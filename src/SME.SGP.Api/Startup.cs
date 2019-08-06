@@ -7,9 +7,6 @@ using SME.SGP.Api.Filtros;
 using SME.SGP.Api.Middlewares;
 using SME.SGP.IoC;
 using Swashbuckle.AspNetCore.Swagger;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
 
 namespace SME.SGP.Api
 {
@@ -58,7 +55,7 @@ namespace SME.SGP.Api
                 options.AllowValidatingTopLevelNodes = false;
                 options.EnableEndpointRouting = true;
                 options.Filters.Add(new ValidaDtoAttribute());
-                options.Filters.Add(new FiltroExcecoes());
+                options.Filters.Add(new FiltroExcecoes(Configuration));
             }).SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
 
             services.AddSwaggerGen(c =>
