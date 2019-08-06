@@ -14,3 +14,6 @@ docker-compose up ```
 -  Adicionar nas variáveis de ambiente
    - *Nome da variável:* ConnectionStrings__SGP-Postgres
    -  *Valor da variável:*  User ID=postgres;Password=postgres;Host=localhost;Port=5432;Database=sgp_db;Pooling=true;
+   
+   - *Nome da variável:* Sentry__DSN
+   -  *Valor da variável:*  xx;
