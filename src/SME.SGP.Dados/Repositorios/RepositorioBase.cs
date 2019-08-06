@@ -30,5 +30,10 @@ namespace SME.SGP.Dados.Repositorios
             entidade.Id = (long)database.Connection().Insert(entidade);
             return entidade.Id;
         }
+
+        public virtual T ObterPorId(long id)
+        {
+            return database.Connection().Get<T>(id);
+        }
     }
 }
