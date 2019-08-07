@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using Dapper;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using SME.SGP.Aplicacao;
 using SME.SGP.Aplicacao.CasosDeUso;
@@ -27,6 +28,7 @@ namespace SME.SGP.IoC
         private static void RegistrarContextos(IServiceCollection services)
         {
             services.TryAddScoped<SgpContext, DbContext>();
+            DefaultTypeMap.MatchNamesWithUnderscores = true;
             RegistrarMapeamentos.Registrar();
         }
 
