@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using SME.SGP.Api.Filtros;
+using SME.SGP.Aplicacao;
 using SME.SGP.Aplicacao.CasosDeUso;
 using SME.SGP.Dto;
 
@@ -10,11 +11,11 @@ namespace SME.SGP.Api.Controllers
     [ValidaDto]
     public class PlanoCicloController : ControllerBase
     {
-        private readonly IManterPlanoCiclo manterPlanoCiclo;
+        private readonly IComandosPlanoCiclo comandosPlanoCiclo;
 
-        public PlanoCicloController(IManterPlanoCiclo manterPlanoCiclo)
+        public PlanoCicloController(IComandosPlanoCiclo comandosPlanoCiclo)
         {
-            this.manterPlanoCiclo = manterPlanoCiclo ?? throw new System.ArgumentNullException(nameof(manterPlanoCiclo));
+            this.comandosPlanoCiclo = comandosPlanoCiclo ?? throw new System.ArgumentNullException(nameof(comandosPlanoCiclo));
         }
 
         [HttpGet]
@@ -26,7 +27,7 @@ namespace SME.SGP.Api.Controllers
         [HttpPost]
         public IActionResult Post(PlanoCicloDto planoCicloDto)
         {
-            manterPlanoCiclo.Salvar(planoCicloDto);
+            comandosPlanoCiclo.Salvar(planoCicloDto);
             return Ok();
         }
     }

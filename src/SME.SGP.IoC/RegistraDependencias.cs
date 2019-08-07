@@ -3,6 +3,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using SME.SGP.Aplicacao;
 using SME.SGP.Aplicacao.CasosDeUso;
+using SME.SGP.Dados;
 using SME.SGP.Dados.Contexto;
 using SME.SGP.Dados.Mapeamentos;
 using SME.SGP.Dados.Repositorios;
@@ -17,6 +18,8 @@ namespace SME.SGP.IoC
             RegistrarRepositorios(services);
             RegistrarContextos(services);
             RegistrarCasosDeUso(services);
+            RegistrarComandos(services);
+            RegistrarConsultas(services);
         }
 
         private static void RegistrarCasosDeUso(IServiceCollection services)
@@ -25,11 +28,20 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IManterPlanoCiclo, ManterPlanoCiclo>();
         }
 
+        private static void RegistrarComandos(IServiceCollection services)
+        {
+            services.TryAddScoped<IComandosPlanoCiclo, ComandosPlanoCiclo>();
+        }
+
+        private static void RegistrarConsultas(IServiceCollection services)
+        {
+            services.TryAddScoped<IConsultasPlanoCiclo, ConsultasPlanoCiclo>();
+        }
+
         private static void RegistrarContextos(IServiceCollection services)
         {
-            services.TryAddScoped<SgpContext, DbContext>();
-            DefaultTypeMap.MatchNamesWithUnderscores = true;
-            RegistrarMapeamentos.Registrar();
+            services.TryAddScoped<ISgpContext, SgpContext>();
+            services.TryAddScoped<IUnitOfWork, UnitOfWork>();
         }
 
         private static void RegistrarRepositorios(IServiceCollection services)
