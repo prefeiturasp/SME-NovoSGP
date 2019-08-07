@@ -58,7 +58,7 @@ namespace SME.SGP.Api
                 options.AllowValidatingTopLevelNodes = false;
                 options.EnableEndpointRouting = true;
                 options.Filters.Add(new ValidaDtoAttribute());
-                options.Filters.Add(new FiltroExcecoes());
+                options.Filters.Add(new FiltroExcecoes(Configuration));
             }).SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
 
             services.AddSwaggerGen(c =>
