@@ -1,6 +1,7 @@
 ﻿using SME.SGP.Dominio;
 using SME.SGP.Dto;
 using System;
+using System.Linq;
 
 namespace SME.SGP.Aplicacao.CasosDeUso
 {
@@ -19,6 +20,27 @@ namespace SME.SGP.Aplicacao.CasosDeUso
         {
             var planoCiclo = MapearParaDominio(planoCicloDto);
             repositorioPlanoCiclo.Salvar(planoCiclo);
+            AjustarMatrizes(planoCiclo, planoCicloDto);
+        }
+
+        private void AjustarMatrizes(PlanoCiclo planoCiclo, PlanoCicloDto planoCicloDto)
+        {
+            var matrizesIncluir = planoCicloDto.IdsMatrizesSaber.Except(planoCiclo.Matrizes.Select(c => c.Id));
+            var matrizesRemover = planoCiclo.Matrizes.Select(c => c.Id).Except(planoCicloDto.IdsMatrizesSaber);
+
+            foreach (var idMatrizRemover in matrizesRemover)
+            {
+                repositorioMatrizSaberPlano.Remover(idMatrizRemover);
+            }
+
+            foreach (var idMatrizIncluir in matrizesIncluir)
+            {
+                repositorioMatrizSaberPlano.Salvar(new MatrizSaberPlano()
+                {
+                    MatrizSaberId = idMatrizIncluir,
+                    PlanoId = planoCiclo.Id
+                });
+            }
         }
 
         private PlanoCiclo MapearParaDominio(PlanoCicloDto planoCicloDto)
@@ -33,10 +55,12 @@ namespace SME.SGP.Aplicacao.CasosDeUso
                 planoCiclo = new PlanoCiclo();
             }
 
-            var matrizSaberPlano = repositorioMatrizSaberPlano.ObterMatrizesSaberDoPlano(planoCicloDto.IdsMatrizesSaber, planoCiclo.Id);
-            //foreach (var matrizId in planoCicloDto.IdsMatrizesSaber)
-            //{
-            //}
+
+
+            //var matrizSaberPlano = repositorioMatrizSaberPlano.ObterMatrizesSaberDoPlano(planoCicloDto.IdsMatrizesSaber, planoCiclo.Id);
+            ////foreach (var matrizId in planoCicloDto.IdsMatrizesSaber)
+            ////{
+            ////}
 
             return planoCiclo;
         }
