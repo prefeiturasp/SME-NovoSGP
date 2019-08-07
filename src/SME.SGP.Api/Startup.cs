@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Prometheus;
 using SME.SGP.Api.Filtros;
 using SME.SGP.Api.Middlewares;
 using SME.SGP.IoC;
@@ -38,7 +39,9 @@ namespace SME.SGP.Api
             {
                 c.SwaggerEndpoint("/swagger/v1/swagger.json", "SGP Api");
             });
+
             app.UseMvc();
+            app.UseMetricServer();
         }
 
         // This method gets called by the runtime. Use this method to add services to the container.
