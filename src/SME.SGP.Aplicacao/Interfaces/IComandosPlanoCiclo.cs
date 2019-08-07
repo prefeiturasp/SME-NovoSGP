@@ -1,8 +1,8 @@
 ﻿using SME.SGP.Dto;
 
-namespace SME.SGP.Aplicacao.CasosDeUso
+namespace SME.SGP.Aplicacao
 {
-    public interface IManterPlanoCiclo
+    public interface IComandosPlanoCiclo
     {
         void Salvar(PlanoCicloDto planoCicloDto);
     }

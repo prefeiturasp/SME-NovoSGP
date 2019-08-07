@@ -3,24 +3,33 @@ using SME.SGP.Dto;
 using System;
 using System.Linq;
 
-namespace SME.SGP.Aplicacao.CasosDeUso
+namespace SME.SGP.Aplicacao
 {
-    public class ManterPlanoCiclo : IManterPlanoCiclo
+    public class ComandosPlanoCiclo : IComandosPlanoCiclo
     {
         private readonly IRepositorioPlanoCiclo repositorioPlanoCiclo;
         private readonly IRepositorioMatrizSaberPlano repositorioMatrizSaberPlano;
+        private readonly IUnitOfWork unitOfWork;
 
-        public ManterPlanoCiclo(IRepositorioPlanoCiclo repositorioPlanoCiclo,
-                               IRepositorioMatrizSaberPlano repositorioMatrizSaberPlano)
+        public ComandosPlanoCiclo(IRepositorioPlanoCiclo repositorioPlanoCiclo,
+                                  IRepositorioMatrizSaberPlano repositorioMatrizSaberPlano,
+                                  IUnitOfWork unitOfWork)
         {
             this.repositorioPlanoCiclo = repositorioPlanoCiclo ?? throw new ArgumentNullException(nameof(repositorioPlanoCiclo));
             this.repositorioMatrizSaberPlano = repositorioMatrizSaberPlano ?? throw new ArgumentNullException(nameof(repositorioMatrizSaberPlano));
+            this.unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
         }
         public void Salvar(PlanoCicloDto planoCicloDto)
         {
             var planoCiclo = MapearParaDominio(planoCicloDto);
-            repositorioPlanoCiclo.Salvar(planoCiclo);
-            AjustarMatrizes(planoCiclo, planoCicloDto);
+            using (var transacao = unitOfWork.IniciarTransacao())
+            {
+                repositorioPlanoCiclo.Salvar(planoCiclo);
+                planoCiclo.Descricao = $"alterada{DateTime.Now.Millisecond}";
+                repositorioPlanoCiclo.Salvar(planoCiclo);
+                AjustarMatrizes(planoCiclo, planoCicloDto);
+                unitOfWork.PersistirTransacao();
+            }
         }
 
         private void AjustarMatrizes(PlanoCiclo planoCiclo, PlanoCicloDto planoCicloDto)
@@ -54,14 +63,6 @@ namespace SME.SGP.Aplicacao.CasosDeUso
             {
                 planoCiclo = new PlanoCiclo();
             }
-
-
-
-            //var matrizSaberPlano = repositorioMatrizSaberPlano.ObterMatrizesSaberDoPlano(planoCicloDto.IdsMatrizesSaber, planoCiclo.Id);
-            ////foreach (var matrizId in planoCicloDto.IdsMatrizesSaber)
-            ////{
-            ////}
-
             return planoCiclo;
         }
     }

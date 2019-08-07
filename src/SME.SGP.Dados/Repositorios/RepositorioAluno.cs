@@ -8,18 +8,18 @@ namespace SME.SGP.Dados.Repositorios
 {
     public class RepositorioAluno : RepositorioBase<Aluno>, IRepositorioAluno
     {
-        public RepositorioAluno(SgpContext conexao) : base(conexao)
+        public RepositorioAluno(ISgpContext conexao) : base(conexao)
         {
         }
 
         public override IEnumerable<Aluno> Listar()
         {
-            return database.Connection().Query<Aluno>("select * from tabela_aluno");
+            return database.Conexao().Query<Aluno>("select * from tabela_aluno where");
         }
 
         public IEnumerable<Aluno> ListarDommel()
         {
-            return database.Connection().GetAll<Aluno, Professor, Aluno>((aluno, professor) =>
+            return database.Conexao().GetAll<Aluno, Professor, Aluno>((aluno, professor) =>
             {
                 aluno.Professor = professor;
                 return aluno;

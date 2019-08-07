@@ -8,7 +8,7 @@ namespace SME.SGP.Dados.Repositorios
 {
     public class RepositorioMatrizSaberPlano : RepositorioBase<MatrizSaberPlano>, IRepositorioMatrizSaberPlano
     {
-        public RepositorioMatrizSaberPlano(SgpContext conexao) : base(conexao)
+        public RepositorioMatrizSaberPlano(ISgpContext conexao) : base(conexao)
         {
         }
     }
