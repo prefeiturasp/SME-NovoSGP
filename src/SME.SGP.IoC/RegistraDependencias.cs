@@ -2,7 +2,6 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using SME.SGP.Aplicacao;
-using SME.SGP.Aplicacao.CasosDeUso;
 using SME.SGP.Dados;
 using SME.SGP.Dados.Contexto;
 using SME.SGP.Dados.Mapeamentos;
@@ -17,15 +16,8 @@ namespace SME.SGP.IoC
         {
             RegistrarRepositorios(services);
             RegistrarContextos(services);
-            RegistrarCasosDeUso(services);
             RegistrarComandos(services);
             RegistrarConsultas(services);
-        }
-
-        private static void RegistrarCasosDeUso(IServiceCollection services)
-        {
-            services.TryAddScoped<IManterAluno, ManterAluno>();
-            services.TryAddScoped<IManterPlanoCiclo, ManterPlanoCiclo>();
         }
 
         private static void RegistrarComandos(IServiceCollection services)

@@ -1,7 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using SME.SGP.Api.Filtros;
 using SME.SGP.Aplicacao;
-using SME.SGP.Aplicacao.CasosDeUso;
 using SME.SGP.Dto;
 
 namespace SME.SGP.Api.Controllers
