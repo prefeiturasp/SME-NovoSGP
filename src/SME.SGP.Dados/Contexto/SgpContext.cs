@@ -5,11 +5,11 @@ using System.Data;
 
 namespace SME.SGP.Dados.Contexto
 {
-    public class DbContext : SgpContext
+    public class SgpContext : ISgpContext
     {
         private readonly NpgsqlConnection connection;
 
-        public DbContext(IConfiguration configuration)
+        public SgpContext(IConfiguration configuration)
         {
             connection = new NpgsqlConnection(configuration.GetConnectionString("SGP-Postgres"));
             Open();
@@ -43,7 +43,7 @@ namespace SME.SGP.Dados.Contexto
             connection.Close();
         }
 
-        public NpgsqlConnection Connection() => connection;
+        public NpgsqlConnection Conexao() => connection;
 
         public IDbCommand CreateCommand()
         {
@@ -56,7 +56,7 @@ namespace SME.SGP.Dados.Contexto
         {
             try
             {
-                if (connection.State != System.Data.ConnectionState.Open)
+                if (connection.State != ConnectionState.Open)
                     connection.Open();
             }
             catch (Exception ex)
