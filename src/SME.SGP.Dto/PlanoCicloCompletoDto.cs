@@ -2,7 +2,7 @@
 {
     public class PlanoCicloCompletoDto
     {
-        public long IdMatriz { get; set; }
+        public long MatrizId { get; set; }
 
         public long ObjetivoDesenvolvimentoId { get; set; }
     }

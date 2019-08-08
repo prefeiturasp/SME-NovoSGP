@@ -34,6 +34,7 @@ namespace SME.SGP.Dados.Repositorios
         //    return planoDto;
         //}
 
+        //TODO TRANSFORMAR EM PIVOT
         public PlanoCicloDto ObterPlanoCicloComMatrizesEObjetivos(long id)
         {
             StringBuilder query = new StringBuilder();
@@ -57,17 +58,8 @@ namespace SME.SGP.Dados.Repositorios
                 Id = id,
             };
 
-            planoDto.IdsMatrizesSaber.AddRange(listaPlanos.Select(c => c.IdMatriz));
+            planoDto.IdsMatrizesSaber.AddRange(listaPlanos.Select(c => c.MatrizId));
             planoDto.IdsObjetivosDesenvolvimento.AddRange(listaPlanos.Select(c => c.ObjetivoDesenvolvimentoId));
-
-            //var matrizes = database.Conexao().Query<PlanoCicloDto, MatrizSaberPlano, ObjetivoDesenvolvimentoPlano, PlanoCicloDto>(query.ToString(),
-            //       map: (planoCiclo, matrizSaberPlano, objetivoDesenvolvimentoPlano) =>
-            //       {
-            //           planoCiclo.IdsMatrizesSaber.Add(matrizSaberPlano.MatrizSaberId);
-            //           planoCiclo.IdsObjetivosDesenvolvimento.Add(objetivoDesenvolvimentoPlano.ObjetivoDesenvolvimentoId);
-            //           return planoCiclo;
-            //       },
-            //       splitOn: "matriz_id,objetivo_desenvolvimento_id", param: new { Id = id });
             return planoDto;
         }
     }
