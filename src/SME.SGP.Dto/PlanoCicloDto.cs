@@ -4,9 +4,15 @@ namespace SME.SGP.Dto
 {
     public class PlanoCicloDto
     {
-        public long Id { get; set; }
+        public PlanoCicloDto()
+        {
+            IdsObjetivosDesenvolvimento = new List<long>();
+            IdsMatrizesSaber = new List<long>();
+        }
+
         public string Descricao { get; set; }
-        public IEnumerable<long> IdsMatrizesSaber { get; set; }
-        public IEnumerable<long> IdsObjetivosDesenvolvimento { get; set; }
+        public long Id { get; set; }
+        public List<long> IdsMatrizesSaber { get; set; }
+        public List<long> IdsObjetivosDesenvolvimento { get; set; }
     }
 }

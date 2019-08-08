@@ -8,6 +8,8 @@ namespace SME.SGP.Dados.Mapeamentos
         public ObjetivoDesenvolvimentoPlanoMap()
         {
             ToTable("objetivo_desenvolvimento_plano");
+            Map(c => c.ObjetivoDesenvolvimentoId).ToColumn("objetivo_desenvolvimento_id");
+            Map(c => c.PlanoId).ToColumn("plano_id");
         }
     }
 }
