@@ -5,6 +5,7 @@ namespace SME.SGP.Dominio
     public interface IRepositorioBase<T> where T : EntidadeBase
     {
         IEnumerable<T> Listar();
+        T ObterPorId(long id);
 
         void Remover(long id);
 
