@@ -1,6 +1,5 @@
 import React from 'react';
 import history from '../../services/history';
-
 // import { Container } from './styles';
 
 export default function Principal() {
@@ -9,11 +8,11 @@ export default function Principal() {
   }
 
   return (
-    <>
+    <React.Fragment>
       <h1>Principal, Home ou Main</h1>
       <button type="button" className="btn btn-info" onClick={irPlanoCiclo}>
         Ir para Plano de Ciclo
       </button>
-    </>
+    </React.Fragment>
   );
 }
