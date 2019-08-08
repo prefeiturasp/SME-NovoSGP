@@ -1,9 +1,9 @@
 import React from 'react';
 import { Switch, Route } from 'react-router-dom';
 
-import Principal from '../pages/Principal/principal';
-import PlanoCiclo from '../pages/Planejamento/PlanoCiclo/planoCiclo';
-import PlanoAnual from '../pages/Planejamento/PlanoAnual/planoAnual';
+import Principal from '../paginas/Principal/principal';
+import PlanoCiclo from '../paginas/Planejamento/PlanoCiclo/planoCiclo';
+import PlanoAnual from '../paginas/Planejamento/PlanoAnual/planoAnual';
 
 export default function Rotas() {
   return (
