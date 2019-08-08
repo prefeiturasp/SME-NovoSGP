@@ -1,8 +1,8 @@
 import React from 'react';
 import { BrowserRouter, Switch, Route } from 'react-router-dom';
 
-import Principal from './paginas/Principal/principal';
-import Repositorio from './paginas/Repositorio/repositorio';
+import Principal from '../pages/Principal/principal';
+import Repositorio from '../pages/Repositorio/repositorio';
 
 export default function Rotas() {
   return (

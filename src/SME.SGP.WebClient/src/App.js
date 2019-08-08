@@ -1,9 +1,18 @@
 import React from 'react';
+import { Router } from 'react-router-dom';
 
-import Rotas from './rotas';
+import Rotas from './routes/index';
+import history from './services/history';
+
+import GlobalStyle from './styles/global';
 
 function App() {
-  return <Rotas />;
+  return (
+    <Router history={history}>
+      <Rotas />
+      <GlobalStyle />
+    </Router>
+  );
 }
 
 export default App;
