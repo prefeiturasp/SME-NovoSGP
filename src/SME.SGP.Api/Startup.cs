@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Builder;
+﻿using Dapper;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
@@ -6,6 +7,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Prometheus;
 using SME.SGP.Api.Filtros;
 using SME.SGP.Api.Middlewares;
+using SME.SGP.Dados.Mapeamentos;
 using SME.SGP.IoC;
 using Swashbuckle.AspNetCore.Swagger;
 
@@ -49,6 +51,8 @@ namespace SME.SGP.Api
         {
             services.AddSingleton(Configuration);
             RegistraDependencias.Registrar(services);
+            DefaultTypeMap.MatchNamesWithUnderscores = true;
+            RegistrarMapeamentos.Registrar();
             services.Configure<ApiBehaviorOptions>(options =>
             {
                 options.SuppressModelStateInvalidFilter = true;
