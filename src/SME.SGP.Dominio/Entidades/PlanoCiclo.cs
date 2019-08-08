@@ -1,15 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace SME.SGP.Dominio
+﻿namespace SME.SGP.Dominio
 {
     public class PlanoCiclo : EntidadeBase
     {
         public PlanoCiclo()
         {
-            Matrizes = new HashSet<MatrizSaberPlano>();
+            //Matrizes = new HashSet<MatrizSaberPlano>();
         }
+
         public string Descricao { get; set; }
-        public ICollection<MatrizSaberPlano> Matrizes { get; set; }
+        //public ICollection<MatrizSaberPlano> Matrizes { get; set; }
     }
 }

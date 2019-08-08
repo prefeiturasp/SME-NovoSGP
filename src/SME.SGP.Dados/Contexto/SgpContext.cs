@@ -54,14 +54,8 @@ namespace SME.SGP.Dados.Contexto
 
         public void Open()
         {
-            try
-            {
-                if (connection.State != ConnectionState.Open)
-                    connection.Open();
-            }
-            catch (Exception ex)
-            {
-            }
+            if (connection.State != ConnectionState.Open)
+                connection.Open();
         }
     }
 }
