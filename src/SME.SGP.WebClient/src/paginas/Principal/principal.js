@@ -1,5 +1,5 @@
 import React from 'react';
-import history from '../../services/history';
+import history from '../../servicos/history';
 
 // import { Container } from './styles';
 
