@@ -6,6 +6,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\SME.SGP.Dominio\SME.SGP.Dominio.csproj" />
+    <ProjectReference Include="..\SME.SGP.Dto\SME.SGP.Dto.csproj" />
   </ItemGroup>
 
 </Project>
