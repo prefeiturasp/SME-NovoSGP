@@ -1,11 +1,16 @@
 version: "3.1"
 
+volumes:
+  grafana_data: {}
+  postgres-data: {}
+
 services:
   sme-api:
     container_name: sme-api
     image: sme-api
     build:
-      context: ./src/SME.SGP.Api
+      context: .
+      dockerfile: ./src/SME.SGP.Api/Dockerfile
     ports:
       - "20000:80"
     networks:
@@ -21,6 +26,36 @@ services:
     environment:
       POSTGRES_PASSWORD: postgres
       POSTGRES_DB: sgp_db
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    networks:
+      - sme-network
+  grafana:
+    container_name: sme-grafana
+    restart: always
+    image: grafana/grafana
+    ports:
+      - "3000:3000"
+    volumes:
+      # Data persistency
+      # sudo mkdir -p /srv/docker/influxdb/data
+      - grafana_data:/var/lib/grafana
+    networks:
+      - sme-network
+    depends_on:
+      - "prom"
+  prom:
+    container_name: sme-prometheus
+    image: sme-prometheus
+    build:
+      context: .
+      dockerfile: ./prometheus/Dockerfile
+    ports:
+      - 9090:9090
+    networks:
+      - sme-network
+    depends_on:
+      - "sme-api"
 networks:
   sme-network:
     driver: bridge
