@@ -57,7 +57,7 @@ namespace SME.SGP.Aplicacao
 
         private void InserirMatrizes(PlanoCiclo planoCiclo, PlanoCicloDto planoCicloDto, List<long> idsMatrizes)
         {
-            var matrizesIncluir = planoCicloDto.IdsMatrizesSaber.Except(idsMatrizes);
+            var matrizesIncluir = planoCicloDto.IdsMatrizesSaber.ToList().Except(idsMatrizes);
 
             foreach (var idMatrizIncluir in matrizesIncluir)
             {
@@ -87,14 +87,25 @@ namespace SME.SGP.Aplicacao
         {
             if (planoCicloDto == null)
             {
-                return null;
+                throw new ArgumentNullException(nameof(planoCicloDto));
             }
+            //TODO VALIDAR SE FOR TURMA  DE ENSINO FUNDAMENTAL REGULAR DEVE PREENCHER OS COMPONENTES: MATRIZ E OBJETIVOS CASO CONTRÁRIO NÃO É OBRIGATÓRIO
+            if (planoCicloDto.IdsMatrizesSaber == null || !planoCicloDto.IdsMatrizesSaber.Any())
+            {
+                throw new NegocioException("A matriz de saberes deve conter ao menos 1 elemento.");
+            }
+            if (planoCicloDto.IdsObjetivosDesenvolvimento == null || !planoCicloDto.IdsObjetivosDesenvolvimento.Any())
+            {
+                throw new NegocioException("Os objetivos de desenvolvimento sustentável devem conter ao menos 1 elemento.");
+            }
+
             var planoCiclo = repositorioPlanoCiclo.ObterPorId(planoCicloDto.Id);
             if (planoCiclo == null)
             {
                 planoCiclo = new PlanoCiclo();
             }
             planoCiclo.Descricao = planoCicloDto.Descricao;
+
             return planoCiclo;
         }
 
