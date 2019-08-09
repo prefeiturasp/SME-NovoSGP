@@ -18,12 +18,7 @@ namespace SME.SGP.Aplicacao
             this.repositorioMatrizSaberPlano = repositorioMatrizSaberPlano ?? throw new System.ArgumentNullException(nameof(repositorioMatrizSaberPlano));
         }
 
-        public IEnumerable<PlanoCicloDto> Listar()
-        {
-            return MapearParaDto(repositorioPlanoCiclo.Listar());
-        }
-
-        public PlanoCicloDto ObterPorId(long id)
+        public PlanoCicloCompletoDto ObterPorId(long id)
         {
             return repositorioPlanoCiclo.ObterPlanoCicloComMatrizesEObjetivos(id);
         }
