@@ -76,6 +76,8 @@ namespace SME.SGP.Api
             {
                 c.SwaggerDoc("v1", new Info { Title = "SGP v1", Version = "v1" });
             });
+
+            services.AddHttpContextAccessor();
         }
     }
 }

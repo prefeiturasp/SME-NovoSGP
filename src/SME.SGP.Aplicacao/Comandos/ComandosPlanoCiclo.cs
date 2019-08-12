@@ -31,6 +31,9 @@ namespace SME.SGP.Aplicacao
             using (var transacao = unitOfWork.IniciarTransacao())
             {
                 repositorioPlanoCiclo.Salvar(planoCiclo);
+
+                planoCicloDto.Id = planoCiclo.Id;
+
                 AjustarMatrizes(planoCiclo, planoCicloDto);
                 AjustarObjetivos(planoCiclo, planoCicloDto);
                 unitOfWork.PersistirTransacao();
@@ -57,7 +60,7 @@ namespace SME.SGP.Aplicacao
 
         private void InserirMatrizes(PlanoCiclo planoCiclo, PlanoCicloDto planoCicloDto, List<long> idsMatrizes)
         {
-            var matrizesIncluir = planoCicloDto.IdsMatrizesSaber.ToList().Except(idsMatrizes);
+            var matrizesIncluir = planoCicloDto.IdsMatrizesSaber.Except(idsMatrizes);
 
             foreach (var idMatrizIncluir in matrizesIncluir)
             {
