@@ -1,7 +1,8 @@
 import React from 'react';
 import styled from 'styled-components';
+import PropTypes from 'prop-types';
 
-export default function CardCollapse(props) {
+const CardCollapse = props => {
   const Icone = styled.i``;
 
   const Link = styled.a`
@@ -13,23 +14,30 @@ export default function CardCollapse(props) {
   const { titulo, indice } = props;
 
   return (
-    <div className="card shadow-sm">
+    <div className="card shadow-sm mb-2">
       <div className="card-header bg-white d-flex align-items-center">
         {titulo}
         <Link
-          className="text-decoration-none cor-cinza ml-auto"
+          className="text-decoration-none ml-auto"
           data-toggle="collapse"
-          data-target={`#${indice}`}
+          href={`#${indice}`}
+          role="button"
           aria-expanded="false"
           aria-controls={`${indice}`}
-          href={`#${indice}`}
         >
           <Icone className="fa fa-bars stretched-link" aria-hidden="true" />
         </Link>
       </div>
-      <div className="collapse fade" id={indice}>
+      <div className="collapse fade" id={`${indice}`}>
         <div className="card-body p-0">Olar</div>
       </div>
     </div>
   );
-}
+};
+
+CardCollapse.propTypes = {
+  titulo: PropTypes.string,
+  indice: PropTypes.string,
+};
+
+export default CardCollapse;
