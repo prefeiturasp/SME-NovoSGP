@@ -1,4 +1,5 @@
 CREATE TABLE public.auditoria (
+	id bigint not null generated always as identity,
 	data timestamp not null,
 	entidade varchar(200) not null,
 	chave bigint not null,
