@@ -1,8 +1,8 @@
 ﻿namespace SME.SGP.Dominio
 {
-    public class ObjetivoDesenvolvimentoPlano
+    public class ObjetivoDesenvolvimentoPlano : EntidadeBase
     {
-        public long IdPlano { get; set; }
-        public long IdObjetivoDesenvolvimento { get; set; }
+        public long ObjetivoDesenvolvimentoId { get; set; }
+        public long PlanoId { get; set; }
     }
 }

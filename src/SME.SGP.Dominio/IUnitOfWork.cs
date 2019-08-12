@@ -1,12 +1,13 @@
-﻿using System;
-using System.Data;
+﻿using System.Data;
 
 namespace SME.SGP.Dominio
 {
     public interface IUnitOfWork
     {
-        void PersistirTransacao();
-        void Rollback();
         IDbTransaction IniciarTransacao();
+
+        void PersistirTransacao();
+
+        void Rollback();
     }
 }

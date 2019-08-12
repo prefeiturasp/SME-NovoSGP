@@ -11,16 +11,19 @@ namespace SME.SGP.Api.Controllers
     public class PlanoCicloController : ControllerBase
     {
         private readonly IComandosPlanoCiclo comandosPlanoCiclo;
+        private readonly IConsultasPlanoCiclo consultasPlanoCiclo;
 
-        public PlanoCicloController(IComandosPlanoCiclo comandosPlanoCiclo)
+        public PlanoCicloController(IComandosPlanoCiclo comandosPlanoCiclo,
+                                    IConsultasPlanoCiclo consultasPlanoCiclo)
         {
             this.comandosPlanoCiclo = comandosPlanoCiclo ?? throw new System.ArgumentNullException(nameof(comandosPlanoCiclo));
+            this.consultasPlanoCiclo = consultasPlanoCiclo ?? throw new System.ArgumentNullException(nameof(consultasPlanoCiclo));
         }
 
         [HttpGet]
         public IActionResult Get()
         {
-            return Ok();
+            return Ok(consultasPlanoCiclo.ObterPorId(1));
         }
 
         [HttpPost]
