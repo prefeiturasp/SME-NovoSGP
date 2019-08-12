@@ -30,7 +30,7 @@ namespace SME.SGP.Aplicacao
             var planoCiclo = MapearParaDominio(planoCicloDto);
             using (var transacao = unitOfWork.IniciarTransacao())
             {
-                repositorioPlanoCiclo.Salvar(planoCiclo);
+                planoCicloDto.Id = repositorioPlanoCiclo.Salvar(planoCiclo);
                 AjustarMatrizes(planoCiclo, planoCicloDto);
                 AjustarObjetivos(planoCiclo, planoCicloDto);
                 unitOfWork.PersistirTransacao();
@@ -88,6 +88,10 @@ namespace SME.SGP.Aplicacao
             if (planoCicloDto == null)
             {
                 throw new ArgumentNullException(nameof(planoCicloDto));
+            }
+            if (planoCicloDto.Id == 0 && repositorioPlanoCiclo.ObterPlanoCicloPorAnoCicloEEscola(planoCicloDto.Ano, planoCicloDto.CicloId, planoCicloDto.EscolaId))
+            {
+                throw new NegocioException("Já existe um plano ciclo referente a este Ano/Ciclo/Escola.");
             }
             //TODO VALIDAR SE FOR TURMA DE ENSINO FUNDAMENTAL REGULAR DEVE PREENCHER OS COMPONENTES: MATRIZ E OBJETIVOS, CASO CONTRÁRIO NÃO É OBRIGATÓRIO
             if (planoCicloDto.IdsMatrizesSaber == null || !planoCicloDto.IdsMatrizesSaber.Any())
