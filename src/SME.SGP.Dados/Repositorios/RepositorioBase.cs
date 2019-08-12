@@ -1,4 +1,5 @@
 ﻿using Dommel;
+using Microsoft.AspNetCore.Http;
 using SME.SGP.Dados.Contexto;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Entidades;
@@ -10,21 +11,12 @@ namespace SME.SGP.Dados.Repositorios
     public abstract class RepositorioBase<T> : IRepositorioBase<T> where T : EntidadeBase
     {
         protected readonly ISgpContext database;
+        private readonly IHttpContextAccessor httpContextAccessor;
 
-        protected RepositorioBase(ISgpContext database)
+        protected RepositorioBase(ISgpContext database, IHttpContextAccessor httpContextAccessor)
         {
             this.database = database;
-        }
-
-        public void Auditar(string usuario, long identificador)
-        {
-            database.Insert<Auditoria>(new Auditoria()
-            {
-                Data = DateTime.Now,
-                Entidade = typeof(T).Name.ToLower(),
-                Chave = identificador,
-                Usuario = usuario
-            });
+            this.httpContextAccessor = httpContextAccessor ?? throw new ArgumentNullException(nameof(httpContextAccessor));
         }
 
         public virtual IEnumerable<T> Listar()
@@ -47,6 +39,19 @@ namespace SME.SGP.Dados.Repositorios
         {
             entidade.Id = (long)database.Conexao().Insert(entidade);
             return entidade.Id;
+        }
+
+        private void Auditar(long identificador)
+        {
+            var usuario = httpContextAccessor.HttpContext.User.Identity.Name;
+
+            database.Insert<Auditoria>(new Auditoria()
+            {
+                Data = DateTime.Now,
+                Entidade = typeof(T).Name.ToLower(),
+                Chave = identificador,
+                Usuario = usuario
+            });
         }
     }
 }
