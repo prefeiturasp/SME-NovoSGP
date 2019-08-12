@@ -2,6 +2,8 @@
 using SME.SGP.Dados.Contexto;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
+using SME.SGP.Dominio.Entidades;
+using System;
 using System.Collections.Generic;
 
 namespace SME.SGP.Dados.Repositorios
@@ -13,6 +15,17 @@ namespace SME.SGP.Dados.Repositorios
         protected RepositorioBase(ISgpContext database)
         {
             this.database = database;
+        }
+
+        public void Auditar(string usuario, long identificador)
+        {
+            database.Insert<Auditoria>(new Auditoria()
+            {
+                Data = DateTime.Now,
+                Entidade = typeof(T).Name.ToLower(),
+                Chave = identificador,
+                Usuario = usuario
+            });
         }
 
         public virtual IEnumerable<T> Listar()
