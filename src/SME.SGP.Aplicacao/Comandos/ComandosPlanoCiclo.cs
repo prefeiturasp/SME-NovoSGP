@@ -89,7 +89,7 @@ namespace SME.SGP.Aplicacao
             {
                 throw new ArgumentNullException(nameof(planoCicloDto));
             }
-            //TODO VALIDAR SE FOR TURMA  DE ENSINO FUNDAMENTAL REGULAR DEVE PREENCHER OS COMPONENTES: MATRIZ E OBJETIVOS CASO CONTRÁRIO NÃO É OBRIGATÓRIO
+            //TODO VALIDAR SE FOR TURMA DE ENSINO FUNDAMENTAL REGULAR DEVE PREENCHER OS COMPONENTES: MATRIZ E OBJETIVOS, CASO CONTRÁRIO NÃO É OBRIGATÓRIO
             if (planoCicloDto.IdsMatrizesSaber == null || !planoCicloDto.IdsMatrizesSaber.Any())
             {
                 throw new NegocioException("A matriz de saberes deve conter ao menos 1 elemento.");
@@ -105,7 +105,9 @@ namespace SME.SGP.Aplicacao
                 planoCiclo = new PlanoCiclo();
             }
             planoCiclo.Descricao = planoCicloDto.Descricao;
-
+            planoCiclo.CicloId = planoCicloDto.CicloId;
+            planoCiclo.Ano = planoCicloDto.Ano;
+            planoCiclo.EscolaId = planoCicloDto.EscolaId;
             return planoCiclo;
         }
 

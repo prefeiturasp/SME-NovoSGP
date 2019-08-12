@@ -21,11 +21,12 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "teste", "teste", "{5D833EA3
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SME.SGP.Teste.Integracao", "teste\SME.SGP.Teste.Integracao\SME.SGP.Teste.Integracao.csproj", "{1B58EF22-6B53-4546-BD74-3C5219A574F1}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SME.SGP.Dominio.Interfaces", "src\SME.SGP.Dominio.Interfaces\SME.SGP.Dominio.Interfaces.csproj", "{078DE56D-0BDA-4AC0-8722-0D6FFA5F8A36}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SME.SGP.Dominio.Interfaces", "src\SME.SGP.Dominio.Interfaces\SME.SGP.Dominio.Interfaces.csproj", "{078DE56D-0BDA-4AC0-8722-0D6FFA5F8A36}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "scripts", "scripts", "{CF91820B-323A-410F-B469-FF8E966B3D41}"
 	ProjectSection(SolutionItems) = preProject
 		scripts\V1__AUDITORIA_CREATE.sql = scripts\V1__AUDITORIA_CREATE.sql
+		scripts\V2__PLANO_CICLO_CREATE.sql = scripts\V2__PLANO_CICLO_CREATE.sql
 	EndProjectSection
 EndProject
 Global

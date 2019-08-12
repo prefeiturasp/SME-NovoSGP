@@ -1,8 +1,8 @@
 ﻿using Dommel;
 using SME.SGP.Dados.Contexto;
 using SME.SGP.Dominio;
-using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Dominio.Entidades;
+using SME.SGP.Dominio.Interfaces;
 using System;
 using System.Collections.Generic;
 
@@ -47,9 +47,16 @@ namespace SME.SGP.Dados.Repositorios
         public virtual long Salvar(T entidade)
         {
             if (entidade.Id > 0)
+            {
+                entidade.AlteradoEm = DateTime.Now;
+                entidade.AlteradoPor = "usuário logado";
                 database.Conexao().Update(entidade);
+            }
             else
+            {
+                entidade.CriadoPor = "usuário logado";
                 entidade.Id = (long)database.Conexao().Insert(entidade);
+            }
             return entidade.Id;
         }
     }
