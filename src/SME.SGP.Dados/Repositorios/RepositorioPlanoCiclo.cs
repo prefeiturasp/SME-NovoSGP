@@ -14,7 +14,7 @@ namespace SME.SGP.Dados.Repositorios
         {
         }
 
-        public PlanoCicloCompletoDto ObterPlanoCicloComMatrizesEObjetivos(long id)
+        public PlanoCicloCompletoDto ObterPlanoCicloComMatrizesEObjetivos(int ano, long cicloId, long escolaId)
         {
             StringBuilder query = new StringBuilder();
             query.AppendLine("select");
@@ -29,11 +29,16 @@ namespace SME.SGP.Dados.Repositorios
             query.AppendLine("inner join objetivo_desenvolvimento_plano odp on");
             query.AppendLine("  odp.plano_id = pc.id");
             query.AppendLine("where");
-            query.AppendLine("  pc.id = @Id");
+            query.AppendLine("  pc.ciclo_id = @cicloId and pc.ano = @ano and pc.escola_id = @escolaId");
             query.AppendLine("group by");
             query.AppendLine("  pc.id");
 
-            return database.Conexao().Query<PlanoCicloCompletoDto>(query.ToString(), new { Id = id }).SingleOrDefault();
+            return database.Conexao().Query<PlanoCicloCompletoDto>(query.ToString(), new { cicloId, ano, escolaId }).SingleOrDefault();
+        }
+
+        public bool ObterPlanoCicloPorAnoCicloEEscola(int ano, long cicloId, long escolaId)
+        {
+            return database.Conexao().Query<bool>("select 1 from plano_ciclo where ano = @ano and ciclo_id = @cicloId and escola_id = @escolaId", new { ano, cicloId, escolaId }).SingleOrDefault();
         }
     }
 }
