@@ -1,21 +1,32 @@
 import React from 'react';
 import styled from 'styled-components';
 import PropTypes from 'prop-types';
+import CardHeader from './cardHeader';
+import CardBody from './cardBody';
 
 const CardCollapse = props => {
-  const Icone = styled.i``;
+  const { titulo, indice, children } = props;
+
+  const Card = styled.div`
+    &:last-child {
+      margin-bottom: 0;
+    }
+  `;
+
+  const Icone = styled.i`
+    color: #c8c8c8;
+  `;
 
   const Link = styled.a`
     &[aria-expanded='true'] ${Icone} {
+      color: #42474a;
       transform: rotate(90deg);
     }
   `;
 
-  const { titulo, indice } = props;
-
   return (
-    <div className="card shadow-sm mb-2">
-      <div className="card-header bg-white d-flex align-items-center">
+    <Card className="card shadow-sm mb-3">
+      <CardHeader>
         {titulo}
         <Link
           className="text-decoration-none ml-auto"
@@ -25,19 +36,20 @@ const CardCollapse = props => {
           aria-expanded="false"
           aria-controls={`${indice}`}
         >
-          <Icone className="fa fa-bars stretched-link" aria-hidden="true" />
+          <Icone className="fa fa-bars" aria-hidden="true" />
         </Link>
-      </div>
+      </CardHeader>
       <div className="collapse fade" id={`${indice}`}>
-        <div className="card-body p-0">Olar</div>
+        <CardBody>{children}</CardBody>
       </div>
-    </div>
+    </Card>
   );
 };
 
 CardCollapse.propTypes = {
   titulo: PropTypes.string,
   indice: PropTypes.string,
+  children: PropTypes.node,
 };
 
 export default CardCollapse;

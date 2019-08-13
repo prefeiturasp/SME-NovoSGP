@@ -1,16 +1,29 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import styled from 'styled-components';
 
 const Button = props => {
-  const { type, style, className, onClick, icon, label } = props;
+  const {
+    type,
+    style,
+    color,
+    className,
+    onClick,
+    disabled,
+    icon,
+    label,
+  } = props;
+
+  const Icone = styled.i``;
 
   return (
     <button
       type={type}
-      className={`btn btn-${style} ${className}`}
+      className={`btn btn-${style}-${color} ${className}`}
       onClick={onClick}
+      disabled={disabled}
     >
-      <i className={`fa fa-${icon}`} />
+      {icon ? <Icone className={`fa fa-${icon} mr-2`} /> : null}
       {label}
     </button>
   );
@@ -19,15 +32,19 @@ const Button = props => {
 Button.propTypes = {
   type: PropTypes.string,
   style: PropTypes.string,
+  color: PropTypes.string,
   className: PropTypes.string,
   onClick: PropTypes.string,
+  disabled: PropTypes.bool,
   icon: PropTypes.string,
   label: PropTypes.string,
 };
 
 Button.defaultProps = {
   type: 'button',
-  style: 'primary',
+  style: 'outline',
+  color: 'primary',
+  disabled: false,
 };
 
 export default Button;
