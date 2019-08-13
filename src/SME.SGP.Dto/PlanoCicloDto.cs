@@ -6,12 +6,12 @@ namespace SME.SGP.Dto
     public class PlanoCicloDto
     {
         [Required(ErrorMessage = "O ano deve ser informado")]
-        public long Ano { get; set; }
+        public int Ano { get; set; }
 
         [Required(ErrorMessage = "O ciclo deve ser informado")]
         public long CicloId { get; set; }
 
-        [Required]
+        [Required(ErrorMessage = "A descrição deve ser informada.")]
         public string Descricao { get; set; }
 
         [Required(ErrorMessage = "A escola deve ser informada")]
