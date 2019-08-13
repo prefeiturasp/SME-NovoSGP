@@ -1,7 +1,7 @@
 ﻿using System.Collections;
 using System.ComponentModel.DataAnnotations;
 
-namespace SME.SGP.Api.Filtros
+namespace SME.SGP.Dto
 {
     public class ListaTemElementosAttribute : ValidationAttribute
     {
