@@ -65,7 +65,7 @@ namespace SME.SGP.Teste.Integracao
             _fixture._clientApi.DefaultRequestHeaders.Clear();
 
             var planoDeCicloDto = new PlanoCicloDto();
-            planoDeCicloDto.Ano = 2019;
+            planoDeCicloDto.Ano = 2020;
             planoDeCicloDto.CicloId = 1;
             planoDeCicloDto.Descricao = "Teste";
             planoDeCicloDto.EscolaId = 1;
