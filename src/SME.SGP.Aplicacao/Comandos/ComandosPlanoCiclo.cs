@@ -41,7 +41,7 @@ namespace SME.SGP.Aplicacao
         {
             var matrizesPlanoCiclo = repositorioMatrizSaberPlano.ObterMatrizesPorIdPlano(planoCiclo.Id);
 
-            var idsMatrizes = matrizesPlanoCiclo == null ? new List<long>() : matrizesPlanoCiclo.Select(c => c.MatrizSaberId)?.ToList();
+            var idsMatrizes = matrizesPlanoCiclo?.Select(c => c.MatrizSaberId)?.ToList();
             RemoverMatrizes(planoCicloDto, matrizesPlanoCiclo);
             InserirMatrizes(planoCiclo, planoCicloDto, idsMatrizes);
         }
@@ -49,7 +49,7 @@ namespace SME.SGP.Aplicacao
         private void AjustarObjetivos(PlanoCiclo planoCiclo, PlanoCicloDto planoCicloDto)
         {
             var objetivosPlanoCiclo = repositorioObjetivoDesenvolvimentoPlano.ObterObjetivosDesenvolvimentoPorIdPlano(planoCiclo.Id);
-            var idsObjetivos = objetivosPlanoCiclo == null ? new List<long>() : objetivosPlanoCiclo.Select(c => c.ObjetivoDesenvolvimentoId)?.ToList();
+            var idsObjetivos = objetivosPlanoCiclo?.Select(c => c.ObjetivoDesenvolvimentoId)?.ToList();
 
             InserirObjetivos(planoCicloDto, idsObjetivos);
             RemoverObjetivos(planoCicloDto, objetivosPlanoCiclo);
@@ -117,7 +117,7 @@ namespace SME.SGP.Aplicacao
 
         private void RemoverMatrizes(PlanoCicloDto planoCicloDto, IEnumerable<MatrizSaberPlano> matrizesPlanoCiclo)
         {
-            var matrizesRemover = matrizesPlanoCiclo == null ? new List<MatrizSaberPlano>() : matrizesPlanoCiclo.Where(c => !planoCicloDto.IdsMatrizesSaber.Contains(c.MatrizSaberId));
+            var matrizesRemover = matrizesPlanoCiclo?.Where(c => !planoCicloDto.IdsMatrizesSaber.Contains(c.MatrizSaberId));
 
             foreach (var matriz in matrizesRemover)
             {
@@ -127,7 +127,7 @@ namespace SME.SGP.Aplicacao
 
         private void RemoverObjetivos(PlanoCicloDto planoCicloDto, IEnumerable<ObjetivoDesenvolvimentoPlano> objetivosPlanoCiclo)
         {
-            var objetivosRemover = objetivosPlanoCiclo == null ? new List<ObjetivoDesenvolvimentoPlano>() : objetivosPlanoCiclo.Where(c => !planoCicloDto.IdsObjetivosDesenvolvimento.Contains(c.ObjetivoDesenvolvimentoId));
+            var objetivosRemover = objetivosPlanoCiclo?.Where(c => !planoCicloDto.IdsObjetivosDesenvolvimento.Contains(c.ObjetivoDesenvolvimentoId));
 
             foreach (var objetivo in objetivosRemover)
             {
