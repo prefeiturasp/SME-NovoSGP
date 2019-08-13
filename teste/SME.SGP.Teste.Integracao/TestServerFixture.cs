@@ -56,7 +56,7 @@ namespace SME.SGP.Teste.Integracao
         public string ObterScripts()
         {
             var testProjectPath = PlatformServices.Default.Application.ApplicationBasePath;
-            var relativePathToHostProject = @"..\..\..\..\..\scripts";
+            var relativePathToHostProject = @"../../../../../scripts";
 
             return Path.GetFullPath(Path.Combine(testProjectPath, relativePathToHostProject));
         }
