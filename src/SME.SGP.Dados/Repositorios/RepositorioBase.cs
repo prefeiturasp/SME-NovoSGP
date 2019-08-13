@@ -17,17 +17,6 @@ namespace SME.SGP.Dados.Repositorios
             this.database = database;
         }
 
-        public void Auditar(string usuario, long identificador)
-        {
-            database.Insert<Auditoria>(new Auditoria()
-            {
-                Data = DateTime.Now,
-                Entidade = typeof(T).Name.ToLower(),
-                Chave = identificador,
-                Usuario = usuario
-            });
-        }
-
         public virtual IEnumerable<T> Listar()
         {
             return database.Conexao().GetAll<T>();
@@ -42,6 +31,7 @@ namespace SME.SGP.Dados.Repositorios
         {
             var entidade = database.Conexao().Get<T>(id);
             database.Conexao().Delete(entidade);
+            Auditar(entidade.Id, "E");
         }
 
         public virtual long Salvar(T entidade)
@@ -49,15 +39,30 @@ namespace SME.SGP.Dados.Repositorios
             if (entidade.Id > 0)
             {
                 entidade.AlteradoEm = DateTime.Now;
-                entidade.AlteradoPor = "usuário logado";
+                entidade.AlteradoPor = database.UsuarioLogado;
                 database.Conexao().Update(entidade);
+                Auditar(entidade.Id, "A");
             }
             else
             {
-                entidade.CriadoPor = "usuário logado";
+                entidade.CriadoPor = database.UsuarioLogado;
                 entidade.Id = (long)database.Conexao().Insert(entidade);
+                Auditar(entidade.Id, "I");
             }
+
             return entidade.Id;
+        }
+
+        private void Auditar(long identificador, string acao)
+        {
+            database.Conexao().Insert<Auditoria>(new Auditoria()
+            {
+                Data = DateTime.Now,
+                Entidade = typeof(T).Name.ToLower(),
+                Chave = identificador,
+                Usuario = database.UsuarioLogado,
+                Acao = acao
+            });
         }
     }
 }
