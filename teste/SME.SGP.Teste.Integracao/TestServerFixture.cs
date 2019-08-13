@@ -64,7 +64,7 @@ namespace SME.SGP.Teste.Integracao
         private string GetContentRootPath(string projectName)
         {
             var testProjectPath = PlatformServices.Default.Application.ApplicationBasePath;
-            var relativePathToHostProject = @"..\..\..\..\" + projectName;
+            var relativePathToHostProject = @"../../../../" + projectName;
 
             return Path.GetFullPath(Path.Combine(testProjectPath, relativePathToHostProject));
         }
