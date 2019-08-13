@@ -40,7 +40,7 @@ namespace SME.SGP.Teste.Integracao
 
             if (postResult.IsSuccessStatusCode)
             {
-                var planoCicloCompletoResult = _fixture._clientApi.GetAsync("api/v1/planos-ciclo/").Result;
+                var planoCicloCompletoResult = _fixture._clientApi.GetAsync("api/v1/planos-ciclo/2019/1/1").Result;
                 if (planoCicloCompletoResult.IsSuccessStatusCode)
                 {
                     var planoCicloCompletoDto = JsonConvert.DeserializeObject<PlanoCicloCompletoDto>(planoCicloCompletoResult.Content.ReadAsStringAsync().Result);
@@ -78,7 +78,7 @@ namespace SME.SGP.Teste.Integracao
 
             if (postResult.IsSuccessStatusCode)
             {
-                var planoCicloCompletoResult = _fixture._clientApi.GetAsync("api/v1/planos-ciclo/").Result;
+                var planoCicloCompletoResult = _fixture._clientApi.GetAsync("api/v1/planos-ciclo/2019/1/1").Result;
                 if (planoCicloCompletoResult.IsSuccessStatusCode)
                 {
                     var planoCicloCompletoDto = JsonConvert.DeserializeObject<PlanoCicloCompletoDto>(planoCicloCompletoResult.Content.ReadAsStringAsync().Result);
