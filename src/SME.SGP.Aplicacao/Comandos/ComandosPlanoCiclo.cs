@@ -30,10 +30,7 @@ namespace SME.SGP.Aplicacao
             var planoCiclo = MapearParaDominio(planoCicloDto);
             using (var transacao = unitOfWork.IniciarTransacao())
             {
-                repositorioPlanoCiclo.Salvar(planoCiclo);
-
-                planoCicloDto.Id = planoCiclo.Id;
-
+                planoCicloDto.Id = repositorioPlanoCiclo.Salvar(planoCiclo);
                 AjustarMatrizes(planoCiclo, planoCicloDto);
                 AjustarObjetivos(planoCiclo, planoCicloDto);
                 unitOfWork.PersistirTransacao();
@@ -44,7 +41,7 @@ namespace SME.SGP.Aplicacao
         {
             var matrizesPlanoCiclo = repositorioMatrizSaberPlano.ObterMatrizesPorIdPlano(planoCiclo.Id);
 
-            var idsMatrizes = matrizesPlanoCiclo == null ? new List<long>() : matrizesPlanoCiclo.Select(c => c.MatrizSaberId)?.ToList();
+            var idsMatrizes = matrizesPlanoCiclo?.Select(c => c.MatrizSaberId)?.ToList();
             RemoverMatrizes(planoCicloDto, matrizesPlanoCiclo);
             InserirMatrizes(planoCiclo, planoCicloDto, idsMatrizes);
         }
@@ -52,7 +49,7 @@ namespace SME.SGP.Aplicacao
         private void AjustarObjetivos(PlanoCiclo planoCiclo, PlanoCicloDto planoCicloDto)
         {
             var objetivosPlanoCiclo = repositorioObjetivoDesenvolvimentoPlano.ObterObjetivosDesenvolvimentoPorIdPlano(planoCiclo.Id);
-            var idsObjetivos = objetivosPlanoCiclo == null ? new List<long>() : objetivosPlanoCiclo.Select(c => c.ObjetivoDesenvolvimentoId)?.ToList();
+            var idsObjetivos = objetivosPlanoCiclo?.Select(c => c.ObjetivoDesenvolvimentoId)?.ToList();
 
             InserirObjetivos(planoCicloDto, idsObjetivos);
             RemoverObjetivos(planoCicloDto, objetivosPlanoCiclo);
@@ -92,6 +89,10 @@ namespace SME.SGP.Aplicacao
             {
                 throw new ArgumentNullException(nameof(planoCicloDto));
             }
+            if (planoCicloDto.Id == 0 && repositorioPlanoCiclo.ObterPlanoCicloPorAnoCicloEEscola(planoCicloDto.Ano, planoCicloDto.CicloId, planoCicloDto.EscolaId))
+            {
+                throw new NegocioException("Já existe um plano ciclo referente a este Ano/Ciclo/Escola.");
+            }
             //TODO VALIDAR SE FOR TURMA DE ENSINO FUNDAMENTAL REGULAR DEVE PREENCHER OS COMPONENTES: MATRIZ E OBJETIVOS, CASO CONTRÁRIO NÃO É OBRIGATÓRIO
             if (planoCicloDto.IdsMatrizesSaber == null || !planoCicloDto.IdsMatrizesSaber.Any())
             {
@@ -116,7 +117,7 @@ namespace SME.SGP.Aplicacao
 
         private void RemoverMatrizes(PlanoCicloDto planoCicloDto, IEnumerable<MatrizSaberPlano> matrizesPlanoCiclo)
         {
-            var matrizesRemover = matrizesPlanoCiclo == null ? new List<MatrizSaberPlano>() : matrizesPlanoCiclo.Where(c => !planoCicloDto.IdsMatrizesSaber.Contains(c.MatrizSaberId));
+            var matrizesRemover = matrizesPlanoCiclo?.Where(c => !planoCicloDto.IdsMatrizesSaber.Contains(c.MatrizSaberId));
 
             foreach (var matriz in matrizesRemover)
             {
@@ -126,7 +127,7 @@ namespace SME.SGP.Aplicacao
 
         private void RemoverObjetivos(PlanoCicloDto planoCicloDto, IEnumerable<ObjetivoDesenvolvimentoPlano> objetivosPlanoCiclo)
         {
-            var objetivosRemover = objetivosPlanoCiclo == null ? new List<ObjetivoDesenvolvimentoPlano>() : objetivosPlanoCiclo.Where(c => !planoCicloDto.IdsObjetivosDesenvolvimento.Contains(c.ObjetivoDesenvolvimentoId));
+            var objetivosRemover = objetivosPlanoCiclo?.Where(c => !planoCicloDto.IdsObjetivosDesenvolvimento.Contains(c.ObjetivoDesenvolvimentoId));
 
             foreach (var objetivo in objetivosRemover)
             {

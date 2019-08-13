@@ -4,6 +4,6 @@ namespace SME.SGP.Aplicacao
 {
     public interface IConsultasPlanoCiclo
     {
-        PlanoCicloCompletoDto ObterPorId(long id);
+        PlanoCicloCompletoDto ObterPorAnoCicloEEscola(int ano, long cicloId, long escolaId);
     }
 }
