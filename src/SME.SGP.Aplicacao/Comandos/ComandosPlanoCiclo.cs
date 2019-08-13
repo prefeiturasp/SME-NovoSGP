@@ -57,7 +57,7 @@ namespace SME.SGP.Aplicacao
 
         private void InserirMatrizes(PlanoCiclo planoCiclo, PlanoCicloDto planoCicloDto, List<long> idsMatrizes)
         {
-            var matrizesIncluir = planoCicloDto.IdsMatrizesSaber.ToList().Except(idsMatrizes);
+            var matrizesIncluir = planoCicloDto.IdsMatrizesSaber.Except(idsMatrizes);
 
             foreach (var idMatrizIncluir in matrizesIncluir)
             {

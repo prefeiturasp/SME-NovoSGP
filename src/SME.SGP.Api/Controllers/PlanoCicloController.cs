@@ -24,7 +24,7 @@ namespace SME.SGP.Api.Controllers
         [Route("{ano}/{cicloId}/{escolaId}")]
         public IActionResult Get(int ano, long cicloId, long escolaId)
         {
-            return Ok(consultasPlanoCiclo.ObterPorAnoECiclo(ano, cicloId, escolaId));
+            return Ok(consultasPlanoCiclo.ObterPorAnoCicloEEscola(ano, cicloId, escolaId));
         }
 
         [HttpPost]
