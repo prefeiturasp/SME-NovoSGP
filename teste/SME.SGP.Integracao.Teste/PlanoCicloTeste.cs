@@ -10,7 +10,7 @@ using Xunit.Extensions.Ordering;
 [assembly: TestCaseOrderer("Xunit.Extensions.Ordering.TestCaseOrderer", "Xunit.Extensions.Ordering")]
 [assembly: TestCollectionOrderer("Xunit.Extensions.Ordering.CollectionOrderer", "Xunit.Extensions.Ordering")]
 
-namespace SME.SGP.Teste.Integracao
+namespace SME.SGP.Integracao.Teste
 {
     public class PlanoCicloTeste : IClassFixture<TestServerFixture>
     {

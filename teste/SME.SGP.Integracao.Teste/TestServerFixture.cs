@@ -9,7 +9,7 @@ using System;
 using System.IO;
 using System.Net.Http;
 
-namespace SME.SGP.Teste.Integracao
+namespace SME.SGP.Integracao.Teste
 {
     public class TestServerFixture : IDisposable
     {
