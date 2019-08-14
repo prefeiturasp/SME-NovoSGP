@@ -4,9 +4,7 @@ import PropTypes from 'prop-types';
 const Grid = props => {
   const { cols, className, children } = props;
   return (
-    <div className={`col-lg-${cols} col-sm-${cols} ${className}`}>
-      {children}
-    </div>
+    <div className={`col-${cols} col-sm-${cols} ${className}`}>{children}</div>
   );
 };
 

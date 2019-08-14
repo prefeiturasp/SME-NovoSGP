@@ -7,6 +7,7 @@ const Button = props => {
     type,
     style,
     color,
+    border,
     className,
     onClick,
     disabled,
@@ -14,18 +15,25 @@ const Button = props => {
     label,
   } = props;
 
-  const Icone = styled.i``;
+  const Icon = styled.i``;
+
+  const Btn = styled.button`
+    background: ${border ? 'transparent' : color} !important;
+    ${border
+      ? `border-color: ${color} !important; color: ${color} !important;`
+      : `border: 0 none !important;`};
+  `;
 
   return (
-    <button
+    <Btn
       type={type}
-      className={`btn btn-${style}-${color} ${className}`}
+      className={`btn btn-${style} ${className}`}
       onClick={onClick}
       disabled={disabled}
     >
-      {icon ? <Icone className={`fa fa-${icon} mr-2`} /> : null}
+      {icon ? <Icon className={`fa fa-${icon} mr-2`} /> : null}
       {label}
-    </button>
+    </Btn>
   );
 };
 
@@ -33,6 +41,7 @@ Button.propTypes = {
   type: PropTypes.string,
   style: PropTypes.string,
   color: PropTypes.string,
+  border: PropTypes.bool,
   className: PropTypes.string,
   onClick: PropTypes.string,
   disabled: PropTypes.bool,
@@ -42,8 +51,9 @@ Button.propTypes = {
 
 Button.defaultProps = {
   type: 'button',
-  style: 'outline',
-  color: 'primary',
+  style: 'primary',
+  border: false,
+  className: '',
   disabled: false,
 };
 

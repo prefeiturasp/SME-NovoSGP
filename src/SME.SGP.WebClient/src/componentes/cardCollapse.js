@@ -13,12 +13,12 @@ const CardCollapse = props => {
     }
   `;
 
-  const Icone = styled.i`
+  const Icon = styled.i`
     color: #c8c8c8;
   `;
 
   const Link = styled.a`
-    &[aria-expanded='true'] ${Icone} {
+    &[aria-expanded='true'] ${Icon} {
       color: #42474a;
       transform: rotate(90deg);
     }
@@ -36,7 +36,7 @@ const CardCollapse = props => {
           aria-expanded="false"
           aria-controls={`${indice}`}
         >
-          <Icone className="fa fa-bars" aria-hidden="true" />
+          <Icon className="fa fa-bars" aria-hidden="true" />
         </Link>
       </CardHeader>
       <div className="collapse fade" id={`${indice}`}>
