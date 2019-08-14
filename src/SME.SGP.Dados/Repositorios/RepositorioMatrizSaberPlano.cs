@@ -14,7 +14,7 @@ namespace SME.SGP.Dados.Repositorios
 
         public IEnumerable<MatrizSaberPlano> ObterMatrizesPorIdPlano(long idPlano)
         {
-            return database.Conexao().Query<MatrizSaberPlano>("select * from matriz_saber_plano where plano_id = @Id", new { Id = idPlano });
+            return database.Conexao.Query<MatrizSaberPlano>("select * from matriz_saber_plano where plano_id = @Id", new { Id = idPlano });
         }
     }
 }

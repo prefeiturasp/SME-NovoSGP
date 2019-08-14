@@ -9,6 +9,7 @@ namespace SME.SGP.Dominio
         public DateTime Data { get; set; }
         public string Entidade { get; set; }
         public long Id { get; set; }
+        public string RF { get; set; }
         public string Usuario { get; set; }
     }
 }
