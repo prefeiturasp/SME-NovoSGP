@@ -18,18 +18,18 @@ namespace SME.SGP.Dados.Repositorios
 
         public virtual IEnumerable<T> Listar()
         {
-            return database.Conexao().GetAll<T>();
+            return database.Conexao.GetAll<T>();
         }
 
         public virtual T ObterPorId(long id)
         {
-            return database.Conexao().Get<T>(id);
+            return database.Conexao.Get<T>(id);
         }
 
         public virtual void Remover(long id)
         {
-            var entidade = database.Conexao().Get<T>(id);
-            database.Conexao().Delete(entidade);
+            var entidade = database.Conexao.Get<T>(id);
+            database.Conexao.Delete(entidade);
             Auditar(entidade.Id, "E");
         }
 
@@ -38,14 +38,16 @@ namespace SME.SGP.Dados.Repositorios
             if (entidade.Id > 0)
             {
                 entidade.AlteradoEm = DateTime.Now;
-                entidade.AlteradoPor = database.UsuarioLogado;
-                database.Conexao().Update(entidade);
+                entidade.AlteradoPor = database.UsuarioLogadoNomeCompleto;
+                entidade.AlteradoRF = database.UsuarioLogadoRF;
+                database.Conexao.Update(entidade);
                 Auditar(entidade.Id, "A");
             }
             else
             {
-                entidade.CriadoPor = database.UsuarioLogado;
-                entidade.Id = (long)database.Conexao().Insert(entidade);
+                entidade.CriadoPor = database.UsuarioLogadoNomeCompleto;
+                entidade.CriadoRF = database.UsuarioLogadoRF;
+                entidade.Id = (long)database.Conexao.Insert(entidade);
                 Auditar(entidade.Id, "I");
             }
 
@@ -54,12 +56,13 @@ namespace SME.SGP.Dados.Repositorios
 
         private void Auditar(long identificador, string acao)
         {
-            database.Conexao().Insert<Auditoria>(new Auditoria()
+            database.Conexao.Insert<Auditoria>(new Auditoria()
             {
                 Data = DateTime.Now,
                 Entidade = typeof(T).Name.ToLower(),
                 Chave = identificador,
-                Usuario = database.UsuarioLogado,
+                Usuario = database.UsuarioLogadoNomeCompleto,
+                RF = database.UsuarioLogadoRF,
                 Acao = acao
             });
         }
