@@ -5,8 +5,9 @@ namespace SME.SGP.Dados.Contexto
 {
     public interface ISgpContext : IDbConnection
     {
+        NpgsqlConnection Conexao { get; }
         string UsuarioLogado { get; }
-
-        NpgsqlConnection Conexao();
+        string UsuarioLogadoNomeCompleto { get; }
+        string UsuarioLogadoRF { get; }
     }
 }
