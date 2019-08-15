@@ -1,12 +1,11 @@
-﻿using Dapper;
-using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using SME.SGP.Aplicacao;
 using SME.SGP.Dados;
 using SME.SGP.Dados.Contexto;
-using SME.SGP.Dados.Mapeamentos;
 using SME.SGP.Dados.Repositorios;
 using SME.SGP.Dominio;
+using SME.SGP.Dominio.Interfaces;
 
 namespace SME.SGP.IoC
 {
@@ -28,6 +27,9 @@ namespace SME.SGP.IoC
         private static void RegistrarConsultas(IServiceCollection services)
         {
             services.TryAddScoped<IConsultasPlanoCiclo, ConsultasPlanoCiclo>();
+            services.TryAddScoped<IConsultasMatrizSaber, ConsultasMatrizSaber>();
+            services.TryAddScoped<IConsultasObjetivoDesenvolvimento, ConsultasObjetivoDesenvolvimento>();
+            services.TryAddScoped<IConsultasCiclo, ConsultasCiclo>();
         }
 
         private static void RegistrarContextos(IServiceCollection services)
@@ -38,10 +40,11 @@ namespace SME.SGP.IoC
 
         private static void RegistrarRepositorios(IServiceCollection services)
         {
-            services.TryAddScoped<IRepositorioAluno, RepositorioAluno>();
-            services.TryAddScoped<IRepositorioProfessor, RepositorioProfessor>();
             services.TryAddScoped<IRepositorioPlanoCiclo, RepositorioPlanoCiclo>();
             services.TryAddScoped<IRepositorioMatrizSaberPlano, RepositorioMatrizSaberPlano>();
+            services.TryAddScoped<IRepositorioObjetivoDesenvolvimentoPlano, RepositorioObjetivoDesenvolvimentoPlano>();
+            services.TryAddScoped<IRepositorioMatrizSaber, RepositorioMatrizSaber>();
+            services.TryAddScoped<IRepositorioObjetivoDesenvolvimento, RepositorioObjetivoDesenvolvimento>();
         }
     }
 }

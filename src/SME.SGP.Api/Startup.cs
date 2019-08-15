@@ -42,6 +42,13 @@ namespace SME.SGP.Api
                 c.SwaggerEndpoint("/swagger/v1/swagger.json", "SGP Api");
             });
 
+            //TODO: Ajustar para as os origins que irão consumir
+            app.UseCors(builder => builder
+                .AllowAnyOrigin()
+                .AllowAnyMethod()
+                .AllowAnyHeader()
+                .AllowCredentials());
+
             app.UseMvc();
             app.UseMetricServer();
         }
@@ -69,6 +76,8 @@ namespace SME.SGP.Api
             {
                 c.SwaggerDoc("v1", new Info { Title = "SGP v1", Version = "v1" });
             });
+
+            services.AddHttpContextAccessor();
         }
     }
 }
