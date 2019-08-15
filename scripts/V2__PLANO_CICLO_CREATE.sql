@@ -8,7 +8,7 @@ criado_em timestamp not null,
 criado_por varchar (200) not null,
 alterado_em timestamp null,
 alterado_por varchar (200) null,
-criado_rf bigint not null,
+criado_rf varchar(200) not null,
 alterado_rf bigint null,
 constraint plano_ciclo_pk primary key (id),
 constraint plano_ciclo_un unique (ano,
@@ -21,7 +21,7 @@ criado_em timestamp not null,
 criado_por varchar (200) not null,
 alterado_em timestamp null,
 alterado_por varchar (200) null,
-criado_rf bigint not null,
+criado_rf varchar(200) not null,
 alterado_rf bigint null,
 constraint matriz_saber_pk primary key (id) );
 
@@ -32,7 +32,7 @@ criado_em timestamp not null,
 criado_por varchar (200) not null,
 alterado_em timestamp null,
 alterado_por varchar (200) null,
-criado_rf bigint not null,
+criado_rf varchar(200) not null,
 alterado_rf bigint null,
 constraint matriz_saber_plano_pk primary key (id),
 constraint matriz_saber_plano_un unique (plano_id,
@@ -52,7 +52,7 @@ criado_em timestamp not null,
 criado_por varchar (200) not null,
 alterado_em timestamp null,
 alterado_por varchar (200) null,
-criado_rf bigint not null,
+criado_rf varchar(200) not null,
 alterado_rf bigint null,
 constraint objetivo_desenvolvimento_pk primary key (id) );
 
@@ -63,7 +63,7 @@ criado_em timestamp not null,
 criado_por varchar (200) not null,
 alterado_em timestamp null,
 alterado_por varchar (200) null,
-criado_rf bigint not null,
+criado_rf varchar(200) not null,
 alterado_rf bigint null,
 constraint objetivo_desenvolvimento_plano_pk primary key (id),
 constraint objetivo_desenvolvimento_un unique (plano_id,
@@ -257,7 +257,6 @@ where
 	where
 		descricao = 'Saúde e Bem Estar' );
 
-;
 
 insert
 	into
