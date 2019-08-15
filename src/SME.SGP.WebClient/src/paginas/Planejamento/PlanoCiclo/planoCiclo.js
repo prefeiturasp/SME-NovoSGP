@@ -20,7 +20,7 @@ const BtnLink = styled.div`
     font-size: 8px;
     padding: 2px;
     margin-left: 3px;
-    position: fixed;
+    position: absolute;
     margin-top: 3px;
   }
 `;
