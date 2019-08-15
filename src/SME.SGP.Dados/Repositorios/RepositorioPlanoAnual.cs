@@ -3,6 +3,7 @@ using SME.SGP.Dados.Contexto;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Dto;
+using System.Linq;
 using System.Text;
 
 namespace SME.SGP.Dados.Repositorios
@@ -29,7 +30,7 @@ namespace SME.SGP.Dados.Repositorios
             query.AppendLine("group by");
             query.AppendLine("  pa.id");
 
-            return database.Conexao().Query<PlanoAnualCompletoDto>(query.ToString(), new { cicloId, ano, escolaId }).SingleOrDefault();
+            return database.Conexao.Query<PlanoAnualCompletoDto>(query.ToString(), new { cicloId, ano, escolaId }).SingleOrDefault();
         }
     }
 }

@@ -7,6 +7,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Prometheus;
 using SME.SGP.Api.Filtros;
 using SME.SGP.Api.Middlewares;
+using SME.SGP.Aplicacao.Integracoes;
 using SME.SGP.Dados.Mapeamentos;
 using SME.SGP.IoC;
 using Swashbuckle.AspNetCore.Swagger;
@@ -78,6 +79,7 @@ namespace SME.SGP.Api
             });
 
             services.AddHttpContextAccessor();
+            services.AddHttpClient<ServicoJurema>();
         }
     }
 }
