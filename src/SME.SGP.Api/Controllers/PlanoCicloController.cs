@@ -11,19 +11,27 @@ namespace SME.SGP.Api.Controllers
     public class PlanoCicloController : ControllerBase
     {
         private readonly IComandosPlanoCiclo comandosPlanoCiclo;
+        private readonly IConsultasPlanoCiclo consultasPlanoCiclo;
 
-        public PlanoCicloController(IComandosPlanoCiclo comandosPlanoCiclo)
+        public PlanoCicloController(IComandosPlanoCiclo comandosPlanoCiclo,
+                                    IConsultasPlanoCiclo consultasPlanoCiclo)
         {
             this.comandosPlanoCiclo = comandosPlanoCiclo ?? throw new System.ArgumentNullException(nameof(comandosPlanoCiclo));
+            this.consultasPlanoCiclo = consultasPlanoCiclo ?? throw new System.ArgumentNullException(nameof(consultasPlanoCiclo));
         }
 
         [HttpGet]
-        public IActionResult Get()
+        [Route("{ano}/{cicloId}/{escolaId}")]
+        [ProducesResponseType(typeof(PlanoCicloCompletoDto), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        public IActionResult Get(int ano, long cicloId, long escolaId)
         {
-            return Ok();
+            return Ok(consultasPlanoCiclo.ObterPorAnoCicloEEscola(ano, cicloId, escolaId));
         }
 
         [HttpPost]
+        [ProducesResponseType(200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         public IActionResult Post(PlanoCicloDto planoCicloDto)
         {
             comandosPlanoCiclo.Salvar(planoCicloDto);

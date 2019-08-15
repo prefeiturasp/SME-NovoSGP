@@ -1,6 +1,5 @@
-﻿using SME.SGP.Dominio;
+﻿using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Dto;
-using System.Collections.Generic;
 
 namespace SME.SGP.Aplicacao
 {
@@ -13,9 +12,9 @@ namespace SME.SGP.Aplicacao
             this.repositorioPlanoCiclo = repositorioPlanoCiclo ?? throw new System.ArgumentNullException(nameof(repositorioPlanoCiclo));
         }
 
-        public IEnumerable<PlanoCicloDto> Listar()
+        public PlanoCicloCompletoDto ObterPorAnoCicloEEscola(int ano, long cicloId, long escolaId)
         {
-            return new List<PlanoCicloDto>();
+            return repositorioPlanoCiclo.ObterPlanoCicloComMatrizesEObjetivos(ano, cicloId, escolaId);
         }
     }
 }

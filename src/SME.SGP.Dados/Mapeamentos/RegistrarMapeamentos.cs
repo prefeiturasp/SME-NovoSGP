@@ -9,13 +9,12 @@ namespace SME.SGP.Dados.Mapeamentos
         {
             FluentMapper.Initialize(config =>
            {
-               config.AddMap(new AlunoMap());
-               config.AddMap(new ProfessorMap());
                config.AddMap(new PlanoCicloMap());
                config.AddMap(new ObjetivoDesenvolvimentoMap());
                config.AddMap(new ObjetivoDesenvolvimentoPlanoMap());
                config.AddMap(new MatrizSaberMap());
                config.AddMap(new MatrizSaberPlanoMap());
+               config.AddMap(new AuditoriaMap());
                config.ForDommel();
            });
         }
