@@ -33,12 +33,12 @@ namespace SME.SGP.Dados.Repositorios
             query.AppendLine("group by");
             query.AppendLine("  pc.id");
 
-            return database.Conexao().Query<PlanoCicloCompletoDto>(query.ToString(), new { cicloId, ano, escolaId }).SingleOrDefault();
+            return database.Conexao.Query<PlanoCicloCompletoDto>(query.ToString(), new { cicloId, ano, escolaId }).SingleOrDefault();
         }
 
         public bool ObterPlanoCicloPorAnoCicloEEscola(int ano, long cicloId, long escolaId)
         {
-            return database.Conexao().Query<bool>("select 1 from plano_ciclo where ano = @ano and ciclo_id = @cicloId and escola_id = @escolaId", new { ano, cicloId, escolaId }).SingleOrDefault();
+            return database.Conexao.Query<bool>("select 1 from plano_ciclo where ano = @ano and ciclo_id = @cicloId and escola_id = @escolaId", new { ano, cicloId, escolaId }).SingleOrDefault();
         }
     }
 }

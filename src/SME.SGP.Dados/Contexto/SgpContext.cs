@@ -8,35 +8,41 @@ namespace SME.SGP.Dados.Contexto
 {
     public class SgpContext : ISgpContext
     {
-        private readonly NpgsqlConnection connection;
         private readonly IHttpContextAccessor httpContextAccessor;
 
         public SgpContext(IConfiguration configuration, IHttpContextAccessor httpContextAccessor)
         {
-            connection = new NpgsqlConnection(configuration.GetConnectionString("SGP-Postgres"));
+            Conexao = new NpgsqlConnection(configuration.GetConnectionString("SGP-Postgres"));
             Open();
             this.httpContextAccessor = httpContextAccessor ?? throw new ArgumentNullException(nameof(httpContextAccessor));
         }
 
-        public string ConnectionString { get { return connection.ConnectionString; } set { connection.ConnectionString = value; } }
+        public NpgsqlConnection Conexao { get; }
+        public string ConnectionString { get { return Conexao.ConnectionString; } set { Conexao.ConnectionString = value; } }
 
-        public int ConnectionTimeout => connection.ConnectionTimeout;
+        public int ConnectionTimeout => Conexao.ConnectionTimeout;
 
-        public string Database => connection.Database;
+        public string Database => Conexao.Database;
 
-        public ConnectionState State => connection.State;
+        public ConnectionState State => Conexao.State;
 
         public string UsuarioLogado =>
-                                          httpContextAccessor.HttpContext?.User?.Identity?.Name ?? "Sistema";
+                                       httpContextAccessor.HttpContext?.User?.Identity?.Name ?? "Sistema";
+
+        public string UsuarioLogadoNomeCompleto =>
+                                          httpContextAccessor.HttpContext?.User?.FindFirst("Nome")?.Value ?? "Sistema";
+
+        public string UsuarioLogadoRF =>
+                                          httpContextAccessor.HttpContext?.User?.FindFirst("RF")?.Value ?? "0";
 
         public IDbTransaction BeginTransaction()
         {
-            return connection.BeginTransaction();
+            return Conexao.BeginTransaction();
         }
 
         public IDbTransaction BeginTransaction(IsolationLevel il)
         {
-            return connection.BeginTransaction(il);
+            return Conexao.BeginTransaction(il);
         }
 
         public void ChangeDatabase(string databaseName)
@@ -46,22 +52,20 @@ namespace SME.SGP.Dados.Contexto
 
         public void Close()
         {
-            connection.Close();
+            Conexao.Close();
         }
-
-        public NpgsqlConnection Conexao() => connection;
 
         public IDbCommand CreateCommand()
         {
-            return connection.CreateCommand();
+            return Conexao.CreateCommand();
         }
 
-        public void Dispose() => connection.Close();
+        public void Dispose() => Conexao.Close();
 
         public void Open()
         {
-            if (connection.State != ConnectionState.Open)
-                connection.Open();
+            if (Conexao.State != ConnectionState.Open)
+                Conexao.Open();
         }
     }
 }
