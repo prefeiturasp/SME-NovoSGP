@@ -8,7 +8,6 @@ export default function Principal() {
 
   return (
     <React.Fragment>
-      <h1>Principal, Home ou Main</h1>
       <button type="button" className="btn btn-info" onClick={irPlanoCiclo}>
         Ir para Plano de Ciclo
       </button>
