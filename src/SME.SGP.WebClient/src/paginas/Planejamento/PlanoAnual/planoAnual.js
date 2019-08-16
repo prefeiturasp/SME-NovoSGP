@@ -166,7 +166,7 @@ function PlanoAnual() {
                   >
                     <div className="row">
                       <Grid cols={6}>
-                        <h6 className="d-inline-block font-weight-bold my-0">
+                        <h6 className="d-inline-block font-weight-bold my-0 fonte-14">
                           Objetivos de aprendizagem
                         </h6>
                         <Icon
@@ -217,11 +217,14 @@ function PlanoAnual() {
                         </div>
                       </Grid>
                       <Grid cols={6}>
-                        <h6 className="d-inline-block font-weight-bold my-0">
+                        <h6 className="d-inline-block font-weight-bold my-0 fonte-14">
                           Objetivos de aprendizagem e meus objetivos (Currículo
                           da cidade)
                         </h6>
-                        <div>
+                        <div
+                          role="group"
+                          aria-label={`${objetivosSelecionados.length} objetivos selecionados`}
+                        >
                           {objetivosSelecionados.length > 0
                             ? objetivosSelecionados.map(selecionado => {
                                 return (

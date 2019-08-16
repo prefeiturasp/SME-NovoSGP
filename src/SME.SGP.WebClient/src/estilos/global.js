@@ -27,13 +27,13 @@ export default createGlobalStyle`
     cursor: pointer;
   }
   .fonte-10 {
-    font-size: 10px;
+    font-size: 10px !important;
   }
   .fonte-12 {
-    font-size: 12px;
+    font-size: 12px !important;
   }
   .fonte-14 {
-    font-size: 14px;
+    font-size: 14px !important;
   }
 
   // .btn-outline-voltar {

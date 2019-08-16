@@ -18,6 +18,8 @@ const CardCollapse = props => {
 
   const Icon = styled.i`
     color: ${Base.CinzaBarras};
+    &:hover {
+    }
   `;
 
   const Link = styled.a`
