@@ -1,5 +1,8 @@
 ﻿using Microsoft.Extensions.Configuration;
+using Newtonsoft.Json;
+using SME.SGP.Aplicacao.Integracoes.Respostas;
 using System;
+using System.Collections.Generic;
 using System.Net.Http;
 
 namespace SME.SGP.Aplicacao.Integracoes
@@ -16,10 +19,11 @@ namespace SME.SGP.Aplicacao.Integracoes
             this.httpClient = httpClient;
         }
 
-        public void ObterListaObjetivosAprendizagem()
+        public IEnumerable<ObjetivoAprendizagemResposta> ObterListaObjetivosAprendizagem()
         {
             var teste = httpClient.GetAsync("v1/learning_objectives");
-            var resultado = teste.Result.Content.ReadAsStringAsync();
+            var json = teste.Result.Content.ReadAsStringAsync().Result;
+            return JsonConvert.DeserializeObject<IEnumerable<ObjetivoAprendizagemResposta>>(json);
         }
     }
 }
