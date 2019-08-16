@@ -4,7 +4,10 @@ import styled from 'styled-components';
 import CardCollapse from '../../../componentes/cardCollapse';
 import Grid from '../../../componentes/grid';
 import Button from '../../../componentes/button';
-// import { listarObjetivosAprendizagem } from '../../../servicos/objetivos';
+import TextEditor from '../../../componentes/textEditor';
+import { listarObjetivosAprendizagem } from '../../../servicos/objetivos';
+import { Colors, Base } from '../../../componentes/colors';
+import Seta from '../../../recursos/Seta.svg';
 
 const bimestres = [
   {
@@ -24,7 +27,7 @@ const objetivos = [
   {
     id: 1623,
     year: 'third',
-    code: '(EF03EF01) ',
+    code: 'EF03EF01',
     description:
       'Vivenciar/experimentar/fruir brincadeiras e jogos do contexto familiar/comunitário, incluindo os de matrizes africanas e indígenas, prezando pelo trabalho coletivo e pelo protagonismo e relacionando os elementos comuns a essas brincadeiras.',
     curricular_component_id: 3,
@@ -34,7 +37,7 @@ const objetivos = [
   {
     id: 1624,
     year: 'third',
-    code: '(EF03EF02)',
+    code: 'EF03EF02',
     description:
       'Planejar e utilizar estratégias para resolver desafios de brincadeiras e jogos do contexto familiar/comunitário, incluindo os de matrizes africanas e indígenas, com base no reconhecimento das características dessas práticas.',
     curricular_component_id: 3,
@@ -44,7 +47,7 @@ const objetivos = [
   {
     id: 1625,
     year: 'third',
-    code: '(EF03EF03)',
+    code: 'EF03EF03',
     description:
       'Descrever, por meio de múltiplas linguagens (corporal, oral e escrita e audiovisual), as brincadeiras e jogos regionais e populares de matrizes africanas e indígenas, explicando suas características e a importância desse patrimônio histórico-cultural na preservação das diferentes culturas.',
     curricular_component_id: 3,
@@ -54,7 +57,7 @@ const objetivos = [
   {
     id: 1626,
     year: 'third',
-    code: '(EF03EF04)',
+    code: 'EF03EF04',
     description:
       'Recriar, individual e coletivamente, brincadeiras e jogos do contexto familiar/comunitário, incluindo os de matrizes africanas e indígenas e demais práticas corporais tematizadas na escola, adequandoas aos espaços.',
     curricular_component_id: 3,
@@ -63,7 +66,7 @@ const objetivos = [
   },
 ];
 
-const objetivosSelecionados = [{ code: '(EF03EF01)' }, { code: '(EF03EF02)' }];
+const objetivosSelecionados = [{ code: 'EF03EF01' }, { code: 'EF03EF02' }];
 
 function selecionaMateria(event) {
   event.target.setAttribute(
@@ -71,9 +74,7 @@ function selecionaMateria(event) {
     event.target.getAttribute('aria-pressed') === 'true' ? 'false' : 'true'
   );
 
-  // listarObjetivosAprendizagem().then(objetivos => {
-  //   console.log(objetivos);
-  // });
+  listarObjetivosAprendizagem();
 }
 
 function selecionaObjetivo(event) {
@@ -86,7 +87,7 @@ function selecionaObjetivo(event) {
 
 function PlanoAnual() {
   const Icon = styled.i`
-    color: rgba(0, 0, 0, 0.26);
+    color: ${Base.CinzaBarras};
   `;
 
   const Badge = styled.button`
@@ -95,22 +96,31 @@ function PlanoAnual() {
     }
 
     &[aria-pressed='true'] {
-      background: #f3f3f3 !important;
-      border-color: #f3f3f3 !important;
+      background: ${Base.CinzaBadge} !important;
+      border-color: ${Base.CinzaBadge} !important;
     }
   `;
 
   const ListItem = styled.li`
-    border-color: #a4dafb !important;
+    border-color: ${Base.AzulAnakiwa} !important;
   `;
 
   const ListItemButton = styled(ListItem)`
     cursor: pointer;
 
     &[aria-pressed='true'] {
-      background: #a4dafb !important;
+      background: ${Base.AzulAnakiwa} !important;
     }
   `;
+
+  const toolbarOptions = [
+    ['bold', 'italic', 'underline'],
+    [{ list: 'bullet' }, { list: 'ordered' }],
+  ];
+
+  const modules = {
+    toolbar: toolbarOptions,
+  };
 
   return (
     <div className="container">
@@ -122,7 +132,7 @@ function PlanoAnual() {
           <Button
             label="Migrar Conteúdo"
             icon="share-square"
-            color="#086397"
+            color={Colors.Azul}
             border
             disabled
           />
@@ -131,17 +141,18 @@ function PlanoAnual() {
           <Button
             label="Voltar"
             icon="arrow-left"
-            color="#6933ff"
-            className="mr-2"
+            color={Colors.Azul}
+            border
+            className="mr-3"
           />
           <Button
             label="Cancelar"
-            color="#6933ff"
-            className="mr-2"
+            color={Colors.Roxo}
             border
-            disabled
+            bold
+            className="mr-3"
           />
-          <Button label="Salvar" color="#6933ff" border disabled />
+          <Button label="Salvar" color={Colors.Roxo} border bold disabled />
         </Grid>
         <Grid cols={12}>
           {bimestres.length > 0
@@ -155,7 +166,7 @@ function PlanoAnual() {
                   >
                     <div className="row">
                       <Grid cols={6}>
-                        <h6 className="d-inline-block font-weight-bold my-0">
+                        <h6 className="d-inline-block font-weight-bold my-0 fonte-14">
                           Objetivos de aprendizagem
                         </h6>
                         <Icon
@@ -179,7 +190,7 @@ function PlanoAnual() {
                               })
                             : null}
                         </div>
-                        <div>
+                        <div className="mt-4">
                           {objetivos.length > 0
                             ? objetivos.map(objetivo => {
                                 return (
@@ -188,7 +199,7 @@ function PlanoAnual() {
                                     className="list-group list-group-horizontal mt-3"
                                   >
                                     <ListItemButton
-                                      className="list-group-item d-flex align-items-center font-weight-bold"
+                                      className="list-group-item d-flex align-items-center font-weight-bold fonte-14"
                                       role="button"
                                       aria-pressed="false"
                                       onClick={selecionaObjetivo}
@@ -196,7 +207,7 @@ function PlanoAnual() {
                                     >
                                       {objetivo.code}
                                     </ListItemButton>
-                                    <ListItem className="list-group-item flex-fill">
+                                    <ListItem className="list-group-item flex-fill p-2 fonte-12">
                                       {objetivo.description}
                                     </ListItem>
                                   </ul>
@@ -206,60 +217,70 @@ function PlanoAnual() {
                         </div>
                       </Grid>
                       <Grid cols={6}>
-                        <h6 className="d-inline-block font-weight-bold my-0">
+                        <h6 className="d-inline-block font-weight-bold my-0 fonte-14">
                           Objetivos de aprendizagem e meus objetivos (Currículo
                           da cidade)
                         </h6>
-                        <div>
+                        <div
+                          role="group"
+                          aria-label={`${objetivosSelecionados.length} objetivos selecionados`}
+                        >
                           {objetivosSelecionados.length > 0
                             ? objetivosSelecionados.map(selecionado => {
                                 return (
                                   <Button
                                     key={shortid.generate()}
                                     label={selecionado.code}
-                                    color="#a4dafb"
-                                    className="text-dark py-2 mt-3 mr-2"
+                                    color={Colors.AzulAnakiwa}
+                                    bold
+                                    steady
+                                    remove
+                                    className="text-dark mt-3 mr-2"
                                   />
                                 );
                               })
                             : null}
                         </div>
-                        <div className="mt-5">
-                          <h6 className="d-inline-block font-weight-bold my-0 mr-2">
+                        <div className="mt-4">
+                          <h6 className="d-inline-block font-weight-bold my-0 mr-2 fonte-14">
                             Planejamento Anual
                           </h6>
-                          <span className="text-secondary font-italic">
+                          <span className="text-secondary font-italic fonte-12">
                             Itens autorais do professor
                           </span>
-                          <p className="text-secondary mt-3">
+                          <p className="text-secondary mt-3 fonte-12">
                             É importante seguir a seguinte estrutura:
                           </p>
-                          <ul className="list-group list-group-horizontal">
-                            <li className="list-group-item border-right-0">
+                          <ul className="list-group list-group-horizontal fonte-10">
+                            <li className="list-group-item border-right-0 py-1">
                               Objetivos
                             </li>
-                            <li className="list-group-item border-left-0 border-right-0 px-0">
-                              <i className="fa fa-arrow-right" />
+                            <li className="list-group-item border-left-0 border-right-0 px-0 py-1">
+                              <img src={Seta} alt="Próximo" />
                             </li>
-                            <li className="list-group-item border-left-0 border-right-0">
+                            <li className="list-group-item border-left-0 border-right-0 py-1">
                               Conteúdo
                             </li>
-                            <li className="list-group-item border-left-0 border-right-0 px-0">
-                              <i className="fa fa-arrow-right" />
+                            <li className="list-group-item border-left-0 border-right-0 px-0 py-1">
+                              <img src={Seta} alt="Próximo" />
                             </li>
-                            <li className="list-group-item border-left-0 border-right-0">
+                            <li className="list-group-item border-left-0 border-right-0 py-1">
                               Estratégia
                             </li>
-                            <li className="list-group-item border-left-0 border-right-0 px-0">
-                              <i className="fa fa-arrow-right" />
+                            <li className="list-group-item border-left-0 border-right-0 px-0 py-1">
+                              <img src={Seta} alt="Próximo" />
                             </li>
-                            <li className="list-group-item border-left-0">
+                            <li className="list-group-item border-left-0 py-1">
                               Avaliação
                             </li>
                           </ul>
                           <fieldset className="mt-3">
                             <form action="">
-                              <textarea rows="5" className="form-control" />
+                              <TextEditor
+                                className="form-control"
+                                modules={modules}
+                                height={135}
+                              />
                             </form>
                           </fieldset>
                         </div>

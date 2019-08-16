@@ -5,38 +5,38 @@ import React from 'react';
 import ReactQuill from 'react-quill';
 import styled from 'styled-components';
 
-const Container = styled.div`
-  .ql-container.ql-snow {
-    border: 1px solid #ccc !important;
-    border-bottom: none !important;
-  }
-
-  .ql-editor {
-    min-height: 515px;
-    max-height: 515px;
-    overflow: auto;
-  }
-
-  .ql-toolbar.ql-snow {
-    border-top: none !important;
-  }
-
-  .ql-snow .ql-stroke {
-    stroke: #a4a4a4;
-  }
-
-  .ql-snow .ql-fill {
-    fill: #a4a4a4;
-  }
-
-  .quill {
-    display: flex;
-    flex-direction: column-reverse;
-  }
-`;
-
 const TextEditor = props => {
-  const { modules, onChange } = props;
+  const { modules, onChange, height } = props;
+
+  const Container = styled.div`
+    .ql-container.ql-snow {
+      border: 1px solid #ccc !important;
+      border-bottom: none !important;
+    }
+
+    .ql-editor {
+      min-height: ${height}px;
+      max-height: 515px;
+      overflow: auto;
+    }
+
+    .ql-toolbar.ql-snow {
+      border-top: none !important;
+    }
+
+    .ql-snow .ql-stroke {
+      stroke: #a4a4a4;
+    }
+
+    .ql-snow .ql-fill {
+      fill: #a4a4a4;
+    }
+
+    .quill {
+      display: flex;
+      flex-direction: column-reverse;
+    }
+  `;
 
   return (
     <Container>
@@ -48,6 +48,7 @@ const TextEditor = props => {
 TextEditor.propTypes = {
   modules: PropTypes.object,
   onChange: PropTypes.func,
+  height: PropTypes.number,
 };
 
 export default TextEditor;
