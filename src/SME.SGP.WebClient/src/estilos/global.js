@@ -1,4 +1,5 @@
 import { createGlobalStyle } from 'styled-components';
+import { Base } from '../componentes/colors';
 
 export default createGlobalStyle`
   @import url('https://fonts.googleapis.com/css?family=Roboto:400,700&display=swap');
@@ -21,6 +22,7 @@ export default createGlobalStyle`
   }
   body {
     -webkit-font-smoothing: antialiased;
+    background: ${Base.CinzaFundo} !important;
   }
   button {
     cursor: pointer;
