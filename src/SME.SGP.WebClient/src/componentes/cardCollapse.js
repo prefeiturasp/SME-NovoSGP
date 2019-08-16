@@ -3,23 +3,28 @@ import styled from 'styled-components';
 import PropTypes from 'prop-types';
 import CardHeader from './cardHeader';
 import CardBody from './cardBody';
+import { Base } from './colors';
 
 const CardCollapse = props => {
   const { titulo, indice, children } = props;
 
   const Card = styled.div`
+    border-color: ${Base.CinzaDesabilitado} !important;
+
     &:last-child {
       margin-bottom: 0;
     }
   `;
 
   const Icon = styled.i`
-    color: #c8c8c8;
+    color: ${Base.CinzaBarras};
+    &:hover {
+    }
   `;
 
   const Link = styled.a`
     &[aria-expanded='true'] ${Icon} {
-      color: #42474a;
+      color: ${Base.CinzaMako};
       transform: rotate(90deg);
     }
   `;
