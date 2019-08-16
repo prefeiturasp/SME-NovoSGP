@@ -1,7 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using SME.SGP.Api.Filtros;
 using SME.SGP.Aplicacao;
-using SME.SGP.Aplicacao.Integracoes;
 using SME.SGP.Dto;
 using System.Collections.Generic;
 
@@ -14,7 +13,7 @@ namespace SME.SGP.Api.Controllers
     {
         private readonly IConsultasCiclo consultasCiclo;
 
-        public CicloController(IConsultasCiclo consultasCiclo, ServicoJurema servicoJurema)
+        public CicloController(IConsultasCiclo consultasCiclo)
         {
             this.consultasCiclo = consultasCiclo ?? throw new System.ArgumentNullException(nameof(consultasCiclo));
         }
