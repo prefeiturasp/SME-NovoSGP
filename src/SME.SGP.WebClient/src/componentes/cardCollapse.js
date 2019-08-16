@@ -18,30 +18,33 @@ const CardCollapse = props => {
 
   const Icon = styled.i`
     color: ${Base.CinzaBarras};
-    &:hover {
-    }
   `;
 
   const Link = styled.a`
+    &:hover {
+      background: ${Base.CinzaFundo};
+      border-radius: 50%;
+    }
+
     &[aria-expanded='true'] ${Icon} {
       color: ${Base.CinzaMako};
-      transform: rotate(90deg);
+      transform: rotate(180deg);
     }
   `;
 
   return (
     <Card className="card shadow-sm mb-3">
-      <CardHeader>
+      <CardHeader border>
         {titulo}
         <Link
-          className="text-decoration-none ml-auto"
+          className="text-decoration-none ml-auto p-2"
           data-toggle="collapse"
           href={`#${indice}`}
           role="button"
           aria-expanded="false"
           aria-controls={`${indice}`}
         >
-          <Icon className="fa fa-bars" aria-hidden="true" />
+          <Icon className="fa fa-chevron-down" aria-hidden="true" />
         </Link>
       </CardHeader>
       <div className="collapse fade" id={`${indice}`}>

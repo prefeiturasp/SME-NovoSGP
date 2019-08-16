@@ -10,8 +10,10 @@ const TextEditor = props => {
 
   const Container = styled.div`
     .ql-container.ql-snow {
-      border: 1px solid #ccc !important;
+      border: 1px solid rgba(0, 0, 0, 0.125) !important;
       border-bottom: none !important;
+      border-top-left-radius: 0.25rem;
+      border-top-right-radius: 0.25rem;
     }
 
     .ql-editor {
@@ -22,6 +24,8 @@ const TextEditor = props => {
 
     .ql-toolbar.ql-snow {
       border-top: none !important;
+      border-bottom-left-radius: 0.25rem;
+      border-bottom-right-radius: 0.25rem;
     }
 
     .ql-snow .ql-stroke {

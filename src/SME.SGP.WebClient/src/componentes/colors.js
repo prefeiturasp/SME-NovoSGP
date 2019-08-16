@@ -12,6 +12,7 @@ const Base = {
   CinzaBadge: '#F3F3F3',
   CinzaBarras: '#C8C8C8',
   CinzaDesabilitado: '#DADADA',
+  CinzaFundo: '#F5F6F8',
   CinzaMako: '#42474A',
   Roxo: '#6933FF',
 };

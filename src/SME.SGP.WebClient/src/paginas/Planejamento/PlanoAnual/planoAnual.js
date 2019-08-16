@@ -86,10 +86,6 @@ function selecionaObjetivo(event) {
 }
 
 function PlanoAnual() {
-  const Icon = styled.i`
-    color: ${Base.CinzaBarras};
-  `;
-
   const Badge = styled.button`
     &:last-child {
       margin-right: 0 !important;
@@ -169,10 +165,6 @@ function PlanoAnual() {
                         <h6 className="d-inline-block font-weight-bold my-0 fonte-14">
                           Objetivos de aprendizagem
                         </h6>
-                        <Icon
-                          className="fa fa-question-circle ml-2"
-                          aria-hidden="true"
-                        />
                         <div>
                           {bimestre.materias.length > 0
                             ? bimestre.materias.map(materia => {
@@ -248,7 +240,7 @@ function PlanoAnual() {
                           <span className="text-secondary font-italic fonte-12">
                             Itens autorais do professor
                           </span>
-                          <p className="text-secondary mt-3 fonte-12">
+                          <p className="text-secondary mt-3 fonte-13">
                             É importante seguir a seguinte estrutura:
                           </p>
                           <ul className="list-group list-group-horizontal fonte-10">

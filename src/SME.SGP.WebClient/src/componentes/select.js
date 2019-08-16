@@ -12,15 +12,7 @@ const Container = styled.div`
 `;
 
 const Select = props => {
-  const {
-    name,
-    id,
-    className,
-    onChange,
-    label,
-    value,
-    lista,
-  } = props;
+  const { name, id, className, onChange, label, value, lista } = props;
 
   return (
     <Container>
