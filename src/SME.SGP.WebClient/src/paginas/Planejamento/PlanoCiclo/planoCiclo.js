@@ -4,6 +4,7 @@ import styled from 'styled-components';
 import Button from '../../../componentes/button';
 import Select from '../../../componentes/select';
 import TextEditor from '../../../componentes/textEditor';
+import { Colors, Base } from '../../../componentes/colors';
 
 import api from '../../../servicos/api';
 
@@ -16,7 +17,7 @@ const BtnLink = styled.div`
   line-height: normal;
   cursor: pointer;
   i {
-    background-color: #6933ff;
+    background-color: ${Base.Roxo};
     border-radius: 3px;
     color: white;
     font-size: 8px;
@@ -42,7 +43,7 @@ const ListaItens = styled.div`
   .btn-li-item {
     width: 30px;
     height: 30px;
-    border: solid 0.8px #a4dafb;
+    border: solid 0.8px ${Base.AzulAnakiwa};
     display: inline-block;
     font-weight: bold;
     margin-right: 5px;
@@ -63,7 +64,7 @@ const Badge = styled.span`
   padding-top: 3px;
 
   &[opcao-selecionada='true'] {
-    background: #a4dafb !important;
+    background: ${Base.AzulAnakiwa} !important;
   }
 `;
 
@@ -206,15 +207,18 @@ export default function PlanoCiclo() {
             <Button
               label="Voltar"
               icon="arrow-left"
-              className="mr-2 btn-outline-voltar"
+              color={Colors.Azul}
               border
+              className="mr-3"
             />
             <Button
               label="Cancelar"
-              className="mr-2 btn-outline-cancelar"
+              color={Colors.Roxo}
               border
+              bold
+              className="mr-3"
             />
-            <Button label="Salvar" className="btn-outline-salvar" border />
+            <Button label="Salvar" color={Colors.Roxo} border bold disabled />
           </div>
         </div>
 
@@ -234,7 +238,12 @@ export default function PlanoCiclo() {
 
         <div className="row mb-3">
           <div className="col-md-6">
-            <TextEditor onChange={teste} modules={modules} />
+            <TextEditor
+              onChange={teste}
+              className="form-control"
+              modules={modules}
+              height={515}
+            />
           </div>
           <div className="col-md-6 btn-link-plano-ciclo">
             <div className="col-md-12">
@@ -279,7 +288,7 @@ export default function PlanoCiclo() {
               <div className="row">
                 <ListaItens>
                   <ul>
-                    {listaMatriz.map(item => {
+                    {listaODS.map(item => {
                       return (
                         <li key={item.id}>
                           {
