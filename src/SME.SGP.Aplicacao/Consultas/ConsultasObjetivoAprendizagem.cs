@@ -8,11 +8,11 @@ namespace SME.SGP.Aplicacao
 {
     public class ConsultasObjetivoAprendizagem : IConsultasObjetivoAprendizagem
     {
-        private readonly ServicoJurema servicoJurema;
+        private readonly IServicoJurema servicoJurema;
 
-        public ConsultasObjetivoAprendizagem(ServicoJurema servicoJurema)
+        public ConsultasObjetivoAprendizagem(IServicoJurema servicoJurema)
         {
-            this.servicoJurema = servicoJurema;
+            this.servicoJurema = servicoJurema ?? throw new System.ArgumentNullException(nameof(servicoJurema));
         }
 
         public IEnumerable<ObjetivoAprendizagemDto> Listar()
