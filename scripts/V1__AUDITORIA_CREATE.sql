@@ -10,5 +10,5 @@ CREATE TABLE public.auditoria
 	(200) not null,
 	acao varchar
 	(1) not null,
-	rf bigint not null
+	rf varchar (200) not null
 );
