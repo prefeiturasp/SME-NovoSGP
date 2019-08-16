@@ -1,9 +1,11 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 
 import styled from 'styled-components';
 import Button from '../../../componentes/button';
 import Select from '../../../componentes/select';
 import TextEditor from '../../../componentes/textEditor';
+
+import api from '../../../servicos/api';
 
 const BtnLink = styled.div`
   color: #686868;
@@ -35,7 +37,6 @@ const ListaItens = styled.div`
 
   li {
     margin-bottom: 5px;
-    cursor: pointer;
   }
 
   .btn-li-item {
@@ -55,13 +56,14 @@ const ListaItens = styled.div`
   .btn-li-item-ods {
     border-radius: 0.25rem !important;
   }
+`;
 
-  .opcao-selecionada {
-    background-color: #a4dafb;
-  }
+const Badge = styled.span`
+  cursor: pointer;
+  padding-top: 3px;
 
-  .id-item {
-    padding-top: 3px;
+  &[opcao-selecionada='true'] {
+    background: #a4dafb !important;
   }
 `;
 
@@ -70,54 +72,70 @@ export default function PlanoCiclo() {
   const urlMatrizSaberes = `${urlPrefeitura}/matriz-de-saberes`;
   const urlODS = `${urlPrefeitura}/ods`;
 
-  const listaTipo = [
-    { label: 'Alfabetização', valor: '0' },
-    { label: 'Interdiciplinar', valor: '1' },
-    { label: 'Autoral', valor: '2' },
-  ];
+  const [listaMatriz, setListaMatriz] = useState([]);
+  const [listaODS, setListaODS] = useState([]);
+  const [listaCiclos, setListaCiclos] = useState([]);
+  const [listaMatrizSelecionda, setListaMatrizSelecionda] = useState([]);
+  const [listaODSSelecionado, setListaODSSelecionado] = useState([]);
 
-  const listaMatriz = [
-    { id: 1, descricao: 'Pensamento Científico, Crítico e Criativo' },
-    { id: 2, descricao: 'Resolução de Problemas' },
-    { id: 3, descricao: 'Comunicação' },
-    { id: 4, descricao: 'Autoconhecimento e Autocuidado' },
-    { id: 5, descricao: 'Autonomia e Determinação' },
-    { id: 6, descricao: 'Abertura à Diversidade' },
-    { id: 7, descricao: 'Responsabilidade e Participação' },
-    { id: 8, descricao: 'Empatia e Colaboração' },
-    { id: 9, descricao: 'Repertório Cultural' },
-  ];
+  useEffect(() => {
+    async function carregarListas() {
+      const matrizes = await api.get('matrizes-saber');
+      setListaMatriz(matrizes.data);
 
-  const listaMatrizSaberesSeleciondo = [
-    { id: 3, descricao: 'Comunicação' },
-    { id: 9, descricao: 'Repertório Cultural' },
-  ];
+      const ods = await api.get('objetivos-desenvolvimento-sustentavel');
+      setListaODS(ods.data);
 
-  const listaODS = [
-    { id: 1, descricao: 'Erradicação da Pobreza' },
-    { id: 2, descricao: 'Fome zero e agricultura sustentável' },
-    { id: 3, descricao: 'Saúde e Bem Estar' },
-    { id: 4, descricao: 'Educação de Qualidade' },
-    { id: 5, descricao: 'Igualdade de Genêro' },
-    { id: 6, descricao: 'Água Potável e Saneamento' },
-    { id: 7, descricao: 'Energia Limpa e Acessível' },
-    { id: 8, descricao: 'Trabalho decente e crescimento econômico' },
-    { id: 9, descricao: 'Indústria, inovação, e infraestrutura' },
-    { id: 10, descricao: 'Redução das desigualdades' },
-    { id: 11, descricao: 'Cidades e comunidades sustentáveis' },
-    { id: 12, descricao: 'Consumo e produção responsáveis' },
-    { id: 13, descricao: 'Ação contra a mudança global do clima' },
-    { id: 14, descricao: 'Vida na água' },
-    { id: 15, descricao: 'Vida terrestre' },
-    { id: 16, descricao: 'Paz, justiça e instituições eficazes' },
-    { id: 17, descricao: 'Parcerias e meios de implementação' },
-  ];
+      const ciclos = await api.get('ciclos');
+      setListaCiclos(ciclos.data);
+    }
 
-  const listaODSSelecionada = [
-    { id: 1, descricao: 'Erradicação da Pobreza' },
-    { id: 9, descricao: 'Indústria, inovação, e infraestrutura' },
-    { id: 17, descricao: 'Parcerias e meios de implementação' },
-  ];
+    carregarListas();
+  }, []);
+
+  function addRemoverMatriz(event, matrizSelecionada) {
+    event.target.setAttribute(
+      'opcao-selecionada',
+      event.target.getAttribute('opcao-selecionada') == 'true'
+        ? 'false'
+        : 'true'
+    );
+
+    let adicionarNovo = true;
+    listaMatrizSelecionda.forEach((item, index) => {
+      if (item.id === matrizSelecionada.id) {
+        listaMatrizSelecionda.splice(index);
+        adicionarNovo = false;
+      }
+    });
+    if (adicionarNovo) {
+      listaMatrizSelecionda.push(matrizSelecionada);
+    }
+    setListaMatrizSelecionda(listaMatrizSelecionda);
+    console.log(listaMatrizSelecionda);
+  }
+
+  function addRemoverODS(event, odsSelecionado) {
+    event.target.setAttribute(
+      'opcao-selecionada',
+      event.target.getAttribute('opcao-selecionada') == 'true'
+        ? 'false'
+        : 'true'
+    );
+
+    let adicionarNovo = true;
+    listaODSSelecionado.forEach((item, index) => {
+      if (item.id === odsSelecionado.id) {
+        listaODSSelecionado.splice(index);
+        adicionarNovo = false;
+      }
+    });
+    if (adicionarNovo) {
+      listaODSSelecionado.push(odsSelecionado);
+    }
+    setListaODSSelecionado(listaODSSelecionado);
+    console.log(listaODSSelecionado);
+  }
 
   function setTipo(event) {
     console.log(event.target.value);
@@ -129,6 +147,30 @@ export default function PlanoCiclo() {
 
   function irParaLinkExterno(link) {
     window.open(link, '_blank');
+  }
+
+  function validaMatrizSelecionada() {
+    listaMatriz.forEach(item => {
+      const jaSelecionado = listaMatrizSelecionda.find(
+        matriz => matriz.id == item.id
+      );
+      if (jaSelecionado) {
+        return true;
+      }
+      return false;
+    });
+  }
+
+  function validaODSSelecionado() {
+    listaODS.forEach(item => {
+      const jaSelecionado = listaODSSelecionado.find(
+        matriz => matriz.id == item.id
+      );
+      if (jaSelecionado) {
+        return true;
+      }
+      return false;
+    });
   }
 
   const toolbarOptions = [
@@ -152,9 +194,9 @@ export default function PlanoCiclo() {
                   id="filtro-tipo"
                   className="custom-select"
                   optionClass="custom-select-option"
-                  lista={listaTipo}
-                  value="valor"
-                  label="label"
+                  lista={listaCiclos}
+                  value="id"
+                  label="descricao"
                   onChange={setTipo}
                 />
               </div>
@@ -208,24 +250,18 @@ export default function PlanoCiclo() {
                   <ul>
                     {listaMatriz.map(item => {
                       return (
-                        <React.Fragment key={item.id}>
-                          <li>
-                            {
-                              <span
-                                className={
-                                  listaMatrizSaberesSeleciondo.find(
-                                    matriz => matriz.id === item.id
-                                  )
-                                    ? 'btn-li-item btn-li-item-matriz opcao-selecionada'
-                                    : 'btn-li-item btn-li-item-matriz'
-                                }
-                              >
-                                <div className="id-item">{item.id}</div>
-                              </span>
-                            }
-                            {item.descricao}
-                          </li>
-                        </React.Fragment>
+                        <li key={item.id}>
+                          {
+                            <Badge
+                              className="btn-li-item btn-li-item-matriz"
+                              opcao-selecionada={validaMatrizSelecionada}
+                              onClick={e => addRemoverMatriz(e, item)}
+                            >
+                              {item.id}
+                            </Badge>
+                          }
+                          {item.descricao}
+                        </li>
                       );
                     })}
                   </ul>
@@ -243,26 +279,20 @@ export default function PlanoCiclo() {
               <div className="row">
                 <ListaItens>
                   <ul>
-                    {listaODS.map(item => {
+                    {listaMatriz.map(item => {
                       return (
-                        <React.Fragment key={item.id}>
-                          <li>
-                            {
-                              <span
-                                className={
-                                  listaODSSelecionada.find(
-                                    ods => ods.id === item.id
-                                  )
-                                    ? 'btn-li-item btn-li-item-ods opcao-selecionada'
-                                    : 'btn-li-item btn-li-item-ods'
-                                }
-                              >
-                                <div className="id-item">{item.id}</div>
-                              </span>
-                            }
-                            {item.descricao}
-                          </li>
-                        </React.Fragment>
+                        <li key={item.id}>
+                          {
+                            <Badge
+                              className="btn-li-item btn-li-item-ods"
+                              opcao-selecionada={validaODSSelecionado}
+                              onClick={e => addRemoverODS(e, item)}
+                            >
+                              {item.id}
+                            </Badge>
+                          }
+                          {item.descricao}
+                        </li>
                       );
                     })}
                   </ul>
