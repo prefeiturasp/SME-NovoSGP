@@ -14,6 +14,9 @@ namespace SME.SGP.Aplicacao.Integracoes.Respostas
         [JsonProperty("code")]
         public string Codigo { get; set; }
 
+        [JsonProperty("curricular_component_id")]
+        public long ComponenteCurricularId { get; set; }
+
         [JsonProperty("created_at")]
         public DateTime CriadoEm { get; set; }
 
@@ -22,8 +25,5 @@ namespace SME.SGP.Aplicacao.Integracoes.Respostas
 
         [JsonProperty("id")]
         public long Id { get; set; }
-
-        [JsonProperty("curricular_component_id")]
-        public long IdComponenteCurricular { get; set; }
     }
 }

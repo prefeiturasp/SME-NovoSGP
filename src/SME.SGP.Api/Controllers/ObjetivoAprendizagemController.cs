@@ -18,12 +18,12 @@ namespace SME.SGP.Api.Controllers
             this.consultasObjetivoAprendizagem = consultasObjetivoAprendizagem ?? throw new System.ArgumentNullException(nameof(consultasObjetivoAprendizagem));
         }
 
-        [HttpGet]
+        [HttpPost]
         [ProducesResponseType(typeof(IEnumerable<ObjetivoAprendizagemDto>), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        public IActionResult Get()
+        public IActionResult Filtrar([FromBody]FiltroObjetivosAprendizagemDto filtroObjetivosAprendizagemDto)
         {
-            return Ok(consultasObjetivoAprendizagem.Listar());
+            return Ok(consultasObjetivoAprendizagem.Listar(filtroObjetivosAprendizagemDto));
         }
     }
 }
