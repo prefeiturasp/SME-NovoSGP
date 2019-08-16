@@ -15,9 +15,13 @@ namespace SME.SGP.Aplicacao
             this.servicoJurema = servicoJurema ?? throw new System.ArgumentNullException(nameof(servicoJurema));
         }
 
-        public IEnumerable<ObjetivoAprendizagemDto> Listar()
+        public IEnumerable<ObjetivoAprendizagemDto> Listar(FiltroObjetivosAprendizagemDto filtroObjetivosAprendizagemDto)
         {
-            return MapearParaDto(servicoJurema.ObterListaObjetivosAprendizagem());
+            var objetivos = servicoJurema.ObterListaObjetivosAprendizagem();
+
+            return MapearParaDto(objetivos.Where(c =>
+                    filtroObjetivosAprendizagemDto.ComponentesCurricularesIds.Contains(c.ComponenteCurricularId) &&
+                    c.Codigo.Substring(3, 2).Equals(filtroObjetivosAprendizagemDto.Ano)));
         }
 
         private IEnumerable<ObjetivoAprendizagemDto> MapearParaDto(IEnumerable<ObjetivoAprendizagemResposta> objetivos)
@@ -30,7 +34,7 @@ namespace SME.SGP.Aplicacao
                 AtualizadoEm = m.AtualizadoEm,
                 Codigo = m.Codigo,
                 CriadoEm = m.CriadoEm,
-                IdComponenteCurricular = m.IdComponenteCurricular
+                IdComponenteCurricular = m.ComponenteCurricularId
             });
         }
     }
