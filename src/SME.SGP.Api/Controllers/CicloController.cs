@@ -13,12 +13,10 @@ namespace SME.SGP.Api.Controllers
     public class CicloController : ControllerBase
     {
         private readonly IConsultasCiclo consultasCiclo;
-        private readonly ServicoJurema servicoJurema;
 
-        public CicloController(IConsultasCiclo consultasCiclo)
+        public CicloController(IConsultasCiclo consultasCiclo, ServicoJurema servicoJurema)
         {
             this.consultasCiclo = consultasCiclo ?? throw new System.ArgumentNullException(nameof(consultasCiclo));
-            this.servicoJurema = servicoJurema;
         }
 
         [HttpGet]
@@ -27,14 +25,6 @@ namespace SME.SGP.Api.Controllers
         public IActionResult Get()
         {
             return Ok(consultasCiclo.Listar(new List<int>()));
-        }
-
-        [HttpGet]
-        [Route("teste")]
-        public IActionResult Teste()
-        {
-            servicoJurema.ObterListaObjetivosAprendizagem();
-            return Ok();
         }
     }
 }
