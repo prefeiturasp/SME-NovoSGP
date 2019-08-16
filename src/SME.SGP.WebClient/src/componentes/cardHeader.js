@@ -12,7 +12,7 @@ const CardHeader = props => {
   `;
 
   return (
-    <Header className="card-header shadow-sm rounded bg-white d-flex align-items-center py-4">
+    <Header className="card-header shadow-sm rounded bg-white d-flex align-items-center py-4 fonte-14">
       {children}
     </Header>
   );

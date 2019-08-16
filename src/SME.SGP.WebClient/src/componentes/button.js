@@ -52,14 +52,17 @@ const Button = props => {
   return (
     <Btn
       type={type}
-      className={`btn btn-${style} ${className} position-relative`}
+      className={`btn btn-${style} ${className} position-relative fonte-14`}
       onClick={onClick}
       disabled={disabled}
     >
       {icon ? <Icon className={`fa fa-${icon} mr-2`} /> : null}
       {label}
       {remove ? (
-        <Remove className="d-block rounded-circle position-absolute" />
+        <Remove
+          aria-label="Remover"
+          className="d-block rounded-circle position-absolute"
+        />
       ) : null}
     </Btn>
   );
