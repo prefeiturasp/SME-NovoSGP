@@ -81,13 +81,13 @@ export default function PlanoCiclo() {
 
   useEffect(() => {
     async function carregarListas() {
-      const matrizes = await api.get('matrizes-saber');
+      const matrizes = await api.get('v1/matrizes-saber');
       setListaMatriz(matrizes.data);
 
-      const ods = await api.get('objetivos-desenvolvimento-sustentavel');
+      const ods = await api.get('v1/objetivos-desenvolvimento-sustentavel');
       setListaODS(ods.data);
 
-      const ciclos = await api.get('ciclos');
+      const ciclos = await api.get('v1/ciclos');
       setListaCiclos(ciclos.data);
     }
 
