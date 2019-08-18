@@ -7,6 +7,7 @@ import history from './servicos/history';
 import GlobalStyle from './estilos/global';
 
 function App() {
+  console.log(process.env);
   return (
     <Router history={history}>
       <Rotas />

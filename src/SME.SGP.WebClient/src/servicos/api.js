@@ -2,7 +2,7 @@ import axios from 'axios';
 
 const api = axios.create({
   // TODO
-  baseURL: 'http://hom-smeintegracaoapi.sme.prefeitura.sp.gov.br/api/v1',
+  baseURL: process.env.REACT_APP_API_URL,
 });
 
 export default api;
