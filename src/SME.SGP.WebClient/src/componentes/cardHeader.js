@@ -4,22 +4,56 @@ import PropTypes from 'prop-types';
 import { Base } from './colors';
 
 const CardHeader = props => {
-  const { children } = props;
+  const { indice, children, border, icon } = props;
 
   const Header = styled.div`
-    border-left: 8px solid ${Base.AzulBordaCard};
-    font-size: 16px;
+    ${border ? `border-left: 8px solid ${Base.AzulBordaCard};` : null}
+  `;
+
+  const Icon = styled.i`
+    color: ${Base.CinzaBarras};
+  `;
+
+  const Link = styled.a`
+    &:hover {
+      background: ${Base.CinzaFundo};
+      border-radius: 50%;
+    }
+
+    &[aria-expanded='true'] ${Icon} {
+      color: ${Base.CinzaMako};
+      transform: rotate(180deg);
+    }
   `;
 
   return (
-    <Header className="card-header shadow-sm rounded bg-white d-flex align-items-center py-4 fonte-14">
+    <Header
+      className={`card-header shadow-sm rounded bg-white d-flex align-items-center ${
+        icon ? 'py-3' : 'py-4'
+      } fonte-16`}
+    >
       {children}
+      {icon ? (
+        <Link
+          className="text-decoration-none ml-auto p-2"
+          data-toggle="collapse"
+          href={`#${indice}`}
+          role="button"
+          aria-expanded="false"
+          aria-controls={`${indice}`}
+        >
+          <Icon className="fa fa-chevron-down" aria-hidden="true" />
+        </Link>
+      ) : null}
     </Header>
   );
 };
 
 CardHeader.propTypes = {
+  indice: PropTypes.string,
   children: PropTypes.node,
+  border: PropTypes.bool,
+  icon: PropTypes.bool,
 };
 
 export default CardHeader;

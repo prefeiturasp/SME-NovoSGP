@@ -83,7 +83,7 @@ export default function PlanoCiclo(props) {
   const [listaCiclos, setListaCiclos] = useState([]);
   const [listaMatrizSelecionda, setListaMatrizSelecionda] = useState([]);
   const [listaODSSelecionado, setListaODSSelecionado] = useState([]);
-  const [cicloSelecionado, setCicloSelecionado] = useState(1);
+  const [cicloSelecionado, setCicloSelecionado] = useState('1');
   const [descricaoCiclo, setDescricaoCiclo] = useState('');
   const [parametrosRota, setParametrosRota] = useState({ id: 0 });
 
@@ -91,7 +91,7 @@ export default function PlanoCiclo(props) {
     async function obterCicloExistente() {
       if (match.params) {
         const ciclo = await api.get(
-          `planos-ciclo/${match.params.ano}/${match.params.cicloId}/${match.params.escolaId}`
+          `v1/planos-ciclo/${match.params.ano}/${match.params.cicloId}/${match.params.escolaId}`
         );
         if (ciclo && ciclo.data) {
           setParametrosRota({
@@ -118,13 +118,14 @@ export default function PlanoCiclo(props) {
           }
 
           setDescricaoCiclo(ciclo.data.descricao);
+          setCicloSelecionado(String(ciclo.data.cicloId));
         }
       }
     }
 
     function obterSugestaoCiclo() {
       // TODO - Setar o ciclo quando tiver uma sugestão!
-      setCicloSelecionado('2');
+      // setCicloSelecionado('2');
     }
 
     async function carregarListas() {
@@ -235,8 +236,8 @@ export default function PlanoCiclo(props) {
       idsObjetivosDesenvolvimento: listaODSSelecionado.map(ods => ods.id),
     };
 
-    api.post('planos-ciclo', params).then(() => {
-      debugger;
+    api.post('v1/planos-ciclo', params).then(() => {
+      console.log(params);
     });
   }
 

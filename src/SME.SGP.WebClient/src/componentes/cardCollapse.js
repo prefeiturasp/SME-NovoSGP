@@ -16,33 +16,10 @@ const CardCollapse = props => {
     }
   `;
 
-  const Icon = styled.i`
-    color: ${Base.CinzaBarras};
-    &:hover {
-    }
-  `;
-
-  const Link = styled.a`
-    &[aria-expanded='true'] ${Icon} {
-      color: ${Base.CinzaMako};
-      transform: rotate(90deg);
-    }
-  `;
-
   return (
     <Card className="card shadow-sm mb-3">
-      <CardHeader>
+      <CardHeader indice={indice} border icon>
         {titulo}
-        <Link
-          className="text-decoration-none ml-auto"
-          data-toggle="collapse"
-          href={`#${indice}`}
-          role="button"
-          aria-expanded="false"
-          aria-controls={`${indice}`}
-        >
-          <Icon className="fa fa-bars" aria-hidden="true" />
-        </Link>
       </CardHeader>
       <div className="collapse fade" id={`${indice}`}>
         <CardBody>{children}</CardBody>
