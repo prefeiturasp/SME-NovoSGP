@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 
 import styled from 'styled-components';
 import Button from '../../../componentes/button';
-import Select from '../../../componentes/select';
+import SelectComponent from '../../../componentes/select';
 import TextEditor from '../../../componentes/textEditor';
 import { Colors, Base } from '../../../componentes/colors';
 
@@ -40,6 +40,9 @@ const ListaItens = styled.div`
     margin-bottom: 5px;
   }
 
+  font-size: 12px;
+  color: #42474a;
+
   .btn-li-item {
     width: 30px;
     height: 30px;
@@ -61,14 +64,16 @@ const ListaItens = styled.div`
 
 const Badge = styled.span`
   cursor: pointer;
-  padding-top: 3px;
+  padding-top: 5.5px;
 
   &[opcao-selecionada='true'] {
     background: ${Base.AzulAnakiwa} !important;
   }
 `;
 
-export default function PlanoCiclo() {
+export default function PlanoCiclo(props) {
+  const { match } = props;
+
   const urlPrefeitura = 'https://curriculo.prefeitura.sp.gov.br';
   const urlMatrizSaberes = `${urlPrefeitura}/matriz-de-saberes`;
   const urlODS = `${urlPrefeitura}/ods`;
@@ -78,8 +83,50 @@ export default function PlanoCiclo() {
   const [listaCiclos, setListaCiclos] = useState([]);
   const [listaMatrizSelecionda, setListaMatrizSelecionda] = useState([]);
   const [listaODSSelecionado, setListaODSSelecionado] = useState([]);
+  const [cicloSelecionado, setCicloSelecionado] = useState(1);
+  const [descricaoCiclo, setDescricaoCiclo] = useState('');
+  const [parametrosRota, setParametrosRota] = useState({ id: 0 });
 
   useEffect(() => {
+    async function obterCicloExistente() {
+      if (match.params) {
+        const ciclo = await api.get(
+          `planos-ciclo/${match.params.ano}/${match.params.cicloId}/${match.params.escolaId}`
+        );
+        if (ciclo && ciclo.data) {
+          setParametrosRota({
+            id: ciclo.data.id,
+            ano: match.params.ano,
+            cicloId: match.params.cicloId,
+            escolaId: match.params.escolaId,
+          });
+          if (
+            ciclo.data.idsMatrizesSaber &&
+            ciclo.data.idsMatrizesSaber.length
+          ) {
+            ciclo.data.idsMatrizesSaber.forEach(id => {
+              document.getElementById(`matriz-${id}`).click();
+            });
+          }
+          if (
+            ciclo.data.idsObjetivosDesenvolvimentoSustentavel &&
+            ciclo.data.idsObjetivosDesenvolvimentoSustentavel.length
+          ) {
+            ciclo.data.idsObjetivosDesenvolvimentoSustentavel.forEach(id => {
+              document.getElementById(`ods-${id}`).click();
+            });
+          }
+
+          setDescricaoCiclo(ciclo.data.descricao);
+        }
+      }
+    }
+
+    function obterSugestaoCiclo() {
+      // TODO - Setar o ciclo quando tiver uma sugestão!
+      setCicloSelecionado('2');
+    }
+
     async function carregarListas() {
       const matrizes = await api.get('matrizes-saber');
       setListaMatriz(matrizes.data);
@@ -89,6 +136,9 @@ export default function PlanoCiclo() {
 
       const ciclos = await api.get('ciclos');
       setListaCiclos(ciclos.data);
+
+      obterCicloExistente();
+      obterSugestaoCiclo();
     }
 
     carregarListas();
@@ -97,7 +147,7 @@ export default function PlanoCiclo() {
   function addRemoverMatriz(event, matrizSelecionada) {
     event.target.setAttribute(
       'opcao-selecionada',
-      event.target.getAttribute('opcao-selecionada') == 'true'
+      event.target.getAttribute('opcao-selecionada') === 'true'
         ? 'false'
         : 'true'
     );
@@ -113,13 +163,12 @@ export default function PlanoCiclo() {
       listaMatrizSelecionda.push(matrizSelecionada);
     }
     setListaMatrizSelecionda(listaMatrizSelecionda);
-    console.log(listaMatrizSelecionda);
   }
 
   function addRemoverODS(event, odsSelecionado) {
     event.target.setAttribute(
       'opcao-selecionada',
-      event.target.getAttribute('opcao-selecionada') == 'true'
+      event.target.getAttribute('opcao-selecionada') === 'true'
         ? 'false'
         : 'true'
     );
@@ -135,15 +184,16 @@ export default function PlanoCiclo() {
       listaODSSelecionado.push(odsSelecionado);
     }
     setListaODSSelecionado(listaODSSelecionado);
-    console.log(listaODSSelecionado);
   }
 
-  function setTipo(event) {
-    console.log(event.target.value);
-  }
-
-  function teste(value) {
+  function setCiclo(value) {
     console.log(value);
+
+    setCicloSelecionado(value);
+  }
+
+  function onChangeTextEditor() {
+    console.log(descricaoCiclo);
   }
 
   function irParaLinkExterno(link) {
@@ -153,7 +203,7 @@ export default function PlanoCiclo() {
   function validaMatrizSelecionada() {
     listaMatriz.forEach(item => {
       const jaSelecionado = listaMatrizSelecionda.find(
-        matriz => matriz.id == item.id
+        matriz => matriz.id === item.id
       );
       if (jaSelecionado) {
         return true;
@@ -165,12 +215,28 @@ export default function PlanoCiclo() {
   function validaODSSelecionado() {
     listaODS.forEach(item => {
       const jaSelecionado = listaODSSelecionado.find(
-        matriz => matriz.id == item.id
+        matriz => matriz.id === item.id
       );
       if (jaSelecionado) {
         return true;
       }
       return false;
+    });
+  }
+
+  function salvarPlanoCiclo() {
+    const params = {
+      ano: 2020,
+      cicloId: cicloSelecionado,
+      descricao: 'novo dia 2020',
+      escolaId: 1,
+      id: parametrosRota.id || 0,
+      idsMatrizesSaber: listaMatrizSelecionda.map(matriz => matriz.id),
+      idsObjetivosDesenvolvimento: listaODSSelecionado.map(ods => ods.id),
+    };
+
+    api.post('planos-ciclo', params).then(() => {
+      debugger;
     });
   }
 
@@ -190,15 +256,15 @@ export default function PlanoCiclo() {
           <div className="col-md-6">
             <div className="row">
               <div className="col-md-6">
-                <Select
-                  name="filtro-tipo"
-                  id="filtro-tipo"
-                  className="custom-select"
-                  optionClass="custom-select-option"
+                <SelectComponent
+                  className="col-md-12"
+                  name="tipo-ciclo"
+                  id="tipo-ciclo"
                   lista={listaCiclos}
-                  value="id"
+                  valueOption="id"
                   label="descricao"
-                  onChange={setTipo}
+                  onChange={setCiclo}
+                  valueSelect={cicloSelecionado}
                 />
               </div>
             </div>
@@ -218,31 +284,38 @@ export default function PlanoCiclo() {
               bold
               className="mr-3"
             />
-            <Button label="Salvar" color={Colors.Roxo} border bold disabled />
+            <Button
+              label="Salvar"
+              color={Colors.Roxo}
+              border
+              bold
+              onClick={salvarPlanoCiclo}
+            />
           </div>
         </div>
 
         <div className="row mb-3">
           <div className="col-md-6">
-            Este é um espaço para construção coletiva. Considerem os diversos
+            Este é um espaço para construção coletiva. Considere os diversos
             ritmos de aprendizagem para planejar e traçar o percurso de cada
-            Ciclo de Aprendizagem.
+            ciclo.
           </div>
           <div className="col-md-6">
-            Considerando as especificidades de cada Ciclo dessa Unidade Escolar
-            e o Currículo da Cidade, selecione os itens da Matriz do Saber e dos
-            Objetivos de Desenvolvimento e Sustentabilidade que contemplam as
-            propostas que planejaram:
+            Considerando as especificações de cada ciclo desta unidade escolar e
+            o currículo da cidade, <b>selecione</b> os itens da matriz do saber
+            e dos objetivos de desenvolvimento e sustentabilidade que contemplam
+            as propostas que planejaram:
           </div>
         </div>
 
         <div className="row mb-3">
           <div className="col-md-6">
             <TextEditor
-              onChange={teste}
               className="form-control"
               modules={modules}
               height={515}
+              onChange={onChangeTextEditor}
+              value={descricaoCiclo}
             />
           </div>
           <div className="col-md-6 btn-link-plano-ciclo">
@@ -262,6 +335,7 @@ export default function PlanoCiclo() {
                         <li key={item.id}>
                           {
                             <Badge
+                              id={`matriz-${item.id}`}
                               className="btn-li-item btn-li-item-matriz"
                               opcao-selecionada={validaMatrizSelecionada}
                               onClick={e => addRemoverMatriz(e, item)}
@@ -293,6 +367,7 @@ export default function PlanoCiclo() {
                         <li key={item.id}>
                           {
                             <Badge
+                              id={`ods-${item.id}`}
                               className="btn-li-item btn-li-item-ods"
                               opcao-selecionada={validaODSSelecionado}
                               onClick={e => addRemoverODS(e, item)}

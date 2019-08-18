@@ -1,4 +1,5 @@
 import { createGlobalStyle } from 'styled-components';
+import { Base } from '../componentes/colors';
 
 export default createGlobalStyle`
 @import url('https://fonts.googleapis.com/css?family=Roboto&display=swap');
@@ -34,6 +35,16 @@ export default createGlobalStyle`
   }
   .fonte-14 {
     font-size: 14px !important;
+  }
+
+  .ant-select-dropdown-menu-item:hover {
+    background-color: ${Base.Roxo}  !important;
+    color: #ffffff;
+  }
+
+  .ant-select-dropdown-menu-item-selected {
+    background-color:  ${Base.Roxo}  !important;
+    color: #ffffff !important;
   }
 
   // .btn-outline-voltar {
