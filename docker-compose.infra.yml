@@ -2,7 +2,7 @@ version: "3.1"
 
 volumes:
   grafana_data: {}
-  postgres-data: {}  
+  postgres-data: {}
 
 services:
   sme-api:
@@ -16,11 +16,9 @@ services:
     networks:
       - sme-network
     depends_on:
-      - "sme-db"
-    env_file:
-    - sme-api.env
-  sme-db:
-    container_name: sme-db
+      - "postgres"
+  postgres:
+    container_name: sme-sgp_db
     restart: always
     image: postgres:11-alpine
     ports:
@@ -31,31 +29,33 @@ services:
     volumes:
       - postgres-data:/var/lib/postgresql/data
     networks:
-      - sme-network 
-  sme-flyway:
-    container_name: sme-flyway
-    image: boxfuse/flyway:5.2.4
-    command: -url=jdbc:postgresql://sme-db:5432/sgp_db?user=postgres&password=postgres -locations='filesystem:/opt/scripts' migrate
+      - sme-network
+  grafana:
+    container_name: sme-grafana
+    restart: always
+    image: grafana/grafana
+    ports:
+      - "3000:3000"
     volumes:
-      - ./scripts:/opt/scripts
-    depends_on:
-      - "sme-db"
+      # Data persistency
+      # sudo mkdir -p /srv/docker/influxdb/data
+      - grafana_data:/var/lib/grafana
     networks:
       - sme-network
-  sme-webclient:
-    container_name: sme-webclient
-    image: sme-webclient
+    depends_on:
+      - "prom"
+  prom:
+    container_name: sme-prometheus
+    image: sme-prometheus
     build:
       context: .
-      dockerfile: ./src/SME.SGP.WebClient/Dockerfile
+      dockerfile: ./prometheus/Dockerfile
     ports:
-      - "20001:80"
+      - 9090:9090
     networks:
       - sme-network
     depends_on:
       - "sme-api"
-    env_file:
-    - sme-api.env  
 networks:
   sme-network:
     driver: bridge
