@@ -4,7 +4,7 @@ import styled from 'styled-components';
 import CardCollapse from '../../../componentes/cardCollapse';
 import Grid from '../../../componentes/grid';
 import Button from '../../../componentes/button';
-import TextEditor from '../../../componentes/textEditor';
+import TesteEditor from '../../../componentes/testeEditor';
 import { listarObjetivosAprendizagem } from '../../../servicos/objetivos';
 import { Colors, Base } from '../../../componentes/colors';
 import Seta from '../../../recursos/Seta.svg';
@@ -270,7 +270,7 @@ function PlanoAnual() {
                         </ul>
                         <fieldset className="mt-3">
                           <form action="">
-                            <TextEditor
+                            <TesteEditor
                               className="form-control"
                               modules={modules}
                               height={135}

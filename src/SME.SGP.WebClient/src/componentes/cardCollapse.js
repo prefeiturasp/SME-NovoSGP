@@ -18,7 +18,7 @@ const CardCollapse = props => {
 
   return (
     <Card className="card shadow-sm mb-3">
-      <CardHeader indice={indice} border icon>
+      <CardHeader indice={indice} border icon show>
         {titulo}
       </CardHeader>
       <div className={`collapse fade ${show ? 'show' : null}`} id={`${indice}`}>
