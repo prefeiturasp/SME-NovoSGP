@@ -77,7 +77,7 @@ Button.propTypes = {
   steady: PropTypes.bool,
   remove: PropTypes.bool,
   className: PropTypes.string,
-  onClick: PropTypes.string,
+  onClick: PropTypes.func,
   disabled: PropTypes.bool,
   icon: PropTypes.string,
   label: PropTypes.string,
