@@ -1,25 +1,27 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import shortid from 'shortid';
 import styled from 'styled-components';
 import CardCollapse from '../../../componentes/cardCollapse';
 import Grid from '../../../componentes/grid';
 import Button from '../../../componentes/button';
-import TextEditor from '../../../componentes/textEditor';
+import TesteEditor from '../../../componentes/testeEditor';
 import { listarObjetivosAprendizagem } from '../../../servicos/objetivos';
 import { Colors, Base } from '../../../componentes/colors';
 import Seta from '../../../recursos/Seta.svg';
 
 const bimestres = [
+  { nome: '1º Bimestre', materias: [] },
+  { nome: '2º Bimestre', materias: [] },
   {
-    nome: '1º Bimestre',
+    nome: '3º Bimestre',
     materias: [
       { materia: 'Ciências' },
       { materia: 'História' },
       { materia: 'Geografia' },
     ],
+    objetivo:
+      'In semper mi vitae nulla bibendum, ut dictum magna dictum. Morbi sodales rutrum turpis, sit amet fringilla orci rutrum sit amet. Nulla tristique dictum neque, ac placerat urna aliquam non. Sed commodo tellus ac hendrerit mollis. Mauris et congue nulla.',
   },
-  { nome: '2º Bimestre', materias: [] },
-  { nome: '3º Bimestre', materias: [] },
   { nome: '4º Bimestre', materias: [] },
 ];
 
@@ -118,8 +120,28 @@ function PlanoAnual() {
     toolbar: toolbarOptions,
   };
 
+  const setLista = useState();
+
+  useEffect(() => {
+    const dispara = new Promise(function(resolve, reject) {
+      setTimeout(function() {
+        if (true) resolve();
+        else reject();
+      }, 10000);
+    });
+
+    dispara
+      .then(() => {
+        bimestres[2].objetivo = 'Novo texto';
+        setLista(bimestres);
+      })
+      .catch(erro => {
+        window.alert('Falha');
+      });
+  });
+
   return (
-    <div className="row">
+    <>
       <Grid cols={12}>
         <h1>Plano Anual</h1>
       </Grid>
@@ -158,6 +180,7 @@ function PlanoAnual() {
                   key={indice}
                   titulo={bimestre.nome}
                   indice={indice}
+                  show={bimestre.nome === '3º Bimestre' && true}
                 >
                   <div className="row">
                     <Grid cols={6}>
@@ -267,10 +290,11 @@ function PlanoAnual() {
                         </ul>
                         <fieldset className="mt-3">
                           <form action="">
-                            <TextEditor
+                            <TesteEditor
                               className="form-control"
                               modules={modules}
                               height={135}
+                              text={bimestre.objetivo}
                             />
                           </form>
                         </fieldset>
@@ -282,7 +306,7 @@ function PlanoAnual() {
             })
           : null}
       </Grid>
-    </div>
+    </>
   );
 }
 
