@@ -88,8 +88,8 @@ export default function PlanoCiclo(props) {
   const [listaMatriz, setListaMatriz] = useState([]);
   const [listaODS, setListaODS] = useState([]);
   const [listaCiclos, setListaCiclos] = useState([]);
-  const [listaMatrizSelecionda, setListaMatrizSelecionda] = useState([]);
-  const [listaODSSelecionado, setListaODSSelecionado] = useState([]);
+  let [listaMatrizSelecionda, setListaMatrizSelecionda] = useState([]);
+  let [listaODSSelecionado, setListaODSSelecionado] = useState([]);
   const [cicloSelecionado, setCicloSelecionado] = useState('1');
   const [descricaoCiclo, setDescricaoCiclo] = useState('');
   const [parametrosRota, setParametrosRota] = useState({ id: 0 });
@@ -161,42 +161,36 @@ export default function PlanoCiclo(props) {
   }, []);
 
   function addRemoverMatriz(event, matrizSelecionada) {
+    const estaSelecionado =
+      event.target.getAttribute('opcao-selecionada') === 'true';
     event.target.setAttribute(
       'opcao-selecionada',
-      event.target.getAttribute('opcao-selecionada') === 'true'
-        ? 'false'
-        : 'true'
+      estaSelecionado ? 'false' : 'true'
     );
 
-    let adicionarNovo = true;
-    listaMatrizSelecionda.forEach((item, index) => {
-      if (item.id === matrizSelecionada.id) {
-        listaMatrizSelecionda.splice(index);
-        adicionarNovo = false;
-      }
-    });
-    if (adicionarNovo) {
+    if (estaSelecionado) {
+      listaMatrizSelecionda = listaMatrizSelecionda.filter(
+        item => item.id !== matrizSelecionada.id
+      );
+    } else {
       listaMatrizSelecionda.push(matrizSelecionada);
     }
     setListaMatrizSelecionda(listaMatrizSelecionda);
   }
 
   function addRemoverODS(event, odsSelecionado) {
+    const estaSelecionado =
+      event.target.getAttribute('opcao-selecionada') === 'true';
     event.target.setAttribute(
       'opcao-selecionada',
-      event.target.getAttribute('opcao-selecionada') === 'true'
-        ? 'false'
-        : 'true'
+      estaSelecionado ? 'false' : 'true'
     );
 
-    let adicionarNovo = true;
-    listaODSSelecionado.forEach((item, index) => {
-      if (item.id === odsSelecionado.id) {
-        listaODSSelecionado.splice(index);
-        adicionarNovo = false;
-      }
-    });
-    if (adicionarNovo) {
+    if (estaSelecionado) {
+      listaODSSelecionado = listaODSSelecionado.filter(
+        item => item.id !== odsSelecionado.id
+      );
+    } else {
       listaODSSelecionado.push(odsSelecionado);
     }
     setListaODSSelecionado(listaODSSelecionado);
@@ -243,6 +237,18 @@ export default function PlanoCiclo(props) {
   }
 
   function salvarPlanoCiclo() {
+    if (!listaMatrizSelecionda.length) {
+      alert('Selecione uma opção ou mais em Matriz de saberes');
+      return;
+    }
+
+    if (!listaODSSelecionado.length) {
+      alert(
+        'Selecione uma opção ou mais em Objetivos de Desenvolvimento Sustentável'
+      );
+      return;
+    }
+
     const params = {
       ano: parametrosRota.ano || anoCiclo,
       cicloId: cicloSelecionado,
@@ -259,7 +265,6 @@ export default function PlanoCiclo(props) {
         alert(
           `Salvo com sucesso! Ano: ${params.ano}, Ciclo: ${params.cicloId}, Ciclo: ${params.escolaId}`
         );
-        history.push('/');
       },
       e => {
         alert(`Erro: ${e.response.data.mensagens[0]}`);
