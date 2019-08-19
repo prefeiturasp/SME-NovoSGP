@@ -39,7 +39,7 @@ const CardHeader = props => {
           data-toggle="collapse"
           href={`#${indice}`}
           role="button"
-          aria-expanded={show}
+          aria-expanded={show && true}
           aria-controls={`${indice}`}
         >
           <Icon className="fa fa-chevron-down" aria-hidden="true" />

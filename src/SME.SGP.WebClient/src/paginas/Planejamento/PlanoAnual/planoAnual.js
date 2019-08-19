@@ -52,8 +52,6 @@ const objetivos = [
   },
 ];
 
-const objetivosSelecionados = [{ code: 'EF03EF01' }, { code: 'EF03EF02' }];
-
 function selecionaMateria(event) {
   event.target.setAttribute(
     'aria-pressed',
@@ -64,11 +62,11 @@ function selecionaMateria(event) {
 }
 
 function selecionaObjetivo(event) {
+  event.persist();
   event.target.setAttribute(
     'aria-pressed',
     event.target.getAttribute('aria-pressed') === 'true' ? 'false' : 'true'
   );
-  objetivosSelecionados.push({ code: event.target.innerHTML });
 }
 
 export default function PlanoAnual() {
@@ -88,18 +86,10 @@ export default function PlanoAnual() {
     { nome: '4º Bimestre', materias: [] },
   ]);
 
-  function adicionaBimestre() {
-    const adiciona = new Promise(resolve => {
-      setTimeout(() => {
-        resolve();
-      }, 1000);
-    });
-    adiciona.then(() => {
-      const novo = bimestres;
-      novo[2].objetivo = 'Olar meus nobres amigos! <3';
-      setBimestres([...novo]);
-    });
-  }
+  const [objetivosSelecionados, setObjetivosSelecionados] = useState([
+    { code: 'EF03EF01' },
+    { code: 'EF03EF02' },
+  ]);
 
   const Badge = styled.button`
     &:last-child {
@@ -243,7 +233,6 @@ export default function PlanoAnual() {
                                   steady
                                   remove
                                   className="text-dark mt-3 mr-2"
-                                  onClick={adicionaBimestre}
                                 />
                               );
                             })
