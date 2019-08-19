@@ -3,7 +3,7 @@ import { store } from '../redux';
 
 import { exibir, removerAlerta } from '../redux/modulos/alertas/actions';
 
-const exibirAlerta = (tipo, mensagem) => {
+const exibirAlerta = (tipo, mensagem, fixo = false) => {
   const id = shortid.generate();
   const alerta = {
     tipo,
@@ -11,10 +11,11 @@ const exibirAlerta = (tipo, mensagem) => {
     mensagem,
   };
   store.dispatch(exibir(alerta));
-
-  setTimeout(() => {
-    store.dispatch(removerAlerta(id));
-  }, 3000);
+  if (!fixo) {
+    setTimeout(() => {
+      store.dispatch(removerAlerta(id));
+    }, 3000);
+  }
 };
 
 const sucesso = mensagem => {
