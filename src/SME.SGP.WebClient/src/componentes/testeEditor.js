@@ -4,7 +4,7 @@ import ReactQuill from 'react-quill';
 export default class TesteEditor extends Component {
   constructor(props) {
     super(props);
-    this.state = { text: '' }; // You can also pass a Quill Delta here
+    this.state = { text: props.text !== undefined ? props.text : '' }; // You can also pass a Quill Delta here
     this.handleChange = this.handleChange.bind(this);
   }
 
