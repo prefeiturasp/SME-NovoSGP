@@ -13,7 +13,7 @@ const Sidebar = () => {
   `;
 
   return (
-    <Nav className="col-md-2 d-none d-md-block sidebar pt-2 h-100">
+    <Nav className="col-md-2 d-none d-md-block sidebar shadow-sm pt-2 h-100">
       <div className="sidebar-sticky">
         <ul className="nav flex-column">
           <li className="nav-item">
