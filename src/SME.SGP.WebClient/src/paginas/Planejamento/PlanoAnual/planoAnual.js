@@ -119,7 +119,7 @@ function PlanoAnual() {
   };
 
   return (
-    <div className="row">
+    <>
       <Grid cols={12}>
         <h1>Plano Anual</h1>
       </Grid>
@@ -282,7 +282,7 @@ function PlanoAnual() {
             })
           : null}
       </Grid>
-    </div>
+    </>
   );
 }
 
