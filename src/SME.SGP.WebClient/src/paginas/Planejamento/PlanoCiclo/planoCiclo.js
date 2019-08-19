@@ -5,6 +5,7 @@ import Button from '../../../componentes/button';
 import SelectComponent from '../../../componentes/select';
 // import TextEditor from '../../../componentes/textEditor';
 import { Colors, Base } from '../../../componentes/colors';
+import history from '../../../servicos/history';
 
 import api from '../../../servicos/api';
 
@@ -92,10 +93,16 @@ export default function PlanoCiclo(props) {
   const [cicloSelecionado, setCicloSelecionado] = useState('1');
   const [descricaoCiclo, setDescricaoCiclo] = useState('');
   const [parametrosRota, setParametrosRota] = useState({ id: 0 });
+  const [anoCiclo, setAnoCiclo] = useState(2019); // TODO Remover
 
   useEffect(() => {
     async function obterCicloExistente() {
-      if (match.params) {
+      if (
+        match.params &&
+        match.params.ano &&
+        match.params.cicloId &&
+        match.params.escolaId
+      ) {
         const ciclo = await api.get(
           `v1/planos-ciclo/${match.params.ano}/${match.params.cicloId}/${match.params.escolaId}`
         );
@@ -126,6 +133,8 @@ export default function PlanoCiclo(props) {
           setDescricaoCiclo(ciclo.data.descricao);
           setCicloSelecionado(String(ciclo.data.cicloId));
         }
+      } else if (match.params && match.params.ano) {
+        setAnoCiclo(match.params.ano);
       }
     }
 
@@ -229,9 +238,13 @@ export default function PlanoCiclo(props) {
     });
   }
 
+  function onClickVoltar() {
+    history.push('/');
+  }
+
   function salvarPlanoCiclo() {
     const params = {
-      ano: 2020,
+      ano: parametrosRota.ano || anoCiclo,
       cicloId: cicloSelecionado,
       descricao: descricaoCiclo,
       escolaId: 1,
@@ -240,9 +253,18 @@ export default function PlanoCiclo(props) {
       idsObjetivosDesenvolvimento: listaODSSelecionado.map(ods => ods.id),
     };
 
-    api.post('v1/planos-ciclo', params).then(() => {
-      console.log(params);
-    });
+    api.post('v1/planos-ciclo', params).then(
+      () => {
+        console.log(params);
+        alert(
+          `Salvo com sucesso! Ano: ${params.ano}, Ciclo: ${params.cicloId}, Ciclo: ${params.escolaId}`
+        );
+        history.push('/');
+      },
+      e => {
+        alert(`Erro: ${e.response.data.mensagens[0]}`);
+      }
+    );
   }
 
   const toolbarOptions = [
@@ -281,6 +303,7 @@ export default function PlanoCiclo(props) {
               color={Colors.Azul}
               border
               className="mr-3"
+              onClick={onClickVoltar}
             />
             <Button
               label="Cancelar"
@@ -316,7 +339,11 @@ export default function PlanoCiclo(props) {
         <div className="row mb-3">
           <div className="col-md-6">
             <TextArea>
-              <textarea onChange={onChangeTextEditor} value={descricaoCiclo} className="form-control" />
+              <textarea
+                onChange={onChangeTextEditor}
+                value={descricaoCiclo}
+                className="form-control"
+              />
             </TextArea>
             {/* <TextEditor
               className="form-control"
