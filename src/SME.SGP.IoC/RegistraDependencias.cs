@@ -46,6 +46,7 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IRepositorioObjetivoDesenvolvimentoPlano, RepositorioObjetivoDesenvolvimentoPlano>();
             services.TryAddScoped<IRepositorioMatrizSaber, RepositorioMatrizSaber>();
             services.TryAddScoped<IRepositorioObjetivoDesenvolvimento, RepositorioObjetivoDesenvolvimento>();
+            services.TryAddScoped<IRepositorioCiclo, RepositorioCiclo>();
         }
     }
 }
