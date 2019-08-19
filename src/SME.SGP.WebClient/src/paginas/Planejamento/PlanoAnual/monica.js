@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import TesteEditor from '../../../componentes/testeEditor';
 
-export default function PlanoCiclo() {
+export default function Monica() {
   const [olar, setOlar] = useState({ texto: 'olar' });
 
   function clicaOlar() {
