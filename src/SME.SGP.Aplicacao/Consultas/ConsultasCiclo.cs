@@ -1,5 +1,6 @@
 ﻿using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Dto;
+using System.Collections.Generic;
 
 namespace SME.SGP.Aplicacao
 {
@@ -10,6 +11,11 @@ namespace SME.SGP.Aplicacao
         public ConsultasCiclo(IRepositorioCiclo repositorioCiclo)
         {
             this.repositorioCiclo = repositorioCiclo ?? throw new System.ArgumentNullException(nameof(repositorioCiclo));
+        }
+
+        public IEnumerable<CicloDto> Listar(IEnumerable<int> idsTurmas)
+        {
+            return repositorioCiclo.ObterCiclosPorTurma(idsTurmas);
         }
 
         public CicloDto Selecionar(int ano)
