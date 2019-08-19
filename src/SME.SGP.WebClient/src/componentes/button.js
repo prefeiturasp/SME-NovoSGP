@@ -18,6 +18,7 @@ const Button = props => {
     disabled,
     icon,
     label,
+    hidden
   } = props;
 
   const Icon = styled.i``;
@@ -51,6 +52,7 @@ const Button = props => {
 
   return (
     <Btn
+      hidden={hidden}
       type={type}
       className={`btn btn-${style} ${className} position-relative py-2 fonte-14`}
       onClick={onClick}
@@ -81,6 +83,7 @@ Button.propTypes = {
   disabled: PropTypes.bool,
   icon: PropTypes.string,
   label: PropTypes.string,
+  hidden: PropTypes.bool,
 };
 
 Button.defaultProps = {
@@ -92,6 +95,7 @@ Button.defaultProps = {
   remove: false,
   className: '',
   disabled: false,
+  hidden: false,
 };
 
 export default Button;
