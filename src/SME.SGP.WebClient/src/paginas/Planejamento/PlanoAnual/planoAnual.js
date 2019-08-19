@@ -1,29 +1,13 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import shortid from 'shortid';
 import styled from 'styled-components';
 import CardCollapse from '../../../componentes/cardCollapse';
 import Grid from '../../../componentes/grid';
 import Button from '../../../componentes/button';
-import TesteEditor from '../../../componentes/testeEditor';
+import TextEditor from '../../../componentes/textEditor';
 import { listarObjetivosAprendizagem } from '../../../servicos/objetivos';
 import { Colors, Base } from '../../../componentes/colors';
 import Seta from '../../../recursos/Seta.svg';
-
-const bimestres = [
-  { nome: '1º Bimestre', materias: [] },
-  { nome: '2º Bimestre', materias: [] },
-  {
-    nome: '3º Bimestre',
-    materias: [
-      { materia: 'Ciências' },
-      { materia: 'História' },
-      { materia: 'Geografia' },
-    ],
-    objetivo:
-      'In semper mi vitae nulla bibendum, ut dictum magna dictum. Morbi sodales rutrum turpis, sit amet fringilla orci rutrum sit amet. Nulla tristique dictum neque, ac placerat urna aliquam non. Sed commodo tellus ac hendrerit mollis. Mauris et congue nulla.',
-  },
-  { nome: '4º Bimestre', materias: [] },
-];
 
 const objetivos = [
   {
@@ -87,7 +71,36 @@ function selecionaObjetivo(event) {
   objetivosSelecionados.push({ code: event.target.innerHTML });
 }
 
-function PlanoAnual() {
+export default function PlanoAnual() {
+  const [bimestres, setBimestres] = useState([
+    { nome: '1º Bimestre', materias: [] },
+    { nome: '2º Bimestre', materias: [] },
+    {
+      nome: '3º Bimestre',
+      materias: [
+        { materia: 'Ciências' },
+        { materia: 'História' },
+        { materia: 'Geografia' },
+      ],
+      objetivo:
+        'In semper mi vitae nulla bibendum, ut dictum magna dictum. Morbi sodales rutrum turpis, sit amet fringilla orci rutrum sit amet. Nulla tristique dictum neque, ac placerat urna aliquam non. Sed commodo tellus ac hendrerit mollis. Mauris et congue nulla.',
+    },
+    { nome: '4º Bimestre', materias: [] },
+  ]);
+
+  function adicionaBimestre() {
+    const adiciona = new Promise(resolve => {
+      setTimeout(() => {
+        resolve();
+      }, 1000);
+    });
+    adiciona.then(() => {
+      const novo = bimestres;
+      novo[2].objetivo = 'Olar meus nobres amigos! <3';
+      setBimestres([...novo]);
+    });
+  }
+
   const Badge = styled.button`
     &:last-child {
       margin-right: 0 !important;
@@ -119,26 +132,6 @@ function PlanoAnual() {
   const modules = {
     toolbar: toolbarOptions,
   };
-
-  const setLista = useState();
-
-  useEffect(() => {
-    const dispara = new Promise(function(resolve, reject) {
-      setTimeout(function() {
-        if (true) resolve();
-        else reject();
-      }, 10000);
-    });
-
-    dispara
-      .then(() => {
-        bimestres[2].objetivo = 'Novo texto';
-        setLista(bimestres);
-      })
-      .catch(erro => {
-        window.alert('Falha');
-      });
-  });
 
   return (
     <>
@@ -172,7 +165,7 @@ function PlanoAnual() {
         <Button label="Salvar" color={Colors.Roxo} border bold disabled />
       </Grid>
       <Grid cols={12}>
-        {bimestres.length > 0
+        {bimestres && bimestres.length > 0
           ? bimestres.map(bimestre => {
               const indice = shortid.generate().replace(/[0-9]/g, '');
               return (
@@ -188,7 +181,7 @@ function PlanoAnual() {
                         Objetivos de aprendizagem
                       </h6>
                       <div>
-                        {bimestre.materias.length > 0
+                        {bimestre.materias && bimestre.materias.length > 0
                           ? bimestre.materias.map(materia => {
                               return (
                                 <Badge
@@ -250,6 +243,7 @@ function PlanoAnual() {
                                   steady
                                   remove
                                   className="text-dark mt-3 mr-2"
+                                  onClick={adicionaBimestre}
                                 />
                               );
                             })
@@ -290,11 +284,11 @@ function PlanoAnual() {
                         </ul>
                         <fieldset className="mt-3">
                           <form action="">
-                            <TesteEditor
+                            <TextEditor
                               className="form-control"
                               modules={modules}
                               height={135}
-                              text={bimestre.objetivo}
+                              value={bimestre.objetivo}
                             />
                           </form>
                         </fieldset>
@@ -310,4 +304,4 @@ function PlanoAnual() {
   );
 }
 
-export default PlanoAnual;
+// export default PlanoAnual;
