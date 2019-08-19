@@ -2,7 +2,6 @@
 using SME.SGP.Api.Filtros;
 using SME.SGP.Aplicacao;
 using SME.SGP.Dto;
-using System.Collections.Generic;
 
 namespace SME.SGP.Api.Controllers
 {
@@ -19,11 +18,11 @@ namespace SME.SGP.Api.Controllers
         }
 
         [HttpGet]
-        [ProducesResponseType(typeof(IEnumerable<CicloDto>), 200)]
+        [ProducesResponseType(typeof(CicloDto), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        public IActionResult Get()
+        public IActionResult Get(int ano)
         {
-            return Ok(consultasCiclo.Listar(new List<int>()));
+            return Ok(consultasCiclo.Selecionar(ano));
         }
     }
 }
