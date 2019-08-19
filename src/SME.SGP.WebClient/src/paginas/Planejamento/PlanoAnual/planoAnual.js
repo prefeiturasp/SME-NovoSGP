@@ -10,16 +10,18 @@ import { Colors, Base } from '../../../componentes/colors';
 import Seta from '../../../recursos/Seta.svg';
 
 const bimestres = [
+  { nome: '1º Bimestre', materias: [] },
+  { nome: '2º Bimestre', materias: [] },
   {
-    nome: '1º Bimestre',
+    nome: '3º Bimestre',
     materias: [
       { materia: 'Ciências' },
       { materia: 'História' },
       { materia: 'Geografia' },
     ],
+    objetivo:
+      'In semper mi vitae nulla bibendum, ut dictum magna dictum. Morbi sodales rutrum turpis, sit amet fringilla orci rutrum sit amet. Nulla tristique dictum neque, ac placerat urna aliquam non. Sed commodo tellus ac hendrerit mollis. Mauris et congue nulla.',
   },
-  { nome: '2º Bimestre', materias: [] },
-  { nome: '3º Bimestre', materias: [] },
   { nome: '4º Bimestre', materias: [] },
 ];
 
@@ -158,6 +160,7 @@ function PlanoAnual() {
                   key={indice}
                   titulo={bimestre.nome}
                   indice={indice}
+                  show={bimestre.nome === '3º Bimestre' && true}
                 >
                   <div className="row">
                     <Grid cols={6}>
@@ -271,6 +274,7 @@ function PlanoAnual() {
                               className="form-control"
                               modules={modules}
                               height={135}
+                              text={bimestre.objetivo}
                             />
                           </form>
                         </fieldset>
