@@ -1,4 +1,7 @@
 import React, { useEffect, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import Alert from '../../../componentes/alert';
+import { sucesso, erro } from '../../../servicos/alertas';
 
 import styled from 'styled-components';
 import Button from '../../../componentes/button';
@@ -238,12 +241,12 @@ export default function PlanoCiclo(props) {
 
   function salvarPlanoCiclo() {
     if (!listaMatrizSelecionda.length) {
-      alert('Selecione uma opção ou mais em Matriz de saberes');
+      erro('Selecione uma opção ou mais em Matriz de saberes');
       return;
     }
 
     if (!listaODSSelecionado.length) {
-      alert(
+      erro(
         'Selecione uma opção ou mais em Objetivos de Desenvolvimento Sustentável'
       );
       return;
@@ -262,12 +265,12 @@ export default function PlanoCiclo(props) {
     api.post('v1/planos-ciclo', params).then(
       () => {
         console.log(params);
-        alert(
+        sucesso(
           `Salvo com sucesso! Ano: ${params.ano}, Ciclo: ${params.cicloId}, Ciclo: ${params.escolaId}`
         );
       },
       e => {
-        alert(`Erro: ${e.response.data.mensagens[0]}`);
+        erro(`Erro: ${e.response.data.mensagens[0]}`);
       }
     );
   }
@@ -280,9 +283,15 @@ export default function PlanoCiclo(props) {
   // const modules = {
   //   toolbar: toolbarOptions,
   // };
-
+  //TODO quanto tivermos a tela de login e a home, deverá ser movido todos os alertas para a home/container
+  const notificacoes = useSelector(state => state.notificacoes);
   return (
     <>
+      <div className="col-md-12">
+        {notificacoes.alertas.map(alerta => (
+          <Alert alerta={alerta} key={alerta.id} />
+        ))}
+      </div>
       <div className="col-md-12">
         <div className="row mb-3">
           <div className="col-md-6">
@@ -316,6 +325,7 @@ export default function PlanoCiclo(props) {
               border
               bold
               className="mr-3"
+              onClick={onClickVoltar}
             />
             <Button
               label="Salvar"
