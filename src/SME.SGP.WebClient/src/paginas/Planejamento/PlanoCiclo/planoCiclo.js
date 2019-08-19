@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
+import styled from 'styled-components';
 import Alert from '../../../componentes/alert';
 import { sucesso, erro } from '../../../servicos/alertas';
 
-import styled from 'styled-components';
 import Button from '../../../componentes/button';
 import SelectComponent from '../../../componentes/select';
 import TextEditor from '../../../componentes/textEditor';
@@ -81,6 +81,17 @@ const TextArea = styled.div`
   }
 `;
 
+const InseridoAlterado = styled.div`
+  object-fit: contain;
+  font-weight: bold;
+  font-style: normal;
+  font-size: 10px;
+  color: #42474a;
+  p {
+    margin: 0px;
+  }
+`;
+
 export default function PlanoCiclo(props) {
   const { match } = props;
 
@@ -96,6 +107,10 @@ export default function PlanoCiclo(props) {
   const [cicloSelecionado, setCicloSelecionado] = useState('1');
   const [descricaoCiclo, setDescricaoCiclo] = useState('');
   const [parametrosRota, setParametrosRota] = useState({ id: 0 });
+  const [inseridoPor, setInseridoPor] = useState('ELISANGELA DOS SANTOS');
+  const [dataInseridoPor, setDataInseridoPor] = useState('02/05/2019 às 20:28');
+  const [alteradoPor, setAlteradoPor] = useState('JOÃO DA SILVA');
+  const [dataAlteradoPor, setDataAlteradoPor] = useState('02/05/2019 às 20:28');
   const [anoCiclo, setAnoCiclo] = useState(2019); // TODO Remover
 
   useEffect(() => {
@@ -373,6 +388,13 @@ export default function PlanoCiclo(props) {
               onChange={onChangeTextEditor}
               value={descricaoCiclo}
             />
+            <InseridoAlterado>
+              <p>
+                INSERIDO por {inseridoPor} em {dataInseridoPor}
+              </p>
+                ALTERADO por {alteradoPor} em {dataAlteradoPor}
+              <p />
+            </InseridoAlterado>
           </div>
           <div className="col-md-6 btn-link-plano-ciclo">
             <div className="col-md-12">
