@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import shortid from 'shortid';
 import styled from 'styled-components';
 import CardCollapse from '../../../componentes/cardCollapse';
@@ -119,6 +119,26 @@ function PlanoAnual() {
   const modules = {
     toolbar: toolbarOptions,
   };
+
+  const setLista = useState();
+
+  useEffect(() => {
+    const dispara = new Promise(function(resolve, reject) {
+      setTimeout(function() {
+        if (true) resolve();
+        else reject();
+      }, 10000);
+    });
+
+    dispara
+      .then(() => {
+        bimestres[2].objetivo = 'Novo texto';
+        setLista(bimestres);
+      })
+      .catch(erro => {
+        window.alert('Falha');
+      });
+  });
 
   return (
     <>
