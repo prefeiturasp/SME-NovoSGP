@@ -15,6 +15,7 @@ namespace SME.SGP.Dados.Mapeamentos
                config.AddMap(new MatrizSaberMap());
                config.AddMap(new MatrizSaberPlanoMap());
                config.AddMap(new AuditoriaMap());
+               config.AddMap(new CicloMap());
                config.ForDommel();
            });
         }
