@@ -4,8 +4,8 @@ import ReactQuill from 'react-quill';
 export default class TesteEditor extends Component {
   constructor(props) {
     super(props);
-    console.log(props);
-    this.state = { text: props.text !== undefined ? props.text : '' }; // You can also pass a Quill Delta here
+    const { text } = props;
+    this.state = { text };
     this.handleChange = this.handleChange.bind(this);
   }
 
@@ -14,6 +14,7 @@ export default class TesteEditor extends Component {
   }
 
   render() {
-    return <ReactQuill value={this.state.text} onChange={this.handleChange} />;
+    const { text } = this.state;
+    return <ReactQuill value={text} onChange={this.handleChange} />;
   }
 }

@@ -4,7 +4,7 @@ import styled from 'styled-components';
 import CardCollapse from '../../../componentes/cardCollapse';
 import Grid from '../../../componentes/grid';
 import Button from '../../../componentes/button';
-import TesteEditor from '../../../componentes/testeEditor';
+import TextEditor from '../../../componentes/textEditor';
 import { listarObjetivosAprendizagem } from '../../../servicos/objetivos';
 import { Colors, Base } from '../../../componentes/colors';
 import Seta from '../../../recursos/Seta.svg';
@@ -89,15 +89,15 @@ export default function PlanoAnual() {
   ]);
 
   function adicionaBimestre() {
-    let bla = new Promise(function(rs) {
-      // setTimeout(function() {
-      rs();
-      // }, 5000);
+    const adiciona = new Promise(resolve => {
+      setTimeout(() => {
+        resolve();
+      }, 1000);
     });
-    bla.then(() => {
-      let b = bimestres;
-      b[2].objetivo = 'Olar';
-      setBimestres([...b]);
+    adiciona.then(() => {
+      const novo = bimestres;
+      novo[2].objetivo = 'Olar meus nobres amigos! <3';
+      setBimestres([...novo]);
     });
   }
 
@@ -284,11 +284,11 @@ export default function PlanoAnual() {
                         </ul>
                         <fieldset className="mt-3">
                           <form action="">
-                            <TesteEditor
+                            <TextEditor
                               className="form-control"
                               modules={modules}
                               height={135}
-                              text={bimestre.objetivo}
+                              value={bimestre.objetivo}
                             />
                           </form>
                         </fieldset>

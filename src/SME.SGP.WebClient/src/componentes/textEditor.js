@@ -1,12 +1,11 @@
 import 'react-quill/dist/quill.snow.css';
-
 import PropTypes from 'prop-types';
 import React from 'react';
 import ReactQuill from 'react-quill';
 import styled from 'styled-components';
 
 const TextEditor = props => {
-  const { modules, onChange, height } = props;
+  const { modules, onChange, height, value } = props;
 
   const Container = styled.div`
     .ql-container.ql-snow {
@@ -44,7 +43,7 @@ const TextEditor = props => {
 
   return (
     <Container>
-      <ReactQuill onChange={onChange} modules={modules} />
+      <ReactQuill onChange={onChange} modules={modules} value={value} />
     </Container>
   );
 };
@@ -53,6 +52,7 @@ TextEditor.propTypes = {
   modules: PropTypes.object,
   onChange: PropTypes.func,
   height: PropTypes.number,
+  value: PropTypes.string,
 };
 
 export default TextEditor;
