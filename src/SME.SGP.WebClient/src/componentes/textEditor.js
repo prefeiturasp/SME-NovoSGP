@@ -5,7 +5,7 @@ import ReactQuill from 'react-quill';
 import styled from 'styled-components';
 
 const TextEditor = props => {
-  const { modules, height, value } = props;
+  const { modules, onChange, height, value } = props;
 
   const Container = styled.div`
     .ql-container.ql-snow {
@@ -43,7 +43,7 @@ const TextEditor = props => {
 
   return (
     <Container>
-      <ReactQuill modules={modules} value={value} />
+      <ReactQuill onChange={onChange} modules={modules} value={value} />
     </Container>
   );
 };
