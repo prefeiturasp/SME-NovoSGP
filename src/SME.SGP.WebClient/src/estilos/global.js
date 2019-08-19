@@ -42,4 +42,14 @@ export default createGlobalStyle`
   .fonte-16 {
     font-size: 16px !important;
   }
+
+  .ant-select-dropdown-menu-item:hover {
+    background-color: ${Base.Roxo}  !important;
+    color: #ffffff;
+  }
+
+  .ant-select-dropdown-menu-item-selected {
+    background-color:  ${Base.Roxo}  !important;
+    color: #ffffff !important;
+  }
 `;

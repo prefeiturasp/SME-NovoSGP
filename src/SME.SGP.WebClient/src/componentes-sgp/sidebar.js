@@ -18,7 +18,7 @@ const Sidebar = () => {
         <ul className="nav flex-column">
           <li className="nav-item">
             <Link
-              to="/planejamento/plano-ciclo"
+              to="/planejamento/plano-ciclo/2019"
               className="nav-link text-white"
             >
               Plano de Ciclo
