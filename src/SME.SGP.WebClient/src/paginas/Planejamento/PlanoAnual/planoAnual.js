@@ -8,6 +8,8 @@ import TesteEditor from '../../../componentes/testeEditor';
 import { listarObjetivosAprendizagem } from '../../../servicos/objetivos';
 import { Colors, Base } from '../../../componentes/colors';
 import Seta from '../../../recursos/Seta.svg';
+import history from '../../../servicos/history';
+import { ControleEstado } from '../../../componentes/controleEstado';
 
 const bimestres = [
   { nome: '1º Bimestre', materias: [] },
@@ -79,14 +81,6 @@ function selecionaMateria(event) {
   listarObjetivosAprendizagem();
 }
 
-function selecionaObjetivo(event) {
-  event.target.setAttribute(
-    'aria-pressed',
-    event.target.getAttribute('aria-pressed') === 'true' ? 'false' : 'true'
-  );
-  objetivosSelecionados.push({ code: event.target.innerHTML });
-}
-
 function PlanoAnual() {
   const Badge = styled.button`
     &:last-child {
@@ -121,6 +115,16 @@ function PlanoAnual() {
   };
 
   const setLista = useState();
+  const [alterado, setAlterado] = useState(false);
+
+  function selecionaObjetivo(event) {
+    setAlterado(true);
+    event.target.setAttribute(
+      'aria-pressed',
+      event.target.getAttribute('aria-pressed') === 'true' ? 'false' : 'true'
+    );
+    objetivosSelecionados.push({ code: event.target.innerHTML });
+  }
 
   useEffect(() => {
     const dispara = new Promise(function(resolve, reject) {
@@ -142,6 +146,13 @@ function PlanoAnual() {
 
   return (
     <>
+      <ControleEstado
+        when={true}
+        navigate={path => history.push(path)}
+        shouldBlockNavigation={() => alterado}
+        confirmar={path => history.push(path)}
+        cancelar={() => false}
+      />
       <Grid cols={12}>
         <h1>Plano Anual</h1>
       </Grid>
