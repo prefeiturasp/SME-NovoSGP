@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { useSelector } from 'react-redux';
 import Alert from '../../../componentes/alert';
 import { sucesso, erro } from '../../../servicos/alertas';
 
 import styled from 'styled-components';
 import Button from '../../../componentes/button';
 import SelectComponent from '../../../componentes/select';
-// import TextEditor from '../../../componentes/textEditor';
+import TextEditor from '../../../componentes/textEditor';
 import { Colors, Base } from '../../../componentes/colors';
 import history from '../../../servicos/history';
 
@@ -101,14 +101,25 @@ export default function PlanoCiclo(props) {
   useEffect(() => {
     async function obterCicloExistente() {
       if (
-        match.params &&
-        match.params.ano &&
-        match.params.cicloId &&
-        match.params.escolaId
+        true
+        // match.params &&
+        // match.params.ano &&
+        // match.params.cicloId &&
+        // match.params.escolaId
       ) {
-        const ciclo = await api.get(
-          `v1/planos-ciclo/${match.params.ano}/${match.params.cicloId}/${match.params.escolaId}`
-        );
+        // const ciclo = await api.get(
+        //   `v1/planos-ciclo/${match.params.ano}/${match.params.cicloId}/${match.params.escolaId}`
+        // );
+        const ciclo = {
+          data: {
+            cicloId: 1,
+            descricao: 'NOVA DESCRICAO',
+            id: 37,
+            idsMatrizesSaber: [1, 2, 3, 4, 5],
+            idsObjetivosDesenvolvimentoSustentavel: [1, 2, 3, 4, 5, 6, 7, 8, 9],
+          },
+        };
+
         if (ciclo && ciclo.data) {
           setParametrosRota({
             id: ciclo.data.id,
@@ -204,7 +215,7 @@ export default function PlanoCiclo(props) {
   }
 
   function onChangeTextEditor(value) {
-    setDescricaoCiclo(value.target.value);
+    setDescricaoCiclo(value);
   }
 
   function irParaLinkExterno(link) {
@@ -280,11 +291,13 @@ export default function PlanoCiclo(props) {
     [{ list: 'bullet' }, { list: 'ordered' }],
   ];
 
-  // const modules = {
-  //   toolbar: toolbarOptions,
-  // };
+  const modules = {
+    toolbar: toolbarOptions,
+  };
+
   //TODO quanto tivermos a tela de login e a home, deverá ser movido todos os alertas para a home/container
   const notificacoes = useSelector(state => state.notificacoes);
+
   return (
     <>
       <div className="col-md-12">
@@ -353,20 +366,13 @@ export default function PlanoCiclo(props) {
 
         <div className="row mb-3">
           <div className="col-md-6">
-            <TextArea>
-              <textarea
-                onChange={onChangeTextEditor}
-                value={descricaoCiclo}
-                className="form-control"
-              />
-            </TextArea>
-            {/* <TextEditor
+            <TextEditor
               className="form-control"
               modules={modules}
               height={515}
               onChange={onChangeTextEditor}
               value={descricaoCiclo}
-            /> */}
+            />
           </div>
           <div className="col-md-6 btn-link-plano-ciclo">
             <div className="col-md-12">
