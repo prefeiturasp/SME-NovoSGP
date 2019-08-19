@@ -6,7 +6,6 @@ namespace SME.SGP.Dto
 {
     public class PlanoCicloCompletoDto
     {
-        public long CicloId { get; set; }
         public string Descricao { get; set; }
         public long Id { get; set; }
         public IEnumerable<long> IdsMatrizesSaber => MatrizesSaber?.Split(',').Select(c => Convert.ToInt64(c));
