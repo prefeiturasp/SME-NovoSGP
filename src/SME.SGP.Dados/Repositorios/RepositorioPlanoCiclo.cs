@@ -20,6 +20,11 @@ namespace SME.SGP.Dados.Repositorios
             query.AppendLine("select");
             query.AppendLine("	pc.id,");
             query.AppendLine("	pc.descricao,");
+            query.AppendLine("	pc.alterado_em as alteradoem,");
+            query.AppendLine("	pc.alterado_por as alteradopor,");
+            query.AppendLine("	pc.criado_por as criadopor,");
+            query.AppendLine("	pc.criado_em as criadoem,");
+            query.AppendLine("	pc.ciclo_id as CicloId,");
             query.AppendLine("	pc.ciclo_id as CicloId,");
             query.AppendLine("	string_agg(distinct cast(msp.matriz_id as text), ',') as MatrizesSaber,");
             query.AppendLine("	string_agg(distinct cast(odp.objetivo_desenvolvimento_id as text), ',') as ObjetivosDesenvolvimento");
