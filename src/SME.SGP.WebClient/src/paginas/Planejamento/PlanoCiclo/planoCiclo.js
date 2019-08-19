@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 
 import styled from 'styled-components';
 import Button from '../../../componentes/button';
+import Alert from '../../../componentes/alert';
 import SelectComponent from '../../../componentes/select';
 import TextEditor from '../../../componentes/textEditor';
 import { Colors, Base } from '../../../componentes/colors';
@@ -119,6 +120,9 @@ export default function PlanoCiclo(props) {
 
           setDescricaoCiclo(ciclo.data.descricao);
           setCicloSelecionado(String(ciclo.data.cicloId));
+
+
+
         }
       }
     }
@@ -129,6 +133,7 @@ export default function PlanoCiclo(props) {
     }
 
     async function carregarListas() {
+      
       const matrizes = await api.get('v1/matrizes-saber');
       setListaMatriz(matrizes.data);
 
@@ -252,6 +257,7 @@ export default function PlanoCiclo(props) {
 
   return (
     <>
+    
       <div className="col-md-12">
         <div className="row mb-3">
           <div className="col-md-6">
