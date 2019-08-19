@@ -4,7 +4,7 @@ import PropTypes from 'prop-types';
 import { Base } from './colors';
 
 const CardHeader = props => {
-  const { indice, children, border, icon } = props;
+  const { indice, children, border, icon, show } = props;
 
   const Header = styled.div`
     ${border ? `border-left: 8px solid ${Base.AzulBordaCard};` : null}
@@ -39,7 +39,7 @@ const CardHeader = props => {
           data-toggle="collapse"
           href={`#${indice}`}
           role="button"
-          aria-expanded="false"
+          aria-expanded={show}
           aria-controls={`${indice}`}
         >
           <Icon className="fa fa-chevron-down" aria-hidden="true" />
@@ -54,6 +54,11 @@ CardHeader.propTypes = {
   children: PropTypes.node,
   border: PropTypes.bool,
   icon: PropTypes.bool,
+  show: PropTypes.bool,
+};
+
+CardHeader.defaultProps = {
+  show: false,
 };
 
 export default CardHeader;
