@@ -1,12 +1,13 @@
 import React, { useEffect, useState } from 'react';
+import { useDispatch } from 'react-redux';
+
+import { sucesso, erro } from '../../../servicos/alertas';
 
 import styled from 'styled-components';
 import Button from '../../../componentes/button';
-import Alert from '../../../componentes/alert';
 import SelectComponent from '../../../componentes/select';
 import TextEditor from '../../../componentes/textEditor';
 import { Colors, Base } from '../../../componentes/colors';
-
 import api from '../../../servicos/api';
 
 const BtnLink = styled.div`
@@ -120,9 +121,6 @@ export default function PlanoCiclo(props) {
 
           setDescricaoCiclo(ciclo.data.descricao);
           setCicloSelecionado(String(ciclo.data.cicloId));
-
-
-
         }
       }
     }
@@ -133,7 +131,6 @@ export default function PlanoCiclo(props) {
     }
 
     async function carregarListas() {
-      
       const matrizes = await api.get('v1/matrizes-saber');
       setListaMatriz(matrizes.data);
 
@@ -231,6 +228,7 @@ export default function PlanoCiclo(props) {
   }
 
   function salvarPlanoCiclo() {
+    console.log('teste');
     const params = {
       ano: 2020,
       cicloId: cicloSelecionado,
@@ -257,7 +255,6 @@ export default function PlanoCiclo(props) {
 
   return (
     <>
-    
       <div className="col-md-12">
         <div className="row mb-3">
           <div className="col-md-6">
@@ -283,6 +280,7 @@ export default function PlanoCiclo(props) {
               color={Colors.Azul}
               border
               className="mr-3"
+              onClick={() => erro('teste')}
             />
             <Button
               label="Cancelar"
@@ -290,6 +288,7 @@ export default function PlanoCiclo(props) {
               border
               bold
               className="mr-3"
+              onClick={() => sucesso('success')}
             />
             <Button
               label="Salvar"

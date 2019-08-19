@@ -2,23 +2,27 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import styled from 'styled-components';
 import { Base, Active, Hover } from './colors';
-
-
-const Alert = props => {  
-    const {
-        tipo,
-    } = props;
-
+import { removerAlerta } from '../redux/modulos/alertas/actions';
+import { useDispatch } from 'react-redux';
+const Alert = props => {
+  const { tipo, id, mensagem } = props.alerta;
+  const dispatch = useDispatch();
   return (
-<div 
-  class={`alert alert-${tipo} alert-dismissible fade show`} role="alert">
-  {`${props.children}`}
-  <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-    <span aria-hidden="true">&times;</span>
-  </button>
-</div>);
-
+    <div
+      className={`alert alert-${tipo} alert-dismissible fade show text-center`}
+      role="alert"
+    >
+      <b>{`${mensagem}`}</b>
+      <button
+        type="button"
+        className="close"
+        onClick={() => dispatch(removerAlerta(id))}
+        aria-label="Close"
+      >
+        <span aria-hidden="true">&times;</span>
+      </button>
+    </div>
+  );
 };
-
 
 export default Alert;
