@@ -3,7 +3,7 @@ import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import Button from '../../../componentes/button';
 import SelectComponent from '../../../componentes/select';
-import TextEditor from '../../../componentes/textEditor';
+// import TextEditor from '../../../componentes/textEditor';
 import { Colors, Base } from '../../../componentes/colors';
 
 import api from '../../../servicos/api';
@@ -68,6 +68,12 @@ const Badge = styled.span`
 
   &[opcao-selecionada='true'] {
     background: ${Base.AzulAnakiwa} !important;
+  }
+`;
+
+const TextArea = styled.div`
+  textarea {
+    height: 600px !important;
   }
 `;
 
@@ -188,13 +194,11 @@ export default function PlanoCiclo(props) {
   }
 
   function setCiclo(value) {
-    console.log(value);
-
     setCicloSelecionado(value);
   }
 
-  function onChangeTextEditor() {
-    console.log(descricaoCiclo);
+  function onChangeTextEditor(value) {
+    setDescricaoCiclo(value.target.value);
   }
 
   function irParaLinkExterno(link) {
@@ -229,7 +233,7 @@ export default function PlanoCiclo(props) {
     const params = {
       ano: 2020,
       cicloId: cicloSelecionado,
-      descricao: 'novo dia 2020',
+      descricao: descricaoCiclo,
       escolaId: 1,
       id: parametrosRota.id || 0,
       idsMatrizesSaber: listaMatrizSelecionda.map(matriz => matriz.id),
@@ -246,9 +250,9 @@ export default function PlanoCiclo(props) {
     [{ list: 'bullet' }, { list: 'ordered' }],
   ];
 
-  const modules = {
-    toolbar: toolbarOptions,
-  };
+  // const modules = {
+  //   toolbar: toolbarOptions,
+  // };
 
   return (
     <>
@@ -311,13 +315,16 @@ export default function PlanoCiclo(props) {
 
         <div className="row mb-3">
           <div className="col-md-6">
-            <TextEditor
+            <TextArea>
+              <textarea onChange={onChangeTextEditor} value={descricaoCiclo} className="form-control" />
+            </TextArea>
+            {/* <TextEditor
               className="form-control"
               modules={modules}
               height={515}
               onChange={onChangeTextEditor}
               value={descricaoCiclo}
-            />
+            /> */}
           </div>
           <div className="col-md-6 btn-link-plano-ciclo">
             <div className="col-md-12">
