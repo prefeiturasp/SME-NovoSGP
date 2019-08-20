@@ -23,7 +23,7 @@ export class ControleEstado extends React.Component {
     if (!confirmou) {
       confirmacao(
         'Atenção',
-        'Você não salvou as informações preenchidas,<br>Deseja realmente cancelar as alterações?',
+        'Você não salvou as informações preenchidas, Deseja realmente cancelar as alterações?',
         () => this.acaoConfirmar(nextLocation),
         cancelar
       );
