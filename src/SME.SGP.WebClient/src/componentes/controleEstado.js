@@ -4,52 +4,43 @@ import { confirmacao } from '../servicos/alertas';
 
 export class ControleEstado extends React.Component {
   state = {
-    modalVisible: false,
-    lastLocation: null,
-    confirmedNavigation: false,
+    confirmou: false,
+    mostrarModal: true,
   };
 
-  showModal = location =>
-    this.setState({
-      modalVisible: true,
-      lastLocation: location,
-    });
-
-  closeModal = callback =>
+  fecharModal = callback =>
     this.setState(
       {
-        modalVisible: false,
+        mostrarModal: false,
       },
       callback
     );
 
-  handleBlockedNavigation = nextLocation => {
-    const { confirmedNavigation } = this.state;
-    const { shouldBlockNavigation } = this.props;
-    if (!confirmedNavigation && shouldBlockNavigation(nextLocation)) {
+  bloquearNavegacao = nextLocation => {
+    const { confirmou } = this.state;
+    const { cancelar } = this.props;
+
+    if (!confirmou) {
       confirmacao(
         'Atenção',
-        'Você não salvou as informações preenchidas,<br> <b>Deseja realmente cancelar as alterações?</b>',
-        () => this.handleConfirmNavigationClick(),
-        this.props.cancelar
+        'Você não salvou as informações preenchidas,<br>Deseja realmente cancelar as alterações?',
+        () => this.acaoConfirmar(nextLocation),
+        cancelar
       );
       return false;
     }
-
-    return true;
   };
 
-  handleConfirmNavigationClick = () => {
-    this.closeModal(() => {
-      const { confirmar, navigate } = this.props;
+  acaoConfirmar = path => {
+    this.fecharModal(() => {
+      const { confirmar } = this.props;
       const { lastLocation } = this.state;
       this.setState(
         {
-          confirmedNavigation: true,
+          confirmou: true,
         },
         () => {
-          // Navigate to the previous blocked location with your navigate function
-          navigate();
+          confirmar(path.pathname);
         }
       );
     });
@@ -57,11 +48,9 @@ export class ControleEstado extends React.Component {
 
   render() {
     const { when } = this.props;
-    const { modalVisible, lastLocation } = this.state;
     return (
       <>
-        <Prompt when={when} message={this.handleBlockedNavigation} />
-        {/* {modalVisible ? <h1>bloqueou</h1> : <h1>Não</h1>} */}
+        <Prompt when={when} message={this.bloquearNavegacao} />
       </>
     );
   }
