@@ -35,13 +35,15 @@ const SelectComponent = props => {
         onChange={onChange}
         value={valueSelect}
       >
-        {lista.map((item, indice) => {
-          return (
-            <Option key={indice} value={`${item[valueOption]}`}>
-              {`${item[label]}`}
-            </Option>
-          );
-        })}
+        {lista.length
+          ? lista.map((item, indice) => {
+              return (
+                <Option key={indice} value={`${item[valueOption]}`}>
+                  {`${item[label]}`}
+                </Option>
+              );
+            })
+          : ''}
       </Select>
     </Container>
   );
