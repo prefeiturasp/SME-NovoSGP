@@ -352,6 +352,7 @@ export default function PlanoCiclo(props) {
       () => {
         console.log(params);
         sucesso('Suas informações foram salvas com sucesso.');
+        onClickCancelar();
       },
       e => {
         erro(`Erro: ${e.response.data.mensagens[0]}`);
