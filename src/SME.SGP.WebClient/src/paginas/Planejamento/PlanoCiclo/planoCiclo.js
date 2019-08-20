@@ -351,10 +351,7 @@ export default function PlanoCiclo(props) {
     api.post('v1/planos-ciclo', params).then(
       () => {
         console.log(params);
-        sucesso(
-          `Salvo com sucesso! Ano: ${params.ano}, Ciclo: ${params.cicloId}, Ciclo: ${params.escolaId}`
-        );
-        onClickCancelar();
+        sucesso('Suas informações foram salvas com sucesso.');
       },
       e => {
         erro(`Erro: ${e.response.data.mensagens[0]}`);
