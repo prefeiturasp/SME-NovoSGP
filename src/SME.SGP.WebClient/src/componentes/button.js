@@ -18,7 +18,7 @@ const Button = props => {
     disabled,
     icon,
     label,
-    hidden
+    hidden,
   } = props;
 
   const Icon = styled.i``;
