@@ -246,7 +246,7 @@ export default function PlanoAnual() {
                                     bold
                                     steady
                                     remove
-                                    className="text-dark mt-3 mr-2"
+                                    className="text-dark mt-3 mr-2 stretched-link"
                                     onClick={removeObjetivoSelecionado}
                                   />
                                 );
