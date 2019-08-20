@@ -1,16 +1,15 @@
+import * as moment from 'moment';
 import React, { useEffect, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import Alert from '../../../componentes/alert';
-import { sucesso, erro } from '../../../servicos/alertas';
-
+import { useSelector } from 'react-redux';
 import styled from 'styled-components';
-import Button from '../../../componentes/button';
-import SelectComponent from '../../../componentes/select';
-// import TextEditor from '../../../componentes/textEditor';
-import { Colors, Base } from '../../../componentes/colors';
-import history from '../../../servicos/history';
 
+import Alert from '../../../componentes/alert';
+import Button from '../../../componentes/button';
+import { Base, Colors } from '../../../componentes/colors';
+import SelectComponent from '../../../componentes/select';
+import { erro, sucesso } from '../../../servicos/alertas';
 import api from '../../../servicos/api';
+import history from '../../../servicos/history';
 
 const BtnLink = styled.div`
   color: #686868;
@@ -81,6 +80,17 @@ const TextArea = styled.div`
   }
 `;
 
+const InseridoAlterado = styled.div`
+  object-fit: contain;
+  font-weight: bold;
+  font-style: normal;
+  font-size: 10px;
+  color: #42474a;
+  p {
+    margin: 0px;
+  }
+`;
+
 export default function PlanoCiclo(props) {
   const { match } = props;
 
@@ -95,52 +105,19 @@ export default function PlanoCiclo(props) {
   let [listaODSSelecionado, setListaODSSelecionado] = useState([]);
   const [cicloSelecionado, setCicloSelecionado] = useState('1');
   const [descricaoCiclo, setDescricaoCiclo] = useState('');
-  const [parametrosRota, setParametrosRota] = useState({ id: 0 });
-  const [anoCiclo, setAnoCiclo] = useState(2019); // TODO Remover
+  const [parametrosConsulta, setParametrosConsulta] = useState({ id: 0 });
+
+  const [inseridoAlterado, setInseridoAlterado] = useState({
+    alteradoEm: '',
+    alteradoPor: '',
+    criadoEm: '',
+    criadoPor: '',
+  });
+  const [modoEdicao, setModoEdicao] = useState(false);
+  const [novoRegistro, setNovoRegistro] = useState(true);
+  const [pronto, setPronto] = useState(false);
 
   useEffect(() => {
-    async function obterCicloExistente() {
-      if (
-        match.params &&
-        match.params.ano &&
-        match.params.cicloId &&
-        match.params.escolaId
-      ) {
-        const ciclo = await api.get(
-          `v1/planos-ciclo/${match.params.ano}/${match.params.cicloId}/${match.params.escolaId}`
-        );
-        if (ciclo && ciclo.data) {
-          setParametrosRota({
-            id: ciclo.data.id,
-            ano: match.params.ano,
-            cicloId: match.params.cicloId,
-            escolaId: match.params.escolaId,
-          });
-          if (
-            ciclo.data.idsMatrizesSaber &&
-            ciclo.data.idsMatrizesSaber.length
-          ) {
-            ciclo.data.idsMatrizesSaber.forEach(id => {
-              document.getElementById(`matriz-${id}`).click();
-            });
-          }
-          if (
-            ciclo.data.idsObjetivosDesenvolvimentoSustentavel &&
-            ciclo.data.idsObjetivosDesenvolvimentoSustentavel.length
-          ) {
-            ciclo.data.idsObjetivosDesenvolvimentoSustentavel.forEach(id => {
-              document.getElementById(`ods-${id}`).click();
-            });
-          }
-
-          setDescricaoCiclo(ciclo.data.descricao);
-          setCicloSelecionado(String(ciclo.data.cicloId));
-        }
-      } else if (match.params && match.params.ano) {
-        setAnoCiclo(match.params.ano);
-      }
-    }
-
     function obterSugestaoCiclo() {
       // TODO - Setar o ciclo quando tiver uma sugestão!
       // setCicloSelecionado('2');
@@ -156,12 +133,67 @@ export default function PlanoCiclo(props) {
       const ciclos = await api.get('v1/ciclos');
       setListaCiclos(ciclos.data);
 
-      obterCicloExistente();
-      obterSugestaoCiclo();
+      if (match.params && match.params.ano && match.params.escolaId) {
+        obterCicloExistente(
+          match.params.ano,
+          match.params.escolaId,
+          cicloSelecionado
+        );
+      }
     }
 
     carregarListas();
   }, []);
+
+  async function obterCicloExistente(ano, escolaId, cicloId) {
+    const ciclo = await api.get(
+      `v1/planos-ciclo/${ano}/${cicloId}/${escolaId}`
+    );
+    setParametrosConsulta({
+      id: ciclo.data.id,
+      ano,
+      cicloId,
+      escolaId,
+    });
+    if (ciclo && ciclo.data) {
+      setNovoRegistro(false);
+      const alteradoEm = moment(ciclo.data.alteradoEm).format(
+        'DD/MM/YYYY HH:mm:ss'
+      );
+      const criadoEm = moment(ciclo.data.criadoEm).format(
+        'DD/MM/YYYY HH:mm:ss'
+      );
+      setInseridoAlterado({
+        alteradoEm,
+        alteradoPor: ciclo.data.alteradoPor,
+        criadoEm,
+        criadoPor: ciclo.data.criadoPor,
+      });
+      configuraValoresPlanoCiclo(ciclo);
+      setPronto(true);
+    } else {
+      setNovoRegistro(true);
+      setPronto(true);
+    }
+  }
+
+  function configuraValoresPlanoCiclo(ciclo) {
+    if (ciclo.data.idsMatrizesSaber && ciclo.data.idsMatrizesSaber.length) {
+      ciclo.data.idsMatrizesSaber.forEach(id => {
+        document.getElementById(`matriz-${id}`).click();
+      });
+    }
+    if (
+      ciclo.data.idsObjetivosDesenvolvimentoSustentavel &&
+      ciclo.data.idsObjetivosDesenvolvimentoSustentavel.length
+    ) {
+      ciclo.data.idsObjetivosDesenvolvimentoSustentavel.forEach(id => {
+        document.getElementById(`ods-${id}`).click();
+      });
+    }
+    setDescricaoCiclo(ciclo.data.descricao);
+    setCicloSelecionado(String(ciclo.data.cicloId));
+  }
 
   function addRemoverMatriz(event, matrizSelecionada) {
     const estaSelecionado =
@@ -179,6 +211,9 @@ export default function PlanoCiclo(props) {
       listaMatrizSelecionda.push(matrizSelecionada);
     }
     setListaMatrizSelecionda(listaMatrizSelecionda);
+    if (pronto) {
+      setModoEdicao(true);
+    }
   }
 
   function addRemoverODS(event, odsSelecionado) {
@@ -197,14 +232,32 @@ export default function PlanoCiclo(props) {
       listaODSSelecionado.push(odsSelecionado);
     }
     setListaODSSelecionado(listaODSSelecionado);
+    if (pronto) {
+      setModoEdicao(true);
+    }
   }
 
   function setCiclo(value) {
+    obterCicloExistente(
+      parametrosConsulta.ano,
+      parametrosConsulta.escolaId,
+      value
+    );
+    resetListas();
+    setListaMatrizSelecionda([]);
+    setListaODSSelecionado([]);
+    setDescricaoCiclo('');
     setCicloSelecionado(value);
+    setModoEdicao(false);
+    setPronto(false);
+    setInseridoAlterado({});
   }
 
-  function onChangeTextEditor(value) {
-    setDescricaoCiclo(value.target.value);
+  function onChangeTextEditor(event) {
+    setDescricaoCiclo(event.target.value);
+    if (pronto) {
+      setModoEdicao(true);
+    }
   }
 
   function irParaLinkExterno(link) {
@@ -239,6 +292,39 @@ export default function PlanoCiclo(props) {
     history.push('/');
   }
 
+  function onClickCancelar() {
+    resetListas();
+    setModoEdicao(false);
+    setPronto(false);
+    setListaMatrizSelecionda([]);
+    setListaODSSelecionado([]);
+    setDescricaoCiclo('');
+    obterCicloExistente(
+      parametrosConsulta.ano,
+      parametrosConsulta.escolaId,
+      cicloSelecionado
+    );
+  }
+
+  function resetListas() {
+    listaMatriz.forEach(item => {
+      const target = document.getElementById(`matriz-${item.id}`);
+      const estaSelecionado =
+        target.getAttribute('opcao-selecionada') === 'true';
+      if (estaSelecionado) {
+        target.setAttribute('opcao-selecionada', 'false');
+      }
+    });
+    listaODS.forEach(item => {
+      const target = document.getElementById(`ods-${item.id}`);
+      const estaSelecionado =
+        target.getAttribute('opcao-selecionada') === 'true';
+      if (estaSelecionado) {
+        target.setAttribute('opcao-selecionada', 'false');
+      }
+    });
+  }
+
   function salvarPlanoCiclo() {
     if (!listaMatrizSelecionda.length) {
       erro('Selecione uma opção ou mais em Matriz de saberes');
@@ -253,11 +339,11 @@ export default function PlanoCiclo(props) {
     }
 
     const params = {
-      ano: parametrosRota.ano || anoCiclo,
+      ano: parametrosConsulta.ano,
       cicloId: cicloSelecionado,
       descricao: descricaoCiclo,
-      escolaId: 1,
-      id: parametrosRota.id || 0,
+      escolaId: parametrosConsulta.escolaId,
+      id: parametrosConsulta.id || 0,
       idsMatrizesSaber: listaMatrizSelecionda.map(matriz => matriz.id),
       idsObjetivosDesenvolvimento: listaODSSelecionado.map(ods => ods.id),
     };
@@ -268,6 +354,7 @@ export default function PlanoCiclo(props) {
         sucesso(
           `Salvo com sucesso! Ano: ${params.ano}, Ciclo: ${params.cicloId}, Ciclo: ${params.escolaId}`
         );
+        onClickCancelar();
       },
       e => {
         erro(`Erro: ${e.response.data.mensagens[0]}`);
@@ -275,16 +362,9 @@ export default function PlanoCiclo(props) {
     );
   }
 
-  const toolbarOptions = [
-    ['bold', 'italic', 'underline'],
-    [{ list: 'bullet' }, { list: 'ordered' }],
-  ];
-
-  // const modules = {
-  //   toolbar: toolbarOptions,
-  // };
-  //TODO quanto tivermos a tela de login e a home, deverá ser movido todos os alertas para a home/container
+  // TODO quanto tivermos a tela de login e a home, deverá ser movido todos os alertas para a home/container
   const notificacoes = useSelector(state => state.notificacoes);
+
   return (
     <>
       <div className="col-md-12">
@@ -325,7 +405,8 @@ export default function PlanoCiclo(props) {
               border
               bold
               className="mr-3"
-              onClick={onClickVoltar}
+              onClick={onClickCancelar}
+              hidden={!modoEdicao}
             />
             <Button
               label="Salvar"
@@ -333,6 +414,7 @@ export default function PlanoCiclo(props) {
               border
               bold
               onClick={salvarPlanoCiclo}
+              disabled={!modoEdicao}
             />
           </div>
         </div>
@@ -360,13 +442,25 @@ export default function PlanoCiclo(props) {
                 className="form-control"
               />
             </TextArea>
-            {/* <TextEditor
-              className="form-control"
-              modules={modules}
-              height={515}
-              onChange={onChangeTextEditor}
-              value={descricaoCiclo}
-            /> */}
+            <InseridoAlterado>
+              {inseridoAlterado.criadoPor && inseridoAlterado.criadoEm ? (
+                <p>
+                  INSERIDO por {inseridoAlterado.criadoPor} em{' '}
+                  {inseridoAlterado.criadoEm}
+                </p>
+              ) : (
+                ''
+              )}
+
+              {inseridoAlterado.alteradoPor && inseridoAlterado.alteradoEm ? (
+                <p>
+                  ALTERADO por {inseridoAlterado.alteradoPor} em{' '}
+                  {inseridoAlterado.alteradoEm}
+                </p>
+              ) : (
+                ''
+              )}
+            </InseridoAlterado>
           </div>
           <div className="col-md-6 btn-link-plano-ciclo">
             <div className="col-md-12">
