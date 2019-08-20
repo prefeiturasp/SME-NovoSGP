@@ -18,10 +18,10 @@ const CardCollapse = props => {
 
   return (
     <Card className="card shadow-sm mb-3">
-      <CardHeader indice={indice} border icon show>
+      <CardHeader indice={indice} border icon show={show}>
         {titulo}
       </CardHeader>
-      <div className={`collapse fade ${show ? 'show' : null}`} id={`${indice}`}>
+      <div className={`collapse fade ${show && 'show'}`} id={`${indice}`}>
         <CardBody>{children}</CardBody>
       </div>
     </Card>
