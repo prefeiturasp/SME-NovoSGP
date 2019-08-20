@@ -7,7 +7,8 @@ import Alert from '../../../componentes/alert';
 import Button from '../../../componentes/button';
 import { Base, Colors } from '../../../componentes/colors';
 import SelectComponent from '../../../componentes/select';
-import { erro, sucesso } from '../../../servicos/alertas';
+import { erro, sucesso, confirmacao } from '../../../servicos/alertas';
+// import ControleEstado from '../../../componentes/controleEstado';
 import api from '../../../servicos/api';
 import history from '../../../servicos/history';
 
@@ -289,10 +290,33 @@ export default function PlanoCiclo(props) {
   }
 
   function onClickVoltar() {
-    history.push('/');
+    if (modoEdicao) {
+      confirmacao(
+        'Atenção',
+        `Suas alterações não foram salvas, deseja salvar agora?`,
+        () => salvarPlanoCiclo(true),
+        () => {
+          setModoEdicao(false);
+          history.push('/');
+          return false;
+        }
+      );
+    } else {
+      history.push('/');
+    }
   }
 
   function onClickCancelar() {
+    confirmacao(
+      'Atenção',
+      `Você não salvou as informações
+      preenchidas. Deseja realmente cancelar as alterações?`,
+      confirmarCancelamento,
+      () => true
+    );
+  }
+
+  function confirmarCancelamento() {
     resetListas();
     setModoEdicao(false);
     setPronto(false);
@@ -325,7 +349,7 @@ export default function PlanoCiclo(props) {
     });
   }
 
-  function salvarPlanoCiclo() {
+  function salvarPlanoCiclo(navegarParaPlanejamento = false) {
     if (!listaMatrizSelecionda.length) {
       erro('Selecione uma opção ou mais em Matriz de saberes');
       return;
@@ -352,7 +376,11 @@ export default function PlanoCiclo(props) {
       () => {
         console.log(params);
         sucesso('Suas informações foram salvas com sucesso.');
-        onClickCancelar();
+        if (navegarParaPlanejamento) {
+          history.push('/');
+        } else {
+          confirmarCancelamento();
+        }
       },
       e => {
         erro(`Erro: ${e.response.data.mensagens[0]}`);
@@ -365,6 +393,12 @@ export default function PlanoCiclo(props) {
 
   return (
     <>
+      {/* <ControleEstado
+        when={modoEdicao}
+        confirmar={url => history.push(url)}
+        cancelar={() => false}
+        bloquearNavegacao={() => modoEdicao}
+      /> */}
       <div className="col-md-12">
         {notificacoes.alertas.map(alerta => (
           <Alert alerta={alerta} key={alerta.id} />
