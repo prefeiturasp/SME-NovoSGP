@@ -1,4 +1,4 @@
-CREATE TABLE IF NOT EXISTS public.tipo_ciclo
+ï»¿CREATE TABLE IF NOT EXISTS public.tipo_ciclo
 (
     id bigint NOT NULL,
     descricao character varying COLLATE pg_catalog."default" NOT NULL,
@@ -41,7 +41,7 @@ TABLESPACE pg_default;
 ALTER TABLE public.tipo_ciclo_ano
     OWNER to postgres;
 
-insert into tipo_ciclo (id,descricao,criado_em,criado_por, criado_rf) values(1,'Alfabetização',now(),'Carga inicial','Carga inicial');
+insert into tipo_ciclo (id,descricao,criado_em,criado_por, criado_rf) values(1,'AlfabetizaÃ§Ã£o',now(),'Carga inicial','Carga inicial');
 insert into tipo_ciclo (id,descricao,criado_em,criado_por, criado_rf) values(2,'Interdisciplinar',now(),'Carga inicial','Carga inicial');
 insert into tipo_ciclo (id,descricao,criado_em,criado_por, criado_rf) values(3,'Autoral',now(),'Carga inicial','Carga inicial');
 
