@@ -1,6 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using SME.SGP.Api.Filtros;
 using SME.SGP.Aplicacao;
+using SME.SGP.Dto;
+using System.Collections.Generic;
 
 namespace SME.SGP.Api.Controllers
 {
@@ -17,6 +19,8 @@ namespace SME.SGP.Api.Controllers
         }
 
         [HttpGet]
+        [ProducesResponseType(typeof(IEnumerable<ObjetivoDesenvolvimentoDto>), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         public IActionResult Get()
         {
             return Ok(consultasObjetivoDesenvolvimento.Listar());

@@ -1,26 +1,26 @@
-﻿using SME.SGP.Dto;
+﻿using SME.SGP.Dominio.Interfaces;
+using SME.SGP.Dto;
 using System.Collections.Generic;
 
 namespace SME.SGP.Aplicacao
 {
     public class ConsultasCiclo : IConsultasCiclo
     {
+        private readonly IRepositorioCiclo repositorioCiclo;
+
+        public ConsultasCiclo(IRepositorioCiclo repositorioCiclo)
+        {
+            this.repositorioCiclo = repositorioCiclo ?? throw new System.ArgumentNullException(nameof(repositorioCiclo));
+        }
+
         public IEnumerable<CicloDto> Listar(IEnumerable<int> idsTurmas)
         {
-            //TODO obter lista de ciclos da API EOL
-            return new List<CicloDto>
-            {
-                new CicloDto()
-                {
-                    Descricao="Alfabetização",
-                    Id=1
-                },
-                new CicloDto()
-                {
-                    Descricao="Interdisciplinar",
-                    Id=2
-                }
-            };
+            return repositorioCiclo.ObterCiclosPorTurma(idsTurmas);
+        }
+
+        public CicloDto Selecionar(int ano)
+        {
+            return repositorioCiclo.ObterCicloPorAno(ano);
         }
     }
 }

@@ -8,6 +8,8 @@ criado_em timestamp not null,
 criado_por varchar (200) not null,
 alterado_em timestamp null,
 alterado_por varchar (200) null,
+criado_rf varchar(200) not null,
+alterado_rf varchar(200) null,
 constraint plano_ciclo_pk primary key (id),
 constraint plano_ciclo_un unique (ano,
 ciclo_id,
@@ -19,6 +21,8 @@ criado_em timestamp not null,
 criado_por varchar (200) not null,
 alterado_em timestamp null,
 alterado_por varchar (200) null,
+criado_rf varchar(200) not null,
+alterado_rf varchar(200) null,
 constraint matriz_saber_pk primary key (id) );
 
 create table if not exists public.matriz_saber_plano ( id int8 not null generated always as identity,
@@ -28,6 +32,8 @@ criado_em timestamp not null,
 criado_por varchar (200) not null,
 alterado_em timestamp null,
 alterado_por varchar (200) null,
+criado_rf varchar(200) not null,
+alterado_rf varchar(200) null,
 constraint matriz_saber_plano_pk primary key (id),
 constraint matriz_saber_plano_un unique (plano_id,
 matriz_id) );
@@ -46,6 +52,8 @@ criado_em timestamp not null,
 criado_por varchar (200) not null,
 alterado_em timestamp null,
 alterado_por varchar (200) null,
+criado_rf varchar(200) not null,
+alterado_rf varchar(200) null,
 constraint objetivo_desenvolvimento_pk primary key (id) );
 
 create table if not exists public.objetivo_desenvolvimento_plano ( id int8 not null generated always as identity,
@@ -55,6 +63,8 @@ criado_em timestamp not null,
 criado_por varchar (200) not null,
 alterado_em timestamp null,
 alterado_por varchar (200) null,
+criado_rf varchar(200) not null,
+alterado_rf varchar(200) null,
 constraint objetivo_desenvolvimento_plano_pk primary key (id),
 constraint objetivo_desenvolvimento_un unique (plano_id,
 objetivo_desenvolvimento_id) );
@@ -75,9 +85,9 @@ alter table if exists public.objetivo_desenvolvimento_plano add constraint plano
                     */
 insert
 	into
-	public.matriz_saber (descricao,criado_em,criado_por)
+	public.matriz_saber (descricao,criado_em,criado_por, criado_rf)
 select
-	'Pensamento Científico, Crítico e Criativo',now(),'Carga Inicial'
+	'Pensamento Científico, Crítico e Criativo',now(),'Carga Inicial','Carga Inicial'
 where
 	not exists(
 	select
@@ -89,9 +99,9 @@ where
 
 insert
 	into
-	public.matriz_saber (descricao,criado_em,criado_por)
+	public.matriz_saber (descricao,criado_em,criado_por,criado_rf)
 select
-	'Resolução de Problemas',now(),'Carga Inicial'
+	'Resolução de Problemas',now(),'Carga Inicial','Carga Inicial'
 where
 	not exists(
 	select
@@ -103,9 +113,9 @@ where
 
 insert
 	into
-	public.matriz_saber (descricao,criado_em,criado_por)
+	public.matriz_saber (descricao,criado_em,criado_por,criado_rf)
 select
-	'Comunicação',now(),'Carga Inicial'
+	'Comunicação',now(),'Carga Inicial','Carga Inicial'
 where
 	not exists(
 	select
@@ -117,9 +127,9 @@ where
 
 insert
 	into
-	public.matriz_saber (descricao,criado_em,criado_por)
+	public.matriz_saber (descricao,criado_em,criado_por,criado_rf)
 select
-	'Autoconhecimento e Autocuidado',now(),'Carga Inicial'
+	'Autoconhecimento e Autocuidado',now(),'Carga Inicial','Carga Inicial'
 where
 	not exists(
 	select
@@ -131,9 +141,9 @@ where
 
 insert
 	into
-	public.matriz_saber (descricao,criado_em,criado_por)
+	public.matriz_saber (descricao,criado_em,criado_por,criado_rf)
 select
-	'Autonomia e Determinação',now(),'Carga Inicial'
+	'Autonomia e Determinação',now(),'Carga Inicial','Carga Inicial'
 where
 	not exists(
 	select
@@ -145,9 +155,9 @@ where
 
 insert
 	into
-	public.matriz_saber (descricao,criado_em,criado_por)
+	public.matriz_saber (descricao,criado_em,criado_por,criado_rf)
 select
-	'Abertura à Diversidade',now(),'Carga Inicial'
+	'Abertura à Diversidade',now(),'Carga Inicial','Carga Inicial'
 where
 	not exists(
 	select
@@ -159,9 +169,9 @@ where
 
 insert
 	into
-	public.matriz_saber (descricao,criado_em,criado_por)
+	public.matriz_saber (descricao,criado_em,criado_por,criado_rf)
 select
-	'Resposabilidade e Participação',now(),'Carga Inicial'
+	'Resposabilidade e Participação',now(),'Carga Inicial','Carga Inicial'
 where
 	not exists(
 	select
@@ -173,9 +183,9 @@ where
 
 insert
 	into
-	public.matriz_saber (descricao,criado_em,criado_por)
+	public.matriz_saber (descricao,criado_em,criado_por,criado_rf)
 select
-	'Empatia e Colaboração',now(),'Carga Inicial'
+	'Empatia e Colaboração',now(),'Carga Inicial','Carga Inicial'
 where
 	not exists(
 	select
@@ -187,9 +197,9 @@ where
 
 insert
 	into
-	public.matriz_saber (descricao,criado_em,criado_por)
+	public.matriz_saber (descricao,criado_em,criado_por,criado_rf)
 select
-	'Repertório Cultural',now(),'Carga Inicial'
+	'Repertório Cultural',now(),'Carga Inicial','Carga Inicial'
 where
 	not exists(
 	select
@@ -207,9 +217,9 @@ where
                     */
 insert
 	into
-	public.objetivo_desenvolvimento (descricao,criado_em,criado_por)
+	public.objetivo_desenvolvimento (descricao,criado_em,criado_por,criado_rf)
 select
-	'Erradicação da Pobreza',now(),'Carga Inicial'
+	'Erradicação da Pobreza',now(),'Carga Inicial','Carga Inicial'
 where
 	not exists(
 	select
@@ -221,9 +231,9 @@ where
 
 insert
 	into
-	public.objetivo_desenvolvimento (descricao,criado_em,criado_por)
+	public.objetivo_desenvolvimento (descricao,criado_em,criado_por,criado_rf)
 select
-	'Fome zero e agricultura sustentável',now(),'Carga Inicial'
+	'Fome zero e agricultura sustentável',now(),'Carga Inicial','Carga Inicial'
 where
 	not exists(
 	select
@@ -235,9 +245,9 @@ where
 
 insert
 	into
-	public.objetivo_desenvolvimento (descricao,criado_em,criado_por)
+	public.objetivo_desenvolvimento (descricao,criado_em,criado_por,criado_rf)
 select
-	'Saúde e Bem Estar',now(),'Carga Inicial'
+	'Saúde e Bem Estar',now(),'Carga Inicial','Carga Inicial'
 where
 	not exists(
 	select
@@ -247,13 +257,12 @@ where
 	where
 		descricao = 'Saúde e Bem Estar' );
 
-;
 
 insert
 	into
-	public.objetivo_desenvolvimento (descricao,criado_em,criado_por)
+	public.objetivo_desenvolvimento (descricao,criado_em,criado_por,criado_rf)
 select
-	'Educação de Qualidade',now(),'Carga Inicial'
+	'Educação de Qualidade',now(),'Carga Inicial','Carga Inicial'
 where
 	not exists(
 	select
@@ -265,9 +274,9 @@ where
 
 insert
 	into
-	public.objetivo_desenvolvimento (descricao,criado_em,criado_por)
+	public.objetivo_desenvolvimento (descricao,criado_em,criado_por,criado_rf)
 select
-	'Igualdade de Gênero',now(),'Carga Inicial'
+	'Igualdade de Gênero',now(),'Carga Inicial','Carga Inicial'
 where
 	not exists(
 	select
@@ -279,9 +288,9 @@ where
 
 insert
 	into
-	public.objetivo_desenvolvimento (descricao,criado_em,criado_por)
+	public.objetivo_desenvolvimento (descricao,criado_em,criado_por,criado_rf)
 select
-	'Água Potável e Saneamento',now(),'Carga Inicial'
+	'Água Potável e Saneamento',now(),'Carga Inicial','Carga Inicial'
 where
 	not exists(
 	select
@@ -293,9 +302,9 @@ where
 
 insert
 	into
-	public.objetivo_desenvolvimento (descricao,criado_em,criado_por)
+	public.objetivo_desenvolvimento (descricao,criado_em,criado_por,criado_rf)
 select
-	'Energia Limpa e Acessível',now(),'Carga Inicial'
+	'Energia Limpa e Acessível',now(),'Carga Inicial','Carga Inicial'
 where
 	not exists(
 	select
@@ -307,9 +316,9 @@ where
 
 insert
 	into
-	public.objetivo_desenvolvimento (descricao,criado_em,criado_por)
+	public.objetivo_desenvolvimento (descricao,criado_em,criado_por,criado_rf)
 select
-	'Trabalho decente e crescimento econômico',now(),'Carga Inicial'
+	'Trabalho decente e crescimento econômico',now(),'Carga Inicial','Carga Inicial'
 where
 	not exists(
 	select
@@ -321,9 +330,9 @@ where
 
 insert
 	into
-	public.objetivo_desenvolvimento (descricao,criado_em,criado_por)
+	public.objetivo_desenvolvimento (descricao,criado_em,criado_por,criado_rf)
 select
-	'Indústria, inovação e infraestrutura',now(),'Carga Inicial'
+	'Indústria, inovação e infraestrutura',now(),'Carga Inicial','Carga Inicial'
 where
 	not exists(
 	select
@@ -335,9 +344,9 @@ where
 
 insert
 	into
-	public.objetivo_desenvolvimento (descricao,criado_em,criado_por)
+	public.objetivo_desenvolvimento (descricao,criado_em,criado_por,criado_rf)
 select
-	'Redução das desigualdades',now(),'Carga Inicial'
+	'Redução das desigualdades',now(),'Carga Inicial','Carga Inicial'
 where
 	not exists(
 	select
@@ -349,9 +358,9 @@ where
 
 insert
 	into
-	public.objetivo_desenvolvimento (descricao,criado_em,criado_por)
+	public.objetivo_desenvolvimento (descricao,criado_em,criado_por,criado_rf)
 select
-	'Cidades e comunidades sustentáveis',now(),'Carga Inicial'
+	'Cidades e comunidades sustentáveis',now(),'Carga Inicial','Carga Inicial'
 where
 	not exists(
 	select
@@ -363,9 +372,9 @@ where
 
 insert
 	into
-	public.objetivo_desenvolvimento (descricao,criado_em,criado_por)
+	public.objetivo_desenvolvimento (descricao,criado_em,criado_por,criado_rf)
 select
-	'Consumo e produção responsáveis',now(),'Carga Inicial'
+	'Consumo e produção responsáveis',now(),'Carga Inicial','Carga Inicial'
 where
 	not exists(
 	select
@@ -377,9 +386,9 @@ where
 
 insert
 	into
-	public.objetivo_desenvolvimento (descricao,criado_em,criado_por)
+	public.objetivo_desenvolvimento (descricao,criado_em,criado_por,criado_rf)
 select
-	'Ação contra a mudança global do clima',now(),'Carga Inicial'
+	'Ação contra a mudança global do clima',now(),'Carga Inicial','Carga Inicial'
 where
 	not exists(
 	select
@@ -391,9 +400,9 @@ where
 
 insert
 	into
-	public.objetivo_desenvolvimento (descricao,criado_em,criado_por)
+	public.objetivo_desenvolvimento (descricao,criado_em,criado_por,criado_rf)
 select
-	'Vida na água',now(),'Carga Inicial'
+	'Vida na água',now(),'Carga Inicial','Carga Inicial'
 where
 	not exists(
 	select
@@ -405,9 +414,9 @@ where
 
 insert
 	into
-	public.objetivo_desenvolvimento (descricao,criado_em,criado_por)
+	public.objetivo_desenvolvimento (descricao,criado_em,criado_por,criado_rf)
 select
-	'Vida terrestre',now(),'Carga Inicial'
+	'Vida terrestre',now(),'Carga Inicial','Carga Inicial'
 where
 	not exists(
 	select
@@ -419,9 +428,9 @@ where
 
 insert
 	into
-	public.objetivo_desenvolvimento (descricao,criado_em,criado_por)
+	public.objetivo_desenvolvimento (descricao,criado_em,criado_por,criado_rf)
 select
-	'Paz, justiça e instituições eficazes',now(),'Carga Inicial'
+	'Paz, justiça e instituições eficazes',now(),'Carga Inicial','Carga Inicial'
 where
 	not exists(
 	select
@@ -433,9 +442,9 @@ where
 
 insert
 	into
-	public.objetivo_desenvolvimento (descricao,criado_em,criado_por)
+	public.objetivo_desenvolvimento (descricao,criado_em,criado_por,criado_rf)
 select
-	'Parcerias e meios de implementação',now(),'Carga Inicial'
+	'Parcerias e meios de implementação',now(),'Carga Inicial','Carga Inicial'
 where
 	not exists(
 	select

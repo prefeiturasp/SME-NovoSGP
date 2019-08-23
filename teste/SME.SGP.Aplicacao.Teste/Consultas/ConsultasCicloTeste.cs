@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using Moq;
+using SME.SGP.Dominio.Interfaces;
 using Xunit;
 
 namespace SME.SGP.Aplicacao.Teste.Consultas
@@ -6,17 +7,20 @@ namespace SME.SGP.Aplicacao.Teste.Consultas
     public class ConsultasCicloTeste
     {
         private readonly ConsultasCiclo consultasCiclo;
+        private readonly Mock<IRepositorioCiclo> repositorioCiclo;
 
         public ConsultasCicloTeste()
         {
-            consultasCiclo = new ConsultasCiclo();
+            repositorioCiclo = new Mock<IRepositorioCiclo>();
+
+            consultasCiclo = new ConsultasCiclo(repositorioCiclo.Object);
         }
 
-        [Fact(DisplayName = "DeveObterCicloPorTurmas")]
+        [Fact(DisplayName = "DeveObterCicloPorAno")]
         public void DeveObterCicloPorTurmas()
         {
-            consultasCiclo.Listar(new List<int>() { 1, 2 });
-            Assert.True(true);
+            consultasCiclo.Selecionar(1);
+            repositorioCiclo.Verify(c => c.ObterCicloPorAno(1), Times.Once);
         }
     }
 }
