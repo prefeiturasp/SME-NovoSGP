@@ -40,8 +40,11 @@ namespace SME.SGP.Integracao.Teste
             }
             catch (Exception ex)
             {
-                throw new Exception(ex.Message);
+                if (runner == null)
+                    runner.Dispose();
+                throw new Exception(ex.Message);                
             }
+           
         }
 
         public HttpClient _clientApi { get; }
