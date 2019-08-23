@@ -1,96 +1,22 @@
 import * as moment from 'moment';
 import React, { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
-import styled from 'styled-components';
+import {
+  BtnLink,
+  ListaItens,
+  Badge,
+  TextArea,
+  InseridoAlterado,
+} from './planoCiclo.css';
 
 import Alert from '../../../componentes/alert';
 import Button from '../../../componentes/button';
-import { Base, Colors } from '../../../componentes/colors';
+import { Colors } from '../../../componentes/colors';
 import SelectComponent from '../../../componentes/select';
 import { erro, sucesso, confirmacao } from '../../../servicos/alertas';
 // import ControleEstado from '../../../componentes/controleEstado';
 import api from '../../../servicos/api';
 import history from '../../../servicos/history';
-
-const BtnLink = styled.div`
-  color: #686868;
-  font-family: Roboto, FontAwesome;
-  font-weight: bold;
-  font-style: normal;
-  font-stretch: normal;
-  line-height: normal;
-  cursor: pointer;
-  i {
-    background-color: ${Base.Roxo};
-    border-radius: 3px;
-    color: white;
-    font-size: 8px;
-    padding: 2px;
-    margin-left: 3px;
-    position: absolute;
-    margin-top: 3px;
-  }
-`;
-
-const ListaItens = styled.div`
-  ul {
-    list-style: none;
-    columns: 2;
-    -webkit-columns: 2;
-    -moz-columns: 2;
-  }
-
-  li {
-    margin-bottom: 5px;
-  }
-
-  font-size: 12px;
-  color: #42474a;
-
-  .btn-li-item {
-    width: 30px;
-    height: 30px;
-    border: solid 0.8px ${Base.AzulAnakiwa};
-    display: inline-block;
-    font-weight: bold;
-    margin-right: 5px;
-    text-align: center;
-  }
-
-  .btn-li-item-matriz {
-    border-radius: 50%;
-  }
-
-  .btn-li-item-ods {
-    border-radius: 0.25rem !important;
-  }
-`;
-
-const Badge = styled.span`
-  cursor: pointer;
-  padding-top: 5.5px;
-
-  &[opcao-selecionada='true'] {
-    background: ${Base.AzulAnakiwa} !important;
-  }
-`;
-
-const TextArea = styled.div`
-  textarea {
-    height: 600px !important;
-  }
-`;
-
-const InseridoAlterado = styled.div`
-  object-fit: contain;
-  font-weight: bold;
-  font-style: normal;
-  font-size: 10px;
-  color: #42474a;
-  p {
-    margin: 0px;
-  }
-`;
 
 export default function PlanoCiclo(props) {
   const { match } = props;
@@ -102,21 +28,19 @@ export default function PlanoCiclo(props) {
   const [listaMatriz, setListaMatriz] = useState([]);
   const [listaODS, setListaODS] = useState([]);
   const [listaCiclos, setListaCiclos] = useState([]);
-  let [listaMatrizSelecionda, setListaMatrizSelecionda] = useState([]);
-  let [listaODSSelecionado, setListaODSSelecionado] = useState([]);
   const [cicloSelecionado, setCicloSelecionado] = useState('1');
   const [descricaoCiclo, setDescricaoCiclo] = useState('');
   const [parametrosConsulta, setParametrosConsulta] = useState({ id: 0 });
-
+  const [modoEdicao, setModoEdicao] = useState(false);
+  const [pronto, setPronto] = useState(false);
   const [inseridoAlterado, setInseridoAlterado] = useState({
     alteradoEm: '',
     alteradoPor: '',
     criadoEm: '',
     criadoPor: '',
   });
-  const [modoEdicao, setModoEdicao] = useState(false);
-  const [novoRegistro, setNovoRegistro] = useState(true);
-  const [pronto, setPronto] = useState(false);
+  let [listaMatrizSelecionda, setListaMatrizSelecionda] = useState([]);
+  let [listaODSSelecionado, setListaODSSelecionado] = useState([]);
 
   useEffect(() => {
     function obterSugestaoCiclo() {
@@ -157,7 +81,6 @@ export default function PlanoCiclo(props) {
       escolaId,
     });
     if (ciclo && ciclo.data) {
-      setNovoRegistro(false);
       const alteradoEm = moment(ciclo.data.alteradoEm).format(
         'DD/MM/YYYY HH:mm:ss'
       );
@@ -173,7 +96,6 @@ export default function PlanoCiclo(props) {
       configuraValoresPlanoCiclo(ciclo);
       setPronto(true);
     } else {
-      setNovoRegistro(true);
       setPronto(true);
     }
   }
@@ -245,12 +167,8 @@ export default function PlanoCiclo(props) {
       value
     );
     resetListas();
-    setListaMatrizSelecionda([]);
-    setListaODSSelecionado([]);
-    setDescricaoCiclo('');
     setCicloSelecionado(value);
     setModoEdicao(false);
-    setPronto(false);
     setInseridoAlterado({});
   }
 
@@ -319,10 +237,6 @@ export default function PlanoCiclo(props) {
   function confirmarCancelamento() {
     resetListas();
     setModoEdicao(false);
-    setPronto(false);
-    setListaMatrizSelecionda([]);
-    setListaODSSelecionado([]);
-    setDescricaoCiclo('');
     obterCicloExistente(
       parametrosConsulta.ano,
       parametrosConsulta.escolaId,
@@ -347,9 +261,13 @@ export default function PlanoCiclo(props) {
         target.setAttribute('opcao-selecionada', 'false');
       }
     });
+    setListaMatrizSelecionda([]);
+    setListaODSSelecionado([]);
+    setDescricaoCiclo('');
+    setPronto(false);
   }
 
-  function salvarPlanoCiclo(navegarParaPlanejamento = false) {
+  function salvarPlanoCiclo(navegarParaPlanejamento) {
     if (!listaMatrizSelecionda.length) {
       erro('Selecione uma opção ou mais em Matriz de saberes');
       return;
@@ -445,7 +363,7 @@ export default function PlanoCiclo(props) {
               color={Colors.Roxo}
               border
               bold
-              onClick={salvarPlanoCiclo}
+              onClick={() => salvarPlanoCiclo(false)}
               disabled={!modoEdicao}
             />
           </div>
