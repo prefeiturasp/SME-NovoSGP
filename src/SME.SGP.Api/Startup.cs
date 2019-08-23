@@ -7,9 +7,11 @@ using Microsoft.Extensions.DependencyInjection;
 using Prometheus;
 using SME.SGP.Api.Filtros;
 using SME.SGP.Api.Middlewares;
+using SME.SGP.Aplicacao.Integracoes;
 using SME.SGP.Dados.Mapeamentos;
 using SME.SGP.IoC;
 using Swashbuckle.AspNetCore.Swagger;
+using System;
 
 namespace SME.SGP.Api
 {
@@ -78,6 +80,12 @@ namespace SME.SGP.Api
             });
 
             services.AddHttpContextAccessor();
+
+            services.AddHttpClient<IServicoJurema, ServicoJurema>(c =>
+            {
+                c.BaseAddress = new Uri(Configuration.GetSection("UrlApiJurema").Value);
+                c.DefaultRequestHeaders.Add("Accept", "application/json");
+            });
         }
     }
 }

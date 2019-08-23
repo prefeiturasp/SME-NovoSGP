@@ -11,6 +11,8 @@ namespace SME.SGP.Dados
             Map(c => c.CriadoPor).ToColumn("criado_por");
             Map(c => c.AlteradoEm).ToColumn("alterado_em");
             Map(c => c.AlteradoPor).ToColumn("alterado_por");
+            Map(c => c.AlteradoRF).ToColumn("alterado_rf");
+            Map(c => c.CriadoRF).ToColumn("criado_rf");
         }
     }
 }

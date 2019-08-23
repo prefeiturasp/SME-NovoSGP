@@ -20,6 +20,12 @@ namespace SME.SGP.Dados.Repositorios
             query.AppendLine("select");
             query.AppendLine("	pc.id,");
             query.AppendLine("	pc.descricao,");
+            query.AppendLine("	pc.alterado_em as alteradoem,");
+            query.AppendLine("	pc.alterado_por as alteradopor,");
+            query.AppendLine("	pc.criado_por as criadopor,");
+            query.AppendLine("	pc.criado_em as criadoem,");
+            query.AppendLine("	pc.ciclo_id as CicloId,");
+            query.AppendLine("	pc.ciclo_id as CicloId,");
             query.AppendLine("	string_agg(distinct cast(msp.matriz_id as text), ',') as MatrizesSaber,");
             query.AppendLine("	string_agg(distinct cast(odp.objetivo_desenvolvimento_id as text), ',') as ObjetivosDesenvolvimento");
             query.AppendLine("from");
@@ -33,12 +39,12 @@ namespace SME.SGP.Dados.Repositorios
             query.AppendLine("group by");
             query.AppendLine("  pc.id");
 
-            return database.Conexao().Query<PlanoCicloCompletoDto>(query.ToString(), new { cicloId, ano, escolaId }).SingleOrDefault();
+            return database.Conexao.Query<PlanoCicloCompletoDto>(query.ToString(), new { cicloId, ano, escolaId }).SingleOrDefault();
         }
 
         public bool ObterPlanoCicloPorAnoCicloEEscola(int ano, long cicloId, long escolaId)
         {
-            return database.Conexao().Query<bool>("select 1 from plano_ciclo where ano = @ano and ciclo_id = @cicloId and escola_id = @escolaId", new { ano, cicloId, escolaId }).SingleOrDefault();
+            return database.Conexao.Query<bool>("select 1 from plano_ciclo where ano = @ano and ciclo_id = @cicloId and escola_id = @escolaId", new { ano, cicloId, escolaId }).SingleOrDefault();
         }
     }
 }

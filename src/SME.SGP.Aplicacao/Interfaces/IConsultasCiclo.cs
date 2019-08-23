@@ -6,5 +6,7 @@ namespace SME.SGP.Aplicacao
     public interface IConsultasCiclo
     {
         IEnumerable<CicloDto> Listar(IEnumerable<int> idsTurmas);
+
+        CicloDto Selecionar(int ano);
     }
 }
