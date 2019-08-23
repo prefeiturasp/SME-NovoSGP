@@ -7,7 +7,12 @@ const CardHeader = props => {
   const { indice, children, border, icon, show } = props;
 
   const Header = styled.div`
-    ${border ? `border-left: 8px solid ${Base.AzulBordaCard};` : null}
+    ${border
+      ? `
+      border-top-width: 0px !important;
+      border-bottom-width: 0px !important;
+      border-left: 8px solid ${Base.AzulBordaCard} !important;`
+      : null}
   `;
 
   const Icon = styled.i`
@@ -15,6 +20,8 @@ const CardHeader = props => {
   `;
 
   const Link = styled.a`
+    padding: .5rem .6rem !important;
+
     &:hover {
       background: ${Base.CinzaFundo};
       border-radius: 50%;
@@ -23,6 +30,10 @@ const CardHeader = props => {
     &[aria-expanded='true'] ${Icon} {
       color: ${Base.CinzaMako};
       transform: rotate(180deg);
+    }
+
+    &[aria-expanded='true'] ${Header} {
+      border-bottom-width: 1px !important;
     }
   `;
 
@@ -35,7 +46,7 @@ const CardHeader = props => {
       {children}
       {icon ? (
         <Link
-          className="text-decoration-none ml-auto p-2"
+          className="text-decoration-none ml-auto"
           data-toggle="collapse"
           href={`#${indice}`}
           role="button"
