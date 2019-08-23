@@ -1,7 +1,8 @@
 # SME-NovoSGP-Api
 Este projeto visa servir de backend com recursos Rest para o novo projeto SGP.
 
-[========]
+------------
+
 
 
 Configuração inicial de ambiente de desenvolvimento
