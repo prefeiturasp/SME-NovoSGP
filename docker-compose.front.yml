@@ -17,7 +17,7 @@ services:
     depends_on:
       - "sme-db"
     env_file:
-      - sme-api.env
+      - ./sme-api.env
   sme-db:
     container_name: sme-db
     restart: always
@@ -29,32 +29,14 @@ services:
       POSTGRES_DB: sgp_db
     volumes:
       - postgres-data:/var/lib/postgresql/data
-    networks:
-      - sme-network
   sme-flyway:
     container_name: sme-flyway
     image: boxfuse/flyway:5.2.4
     command: -url=jdbc:postgresql://sme-db:5432/sgp_db?user=postgres&password=postgres -locations='filesystem:/opt/scripts' migrate
     volumes:
-      - ./scripts:/opt/scripts
+      - ../../scripts:/opt/scripts
     depends_on:
-      - "sme-db"
-    networks:
-      - sme-network
-  sme-webclient:
-    container_name: sme-webclient
-    image: sme-webclient
-    build:
-      context: .
-      dockerfile: ./src/SME.SGP.WebClient/Dockerfile
-    ports:
-      - "20001:80"
-    networks:
-      - sme-network
-    depends_on:
-      - "sme-api"
-    env_file:
-      - sme-api.env
+      - sme-db
 networks:
   sme-network:
     driver: bridge
