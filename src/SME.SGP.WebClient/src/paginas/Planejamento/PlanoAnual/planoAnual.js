@@ -5,72 +5,13 @@ import CardCollapse from '../../../componentes/cardCollapse';
 import Grid from '../../../componentes/grid';
 import Button from '../../../componentes/button';
 import TextEditor from '../../../componentes/textEditor';
-import { listarObjetivosAprendizagem } from '../../../servicos/objetivos';
 import { Colors, Base } from '../../../componentes/colors';
 import Seta from '../../../recursos/Seta.svg';
-
-const objetivos = [
-  {
-    id: 1623,
-    year: 'third',
-    code: 'EF03EF01',
-    description:
-      'Vivenciar/experimentar/fruir brincadeiras e jogos do contexto familiar/comunitário, incluindo os de matrizes africanas e indígenas, prezando pelo trabalho coletivo e pelo protagonismo e relacionando os elementos comuns a essas brincadeiras.',
-    curricular_component_id: 3,
-    created_at: '2019-01-09T18:54:00.495Z',
-    updated_at: '2019-01-09T18:54:00.495Z',
-  },
-  {
-    id: 1624,
-    year: 'third',
-    code: 'EF03EF02',
-    description:
-      'Planejar e utilizar estratégias para resolver desafios de brincadeiras e jogos do contexto familiar/comunitário, incluindo os de matrizes africanas e indígenas, com base no reconhecimento das características dessas práticas.',
-    curricular_component_id: 3,
-    created_at: '2019-01-09T18:54:34.206Z',
-    updated_at: '2019-01-09T18:54:34.206Z',
-  },
-  {
-    id: 1625,
-    year: 'third',
-    code: 'EF03EF03',
-    description:
-      'Descrever, por meio de múltiplas linguagens (corporal, oral e escrita e audiovisual), as brincadeiras e jogos regionais e populares de matrizes africanas e indígenas, explicando suas características e a importância desse patrimônio histórico-cultural na preservação das diferentes culturas.',
-    curricular_component_id: 3,
-    created_at: '2019-01-09T18:55:13.424Z',
-    updated_at: '2019-01-10T18:47:34.270Z',
-  },
-  {
-    id: 1626,
-    year: 'third',
-    code: 'EF03EF04',
-    description:
-      'Recriar, individual e coletivamente, brincadeiras e jogos do contexto familiar/comunitário, incluindo os de matrizes africanas e indígenas e demais práticas corporais tematizadas na escola, adequandoas aos espaços.',
-    curricular_component_id: 3,
-    created_at: '2019-01-09T18:55:53.435Z',
-    updated_at: '2019-01-09T18:55:53.435Z',
-  },
-];
-
-function selecionaMateria(event) {
-  event.target.setAttribute(
-    'aria-pressed',
-    event.target.getAttribute('aria-pressed') === 'true' ? 'false' : 'true'
-  );
-
-  listarObjetivosAprendizagem();
-}
-
-function selecionaObjetivo(event) {
-  event.persist();
-  event.target.setAttribute(
-    'aria-pressed',
-    event.target.getAttribute('aria-pressed') === 'true' ? 'false' : 'true'
-  );
-}
+// import { confirmacao } from '../../../servicos/alertas';
+// import Modal from '../../../componentes/modal';
 
 export default function PlanoAnual() {
-  const [bimestres, setBimestres] = useState([
+  const [bimestres] = useState([
     { nome: '1º Bimestre', materias: [] },
     { nome: '2º Bimestre', materias: [] },
     {
@@ -86,9 +27,51 @@ export default function PlanoAnual() {
     { nome: '4º Bimestre', materias: [] },
   ]);
 
-  const [objetivosSelecionados, setObjetivosSelecionados] = useState([
-    { code: 'EF03EF01' },
-    { code: 'EF03EF02' },
+  const [objetivos, setObjetivos] = useState([
+    {
+      id: 1623,
+      year: 'third',
+      code: 'EF03EF01',
+      selected: false,
+      description:
+        'Vivenciar/experimentar/fruir brincadeiras e jogos do contexto familiar/comunitário, incluindo os de matrizes africanas e indígenas, prezando pelo trabalho coletivo e pelo protagonismo e relacionando os elementos comuns a essas brincadeiras.',
+      curricular_component_id: 3,
+      created_at: '2019-01-09T18:54:00.495Z',
+      updated_at: '2019-01-09T18:54:00.495Z',
+    },
+    {
+      id: 1624,
+      year: 'third',
+      code: 'EF03EF02',
+      selected: true,
+      description:
+        'Planejar e utilizar estratégias para resolver desafios de brincadeiras e jogos do contexto familiar/comunitário, incluindo os de matrizes africanas e indígenas, com base no reconhecimento das características dessas práticas.',
+      curricular_component_id: 3,
+      created_at: '2019-01-09T18:54:34.206Z',
+      updated_at: '2019-01-09T18:54:34.206Z',
+    },
+    {
+      id: 1625,
+      year: 'third',
+      code: 'EF03EF03',
+      selected: false,
+      description:
+        'Descrever, por meio de múltiplas linguagens (corporal, oral e escrita e audiovisual), as brincadeiras e jogos regionais e populares de matrizes africanas e indígenas, explicando suas características e a importância desse patrimônio histórico-cultural na preservação das diferentes culturas.',
+      curricular_component_id: 3,
+      created_at: '2019-01-09T18:55:13.424Z',
+      updated_at: '2019-01-10T18:47:34.270Z',
+    },
+    {
+      id: 1626,
+      year: 'third',
+      code: 'EF03EF04',
+      selected: true,
+      description:
+        'Recriar, individual e coletivamente, brincadeiras e jogos do contexto familiar/comunitário, incluindo os de matrizes africanas e indígenas e demais práticas corporais tematizadas na escola, adequandoas aos espaços.',
+      curricular_component_id: 3,
+      created_at: '2019-01-09T18:55:53.435Z',
+      updated_at: '2019-01-09T18:55:53.435Z',
+    },
   ]);
 
   const Badge = styled.button`
@@ -113,6 +96,53 @@ export default function PlanoAnual() {
       background: ${Base.AzulAnakiwa} !important;
     }
   `;
+
+  const selecionaMateria = e => {
+    e.target.setAttribute(
+      'aria-pressed',
+      e.target.getAttribute('aria-pressed') !== 'true'
+    );
+  };
+
+  const selecionaObjetivo = e => {
+    e.persist();
+
+    objetivos[
+      objetivos.findIndex(objetivo => objetivo.code === e.target.innerHTML)
+    ].selected = e.target.getAttribute('aria-pressed') !== 'true';
+
+    setObjetivos([...objetivos]);
+  };
+
+  const removeObjetivoSelecionado = e => {
+    e.persist();
+
+    const indice = objetivos.findIndex(
+      objetivo => objetivo.code === e.target.innerText
+    );
+
+    if (objetivos[indice]) objetivos[indice].selected = false;
+
+    setObjetivos([...objetivos]);
+  };
+
+  // const confirmarCancelamento = () => {};
+
+  const cancelarAlteracoes = () => {
+    // confirmacao(
+    //   'Atenção',
+    //   `Você não salvou as informações
+    //   preenchidas. Deseja realmente cancelar as alterações?`,
+    //   confirmarCancelamento,
+    //   () => true
+    // );
+    // return (
+    //   <Modal
+    //     title="Atenção"
+    //     content="Você não salvou as informações preenchidas. Deseja realmente cancelar as alterações?"
+    //   />
+    // );
+  };
 
   const toolbarOptions = [
     ['bold', 'italic', 'underline'],
@@ -151,6 +181,7 @@ export default function PlanoAnual() {
           border
           bold
           className="mr-3"
+          onClick={cancelarAlteracoes}
         />
         <Button label="Salvar" color={Colors.Roxo} border bold disabled />
       </Grid>
@@ -198,7 +229,7 @@ export default function PlanoAnual() {
                                   <ListItemButton
                                     className="list-group-item d-flex align-items-center font-weight-bold fonte-14"
                                     role="button"
-                                    aria-pressed="false"
+                                    aria-pressed={objetivo.selected && true}
                                     onClick={selecionaObjetivo}
                                     onKeyUp={selecionaObjetivo}
                                   >
@@ -220,22 +251,27 @@ export default function PlanoAnual() {
                       </h6>
                       <div
                         role="group"
-                        aria-label={`${objetivosSelecionados.length} objetivos selecionados`}
+                        aria-label={`${objetivos.length > 0 &&
+                          objetivos.filter(objetivo => objetivo.selected)
+                            .length} objetivos selecionados`}
                       >
-                        {objetivosSelecionados.length > 0
-                          ? objetivosSelecionados.map(selecionado => {
-                              return (
-                                <Button
-                                  key={shortid.generate()}
-                                  label={selecionado.code}
-                                  color={Colors.AzulAnakiwa}
-                                  bold
-                                  steady
-                                  remove
-                                  className="text-dark mt-3 mr-2"
-                                />
-                              );
-                            })
+                        {objetivos.length > 0
+                          ? objetivos
+                              .filter(objetivo => objetivo.selected)
+                              .map(selecionado => {
+                                return (
+                                  <Button
+                                    key={shortid.generate()}
+                                    label={selecionado.code}
+                                    color={Colors.AzulAnakiwa}
+                                    bold
+                                    steady
+                                    remove
+                                    className="text-dark mt-3 mr-2 stretched-link"
+                                    onClick={removeObjetivoSelecionado}
+                                  />
+                                );
+                              })
                           : null}
                       </div>
                       <div className="mt-4">
@@ -292,5 +328,3 @@ export default function PlanoAnual() {
     </>
   );
 }
-
-// export default PlanoAnual;
