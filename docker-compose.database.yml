@@ -1,7 +1,7 @@
 version: "3.1"
 
 volumes:
-  postgres-data: {} 
+  postgres-data: {}
 
 services:
   sme-db:
@@ -20,6 +20,6 @@ services:
     image: boxfuse/flyway:5.2.4
     command: -url=jdbc:postgresql://sme-db:5432/sgp_db?user=postgres&password=postgres -locations='filesystem:/opt/scripts' migrate
     volumes:
-      - ../../scripts:/opt/scripts
+      - ./scripts:/opt/scripts
     depends_on:
       - sme-db
