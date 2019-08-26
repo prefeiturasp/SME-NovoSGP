@@ -1,4 +1,5 @@
-﻿using Dommel;
+﻿using Dapper.FluentMap;
+using Dommel;
 using SME.SGP.Dados.Contexto;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
@@ -29,6 +30,13 @@ namespace SME.SGP.Dados.Repositorios
         public virtual void Remover(long id)
         {
             var entidade = database.Conexao.Get<T>(id);
+            database.Conexao.Delete(entidade);
+            Auditar(entidade.Id, "E");
+        }
+
+        public virtual void Remover(T entidade)
+        {
+            FluentMapper.EntityMaps.(typeof(T),)
             database.Conexao.Delete(entidade);
             Auditar(entidade.Id, "E");
         }

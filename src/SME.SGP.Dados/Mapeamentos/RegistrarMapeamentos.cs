@@ -1,5 +1,6 @@
 ﻿using Dapper.FluentMap;
 using Dapper.FluentMap.Dommel;
+using SME.SGP.Dominio;
 
 namespace SME.SGP.Dados.Mapeamentos
 {
@@ -9,6 +10,8 @@ namespace SME.SGP.Dados.Mapeamentos
         {
             FluentMapper.Initialize(config =>
            {
+               config.AddConvention<UnderlineConvention>()
+               .ForEntitiesInAssembly(typeof(EntidadeBase).Assembly);
                config.AddMap(new PlanoCicloMap());
                config.AddMap(new ObjetivoDesenvolvimentoMap());
                config.AddMap(new ObjetivoDesenvolvimentoPlanoMap());
