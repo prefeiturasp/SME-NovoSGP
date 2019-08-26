@@ -7,8 +7,7 @@ import Button from '../../../componentes/button';
 import TextEditor from '../../../componentes/textEditor';
 import { Colors, Base } from '../../../componentes/colors';
 import Seta from '../../../recursos/Seta.svg';
-// import { confirmacao } from '../../../servicos/alertas';
-// import Modal from '../../../componentes/modal';
+import { confirmacao } from '../../../servicos/alertas';
 
 export default function PlanoAnual() {
   const [bimestres] = useState([
@@ -126,22 +125,16 @@ export default function PlanoAnual() {
     setObjetivos([...objetivos]);
   };
 
-  // const confirmarCancelamento = () => {};
+  const confirmarCancelamento = () => {};
 
   const cancelarAlteracoes = () => {
-    // confirmacao(
-    //   'Atenção',
-    //   `Você não salvou as informações
-    //   preenchidas. Deseja realmente cancelar as alterações?`,
-    //   confirmarCancelamento,
-    //   () => true
-    // );
-    // return (
-    //   <Modal
-    //     title="Atenção"
-    //     content="Você não salvou as informações preenchidas. Deseja realmente cancelar as alterações?"
-    //   />
-    // );
+    confirmacao(
+      'Atenção',
+      `Você não salvou as informações
+      preenchidas. Deseja realmente cancelar as alterações?`,
+      confirmarCancelamento,
+      () => true
+    );
   };
 
   const toolbarOptions = [
