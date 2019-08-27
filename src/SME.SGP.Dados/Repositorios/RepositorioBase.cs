@@ -33,6 +33,12 @@ namespace SME.SGP.Dados.Repositorios
             Auditar(entidade.Id, "E");
         }
 
+        public virtual void Remover(T entidade)
+        {
+            database.Conexao.Delete(entidade);
+            Auditar(entidade.Id, "E");
+        }
+
         public virtual long Salvar(T entidade)
         {
             if (entidade.Id > 0)
