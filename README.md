@@ -21,3 +21,4 @@ No projeto de Front (src/SME.SGP.WebClient), deverá ser criado um arquivo chama
 Executar o comando na **raiz da solução**
 
 `docker-compose up --build`
+
