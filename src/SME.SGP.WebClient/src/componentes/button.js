@@ -88,7 +88,7 @@ Button.propTypes = {
 
 Button.defaultProps = {
   type: 'button',
-  style: '',
+  style: 'primary',
   color: Base.Roxo,
   border: false,
   bold: false,

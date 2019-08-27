@@ -1,4 +1,5 @@
 import React from 'react';
+import Filtro from './filtro';
 
 const Navbar = () => {
   return (
@@ -6,6 +7,7 @@ const Navbar = () => {
       <a className="navbar-brand col-sm-3 col-md-2 mr-0" href="/">
         SGP
       </a>
+      <Filtro />
     </nav>
   );
 };
