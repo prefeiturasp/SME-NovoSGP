@@ -49,6 +49,7 @@ const ModalConfirmacao = props => {
   } = props;
   return (
     <Container
+      onCancel={onConfirmacaoNao}
       title={titulo}
       visible={visivel}
       centered
