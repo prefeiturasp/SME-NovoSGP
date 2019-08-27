@@ -1,19 +1,24 @@
-# SME-NovoSGP-Api
+# SME Novo SGP
 
 Configuração inicial de ambiente de desenvolvimento
 
-**1- Instalar Docker**
+Esta solução contém o projet de [API](https://github.com/prefeiturasp/SME-NovoSGP/tree/master/src/SME.SGP.Api "API") (backend) e [Front](https://github.com/prefeiturasp/SME-NovoSGP/tree/master/src/SME.SGP.WebClient "Front")
 
-**2- DataBase - PostgreSQL**
-- No diretório base, existe o arquivo de docker-compose o qual contém a configuração para executar um postgreSQL local. Para executá-lo, em um prompt de comando, executar: ```
-docker-compose up ```
- 
-**3- Variáveis de ambiente**
-> Informações sensíveis como string de conexão deverão ser mantidas em variáveis de ambiente. 
+Cada projeto contém seu próprio readme e nestes contem instruções para conseguir um ambiente de desenvolvimento local.
 
--  Adicionar nas variáveis de ambiente
-   - *Nome da variável:* ConnectionStrings__SGP-Postgres
-   -  *Valor da variável:*  User ID=postgres;Password=postgres;Host=localhost;Port=5432;Database=sgp_db;Pooling=true;
-   
-   - *Nome da variável:* Sentry__DSN
-   -  *Valor da variável:*  xx;
+Para executar toda a solução em um ambiente local deverá:
+
+**1- Instalar docker**
+
+**2- Configurar variáveis de ambiente**
+
+Acessar o readme do projeto de [Front](https://github.com/prefeiturasp/SME-NovoSGP/tree/master/src/SME.SGP.WebClient "Front") e seguir a configuração de variáveis de ambiente
+
+No projeto de Front (src/SME.SGP.WebClient), deverá ser criado um arquivo chamado .env , baseado no arquivo sample.env
+
+**3- Docker Compose**
+
+Executar o comando na **raiz da solução**
+
+`docker-compose up --build`
+
