@@ -22,6 +22,7 @@ namespace SME.SGP.IoC
         private static void RegistrarComandos(IServiceCollection services)
         {
             services.TryAddScoped<IComandosPlanoCiclo, ComandosPlanoCiclo>();
+            services.TryAddScoped<IComandosPlanoAnual, ComandosPlanoAnual>();
         }
 
         private static void RegistrarConsultas(IServiceCollection services)
@@ -47,6 +48,7 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IRepositorioMatrizSaber, RepositorioMatrizSaber>();
             services.TryAddScoped<IRepositorioObjetivoDesenvolvimento, RepositorioObjetivoDesenvolvimento>();
             services.TryAddScoped<IRepositorioCiclo, RepositorioCiclo>();
+            services.TryAddScoped<IRepositorioPlanoAnual, RepositorioPlanoAnual>();
         }
     }
 }

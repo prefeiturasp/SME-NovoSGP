@@ -1,9 +1,11 @@
-﻿namespace SME.SGP.Dominio.Interfaces
+﻿using SME.SGP.Dto;
+
+namespace SME.SGP.Dominio.Interfaces
 {
     public interface IRepositorioPlanoAnual : IRepositorioBase<PlanoAnual>
     {
-        //PlanoCicloCompletoDto ObterPlanoAnualComMatrizesEObjetivos(int ano, long cicloId, long escolaId);
+        PlanoAnualCompletoDto ObterPorAnoEscolaBimestreETurma(int ano, long escolaId, long turmaId, int bimestre);
 
-        //bool ObterPlanoAnualPorAnoCicloEEscola(int ano, long cicloId, long escolaId);
+        bool ValidarPlanoExistentePorAnoEscolaTurmaEBimestre(int ano, long escolaId, long turmaId, int bimestre);
     }
 }
