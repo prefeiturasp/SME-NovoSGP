@@ -1,13 +1,8 @@
 import * as moment from 'moment';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { useSelector } from 'react-redux';
-import {
-  BtnLink,
-  ListaItens,
-  Badge,
-  TextArea,
-  InseridoAlterado,
-} from './planoCiclo.css';
+import { BtnLink, ListaItens, Badge, Container, InseridoAlterado, } from './planoCiclo.css';
+import TextEditor from '../../../componentes/textEditor';
 
 import Alert from '../../../componentes/alert';
 import Button from '../../../componentes/button';
@@ -24,6 +19,7 @@ export default function PlanoCiclo(props) {
   const urlPrefeitura = 'https://curriculo.prefeitura.sp.gov.br';
   const urlMatrizSaberes = `${urlPrefeitura}/matriz-de-saberes`;
   const urlODS = `${urlPrefeitura}/ods`;
+  const textEditorRef = useRef(null);
 
   const [listaMatriz, setListaMatriz] = useState([]);
   const [listaODS, setListaODS] = useState([]);
@@ -172,8 +168,10 @@ export default function PlanoCiclo(props) {
     setInseridoAlterado({});
   }
 
-  function onChangeTextEditor(event) {
-    setDescricaoCiclo(event.target.value);
+  function onChangeTextEditor(value) {
+    setDescricaoCiclo(value);
+    console.log(value);
+    console.log(descricaoCiclo);
     if (pronto) {
       setModoEdicao(true);
     }
@@ -208,6 +206,7 @@ export default function PlanoCiclo(props) {
   }
 
   function onClickVoltar() {
+
     if (modoEdicao) {
       confirmacao(
         'Atenção',
@@ -268,6 +267,9 @@ export default function PlanoCiclo(props) {
   }
 
   function salvarPlanoCiclo(navegarParaPlanejamento) {
+
+    textEditorRef.current.blur();
+
     if (!listaMatrizSelecionda.length) {
       erro('Selecione uma opção ou mais em Matriz de saberes');
       return;
@@ -310,7 +312,7 @@ export default function PlanoCiclo(props) {
   const notificacoes = useSelector(state => state.notificacoes);
 
   return (
-    <>
+    <Container>
       {/* <ControleEstado
         when={modoEdicao}
         confirmar={url => history.push(url)}
@@ -385,13 +387,7 @@ export default function PlanoCiclo(props) {
 
         <div className="row mb-3">
           <div className="col-md-6">
-            <TextArea>
-              <textarea
-                onChange={onChangeTextEditor}
-                value={descricaoCiclo}
-                className="form-control"
-              />
-            </TextArea>
+            <TextEditor ref={textEditorRef} id="textEditor" height="350px" maxHeight="calc(100vh * .7)" onBlur={onChangeTextEditor} value={descricaoCiclo} />
             <InseridoAlterado>
               {inseridoAlterado.criadoPor && inseridoAlterado.criadoEm ? (
                 <p>
@@ -399,8 +395,8 @@ export default function PlanoCiclo(props) {
                   {inseridoAlterado.criadoEm}
                 </p>
               ) : (
-                ''
-              )}
+                  ''
+                )}
 
               {inseridoAlterado.alteradoPor && inseridoAlterado.alteradoEm ? (
                 <p>
@@ -408,8 +404,8 @@ export default function PlanoCiclo(props) {
                   {inseridoAlterado.alteradoEm}
                 </p>
               ) : (
-                ''
-              )}
+                  ''
+                )}
             </InseridoAlterado>
           </div>
           <div className="col-md-6 btn-link-plano-ciclo">
@@ -480,6 +476,6 @@ export default function PlanoCiclo(props) {
           </div>
         </div>
       </div>
-    </>
+    </Container>
   );
 }
