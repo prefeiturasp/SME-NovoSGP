@@ -54,7 +54,7 @@ const Button = props => {
     <Btn
       hidden={hidden}
       type={type}
-      className={`btn btn-${style} ${className} position-relative py-2 fonte-14`}
+      className={`btn btn-${style} ${className} position-relative py-2 px-3 fonte-14`}
       onClick={onClick}
       disabled={disabled}
     >
@@ -88,13 +88,17 @@ Button.propTypes = {
 
 Button.defaultProps = {
   type: 'button',
-  style: 'primary',
+  style: '',
+  color: Base.Roxo,
   border: false,
   bold: false,
   steady: false,
   remove: false,
   className: '',
+  onClick: () => {},
   disabled: false,
+  icon: '',
+  label: '',
   hidden: false,
 };
 

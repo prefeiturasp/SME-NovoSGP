@@ -203,7 +203,7 @@ export default function PlanoAnual() {
                                   onClick={selecionaMateria}
                                   aria-pressed={false}
                                   key={shortid.generate()}
-                                  className="badge badge-pill border text-dark bg-white font-weight-light p-2 mt-3 mr-2"
+                                  className="badge badge-pill border text-dark bg-white font-weight-light px-2 py-1 mt-3 mr-2"
                                 >
                                   {materia.materia}
                                 </Badge>
