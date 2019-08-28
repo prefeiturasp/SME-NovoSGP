@@ -12,8 +12,7 @@ namespace SME.SGP.Api.Controllers
     {
         private readonly IComandosPlanoAnual comandosPlanoAnual;
 
-        public PlanoAnualController(IComandosPlanoAnual comandosPlanoAnual,
-                                    IConsultasPlanoCiclo consultasPlanoCiclo)
+        public PlanoAnualController(IComandosPlanoAnual comandosPlanoAnual)
         {
             this.comandosPlanoAnual = comandosPlanoAnual ?? throw new System.ArgumentNullException(nameof(comandosPlanoAnual));
         }
