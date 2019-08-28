@@ -10,6 +10,7 @@ import Alert from './componentes/alert';
 import GlobalStyle from './estilos/global';
 import Navbar from './componentes-sgp/navbar';
 import Sidebar from './componentes-sgp/sidebar';
+import Sider from './componentes-sgp/sider';
 import { store } from './redux';
 
 const notificacoes = { alertas: [] };
@@ -21,7 +22,8 @@ function App() {
         <Navbar />
         <div className="container-fluid h-100">
           <div className="row h-100">
-            <Sidebar />
+            <Sider/>
+            {/* <Sidebar /> */}
             <main role="main" className="col-md-9 ml-sm-auto col-lg-10">
               <div className="row shadow py-3 px-2 mx-2 my-4 bg-white">
                 <Rotas />
