@@ -6,14 +6,14 @@ namespace SME.SGP.Dto
 {
     public class PlanoAnualCompletoDto : PlanoAnualDto
     {
-        //public long Ano { get; set; }
-        //public long Bimestre { get; set; }
-        //public string Descricao { get; set; }
-        //public long EscolaId { get; set; }
-        //public long Id { get; set; }
-        public IEnumerable<long> IdsObjetivosAprendizagem => ObjetivosAprendizagem?.Split(',').Select(c => Convert.ToInt64(c));
+        public DateTime AlteradoEm { get; set; }
+        public string AlteradoPor { get; set; }
+        public string AlteradoRF { get; set; }
+        public DateTime CriadoEm { get; set; }
+        public string CriadoPor { get; set; }
+        public string CriadoRF { get; set; }
+        public new IEnumerable<long> IdsObjetivosAprendizagem => ObjetivosAprendizagem?.Split(',').Select(c => Convert.ToInt64(c));
 
-        //public long TurmaId { get; set; }
         private string ObjetivosAprendizagem { get; set; }
     }
 }
