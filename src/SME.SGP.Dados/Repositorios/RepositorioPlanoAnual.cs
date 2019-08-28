@@ -53,6 +53,7 @@ namespace SME.SGP.Dados.Repositorios
             query.AppendLine("	pa.id");
 
             return database.Conexao.Query<PlanoAnualCompletoDto>(query.ToString(), new { ano, escolaId, turmaId, bimestre }).SingleOrDefault();
+            //return database.Conexao.Query<PlanoAnualCompletoDto>("select * from plano_anual where ano = @ano and escola_id = @escolaId and bimestre = @bimestre and turma_id = @turmaId", new { ano, escolaId, turmaId, bimestre }).SingleOrDefault();
         }
 
         public bool ValidarPlanoExistentePorAnoEscolaTurmaEBimestre(int ano, long escolaId, long turmaId, int bimestre)
