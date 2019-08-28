@@ -6,7 +6,6 @@ import { useSelector } from 'react-redux';
 import Rotas from './rotas/rotas';
 import history from './servicos/history';
 import Alert from './componentes/alert';
-
 import GlobalStyle from './estilos/global';
 import Navbar from './componentes-sgp/navbar';
 import Sidebar from './componentes-sgp/sidebar';
@@ -23,9 +22,7 @@ function App() {
           <div className="row h-100">
             <Sidebar />
             <main role="main" className="col-md-9 ml-sm-auto col-lg-10">
-              <div className="row shadow py-3 px-2 mx-2 my-4 bg-white">
-                <Rotas />
-              </div>
+              <Rotas />
             </main>
           </div>
         </div>
