@@ -18,6 +18,7 @@ namespace SME.SGP.Dados.Mapeamentos
                config.AddMap(new CicloMap());
                config.AddMap(new PlanoAnualMap());
                config.AddMap(new ObjetivoAprendizagemPlanoMap());
+               config.AddMap(new DisciplinaPlanoMap());
                config.ForDommel();
            });
         }
