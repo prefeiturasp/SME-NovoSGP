@@ -168,10 +168,10 @@ export default function PlanoCiclo(props) {
     setInseridoAlterado({});
   }
 
-  function onChangeTextEditor(value) {
+  const onChangeTextEditor = (value) => {
+
     setDescricaoCiclo(value);
-    console.log(value);
-    console.log(descricaoCiclo);
+    
     if (pronto) {
       setModoEdicao(true);
     }
@@ -268,8 +268,6 @@ export default function PlanoCiclo(props) {
 
   function salvarPlanoCiclo(navegarParaPlanejamento) {
 
-    textEditorRef.current.blur();
-
     if (!listaMatrizSelecionda.length) {
       erro('Selecione uma opção ou mais em Matriz de saberes');
       return;
@@ -285,7 +283,7 @@ export default function PlanoCiclo(props) {
     const params = {
       ano: parametrosConsulta.ano,
       cicloId: cicloSelecionado,
-      descricao: descricaoCiclo,
+      descricao: textEditorRef.current.state.value,
       escolaId: parametrosConsulta.escolaId,
       id: parametrosConsulta.id || 0,
       idsMatrizesSaber: listaMatrizSelecionda.map(matriz => matriz.id),
@@ -387,7 +385,7 @@ export default function PlanoCiclo(props) {
 
         <div className="row mb-3">
           <div className="col-md-6">
-            <TextEditor ref={textEditorRef} id="textEditor" height="350px" maxHeight="calc(100vh * .7)" onBlur={onChangeTextEditor} value={descricaoCiclo} />
+            <TextEditor ref={textEditorRef} id="textEditor" height="300px" maxHeight="calc(100vh)" onBlur={onChangeTextEditor} value={descricaoCiclo} />
             <InseridoAlterado>
               {inseridoAlterado.criadoPor && inseridoAlterado.criadoEm ? (
                 <p>

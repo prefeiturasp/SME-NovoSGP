@@ -12,7 +12,7 @@ namespace SME.SGP.Api
                   {
                       config.AddEnvironmentVariables();
                   })
-                .UseSentry()
+                //.UseSentry()
                 .UseStartup<Startup>();
 
         public static void Main(string[] args)
