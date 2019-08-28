@@ -1,126 +1,212 @@
-import React, { useState, createRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import Grid from '../componentes/grid';
 import Button from '../componentes/button';
 import { Base, Colors } from '../componentes/colors';
+import SelectComponent from '../componentes/select';
 
 const Filtro = () => {
+  const [anosLetivos, setAnosLetivos] = useState([]);
+  const [anoLetivoSelecionado, setAnoLetivoSelecionado] = useState();
+
+  const [modalidades, setModalidades] = useState([]);
+  const [modalidadeSelecionada, setModalidadeSelecionada] = useState();
+
+  const [periodos, setPeriodos] = useState([]);
+  const [periodoSelecionado, setPeriodoSelecionado] = useState();
+
+  const [dres, setDres] = useState([{ dre: '' }]);
+  const [dreSelecionado, setDreSelecionado] = useState();
+
+  const [unidadesEscolares, setUnidadesEscolares] = useState();
+  const [unidadeEscolarSelecionada, setUnidadeEscolarSelecionada] = useState();
+
+  const [turmas, setTurmas] = useState();
+  const [turmaSelecionada, setTurmaSelecionada] = useState();
+
   const [toggleBusca, setToggleBusca] = useState(false);
-  const [modalidade, setModalidade] = useState();
+
+  const Container = styled.div`
+    max-width: 571px !important;
+  `;
+
+  const Input = styled.input`
+    background: ${Base.CinzaFundo} !important;
+    height: 45px !important;
+    &:focus {
+      background: ${Base.Branco} !important;
+      box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075) !important;
+    }
+  `;
 
   const Icon = styled.i`
-    background: ${Base.CinzaDesabilitado} !important;
-    border-radius: 50% !important;
     color: ${Base.CinzaMako} !important;
     cursor: pointer !important;
+  `;
+
+  const Search = styled(Icon)`
+    left: 0;
+    max-height: 23px;
+    max-width: 14px;
+    padding: 1rem !important;
+    right: 0;
+    top: 0;
+  `;
+
+  const Caret = styled(Icon)`
+    background: ${Base.CinzaDesabilitado} !important;
+    max-height: 36px;
+    max-width: 36px;
     padding: 0.7rem 0.9rem !important;
     right: 5px !important;
     top: 5px !important;
     ${toggleBusca && 'transform: rotate(180deg) !important;'}
   `;
 
-  const FormGroup = styled.div`
-    &:last-child {
-      margin-bottom: 0 !important;
-    }
-  `;
+  useEffect(() => {
+    setAnosLetivos([{ ano: '2019' }]);
+    setAnoLetivoSelecionado('2019');
+    setModalidades([
+      { modalidade: 'EJA' },
+      { modalidade: 'Ensino Fundamental' },
+    ]);
+    setPeriodos([{ periodo: '1º Semestre' }, { periodo: '2º Semestre' }]);
+    setDres([{ dre: 'Diretoria Regional de Educação (DRE) Ipiranga' }]);
+    setUnidadesEscolares([
+      {
+        unidade:
+          'Unidade Escolar (UE) Luiz Gonzaga do Nascimento Jr - Gonzaguinha',
+      },
+    ]);
+    setTurmas([
+      { turma: '1-A' },
+      { turma: '1-B' },
+      { turma: '1-C' },
+      { turma: '1-D' },
+    ]);
+  }, []);
 
-  const FormRow = styled.div`
-    &:last-child {
-      margin-bottom: 0 !important;
-    }
-  `;
+  const onChangeAnoLetivo = ano => {
+    setAnoLetivoSelecionado(ano);
+  };
 
-  const modalidadeRef = createRef();
+  const onChangeModalidade = modalidade => {
+    setModalidadeSelecionada(modalidade);
+  };
+
+  const onChangePeriodo = periodo => {
+    setPeriodoSelecionado(periodo);
+  };
+
+  const onChangeDre = dre => {
+    setDreSelecionado(dre);
+  };
+
+  const onChangeUnidadeEscolar = unidade => {
+    setUnidadeEscolarSelecionada(unidade);
+  };
+
+  const onChangeTurma = turma => {
+    setTurmaSelecionada(turma);
+  };
 
   const mostraBusca = () => {
     setToggleBusca(!toggleBusca);
   };
 
-  const selecionaModalidade = () => {
-    setModalidade(modalidadeRef.current.value);
-    modalidadeRef.current[modalidadeRef.current.selectedIndex].setAttribute(
-      'selected',
-      true
-    );
-  };
-
   return (
-    <div className="position-relative w-50 mx-auto">
-      <form>
-        <FormGroup className="form-group mb-0 position-relative">
-          <input
+    <Container className="position-relative w-100 mx-auto">
+      <form className="w-100">
+        <div className="form-group mb-0 w-100 position-relative">
+          <Search className="fa fa-search fa-lg bg-transparent position-absolute text-center" />
+          <Input
             type="text"
-            className="form-control form-control-lg shadow-sm rounded"
+            className="form-control form-control-lg rounded d-flex px-5 border-0 fonte-14"
+            placeholder="Pesquisar Turma"
           />
-          <Icon
-            className="fa fa-caret-down d-block position-absolute"
+          <Caret
+            className="fa fa-caret-down rounded-circle position-absolute text-center"
             onClick={mostraBusca}
           />
-        </FormGroup>
+        </div>
         {toggleBusca && (
-          <div className="container position-absolute bg-white shadow rounded px-3 pt-5 pb-1">
-            <FormRow className="form-row">
-              <Grid cols={2} className="form-group">
-                <select className="form-control">
-                  <option value="2019">2019</option>
-                </select>
+          <div className="container position-absolute bg-white shadow rounded mt-1 px-3 pt-5 pb-1">
+            <div className="form-row">
+              <Grid cols={3} className="form-group">
+                <SelectComponent
+                  className="fonte-14"
+                  onChange={onChangeAnoLetivo}
+                  lista={anosLetivos}
+                  valueOption="ano"
+                  label="ano"
+                  valueSelect={anoLetivoSelecionado}
+                />
               </Grid>
-              <Grid cols={modalidade === 'EJA' ? 5 : 10} className="form-group">
-                <select
-                  className="form-control"
-                  onChange={selecionaModalidade}
-                  ref={modalidadeRef}
-                >
-                  <option value="Fundamental">Ensino Fundamental</option>
-                  <option value="EJA">EJA</option>
-                </select>
+              <Grid
+                cols={modalidadeSelecionada === 'EJA' ? 5 : 9}
+                className="form-group"
+              >
+                <SelectComponent
+                  className="fonte-14"
+                  onChange={onChangeModalidade}
+                  lista={modalidades}
+                  valueOption="modalidade"
+                  label="modalidade"
+                  valueSelect={modalidadeSelecionada}
+                />
               </Grid>
-              {modalidade === 'EJA' && (
-                <Grid cols={5} className="form-group">
-                  <select
-                    className="form-control"
-                    onChange={selecionaModalidade}
-                  >
-                    <option value="1">1º Semestre</option>
-                    <option value="2">2º Semestre</option>
-                  </select>
+              {modalidadeSelecionada === 'EJA' && (
+                <Grid cols={4} className="form-group">
+                  <SelectComponent
+                    className="fonte-14"
+                    onChange={onChangePeriodo}
+                    lista={periodos}
+                    valueOption="periodo"
+                    label="periodo"
+                    valueSelect={periodoSelecionado}
+                  />
                 </Grid>
               )}
-            </FormRow>
-            <FormGroup className="form-group">
-              <select className="form-control">
-                <option value="IP">
-                  Diretoria Regional de Educação (DRE) Ipiranga
-                </option>
-              </select>
-            </FormGroup>
-            <FormGroup className="form-group">
-              <select className="form-control">
-                <option value="1">
-                  Unidade Escolar (UE) Luiz Gonzaga do Nascimento Jr -
-                  Gonzaguinha
-                </option>
-              </select>
-            </FormGroup>
-            <FormRow className="form-row d-flex justify-content-between">
-              <Grid cols={2} className="form-group">
-                <select className="form-control">
-                  <option>Turma</option>
-                  <option value="1A">1-A</option>
-                  <option value="1B">1-B</option>
-                  <option value="1C">1-C</option>
-                  <option value="1D">1-D</option>
-                </select>
+            </div>
+            <div className="form-group">
+              <SelectComponent
+                className="fonte-14"
+                onChange={onChangeDre}
+                lista={dres}
+                valueOption="dre"
+                label="dre"
+                valueSelect={dreSelecionado}
+              />
+            </div>
+            <div className="form-group">
+              <SelectComponent
+                className="fonte-14"
+                onChange={onChangeUnidadeEscolar}
+                lista={unidadesEscolares}
+                valueOption="unidade"
+                label="unidade"
+                valueSelect={unidadeEscolarSelecionada}
+              />
+            </div>
+            <div className="form-row d-flex justify-content-between">
+              <Grid cols={3} className="form-group">
+                <SelectComponent
+                  className="fonte-14"
+                  onChange={onChangeTurma}
+                  lista={turmas}
+                  valueOption="turma"
+                  label="turma"
+                  valueSelect={turmaSelecionada}
+                />
               </Grid>
               <Grid cols={3} className="form-group text-right">
-                <Button label="Aplicar filtro" color={Colors.Roxo} />
+                <Button label="Aplicar filtro" color={Colors.Roxo} bold />
               </Grid>
-            </FormRow>
+            </div>
           </div>
         )}
       </form>
-    </div>
+    </Container>
   );
 };
 
