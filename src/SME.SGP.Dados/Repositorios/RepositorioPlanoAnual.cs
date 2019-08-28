@@ -32,5 +32,33 @@ namespace SME.SGP.Dados.Repositorios
 
             return database.Conexao.Query<PlanoAnualCompletoDto>(query.ToString(), new { cicloId, ano, escolaId }).SingleOrDefault();
         }
+
+        public PlanoAnualCompletoDto ObterPorAnoEscolaBimestreETurma(int ano, long escolaId, long turmaId, int bimestre)
+        {
+            StringBuilder query = new StringBuilder();
+
+            query.AppendLine("select");
+            query.AppendLine("	pa.*,");
+            query.AppendLine("	string_agg(distinct cast(oap.objetivo_aprendizagem_id as text), ',') as ObjetivosAprendizagem");
+            query.AppendLine("from");
+            query.AppendLine("	plano_anual pa");
+            query.AppendLine("inner join objetivo_aprendizagem_plano oap on");
+            query.AppendLine("	pa.id = oap.plano_id");
+            query.AppendLine("where");
+            query.AppendLine("	pa.ano = @ano");
+            query.AppendLine("	and pa.bimestre = @bimestre");
+            query.AppendLine("	and pa.escola_id = @escolaId");
+            query.AppendLine("	and pa.turma_id = @turmaId");
+            query.AppendLine("group by");
+            query.AppendLine("	pa.id");
+
+            return database.Conexao.Query<PlanoAnualCompletoDto>(query.ToString(), new { ano, escolaId, turmaId, bimestre }).SingleOrDefault();
+            //return database.Conexao.Query<PlanoAnualCompletoDto>("select * from plano_anual where ano = @ano and escola_id = @escolaId and bimestre = @bimestre and turma_id = @turmaId", new { ano, escolaId, turmaId, bimestre }).SingleOrDefault();
+        }
+
+        public bool ValidarPlanoExistentePorAnoEscolaTurmaEBimestre(int ano, long escolaId, long turmaId, int bimestre)
+        {
+            return database.Conexao.Query<bool>("select 1 from plano_anual where ano = @ano and escola_id = @escolaId and bimestre = @bimestre and turma_id = @turmaId", new { ano, escolaId, turmaId, bimestre }).SingleOrDefault();
+        }
     }
 }
