@@ -38,7 +38,9 @@ const Button = props => {
     ${border
       ? `border-color: ${Active[color]} !important; color: ${Active[color]} !important;`
       : `border: 0 none !important;`};
+    display: flex;
     font-weight: ${bold ? 'bold' : 'normal'} !important;
+    height: 38px;
     &:hover {
       background: ${Hover[color]} !important;
       color: ${!steady ? Base.Branco : 'initial'} !important;
