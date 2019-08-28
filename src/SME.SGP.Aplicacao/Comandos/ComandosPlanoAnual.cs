@@ -9,16 +9,19 @@ namespace SME.SGP.Aplicacao
 {
     public class ComandosPlanoAnual : IComandosPlanoAnual
     {
+        private readonly IRepositorioDisciplinaPlano repositorioDisciplinaPlano;
         private readonly IRepositorioObjetivoAprendizagemPlano repositorioObjetivoAprendizagemPlano;
         private readonly IRepositorioPlanoAnual repositorioPlanoAnual;
         private readonly IUnitOfWork unitOfWork;
 
         public ComandosPlanoAnual(IRepositorioPlanoAnual repositorioPlanoAnual,
                                   IRepositorioObjetivoAprendizagemPlano repositorioObjetivoAprendizagemPlano,
+                                  IRepositorioDisciplinaPlano repositorioDisciplinaPlano,
                                   IUnitOfWork unitOfWork)
         {
             this.repositorioPlanoAnual = repositorioPlanoAnual ?? throw new ArgumentNullException(nameof(repositorioPlanoAnual));
             this.repositorioObjetivoAprendizagemPlano = repositorioObjetivoAprendizagemPlano ?? throw new ArgumentNullException(nameof(repositorioObjetivoAprendizagemPlano));
+            this.repositorioDisciplinaPlano = repositorioDisciplinaPlano ?? throw new ArgumentNullException(nameof(repositorioDisciplinaPlano));
             this.unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
         }
 
@@ -29,7 +32,20 @@ namespace SME.SGP.Aplicacao
             {
                 planoAnualDto.Id = repositorioPlanoAnual.Salvar(planoAnual);
                 AjustarObjetivosAprendizagem(planoAnualDto);
+                AjustarDisciplinas(planoAnualDto);
                 unitOfWork.PersistirTransacao();
+            }
+        }
+
+        private void AjustarDisciplinas(PlanoAnualDto planoAnualDto)
+        {
+            var disciplinasPlanoAnual = repositorioDisciplinaPlano.ObterDisciplinasPorIdPlano(planoAnualDto.Id);
+
+            if (disciplinasPlanoAnual != null)
+            {
+                var idsDisciplinas = disciplinasPlanoAnual.Select(c => c.DisciplinaId);
+                RemoverDisciplinas(planoAnualDto, disciplinasPlanoAnual);
+                InserirDisciplinas(planoAnualDto, idsDisciplinas);
             }
         }
 
@@ -42,6 +58,20 @@ namespace SME.SGP.Aplicacao
                 var idsObjetivos = objetivosAprendizagemPlanoAnual.Select(c => c.ObjetivoAprendizagemId);
                 RemoverObjetivos(planoAnualDto, objetivosAprendizagemPlanoAnual);
                 InserirObjetivos(planoAnualDto, idsObjetivos);
+            }
+        }
+
+        private void InserirDisciplinas(PlanoAnualDto planoAnualDto, IEnumerable<long> idsDisciplinas)
+        {
+            var disciplinasIncluir = planoAnualDto.IdsDisciplinas.Except(idsDisciplinas);
+
+            foreach (var idDisciplina in disciplinasIncluir)
+            {
+                repositorioDisciplinaPlano.Salvar(new DisciplinaPlano()
+                {
+                    DisciplinaId = idDisciplina,
+                    PlanoId = planoAnualDto.Id
+                });
             }
         }
 
@@ -89,6 +119,19 @@ namespace SME.SGP.Aplicacao
             }
             MapearParaDominio(planoAnualDto, planoAnual);
             return planoAnual;
+        }
+
+        private void RemoverDisciplinas(PlanoAnualDto planoAnualDto, IEnumerable<DisciplinaPlano> disciplinasPlano)
+        {
+            if (disciplinasPlano != null)
+            {
+                var disciplinasRemover = disciplinasPlano.Where(c => !planoAnualDto.IdsDisciplinas.Contains(c.DisciplinaId));
+
+                foreach (var disciplina in disciplinasRemover)
+                {
+                    repositorioDisciplinaPlano.Remover(disciplina.Id);
+                }
+            }
         }
 
         private void RemoverObjetivos(PlanoAnualDto planoAnualDto, IEnumerable<ObjetivoAprendizagemPlano> objetivosAprendizagemPlanoAnual)
