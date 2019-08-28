@@ -4,7 +4,7 @@ using SME.SGP.Aplicacao;
 
 namespace SME.SGP.Api.Controllers
 {
-    [Route("api/v1/professor-turma")]
+    [Route("api/v1/professor-turmas")]
     [ApiController]
     [ValidaDto]
     public class ProfessorTurmaController : ControllerBase
