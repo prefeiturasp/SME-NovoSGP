@@ -21,7 +21,7 @@ namespace SME.SGP.Api.Controllers
         [HttpPost]
         [ProducesResponseType(typeof(IEnumerable<CicloDto>), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        public IActionResult Get(IEnumerable<FiltroCicloDto> filtroCiclos)
+        public IActionResult Post(IEnumerable<FiltroCicloDto> filtroCiclos)
         {
             return Ok(consultasCiclo.Listar(filtroCiclos));
         }
