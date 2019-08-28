@@ -19,6 +19,7 @@ namespace SME.SGP.Dto
 
         public long Id { get; set; }
 
+        public List<long> IdsDisciplinas { get; set; }
         public List<long> IdsObjetivosAprendizagem { get; set; }
 
         [Required(ErrorMessage = "A turma deve ser informada")]

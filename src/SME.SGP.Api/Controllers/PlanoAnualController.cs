@@ -6,7 +6,7 @@ using SME.SGP.Dto;
 namespace SME.SGP.Api.Controllers
 {
     [ApiController]
-    [Route("api/v1/planos-anuais")]
+    [Route("api/v1/planos/anual")]
     [ValidaDto]
     public class PlanoAnualController : ControllerBase
     {
