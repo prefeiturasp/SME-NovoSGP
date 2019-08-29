@@ -52,4 +52,12 @@ export default createGlobalStyle`
     background-color:  ${Base.Roxo}  !important;
     color: #ffffff !important;
   }
+
+  .p-l-5{
+    padding-left: 5px !important;
+  }
+
+  .p-r-5{
+    padding-left: 5px !important;
+  }
 `;
