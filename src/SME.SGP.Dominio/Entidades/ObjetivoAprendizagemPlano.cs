@@ -2,8 +2,8 @@
 {
     public class ObjetivoAprendizagemPlano : EntidadeBase
     {
-        public long CodigoComponenteEOL { get; set; }
-        public long CodigoComponenteJurema { get; set; }
+        public long ComponenteCurricularId { get; set; }
+        public long ObjetivoAprendizagemJuremaId { get; set; }
         public long PlanoId { get; set; }
     }
 }

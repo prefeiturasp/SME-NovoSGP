@@ -1,6 +1,7 @@
 ﻿using SME.SGP.Aplicacao.Integracoes;
 using SME.SGP.Aplicacao.Integracoes.Respostas;
 using SME.SGP.Dto;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -12,7 +13,7 @@ namespace SME.SGP.Aplicacao
 
         public ConsultasObjetivoAprendizagem(IServicoJurema servicoJurema)
         {
-            this.servicoJurema = servicoJurema ?? throw new System.ArgumentNullException(nameof(servicoJurema));
+            this.servicoJurema = servicoJurema ?? throw new ArgumentNullException(nameof(servicoJurema));
         }
 
         public IEnumerable<ObjetivoAprendizagemDto> Listar(FiltroObjetivosAprendizagemDto filtroObjetivosAprendizagemDto)

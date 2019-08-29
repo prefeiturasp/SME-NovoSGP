@@ -52,18 +52,26 @@ namespace SME.SGP.Aplicacao
 
         private void InserirObjetivos(PlanoAnualDto planoAnualDto, IEnumerable<ObjetivoAprendizagemPlano> objetivosAprendizagemPlanoAnual)
         {
-            var objetivosIncluir = planoAnualDto.IdsObjetivosAprendizagem.Except(objetivosAprendizagemPlanoAnual.Select(c => c.CodigoComponenteEOL));
-            var componentesCurriculares = repositorioComponenteCurricular.Listar();
-
-            foreach (var codigoComponenteEol in objetivosIncluir)
+            if (planoAnualDto.ObjetivosAprendizagem != null && planoAnualDto.ObjetivosAprendizagem.Any())
             {
-                var componenteEol = componentesCurriculares.FirstOrDefault(c => c.CodigoEOL == codigoComponenteEol);
-                repositorioObjetivoAprendizagemPlano.Salvar(new ObjetivoAprendizagemPlano()
+                var idsObjetivos = objetivosAprendizagemPlanoAnual?.Select(c => c.ObjetivoAprendizagemJuremaId);
+                var componentesCurriculares = repositorioComponenteCurricular.Listar();
+                foreach (var objetivo in planoAnualDto.ObjetivosAprendizagem)
                 {
-                    CodigoComponenteEOL = codigoComponenteEol,
-                    CodigoComponenteJurema = componenteEol.CodigoJurema,
-                    PlanoId = planoAnualDto.Id
-                });
+                    if (idsObjetivos != null && !idsObjetivos.Contains(objetivo.Id))
+                    {
+                        var componenteEol = componentesCurriculares?.FirstOrDefault(c => c.CodigoJurema == objetivo.IdComponenteCurricular);
+                        if (componenteEol != null)
+                        {
+                            repositorioObjetivoAprendizagemPlano.Salvar(new ObjetivoAprendizagemPlano()
+                            {
+                                ObjetivoAprendizagemJuremaId = objetivo.Id,
+                                ComponenteCurricularId = componenteEol.Id,
+                                PlanoId = planoAnualDto.Id
+                            });
+                        }
+                    }
+                }
             }
         }
 
@@ -103,7 +111,8 @@ namespace SME.SGP.Aplicacao
         {
             if (objetivosAprendizagemPlanoAnual != null)
             {
-                var objetivosRemover = objetivosAprendizagemPlanoAnual.Where(c => !planoAnualDto.IdsObjetivosAprendizagem.Contains(c.CodigoComponenteEOL));
+                var idsObjetivos = planoAnualDto.ObjetivosAprendizagem.Select(x => x.Id);
+                var objetivosRemover = objetivosAprendizagemPlanoAnual.Where(c => idsObjetivos.Contains(c.ObjetivoAprendizagemJuremaId));
 
                 foreach (var objetivo in objetivosRemover)
                 {

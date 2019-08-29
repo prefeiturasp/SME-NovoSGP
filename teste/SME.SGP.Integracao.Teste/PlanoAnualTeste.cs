@@ -1,6 +1,5 @@
 ﻿using Newtonsoft.Json;
 using SME.SGP.Dto;
-using System.Collections.Generic;
 using System.Net.Http;
 using System.Text;
 using Xunit;
@@ -54,8 +53,8 @@ namespace SME.SGP.Integracao.Teste
                 Descricao = "Primeiro bismestre do primeiro ano",
                 EscolaId = 1,
                 TurmaId = 1,
-                IdsDisciplinas = new List<long> { 1, 2, 3 },
-                IdsObjetivosAprendizagem = new List<long> { 4, 5, 6 }
+                //IdsDisciplinas = new List<long> { 1, 2, 3 },
+                //ObjetivosAprendizagem = new List<long> { 4, 5, 6 }
             };
         }
     }
