@@ -87,11 +87,11 @@ namespace SME.SGP.Api
                 c.DefaultRequestHeaders.Add("Accept", "application/json");
             });
 
-            //services.AddDistributedRedisCache(options =>
-            //{
-            //    options.Configuration =
-            //        Configuration.GetConnectionString("ConexaoRedis");
-            //});
+            services.AddDistributedRedisCache(options =>
+            {
+                options.Configuration = Configuration.GetConnectionString("SGP-Redis");
+                options.InstanceName = Configuration.GetValue<string>("Nome-Instancia-Redis");
+            });
         }
     }
 }
