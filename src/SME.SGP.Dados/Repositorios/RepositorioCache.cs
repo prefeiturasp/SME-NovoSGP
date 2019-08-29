@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.Caching.Distributed;
 using SME.SGP.Dominio.Interfaces;
+using System;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Dados.Repositorios
@@ -18,9 +19,10 @@ namespace SME.SGP.Dados.Repositorios
             return distributedCache.GetString(nomeChave);
         }
 
-        public async Task SalvarAsync(string nomeChave, string valor)
+        public async Task SalvarAsync(string nomeChave, string valor, int minutosParaExpirar = 720)
         {
-            await distributedCache.SetStringAsync(nomeChave, valor);
+            await distributedCache.SetStringAsync(nomeChave, valor, new DistributedCacheEntryOptions()
+                                            .SetAbsoluteExpiration(TimeSpan.FromMinutes(minutosParaExpirar)));
         }
     }
 }

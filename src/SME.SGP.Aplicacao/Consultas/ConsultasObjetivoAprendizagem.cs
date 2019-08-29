@@ -1,4 +1,6 @@
-﻿using SME.SGP.Aplicacao.Integracoes;
+﻿using Microsoft.Extensions.Configuration;
+using SME.SGP.Aplicacao.Auxiliares;
+using SME.SGP.Aplicacao.Integracoes;
 using SME.SGP.Aplicacao.Integracoes.Respostas;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Dto;
@@ -11,12 +13,14 @@ namespace SME.SGP.Aplicacao
     public class ConsultasObjetivoAprendizagem : IConsultasObjetivoAprendizagem
     {
         private readonly IRepositorioCache repositorioCache;
+        private readonly IConfiguration configuration;
         private readonly IServicoJurema servicoJurema;
 
-        public ConsultasObjetivoAprendizagem(IServicoJurema servicoJurema, IRepositorioCache repositorioCache)
+        public ConsultasObjetivoAprendizagem(IServicoJurema servicoJurema, IRepositorioCache repositorioCache, IConfiguration configuration)
         {
             this.servicoJurema = servicoJurema ?? throw new System.ArgumentNullException(nameof(servicoJurema));
             this.repositorioCache = repositorioCache ?? throw new System.ArgumentNullException(nameof(repositorioCache));
+            this.configuration = configuration ?? throw new System.ArgumentNullException(nameof(configuration));
         }
 
         public async Task<IEnumerable<ObjetivoAprendizagemDto>> Listar(FiltroObjetivosAprendizagemDto filtroObjetivosAprendizagemDto)
@@ -28,36 +32,42 @@ namespace SME.SGP.Aplicacao
             if (string.IsNullOrEmpty(objetivosCacheString))
             {
                 var objetivosJuremaDto = await servicoJurema.ObterListaObjetivosAprendizagem();
-                objetivos = MapearParaDto(objetivosJuremaDto);
+                objetivos = MapearParaDto(objetivosJuremaDto).ToList();
 
-                await repositorioCache.SalvarAsync("ObjetivosAprendizagem", Newtonsoft.Json.JsonConvert.SerializeObject(objetivos));
+                var tempoExpiracao = int.Parse(configuration.GetSection("ExpiracaoCache").GetSection("ObjetivosAprendizagem").Value);
+
+                await repositorioCache.SalvarAsync("ObjetivosAprendizagem", Newtonsoft.Json.JsonConvert.SerializeObject(objetivos), tempoExpiracao);
+
             }
             else
-            {
                 objetivos = Newtonsoft.Json.JsonConvert.DeserializeObject<List<ObjetivoAprendizagemDto>>(objetivosCacheString);
-            }
 
-            //return objetivos.Where(c =>
-            //        filtroObjetivosAprendizagemDto.ComponentesCurricularesIds.Contains(c.IdComponenteCurricular)
-            //        && c.Ano == filtroObjetivosAprendizagemDto.Ano)
-            //    .ToList();
 
-            return objetivos
-                .ToList();
+            return objetivos.Where(c => (filtroObjetivosAprendizagemDto.ComponentesCurricularesIds.Count > 0)?
+                    filtroObjetivosAprendizagemDto.ComponentesCurricularesIds.Contains(c.IdComponenteCurricular) : true
+                    && (filtroObjetivosAprendizagemDto.Ano > 0) ? c.Ano == filtroObjetivosAprendizagemDto.Ano : true);
         }
 
-        private List<ObjetivoAprendizagemDto> MapearParaDto(IEnumerable<ObjetivoAprendizagemResposta> objetivos)
+        private IEnumerable<ObjetivoAprendizagemDto> MapearParaDto(IEnumerable<ObjetivoAprendizagemResposta> objetivos)
         {
-            return objetivos?.Select(m => new ObjetivoAprendizagemDto()
+            foreach (var objetivoDto in objetivos)
             {
-                Descricao = m.Descricao,
-                Id = m.Id,
-                Ano = m.Codigo.Substring(3, 2),
-                AtualizadoEm = m.AtualizadoEm,
-                Codigo = m.Codigo,
-                CriadoEm = m.CriadoEm,
-                IdComponenteCurricular = m.ComponenteCurricularId
-            }).ToList();
+
+                var codigo = objetivoDto.Codigo.Replace("(", "").Replace(")", "");
+                var anoString = codigo.Substring(3, 1);
+                int.TryParse(anoString, out int ano);
+                if (ano != 0)
+                {
+                    yield return new ObjetivoAprendizagemDto()
+                    {
+                        Descricao = objetivoDto.Descricao,
+                        Id = objetivoDto.Id,
+                        Ano = ano,
+                        Codigo = codigo,
+                        IdComponenteCurricular = objetivoDto.ComponenteCurricularId
+                    };
+                }
+            }
         }
     }
 }
