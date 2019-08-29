@@ -80,3 +80,5 @@ export const InseridoAlterado = styled.div`
     margin: 0px;
   }
 `;
+
+export const Container = styled.div``;
