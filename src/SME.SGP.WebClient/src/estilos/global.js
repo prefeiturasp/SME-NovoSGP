@@ -14,7 +14,7 @@ export default createGlobalStyle`
     box-shadow: none;
   }
   html, body, #root {
-    font-family: 'Roboto', sans-serif !important;
+    font-family: 'FontAwesome', 'Roboto', sans-serif !important;
     font-stretch: normal;
     height: 100%;
     letter-spacing: normal;
