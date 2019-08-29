@@ -13,9 +13,9 @@ namespace SME.SGP.Aplicacao
             this.repositorioCiclo = repositorioCiclo ?? throw new System.ArgumentNullException(nameof(repositorioCiclo));
         }
 
-        public IEnumerable<CicloDto> Listar(IEnumerable<FiltroCicloDto> filtroCicloDtos)
+        public IEnumerable<CicloDto> Listar(IEnumerable<string> Ano, string AnoSelecionado, int Modalidade)
         {
-            return repositorioCiclo.ObterCiclosPorTurma(filtroCicloDtos);
+            return repositorioCiclo.ObterCiclosPorTurma(Ano, AnoSelecionado, Modalidade);
         }
 
         public CicloDto Selecionar(int ano)
