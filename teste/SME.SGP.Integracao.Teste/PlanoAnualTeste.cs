@@ -1,8 +1,10 @@
 ﻿using Newtonsoft.Json;
 using SME.SGP.Dto;
+using System.Collections.Generic;
 using System.Net.Http;
 using System.Text;
 using Xunit;
+using Xunit.Extensions.Ordering;
 
 namespace SME.SGP.Integracao.Teste
 {
@@ -15,7 +17,7 @@ namespace SME.SGP.Integracao.Teste
             this.fixture = fixture ?? throw new System.ArgumentNullException(nameof(fixture));
         }
 
-        [Fact]
+        [Fact, Order(3)]
         public void DeveIncluirPlanoAnual()
         {
             fixture._clientApi.DefaultRequestHeaders.Clear();
@@ -28,7 +30,7 @@ namespace SME.SGP.Integracao.Teste
             Assert.True(postResult.IsSuccessStatusCode);
         }
 
-        [Fact]
+        [Fact, Order(4)]
         public void NaoDeveIncluirPlanoAnualEExibirMensagemErro()
         {
             fixture._clientApi.DefaultRequestHeaders.Clear();
@@ -53,8 +55,14 @@ namespace SME.SGP.Integracao.Teste
                 Descricao = "Primeiro bismestre do primeiro ano",
                 EscolaId = 1,
                 TurmaId = 1,
-                //IdsDisciplinas = new List<long> { 1, 2, 3 },
-                //ObjetivosAprendizagem = new List<long> { 4, 5, 6 }
+                ObjetivosAprendizagem = new List<ObjetivoAprendizagemSimplificadoDto>()
+                {
+                    new ObjetivoAprendizagemSimplificadoDto()
+                    {
+                        Id=1623,
+                        IdComponenteCurricular=3
+                    }
+                }
             };
         }
     }
