@@ -6,6 +6,6 @@ namespace SME.SGP.Dominio.Interfaces
     {
         string Obter(string nomeChave);
 
-        Task SalvarAsync(string nomeChave, string valor);
+        Task SalvarAsync(string nomeChave, string valor, int minutosParaExpirar);
     }
 }
