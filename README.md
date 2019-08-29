@@ -14,10 +14,9 @@ Para executar toda a solução em um ambiente local deverá:
 
 Acessar o readme do projeto de [Front](https://github.com/prefeiturasp/SME-NovoSGP/tree/master/src/SME.SGP.WebClient "Front") e seguir a configuração de variáveis de ambiente
 
-No projeto de Front (src/SME.SGP.WebClient), deverá ser criado um arquivo chamado .env , baseado no arquivo sample.env
-
 **3- Docker Compose**
 
 Executar o comando na **raiz da solução**
 
 `docker-compose up --build`
+

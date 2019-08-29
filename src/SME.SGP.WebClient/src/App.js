@@ -6,13 +6,14 @@ import { useSelector } from 'react-redux';
 import Rotas from './rotas/rotas';
 import history from './servicos/history';
 import Alert from './componentes/alert';
-
 import GlobalStyle from './estilos/global';
 import Navbar from './componentes-sgp/navbar';
 import Sidebar from './componentes-sgp/sidebar';
 import { store } from './redux';
 
+
 const notificacoes = { alertas: [] };
+
 function App() {
   return (
     <Provider store={store}>
