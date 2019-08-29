@@ -11,4 +11,8 @@ CardBody.propTypes = {
   children: PropTypes.node,
 };
 
+CardBody.defaultProps = {
+  children: () => {},
+};
+
 export default CardBody;
