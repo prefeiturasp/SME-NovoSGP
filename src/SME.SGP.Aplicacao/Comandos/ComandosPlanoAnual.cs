@@ -9,6 +9,7 @@ namespace SME.SGP.Aplicacao
 {
     public class ComandosPlanoAnual : IComandosPlanoAnual
     {
+        private readonly IRepositorioComponenteCurricular repositorioComponenteCurricular;
         private readonly IRepositorioDisciplinaPlano repositorioDisciplinaPlano;
         private readonly IRepositorioObjetivoAprendizagemPlano repositorioObjetivoAprendizagemPlano;
         private readonly IRepositorioPlanoAnual repositorioPlanoAnual;
@@ -17,11 +18,13 @@ namespace SME.SGP.Aplicacao
         public ComandosPlanoAnual(IRepositorioPlanoAnual repositorioPlanoAnual,
                                   IRepositorioObjetivoAprendizagemPlano repositorioObjetivoAprendizagemPlano,
                                   IRepositorioDisciplinaPlano repositorioDisciplinaPlano,
+                                  IRepositorioComponenteCurricular repositorioComponenteCurricular,
                                   IUnitOfWork unitOfWork)
         {
             this.repositorioPlanoAnual = repositorioPlanoAnual ?? throw new ArgumentNullException(nameof(repositorioPlanoAnual));
             this.repositorioObjetivoAprendizagemPlano = repositorioObjetivoAprendizagemPlano ?? throw new ArgumentNullException(nameof(repositorioObjetivoAprendizagemPlano));
             this.repositorioDisciplinaPlano = repositorioDisciplinaPlano ?? throw new ArgumentNullException(nameof(repositorioDisciplinaPlano));
+            this.repositorioComponenteCurricular = repositorioComponenteCurricular ?? throw new ArgumentNullException(nameof(repositorioComponenteCurricular));
             this.unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
         }
 
@@ -32,20 +35,7 @@ namespace SME.SGP.Aplicacao
             {
                 planoAnualDto.Id = repositorioPlanoAnual.Salvar(planoAnual);
                 AjustarObjetivosAprendizagem(planoAnualDto);
-                AjustarDisciplinas(planoAnualDto);
                 unitOfWork.PersistirTransacao();
-            }
-        }
-
-        private void AjustarDisciplinas(PlanoAnualDto planoAnualDto)
-        {
-            var disciplinasPlanoAnual = repositorioDisciplinaPlano.ObterDisciplinasPorIdPlano(planoAnualDto.Id);
-
-            if (disciplinasPlanoAnual != null)
-            {
-                var idsDisciplinas = disciplinasPlanoAnual.Select(c => c.DisciplinaId);
-                RemoverDisciplinas(planoAnualDto, disciplinasPlanoAnual);
-                InserirDisciplinas(planoAnualDto, idsDisciplinas);
             }
         }
 
@@ -55,35 +45,23 @@ namespace SME.SGP.Aplicacao
 
             if (objetivosAprendizagemPlanoAnual != null)
             {
-                var idsObjetivos = objetivosAprendizagemPlanoAnual.Select(c => c.ObjetivoAprendizagemId);
                 RemoverObjetivos(planoAnualDto, objetivosAprendizagemPlanoAnual);
-                InserirObjetivos(planoAnualDto, idsObjetivos);
+                InserirObjetivos(planoAnualDto, objetivosAprendizagemPlanoAnual);
             }
         }
 
-        private void InserirDisciplinas(PlanoAnualDto planoAnualDto, IEnumerable<long> idsDisciplinas)
+        private void InserirObjetivos(PlanoAnualDto planoAnualDto, IEnumerable<ObjetivoAprendizagemPlano> objetivosAprendizagemPlanoAnual)
         {
-            var disciplinasIncluir = planoAnualDto.IdsDisciplinas.Except(idsDisciplinas);
+            var objetivosIncluir = planoAnualDto.IdsObjetivosAprendizagem.Except(objetivosAprendizagemPlanoAnual.Select(c => c.CodigoComponenteEOL));
+            var componentesCurriculares = repositorioComponenteCurricular.Listar();
 
-            foreach (var idDisciplina in disciplinasIncluir)
+            foreach (var codigoComponenteEol in objetivosIncluir)
             {
-                repositorioDisciplinaPlano.Salvar(new DisciplinaPlano()
-                {
-                    DisciplinaId = idDisciplina,
-                    PlanoId = planoAnualDto.Id
-                });
-            }
-        }
-
-        private void InserirObjetivos(PlanoAnualDto planoAnualDto, IEnumerable<long> idsObjetivos)
-        {
-            var objetivosIncluir = planoAnualDto.IdsObjetivosAprendizagem.Except(idsObjetivos);
-
-            foreach (var idObjetivo in objetivosIncluir)
-            {
+                var componenteEol = componentesCurriculares.FirstOrDefault(c => c.CodigoEOL == codigoComponenteEol);
                 repositorioObjetivoAprendizagemPlano.Salvar(new ObjetivoAprendizagemPlano()
                 {
-                    ObjetivoAprendizagemId = idObjetivo,
+                    CodigoComponenteEOL = codigoComponenteEol,
+                    CodigoComponenteJurema = componenteEol.CodigoJurema,
                     PlanoId = planoAnualDto.Id
                 });
             }
@@ -91,11 +69,11 @@ namespace SME.SGP.Aplicacao
 
         private void MapearParaDominio(PlanoAnualDto planoAnualDto, PlanoAnual planoAnual)
         {
-            planoAnual.Ano = planoAnualDto.Ano;
-            planoAnual.Bimestre = planoAnualDto.Bimestre;
+            planoAnual.Ano = planoAnualDto.Ano.Value;
+            planoAnual.Bimestre = planoAnualDto.Bimestre.Value;
             planoAnual.Descricao = planoAnualDto.Descricao;
-            planoAnual.EscolaId = planoAnualDto.EscolaId;
-            planoAnual.TurmaId = planoAnualDto.TurmaId;
+            planoAnual.EscolaId = planoAnualDto.EscolaId.Value;
+            planoAnual.TurmaId = planoAnualDto.TurmaId.Value;
         }
 
         private PlanoAnual ObterPlanoAnual(PlanoAnualDto planoAnualDto)
@@ -111,7 +89,7 @@ namespace SME.SGP.Aplicacao
             }
             else
             {
-                var planoExistente = repositorioPlanoAnual.ValidarPlanoExistentePorAnoEscolaTurmaEBimestre(planoAnualDto.Ano, planoAnualDto.EscolaId, planoAnualDto.TurmaId, planoAnualDto.Bimestre);
+                var planoExistente = repositorioPlanoAnual.ValidarPlanoExistentePorAnoEscolaTurmaEBimestre(planoAnualDto.Ano.Value, planoAnualDto.EscolaId.Value, planoAnualDto.TurmaId.Value, planoAnualDto.Bimestre.Value);
                 if (planoExistente)
                 {
                     throw new NegocioException("Já existe um plano anual com o ano, escola, turma e bimestre informados.");
@@ -121,24 +99,11 @@ namespace SME.SGP.Aplicacao
             return planoAnual;
         }
 
-        private void RemoverDisciplinas(PlanoAnualDto planoAnualDto, IEnumerable<DisciplinaPlano> disciplinasPlano)
-        {
-            if (disciplinasPlano != null)
-            {
-                var disciplinasRemover = disciplinasPlano.Where(c => !planoAnualDto.IdsDisciplinas.Contains(c.DisciplinaId));
-
-                foreach (var disciplina in disciplinasRemover)
-                {
-                    repositorioDisciplinaPlano.Remover(disciplina.Id);
-                }
-            }
-        }
-
         private void RemoverObjetivos(PlanoAnualDto planoAnualDto, IEnumerable<ObjetivoAprendizagemPlano> objetivosAprendizagemPlanoAnual)
         {
             if (objetivosAprendizagemPlanoAnual != null)
             {
-                var objetivosRemover = objetivosAprendizagemPlanoAnual.Where(c => !planoAnualDto.IdsObjetivosAprendizagem.Contains(c.ObjetivoAprendizagemId));
+                var objetivosRemover = objetivosAprendizagemPlanoAnual.Where(c => !planoAnualDto.IdsObjetivosAprendizagem.Contains(c.CodigoComponenteEOL));
 
                 foreach (var objetivo in objetivosRemover)
                 {
