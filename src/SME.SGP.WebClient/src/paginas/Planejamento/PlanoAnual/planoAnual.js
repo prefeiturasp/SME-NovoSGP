@@ -10,6 +10,7 @@ import Seta from '../../../recursos/Seta.svg';
 import Card from '../../../componentes/card';
 // import { confirmacao } from '../../../servicos/alertas';
 // import Modal from '../../../componentes/modal';
+import { confirmacao } from '../../../servicos/alertas';
 
 export default function PlanoAnual() {
   const [bimestres] = useState([
@@ -127,22 +128,16 @@ export default function PlanoAnual() {
     setObjetivos([...objetivos]);
   };
 
-  // const confirmarCancelamento = () => {};
+  const confirmarCancelamento = () => {};
 
   const cancelarAlteracoes = () => {
-    // confirmacao(
-    //   'Atenção',
-    //   `Você não salvou as informações
-    //   preenchidas. Deseja realmente cancelar as alterações?`,
-    //   confirmarCancelamento,
-    //   () => true
-    // );
-    // return (
-    //   <Modal
-    //     title="Atenção"
-    //     content="Você não salvou as informações preenchidas. Deseja realmente cancelar as alterações?"
-    //   />
-    // );
+    confirmacao(
+      'Atenção',
+      `Você não salvou as informações
+      preenchidas. Deseja realmente cancelar as alterações?`,
+      confirmarCancelamento,
+      () => true
+    );
   };
 
   const toolbarOptions = [
@@ -211,7 +206,7 @@ export default function PlanoAnual() {
                                   onClick={selecionaMateria}
                                   aria-pressed={false}
                                   key={shortid.generate()}
-                                  className="badge badge-pill border text-dark bg-white font-weight-light p-2 mt-3 mr-2"
+                                  className="badge badge-pill border text-dark bg-white font-weight-light px-2 py-1 mt-3 mr-2"
                                 >
                                   {materia.materia}
                                 </Badge>
