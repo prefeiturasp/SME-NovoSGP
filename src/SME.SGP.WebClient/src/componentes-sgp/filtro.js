@@ -1,9 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, createRef } from 'react';
 import styled from 'styled-components';
 import Grid from '../componentes/grid';
 import Button from '../componentes/button';
 import { Base, Colors } from '../componentes/colors';
 import SelectComponent from '../componentes/select';
+import { sucesso } from '../servicos/alertas';
 
 const Filtro = () => {
   const [anosLetivos, setAnosLetivos] = useState([]);
@@ -24,6 +25,7 @@ const Filtro = () => {
   const [turmas, setTurmas] = useState();
   const [turmaSelecionada, setTurmaSelecionada] = useState();
 
+  const [toggleInputFocus, setToggleInputFocus] = useState(false);
   const [toggleBusca, setToggleBusca] = useState(false);
 
   const Container = styled.div`
@@ -36,6 +38,7 @@ const Filtro = () => {
     &:focus {
       background: ${Base.Branco} !important;
       box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075) !important;
+      color ${Base.Preto} !important;
     }
   `;
 
@@ -86,6 +89,24 @@ const Filtro = () => {
     ]);
   }, []);
 
+  const inputBuscaRef = createRef();
+
+  useEffect(() => {
+    if (!toggleBusca && toggleInputFocus) inputBuscaRef.current.focus();
+  }, [toggleBusca]);
+
+  const onFocusBusca = () => {
+    if (toggleBusca) {
+      setToggleBusca(false);
+      setToggleInputFocus(true);
+    }
+  };
+
+  const mostraBusca = () => {
+    setToggleBusca(!toggleBusca);
+    setToggleInputFocus(false);
+  };
+
   const onChangeAnoLetivo = ano => {
     setAnoLetivoSelecionado(ano);
   };
@@ -110,8 +131,9 @@ const Filtro = () => {
     setTurmaSelecionada(turma);
   };
 
-  const mostraBusca = () => {
-    setToggleBusca(!toggleBusca);
+  const aplicarFiltro = () => {
+    setToggleBusca(false);
+    sucesso('Suas escolhas foram salvas com sucesso!');
   };
 
   return (
@@ -123,6 +145,8 @@ const Filtro = () => {
             type="text"
             className="form-control form-control-lg rounded d-flex px-5 border-0 fonte-14"
             placeholder="Pesquisar Turma"
+            ref={inputBuscaRef}
+            onFocus={onFocusBusca}
           />
           <Caret
             className="fa fa-caret-down rounded-circle position-absolute text-center"
@@ -140,6 +164,7 @@ const Filtro = () => {
                   valueOption="ano"
                   label="ano"
                   valueSelect={anoLetivoSelecionado}
+                  placeholder="Ano"
                 />
               </Grid>
               <Grid
@@ -153,6 +178,7 @@ const Filtro = () => {
                   valueOption="modalidade"
                   label="modalidade"
                   valueSelect={modalidadeSelecionada}
+                  placeholder="Modalidade"
                 />
               </Grid>
               {modalidadeSelecionada === 'EJA' && (
@@ -176,6 +202,7 @@ const Filtro = () => {
                 valueOption="dre"
                 label="dre"
                 valueSelect={dreSelecionado}
+                placeholder="Diretoria Regional De Educação (DRE)"
               />
             </div>
             <div className="form-group">
@@ -186,6 +213,7 @@ const Filtro = () => {
                 valueOption="unidade"
                 label="unidade"
                 valueSelect={unidadeEscolarSelecionada}
+                placeholder="Unidade Escolar (UE)"
               />
             </div>
             <div className="form-row d-flex justify-content-between">
@@ -197,10 +225,16 @@ const Filtro = () => {
                   valueOption="turma"
                   label="turma"
                   valueSelect={turmaSelecionada}
+                  placeholder="Turma"
                 />
               </Grid>
               <Grid cols={3} className="form-group text-right">
-                <Button label="Aplicar filtro" color={Colors.Roxo} bold />
+                <Button
+                  label="Aplicar filtro"
+                  color={Colors.Roxo}
+                  bold
+                  onClick={aplicarFiltro}
+                />
               </Grid>
             </div>
           </div>
