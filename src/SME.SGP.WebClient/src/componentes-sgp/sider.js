@@ -11,6 +11,11 @@ const Sider = () => {
   i{
     font-style: normal !important;
   }
+
+  div{
+    padding-left: 15px !important;
+  }
+
   .ant-menu, ant-menu-sub, ant-menu-inline, ant-menu-item{
     background: ${Base.Roxo} !important;
     width: 200px !important;
@@ -22,6 +27,14 @@ const Sider = () => {
     color: ${Base.Roxo} !important;
   }
 
+  .ant-menu-inline, .ant-menu-submenu-title, .ant-menu-item{
+    margin-bottom: 0px !important;
+    margin-top: 0px !important;
+  }
+
+  .ant-menu-submenu-title, .ant-menu-item{
+    height: 35px !important;
+  }
   .ant-menu-item {
     color: ${Base.CinzaMenuItem} !important;
   }
@@ -36,7 +49,11 @@ const Sider = () => {
   }
 
   .ant-menu-submenu-title:hover, .ant-menu-inline.ant-menu-sub, .ant-menu-submenu-open{
-    border-radius:4px;
+    border-radius:6px;
+  }
+
+  .ant-menu-submenu-title{
+    font-weight: bold;
   }
 
   .ant-menu-item-selected{
@@ -87,7 +104,7 @@ const Sider = () => {
                 key="subDiarioClasses"
                 title={
                   <span>
-                    <Icon type="unordered-list" />
+                    <i className="fas fa-book-reader"></i>
                     <span>Diário de classes</span>
                   </span>
                 }>
