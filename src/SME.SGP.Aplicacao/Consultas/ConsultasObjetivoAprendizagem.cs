@@ -1,5 +1,4 @@
 ﻿using Microsoft.Extensions.Configuration;
-using SME.SGP.Aplicacao.Auxiliares;
 using SME.SGP.Aplicacao.Integracoes;
 using SME.SGP.Aplicacao.Integracoes.Respostas;
 using SME.SGP.Dominio.Interfaces;
@@ -13,15 +12,15 @@ namespace SME.SGP.Aplicacao
 {
     public class ConsultasObjetivoAprendizagem : IConsultasObjetivoAprendizagem
     {
-        private readonly IRepositorioCache repositorioCache;
         private readonly IConfiguration configuration;
+        private readonly IRepositorioCache repositorioCache;
         private readonly IServicoJurema servicoJurema;
 
         public ConsultasObjetivoAprendizagem(IServicoJurema servicoJurema, IRepositorioCache repositorioCache, IConfiguration configuration)
         {
-            this.servicoJurema = servicoJurema ?? throw new System.ArgumentNullException(nameof(servicoJurema));
-            this.repositorioCache = repositorioCache ?? throw new System.ArgumentNullException(nameof(repositorioCache));
-            this.configuration = configuration ?? throw new System.ArgumentNullException(nameof(configuration));
+            this.servicoJurema = servicoJurema ?? throw new ArgumentNullException(nameof(servicoJurema));
+            this.repositorioCache = repositorioCache ?? throw new ArgumentNullException(nameof(repositorioCache));
+            this.configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
         }
 
         public async Task<IEnumerable<ObjetivoAprendizagemDto>> Listar(FiltroObjetivosAprendizagemDto filtroObjetivosAprendizagemDto)
@@ -38,13 +37,11 @@ namespace SME.SGP.Aplicacao
                 var tempoExpiracao = int.Parse(configuration.GetSection("ExpiracaoCache").GetSection("ObjetivosAprendizagem").Value);
 
                 await repositorioCache.SalvarAsync("ObjetivosAprendizagem", Newtonsoft.Json.JsonConvert.SerializeObject(objetivos), tempoExpiracao);
-
             }
             else
                 objetivos = Newtonsoft.Json.JsonConvert.DeserializeObject<List<ObjetivoAprendizagemDto>>(objetivosCacheString);
 
-
-            return objetivos.Where(c => (filtroObjetivosAprendizagemDto.ComponentesCurricularesIds.Count > 0)?
+            return objetivos.Where(c => (filtroObjetivosAprendizagemDto.ComponentesCurricularesIds.Count > 0) ?
                     filtroObjetivosAprendizagemDto.ComponentesCurricularesIds.Contains(c.IdComponenteCurricular) : true
                     && (filtroObjetivosAprendizagemDto.Ano > 0) ? c.Ano == filtroObjetivosAprendizagemDto.Ano : true);
         }
@@ -53,7 +50,6 @@ namespace SME.SGP.Aplicacao
         {
             foreach (var objetivoDto in objetivos)
             {
-
                 var codigo = objetivoDto.Codigo.Replace("(", "").Replace(")", "");
                 var anoString = codigo.Substring(3, 1);
                 int.TryParse(anoString, out int ano);
