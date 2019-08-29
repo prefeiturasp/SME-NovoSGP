@@ -1,4 +1,4 @@
-import React, { useState, useEffect, createRef } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import styled from 'styled-components';
 import Grid from '../componentes/grid';
 import Button from '../componentes/button';
@@ -7,6 +7,89 @@ import SelectComponent from '../componentes/select';
 import { sucesso } from '../servicos/alertas';
 
 const Filtro = () => {
+  const [dadosProfessor] = useState([
+    {
+      Modalidade: 'EJA',
+      CodModalidade: 3,
+      Dre: 'DIRETORIA REGIONAL DE EDUCACAO IPIRANGA',
+      DreAbrev: 'DRE - IP',
+      UE: 'QUEIROZ FILHO, PROF.',
+      UEAbrev: 'QUEIROZ FILHO, PROF.',
+      NomeTurma: '3C',
+      Ano: 3,
+    },
+    {
+      Modalidade: 'EJA',
+      CodModalidade: 3,
+      Dre: 'DIRETORIA REGIONAL DE EDUCACAO IPIRANGA',
+      DreAbrev: 'DRE - IP',
+      UE: 'QUEIROZ FILHO, PROF.',
+      UEAbrev: 'QUEIROZ FILHO, PROF.',
+      NomeTurma: '3D',
+      Ano: 3,
+    },
+    {
+      Modalidade: 'EJA',
+      CodModalidade: 3,
+      Dre: 'DIRETORIA REGIONAL DE EDUCACAO IPIRANGA',
+      DreAbrev: 'DRE - IP',
+      UE: 'QUEIROZ FILHO, PROF.',
+      UEAbrev: 'QUEIROZ FILHO, PROF.',
+      NomeTurma: '4C',
+      Ano: 4,
+    },
+    {
+      Modalidade: 'EJA',
+      CodModalidade: 3,
+      Dre: 'DIRETORIA REGIONAL DE EDUCACAO IPIRANGA',
+      DreAbrev: 'DRE - IP',
+      UE: 'QUEIROZ FILHO, PROF.',
+      UEAbrev: 'QUEIROZ FILHO, PROF.',
+      NomeTurma: '4D',
+      Ano: 4,
+    },
+    {
+      Modalidade: 'EJA',
+      CodModalidade: 3,
+      Dre: 'DIRETORIA REGIONAL DE EDUCACAO IPIRANGA',
+      DreAbrev: 'DRE - IP',
+      UE: 'QUEIROZ FILHO, PROF.',
+      UEAbrev: 'QUEIROZ FILHO, PROF.',
+      NomeTurma: '4F',
+      Ano: 4,
+    },
+    {
+      Modalidade: 'Fundamental',
+      CodModalidade: 5,
+      Dre: 'DIRETORIA REGIONAL DE EDUCACAO IPIRANGA',
+      DreAbrev: 'DRE - IP',
+      UE: 'QUEIROZ FILHO, PROF.',
+      UEAbrev: 'QUEIROZ FILHO, PROF.',
+      NomeTurma: '8A',
+      Ano: 8,
+    },
+    {
+      Modalidade: 'Fundamental',
+      CodModalidade: 5,
+      Dre: 'DIRETORIA REGIONAL DE EDUCACAO IPIRANGA',
+      DreAbrev: 'DRE - IP',
+      UE: 'QUEIROZ FILHO, PROF.',
+      UEAbrev: 'QUEIROZ FILHO, PROF.',
+      NomeTurma: '8B',
+      Ano: 8,
+    },
+    {
+      Modalidade: 'Fundamental',
+      CodModalidade: 5,
+      Dre: 'DIRETORIA REGIONAL DE EDUCACAO IPIRANGA',
+      DreAbrev: 'DRE - IP',
+      UE: 'QUEIROZ FILHO, PROF.',
+      UEAbrev: 'QUEIROZ FILHO, PROF.',
+      NomeTurma: '8C',
+      Ano: 8,
+    },
+  ]);
+
   const [anosLetivos, setAnosLetivos] = useState([]);
   const [anoLetivoSelecionado, setAnoLetivoSelecionado] = useState();
 
@@ -24,6 +107,8 @@ const Filtro = () => {
 
   const [turmas, setTurmas] = useState();
   const [turmaSelecionada, setTurmaSelecionada] = useState();
+
+  const [resultadosFiltro, setResultadosFiltro] = useState([]);
 
   const [toggleInputFocus, setToggleInputFocus] = useState(false);
   const [toggleBusca, setToggleBusca] = useState(false);
@@ -69,31 +154,78 @@ const Filtro = () => {
   useEffect(() => {
     setAnosLetivos([{ ano: '2019' }]);
     setAnoLetivoSelecionado('2019');
-    setModalidades([
-      { modalidade: 'EJA' },
-      { modalidade: 'Ensino Fundamental' },
-    ]);
+
+    const modalidadesList = [];
+    const dresList = [];
+    const unidadesEscolaresList = [];
+    const turmasList = [];
+
+    dadosProfessor.forEach(dado => {
+      if (
+        modalidadesList.findIndex(
+          modalidade => modalidade.codigo === dado.CodModalidade
+        ) < 0
+      ) {
+        modalidadesList.push({
+          codigo: dado.CodModalidade,
+          modalidade: dado.Modalidade,
+        });
+      }
+
+      if (dresList.findIndex(dre => dre.abrev === dado.DreAbrev) < 0) {
+        dresList.push({
+          abrev: dado.DreAbrev,
+          dre: dado.Dre,
+        });
+      }
+
+      if (
+        unidadesEscolaresList.findIndex(
+          unidade => unidade.abrev === dado.UEAbrev
+        ) < 0
+      ) {
+        unidadesEscolaresList.push({
+          abrev: dado.UEAbrev,
+          unidade: dado.UE,
+        });
+      }
+
+      if (turmasList.findIndex(turma => turma.turma === dado.NomeTurma) < 0) {
+        turmasList.push({
+          ano: dado.Ano,
+          turma: dado.NomeTurma,
+        });
+      }
+    });
+
+    setModalidades([...modalidadesList]);
     setPeriodos([{ periodo: '1º Semestre' }, { periodo: '2º Semestre' }]);
-    setDres([{ dre: 'Diretoria Regional de Educação (DRE) Ipiranga' }]);
-    setUnidadesEscolares([
-      {
-        unidade:
-          'Unidade Escolar (UE) Luiz Gonzaga do Nascimento Jr - Gonzaguinha',
-      },
-    ]);
-    setTurmas([
-      { turma: '1-A' },
-      { turma: '1-B' },
-      { turma: '1-C' },
-      { turma: '1-D' },
-    ]);
+    setDres([...dresList]);
+    setUnidadesEscolares([...unidadesEscolaresList]);
+    setTurmas([...turmasList]);
   }, []);
 
-  const inputBuscaRef = createRef();
+  const inputBuscaRef = useRef();
 
   useEffect(() => {
     if (!toggleBusca && toggleInputFocus) inputBuscaRef.current.focus();
-  }, [toggleBusca]);
+  }, [toggleBusca, toggleInputFocus]);
+
+  const onKeyUpAutocomplete = () => {
+    const texto = inputBuscaRef.current.value;
+    const resultadosAutocomplete = [];
+    if (texto.length >= 2) {
+      dadosProfessor
+        .filter(dado => {
+          return dado.UE.toLowerCase().includes(texto);
+        })
+        .forEach(dado => {
+          resultadosAutocomplete.push(dado);
+        });
+      setResultadosFiltro(resultadosAutocomplete);
+      setToggleInputFocus(true);
+    }
+  };
 
   const onFocusBusca = () => {
     if (toggleBusca) {
@@ -147,12 +279,24 @@ const Filtro = () => {
             placeholder="Pesquisar Turma"
             ref={inputBuscaRef}
             onFocus={onFocusBusca}
+            onKeyUp={onKeyUpAutocomplete}
           />
           <Caret
             className="fa fa-caret-down rounded-circle position-absolute text-center"
             onClick={mostraBusca}
           />
         </div>
+        {resultadosFiltro.length > 0 && (
+          <div className="container position-absolute bg-white shadow rounded mt-1 p-2">
+            <div className="list-group">
+              {resultadosFiltro.map(resultado => {
+                return (
+                  <li className="list-group-item list-group-item-action border-0">{`${resultado.NomeTurma} ${resultado.UE}`}</li>
+                );
+              })}
+            </div>
+          </div>
+        )}
         {toggleBusca && (
           <div className="container position-absolute bg-white shadow rounded mt-1 px-3 pt-5 pb-1">
             <div className="form-row">
