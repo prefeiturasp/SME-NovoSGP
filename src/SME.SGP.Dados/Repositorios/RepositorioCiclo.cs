@@ -31,15 +31,16 @@ namespace SME.SGP.Dados.Repositorios
             return database.Conexao.Query<CicloDto>(query.ToString(), new { ano }).SingleOrDefault();
         }
 
-        public IEnumerable<CicloDto> ObterCiclosPorTurma(IEnumerable<int> turmas)
+        public IEnumerable<CicloDto> ObterCiclosPorTurma(IEnumerable<FiltroCicloDto> filtroCicloDtos)
         {
             StringBuilder query = new StringBuilder();
             query.AppendLine("select");
             query.AppendLine("	tc.id,");
             query.AppendLine("	tc.descricao");
-            query.AppendLine("from");
-            query.AppendLine("	tipo_ciclo tc");
-
+            query.AppendLine("from ");
+            query.AppendLine("	tipo_ciclo tc inner join tipo_ciclo_ano tca on tc.id = tca.tipo_ciclo_id ");
+            filtroCicloDtos.ToList().ForEach(x => query.AppendLine((x == filtroCicloDtos.First() ? "WHERE " : "OR ")
+                + $"(tca.etapa_id = {x.Etapa} AND tca.ano = '{x.Ano}')"));
             return database.Conexao.Query<CicloDto>(query.ToString()).ToList();
         }
 

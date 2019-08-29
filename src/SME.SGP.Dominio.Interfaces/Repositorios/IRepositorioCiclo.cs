@@ -7,6 +7,6 @@ namespace SME.SGP.Dominio.Interfaces
     {
         CicloDto ObterCicloPorAno(int ano);
 
-        IEnumerable<CicloDto> ObterCiclosPorTurma(IEnumerable<int> turmas);
+        IEnumerable<CicloDto> ObterCiclosPorTurma(IEnumerable<FiltroCicloDto> filtroCicloDtos);
     }
 }
