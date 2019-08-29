@@ -3,6 +3,7 @@ using SME.SGP.Api.Filtros;
 using SME.SGP.Aplicacao;
 using SME.SGP.Dto;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace SME.SGP.Api.Controllers
 {
@@ -18,12 +19,12 @@ namespace SME.SGP.Api.Controllers
             this.consultasObjetivoAprendizagem = consultasObjetivoAprendizagem ?? throw new System.ArgumentNullException(nameof(consultasObjetivoAprendizagem));
         }
 
-        [HttpPost]
+        [HttpGet]
         [ProducesResponseType(typeof(IEnumerable<ObjetivoAprendizagemDto>), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        public IActionResult Filtrar([FromBody]FiltroObjetivosAprendizagemDto filtroObjetivosAprendizagemDto)
+        public async Task<IActionResult> Filtrar([FromBody]FiltroObjetivosAprendizagemDto filtroObjetivosAprendizagemDto)
         {
-            return Ok(consultasObjetivoAprendizagem.Listar(filtroObjetivosAprendizagemDto));
+            return Ok(await consultasObjetivoAprendizagem.Listar(filtroObjetivosAprendizagemDto));
         }
     }
 }

@@ -1,10 +1,11 @@
 ﻿using SME.SGP.Dto;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
     public interface IConsultasObjetivoAprendizagem
     {
-        IEnumerable<ObjetivoAprendizagemDto> Listar(FiltroObjetivosAprendizagemDto filtroObjetivosAprendizagemDto);
+        Task<IEnumerable<ObjetivoAprendizagemDto>> Listar(FiltroObjetivosAprendizagemDto filtroObjetivosAprendizagemDto);
     }
 }
