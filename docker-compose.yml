@@ -53,8 +53,8 @@ services:
       - sme-network
     depends_on:
       - "sme-api"
-    env_file:
-      - sme-api.env
+    environment:
+      - API_URL=http://localhost:8080/api
 networks:
   sme-network:
     driver: bridge
