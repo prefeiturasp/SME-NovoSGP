@@ -2,6 +2,7 @@
 using SME.SGP.Aplicacao.Integracoes.Respostas;
 using System.Collections.Generic;
 using System.Net.Http;
+using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao.Integracoes
 {
@@ -14,12 +15,13 @@ namespace SME.SGP.Aplicacao.Integracoes
             this.httpClient = httpClient;
         }
 
-        public IEnumerable<ObjetivoAprendizagemResposta> ObterListaObjetivosAprendizagem()
+        public async Task<IEnumerable<ObjetivoAprendizagemResposta>> ObterListaObjetivosAprendizagem()
         {
-            var resposta = httpClient.GetAsync("v1/learning_objectives").Result;
+            var resposta = await httpClient.GetAsync("v1/learning_objectives");
+
             if (resposta.IsSuccessStatusCode)
             {
-                var json = resposta.Content.ReadAsStringAsync().Result;
+                var json = await resposta.Content.ReadAsStringAsync();
                 return JsonConvert.DeserializeObject<IEnumerable<ObjetivoAprendizagemResposta>>(json);
             }
             return null;

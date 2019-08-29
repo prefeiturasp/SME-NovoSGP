@@ -86,6 +86,12 @@ namespace SME.SGP.Api
                 c.BaseAddress = new Uri(Configuration.GetSection("UrlApiJurema").Value);
                 c.DefaultRequestHeaders.Add("Accept", "application/json");
             });
+
+            services.AddDistributedRedisCache(options =>
+            {
+                options.Configuration = Configuration.GetConnectionString("SGP-Redis");
+                options.InstanceName = Configuration.GetValue<string>("Nome-Instancia-Redis");
+            });
         }
     }
 }
