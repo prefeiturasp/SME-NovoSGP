@@ -12,6 +12,7 @@ import { erro, sucesso, confirmacao } from '../../../servicos/alertas';
 // import ControleEstado from '../../../componentes/controleEstado';
 import api from '../../../servicos/api';
 import history from '../../../servicos/history';
+import ModalConfirmacao from '../../../componentes/modalConfirmacao';
 
 export default function PlanoCiclo(props) {
   const { match } = props;
@@ -24,11 +25,15 @@ export default function PlanoCiclo(props) {
   const [listaMatriz, setListaMatriz] = useState([]);
   const [listaODS, setListaODS] = useState([]);
   const [listaCiclos, setListaCiclos] = useState([]);
-  const [cicloSelecionado, setCicloSelecionado] = useState('1');
+  const [cicloSelecionado, setCicloSelecionado] = useState('');
   const [descricaoCiclo, setDescricaoCiclo] = useState('');
   const [parametrosConsulta, setParametrosConsulta] = useState({ id: 0 });
   const [modoEdicao, setModoEdicao] = useState(false);
   const [pronto, setPronto] = useState(false);
+  const [exibirConfirmacaoVoltar, setExibirConfirmacaoVoltar] = useState(false);
+  const [exibirConfirmacaoCancelar, setExibirConfirmacaoCancelar] = useState(
+    false
+  );
   const [inseridoAlterado, setInseridoAlterado] = useState({
     alteradoEm: '',
     alteradoPor: '',
@@ -58,7 +63,7 @@ export default function PlanoCiclo(props) {
         obterCicloExistente(
           match.params.ano,
           match.params.escolaId,
-          cicloSelecionado
+          cicloSelecionado || '1'
         );
       }
     }
@@ -208,29 +213,14 @@ export default function PlanoCiclo(props) {
   function onClickVoltar() {
 
     if (modoEdicao) {
-      confirmacao(
-        'Atenção',
-        `Suas alterações não foram salvas, deseja salvar agora?`,
-        () => salvarPlanoCiclo(true),
-        () => {
-          setModoEdicao(false);
-          history.push('/');
-          return false;
-        }
-      );
+      setExibirConfirmacaoVoltar(true);
     } else {
       history.push('/');
     }
   }
 
   function onClickCancelar() {
-    confirmacao(
-      'Atenção',
-      `Você não salvou as informações
-      preenchidas. Deseja realmente cancelar as alterações?`,
-      confirmarCancelamento,
-      () => true
-    );
+    setExibirConfirmacaoCancelar(true);
   }
 
   function confirmarCancelamento() {
@@ -292,7 +282,6 @@ export default function PlanoCiclo(props) {
 
     api.post('v1/planos-ciclo', params).then(
       () => {
-        console.log(params);
         sucesso('Suas informações foram salvas com sucesso.');
         if (navegarParaPlanejamento) {
           history.push('/');
@@ -311,6 +300,33 @@ export default function PlanoCiclo(props) {
 
   return (
     <Container>
+      <ModalConfirmacao
+        id="modal-confirmacao-cancelar"
+        visivel={exibirConfirmacaoCancelar}
+        onConfirmacaoSim={() => {
+          confirmarCancelamento();
+          setExibirConfirmacaoCancelar(false);
+        }}
+        onConfirmacaoNao={() => setExibirConfirmacaoCancelar(false)}
+        conteudo="Você não salvou as informações preenchidas."
+        perguntaDoConteudo="Deseja realmente cancelar as alterações?"
+        titulo="Atenção"
+      />
+      <ModalConfirmacao
+        id="modal-confirmacao-voltar"
+        visivel={exibirConfirmacaoVoltar}
+        onConfirmacaoSim={() => {
+          salvarPlanoCiclo(true);
+          setExibirConfirmacaoVoltar(false);
+        }}
+        onConfirmacaoNao={() => {
+          setExibirConfirmacaoVoltar(false);
+          setModoEdicao(false);
+          history.push('/');
+        }}
+        perguntaDoConteudo="Suas alterações não foram salvas, deseja salvar agora?"
+        titulo="Atenção"
+      />
       {/* <ControleEstado
         when={modoEdicao}
         confirmar={url => history.push(url)}
