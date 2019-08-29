@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import shortid from 'shortid';
 import styled from 'styled-components';
 import CardCollapse from '../../../componentes/cardCollapse';
@@ -10,7 +10,10 @@ import Seta from '../../../recursos/Seta.svg';
 import { confirmacao } from '../../../servicos/alertas';
 
 export default function PlanoAnual() {
-  const [bimestres] = useState([
+
+  const textEditorRef = useRef(null);
+
+  const [bimestres, setBimestres] = useState([
     { nome: '1º Bimestre', materias: [] },
     { nome: '2º Bimestre', materias: [] },
     {
@@ -103,6 +106,13 @@ export default function PlanoAnual() {
     );
   };
 
+  const onChangeTextEditor = (value, reference) => {
+
+    //Use reference.current.props.propsPai para obter as propriedades do objeto pai, podendo passar N outras propriedades personalizadas
+    //Esse metodo vai servir pra quando você quiser alterar o estado do componente para edição. Não dependa do valor daqui para atualizar o estado do editor de texto
+    //Para usar o estado do componete use textEditorRef.current.state.value ele fornecerá o valor mais atual do componente textEditor, e mais confiavel do que defender do blur
+  }
+
   const selecionaObjetivo = e => {
     e.persist();
 
@@ -125,7 +135,7 @@ export default function PlanoAnual() {
     setObjetivos([...objetivos]);
   };
 
-  const confirmarCancelamento = () => {};
+  const confirmarCancelamento = () => { };
 
   const cancelarAlteracoes = () => {
     confirmacao(
@@ -185,53 +195,53 @@ export default function PlanoAnual() {
                     <h6 className="d-inline-block font-weight-bold my-0 fonte-14">
                       Objetivos de aprendizagem
                       </h6>
-                      <div>
-                        {bimestre.materias && bimestre.materias.length > 0
-                          ? bimestre.materias.map(materia => {
-                              return (
-                                <Badge
-                                  role="button"
-                                  onClick={selecionaMateria}
-                                  aria-pressed={false}
-                                  key={shortid.generate()}
-                                  className="badge badge-pill border text-dark bg-white font-weight-light px-2 py-1 mt-3 mr-2"
-                                >
-                                  {materia.materia}
-                                </Badge>
-                              );
-                            })
-                          : null}
-                      </div>
-                      <div className="mt-4">
-                        {objetivos.length > 0
-                          ? objetivos.map(objetivo => {
-                              return (
-                                <ul
-                                  key={shortid.generate()}
-                                  className="list-group list-group-horizontal mt-3"
-                                >
-                                  <ListItemButton
-                                    className="list-group-item d-flex align-items-center font-weight-bold fonte-14"
-                                    role="button"
-                                    aria-pressed={objetivo.selected && true}
-                                    onClick={selecionaObjetivo}
-                                    onKeyUp={selecionaObjetivo}
-                                  >
-                                    {objetivo.code}
-                                  </ListItemButton>
-                                  <ListItem className="list-group-item flex-fill p-2 fonte-12">
-                                    {objetivo.description}
-                                  </ListItem>
-                                </ul>
-                              );
-                            })
-                          : null}
-                      </div>
-                    </Grid>
-                    <Grid cols={6}>
-                      <h6 className="d-inline-block font-weight-bold my-0 fonte-14">
-                        Objetivos de aprendizagem e meus objetivos (Currículo da
-                        cidade)
+                    <div>
+                      {bimestre.materias && bimestre.materias.length > 0
+                        ? bimestre.materias.map(materia => {
+                          return (
+                            <Badge
+                              role="button"
+                              onClick={selecionaMateria}
+                              aria-pressed={false}
+                              key={shortid.generate()}
+                              className="badge badge-pill border text-dark bg-white font-weight-light px-2 py-1 mt-3 mr-2"
+                            >
+                              {materia.materia}
+                            </Badge>
+                          );
+                        })
+                        : null}
+                    </div>
+                    <div className="mt-4">
+                      {objetivos.length > 0
+                        ? objetivos.map(objetivo => {
+                          return (
+                            <ul
+                              key={shortid.generate()}
+                              className="list-group list-group-horizontal mt-3"
+                            >
+                              <ListItemButton
+                                className="list-group-item d-flex align-items-center font-weight-bold fonte-14"
+                                role="button"
+                                aria-pressed={objetivo.selected && true}
+                                onClick={selecionaObjetivo}
+                                onKeyUp={selecionaObjetivo}
+                              >
+                                {objetivo.code}
+                              </ListItemButton>
+                              <ListItem className="list-group-item flex-fill p-2 fonte-12">
+                                {objetivo.description}
+                              </ListItem>
+                            </ul>
+                          );
+                        })
+                        : null}
+                    </div>
+                  </Grid>
+                  <Grid cols={6}>
+                    <h6 className="d-inline-block font-weight-bold my-0 fonte-14">
+                      Objetivos de aprendizagem e meus objetivos (Currículo da
+                      cidade)
                       </h6>
                     <div
                       role="group"
@@ -293,12 +303,7 @@ export default function PlanoAnual() {
                       </ul>
                       <fieldset className="mt-3">
                         <form action="">
-                        <TextEditor ref={textEditorRef} id="textEditor" height="135px" maxHeight="calc(100vh)" onBlur={onChangeTextEditor} value={descricaoCiclo} />
-                            <TextEditor
-                              className="form-control"
-                              height={135}
-                              value={bimestre.objetivo}
-                            />
+                          <TextEditor ref={textEditorRef} id="textEditor" bimestre={bimestre.nome} height="135px" maxHeight="135px" onBlur={onChangeTextEditor} value={bimestre.objetivo} />
                         </form>
                       </fieldset>
                     </div>
