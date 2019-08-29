@@ -10,20 +10,17 @@ namespace SME.SGP.Aplicacao
     public class ComandosPlanoAnual : IComandosPlanoAnual
     {
         private readonly IRepositorioComponenteCurricular repositorioComponenteCurricular;
-        private readonly IRepositorioDisciplinaPlano repositorioDisciplinaPlano;
         private readonly IRepositorioObjetivoAprendizagemPlano repositorioObjetivoAprendizagemPlano;
         private readonly IRepositorioPlanoAnual repositorioPlanoAnual;
         private readonly IUnitOfWork unitOfWork;
 
         public ComandosPlanoAnual(IRepositorioPlanoAnual repositorioPlanoAnual,
                                   IRepositorioObjetivoAprendizagemPlano repositorioObjetivoAprendizagemPlano,
-                                  IRepositorioDisciplinaPlano repositorioDisciplinaPlano,
                                   IRepositorioComponenteCurricular repositorioComponenteCurricular,
                                   IUnitOfWork unitOfWork)
         {
             this.repositorioPlanoAnual = repositorioPlanoAnual ?? throw new ArgumentNullException(nameof(repositorioPlanoAnual));
             this.repositorioObjetivoAprendizagemPlano = repositorioObjetivoAprendizagemPlano ?? throw new ArgumentNullException(nameof(repositorioObjetivoAprendizagemPlano));
-            this.repositorioDisciplinaPlano = repositorioDisciplinaPlano ?? throw new ArgumentNullException(nameof(repositorioDisciplinaPlano));
             this.repositorioComponenteCurricular = repositorioComponenteCurricular ?? throw new ArgumentNullException(nameof(repositorioComponenteCurricular));
             this.unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
         }

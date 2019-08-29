@@ -1,15 +1,16 @@
-﻿CREATE TABLE IF NOT exists public.componente_curricular (
-  id int8 NOT NULL GENERATED ALWAYS AS IDENTITY,
-  codigo_jurema int8 NOT NULL,
-  codigo_eol int8 NOT NULL,
-  descricao_eol varchar(100) NOT NULL,
-  criado_em timestamp NOT NULL,
-  criado_por varchar(200) NOT NULL,
-  alterado_em timestamp NULL,
-  alterado_por varchar(200) NULL,
-  criado_rf varchar(200) NOT NULL,
-  alterado_rf varchar(200) NULL,
-  CONSTRAINT componente_curricular_un UNIQUE (codigo_jurema, codigo_eol)
+﻿CREATE TABLE if not exists public.componente_curricular (
+	id int8 NOT NULL GENERATED ALWAYS AS IDENTITY,
+	codigo_jurema int8 NOT NULL,
+	codigo_eol int8 NOT NULL,
+	descricao_eol varchar(100) NOT NULL,
+	criado_em timestamp NOT NULL,
+	criado_por varchar(200) NOT NULL,
+	alterado_em timestamp NULL,
+	alterado_por varchar(200) NULL,
+	criado_rf varchar(200) NOT NULL,
+	alterado_rf varchar(200) NULL,
+	CONSTRAINT componente_curricular_pk PRIMARY KEY (id),
+	CONSTRAINT componente_curricular_un UNIQUE (codigo_jurema,codigo_eol)
 );
 insert into
   public.componente_curricular (
@@ -455,12 +456,13 @@ CREATE TABLE if not exists public.plano_anual (
   CONSTRAINT plano_anual_un UNIQUE (escola_id, turma_id, ano, bimestre)
 );
 
+
+
 CREATE TABLE if not exists public.objetivo_aprendizagem_plano (
 	id int8 NOT NULL GENERATED ALWAYS AS IDENTITY,
 	plano_id int8 NOT NULL,
-	codigo_objetivo_jurema varchar(20) NOT NULL,
-	codigo_componente_jurema int8 NOT NULL,
-	codigo_componente_eol int8 NOT NULL,
+	objetivo_aprendizagem_jurema_id int8 NOT NULL,
+	componente_curricular_id int8 NOT NULL,
 	criado_em timestamp NOT NULL,
 	criado_por varchar(200) NOT NULL,
 	alterado_em timestamp NULL,
@@ -468,8 +470,7 @@ CREATE TABLE if not exists public.objetivo_aprendizagem_plano (
 	criado_rf varchar(200) NOT NULL,
 	alterado_rf varchar(200) NULL,
 	CONSTRAINT objetivo_aprendizagem_plano_pk PRIMARY KEY (id),
-	CONSTRAINT objetivo_aprendizagem_plano_un UNIQUE (plano_id, codigo_componente_jurema, codigo_componente_eol),
-	CONSTRAINT objetivo_aprendizagem_plano_fk FOREIGN KEY (codigo_componente_jurema, codigo_componente_eol) REFERENCES componente_curricular(codigo_jurema, codigo_eol),
-	CONSTRAINT plano_id_fk FOREIGN KEY (plano_id) REFERENCES plano_anual(id)
+	CONSTRAINT objetivo_aprendizagem_plano_fk FOREIGN KEY (componente_curricular_id) REFERENCES public.componente_curricular(id),
+	CONSTRAINT plano_id_fk FOREIGN KEY (plano_id) REFERENCES public.plano_anual(id)
 );
 
