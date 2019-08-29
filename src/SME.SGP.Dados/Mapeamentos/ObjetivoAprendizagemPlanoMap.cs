@@ -7,7 +7,8 @@ namespace SME.SGP.Dados.Mapeamentos
         public ObjetivoAprendizagemPlanoMap()
         {
             ToTable("objetivo_aprendizagem_plano");
-            Map(c => c.ObjetivoAprendizagemId).ToColumn("objetivo_aprendizagem_id");
+            Map(c => c.CodigoComponenteEOL).ToColumn("codigo_componente_eol");
+            Map(c => c.CodigoComponenteJurema).ToColumn("codigo_componente_jurema");
             Map(c => c.PlanoId).ToColumn("plano_id");
         }
     }
