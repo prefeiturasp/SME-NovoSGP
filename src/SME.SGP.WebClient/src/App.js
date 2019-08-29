@@ -10,7 +10,6 @@ import GlobalStyle from './estilos/global';
 import Navbar from './componentes-sgp/navbar';
 import Sidebar from './componentes-sgp/sidebar';
 import { store } from './redux';
-import styled from 'styled-components';
 
 
 const notificacoes = { alertas: [] };
