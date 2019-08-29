@@ -144,15 +144,6 @@ export default function PlanoAnual() {
     // );
   };
 
-  const toolbarOptions = [
-    ['bold', 'italic', 'underline'],
-    [{ list: 'bullet' }, { list: 'ordered' }],
-  ];
-
-  const modules = {
-    toolbar: toolbarOptions,
-  };
-
   return (
     <>
       <Grid cols={12}>
@@ -188,141 +179,140 @@ export default function PlanoAnual() {
       <Grid cols={12}>
         {bimestres && bimestres.length > 0
           ? bimestres.map(bimestre => {
-              const indice = shortid.generate().replace(/[0-9]/g, '');
-              return (
-                <CardCollapse
-                  key={indice}
-                  titulo={bimestre.nome}
-                  indice={indice}
-                  show={bimestre.nome === '3º Bimestre' && true}
-                >
-                  <div className="row">
-                    <Grid cols={6}>
-                      <h6 className="d-inline-block font-weight-bold my-0 fonte-14">
-                        Objetivos de aprendizagem
+            const indice = shortid.generate().replace(/[0-9]/g, '');
+            return (
+              <CardCollapse
+                key={indice}
+                titulo={bimestre.nome}
+                indice={indice}
+                show={bimestre.nome === '3º Bimestre' && true}
+              >
+                <div className="row">
+                  <Grid cols={6}>
+                    <h6 className="d-inline-block font-weight-bold my-0 fonte-14">
+                      Objetivos de aprendizagem
                       </h6>
-                      <div>
-                        {bimestre.materias && bimestre.materias.length > 0
-                          ? bimestre.materias.map(materia => {
-                              return (
-                                <Badge
-                                  role="button"
-                                  onClick={selecionaMateria}
-                                  aria-pressed={false}
-                                  key={shortid.generate()}
-                                  className="badge badge-pill border text-dark bg-white font-weight-light p-2 mt-3 mr-2"
-                                >
-                                  {materia.materia}
-                                </Badge>
-                              );
-                            })
-                          : null}
-                      </div>
-                      <div className="mt-4">
-                        {objetivos.length > 0
-                          ? objetivos.map(objetivo => {
-                              return (
-                                <ul
-                                  key={shortid.generate()}
-                                  className="list-group list-group-horizontal mt-3"
-                                >
-                                  <ListItemButton
-                                    className="list-group-item d-flex align-items-center font-weight-bold fonte-14"
-                                    role="button"
-                                    aria-pressed={objetivo.selected && true}
-                                    onClick={selecionaObjetivo}
-                                    onKeyUp={selecionaObjetivo}
-                                  >
-                                    {objetivo.code}
-                                  </ListItemButton>
-                                  <ListItem className="list-group-item flex-fill p-2 fonte-12">
-                                    {objetivo.description}
-                                  </ListItem>
-                                </ul>
-                              );
-                            })
-                          : null}
-                      </div>
-                    </Grid>
-                    <Grid cols={6}>
-                      <h6 className="d-inline-block font-weight-bold my-0 fonte-14">
-                        Objetivos de aprendizagem e meus objetivos (Currículo da
-                        cidade)
+                    <div>
+                      {bimestre.materias && bimestre.materias.length > 0
+                        ? bimestre.materias.map(materia => {
+                          return (
+                            <Badge
+                              role="button"
+                              onClick={selecionaMateria}
+                              aria-pressed={false}
+                              key={shortid.generate()}
+                              className="badge badge-pill border text-dark bg-white font-weight-light p-2 mt-3 mr-2"
+                            >
+                              {materia.materia}
+                            </Badge>
+                          );
+                        })
+                        : null}
+                    </div>
+                    <div className="mt-4">
+                      {objetivos.length > 0
+                        ? objetivos.map(objetivo => {
+                          return (
+                            <ul
+                              key={shortid.generate()}
+                              className="list-group list-group-horizontal mt-3"
+                            >
+                              <ListItemButton
+                                className="list-group-item d-flex align-items-center font-weight-bold fonte-14"
+                                role="button"
+                                aria-pressed={objetivo.selected && true}
+                                onClick={selecionaObjetivo}
+                                onKeyUp={selecionaObjetivo}
+                              >
+                                {objetivo.code}
+                              </ListItemButton>
+                              <ListItem className="list-group-item flex-fill p-2 fonte-12">
+                                {objetivo.description}
+                              </ListItem>
+                            </ul>
+                          );
+                        })
+                        : null}
+                    </div>
+                  </Grid>
+                  <Grid cols={6}>
+                    <h6 className="d-inline-block font-weight-bold my-0 fonte-14">
+                      Objetivos de aprendizagem e meus objetivos (Currículo da
+                      cidade)
                       </h6>
-                      <div
-                        role="group"
-                        aria-label={`${objetivos.length > 0 &&
-                          objetivos.filter(objetivo => objetivo.selected)
-                            .length} objetivos selecionados`}
-                      >
-                        {objetivos.length > 0
-                          ? objetivos
-                              .filter(objetivo => objetivo.selected)
-                              .map(selecionado => {
-                                return (
-                                  <Button
-                                    key={shortid.generate()}
-                                    label={selecionado.code}
-                                    color={Colors.AzulAnakiwa}
-                                    bold
-                                    steady
-                                    remove
-                                    className="text-dark mt-3 mr-2 stretched-link"
-                                    onClick={removeObjetivoSelecionado}
-                                  />
-                                );
-                              })
-                          : null}
-                      </div>
-                      <div className="mt-4">
-                        <h6 className="d-inline-block font-weight-bold my-0 mr-2 fonte-14">
-                          Planejamento Anual
+                    <div
+                      role="group"
+                      aria-label={`${objetivos.length > 0 &&
+                        objetivos.filter(objetivo => objetivo.selected)
+                          .length} objetivos selecionados`}
+                    >
+                      {objetivos.length > 0
+                        ? objetivos
+                          .filter(objetivo => objetivo.selected)
+                          .map(selecionado => {
+                            return (
+                              <Button
+                                key={shortid.generate()}
+                                label={selecionado.code}
+                                color={Colors.AzulAnakiwa}
+                                bold
+                                steady
+                                remove
+                                className="text-dark mt-3 mr-2 stretched-link"
+                                onClick={removeObjetivoSelecionado}
+                              />
+                            );
+                          })
+                        : null}
+                    </div>
+                    <div className="mt-4">
+                      <h6 className="d-inline-block font-weight-bold my-0 mr-2 fonte-14">
+                        Planejamento Anual
                         </h6>
-                        <span className="text-secondary font-italic fonte-12">
-                          Itens autorais do professor
+                      <span className="text-secondary font-italic fonte-12">
+                        Itens autorais do professor
                         </span>
-                        <p className="text-secondary mt-3 fonte-13">
-                          É importante seguir a seguinte estrutura:
+                      <p className="text-secondary mt-3 fonte-13">
+                        É importante seguir a seguinte estrutura:
                         </p>
-                        <ul className="list-group list-group-horizontal fonte-10">
-                          <li className="list-group-item border-right-0 py-1">
-                            Objetivos
+                      <ul className="list-group list-group-horizontal fonte-10">
+                        <li className="list-group-item border-right-0 py-1">
+                          Objetivos
                           </li>
-                          <li className="list-group-item border-left-0 border-right-0 px-0 py-1">
-                            <img src={Seta} alt="Próximo" />
+                        <li className="list-group-item border-left-0 border-right-0 px-0 py-1">
+                          <img src={Seta} alt="Próximo" />
+                        </li>
+                        <li className="list-group-item border-left-0 border-right-0 py-1">
+                          Conteúdo
                           </li>
-                          <li className="list-group-item border-left-0 border-right-0 py-1">
-                            Conteúdo
+                        <li className="list-group-item border-left-0 border-right-0 px-0 py-1">
+                          <img src={Seta} alt="Próximo" />
+                        </li>
+                        <li className="list-group-item border-left-0 border-right-0 py-1">
+                          Estratégia
                           </li>
-                          <li className="list-group-item border-left-0 border-right-0 px-0 py-1">
-                            <img src={Seta} alt="Próximo" />
+                        <li className="list-group-item border-left-0 border-right-0 px-0 py-1">
+                          <img src={Seta} alt="Próximo" />
+                        </li>
+                        <li className="list-group-item border-left-0 py-1">
+                          Avaliação
                           </li>
-                          <li className="list-group-item border-left-0 border-right-0 py-1">
-                            Estratégia
-                          </li>
-                          <li className="list-group-item border-left-0 border-right-0 px-0 py-1">
-                            <img src={Seta} alt="Próximo" />
-                          </li>
-                          <li className="list-group-item border-left-0 py-1">
-                            Avaliação
-                          </li>
-                        </ul>
-                        <fieldset className="mt-3">
-                          <form action="">
+                      </ul>
+                      <fieldset className="mt-3">
+                        <form action="">
                             <TextEditor
                               className="form-control"
-                              modules={modules}
                               height={135}
                               value={bimestre.objetivo}
                             />
-                          </form>
-                        </fieldset>
-                      </div>
-                    </Grid>
-                  </div>
-                </CardCollapse>
-              );
-            })
+                        </form>
+                      </fieldset>
+                    </div>
+                  </Grid>
+                </div>
+              </CardCollapse>
+            );
+          })
           : null}
       </Grid>
     </>
