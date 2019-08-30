@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.Configuration;
+using Newtonsoft.Json;
 using SME.SGP.Aplicacao.Integracoes;
 using SME.SGP.Aplicacao.Integracoes.Respostas;
 using SME.SGP.Dominio.Interfaces;
@@ -23,7 +24,16 @@ namespace SME.SGP.Aplicacao
             this.configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
         }
 
-        public async Task<IEnumerable<ObjetivoAprendizagemDto>> Listar(FiltroObjetivosAprendizagemDto filtroObjetivosAprendizagemDto)
+        public async Task<IEnumerable<ObjetivoAprendizagemDto>> Filtrar(FiltroObjetivosAprendizagemDto filtroObjetivosAprendizagemDto)
+        {
+            var objetivos = await Listar();
+
+            return objetivos?.Where(c => (filtroObjetivosAprendizagemDto.ComponentesCurricularesIds.Count > 0) ?
+                    filtroObjetivosAprendizagemDto.ComponentesCurricularesIds.Contains(c.IdComponenteCurricular) : true
+                    && (filtroObjetivosAprendizagemDto.Ano > 0) ? c.Ano == filtroObjetivosAprendizagemDto.Ano : true);
+        }
+
+        public async Task<IEnumerable<ObjetivoAprendizagemDto>> Listar()
         {
             var objetivos = new List<ObjetivoAprendizagemDto>();
 
@@ -36,14 +46,12 @@ namespace SME.SGP.Aplicacao
 
                 var tempoExpiracao = int.Parse(configuration.GetSection("ExpiracaoCache").GetSection("ObjetivosAprendizagem").Value);
 
-                await repositorioCache.SalvarAsync("ObjetivosAprendizagem", Newtonsoft.Json.JsonConvert.SerializeObject(objetivos), tempoExpiracao);
+                await repositorioCache.SalvarAsync("ObjetivosAprendizagem", JsonConvert.SerializeObject(objetivos), tempoExpiracao);
             }
             else
-                objetivos = Newtonsoft.Json.JsonConvert.DeserializeObject<List<ObjetivoAprendizagemDto>>(objetivosCacheString);
+                objetivos = JsonConvert.DeserializeObject<List<ObjetivoAprendizagemDto>>(objetivosCacheString);
 
-            return objetivos.Where(c => (filtroObjetivosAprendizagemDto.ComponentesCurricularesIds.Count > 0) ?
-                    filtroObjetivosAprendizagemDto.ComponentesCurricularesIds.Contains(c.IdComponenteCurricular) : true
-                    && (filtroObjetivosAprendizagemDto.Ano > 0) ? c.Ano == filtroObjetivosAprendizagemDto.Ano : true);
+            return objetivos;
         }
 
         private IEnumerable<ObjetivoAprendizagemDto> MapearParaDto(IEnumerable<ObjetivoAprendizagemResposta> objetivos)

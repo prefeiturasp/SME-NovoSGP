@@ -10,8 +10,11 @@ namespace SME.SGP.Dados.Repositorios
 {
     public class RepositorioPlanoAnual : RepositorioBase<PlanoAnual>, IRepositorioPlanoAnual
     {
+        private readonly IRepositorioCache repositorioCache;
+
         public RepositorioPlanoAnual(ISgpContext conexao) : base(conexao)
         {
+            this.repositorioCache = repositorioCache;
         }
 
         public PlanoAnualCompletoDto ObterPlanoAnualComObjetivosAprendizagem(int ano, long cicloId, long escolaId)
@@ -39,7 +42,7 @@ namespace SME.SGP.Dados.Repositorios
 
             query.AppendLine("select");
             query.AppendLine("	pa.*,");
-            query.AppendLine("	string_agg(distinct cast(oap.objetivo_aprendizagem_id as text), ',') as ObjetivosAprendizagem");
+            query.AppendLine("	string_agg(distinct cast(oap.objetivo_aprendizagem_jurema_id as text), ',') as ObjetivosAprendizagemPlano");
             query.AppendLine("from");
             query.AppendLine("	plano_anual pa");
             query.AppendLine("inner join objetivo_aprendizagem_plano oap on");
