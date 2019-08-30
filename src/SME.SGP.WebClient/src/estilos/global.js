@@ -52,4 +52,6 @@ export default createGlobalStyle`
     background-color:  ${Base.Roxo}  !important;
     color: #ffffff !important;
   }
+
+
 `;
