@@ -3,7 +3,6 @@ using SME.SGP.Dados.Contexto;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Dto;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -31,9 +30,9 @@ namespace SME.SGP.Dados.Repositorios
             return database.Conexao.Query<CicloDto>(query.ToString(), new { ano }).SingleOrDefault();
         }
 
-        public IEnumerable<CicloDto> ObterCiclosPorTurma(IEnumerable<string> Ano, string AnoSelecionado, int Modalidade)
+        public IEnumerable<CicloDto> ObterCiclosPorAnoModalidade(FiltroCicloDto filtroCicloDto)
         {
-            var anos = "'" + string.Join("','", Ano) + "'";
+            var anos = "'" + string.Join("','", filtroCicloDto.Anos) + "'";
 
             StringBuilder query = new StringBuilder();
             query.AppendLine("SELECT");
@@ -43,8 +42,8 @@ namespace SME.SGP.Dados.Repositorios
             query.AppendLine("from ");
             query.AppendLine("	tipo_ciclo tc inner join tipo_ciclo_ano tca on tc.id = tca.tipo_ciclo_id ");
             query.AppendLine("WHERE ");
-            query.AppendLine($"  tca.Ano = '{AnoSelecionado}'");
-            query.AppendLine($"  AND etapa_id = {Modalidade}");
+            query.AppendLine($"  tca.Ano = '{filtroCicloDto.AnoSelecionado}'");
+            query.AppendLine($"  AND etapa_id = {filtroCicloDto.Modalidade}");
             query.AppendLine(" UNION ");
             query.AppendLine("SELECT");
             query.AppendLine("	tc.id,");
@@ -54,14 +53,9 @@ namespace SME.SGP.Dados.Repositorios
             query.AppendLine("	tipo_ciclo tc inner join tipo_ciclo_ano tca on tc.id = tca.tipo_ciclo_id ");
             query.AppendLine("WHERE ");
             query.AppendLine($"  tca.Ano IN ({anos})");
-            query.AppendLine($"  AND etapa_id = {Modalidade} ");
+            query.AppendLine($"  AND etapa_id = {filtroCicloDto.Modalidade} ");
             query.AppendLine($"ORDER BY Selecionado DESC");
             return database.Conexao.Query<CicloDto>(query.ToString()).ToList();
-        }
-
-        private object IEnumerable<T>(string v, object p)
-        {
-            throw new NotImplementedException();
         }
     }
 }
