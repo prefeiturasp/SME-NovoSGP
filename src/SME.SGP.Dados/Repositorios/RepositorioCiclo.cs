@@ -31,16 +31,31 @@ namespace SME.SGP.Dados.Repositorios
             return database.Conexao.Query<CicloDto>(query.ToString(), new { ano }).SingleOrDefault();
         }
 
-        public IEnumerable<CicloDto> ObterCiclosPorTurma(IEnumerable<FiltroCicloDto> filtroCicloDtos)
+        public IEnumerable<CicloDto> ObterCiclosPorTurma(IEnumerable<string> Ano, string AnoSelecionado, int Modalidade)
         {
+            var anos = "'" + string.Join("','", Ano) + "'";
+
             StringBuilder query = new StringBuilder();
-            query.AppendLine("select");
+            query.AppendLine("SELECT");
             query.AppendLine("	tc.id,");
-            query.AppendLine("	tc.descricao");
+            query.AppendLine("	tc.descricao,");
+            query.AppendLine("	1 AS Selecionado");
             query.AppendLine("from ");
             query.AppendLine("	tipo_ciclo tc inner join tipo_ciclo_ano tca on tc.id = tca.tipo_ciclo_id ");
-            filtroCicloDtos.ToList().ForEach(x => query.AppendLine((x == filtroCicloDtos.First() ? "WHERE " : "OR ")
-                + $"(tca.etapa_id = {x.Etapa} AND tca.ano = '{x.Ano}')"));
+            query.AppendLine("WHERE ");
+            query.AppendLine($"  tca.Ano = '{AnoSelecionado}'");
+            query.AppendLine($"  AND etapa_id = {Modalidade}");
+            query.AppendLine(" UNION ");
+            query.AppendLine("SELECT");
+            query.AppendLine("	tc.id,");
+            query.AppendLine("	tc.descricao,");
+            query.AppendLine("	0 AS Selecionado");
+            query.AppendLine("from ");
+            query.AppendLine("	tipo_ciclo tc inner join tipo_ciclo_ano tca on tc.id = tca.tipo_ciclo_id ");
+            query.AppendLine("WHERE ");
+            query.AppendLine($"  tca.Ano IN ({anos})");
+            query.AppendLine($"  AND etapa_id = {Modalidade} ");
+            query.AppendLine($"ORDER BY Selecionado DESC");
             return database.Conexao.Query<CicloDto>(query.ToString()).ToList();
         }
 
