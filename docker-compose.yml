@@ -54,6 +54,8 @@ services:
       - sme-network
     depends_on:
       - "sme-api"
+    environment:
+      - API_URL=http://localhost:8080/api
   sme-redis:
     image: redis:5.0.5-alpine
     container_name: sme-redis
