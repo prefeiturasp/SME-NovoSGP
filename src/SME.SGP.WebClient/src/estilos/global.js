@@ -58,6 +58,50 @@ export default createGlobalStyle`
   }
 
   .p-r-5{
-    padding-left: 5px !important;
+    padding-right: 5px !important;
+  }
+
+  .m-r-10{
+    margin-right: 10px !important;
+  }
+
+  .m-t-10{
+    margin-top: 10px !important;
+  }
+
+  .m-b-10{
+    margin-bottom: 10px !important;
+  }
+
+  .m-r-0{
+    margin-rigth: 0px !important;
+  }
+
+  .m-l-0{
+    margin-left: 0px !important;
+  }
+
+  .m-t-0{
+    margin-top: 0px !important;
+  }
+
+  .m-b-0{
+    margin-bottom: 0px !important;
+  }
+
+  .p-r-0{
+    padding-right: 0px !important;
+  }
+
+  .p-l-0{
+    padding-left: 0px !important;
+  }
+
+  .p-t-0{
+    padding-top: 0px !important;
+  }
+
+  .p-b-0{
+    padding-bottom: 0px !important;
   }
 `;
