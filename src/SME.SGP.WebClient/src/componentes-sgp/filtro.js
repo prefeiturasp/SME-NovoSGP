@@ -1,5 +1,12 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { useSelector } from 'react-redux';
 import styled from 'styled-components';
+import shortid from 'shortid';
+import { store } from '../redux';
+import {
+  turmasUusario,
+  selecionarTurma,
+} from '../redux/modulos/usuario/actions';
 import Grid from '../componentes/grid';
 import Button from '../componentes/button';
 import { Base, Colors } from '../componentes/colors';
@@ -99,14 +106,13 @@ const Filtro = () => {
   const [periodos, setPeriodos] = useState([]);
   const [periodoSelecionado, setPeriodoSelecionado] = useState();
 
-  const [dres, setDres] = useState([{ dre: '' }]);
+  const [dres, setDres] = useState([]);
   const [dreSelecionado, setDreSelecionado] = useState();
 
   const [unidadesEscolares, setUnidadesEscolares] = useState();
   const [unidadeEscolarSelecionada, setUnidadeEscolarSelecionada] = useState();
 
-  const [turmas, setTurmas] = useState();
-  const [turmaSelecionada, setTurmaSelecionada] = useState();
+  const [nomeTurmaSelecionada, setNomeTurmaSelecionada] = useState();
 
   const [resultadosFiltro, setResultadosFiltro] = useState([]);
 
@@ -202,16 +208,23 @@ const Filtro = () => {
     setPeriodos([{ periodo: '1º Semestre' }, { periodo: '2º Semestre' }]);
     setDres([...dresList]);
     setUnidadesEscolares([...unidadesEscolaresList]);
-    setTurmas([...turmasList]);
+
+    store.dispatch(turmasUusario(turmasList));
   }, []);
 
+  const usuario = useSelector(state => state.usuario);
+
   const inputBuscaRef = useRef();
+  console.log(usuario.turmaSelecionada);
+  if (usuario.turmaSelecionada.length > 0) {
+    inputBuscaRef.current.value = `${usuario.turmaSelecionada[0].NomeTurma} ${usuario.turmaSelecionada[0].UE}`;
+  }
 
   useEffect(() => {
     if (!toggleBusca && toggleInputFocus) inputBuscaRef.current.focus();
   }, [toggleBusca, toggleInputFocus]);
 
-  const onKeyUpAutocomplete = () => {
+  const onChangeAutocomplete = () => {
     const texto = inputBuscaRef.current.value;
     const resultadosAutocomplete = [];
     if (texto.length >= 2) {
@@ -223,7 +236,6 @@ const Filtro = () => {
           resultadosAutocomplete.push(dado);
         });
       setResultadosFiltro(resultadosAutocomplete);
-      setToggleInputFocus(true);
     }
   };
 
@@ -260,12 +272,42 @@ const Filtro = () => {
   };
 
   const onChangeTurma = turma => {
-    setTurmaSelecionada(turma);
+    setNomeTurmaSelecionada(turma);
+  };
+
+  const selecionaTurma = () => {
+    console.log(
+      modalidadeSelecionada,
+      dreSelecionado,
+      unidadeEscolarSelecionada,
+      nomeTurmaSelecionada
+    );
+    const turma = dadosProfessor.filter(dado => {
+      return (
+        // dado.AnoLetivo === anoLetivoSelecionado &&
+        dado.CodModalidade === modalidadeSelecionada &&
+        dado.DreAbrev === dreSelecionado &&
+        dado.UE === unidadeEscolarSelecionada &&
+        dado.NomeTurma === nomeTurmaSelecionada
+      );
+    });
+    console.log(turma);
+    if (turma.length > 0) {
+      store.dispatch(selecionarTurma(turma));
+      setToggleBusca(false);
+      sucesso('Suas escolhas foram salvas com sucesso!');
+    }
   };
 
   const aplicarFiltro = () => {
-    setToggleBusca(false);
-    sucesso('Suas escolhas foram salvas com sucesso!');
+    if (
+      anoLetivoSelecionado &&
+      modalidadeSelecionada &&
+      dreSelecionado &&
+      unidadeEscolarSelecionada &&
+      nomeTurmaSelecionada
+    )
+      selecionaTurma();
   };
 
   return (
@@ -279,7 +321,7 @@ const Filtro = () => {
             placeholder="Pesquisar Turma"
             ref={inputBuscaRef}
             onFocus={onFocusBusca}
-            onKeyUp={onKeyUpAutocomplete}
+            onChange={onChangeAutocomplete}
           />
           <Caret
             className="fa fa-caret-down rounded-circle position-absolute text-center"
@@ -291,7 +333,10 @@ const Filtro = () => {
             <div className="list-group">
               {resultadosFiltro.map(resultado => {
                 return (
-                  <li className="list-group-item list-group-item-action border-0">{`${resultado.NomeTurma} ${resultado.UE}`}</li>
+                  <li
+                    key={shortid.generate()}
+                    className="list-group-item list-group-item-action border-0"
+                  >{`${resultado.NomeTurma} ${resultado.UE}`}</li>
                 );
               })}
             </div>
@@ -319,13 +364,13 @@ const Filtro = () => {
                   className="fonte-14"
                   onChange={onChangeModalidade}
                   lista={modalidades}
-                  valueOption="modalidade"
+                  valueOption="codigo"
                   label="modalidade"
                   valueSelect={modalidadeSelecionada}
                   placeholder="Modalidade"
                 />
               </Grid>
-              {modalidadeSelecionada === 'EJA' && (
+              {modalidadeSelecionada === 3 && (
                 <Grid cols={4} className="form-group">
                   <SelectComponent
                     className="fonte-14"
@@ -343,7 +388,7 @@ const Filtro = () => {
                 className="fonte-14"
                 onChange={onChangeDre}
                 lista={dres}
-                valueOption="dre"
+                valueOption="abrev"
                 label="dre"
                 valueSelect={dreSelecionado}
                 placeholder="Diretoria Regional De Educação (DRE)"
@@ -365,10 +410,10 @@ const Filtro = () => {
                 <SelectComponent
                   className="fonte-14"
                   onChange={onChangeTurma}
-                  lista={turmas}
+                  lista={usuario.turmasUusario}
                   valueOption="turma"
                   label="turma"
-                  valueSelect={turmaSelecionada}
+                  valueSelect={nomeTurmaSelecionada}
                   placeholder="Turma"
                 />
               </Grid>
