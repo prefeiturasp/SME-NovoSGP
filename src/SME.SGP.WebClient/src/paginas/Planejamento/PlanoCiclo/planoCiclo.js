@@ -23,7 +23,7 @@ import ModalConfirmacao from '../../../componentes/modalConfirmacao';
 export default function PlanoCiclo(props) {
   const { match } = props;
 
-  const urlPrefeitura = 'https://curriculo.prefeitura.sp.gov.br';
+  const urlPrefeitura = 'https://curriculo.sme.prefeitura.sp.gov.br';
   const urlMatrizSaberes = `${urlPrefeitura}/matriz-de-saberes`;
   const urlODS = `${urlPrefeitura}/ods`;
   const textEditorRef = useRef(null);
@@ -455,7 +455,7 @@ export default function PlanoCiclo(props) {
             ciclo.
           </div>
           <div className="col-md-6">
-            Considerando as especificações de cada ciclo desta unidade escolar e
+            Considerando as especificações de cada etapa desta unidade escolar e
             o currículo da cidade, <b>selecione</b> os itens da matriz do saber
             e dos objetivos de desenvolvimento e sustentabilidade que contemplam
             as propostas que planejaram:
