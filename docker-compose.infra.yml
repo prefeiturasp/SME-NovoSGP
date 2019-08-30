@@ -54,6 +54,8 @@ services:
       - sme-network
     depends_on:
       - "sme-api"
+    environment:
+      - API_URL=http://localhost:8080/api
   grafana:
     container_name: sme-grafana
     restart: always
