@@ -11,13 +11,6 @@ namespace SME.SGP.Api.Controllers
     [ValidaDto]
     public class PlanoAnualController : ControllerBase
     {
-        private readonly IComandosPlanoAnual comandosPlanoAnual;
-
-        public PlanoAnualController(IComandosPlanoAnual comandosPlanoAnual)
-        {
-            this.comandosPlanoAnual = comandosPlanoAnual ?? throw new System.ArgumentNullException(nameof(comandosPlanoAnual));
-        }
-
         [HttpGet]
         [ProducesResponseType(typeof(PlanoAnualCompletoDto), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
@@ -29,10 +22,18 @@ namespace SME.SGP.Api.Controllers
         [HttpPost]
         [ProducesResponseType(200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        public IActionResult Post(PlanoAnualDto planoAnualDto)
+        public IActionResult Post(PlanoAnualDto planoAnualDto, [FromServices]IComandosPlanoAnual comandosPlanoAnual)
         {
             comandosPlanoAnual.Salvar(planoAnualDto);
             return Ok();
+        }
+
+        [HttpGet("validar-existente")]
+        [ProducesResponseType(typeof(bool), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        public IActionResult ValidarPlanoAnualExistente(FiltroPlanoAnualDto filtroPlanoAnualDto, [FromServices]IConsultasPlanoAnual consultasPlanoAnual)
+        {
+            return Ok(consultasPlanoAnual.ValidarPlanoAnualExistente(filtroPlanoAnualDto));
         }
     }
 }

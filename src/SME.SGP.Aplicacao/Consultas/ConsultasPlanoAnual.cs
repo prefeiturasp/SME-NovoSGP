@@ -35,5 +35,10 @@ namespace SME.SGP.Aplicacao
             }
             return planoAnual;
         }
+
+        public bool ValidarPlanoAnualExistente(FiltroPlanoAnualDto filtroPlanoAnualDto)
+        {
+            return repositorioPlanoAnual.ValidarPlanoExistentePorAnoEscolaTurmaEBimestre(filtroPlanoAnualDto.Ano, filtroPlanoAnualDto.EscolaId, filtroPlanoAnualDto.TurmaId, filtroPlanoAnualDto.Bimestre);
+        }
     }
 }
