@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace SME.SGP.Aplicacao
 {
-    public interface IConsultasProfessorTurma
+    public interface IConsultasProfessor
     {
         IEnumerable<ProfessorTurmaDto> Listar(string codigoRf);
     }
