@@ -9,14 +9,12 @@ import LinkRouter from '../linkRouter';
 
 const CardLink = (props) => {
 
-    const { icone, pack, label, url, disabled, alt, cols, className, iconSize } = props;
+    const { icone, pack, label, url, disabled, alt, cols, className, classHidden, iconSize } = props;
 
-    const color =  disabled ? Base.CinzaDesabilitado : Base.Roxo;
-    const colorActive = disabled? Base.CinzaDesabilitado : Base.Branco;
+    const color = disabled ? Base.CinzaDesabilitado : Base.Roxo;
+    const colorActive = disabled ? Base.CinzaDesabilitado : Base.Branco;
     const backgroundActive = disabled ? Base.Branco : Base.Roxo;
     const background = Base.Branco;
-
-    useEffect(() => console.log(color), [color]);
 
     const CardLine = styled.div`
         border-bottom: 5.8px solid ${color} !important;
@@ -75,8 +73,8 @@ const CardLink = (props) => {
     }
 
     return (
-        <Div className={`${getCols()} px-2`}>
-            <LinkRouter to={url} alt={disabled? "" : alt} isactive={!disabled}>
+        <Div className={`${getCols()} px-2 ${classHidden}`}>
+            <LinkRouter to={url} alt={disabled ? "" : alt} isactive={!disabled}>
                 <Div className={className}>
                     <CardLine className={`card`}>
                         <CardBody className={`text-center`}>
@@ -101,7 +99,8 @@ CardLink.defaultProps = {
     alt: "",
     cols: [3],
     className: "",
-    iconSize: "15px"
+    iconSize: "15px",
+    classHidden: ""
 };
 
 CardLink.propTypes = {
@@ -113,7 +112,8 @@ CardLink.propTypes = {
     alt: PropTypes.string,
     cols: PropTypes.array,
     className: PropTypes.string,
-    iconSize: PropTypes.string
+    iconSize: PropTypes.string,
+    classHidden: PropTypes.string
 };
 
 

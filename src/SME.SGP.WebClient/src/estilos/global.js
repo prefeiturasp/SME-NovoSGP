@@ -53,6 +53,14 @@ export default createGlobalStyle`
     color: #ffffff !important;
   }
 
+  @media (max-width: 544px) { 
+    
+    .hidden-xs-down{
+      display: none !important;
+    }
+
+   }
+
   .p-l-5{
     padding-left: 5px !important;
   }
