@@ -5,7 +5,7 @@ namespace SME.SGP.Aplicacao
 {
     public interface IConsultasCiclo
     {
-        IEnumerable<CicloDto> Listar(IEnumerable<FiltroCicloDto> filtroCicloDtos);
+        IEnumerable<CicloDto> Listar(IEnumerable<string> Ano, string AnoSelecionado, int Modalidade);
 
         CicloDto Selecionar(int ano);
     }
