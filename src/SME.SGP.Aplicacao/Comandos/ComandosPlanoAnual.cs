@@ -9,6 +9,7 @@ namespace SME.SGP.Aplicacao
 {
     public class ComandosPlanoAnual : IComandosPlanoAnual
     {
+        private readonly IConsultasObjetivoAprendizagem consultasObjetivoAprendizagem;
         private readonly IRepositorioComponenteCurricular repositorioComponenteCurricular;
         private readonly IRepositorioObjetivoAprendizagemPlano repositorioObjetivoAprendizagemPlano;
         private readonly IRepositorioPlanoAnual repositorioPlanoAnual;
@@ -17,11 +18,13 @@ namespace SME.SGP.Aplicacao
         public ComandosPlanoAnual(IRepositorioPlanoAnual repositorioPlanoAnual,
                                   IRepositorioObjetivoAprendizagemPlano repositorioObjetivoAprendizagemPlano,
                                   IRepositorioComponenteCurricular repositorioComponenteCurricular,
+                                  IConsultasObjetivoAprendizagem consultasObjetivoAprendizagem,
                                   IUnitOfWork unitOfWork)
         {
             this.repositorioPlanoAnual = repositorioPlanoAnual ?? throw new ArgumentNullException(nameof(repositorioPlanoAnual));
             this.repositorioObjetivoAprendizagemPlano = repositorioObjetivoAprendizagemPlano ?? throw new ArgumentNullException(nameof(repositorioObjetivoAprendizagemPlano));
             this.repositorioComponenteCurricular = repositorioComponenteCurricular ?? throw new ArgumentNullException(nameof(repositorioComponenteCurricular));
+            this.consultasObjetivoAprendizagem = consultasObjetivoAprendizagem ?? throw new ArgumentNullException(nameof(consultasObjetivoAprendizagem));
             this.unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
         }
 
@@ -33,6 +36,15 @@ namespace SME.SGP.Aplicacao
                 planoAnualDto.Id = repositorioPlanoAnual.Salvar(planoAnual);
                 AjustarObjetivosAprendizagem(planoAnualDto);
                 unitOfWork.PersistirTransacao();
+            }
+        }
+
+        private static void ValidarObjetivoPertenceAoComponenteCurricular(IEnumerable<ObjetivoAprendizagemDto> objetivosAprendizagem, ObjetivoAprendizagemSimplificadoDto objetivo, ComponenteCurricular componenteEol)
+        {
+            var objetivoAprendizagem = objetivosAprendizagem.FirstOrDefault(c => c.Id == objetivo.Id);
+            if (objetivoAprendizagem.IdComponenteCurricular != componenteEol.CodigoJurema)
+            {
+                throw new NegocioException($"O objetivo de aprendizagem: '{objetivoAprendizagem.Codigo}' não pertence ao componente curricular: {componenteEol.DescricaoEOL}");
             }
         }
 
@@ -52,21 +64,14 @@ namespace SME.SGP.Aplicacao
             if (planoAnualDto.ObjetivosAprendizagem != null && planoAnualDto.ObjetivosAprendizagem.Any())
             {
                 var idsObjetivos = objetivosAprendizagemPlanoAnual?.Select(c => c.ObjetivoAprendizagemJuremaId);
-                var componentesCurriculares = repositorioComponenteCurricular.Listar();
+                IEnumerable<ComponenteCurricular> componentesCurriculares = ObterComponentesCurriculares();
+                IEnumerable<ObjetivoAprendizagemDto> objetivosAprendizagem = ObterObjetivosDeAprendizagem();
+
                 foreach (var objetivo in planoAnualDto.ObjetivosAprendizagem)
                 {
                     if (idsObjetivos != null && !idsObjetivos.Contains(objetivo.Id))
                     {
-                        var componenteEol = componentesCurriculares?.FirstOrDefault(c => c.CodigoJurema == objetivo.IdComponenteCurricular);
-                        if (componenteEol != null)
-                        {
-                            repositorioObjetivoAprendizagemPlano.Salvar(new ObjetivoAprendizagemPlano()
-                            {
-                                ObjetivoAprendizagemJuremaId = objetivo.Id,
-                                ComponenteCurricularId = componenteEol.Id,
-                                PlanoId = planoAnualDto.Id
-                            });
-                        }
+                        SalvarObjetivoAprendizagem(planoAnualDto, componentesCurriculares, objetivosAprendizagem, objetivo);
                     }
                 }
             }
@@ -79,6 +84,28 @@ namespace SME.SGP.Aplicacao
             planoAnual.Descricao = planoAnualDto.Descricao;
             planoAnual.EscolaId = planoAnualDto.EscolaId.Value;
             planoAnual.TurmaId = planoAnualDto.TurmaId.Value;
+        }
+
+        private IEnumerable<ComponenteCurricular> ObterComponentesCurriculares()
+        {
+            var componentesCurriculares = repositorioComponenteCurricular.Listar();
+            if (componentesCurriculares == null)
+            {
+                throw new NegocioException("Não foi possível recuperar a lista de componentes curriculares.");
+            }
+
+            return componentesCurriculares;
+        }
+
+        private IEnumerable<ObjetivoAprendizagemDto> ObterObjetivosDeAprendizagem()
+        {
+            var objetivosAprendizagem = consultasObjetivoAprendizagem.Listar().Result;
+            if (objetivosAprendizagem == null)
+            {
+                throw new NegocioException("Não foi possível recuperar a lista de objetivos de aprendizagem.");
+            }
+
+            return objetivosAprendizagem;
         }
 
         private PlanoAnual ObterPlanoAnual(PlanoAnualDto planoAnualDto)
@@ -109,13 +136,27 @@ namespace SME.SGP.Aplicacao
             if (objetivosAprendizagemPlanoAnual != null)
             {
                 var idsObjetivos = planoAnualDto.ObjetivosAprendizagem.Select(x => x.Id);
-                var objetivosRemover = objetivosAprendizagemPlanoAnual.Where(c => idsObjetivos.Contains(c.ObjetivoAprendizagemJuremaId));
+                var objetivosRemover = objetivosAprendizagemPlanoAnual.Where(c => !idsObjetivos.Contains(c.ObjetivoAprendizagemJuremaId));
 
                 foreach (var objetivo in objetivosRemover)
                 {
                     repositorioObjetivoAprendizagemPlano.Remover(objetivo.Id);
                 }
             }
+        }
+
+        private void SalvarObjetivoAprendizagem(PlanoAnualDto planoAnualDto, IEnumerable<ComponenteCurricular> componentesCurriculares, IEnumerable<ObjetivoAprendizagemDto> objetivosAprendizagem, ObjetivoAprendizagemSimplificadoDto objetivo)
+        {
+            var componenteEol = componentesCurriculares.FirstOrDefault(c => c.CodigoJurema == objetivo.IdComponenteCurricular);
+
+            ValidarObjetivoPertenceAoComponenteCurricular(objetivosAprendizagem, objetivo, componenteEol);
+
+            repositorioObjetivoAprendizagemPlano.Salvar(new ObjetivoAprendizagemPlano()
+            {
+                ObjetivoAprendizagemJuremaId = objetivo.Id,
+                ComponenteCurricularId = componenteEol.Id,
+                PlanoId = planoAnualDto.Id
+            });
         }
     }
 }

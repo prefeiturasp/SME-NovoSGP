@@ -1,5 +1,6 @@
 ﻿using Newtonsoft.Json;
 using SME.SGP.Dto;
+using System;
 using System.Collections.Generic;
 using System.Net.Http;
 using System.Text;
@@ -28,6 +29,31 @@ namespace SME.SGP.Integracao.Teste
             var postResult = fixture._clientApi.PostAsync("api/v1/planos/anual/", jsonParaPost).Result;
 
             Assert.True(postResult.IsSuccessStatusCode);
+            var filtro = new FiltroPlanoAnualDto()
+            {
+                Ano = 1,
+                Bimestre = 1,
+                EscolaId = 1,
+                TurmaId = 1
+            };
+            var filtroPlanoAnual = new StringContent(JsonConvert.SerializeObject(filtro), Encoding.UTF8, "application/json");
+            var request = new HttpRequestMessage
+            {
+                Method = HttpMethod.Get,
+                RequestUri = new Uri("api/v1/planos/anual/"),
+                Content = filtroPlanoAnual,
+            };
+            var planoAnualCompletoResponse = fixture._clientApi.SendAsync(request).Result;
+            if (planoAnualCompletoResponse.IsSuccessStatusCode)
+            {
+                var planoAnualCompleto = JsonConvert.DeserializeObject<PlanoCicloCompletoDto>(planoAnualCompletoResponse.Content.ReadAsStringAsync().Result);
+                Assert.Equal(planoAnualDto.Descricao, planoAnualCompleto.Descricao);
+            }
+            else
+            {
+                var erro = postResult.Content.ReadAsStringAsync().Result;
+                Assert.True(false, erro);
+            }
         }
 
         [Fact, Order(4)]
@@ -59,8 +85,8 @@ namespace SME.SGP.Integracao.Teste
                 {
                     new ObjetivoAprendizagemSimplificadoDto()
                     {
-                        Id=1623,
-                        IdComponenteCurricular=3
+                        Id=343,
+                        IdComponenteCurricular=9
                     }
                 }
             };
