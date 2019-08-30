@@ -19,7 +19,6 @@ const Principal = (props) => {
     if (!escolaSelecionada)
       return true;
 
-    console.log(tipo);
     if (tipo === CICLOS_TYPE)
       return !cicloLiberado();
 
