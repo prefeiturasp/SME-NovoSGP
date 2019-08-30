@@ -24,7 +24,7 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         public async Task<IActionResult> Filtrar([FromBody]FiltroObjetivosAprendizagemDto filtroObjetivosAprendizagemDto)
         {
-            return Ok(await consultasObjetivoAprendizagem.Listar(filtroObjetivosAprendizagemDto));
+            return Ok(await consultasObjetivoAprendizagem.Filtrar(filtroObjetivosAprendizagemDto));
         }
     }
 }

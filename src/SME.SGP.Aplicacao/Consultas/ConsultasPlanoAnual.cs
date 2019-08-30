@@ -1,23 +1,39 @@
-﻿using SME.SGP.Aplicacao.Integracoes;
-using SME.SGP.Dominio.Interfaces;
+﻿using SME.SGP.Dominio.Interfaces;
+using SME.SGP.Dto;
+using System.Linq;
+using System.Threading.Tasks;
 
-namespace SME.SGP.Aplicacao.Consultas
+namespace SME.SGP.Aplicacao
 {
-    public class ConsultasPlanoAnual
+    public class ConsultasPlanoAnual : IConsultasPlanoAnual
     {
+        private readonly IConsultasObjetivoAprendizagem consultasObjetivoAprendizagem;
         private readonly IRepositorioPlanoAnual repositorioPlanoAnual;
-        private readonly ServicoJurema servicoJurema;
 
         public ConsultasPlanoAnual(IRepositorioPlanoAnual repositorioPlanoAnual,
-                                   ServicoJurema servicoJurema)
+                                   IConsultasObjetivoAprendizagem consultasObjetivoAprendizagem)
         {
             this.repositorioPlanoAnual = repositorioPlanoAnual ?? throw new System.ArgumentNullException(nameof(repositorioPlanoAnual));
-            this.servicoJurema = servicoJurema ?? throw new System.ArgumentNullException(nameof(servicoJurema));
+            this.consultasObjetivoAprendizagem = consultasObjetivoAprendizagem ?? throw new System.ArgumentNullException(nameof(consultasObjetivoAprendizagem));
         }
 
-        public void Listar()
+        public async Task<PlanoAnualCompletoDto> ObterPorEscolaTurmaAnoEBimestre(FiltroPlanoAnualDto filtroPlanoAnualDto)
         {
-            var planosAnuais = repositorioPlanoAnual.Listar();
+            var planoAnual = repositorioPlanoAnual.ObterPorAnoEscolaBimestreETurma(filtroPlanoAnualDto.Ano, filtroPlanoAnualDto.EscolaId, filtroPlanoAnualDto.TurmaId, filtroPlanoAnualDto.Bimestre);
+            if (planoAnual != null)
+            {
+                var objetivosAprendizagem = await consultasObjetivoAprendizagem.Listar();
+
+                foreach (var idObjetivo in planoAnual.IdsObjetivosAprendizagem)
+                {
+                    var objetivo = objetivosAprendizagem.FirstOrDefault(c => c.Id == idObjetivo);
+                    if (objetivo != null)
+                    {
+                        planoAnual.ObjetivosAprendizagem.Add(objetivo);
+                    }
+                }
+            }
+            return planoAnual;
         }
     }
 }

@@ -6,14 +6,20 @@ namespace SME.SGP.Dto
 {
     public class PlanoAnualCompletoDto : PlanoAnualDto
     {
+        public PlanoAnualCompletoDto()
+        {
+            ObjetivosAprendizagem = new List<ObjetivoAprendizagemDto>();
+        }
+
         public DateTime AlteradoEm { get; set; }
         public string AlteradoPor { get; set; }
         public string AlteradoRF { get; set; }
         public DateTime CriadoEm { get; set; }
         public string CriadoPor { get; set; }
         public string CriadoRF { get; set; }
-        public new IEnumerable<long> IdsObjetivosAprendizagem => ObjetivosAprendizagem?.Split(',').Select(c => Convert.ToInt64(c));
+        public IEnumerable<long> IdsObjetivosAprendizagem => ObjetivosAprendizagemPlano?.Split(',').Select(c => Convert.ToInt64(c));
 
-        private string ObjetivosAprendizagem { get; set; }
+        public new List<ObjetivoAprendizagemDto> ObjetivosAprendizagem { get; set; }
+        private string ObjetivosAprendizagemPlano { get; }
     }
 }
