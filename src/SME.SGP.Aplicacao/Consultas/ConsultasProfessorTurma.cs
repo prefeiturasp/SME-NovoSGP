@@ -31,6 +31,7 @@ namespace SME.SGP.Aplicacao
                     Ue = escola1,
                     UeAbrev = escola1Abrev,
                     NomeTurma = "1A",
+                    TipoUE = "EF"
                 },
                 new ProfessorTurmaDto
                 {
@@ -43,7 +44,8 @@ namespace SME.SGP.Aplicacao
                     DreAbrev = "Dre CL",
                     Ue = escola1,
                     UeAbrev = escola1Abrev,
-                    NomeTurma = "2B"
+                    NomeTurma = "2B",
+                    TipoUE = "EJA"
                 },
                 new ProfessorTurmaDto
                 {
@@ -56,7 +58,8 @@ namespace SME.SGP.Aplicacao
                     DreAbrev = "DRE CL",
                     Ue = escola1,
                     UeAbrev = escola1Abrev,
-                    NomeTurma = "2C"
+                    NomeTurma = "2C",
+                    TipoUE = "EJA"
                 },
                 new ProfessorTurmaDto
                 {
@@ -69,7 +72,8 @@ namespace SME.SGP.Aplicacao
                     DreAbrev = "DRE CL",
                     Ue = escola2,
                     UeAbrev = escola2Abrev,
-                    NomeTurma = "2B"
+                    NomeTurma = "2B",
+                    TipoUE = "EF"
                 },
                 new ProfessorTurmaDto
                 {
@@ -82,7 +86,8 @@ namespace SME.SGP.Aplicacao
                     DreAbrev = "DRE CL",
                     Ue = escola2,
                     UeAbrev = escola2Abrev,
-                    NomeTurma = "1A"
+                    NomeTurma = "1A",
+                    TipoUE = "EF"
                 },
                 new ProfessorTurmaDto
                 {
@@ -95,7 +100,8 @@ namespace SME.SGP.Aplicacao
                     DreAbrev = "DRE CL",
                     Ue = escola2,
                     UeAbrev = escola2Abrev,
-                    NomeTurma = "2B"
+                    NomeTurma = "2B",
+                    TipoUE = "EJA"
                 },
                 new ProfessorTurmaDto
                 {
@@ -108,7 +114,8 @@ namespace SME.SGP.Aplicacao
                     DreAbrev = "DRE CL",
                     Ue = escola2,
                     UeAbrev = escola2Abrev,
-                    NomeTurma = "2B"
+                    NomeTurma = "2B",
+                    TipoUE = "EJA"
                 },
                 new ProfessorTurmaDto
                 {
@@ -121,7 +128,8 @@ namespace SME.SGP.Aplicacao
                     DreAbrev = "DRE CL",
                     Ue = escola2,
                     UeAbrev = escola2Abrev,
-                    NomeTurma = "2A"
+                    NomeTurma = "2A",
+                    TipoUE = "EF"
                 },
                 new ProfessorTurmaDto
                 {
@@ -134,7 +142,8 @@ namespace SME.SGP.Aplicacao
                     DreAbrev = "DRE SJ",
                     Ue = escola3,
                     UeAbrev = escola3Abrev,
-                    NomeTurma = "2A"
+                    NomeTurma = "2A",
+                    TipoUE = "EF"
                 },
                 new ProfessorTurmaDto
                 {
@@ -147,7 +156,8 @@ namespace SME.SGP.Aplicacao
                     DreAbrev = "DRE SJ",
                     Ue = escola3,
                     UeAbrev = escola3Abrev,
-                    NomeTurma = "3A"
+                    NomeTurma = "3A",
+                    TipoUE = "EF"
                 },
                 new ProfessorTurmaDto
                 {
@@ -160,7 +170,8 @@ namespace SME.SGP.Aplicacao
                     DreAbrev = "DRE SJ",
                     Ue = escola3,
                     UeAbrev = escola3Abrev,
-                    NomeTurma = "1A"
+                    NomeTurma = "1A",
+                    TipoUE = "EJA"
                 }
             };
             return lista;

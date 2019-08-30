@@ -10,6 +10,7 @@
         public string Modalidade { get; set; }
         public string NomeTurma { get; set; }
         public int TipoSemestre { get; set; }
+        public string TipoUE { get; set; }
         public string Ue { get; set; }
         public string UeAbrev { get; set; }
     }
