@@ -5,6 +5,7 @@ using SME.SGP.Aplicacao.Integracoes.Respostas;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Dto;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
@@ -26,16 +27,25 @@ namespace SME.SGP.Aplicacao
 
         public async Task<IEnumerable<DisciplinaDto>> ObterDisciplinasPorProfessorETurma(long codigoTurma, string rfProfessor)
         {
+            IEnumerable<DisciplinaDto> disciplinasDto = null;
+
             var disciplinasCacheString = repositorioCache.Obter($"Disciplinas-{codigoTurma}-{rfProfessor}");
 
-            if (string.IsNullOrEmpty(disciplinasCacheString))
+            if (!string.IsNullOrWhiteSpace(disciplinasCacheString))
+            {
+                disciplinasDto = JsonConvert.DeserializeObject<List<DisciplinaDto>>(disciplinasCacheString);
+            }
+            else
             {
                 var disciplinas = await servicoEOL.ObterDisciplinasPorProfessorETurma(codigoTurma, rfProfessor);
-                var disciplinasDto = MapearParaDto(disciplinas);
+                if (disciplinas != null && disciplinas.Any())
+                {
+                    disciplinasDto = MapearParaDto(disciplinas);
 
-                await repositorioCache.SalvarAsync($"Disciplinas-{codigoTurma}-{rfProfessor}", JsonConvert.SerializeObject(disciplinasDto));
+                    await repositorioCache.SalvarAsync($"Disciplinas-{codigoTurma}-{rfProfessor}", JsonConvert.SerializeObject(disciplinasDto));
+                }
             }
-            return JsonConvert.DeserializeObject<List<DisciplinaDto>>(disciplinasCacheString);
+            return disciplinasDto;
         }
 
         private IEnumerable<DisciplinaDto> MapearParaDto(IEnumerable<DisciplinaResposta> disciplinas)
