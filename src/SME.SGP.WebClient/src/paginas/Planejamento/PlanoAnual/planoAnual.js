@@ -7,6 +7,9 @@ import Button from '../../../componentes/button';
 import TextEditor from '../../../componentes/textEditor';
 import { Colors, Base } from '../../../componentes/colors';
 import Seta from '../../../recursos/Seta.svg';
+import Card from '../../../componentes/card';
+// import { confirmacao } from '../../../servicos/alertas';
+// import Modal from '../../../componentes/modal';
 import { confirmacao } from '../../../servicos/alertas';
 
 export default function PlanoAnual() {
@@ -147,7 +150,7 @@ export default function PlanoAnual() {
   };
 
   return (
-    <>
+    <Card>
       <Grid cols={12}>
         <h1>Plano Anual</h1>
       </Grid>
@@ -318,6 +321,6 @@ export default function PlanoAnual() {
             })
           : null}
       </Grid>
-    </>
+    </Card>
   );
 }
