@@ -70,8 +70,8 @@ const Principal = (props) => {
       <Row>
         <Grid cols={12} className="form-inline">
           <CardLink cols={[4, 4, 4, 12]} iconSize="90px" url="/" disabled={(e => ehDisabled(FREQUENCIA_TYPE))()} icone="fa-columns" pack="fas" label="Frequência/ Plano de Aula" />
-          <CardLink cols={[4, 4, 4, 12]} iconSize="90px" url="/" disabled={(e => ehDisabled(CICLOS_TYPE))()} icone="fa-calendar-minus" pack="far" label="Plano de Ciclo" />
-          <CardLink cols={[4, 4, 4, 12]} iconSize="90px" url="/planejamento/plano-anual" disabled={(e => ehDisabled(ANUAL_TYPE))()} icone="fa-calendar-alt" pack="far" label="Plano Anual" />
+          <CardLink cols={[4, 4, 4, 12]} classHidden="hidden-xs-down" iconSize="90px" url="/" disabled={(e => ehDisabled(CICLOS_TYPE))()} icone="fa-calendar-minus" pack="far" label="Plano de Ciclo" />
+          <CardLink cols={[4, 4, 4, 12]} classHidden="hidden-xs-down" iconSize="90px" url="/planejamento/plano-anual" disabled={(e => ehDisabled(ANUAL_TYPE))()} icone="fa-calendar-alt" pack="far" label="Plano Anual" />
         </Grid>
       </Row>
     </div>
