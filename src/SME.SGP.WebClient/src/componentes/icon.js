@@ -4,10 +4,11 @@ import PropTypes from 'prop-types';
 
 export default function Icon(props) {
 
-    const { icon, pack, color} = props;
+    const { icon, pack, color, iconSize} = props;
 
     const Icone = styled.i`
         ${color ? `color: ${color}` : ""}
+        ${iconSize? `font-size: ${iconSize}` : ""}
     `;
 
     return (
@@ -24,5 +25,6 @@ Icon.defaultProps = {
 Icon.propTypes = {
     icon: PropTypes.string,
     pack: PropTypes.string,
-    color: PropTypes.string
+    color: PropTypes.string,
+    iconSize: PropTypes.string
   };
