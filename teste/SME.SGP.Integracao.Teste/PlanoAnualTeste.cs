@@ -48,6 +48,15 @@ namespace SME.SGP.Integracao.Teste
             {
                 var planoAnualCompleto = JsonConvert.DeserializeObject<PlanoCicloCompletoDto>(planoAnualCompletoResponse.Content.ReadAsStringAsync().Result);
                 Assert.Equal(planoAnualDto.Descricao, planoAnualCompleto.Descricao);
+
+                var requestValidaPlanoAnualExistente = new HttpRequestMessage
+                {
+                    Method = HttpMethod.Get,
+                    RequestUri = new Uri("api/v1/planos/anual/validar-existente"),
+                    Content = filtroPlanoAnual,
+                };
+                var planoAnualExistenteResponse = fixture._clientApi.SendAsync(request).Result;
+                Assert.True(bool.Parse(planoAnualExistenteResponse.Content.ReadAsStringAsync().Result));
             }
             else
             {
