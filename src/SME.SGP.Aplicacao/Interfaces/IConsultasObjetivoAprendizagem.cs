@@ -6,6 +6,8 @@ namespace SME.SGP.Aplicacao
 {
     public interface IConsultasObjetivoAprendizagem
     {
-        Task<IEnumerable<ObjetivoAprendizagemDto>> Listar(FiltroObjetivosAprendizagemDto filtroObjetivosAprendizagemDto);
+        Task<IEnumerable<ObjetivoAprendizagemDto>> Filtrar(FiltroObjetivosAprendizagemDto filtroObjetivosAprendizagemDto);
+
+        Task<IEnumerable<ObjetivoAprendizagemDto>> Listar();
     }
 }
