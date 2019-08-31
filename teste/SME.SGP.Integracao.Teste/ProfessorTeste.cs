@@ -26,5 +26,35 @@ namespace SME.SGP.Integracao.Teste
             var disciplinas = JsonConvert.DeserializeObject<IEnumerable<DisciplinaDto>>(getResult.Content.ReadAsStringAsync().Result);
             Assert.True(disciplinas != null);
         }
+
+        [Theory]
+        [InlineData("6082840", "095346", "2019")]
+        [InlineData("5512557", "095346", "2019")]
+        [InlineData("5773067", "095346", "2019")]
+        [InlineData("7866089", "017272", "2019")]
+        [InlineData("8029474", "095401", "2019")]
+        public void DeveObterTurmasAtribuidasAoProfessorPorEscolaEAno(string rf, string escola, string ano)
+        {
+            fixture._clientApi.DefaultRequestHeaders.Clear();
+
+            var getResult = fixture._clientApi.GetAsync($"api/v1/professores/{rf}/escolas/{escola}/turmas/anos-letivos/{ano}").Result;
+
+            Assert.True(getResult.IsSuccessStatusCode);
+            var turmas = JsonConvert.DeserializeObject<IEnumerable<TurmaDto>>(getResult.Content.ReadAsStringAsync().Result);
+            Assert.True(turmas != null);
+        }
+
+        [Theory]
+        [InlineData("8029474", "095346", "2019")]
+        public void NaoDeveObterTurmasAtribuidasAoProfessorEDeveRetornarSemErro(string rf, string escola, string ano)
+        {
+            fixture._clientApi.DefaultRequestHeaders.Clear();
+
+            var getResult = fixture._clientApi.GetAsync($"api/v1/professores/{rf}/escolas/{escola}/turmas/anos-letivos/{ano}").Result;
+
+            Assert.True(getResult.IsSuccessStatusCode);
+            var turmas = JsonConvert.DeserializeObject<IEnumerable<TurmaDto>>(getResult.Content.ReadAsStringAsync().Result);
+            Assert.True(turmas == null);
+        }
     }
 }
