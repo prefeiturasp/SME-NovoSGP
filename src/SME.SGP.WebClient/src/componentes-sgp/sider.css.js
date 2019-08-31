@@ -8,7 +8,7 @@ position: fixed;
 export const DivFooter = styled.div`
 display: flex;
 justify-content: center;
-flex-direction: column;
+flex-direction: row;
 align-items: center;
 color: ${Base.Branco};
 background: ${Base.Roxo};
@@ -92,10 +92,6 @@ export const MenuScope = styled.div`
     width: 13.5px;
   }
 
-  .ant-menu-submenu-title{
-    padding-left: 15px !important;
-  }
-
   .ant-menu{
     background: ${Base.Roxo} !important;
     width: 220px !important;
@@ -104,6 +100,7 @@ export const MenuScope = styled.div`
   .ant-menu-inline, .ant-menu-submenu-title, .ant-menu-item{
     margin-bottom: 0px !important;
     margin-top: 0px !important;
+    top: 0;
   }
 
   .ant-menu-submenu-title, .ant-menu-item{
@@ -115,16 +112,29 @@ export const MenuScope = styled.div`
   }
 
   .ant-menu-sub{
+    max-height: 200px;
     box-shadow: 2px 5px 6px rgba(50,50,50,0.77) !important;
     -webkit-box-shadow: 2px 5px 6px rgba(50,50,50,0.77) !important;
     -moz-box-shadow: 2px 5px 6px rgba(50,50,50,0.77) !important;
+    overflow: auto;
+    ::-webkit-scrollbar {
+      width: 10px;
+      position: absolute
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #dad7d7;
+      border-radius: 5px;
+    }
+    
   }
 
-  .ant-menu-submenu-title:hover, .ant-menu-inline.ant-menu-sub, .ant-menu-submenu-open{
+  .ant-menu-submenu-title:first-child, .ant-menu-submenu-open{
     border-radius:5px;
   }
 
   .ant-menu-submenu-title{
+    margin-top:3px !important;
+    padding-left: 15px !important;
     font-size: 14px !important;
     font-weight: bold;
   }
@@ -134,7 +144,7 @@ export const MenuScope = styled.div`
     border-top: 1px solid ${Base.RoxoClaro} ;
   }
 
-  .ant-menu-item:last-child{
+  .ant-menu-item:last-child, .ant-menu-inline.ant-menu-sub:last-child{
     border-bottom-right-radius:5px !important;
     border-bottom-left-radius:5px !important;
   }
@@ -143,11 +153,18 @@ export const MenuScope = styled.div`
   .ant-menu-item {
     padding-left: 34px !important;
     font-size: 12px !important;
-    border-left: solid transparent 8px;
+    padding-left: 40px !important;
   }
 
-  .ant-menu-dark, .ant-menu-submenu-arrow{
-    color: ${Base.Branco} !important;
+  .ant-menu-item-selected{
+    background: ${Base.CinzaMenu} !important;
+    border-bottom-width: 8px;
+    padding-left: 32px !important;
+    border-left: solid ${Base.RoxoClaro} 8px !important;
+  }
+
+  .ant-menu-dark:not(:disabled), .ant-menu-submenu-arrow{
+    color: ${Base.Branco};
     opacity: initial !important;
   }
 
@@ -170,10 +187,6 @@ export const MenuScope = styled.div`
     color: ${Base.CinzaMenuItem} !important;
   }
 
-  .ant-menu-submenu-title{
-    margin-top:3px !important;
-  }
-
   .menu-scope{
     display: flex;
     flex-direction: row;
@@ -181,21 +194,17 @@ export const MenuScope = styled.div`
     align-items: center
   }
 
-  .ant-menu-submenu-disabled{
-    color: blue !important;
-    background: ${Base.Roxo} !important;
+  .ant-menu-submenu-title:hover:not(:disabled), .ant-menu-inline.ant-menu-sub, .ant-menu-submenu-open{
+    background: ${Base.Branco};
+    color: ${Base.Roxo};
   }
 
-  .ant-menu-submenu-title:hover, .ant-menu-inline.ant-menu-sub, .ant-menu-submenu-open{
-    background: ${Base.Branco} !important;
-    color: ${Base.Roxo} !important;
+  .ant-menu-dark> .ant-menu-submenu-disabled > .ant-menu-submenu-title{
+    opacity: initial;
+    background: ${Base.Roxo};
+    color:  ${Base.CinzaDesabilitado};
   }
 
-  .ant-menu-item-selected{
-    background: ${Base.CinzaMenu} !important;
-    border-left: solid ${Base.RoxoClaro} 8px !important;
-    border-bottom-width: 8px;
-  }
   `;
 
 
