@@ -5,6 +5,8 @@ namespace SME.SGP.Aplicacao
 {
     public interface IConsultasSupervisor
     {
+        IEnumerable<SupervisorEscolasDto> ObterPorDre(string dreId);
+
         IEnumerable<SupervisorEscolasDto> ObterPorDreESupervisor(string supervisorId, string dreId);
     }
 }

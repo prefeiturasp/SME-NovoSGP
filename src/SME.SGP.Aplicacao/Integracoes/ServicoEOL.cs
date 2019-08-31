@@ -28,6 +28,19 @@ namespace SME.SGP.Aplicacao.Integracoes
             return null;
         }
 
+        public IEnumerable<EscolasRetornoDto> ObterEscolasPorDre(string dreId)
+        {
+            httpClient.DefaultRequestHeaders.Clear();
+
+            var resposta = httpClient.GetAsync($"DREs/{dreId}/escolas").Result;
+            if (resposta.IsSuccessStatusCode)
+            {
+                var json = resposta.Content.ReadAsStringAsync().Result;
+                return JsonConvert.DeserializeObject<IEnumerable<EscolasRetornoDto>>(json);
+            }
+            return null;
+        }
+
         public IEnumerable<SupervisoresRetornoDto> ObterSupervisoresPorCodigo(string[] codigoSupervisores)
         {
             var resposta = httpClient.PostAsync("funcionarios/supervisores", new StringContent(JsonConvert.SerializeObject(codigoSupervisores), Encoding.UTF8, "application/json-patch+json")).Result;

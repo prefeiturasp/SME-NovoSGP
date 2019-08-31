@@ -20,18 +20,20 @@ namespace SME.SGP.Dados.Repositorios
 
             query.AppendLine("select *");
             query.AppendLine("from supervisor_escola_dre sed");
-            query.AppendLine("where");
-            query.AppendLine("sed.id_supervisor = @supervisorId");
+            query.AppendLine("where 1=1");
 
-            //var parametros = new { IdSupervisor = supervisorId };
+            if (!string.IsNullOrEmpty(supervisorId))
+                query.AppendLine("and sed.id_supervisor = @supervisorId");
 
             if (!string.IsNullOrEmpty(dreId))
-            {
-                query.AppendLine(" and sed.id_dre = @dreId");
-                //parametros =  parametros.IdDre = dreId;
-            }
+                query.AppendLine("and sed.id_dre = @dreId");
 
             return database.Conexao.Query<SupervisorEscolasDreDto>(query.ToString(), new { supervisorId, dreId }).AsList();
+        }
+
+        public IEnumerable<SupervisorEscolasDreDto> ObtemSupervisoresPorDre(string dreId)
+        {
+            throw new System.NotImplementedException();
         }
     }
 }

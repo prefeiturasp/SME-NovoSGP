@@ -7,6 +7,8 @@ namespace SME.SGP.Aplicacao.Integracoes
     {
         IEnumerable<EscolasRetornoDto> ObterEscolasPorCodigo(string[] codigoUes);
 
+        IEnumerable<EscolasRetornoDto> ObterEscolasPorDre(string dreId);
+
         IEnumerable<SupervisoresRetornoDto> ObterSupervisoresPorCodigo(string[] codigoUes);
     }
 }
