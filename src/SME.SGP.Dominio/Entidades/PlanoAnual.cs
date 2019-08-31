@@ -5,7 +5,7 @@
         public int Ano { get; set; }
         public long Bimestre { get; set; }
         public string Descricao { get; set; }
-        public long EscolaId { get; set; }
+        public string EscolaId { get; set; }
         public long TurmaId { get; set; }
     }
 }

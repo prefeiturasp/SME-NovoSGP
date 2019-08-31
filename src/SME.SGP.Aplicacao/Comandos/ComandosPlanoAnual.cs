@@ -4,12 +4,14 @@ using SME.SGP.Dto;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
     public class ComandosPlanoAnual : IComandosPlanoAnual
     {
         private readonly IConsultasObjetivoAprendizagem consultasObjetivoAprendizagem;
+        private readonly IConsultasProfessor consultasProfessor;
         private readonly IRepositorioComponenteCurricular repositorioComponenteCurricular;
         private readonly IRepositorioObjetivoAprendizagemPlano repositorioObjetivoAprendizagemPlano;
         private readonly IRepositorioPlanoAnual repositorioPlanoAnual;
@@ -19,20 +21,28 @@ namespace SME.SGP.Aplicacao
                                   IRepositorioObjetivoAprendizagemPlano repositorioObjetivoAprendizagemPlano,
                                   IRepositorioComponenteCurricular repositorioComponenteCurricular,
                                   IConsultasObjetivoAprendizagem consultasObjetivoAprendizagem,
+                                  IConsultasProfessor consultasProfessor,
                                   IUnitOfWork unitOfWork)
         {
             this.repositorioPlanoAnual = repositorioPlanoAnual ?? throw new ArgumentNullException(nameof(repositorioPlanoAnual));
             this.repositorioObjetivoAprendizagemPlano = repositorioObjetivoAprendizagemPlano ?? throw new ArgumentNullException(nameof(repositorioObjetivoAprendizagemPlano));
             this.repositorioComponenteCurricular = repositorioComponenteCurricular ?? throw new ArgumentNullException(nameof(repositorioComponenteCurricular));
             this.consultasObjetivoAprendizagem = consultasObjetivoAprendizagem ?? throw new ArgumentNullException(nameof(consultasObjetivoAprendizagem));
+            this.consultasProfessor = consultasProfessor ?? throw new ArgumentNullException(nameof(consultasProfessor));
             this.unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
         }
 
-        public void Migrar(MigrarPlanoAnualDto migrarPlanoAnualDto)
+        public async Task Migrar(MigrarPlanoAnualDto migrarPlanoAnualDto)
         {
-            //TODO, VALIDAR TURMAS DO PROFESSOR
             var planoAnualDto = migrarPlanoAnualDto.PlanoAnual;
             var planoAnualOrigem = ObterPlanoAnualSimplificado(planoAnualDto);
+            if (planoAnualOrigem == null)
+            {
+                throw new NegocioException("Plano anual de origemnão encontrado");
+            }
+
+            await ValidaTurmasProfessor(migrarPlanoAnualDto, planoAnualDto);
+
             using (var transacao = unitOfWork.IniciarTransacao())
             {
                 foreach (var turmaId in migrarPlanoAnualDto.IdsTurmasDestino)
@@ -107,10 +117,10 @@ namespace SME.SGP.Aplicacao
             {
                 planoAnual = new PlanoAnual();
             }
-            planoAnual.Ano = planoAnualDto.Ano.Value;
+            planoAnual.Ano = planoAnualDto.AnoLetivo.Value;
             planoAnual.Bimestre = planoAnualDto.Bimestre.Value;
             planoAnual.Descricao = planoAnualDto.Descricao;
-            planoAnual.EscolaId = planoAnualDto.EscolaId.Value;
+            planoAnual.EscolaId = planoAnualDto.EscolaId;
             planoAnual.TurmaId = planoAnualDto.TurmaId.Value;
             return planoAnual;
         }
@@ -139,8 +149,8 @@ namespace SME.SGP.Aplicacao
 
         private PlanoAnual ObterPlanoAnualSimplificado(PlanoAnualDto planoAnualDto)
         {
-            return repositorioPlanoAnual.ObterPlanoAnualSimplificadoPorAnoEscolaBimestreETurma(planoAnualDto.Ano.Value,
-                                                                                                      planoAnualDto.EscolaId.Value,
+            return repositorioPlanoAnual.ObterPlanoAnualSimplificadoPorAnoEscolaBimestreETurma(planoAnualDto.AnoLetivo.Value,
+                                                                                                      planoAnualDto.EscolaId,
                                                                                                       planoAnualDto.TurmaId.Value,
                                                                                                       planoAnualDto.Bimestre.Value);
         }
@@ -180,6 +190,17 @@ namespace SME.SGP.Aplicacao
                 ComponenteCurricularId = componenteEol.Id,
                 PlanoId = planoAnualDto.Id
             });
+        }
+
+        private async Task ValidaTurmasProfessor(MigrarPlanoAnualDto migrarPlanoAnualDto, PlanoAnualDto planoAnualDto)
+        {
+            var turmasAtribuidasAoProfessor = await consultasProfessor.ObterTurmasAtribuidasAoProfessorPorEscolaEAnoLetivo(migrarPlanoAnualDto.RFProfessor, planoAnualDto.EscolaId, planoAnualDto.AnoLetivo.Value);
+            var idsTurmasProfessor = turmasAtribuidasAoProfessor?.Select(c => c.CodigoTurma).ToList();
+
+            if (idsTurmasProfessor == null || migrarPlanoAnualDto.IdsTurmasDestino.Any(c => !idsTurmasProfessor.Contains(c)))
+            {
+                throw new NegocioException("Somente é possível migrar o plano anual para turmas atribuidas ao professor");
+            }
         }
     }
 }
