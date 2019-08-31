@@ -1,6 +1,7 @@
 import React from 'react';
 import styled from 'styled-components';
 import PropTypes from 'prop-types';
+import shortid from 'shortid';
 import CardHeader from './cardHeader';
 import CardBody from './cardBody';
 import { Base } from './colors';
@@ -12,7 +13,7 @@ const CardCollapse = props => {
     border-color: ${Base.CinzaDesabilitado} !important;
 
     &:last-child {
-      margin-bottom: 0;
+      margin-bottom: 0 !important;
     }
   `;
 
@@ -36,6 +37,9 @@ CardCollapse.propTypes = {
 };
 
 CardCollapse.defaultProps = {
+  titulo: '',
+  indice: shortid.generate(),
+  children: () => {},
   show: false,
 };
 

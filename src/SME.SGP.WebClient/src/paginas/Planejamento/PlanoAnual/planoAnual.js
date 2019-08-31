@@ -7,8 +7,10 @@ import Button from '../../../componentes/button';
 import TextEditor from '../../../componentes/textEditor';
 import { Colors, Base } from '../../../componentes/colors';
 import Seta from '../../../recursos/Seta.svg';
+import Card from '../../../componentes/card';
 // import { confirmacao } from '../../../servicos/alertas';
 // import Modal from '../../../componentes/modal';
+import { confirmacao } from '../../../servicos/alertas';
 
 export default function PlanoAnual() {
   const [bimestres] = useState([
@@ -126,26 +128,20 @@ export default function PlanoAnual() {
     setObjetivos([...objetivos]);
   };
 
-  // const confirmarCancelamento = () => {};
+  const confirmarCancelamento = () => {};
 
   const cancelarAlteracoes = () => {
-    // confirmacao(
-    //   'Atenção',
-    //   `Você não salvou as informações
-    //   preenchidas. Deseja realmente cancelar as alterações?`,
-    //   confirmarCancelamento,
-    //   () => true
-    // );
-    // return (
-    //   <Modal
-    //     title="Atenção"
-    //     content="Você não salvou as informações preenchidas. Deseja realmente cancelar as alterações?"
-    //   />
-    // );
+    confirmacao(
+      'Atenção',
+      `Você não salvou as informações
+      preenchidas. Deseja realmente cancelar as alterações?`,
+      confirmarCancelamento,
+      () => true
+    );
   };
 
   return (
-    <>
+    <Card>
       <Grid cols={12}>
         <h1>Plano Anual</h1>
       </Grid>
@@ -192,53 +188,53 @@ export default function PlanoAnual() {
                     <h6 className="d-inline-block font-weight-bold my-0 fonte-14">
                       Objetivos de aprendizagem
                       </h6>
-                    <div>
-                      {bimestre.materias && bimestre.materias.length > 0
-                        ? bimestre.materias.map(materia => {
-                          return (
-                            <Badge
-                              role="button"
-                              onClick={selecionaMateria}
-                              aria-pressed={false}
-                              key={shortid.generate()}
-                              className="badge badge-pill border text-dark bg-white font-weight-light p-2 mt-3 mr-2"
-                            >
-                              {materia.materia}
-                            </Badge>
-                          );
-                        })
-                        : null}
-                    </div>
-                    <div className="mt-4">
-                      {objetivos.length > 0
-                        ? objetivos.map(objetivo => {
-                          return (
-                            <ul
-                              key={shortid.generate()}
-                              className="list-group list-group-horizontal mt-3"
-                            >
-                              <ListItemButton
-                                className="list-group-item d-flex align-items-center font-weight-bold fonte-14"
-                                role="button"
-                                aria-pressed={objetivo.selected && true}
-                                onClick={selecionaObjetivo}
-                                onKeyUp={selecionaObjetivo}
-                              >
-                                {objetivo.code}
-                              </ListItemButton>
-                              <ListItem className="list-group-item flex-fill p-2 fonte-12">
-                                {objetivo.description}
-                              </ListItem>
-                            </ul>
-                          );
-                        })
-                        : null}
-                    </div>
-                  </Grid>
-                  <Grid cols={6}>
-                    <h6 className="d-inline-block font-weight-bold my-0 fonte-14">
-                      Objetivos de aprendizagem e meus objetivos (Currículo da
-                      cidade)
+                      <div>
+                        {bimestre.materias && bimestre.materias.length > 0
+                          ? bimestre.materias.map(materia => {
+                              return (
+                                <Badge
+                                  role="button"
+                                  onClick={selecionaMateria}
+                                  aria-pressed={false}
+                                  key={shortid.generate()}
+                                  className="badge badge-pill border text-dark bg-white font-weight-light px-2 py-1 mt-3 mr-2"
+                                >
+                                  {materia.materia}
+                                </Badge>
+                              );
+                            })
+                          : null}
+                      </div>
+                      <div className="mt-4">
+                        {objetivos.length > 0
+                          ? objetivos.map(objetivo => {
+                              return (
+                                <ul
+                                  key={shortid.generate()}
+                                  className="list-group list-group-horizontal mt-3"
+                                >
+                                  <ListItemButton
+                                    className="list-group-item d-flex align-items-center font-weight-bold fonte-14"
+                                    role="button"
+                                    aria-pressed={objetivo.selected && true}
+                                    onClick={selecionaObjetivo}
+                                    onKeyUp={selecionaObjetivo}
+                                  >
+                                    {objetivo.code}
+                                  </ListItemButton>
+                                  <ListItem className="list-group-item flex-fill p-2 fonte-12">
+                                    {objetivo.description}
+                                  </ListItem>
+                                </ul>
+                              );
+                            })
+                          : null}
+                      </div>
+                    </Grid>
+                    <Grid cols={6}>
+                      <h6 className="d-inline-block font-weight-bold my-0 fonte-14">
+                        Objetivos de aprendizagem e meus objetivos (Currículo da
+                        cidade)
                       </h6>
                     <div
                       role="group"
@@ -315,6 +311,6 @@ export default function PlanoAnual() {
           })
           : null}
       </Grid>
-    </>
+    </Card>
   );
 }
