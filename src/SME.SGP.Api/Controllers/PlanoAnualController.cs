@@ -36,5 +36,13 @@ namespace SME.SGP.Api.Controllers
             comandosPlanoAnual.Salvar(planoAnualDto);
             return Ok();
         }
+
+        [HttpGet("validar-existente")]
+        [ProducesResponseType(typeof(bool), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        public IActionResult ValidarPlanoAnualExistente(FiltroPlanoAnualDto filtroPlanoAnualDto, [FromServices]IConsultasPlanoAnual consultasPlanoAnual)
+        {
+            return Ok(consultasPlanoAnual.ValidarPlanoAnualExistente(filtroPlanoAnualDto));
+        }
     }
 }
