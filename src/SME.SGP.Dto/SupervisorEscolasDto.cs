@@ -10,7 +10,7 @@ namespace SME.SGP.Dto
         }
 
         public List<UnidadeEscolarDto> Escolas { get; set; }
-        public long SupervisorId { get; set; }
+        public string SupervisorId { get; set; }
         public string SupervisorNome { get; set; }
     }
 }

@@ -14,17 +14,24 @@ namespace SME.SGP.Dados.Repositorios
         {
         }
 
-        public IEnumerable<SupervisorEscolasDto> ObtemSupervisoresEscola(long dreId, long supervisorId)
+        public IEnumerable<SupervisorEscolasDreDto> ObtemSupervisoresEscola(string dreId, string supervisorId)
         {
             StringBuilder query = new StringBuilder();
 
             query.AppendLine("select *");
-            query.AppendLine("from supervisor_escola_dre");
+            query.AppendLine("from supervisor_escola_dre sed");
+            query.AppendLine("where");
+            query.AppendLine("sed.id_supervisor = @supervisorId");
 
-            //query.AppendLine("where");
-            //query.AppendLine("tca.ano = @ano");
+            //var parametros = new { IdSupervisor = supervisorId };
 
-            return database.Conexao.Query<SupervisorEscolasDto>(query.ToString()).AsList();
+            if (!string.IsNullOrEmpty(dreId))
+            {
+                query.AppendLine(" and sed.id_dre = @dreId");
+                //parametros =  parametros.IdDre = dreId;
+            }
+
+            return database.Conexao.Query<SupervisorEscolasDreDto>(query.ToString(), new { supervisorId, dreId }).AsList();
         }
     }
 }

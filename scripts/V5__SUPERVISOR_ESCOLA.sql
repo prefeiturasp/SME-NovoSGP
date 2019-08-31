@@ -1,9 +1,9 @@
 ﻿CREATE TABLE IF NOT EXISTS public.supervisor_escola_dre
 (
     id bigint NOT NULL,
-    id_supervisor bigint not null,
-    id_escola bigint not null,
-    id_dre bigint not null,
+    id_supervisor varchar(15) not null,
+    id_escola varchar(15) not null,
+    id_dre varchar(15) not null,
     criado_em timestamp without time zone NOT NULL,
     criado_por character varying(200) COLLATE pg_catalog."default" NOT NULL,
     alterado_em timestamp without time zone,
