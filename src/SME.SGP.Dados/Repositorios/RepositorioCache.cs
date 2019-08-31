@@ -16,13 +16,28 @@ namespace SME.SGP.Dados.Repositorios
 
         public string Obter(string nomeChave)
         {
-            return distributedCache.GetString(nomeChave);
+            try
+            {
+                return distributedCache.GetString(nomeChave);
+            }
+            catch (Exception)
+            {
+                //Caso o cache esteja indisponível a aplicação precisa continuar funcionando mesmo sem o cache
+                return null;
+            }
         }
 
         public async Task SalvarAsync(string nomeChave, string valor, int minutosParaExpirar = 720)
         {
-            await distributedCache.SetStringAsync(nomeChave, valor, new DistributedCacheEntryOptions()
-                                            .SetAbsoluteExpiration(TimeSpan.FromMinutes(minutosParaExpirar)));
+            try
+            {
+                await distributedCache.SetStringAsync(nomeChave, valor, new DistributedCacheEntryOptions()
+                                                .SetAbsoluteExpiration(TimeSpan.FromMinutes(minutosParaExpirar)));
+            }
+            catch (Exception)
+            {
+                //Caso o cache esteja indisponível a aplicação precisa continuar funcionando mesmo sem o cache
+            }
         }
     }
 }
