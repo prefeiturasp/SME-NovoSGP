@@ -37,6 +37,7 @@ const Sider = () => {
               </a>
             </div>
             <div className="perfil">
+              
               <div className="circulo-perfil">
                 <img id="imagem-perfil" src="https://graziellanicolai.com.br/wp-content/uploads/2018/03/Graziella-perfil.jpg"></img>
               </div>
@@ -194,7 +195,7 @@ const Sider = () => {
                     <span className="menuItem">Atribuição Supervisor</span>
                   </Menu.Item>
                 </SubMenu>
-                <SubMenu style={{color: 'blue'}}
+                <SubMenu 
                   disabled
                   id="configuracoes"
                   key="subConfiguracoes"
