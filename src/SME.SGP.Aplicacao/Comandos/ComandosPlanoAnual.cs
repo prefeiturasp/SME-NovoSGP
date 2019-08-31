@@ -28,18 +28,42 @@ namespace SME.SGP.Aplicacao
             this.unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
         }
 
-        public void Salvar(PlanoAnualDto planoAnualDto)
+        public void Migrar(MigrarPlanoAnualDto migrarPlanoAnualDto)
         {
-            PlanoAnual planoAnual = ObterPlanoAnual(planoAnualDto);
+            //TODO, VALIDAR TURMAS DO PROFESSOR
+            var planoAnualDto = migrarPlanoAnualDto.PlanoAnual;
+            var planoAnualOrigem = ObterPlanoAnualSimplificado(planoAnualDto);
             using (var transacao = unitOfWork.IniciarTransacao())
             {
-                planoAnualDto.Id = repositorioPlanoAnual.Salvar(planoAnual);
-                AjustarObjetivosAprendizagem(planoAnualDto);
+                foreach (var turmaId in migrarPlanoAnualDto.IdsTurmasDestino)
+                {
+                    planoAnualDto.TurmaId = turmaId;
+                    var planoAnual = ObterPlanoAnualSimplificado(planoAnualDto);
+                    if (planoAnual == null)
+                    {
+                        planoAnual = MapearParaDominio(planoAnualDto, planoAnual);
+                    }
+                    planoAnual.Descricao = planoAnualOrigem.Descricao;
+                    Salvar(planoAnualDto, planoAnual);
+                }
                 unitOfWork.PersistirTransacao();
             }
         }
 
-        private static void ValidarObjetivoPertenceAoComponenteCurricular(IEnumerable<ObjetivoAprendizagemDto> objetivosAprendizagem, ObjetivoAprendizagemSimplificadoDto objetivo, ComponenteCurricular componenteEol)
+        public void Salvar(PlanoAnualDto planoAnualDto)
+        {
+            PlanoAnual planoAnual = ObterPlanoAnualSimplificado(planoAnualDto);
+            planoAnual = MapearParaDominio(planoAnualDto, planoAnual);
+            using (var transacao = unitOfWork.IniciarTransacao())
+            {
+                Salvar(planoAnualDto, planoAnual);
+                unitOfWork.PersistirTransacao();
+            }
+        }
+
+        private static void ValidarObjetivoPertenceAoComponenteCurricular(IEnumerable<ObjetivoAprendizagemDto> objetivosAprendizagem,
+                                                                          ObjetivoAprendizagemSimplificadoDto objetivo,
+                                                                          ComponenteCurricular componenteEol)
         {
             var objetivoAprendizagem = objetivosAprendizagem.FirstOrDefault(c => c.Id == objetivo.Id);
             if (objetivoAprendizagem.IdComponenteCurricular != componenteEol.CodigoJurema)
@@ -77,13 +101,18 @@ namespace SME.SGP.Aplicacao
             }
         }
 
-        private void MapearParaDominio(PlanoAnualDto planoAnualDto, PlanoAnual planoAnual)
+        private PlanoAnual MapearParaDominio(PlanoAnualDto planoAnualDto, PlanoAnual planoAnual)
         {
+            if (planoAnual == null)
+            {
+                planoAnual = new PlanoAnual();
+            }
             planoAnual.Ano = planoAnualDto.Ano.Value;
             planoAnual.Bimestre = planoAnualDto.Bimestre.Value;
             planoAnual.Descricao = planoAnualDto.Descricao;
             planoAnual.EscolaId = planoAnualDto.EscolaId.Value;
             planoAnual.TurmaId = planoAnualDto.TurmaId.Value;
+            return planoAnual;
         }
 
         private IEnumerable<ComponenteCurricular> ObterComponentesCurriculares()
@@ -108,27 +137,12 @@ namespace SME.SGP.Aplicacao
             return objetivosAprendizagem;
         }
 
-        private PlanoAnual ObterPlanoAnual(PlanoAnualDto planoAnualDto)
+        private PlanoAnual ObterPlanoAnualSimplificado(PlanoAnualDto planoAnualDto)
         {
-            var planoAnual = new PlanoAnual();
-            if (planoAnualDto.Id > 0)
-            {
-                planoAnual = repositorioPlanoAnual.ObterPorId(planoAnualDto.Id);
-                if (planoAnual == null)
-                {
-                    throw new NegocioException("Plano anual não encontrado.");
-                }
-            }
-            else
-            {
-                var planoExistente = repositorioPlanoAnual.ValidarPlanoExistentePorAnoEscolaTurmaEBimestre(planoAnualDto.Ano.Value, planoAnualDto.EscolaId.Value, planoAnualDto.TurmaId.Value, planoAnualDto.Bimestre.Value);
-                if (planoExistente)
-                {
-                    throw new NegocioException("Já existe um plano anual com o ano, escola, turma e bimestre informados.");
-                }
-            }
-            MapearParaDominio(planoAnualDto, planoAnual);
-            return planoAnual;
+            return repositorioPlanoAnual.ObterPlanoAnualSimplificadoPorAnoEscolaBimestreETurma(planoAnualDto.Ano.Value,
+                                                                                                      planoAnualDto.EscolaId.Value,
+                                                                                                      planoAnualDto.TurmaId.Value,
+                                                                                                      planoAnualDto.Bimestre.Value);
         }
 
         private void RemoverObjetivos(PlanoAnualDto planoAnualDto, IEnumerable<ObjetivoAprendizagemPlano> objetivosAprendizagemPlanoAnual)
@@ -145,7 +159,16 @@ namespace SME.SGP.Aplicacao
             }
         }
 
-        private void SalvarObjetivoAprendizagem(PlanoAnualDto planoAnualDto, IEnumerable<ComponenteCurricular> componentesCurriculares, IEnumerable<ObjetivoAprendizagemDto> objetivosAprendizagem, ObjetivoAprendizagemSimplificadoDto objetivo)
+        private void Salvar(PlanoAnualDto planoAnualDto, PlanoAnual planoAnual)
+        {
+            planoAnualDto.Id = repositorioPlanoAnual.Salvar(planoAnual);
+            AjustarObjetivosAprendizagem(planoAnualDto);
+        }
+
+        private void SalvarObjetivoAprendizagem(PlanoAnualDto planoAnualDto,
+                                                IEnumerable<ComponenteCurricular> componentesCurriculares,
+                                                IEnumerable<ObjetivoAprendizagemDto> objetivosAprendizagem,
+                                                ObjetivoAprendizagemSimplificadoDto objetivo)
         {
             var componenteEol = componentesCurriculares.FirstOrDefault(c => c.CodigoJurema == objetivo.IdComponenteCurricular);
 

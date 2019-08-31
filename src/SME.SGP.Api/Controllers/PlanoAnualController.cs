@@ -26,6 +26,15 @@ namespace SME.SGP.Api.Controllers
             return Ok(await consultasPlanoAnual.ObterPorEscolaTurmaAnoEBimestre(filtroPlanoAnualDto));
         }
 
+        [HttpPost("migrar")]
+        [ProducesResponseType(200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        public IActionResult Migrar(MigrarPlanoAnualDto migrarPlanoAnualDto)
+        {
+            comandosPlanoAnual.Migrar(migrarPlanoAnualDto);
+            return Ok();
+        }
+
         [HttpPost]
         [ProducesResponseType(200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]

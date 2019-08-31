@@ -19,7 +19,7 @@ namespace SME.SGP.Aplicacao
 
         public async Task<PlanoAnualCompletoDto> ObterPorEscolaTurmaAnoEBimestre(FiltroPlanoAnualDto filtroPlanoAnualDto)
         {
-            var planoAnual = repositorioPlanoAnual.ObterPorAnoEscolaBimestreETurma(filtroPlanoAnualDto.Ano, filtroPlanoAnualDto.EscolaId, filtroPlanoAnualDto.TurmaId, filtroPlanoAnualDto.Bimestre);
+            var planoAnual = repositorioPlanoAnual.ObterPlanoAnualCompletoPorAnoEscolaBimestreETurma(filtroPlanoAnualDto.Ano, filtroPlanoAnualDto.EscolaId, filtroPlanoAnualDto.TurmaId, filtroPlanoAnualDto.Bimestre);
             if (planoAnual != null)
             {
                 var objetivosAprendizagem = await consultasObjetivoAprendizagem.Listar();
