@@ -11,7 +11,7 @@ namespace SME.SGP.Dto
         public int Bimestre { get; set; }
 
         [Required(ErrorMessage = "A escola deve ser informada")]
-        public int EscolaId { get; set; }
+        public string EscolaId { get; set; }
 
         [Required(ErrorMessage = "A escola deve ser informada")]
         public int TurmaId { get; set; }
