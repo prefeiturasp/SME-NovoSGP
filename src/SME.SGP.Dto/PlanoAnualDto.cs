@@ -19,6 +19,7 @@ namespace SME.SGP.Dto
 
         public long Id { get; set; }
 
+        [ListaTemElementos(ErrorMessage = "Os objetivos de aprendizagem devem ser informados")]
         public List<ObjetivoAprendizagemSimplificadoDto> ObjetivosAprendizagem { get; set; }
 
         [Required(ErrorMessage = "A turma deve ser informada")]
