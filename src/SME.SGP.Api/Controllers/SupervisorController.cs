@@ -11,19 +11,19 @@ namespace SME.SGP.Api.Controllers
     [ValidaDto]
     public class SupervisorController : ControllerBase
     {
-        private readonly IConsultasCiclo consultasCiclo;
+        private readonly IConsultasSupervisor consultasSupervisor;
 
-        public SupervisorController(IConsultasCiclo consultasCiclo)
+        public SupervisorController(IConsultasSupervisor consultasSupervisor)
         {
-            this.consultasCiclo = consultasCiclo ?? throw new System.ArgumentNullException(nameof(consultasCiclo));
+            this.consultasSupervisor = consultasSupervisor ?? throw new System.ArgumentNullException(nameof(consultasSupervisor));
         }
 
-        [HttpGet]
-        [ProducesResponseType(typeof(IEnumerable<CicloDto>), 200)]
+        [HttpGet("{supervisorId}/dre/{dreId}")]
+        [ProducesResponseType(typeof(IEnumerable<SupervisorEscolasDto>), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        public IActionResult Get()
+        public IActionResult Get(string supervisorId, string dreId)
         {
-            return Ok(consultasCiclo.Listar(new List<int>()));
+            return Ok(consultasSupervisor.ObterPorDreESupervisor(supervisorId, dreId));
         }
     }
 }
