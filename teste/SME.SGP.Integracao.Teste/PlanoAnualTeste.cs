@@ -33,7 +33,7 @@ namespace SME.SGP.Integracao.Teste
             {
                 Ano = 1,
                 Bimestre = 1,
-                EscolaId = 1,
+                EscolaId = "1",
                 TurmaId = 1
             };
             var filtroPlanoAnual = new StringContent(JsonConvert.SerializeObject(filtro), Encoding.UTF8, "application/json");
@@ -76,11 +76,11 @@ namespace SME.SGP.Integracao.Teste
         {
             return new PlanoAnualDto()
             {
-                Ano = 1,
+                AnoLetivo = 2019,
                 Bimestre = 1,
                 Descricao = "Primeiro bismestre do primeiro ano",
-                EscolaId = 1,
-                TurmaId = 1,
+                EscolaId = "095346",
+                TurmaId = 2008187,
                 ObjetivosAprendizagem = new List<ObjetivoAprendizagemSimplificadoDto>()
                 {
                     new ObjetivoAprendizagemSimplificadoDto()

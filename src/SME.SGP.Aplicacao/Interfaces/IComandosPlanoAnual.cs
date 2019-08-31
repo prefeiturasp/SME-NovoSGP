@@ -1,10 +1,11 @@
 ﻿using SME.SGP.Dto;
+using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
     public interface IComandosPlanoAnual
     {
-        void Migrar(MigrarPlanoAnualDto migrarPlanoAnualDto);
+        Task Migrar(MigrarPlanoAnualDto migrarPlanoAnualDto);
 
         void Salvar(PlanoAnualDto planoAnualDto);
     }
