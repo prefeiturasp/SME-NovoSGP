@@ -37,8 +37,12 @@ export default function PlanoCiclo(props) {
   const [modoEdicao, setModoEdicao] = useState(false);
   const [pronto, setPronto] = useState(false);
   const [exibirConfirmacaoVoltar, setExibirConfirmacaoVoltar] = useState(false);
-  const [exibirConfirmacaoTrocaCiclo, setExibirConfirmacaoTrocaCiclo] = useState(false);
+  const [
+    exibirConfirmacaoTrocaCiclo,
+    setExibirConfirmacaoTrocaCiclo,
+  ] = useState(false);
   const [eventoTrocarCiclo, setEventoTrocarCiclo] = useState(false);
+  const [registroMigrado, setRegistroMigrado] = useState(true);
   const [cicloParaTrocar, setCicloParaTrocar] = useState('');
   const [exibirConfirmacaoCancelar, setExibirConfirmacaoCancelar] = useState(
     false
@@ -154,6 +158,9 @@ export default function PlanoCiclo(props) {
     }
     setDescricaoCiclo(ciclo.data.descricao);
     setCicloSelecionado(String(ciclo.data.cicloId));
+    if (ciclo.data.migrado) {
+      setRegistroMigrado(ciclo.data.migrado);
+    }
   }
 
   function addRemoverMatriz(event, matrizSelecionada) {
@@ -274,7 +281,7 @@ export default function PlanoCiclo(props) {
     let ciclo = '';
     if (eventoTrocarCiclo) {
       ciclo = cicloParaTrocar;
-      setCicloSelecionado(ciclo)
+      setCicloSelecionado(ciclo);
     }
     obterCicloExistente(
       parametrosConsulta.ano,
@@ -307,16 +314,24 @@ export default function PlanoCiclo(props) {
   }
 
   function salvarPlanoCiclo(navegarParaPlanejamento) {
-    if (!listaMatrizSelecionda.length) {
-      erro('Selecione uma opção ou mais em Matriz de saberes');
-      return;
-    }
+    let idsMatrizesSaber = [];
+    let idsObjetivosDesenvolvimento = [];
 
-    if (!listaODSSelecionado.length) {
-      erro(
-        'Selecione uma opção ou mais em Objetivos de Desenvolvimento Sustentável'
-      );
-      return;
+    if (!registroMigrado) {
+      if (!listaMatrizSelecionda.length) {
+        erro('Selecione uma opção ou mais em Matriz de saberes');
+        return;
+      }
+
+      if (!listaODSSelecionado.length) {
+        erro(
+          'Selecione uma opção ou mais em Objetivos de Desenvolvimento Sustentável'
+        );
+        return;
+      }
+
+      idsMatrizesSaber = listaMatrizSelecionda.map(matriz => matriz.id);
+      idsObjetivosDesenvolvimento = listaODSSelecionado.map(ods => ods.id);
     }
 
     const params = {
@@ -325,8 +340,8 @@ export default function PlanoCiclo(props) {
       descricao: textEditorRef.current.state.value,
       escolaId: parametrosConsulta.escolaId,
       id: parametrosConsulta.id || 0,
-      idsMatrizesSaber: listaMatrizSelecionda.map(matriz => matriz.id),
-      idsObjetivosDesenvolvimento: listaODSSelecionado.map(ods => ods.id),
+      idsMatrizesSaber,
+      idsObjetivosDesenvolvimento,
     };
 
     api.post('v1/planos-ciclo', params).then(
@@ -349,6 +364,9 @@ export default function PlanoCiclo(props) {
 
   return (
     <Container>
+      <div className="col-md-12 pb-3">
+        {registroMigrado ? <span> REGISTRO MIGRADO </span> : ''}
+      </div>
       <ModalConfirmacao
         id="modal-confirmacao-cancelar"
         visivel={exibirConfirmacaoCancelar}
@@ -502,7 +520,9 @@ export default function PlanoCiclo(props) {
               </div>
 
               <div className="row">
-                <ListaItens>
+                <ListaItens
+                  className={registroMigrado ? 'desabilitar-elemento' : ''}
+                >
                   <ul>
                     {listaMatriz.map(item => {
                       return (
@@ -534,7 +554,9 @@ export default function PlanoCiclo(props) {
                 </BtnLink>
               </div>
               <div className="row">
-                <ListaItens>
+                <ListaItens
+                  className={registroMigrado ? 'desabilitar-elemento' : ''}
+                >
                   <ul>
                     {listaODS.map(item => {
                       return (
