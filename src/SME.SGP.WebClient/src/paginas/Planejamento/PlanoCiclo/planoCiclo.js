@@ -1,25 +1,20 @@
 import * as moment from 'moment';
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { useSelector } from 'react-redux';
-import {
-  BtnLink,
-  ListaItens,
-  Badge,
-  Container,
-  InseridoAlterado,
-} from './planoCiclo.css';
-import TextEditor from '../../../componentes/textEditor';
 
 import Alert from '../../../componentes/alert';
 import Button from '../../../componentes/button';
+import Card from '../../../componentes/card';
 import { Colors } from '../../../componentes/colors';
+import ModalConfirmacao from '../../../componentes/modalConfirmacao';
 import SelectComponent from '../../../componentes/select';
-import { erro, sucesso, confirmacao } from '../../../servicos/alertas';
-// import ControleEstado from '../../../componentes/controleEstado';
+import TextEditor from '../../../componentes/textEditor';
+import { erro, sucesso } from '../../../servicos/alertas';
 import api from '../../../servicos/api';
 import history from '../../../servicos/history';
-import ModalConfirmacao from '../../../componentes/modalConfirmacao';
+import { Badge, BtnLink, InseridoAlterado, ListaItens } from './planoCiclo.css';
 
+// import ControleEstado from '../../../componentes/controleEstado';
 export default function PlanoCiclo(props) {
   const { match } = props;
 
@@ -42,7 +37,7 @@ export default function PlanoCiclo(props) {
     setExibirConfirmacaoTrocaCiclo,
   ] = useState(false);
   const [eventoTrocarCiclo, setEventoTrocarCiclo] = useState(false);
-  const [registroMigrado, setRegistroMigrado] = useState(true);
+  const [registroMigrado, setRegistroMigrado] = useState(false);
   const [cicloParaTrocar, setCicloParaTrocar] = useState('');
   const [exibirConfirmacaoCancelar, setExibirConfirmacaoCancelar] = useState(
     false
@@ -363,7 +358,7 @@ export default function PlanoCiclo(props) {
   const notificacoes = useSelector(state => state.notificacoes);
 
   return (
-    <Container>
+    <Card>
       <div className="col-md-12 pb-3">
         {registroMigrado ? <span> REGISTRO MIGRADO </span> : ''}
       </div>
@@ -582,6 +577,6 @@ export default function PlanoCiclo(props) {
           </div>
         </div>
       </div>
-    </Container>
+    </Card>
   );
 }

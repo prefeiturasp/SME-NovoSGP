@@ -23,8 +23,8 @@ function App() {
         <div className="container-fluid h-100">
           <div className="row h-100">
             <Sidebar />
-            <main role="main" className="col-md-9 ml-sm-auto col-lg-10">
-              <div className="row shadow py-3 px-2 mx-2 my-4 bg-white">
+            <main role="main" className="col-lg-10 col-md-10 col-sm-12 col-xs-12">
+              <div className="card-body m-r-0 m-l-0 p-l-0 p-r-0 m-t-0">
                 <Rotas />
               </div>
             </main>
