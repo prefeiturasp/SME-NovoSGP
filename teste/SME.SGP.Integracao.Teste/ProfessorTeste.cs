@@ -6,7 +6,8 @@ using Xunit;
 
 namespace SME.SGP.Integracao.Teste
 {
-    public class ProfessorTeste : IClassFixture<TestServerFixture>
+    [Collection("Testserver collection")]
+    public class ProfessorTeste
     {
         private readonly TestServerFixture fixture;
 
