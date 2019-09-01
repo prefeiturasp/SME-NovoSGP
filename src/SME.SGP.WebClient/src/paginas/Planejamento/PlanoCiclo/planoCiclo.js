@@ -1,29 +1,24 @@
 import * as moment from 'moment';
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { useSelector } from 'react-redux';
-import {
-  BtnLink,
-  ListaItens,
-  Badge,
-  InseridoAlterado,
-} from './planoCiclo.css';
-import TextEditor from '../../../componentes/textEditor';
 
 import Alert from '../../../componentes/alert';
 import Button from '../../../componentes/button';
+import Card from '../../../componentes/card';
 import { Colors } from '../../../componentes/colors';
+import ModalConfirmacao from '../../../componentes/modalConfirmacao';
 import SelectComponent from '../../../componentes/select';
-import { erro, sucesso, confirmacao } from '../../../servicos/alertas';
-// import ControleEstado from '../../../componentes/controleEstado';
+import TextEditor from '../../../componentes/textEditor';
+import { erro, sucesso } from '../../../servicos/alertas';
 import api from '../../../servicos/api';
 import history from '../../../servicos/history';
-import ModalConfirmacao from '../../../componentes/modalConfirmacao';
-import Card from '../../../componentes/card';
+import { Badge, BtnLink, InseridoAlterado, ListaItens } from './planoCiclo.css';
 
+// import ControleEstado from '../../../componentes/controleEstado';
 export default function PlanoCiclo(props) {
   const { match } = props;
 
-  const urlPrefeitura = 'https://curriculo.prefeitura.sp.gov.br';
+  const urlPrefeitura = 'https://curriculo.sme.prefeitura.sp.gov.br';
   const urlMatrizSaberes = `${urlPrefeitura}/matriz-de-saberes`;
   const urlODS = `${urlPrefeitura}/ods`;
   const textEditorRef = useRef(null);
@@ -37,6 +32,13 @@ export default function PlanoCiclo(props) {
   const [modoEdicao, setModoEdicao] = useState(false);
   const [pronto, setPronto] = useState(false);
   const [exibirConfirmacaoVoltar, setExibirConfirmacaoVoltar] = useState(false);
+  const [
+    exibirConfirmacaoTrocaCiclo,
+    setExibirConfirmacaoTrocaCiclo,
+  ] = useState(false);
+  const [eventoTrocarCiclo, setEventoTrocarCiclo] = useState(false);
+  const [registroMigrado, setRegistroMigrado] = useState(false);
+  const [cicloParaTrocar, setCicloParaTrocar] = useState('');
   const [exibirConfirmacaoCancelar, setExibirConfirmacaoCancelar] = useState(
     false
   );
@@ -50,26 +52,54 @@ export default function PlanoCiclo(props) {
   let [listaODSSelecionado, setListaODSSelecionado] = useState([]);
 
   useEffect(() => {
-    function obterSugestaoCiclo() {
-      // TODO - Setar o ciclo quando tiver uma sugestão!
-      // setCicloSelecionado('2');
-    }
-
     async function carregarListas() {
       const matrizes = await api.get('v1/matrizes-saber');
       setListaMatriz(matrizes.data);
 
       const ods = await api.get('v1/objetivos-desenvolvimento-sustentavel');
       setListaODS(ods.data);
+      // TODO
+      // const ciclos = await api.get('v1/ciclos');
+      // setListaCiclos(ciclos.data);
 
-      const ciclos = await api.get('v1/ciclos');
-      setListaCiclos(ciclos.data);
+      const mock = [
+        {
+          descricao: 'Alfabetização',
+          id: 1,
+          selecionado: false,
+        },
+        {
+          descricao: 'Complementar',
+          id: 6,
+          selecionado: true,
+        },
+        {
+          descricao: 'Básica',
+          id: 5,
+          selecionado: false,
+        },
+        {
+          descricao: 'Final',
+          id: 7,
+          selecionado: false,
+        },
+      ];
+
+      const sugestaoCiclo = mock.find(item => item.selecionado).id;
+
+      setListaCiclos(mock);
+
+      if (sugestaoCiclo) {
+        setCicloSelecionado(String(sugestaoCiclo));
+      } else {
+        setCicloSelecionado(String(mock[0]));
+      }
 
       if (match.params && match.params.ano && match.params.escolaId) {
         obterCicloExistente(
           match.params.ano,
           match.params.escolaId,
-          cicloSelecionado || '1'
+          String(sugestaoCiclo) || String(mock[0])
         );
       }
     }
@@ -123,6 +153,9 @@ export default function PlanoCiclo(props) {
     }
     setDescricaoCiclo(ciclo.data.descricao);
     setCicloSelecionado(String(ciclo.data.cicloId));
+    if (ciclo.data.migrado) {
+      setRegistroMigrado(ciclo.data.migrado);
+    }
   }
 
   function addRemoverMatriz(event, matrizSelecionada) {
@@ -167,7 +200,17 @@ export default function PlanoCiclo(props) {
     }
   }
 
-  function setCiclo(value) {
+  function validaTrocaCiclo(value) {
+    if (modoEdicao) {
+      setCicloParaTrocar(value);
+      setExibirConfirmacaoTrocaCiclo(true);
+      setEventoTrocarCiclo(true);
+    } else {
+      trocaCiclo(value);
+    }
+  }
+
+  function trocaCiclo(value) {
     obterCicloExistente(
       parametrosConsulta.ano,
       parametrosConsulta.escolaId,
@@ -230,10 +273,15 @@ export default function PlanoCiclo(props) {
   function confirmarCancelamento() {
     resetListas();
     setModoEdicao(false);
+    let ciclo = '';
+    if (eventoTrocarCiclo) {
+      ciclo = cicloParaTrocar;
+      setCicloSelecionado(ciclo);
+    }
     obterCicloExistente(
       parametrosConsulta.ano,
       parametrosConsulta.escolaId,
-      cicloSelecionado
+      ciclo || cicloSelecionado
     );
   }
 
@@ -261,16 +309,24 @@ export default function PlanoCiclo(props) {
   }
 
   function salvarPlanoCiclo(navegarParaPlanejamento) {
-    if (!listaMatrizSelecionda.length) {
-      erro('Selecione uma opção ou mais em Matriz de saberes');
-      return;
-    }
+    let idsMatrizesSaber = [];
+    let idsObjetivosDesenvolvimento = [];
 
-    if (!listaODSSelecionado.length) {
-      erro(
-        'Selecione uma opção ou mais em Objetivos de Desenvolvimento Sustentável'
-      );
-      return;
+    if (!registroMigrado) {
+      if (!listaMatrizSelecionda.length) {
+        erro('Selecione uma opção ou mais em Matriz de saberes');
+        return;
+      }
+
+      if (!listaODSSelecionado.length) {
+        erro(
+          'Selecione uma opção ou mais em Objetivos de Desenvolvimento Sustentável'
+        );
+        return;
+      }
+
+      idsMatrizesSaber = listaMatrizSelecionda.map(matriz => matriz.id);
+      idsObjetivosDesenvolvimento = listaODSSelecionado.map(ods => ods.id);
     }
 
     const params = {
@@ -279,8 +335,8 @@ export default function PlanoCiclo(props) {
       descricao: textEditorRef.current.state.value,
       escolaId: parametrosConsulta.escolaId,
       id: parametrosConsulta.id || 0,
-      idsMatrizesSaber: listaMatrizSelecionda.map(matriz => matriz.id),
-      idsObjetivosDesenvolvimento: listaODSSelecionado.map(ods => ods.id),
+      idsMatrizesSaber,
+      idsObjetivosDesenvolvimento,
     };
 
     api.post('v1/planos-ciclo', params).then(
@@ -303,6 +359,9 @@ export default function PlanoCiclo(props) {
 
   return (
     <Card>
+      <div className="col-md-12 pb-3">
+        {registroMigrado ? <span> REGISTRO MIGRADO </span> : ''}
+      </div>
       <ModalConfirmacao
         id="modal-confirmacao-cancelar"
         visivel={exibirConfirmacaoCancelar}
@@ -330,6 +389,20 @@ export default function PlanoCiclo(props) {
         perguntaDoConteudo="Suas alterações não foram salvas, deseja salvar agora?"
         titulo="Atenção"
       />
+      <ModalConfirmacao
+        id="modal-confirmacao-troca-ciclo"
+        visivel={exibirConfirmacaoTrocaCiclo}
+        onConfirmacaoSim={() => {
+          salvarPlanoCiclo(false);
+          setExibirConfirmacaoTrocaCiclo(false);
+        }}
+        onConfirmacaoNao={() => {
+          setExibirConfirmacaoTrocaCiclo(false);
+          trocaCiclo(cicloParaTrocar);
+        }}
+        perguntaDoConteudo="Suas alterações não foram salvas, deseja salvar agora?"
+        titulo="Atenção"
+      />
       {/* <ControleEstado
         when={modoEdicao}
         confirmar={url => history.push(url)}
@@ -353,7 +426,7 @@ export default function PlanoCiclo(props) {
                   lista={listaCiclos}
                   valueOption="id"
                   label="descricao"
-                  onChange={setCiclo}
+                  onChange={validaTrocaCiclo}
                   valueSelect={cicloSelecionado}
                 />
               </div>
@@ -395,7 +468,7 @@ export default function PlanoCiclo(props) {
             ciclo.
           </div>
           <div className="col-md-6">
-            Considerando as especificações de cada ciclo desta unidade escolar e
+            Considerando as especificações de cada etapa desta unidade escolar e
             o currículo da cidade, <b>selecione</b> os itens da matriz do saber
             e dos objetivos de desenvolvimento e sustentabilidade que contemplam
             as propostas que planejaram:
@@ -407,7 +480,7 @@ export default function PlanoCiclo(props) {
             <TextEditor
               ref={textEditorRef}
               id="textEditor"
-              height="300px"
+              height="500px"
               maxHeight="calc(100vh)"
               onBlur={onChangeTextEditor}
               value={descricaoCiclo}
@@ -442,7 +515,9 @@ export default function PlanoCiclo(props) {
               </div>
 
               <div className="row">
-                <ListaItens>
+                <ListaItens
+                  className={registroMigrado ? 'desabilitar-elemento' : ''}
+                >
                   <ul>
                     {listaMatriz.map(item => {
                       return (
@@ -474,7 +549,9 @@ export default function PlanoCiclo(props) {
                 </BtnLink>
               </div>
               <div className="row">
-                <ListaItens>
+                <ListaItens
+                  className={registroMigrado ? 'desabilitar-elemento' : ''}
+                >
                   <ul>
                     {listaODS.map(item => {
                       return (
