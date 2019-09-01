@@ -3,7 +3,6 @@ using SME.SGP.Dados.Contexto;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Dto;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -41,11 +40,6 @@ namespace SME.SGP.Dados.Repositorios
             query.AppendLine("	tipo_ciclo tc");
 
             return database.Conexao.Query<CicloDto>(query.ToString()).ToList();
-        }
-
-        private object IEnumerable<T>(string v, object p)
-        {
-            throw new NotImplementedException();
         }
     }
 }
