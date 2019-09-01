@@ -12,7 +12,8 @@ using Xunit.Extensions.Ordering;
 
 namespace SME.SGP.Integracao.Teste
 {
-    public class PlanoCicloTeste : IClassFixture<TestServerFixture>
+    [Collection("Testserver collection")]
+    public class PlanoCicloTeste
     {
         private readonly TestServerFixture _fixture;
 
