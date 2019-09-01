@@ -6,7 +6,8 @@ using Xunit.Extensions.Ordering;
 
 namespace SME.SGP.Integracao.Teste
 {
-    public class SupervisorTeste : IClassFixture<TestServerFixture>
+    [Collection("Testserver collection")]
+    public class SupervisorTeste
     {
         private readonly TestServerFixture _fixture;
 
