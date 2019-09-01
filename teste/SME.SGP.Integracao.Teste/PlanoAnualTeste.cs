@@ -9,7 +9,8 @@ using Xunit.Extensions.Ordering;
 
 namespace SME.SGP.Integracao.Teste
 {
-    public class PlanoAnualTeste : IClassFixture<TestServerFixture>
+    [Collection("Testserver collection")]
+    public class PlanoAnualTeste
     {
         private readonly TestServerFixture fixture;
 
