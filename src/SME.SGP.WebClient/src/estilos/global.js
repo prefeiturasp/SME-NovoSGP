@@ -53,8 +53,13 @@ export default createGlobalStyle`
     color: #ffffff !important;
   }
 
-  @media (max-width: 544px) { 
-    
+  .desabilitar-elemento {
+    pointer-events: none !important;
+    opacity: 0.6 !important;
+  }
+
+  @media (max-width: 544px) {
+
     .hidden-xs-down{
       display: none !important;
     }
