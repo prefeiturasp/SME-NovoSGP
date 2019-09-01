@@ -6,7 +6,8 @@ using Xunit.Extensions.Ordering;
 
 namespace SME.SGP.Integracao.Teste
 {
-    public class SupervisorTeste : IClassFixture<TestServerFixture>
+    [Collection("Testserver collection")]
+    public class SupervisorTeste
     {
         private readonly TestServerFixture _fixture;
 
@@ -15,7 +16,7 @@ namespace SME.SGP.Integracao.Teste
             _fixture = fixture;
         }
 
-        [Fact, Order(3)]
+        [Fact, Order(9)]
         public void Deve_Consultar_Escolas_Por_Dre()
         {
             _fixture._clientApi.DefaultRequestHeaders.Clear();
