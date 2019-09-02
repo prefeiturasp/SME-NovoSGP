@@ -1,6 +1,6 @@
-﻿namespace SME.SGP.Dto
+﻿namespace SME.SGP.Aplicacao.Integracoes.Respostas
 {
-    public class ProfessorTurmaDto
+    public class ProfessorTurmaReposta
     {
         public int Ano { get; set; }
         public int AnoLetivo { get; set; }
