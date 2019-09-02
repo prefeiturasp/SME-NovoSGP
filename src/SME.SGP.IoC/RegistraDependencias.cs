@@ -33,6 +33,8 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IConsultasCiclo, ConsultasCiclo>();
             services.TryAddScoped<IConsultasObjetivoAprendizagem, ConsultasObjetivoAprendizagem>();
             services.TryAddScoped<IConsultasPlanoAnual, ConsultasPlanoAnual>();
+            services.TryAddScoped<IConsultasDisciplina, ConsultasDisciplina>();
+            services.TryAddScoped<IConsultasProfessor, ConsultasProfessor>();
         }
 
         private static void RegistrarContextos(IServiceCollection services)

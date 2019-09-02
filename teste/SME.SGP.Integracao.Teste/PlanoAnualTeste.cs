@@ -9,7 +9,8 @@ using Xunit.Extensions.Ordering;
 
 namespace SME.SGP.Integracao.Teste
 {
-    public class PlanoAnualTeste : IClassFixture<TestServerFixture>
+    [Collection("Testserver collection")]
+    public class PlanoAnualTeste
     {
         private readonly TestServerFixture fixture;
 
@@ -33,7 +34,7 @@ namespace SME.SGP.Integracao.Teste
             {
                 Ano = 1,
                 Bimestre = 1,
-                EscolaId = 1,
+                EscolaId = "1",
                 TurmaId = 1
             };
             var filtroPlanoAnual = new StringContent(JsonConvert.SerializeObject(filtro), Encoding.UTF8, "application/json");
@@ -48,6 +49,15 @@ namespace SME.SGP.Integracao.Teste
             {
                 var planoAnualCompleto = JsonConvert.DeserializeObject<PlanoCicloCompletoDto>(planoAnualCompletoResponse.Content.ReadAsStringAsync().Result);
                 Assert.Equal(planoAnualDto.Descricao, planoAnualCompleto.Descricao);
+
+                var requestValidaPlanoAnualExistente = new HttpRequestMessage
+                {
+                    Method = HttpMethod.Get,
+                    RequestUri = new Uri("api/v1/planos/anual/validar-existente"),
+                    Content = filtroPlanoAnual,
+                };
+                var planoAnualExistenteResponse = fixture._clientApi.SendAsync(request).Result;
+                Assert.True(bool.Parse(planoAnualExistenteResponse.Content.ReadAsStringAsync().Result));
             }
             else
             {
@@ -76,11 +86,11 @@ namespace SME.SGP.Integracao.Teste
         {
             return new PlanoAnualDto()
             {
-                Ano = 1,
+                AnoLetivo = 2019,
                 Bimestre = 1,
                 Descricao = "Primeiro bismestre do primeiro ano",
-                EscolaId = 1,
-                TurmaId = 1,
+                EscolaId = "095346",
+                TurmaId = 2008187,
                 ObjetivosAprendizagem = new List<ObjetivoAprendizagemSimplificadoDto>()
                 {
                     new ObjetivoAprendizagemSimplificadoDto()
