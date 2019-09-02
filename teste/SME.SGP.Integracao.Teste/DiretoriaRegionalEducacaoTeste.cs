@@ -1,0 +1,33 @@
+﻿using Newtonsoft.Json;
+using SME.SGP.Dto;
+using System.Collections.Generic;
+using Xunit;
+using Xunit.Extensions.Ordering;
+
+namespace SME.SGP.Integracao.Teste
+{
+    [Collection("Testserver collection")]
+    public class DiretoriaRegionalEducacaoTeste
+    {
+        private readonly TestServerFixture _fixture;
+
+        public DiretoriaRegionalEducacaoTeste(TestServerFixture fixture)
+        {
+            _fixture = fixture;
+        }
+
+        [Fact, Order(10)]
+        public void Deve_Consultar_Dres()
+        {
+            _fixture._clientApi.DefaultRequestHeaders.Clear();
+
+            var postResult = _fixture._clientApi.GetAsync("api/v1/dres").Result;
+
+            if (postResult.IsSuccessStatusCode)
+            {
+                var supervisorEscolasDto = JsonConvert.DeserializeObject<List<DreConsultaDto>>(postResult.Content.ReadAsStringAsync().Result);
+                Assert.True(supervisorEscolasDto.Count > 0);
+            }
+        }
+    }
+}

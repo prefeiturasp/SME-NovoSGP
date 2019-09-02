@@ -15,6 +15,17 @@ namespace SME.SGP.Aplicacao.Integracoes
             this.httpClient = httpClient;
         }
 
+        public IEnumerable<DreRespostaEolDto> ObterDres()
+        {
+            var resposta = httpClient.GetAsync("dres").Result;
+            if (resposta.IsSuccessStatusCode)
+            {
+                var json = resposta.Content.ReadAsStringAsync().Result;
+                return JsonConvert.DeserializeObject<IEnumerable<DreRespostaEolDto>>(json);
+            }
+            return null;
+        }
+
         public IEnumerable<EscolasRetornoDto> ObterEscolasPorCodigo(string[] codigoUes)
         {
             httpClient.DefaultRequestHeaders.Clear();
