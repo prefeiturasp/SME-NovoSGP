@@ -29,5 +29,21 @@ namespace SME.SGP.Integracao.Teste
                 Assert.True(supervisorEscolasDto.Count > 0);
             }
         }
+
+        [Fact, Order(11)]
+        public void Deve_Consultar_Escolas_Sem_Atribuicao()
+        {
+            _fixture._clientApi.DefaultRequestHeaders.Clear();
+
+            var postResult = _fixture._clientApi.GetAsync("api/v1/dres/18100/escolas/sem-atribuicao").Result;
+
+            if (postResult.IsSuccessStatusCode)
+            {
+                var supervisorEscolasDto = JsonConvert.DeserializeObject<List<UnidadeEscolarDto>>(postResult.Content.ReadAsStringAsync().Result);
+                Assert.True(supervisorEscolasDto.Count > 0);
+            }
+        }
+
+        //TODO CRIAR TESTE INCLUINDO UM SUPERVISOR - ESCOLA - DRE e O MESMO NÃO DEVE VIR NA CONSULTA;
     }
 }
