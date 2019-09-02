@@ -20,3 +20,4 @@ Executar o comando na **raiz da solução**
 
 `docker-compose up --build`
 
+
