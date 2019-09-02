@@ -18,10 +18,10 @@ namespace SME.SGP.Api.Controllers
             this.consultasCiclo = consultasCiclo ?? throw new System.ArgumentNullException(nameof(consultasCiclo));
         }
 
-        [HttpGet]
+        [HttpPost("filtro")]
         [ProducesResponseType(typeof(IEnumerable<CicloDto>), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        public IActionResult Get(FiltroCicloDto filtroCicloDto)
+        public IActionResult Filtrar(FiltroCicloDto filtroCicloDto)
         {
             return Ok(consultasCiclo.Listar(filtroCicloDto));
         }
