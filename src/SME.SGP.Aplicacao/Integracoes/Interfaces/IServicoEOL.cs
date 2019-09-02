@@ -5,6 +5,8 @@ namespace SME.SGP.Aplicacao.Integracoes
 {
     public interface IServicoEOL
     {
+        IEnumerable<DreRespostaEolDto> ObterDres();
+
         IEnumerable<EscolasRetornoDto> ObterEscolasPorCodigo(string[] codigoUes);
 
         IEnumerable<EscolasRetornoDto> ObterEscolasPorDre(string dreId);
