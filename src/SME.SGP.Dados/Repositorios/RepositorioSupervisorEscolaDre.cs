@@ -30,10 +30,5 @@ namespace SME.SGP.Dados.Repositorios
 
             return database.Conexao.Query<SupervisorEscolasDreDto>(query.ToString(), new { supervisorId, dreId }).AsList();
         }
-
-        public IEnumerable<SupervisorEscolasDreDto> ObtemSupervisoresPorDre(string dreId)
-        {
-            throw new System.NotImplementedException();
-        }
     }
 }
