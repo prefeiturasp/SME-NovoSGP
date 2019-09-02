@@ -17,6 +17,7 @@ import { erro, sucesso, confirmacao } from '../../../servicos/alertas';
 // import ControleEstado from '../../../componentes/controleEstado';
 import api from '../../../servicos/api';
 import history from '../../../servicos/history';
+import Card from '../../../componentes/card';
 
 export default function PlanoCiclo(props) {
   const { match } = props;
@@ -310,7 +311,7 @@ export default function PlanoCiclo(props) {
   const notificacoes = useSelector(state => state.notificacoes);
 
   return (
-    <>
+    <Card>
       {/* <ControleEstado
         when={modoEdicao}
         confirmar={url => history.push(url)}
@@ -480,6 +481,6 @@ export default function PlanoCiclo(props) {
           </div>
         </div>
       </div>
-    </>
+    </Card>
   );
 }
