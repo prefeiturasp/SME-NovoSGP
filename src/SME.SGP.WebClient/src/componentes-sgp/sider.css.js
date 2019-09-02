@@ -56,6 +56,17 @@ export const Topo = styled.div`
     width: 100%;
   }
 
+  .perfil-retraido{
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+    align-items: center;
+    height: 100px;
+    color: ${Base.Branco};
+    width: 100%;
+    margin-bottom: 50px;
+  }
+
   .circulo-perfil img {
     border: 2px solid ${Base.Branco};
     border-radius: 50%;
@@ -85,6 +96,14 @@ export const Topo = styled.div`
 `;
 
 export const MenuScope = styled.div`
+/*----MENU EXPANDIDO----*/
+  .menu-scope{
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center
+  }
+
   .icons{
     font-style: normal !important;
     margin-right: 12px;
@@ -94,46 +113,19 @@ export const MenuScope = styled.div`
 
   .ant-menu{
     background: ${Base.Roxo};
-    width: 220px !important;
-  }
-
-  .ant-menu-inline, .ant-menu-submenu-title, .ant-menu-item{
-    margin-bottom: 0px !important;
-    margin-top: 0px !important;
-    top: 0;
+    width: 220px;
   }
 
   .ant-menu-submenu-title, .ant-menu-item{
     height: 35px !important;
   }
 
-  .ant-menu-item {
-    color: ${Base.CinzaMenuItem} !important;
-  }
-
   .ant-menu-item, .ant-menu-submenu-open {    
     background: ${Base.Branco} !important;
   }
 
-  .ant-menu-sub{
-    max-height: 200px;
-    box-shadow: 2px 5px 6px rgba(50,50,50,0.77) !important;
-    -webkit-box-shadow: 2px 5px 6px rgba(50,50,50,0.77) !important;
-    -moz-box-shadow: 2px 5px 6px rgba(50,50,50,0.77) !important;
-    overflow: auto;
-    ::-webkit-scrollbar {
-      width: 10px;
-      position: absolute
-    }
-    ::-webkit-scrollbar-thumb {
-      background: #dad7d7;
-      border-radius: 5px;
-    }
-    
-  }
-
   .ant-menu-submenu-title:first-child, .ant-menu-submenu-open{
-    border-radius:5px;
+    border-radius:4px;
   }
 
   .ant-menu-submenu-title{
@@ -143,14 +135,9 @@ export const MenuScope = styled.div`
     font-weight: bold;
   }
 
-  .ant-menu-inline .ant-menu-item:not(:first-child){
-    margin-bottom: 0px !important;
-    border-top: 1px solid ${Base.RoxoClaro} ;
-  }
-
   .ant-menu-item:last-child, .ant-menu-inline.ant-menu-sub:last-child{
-    border-bottom-right-radius:5px !important;
-    border-bottom-left-radius:5px !important;
+    border-bottom-right-radius:4px !important;
+    border-bottom-left-radius:4px !important;
   }
 
 
@@ -177,6 +164,7 @@ export const MenuScope = styled.div`
   }
 
   .ant-menu-submenu-title:hover  .ant-menu-submenu-arrow::after {
+    color: ${Base.Branco} !important;
     background: ${Base.Roxo} !important;
   }
 
@@ -189,13 +177,6 @@ export const MenuScope = styled.div`
 
   .menuItem{
     color: ${Base.CinzaMenuItem} !important;
-  }
-
-  .menu-scope{
-    display: flex;
-    flex-direction: row;
-    justify-content: center;
-    align-items: center
   }
 
   .ant-menu-submenu-title:hover:not(:disabled), .ant-menu-inline.ant-menu-sub, .ant-menu-submenu-open{
@@ -217,6 +198,51 @@ export const MenuScope = styled.div`
     background: ${Base.Branco} !important;
   }
 
+  .menu-scope{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center
+  }
+
+  /*----MENU RETRAÍDO----*/
+  .ant-menu-vertical{
+    width:100px;    
+  }
+
+   
+  .ant-menu:not(.ant-menu-inline) .ant-menu-submenu-open{
+    color: ${Base.Roxo};
+  }
+
+  .ant-menu-vertical> .ant-menu-submenu{
+    height: 80px !important;
+    border-radius: 0 !important; 
+
+    .ant-menu-submenu-title{
+      border-radius: 0 !important; 
+      height: 80px !important;
+      .item-menu-retraido{
+        margin-top: 10px;
+        display: flex;
+        justify-content: center;
+        flex-direction: column;
+        align-items: center;
+        margin-bottom: 50px;
+        font-weight:normal;
+        font-size: 12px;
+      }
+    }
+  }
+
+  .icons-retraido{
+    font-size: 34px;
+    margin-top: 0px !important;
+  }
+
+  .ant-menu-submenu .ant-menu-submenu-popup .ant-menu-dark .ant-menu-submenu-placement-rightTop  .ant-menu-submenu-hidden::after{
+    color: red !important;
+  }
   `;
 
 
