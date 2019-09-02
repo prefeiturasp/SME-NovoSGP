@@ -9,10 +9,11 @@ const Sider = () => {
 
   const { Sider, Footer } = Layout;
   const { SubMenu } = Menu;
-  const [collapsed, setCollapsed] = useState(false);
+  const [collapsed, setCollapsed] = useState(true);
   const [openKeys, setOpenKeys] = useState([]);
 
   const toggleCollapsed = () => {
+    setOpenKeys([]);
     setCollapsed(!collapsed);
   };
 
@@ -26,25 +27,25 @@ const Sider = () => {
   };
 
   return (
-    <MenuBody>
+    <MenuBody id="main">
       <Layout style={{ minHeight: '100vh' }}>
         <Sider style={{ background: Base.Roxo, flex: [0, 0, 220] }} collapsed={collapsed} onCollapse={collapsed}
-          width="230px">
+          width="230px" collapsedWidth="100px">
           <Topo>
             <div className="conteudo">
               <a className="arrow" onClick={toggleCollapsed}>
                 <i style={{ color: Base.Branco }} className={collapsed ? 'fas fa-chevron-circle-right' : 'fas fa-chevron-circle-left'} />
               </a>
             </div>
-            <div className="perfil">
+            <div className={collapsed?"perfil-retraido":"perfil"}>
               
               <div className="circulo-perfil">
                 <img id="imagem-perfil" src="https://graziellanicolai.com.br/wp-content/uploads/2018/03/Graziella-perfil.jpg"></img>
               </div>
-              <div>
+              <div hidden={collapsed}>
                 <span id="nome" className="nome">Nome + Sobrenome</span>
               </div>
-              <div className="perfil-edit" style={{ paddingTop: '12px' }}>
+              <div className="perfil-edit" style={{ paddingTop: collapsed?'0':'12px'}}>
                 <a id="perfil-edit">
                   <i className="fas fa-user-edit"></i>
                   <span>Perfil</span>
@@ -66,10 +67,10 @@ const Sider = () => {
                   id="diarioClasse"
                   key="subDiarioClasse"
                   title={
-                    <span>
-                      <i className="fas fa-book-reader icons"></i>
-                      <span>Diário de classe</span>
-                    </span>
+                    <div className="item-menu-retraido">
+                      <i className={"fas fa-book-reader "+(collapsed?"icons-retraido":"icons")}></i>
+                      <span>Diário de Classe</span>
+                    </div>
                   }>
                   <Menu.Item key="1" id="diaPlanoAulaFreq">
                     <span className="menuItem"> Plano de aula/Frequência</span>
@@ -103,10 +104,10 @@ const Sider = () => {
                   id="planejamento"
                   key="subPlanejamento"
                   title={
-                    <span>
-                      <i className="fas fa-list-alt icons"></i>
+                    <div className="item-menu-retraido">
+                      <i className={"fas fa-list-alt "+(collapsed?"icons-retraido":"icons")}></i>
                       <span>Planejamento</span>
-                    </span>
+                    </div>
                   }>
                   <Menu.Item key="30" id="plaPlanoCiclo" htmlFor="linkPlanoCiclo">
                     <span className="menuItem">  Plano de Ciclo</span>
@@ -121,10 +122,10 @@ const Sider = () => {
                   id="fechamento"
                   key="subFechamento"
                   title={
-                    <span>
-                      <i className="fas fa-pencil-ruler icons"></i>
+                    <div className="item-menu-retraido">
+                      <i className={"fas fa-pencil-ruler "+(collapsed?"icons-retraido":"icons")}></i>
                       <span>Fechamento</span>
-                    </span>
+                    </div>
                   }>
                   <Menu.Item key="50" id="fecConselhoClasse">
                     <span className="menuItem">  Conselho de Classe</span>
@@ -140,10 +141,10 @@ const Sider = () => {
                   id="relatorios"
                   key="subRelatorios"
                   title={
-                    <span>
-                      <i className="fas fa-file-alt icons"></i>
+                    <div className="item-menu-retraido">
+                      <i className={"fas fa-file-alt "+(collapsed?"icons-retraido":"icons")}></i>
                       <span>Relatórios</span>
-                    </span>
+                    </div>
                   }>
                   <Menu.Item key="70" id="relFrequencia">
                     <span className="menuItem">Frequência</span>
@@ -174,10 +175,10 @@ const Sider = () => {
                   id="gestao"
                   key="subGestao"
                   title={
-                    <span>
-                      <i className="fas fa-user-cog icons"></i>
+                    <div className="item-menu-retraido">
+                      <i className={"fas fa-user-cog "+(collapsed?"icons-retraido":"icons")}></i>
                       <span>Gestão</span>
-                    </span>
+                    </div>
                   }>
                   <Menu.Item key="90" id="gesCalendarioEscolar">
                     <span className="menuItem">Calendário Escolar</span>
@@ -200,16 +201,16 @@ const Sider = () => {
                   id="configuracoes"
                   key="subConfiguracoes"
                   title={
-                    <span>
-                      <i className="fas fa-cog icons"></i>
+                    <div className="item-menu-retraido">
+                      <i className={"fas fa-cog "+(collapsed?"icons-retraido":"icons")}></i>
                       <span>Configurações</span>
-                    </span>
+                    </div>
                   }>
                 </SubMenu>
               </Menu>
             </div>
           </MenuScope>
-          <DivFooter>
+          <DivFooter hidden={collapsed}>
             <Footer>
               <div className="logo-secretaria">
                 <img src={LogoMenuFooter}></img>
