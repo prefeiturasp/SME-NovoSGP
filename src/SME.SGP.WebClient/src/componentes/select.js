@@ -3,12 +3,27 @@ import PropTypes from 'prop-types';
 import styled from 'styled-components';
 import Select from 'antd/es/select';
 import Icon from 'antd/es/icon';
+import shortid from 'shortid';
+import { Base } from './colors';
 
 const Container = styled.div`
   .ant-select-arrow {
-    color: #42474a;
+    color: ${Base.CinzaMako};
   }
-  font-weight: bold;
+  .ant-select-selection--single {
+    align-items: center;
+    display: flex;
+    height: 38px;
+  }
+  .ant-select-selection__rendered {
+    width: 100%;
+  }
+  .ant-select-selection__placeholder {
+    display: block;
+  }
+  .ant-select-selection-selected-value {
+    font-weight: bold;
+  }
 `;
 
 const SelectComponent = props => {
@@ -21,6 +36,7 @@ const SelectComponent = props => {
     valueOption,
     valueSelect,
     lista,
+    placeholder,
   } = props;
 
   const { Option } = Select;
@@ -34,16 +50,16 @@ const SelectComponent = props => {
         id={id}
         onChange={onChange}
         value={valueSelect}
+        placeholder={placeholder}
       >
-        {lista.length
-          ? lista.map((item, indice) => {
-              return (
-                <Option key={indice} value={`${item[valueOption]}`}>
-                  {`${item[label]}`}
-                </Option>
-              );
-            })
-          : ''}
+        {lista.length &&
+          lista.map(item => {
+            return (
+              <Option key={shortid.generate()} value={`${item[valueOption]}`}>
+                {`${item[label]}`}
+              </Option>
+            );
+          })}
       </Select>
     </Container>
   );
@@ -54,10 +70,11 @@ SelectComponent.propTypes = {
   id: PropTypes.string,
   className: PropTypes.string,
   onChange: PropTypes.func,
-  label: PropTypes.string,
-  valueOption: PropTypes.string,
-  valueSelect: PropTypes.any,
+  label: PropTypes.string.isRequired,
+  valueOption: PropTypes.string.isRequired,
+  valueSelect: PropTypes.string,
   lista: PropTypes.array,
+  placeholder: PropTypes.string,
 };
 
 export default SelectComponent;
