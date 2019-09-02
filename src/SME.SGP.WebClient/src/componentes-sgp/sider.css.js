@@ -93,7 +93,7 @@ export const MenuScope = styled.div`
   }
 
   .ant-menu{
-    background: ${Base.Roxo} !important;
+    background: ${Base.Roxo};
     width: 220px !important;
   }
 
@@ -109,6 +109,10 @@ export const MenuScope = styled.div`
 
   .ant-menu-item {
     color: ${Base.CinzaMenuItem} !important;
+  }
+
+  .ant-menu-item, .ant-menu-submenu-open {    
+    background: ${Base.Branco} !important;
   }
 
   .ant-menu-sub{
@@ -203,6 +207,14 @@ export const MenuScope = styled.div`
     opacity: initial;
     background: ${Base.Roxo};
     color:  ${Base.CinzaDesabilitado};
+  }
+
+  .ant-menu-dark> .ant-menu-submenu-open{
+    color:  ${Base.Roxo};    
+  }
+
+  .ant-menu-inline.ant-menu-sub{    
+    background: ${Base.Branco} !important;
   }
 
   `;
