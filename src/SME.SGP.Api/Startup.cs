@@ -92,6 +92,12 @@ namespace SME.SGP.Api
                 options.Configuration = Configuration.GetConnectionString("SGP-Redis");
                 options.InstanceName = Configuration.GetValue<string>("Nome-Instancia-Redis");
             });
+
+            services.AddHttpClient<IServicoEOL, ServicoEOL>(c =>
+            {
+                c.BaseAddress = new Uri(Configuration.GetSection("UrlApiEOL").Value);
+                c.DefaultRequestHeaders.Add("Accept", "application/json");
+            });
         }
     }
 }
