@@ -13,7 +13,7 @@ namespace SME.SGP.Dto
         [Required(ErrorMessage = "A escola deve ser informada")]
         public string EscolaId { get; set; }
 
-        [Required(ErrorMessage = "A escola deve ser informada")]
+        [Required(ErrorMessage = "A turma deve ser informada")]
         public int TurmaId { get; set; }
     }
 }
