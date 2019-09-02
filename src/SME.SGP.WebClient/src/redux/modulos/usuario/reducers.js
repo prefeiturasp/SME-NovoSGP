@@ -2,7 +2,7 @@ import produce from 'immer';
 
 const inicial = {
   turmasUusario: [],
-  turmaSelecionada: {},
+  turmaSelecionada: [],
 };
 
 export default function usuario(state = inicial, action) {
@@ -13,6 +13,7 @@ export default function usuario(state = inicial, action) {
         break;
       }
       case '@usuario/selecionarTurma': {
+        draft.turmaSelecionada.splice(0);
         action.payload.map(turma => draft.turmaSelecionada.push(turma));
         break;
       }
