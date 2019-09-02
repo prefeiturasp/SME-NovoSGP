@@ -117,21 +117,26 @@ namespace SME.SGP.Aplicacao
 
         private void RemoverMatrizes(PlanoCicloDto planoCicloDto, IEnumerable<MatrizSaberPlano> matrizesPlanoCiclo)
         {
-            var matrizesRemover = matrizesPlanoCiclo?.Where(c => !planoCicloDto.IdsMatrizesSaber.Contains(c.MatrizSaberId));
-
-            foreach (var matriz in matrizesRemover)
+            if (matrizesPlanoCiclo != null)
             {
-                repositorioMatrizSaberPlano.Remover(matriz.Id);
+                var matrizesRemover = matrizesPlanoCiclo.Where(c => !planoCicloDto.IdsMatrizesSaber.Contains(c.MatrizSaberId));
+                foreach (var matriz in matrizesRemover)
+                {
+                    repositorioMatrizSaberPlano.Remover(matriz.Id);
+                }
             }
         }
 
         private void RemoverObjetivos(PlanoCicloDto planoCicloDto, IEnumerable<ObjetivoDesenvolvimentoPlano> objetivosPlanoCiclo)
         {
-            var objetivosRemover = objetivosPlanoCiclo?.Where(c => !planoCicloDto.IdsObjetivosDesenvolvimento.Contains(c.ObjetivoDesenvolvimentoId));
-
-            foreach (var objetivo in objetivosRemover)
+            if (objetivosPlanoCiclo != null)
             {
-                repositorioObjetivoDesenvolvimentoPlano.Remover(objetivo.Id);
+                var objetivosRemover = objetivosPlanoCiclo.Where(c => !planoCicloDto.IdsObjetivosDesenvolvimento.Contains(c.ObjetivoDesenvolvimentoId));
+
+                foreach (var objetivo in objetivosRemover)
+                {
+                    repositorioObjetivoDesenvolvimentoPlano.Remover(objetivo.Id);
+                }
             }
         }
     }

@@ -31,6 +31,8 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IConsultasObjetivoDesenvolvimento, ConsultasObjetivoDesenvolvimento>();
             services.TryAddScoped<IConsultasCiclo, ConsultasCiclo>();
             services.TryAddScoped<IConsultasObjetivoAprendizagem, ConsultasObjetivoAprendizagem>();
+            services.TryAddScoped<IConsultasSupervisor, ConsultasSupervisor>();
+            services.TryAddScoped<IConsultaDres, ConsultaDres>();
         }
 
         private static void RegistrarContextos(IServiceCollection services)
@@ -47,6 +49,7 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IRepositorioMatrizSaber, RepositorioMatrizSaber>();
             services.TryAddScoped<IRepositorioObjetivoDesenvolvimento, RepositorioObjetivoDesenvolvimento>();
             services.TryAddScoped<IRepositorioCiclo, RepositorioCiclo>();
+            services.TryAddScoped<IRepositorioSupervisorEscolaDre, RepositorioSupervisorEscolaDre>();
         }
     }
 }
