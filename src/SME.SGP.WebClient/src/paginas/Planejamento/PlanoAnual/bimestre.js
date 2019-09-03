@@ -1,86 +1,92 @@
 import React, { useState, useEffect } from 'react';
-import shortid from 'shortid';
-import styled from 'styled-components';
+import { Badge, ObjetivosList, ListItemButton, ListItem } from './bimestre.css';
 import CardCollapse from '../../../componentes/cardCollapse';
 import Grid from '../../../componentes/grid';
 import Button from '../../../componentes/button';
 import TextEditor from '../../../componentes/textEditor';
-import { Colors, Base } from '../../../componentes/colors';
+import { Colors } from '../../../componentes/colors';
 import Seta from '../../../recursos/Seta.svg';
+import Servico from '../../../servicos/Paginas/PlanoAnualServices';
 
 // import { Container } from './styles';
 
-export default function Bimestre(props) {
+const BimestreComponent = (props) => {
+
+    const Ano = 1;
 
     const { bimestreDOM } = props;
 
-    const [objetivos, setObjetivos] = useState(null);
+    const [ehExpandido, setEhExpandido] = useState(false);
 
-    const [bimestre, setBimestre] = useState(bimestreDOM);
+    const [objetivos, setObjetivos] = useState({});
 
-    const [materias, setMaterias] = useState(bimestre.materias);
+    const [bimestre, setBimestre] = useState({});
+
+    const [materias, setMaterias] = useState([]);
+
 
     useEffect(() => {
 
-        if (materias.length > 0)
-            console.log(materias.filter(materia => materia.selected));
-        else
-            setObjetivos([]);
+        setBimestre({ ...bimestreDOM });
+        setMaterias([...bimestreDOM.materias])
+
+    }, [])
+
+    useEffect(() => {
+
+        getObjetivos();
 
     }, [materias])
 
-    useEffect(() => {
+    const getObjetivos = () => {
 
-        setMaterias([...bimestre.materias]);
+        if (!materias)
+            return;
 
-    }, [bimestre])
+        const materiasSelecionadas = materias.filter(materia => materia.selected).map(x => x.codigo);
 
-    const Badge = styled.button`
-    &:last-child {
-      margin-right: 0 !important;
+        if (materiasSelecionadas.length > 0) {
+
+            Servico.getObjetivoseByDisciplinas(Ano, materiasSelecionadas)
+                .then(res => {
+
+                    const concatenados = objetivos.concat(res.filter((item) => {
+
+                        const index = objetivos.findIndex(x => x.codigo === item.codigo);
+
+                        return index < 0;
+                    }));
+
+                    setObjetivos([...concatenados]);
+                    setEhExpandido(true);
+
+                });
+        }
+        else {
+            setObjetivos([]);
+        }
     }
-
-    &[aria-pressed='true'] {
-      background: ${Base.CinzaBadge} !important;
-      border-color: ${Base.CinzaBadge} !important;
-    }
-  `;
-
-    const ListItem = styled.li`
-    border-color: ${Base.AzulAnakiwa} !important;
-  `;
-
-    const ListItemButton = styled(ListItem)`
-    cursor: pointer;
-
-    &[aria-pressed='true'] {
-      background: ${Base.AzulAnakiwa} !important;
-    }
-  `;
 
     const selecionaMateria = e => {
-        e.persist();
 
-        bimestre.materias[bimestre.materias.findIndex(materia => materia.codigo == e.target.id)].selected = e.target.getAttribute('aria-pressed') !== 'true';
+        materias[materias.findIndex(materia => materia.codigo == e.target.id)].selected = e.target.getAttribute('aria-pressed') !== 'true';
 
-        setBimestre({ ...bimestre });
+        setMaterias([...materias]);
     };
 
     const selecionaObjetivo = e => {
-        e.persist();
 
         objetivos[
-            objetivos.findIndex(objetivo => objetivo.code === e.target.innerHTML)
+            objetivos.findIndex(objetivo => objetivo.codigo === e.target.id)
         ].selected = e.target.getAttribute('aria-pressed') !== 'true';
 
         setObjetivos([...objetivos]);
     };
 
     const removeObjetivoSelecionado = e => {
-        e.persist();
 
         const indice = objetivos.findIndex(
-            objetivo => objetivo.code === e.target.innerText
+            objetivo => objetivo.id == e.target.id
         );
 
         if (objetivos[indice]) objetivos[indice].selected = false;
@@ -97,16 +103,13 @@ export default function Bimestre(props) {
         toolbar: toolbarOptions,
     };
 
-
-    const indice = shortid.generate().replace(/[0-9]/g, '');
-
     return (
 
         <CardCollapse
-            key={indice}
+            key={bimestre.indice}
             titulo={bimestre.nome}
-            indice={indice}
-            show={bimestre.nome === '3º Bimestre' && true}
+            indice={`Bimestre${bimestre.indice}`}
+            show={ehExpandido}
         >
             <div className="row">
                 <Grid cols={6}>
@@ -114,8 +117,8 @@ export default function Bimestre(props) {
                         Objetivos de aprendizagem
                     </h6>
                     <div>
-                        {bimestre.materias && bimestre.materias.length > 0
-                            ? bimestre.materias.map(materia => {
+                        {materias && materias.length > 0
+                            ? materias.map(materia => {
                                 return (
                                     <Badge
                                         role="button"
@@ -131,31 +134,32 @@ export default function Bimestre(props) {
                             })
                             : null}
                     </div>
-                    <div className="mt-4">
+                    <ObjetivosList className="mt-4 overflow-auto">
                         {objetivos && objetivos.length > 0
                             ? objetivos.map(objetivo => {
                                 return (
                                     <ul
-                                        key={shortid.generate()}
+                                        key={objetivo.id}
                                         className="list-group list-group-horizontal mt-3"
                                     >
                                         <ListItemButton
                                             className="list-group-item d-flex align-items-center font-weight-bold fonte-14"
                                             role="button"
+                                            id={objetivo.id}
                                             aria-pressed={objetivo.selected && true}
                                             onClick={selecionaObjetivo}
                                             onKeyUp={selecionaObjetivo}
                                         >
-                                            {objetivo.code}
+                                            {objetivo.codigo}
                                         </ListItemButton>
                                         <ListItem className="list-group-item flex-fill p-2 fonte-12">
-                                            {objetivo.description}
+                                            {objetivo.descricao}
                                         </ListItem>
                                     </ul>
                                 );
                             })
                             : null}
-                    </div>
+                    </ObjetivosList>
                 </Grid>
                 <Grid cols={6}>
                     <h6 className="d-inline-block font-weight-bold my-0 fonte-14">
@@ -174,10 +178,11 @@ export default function Bimestre(props) {
                                 .map(selecionado => {
                                     return (
                                         <Button
-                                            key={shortid.generate()}
-                                            label={selecionado.code}
+                                            key={selecionado.id}
+                                            label={selecionado.codigo}
                                             color={Colors.AzulAnakiwa}
                                             bold
+                                            id={selecionado.id}
                                             steady
                                             remove
                                             className="text-dark mt-3 mr-2 stretched-link"
@@ -236,3 +241,6 @@ export default function Bimestre(props) {
         </CardCollapse>
     );
 }
+
+
+export default BimestreComponent;

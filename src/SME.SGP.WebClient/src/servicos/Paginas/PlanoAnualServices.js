@@ -2,13 +2,17 @@ import API from '../api';
 
 const Service = {
 
-    getBaseUrlMateriasProfessor: (RF, CodigoTurma) => {
+    _getBaseUrlMateriasProfessor: (RF, CodigoTurma) => {
         return `v1/professores/${RF}/turmas/${CodigoTurma}/disciplinas/`;
+    },
+
+    _getBaseUrlObjetivosFiltro: () => {
+        return `v1/objetivos-aprendizagem`;
     },
 
     getMateriasProfessor: async (RF, CodigoTurma) => {
 
-        const requisicao = await API.get(Service.getBaseUrlMateriasProfessor(RF, CodigoTurma));
+        const requisicao = await API.get(Service._getBaseUrlMateriasProfessor(RF, CodigoTurma));
 
         return requisicao.data.map(req => {
 
@@ -21,10 +25,16 @@ const Service = {
 
     },
 
-    getObjetivoseByDisciplinas: async (disciplinas, Ano) => {
+    getObjetivoseByDisciplinas: async (Ano, disciplinas) => {
 
-        console.log(disciplinas);
+        const corpoRequisicao = {
+            "Ano": Ano,
+            "ComponentesCurricularesIds": disciplinas
+        };
 
+        const requisicao =  await API.post(Service._getBaseUrlObjetivosFiltro(), corpoRequisicao);
+
+        return requisicao.data;
     }
 
 }
