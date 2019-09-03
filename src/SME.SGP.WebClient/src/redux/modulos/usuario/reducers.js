@@ -1,15 +1,15 @@
 import produce from 'immer';
 
 const inicial = {
-  turmasUusario: [],
+  turmasUsuario: [],
   turmaSelecionada: [],
 };
 
 export default function usuario(state = inicial, action) {
   return produce(state, draft => {
     switch (action.type) {
-      case '@usuario/turmasUusario': {
-        action.payload.map(turma => draft.turmasUusario.push(turma));
+      case '@usuario/turmasUsuario': {
+        action.payload.map(turma => draft.turmasUsuario.push(turma));
         break;
       }
       case '@usuario/selecionarTurma': {

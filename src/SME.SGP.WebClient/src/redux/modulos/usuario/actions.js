@@ -1,6 +1,6 @@
-export function turmasUusario(turmas) {
+export function turmasUsuario(turmas) {
   return {
-    type: '@usuario/turmasUusario',
+    type: '@usuario/turmasUsuario',
     payload: turmas,
   };
 }

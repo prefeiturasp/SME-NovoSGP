@@ -5,7 +5,7 @@ import styled from 'styled-components';
 import shortid from 'shortid';
 import { store } from '../redux';
 import {
-  turmasUusario,
+  turmasUsuario,
   selecionarTurma,
 } from '../redux/modulos/usuario/actions';
 import Grid from '../componentes/grid';
@@ -247,7 +247,7 @@ const Filtro = () => {
     setPeriodos([{ periodo: '1º Semestre' }, { periodo: '2º Semestre' }]);
     setDresFiltro([...dres]);
     setUnidadesEscolaresFiltro([...unidadesEscolares]);
-    store.dispatch(turmasUusario(turmas));
+    store.dispatch(turmasUsuario(turmas));
   }, []);
 
   const usuario = useSelector(state => state.usuario);
@@ -446,7 +446,7 @@ const Filtro = () => {
                 <SelectComponent
                   className="fonte-14"
                   onChange={onChangeTurma}
-                  lista={usuario.turmasUusario}
+                  lista={usuario.turmasUsuario}
                   valueOption="turma"
                   label="turma"
                   valueSelect={nomeTurmaFiltroSelecionada}
