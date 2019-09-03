@@ -11,3 +11,9 @@ export function selecionarTurma(turma) {
     payload: turma,
   };
 }
+
+export function removerTurma() {
+  return {
+    type: '@usuario/removerTurma',
+  };
+}

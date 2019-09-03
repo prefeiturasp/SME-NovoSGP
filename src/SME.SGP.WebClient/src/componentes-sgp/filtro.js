@@ -7,6 +7,7 @@ import { store } from '../redux';
 import {
   turmasUsuario,
   selecionarTurma,
+  removerTurma,
 } from '../redux/modulos/usuario/actions';
 import Grid from '../componentes/grid';
 import Button from '../componentes/button';
@@ -181,6 +182,11 @@ const Filtro = () => {
     top: 0 !important;
   `;
 
+  const Times = styled(Icon)`
+    right: 50px !important;
+    top: 15px !important;
+  `;
+
   const Caret = styled(Icon)`
     background: ${Base.CinzaDesabilitado} !important;
     max-height: 36px !important;
@@ -268,12 +274,14 @@ const Filtro = () => {
     if (texto.length >= 2) {
       dadosProfessor
         .filter(dado => {
-          return dado.ue.toLowerCase().includes(texto);
+          return dado
         })
-        .forEach(dado => {
-          resultadosAutocomplete.push(dado);
+        .map(dado => {
+          return resultadosAutocomplete.push(dado);
         });
-      setResultadosFiltro(resultadosAutocomplete);
+      // eslint-disable-next-line no-console
+      console.log(resultadosAutocomplete);
+      // setResultadosFiltro(resultadosAutocomplete);
     }
   };
 
@@ -345,6 +353,10 @@ const Filtro = () => {
     }
   };
 
+  const removerTurmaSelecionada = () => {
+    store.dispatch(removerTurma());
+  };
+
   return (
     <Container className="position-relative w-100 mx-auto">
       <form className="w-100">
@@ -357,8 +369,14 @@ const Filtro = () => {
             ref={inputBuscaRef}
             onFocus={onFocusBusca}
             onChange={onChangeAutocomplete}
-            value={turmaEscolaSelecionada}
+            // value={turmaEscolaSelecionada}
           />
+          {turmaEscolaSelecionada && (
+            <Times
+              className="fa fa-times position-absolute"
+              onClick={removerTurmaSelecionada}
+            />
+          )}
           <Caret
             className="fa fa-caret-down rounded-circle position-absolute text-center"
             onClick={mostraBusca}
