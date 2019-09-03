@@ -1,5 +1,4 @@
 import React, { useState, useEffect, useRef } from 'react';
-// eslint-disable-next-line import/no-extraneous-dependencies
 import { useSelector } from 'react-redux';
 import styled from 'styled-components';
 import shortid from 'shortid';
@@ -264,6 +263,7 @@ const Filtro = () => {
 
   const onChangeAutocomplete = () => {
     const texto = inputBuscaRef.current.value;
+
     const resultadosAutocomplete = [];
     if (texto.length >= 2) {
       dadosProfessor
