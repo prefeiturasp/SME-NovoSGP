@@ -23,6 +23,7 @@ function App() {
         <div className="container-fluid h-100">
           <div className="row h-100">
             <Sider/>
+            {/* <Sidebar/> */}
             <main role="main" className="col-md-9 ml-sm-auto col-lg-10">
               <div className="row shadow py-3 px-2 mx-2 my-4 bg-white">
                 <Rotas />
