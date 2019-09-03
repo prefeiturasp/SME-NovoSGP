@@ -13,7 +13,7 @@ align-items: center;
 color: ${Base.Branco};
 background: ${Base.Roxo};
 text-align: center;
-width: 214px;
+width:300px;
 vertical-align: bottom;
 position: absolute;
 bottom: 0;
@@ -72,8 +72,8 @@ export const Topo = styled.div`
     border-radius: 50%;
     bottom: 0;
     width: 100%;
-    width: 60px;
-    height: 60px;
+    width: 70px;
+    height: 70px;
     margin-bottom: 10px;
   }
 
@@ -113,7 +113,7 @@ export const MenuScope = styled.div`
 
   .ant-menu{
     background: ${Base.Roxo};
-    width: 220px;
+    width: 242px;
   }
 
   .ant-menu-submenu-title, .ant-menu-item{
@@ -236,7 +236,7 @@ export const MenuScope = styled.div`
   }
 
   .icons-retraido{
-    font-size: 34px;
+    font-size: 30px;
     margin-top: 0px !important;
   }
 
