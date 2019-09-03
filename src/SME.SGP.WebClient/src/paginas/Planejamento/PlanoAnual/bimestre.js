@@ -8,7 +8,6 @@ import { Colors } from '../../../componentes/colors';
 import Seta from '../../../recursos/Seta.svg';
 import Servico from '../../../servicos/Paginas/PlanoAnualServices';
 
-// import { Container } from './styles';
 
 const BimestreComponent = (props) => {
 
@@ -47,6 +46,8 @@ const BimestreComponent = (props) => {
 
         if (materiasSelecionadas.length > 0) {
 
+            setEhExpandido(true);
+
             Servico.getObjetivoseByDisciplinas(Ano, materiasSelecionadas)
                 .then(res => {
 
@@ -57,8 +58,7 @@ const BimestreComponent = (props) => {
                         return index < 0;
                     }));
 
-                    setObjetivos([...concatenados]);
-                    setEhExpandido(true);
+                    setObjetivos([...concatenados]);                   
 
                 });
         }
