@@ -11,5 +11,5 @@
     criado_rf character varying(200) COLLATE pg_catalog."default" NOT NULL,
     alterado_rf character varying(200) COLLATE pg_catalog."default",
     CONSTRAINT supervisor_escola_pk PRIMARY KEY (id),
-    constraint supervisor_escola_dre_ck  UNIQUE (id_supervisor, id_escola, id_dre)
+    constraint supervisor_escola_dre_ck  UNIQUE (supervisor_id, escola_id, dre_id)
 )
