@@ -67,7 +67,7 @@ export default createGlobalStyle`
   .ant-menu-vertical.ant-menu-sub > .ant-menu-dark{
     background: white !important;
   }
-  
+
   .ant-menu-vertical.ant-menu-sub >.ant-menu-item-selected, .ant-menu-vertical.ant-menu-sub > .ant-menu-item-selected{
     background: ${Base.CinzaMenu} !important;
     border-bottom-width: 8px;
@@ -81,11 +81,11 @@ export default createGlobalStyle`
     padding-left: 40px !important;
   }
 
-  .ant-menu-inline.ant-menu-sub{    
+  .ant-menu-inline.ant-menu-sub{
     background: ${Base.Branco} !important;
   }
 
-  .ant-menu-item, .ant-menu-submenu-open {    
+  .ant-menu-item, .ant-menu-submenu-open {
     background: ${Base.Branco} !important;
   }
 
@@ -105,13 +105,17 @@ export default createGlobalStyle`
     ::-webkit-scrollbar-thumb {
       background: #dad7d7;
       border-radius: 4px;
-    }    
+    }
   }
 
   .ant-menu-inline, .ant-menu-submenu-title, .ant-menu-item{
     margin-bottom: 0px !important;
     margin-top: 0px !important;
     top: 0;
+  }
+
+  .ant-menu-submenu-popup{
+    position: fixed !important;
   }
 
 `;

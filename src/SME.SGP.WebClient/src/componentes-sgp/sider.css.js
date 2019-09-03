@@ -13,7 +13,6 @@ align-items: center;
 color: ${Base.Branco};
 background: ${Base.Roxo};
 text-align: center;
-width: 214px;
 vertical-align: bottom;
 position: absolute;
 bottom: 0;
@@ -27,7 +26,7 @@ margin-bottom: 40px;
   font-size:9px;
 }
 .logo-secretaria{
-  width: 140px;
+  width: 100%;
   padding-bottom: 10px;
 }
 `;
@@ -113,14 +112,14 @@ export const MenuScope = styled.div`
 
   .ant-menu{
     background: ${Base.Roxo};
-    width: 220px;
+    width: 100%;
   }
 
   .ant-menu-submenu-title, .ant-menu-item{
     height: 35px !important;
   }
 
-  .ant-menu-item, .ant-menu-submenu-open {    
+  .ant-menu-item, .ant-menu-submenu-open {
     background: ${Base.Branco} !important;
   }
 
@@ -191,10 +190,10 @@ export const MenuScope = styled.div`
   }
 
   .ant-menu-dark> .ant-menu-submenu-open{
-    color:  ${Base.Roxo};    
+    color:  ${Base.Roxo};
   }
 
-  .ant-menu-inline.ant-menu-sub{    
+  .ant-menu-inline.ant-menu-sub{
     background: ${Base.Branco} !important;
   }
 
@@ -207,37 +206,50 @@ export const MenuScope = styled.div`
 
   /*----MENU RETRAÍDO----*/
   .ant-menu-vertical{
-    width:100px;    
+    width:100px;
   }
 
-   
+
   .ant-menu:not(.ant-menu-inline) .ant-menu-submenu-open{
     color: ${Base.Roxo};
   }
+/*
+  @media (min-height: 900px) {
+    .ant-menu-vertical> .ant-menu-submenu{
+      .ant-menu-submenu-title{
+        height: 80px !important;
+        margin-top: 10px !important;
+      }
+    }
+  } */
 
   .ant-menu-vertical> .ant-menu-submenu{
-    height: 80px !important;
-    border-radius: 0 !important; 
-
+    border-radius: 0 !important;
     .ant-menu-submenu-title{
-      border-radius: 0 !important; 
-      height: 80px !important;
+      border-radius: 0 !important;
+      height: 70px !important;
       .item-menu-retraido{
         margin-top: 10px;
         display: flex;
         justify-content: center;
         flex-direction: column;
         align-items: center;
-        margin-bottom: 50px;
         font-weight:normal;
         font-size: 12px;
       }
     }
   }
 
+  @media (min-height: 900px) {
+    .icons-retraido{
+      font-size: 34px !important;
+    }
+  }
+
+
   .icons-retraido{
-    font-size: 34px;
     margin-top: 0px !important;
+    font-size: 25px;
   }
 
   .ant-menu-submenu .ant-menu-submenu-popup .ant-menu-dark .ant-menu-submenu-placement-rightTop  .ant-menu-submenu-hidden::after{
