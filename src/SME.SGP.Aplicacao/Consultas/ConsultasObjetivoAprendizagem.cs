@@ -2,6 +2,7 @@
 using Newtonsoft.Json;
 using SME.SGP.Aplicacao.Integracoes;
 using SME.SGP.Aplicacao.Integracoes.Respostas;
+using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Dto;
 using System;
@@ -15,22 +16,35 @@ namespace SME.SGP.Aplicacao
     {
         private readonly IConfiguration configuration;
         private readonly IRepositorioCache repositorioCache;
+        private readonly IRepositorioComponenteCurricular repositorioComponenteCurricular;
         private readonly IServicoJurema servicoJurema;
 
-        public ConsultasObjetivoAprendizagem(IServicoJurema servicoJurema, IRepositorioCache repositorioCache, IConfiguration configuration)
+        public ConsultasObjetivoAprendizagem(IServicoJurema servicoJurema,
+                                             IRepositorioCache repositorioCache,
+                                             IRepositorioComponenteCurricular repositorioComponenteCurricular,
+                                             IConfiguration configuration)
         {
             this.servicoJurema = servicoJurema ?? throw new ArgumentNullException(nameof(servicoJurema));
             this.repositorioCache = repositorioCache ?? throw new ArgumentNullException(nameof(repositorioCache));
+            this.repositorioComponenteCurricular = repositorioComponenteCurricular ?? throw new ArgumentNullException(nameof(repositorioComponenteCurricular));
             this.configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
         }
 
         public async Task<IEnumerable<ObjetivoAprendizagemDto>> Filtrar(FiltroObjetivosAprendizagemDto filtroObjetivosAprendizagemDto)
         {
             var objetivos = await Listar();
+            var componentesCurriculares = repositorioComponenteCurricular.Listar();
+            if (componentesCurriculares == null)
+            {
+                throw new NegocioException("Não foi possível recuperar a lista de componentes curriculares.");
+            }
 
-            return objetivos?.Where(c => (filtroObjetivosAprendizagemDto.ComponentesCurricularesIds.Count > 0) ?
-                    filtroObjetivosAprendizagemDto.ComponentesCurricularesIds.Contains(c.IdComponenteCurricular) : true
-                    && (filtroObjetivosAprendizagemDto.Ano > 0) ? c.Ano == filtroObjetivosAprendizagemDto.Ano : true);
+            var componentesFiltro = componentesCurriculares.Where(c => filtroObjetivosAprendizagemDto.ComponentesCurricularesIds.Contains(c.CodigoJurema));
+            var componentesJurema = componentesFiltro.Select(c => c.CodigoJurema);
+
+            return objetivos?
+                .Where(c => componentesJurema.Contains(c.IdComponenteCurricular)
+                    && c.Ano == filtroObjetivosAprendizagemDto.Ano);
         }
 
         public async Task<IEnumerable<ObjetivoAprendizagemDto>> Listar()
