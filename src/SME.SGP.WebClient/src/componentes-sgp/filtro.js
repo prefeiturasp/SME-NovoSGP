@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+// eslint-disable-next-line import/no-extraneous-dependencies
 import { useSelector } from 'react-redux';
 import styled from 'styled-components';
 import shortid from 'shortid';
@@ -191,7 +192,6 @@ const Filtro = () => {
   `;
 
   const inputBuscaRef = useRef();
-  // const [turmaEscolaSelecionada, setTurmaEscolaSelecionada] = useState();
 
   useEffect(() => {
     const anosLetivos = [];
