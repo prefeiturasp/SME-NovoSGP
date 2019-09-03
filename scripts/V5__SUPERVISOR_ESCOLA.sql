@@ -1,6 +1,6 @@
 ﻿CREATE TABLE IF NOT EXISTS public.supervisor_escola_dre
 (
-    id bigint NOT NULL,
+    id bigint NOT null generated always as identity,
     supervisor_id varchar(15) not null,
     escola_id varchar(15) not null,
     dre_id varchar(15) not null,
