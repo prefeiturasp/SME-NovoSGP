@@ -22,6 +22,7 @@ namespace SME.SGP.IoC
         private static void RegistrarComandos(IServiceCollection services)
         {
             services.TryAddScoped<IComandosPlanoCiclo, ComandosPlanoCiclo>();
+            services.TryAddScoped<IComandosSupervisor, ComandosSupervisor>();
         }
 
         private static void RegistrarConsultas(IServiceCollection services)

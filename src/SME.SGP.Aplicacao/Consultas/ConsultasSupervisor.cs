@@ -64,19 +64,19 @@ namespace SME.SGP.Aplicacao
 
         private IEnumerable<SupervisorEscolasDto> MapearSupervisorEscolaDre(IEnumerable<SupervisorEscolasDreDto> supervisoresEscolasDres)
         {
-            var listaEscolas = servicoEOL.ObterEscolasPorCodigo(supervisoresEscolasDres.Select(a => a.IdEscola.ToString()).ToArray());
-            var listaSupervisores = servicoEOL.ObterSupervisoresPorCodigo(supervisoresEscolasDres.Select(a => a.IdSupervisor.ToString()).ToArray());
+            var listaEscolas = servicoEOL.ObterEscolasPorCodigo(supervisoresEscolasDres.Select(a => a.EscolaId.ToString()).ToArray());
+            var listaSupervisores = servicoEOL.ObterSupervisoresPorCodigo(supervisoresEscolasDres.Select(a => a.SupervisorId.ToString()).ToArray());
 
             if (!listaSupervisores.Any())
                 throw new NegocioException("Não foi possível localizar supervisores.");
 
             var supervisoresIds = supervisoresEscolasDres
-                .GroupBy(a => a.IdSupervisor)
+                .GroupBy(a => a.SupervisorId)
                 .Select(g => g.Key);
 
             foreach (var supervisorId in supervisoresIds)
             {
-                var idsEscolas = supervisoresEscolasDres.Where(a => a.IdSupervisor == supervisorId).Select(a => a.IdEscola).ToList();
+                var idsEscolas = supervisoresEscolasDres.Where(a => a.SupervisorId == supervisorId).Select(a => a.EscolaId).ToList();
 
                 IEnumerable<UnidadeEscolarDto> escolas = new List<UnidadeEscolarDto>();
 
@@ -100,18 +100,18 @@ namespace SME.SGP.Aplicacao
         {
             if (supervisoresEscolasDres.Any())
             {
-                var supervisores = servicoEOL.ObterSupervisoresPorCodigo(supervisoresEscolasDres.Select(a => a.IdSupervisor).ToArray());
+                var supervisores = servicoEOL.ObterSupervisoresPorCodigo(supervisoresEscolasDres.Select(a => a.SupervisorId).ToArray());
                 if (supervisores == null)
                     throw new System.Exception("Não foi possível localizar o nome dos supervisores na API Eol");
 
-                foreach (var supervisorEscolaDre in supervisoresEscolasDres.GroupBy(a => a.IdSupervisor).Select(a => a.Key).ToList())
+                foreach (var supervisorEscolaDre in supervisoresEscolasDres.GroupBy(a => a.SupervisorId).Select(a => a.Key).ToList())
                 {
                     var supervisorEscolasDto = new SupervisorEscolasDto();
                     supervisorEscolasDto.SupervisorNome = supervisores.FirstOrDefault(a => a.CodigoRF == supervisorEscolaDre).NomeServidor;
                     supervisorEscolasDto.SupervisorId = supervisorEscolaDre;
 
-                    var idsEscolasDoSupervisor = supervisoresEscolasDres.Where(a => a.IdSupervisor == supervisorEscolaDre)
-                        .Select(a => a.IdEscola)
+                    var idsEscolasDoSupervisor = supervisoresEscolasDres.Where(a => a.SupervisorId == supervisorEscolaDre)
+                        .Select(a => a.EscolaId)
                         .ToList();
 
                     var escolas = from t in escolasPorDre
