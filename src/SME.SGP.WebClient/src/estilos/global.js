@@ -114,8 +114,4 @@ export default createGlobalStyle`
     top: 0;
   }
 
-  .ant-menu-submenu-popup{
-    position: fixed !important;
-  }
-
 `;

@@ -9,7 +9,7 @@ const Sider = () => {
 
   const { Sider, Footer } = Layout;
   const { SubMenu } = Menu;
-  const [collapsed, setCollapsed] = useState(false);
+  const [collapsed, setCollapsed] = useState(true);
   const [openKeys, setOpenKeys] = useState([]);
 
   const toggleCollapsed = () => {
@@ -27,10 +27,10 @@ const Sider = () => {
   };
 
   return (
-    <MenuBody id="main" className>
+    <MenuBody id="main">
       <Layout style={{ minHeight: '100vh' }}>
-        <Sider style={{ background: Base.Roxo }} collapsed={collapsed} onCollapse={collapsed}
-          width="300px" collapsedWidth="100px">
+        <Sider style={{ background: Base.Roxo, flex: [0, 0, 220] }} collapsed={collapsed} onCollapse={collapsed}
+          width="230px" collapsedWidth="100px">
           <Topo>
             <div className="conteudo">
               <a className="arrow" onClick={toggleCollapsed}>
