@@ -18,15 +18,15 @@ namespace SME.SGP.Dados.Repositorios
         {
             StringBuilder query = new StringBuilder();
 
-            query.AppendLine("select *");
+            query.AppendLine("select id, dre_id, escola_id, supervisor_id ");
             query.AppendLine("from supervisor_escola_dre sed");
             query.AppendLine("where 1=1");
 
             if (!string.IsNullOrEmpty(supervisorId))
-                query.AppendLine("and sed.id_supervisor = @supervisorId");
+                query.AppendLine("and sed.supervisor_id = @supervisorId");
 
             if (!string.IsNullOrEmpty(dreId))
-                query.AppendLine("and sed.id_dre = @dreId");
+                query.AppendLine("and sed.dre_id = @dreId");
 
             return database.Conexao.Query<SupervisorEscolasDreDto>(query.ToString(), new { supervisorId, dreId }).AsList();
         }

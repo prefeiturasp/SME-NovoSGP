@@ -19,33 +19,34 @@ namespace SME.SGP.Aplicacao
 
         public void AtribuirEscola(AtribuicaoSupervisorEscolaDto atribuicaoSupervisorEscolaDto)
         {
-            var escolasAtribuidas = repositorioSupervisorEscolaDre.ObtemSupervisoresEscola(atribuicaoSupervisorEscolaDto.IdDre, atribuicaoSupervisorEscolaDto.SupervisorId);
+            var escolasAtribuidas = repositorioSupervisorEscolaDre.ObtemSupervisoresEscola(atribuicaoSupervisorEscolaDto.DreId, atribuicaoSupervisorEscolaDto.SupervisorId);
 
-            var codigosEscolasDto = atribuicaoSupervisorEscolaDto.Escolas.Select(a => a.Codigo);
-            var codigosEscolasDominio = escolasAtribuidas?.Select(c => c.IdEscola);
+            var codigosEscolasDominio = escolasAtribuidas?.Select(c => c.EscolaId);
 
             using (var transacao = unitOfWork.IniciarTransacao())
             {
-                foreach (var codigoEscolaDto in codigosEscolasDto)
-                {
-                    if (codigosEscolasDominio != null && !codigosEscolasDominio.Contains(codigoEscolaDto))
-                    {
-                        repositorioSupervisorEscolaDre.Salvar(new SupervisorEscolaDre()
-                        {
-                            DreId = atribuicaoSupervisorEscolaDto.IdDre,
-                            SupervisorId = atribuicaoSupervisorEscolaDto.SupervisorId,
-                            EscolaId = codigoEscolaDto
-                        });
-                    }
-                }
                 if (escolasAtribuidas != null)
                     foreach (var atribuicao in escolasAtribuidas)
                     {
-                        if (!codigosEscolasDto.Contains(atribuicao.IdEscola))
+                        if (atribuicaoSupervisorEscolaDto.EscolasIds == null || !atribuicaoSupervisorEscolaDto.EscolasIds.Contains(atribuicao.EscolaId))
                         {
                             repositorioSupervisorEscolaDre.Remover(atribuicao.Id);
                         }
                     }
+                if (atribuicaoSupervisorEscolaDto.EscolasIds != null)
+                    foreach (var codigoEscolaDto in atribuicaoSupervisorEscolaDto.EscolasIds)
+                    {
+                        if (codigosEscolasDominio != null && !codigosEscolasDominio.Contains(codigoEscolaDto))
+                        {
+                            repositorioSupervisorEscolaDre.Salvar(new SupervisorEscolaDre()
+                            {
+                                DreId = atribuicaoSupervisorEscolaDto.DreId,
+                                SupervisorId = atribuicaoSupervisorEscolaDto.SupervisorId,
+                                EscolaId = codigoEscolaDto
+                            });
+                        }
+                    }
+
                 unitOfWork.PersistirTransacao();
             }
         }
