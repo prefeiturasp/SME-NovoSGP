@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import Grid from '../../../componentes/grid';
 import Button from '../../../componentes/button';
 import { Colors, Base } from '../../../componentes/colors';
+import _ from "lodash";
 import Card from '../../../componentes/card';
 import Bimestre from './bimestre';
 import { confirmacao } from '../../../servicos/alertas';
@@ -11,25 +12,16 @@ export default function PlanoAnual() {
 
   const qtdBimestres = 4;
 
-
   const [bimestres, setBimestres] = useState([]);
-  const [materias, setMaterias] = useState([]);
 
   useEffect(() => {
 
     Service.getMateriasProfessor(6082840, 1982186)
       .then((res) => {
-        setMaterias(res);
+        ObtenhaBimestres(_.cloneDeep(res));
       });
 
   }, [])
-
-  useEffect(() => {
-
-    if (materias && materias.length > 0)
-      ObtenhaBimestres();
-
-  }, [materias])
 
   const ehEja = false;
 
@@ -37,9 +29,9 @@ export default function PlanoAnual() {
 
   const confirmarCancelamento = () => { };
 
-  const ObtenhaBimestres = async () => {
+  const ObtenhaBimestres = (materias) => {
 
-    const Aux = [];
+    const Auxiliar = [];
 
     for (let i = 1; i <= qtdBimestres; i++) {
 
@@ -50,14 +42,14 @@ export default function PlanoAnual() {
       const bimestre = {
         indice: i,
         nome: Nome,
-        materias: materias,
+        materias: _.cloneDeep(materias),
         objetivo: objetivo
       };
 
-      Aux.push(bimestre);
+      Auxiliar.push(bimestre);     
     }
 
-    setBimestres(Aux);
+    setBimestres([..._.cloneDeep(Auxiliar)]);
   }
 
   const cancelarAlteracoes = () => {
@@ -69,7 +61,6 @@ export default function PlanoAnual() {
       () => true
     );
   };
-
   return (
     <Card>
       <Grid cols={12}>
@@ -104,7 +95,9 @@ export default function PlanoAnual() {
       </Grid>
       <Grid cols={12}>
         {
-          bimestres ? bimestres.map(bim => <Bimestre key={bim.indice} bimestreDOM={bim} />) : null
+          bimestres ? bimestres.map(bim => {
+            return (<Bimestre key={bim.indice} bimestreDOM={bim} />);
+          }) : null
         }
       </Grid>
     </Card>
