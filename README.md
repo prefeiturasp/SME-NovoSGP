@@ -19,4 +19,3 @@ Acessar o readme do projeto de [Front](https://github.com/prefeiturasp/SME-NovoS
 Executar o comando na **raiz da solução**
 
 `docker-compose up --build`
-
