@@ -2,14 +2,6 @@ import API from '../api';
 
 const Service = {
 
-    _getBaseUrlMateriasProfessor: (RF, CodigoTurma) => {
-        return `v1/professores/${RF}/turmas/${CodigoTurma}/disciplinas/`;
-    },
-
-    _getBaseUrlObjetivosFiltro: () => {
-        return `v1/objetivos-aprendizagem`;
-    },
-
     getMateriasProfessor: async (RF, CodigoTurma) => {
 
         const requisicao = await API.get(Service._getBaseUrlMateriasProfessor(RF, CodigoTurma));
@@ -32,10 +24,61 @@ const Service = {
             "ComponentesCurricularesIds": disciplinas
         };
 
-        const requisicao =  await API.post(Service._getBaseUrlObjetivosFiltro(), corpoRequisicao);
+        const requisicao = await API.post(Service._getBaseUrlObjetivosFiltro(), corpoRequisicao);
 
         return requisicao.data;
-    }
+    },
+
+    postPlanoAnual: async (Bimestres) => {
+
+        console.log(Service._getObjetoPostPlanoAnual(Bimestres));
+
+    },
+
+    _getBaseUrlMateriasProfessor: (RF, CodigoTurma) => {
+        return `v1/professores/${RF}/turmas/${CodigoTurma}/disciplinas/`;
+    },
+
+    _getBaseUrlObjetivosFiltro: () => {
+        return `v1/objetivos-aprendizagem`;
+    },
+
+    _getBaseUrlSalvarPlanoAnual: () => {
+        return `api/v1/planos/anual`;
+    },
+
+    _getObjetoPostPlanoAnual: (Bimestres) => {
+
+        const BimestresFiltrados = Bimestres.filter(x => x.ehExpandido);
+
+        const ArrayEnviar = [];
+
+        BimestresFiltrados.forEach((bimestre) => {
+
+            const temObjetivos = bimestre.objetivosAprendizagem && bimestre.objetivosAprendizagem.length > 0;
+
+            const objetivosAprendizagem = temObjetivos ? bimestre.objetivosAprendizagem.filter(x => x.selected).map(obj => {
+                return {
+                    Id: obj.id,
+                    IdComponenteCurricular: obj.idComponenteCurricular
+                }
+            }) : [];
+
+            const BimestreDTO = {
+                AnoLetivo: bimestre.anoLetivo,
+                Bimestre: bimestre.indice,
+                Descricao: bimestre.objetivo,
+                EscolaId: bimestre.escolaId,
+                TurmaId: bimestre.turmaId,
+                ObjetivosAprendizagem: objetivosAprendizagem
+            };
+
+            ArrayEnviar.push(BimestreDTO);
+
+        });
+
+        return ArrayEnviar;
+    },
 
 }
 

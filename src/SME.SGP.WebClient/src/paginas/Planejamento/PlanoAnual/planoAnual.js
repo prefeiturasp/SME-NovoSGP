@@ -13,22 +13,30 @@ import Service from '../../../servicos/Paginas/PlanoAnualServices';
 export default function PlanoAnual() {
 
   const qtdBimestres = 4;
+  const anoLetivo = 2019;
+  const escolaId = 1;
 
   const RF = 6082840;
 
-  const Turma = 1982186;
+  const turmaId = 1982186;
 
   const bimestres = useSelector(store => store.bimestres.bimestres);
   const dispatch = useDispatch();
 
   useEffect(() => {
 
-    Service.getMateriasProfessor(RF, Turma)
+    Service.getMateriasProfessor(RF, turmaId)
       .then((res) => {
         ObtenhaBimestres(_.cloneDeep(res));
       });
 
   }, [])
+
+  useEffect(() => {
+
+    Service.postPlanoAnual(bimestres);
+
+  }, [bimestres]);
 
   const ehEja = false;
 
@@ -42,9 +50,13 @@ export default function PlanoAnual() {
 
       const Nome = ObtenhaNomebimestre(i);
 
-      const objetivo = 'In semper mi vitae nulla bibendum, ut dictum magna dictum. Morbi sodales rutrum turpis, sit amet fringilla orci rutrum sit amet. Nulla tristique dictum neque, ac placerat urna aliquam non. Sed commodo tellus ac hendrerit mollis. Mauris et congue nulla.';
+      const objetivo = '';
 
       const bimestre = {
+        anoLetivo,
+        escolaId,
+        turmaId,
+        ehExpandido: false,
         indice: i,
         nome: Nome,
         materias: _.cloneDeep(materias),
