@@ -3,6 +3,7 @@ using SME.SGP.Dto;
 using System;
 using System.Collections.Generic;
 using Xunit;
+using Xunit.Extensions.Ordering;
 
 namespace SME.SGP.Integracao.Teste
 {
@@ -16,7 +17,7 @@ namespace SME.SGP.Integracao.Teste
             this.fixture = fixture ?? throw new ArgumentNullException(nameof(fixture));
         }
 
-        [Fact]
+        [Fact, Order(5)]
         public void DeveObterDisciplinasDoProfessorPorTurma()
         {
             fixture._clientApi.DefaultRequestHeaders.Clear();
@@ -28,7 +29,7 @@ namespace SME.SGP.Integracao.Teste
             Assert.True(disciplinas != null);
         }
 
-        [Theory]
+        [Theory, Order(6)]
         [InlineData("6082840", "095346", "2019")]
         [InlineData("5512557", "095346", "2019")]
         [InlineData("5773067", "095346", "2019")]
@@ -45,7 +46,7 @@ namespace SME.SGP.Integracao.Teste
             Assert.True(turmas != null);
         }
 
-        [Theory]
+        [Theory, Order(7)]
         [InlineData("8029474", "095346", "2019")]
         public void NaoDeveObterTurmasAtribuidasAoProfessorEDeveRetornarSemErro(string rf, string escola, string ano)
         {
