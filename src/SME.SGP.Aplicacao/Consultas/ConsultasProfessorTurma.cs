@@ -37,7 +37,7 @@ namespace SME.SGP.Aplicacao
                 Modalidade = m.Modalidade,
                 NomeTurma = m.NomeTurma,
                 TipoEscola = m.TipoEscola,
-                TipoSemestre = m.TipoSemestre,
+                Semestre = m.Semestre,
                 TipoUE = m.TipoUE,
                 Ue = m.Ue,
                 UeAbrev = m.UeAbrev
