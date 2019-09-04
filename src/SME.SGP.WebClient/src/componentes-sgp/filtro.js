@@ -1,29 +1,150 @@
-import React, { useState, useEffect, createRef } from 'react';
+import React, { useState, useEffect, useLayoutEffect, useRef } from 'react';
+import { useSelector } from 'react-redux';
 import styled from 'styled-components';
+import shortid from 'shortid';
+import { store } from '../redux';
+import {
+  turmasUsuario,
+  selecionarTurma,
+  removerTurma,
+} from '../redux/modulos/usuario/actions';
 import Grid from '../componentes/grid';
 import Button from '../componentes/button';
 import { Base, Colors } from '../componentes/colors';
 import SelectComponent from '../componentes/select';
-import { sucesso } from '../servicos/alertas';
+import { sucesso, erro } from '../servicos/alertas';
+import InputCustom from '../componentes/input';
 
-const Filtro = () => {
-  const [anosLetivos, setAnosLetivos] = useState([]);
-  const [anoLetivoSelecionado, setAnoLetivoSelecionado] = useState();
+export default function Filtro() {
+  const [dadosProfessor] = useState([
+    {
+      ano: 5,
+      anoLetivo: 2019,
+      codModalidade: 5,
+      dre: 'DIRETORIA REGIONAL DE EDUCACAO IPIRANGA',
+      dreAbrev: 'DRE - IP',
+      modalidade: 'Fundamental',
+      nomeTurma: '5A',
+      tipoSemestre: 1,
+      tipoUE: 'UNIDADE ADMINISTRATIVA',
+      codTipoUE: 3,
+      ue: 'PRUDENTE DE MORAIS, PRES.',
+      ueAbrev: 'PRUDENTE DE MORAIS, PRES.',
+      tipoEscola: 'EMEF ',
+      codTipoEscola: '1',
+    },
+    {
+      ano: 5,
+      anoLetivo: 2019,
+      codModalidade: 5,
+      dre: 'DIRETORIA REGIONAL DE EDUCACAO IPIRANGA',
+      dreAbrev: 'DRE - IP',
+      modalidade: 'Fundamental',
+      nomeTurma: '5B',
+      tipoSemestre: 1,
+      tipoUE: 'UNIDADE ADMINISTRATIVA',
+      codTipoUE: 3,
+      ue: 'PRUDENTE DE MORAIS, PRES.',
+      ueAbrev: 'PRUDENTE DE MORAIS, PRES.',
+      tipoEscola: 'EMEF ',
+      codTipoEscola: '1',
+    },
+    {
+      ano: 5,
+      anoLetivo: 2019,
+      codModalidade: 5,
+      dre: 'DIRETORIA REGIONAL DE EDUCACAO IPIRANGA',
+      dreAbrev: 'DRE - IP',
+      modalidade: 'Fundamental',
+      nomeTurma: '5C',
+      tipoSemestre: 1,
+      tipoUE: 'UNIDADE ADMINISTRATIVA',
+      codTipoUE: 3,
+      ue: 'PRUDENTE DE MORAIS, PRES.',
+      ueAbrev: 'PRUDENTE DE MORAIS, PRES.',
+      tipoEscola: 'EMEF ',
+      codTipoEscola: '1',
+    },
+    {
+      ano: 6,
+      anoLetivo: 2019,
+      codModalidade: 5,
+      dre: 'DIRETORIA REGIONAL DE EDUCACAO IPIRANGA',
+      dreAbrev: 'DRE - IP',
+      modalidade: 'Fundamental',
+      nomeTurma: '6A',
+      tipoSemestre: 1,
+      tipoUE: 'UNIDADE ADMINISTRATIVA',
+      codTipoUE: 3,
+      ue: 'PRUDENTE DE MORAIS, PRES.',
+      ueAbrev: 'PRUDENTE DE MORAIS, PRES.',
+      tipoEscola: 'EMEF ',
+      codTipoEscola: '1',
+    },
+    {
+      ano: 6,
+      anoLetivo: 2019,
+      codModalidade: 5,
+      dre: 'DIRETORIA REGIONAL DE EDUCACAO IPIRANGA',
+      dreAbrev: 'DRE - IP',
+      modalidade: 'Fundamental',
+      nomeTurma: '6B',
+      tipoSemestre: 1,
+      tipoUE: 'UNIDADE ADMINISTRATIVA',
+      codTipoUE: 3,
+      ue: 'PRUDENTE DE MORAIS, PRES.',
+      ueAbrev: 'PRUDENTE DE MORAIS, PRES.',
+      tipoEscola: 'EMEF ',
+      codTipoEscola: '1',
+    },
+    {
+      ano: 7,
+      anoLetivo: 2019,
+      codModalidade: 5,
+      dre: 'DIRETORIA REGIONAL DE EDUCACAO IPIRANGA',
+      dreAbrev: 'DRE - IP',
+      modalidade: 'Fundamental',
+      nomeTurma: '7A',
+      tipoSemestre: 1,
+      tipoUE: 'UNIDADE ADMINISTRATIVA',
+      codTipoUE: 3,
+      ue: 'PRUDENTE DE MORAIS, PRES.',
+      ueAbrev: 'PRUDENTE DE MORAIS, PRES.',
+      tipoEscola: 'EMEF ',
+      codTipoEscola: '1',
+    },
+  ]);
 
-  const [modalidades, setModalidades] = useState([]);
-  const [modalidadeSelecionada, setModalidadeSelecionada] = useState();
+  const [anosLetivosFiltro, setAnosLetivosFiltro] = useState([]);
+  const [
+    anoLetivoFiltroSelecionado,
+    setAnoLetivoFiltroSelecionado,
+  ] = useState();
+
+  const [modalidadesFiltro, setModalidadesFiltro] = useState([]);
+  const [
+    modalidadeFiltroSelecionada,
+    setmodalidadeFiltroSelecionada,
+  ] = useState();
 
   const [periodos, setPeriodos] = useState([]);
   const [periodoSelecionado, setPeriodoSelecionado] = useState();
 
-  const [dres, setDres] = useState([{ dre: '' }]);
-  const [dreSelecionado, setDreSelecionado] = useState();
+  const [dresFiltro, setDresFiltro] = useState([]);
+  const [dreFiltroSelecionada, setDreFiltroSelecionada] = useState();
 
-  const [unidadesEscolares, setUnidadesEscolares] = useState();
-  const [unidadeEscolarSelecionada, setUnidadeEscolarSelecionada] = useState();
+  const [unidadesEscolaresFiltro, setUnidadesEscolaresFiltro] = useState();
+  const [
+    unidadeEscolarFiltroSelecionada,
+    setUnidadeEscolarFiltroSelecionada,
+  ] = useState();
 
-  const [turmas, setTurmas] = useState();
-  const [turmaSelecionada, setTurmaSelecionada] = useState();
+  const [
+    nomeTurmaFiltroSelecionada,
+    setNomeTurmaFiltroSelecionada,
+  ] = useState();
+
+  const [resultadosFiltro, setResultadosFiltro] = useState([]);
 
   const [toggleInputFocus, setToggleInputFocus] = useState(false);
   const [toggleBusca, setToggleBusca] = useState(false);
@@ -32,13 +153,18 @@ const Filtro = () => {
     max-width: 571px !important;
   `;
 
-  const Input = styled.input`
+  const Input = styled(InputCustom)`
     background: ${Base.CinzaFundo} !important;
+    font-weight: bold !important;
     height: 45px !important;
+    &::placeholder {
+      font-weight: normal !important;
+    }
     &:focus {
       background: ${Base.Branco} !important;
       box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075) !important;
       color ${Base.Preto} !important;
+      font-weight: normal !important;
     }
   `;
 
@@ -48,52 +174,125 @@ const Filtro = () => {
   `;
 
   const Search = styled(Icon)`
-    left: 0;
-    max-height: 23px;
-    max-width: 14px;
+    left: 0 !important;
+    max-height: 23px !important;
+    max-width: 14px !important;
     padding: 1rem !important;
-    right: 0;
-    top: 0;
+    right: 0 !important;
+    top: 0 !important;
+  `;
+
+  const Times = styled(Icon)`
+    right: 50px !important;
+    top: 15px !important;
   `;
 
   const Caret = styled(Icon)`
     background: ${Base.CinzaDesabilitado} !important;
-    max-height: 36px;
-    max-width: 36px;
+    max-height: 36px !important;
+    max-width: 36px !important;
     padding: 0.7rem 0.9rem !important;
     right: 5px !important;
     top: 5px !important;
     ${toggleBusca && 'transform: rotate(180deg) !important;'}
   `;
 
+  const ListItem = styled.li`
+    cursor: pointer !important;
+    &:hover {
+      background: ${Base.Roxo} !important;
+      color: ${Base.Branco} !important;
+    }
+  `;
+
+  const inputBuscaRef = useRef();
+
   useEffect(() => {
-    setAnosLetivos([{ ano: '2019' }]);
-    setAnoLetivoSelecionado('2019');
-    setModalidades([
-      { modalidade: 'EJA' },
-      { modalidade: 'Ensino Fundamental' },
-    ]);
+    const anosLetivos = [];
+    const modalidades = [];
+    const dres = [];
+    const unidadesEscolares = [];
+    const turmas = [];
+
+    dadosProfessor.forEach(dado => {
+      if (anosLetivos.findIndex(ano => ano.ano === dado.anoLetivo) < 0) {
+        anosLetivos.push({ ano: dado.anoLetivo });
+      }
+
+      if (
+        modalidades.findIndex(
+          modalidade => modalidade.codigo === dado.codModalidade
+        ) < 0
+      ) {
+        modalidades.push({
+          codigo: dado.codModalidade,
+          modalidade: dado.modalidade,
+        });
+      }
+
+      if (dres.findIndex(dre => dre.abrev === dado.dreAbrev) < 0) {
+        dres.push({
+          abrev: dado.dreAbrev,
+          dre: dado.dre,
+        });
+      }
+
+      if (
+        unidadesEscolares.findIndex(unidade => unidade.abrev === dado.ueAbrev) <
+        0
+      ) {
+        unidadesEscolares.push({
+          abrev: dado.ueAbrev,
+          unidade: dado.ue,
+        });
+      }
+
+      if (turmas.findIndex(turma => turma.turma === dado.nomeTurma) < 0) {
+        turmas.push({
+          ano: dado.ano,
+          turma: dado.nomeTurma,
+        });
+      }
+    });
+
+    setAnosLetivosFiltro([...anosLetivos]);
+    setAnoLetivoFiltroSelecionado('2019');
+    setModalidadesFiltro([...modalidades]);
     setPeriodos([{ periodo: '1º Semestre' }, { periodo: '2º Semestre' }]);
-    setDres([{ dre: 'Diretoria Regional de Educação (DRE) Ipiranga' }]);
-    setUnidadesEscolares([
-      {
-        unidade:
-          'Unidade Escolar (UE) Luiz Gonzaga do Nascimento Jr - Gonzaguinha',
-      },
-    ]);
-    setTurmas([
-      { turma: '1-A' },
-      { turma: '1-B' },
-      { turma: '1-C' },
-      { turma: '1-D' },
-    ]);
+    setDresFiltro([...dres]);
+    setUnidadesEscolaresFiltro([...unidadesEscolares]);
+    store.dispatch(turmasUsuario(turmas));
   }, []);
 
-  const inputBuscaRef = createRef();
+  const usuario = useSelector(state => state.usuario);
+
+  const [turmaEscolaSelecionada, setTurmaEscolaSelecionada] = useState(usuario.turmaSelecionada.length > 0
+    ? `${usuario.turmaSelecionada[0].modalidade} - ${usuario.turmaSelecionada[0].nomeTurma} - ${usuario.turmaSelecionada[0].tipoEscola} - ${usuario.turmaSelecionada[0].ue}`
+    : '');
 
   useEffect(() => {
     if (!toggleBusca && toggleInputFocus) inputBuscaRef.current.focus();
-  }, [toggleBusca]);
+  }, [toggleBusca, toggleInputFocus]);
+
+  const onKeyUpAutocomplete = () => {
+    const texto = inputBuscaRef.current.value;
+
+    const resultadosAutocomplete = [];
+    if (texto.length >= 2) {
+      dadosProfessor
+        .filter(dado => {
+          return dado.nomeTurma.toLowerCase().includes(texto) || dado.ue.toLowerCase().includes(texto);
+        })
+        .map(dado => {
+          return resultadosAutocomplete.push(dado);
+        });
+      setResultadosFiltro(resultadosAutocomplete);
+    }
+  };
+
+  const selecionaTurmaAutocomplete = (resultado) => {
+    store.dispatch(selecionarTurma([resultado]));
+  };
 
   const onFocusBusca = () => {
     if (toggleBusca) {
@@ -108,11 +307,11 @@ const Filtro = () => {
   };
 
   const onChangeAnoLetivo = ano => {
-    setAnoLetivoSelecionado(ano);
+    setAnoLetivoFiltroSelecionado(ano);
   };
 
   const onChangeModalidade = modalidade => {
-    setModalidadeSelecionada(modalidade);
+    setmodalidadeFiltroSelecionada(modalidade);
   };
 
   const onChangePeriodo = periodo => {
@@ -120,20 +319,51 @@ const Filtro = () => {
   };
 
   const onChangeDre = dre => {
-    setDreSelecionado(dre);
+    setDreFiltroSelecionada(dre);
   };
 
-  const onChangeUnidadeEscolar = unidade => {
-    setUnidadeEscolarSelecionada(unidade);
+  const onChangeUnidadeEscolarFiltro = unidade => {
+    setUnidadeEscolarFiltroSelecionada(unidade);
   };
 
   const onChangeTurma = turma => {
-    setTurmaSelecionada(turma);
+    setNomeTurmaFiltroSelecionada(turma);
+  };
+
+  const selecionaTurma = () => {
+    const turma = dadosProfessor.filter(dado => {
+      return (
+        dado.anoLetivo.toString() === anoLetivoFiltroSelecionado &&
+        dado.codModalidade.toString() === modalidadeFiltroSelecionada &&
+        dado.dreAbrev === dreFiltroSelecionada &&
+        dado.nomeTurma === nomeTurmaFiltroSelecionada &&
+        dado.ue === unidadeEscolarFiltroSelecionada
+      );
+    });
+
+    if (turma.length > 0) {
+      store.dispatch(selecionarTurma(turma));
+      setToggleBusca(false);
+      sucesso('Suas escolhas foram salvas com sucesso!');
+    }
   };
 
   const aplicarFiltro = () => {
-    setToggleBusca(false);
-    sucesso('Suas escolhas foram salvas com sucesso!');
+    if (
+      anoLetivoFiltroSelecionado &&
+      modalidadeFiltroSelecionada &&
+      dreFiltroSelecionada &&
+      nomeTurmaFiltroSelecionada &&
+      unidadeEscolarFiltroSelecionada
+    ) {
+      selecionaTurma();
+    } else {
+      erro('Você precisa selecionar todas as informações!');
+    }
+  };
+
+  const removerTurmaSelecionada = () => {
+    store.dispatch(removerTurma());
   };
 
   return (
@@ -147,12 +377,37 @@ const Filtro = () => {
             placeholder="Pesquisar Turma"
             ref={inputBuscaRef}
             onFocus={onFocusBusca}
+            onKeyUp={onKeyUpAutocomplete}
+            value={turmaEscolaSelecionada}
           />
+          {turmaEscolaSelecionada && (
+            <Times
+              className="fa fa-times position-absolute"
+              onClick={removerTurmaSelecionada}
+            />
+          )}
           <Caret
             className="fa fa-caret-down rounded-circle position-absolute text-center"
             onClick={mostraBusca}
           />
         </div>
+        {resultadosFiltro.length > 0 && (
+          <div className="container position-absolute bg-white shadow rounded mt-1 p-0">
+            <div className="list-group">
+              {resultadosFiltro.map(resultado => {
+                return (
+                  <ListItem
+                    key={shortid.generate()}
+                    className="list-group-item list-group-item-action border-0 rounded-0"
+                    onClick={() => selecionaTurmaAutocomplete(resultado)}
+                  >
+                    {`${resultado.modalidade} - ${resultado.nomeTurma} - ${resultado.tipoEscola} - ${resultado.ue}`}
+                  </ListItem>
+                );
+              })}
+            </div>
+          </div>
+        )}
         {toggleBusca && (
           <div className="container position-absolute bg-white shadow rounded mt-1 px-3 pt-5 pb-1">
             <div className="form-row">
@@ -160,28 +415,28 @@ const Filtro = () => {
                 <SelectComponent
                   className="fonte-14"
                   onChange={onChangeAnoLetivo}
-                  lista={anosLetivos}
+                  lista={anosLetivosFiltro}
                   valueOption="ano"
                   label="ano"
-                  valueSelect={anoLetivoSelecionado}
+                  valueSelect={anoLetivoFiltroSelecionado}
                   placeholder="Ano"
                 />
               </Grid>
               <Grid
-                cols={modalidadeSelecionada === 'EJA' ? 5 : 9}
+                cols={modalidadeFiltroSelecionada === 'EJA' ? 5 : 9}
                 className="form-group"
               >
                 <SelectComponent
                   className="fonte-14"
                   onChange={onChangeModalidade}
-                  lista={modalidades}
-                  valueOption="modalidade"
+                  lista={modalidadesFiltro}
+                  valueOption="codigo"
                   label="modalidade"
-                  valueSelect={modalidadeSelecionada}
+                  valueSelect={modalidadeFiltroSelecionada}
                   placeholder="Modalidade"
                 />
               </Grid>
-              {modalidadeSelecionada === 'EJA' && (
+              {modalidadeFiltroSelecionada === 3 && (
                 <Grid cols={4} className="form-group">
                   <SelectComponent
                     className="fonte-14"
@@ -198,21 +453,21 @@ const Filtro = () => {
               <SelectComponent
                 className="fonte-14"
                 onChange={onChangeDre}
-                lista={dres}
-                valueOption="dre"
+                lista={dresFiltro}
+                valueOption="abrev"
                 label="dre"
-                valueSelect={dreSelecionado}
+                valueSelect={dreFiltroSelecionada}
                 placeholder="Diretoria Regional De Educação (DRE)"
               />
             </div>
             <div className="form-group">
               <SelectComponent
                 className="fonte-14"
-                onChange={onChangeUnidadeEscolar}
-                lista={unidadesEscolares}
+                onChange={onChangeUnidadeEscolarFiltro}
+                lista={unidadesEscolaresFiltro}
                 valueOption="unidade"
                 label="unidade"
-                valueSelect={unidadeEscolarSelecionada}
+                valueSelect={unidadeEscolarFiltroSelecionada}
                 placeholder="Unidade Escolar (UE)"
               />
             </div>
@@ -221,10 +476,10 @@ const Filtro = () => {
                 <SelectComponent
                   className="fonte-14"
                   onChange={onChangeTurma}
-                  lista={turmas}
+                  lista={usuario.turmasUsuario}
                   valueOption="turma"
                   label="turma"
-                  valueSelect={turmaSelecionada}
+                  valueSelect={nomeTurmaFiltroSelecionada}
                   placeholder="Turma"
                 />
               </Grid>
@@ -244,4 +499,4 @@ const Filtro = () => {
   );
 };
 
-export default Filtro;
+// export default Filtro;
