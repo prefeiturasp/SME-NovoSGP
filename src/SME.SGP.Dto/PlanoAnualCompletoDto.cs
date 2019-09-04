@@ -4,7 +4,7 @@ using System.Linq;
 
 namespace SME.SGP.Dto
 {
-    public class PlanoAnualCompletoDto : PlanoAnualDto
+    public class PlanoAnualCompletoDto
     {
         public PlanoAnualCompletoDto()
         {
@@ -14,12 +14,20 @@ namespace SME.SGP.Dto
         public DateTime AlteradoEm { get; set; }
         public string AlteradoPor { get; set; }
         public string AlteradoRF { get; set; }
+        public int? AnoLetivo { get; set; }
         public DateTime CriadoEm { get; set; }
         public string CriadoPor { get; set; }
         public string CriadoRF { get; set; }
+        public string Descricao { get; set; }
+
+        public string EscolaId { get; set; }
+
+        public long Id { get; set; }
         public IEnumerable<long> IdsObjetivosAprendizagem => ObjetivosAprendizagemPlano?.Split(',').Select(c => Convert.ToInt64(c));
 
         public new List<ObjetivoAprendizagemDto> ObjetivosAprendizagem { get; set; }
+
+        public long TurmaId { get; set; }
         private string ObjetivosAprendizagemPlano { get; }
     }
 }
