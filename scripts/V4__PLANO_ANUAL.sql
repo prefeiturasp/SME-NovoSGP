@@ -441,7 +441,7 @@ where
 
 CREATE TABLE if not exists public.plano_anual (
   id int8 NOT NULL GENERATED ALWAYS AS IDENTITY,
-  escola_id int8 NOT NULL,
+  escola_id varchar(10) NOT NULL,
   turma_id int8 NOT NULL,
   ano int8 NOT NULL,
   bimestre int4 NOT NULL,

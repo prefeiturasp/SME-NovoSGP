@@ -11,14 +11,6 @@ namespace SME.SGP.Api.Controllers
     [ValidaDto]
     public class PlanoAnualController : ControllerBase
     {
-        [HttpGet]
-        [ProducesResponseType(typeof(PlanoAnualCompletoDto), 200)]
-        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        public async Task<IActionResult> Get(FiltroPlanoAnualDto filtroPlanoAnualDto, [FromServices]IConsultasPlanoAnual consultasPlanoAnual)
-        {
-            return Ok(await consultasPlanoAnual.ObterPorEscolaTurmaAnoEBimestre(filtroPlanoAnualDto));
-        }
-
         [HttpPost("migrar")]
         [ProducesResponseType(200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
@@ -26,6 +18,14 @@ namespace SME.SGP.Api.Controllers
         {
             await comandosPlanoAnual.Migrar(migrarPlanoAnualDto);
             return Ok();
+        }
+
+        [HttpPost("obter")]
+        [ProducesResponseType(typeof(PlanoAnualCompletoDto), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        public async Task<IActionResult> Obter(FiltroPlanoAnualDto filtroPlanoAnualDto, [FromServices]IConsultasPlanoAnual consultasPlanoAnual)
+        {
+            return Ok(await consultasPlanoAnual.ObterPorEscolaTurmaAnoEBimestre(filtroPlanoAnualDto));
         }
 
         [HttpPost]
@@ -37,7 +37,7 @@ namespace SME.SGP.Api.Controllers
             return Ok();
         }
 
-        [HttpGet("validar-existente")]
+        [HttpPost("validar-existente")]
         [ProducesResponseType(typeof(bool), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         public IActionResult ValidarPlanoAnualExistente(FiltroPlanoAnualDto filtroPlanoAnualDto, [FromServices]IConsultasPlanoAnual consultasPlanoAnual)
