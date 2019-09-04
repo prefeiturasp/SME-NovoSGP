@@ -32,6 +32,23 @@ namespace SME.SGP.Aplicacao
             return listaRetorno;
         }
 
+        public IEnumerable<SupervisorDto> ObterPorDreENomeSupervisor(string supervisorNome, string dreId)
+        {
+            var supervisoresEol = servicoEOL.ObterSupervisoresPorDre(dreId);
+
+            if (string.IsNullOrEmpty(supervisorNome))
+            {
+                return from a in supervisoresEol
+                       select new SupervisorDto() { SupervisorId = a.CodigoRF, SupervisorNome = a.NomeServidor };
+            }
+            else
+            {
+                return from a in supervisoresEol
+                       where a.NomeServidor.ToLower().Contains(supervisorNome.ToLower())
+                       select new SupervisorDto() { SupervisorId = a.CodigoRF, SupervisorNome = a.NomeServidor };
+            }
+        }
+
         public IEnumerable<SupervisorEscolasDto> ObterPorDreESupervisor(string supervisorId, string dreId)
         {
             var supervisoresEscolasDres = repositorioSupervisorEscolaDre.ObtemSupervisoresEscola(dreId, supervisorId);
