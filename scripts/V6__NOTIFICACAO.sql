@@ -1,6 +1,6 @@
 ﻿CREATE TABLE IF NOT EXISTS public.notificacao
 (
-    id bigint NOT NULL,
+    id bigint NOT NULL generated always as identity,
     titulo varchar(50)  NOT NULL,
     mensagem varchar(500) NOT NULL,
     usuario_id varchar(15) NOT NULL,
