@@ -1,6 +1,5 @@
 ﻿using Newtonsoft.Json;
 using SME.SGP.Dto;
-using System;
 using System.Collections.Generic;
 using System.Net.Http;
 using System.Text;
@@ -22,47 +21,43 @@ namespace SME.SGP.Integracao.Teste
         [Fact, Order(3)]
         public void DeveIncluirPlanoAnual()
         {
-            fixture._clientApi.DefaultRequestHeaders.Clear();
-            PlanoAnualDto planoAnualDto = CriarDtoPlanoAnual();
-
-            var jsonParaPost = new StringContent(JsonConvert.SerializeObject(planoAnualDto), Encoding.UTF8, "application/json");
-
-            var postResult = fixture._clientApi.PostAsync("api/v1/planos/anual/", jsonParaPost).Result;
-
-            Assert.True(postResult.IsSuccessStatusCode);
-            var filtro = new FiltroPlanoAnualDto()
+            try
             {
-                Ano = 1,
-                Bimestre = 1,
-                EscolaId = "1",
-                TurmaId = 1
-            };
-            var filtroPlanoAnual = new StringContent(JsonConvert.SerializeObject(filtro), Encoding.UTF8, "application/json");
-            var request = new HttpRequestMessage
-            {
-                Method = HttpMethod.Get,
-                RequestUri = new Uri("api/v1/planos/anual/"),
-                Content = filtroPlanoAnual,
-            };
-            var planoAnualCompletoResponse = fixture._clientApi.SendAsync(request).Result;
-            if (planoAnualCompletoResponse.IsSuccessStatusCode)
-            {
-                var planoAnualCompleto = JsonConvert.DeserializeObject<PlanoCicloCompletoDto>(planoAnualCompletoResponse.Content.ReadAsStringAsync().Result);
-                Assert.Equal(planoAnualDto.Descricao, planoAnualCompleto.Descricao);
+                fixture._clientApi.DefaultRequestHeaders.Clear();
+                PlanoAnualDto planoAnualDto = CriarDtoPlanoAnual();
 
-                var requestValidaPlanoAnualExistente = new HttpRequestMessage
+                var jsonParaPost = new StringContent(JsonConvert.SerializeObject(planoAnualDto), Encoding.UTF8, "application/json");
+
+                var postResult = fixture._clientApi.PostAsync("api/v1/planos/anual/", jsonParaPost).Result;
+
+                Assert.True(postResult.IsSuccessStatusCode);
+                var filtro = new FiltroPlanoAnualDto()
                 {
-                    Method = HttpMethod.Get,
-                    RequestUri = new Uri("api/v1/planos/anual/validar-existente"),
-                    Content = filtroPlanoAnual,
+                    Ano = 2019,
+                    Bimestre = 1,
+                    EscolaId = "095346",
+                    TurmaId = 2008187
                 };
-                var planoAnualExistenteResponse = fixture._clientApi.SendAsync(request).Result;
-                Assert.True(bool.Parse(planoAnualExistenteResponse.Content.ReadAsStringAsync().Result));
+                var filtroPlanoAnual = new StringContent(JsonConvert.SerializeObject(filtro), Encoding.UTF8, "application/json");
+
+                var planoAnualCompletoResponse = fixture._clientApi.PostAsync("api/v1/planos/anual/obter", filtroPlanoAnual).Result;
+                if (planoAnualCompletoResponse.IsSuccessStatusCode)
+                {
+                    var planoAnualCompleto = JsonConvert.DeserializeObject<PlanoCicloCompletoDto>(planoAnualCompletoResponse.Content.ReadAsStringAsync().Result);
+                    Assert.Contains(planoAnualDto.Bimestres, c => c.Descricao == planoAnualCompleto.Descricao);
+
+                    var planoAnualExistenteResponse = fixture._clientApi.PostAsync("api/v1/planos/anual/validar-existente", filtroPlanoAnual).Result;
+                    Assert.True(bool.Parse(planoAnualExistenteResponse.Content.ReadAsStringAsync().Result));
+                }
+                else
+                {
+                    var erro = postResult.Content.ReadAsStringAsync().Result;
+                    Assert.True(false, erro);
+                }
             }
-            else
+            catch (System.Exception ex)
             {
-                var erro = postResult.Content.ReadAsStringAsync().Result;
-                Assert.True(false, erro);
+                Assert.True(false, $"Erro nas integrações: {ex.Message}");
             }
         }
 
@@ -87,18 +82,24 @@ namespace SME.SGP.Integracao.Teste
             return new PlanoAnualDto()
             {
                 AnoLetivo = 2019,
-                Bimestre = 1,
-                Descricao = "Primeiro bismestre do primeiro ano",
                 EscolaId = "095346",
                 TurmaId = 2008187,
-                ObjetivosAprendizagem = new List<ObjetivoAprendizagemSimplificadoDto>()
+                Bimestres = new List<BimestrePlanoAnualDto>
                 {
-                    new ObjetivoAprendizagemSimplificadoDto()
+                    new BimestrePlanoAnualDto
                     {
-                        Id=343,
-                        IdComponenteCurricular=9
+                        Bimestre = 1,
+                        Descricao = "Primeiro bismestre do primeiro ano",
+                        ObjetivosAprendizagem = new List<ObjetivoAprendizagemSimplificadoDto>()
+                        {
+                            new ObjetivoAprendizagemSimplificadoDto()
+                            {
+                                Id =343,
+                                IdComponenteCurricular =9
+                            }
+                        }
                     }
-                }
+                },
             };
         }
     }

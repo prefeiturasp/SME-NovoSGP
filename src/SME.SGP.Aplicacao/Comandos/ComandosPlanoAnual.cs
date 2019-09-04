@@ -35,38 +35,44 @@ namespace SME.SGP.Aplicacao
         public async Task Migrar(MigrarPlanoAnualDto migrarPlanoAnualDto)
         {
             var planoAnualDto = migrarPlanoAnualDto.PlanoAnual;
-            var planoAnualOrigem = ObterPlanoAnualSimplificado(planoAnualDto);
-            if (planoAnualOrigem == null)
+            foreach (var bimestrePlanoAnual in planoAnualDto.Bimestres)
             {
-                throw new NegocioException("Plano anual de origemnão encontrado");
-            }
-
-            await ValidaTurmasProfessor(migrarPlanoAnualDto, planoAnualDto);
-
-            using (var transacao = unitOfWork.IniciarTransacao())
-            {
-                foreach (var turmaId in migrarPlanoAnualDto.IdsTurmasDestino)
+                var planoAnualOrigem = ObterPlanoAnualSimplificado(planoAnualDto, bimestrePlanoAnual.Bimestre.Value);
+                if (planoAnualOrigem == null)
                 {
-                    planoAnualDto.TurmaId = turmaId;
-                    var planoAnual = ObterPlanoAnualSimplificado(planoAnualDto);
-                    if (planoAnual == null)
-                    {
-                        planoAnual = MapearParaDominio(planoAnualDto, planoAnual);
-                    }
-                    planoAnual.Descricao = planoAnualOrigem.Descricao;
-                    Salvar(planoAnualDto, planoAnual);
+                    throw new NegocioException("Plano anual de origemnão encontrado");
                 }
-                unitOfWork.PersistirTransacao();
+
+                await ValidaTurmasProfessor(migrarPlanoAnualDto, planoAnualDto);
+
+                using (var transacao = unitOfWork.IniciarTransacao())
+                {
+                    foreach (var turmaId in migrarPlanoAnualDto.IdsTurmasDestino)
+                    {
+                        planoAnualDto.TurmaId = turmaId;
+                        var planoAnual = ObterPlanoAnualSimplificado(planoAnualDto, bimestrePlanoAnual.Bimestre.Value);
+                        if (planoAnual == null)
+                        {
+                            planoAnual = MapearParaDominio(planoAnualDto, planoAnual, bimestrePlanoAnual);
+                        }
+                        planoAnual.Descricao = planoAnualOrigem.Descricao;
+                        Salvar(planoAnualDto, planoAnual, bimestrePlanoAnual);
+                    }
+                    unitOfWork.PersistirTransacao();
+                }
             }
         }
 
         public void Salvar(PlanoAnualDto planoAnualDto)
         {
-            PlanoAnual planoAnual = ObterPlanoAnualSimplificado(planoAnualDto);
-            planoAnual = MapearParaDominio(planoAnualDto, planoAnual);
             using (var transacao = unitOfWork.IniciarTransacao())
             {
-                Salvar(planoAnualDto, planoAnual);
+                foreach (var bimestrePlanoAnual in planoAnualDto.Bimestres)
+                {
+                    PlanoAnual planoAnual = ObterPlanoAnualSimplificado(planoAnualDto, bimestrePlanoAnual.Bimestre.Value);
+                    planoAnual = MapearParaDominio(planoAnualDto, planoAnual, bimestrePlanoAnual);
+                    Salvar(planoAnualDto, planoAnual, bimestrePlanoAnual);
+                }
                 unitOfWork.PersistirTransacao();
             }
         }
@@ -82,26 +88,26 @@ namespace SME.SGP.Aplicacao
             }
         }
 
-        private void AjustarObjetivosAprendizagem(PlanoAnualDto planoAnualDto)
+        private void AjustarObjetivosAprendizagem(PlanoAnualDto planoAnualDto, BimestrePlanoAnualDto bimestrePlanoAnualDto)
         {
             var objetivosAprendizagemPlanoAnual = repositorioObjetivoAprendizagemPlano.ObterObjetivosAprendizagemPorIdPlano(planoAnualDto.Id);
 
             if (objetivosAprendizagemPlanoAnual != null)
             {
-                RemoverObjetivos(planoAnualDto, objetivosAprendizagemPlanoAnual);
-                InserirObjetivos(planoAnualDto, objetivosAprendizagemPlanoAnual);
+                RemoverObjetivos(objetivosAprendizagemPlanoAnual, bimestrePlanoAnualDto);
+                InserirObjetivos(planoAnualDto, objetivosAprendizagemPlanoAnual, bimestrePlanoAnualDto);
             }
         }
 
-        private void InserirObjetivos(PlanoAnualDto planoAnualDto, IEnumerable<ObjetivoAprendizagemPlano> objetivosAprendizagemPlanoAnual)
+        private void InserirObjetivos(PlanoAnualDto planoAnualDto, IEnumerable<ObjetivoAprendizagemPlano> objetivosAprendizagemPlanoAnual, BimestrePlanoAnualDto bimestrePlanoAnualDto)
         {
-            if (planoAnualDto.ObjetivosAprendizagem != null && planoAnualDto.ObjetivosAprendizagem.Any())
+            if (bimestrePlanoAnualDto.ObjetivosAprendizagem != null && bimestrePlanoAnualDto.ObjetivosAprendizagem.Any())
             {
                 var idsObjetivos = objetivosAprendizagemPlanoAnual?.Select(c => c.ObjetivoAprendizagemJuremaId);
                 IEnumerable<ComponenteCurricular> componentesCurriculares = ObterComponentesCurriculares();
                 IEnumerable<ObjetivoAprendizagemDto> objetivosAprendizagem = ObterObjetivosDeAprendizagem();
 
-                foreach (var objetivo in planoAnualDto.ObjetivosAprendizagem)
+                foreach (var objetivo in bimestrePlanoAnualDto.ObjetivosAprendizagem)
                 {
                     if (idsObjetivos != null && !idsObjetivos.Contains(objetivo.Id))
                     {
@@ -111,15 +117,15 @@ namespace SME.SGP.Aplicacao
             }
         }
 
-        private PlanoAnual MapearParaDominio(PlanoAnualDto planoAnualDto, PlanoAnual planoAnual)
+        private PlanoAnual MapearParaDominio(PlanoAnualDto planoAnualDto, PlanoAnual planoAnual, BimestrePlanoAnualDto bimestrePlanoAnual)
         {
             if (planoAnual == null)
             {
                 planoAnual = new PlanoAnual();
             }
             planoAnual.Ano = planoAnualDto.AnoLetivo.Value;
-            planoAnual.Bimestre = planoAnualDto.Bimestre.Value;
-            planoAnual.Descricao = planoAnualDto.Descricao;
+            planoAnual.Bimestre = bimestrePlanoAnual.Bimestre.Value;
+            planoAnual.Descricao = bimestrePlanoAnual.Descricao;
             planoAnual.EscolaId = planoAnualDto.EscolaId;
             planoAnual.TurmaId = planoAnualDto.TurmaId.Value;
             return planoAnual;
@@ -147,19 +153,19 @@ namespace SME.SGP.Aplicacao
             return objetivosAprendizagem;
         }
 
-        private PlanoAnual ObterPlanoAnualSimplificado(PlanoAnualDto planoAnualDto)
+        private PlanoAnual ObterPlanoAnualSimplificado(PlanoAnualDto planoAnualDto, int bimestre)
         {
             return repositorioPlanoAnual.ObterPlanoAnualSimplificadoPorAnoEscolaBimestreETurma(planoAnualDto.AnoLetivo.Value,
                                                                                                       planoAnualDto.EscolaId,
                                                                                                       planoAnualDto.TurmaId.Value,
-                                                                                                      planoAnualDto.Bimestre.Value);
+                                                                                                      bimestre);
         }
 
-        private void RemoverObjetivos(PlanoAnualDto planoAnualDto, IEnumerable<ObjetivoAprendizagemPlano> objetivosAprendizagemPlanoAnual)
+        private void RemoverObjetivos(IEnumerable<ObjetivoAprendizagemPlano> objetivosAprendizagemPlanoAnual, BimestrePlanoAnualDto bimestrePlanoAnualDto)
         {
             if (objetivosAprendizagemPlanoAnual != null)
             {
-                var idsObjetivos = planoAnualDto.ObjetivosAprendizagem.Select(x => x.Id);
+                var idsObjetivos = bimestrePlanoAnualDto.ObjetivosAprendizagem.Select(x => x.Id);
                 var objetivosRemover = objetivosAprendizagemPlanoAnual.Where(c => !idsObjetivos.Contains(c.ObjetivoAprendizagemJuremaId));
 
                 foreach (var objetivo in objetivosRemover)
@@ -169,10 +175,10 @@ namespace SME.SGP.Aplicacao
             }
         }
 
-        private void Salvar(PlanoAnualDto planoAnualDto, PlanoAnual planoAnual)
+        private void Salvar(PlanoAnualDto planoAnualDto, PlanoAnual planoAnual, BimestrePlanoAnualDto bimestrePlanoAnualDto)
         {
             planoAnualDto.Id = repositorioPlanoAnual.Salvar(planoAnual);
-            AjustarObjetivosAprendizagem(planoAnualDto);
+            AjustarObjetivosAprendizagem(planoAnualDto, bimestrePlanoAnualDto);
         }
 
         private void SalvarObjetivoAprendizagem(PlanoAnualDto planoAnualDto,
