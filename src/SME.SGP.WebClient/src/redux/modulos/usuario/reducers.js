@@ -1,6 +1,7 @@
 import produce from 'immer';
 
 const inicial = {
+  rf: [],
   turmasUsuario: [],
   turmaSelecionada: [],
 };
@@ -8,6 +9,10 @@ const inicial = {
 export default function usuario(state = inicial, action) {
   return produce(state, draft => {
     switch (action.type) {
+      case '@usuario/salvarRf': {
+        draft.rf.push(action.payload);
+        break;
+      }
       case '@usuario/turmasUsuario': {
         action.payload.map(turma => draft.turmasUsuario.push(turma));
         break;
