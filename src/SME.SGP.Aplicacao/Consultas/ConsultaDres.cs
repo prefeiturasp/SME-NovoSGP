@@ -50,7 +50,7 @@ namespace SME.SGP.Aplicacao
                     IEnumerable<SupervisorEscolasDreDto> supervisoresEscolas)
         {
             var escolasComSupervisor = supervisoresEscolas
-                .Select(a => a.IdEscola)
+                .Select(a => a.EscolaId)
                 .ToList();
 
             var escolasSemSupervisor = escolasPorDre
