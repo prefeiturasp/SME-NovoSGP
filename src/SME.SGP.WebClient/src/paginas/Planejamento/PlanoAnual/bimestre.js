@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useLayoutEffect } from 'react';
+import React, { useEffect, useRef, useLayoutEffect } from 'react';
 import { Badge, ObjetivosList, ListItemButton, ListItem } from './bimestre.css';
 import CardCollapse from '../../../componentes/cardCollapse';
 import Grid from '../../../componentes/grid';
@@ -7,8 +7,8 @@ import TextEditor from '../../../componentes/textEditor';
 import { Colors } from '../../../componentes/colors';
 import Seta from '../../../recursos/Seta.svg';
 import Servico from '../../../servicos/Paginas/PlanoAnualServices';
-import { useDispatch } from 'react-redux';
-import { Salvar } from '../../../redux/modulos/planoAnual/action';
+import { useDispatch, useSelector } from 'react-redux';
+import { Salvar, SalvarMaterias, SalvarEhExpandido, SelecionarMateria, SetarDescricaoFunction, SalvarObjetivos, DefinirObjetivoFocado, SelecionarObjetivo, SetarDescricao} from '../../../redux/modulos/planoAnual/action';
 
 //Utilizado para importar a função scrollIntoViewIfNeeded para navegadores que não possuem essa funcionalidade.
 import '../../../componentes/scrollIntoViewIfNeeded';
@@ -20,9 +20,9 @@ const BimestreComponent = (props) => {
 
     const dispatch = useDispatch()
 
-    const { bimestreDOM } = props;
+    const { indice } = props;
 
-    const [bimestre, setBimestre] = useState({ ...bimestreDOM });
+    const bimestres = useSelector(store => store.bimestres.bimestres);
 
     const textEditorRef = useRef(null);
 
@@ -32,46 +32,68 @@ const BimestreComponent = (props) => {
 
         focarObjetivo();
 
+        if (!bimestres[indice].setarObjetivo) {
+            setarDescricaoFunction(descricaoFunction);
+        }
+
     })
 
-    useEffect(() => {
+    const descricaoFunction = () => {
 
-        bimestre.objetivo = textEditorRef.current.state.value;
-        
-        dispatch(Salvar(bimestre.indice, bimestre));
+        return textEditorRef.current.state.value;
 
-    }, [bimestre])
+    }
+
+    const setarDescricaoFunction = descricaoFunction => {
+        dispatch(SetarDescricaoFunction(indice, descricaoFunction));
+    }
+
+    const setarDescricao = descricao => {
+        dispatch(SetarDescricao(indice, descricao));
+    }
+    
+    const salvarObjetivos = (objetivos) => {        
+        dispatch(SalvarObjetivos(indice, objetivos));
+    }
+
+    const selecionarMaterias = (index, selecionarMaterias) => {
+        dispatch(SelecionarMateria(indice, index, selecionarMaterias));
+    }
 
     const focarObjetivo = () => {
 
-        if (!bimestre.objetivoIdFocado)
+        if (!bimestres[indice].objetivoIdFocado)
             return;
 
-        const Elem = document.getElementById(bimestre.objetivoIdFocado);
+        const Elem = document.getElementById(bimestres[indice].objetivoIdFocado);
         const listDivObjetivos = ListRef.current;
         Elem.scrollIntoViewIfNeeded(listDivObjetivos);
     }
 
     const setObjetivoFocado = objetivoId => {
 
-        bimestre.objetivoIdFocado = objetivoId;
+        dispatch(DefinirObjetivoFocado(indice, objetivoId));
+    }
 
-        setBimestre({ ...bimestre });
+    const selecionarObjetivo = (index, ariaPressed) => {
+
+        dispatch(SelecionarObjetivo(indice, index, ariaPressed));
+
     }
 
     const getObjetivos = () => {
 
-        if (!bimestre.materias || bimestre.materias.length === 0) {
-            bimestre.objetivosAprendizagem = [];
-            setBimestre({ ...bimestre });
+        if (!bimestres[indice].materias || bimestres[indice].materias.length === 0) {
+            salvarObjetivos([]);
             return;
         }
 
-        const materiasSelecionadas = bimestre.materias.filter(materia => materia.selected).map(x => x.codigo);
+        const materiasSelecionadas = bimestres[indice].materias.filter(materia => materia.selected).map(x => x.codigo);
+
+        console.log(materiasSelecionadas);
 
         if (!materiasSelecionadas || materiasSelecionadas.length === 0) {
-            bimestre.objetivosAprendizagem = [];
-            setBimestre({ ...bimestre });
+            salvarObjetivos([]);
             return;
         }
 
@@ -80,87 +102,77 @@ const BimestreComponent = (props) => {
         Servico.getObjetivoseByDisciplinas(Ano, materiasSelecionadas)
             .then(res => {
 
-                if (!bimestre.objetivosAprendizagem || bimestre.objetivosAprendizagem.length === 0) {
-                    bimestre.objetivosAprendizagem = res;
-                    setBimestre({ ...bimestre });
+                if (!bimestres[indice].objetivosAprendizagem || bimestres[indice].objetivosAprendizagem.length === 0) {
+                    salvarObjetivos(res);
+                    return;
                 }
 
-                bimestre.objetivosAprendizagem = res;
+                salvarObjetivos(res);
 
-                const concatenados = bimestre.objetivosAprendizagem.concat(res.filter(item => {
+                const concatenados = bimestres[indice].objetivosAprendizagem.concat(res.filter(item => {
 
-                    const index = bimestre.objetivosAprendizagem.findIndex(x => x.codigo === item.codigo);
+                    const index = bimestres[indice].objetivosAprendizagem.findIndex(x => x.codigo === item.codigo);
 
                     return index < 0;
 
                 }));
 
-                bimestre.objetivosAprendizagem = concatenados;
-
-                setBimestre({ ...bimestre });
-
+                salvarObjetivos(concatenados);
             });
     }
 
     const setEhExpandido = ehExpandido => {
 
-        bimestre.ehExpandido = ehExpandido;
-        setBimestre({ ...bimestre });
+        dispatch(SalvarEhExpandido(indice, ehExpandido));
+
     }
 
     const selecionaMateria = e => {
 
         const index = e.target.getAttribute("data-index");
-        const ariaPressed = e.target.getAttribute('aria-pressed');
+        const ariaPressed = e.target.getAttribute('aria-pressed') !== 'true';
 
-        bimestre.materias[index].selected = ariaPressed !== 'true';
+        console.log(e, index, ariaPressed);
 
-        setBimestre({ ...bimestre });
-
-        getObjetivos();
+        setEhExpandido(true);
+        
+        selecionarMaterias(index, ariaPressed);
     };
 
 
     const selecionaObjetivo = e => {
 
         const index = e.target.getAttribute("data-index");
-        const ariaPressed = e.target.getAttribute('aria-pressed');
-
-        bimestre.objetivosAprendizagem[index].selected = ariaPressed !== 'true';
+        const ariaPressed = e.target.getAttribute('aria-pressed') !== 'true';
 
         setObjetivoFocado(e.target.id);
 
-        setBimestre({ ...bimestre });
+        selecionarObjetivo(index, ariaPressed);
     };
 
     const removeObjetivoSelecionado = e => {
 
-        const indice = bimestre.objetivosAprendizagem.findIndex(
+        const index = bimestres[indice].objetivosAprendizagem.findIndex(
             objetivo => objetivo.id == e.target.id
         );
 
-        if (bimestre.objetivosAprendizagem[indice])
-            bimestre.objetivosAprendizagem[indice].selected = false;
-
-        setBimestre({ ...bimestre });
+        selecionarObjetivo(index, false);
     };
 
     const onBlurTextEditor = (value) => {
 
         setEhExpandido(true);
 
-        bimestre.objetivo = value;
-
-        setBimestre({ ...bimestre });
+        setarDescricao(value);
     }
 
     return (
 
         <CardCollapse
-            key={bimestre.indice}
-            titulo={bimestre.nome}
-            indice={`Bimestre${bimestre.indice}`}
-            show={bimestre.ehExpandido}
+            key={indice}
+            titulo={bimestres[indice].nome}
+            indice={`Bimestre${indice}`}
+            show={bimestres[indice].ehExpandido}
         >
             <div className="row">
                 <Grid cols={6}>
@@ -168,8 +180,8 @@ const BimestreComponent = (props) => {
                         Objetivos de aprendizagem
                     </h6>
                     <div>
-                        {bimestre.materias && bimestre.materias.length > 0
-                            ? bimestre.materias.map((materia, indice) => {
+                        {bimestres[indice].materias && bimestres[indice].materias.length > 0
+                            ? bimestres[indice].materias.map((materia, indice) => {
                                 return (
                                     <Badge
                                         role="button"
@@ -187,8 +199,8 @@ const BimestreComponent = (props) => {
                             : null}
                     </div>
                     <ObjetivosList ref={ListRef} className="mt-4 overflow-auto">
-                        {bimestre.objetivosAprendizagem && bimestre.objetivosAprendizagem.length > 0
-                            ? bimestre.objetivosAprendizagem.map((objetivo, indice) => {
+                        {bimestres[indice].objetivosAprendizagem && bimestres[indice].objetivosAprendizagem.length > 0
+                            ? bimestres[indice].objetivosAprendizagem.map((objetivo, indice) => {
                                 return (
                                     <ul
                                         key={`${objetivo.id}Bimestre`}
@@ -197,7 +209,7 @@ const BimestreComponent = (props) => {
                                         <ListItemButton
                                             className="list-group-item d-flex align-items-center font-weight-bold fonte-14"
                                             role="button"
-                                            id={`${bimestre.indice}Bimestre${objetivo.id}`}
+                                            id={`${indice}Bimestre${objetivo.id}`}
                                             aria-pressed={objetivo.selected ? true : false}
                                             data-index={indice}
                                             onClick={selecionaObjetivo}
@@ -221,12 +233,12 @@ const BimestreComponent = (props) => {
                     </h6>
                     <div
                         role="group"
-                        aria-label={`${bimestre.objetivosAprendizagem && bimestre.objetivosAprendizagem.length > 0 &&
-                            bimestre.objetivosAprendizagem.filter(objetivo => objetivo.selected)
+                        aria-label={`${bimestres[indice].objetivosAprendizagem && bimestres[indice].objetivosAprendizagem.length > 0 &&
+                            bimestres[indice].objetivosAprendizagem.filter(objetivo => objetivo.selected)
                                 .length} objetivos selecionados`}
                     >
-                        {bimestre.objetivosAprendizagem && bimestre.objetivosAprendizagem.length > 0
-                            ? bimestre.objetivosAprendizagem
+                        {bimestres[indice].objetivosAprendizagem && bimestres[indice].objetivosAprendizagem.length > 0
+                            ? bimestres[indice].objetivosAprendizagem
                                 .filter(objetivo => objetivo.selected)
                                 .map(selecionado => {
                                     return (
@@ -286,7 +298,7 @@ const BimestreComponent = (props) => {
                                     id="textEditor"
                                     height="135px"
                                     height="135px"
-                                    value={bimestre.objetivo}
+                                    value={bimestres[indice].objetivo}
                                     onBlur={onBlurTextEditor}
                                 />
                             </form>
