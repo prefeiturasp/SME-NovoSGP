@@ -27,10 +27,9 @@ const Sider = () => {
   };
 
   return (
-    <MenuBody id="main" className="col-md-2 col-lg-2">
-        <Layout>
+    <MenuBody id="main" className={collapsed?"col-sm-2 col-md-2 col-lg-1":"col-sm-2 col-md-3 col-lg-2"}>
           <Sider style={{ background: Base.Roxo, flex: [0, 0, 220] }} collapsed={collapsed} onCollapse={collapsed}
-            width="100%" collapsedWidth="100px">
+            width="100%" collapsedWidth="100%">
             <Topo>
               <div className="conteudo">
                 <a className="arrow" onClick={toggleCollapsed}>
@@ -55,7 +54,7 @@ const Sider = () => {
             </Topo>
 
             <MenuScope>
-              <div className="menu-scope">
+              <div className={"menu-scope"+(collapsed?" menu-scope-retraido":"")}>
                 <Menu
                   id="menuPrincipal"
                   mode="inline"
@@ -222,7 +221,6 @@ const Sider = () => {
               </Footer>
             </DivFooter>
           </Sider>
-        </Layout>
     </MenuBody>
   );
 }
