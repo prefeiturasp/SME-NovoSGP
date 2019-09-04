@@ -15,6 +15,7 @@ namespace SME.SGP.Dto
         public long Id { get; set; }
         public IEnumerable<long> IdsMatrizesSaber => MatrizesSaber?.Split(',').Select(c => Convert.ToInt64(c));
         public IEnumerable<long> IdsObjetivosDesenvolvimentoSustentavel => ObjetivosDesenvolvimento?.Split(',').Select(c => Convert.ToInt64(c));
+        public bool Migrado { get; set; }
         private string MatrizesSaber { get; set; }
         private string ObjetivosDesenvolvimento { get; set; }
     }

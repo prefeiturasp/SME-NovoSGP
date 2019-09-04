@@ -17,6 +17,7 @@ Grid.propTypes = {
 Grid.defaultProps = {
   cols: 12,
   className: '',
+  children: () => {},
 };
 
 export default Grid;
