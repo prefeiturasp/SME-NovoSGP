@@ -1,6 +1,6 @@
 ﻿CREATE TABLE IF NOT EXISTS public.wf_aprova_niveis
 (
-    id bigint NOT NULL,
+    id bigint NOT NULL generated always as identity,
     usuario_id varchar(15) NOT NULL,
     status int NOT NULL,
     descricao varchar(100) NULL,    
