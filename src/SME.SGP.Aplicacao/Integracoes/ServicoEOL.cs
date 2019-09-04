@@ -51,5 +51,16 @@ namespace SME.SGP.Aplicacao.Integracoes
             }
             return null;
         }
+
+        public IEnumerable<SupervisoresRetornoDto> ObterSupervisoresPorDre(string dreId)
+        {
+            var resposta = httpClient.GetAsync($"dres/{dreId}/supervisores").Result;
+            if (resposta.IsSuccessStatusCode)
+            {
+                var json = resposta.Content.ReadAsStringAsync().Result;
+                return JsonConvert.DeserializeObject<IEnumerable<SupervisoresRetornoDto>>(json);
+            }
+            return null;
+        }
     }
 }
