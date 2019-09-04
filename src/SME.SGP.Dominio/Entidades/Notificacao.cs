@@ -1,19 +1,21 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace SME.SGP.Dominio.Entidades
+﻿namespace SME.SGP.Dominio
 {
-    public class Notificacao :EntidadeBase
+    public class Notificacao : EntidadeBase
     {
-        public string Titulo { get; set; }
-        public string Mensagem { get; set; }
-        public string UsuarioId { get; set; }
-        public NotificacaoStatus Status { get; set; }
-        public NotificacaoCategoria Categoria { get; set; }
-        public string EscolaId { get; set; }
-        public string DreId { get; set; }
-        public bool PodeRemover { get; set; }
+        public Notificacao()
+        {
+            Status = NotificacaoStatus.Enviada;
+        }
 
+        public int Ano { get; set; }
+        public NotificacaoCategoria Categoria { get; set; }
+        public string DreId { get; set; }
+        public string EscolaId { get; set; }
+        public string Mensagem { get; set; }
+        public bool PodeRemover { get; set; }
+        public NotificacaoStatus Status { get; set; }
+        public string Titulo { get; set; }
+        public string TurmaId { get; set; }
+        public string UsuarioId { get; set; }
     }
 }
