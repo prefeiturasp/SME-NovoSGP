@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { Salvar } from '../../../redux/modulos/planoAnual/action';
+import { Salvar, PrePost } from '../../../redux/modulos/planoAnual/action';
 import Grid from '../../../componentes/grid';
 import Button from '../../../componentes/button';
 import { Colors, Base } from '../../../componentes/colors';
@@ -15,6 +15,7 @@ export default function PlanoAnual() {
   const qtdBimestres = 4;
   const anoLetivo = 2019;
   const escolaId = 1;
+  const anoEscolar = 1;
 
   const RF = 6082840;
 
@@ -25,16 +26,19 @@ export default function PlanoAnual() {
 
   useEffect(() => {
 
-    Service.getMateriasProfessor(RF, turmaId)
-      .then((res) => {
-        ObtenhaBimestres(_.cloneDeep(res));
-      });
+    if (!bimestres || bimestres.length === 0)
+      Service.getMateriasProfessor(RF, turmaId)
+        .then((res) => {
+          ObtenhaBimestres(_.cloneDeep(res));
+        });
 
   }, [])
 
   useEffect(() => {
 
     Service.postPlanoAnual(bimestres);
+
+    console.log(bimestres);
 
   }, [bimestres]);
 
@@ -43,6 +47,12 @@ export default function PlanoAnual() {
   const ObtenhaNomebimestre = (index) => `${index}º ${ehEja ? "Semestre" : "Bimestre"}`
 
   const confirmarCancelamento = () => { };
+
+  const onClickSalvar = () => {
+
+    dispatch(PrePost());
+
+  }
 
   const ObtenhaBimestres = (materias) => {
 
@@ -54,6 +64,7 @@ export default function PlanoAnual() {
 
       const bimestre = {
         anoLetivo,
+        anoEscolar,
         escolaId,
         turmaId,
         ehExpandido: false,
@@ -106,12 +117,14 @@ export default function PlanoAnual() {
           className="mr-3"
           onClick={cancelarAlteracoes}
         />
-        <Button label="Salvar" color={Colors.Roxo} border bold disabled />
+        <Button label="Salvar" color={Colors.Roxo} onClick={onClickSalvar} border bold />
       </Grid>
       <Grid cols={12}>
         {
           bimestres ? bimestres.map(bim => {
-            return (<Bimestre key={bim.indice} bimestreDOM={bim} />);
+            return (
+              <Bimestre key={bim.indice} indice={bim.indice} />
+            );
           }) : null
         }
       </Grid>
