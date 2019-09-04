@@ -3,6 +3,8 @@ import styled from 'styled-components';
 
 export const MenuBody = styled.div`
 position: fixed;
+background:${Base.Roxo};
+padding: 0 !important;
 `;
 
 export const DivFooter = styled.div`
@@ -100,7 +102,12 @@ export const MenuScope = styled.div`
     display: flex;
     flex-direction: row;
     justify-content: center;
-    align-items: center
+    align-items: center;
+    margin: 0 10px 0 10px;
+  }
+
+  .menu-scope-retraido{
+    margin: 0 !important;
   }
 
   .icons{
@@ -128,7 +135,7 @@ export const MenuScope = styled.div`
   }
 
   .ant-menu-submenu-title{
-    margin-top:3px !important;
+    margin-top:2px !important;
     padding-left: 15px !important;
     font-size: 14px !important;
     font-weight: bold;
@@ -206,22 +213,13 @@ export const MenuScope = styled.div`
 
   /*----MENU RETRAÍDO----*/
   .ant-menu-vertical{
-    width:100px;
+    width:100%;
   }
 
 
   .ant-menu:not(.ant-menu-inline) .ant-menu-submenu-open{
     color: ${Base.Roxo};
   }
-/*
-  @media (min-height: 900px) {
-    .ant-menu-vertical> .ant-menu-submenu{
-      .ant-menu-submenu-title{
-        height: 80px !important;
-        margin-top: 10px !important;
-      }
-    }
-  } */
 
   .ant-menu-vertical> .ant-menu-submenu{
     border-radius: 0 !important;
