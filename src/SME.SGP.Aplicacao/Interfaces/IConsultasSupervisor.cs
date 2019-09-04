@@ -7,6 +7,8 @@ namespace SME.SGP.Aplicacao
     {
         IEnumerable<SupervisorEscolasDto> ObterPorDre(string dreId);
 
+        IEnumerable<SupervisorDto> ObterPorDreENomeSupervisor(string supervisorNome, string dreId);
+
         IEnumerable<SupervisorEscolasDto> ObterPorDreESupervisor(string supervisorId, string dreId);
     }
 }
