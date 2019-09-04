@@ -53,9 +53,69 @@ export default createGlobalStyle`
     color: #ffffff !important;
   }
 
-  /*MENU*/
+  @media (max-width: 544px) {
 
-  .menuItem{
+    .hidden-xs-down{
+      display: none !important;
+    }
+
+   }
+
+  .p-l-5{
+    padding-left: 5px !important;
+  }
+
+  .p-r-5{
+    padding-right: 5px !important;
+  }
+
+  .m-r-10{
+    margin-right: 10px !important;
+  }
+
+  .m-t-10{
+    margin-top: 10px !important;
+  }
+
+  .m-b-10{
+    margin-bottom: 10px !important;
+  }
+
+  .m-r-0{
+    margin-rigth: 0px !important;
+  }
+
+  .m-l-0{
+    margin-left: 0px !important;
+  }
+
+  .m-t-0{
+    margin-top: 0px !important;
+  }
+
+  .m-b-0{
+    margin-bottom: 0px !important;
+  }
+
+  .p-r-0{
+    padding-right: 0px !important;
+  }
+
+  .p-l-0{
+    padding-left: 0px !important;
+  }
+
+  .p-t-0{
+    padding-top: 0px !important;
+  }
+
+  .p-b-0{
+    padding-bottom: 0px !important;
+  }
+
+/*MENU*/
+
+.menuItem{
     color: ${Base.CinzaMenuItem} !important;
   }
 
@@ -117,5 +177,4 @@ export default createGlobalStyle`
   .ant-menu-submenu-popup{
     position: fixed !important;
   }
-
 `;

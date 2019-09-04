@@ -16,6 +16,7 @@ const Base = {
   CinzaDesabilitado: '#DADADA',
   CinzaFundo: '#F5F6F8',
   CinzaMako: '#42474A',
+  Preto: '#000',
   Roxo: '#6933FF',
   RoxoClaro: '#B99FFF'
 };

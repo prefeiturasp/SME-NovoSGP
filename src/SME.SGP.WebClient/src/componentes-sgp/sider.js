@@ -4,6 +4,8 @@ import { Link } from 'react-router-dom';
 import { Base } from '../componentes/colors';
 import { MenuBody, DivFooter, MenuScope, Topo } from './sider.css'
 import LogoMenuFooter from '../recursos/LogoMenuFooter.svg';
+import { store } from '../redux';
+import {menuCollapsed} from '../redux/modulos/menu/actions'
 
 const Sider = () => {
 
@@ -15,6 +17,7 @@ const Sider = () => {
   const toggleCollapsed = () => {
     setOpenKeys([]);
     setCollapsed(!collapsed);
+    store.dispatch(menuCollapsed(!collapsed));
   };
 
   const onOpenChange = openKeys => {
@@ -27,7 +30,7 @@ const Sider = () => {
   };
 
   return (
-    <MenuBody id="main" className={collapsed?"col-sm-2 col-md-2 col-lg-1":"col-sm-2 col-md-3 col-lg-2"}>
+    <MenuBody id="main" className={collapsed?"col-sm-2 col-md-2 col-lg-1":"col-sm-4 col-md-3 col-lg-2"}>
           <Sider style={{ background: Base.Roxo, flex: [0, 0, 220] }} collapsed={collapsed} onCollapse={collapsed}
             width="100%" collapsedWidth="100%">
             <Topo>
