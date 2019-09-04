@@ -19,21 +19,7 @@ namespace SME.SGP.Integracao.Teste
             _fixture = fixture;
         }
 
-        [Fact, Order(1)]
-        public void Deve_Consultar_Escolas_Por_Dre()
-        {
-            _fixture._clientApi.DefaultRequestHeaders.Clear();
-
-            var postResult = _fixture._clientApi.GetAsync("api/v1/supervisores/dre/108100").Result;
-
-            if (postResult.IsSuccessStatusCode)
-            {
-                var supervisorEscolasDto = JsonConvert.DeserializeObject<List<SupervisorEscolasDto>>(postResult.Content.ReadAsStringAsync().Result);
-                Assert.True(supervisorEscolasDto.Count > 0);
-            }
-        }
-
-        [Theory, Order(2)]
+        [Theory, Order(1)]
         [InlineData("108100", "an", true, true)]
         [InlineData("108100", "ma", true, true)]
         [InlineData("108100", "xy", false, true)]
@@ -54,7 +40,7 @@ namespace SME.SGP.Integracao.Teste
             }
         }
 
-        [Fact]
+        [Fact, Order(2)]
         public void DeveAtribuirEscolaAoSupervisor()
         {
             _fixture._clientApi.DefaultRequestHeaders.Clear();
