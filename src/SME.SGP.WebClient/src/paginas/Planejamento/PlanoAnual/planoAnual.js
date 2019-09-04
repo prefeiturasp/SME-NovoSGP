@@ -1,20 +1,19 @@
 import React, { useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
+import _ from 'lodash';
 import { Salvar } from '../../../redux/modulos/planoAnual/action';
 import Grid from '../../../componentes/grid';
 import Button from '../../../componentes/button';
 import { Colors, Base } from '../../../componentes/colors';
-import _ from "lodash";
 import Card from '../../../componentes/card';
 import Bimestre from './bimestre';
 import { confirmacao } from '../../../servicos/alertas';
 import Service from '../../../servicos/Paginas/PlanoAnualServices';
 
 export default function PlanoAnual() {
-
-  const qtdBimestres = 4;
+  const qtdBimestres = 2;
   const anoLetivo = 2019;
-  const escolaId = 1;
+  const escolaId = '095346';
 
   const RF = 6082840;
 
@@ -24,30 +23,24 @@ export default function PlanoAnual() {
   const dispatch = useDispatch();
 
   useEffect(() => {
-
-    Service.getMateriasProfessor(RF, turmaId)
-      .then((res) => {
-        ObtenhaBimestres(_.cloneDeep(res));
-      });
-
-  }, [])
+    Service.getMateriasProfessor(RF, turmaId).then(res => {
+      ObtenhaBimestres(_.cloneDeep(res));
+    });
+  }, []);
 
   useEffect(() => {
-
     Service.postPlanoAnual(bimestres);
-
   }, [bimestres]);
 
   const ehEja = false;
 
-  const ObtenhaNomebimestre = (index) => `${index}º ${ehEja ? "Semestre" : "Bimestre"}`
+  const ObtenhaNomebimestre = index =>
+    `${index}º ${ehEja ? 'Semestre' : 'Bimestre'}`;
 
-  const confirmarCancelamento = () => { };
+  const confirmarCancelamento = () => {};
 
-  const ObtenhaBimestres = (materias) => {
-
+  const ObtenhaBimestres = materias => {
     for (let i = 1; i <= qtdBimestres; i++) {
-
       const Nome = ObtenhaNomebimestre(i);
 
       const objetivo = '';
@@ -60,12 +53,12 @@ export default function PlanoAnual() {
         indice: i,
         nome: Nome,
         materias: _.cloneDeep(materias),
-        objetivo: objetivo
+        objetivo,
       };
 
       dispatch(Salvar(i, bimestre));
     }
-  }
+  };
 
   const cancelarAlteracoes = () => {
     confirmacao(
@@ -109,11 +102,11 @@ export default function PlanoAnual() {
         <Button label="Salvar" color={Colors.Roxo} border bold disabled />
       </Grid>
       <Grid cols={12}>
-        {
-          bimestres ? bimestres.map(bim => {
-            return (<Bimestre key={bim.indice} bimestreDOM={bim} />);
-          }) : null
-        }
+        {bimestres
+          ? bimestres.map(bim => {
+              return <Bimestre key={bim.indice} bimestreDOM={bim} />;
+            })
+          : null}
       </Grid>
     </Card>
   );
