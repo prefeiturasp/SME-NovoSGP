@@ -37,7 +37,7 @@ const BimestreComponent = (props) => {
     useEffect(() => {
 
         bimestre.objetivo = textEditorRef.current.state.value;
-
+        
         dispatch(Salvar(bimestre.indice, bimestre));
 
     }, [bimestre])
@@ -62,7 +62,7 @@ const BimestreComponent = (props) => {
     const getObjetivos = () => {
 
         if (!bimestre.materias || bimestre.materias.length === 0) {
-            bimestre.ObjetivosAprendizagem = [];
+            bimestre.objetivosAprendizagem = [];
             setBimestre({ ...bimestre });
             return;
         }
@@ -70,7 +70,7 @@ const BimestreComponent = (props) => {
         const materiasSelecionadas = bimestre.materias.filter(materia => materia.selected).map(x => x.codigo);
 
         if (!materiasSelecionadas || materiasSelecionadas.length === 0) {
-            bimestre.ObjetivosAprendizagem = [];
+            bimestre.objetivosAprendizagem = [];
             setBimestre({ ...bimestre });
             return;
         }
@@ -80,22 +80,22 @@ const BimestreComponent = (props) => {
         Servico.getObjetivoseByDisciplinas(Ano, materiasSelecionadas)
             .then(res => {
 
-                if (!bimestre.ObjetivosAprendizagem || bimestre.ObjetivosAprendizagem.length === 0) {
-                    bimestre.ObjetivosAprendizagem = res;
+                if (!bimestre.objetivosAprendizagem || bimestre.objetivosAprendizagem.length === 0) {
+                    bimestre.objetivosAprendizagem = res;
                     setBimestre({ ...bimestre });
                 }
 
-                bimestre.ObjetivosAprendizagem = res;
+                bimestre.objetivosAprendizagem = res;
 
-                const concatenados = bimestre.ObjetivosAprendizagem.concat(res.filter(item => {
+                const concatenados = bimestre.objetivosAprendizagem.concat(res.filter(item => {
 
-                    const index = bimestre.ObjetivosAprendizagem.findIndex(x => x.codigo === item.codigo);
+                    const index = bimestre.objetivosAprendizagem.findIndex(x => x.codigo === item.codigo);
 
                     return index < 0;
 
                 }));
 
-                bimestre.ObjetivosAprendizagem = concatenados;
+                bimestre.objetivosAprendizagem = concatenados;
 
                 setBimestre({ ...bimestre });
 
@@ -126,7 +126,7 @@ const BimestreComponent = (props) => {
         const index = e.target.getAttribute("data-index");
         const ariaPressed = e.target.getAttribute('aria-pressed');
 
-        bimestre.ObjetivosAprendizagem[index].selected = ariaPressed !== 'true';
+        bimestre.objetivosAprendizagem[index].selected = ariaPressed !== 'true';
 
         setObjetivoFocado(e.target.id);
 
@@ -135,12 +135,12 @@ const BimestreComponent = (props) => {
 
     const removeObjetivoSelecionado = e => {
 
-        const indice = bimestre.ObjetivosAprendizagem.findIndex(
+        const indice = bimestre.objetivosAprendizagem.findIndex(
             objetivo => objetivo.id == e.target.id
         );
 
-        if (bimestre.ObjetivosAprendizagem[indice])
-            bimestre.ObjetivosAprendizagem[indice].selected = false;
+        if (bimestre.objetivosAprendizagem[indice])
+            bimestre.objetivosAprendizagem[indice].selected = false;
 
         setBimestre({ ...bimestre });
     };
@@ -187,8 +187,8 @@ const BimestreComponent = (props) => {
                             : null}
                     </div>
                     <ObjetivosList ref={ListRef} className="mt-4 overflow-auto">
-                        {bimestre.ObjetivosAprendizagem && bimestre.ObjetivosAprendizagem.length > 0
-                            ? bimestre.ObjetivosAprendizagem.map((objetivo, indice) => {
+                        {bimestre.objetivosAprendizagem && bimestre.objetivosAprendizagem.length > 0
+                            ? bimestre.objetivosAprendizagem.map((objetivo, indice) => {
                                 return (
                                     <ul
                                         key={`${objetivo.id}Bimestre`}
@@ -221,12 +221,12 @@ const BimestreComponent = (props) => {
                     </h6>
                     <div
                         role="group"
-                        aria-label={`${bimestre.ObjetivosAprendizagem && bimestre.ObjetivosAprendizagem.length > 0 &&
-                            bimestre.ObjetivosAprendizagem.filter(objetivo => objetivo.selected)
+                        aria-label={`${bimestre.objetivosAprendizagem && bimestre.objetivosAprendizagem.length > 0 &&
+                            bimestre.objetivosAprendizagem.filter(objetivo => objetivo.selected)
                                 .length} objetivos selecionados`}
                     >
-                        {bimestre.ObjetivosAprendizagem && bimestre.ObjetivosAprendizagem.length > 0
-                            ? bimestre.ObjetivosAprendizagem
+                        {bimestre.objetivosAprendizagem && bimestre.objetivosAprendizagem.length > 0
+                            ? bimestre.objetivosAprendizagem
                                 .filter(objetivo => objetivo.selected)
                                 .map(selecionado => {
                                     return (
