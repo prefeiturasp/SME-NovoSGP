@@ -15,6 +15,7 @@ export default function PlanoAnual() {
   const qtdBimestres = 4;
   const anoLetivo = 2019;
   const escolaId = 1;
+  const anoEscolar = 1;
 
   const RF = 6082840;
 
@@ -63,6 +64,7 @@ export default function PlanoAnual() {
 
       const bimestre = {
         anoLetivo,
+        anoEscolar,
         escolaId,
         turmaId,
         ehExpandido: false,

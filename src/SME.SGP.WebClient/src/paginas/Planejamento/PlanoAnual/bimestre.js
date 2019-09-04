@@ -6,17 +6,14 @@ import Button from '../../../componentes/button';
 import TextEditor from '../../../componentes/textEditor';
 import { Colors } from '../../../componentes/colors';
 import Seta from '../../../recursos/Seta.svg';
-import Servico from '../../../servicos/Paginas/PlanoAnualServices';
 import { useDispatch, useSelector } from 'react-redux';
-import { Salvar, SalvarMaterias, SalvarEhExpandido, SelecionarMateria, SetarDescricaoFunction, SalvarObjetivos, DefinirObjetivoFocado, SelecionarObjetivo, SetarDescricao} from '../../../redux/modulos/planoAnual/action';
+import { ObterObjetivosCall, SalvarEhExpandido, SelecionarMateria, SetarDescricaoFunction, SalvarObjetivos, DefinirObjetivoFocado, SelecionarObjetivo, SetarDescricao} from '../../../redux/modulos/planoAnual/action';
 
 //Utilizado para importar a função scrollIntoViewIfNeeded para navegadores que não possuem essa funcionalidade.
 import '../../../componentes/scrollIntoViewIfNeeded';
 
 
 const BimestreComponent = (props) => {
-
-    const Ano = 1;
 
     const dispatch = useDispatch()
 
@@ -46,6 +43,10 @@ const BimestreComponent = (props) => {
 
     const setarDescricaoFunction = descricaoFunction => {
         dispatch(SetarDescricaoFunction(indice, descricaoFunction));
+    }
+
+    const obterObjetivos = () =>{
+        dispatch(ObterObjetivosCall(bimestres[indice]));
     }
 
     const setarDescricao = descricao => {
@@ -79,47 +80,7 @@ const BimestreComponent = (props) => {
 
         dispatch(SelecionarObjetivo(indice, index, ariaPressed));
 
-    }
-
-    const getObjetivos = () => {
-
-        if (!bimestres[indice].materias || bimestres[indice].materias.length === 0) {
-            salvarObjetivos([]);
-            return;
-        }
-
-        const materiasSelecionadas = bimestres[indice].materias.filter(materia => materia.selected).map(x => x.codigo);
-
-        console.log(materiasSelecionadas);
-
-        if (!materiasSelecionadas || materiasSelecionadas.length === 0) {
-            salvarObjetivos([]);
-            return;
-        }
-
-        setEhExpandido(true);
-
-        Servico.getObjetivoseByDisciplinas(Ano, materiasSelecionadas)
-            .then(res => {
-
-                if (!bimestres[indice].objetivosAprendizagem || bimestres[indice].objetivosAprendizagem.length === 0) {
-                    salvarObjetivos(res);
-                    return;
-                }
-
-                salvarObjetivos(res);
-
-                const concatenados = bimestres[indice].objetivosAprendizagem.concat(res.filter(item => {
-
-                    const index = bimestres[indice].objetivosAprendizagem.findIndex(x => x.codigo === item.codigo);
-
-                    return index < 0;
-
-                }));
-
-                salvarObjetivos(concatenados);
-            });
-    }
+    }    
 
     const setEhExpandido = ehExpandido => {
 
@@ -137,6 +98,8 @@ const BimestreComponent = (props) => {
         setEhExpandido(true);
         
         selecionarMaterias(index, ariaPressed);
+
+        obterObjetivos();
     };
 
 
