@@ -43,6 +43,7 @@
     "reactotron-redux": "^3.1.1",
     "redux": "^4.0.4",
     "redux-persist": "^5.10.0",
+    "redux-thunk": "^2.3.0",
     "shortid": "^2.2.14",
     "styled-components": "^4.3.2"
   },
