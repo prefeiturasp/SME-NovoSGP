@@ -1,10 +1,15 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useSelector } from 'react-redux';
+
 import Card from '../../componentes/card';
 import Grid from '../../componentes/grid';
 import CardLink from '../../componentes/cardlink';
 import Row from '../../componentes/row';
 import Alert from '../../componentes/alert';
 import styled from 'styled-components';
+import { URL_PLANO_ANUAL, URL_PLANO_CICLO, URL_FREQ_PLANO_AULA } from '../../constantes/url';
+
+
 
 const Principal = (props) => {
 
@@ -13,6 +18,36 @@ const Principal = (props) => {
   const ANUAL_TYPE = "anual";
 
   const [escolaSelecionada, setEscolaSelecionada] = useState(false);
+  const [turmaSelecionada, setTurmaSelecionada] = useState(false);
+
+  const FiltroStore = useSelector(store => store.usuario);
+
+  console.log(FiltroStore);
+
+  useEffect(() => { validarFiltro(); }, [])
+
+  useEffect(() => { validarFiltro(); }, [FiltroStore])
+
+  const validarFiltro = () => {
+
+    console.log(!FiltroStore.turmaSelecionada);
+
+    if (!FiltroStore.turmaSelecionada) {
+      setTurmaSelecionada(false);
+      setEscolaSelecionada(false);
+      return;
+    }
+
+    const temTurma = FiltroStore.turmaSelecionada.length > 0;
+    const temEscola = temTurma && (FiltroStore.turmaSelecionada[0].ue !== "" && typeof (FiltroStore.turmaSelecionada[0].ue) !== "undefined");
+
+    console.log(temTurma);
+    console.log(temEscola);
+
+    setTurmaSelecionada(temTurma);
+    setEscolaSelecionada(temEscola);
+
+  }
 
   const ehDisabled = (tipo) => {
 
@@ -22,11 +57,11 @@ const Principal = (props) => {
     if (tipo === CICLOS_TYPE)
       return !cicloLiberado();
 
-    return false;
+    return !turmaSelecionada;
   }
 
   const cicloLiberado = () => {
-    return false;
+    return escolaSelecionada;
   }
 
   const Container = styled.div`
@@ -46,7 +81,7 @@ const Principal = (props) => {
   return (
     <div className="col-md-12">
       {
-        !escolaSelecionada ?
+        !turmaSelecionada ?
           <Row className="mb-0 pb-0">
             <Grid cols={12} className="mb-0 pb-0">
               <Container>
@@ -68,9 +103,9 @@ const Principal = (props) => {
       </Card>
       <Row>
         <Grid cols={12} className="form-inline">
-          <CardLink cols={[4, 4, 4, 12]} iconSize="90px" url="/" disabled={(e => ehDisabled(FREQUENCIA_TYPE))()} icone="fa-columns" pack="fas" label="Frequência/ Plano de Aula" />
-          <CardLink cols={[4, 4, 4, 12]} classHidden="hidden-xs-down" iconSize="90px" url="/" disabled={(e => ehDisabled(CICLOS_TYPE))()} icone="fa-calendar-minus" pack="far" label="Plano de Ciclo" />
-          <CardLink cols={[4, 4, 4, 12]} classHidden="hidden-xs-down" iconSize="90px" url="/planejamento/plano-anual" disabled={(e => ehDisabled(ANUAL_TYPE))()} icone="fa-calendar-alt" pack="far" label="Plano Anual" />
+          <CardLink cols={[4, 4, 4, 12]} iconSize="90px" url={URL_FREQ_PLANO_AULA} disabled={(e => ehDisabled(FREQUENCIA_TYPE))()} icone="fa-columns" pack="fas" label="Frequência/ Plano de Aula" />
+          <CardLink cols={[4, 4, 4, 12]} classHidden="hidden-xs-down" iconSize="90px" url={URL_PLANO_CICLO} disabled={(e => ehDisabled(CICLOS_TYPE))()} icone="fa-calendar-minus" pack="far" label="Plano de Ciclo" />
+          <CardLink cols={[4, 4, 4, 12]} classHidden="hidden-xs-down" iconSize="90px" url={URL_PLANO_ANUAL} disabled={(e => ehDisabled(ANUAL_TYPE))()} icone="fa-calendar-alt" pack="far" label="Plano Anual" />
         </Grid>
       </Row>
     </div>

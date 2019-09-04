@@ -17,6 +17,10 @@ export default function usuario(state = inicial, action) {
         action.payload.map(turma => draft.turmaSelecionada.push(turma));
         break;
       }
+      case '@usuario/removerTurma': {
+        draft.turmaSelecionada.splice(0);
+        break;
+      }
       default:
         break;
     }
