@@ -22,15 +22,11 @@ const Principal = (props) => {
 
   const FiltroStore = useSelector(store => store.usuario);
 
-  console.log(FiltroStore);
-
   useEffect(() => { validarFiltro(); }, [])
 
   useEffect(() => { validarFiltro(); }, [FiltroStore])
 
   const validarFiltro = () => {
-
-    console.log(!FiltroStore.turmaSelecionada);
 
     if (!FiltroStore.turmaSelecionada) {
       setTurmaSelecionada(false);
@@ -40,9 +36,6 @@ const Principal = (props) => {
 
     const temTurma = FiltroStore.turmaSelecionada.length > 0;
     const temEscola = temTurma && (FiltroStore.turmaSelecionada[0].ue !== "" && typeof (FiltroStore.turmaSelecionada[0].ue) !== "undefined");
-
-    console.log(temTurma);
-    console.log(temEscola);
 
     setTurmaSelecionada(temTurma);
     setEscolaSelecionada(temEscola);
