@@ -5,6 +5,7 @@ import bimestres from './planoAnual/reducers';
 import usuario from './usuario/reducers';
 
 export default combineReducers({
-  notificacoes, bimestres
+  notificacoes, 
+  bimestres,
   usuario,
 });
