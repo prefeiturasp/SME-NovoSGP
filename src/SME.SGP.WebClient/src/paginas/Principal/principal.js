@@ -9,8 +9,10 @@ import { salvarRf } from '../../redux/modulos/usuario/actions';
 import { store } from '../../redux';
 
 const Principal = props => {
-  const { rf } = props.match.params;
-  store.dispatch(salvarRf(rf));
+  if (props.match.params.rf) {
+    const { rf } = props.match.params;
+    store.dispatch(salvarRf(rf));
+  }
 
   const FREQUENCIA_TYPE = 'frequencia';
   const CICLOS_TYPE = 'ciclos';
