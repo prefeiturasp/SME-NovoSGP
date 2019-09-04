@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useLayoutEffect, useRef } from 'react';
 import { useSelector } from 'react-redux';
 import styled from 'styled-components';
 import shortid from 'shortid';
@@ -6,14 +6,16 @@ import { store } from '../redux';
 import {
   turmasUsuario,
   selecionarTurma,
+  removerTurma,
 } from '../redux/modulos/usuario/actions';
 import Grid from '../componentes/grid';
 import Button from '../componentes/button';
 import { Base, Colors } from '../componentes/colors';
 import SelectComponent from '../componentes/select';
 import { sucesso, erro } from '../servicos/alertas';
+import InputCustom from '../componentes/input';
 
-const Filtro = () => {
+export default function Filtro() {
   const [dadosProfessor] = useState([
     {
       ano: 5,
@@ -151,7 +153,7 @@ const Filtro = () => {
     max-width: 571px !important;
   `;
 
-  const Input = styled.input`
+  const Input = styled(InputCustom)`
     background: ${Base.CinzaFundo} !important;
     font-weight: bold !important;
     height: 45px !important;
@@ -180,6 +182,11 @@ const Filtro = () => {
     top: 0 !important;
   `;
 
+  const Times = styled(Icon)`
+    right: 50px !important;
+    top: 15px !important;
+  `;
+
   const Caret = styled(Icon)`
     background: ${Base.CinzaDesabilitado} !important;
     max-height: 36px !important;
@@ -188,6 +195,14 @@ const Filtro = () => {
     right: 5px !important;
     top: 5px !important;
     ${toggleBusca && 'transform: rotate(180deg) !important;'}
+  `;
+
+  const ListItem = styled.li`
+    cursor: pointer !important;
+    &:hover {
+      background: ${Base.Roxo} !important;
+      color: ${Base.Branco} !important;
+    }
   `;
 
   const inputBuscaRef = useRef();
@@ -251,29 +266,32 @@ const Filtro = () => {
 
   const usuario = useSelector(state => state.usuario);
 
-  const turmaEscolaSelecionada =
-    usuario.turmaSelecionada.length > 0
-      ? `${usuario.turmaSelecionada[0].modalidade} - ${usuario.turmaSelecionada[0].nomeTurma} - ${usuario.turmaSelecionada[0].tipoEscola} - ${usuario.turmaSelecionada[0].ue}`
-      : '';
+  const [turmaEscolaSelecionada, setTurmaEscolaSelecionada] = useState(usuario.turmaSelecionada.length > 0
+    ? `${usuario.turmaSelecionada[0].modalidade} - ${usuario.turmaSelecionada[0].nomeTurma} - ${usuario.turmaSelecionada[0].tipoEscola} - ${usuario.turmaSelecionada[0].ue}`
+    : '');
 
   useEffect(() => {
     if (!toggleBusca && toggleInputFocus) inputBuscaRef.current.focus();
   }, [toggleBusca, toggleInputFocus]);
 
-  const onChangeAutocomplete = () => {
+  const onKeyUpAutocomplete = () => {
     const texto = inputBuscaRef.current.value;
 
     const resultadosAutocomplete = [];
     if (texto.length >= 2) {
       dadosProfessor
         .filter(dado => {
-          return dado.ue.toLowerCase().includes(texto);
+          return dado.nomeTurma.toLowerCase().includes(texto) || dado.ue.toLowerCase().includes(texto);
         })
-        .forEach(dado => {
-          resultadosAutocomplete.push(dado);
+        .map(dado => {
+          return resultadosAutocomplete.push(dado);
         });
       setResultadosFiltro(resultadosAutocomplete);
     }
+  };
+
+  const selecionaTurmaAutocomplete = (resultado) => {
+    store.dispatch(selecionarTurma([resultado]));
   };
 
   const onFocusBusca = () => {
@@ -344,6 +362,10 @@ const Filtro = () => {
     }
   };
 
+  const removerTurmaSelecionada = () => {
+    store.dispatch(removerTurma());
+  };
+
   return (
     <Container className="position-relative w-100 mx-auto">
       <form className="w-100">
@@ -355,23 +377,32 @@ const Filtro = () => {
             placeholder="Pesquisar Turma"
             ref={inputBuscaRef}
             onFocus={onFocusBusca}
-            onChange={onChangeAutocomplete}
+            onKeyUp={onKeyUpAutocomplete}
             value={turmaEscolaSelecionada}
           />
+          {turmaEscolaSelecionada && (
+            <Times
+              className="fa fa-times position-absolute"
+              onClick={removerTurmaSelecionada}
+            />
+          )}
           <Caret
             className="fa fa-caret-down rounded-circle position-absolute text-center"
             onClick={mostraBusca}
           />
         </div>
         {resultadosFiltro.length > 0 && (
-          <div className="container position-absolute bg-white shadow rounded mt-1 p-2">
+          <div className="container position-absolute bg-white shadow rounded mt-1 p-0">
             <div className="list-group">
               {resultadosFiltro.map(resultado => {
                 return (
-                  <li
+                  <ListItem
                     key={shortid.generate()}
-                    className="list-group-item list-group-item-action border-0"
-                  >{`${resultado.NomeTurma} ${resultado.UE}`}</li>
+                    className="list-group-item list-group-item-action border-0 rounded-0"
+                    onClick={() => selecionaTurmaAutocomplete(resultado)}
+                  >
+                    {`${resultado.modalidade} - ${resultado.nomeTurma} - ${resultado.tipoEscola} - ${resultado.ue}`}
+                  </ListItem>
                 );
               })}
             </div>
@@ -468,4 +499,4 @@ const Filtro = () => {
   );
 };
 
-export default Filtro;
+// export default Filtro;
