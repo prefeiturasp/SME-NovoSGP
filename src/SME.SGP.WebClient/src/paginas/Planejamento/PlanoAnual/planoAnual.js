@@ -1,4 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
+import { Salvar } from '../../../redux/modulos/planoAnual/action';
 import Grid from '../../../componentes/grid';
 import Button from '../../../componentes/button';
 import { Colors, Base } from '../../../componentes/colors';
@@ -12,11 +14,16 @@ export default function PlanoAnual() {
 
   const qtdBimestres = 4;
 
-  const [bimestres, setBimestres] = useState([]);
+  const RF = 6082840;
+
+  const Turma = 1982186;
+
+  const bimestres = useSelector(store => store.bimestres.bimestres);
+  const dispatch = useDispatch();
 
   useEffect(() => {
 
-    Service.getMateriasProfessor(6082840, 1982186)
+    Service.getMateriasProfessor(RF, Turma)
       .then((res) => {
         ObtenhaBimestres(_.cloneDeep(res));
       });
@@ -31,8 +38,6 @@ export default function PlanoAnual() {
 
   const ObtenhaBimestres = (materias) => {
 
-    const Auxiliar = [];
-
     for (let i = 1; i <= qtdBimestres; i++) {
 
       const Nome = ObtenhaNomebimestre(i);
@@ -46,10 +51,8 @@ export default function PlanoAnual() {
         objetivo: objetivo
       };
 
-      Auxiliar.push(bimestre);     
+      dispatch(Salvar(i, bimestre));
     }
-
-    setBimestres([..._.cloneDeep(Auxiliar)]);
   }
 
   const cancelarAlteracoes = () => {

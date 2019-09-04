@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef, useLayoutEffect } from 'react';
 import { Badge, ObjetivosList, ListItemButton, ListItem } from './bimestre.css';
 import CardCollapse from '../../../componentes/cardCollapse';
 import Grid from '../../../componentes/grid';
@@ -7,101 +7,152 @@ import TextEditor from '../../../componentes/textEditor';
 import { Colors } from '../../../componentes/colors';
 import Seta from '../../../recursos/Seta.svg';
 import Servico from '../../../servicos/Paginas/PlanoAnualServices';
+import { useDispatch } from 'react-redux';
+import { Salvar } from '../../../redux/modulos/planoAnual/action';
+
+//Utilizado para importar a função scrollIntoViewIfNeeded para navegadores que não possuem essa funcionalidade.
+import '../../../componentes/scrollIntoViewIfNeeded';
 
 
 const BimestreComponent = (props) => {
 
     const Ano = 1;
 
+    const dispatch = useDispatch()
+
     const { bimestreDOM } = props;
 
-    const [ehExpandido, setEhExpandido] = useState(false);
+    const [bimestre, setBimestre] = useState({ ...bimestreDOM });
 
-    const [objetivos, setObjetivos] = useState({});
+    const textEditorRef = useRef(null);
 
-    const [bimestre, setBimestre] = useState({});
+    const ListRef = useRef(null);
 
-    const [materias, setMaterias] = useState([]);
+    useLayoutEffect(() => {
 
+        focarObjetivo();
 
-    useEffect(() => {
-
-        setBimestre({ ...bimestreDOM });
-        setMaterias([...bimestreDOM.materias])
-
-    }, [])
+    })
 
     useEffect(() => {
 
-        getObjetivos();
+        bimestre.objetivo = textEditorRef.current.state.value;
 
-    }, [materias])
+        dispatch(Salvar(bimestre.indice, bimestre));
+
+    }, [bimestre])
+
+    const focarObjetivo = () => {
+
+        if (!bimestre.objetivoIdFocado)
+            return;
+
+        const Elem = document.getElementById(bimestre.objetivoIdFocado);
+        const listDivObjetivos = ListRef.current;
+        Elem.scrollIntoViewIfNeeded(listDivObjetivos);
+    }
+
+    const setObjetivoFocado = objetivoId => {
+
+        bimestre.objetivoIdFocado = objetivoId;
+
+        setBimestre({ ...bimestre });
+    }
 
     const getObjetivos = () => {
 
-        if (!materias)
+        if (!bimestre.materias || bimestre.materias.length === 0) {
+            bimestre.ObjetivosAprendizagem = [];
+            setBimestre({ ...bimestre });
             return;
-
-        const materiasSelecionadas = materias.filter(materia => materia.selected).map(x => x.codigo);
-
-        if (materiasSelecionadas.length > 0) {
-
-            setEhExpandido(true);
-
-            Servico.getObjetivoseByDisciplinas(Ano, materiasSelecionadas)
-                .then(res => {
-
-                    const concatenados = objetivos.concat(res.filter((item) => {
-
-                        const index = objetivos.findIndex(x => x.codigo === item.codigo);
-
-                        return index < 0;
-                    }));
-
-                    setObjetivos([...concatenados]);                   
-
-                });
         }
-        else {
-            setObjetivos([]);
+
+        const materiasSelecionadas = bimestre.materias.filter(materia => materia.selected).map(x => x.codigo);
+
+        if (!materiasSelecionadas || materiasSelecionadas.length === 0) {
+            bimestre.ObjetivosAprendizagem = [];
+            setBimestre({ ...bimestre });
+            return;
         }
+
+        setEhExpandido(true);
+
+        Servico.getObjetivoseByDisciplinas(Ano, materiasSelecionadas)
+            .then(res => {
+
+                if (!bimestre.ObjetivosAprendizagem || bimestre.ObjetivosAprendizagem.length === 0) {
+                    bimestre.ObjetivosAprendizagem = res;
+                    setBimestre({ ...bimestre });
+                }
+
+                bimestre.ObjetivosAprendizagem = res;
+
+                const concatenados = bimestre.ObjetivosAprendizagem.concat(res.filter(item => {
+
+                    const index = bimestre.ObjetivosAprendizagem.findIndex(x => x.codigo === item.codigo);
+
+                    return index < 0;
+
+                }));
+
+                bimestre.ObjetivosAprendizagem = concatenados;
+
+                setBimestre({ ...bimestre });
+
+            });
+    }
+
+    const setEhExpandido = ehExpandido => {
+
+        bimestre.ehExpandido = ehExpandido;
+        setBimestre({ ...bimestre });
     }
 
     const selecionaMateria = e => {
 
-        materias[materias.findIndex(materia => materia.codigo == e.target.id)].selected = e.target.getAttribute('aria-pressed') !== 'true';
+        const index = e.target.getAttribute("data-index");
+        const ariaPressed = e.target.getAttribute('aria-pressed');
 
-        setMaterias([...materias]);
+        bimestre.materias[index].selected = ariaPressed !== 'true';
+
+        setBimestre({ ...bimestre });
+
+        getObjetivos();
     };
+
 
     const selecionaObjetivo = e => {
 
-        objetivos[
-            objetivos.findIndex(objetivo => objetivo.codigo === e.target.id)
-        ].selected = e.target.getAttribute('aria-pressed') !== 'true';
+        const index = e.target.getAttribute("data-index");
+        const ariaPressed = e.target.getAttribute('aria-pressed');
 
-        setObjetivos([...objetivos]);
+        bimestre.ObjetivosAprendizagem[index].selected = ariaPressed !== 'true';
+
+        setObjetivoFocado(e.target.id);
+
+        setBimestre({ ...bimestre });
     };
 
     const removeObjetivoSelecionado = e => {
 
-        const indice = objetivos.findIndex(
+        const indice = bimestre.ObjetivosAprendizagem.findIndex(
             objetivo => objetivo.id == e.target.id
         );
 
-        if (objetivos[indice]) objetivos[indice].selected = false;
+        if (bimestre.ObjetivosAprendizagem[indice])
+            bimestre.ObjetivosAprendizagem[indice].selected = false;
 
-        setObjetivos([...objetivos]);
+        setBimestre({ ...bimestre });
     };
 
-    const toolbarOptions = [
-        ['bold', 'italic', 'underline'],
-        [{ list: 'bullet' }, { list: 'ordered' }],
-    ];
+    const onBlurTextEditor = (value) => {
 
-    const modules = {
-        toolbar: toolbarOptions,
-    };
+        setEhExpandido(true);
+
+        bimestre.objetivo = value;
+
+        setBimestre({ ...bimestre });
+    }
 
     return (
 
@@ -109,7 +160,7 @@ const BimestreComponent = (props) => {
             key={bimestre.indice}
             titulo={bimestre.nome}
             indice={`Bimestre${bimestre.indice}`}
-            show={ehExpandido}
+            show={bimestre.ehExpandido}
         >
             <div className="row">
                 <Grid cols={6}>
@@ -117,14 +168,15 @@ const BimestreComponent = (props) => {
                         Objetivos de aprendizagem
                     </h6>
                     <div>
-                        {materias && materias.length > 0
-                            ? materias.map(materia => {
+                        {bimestre.materias && bimestre.materias.length > 0
+                            ? bimestre.materias.map((materia, indice) => {
                                 return (
                                     <Badge
                                         role="button"
                                         onClick={selecionaMateria}
                                         aria-pressed={materia.selected && true}
                                         id={materia.codigo}
+                                        data-index={indice}
                                         key={materia.codigo}
                                         className="badge badge-pill border text-dark bg-white font-weight-light px-2 py-1 mt-3 mr-2"
                                     >
@@ -134,19 +186,20 @@ const BimestreComponent = (props) => {
                             })
                             : null}
                     </div>
-                    <ObjetivosList className="mt-4 overflow-auto">
-                        {objetivos && objetivos.length > 0
-                            ? objetivos.map(objetivo => {
+                    <ObjetivosList ref={ListRef} className="mt-4 overflow-auto">
+                        {bimestre.ObjetivosAprendizagem && bimestre.ObjetivosAprendizagem.length > 0
+                            ? bimestre.ObjetivosAprendizagem.map((objetivo, indice) => {
                                 return (
                                     <ul
-                                        key={objetivo.id}
+                                        key={`${objetivo.id}Bimestre`}
                                         className="list-group list-group-horizontal mt-3"
                                     >
                                         <ListItemButton
                                             className="list-group-item d-flex align-items-center font-weight-bold fonte-14"
                                             role="button"
-                                            id={objetivo.id}
-                                            aria-pressed={objetivo.selected && true}
+                                            id={`${bimestre.indice}Bimestre${objetivo.id}`}
+                                            aria-pressed={objetivo.selected ? true : false}
+                                            data-index={indice}
                                             onClick={selecionaObjetivo}
                                             onKeyUp={selecionaObjetivo}
                                         >
@@ -168,12 +221,12 @@ const BimestreComponent = (props) => {
                     </h6>
                     <div
                         role="group"
-                        aria-label={`${objetivos && objetivos.length > 0 &&
-                            objetivos.filter(objetivo => objetivo.selected)
+                        aria-label={`${bimestre.ObjetivosAprendizagem && bimestre.ObjetivosAprendizagem.length > 0 &&
+                            bimestre.ObjetivosAprendizagem.filter(objetivo => objetivo.selected)
                                 .length} objetivos selecionados`}
                     >
-                        {objetivos && objetivos.length > 0
-                            ? objetivos
+                        {bimestre.ObjetivosAprendizagem && bimestre.ObjetivosAprendizagem.length > 0
+                            ? bimestre.ObjetivosAprendizagem
                                 .filter(objetivo => objetivo.selected)
                                 .map(selecionado => {
                                     return (
@@ -229,9 +282,12 @@ const BimestreComponent = (props) => {
                             <form action="">
                                 <TextEditor
                                     className="form-control"
-                                    modules={modules}
-                                    height={135}
+                                    ref={textEditorRef}
+                                    id="textEditor"
+                                    height="135px"
+                                    height="135px"
                                     value={bimestre.objetivo}
+                                    onBlur={onBlurTextEditor}
                                 />
                             </form>
                         </fieldset>
