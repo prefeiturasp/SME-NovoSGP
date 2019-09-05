@@ -186,7 +186,7 @@ namespace SME.SGP.Aplicacao
                                                 IEnumerable<ObjetivoAprendizagemDto> objetivosAprendizagem,
                                                 ObjetivoAprendizagemSimplificadoDto objetivo)
         {
-            var componenteEol = componentesCurriculares.FirstOrDefault(c => c.CodigoJurema == objetivo.IdComponenteCurricular);
+            var componenteEol = componentesCurriculares.FirstOrDefault(c => c.CodigoEOL == objetivo.IdComponenteCurricular);
 
             ValidarObjetivoPertenceAoComponenteCurricular(objetivosAprendizagem, objetivo, componenteEol);
 
