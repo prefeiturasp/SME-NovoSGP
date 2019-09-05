@@ -4,6 +4,7 @@ import { Switch, Route } from 'react-router-dom';
 import Principal from '../paginas/Principal/principal';
 import PlanoCiclo from '../paginas/Planejamento/PlanoCiclo/planoCiclo';
 import PlanoAnual from '../paginas/Planejamento/PlanoAnual/planoAnual';
+import AtribuicaoSupervisor from '../paginas/Gestao/AtribuicaoSupervisor/atribuicaoSupervisor';
 
 export default function Rotas() {
   return (
@@ -15,6 +16,10 @@ export default function Rotas() {
         component={PlanoCiclo}
       />
       <Route path="/planejamento/plano-anual" component={PlanoAnual} />
+      <Route
+        path="/gestao/atribuicao-supervisor"
+        component={AtribuicaoSupervisor}
+      />
     </Switch>
   );
 }
