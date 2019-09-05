@@ -1,12 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace SME.SGP.Dominio
+﻿namespace SME.SGP.Dominio
 {
     public enum NotificacaoStatus
     {
-        Enviada = 1,
-        Lida = 2
+        Pendente = 1,
+        Lida = 2,
+        Aceita = 4,
+        Recusada = 5
     }
 }
