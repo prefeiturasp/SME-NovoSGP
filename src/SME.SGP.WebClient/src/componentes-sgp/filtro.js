@@ -119,13 +119,9 @@ const Filtro = () => {
   const usuario = useSelector(state => state.usuario);
 
   const buscaDadosPoRf = async rf => {
-    await api
-      .get(
-        `http://hom-integracao.sme.prefeitura.sp.gov.br/api/v1/professores/${rf}/turmas`
-      )
-      .then(res => {
-        setDados(res.data);
-      });
+    await api.get(`v1/professores/${rf}/turmas`).then(res => {
+      setDados(res.data);
+    });
   };
 
   useEffect(() => {
