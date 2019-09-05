@@ -14,9 +14,6 @@ const notificacoes = { alertas: [] };
 
 function App() {
 
-  const [collapsed, setCollapsed] = useState(false);
-  console.log(store.menu);
-
   return (
     <Provider store={store}>
       <Router history={history}>
