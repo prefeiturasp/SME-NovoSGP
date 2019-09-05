@@ -15,6 +15,7 @@ namespace SME.SGP.Dto
         public string AlteradoPor { get; set; }
         public string AlteradoRF { get; set; }
         public int? AnoLetivo { get; set; }
+
         public DateTime CriadoEm { get; set; }
         public string CriadoPor { get; set; }
         public string CriadoRF { get; set; }
