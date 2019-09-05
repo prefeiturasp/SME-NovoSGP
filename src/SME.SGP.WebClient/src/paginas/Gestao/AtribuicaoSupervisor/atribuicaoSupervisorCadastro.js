@@ -1,9 +1,13 @@
 import React, { useEffect, useState } from 'react';
+import PropTypes from 'prop-types';
 import SelectList from '~/componentes/selectList';
 import Card from '~/componentes/card';
-import SelectComponent from 'componentes/select';
+import SelectComponent from '~/componentes/select';
+import Button from '~/componentes/button';
+import { Colors } from '~/componentes/colors';
+import Auditoria from '~/componentes/auditoria';
 
-export default function AtribuicaoSupervisorCadastro() {
+const AtribuicaoSupervisorCadastro = () => {
   const [listaUES, setListaUES] = useState([]);
   const [listaDres, setListaDres] = useState([{ id: 1, descricao: 'teste' }]);
   const [listaUESSelecionadas, setListaUESSelecionadas] = useState([]);
@@ -24,7 +28,6 @@ export default function AtribuicaoSupervisorCadastro() {
         },
       ]);
     }
-    console.log(dreSelecionada);
 
     carregarListas();
   }, []);
@@ -36,10 +39,30 @@ export default function AtribuicaoSupervisorCadastro() {
   function selecionaDre(e) {
     setDreSelecionada(e);
   }
+
+  function cancelarAlteracoes() {}
   return (
     <>
       <h3>Atribuição de Supervisor</h3>
       <Card>
+        <div className="col-xs-12 col-md-6 col-lg-12 d-flex justify-content-end mb-4">
+          <Button
+            label="Voltar"
+            icon="arrow-left"
+            color={Colors.Azul}
+            border
+            className="mr-3"
+          />
+          <Button
+            label="Cancelar"
+            color={Colors.Roxo}
+            border
+            bold
+            className="mr-3"
+            onClick={cancelarAlteracoes}
+          />
+          <Button label="Salvar" color={Colors.Roxo} border bold disabled />
+        </div>
         <div className="col-xs-12 col-md-6 col-lg-6">
           <SelectComponent
             label="SELECIONE A DRE:"
@@ -73,7 +96,13 @@ export default function AtribuicaoSupervisorCadastro() {
           handleChange={handleChange}
           titulos={["UE'S SEM ATRIBUIÇÃO", "UE'S ATRIBUIDAS AO SUPERVISOR"]}
         />
+        <Auditoria
+          inserido="INSERIDO por ELISANGELA DOS SANTOS ARRUDA em 02/05/2019 às 20:28"
+          alterado="ALTERADO por JOÃO DA SILVA em 02/05/2019 às 20:28"
+        />
       </Card>
     </>
   );
-}
+};
+
+export default AtribuicaoSupervisorCadastro;
