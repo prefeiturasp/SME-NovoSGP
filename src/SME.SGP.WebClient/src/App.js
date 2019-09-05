@@ -14,7 +14,6 @@ const notificacoes = { alertas: [] };
 
 function App() {
 
-  //const MenuStore = useSelector(store => store.menu);
   const [collapsed, setCollapsed] = useState(false);
   console.log(store.menu);
 

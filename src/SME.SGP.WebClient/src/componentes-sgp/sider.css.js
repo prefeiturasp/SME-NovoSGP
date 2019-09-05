@@ -2,30 +2,49 @@ import { Base } from '../componentes/colors';
 import styled from 'styled-components';
 
 export const MenuBody = styled.div`
-position: fixed;
-background:${Base.Roxo};
-padding: 0 !important;
+  background:${Base.Roxo};
+  padding: 0 !important;
+  position: fixed;
+
+  .footer-content{
+    display: flex;
+    justify-content: center;
+  }
+
+  .menu-fixo{
+    position: 'fixed'
+  }
 `;
 
 export const DivFooter = styled.div`
+
+bottom: 0;
+position: fixed;
 display: flex;
 justify-content: center;
-flex-direction: row;
+flex-direction: column;
 align-items: center;
-color: ${Base.Branco};
-background: ${Base.Roxo};
-text-align: center;
-vertical-align: bottom;
-position: absolute;
-bottom: 0;
-margin-bottom: 40px;
 
 .ant-layout-footer{
+  align-items: center;
   color: ${Base.Branco};
   background: ${Base.Roxo};
+  text-align: center;
+  padding: 0;
+  bottom: 0;
+  margin-bottom:2px;
 }
 .descricao{
+  width: 110px;
   font-size:9px;
+  word-wrap: break-word;
+}
+
+@media (max-width: 790px){
+  .descricao{
+    width: 93px;
+    font-size:8px;
+  }
 }
 .logo-secretaria{
   width: 100%;
@@ -68,6 +87,12 @@ export const Topo = styled.div`
     margin-bottom: 50px;
   }
 
+  @media (max-height: 650px) {
+    .perfil-retraido{
+      margin-bottom: 0;
+    }
+  }
+
   .circulo-perfil img {
     border: 2px solid ${Base.Branco};
     border-radius: 50%;
@@ -98,6 +123,10 @@ export const Topo = styled.div`
 
 export const MenuScope = styled.div`
 /*----MENU EXPANDIDO----*/
+  position: absolute;
+  z-index: 1001;
+  width: 100%;
+
   .menu-scope{
     display: flex;
     flex-direction: row;
@@ -225,9 +254,9 @@ export const MenuScope = styled.div`
     border-radius: 0 !important;
     .ant-menu-submenu-title{
       border-radius: 0 !important;
-      height: 70px !important;
+      height: 60px !important;
       .item-menu-retraido{
-        margin-top: 10px;
+        margin-top: 5px;
         display: flex;
         justify-content: center;
         flex-direction: column;
@@ -237,13 +266,6 @@ export const MenuScope = styled.div`
       }
     }
   }
-
-  @media (min-height: 900px) {
-    .icons-retraido{
-      font-size: 34px !important;
-    }
-  }
-
 
   .icons-retraido{
     margin-top: 0px !important;
