@@ -22,6 +22,7 @@ export default function PlanoAnual() {
   const turmaId = 1982186;
 
   const bimestres = useSelector(store => store.bimestres.bimestres);
+
   const dispatch = useDispatch();
 
   useEffect(() => {
@@ -31,16 +32,16 @@ export default function PlanoAnual() {
         .then((res) => {
           ObtenhaBimestres(_.cloneDeep(res));
         });
-
   }, [])
 
   useEffect(() => {
 
-    Service.postPlanoAnual(bimestres);
+    const paraEnviar = bimestres.map(x => x.paraEnviar).filter(x => x);
 
-    console.log(bimestres);
+    if (paraEnviar && paraEnviar.length > 0)
+      Service.postPlanoAnual(bimestres);
 
-  }, [bimestres]);
+  }, [bimestres])
 
   const ehEja = false;
 
@@ -71,7 +72,8 @@ export default function PlanoAnual() {
         indice: i,
         nome: Nome,
         materias: _.cloneDeep(materias),
-        objetivo: objetivo
+        objetivo: objetivo,
+        paraEnviar: false
       };
 
       dispatch(Salvar(i, bimestre));

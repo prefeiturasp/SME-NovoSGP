@@ -90,7 +90,13 @@ export function ObterObjetivosCall(bimestre) {
             return;
         }
 
-        const materiasSelecionadas = bimestre.materias.filter(materia => materia.selected).map(x => x.codigo);
+        const materiasSelecionadas = bimestre.materias.filter(materia => {
+            console.log(materia.selected);
+
+            return materia.selected;
+        }).map(x => x.codigo);
+
+        console.log(materiasSelecionadas);
 
         if (!materiasSelecionadas || materiasSelecionadas.length === 0) {
             dispatch(SalvarObjetivos(bimestre.indice, []));
@@ -107,9 +113,9 @@ export function ObterObjetivosCall(bimestre) {
                     return;
                 }
 
-                dispatch(SalvarObjetivos(bimestre.indice, res));
+                const Aux = [...res];
 
-                const concatenados = bimestre.objetivosAprendizagem.concat(res.filter(item => {
+                const concatenados = Aux.concat(res.filter(item => {
 
                     const index = bimestre.objetivosAprendizagem.findIndex(x => x.codigo === item.codigo);
 

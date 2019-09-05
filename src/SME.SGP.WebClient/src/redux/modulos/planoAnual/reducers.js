@@ -18,7 +18,8 @@ export default function bimestres(state = INICIAL, action) {
                 const paraEnvio = state.bimestres.filter(x => x.ehExpandido);
 
                 paraEnvio.forEach(elem => {
-                    draft.bimestres[elem.indice].preEnvio = true;
+                    draft.bimestres[elem.indice].objetivo = state.bimestres[elem.indice].setarObjetivo();
+                    draft.bimestres[elem.indice].paraEnviar = true;
                 })
 
                 break;
