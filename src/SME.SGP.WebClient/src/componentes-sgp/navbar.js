@@ -2,7 +2,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import Filtro from './filtro';
 import styled from 'styled-components';
-import LogoSGP from '../recursos/LogoSGP.svg';
+import LogoSGP from '../recursos/LogoSgp.svg';
 import { Base } from '../componentes/colors';
 
 const Navbar = () => {
@@ -48,7 +48,7 @@ const Navbar = () => {
         }`}
         to="/"
       >
-        <Logo src={LogoSGP} alt="SGP" className="mx-auto d-block" />
+        {/* <Logo src={LogoSGP} alt="SGP" className="mx-auto d-block" /> */}
       </Link>
       <div
         className={`${
