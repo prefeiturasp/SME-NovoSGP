@@ -2,7 +2,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import Filtro from './filtro';
 import styled from 'styled-components';
-import LogoSGP from '../recursos/LogoSGP.svg';
+import LogoSGP from '../recursos/LogoSgp.svg';
 import { Base } from '../componentes/colors';
 
 const Navbar = () => {
