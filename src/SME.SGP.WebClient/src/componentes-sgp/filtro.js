@@ -52,6 +52,7 @@ const Filtro = () => {
   const [turmaUeSelecionada, setTurmaUeSelecionada] = useState();
 
   const Container = styled.div`
+    margin-left: -4px;
     max-width: 571px !important;
   `;
 
@@ -117,129 +118,16 @@ const Filtro = () => {
 
   const usuario = useSelector(state => state.usuario);
 
+  const buscaDadosPoRf = async rf => {
+    await api.get(`v1/professores/${rf}/turmas`).then(res => {
+      setDados(res.data);
+    });
+  };
+
   useEffect(() => {
     if (usuario.rf.length > 0) {
-      const dados = api.get(`v1/professores/${usuario.rf[0]}/turmas`);
-      setDados(dados);
-    } else {
-      setDados([
-        {
-          ano: 8,
-          anoLetivo: 2019,
-          codDre: '108600',
-          codEscola: '095346',
-          codModalidade: 5,
-          codTipoEscola: '1',
-          codTipoUE: 3,
-          codTurma: 2008187,
-          dre: 'DIRETORIA REGIONAL DE EDUCACAO IPIRANGA',
-          dreAbrev: 'DRE - IP',
-          modalidade: 'Fundamental',
-          nomeTurma: '8A',
-          tipoEscola: 'EMEF ',
-          tipoSemestre: 1,
-          tipoUE: 'UNIDADE ADMINISTRATIVA',
-          ue: 'QUEIROZ FILHO, PROF.',
-          ueAbrev: 'QUEIROZ FILHO, PROF.',
-        },
-        {
-          ano: 3,
-          anoLetivo: 2019,
-          codDre: '108600',
-          codEscola: '095346',
-          codModalidade: 3,
-          codTipoEscola: '1',
-          codTipoUE: 3,
-          codTurma: 2103083,
-          dre: 'DIRETORIA REGIONAL DE EDUCACAO IPIRANGA',
-          dreAbrev: 'DRE - IP',
-          modalidade: 'EJA',
-          nomeTurma: '3D',
-          tipoEscola: 'EMEF ',
-          tipoSemestre: 2,
-          tipoUE: 'UNIDADE ADMINISTRATIVA',
-          ue: 'QUEIROZ FILHO, PROF.',
-          ueAbrev: 'QUEIROZ FILHO, PROF.',
-        },
-        {
-          ano: 4,
-          anoLetivo: 2019,
-          codDre: '108600',
-          codEscola: '095346',
-          codModalidade: 3,
-          codTipoEscola: '1',
-          codTipoUE: 3,
-          codTurma: 2103084,
-          dre: 'DIRETORIA REGIONAL DE EDUCACAO IPIRANGA',
-          dreAbrev: 'DRE - IP',
-          modalidade: 'EJA',
-          nomeTurma: '4C',
-          tipoEscola: 'EMEF ',
-          tipoSemestre: 2,
-          tipoUE: 'UNIDADE ADMINISTRATIVA',
-          ue: 'QUEIROZ FILHO, PROF.',
-          ueAbrev: 'QUEIROZ FILHO, PROF.',
-        },
-        {
-          ano: 4,
-          anoLetivo: 2019,
-          codDre: '108600',
-          codEscola: '095346',
-          codModalidade: 3,
-          codTipoEscola: '1',
-          codTipoUE: 3,
-          codTurma: 2103086,
-          dre: 'DIRETORIA REGIONAL DE EDUCACAO IPIRANGA',
-          dreAbrev: 'DRE - IP',
-          modalidade: 'EJA',
-          nomeTurma: '4D',
-          tipoEscola: 'EMEF ',
-          tipoSemestre: 2,
-          tipoUE: 'UNIDADE ADMINISTRATIVA',
-          ue: 'QUEIROZ FILHO, PROF.',
-          ueAbrev: 'QUEIROZ FILHO, PROF.',
-        },
-        {
-          ano: 4,
-          anoLetivo: 2019,
-          codDre: '108600',
-          codEscola: '095346',
-          codModalidade: 3,
-          codTipoEscola: '1',
-          codTipoUE: 3,
-          codTurma: 2103089,
-          dre: 'DIRETORIA REGIONAL DE EDUCACAO IPIRANGA',
-          dreAbrev: 'DRE - IP',
-          modalidade: 'EJA',
-          nomeTurma: '4E',
-          tipoEscola: 'EMEF ',
-          tipoSemestre: 2,
-          tipoUE: 'UNIDADE ADMINISTRATIVA',
-          ue: 'QUEIROZ FILHO, PROF.',
-          ueAbrev: 'QUEIROZ FILHO, PROF.',
-        },
-        {
-          ano: 4,
-          anoLetivo: 2019,
-          codDre: '108600',
-          codEscola: '095346',
-          codModalidade: 3,
-          codTipoEscola: '1',
-          codTipoUE: 3,
-          codTurma: 2103094,
-          dre: 'DIRETORIA REGIONAL DE EDUCACAO IPIRANGA',
-          dreAbrev: 'DRE - IP',
-          modalidade: 'EJA',
-          nomeTurma: '4F',
-          tipoEscola: 'EMEF ',
-          tipoSemestre: 2,
-          tipoUE: 'UNIDADE ADMINISTRATIVA',
-          ue: 'QUEIROZ FILHO, PROF.',
-          ueAbrev: 'QUEIROZ FILHO, PROF.',
-        },
-      ]);
+      buscaDadosPoRf(usuario.rf[0]);
     }
-
     if (usuario.turmaSelecionada.length > 0) {
       const {
         modalidade,
@@ -248,7 +136,7 @@ const Filtro = () => {
         ue,
       } = usuario.turmaSelecionada[0];
       setTurmaUeSelecionada(
-        `${modalidade} - ${nomeTurma} - ${tipoEscola} - ${ue}`
+        `${modalidade.trim()} - ${nomeTurma.trim()} - ${tipoEscola.trim()} - ${ue.trim()}`
       );
     }
   }, [usuario.turmaSelecionada, usuario.rf]);
@@ -336,6 +224,7 @@ const Filtro = () => {
     };
 
     store.dispatch(turmasUsuario(turmas.sort(ordenaTurmas)));
+    selecionaTurmaCasosEspecificos();
   }, [dados]);
 
   useEffect(() => {
@@ -345,6 +234,17 @@ const Filtro = () => {
   useEffect(() => {
     if (!toggleBusca && toggleInputFocus) inputBuscaRef.current.focus();
   }, [toggleBusca, toggleInputFocus]);
+
+  const selecionaTurmaCasosEspecificos = () => {
+    if (dados.length === 1) {
+      setmodalidadeFiltroSelecionada(dados[0].codModalidade.toString());
+      setDreFiltroSelecionada(dados[0].codDre.toString());
+      setUnidadeEscolarFiltroSelecionada(dados[0].codEscola.toString());
+      setTurmaFiltroSelecionada(dados[0].codTurma.toString());
+    } else if (dresFiltro.length === 1) {
+      setDreFiltroSelecionada(dresFiltro[0].codigo.toString());
+    }
+  };
 
   const onChangeAutocomplete = () => {
     const texto = inputBuscaRef.current.value;
@@ -452,7 +352,7 @@ const Filtro = () => {
   };
 
   return (
-    <Container className="position-relative w-100 mx-auto">
+    <Container className="position-relative w-100 float-left">
       <form className="w-100">
         <div className="form-group mb-0 w-100 position-relative">
           <Search className="fa fa-search fa-lg bg-transparent position-absolute text-center" />
@@ -466,7 +366,7 @@ const Filtro = () => {
             readOnly={turmaUeSelecionada ? true : false}
             value={turmaUeSelecionada ? turmaUeSelecionada : queryAutocomplete}
           />
-          {turmaUeSelecionada && (
+          {dados.length > 1 && turmaUeSelecionada && (
             <Times
               className="fa fa-times position-absolute"
               onClick={removerTurmaSelecionada}
