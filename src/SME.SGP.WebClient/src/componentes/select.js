@@ -33,6 +33,7 @@ const SelectComponent = props => {
     className,
     onChange,
     label,
+    valueText,
     valueOption,
     valueSelect,
     lista,
@@ -43,6 +44,7 @@ const SelectComponent = props => {
 
   return (
     <Container>
+      <label>{label}</label>
       <Select
         suffixIcon={<Icon type="caret-down" />}
         className={className}
@@ -56,7 +58,7 @@ const SelectComponent = props => {
           lista.map(item => {
             return (
               <Option key={shortid.generate()} value={`${item[valueOption]}`}>
-                {`${item[label]}`}
+                {`${item[valueText]}`}
               </Option>
             );
           })}
@@ -71,6 +73,7 @@ SelectComponent.propTypes = {
   className: PropTypes.string,
   onChange: PropTypes.func,
   label: PropTypes.string.isRequired,
+  valueText: PropTypes.string.isRequired,
   valueOption: PropTypes.string.isRequired,
   valueSelect: PropTypes.string,
   lista: PropTypes.array,

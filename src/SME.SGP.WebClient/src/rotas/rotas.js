@@ -4,7 +4,7 @@ import { Switch, Route } from 'react-router-dom';
 import Principal from '../paginas/Principal/principal';
 import PlanoCiclo from '../paginas/Planejamento/PlanoCiclo/planoCiclo';
 import PlanoAnual from '../paginas/Planejamento/PlanoAnual/planoAnual';
-import AtribuicaoSupervisor from '../paginas/Gestao/AtribuicaoSupervisor/atribuicaoSupervisor';
+import AtribuicaoSupervisor from '../paginas/Gestao/AtribuicaoSupervisor/atribuicaoSupervisorCadastro';
 
 export default function Rotas() {
   return (
