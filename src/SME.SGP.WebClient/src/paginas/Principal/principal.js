@@ -15,11 +15,6 @@ import { salvarRf } from '../../redux/modulos/usuario/actions';
 import { store } from '../../redux';
 
 const Principal = props => {
-  if (props.match.params.rf) {
-    const { rf } = props.match.params;
-    store.dispatch(salvarRf(rf));
-  }
-
   const FREQUENCIA_TYPE = 'frequencia';
   const CICLOS_TYPE = 'ciclos';
   const ANUAL_TYPE = 'anual';
@@ -30,6 +25,10 @@ const Principal = props => {
   const FiltroStore = useSelector(store => store.usuario);
 
   useEffect(() => {
+    if (props.match.params.rf) {
+      const { rf } = props.match.params;
+      store.dispatch(salvarRf(rf));
+    }
     validarFiltro();
   }, []);
 
