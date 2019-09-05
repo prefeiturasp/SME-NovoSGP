@@ -120,7 +120,7 @@ const Filtro = () => {
 
   const buscaDadosPoRf = async rf => {
     await api.get(`v1/professores/${rf}/turmas`).then(res => {
-      setDados(res.data);
+      if (res.data.length > 0) setDados(res.data);
     });
   };
 
