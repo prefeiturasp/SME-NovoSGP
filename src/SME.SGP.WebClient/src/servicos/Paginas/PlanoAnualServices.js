@@ -29,7 +29,22 @@ const Service = {
   },
 
   postPlanoAnual: async Bimestres => {
-    console.log(Service._getObjetoPostPlanoAnual(Bimestres));
+    const ObjetoEnviar = Service._getObjetoPostPlanoAnual(Bimestres);
+
+    const Erros = Service._validarDTO(ObjetoEnviar);
+
+    if (Erros && Erros.length > 0) throw { error: Erros };
+
+    const requisicao = API.post(
+      Service._getBaseUrlSalvarPlanoAnual(),
+      ObjetoEnviar
+    );
+
+    return requisicao
+      .then(res => res)
+      .catch(res => {
+        throw { error: res.response.data.mensagens };
+      });
   },
 
   _getBaseUrlMateriasProfessor: (RF, CodigoTurma) => {
@@ -41,13 +56,19 @@ const Service = {
   },
 
   _getBaseUrlSalvarPlanoAnual: () => {
-    return `api/v1/planos/anual`;
+    return `v1/planos/anual`;
   },
 
   _getObjetoPostPlanoAnual: Bimestres => {
     const BimestresFiltrados = Bimestres.filter(x => x.ehExpandido);
 
-    const ArrayEnviar = [];
+    const ObjetoEnviar = {
+      AnoLetivo: 0,
+      EscolaId: 0,
+      TurmaId: 0,
+      Id: 0,
+      Bimestres: [],
+    };
 
     BimestresFiltrados.forEach(bimestre => {
       const temObjetivos =
@@ -66,19 +87,70 @@ const Service = {
         : [];
 
       const BimestreDTO = {
-        AnoLetivo: bimestre.anoLetivo,
         Bimestre: bimestre.indice,
         Descricao: bimestre.objetivo,
-        EscolaId: bimestre.escolaId,
-        TurmaId: bimestre.turmaId,
         ObjetivosAprendizagem: objetivosAprendizagem,
       };
 
-      ArrayEnviar.push(BimestreDTO);
+      ObjetoEnviar.AnoLetivo = bimestre.anoLetivo;
+      ObjetoEnviar.EscolaId = bimestre.escolaId;
+      ObjetoEnviar.TurmaId = bimestre.turmaId;
+      ObjetoEnviar.Id = bimestre.Id;
+
+      ObjetoEnviar.Bimestres.push(BimestreDTO);
     });
 
-    return ArrayEnviar;
+    return ObjetoEnviar;
   },
+
+  _validarDTO: DTO => {
+    let Erros = [];
+
+    if (
+      !DTO.AnoLetivo ||
+      DTO.AnoLetivo === '' ||
+      typeof DTO.AnoLetivo === 'undefined'
+    )
+      Erros.push('Ano letivo não informado');
+
+    if (
+      !DTO.EscolaId ||
+      DTO.EscolaId === '' ||
+      typeof DTO.EscolaId === 'undefined'
+    )
+      Erros.push('Unidade escolar não informada');
+
+    if (
+      !DTO.TurmaId ||
+      DTO.TurmaId === '' ||
+      typeof DTO.TurmaId === 'undefined'
+    )
+      Erros.push('Turma não informada');
+
+    Erros = Service._validarBimestresDTO(DTO.Bimestres, Erros);
+
+    return Erros;
+  },
+
+  _validarBimestresDTO: (Bimestres, Erros) => {
+    Bimestres.forEach((bimestre, index) => {
+      if (
+        !bimestre.Descricao ||
+        bimestre.Descricao === '' ||
+        typeof bimestre.Descricao === 'undefined'
+      )
+        Erros.push(`${index + 1}º Bimestre: Descrição não informada`);
+
+      if (
+        !bimestre.ObjetivosAprendizagem ||
+        bimestre.ObjetivosAprendizagem.length === 0
+      )
+        Erros.push(`${index + 1}º Bimestre: Nenhum objetivo selecionado`);
+    });
+
+    return Erros;
+  },
+
   urlObterPlanoAnual: () => {
     return `v1/planos/anual/obter`;
   },
