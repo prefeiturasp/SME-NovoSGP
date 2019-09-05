@@ -1,6 +1,5 @@
 ﻿using Newtonsoft.Json;
 using SME.SGP.Dto;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
@@ -46,11 +45,9 @@ namespace SME.SGP.Integracao.Teste
 
                 Assert.True(notificacoesDto.Count() == 1);
 
-
                 var getResult2 = _fixture._clientApi.GetAsync($"api/v1/notificacoes?Tipo={(int)Dominio.NotificacaoTipo.Notas}").Result;
                 var notificacoesDto2 = JsonConvert.DeserializeObject<IEnumerable<PlanoCicloCompletoDto>>(getResult2.Content.ReadAsStringAsync().Result);
-                Assert.True(notificacoesDto.Count() == 0);
-
+                Assert.True(notificacoesDto2.Count() == 0);
             }
         }
 
