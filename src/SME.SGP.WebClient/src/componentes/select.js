@@ -5,6 +5,7 @@ import Select from 'antd/es/select';
 import Icon from 'antd/es/icon';
 import shortid from 'shortid';
 import { Base } from './colors';
+import Label from './label';
 
 const Container = styled.div`
   .ant-select-arrow {
@@ -44,7 +45,7 @@ const SelectComponent = props => {
 
   return (
     <Container>
-      <label>{label}</label>
+      <Label text={label} control={name} />
       <Select
         suffixIcon={<Icon type="caret-down" />}
         className={className}
