@@ -8,7 +8,7 @@ import PlanoAnual from '../paginas/Planejamento/PlanoAnual/planoAnual';
 export default function Rotas() {
   return (
     <Switch>
-      <Route path="/" exact component={Principal} />
+      <Route path="/:rf?" exact component={Principal} />
       <Route
         path="/planejamento/plano-ciclo/:ano/:escolaId"
         exact
