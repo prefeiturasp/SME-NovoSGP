@@ -7,7 +7,7 @@ import CardBody from './cardBody';
 import { Base } from './colors';
 
 const CardCollapse = props => {
-  const { titulo, indice, children, show } = props;
+  const { titulo, indice, children, show, onClick } = props;
 
   const Card = styled.div`
     border-color: ${Base.CinzaDesabilitado} !important;
@@ -19,7 +19,7 @@ const CardCollapse = props => {
 
   return (
     <Card className="card shadow-sm mb-3">
-      <CardHeader indice={indice} border icon show={show}>
+      <CardHeader indice={indice} border icon show={show} onclick={onClick}>
         {titulo}
       </CardHeader>
       <div className={`collapse fade ${show && 'show'}`} id={`${indice}`}>

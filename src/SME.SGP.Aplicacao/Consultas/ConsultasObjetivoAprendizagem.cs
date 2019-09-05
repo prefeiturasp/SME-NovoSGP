@@ -39,7 +39,7 @@ namespace SME.SGP.Aplicacao
                 throw new NegocioException("Não foi possível recuperar a lista de componentes curriculares.");
             }
 
-            var componentesFiltro = componentesCurriculares.Where(c => filtroObjetivosAprendizagemDto.ComponentesCurricularesIds.Contains(c.CodigoJurema));
+            var componentesFiltro = componentesCurriculares.Where(c => filtroObjetivosAprendizagemDto.ComponentesCurricularesIds.Contains(c.CodigoEOL));
             var componentesJurema = componentesFiltro.Select(c => c.CodigoJurema);
 
             return objetivos?
