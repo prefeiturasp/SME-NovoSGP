@@ -14,20 +14,22 @@ namespace SME.SGP.Dados.Repositorios
         }
 
         public IEnumerable<Notificacao> ObterPorDreOuEscolaOuStatusOuTurmoOuUsuarioOuTipo(string dreId, string escolaId, int statusId,
-            string turmaId, string usuarioId, int tipoId)
+            string turmaId, string usuarioId, int tipoId, int categoriaId)
         {
             var query = new StringBuilder();
+
+            
 
             query.AppendLine("select * from notificacao n");
             query.AppendLine("where 1=1");
 
-            if (string.IsNullOrEmpty(dreId))
+            if (!string.IsNullOrEmpty(dreId))
                 query.AppendLine("and n.dre_id = @dreId");
 
-            if (string.IsNullOrEmpty(escolaId))
+            if (!string.IsNullOrEmpty(escolaId))
                 query.AppendLine("and n.escola_id = @escolaId");
 
-            if (string.IsNullOrEmpty(turmaId))
+            if (!string.IsNullOrEmpty(turmaId))
                 query.AppendLine("and n.turma_id = @turmaId");
 
             if (statusId > 0)
@@ -36,10 +38,13 @@ namespace SME.SGP.Dados.Repositorios
             if (tipoId > 0)
                 query.AppendLine("and n.tipo = @tipoId");
 
-            if (string.IsNullOrEmpty(usuarioId))
+            if (!string.IsNullOrEmpty(usuarioId))
                 query.AppendLine("and n.usuario_id = @usuarioId");
 
-            return database.Conexao.Query<Notificacao>(query.ToString(), new { dreId, escolaId, turmaId, statusId, tipoId, usuarioId });
+            if (categoriaId > 0)
+                query.AppendLine("and n.categoria = @categoriaId");
+
+            return database.Conexao.Query<Notificacao>(query.ToString(), new { dreId, escolaId, turmaId, statusId, tipoId, usuarioId, categoriaId });
         }
     }
 }

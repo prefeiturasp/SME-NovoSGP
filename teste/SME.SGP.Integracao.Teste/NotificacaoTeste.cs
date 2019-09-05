@@ -23,7 +23,7 @@ namespace SME.SGP.Integracao.Teste
             _fixture._clientApi.DefaultRequestHeaders.Clear();
 
             var notificacaoDto = new NotificacaoDto();
-            notificacaoDto.Categoria = Dominio.NotificacaoCategoria.Leitura;
+            notificacaoDto.Categoria = Dominio.NotificacaoCategoria.Aviso;
             notificacaoDto.Mensagem = "Mensagem de teste";
             notificacaoDto.PodeRemover = true;
             notificacaoDto.Titulo = "Titulo de Teste";
