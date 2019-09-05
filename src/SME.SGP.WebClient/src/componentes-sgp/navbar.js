@@ -48,7 +48,7 @@ const Navbar = () => {
         }`}
         to="/"
       >
-        {/* <Logo src={LogoDoSgp} alt="SGP" className="mx-auto d-block" /> */}
+        <Logo src={LogoDoSgp} alt="SGP" className="mx-auto d-block" />
       </Link>
       <div
         className={`${
