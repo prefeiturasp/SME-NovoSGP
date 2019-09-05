@@ -31,7 +31,8 @@ namespace SME.SGP.Aplicacao
                 UsuarioId = notificacaoDto.UsuarioId,
                 Titulo = notificacaoDto.Titulo,
                 Ano = notificacaoDto.Ano,
-                TurmaId = notificacaoDto.TurmaId
+                TurmaId = notificacaoDto.TurmaId,
+                Tipo = notificacaoDto.Tipo
             };
         }
     }
