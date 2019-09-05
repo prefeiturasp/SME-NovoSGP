@@ -5,7 +5,7 @@ namespace SME.SGP.Dto
     public class FiltroPlanoAnualDto
     {
         [Required(ErrorMessage = "O ano deve ser informado")]
-        public int Ano { get; set; }
+        public int AnoLetivo { get; set; }
 
         [Required(ErrorMessage = "O bimestre deve ser informado")]
         public int Bimestre { get; set; }
