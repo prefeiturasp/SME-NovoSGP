@@ -7,7 +7,7 @@ import TextEditor from '../../../componentes/textEditor';
 import { Colors } from '../../../componentes/colors';
 import Seta from '../../../recursos/Seta.svg';
 import { useDispatch, useSelector } from 'react-redux';
-import { ObterObjetivosCall, SalvarEhExpandido, SelecionarMateria, SetarDescricaoFunction, SalvarObjetivos, DefinirObjetivoFocado, SelecionarObjetivo, SetarDescricao} from '../../../redux/modulos/planoAnual/action';
+import { ObterObjetivosCall, SalvarEhExpandido, SelecionarMateria, SetarDescricaoFunction, SalvarObjetivos, DefinirObjetivoFocado, SelecionarObjetivo, SetarDescricao } from '../../../redux/modulos/planoAnual/action';
 
 //Utilizado para importar a função scrollIntoViewIfNeeded para navegadores que não possuem essa funcionalidade.
 import '../../../componentes/scrollIntoViewIfNeeded';
@@ -20,6 +20,8 @@ const BimestreComponent = (props) => {
     const { indice } = props;
 
     const bimestres = useSelector(store => store.bimestres.bimestres);
+
+    const materias = bimestres[indice].materias;
 
     const textEditorRef = useRef(null);
 
@@ -35,27 +37,29 @@ const BimestreComponent = (props) => {
 
     })
 
+    useEffect(() => {
+
+        console.log(bimestres[indice].materias);
+        obterObjetivos();
+
+    }, [materias])
+
     const descricaoFunction = () => {
-
         return textEditorRef.current.state.value;
-
     }
 
     const setarDescricaoFunction = descricaoFunction => {
         dispatch(SetarDescricaoFunction(indice, descricaoFunction));
     }
 
-    const obterObjetivos = () =>{
+    const obterObjetivos = () => {
         dispatch(ObterObjetivosCall(bimestres[indice]));
     }
 
     const setarDescricao = descricao => {
         dispatch(SetarDescricao(indice, descricao));
     }
-    
-    const salvarObjetivos = (objetivos) => {        
-        dispatch(SalvarObjetivos(indice, objetivos));
-    }
+
 
     const selecionarMaterias = (index, selecionarMaterias) => {
         dispatch(SelecionarMateria(indice, index, selecionarMaterias));
@@ -72,36 +76,26 @@ const BimestreComponent = (props) => {
     }
 
     const setObjetivoFocado = objetivoId => {
-
         dispatch(DefinirObjetivoFocado(indice, objetivoId));
     }
 
     const selecionarObjetivo = (index, ariaPressed) => {
-
         dispatch(SelecionarObjetivo(indice, index, ariaPressed));
-
-    }    
-
-    const setEhExpandido = ehExpandido => {
-
-        dispatch(SalvarEhExpandido(indice, ehExpandido));
-
     }
 
-    const selecionaMateria = e => {
+    const setEhExpandido = ehExpandido => {
+        dispatch(SalvarEhExpandido(indice, ehExpandido));
+    }
+
+    const selecionaMateria = async e => {
 
         const index = e.target.getAttribute("data-index");
         const ariaPressed = e.target.getAttribute('aria-pressed') !== 'true';
 
-        console.log(e, index, ariaPressed);
-
         setEhExpandido(true);
-        
-        selecionarMaterias(index, ariaPressed);
 
-        obterObjetivos();
+        selecionarMaterias(index, ariaPressed)
     };
-
 
     const selecionaObjetivo = e => {
 
@@ -163,10 +157,10 @@ const BimestreComponent = (props) => {
                     </div>
                     <ObjetivosList ref={ListRef} className="mt-4 overflow-auto">
                         {bimestres[indice].objetivosAprendizagem && bimestres[indice].objetivosAprendizagem.length > 0
-                            ? bimestres[indice].objetivosAprendizagem.map((objetivo, indice) => {
+                            ? bimestres[indice].objetivosAprendizagem.map((objetivo, index) => {
                                 return (
                                     <ul
-                                        key={`${objetivo.id}Bimestre`}
+                                        key={`${objetivo.id}Bimestre${index}`}
                                         className="list-group list-group-horizontal mt-3"
                                     >
                                         <ListItemButton
@@ -174,7 +168,7 @@ const BimestreComponent = (props) => {
                                             role="button"
                                             id={`${indice}Bimestre${objetivo.id}`}
                                             aria-pressed={objetivo.selected ? true : false}
-                                            data-index={indice}
+                                            data-index={index}
                                             onClick={selecionaObjetivo}
                                             onKeyUp={selecionaObjetivo}
                                         >
