@@ -19,6 +19,9 @@ namespace SME.SGP.Dto
 
         public bool PodeRemover { get; set; }
 
+        [Required(ErrorMessage = "O tipo é obrigatório.")]
+        public NotificacaoTipo Tipo { get; set; }
+
         [Required(ErrorMessage = "O título é obrigatório.")]
         [MinLength(3, ErrorMessage = "O título deve conter no mínimo 3 caracteres.")]
         public string Titulo { get; set; }

@@ -4,7 +4,7 @@
     {
         public Notificacao()
         {
-            Status = NotificacaoStatus.Enviada;
+            Status = NotificacaoStatus.Pendente;
         }
 
         public int Ano { get; set; }
@@ -14,6 +14,7 @@
         public string Mensagem { get; set; }
         public bool PodeRemover { get; set; }
         public NotificacaoStatus Status { get; set; }
+        public NotificacaoTipo Tipo { get; set; }
         public string Titulo { get; set; }
         public string TurmaId { get; set; }
         public string UsuarioId { get; set; }
