@@ -2,32 +2,52 @@ import { Base } from '../componentes/colors';
 import styled from 'styled-components';
 
 export const MenuBody = styled.div`
-position: fixed;
+  background:${Base.Roxo};
+  padding: 0 !important;
+  position: fixed;
+
+  .footer-content{
+    display: flex;
+    justify-content: center;
+  }
+
+  .menu-fixo{
+    position: 'fixed'
+  }
 `;
 
 export const DivFooter = styled.div`
+
+bottom: 0;
+position: fixed;
 display: flex;
 justify-content: center;
-flex-direction: row;
+flex-direction: column;
 align-items: center;
-color: ${Base.Branco};
-background: ${Base.Roxo};
-text-align: center;
-width: 214px;
-vertical-align: bottom;
-position: absolute;
-bottom: 0;
-margin-bottom: 40px;
 
 .ant-layout-footer{
+  align-items: center;
   color: ${Base.Branco};
   background: ${Base.Roxo};
+  text-align: center;
+  padding: 0;
+  bottom: 0;
+  margin-bottom:2px;
 }
 .descricao{
+  width: 110px;
   font-size:9px;
+  word-wrap: break-word;
+}
+
+@media (max-width: 790px){
+  .descricao{
+    width: 93px;
+    font-size:8px;
+  }
 }
 .logo-secretaria{
-  width: 140px;
+  width: 100%;
   padding-bottom: 10px;
 }
 `;
@@ -67,6 +87,12 @@ export const Topo = styled.div`
     margin-bottom: 50px;
   }
 
+  @media (max-height: 650px) {
+    .perfil-retraido{
+      margin-bottom: 0;
+    }
+  }
+
   .circulo-perfil img {
     border: 2px solid ${Base.Branco};
     border-radius: 50%;
@@ -97,11 +123,20 @@ export const Topo = styled.div`
 
 export const MenuScope = styled.div`
 /*----MENU EXPANDIDO----*/
+  position: absolute;
+  z-index: 1001;
+  width: 100%;
+
   .menu-scope{
     display: flex;
     flex-direction: row;
     justify-content: center;
-    align-items: center
+    align-items: center;
+    margin: 0 10px 0 10px;
+  }
+
+  .menu-scope-retraido{
+    margin: 0 !important;
   }
 
   .icons{
@@ -113,14 +148,14 @@ export const MenuScope = styled.div`
 
   .ant-menu{
     background: ${Base.Roxo};
-    width: 220px;
+    width: 100%;
   }
 
   .ant-menu-submenu-title, .ant-menu-item{
     height: 35px !important;
   }
 
-  .ant-menu-item, .ant-menu-submenu-open {    
+  .ant-menu-item, .ant-menu-submenu-open {
     background: ${Base.Branco} !important;
   }
 
@@ -129,7 +164,7 @@ export const MenuScope = styled.div`
   }
 
   .ant-menu-submenu-title{
-    margin-top:3px !important;
+    margin-top:2px !important;
     padding-left: 15px !important;
     font-size: 14px !important;
     font-weight: bold;
@@ -191,10 +226,10 @@ export const MenuScope = styled.div`
   }
 
   .ant-menu-dark> .ant-menu-submenu-open{
-    color:  ${Base.Roxo};    
+    color:  ${Base.Roxo};
   }
 
-  .ant-menu-inline.ant-menu-sub{    
+  .ant-menu-inline.ant-menu-sub{
     background: ${Base.Branco} !important;
   }
 
@@ -207,28 +242,25 @@ export const MenuScope = styled.div`
 
   /*----MENU RETRAÍDO----*/
   .ant-menu-vertical{
-    width:100px;    
+    width:100%;
   }
 
-   
+
   .ant-menu:not(.ant-menu-inline) .ant-menu-submenu-open{
     color: ${Base.Roxo};
   }
 
   .ant-menu-vertical> .ant-menu-submenu{
-    height: 80px !important;
-    border-radius: 0 !important; 
-
+    border-radius: 0 !important;
     .ant-menu-submenu-title{
-      border-radius: 0 !important; 
-      height: 80px !important;
+      border-radius: 0 !important;
+      height: 60px !important;
       .item-menu-retraido{
-        margin-top: 10px;
+        margin-top: 5px;
         display: flex;
         justify-content: center;
         flex-direction: column;
         align-items: center;
-        margin-bottom: 50px;
         font-weight:normal;
         font-size: 12px;
       }
@@ -236,8 +268,8 @@ export const MenuScope = styled.div`
   }
 
   .icons-retraido{
-    font-size: 34px;
     margin-top: 0px !important;
+    font-size: 25px;
   }
 
   .ant-menu-submenu .ant-menu-submenu-popup .ant-menu-dark .ant-menu-submenu-placement-rightTop  .ant-menu-submenu-hidden::after{

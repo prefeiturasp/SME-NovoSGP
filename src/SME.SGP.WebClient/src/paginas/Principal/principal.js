@@ -27,7 +27,7 @@ const Principal = (props) => {
   useEffect(() => { validarFiltro(); }, [FiltroStore])
 
   const validarFiltro = () => {
-
+    console.log('mudou o filtro')
     if (!FiltroStore.turmaSelecionada) {
       setTurmaSelecionada(false);
       setEscolaSelecionada(false);
