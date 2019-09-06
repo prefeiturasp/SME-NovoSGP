@@ -1,11 +1,13 @@
 ﻿using Newtonsoft.Json;
 using SME.SGP.Dto;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Net.Http;
 using System.Text;
 using Xunit;
 using Xunit.Extensions.Ordering;
+using SME.SGP.Aplicacao;
 
 namespace SME.SGP.Integracao.Teste
 {
@@ -41,13 +43,25 @@ namespace SME.SGP.Integracao.Teste
             if (postResult.IsSuccessStatusCode)
             {
                 var getResult = _fixture._clientApi.GetAsync($"api/v1/notificacoes?UsuarioId={notificacaoDto.UsuarioId}").Result;
-                var notificacoesDto = JsonConvert.DeserializeObject<IEnumerable<PlanoCicloCompletoDto>>(getResult.Content.ReadAsStringAsync().Result);
+                var notificacoesDto = JsonConvert.DeserializeObject<IEnumerable<NotificacaoBasicaDto>>(getResult.Content.ReadAsStringAsync().Result);
 
                 Assert.True(notificacoesDto.Count() == 1);
 
                 var getResult2 = _fixture._clientApi.GetAsync($"api/v1/notificacoes?Tipo={(int)Dominio.NotificacaoTipo.Notas}").Result;
-                var notificacoesDto2 = JsonConvert.DeserializeObject<IEnumerable<PlanoCicloCompletoDto>>(getResult2.Content.ReadAsStringAsync().Result);
+                var notificacoesDto2 = JsonConvert.DeserializeObject<IEnumerable<NotificacaoBasicaDto>>(getResult2.Content.ReadAsStringAsync().Result);
                 Assert.True(notificacoesDto2.Count() == 0);
+
+
+                var getResultDetalhe = _fixture._clientApi.GetAsync($"api/v1/notificacoes/{notificacoesDto.FirstOrDefault().Id}").Result;
+
+                Assert.True(getResultDetalhe.IsSuccessStatusCode);
+
+                var notificacaoDetalheDto = JsonConvert.DeserializeObject<NotificacaoDetalheDto>(getResultDetalhe.Content.ReadAsStringAsync().Result);
+
+                Assert.Equal(notificacaoDto.Tipo.GetAttribute<DisplayAttribute>().Name, notificacaoDetalheDto.Tipo);
+                Assert.Equal(notificacaoDto.Mensagem, notificacaoDetalheDto.Mensagem);
+                Assert.Equal(notificacaoDto.Titulo, notificacaoDetalheDto.Titulo);                
+
             }
         }
 
