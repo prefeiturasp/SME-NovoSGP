@@ -11,9 +11,9 @@ namespace SME.SGP.Api.Controllers
     [ValidaDto]
     public class ProfessorController : ControllerBase
     {
-        private readonly IConsultasProfessor consultasProfessor;
+        private readonly IConsultasProfessorTurma consultasProfessor;
 
-        public ProfessorController(IConsultasProfessor consultasProfessor)
+        public ProfessorController(IConsultasProfessorTurma consultasProfessor)
         {
             this.consultasProfessor = consultasProfessor;
         }

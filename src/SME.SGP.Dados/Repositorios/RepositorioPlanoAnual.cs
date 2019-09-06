@@ -19,7 +19,7 @@ namespace SME.SGP.Dados.Repositorios
             StringBuilder query = new StringBuilder();
 
             query.AppendLine("select");
-            query.AppendLine("	pa.*,");
+            query.AppendLine("	pa.ano as AnoLetivo, pa.*,");
             query.AppendLine("	string_agg(distinct cast(oap.objetivo_aprendizagem_jurema_id as text), ',') as ObjetivosAprendizagemPlano");
             query.AppendLine("from");
             query.AppendLine("	plano_anual pa");
