@@ -12,12 +12,18 @@ import TextEditor from '../../../componentes/textEditor';
 import { erro, sucesso } from '../../../servicos/alertas';
 import api from '../../../servicos/api';
 import history from '../../../servicos/history';
-import { Badge, BtnLink, InseridoAlterado, ListaItens } from './planoCiclo.css';
+import {
+  Badge,
+  BtnLink,
+  InseridoAlterado,
+  ListaItens,
+  Planejamento,
+  Titulo,
+  TituloAno,
+} from './planoCiclo.css';
 
 // import ControleEstado from '../../../componentes/controleEstado';
-export default function PlanoCiclo(props) {
-  const { match } = props;
-
+export default function PlanoCiclo() {
   const urlPrefeitura = 'https://curriculo.sme.prefeitura.sp.gov.br';
   const urlMatrizSaberes = `${urlPrefeitura}/matriz-de-saberes`;
   const urlODS = `${urlPrefeitura}/ods`;
@@ -28,7 +34,6 @@ export default function PlanoCiclo(props) {
   const [listaCiclos, setListaCiclos] = useState([]);
   const [cicloSelecionado, setCicloSelecionado] = useState('');
   const [descricaoCiclo, setDescricaoCiclo] = useState('');
-  const [parametrosConsulta, setParametrosConsulta] = useState({ id: 0 });
   const [modoEdicao, setModoEdicao] = useState(false);
   const [pronto, setPronto] = useState(false);
   const [exibirConfirmacaoVoltar, setExibirConfirmacaoVoltar] = useState(false);
@@ -50,6 +55,11 @@ export default function PlanoCiclo(props) {
   });
   let [listaMatrizSelecionda, setListaMatrizSelecionda] = useState([]);
   let [listaODSSelecionado, setListaODSSelecionado] = useState([]);
+  const [anosTurmasUsuario, setAnosTurmasUsuario] = useState([]);
+  const [planoCicloId, setPlanoCicloId] = useState(0);
+  const [modalidadeEja, setModalidadeEja] = useState(false);
+
+  const usuario = useSelector(store => store.usuario);
 
   useEffect(() => {
     async function carregarListas() {
@@ -58,65 +68,80 @@ export default function PlanoCiclo(props) {
 
       const ods = await api.get('v1/objetivos-desenvolvimento-sustentavel');
       setListaODS(ods.data);
-      // TODO
-      // const ciclos = await api.get('v1/ciclos');
-      // setListaCiclos(ciclos.data);
-
-      const mock = [
-        {
-          descricao: 'Alfabetização',
-          id: 1,
-          selecionado: false,
-        },
-        {
-          descricao: 'Complementar',
-          id: 6,
-          selecionado: true,
-        },
-        {
-          descricao: 'Básica',
-          id: 5,
-          selecionado: false,
-        },
-        {
-          descricao: 'Final',
-          id: 7,
-          selecionado: false,
-        },
-      ];
-
-      const sugestaoCiclo = mock.find(item => item.selecionado).id;
-
-      setListaCiclos(mock);
-
-      if (sugestaoCiclo) {
-        setCicloSelecionado(String(sugestaoCiclo));
-      } else {
-        setCicloSelecionado(String(mock[0]));
-      }
-
-      if (match.params && match.params.ano && match.params.escolaId) {
-        obterCicloExistente(
-          match.params.ano,
-          match.params.escolaId,
-          String(sugestaoCiclo) || String(mock[0])
-        );
-      }
     }
 
     carregarListas();
   }, []);
 
+  useEffect(() => {
+    let anosTurmasUsuario = usuario.turmasUsuario.map(item => item.ano);
+    anosTurmasUsuario = anosTurmasUsuario.filter(
+      (elem, pos) => anosTurmasUsuario.indexOf(elem) == pos
+    );
+    setAnosTurmasUsuario(anosTurmasUsuario);
+  }, [usuario.turmasUsuario]);
+
+  useEffect(() => {
+    async function carregarCiclos() {
+      if (
+        usuario &&
+        usuario.turmaSelecionada &&
+        usuario.turmaSelecionada.length
+      ) {
+        let anoSelecionado = '';
+        let codModalidade = null;
+        if (usuario.turmaSelecionada && usuario.turmaSelecionada.length) {
+          anoSelecionado = String(usuario.turmaSelecionada[0].ano);
+          codModalidade = usuario.turmaSelecionada[0].codModalidade;
+        }
+        const params = {
+          anos: anosTurmasUsuario,
+          anoSelecionado,
+          modalidade: codModalidade,
+        };
+        const ciclos = await api.post('v1/ciclos/filtro', params);
+
+        let sugestaoCiclo = ciclos.data.find(item => item.selecionado);
+        if (sugestaoCiclo && sugestaoCiclo.id) {
+          sugestaoCiclo = sugestaoCiclo.id;
+        }
+        const listaCiclosAtual = ciclos.data.filter(item => !item.selecionado);
+
+        setListaCiclos(listaCiclosAtual);
+
+        if (sugestaoCiclo) {
+          setCicloSelecionado(String(sugestaoCiclo));
+        } else {
+          setCicloSelecionado(String(listaCiclosAtual[0]));
+        }
+
+        const anoLetivo = String(usuario.turmaSelecionada[0].anoLetivo);
+        const codEscola = String(usuario.turmaSelecionada[0].codEscola);
+
+        if (usuario.turmaSelecionada.codModalidade == 3) {
+          setModalidadeEja(true);
+        } else {
+          setModalidadeEja(false);
+        }
+        obterCicloExistente(
+          anoLetivo,
+          codEscola,
+          String(sugestaoCiclo) || String(listaCiclosAtual[0])
+        );
+      }
+    }
+
+    carregarCiclos();
+  }, [usuario.turmaSelecionada]);
+
   async function obterCicloExistente(ano, escolaId, cicloId) {
+    resetListas();
     const ciclo = await api.get(
       `v1/planos-ciclo/${ano}/${cicloId}/${escolaId}`
     );
-    setParametrosConsulta({
-      id: ciclo.data.id,
-      ano,
-      cicloId,
-      escolaId,
-    });
+
+    setPlanoCicloId(ciclo.data.id);
+
     if (ciclo && ciclo.data) {
       const alteradoEm = moment(ciclo.data.alteradoEm).format(
         'DD/MM/YYYY HH:mm:ss'
@@ -211,12 +236,9 @@ export default function PlanoCiclo(props) {
   }
 
   function trocaCiclo(value) {
-    obterCicloExistente(
-      parametrosConsulta.ano,
-      parametrosConsulta.escolaId,
-      value
-    );
-    resetListas();
+    const anoLetivo = String(usuario.turmaSelecionada[0].anoLetivo);
+    const codEscola = String(usuario.turmaSelecionada[0].codEscola);
+    obterCicloExistente(anoLetivo, codEscola, value);
     setCicloSelecionado(value);
     setModoEdicao(false);
     setInseridoAlterado({});
@@ -278,11 +300,9 @@ export default function PlanoCiclo(props) {
       ciclo = cicloParaTrocar;
       setCicloSelecionado(ciclo);
     }
-    obterCicloExistente(
-      parametrosConsulta.ano,
-      parametrosConsulta.escolaId,
-      ciclo || cicloSelecionado
-    );
+    const anoLetivo = String(usuario.turmaSelecionada[0].anoLetivo);
+    const codEscola = String(usuario.turmaSelecionada[0].codEscola);
+    obterCicloExistente(anoLetivo, codEscola, ciclo || cicloSelecionado);
   }
 
   function resetListas() {
@@ -329,12 +349,14 @@ export default function PlanoCiclo(props) {
       idsObjetivosDesenvolvimento = listaODSSelecionado.map(ods => ods.id);
     }
 
+    const anoLetivo = String(usuario.turmaSelecionada[0].anoLetivo);
+    const codEscola = String(usuario.turmaSelecionada[0].codEscola);
     const params = {
-      ano: parametrosConsulta.ano,
+      ano: anoLetivo,
       cicloId: cicloSelecionado,
       descricao: textEditorRef.current.state.value,
-      escolaId: parametrosConsulta.escolaId,
-      id: parametrosConsulta.id || 0,
+      escolaId: codEscola,
+      id: planoCicloId || 0,
       idsMatrizesSaber,
       idsObjetivosDesenvolvimento,
     };
@@ -358,225 +380,253 @@ export default function PlanoCiclo(props) {
   const notificacoes = useSelector(state => state.notificacoes);
 
   return (
-    <Card>
-      <div className="col-md-12 pb-3">
-        {registroMigrado ? <span> REGISTRO MIGRADO </span> : ''}
+    <>
+      <div className="col-md-12">
+        {notificacoes.alertas.map(alerta => (
+          <Alert alerta={alerta} key={alerta.id} />
+        ))}
+
+        {usuario &&
+        usuario.turmaSelecionada &&
+        usuario.turmaSelecionada.length ? (
+          ''
+        ) : (
+          <Alert
+            alerta={{
+              tipo: 'warning',
+              id: 'plano-ciclo-selecione-turma',
+              mensagem: 'Você precisa escolher uma turma.',
+            }}
+            className="mb-0"
+          />
+        )}
       </div>
-      <ModalConfirmacao
-        id="modal-confirmacao-cancelar"
-        visivel={exibirConfirmacaoCancelar}
-        onConfirmacaoSim={() => {
-          confirmarCancelamento();
-          setExibirConfirmacaoCancelar(false);
-        }}
-        onConfirmacaoNao={() => setExibirConfirmacaoCancelar(false)}
-        conteudo="Você não salvou as informações preenchidas."
-        perguntaDoConteudo="Deseja realmente cancelar as alterações?"
-        titulo="Atenção"
-      />
-      <ModalConfirmacao
-        id="modal-confirmacao-voltar"
-        visivel={exibirConfirmacaoVoltar}
-        onConfirmacaoSim={() => {
-          salvarPlanoCiclo(true);
-          setExibirConfirmacaoVoltar(false);
-        }}
-        onConfirmacaoNao={() => {
-          setExibirConfirmacaoVoltar(false);
-          setModoEdicao(false);
-          history.push('/');
-        }}
-        perguntaDoConteudo="Suas alterações não foram salvas, deseja salvar agora?"
-        titulo="Atenção"
-      />
-      <ModalConfirmacao
-        id="modal-confirmacao-troca-ciclo"
-        visivel={exibirConfirmacaoTrocaCiclo}
-        onConfirmacaoSim={() => {
-          salvarPlanoCiclo(false);
-          setExibirConfirmacaoTrocaCiclo(false);
-        }}
-        onConfirmacaoNao={() => {
-          setExibirConfirmacaoTrocaCiclo(false);
-          trocaCiclo(cicloParaTrocar);
-        }}
-        perguntaDoConteudo="Suas alterações não foram salvas, deseja salvar agora?"
-        titulo="Atenção"
-      />
-      {/* <ControleEstado
+      <div className="col-md-12">
+        <Planejamento>PLANEJAMENTO</Planejamento>
+        <Titulo>
+          {modalidadeEja ? 'Plano de Etapa' : 'Plano de Ciclo'}
+          <TituloAno>
+            /2019 <i className="fas fa-retweet" />
+          </TituloAno>
+        </Titulo>
+      </div>
+
+      <Card>
+        <div className="col-md-12 pb-3">
+          {registroMigrado ? <span> REGISTRO MIGRADO </span> : ''}
+        </div>
+        <ModalConfirmacao
+          id="modal-confirmacao-cancelar"
+          visivel={exibirConfirmacaoCancelar}
+          onConfirmacaoSim={() => {
+            confirmarCancelamento();
+            setExibirConfirmacaoCancelar(false);
+          }}
+          onConfirmacaoNao={() => setExibirConfirmacaoCancelar(false)}
+          conteudo="Você não salvou as informações preenchidas."
+          perguntaDoConteudo="Deseja realmente cancelar as alterações?"
+          titulo="Atenção"
+        />
+        <ModalConfirmacao
+          id="modal-confirmacao-voltar"
+          visivel={exibirConfirmacaoVoltar}
+          onConfirmacaoSim={() => {
+            salvarPlanoCiclo(true);
+            setExibirConfirmacaoVoltar(false);
+          }}
+          onConfirmacaoNao={() => {
+            setExibirConfirmacaoVoltar(false);
+            setModoEdicao(false);
+            history.push('/');
+          }}
+          perguntaDoConteudo="Suas alterações não foram salvas, deseja salvar agora?"
+          titulo="Atenção"
+        />
+        <ModalConfirmacao
+          id="modal-confirmacao-troca-ciclo"
+          visivel={exibirConfirmacaoTrocaCiclo}
+          onConfirmacaoSim={() => {
+            salvarPlanoCiclo(false);
+            setExibirConfirmacaoTrocaCiclo(false);
+          }}
+          onConfirmacaoNao={() => {
+            setExibirConfirmacaoTrocaCiclo(false);
+            trocaCiclo(cicloParaTrocar);
+          }}
+          perguntaDoConteudo="Suas alterações não foram salvas, deseja salvar agora?"
+          titulo="Atenção"
+        />
+        {/* <ControleEstado
         when={modoEdicao}
         confirmar={url => history.push(url)}
         cancelar={() => false}
         bloquearNavegacao={() => modoEdicao}
       /> */}
-      <div className="col-md-12">
-        {notificacoes.alertas.map(alerta => (
-          <Alert alerta={alerta} key={alerta.id} />
-        ))}
-      </div>
-      <div className="col-md-12">
-        <div className="row mb-3">
-          <div className="col-md-6">
-            <div className="row">
-              <div className="col-md-6">
-                <SelectComponent
-                  className="col-md-12"
-                  name="tipo-ciclo"
-                  id="tipo-ciclo"
-                  lista={listaCiclos}
-                  valueOption="id"
-                  label="descricao"
-                  onChange={validaTrocaCiclo}
-                  valueSelect={cicloSelecionado}
-                />
+        <div className="col-md-12">
+          <div className="row mb-3">
+            <div className="col-md-6">
+              <div className="row">
+                <div className="col-md-6">
+                  <SelectComponent
+                    className="col-md-12"
+                    name="tipo-ciclo"
+                    id="tipo-ciclo"
+                    lista={listaCiclos}
+                    valueOption="id"
+                    label="descricao"
+                    onChange={validaTrocaCiclo}
+                    valueSelect={cicloSelecionado}
+                  />
+                </div>
               </div>
             </div>
+            <div className="col-md-6 d-flex justify-content-end">
+              <Button
+                label="Voltar"
+                icon="arrow-left"
+                color={Colors.Azul}
+                border
+                className="mr-3"
+                onClick={onClickVoltar}
+              />
+              <Button
+                label="Cancelar"
+                color={Colors.Roxo}
+                border
+                bold
+                className="mr-3"
+                onClick={onClickCancelar}
+                hidden={!modoEdicao}
+              />
+              <Button
+                label="Salvar"
+                color={Colors.Roxo}
+                border
+                bold
+                onClick={() => salvarPlanoCiclo(false)}
+                disabled={!modoEdicao}
+              />
+            </div>
           </div>
-          <div className="col-md-6 d-flex justify-content-end">
-            <Button
-              label="Voltar"
-              icon="arrow-left"
-              color={Colors.Azul}
-              border
-              className="mr-3"
-              onClick={onClickVoltar}
-            />
-            <Button
-              label="Cancelar"
-              color={Colors.Roxo}
-              border
-              bold
-              className="mr-3"
-              onClick={onClickCancelar}
-              hidden={!modoEdicao}
-            />
-            <Button
-              label="Salvar"
-              color={Colors.Roxo}
-              border
-              bold
-              onClick={() => salvarPlanoCiclo(false)}
-              disabled={!modoEdicao}
-            />
+
+          <div className="row mb-3">
+            <div className="col-md-6">
+              Este é um espaço para construção coletiva. Considere os diversos
+              ritmos de aprendizagem para planejar e traçar o percurso de cada
+              ciclo.
+            </div>
+            <div className="col-md-6">
+              Considerando as especificações de cada{' '}
+              {modalidadeEja ? 'etapa' : 'ciclo'} desta unidade escolar e o
+              currículo da cidade, <b>selecione</b> os itens da matriz do saber
+              e dos objetivos de desenvolvimento e sustentabilidade que
+              contemplam as propostas que planejaram:
+            </div>
           </div>
-        </div>
 
-        <div className="row mb-3">
-          <div className="col-md-6">
-            Este é um espaço para construção coletiva. Considere os diversos
-            ritmos de aprendizagem para planejar e traçar o percurso de cada
-            ciclo.
-          </div>
-          <div className="col-md-6">
-            Considerando as especificações de cada etapa desta unidade escolar e
-            o currículo da cidade, <b>selecione</b> os itens da matriz do saber
-            e dos objetivos de desenvolvimento e sustentabilidade que contemplam
-            as propostas que planejaram:
-          </div>
-        </div>
+          <div className="row mb-3">
+            <div className="col-md-6">
+              <TextEditor
+                ref={textEditorRef}
+                id="textEditor"
+                height="500px"
+                maxHeight="calc(100vh)"
+                onBlur={onChangeTextEditor}
+                value={descricaoCiclo}
+              />
+              <InseridoAlterado>
+                {inseridoAlterado.criadoPor && inseridoAlterado.criadoEm ? (
+                  <p>
+                    INSERIDO por {inseridoAlterado.criadoPor} em{' '}
+                    {inseridoAlterado.criadoEm}
+                  </p>
+                ) : (
+                  ''
+                )}
 
-        <div className="row mb-3">
-          <div className="col-md-6">
-            <TextEditor
-              ref={textEditorRef}
-              id="textEditor"
-              height="500px"
-              maxHeight="calc(100vh)"
-              onBlur={onChangeTextEditor}
-              value={descricaoCiclo}
-            />
-            <InseridoAlterado>
-              {inseridoAlterado.criadoPor && inseridoAlterado.criadoEm ? (
-                <p>
-                  INSERIDO por {inseridoAlterado.criadoPor} em{' '}
-                  {inseridoAlterado.criadoEm}
-                </p>
-              ) : (
-                ''
-              )}
+                {inseridoAlterado.alteradoPor && inseridoAlterado.alteradoEm ? (
+                  <p>
+                    ALTERADO por {inseridoAlterado.alteradoPor} em{' '}
+                    {inseridoAlterado.alteradoEm}
+                  </p>
+                ) : (
+                  ''
+                )}
+              </InseridoAlterado>
+            </div>
+            <div className="col-md-6 btn-link-plano-ciclo">
+              <div className="col-md-12">
+                <div className="row mb-3">
+                  <BtnLink onClick={() => irParaLinkExterno(urlMatrizSaberes)}>
+                    Matriz de saberes
+                    <i className="fas fa-share" />
+                  </BtnLink>
+                </div>
 
-              {inseridoAlterado.alteradoPor && inseridoAlterado.alteradoEm ? (
-                <p>
-                  ALTERADO por {inseridoAlterado.alteradoPor} em{' '}
-                  {inseridoAlterado.alteradoEm}
-                </p>
-              ) : (
-                ''
-              )}
-            </InseridoAlterado>
-          </div>
-          <div className="col-md-6 btn-link-plano-ciclo">
-            <div className="col-md-12">
-              <div className="row mb-3">
-                <BtnLink onClick={() => irParaLinkExterno(urlMatrizSaberes)}>
-                  Matriz de saberes
-                  <i className="fas fa-share" />
-                </BtnLink>
-              </div>
+                <div className="row">
+                  <ListaItens
+                    className={registroMigrado ? 'desabilitar-elemento' : ''}
+                  >
+                    <ul>
+                      {listaMatriz.map(item => {
+                        return (
+                          <li key={item.id}>
+                            {
+                              <Badge
+                                id={`matriz-${item.id}`}
+                                className="btn-li-item btn-li-item-matriz"
+                                opcao-selecionada={validaMatrizSelecionada}
+                                onClick={e => addRemoverMatriz(e, item)}
+                              >
+                                {item.id}
+                              </Badge>
+                            }
+                            {item.descricao}
+                          </li>
+                        );
+                      })}
+                    </ul>
+                  </ListaItens>
+                </div>
 
-              <div className="row">
-                <ListaItens
-                  className={registroMigrado ? 'desabilitar-elemento' : ''}
-                >
-                  <ul>
-                    {listaMatriz.map(item => {
-                      return (
-                        <li key={item.id}>
-                          {
-                            <Badge
-                              id={`matriz-${item.id}`}
-                              className="btn-li-item btn-li-item-matriz"
-                              opcao-selecionada={validaMatrizSelecionada}
-                              onClick={e => addRemoverMatriz(e, item)}
-                            >
-                              {item.id}
-                            </Badge>
-                          }
-                          {item.descricao}
-                        </li>
-                      );
-                    })}
-                  </ul>
-                </ListaItens>
-              </div>
+                <hr className="row mb-3 mt-3" />
 
-              <hr className="row mb-3 mt-3" />
-
-              <div className="row mb-3">
-                <BtnLink onClick={() => irParaLinkExterno(urlODS)}>
-                  Objetivos de Desenvolvimento Sustentável
-                  <i className="fas fa-share" />
-                </BtnLink>
-              </div>
-              <div className="row">
-                <ListaItens
-                  className={registroMigrado ? 'desabilitar-elemento' : ''}
-                >
-                  <ul>
-                    {listaODS.map(item => {
-                      return (
-                        <li key={item.id}>
-                          {
-                            <Badge
-                              id={`ods-${item.id}`}
-                              className="btn-li-item btn-li-item-ods"
-                              opcao-selecionada={validaODSSelecionado}
-                              onClick={e => addRemoverODS(e, item)}
-                            >
-                              {item.id}
-                            </Badge>
-                          }
-                          {item.descricao}
-                        </li>
-                      );
-                    })}
-                  </ul>
-                </ListaItens>
+                <div className="row mb-3">
+                  <BtnLink onClick={() => irParaLinkExterno(urlODS)}>
+                    Objetivos de Desenvolvimento Sustentável
+                    <i className="fas fa-share" />
+                  </BtnLink>
+                </div>
+                <div className="row">
+                  <ListaItens
+                    className={registroMigrado ? 'desabilitar-elemento' : ''}
+                  >
+                    <ul>
+                      {listaODS.map(item => {
+                        return (
+                          <li key={item.id}>
+                            {
+                              <Badge
+                                id={`ods-${item.id}`}
+                                className="btn-li-item btn-li-item-ods"
+                                opcao-selecionada={validaODSSelecionado}
+                                onClick={e => addRemoverODS(e, item)}
+                              >
+                                {item.id}
+                              </Badge>
+                            }
+                            {item.descricao}
+                          </li>
+                        );
+                      })}
+                    </ul>
+                  </ListaItens>
+                </div>
               </div>
             </div>
           </div>
         </div>
-      </div>
-    </Card>
+      </Card>
+    </>
   );
 }
