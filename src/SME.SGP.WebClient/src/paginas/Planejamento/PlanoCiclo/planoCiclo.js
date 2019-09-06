@@ -94,11 +94,26 @@ export default function PlanoCiclo() {
           anoSelecionado = String(usuario.turmaSelecionada[0].ano);
           codModalidade = usuario.turmaSelecionada[0].codModalidade;
         }
+
         const params = {
-          anos: anosTurmasUsuario,
           anoSelecionado,
           modalidade: codModalidade,
         };
+
+        let anos = [];
+        if (usuario.turmasUsuario && usuario.turmasUsuario.length && anosTurmasUsuario.length < 1) {
+          anos = usuario.turmasUsuario.map(item => item.ano);
+          anos = anos.filter(
+            (elem, pos) => anos.indexOf(elem) == pos
+          );
+        }
+        if (anosTurmasUsuario.length < 1 && anos.length > 0) {
+          setAnosTurmasUsuario(anos);
+          params['anos'] = anos;
+        } else {
+          params['anos'] = anosTurmasUsuario;
+        }
+
         const ciclos = await api.post('v1/ciclos/filtro', params);
 
         let sugestaoCiclo = ciclos.data.find(item => item.selecionado);
@@ -536,7 +551,7 @@ export default function PlanoCiclo() {
               />
               <InseridoAlterado>
                 {inseridoAlterado.criadoPor && inseridoAlterado.criadoEm ? (
-                  <p>
+                  <p className="pt-2">
                     INSERIDO por {inseridoAlterado.criadoPor} em{' '}
                     {inseridoAlterado.criadoEm}
                   </p>
