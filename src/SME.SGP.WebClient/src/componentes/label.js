@@ -19,7 +19,7 @@ const Container = styled.div`
 const Label = ({ text, control }) => {
   return (
     <Container>
-      <label for={control} id={text}>
+      <label htmlFor={control} id={text}>
         {text}
       </label>
     </Container>

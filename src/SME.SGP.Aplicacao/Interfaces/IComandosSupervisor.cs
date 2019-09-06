@@ -4,6 +4,6 @@ namespace SME.SGP.Aplicacao
 {
     public interface IComandosSupervisor
     {
-        void AtribuirEscola(AtribuicaoSupervisorEscolaDto atribuicaoSupervisorEscolaDto);
+        void AtribuirUE(AtribuicaoSupervisorUEDto atribuicaoSupervisorEscolaDto);
     }
 }

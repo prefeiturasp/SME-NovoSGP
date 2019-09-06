@@ -1,5 +1,4 @@
 ﻿using SME.SGP.Aplicacao.Integracoes;
-using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Dto;
 using System.Collections.Generic;
@@ -38,8 +37,7 @@ namespace SME.SGP.Aplicacao
 
             if (string.IsNullOrEmpty(supervisorNome))
             {
-                return from a in supervisoresEol
-                       select new SupervisorDto() { SupervisorId = a.CodigoRF, SupervisorNome = a.NomeServidor };
+                return supervisoresEol?.Select(a => new SupervisorDto() { SupervisorId = a.CodigoRF, SupervisorNome = a.NomeServidor });
             }
             else
             {
@@ -83,9 +81,6 @@ namespace SME.SGP.Aplicacao
         {
             var listaEscolas = servicoEOL.ObterEscolasPorCodigo(supervisoresEscolasDres.Select(a => a.EscolaId.ToString()).ToArray());
             var listaSupervisores = servicoEOL.ObterSupervisoresPorCodigo(supervisoresEscolasDres.Select(a => a.SupervisorId.ToString()).ToArray());
-
-            if (!listaSupervisores.Any())
-                throw new NegocioException("Não foi possível localizar supervisores.");
 
             var supervisoresIds = supervisoresEscolasDres
                 .GroupBy(a => a.SupervisorId)

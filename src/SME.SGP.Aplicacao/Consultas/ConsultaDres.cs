@@ -19,7 +19,8 @@ namespace SME.SGP.Aplicacao
 
         public IEnumerable<UnidadeEscolarDto> ObterEscolasSemAtribuicao(string dreId)
         {
-            var escolasPorDre = servicoEOL.ObterEscolasPorDre(dreId);
+            //TODO, Nogueira, estou limitando em 100 registros até a api que retorna a lista correta de dres atribuidas ao supervisor ser criada
+            var escolasPorDre = servicoEOL.ObterEscolasPorDre(dreId)?.Take(10);
 
             var supervisoresEscolasDres = repositorioSupervisorEscolaDre.ObtemSupervisoresEscola(dreId, string.Empty);
 
@@ -49,16 +50,19 @@ namespace SME.SGP.Aplicacao
         private IEnumerable<UnidadeEscolarDto> TrataEscolasSemSupervisores(IEnumerable<EscolasRetornoDto> escolasPorDre,
                     IEnumerable<SupervisorEscolasDreDto> supervisoresEscolas)
         {
-            var escolasComSupervisor = supervisoresEscolas
+            var escolasComSupervisor = supervisoresEscolas?
                 .Select(a => a.EscolaId)
                 .ToList();
 
-            var escolasSemSupervisor = escolasPorDre
-                .Where(a => !escolasComSupervisor.Contains(a.CodigoEscola))
-                .ToList();
+            List<EscolasRetornoDto> escolasSemSupervisor = null;
+            if (escolasComSupervisor != null)
+            {
+                escolasSemSupervisor = escolasPorDre?
+                    .Where(a => !escolasComSupervisor.Contains(a.CodigoEscola))
+                    .ToList();
+            }
 
-            return from t in escolasSemSupervisor
-                   select new UnidadeEscolarDto() { Codigo = t.CodigoEscola, Nome = t.NomeEscola };
+            return escolasSemSupervisor?.Select(t => new UnidadeEscolarDto() { Codigo = t.CodigoEscola, Nome = t.NomeEscola });
         }
     }
 }
