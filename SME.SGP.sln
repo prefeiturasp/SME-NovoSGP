@@ -28,6 +28,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "scripts", "scripts", "{CF91
 		scripts\V1__AUDITORIA_CREATE.sql = scripts\V1__AUDITORIA_CREATE.sql
 		scripts\V2__PLANO_CICLO_CREATE.sql = scripts\V2__PLANO_CICLO_CREATE.sql
 		scripts\V3__TIPO_CICLO.sql = scripts\V3__TIPO_CICLO.sql
+		scripts\V4__PLANO_ANUAL.sql = scripts\V4__PLANO_ANUAL.sql
 	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SME.SGP.Aplicacao.Teste", "teste\SME.SGP.Aplicacao.Teste\SME.SGP.Aplicacao.Teste.csproj", "{028D1115-E688-4E18-938D-DAB534C5BFBF}"
