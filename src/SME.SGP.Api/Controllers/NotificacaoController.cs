@@ -28,6 +28,15 @@ namespace SME.SGP.Api.Controllers
             return Ok(consultasNotificacao.Listar(notificacaoFiltroDto));
         }
 
+        [HttpGet]
+        [ProducesResponseType(200)]
+        [ProducesResponseType(typeof(NotificacaoDetalheDto), 500)]
+        [Route("{notificacaoId}")]
+        public IActionResult Get(long notificacaoId)
+        {
+            return Ok(consultasNotificacao.Obter(notificacaoId));
+        }
+
         [HttpPost]
         [ProducesResponseType(200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
