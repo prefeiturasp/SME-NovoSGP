@@ -1,9 +1,10 @@
 import shortid from 'shortid';
+import React from 'react';
 import { Modal } from 'antd';
 import { store } from '../redux';
 import { exibir, removerAlerta } from '../redux/modulos/alertas/actions';
 
-const { confirm } = Modal;
+const { confirm, error } = Modal;
 
 const exibirAlerta = (tipo, mensagem, fixo = false) => {
   const id = shortid.generate();
@@ -41,4 +42,12 @@ const confirmacao = (titulo, texto, confirmar, cancelar) => {
   });
 };
 
-export { exibirAlerta, sucesso, erro, confirmacao };
+const erroMensagem = (titulo, texto) => {
+  error({
+    title: titulo,
+    content: <div>{texto ? texto.map(t => <p>{t}</p>) : null}</div>,
+    type: 'error',
+  });
+};
+
+export { exibirAlerta, sucesso, erro, confirmacao, erroMensagem };

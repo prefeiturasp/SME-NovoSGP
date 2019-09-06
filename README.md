@@ -13,10 +13,10 @@ Para executar toda a solução em um ambiente local deverá:
 **2- Configurar variáveis de ambiente**
 
 Acessar o readme do projeto de [Front](https://github.com/prefeiturasp/SME-NovoSGP/tree/master/src/SME.SGP.WebClient "Front") e seguir a configuração de variáveis de ambiente
+Acessar o readme do projeto de [Back](https://github.com/prefeiturasp/SME-NovoSGP/tree/master/src/SME.SGP.Api "Back") e seguir a configuração de variáveis de ambiente
 
 **3- Docker Compose**
 
 Executar o comando na **raiz da solução**
 
 `docker-compose up --build`
-

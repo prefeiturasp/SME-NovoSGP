@@ -6,7 +6,7 @@ using SME.SGP.Dto;
 namespace SME.SGP.Api.Controllers
 {
     [ApiController]
-    [Route("api/v1/planos-ciclo")]
+    [Route("api/v1/planos/ciclo")]
     [ValidaDto]
     public class PlanoCicloController : ControllerBase
     {
