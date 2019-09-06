@@ -17,6 +17,7 @@ import { confirmacao } from '../../../servicos/alertas';
 import Service from '../../../servicos/Paginas/PlanoAnualServices';
 import Alert from '../../../componentes/alert';
 import ModalMultiLinhas from '../../../componentes/modalMultiLinhas';
+import ModalConfirmacao from '../../../componentes/modalConfirmacao';
 import history from '../../../servicos/history';
 
 export default function PlanoAnual() {
@@ -116,15 +117,7 @@ export default function PlanoAnual() {
     }
   };
 
-  const voltarParaHome = () => {
-    confirmacao(
-      'Atenção',
-      `Você não salvou as informações
-    preenchidas. Deseja realmente cancelar as alterações?`,
-      confirmarCancelamento,
-      verificarSeEhEdicao
-    );
-  };
+  const voltarParaHome = () => {};
   return (
     <>
       <div className="col-md-12">
@@ -153,6 +146,18 @@ export default function PlanoAnual() {
         type={bimestresErro.type}
         conteudo={bimestresErro.content}
         titulo={bimestresErro.title}
+      />
+      <ModalConfirmacao
+        key="confirmacaoDeSaida"
+        visivel={true}
+        onConfirmacaoPrincipal={() => true}
+        onConfirmacaoSecundaria={confirmarCancelamento}
+        onClose={() => true}
+        labelPrincipal="Não"
+        labelSecundaria="Sim"
+        titulo="Atenção"
+        conteudo="Você não salvou as informações preenchidas"
+        perguntaDoConteudo="Deseja realmente cancelar as alterações?"
       />
       <Card>
         <Grid cols={12}>
