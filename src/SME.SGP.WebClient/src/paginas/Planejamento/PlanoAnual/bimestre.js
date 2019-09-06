@@ -16,6 +16,7 @@ import {
   DefinirObjetivoFocado,
   SelecionarObjetivo,
   SetarDescricao,
+  ObterBimestreServidor,
 } from '../../../redux/modulos/planoAnual/action';
 
 //Utilizado para importar a função scrollIntoViewIfNeeded para navegadores que não possuem essa funcionalidade.
@@ -24,10 +25,9 @@ import '../../../componentes/scrollIntoViewIfNeeded';
 const BimestreComponent = props => {
   const dispatch = useDispatch();
 
-  const { indice } = props;
+  const { indice, disabled } = props;
 
   const bimestres = useSelector(store => store.bimestres.bimestres);
-  const bimestresErro = useSelector(store => store.bimestres.bimestresErro);
 
   const materias = bimestres[indice].materias;
 
@@ -68,11 +68,17 @@ const BimestreComponent = props => {
   };
 
   const focarObjetivo = () => {
-    if (!bimestres[indice].objetivoIdFocado) return;
+    if (
+      !bimestres[indice].objetivoIdFocado ||
+      bimestres[indice].objetivoIdFocado === 0
+    )
+      return;
 
     const Elem = document.getElementById(bimestres[indice].objetivoIdFocado);
     const listDivObjetivos = ListRef.current;
     Elem.scrollIntoViewIfNeeded(listDivObjetivos);
+
+    DefinirObjetivoFocado(indice, 0);
   };
 
   const setObjetivoFocado = objetivoId => {
@@ -105,6 +111,10 @@ const BimestreComponent = props => {
     selecionarObjetivo(index, ariaPressed);
   };
 
+  const onClickTextEditor = () => {
+    setEhExpandido(true);
+  };
+
   const removeObjetivoSelecionado = e => {
     const index = bimestres[indice].objetivosAprendizagem.findIndex(
       objetivo => objetivo.id == e.target.id
@@ -119,12 +129,18 @@ const BimestreComponent = props => {
     setarDescricao(value);
   };
 
+  const onClickBimestre = () => {
+    dispatch(ObterBimestreServidor(bimestres[indice]));
+  };
+
   return (
     <CardCollapse
       key={indice}
+      onClick={onClickBimestre}
       titulo={bimestres[indice].nome}
       indice={`Bimestre${indice}`}
       show={bimestres[indice].ehExpandido}
+      disabled={disabled}
     >
       <div className="row">
         <Grid cols={6}>
@@ -142,6 +158,7 @@ const BimestreComponent = props => {
                       id={materia.codigo}
                       data-index={indice}
                       key={materia.codigo}
+                      disabled={disabled}
                       className="badge badge-pill border text-dark bg-white font-weight-light px-2 py-1 mt-3 mr-2"
                     >
                       {materia.materia}
@@ -168,6 +185,7 @@ const BimestreComponent = props => {
                           data-index={index}
                           onClick={selecionaObjetivo}
                           onKeyUp={selecionaObjetivo}
+                          disabled={disabled}
                         >
                           {objetivo.codigo}
                         </ListItemButton>
@@ -205,6 +223,7 @@ const BimestreComponent = props => {
                         color={Colors.AzulAnakiwa}
                         bold
                         id={selecionado.id}
+                        disabled={disabled}
                         steady
                         remove
                         className="text-dark mt-3 mr-2 stretched-link"
@@ -251,6 +270,8 @@ const BimestreComponent = props => {
                   id="textEditor"
                   height="135px"
                   height="135px"
+                  disabled={disabled}
+                  onClick={onClickTextEditor}
                   value={bimestres[indice].objetivo}
                   onBlur={onBlurTextEditor}
                 />

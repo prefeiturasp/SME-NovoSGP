@@ -5,48 +5,82 @@ import {
   PrePost,
   Post,
 } from '../../../redux/modulos/planoAnual/action';
+import { salvarRf } from '../../../redux/modulos/usuario/actions';
 import Grid from '../../../componentes/grid';
 import Button from '../../../componentes/button';
 import { Colors, Base } from '../../../componentes/colors';
 import _ from 'lodash';
 import Card from '../../../componentes/card';
 import Bimestre from './bimestre';
+import Row from '../../../componentes/row';
 import { confirmacao } from '../../../servicos/alertas';
 import Service from '../../../servicos/Paginas/PlanoAnualServices';
 import Alert from '../../../componentes/alert';
 import ModalMultiLinhas from '../../../componentes/modalMultiLinhas';
 
 export default function PlanoAnual() {
-  const qtdBimestres = 4;
-  const anoLetivo = 2019;
-  const escolaId = 1;
-  const anoEscolar = 1;
-  const RF = 6082840;
-  const turmaId = 1982186;
-
   const bimestres = useSelector(store => store.bimestres.bimestres);
-  const notificacoes = useSelector(state => state.notificacoes);
+  const notificacoes = useSelector(store => store.notificacoes);
   const bimestresErro = useSelector(store => store.bimestres.bimestresErro);
+  const usuario = useSelector(store => store.usuario);
+
+  const turmaSelecionada = usuario.turmaSelecionada;
   const ehEdicao = bimestres.filter(x => x.ehEdicao).length > 0;
+  const ehDisabled = usuario.turmaSelecionada.length === 0;
   const dispatch = useDispatch();
 
+  const ehEja =
+    turmaSelecionada[0] && turmaSelecionada[0].codModalidade === 3
+      ? true
+      : false;
+
+  const qtdBimestres = ehEja ? 2 : 4;
+
+  const anoLetivo = turmaSelecionada[0] ? turmaSelecionada[0].anoLetivo : 0;
+  const escolaId = turmaSelecionada[0] ? turmaSelecionada[0].codEscola : 0;
+  const anoEscolar = turmaSelecionada[0] ? turmaSelecionada[0].ano : 0;
+  const turmaId = turmaSelecionada[0] ? turmaSelecionada[0].codTurma : 0;
+
   useEffect(() => {
-    if (!bimestres || bimestres.length === 0)
-      Service.getMateriasProfessor(RF, turmaId).then(res => {
-        ObtenhaBimestres(_.cloneDeep(res));
-      });
+    dispatch(salvarRf(6082840));
   }, []);
 
   useEffect(() => {
-    VerificarEnvio();
-  }, [bimestres]);
+    if ((!bimestres || bimestres.length === 0) && !ehDisabled)
+      ObtenhaBimestres();
 
-  const ehEja = false;
+    verificarSeEhEdicao();
+
+    console.log(turmaSelecionada);
+  }, [usuario]);
+
+  useEffect(() => {
+    VerificarEnvio();
+
+    console.log(bimestres);
+  }, [bimestres]);
 
   const VerificarEnvio = () => {
     const paraEnviar = bimestres.map(x => x.paraEnviar).filter(x => x);
 
     if (paraEnviar && paraEnviar.length > 0) dispatch(Post(bimestres));
+  };
+
+  const verificarSeEhEdicao = () => {
+    if (!turmaSelecionada[0]) return;
+
+    Service.obterBimestre({
+      AnoLetivo: anoLetivo,
+      Bimestre: 1,
+      EscolaId: escolaId,
+      TurmaId: turmaId,
+    }).then(res => {
+      const ehEdicao = res.status === 200;
+
+      Service.getDisciplinasProfessor(usuario.rf, turmaId).then(res => {
+        ObtenhaBimestres(_.cloneDeep(res), !ehEdicao);
+      });
+    });
   };
 
   const ObtenhaNomebimestre = index =>
@@ -58,7 +92,7 @@ export default function PlanoAnual() {
     dispatch(PrePost());
   };
 
-  const ObtenhaBimestres = materias => {
+  const ObtenhaBimestres = (disciplinas = [], ehEdicao) => {
     for (let i = 1; i <= qtdBimestres; i++) {
       const Nome = ObtenhaNomebimestre(i);
 
@@ -72,9 +106,12 @@ export default function PlanoAnual() {
         ehExpandido: false,
         indice: i,
         nome: Nome,
-        materias: _.cloneDeep(materias),
+        materias: disciplinas,
         objetivo: objetivo,
         paraEnviar: false,
+        ehEdicao,
+        ehExpandido: ehEdicao,
+        jaSincronizou: false,
       };
 
       dispatch(Salvar(i, bimestre));
@@ -93,6 +130,20 @@ export default function PlanoAnual() {
   return (
     <>
       <div className="col-md-12">
+        {!turmaSelecionada[0] ? (
+          <Row className="mb-0 pb-0">
+            <Grid cols={12} className="mb-0 pb-0">
+              <Alert
+                alerta={{
+                  tipo: 'warning',
+                  id: 'AlertaPrincipal',
+                  mensagem: 'Você precisa escolher uma turma.',
+                }}
+                className="mb-0"
+              />
+            </Grid>
+          </Row>
+        ) : null}
         {notificacoes.alertas.map(alerta => (
           <Alert alerta={alerta} key={alerta.id} />
         ))}
@@ -138,7 +189,7 @@ export default function PlanoAnual() {
             label="Salvar"
             color={Colors.Roxo}
             onClick={onClickSalvar}
-            disabled={!ehEdicao}
+            disabled={!ehEdicao || ehDisabled}
             border
             bold
           />
@@ -146,7 +197,13 @@ export default function PlanoAnual() {
         <Grid cols={12}>
           {bimestres
             ? bimestres.map(bim => {
-                return <Bimestre key={bim.indice} indice={bim.indice} />;
+                return (
+                  <Bimestre
+                    disabled={ehDisabled}
+                    key={bim.indice}
+                    indice={bim.indice}
+                  />
+                );
               })
             : null}
         </Grid>
