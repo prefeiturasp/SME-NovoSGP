@@ -1,5 +1,6 @@
 ﻿using Newtonsoft.Json;
 using SME.SGP.Dto;
+using System;
 using System.Collections.Generic;
 using System.Net.Http;
 using System.Text;
@@ -23,6 +24,8 @@ namespace SME.SGP.Integracao.Teste
         {
             try
             {
+
+            
                 fixture._clientApi.DefaultRequestHeaders.Clear();
                 PlanoAnualDto planoAnualDto = CriarDtoPlanoAnual();
 
@@ -55,9 +58,9 @@ namespace SME.SGP.Integracao.Teste
                     Assert.True(false, erro);
                 }
             }
-            catch (System.Exception ex)
+            catch (AggregateException ae)
             {
-                Assert.True(false, $"Erro nas integrações: {ex.Message}");
+                throw new Exception("Erros: " + string.Join(",", ae.InnerExceptions));                
             }
         }
 
