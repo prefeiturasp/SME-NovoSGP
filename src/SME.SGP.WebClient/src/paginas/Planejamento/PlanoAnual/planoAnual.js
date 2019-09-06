@@ -17,6 +17,7 @@ import { confirmacao } from '../../../servicos/alertas';
 import Service from '../../../servicos/Paginas/PlanoAnualServices';
 import Alert from '../../../componentes/alert';
 import ModalMultiLinhas from '../../../componentes/modalMultiLinhas';
+import history from '../../../servicos/history';
 
 export default function PlanoAnual() {
   const bimestres = useSelector(store => store.bimestres.bimestres);
@@ -25,7 +26,7 @@ export default function PlanoAnual() {
   const usuario = useSelector(store => store.usuario);
 
   const turmaSelecionada = usuario.turmaSelecionada;
-  const ehEdicao = bimestres.filter(x => x.ehEdicao).length > 0;
+  const emEdicao = bimestres.filter(x => x.ehEdicao).length > 0;
   const ehDisabled = usuario.turmaSelecionada.length === 0;
   const dispatch = useDispatch();
 
@@ -48,8 +49,6 @@ export default function PlanoAnual() {
       ObtenhaBimestres();
 
     verificarSeEhEdicao();
-
-    console.log(turmaSelecionada);
   }, [usuario]);
 
   useEffect(() => {
@@ -74,7 +73,6 @@ export default function PlanoAnual() {
       TurmaId: turmaId,
     }).then(res => {
       const ehEdicao = res.status === 200;
-
       Service.getDisciplinasProfessor(usuario.rf, turmaId).then(res => {
         ObtenhaBimestres(_.cloneDeep(res), !ehEdicao);
       });
@@ -84,7 +82,9 @@ export default function PlanoAnual() {
   const ObtenhaNomebimestre = index =>
     `${index}º ${ehEja ? 'Semestre' : 'Bimestre'}`;
 
-  const confirmarCancelamento = () => {};
+  const confirmarCancelamento = () => {
+    history.push('/');
+  };
 
   const onClickSalvar = () => {
     dispatch(PrePost());
@@ -116,13 +116,13 @@ export default function PlanoAnual() {
     }
   };
 
-  const cancelarAlteracoes = () => {
+  const voltarParaHome = () => {
     confirmacao(
       'Atenção',
       `Você não salvou as informações
     preenchidas. Deseja realmente cancelar as alterações?`,
       confirmarCancelamento,
-      () => true
+      verificarSeEhEdicao
     );
   };
   return (
@@ -172,6 +172,7 @@ export default function PlanoAnual() {
             label="Voltar"
             icon="arrow-left"
             color={Colors.Azul}
+            onClick={voltarParaHome}
             border
             className="mr-3"
           />
@@ -181,13 +182,12 @@ export default function PlanoAnual() {
             border
             bold
             className="mr-3"
-            onClick={cancelarAlteracoes}
           />
           <Button
             label="Salvar"
             color={Colors.Roxo}
             onClick={onClickSalvar}
-            disabled={!ehEdicao || ehDisabled}
+            disabled={!emEdicao || ehDisabled}
             border
             bold
           />
