@@ -44,6 +44,7 @@ export const ListaItens = styled.div`
     font-weight: bold;
     margin-right: 5px;
     text-align: center;
+    font-size: 15px;
   }
 
   .btn-li-item-matriz {
