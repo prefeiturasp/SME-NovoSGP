@@ -4,11 +4,12 @@ import PropTypes from 'prop-types';
 import SelectList from '~/componentes/selectList';
 import Card from '~/componentes/card';
 import SelectComponent from '~/componentes/select';
+import SelectAutocomplete from '~/componentes/select-autocomplete';
 import Button from '~/componentes/button';
 import { Colors } from '~/componentes/colors';
 import Auditoria from '~/componentes/auditoria';
 import api from '~/servicos/api';
-import { suceso, erro, sucesso } from '~/servicos/alertas';
+import { erro, sucesso } from '~/servicos/alertas';
 import Alert from '~/componentes/alert';
 
 const AtribuicaoSupervisorCadastro = () => {
@@ -75,6 +76,7 @@ const AtribuicaoSupervisorCadastro = () => {
           exibeErro(erros);
         });
     }
+
     async function obterListaUES() {
       const url = `v1/dres/${dreSelecionada}/ues/sem-atribuicao`;
       await api
@@ -170,14 +172,14 @@ const AtribuicaoSupervisorCadastro = () => {
           />
         </div>
         <div className="col-xs-12 col-md-6 col-lg-6 mb-4">
-          <SelectComponent
+          <SelectAutocomplete
             label="SUPERVISOR:"
             className="col-md-12"
             name="dre"
             id="dre"
             lista={listaSupervisores}
-            valueOption="supervisorId"
-            valueText="supervisorNome"
+            valueField="supervisorId"
+            textField="supervisorNome"
             onChange={selecionaSupervisor}
             valueSelect={supervisorSelecionado}
           />
