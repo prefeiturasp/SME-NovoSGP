@@ -150,7 +150,7 @@ export default createGlobalStyle`
   }
 
   .ant-menu-sub{
-    max-height: 206px;
+    max-height: 160px;
     box-shadow: 2px 5px 6px rgba(50,50,50,0.77) !important;
     -webkit-box-shadow: 2px 5px 6px rgba(50,50,50,0.77) !important;
     -moz-box-shadow: 2px 5px 6px rgba(50,50,50,0.77) !important;
@@ -173,4 +173,9 @@ export default createGlobalStyle`
     margin-top: 0px !important;
     top: 0;
   }
+
+  .ant-menu-submenu-popup{
+    position: fixed !important;
+  }
+
 `;
