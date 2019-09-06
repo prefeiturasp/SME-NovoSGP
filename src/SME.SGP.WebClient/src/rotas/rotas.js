@@ -10,7 +10,7 @@ export default function Rotas() {
     <Switch>
       <Route path="/:rf?" exact component={Principal} />
       <Route
-        path="/planejamento/plano-ciclo/:ano/:escolaId"
+        path="/planejamento/plano-ciclo"
         exact
         component={PlanoCiclo}
       />
