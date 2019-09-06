@@ -51,6 +51,7 @@ const SelectComponent = props => {
         onChange={onChange}
         value={valueSelect}
         placeholder={placeholder}
+        notFoundContent="Sem dados"
       >
         {lista.length &&
           lista.map(item => {
