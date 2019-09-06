@@ -5,11 +5,11 @@ using SME.SGP.Dominio;
 
 namespace SME.SGP.Api.Middlewares
 {
-    public class FiltroExcecoes : ExceptionFilterAttribute
+    public class FiltroExcecoesAttribute : ExceptionFilterAttribute
     {
         public readonly string sentryDSN;
 
-        public FiltroExcecoes(IConfiguration configuration)
+        public FiltroExcecoesAttribute(IConfiguration configuration)
         {
             if (configuration == null)
             {
