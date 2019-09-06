@@ -28,3 +28,6 @@ Com este comando, a base de dados estará disponível, com todos os scripts já 
    
    - *Nome da variável:* Sentry__DSN
    - *Valor da variável:*  {Obter através dos canais de comunicação};
+
+   - *Nome da variável:* ConnectionStrings__SGP-Redis
+   - *Valor da variável:*  localhost
