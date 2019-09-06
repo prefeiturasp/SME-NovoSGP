@@ -2,6 +2,7 @@
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Dto;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 
 namespace SME.SGP.Aplicacao
@@ -24,11 +25,11 @@ namespace SME.SGP.Aplicacao
             return from r in retorno
                    select new NotificacaoBasicaDto()
                    {
-                       NotificacaoId = r.Id,
+                       Id = r.Id,
                        Titulo = r.Titulo,
                        Data = r.CriadoEm.ToString(),
                        Status = r.Status.ToString(),
-                       Tipo = r.Tipo.ToString()
+                       Tipo = r.Tipo.GetAttribute<DisplayAttribute>().Name
                    };
         }
 
@@ -60,7 +61,7 @@ namespace SME.SGP.Aplicacao
                 Id = retorno.Id,
                 Mensagem = retorno.Mensagem,
                 Situacao = retorno.Status.ToString(),
-                Tipo = retorno.Tipo.ToString(),
+                Tipo = retorno.Tipo.GetAttribute<DisplayAttribute>().Name,
                 Titulo = retorno.Titulo
             };
         }
