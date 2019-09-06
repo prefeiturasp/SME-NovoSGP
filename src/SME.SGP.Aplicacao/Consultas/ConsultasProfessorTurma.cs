@@ -6,11 +6,11 @@ using System.Linq;
 
 namespace SME.SGP.Aplicacao
 {
-    public class ConsultasProfessor : IConsultasProfessor
+    public class ConsultasProfessorTurma : IConsultasProfessorTurma
     {
         private readonly IServicoEOL servicoEOL;
 
-        public ConsultasProfessor(IServicoEOL servicoEOL)
+        public ConsultasProfessorTurma(IServicoEOL servicoEOL)
         {
             this.servicoEOL = servicoEOL ?? throw new System.ArgumentNullException(nameof(servicoEOL));
         }

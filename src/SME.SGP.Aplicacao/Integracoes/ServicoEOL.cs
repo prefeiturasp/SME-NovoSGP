@@ -39,5 +39,16 @@ namespace SME.SGP.Aplicacao.Integracoes
             }
             return null;
         }
+
+        public IEnumerable<ProfessorTurmaReposta> ObterListaTurmasPorProfessor(string codigoRf)
+        {
+            var resposta = httpClient.GetAsync($"professores/{codigoRf}/turmas").Result;
+            if (resposta.IsSuccessStatusCode)
+            {
+                var json = resposta.Content.ReadAsStringAsync().Result;
+                return JsonConvert.DeserializeObject<IEnumerable<ProfessorTurmaReposta>>(json);
+            }
+            return null;
+        }
     }
 }
