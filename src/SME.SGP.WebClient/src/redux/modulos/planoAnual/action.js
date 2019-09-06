@@ -1,5 +1,5 @@
 import Servico from '../../../servicos/Paginas/PlanoAnualServices';
-import { sucesso, erroMensagem } from '../../../servicos/alertas';
+import { sucesso, erro, erroMensagem } from '../../../servicos/alertas';
 
 export function Salvar(indice, bimestre) {
   return {
@@ -100,12 +100,18 @@ export function ObterObjetivosCall(bimestre) {
       return;
     }
 
+    const objetivosSelecionados = bimestre.objetivosAprendizagem
+      ? bimestre.objetivosAprendizagem.filter(obj => obj.selected)
+      : [];
+
     const materiasSelecionadas = bimestre.materias
       .filter(materia => materia.selected)
       .map(x => x.codigo);
 
     if (!materiasSelecionadas || materiasSelecionadas.length === 0) {
-      dispatch(SalvarObjetivos(bimestre.indice, []));
+      dispatch(
+        SalvarObjetivos(bimestre.indice, [].concat(objetivosSelecionados))
+      );
       return;
     }
 
@@ -119,11 +125,13 @@ export function ObterObjetivosCall(bimestre) {
         !bimestre.objetivosAprendizagem ||
         bimestre.objetivosAprendizagem.length === 0
       ) {
-        dispatch(SalvarObjetivos(bimestre.indice, res));
+        dispatch(
+          SalvarObjetivos(bimestre.indice, res.concat(objetivosSelecionados))
+        );
         return;
       }
 
-      const Aux = [...res];
+      const Aux = [...objetivosSelecionados, ...res];
 
       const concatenados = Aux.concat(
         res.filter(item => {
@@ -199,5 +207,45 @@ export function setLimpartBimestresErro() {
 export function setNaoEdicao() {
   return {
     type: '@bimestres/setEdicaoFalse',
+  };
+}
+
+export function setJaSincronizou() {
+  return {
+    type: '@bimestres/jaSincronizou',
+    payload: true,
+  };
+}
+
+export function ObterBimestreServidor(Bimestre) {
+  return dispatch => {
+    Servico.obterBimestre({
+      AnoLetivo: Bimestre.anoLetivo,
+      Bimestre: Bimestre.indice,
+      EscolaId: Bimestre.escolaId,
+      TurmaId: Bimestre.turmaId,
+    })
+      .then(res => {
+        const bimestreDTO = res.data;
+
+        dispatch(
+          Salvar(Bimestre.indice, {
+            ...Bimestre,
+            objetivo: bimestreDTO.descricao,
+            ehExpandido: true,
+            objetivosAprendizagem: bimestreDTO.objetivosAprendizagem.map(
+              obj => {
+                obj.selected = true;
+                return obj;
+              }
+            ),
+          })
+        );
+
+        sucesso('Dados obtidos com sucesso');
+      })
+      .catch(() => {
+        erro('Não foi possivel obter os dados do periodo selecionado');
+      });
   };
 }
