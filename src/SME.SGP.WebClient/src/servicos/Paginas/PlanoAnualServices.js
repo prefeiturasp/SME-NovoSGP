@@ -1,9 +1,9 @@
 import API from '../api';
 
 const Service = {
-  getMateriasProfessor: async (RF, CodigoTurma) => {
+  getDisciplinasProfessor: async (RF, CodigoTurma) => {
     const requisicao = await API.get(
-      Service._getBaseUrlMateriasProfessor(RF, CodigoTurma)
+      Service._getBaseUrlDisciplinasProfessor(RF, CodigoTurma)
     );
 
     return requisicao.data.map(req => {
@@ -47,7 +47,7 @@ const Service = {
       });
   },
 
-  _getBaseUrlMateriasProfessor: (RF, CodigoTurma) => {
+  _getBaseUrlDisciplinasProfessor: (RF, CodigoTurma) => {
     return `v1/professores/${RF}/turmas/${CodigoTurma}/disciplinas/`;
   },
 

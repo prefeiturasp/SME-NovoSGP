@@ -4,16 +4,22 @@ import React, { useState, useEffect } from 'react';
 import ReactQuill from 'react-quill';
 
 const TextEditor = React.forwardRef((props, ref) => {
-
-  const { value, onBlur } = props;
+  const { value, onBlur, disabled, onClick } = props;
 
   const onBlurQuill = () => {
-    if (onBlur)
-      onBlur(ref.current.state.value);
-  }
+    if (onBlur) onBlur(ref.current.state.value);
+  };
 
   return (
-    <ReactQuill ref={ref} modules={modules} onBlur={onBlurQuill} value={value || ''} />
+    <ReactQuill
+      ref={ref}
+      modules={modules}
+      onBlur={onBlurQuill}
+      value={value || ''}
+      onClick={onClick}
+      readOnly={disabled}
+      disabled={disabled}
+    />
   );
 });
 
@@ -25,8 +31,8 @@ TextEditor.propTypes = {
 
 TextEditor.defaultProps = {
   onBlur: () => {},
-  value: ""
-}
+  value: '',
+};
 
 export default TextEditor;
 
