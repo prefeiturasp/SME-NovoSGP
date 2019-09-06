@@ -134,6 +134,10 @@ export default function bimestres(state = INICIAL, action) {
           return x;
         });
         break;
+
+      case '@bimestres/jaSincronizou':
+        draft.bimestres[action.payload].jaSincronizou = true;
+        break;
       default:
         break;
     }
