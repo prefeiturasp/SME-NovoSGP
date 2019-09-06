@@ -17,7 +17,7 @@ namespace SME.SGP.Aplicacao
             this.unitOfWork = unitOfWork ?? throw new System.ArgumentNullException(nameof(unitOfWork));
         }
 
-        public void AtribuirEscola(AtribuicaoSupervisorEscolaDto atribuicaoSupervisorEscolaDto)
+        public void AtribuirUE(AtribuicaoSupervisorUEDto atribuicaoSupervisorEscolaDto)
         {
             var escolasAtribuidas = repositorioSupervisorEscolaDre.ObtemSupervisoresEscola(atribuicaoSupervisorEscolaDto.DreId, atribuicaoSupervisorEscolaDto.SupervisorId);
 
@@ -32,10 +32,10 @@ namespace SME.SGP.Aplicacao
             }
         }
 
-        private void AtribuirEscolas(AtribuicaoSupervisorEscolaDto atribuicaoSupervisorEscolaDto, System.Collections.Generic.IEnumerable<string> codigosEscolasDominio)
+        private void AtribuirEscolas(AtribuicaoSupervisorUEDto atribuicaoSupervisorEscolaDto, System.Collections.Generic.IEnumerable<string> codigosEscolasDominio)
         {
-            if (atribuicaoSupervisorEscolaDto.EscolasIds != null)
-                foreach (var codigoEscolaDto in atribuicaoSupervisorEscolaDto.EscolasIds)
+            if (atribuicaoSupervisorEscolaDto.UESIds != null)
+                foreach (var codigoEscolaDto in atribuicaoSupervisorEscolaDto.UESIds)
                 {
                     if (codigosEscolasDominio != null && !codigosEscolasDominio.Contains(codigoEscolaDto))
                     {
@@ -49,12 +49,12 @@ namespace SME.SGP.Aplicacao
                 }
         }
 
-        private void RemoverEscolas(AtribuicaoSupervisorEscolaDto atribuicaoSupervisorEscolaDto, System.Collections.Generic.IEnumerable<SupervisorEscolasDreDto> escolasAtribuidas)
+        private void RemoverEscolas(AtribuicaoSupervisorUEDto atribuicaoSupervisorEscolaDto, System.Collections.Generic.IEnumerable<SupervisorEscolasDreDto> escolasAtribuidas)
         {
             if (escolasAtribuidas != null)
                 foreach (var atribuicao in escolasAtribuidas)
                 {
-                    if (atribuicaoSupervisorEscolaDto.EscolasIds == null || !atribuicaoSupervisorEscolaDto.EscolasIds.Contains(atribuicao.EscolaId))
+                    if (atribuicaoSupervisorEscolaDto.UESIds == null || !atribuicaoSupervisorEscolaDto.UESIds.Contains(atribuicao.EscolaId))
                     {
                         repositorioSupervisorEscolaDre.Remover(atribuicao.Id);
                     }

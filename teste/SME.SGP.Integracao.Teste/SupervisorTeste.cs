@@ -45,10 +45,10 @@ namespace SME.SGP.Integracao.Teste
         {
             _fixture._clientApi.DefaultRequestHeaders.Clear();
 
-            var post = JsonConvert.SerializeObject(new AtribuicaoSupervisorEscolaDto
+            var post = JsonConvert.SerializeObject(new AtribuicaoSupervisorUEDto
             {
                 DreId = "108100",
-                EscolasIds = new List<string> { "095346" },
+                UESIds = new List<string> { "095346" },
                 SupervisorId = "7827067"
             });
 
