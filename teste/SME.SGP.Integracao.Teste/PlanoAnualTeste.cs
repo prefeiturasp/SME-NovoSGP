@@ -33,7 +33,7 @@ namespace SME.SGP.Integracao.Teste
                 Assert.True(postResult.IsSuccessStatusCode);
                 var filtro = new FiltroPlanoAnualDto()
                 {
-                    Ano = 2019,
+                    AnoLetivo = 2019,
                     Bimestre = 1,
                     EscolaId = "095346",
                     TurmaId = 2008187

@@ -10,5 +10,6 @@ namespace SME.SGP.Aplicacao.Integracoes
         Task<IEnumerable<DisciplinaResposta>> ObterDisciplinasPorProfessorETurma(long codigoTurma, string rfProfessor);
 
         Task<IEnumerable<TurmaDto>> ObterTurmasAtribuidasAoProfessorPorEscolaEAnoLetivo(string rfProfessor, string codigoEscola, int anoLetivo);
+        IEnumerable<ProfessorTurmaReposta> ObterListaTurmasPorProfessor(string codigoRf);
     }
 }
