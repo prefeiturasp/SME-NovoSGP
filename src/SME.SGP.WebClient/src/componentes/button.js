@@ -19,6 +19,7 @@ const Button = props => {
     icon,
     label,
     hidden,
+    id,
   } = props;
 
   const Icon = styled.i``;
@@ -59,6 +60,7 @@ const Button = props => {
       className={`btn btn-${style} ${className} position-relative py-2 px-3 fonte-14`}
       onClick={onClick}
       disabled={disabled}
+      id={id}
     >
       {icon ? <Icon className={`fa fa-${icon} mr-2`} /> : null}
       {label}
