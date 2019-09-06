@@ -101,11 +101,13 @@ export default function PlanoCiclo() {
         };
 
         let anos = [];
-        if (usuario.turmasUsuario && usuario.turmasUsuario.length && anosTurmasUsuario.length < 1) {
+        if (
+          usuario.turmasUsuario &&
+          usuario.turmasUsuario.length &&
+          anosTurmasUsuario.length < 1
+        ) {
           anos = usuario.turmasUsuario.map(item => item.ano);
-          anos = anos.filter(
-            (elem, pos) => anos.indexOf(elem) == pos
-          );
+          anos = anos.filter((elem, pos) => anos.indexOf(elem) == pos);
         }
         if (anosTurmasUsuario.length < 1 && anos.length > 0) {
           setAnosTurmasUsuario(anos);
@@ -445,15 +447,22 @@ export default function PlanoCiclo() {
         <ModalConfirmacao
           id="modal-confirmacao-voltar"
           visivel={exibirConfirmacaoVoltar}
-          onConfirmacaoSim={() => {
+          onConfirmacaoPrincipal={() => {
             salvarPlanoCiclo(true);
             setExibirConfirmacaoVoltar(false);
           }}
-          onConfirmacaoNao={() => {
+          onConfirmacaoSecundaria={() => {
             setExibirConfirmacaoVoltar(false);
             setModoEdicao(false);
             history.push('/');
           }}
+          onClose={() => {
+            setExibirConfirmacaoVoltar(false);
+            setModoEdicao(false);
+            history.push('/');
+          }}
+          labelPrincipal="Não"
+          labelSecundaria="Sim"
           perguntaDoConteudo="Suas alterações não foram salvas, deseja salvar agora?"
           titulo="Atenção"
         />

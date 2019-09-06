@@ -41,34 +41,36 @@ const Container = styled(Modal)`
 const ModalConfirmacao = props => {
   const {
     visivel,
-    onConfirmacaoSim,
-    onConfirmacaoNao,
+    onConfirmacaoPrincipal,
+    onConfirmacaoSecundaria,
+    onClose,
     conteudo,
     perguntaDoConteudo,
+    labelPrincipal,
+    labelSecundaria,
     titulo,
   } = props;
   return (
     <Container
-      onCancel={onConfirmacaoNao}
+      onCancel={onClose}
       title={titulo}
       visible={visivel}
       centered
       footer={[
         <Button
           key="btn-sim-confirmacao"
-          label="Sim"
+          label={labelSecundaria}
           color={Colors.Azul}
           border
           className="mr-2 padding-btn-confirmacao"
-          onClick={onConfirmacaoSim}
+          onClick={onConfirmacaoSecundaria}
         />,
         <Button
           key="btn-nao-confirmacao"
-          label="Não"
+          label={labelPrincipal}
           color={Colors.Azul}
-          border
           className="padding-btn-confirmacao"
-          onClick={onConfirmacaoNao}
+          onClick={onConfirmacaoPrincipal}
         />,
       ]}
     >
