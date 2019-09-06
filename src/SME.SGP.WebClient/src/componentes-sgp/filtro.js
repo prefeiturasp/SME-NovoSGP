@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useLayoutEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useSelector } from 'react-redux';
 import styled from 'styled-components';
 import shortid from 'shortid';
@@ -13,107 +13,10 @@ import Button from '../componentes/button';
 import { Base, Colors } from '../componentes/colors';
 import SelectComponent from '../componentes/select';
 import { sucesso, erro } from '../servicos/alertas';
-import InputCustom from '../componentes/input';
+import api from '../servicos/api';
 
-export default function Filtro() {
-  const [dadosProfessor] = useState([
-    {
-      ano: 5,
-      anoLetivo: 2019,
-      codModalidade: 5,
-      dre: 'DIRETORIA REGIONAL DE EDUCACAO IPIRANGA',
-      dreAbrev: 'DRE - IP',
-      modalidade: 'Fundamental',
-      nomeTurma: '5A',
-      tipoSemestre: 1,
-      tipoUE: 'UNIDADE ADMINISTRATIVA',
-      codTipoUE: 3,
-      ue: 'PRUDENTE DE MORAIS, PRES.',
-      ueAbrev: 'PRUDENTE DE MORAIS, PRES.',
-      tipoEscola: 'EMEF ',
-      codTipoEscola: '1',
-    },
-    {
-      ano: 5,
-      anoLetivo: 2019,
-      codModalidade: 5,
-      dre: 'DIRETORIA REGIONAL DE EDUCACAO IPIRANGA',
-      dreAbrev: 'DRE - IP',
-      modalidade: 'Fundamental',
-      nomeTurma: '5B',
-      tipoSemestre: 1,
-      tipoUE: 'UNIDADE ADMINISTRATIVA',
-      codTipoUE: 3,
-      ue: 'PRUDENTE DE MORAIS, PRES.',
-      ueAbrev: 'PRUDENTE DE MORAIS, PRES.',
-      tipoEscola: 'EMEF ',
-      codTipoEscola: '1',
-    },
-    {
-      ano: 5,
-      anoLetivo: 2019,
-      codModalidade: 5,
-      dre: 'DIRETORIA REGIONAL DE EDUCACAO IPIRANGA',
-      dreAbrev: 'DRE - IP',
-      modalidade: 'Fundamental',
-      nomeTurma: '5C',
-      tipoSemestre: 1,
-      tipoUE: 'UNIDADE ADMINISTRATIVA',
-      codTipoUE: 3,
-      ue: 'PRUDENTE DE MORAIS, PRES.',
-      ueAbrev: 'PRUDENTE DE MORAIS, PRES.',
-      tipoEscola: 'EMEF ',
-      codTipoEscola: '1',
-    },
-    {
-      ano: 6,
-      anoLetivo: 2019,
-      codModalidade: 5,
-      dre: 'DIRETORIA REGIONAL DE EDUCACAO IPIRANGA',
-      dreAbrev: 'DRE - IP',
-      modalidade: 'Fundamental',
-      nomeTurma: '6A',
-      tipoSemestre: 1,
-      tipoUE: 'UNIDADE ADMINISTRATIVA',
-      codTipoUE: 3,
-      ue: 'PRUDENTE DE MORAIS, PRES.',
-      ueAbrev: 'PRUDENTE DE MORAIS, PRES.',
-      tipoEscola: 'EMEF ',
-      codTipoEscola: '1',
-    },
-    {
-      ano: 6,
-      anoLetivo: 2019,
-      codModalidade: 5,
-      dre: 'DIRETORIA REGIONAL DE EDUCACAO IPIRANGA',
-      dreAbrev: 'DRE - IP',
-      modalidade: 'Fundamental',
-      nomeTurma: '6B',
-      tipoSemestre: 1,
-      tipoUE: 'UNIDADE ADMINISTRATIVA',
-      codTipoUE: 3,
-      ue: 'PRUDENTE DE MORAIS, PRES.',
-      ueAbrev: 'PRUDENTE DE MORAIS, PRES.',
-      tipoEscola: 'EMEF ',
-      codTipoEscola: '1',
-    },
-    {
-      ano: 7,
-      anoLetivo: 2019,
-      codModalidade: 5,
-      dre: 'DIRETORIA REGIONAL DE EDUCACAO IPIRANGA',
-      dreAbrev: 'DRE - IP',
-      modalidade: 'Fundamental',
-      nomeTurma: '7A',
-      tipoSemestre: 1,
-      tipoUE: 'UNIDADE ADMINISTRATIVA',
-      codTipoUE: 3,
-      ue: 'PRUDENTE DE MORAIS, PRES.',
-      ueAbrev: 'PRUDENTE DE MORAIS, PRES.',
-      tipoEscola: 'EMEF ',
-      codTipoEscola: '1',
-    },
-  ]);
+const Filtro = () => {
+  const [dados, setDados] = useState([]);
 
   const [anosLetivosFiltro, setAnosLetivosFiltro] = useState([]);
   const [
@@ -127,33 +30,33 @@ export default function Filtro() {
     setmodalidadeFiltroSelecionada,
   ] = useState();
 
-  const [periodos, setPeriodos] = useState([]);
-  const [periodoSelecionado, setPeriodoSelecionado] = useState();
+  const [periodosFiltro, setPeriodosFiltro] = useState([]);
+  const [periodoFiltroSelecionado, setPeriodoFiltroSelecionado] = useState();
 
   const [dresFiltro, setDresFiltro] = useState([]);
   const [dreFiltroSelecionada, setDreFiltroSelecionada] = useState();
 
-  const [unidadesEscolaresFiltro, setUnidadesEscolaresFiltro] = useState();
+  const [unidadesEscolaresFiltro, setUnidadesEscolaresFiltro] = useState([]);
   const [
     unidadeEscolarFiltroSelecionada,
     setUnidadeEscolarFiltroSelecionada,
   ] = useState();
 
-  const [
-    nomeTurmaFiltroSelecionada,
-    setNomeTurmaFiltroSelecionada,
-  ] = useState();
+  const [turmaFiltroSelecionada, setTurmaFiltroSelecionada] = useState();
 
   const [resultadosFiltro, setResultadosFiltro] = useState([]);
 
   const [toggleInputFocus, setToggleInputFocus] = useState(false);
   const [toggleBusca, setToggleBusca] = useState(false);
 
+  const [turmaUeSelecionada, setTurmaUeSelecionada] = useState();
+
   const Container = styled.div`
+    margin-left: -4px;
     max-width: 571px !important;
   `;
 
-  const Input = styled(InputCustom)`
+  const Input = styled.input`
     background: ${Base.CinzaFundo} !important;
     font-weight: bold !important;
     height: 45px !important;
@@ -165,6 +68,11 @@ export default function Filtro() {
       box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075) !important;
       color ${Base.Preto} !important;
       font-weight: normal !important;
+      &:read-only {
+        background: ${Base.CinzaFundo} !important;
+        font-weight: bold !important;
+        box-shadow: none !important;
+      }
     }
   `;
 
@@ -206,17 +114,46 @@ export default function Filtro() {
   `;
 
   const inputBuscaRef = useRef();
+  const [queryAutocomplete, setQueryAutocomplete] = useState();
+
+  const usuario = useSelector(state => state.usuario);
+
+  const buscaDadosPoRf = async rf => {
+    await api.get(`v1/professores/${rf}/turmas`).then(res => {
+      if (res.data.length > 0) setDados(res.data);
+    });
+  };
+
+  useEffect(() => {
+    if (usuario.rf.length > 0) {
+      buscaDadosPoRf(usuario.rf[0]);
+    }
+    if (usuario.turmaSelecionada.length > 0) {
+      const {
+        modalidade,
+        nomeTurma,
+        tipoEscola,
+        ue,
+      } = usuario.turmaSelecionada[0];
+      setTurmaUeSelecionada(
+        `${modalidade.trim()} - ${nomeTurma.trim()} - ${tipoEscola.trim()} - ${ue.trim()}`
+      );
+    }
+  }, [usuario.turmaSelecionada, usuario.rf]);
 
   useEffect(() => {
     const anosLetivos = [];
     const modalidades = [];
+    const periodos = [];
     const dres = [];
     const unidadesEscolares = [];
     const turmas = [];
 
-    dadosProfessor.forEach(dado => {
+    dados.forEach(dado => {
       if (anosLetivos.findIndex(ano => ano.ano === dado.anoLetivo) < 0) {
-        anosLetivos.push({ ano: dado.anoLetivo });
+        anosLetivos.push({
+          ano: dado.anoLetivo,
+        });
       }
 
       if (
@@ -230,25 +167,38 @@ export default function Filtro() {
         });
       }
 
-      if (dres.findIndex(dre => dre.abrev === dado.dreAbrev) < 0) {
+      if (dado.tipoSemestre === 2 && periodos.length < 2) {
+        for (let semestre = 1; semestre <= dado.tipoSemestre; semestre++) {
+          if (periodos.findIndex(periodo => periodo.codigo === semestre) < 0) {
+            periodos.push({
+              codigo: semestre,
+              periodo: `${semestre}º Semestre`,
+            });
+          }
+        }
+      }
+
+      if (dres.findIndex(dre => dre.codigo === dado.codDre) < 0) {
         dres.push({
-          abrev: dado.dreAbrev,
+          codigo: dado.codDre,
           dre: dado.dre,
         });
       }
 
       if (
-        unidadesEscolares.findIndex(unidade => unidade.abrev === dado.ueAbrev) <
-        0
+        unidadesEscolares.findIndex(
+          unidade => unidade.codigo === dado.codEscola
+        ) < 0
       ) {
         unidadesEscolares.push({
-          abrev: dado.ueAbrev,
+          codigo: dado.codEscola,
           unidade: dado.ue,
         });
       }
 
-      if (turmas.findIndex(turma => turma.turma === dado.nomeTurma) < 0) {
+      if (turmas.findIndex(turma => turma.codigo === dado.codTurma) < 0) {
         turmas.push({
+          codigo: dado.codTurma,
           ano: dado.ano,
           turma: dado.nomeTurma,
         });
@@ -257,31 +207,58 @@ export default function Filtro() {
 
     setAnosLetivosFiltro([...anosLetivos]);
     setAnoLetivoFiltroSelecionado('2019');
+
     setModalidadesFiltro([...modalidades]);
-    setPeriodos([{ periodo: '1º Semestre' }, { periodo: '2º Semestre' }]);
+    setPeriodosFiltro([...periodos]);
     setDresFiltro([...dres]);
     setUnidadesEscolaresFiltro([...unidadesEscolares]);
-    store.dispatch(turmasUsuario(turmas));
-  }, []);
 
-  const usuario = useSelector(state => state.usuario);
+    const ordenaTurmas = (x, y) => {
+      const a = x.turma.toLowerCase();
+      const b = y.turma.toLowerCase();
 
-  const [turmaEscolaSelecionada, setTurmaEscolaSelecionada] = useState(usuario.turmaSelecionada.length > 0
-    ? `${usuario.turmaSelecionada[0].modalidade} - ${usuario.turmaSelecionada[0].nomeTurma} - ${usuario.turmaSelecionada[0].tipoEscola} - ${usuario.turmaSelecionada[0].ue}`
-    : '');
+      if (a > b) return 1;
+      else if (a < b) return -1;
+
+      return 0;
+    };
+
+    store.dispatch(turmasUsuario(turmas.sort(ordenaTurmas)));
+    selecionaTurmaCasosEspecificos();
+  }, [dados]);
+
+  useEffect(() => {
+    inputBuscaRef.current.focus();
+  }, [queryAutocomplete]);
 
   useEffect(() => {
     if (!toggleBusca && toggleInputFocus) inputBuscaRef.current.focus();
   }, [toggleBusca, toggleInputFocus]);
 
-  const onKeyUpAutocomplete = () => {
+  const selecionaTurmaCasosEspecificos = () => {
+    if (dados.length === 1) {
+      setmodalidadeFiltroSelecionada(dados[0].codModalidade.toString());
+      setDreFiltroSelecionada(dados[0].codDre.toString());
+      setUnidadeEscolarFiltroSelecionada(dados[0].codEscola.toString());
+      setTurmaFiltroSelecionada(dados[0].codTurma.toString());
+    } else if (dresFiltro.length === 1) {
+      setDreFiltroSelecionada(dresFiltro[0].codigo.toString());
+    }
+  };
+
+  const onChangeAutocomplete = () => {
     const texto = inputBuscaRef.current.value;
+    setQueryAutocomplete(texto);
 
     const resultadosAutocomplete = [];
     if (texto.length >= 2) {
-      dadosProfessor
+      dados
         .filter(dado => {
-          return dado.nomeTurma.toLowerCase().includes(texto) || dado.ue.toLowerCase().includes(texto);
+          return (
+            dado.modalidade.toLowerCase().includes(texto) ||
+            dado.nomeTurma.toLowerCase().includes(texto) ||
+            dado.ue.toLowerCase().includes(texto)
+          );
         })
         .map(dado => {
           return resultadosAutocomplete.push(dado);
@@ -290,8 +267,9 @@ export default function Filtro() {
     }
   };
 
-  const selecionaTurmaAutocomplete = (resultado) => {
+  const selecionaTurmaAutocomplete = resultado => {
     store.dispatch(selecionarTurma([resultado]));
+    setResultadosFiltro([]);
   };
 
   const onFocusBusca = () => {
@@ -315,7 +293,7 @@ export default function Filtro() {
   };
 
   const onChangePeriodo = periodo => {
-    setPeriodoSelecionado(periodo);
+    setPeriodoFiltroSelecionado(periodo);
   };
 
   const onChangeDre = dre => {
@@ -327,24 +305,24 @@ export default function Filtro() {
   };
 
   const onChangeTurma = turma => {
-    setNomeTurmaFiltroSelecionada(turma);
+    setTurmaFiltroSelecionada(turma);
   };
 
   const selecionaTurma = () => {
-    const turma = dadosProfessor.filter(dado => {
+    const turma = dados.filter(dado => {
       return (
         dado.anoLetivo.toString() === anoLetivoFiltroSelecionado &&
         dado.codModalidade.toString() === modalidadeFiltroSelecionada &&
-        dado.dreAbrev === dreFiltroSelecionada &&
-        dado.nomeTurma === nomeTurmaFiltroSelecionada &&
-        dado.ue === unidadeEscolarFiltroSelecionada
+        dado.codDre.toString() === dreFiltroSelecionada &&
+        dado.codEscola.toString() === unidadeEscolarFiltroSelecionada &&
+        dado.codTurma.toString() === turmaFiltroSelecionada
       );
     });
 
     if (turma.length > 0) {
       store.dispatch(selecionarTurma(turma));
       setToggleBusca(false);
-      sucesso('Suas escolhas foram salvas com sucesso!');
+      sucesso('Turma selecionada com sucesso!');
     }
   };
 
@@ -353,21 +331,28 @@ export default function Filtro() {
       anoLetivoFiltroSelecionado &&
       modalidadeFiltroSelecionada &&
       dreFiltroSelecionada &&
-      nomeTurmaFiltroSelecionada &&
-      unidadeEscolarFiltroSelecionada
+      unidadeEscolarFiltroSelecionada &&
+      turmaFiltroSelecionada
     ) {
       selecionaTurma();
     } else {
-      erro('Você precisa selecionar todas as informações!');
+      erro('Preencha todos os dados da turma!');
     }
   };
 
   const removerTurmaSelecionada = () => {
     store.dispatch(removerTurma());
+    setQueryAutocomplete();
+    setmodalidadeFiltroSelecionada();
+    setPeriodoFiltroSelecionado();
+    setDreFiltroSelecionada();
+    setUnidadeEscolarFiltroSelecionada();
+    setTurmaFiltroSelecionada();
+    setTurmaUeSelecionada();
   };
 
   return (
-    <Container className="position-relative w-100 mx-auto">
+    <Container className="position-relative w-100 float-left">
       <form className="w-100">
         <div className="form-group mb-0 w-100 position-relative">
           <Search className="fa fa-search fa-lg bg-transparent position-absolute text-center" />
@@ -377,10 +362,11 @@ export default function Filtro() {
             placeholder="Pesquisar Turma"
             ref={inputBuscaRef}
             onFocus={onFocusBusca}
-            onKeyUp={onKeyUpAutocomplete}
-            value={turmaEscolaSelecionada}
+            onChange={onChangeAutocomplete}
+            readOnly={turmaUeSelecionada ? true : false}
+            value={turmaUeSelecionada ? turmaUeSelecionada : queryAutocomplete}
           />
-          {turmaEscolaSelecionada && (
+          {dados.length > 1 && turmaUeSelecionada && (
             <Times
               className="fa fa-times position-absolute"
               onClick={removerTurmaSelecionada}
@@ -423,7 +409,7 @@ export default function Filtro() {
                 />
               </Grid>
               <Grid
-                cols={modalidadeFiltroSelecionada === 'EJA' ? 5 : 9}
+                cols={modalidadeFiltroSelecionada === '3' ? 5 : 9}
                 className="form-group"
               >
                 <SelectComponent
@@ -436,15 +422,16 @@ export default function Filtro() {
                   placeholder="Modalidade"
                 />
               </Grid>
-              {modalidadeFiltroSelecionada === 3 && (
+              {modalidadeFiltroSelecionada === '3' && (
                 <Grid cols={4} className="form-group">
                   <SelectComponent
                     className="fonte-14"
                     onChange={onChangePeriodo}
-                    lista={periodos}
-                    valueOption="periodo"
+                    lista={periodosFiltro}
+                    valueOption="codigo"
                     label="periodo"
-                    valueSelect={periodoSelecionado}
+                    valueSelect={periodoFiltroSelecionado}
+                    placeholder="Período"
                   />
                 </Grid>
               )}
@@ -454,7 +441,7 @@ export default function Filtro() {
                 className="fonte-14"
                 onChange={onChangeDre}
                 lista={dresFiltro}
-                valueOption="abrev"
+                valueOption="codigo"
                 label="dre"
                 valueSelect={dreFiltroSelecionada}
                 placeholder="Diretoria Regional De Educação (DRE)"
@@ -465,7 +452,7 @@ export default function Filtro() {
                 className="fonte-14"
                 onChange={onChangeUnidadeEscolarFiltro}
                 lista={unidadesEscolaresFiltro}
-                valueOption="unidade"
+                valueOption="codigo"
                 label="unidade"
                 valueSelect={unidadeEscolarFiltroSelecionada}
                 placeholder="Unidade Escolar (UE)"
@@ -477,9 +464,9 @@ export default function Filtro() {
                   className="fonte-14"
                   onChange={onChangeTurma}
                   lista={usuario.turmasUsuario}
-                  valueOption="turma"
+                  valueOption="codigo"
                   label="turma"
-                  valueSelect={nomeTurmaFiltroSelecionada}
+                  valueSelect={turmaFiltroSelecionada}
                   placeholder="Turma"
                 />
               </Grid>
@@ -499,4 +486,4 @@ export default function Filtro() {
   );
 };
 
-// export default Filtro;
+export default Filtro;
