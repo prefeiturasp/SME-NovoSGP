@@ -22,6 +22,7 @@ namespace SME.SGP.IoC
         private static void RegistrarComandos(IServiceCollection services)
         {
             services.TryAddScoped<IComandosPlanoCiclo, ComandosPlanoCiclo>();
+            services.TryAddScoped<IComandosPlanoAnual, ComandosPlanoAnual>();
             services.TryAddScoped<IComandosSupervisor, ComandosSupervisor>();
         }
 
@@ -32,6 +33,9 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IConsultasObjetivoDesenvolvimento, ConsultasObjetivoDesenvolvimento>();
             services.TryAddScoped<IConsultasCiclo, ConsultasCiclo>();
             services.TryAddScoped<IConsultasObjetivoAprendizagem, ConsultasObjetivoAprendizagem>();
+            services.TryAddScoped<IConsultasPlanoAnual, ConsultasPlanoAnual>();
+            services.TryAddScoped<IConsultasDisciplina, ConsultasDisciplina>();
+            services.TryAddScoped<IConsultasProfessor, ConsultasProfessor>();
             services.TryAddScoped<IConsultasSupervisor, ConsultasSupervisor>();
             services.TryAddScoped<IConsultaDres, ConsultaDres>();
         }
@@ -50,6 +54,11 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IRepositorioMatrizSaber, RepositorioMatrizSaber>();
             services.TryAddScoped<IRepositorioObjetivoDesenvolvimento, RepositorioObjetivoDesenvolvimento>();
             services.TryAddScoped<IRepositorioCiclo, RepositorioCiclo>();
+            services.TryAddScoped<IRepositorioPlanoAnual, RepositorioPlanoAnual>();
+            services.TryAddScoped<IRepositorioObjetivoAprendizagemPlano, RepositorioObjetivoAprendizagemPlano>();
+            services.TryAddScoped<IRepositorioCache, RepositorioCache>();
+            services.TryAddScoped<IRepositorioComponenteCurricular, RepositorioComponenteCurricular>();
+            //services.TryAddScoped<IRepositorioProfessorTurma, RepositorioProfessorTurma>();
             services.TryAddScoped<IRepositorioSupervisorEscolaDre, RepositorioSupervisorEscolaDre>();
         }
     }
