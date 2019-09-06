@@ -9,11 +9,13 @@ const Conteudo = () => {
   useEffect(() => { setCollapsed(MenuStore.collapsed); }, [MenuStore.collapsed]);
 
   return (
-    <main role="main" className={collapsed?"col-lg-10 col-md-10 col-sm-10 col-xs-12 col-xl-11":"col-sm-8 col-md-9 col-lg-9 col-xl-10"}>
+    <div className="row h-100" style={{marginLeft: collapsed?'115px':'250px'}}>
+    <main role="main" className="col-md-12 col-lg-12 col-sm-12 col-xl-12">
       <div className="card-body m-r-0 m-l-0 p-l-0 p-r-0 m-t-0">
         <Rotas />
       </div>
     </main>
+    </div>
   );
 }
 

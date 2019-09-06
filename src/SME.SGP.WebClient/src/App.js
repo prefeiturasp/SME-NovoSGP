@@ -20,10 +20,8 @@ function App() {
         <GlobalStyle />
         <Navbar />
         <div className="container-fluid h-100">
-          <div className="row h-100">
-            <Sider />
-            <Conteudo />
-          </div>
+          <Sider />
+          <Conteudo />
         </div>
       </Router>
     </Provider>
