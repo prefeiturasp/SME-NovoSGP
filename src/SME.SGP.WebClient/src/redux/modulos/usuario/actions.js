@@ -1,3 +1,10 @@
+export function salvarRf(rf) {
+  return {
+    type: '@usuario/salvarRf',
+    payload: rf,
+  };
+}
+
 export function turmasUsuario(turmas) {
   return {
     type: '@usuario/turmasUsuario',

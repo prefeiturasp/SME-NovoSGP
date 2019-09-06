@@ -55,6 +55,7 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IRepositorioObjetivoAprendizagemPlano, RepositorioObjetivoAprendizagemPlano>();
             services.TryAddScoped<IRepositorioCache, RepositorioCache>();
             services.TryAddScoped<IRepositorioComponenteCurricular, RepositorioComponenteCurricular>();
+            //services.TryAddScoped<IRepositorioProfessorTurma, RepositorioProfessorTurma>();
         }
     }
 }
