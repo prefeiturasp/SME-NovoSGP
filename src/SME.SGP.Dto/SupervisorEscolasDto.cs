@@ -2,7 +2,7 @@
 
 namespace SME.SGP.Dto
 {
-    public class SupervisorEscolasDto
+    public class SupervisorEscolasDto : AuditoriaDto
     {
         public SupervisorEscolasDto()
         {

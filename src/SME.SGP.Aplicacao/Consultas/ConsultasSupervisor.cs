@@ -1,5 +1,4 @@
 ﻿using SME.SGP.Aplicacao.Integracoes;
-using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Dto;
 using System.Collections.Generic;
@@ -38,8 +37,7 @@ namespace SME.SGP.Aplicacao
 
             if (string.IsNullOrEmpty(supervisorNome))
             {
-                return from a in supervisoresEol
-                       select new SupervisorDto() { SupervisorId = a.CodigoRF, SupervisorNome = a.NomeServidor };
+                return supervisoresEol?.Select(a => new SupervisorDto() { SupervisorId = a.CodigoRF, SupervisorNome = a.NomeServidor });
             }
             else
             {
@@ -84,9 +82,6 @@ namespace SME.SGP.Aplicacao
             var listaEscolas = servicoEOL.ObterEscolasPorCodigo(supervisoresEscolasDres.Select(a => a.EscolaId.ToString()).ToArray());
             var listaSupervisores = servicoEOL.ObterSupervisoresPorCodigo(supervisoresEscolasDres.Select(a => a.SupervisorId.ToString()).ToArray());
 
-            if (!listaSupervisores.Any())
-                throw new NegocioException("Não foi possível localizar supervisores.");
-
             var supervisoresIds = supervisoresEscolasDres
                 .GroupBy(a => a.SupervisorId)
                 .Select(g => g.Key);
@@ -104,11 +99,19 @@ namespace SME.SGP.Aplicacao
                               select new UnidadeEscolarDto() { Codigo = t.CodigoEscola, Nome = t.NomeEscola };
                 }
 
+                var auditoria = supervisoresEscolasDres.FirstOrDefault(c => c.SupervisorId == supervisorId);
+
                 yield return new SupervisorEscolasDto()
                 {
                     SupervisorNome = listaSupervisores.FirstOrDefault(a => a.CodigoRF == supervisorId).NomeServidor,
                     SupervisorId = supervisorId,
-                    Escolas = escolas.ToList()
+                    Escolas = escolas.ToList(),
+                    AlteradoEm = auditoria.AlteradoEm,
+                    AlteradoPor = auditoria.AlteradoPor,
+                    AlteradoRF = auditoria.AlteradoRF,
+                    CriadoEm = auditoria.CriadoEm,
+                    CriadoPor = auditoria.CriadoPor,
+                    CriadoRF = auditoria.CriadoRF
                 };
             }
         }

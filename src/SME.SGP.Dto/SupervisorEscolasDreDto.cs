@@ -1,6 +1,6 @@
 ﻿namespace SME.SGP.Dto
 {
-    public class SupervisorEscolasDreDto
+    public class SupervisorEscolasDreDto : AuditoriaDto
     {
         public string DreId { get; set; }
         public string EscolaId { get; set; }
