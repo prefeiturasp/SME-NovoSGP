@@ -4,59 +4,54 @@ import React from 'react';
 
 import { Container } from './dataTabe.css';
 
-export class DataTable extends React.Component {
-  state = {
-    selectedRowKeys: this.props.selectedRowKeys,
-    setSelectedRowKeys: this.props.setSelectedRowKeys,
-    dataSource: this.props.dataSource,
-    columns: this.props.columns,
-    selectMultipleRows: this.props.selectMultipleRows,
-    pageSize: this.props.pageSize,
-  };
+const DataTable = props => {
+  const {
+    selectedRowKeys,
+    columns,
+    dataSource,
+    onSelectRow,
+    selectMultipleRows,
+    pageSize,
+  } = props;
 
-  selectRow = record => {
-    let selectedRowKeys = [...this.state.selectedRowKeys];
-    if (selectedRowKeys.indexOf(record.key) >= 0) {
-      selectedRowKeys.splice(selectedRowKeys.indexOf(record.key), 1);
-    } else if (this.state.selectMultipleRows) {
-      selectedRowKeys.push(record.key);
+  const rowSelection = { selectedRowKeys };
+
+  const selectRow = record => {
+    let selected = [...selectedRowKeys];
+    if (selected.indexOf(record.key) >= 0) {
+      selected.splice(selected.indexOf(record.key), 1);
+    } else if (selectMultipleRows) {
+      selected.push(record.key);
     } else {
-      selectedRowKeys = [];
-      selectedRowKeys.push(record.key);
+      selected = [];
+      selected.push(record.key);
     }
-    this.setState({ selectedRowKeys });
-    this.state.setSelectedRowKeys(selectedRowKeys);
+    onSelectRow(selected);
   };
 
-  render() {
-    const { selectedRowKeys, columns, dataSource } = this.state;
-    const rowSelection = {
-      selectedRowKeys,
-    };
-
-    return (
-      <Container>
-        <Table
-          rowSelection={rowSelection}
-          columns={columns}
-          dataSource={dataSource}
-          onRow={record => ({
-            onClick: () => {
-              this.selectRow(record);
-            },
-          })}
-          pagination={{ pageSize: 2 }}
-          bordered
-          size="middle"
-        />
-      </Container>
-    );
-  }
-}
+  return (
+    <Container className="table-responsive">
+      <Table
+        rowSelection={rowSelection}
+        columns={columns}
+        dataSource={dataSource}
+        onRow={record => ({
+          onClick: () => {
+            selectRow(record);
+          },
+        })}
+        pagination={{ pageSize }}
+        bordered
+        size="middle"
+        locale={{ emptyText: 'Sem dados' }}
+      />
+    </Container>
+  );
+};
 
 DataTable.propTypes = {
   selectedRowKeys: PropTypes.array,
-  setSelectedRowKeys: PropTypes.func,
+  onSelectRow: PropTypes.func,
   dataSource: PropTypes.array,
   columns: PropTypes.array,
   selectMultipleRows: PropTypes.bool,
@@ -64,11 +59,10 @@ DataTable.propTypes = {
 };
 
 DataTable.defaultProps = {
-  selectedRowKeys: [],
   dataSource: [],
   columns: [],
   selectMultipleRows: false,
-  pageSize: 2, // TODO
+  pageSize: 10,
 };
 
 export default DataTable;

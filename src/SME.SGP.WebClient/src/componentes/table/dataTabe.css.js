@@ -2,8 +2,11 @@ import styled from 'styled-components';
 import { Base } from '../colors';
 
 export const Container = styled.div`
+  .supervisor-nao-atribuido {
+    color: #b40c02;
+  }
   .ant-table-selection-column {
-    display: none;
+    display: none !important;
   }
   .ant-table-thead tr th {
     text-align: center;
@@ -12,6 +15,7 @@ export const Container = styled.div`
 
   .ant-table-tbody tr td {
     border-right: solid 1px #dadada;
+    white-space: nowrap;
   }
 
   .ant-table-column-title {
