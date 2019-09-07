@@ -164,7 +164,10 @@ const AtribuicaoSupervisorCadastro = () => {
   }
 
   const filtraSupervisor = (item, texto) => {
-    return item.supervisorNome.toLowerCase().indexOf(texto) > -1;
+    return (
+      item.supervisorNome.toLowerCase().indexOf(texto) > -1 ||
+      item.supervisorId === texto
+    );
   };
 
   return (
