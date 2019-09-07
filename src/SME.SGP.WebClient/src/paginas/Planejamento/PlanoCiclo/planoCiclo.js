@@ -101,17 +101,19 @@ export default function PlanoCiclo() {
         };
 
         let anos = [];
-        if (usuario.turmasUsuario && usuario.turmasUsuario.length && anosTurmasUsuario.length < 1) {
+        if (
+          usuario.turmasUsuario &&
+          usuario.turmasUsuario.length &&
+          anosTurmasUsuario.length < 1
+        ) {
           anos = usuario.turmasUsuario.map(item => item.ano);
-          anos = anos.filter(
-            (elem, pos) => anos.indexOf(elem) == pos
-          );
+          anos = anos.filter((elem, pos) => anos.indexOf(elem) == pos);
         }
         if (anosTurmasUsuario.length < 1 && anos.length > 0) {
           setAnosTurmasUsuario(anos);
-          params['anos'] = anos;
+          params.anos = anos;
         } else {
-          params['anos'] = anosTurmasUsuario;
+          params.anos = anosTurmasUsuario;
         }
 
         const ciclos = await api.post('v1/ciclos/filtro', params);
@@ -391,16 +393,9 @@ export default function PlanoCiclo() {
     );
   }
 
-  // TODO quanto tivermos a tela de login e a home, deverá ser movido todos os alertas para a home/container
-  const notificacoes = useSelector(state => state.notificacoes);
-
   return (
     <>
       <div className="col-md-12">
-        {notificacoes.alertas.map(alerta => (
-          <Alert alerta={alerta} key={alerta.id} />
-        ))}
-
         {usuario &&
         usuario.turmaSelecionada &&
         usuario.turmaSelecionada.length ? (

@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
-import { Base } from './colors';
 import { AutoComplete } from 'antd';
 import PropTypes from 'prop-types';
+import { Base } from './colors';
 import Label from './label';
 
 const { Option } = AutoComplete;
@@ -39,6 +39,7 @@ const SelectAutocomplete = ({
   name,
   id,
   onChange,
+  onSelect,
 }) => {
   useEffect(() => {});
 
@@ -68,6 +69,7 @@ const SelectAutocomplete = ({
         placeholder={placeholder}
         name={name}
         onChange={onChange}
+        onSelect={onSelect}
         id={id}
       >
         {children}
