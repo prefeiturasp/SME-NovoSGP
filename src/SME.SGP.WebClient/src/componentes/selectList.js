@@ -143,7 +143,15 @@ const Container = styled.div`
 `;
 
 const SelectList = props => {
-  const { mockData, handleChange, targetKeys, titulos, height } = props;
+  const {
+    dados,
+    handleChange,
+    targetKeys,
+    titulos,
+    texto,
+    codigo,
+    selecionados,
+  } = props;
 
   return (
     <div className="col-sm-12 col-md-12 col-lg-12 col-xl-12">
@@ -152,10 +160,11 @@ const SelectList = props => {
           titles={titulos}
           showSelectAll={false}
           notFoundContent=""
-          dataSource={mockData}
+          dataSource={dados}
           targetKeys={targetKeys}
           onChange={handleChange}
-          render={item => `${item.titulo}-${item.descricao}`}
+          render={item => `${item[codigo]} ${item[texto]}`}
+          // selectedKeys={selecionados}
         />
       </Container>
     </div>
@@ -167,7 +176,6 @@ SelectList.propTypes = {
   targetKeys: PropTypes.array,
   handleChange: PropTypes.func,
   titulos: PropTypes.array,
-  height: PropTypes.string,
 };
 
 export default SelectList;
