@@ -114,21 +114,17 @@ const Filtro = () => {
   `;
 
   const inputBuscaRef = useRef();
-  const [queryAutocomplete, setQueryAutocomplete] = useState();
+  const [textoAutocomplete, setTextoAutocomplete] = useState();
 
   const divBuscaRef = useRef();
 
   const usuario = useSelector(state => state.usuario);
 
   const buscaDadosPoRf = async rf => {
-    await api
-      .get(
-        `http://hom-integracao.sme.prefeitura.sp.gov.br/api/v1/professores/${rf}/turmas`
-      )
-      .then(res => {
-        if (res.data.length > 0) setDados(res.data);
-        else erro('Usuário sem turmas atribuídas!');
-      });
+    await api.get(`v1/professores/${rf}/turmas`).then(res => {
+      if (res.data.length > 0) setDados(res.data);
+      else erro('Usuário sem turmas atribuídas!');
+    });
   };
 
   useEffect(() => {
@@ -235,12 +231,69 @@ const Filtro = () => {
 
   useEffect(() => {
     inputBuscaRef.current.focus();
-  }, [queryAutocomplete]);
+    if (!textoAutocomplete) setResultadosFiltro([]);
+  }, [textoAutocomplete]);
 
   useLayoutEffect(() => {
     if (!toggleBusca && toggleInputFocus) inputBuscaRef.current.focus();
     if (toggleBusca) document.addEventListener('click', handleClickFora);
   }, [toggleBusca, toggleInputFocus]);
+
+  useEffect(() => {
+    const dres = [];
+    const unidadesEscolares = [];
+    const turmas = [];
+
+    dados
+      .filter(dado => {
+        if (modalidadeFiltroSelecionada)
+          return dado.codModalidade.toString() === modalidadeFiltroSelecionada;
+        return true;
+      })
+      .filter(dado => {
+        if (dreFiltroSelecionada)
+          return dado.codDre.toString() === dreFiltroSelecionada;
+        return true;
+      })
+      .filter(dado => {
+        if (unidadeEscolarFiltroSelecionada)
+          return dado.codEscola.toString() === unidadeEscolarFiltroSelecionada;
+        return true;
+      })
+      .forEach(dado => {
+        if (dres.findIndex(dre => dre.codigo === dado.codDre) < 0) {
+          dres.push({
+            codigo: dado.codDre,
+            dre: dado.dre,
+          });
+        }
+        if (
+          unidadesEscolares.findIndex(
+            unidade => unidade.codigo === dado.codEscola
+          ) < 0
+        ) {
+          unidadesEscolares.push({
+            codigo: dado.codEscola,
+            unidade: dado.ue,
+          });
+        }
+        if (turmas.findIndex(turma => turma.codigo === dado.codTurma) < 0) {
+          turmas.push({
+            codigo: dado.codTurma,
+            ano: dado.ano,
+            turma: dado.nomeTurma,
+          });
+        }
+      });
+
+    setDresFiltro([...dres]);
+    setUnidadesEscolaresFiltro([...unidadesEscolares]);
+    store.dispatch(turmasUsuario(turmas.sort(ordenaTurmas)));
+  }, [
+    modalidadeFiltroSelecionada,
+    dreFiltroSelecionada,
+    unidadeEscolarFiltroSelecionada,
+  ]);
 
   const handleClickFora = event => {
     if (
@@ -253,24 +306,6 @@ const Filtro = () => {
     )
       mostraBusca();
   };
-
-  useEffect(() => {
-    const turmas = [];
-    dados
-      .filter(dado => {
-        return dado.codModalidade.toString() === modalidadeFiltroSelecionada;
-      })
-      .forEach(dado => {
-        if (turmas.findIndex(turma => turma.codigo === dado.codTurma) < 0) {
-          turmas.push({
-            codigo: dado.codTurma,
-            ano: dado.ano,
-            turma: dado.nomeTurma,
-          });
-        }
-      });
-    store.dispatch(turmasUsuario(turmas.sort(ordenaTurmas)));
-  }, [modalidadeFiltroSelecionada]);
 
   const selecionaTurmaCasosEspecificos = () => {
     if (dados.length === 1) {
@@ -289,7 +324,7 @@ const Filtro = () => {
 
   const onChangeAutocomplete = () => {
     const texto = inputBuscaRef.current.value;
-    setQueryAutocomplete(texto);
+    setTextoAutocomplete(texto);
 
     const resultadosAutocomplete = [];
     if (texto.length >= 2) {
@@ -383,7 +418,7 @@ const Filtro = () => {
 
   const removerTurmaSelecionada = () => {
     store.dispatch(removerTurma());
-    setQueryAutocomplete();
+    setTextoAutocomplete();
     setModalidadeFiltroSelecionada();
     setPeriodoFiltroSelecionado();
     setDreFiltroSelecionada();
@@ -405,7 +440,7 @@ const Filtro = () => {
             onFocus={onFocusBusca}
             onChange={onChangeAutocomplete}
             readOnly={turmaUeSelecionada ? true : false}
-            value={turmaUeSelecionada ? turmaUeSelecionada : queryAutocomplete}
+            value={turmaUeSelecionada ? turmaUeSelecionada : textoAutocomplete}
           />
           {dados.length > 1 && turmaUeSelecionada && (
             <Times
