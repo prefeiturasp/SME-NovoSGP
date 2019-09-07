@@ -8,19 +8,20 @@ const Container = styled.div`
   font-weight: bold;
   color: #42474a;
 `;
-const Auditoria = ({ inserido, alterado }) => {
+const Auditoria = ({ criadoPor, criadoEm, alteradoPor, alteradoEm }) => {
   return (
     <Container>
-      {inserido ? (
+      {criadoPor ? (
         <div className="col-xs-12 col-md-6 col-lg-12 d-flex justify-content-start mt-2">
-          {inserido}
+          INSERIDO por {criadoPor} em {window.moment(criadoEm).format('LLL')}
         </div>
       ) : (
         ''
       )}
-      {alterado ? (
+      {alteradoPor ? (
         <div className="col-xs-12 col-md-6 col-lg-12 d-flex justify-content-start mt-2">
-          {alterado}
+          ALTERADO por {alteradoPor} em{' '}
+          {window.moment(alteradoEm).format('LLL')}
         </div>
       ) : (
         ''

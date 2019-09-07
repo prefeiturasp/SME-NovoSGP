@@ -40,39 +40,43 @@ const SelectAutocomplete = ({
   id,
   onChange,
   onSelect,
+  value,
+  filtro,
 }) => {
-  useEffect(() => {});
+  const [itensFiltrados, setItensFiltrados] = useState(lista);
 
-  const [result, setResult] = useState(lista);
+  useEffect(() => {
+    if (!value) setItensFiltrados([]);
+  }, [value]);
 
-  const handleSearch = value => {
+  const filtrar = value => {
     if (value) {
       const textoFiltro = value.toLowerCase();
-      const dadosFiltrados = lista.filter(item => {
-        return item.supervisorNome.toLowerCase().indexOf(textoFiltro) > -1;
-      });
-      setResult(dadosFiltrados);
+      const dadosFiltrados = lista.filter(item => filtro(item, textoFiltro));
+      setItensFiltrados(dadosFiltrados);
     } else {
-      setResult(lista);
+      setItensFiltrados([]);
     }
   };
 
-  const children = result.map(item => (
+  const opcoes = itensFiltrados.map(item => (
     <Option key={item[valueField]}>{item[textField]}</Option>
   ));
+
   return (
     <Container>
       <Label text={label} control={name} />
       <AutoComplete
         className={className}
-        onSearch={handleSearch}
+        onSearch={filtrar}
         placeholder={placeholder}
         name={name}
         onChange={onChange}
         onSelect={onSelect}
         id={id}
+        value={value}
       >
-        {children}
+        {opcoes}
       </AutoComplete>
     </Container>
   );

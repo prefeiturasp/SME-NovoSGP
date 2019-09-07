@@ -99,11 +99,19 @@ namespace SME.SGP.Aplicacao
                               select new UnidadeEscolarDto() { Codigo = t.CodigoEscola, Nome = t.NomeEscola };
                 }
 
+                var auditoria = supervisoresEscolasDres.FirstOrDefault(c => c.SupervisorId == supervisorId);
+
                 yield return new SupervisorEscolasDto()
                 {
                     SupervisorNome = listaSupervisores.FirstOrDefault(a => a.CodigoRF == supervisorId).NomeServidor,
                     SupervisorId = supervisorId,
-                    Escolas = escolas.ToList()
+                    Escolas = escolas.ToList(),
+                    AlteradoEm = auditoria.AlteradoEm,
+                    AlteradoPor = auditoria.AlteradoPor,
+                    AlteradoRF = auditoria.AlteradoRF,
+                    CriadoEm = auditoria.CriadoEm,
+                    CriadoPor = auditoria.CriadoPor,
+                    CriadoRF = auditoria.CriadoRF
                 };
             }
         }
