@@ -117,7 +117,6 @@ const Filtro = () => {
   const [queryAutocomplete, setQueryAutocomplete] = useState();
 
   const divBuscaRef = useRef();
-  const btnBuscaRef = useRef();
 
   const usuario = useSelector(state => state.usuario);
 
@@ -244,10 +243,8 @@ const Filtro = () => {
   }, [toggleBusca, toggleInputFocus]);
 
   const handleClickFora = event => {
-    console.log(btnBuscaRef.current);
-    console.log(event.target);
     if (
-      event.target !== btnBuscaRef.current &&
+      !event.target.classList.contains('fa-caret-down') &&
       divBuscaRef.current &&
       !divBuscaRef.current.contains(event.target)
     )
@@ -416,7 +413,6 @@ const Filtro = () => {
           <Caret
             className="fa fa-caret-down rounded-circle position-absolute text-center"
             onClick={mostraBusca}
-            ref={btnBuscaRef}
           />
         </div>
         {resultadosFiltro.length > 0 && (
