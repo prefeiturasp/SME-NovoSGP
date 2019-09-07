@@ -37,11 +37,11 @@ namespace SME.SGP.Integracao.Teste
 
             var jsonParaPost = new StringContent(TransformarEmJson(planoDeCicloDto), UnicodeEncoding.UTF8, "application/json");
 
-            var postResult = _fixture._clientApi.PostAsync("api/v1/planos-ciclo/", jsonParaPost).Result;
+            var postResult = _fixture._clientApi.PostAsync("api/v1/planos/ciclo/", jsonParaPost).Result;
 
             if (postResult.IsSuccessStatusCode)
             {
-                var planoCicloCompletoResult = _fixture._clientApi.GetAsync("api/v1/planos-ciclo/2019/1/1").Result;
+                var planoCicloCompletoResult = _fixture._clientApi.GetAsync("api/v1/planos/ciclo/2019/1/1").Result;
                 if (planoCicloCompletoResult.IsSuccessStatusCode)
                 {
                     var planoCicloCompletoDto = JsonConvert.DeserializeObject<PlanoCicloCompletoDto>(planoCicloCompletoResult.Content.ReadAsStringAsync().Result);
@@ -75,11 +75,11 @@ namespace SME.SGP.Integracao.Teste
 
             var jsonParaPost = new StringContent(TransformarEmJson(planoDeCicloDto), UnicodeEncoding.UTF8, "application/json");
 
-            var postResult = _fixture._clientApi.PostAsync("api/v1/planos-ciclo/", jsonParaPost).Result;
+            var postResult = _fixture._clientApi.PostAsync("api/v1/planos/ciclo/", jsonParaPost).Result;
 
             if (postResult.IsSuccessStatusCode)
             {
-                var planoCicloCompletoResult = _fixture._clientApi.GetAsync("api/v1/planos-ciclo/2019/1/1").Result;
+                var planoCicloCompletoResult = _fixture._clientApi.GetAsync("api/v1/planos/ciclo/2019/1/1").Result;
                 if (planoCicloCompletoResult.IsSuccessStatusCode)
                 {
                     var planoCicloCompletoDto = JsonConvert.DeserializeObject<PlanoCicloCompletoDto>(planoCicloCompletoResult.Content.ReadAsStringAsync().Result);

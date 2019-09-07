@@ -10,6 +10,7 @@ import Sider from './componentes-sgp/sider';
 import { store } from './redux';
 import Conteudo from './componentes-sgp/conteudo';
 
+
 const notificacoes = { alertas: [] };
 
 function App() {
