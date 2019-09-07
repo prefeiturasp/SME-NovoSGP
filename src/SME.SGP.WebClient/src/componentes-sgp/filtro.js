@@ -245,6 +245,9 @@ const Filtro = () => {
   const handleClickFora = event => {
     if (
       !event.target.classList.contains('fa-caret-down') &&
+      !event.target.classList.contains(
+        'ant-select-dropdown-menu-item-active'
+      ) &&
       divBuscaRef.current &&
       !divBuscaRef.current.contains(event.target)
     )
