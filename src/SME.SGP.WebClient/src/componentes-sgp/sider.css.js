@@ -4,15 +4,10 @@ import styled from 'styled-components';
 export const MenuBody = styled.div`
   background:${Base.Roxo};
   padding: 0 !important;
-  position: fixed;
 
   .footer-content{
     display: flex;
     justify-content: center;
-  }
-
-  .menu-fixo{
-    position: 'fixed'
   }
 `;
 

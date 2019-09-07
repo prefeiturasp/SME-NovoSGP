@@ -1,5 +1,7 @@
 ﻿using Moq;
 using SME.SGP.Dominio.Interfaces;
+using SME.SGP.Dto;
+using System.Collections.Generic;
 using Xunit;
 
 namespace SME.SGP.Aplicacao.Teste.Consultas
@@ -16,11 +18,22 @@ namespace SME.SGP.Aplicacao.Teste.Consultas
             consultasCiclo = new ConsultasCiclo(repositorioCiclo.Object);
         }
 
-        [Fact(DisplayName = "DeveObterCicloPorAno")]
-        public void DeveObterCicloPorTurmas()
+        [Fact(DisplayName = "DeveObterCiclosFundamentalPorAnoEtapa")]
+        public void DeveObterCiclosFundamentalPorAnoEtapa()
         {
-            consultasCiclo.Selecionar(1);
-            repositorioCiclo.Verify(c => c.ObterCicloPorAno(1), Times.Once);
+            List<string> anos = new List<string>();
+            for (int ano = 1; ano <= 9; ano++) anos.Add(ano.ToString());
+            consultasCiclo.Listar(new Dto.FiltroCicloDto { Anos = anos, AnoSelecionado = "1", Modalidade = 5 });
+            repositorioCiclo.Verify(c => c.ObterCiclosPorAnoModalidade(It.IsAny<FiltroCicloDto>()), Times.Once);
+        }
+
+        [Fact(DisplayName = "DeveObterCiclosMedioPorAnoEtapa")]
+        public void DeveObterCiclosMedioPorAnoEtapa()
+        {
+            List<string> anos = new List<string>();
+            for (int ano = 1; ano <= 3; ano++) anos.Add(ano.ToString());
+            consultasCiclo.Listar(new Dto.FiltroCicloDto { Anos = anos, AnoSelecionado = "1", Modalidade = 6 });
+            repositorioCiclo.Verify(c => c.ObterCiclosPorAnoModalidade(It.IsAny<FiltroCicloDto>()), Times.Once);
         }
     }
 }

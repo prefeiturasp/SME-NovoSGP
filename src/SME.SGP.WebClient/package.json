@@ -29,6 +29,7 @@
     "history": "^4.9.0",
     "immer": "^3.2.0",
     "jquery": "^3.4.1",
+    "lodash": "^4.17.15",
     "moment": "^2.24.0",
     "popper.js": "^1.15.0",
     "prop-types": "^15.7.2",
@@ -42,6 +43,7 @@
     "reactotron-redux": "^3.1.1",
     "redux": "^4.0.4",
     "redux-persist": "^5.10.0",
+    "redux-thunk": "^2.3.0",
     "shortid": "^2.2.14",
     "styled-components": "^4.3.2"
   },
