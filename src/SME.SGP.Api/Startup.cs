@@ -71,7 +71,7 @@ namespace SME.SGP.Api
                 options.AllowValidatingTopLevelNodes = false;
                 options.EnableEndpointRouting = true;
                 options.Filters.Add(new ValidaDtoAttribute());
-                options.Filters.Add(new FiltroExcecoes(Configuration));
+                options.Filters.Add(new FiltroExcecoesAttribute(Configuration));
             }).SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
 
             services.AddSwaggerGen(c =>
@@ -85,6 +85,12 @@ namespace SME.SGP.Api
             {
                 c.BaseAddress = new Uri(Configuration.GetSection("UrlApiJurema").Value);
                 c.DefaultRequestHeaders.Add("Accept", "application/json");
+            });
+
+            services.AddDistributedRedisCache(options =>
+            {
+                options.Configuration = Configuration.GetConnectionString("SGP-Redis");
+                options.InstanceName = Configuration.GetValue<string>("Nome-Instancia-Redis");
             });
 
             services.AddHttpClient<IServicoEOL, ServicoEOL>(c =>
