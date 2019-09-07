@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from 'react';
-import { useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
 import SelectList from '~/componentes/selectList';
 import Card from '~/componentes/card';
@@ -10,22 +9,28 @@ import { Colors } from '~/componentes/colors';
 import Auditoria from '~/componentes/auditoria';
 import api from '~/servicos/api';
 import { erro, sucesso } from '~/servicos/alertas';
+import history from '~/servicos/history';
 
 const AtribuicaoSupervisorCadastro = () => {
+  const [auditoria, setAuditoria] = useState([]);
+
   const [listaDres, setListaDres] = useState([]);
   const [dreSelecionada, setDreSelecionada] = useState('');
 
   const [listaSupervisores, setListaSupervisores] = useState([]);
   const [supervisorSelecionado, setSupervisorSelecionado] = useState('');
+  const [filtroSupervisor, setFiltroSupervisor] = useState('');
 
+  const [listaUESDreAtual, setListaUESDreAtual] = useState([]);
   const [listaUES, setListaUES] = useState([]);
-  const [uesSelecionadas, setUESAtribuidas] = useState([]);
+  const [uesAtribuidas, setUESAtribuidas] = useState([]);
 
   function exibeErro(erros) {
     if (erros && erros.response && erros.response.data)
       erros.response.data.mensagens.forEach(mensagem => erro(mensagem));
   }
-  // carrega dres
+
+  // 1 - carrega dres
   useEffect(() => {
     async function obterListaDres() {
       await api
@@ -40,20 +45,8 @@ const AtribuicaoSupervisorCadastro = () => {
     obterListaDres();
   }, []);
 
+  // 2 - carrega supervisores e ues
   useEffect(() => {
-    async function obterListaUES() {
-      const url = `v1/dres/${dreSelecionada}/ues/sem-atribuicao`;
-      await api
-        .get(url)
-        .then(resposta => {
-          if (resposta.data)
-            setListaUES(resposta.data.map(c => ({ ...c, key: c.codigo })));
-          else erro('Nenhuma UE sem atribuição para a DRE selecionada.');
-        })
-        .catch(erros => {
-          exibeErro(erros);
-        });
-    }
     async function obterListaSupervisores() {
       const url = `v1/supervisores/dre/${dreSelecionada}`;
       await api
@@ -67,26 +60,57 @@ const AtribuicaoSupervisorCadastro = () => {
     }
 
     if (dreSelecionada) {
-      obterListaUES();
+      setListaSupervisores([]);
       obterListaSupervisores();
+      setSupervisorSelecionado('');
+      setFiltroSupervisor('');
     } else {
       setListaSupervisores([]);
     }
   }, [dreSelecionada]);
 
+  // 3 - carrega ues atribuídas
   useEffect(() => {
-    async function obterListaUESAtribuidas() {
+    async function obterListaUESAtribuidas(uesNaoAtribuidas) {
       await api
         .get(`v1/supervisores/${supervisorSelecionado}/dre/${dreSelecionada}`)
         .then(resposta => {
           if (resposta.data && resposta.data.length) {
+            const listaUesNaoAtribuidas = listaUESDreAtual.length
+              ? listaUESDreAtual
+              : uesNaoAtribuidas;
             const ues = [
-              ...listaUES,
+              ...listaUesNaoAtribuidas,
               ...resposta.data[0].escolas.map(c => ({ ...c, key: c.codigo })),
             ];
             setUESAtribuidas(resposta.data[0].escolas.map(e => e.codigo));
             setListaUES(ues);
-          } else setUESAtribuidas([]);
+            const registro = resposta.data[0];
+            setAuditoria({
+              criadoPor: registro.criadoPor,
+              criadoEm: registro.criadoEm,
+              alteradoPor: registro.alteradoPor,
+              alteradoEm: registro.alteradoEm,
+            });
+          } else {
+            setUESAtribuidas([]);
+          }
+        })
+        .catch(erros => {
+          exibeErro(erros);
+        });
+    }
+    async function obterListaUES() {
+      const url = `v1/dres/${dreSelecionada}/ues/sem-atribuicao`;
+      await api
+        .get(url)
+        .then(resposta => {
+          if (resposta.data.length) {
+            const ues = resposta.data.map(c => ({ ...c, key: c.codigo }));
+            setListaUES([...ues]);
+            setListaUESDreAtual([...ues]);
+            if (supervisorSelecionado) obterListaUESAtribuidas(ues);
+          } // else erro('Nenhuma UE sem atribuição para a DRE selecionada.');
         })
         .catch(erros => {
           exibeErro(erros);
@@ -94,9 +118,10 @@ const AtribuicaoSupervisorCadastro = () => {
     }
 
     if (supervisorSelecionado) {
-      obterListaUESAtribuidas();
+      obterListaUES();
     } else {
       setUESAtribuidas([]);
+      setListaUES([]);
     }
   }, [supervisorSelecionado]);
 
@@ -109,24 +134,38 @@ const AtribuicaoSupervisorCadastro = () => {
   }
 
   function selecionaSupervisor(idSupervisor) {
-    setSupervisorSelecionado(idSupervisor);
+    if (Number(idSupervisor) || !idSupervisor) {
+      setSupervisorSelecionado(idSupervisor);
+    }
+    setFiltroSupervisor(idSupervisor);
   }
 
-  function cancelarAlteracoes() {}
+  function cancelarAlteracoes() {
+    setDreSelecionada('');
+    setSupervisorSelecionado('');
+    setFiltroSupervisor('');
+  }
 
   async function salvarAtribuicao() {
     const atribuicao = {
       dreId: dreSelecionada,
       supervisorId: supervisorSelecionado,
-      uesIds: uesSelecionadas,
+      uesIds: uesAtribuidas,
     };
     await api
       .post('v1/supervisores/atribuir-ue', atribuicao)
-      .then(resposta => sucesso('Atribuição realizada com sucesso.'))
+      .then(() => {
+        sucesso('Atribuição realizada com sucesso.');
+        history.push('/');
+      })
       .catch(erros => {
         exibeErro(erros);
       });
   }
+
+  const filtraSupervisor = (item, texto) => {
+    return item.supervisorNome.toLowerCase().indexOf(texto) > -1;
+  };
 
   return (
     <>
@@ -139,15 +178,18 @@ const AtribuicaoSupervisorCadastro = () => {
             color={Colors.Azul}
             border
             className="mr-3"
+            onClick={() => history.push('/')}
           />
-          <Button
-            label="Cancelar"
-            color={Colors.Roxo}
-            border
-            bold
-            className="mr-3"
-            onClick={cancelarAlteracoes}
-          />
+          {dreSelecionada && supervisorSelecionado && (
+            <Button
+              label="Cancelar"
+              color={Colors.Roxo}
+              border
+              bold
+              className="mr-3"
+              onClick={cancelarAlteracoes}
+            />
+          )}
           <Button
             label="Salvar"
             color={Colors.Roxo}
@@ -179,21 +221,25 @@ const AtribuicaoSupervisorCadastro = () => {
             valueField="supervisorId"
             textField="supervisorNome"
             onSelect={selecionaSupervisor}
+            onChange={selecionaSupervisor}
+            value={filtroSupervisor}
+            filtro={filtraSupervisor}
           />
         </div>
         <SelectList
           id="select-list-supervisor"
           dados={listaUES}
-          targetKeys={uesSelecionadas}
+          targetKeys={uesAtribuidas}
           handleChange={handleChange}
           titulos={["UE'S SEM ATRIBUIÇÃO", "UE'S ATRIBUIDAS AO SUPERVISOR"]}
           texto="nome"
           codigo="codigo"
-          // selecionados={uesSelecionadas}
         />
         <Auditoria
-          inserido="INSERIDO por ELISANGELA DOS SANTOS ARRUDA em 02/05/2019 às 20:28"
-          alterado="ALTERADO por JOÃO DA SILVA em 02/05/2019 às 20:28"
+          criadoEm={auditoria.criadoEm}
+          criadoPor={auditoria.criadoPor}
+          alteradoPor={auditoria.alteradoPor}
+          alteradoEm={auditoria.alteradoEm}
         />
       </Card>
     </>
