@@ -43,7 +43,7 @@ namespace SME.SGP.Dados.Repositorios
             query.AppendLine("	tipo_ciclo tc inner join tipo_ciclo_ano tca on tc.id = tca.tipo_ciclo_id ");
             query.AppendLine("WHERE ");
             query.AppendLine($"  tca.Ano = '{filtroCicloDto.AnoSelecionado}'");
-            query.AppendLine($"  AND etapa_id = {filtroCicloDto.Modalidade}");
+            query.AppendLine($"  AND modalidade = {filtroCicloDto.Modalidade}");
             query.AppendLine(" UNION ");
             query.AppendLine("SELECT");
             query.AppendLine("	tc.id,");
@@ -53,7 +53,7 @@ namespace SME.SGP.Dados.Repositorios
             query.AppendLine("	tipo_ciclo tc inner join tipo_ciclo_ano tca on tc.id = tca.tipo_ciclo_id ");
             query.AppendLine("WHERE ");
             query.AppendLine($"  tca.Ano IN ({anos})");
-            query.AppendLine($"  AND etapa_id = {filtroCicloDto.Modalidade} ");
+            query.AppendLine($"  AND modalidade = {filtroCicloDto.Modalidade} ");
             query.AppendLine($"ORDER BY Selecionado DESC");
             return database.Conexao.Query<CicloDto>(query.ToString()).ToList();
         }
