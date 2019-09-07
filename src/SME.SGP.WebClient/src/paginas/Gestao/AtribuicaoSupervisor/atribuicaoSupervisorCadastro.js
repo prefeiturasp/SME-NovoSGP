@@ -10,7 +10,6 @@ import { Colors } from '~/componentes/colors';
 import Auditoria from '~/componentes/auditoria';
 import api from '~/servicos/api';
 import { erro, sucesso } from '~/servicos/alertas';
-import Alert from '~/componentes/alert';
 
 const AtribuicaoSupervisorCadastro = () => {
   const [listaDres, setListaDres] = useState([]);
@@ -20,13 +19,13 @@ const AtribuicaoSupervisorCadastro = () => {
   const [supervisorSelecionado, setSupervisorSelecionado] = useState('');
 
   const [listaUES, setListaUES] = useState([]);
-  const [uesSelecionadas, setUESSelecionadas] = useState([]);
+  const [uesSelecionadas, setUESAtribuidas] = useState([]);
 
   function exibeErro(erros) {
     if (erros && erros.response && erros.response.data)
       erros.response.data.mensagens.forEach(mensagem => erro(mensagem));
   }
-
+  // carrega dres
   useEffect(() => {
     async function obterListaDres() {
       await api
@@ -42,41 +41,6 @@ const AtribuicaoSupervisorCadastro = () => {
   }, []);
 
   useEffect(() => {
-    async function obterListaUESAtribuidas() {
-      await api
-        .get(`v1/supervisores/${supervisorSelecionado}/dre/${dreSelecionada}`)
-        .then(resposta => {
-          if (resposta.data && resposta.data.length) {
-            const ues = [
-              ...listaUES,
-              ...resposta.data[0].escolas.map(c => ({ ...c, key: c.codigo })),
-            ];
-            setListaUES(ues);
-
-            setUESSelecionadas(resposta.data[0].escolas.map(e => e.codigo));
-          } else setUESSelecionadas([]);
-        })
-        .catch(erros => {
-          exibeErro(erros);
-        });
-    }
-    if (supervisorSelecionado) obterListaUESAtribuidas();
-    else setUESSelecionadas([]);
-  }, [supervisorSelecionado]);
-
-  useEffect(() => {
-    async function obterListaSupervisores() {
-      const url = `v1/supervisores/dre/${dreSelecionada}`;
-      await api
-        .get(url)
-        .then(resposta => {
-          setListaSupervisores(resposta.data);
-        })
-        .catch(erros => {
-          exibeErro(erros);
-        });
-    }
-
     async function obterListaUES() {
       const url = `v1/dres/${dreSelecionada}/ues/sem-atribuicao`;
       await api
@@ -90,14 +54,54 @@ const AtribuicaoSupervisorCadastro = () => {
           exibeErro(erros);
         });
     }
+    async function obterListaSupervisores() {
+      const url = `v1/supervisores/dre/${dreSelecionada}`;
+      await api
+        .get(url)
+        .then(resposta => {
+          setListaSupervisores(resposta.data);
+        })
+        .catch(erros => {
+          exibeErro(erros);
+        });
+    }
+
     if (dreSelecionada) {
-      obterListaSupervisores();
       obterListaUES();
+      obterListaSupervisores();
+    } else {
+      setListaSupervisores([]);
     }
   }, [dreSelecionada]);
 
+  useEffect(() => {
+    async function obterListaUESAtribuidas() {
+      await api
+        .get(`v1/supervisores/${supervisorSelecionado}/dre/${dreSelecionada}`)
+        .then(resposta => {
+          if (resposta.data && resposta.data.length) {
+            const ues = [
+              ...listaUES,
+              ...resposta.data[0].escolas.map(c => ({ ...c, key: c.codigo })),
+            ];
+            setUESAtribuidas(resposta.data[0].escolas.map(e => e.codigo));
+            setListaUES(ues);
+          } else setUESAtribuidas([]);
+        })
+        .catch(erros => {
+          exibeErro(erros);
+        });
+    }
+
+    if (supervisorSelecionado) {
+      obterListaUESAtribuidas();
+    } else {
+      setUESAtribuidas([]);
+    }
+  }, [supervisorSelecionado]);
+
   function handleChange(targetKeys) {
-    setUESSelecionadas(targetKeys);
+    setUESAtribuidas(targetKeys);
   }
 
   function selecionaDre(idDre) {
@@ -123,16 +127,10 @@ const AtribuicaoSupervisorCadastro = () => {
         exibeErro(erros);
       });
   }
-  const notificacoes = useSelector(state => state.notificacoes);
 
   return (
     <>
       <h3>Atribuição de Supervisor</h3>
-      <div className="col-md-12">
-        {notificacoes.alertas.map(alerta => (
-          <Alert alerta={alerta} key={alerta.id} />
-        ))}
-      </div>
       <Card>
         <div className="col-xs-12 col-md-6 col-lg-12 d-flex justify-content-end mb-4">
           <Button
@@ -180,8 +178,7 @@ const AtribuicaoSupervisorCadastro = () => {
             lista={listaSupervisores}
             valueField="supervisorId"
             textField="supervisorNome"
-            onChange={selecionaSupervisor}
-            valueSelect={supervisorSelecionado}
+            onSelect={selecionaSupervisor}
           />
         </div>
         <SelectList
