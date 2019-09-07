@@ -1,13 +1,11 @@
-import 'react-quill/dist/quill.snow.css';
-import PropTypes from 'prop-types';
 import React from 'react';
-import ReactQuill from 'react-quill';
 import styled from 'styled-components';
 
-const TextEditor = props => {
-  const { modules, onChange, height, value } = props;
+const Container = props => {
 
-  const Container = styled.div`
+  const { height, children, maxHeight, id} = props;
+
+  const Retorno = styled.div`
     .ql-container.ql-snow {
       border: 1px solid rgba(0, 0, 0, 0.125) !important;
       border-bottom: none !important;
@@ -16,8 +14,8 @@ const TextEditor = props => {
     }
 
     .ql-editor {
-      min-height: ${height}px;
-      max-height: 515px;
+      min-height: ${height || "100px"};
+      max-height: ${maxHeight || "420px"};
       overflow: auto;
     }
 
@@ -41,18 +39,7 @@ const TextEditor = props => {
     }
   `;
 
-  return (
-    <Container>
-      <ReactQuill onChange={onChange} modules={modules} value={value} />
-    </Container>
-  );
+  return <Retorno id={id || "textEditor"}>{children}</Retorno>;
 };
 
-TextEditor.propTypes = {
-  modules: PropTypes.object,
-  onChange: PropTypes.func,
-  height: PropTypes.number,
-  value: PropTypes.string,
-};
-
-export default TextEditor;
+export default Container;
