@@ -1,10 +1,11 @@
-﻿using System.Collections.Generic;
-using SME.SGP.Aplicacao.Integracoes.Respostas;
+﻿using SME.SGP.Aplicacao.Integracoes.Respostas;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao.Integracoes
 {
     public interface IServicoJurema
     {
-        IEnumerable<ObjetivoAprendizagemResposta> ObterListaObjetivosAprendizagem();
+        Task<IEnumerable<ObjetivoAprendizagemResposta>> ObterListaObjetivosAprendizagem();
     }
 }

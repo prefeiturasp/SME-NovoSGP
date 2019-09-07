@@ -5,7 +5,7 @@ import shortid from 'shortid';
 import { Base } from './colors';
 
 const CardHeader = props => {
-  const { indice, children, border, icon, show } = props;
+  const { indice, children, border, icon, show, onclick } = props;
 
   const Header = styled.div`
     ${border
@@ -41,6 +41,7 @@ const CardHeader = props => {
     const header = event.target.parentElement.parentElement.classList;
     if (!header.contains('expanded')) header.add('expanded');
     else header.remove('expanded');
+    onclick && onclick();
   };
 
   return (
