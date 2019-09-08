@@ -23,6 +23,7 @@ export default createGlobalStyle`
   body {
     -webkit-font-smoothing: antialiased;
     background: ${Base.CinzaFundo} !important;
+    overflow-x: hidden;
   }
   button {
     cursor: pointer;
