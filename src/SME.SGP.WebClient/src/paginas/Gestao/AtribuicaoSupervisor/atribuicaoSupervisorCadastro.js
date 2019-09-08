@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from 'react';
-import PropTypes from 'prop-types';
 import SelectList from '~/componentes/selectList';
 import Card from '~/componentes/card';
 import SelectComponent from '~/componentes/select';
