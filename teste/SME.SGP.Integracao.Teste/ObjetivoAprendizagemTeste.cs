@@ -25,6 +25,9 @@ namespace SME.SGP.Integracao.Teste
             fixture._clientApi.DefaultRequestHeaders.Clear();
 
             var filtros = new FiltroObjetivosAprendizagemDto();
+            filtros.ComponentesCurricularesIds.Add(139);
+            filtros.Ano = 3;
+
             var jsonParaPost = new StringContent(TransformarEmJson(filtros), UnicodeEncoding.UTF8, "application/json");
 
             var getResult = fixture._clientApi.PostAsync("api/v1/objetivos-aprendizagem/", jsonParaPost).Result;

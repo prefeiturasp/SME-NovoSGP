@@ -154,7 +154,7 @@ export default function PlanoCiclo() {
   async function obterCicloExistente(ano, escolaId, cicloId) {
     resetListas();
     const ciclo = await api.get(
-      `v1/planos-ciclo/${ano}/${cicloId}/${escolaId}`
+      `v1/planos/ciclo/${ano}/${cicloId}/${escolaId}`
     );
 
     setPlanoCicloId(ciclo.data.id);
@@ -378,7 +378,7 @@ export default function PlanoCiclo() {
       idsObjetivosDesenvolvimento,
     };
 
-    api.post('v1/planos-ciclo', params).then(
+    api.post('v1/planos/ciclo', params).then(
       () => {
         sucesso('Suas informações foram salvas com sucesso.');
         if (navegarParaPlanejamento) {
