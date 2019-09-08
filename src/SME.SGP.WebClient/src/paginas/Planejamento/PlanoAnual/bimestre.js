@@ -49,7 +49,7 @@ const BimestreComponent = props => {
     obterObjetivos();
   }, [materias]);
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     focarObjetivo();
   }, [objetivos]);
 
