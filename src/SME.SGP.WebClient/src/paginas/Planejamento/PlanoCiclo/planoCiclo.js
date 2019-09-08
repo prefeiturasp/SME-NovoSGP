@@ -435,13 +435,16 @@ export default function PlanoCiclo() {
         <ModalConfirmacao
           id="modal-confirmacao-cancelar"
           visivel={exibirConfirmacaoCancelar}
-          onConfirmacaoSim={() => {
+          onConfirmacaoSecundaria={() => {
             confirmarCancelamento();
             setExibirConfirmacaoCancelar(false);
           }}
-          onConfirmacaoNao={() => setExibirConfirmacaoCancelar(false)}
+          onConfirmacaoPrincipal={() => setExibirConfirmacaoCancelar(false)}
+          onClose={() => setExibirConfirmacaoCancelar(false)}
           conteudo="Você não salvou as informações preenchidas."
           perguntaDoConteudo="Deseja realmente cancelar as alterações?"
+          labelPrincipal="Não"
+          labelSecundaria="Sim"
           titulo="Atenção"
         />
         <ModalConfirmacao
@@ -461,22 +464,28 @@ export default function PlanoCiclo() {
             setModoEdicao(false);
             history.push('/');
           }}
-          labelPrincipal="Não"
-          labelSecundaria="Sim"
+          labelPrincipal="Sim"
+          labelSecundaria="Não"
           perguntaDoConteudo="Suas alterações não foram salvas, deseja salvar agora?"
           titulo="Atenção"
         />
         <ModalConfirmacao
           id="modal-confirmacao-troca-ciclo"
           visivel={exibirConfirmacaoTrocaCiclo}
-          onConfirmacaoSim={() => {
+          onConfirmacaoPrincipal={() => {
             salvarPlanoCiclo(false);
             setExibirConfirmacaoTrocaCiclo(false);
           }}
-          onConfirmacaoNao={() => {
+          onConfirmacaoSecundaria={() => {
             setExibirConfirmacaoTrocaCiclo(false);
             trocaCiclo(cicloParaTrocar);
           }}
+          onClose={() => {
+            setExibirConfirmacaoTrocaCiclo(false);
+            trocaCiclo(cicloParaTrocar);
+          }}
+          labelPrincipal="Sim"
+          labelSecundaria="Não"
           perguntaDoConteudo="Suas alterações não foram salvas, deseja salvar agora?"
           titulo="Atenção"
         />
