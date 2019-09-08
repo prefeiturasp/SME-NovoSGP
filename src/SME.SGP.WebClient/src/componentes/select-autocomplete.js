@@ -15,9 +15,7 @@ const Container = styled.div`
     align-items: center;
     display: flex;
   }
-  .ant-select-auto-complete.ant-select .ant-select-selection--single {
-    height: 38px;
-  }
+
   .ant-select-selection__rendered {
     width: 100%;
   }
@@ -26,6 +24,12 @@ const Container = styled.div`
   }
   .ant-select-selection-selected-value {
     font-weight: bold;
+  }
+  .ant-select-auto-complete.ant-select .ant-input {
+    height: 38px;
+    line-height: 1.5;
+    background: transparent;
+    border-width: 1px;
   }
 `;
 
