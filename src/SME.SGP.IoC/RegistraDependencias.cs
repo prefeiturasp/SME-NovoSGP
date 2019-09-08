@@ -6,6 +6,7 @@ using SME.SGP.Dados.Contexto;
 using SME.SGP.Dados.Repositorios;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
+using SME.SGP.Dominio.Servicos;
 
 namespace SME.SGP.IoC
 {
@@ -17,6 +18,7 @@ namespace SME.SGP.IoC
             RegistrarContextos(services);
             RegistrarComandos(services);
             RegistrarConsultas(services);
+            RegistrarServicos(services);
         }
 
         private static void RegistrarComandos(IServiceCollection services)
@@ -52,6 +54,12 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IRepositorioCiclo, RepositorioCiclo>();
             services.TryAddScoped<IRepositorioNotificacao, RepositorioNotificacao>();
             services.TryAddScoped<IRepositorioWorkflowAprovaNivel, RepositorioWorkflowAprovaNivel>();
+            services.TryAddScoped<IRepositorioWorkflowAprovaNivelNotificacao, RepositorioWorkflowAprovaNivelNotificacao>();
+        }
+
+        private static void RegistrarServicos(IServiceCollection services)
+        {
+            services.TryAddScoped<IServicoWorkflowAprovaNivel, ServicoWorkflowAprovaNivel>();
         }
     }
 }
