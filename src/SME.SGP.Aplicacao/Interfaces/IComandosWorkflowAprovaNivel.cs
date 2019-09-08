@@ -5,6 +5,6 @@ namespace SME.SGP.Aplicacao
 {
     public interface IComandosWorkflowAprovaNivel
     {
-        void SalvarListaDto(IEnumerable<WorkflowAprovaNivelDto> workflowAprovacaoNiveisDto);
+        void SalvarListaDto(IEnumerable<WorkflowAprovacaoNiveisDto> workflowAprovacaoNiveisDto);
     }
 }

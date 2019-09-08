@@ -17,7 +17,7 @@ namespace SME.SGP.Aplicacao
             this.unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
         }
 
-        public void SalvarListaDto(IEnumerable<WorkflowAprovaNivelDto> workflowAprovacaoNiveisDto)
+        public void SalvarListaDto(IEnumerable<WorkflowAprovacaoNiveisDto> workflowAprovacaoNiveisDto)
         {
             var chave = Guid.NewGuid().ToString();
             unitOfWork.IniciarTransacao();
@@ -28,9 +28,9 @@ namespace SME.SGP.Aplicacao
             unitOfWork.PersistirTransacao();
         }
 
-        private WorkflowAprovaNivel MapearParaEntidade(WorkflowAprovaNivelDto workflowAprovacaoNivelDto, string chave)
+        private WorkflowAprovacao MapearParaEntidade(WorkflowAprovacaoNiveisDto workflowAprovacaoNivelDto, string chave)
         {
-            return new WorkflowAprovaNivel()
+            return new WorkflowAprovacao()
             {
                 Ano = workflowAprovacaoNivelDto.Ano,
                 Descricao = workflowAprovacaoNivelDto.Descricao,
@@ -43,9 +43,9 @@ namespace SME.SGP.Aplicacao
             };
         }
 
-        private void SalvarDto(WorkflowAprovaNivelDto workflowAprovacaoNivelDto, string chave)
+        private void SalvarDto(WorkflowAprovacaoNiveisDto workflowAprovacaoNivelDto, string chave)
         {
-            WorkflowAprovaNivel workflowAprovaNivel = MapearParaEntidade(workflowAprovacaoNivelDto, chave);
+            WorkflowAprovacao workflowAprovaNivel = MapearParaEntidade(workflowAprovacaoNivelDto, chave);
             repositorioWorkflowAprovaNivel.Salvar(workflowAprovaNivel);
         }
     }
