@@ -2,11 +2,11 @@
 
 namespace SME.SGP.Dados.Mapeamentos
 {
-    public class WorkflowAprovaNiveisMap : BaseMap<WorkflowAprovaNiveis>
+    public class WorkflowAprovaNivelMap : BaseMap<WorkflowAprovaNivel>
     {
-        public WorkflowAprovaNiveisMap()
+        public WorkflowAprovaNivelMap()
         {
-            ToTable("wf_aprova_niveis");
+            ToTable("wf_aprova_nivel");
             Map(c => c.UsuarioId).ToColumn("usuario_id");
             Map(c => c.EscolaId).ToColumn("escola_id");
             Map(c => c.DreId).ToColumn("dre_id");

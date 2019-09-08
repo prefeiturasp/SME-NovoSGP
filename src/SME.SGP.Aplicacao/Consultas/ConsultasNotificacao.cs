@@ -40,7 +40,7 @@ namespace SME.SGP.Aplicacao
             if (notificacao == null)
                 throw new NegocioException($"Notificação de Id: '{notificacaoId}' não localizada.");
 
-            if (notificacao.Status != NotificacaoStatus.Lida && notificacao.DeveSerMarcadoComoLidaAoObterDetalhe())
+            if (notificacao.Status != NotificacaoStatus.Lida && notificacao.MarcarComoLidaAoObterDetalhe())
                 repositorioNotificacao.Salvar(notificacao);
 
             var detalheDto = MapearEntidadeParaDetalheDto(notificacao);

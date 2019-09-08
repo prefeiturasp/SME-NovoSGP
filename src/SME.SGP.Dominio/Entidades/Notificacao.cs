@@ -21,7 +21,7 @@
         public string TurmaId { get; set; }
         public string UsuarioId { get; set; }
 
-        public bool DeveSerMarcadoComoLidaAoObterDetalhe()
+        public bool MarcarComoLidaAoObterDetalhe()
         {
             if (Categoria == NotificacaoCategoria.Aviso)
             {
