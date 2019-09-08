@@ -4,6 +4,7 @@ import Filtro from './filtro';
 import styled from 'styled-components';
 import LogoDoSgp from '../recursos/LogoDoSgp.svg';
 import { Base } from '../componentes/colors';
+import { useSelector } from 'react-redux';
 
 const Navbar = () => {
   const Nav = styled.nav`
@@ -36,14 +37,14 @@ const Navbar = () => {
 
   const BtnSair = styled.a``;
 
-  const collapsed = false;
+  const collapsed = useSelector(state => state.menu.collapsed);
 
   return (
     <Nav className="navbar navbar-expand-md navbar-light bg-white shadow-sm sticky-top">
       <Link
         className={`navbar-brand ${
           collapsed
-            ? 'col-lg-2 col-md-2 col-sm-2 col-xl-1'
+            ? 'col-lg-2 col-md-2 col-sm-2 col-xl-1 pl-0'
             : 'col-sm-4 col-md-3 col-lg-3 col-xl-2'
         }`}
         to="/"
