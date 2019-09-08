@@ -29,10 +29,21 @@ const erro = mensagem => {
   exibirAlerta('danger', mensagem);
 };
 
-const confirmacao = (titulo, texto, confirmar, cancelar) => {
+const confirmacao = (
+  titulo,
+  texto,
+  confirmar,
+  cancelar,
+  okText,
+  okType,
+  cancelText
+) => {
   confirm({
     title: titulo,
     content: texto,
+    okText: okText || 'Confirmar',
+    okType: okType || 'primary',
+    cancelText: cancelText || 'Cancelar',
     onOk() {
       confirmar();
     },

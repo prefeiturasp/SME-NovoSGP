@@ -1,5 +1,5 @@
 import Servico from '../../../servicos/Paginas/PlanoAnualServices';
-import { sucesso, erro, erroMensagem } from '../../../servicos/alertas';
+import { sucesso, erro } from '../../../servicos/alertas';
 
 export function Salvar(indice, bimestre) {
   return {
