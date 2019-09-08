@@ -13,6 +13,9 @@
         public string DreId { get; set; }
         public string EscolaId { get; set; }
         public int Nivel { get; set; }
+        public string NotifacaoMensagem { get; set; }
+        public string NotifacaoTitulo { get; set; }
+        public NotificacaoTipo NotificacaoTipo { get; set; }
         public WorkflowAprovaNiveisStatus Status { get; set; }
         public string TurmaId { get; set; }
         public string UsuarioId { get; set; }
