@@ -164,7 +164,6 @@ const SelectList = props => {
           targetKeys={targetKeys}
           onChange={handleChange}
           render={item => `${item[codigo]} ${item[texto]}`}
-          // selectedKeys={selecionados}
         />
       </Container>
     </div>
