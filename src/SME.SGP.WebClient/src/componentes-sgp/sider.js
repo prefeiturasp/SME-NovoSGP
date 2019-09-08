@@ -5,7 +5,7 @@ import { Base } from '../componentes/colors';
 import { MenuBody, DivFooter, MenuScope, Topo } from './sider.css'
 import LogoMenuFooter from '../recursos/LogoMenuFooter.svg';
 import { store } from '../redux';
-import { menuCollapsed } from '../redux/modulos/menu/actions'
+import { menuCollapsed } from '../redux/modulos/navegacao/actions'
 
 const Sider = () => {
 

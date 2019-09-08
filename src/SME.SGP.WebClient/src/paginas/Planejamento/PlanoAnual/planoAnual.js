@@ -18,7 +18,7 @@ import Service from '../../../servicos/Paginas/PlanoAnualServices';
 import Alert from '../../../componentes/alert';
 import ModalMultiLinhas from '../../../componentes/modalMultiLinhas';
 
-export default function PlanoAnual() {
+export default function PlanoAnual(props) {
   const bimestres = useSelector(store => store.bimestres.bimestres);
   const notificacoes = useSelector(store => store.notificacoes);
   const bimestresErro = useSelector(store => store.bimestres.bimestresErro);
@@ -49,13 +49,11 @@ export default function PlanoAnual() {
 
     verificarSeEhEdicao();
 
-    console.log(turmaSelecionada);
   }, [usuario]);
 
   useEffect(() => {
     VerificarEnvio();
 
-    console.log(bimestres);
   }, [bimestres]);
 
   const VerificarEnvio = () => {
