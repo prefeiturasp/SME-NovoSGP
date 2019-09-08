@@ -43,9 +43,7 @@ export default function PlanoAnual() {
   const anoEscolar = turmaSelecionada[0] ? turmaSelecionada[0].ano : 0;
   const turmaId = turmaSelecionada[0] ? turmaSelecionada[0].codTurma : 0;
 
-  useEffect(() => {
-    window.onpopstate = onBackButtonEvent;
-  }, []);
+  useEffect(() => {}, []);
 
   useEffect(() => {
     if ((!bimestres || bimestres.length === 0) && !ehDisabled)
@@ -56,22 +54,15 @@ export default function PlanoAnual() {
 
   useEffect(() => {
     VerificarEnvio();
-
-    console.log(bimestres);
   }, [bimestres]);
 
   const onF5Click = e => {
     if ((e.which || e.keyCode) == 116) {
-      console.log(emEdicao);
       if (emEdicao) {
         e.preventDefault();
         setModalConfirmacaoVisivel(true);
       }
     }
-  };
-
-  const onBackButtonEvent = e => {
-    console.log(e);
   };
 
   document.onkeydown = onF5Click;
