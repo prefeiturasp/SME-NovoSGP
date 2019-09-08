@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useLayoutEffect, useRef } from 'react';
 import { useSelector } from 'react-redux';
 import styled from 'styled-components';
 import shortid from 'shortid';
@@ -27,7 +27,7 @@ const Filtro = () => {
   const [modalidadesFiltro, setModalidadesFiltro] = useState([]);
   const [
     modalidadeFiltroSelecionada,
-    setmodalidadeFiltroSelecionada,
+    setModalidadeFiltroSelecionada,
   ] = useState();
 
   const [periodosFiltro, setPeriodosFiltro] = useState([]);
@@ -52,7 +52,7 @@ const Filtro = () => {
   const [turmaUeSelecionada, setTurmaUeSelecionada] = useState();
 
   const Container = styled.div`
-    margin-left: -4px;
+    margin-left: -3px;
     max-width: 571px !important;
   `;
 
@@ -116,17 +116,24 @@ const Filtro = () => {
   const inputBuscaRef = useRef();
   const [queryAutocomplete, setQueryAutocomplete] = useState();
 
+  const divBuscaRef = useRef();
+
   const usuario = useSelector(state => state.usuario);
 
   const buscaDadosPoRf = async rf => {
-    await api.get(`v1/professores/${rf}/turmas`).then(res => {
-      if (res.data.length > 0) setDados(res.data);
-    });
+    await api
+      .get(
+        `http://hom-integracao.sme.prefeitura.sp.gov.br/api/v1/professores/${rf}/turmas`
+      )
+      .then(res => {
+        if (res.data.length > 0) setDados(res.data);
+        else erro('Usuário sem turmas atribuídas!');
+      });
   };
 
   useEffect(() => {
     if (usuario.rf.length > 0) {
-      buscaDadosPoRf(usuario.rf[0]);
+      if (dados.length === 0) buscaDadosPoRf(usuario.rf);
     }
     if (usuario.turmaSelecionada.length > 0) {
       const {
@@ -135,11 +142,20 @@ const Filtro = () => {
         tipoEscola,
         ue,
       } = usuario.turmaSelecionada[0];
-      setTurmaUeSelecionada(
-        `${modalidade.trim()} - ${nomeTurma.trim()} - ${tipoEscola.trim()} - ${ue.trim()}`
-      );
+      const selecionada = `${modalidade.trim()} - ${nomeTurma.trim()} - ${tipoEscola.trim()} - ${ue.trim()}`;
+      setTurmaUeSelecionada(selecionada);
     }
   }, [usuario.turmaSelecionada, usuario.rf]);
+
+  const ordenaTurmas = (x, y) => {
+    const a = x.turma.toLowerCase();
+    const b = y.turma.toLowerCase();
+
+    if (a > b) return 1;
+    else if (a < b) return -1;
+
+    return 0;
+  };
 
   useEffect(() => {
     const anosLetivos = [];
@@ -167,8 +183,8 @@ const Filtro = () => {
         });
       }
 
-      if (dado.tipoSemestre === 2 && periodos.length < 2) {
-        for (let semestre = 1; semestre <= dado.tipoSemestre; semestre++) {
+      if (dado.semestre === 2) {
+        for (let semestre = 1; semestre <= dado.semestre; semestre++) {
           if (periodos.findIndex(periodo => periodo.codigo === semestre) < 0) {
             periodos.push({
               codigo: semestre,
@@ -206,22 +222,12 @@ const Filtro = () => {
     });
 
     setAnosLetivosFiltro([...anosLetivos]);
-    setAnoLetivoFiltroSelecionado('2019');
+    if (anosLetivos.length > 0) setAnoLetivoFiltroSelecionado('2019');
 
     setModalidadesFiltro([...modalidades]);
     setPeriodosFiltro([...periodos]);
     setDresFiltro([...dres]);
     setUnidadesEscolaresFiltro([...unidadesEscolares]);
-
-    const ordenaTurmas = (x, y) => {
-      const a = x.turma.toLowerCase();
-      const b = y.turma.toLowerCase();
-
-      if (a > b) return 1;
-      else if (a < b) return -1;
-
-      return 0;
-    };
 
     store.dispatch(turmasUsuario(turmas.sort(ordenaTurmas)));
     selecionaTurmaCasosEspecificos();
@@ -231,18 +237,50 @@ const Filtro = () => {
     inputBuscaRef.current.focus();
   }, [queryAutocomplete]);
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     if (!toggleBusca && toggleInputFocus) inputBuscaRef.current.focus();
+    if (toggleBusca) document.addEventListener('click', handleClickFora);
   }, [toggleBusca, toggleInputFocus]);
+
+  const handleClickFora = event => {
+    if (
+      !event.target.classList.contains('fa-caret-down') &&
+      divBuscaRef.current &&
+      !divBuscaRef.current.contains(event.target)
+    )
+      mostraBusca();
+  };
+
+  useEffect(() => {
+    const turmas = [];
+    dados
+      .filter(dado => {
+        return dado.codModalidade.toString() === modalidadeFiltroSelecionada;
+      })
+      .forEach(dado => {
+        if (turmas.findIndex(turma => turma.codigo === dado.codTurma) < 0) {
+          turmas.push({
+            codigo: dado.codTurma,
+            ano: dado.ano,
+            turma: dado.nomeTurma,
+          });
+        }
+      });
+    store.dispatch(turmasUsuario(turmas.sort(ordenaTurmas)));
+  }, [modalidadeFiltroSelecionada]);
 
   const selecionaTurmaCasosEspecificos = () => {
     if (dados.length === 1) {
-      setmodalidadeFiltroSelecionada(dados[0].codModalidade.toString());
+      setModalidadeFiltroSelecionada(dados[0].codModalidade.toString());
       setDreFiltroSelecionada(dados[0].codDre.toString());
       setUnidadeEscolarFiltroSelecionada(dados[0].codEscola.toString());
       setTurmaFiltroSelecionada(dados[0].codTurma.toString());
+      store.dispatch(selecionarTurma(dados));
     } else if (dresFiltro.length === 1) {
       setDreFiltroSelecionada(dresFiltro[0].codigo.toString());
+      if (unidadesEscolaresFiltro.length === 1) {
+        setUnidadeEscolarFiltroSelecionada(unidadesEscolaresFiltro[0].codigo);
+      }
     }
   };
 
@@ -289,7 +327,7 @@ const Filtro = () => {
   };
 
   const onChangeModalidade = modalidade => {
-    setmodalidadeFiltroSelecionada(modalidade);
+    setModalidadeFiltroSelecionada(modalidade);
   };
 
   const onChangePeriodo = periodo => {
@@ -336,14 +374,14 @@ const Filtro = () => {
     ) {
       selecionaTurma();
     } else {
-      erro('Preencha todos os dados da turma!');
+      erro('É necessário informar todos os dados da turma!');
     }
   };
 
   const removerTurmaSelecionada = () => {
     store.dispatch(removerTurma());
     setQueryAutocomplete();
-    setmodalidadeFiltroSelecionada();
+    setModalidadeFiltroSelecionada();
     setPeriodoFiltroSelecionado();
     setDreFiltroSelecionada();
     setUnidadeEscolarFiltroSelecionada();
@@ -395,7 +433,10 @@ const Filtro = () => {
           </div>
         )}
         {toggleBusca && (
-          <div className="container position-absolute bg-white shadow rounded mt-1 px-3 pt-5 pb-1">
+          <div
+            ref={divBuscaRef}
+            className="container position-absolute bg-white shadow rounded mt-1 px-3 pt-5 pb-1"
+          >
             <div className="form-row">
               <Grid cols={3} className="form-group">
                 <SelectComponent

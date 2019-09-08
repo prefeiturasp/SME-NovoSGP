@@ -23,6 +23,7 @@ export default createGlobalStyle`
   body {
     -webkit-font-smoothing: antialiased;
     background: ${Base.CinzaFundo} !important;
+    overflow-x: hidden;
   }
   button {
     cursor: pointer;
@@ -51,6 +52,10 @@ export default createGlobalStyle`
   .ant-select-dropdown-menu-item-selected {
     background-color:  ${Base.Roxo}  !important;
     color: #ffffff !important;
+  }
+
+  .ant-select-selected-icon {
+    color: white !important;
   }
 
   .desabilitar-elemento {

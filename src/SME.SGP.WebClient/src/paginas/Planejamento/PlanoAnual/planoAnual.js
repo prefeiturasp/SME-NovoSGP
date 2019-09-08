@@ -1,11 +1,10 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import {
   Salvar,
   PrePost,
   Post,
 } from '../../../redux/modulos/planoAnual/action';
-import { salvarRf } from '../../../redux/modulos/usuario/actions';
 import Grid from '../../../componentes/grid';
 import Button from '../../../componentes/button';
 import { Colors, Base } from '../../../componentes/colors';
@@ -13,10 +12,12 @@ import _ from 'lodash';
 import Card from '../../../componentes/card';
 import Bimestre from './bimestre';
 import Row from '../../../componentes/row';
-import { confirmacao } from '../../../servicos/alertas';
 import Service from '../../../servicos/Paginas/PlanoAnualServices';
 import Alert from '../../../componentes/alert';
 import ModalMultiLinhas from '../../../componentes/modalMultiLinhas';
+import ModalConfirmacao from '../../../componentes/modalConfirmacao';
+import history from '../../../servicos/history';
+import { URL_PLANO_ANUAL, URL_HOME } from '../../../constantes/url';
 
 export default function PlanoAnual() {
   const bimestres = useSelector(store => store.bimestres.bimestres);
@@ -25,9 +26,10 @@ export default function PlanoAnual() {
   const usuario = useSelector(store => store.usuario);
 
   const turmaSelecionada = usuario.turmaSelecionada;
-  const ehEdicao = bimestres.filter(x => x.ehEdicao).length > 0;
+  const emEdicao = bimestres.filter(x => x.ehEdicao).length > 0;
   const ehDisabled = usuario.turmaSelecionada.length === 0;
   const dispatch = useDispatch();
+  const [modalConfirmacaoVisivel, setModalConfirmacaoVisivel] = useState(false);
 
   const ehEja =
     turmaSelecionada[0] && turmaSelecionada[0].codModalidade === 3
@@ -48,15 +50,24 @@ export default function PlanoAnual() {
       ObtenhaBimestres();
 
     verificarSeEhEdicao();
-
-    console.log(turmaSelecionada);
   }, [usuario]);
 
   useEffect(() => {
     VerificarEnvio();
-
-    console.log(bimestres);
   }, [bimestres]);
+
+  const onF5Click = e => {
+    if ((e.which || e.keyCode) == 116) {
+      if (emEdicao) {
+        e.preventDefault();
+        setModalConfirmacaoVisivel(true);
+      }
+    }
+  };
+
+  document.onkeydown = onF5Click;
+  document.onkeypress = onF5Click;
+  document.onkeyup = onF5Click;
 
   const VerificarEnvio = () => {
     const paraEnviar = bimestres.map(x => x.paraEnviar).filter(x => x);
@@ -72,19 +83,30 @@ export default function PlanoAnual() {
       Bimestre: 1,
       EscolaId: escolaId,
       TurmaId: turmaId,
-    }).then(res => {
-      const ehEdicao = res.status === 200;
-
-      Service.getDisciplinasProfessor(usuario.rf, turmaId).then(res => {
-        ObtenhaBimestres(_.cloneDeep(res), !ehEdicao);
-      });
-    });
+    })
+      .then(res => {
+        const ehEdicao = res.status === 200;
+        Service.getDisciplinasProfessor(usuario.rf, turmaId).then(res => {
+          ObtenhaBimestres(_.cloneDeep(res), !ehEdicao);
+        });
+      })
+      .catch(() => {});
   };
 
   const ObtenhaNomebimestre = index =>
     `${index}º ${ehEja ? 'Semestre' : 'Bimestre'}`;
 
-  const confirmarCancelamento = () => {};
+  const confirmarCancelamento = () => {
+    history.push(URL_HOME);
+  };
+
+  const onClickCancelar = () => {
+    verificarSeEhEdicao();
+  };
+
+  const cancelarModalConfirmacao = () => {
+    setModalConfirmacaoVisivel(false);
+  };
 
   const onClickSalvar = () => {
     dispatch(PrePost());
@@ -116,15 +138,11 @@ export default function PlanoAnual() {
     }
   };
 
-  const cancelarAlteracoes = () => {
-    confirmacao(
-      'Atenção',
-      `Você não salvou as informações
-    preenchidas. Deseja realmente cancelar as alterações?`,
-      confirmarCancelamento,
-      () => true
-    );
+  const voltarParaHome = () => {
+    if (emEdicao) setModalConfirmacaoVisivel(true);
+    else history.push(URL_HOME);
   };
+
   return (
     <>
       <div className="col-md-12">
@@ -154,9 +172,21 @@ export default function PlanoAnual() {
         conteudo={bimestresErro.content}
         titulo={bimestresErro.title}
       />
+      <ModalConfirmacao
+        key="confirmacaoDeSaida"
+        visivel={modalConfirmacaoVisivel}
+        onConfirmacaoPrincipal={cancelarModalConfirmacao}
+        onConfirmacaoSecundaria={confirmarCancelamento}
+        onClose={cancelarModalConfirmacao}
+        labelPrincipal="Não"
+        labelSecundaria="Sim"
+        titulo="Atenção"
+        conteudo="Você não salvou as informações preenchidas"
+        perguntaDoConteudo="Deseja realmente cancelar as alterações?"
+      />
       <Card>
         <Grid cols={12}>
-          <h1>Plano Anual</h1>
+          {ehEja ? <h1>Plano Semestral</h1> : <h1>Plano Anual</h1>}
         </Grid>
         <Grid cols={6} className="d-flex justify-content-start mb-3">
           <Button
@@ -172,22 +202,23 @@ export default function PlanoAnual() {
             label="Voltar"
             icon="arrow-left"
             color={Colors.Azul}
+            onClick={voltarParaHome}
             border
             className="mr-3"
           />
           <Button
             label="Cancelar"
             color={Colors.Roxo}
+            onClick={onClickCancelar}
             border
             bold
             className="mr-3"
-            onClick={cancelarAlteracoes}
           />
           <Button
             label="Salvar"
             color={Colors.Roxo}
             onClick={onClickSalvar}
-            disabled={!ehEdicao || ehDisabled}
+            disabled={!emEdicao || ehDisabled}
             border
             bold
           />

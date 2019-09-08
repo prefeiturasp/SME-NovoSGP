@@ -440,15 +440,22 @@ export default function PlanoCiclo() {
         <ModalConfirmacao
           id="modal-confirmacao-voltar"
           visivel={exibirConfirmacaoVoltar}
-          onConfirmacaoSim={() => {
+          onConfirmacaoPrincipal={() => {
             salvarPlanoCiclo(true);
             setExibirConfirmacaoVoltar(false);
           }}
-          onConfirmacaoNao={() => {
+          onConfirmacaoSecundaria={() => {
             setExibirConfirmacaoVoltar(false);
             setModoEdicao(false);
             history.push('/');
           }}
+          onClose={() => {
+            setExibirConfirmacaoVoltar(false);
+            setModoEdicao(false);
+            history.push('/');
+          }}
+          labelPrincipal="Não"
+          labelSecundaria="Sim"
           perguntaDoConteudo="Suas alterações não foram salvas, deseja salvar agora?"
           titulo="Atenção"
         />
