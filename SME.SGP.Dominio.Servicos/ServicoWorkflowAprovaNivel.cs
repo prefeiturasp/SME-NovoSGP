@@ -36,7 +36,7 @@ namespace SME.SGP.Dominio.Servicos
             EnviaNotificacaoParaNiveis(primeirosNiveis);
         }
 
-        private void EnviaNotificacaoParaNiveis(List<WorkflowAprovaNivel> aprovaNiveis)
+        private void EnviaNotificacaoParaNiveis(List<WorkflowAprovacao> aprovaNiveis)
         {
             unitOfWork.IniciarTransacao();
             foreach (var aprovaNivel in aprovaNiveis)
@@ -46,7 +46,7 @@ namespace SME.SGP.Dominio.Servicos
             unitOfWork.PersistirTransacao();
         }
 
-        private void EnviaNotificacaoParaNivel(WorkflowAprovaNivel aprovaNivel)
+        private void EnviaNotificacaoParaNivel(WorkflowAprovacao aprovaNivel)
         {
             var notificacao = new Notificacao()
             {

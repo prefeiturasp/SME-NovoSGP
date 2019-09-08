@@ -2,12 +2,8 @@
 
 namespace SME.SGP.Dto
 {
-    public class WorkflowAprovaNivelDto
+    public class WorkflowAprovacaoNiveisDto
     {
-        public WorkflowAprovaNivelDto()
-        {
-        }
-
         public int Ano { get; set; }
 
         [Required(ErrorMessage = "É necessário informar a descrição do nível.")]
@@ -25,5 +21,7 @@ namespace SME.SGP.Dto
         [Required(ErrorMessage = "É necessário informar o usuário.")]
         [MinLength(1, ErrorMessage = "É necessário informar o usuário.")]
         public string UsuarioId { get; set; }
+
+        //public List<WorkflowAprovacaoNivelDto> MyProperty { get; set; }
     }
 }

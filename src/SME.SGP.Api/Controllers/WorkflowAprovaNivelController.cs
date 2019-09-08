@@ -20,7 +20,7 @@ namespace SME.SGP.Api.Controllers
         [HttpPost]
         [ProducesResponseType(200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        public IActionResult Post(WorkflowAprovaNivelDto[] workflowAprovaNivelDto)
+        public IActionResult Post(WorkflowAprovacaoNiveisDto[] workflowAprovaNivelDto)
         {
             comandosWorkflowAprovaNivel.SalvarListaDto(workflowAprovaNivelDto);
             return Ok();

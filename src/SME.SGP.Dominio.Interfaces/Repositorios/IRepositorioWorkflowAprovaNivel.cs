@@ -2,8 +2,8 @@
 
 namespace SME.SGP.Dominio.Interfaces
 {
-    public interface IRepositorioWorkflowAprovaNivel : IRepositorioBase<WorkflowAprovaNivel>
+    public interface IRepositorioWorkflowAprovaNivel : IRepositorioBase<WorkflowAprovacao>
     {
-        IEnumerable<WorkflowAprovaNivel> ObterNiveisPorCodigo(string codigo);
+        IEnumerable<WorkflowAprovacao> ObterNiveisPorCodigo(string codigo);
     }
 }

@@ -6,15 +6,15 @@ using System.Collections.Generic;
 
 namespace SME.SGP.Dados.Repositorios
 {
-    public class RepositorioWorkflowAprovaNivel : RepositorioBase<WorkflowAprovaNivel>, IRepositorioWorkflowAprovaNivel
+    public class RepositorioWorkflowAprovaNivel : RepositorioBase<WorkflowAprovacao>, IRepositorioWorkflowAprovaNivel
     {
         public RepositorioWorkflowAprovaNivel(ISgpContext conexao) : base(conexao)
         {
         }
 
-        public IEnumerable<WorkflowAprovaNivel> ObterNiveisPorCodigo(string codigo)
+        public IEnumerable<WorkflowAprovacao> ObterNiveisPorCodigo(string codigo)
         {
-            return database.Conexao.Query<WorkflowAprovaNivel>("select * from WorkflowAprovaNivel w where w.codigo = @codigo ", new { codigo })
+            return database.Conexao.Query<WorkflowAprovacao>("select * from WorkflowAprovaNivel w where w.codigo = @codigo ", new { codigo })
                 .AsList();
         }
     }
