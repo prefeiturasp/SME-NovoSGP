@@ -198,6 +198,7 @@ const Sider = () => {
                 </Menu.Item>
                 <Menu.Item key="94" id="gesAtribuicaoSupervisor">
                   <span className="menuItem">Atribuição Supervisor</span>
+                  <Link to="/gestao/atribuicao-supervisor-lista" className="nav-link text-white" id="linkAtribuicaoSupervisor"/>
                 </Menu.Item>
               </SubMenu>
               <SubMenu
