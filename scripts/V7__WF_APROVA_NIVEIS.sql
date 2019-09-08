@@ -1,4 +1,4 @@
-﻿CREATE TABLE IF NOT EXISTS public.wf_aprova_niveis
+﻿CREATE TABLE IF NOT EXISTS public.wf_aprova_nivel
 (
     id bigint NOT NULL generated always as identity,
     usuario_id varchar(15) NOT NULL,
@@ -8,6 +8,8 @@
     dre_id varchar(15) NULL,
 	ano int NULL,
 	turma_id varchar(15) NULL,
+	chave varchar(38) NULL,
+	nivel int NOT NULL,
     criado_em timestamp without time zone NOT NULL,
     criado_por character varying(200) COLLATE pg_catalog."default" NOT NULL,
     alterado_em timestamp without time zone,
@@ -18,5 +20,6 @@
 
 );
 
-CREATE INDEX wf_aprova_niveis_usuario_idx ON public.wf_aprova_niveis (usuario_id);
+CREATE INDEX wf_aprova_nivel_usuario_idx ON public.wf_aprova_nivel (usuario_id);
+CREATE INDEX wf_aprova_nivel_chave_idx ON public.wf_aprova_nivel (chave);
 

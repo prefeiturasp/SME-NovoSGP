@@ -23,6 +23,7 @@ namespace SME.SGP.IoC
         {
             services.TryAddScoped<IComandosPlanoCiclo, ComandosPlanoCiclo>();
             services.TryAddScoped<IComandosNotificacao, ComandosNotificacao>();
+            services.TryAddScoped<IComandosWorkflowAprovaNivel, ComandosWorkflowAprovaNivel>();
         }
 
         private static void RegistrarConsultas(IServiceCollection services)
@@ -50,6 +51,7 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IRepositorioObjetivoDesenvolvimento, RepositorioObjetivoDesenvolvimento>();
             services.TryAddScoped<IRepositorioCiclo, RepositorioCiclo>();
             services.TryAddScoped<IRepositorioNotificacao, RepositorioNotificacao>();
+            services.TryAddScoped<IRepositorioWorkflowAprovaNivel, RepositorioWorkflowAprovaNivel>();
         }
     }
 }
