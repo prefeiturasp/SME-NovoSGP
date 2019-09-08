@@ -183,7 +183,7 @@ const AtribuicaoSupervisorCadastro = ({ match }) => {
     <>
       <h3>Atribuição de Supervisor</h3>
       <Card>
-        <div className="col-xs-12 col-md-6 col-lg-12 d-flex justify-content-end mb-4">
+        <div className="col-xs-12 col-md-12 col-lg-12 d-flex justify-content-end mb-4">
           <Button
             label="Voltar"
             icon="arrow-left"
