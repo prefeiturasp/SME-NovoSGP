@@ -5,6 +5,7 @@ import Principal from '../paginas/Principal/principal';
 import PlanoCiclo from '../paginas/Planejamento/PlanoCiclo/planoCiclo';
 import PlanoAnual from '../paginas/Planejamento/PlanoAnual/planoAnual';
 import AtribuicaoSupervisor from '../paginas/Gestao/AtribuicaoSupervisor/atribuicaoSupervisorCadastro';
+import AtribuicaoSupervisorLista from '../paginas/Gestao/AtribuicaoSupervisor/atribuicaoSupervisorLista';
 
 export default function Rotas() {
   return (
@@ -19,6 +20,10 @@ export default function Rotas() {
       <Route
         path="/gestao/atribuicao-supervisor"
         component={AtribuicaoSupervisor}
+      />
+      <Route
+        path="/gestao/atribuicao-supervisor-lista"
+        component={AtribuicaoSupervisorLista}
       />
     </Switch>
   );

@@ -53,6 +53,10 @@ export default createGlobalStyle`
     color: #ffffff !important;
   }
 
+  .ant-select-selected-icon {
+    color: white !important;
+  }
+
   .desabilitar-elemento {
     pointer-events: none !important;
     opacity: 0.6 !important;
