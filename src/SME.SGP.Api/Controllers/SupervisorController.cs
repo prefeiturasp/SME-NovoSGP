@@ -18,12 +18,12 @@ namespace SME.SGP.Api.Controllers
             this.consultasSupervisor = consultasSupervisor ?? throw new System.ArgumentNullException(nameof(consultasSupervisor));
         }
 
-        [HttpPost("atribuir-escola")]
+        [HttpPost("atribuir-ue")]
         [ProducesResponseType(200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        public IActionResult AtribuirEscola(AtribuicaoSupervisorEscolaDto atribuicaoSupervisorEscolaDto, [FromServices] IComandosSupervisor comandosSupervisor)
+        public IActionResult AtribuirUE(AtribuicaoSupervisorUEDto atribuicaoSupervisorUEDto, [FromServices] IComandosSupervisor comandosSupervisor)
         {
-            comandosSupervisor.AtribuirEscola(atribuicaoSupervisorEscolaDto);
+            comandosSupervisor.AtribuirUE(atribuicaoSupervisorUEDto);
             return Ok();
         }
 
