@@ -45,10 +45,6 @@ const SelectAutocomplete = ({
 }) => {
   const [itensFiltrados, setItensFiltrados] = useState(lista);
 
-  useEffect(() => {
-    if (!value) setItensFiltrados([]);
-  }, [value]);
-
   const filtrar = value => {
     if (value) {
       const textoFiltro = value.toLowerCase();
@@ -58,6 +54,14 @@ const SelectAutocomplete = ({
       setItensFiltrados([]);
     }
   };
+
+  useEffect(() => {
+    if (!value) {
+      setItensFiltrados([]);
+    } else {
+      filtrar(value);
+    }
+  }, [value]);
 
   const opcoes = itensFiltrados.map(item => (
     <Option key={item[valueField]}>{item[textField]}</Option>

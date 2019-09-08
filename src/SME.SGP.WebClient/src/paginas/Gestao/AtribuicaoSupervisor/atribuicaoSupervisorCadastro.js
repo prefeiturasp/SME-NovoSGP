@@ -11,7 +11,7 @@ import api from '~/servicos/api';
 import { erro, sucesso } from '~/servicos/alertas';
 import history from '~/servicos/history';
 
-const AtribuicaoSupervisorCadastro = () => {
+const AtribuicaoSupervisorCadastro = ({ match }) => {
   const [auditoria, setAuditoria] = useState([]);
 
   const [listaDres, setListaDres] = useState([]);
@@ -37,6 +37,15 @@ const AtribuicaoSupervisorCadastro = () => {
         .get('v1/dres')
         .then(resposta => {
           setListaDres(resposta.data);
+          if (match.params.dreId) {
+            setDreSelecionada(match.params.dreId);
+          }
+          if (match.params.supervisorId) {
+            setTimeout(() => {
+              setSupervisorSelecionado(match.params.supervisorId);
+              setFiltroSupervisor(match.params.supervisorId);
+            }, 500);
+          }
         })
         .catch(erros => {
           exibeErro(erros);
