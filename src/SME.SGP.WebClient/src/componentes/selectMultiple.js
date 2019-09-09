@@ -45,6 +45,7 @@ const SelectComponent = props => {
   return (
     <Container>
       <Select
+        mode="multiple"
         suffixIcon={<Icon type="caret-down" />}
         className={className}
         name={name}
@@ -75,7 +76,7 @@ SelectComponent.propTypes = {
   onChange: PropTypes.func,
   label: PropTypes.string.isRequired,
   valueOption: PropTypes.string.isRequired,
-  valueSelect: PropTypes.string,
+  valueSelect: PropTypes.array,
   lista: PropTypes.array,
   placeholder: PropTypes.string,
 };
