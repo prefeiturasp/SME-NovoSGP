@@ -20,6 +20,7 @@ import history from '../../../servicos/history';
 import { URL_HOME } from '../../../constantes/url';
 import { erro } from '../../../servicos/alertas';
 import { salvarRf } from '../../../redux/modulos/usuario/actions';
+import ModalConteudoHtml from '../../../componentes/modalConteudoHtml';
 
 export default function PlanoAnual() {
   const diciplinasSemObjetivo = [1061];
@@ -49,6 +50,9 @@ export default function PlanoAnual() {
       : false;
 
   const [disciplinaObjetivo, setDisciplinaObjetivo] = useState(false);
+  const [modalCopiarConteudo, setModalCopiarConteudo] = useState({
+    visivel: false,
+  });
 
   const LayoutEspecial = ehEja || ehMedio || disciplinaObjetivo;
 
@@ -151,6 +155,24 @@ export default function PlanoAnual() {
     dispatch(PrePost());
   };
 
+  const onCopiarConteudoClick = () => {
+    Service.obterBimestre({
+      AnoLetivo: anoLetivo,
+      Bimestre: 1,
+      EscolaId: escolaId,
+      TurmaId: turmaId,
+    })
+      .then(res => {
+        if (res.status === 200) {
+        } else {
+          erro('Este plano ainda não foi salvo na base de dados');
+        }
+      })
+      .catch(() => {
+        erro('Não foi possivel obter os dados do plano');
+      });
+  };
+
   const ObtenhaBimestres = (disciplinas = [], ehEdicao) => {
     console.log(disciplinas);
 
@@ -246,17 +268,28 @@ export default function PlanoAnual() {
         conteudo="Você não salvou as informações preenchidas"
         perguntaDoConteudo="Deseja realmente cancelar as alterações?"
       />
+      <ModalConteudoHtml
+        key={'copiarConteudo'}
+        visivel={modalCopiarConteudo.visivel}
+        onConfirmacaoPrincipal={() => {}}
+        onConfirmacaoSecundaria={() => {}}
+        onClose={() => {}}
+        labelPrincipal="Copiar"
+        labelSecundaria="Cancelar"
+        titulo="Copiar Conteúdo"
+      ></ModalConteudoHtml>
       <Card>
         <Grid cols={12}>
           {ehEja ? <h1>Plano Semestral</h1> : <h1>Plano Anual</h1>}
         </Grid>
         <Grid cols={6} className="d-flex justify-content-start mb-3">
           <Button
-            label="Migrar Conteúdo"
+            label="Copiar Conteúdo"
             icon="share-square"
             color={Colors.Azul}
+            onClick={onCopiarConteudoClick}
             border
-            disabled
+            disabled={turmaSelecionada[0] ? false : true}
           />
         </Grid>
         <Grid cols={6} className="d-flex justify-content-end mb-3">
