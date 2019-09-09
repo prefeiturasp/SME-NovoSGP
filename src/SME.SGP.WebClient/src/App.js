@@ -10,12 +10,13 @@ import { store } from './redux';
 import Conteudo from './componentes-sgp/conteudo';
 import { activeRoute } from './redux/modulos/navegacao/actions'
 
-function App() {  
+function App() {
 
-  history.listen((location) => { 
+  history.listen((location) => {
     store.dispatch(activeRoute(location.pathname));
+    localStorage.setItem('rota-atual', location.pathname);
   });
-  
+
   return (
     <Provider store={store}>
       <Router history={history}>
