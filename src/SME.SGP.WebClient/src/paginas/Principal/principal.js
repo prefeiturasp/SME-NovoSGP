@@ -18,7 +18,6 @@ const Principal = props => {
   const FREQUENCIA_TYPE = 'frequencia';
   const CICLOS_TYPE = 'ciclos';
   const ANUAL_TYPE = 'anual';
-
   const [escolaSelecionada, setEscolaSelecionada] = useState(false);
   const [turmaSelecionada, setTurmaSelecionada] = useState(false);
 
