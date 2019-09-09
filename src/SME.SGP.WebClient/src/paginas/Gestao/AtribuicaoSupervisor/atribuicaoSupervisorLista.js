@@ -20,7 +20,7 @@ export default function AtribuicaoSupervisorLista() {
   const [listaDres, setListaDres] = useState([]);
   const [listaSupervisores, setListaSupervisores] = useState([]);
   const [listaUes, setListaUes] = useState([]);
-  const [ueSelecionada, setUeSelecionada] = useState('');
+  const [ueSelecionada, setUeSelecionada] = useState([]);
   const [listaFiltroAtribuicao, setListaFiltroAtribuicao] = useState([]);
   const [desabilitarSupervisor, setDesabilitarSupervisor] = useState(false);
   const [desabilitarUe, setDesabilitarUe] = useState(false);
@@ -181,23 +181,24 @@ export default function AtribuicaoSupervisorLista() {
   function montarListaAtribuicao(lista, dre, isArray) {
     if (lista) {
       if (isArray) {
+        const dadosAtribuicao = [];
         lista.forEach(item => {
-          setListaFiltroAtribuicao(montarLista(item));
+          montarLista(item, dadosAtribuicao);
         });
+        setListaFiltroAtribuicao(dadosAtribuicao);
       } else {
-        setListaFiltroAtribuicao(montarLista(lista));
+        setListaFiltroAtribuicao(montarLista(lista), []);
       }
     } else {
       setListaFiltroAtribuicao([]);
     }
 
-    function montarLista(item) {
+    function montarLista(item, dadosAtribuicao) {
       const dreSelecionada = listaDres.find(d => d.id == dre);
-      const dadosAtribuicao = [];
-      let contId = 1;
       item.escolas.forEach(escola => {
+        let contId = dadosAtribuicao.length + 1;
         dadosAtribuicao.push({
-          key: contId++,
+          key: contId,
           dre: dreSelecionada.sigla,
           escola: escola.nome,
           supervisor: item.supervisorNome || 'NÃO ATRIBUÍDO',
@@ -273,7 +274,7 @@ export default function AtribuicaoSupervisorLista() {
           />
         </div>
 
-        <div className="col-md-6">
+        <div className="col-md-6 pb-2">
           <CheckboxComponent
             className="mb-2"
             label="Exibir apenas UE's sem supervisor"
@@ -288,7 +289,7 @@ export default function AtribuicaoSupervisorLista() {
             disabled={desabilitarAssumirFiltroPrincipal}
           />
         </div>
-        <div className="col-md-6">
+        <div className="col-md-6 pb-2">
           <SelectComponent
             className="col-md-12"
             name="dres-atribuicao-sup"
@@ -297,7 +298,7 @@ export default function AtribuicaoSupervisorLista() {
             valueOption="id"
             valueText="nome"
             onChange={onChangeDre}
-            valueSelect={dresSelecionadas}
+            valueSelect={dresSelecionadas || []}
             placeholder="SELECIONE A DRE"
             disabled={desabilitarDre}
           />
@@ -328,7 +329,7 @@ export default function AtribuicaoSupervisorLista() {
             valueOption="codigo"
             valueText="nome"
             onChange={onChangeUes}
-            valueSelect={ueSelecionada}
+            valueSelect={ueSelecionada || []}
             placeholder="SELECIONE A UE"
             disabled={desabilitarUe}
           />
