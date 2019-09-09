@@ -12,7 +12,7 @@ import { activeRoute } from './redux/modulos/navegacao/actions'
 
 function App() {  
 
-  history.listen((location) => {
+  history.listen((location) => { 
     store.dispatch(activeRoute(location.pathname));
   });
   
