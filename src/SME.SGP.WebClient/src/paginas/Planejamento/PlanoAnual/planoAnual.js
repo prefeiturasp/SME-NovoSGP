@@ -64,9 +64,7 @@ export default function PlanoAnual() {
   const anoEscolar = turmaSelecionada[0] ? turmaSelecionada[0].ano : 0;
   const turmaId = turmaSelecionada[0] ? turmaSelecionada[0].codTurma : 0;
 
-  useEffect(() => {
-    dispatch(salvarRf(8078670));
-  }, []);
+  useEffect(() => {}, []);
 
   useEffect(() => {
     console.log(modalCopiarConteudo);
@@ -324,6 +322,7 @@ export default function PlanoAnual() {
             color={Colors.Roxo}
             onClick={onClickSalvar}
             disabled={!emEdicao || ehDisabled}
+            border={!emEdicao || ehDisabled}
             bold
           />
         </Grid>
