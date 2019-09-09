@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useLayoutEffect } from 'react';
+import React, { useEffect, useRef, useLayoutEffect, useState } from 'react';
 import { Badge, ObjetivosList, ListItemButton, ListItem } from './bimestre.css';
 import CardCollapse from '../../../componentes/cardCollapse';
 import Grid from '../../../componentes/grid';
@@ -12,8 +12,6 @@ import {
   SalvarEhExpandido,
   SelecionarMateria,
   SetarDescricaoFunction,
-  SalvarObjetivos,
-  DefinirObjetivoFocado,
   SelecionarObjetivo,
   SetarDescricao,
   ObterBimestreServidor,
@@ -25,19 +23,23 @@ import '../../../componentes/scrollIntoViewIfNeeded';
 const BimestreComponent = props => {
   const dispatch = useDispatch();
 
-  const { indice, disabled } = props;
+  const { indice, disabled, LayoutEspecial } = props;
 
   const bimestres = useSelector(store => store.bimestres.bimestres);
 
   const materias = bimestres[indice].materias;
 
+  const objetivos = bimestres[indice].objetivosAprendizagem;
+
+  const [idObjetivoFocado, setIDObjetivoFocado] = useState('0');
+
   const textEditorRef = useRef(null);
 
   const ListRef = useRef(null);
 
-  useLayoutEffect(() => {
-    focarObjetivo();
+  const bimestreJaObtidoServidor = bimestres[indice].ehExpandido;
 
+  useLayoutEffect(() => {
     if (!bimestres[indice].setarObjetivo) {
       setarDescricaoFunction(descricaoFunction);
     }
@@ -46,6 +48,10 @@ const BimestreComponent = props => {
   useEffect(() => {
     obterObjetivos();
   }, [materias]);
+
+  useLayoutEffect(() => {
+    focarObjetivo();
+  }, [objetivos]);
 
   const descricaoFunction = () => {
     return textEditorRef.current.state.value;
@@ -68,21 +74,18 @@ const BimestreComponent = props => {
   };
 
   const focarObjetivo = () => {
-    if (
-      !bimestres[indice].objetivoIdFocado ||
-      bimestres[indice].objetivoIdFocado === 0
-    )
-      return;
+    if (!idObjetivoFocado || idObjetivoFocado === '0') return;
 
-    const Elem = document.getElementById(bimestres[indice].objetivoIdFocado);
+    const Elem = document.getElementById(idObjetivoFocado);
+
+    if (!Elem) return;
+
     const listDivObjetivos = ListRef.current;
     Elem.scrollIntoViewIfNeeded(listDivObjetivos);
-
-    DefinirObjetivoFocado(indice, 0);
   };
 
   const setObjetivoFocado = objetivoId => {
-    dispatch(DefinirObjetivoFocado(indice, objetivoId));
+    setIDObjetivoFocado(objetivoId);
   };
 
   const selecionarObjetivo = (index, ariaPressed) => {
@@ -130,7 +133,8 @@ const BimestreComponent = props => {
   };
 
   const onClickBimestre = () => {
-    dispatch(ObterBimestreServidor(bimestres[indice]));
+    if (!bimestreJaObtidoServidor)
+      dispatch(ObterBimestreServidor(bimestres[indice]));
   };
 
   return (
@@ -143,10 +147,12 @@ const BimestreComponent = props => {
       disabled={disabled}
     >
       <div className="row">
-        <Grid cols={6}>
-          <h6 className="d-inline-block font-weight-bold my-0 fonte-14">
-            Objetivos de aprendizagem
-          </h6>
+        <Grid cols={LayoutEspecial ? 12 : 6}>
+          {LayoutEspecial ? null : (
+            <h6 className="d-inline-block font-weight-bold my-0 fonte-14">
+              Objetivos de aprendizagem
+            </h6>
+          )}
           <div>
             {bimestres[indice].materias && bimestres[indice].materias.length > 0
               ? bimestres[indice].materias.map((materia, indice) => {
@@ -158,8 +164,11 @@ const BimestreComponent = props => {
                       id={materia.codigo}
                       data-index={indice}
                       key={materia.codigo}
-                      disabled={disabled}
-                      className="badge badge-pill border text-dark bg-white font-weight-light px-2 py-1 mt-3 mr-2"
+                      disabled={disabled || LayoutEspecial}
+                      readonly={LayoutEspecial}
+                      className={`badge badge-pill border text-dark bg-white font-weight-light px-2 py-1 ${
+                        LayoutEspecial ? '' : 'mt-3'
+                      } mr-2`}
                     >
                       {materia.materia}
                     </Badge>
@@ -167,72 +176,78 @@ const BimestreComponent = props => {
                 })
               : null}
           </div>
-          <ObjetivosList ref={ListRef} className="mt-4 overflow-auto">
-            {bimestres[indice].objetivosAprendizagem &&
-            bimestres[indice].objetivosAprendizagem.length > 0
-              ? bimestres[indice].objetivosAprendizagem.map(
-                  (objetivo, index) => {
-                    return (
-                      <ul
-                        key={`${objetivo.id}Bimestre${index}`}
-                        className="list-group list-group-horizontal mt-3"
-                      >
-                        <ListItemButton
-                          className="list-group-item d-flex align-items-center font-weight-bold fonte-14"
-                          role="button"
-                          id={`${indice}Bimestre${objetivo.id}`}
-                          aria-pressed={objetivo.selected ? true : false}
-                          data-index={index}
-                          onClick={selecionaObjetivo}
-                          onKeyUp={selecionaObjetivo}
-                          disabled={disabled}
+          {LayoutEspecial ? null : (
+            <ObjetivosList ref={ListRef} className="mt-4 overflow-auto">
+              {bimestres[indice].objetivosAprendizagem &&
+              bimestres[indice].objetivosAprendizagem.length > 0
+                ? bimestres[indice].objetivosAprendizagem.map(
+                    (objetivo, index) => {
+                      return (
+                        <ul
+                          key={`${objetivo.id}Bimestre${index}`}
+                          className="list-group list-group-horizontal mt-3"
                         >
-                          {objetivo.codigo}
-                        </ListItemButton>
-                        <ListItem className="list-group-item flex-fill p-2 fonte-12">
-                          {objetivo.descricao}
-                        </ListItem>
-                      </ul>
-                    );
-                  }
-                )
-              : null}
-          </ObjetivosList>
+                          <ListItemButton
+                            className="list-group-item d-flex align-items-center font-weight-bold fonte-14"
+                            role="button"
+                            id={`${indice}Bimestre${objetivo.id}`}
+                            aria-pressed={objetivo.selected ? true : false}
+                            data-index={index}
+                            onClick={selecionaObjetivo}
+                            onKeyUp={selecionaObjetivo}
+                            disabled={disabled}
+                          >
+                            {objetivo.codigo}
+                          </ListItemButton>
+                          <ListItem className="list-group-item flex-fill p-2 fonte-12">
+                            {objetivo.descricao}
+                          </ListItem>
+                        </ul>
+                      );
+                    }
+                  )
+                : null}
+            </ObjetivosList>
+          )}
         </Grid>
-        <Grid cols={6}>
-          <h6 className="d-inline-block font-weight-bold my-0 fonte-14">
-            Objetivos de aprendizagem e meus objetivos (Currículo da cidade)
-          </h6>
-          <div
-            role="group"
-            aria-label={`${bimestres[indice].objetivosAprendizagem &&
-              bimestres[indice].objetivosAprendizagem.length > 0 &&
-              bimestres[indice].objetivosAprendizagem.filter(
-                objetivo => objetivo.selected
-              ).length} objetivos selecionados`}
-          >
-            {bimestres[indice].objetivosAprendizagem &&
-            bimestres[indice].objetivosAprendizagem.length > 0
-              ? bimestres[indice].objetivosAprendizagem
-                  .filter(objetivo => objetivo.selected)
-                  .map(selecionado => {
-                    return (
-                      <Button
-                        key={selecionado.id}
-                        label={selecionado.codigo}
-                        color={Colors.AzulAnakiwa}
-                        bold
-                        id={selecionado.id}
-                        disabled={disabled}
-                        steady
-                        remove
-                        className="text-dark mt-3 mr-2 stretched-link"
-                        onClick={removeObjetivoSelecionado}
-                      />
-                    );
-                  })
-              : null}
-          </div>
+        <Grid cols={LayoutEspecial ? 12 : 6}>
+          {LayoutEspecial ? null : (
+            <h6 className="d-inline-block font-weight-bold my-0 fonte-14">
+              Objetivos de aprendizagem e meus objetivos (Currículo da cidade)
+            </h6>
+          )}
+          {LayoutEspecial ? null : (
+            <div
+              role="group"
+              aria-label={`${bimestres[indice].objetivosAprendizagem &&
+                bimestres[indice].objetivosAprendizagem.length > 0 &&
+                bimestres[indice].objetivosAprendizagem.filter(
+                  objetivo => objetivo.selected
+                ).length} objetivos selecionados`}
+            >
+              {bimestres[indice].objetivosAprendizagem &&
+              bimestres[indice].objetivosAprendizagem.length > 0
+                ? bimestres[indice].objetivosAprendizagem
+                    .filter(objetivo => objetivo.selected)
+                    .map(selecionado => {
+                      return (
+                        <Button
+                          key={selecionado.id}
+                          label={selecionado.codigo}
+                          color={Colors.AzulAnakiwa}
+                          bold
+                          id={selecionado.id}
+                          disabled={disabled}
+                          steady
+                          remove
+                          className="text-dark mt-3 mr-2 stretched-link"
+                          onClick={removeObjetivoSelecionado}
+                        />
+                      );
+                    })
+                : null}
+            </div>
+          )}
           <div className="mt-4">
             <h6 className="d-inline-block font-weight-bold my-0 mr-2 fonte-14">
               Planejamento Anual

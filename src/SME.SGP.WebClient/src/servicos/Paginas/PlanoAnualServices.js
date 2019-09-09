@@ -31,7 +31,7 @@ const Service = {
   postPlanoAnual: async Bimestres => {
     const ObjetoEnviar = Service._getObjetoPostPlanoAnual(Bimestres);
 
-    const Erros = Service._validarDTO(ObjetoEnviar);
+    const Erros = Service._validarDTO(ObjetoEnviar, Bimestres);
 
     if (Erros && Erros.length > 0) throw { error: Erros };
 
@@ -103,7 +103,7 @@ const Service = {
     return ObjetoEnviar;
   },
 
-  _validarDTO: DTO => {
+  _validarDTO: (DTO, Bimestres) => {
     let Erros = [];
 
     if (
@@ -127,23 +127,33 @@ const Service = {
     )
       Erros.push('Turma não informada');
 
-    Erros = Service._validarBimestresDTO(DTO.Bimestres, Erros);
+    Erros = Service._validarBimestresDTO(DTO.Bimestres, Erros, Bimestres);
 
     return Erros;
   },
 
-  _validarBimestresDTO: (Bimestres, Erros) => {
+  _validarBimestresDTO: (Bimestres, Erros, BimestresFront) => {
+    const LayoutEspecial = BimestresFront.map(x => x.LayoutEspecial).filter(
+      x => x
+    );
+
     Bimestres.forEach((bimestre, index) => {
       if (
         !bimestre.Descricao ||
         bimestre.Descricao === '' ||
-        typeof bimestre.Descricao === 'undefined'
+        typeof bimestre.Descricao === 'undefined' ||
+        bimestre.Descricao === '<p><br></p>'
       )
-        Erros.push(`${index + 1}º Bimestre: Descrição não informada`);
+        Erros.push(
+          `${BimestresFront[index + 1].nome}: Descrição não informada`
+        );
+
+      console.log(bimestre.Descricao);
 
       if (
-        !bimestre.ObjetivosAprendizagem ||
-        bimestre.ObjetivosAprendizagem.length === 0
+        (!bimestre.ObjetivosAprendizagem ||
+          bimestre.ObjetivosAprendizagem.length === 0) &&
+        LayoutEspecial.length === 0
       )
         Erros.push(`${index + 1}º Bimestre: Nenhum objetivo selecionado`);
     });
