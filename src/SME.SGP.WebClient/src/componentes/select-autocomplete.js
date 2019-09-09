@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import { AutoComplete } from 'antd';
-import PropTypes from 'prop-types';
 import { Base } from './colors';
 import Label from './label';
 
@@ -52,7 +51,9 @@ const SelectAutocomplete = ({
   const filtrar = value => {
     if (value) {
       const textoFiltro = value.toLowerCase();
-      const dadosFiltrados = lista.filter(item => filtro(item, textoFiltro));
+      const dadosFiltrados = lista
+        ? lista.filter(item => filtro(item, textoFiltro))
+        : [];
       setItensFiltrados(dadosFiltrados);
     } else {
       setItensFiltrados([]);
@@ -89,7 +90,5 @@ const SelectAutocomplete = ({
     </Container>
   );
 };
-SelectAutocomplete.propTypes = {
-  lista: PropTypes.array,
-};
+
 export default SelectAutocomplete;
