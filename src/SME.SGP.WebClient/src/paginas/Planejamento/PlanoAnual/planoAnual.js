@@ -19,8 +19,11 @@ import ModalConfirmacao from '../../../componentes/modalConfirmacao';
 import history from '../../../servicos/history';
 import { URL_HOME } from '../../../constantes/url';
 import { erro } from '../../../servicos/alertas';
+import { salvarRf } from '../../../redux/modulos/usuario/actions';
 
 export default function PlanoAnual() {
+  const diciplinasSemObjetivo = [1061];
+
   const bimestres = useSelector(store => store.bimestres.bimestres);
   const notificacoes = useSelector(store => store.notificacoes);
   const bimestresErro = useSelector(store => store.bimestres.bimestresErro);
@@ -40,6 +43,15 @@ export default function PlanoAnual() {
       ? true
       : false;
 
+  const ehMedio =
+    turmaSelecionada[0] && turmaSelecionada[0].codModalidade === 6
+      ? true
+      : false;
+
+  const [disciplinaObjetivo, setDisciplinaObjetivo] = useState(false);
+
+  const LayoutEspecial = ehEja || ehMedio || disciplinaObjetivo;
+
   const qtdBimestres = ehEja ? 2 : 4;
 
   const anoLetivo = turmaSelecionada[0] ? turmaSelecionada[0].anoLetivo : 0;
@@ -47,7 +59,9 @@ export default function PlanoAnual() {
   const anoEscolar = turmaSelecionada[0] ? turmaSelecionada[0].ano : 0;
   const turmaId = turmaSelecionada[0] ? turmaSelecionada[0].codTurma : 0;
 
-  useEffect(() => {}, []);
+  useEffect(() => {
+    dispatch(salvarRf(7923163));
+  }, []);
 
   useEffect(() => {
     if ((!bimestres || bimestres.length === 0) && !ehDisabled)
@@ -138,6 +152,22 @@ export default function PlanoAnual() {
   };
 
   const ObtenhaBimestres = (disciplinas = [], ehEdicao) => {
+    console.log(disciplinas);
+
+    let semObjetivo = false;
+
+    if (disciplinas.length === 1) {
+      const arraySemObjetivo = diciplinasSemObjetivo.filter(
+        x => x === disciplinas[0].codigo
+      );
+
+      console.log(arraySemObjetivo);
+
+      if (arraySemObjetivo.length > 0) semObjetivo = true;
+
+      console.log(semObjetivo);
+    }
+
     for (let i = 1; i <= qtdBimestres; i++) {
       const Nome = ObtenhaNomebimestre(i);
 
@@ -155,12 +185,15 @@ export default function PlanoAnual() {
         objetivo: objetivo,
         paraEnviar: false,
         ehEdicao,
+        LayoutEspecial: LayoutEspecial || semObjetivo,
         ehExpandido: ehEdicao,
         jaSincronizou: false,
       };
 
       dispatch(Salvar(i, bimestre));
     }
+
+    setDisciplinaObjetivo(semObjetivo);
   };
 
   const voltarParaHome = () => {
@@ -260,6 +293,7 @@ export default function PlanoAnual() {
                     disabled={ehDisabled}
                     key={bim.indice}
                     indice={bim.indice}
+                    LayoutEspecial={LayoutEspecial}
                   />
                 );
               })
