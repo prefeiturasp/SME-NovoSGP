@@ -19,7 +19,7 @@ namespace SME.SGP.Aplicacao
 
         public void AtribuirUE(AtribuicaoSupervisorUEDto atribuicaoSupervisorEscolaDto)
         {
-            var escolasAtribuidas = repositorioSupervisorEscolaDre.ObtemSupervisoresEscola(atribuicaoSupervisorEscolaDto.DreId, atribuicaoSupervisorEscolaDto.SupervisorId);
+            var escolasAtribuidas = repositorioSupervisorEscolaDre.ObtemPorDreESupervisor(atribuicaoSupervisorEscolaDto.DreId, atribuicaoSupervisorEscolaDto.SupervisorId);
 
             var codigosEscolasDominio = escolasAtribuidas?.Select(c => c.EscolaId);
 
