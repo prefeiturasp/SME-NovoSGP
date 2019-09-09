@@ -11,9 +11,9 @@ export default function Rotas() {
     <div>
       <BreadcrumbSgp/>
       <Switch>
-        <Route path="/" exact component={Principal} breadcrumbName="Plano de Ciclo" />
-        <Route path="/planejamento/plano-ciclo" exact component={PlanoCiclo} breadcrumbName="Plano de Ciclo" />
-        <Route path="/planejamento/plano-anual" component={PlanoAnual} breadcrumbName="Plano Anual" />
+        <Route path="/" exact component={Principal} />
+        <Route path="/planejamento/plano-ciclo" exact component={PlanoCiclo} />
+        <Route path="/planejamento/plano-anual" component={PlanoAnual} />
       </Switch>
     </div>
   );

@@ -5,9 +5,9 @@ import { useSelector } from 'react-redux';
 import { Base } from '../componentes/colors';
 import styled from 'styled-components';
 
-const BreadcrumbSgp = () => {
+const BreadcrumbSgp = (props) => {
     const BreadcrumbBody = styled.div`
-        margin: 0 0 5px 15px;
+        margin: 0 0 5px 25px;
 
         i{
             margin-right: 10px;
@@ -18,24 +18,40 @@ const BreadcrumbSgp = () => {
     const NavegacaoStore = useSelector(store => store.navegacao);
 
     const routes = new Map();
-    routes.set('/', { breadcrumbName: 'Home', parentName: null });
-    routes.set('/planejamento/plano-ciclo', { breadcrumbName: 'Plano de Ciclo', parentName: 'Planejamento' });
-    routes.set('/planejamento/plano-anual', { breadcrumbName: 'Plano Anual', parentName: 'Planejamento' });
+    routes.set('/', { breadcrumbName: 'Home', parent: null });
+    routes.set('/planejamento/plano-ciclo', { breadcrumbName: 'Plano de Ciclo', menu: 'Planejamento' , parent: '/'});
+    routes.set('/planejamento/plano-anual', { breadcrumbName: 'Plano Anual', menu: 'Planejamento',  parent: '/' });
+    routes.set('/teste-filho', { breadcrumbName: 'Teste Filho',  parent: '/planejamento/plano-anual' });
 
     const [itens, setItens] = useState([]);
-    const [paginaAtual, setPaginaAtual] = useState('');
 
     useEffect(() => { carregaBreadcrumbs(NavegacaoStore.activeRoute); }, [NavegacaoStore.activeRoute]);
 
     const carregaBreadcrumbs = (route) => {
-        console.log('mudou')
         const item = routes.get(route);
-        if (item) {
-            setPaginaAtual(item.breadcrumbName);
-            const newItens = itens;
-            newItens.push({ breadcrumbName: item.breadcrumbName, parentName: item.parentName, path: route })
+        if (item) {            
+            const newItens = [];  
+            carregaBreadcrumbsExtra(item, newItens);          
+            newItens.push(criarItemBreadcrumb(item.breadcrumbName, route, true, true));
             setItens(newItens);
         }
+    }
+
+    const carregaBreadcrumbsExtra = (item, newItens) =>{        
+        const itemParent = routes.get(item.parent);        
+        if(itemParent && itemParent.parent){
+            carregaBreadcrumbsExtra(itemParent, newItens);
+          }
+        if(item.parent){                
+            newItens.push(criarItemBreadcrumb(itemParent.breadcrumbName, item.parent, false, false));
+        }
+        if(item.menu){
+            newItens.push(criarItemBreadcrumb(item.menu, item.path+'-menu', true, false));
+        }
+    }
+
+    const criarItemBreadcrumb = (breadcrumbName, path, ehEstatico, ehRotaAtual) => {
+        return {breadcrumbName, path, ehEstatico, ehRotaAtual}
     }
 
     return (
@@ -43,14 +59,12 @@ const BreadcrumbSgp = () => {
             {itens.map(item => {
                 return (
                     <Breadcrumb.Item key={item.path} separator="">
-                        <Link to={item.path}>{item.breadcrumbName}</Link>
-                        <i style={{ color: Base.Roxo }} className='fas fa-chevron-circle-right' />
+                        <Link hidden={item.ehEstatico } to={item.path}>{item.breadcrumbName}</Link>
+                        <span hidden={!item.ehEstatico}>{item.breadcrumbName}</span>
+                        <i hidden={item.ehRotaAtual} style={{ color: Base.Roxo }} className='fas fa-chevron-circle-right' />
                     </Breadcrumb.Item>
                 );
             })}
-            {/* <Breadcrumb.Item separator="">
-                <span>{paginaAtual}</span>
-            </Breadcrumb.Item> */}
         </BreadcrumbBody>
     );
 }
