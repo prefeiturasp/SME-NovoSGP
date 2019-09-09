@@ -283,6 +283,7 @@ const Filtro = () => {
             codigo: dado.codTurma,
             ano: dado.ano,
             turma: dado.nomeTurma,
+            codEscola: dado.codEscola,
           });
         }
       });
