@@ -154,8 +154,8 @@ export function Post(bimestres) {
   return dispatch => {
     Servico.postPlanoAnual(bimestres)
       .then(() => {
+        requestAnimationFrame(() => dispatch(setNaoEdicao()));
         sucesso('Suas informações foram salvas com sucesso.');
-        dispatch(setNaoEdicao());
       })
       .catch(err => {
         dispatch(
