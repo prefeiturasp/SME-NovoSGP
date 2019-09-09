@@ -4,6 +4,9 @@ import styled from 'styled-components';
 export const MenuBody = styled.div`
   background:${Base.Roxo};
   padding: 0 !important;
+  position: fixed;
+  left: 0%;
+  height: 100%;
 
   .footer-content{
     display: flex;
@@ -265,10 +268,6 @@ export const MenuScope = styled.div`
   .icons-retraido{
     margin-top: 0px !important;
     font-size: 25px;
-  }
-
-  .ant-menu-submenu .ant-menu-submenu-popup .ant-menu-dark .ant-menu-submenu-placement-rightTop  .ant-menu-submenu-hidden::after{
-    color: red !important;
   }
   `;
 
