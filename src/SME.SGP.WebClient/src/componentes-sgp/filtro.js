@@ -270,6 +270,11 @@ const Filtro = () => {
         return true;
       })
       .filter(dado => {
+        if (periodoFiltroSelecionado)
+          return dado.semestre.toString() === periodoFiltroSelecionado;
+        return true;
+      })
+      .filter(dado => {
         if (dreFiltroSelecionada)
           return dado.codDre.toString() === dreFiltroSelecionada;
         return true;
@@ -306,12 +311,27 @@ const Filtro = () => {
         }
       });
 
+    if (dres.filter(dre => dre.codigo === dreFiltroSelecionada).length === 0)
+      setDreFiltroSelecionada();
     setDresFiltro([...dres]);
+
+    if (
+      unidadesEscolares.filter(
+        unidade => unidade.codigo === unidadeEscolarFiltroSelecionada
+      ).length === 0
+    )
+      setUnidadeEscolarFiltroSelecionada();
     setUnidadesEscolaresFiltro([...unidadesEscolares]);
+
+    if (
+      turmas.filter(turma => turma.codigo === turmaFiltroSelecionada).length ===
+      0
+    )
+      setTurmaFiltroSelecionada();
     store.dispatch(turmasUsuario(turmas.sort(ordenaTurmas)));
-    setTurmaFiltroSelecionada();
   }, [
     modalidadeFiltroSelecionada,
+    periodoFiltroSelecionado,
     dreFiltroSelecionada,
     unidadeEscolarFiltroSelecionada,
   ]);

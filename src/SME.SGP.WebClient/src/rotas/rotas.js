@@ -3,7 +3,6 @@ import { Switch, Route } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 
 export default function Rotas() {
-
   const NavegacaoStore = useSelector(store => store.navegacao);
   const rotas = NavegacaoStore.rotas;
 
@@ -17,13 +16,16 @@ export default function Rotas() {
   return (
     <div>
       <Switch>
-        {
-          rotasArray.map( rota =>{
-            return(
-              <Route path={rota.path} key={rota.path} exact={rota.exact} component={rota.component} />
-            );
-          })
-        }
+        {rotasArray.map(rota => {
+          return (
+            <Route
+              path={rota.path}
+              key={rota.path}
+              exact={rota.exact}
+              component={rota.component}
+            />
+          );
+        })}
       </Switch>
     </div>
   );
