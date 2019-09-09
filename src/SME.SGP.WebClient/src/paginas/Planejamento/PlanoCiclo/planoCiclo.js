@@ -111,9 +111,9 @@ export default function PlanoCiclo() {
         }
         if (anosTurmasUsuario.length < 1 && anos.length > 0) {
           setAnosTurmasUsuario(anos);
-          params['anos'] = anos;
+          params.anos = anos;
         } else {
-          params['anos'] = anosTurmasUsuario;
+          params.anos = anosTurmasUsuario;
         }
 
         const ciclos = await api.post('v1/ciclos/filtro', params);
@@ -393,16 +393,9 @@ export default function PlanoCiclo() {
     );
   }
 
-  // TODO quanto tivermos a tela de login e a home, deverá ser movido todos os alertas para a home/container
-  const notificacoes = useSelector(state => state.notificacoes);
-
   return (
     <>
       <div className="col-md-12">
-        {notificacoes.alertas.map(alerta => (
-          <Alert alerta={alerta} key={alerta.id} />
-        ))}
-
         {usuario &&
         usuario.turmaSelecionada &&
         usuario.turmaSelecionada.length ? (
@@ -413,6 +406,8 @@ export default function PlanoCiclo() {
               tipo: 'warning',
               id: 'plano-ciclo-selecione-turma',
               mensagem: 'Você precisa escolher uma turma.',
+              estiloTitulo: { fontSize: '18px' },
+
             }}
             className="mb-0"
           />
