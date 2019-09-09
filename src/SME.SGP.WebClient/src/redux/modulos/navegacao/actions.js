@@ -11,3 +11,10 @@ export function activeRoute(route) {
     payload: route,
   };
 }
+
+export function getRotas(routas) {
+  return {
+    type: '@navegacao/rotas',
+    payload: routas,
+  };
+}
