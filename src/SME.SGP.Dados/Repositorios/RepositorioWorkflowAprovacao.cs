@@ -6,9 +6,9 @@ using System.Collections.Generic;
 
 namespace SME.SGP.Dados.Repositorios
 {
-    public class RepositorioWorkflowAprovaNivel : RepositorioBase<WorkflowAprovacao>, IRepositorioWorkflowAprovaNivel
+    public class RepositorioWorkflowAprovacao : RepositorioBase<WorkflowAprovacao>, IRepositorioWorkflowAprovacao
     {
-        public RepositorioWorkflowAprovaNivel(ISgpContext conexao) : base(conexao)
+        public RepositorioWorkflowAprovacao(ISgpContext conexao) : base(conexao)
         {
         }
 

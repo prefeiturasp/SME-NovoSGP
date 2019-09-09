@@ -10,19 +10,19 @@ namespace SME.SGP.Api.Controllers
     [ValidaDto]
     public class WorkflowAprovaNivelController : ControllerBase
     {
-        private readonly IComandosWorkflowAprovaNivel comandosWorkflowAprovaNivel;
+        private readonly IComandosWorkflowAprovacao comandosWorkflowAprovacao;
 
-        public WorkflowAprovaNivelController(IComandosWorkflowAprovaNivel comandosWorkflowAprovaNivel)
+        public WorkflowAprovaNivelController(IComandosWorkflowAprovacao comandosWorkflowAprovacao)
         {
-            this.comandosWorkflowAprovaNivel = comandosWorkflowAprovaNivel ?? throw new System.ArgumentNullException(nameof(comandosWorkflowAprovaNivel));
+            this.comandosWorkflowAprovacao = comandosWorkflowAprovacao ?? throw new System.ArgumentNullException(nameof(comandosWorkflowAprovacao));
         }
 
         [HttpPost]
         [ProducesResponseType(200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        public IActionResult Post(WorkflowAprovacaoNiveisDto[] workflowAprovaNivelDto)
+        public IActionResult Post(WorkflowAprovacaoNiveisDto workflowAprovaNivelDto)
         {
-            comandosWorkflowAprovaNivel.SalvarListaDto(workflowAprovaNivelDto);
+            comandosWorkflowAprovacao.SalvarListaDto(workflowAprovaNivelDto);
             return Ok();
         }
     }
