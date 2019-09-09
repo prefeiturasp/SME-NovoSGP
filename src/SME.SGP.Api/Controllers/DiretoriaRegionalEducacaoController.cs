@@ -31,5 +31,13 @@ namespace SME.SGP.Api.Controllers
         {
             return Ok(consultaDres.ObterEscolasSemAtribuicao(dreId));
         }
+
+        [HttpGet("{dreId}/ues")]
+        [ProducesResponseType(typeof(IEnumerable<UnidadeEscolarDto>), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        public IActionResult ObterUesPorDre(string dreId)
+        {
+            return Ok(consultaDres.ObterEscolasPorDre(dreId));
+        }
     }
 }

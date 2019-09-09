@@ -17,12 +17,26 @@ namespace SME.SGP.Aplicacao
             this.repositorioSupervisorEscolaDre = repositorioSupervisorEscolaDre ?? throw new System.ArgumentNullException(nameof(repositorioSupervisorEscolaDre));
         }
 
+        public IEnumerable<UnidadeEscolarDto> ObterEscolasPorDre(string dreId)
+        {
+            var escolasPorDre = servicoEOL.ObterEscolasPorDre(dreId);
+
+            var lista = from a in escolasPorDre
+                        select new UnidadeEscolarDto()
+                        {
+                            Codigo = a.CodigoEscola,
+                            Nome = a.NomeEscola
+                        };
+
+            return lista;
+        }
+
         public IEnumerable<UnidadeEscolarDto> ObterEscolasSemAtribuicao(string dreId)
         {
             //TODO, Nogueira, estou limitando em 100 registros até a api que retorna a lista correta de dres atribuidas ao supervisor ser criada
             var escolasPorDre = servicoEOL.ObterEscolasPorDre(dreId)?.Take(10);
 
-            var supervisoresEscolasDres = repositorioSupervisorEscolaDre.ObtemSupervisoresEscola(dreId, string.Empty);
+            var supervisoresEscolasDres = repositorioSupervisorEscolaDre.ObtemPorDreESupervisor(dreId, string.Empty);
 
             return TrataEscolasSemSupervisores(escolasPorDre, supervisoresEscolasDres);
         }

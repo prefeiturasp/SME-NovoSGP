@@ -27,6 +27,14 @@ namespace SME.SGP.Api.Controllers
             return Ok();
         }
 
+        [HttpGet("ues/{ueId}/vinculo")]
+        [ProducesResponseType(typeof(SupervisorEscolasDto), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        public IActionResult ObterPorUe(string ueId)
+        {
+            return Ok(consultasSupervisor.ObterPorUe(ueId));
+        }
+
         [HttpGet("dre/{dreId}")]
         [ProducesResponseType(typeof(IEnumerable<SupervisorDto>), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
@@ -43,12 +51,16 @@ namespace SME.SGP.Api.Controllers
             return Ok(consultasSupervisor.ObterPorDre(dreId));
         }
 
-        [HttpGet("{supervisorId}/dre/{dreId}")]
+        [HttpGet("{supervisoresId}/dre/{dreId}")]
         [ProducesResponseType(typeof(IEnumerable<SupervisorEscolasDto>), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        public IActionResult ObterSupervisoresEEscolasPorSupervsiroEDre(string supervisorId, string dreId)
+        public IActionResult ObterSupervisoresEEscolasPorSupervisoresEDre(string supervisoresId, string dreId)
         {
-            return Ok(consultasSupervisor.ObterPorDreESupervisor(supervisorId, dreId));
+            var listaretorno = consultasSupervisor.ObterPorDreESupervisores(supervisoresId.Split(","), dreId);
+
+            if (listaretorno == null)
+                return new StatusCodeResult(204);
+            else return Ok(listaretorno);
         }
     }
 }
