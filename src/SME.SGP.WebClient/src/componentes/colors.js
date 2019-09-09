@@ -18,7 +18,7 @@ const Base = {
   CinzaMako: '#42474A',
   Preto: '#000',
   Roxo: '#6933FF',
-  RoxoClaro: '#B99FFF'
+  RoxoClaro: '#B99FFF',
 };
 
 const Active = {

@@ -36,6 +36,7 @@ const Container = styled(Modal)`
 
 const ModalMultiLinhas = props => {
   const { visivel, onClose, conteudo, titulo, type } = props;
+
   return (
     <Container
       onCancel={onClose}
