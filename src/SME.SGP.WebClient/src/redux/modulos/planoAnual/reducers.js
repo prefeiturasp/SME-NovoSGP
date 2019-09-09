@@ -94,13 +94,6 @@ export default function bimestres(state = INICIAL, action) {
 
         break;
 
-      case '@bimestres/DefinirObjetivoFocado':
-        draft.bimestres[action.payload.indice].objetivoIdFocado =
-          action.payload.codigoObjetivo;
-        draft.bimestresErro = state.bimestresErro;
-
-        break;
-
       case '@bimestres/SetarDescricao':
         draft.bimestres[action.payload.indice].objetivo =
           action.payload.descricao;
