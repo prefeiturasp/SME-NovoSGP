@@ -309,6 +309,7 @@ const Filtro = () => {
     setDresFiltro([...dres]);
     setUnidadesEscolaresFiltro([...unidadesEscolares]);
     store.dispatch(turmasUsuario(turmas.sort(ordenaTurmas)));
+    setTurmaFiltroSelecionada();
   }, [
     modalidadeFiltroSelecionada,
     dreFiltroSelecionada,
