@@ -490,7 +490,7 @@ export default function PlanoCiclo() {
                     id="tipo-ciclo"
                     lista={listaCiclos}
                     valueOption="id"
-                    label="descricao"
+                    valueText="descricao"
                     onChange={validaTrocaCiclo}
                     valueSelect={cicloSelecionado}
                   />

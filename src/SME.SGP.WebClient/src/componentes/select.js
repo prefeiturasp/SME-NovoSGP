@@ -25,6 +25,17 @@ const Container = styled.div`
   .ant-select-selection-selected-value {
     font-weight: bold;
   }
+  .ant-select-selection--multiple {
+    min-height: 38px;
+
+    .ant-select-selection__placeholder {
+      line-height: 25px;
+    }
+
+    .ant-select-selection__rendered {
+      margin-top: 3px;
+    }
+  }
 `;
 
 const SelectComponent = props => {
@@ -39,14 +50,19 @@ const SelectComponent = props => {
     valueSelect,
     lista,
     placeholder,
+    multiple,
+    disabled
   } = props;
 
   const { Option } = Select;
 
   return (
     <Container>
-      <Label text={label} control={name} />
+      {
+        label ? <Label text={label} control={name} />: ''
+      }
       <Select
+        mode={multiple ? 'multiple' : ''}
         suffixIcon={<Icon type="caret-down" />}
         className={className}
         name={name}
@@ -55,6 +71,9 @@ const SelectComponent = props => {
         value={valueSelect}
         placeholder={placeholder}
         notFoundContent="Sem dados"
+        optionFilterProp="children"
+        allowClear
+        disabled={disabled}
       >
         {lista.length &&
           lista.map(item => {
@@ -74,12 +93,13 @@ SelectComponent.propTypes = {
   id: PropTypes.string,
   className: PropTypes.string,
   onChange: PropTypes.func,
-  label: PropTypes.string.isRequired,
-  valueText: PropTypes.string.isRequired,
+  label: PropTypes.string,
+  valueText: PropTypes.string,
   valueOption: PropTypes.string.isRequired,
-  valueSelect: PropTypes.string,
+  valueSelect: PropTypes.any,
   lista: PropTypes.array,
   placeholder: PropTypes.string,
+  disabled: PropTypes.bool,
 };
 
 export default SelectComponent;
