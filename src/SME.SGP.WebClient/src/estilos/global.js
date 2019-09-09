@@ -23,6 +23,7 @@ export default createGlobalStyle`
   body {
     -webkit-font-smoothing: antialiased;
     background: ${Base.CinzaFundo} !important;
+    overflow-x: hidden;
   }
   button {
     cursor: pointer;
@@ -183,4 +184,11 @@ export default createGlobalStyle`
     position: fixed !important;
   }
 
+  .ant-modal-footer {
+    border-top: 0px !important;
+  }
+
+  .ant-modal-title{
+    font-size: 24px !important;
+  }
 `;
