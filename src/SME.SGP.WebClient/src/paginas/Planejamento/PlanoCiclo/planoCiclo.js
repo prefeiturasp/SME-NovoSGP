@@ -407,7 +407,6 @@ export default function PlanoCiclo() {
               id: 'plano-ciclo-selecione-turma',
               mensagem: 'Você precisa escolher uma turma.',
               estiloTitulo: { fontSize: '18px' },
-
             }}
             className="mb-0"
           />
