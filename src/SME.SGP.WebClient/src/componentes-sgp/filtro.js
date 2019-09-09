@@ -270,6 +270,11 @@ const Filtro = () => {
         return true;
       })
       .filter(dado => {
+        if (periodoFiltroSelecionado)
+          return dado.semestre.toString() === periodoFiltroSelecionado;
+        return true;
+      })
+      .filter(dado => {
         if (dreFiltroSelecionada)
           return dado.codDre.toString() === dreFiltroSelecionada;
         return true;
@@ -311,6 +316,7 @@ const Filtro = () => {
     store.dispatch(turmasUsuario(turmas.sort(ordenaTurmas)));
   }, [
     modalidadeFiltroSelecionada,
+    periodoFiltroSelecionado,
     dreFiltroSelecionada,
     unidadeEscolarFiltroSelecionada,
   ]);
