@@ -6,7 +6,7 @@ using SME.SGP.Dto;
 namespace SME.SGP.Api.Controllers
 {
     [ApiController]
-    [Route("api/v1/workflows/aprova-niveis")]
+    [Route("api/v1/workflows/aprovacoes")]
     [ValidaDto]
     public class WorkflowAprovaNivelController : ControllerBase
     {
@@ -22,7 +22,7 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         public IActionResult Post(WorkflowAprovacaoNiveisDto workflowAprovaNivelDto)
         {
-            comandosWorkflowAprovacao.SalvarListaDto(workflowAprovaNivelDto);
+            comandosWorkflowAprovacao.Salvar(workflowAprovaNivelDto);
             return Ok();
         }
     }
