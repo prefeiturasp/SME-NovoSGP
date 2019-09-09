@@ -17,7 +17,8 @@ import Alert from '../../../componentes/alert';
 import ModalMultiLinhas from '../../../componentes/modalMultiLinhas';
 import ModalConfirmacao from '../../../componentes/modalConfirmacao';
 import history from '../../../servicos/history';
-import { URL_PLANO_ANUAL, URL_HOME } from '../../../constantes/url';
+import { URL_HOME } from '../../../constantes/url';
+import { erro } from '../../../servicos/alertas';
 
 export default function PlanoAnual() {
   const bimestres = useSelector(store => store.bimestres.bimestres);
@@ -29,7 +30,10 @@ export default function PlanoAnual() {
   const emEdicao = bimestres.filter(x => x.ehEdicao).length > 0;
   const ehDisabled = usuario.turmaSelecionada.length === 0;
   const dispatch = useDispatch();
-  const [modalConfirmacaoVisivel, setModalConfirmacaoVisivel] = useState(false);
+  const [modalConfirmacaoVisivel, setModalConfirmacaoVisivel] = useState({
+    modalVisivel: false,
+    sairTela: false,
+  });
 
   const ehEja =
     turmaSelecionada[0] && turmaSelecionada[0].codModalidade === 3
@@ -57,10 +61,13 @@ export default function PlanoAnual() {
   }, [bimestres]);
 
   const onF5Click = e => {
-    if ((e.which || e.keyCode) == 116) {
+    if (e.code === 'F5') {
       if (emEdicao) {
         e.preventDefault();
-        setModalConfirmacaoVisivel(true);
+        setModalConfirmacaoVisivel({
+          modalVisivel: true,
+          sairTela: false,
+        });
       }
     }
   };
@@ -86,18 +93,33 @@ export default function PlanoAnual() {
     })
       .then(res => {
         const ehEdicao = res.status === 200;
-        Service.getDisciplinasProfessor(usuario.rf, turmaId).then(res => {
-          ObtenhaBimestres(_.cloneDeep(res), !ehEdicao);
-        });
+        Service.getDisciplinasProfessor(usuario.rf, turmaId)
+          .then(res => {
+            ObtenhaBimestres(_.cloneDeep(res), !ehEdicao);
+          })
+          .catch(() => {
+            erro(`Não foi possivel obter as disciplinas do professor`);
+          });
       })
-      .catch(() => {});
+      .catch(() => {
+        erro(
+          `Não foi possivel obter os dados do ${
+            ehEja ? 'plano semestral' : 'plano anual'
+          }`
+        );
+      });
   };
 
   const ObtenhaNomebimestre = index =>
     `${index}º ${ehEja ? 'Semestre' : 'Bimestre'}`;
 
   const confirmarCancelamento = () => {
-    history.push(URL_HOME);
+    if (modalConfirmacaoVisivel.sairTela) {
+      history.push(URL_HOME);
+    } else {
+      cancelarModalConfirmacao();
+      verificarSeEhEdicao();
+    }
   };
 
   const onClickCancelar = () => {
@@ -105,7 +127,10 @@ export default function PlanoAnual() {
   };
 
   const cancelarModalConfirmacao = () => {
-    setModalConfirmacaoVisivel(false);
+    setModalConfirmacaoVisivel({
+      modalVisivel: false,
+      sairTela: false,
+    });
   };
 
   const onClickSalvar = () => {
@@ -139,7 +164,11 @@ export default function PlanoAnual() {
   };
 
   const voltarParaHome = () => {
-    if (emEdicao) setModalConfirmacaoVisivel(true);
+    if (emEdicao)
+      setModalConfirmacaoVisivel({
+        modalVisivel: true,
+        sairTela: true,
+      });
     else history.push(URL_HOME);
   };
 
@@ -174,7 +203,7 @@ export default function PlanoAnual() {
       />
       <ModalConfirmacao
         key="confirmacaoDeSaida"
-        visivel={modalConfirmacaoVisivel}
+        visivel={modalConfirmacaoVisivel.modalVisivel}
         onConfirmacaoPrincipal={cancelarModalConfirmacao}
         onConfirmacaoSecundaria={confirmarCancelamento}
         onClose={cancelarModalConfirmacao}

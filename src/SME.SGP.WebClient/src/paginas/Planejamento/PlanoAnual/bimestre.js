@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useLayoutEffect } from 'react';
+import React, { useEffect, useRef, useLayoutEffect, useState } from 'react';
 import { Badge, ObjetivosList, ListItemButton, ListItem } from './bimestre.css';
 import CardCollapse from '../../../componentes/cardCollapse';
 import Grid from '../../../componentes/grid';
@@ -12,8 +12,6 @@ import {
   SalvarEhExpandido,
   SelecionarMateria,
   SetarDescricaoFunction,
-  SalvarObjetivos,
-  DefinirObjetivoFocado,
   SelecionarObjetivo,
   SetarDescricao,
   ObterBimestreServidor,
@@ -31,13 +29,17 @@ const BimestreComponent = props => {
 
   const materias = bimestres[indice].materias;
 
+  const objetivos = bimestres[indice].objetivosAprendizagem;
+
+  const [idObjetivoFocado, setIDObjetivoFocado] = useState('0');
+
   const textEditorRef = useRef(null);
 
   const ListRef = useRef(null);
 
-  useLayoutEffect(() => {
-    focarObjetivo();
+  const bimestreJaObtidoServidor = bimestres[indice].ehExpandido;
 
+  useLayoutEffect(() => {
     if (!bimestres[indice].setarObjetivo) {
       setarDescricaoFunction(descricaoFunction);
     }
@@ -46,6 +48,10 @@ const BimestreComponent = props => {
   useEffect(() => {
     obterObjetivos();
   }, [materias]);
+
+  useLayoutEffect(() => {
+    focarObjetivo();
+  }, [objetivos]);
 
   const descricaoFunction = () => {
     return textEditorRef.current.state.value;
@@ -68,21 +74,18 @@ const BimestreComponent = props => {
   };
 
   const focarObjetivo = () => {
-    if (
-      !bimestres[indice].objetivoIdFocado ||
-      bimestres[indice].objetivoIdFocado === 0
-    )
-      return;
+    if (!idObjetivoFocado || idObjetivoFocado === '0') return;
 
-    const Elem = document.getElementById(bimestres[indice].objetivoIdFocado);
+    const Elem = document.getElementById(idObjetivoFocado);
+
+    if (!Elem) return;
+
     const listDivObjetivos = ListRef.current;
     Elem.scrollIntoViewIfNeeded(listDivObjetivos);
-
-    DefinirObjetivoFocado(indice, 0);
   };
 
   const setObjetivoFocado = objetivoId => {
-    dispatch(DefinirObjetivoFocado(indice, objetivoId));
+    setIDObjetivoFocado(objetivoId);
   };
 
   const selecionarObjetivo = (index, ariaPressed) => {
@@ -130,7 +133,8 @@ const BimestreComponent = props => {
   };
 
   const onClickBimestre = () => {
-    dispatch(ObterBimestreServidor(bimestres[indice]));
+    if (!bimestreJaObtidoServidor)
+      dispatch(ObterBimestreServidor(bimestres[indice]));
   };
 
   return (
