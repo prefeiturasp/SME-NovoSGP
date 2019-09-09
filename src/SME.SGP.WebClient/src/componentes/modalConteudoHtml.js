@@ -1,5 +1,5 @@
 import { Modal } from 'antd';
-import React, { Children } from 'react';
+import React from 'react';
 import styled from 'styled-components';
 
 import Button from './button';
@@ -38,7 +38,7 @@ const Container = styled(Modal)`
   }
 `;
 
-const ModalConfirmacao = props => {
+const ModalConteudoHtml = props => {
   const {
     visivel,
     onConfirmacaoPrincipal,
@@ -47,6 +47,7 @@ const ModalConfirmacao = props => {
     labelBotaoPrincipal,
     labelBotaoSecundario,
     titulo,
+    children,
   } = props;
   return (
     <Container
@@ -72,9 +73,9 @@ const ModalConfirmacao = props => {
         />,
       ]}
     >
-      {Children}
+      {children}
     </Container>
   );
 };
 
-export default ModalConfirmacao;
+export default ModalConteudoHtml;

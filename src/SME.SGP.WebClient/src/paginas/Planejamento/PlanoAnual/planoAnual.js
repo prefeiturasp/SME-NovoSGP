@@ -21,6 +21,7 @@ import { URL_HOME } from '../../../constantes/url';
 import { erro } from '../../../servicos/alertas';
 import { salvarRf } from '../../../redux/modulos/usuario/actions';
 import ModalConteudoHtml from '../../../componentes/modalConteudoHtml';
+import Select from '../../../componentes/select';
 
 export default function PlanoAnual() {
   const diciplinasSemObjetivo = [1061];
@@ -64,8 +65,12 @@ export default function PlanoAnual() {
   const turmaId = turmaSelecionada[0] ? turmaSelecionada[0].codTurma : 0;
 
   useEffect(() => {
-    dispatch(salvarRf(7923163));
+    dispatch(salvarRf(8078670));
   }, []);
+
+  useEffect(() => {
+    console.log(modalCopiarConteudo);
+  }, [modalCopiarConteudo]);
 
   useEffect(() => {
     if ((!bimestres || bimestres.length === 0) && !ehDisabled)
@@ -164,6 +169,9 @@ export default function PlanoAnual() {
     })
       .then(res => {
         if (res.status === 200) {
+          modalCopiarConteudo.visivel = true;
+          //setModalCopiarConteudo({ ...modalCopiarConteudo });
+          ObtenhaTurmasCopiarConteudo();
         } else {
           erro('Este plano ainda não foi salvo na base de dados');
         }
@@ -183,11 +191,7 @@ export default function PlanoAnual() {
         x => x === disciplinas[0].codigo
       );
 
-      console.log(arraySemObjetivo);
-
       if (arraySemObjetivo.length > 0) semObjetivo = true;
-
-      console.log(semObjetivo);
     }
 
     for (let i = 1; i <= qtdBimestres; i++) {
@@ -216,6 +220,12 @@ export default function PlanoAnual() {
     }
 
     setDisciplinaObjetivo(semObjetivo);
+  };
+
+  const ObtenhaTurmasCopiarConteudo = () => {
+    const anoEscolar = turmaSelecionada[0].ano;
+
+    console.log(usuario);
   };
 
   const voltarParaHome = () => {
@@ -274,8 +284,8 @@ export default function PlanoAnual() {
         onConfirmacaoPrincipal={() => {}}
         onConfirmacaoSecundaria={() => {}}
         onClose={() => {}}
-        labelPrincipal="Copiar"
-        labelSecundaria="Cancelar"
+        labelBotaoPrincipal="Copiar"
+        labelBotaoSecundario="Cancelar"
         titulo="Copiar Conteúdo"
       ></ModalConteudoHtml>
       <Card>
@@ -314,7 +324,6 @@ export default function PlanoAnual() {
             color={Colors.Roxo}
             onClick={onClickSalvar}
             disabled={!emEdicao || ehDisabled}
-            border
             bold
           />
         </Grid>
