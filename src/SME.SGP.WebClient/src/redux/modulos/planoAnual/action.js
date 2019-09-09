@@ -1,5 +1,5 @@
 import Servico from '../../../servicos/Paginas/PlanoAnualServices';
-import { sucesso, erro, erroMensagem } from '../../../servicos/alertas';
+import { sucesso, erro } from '../../../servicos/alertas';
 
 export function Salvar(indice, bimestre) {
   return {
@@ -69,16 +69,6 @@ export function SelecionarObjetivo(indice, indiceObjetivo, selecionarObjetivo) {
       indice,
       indiceObjetivo,
       selecionarObjetivo,
-    },
-  };
-}
-
-export function DefinirObjetivoFocado(indice, codigoObjetivo) {
-  return {
-    type: '@bimestres/DefinirObjetivoFocado',
-    payload: {
-      indice,
-      codigoObjetivo,
     },
   };
 }
@@ -164,8 +154,8 @@ export function Post(bimestres) {
   return dispatch => {
     Servico.postPlanoAnual(bimestres)
       .then(() => {
+        requestAnimationFrame(() => dispatch(setNaoEdicao()));
         sucesso('Suas informações foram salvas com sucesso.');
-        dispatch(setNaoEdicao());
       })
       .catch(err => {
         dispatch(
