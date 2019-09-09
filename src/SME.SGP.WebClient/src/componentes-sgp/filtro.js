@@ -231,6 +231,24 @@ const Filtro = () => {
   }, [dados]);
 
   useEffect(() => {
+    if (modalidadesFiltro.length === 1)
+      setModalidadeFiltroSelecionada(modalidadesFiltro[0].codigo.toString());
+    if (dresFiltro.length === 1)
+      setDreFiltroSelecionada(dresFiltro[0].codigo.toString());
+    if (unidadesEscolaresFiltro.length === 1)
+      setUnidadeEscolarFiltroSelecionada(
+        unidadesEscolaresFiltro[0].codigo.toString()
+      );
+    if (usuario.turmasUsuario.length === 1)
+      setTurmaFiltroSelecionada(usuario.turmasUsuario[0].codigo.toString());
+  }, [
+    modalidadesFiltro,
+    dresFiltro,
+    unidadesEscolaresFiltro,
+    usuario.turmasUsuario,
+  ]);
+
+  useEffect(() => {
     inputBuscaRef.current.focus();
     if (!textoAutocomplete) setResultadosFiltro([]);
   }, [textoAutocomplete]);
@@ -315,11 +333,6 @@ const Filtro = () => {
       setUnidadeEscolarFiltroSelecionada(dados[0].codEscola.toString());
       setTurmaFiltroSelecionada(dados[0].codTurma.toString());
       store.dispatch(selecionarTurma(dados));
-    } else if (dresFiltro.length === 1) {
-      setDreFiltroSelecionada(dresFiltro[0].codigo.toString());
-      if (unidadesEscolaresFiltro.length === 1) {
-        setUnidadeEscolarFiltroSelecionada(unidadesEscolaresFiltro[0].codigo);
-      }
     }
   };
 
