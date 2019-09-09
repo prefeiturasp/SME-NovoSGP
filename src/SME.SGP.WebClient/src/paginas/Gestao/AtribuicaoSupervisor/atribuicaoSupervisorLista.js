@@ -180,14 +180,14 @@ export default function AtribuicaoSupervisorLista() {
 
   function montarListaAtribuicao(lista, dre, isArray) {
     if (lista) {
+      const dadosAtribuicao = [];
       if (isArray) {
-        const dadosAtribuicao = [];
         lista.forEach(item => {
           montarLista(item, dadosAtribuicao);
         });
         setListaFiltroAtribuicao(dadosAtribuicao);
       } else {
-        setListaFiltroAtribuicao(montarLista(lista), []);
+        setListaFiltroAtribuicao(montarLista(lista, dadosAtribuicao));
       }
     } else {
       setListaFiltroAtribuicao([]);
