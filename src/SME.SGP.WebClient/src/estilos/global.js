@@ -183,4 +183,12 @@ export default createGlobalStyle`
     margin-top: 0px !important;
     top: 0;
   }
+
+  .ant-modal-footer {
+    border-top: 0px !important;
+  }
+
+  .ant-modal-title{
+    font-size: 24px !important;
+  }
 `;

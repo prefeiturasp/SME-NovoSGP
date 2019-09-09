@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { useSelector } from 'react-redux';
+import styled from 'styled-components';
 import Card from '../../componentes/card';
 import Grid from '../../componentes/grid';
 import CardLink from '../../componentes/cardlink';
 import Row from '../../componentes/row';
 import Alert from '../../componentes/alert';
-import styled from 'styled-components';
 import {
   URL_PLANO_ANUAL,
   URL_PLANO_CICLO,
@@ -90,6 +90,7 @@ const Principal = props => {
                   tipo: 'warning',
                   id: 'AlertaPrincipal',
                   mensagem: 'Você precisa escolher uma turma.',
+                  estiloTitulo: { fontSize: '18px' },
                 }}
                 className="mb-0"
               />
@@ -100,7 +101,8 @@ const Principal = props => {
       <Card>
         <Grid cols={12}>
           <Label>
-            <span className="fas fa-thumbtack m-r-10 m-b-10"></span>Notificações
+            <span className="fas fa-thumbtack m-r-10 m-b-10" />
+            Notificações
           </Label>
           <Row>
             <Grid cols={12}>
