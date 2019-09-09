@@ -192,4 +192,12 @@ export default createGlobalStyle`
   .supervisor-nao-atribuido {
     color: #b40c02;
   }
+
+  .ant-modal-footer {
+    border-top: 0px !important;
+  }
+
+  .ant-modal-title{
+    font-size: 24px !important;
+  }
 `;

@@ -17,9 +17,13 @@ import Alert from '../../../componentes/alert';
 import ModalMultiLinhas from '../../../componentes/modalMultiLinhas';
 import ModalConfirmacao from '../../../componentes/modalConfirmacao';
 import history from '../../../servicos/history';
-import { URL_PLANO_ANUAL, URL_HOME } from '../../../constantes/url';
+import { URL_HOME } from '../../../constantes/url';
+import { erro } from '../../../servicos/alertas';
+import { salvarRf } from '../../../redux/modulos/usuario/actions';
 
 export default function PlanoAnual() {
+  const diciplinasSemObjetivo = [1061];
+
   const bimestres = useSelector(store => store.bimestres.bimestres);
   const notificacoes = useSelector(store => store.notificacoes);
   const bimestresErro = useSelector(store => store.bimestres.bimestresErro);
@@ -29,12 +33,24 @@ export default function PlanoAnual() {
   const emEdicao = bimestres.filter(x => x.ehEdicao).length > 0;
   const ehDisabled = usuario.turmaSelecionada.length === 0;
   const dispatch = useDispatch();
-  const [modalConfirmacaoVisivel, setModalConfirmacaoVisivel] = useState(false);
+  const [modalConfirmacaoVisivel, setModalConfirmacaoVisivel] = useState({
+    modalVisivel: false,
+    sairTela: false,
+  });
 
   const ehEja =
     turmaSelecionada[0] && turmaSelecionada[0].codModalidade === 3
       ? true
       : false;
+
+  const ehMedio =
+    turmaSelecionada[0] && turmaSelecionada[0].codModalidade === 6
+      ? true
+      : false;
+
+  const [disciplinaObjetivo, setDisciplinaObjetivo] = useState(false);
+
+  const LayoutEspecial = ehEja || ehMedio || disciplinaObjetivo;
 
   const qtdBimestres = ehEja ? 2 : 4;
 
@@ -43,7 +59,9 @@ export default function PlanoAnual() {
   const anoEscolar = turmaSelecionada[0] ? turmaSelecionada[0].ano : 0;
   const turmaId = turmaSelecionada[0] ? turmaSelecionada[0].codTurma : 0;
 
-  useEffect(() => {}, []);
+  useEffect(() => {
+    dispatch(salvarRf(7923163));
+  }, []);
 
   useEffect(() => {
     if ((!bimestres || bimestres.length === 0) && !ehDisabled)
@@ -57,10 +75,13 @@ export default function PlanoAnual() {
   }, [bimestres]);
 
   const onF5Click = e => {
-    if ((e.which || e.keyCode) == 116) {
+    if (e.code === 'F5') {
       if (emEdicao) {
         e.preventDefault();
-        setModalConfirmacaoVisivel(true);
+        setModalConfirmacaoVisivel({
+          modalVisivel: true,
+          sairTela: false,
+        });
       }
     }
   };
@@ -86,18 +107,33 @@ export default function PlanoAnual() {
     })
       .then(res => {
         const ehEdicao = res.status === 200;
-        Service.getDisciplinasProfessor(usuario.rf, turmaId).then(res => {
-          ObtenhaBimestres(_.cloneDeep(res), !ehEdicao);
-        });
+        Service.getDisciplinasProfessor(usuario.rf, turmaId)
+          .then(res => {
+            ObtenhaBimestres(_.cloneDeep(res), !ehEdicao);
+          })
+          .catch(() => {
+            erro(`Não foi possivel obter as disciplinas do professor`);
+          });
       })
-      .catch(() => {});
+      .catch(() => {
+        erro(
+          `Não foi possivel obter os dados do ${
+            ehEja ? 'plano semestral' : 'plano anual'
+          }`
+        );
+      });
   };
 
   const ObtenhaNomebimestre = index =>
     `${index}º ${ehEja ? 'Semestre' : 'Bimestre'}`;
 
   const confirmarCancelamento = () => {
-    history.push(URL_HOME);
+    if (modalConfirmacaoVisivel.sairTela) {
+      history.push(URL_HOME);
+    } else {
+      cancelarModalConfirmacao();
+      verificarSeEhEdicao();
+    }
   };
 
   const onClickCancelar = () => {
@@ -105,7 +141,10 @@ export default function PlanoAnual() {
   };
 
   const cancelarModalConfirmacao = () => {
-    setModalConfirmacaoVisivel(false);
+    setModalConfirmacaoVisivel({
+      modalVisivel: false,
+      sairTela: false,
+    });
   };
 
   const onClickSalvar = () => {
@@ -113,6 +152,22 @@ export default function PlanoAnual() {
   };
 
   const ObtenhaBimestres = (disciplinas = [], ehEdicao) => {
+    console.log(disciplinas);
+
+    let semObjetivo = false;
+
+    if (disciplinas.length === 1) {
+      const arraySemObjetivo = diciplinasSemObjetivo.filter(
+        x => x === disciplinas[0].codigo
+      );
+
+      console.log(arraySemObjetivo);
+
+      if (arraySemObjetivo.length > 0) semObjetivo = true;
+
+      console.log(semObjetivo);
+    }
+
     for (let i = 1; i <= qtdBimestres; i++) {
       const Nome = ObtenhaNomebimestre(i);
 
@@ -130,16 +185,23 @@ export default function PlanoAnual() {
         objetivo: objetivo,
         paraEnviar: false,
         ehEdicao,
+        LayoutEspecial: LayoutEspecial || semObjetivo,
         ehExpandido: ehEdicao,
         jaSincronizou: false,
       };
 
       dispatch(Salvar(i, bimestre));
     }
+
+    setDisciplinaObjetivo(semObjetivo);
   };
 
   const voltarParaHome = () => {
-    if (emEdicao) setModalConfirmacaoVisivel(true);
+    if (emEdicao)
+      setModalConfirmacaoVisivel({
+        modalVisivel: true,
+        sairTela: true,
+      });
     else history.push(URL_HOME);
   };
 
@@ -174,7 +236,7 @@ export default function PlanoAnual() {
       />
       <ModalConfirmacao
         key="confirmacaoDeSaida"
-        visivel={modalConfirmacaoVisivel}
+        visivel={modalConfirmacaoVisivel.modalVisivel}
         onConfirmacaoPrincipal={cancelarModalConfirmacao}
         onConfirmacaoSecundaria={confirmarCancelamento}
         onClose={cancelarModalConfirmacao}
@@ -231,6 +293,7 @@ export default function PlanoAnual() {
                     disabled={ehDisabled}
                     key={bim.indice}
                     indice={bim.indice}
+                    LayoutEspecial={LayoutEspecial}
                   />
                 );
               })

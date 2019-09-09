@@ -33,8 +33,7 @@ namespace SME.SGP.Aplicacao
 
         public IEnumerable<UnidadeEscolarDto> ObterEscolasSemAtribuicao(string dreId)
         {
-            //TODO, Nogueira, estou limitando em 100 registros até a api que retorna a lista correta de dres atribuidas ao supervisor ser criada
-            var escolasPorDre = servicoEOL.ObterEscolasPorDre(dreId)?.Take(10);
+            var escolasPorDre = servicoEOL.ObterEscolasPorDre(dreId);
 
             var supervisoresEscolasDres = repositorioSupervisorEscolaDre.ObtemPorDreESupervisor(dreId, string.Empty);
 
