@@ -5,7 +5,7 @@ using SME.SGP.Dominio.Interfaces;
 
 namespace SME.SGP.Dados.Repositorios
 {
-    public class RepositorioWorkflowAprovaNivelNotificacao : IRepositorioWorkflowAprovaNivelNotificacao
+    public class RepositorioWorkflowAprovaNivelNotificacao : IRepositorioWorkflowAprovacaoNivelNotificacao
     {
         private readonly ISgpContext dataBase;
 
@@ -14,7 +14,7 @@ namespace SME.SGP.Dados.Repositorios
             this.dataBase = dataBase ?? throw new System.ArgumentNullException(nameof(dataBase));
         }
 
-        public void Salvar(WorkflowAprovaNivelNotificacao workflowAprovaNivelNotificacao)
+        public void Salvar(WorkflowAprovacaoNivelNotificacao workflowAprovaNivelNotificacao)
         {
             dataBase.Conexao.Insert(workflowAprovaNivelNotificacao);
         }

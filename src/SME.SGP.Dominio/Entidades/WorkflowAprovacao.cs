@@ -26,6 +26,8 @@ namespace SME.SGP.Dominio
             if (nivel == null)
                 throw new NegocioException("Não é possível incluir um nível sem informação");
 
+            nivel.Workflow = this;
+
             niveis.Add(nivel);
         }
     }

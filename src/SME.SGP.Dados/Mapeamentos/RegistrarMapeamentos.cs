@@ -17,8 +17,9 @@ namespace SME.SGP.Dados.Mapeamentos
                config.AddMap(new AuditoriaMap());
                config.AddMap(new CicloMap());
                config.AddMap(new NotificacaoMap());
-               config.AddMap(new WorkflowAprovaNivelMap());
-               config.AddMap(new WorkflowAprovaNivelNotificacaoMap());
+               config.AddMap(new WorkflowAprovacaoMap());
+               config.AddMap(new WorkflowAprovacaoNivelMap());
+               config.AddMap(new WorkflowAprovacaoNivelNotificacaoMap());
                config.ForDommel();
            });
         }
