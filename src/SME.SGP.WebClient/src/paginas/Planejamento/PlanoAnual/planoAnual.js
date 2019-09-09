@@ -1,11 +1,10 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import {
   Salvar,
   PrePost,
   Post,
 } from '../../../redux/modulos/planoAnual/action';
-import { salvarRf } from '../../../redux/modulos/usuario/actions';
 import Grid from '../../../componentes/grid';
 import Button from '../../../componentes/button';
 import { Colors, Base } from '../../../componentes/colors';
@@ -13,26 +12,45 @@ import _ from 'lodash';
 import Card from '../../../componentes/card';
 import Bimestre from './bimestre';
 import Row from '../../../componentes/row';
-import { confirmacao } from '../../../servicos/alertas';
 import Service from '../../../servicos/Paginas/PlanoAnualServices';
 import Alert from '../../../componentes/alert';
 import ModalMultiLinhas from '../../../componentes/modalMultiLinhas';
+import ModalConfirmacao from '../../../componentes/modalConfirmacao';
+import history from '../../../servicos/history';
+import { URL_HOME } from '../../../constantes/url';
+import { erro } from '../../../servicos/alertas';
+import { salvarRf } from '../../../redux/modulos/usuario/actions';
 
-export default function PlanoAnual(props) {
+export default function PlanoAnual() {
+  const diciplinasSemObjetivo = [1061];
+
   const bimestres = useSelector(store => store.bimestres.bimestres);
   const notificacoes = useSelector(store => store.notificacoes);
   const bimestresErro = useSelector(store => store.bimestres.bimestresErro);
   const usuario = useSelector(store => store.usuario);
 
   const turmaSelecionada = usuario.turmaSelecionada;
-  const ehEdicao = bimestres.filter(x => x.ehEdicao).length > 0;
+  const emEdicao = bimestres.filter(x => x.ehEdicao).length > 0;
   const ehDisabled = usuario.turmaSelecionada.length === 0;
   const dispatch = useDispatch();
+  const [modalConfirmacaoVisivel, setModalConfirmacaoVisivel] = useState({
+    modalVisivel: false,
+    sairTela: false,
+  });
 
   const ehEja =
     turmaSelecionada[0] && turmaSelecionada[0].codModalidade === 3
       ? true
       : false;
+
+  const ehMedio =
+    turmaSelecionada[0] && turmaSelecionada[0].codModalidade === 6
+      ? true
+      : false;
+
+  const [disciplinaObjetivo, setDisciplinaObjetivo] = useState(false);
+
+  const LayoutEspecial = ehEja || ehMedio || disciplinaObjetivo;
 
   const qtdBimestres = ehEja ? 2 : 4;
 
@@ -41,20 +59,36 @@ export default function PlanoAnual(props) {
   const anoEscolar = turmaSelecionada[0] ? turmaSelecionada[0].ano : 0;
   const turmaId = turmaSelecionada[0] ? turmaSelecionada[0].codTurma : 0;
 
-  useEffect(() => {}, []);
+  useEffect(() => {
+    dispatch(salvarRf(7923163));
+  }, []);
 
   useEffect(() => {
     if ((!bimestres || bimestres.length === 0) && !ehDisabled)
       ObtenhaBimestres();
 
     verificarSeEhEdicao();
-
   }, [usuario]);
 
   useEffect(() => {
     VerificarEnvio();
-
   }, [bimestres]);
+
+  const onF5Click = e => {
+    if (e.code === 'F5') {
+      if (emEdicao) {
+        e.preventDefault();
+        setModalConfirmacaoVisivel({
+          modalVisivel: true,
+          sairTela: false,
+        });
+      }
+    }
+  };
+
+  document.onkeydown = onF5Click;
+  document.onkeypress = onF5Click;
+  document.onkeyup = onF5Click;
 
   const VerificarEnvio = () => {
     const paraEnviar = bimestres.map(x => x.paraEnviar).filter(x => x);
@@ -70,25 +104,70 @@ export default function PlanoAnual(props) {
       Bimestre: 1,
       EscolaId: escolaId,
       TurmaId: turmaId,
-    }).then(res => {
-      const ehEdicao = res.status === 200;
-
-      Service.getDisciplinasProfessor(usuario.rf, turmaId).then(res => {
-        ObtenhaBimestres(_.cloneDeep(res), !ehEdicao);
+    })
+      .then(res => {
+        const ehEdicao = res.status === 200;
+        Service.getDisciplinasProfessor(usuario.rf, turmaId)
+          .then(res => {
+            ObtenhaBimestres(_.cloneDeep(res), !ehEdicao);
+          })
+          .catch(() => {
+            erro(`Não foi possivel obter as disciplinas do professor`);
+          });
+      })
+      .catch(() => {
+        erro(
+          `Não foi possivel obter os dados do ${
+            ehEja ? 'plano semestral' : 'plano anual'
+          }`
+        );
       });
-    });
   };
 
   const ObtenhaNomebimestre = index =>
     `${index}º ${ehEja ? 'Semestre' : 'Bimestre'}`;
 
-  const confirmarCancelamento = () => {};
+  const confirmarCancelamento = () => {
+    if (modalConfirmacaoVisivel.sairTela) {
+      history.push(URL_HOME);
+    } else {
+      cancelarModalConfirmacao();
+      verificarSeEhEdicao();
+    }
+  };
+
+  const onClickCancelar = () => {
+    verificarSeEhEdicao();
+  };
+
+  const cancelarModalConfirmacao = () => {
+    setModalConfirmacaoVisivel({
+      modalVisivel: false,
+      sairTela: false,
+    });
+  };
 
   const onClickSalvar = () => {
     dispatch(PrePost());
   };
 
   const ObtenhaBimestres = (disciplinas = [], ehEdicao) => {
+    console.log(disciplinas);
+
+    let semObjetivo = false;
+
+    if (disciplinas.length === 1) {
+      const arraySemObjetivo = diciplinasSemObjetivo.filter(
+        x => x === disciplinas[0].codigo
+      );
+
+      console.log(arraySemObjetivo);
+
+      if (arraySemObjetivo.length > 0) semObjetivo = true;
+
+      console.log(semObjetivo);
+    }
+
     for (let i = 1; i <= qtdBimestres; i++) {
       const Nome = ObtenhaNomebimestre(i);
 
@@ -106,23 +185,26 @@ export default function PlanoAnual(props) {
         objetivo: objetivo,
         paraEnviar: false,
         ehEdicao,
+        LayoutEspecial: LayoutEspecial || semObjetivo,
         ehExpandido: ehEdicao,
         jaSincronizou: false,
       };
 
       dispatch(Salvar(i, bimestre));
     }
+
+    setDisciplinaObjetivo(semObjetivo);
   };
 
-  const cancelarAlteracoes = () => {
-    confirmacao(
-      'Atenção',
-      `Você não salvou as informações
-    preenchidas. Deseja realmente cancelar as alterações?`,
-      confirmarCancelamento,
-      () => true
-    );
+  const voltarParaHome = () => {
+    if (emEdicao)
+      setModalConfirmacaoVisivel({
+        modalVisivel: true,
+        sairTela: true,
+      });
+    else history.push(URL_HOME);
   };
+
   return (
     <>
       <div className="col-md-12">
@@ -152,9 +234,21 @@ export default function PlanoAnual(props) {
         conteudo={bimestresErro.content}
         titulo={bimestresErro.title}
       />
+      <ModalConfirmacao
+        key="confirmacaoDeSaida"
+        visivel={modalConfirmacaoVisivel.modalVisivel}
+        onConfirmacaoPrincipal={cancelarModalConfirmacao}
+        onConfirmacaoSecundaria={confirmarCancelamento}
+        onClose={cancelarModalConfirmacao}
+        labelPrincipal="Não"
+        labelSecundaria="Sim"
+        titulo="Atenção"
+        conteudo="Você não salvou as informações preenchidas"
+        perguntaDoConteudo="Deseja realmente cancelar as alterações?"
+      />
       <Card>
         <Grid cols={12}>
-          <h1>Plano Anual</h1>
+          {ehEja ? <h1>Plano Semestral</h1> : <h1>Plano Anual</h1>}
         </Grid>
         <Grid cols={6} className="d-flex justify-content-start mb-3">
           <Button
@@ -170,22 +264,23 @@ export default function PlanoAnual(props) {
             label="Voltar"
             icon="arrow-left"
             color={Colors.Azul}
+            onClick={voltarParaHome}
             border
             className="mr-3"
           />
           <Button
             label="Cancelar"
             color={Colors.Roxo}
+            onClick={onClickCancelar}
             border
             bold
             className="mr-3"
-            onClick={cancelarAlteracoes}
           />
           <Button
             label="Salvar"
             color={Colors.Roxo}
             onClick={onClickSalvar}
-            disabled={!ehEdicao || ehDisabled}
+            disabled={!emEdicao || ehDisabled}
             border
             bold
           />
@@ -198,6 +293,7 @@ export default function PlanoAnual(props) {
                     disabled={ehDisabled}
                     key={bim.indice}
                     indice={bim.indice}
+                    LayoutEspecial={LayoutEspecial}
                   />
                 );
               })

@@ -101,17 +101,19 @@ export default function PlanoCiclo() {
         };
 
         let anos = [];
-        if (usuario.turmasUsuario && usuario.turmasUsuario.length && anosTurmasUsuario.length < 1) {
+        if (
+          usuario.turmasUsuario &&
+          usuario.turmasUsuario.length &&
+          anosTurmasUsuario.length < 1
+        ) {
           anos = usuario.turmasUsuario.map(item => item.ano);
-          anos = anos.filter(
-            (elem, pos) => anos.indexOf(elem) == pos
-          );
+          anos = anos.filter((elem, pos) => anos.indexOf(elem) == pos);
         }
         if (anosTurmasUsuario.length < 1 && anos.length > 0) {
           setAnosTurmasUsuario(anos);
-          params['anos'] = anos;
+          params.anos = anos;
         } else {
-          params['anos'] = anosTurmasUsuario;
+          params.anos = anosTurmasUsuario;
         }
 
         const ciclos = await api.post('v1/ciclos/filtro', params);
@@ -391,16 +393,9 @@ export default function PlanoCiclo() {
     );
   }
 
-  // TODO quanto tivermos a tela de login e a home, deverá ser movido todos os alertas para a home/container
-  const notificacoes = useSelector(state => state.notificacoes);
-
   return (
     <>
       <div className="col-md-12">
-        {notificacoes.alertas.map(alerta => (
-          <Alert alerta={alerta} key={alerta.id} />
-        ))}
-
         {usuario &&
         usuario.turmaSelecionada &&
         usuario.turmaSelecionada.length ? (
@@ -411,6 +406,7 @@ export default function PlanoCiclo() {
               tipo: 'warning',
               id: 'plano-ciclo-selecione-turma',
               mensagem: 'Você precisa escolher uma turma.',
+              estiloTitulo: { fontSize: '18px' },
             }}
             className="mb-0"
           />
@@ -433,41 +429,57 @@ export default function PlanoCiclo() {
         <ModalConfirmacao
           id="modal-confirmacao-cancelar"
           visivel={exibirConfirmacaoCancelar}
-          onConfirmacaoSim={() => {
+          onConfirmacaoSecundaria={() => {
             confirmarCancelamento();
             setExibirConfirmacaoCancelar(false);
           }}
-          onConfirmacaoNao={() => setExibirConfirmacaoCancelar(false)}
+          onConfirmacaoPrincipal={() => setExibirConfirmacaoCancelar(false)}
+          onClose={() => setExibirConfirmacaoCancelar(false)}
           conteudo="Você não salvou as informações preenchidas."
           perguntaDoConteudo="Deseja realmente cancelar as alterações?"
+          labelPrincipal="Não"
+          labelSecundaria="Sim"
           titulo="Atenção"
         />
         <ModalConfirmacao
           id="modal-confirmacao-voltar"
           visivel={exibirConfirmacaoVoltar}
-          onConfirmacaoSim={() => {
+          onConfirmacaoPrincipal={() => {
             salvarPlanoCiclo(true);
             setExibirConfirmacaoVoltar(false);
           }}
-          onConfirmacaoNao={() => {
+          onConfirmacaoSecundaria={() => {
             setExibirConfirmacaoVoltar(false);
             setModoEdicao(false);
             history.push('/');
           }}
+          onClose={() => {
+            setExibirConfirmacaoVoltar(false);
+            setModoEdicao(false);
+            history.push('/');
+          }}
+          labelPrincipal="Sim"
+          labelSecundaria="Não"
           perguntaDoConteudo="Suas alterações não foram salvas, deseja salvar agora?"
           titulo="Atenção"
         />
         <ModalConfirmacao
           id="modal-confirmacao-troca-ciclo"
           visivel={exibirConfirmacaoTrocaCiclo}
-          onConfirmacaoSim={() => {
+          onConfirmacaoPrincipal={() => {
             salvarPlanoCiclo(false);
             setExibirConfirmacaoTrocaCiclo(false);
           }}
-          onConfirmacaoNao={() => {
+          onConfirmacaoSecundaria={() => {
             setExibirConfirmacaoTrocaCiclo(false);
             trocaCiclo(cicloParaTrocar);
           }}
+          onClose={() => {
+            setExibirConfirmacaoTrocaCiclo(false);
+            trocaCiclo(cicloParaTrocar);
+          }}
+          labelPrincipal="Sim"
+          labelSecundaria="Não"
           perguntaDoConteudo="Suas alterações não foram salvas, deseja salvar agora?"
           titulo="Atenção"
         />
