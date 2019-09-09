@@ -7,7 +7,7 @@ namespace SME.SGP.Dominio
         public WorkflowAprovacao()
         {
             niveis = new List<WorkflowAprovacaoNivel>();
-            Status = WorkflowAprovaNiveisStatus.SemStatus;
+            Status = WorkflowAprovacaoNivelStatus.SemStatus;
         }
 
         public int Ano { get; set; }
@@ -17,7 +17,6 @@ namespace SME.SGP.Dominio
         public string NotifacaoMensagem { get; set; }
         public string NotifacaoTitulo { get; set; }
         public NotificacaoTipo NotificacaoTipo { get; set; }
-        public WorkflowAprovaNiveisStatus Status { get; set; }
         public string TurmaId { get; set; }
         private List<WorkflowAprovacaoNivel> niveis { get; set; }
 

@@ -30,8 +30,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "scripts", "scripts", "{CF91
 		scripts\V3__TIPO_CICLO.sql = scripts\V3__TIPO_CICLO.sql
 		scripts\V6__NOTIFICACAO.sql = scripts\V6__NOTIFICACAO.sql
 		scripts\V7__WF_APROVACAO.sql = scripts\V7__WF_APROVACAO.sql
-		scripts\V8__WF_APROVACAO_NIVEIS_MENSAGEM.sql = scripts\V8__WF_APROVACAO_NIVEIS_MENSAGEM.sql
-		scripts\V9__WF_APROVACAO_NIVEL.sql = scripts\V9__WF_APROVACAO_NIVEL.sql
+		scripts\V8__WF_APROVACAO_NIVEL.sql = scripts\V8__WF_APROVACAO_NIVEL.sql
+		scripts\V9__WF_APROVACAO_NIVEIS_MENSAGEM.sql = scripts\V9__WF_APROVACAO_NIVEIS_MENSAGEM.sql
 	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SME.SGP.Aplicacao.Teste", "teste\SME.SGP.Aplicacao.Teste\SME.SGP.Aplicacao.Teste.csproj", "{028D1115-E688-4E18-938D-DAB534C5BFBF}"

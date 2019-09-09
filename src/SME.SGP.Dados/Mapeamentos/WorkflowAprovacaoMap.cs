@@ -12,6 +12,7 @@ namespace SME.SGP.Dados.Mapeamentos
             Map(c => c.TurmaId).ToColumn("turma_id");
             Map(c => c.NotifacaoMensagem).ToColumn("notificacao_mensagem");
             Map(c => c.NotifacaoTitulo).ToColumn("notificacao_titulo");
+            Map(c => c.NotificacaoTipo).ToColumn("notificacao_tipo");
         }
     }
 }
