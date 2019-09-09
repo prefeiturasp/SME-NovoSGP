@@ -311,10 +311,24 @@ const Filtro = () => {
         }
       });
 
+    if (dres.filter(dre => dre.codigo === dreFiltroSelecionada).length === 0)
+      setDreFiltroSelecionada();
     setDresFiltro([...dres]);
+
+    if (
+      unidadesEscolares.filter(
+        unidade => unidade.codigo === unidadeEscolarFiltroSelecionada
+      ).length === 0
+    )
+      setUnidadeEscolarFiltroSelecionada();
     setUnidadesEscolaresFiltro([...unidadesEscolares]);
+
+    if (
+      turmas.filter(turma => turma.codigo === turmaFiltroSelecionada).length ===
+      0
+    )
+      setTurmaFiltroSelecionada();
     store.dispatch(turmasUsuario(turmas.sort(ordenaTurmas)));
-    setTurmaFiltroSelecionada();
   }, [
     modalidadeFiltroSelecionada,
     periodoFiltroSelecionado,
