@@ -21,7 +21,7 @@ namespace SME.SGP.Aplicacao
         {
             var escolasPorDre = servicoEOL.ObterEscolasPorDre(dreId);
 
-            var supervisoresEscolasDres = repositorioSupervisorEscolaDre.ObtemSupervisoresEscola(dreId, string.Empty);
+            var supervisoresEscolasDres = repositorioSupervisorEscolaDre.ObtemPorDreESupervisor(dreId, string.Empty);
 
             var listaRetorno = new List<SupervisorEscolasDto>();
 
@@ -49,11 +49,30 @@ namespace SME.SGP.Aplicacao
 
         public IEnumerable<SupervisorEscolasDto> ObterPorDreESupervisor(string supervisorId, string dreId)
         {
-            var supervisoresEscolasDres = repositorioSupervisorEscolaDre.ObtemSupervisoresEscola(dreId, supervisorId);
+            var supervisoresEscolasDres = repositorioSupervisorEscolaDre.ObtemPorDreESupervisor(dreId, supervisorId);
 
             List<SupervisorEscolasDto> lista = MapearSupervisorEscolaDre(supervisoresEscolasDres).ToList();
 
             return lista;
+        }
+
+        public IEnumerable<SupervisorEscolasDto> ObterPorDreESupervisores(string[] supervisoresId, string dreId)
+        {
+            var supervisoresEscolasDres = repositorioSupervisorEscolaDre.ObtemPorDreESupervisores(dreId, supervisoresId);
+
+            if (supervisoresEscolasDres == null || supervisoresEscolasDres.Count() == 0)
+                return null;
+            else return MapearSupervisorEscolaDre(supervisoresEscolasDres).ToList();
+        }
+
+        public SupervisorEscolasDto ObterPorUe(string ueId)
+        {
+            var supervisorEscolaDreDto = repositorioSupervisorEscolaDre.ObtemPorUe(ueId);
+            if (supervisorEscolaDreDto == null)
+                supervisorEscolaDreDto = new SupervisorEscolasDreDto() { EscolaId = ueId };
+
+            return MapearSupervisorEscolaDre(new[] { supervisorEscolaDreDto })
+                .FirstOrDefault();
         }
 
         private static void TrataEscolasSemSupervisores(IEnumerable<EscolasRetornoDto> escolasPorDre, List<SupervisorEscolasDto> listaRetorno)
@@ -66,7 +85,7 @@ namespace SME.SGP.Aplicacao
 
                 var escolasSemSupervisor = escolasPorDre.Where(a => !escolasComSupervisor.Contains(a.CodigoEscola)).ToList();
 
-                var escolaSupervisorRetorno = new SupervisorEscolasDto() { SupervisorId = string.Empty, SupervisorNome = "Sem supervisor" };
+                var escolaSupervisorRetorno = new SupervisorEscolasDto() { SupervisorId = string.Empty, SupervisorNome = "NÃO ATRIBUÍDO" };
 
                 var escolas = from t in escolasSemSupervisor
                               select new UnidadeEscolarDto() { Codigo = t.CodigoEscola, Nome = t.NomeEscola };
@@ -80,7 +99,18 @@ namespace SME.SGP.Aplicacao
         private IEnumerable<SupervisorEscolasDto> MapearSupervisorEscolaDre(IEnumerable<SupervisorEscolasDreDto> supervisoresEscolasDres)
         {
             var listaEscolas = servicoEOL.ObterEscolasPorCodigo(supervisoresEscolasDres.Select(a => a.EscolaId.ToString()).ToArray());
-            var listaSupervisores = servicoEOL.ObterSupervisoresPorCodigo(supervisoresEscolasDres.Select(a => a.SupervisorId.ToString()).ToArray());
+
+            List<SupervisoresRetornoDto> listaSupervisores;
+
+            if (supervisoresEscolasDres.Count() == 1 && string.IsNullOrEmpty(supervisoresEscolasDres.FirstOrDefault().SupervisorId))
+            {
+                listaSupervisores = new List<SupervisoresRetornoDto>() { new SupervisoresRetornoDto() { CodigoRF = "", NomeServidor = "NÃO ATRIBUÍDO" } };
+            }
+            else
+            {
+                listaSupervisores = servicoEOL.ObterSupervisoresPorCodigo(supervisoresEscolasDres.Select(a => a.SupervisorId.ToString()).ToArray())
+                .ToList();
+            }
 
             var supervisoresIds = supervisoresEscolasDres
                 .GroupBy(a => a.SupervisorId)
@@ -103,7 +133,7 @@ namespace SME.SGP.Aplicacao
 
                 yield return new SupervisorEscolasDto()
                 {
-                    SupervisorNome = listaSupervisores.FirstOrDefault(a => a.CodigoRF == supervisorId).NomeServidor,
+                    SupervisorNome = listaSupervisores.FirstOrDefault(a => a.CodigoRF == (supervisorId ?? string.Empty)).NomeServidor,
                     SupervisorId = supervisorId,
                     Escolas = escolas.ToList(),
                     AlteradoEm = auditoria.AlteradoEm,
