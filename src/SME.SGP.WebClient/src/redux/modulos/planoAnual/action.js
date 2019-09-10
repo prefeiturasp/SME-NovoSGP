@@ -207,6 +207,12 @@ export function setJaSincronizou() {
   };
 }
 
+export function removerSelecaoTodosObjetivos() {
+  return {
+    type: '@bimestres/removerSelecaoTodosObjetivos',
+  };
+}
+
 export function ObterBimestreServidor(Bimestre) {
   return dispatch => {
     Servico.obterBimestre({

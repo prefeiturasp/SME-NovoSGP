@@ -17,6 +17,10 @@ const Button = props => {
     onClick,
     disabled,
     icon,
+    padding,
+    height,
+    width,
+    fontSize,
     label,
     hidden,
     id,
@@ -36,12 +40,17 @@ const Button = props => {
 
   const Btn = styled.button`
     background: ${border ? 'transparent' : Active[color]} !important;
-    ${border
-      ? `border-color: ${Active[color]} !important; color: ${Active[color]} !important;`
-      : `border: 0 none !important;`};
+    ${
+      border
+        ? `border-color: ${Active[color]} !important; color: ${Active[color]} !important;`
+        : `border: 0 none !important;`
+    };
     display: flex;
     font-weight: ${bold ? 'bold' : 'normal'} !important;
-    height: 38px;
+    ${width ? `width: ${width};` : ''}
+    ${fontSize ? `font-size: ${fontSize};` : ''}
+    ${padding ? `padding: ${padding};` : ''}
+    height: ${height ? height : '38px'};
     &:hover {
       background: ${Hover[color]} !important;
       color: ${!steady ? Base.Branco : 'initial'} !important;
@@ -57,7 +66,9 @@ const Button = props => {
     <Btn
       hidden={hidden}
       type={type}
-      className={`btn btn-${style} ${className} position-relative py-2 px-3 fonte-14`}
+      className={`btn btn-${style} ${className} position-relative ${
+        padding ? '' : 'py-2 px-3'
+      } ${fontSize ? '' : 'fonte-14'}`}
       onClick={onClick}
       disabled={disabled}
       id={id}
