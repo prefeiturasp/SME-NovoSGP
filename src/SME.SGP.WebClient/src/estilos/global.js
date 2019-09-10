@@ -99,7 +99,7 @@ export default createGlobalStyle`
   .m-r-0{
     margin-rigth: 0px !important;
   }
-
+  
   .m-l-0{
     margin-left: 0px !important;
   }
