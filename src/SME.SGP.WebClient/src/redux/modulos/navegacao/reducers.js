@@ -2,6 +2,8 @@ import produce from 'immer';
 import Principal from '../../../paginas/Principal/principal';
 import PlanoCiclo from '../../../paginas/Planejamento/PlanoCiclo/planoCiclo';
 import PlanoAnual from '../../../paginas/Planejamento/PlanoAnual/planoAnual';
+import AtribuicaoSupervisorLista from '~/paginas/Gestao/AtribuicaoSupervisor/atribuicaoSupervisorLista';
+import AtribuicaoSupervisorCadastro from '~/paginas/Gestao/AtribuicaoSupervisor/atribuicaoSupervisorCadastro';
 
 const rotas = new Map();
 rotas.set('/:rf?', {
@@ -23,6 +25,27 @@ rotas.set('/planejamento/plano-anual', {
   parent: '/',
   component: PlanoAnual,
   exact: false,
+});
+rotas.set('/gestao/atribuicao-supervisor-lista', {
+  breadcrumbName: 'Atribuição de Supervisor',
+  menu: 'Gestão',
+  parent: '/',
+  component: AtribuicaoSupervisorLista,
+  exact: true,
+});
+rotas.set('/gestao/atribuicao-supervisor', {
+  breadcrumbName: 'Atribuição de Supervisor',
+  menu: 'Gestão',
+  parent: '/',
+  component: AtribuicaoSupervisorCadastro,
+  exact: true,
+});
+rotas.set('/gestao/atribuicao-supervisor/:dreId/:supervisorId', {
+  breadcrumbName: 'Atribuição de Supervisor',
+  menu: 'Gestão',
+  parent: '/',
+  component: AtribuicaoSupervisorCadastro,
+  exact: true,
 });
 
 const inicial = {

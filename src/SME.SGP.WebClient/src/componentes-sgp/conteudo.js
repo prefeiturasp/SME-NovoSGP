@@ -23,9 +23,6 @@ const Conteudo = () => {
     setCollapsed(NavegacaoStore.collapsed);
   }, [NavegacaoStore.collapsed]);
 
-  useEffect(() => {
-    setCollapsed(MenuStore.collapsed);
-  }, [MenuStore.collapsed]);
   const confirmacao = useSelector(state => state.notificacoes.confirmacao);
 
   useEffect(() => { setCollapsed(NavegacaoStore.collapsed); }, [NavegacaoStore.collapsed]);
