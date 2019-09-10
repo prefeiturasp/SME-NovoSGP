@@ -12,7 +12,6 @@ namespace SME.SGP.Dto
         [Required(ErrorMessage = "A descrição deve ser informada.")]
         public string Descricao { get; set; }
 
-        [ListaTemElementos(ErrorMessage = "Os objetivos de aprendizagem devem ser informados")]
         public List<ObjetivoAprendizagemSimplificadoDto> ObjetivosAprendizagem { get; set; }
     }
 }
