@@ -7,7 +7,6 @@ namespace SME.SGP.Dominio
         public WorkflowAprovacao()
         {
             niveis = new List<WorkflowAprovacaoNivel>();
-            Status = WorkflowAprovacaoNivelStatus.SemStatus;
         }
 
         public int Ano { get; set; }

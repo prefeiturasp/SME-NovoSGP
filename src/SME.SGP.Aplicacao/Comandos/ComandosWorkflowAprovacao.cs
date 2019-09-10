@@ -29,6 +29,7 @@ namespace SME.SGP.Aplicacao
 
             foreach (var workflowAprovacaoNivel in workflowAprovacao.Niveis)
             {
+                workflowAprovacaoNivel.WorkflowId = workflowAprovacao.Id;
                 repositorioWorkflowAprovacaoNivel.Salvar(workflowAprovacaoNivel);
             }
 
