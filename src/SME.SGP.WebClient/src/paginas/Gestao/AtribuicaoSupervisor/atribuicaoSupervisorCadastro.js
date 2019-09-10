@@ -189,7 +189,7 @@ const AtribuicaoSupervisorCadastro = ({ match }) => {
             color={Colors.Azul}
             border
             className="mr-3"
-            onClick={() => history.push('/')}
+            onClick={() => history.push('/gestao/atribuicao-supervisor-lista')}
           />
           {dreSelecionada && supervisorSelecionado && (
             <Button
