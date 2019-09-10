@@ -6,7 +6,7 @@ import { alertaFechar } from '../redux/modulos/alertas/actions';
 import Rotas from '../rotas/rotas';
 import Button from '../componentes/button';
 import { Colors } from '../componentes/colors';
-import BreadcrumbSgp from '../componentes-sgp/breadcrumb-sgp'
+import BreadcrumbSgp from '../componentes-sgp/breadcrumb-sgp';
 import Alert from '~/componentes/alert';
 
 const ContainerModal = styled.div`
@@ -25,13 +25,15 @@ const Conteudo = () => {
 
   const confirmacao = useSelector(state => state.notificacoes.confirmacao);
 
-  useEffect(() => { setCollapsed(NavegacaoStore.collapsed); }, [NavegacaoStore.collapsed]);
+  useEffect(() => {
+    setCollapsed(NavegacaoStore.collapsed);
+  }, [NavegacaoStore.collapsed]);
 
   const fecharConfirmacao = resultado => {
     confirmacao.resolve(resultado);
     dispatch(alertaFechar());
   };
-    const notificacoes = useSelector(state => state.notificacoes);
+  const notificacoes = useSelector(state => state.notificacoes);
   return (
     <div style={{ marginLeft: collapsed ? '115px' : '250px' }}>
       <BreadcrumbSgp />
@@ -66,6 +68,9 @@ const Conteudo = () => {
             </Modal>
           </ContainerModal>
           <div className="card-body m-r-0 m-l-0 p-l-0 p-r-0 m-t-0">
+            {notificacoes.alertas.map(alerta => (
+              <Alert alerta={alerta} key={alerta.id} closable />
+            ))}
             <Rotas />
           </div>
         </main>
