@@ -4,6 +4,8 @@ import {
   Salvar,
   PrePost,
   Post,
+  setBimestresErro,
+  setLimpartBimestresErro,
 } from '../../../redux/modulos/planoAnual/action';
 import Grid from '../../../componentes/grid';
 import Button from '../../../componentes/button';
@@ -18,7 +20,7 @@ import ModalMultiLinhas from '../../../componentes/modalMultiLinhas';
 import ModalConfirmacao from '../../../componentes/modalConfirmacao';
 import history from '../../../servicos/history';
 import { URL_HOME } from '../../../constantes/url';
-import { erro } from '../../../servicos/alertas';
+import { erro, sucesso } from '../../../servicos/alertas';
 import { salvarRf } from '../../../redux/modulos/usuario/actions';
 import ModalConteudoHtml from '../../../componentes/modalConteudoHtml';
 import Select from '../../../componentes/selectMultiple';
@@ -54,7 +56,7 @@ export default function PlanoAnual() {
   const [modalCopiarConteudo, setModalCopiarConteudo] = useState({
     visivel: false,
     listSelect: [],
-    disciplinasSelecionadas: [],
+    turmasSelecionadas: [],
   });
 
   const LayoutEspecial = ehEja || ehMedio || disciplinaObjetivo;
@@ -66,7 +68,7 @@ export default function PlanoAnual() {
   const anoEscolar = turmaSelecionada[0] ? turmaSelecionada[0].ano : 0;
   const turmaId = turmaSelecionada[0] ? turmaSelecionada[0].codTurma : 0;
 
-  useEffect(() => {}, []);
+  useEffect(() => { }, []);
 
   useEffect(() => {
     if ((!bimestres || bimestres.length === 0) && !ehDisabled)
@@ -123,7 +125,7 @@ export default function PlanoAnual() {
       .catch(() => {
         erro(
           `Não foi possivel obter os dados do ${
-            ehEja ? 'plano semestral' : 'plano anual'
+          ehEja ? 'plano semestral' : 'plano anual'
           }`
         );
       });
@@ -273,7 +275,7 @@ export default function PlanoAnual() {
   };
 
   const onChangeCopiarConteudo = selecionadas => {
-    modalCopiarConteudo.disciplinasSelecionadas = selecionadas;
+    modalCopiarConteudo.turmasSelecionadas = selecionadas;
     setModalCopiarConteudo({ ...modalCopiarConteudo });
   };
 
@@ -299,8 +301,44 @@ export default function PlanoAnual() {
     }
 
     Promise.all(promissesBimestres).then(resultados => {
-      console.log(resultados.map(res => res.data));
-    });
+      const PlanoAnualEnviar = {
+        Id: resultados[0].id,
+        AnoLetivo: bimestres[1].anoLetivo,
+        EscolaId: bimestres[1].escolaId,
+        TurmaId: bimestres[1].turmaId,
+        Bimestres: []
+      };
+
+      resultados.forEach((res, index) => {
+        PlanoAnualEnviar.Bimestres.push({
+          Bimestre: index + 1,
+          ObjetivosAprendizagem: res.objetivosAprendizagem,
+          Descricao: res.descricao
+        })
+      });
+
+      return PlanoAnualEnviar;
+
+    })
+      .then(PlanoAnualEnviar => {
+
+        Service.copiarConteudo(
+          PlanoAnualEnviar,
+          usuario.rf,
+          modalCopiarConteudo.turmasSelecionadas
+        )
+          .then(() => sucesso("Plano copiado com sucesso"))
+          .catch(erro => dispatch(setBimestresErro({
+            type: 'erro',
+            content: erro.error,
+            title: 'Ocorreu uma falha',
+            onClose: () => dispatch(setLimpartBimestresErro()),
+            visible: true,
+          })))
+          .finally(()=>{
+            onCloseCopiarConteudo();
+          })
+      });
   };
 
   const onCancelarCopiarConteudo = () => {
@@ -421,15 +459,15 @@ export default function PlanoAnual() {
         <Grid cols={12}>
           {bimestres
             ? bimestres.map(bim => {
-                return (
-                  <Bimestre
-                    disabled={ehDisabled}
-                    key={bim.indice}
-                    indice={bim.indice}
-                    LayoutEspecial={LayoutEspecial}
-                  />
-                );
-              })
+              return (
+                <Bimestre
+                  disabled={ehDisabled}
+                  key={bim.indice}
+                  indice={bim.indice}
+                  LayoutEspecial={LayoutEspecial}
+                />
+              );
+            })
             : null}
         </Grid>
       </Card>

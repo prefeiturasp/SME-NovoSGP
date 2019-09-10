@@ -223,7 +223,7 @@ export function ObterBimestreServidor(Bimestre) {
             ...Bimestre,
             objetivo: bimestreDTO.descricao,
             ehExpandido: true,
-            codigo: bimestreDTO.codigo,
+            id: bimestreDTO.id,
             objetivosAprendizagem: bimestreDTO.objetivosAprendizagem.map(
               obj => {
                 obj.selected = true;
