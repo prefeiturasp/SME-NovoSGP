@@ -518,7 +518,7 @@ const Filtro = () => {
                   onChange={onChangeAnoLetivo}
                   lista={anosLetivosFiltro}
                   valueOption="ano"
-                  label="ano"
+                  valueText="ano"
                   valueSelect={anoLetivoFiltroSelecionado}
                   placeholder="Ano"
                 />
@@ -532,7 +532,7 @@ const Filtro = () => {
                   onChange={onChangeModalidade}
                   lista={modalidadesFiltro}
                   valueOption="codigo"
-                  label="modalidade"
+                  valueText="modalidade"
                   valueSelect={modalidadeFiltroSelecionada}
                   placeholder="Modalidade"
                 />
@@ -544,7 +544,7 @@ const Filtro = () => {
                     onChange={onChangePeriodo}
                     lista={periodosFiltro}
                     valueOption="codigo"
-                    label="periodo"
+                    valueText="periodo"
                     valueSelect={periodoFiltroSelecionado}
                     placeholder="Período"
                   />
@@ -557,7 +557,7 @@ const Filtro = () => {
                 onChange={onChangeDre}
                 lista={dresFiltro}
                 valueOption="codigo"
-                label="dre"
+                valueText="dre"
                 valueSelect={dreFiltroSelecionada}
                 placeholder="Diretoria Regional De Educação (DRE)"
               />
@@ -568,7 +568,7 @@ const Filtro = () => {
                 onChange={onChangeUnidadeEscolarFiltro}
                 lista={unidadesEscolaresFiltro}
                 valueOption="codigo"
-                label="unidade"
+                valueText="unidade"
                 valueSelect={unidadeEscolarFiltroSelecionada}
                 placeholder="Unidade Escolar (UE)"
               />
@@ -580,7 +580,7 @@ const Filtro = () => {
                   onChange={onChangeTurma}
                   lista={usuario.turmasUsuario}
                   valueOption="codigo"
-                  label="turma"
+                  valueText="turma"
                   valueSelect={turmaFiltroSelecionada}
                   placeholder="Turma"
                 />
