@@ -47,6 +47,25 @@ const Service = {
       });
   },
 
+  copiarConteudo: async (PlanoAnualDTO, RF, TurmasDestino) => {
+    const requisicao = API.post(Service._getUrlMigrarPlanoAnual(), {
+      IdsTurmasDestino: TurmasDestino,
+      PlanoAnual: PlanoAnualDTO,
+      RFProfessor: RF,
+    });
+
+    return requisicao
+      .then(res => res)
+      .catch(res => {
+        console.log(res);
+        const erro =
+          res.response && res.response.data.mensagens
+            ? res.respose.data.mensagens
+            : ['Por favor contate a equipe de suporte'];
+        throw { error: erro };
+      });
+  },
+
   _getBaseUrlDisciplinasProfessor: (RF, CodigoTurma) => {
     return `v1/professores/${RF}/turmas/${CodigoTurma}/disciplinas/`;
   },
@@ -57,6 +76,10 @@ const Service = {
 
   _getBaseUrlSalvarPlanoAnual: () => {
     return `v1/planos/anual`;
+  },
+
+  _getUrlMigrarPlanoAnual: () => {
+    return 'v1/planos/anual/migrar';
   },
 
   _getObjetoPostPlanoAnual: Bimestres => {
@@ -95,7 +118,7 @@ const Service = {
       ObjetoEnviar.AnoLetivo = bimestre.anoLetivo;
       ObjetoEnviar.EscolaId = bimestre.escolaId;
       ObjetoEnviar.TurmaId = bimestre.turmaId;
-      ObjetoEnviar.Id = bimestre.Id;
+      ObjetoEnviar.Id = bimestre.id;
 
       ObjetoEnviar.Bimestres.push(BimestreDTO);
     });

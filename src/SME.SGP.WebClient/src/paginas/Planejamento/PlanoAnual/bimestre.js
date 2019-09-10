@@ -15,6 +15,7 @@ import {
   SelecionarObjetivo,
   SetarDescricao,
   ObterBimestreServidor,
+  removerSelecaoTodosObjetivos,
 } from '../../../redux/modulos/planoAnual/action';
 
 //Utilizado para importar a função scrollIntoViewIfNeeded para navegadores que não possuem essa funcionalidade.
@@ -126,6 +127,10 @@ const BimestreComponent = props => {
     selecionarObjetivo(index, false);
   };
 
+  const removerTodosObjetivoSelecionado = () => {
+    dispatch(removerSelecaoTodosObjetivos());
+  };
+
   const onBlurTextEditor = value => {
     setEhExpandido(true);
 
@@ -145,9 +150,10 @@ const BimestreComponent = props => {
       indice={`Bimestre${indice}`}
       show={bimestres[indice].ehExpandido}
       disabled={disabled}
+      alt={`Card ${indice}º Bimestre`}
     >
       <div className="row">
-        <Grid cols={LayoutEspecial ? 12 : 6}>
+        <Grid cols={LayoutEspecial ? 12 : 6} className="m-b-10">
           {LayoutEspecial ? null : (
             <h6 className="d-inline-block font-weight-bold my-0 fonte-14">
               Objetivos de aprendizagem
@@ -163,6 +169,7 @@ const BimestreComponent = props => {
                       aria-pressed={materia.selected && true}
                       id={materia.codigo}
                       data-index={indice}
+                      alt={materia.materia}
                       key={materia.codigo}
                       disabled={disabled || LayoutEspecial}
                       readonly={LayoutEspecial}
@@ -196,10 +203,14 @@ const BimestreComponent = props => {
                             onClick={selecionaObjetivo}
                             onKeyUp={selecionaObjetivo}
                             disabled={disabled}
+                            alt={`Codigo do Objetivo : ${objetivo.codigo} `}
                           >
                             {objetivo.codigo}
                           </ListItemButton>
-                          <ListItem className="list-group-item flex-fill p-2 fonte-12">
+                          <ListItem
+                            alt={objetivo.descricao}
+                            className="list-group-item flex-fill p-2 fonte-12"
+                          >
                             {objetivo.descricao}
                           </ListItem>
                         </ul>
@@ -246,6 +257,28 @@ const BimestreComponent = props => {
                       );
                     })
                 : null}
+              {bimestres[indice].objetivosAprendizagem &&
+              bimestres[indice].objetivosAprendizagem.length > 0 &&
+              bimestres[indice].objetivosAprendizagem.filter(x => x.selected)
+                .length > 1 ? (
+                <Button
+                  key={`removerTodos`}
+                  label={`Remover Todos`}
+                  color={Colors.CinzaBotao}
+                  bold
+                  alt="Remover todos os objetivos selecionados"
+                  id={`removerTodos`}
+                  height="38px !important"
+                  width="92px !important"
+                  fontSize="12px !important"
+                  padding="0px !important"
+                  steady
+                  border
+                  padding="0px !important"
+                  className="text-dark mt-3 mr-2 stretched-link"
+                  onClick={removerTodosObjetivoSelecionado}
+                />
+              ) : null}
             </div>
           )}
           <div className="mt-4">
@@ -258,24 +291,28 @@ const BimestreComponent = props => {
             <p className="text-secondary mt-3 fonte-13">
               É importante seguir a seguinte estrutura:
             </p>
-            <ul className="list-group list-group-horizontal fonte-10">
-              <li className="list-group-item border-right-0 py-1">Objetivos</li>
-              <li className="list-group-item border-left-0 border-right-0 px-0 py-1">
+            <ul className="list-group list-group-horizontal fonte-10 col-md-12">
+              <li className="list-group-item border-right-0 p-r-10 p-l-10 py-1 col-md-2">
+                Objetivos
+              </li>
+              <li className="list-group-item border-left-0 border-right-0 px-0 py-1 col-md-1">
                 <img src={Seta} alt="Próximo" />
               </li>
-              <li className="list-group-item border-left-0 border-right-0 py-1">
+              <li className="list-group-item border-left-0 border-right-0 px-0 py-1 col-md-2">
                 Conteúdo
               </li>
-              <li className="list-group-item border-left-0 border-right-0 px-0 py-1">
+              <li className="list-group-item border-left-0 border-right-0 px-0 py-1 col-md-1">
                 <img src={Seta} alt="Próximo" />
               </li>
-              <li className="list-group-item border-left-0 border-right-0 py-1">
+              <li className="list-group-item border-left-0 border-right-0 px-0 py-1 col-md-2">
                 Estratégia
               </li>
-              <li className="list-group-item border-left-0 border-right-0 px-0 py-1">
+              <li className="list-group-item border-left-0 border-right-0 px-0 py-1 col-md-1">
                 <img src={Seta} alt="Próximo" />
               </li>
-              <li className="list-group-item border-left-0 py-1">Avaliação</li>
+              <li className="list-group-item border-left-0 px-0 py-1 col-md-2">
+                Avaliação
+              </li>
             </ul>
             <fieldset className="mt-3">
               <form action="">
@@ -285,6 +322,7 @@ const BimestreComponent = props => {
                   id="textEditor"
                   height="135px"
                   height="135px"
+                  alt="Descrição do plano Anual"
                   disabled={disabled}
                   onClick={onClickTextEditor}
                   value={bimestres[indice].objetivo}

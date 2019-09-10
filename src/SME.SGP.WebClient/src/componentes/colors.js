@@ -2,6 +2,7 @@ const Colors = {
   Azul: 'Azul',
   AzulAnakiwa: 'AzulAnakiwa',
   Roxo: 'Roxo',
+  CinzaBotao: 'CinzaBotao',
 };
 
 const Base = {
@@ -14,6 +15,7 @@ const Base = {
   CinzaMenu: '#EEEEEE',
   CinzaMenuItem: '#686868',
   CinzaDesabilitado: '#DADADA',
+  CinzaBotao: '#A4A4A4',
   CinzaFundo: '#F5F6F8',
   CinzaMako: '#42474A',
   Preto: '#000',
@@ -25,6 +27,7 @@ const Active = {
   Azul: Base.Azul,
   AzulAnakiwa: Base.AzulAnakiwa,
   Roxo: Base.Roxo,
+  CinzaBotao: Base.CinzaBotao,
 };
 
 const Hover = {

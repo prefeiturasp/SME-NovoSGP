@@ -128,6 +128,14 @@ export default createGlobalStyle`
     padding-bottom: 0px !important;
   }
 
+  .p-r-10{
+    padding-right: 10px !important;
+  } 
+  
+  .p-l-10{
+    padding-left: 10px !important;
+  }
+
 /*MENU*/
 
 .menuItem{

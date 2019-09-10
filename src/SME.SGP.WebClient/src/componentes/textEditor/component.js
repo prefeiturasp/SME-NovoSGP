@@ -4,7 +4,7 @@ import React, { useState, useEffect } from 'react';
 import ReactQuill from 'react-quill';
 
 const TextEditor = React.forwardRef((props, ref) => {
-  const { value, onBlur, disabled, onClick } = props;
+  const { value, onBlur, disabled, onClick, alt } = props;
 
   const onBlurQuill = () => {
     if (onBlur) onBlur(ref.current.state.value);
@@ -15,6 +15,7 @@ const TextEditor = React.forwardRef((props, ref) => {
       ref={ref}
       modules={modules}
       onBlur={onBlurQuill}
+      alt={alt}
       value={value || ''}
       onClick={onClick}
       readOnly={disabled}

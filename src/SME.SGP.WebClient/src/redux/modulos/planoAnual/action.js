@@ -207,6 +207,12 @@ export function setJaSincronizou() {
   };
 }
 
+export function removerSelecaoTodosObjetivos() {
+  return {
+    type: '@bimestres/removerSelecaoTodosObjetivos',
+  };
+}
+
 export function ObterBimestreServidor(Bimestre) {
   return dispatch => {
     Servico.obterBimestre({
@@ -223,6 +229,7 @@ export function ObterBimestreServidor(Bimestre) {
             ...Bimestre,
             objetivo: bimestreDTO.descricao,
             ehExpandido: true,
+            id: bimestreDTO.id,
             objetivosAprendizagem: bimestreDTO.objetivosAprendizagem.map(
               obj => {
                 obj.selected = true;
