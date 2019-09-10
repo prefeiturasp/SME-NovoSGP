@@ -6,6 +6,8 @@ import { alertaFechar } from '../redux/modulos/alertas/actions';
 import Rotas from '../rotas/rotas';
 import Button from '../componentes/button';
 import { Colors } from '../componentes/colors';
+import BreadcrumbSgp from '../componentes-sgp/breadcrumb-sgp';
+import Alert from '~/componentes/alert';
 
 const ContainerModal = styled.div`
   .ant-modal-footer {
@@ -14,61 +16,66 @@ const ContainerModal = styled.div`
 `;
 
 const Conteudo = () => {
-  const MenuStore = useSelector(store => store.menu);
+  const NavegacaoStore = useSelector(store => store.navegacao);
   const [collapsed, setCollapsed] = useState(false);
   const dispatch = useDispatch();
   useEffect(() => {
-    setCollapsed(MenuStore.collapsed);
-  }, [MenuStore.collapsed]);
+    setCollapsed(NavegacaoStore.collapsed);
+  }, [NavegacaoStore.collapsed]);
 
   const confirmacao = useSelector(state => state.notificacoes.confirmacao);
+
+  useEffect(() => {
+    setCollapsed(NavegacaoStore.collapsed);
+  }, [NavegacaoStore.collapsed]);
 
   const fecharConfirmacao = resultado => {
     confirmacao.resolve(resultado);
     dispatch(alertaFechar());
   };
-
+  const notificacoes = useSelector(state => state.notificacoes);
   return (
-    <main
-      role="main"
-      className={
-        collapsed
-          ? 'col-lg-10 col-md-10 col-sm-10 col-xs-12 col-xl-11'
-          : 'col-sm-8 col-md-9 col-lg-9 col-xl-10'
-      }
-    >
-      <ContainerModal>
-        <Modal
-          title={confirmacao.titulo}
-          visible={confirmacao.visivel}
-          onOk={() => fecharConfirmacao(true)}
-          onCancel={() => fecharConfirmacao(false)}
-          footer={[
-            <Button
-              key="btn-sim"
-              onClick={() => fecharConfirmacao(true)}
-              label="Sim"
-              color={Colors.Azul}
-              border
-              className="mr-3"
-            />,
-            <Button
-              label="Não"
-              type="primary"
-              onClick={() => fecharConfirmacao(false)}
-              color={Colors.Azul}
-            />,
-          ]}
-        >
-          {confirmacao.texto}
-          <br />
-          <b>{confirmacao.textoNegrito}</b>
-        </Modal>
-      </ContainerModal>
-      <div className="card-body m-r-0 m-l-0 p-l-0 p-r-0 m-t-0">
-        <Rotas />
+    <div style={{ marginLeft: collapsed ? '115px' : '250px' }}>
+      <BreadcrumbSgp />
+      <div className="row h-100">
+        <main role="main" className="col-md-12 col-lg-12 col-sm-12 col-xl-12">
+          <ContainerModal>
+            <Modal
+              title={confirmacao.titulo}
+              visible={confirmacao.visivel}
+              onOk={() => fecharConfirmacao(true)}
+              onCancel={() => fecharConfirmacao(false)}
+              footer={[
+                <Button
+                  key="btn-sim"
+                  onClick={() => fecharConfirmacao(true)}
+                  label="Sim"
+                  color={Colors.Azul}
+                  border
+                  className="mr-3"
+                />,
+                <Button
+                  label="Não"
+                  type="primary"
+                  onClick={() => fecharConfirmacao(false)}
+                  color={Colors.Azul}
+                />,
+              ]}
+            >
+              {confirmacao.texto}
+              <br />
+              <b>{confirmacao.textoNegrito}</b>
+            </Modal>
+          </ContainerModal>
+          <div className="card-body m-r-0 m-l-0 p-l-0 p-r-0 m-t-0">
+            {notificacoes.alertas.map(alerta => (
+              <Alert alerta={alerta} key={alerta.id} closable />
+            ))}
+            <Rotas />
+          </div>
+        </main>
       </div>
-    </main>
+    </div>
   );
 };
 

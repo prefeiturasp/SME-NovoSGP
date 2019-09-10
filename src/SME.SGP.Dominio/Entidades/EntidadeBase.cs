@@ -9,7 +9,7 @@ namespace SME.SGP.Dominio
             CriadoEm = DateTime.Now;
         }
 
-        public DateTime AlteradoEm { get; set; }
+        public DateTime? AlteradoEm { get; set; }
         public string AlteradoPor { get; set; }
         public string AlteradoRF { get; set; }
         public DateTime CriadoEm { get; set; }

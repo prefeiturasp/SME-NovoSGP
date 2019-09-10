@@ -37,7 +37,7 @@ const Navbar = () => {
 
   const BtnSair = styled.a``;
 
-  const collapsed = useSelector(state => state.menu.collapsed);
+  const collapsed = useSelector(state => state.navegacao.collapsed);
 
   return (
     <Nav className="navbar navbar-expand-md navbar-light bg-white shadow-sm sticky-top">

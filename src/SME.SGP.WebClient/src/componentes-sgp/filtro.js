@@ -270,6 +270,11 @@ const Filtro = () => {
         return true;
       })
       .filter(dado => {
+        if (periodoFiltroSelecionado)
+          return dado.semestre.toString() === periodoFiltroSelecionado;
+        return true;
+      })
+      .filter(dado => {
         if (dreFiltroSelecionada)
           return dado.codDre.toString() === dreFiltroSelecionada;
         return true;
@@ -306,11 +311,27 @@ const Filtro = () => {
         }
       });
 
+    if (dres.filter(dre => dre.codigo === dreFiltroSelecionada).length === 0)
+      setDreFiltroSelecionada();
     setDresFiltro([...dres]);
+
+    if (
+      unidadesEscolares.filter(
+        unidade => unidade.codigo === unidadeEscolarFiltroSelecionada
+      ).length === 0
+    )
+      setUnidadeEscolarFiltroSelecionada();
     setUnidadesEscolaresFiltro([...unidadesEscolares]);
+
+    if (
+      turmas.filter(turma => turma.codigo === turmaFiltroSelecionada).length ===
+      0
+    )
+      setTurmaFiltroSelecionada();
     store.dispatch(turmasUsuario(turmas.sort(ordenaTurmas)));
   }, [
     modalidadeFiltroSelecionada,
+    periodoFiltroSelecionado,
     dreFiltroSelecionada,
     unidadeEscolarFiltroSelecionada,
   ]);
@@ -320,6 +341,10 @@ const Filtro = () => {
       !event.target.classList.contains('fa-caret-down') &&
       !event.target.classList.contains(
         'ant-select-dropdown-menu-item-active'
+      ) &&
+      !event.target.classList.contains('ant-select-selection-selected-value') &&
+      !event.target.classList.contains(
+        'ant-select-dropdown-menu-item-selected'
       ) &&
       divBuscaRef.current &&
       !divBuscaRef.current.contains(event.target)
@@ -497,7 +522,7 @@ const Filtro = () => {
                   onChange={onChangeAnoLetivo}
                   lista={anosLetivosFiltro}
                   valueOption="ano"
-                  label="ano"
+                  valueText="ano"
                   valueSelect={anoLetivoFiltroSelecionado}
                   placeholder="Ano"
                 />
@@ -511,7 +536,7 @@ const Filtro = () => {
                   onChange={onChangeModalidade}
                   lista={modalidadesFiltro}
                   valueOption="codigo"
-                  label="modalidade"
+                  valueText="modalidade"
                   valueSelect={modalidadeFiltroSelecionada}
                   placeholder="Modalidade"
                 />
@@ -523,7 +548,7 @@ const Filtro = () => {
                     onChange={onChangePeriodo}
                     lista={periodosFiltro}
                     valueOption="codigo"
-                    label="periodo"
+                    valueText="periodo"
                     valueSelect={periodoFiltroSelecionado}
                     placeholder="Período"
                   />
@@ -536,7 +561,7 @@ const Filtro = () => {
                 onChange={onChangeDre}
                 lista={dresFiltro}
                 valueOption="codigo"
-                label="dre"
+                valueText="dre"
                 valueSelect={dreFiltroSelecionada}
                 placeholder="Diretoria Regional De Educação (DRE)"
               />
@@ -547,7 +572,7 @@ const Filtro = () => {
                 onChange={onChangeUnidadeEscolarFiltro}
                 lista={unidadesEscolaresFiltro}
                 valueOption="codigo"
-                label="unidade"
+                valueText="unidade"
                 valueSelect={unidadeEscolarFiltroSelecionada}
                 placeholder="Unidade Escolar (UE)"
               />
@@ -559,7 +584,7 @@ const Filtro = () => {
                   onChange={onChangeTurma}
                   lista={usuario.turmasUsuario}
                   valueOption="codigo"
-                  label="turma"
+                  valueText="turma"
                   valueSelect={turmaFiltroSelecionada}
                   placeholder="Turma"
                 />
