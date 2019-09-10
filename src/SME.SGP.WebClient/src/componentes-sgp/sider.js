@@ -2,13 +2,12 @@ import React, { useState } from 'react';
 import { Menu, Layout } from 'antd';
 import { Link } from 'react-router-dom';
 import { Base } from '../componentes/colors';
-import { MenuBody, DivFooter, MenuScope, Topo } from './sider.css'
+import { MenuBody, DivFooter, MenuScope, Topo } from './sider.css';
 import LogoMenuFooter from '../recursos/LogoMenuFooter.svg';
 import { store } from '../redux';
 import { menuCollapsed } from '../redux/modulos/navegacao/actions'
 
 const Sider = () => {
-
   const { Sider, Footer } = Layout;
   const { SubMenu } = Menu;
   const [collapsed, setCollapsed] = useState(false);
@@ -37,20 +36,34 @@ const Sider = () => {
         <Topo>
           <div className="conteudo">
             <a className="arrow" onClick={toggleCollapsed}>
-              <i style={{ color: Base.Branco }} className={collapsed ? 'fas fa-chevron-circle-right' : 'fas fa-chevron-circle-left'} />
+              <i
+                style={{ color: Base.Branco }}
+                className={
+                  collapsed
+                    ? 'fas fa-chevron-circle-right'
+                    : 'fas fa-chevron-circle-left'
+                }
+              />
             </a>
           </div>
-          <div className={collapsed ? "perfil-retraido" : "perfil"}>
-
+          <div className={collapsed ? 'perfil-retraido' : 'perfil'}>
             <div className="circulo-perfil">
-              <img id="imagem-perfil" src="https://graziellanicolai.com.br/wp-content/uploads/2018/03/Graziella-perfil.jpg"></img>
+              <img
+                id="imagem-perfil"
+                src="https://graziellanicolai.com.br/wp-content/uploads/2018/03/Graziella-perfil.jpg"
+              />
             </div>
             <div hidden={collapsed}>
-              <span id="nome" className="nome">Nome + Sobrenome</span>
+              <span id="nome" className="nome">
+                Nome + Sobrenome
+              </span>
             </div>
-            <div className="perfil-edit" style={{ paddingTop: collapsed ? '0' : '12px' }}>
+            <div
+              className="perfil-edit"
+              style={{ paddingTop: collapsed ? '0' : '12px' }}
+            >
               <a id="perfil-edit">
-                <i className="fas fa-user-edit"></i>
+                <i className="fas fa-user-edit" />
                 <span>Perfil</span>
               </a>
             </div>
@@ -58,7 +71,9 @@ const Sider = () => {
         </Topo>
 
         <MenuScope>
-          <div className={"menu-scope" + (collapsed ? " menu-scope-retraido" : "")}>
+          <div
+            className={`menu-scope${collapsed ? ' menu-scope-retraido' : ''}`}
+          >
             <Menu
               id="menuPrincipal"
               mode="inline"
@@ -72,10 +87,15 @@ const Sider = () => {
                 popupClassName="popup"
                 title={
                   <div className="item-menu-retraido">
-                    <i className={"fas fa-book-reader " + (collapsed ? "icons-retraido" : "icons")}></i>
+                    <i
+                      className={`fas fa-book-reader ${
+                        collapsed ? 'icons-retraido' : 'icons'
+                      }`}
+                    />
                     <span>Diário de Classe</span>
                   </div>
-                }>
+                }
+              >
                 <Menu.Item key="1" id="diaPlanoAulaFreq">
                   <span className="menuItem"> Plano de aula/Frequência</span>
                 </Menu.Item>
@@ -109,17 +129,30 @@ const Sider = () => {
                 key="subPlanejamento"
                 title={
                   <div className="item-menu-retraido">
-                    <i className={"fas fa-list-alt " + (collapsed ? "icons-retraido" : "icons")}></i>
+                    <i
+                      className={`fas fa-list-alt ${
+                        collapsed ? 'icons-retraido' : 'icons'
+                      }`}
+                    />
                     <span>Planejamento</span>
                   </div>
-                }>
+                }
+              >
                 <Menu.Item key="30" id="plaPlanoCiclo" htmlFor="linkPlanoCiclo">
-                  <span className="menuItem">  Plano de Ciclo</span>
-                  <Link to="/planejamento/plano-ciclo" className="nav-link text-white" id="linkPlanoCiclo" />
+                  <span className="menuItem"> Plano de Ciclo</span>
+                  <Link
+                    to="/planejamento/plano-ciclo"
+                    className="nav-link text-white"
+                    id="linkPlanoCiclo"
+                  />
                 </Menu.Item>
                 <Menu.Item key="31" id="plaPlanoAnual" htmlFor="linkPlanoAnual">
                   <span className="menuItem"> Plano anual</span>
-                  <Link to="/planejamento/plano-anual" className="nav-link text-white" id="linkPlanoAnual" />
+                  <Link
+                    to="/planejamento/plano-anual"
+                    className="nav-link text-white"
+                    id="linkPlanoAnual"
+                  />
                 </Menu.Item>
               </SubMenu>
               <SubMenu
@@ -127,12 +160,17 @@ const Sider = () => {
                 key="subFechamento"
                 title={
                   <div className="item-menu-retraido">
-                    <i className={"fas fa-pencil-ruler " + (collapsed ? "icons-retraido" : "icons")}></i>
+                    <i
+                      className={`fas fa-pencil-ruler ${
+                        collapsed ? 'icons-retraido' : 'icons'
+                      }`}
+                    />
                     <span>Fechamento</span>
                   </div>
-                }>
+                }
+              >
                 <Menu.Item key="50" id="fecConselhoClasse">
-                  <span className="menuItem">  Conselho de Classe</span>
+                  <span className="menuItem"> Conselho de Classe</span>
                 </Menu.Item>
                 <Menu.Item key="51" id="fecNotaBimestre">
                   <span className="menuItem"> Nota do Bimestre</span>
@@ -146,10 +184,15 @@ const Sider = () => {
                 key="subRelatorios"
                 title={
                   <div className="item-menu-retraido">
-                    <i className={"fas fa-file-alt " + (collapsed ? "icons-retraido" : "icons")}></i>
+                    <i
+                      className={`fas fa-file-alt ${
+                        collapsed ? 'icons-retraido' : 'icons'
+                      }`}
+                    />
                     <span>Relatórios</span>
                   </div>
-                }>
+                }
+              >
                 <Menu.Item key="70" id="relFrequencia">
                   <span className="menuItem">Frequência</span>
                 </Menu.Item>
@@ -180,7 +223,11 @@ const Sider = () => {
                 key="subGestao"
                 title={
                   <div className="item-menu-retraido">
-                    <i className={"fas fa-user-cog " + (collapsed ? "icons-retraido" : "icons")}></i>
+                    <i
+                      className={`fas fa-user-cog ${
+                        collapsed ? 'icons-retraido' : 'icons'
+                      }`}
+                    />
                     <span>Gestão</span>
                   </div>
                 }>
@@ -198,6 +245,7 @@ const Sider = () => {
                 </Menu.Item>
                 <Menu.Item key="94" id="gesAtribuicaoSupervisor">
                   <span className="menuItem">Atribuição Supervisor</span>
+                  <Link to="/gestao/atribuicao-supervisor-lista" className="nav-link text-white" id="linkAtribuicaoSupervisor"/>
                 </Menu.Item>
               </SubMenu>
               <SubMenu
@@ -206,11 +254,15 @@ const Sider = () => {
                 key="subConfiguracoes"
                 title={
                   <div className="item-menu-retraido">
-                    <i className={"fas fa-cog " + (collapsed ? "icons-retraido" : "icons")}></i>
+                    <i
+                      className={`fas fa-cog ${
+                        collapsed ? 'icons-retraido' : 'icons'
+                      }`}
+                    />
                     <span>Configurações</span>
                   </div>
-                }>
-              </SubMenu>
+                }
+              />
             </Menu>
           </div>
         </MenuScope>
@@ -218,7 +270,7 @@ const Sider = () => {
           <DivFooter>
             <Footer>
               <div className="logo-secretaria" hidden>
-                <img src={LogoMenuFooter}></img>
+                <img src={LogoMenuFooter} />
               </div>
               <div className="descricao">
                 <span>SME-SP-SGA - Distribuído sob a Licença AGPL V3</span>
@@ -229,6 +281,6 @@ const Sider = () => {
       </Sider>
     </MenuBody>
   );
-}
+};
 
 export default Sider;

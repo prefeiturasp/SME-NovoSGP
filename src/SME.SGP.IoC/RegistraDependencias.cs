@@ -23,6 +23,7 @@ namespace SME.SGP.IoC
         {
             services.TryAddScoped<IComandosPlanoCiclo, ComandosPlanoCiclo>();
             services.TryAddScoped<IComandosPlanoAnual, ComandosPlanoAnual>();
+            services.TryAddScoped<IComandosSupervisor, ComandosSupervisor>();
         }
 
         private static void RegistrarConsultas(IServiceCollection services)
@@ -35,6 +36,8 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IConsultasPlanoAnual, ConsultasPlanoAnual>();
             services.TryAddScoped<IConsultasDisciplina, ConsultasDisciplina>();
             services.TryAddScoped<IConsultasProfessor, ConsultasProfessor>();
+            services.TryAddScoped<IConsultasSupervisor, ConsultasSupervisor>();
+            services.TryAddScoped<IConsultaDres, ConsultaDres>();
         }
 
         private static void RegistrarContextos(IServiceCollection services)
@@ -56,6 +59,7 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IRepositorioCache, RepositorioCache>();
             services.TryAddScoped<IRepositorioComponenteCurricular, RepositorioComponenteCurricular>();
             //services.TryAddScoped<IRepositorioProfessorTurma, RepositorioProfessorTurma>();
+            services.TryAddScoped<IRepositorioSupervisorEscolaDre, RepositorioSupervisorEscolaDre>();
         }
     }
 }

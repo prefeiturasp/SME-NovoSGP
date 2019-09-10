@@ -54,6 +54,15 @@ export default createGlobalStyle`
     color: #ffffff !important;
   }
 
+  .ant-select-dropdown-menu-item  {
+    -webkit-transition: none !important;
+    transition: none !important;
+  }
+
+  .ant-select-selected-icon {
+    color: white !important;
+  }
+
   .desabilitar-elemento {
     pointer-events: none !important;
     opacity: 0.6 !important;
@@ -182,6 +191,10 @@ export default createGlobalStyle`
 
   .ant-menu-submenu-popup{
     position: fixed !important;
+  }
+
+  .supervisor-nao-atribuido {
+    color: #b40c02;
   }
 
   .ant-modal-footer {
