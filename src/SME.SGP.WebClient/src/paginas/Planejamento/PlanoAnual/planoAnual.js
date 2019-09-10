@@ -68,7 +68,7 @@ export default function PlanoAnual() {
   const anoEscolar = turmaSelecionada[0] ? turmaSelecionada[0].ano : 0;
   const turmaId = turmaSelecionada[0] ? turmaSelecionada[0].codTurma : 0;
 
-  useEffect(() => { }, []);
+  useEffect(() => {}, []);
 
   useEffect(() => {
     if ((!bimestres || bimestres.length === 0) && !ehDisabled)
@@ -125,7 +125,7 @@ export default function PlanoAnual() {
       .catch(() => {
         erro(
           `Não foi possivel obter os dados do ${
-          ehEja ? 'plano semestral' : 'plano anual'
+            ehEja ? 'plano semestral' : 'plano anual'
           }`
         );
       });
@@ -300,44 +300,50 @@ export default function PlanoAnual() {
       promissesBimestres.push(promise);
     }
 
-    Promise.all(promissesBimestres).then(resultados => {
-      const PlanoAnualEnviar = {
-        Id: resultados[0].id,
-        AnoLetivo: bimestres[1].anoLetivo,
-        EscolaId: bimestres[1].escolaId,
-        TurmaId: bimestres[1].turmaId,
-        Bimestres: []
-      };
+    Promise.all(promissesBimestres)
+      .then(resultados => {
+        console.log(resultados);
 
-      resultados.forEach((res, index) => {
-        PlanoAnualEnviar.Bimestres.push({
-          Bimestre: index + 1,
-          ObjetivosAprendizagem: res.objetivosAprendizagem,
-          Descricao: res.descricao
-        })
-      });
+        const PlanoAnualEnviar = {
+          Id: resultados[0].data.id,
+          AnoLetivo: bimestres[1].anoLetivo,
+          EscolaId: bimestres[1].escolaId,
+          TurmaId: bimestres[1].turmaId,
+          Bimestres: [],
+        };
 
-      return PlanoAnualEnviar;
+        resultados.forEach((res, index) => {
+          const bimestrePlanoAnual = res.data;
+          PlanoAnualEnviar.Bimestres.push({
+            Bimestre: index + 1,
+            ObjetivosAprendizagem: bimestrePlanoAnual.objetivosAprendizagem,
+            Descricao: bimestrePlanoAnual.descricao,
+          });
+        });
 
-    })
+        return PlanoAnualEnviar;
+      })
       .then(PlanoAnualEnviar => {
-
         Service.copiarConteudo(
           PlanoAnualEnviar,
           usuario.rf,
           modalCopiarConteudo.turmasSelecionadas
         )
-          .then(() => sucesso("Plano copiado com sucesso"))
-          .catch(erro => dispatch(setBimestresErro({
-            type: 'erro',
-            content: erro.error,
-            title: 'Ocorreu uma falha',
-            onClose: () => dispatch(setLimpartBimestresErro()),
-            visible: true,
-          })))
-          .finally(()=>{
-            onCloseCopiarConteudo();
+          .then(() => sucesso('Plano copiado com sucesso'))
+          .catch(erro => {
+            dispatch(
+              setBimestresErro({
+                type: 'erro',
+                content: erro.error,
+                title: 'Ocorreu uma falha',
+                onClose: () => dispatch(setLimpartBimestresErro()),
+                visible: true,
+              })
+            );
           })
+          .finally(() => {
+            onCloseCopiarConteudo();
+          });
       });
   };
 
@@ -405,14 +411,17 @@ export default function PlanoAnual() {
         labelBotaoSecundario="Cancelar"
         titulo="Copiar Conteúdo"
       >
-        <label>Copiar para a(s) turma(s)</label>
+        <label for="SelecaoTurma" alt="Selecione uma ou mais turmas de destino">
+          Copiar para a(s) turma(s)
+        </label>
         <Select
           lista={modalCopiarConteudo.listSelect}
           label="turma"
+          id="SelecaoTurma"
           valueOption="codigo"
           className="col-xl-12 col-md-12 col-sm-12 col-xs-12"
           placeholder="Selecione uma turma destino"
-          valueSelect={modalCopiarConteudo.disciplinasSelecionadas}
+          valueSelect={modalCopiarConteudo.turmasSelecionadas}
           onChange={onChangeCopiarConteudo}
         ></Select>
       </ModalConteudoHtml>
@@ -459,15 +468,15 @@ export default function PlanoAnual() {
         <Grid cols={12}>
           {bimestres
             ? bimestres.map(bim => {
-              return (
-                <Bimestre
-                  disabled={ehDisabled}
-                  key={bim.indice}
-                  indice={bim.indice}
-                  LayoutEspecial={LayoutEspecial}
-                />
-              );
-            })
+                return (
+                  <Bimestre
+                    disabled={ehDisabled}
+                    key={bim.indice}
+                    indice={bim.indice}
+                    LayoutEspecial={LayoutEspecial}
+                  />
+                );
+              })
             : null}
         </Grid>
       </Card>

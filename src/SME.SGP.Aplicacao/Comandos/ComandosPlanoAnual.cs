@@ -40,7 +40,7 @@ namespace SME.SGP.Aplicacao
                 var planoAnualOrigem = ObterPlanoAnualSimplificado(planoAnualDto, bimestrePlanoAnual.Bimestre.Value);
                 if (planoAnualOrigem == null)
                 {
-                    throw new NegocioException("Plano anual de origemnão encontrado");
+                    throw new NegocioException("Plano anual de origem não encontrado");
                 }
 
                 await ValidaTurmasProfessor(migrarPlanoAnualDto, planoAnualDto);
