@@ -342,6 +342,10 @@ const Filtro = () => {
       !event.target.classList.contains(
         'ant-select-dropdown-menu-item-active'
       ) &&
+      !event.target.classList.contains('ant-select-selection-selected-value') &&
+      !event.target.classList.contains(
+        'ant-select-dropdown-menu-item-selected'
+      ) &&
       divBuscaRef.current &&
       !divBuscaRef.current.contains(event.target)
     )
