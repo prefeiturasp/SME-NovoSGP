@@ -220,9 +220,18 @@ export default function AtribuicaoSupervisorLista() {
     setListaUes(ues.data || []);
   }
 
-  function onChangeSupervisores(sup) {
-    setSupervisoresSelecionados(sup);
-    console.log(`onChangeSupervisores${sup}`);
+  async function onChangeSupervisores(sup) {
+    if (sup && sup.length) {
+      const vinculoSupervisores = await api.get(`/v1/supervisores/${sup.toString()}/dre/${dresSelecionadas}`);
+      montarListaAtribuicao(vinculoSupervisores.data, dresSelecionadas, true);
+      setDesabilitarUe(true);
+      setUeSelecionada([]);
+      setSupervisoresSelecionados(sup);
+    } else {
+      setSupervisoresSelecionados([]);
+      setDesabilitarUe(false);
+      onChangeDre(dresSelecionadas);
+    }
   }
 
   async function onChangeUes(ue) {
