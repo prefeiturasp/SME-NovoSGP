@@ -5,7 +5,7 @@ import { Base } from '../componentes/colors';
 import { MenuBody, DivFooter, MenuScope, Topo } from './sider.css';
 import LogoMenuFooter from '../recursos/LogoMenuFooter.svg';
 import { store } from '../redux';
-import { menuCollapsed } from '../redux/modulos/menu/actions';
+import { menuCollapsed } from '../redux/modulos/navegacao/actions'
 
 const Sider = () => {
   const { Sider, Footer } = Layout;
@@ -29,21 +29,10 @@ const Sider = () => {
   };
 
   return (
-    <MenuBody
-      id="main"
-      className={
-        collapsed
-          ? 'col-lg-2 col-md-2 col-sm-2 col-xl-1'
-          : 'col-sm-4 col-md-3 col-lg-3 col-xl-2'
-      }
-    >
+    <MenuBody id="main" style={{width: collapsed?'115px': '250px'}}>
       <Sider
-        style={{ background: Base.Roxo }}
-        collapsed={collapsed}
-        onCollapse={collapsed}
-        width="100%"
-        collapsedWidth="100%"
-      >
+        style={{ background: Base.Roxo, height: '100%' }} collapsed={collapsed} onCollapse={collapsed}
+        width="250px" collapsedWidth="115px">
         <Topo>
           <div className="conteudo">
             <a className="arrow" onClick={toggleCollapsed}>
@@ -95,6 +84,7 @@ const Sider = () => {
               <SubMenu
                 id="diarioClasse"
                 key="subDiarioClasse"
+                popupClassName="popup"
                 title={
                   <div className="item-menu-retraido">
                     <i
@@ -240,9 +230,8 @@ const Sider = () => {
                     />
                     <span>Gestão</span>
                   </div>
-                }
-              >
-                <Menu.Item key="90" id="gesCalendarioEscolar">
+                }>
+                <Menu.Item key="90" id="gesCalendarioEscolar" className="popup-gestao">
                   <span className="menuItem">Calendário Escolar</span>
                 </Menu.Item>
                 <Menu.Item key="91" id="gesAtribuicaoCj">
