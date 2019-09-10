@@ -10,6 +10,10 @@ const TextEditor = React.forwardRef((props, ref) => {
     if (onBlur) onBlur(ref.current.state.value);
   };
 
+  const onClickQuill = () => {
+    if (onClick) onClick();
+  };
+
   return (
     <ReactQuill
       ref={ref}
@@ -17,7 +21,7 @@ const TextEditor = React.forwardRef((props, ref) => {
       onBlur={onBlurQuill}
       alt={alt}
       value={value || ''}
-      onClick={onClick}
+      onFocus={onClickQuill}
       readOnly={disabled}
       disabled={disabled}
     />

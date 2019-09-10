@@ -230,6 +230,22 @@ export function ObterBimestreServidor(Bimestre) {
             objetivo: bimestreDTO.descricao,
             ehExpandido: true,
             id: bimestreDTO.id,
+            alteradoPor: bimestreDTO.alteradoPor
+              ? _getStringPor(
+                  bimestreDTO.alteradoPor,
+                  bimestreDTO.alteradoEm,
+                  'ALTERADO',
+                  bimestreDTO.alteradoRF
+                )
+              : null,
+            criadoPor: bimestreDTO.criadoPor
+              ? _getStringPor(
+                  bimestreDTO.criadoPor,
+                  bimestreDTO.criadoEm,
+                  'INSERIDO',
+                  bimestreDTO.criadoRF
+                )
+              : null,
             objetivosAprendizagem: bimestreDTO.objetivosAprendizagem.map(
               obj => {
                 obj.selected = true;
@@ -246,3 +262,17 @@ export function ObterBimestreServidor(Bimestre) {
       });
   };
 }
+
+const _getStringPor = (responsavelPor, dataEM, operacao, rf) => {
+  const data = new Date(dataEM);
+  const dia = data
+    .getDate()
+    .toString()
+    .padStart(2, '0');
+  const mes = (data.getMonth() + 1).toString().padStart(2, '0');
+  const ano = data.getFullYear();
+  const hora = data.getHours();
+  const minuto = data.getMinutes();
+
+  return `${operacao} por ${responsavelPor} ${rf} em ${dia}/${mes}/${ano} as ${hora}:${minuto}`;
+};
