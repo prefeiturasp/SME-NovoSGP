@@ -164,7 +164,7 @@ const AtribuicaoSupervisorCadastro = ({ match }) => {
       .post('v1/supervisores/atribuir-ue', atribuicao)
       .then(() => {
         sucesso('Atribuição realizada com sucesso.');
-        history.push('/');
+        history.push('/gestao/atribuicao-supervisor-lista');
       })
       .catch(erros => {
         exibeErro(erros);
