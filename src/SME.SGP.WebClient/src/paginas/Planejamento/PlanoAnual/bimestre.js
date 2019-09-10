@@ -1,5 +1,11 @@
 import React, { useEffect, useRef, useLayoutEffect, useState } from 'react';
-import { Badge, ObjetivosList, ListItemButton, ListItem } from './bimestre.css';
+import {
+  Badge,
+  ObjetivosList,
+  ListItemButton,
+  ListItem,
+  H5,
+} from './bimestre.css';
 import CardCollapse from '../../../componentes/cardCollapse';
 import Grid from '../../../componentes/grid';
 import Button from '../../../componentes/button';
@@ -330,6 +336,14 @@ const BimestreComponent = props => {
                 />
               </form>
             </fieldset>
+            <Grid cols={12} className="p-0">
+              {bimestres[indice].criadoPor ? (
+                <H5>{bimestres[indice].criadoPor}</H5>
+              ) : null}
+              {bimestres[indice].alteradoPor ? (
+                <H5>{bimestres[indice].alteradoPor}</H5>
+              ) : null}
+            </Grid>
           </div>
         </Grid>
       </div>
