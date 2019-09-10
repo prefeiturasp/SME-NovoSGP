@@ -213,6 +213,7 @@ const Filtro = () => {
           codigo: dado.codTurma,
           ano: dado.ano,
           turma: dado.nomeTurma,
+          codEscola: dado.codEscola,
         });
       }
     });
@@ -228,6 +229,24 @@ const Filtro = () => {
     store.dispatch(turmasUsuario(turmas.sort(ordenaTurmas)));
     selecionaTurmaCasosEspecificos();
   }, [dados]);
+
+  useEffect(() => {
+    if (modalidadesFiltro.length === 1)
+      setModalidadeFiltroSelecionada(modalidadesFiltro[0].codigo.toString());
+    if (dresFiltro.length === 1)
+      setDreFiltroSelecionada(dresFiltro[0].codigo.toString());
+    if (unidadesEscolaresFiltro.length === 1)
+      setUnidadeEscolarFiltroSelecionada(
+        unidadesEscolaresFiltro[0].codigo.toString()
+      );
+    if (usuario.turmasUsuario.length === 1)
+      setTurmaFiltroSelecionada(usuario.turmasUsuario[0].codigo.toString());
+  }, [
+    modalidadesFiltro,
+    dresFiltro,
+    unidadesEscolaresFiltro,
+    usuario.turmasUsuario,
+  ]);
 
   useEffect(() => {
     inputBuscaRef.current.focus();
@@ -248,6 +267,11 @@ const Filtro = () => {
       .filter(dado => {
         if (modalidadeFiltroSelecionada)
           return dado.codModalidade.toString() === modalidadeFiltroSelecionada;
+        return true;
+      })
+      .filter(dado => {
+        if (periodoFiltroSelecionado)
+          return dado.semestre.toString() === periodoFiltroSelecionado;
         return true;
       })
       .filter(dado => {
@@ -282,15 +306,32 @@ const Filtro = () => {
             codigo: dado.codTurma,
             ano: dado.ano,
             turma: dado.nomeTurma,
+            codEscola: dado.codEscola,
           });
         }
       });
 
+    if (dres.filter(dre => dre.codigo === dreFiltroSelecionada).length === 0)
+      setDreFiltroSelecionada();
     setDresFiltro([...dres]);
+
+    if (
+      unidadesEscolares.filter(
+        unidade => unidade.codigo === unidadeEscolarFiltroSelecionada
+      ).length === 0
+    )
+      setUnidadeEscolarFiltroSelecionada();
     setUnidadesEscolaresFiltro([...unidadesEscolares]);
+
+    if (
+      turmas.filter(turma => turma.codigo === turmaFiltroSelecionada).length ===
+      0
+    )
+      setTurmaFiltroSelecionada();
     store.dispatch(turmasUsuario(turmas.sort(ordenaTurmas)));
   }, [
     modalidadeFiltroSelecionada,
+    periodoFiltroSelecionado,
     dreFiltroSelecionada,
     unidadeEscolarFiltroSelecionada,
   ]);
@@ -314,11 +355,6 @@ const Filtro = () => {
       setUnidadeEscolarFiltroSelecionada(dados[0].codEscola.toString());
       setTurmaFiltroSelecionada(dados[0].codTurma.toString());
       store.dispatch(selecionarTurma(dados));
-    } else if (dresFiltro.length === 1) {
-      setDreFiltroSelecionada(dresFiltro[0].codigo.toString());
-      if (unidadesEscolaresFiltro.length === 1) {
-        setUnidadeEscolarFiltroSelecionada(unidadesEscolaresFiltro[0].codigo);
-      }
     }
   };
 
