@@ -21,9 +21,9 @@ import ModalConfirmacao from '../../../componentes/modalConfirmacao';
 import history from '../../../servicos/history';
 import { URL_HOME } from '../../../constantes/url';
 import { erro, sucesso } from '../../../servicos/alertas';
-import { salvarRf } from '../../../redux/modulos/usuario/actions';
 import ModalConteudoHtml from '../../../componentes/modalConteudoHtml';
 import Select from '../../../componentes/selectMultiple';
+import { Titulo, TituloAno, Planejamento } from './planoAnual.css.js';
 
 export default function PlanoAnual() {
   const diciplinasSemObjetivo = [1061];
@@ -425,10 +425,16 @@ export default function PlanoAnual() {
           onChange={onChangeCopiarConteudo}
         ></Select>
       </ModalConteudoHtml>
+      <Grid cols={12} className="p-l-10 mb-10">
+        <Planejamento>PLANEJAMENTO</Planejamento>
+        <Titulo>
+          {ehEja ? 'Plano Semestral' : 'Plano Anual'}
+          <TituloAno>
+            {` / ${anoLetivo ? anoLetivo : new Date().getFullYear()}`}
+          </TituloAno>
+        </Titulo>
+      </Grid>
       <Card>
-        <Grid cols={12}>
-          {ehEja ? <h1>Plano Semestral</h1> : <h1>Plano Anual</h1>}
-        </Grid>
         <Grid cols={6} className="d-flex justify-content-start mb-3">
           <Button
             label="Copiar Conteúdo"
