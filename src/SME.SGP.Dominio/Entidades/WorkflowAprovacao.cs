@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-
+using System.Linq;
 namespace SME.SGP.Dominio
 {
     public class WorkflowAprovacao : EntidadeBase
@@ -27,6 +27,19 @@ namespace SME.SGP.Dominio
             nivel.Workflow = this;
 
             niveis.Add(nivel);
+        }
+
+        public void InicializarWorkflow()
+        {
+
+        }
+        public int ObtemPrimeiroNivel()
+        {
+            return niveis
+                .OrderByDescending( a => a.Nivel)
+                .GroupBy(a => a.Nivel)
+                .Select(a => a.Key)
+                .FirstOrDefault();
         }
     }
 }
