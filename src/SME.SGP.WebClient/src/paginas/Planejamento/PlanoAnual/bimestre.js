@@ -134,7 +134,7 @@ const BimestreComponent = props => {
   };
 
   const removerTodosObjetivoSelecionado = () => {
-    dispatch(removerSelecaoTodosObjetivos());
+    dispatch(removerSelecaoTodosObjetivos(indice));
   };
 
   const onBlurTextEditor = value => {
