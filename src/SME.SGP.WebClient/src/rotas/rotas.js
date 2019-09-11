@@ -9,16 +9,16 @@ import PlanoAnual from '../paginas/Planejamento/PlanoAnual/planoAnual';
 import AtribuicaoSupervisorLista from '../paginas/Gestao/AtribuicaoSupervisor/atribuicaoSupervisorLista';
 import AtribuicaoSupervisorCadastro from '../paginas/Gestao/AtribuicaoSupervisor/atribuicaoSupervisorCadastro';
 
-export default function Rotas() {
+export default function Rotas(props) {
   const rotas = new Map();
 
-  rotas.set('/', {
-    params: ':rf?',
+  rotas.set('/:rf?', {
     breadcrumbName: 'Home',
     parent: null,
     component: Principal,
     exact: true,
-    limpaSelecaoMenu: true
+    limpaSelecaoMenu: true,
+    paginaInicial: true
   });
   rotas.set('/planejamento/plano-ciclo', {
     breadcrumbName: 'Plano de Ciclo',
@@ -42,7 +42,7 @@ export default function Rotas() {
     exact: true,
   });
   rotas.set('/gestao/atribuicao-supervisor', {
-    breadcrumbName: 'Atribuição de Supervisor',
+    breadcrumbName: 'Nova Atribuicao',
     parent: '/gestao/atribuicao-supervisor-lista',
     component: AtribuicaoSupervisorCadastro,
     exact: true,
@@ -54,27 +54,21 @@ export default function Rotas() {
     exact: true,
   });
 
-  const rotasParaRedux = new Map();
-
-  history.listen((location) => {
-    store.dispatch(activeRoute(location.pathname));
-    localStorage.setItem('rota-atual', location.pathname);
-  });
-
   const rotasArray = [];
   for (var [key, value] of rotas) {
     const rota = value;
     rota.path = key + (value.params ? value.params : '');
     rotasArray.push(rota);
     const rotaRedux = {
+      path: value.paginaInicial?'/':key,
       params: value.params,
       breadcrumbName: value.breadcrumbName,
+      menu: value.menu,
       parent: value.parent
     }
-    rotasParaRedux.set(value.path, rotaRedux)
+    store.dispatch(getRotas(rotaRedux));
   }
 
-  store.dispatch(getRotas(rotasParaRedux));
 
   return (
     <div>
