@@ -1,17 +1,32 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Menu, Layout } from 'antd';
 import { Link } from 'react-router-dom';
 import { Base } from '../componentes/colors';
 import { MenuBody, DivFooter, MenuScope, Topo } from './sider.css';
 import LogoMenuFooter from '../recursos/LogoMenuFooter.svg';
 import { store } from '../redux';
-import { menuCollapsed } from '../redux/modulos/navegacao/actions'
+import { menuCollapsed } from '../redux/modulos/navegacao/actions';
+import { useSelector } from 'react-redux';
 
 const Sider = () => {
   const { Sider, Footer } = Layout;
   const { SubMenu } = Menu;
   const [collapsed, setCollapsed] = useState(false);
   const [openKeys, setOpenKeys] = useState([]);
+  const [itemMenuSelecionado, setItemMenuSelecionado] = useState(['0']);
+  const NavegacaoStore = useSelector(store => store.navegacao);
+
+  useEffect(() => {
+    verificaSelecaoMenu(NavegacaoStore.activeRoute);
+  }, [NavegacaoStore.activeRoute]);
+
+  const verificaSelecaoMenu = (rotaAtiva) => {
+    const rota = NavegacaoStore.rotas.get(rotaAtiva);
+    setOpenKeys([]);
+    if (rota.limpaSelecaoMenu) {
+      setItemMenuSelecionado([]);
+    }
+  }
 
   const toggleCollapsed = () => {
     setOpenKeys([]);
@@ -28,8 +43,10 @@ const Sider = () => {
     }
   };
 
+  const selecionarItem = (item) => setItemMenuSelecionado([item.key]);
+
   return (
-    <MenuBody id="main" style={{width: collapsed?'115px': '250px'}}>
+    <MenuBody id="main" style={{ width: collapsed ? '115px' : '250px' }}>
       <Sider
         style={{ background: Base.Roxo, height: '100%' }} collapsed={collapsed} onCollapse={collapsed}
         width="250px" collapsedWidth="115px">
@@ -80,6 +97,8 @@ const Sider = () => {
               theme="dark"
               openKeys={openKeys}
               onOpenChange={onOpenChange}
+              onSelect = {selecionarItem.bind(itemMenuSelecionado)}
+              selectedKeys = {itemMenuSelecionado}
             >
               <SubMenu
                 id="diarioClasse"
@@ -90,7 +109,7 @@ const Sider = () => {
                     <i
                       className={`fas fa-book-reader ${
                         collapsed ? 'icons-retraido' : 'icons'
-                      }`}
+                        }`}
                     />
                     <span>Diário de Classe</span>
                   </div>
@@ -132,7 +151,7 @@ const Sider = () => {
                     <i
                       className={`fas fa-list-alt ${
                         collapsed ? 'icons-retraido' : 'icons'
-                      }`}
+                        }`}
                     />
                     <span>Planejamento</span>
                   </div>
@@ -163,7 +182,7 @@ const Sider = () => {
                     <i
                       className={`fas fa-pencil-ruler ${
                         collapsed ? 'icons-retraido' : 'icons'
-                      }`}
+                        }`}
                     />
                     <span>Fechamento</span>
                   </div>
@@ -187,7 +206,7 @@ const Sider = () => {
                     <i
                       className={`fas fa-file-alt ${
                         collapsed ? 'icons-retraido' : 'icons'
-                      }`}
+                        }`}
                     />
                     <span>Relatórios</span>
                   </div>
@@ -226,7 +245,7 @@ const Sider = () => {
                     <i
                       className={`fas fa-user-cog ${
                         collapsed ? 'icons-retraido' : 'icons'
-                      }`}
+                        }`}
                     />
                     <span>Gestão</span>
                   </div>
@@ -245,7 +264,7 @@ const Sider = () => {
                 </Menu.Item>
                 <Menu.Item key="94" id="gesAtribuicaoSupervisor">
                   <span className="menuItem">Atribuição Supervisor</span>
-                  <Link to="/gestao/atribuicao-supervisor-lista" className="nav-link text-white" id="linkAtribuicaoSupervisor"/>
+                  <Link to="/gestao/atribuicao-supervisor-lista" className="nav-link text-white" id="linkAtribuicaoSupervisor" />
                 </Menu.Item>
               </SubMenu>
               <SubMenu
@@ -257,7 +276,7 @@ const Sider = () => {
                     <i
                       className={`fas fa-cog ${
                         collapsed ? 'icons-retraido' : 'icons'
-                      }`}
+                        }`}
                     />
                     <span>Configurações</span>
                   </div>
