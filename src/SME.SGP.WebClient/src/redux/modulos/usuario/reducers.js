@@ -15,7 +15,6 @@ export default function usuario(state = inicial, action) {
       }
       case '@usuario/turmasUsuario': {
         draft.turmasUsuario = [];
-        console.log(action.payload);
         draft.turmasUsuario = action.payload;
         break;
       }
