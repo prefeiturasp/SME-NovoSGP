@@ -84,7 +84,6 @@ const Sider = () => {
               <SubMenu
                 id="diarioClasse"
                 key="subDiarioClasse"
-                popupClassName="popup"
                 title={
                   <div className="item-menu-retraido">
                     <i
@@ -147,7 +146,7 @@ const Sider = () => {
                   />
                 </Menu.Item>
                 <Menu.Item key="31" id="plaPlanoAnual" htmlFor="linkPlanoAnual">
-                  <span className="menuItem"> Plano anual</span>
+                  <span className="menuItem"> Plano Anual</span>
                   <Link
                     to="/planejamento/plano-anual"
                     className="nav-link text-white"
