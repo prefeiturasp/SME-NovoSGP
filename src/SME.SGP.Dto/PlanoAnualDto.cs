@@ -5,6 +5,24 @@ namespace SME.SGP.Dto
 {
     public class PlanoAnualDto
     {
+        public PlanoAnualDto()
+        { }
+
+        public PlanoAnualDto(
+            int? anoLetivo,
+            IEnumerable<BimestrePlanoAnualDto> bimestres,
+            string escolaId,
+            long id,
+            long? turmaId)
+        {
+            AnoLetivo = anoLetivo;
+            Bimestres = bimestres;
+            EscolaId = escolaId;
+            Id = id;
+            TurmaId = turmaId;
+        }
+
+
         [Required(ErrorMessage = "O ano deve ser informado")]
         public int? AnoLetivo { get; set; }
 
