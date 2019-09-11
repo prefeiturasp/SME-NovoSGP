@@ -11,3 +11,16 @@ export function removerAlerta(id) {
     payload: { id },
   };
 }
+
+export function alertaConfirmar(titulo, texto, textoNegrito, resolve) {
+  return {
+    type: '@alertas/confirmar',
+    payload: { titulo, texto, textoNegrito, resolve },
+  };
+}
+
+export function alertaFechar() {
+  return {
+    type: '@alertas/fecharConfirmacao',
+  };
+}
