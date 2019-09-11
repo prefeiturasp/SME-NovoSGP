@@ -377,9 +377,6 @@ export default function PlanoAnual() {
             </Grid>
           </Row>
         ) : null}
-        {notificacoes.alertas.map(alerta => (
-          <Alert alerta={alerta} key={alerta.id} />
-        ))}
       </div>
       <ModalMultiLinhas
         key="errosBimestre"

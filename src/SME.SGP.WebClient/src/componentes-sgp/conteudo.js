@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { Modal } from 'antd';
+import { Modal, Row } from 'antd';
 import styled from 'styled-components';
 import { alertaFechar } from '../redux/modulos/alertas/actions';
 import Rotas from '../rotas/rotas';
@@ -8,6 +8,7 @@ import Button from '../componentes/button';
 import { Colors } from '../componentes/colors';
 import BreadcrumbSgp from '../componentes-sgp/breadcrumb-sgp';
 import Alert from '~/componentes/alert';
+import Grid from '~/componentes/grid';
 
 const ContainerModal = styled.div`
   .ant-modal-footer {
@@ -69,7 +70,11 @@ const Conteudo = () => {
           </ContainerModal>
           <div className="card-body m-r-0 m-l-0 p-l-0 p-r-0 m-t-0">
             {notificacoes.alertas.map(alerta => (
-              <Alert alerta={alerta} key={alerta.id} closable />
+              <Row>
+                <Grid cols={12}>
+                  <Alert alerta={alerta} key={alerta.id} closable />
+                </Grid>
+              </Row>
             ))}
             <Rotas />
           </div>
