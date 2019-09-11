@@ -6,11 +6,13 @@ import AtribuicaoSupervisorLista from '~/paginas/Gestao/AtribuicaoSupervisor/atr
 import AtribuicaoSupervisorCadastro from '~/paginas/Gestao/AtribuicaoSupervisor/atribuicaoSupervisorCadastro';
 
 const rotas = new Map();
-rotas.set('/:rf?', {
+rotas.set('/', {
+  params: ':rf?',
   breadcrumbName: 'Home',
   parent: null,
   component: Principal,
   exact: true,
+  limpaSelecaoMenu: true
 });
 rotas.set('/planejamento/plano-ciclo', {
   breadcrumbName: 'Plano de Ciclo',
