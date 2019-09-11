@@ -75,14 +75,13 @@ export default function bimestres(state = INICIAL, action) {
         break;
 
       case '@bimestres/removerSelecaoTodosObjetivos':
-        draft.bimestres = draft.bimestres.map(bimestre => {
-          bimestre.objetivosAprendizagem = bimestre.objetivosAprendizagem.map(
-            objetivo => {
-              objetivo.selected = false;
-              return objetivo;
-            }
-          );
-          return bimestre;
+        draft.bimestres[
+          action.payload.indice
+        ].objetivosAprendizagem = draft.bimestres[
+          action.payload.indice
+        ].objetivosAprendizagem.map(objetivo => {
+          objetivo.selected = false;
+          return objetivo;
         });
         break;
 
