@@ -9,8 +9,7 @@ namespace SME.SGP.Dados.Mapeamentos
             ToTable("wf_aprovacao_nivel");
 
             Map(c => c.Workflow).Ignore();
-
-            Map(c => c.UsuarioId).ToColumn("usuario_id");
+                        
             Map(c => c.Status).ToColumn("status");
 
             Map(c => c.WorkflowId).ToColumn("wf_aprovacao_id");

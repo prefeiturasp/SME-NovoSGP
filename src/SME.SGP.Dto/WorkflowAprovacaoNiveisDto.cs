@@ -13,7 +13,7 @@ namespace SME.SGP.Dto
 
         public int Ano { get; set; }
         public string DreId { get; set; }
-        public string EscolaId { get; set; }
+        public string UeId { get; set; }
         public List<WorkflowAprovacaoNivelDto> Niveis { get; set; }
 
         [Required(ErrorMessage = "É necessário informar a mensagem da notificação.")]

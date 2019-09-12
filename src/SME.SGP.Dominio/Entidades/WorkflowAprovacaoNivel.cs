@@ -10,18 +10,15 @@ namespace SME.SGP.Dominio
             notificacoes = new List<Notificacao>();
             usuarios = new List<Usuario>();
         }
-
-        public string Descricao { get; set; }
         public int Nivel { get; set; }
         public WorkflowAprovacaoNivelStatus Status { get; set; }
-        public IEnumerable<Usuario> Usuarios { get { return usuarios; } }
-        public IList<Usuario> usuarios { get; set; }
         public WorkflowAprovacao Workflow { get; set; }
         public long WorkflowId { get; set; }
-        public string CargoId { get; set; }
+        public Cargo Cargo { get; set; }
         private IList<Notificacao> notificacoes { get; set; }
         public IEnumerable<Notificacao> Notificacoes { get { return notificacoes;  }  }
-
+        public IEnumerable<Usuario> Usuarios { get { return usuarios; } }
+        public IList<Usuario> usuarios { get; set; }
         public void Adicionar(Notificacao notificacao)
         {
             if (notificacao != null)

@@ -10,8 +10,10 @@
         public string Mensagem { get; set; }
         public bool MostrarBotaoMarcarComoLido { get; set; }
         public bool MostrarBotoesDeAprovacao { get; set; }
+        public bool MostrarBotaoRemover { get; set; }
         public string Situacao { get; set; }
         public string Tipo { get; set; }
         public string Titulo { get; set; }
+        public string UsuarioRf { get; set; }
     }
 }

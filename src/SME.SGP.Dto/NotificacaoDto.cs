@@ -11,14 +11,12 @@ namespace SME.SGP.Dto
         public NotificacaoCategoria Categoria { get; set; }
 
         public string DreId { get; set; }
-        public string EscolaId { get; set; }
+        public string UeId { get; set; }
 
         [Required(ErrorMessage = "A Mensagem é obrigatória.")]
         [MinLength(3, ErrorMessage = "A Mensagem deve conter no mínimo 3 caracteres.")]
         public string Mensagem { get; set; }
-
-        public bool PodeRemover { get; set; }
-
+        
         [Required(ErrorMessage = "O tipo é obrigatório.")]
         public NotificacaoTipo Tipo { get; set; }
 
@@ -28,7 +26,6 @@ namespace SME.SGP.Dto
 
         public string TurmaId { get; set; }
 
-        [Required(ErrorMessage = "O usuário é obrigatório.")]
-        public string UsuarioId { get; set; }
+        public string UsuarioRf { get; set; }
     }
 }

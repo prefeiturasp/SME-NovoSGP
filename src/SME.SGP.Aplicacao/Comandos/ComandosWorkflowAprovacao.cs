@@ -41,7 +41,7 @@ namespace SME.SGP.Aplicacao
             WorkflowAprovacao workflowAprovacao = new WorkflowAprovacao();
             workflowAprovacao.Ano = workflowAprovacaoNiveisDto.Ano;
             workflowAprovacao.DreId = workflowAprovacaoNiveisDto.DreId;
-            workflowAprovacao.EscolaId = workflowAprovacaoNiveisDto.EscolaId;
+            workflowAprovacao.UeId = workflowAprovacaoNiveisDto.UeId;
             workflowAprovacao.TurmaId = workflowAprovacaoNiveisDto.TurmaId;
             workflowAprovacao.NotifacaoMensagem = workflowAprovacaoNiveisDto.NotificacaoMensagem;
             workflowAprovacao.NotifacaoTitulo = workflowAprovacaoNiveisDto.NotificacaoTitulo;
@@ -49,12 +49,12 @@ namespace SME.SGP.Aplicacao
 
             foreach (var nivel in workflowAprovacaoNiveisDto.Niveis)
             {
-                workflowAprovacao.Adicionar(new WorkflowAprovacaoNivel()
-                {
-                    Descricao = nivel.Descricao,
-                    Nivel = nivel.Nivel,
-                    UsuarioId = nivel.UsuarioId
-                });
+                //workflowAprovacao.Adicionar(new WorkflowAprovacaoNivel()
+                //{
+                //    Descricao = nivel.Descricao,
+                //    Nivel = nivel.Nivel,
+                //    UsuarioId = nivel.UsuarioId
+                //});
             }
             return workflowAprovacao;
         }
