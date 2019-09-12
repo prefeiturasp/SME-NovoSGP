@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { Modal } from 'antd';
+import { Modal, Row } from 'antd';
 import styled from 'styled-components';
 import { alertaFechar } from '../redux/modulos/alertas/actions';
 import Rotas from '../rotas/rotas';
@@ -8,11 +8,18 @@ import Button from '../componentes/button';
 import { Colors } from '../componentes/colors';
 import BreadcrumbSgp from '../componentes-sgp/breadcrumb-sgp';
 import Alert from '~/componentes/alert';
+import Grid from '~/componentes/grid';
+import shortid from 'shortid';
 
 const ContainerModal = styled.div`
   .ant-modal-footer {
     border-top: 0px !important;
   }
+`;
+
+const ContainerBotoes = styled.div`
+  display: flex;
+  justify-content: flex-end;
 `;
 
 const Conteudo = () => {
@@ -46,30 +53,36 @@ const Conteudo = () => {
               onOk={() => fecharConfirmacao(true)}
               onCancel={() => fecharConfirmacao(false)}
               footer={[
-                <Button
-                  key="btn-sim"
-                  onClick={() => fecharConfirmacao(true)}
-                  label="Sim"
-                  color={Colors.Azul}
-                  border
-                  className="mr-3"
-                />,
-                <Button
-                  label="Não"
-                  type="primary"
-                  onClick={() => fecharConfirmacao(false)}
-                  color={Colors.Azul}
-                />,
+                <ContainerBotoes key={shortid.generate()}>
+                  <Button
+                    key={shortid.generate()}
+                    onClick={() => fecharConfirmacao(true)}
+                    label={confirmacao.textoOk}
+                    color={Colors.Azul}
+                    border
+                  />
+                  <Button
+                    key={shortid.generate()}
+                    onClick={() => fecharConfirmacao(false)}
+                    label={confirmacao.textoCancelar}
+                    type="primary"
+                    color={Colors.Azul}
+                  />
+                </ContainerBotoes>,
               ]}
             >
               {confirmacao.texto}
-              <br />
+              {confirmacao.texto ? <br /> : ''}
               <b>{confirmacao.textoNegrito}</b>
             </Modal>
           </ContainerModal>
           <div className="card-body m-r-0 m-l-0 p-l-0 p-r-0 m-t-0">
             {notificacoes.alertas.map(alerta => (
-              <Alert alerta={alerta} key={alerta.id} closable />
+              <Row>
+                <Grid cols={12}>
+                  <Alert alerta={alerta} key={alerta.id} closable />
+                </Grid>
+              </Row>
             ))}
             <Rotas />
           </div>

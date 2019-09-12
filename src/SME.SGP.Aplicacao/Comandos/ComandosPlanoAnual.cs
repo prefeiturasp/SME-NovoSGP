@@ -35,31 +35,41 @@ namespace SME.SGP.Aplicacao
         public async Task Migrar(MigrarPlanoAnualDto migrarPlanoAnualDto)
         {
             var planoAnualDto = migrarPlanoAnualDto.PlanoAnual;
-            foreach (var bimestrePlanoAnual in planoAnualDto.Bimestres)
+
+            using (var transacao = unitOfWork.IniciarTransacao())
             {
-                var planoAnualOrigem = ObterPlanoAnualSimplificado(planoAnualDto, bimestrePlanoAnual.Bimestre.Value);
-                if (planoAnualOrigem == null)
+                foreach (var bimestrePlanoAnual in planoAnualDto.Bimestres)
                 {
-                    throw new NegocioException("Plano anual de origem não encontrado");
-                }
+                    var planoAnualOrigem = ObterPlanoAnualSimplificado(planoAnualDto, bimestrePlanoAnual.Bimestre.Value);
 
-                await ValidaTurmasProfessor(migrarPlanoAnualDto, planoAnualDto);
+                    if (planoAnualOrigem == null)
+                        throw new NegocioException("Plano anual de origem não encontrado");
 
-                using (var transacao = unitOfWork.IniciarTransacao())
-                {
+                    await ValidaTurmasProfessor(migrarPlanoAnualDto, planoAnualDto);
+
                     foreach (var turmaId in migrarPlanoAnualDto.IdsTurmasDestino)
                     {
-                        planoAnualDto.TurmaId = turmaId;
-                        var planoAnual = ObterPlanoAnualSimplificado(planoAnualDto, bimestrePlanoAnual.Bimestre.Value);
+                        var planoCopia = new PlanoAnualDto(
+                            planoAnualDto.AnoLetivo,
+                            planoAnualDto.Bimestres,
+                            planoAnualDto.EscolaId,
+                            planoAnualDto.Id,
+                            planoAnualDto.TurmaId);
+
+                        planoCopia.TurmaId = turmaId;
+
+                        var planoAnual = ObterPlanoAnualSimplificado(planoCopia, bimestrePlanoAnual.Bimestre.Value);
+
                         if (planoAnual == null)
-                        {
-                            planoAnual = MapearParaDominio(planoAnualDto, planoAnual, bimestrePlanoAnual);
-                        }
+                            planoAnual = MapearParaDominio(planoCopia, planoAnual, bimestrePlanoAnual);
+
                         planoAnual.Descricao = planoAnualOrigem.Descricao;
-                        Salvar(planoAnualDto, planoAnual, bimestrePlanoAnual);
+                        Salvar(planoCopia, planoAnual, bimestrePlanoAnual);
                     }
-                    unitOfWork.PersistirTransacao();
+
                 }
+
+                unitOfWork.PersistirTransacao();
             }
         }
 
