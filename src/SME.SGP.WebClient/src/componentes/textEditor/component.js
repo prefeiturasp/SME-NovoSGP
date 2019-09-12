@@ -6,6 +6,14 @@ import ReactQuill from 'react-quill';
 const TextEditor = React.forwardRef((props, ref) => {
   const { value, onBlur, disabled, onClick, alt } = props;
 
+  useEffect(() => {
+    return () => {
+      if (onBlur) {
+        if (value !== ref.current.state.value) onBlur(ref.current.state.value);
+      }
+    };
+  });
+
   const onBlurQuill = () => {
     if (onBlur) onBlur(ref.current.state.value);
   };
