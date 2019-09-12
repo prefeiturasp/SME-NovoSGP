@@ -14,17 +14,23 @@ const DataTable = props => {
     pageSize,
   } = props;
 
-  const rowSelection = { selectedRowKeys };
+  const rowSelection = {
+    selectedRowKeys,
+    onChange: (ids) => {
+      onSelectRow(ids);
+    },
+    hideDefaultSelections: true
+  };
 
-  const selectRow = record => {
+  const selectRow = row => {
     let selected = [...selectedRowKeys];
-    if (selected.indexOf(record.key) >= 0) {
-      selected.splice(selected.indexOf(record.key), 1);
+    if (selected.indexOf(row.id) >= 0) {
+      selected.splice(selected.indexOf(row.id), 1);
     } else if (selectMultipleRows) {
-      selected.push(record.key);
+      selected.push(row.id);
     } else {
       selected = [];
-      selected.push(record.key);
+      selected.push(row.id);
     }
     onSelectRow(selected);
   };
@@ -32,12 +38,14 @@ const DataTable = props => {
   return (
     <Container className="table-responsive">
       <Table
+        className={selectMultipleRows ? '' : 'ocultar-coluna-multi-selecao'}
+        rowKey="id"
         rowSelection={rowSelection}
         columns={columns}
         dataSource={dataSource}
-        onRow={record => ({
+        onRow={row => ({
           onClick: () => {
-            selectRow(record);
+            selectRow(row);
           },
         })}
         pagination={{ pageSize }}
