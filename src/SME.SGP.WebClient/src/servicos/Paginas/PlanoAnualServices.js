@@ -57,7 +57,6 @@ const Service = {
     return requisicao
       .then(res => res)
       .catch(res => {
-        console.log(res);
         const erro =
           res.response && res.response.data.mensagens
             ? res.respose.data.mensagens
@@ -170,8 +169,6 @@ const Service = {
         Erros.push(
           `${BimestresFront[index + 1].nome}: Descrição não informada`
         );
-
-      console.log(bimestre.Descricao);
 
       if (
         (!bimestre.ObjetivosAprendizagem ||

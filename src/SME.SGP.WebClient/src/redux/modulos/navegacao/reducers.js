@@ -7,11 +7,13 @@ import AtribuicaoSupervisorCadastro from '~/paginas/Gestao/AtribuicaoSupervisor/
 import DetalheNotificacao from '~/paginas/Notificacoes/Detalhes/detalheNotificacao';
 
 const rotas = new Map();
-rotas.set('/:rf?', {
+rotas.set('/', {
+  params: ':rf?',
   breadcrumbName: 'Home',
   parent: null,
   component: Principal,
   exact: true,
+  limpaSelecaoMenu: true
 });
 rotas.set('/planejamento/plano-ciclo', {
   breadcrumbName: 'Plano de Ciclo',

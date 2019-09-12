@@ -52,16 +52,14 @@ const SelectComponent = props => {
     placeholder,
     alt,
     multiple,
-    disabled
+    disabled,
   } = props;
 
   const { Option } = Select;
 
   return (
     <Container>
-      {
-        label ? <Label text={label} control={name} />: ''
-      }
+      {label ? <Label text={label} control={name} /> : ''}
       <Select
         mode={multiple ? 'multiple' : ''}
         suffixIcon={<Icon type="caret-down" />}

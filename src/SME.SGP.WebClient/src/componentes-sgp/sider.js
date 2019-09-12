@@ -1,17 +1,32 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Menu, Layout } from 'antd';
 import { Link } from 'react-router-dom';
 import { Base } from '../componentes/colors';
 import { MenuBody, DivFooter, MenuScope, Topo } from './sider.css';
 import LogoMenuFooter from '../recursos/LogoMenuFooter.svg';
 import { store } from '../redux';
-import { menuCollapsed } from '../redux/modulos/navegacao/actions'
+import { menuCollapsed } from '../redux/modulos/navegacao/actions';
+import { useSelector } from 'react-redux';
 
 const Sider = () => {
   const { Sider, Footer } = Layout;
   const { SubMenu } = Menu;
   const [collapsed, setCollapsed] = useState(false);
   const [openKeys, setOpenKeys] = useState([]);
+  const [itemMenuSelecionado, setItemMenuSelecionado] = useState(['0']);
+  const NavegacaoStore = useSelector(store => store.navegacao);
+
+  useEffect(() => {
+    verificaSelecaoMenu(NavegacaoStore.activeRoute);
+  }, [NavegacaoStore.activeRoute]);
+
+  const verificaSelecaoMenu = rotaAtiva => {
+    const rota = NavegacaoStore.rotas.get(rotaAtiva);
+    setOpenKeys([]);
+    if (rota && rota.limpaSelecaoMenu) {
+      setItemMenuSelecionado([]);
+    }
+  };
 
   const toggleCollapsed = () => {
     setOpenKeys([]);
@@ -28,11 +43,17 @@ const Sider = () => {
     }
   };
 
+  const selecionarItem = item => setItemMenuSelecionado([item.key]);
+
   return (
-    <MenuBody id="main" style={{width: collapsed?'115px': '250px'}}>
+    <MenuBody id="main" style={{ width: collapsed ? '115px' : '250px' }}>
       <Sider
-        style={{ background: Base.Roxo, height: '100%' }} collapsed={collapsed} onCollapse={collapsed}
-        width="250px" collapsedWidth="115px">
+        style={{ background: Base.Roxo, height: '100%' }}
+        collapsed={collapsed}
+        onCollapse={collapsed}
+        width="250px"
+        collapsedWidth="115px"
+      >
         <Topo>
           <div className="conteudo">
             <a className="arrow" onClick={toggleCollapsed}>
@@ -80,11 +101,12 @@ const Sider = () => {
               theme="dark"
               openKeys={openKeys}
               onOpenChange={onOpenChange}
+              onSelect={selecionarItem.bind(itemMenuSelecionado)}
+              selectedKeys={itemMenuSelecionado}
             >
               <SubMenu
                 id="diarioClasse"
                 key="subDiarioClasse"
-                popupClassName="popup"
                 title={
                   <div className="item-menu-retraido">
                     <i
@@ -147,7 +169,7 @@ const Sider = () => {
                   />
                 </Menu.Item>
                 <Menu.Item key="31" id="plaPlanoAnual" htmlFor="linkPlanoAnual">
-                  <span className="menuItem"> Plano anual</span>
+                  <span className="menuItem"> Plano Anual</span>
                   <Link
                     to="/planejamento/plano-anual"
                     className="nav-link text-white"
@@ -230,8 +252,13 @@ const Sider = () => {
                     />
                     <span>Gestão</span>
                   </div>
-                }>
-                <Menu.Item key="90" id="gesCalendarioEscolar" className="popup-gestao">
+                }
+              >
+                <Menu.Item
+                  key="90"
+                  id="gesCalendarioEscolar"
+                  className="popup-gestao"
+                >
                   <span className="menuItem">Calendário Escolar</span>
                 </Menu.Item>
                 <Menu.Item key="91" id="gesAtribuicaoCj">
@@ -245,7 +272,11 @@ const Sider = () => {
                 </Menu.Item>
                 <Menu.Item key="94" id="gesAtribuicaoSupervisor">
                   <span className="menuItem">Atribuição Supervisor</span>
-                  <Link to="/gestao/atribuicao-supervisor-lista" className="nav-link text-white" id="linkAtribuicaoSupervisor"/>
+                  <Link
+                    to="/gestao/atribuicao-supervisor-lista"
+                    className="nav-link text-white"
+                    id="linkAtribuicaoSupervisor"
+                  />
                 </Menu.Item>
               </SubMenu>
               <SubMenu
