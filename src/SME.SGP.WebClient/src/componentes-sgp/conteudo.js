@@ -72,7 +72,7 @@ const Conteudo = () => {
               ]}
             >
               {confirmacao.texto}
-              <br />
+              {confirmacao.texto ? <br /> : ''}
               <b>{confirmacao.textoNegrito}</b>
             </Modal>
           </ContainerModal>
