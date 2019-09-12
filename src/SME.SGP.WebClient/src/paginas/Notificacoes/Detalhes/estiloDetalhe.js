@@ -17,5 +17,58 @@ export const EstiloDetalhe = styled.div`
     justify-items: center;
     display: flex;
     padding: 10px;
+
+    .id-notificacao {
+      font-size: 20px;
+    }
+  }
+
+  .notificacao-horario {
+    font-size: 12px;
+    color: #a8a8a8;
+  }
+
+  div.titulo-coluna {
+    padding-top: 25px;
+    font-size: 14px;
+    font-weight: bold;
+    color: #42474a;
+
+    div.conteudo-coluna {
+      font-size: 14px;
+      color: #42474a;
+      font-weight: normal;
+    }
+  }
+
+  .mg-bottom {
+    margin-bottom: solid 1px #c0c0c0;
+  }
+
+  .mensagem {
+    font-size: 14px;
+    line-height: 1.57;
+    letter-spacing: normal;
+    color: #42474a;
+    margin-top: 39px;
+  }
+
+  .mt-hr {
+    margin-top: 34px;
+  }
+
+  div.obs {
+    margin-top: 40px;
+
+    label {
+      font-size: 14px;
+      font-weight: bold;
+      color: #42474a;
+    }
+    textarea {
+      font-size: 12px;
+      line-height: 1.6;
+      letter-spacing: normal;
+    }
   }
 `;
