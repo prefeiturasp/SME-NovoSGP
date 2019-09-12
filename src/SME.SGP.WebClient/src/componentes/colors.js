@@ -21,6 +21,7 @@ const Base = {
   Preto: '#000',
   Roxo: '#6933FF',
   RoxoClaro: '#B99FFF',
+  VermelhoNotificacao: '#B40C02',
 };
 
 const Active = {
