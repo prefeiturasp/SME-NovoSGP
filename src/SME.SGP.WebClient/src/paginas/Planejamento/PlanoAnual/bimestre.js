@@ -134,7 +134,7 @@ const BimestreComponent = props => {
   };
 
   const removerTodosObjetivoSelecionado = () => {
-    dispatch(removerSelecaoTodosObjetivos());
+    dispatch(removerSelecaoTodosObjetivos(indice));
   };
 
   const onBlurTextEditor = value => {
@@ -235,6 +235,7 @@ const BimestreComponent = props => {
           )}
           {LayoutEspecial ? null : (
             <div
+              className="row col-md-12"
               role="group"
               aria-label={`${bimestres[indice].objetivosAprendizagem &&
                 bimestres[indice].objetivosAprendizagem.length > 0 &&
