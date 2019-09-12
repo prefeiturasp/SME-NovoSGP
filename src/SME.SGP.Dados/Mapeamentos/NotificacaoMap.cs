@@ -7,10 +7,12 @@ namespace SME.SGP.Dados.Mapeamentos
         public NotificacaoMap()
         {
             ToTable("notificacao");
-            Map(c => c.UsuarioId).ToColumn("usuario_id");
-            Map(c => c.EscolaId).ToColumn("escola_id");
+            Map(c => c.Usuario).Ignore();
+            
+            Map(c => c.UeId).ToColumn("ue_id");
             Map(c => c.DreId).ToColumn("dre_id");
             Map(c => c.TurmaId).ToColumn("turma_id");
+            Map(c => c.UsuarioId).ToColumn("usuario_id");
             Map(c => c.PodeRemover).ToColumn("pode_remover");
         }
     }

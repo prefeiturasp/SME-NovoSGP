@@ -10,10 +10,12 @@ namespace SME.SGP.Aplicacao
     public class ConsultasNotificacao : IConsultasNotificacao
     {
         private readonly IRepositorioNotificacao repositorioNotificacao;
+        private readonly IRepositorioUsuario repositorioUsuario;
 
-        public ConsultasNotificacao(IRepositorioNotificacao repositorioNotificacao)
+        public ConsultasNotificacao(IRepositorioNotificacao repositorioNotificacao, IRepositorioUsuario repositorioUsuario)
         {
             this.repositorioNotificacao = repositorioNotificacao ?? throw new System.ArgumentNullException(nameof(repositorioNotificacao));
+            this.repositorioUsuario = repositorioUsuario ?? throw new System.ArgumentNullException(nameof(repositorioUsuario));
         }
 
         public IEnumerable<NotificacaoBasicaDto> Listar(NotificacaoFiltroDto filtroNotificacaoDto)
@@ -43,11 +45,14 @@ namespace SME.SGP.Aplicacao
             if (notificacao.Status != NotificacaoStatus.Lida && notificacao.MarcarComoLidaAoObterDetalhe())
                 repositorioNotificacao.Salvar(notificacao);
 
-            var detalheDto = MapearEntidadeParaDetalheDto(notificacao);
-            detalheDto.MostrarBotaoMarcarComoLido = notificacao.DeveMarcarComoLido;
-            detalheDto.MostrarBotoesDeAprovacao = notificacao.DeveAprovar;
+           var retorno =  MapearEntidadeParaDetalheDto(notificacao);
+           if (notificacao.UsuarioId.HasValue)
+            {
+                notificacao.Usuario = repositorioUsuario.ObterPorId(notificacao.UsuarioId.Value);
+                retorno.UsuarioRf = notificacao.Usuario.CodigoRf;
+            }                
 
-            return detalheDto;
+            return retorno;            
         }
 
         private static NotificacaoDetalheDto MapearEntidadeParaDetalheDto(Dominio.Notificacao retorno)
@@ -62,7 +67,10 @@ namespace SME.SGP.Aplicacao
                 Mensagem = retorno.Mensagem,
                 Situacao = retorno.Status.ToString(),
                 Tipo = retorno.Tipo.GetAttribute<DisplayAttribute>().Name,
-                Titulo = retorno.Titulo
+                Titulo = retorno.Titulo,
+                MostrarBotaoRemover = retorno.PodeRemover,
+                MostrarBotoesDeAprovacao = retorno.DeveAprovar,
+                MostrarBotaoMarcarComoLido = retorno.DeveMarcarComoLido
             };
         }
     }

@@ -53,7 +53,7 @@ namespace SME.SGP.Dominio.Servicos
                 Ano = aprovaNivel.Ano,
                 Categoria = NotificacaoCategoria.Workflow_Aprovacao,
                 DreId = aprovaNivel.DreId,
-                EscolaId = aprovaNivel.EscolaId,
+                UeId = aprovaNivel.UeId,
                 Mensagem = aprovaNivel.NotifacaoMensagem,
                 Tipo = aprovaNivel.NotificacaoTipo,
                 Titulo = aprovaNivel.NotifacaoTitulo,

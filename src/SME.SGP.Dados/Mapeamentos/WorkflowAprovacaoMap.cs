@@ -7,7 +7,7 @@ namespace SME.SGP.Dados.Mapeamentos
         public WorkflowAprovacaoMap()
         {
             ToTable("wf_aprovacao");
-            Map(c => c.EscolaId).ToColumn("escola_id");
+            Map(c => c.UeId).ToColumn("ue_id");
             Map(c => c.DreId).ToColumn("dre_id");
             Map(c => c.TurmaId).ToColumn("turma_id");
             Map(c => c.NotifacaoMensagem).ToColumn("notificacao_mensagem");
