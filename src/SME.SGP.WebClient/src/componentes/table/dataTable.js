@@ -19,7 +19,6 @@ const DataTable = props => {
     onChange: (ids) => {
       onSelectRow(ids);
     },
-    hideDefaultSelections: true
   };
 
   const selectRow = row => {
