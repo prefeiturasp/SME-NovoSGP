@@ -9,11 +9,17 @@ import { Colors } from '../componentes/colors';
 import BreadcrumbSgp from '../componentes-sgp/breadcrumb-sgp';
 import Alert from '~/componentes/alert';
 import Grid from '~/componentes/grid';
+import shortid from 'shortid';
 
 const ContainerModal = styled.div`
   .ant-modal-footer {
     border-top: 0px !important;
   }
+`;
+
+const ContainerBotoes = styled.div`
+  display: flex;
+  justify-content: flex-end;
 `;
 
 const Conteudo = () => {
@@ -47,20 +53,22 @@ const Conteudo = () => {
               onOk={() => fecharConfirmacao(true)}
               onCancel={() => fecharConfirmacao(false)}
               footer={[
-                <Button
-                  key="btn-sim"
-                  onClick={() => fecharConfirmacao(true)}
-                  label="Sim"
-                  color={Colors.Azul}
-                  border
-                  className="mr-3"
-                />,
-                <Button
-                  label="Não"
-                  type="primary"
-                  onClick={() => fecharConfirmacao(false)}
-                  color={Colors.Azul}
-                />,
+                <ContainerBotoes key={shortid.generate()}>
+                  <Button
+                    key={shortid.generate()}
+                    onClick={() => fecharConfirmacao(true)}
+                    label={confirmacao.textoOk}
+                    color={Colors.Azul}
+                    border
+                  />
+                  <Button
+                    key={shortid.generate()}
+                    onClick={() => fecharConfirmacao(false)}
+                    label={confirmacao.textoCancelar}
+                    type="primary"
+                    color={Colors.Azul}
+                  />
+                </ContainerBotoes>,
               ]}
             >
               {confirmacao.texto}

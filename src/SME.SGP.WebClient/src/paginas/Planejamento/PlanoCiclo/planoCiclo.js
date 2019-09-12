@@ -9,7 +9,7 @@ import { Colors } from '../../../componentes/colors';
 import ModalConfirmacao from '../../../componentes/modalConfirmacao';
 import SelectComponent from '../../../componentes/select';
 import TextEditor from '../../../componentes/textEditor';
-import { erro, sucesso } from '../../../servicos/alertas';
+import { erro, sucesso, confirmar } from '../../../servicos/alertas';
 import api from '../../../servicos/api';
 import history from '../../../servicos/history';
 import {
@@ -297,54 +297,6 @@ export default function PlanoCiclo() {
     });
   }
 
-  function onClickVoltar() {
-    if (modoEdicao) {
-      setExibirConfirmacaoVoltar(true);
-    } else {
-      history.push('/');
-    }
-  }
-
-  function onClickCancelar() {
-    setExibirConfirmacaoCancelar(true);
-  }
-
-  function confirmarCancelamento() {
-    resetListas();
-    setModoEdicao(false);
-    let ciclo = '';
-    if (eventoTrocarCiclo) {
-      ciclo = cicloParaTrocar;
-      setCicloSelecionado(ciclo);
-    }
-    const anoLetivo = String(usuario.turmaSelecionada[0].anoLetivo);
-    const codEscola = String(usuario.turmaSelecionada[0].codEscola);
-    obterCicloExistente(anoLetivo, codEscola, ciclo || cicloSelecionado);
-  }
-
-  function resetListas() {
-    listaMatriz.forEach(item => {
-      const target = document.getElementById(`matriz-${item.id}`);
-      const estaSelecionado =
-        target.getAttribute('opcao-selecionada') === 'true';
-      if (estaSelecionado) {
-        target.setAttribute('opcao-selecionada', 'false');
-      }
-    });
-    listaODS.forEach(item => {
-      const target = document.getElementById(`ods-${item.id}`);
-      const estaSelecionado =
-        target.getAttribute('opcao-selecionada') === 'true';
-      if (estaSelecionado) {
-        target.setAttribute('opcao-selecionada', 'false');
-      }
-    });
-    setListaMatrizSelecionda([]);
-    setListaODSSelecionado([]);
-    setDescricaoCiclo('');
-    setPronto(false);
-  }
-
   function salvarPlanoCiclo(navegarParaPlanejamento) {
     let idsMatrizesSaber = [];
     let idsObjetivosDesenvolvimento = [];
@@ -393,6 +345,63 @@ export default function PlanoCiclo() {
     );
   }
 
+  function onClickCancelar() {
+    setExibirConfirmacaoCancelar(true);
+  }
+
+  function resetListas() {
+    listaMatriz.forEach(item => {
+      const target = document.getElementById(`matriz-${item.id}`);
+      const estaSelecionado =
+        target.getAttribute('opcao-selecionada') === 'true';
+      if (estaSelecionado) {
+        target.setAttribute('opcao-selecionada', 'false');
+      }
+    });
+    listaODS.forEach(item => {
+      const target = document.getElementById(`ods-${item.id}`);
+      const estaSelecionado =
+        target.getAttribute('opcao-selecionada') === 'true';
+      if (estaSelecionado) {
+        target.setAttribute('opcao-selecionada', 'false');
+      }
+    });
+    setListaMatrizSelecionda([]);
+    setListaODSSelecionado([]);
+    setDescricaoCiclo('');
+    setPronto(false);
+  }
+  function confirmarCancelamento() {
+    resetListas();
+    setModoEdicao(false);
+    let ciclo = '';
+    if (eventoTrocarCiclo) {
+      ciclo = cicloParaTrocar;
+      setCicloSelecionado(ciclo);
+    }
+    const anoLetivo = String(usuario.turmaSelecionada[0].anoLetivo);
+    const codEscola = String(usuario.turmaSelecionada[0].codEscola);
+    obterCicloExistente(anoLetivo, codEscola, ciclo || cicloSelecionado);
+  }
+  const onClickVoltar = async () => {
+    if (modoEdicao) {
+      const confirmado = await confirmar(
+        'Atenção',
+        '',
+        'Suas alterações não foram salvas, deseja salvar agora?'
+      );
+      if (confirmado) {
+        salvarPlanoCiclo(true);
+        setExibirConfirmacaoVoltar(false);
+      } else {
+        setExibirConfirmacaoVoltar(false);
+        setModoEdicao(false);
+        history.push('/');
+      }
+    } else {
+      history.push('/');
+    }
+  };
   return (
     <>
       <div className="col-md-12">
