@@ -16,6 +16,11 @@ namespace SME.SGP.Dados.Mapeamentos
                config.AddMap(new MatrizSaberPlanoMap());
                config.AddMap(new AuditoriaMap());
                config.AddMap(new CicloMap());
+               config.AddMap(new PlanoAnualMap());
+               config.AddMap(new ObjetivoAprendizagemPlanoMap());
+               config.AddMap(new DisciplinaPlanoMap());
+               config.AddMap(new ComponenteCurricularMap());
+               config.AddMap(new SupervisorEscolaDreMap());
                config.AddMap(new NotificacaoMap());
                config.AddMap(new WorkflowAprovacaoMap());
                config.AddMap(new WorkflowAprovacaoNivelMap());
