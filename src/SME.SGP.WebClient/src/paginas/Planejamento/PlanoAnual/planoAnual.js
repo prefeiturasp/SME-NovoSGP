@@ -302,7 +302,6 @@ export default function PlanoAnual() {
 
     Promise.all(promissesBimestres)
       .then(resultados => {
-        console.log(resultados);
 
         const PlanoAnualEnviar = {
           Id: resultados[0].data.id,
@@ -377,9 +376,6 @@ export default function PlanoAnual() {
             </Grid>
           </Row>
         ) : null}
-        {notificacoes.alertas.map(alerta => (
-          <Alert alerta={alerta} key={alerta.id} />
-        ))}
       </div>
       <ModalMultiLinhas
         key="errosBimestre"
