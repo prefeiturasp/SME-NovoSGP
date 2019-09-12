@@ -263,3 +263,4 @@ __pycache__/
 # Variáveis de ambiente para docker-compose
 sme-api.env
 src/SME.SGP.WebClient/public/configuracoes/variaveis.json
+src/SME.SGP.WebClient/package-lock.json
