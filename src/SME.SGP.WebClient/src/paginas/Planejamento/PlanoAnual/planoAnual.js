@@ -106,6 +106,13 @@ export default function PlanoAnual() {
   const verificarSeEhEdicao = () => {
     if (!turmaSelecionada[0]) return;
 
+    Service.validarPlanoExistente({
+      AnoLetivo: anoLetivo,
+      Bimestre: 1,
+      EscolaId: escolaId,
+      TurmaId: turmaId,
+    });
+
     Service.obterBimestre({
       AnoLetivo: anoLetivo,
       Bimestre: 1,
@@ -302,7 +309,6 @@ export default function PlanoAnual() {
 
     Promise.all(promissesBimestres)
       .then(resultados => {
-
         const PlanoAnualEnviar = {
           Id: resultados[0].data.id,
           AnoLetivo: bimestres[1].anoLetivo,
