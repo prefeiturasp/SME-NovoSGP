@@ -23,7 +23,7 @@ const Sider = () => {
   const verificaSelecaoMenu = rotaAtiva => {
     const rota = NavegacaoStore.rotas.get(rotaAtiva);
     setOpenKeys([]);
-    if (rota && rota.limpaSelecaoMenu) {
+    if (rota.limpaSelecaoMenu) {
       setItemMenuSelecionado([]);
     }
   };
