@@ -99,7 +99,7 @@ export default createGlobalStyle`
   .m-r-0{
     margin-rigth: 0px !important;
   }
-  
+
   .m-l-0{
     margin-left: 0px !important;
   }
@@ -130,8 +130,8 @@ export default createGlobalStyle`
 
   .p-r-10{
     padding-right: 10px !important;
-  } 
-  
+  }
+
   .p-l-10{
     padding-left: 10px !important;
   }
@@ -201,8 +201,17 @@ export default createGlobalStyle`
     position: fixed !important;
   }
 
-  .supervisor-nao-atribuido {
-    color: #b40c02;
+  .coluna-vermelha {
+    color: #b40c02 !important;
+  }
+
+  .coluna-vermelha-negrito {
+    color: #b40c02 !important;
+    font-weight: bold !important;
+  }
+
+  .coluna-negrito {
+    font-weight: bold !important;
   }
 
   .ant-modal-footer {
