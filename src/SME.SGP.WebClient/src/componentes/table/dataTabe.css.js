@@ -2,9 +2,22 @@ import styled from 'styled-components';
 import { Base } from '../colors';
 
 export const Container = styled.div`
-  .ant-table-selection-column {
-    display: none !important;
+
+  .ocultar-coluna-multi-selecao {
+    .ant-table-selection-column {
+      display: none !important;
+    }
   }
+
+  .ant-checkbox-indeterminate .ant-checkbox-inner::after {
+    background-color: ${Base.Roxo} !important;
+  }
+
+  .ant-checkbox-checked .ant-checkbox-inner {
+    background-color: ${Base.Roxo};
+    border-color: #ffffff;
+  }
+
   .ant-table-thead tr th {
     text-align: center;
     border-right: solid 1px #dadada;
