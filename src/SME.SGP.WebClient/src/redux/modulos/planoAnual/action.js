@@ -207,9 +207,12 @@ export function setJaSincronizou() {
   };
 }
 
-export function removerSelecaoTodosObjetivos() {
+export function removerSelecaoTodosObjetivos(indice) {
   return {
     type: '@bimestres/removerSelecaoTodosObjetivos',
+    payload: {
+      indice,
+    },
   };
 }
 

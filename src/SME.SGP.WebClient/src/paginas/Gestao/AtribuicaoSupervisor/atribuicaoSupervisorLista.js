@@ -86,7 +86,6 @@ export default function AtribuicaoSupervisorLista() {
     },
   ];
   function onSelectRow(row) {
-    console.log(row);
     setSelectedRowKeys(row);
   }
 
