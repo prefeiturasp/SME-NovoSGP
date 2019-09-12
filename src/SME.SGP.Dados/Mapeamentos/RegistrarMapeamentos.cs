@@ -22,8 +22,10 @@ namespace SME.SGP.Dados.Mapeamentos
                config.AddMap(new ComponenteCurricularMap());
                config.AddMap(new SupervisorEscolaDreMap());
                config.AddMap(new NotificacaoMap());
-               config.AddMap(new WorkflowAprovaNiveisMap());
-               config.AddMap(new WorkflowAprovaNiveisNotificacaoMap());
+               config.AddMap(new WorkflowAprovacaoMap());
+               config.AddMap(new WorkflowAprovacaoNivelMap());
+               config.AddMap(new WorkflowAprovacaoNivelNotificacaoMap());
+               config.AddMap(new UsuarioMap());
                config.ForDommel();
            });
         }
