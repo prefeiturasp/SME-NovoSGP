@@ -14,13 +14,15 @@ namespace SME.SGP.Dados.Repositorios
         }
 
         public IEnumerable<Notificacao> ObterPorDreOuEscolaOuStatusOuTurmoOuUsuarioOuTipo(string dreId, string escolaId, int statusId,
-            string turmaId, string usuarioId, int tipoId, int categoriaId)
+            string turmaId, string usuarioRf, int tipoId, int categoriaId)
         {
             var query = new StringBuilder();
 
             
 
-            query.AppendLine("select * from notificacao n");
+            query.AppendLine("select n.* from notificacao n");
+            query.AppendLine("left join usuario u");
+            query.AppendLine("on n.usuario_id = u.id");
             query.AppendLine("where 1=1");
 
             if (!string.IsNullOrEmpty(dreId))
@@ -38,13 +40,13 @@ namespace SME.SGP.Dados.Repositorios
             if (tipoId > 0)
                 query.AppendLine("and n.tipo = @tipoId");
 
-            if (!string.IsNullOrEmpty(usuarioId))
-                query.AppendLine("and n.usuario_id = @usuarioId");
+            if (!string.IsNullOrEmpty(usuarioRf))
+                query.AppendLine("and u.rf_codigo = @usuarioRf");
 
             if (categoriaId > 0)
                 query.AppendLine("and n.categoria = @categoriaId");
 
-            return database.Conexao.Query<Notificacao>(query.ToString(), new { dreId, escolaId, turmaId, statusId, tipoId, usuarioId, categoriaId });
+            return database.Conexao.Query<Notificacao>(query.ToString(), new { dreId, escolaId, turmaId, statusId, tipoId, usuarioRf, categoriaId });
         }
     }
 }

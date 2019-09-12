@@ -2,7 +2,7 @@
 
 namespace SME.SGP.Dominio
 {
-    public enum WorkflowAprovaNiveisStatus
+    public enum WorkflowAprovacaoNivelStatus
     {
         [Display(Name = "Aguardando Aprovação")]
         AguardandoAprovacao = 1,
