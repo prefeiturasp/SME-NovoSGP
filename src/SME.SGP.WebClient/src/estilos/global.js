@@ -201,8 +201,17 @@ export default createGlobalStyle`
     position: fixed !important;
   }
 
-  .supervisor-nao-atribuido {
-    color: #b40c02;
+  .coluna-vermelha {
+    color: #b40c02 !important;
+  }
+
+  .coluna-vermelha-negrito {
+    color: #b40c02 !important;
+    font-weight: bold !important;
+  }
+
+  .coluna-negrito {
+    font-weight: bold !important;
   }
 
   .ant-modal-footer {

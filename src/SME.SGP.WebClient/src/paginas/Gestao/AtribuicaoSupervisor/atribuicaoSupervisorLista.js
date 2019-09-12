@@ -83,6 +83,9 @@ export default function AtribuicaoSupervisorLista() {
     {
       title: 'supervisor',
       dataIndex: 'supervisor',
+      render: text => {
+        return text ? text : <a className="coluna-vermelha">NÃO ATRIBUIDO</a>
+      },
     },
   ];
   function onSelectRow(row) {
@@ -95,9 +98,12 @@ export default function AtribuicaoSupervisorLista() {
 
   function onClickEditar() {
     const ueSelecionada = listaFiltroAtribuicao.find(
-      ue => ue.key == selectedRowKeys[0]
+      ue => ue.id == selectedRowKeys[0]
     );
-    history.push(`/gestao/atribuicao-supervisor/${dresSelecionadas}/${ueSelecionada.supervisorId || ''}`);
+    history.push(
+      `/gestao/atribuicao-supervisor/${dresSelecionadas}/${ueSelecionada.supervisorId ||
+        ''}`
+    );
   }
 
   function onClickNovaAtribuicao() {
@@ -195,14 +201,13 @@ export default function AtribuicaoSupervisorLista() {
     function montarLista(item, dadosAtribuicao) {
       const dreSelecionada = listaDres.find(d => d.id == dre);
       item.escolas.forEach(escola => {
-        let contId = dadosAtribuicao.length + 1;
+        const contId = dadosAtribuicao.length + 1;
         dadosAtribuicao.push({
-          key: contId,
+          id: contId,
           dre: dreSelecionada.sigla,
           escola: escola.nome,
-          supervisor: item.supervisorNome || 'NÃO ATRIBUÍDO',
-          supervisorId: item.supervisorId,
-          className: item.supervisorId ? '' : 'supervisor-nao-atribuido',
+          supervisor: item.supervisorId ? item.supervisorNome : '',
+          supervisorId: item.supervisorId
         });
       });
       return dadosAtribuicao;
@@ -221,7 +226,9 @@ export default function AtribuicaoSupervisorLista() {
 
   async function onChangeSupervisores(sup) {
     if (sup && sup.length) {
-      const vinculoSupervisores = await api.get(`/v1/supervisores/${sup.toString()}/dre/${dresSelecionadas}`);
+      const vinculoSupervisores = await api.get(
+        `/v1/supervisores/${sup.toString()}/dre/${dresSelecionadas}`
+      );
       montarListaAtribuicao(vinculoSupervisores.data, dresSelecionadas, true);
       setDesabilitarUe(true);
       setUeSelecionada([]);
