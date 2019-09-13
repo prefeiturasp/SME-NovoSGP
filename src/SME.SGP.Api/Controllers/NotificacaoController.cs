@@ -37,6 +37,16 @@ namespace SME.SGP.Api.Controllers
             return Ok(consultasNotificacao.Obter(notificacaoId));
         }
 
+        [HttpPut]
+        [ProducesResponseType(200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [Route("{notificacaoId}/marcar-como-lida")]
+        public IActionResult MarcarComoLida(long notificacaoId)
+        {
+            comandosNotificacao.MarcarComoLida(notificacaoId);
+            return Ok();
+        }
+
         [HttpPost]
         [ProducesResponseType(200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]

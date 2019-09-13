@@ -19,6 +19,7 @@
         public NotificacaoTipo Tipo { get; set; }
         public string Titulo { get; set; }
         public string TurmaId { get; set; }
+
         public string UsuarioId { get; set; }
 
         public bool DeveSerMarcadoComoLidaAoObterDetalhe()
@@ -29,6 +30,14 @@
                 return true;
             }
             else return false;
+        }
+
+        public void MarcarComoLida()
+        {
+            if (DeveMarcarComoLido && Status != NotificacaoStatus.Lida)
+                Status = NotificacaoStatus.Lida;
+            else
+                throw new NegocioException("Esse tipo de notificação não pode ser marcada como lida.");
         }
     }
 }
