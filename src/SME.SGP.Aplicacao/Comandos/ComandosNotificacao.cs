@@ -13,6 +13,17 @@ namespace SME.SGP.Aplicacao
             this.repositorioNotificacao = repositorioNotificacao ?? throw new System.ArgumentNullException(nameof(repositorioNotificacao));
         }
 
+        public void MarcarComoLida(long notificacaoId)
+        {
+            var notificacao = repositorioNotificacao.ObterPorId(notificacaoId);
+            if (notificacao == null)
+            {
+                throw new NegocioException($"Notificação com id: '{notificacaoId}' não encontrada");
+            }
+            notificacao.MarcarComoLida();
+            repositorioNotificacao.Salvar(notificacao);
+        }
+
         public void Salvar(NotificacaoDto notificacaoDto)
         {
             var noticacao = MapearParaDominio(notificacaoDto);

@@ -1,4 +1,5 @@
 ﻿using Newtonsoft.Json;
+using SME.SGP.Aplicacao;
 using SME.SGP.Dto;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -7,7 +8,6 @@ using System.Net.Http;
 using System.Text;
 using Xunit;
 using Xunit.Extensions.Ordering;
-using SME.SGP.Aplicacao;
 
 namespace SME.SGP.Integracao.Teste
 {
@@ -51,7 +51,6 @@ namespace SME.SGP.Integracao.Teste
                 var notificacoesDto2 = JsonConvert.DeserializeObject<IEnumerable<NotificacaoBasicaDto>>(getResult2.Content.ReadAsStringAsync().Result);
                 Assert.True(notificacoesDto2.Count() == 0);
 
-
                 var getResultDetalhe = _fixture._clientApi.GetAsync($"api/v1/notificacoes/{notificacoesDto.FirstOrDefault().Id}").Result;
 
                 Assert.True(getResultDetalhe.IsSuccessStatusCode);
@@ -60,9 +59,34 @@ namespace SME.SGP.Integracao.Teste
 
                 Assert.Equal(notificacaoDto.Tipo.GetAttribute<DisplayAttribute>().Name, notificacaoDetalheDto.Tipo);
                 Assert.Equal(notificacaoDto.Mensagem, notificacaoDetalheDto.Mensagem);
-                Assert.Equal(notificacaoDto.Titulo, notificacaoDetalheDto.Titulo);                
-
+                Assert.Equal(notificacaoDto.Titulo, notificacaoDetalheDto.Titulo);
             }
+        }
+
+        [Fact, Order(2)]
+        public void DevemarcarComoLida()
+        {
+            _fixture._clientApi.DefaultRequestHeaders.Clear();
+
+            var notificacaoDto = new NotificacaoDto();
+            notificacaoDto.Categoria = Dominio.NotificacaoCategoria.Alerta;
+            notificacaoDto.Mensagem = "Notificação de alerta";
+            notificacaoDto.PodeRemover = true;
+            notificacaoDto.Titulo = "Titulo de Teste";
+            notificacaoDto.UsuarioId = "1230";
+            notificacaoDto.Tipo = Dominio.NotificacaoTipo.Frequencia;
+
+            var jsonParaPost = new StringContent(TransformarEmJson(notificacaoDto), UnicodeEncoding.UTF8, "application/json");
+
+            var postResult = _fixture._clientApi.PostAsync("api/v1/notificacoes/", jsonParaPost).Result;
+
+            Assert.True(postResult.IsSuccessStatusCode);
+
+            var getResult = _fixture._clientApi.GetAsync($"api/v1/notificacoes?UsuarioId={notificacaoDto.UsuarioId}").Result;
+            var notificacoesDto = JsonConvert.DeserializeObject<IEnumerable<NotificacaoBasicaDto>>(getResult.Content.ReadAsStringAsync().Result);
+
+            var putResult = _fixture._clientApi.PutAsync($"api/v1/notificacoes/{notificacoesDto.FirstOrDefault(c => c.Titulo == "Titulo de Teste").Id}/marcar-como-lida", null).Result;
+            Assert.True(putResult.IsSuccessStatusCode);
         }
 
         private string TransformarEmJson(object model)
