@@ -66,9 +66,18 @@ const erroMensagem = (titulo, texto) => {
   });
 };
 
-const confirmar = (titulo, texto, textoNegrito) => {
+const confirmar = (titulo, texto, textoNegrito, textoOk, textoCancelar) => {
   return new Promise((resolve, reject) => {
-    store.dispatch(alertaConfirmar(titulo, texto, textoNegrito, resolve));
+    store.dispatch(
+      alertaConfirmar(
+        titulo,
+        texto,
+        textoNegrito,
+        resolve,
+        textoOk,
+        textoCancelar
+      )
+    );
   });
 };
 

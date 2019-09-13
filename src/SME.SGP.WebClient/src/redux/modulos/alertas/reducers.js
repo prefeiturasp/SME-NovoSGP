@@ -7,6 +7,8 @@ const inicial = {
     texto: '',
     titulo: '',
     resolve: null,
+    textoOk: 'Sim',
+    textoCancelar: 'Não',
   },
 };
 
@@ -29,8 +31,10 @@ export default function alertas(state = inicial, action) {
           visivel: true,
           texto: action.payload.texto,
           textoNegrito: action.payload.textoNegrito,
-          titulo: action.payload.titulo,
+          titulo: action.payload.titulo || 'Atenção',
           resolve: action.payload.resolve,
+          textoOk: action.payload.textoOk || 'Sim',
+          textoCancelar: action.payload.textoCancelar || 'Não',
         };
         break;
       }
