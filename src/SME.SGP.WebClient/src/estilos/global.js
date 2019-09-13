@@ -88,6 +88,34 @@ export default createGlobalStyle`
     margin-right: 10px !important;
   }
 
+  .p-r-20{
+    padding-right: 20px !important;
+  }
+
+  .p-r-11{
+    padding-right: 11px !important;
+  }
+  
+  .p-l-20{
+    padding-left: 20px !important;
+  }
+
+  .p-b-20{
+    padding-bottom: 20px !important;
+  }
+
+  .p-t-24{
+    padding-top: 24px !important;
+  }
+
+  .p-r-8{
+    padding-right: 8px !important;
+  }
+
+  .p-l-8{
+    padding-left: 8px !important;
+  }
+
   .m-t-10{
     margin-top: 10px !important;
   }
@@ -134,6 +162,22 @@ export default createGlobalStyle`
   
   .p-l-10{
     padding-left: 10px !important;
+  }
+
+  .m-b-20{
+    margin-bottom: 20px !important;
+  }
+
+  .border-vermelhoAlerta{
+    border-color: ${Base.VermelhoAlerta} !important;
+  }
+
+  .border-2{
+    border-width: 2px !important;
+  }
+
+  .border-radius-4{
+    border-radius: 4px !important;
   }
 
 /*MENU*/
