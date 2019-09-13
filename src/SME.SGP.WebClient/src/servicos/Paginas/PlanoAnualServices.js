@@ -65,6 +65,15 @@ const Service = {
       });
   },
 
+  validarPlanoExistente: FiltroPlanoAnual => {
+    const requisicao = API.post(
+      Service._getBaseUrlValidarPlanoAnualExistente,
+      FiltroPlanoAnual
+    );
+
+    return requisicao;
+  },
+
   _getBaseUrlDisciplinasProfessor: (RF, CodigoTurma) => {
     return `v1/professores/${RF}/turmas/${CodigoTurma}/disciplinas/`;
   },
@@ -79,6 +88,10 @@ const Service = {
 
   _getUrlMigrarPlanoAnual: () => {
     return 'v1/planos/anual/migrar';
+  },
+
+  _getBaseUrlValidarPlanoAnualExistente: () => {
+    return 'v1/planos/anual/validar-existente';
   },
 
   _getObjetoPostPlanoAnual: Bimestres => {
