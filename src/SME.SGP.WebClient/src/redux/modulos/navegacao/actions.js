@@ -12,7 +12,7 @@ export function activeRoute(route) {
   };
 }
 
-export function getRotas(routas) {
+export function setRotas(routas) {
   return {
     type: '@navegacao/rotas',
     payload: routas,

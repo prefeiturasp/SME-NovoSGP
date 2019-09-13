@@ -4,8 +4,6 @@ import { Link } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import { Base } from '../componentes/colors';
 import styled from 'styled-components';
-import { store } from '../redux';
-import { activeRoute } from '../redux/modulos/navegacao/actions';
 
 const BreadcrumbSgp = () => {
   const BreadcrumbBody = styled.div`
@@ -20,10 +18,6 @@ const BreadcrumbSgp = () => {
     }
   `;
 
-  const rotaAtual = localStorage.getItem('rota-atual');
-
-  if (rotaAtual) store.dispatch(activeRoute(rotaAtual));
-
   const NavegacaoStore = useSelector(store => store.navegacao);
 
   const rotas = NavegacaoStore.rotas;
@@ -31,20 +25,21 @@ const BreadcrumbSgp = () => {
   const [itens, setItens] = useState([]);
 
   useEffect(() => {
-    carregaBreadcrumbs(NavegacaoStore.activeRoute);
+    carregaBreadcrumbs();
   }, [NavegacaoStore.activeRoute]);
 
   window.onbeforeunload = () => {
     localStorage.setItem('rota-atual', window.location.pathname);
   };
 
-  const carregaBreadcrumbs = route => {
-    const item = rotas.get(route);
+  const carregaBreadcrumbs = () => {
+    const rotaAtual = window.location.pathname;
+    const item = rotas.get(rotaAtual);
     if (item) {
       const newItens = [];
       carregaBreadcrumbsExtra(item, newItens);
       newItens.push(
-        criarItemBreadcrumb(item.breadcrumbName, route, true, true)
+        criarItemBreadcrumb(item.breadcrumbName, rotaAtual, true, true)
       );
       setItens(newItens);
     } else setItens([]);
