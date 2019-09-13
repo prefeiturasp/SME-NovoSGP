@@ -3,7 +3,7 @@
     id bigint NOT NULL generated always as identity,
     usuario_id varchar(15) NOT NULL,
     status int NOT NULL,
-    descricao varchar(100) NULL,    
+    cargo int NULL,
 	nivel int NOT NULL,
 	wf_aprovacao_id bigint not null,
     criado_em timestamp without time zone NOT NULL,
