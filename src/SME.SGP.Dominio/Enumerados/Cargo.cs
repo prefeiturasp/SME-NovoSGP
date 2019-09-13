@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Text;
+﻿using System.ComponentModel.DataAnnotations;
 
 namespace SME.SGP.Dominio
 {
@@ -9,12 +6,14 @@ namespace SME.SGP.Dominio
     {
         [Display(Name = "Coordenador Pedagógico")]
         CP = 3379,
+
         [Display(Name = "Assistente Diretor")]
         AD = 3085,
+
         [Display(Name = "Diretor de Escola")]
         Diretor = 3360,
+
         [Display(Name = "Supervisor Escolar")]
         Supervisor = 3352
-
     }
 }

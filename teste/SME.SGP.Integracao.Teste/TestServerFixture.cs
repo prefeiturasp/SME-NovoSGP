@@ -17,7 +17,7 @@ namespace SME.SGP.Integracao.Teste
     {
         private readonly TestServer _testServerCliente;
         private readonly PostgresRunner runner;
-        private Regex rxNonDigits = new Regex(@"[^\d]+");
+
         public TestServerFixture()
         {
             try
@@ -65,6 +65,16 @@ namespace SME.SGP.Integracao.Teste
             return Path.GetFullPath(Path.Combine(testProjectPath, relativePathToHostProject));
         }
 
+        private string CleanStringOfNonDigits_V1(string s)
+        {
+            Regex rxNonDigits = new Regex(@"[^\d]+");
+
+            if (string.IsNullOrEmpty(s))
+                return s;
+
+            return rxNonDigits.Replace(s, "");
+        }
+
         private string GetContentRootPath(string projectName)
         {
             var testProjectPath = PlatformServices.Default.Application.ApplicationBasePath;
@@ -75,8 +85,6 @@ namespace SME.SGP.Integracao.Teste
 
         private void MontaBaseDados(PostgresRunner runner)
         {
-
-
             var scripts = ObterScripts();
             using (var conn = new NpgsqlConnection(runner.GetConnectionString()))
             {
@@ -96,12 +104,6 @@ namespace SME.SGP.Integracao.Teste
                     }
                 }
             }
-        }
-        private string CleanStringOfNonDigits_V1(string s)
-        {
-            if (string.IsNullOrEmpty(s)) return s;
-            string cleaned = rxNonDigits.Replace(s, "");
-            return cleaned;
         }
     }
 }

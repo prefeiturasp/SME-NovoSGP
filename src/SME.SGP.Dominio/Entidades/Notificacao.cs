@@ -9,6 +9,7 @@
         }
 
         public int Ano { get; set; }
+        public int AnoLetivo { get; set; }
         public NotificacaoCategoria Categoria { get; set; }
         public long Codigo { get; set; }
         public string CodigoFormatado { get { return Codigo.ToString().PadLeft(9, '0'); } }
