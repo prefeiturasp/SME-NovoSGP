@@ -13,8 +13,8 @@ import { activeRoute } from './redux/modulos/navegacao/actions';
 function App() {
 
   history.listen((location) => {
-    store.dispatch(activeRoute(location.pathname));
     localStorage.setItem('rota-atual', location.pathname);
+    store.dispatch(activeRoute(location.pathname));
   });
 
   return (

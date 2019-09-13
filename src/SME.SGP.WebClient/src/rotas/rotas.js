@@ -1,7 +1,6 @@
 import React from 'react';
 import { Switch, Route } from 'react-router-dom';
-import history from '../servicos/history';
-import { activeRoute, getRotas } from '../redux/modulos/navegacao/actions'
+import { setRotas } from '../redux/modulos/navegacao/actions'
 import { store } from '../redux';
 import Principal from '../paginas/Principal/principal';
 import PlanoCiclo from '../paginas/Planejamento/PlanoCiclo/planoCiclo';
@@ -42,7 +41,7 @@ export default function Rotas(props) {
     exact: true,
   });
   rotas.set('/gestao/atribuicao-supervisor', {
-    breadcrumbName: 'Nova Atribuicao',
+    breadcrumbName: 'Nova Atribuição',
     parent: '/gestao/atribuicao-supervisor-lista',
     component: AtribuicaoSupervisorCadastro,
     exact: true,
@@ -64,9 +63,10 @@ export default function Rotas(props) {
       params: value.params,
       breadcrumbName: value.breadcrumbName,
       menu: value.menu,
-      parent: value.parent
+      parent: value.parent,
+      limpaSelecaoMenu: value.limpaSelecaoMenu
     }
-    store.dispatch(getRotas(rotaRedux));
+    store.dispatch(setRotas(rotaRedux));
   }
 
 
