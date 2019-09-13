@@ -56,6 +56,33 @@ namespace SME.SGP.Aplicacao
             return retorno;
         }
 
+        public IEnumerable<EnumeradoRetornoDto> ObterCategorias()
+        {
+            return NotificacaoCategoria.GetValues(typeof(NotificacaoCategoria)).Cast<NotificacaoCategoria>().Select(v => new EnumeradoRetornoDto
+            {
+                Descricao = v.GetAttribute<DisplayAttribute>().Name,
+                Id = (int)v
+            }).ToList();
+        }
+
+        public IEnumerable<EnumeradoRetornoDto> ObterStatus()
+        {
+            return NotificacaoCategoria.GetValues(typeof(NotificacaoStatus)).Cast<NotificacaoStatus>().Select(v => new EnumeradoRetornoDto
+            {
+                Descricao = v.GetAttribute<DisplayAttribute>().Name,
+                Id = (int)v
+            }).ToList();
+        }
+
+        public IEnumerable<EnumeradoRetornoDto> ObterTipos()
+        {
+            return NotificacaoCategoria.GetValues(typeof(NotificacaoTipo)).Cast<NotificacaoTipo>().Select(v => new EnumeradoRetornoDto
+            {
+                Descricao = v.GetAttribute<DisplayAttribute>().Name,
+                Id = (int)v
+            }).ToList();
+        }
+
         private static NotificacaoDetalheDto MapearEntidadeParaDetalheDto(Dominio.Notificacao retorno)
         {
             return new NotificacaoDetalheDto()
