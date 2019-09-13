@@ -18,6 +18,7 @@ const Base = {
   CinzaBotao: '#A4A4A4',
   CinzaFundo: '#F5F6F8',
   CinzaMako: '#42474A',
+  VermelhoAlerta: '#b40c02',
   Preto: '#000',
   Roxo: '#6933FF',
   RoxoClaro: '#B99FFF',
