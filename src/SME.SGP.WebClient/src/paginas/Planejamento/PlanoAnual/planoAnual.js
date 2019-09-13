@@ -104,9 +104,10 @@ export default function PlanoAnual() {
   document.onkeyup = onF5Click;
 
   const VerificarEnvio = () => {
-    const paraEnviar = bimestres.map(x => x.paraEnviar).filter(x => x);
+    const BimestresParaEnviar = bimestres.filter(x => x.paraEnviar);
 
-    if (paraEnviar && paraEnviar.length > 0) dispatch(Post(bimestres));
+    if (BimestresParaEnviar && BimestresParaEnviar.length > 0)
+      dispatch(Post(BimestresParaEnviar));
   };
 
   const verificarSeEhEdicao = () => {
