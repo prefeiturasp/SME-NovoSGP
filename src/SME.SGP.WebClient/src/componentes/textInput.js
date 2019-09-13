@@ -1,8 +1,8 @@
 import React from 'react';
 import { Input } from '@rocketseat/unform';
+import styled from 'styled-components';
 import { Base } from './colors';
 
-import styled from 'styled-components';
 const CampoTexto = styled.div`
   span {
     color: ${Base.Vermelho};
