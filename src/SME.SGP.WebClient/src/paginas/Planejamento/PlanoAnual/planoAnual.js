@@ -302,7 +302,6 @@ export default function PlanoAnual() {
 
     Promise.all(promissesBimestres)
       .then(resultados => {
-
         const PlanoAnualEnviar = {
           Id: resultados[0].data.id,
           AnoLetivo: bimestres[1].anoLetivo,
