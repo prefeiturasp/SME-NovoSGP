@@ -3,6 +3,7 @@ using SME.SGP.Dados.Contexto;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 
 namespace SME.SGP.Dados.Repositorios
@@ -13,12 +14,10 @@ namespace SME.SGP.Dados.Repositorios
         {
         }
 
-        public IEnumerable<Notificacao> ObterPorDreOuEscolaOuStatusOuTurmoOuUsuarioOuTipo(string dreId, string escolaId, int statusId,
-            string turmaId, string usuarioRf, int tipoId, int categoriaId)
+        public IEnumerable<Notificacao> ObterPorDreOuEscolaOuStatusOuTurmoOuUsuarioOuTipoOuCategoriaOuTitulo(string dreId, string escolaId, int statusId,
+            string turmaId, string usuarioRf, int tipoId, int categoriaId, string titulo)
         {
             var query = new StringBuilder();
-
-            
 
             query.AppendLine("select n.* from notificacao n");
             query.AppendLine("left join usuario u");
@@ -46,7 +45,27 @@ namespace SME.SGP.Dados.Repositorios
             if (categoriaId > 0)
                 query.AppendLine("and n.categoria = @categoriaId");
 
-            return database.Conexao.Query<Notificacao>(query.ToString(), new { dreId, escolaId, turmaId, statusId, tipoId, usuarioRf, categoriaId });
+            if (!string.IsNullOrEmpty(titulo))
+            {
+                titulo = $"%{titulo}%";
+                query.AppendLine("and lower(f_unaccent(n.titulo)) LIKE @titulo ");
+            }
+
+            return database.Conexao.Query<Notificacao>(query.ToString(), new { dreId, escolaId, turmaId, statusId, tipoId, usuarioRf, categoriaId, titulo });
+        }
+
+        public long ObterUltimoCodigoPorAno(int ano)
+        {
+            var query = new StringBuilder();
+
+            query.AppendLine("SELECT n.codigo");
+            query.AppendLine("FROM notificacao n");
+            query.AppendLine("where EXTRACT(year FROM n.criado_em) = @ano");
+            query.AppendLine("order by codigo desc");
+            query.AppendLine("limit 1");
+
+            return database.Conexao.Query<int>(query.ToString(), new { ano })
+                .FirstOrDefault();
         }
     }
 }

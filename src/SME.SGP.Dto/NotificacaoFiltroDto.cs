@@ -11,5 +11,8 @@ namespace SME.SGP.Dto
         public string TurmaId { get; set; }
         public string UsuarioId { get; set; }
         public NotificacaoCategoria Categoria { get; set; }
+        public string Titulo { get; set; }
+        public long Codigo { get; set; }
+        public int Ano { get; set; }
     }
 }
