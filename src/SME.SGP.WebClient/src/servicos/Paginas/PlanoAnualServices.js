@@ -71,9 +71,7 @@ const Service = {
       FiltroPlanoAnual
     );
 
-    return requisicao
-      .then(res => console.log(res))
-      .catch(res => console.log(res));
+    return requisicao;
   },
 
   _getBaseUrlDisciplinasProfessor: (RF, CodigoTurma) => {
