@@ -1,11 +1,9 @@
 ﻿using SME.SGP.Dominio.Interfaces;
 using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace SME.SGP.Dominio.Servicos
 {
-    public class ServicoNotificacao
+    public class ServicoNotificacao : IServicoNotificacao
     {
         private readonly IRepositorioNotificacao repositorioNotificacao;
 
@@ -14,16 +12,9 @@ namespace SME.SGP.Dominio.Servicos
             this.repositorioNotificacao = repositorioNotificacao ?? throw new ArgumentNullException(nameof(repositorioNotificacao));
         }
 
-        public long GeraNovoCodigo()
+        public void GeraNovoCodigo(Notificacao notificacao)
         {
-            var anoAtual = System.DateTime.Now.Year;
-            long codigo = 0;
-
-            //repositorioNotificacao.
-
-
-
-            return codigo;
+            notificacao.Codigo = repositorioNotificacao.ObterUltimoCodigoPorAno(DateTime.Now.Year) + 1;
         }
     }
 }

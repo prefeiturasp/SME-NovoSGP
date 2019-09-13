@@ -8,17 +8,20 @@ namespace SME.SGP.Aplicacao
     {
         private readonly IRepositorioNotificacao repositorioNotificacao;
         private readonly IRepositorioUsuario repositorioUsuario;
+        private readonly IServicoNotificacao servicoNotificacao;
 
-        public ComandosNotificacao(IRepositorioNotificacao repositorioNotificacao, IRepositorioUsuario repositorioUsuario)
+        public ComandosNotificacao(IRepositorioNotificacao repositorioNotificacao, IRepositorioUsuario repositorioUsuario, IServicoNotificacao servicoNotificacao)
         {
             this.repositorioNotificacao = repositorioNotificacao ?? throw new System.ArgumentNullException(nameof(repositorioNotificacao));
             this.repositorioUsuario = repositorioUsuario ?? throw new System.ArgumentNullException(nameof(repositorioUsuario));
+            this.servicoNotificacao = servicoNotificacao ?? throw new System.ArgumentNullException(nameof(servicoNotificacao));
         }
 
         public void Salvar(NotificacaoDto notificacaoDto)
         {
-            var noticacao = MapearParaDominio(notificacaoDto);
-            repositorioNotificacao.Salvar(noticacao);
+            var notificacao = MapearParaDominio(notificacaoDto);
+            servicoNotificacao.GeraNovoCodigo(notificacao);
+            repositorioNotificacao.Salvar(notificacao);
         }
 
         private Notificacao MapearParaDominio(NotificacaoDto notificacaoDto)
@@ -49,11 +52,11 @@ namespace SME.SGP.Aplicacao
                 {
                     usuario = new Usuario() { CodigoRf = usuarioRf };
                     repositorioUsuario.Salvar(usuario);
-                }                    
+                }
 
                 notificacao.Usuario = usuario;
                 notificacao.UsuarioId = usuario.Id;
-            }            
+            }
         }
     }
 }

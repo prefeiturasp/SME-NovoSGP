@@ -6,5 +6,7 @@ namespace SME.SGP.Dominio.Interfaces
     {
         IEnumerable<Notificacao> ObterPorDreOuEscolaOuStatusOuTurmoOuUsuarioOuTipoOuCategoriaOuTitulo(string dreId, string escolaId, int statusId, string turmaId,
             string usuarioId, int tipoId, int categoriaId, string titulo);
+
+        long ObterUltimoCodigoPorAno(int ano);
     }
 }

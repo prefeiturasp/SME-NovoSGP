@@ -31,7 +31,8 @@ namespace SME.SGP.Aplicacao
                        Titulo = r.Titulo,
                        Data = r.CriadoEm.ToString(),
                        Status = r.Status.ToString(),
-                       Tipo = r.Tipo.GetAttribute<DisplayAttribute>().Name
+                       Tipo = r.Tipo.GetAttribute<DisplayAttribute>().Name,
+                       Codigo = r.CodigoFormatado
                    };
         }
 
@@ -45,14 +46,14 @@ namespace SME.SGP.Aplicacao
             if (notificacao.Status != NotificacaoStatus.Lida && notificacao.MarcarComoLidaAoObterDetalhe())
                 repositorioNotificacao.Salvar(notificacao);
 
-           var retorno =  MapearEntidadeParaDetalheDto(notificacao);
-           if (notificacao.UsuarioId.HasValue)
+            var retorno = MapearEntidadeParaDetalheDto(notificacao);
+            if (notificacao.UsuarioId.HasValue)
             {
                 notificacao.Usuario = repositorioUsuario.ObterPorId(notificacao.UsuarioId.Value);
                 retorno.UsuarioRf = notificacao.Usuario.CodigoRf;
-            }                
+            }
 
-            return retorno;            
+            return retorno;
         }
 
         private static NotificacaoDetalheDto MapearEntidadeParaDetalheDto(Dominio.Notificacao retorno)

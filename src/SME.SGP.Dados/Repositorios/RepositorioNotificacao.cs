@@ -50,23 +50,21 @@ namespace SME.SGP.Dados.Repositorios
                 titulo = $"%{titulo}%";
                 query.AppendLine("and lower(f_unaccent(n.titulo)) LIKE @titulo ");
             }
-                
 
             return database.Conexao.Query<Notificacao>(query.ToString(), new { dreId, escolaId, turmaId, statusId, tipoId, usuarioRf, categoriaId, titulo });
         }
 
-
         public long ObterUltimoCodigoPorAno(int ano)
         {
+            var query = new StringBuilder();
 
-//            SELECT n.codigo
-//FROM notificacao n
-//where EXTRACT(year FROM "criado_em") = 2019
-//order by codigo desc
-//limit 1
+            query.AppendLine("SELECT n.codigo");
+            query.AppendLine("FROM notificacao n");
+            query.AppendLine("where EXTRACT(year FROM n.criado_em) = @ano");
+            query.AppendLine("order by codigo desc");
+            query.AppendLine("limit 1");
 
-
-            return database.Conexao.Query<int>("select codigo from notificacao order by ", new { ano })
+            return database.Conexao.Query<int>(query.ToString(), new { ano })
                 .FirstOrDefault();
         }
     }
