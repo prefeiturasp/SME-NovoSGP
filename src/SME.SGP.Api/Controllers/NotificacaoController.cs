@@ -37,14 +37,31 @@ namespace SME.SGP.Api.Controllers
             return Ok(consultasNotificacao.Obter(notificacaoId));
         }
 
-        [HttpPut]
-        [ProducesResponseType(200)]
+        [HttpGet]
+        [ProducesResponseType(typeof(IEnumerable<EnumeradoRetornoDto>), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        [Route("{notificacaoId}/marcar-como-lida")]
-        public IActionResult MarcarComoLida(long notificacaoId)
+        [Route("categorias")]
+        public IActionResult ObtemCategorias()
         {
-            comandosNotificacao.MarcarComoLida(notificacaoId);
-            return Ok();
+            return Ok(consultasNotificacao.ObterCategorias());
+        }
+
+        [HttpGet]
+        [ProducesResponseType(typeof(IEnumerable<EnumeradoRetornoDto>), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [Route("status")]
+        public IActionResult ObtemStatus()
+        {
+            return Ok(consultasNotificacao.ObterStatus());
+        }
+
+        [HttpGet]
+        [ProducesResponseType(typeof(IEnumerable<EnumeradoRetornoDto>), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [Route("tipos")]
+        public IActionResult ObtemTipos()
+        {
+            return Ok(consultasNotificacao.ObterTipos());
         }
 
         [HttpPost]
@@ -53,6 +70,16 @@ namespace SME.SGP.Api.Controllers
         public IActionResult Post([FromBody]NotificacaoDto notificacaoDto)
         {
             comandosNotificacao.Salvar(notificacaoDto);
+            return Ok();
+        }
+
+        [HttpPut]
+        [ProducesResponseType(200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [Route("{notificacaoId}/marcar-como-lida")]
+        public IActionResult MarcarComoLida(long notificacaoId)
+        {
+            comandosNotificacao.MarcarComoLida(notificacaoId);
             return Ok();
         }
     }
