@@ -153,16 +153,20 @@ const SelectList = props => {
     selecionados,
   } = props;
 
+  const locale = {
+    notFoundContent: '',
+  };
+
   return (
     <div className="col-sm-12 col-md-12 col-lg-12 col-xl-12">
       <Container>
         <Transfer
           titles={titulos}
           showSelectAll={false}
-          notFoundContent=""
           dataSource={dados}
           targetKeys={targetKeys}
           onChange={handleChange}
+          locale={locale}
           render={item => `${item[codigo]} ${item[texto]}`}
         />
       </Container>

@@ -66,14 +66,14 @@ const Button = props => {
     <Btn
       hidden={hidden}
       type={type}
-      className={`btn btn-${style} ${className} position-relative ${
-        padding ? '' : 'py-2 px-3'
-      } ${fontSize ? '' : 'fonte-14'}`}
+      className={`btn btn-${style} ${className} ${padding ? '' : 'py-2 px-3'} ${
+        fontSize ? '' : 'fonte-14'
+      }`}
       onClick={onClick}
       disabled={disabled}
       id={id}
     >
-      {icon ? <Icon className={`fa fa-${icon} mr-2`} /> : null}
+      {icon ? <Icon className={`fa fa-${icon} mr-2 py-1`} /> : null}
       {label}
       {remove ? (
         <Remove
