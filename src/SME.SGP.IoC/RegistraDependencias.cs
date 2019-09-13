@@ -74,6 +74,7 @@ namespace SME.SGP.IoC
         private static void RegistrarServicos(IServiceCollection services)
         {
             services.TryAddScoped<IServicoWorkflowAprovaNivel, ServicoWorkflowAprovaNivel>();
+            services.TryAddScoped<IServicoNotificacao, ServicoNotificacao>();
         }
     }
 }

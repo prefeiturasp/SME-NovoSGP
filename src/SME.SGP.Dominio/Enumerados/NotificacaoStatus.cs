@@ -1,10 +1,19 @@
-﻿namespace SME.SGP.Dominio
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace SME.SGP.Dominio
 {
     public enum NotificacaoStatus
     {
+        [Display(Name = "Não lida")]
         Pendente = 1,
+
+        [Display(Name = "Lida")]
         Lida = 2,
-        Aceita = 4,
-        Recusada = 5
+
+        [Display(Name = "Aprovada")]
+        Aceita = 3,
+
+        [Display(Name = "Recusada")]
+        Recusada = 4
     }
 }

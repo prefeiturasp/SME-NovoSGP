@@ -8,5 +8,11 @@ namespace SME.SGP.Aplicacao
         IEnumerable<NotificacaoBasicaDto> Listar(NotificacaoFiltroDto filtroNotificacaoDto);
 
         NotificacaoDetalheDto Obter(long notificacaoId);
+
+        IEnumerable<EnumeradoRetornoDto> ObterCategorias();
+
+        IEnumerable<EnumeradoRetornoDto> ObterStatus();
+
+        IEnumerable<EnumeradoRetornoDto> ObterTipos();
     }
 }

@@ -75,7 +75,7 @@ namespace SME.SGP.Integracao.Teste
 
         private void MontaBaseDados(PostgresRunner runner)
         {
-            
+
 
             var scripts = ObterScripts();
             using (var conn = new NpgsqlConnection(runner.GetConnectionString()))
@@ -84,14 +84,7 @@ namespace SME.SGP.Integracao.Teste
 
                 DirectoryInfo d = new DirectoryInfo(scripts);
 
-                var files = d.GetFiles("*.sql").OrderBy( a => int.Parse(CleanStringOfNonDigits_V1(a.Name)));
-
-                //var files1 = d.GetFiles("*.sql")
-                //    .Select(a => CleanStringOfNonDigits_V1(a.Name));
-
-                //var file1 = d.GetFiles("*.sql").FirstOrDefault();
-                //var file12 = file1.Name.Remove(0, 1).Remove(file1.Name.IndexOf("__") - 1, file1.Name.Length - 3);
-
+                var files = d.GetFiles("*.sql").OrderBy(a => int.Parse(CleanStringOfNonDigits_V1(a.Name)));
 
                 foreach (var file in files)
                 {
@@ -110,10 +103,5 @@ namespace SME.SGP.Integracao.Teste
             string cleaned = rxNonDigits.Replace(s, "");
             return cleaned;
         }
-        //public void Dispose()
-        //{
-        //    _clientApi.Dispose();
-        //    _testServerCliente.Dispose();
-        //}
-        }
+    }
 }
