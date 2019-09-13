@@ -13,7 +13,6 @@ namespace SME.SGP.Dados.Mapeamentos
             Map(c => c.DreId).ToColumn("dre_id");
             Map(c => c.TurmaId).ToColumn("turma_id");
             Map(c => c.UsuarioId).ToColumn("usuario_id");
-            Map(c => c.AnoLetivo).ToColumn("ano_letivo");
         }
     }
 }
