@@ -99,11 +99,6 @@ export default function PlanoAnual() {
     }
   };
 
-  useEffect(() => {
-    console.log(emEdicao);
-    console.log(bimestres);
-  }, [emEdicao]);
-
   document.onkeydown = onF5Click;
   document.onkeypress = onF5Click;
   document.onkeyup = onF5Click;
