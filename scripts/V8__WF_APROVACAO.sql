@@ -8,6 +8,7 @@
 	notificacao_mensagem varchar(500) NOT NULL,
 	notificacao_titulo varchar(500) NOT NULL,
 	notificacao_tipo int NOT NULL,
+	notificacao_categoria int NOT NULL,
 	criado_em timestamp without time zone NOT NULL,
     criado_por character varying(200) COLLATE pg_catalog."default" NOT NULL,
     alterado_em timestamp without time zone,
