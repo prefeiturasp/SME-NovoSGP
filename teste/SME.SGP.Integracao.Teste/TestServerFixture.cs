@@ -7,7 +7,9 @@ using Postgres2Go;
 using SME.SGP.Api;
 using System;
 using System.IO;
+using System.Linq;
 using System.Net.Http;
+using System.Text.RegularExpressions;
 
 namespace SME.SGP.Integracao.Teste
 {
@@ -15,7 +17,7 @@ namespace SME.SGP.Integracao.Teste
     {
         private readonly TestServer _testServerCliente;
         private readonly PostgresRunner runner;
-
+        private Regex rxNonDigits = new Regex(@"[^\d]+");
         public TestServerFixture()
         {
             try
@@ -73,13 +75,18 @@ namespace SME.SGP.Integracao.Teste
 
         private void MontaBaseDados(PostgresRunner runner)
         {
+
+
             var scripts = ObterScripts();
             using (var conn = new NpgsqlConnection(runner.GetConnectionString()))
             {
                 conn.Open();
 
                 DirectoryInfo d = new DirectoryInfo(scripts);
-                foreach (var file in d.GetFiles("*.sql"))
+
+                var files = d.GetFiles("*.sql").OrderBy(a => int.Parse(CleanStringOfNonDigits_V1(a.Name)));
+
+                foreach (var file in files)
                 {
                     string script = File.ReadAllText(file.FullName);
 
@@ -90,11 +97,11 @@ namespace SME.SGP.Integracao.Teste
                 }
             }
         }
-
-        //public void Dispose()
-        //{
-        //    _clientApi.Dispose();
-        //    _testServerCliente.Dispose();
-        //}
+        private string CleanStringOfNonDigits_V1(string s)
+        {
+            if (string.IsNullOrEmpty(s)) return s;
+            string cleaned = rxNonDigits.Replace(s, "");
+            return cleaned;
+        }
     }
 }

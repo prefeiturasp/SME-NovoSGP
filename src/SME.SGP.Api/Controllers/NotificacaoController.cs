@@ -37,6 +37,33 @@ namespace SME.SGP.Api.Controllers
             return Ok(consultasNotificacao.Obter(notificacaoId));
         }
 
+        [HttpGet]
+        [ProducesResponseType(typeof(IEnumerable<EnumeradoRetornoDto>), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [Route("categorias")]
+        public IActionResult ObtemCategorias()
+        {
+            return Ok(consultasNotificacao.ObterCategorias());
+        }
+
+        [HttpGet]
+        [ProducesResponseType(typeof(IEnumerable<EnumeradoRetornoDto>), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [Route("status")]
+        public IActionResult ObtemStatus()
+        {
+            return Ok(consultasNotificacao.ObterStatus());
+        }
+
+        [HttpGet]
+        [ProducesResponseType(typeof(IEnumerable<EnumeradoRetornoDto>), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [Route("tipos")]
+        public IActionResult ObtemTipos()
+        {
+            return Ok(consultasNotificacao.ObterTipos());
+        }
+
         [HttpPost]
         [ProducesResponseType(200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
