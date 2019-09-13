@@ -67,11 +67,18 @@ const Service = {
 
   validarPlanoExistente: FiltroPlanoAnual => {
     const requisicao = API.post(
-      Service._getBaseUrlValidarPlanoAnualExistente,
+      Service._getBaseUrlValidarPlanoAnualExistente(),
       FiltroPlanoAnual
     );
 
-    return requisicao;
+    return requisicao
+      .then(res => res.data)
+      .catch(() => {
+        throw {
+          error:
+            'Não foi possivel realizar a consulta, por favor contate a equipe de suporte',
+        };
+      });
   },
 
   _getBaseUrlDisciplinasProfessor: (RF, CodigoTurma) => {

@@ -250,7 +250,7 @@ const BimestreComponent = props => {
                     .map(selecionado => {
                       return (
                         <Button
-                          key={selecionado.id}
+                          key={`Objetivo${selecionado.id}Selecionado${indice}`}
                           label={selecionado.codigo}
                           color={Colors.AzulAnakiwa}
                           bold
