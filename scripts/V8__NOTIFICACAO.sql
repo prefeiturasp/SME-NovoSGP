@@ -28,4 +28,5 @@ CREATE INDEX notificacao_ue_idx ON public.notificacao (ue_id);
 CREATE INDEX notificacao_dre_idx ON public.notificacao (dre_id);
 CREATE INDEX notificacao_turma_idx ON public.notificacao (turma_id);
 CREATE INDEX notificacao_ano_idx ON public.notificacao (ano);
+CREATE INDEX notificacao_titulo_idx ON public.notificacao (lower(f_unaccent(titulo)) text_pattern_ops);
 
