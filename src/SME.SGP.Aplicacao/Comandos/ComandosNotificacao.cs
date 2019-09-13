@@ -7,10 +7,14 @@ namespace SME.SGP.Aplicacao
     public class ComandosNotificacao : IComandosNotificacao
     {
         private readonly IRepositorioNotificacao repositorioNotificacao;
+        private readonly IRepositorioUsuario repositorioUsuario;
+        private readonly IServicoNotificacao servicoNotificacao;
 
-        public ComandosNotificacao(IRepositorioNotificacao repositorioNotificacao)
+        public ComandosNotificacao(IRepositorioNotificacao repositorioNotificacao, IRepositorioUsuario repositorioUsuario, IServicoNotificacao servicoNotificacao)
         {
             this.repositorioNotificacao = repositorioNotificacao ?? throw new System.ArgumentNullException(nameof(repositorioNotificacao));
+            this.repositorioUsuario = repositorioUsuario ?? throw new System.ArgumentNullException(nameof(repositorioUsuario));
+            this.servicoNotificacao = servicoNotificacao ?? throw new System.ArgumentNullException(nameof(servicoNotificacao));
         }
 
         public void MarcarComoLida(long notificacaoId)
@@ -26,25 +30,44 @@ namespace SME.SGP.Aplicacao
 
         public void Salvar(NotificacaoDto notificacaoDto)
         {
-            var noticacao = MapearParaDominio(notificacaoDto);
-            repositorioNotificacao.Salvar(noticacao);
+            var notificacao = MapearParaDominio(notificacaoDto);
+            servicoNotificacao.GeraNovoCodigo(notificacao);
+            repositorioNotificacao.Salvar(notificacao);
         }
 
         private Notificacao MapearParaDominio(NotificacaoDto notificacaoDto)
         {
-            return new Notificacao()
+            var notificacao = new Notificacao()
             {
                 Categoria = notificacaoDto.Categoria,
                 DreId = notificacaoDto.DreId,
-                EscolaId = notificacaoDto.EscolaId,
+                UeId = notificacaoDto.UeId,
                 Mensagem = notificacaoDto.Mensagem,
-                PodeRemover = notificacaoDto.PodeRemover,
-                UsuarioId = notificacaoDto.UsuarioId,
                 Titulo = notificacaoDto.Titulo,
                 Ano = notificacaoDto.Ano,
                 TurmaId = notificacaoDto.TurmaId,
                 Tipo = notificacaoDto.Tipo
             };
+
+            TrataUsuario(notificacao, notificacaoDto.UsuarioRf);
+
+            return notificacao;
+        }
+
+        private void TrataUsuario(Notificacao notificacao, string usuarioRf)
+        {
+            if (!string.IsNullOrEmpty(usuarioRf))
+            {
+                Usuario usuario = repositorioUsuario.ObterPorCodigoRf(usuarioRf);
+                if (usuario == null)
+                {
+                    usuario = new Usuario() { CodigoRf = usuarioRf };
+                    repositorioUsuario.Salvar(usuario);
+                }
+
+                notificacao.Usuario = usuario;
+                notificacao.UsuarioId = usuario.Id;
+            }
         }
     }
 }
