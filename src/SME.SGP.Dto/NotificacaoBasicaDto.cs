@@ -7,5 +7,6 @@
         public string Status { get; set; }
         public string Tipo { get; set; }
         public string Titulo { get; set; }
+        public int Codigo { get; set; }
     }
 }

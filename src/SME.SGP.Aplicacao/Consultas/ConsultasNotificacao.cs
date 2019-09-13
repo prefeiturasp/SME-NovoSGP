@@ -20,9 +20,9 @@ namespace SME.SGP.Aplicacao
 
         public IEnumerable<NotificacaoBasicaDto> Listar(NotificacaoFiltroDto filtroNotificacaoDto)
         {
-            var retorno = repositorioNotificacao.ObterPorDreOuEscolaOuStatusOuTurmoOuUsuarioOuTipo(filtroNotificacaoDto.DreId,
+            var retorno = repositorioNotificacao.ObterPorDreOuEscolaOuStatusOuTurmoOuUsuarioOuTipoOuCategoriaOuTitulo(filtroNotificacaoDto.DreId,
                 filtroNotificacaoDto.EscolaId, (int)filtroNotificacaoDto.Status, filtroNotificacaoDto.TurmaId, filtroNotificacaoDto.UsuarioId,
-                (int)filtroNotificacaoDto.Tipo, (int)filtroNotificacaoDto.Categoria);
+                (int)filtroNotificacaoDto.Tipo, (int)filtroNotificacaoDto.Categoria, filtroNotificacaoDto.Titulo);
 
             return from r in retorno
                    select new NotificacaoBasicaDto()
