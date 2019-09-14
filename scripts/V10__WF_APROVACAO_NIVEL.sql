@@ -1,7 +1,6 @@
 ﻿CREATE TABLE IF NOT EXISTS public.wf_aprovacao_nivel
 (
     id bigint NOT NULL generated always as identity,
-    usuario_id varchar(15) NOT NULL,
     status int NOT NULL,
     cargo int NULL,
 	nivel int NOT NULL,
@@ -15,8 +14,8 @@
     CONSTRAINT wf_aprova_nivel_nivel_pk PRIMARY KEY (id)
 
 );
-
 ALTER TABLE public.wf_aprovacao_nivel ADD CONSTRAINT wf_aprovacao_nivel_wf_aprovacao_fk FOREIGN KEY (wf_aprovacao_id) REFERENCES wf_aprovacao(id);
-CREATE INDEX wf_aprovacao_nivel_usuario_idx ON public.wf_aprovacao_nivel (usuario_id);
+
+
 
 

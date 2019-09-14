@@ -9,16 +9,18 @@ namespace SME.SGP.Aplicacao
     {
         private readonly IRepositorioWorkflowAprovacao repositorioWorkflowAprovacao;
         private readonly IRepositorioWorkflowAprovacaoNivel repositorioWorkflowAprovacaoNivel;
+        private readonly IRepositorioWorkflowAprovacaoNivelUsuario repositorioWorkflowAprovacaoNivelUsuario;
         private readonly IServicoUsuario servicoUsuario;
         private readonly IUnitOfWork unitOfWork;
 
         public ComandosWorkflowAprovacao(IRepositorioWorkflowAprovacao repositorioWorkflowAprovacao, IRepositorioWorkflowAprovacaoNivel repositorioWorkflowAprovacaoNivel,
-            IUnitOfWork unitOfWork, IServicoUsuario servicoUsuario)
+            IUnitOfWork unitOfWork, IServicoUsuario servicoUsuario, IRepositorioWorkflowAprovacaoNivelUsuario repositorioWorkflowAprovacaoNivelUsuario)
         {
             this.repositorioWorkflowAprovacao = repositorioWorkflowAprovacao ?? throw new ArgumentNullException(nameof(repositorioWorkflowAprovacao));
             this.repositorioWorkflowAprovacaoNivel = repositorioWorkflowAprovacaoNivel ?? throw new ArgumentNullException(nameof(repositorioWorkflowAprovacaoNivel));
             this.unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
             this.servicoUsuario = servicoUsuario ?? throw new ArgumentNullException(nameof(servicoUsuario));
+            this.repositorioWorkflowAprovacaoNivelUsuario = repositorioWorkflowAprovacaoNivelUsuario ?? throw new ArgumentNullException(nameof(repositorioWorkflowAprovacaoNivelUsuario));
         }
 
         public void Salvar(WorkflowAprovacaoDto workflowAprovacaoNiveisDto)
@@ -33,6 +35,15 @@ namespace SME.SGP.Aplicacao
             {
                 workflowAprovacaoNivel.WorkflowId = workflowAprovacao.Id;
                 repositorioWorkflowAprovacaoNivel.Salvar(workflowAprovacaoNivel);
+
+                foreach (var usuario in workflowAprovacaoNivel.Usuarios)
+                {
+                    repositorioWorkflowAprovacaoNivelUsuario.Salvar(new WorkflowAprovacaoNivelUsuario()
+                    {
+                        UsuarioId = usuario.Id,
+                        WorkflowAprovacaoNivelId = workflowAprovacaoNivel.Id
+                    });
+                }
             }
 
             unitOfWork.PersistirTransacao();
