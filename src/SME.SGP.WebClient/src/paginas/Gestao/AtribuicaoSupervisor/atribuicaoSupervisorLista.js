@@ -10,7 +10,6 @@ import SelectComponent from '../../../componentes/select';
 import DataTable from '../../../componentes/table/dataTable';
 import api from '../../../servicos/api';
 import { NovoSGP, Titulo } from './atribuicaoSupervisor.css';
-import {setBreadcrumbManual} from '~/servicos/breadcrumb-services';
 
 export default function AtribuicaoSupervisorLista() {
   const [selectedRowKeys, setSelectedRowKeys] = useState([]);
@@ -102,7 +101,6 @@ export default function AtribuicaoSupervisorLista() {
       ue => ue.id == selectedRowKeys[0]
     );
     const path = `/gestao/atribuicao-supervisor/${dresSelecionadas}/${ueSelecionada.supervisorId || ''}`
-    setBreadcrumbManual(path,'Editar Atribuição', '/gestao/atribuicao-supervisor-lista');
     history.push(path);
   }
 
