@@ -32,3 +32,7 @@ export const Planejamento = styled.div`
   color: #c8c8c8;
   padding-top: 6px;
 `;
+
+export const ParagrafoAlerta = styled.p`
+  color: ${Base.VermelhoAlerta};
+`;
