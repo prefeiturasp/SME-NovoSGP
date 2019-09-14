@@ -1,5 +1,6 @@
 ﻿using Newtonsoft.Json;
 using SME.SGP.Aplicacao;
+using SME.SGP.Dominio;
 using SME.SGP.Dto;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -21,8 +22,47 @@ namespace SME.SGP.Integracao.Teste
             _fixture = fixture;
         }
 
+        [Fact, Order(2)]
+        public void Deve_Incluir_e_Consultar_Alerta()
+        {
+            _fixture._clientApi.DefaultRequestHeaders.Clear();
+
+            var notificacaoDto = new NotificacaoDto();
+            notificacaoDto.Categoria = Dominio.NotificacaoCategoria.Alerta;
+            notificacaoDto.Mensagem = "Mensagem de teste 2";
+            notificacaoDto.Titulo = "Titulo de Teste 2";
+            notificacaoDto.UsuarioRf = "0127254221";
+            notificacaoDto.Tipo = Dominio.NotificacaoTipo.Sondagem;
+
+            var jsonParaPost = new StringContent(TransformarEmJson(notificacaoDto), UnicodeEncoding.UTF8, "application/json");
+
+            var postResult = _fixture._clientApi.PostAsync("api/v1/notificacoes/", jsonParaPost).Result;
+
+            Assert.True(postResult.IsSuccessStatusCode);
+
+            if (postResult.IsSuccessStatusCode)
+            {
+                var getResult = _fixture._clientApi.GetAsync($"api/v1/notificacoes?UsuarioId={notificacaoDto.UsuarioRf}").Result;
+                var notificacoesDto = JsonConvert.DeserializeObject<IEnumerable<NotificacaoBasicaDto>>(getResult.Content.ReadAsStringAsync().Result);
+
+                Assert.True(notificacoesDto.Count() == 1);
+
+                var notificacao = notificacoesDto.FirstOrDefault();
+
+                var getResultDetalhe = _fixture._clientApi.GetAsync($"api/v1/notificacoes/{notificacao.Id}").Result;
+                Assert.True(getResultDetalhe.IsSuccessStatusCode);
+
+                var notificacaoDetalheDto = JsonConvert.DeserializeObject<NotificacaoDetalheDto>(getResultDetalhe.Content.ReadAsStringAsync().Result);
+
+                Assert.Equal(notificacaoDetalheDto.Tipo, notificacaoDto.Tipo.GetAttribute<DisplayAttribute>().Name);
+                Assert.Equal(notificacaoDetalheDto.Mensagem, notificacaoDto.Mensagem);
+                Assert.Equal(notificacaoDetalheDto.Titulo, notificacaoDto.Titulo);
+                Assert.Equal(notificacaoDetalheDto.StatusId, (int)NotificacaoStatus.Pendente);
+            }
+        }
+
         [Fact, Order(1)]
-        public void Deve_Incluir_e_Consultar()
+        public void Deve_Incluir_e_Consultar_Aviso()
         {
             _fixture._clientApi.DefaultRequestHeaders.Clear();
 
@@ -60,6 +100,7 @@ namespace SME.SGP.Integracao.Teste
                 Assert.Equal(notificacaoDto.Tipo.GetAttribute<DisplayAttribute>().Name, notificacaoDetalheDto.Tipo);
                 Assert.Equal(notificacaoDto.Mensagem, notificacaoDetalheDto.Mensagem);
                 Assert.Equal(notificacaoDto.Titulo, notificacaoDetalheDto.Titulo);
+                Assert.Equal(notificacaoDetalheDto.StatusId, (int)NotificacaoStatus.Lida);
             }
         }
 
