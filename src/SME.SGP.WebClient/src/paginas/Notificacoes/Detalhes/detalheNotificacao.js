@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import Card from '~/componentes/card';
 import { EstiloDetalhe } from './estiloDetalhe';
 import api from '~/servicos/api';
-import { erros, erro, sucesso } from '~/servicos/alertas';
+import { erros, erro, sucesso, confirmar } from '~/servicos/alertas';
 import * as cores from '~/componentes/colors';
 import Button from '~/componentes/button';
 import Cabecalho from '~/componentes-sgp/cabecalho';
@@ -66,6 +66,31 @@ const DetalheNotificacao = ({ match }) => {
       .catch(listaErros => erros(listaErros));
   };
 
+  const excluir = async () => {
+    const confirmado = await confirmar(
+      'Atenção',
+      'Você tem certeza que deseja excluir estas notificações?'
+    );
+    if (confirmado) {
+      const idsNotificacoes = [...idNotificacao];
+      api
+        .delete('v1/notificacoes/', idsNotificacoes)
+        .then(resposta => {
+          if (resposta.data) {
+            resposta.data.forEach(resultado => {
+              if (resultado.sucesso) {
+                sucesso(resultado.mensagem);
+              } else {
+                erro(resultado.mensagem);
+              }
+            });
+          }
+          buscaNotificacao(idNotificacao);
+        })
+        .catch(listaErros => erros(listaErros));
+    }
+  };
+
   const validacoes = Yup.object().shape({
     observacao: Yup.string()
       .required('Observação obrigatória')
@@ -119,7 +144,7 @@ const DetalheNotificacao = ({ match }) => {
                   className="mr-2"
                   border
                   disabled={!notificacao.mostrarBotaoRemover}
-                  onClick={() => true}
+                  onClick={excluir}
                 />
               </div>
               <EstiloDetalhe>
