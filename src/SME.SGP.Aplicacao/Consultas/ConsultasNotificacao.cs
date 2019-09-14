@@ -30,7 +30,9 @@ namespace SME.SGP.Aplicacao
                        Id = r.Id,
                        Titulo = r.Titulo,
                        Data = r.CriadoEm.ToString(),
-                       Status = r.Status.ToString(),
+                       DescricaoStatus = r.Status.ToString(),
+                       Status = r.Status,
+                       Categoria = r.Categoria,
                        Tipo = r.Tipo.GetAttribute<DisplayAttribute>().Name,
                        Codigo = r.CodigoFormatado
                    };
