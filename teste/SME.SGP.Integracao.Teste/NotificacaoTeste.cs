@@ -2,6 +2,7 @@
 using SME.SGP.Aplicacao;
 using SME.SGP.Dominio;
 using SME.SGP.Dto;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
@@ -104,17 +105,17 @@ namespace SME.SGP.Integracao.Teste
             }
         }
 
-        [Fact, Order(2)]
-        public void DeveMarcarComoLida()
+        [Fact, Order(4)]
+        public void Deve_Incluir_e_Excluir()
         {
             _fixture._clientApi.DefaultRequestHeaders.Clear();
 
             var notificacaoDto = new NotificacaoDto();
-            notificacaoDto.Categoria = Dominio.NotificacaoCategoria.Alerta;
-            notificacaoDto.Mensagem = "Notificação de alerta";
-            notificacaoDto.Titulo = "Titulo de Teste de alerta";
-            notificacaoDto.UsuarioRf = "987654321";
-            notificacaoDto.Tipo = Dominio.NotificacaoTipo.Frequencia;
+            notificacaoDto.Categoria = NotificacaoCategoria.Aviso;
+            notificacaoDto.Mensagem = "Notificação de aviso";
+            notificacaoDto.Titulo = "Notificação para excluir";
+            notificacaoDto.UsuarioRf = "987654333";
+            notificacaoDto.Tipo = NotificacaoTipo.Frequencia;
 
             var jsonParaPost = new StringContent(TransformarEmJson(notificacaoDto), UnicodeEncoding.UTF8, "application/json");
 
@@ -122,7 +123,44 @@ namespace SME.SGP.Integracao.Teste
 
             Assert.True(postResult.IsSuccessStatusCode);
 
-            notificacaoDto.Categoria = Dominio.NotificacaoCategoria.Aviso;
+            var getResult = _fixture._clientApi.GetAsync($"api/v1/notificacoes?UsuarioId={notificacaoDto.UsuarioRf}").Result;
+            var notificacoesDto = JsonConvert.DeserializeObject<IEnumerable<NotificacaoBasicaDto>>(getResult.Content.ReadAsStringAsync().Result);
+
+            var jsonDelete = new StringContent(JsonConvert.SerializeObject(notificacoesDto.Select(c => c.Id)), UnicodeEncoding.UTF8, "application/json");
+            HttpRequestMessage request = new HttpRequestMessage
+            {
+                Content = jsonDelete,
+                Method = HttpMethod.Delete,
+                RequestUri = new Uri($"{ _fixture._clientApi.BaseAddress}api/v1/notificacoes/")
+            };
+
+            var putResult = _fixture._clientApi.SendAsync(request).Result;
+
+            Assert.True(putResult.IsSuccessStatusCode);
+            var listaMensagens = JsonConvert.DeserializeObject<IEnumerable<AlteracaoStatusNotificacaoDto>>(putResult.Content.ReadAsStringAsync().Result);
+            var id = notificacoesDto.FirstOrDefault().Id;
+            Assert.Contains(listaMensagens, c => c.Sucesso && c.Mensagem == $"Notificação com id: '{id}' excluída com sucesso.");
+        }
+
+        [Fact, Order(3)]
+        public void Deve_Marcar_Como_Lida()
+        {
+            _fixture._clientApi.DefaultRequestHeaders.Clear();
+
+            var notificacaoDto = new NotificacaoDto();
+            notificacaoDto.Categoria = NotificacaoCategoria.Alerta;
+            notificacaoDto.Mensagem = "Notificação de alerta";
+            notificacaoDto.Titulo = "Titulo de Teste de alerta";
+            notificacaoDto.UsuarioRf = "987654321";
+            notificacaoDto.Tipo = NotificacaoTipo.Frequencia;
+
+            var jsonParaPost = new StringContent(TransformarEmJson(notificacaoDto), UnicodeEncoding.UTF8, "application/json");
+
+            var postResult = _fixture._clientApi.PostAsync("api/v1/notificacoes/", jsonParaPost).Result;
+
+            Assert.True(postResult.IsSuccessStatusCode);
+
+            notificacaoDto.Categoria = NotificacaoCategoria.Aviso;
 
             jsonParaPost = new StringContent(TransformarEmJson(notificacaoDto), UnicodeEncoding.UTF8, "application/json");
 
@@ -133,17 +171,14 @@ namespace SME.SGP.Integracao.Teste
             var getResult = _fixture._clientApi.GetAsync($"api/v1/notificacoes?UsuarioId={notificacaoDto.UsuarioRf}").Result;
             var notificacoesDto = JsonConvert.DeserializeObject<IEnumerable<NotificacaoBasicaDto>>(getResult.Content.ReadAsStringAsync().Result);
 
-            var notificacoesIds = new List<long>();
-            notificacoesIds.AddRange(notificacoesDto.Select(c => c.Id));
-
-            var jsonPut = new StringContent(JsonConvert.SerializeObject(notificacoesIds), UnicodeEncoding.UTF8, "application/json");
+            var jsonPut = new StringContent(JsonConvert.SerializeObject(notificacoesDto.Select(c => c.Id)), UnicodeEncoding.UTF8, "application/json");
             var putResult = _fixture._clientApi.PutAsync($"api/v1/notificacoes/status/lida", jsonPut).Result;
 
             Assert.True(putResult.IsSuccessStatusCode);
-            var listaMensagens = JsonConvert.DeserializeObject<IEnumerable<AlteracaoStatusNotificacaoDto>>(putResult.Content.ReadAsStringAsync().Result);
-
-            Assert.Contains(listaMensagens, c => c.Sucesso && c.Mensagem == "Notificação com id: '2' alterada com sucesso.");
-            Assert.Contains(listaMensagens, c => !c.Sucesso && c.Mensagem == "A notificação com id: '3' não pode ser marcada como lida ou já está nesse status.");
+            getResult = _fixture._clientApi.GetAsync($"api/v1/notificacoes?UsuarioId={notificacaoDto.UsuarioRf}").Result;
+            notificacoesDto = JsonConvert.DeserializeObject<IEnumerable<NotificacaoBasicaDto>>(getResult.Content.ReadAsStringAsync().Result);
+            Assert.Contains(notificacoesDto, c => c.Status == NotificacaoStatus.Lida && c.Categoria == NotificacaoCategoria.Alerta);
+            Assert.Contains(notificacoesDto, c => c.Status == NotificacaoStatus.Pendente && c.Categoria == NotificacaoCategoria.Aviso);
         }
 
         private string TransformarEmJson(object model)

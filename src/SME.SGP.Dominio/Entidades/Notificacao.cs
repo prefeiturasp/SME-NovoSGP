@@ -15,9 +15,9 @@
         public bool DeveAprovar { get { return Categoria == NotificacaoCategoria.Workflow_Aprovacao; } }
         public bool DeveMarcarComoLido { get { return Categoria == NotificacaoCategoria.Alerta && Status != NotificacaoStatus.Lida; } }
         public string DreId { get; set; }
-        public bool Excluida { get; set; }
+        public bool Excluida { get; private set; }
         public string Mensagem { get; set; }
-        public bool PodeRemover { get { return Categoria == NotificacaoCategoria.Aviso; } }
+        public bool PodeRemover { get { return Categoria == NotificacaoCategoria.Aviso && !Excluida; } }
         public NotificacaoStatus Status { get; set; }
         public NotificacaoTipo Tipo { get; set; }
         public string Titulo { get; set; }
@@ -42,6 +42,14 @@
                 return true;
             }
             else return false;
+        }
+
+        public void Remover()
+        {
+            if (PodeRemover)
+                Excluida = true;
+            else
+                throw new NegocioException($"A notificação com id: '{Id}' não pode ser excluída ou já está nesse status.");
         }
     }
 }
