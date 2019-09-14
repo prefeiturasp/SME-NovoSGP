@@ -129,6 +129,8 @@ export default function bimestres(state = INICIAL, action) {
           x.paraEnviar = false;
           return x;
         });
+
+        draft.bimestres[1].recarregarPlanoAnual = true;
         draft.bimestresErro = state.bimestresErro;
 
         break;

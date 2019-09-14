@@ -66,6 +66,8 @@ export default function PlanoAnual() {
     loader: false,
   });
 
+  const recarregarPlanoAnual = bimestres.filter(bimestre => bimestre.recarregarPlanoAnual).length > 0;
+
   const LayoutEspecial = ehEja || ehMedio || disciplinaObjetivo;
 
   const qtdBimestres = ehEja ? 2 : 4;
@@ -85,6 +87,10 @@ export default function PlanoAnual() {
 
   useEffect(() => {
     VerificarEnvio();
+
+    if(recarregarPlanoAnual)
+      ObtenhaBimestres();
+
   }, [bimestres]);
 
   const onF5Click = e => {
@@ -268,6 +274,7 @@ export default function PlanoAnual() {
         materias: disciplinas,
         objetivo: objetivo,
         paraEnviar: false,
+        recarregarPlanoAnual: false,
         ehEdicao,
         LayoutEspecial: LayoutEspecial || semObjetivo,
         ehExpandido: ehEdicao,
