@@ -4,17 +4,17 @@ using System.ComponentModel.DataAnnotations;
 
 namespace SME.SGP.Dto
 {
-    public class WorkflowAprovacaoNiveisDto
+    public class WorkflowAprovacaoDto
     {
-        public WorkflowAprovacaoNiveisDto()
+        public WorkflowAprovacaoDto()
         {
             Niveis = new List<WorkflowAprovacaoNivelDto>();
         }
 
         public int Ano { get; set; }
         public string DreId { get; set; }
-        public string UeId { get; set; }
         public List<WorkflowAprovacaoNivelDto> Niveis { get; set; }
+        public NotificacaoCategoria NotificacaoCategoria { get; set; }
 
         [Required(ErrorMessage = "É necessário informar a mensagem da notificação.")]
         [MinLength(3, ErrorMessage = "Mensagem da notificação deve conter no mínimo 3 caracteres.")]
@@ -27,5 +27,6 @@ namespace SME.SGP.Dto
         public string NotificacaoTitulo { get; set; }
 
         public string TurmaId { get; set; }
+        public string UeId { get; set; }
     }
 }

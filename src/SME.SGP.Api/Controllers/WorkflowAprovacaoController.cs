@@ -8,11 +8,11 @@ namespace SME.SGP.Api.Controllers
     [ApiController]
     [Route("api/v1/workflows/aprovacoes")]
     [ValidaDto]
-    public class WorkflowAprovaNivelController : ControllerBase
+    public class WorkflowAprovacaoController : ControllerBase
     {
         private readonly IComandosWorkflowAprovacao comandosWorkflowAprovacao;
 
-        public WorkflowAprovaNivelController(IComandosWorkflowAprovacao comandosWorkflowAprovacao)
+        public WorkflowAprovacaoController(IComandosWorkflowAprovacao comandosWorkflowAprovacao)
         {
             this.comandosWorkflowAprovacao = comandosWorkflowAprovacao ?? throw new System.ArgumentNullException(nameof(comandosWorkflowAprovacao));
         }
@@ -20,7 +20,7 @@ namespace SME.SGP.Api.Controllers
         [HttpPost]
         [ProducesResponseType(200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        public IActionResult Post(WorkflowAprovacaoNiveisDto workflowAprovaNivelDto)
+        public IActionResult Post(WorkflowAprovacaoDto workflowAprovaNivelDto)
         {
             comandosWorkflowAprovacao.Salvar(workflowAprovaNivelDto);
             return Ok();
