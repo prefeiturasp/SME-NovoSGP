@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import Card from '~/componentes/card';
 import { EstiloDetalhe } from './estiloDetalhe';
 import api from '~/servicos/api';
-import { erros } from '~/servicos/alertas';
+import { erros, erro, sucesso } from '~/servicos/alertas';
 import * as cores from '~/componentes/colors';
 import Button from '~/componentes/button';
 import Cabecalho from '~/componentes-sgp/cabecalho';
@@ -11,6 +11,8 @@ import { Formik, Form } from 'formik';
 import * as Yup from 'yup';
 
 const DetalheNotificacao = ({ match }) => {
+  const [idNotificacao, setIdNotificacao] = useState('');
+
   const [notificacao, setNotificacao] = useState({
     alteradoEm: '',
     alteradoPor: null,
@@ -25,20 +27,43 @@ const DetalheNotificacao = ({ match }) => {
     titulo: '',
   });
 
+  const buscaNotificacao = id => {
+    api
+      .get(`v1/notificacoes/${id}`)
+      .then(resposta => setNotificacao(resposta.data))
+      .catch(listaErros => erros(listaErros));
+  };
   useEffect(() => {
-    const buscaNotificacao = id => {
-      api
-        .get(`v1/notificacoes/${id}`)
-        .then(resposta => setNotificacao(resposta.data))
-        .catch(listaErros => erros(listaErros));
-    };
-    if (match.params.id) {
-      buscaNotificacao(match.params.id);
+    if (idNotificacao) {
+      buscaNotificacao(idNotificacao);
     }
+  }, [idNotificacao]);
+
+  useEffect(() => {
+    setIdNotificacao(match.params.id);
   }, [match.params.id]);
 
   const salvar = form => {
     debugger;
+  };
+
+  const marcarComoLida = () => {
+    const idsNotificacoes = [...idNotificacao];
+    api
+      .put('v1/notificacoes/status/lida', idsNotificacoes)
+      .then(resposta => {
+        if (resposta.data) {
+          resposta.data.forEach(resultado => {
+            if (resultado.sucesso) {
+              sucesso(resultado.mensagem);
+            } else {
+              erro(resultado.mensagem);
+            }
+          });
+        }
+        buscaNotificacao(idNotificacao);
+      })
+      .catch(listaErros => erros(listaErros));
   };
 
   const validacoes = Yup.object().shape({
@@ -61,38 +86,39 @@ const DetalheNotificacao = ({ match }) => {
           <Form>
             <Card mtop="mt-2">
               <div className="col-md-12 d-flex justify-content-end pb-3">
-                {notificacao.mostrarBotoesDeAprovacao && (
-                  <>
-                    <Button
-                      label="Aceitar"
-                      color={cores.Colors.Roxo}
-                      className="mr-2"
-                      type="submit"
-                    />
-                    <Button
-                      label="Recusar"
-                      color={cores.Colors.Roxo}
-                      border
-                      className="mr-2"
-                      onClick={() => true}
-                    />
-                  </>
-                )}
-                {notificacao.mostrarBotaoMarcarComoLido && (
+                <>
                   <Button
-                    label="Marcar como lida"
-                    color={cores.Colors.Azul}
+                    label="Aceitar"
+                    color={cores.Colors.Roxo}
+                    disabled={!notificacao.mostrarBotoesDeAprovacao}
+                    className="mr-2"
+                    border={!notificacao.mostrarBotoesDeAprovacao}
+                    type="submit"
+                  />
+                  <Button
+                    label="Recusar"
+                    color={cores.Colors.Roxo}
                     border
+                    disabled={!notificacao.mostrarBotoesDeAprovacao}
                     className="mr-2"
                     onClick={() => true}
                   />
-                )}
+                </>
+                <Button
+                  label="Marcar como lida"
+                  color={cores.Colors.Azul}
+                  border
+                  className="mr-2"
+                  disabled={!notificacao.mostrarBotaoMarcarComoLido}
+                  onClick={marcarComoLida}
+                />
                 <Button
                   label="Excluir"
                   color={cores.Colors.Vermelho}
                   border
                   className="mr-2"
                   border
+                  disabled={!notificacao.mostrarBotaoRemover}
                   onClick={() => true}
                 />
               </div>
