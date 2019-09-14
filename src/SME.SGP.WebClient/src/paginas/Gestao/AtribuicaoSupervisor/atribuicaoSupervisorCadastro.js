@@ -29,6 +29,10 @@ const AtribuicaoSupervisorCadastro = ({ match }) => {
     if (erros && erros.response && erros.response.data)
       erros.response.data.mensagens.forEach(mensagem => erro(mensagem));
   }
+
+  useEffect(() =>{
+    setBreadcrumbManual(match.url,'Editar Atribuição', '/gestao/atribuicao-supervisor-lista');
+  },[])
   // 1 - carrega dres
   useEffect(() => {
     async function obterListaDres() {
