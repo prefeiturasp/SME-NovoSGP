@@ -20,7 +20,7 @@ export default function bimestres(state = INICIAL, action) {
 
         break;
       case '@bimestres/PrePostBimestre':
-        const paraEnvio = state.bimestres.filter(x => x.ehExpandido);
+        const paraEnvio = state.bimestres.filter(x => x.ehEdicao);
         paraEnvio.forEach(elem => {
           draft.bimestres[elem.indice].objetivo = state.bimestres[
             elem.indice
@@ -44,7 +44,6 @@ export default function bimestres(state = INICIAL, action) {
         draft.bimestresErro = state.bimestresErro;
 
         break;
-
       case '@bimestres/SalvarEhExpandido':
         draft.bimestres[action.payload.indice].ehExpandido =
           action.payload.ehExpandido;
@@ -53,7 +52,6 @@ export default function bimestres(state = INICIAL, action) {
         draft.bimestresErro = state.bimestresErro;
 
         break;
-
       case '@bimestres/SelecionarMateria':
         draft.bimestres[action.payload.indice].materias[
           action.payload.indiceMateria
@@ -66,14 +64,12 @@ export default function bimestres(state = INICIAL, action) {
           ].setarObjetivo();
 
         break;
-
       case '@bimestres/SalvarObjetivos':
         draft.bimestres[action.payload.indice].objetivosAprendizagem =
           action.payload.objetivos;
         draft.bimestresErro = state.bimestresErro;
 
         break;
-
       case '@bimestres/removerSelecaoTodosObjetivos':
         draft.bimestres[
           action.payload.indice
