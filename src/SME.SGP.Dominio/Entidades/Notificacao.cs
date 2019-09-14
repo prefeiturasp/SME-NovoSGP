@@ -26,6 +26,14 @@
         public Usuario Usuario { get; set; }
         public long? UsuarioId { get; set; }
 
+        public void MarcarComoLida()
+        {
+            if (DeveMarcarComoLido && Status != NotificacaoStatus.Lida)
+                Status = NotificacaoStatus.Lida;
+            else
+                throw new NegocioException($"A notificação com id: '{Id}' não pode ser marcada como lida ou já está nesse status.");
+        }
+
         public bool MarcarComoLidaAoObterDetalhe()
         {
             if (Categoria == NotificacaoCategoria.Aviso)
@@ -34,14 +42,6 @@
                 return true;
             }
             else return false;
-        }
-
-        public void MarcarComoLida()
-        {
-            if (DeveMarcarComoLido && Status != NotificacaoStatus.Lida)
-                Status = NotificacaoStatus.Lida;
-            else
-                throw new NegocioException("Esse tipo de notificação não pode ser marcada como lida.");
         }
     }
 }
