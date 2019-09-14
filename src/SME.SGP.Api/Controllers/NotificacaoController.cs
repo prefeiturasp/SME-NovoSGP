@@ -37,6 +37,15 @@ namespace SME.SGP.Api.Controllers
             return Ok(consultasNotificacao.Obter(notificacaoId));
         }
 
+        [HttpPut]
+        [ProducesResponseType(200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [Route("status/lida")]
+        public IActionResult MarcarComoLida(IList<long> notificaoesId)
+        {
+            return Ok(comandosNotificacao.MarcarComoLida(notificaoesId));
+        }
+
         [HttpGet]
         [ProducesResponseType(typeof(IEnumerable<EnumeradoRetornoDto>), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
@@ -70,16 +79,6 @@ namespace SME.SGP.Api.Controllers
         public IActionResult Post([FromBody]NotificacaoDto notificacaoDto)
         {
             comandosNotificacao.Salvar(notificacaoDto);
-            return Ok();
-        }
-
-        [HttpPut]
-        [ProducesResponseType(200)]
-        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        [Route("{notificacaoId}/marcar-como-lida")]
-        public IActionResult MarcarComoLida(long notificacaoId)
-        {
-            comandosNotificacao.MarcarComoLida(notificacaoId);
             return Ok();
         }
     }

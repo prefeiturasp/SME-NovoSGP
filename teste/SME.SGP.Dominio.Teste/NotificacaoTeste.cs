@@ -11,7 +11,7 @@ namespace SME.SGP.Dominio.Teste
             {
                 Categoria = NotificacaoCategoria.Aviso
             };
-            Assert.Equal("Esse tipo de notificação não pode ser marcada como lida.",
+            Assert.Equal($"A notificação com id: '{notificacao.Id}' não pode ser marcada como lida ou já está nesse status.",
                 Assert.Throws<NegocioException>(() => notificacao.MarcarComoLida()).Message);
             Assert.True(notificacao.Status == NotificacaoStatus.Pendente);
         }

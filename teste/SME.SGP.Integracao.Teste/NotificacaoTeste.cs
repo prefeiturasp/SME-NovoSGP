@@ -64,7 +64,7 @@ namespace SME.SGP.Integracao.Teste
         }
 
         [Fact, Order(2)]
-        public void DevemarcarComoLida()
+        public void DeveMarcarComoLida()
         {
             _fixture._clientApi.DefaultRequestHeaders.Clear();
 
@@ -81,11 +81,28 @@ namespace SME.SGP.Integracao.Teste
 
             Assert.True(postResult.IsSuccessStatusCode);
 
+            notificacaoDto.Categoria = Dominio.NotificacaoCategoria.Aviso;
+
+            jsonParaPost = new StringContent(TransformarEmJson(notificacaoDto), UnicodeEncoding.UTF8, "application/json");
+
+            postResult = _fixture._clientApi.PostAsync("api/v1/notificacoes/", jsonParaPost).Result;
+
+            Assert.True(postResult.IsSuccessStatusCode);
+
             var getResult = _fixture._clientApi.GetAsync($"api/v1/notificacoes?UsuarioId={notificacaoDto.UsuarioRf}").Result;
             var notificacoesDto = JsonConvert.DeserializeObject<IEnumerable<NotificacaoBasicaDto>>(getResult.Content.ReadAsStringAsync().Result);
 
-            var putResult = _fixture._clientApi.PutAsync($"api/v1/notificacoes/{notificacoesDto.FirstOrDefault(c => c.Titulo == "Titulo de Teste de alerta").Id}/marcar-como-lida", null).Result;
+            var notificacoesIds = new List<long>();
+            notificacoesIds.AddRange(notificacoesDto.Select(c => c.Id));
+
+            var jsonPut = new StringContent(JsonConvert.SerializeObject(notificacoesIds), UnicodeEncoding.UTF8, "application/json");
+            var putResult = _fixture._clientApi.PutAsync($"api/v1/notificacoes/status/lida", jsonPut).Result;
+
             Assert.True(putResult.IsSuccessStatusCode);
+            var listaMensagens = JsonConvert.DeserializeObject<IEnumerable<AlteracaoStatusNotificacaoDto>>(putResult.Content.ReadAsStringAsync().Result);
+
+            Assert.Contains(listaMensagens, c => c.Sucesso && c.Mensagem == "Notificação com id: '2' alterada com sucesso.");
+            Assert.Contains(listaMensagens, c => !c.Sucesso && c.Mensagem == "A notificação com id: '3' não pode ser marcada como lida ou já está nesse status.");
         }
 
         private string TransformarEmJson(object model)
