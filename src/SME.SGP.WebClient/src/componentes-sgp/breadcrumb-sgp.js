@@ -24,6 +24,8 @@ const BreadcrumbSgp = () => {
 
   const [itens, setItens] = useState([]);
 
+  const rotaAtual = window.location.pathname;
+
   useEffect(() => {
     carregaBreadcrumbs();
   }, [NavegacaoStore.activeRoute]);
@@ -33,17 +35,27 @@ const BreadcrumbSgp = () => {
   };
 
   const carregaBreadcrumbs = () => {
-    const rotaAtual = window.location.pathname;
+    const rotaDinamica = localStorage.getItem('rota-dinamica');
+    const itemRotaDinamica = rotaDinamica?JSON.parse(rotaDinamica): null;
     const item = rotas.get(rotaAtual);
     if (item) {
-      const newItens = [];
-      carregaBreadcrumbsExtra(item, newItens);
-      newItens.push(
-        criarItemBreadcrumb(item.breadcrumbName, rotaAtual, true, true)
-      );
-      setItens(newItens);
-    } else setItens([]);
+      setItensBreadcrumb(item);
+    } else if (rotaDinamica && itemRotaDinamica.path === rotaAtual) {
+      setItensBreadcrumb(itemRotaDinamica);
+    } else {
+      const itemHome = rotas.get("/");
+      setItensBreadcrumb(itemHome);
+    }
   };
+
+  const setItensBreadcrumb = (item) => {
+    const newItens = [];
+    carregaBreadcrumbsExtra(item, newItens);
+    newItens.push(
+      criarItemBreadcrumb(item.breadcrumbName, rotaAtual, true, true)
+    );
+    setItens(newItens);
+  }
 
   const carregaBreadcrumbsExtra = (item, newItens) => {
     const itemParent = rotas.get(item.parent);
