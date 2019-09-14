@@ -19,6 +19,34 @@ namespace SME.SGP.Aplicacao
             this.servicoNotificacao = servicoNotificacao ?? throw new ArgumentNullException(nameof(servicoNotificacao));
         }
 
+        public List<AlteracaoStatusNotificacaoDto> Excluir(IList<long> notificacoesId)
+        {
+            if (notificacoesId == null)
+            {
+                throw new NegocioException("A lista de notificações deve ser informada.");
+            }
+            var resultado = new List<AlteracaoStatusNotificacaoDto>();
+            foreach (var notificacaoId in notificacoesId)
+            {
+                try
+                {
+                    Notificacao notificacao = ObterPorIdENotificarCasoNaoExista(notificacaoId);
+                    notificacao.Remover();
+                    repositorioNotificacao.Salvar(notificacao);
+                    resultado.Add(new AlteracaoStatusNotificacaoDto($"Notificação com id: '{notificacaoId}' excluída com sucesso.", true));
+                }
+                catch (NegocioException nex)
+                {
+                    resultado.Add(new AlteracaoStatusNotificacaoDto(nex.Message, false));
+                }
+                catch (Exception)
+                {
+                    resultado.Add(new AlteracaoStatusNotificacaoDto($"Não foi possível excluir a notificação com id: '{notificacaoId}'", false));
+                }
+            }
+            return resultado;
+        }
+
         public List<AlteracaoStatusNotificacaoDto> MarcarComoLida(IList<long> notificacoesId)
         {
             if (notificacoesId == null)
@@ -30,11 +58,8 @@ namespace SME.SGP.Aplicacao
             {
                 try
                 {
-                    var notificacao = repositorioNotificacao.ObterPorId(notificacaoId);
-                    if (notificacao == null)
-                    {
-                        throw new NegocioException($"Notificação com id: '{notificacaoId}' não encontrada.");
-                    }
+                    Notificacao notificacao = ObterPorIdENotificarCasoNaoExista(notificacaoId);
+
                     notificacao.MarcarComoLida();
                     repositorioNotificacao.Salvar(notificacao);
                     resultado.Add(new AlteracaoStatusNotificacaoDto($"Notificação com id: '{notificacaoId}' alterada com sucesso.", true));
@@ -73,6 +98,17 @@ namespace SME.SGP.Aplicacao
             };
 
             TrataUsuario(notificacao, notificacaoDto.UsuarioRf);
+
+            return notificacao;
+        }
+
+        private Notificacao ObterPorIdENotificarCasoNaoExista(long notificacaoId)
+        {
+            Notificacao notificacao = repositorioNotificacao.ObterPorId(notificacaoId);
+            if (notificacao == null)
+            {
+                throw new NegocioException($"Notificação com id: '{notificacaoId}' não encontrada.");
+            }
 
             return notificacao;
         }

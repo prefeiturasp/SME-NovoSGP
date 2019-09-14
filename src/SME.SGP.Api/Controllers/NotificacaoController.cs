@@ -20,6 +20,14 @@ namespace SME.SGP.Api.Controllers
             this.consultasNotificacao = consultasNotificacao ?? throw new System.ArgumentNullException(nameof(consultasNotificacao));
         }
 
+        [HttpDelete]
+        [ProducesResponseType(200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        public IActionResult Delete(IList<long> notificaoesId)
+        {
+            return Ok(comandosNotificacao.Excluir(notificaoesId));
+        }
+
         [HttpGet]
         [ProducesResponseType(typeof(IEnumerable<NotificacaoBasicaDto>), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
