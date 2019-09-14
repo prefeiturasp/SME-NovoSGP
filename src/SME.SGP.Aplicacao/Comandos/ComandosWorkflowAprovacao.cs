@@ -9,17 +9,19 @@ namespace SME.SGP.Aplicacao
     {
         private readonly IRepositorioWorkflowAprovacao repositorioWorkflowAprovacao;
         private readonly IRepositorioWorkflowAprovacaoNivel repositorioWorkflowAprovacaoNivel;
+        private readonly IServicoUsuario servicoUsuario;
         private readonly IUnitOfWork unitOfWork;
 
         public ComandosWorkflowAprovacao(IRepositorioWorkflowAprovacao repositorioWorkflowAprovacao, IRepositorioWorkflowAprovacaoNivel repositorioWorkflowAprovacaoNivel,
-            IUnitOfWork unitOfWork)
+            IUnitOfWork unitOfWork, IServicoUsuario servicoUsuario)
         {
             this.repositorioWorkflowAprovacao = repositorioWorkflowAprovacao ?? throw new ArgumentNullException(nameof(repositorioWorkflowAprovacao));
             this.repositorioWorkflowAprovacaoNivel = repositorioWorkflowAprovacaoNivel ?? throw new ArgumentNullException(nameof(repositorioWorkflowAprovacaoNivel));
             this.unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
+            this.servicoUsuario = servicoUsuario ?? throw new ArgumentNullException(nameof(servicoUsuario));
         }
 
-        public void Salvar(WorkflowAprovacaoNiveisDto workflowAprovacaoNiveisDto)
+        public void Salvar(WorkflowAprovacaoDto workflowAprovacaoNiveisDto)
         {
             WorkflowAprovacao workflowAprovacao = MapearDtoParaEntidade(workflowAprovacaoNiveisDto);
 
@@ -36,7 +38,7 @@ namespace SME.SGP.Aplicacao
             unitOfWork.PersistirTransacao();
         }
 
-        private WorkflowAprovacao MapearDtoParaEntidade(WorkflowAprovacaoNiveisDto workflowAprovacaoNiveisDto)
+        private WorkflowAprovacao MapearDtoParaEntidade(WorkflowAprovacaoDto workflowAprovacaoNiveisDto)
         {
             WorkflowAprovacao workflowAprovacao = new WorkflowAprovacao();
             workflowAprovacao.Ano = workflowAprovacaoNiveisDto.Ano;
@@ -46,15 +48,25 @@ namespace SME.SGP.Aplicacao
             workflowAprovacao.NotifacaoMensagem = workflowAprovacaoNiveisDto.NotificacaoMensagem;
             workflowAprovacao.NotifacaoTitulo = workflowAprovacaoNiveisDto.NotificacaoTitulo;
             workflowAprovacao.NotificacaoTipo = workflowAprovacaoNiveisDto.NotificacaoTipo;
+            workflowAprovacao.NotificacaoCategoria = workflowAprovacaoNiveisDto.NotificacaoCategoria;
 
             foreach (var nivel in workflowAprovacaoNiveisDto.Niveis)
             {
-                //workflowAprovacao.Adicionar(new WorkflowAprovacaoNivel()
-                //{
-                //    Descricao = nivel.Descricao,
-                //    Nivel = nivel.Nivel,
-                //    UsuarioId = nivel.UsuarioId
-                //});
+                var workflowNivel = new WorkflowAprovacaoNivel()
+                {
+                    Cargo = nivel.Cargo,
+                    Nivel = nivel.Nivel
+                };
+
+                if (nivel.UsuariosRf.Length > 0)
+                {
+                    foreach (var usuarioRf in nivel.UsuariosRf)
+                    {
+                        workflowNivel.Adicionar(servicoUsuario.ObterUsuarioPorCodigoRfOuAdiciona(usuarioRf));
+                    }
+                }
+
+                workflowAprovacao.Adicionar(workflowNivel);
             }
             return workflowAprovacao;
         }

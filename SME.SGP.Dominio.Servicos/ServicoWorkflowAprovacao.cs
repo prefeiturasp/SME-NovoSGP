@@ -1,16 +1,15 @@
 ﻿using SME.SGP.Dominio.Interfaces;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace SME.SGP.Dominio.Servicos
 {
-    public class ServicoWorkflowAprovaNivel : IServicoWorkflowAprovaNivel
+    public class ServicoWorkflowAprovacao : IServicoWorkflowAprovacao
     {
         private readonly IRepositorioNotificacao repositorioNotificacao;
         private readonly IRepositorioWorkflowAprovacao repositorioWorkflowAprovacao;
         private readonly IUnitOfWork unitOfWork;
 
-        public ServicoWorkflowAprovaNivel(IRepositorioWorkflowAprovacao repositorioWorkflowAprovacao, IUnitOfWork unitOfWork,
+        public ServicoWorkflowAprovacao(IRepositorioWorkflowAprovacao repositorioWorkflowAprovacao, IUnitOfWork unitOfWork,
             IRepositorioNotificacao repositorioNotificacao)
         {
             this.repositorioWorkflowAprovacao = repositorioWorkflowAprovacao ?? throw new System.ArgumentNullException(nameof(repositorioWorkflowAprovacao));
@@ -18,12 +17,14 @@ namespace SME.SGP.Dominio.Servicos
             this.repositorioNotificacao = repositorioNotificacao ?? throw new System.ArgumentNullException(nameof(repositorioNotificacao));
         }
 
-        public void ConfiguracaoInicial(string codigo)
+        public void ConfiguracaoInicial(long id)
         {
-            var workflowAprovaNiveis = repositorioWorkflowAprovacao.ObterNiveisPorCodigo(codigo);
+            var workflow = repositorioWorkflowAprovacao.ObterComNiveisPorId(id);
 
-            if (workflowAprovaNiveis == null || workflowAprovaNiveis.Count() == 0)
-                throw new NegocioException($"Não foi possível localizar o workflow de aprovação de nível com o código: {codigo}");
+            if (workflow == null)
+                throw new NegocioException($"Não foi possível localizar este workflow de id {id}");
+
+            var niveisIniciais = workflow.ObtemNiveis(workflow.ObtemPrimeiroNivel());
 
             //var primeiroNivel = workflowAprovaNiveis.OrderBy(a => a.Nivel)
             //    .FirstOrDefault()
@@ -32,8 +33,6 @@ namespace SME.SGP.Dominio.Servicos
             //var primeirosNiveis = workflowAprovaNiveis
             //    .Where(a => a.Nivel == primeiroNivel)
             //    .ToList();
-
-            //EnviaNotificacaoParaNiveis(primeirosNiveis);
         }
 
         private void EnviaNotificacaoParaNiveis(List<WorkflowAprovacao> aprovaNiveis)
@@ -57,7 +56,7 @@ namespace SME.SGP.Dominio.Servicos
                 Mensagem = aprovaNivel.NotifacaoMensagem,
                 Tipo = aprovaNivel.NotificacaoTipo,
                 Titulo = aprovaNivel.NotifacaoTitulo,
-                TurmaId = aprovaNivel.TurmaId                
+                TurmaId = aprovaNivel.TurmaId
             };
             repositorioNotificacao.Salvar(notificacao);
 

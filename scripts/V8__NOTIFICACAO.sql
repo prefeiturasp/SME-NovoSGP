@@ -8,7 +8,7 @@
     tipo int NOT NULL,
     ue_id varchar(15) NULL,
     dre_id varchar(15) NULL,
-	ano int NULL,	
+	ano int NULL,		
 	codigo bigint NOT NULL,
 	turma_id varchar(15) NULL,    
 	excluida BOOLEAN NOT NULL,
