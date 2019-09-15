@@ -7,6 +7,12 @@ namespace SME.SGP.Aplicacao
     {
         IEnumerable<NotificacaoBasicaDto> Listar(NotificacaoFiltroDto filtroNotificacaoDto);
 
+        IEnumerable<NotificacaoBasicaDto> Listar(int anoLetivo, string usuarioRf, int limite = 5);
+
+        NotificacaoBasicaListaDto ListarNotificacaoBasica(int anoLetivo, string usuarioRf);
+
+        int QuantidadeNotificacoes(int anoLetivo, string usuarioRf);
+
         NotificacaoDetalheDto Obter(long notificacaoId);
 
         IEnumerable<EnumeradoRetornoDto> ObterCategorias();

@@ -11,7 +11,6 @@ namespace SME.SGP.Dto
         public long Id { get; set; }
         public NotificacaoStatus Status { get; set; }
         public string Tipo { get; set; }
-
         public string Titulo { get; set; }
     }
 }
