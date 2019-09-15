@@ -41,6 +41,11 @@ const BimestreComponent = props => {
 
   const [idObjetivoFocado, setIDObjetivoFocado] = useState('0');
 
+  const [stateAdicionalTextEditor, setstateAdicionalTextEditor] = useState({
+    focado: false,
+    lastRange: null
+  });
+
   const textEditorRef = useRef(null);
 
   const ListRef = useRef(null);
@@ -122,8 +127,16 @@ const BimestreComponent = props => {
     selecionarObjetivo(index, ariaPressed);
   };
 
-  const onClickTextEditor = () => {
-    setEhExpandido(true);
+  const onClickTextEditor = (lastRange) => {
+
+    if (!bimestres[indice].ehEdicao) {
+      setEhExpandido(true);
+
+      setstateAdicionalTextEditor({
+        focado: true,
+        lastRange
+      })
+    }
   };
 
   const removeObjetivoSelecionado = e => {
@@ -140,6 +153,11 @@ const BimestreComponent = props => {
 
   const onBlurTextEditor = value => {
     setEhExpandido(true);
+
+    setstateAdicionalTextEditor({
+      focado: false,
+      lastRange: null
+    });
 
     setarDescricao(value);
   };
@@ -169,61 +187,61 @@ const BimestreComponent = props => {
           <div>
             {bimestres[indice].materias && bimestres[indice].materias.length > 0
               ? bimestres[indice].materias.map((materia, indice) => {
-                  return (
-                    <Badge
-                      role="button"
-                      onClick={selecionaMateria}
-                      aria-pressed={materia.selected && true}
-                      id={materia.codigo}
-                      data-index={indice}
-                      alt={materia.materia}
-                      key={materia.codigo}
-                      disabled={disabled || LayoutEspecial}
-                      readonly={LayoutEspecial}
-                      className={`badge badge-pill border text-dark bg-white font-weight-light px-2 py-1 ${
-                        LayoutEspecial ? '' : 'mt-3'
+                return (
+                  <Badge
+                    role="button"
+                    onClick={selecionaMateria}
+                    aria-pressed={materia.selected && true}
+                    id={materia.codigo}
+                    data-index={indice}
+                    alt={materia.materia}
+                    key={materia.codigo}
+                    disabled={disabled || LayoutEspecial}
+                    readonly={LayoutEspecial}
+                    className={`badge badge-pill border text-dark bg-white font-weight-light px-2 py-1 ${
+                      LayoutEspecial ? '' : 'mt-3'
                       } mr-2`}
-                    >
-                      {materia.materia}
-                    </Badge>
-                  );
-                })
+                  >
+                    {materia.materia}
+                  </Badge>
+                );
+              })
               : null}
           </div>
           {LayoutEspecial ? null : (
             <ObjetivosList ref={ListRef} className="mt-4 overflow-auto">
               {bimestres[indice].objetivosAprendizagem &&
-              bimestres[indice].objetivosAprendizagem.length > 0
+                bimestres[indice].objetivosAprendizagem.length > 0
                 ? bimestres[indice].objetivosAprendizagem.map(
-                    (objetivo, index) => {
-                      return (
-                        <ul
-                          key={`${objetivo.id}Bimestre${index}`}
-                          className="list-group list-group-horizontal mt-3"
+                  (objetivo, index) => {
+                    return (
+                      <ul
+                        key={`${objetivo.id}Bimestre${index}`}
+                        className="list-group list-group-horizontal mt-3"
+                      >
+                        <ListItemButton
+                          className="list-group-item d-flex align-items-center font-weight-bold fonte-14"
+                          role="button"
+                          id={`${indice}Bimestre${objetivo.id}`}
+                          aria-pressed={objetivo.selected ? true : false}
+                          data-index={index}
+                          onClick={selecionaObjetivo}
+                          onKeyUp={selecionaObjetivo}
+                          disabled={disabled}
+                          alt={`Codigo do Objetivo : ${objetivo.codigo} `}
                         >
-                          <ListItemButton
-                            className="list-group-item d-flex align-items-center font-weight-bold fonte-14"
-                            role="button"
-                            id={`${indice}Bimestre${objetivo.id}`}
-                            aria-pressed={objetivo.selected ? true : false}
-                            data-index={index}
-                            onClick={selecionaObjetivo}
-                            onKeyUp={selecionaObjetivo}
-                            disabled={disabled}
-                            alt={`Codigo do Objetivo : ${objetivo.codigo} `}
-                          >
-                            {objetivo.codigo}
-                          </ListItemButton>
-                          <ListItem
-                            alt={objetivo.descricao}
-                            className="list-group-item flex-fill p-2 fonte-12"
-                          >
-                            {objetivo.descricao}
-                          </ListItem>
-                        </ul>
-                      );
-                    }
-                  )
+                          {objetivo.codigo}
+                        </ListItemButton>
+                        <ListItem
+                          alt={objetivo.descricao}
+                          className="list-group-item flex-fill p-2 fonte-12"
+                        >
+                          {objetivo.descricao}
+                        </ListItem>
+                      </ul>
+                    );
+                  }
+                )
                 : null}
             </ObjetivosList>
           )}
@@ -245,48 +263,48 @@ const BimestreComponent = props => {
                 ).length} objetivos selecionados`}
             >
               {bimestres[indice].objetivosAprendizagem &&
-              bimestres[indice].objetivosAprendizagem.length > 0
+                bimestres[indice].objetivosAprendizagem.length > 0
                 ? bimestres[indice].objetivosAprendizagem
-                    .filter(objetivo => objetivo.selected)
-                    .map(selecionado => {
-                      return (
-                        <Button
-                          key={`Objetivo${selecionado.id}Selecionado${indice}`}
-                          label={selecionado.codigo}
-                          color={Colors.AzulAnakiwa}
-                          bold
-                          id={selecionado.id}
-                          disabled={disabled}
-                          steady
-                          remove
-                          className="text-dark mt-3 mr-2 stretched-link"
-                          onClick={removeObjetivoSelecionado}
-                        />
-                      );
-                    })
+                  .filter(objetivo => objetivo.selected)
+                  .map(selecionado => {
+                    return (
+                      <Button
+                        key={`Objetivo${selecionado.id}Selecionado${indice}`}
+                        label={selecionado.codigo}
+                        color={Colors.AzulAnakiwa}
+                        bold
+                        id={selecionado.id}
+                        disabled={disabled}
+                        steady
+                        remove
+                        className="text-dark mt-3 mr-2 stretched-link"
+                        onClick={removeObjetivoSelecionado}
+                      />
+                    );
+                  })
                 : null}
               {bimestres[indice].objetivosAprendizagem &&
-              bimestres[indice].objetivosAprendizagem.length > 0 &&
-              bimestres[indice].objetivosAprendizagem.filter(x => x.selected)
-                .length > 1 ? (
-                <Button
-                  key={`removerTodos`}
-                  label={`Remover Todos`}
-                  color={Colors.CinzaBotao}
-                  bold
-                  alt="Remover todos os objetivos selecionados"
-                  id={`removerTodos`}
-                  height="38px !important"
-                  width="92px !important"
-                  fontSize="12px !important"
-                  padding="0px !important"
-                  steady
-                  border
-                  padding="0px !important"
-                  className="text-dark mt-3 mr-2 stretched-link"
-                  onClick={removerTodosObjetivoSelecionado}
-                />
-              ) : null}
+                bimestres[indice].objetivosAprendizagem.length > 0 &&
+                bimestres[indice].objetivosAprendizagem.filter(x => x.selected)
+                  .length > 1 ? (
+                  <Button
+                    key={`removerTodos`}
+                    label={`Remover Todos`}
+                    color={Colors.CinzaBotao}
+                    bold
+                    alt="Remover todos os objetivos selecionados"
+                    id={`removerTodos`}
+                    height="38px !important"
+                    width="92px !important"
+                    fontSize="12px !important"
+                    padding="0px !important"
+                    steady
+                    border
+                    padding="0px !important"
+                    className="text-dark mt-3 mr-2 stretched-link"
+                    onClick={removerTodosObjetivoSelecionado}
+                  />
+                ) : null}
             </div>
           )}
           <div className="mt-4">
@@ -332,6 +350,7 @@ const BimestreComponent = props => {
                   height="135px"
                   alt="Descrição do plano Anual"
                   disabled={disabled}
+                  stateAdicional={stateAdicionalTextEditor}
                   onClick={onClickTextEditor}
                   value={bimestres[indice].objetivo}
                   onBlur={onBlurTextEditor}
@@ -340,12 +359,12 @@ const BimestreComponent = props => {
             </fieldset>
             <Grid cols={12} className="p-0">
               <BoxAuditoria>
-              {bimestres[indice].criadoPor ? (
-                <H5>{bimestres[indice].criadoPor}</H5>
-              ) : null}
-              {bimestres[indice].alteradoPor ? (
-                <H5>{bimestres[indice].alteradoPor}</H5>
-              ) : null}
+                {bimestres[indice].criadoPor ? (
+                  <H5>{bimestres[indice].criadoPor}</H5>
+                ) : null}
+                {bimestres[indice].alteradoPor ? (
+                  <H5>{bimestres[indice].alteradoPor}</H5>
+                ) : null}
               </BoxAuditoria>
             </Grid>
           </div>
