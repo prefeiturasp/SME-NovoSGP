@@ -215,53 +215,27 @@ const DetalheNotificacao = ({ match }) => {
                     </div>
                     <div className="col-xs-12 col-md-11 col-lg-12">
                       <div className="timeline">
-                        <div className="timeline-item">
-                          <span>Notificação gerada</span>
-                          <br />
-                          <i className="fa fa-check-circle" />
-                          <div className="bar"></div>
-                          <br />
-                          <span className="timeline-data">
-                            15/08/2019 às 9:20 Sistema SGP
-                          </span>
-                        </div>
-                        <div className="timeline-item">
-                          <span>Notificação gerada</span>
-                          <br />
-                          <i className="fa fa-check-circle" />
-                          <div className="bar"></div>
-                          <br />
-                          <span className="timeline-data">
-                            15/08/2019 às 9:20 Sistema SGP
-                          </span>
-                        </div>
-                        <div className="timeline-item">
-                          <span>Notificação gerada</span>
-                          <br />
-                          <i className="fa fa-check-circle" />
-                          <br />
-                          <span className="timeline-data">
-                            15/08/2019 às 9:20 Sistema SGP
-                          </span>
-                        </div>
-                        <div className="timeline-item">
-                          <span>Notificação gerada</span>
-                          <br />
-                          <i className="fa fa-check-circle" />
-                          <br />
-                          <span className="timeline-data">
-                            15/08/2019 às 9:20 Sistema SGP
-                          </span>
-                        </div>
-                        <div className="timeline-item">
-                          <span>Notificação gerada</span>
-                          <br />
-                          <i className="fa fa-check-circle" />
-                          <br />
-                          <span className="timeline-data">
-                            15/08/2019 às 9:20 Sistema SGP
-                          </span>
-                        </div>
+                        <ol>
+                          <li>
+                            <i className="fa fa-check-circle" />
+                            hello welcome
+                          </li>
+                          <li>
+                            <i className="fa fa-check-circle" />
+                            hello welcome
+                          </li>
+                          <li>
+                            <i className="fa fa-check-circle" />
+                            hello welcome
+                          </li>
+                          <li>
+                            <i className="fa fa-check-circle" /> hello welcome
+                          </li>
+                          <li>
+                            <i className="fa fa-check-circle" />
+                            hello welcome
+                          </li>
+                        </ol>
                       </div>
                     </div>
                   </div>
