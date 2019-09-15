@@ -17,6 +17,10 @@ TextEditor.propTypes = {
   maxHeight: PropTypes.string,
   height: PropTypes.string,
   value: PropTypes.string,
+  disabled: PropTypes.bool,
+  onClick: PropTypes.func,
+  alt: PropTypes.string,
+  stateAdicional: PropTypes.object
 };
 
 export default TextEditor;

@@ -4,9 +4,16 @@ import React, { useState, useEffect } from 'react';
 import ReactQuill from 'react-quill';
 
 const TextEditor = React.forwardRef((props, ref) => {
-  const { value, onBlur, disabled, onClick, alt } = props;
+  const { value, onBlur, disabled, onClick, alt, stateAdicional } = props;
 
   useEffect(() => {
+
+    if (stateAdicional && stateAdicional.focado)
+      ref.current.focus();
+
+    if (stateAdicional && stateAdicional.lastRange)
+      ref.current.setEditorSelection(ref.current.getEditor(), stateAdicional.lastRange);
+
     return () => {
       if (onBlur) {
         if (value !== ref.current.state.value) onBlur(ref.current.state.value);
@@ -15,11 +22,15 @@ const TextEditor = React.forwardRef((props, ref) => {
   });
 
   const onBlurQuill = () => {
-    if (onBlur) onBlur(ref.current.state.value);
+
+    if (onBlur)
+      onBlur(ref.current.state.value);
   };
 
-  const onClickQuill = () => {
-    if (onClick) onClick();
+  const onClickQuill = (range) => {
+
+    if (onClick)
+      onClick(range);
   };
 
   return (
@@ -43,7 +54,7 @@ TextEditor.propTypes = {
 };
 
 TextEditor.defaultProps = {
-  onBlur: () => {},
+  onBlur: () => { },
   value: '',
 };
 
@@ -56,4 +67,9 @@ const toolbarOptions = [
 
 const modules = {
   toolbar: toolbarOptions,
+  keyboard: {
+    bindings: {
+      tab: false
+    }
+  }
 };
