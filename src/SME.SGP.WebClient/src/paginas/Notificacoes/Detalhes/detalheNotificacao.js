@@ -208,32 +208,38 @@ const DetalheNotificacao = ({ match }) => {
                 </div>
               </EstiloDetalhe>
               <EstiloTimeLine>
-                <span>SITUAÇÃO DA NOTIFICAÇÃO</span>
-                <div className="row">
-                  <ul className="timeline">
-                    <li className="timeline-item">
-                      <span>Notificação gerada</span>
-                      <br />
-                      <div className="badge">
-                        <i className="fa fa-check-circle" />
+                <div className="col-xs-12 col-md-12 col-lg-12">
+                  <div className="row">
+                    <div className="col-xs-12 col-md-12 col-lg-12">
+                      <p>SITUAÇÃO DA NOTIFICAÇÃO</p>
+                    </div>
+                    <div className="col-xs-12 col-md-11 col-lg-12">
+                      <div className="timeline">
+                        <ol>
+                          <li>
+                            <i className="fa fa-check-circle" />
+                            Notificação Gerada
+                          </li>
+                          <li>
+                            <i className="fa fa-check-circle" />
+                            Notificação Gerada
+                          </li>
+                          <li>
+                            <i className="fa fa-check-circle" />
+                            Notificação Gerada
+                          </li>
+                          <li>
+                            <i className="fa fa-check-circle" /> Notificação
+                            Gerada
+                          </li>
+                          <li>
+                            <i className="fa fa-check-circle" />
+                            Notificação Gerada
+                          </li>
+                        </ol>
                       </div>
-                      <div className="bar"></div>
-                      <br />
-                      <span className="timeline-data">
-                        15/08/2019 às 9:20 Sistema SGP
-                      </span>
-                    </li>
-                    <li className="timeline-item">
-                      <span>Notificação gerada</span>
-                      <br />
-                      <i className="fa fa-check-circle" />
-                      <div className="bar"></div>
-                      <br />
-                      <span className="timeline-data">
-                        15/08/2019 às 9:20 Sistema SGP
-                      </span>
-                    </li>
-                  </ul>
+                    </div>
+                  </div>
                 </div>
               </EstiloTimeLine>
             </Card>
