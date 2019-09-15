@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import Card from '~/componentes/card';
-import { EstiloDetalhe } from './estiloDetalhe';
+import { EstiloDetalhe } from './detalheNotificacao.css';
 import api from '~/servicos/api';
 import { erros, erro, sucesso, confirmar } from '~/servicos/alertas';
 import * as cores from '~/componentes/colors';
@@ -9,6 +9,7 @@ import Cabecalho from '~/componentes-sgp/cabecalho';
 import CampoTexto from '~/componentes/campoTexto';
 import { Formik, Form } from 'formik';
 import * as Yup from 'yup';
+import EstiloTimeLine from './timeline.css';
 
 const DetalheNotificacao = ({ match }) => {
   const [idNotificacao, setIdNotificacao] = useState('');
@@ -206,6 +207,66 @@ const DetalheNotificacao = ({ match }) => {
                   </div>
                 </div>
               </EstiloDetalhe>
+              <EstiloTimeLine>
+                <div className="col-xs-12 col-md-12 col-lg-12">
+                  <div className="row">
+                    <div className="col-xs-12 col-md-12 col-lg-12">
+                      <p>SITUAÇÃO DA NOTIFICAÇÃO</p>
+                    </div>
+                    <div className="col-xs-12 col-md-11 col-lg-12">
+                      <div className="timeline">
+                        <div className="timeline-item">
+                          <span>Notificação gerada</span>
+                          <br />
+                          <i className="fa fa-check-circle" />
+                          <div className="bar"></div>
+                          <br />
+                          <span className="timeline-data">
+                            15/08/2019 às 9:20 Sistema SGP
+                          </span>
+                        </div>
+                        <div className="timeline-item">
+                          <span>Notificação gerada</span>
+                          <br />
+                          <i className="fa fa-check-circle" />
+                          <div className="bar"></div>
+                          <br />
+                          <span className="timeline-data">
+                            15/08/2019 às 9:20 Sistema SGP
+                          </span>
+                        </div>
+                        <div className="timeline-item">
+                          <span>Notificação gerada</span>
+                          <br />
+                          <i className="fa fa-check-circle" />
+                          <br />
+                          <span className="timeline-data">
+                            15/08/2019 às 9:20 Sistema SGP
+                          </span>
+                        </div>
+                        <div className="timeline-item">
+                          <span>Notificação gerada</span>
+                          <br />
+                          <i className="fa fa-check-circle" />
+                          <br />
+                          <span className="timeline-data">
+                            15/08/2019 às 9:20 Sistema SGP
+                          </span>
+                        </div>
+                        <div className="timeline-item">
+                          <span>Notificação gerada</span>
+                          <br />
+                          <i className="fa fa-check-circle" />
+                          <br />
+                          <span className="timeline-data">
+                            15/08/2019 às 9:20 Sistema SGP
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </EstiloTimeLine>
             </Card>
           </Form>
         )}
