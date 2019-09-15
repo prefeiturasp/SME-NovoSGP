@@ -28,7 +28,28 @@ namespace SME.SGP.Dominio
 
             nivel.Workflow = this;
 
-            niveis.Add(nivel);
+            if (nivel.Id == 0)
+                niveis.Add(nivel);
+            else if (!niveis.Any(a => a.Id == nivel.Id))
+                niveis.Add(nivel);
+        }
+
+        public void Adicionar(long nivelId, Notificacao notificacao)
+        {
+            var nivel = niveis.FirstOrDefault(a => a.Id == nivelId);
+            if (nivel == null)
+                throw new NegocioException($"Não foi possível localizar o nível de Id {nivelId}");
+
+            nivel.Adicionar(notificacao);
+        }
+
+        public void Adicionar(long nivelId, Usuario usuario)
+        {
+            var nivel = niveis.FirstOrDefault(a => a.Id == nivelId);
+            if (nivel == null)
+                throw new NegocioException($"Não foi possível localizar o nível de Id {nivelId}");
+
+            nivel.Adicionar(usuario);
         }
 
         public IEnumerable<WorkflowAprovacaoNivel> ObtemNiveis(long nivel)
@@ -37,12 +58,19 @@ namespace SME.SGP.Dominio
                 .ToList();
         }
 
+        public IEnumerable<WorkflowAprovacaoNivel> ObtemNiveisUnicosEStatus()
+        {
+            return niveis
+                .OrderBy(a => a.Nivel)
+                .GroupBy(a => a.Nivel)
+                .Select(a => a.FirstOrDefault());
+        }
+
         public int ObtemPrimeiroNivel()
         {
             return niveis
-                .OrderByDescending(a => a.Nivel)
-                .GroupBy(a => a.Nivel)
-                .Select(a => a.Key)
+                .OrderBy(a => a.Nivel)
+                .Select(a => a.Nivel)
                 .FirstOrDefault();
         }
     }

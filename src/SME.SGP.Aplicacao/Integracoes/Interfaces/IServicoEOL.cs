@@ -3,25 +3,26 @@ using SME.SGP.Dto;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-using SME.SGP.Dto;
-using System.Collections.Generic;
-
 namespace SME.SGP.Aplicacao.Integracoes
 {
     public interface IServicoEOL
     {
+        Task<IEnumerable<DisciplinaResposta>> ObterDisciplinasPorProfessorETurma(long codigoTurma, string rfProfessor);
+
         IEnumerable<DreRespostaEolDto> ObterDres();
 
         IEnumerable<EscolasRetornoDto> ObterEscolasPorCodigo(string[] codigoUes);
 
         IEnumerable<EscolasRetornoDto> ObterEscolasPorDre(string dreId);
 
+        IEnumerable<UsuarioEolRetornoDto> ObterFuncionariosPorCargoUe(string UeId, long cargoId);
+
+        IEnumerable<ProfessorTurmaReposta> ObterListaTurmasPorProfessor(string codigoRf);
+
         IEnumerable<SupervisoresRetornoDto> ObterSupervisoresPorCodigo(string[] codigoUes);
 
         IEnumerable<SupervisoresRetornoDto> ObterSupervisoresPorDre(string dreId);
-        Task<IEnumerable<DisciplinaResposta>> ObterDisciplinasPorProfessorETurma(long codigoTurma, string rfProfessor);
 
         Task<IEnumerable<TurmaDto>> ObterTurmasAtribuidasAoProfessorPorEscolaEAnoLetivo(string rfProfessor, string codigoEscola, int anoLetivo);
-        IEnumerable<ProfessorTurmaReposta> ObterListaTurmasPorProfessor(string codigoRf);
     }
 }

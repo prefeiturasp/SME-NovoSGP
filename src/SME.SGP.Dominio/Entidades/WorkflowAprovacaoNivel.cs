@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 
 namespace SME.SGP.Dominio
 {
@@ -12,6 +13,7 @@ namespace SME.SGP.Dominio
         }
 
         public Cargo? Cargo { get; set; }
+
         public int Nivel { get; set; }
         public IEnumerable<Notificacao> Notificacoes { get { return notificacoes; } }
         public WorkflowAprovacaoNivelStatus Status { get; set; }
@@ -24,7 +26,10 @@ namespace SME.SGP.Dominio
         public void Adicionar(Notificacao notificacao)
         {
             if (notificacao != null)
-                notificacoes.Add(notificacao);
+            {
+                if (!notificacoes.Any(a => a.Id == notificacao.Id))
+                    notificacoes.Add(notificacao);
+            }
         }
 
         public void Adicionar(Usuario usuario)

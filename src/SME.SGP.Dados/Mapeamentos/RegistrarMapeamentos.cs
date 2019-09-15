@@ -25,7 +25,7 @@ namespace SME.SGP.Dados.Mapeamentos
                config.AddMap(new WorkflowAprovacaoMap());
                config.AddMap(new WorkflowAprovacaoNivelMap());
                config.AddMap(new WorkflowAprovacaoNivelNotificacaoMap());
-               //config.AddMap(new WorkflowAprovacaoNivelUsuarioMap());
+               config.AddMap(new WorkflowAprovacaoNivelUsuarioMap());
                config.AddMap(new UsuarioMap());
                config.ForDommel();
            });
