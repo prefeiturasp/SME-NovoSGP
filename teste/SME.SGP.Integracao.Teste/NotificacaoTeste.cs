@@ -171,11 +171,11 @@ namespace SME.SGP.Integracao.Teste
             var getResult = _fixture._clientApi.GetAsync($"api/v1/notificacoes?UsuarioId={notificacaoDto.UsuarioRf}").Result;
             var notificacoesDto = JsonConvert.DeserializeObject<IEnumerable<NotificacaoBasicaDto>>(getResult.Content.ReadAsStringAsync().Result);
 
-            //var jsonPut = new StringContent(JsonConvert.SerializeObject(notificacoesDto.Select(c => c.Id)), UnicodeEncoding.UTF8, "application/json");
+            var jsonPut = new StringContent(string.Empty, UnicodeEncoding.Default, "text/plain");
 
             var queryParameters = string.Join("&notificaoesId=", notificacoesDto.Select(a => a.Id.ToString()));
 
-            var putResult = _fixture._clientApi.PutAsync($"api/v1/notificacoes/status/lida?notificaoesId={queryParameters}", null).Result;
+            var putResult = _fixture._clientApi.PutAsync($"api/v1/notificacoes/status/lida?notificaoesId={queryParameters}", jsonPut).Result;
 
             Assert.True(putResult.IsSuccessStatusCode);
             getResult = _fixture._clientApi.GetAsync($"api/v1/notificacoes?UsuarioId={notificacaoDto.UsuarioRf}").Result;
