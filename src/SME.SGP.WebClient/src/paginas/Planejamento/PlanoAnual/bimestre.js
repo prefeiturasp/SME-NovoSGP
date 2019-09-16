@@ -5,6 +5,7 @@ import {
   ListItemButton,
   ListItem,
   H5,
+  BoxAuditoria,
 } from './bimestre.css';
 import CardCollapse from '../../../componentes/cardCollapse';
 import Grid from '../../../componentes/grid';
@@ -338,12 +339,14 @@ const BimestreComponent = props => {
               </form>
             </fieldset>
             <Grid cols={12} className="p-0">
+              <BoxAuditoria>
               {bimestres[indice].criadoPor ? (
                 <H5>{bimestres[indice].criadoPor}</H5>
               ) : null}
               {bimestres[indice].alteradoPor ? (
                 <H5>{bimestres[indice].alteradoPor}</H5>
               ) : null}
+              </BoxAuditoria>
             </Grid>
           </div>
         </Grid>

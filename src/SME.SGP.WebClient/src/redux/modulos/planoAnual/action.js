@@ -274,8 +274,9 @@ const _getStringPor = (responsavelPor, dataEM, operacao, rf) => {
     .padStart(2, '0');
   const mes = (data.getMonth() + 1).toString().padStart(2, '0');
   const ano = data.getFullYear();
-  const hora = data.getHours();
-  const minuto = data.getMinutes();
+  const hora = data.getHours().toString().padStart(2, '0');;
+  const minuto = data.getMinutes().toString().padStart(2, '0');;
+  const segundos = data.getSeconds().toString().padStart(2, '0');;
 
-  return `${operacao} por ${responsavelPor} ${rf} em ${dia}/${mes}/${ano} as ${hora}:${minuto}`;
+  return `${operacao} por ${responsavelPor} ${rf} em ${dia}/${mes}/${ano} ${hora}:${minuto}:${segundos}`;
 };
