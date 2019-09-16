@@ -46,7 +46,6 @@ const BreadcrumbSgp = () => {
       const itemHome = rotas.get("/");
       setItensBreadcrumb(itemHome);
     }
-    localStorage.setItem('rota-atual', window.location.pathname);
   };
 
   const setItensBreadcrumb = (item) => {
