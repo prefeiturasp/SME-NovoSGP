@@ -14,8 +14,8 @@ namespace SME.SGP.Dados.Repositorios
         {
         }
 
-        public IEnumerable<Notificacao> ObterPorDreOuEscolaOuStatusOuTurmoOuUsuarioOuTipoOuCategoriaOuTitulo(string dreId, string escolaId, int statusId,
-            string turmaId, string usuarioRf, int tipoId, int categoriaId, string titulo)
+        public IEnumerable<Notificacao> ObterPorDreOuEscolaOuStatusOuTurmoOuUsuarioOuTipoOuCategoriaOuTitulo(string dreId, string ueId, int statusId,
+            string turmaId, string usuarioRf, int tipoId, int categoriaId, string titulo, long codigo, int anoLetivo)
         {
             var query = new StringBuilder();
 
@@ -27,8 +27,8 @@ namespace SME.SGP.Dados.Repositorios
             if (!string.IsNullOrEmpty(dreId))
                 query.AppendLine("and n.dre_id = @dreId");
 
-            if (!string.IsNullOrEmpty(escolaId))
-                query.AppendLine("and n.escola_id = @escolaId");
+            if (!string.IsNullOrEmpty(ueId))
+                query.AppendLine("and n.ue_id = @ueId");
 
             if (!string.IsNullOrEmpty(turmaId))
                 query.AppendLine("and n.turma_id = @turmaId");
@@ -45,13 +45,19 @@ namespace SME.SGP.Dados.Repositorios
             if (categoriaId > 0)
                 query.AppendLine("and n.categoria = @categoriaId");
 
+            if (codigo > 0)
+                query.AppendLine("and n.codigo = @codigo");
+
+            if (anoLetivo > 0)
+                query.AppendLine("and EXTRACT(year FROM n.criado_em) = @anoLetivo");
+
             if (!string.IsNullOrEmpty(titulo))
             {
                 titulo = $"%{titulo}%";
                 query.AppendLine("and lower(f_unaccent(n.titulo)) LIKE @titulo ");
             }
 
-            return database.Conexao.Query<Notificacao>(query.ToString(), new { dreId, escolaId, turmaId, statusId, tipoId, usuarioRf, categoriaId, titulo });
+            return database.Conexao.Query<Notificacao>(query.ToString(), new { dreId, ueId, turmaId, statusId, tipoId, usuarioRf, categoriaId, titulo, codigo, anoLetivo });
         }
 
         public long ObterUltimoCodigoPorAno(int ano)
