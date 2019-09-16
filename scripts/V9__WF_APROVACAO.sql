@@ -1,7 +1,7 @@
 ﻿CREATE TABLE IF NOT EXISTS public.wf_aprovacao
 (
     id bigint NOT NULL generated always as identity,
-    escola_id varchar(15) NULL,
+    ue_id varchar(15) NULL,
     dre_id varchar(15) NULL,
 	ano int NULL,
 	turma_id varchar(15) NULL,

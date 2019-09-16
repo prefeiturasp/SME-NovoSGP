@@ -15,7 +15,7 @@
         public bool DeveAprovar { get { return Categoria == NotificacaoCategoria.Workflow_Aprovacao; } }
         public bool DeveMarcarComoLido { get { return Categoria == NotificacaoCategoria.Alerta && Status != NotificacaoStatus.Lida; } }
         public string DreId { get; set; }
-        public bool Excluida { get; private set; }
+        public bool Excluida { get; set; }
         public string Mensagem { get; set; }
         public bool PodeRemover { get { return Categoria == NotificacaoCategoria.Aviso && !Excluida; } }
         public NotificacaoStatus Status { get; set; }

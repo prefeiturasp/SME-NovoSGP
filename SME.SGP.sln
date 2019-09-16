@@ -27,6 +27,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "scripts", "scripts", "{CF91
 	ProjectSection(SolutionItems) = preProject
 		scripts\V10__WF_APROVACAO_NIVEL.sql = scripts\V10__WF_APROVACAO_NIVEL.sql
 		scripts\V11__WF_APROVACAO_NIVEIS_MENSAGEM.sql = scripts\V11__WF_APROVACAO_NIVEIS_MENSAGEM.sql
+		scripts\V12__WF_APROVACAO_NIVEL_USUARIO.sql = scripts\V12__WF_APROVACAO_NIVEL_USUARIO.sql
 		scripts\V1__AUDITORIA_CREATE.sql = scripts\V1__AUDITORIA_CREATE.sql
 		scripts\V2__PLANO_CICLO_CREATE.sql = scripts\V2__PLANO_CICLO_CREATE.sql
 		scripts\V3__TIPO_CICLO.sql = scripts\V3__TIPO_CICLO.sql
@@ -40,7 +41,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "scripts", "scripts", "{CF91
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SME.SGP.Aplicacao.Teste", "teste\SME.SGP.Aplicacao.Teste\SME.SGP.Aplicacao.Teste.csproj", "{028D1115-E688-4E18-938D-DAB534C5BFBF}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SME.SGP.Dominio.Teste", "teste\SME.SGP.Dominio.Teste\SME.SGP.Dominio.Teste.csproj", "{FD180A55-14AC-42D0-8D43-55E7DF03E113}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SME.SGP.Dominio.Teste", "teste\SME.SGP.Dominio.Teste\SME.SGP.Dominio.Teste.csproj", "{FD180A55-14AC-42D0-8D43-55E7DF03E113}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SME.SGP.Dominio.Servicos", "SME.SGP.Dominio.Servicos\SME.SGP.Dominio.Servicos.csproj", "{A051908A-A32C-437D-9E8F-57A2A6048689}"
 EndProject
