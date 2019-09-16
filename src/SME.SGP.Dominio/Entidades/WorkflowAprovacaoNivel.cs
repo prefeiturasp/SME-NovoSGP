@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace SME.SGP.Dominio
@@ -48,6 +49,12 @@ namespace SME.SGP.Dominio
             }
             this.Observacao = observacao;
             this.Status = status;
+        }
+
+        public void PodeAprovar()
+        {
+            if (Status != WorkflowAprovacaoNivelStatus.AguardandoAprovacao)
+                throw new NegocioException($"Não é possível aprovar/reprovar este nível pois o mesmo não está Aguardando Aprovação.");
         }
     }
 }

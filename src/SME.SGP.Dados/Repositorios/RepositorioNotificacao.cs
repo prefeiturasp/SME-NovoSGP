@@ -22,7 +22,8 @@ namespace SME.SGP.Dados.Repositorios
             query.AppendLine("select n.* from notificacao n");
             query.AppendLine("left join usuario u");
             query.AppendLine("on n.usuario_id = u.id");
-            query.AppendLine("where 1=1");
+
+            query.AppendLine("where excluida = false ");
 
             if (!string.IsNullOrEmpty(dreId))
                 query.AppendLine("and n.dre_id = @dreId");
@@ -56,6 +57,8 @@ namespace SME.SGP.Dados.Repositorios
                 titulo = $"%{titulo}%";
                 query.AppendLine("and lower(f_unaccent(n.titulo)) LIKE @titulo ");
             }
+
+            query.AppendLine("order by id desc");
 
             return database.Conexao.Query<Notificacao>(query.ToString(), new { dreId, ueId, turmaId, statusId, tipoId, usuarioRf, categoriaId, titulo, codigo, anoLetivo });
         }
