@@ -221,4 +221,8 @@ export default createGlobalStyle`
   .ant-modal-title{
     font-size: 24px !important;
   }
+
+  form{
+    width:100%;
+  }
 `;

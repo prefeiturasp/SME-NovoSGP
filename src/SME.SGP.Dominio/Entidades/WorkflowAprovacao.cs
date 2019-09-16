@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+
 namespace SME.SGP.Dominio
 {
     public class WorkflowAprovacao : EntidadeBase
@@ -11,13 +12,13 @@ namespace SME.SGP.Dominio
 
         public int Ano { get; set; }
         public string DreId { get; set; }
-        public string UeId { get; set; }
         public IEnumerable<WorkflowAprovacaoNivel> Niveis { get { return niveis; } }
         public string NotifacaoMensagem { get; set; }
         public string NotifacaoTitulo { get; set; }
-        public NotificacaoTipo NotificacaoTipo { get; set; }
         public NotificacaoCategoria NotificacaoCategoria { get; set; }
+        public NotificacaoTipo NotificacaoTipo { get; set; }
         public string TurmaId { get; set; }
+        public string UeId { get; set; }
         private List<WorkflowAprovacaoNivel> niveis { get; set; }
 
         public void Adicionar(WorkflowAprovacaoNivel nivel)
@@ -27,20 +28,82 @@ namespace SME.SGP.Dominio
 
             nivel.Workflow = this;
 
-            niveis.Add(nivel);
+            if (nivel.Id == 0)
+                niveis.Add(nivel);
+            else if (!niveis.Any(a => a.Id == nivel.Id))
+                niveis.Add(nivel);
         }
 
-        public void InicializarWorkflow()
+        public void Adicionar(long nivelId, Notificacao notificacao)
         {
+            var nivel = niveis.FirstOrDefault(a => a.Id == nivelId);
+            if (nivel == null)
+                throw new NegocioException($"Não foi possível localizar o nível de Id {nivelId}");
 
+            nivel.Adicionar(notificacao);
         }
+
+        public void Adicionar(long nivelId, Usuario usuario)
+        {
+            var nivel = niveis.FirstOrDefault(a => a.Id == nivelId);
+            if (nivel == null)
+                throw new NegocioException($"Não foi possível localizar o nível de Id {nivelId}");
+
+            nivel.Adicionar(usuario);
+        }
+
+        public IEnumerable<WorkflowAprovacaoNivel> ModificarStatusPorNivel(WorkflowAprovacaoNivelStatus status, int nivelNumero, string observacao)
+        {
+            var niveis = ObtemNiveis(nivelNumero);
+            foreach (var nivel in niveis)
+            {
+                nivel.ModificaStatus(status, observacao);
+                yield return nivel;
+            }
+        }
+
+        public IEnumerable<WorkflowAprovacaoNivel> ObtemNiveis(long nivel)
+        {
+            return niveis.Where(a => a.Nivel == nivel)
+                .ToList();
+        }
+
+        public IEnumerable<WorkflowAprovacaoNivel> ObtemNiveisParaEnvioPosAprovacao()
+        {
+            var nivelAtual = niveis
+                    .Where(a => a.Status == WorkflowAprovacaoNivelStatus.Aprovado)
+                    .FirstOrDefault()
+                    .Nivel;
+
+            var proximoNivel = niveis
+                .OrderBy(a => a.Nivel)
+                .FirstOrDefault(a => a.Status == WorkflowAprovacaoNivelStatus.SemStatus && a.Nivel > nivelAtual);
+
+            if (proximoNivel == null)
+                return null;
+
+            return ObtemNiveis(proximoNivel.Nivel);
+        }
+
+        public IEnumerable<WorkflowAprovacaoNivel> ObtemNiveisUnicosEStatus()
+        {
+            return niveis
+                .OrderBy(a => a.Nivel)
+                .GroupBy(a => a.Nivel)
+                .Select(a => a.FirstOrDefault());
+        }
+
         public int ObtemPrimeiroNivel()
         {
             return niveis
-                .OrderByDescending( a => a.Nivel)
-                .GroupBy(a => a.Nivel)
-                .Select(a => a.Key)
+                .OrderBy(a => a.Nivel)
+                .Select(a => a.Nivel)
                 .FirstOrDefault();
+        }
+
+        public WorkflowAprovacaoNivel ObterNivelPorNotificacaoId(long notificacaoId)
+        {
+            return niveis.FirstOrDefault(a => a.Notificacoes.Any(b => b.Id == notificacaoId));
         }
     }
 }

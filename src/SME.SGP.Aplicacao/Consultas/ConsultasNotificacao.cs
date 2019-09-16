@@ -21,8 +21,8 @@ namespace SME.SGP.Aplicacao
         public IEnumerable<NotificacaoBasicaDto> Listar(NotificacaoFiltroDto filtroNotificacaoDto)
         {
             var retorno = repositorioNotificacao.ObterPorDreOuEscolaOuStatusOuTurmoOuUsuarioOuTipoOuCategoriaOuTitulo(filtroNotificacaoDto.DreId,
-                filtroNotificacaoDto.EscolaId, (int)filtroNotificacaoDto.Status, filtroNotificacaoDto.TurmaId, filtroNotificacaoDto.UsuarioId,
-                (int)filtroNotificacaoDto.Tipo, (int)filtroNotificacaoDto.Categoria, filtroNotificacaoDto.Titulo);
+                filtroNotificacaoDto.UeId, (int)filtroNotificacaoDto.Status, filtroNotificacaoDto.TurmaId, filtroNotificacaoDto.UsuarioId,
+                (int)filtroNotificacaoDto.Tipo, (int)filtroNotificacaoDto.Categoria, filtroNotificacaoDto.Titulo, filtroNotificacaoDto.Codigo, filtroNotificacaoDto.AnoLetivo);
 
             return from r in retorno
                    select new NotificacaoBasicaDto()
@@ -30,7 +30,9 @@ namespace SME.SGP.Aplicacao
                        Id = r.Id,
                        Titulo = r.Titulo,
                        Data = r.CriadoEm.ToString(),
-                       Status = r.Status.ToString(),
+                       DescricaoStatus = r.Status.ToString(),
+                       Status = r.Status,
+                       Categoria = r.Categoria,
                        Tipo = r.Tipo.GetAttribute<DisplayAttribute>().Name,
                        Codigo = r.CodigoFormatado
                    };
@@ -98,7 +100,10 @@ namespace SME.SGP.Aplicacao
                 Titulo = retorno.Titulo,
                 MostrarBotaoRemover = retorno.PodeRemover,
                 MostrarBotoesDeAprovacao = retorno.DeveAprovar,
-                MostrarBotaoMarcarComoLido = retorno.DeveMarcarComoLido
+                MostrarBotaoMarcarComoLido = retorno.DeveMarcarComoLido,
+                CategoriaId = (int)retorno.Categoria,
+                TipoId = (int)retorno.Tipo,
+                StatusId = (int)retorno.Status
             };
         }
     }

@@ -1,22 +1,26 @@
-﻿using System;
+﻿using SME.SGP.Dominio;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Text;
+using System.Linq;
 
 namespace SME.SGP.Dto
 {
-    public class WorkflowAprovacaoNivelDto
+    public class WorkflowAprovacaoNivelDto : IValidatableObject
     {
+        public Cargo? Cargo { get; set; }
+
         [Required(ErrorMessage = "É necessário informar o nível.")]
         public int Nivel { get; set; }
 
-        [Required(ErrorMessage = "É necessário informar o usuário.")]
-        [MinLength(1, ErrorMessage = "É necessário informar o usuário.")]
-        public string UsuarioId { get; set; }
+        public string[] UsuariosRf { get; set; }
 
-        [Required(ErrorMessage = "É necessário informar a descrição do nível.")]
-        [MinLength(3, ErrorMessage = "Descrição do nível deve conter no mínimo 3 caracteres.")]
-        public string Descricao { get; set; }
+        public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
+        {
+            if (UsuariosRf != null && (UsuariosRf.Count() > 0 && Cargo.HasValue))
+                yield return new ValidationResult($"O nível {this.Nivel} deve conter apenas Cargo ou Usuários");
 
+            if (UsuariosRf != null && (UsuariosRf.Count() == 0 && !Cargo.HasValue))
+                yield return new ValidationResult($"O nível {this.Nivel} deve conter Cargo ou Usuários");
+        }
     }
 }

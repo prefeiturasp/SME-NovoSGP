@@ -43,6 +43,7 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IConsultasSupervisor, ConsultasSupervisor>();
             services.TryAddScoped<IConsultaDres, ConsultaDres>();
             services.TryAddScoped<IConsultasNotificacao, ConsultasNotificacao>();
+            services.TryAddScoped<IConsultasWorkflowAprovacao, ConsultasWorkflowAprovacao>();
         }
 
         private static void RegistrarContextos(IServiceCollection services)
@@ -69,12 +70,14 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IRepositorioWorkflowAprovacaoNivelNotificacao, RepositorioWorkflowAprovaNivelNotificacao>();
             services.TryAddScoped<IRepositorioWorkflowAprovacaoNivel, RepositorioWorkflowAprovacaoNivel>();
             services.TryAddScoped<IRepositorioUsuario, RepositorioUsuario>();
+            services.TryAddScoped<IRepositorioWorkflowAprovacaoNivelUsuario, RepositorioWorkflowAprovacaoNivelUsuario>();
         }
 
         private static void RegistrarServicos(IServiceCollection services)
         {
-            services.TryAddScoped<IServicoWorkflowAprovaNivel, ServicoWorkflowAprovaNivel>();
+            services.TryAddScoped<IServicoWorkflowAprovacao, ServicoWorkflowAprovacao>();
             services.TryAddScoped<IServicoNotificacao, ServicoNotificacao>();
+            services.TryAddScoped<IServicoUsuario, ServicoUsuario>();
         }
     }
 }

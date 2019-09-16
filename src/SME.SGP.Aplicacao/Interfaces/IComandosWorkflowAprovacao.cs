@@ -4,6 +4,8 @@ namespace SME.SGP.Aplicacao
 {
     public interface IComandosWorkflowAprovacao
     {
-        void Salvar(WorkflowAprovacaoNiveisDto workflowAprovacaoNiveisDto);
+        void Aprovar(bool aprovar, long notificacaoId, string observacao);
+
+        void Salvar(WorkflowAprovacaoDto workflowAprovacaoNiveisDto);
     }
 }

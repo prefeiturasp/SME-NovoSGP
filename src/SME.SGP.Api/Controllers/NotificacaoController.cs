@@ -20,6 +20,14 @@ namespace SME.SGP.Api.Controllers
             this.consultasNotificacao = consultasNotificacao ?? throw new System.ArgumentNullException(nameof(consultasNotificacao));
         }
 
+        [HttpDelete]
+        [ProducesResponseType(200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        public IActionResult Delete([FromQuery]IList<long> notificaoesId)
+        {
+            return Ok(comandosNotificacao.Excluir(notificaoesId));
+        }
+
         [HttpGet]
         [ProducesResponseType(typeof(IEnumerable<NotificacaoBasicaDto>), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
@@ -35,6 +43,15 @@ namespace SME.SGP.Api.Controllers
         public IActionResult Get(long notificacaoId)
         {
             return Ok(consultasNotificacao.Obter(notificacaoId));
+        }
+
+        [HttpPut]
+        [ProducesResponseType(200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [Route("status/lida")]
+        public IActionResult MarcarComoLida(IList<long> notificaoesId)
+        {
+            return Ok(comandosNotificacao.MarcarComoLida(notificaoesId));
         }
 
         [HttpGet]
