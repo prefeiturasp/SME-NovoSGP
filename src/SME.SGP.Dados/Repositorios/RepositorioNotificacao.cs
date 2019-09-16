@@ -31,7 +31,7 @@ namespace SME.SGP.Dados.Repositorios
             return database.Conexao.Query<Notificacao>(query.ToString(), new { anoLetivo, usuarioRf, limite, excluida = false });
         }
 
-        public int ObterQuantidadeNotificacoesPorAnoLetivoERf(int anoLetivo, string usuarioRf)
+        public int ObterQuantidadeNotificacoesNaoLidasPorAnoLetivoERf(int anoLetivo, string usuarioRf)
         {
             var query = new StringBuilder();
 
@@ -40,9 +40,10 @@ namespace SME.SGP.Dados.Repositorios
             query.AppendLine("on n.usuario_id = u.id");
             query.AppendLine("where u.rf_codigo = @usuarioRf");
             query.AppendLine("and excluida = @excluida");
+            query.AppendLine("and n.status = @naoLida");
             query.AppendLine("and EXTRACT(year FROM n.criado_em) = @anoLetivo");
 
-            return database.Conexao.QueryFirst<int>(query.ToString(), new { anoLetivo, usuarioRf, excluida = false });
+            return database.Conexao.QueryFirst<int>(query.ToString(), new { anoLetivo, usuarioRf, excluida = false, naoLida = (int)NotificacaoStatus.Pendente });
         }
 
         public IEnumerable<Notificacao> ObterPorDreOuEscolaOuStatusOuTurmoOuUsuarioOuTipoOuCategoriaOuTitulo(string dreId, string ueId, int statusId,

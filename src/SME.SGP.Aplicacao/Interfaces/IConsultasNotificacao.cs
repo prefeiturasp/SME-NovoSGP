@@ -11,7 +11,7 @@ namespace SME.SGP.Aplicacao
 
         NotificacaoBasicaListaDto ListarNotificacaoBasica(int anoLetivo, string usuarioRf);
 
-        int QuantidadeNotificacoes(int anoLetivo, string usuarioRf);
+        int QuantidadeNotificacoesNaoLidas(int anoLetivo, string usuarioRf);
 
         NotificacaoDetalheDto Obter(long notificacaoId);
 

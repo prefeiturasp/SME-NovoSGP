@@ -102,12 +102,12 @@ namespace SME.SGP.Api.Controllers
         [HttpGet]
         [ProducesResponseType(typeof(object), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        [Route("quantidade")]
-        public IActionResult ObtemQuantidade(int anoLetivo, string usuarioRf)
+        [Route("quantidade/naolidas")]
+        public IActionResult ObtemQuantidadeNaoLida(int anoLetivo, string usuarioRf)
         {
             return Ok(new
             {
-                quantidade = consultasNotificacao.QuantidadeNotificacoes(anoLetivo, usuarioRf)
+                quantidade = consultasNotificacao.QuantidadeNotificacoesNaoLidas(anoLetivo, usuarioRf)
             });
         }
     }
