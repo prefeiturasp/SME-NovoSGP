@@ -23,11 +23,12 @@ namespace SME.SGP.Dados.Repositorios
             query.AppendLine("on n.usuario_id = u.id");
             query.AppendLine("where u.rf_codigo = @usuarioRf");
             query.AppendLine("and EXTRACT(year FROM n.criado_em) = @anoLetivo");
+            query.AppendLine("and excluida = @excluida");
             query.AppendLine("order by n.status asc, n.criado_em desc");
             query.AppendLine("limit @limite");
-            
 
-            return database.Conexao.Query<Notificacao>(query.ToString(), new { anoLetivo, usuarioRf, limite });
+
+            return database.Conexao.Query<Notificacao>(query.ToString(), new { anoLetivo, usuarioRf, limite, excluida = false });
         }
 
         public int ObterQuantidadeNotificacoesPorAnoLetivoERf(int anoLetivo, string usuarioRf)

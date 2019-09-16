@@ -32,6 +32,10 @@ const Principal = props => {
   }, []);
 
   useEffect(() => {
+    console.log(FiltroStore);
+  }, [turmaSelecionada]);
+
+  useEffect(() => {
     validarFiltro();
   }, [FiltroStore]);
 

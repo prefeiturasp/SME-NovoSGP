@@ -93,7 +93,7 @@ namespace SME.SGP.Api.Controllers
         [HttpGet]
         [ProducesResponseType(typeof(NotificacaoBasicaListaDto), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        [Route("{usuarioRf}/obtenha/{anoLetivo}")]
+        [Route("resumo")]
         public IActionResult ObtenhaPorRFAnoLetivo(int anoLetivo, string usuarioRf)
         {
             return Ok(consultasNotificacao.ListarNotificacaoBasica(anoLetivo, usuarioRf));
@@ -102,7 +102,7 @@ namespace SME.SGP.Api.Controllers
         [HttpGet]
         [ProducesResponseType(typeof(object), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        [Route("{usuarioRf}/quantidade/{anoLetivo}")]
+        [Route("quantidade")]
         public IActionResult ObtemQuantidade(int anoLetivo, string usuarioRf)
         {
             return Ok(new
