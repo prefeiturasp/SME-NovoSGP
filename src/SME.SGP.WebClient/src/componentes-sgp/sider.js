@@ -20,13 +20,13 @@ const Sider = () => {
     verificaSelecaoMenu(NavegacaoStore.activeRoute);
   }, [NavegacaoStore.activeRoute]);
 
-  const verificaSelecaoMenu = (rotaAtiva) => {
+  const verificaSelecaoMenu = rotaAtiva => {
     const rota = NavegacaoStore.rotas.get(rotaAtiva);
     setOpenKeys([]);
-    if (rota.limpaSelecaoMenu) {
+    if (rota && rota.limpaSelecaoMenu) {
       setItemMenuSelecionado([]);
     }
-  }
+  };
 
   const toggleCollapsed = () => {
     setOpenKeys([]);
@@ -43,13 +43,17 @@ const Sider = () => {
     }
   };
 
-  const selecionarItem = (item) => setItemMenuSelecionado([item.key]);
+  const selecionarItem = item => setItemMenuSelecionado([item.key]);
 
   return (
     <MenuBody id="main" style={{ width: collapsed ? '115px' : '250px' }}>
       <Sider
-        style={{ background: Base.Roxo, height: '100%' }} collapsed={collapsed} onCollapse={collapsed}
-        width="250px" collapsedWidth="115px">
+        style={{ background: Base.Roxo, height: '100%' }}
+        collapsed={collapsed}
+        onCollapse={collapsed}
+        width="250px"
+        collapsedWidth="115px"
+      >
         <Topo>
           <div className="conteudo">
             <a className="arrow" onClick={toggleCollapsed}>
@@ -97,8 +101,8 @@ const Sider = () => {
               theme="dark"
               openKeys={openKeys}
               onOpenChange={onOpenChange}
-              onSelect = {selecionarItem.bind(itemMenuSelecionado)}
-              selectedKeys = {itemMenuSelecionado}
+              onSelect={selecionarItem.bind(itemMenuSelecionado)}
+              selectedKeys={itemMenuSelecionado}
             >
               <SubMenu
                 id="diarioClasse"
@@ -108,7 +112,7 @@ const Sider = () => {
                     <i
                       className={`fas fa-book-reader ${
                         collapsed ? 'icons-retraido' : 'icons'
-                        }`}
+                      }`}
                     />
                     <span>Diário de Classe</span>
                   </div>
@@ -150,7 +154,7 @@ const Sider = () => {
                     <i
                       className={`fas fa-list-alt ${
                         collapsed ? 'icons-retraido' : 'icons'
-                        }`}
+                      }`}
                     />
                     <span>Planejamento</span>
                   </div>
@@ -181,7 +185,7 @@ const Sider = () => {
                     <i
                       className={`fas fa-pencil-ruler ${
                         collapsed ? 'icons-retraido' : 'icons'
-                        }`}
+                      }`}
                     />
                     <span>Fechamento</span>
                   </div>
@@ -205,7 +209,7 @@ const Sider = () => {
                     <i
                       className={`fas fa-file-alt ${
                         collapsed ? 'icons-retraido' : 'icons'
-                        }`}
+                      }`}
                     />
                     <span>Relatórios</span>
                   </div>
@@ -244,12 +248,17 @@ const Sider = () => {
                     <i
                       className={`fas fa-user-cog ${
                         collapsed ? 'icons-retraido' : 'icons'
-                        }`}
+                      }`}
                     />
                     <span>Gestão</span>
                   </div>
-                }>
-                <Menu.Item key="90" id="gesCalendarioEscolar" className="popup-gestao">
+                }
+              >
+                <Menu.Item
+                  key="90"
+                  id="gesCalendarioEscolar"
+                  className="popup-gestao"
+                >
                   <span className="menuItem">Calendário Escolar</span>
                 </Menu.Item>
                 <Menu.Item key="91" id="gesAtribuicaoCj">
@@ -263,7 +272,11 @@ const Sider = () => {
                 </Menu.Item>
                 <Menu.Item key="94" id="gesAtribuicaoSupervisor">
                   <span className="menuItem">Atribuição Supervisor</span>
-                  <Link to="/gestao/atribuicao-supervisor-lista" className="nav-link text-white" id="linkAtribuicaoSupervisor" />
+                  <Link
+                    to="/gestao/atribuicao-supervisor-lista"
+                    className="nav-link text-white"
+                    id="linkAtribuicaoSupervisor"
+                  />
                 </Menu.Item>
               </SubMenu>
               <SubMenu
@@ -275,7 +288,7 @@ const Sider = () => {
                     <i
                       className={`fas fa-cog ${
                         collapsed ? 'icons-retraido' : 'icons'
-                        }`}
+                      }`}
                     />
                     <span>Configurações</span>
                   </div>

@@ -6,6 +6,7 @@ using SME.SGP.Dados.Contexto;
 using SME.SGP.Dados.Repositorios;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
+using SME.SGP.Dominio.Servicos;
 
 namespace SME.SGP.IoC
 {
@@ -17,6 +18,7 @@ namespace SME.SGP.IoC
             RegistrarContextos(services);
             RegistrarComandos(services);
             RegistrarConsultas(services);
+            RegistrarServicos(services);
         }
 
         private static void RegistrarComandos(IServiceCollection services)
@@ -24,6 +26,8 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IComandosPlanoCiclo, ComandosPlanoCiclo>();
             services.TryAddScoped<IComandosPlanoAnual, ComandosPlanoAnual>();
             services.TryAddScoped<IComandosSupervisor, ComandosSupervisor>();
+            services.TryAddScoped<IComandosNotificacao, ComandosNotificacao>();
+            services.TryAddScoped<IComandosWorkflowAprovacao, ComandosWorkflowAprovacao>();
         }
 
         private static void RegistrarConsultas(IServiceCollection services)
@@ -38,6 +42,7 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IConsultasProfessor, ConsultasProfessor>();
             services.TryAddScoped<IConsultasSupervisor, ConsultasSupervisor>();
             services.TryAddScoped<IConsultaDres, ConsultaDres>();
+            services.TryAddScoped<IConsultasNotificacao, ConsultasNotificacao>();
         }
 
         private static void RegistrarContextos(IServiceCollection services)
@@ -58,8 +63,19 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IRepositorioObjetivoAprendizagemPlano, RepositorioObjetivoAprendizagemPlano>();
             services.TryAddScoped<IRepositorioCache, RepositorioCache>();
             services.TryAddScoped<IRepositorioComponenteCurricular, RepositorioComponenteCurricular>();
-            //services.TryAddScoped<IRepositorioProfessorTurma, RepositorioProfessorTurma>();
             services.TryAddScoped<IRepositorioSupervisorEscolaDre, RepositorioSupervisorEscolaDre>();
+            services.TryAddScoped<IRepositorioNotificacao, RepositorioNotificacao>();
+            services.TryAddScoped<IRepositorioWorkflowAprovacao, RepositorioWorkflowAprovacao>();
+            services.TryAddScoped<IRepositorioWorkflowAprovacaoNivelNotificacao, RepositorioWorkflowAprovaNivelNotificacao>();
+            services.TryAddScoped<IRepositorioWorkflowAprovacaoNivel, RepositorioWorkflowAprovacaoNivel>();
+            services.TryAddScoped<IRepositorioUsuario, RepositorioUsuario>();
+        }
+
+        private static void RegistrarServicos(IServiceCollection services)
+        {
+            services.TryAddScoped<IServicoWorkflowAprovacao, ServicoWorkflowAprovacao>();
+            services.TryAddScoped<IServicoNotificacao, ServicoNotificacao>();
+            services.TryAddScoped<IServicoUsuario, ServicoUsuario>();
         }
     }
 }

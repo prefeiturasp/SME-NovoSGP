@@ -3,6 +3,7 @@ const Colors = {
   AzulAnakiwa: 'AzulAnakiwa',
   Roxo: 'Roxo',
   CinzaBotao: 'CinzaBotao',
+  Vermelho: 'Vermelho',
 };
 
 const Base = {
@@ -24,6 +25,7 @@ const Base = {
   RoxoClaro: '#B99FFF',
   RoxoNotificacao: '#E7E6F8',
   VermelhoNotificacao: '#B40C02',
+  Vermelho: '#B40C02',
 };
 
 const Active = {
@@ -31,11 +33,13 @@ const Active = {
   AzulAnakiwa: Base.AzulAnakiwa,
   Roxo: Base.Roxo,
   CinzaBotao: Base.CinzaBotao,
+  Vermelho: Base.Vermelho,
 };
 
 const Hover = {
   Azul: '#064F79',
   Roxo: '#490CF5',
+  Vermelho: '#ad0007',
 };
 
 export { Colors, Base, Active, Hover };
