@@ -304,7 +304,7 @@ const Sider = () => {
                 <img src={LogoMenuFooter} />
               </div>
               <div className="descricao">
-                <span>SME-SP-SGA - Distribuído sob a Licença AGPL V3</span>
+                <span>SME-SP-SGP - Distribuído sob a Licença AGPL V3</span>
               </div>
             </Footer>
           </DivFooter>
