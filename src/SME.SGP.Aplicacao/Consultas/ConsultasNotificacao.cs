@@ -38,7 +38,7 @@ namespace SME.SGP.Aplicacao
                    };
         }
 
-        public IEnumerable<NotificacaoBasicaDto> Listar(int anoLetivo, string usuarioRf, int limite = 5)
+        public IEnumerable<NotificacaoBasicaDto> ListarPorAnoLetivoRf(int anoLetivo, string usuarioRf, int limite = 5)
         {
             var notificacao = repositorioNotificacao.ObterNotificacoesPorAnoLetivoERf(anoLetivo, usuarioRf, limite);
 
@@ -60,11 +60,11 @@ namespace SME.SGP.Aplicacao
             return repositorioNotificacao.ObterQuantidadeNotificacoesNaoLidasPorAnoLetivoERf(anoLetivo, usuarioRf);
         }
 
-        public NotificacaoBasicaListaDto ListarNotificacaoBasica(int anoLetivo, string usuarioRf)
+        public NotificacaoBasicaListaDto ObterNotificacaoBasicaLista(int anoLetivo, string usuarioRf)
         {
             return new NotificacaoBasicaListaDto
             {
-                Notificacoes = Listar(anoLetivo, usuarioRf),
+                Notificacoes = ListarPorAnoLetivoRf(anoLetivo, usuarioRf),
                 QuantidadeNaoLidas = QuantidadeNotificacoesNaoLidas(anoLetivo, usuarioRf)
             };
         }
