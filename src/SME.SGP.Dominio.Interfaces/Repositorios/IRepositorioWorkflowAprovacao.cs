@@ -4,7 +4,7 @@ namespace SME.SGP.Dominio.Interfaces
 {
     public interface IRepositorioWorkflowAprovacao : IRepositorioBase<WorkflowAprovacao>
     {
-        WorkflowAprovacao ObterComNiveisPorId(long id);
+        WorkflowAprovacao ObterEntidadeCompleta(long workflowId = 0, long notificacaoId = 0);
 
         IEnumerable<WorkflowAprovacao> ObterNiveisPorCodigo(string codigo);
     }

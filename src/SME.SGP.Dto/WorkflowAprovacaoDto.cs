@@ -1,10 +1,11 @@
 ﻿using SME.SGP.Dominio;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.Linq;
 
 namespace SME.SGP.Dto
 {
-    public class WorkflowAprovacaoDto
+    public class WorkflowAprovacaoDto : IValidatableObject
     {
         public WorkflowAprovacaoDto()
         {
@@ -28,5 +29,20 @@ namespace SME.SGP.Dto
 
         public string TurmaId { get; set; }
         public string UeId { get; set; }
+
+        public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
+        {
+            if (Niveis == null || Niveis.Count == 0)
+                yield return new ValidationResult("No mínimo 1 nível deve ser informado.");
+
+            if (Niveis != null)
+            {
+                if (Niveis.Count(a => a.Cargo.HasValue) > 0)
+                {
+                    if (string.IsNullOrEmpty(UeId))
+                        yield return new ValidationResult("Este workflow possui níveis com cargo e é necessário informar a Ue.");
+                }
+            }
+        }
     }
 }

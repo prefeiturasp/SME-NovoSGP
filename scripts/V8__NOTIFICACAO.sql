@@ -11,7 +11,7 @@
 	ano int NULL,		
 	codigo bigint NOT NULL,
 	turma_id varchar(15) NULL,    
-	excluida BOOLEAN NOT NULL DEFAULT false,
+	excluida BOOLEAN NOT NULL,
 	usuario_id bigint NULL,
     criado_em timestamp without time zone NOT NULL,
     criado_por character varying(200) COLLATE pg_catalog."default" NOT NULL,
