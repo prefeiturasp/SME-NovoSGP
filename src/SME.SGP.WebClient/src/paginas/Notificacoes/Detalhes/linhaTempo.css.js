@@ -1,4 +1,5 @@
 import styled from 'styled-components';
+
 const EstiloTimeline = styled.div`
   width: 100%;
   p {

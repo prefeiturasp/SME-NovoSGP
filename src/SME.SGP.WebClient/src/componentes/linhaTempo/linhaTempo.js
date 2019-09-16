@@ -6,9 +6,9 @@ const LinhaTempo = props => {
 
   const obterEstiloPorStatus = status => {
     switch (status) {
-      case 'aprovado':
+      case 2:
         return 'active';
-      case 'reprovado':
+      case 3:
         return 'disapproved';
       default:
         return '';
