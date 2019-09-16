@@ -1,18 +1,47 @@
 import React, { useEffect, useState } from 'react';
+import { Formik, Form } from 'formik';
+import * as Yup from 'yup';
+import { erros, erro, sucesso, confirmar } from '~/servicos/alertas';
 import Card from '~/componentes/card';
 import { EstiloDetalhe } from './detalheNotificacao.css';
 import api from '~/servicos/api';
-import { erros, erro, sucesso, confirmar } from '~/servicos/alertas';
 import * as cores from '~/componentes/colors';
 import Button from '~/componentes/button';
 import Cabecalho from '~/componentes-sgp/cabecalho';
 import CampoTexto from '~/componentes/campoTexto';
-import { Formik, Form } from 'formik';
-import * as Yup from 'yup';
 import EstiloTimeLine from './timeline.css';
+import LinhaTempo from '~/componentes/linhaTempo/linhaTempo';
 
 const DetalheNotificacao = ({ match }) => {
   const [idNotificacao, setIdNotificacao] = useState('');
+  const [listaDeStatus, setListaDeStatus] = useState([
+    {
+      titulo: 'Solicitação Realizada',
+      status: 'aprovado',
+      timestamp: '25/04/2019 às 9:20',
+      rf: '7972324',
+      nome: 'João da Silva',
+    },
+    {
+      titulo: 'Reprovado da DRE',
+      status: 'reprovado',
+      timestamp: '25/04/2019 às 9:20',
+      rf: '7972324',
+      nome: 'João da Silva',
+    },
+    {
+      titulo: 'Cancelado pela CODAE',
+      status: 'cancelado',
+      timestamp: '25/04/2019 às 9:20',
+      rf: '7972324',
+      nome: 'João da Silva',
+    },
+    {
+      titulo: 'Visualizado pela Terceirizada',
+      status: null,
+      timestamp: null,
+    },
+  ]);
 
   const [notificacao, setNotificacao] = useState({
     alteradoEm: '',
@@ -213,31 +242,8 @@ const DetalheNotificacao = ({ match }) => {
                     <div className="col-xs-12 col-md-12 col-lg-12">
                       <p>SITUAÇÃO DA NOTIFICAÇÃO</p>
                     </div>
-                    <div className="col-xs-12 col-md-11 col-lg-12">
-                      <div className="timeline">
-                        <ol>
-                          <li>
-                            <i className="fa fa-check-circle" />
-                            Notificação Gerada
-                          </li>
-                          <li>
-                            <i className="fa fa-check-circle" />
-                            Notificação Gerada
-                          </li>
-                          <li>
-                            <i className="fa fa-check-circle" />
-                            Notificação Gerada
-                          </li>
-                          <li>
-                            <i className="fa fa-check-circle" /> Notificação
-                            Gerada
-                          </li>
-                          <li>
-                            <i className="fa fa-check-circle" />
-                            Notificação Gerada
-                          </li>
-                        </ol>
-                      </div>
+                    <div className="col-xs-12 col-md-12 col-lg-12">
+                      <LinhaTempo listaDeStatus={listaDeStatus} />
                     </div>
                   </div>
                 </div>
