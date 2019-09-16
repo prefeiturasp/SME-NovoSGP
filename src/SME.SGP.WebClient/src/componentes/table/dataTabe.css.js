@@ -51,7 +51,6 @@ export const Container = styled.div`
       font-style: normal;
       font-stretch: normal;
       letter-spacing: normal;
-      color: #ffffff;
     }
   }
 
