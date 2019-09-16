@@ -23,9 +23,9 @@ namespace SME.SGP.Api.Controllers
         [HttpDelete]
         [ProducesResponseType(200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        public IActionResult Delete([FromQuery]IList<long> notificaoesId)
+        public IActionResult Delete([FromQuery]long[] notificacoesId)
         {
-            return Ok(comandosNotificacao.Excluir(notificaoesId));
+            return Ok(comandosNotificacao.Excluir(notificacoesId));
         }
 
         [HttpGet]

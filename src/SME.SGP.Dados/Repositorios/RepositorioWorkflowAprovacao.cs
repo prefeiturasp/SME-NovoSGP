@@ -47,20 +47,20 @@ namespace SME.SGP.Dados.Repositorios
             var lookup = new Dictionary<long, WorkflowAprovacao>();
 
             database.Conexao.Query<WorkflowAprovacao, WorkflowAprovacaoNivel, Notificacao, Usuario, WorkflowAprovacao>(query.ToString(),
-                 (wf, wfn, n, u) =>
+                 (workflow, workflowNivel, notificacao, usuario) =>
                 {
                     WorkflowAprovacao workflowAprovacao;
-                    if (!lookup.TryGetValue(wf.Id, out workflowAprovacao))
+                    if (!lookup.TryGetValue(workflow.Id, out workflowAprovacao))
                     {
-                        workflowAprovacao = wf;
-                        lookup.Add(wf.Id, workflowAprovacao);
+                        workflowAprovacao = workflow;
+                        lookup.Add(workflow.Id, workflowAprovacao);
                     }
-                    workflowAprovacao.Adicionar(wfn);
-                    workflowAprovacao.Adicionar(wfn.Id, n);
-                    workflowAprovacao.Adicionar(wfn.Id, u);
+                    workflowAprovacao.Adicionar(workflowNivel);
+                    workflowAprovacao.Adicionar(workflowNivel.Id, notificacao);
+                    workflowAprovacao.Adicionar(workflowNivel.Id, usuario);
 
                     return workflowAprovacao;
-                }, param: new { workflowId, notificacaoId }, splitOn: "Id").FirstOrDefault();
+                }, param: new { workflowId, notificacaoId }).FirstOrDefault();
 
             return lookup.Values.FirstOrDefault();
         }
