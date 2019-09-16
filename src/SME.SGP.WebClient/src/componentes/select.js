@@ -8,6 +8,10 @@ import { Base } from './colors';
 import Label from './label';
 
 const Container = styled.div`
+  .ant-select {
+    width: 100%;
+  }
+
   .ant-select-arrow {
     color: ${Base.CinzaMako};
   }
