@@ -144,9 +144,10 @@ export function PrePost() {
   };
 }
 
-export function PosPost() {
+export function PosPost(recarregar) {
   return {
     type: '@bimestres/PosPostBimestre',
+    payload: recarregar,
   };
 }
 
@@ -156,20 +157,24 @@ export function Post(bimestres) {
       .then(() => {
         requestAnimationFrame(() => dispatch(setNaoEdicao()));
         sucesso('Suas informações foram salvas com sucesso.');
+        dispatch(PosPost(true));
       })
       .catch(err => {
+        console.log(err);
         dispatch(
-          setBimestresErro({
-            type: 'erro',
-            content: err.error,
-            title: 'Ocorreu uma falha',
-            onClose: () => dispatch(setLimpartBimestresErro()),
-            visible: true,
-          })
+          setBimestresErro(
+            {
+              type: 'erro',
+              content: err.error,
+              title: 'Ocorreu uma falha',
+              onClose: () => dispatch(setLimpartBimestresErro()),
+              visible: true,
+            },
+            true
+          )
         );
-      })
-      .finally(() => {
-        dispatch(PosPost());
+
+        dispatch(PosPost(false));
       });
   };
 }

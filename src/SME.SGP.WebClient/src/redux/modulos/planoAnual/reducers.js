@@ -130,8 +130,7 @@ export default function bimestres(state = INICIAL, action) {
           return x;
         });
 
-        draft.bimestres[1].recarregarPlanoAnual = true;
-        draft.bimestresErro = state.bimestresErro;
+        draft.bimestres[1].recarregarPlanoAnual = action.payload;
 
         break;
       case '@bimestres/setEdicaoFalse':
