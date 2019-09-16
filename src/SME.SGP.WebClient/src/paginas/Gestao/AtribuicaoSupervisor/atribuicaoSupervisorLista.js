@@ -100,10 +100,8 @@ export default function AtribuicaoSupervisorLista() {
     const ueSelecionada = listaFiltroAtribuicao.find(
       ue => ue.id == selectedRowKeys[0]
     );
-    history.push(
-      `/gestao/atribuicao-supervisor/${dresSelecionadas}/${ueSelecionada.supervisorId ||
-        ''}`
-    );
+    const path = `/gestao/atribuicao-supervisor/${dresSelecionadas}/${ueSelecionada.supervisorId || ''}`
+    history.push(path);
   }
 
   function onClickNovaAtribuicao() {

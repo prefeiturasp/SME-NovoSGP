@@ -8,8 +8,14 @@ import Navbar from './componentes-sgp/navbar';
 import Sider from './componentes-sgp/sider';
 import { store } from './redux';
 import Conteudo from './componentes-sgp/conteudo';
+import { rotaAtiva } from './redux/modulos/navegacao/actions';
 
 function App() {
+
+  history.listen((location) => {
+    localStorage.setItem('rota-atual', location.pathname);
+    store.dispatch(rotaAtiva(location.pathname));
+  });
 
   return (
     <Provider store={store}>
