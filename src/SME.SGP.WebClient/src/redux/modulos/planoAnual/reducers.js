@@ -79,6 +79,8 @@ export default function bimestres(state = INICIAL, action) {
           objetivo.selected = false;
           return objetivo;
         });
+        draft.bimestres[action.payload.indice].ehEdicao = true;
+        
         break;
 
       case '@bimestres/SetarDescricaoFunction':
@@ -93,6 +95,8 @@ export default function bimestres(state = INICIAL, action) {
           action.payload.indiceObjetivo
         ].selected = action.payload.selecionarObjetivo;
         draft.bimestresErro = state.bimestresErro;
+
+        draft.bimestres[action.payload.indice].ehEdicao = true;
 
         if (state.bimestres[action.payload.indice])
           draft.bimestres[action.payload.indice].objetivo = state.bimestres[
@@ -125,6 +129,8 @@ export default function bimestres(state = INICIAL, action) {
           x.paraEnviar = false;
           return x;
         });
+
+        draft.bimestres[1].recarregarPlanoAnual = true;
         draft.bimestresErro = state.bimestresErro;
 
         break;
