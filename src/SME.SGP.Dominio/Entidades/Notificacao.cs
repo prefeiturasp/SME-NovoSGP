@@ -1,4 +1,4 @@
-﻿]namespace SME.SGP.Dominio
+﻿namespace SME.SGP.Dominio
 {
     public class Notificacao : EntidadeBase
     {
@@ -49,7 +49,13 @@
             if (PodeRemover)
                 Excluida = true;
             else
-                throw new NegocioException($"A notificação com id: '{Id}' não pode ser excluída ou já está nesse status.");
+            {
+                if (Categoria != NotificacaoCategoria.Aviso)
+                    throw new NegocioException($"Somente notificações de categoria Aviso, podem ser removidas.");
+
+                if (Excluida)
+                    throw new NegocioException($"Esta notificação ja está excluída.");
+            }
         }
     }
 }
