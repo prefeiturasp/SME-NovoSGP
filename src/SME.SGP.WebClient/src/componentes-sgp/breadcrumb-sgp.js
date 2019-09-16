@@ -7,7 +7,7 @@ import styled from 'styled-components';
 
 const BreadcrumbSgp = () => {
   const BreadcrumbBody = styled.div`
-    margin: 10px 0 5px 15px !important;
+    padding: 10px 0 5px 15px !important;
     a,
     a:hover {
       color: ${Base.Roxo};
