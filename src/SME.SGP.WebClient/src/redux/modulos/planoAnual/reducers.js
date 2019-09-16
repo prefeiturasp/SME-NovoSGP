@@ -55,7 +55,7 @@ export default function bimestres(state = INICIAL, action) {
       case '@bimestres/SelecionarMateria':
         draft.bimestres[action.payload.indice].materias[
           action.payload.indiceMateria
-        ].selected = action.payload.selecionarMateria;
+        ].selecionada = action.payload.selecionarMateria;
         draft.bimestresErro = state.bimestresErro;
 
         if (state.bimestres[action.payload.indice])
@@ -80,7 +80,7 @@ export default function bimestres(state = INICIAL, action) {
           return objetivo;
         });
         draft.bimestres[action.payload.indice].ehEdicao = true;
-        
+
         break;
 
       case '@bimestres/SetarDescricaoFunction':
