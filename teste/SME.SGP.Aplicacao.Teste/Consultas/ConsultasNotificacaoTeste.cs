@@ -31,7 +31,7 @@ namespace SME.SGP.Aplicacao.Teste.Consultas
         [Fact(DisplayName = "ObterNotificacaoBasicaListaPorAnoLetivoeRf")]
         public void DeveObterPlanoAnualResumidoPorAnoLetivoeRf()
         {
-            consultasNotificacao.ListarNotificacaoBasica(2019, "1");
+            consultasNotificacao.ObterNotificacaoBasicaLista(2019, "1");
             repositorioNotificacao.Verify(r => r.ObterNotificacoesPorAnoLetivoERf(It.IsAny<int>(), It.IsAny<string>(), It.IsAny<int>()));
         }
 
@@ -40,6 +40,13 @@ namespace SME.SGP.Aplicacao.Teste.Consultas
         {
             consultasNotificacao.QuantidadeNotificacoesNaoLidas(2019, "1");
             repositorioNotificacao.Verify(r => r.ObterQuantidadeNotificacoesNaoLidasPorAnoLetivoERf(It.IsAny<int>(), It.IsAny<string>()));
+        }
+
+        [Fact(DisplayName = "ListarNotificacoesBasicaPorAnoLetivoRF")]
+        public void DeveListarNotificacoesBasicaPorAnoLetivoRF()
+        {
+            consultasNotificacao.ListarPorAnoLetivoRf(2019, "1");
+            repositorioNotificacao.Verify(r => r.ObterNotificacoesPorAnoLetivoERf(It.IsAny<int>(), It.IsAny<string>(), It.IsAny<int>()));
         }
     }
 }

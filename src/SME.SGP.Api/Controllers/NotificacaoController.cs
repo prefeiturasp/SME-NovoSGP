@@ -96,7 +96,7 @@ namespace SME.SGP.Api.Controllers
         [Route("resumo")]
         public IActionResult ObtenhaPorRFAnoLetivo(int anoLetivo, string usuarioRf)
         {
-            return Ok(consultasNotificacao.ListarNotificacaoBasica(anoLetivo, usuarioRf));
+            return Ok(consultasNotificacao.ObterNotificacaoBasicaLista(anoLetivo, usuarioRf));
         }
 
         [HttpGet]
