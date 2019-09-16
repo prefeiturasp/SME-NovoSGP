@@ -3,8 +3,15 @@ import PropTypes from 'prop-types';
 import { Badge } from 'antd';
 import styled from 'styled-components';
 import shortid from 'shortid';
+import { useSelector } from 'react-redux';
+import Axios from 'axios';
 import { Base, Colors } from '../componentes/colors';
 import Button from '../componentes/button';
+import { store } from '~/redux';
+import {
+  notificacoesLista,
+  naoLidas,
+} from '../redux/modulos/notificacoes/actions';
 
 const NavbarNotificacoes = props => {
   const { Botao, Icone, Texto } = props;
@@ -66,7 +73,6 @@ const NavbarNotificacoes = props => {
     }
   `;
 
-  // eslint-disable-next-line no-unused-vars
   const Aba = styled.div`
     background: ${Base.Branco} !important;
     border-left: 1px solid ${Base.CinzaDesabilitado} !important;
@@ -81,44 +87,27 @@ const NavbarNotificacoes = props => {
   `;
 
   const [mostraNotificacoes, setMostraNotificacoes] = useState(false);
-  const [notificacoes, setNotificacoes] = useState([]);
+  const statusLista = ['Não Lida', 'Lida', 'Aceita', 'Recusada'];
 
-  const statusLista = ['Pendente', 'Aprovado'];
+  const usuario = useSelector(state => state.usuario);
+  const notificacoes = useSelector(state => state.notificacoesLista);
+
+  const buscaNotificacoesPorAnoRf = async (ano, rf) => {
+    await Axios.get(`./data.json?anoLetivo=${ano}&usuarioRf=${rf}`).then(
+      res => {
+        if (res.data) {
+          store.dispatch(naoLidas(res.data.quantidadeNaoLidas));
+          store.dispatch(notificacoesLista(res.data.notificacoes));
+        }
+      }
+    );
+  };
 
   useEffect(() => {
-    setNotificacoes([
-      {
-        id: '0000010',
-        status: 0,
-        mensagem: 'Validação da frequencia da turma 4A',
-        data: '15/08/2019 15:18',
-      },
-      {
-        id: '0000009',
-        status: 0,
-        mensagem: 'Validação da frequencia da turma 4B',
-        data: '15/08/2019 08:34',
-      },
-      {
-        id: '0000008',
-        status: 1,
-        mensagem: 'Validação da frequencia da turma 4C',
-        data: '14/08/2019 12:05',
-      },
-      {
-        id: '0000007',
-        status: 1,
-        mensagem: 'Validação da frequencia da turma 4D',
-        data: '14/08/2019 12:05',
-      },
-      {
-        id: '0000006',
-        status: 1,
-        mensagem: 'Validação da frequencia da turma 4E',
-        data: '14/08/2019 12:05',
-      },
-    ]);
-  }, []);
+    if (usuario.rf.length > 0)
+      if (notificacoes.notificacoes.length === 0)
+        buscaNotificacoesPorAnoRf(2019, usuario.rf);
+  }, [usuario.rf]);
 
   const onClickBotao = () => {
     setMostraNotificacoes(!mostraNotificacoes);
@@ -127,7 +116,7 @@ const NavbarNotificacoes = props => {
   return (
     <div className="position-relative">
       <Botao className="text-center" onClick={onClickBotao}>
-        <Count count={notificacoes.length} overflowCount={99}>
+        <Count count={notificacoes.quantidade} overflowCount={99}>
           <Icone className="fa fa-bell fa-lg" />
         </Count>
         <Texto
@@ -136,11 +125,11 @@ const NavbarNotificacoes = props => {
           Notificações
         </Texto>
       </Botao>
-      {mostraNotificacoes && notificacoes.length > 0 && (
+      {mostraNotificacoes && notificacoes.notificacoes.length > 0 && (
         <Lista className="container position-absolute rounded border bg-white shadow p-0">
           <table className="table mb-0">
             <tbody>
-              {notificacoes.map(notificacao => {
+              {notificacoes.notificacoes.map(notificacao => {
                 return (
                   <Tr key={shortid.generate()} status={notificacao.status}>
                     <td className="py-1 pl-2 pr-1 text-center align-middle">
@@ -150,10 +139,10 @@ const NavbarNotificacoes = props => {
                       className="py-1 px-1 text-center align-middle"
                       scope="row"
                     >
-                      {notificacao.id}
+                      {notificacao.codigo}
                     </th>
                     <td className="py-1 px-1 align-middle w-75">
-                      {notificacao.mensagem}
+                      {notificacao.descricaoStatus}
                     </td>
                     <td className="py-1 px-1 text-center align-middle status">
                       {statusLista[notificacao.status]}
