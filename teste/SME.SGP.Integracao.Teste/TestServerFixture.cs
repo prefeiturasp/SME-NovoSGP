@@ -7,7 +7,9 @@ using Postgres2Go;
 using SME.SGP.Api;
 using System;
 using System.IO;
+using System.Linq;
 using System.Net.Http;
+using System.Text.RegularExpressions;
 
 namespace SME.SGP.Integracao.Teste
 {
@@ -63,6 +65,16 @@ namespace SME.SGP.Integracao.Teste
             return Path.GetFullPath(Path.Combine(testProjectPath, relativePathToHostProject));
         }
 
+        private string CleanStringOfNonDigits_V1(string s)
+        {
+            Regex rxNonDigits = new Regex(@"[^\d]+");
+
+            if (string.IsNullOrEmpty(s))
+                return s;
+
+            return rxNonDigits.Replace(s, "");
+        }
+
         private string GetContentRootPath(string projectName)
         {
             var testProjectPath = PlatformServices.Default.Application.ApplicationBasePath;
@@ -79,7 +91,10 @@ namespace SME.SGP.Integracao.Teste
                 conn.Open();
 
                 DirectoryInfo d = new DirectoryInfo(scripts);
-                foreach (var file in d.GetFiles("*.sql"))
+
+                var files = d.GetFiles("*.sql").OrderBy(a => int.Parse(CleanStringOfNonDigits_V1(a.Name)));
+
+                foreach (var file in files)
                 {
                     string script = File.ReadAllText(file.FullName);
 
@@ -90,11 +105,5 @@ namespace SME.SGP.Integracao.Teste
                 }
             }
         }
-
-        //public void Dispose()
-        //{
-        //    _clientApi.Dispose();
-        //    _testServerCliente.Dispose();
-        //}
     }
 }

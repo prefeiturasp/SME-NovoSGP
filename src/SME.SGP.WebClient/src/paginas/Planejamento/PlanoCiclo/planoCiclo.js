@@ -6,10 +6,9 @@ import Alert from '../../../componentes/alert';
 import Button from '../../../componentes/button';
 import Card from '../../../componentes/card';
 import { Colors } from '../../../componentes/colors';
-import ModalConfirmacao from '../../../componentes/modalConfirmacao';
 import SelectComponent from '../../../componentes/select';
 import TextEditor from '../../../componentes/textEditor';
-import { erro, sucesso } from '../../../servicos/alertas';
+import { erro, sucesso, confirmar } from '../../../servicos/alertas';
 import api from '../../../servicos/api';
 import history from '../../../servicos/history';
 import {
@@ -36,17 +35,9 @@ export default function PlanoCiclo() {
   const [descricaoCiclo, setDescricaoCiclo] = useState('');
   const [modoEdicao, setModoEdicao] = useState(false);
   const [pronto, setPronto] = useState(false);
-  const [exibirConfirmacaoVoltar, setExibirConfirmacaoVoltar] = useState(false);
-  const [
-    exibirConfirmacaoTrocaCiclo,
-    setExibirConfirmacaoTrocaCiclo,
-  ] = useState(false);
   const [eventoTrocarCiclo, setEventoTrocarCiclo] = useState(false);
   const [registroMigrado, setRegistroMigrado] = useState(false);
   const [cicloParaTrocar, setCicloParaTrocar] = useState('');
-  const [exibirConfirmacaoCancelar, setExibirConfirmacaoCancelar] = useState(
-    false
-  );
   const [inseridoAlterado, setInseridoAlterado] = useState({
     alteradoEm: '',
     alteradoPor: '',
@@ -242,16 +233,6 @@ export default function PlanoCiclo() {
     }
   }
 
-  function validaTrocaCiclo(value) {
-    if (modoEdicao) {
-      setCicloParaTrocar(value);
-      setExibirConfirmacaoTrocaCiclo(true);
-      setEventoTrocarCiclo(true);
-    } else {
-      trocaCiclo(value);
-    }
-  }
-
   function trocaCiclo(value) {
     const anoLetivo = String(usuario.turmaSelecionada[0].anoLetivo);
     const codEscola = String(usuario.turmaSelecionada[0].codEscola);
@@ -295,54 +276,6 @@ export default function PlanoCiclo() {
       }
       return false;
     });
-  }
-
-  function onClickVoltar() {
-    if (modoEdicao) {
-      setExibirConfirmacaoVoltar(true);
-    } else {
-      history.push('/');
-    }
-  }
-
-  function onClickCancelar() {
-    setExibirConfirmacaoCancelar(true);
-  }
-
-  function confirmarCancelamento() {
-    resetListas();
-    setModoEdicao(false);
-    let ciclo = '';
-    if (eventoTrocarCiclo) {
-      ciclo = cicloParaTrocar;
-      setCicloSelecionado(ciclo);
-    }
-    const anoLetivo = String(usuario.turmaSelecionada[0].anoLetivo);
-    const codEscola = String(usuario.turmaSelecionada[0].codEscola);
-    obterCicloExistente(anoLetivo, codEscola, ciclo || cicloSelecionado);
-  }
-
-  function resetListas() {
-    listaMatriz.forEach(item => {
-      const target = document.getElementById(`matriz-${item.id}`);
-      const estaSelecionado =
-        target.getAttribute('opcao-selecionada') === 'true';
-      if (estaSelecionado) {
-        target.setAttribute('opcao-selecionada', 'false');
-      }
-    });
-    listaODS.forEach(item => {
-      const target = document.getElementById(`ods-${item.id}`);
-      const estaSelecionado =
-        target.getAttribute('opcao-selecionada') === 'true';
-      if (estaSelecionado) {
-        target.setAttribute('opcao-selecionada', 'false');
-      }
-    });
-    setListaMatrizSelecionda([]);
-    setListaODSSelecionado([]);
-    setDescricaoCiclo('');
-    setPronto(false);
   }
 
   function salvarPlanoCiclo(navegarParaPlanejamento) {
@@ -393,6 +326,87 @@ export default function PlanoCiclo() {
     );
   }
 
+  function resetListas() {
+    listaMatriz.forEach(item => {
+      const target = document.getElementById(`matriz-${item.id}`);
+      const estaSelecionado =
+        target.getAttribute('opcao-selecionada') === 'true';
+      if (estaSelecionado) {
+        target.setAttribute('opcao-selecionada', 'false');
+      }
+    });
+    listaODS.forEach(item => {
+      const target = document.getElementById(`ods-${item.id}`);
+      const estaSelecionado =
+        target.getAttribute('opcao-selecionada') === 'true';
+      if (estaSelecionado) {
+        target.setAttribute('opcao-selecionada', 'false');
+      }
+    });
+    setListaMatrizSelecionda([]);
+    setListaODSSelecionado([]);
+    setDescricaoCiclo('');
+    setPronto(false);
+  }
+  function confirmarCancelamento() {
+    resetListas();
+    setModoEdicao(false);
+    let ciclo = '';
+    if (eventoTrocarCiclo) {
+      ciclo = cicloParaTrocar;
+      setCicloSelecionado(ciclo);
+    }
+    const anoLetivo = String(usuario.turmaSelecionada[0].anoLetivo);
+    const codEscola = String(usuario.turmaSelecionada[0].codEscola);
+    obterCicloExistente(anoLetivo, codEscola, ciclo || cicloSelecionado);
+  }
+  const onClickVoltar = async () => {
+    if (modoEdicao) {
+      const confirmado = await confirmar(
+        'Atenção',
+        '',
+        'Suas alterações não foram salvas, deseja salvar agora?'
+      );
+      if (confirmado) {
+        salvarPlanoCiclo(true);
+      } else {
+        setModoEdicao(false);
+        history.push('/');
+      }
+    } else {
+      history.push('/');
+    }
+  };
+
+  async function onClickCancelar() {
+    const confirmou = await confirmar(
+      'Atenção',
+      'Você não salvou as informações preenchidas.',
+      'Deseja realmente cancelar as alterações?'
+    );
+    if (confirmou) {
+      confirmarCancelamento();
+    }
+  }
+
+  async function validaTrocaCiclo(value) {
+    if (modoEdicao) {
+      setCicloParaTrocar(value);
+      const confirmou = await confirmar(
+        'Atenção',
+        '',
+        'Suas alterações não foram salvas, deseja salvar agora?'
+      );
+      if (confirmou) {
+        salvarPlanoCiclo(false);
+      } else {
+        trocaCiclo(value);
+      }
+      setEventoTrocarCiclo(true);
+    } else {
+      trocaCiclo(value);
+    }
+  }
   return (
     <>
       <div className="col-md-12">
@@ -426,69 +440,6 @@ export default function PlanoCiclo() {
         <div className="col-md-12 pb-3">
           {registroMigrado ? <span> REGISTRO MIGRADO </span> : ''}
         </div>
-        <ModalConfirmacao
-          id="modal-confirmacao-cancelar"
-          visivel={exibirConfirmacaoCancelar}
-          onConfirmacaoSecundaria={() => {
-            confirmarCancelamento();
-            setExibirConfirmacaoCancelar(false);
-          }}
-          onConfirmacaoPrincipal={() => setExibirConfirmacaoCancelar(false)}
-          onClose={() => setExibirConfirmacaoCancelar(false)}
-          conteudo="Você não salvou as informações preenchidas."
-          perguntaDoConteudo="Deseja realmente cancelar as alterações?"
-          labelPrincipal="Não"
-          labelSecundaria="Sim"
-          titulo="Atenção"
-        />
-        <ModalConfirmacao
-          id="modal-confirmacao-voltar"
-          visivel={exibirConfirmacaoVoltar}
-          onConfirmacaoPrincipal={() => {
-            salvarPlanoCiclo(true);
-            setExibirConfirmacaoVoltar(false);
-          }}
-          onConfirmacaoSecundaria={() => {
-            setExibirConfirmacaoVoltar(false);
-            setModoEdicao(false);
-            history.push('/');
-          }}
-          onClose={() => {
-            setExibirConfirmacaoVoltar(false);
-            setModoEdicao(false);
-            history.push('/');
-          }}
-          labelPrincipal="Sim"
-          labelSecundaria="Não"
-          perguntaDoConteudo="Suas alterações não foram salvas, deseja salvar agora?"
-          titulo="Atenção"
-        />
-        <ModalConfirmacao
-          id="modal-confirmacao-troca-ciclo"
-          visivel={exibirConfirmacaoTrocaCiclo}
-          onConfirmacaoPrincipal={() => {
-            salvarPlanoCiclo(false);
-            setExibirConfirmacaoTrocaCiclo(false);
-          }}
-          onConfirmacaoSecundaria={() => {
-            setExibirConfirmacaoTrocaCiclo(false);
-            trocaCiclo(cicloParaTrocar);
-          }}
-          onClose={() => {
-            setExibirConfirmacaoTrocaCiclo(false);
-            trocaCiclo(cicloParaTrocar);
-          }}
-          labelPrincipal="Sim"
-          labelSecundaria="Não"
-          perguntaDoConteudo="Suas alterações não foram salvas, deseja salvar agora?"
-          titulo="Atenção"
-        />
-        {/* <ControleEstado
-        when={modoEdicao}
-        confirmar={url => history.push(url)}
-        cancelar={() => false}
-        bloquearNavegacao={() => modoEdicao}
-      /> */}
         <div className="col-md-12">
           <div className="row mb-3">
             <div className="col-md-6">

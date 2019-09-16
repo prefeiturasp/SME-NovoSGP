@@ -74,7 +74,7 @@ const Button = props => {
       disabled={disabled}
       id={id}
     >
-      {icon ? <Icon className={`fa fa-${icon} mr-2`} /> : null}
+      {icon ? <Icon className={`fa fa-${icon} mr-2 py-1`} /> : null}
       {label}
       {remove ? (
         <Remove

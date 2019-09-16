@@ -34,6 +34,11 @@ const erro = mensagem => {
   exibirAlerta('danger', mensagem);
 };
 
+const erros = listaErros => {
+  if (listaErros && listaErros.response && listaErros.response.data)
+    listaErros.response.data.mensagens.forEach(mensagem => erro(mensagem));
+  else erro('Ocorreu um erro interno.');
+};
 const confirmacao = (
   titulo,
   texto,
@@ -66,9 +71,18 @@ const erroMensagem = (titulo, texto) => {
   });
 };
 
-const confirmar = (titulo, texto, textoNegrito) => {
+const confirmar = (titulo, texto, textoNegrito, textoOk, textoCancelar) => {
   return new Promise((resolve, reject) => {
-    store.dispatch(alertaConfirmar(titulo, texto, textoNegrito, resolve));
+    store.dispatch(
+      alertaConfirmar(
+        titulo,
+        texto,
+        textoNegrito,
+        resolve,
+        textoOk,
+        textoCancelar
+      )
+    );
   });
 };
 
@@ -84,4 +98,5 @@ export {
   erroMensagem,
   confirmar,
   fecharModalConfirmacao,
+  erros,
 };

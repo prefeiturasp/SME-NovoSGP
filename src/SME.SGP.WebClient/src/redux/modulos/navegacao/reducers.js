@@ -4,6 +4,7 @@ import PlanoCiclo from '../../../paginas/Planejamento/PlanoCiclo/planoCiclo';
 import PlanoAnual from '../../../paginas/Planejamento/PlanoAnual/planoAnual';
 import AtribuicaoSupervisorLista from '~/paginas/Gestao/AtribuicaoSupervisor/atribuicaoSupervisorLista';
 import AtribuicaoSupervisorCadastro from '~/paginas/Gestao/AtribuicaoSupervisor/atribuicaoSupervisorCadastro';
+import DetalheNotificacao from '~/paginas/Notificacoes/Detalhes/detalheNotificacao';
 
 const rotas = new Map();
 rotas.set('/', {
@@ -47,6 +48,13 @@ rotas.set('/gestao/atribuicao-supervisor/:dreId/:supervisorId', {
   menu: 'Gestão',
   parent: '/',
   component: AtribuicaoSupervisorCadastro,
+  exact: true,
+});
+
+rotas.set('/notificacoes/:id', {
+  breadcrumbName: 'Notificações',
+  parent: '/',
+  component: DetalheNotificacao,
   exact: true,
 });
 
