@@ -1,13 +1,13 @@
-export function menuCollapsed(collapsed) {
+export function menuRetraido(retraido) {
   return {
-    type: '@navegacao/collapsed',
-    payload: collapsed,
+    type: '@navegacao/retraido',
+    payload: retraido,
   };
 }
 
-export function activeRoute(route) {
+export function rotaAtiva(route) {
   return {
-    type: '@navegacao/activeRoute',
+    type: '@navegacao/rotaAtiva',
     payload: route,
   };
 }

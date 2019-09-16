@@ -28,7 +28,7 @@ const BreadcrumbSgp = () => {
 
   useEffect(() => {
     carregaBreadcrumbs();
-  }, [NavegacaoStore.activeRoute]);
+  }, [NavegacaoStore.rotaAtiva]);
 
   window.onbeforeunload = () => {
     localStorage.setItem('rota-atual', window.location.pathname);
