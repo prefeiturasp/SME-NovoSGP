@@ -24,17 +24,17 @@ const ContainerBotoes = styled.div`
 
 const Conteudo = () => {
   const NavegacaoStore = useSelector(store => store.navegacao);
-  const [collapsed, setCollapsed] = useState(false);
+  const [retraido, setRetraido] = useState(false);
   const dispatch = useDispatch();
   useEffect(() => {
-    setCollapsed(NavegacaoStore.collapsed);
-  }, [NavegacaoStore.collapsed]);
+    setRetraido(NavegacaoStore.retraido);
+  }, [NavegacaoStore.retraido]);
 
   const confirmacao = useSelector(state => state.notificacoes.confirmacao);
 
   useEffect(() => {
-    setCollapsed(NavegacaoStore.collapsed);
-  }, [NavegacaoStore.collapsed]);
+    setRetraido(NavegacaoStore.retraido);
+  }, [NavegacaoStore.retraido]);
 
   const fecharConfirmacao = resultado => {
     confirmacao.resolve(resultado);
@@ -42,7 +42,7 @@ const Conteudo = () => {
   };
   const notificacoes = useSelector(state => state.notificacoes);
   return (
-    <div style={{ marginLeft: collapsed ? '115px' : '250px' }}>
+    <div style={{ marginLeft: retraido ? '115px' : '250px' }}>
       <BreadcrumbSgp />
       <div className="row h-100">
         <main role="main" className="col-md-12 col-lg-12 col-sm-12 col-xl-12">

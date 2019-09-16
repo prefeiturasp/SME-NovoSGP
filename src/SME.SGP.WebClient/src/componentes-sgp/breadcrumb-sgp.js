@@ -4,8 +4,6 @@ import { Link } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import { Base } from '../componentes/colors';
 import styled from 'styled-components';
-import { store } from '../redux';
-import { activeRoute } from '../redux/modulos/navegacao/actions';
 
 const BreadcrumbSgp = () => {
   const BreadcrumbBody = styled.div`
@@ -20,35 +18,44 @@ const BreadcrumbSgp = () => {
     }
   `;
 
-  const rotaAtual = localStorage.getItem('rota-atual');
-
-  if (rotaAtual) store.dispatch(activeRoute(rotaAtual));
-
   const NavegacaoStore = useSelector(store => store.navegacao);
 
   const rotas = NavegacaoStore.rotas;
 
   const [itens, setItens] = useState([]);
 
+  const rotaAtual = window.location.pathname;
+
   useEffect(() => {
-    carregaBreadcrumbs(NavegacaoStore.activeRoute);
-  }, [NavegacaoStore.activeRoute]);
+    carregaBreadcrumbs();
+  }, [NavegacaoStore.rotaAtiva]);
 
   window.onbeforeunload = () => {
     localStorage.setItem('rota-atual', window.location.pathname);
   };
 
-  const carregaBreadcrumbs = route => {
-    const item = rotas.get(route);
+  const carregaBreadcrumbs = () => {
+    const rotaDinamica = localStorage.getItem('rota-dinamica');
+    const itemRotaDinamica = rotaDinamica?JSON.parse(rotaDinamica): null;
+    const item = rotas.get(rotaAtual);
     if (item) {
-      const newItens = [];
-      carregaBreadcrumbsExtra(item, newItens);
-      newItens.push(
-        criarItemBreadcrumb(item.breadcrumbName, route, true, true)
-      );
-      setItens(newItens);
-    } else setItens([]);
+      setItensBreadcrumb(item);
+    } else if (rotaDinamica && itemRotaDinamica.path === rotaAtual) {
+      setItensBreadcrumb(itemRotaDinamica);
+    } else {
+      const itemHome = rotas.get("/");
+      setItensBreadcrumb(itemHome);
+    }
   };
+
+  const setItensBreadcrumb = (item) => {
+    const newItens = [];
+    carregaBreadcrumbsExtra(item, newItens);
+    newItens.push(
+      criarItemBreadcrumb(item.breadcrumbName, rotaAtual, true, true)
+    );
+    setItens(newItens);
+  }
 
   const carregaBreadcrumbsExtra = (item, newItens) => {
     const itemParent = rotas.get(item.parent);
