@@ -5,6 +5,7 @@
     cargo int NULL,
 	nivel int NOT NULL,
 	wf_aprovacao_id bigint not null,
+	observacao character varying(500) COLLATE pg_catalog."default",
     criado_em timestamp without time zone NOT NULL,
     criado_por character varying(200) COLLATE pg_catalog."default" NOT NULL,
     alterado_em timestamp without time zone,

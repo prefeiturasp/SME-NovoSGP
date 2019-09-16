@@ -25,6 +25,19 @@ namespace SME.SGP.Aplicacao
             this.servicoWorkflowAprovacao = servicoWorkflowAprovacao ?? throw new ArgumentNullException(nameof(servicoWorkflowAprovacao));
         }
 
+        public void Aprovar(bool aprovar, long notificacaoId, string observacao)
+        {
+            var workflow = repositorioWorkflowAprovacao.ObterEntidadeCompleta(0, notificacaoId);
+            if (workflow == null)
+                throw new NegocioException($"Não foi possível localizar o fluxo de aprovação da notificação {notificacaoId}");
+
+            unitOfWork.IniciarTransacao();
+
+            servicoWorkflowAprovacao.Aprovar(workflow, aprovar, observacao, notificacaoId);
+
+            unitOfWork.PersistirTransacao();
+        }
+
         public void Salvar(WorkflowAprovacaoDto workflowAprovacaoNiveisDto)
         {
             WorkflowAprovacao workflowAprovacao = MapearDtoParaEntidade(workflowAprovacaoNiveisDto);
