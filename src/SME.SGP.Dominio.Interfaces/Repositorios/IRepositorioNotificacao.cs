@@ -9,7 +9,7 @@ namespace SME.SGP.Dominio.Interfaces
 
         IEnumerable<Notificacao> ObterNotificacoesPorAnoLetivoERf(int anoLetivo, string usuarioRf, int limite);
 
-        int ObterQuantidadeNotificacoesPorAnoLetivoERf(int anoLetivo, string usuarioRf);
+        int ObterQuantidadeNotificacoesNaoLidasPorAnoLetivoERf(int anoLetivo, string usuarioRf);
 
         long ObterUltimoCodigoPorAno(int ano);
     }

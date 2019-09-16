@@ -7,6 +7,6 @@ namespace SME.SGP.Dto
     public class NotificacaoBasicaListaDto
     {
         public IEnumerable<NotificacaoBasicaDto> Notificacoes { get; set; }
-        public long QuantidadeTotal { get; set; }
+        public long QuantidadeNaoLidas { get; set; }
     }
 }
