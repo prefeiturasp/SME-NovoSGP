@@ -52,10 +52,37 @@ namespace SME.SGP.Dominio
             nivel.Adicionar(usuario);
         }
 
+        public IEnumerable<WorkflowAprovacaoNivel> ModificarStatusPorNivel(WorkflowAprovacaoNivelStatus status, int nivelNumero, string observacao)
+        {
+            var niveis = ObtemNiveis(nivelNumero);
+            foreach (var nivel in niveis)
+            {
+                nivel.ModificaStatus(status, observacao);
+                yield return nivel;
+            }
+        }
+
         public IEnumerable<WorkflowAprovacaoNivel> ObtemNiveis(long nivel)
         {
             return niveis.Where(a => a.Nivel == nivel)
                 .ToList();
+        }
+
+        public IEnumerable<WorkflowAprovacaoNivel> ObtemNiveisParaEnvioPosAprovacao()
+        {
+            var nivelAtual = niveis
+                    .Where(a => a.Status == WorkflowAprovacaoNivelStatus.Aprovado)
+                    .FirstOrDefault()
+                    .Nivel;
+
+            var proximoNivel = niveis
+                .OrderBy(a => a.Nivel)
+                .FirstOrDefault(a => a.Status == WorkflowAprovacaoNivelStatus.SemStatus && a.Nivel > nivelAtual);
+
+            if (proximoNivel == null)
+                return null;
+
+            return ObtemNiveis(proximoNivel.Nivel);
         }
 
         public IEnumerable<WorkflowAprovacaoNivel> ObtemNiveisUnicosEStatus()
@@ -72,6 +99,11 @@ namespace SME.SGP.Dominio
                 .OrderBy(a => a.Nivel)
                 .Select(a => a.Nivel)
                 .FirstOrDefault();
+        }
+
+        public WorkflowAprovacaoNivel ObterNivelPorNotificacaoId(long notificacaoId)
+        {
+            return niveis.FirstOrDefault(a => a.Notificacoes.Any(b => b.Id == notificacaoId));
         }
     }
 }

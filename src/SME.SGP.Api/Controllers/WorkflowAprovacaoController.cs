@@ -20,14 +20,15 @@ namespace SME.SGP.Api.Controllers
             this.consultasWorkflowAprovacao = consultasWorkflowAprovacao ?? throw new System.ArgumentNullException(nameof(consultasWorkflowAprovacao));
         }
 
-        //[HttpGet]
-        //[Route("{id}")]
-        //[ProducesResponseType(200)]
-        //[ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        //public IActionResult Get(long id)
-        //{
-        //    return Ok(consultasWorkflowAprovacao.ObtemPorId(id));
-        //}
+        [HttpPut]
+        [Route("notificacoes/{notificacaoId}/aprova")]
+        [ProducesResponseType(200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        public IActionResult Aprovar(long notificacaoId, [FromBody]WorkflowAprovacaoAprovacaoDto workflowAprovacaoAprovacaoDto)
+        {
+            comandosWorkflowAprovacao.Aprovar(workflowAprovacaoAprovacaoDto.Aprova, notificacaoId, workflowAprovacaoAprovacaoDto.Observacao);
+            return Ok();
+        }
 
         [HttpGet]
         [Route("notificacoes/{id}/linha-tempo")]

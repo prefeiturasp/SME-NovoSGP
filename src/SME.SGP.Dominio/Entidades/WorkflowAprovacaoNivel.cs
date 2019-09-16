@@ -16,6 +16,7 @@ namespace SME.SGP.Dominio
 
         public int Nivel { get; set; }
         public IEnumerable<Notificacao> Notificacoes { get { return notificacoes; } }
+        public string Observacao { get; set; }
         public WorkflowAprovacaoNivelStatus Status { get; set; }
         public IEnumerable<Usuario> Usuarios { get { return usuarios; } }
         public WorkflowAprovacao Workflow { get; set; }
@@ -36,6 +37,17 @@ namespace SME.SGP.Dominio
         {
             if (usuario != null)
                 usuarios.Add(usuario);
+        }
+
+        internal void ModificaStatus(WorkflowAprovacaoNivelStatus status, string observacao)
+        {
+            if (status == WorkflowAprovacaoNivelStatus.Reprovado)
+            {
+                if (string.IsNullOrEmpty(observacao))
+                    throw new NegocioException("Para recusar é obrigatório informar uma observação.");
+            }
+            this.Observacao = observacao;
+            this.Status = status;
         }
     }
 }
