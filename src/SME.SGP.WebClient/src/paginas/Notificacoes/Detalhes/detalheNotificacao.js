@@ -1,17 +1,20 @@
 import React, { useEffect, useState } from 'react';
-import Card from '~/componentes/card';
-import { EstiloDetalhe } from './estiloDetalhe';
-import api from '~/servicos/api';
+import { Formik, Form } from 'formik';
+import * as Yup from 'yup';
 import { erros, erro, sucesso, confirmar } from '~/servicos/alertas';
+import Card from '~/componentes/card';
+import { EstiloDetalhe } from './detalheNotificacao.css';
+import api from '~/servicos/api';
 import * as cores from '~/componentes/colors';
 import Button from '~/componentes/button';
 import Cabecalho from '~/componentes-sgp/cabecalho';
 import CampoTexto from '~/componentes/campoTexto';
-import { Formik, Form } from 'formik';
-import * as Yup from 'yup';
+import EstiloLinhaTempo from './linhaTempo.css';
+import LinhaTempo from '~/componentes/linhaTempo/linhaTempo';
 
 const DetalheNotificacao = ({ match }) => {
   const [idNotificacao, setIdNotificacao] = useState('');
+  const [listaDeStatus, setListaDeStatus] = useState([]);
 
   const [notificacao, setNotificacao] = useState({
     alteradoEm: '',
@@ -42,6 +45,31 @@ const DetalheNotificacao = ({ match }) => {
   useEffect(() => {
     setIdNotificacao(match.params.id);
   }, [match.params.id]);
+
+  useEffect(() => {
+    const buscaLinhaTempo = () => {
+      api
+        .get(
+          `v1/workflows/aprovacoes/notificacoes/${idNotificacao}/linha-tempo`
+        )
+        .then(resposta => {
+          const status = resposta.data.map(item => {
+            return {
+              titulo: item.status,
+              status: item.statusId,
+              timestamp: item.alteracaoData,
+              rf: '7972324',
+              nome: item.alteracaoUsuario,
+            };
+          });
+          setListaDeStatus(status);
+        })
+        .catch(listaErros => erros(listaErros));
+    };
+    if (notificacao && notificacao.mostrarBotoesDeAprovacao) {
+      buscaLinhaTempo();
+    }
+  }, [notificacao]);
 
   const salvar = form => {
     debugger;
@@ -206,6 +234,18 @@ const DetalheNotificacao = ({ match }) => {
                   </div>
                 </div>
               </EstiloDetalhe>
+              <EstiloLinhaTempo>
+                <div className="col-xs-12 col-md-12 col-lg-12">
+                  <div className="row">
+                    <div className="col-xs-12 col-md-12 col-lg-12">
+                      <p>SITUAÇÃO DA NOTIFICAÇÃO</p>
+                    </div>
+                    <div className="col-xs-12 col-md-12 col-lg-12">
+                      <LinhaTempo listaDeStatus={listaDeStatus} />
+                    </div>
+                  </div>
+                </div>
+              </EstiloLinhaTempo>
             </Card>
           </Form>
         )}
