@@ -8,5 +8,6 @@
         public long NivelId { get; set; }
         public string Status { get; set; }
         public int StatusId { get; set; }
+        public string AlteracaoUsuarioRf { get; set; }
     }
 }
