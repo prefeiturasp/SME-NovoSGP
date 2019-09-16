@@ -160,18 +160,14 @@ export function Post(bimestres) {
         dispatch(PosPost(true));
       })
       .catch(err => {
-        console.log(err);
         dispatch(
-          setBimestresErro(
-            {
-              type: 'erro',
-              content: err.error,
-              title: 'Ocorreu uma falha',
-              onClose: () => dispatch(setLimpartBimestresErro()),
-              visible: true,
-            },
-            true
-          )
+          setBimestresErro({
+            type: 'erro',
+            content: err.error,
+            title: 'Ocorreu uma falha',
+            onClose: () => dispatch(setLimpartBimestresErro()),
+            visible: true,
+          })
         );
 
         dispatch(PosPost(false));
