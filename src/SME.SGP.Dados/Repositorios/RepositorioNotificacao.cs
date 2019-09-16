@@ -39,9 +39,10 @@ namespace SME.SGP.Dados.Repositorios
             query.AppendLine("left join usuario u");
             query.AppendLine("on n.usuario_id = u.id");
             query.AppendLine("where u.rf_codigo = @usuarioRf");
+            query.AppendLine("and excluida = @excluida");
             query.AppendLine("and EXTRACT(year FROM n.criado_em) = @anoLetivo");
 
-            return database.Conexao.QueryFirst<int>(query.ToString(), new { anoLetivo, usuarioRf });
+            return database.Conexao.QueryFirst<int>(query.ToString(), new { anoLetivo, usuarioRf, excluida = false });
         }
 
         public IEnumerable<Notificacao> ObterPorDreOuEscolaOuStatusOuTurmoOuUsuarioOuTipoOuCategoriaOuTitulo(string dreId, string ueId, int statusId,
