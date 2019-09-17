@@ -58,6 +58,12 @@ namespace SME.SGP.Dominio
             foreach (var nivel in niveis)
             {
                 nivel.ModificaStatus(status, observacao);
+
+                foreach (var notificacao in nivel.Notificacoes)
+                {
+                    notificacao.Status = RetornaStatusPorNivelStatus(status);
+                }
+
                 yield return nivel;
             }
         }
@@ -104,6 +110,21 @@ namespace SME.SGP.Dominio
         public WorkflowAprovacaoNivel ObterNivelPorNotificacaoId(long notificacaoId)
         {
             return niveis.FirstOrDefault(a => a.Notificacoes.Any(b => b.Id == notificacaoId));
+        }
+
+        private NotificacaoStatus RetornaStatusPorNivelStatus(WorkflowAprovacaoNivelStatus status)
+        {
+            switch (status)
+            {
+                case WorkflowAprovacaoNivelStatus.Aprovado:
+                    return NotificacaoStatus.Aceita;
+
+                case WorkflowAprovacaoNivelStatus.Reprovado:
+                    return NotificacaoStatus.Recusada;
+
+                default:
+                    throw new NegocioException("Não foi possível atualizar o status da notificação.");
+            }
         }
     }
 }
