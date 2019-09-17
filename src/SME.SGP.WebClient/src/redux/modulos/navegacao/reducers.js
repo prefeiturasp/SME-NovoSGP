@@ -14,7 +14,7 @@ rotas.set('/', {
   parent: null,
   component: Principal,
   exact: true,
-  limpaSelecaoMenu: true
+  limpaSelecaoMenu: true,
 });
 rotas.set('/planejamento/plano-ciclo', {
   breadcrumbName: 'Plano de Ciclo',
