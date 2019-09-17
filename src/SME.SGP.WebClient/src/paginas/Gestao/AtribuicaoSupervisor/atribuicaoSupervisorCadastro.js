@@ -9,6 +9,7 @@ import Auditoria from '~/componentes/auditoria';
 import api from '~/servicos/api';
 import { erro, sucesso } from '~/servicos/alertas';
 import history from '~/servicos/history';
+import Cabecalho from '~/componentes-sgp/cabecalho';
 
 const AtribuicaoSupervisorCadastro = ({ match }) => {
   const [auditoria, setAuditoria] = useState([]);
@@ -180,7 +181,7 @@ const AtribuicaoSupervisorCadastro = ({ match }) => {
 
   return (
     <>
-      <h3>Atribuição de Supervisor</h3>
+      <Cabecalho pagina="Atribuição de Supervisor" />
       <Card>
         <div className="col-xs-12 col-md-12 col-lg-12 d-flex justify-content-end mb-4">
           <Button
