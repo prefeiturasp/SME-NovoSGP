@@ -39,7 +39,8 @@ namespace SME.SGP.Aplicacao
                     NivelDescricao = nivel.Cargo.HasValue ? nivel.Cargo.GetAttribute<DisplayAttribute>().Name : null,
                     NivelId = nivel.Id,
                     Status = nivel.Status.GetAttribute<DisplayAttribute>().Name,
-                    StatusId = (int)nivel.Status
+                    StatusId = (int)nivel.Status,
+                    Nivel = nivel.Nivel
                 };
             }
         }
