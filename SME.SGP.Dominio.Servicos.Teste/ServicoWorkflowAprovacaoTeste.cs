@@ -31,8 +31,12 @@ namespace SME.SGP.Dominio.Servicos.Teste
         }
 
         [Fact]
-        public void Deve_()
+        public void Deve_Fazer_Configuracao_Inicial()
         {
+            var workflow = new WorkflowAprovacao();
+            //workflow.
+
+            //servicoWorkflowAprovacao.ConfiguracaoInicial(workflow);
         }
     }
 }
