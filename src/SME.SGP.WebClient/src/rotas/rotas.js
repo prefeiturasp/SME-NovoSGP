@@ -12,12 +12,13 @@ export default function Rotas(props) {
   const rotas = new Map();
 
   rotas.set('/:rf?', {
-    breadcrumbName: 'Home',
+    icone: 'fas fa-home',
     parent: null,
     component: Principal,
     exact: true,
     limpaSelecaoMenu: true,
-    paginaInicial: true
+    paginaInicial: true,
+    dicaIcone: 'Página Inicial'
   });
   rotas.set('/planejamento/plano-ciclo', {
     breadcrumbName: 'Plano de Ciclo',
@@ -60,6 +61,8 @@ export default function Rotas(props) {
     rotasArray.push(rota);
     const rotaRedux = {
       path: value.paginaInicial?'/':key,
+      icone: value.icone,
+      dicaIcone: value.dicaIcone,
       params: value.params,
       breadcrumbName: value.breadcrumbName,
       menu: value.menu,
