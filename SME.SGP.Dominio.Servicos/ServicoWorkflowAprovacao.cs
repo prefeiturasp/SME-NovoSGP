@@ -27,7 +27,7 @@ namespace SME.SGP.Dominio.Servicos
             this.servicoEOL = servicoEOL ?? throw new System.ArgumentNullException(nameof(servicoEOL));
             this.servicoUsuario = servicoUsuario ?? throw new System.ArgumentNullException(nameof(servicoUsuario));
             this.servicoNotificacao = servicoNotificacao ?? throw new System.ArgumentNullException(nameof(servicoNotificacao));
-            this.workflowAprovacaoNivel = workflowAprovacaoNivel ?? throw new System.ArgumentNullException(nameof(workflowAprovacaoNivel));            
+            this.workflowAprovacaoNivel = workflowAprovacaoNivel ?? throw new System.ArgumentNullException(nameof(workflowAprovacaoNivel));
         }
 
         public void Aprovar(WorkflowAprovacao workflow, bool aprovar, string observacao, long notificacaoId)
@@ -67,6 +67,11 @@ namespace SME.SGP.Dominio.Servicos
             foreach (var nivel in niveis)
             {
                 workflowAprovacaoNivel.Salvar(nivel);
+
+                foreach (var notificacao in nivel.Notificacoes)
+                {
+                    repositorioNotificacao.Salvar(notificacao);
+                }
             }
         }
 
