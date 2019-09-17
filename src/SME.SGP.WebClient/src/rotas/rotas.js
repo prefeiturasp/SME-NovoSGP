@@ -1,6 +1,6 @@
 import React from 'react';
 import { Switch, Route } from 'react-router-dom';
-import { setRotas } from '../redux/modulos/navegacao/actions'
+import { setRotas } from '../redux/modulos/navegacao/actions';
 import { store } from '../redux';
 import Principal from '../paginas/Principal/principal';
 import PlanoCiclo from '../paginas/Planejamento/PlanoCiclo/planoCiclo';
@@ -8,7 +8,7 @@ import PlanoAnual from '../paginas/Planejamento/PlanoAnual/planoAnual';
 import AtribuicaoSupervisorLista from '../paginas/Gestao/AtribuicaoSupervisor/atribuicaoSupervisorLista';
 import AtribuicaoSupervisorCadastro from '../paginas/Gestao/AtribuicaoSupervisor/atribuicaoSupervisorCadastro';
 
-export default function Rotas(props) {
+export default function Rotas() {
   const rotas = new Map();
 
   rotas.set('/:rf?', {
@@ -18,7 +18,7 @@ export default function Rotas(props) {
     exact: true,
     limpaSelecaoMenu: true,
     paginaInicial: true,
-    dicaIcone: 'Página Inicial'
+    dicaIcone: 'Página Inicial',
   });
   rotas.set('/planejamento/plano-ciclo', {
     breadcrumbName: 'Plano de Ciclo',
@@ -47,6 +47,12 @@ export default function Rotas(props) {
     component: AtribuicaoSupervisorCadastro,
     exact: true,
   });
+  rotas.set('/gestao/atribuicao-supervisor/:dreId/', {
+    breadcrumbName: 'Atribuição de Supervisor',
+    parent: '/gestao/atribuicao-supervisor-lista',
+    component: AtribuicaoSupervisorCadastro,
+    exact: true,
+  });
   rotas.set('/gestao/atribuicao-supervisor/:dreId/:supervisorId', {
     breadcrumbName: 'Atribuição de Supervisor',
     parent: '/gestao/atribuicao-supervisor-lista',
@@ -60,18 +66,17 @@ export default function Rotas(props) {
     rota.path = key + (value.params ? value.params : '');
     rotasArray.push(rota);
     const rotaRedux = {
-      path: value.paginaInicial?'/':key,
+      path: value.paginaInicial ? '/' : key,
       icone: value.icone,
       dicaIcone: value.dicaIcone,
       params: value.params,
       breadcrumbName: value.breadcrumbName,
       menu: value.menu,
       parent: value.parent,
-      limpaSelecaoMenu: value.limpaSelecaoMenu
-    }
+      limpaSelecaoMenu: value.limpaSelecaoMenu,
+    };
     store.dispatch(setRotas(rotaRedux));
   }
-
 
   return (
     <div>
