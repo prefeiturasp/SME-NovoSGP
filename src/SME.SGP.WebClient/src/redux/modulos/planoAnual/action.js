@@ -144,9 +144,10 @@ export function PrePost() {
   };
 }
 
-export function PosPost() {
+export function PosPost(recarregar) {
   return {
     type: '@bimestres/PosPostBimestre',
+    payload: recarregar,
   };
 }
 
@@ -156,6 +157,7 @@ export function Post(bimestres) {
       .then(() => {
         requestAnimationFrame(() => dispatch(setNaoEdicao()));
         sucesso('Suas informações foram salvas com sucesso.');
+        dispatch(PosPost(true));
       })
       .catch(err => {
         dispatch(
@@ -167,9 +169,8 @@ export function Post(bimestres) {
             visible: true,
           })
         );
-      })
-      .finally(() => {
-        dispatch(PosPost());
+
+        dispatch(PosPost(false));
       });
   };
 }
