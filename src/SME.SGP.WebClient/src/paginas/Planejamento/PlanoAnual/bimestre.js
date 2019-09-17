@@ -253,7 +253,7 @@ const BimestreComponent = props => {
           )}
           {LayoutEspecial ? null : (
             <div
-              className="row col-md-12"
+              className="row col-md-12 d-flex"
               role="group"
               aria-label={`${bimestres[indice].objetivosAprendizagem &&
                 bimestres[indice].objetivosAprendizagem.length > 0 &&
@@ -296,10 +296,10 @@ const BimestreComponent = props => {
                   height="38px !important"
                   width="92px !important"
                   fontSize="12px !important"
-                  padding="0px !important"
+                  padding="0px 5px !important"
+                  lineHeight="1.2 !important"
                   steady
                   border
-                  padding="0px !important"
                   className="text-dark mt-3 mr-2 stretched-link"
                   onClick={removerTodosObjetivoSelecionado}
                 />
