@@ -12,6 +12,11 @@ import CampoTexto from '~/componentes/campoTexto';
 import EstiloLinhaTempo from './linhaTempo.css';
 import LinhaTempo from '~/componentes/linhaTempo/linhaTempo';
 import history from '~/servicos/history';
+import notificacaoCategoria from '~/dtos/notificacaoCategoria';
+import notificacaoStatus from '~/dtos/notificacaoStatus';
+import servicoNotificacao from '~/servicos/Paginas/ServicoNotificacao';
+
+const urlTelaNotificacoes = '/teste/notificacoes';
 
 const DetalheNotificacao = ({ match }) => {
   const [idNotificacao, setIdNotificacao] = useState('');
@@ -66,7 +71,7 @@ const DetalheNotificacao = ({ match }) => {
               titulo: item.status,
               status: item.statusId,
               timestamp: item.alteracaoData,
-              rf: '7972324',
+              rf: item.alteracaoUsuarioRf,
               nome: item.alteracaoUsuario,
             };
           });
@@ -74,56 +79,31 @@ const DetalheNotificacao = ({ match }) => {
         })
         .catch(listaErros => erros(listaErros));
     };
-    if (notificacao && notificacao.mostrarBotoesDeAprovacao) {
+    if (
+      notificacao &&
+      notificacao.categoriaId === notificacaoCategoria.Workflow_Aprovacao
+    ) {
       buscaLinhaTempo();
     }
   }, [notificacao]);
 
-  const salvar = form => {
-    debugger;
-  };
-
   const marcarComoLida = () => {
     const idsNotificacoes = [...idNotificacao];
-    api
-      .put('v1/notificacoes/status/lida', idsNotificacoes)
-      .then(resposta => {
-        if (resposta.data) {
-          resposta.data.forEach(resultado => {
-            if (resultado.sucesso) {
-              sucesso(resultado.mensagem);
-            } else {
-              erro(resultado.mensagem);
-            }
-          });
-        }
-        history.push('/notificacoes');
-      })
-      .catch(listaErros => erros(listaErros));
+    servicoNotificacao.marcarComoLida(idsNotificacoes, () =>
+      history.push(urlTelaNotificacoes)
+    );
   };
 
   const excluir = async () => {
     const confirmado = await confirmar(
       'Atenção',
-      'Você tem certeza que deseja excluir estas notificações?'
+      'Você tem certeza que deseja excluir esta notificação?'
     );
     if (confirmado) {
       const idsNotificacoes = [...idNotificacao];
-      api
-        .delete('v1/notificacoes/', idsNotificacoes)
-        .then(resposta => {
-          if (resposta.data) {
-            resposta.data.forEach(resultado => {
-              if (resultado.sucesso) {
-                sucesso(resultado.mensagem);
-              } else {
-                erro(resultado.mensagem);
-              }
-            });
-          }
-          history.push('/notificacoes');
-        })
-        .catch(listaErros => erros(listaErros));
+      servicoNotificacao.excluir(idsNotificacoes, () =>
+        history.push(urlTelaNotificacoes)
+      );
     }
   };
 
@@ -135,17 +115,16 @@ const DetalheNotificacao = ({ match }) => {
       }" esta notificação?`
     );
     if (confirmado) {
-      form.aprova = aprovar;
+      const parametros = { ...form, aprova: aprovar };
+      const url = `v1/workflows/aprovacoes/notificacoes/${idNotificacao}/aprova`;
       api
-        .put(
-          `v1/workflows/aprovacoes/notificacoes/${idNotificacao}/aprova`,
-          form
-        )
-        .then(resposta => {
-          sucesso(
-            `Notificação "${aprovar ? 'Aceita' : 'Recusada'}" com sucesso.`
-          );
-          history.push('/notificacoes');
+        .put(url, parametros)
+        .then(() => {
+          const mensagemSucesso = `Notificação "${
+            aprovar ? 'Aceita' : 'Recusada'
+          }" com sucesso.`;
+          sucesso(mensagemSucesso);
+          history.push(urlTelaNotificacoes);
         })
         .catch(listaErros => erros(listaErros));
     }
@@ -182,7 +161,7 @@ const DetalheNotificacao = ({ match }) => {
                         })
                       );
                       setAprovar(true);
-                      form.validateForm().then(r => form.handleSubmit(e));
+                      form.validateForm().then(() => form.handleSubmit(e));
                     }}
                   />
                   <Button
@@ -201,7 +180,7 @@ const DetalheNotificacao = ({ match }) => {
                         })
                       );
                       setAprovar(false);
-                      form.validateForm().then(r => form.handleSubmit(e));
+                      form.validateForm().then(() => form.handleSubmit(e));
                     }}
                   />
                 </>
@@ -218,7 +197,6 @@ const DetalheNotificacao = ({ match }) => {
                   color={cores.Colors.Vermelho}
                   border
                   className="mr-2"
-                  border
                   disabled={!notificacao.mostrarBotaoRemover}
                   onClick={excluir}
                 />
@@ -261,7 +239,8 @@ const DetalheNotificacao = ({ match }) => {
                               Situação
                               <div
                                 className={`conteudo-coluna ${
-                                  notificacao.statusId == 1
+                                  notificacao.statusId ===
+                                  notificacaoStatus.Pendente
                                     ? 'texto-vermelho-negrito'
                                     : ''
                                 }`}
@@ -293,7 +272,8 @@ const DetalheNotificacao = ({ match }) => {
                   </div>
                 </div>
               </EstiloDetalhe>
-              {notificacao.mostrarBotoesDeAprovacao && (
+              {notificacao.categoriaId ===
+                notificacaoCategoria.Workflow_Aprovacao && (
                 <EstiloLinhaTempo>
                   <div className="col-xs-12 col-md-12 col-lg-12">
                     <div className="row">

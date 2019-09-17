@@ -12,7 +12,7 @@
         public NotificacaoCategoria Categoria { get; set; }
         public long Codigo { get; set; }
         public string CodigoFormatado { get { return Codigo.ToString().PadLeft(9, '0'); } }
-        public bool DeveAprovar { get { return Categoria == NotificacaoCategoria.Workflow_Aprovacao; } }
+        public bool DeveAprovar { get { return Categoria == NotificacaoCategoria.Workflow_Aprovacao && Status == NotificacaoStatus.Pendente; } }
         public bool DeveMarcarComoLido { get { return Categoria == NotificacaoCategoria.Alerta && Status != NotificacaoStatus.Lida; } }
         public string DreId { get; set; }
         public bool Excluida { get; set; }
