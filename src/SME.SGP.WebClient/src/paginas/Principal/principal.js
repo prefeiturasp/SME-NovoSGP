@@ -13,6 +13,7 @@ import {
 } from '../../constantes/url';
 import { salvarRf } from '../../redux/modulos/usuario/actions';
 import { store } from '../../redux';
+import ListaNotificacoes from './listaNotificacoes';
 
 const Principal = props => {
   const FREQUENCIA_TYPE = 'frequencia';
@@ -21,61 +22,50 @@ const Principal = props => {
   const [escolaSelecionada, setEscolaSelecionada] = useState(false);
   const [turmaSelecionada, setTurmaSelecionada] = useState(false);
 
-  const FiltroStore = useSelector(store => store.usuario);
-
-  useEffect(() => {
-    if (props.match.params.rf) {
-      const { rf } = props.match.params;
-      store.dispatch(salvarRf(rf));
-    }
-    validarFiltro();
-  }, []);
-
-  useEffect(() => {
-    console.log(FiltroStore);
-  }, [turmaSelecionada]);
-
-  useEffect(() => {
-    validarFiltro();
-  }, [FiltroStore]);
+  const filtroStore = useSelector(state => state.usuario);
 
   const validarFiltro = () => {
-    if (!FiltroStore.turmaSelecionada) {
+    if (!filtroStore.turmaSelecionada) {
       setTurmaSelecionada(false);
       setEscolaSelecionada(false);
       return;
     }
 
-    const temTurma = FiltroStore.turmaSelecionada.length > 0;
+    const temTurma = filtroStore.turmaSelecionada.length > 0;
     const temEscola =
       temTurma &&
-      (FiltroStore.turmaSelecionada[0].ue !== '' &&
-        typeof FiltroStore.turmaSelecionada[0].ue !== 'undefined');
+      (filtroStore.turmaSelecionada[0].ue !== '' &&
+        typeof filtroStore.turmaSelecionada[0].ue !== 'undefined');
 
     setTurmaSelecionada(temTurma);
     setEscolaSelecionada(temEscola);
   };
 
-  const ehDisabled = tipo => {
-    if (!escolaSelecionada) return true;
+  useEffect(() => {
+    if (props.match.params && props.match.params.rf) {
+      const { rf } = props.match.params;
+      store.dispatch(salvarRf(rf));
+    }
+  }, []);
 
-    if (tipo === CICLOS_TYPE) return !cicloLiberado();
-
-    return !turmaSelecionada;
-  };
+  useEffect(() => {
+    validarFiltro();
+  }, [filtroStore]);
 
   const cicloLiberado = () => {
     return escolaSelecionada;
+  };
+
+  const isDesabilitado = tipo => {
+    if (!escolaSelecionada) return true;
+    if (tipo === CICLOS_TYPE) return !cicloLiberado();
+    return !turmaSelecionada;
   };
 
   const Container = styled.div`
     margin-left: 8px !important;
     margin-right: 8px !important;
     margin-top: 20px !important;
-  `;
-
-  const Img = styled.img`
-    width: 100% !important;
   `;
 
   const Label = styled.h5`
@@ -109,7 +99,7 @@ const Principal = props => {
           </Label>
           <Row>
             <Grid cols={12}>
-              <Img src="https://i.imgur.com/UOrwcA9.png" />
+              <ListaNotificacoes />
             </Grid>
           </Row>
         </Grid>
@@ -120,7 +110,7 @@ const Principal = props => {
             cols={[4, 4, 4, 12]}
             iconSize="90px"
             url={URL_FREQ_PLANO_AULA}
-            disabled={(e => ehDisabled(FREQUENCIA_TYPE))()}
+            disabled={() => isDesabilitado(FREQUENCIA_TYPE)}
             icone="fa-columns"
             pack="fas"
             label="Frequência/ Plano de Aula"
@@ -130,7 +120,7 @@ const Principal = props => {
             classHidden="hidden-xs-down"
             iconSize="90px"
             url={URL_PLANO_CICLO}
-            disabled={(e => ehDisabled(CICLOS_TYPE))()}
+            disabled={() => isDesabilitado(CICLOS_TYPE)}
             icone="fa-calendar-minus"
             pack="far"
             label="Plano de Ciclo"
@@ -140,7 +130,7 @@ const Principal = props => {
             classHidden="hidden-xs-down"
             iconSize="90px"
             url={URL_PLANO_ANUAL}
-            disabled={(e => ehDisabled(ANUAL_TYPE))()}
+            disabled={() => isDesabilitado(ANUAL_TYPE)}
             icone="fa-calendar-alt"
             pack="far"
             label="Plano Anual"
