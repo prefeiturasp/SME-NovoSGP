@@ -6,7 +6,6 @@ import CampoTexto from '~/componentes/campoTexto';
 import { Colors } from '~/componentes/colors';
 import SelectComponent from '~/componentes/select';
 import DataTable from '~/componentes/table/dataTable';
-import notificacaoCategoria from '~/dtos/notificacaoCategoria';
 import { confirmar } from '~/servicos/alertas';
 import api from '~/servicos/api';
 import history from '~/servicos/history';
