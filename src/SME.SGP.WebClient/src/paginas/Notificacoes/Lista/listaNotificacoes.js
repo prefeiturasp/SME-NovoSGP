@@ -1,18 +1,18 @@
 import React, { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
+import Cabecalho from '~/componentes-sgp/cabecalho';
 import Button from '~/componentes/button';
+import CampoTexto from '~/componentes/campoTexto';
 import { Colors } from '~/componentes/colors';
 import SelectComponent from '~/componentes/select';
 import DataTable from '~/componentes/table/dataTable';
+import notificacaoCategoria from '~/dtos/notificacaoCategoria';
+import { confirmar } from '~/servicos/alertas';
 import api from '~/servicos/api';
-
-import { EstiloLista } from './estiloLista';
-import CampoTexto from '~/componentes/campoTexto';
-import { erros, erro, sucesso, confirmar } from '~/servicos/alertas';
 import history from '~/servicos/history';
 import servicoNotificacao from '~/servicos/Paginas/ServicoNotificacao';
-import Cabecalho from '~/componentes-sgp/cabecalho';
-import notificacaoCategoria from '~/dtos/notificacaoCategoria';
+
+import { EstiloLista } from './estiloLista';
 
 export default function NotificacoesLista() {
   const [idNotificacoesSelecionadas, setIdNotificacoesSelecionadas] = useState(

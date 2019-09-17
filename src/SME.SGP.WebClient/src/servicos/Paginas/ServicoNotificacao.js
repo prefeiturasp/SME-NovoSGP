@@ -5,7 +5,7 @@ class ServicoNotificacao {
   excluir = async (notificacoesId, callback) => {
     api
       .delete('v1/notificacoes/', {
-        params: { notificacoesId: notificacoesId.toString() },
+        data: notificacoesId,
       })
       .then(resposta => {
         if (resposta.data) {
