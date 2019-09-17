@@ -258,8 +258,6 @@ export function ObterBimestreServidor(Bimestre) {
             ),
           })
         );
-
-        sucesso('Dados obtidos com sucesso');
       })
       .catch(() => {
         erro('Não foi possivel obter os dados do periodo selecionado');
@@ -273,16 +271,19 @@ const _getStringPor = (responsavelPor, dataEM, operacao, rf) => {
     .getDate()
     .toString()
     .padStart(2, '0');
+
   const mes = (data.getMonth() + 1).toString().padStart(2, '0');
   const ano = data.getFullYear();
   const hora = data
     .getHours()
     .toString()
     .padStart(2, '0');
+
   const minuto = data
     .getMinutes()
     .toString()
     .padStart(2, '0');
+
   const segundos = data
     .getSeconds()
     .toString()
