@@ -234,22 +234,10 @@ export function ObterBimestreServidor(Bimestre) {
             objetivo: bimestreDTO.descricao,
             ehExpandido: true,
             id: bimestreDTO.id,
-            alteradoPor: bimestreDTO.alteradoPor
-              ? _getStringPor(
-                  bimestreDTO.alteradoPor,
-                  bimestreDTO.alteradoEm,
-                  'ALTERADO',
-                  bimestreDTO.alteradoRF
-                )
-              : null,
-            criadoPor: bimestreDTO.criadoPor
-              ? _getStringPor(
-                  bimestreDTO.criadoPor,
-                  bimestreDTO.criadoEm,
-                  'INSERIDO',
-                  bimestreDTO.criadoRF
-                )
-              : null,
+            alteradoPor: bimestreDTO.alteradoPor,
+            alteradoEm: bimestreDTO.alteradoEm,
+            criadoEm: bimestreDTO.criadoEm,
+            criadoPor: bimestreDTO.criadoPor,
             objetivosAprendizagem: bimestreDTO.objetivosAprendizagem.map(
               obj => {
                 obj.selected = true;

@@ -89,7 +89,7 @@ export default function PlanoAnual() {
   useEffect(() => {
     VerificarEnvio();
 
-    if (recarregarPlanoAnual) verificarSeEhEdicao();
+if (recarregarPlanoAnual) verificarSeEhEdicao();
   }, [bimestres]);
 
   const onF5Click = e => {
