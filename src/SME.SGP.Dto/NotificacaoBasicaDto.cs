@@ -9,6 +9,8 @@ namespace SME.SGP.Dto
         public string Data { get; set; }
         public string DescricaoStatus { get; set; }
         public long Id { get; set; }
+        public bool PodeMarcarComoLida { get; set; }
+        public bool PodeRemover { get; set; }
         public NotificacaoStatus Status { get; set; }
         public string Tipo { get; set; }
 
