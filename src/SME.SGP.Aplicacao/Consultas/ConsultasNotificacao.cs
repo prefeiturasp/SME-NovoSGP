@@ -36,7 +36,7 @@ namespace SME.SGP.Aplicacao
                        Tipo = r.Tipo.GetAttribute<DisplayAttribute>().Name,
                        Codigo = r.CodigoFormatado,
                        PodeRemover = r.PodeRemover,
-                       PodeMarcarComoLida = r.MarcarComoLida
+                       PodeMarcarComoLida = r.DeveMarcarComoLido
                    };
         }
 
