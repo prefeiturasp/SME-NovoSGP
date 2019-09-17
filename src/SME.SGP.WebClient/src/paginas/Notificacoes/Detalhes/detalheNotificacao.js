@@ -11,10 +11,18 @@ import Cabecalho from '~/componentes-sgp/cabecalho';
 import CampoTexto from '~/componentes/campoTexto';
 import EstiloLinhaTempo from './linhaTempo.css';
 import LinhaTempo from '~/componentes/linhaTempo/linhaTempo';
+import history from '~/servicos/history';
 
 const DetalheNotificacao = ({ match }) => {
   const [idNotificacao, setIdNotificacao] = useState('');
   const [listaDeStatus, setListaDeStatus] = useState([]);
+  const [aprovar, setAprovar] = useState(false);
+
+  const [validacoes, setValidacoes] = useState(
+    Yup.object({
+      observacao: Yup.string().notRequired(),
+    })
+  );
 
   const [notificacao, setNotificacao] = useState({
     alteradoEm: '',
@@ -89,7 +97,7 @@ const DetalheNotificacao = ({ match }) => {
             }
           });
         }
-        buscaNotificacao(idNotificacao);
+        history.push('/notificacoes');
       })
       .catch(listaErros => erros(listaErros));
   };
@@ -113,17 +121,35 @@ const DetalheNotificacao = ({ match }) => {
               }
             });
           }
-          buscaNotificacao(idNotificacao);
+          history.push('/notificacoes');
         })
         .catch(listaErros => erros(listaErros));
     }
   };
 
-  const validacoes = Yup.object().shape({
-    observacao: Yup.string()
-      .required('Observação obrigatória')
-      .min(5, 'Pelo menos 5'),
-  });
+  const enviarAprovacao = async form => {
+    const confirmado = await confirmar(
+      'Atenção',
+      `Você tem certeza que deseja "${
+        aprovar ? 'Aceitar' : 'Recusar'
+      }" esta notificação?`
+    );
+    if (confirmado) {
+      form.aprova = aprovar;
+      api
+        .put(
+          `v1/workflows/aprovacoes/notificacoes/${idNotificacao}/aprova`,
+          form
+        )
+        .then(resposta => {
+          sucesso(
+            `Notificação "${aprovar ? 'Aceita' : 'Recusada'}" com sucesso.`
+          );
+          history.push('/notificacoes');
+        })
+        .catch(listaErros => erros(listaErros));
+    }
+  };
 
   return (
     <>
@@ -133,7 +159,9 @@ const DetalheNotificacao = ({ match }) => {
           observacao: '',
         }}
         validationSchema={validacoes}
-        onSubmit={values => salvar(values)}
+        onSubmit={values => enviarAprovacao(values)}
+        validateOnChange
+        validateOnBlur
       >
         {form => (
           <Form>
@@ -146,7 +174,16 @@ const DetalheNotificacao = ({ match }) => {
                     disabled={!notificacao.mostrarBotoesDeAprovacao}
                     className="mr-2"
                     border={!notificacao.mostrarBotoesDeAprovacao}
-                    type="submit"
+                    type="button"
+                    onClick={async e => {
+                      setValidacoes(
+                        Yup.object().shape({
+                          observacao: Yup.string().notRequired(),
+                        })
+                      );
+                      setAprovar(true);
+                      form.validateForm().then(r => form.handleSubmit(e));
+                    }}
                   />
                   <Button
                     label="Recusar"
@@ -154,7 +191,18 @@ const DetalheNotificacao = ({ match }) => {
                     border
                     disabled={!notificacao.mostrarBotoesDeAprovacao}
                     className="mr-2"
-                    onClick={() => true}
+                    type="button"
+                    onClick={async e => {
+                      setValidacoes(
+                        Yup.object({
+                          observacao: Yup.string().required(
+                            'Observação obrigatória'
+                          ),
+                        })
+                      );
+                      setAprovar(false);
+                      form.validateForm().then(r => form.handleSubmit(e));
+                    }}
                   />
                 </>
                 <Button
@@ -211,7 +259,13 @@ const DetalheNotificacao = ({ match }) => {
                             </div>
                             <div className="col-xs-12 col-md-12 col-lg-2 titulo-coluna">
                               Situação
-                              <div className="conteudo-coluna">
+                              <div
+                                className={`conteudo-coluna ${
+                                  notificacao.statusId == 1
+                                    ? 'texto-vermelho-negrito'
+                                    : ''
+                                }`}
+                              >
                                 {notificacao.situacao}
                               </div>
                             </div>
@@ -230,22 +284,29 @@ const DetalheNotificacao = ({ match }) => {
                 <div className="row">
                   <div className="col-xs-12 col-md-12 col-lg-12 obs">
                     <label>Observações</label>
-                    <CampoTexto name="observacao" type="textarea" form={form} />
+                    <CampoTexto
+                      name="observacao"
+                      type="textarea"
+                      form={form}
+                      desabilitado={!notificacao.mostrarBotoesDeAprovacao}
+                    />
                   </div>
                 </div>
               </EstiloDetalhe>
-              <EstiloLinhaTempo>
-                <div className="col-xs-12 col-md-12 col-lg-12">
-                  <div className="row">
-                    <div className="col-xs-12 col-md-12 col-lg-12">
-                      <p>SITUAÇÃO DA NOTIFICAÇÃO</p>
-                    </div>
-                    <div className="col-xs-12 col-md-12 col-lg-12">
-                      <LinhaTempo listaDeStatus={listaDeStatus} />
+              {notificacao.mostrarBotoesDeAprovacao && (
+                <EstiloLinhaTempo>
+                  <div className="col-xs-12 col-md-12 col-lg-12">
+                    <div className="row">
+                      <div className="col-xs-12 col-md-12 col-lg-12">
+                        <p>SITUAÇÃO DA NOTIFICAÇÃO</p>
+                      </div>
+                      <div className="col-xs-12 col-md-12 col-lg-12">
+                        <LinhaTempo listaDeStatus={listaDeStatus} />
+                      </div>
                     </div>
                   </div>
-                </div>
-              </EstiloLinhaTempo>
+                </EstiloLinhaTempo>
+              )}
             </Card>
           </Form>
         )}

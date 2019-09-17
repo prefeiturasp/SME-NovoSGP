@@ -59,6 +59,7 @@ const Button = props => {
       background: transparent !important;
       border-color: ${Base.CinzaDesabilitado} !important;
       color: ${Base.CinzaDesabilitado} !important;
+      cursor: unset !important;
     }
   `;
 
