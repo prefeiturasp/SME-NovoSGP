@@ -59,7 +59,7 @@ rotas.set('/notificacoes/:id', {
   exact: true,
 });
 
-rotas.set('/teste/notificacoes', {
+rotas.set('/notificacoes', {
   breadcrumbName: 'Notificações',
   parent: '/',
   component: NotificacoesLista,

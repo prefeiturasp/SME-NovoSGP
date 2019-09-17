@@ -1,5 +1,6 @@
 import React from 'react';
 import styled from 'styled-components';
+import PropTypes from 'prop-types';
 
 const Container = styled.div`
   span {
@@ -16,7 +17,6 @@ const Container = styled.div`
   }
 
   h3 {
-    width: 137px;
     height: 29px;
     object-fit: contain;
     font-family: Roboto;
@@ -33,11 +33,21 @@ const Container = styled.div`
 const Cabecalho = ({ titulo, pagina }) => {
   return (
     <Container>
-      <div className="col-xs-12 p-l-10">
-        <span>{titulo || 'NOVO SGP'}</span>
+      <div className="col-xs-12 col-md-12 col-lg-12 p-l-10">
+        <span>{titulo}</span>
         <h3>{pagina}</h3>
       </div>
     </Container>
   );
+};
+
+Cabecalho.defaultProps = {
+  titulo: 'NOVO SGP',
+  pagina: '',
+};
+
+Cabecalho.propTypes = {
+  titulo: PropTypes.string,
+  pagina: PropTypes.string,
 };
 export default Cabecalho;
