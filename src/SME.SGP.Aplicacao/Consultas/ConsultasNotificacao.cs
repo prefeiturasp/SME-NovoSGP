@@ -34,7 +34,9 @@ namespace SME.SGP.Aplicacao
                        Status = r.Status,
                        Categoria = r.Categoria,
                        Tipo = r.Tipo.GetAttribute<DisplayAttribute>().Name,
-                       Codigo = r.CodigoFormatado
+                       Codigo = r.CodigoFormatado,
+                       PodeRemover = r.PodeRemover,
+                       PodeMarcarComoLida = r.MarcarComoLida
                    };
         }
 
