@@ -31,6 +31,9 @@ export default function NotificacoesLista() {
   const [codigoSelecionado, setCodigoSelecionado] = useState();
   const [desabilitarBotaoEditar, setDesabilitarBotaoEditar] = useState(true);
   const [desabilitarBotaoExcluir, setDesabilitarBotaoExcluir] = useState(true);
+  const [desabilitarBotaoMarcarLido, setDesabilitarBotaoMarcarLido] = useState(
+    true
+  );
   const [desabilitarTurma, setDesabilitarTurma] = useState(true);
 
   const columns = [
@@ -114,16 +117,24 @@ export default function NotificacoesLista() {
         return ids.includes(noti.id);
       });
 
-      const categoriaDiferente = notifSelecionadas.find(
-        item => item.categoria != notificacaoCategoria.Aviso
-      );
-      if (categoriaDiferente) {
+      const naoPodeRemover = notifSelecionadas.find(item => !item.podeRemover);
+      if (naoPodeRemover) {
         setDesabilitarBotaoExcluir(true);
       } else {
         setDesabilitarBotaoExcluir(false);
       }
+
+      const naoPodeMarcarLido = notifSelecionadas.find(
+        item => !item.podeMarcarComoLida
+      );
+      if (naoPodeMarcarLido) {
+        setDesabilitarBotaoMarcarLido(true);
+      } else {
+        setDesabilitarBotaoMarcarLido(false);
+      }
     } else {
       setDesabilitarBotaoExcluir(true);
+      setDesabilitarBotaoMarcarLido(true);
     }
 
     setIdNotificacoesSelecionadas(ids);
@@ -153,8 +164,8 @@ export default function NotificacoesLista() {
     setTipoSelecionado(tipo);
   }
 
-  function onClickEditar(id) {
-    history.push(`/notificacoes/${id[0]}`);
+  function onClickEditar() {
+    history.push(`/notificacoes/${idNotificacoesSelecionadas[0]}`);
   }
 
   async function onClickFiltrar() {
@@ -286,6 +297,7 @@ export default function NotificacoesLista() {
             border
             className="mb-2 ml-2 float-right"
             onClick={marcarComoLida}
+            disabled={desabilitarBotaoMarcarLido}
           />
           <Button
             label="Editar"
