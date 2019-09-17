@@ -260,9 +260,11 @@ export default createGlobalStyle`
 
   .ant-modal-footer {
     border-top: 0px !important;
+    display: flex !important;
+    justify-content: flex-end !important;
   }
 
   .ant-modal-title{
     font-size: 24px !important;
-  }
+    }
 `;
