@@ -9,7 +9,7 @@ import { rotaAtiva } from '../redux/modulos/navegacao/actions';
 
 const BreadcrumbSgp = () => {
   const BreadcrumbBody = styled.div`
-    margin: 10px 0 5px 15px !important;
+    padding: 10px 0 5px 15px !important;
     font-size: 10px;
     a, a:hover {
       color: ${Base.AzulBreadcrumb};
