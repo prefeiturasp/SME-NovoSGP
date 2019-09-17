@@ -24,6 +24,7 @@ import {
   ObterBimestreServidor,
   removerSelecaoTodosObjetivos,
 } from '../../../redux/modulos/planoAnual/action';
+import Auditoria from '~/componentes/auditoria';
 
 //Utilizado para importar a função scrollIntoViewIfNeeded para navegadores que não possuem essa funcionalidade.
 import '../../../componentes/scrollIntoViewIfNeeded';
@@ -346,7 +347,6 @@ const BimestreComponent = props => {
                   ref={textEditorRef}
                   id="textEditor"
                   height="135px"
-                  height="135px"
                   alt="Descrição do plano Anual"
                   disabled={disabled}
                   stateAdicional={estadoAdicionalEditorTexto}
@@ -357,14 +357,20 @@ const BimestreComponent = props => {
               </form>
             </fieldset>
             <Grid cols={12} className="p-0">
-              <BoxAuditoria>
+              <Auditoria
+                criadoPor={bimestres[indice].criadoPor}
+                criadoEm={bimestres[indice].criadoEm}
+                alteradoPor={bimestres[indice].alteradoPor}
+                alteradoEm={bimestres[indice].alteradoEm}
+              />
+              {/* <BoxAuditoria>
                 {bimestres[indice].criadoPor ? (
                   <H5>{bimestres[indice].criadoPor}</H5>
                 ) : null}
                 {bimestres[indice].alteradoPor ? (
                   <H5>{bimestres[indice].alteradoPor}</H5>
                 ) : null}
-              </BoxAuditoria>
+              </BoxAuditoria> */}
             </Grid>
           </div>
         </Grid>
