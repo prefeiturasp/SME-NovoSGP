@@ -9,6 +9,7 @@ const Base = {
   Azul: '#086397',
   AzulAnakiwa: '#A4DAFB',
   AzulBordaCard: '#0A3DA3',
+  AzulBreadcrumb: '#0C6598',
   Branco: '#FFF',
   CinzaBadge: '#F3F3F3',
   CinzaBarras: '#C8C8C8',

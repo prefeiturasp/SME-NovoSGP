@@ -3,16 +3,24 @@ import { Breadcrumb } from 'antd';
 import { Link } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import { Base } from '../componentes/colors';
+import { store } from '../redux';
 import styled from 'styled-components';
+import { rotaAtiva } from '../redux/modulos/navegacao/actions';
 
 const BreadcrumbSgp = () => {
   const BreadcrumbBody = styled.div`
-    padding: 10px 0 5px 15px !important;
-    a,
-    a:hover {
-      color: ${Base.Roxo};
+    margin: 10px 0 5px 15px !important;
+    font-size: 10px;
+    a, a:hover {
+      color: ${Base.AzulBreadcrumb};
+      padding: 10px 0 5px 15px !important;
     }
-    i {
+
+    a:hover{
+      text-decoration: underline;
+    }
+
+    .icone-seta {
       margin-right: 10px;
       margin-left: 10px;
     }
@@ -30,13 +38,18 @@ const BreadcrumbSgp = () => {
     carregaBreadcrumbs();
   }, [NavegacaoStore.rotaAtiva]);
 
-  window.onbeforeunload = () => {
+  useEffect(window.onbeforeunload = () => {
+    depoisDeCarregar()
+  }, []);
+
+  const depoisDeCarregar = () => {
     localStorage.setItem('rota-atual', window.location.pathname);
-  };
+    store.dispatch(rotaAtiva(window.location.pathname));
+  }
 
   const carregaBreadcrumbs = () => {
     const rotaDinamica = localStorage.getItem('rota-dinamica');
-    const itemRotaDinamica = rotaDinamica?JSON.parse(rotaDinamica): null;
+    const itemRotaDinamica = rotaDinamica ? JSON.parse(rotaDinamica) : null;
     const item = rotas.get(rotaAtual);
     if (item) {
       setItensBreadcrumb(item);
@@ -52,7 +65,7 @@ const BreadcrumbSgp = () => {
     const newItens = [];
     carregaBreadcrumbsExtra(item, newItens);
     newItens.push(
-      criarItemBreadcrumb(item.breadcrumbName, rotaAtual, true, true)
+      criarItemBreadcrumb(item.breadcrumbName, rotaAtual, true, true, item.icone, item.dicaIcone)
     );
     setItens(newItens);
   }
@@ -69,14 +82,16 @@ const BreadcrumbSgp = () => {
           itemParent.breadcrumbName,
           item.parent,
           false,
-          false
+          false,
+          itemParent.icone,
+          itemParent.dicaIcone
         )
       );
     }
 
     if (item.menu) {
       newItens.push(
-        criarItemBreadcrumb(item.menu, item.path + '-menu', true, false)
+        criarItemBreadcrumb(item.menu, item.path + '-menu', true, false, item.icone, item.dicaIcone)
       );
     }
   };
@@ -85,9 +100,11 @@ const BreadcrumbSgp = () => {
     breadcrumbName,
     path,
     ehEstatico,
-    ehRotaAtual
+    ehRotaAtual,
+    icone,
+    dicaIcone
   ) => {
-    return { breadcrumbName, path, ehEstatico, ehRotaAtual };
+    return { breadcrumbName, path, ehEstatico, ehRotaAtual, icone, dicaIcone };
   };
 
   return (
@@ -96,13 +113,15 @@ const BreadcrumbSgp = () => {
         return (
           <Breadcrumb.Item key={item.path} separator="">
             <Link hidden={item.ehEstatico} to={item.path}>
-              {item.breadcrumbName}
+              <i className={item.icone} title={item.breadcrumbName} title={item.dicaIcone}/>
+              <span hidden={item.path === '/'}>{item.breadcrumbName}</span>
             </Link>
-            <span hidden={!item.ehEstatico}>{item.breadcrumbName}</span>
+            <i hidden={!item.ehEstatico} className={item.icone} title={item.dicaIcone} />
+            <span hidden={!item.ehEstatico || item.path === '/'}>{item.breadcrumbName}</span>
             <i
               hidden={item.ehRotaAtual}
-              style={{ color: Base.Roxo }}
-              className="fas fa-chevron-circle-right"
+              style={{ color: Base.AzulBreadcrumb }}
+              className="fas fa-chevron-circle-right icone-seta"
             />
           </Breadcrumb.Item>
         );
