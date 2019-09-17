@@ -15,7 +15,7 @@ const LinhaTempo = props => {
     }
   };
   return (
-    <EstiloLinhaTempo>
+    <EstiloLinhaTempo quantidadeItems={listaDeStatus.length}>
       <div className="w-100">
         <div className="row">
           <div className="col-12">
