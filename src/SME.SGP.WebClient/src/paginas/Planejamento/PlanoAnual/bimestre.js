@@ -41,6 +41,11 @@ const BimestreComponent = props => {
 
   const [idObjetivoFocado, setIDObjetivoFocado] = useState('0');
 
+  const [estadoAdicionalEditorTexto, setEstadoAdicionalEditorTexto] = useState({
+    focado: false,
+    ultimoFoco: null,
+  });
+
   const textEditorRef = useRef(null);
 
   const ListRef = useRef(null);
@@ -122,8 +127,15 @@ const BimestreComponent = props => {
     selecionarObjetivo(index, ariaPressed);
   };
 
-  const onClickTextEditor = () => {
-    setEhExpandido(true);
+  const onClickTextEditor = ultimoFoco => {
+    if (!bimestres[indice].ehEdicao) {
+      setEhExpandido(true);
+
+      setEstadoAdicionalEditorTexto({
+        focado: true,
+        ultimoFoco,
+      });
+    }
   };
 
   const removeObjetivoSelecionado = e => {
@@ -140,6 +152,11 @@ const BimestreComponent = props => {
 
   const onBlurTextEditor = value => {
     setEhExpandido(true);
+
+    setEstadoAdicionalEditorTexto({
+      focado: false,
+      ultimoFoco: null,
+    });
 
     setarDescricao(value);
   };
@@ -173,7 +190,7 @@ const BimestreComponent = props => {
                     <Badge
                       role="button"
                       onClick={selecionaMateria}
-                      aria-pressed={materia.selected && true}
+                      aria-pressed={materia.selecionada && true}
                       id={materia.codigo}
                       data-index={indice}
                       alt={materia.materia}
@@ -332,6 +349,7 @@ const BimestreComponent = props => {
                   height="135px"
                   alt="Descrição do plano Anual"
                   disabled={disabled}
+                  stateAdicional={estadoAdicionalEditorTexto}
                   onClick={onClickTextEditor}
                   value={bimestres[indice].objetivo}
                   onBlur={onBlurTextEditor}
@@ -340,12 +358,12 @@ const BimestreComponent = props => {
             </fieldset>
             <Grid cols={12} className="p-0">
               <BoxAuditoria>
-              {bimestres[indice].criadoPor ? (
-                <H5>{bimestres[indice].criadoPor}</H5>
-              ) : null}
-              {bimestres[indice].alteradoPor ? (
-                <H5>{bimestres[indice].alteradoPor}</H5>
-              ) : null}
+                {bimestres[indice].criadoPor ? (
+                  <H5>{bimestres[indice].criadoPor}</H5>
+                ) : null}
+                {bimestres[indice].alteradoPor ? (
+                  <H5>{bimestres[indice].alteradoPor}</H5>
+                ) : null}
               </BoxAuditoria>
             </Grid>
           </div>

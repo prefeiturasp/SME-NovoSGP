@@ -13,6 +13,7 @@ const BreadcrumbSgp = () => {
     font-size: 10px;
     a, a:hover {
       color: ${Base.AzulBreadcrumb};
+      padding: 10px 0 5px 15px !important;
     }
 
     a:hover{

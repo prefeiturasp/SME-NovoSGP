@@ -23,7 +23,7 @@ namespace SME.SGP.Dados.Repositorios
             query.AppendLine("	string_agg(distinct cast(oap.objetivo_aprendizagem_jurema_id as text), ',') as ObjetivosAprendizagemPlano");
             query.AppendLine("from");
             query.AppendLine("	plano_anual pa");
-            query.AppendLine("inner join objetivo_aprendizagem_plano oap on");
+            query.AppendLine("left join objetivo_aprendizagem_plano oap on");
             query.AppendLine("	pa.id = oap.plano_id");
             query.AppendLine("where");
             query.AppendLine("	pa.ano = @ano");
