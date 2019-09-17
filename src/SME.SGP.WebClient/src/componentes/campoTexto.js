@@ -13,6 +13,9 @@ const Campo = styled.div`
     margin-bottom: 5px;
     background-image: none !important;
   }
+  .ant-input {
+    height: 38px;
+  }
 `;
 
 const Container = styled.div`
@@ -21,30 +24,46 @@ const Container = styled.div`
   }
 `;
 
-const CampoTexto = ({ name, id, form, className, type, placeholder, onChange, value }) => {
+const CampoTexto = ({
+  name,
+  id,
+  form,
+  className,
+  type,
+  placeholder,
+  onChange,
+  value,
+  desabilitado,
+}) => {
   const possuiErro = () => {
-    return form.errors[name] && form.touched[name];
+    return form && form.errors[name] && form.touched[name];
   };
-
+  const executaOnBlur = event => {
+    const { relatedTarget } = event;
+    if (relatedTarget && 'button' === relatedTarget.getAttribute('type')) {
+      event.preventDefault();
+    }
+  };
   return (
     <>
-      {form ? (
-        <Campo erro={possuiErro()}>
+      <Campo erro={possuiErro()}>
+        {form ? (
           <Field
             name={name}
             id={id || name}
             className={`form-control campo ${
               possuiErro() ? 'is-invalid' : ''
-            } ${className || ''}`}
+            } ${className || ''} ${desabilitado ? 'desabilitado' : ''}`}
             component={type || 'text'}
-          />
-          {possuiErro() && <span>{form.errors[name]}</span>}
-        </Campo>
-      ) : (
-        <Container>
-          <Input placeholder={placeholder}  onChange={onChange} value={value}/>
-        </Container>
-      )}
+            disabled={desabilitado}
+            onBlur={executaOnBlur}
+          >
+            {possuiErro() && <span>{form.errors[name]}</span>}
+          </Field>
+        ) : (
+          <Input placeholder={placeholder} onChange={onChange} value={value} />
+        )}
+      </Campo>
     </>
   );
 };
