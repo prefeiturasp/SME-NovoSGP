@@ -12,6 +12,7 @@ import history from '~/servicos/history';
 import servicoNotificacao from '~/servicos/Paginas/ServicoNotificacao';
 
 import { EstiloLista } from './estiloLista';
+import notificacaoStatus from '~/dtos/notificacaoStatus';
 
 export default function NotificacoesLista() {
   const [idNotificacoesSelecionadas, setIdNotificacoesSelecionadas] = useState(
@@ -34,31 +35,41 @@ export default function NotificacoesLista() {
     true
   );
   const [desabilitarTurma, setDesabilitarTurma] = useState(true);
-
-  const columns = [
-    {
-      title: 'Código',
-      dataIndex: 'codigo',
-    },
-    {
-      title: 'Tipo',
-      dataIndex: 'tipo',
-    },
-    {
-      title: 'Título',
-      dataIndex: 'titulo',
-    },
-    {
-      title: 'Situação',
-      dataIndex: 'descricaoStatus',
-    },
-    {
-      title: 'Data/Hora',
-      dataIndex: 'data',
-    },
-  ];
+  const [colunasTabela, setColunasTabela] = useState([]);
 
   const usuario = useSelector(store => store.usuario);
+
+  useEffect(() => {
+    const colunas = [
+      {
+        title: 'Código',
+        dataIndex: 'codigo',
+        render: (text, row) => montarLinhasTabela(text, row),
+      },
+      {
+        title: 'Tipo',
+        dataIndex: 'tipo',
+        render: (text, row) => montarLinhasTabela(text, row),
+      },
+      {
+        title: 'Título',
+        dataIndex: 'titulo',
+        render: (text, row) => montarLinhasTabela(text, row),
+      },
+      {
+        title: 'Situação',
+        dataIndex: 'descricaoStatus',
+        render: (text, row) => montarLinhasTabela(text, row, true),
+      },
+      {
+        title: 'Data/Hora',
+        dataIndex: 'data',
+        render: (text, row) => montarLinhasTabela(text, row),
+      },
+    ];
+
+    setColunasTabela(colunas);
+  }, []);
 
   useEffect(() => {
     async function carregarListas() {
@@ -103,6 +114,18 @@ export default function NotificacoesLista() {
     { id: 1, descricao: 'Todas as turmas' },
     { id: 2, descricao: 'Turma selecionada' },
   ];
+
+  function montarLinhasTabela(text, row, colunaSituacao) {
+    return row.status === notificacaoStatus.Pendente ? (
+      colunaSituacao ? (
+        <a className="texto-vermelho-negrito text-uppercase">{text}</a>
+      ) : (
+        <a className="coluna-negrito">{text}</a>
+      )
+    ) : (
+      text
+    );
+  }
 
   function onSelectRow(ids) {
     if (ids && ids.length == 1) {
@@ -193,6 +216,7 @@ export default function NotificacoesLista() {
     });
     setListaNotificacoes(listaNotifi.data);
     setIdNotificacoesSelecionadas([]);
+    onSelectRow([]);
   }
 
   function marcarComoLida() {
@@ -312,7 +336,7 @@ export default function NotificacoesLista() {
             id="lista-notificacoes"
             selectedRowKeys={idNotificacoesSelecionadas}
             onSelectRow={onSelectRow}
-            columns={columns}
+            columns={colunasTabela}
             dataSource={listaNotificacoes}
             selectMultipleRows
           />
