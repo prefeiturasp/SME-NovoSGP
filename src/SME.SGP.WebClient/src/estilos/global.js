@@ -201,11 +201,11 @@ export default createGlobalStyle`
     position: fixed !important;
   }
 
-  .coluna-vermelha {
+  .texto-vermelho {
     color: #b40c02 !important;
   }
 
-  .coluna-vermelha-negrito {
+  .texto-vermelho-negrito {
     color: #b40c02 !important;
     font-weight: bold !important;
   }
@@ -224,5 +224,12 @@ export default createGlobalStyle`
 
   form{
     width:100%;
+  }
+
+  .desabilitado{
+    background: transparent !important;
+    border-color: ${Base.CinzaDesabilitado} !important;
+    color: ${Base.CinzaDesabilitado} !important;
+    cursor: unset !important;
   }
 `;
