@@ -4,7 +4,7 @@ import Button from '~/componentes/button';
 import { Colors } from '~/componentes/colors';
 import SelectComponent from '~/componentes/select';
 import DataTable from '~/componentes/table/dataTable';
-import { NovoSGP, Titulo } from '~/helpers/styledComponentsGeneric';
+import Cabecalho from '~/componentes-sgp/cabecalho';
 import api from '~/servicos/api';
 
 import { EstiloLista } from './estiloLista';
@@ -149,10 +149,7 @@ export default function NotificacoesLista() {
 
   return (
     <>
-      <div className="col-md-12">
-        <NovoSGP>NOVO SGP</NovoSGP>
-        <Titulo>Notificações</Titulo>
-      </div>
+      <Cabecalho pagina="Notificações" />
       <EstiloLista>
         <div className="col-md-2 pb-2">
           <SelectComponent
