@@ -19,6 +19,7 @@ const Button = props => {
     icon,
     padding,
     height,
+    lineHeight,
     width,
     fontSize,
     label,
@@ -46,11 +47,13 @@ const Button = props => {
         : `border: 0 none !important;`
     };
     display: flex;
+    position: relative;
     font-weight: ${bold ? 'bold' : 'normal'} !important;
     ${width ? `width: ${width};` : ''}
     ${fontSize ? `font-size: ${fontSize};` : ''}
     ${padding ? `padding: ${padding};` : ''}
     height: ${height ? height : '38px'};
+    ${lineHeight ? `line-height: ${lineHeight}` : ''}
     &:hover {
       background: ${Hover[color]} !important;
       color: ${!steady ? Base.Branco : 'initial'} !important;
