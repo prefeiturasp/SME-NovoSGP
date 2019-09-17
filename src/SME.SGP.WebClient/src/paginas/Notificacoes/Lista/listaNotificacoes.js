@@ -11,6 +11,7 @@ import { EstiloLista } from './estiloLista';
 import CampoTexto from '~/componentes/campoTexto';
 import { erros, erro, sucesso, confirmar } from '~/servicos/alertas';
 import history from '~/servicos/history';
+import servicoNotificacao from '~/servicos/Paginas/ServicoNotificacao';
 
 export default function NotificacoesLista() {
   const [idNotificacoesSelecionadas, setIdNotificacoesSelecionadas] = useState(
@@ -107,50 +108,6 @@ export default function NotificacoesLista() {
     history.push(`/notificacoes/${row.id}`);
   }
 
-  function marcarComoLida() {
-    api
-      .put('v1/notificacoes/status/lida', idNotificacoesSelecionadas)
-      .then(resposta => {
-        if (resposta.data) {
-          resposta.data.forEach(resultado => {
-            if (resultado.sucesso) {
-              sucesso(resultado.mensagem);
-            } else {
-              erro(resultado.mensagem);
-            }
-          });
-        }
-        onClickFiltrar();
-      })
-      .catch(listaErros => erros(listaErros));
-  }
-
-  async function excluir() {
-    const confirmado = await confirmar(
-      'Atenção',
-      'Você tem certeza que deseja excluir estas notificações?'
-    );
-    if (confirmado) {
-      api
-        .delete('v1/notificacoes', {
-          params: { notificaoesId: idNotificacoesSelecionadas.toString() },
-        })
-        .then(resposta => {
-          if (resposta.data) {
-            resposta.data.forEach(resultado => {
-              if (resultado.sucesso) {
-                sucesso(resultado.mensagem);
-              } else {
-                erro(resultado.mensagem);
-              }
-            });
-          }
-          onClickFiltrar();
-        })
-        .catch(listaErros => erros(listaErros));
-    }
-  }
-
   async function onClickFiltrar() {
     const paramsQuery = {
       ano: usuario.turmaSelecionada.ano,
@@ -163,13 +120,31 @@ export default function NotificacoesLista() {
       titulo: tituloSelecionado || null,
       turmaId: usuario.turmaSelecionada.codTurma,
       ueId: usuario.turmaSelecionada.codEscola,
-      usuarioId: '10', // TODO Mock
+      usuarioId: '7208626', // TODO Mock
     };
     const listaNotifi = await api.get('v1/notificacoes', {
       params: paramsQuery,
     });
     console.log(listaNotifi);
     setListaNotificacoes(listaNotifi.data);
+  }
+
+  function marcarComoLida() {
+    servicoNotificacao.marcarComoLida(idNotificacoesSelecionadas, () =>
+      onClickFiltrar()
+    );
+  }
+
+  async function excluir() {
+    const confirmado = await confirmar(
+      'Atenção',
+      'Você tem certeza que deseja excluir estas notificações?'
+    );
+    if (confirmado) {
+      servicoNotificacao.excluir(idNotificacoesSelecionadas, () =>
+        onClickFiltrar()
+      );
+    }
   }
 
   return (
