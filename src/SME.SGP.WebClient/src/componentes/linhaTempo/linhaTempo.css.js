@@ -16,7 +16,7 @@ const EstiloLinhaTempo = styled.div`
     margin-bottom: 5px;
     font-size: 9px;
     li {
-      width: 33.3%;
+      width: ${props => (props.quantidadeItems == 2 ? '50%' : '33.3%')};
     }
   }
 
@@ -38,6 +38,10 @@ const EstiloLinhaTempo = styled.div`
           font-weight: 900;
           background-color: #297805;
           color: #fff;
+          border-color: #297805;
+        }
+        &:after {
+          background-color: #297805;
           border-color: #297805;
         }
       }

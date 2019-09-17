@@ -12,11 +12,23 @@ const Campo = styled.div`
     margin-bottom: 5px;
     background-image: none !important;
   }
+  .disabled {
+    background: transparent !important;
+    border-color: ${Base.CinzaDesabilitado} !important;
+    color: ${Base.CinzaDesabilitado} !important;
+  }
 `;
 
-const CampoTexto = ({ name, id, form, className, type }) => {
+const CampoTexto = ({ name, id, form, className, type, desabilitado }) => {
   const possuiErro = () => {
     return form.errors[name] && form.touched[name];
+  };
+
+  const executaOnBlur = event => {
+    const { relatedTarget } = event;
+    if (relatedTarget && 'button' === relatedTarget.getAttribute('type')) {
+      event.preventDefault();
+    }
   };
 
   return (
@@ -26,8 +38,10 @@ const CampoTexto = ({ name, id, form, className, type }) => {
         id={id || name}
         className={`form-control campo ${
           possuiErro() ? 'is-invalid' : ''
-        } ${className || ''}`}
+        } ${className || ''} ${desabilitado ? 'desabilitado' : ''}`}
         component={type || 'text'}
+        disabled={desabilitado}
+        onBlur={executaOnBlur}
       />
       {possuiErro() && <span>{form.errors[name]}</span>}
     </Campo>
