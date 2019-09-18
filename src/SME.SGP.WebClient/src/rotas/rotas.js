@@ -7,6 +7,8 @@ import PlanoCiclo from '../paginas/Planejamento/PlanoCiclo/planoCiclo';
 import PlanoAnual from '../paginas/Planejamento/PlanoAnual/planoAnual';
 import AtribuicaoSupervisorLista from '../paginas/Gestao/AtribuicaoSupervisor/atribuicaoSupervisorLista';
 import AtribuicaoSupervisorCadastro from '../paginas/Gestao/AtribuicaoSupervisor/atribuicaoSupervisorCadastro';
+import DetalheNotificacao from '~/paginas/Notificacoes/Detalhes/detalheNotificacao';
+import NotificacoesLista from '~/paginas/Notificacoes/Lista/listaNotificacoes';
 
 export default function Rotas() {
   const rotas = new Map();
@@ -57,6 +59,20 @@ export default function Rotas() {
     breadcrumbName: 'Atribuição de Supervisor',
     parent: '/gestao/atribuicao-supervisor-lista',
     component: AtribuicaoSupervisorCadastro,
+    exact: true,
+  });
+
+  rotas.set('/notificacoes/:id', {
+    breadcrumbName: 'Notificações',
+    parent: '/',
+    component: DetalheNotificacao,
+    exact: true,
+  });
+
+  rotas.set('/teste/notificacoes', {
+    breadcrumbName: 'Notificações',
+    parent: '/',
+    component: NotificacoesLista,
     exact: true,
   });
 
