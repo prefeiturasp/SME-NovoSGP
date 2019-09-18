@@ -1,17 +1,19 @@
 import React, { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
+import Cabecalho from '~/componentes-sgp/cabecalho';
 import Button from '~/componentes/button';
+import CampoTexto from '~/componentes/campoTexto';
 import { Colors } from '~/componentes/colors';
 import SelectComponent from '~/componentes/select';
 import DataTable from '~/componentes/table/dataTable';
-import Cabecalho from '~/componentes-sgp/cabecalho';
+import { confirmar } from '~/servicos/alertas';
 import api from '~/servicos/api';
-
-import { EstiloLista } from './estiloLista';
-import CampoTexto from '~/componentes/campoTexto';
-import { erros, erro, sucesso, confirmar } from '~/servicos/alertas';
 import history from '~/servicos/history';
 import servicoNotificacao from '~/servicos/Paginas/ServicoNotificacao';
+
+import { EstiloLista } from './estiloLista';
+import notificacaoStatus from '~/dtos/notificacaoStatus';
+import CampoTextoBusca from '~/componentes/campoTextoBusca';
 
 export default function NotificacoesLista() {
   const [idNotificacoesSelecionadas, setIdNotificacoesSelecionadas] = useState(
@@ -28,34 +30,47 @@ export default function NotificacoesLista() {
   const [tipoSelecionado, setTipoSelecionado] = useState();
   const [tituloSelecionado, setTituloSelecionado] = useState();
   const [codigoSelecionado, setCodigoSelecionado] = useState();
-
-  const columns = [
-    {
-      title: 'Código',
-      dataIndex: 'codigo',
-      render: (text, row) => (
-        <a onClick={() => editarNotificacao(row)}>{text}</a>
-      ),
-    },
-    {
-      title: 'Tipo',
-      dataIndex: 'tipo',
-    },
-    {
-      title: 'Título',
-      dataIndex: 'titulo',
-    },
-    {
-      title: 'Situação',
-      dataIndex: 'descricaoStatus',
-    },
-    {
-      title: 'Data/Hora',
-      dataIndex: 'data',
-    },
-  ];
+  const [desabilitarBotaoEditar, setDesabilitarBotaoEditar] = useState(true);
+  const [desabilitarBotaoExcluir, setDesabilitarBotaoExcluir] = useState(true);
+  const [desabilitarBotaoMarcarLido, setDesabilitarBotaoMarcarLido] = useState(
+    true
+  );
+  const [desabilitarTurma, setDesabilitarTurma] = useState(true);
+  const [colunasTabela, setColunasTabela] = useState([]);
 
   const usuario = useSelector(store => store.usuario);
+
+  useEffect(() => {
+    const colunas = [
+      {
+        title: 'Código',
+        dataIndex: 'codigo',
+        render: (text, row) => montarLinhasTabela(text, row),
+      },
+      {
+        title: 'Tipo',
+        dataIndex: 'tipo',
+        render: (text, row) => montarLinhasTabela(text, row),
+      },
+      {
+        title: 'Título',
+        dataIndex: 'titulo',
+        render: (text, row) => montarLinhasTabela(text, row),
+      },
+      {
+        title: 'Situação',
+        dataIndex: 'descricaoStatus',
+        render: (text, row) => montarLinhasTabela(text, row, true),
+      },
+      {
+        title: 'Data/Hora',
+        dataIndex: 'data',
+        render: (text, row) => montarLinhasTabela(text, row),
+      },
+    ];
+
+    setColunasTabela(colunas);
+  }, []);
 
   useEffect(() => {
     async function carregarListas() {
@@ -72,27 +87,91 @@ export default function NotificacoesLista() {
     carregarListas();
   }, []);
 
+  useEffect(() => {
+    if (
+      usuario &&
+      usuario.turmaSelecionada &&
+      usuario.turmaSelecionada.length
+    ) {
+      setDesabilitarTurma(false);
+    } else {
+      setDesabilitarTurma(true);
+      setTurmaSelecionada('');
+    }
+    onClickFiltrar();
+  }, [usuario.turmaSelecionada]);
+
+  useEffect(() => {
+    onClickFiltrar();
+  }, [
+    statusSelecionado,
+    turmaSelecionada,
+    categoriaSelecionada,
+    tipoSelecionado,
+    tituloSelecionado,
+  ]);
+
   const listaSelectTurma = [
     { id: 1, descricao: 'Todas as turmas' },
     { id: 2, descricao: 'Turma selecionada' },
   ];
 
-  function onSelectRow(row) {
-    setIdNotificacoesSelecionadas(row);
+  function montarLinhasTabela(text, row, colunaSituacao) {
+    return row.status === notificacaoStatus.Pendente ? (
+      colunaSituacao ? (
+        <a className="texto-vermelho-negrito text-uppercase">{text}</a>
+      ) : (
+        <a className="coluna-negrito">{text}</a>
+      )
+    ) : (
+      text
+    );
+  }
+
+  function onSelectRow(ids) {
+    if (ids && ids.length == 1) {
+      setDesabilitarBotaoEditar(false);
+    } else {
+      setDesabilitarBotaoEditar(true);
+    }
+
+    if (ids && ids.length > 0) {
+      const notifSelecionadas = listaNotificacoes.filter(noti => {
+        return ids.includes(noti.id);
+      });
+
+      const naoPodeRemover = notifSelecionadas.find(item => !item.podeRemover);
+      if (naoPodeRemover) {
+        setDesabilitarBotaoExcluir(true);
+      } else {
+        setDesabilitarBotaoExcluir(false);
+      }
+
+      const naoPodeMarcarLido = notifSelecionadas.find(
+        item => !item.podeMarcarComoLida
+      );
+      if (naoPodeMarcarLido) {
+        setDesabilitarBotaoMarcarLido(true);
+      } else {
+        setDesabilitarBotaoMarcarLido(false);
+      }
+    } else {
+      setDesabilitarBotaoExcluir(true);
+      setDesabilitarBotaoMarcarLido(true);
+    }
+
+    setIdNotificacoesSelecionadas(ids);
   }
 
   function onChangeTurma(turma) {
-    console.log(`turma = ${turma}`);
     setTurmaSelecionada(turma);
   }
 
   function onChangeStatus(status) {
-    console.log(`status = ${status}`);
     setStatusSelecionado(status);
   }
 
   function onChangeCategoria(categoria) {
-    console.log(`categoria = ${categoria}`);
     setCategoriaSelecionada(categoria);
   }
 
@@ -100,33 +179,49 @@ export default function NotificacoesLista() {
     setTituloSelecionado(titulo.target.value);
   }
 
+  function onSearchCodigo() {
+    onClickFiltrar();
+  }
+
   function onChangeCodigo(codigo) {
     setCodigoSelecionado(codigo.target.value);
   }
 
-  function editarNotificacao(row) {
-    history.push(`/notificacoes/${row.id}`);
+  function onChangeTipo(tipo) {
+    setTipoSelecionado(tipo);
+  }
+
+  function onClickEditar() {
+    history.push(`/notificacoes/${idNotificacoesSelecionadas[0]}`);
   }
 
   async function onClickFiltrar() {
     const paramsQuery = {
-      ano: usuario.turmaSelecionada.ano,
-      anoLetivo: usuario.turmaSelecionada.anoLetivo,
       categoria: categoriaSelecionada,
       codigo: codigoSelecionado || null,
-      dreId: usuario.turmaSelecionada.codDre,
       status: statusSelecionado,
       tipo: tipoSelecionado,
       titulo: tituloSelecionado || null,
-      turmaId: usuario.turmaSelecionada.codTurma,
-      ueId: usuario.turmaSelecionada.codEscola,
       usuarioId: '7208626', // TODO Mock
     };
+    if (usuario.turmaSelecionada && usuario.turmaSelecionada.length) {
+      paramsQuery.ano = usuario.turmaSelecionada[0].ano;
+      paramsQuery.dreId = usuario.turmaSelecionada[0].codDre;
+      paramsQuery.ueId = usuario.turmaSelecionada[0].codEscola;
+    }
+    if (
+      usuario.turmaSelecionada &&
+      usuario.turmaSelecionada.length &&
+      !desabilitarTurma
+    ) {
+      paramsQuery.turmaId = usuario.turmaSelecionada[0].codEscola;
+    }
     const listaNotifi = await api.get('v1/notificacoes', {
       params: paramsQuery,
     });
-    console.log(listaNotifi);
     setListaNotificacoes(listaNotifi.data);
+    setIdNotificacoesSelecionadas([]);
+    onSelectRow([]);
   }
 
   function marcarComoLida() {
@@ -141,9 +236,10 @@ export default function NotificacoesLista() {
       'Você tem certeza que deseja excluir estas notificações?'
     );
     if (confirmado) {
-      servicoNotificacao.excluir(idNotificacoesSelecionadas, () =>
-        onClickFiltrar()
-      );
+      servicoNotificacao.excluir(idNotificacoesSelecionadas, () => {
+        onClickFiltrar();
+        setIdNotificacoesSelecionadas([]);
+      });
     }
   }
 
@@ -151,7 +247,22 @@ export default function NotificacoesLista() {
     <>
       <Cabecalho pagina="Notificações" />
       <EstiloLista>
-        <div className="col-md-2 pb-2">
+        <div className="col-md-6 pb-3">
+          <CampoTexto
+            placeholder="Título"
+            onChange={onChangeTitulo}
+            value={tituloSelecionado}
+          />
+        </div>
+        <div className="col-md-6 pb-3">
+          <CampoTextoBusca
+            placeholder="Código"
+            onSearch={onSearchCodigo}
+            onChange={onChangeCodigo}
+            value={codigoSelecionado}
+          />
+        </div>
+        <div className="col-md-3 pb-3">
           <SelectComponent
             name="turma-noti"
             id="turma-noti"
@@ -161,9 +272,10 @@ export default function NotificacoesLista() {
             onChange={onChangeTurma}
             valueSelect={turmaSelecionada || []}
             placeholder="Turma"
+            disabled={desabilitarTurma}
           />
         </div>
-        <div className="col-md-2 pb-2">
+        <div className="col-md-3 pb-3">
           <SelectComponent
             name="status-noti"
             id="status-noti"
@@ -175,7 +287,7 @@ export default function NotificacoesLista() {
             placeholder="Filtrar por"
           />
         </div>
-        <div className="col-md-2 pb-2">
+        <div className="col-md-3 pb-3">
           <SelectComponent
             name="categoria-noti"
             id="categoria-noti"
@@ -187,31 +299,18 @@ export default function NotificacoesLista() {
             placeholder="Categoria"
           />
         </div>
-        <div className="col-md-3 pb-2">
-          <CampoTexto
-            placeholder="Título"
-            onChange={onChangeTitulo}
-            value={tituloSelecionado}
+        <div className="col-md-3 pb-3">
+          <SelectComponent
+            name="tipo-noti"
+            id="tipo-noti"
+            lista={listaTipos}
+            valueOption="id"
+            valueText="descricao"
+            onChange={onChangeTipo}
+            valueSelect={tipoSelecionado || []}
+            placeholder="Tipo"
           />
         </div>
-        <div className="col-md-2 pb-2">
-          <CampoTexto
-            placeholder="Código"
-            onChange={onChangeCodigo}
-            value={codigoSelecionado}
-          />
-        </div>
-
-        <div className="col-md-1 pb-2">
-          <Button
-            label="Filtrar"
-            color={Colors.Azul}
-            border
-            className="mb-2 "
-            onClick={onClickFiltrar}
-          />
-        </div>
-
         <div className="col-md-12 ">
           <Button
             label="Excluir"
@@ -219,6 +318,7 @@ export default function NotificacoesLista() {
             border
             className="mb-2 ml-2 float-right"
             onClick={excluir}
+            disabled={desabilitarBotaoExcluir}
           />
           <Button
             label="Marcar como lida"
@@ -226,35 +326,23 @@ export default function NotificacoesLista() {
             border
             className="mb-2 ml-2 float-right"
             onClick={marcarComoLida}
-          />
-          {/* <Button
-            label="Recusar"
-            color={Colors.Roxo}
-            border
-            className="mb-2 ml-2 float-right"
-            onClick={() => {}}
+            disabled={desabilitarBotaoMarcarLido}
           />
           <Button
-            label="Aceitar"
-            color={Colors.Roxo}
-            border
-            className="mb-2 ml-2 float-right"
-            onClick={() => {}}
-          /> */}
-          {/* <Button
-            label="Filtrar"
+            label="Editar"
             color={Colors.Azul}
             border
             className="mb-2 float-right"
-            onClick={onClickFiltrar}
-          /> */}
+            onClick={onClickEditar}
+            disabled={desabilitarBotaoEditar}
+          />
         </div>
         <div className="col-md-12 pt-2">
           <DataTable
             id="lista-notificacoes"
             selectedRowKeys={idNotificacoesSelecionadas}
             onSelectRow={onSelectRow}
-            columns={columns}
+            columns={colunasTabela}
             dataSource={listaNotificacoes}
             selectMultipleRows
           />

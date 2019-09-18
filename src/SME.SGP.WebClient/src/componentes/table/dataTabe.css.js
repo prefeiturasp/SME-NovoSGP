@@ -131,6 +131,11 @@ export const Container = styled.div`
     td {
       -webkit-transition: none;
       transition: none;
+
+      a {
+        -webkit-transition: none;
+      transition: none;
+      }
     }
   }
 `;
