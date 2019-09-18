@@ -13,6 +13,7 @@ import servicoNotificacao from '~/servicos/Paginas/ServicoNotificacao';
 
 import { EstiloLista } from './estiloLista';
 import notificacaoStatus from '~/dtos/notificacaoStatus';
+import CampoTextoBusca from '~/componentes/campoTextoBusca';
 
 export default function NotificacoesLista() {
   const [idNotificacoesSelecionadas, setIdNotificacoesSelecionadas] = useState(
@@ -178,6 +179,10 @@ export default function NotificacoesLista() {
     setTituloSelecionado(titulo.target.value);
   }
 
+  function onSearchCodigo() {
+    onClickFiltrar();
+  }
+
   function onChangeCodigo(codigo) {
     setCodigoSelecionado(codigo.target.value);
   }
@@ -250,8 +255,9 @@ export default function NotificacoesLista() {
           />
         </div>
         <div className="col-md-6 pb-3">
-          <CampoTexto
+          <CampoTextoBusca
             placeholder="Código"
+            onSearch={onSearchCodigo}
             onChange={onChangeCodigo}
             value={codigoSelecionado}
           />
