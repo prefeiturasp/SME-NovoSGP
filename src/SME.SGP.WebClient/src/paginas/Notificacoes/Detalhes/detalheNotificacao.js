@@ -153,6 +153,7 @@ const DetalheNotificacao = ({ match }) => {
                   icon="arrow-left"
                   border
                   type="button"
+                  width="44px"
                   onClick={() => history.push(urlTelaNotificacoes)}
                 />
               </div>

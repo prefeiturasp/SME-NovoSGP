@@ -2,9 +2,9 @@ import React from 'react';
 import PropTypes from 'prop-types';
 
 const CardBody = props => {
-  const { children } = props;
+  const { children, className } = props;
 
-  return <div className="card-body">{children}</div>;
+  return <div className={`card-body ${className}`}>{children}</div>;
 };
 
 CardBody.propTypes = {

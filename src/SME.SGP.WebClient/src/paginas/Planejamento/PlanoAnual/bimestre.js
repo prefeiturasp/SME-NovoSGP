@@ -5,6 +5,7 @@ import {
   ListItemButton,
   ListItem,
   H5,
+  BoxAuditoria,
 } from './bimestre.css';
 import CardCollapse from '../../../componentes/cardCollapse';
 import Grid from '../../../componentes/grid';
@@ -23,6 +24,7 @@ import {
   ObterBimestreServidor,
   removerSelecaoTodosObjetivos,
 } from '../../../redux/modulos/planoAnual/action';
+import Auditoria from '~/componentes/auditoria';
 
 //Utilizado para importar a função scrollIntoViewIfNeeded para navegadores que não possuem essa funcionalidade.
 import '../../../componentes/scrollIntoViewIfNeeded';
@@ -39,6 +41,11 @@ const BimestreComponent = props => {
   const objetivos = bimestres[indice].objetivosAprendizagem;
 
   const [idObjetivoFocado, setIDObjetivoFocado] = useState('0');
+
+  const [estadoAdicionalEditorTexto, setEstadoAdicionalEditorTexto] = useState({
+    focado: false,
+    ultimoFoco: null,
+  });
 
   const textEditorRef = useRef(null);
 
@@ -121,8 +128,15 @@ const BimestreComponent = props => {
     selecionarObjetivo(index, ariaPressed);
   };
 
-  const onClickTextEditor = () => {
-    setEhExpandido(true);
+  const onClickTextEditor = ultimoFoco => {
+    if (!bimestres[indice].ehEdicao) {
+      setEhExpandido(true);
+
+      setEstadoAdicionalEditorTexto({
+        focado: true,
+        ultimoFoco,
+      });
+    }
   };
 
   const removeObjetivoSelecionado = e => {
@@ -139,6 +153,11 @@ const BimestreComponent = props => {
 
   const onBlurTextEditor = value => {
     setEhExpandido(true);
+
+    setEstadoAdicionalEditorTexto({
+      focado: false,
+      ultimoFoco: null,
+    });
 
     setarDescricao(value);
   };
@@ -172,7 +191,7 @@ const BimestreComponent = props => {
                     <Badge
                       role="button"
                       onClick={selecionaMateria}
-                      aria-pressed={materia.selected && true}
+                      aria-pressed={materia.selecionada && true}
                       id={materia.codigo}
                       data-index={indice}
                       alt={materia.materia}
@@ -250,7 +269,7 @@ const BimestreComponent = props => {
                     .map(selecionado => {
                       return (
                         <Button
-                          key={selecionado.id}
+                          key={`Objetivo${selecionado.id}Selecionado${indice}`}
                           label={selecionado.codigo}
                           color={Colors.AzulAnakiwa}
                           bold
@@ -328,9 +347,9 @@ const BimestreComponent = props => {
                   ref={textEditorRef}
                   id="textEditor"
                   height="135px"
-                  height="135px"
                   alt="Descrição do plano Anual"
                   disabled={disabled}
+                  stateAdicional={estadoAdicionalEditorTexto}
                   onClick={onClickTextEditor}
                   value={bimestres[indice].objetivo}
                   onBlur={onBlurTextEditor}
@@ -338,12 +357,20 @@ const BimestreComponent = props => {
               </form>
             </fieldset>
             <Grid cols={12} className="p-0">
-              {bimestres[indice].criadoPor ? (
-                <H5>{bimestres[indice].criadoPor}</H5>
-              ) : null}
-              {bimestres[indice].alteradoPor ? (
-                <H5>{bimestres[indice].alteradoPor}</H5>
-              ) : null}
+              <Auditoria
+                criadoPor={bimestres[indice].criadoPor}
+                criadoEm={bimestres[indice].criadoEm}
+                alteradoPor={bimestres[indice].alteradoPor}
+                alteradoEm={bimestres[indice].alteradoEm}
+              />
+              {/* <BoxAuditoria>
+                {bimestres[indice].criadoPor ? (
+                  <H5>{bimestres[indice].criadoPor}</H5>
+                ) : null}
+                {bimestres[indice].alteradoPor ? (
+                  <H5>{bimestres[indice].alteradoPor}</H5>
+                ) : null}
+              </BoxAuditoria> */}
             </Grid>
           </div>
         </Grid>

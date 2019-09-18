@@ -10,6 +10,7 @@ import api from '~/servicos/api';
 import { erro, sucesso } from '~/servicos/alertas';
 import history from '~/servicos/history';
 import Cabecalho from '~/componentes-sgp/cabecalho';
+import {setBreadcrumbManual} from '~/servicos/breadcrumb-services';
 
 const AtribuicaoSupervisorCadastro = ({ match }) => {
   const [auditoria, setAuditoria] = useState([]);
@@ -30,6 +31,9 @@ const AtribuicaoSupervisorCadastro = ({ match }) => {
       erros.response.data.mensagens.forEach(mensagem => erro(mensagem));
   }
 
+  useEffect(() =>{
+    setBreadcrumbManual(match.url,'Editar Atribuição', '/gestao/atribuicao-supervisor-lista');
+  },[])
   // 1 - carrega dres
   useEffect(() => {
     async function obterListaDres() {
