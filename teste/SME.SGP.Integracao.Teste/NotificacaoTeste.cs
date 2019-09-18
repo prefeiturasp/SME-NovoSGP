@@ -139,7 +139,7 @@ namespace SME.SGP.Integracao.Teste
             Assert.True(putResult.IsSuccessStatusCode);
             var listaMensagens = JsonConvert.DeserializeObject<IEnumerable<AlteracaoStatusNotificacaoDto>>(putResult.Content.ReadAsStringAsync().Result);
             var id = notificacoesDto.FirstOrDefault().Id;
-            Assert.Contains(listaMensagens, c => c.Sucesso && c.Mensagem == $"Notificação com Código: '{id}' excluída com sucesso.");
+            Assert.True(listaMensagens.Count(c => c.Sucesso) == 1);
         }
 
         [Fact, Order(3)]
