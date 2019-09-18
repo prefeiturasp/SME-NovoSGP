@@ -9,14 +9,16 @@ namespace SME.SGP.Aplicacao
     public class ComandosNotificacao : IComandosNotificacao
     {
         private readonly IRepositorioNotificacao repositorioNotificacao;
-        private readonly IRepositorioUsuario repositorioUsuario;
         private readonly IServicoNotificacao servicoNotificacao;
+        private readonly IServicoUsuario servicoUsuario;
 
-        public ComandosNotificacao(IRepositorioNotificacao repositorioNotificacao, IRepositorioUsuario repositorioUsuario, IServicoNotificacao servicoNotificacao)
+        public ComandosNotificacao(IRepositorioNotificacao repositorioNotificacao,
+                                   IServicoNotificacao servicoNotificacao,
+                                   IServicoUsuario servicoUsuario)
         {
             this.repositorioNotificacao = repositorioNotificacao ?? throw new ArgumentNullException(nameof(repositorioNotificacao));
-            this.repositorioUsuario = repositorioUsuario ?? throw new ArgumentNullException(nameof(repositorioUsuario));
             this.servicoNotificacao = servicoNotificacao ?? throw new ArgumentNullException(nameof(servicoNotificacao));
+            this.servicoUsuario = servicoUsuario ?? throw new ArgumentNullException(nameof(servicoUsuario));
         }
 
         public List<AlteracaoStatusNotificacaoDto> Excluir(IList<long> notificacoesId)
@@ -33,7 +35,7 @@ namespace SME.SGP.Aplicacao
                     Notificacao notificacao = ObterPorIdENotificarCasoNaoExista(notificacaoId);
                     notificacao.Remover();
                     repositorioNotificacao.Salvar(notificacao);
-                    resultado.Add(new AlteracaoStatusNotificacaoDto($"Notificação com id: '{notificacaoId}' excluída com sucesso.", true));
+                    resultado.Add(new AlteracaoStatusNotificacaoDto($"Notificação com Código: '{notificacao.Codigo}' excluída com sucesso.", true));
                 }
                 catch (NegocioException nex)
                 {
@@ -62,7 +64,7 @@ namespace SME.SGP.Aplicacao
 
                     notificacao.MarcarComoLida();
                     repositorioNotificacao.Salvar(notificacao);
-                    resultado.Add(new AlteracaoStatusNotificacaoDto($"Notificação com id: '{notificacaoId}' alterada com sucesso.", true));
+                    resultado.Add(new AlteracaoStatusNotificacaoDto($"Notificação com Código: '{notificacao.Codigo}' alterada com sucesso.", true));
                 }
                 catch (NegocioException nex)
                 {
@@ -115,18 +117,9 @@ namespace SME.SGP.Aplicacao
 
         private void TrataUsuario(Notificacao notificacao, string usuarioRf)
         {
-            if (!string.IsNullOrEmpty(usuarioRf))
-            {
-                Usuario usuario = repositorioUsuario.ObterPorCodigoRf(usuarioRf);
-                if (usuario == null)
-                {
-                    usuario = new Usuario() { CodigoRf = usuarioRf };
-                    repositorioUsuario.Salvar(usuario);
-                }
-
-                notificacao.Usuario = usuario;
-                notificacao.UsuarioId = usuario.Id;
-            }
+            var usuario = servicoUsuario.ObterUsuarioPorCodigoRfOuAdiciona(usuarioRf);
+            notificacao.Usuario = usuario;
+            notificacao.UsuarioId = usuario.Id;
         }
     }
 }
