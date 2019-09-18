@@ -121,7 +121,7 @@ export default function NotificacoesLista() {
       colunaSituacao ? (
         <a className="texto-vermelho-negrito text-uppercase">{text}</a>
       ) : (
-        <a className="coluna-negrito">{text}</a>
+        <a className="texto-negrito">{text}</a>
       )
     ) : (
       text
@@ -202,7 +202,7 @@ export default function NotificacoesLista() {
       status: statusSelecionado,
       tipo: tipoSelecionado,
       titulo: tituloSelecionado || null,
-      usuarioId: '7208626', // TODO Mock
+      usuarioRf: usuario.rf,
     };
     if (usuario.turmaSelecionada && usuario.turmaSelecionada.length) {
       paramsQuery.ano = usuario.turmaSelecionada[0].ano;

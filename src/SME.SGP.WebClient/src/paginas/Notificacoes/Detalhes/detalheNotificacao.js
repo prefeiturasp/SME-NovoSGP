@@ -145,7 +145,18 @@ const DetalheNotificacao = ({ match }) => {
         {form => (
           <Form>
             <Card mtop="mt-2">
-              <div className="col-md-12 d-flex justify-content-end pb-3">
+              <div className="col-md-2">
+                <Button
+                  label=""
+                  color={cores.Colors.Azul}
+                  className="mr-2 float-left"
+                  icon="arrow-left"
+                  border
+                  type="button"
+                  onClick={() => history.push(urlTelaNotificacoes)}
+                />
+              </div>
+              <div className="col-md-10 d-flex justify-content-end pb-3">
                 <>
                   <Button
                     label="Aceitar"
@@ -174,9 +185,12 @@ const DetalheNotificacao = ({ match }) => {
                     onClick={async e => {
                       setValidacoes(
                         Yup.object({
-                          observacao: Yup.string().required(
-                            'Observação obrigatória'
-                          ),
+                          observacao: Yup.string()
+                            .required('Observação obrigatória')
+                            .max(
+                              100,
+                              'A observação deverá conter no máximo 100 caracteres'
+                            ),
                         })
                       );
                       setAprovar(false);
@@ -207,10 +221,10 @@ const DetalheNotificacao = ({ match }) => {
                     <div className="col-xs-12 col-md-12 col-lg-2 bg-id">
                       <div className="row">
                         <div className="col-xs-12 col-md-12 col-lg-12 text-center">
-                          ID
+                          CÓDIGO
                         </div>
                         <div className="id-notificacao col-xs-12 col-md-12 col-lg-12 text-center">
-                          {notificacao.id}
+                          {notificacao.codigo}
                         </div>
                       </div>
                     </div>
@@ -267,6 +281,7 @@ const DetalheNotificacao = ({ match }) => {
                       name="observacao"
                       type="textarea"
                       form={form}
+                      maxlength="100"
                       desabilitado={!notificacao.mostrarBotoesDeAprovacao}
                     />
                   </div>

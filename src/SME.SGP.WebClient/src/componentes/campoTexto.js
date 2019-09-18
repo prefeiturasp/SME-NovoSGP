@@ -28,9 +28,9 @@ const CampoTexto = ({
   onChange,
   value,
   desabilitado,
+  maxlength,
 }) => {
   const possuiErro = () => {
-    console.log(form && form.errors[name] && form.touched[name]);
     return form && form.errors[name] && form.touched[name];
   };
   const executaOnBlur = event => {
@@ -54,6 +54,7 @@ const CampoTexto = ({
               component={type || 'text'}
               disabled={desabilitado}
               onBlur={executaOnBlur}
+              maxLength={maxlength || ''}
             />
             <span>{form.errors[name]}</span>
           </>

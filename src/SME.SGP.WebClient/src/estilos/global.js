@@ -210,8 +210,9 @@ export default createGlobalStyle`
     font-weight: bold !important;
   }
 
-  .coluna-negrito {
+  .texto-negrito {
     font-weight: bold !important;
+    color: #42474a !important;
   }
 
   .ant-modal-footer {
