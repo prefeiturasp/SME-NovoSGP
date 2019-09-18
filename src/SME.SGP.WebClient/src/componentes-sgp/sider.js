@@ -305,6 +305,7 @@ const Sider = () => {
               </div>
               <div className="descricao">
                 <span>SME-SP-SGA - Distribuído sob a Licença AGPL V3</span>
+                <Link to="/teste/notificacoes">.</Link>
               </div>
             </Footer>
           </DivFooter>

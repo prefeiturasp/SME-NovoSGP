@@ -21,7 +21,6 @@ import {
   TituloAno,
 } from './planoCiclo.css';
 
-// import ControleEstado from '../../../componentes/controleEstado';
 export default function PlanoCiclo() {
   const urlPrefeitura = 'https://curriculo.sme.prefeitura.sp.gov.br';
   const urlMatrizSaberes = `${urlPrefeitura}/matriz-de-saberes`;
