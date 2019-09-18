@@ -26,7 +26,7 @@ namespace SME.SGP.Dto
         public long Id { get; set; }
         public IEnumerable<long> IdsObjetivosAprendizagem => ObjetivosAprendizagemPlano?.Split(',').Select(c => Convert.ToInt64(c));
 
-        public new List<ObjetivoAprendizagemDto> ObjetivosAprendizagem { get; set; }
+        public List<ObjetivoAprendizagemDto> ObjetivosAprendizagem { get; set; }
 
         public long TurmaId { get; set; }
         private string ObjetivosAprendizagemPlano { get; }

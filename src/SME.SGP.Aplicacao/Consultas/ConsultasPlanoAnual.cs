@@ -24,6 +24,9 @@ namespace SME.SGP.Aplicacao
             {
                 var objetivosAprendizagem = await consultasObjetivoAprendizagem.Listar();
 
+                if (planoAnual.IdsObjetivosAprendizagem == null)
+                    return planoAnual;
+                   
                 foreach (var idObjetivo in planoAnual.IdsObjetivosAprendizagem)
                 {
                     var objetivo = objetivosAprendizagem.FirstOrDefault(c => c.Id == idObjetivo);

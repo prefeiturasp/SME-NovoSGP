@@ -37,23 +37,23 @@ const Navbar = () => {
 
   const BtnSair = styled.a``;
 
-  const collapsed = useSelector(state => state.navegacao.collapsed);
+  const retraido = useSelector(state => state.navegacao.retraido);
 
   return (
     <Nav className="navbar navbar-expand-md navbar-light bg-white shadow-sm sticky-top">
       <Link
         className={`navbar-brand ${
-          collapsed
+          retraido
             ? 'col-lg-2 col-md-2 col-sm-2 col-xl-1 pl-0'
             : 'col-sm-4 col-md-3 col-lg-3 col-xl-2'
         }`}
-        to="/teste/notificacoes"
+        to="/"
       >
         <Logo src={LogoDoSgp} alt="SGP" className="mx-auto d-block" />
       </Link>
       <div
         className={`${
-          collapsed
+          retraido
             ? 'col-lg-10 col-md-10 col-sm-10 col-xl-11'
             : 'col-sm-8 col-md-9 col-lg-9 col-xl-10'
         }`}

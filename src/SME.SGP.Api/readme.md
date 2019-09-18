@@ -23,9 +23,15 @@ Com este comando, a base de dados estará disponível, com todos os scripts já 
 > Informações sensíveis como string de conexão deverão ser mantidas em variáveis de ambiente. 
 
 -  Adicionar nas variáveis de ambiente
-   - *Nome da variável:* ConnectionStrings__SGP-Postgres
-   - *Valor da variável:*  User ID=postgres;Password=postgres;Host=localhost;Port=5432;Database=sgp_db;Pooling=true;
-   
+
+	Caso o acesso ao banco sejá por debbug de codigo (VS)	
+		- *Nome da variável:* ConnectionStrings__SGP-Postgres
+		- *Valor da variável:*  User ID=postgres;Password=postgres;Host=localhost;Port=5432;Database=sgp_db;Pooling=true;
+		
+	Caso o acesso ao banco seja pelo Docker do backend	
+		- *Nome da variável:* ConnectionStrings__SGP-Postgres
+		- *Valor da variável:*  User ID=postgres;Password=postgres;Host=sme-db;Port=5432;Database=sgp_db;Pooling=true;
+	     
    - *Nome da variável:* Sentry__DSN
    - *Valor da variável:*  {Obter através dos canais de comunicação};
 

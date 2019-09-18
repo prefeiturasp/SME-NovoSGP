@@ -95,7 +95,7 @@ export function ObterObjetivosCall(bimestre) {
       : [];
 
     const materiasSelecionadas = bimestre.materias
-      .filter(materia => materia.selected)
+      .filter(materia => materia.selecionada)
       .map(x => x.codigo);
 
     if (!materiasSelecionadas || materiasSelecionadas.length === 0) {
@@ -144,9 +144,10 @@ export function PrePost() {
   };
 }
 
-export function PosPost() {
+export function PosPost(recarregar) {
   return {
     type: '@bimestres/PosPostBimestre',
+    payload: recarregar,
   };
 }
 
@@ -156,6 +157,7 @@ export function Post(bimestres) {
       .then(() => {
         requestAnimationFrame(() => dispatch(setNaoEdicao()));
         sucesso('Suas informações foram salvas com sucesso.');
+        dispatch(PosPost(true));
       })
       .catch(err => {
         dispatch(
@@ -167,9 +169,8 @@ export function Post(bimestres) {
             visible: true,
           })
         );
-      })
-      .finally(() => {
-        dispatch(PosPost());
+
+        dispatch(PosPost(false));
       });
   };
 }
@@ -233,22 +234,10 @@ export function ObterBimestreServidor(Bimestre) {
             objetivo: bimestreDTO.descricao,
             ehExpandido: true,
             id: bimestreDTO.id,
-            alteradoPor: bimestreDTO.alteradoPor
-              ? _getStringPor(
-                  bimestreDTO.alteradoPor,
-                  bimestreDTO.alteradoEm,
-                  'ALTERADO',
-                  bimestreDTO.alteradoRF
-                )
-              : null,
-            criadoPor: bimestreDTO.criadoPor
-              ? _getStringPor(
-                  bimestreDTO.criadoPor,
-                  bimestreDTO.criadoEm,
-                  'INSERIDO',
-                  bimestreDTO.criadoRF
-                )
-              : null,
+            alteradoPor: bimestreDTO.alteradoPor,
+            alteradoEm: bimestreDTO.alteradoEm,
+            criadoEm: bimestreDTO.criadoEm,
+            criadoPor: bimestreDTO.criadoPor,
             objetivosAprendizagem: bimestreDTO.objetivosAprendizagem.map(
               obj => {
                 obj.selected = true;
@@ -257,8 +246,6 @@ export function ObterBimestreServidor(Bimestre) {
             ),
           })
         );
-
-        sucesso('Dados obtidos com sucesso');
       })
       .catch(() => {
         erro('Não foi possivel obter os dados do periodo selecionado');
@@ -272,10 +259,23 @@ const _getStringPor = (responsavelPor, dataEM, operacao, rf) => {
     .getDate()
     .toString()
     .padStart(2, '0');
+
   const mes = (data.getMonth() + 1).toString().padStart(2, '0');
   const ano = data.getFullYear();
-  const hora = data.getHours();
-  const minuto = data.getMinutes();
+  const hora = data
+    .getHours()
+    .toString()
+    .padStart(2, '0');
 
-  return `${operacao} por ${responsavelPor} ${rf} em ${dia}/${mes}/${ano} as ${hora}:${minuto}`;
+  const minuto = data
+    .getMinutes()
+    .toString()
+    .padStart(2, '0');
+
+  const segundos = data
+    .getSeconds()
+    .toString()
+    .padStart(2, '0');
+
+  return `${operacao} por ${responsavelPor} ${rf} em ${dia}/${mes}/${ano} ${hora}:${minuto}:${segundos}`;
 };
