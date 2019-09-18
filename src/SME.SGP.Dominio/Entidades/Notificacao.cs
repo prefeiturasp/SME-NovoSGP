@@ -11,7 +11,6 @@
         public int Ano { get; set; }
         public NotificacaoCategoria Categoria { get; set; }
         public long Codigo { get; set; }
-        public string CodigoFormatado { get { return Codigo.ToString().PadLeft(9, '0'); } }
         public bool DeveAprovar { get { return Categoria == NotificacaoCategoria.Workflow_Aprovacao && Status == NotificacaoStatus.Pendente; } }
         public bool DeveMarcarComoLido { get { return Categoria == NotificacaoCategoria.Alerta && Status != NotificacaoStatus.Lida; } }
         public string DreId { get; set; }
@@ -31,7 +30,7 @@
             if (DeveMarcarComoLido && Status != NotificacaoStatus.Lida)
                 Status = NotificacaoStatus.Lida;
             else
-                throw new NegocioException($"A notificação com id: '{Id}' não pode ser marcada como lida ou já está nesse status.");
+                throw new NegocioException($"A notificação com Código: '{Codigo}' não pode ser marcada como lida ou já está nesse status.");
         }
 
         public bool MarcarComoLidaAoObterDetalhe()

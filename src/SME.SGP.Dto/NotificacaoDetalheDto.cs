@@ -5,6 +5,7 @@
         public string AlteradoEm { get; set; }
         public string AlteradoPor { get; set; }
         public int CategoriaId { get; set; }
+        public long Codigo { get; set; }
         public string CriadoEm { get; set; }
         public string CriadoPor { get; set; }
         public long Id { get; set; }

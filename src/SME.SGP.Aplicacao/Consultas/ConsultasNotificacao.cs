@@ -21,7 +21,7 @@ namespace SME.SGP.Aplicacao
         public IEnumerable<NotificacaoBasicaDto> Listar(NotificacaoFiltroDto filtroNotificacaoDto)
         {
             var retorno = repositorioNotificacao.ObterPorDreOuEscolaOuStatusOuTurmoOuUsuarioOuTipoOuCategoriaOuTitulo(filtroNotificacaoDto.DreId,
-                filtroNotificacaoDto.UeId, (int)filtroNotificacaoDto.Status, filtroNotificacaoDto.TurmaId, filtroNotificacaoDto.UsuarioId,
+                filtroNotificacaoDto.UeId, (int)filtroNotificacaoDto.Status, filtroNotificacaoDto.TurmaId, filtroNotificacaoDto.UsuarioRf,
                 (int)filtroNotificacaoDto.Tipo, (int)filtroNotificacaoDto.Categoria, filtroNotificacaoDto.Titulo, filtroNotificacaoDto.Codigo, filtroNotificacaoDto.AnoLetivo);
 
             return from r in retorno
@@ -34,7 +34,7 @@ namespace SME.SGP.Aplicacao
                        Status = r.Status,
                        Categoria = r.Categoria,
                        Tipo = r.Tipo.GetAttribute<DisplayAttribute>().Name,
-                       Codigo = r.CodigoFormatado,
+                       Codigo = r.Codigo,
                        PodeRemover = r.PodeRemover,
                        PodeMarcarComoLida = r.DeveMarcarComoLido
                    };
@@ -105,7 +105,8 @@ namespace SME.SGP.Aplicacao
                 MostrarBotaoMarcarComoLido = retorno.DeveMarcarComoLido,
                 CategoriaId = (int)retorno.Categoria,
                 TipoId = (int)retorno.Tipo,
-                StatusId = (int)retorno.Status
+                StatusId = (int)retorno.Status,
+                Codigo = retorno.Codigo
             };
         }
     }
