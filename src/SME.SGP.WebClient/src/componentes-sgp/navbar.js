@@ -9,8 +9,15 @@ import { useSelector } from 'react-redux';
 const Navbar = () => {
   const Nav = styled.nav`
     height: 70px !important;
-    padding-left: 15px !important;
-    padding-right: 15px !important;
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+
+    .logo{
+      display: flex;
+      justify-content: center;
+      flex-direction: column;
+      align-items: center;
+    }
   `;
 
   const Logo = styled.img`
@@ -42,11 +49,8 @@ const Navbar = () => {
   return (
     <Nav className="navbar navbar-expand-md navbar-light bg-white shadow-sm sticky-top">
       <Link
-        className={`navbar-brand ${
-          retraido
-            ? 'col-lg-2 col-md-2 col-sm-2 col-xl-1 pl-0'
-            : 'col-sm-4 col-md-3 col-lg-3 col-xl-2'
-        }`}
+        style={{ width: retraido ? '115px' : '250px' }}
+        className={'logo'}
         to="/"
       >
         <Logo src={LogoDoSgp} alt="SGP" className="mx-auto d-block" />
