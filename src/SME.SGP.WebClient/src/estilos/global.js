@@ -228,9 +228,19 @@ export default createGlobalStyle`
     top: 0;
   }
 
+  :root{
+    --posicao-item-menu: 0;
+  }
+
+  div > div > .ant-menu-submenu-popup{
+    top: var(--posicao-item-menu) !important;
+  }
+
   .ant-menu-submenu-popup{
     position: fixed !important;
     overflow-y: auto;
+    max-height: calc(100vh - 140px);
+    margin-bottom:800px !important;
 
     ::-webkit-scrollbar {
       width: 10px;
