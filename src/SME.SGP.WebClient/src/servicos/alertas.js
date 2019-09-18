@@ -24,6 +24,7 @@ const exibirAlerta = (tipo, mensagem, fixo = false) => {
       store.dispatch(removerAlerta(id));
     }, 3000);
   }
+  window.scroll(0, 0);
 };
 
 const sucesso = mensagem => {

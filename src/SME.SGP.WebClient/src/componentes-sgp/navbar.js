@@ -47,7 +47,7 @@ const Navbar = () => {
             ? 'col-lg-2 col-md-2 col-sm-2 col-xl-1 pl-0'
             : 'col-sm-4 col-md-3 col-lg-3 col-xl-2'
         }`}
-        to="/"
+        to="/teste/notificacoes"
       >
         <Logo src={LogoDoSgp} alt="SGP" className="mx-auto d-block" />
       </Link>

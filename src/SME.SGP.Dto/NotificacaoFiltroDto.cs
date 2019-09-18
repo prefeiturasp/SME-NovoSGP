@@ -14,6 +14,6 @@ namespace SME.SGP.Dto
         public string Titulo { get; set; }
         public string TurmaId { get; set; }
         public string UeId { get; set; }
-        public string UsuarioId { get; set; }
+        public string UsuarioRf { get; set; }
     }
 }

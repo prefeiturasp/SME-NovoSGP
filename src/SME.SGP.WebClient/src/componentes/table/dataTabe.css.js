@@ -2,7 +2,6 @@ import styled from 'styled-components';
 import { Base } from '../colors';
 
 export const Container = styled.div`
-
   .ocultar-coluna-multi-selecao {
     .ant-table-selection-column {
       display: none !important;
@@ -112,6 +111,14 @@ export const Container = styled.div`
   .ant-table-tbody tr:hover td {
     background: ${Base.Roxo} !important;
     color: #ffffff !important;
+
+    a.texto-vermelho-negrito {
+      color: #ffffff !important;
+    }
+
+    a.texto-negrito {
+      color: #ffffff !important;
+    }
   }
 
   .ant-table-tbody tr:hover {
@@ -122,6 +129,14 @@ export const Container = styled.div`
   .ant-table-tbody tr.ant-table-row-selected > td {
     background: ${Base.Roxo};
     color: #ffffff;
+
+    a.texto-vermelho-negrito {
+      color: #ffffff !important;
+    }
+
+    a.texto-negrito {
+      color: #ffffff !important;
+    }
   }
 
   .ant-table-tbody > tr {
@@ -134,7 +149,7 @@ export const Container = styled.div`
 
       a {
         -webkit-transition: none;
-      transition: none;
+        transition: none;
       }
     }
   }
