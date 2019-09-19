@@ -349,7 +349,7 @@ const BimestreComponent = props => {
                   height="135px"
                   alt="Descrição do plano Anual"
                   disabled={disabled}
-                  stateAdicional={estadoAdicionalEditorTexto}
+                  estadoAdicional={estadoAdicionalEditorTexto}
                   onClick={onClickTextEditor}
                   value={bimestres[indice].objetivo}
                   onBlur={onBlurTextEditor}
