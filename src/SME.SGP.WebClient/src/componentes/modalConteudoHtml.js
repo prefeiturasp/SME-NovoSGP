@@ -88,23 +88,25 @@ const ModalConteudoHtml = props => {
                     <TextoAlerta className="m-b-20">
                       {perguntaAtencao}
                     </TextoAlerta>
-                    <Button
-                      key="btn-sim-confirmacao"
-                      label={labelBotaoSecundario}
-                      color={Colors.Roxo}
-                      bold
-                      border
-                      className="mr-2 padding-btn-confirmacao"
-                      onClick={onConfirmacaoSecundaria}
-                    />
-                    <Button
-                      key="btn-nao-confirmacao"
-                      label={labelBotaoPrincipal}
-                      color={Colors.Roxo}
-                      bold
-                      className="padding-btn-confirmacao"
-                      onClick={onConfirmacaoPrincipal}
-                    />
+                    <div className="d-flex justify-content-end">
+                      <Button
+                        key="btn-sim-confirmacao"
+                        label={labelBotaoSecundario}
+                        color={Colors.Roxo}
+                        bold
+                        border
+                        className="mr-2 padding-btn-confirmacao"
+                        onClick={onConfirmacaoSecundaria}
+                      />
+                      <Button
+                        key="btn-nao-confirmacao"
+                        label={labelBotaoPrincipal}
+                        color={Colors.Roxo}
+                        bold
+                        className="padding-btn-confirmacao"
+                        onClick={onConfirmacaoPrincipal}
+                      />
+                    </div>
                   </CardBody>
                 </Card>
               </Grid>

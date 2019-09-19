@@ -254,24 +254,38 @@ export default createGlobalStyle`
     }
   }
 
-  .coluna-vermelha {
+  .texto-vermelho {
     color: #b40c02 !important;
   }
 
-  .coluna-vermelha-negrito {
+  .texto-vermelho-negrito {
     color: #b40c02 !important;
     font-weight: bold !important;
   }
 
-  .coluna-negrito {
+  .texto-negrito {
     font-weight: bold !important;
+    color: #42474a !important;
   }
 
   .ant-modal-footer {
     border-top: 0px !important;
+    display: flex !important;
+    justify-content: flex-end !important;
   }
 
   .ant-modal-title{
     font-size: 24px !important;
+  }
+
+  form{
+    width:100%;
+  }
+
+  .desabilitado{
+    background: transparent !important;
+    border-color: ${Base.CinzaDesabilitado} !important;
+    color: ${Base.CinzaDesabilitado} !important;
+    cursor: unset !important;
   }
 `;
