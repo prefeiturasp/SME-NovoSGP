@@ -16,6 +16,7 @@
         public string DreId { get; set; }
         public bool Excluida { get; set; }
         public string Mensagem { get; set; }
+        public string Observacao { get; set; }
         public bool PodeRemover { get { return Categoria == NotificacaoCategoria.Aviso && !Excluida; } }
         public NotificacaoStatus Status { get; set; }
         public NotificacaoTipo Tipo { get; set; }

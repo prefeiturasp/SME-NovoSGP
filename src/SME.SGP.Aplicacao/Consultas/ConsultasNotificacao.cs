@@ -106,7 +106,8 @@ namespace SME.SGP.Aplicacao
                 CategoriaId = (int)retorno.Categoria,
                 TipoId = (int)retorno.Tipo,
                 StatusId = (int)retorno.Status,
-                Codigo = retorno.Codigo
+                Codigo = retorno.Codigo,
+                Observacao = retorno.Observacao
             };
         }
     }
