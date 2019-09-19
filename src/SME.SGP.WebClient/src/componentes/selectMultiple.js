@@ -47,11 +47,11 @@ const SelectComponent = props => {
       <Select
         mode="multiple"
         suffixIcon={<Icon type="caret-down" />}
-        className={className}
+        className={`overflow-hidden ${className}`}
         name={name}
         id={id}
         onChange={onChange}
-        value={valueSelect}
+        defaultValue={valueSelect}
         placeholder={placeholder}
         notFoundContent="Sem dados"
         alt={alt}
