@@ -23,14 +23,14 @@ const TextEditor = React.forwardRef((props, ref) => {
     };
   });
 
-  const onBlurQuill = (rangeAnterior, origem, editor) => {
+  const onBlurQuill = (posicaoAnterior, origem, editor) => {
 
     if (onBlur && origem === "user") onBlur(ref.current.state.value);
 
   };
 
-  const onClickQuill = range => {
-    if (onClick) onClick(range);
+  const onClickQuill = posicao => {
+    if (onClick) onClick(posicao);
   };
 
   return (
