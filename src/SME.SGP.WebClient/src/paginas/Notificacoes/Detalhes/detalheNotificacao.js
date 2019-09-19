@@ -269,12 +269,14 @@ const DetalheNotificacao = ({ match }) => {
                     </div>
                   </div>
                 </div>
-                <hr className="mt-hr" />
+                <hr className="mt-hr" />            
                 <div className="row">
                   <div className="col-xs-12 col-md-12 col-lg-12 mensagem">
                     MENSAGEM: {notificacao.mensagem}
                   </div>
                 </div>
+                {notificacao.categoriaId ===
+                notificacaoCategoria.Workflow_Aprovacao && (
                 <div className="row">
                   <div className="col-xs-12 col-md-12 col-lg-12 obs">
                     <label>Observações</label>
@@ -283,10 +285,10 @@ const DetalheNotificacao = ({ match }) => {
                       type="textarea"
                       form={form}
                       maxlength="100"
-                      desabilitado={!notificacao.mostrarBotoesDeAprovacao}
                     />
                   </div>
                 </div>
+                )}
               </EstiloDetalhe>
               {notificacao.categoriaId ===
                 notificacaoCategoria.Workflow_Aprovacao && (
