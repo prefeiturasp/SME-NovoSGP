@@ -13,7 +13,6 @@ const BreadcrumbSgp = () => {
     font-size: 10px;
     a, a:hover {
       color: ${Base.AzulBreadcrumb};
-      padding: 10px 0 5px 15px !important;
     }
 
     a:hover{
@@ -109,9 +108,10 @@ const BreadcrumbSgp = () => {
 
   return (
     <BreadcrumbBody>
+
       {itens.map(item => {
         return (
-          <Breadcrumb.Item key={item.path} separator="">
+          <Breadcrumb.Item key={item.path} separator="" hidden={itens.length === 1 && item.path === '/'}>
             <Link hidden={item.ehEstatico} to={item.path}>
               <i className={item.icone} title={item.breadcrumbName} title={item.dicaIcone}/>
               <span hidden={item.path === '/'}>{item.breadcrumbName}</span>
