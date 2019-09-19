@@ -57,7 +57,7 @@ export default function PlanoAnual() {
       ? true
       : false;
 
-  const [disciplinaObjetivo, setDisciplinaObjetivo] = useState(false);
+  const [disciplinaSemObjetivo, setDisciplinaSemObjetivo] = useState(false);
   const [modalCopiarConteudo, setModalCopiarConteudo] = useState({
     visivel: false,
     listSelect: [],
@@ -69,7 +69,7 @@ export default function PlanoAnual() {
   const recarregarPlanoAnual =
     bimestres.filter(bimestre => bimestre.recarregarPlanoAnual).length > 0;
 
-  const LayoutEspecial = ehEja || ehMedio || disciplinaObjetivo;
+  const LayoutEspecial = ehEja || ehMedio || disciplinaSemObjetivo;
 
   const qtdBimestres = ehEja ? 2 : 4;
 
@@ -89,7 +89,7 @@ export default function PlanoAnual() {
   useEffect(() => {
     VerificarEnvio();
 
-    if (recarregarPlanoAnual) ObtenhaBimestres();
+if (recarregarPlanoAnual) verificarSeEhEdicao();
   }, [bimestres]);
 
   const onF5Click = e => {
@@ -283,7 +283,7 @@ export default function PlanoAnual() {
       dispatch(Salvar(i, bimestre));
     }
 
-    setDisciplinaObjetivo(semObjetivo);
+    setDisciplinaSemObjetivo(semObjetivo);
   };
 
   const ObtenhaTurmasCopiarConteudo = async () => {
