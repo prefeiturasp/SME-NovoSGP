@@ -37,6 +37,11 @@ const Container = props => {
       display: flex;
       flex-direction: column-reverse;
     }
+
+    .ql-editor li:not(.ql-direction-rtl)::before {
+      margin-right: 0.8em;
+      margin-left: -2em;
+    }
   `;
 
   return <Retorno id={id || "textEditor"}>{children}</Retorno>;
