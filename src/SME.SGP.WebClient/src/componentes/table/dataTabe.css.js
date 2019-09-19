@@ -8,6 +8,10 @@ export const Container = styled.div`
     }
   }
 
+  .ant-table table {
+    border-collapse: collapse;
+  }
+
   .ant-checkbox-indeterminate .ant-checkbox-inner::after {
     background-color: ${Base.Roxo} !important;
   }
