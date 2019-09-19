@@ -63,6 +63,23 @@ namespace SME.SGP.Dados.Repositorios
             return database.Conexao.Query<Notificacao>(query.ToString(), new { dreId, ueId, turmaId, statusId, tipoId, usuarioRf, categoriaId, titulo, codigo, anoLetivo });
         }
 
+        public override Notificacao ObterPorId(long id)
+        {
+            var query = new StringBuilder();
+
+            query.AppendLine("select n.*, wan.observacao from notificacao n");
+            query.AppendLine("left join wf_aprovacao_nivel_notificacao wann");
+            query.AppendLine("on wann.notificacao_id = n.id");
+            query.AppendLine("join wf_aprovacao_nivel wan");
+            query.AppendLine("on wan.id = wann.wf_aprovacao_nivel_id");
+
+            query.AppendLine("where excluida = false ");
+            query.AppendLine("and n.id = @id ");
+
+            return database.Conexao.Query<Notificacao>(query.ToString(), new { id })
+                .FirstOrDefault();
+        }
+
         public long ObterUltimoCodigoPorAno(int ano)
         {
             var query = new StringBuilder();
