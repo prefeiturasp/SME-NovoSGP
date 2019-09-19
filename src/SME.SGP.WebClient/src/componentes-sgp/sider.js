@@ -15,10 +15,26 @@ const Sider = () => {
   const [openKeys, setOpenKeys] = useState([]);
   const [itemMenuSelecionado, setItemMenuSelecionado] = useState(['0']);
   const NavegacaoStore = useSelector(store => store.navegacao);
+  const [modalidadeEja, setModalidadeEja] = useState(false);
+
+  const usuario = useSelector(store => store.usuario);
 
   useEffect(() => {
     verificaSelecaoMenu(NavegacaoStore.rotaAtiva);
   }, [NavegacaoStore.rotaAtiva]);
+
+  useEffect(() => {
+    if (
+      usuario &&
+      usuario.turmaSelecionada &&
+      usuario.turmaSelecionada.length &&
+      usuario.turmaSelecionada[0].codModalidade == 3
+    ) {
+      setModalidadeEja(true);
+    } else {
+      setModalidadeEja(false);
+    }
+  }, [usuario.turmaSelecionada]);
 
   const verificaSelecaoMenu = rotaAtiva => {
     const rota = NavegacaoStore.rotas.get(rotaAtiva);
@@ -175,7 +191,7 @@ const Sider = () => {
                 }
               >
                 <Menu.Item key="30" id="plaPlanoCiclo" htmlFor="linkPlanoCiclo">
-                  <span className="menuItem"> Plano de Ciclo</span>
+                  <span className="menuItem">{ modalidadeEja ? 'Plano de Etapa' : 'Plano de Ciclo'}</span>
                   <Link
                     to="/planejamento/plano-ciclo"
                     className="nav-link text-white"
