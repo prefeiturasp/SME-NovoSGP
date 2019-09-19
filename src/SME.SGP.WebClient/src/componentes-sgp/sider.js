@@ -28,6 +28,18 @@ const Sider = () => {
     }
   };
 
+  const alterarPosicaoJanelaPopup = (idElementoHtml, quantidadeItens) => {
+    const itemMenu = window.document.getElementById(idElementoHtml);
+    if (itemMenu) {
+      const alturaItens = (quantidadeItens * 40) + 6;
+      const alturaTela = window.innerHeight
+      const posicaoY = itemMenu.getBoundingClientRect().y;
+      const alturaTotalItens = posicaoY + alturaItens;
+      const posicaoTop = alturaTotalItens > alturaTela ? (posicaoY-(alturaTotalItens - alturaTela)) : posicaoY;
+      document.documentElement.style.setProperty('--posicao-item-menu', `${posicaoTop}px`)
+    }
+  }
+
   const alternarRetraido = () => {
     setOpenKeys([]);
     setRetraido(!retraido);
@@ -107,12 +119,13 @@ const Sider = () => {
               <SubMenu
                 id="diarioClasse"
                 key="subDiarioClasse"
+                onMouseEnter={(e) => alterarPosicaoJanelaPopup('diarioClasse', 9)}
                 title={
                   <div className="item-menu-retraido">
                     <i
                       className={`fas fa-book-reader ${
                         retraido ? 'icons-retraido' : 'icons'
-                      }`}
+                        }`}
                     />
                     <span>Diário de Classe</span>
                   </div>
@@ -149,12 +162,13 @@ const Sider = () => {
               <SubMenu
                 id="planejamento"
                 key="subPlanejamento"
+                onMouseEnter={(e) => alterarPosicaoJanelaPopup('planejamento', 2)}
                 title={
                   <div className="item-menu-retraido">
                     <i
                       className={`fas fa-list-alt ${
                         retraido ? 'icons-retraido' : 'icons'
-                      }`}
+                        }`}
                     />
                     <span>Planejamento</span>
                   </div>
@@ -180,12 +194,13 @@ const Sider = () => {
               <SubMenu
                 id="fechamento"
                 key="subFechamento"
+                onMouseEnter={(e) => alterarPosicaoJanelaPopup('fechamento', 3)}
                 title={
                   <div className="item-menu-retraido">
                     <i
                       className={`fas fa-pencil-ruler ${
                         retraido ? 'icons-retraido' : 'icons'
-                      }`}
+                        }`}
                     />
                     <span>Fechamento</span>
                   </div>
@@ -204,12 +219,13 @@ const Sider = () => {
               <SubMenu
                 id="relatorios"
                 key="subRelatorios"
+                onMouseEnter={(e) => alterarPosicaoJanelaPopup('relatorios', 8)}
                 title={
                   <div className="item-menu-retraido">
                     <i
                       className={`fas fa-file-alt ${
                         retraido ? 'icons-retraido' : 'icons'
-                      }`}
+                        }`}
                     />
                     <span>Relatórios</span>
                   </div>
@@ -225,7 +241,7 @@ const Sider = () => {
                   <span className="menuItem">Componente Finalizado</span>
                 </Menu.Item>
                 <Menu.Item key="73" id="relContraturno">
-                  <span className="menuItem">Contraturo</span>
+                  <span className="menuItem">Contraturno</span>
                 </Menu.Item>
                 <Menu.Item key="74" id="relHistoricoEscolar">
                   <span className="menuItem">Histórico Escolar</span>
@@ -243,12 +259,13 @@ const Sider = () => {
               <SubMenu
                 id="gestao"
                 key="subGestao"
+                onMouseEnter={(e) => alterarPosicaoJanelaPopup('gestao', 5)}
                 title={
                   <div className="item-menu-retraido">
                     <i
                       className={`fas fa-user-cog ${
                         retraido ? 'icons-retraido' : 'icons'
-                      }`}
+                        }`}
                     />
                     <span>Gestão</span>
                   </div>
@@ -288,7 +305,7 @@ const Sider = () => {
                     <i
                       className={`fas fa-cog ${
                         retraido ? 'icons-retraido' : 'icons'
-                      }`}
+                        }`}
                     />
                     <span>Configurações</span>
                   </div>
@@ -304,8 +321,7 @@ const Sider = () => {
                 <img src={LogoMenuFooter} />
               </div>
               <div className="descricao">
-                <span>SME-SP-SGA - Distribuído sob a Licença AGPL V3</span>
-                <Link to="/teste/notificacoes">.</Link>
+                <span>SME-SP-SGP - Distribuído sob a Licença AGPL V3</span>
               </div>
             </Footer>
           </DivFooter>
