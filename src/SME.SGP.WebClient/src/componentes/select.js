@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useLayoutEffect } from 'react';
 import PropTypes from 'prop-types';
 import styled from 'styled-components';
 import Select from 'antd/es/select';
@@ -8,6 +8,9 @@ import { Base } from './colors';
 import Label from './label';
 
 const Container = styled.div`
+  
+  display: flex;
+
   .ant-select {
     width: 100%;
   }
@@ -25,6 +28,10 @@ const Container = styled.div`
   }
   .ant-select-selection__placeholder {
     display: block;
+  }
+  .ant-select .ant-select-search__field{
+    display:block;
+    max-width: 100% !important;
   }
   .ant-select-selection-selected-value {
     font-weight: bold;
@@ -65,9 +72,9 @@ const SelectComponent = props => {
     <Container>
       {label ? <Label text={label} control={name} /> : ''}
       <Select
-        mode={multiple ? 'multiple' : ''}
+        mode={multiple && 'multiple'}
         suffixIcon={<Icon type="caret-down" />}
-        className={className}
+        className={`${className}`}
         name={name}
         id={id}
         onChange={onChange}
