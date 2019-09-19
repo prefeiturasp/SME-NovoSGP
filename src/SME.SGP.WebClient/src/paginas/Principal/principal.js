@@ -20,6 +20,7 @@ const Principal = props => {
   const ANUAL_TYPE = 'anual';
   const [escolaSelecionada, setEscolaSelecionada] = useState(false);
   const [turmaSelecionada, setTurmaSelecionada] = useState(false);
+  const [modalidadeEja, setModalidadeEja] = useState(false);
 
   const FiltroStore = useSelector(store => store.usuario);
 
@@ -34,6 +35,19 @@ const Principal = props => {
   useEffect(() => {
     validarFiltro();
   }, [FiltroStore]);
+
+  useEffect(() => {
+    if (
+      FiltroStore &&
+      FiltroStore.turmaSelecionada &&
+      FiltroStore.turmaSelecionada.length &&
+      FiltroStore.turmaSelecionada[0].codModalidade == 3
+    ) {
+      setModalidadeEja(true);
+    } else {
+      setModalidadeEja(false);
+    }
+  }, [FiltroStore.turmaSelecionada]);
 
   const validarFiltro = () => {
     if (!FiltroStore.turmaSelecionada) {
@@ -129,7 +143,7 @@ const Principal = props => {
             disabled={(e => ehDisabled(CICLOS_TYPE))()}
             icone="fa-calendar-minus"
             pack="far"
-            label="Plano de Ciclo"
+            label={ modalidadeEja ? 'Plano de Etapa' : 'Plano de Ciclo'}
           />
           <CardLink
             cols={[4, 4, 4, 12]}
