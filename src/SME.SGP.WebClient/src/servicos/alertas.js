@@ -24,6 +24,7 @@ const exibirAlerta = (tipo, mensagem, fixo = false) => {
       store.dispatch(removerAlerta(id));
     }, 3000);
   }
+  window.scroll(0, 0);
 };
 
 const sucesso = mensagem => {
@@ -34,6 +35,11 @@ const erro = mensagem => {
   exibirAlerta('danger', mensagem);
 };
 
+const erros = listaErros => {
+  if (listaErros && listaErros.response && listaErros.response.data)
+    listaErros.response.data.mensagens.forEach(mensagem => erro(mensagem));
+  else erro('Ocorreu um erro interno.');
+};
 const confirmacao = (
   titulo,
   texto,
@@ -93,4 +99,5 @@ export {
   erroMensagem,
   confirmar,
   fecharModalConfirmacao,
+  erros,
 };

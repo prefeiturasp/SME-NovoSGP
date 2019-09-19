@@ -92,7 +92,7 @@ export const Titulo = styled.div`
   line-height: normal;
   letter-spacing: normal;
   color: #42474a;
-  margin-bottom: -23px;
+  margin-bottom: 10px;
 `;
 
 export const TituloAno = styled.span`
