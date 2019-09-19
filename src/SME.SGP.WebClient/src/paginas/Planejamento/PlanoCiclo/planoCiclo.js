@@ -430,7 +430,8 @@ export default function PlanoCiclo() {
         <Titulo>
           {modalidadeEja ? 'Plano de Etapa' : 'Plano de Ciclo'}
           <TituloAno>
-            /2019 <i className="fas fa-retweet" />
+             {' / 2019 '}
+             <i className="fas fa-retweet" />
           </TituloAno>
         </Titulo>
       </div>
