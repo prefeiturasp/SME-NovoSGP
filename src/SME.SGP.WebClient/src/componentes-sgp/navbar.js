@@ -5,6 +5,7 @@ import styled from 'styled-components';
 import LogoDoSgp from '../recursos/LogoDoSgp.svg';
 import { Base } from '../componentes/colors';
 import { useSelector } from 'react-redux';
+import BtnPerfil from './btn-perfil';
 
 const Navbar = () => {
   const Nav = styled.nav`
@@ -61,6 +62,9 @@ const Navbar = () => {
         <Filtro />
         <Botoes className="float-right d-flex align-items-center mr-4">
           <ul className="list-inline p-0 m-0">
+            <li className="list-inline-item text-center">
+              <BtnPerfil/>
+            </li>
             <li className="list-inline-item text-center">
               <BtnSair>
                 <Icone className="fa fa-power-off fa-lg mb-1" />
