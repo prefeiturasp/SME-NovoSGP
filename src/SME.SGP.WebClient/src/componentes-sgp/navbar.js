@@ -47,7 +47,8 @@ const Navbar = () => {
   const retraido = useSelector(state => state.navegacao.retraido);
 
   return (
-    <Nav className="navbar navbar-expand-md navbar-light bg-white shadow-sm sticky-top">
+    <Nav className="bg-white shadow-sm">
+      <div style={{ width: retraido ? '115px' : '250px' }}>
       <Link
         style={{ width: retraido ? '115px' : '250px' }}
         className={'logo'}
@@ -55,12 +56,13 @@ const Navbar = () => {
       >
         <Logo src={LogoDoSgp} alt="SGP" className="mx-auto d-block" />
       </Link>
+      </div>
       <div
         className={`${
           retraido
             ? 'col-lg-10 col-md-10 col-sm-10 col-xl-11'
             : 'col-sm-8 col-md-9 col-lg-9 col-xl-10'
-        }`}
+          }`}
       >
         <Filtro />
         <Botoes className="float-right d-flex align-items-center mr-4">
