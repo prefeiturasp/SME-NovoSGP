@@ -24,6 +24,7 @@ import {
   ObterBimestreServidor,
   removerSelecaoTodosObjetivos,
 } from '../../../redux/modulos/planoAnual/action';
+import Auditoria from '~/componentes/auditoria';
 
 //Utilizado para importar a função scrollIntoViewIfNeeded para navegadores que não possuem essa funcionalidade.
 import '../../../componentes/scrollIntoViewIfNeeded';
@@ -253,7 +254,7 @@ const BimestreComponent = props => {
           )}
           {LayoutEspecial ? null : (
             <div
-              className="row col-md-12"
+              className="row col-md-12 d-flex"
               role="group"
               aria-label={`${bimestres[indice].objetivosAprendizagem &&
                 bimestres[indice].objetivosAprendizagem.length > 0 &&
@@ -296,10 +297,10 @@ const BimestreComponent = props => {
                   height="38px !important"
                   width="92px !important"
                   fontSize="12px !important"
-                  padding="0px !important"
+                  padding="0px 5px !important"
+                  lineHeight="1.2 !important"
                   steady
                   border
-                  padding="0px !important"
                   className="text-dark mt-3 mr-2 stretched-link"
                   onClick={removerTodosObjetivoSelecionado}
                 />
@@ -346,7 +347,6 @@ const BimestreComponent = props => {
                   ref={textEditorRef}
                   id="textEditor"
                   height="135px"
-                  height="135px"
                   alt="Descrição do plano Anual"
                   disabled={disabled}
                   stateAdicional={estadoAdicionalEditorTexto}
@@ -357,14 +357,20 @@ const BimestreComponent = props => {
               </form>
             </fieldset>
             <Grid cols={12} className="p-0">
-              <BoxAuditoria>
+              <Auditoria
+                criadoPor={bimestres[indice].criadoPor}
+                criadoEm={bimestres[indice].criadoEm}
+                alteradoPor={bimestres[indice].alteradoPor}
+                alteradoEm={bimestres[indice].alteradoEm}
+              />
+              {/* <BoxAuditoria>
                 {bimestres[indice].criadoPor ? (
                   <H5>{bimestres[indice].criadoPor}</H5>
                 ) : null}
                 {bimestres[indice].alteradoPor ? (
                   <H5>{bimestres[indice].alteradoPor}</H5>
                 ) : null}
-              </BoxAuditoria>
+              </BoxAuditoria> */}
             </Grid>
           </div>
         </Grid>

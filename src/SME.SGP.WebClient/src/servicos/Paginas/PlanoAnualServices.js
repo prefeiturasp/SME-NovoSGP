@@ -179,23 +179,23 @@ const Service = {
       x => x
     );
 
-    Bimestres.forEach((bimestre, index) => {
+    Bimestres.forEach(bimestre => {
       if (
         !bimestre.Descricao ||
         bimestre.Descricao === '' ||
         typeof bimestre.Descricao === 'undefined' ||
         bimestre.Descricao === '<p><br></p>'
       )
-        Erros.push(
-          `${BimestresFront[index + 1].nome}: Descrição não informada`
-        );
+        Erros.push(`${bimestre.Bimestre}º Bimestre: Descrição não informada`);
 
       if (
         (!bimestre.ObjetivosAprendizagem ||
           bimestre.ObjetivosAprendizagem.length === 0) &&
         LayoutEspecial.length === 0
       )
-        Erros.push(`${index + 1}º Bimestre: Nenhum objetivo selecionado`);
+        Erros.push(
+          `${bimestre.Bimestre}º Bimestre: Nenhum objetivo selecionado`
+        );
     });
 
     return Erros;
