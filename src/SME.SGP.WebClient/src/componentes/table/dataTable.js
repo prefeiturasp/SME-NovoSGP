@@ -1,7 +1,6 @@
 import { Table } from 'antd';
 import PropTypes from 'prop-types';
 import React from 'react';
-
 import { Container } from './dataTabe.css';
 
 const DataTable = props => {
@@ -12,11 +11,13 @@ const DataTable = props => {
     onSelectRow,
     selectMultipleRows,
     pageSize,
+    pagination,
+    onRowClick,
   } = props;
 
   const rowSelection = {
     selectedRowKeys,
-    onChange: (ids) => {
+    onChange: ids => {
       onSelectRow(ids);
     },
   };
@@ -45,9 +46,11 @@ const DataTable = props => {
         onRow={row => ({
           onClick: () => {
             selectRow(row);
+            onRowClick();
           },
         })}
-        pagination={{ pageSize }}
+        pagination={pagination}
+        pageSize={{ pageSize }}
         bordered
         size="middle"
         locale={{ emptyText: 'Sem dados' }}
@@ -63,6 +66,8 @@ DataTable.propTypes = {
   columns: PropTypes.array,
   selectMultipleRows: PropTypes.bool,
   pageSize: PropTypes.number,
+  pagination: PropTypes.bool,
+  onRowClick: PropTypes.func,
 };
 
 DataTable.defaultProps = {
@@ -70,6 +75,8 @@ DataTable.defaultProps = {
   columns: [],
   selectMultipleRows: false,
   pageSize: 10,
+  pagination: false,
+  onRowClick: () => {},
 };
 
 export default DataTable;
