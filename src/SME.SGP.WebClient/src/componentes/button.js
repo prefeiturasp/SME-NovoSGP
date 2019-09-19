@@ -53,7 +53,7 @@ const Button = props => {
     ${fontSize ? `font-size: ${fontSize};` : ''}
     ${padding ? `padding: ${padding};` : ''}
     height: ${height ? height : '38px'};
-    ${lineHeight ? `line-height: ${lineHeight}` : ''}
+    ${lineHeight && `line-height: ${lineHeight}`}
     &:hover {
       background: ${Hover[color]} !important;
       color: ${!steady ? Base.Branco : 'initial'} !important;
