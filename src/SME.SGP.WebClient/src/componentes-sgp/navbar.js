@@ -9,15 +9,8 @@ import { useSelector } from 'react-redux';
 const Navbar = () => {
   const Nav = styled.nav`
     height: 70px !important;
-    padding-left: 0 !important;
-    padding-right: 0 !important;
-
-    .logo{
-      display: flex;
-      justify-content: center;
-      flex-direction: column;
-      align-items: center;
-    }
+    padding-left: 15px !important;
+    padding-right: 15px !important;
   `;
 
   const Logo = styled.img`
@@ -47,22 +40,23 @@ const Navbar = () => {
   const retraido = useSelector(state => state.navegacao.retraido);
 
   return (
-    <Nav className="bg-white shadow-sm">
-      <div style={{ width: retraido ? '115px' : '250px' }}>
+    <Nav className="navbar navbar-expand-md navbar-light bg-white shadow-sm sticky-top">
       <Link
-        style={{ width: retraido ? '115px' : '250px' }}
-        className={'logo'}
+        className={`navbar-brand ${
+          retraido
+            ? 'col-lg-2 col-md-2 col-sm-2 col-xl-1 pl-0'
+            : 'col-sm-4 col-md-3 col-lg-3 col-xl-2'
+        }`}
         to="/"
       >
         <Logo src={LogoDoSgp} alt="SGP" className="mx-auto d-block" />
       </Link>
-      </div>
       <div
         className={`${
           retraido
             ? 'col-lg-10 col-md-10 col-sm-10 col-xl-11'
             : 'col-sm-8 col-md-9 col-lg-9 col-xl-10'
-          }`}
+        }`}
       >
         <Filtro />
         <Botoes className="float-right d-flex align-items-center mr-4">
