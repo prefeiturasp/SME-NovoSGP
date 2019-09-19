@@ -241,7 +241,7 @@ const Sider = () => {
                   <span className="menuItem">Componente Finalizado</span>
                 </Menu.Item>
                 <Menu.Item key="73" id="relContraturno">
-                  <span className="menuItem">Contraturo</span>
+                  <span className="menuItem">Contraturno</span>
                 </Menu.Item>
                 <Menu.Item key="74" id="relHistoricoEscolar">
                   <span className="menuItem">Histórico Escolar</span>
