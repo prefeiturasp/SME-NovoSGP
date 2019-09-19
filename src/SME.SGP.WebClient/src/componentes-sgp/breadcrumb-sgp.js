@@ -108,9 +108,10 @@ const BreadcrumbSgp = () => {
 
   return (
     <BreadcrumbBody>
+
       {itens.map(item => {
         return (
-          <Breadcrumb.Item key={item.path} separator="">
+          <Breadcrumb.Item key={item.path} separator="" hidden={itens.length === 1 && item.path === '/'}>
             <Link hidden={item.ehEstatico} to={item.path}>
               <i className={item.icone} title={item.breadcrumbName} title={item.dicaIcone}/>
               <span hidden={item.path === '/'}>{item.breadcrumbName}</span>
