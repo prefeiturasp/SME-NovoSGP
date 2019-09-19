@@ -9,7 +9,7 @@ import { Colors } from '../../../componentes/colors';
 import SelectComponent from '../../../componentes/select';
 import DataTable from '../../../componentes/table/dataTable';
 import api from '../../../servicos/api';
-import { NovoSGP, Titulo } from './atribuicaoSupervisor.css';
+import Cabecalho from '~/componentes-sgp/cabecalho';
 
 export default function AtribuicaoSupervisorLista() {
   const [selectedRowKeys, setSelectedRowKeys] = useState([]);
@@ -84,7 +84,7 @@ export default function AtribuicaoSupervisorLista() {
       title: 'supervisor',
       dataIndex: 'supervisor',
       render: text => {
-        return text ? text : <a className="coluna-vermelha">NÃO ATRIBUIDO</a>
+        return text ? text : <a className="texto-vermelho">NÃO ATRIBUIDO</a>;
       },
     },
   ];
@@ -205,7 +205,7 @@ export default function AtribuicaoSupervisorLista() {
           dre: dreSelecionada.sigla,
           escola: escola.nome,
           supervisor: item.supervisorId ? item.supervisorNome : '',
-          supervisorId: item.supervisorId
+          supervisorId: item.supervisorId,
         });
       });
       return dadosAtribuicao;
@@ -254,10 +254,7 @@ export default function AtribuicaoSupervisorLista() {
 
   return (
     <>
-      <div className="col-md-12">
-        <NovoSGP>NOVO SGP</NovoSGP>
-        <Titulo>Atribuição de Supervisor - Listagem</Titulo>
-      </div>
+      <Cabecalho pagina="Atribuição de Supervisor - Listagem" />
       <Card>
         <div className="col-md-12 d-flex justify-content-end pb-4">
           <Button
