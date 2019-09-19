@@ -8,7 +8,6 @@ import { Base } from './colors';
 import Label from './label';
 
 const Container = styled.div`
-  
   display: flex;
 
   .ant-select {
@@ -29,8 +28,8 @@ const Container = styled.div`
   .ant-select-selection__placeholder {
     display: block;
   }
-  .ant-select .ant-select-search__field{
-    display:block;
+  .ant-select .ant-select-search__field {
+    display: block;
     max-width: 100% !important;
   }
   .ant-select-selection-selected-value {
@@ -74,7 +73,7 @@ const SelectComponent = props => {
       <Select
         mode={multiple && 'multiple'}
         suffixIcon={<Icon type="caret-down" />}
-        className={`${className}`}
+        className={`overflow-hidden ${className}`}
         name={name}
         id={id}
         onChange={onChange}
