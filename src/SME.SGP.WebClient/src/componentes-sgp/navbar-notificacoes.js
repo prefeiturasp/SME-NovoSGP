@@ -89,71 +89,77 @@ const NavbarNotificacoes = props => {
   const notificacoes = useSelector(state => state.notificacoes);
 
   const buscaNotificacoesPorAnoRf = async (ano, rf) => {
-    const res = {
-      data: {
-        notificacoes: [
-          {
-            categoria: 3,
-            codigo: '000000007',
-            data: '16/09/2019 11:32:11',
-            descricaoStatus: 'Teste 123',
-            id: 7,
-            status: 1,
-            tipo: 'Notas',
-            titulo: 'Você tem um teste',
-          },
-          {
-            categoria: 3,
-            codigo: '000000005',
-            data: '16/09/2019 11:32:04',
-            descricaoStatus: 'Teste 123',
-            id: 5,
-            status: 1,
-            tipo: 'Fechamento',
-            titulo: 'Você tem um teste',
-          },
-          {
-            categoria: 1,
-            codigo: '000000001',
-            data: '16/09/2019 11:16:07',
-            descricaoStatus: 'Teste 123',
-            id: 1,
-            status: 1,
-            tipo: 'Calendario',
-            titulo: 'Você tem um teste',
-          },
-          {
-            categoria: 1,
-            codigo: '000000014',
-            data: '16/09/2019 11:32:48',
-            descricaoStatus: 'Teste 123',
-            id: 14,
-            status: 2,
-            tipo: 'Sondagem',
-            titulo: 'Você tem um teste',
-          },
-          {
-            categoria: 2,
-            codigo: '000000013',
-            data: '16/09/2019 11:32:40',
-            descricaoStatus: 'Teste 123',
-            id: 13,
-            status: 2,
-            tipo: 'PlanoDeAula',
-            titulo: 'Você tem um teste',
-          },
-        ],
-        quantidadeNaoLidas: 3,
-      },
-    };
-    // await api
-    // .get(`v1/notificacoes/resumo?anoLetivo=${ano}&usuarioRf=${rf}`)
-    // .then(res => {
-    // if (res.data) {
-    store.dispatch(naoLidas(res.data.quantidadeNaoLidas));
-    store.dispatch(notificacoesLista(res.data.notificacoes));
-    // }
-    // });
+    // const res = {
+    //   data: {
+    //     notificacoes: [
+    //       {
+    //         categoria: 3,
+    //         codigo: '000000007',
+    //         data: '16/09/2019 11:32:11',
+    //         descricaoStatus: 'Teste 123',
+    //         id: 7,
+    //         status: 1,
+    //         tipo: 'Notas',
+    //         titulo: 'Você tem um teste',
+    //       },
+    //       {
+    //         categoria: 3,
+    //         codigo: '000000005',
+    //         data: '16/09/2019 11:32:04',
+    //         descricaoStatus: 'Teste 123',
+    //         id: 5,
+    //         status: 1,
+    //         tipo: 'Fechamento',
+    //         titulo: 'Você tem um teste',
+    //       },
+    //       {
+    //         categoria: 1,
+    //         codigo: '000000001',
+    //         data: '16/09/2019 11:16:07',
+    //         descricaoStatus: 'Teste 123',
+    //         id: 1,
+    //         status: 1,
+    //         tipo: 'Calendario',
+    //         titulo: 'Você tem um teste',
+    //       },
+    //       {
+    //         categoria: 1,
+    //         codigo: '000000014',
+    //         data: '16/09/2019 11:32:48',
+    //         descricaoStatus: 'Teste 123',
+    //         id: 14,
+    //         status: 2,
+    //         tipo: 'Sondagem',
+    //         titulo: 'Você tem um teste',
+    //       },
+    //       {
+    //         categoria: 2,
+    //         codigo: '000000013',
+    //         data: '16/09/2019 11:32:40',
+    //         descricaoStatus: 'Teste 123',
+    //         id: 13,
+    //         status: 2,
+    //         tipo: 'PlanoDeAula',
+    //         titulo: 'Você tem um teste',
+    //       },
+    //     ],
+    //     quantidadeNaoLidas: 3,
+    //   },
+    // };
+    await api
+      .get(`v1/notificacoes/resumo?anoLetivo=${ano}&usuarioRf=${rf}`)
+      .then(res => {
+        if (res.data) {
+          store.dispatch(naoLidas(res.data.quantidadeNaoLidas));
+          store.dispatch(notificacoesLista(res.data.notificacoes));
+        }
+      });
+  };
+
+  const handleClickFora = event => {
+    if (listaRef.current && !listaRef.current.contains(event.target)) {
+      setMostraNotificacoes(!mostraNotificacoes);
+    }
   };
 
   useEffect(() => {
@@ -183,12 +189,6 @@ const NavbarNotificacoes = props => {
     setMostraNotificacoes(!mostraNotificacoes);
   };
 
-  const handleClickFora = event => {
-    if (listaRef.current && !listaRef.current.contains(event.target)) {
-      setMostraNotificacoes(!mostraNotificacoes);
-    }
-  };
-
   return (
     <div ref={listaRef} className="position-relative">
       <Botao className="text-center stretched-link" onClick={onClickBotao}>
@@ -214,7 +214,7 @@ const NavbarNotificacoes = props => {
                     <Tr
                       key={shortid.generate()}
                       status={notificacao.status}
-                      onClick={() => onClickNotificacao(notificacao.codigo)}
+                      onClick={() => onClickNotificacao(notificacao.id)}
                     >
                       <td className="py-1 pl-2 pr-1 text-center align-middle">
                         <i className="fa fa-info-circle" />

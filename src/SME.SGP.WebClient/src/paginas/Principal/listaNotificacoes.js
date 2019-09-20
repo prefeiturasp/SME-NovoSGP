@@ -1,8 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useLayoutEffect } from 'react';
 import { useSelector } from 'react-redux';
 import DataTable from '~/componentes/table/dataTable';
-import { Base, Colors } from '~/componentes/colors';
+import { Colors } from '~/componentes/colors';
 import Button from '~/componentes/button';
+import history from '~/servicos/history';
 
 const ListaNotificacoes = () => {
   const notificacoes = useSelector(state => state.notificacoes);
@@ -16,6 +17,7 @@ const ListaNotificacoes = () => {
       title: 'ID',
       dataIndex: 'codigo',
       key: 'codigo',
+      className: 'px-4',
     },
     {
       title: 'Tipo',
@@ -32,12 +34,9 @@ const ListaNotificacoes = () => {
       title: 'Situação',
       dataIndex: 'status',
       key: 'status',
-      className: 'text-uppercase text-center',
+      className: 'text-uppercase',
       render: status => (
-        <span
-          className={`${status === 1 && 'font-weight-bold'}`}
-          style={{ color: status === 1 && Base.Vermelho }}
-        >
+        <span className={`${status === 1 && 'cor-vermelho font-weight-bold'}`}>
           {statusLista[status]}
         </span>
       ),
@@ -47,6 +46,10 @@ const ListaNotificacoes = () => {
       dataIndex: 'data',
       key: 'data',
       className: 'text-right',
+      width: '100px',
+      textWrap: 'word-break',
+      ellipsis: true,
+      render: data => <span style={{ width: 50 }}>{data}</span>,
     },
   ];
 
@@ -54,8 +57,14 @@ const ListaNotificacoes = () => {
     setSelectedRowKeys(row);
   };
 
-  const onSelecionaNotificacao = row => {
-    console.log(row);
+  useLayoutEffect(() => {
+    if (selectedRowKeys[0]) {
+      history.push(`/notificacoes/${selectedRowKeys[0]}`);
+    }
+  }, [selectedRowKeys]);
+
+  const onClickVerTudo = () => {
+    history.push(`/notificacoes`);
   };
 
   return (
@@ -66,7 +75,6 @@ const ListaNotificacoes = () => {
         pageSize={0}
         onSelectRow={onSelectRow}
         selectedRowKeys={selectedRowKeys}
-        onRowClick={onSelecionaNotificacao}
       />
       <Button
         label="Ver tudo"
@@ -77,6 +85,7 @@ const ListaNotificacoes = () => {
         customRadius="border-top-right-radius: 0 !important; border-top-left-radius: 0 !important;"
         border
         bold
+        onClick={onClickVerTudo}
       />
     </>
   );

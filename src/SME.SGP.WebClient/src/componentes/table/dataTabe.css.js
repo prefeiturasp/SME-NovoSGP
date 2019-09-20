@@ -2,7 +2,6 @@ import styled from 'styled-components';
 import { Base } from '../colors';
 
 export const Container = styled.div`
-
   .ocultar-coluna-multi-selecao {
     .ant-table-selection-column {
       display: none !important;
@@ -15,87 +14,88 @@ export const Container = styled.div`
 
   .ant-checkbox-checked .ant-checkbox-inner {
     background-color: ${Base.Roxo};
-    border-color: #ffffff;
+    border-color: ${Base.Branco} !important;
   }
 
   .ant-table-thead tr th {
+    background: ${Base.CinzaFundo} !important;
+    border-right: solid 1px ${Base.CinzaDesabilitado};
     text-align: center;
-    border-right: solid 1px #dadada;
   }
 
   .ant-table-tbody tr td {
-    border-right: solid 1px #dadada;
-    white-space: nowrap;
+    border-right: solid 1px ${Base.CinzaDesabilitado};
     cursor: pointer;
+    white-space: nowrap;
   }
 
   .ant-table-column-title {
+    color: #323c47;
+    font-size: 14px;
     font-weight: bold;
     letter-spacing: 0.12px;
-    color: #323c47;
-    text-transform: uppercase;
-    font-size: 14px;
+    text-transform: capitalize;
   }
 
   .ant-table-pagination.ant-pagination {
-    text-align: center !important;
     float: none;
+    text-align: center !important;
   }
 
   .ant-pagination-item {
-    border-radius: 0px;
+    border-radius: 0;
 
     a {
+      color: ${Base.Branco} !important;
       font-family: Roboto;
-      font-weight: bold;
       font-style: normal;
       font-stretch: normal;
+      font-weight: bold;
       letter-spacing: normal;
-      color: #ffffff;
     }
   }
 
   .ant-pagination.mini .ant-pagination-item {
-    min-width: 45px;
     height: 45px;
-    margin: 0;
     line-height: 45px;
+    margin: 0;
+    min-width: 45px;
   }
 
   .ant-pagination-prev {
-    border: solid 1px #dadada !important;
+    border: solid 1px ${Base.CinzaDesabilitado} !important;
   }
 
   .ant-pagination.mini .ant-pagination-prev {
-    min-width: 45px;
-    height: 45px;
-    margin: 0;
-    line-height: 40px;
     border-radius: 4px 0px 0px 4px;
     border-right: none !important;
+    height: 45px;
+    line-height: 40px;
+    margin: 0;
+    min-width: 45px;
   }
 
   .ant-pagination.mini .ant-pagination-next {
-    min-width: 45px;
-    height: 45px;
-    margin: 0;
-    line-height: 40px;
     border-radius: 0px 4px 4px 0px;
     border-left: none !important;
+    height: 45px;
+    line-height: 40px;
+    margin: 0;
+    min-width: 45px;
   }
 
   .ant-pagination-next {
-    border: solid 1px #dadada !important;
+    border: solid 1px ${Base.CinzaDesabilitado} !important;
   }
 
   .ant-pagination-item {
-    border: solid 1px #dadada !important;
+    border: solid 1px ${Base.CinzaDesabilitado} !important;
   }
 
   .ant-pagination-item-active {
     background: ${Base.Roxo} !important;
     border-color: ${Base.Roxo} !important;
-    color: #ffffff;
+    color: ${Base.Branco} !important;
     font-size: 12px;
   }
 
@@ -106,22 +106,29 @@ export const Container = styled.div`
 
   .ant-pagination-item-active:focus a,
   .ant-pagination-item-active:hover a {
-    color: #ffffff;
+    color: ${Base.Branco} !important;
+  }
+
+  .ant-table-tbody tr td span.cor-vermelho {
+    color: ${Base.Vermelho};
   }
 
   .ant-table-tbody tr:hover td {
     background: ${Base.Roxo} !important;
-    color: #ffffff !important;
+    color: ${Base.Branco} !important;
+    span.cor-vermelho {
+      color: ${Base.Branco} !important;
+    }
   }
 
   .ant-table-tbody tr:hover {
     background: ${Base.Roxo} !important;
-    color: #ffffff !important;
+    color: ${Base.Branco} !important;
   }
 
   .ant-table-tbody tr.ant-table-row-selected > td {
     background: ${Base.Roxo};
-    color: #ffffff;
+    color: ${Base.Branco} !important;
   }
 
   .ant-table-tbody > tr {
