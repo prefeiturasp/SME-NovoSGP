@@ -14,7 +14,7 @@ namespace SME.SGP.Dados.Repositorios
         {
         }
 
-        public IEnumerable<Notificacao> ObterPorDreOuEscolaOuStatusOuTurmoOuUsuarioOuTipoOuCategoriaOuTitulo(string dreId, string ueId, int statusId,
+        public IEnumerable<Notificacao> Obter(string dreId, string ueId, int statusId,
             string turmaId, string usuarioRf, int tipoId, int categoriaId, string titulo, long codigo, int anoLetivo)
         {
             var query = new StringBuilder();
@@ -63,11 +63,32 @@ namespace SME.SGP.Dados.Repositorios
             return database.Conexao.Query<Notificacao>(query.ToString(), new { dreId, ueId, turmaId, statusId, tipoId, usuarioRf, categoriaId, titulo, codigo, anoLetivo });
         }
 
+        //public (Notificacao, string) ObterDetalhePorId(long idNotificacao)
+        //{
+        //    var query = new StringBuilder();
+
+        //    query.AppendLine("select n.*, u.* from notificacao n");
+        //    query.AppendLine("where excluida = false ");
+        //    query.AppendLine("and n.id = @idNotificacao; ");
+
+        //    //query.AppendLine("select wfn.observacao from wf_aprovacao_nivel wfn");
+        //    //query.AppendLine("inner join wf_aprovacao_nivel_notificacao wfnn");
+        //    //query.AppendLine("on  wfn.id = wfnn.wf_aprovacao_nivel_id");
+        //    //query.AppendLine("where wfnn.notificacao_id = @idNotificacao");
+
+        //    //using (var multi = database.Conexao.QueryMultiple(query.ToString(), new { idNotificacao }))
+        //    //{
+        //    //    var notificacao = multi.Read<Notificacao>().First();
+        //    //    var observacao = multi.Read<string>().First();
+
+        //    //    return (notificacao, observacao);
+        //    //}
+        //}
         public override Notificacao ObterPorId(long id)
         {
             var query = new StringBuilder();
 
-            query.AppendLine("select n.*, wan.observacao from notificacao n");
+            query.AppendLine("select n.*, wan.* from notificacao n");
             query.AppendLine("left join wf_aprovacao_nivel_notificacao wann");
             query.AppendLine("on wann.notificacao_id = n.id");
             query.AppendLine("join wf_aprovacao_nivel wan");
