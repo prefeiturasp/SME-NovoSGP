@@ -135,7 +135,7 @@ const DetalheNotificacao = ({ match }) => {
       <Cabecalho pagina="Notificações" />
       <Formik
         initialValues={{
-          observacao: '',
+          observacao: notificacao.observacao,
         }}
         validationSchema={validacoes}
         onSubmit={values => enviarAprovacao(values)}
@@ -269,25 +269,25 @@ const DetalheNotificacao = ({ match }) => {
                     </div>
                   </div>
                 </div>
-                <hr className="mt-hr" />            
+                <hr className="mt-hr" />
                 <div className="row">
                   <div className="col-xs-12 col-md-12 col-lg-12 mensagem">
                     MENSAGEM: {notificacao.mensagem}
                   </div>
                 </div>
                 {notificacao.categoriaId ===
-                notificacaoCategoria.Workflow_Aprovacao && (
-                <div className="row">
-                  <div className="col-xs-12 col-md-12 col-lg-12 obs">
-                    <label>Observações</label>
-                    <CampoTexto
-                      name="observacao"
-                      type="textarea"
-                      form={form}
-                      maxlength="100"
-                    />
+                  notificacaoCategoria.Workflow_Aprovacao && (
+                  <div className="row">
+                    <div className="col-xs-12 col-md-12 col-lg-12 obs">
+                      <label>Observações</label>
+                      <CampoTexto
+                        name="observacao"
+                        type="textarea"
+                        form={form}
+                        maxlength="100"
+                      />
+                    </div>
                   </div>
-                </div>
                 )}
               </EstiloDetalhe>
               {notificacao.categoriaId ===
