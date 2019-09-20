@@ -12,7 +12,6 @@ const DataTable = props => {
     selectMultipleRows,
     pageSize,
     pagination,
-    onRowClick,
   } = props;
 
   const rowSelection = {
@@ -46,7 +45,6 @@ const DataTable = props => {
         onRow={row => ({
           onClick: () => {
             selectRow(row);
-            onRowClick();
           },
         })}
         pagination={pagination}
