@@ -14,7 +14,7 @@ namespace SME.SGP.Dados.Repositorios
         {
         }
 
-        public IEnumerable<Notificacao> ObterPorDreOuEscolaOuStatusOuTurmoOuUsuarioOuTipoOuCategoriaOuTitulo(string dreId, string ueId, int statusId,
+        public IEnumerable<Notificacao> Obter(string dreId, string ueId, int statusId,
             string turmaId, string usuarioRf, int tipoId, int categoriaId, string titulo, long codigo, int anoLetivo)
         {
             var query = new StringBuilder();
@@ -61,6 +61,32 @@ namespace SME.SGP.Dados.Repositorios
             query.AppendLine("order by id desc");
 
             return database.Conexao.Query<Notificacao>(query.ToString(), new { dreId, ueId, turmaId, statusId, tipoId, usuarioRf, categoriaId, titulo, codigo, anoLetivo });
+        }
+
+        public override Notificacao ObterPorId(long id)
+        {
+            var query = new StringBuilder();
+
+            query.AppendLine("select n.*, wan.*, u.* from notificacao n");
+            query.AppendLine("left join wf_aprovacao_nivel_notificacao wann");
+            query.AppendLine("on wann.notificacao_id = n.id");
+            query.AppendLine("left join wf_aprovacao_nivel wan");
+            query.AppendLine("on wan.id = wann.wf_aprovacao_nivel_id");
+            query.AppendLine("left join usuario u");
+            query.AppendLine("on u.id = n.usuario_id");
+
+            query.AppendLine("where excluida = false ");
+            query.AppendLine("and n.id = @id ");
+
+            return database.Conexao.Query<Notificacao, WorkflowAprovacaoNivel, Usuario, Notificacao>(query.ToString(),
+                (notificacao, workflowNivel, usuario) =>
+                {
+                    notificacao.WorkflowAprovacaoNivel = workflowNivel;
+                    notificacao.Usuario = usuario;
+                    notificacao.UsuarioId = usuario.Id;
+
+                    return notificacao;
+                }, param: new { id }).FirstOrDefault();
         }
 
         public long ObterUltimoCodigoPorAno(int ano)
