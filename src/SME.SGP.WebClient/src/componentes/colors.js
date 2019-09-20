@@ -23,6 +23,7 @@ const Base = {
   VermelhoAlerta: '#b40c02',
   Preto: '#000',
   Roxo: '#6933FF',
+  RoxoFundo: '#6331EA',
   RoxoClaro: '#B99FFF',
   Vermelho: '#B40C02',
 };
