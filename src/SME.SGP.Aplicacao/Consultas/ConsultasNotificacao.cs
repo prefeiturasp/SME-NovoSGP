@@ -51,11 +51,6 @@ namespace SME.SGP.Aplicacao
                 repositorioNotificacao.Salvar(notificacao);
 
             var retorno = MapearEntidadeParaDetalheDto(notificacao);
-            if (notificacao.UsuarioId.HasValue)
-            {
-                notificacao.Usuario = repositorioUsuario.ObterPorId(notificacao.UsuarioId.Value);
-                retorno.UsuarioRf = notificacao.Usuario.CodigoRf;
-            }
 
             return retorno;
         }
@@ -107,7 +102,7 @@ namespace SME.SGP.Aplicacao
                 TipoId = (int)retorno.Tipo,
                 StatusId = (int)retorno.Status,
                 Codigo = retorno.Codigo,
-                Observacao = ""
+                Observacao = retorno.WorkflowAprovacaoNivel == null ? string.Empty : retorno.WorkflowAprovacaoNivel.Observacao
             };
         }
     }

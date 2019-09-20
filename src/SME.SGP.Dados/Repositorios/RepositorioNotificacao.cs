@@ -88,17 +88,26 @@ namespace SME.SGP.Dados.Repositorios
         {
             var query = new StringBuilder();
 
-            query.AppendLine("select n.*, wan.* from notificacao n");
+            query.AppendLine("select n.*, wan.*, u.* from notificacao n");
             query.AppendLine("left join wf_aprovacao_nivel_notificacao wann");
             query.AppendLine("on wann.notificacao_id = n.id");
-            query.AppendLine("join wf_aprovacao_nivel wan");
+            query.AppendLine("left join wf_aprovacao_nivel wan");
             query.AppendLine("on wan.id = wann.wf_aprovacao_nivel_id");
+            query.AppendLine("left join usuario u");
+            query.AppendLine("on u.id = n.usuario_id");
 
             query.AppendLine("where excluida = false ");
             query.AppendLine("and n.id = @id ");
 
-            return database.Conexao.Query<Notificacao>(query.ToString(), new { id })
-                .FirstOrDefault();
+            return database.Conexao.Query<Notificacao, WorkflowAprovacaoNivel, Usuario, Notificacao>(query.ToString(),
+                (notificacao, workflowNivel, usuario) =>
+                {
+                    notificacao.WorkflowAprovacaoNivel = workflowNivel;
+                    notificacao.Usuario = usuario;
+                    notificacao.UsuarioId = usuario.Id;
+
+                    return notificacao;
+                }, param: new { id }).FirstOrDefault();
         }
 
         public long ObterUltimoCodigoPorAno(int ano)
