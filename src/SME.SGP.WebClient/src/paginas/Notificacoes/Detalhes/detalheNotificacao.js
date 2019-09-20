@@ -134,8 +134,9 @@ const DetalheNotificacao = ({ match }) => {
     <>
       <Cabecalho pagina="Notificações" />
       <Formik
+        enableReinitialize={true}
         initialValues={{
-          observacao: notificacao.observacao,
+          observacao: notificacao.observacao || '',
         }}
         validationSchema={validacoes}
         onSubmit={values => enviarAprovacao(values)}
@@ -285,6 +286,7 @@ const DetalheNotificacao = ({ match }) => {
                         type="textarea"
                         form={form}
                         maxlength="100"
+                        desabilitado={!notificacao.mostrarBotoesDeAprovacao}
                       />
                     </div>
                   </div>
