@@ -62,24 +62,30 @@ const BtnPerfil = () => {
     border-top-left-radius: 5px;
     border-bottom-left-radius: 5px;
     border-bottom-right-radius: 5px;
-    width:100%;
+    width:145px;
     height: auto;
     background: ${Base.Branco};
     border: solid ${Base.CinzaDesabilitado} 1px;
     position: absolute;
     right:100px;
     text-align: left;
-
-    li{
-      list-style-type: none;
-    }
-
-    li:not(:last-child){
-      border-bottom: solid ${Base.CinzaDesabilitado} 1px;
-    }
-
     a{
       width: 100%;
+    }
+  `;
+
+  const Li = styled.li`
+      height: 35px;
+      list-style-type: none;
+      font-size: 10px;
+
+    &:hover{
+      background: #e7e6f8;
+      font-weight: bold !important;
+    }
+
+    &:not(:last-child){
+      border-bottom: solid ${Base.CinzaDesabilitado} 1px !important;
     }
   `;
 
@@ -92,12 +98,12 @@ const BtnPerfil = () => {
       <ItensPerfil>
         <ul>
           {perfis.data.map(item =>
-            <li>
-              <a>
+            <a>
+              <Li style={{ fontWeight: item.id === perfilSelecionado.id ? 'bold' : 'initial' }}>
                 <i className="fas fa-user-circle"></i>
                 {item.descricao + (item.abreviacao ? "(" + item.abreviacao + ")" : "")}
-              </a>
-            </li>
+              </Li>
+            </a>
           )}
         </ul>
       </ItensPerfil>
