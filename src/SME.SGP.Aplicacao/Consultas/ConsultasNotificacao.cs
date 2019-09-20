@@ -20,7 +20,7 @@ namespace SME.SGP.Aplicacao
 
         public IEnumerable<NotificacaoBasicaDto> Listar(NotificacaoFiltroDto filtroNotificacaoDto)
         {
-            var retorno = repositorioNotificacao.ObterPorDreOuEscolaOuStatusOuTurmoOuUsuarioOuTipoOuCategoriaOuTitulo(filtroNotificacaoDto.DreId,
+            var retorno = repositorioNotificacao.Obter(filtroNotificacaoDto.DreId,
                 filtroNotificacaoDto.UeId, (int)filtroNotificacaoDto.Status, filtroNotificacaoDto.TurmaId, filtroNotificacaoDto.UsuarioRf,
                 (int)filtroNotificacaoDto.Tipo, (int)filtroNotificacaoDto.Categoria, filtroNotificacaoDto.Titulo, filtroNotificacaoDto.Codigo, filtroNotificacaoDto.AnoLetivo);
 
@@ -107,7 +107,7 @@ namespace SME.SGP.Aplicacao
                 TipoId = (int)retorno.Tipo,
                 StatusId = (int)retorno.Status,
                 Codigo = retorno.Codigo,
-                Observacao = retorno.Observacao
+                Observacao = ""
             };
         }
     }

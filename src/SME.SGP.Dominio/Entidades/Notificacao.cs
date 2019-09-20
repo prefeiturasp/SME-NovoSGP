@@ -16,7 +16,6 @@
         public string DreId { get; set; }
         public bool Excluida { get; set; }
         public string Mensagem { get; set; }
-        public string Observacao { get; set; }
         public bool PodeRemover { get { return Categoria == NotificacaoCategoria.Aviso && !Excluida; } }
         public NotificacaoStatus Status { get; set; }
         public NotificacaoTipo Tipo { get; set; }
@@ -25,6 +24,7 @@
         public string UeId { get; set; }
         public Usuario Usuario { get; set; }
         public long? UsuarioId { get; set; }
+        public WorkflowAprovacaoNivel WorkflowAprovacaoNivel { get; set; }
 
         public void MarcarComoLida()
         {
