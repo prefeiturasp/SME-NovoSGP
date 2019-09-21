@@ -5,16 +5,14 @@ import { Base } from '../componentes/colors';
 import { MenuBody, DivFooter, MenuScope, Topo } from './sider.css';
 import LogoMenuFooter from '../recursos/LogoMenuFooter.svg';
 import { store } from '../redux';
-import { menuRetraido } from '../redux/modulos/navegacao/actions';
+import { menuRetraido, menuSelecionado } from '../redux/modulos/navegacao/actions';
 import { useSelector } from 'react-redux';
 
 const Sider = () => {
   const { Sider, Footer } = Layout;
   const { SubMenu } = Menu;
-  const [retraido, setRetraido] = useState(false);
-  const [openKeys, setOpenKeys] = useState([]);
-  const [itemMenuSelecionado, setItemMenuSelecionado] = useState(['0']);
   const NavegacaoStore = useSelector(store => store.navegacao);
+  const [openKeys, setOpenKeys] = useState([]);
   const [modalidadeEja, setModalidadeEja] = useState(false);
 
   const usuario = useSelector(store => store.usuario);
@@ -40,7 +38,7 @@ const Sider = () => {
     const rota = NavegacaoStore.rotas.get(rotaAtiva);
     setOpenKeys([]);
     if (rota && rota.limpaSelecaoMenu) {
-      setItemMenuSelecionado([]);
+      store.dispatch(menuSelecionado([]));
     }
   };
 
@@ -58,8 +56,7 @@ const Sider = () => {
 
   const alternarRetraido = () => {
     setOpenKeys([]);
-    setRetraido(!retraido);
-    store.dispatch(menuRetraido(!retraido));
+    store.dispatch(menuRetraido(!NavegacaoStore.retraido));
   };
 
   const onOpenChange = openKeys => {
@@ -71,14 +68,16 @@ const Sider = () => {
     }
   };
 
-  const selecionarItem = item => setItemMenuSelecionado([item.key]);
+  const selecionarItem = item => {
+    store.dispatch(menuSelecionado([item.key]));
+  }
 
   return (
-    <MenuBody id="main" style={{ width: retraido ? '115px' : '250px' }}>
+    <MenuBody id="main" style={{ width: NavegacaoStore.retraido ? '115px' : '250px' }}>
       <Sider
         style={{ background: Base.Roxo, height: '100%' }}
-        collapsed={retraido}
-        onCollapse={retraido}
+        collapsed={NavegacaoStore.retraido}
+        onCollapse={NavegacaoStore.retraido}
         width="250px"
         collapsedWidth="115px"
       >
@@ -88,28 +87,28 @@ const Sider = () => {
               <i
                 style={{ color: Base.Branco }}
                 className={
-                  retraido
+                  NavegacaoStore.retraido
                     ? 'fas fa-chevron-circle-right'
                     : 'fas fa-chevron-circle-left'
                 }
               />
             </a>
           </div>
-          <div className={retraido ? 'perfil-retraido' : 'perfil'}>
+          <div className={NavegacaoStore.retraido ? 'perfil-retraido' : 'perfil'}>
             <div className="circulo-perfil">
               <img
                 id="imagem-perfil"
                 src="https://graziellanicolai.com.br/wp-content/uploads/2018/03/Graziella-perfil.jpg"
               />
             </div>
-            <div hidden={retraido}>
+            <div hidden={NavegacaoStore.retraido}>
               <span id="nome" className="nome">
                 Nome + Sobrenome
               </span>
             </div>
             <div
               className="perfil-edit"
-              style={{ paddingTop: retraido ? '0' : '12px' }}
+              style={{ paddingTop: NavegacaoStore.retraido ? '0' : '12px' }}
             >
               <a id="perfil-edit">
                 <i className="fas fa-user-edit" />
@@ -121,7 +120,7 @@ const Sider = () => {
 
         <MenuScope>
           <div
-            className={`menu-scope${retraido ? ' menu-scope-retraido' : ''}`}
+            className={`menu-scope${NavegacaoStore.retraido ? ' menu-scope-retraido' : ''}`}
           >
             <Menu
               id="menuPrincipal"
@@ -129,8 +128,8 @@ const Sider = () => {
               theme="dark"
               openKeys={openKeys}
               onOpenChange={onOpenChange}
-              onSelect={selecionarItem.bind(itemMenuSelecionado)}
-              selectedKeys={itemMenuSelecionado}
+              onSelect={selecionarItem.bind(NavegacaoStore.menuSelecionado)}
+              selectedKeys={NavegacaoStore.menuSelecionado}
             >
               <SubMenu
                 id="diarioClasse"
@@ -140,7 +139,7 @@ const Sider = () => {
                   <div className="item-menu-retraido">
                     <i
                       className={`fas fa-book-reader ${
-                        retraido ? 'icons-retraido' : 'icons'
+                        NavegacaoStore.retraido ? 'icons-retraido' : 'icons'
                         }`}
                     />
                     <span>Diário de Classe</span>
@@ -183,7 +182,7 @@ const Sider = () => {
                   <div className="item-menu-retraido">
                     <i
                       className={`fas fa-list-alt ${
-                        retraido ? 'icons-retraido' : 'icons'
+                        NavegacaoStore.retraido ? 'icons-retraido' : 'icons'
                         }`}
                     />
                     <span>Planejamento</span>
@@ -215,7 +214,7 @@ const Sider = () => {
                   <div className="item-menu-retraido">
                     <i
                       className={`fas fa-pencil-ruler ${
-                        retraido ? 'icons-retraido' : 'icons'
+                        NavegacaoStore.retraido ? 'icons-retraido' : 'icons'
                         }`}
                     />
                     <span>Fechamento</span>
@@ -240,7 +239,7 @@ const Sider = () => {
                   <div className="item-menu-retraido">
                     <i
                       className={`fas fa-file-alt ${
-                        retraido ? 'icons-retraido' : 'icons'
+                        NavegacaoStore.retraido ? 'icons-retraido' : 'icons'
                         }`}
                     />
                     <span>Relatórios</span>
@@ -280,7 +279,7 @@ const Sider = () => {
                   <div className="item-menu-retraido">
                     <i
                       className={`fas fa-user-cog ${
-                        retraido ? 'icons-retraido' : 'icons'
+                        NavegacaoStore.retraido ? 'icons-retraido' : 'icons'
                         }`}
                     />
                     <span>Gestão</span>
@@ -320,7 +319,7 @@ const Sider = () => {
                   <div className="item-menu-retraido">
                     <i
                       className={`fas fa-cog ${
-                        retraido ? 'icons-retraido' : 'icons'
+                        NavegacaoStore.retraido ? 'icons-retraido' : 'icons'
                         }`}
                     />
                     <span>Configurações</span>
