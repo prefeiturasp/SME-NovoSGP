@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using SME.SGP.Api.Filtros;
-using SME.SGP.Dominio.Interfaces;
+using SME.SGP.Aplicacao.Integracoes;
 using SME.SGP.Dto;
 using System.Threading.Tasks;
 
