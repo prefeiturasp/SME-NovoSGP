@@ -1,9 +1,12 @@
-﻿namespace SME.SGP.Dominio.Entidades
+﻿using System;
+
+namespace SME.SGP.Dominio
 {
     public class PrioridadePerfil : EntidadeBase
     {
-        public string CodigoPerfil { get; set; }
+        public Guid CodigoPerfil { get; set; }
         public string NomePerfil { get; set; }
         public int Ordem { get; set; }
+        public TipoPerfil Tipo { get; set; }
     }
 }

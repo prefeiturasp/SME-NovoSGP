@@ -71,6 +71,7 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IRepositorioWorkflowAprovacaoNivel, RepositorioWorkflowAprovacaoNivel>();
             services.TryAddScoped<IRepositorioUsuario, RepositorioUsuario>();
             services.TryAddScoped<IRepositorioWorkflowAprovacaoNivelUsuario, RepositorioWorkflowAprovacaoNivelUsuario>();
+            services.TryAddScoped<IRepositorioPrioridadePerfil, RepositorioPrioridadePerfil>();
         }
 
         private static void RegistrarServicos(IServiceCollection services)
