@@ -13,7 +13,6 @@ const Sider = () => {
   const { SubMenu } = Menu;
   const NavegacaoStore = useSelector(store => store.navegacao);
   const [openKeys, setOpenKeys] = useState([]);
-  const [itemMenuSelecionado, setItemMenuSelecionado] = useState(NavegacaoStore.menuSelecionado);
   const [modalidadeEja, setModalidadeEja] = useState(false);
 
   const usuario = useSelector(store => store.usuario);
@@ -39,7 +38,7 @@ const Sider = () => {
     const rota = NavegacaoStore.rotas.get(rotaAtiva);
     setOpenKeys([]);
     if (rota && rota.limpaSelecaoMenu) {
-      setItemMenuSelecionado([]);
+      store.dispatch(menuSelecionado([]));
     }
   };
 
@@ -70,7 +69,6 @@ const Sider = () => {
   };
 
   const selecionarItem = item => {
-    setItemMenuSelecionado([item.key]);
     store.dispatch(menuSelecionado([item.key]));
   }
 
@@ -130,8 +128,8 @@ const Sider = () => {
               theme="dark"
               openKeys={openKeys}
               onOpenChange={onOpenChange}
-              onSelect={selecionarItem.bind(itemMenuSelecionado)}
-              selectedKeys={itemMenuSelecionado}
+              onSelect={selecionarItem.bind(NavegacaoStore.menuSelecionado)}
+              selectedKeys={NavegacaoStore.menuSelecionado}
             >
               <SubMenu
                 id="diarioClasse"
