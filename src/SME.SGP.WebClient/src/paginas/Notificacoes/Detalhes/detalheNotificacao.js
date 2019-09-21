@@ -16,7 +16,7 @@ import notificacaoCategoria from '~/dtos/notificacaoCategoria';
 import notificacaoStatus from '~/dtos/notificacaoStatus';
 import servicoNotificacao from '~/servicos/Paginas/ServicoNotificacao';
 
-const urlTelaNotificacoes = '/teste/notificacoes';
+const urlTelaNotificacoes = '/notificacoes';
 
 const DetalheNotificacao = ({ match }) => {
   const [idNotificacao, setIdNotificacao] = useState('');
