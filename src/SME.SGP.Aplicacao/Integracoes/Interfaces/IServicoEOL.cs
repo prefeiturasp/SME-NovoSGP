@@ -7,6 +7,8 @@ namespace SME.SGP.Aplicacao.Integracoes
 {
     public interface IServicoEOL
     {
+        Task<UsuarioEolAutenticacaoRetornoDto> Autenticar(string login, string senha);
+
         Task<IEnumerable<DisciplinaResposta>> ObterDisciplinasPorProfessorETurma(long codigoTurma, string rfProfessor);
 
         IEnumerable<DreRespostaEolDto> ObterDres();
