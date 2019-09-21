@@ -3,7 +3,7 @@
     public class UsuarioEolAutenticacaoRetornoDto
     {
         public string CodigoRf { get; set; }
-        public string Cpf { get; set; }
-        public string Nome { get; set; }
+        public string[] Permissoes { get; set; }
+        public AutenticacaoStatusEol Status { get; set; }
     }
 }

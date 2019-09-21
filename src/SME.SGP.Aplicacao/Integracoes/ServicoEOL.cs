@@ -17,7 +17,7 @@ namespace SME.SGP.Aplicacao.Integracoes
             this.httpClient = httpClient;
         }
 
-        public async Task Autenticar(string login, string senha)
+        public async Task<UsuarioEolAutenticacaoRetornoDto> Autenticar(string login, string senha)
         {
             httpClient.DefaultRequestHeaders.Clear();
 
@@ -33,10 +33,10 @@ namespace SME.SGP.Aplicacao.Integracoes
 
             if (resposta.IsSuccessStatusCode)
             {
+                var json = await resposta.Content.ReadAsStringAsync();
+                return JsonConvert.DeserializeObject<UsuarioEolAutenticacaoRetornoDto>(json);
             }
-            else if (resposta.StatusCode == System.Net.HttpStatusCode.Unauthorized)
-            {
-            }
+            else return null;
         }
 
         public async Task<IEnumerable<DisciplinaResposta>> ObterDisciplinasPorProfessorETurma(long codigoTurma, string rfProfessor)

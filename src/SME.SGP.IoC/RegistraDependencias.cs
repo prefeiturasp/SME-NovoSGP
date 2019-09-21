@@ -78,6 +78,7 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IServicoWorkflowAprovacao, ServicoWorkflowAprovacao>();
             services.TryAddScoped<IServicoNotificacao, ServicoNotificacao>();
             services.TryAddScoped<IServicoUsuario, ServicoUsuario>();
+            services.TryAddScoped<IServicoAutenticacao, ServicoAutenticacao>();
         }
     }
 }

@@ -1,6 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using SME.SGP.Api.Filtros;
+using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Dto;
+using System.Threading.Tasks;
 
 namespace SME.SGP.Api.Controllers
 {
@@ -9,16 +11,26 @@ namespace SME.SGP.Api.Controllers
     [ValidaDto]
     public class AutenticacaoController : ControllerBase
     {
-        public AutenticacaoController()
+        private readonly IServicoAutenticacao servicoAutenticacao;
+
+        public AutenticacaoController(IServicoAutenticacao servicoAutenticacao)
         {
+            this.servicoAutenticacao = servicoAutenticacao ?? throw new System.ArgumentNullException(nameof(servicoAutenticacao));
         }
 
         [HttpPost]
         [ProducesResponseType(200)]
+        [ProducesResponseType(401)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        public IActionResult Autenticar(string login, string senha)
+        [ProducesResponseType(typeof(UsuarioAutenticacaoRetornoDto), 200)]
+        public async Task<IActionResult> Autenticar([FromForm]string login, [FromForm]string senha)
         {
-            return null;
+            var retornoAutenticacao = await servicoAutenticacao.AutenticarNoEol(login, senha);
+
+            if (!retornoAutenticacao.Autenticado)
+                return StatusCode(401);
+
+            return Ok(retornoAutenticacao);
         }
     }
 }
