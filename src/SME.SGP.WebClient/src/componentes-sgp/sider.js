@@ -5,33 +5,58 @@ import { Base } from '../componentes/colors';
 import { MenuBody, DivFooter, MenuScope, Topo } from './sider.css';
 import LogoMenuFooter from '../recursos/LogoMenuFooter.svg';
 import { store } from '../redux';
-import { menuRetraido } from '../redux/modulos/navegacao/actions';
+import { menuRetraido, menuSelecionado } from '../redux/modulos/navegacao/actions';
 import { useSelector } from 'react-redux';
 
 const Sider = () => {
   const { Sider, Footer } = Layout;
   const { SubMenu } = Menu;
-  const [retraido, setRetraido] = useState(false);
-  const [openKeys, setOpenKeys] = useState([]);
-  const [itemMenuSelecionado, setItemMenuSelecionado] = useState(['0']);
   const NavegacaoStore = useSelector(store => store.navegacao);
+  const [openKeys, setOpenKeys] = useState([]);
+  const [modalidadeEja, setModalidadeEja] = useState(false);
+
+  const usuario = useSelector(store => store.usuario);
 
   useEffect(() => {
     verificaSelecaoMenu(NavegacaoStore.rotaAtiva);
   }, [NavegacaoStore.rotaAtiva]);
 
+  useEffect(() => {
+    if (
+      usuario &&
+      usuario.turmaSelecionada &&
+      usuario.turmaSelecionada.length &&
+      usuario.turmaSelecionada[0].codModalidade == 3
+    ) {
+      setModalidadeEja(true);
+    } else {
+      setModalidadeEja(false);
+    }
+  }, [usuario.turmaSelecionada]);
+
   const verificaSelecaoMenu = rotaAtiva => {
     const rota = NavegacaoStore.rotas.get(rotaAtiva);
     setOpenKeys([]);
     if (rota && rota.limpaSelecaoMenu) {
-      setItemMenuSelecionado([]);
+      store.dispatch(menuSelecionado([]));
     }
   };
 
+  const alterarPosicaoJanelaPopup = (idElementoHtml, quantidadeItens) => {
+    const itemMenu = window.document.getElementById(idElementoHtml);
+    if (itemMenu) {
+      const alturaItens = (quantidadeItens * 40) + 6;
+      const alturaTela = window.innerHeight
+      const posicaoY = itemMenu.getBoundingClientRect().y;
+      const alturaTotalItens = posicaoY + alturaItens;
+      const posicaoTop = alturaTotalItens > alturaTela ? (posicaoY-(alturaTotalItens - alturaTela)) : posicaoY;
+      document.documentElement.style.setProperty('--posicao-item-menu', `${posicaoTop}px`)
+    }
+  }
+
   const alternarRetraido = () => {
     setOpenKeys([]);
-    setRetraido(!retraido);
-    store.dispatch(menuRetraido(!retraido));
+    store.dispatch(menuRetraido(!NavegacaoStore.retraido));
   };
 
   const onOpenChange = openKeys => {
@@ -43,14 +68,16 @@ const Sider = () => {
     }
   };
 
-  const selecionarItem = item => setItemMenuSelecionado([item.key]);
+  const selecionarItem = item => {
+    store.dispatch(menuSelecionado([item.key]));
+  }
 
   return (
-    <MenuBody id="main" style={{ width: retraido ? '115px' : '250px' }}>
+    <MenuBody id="main" style={{ width: NavegacaoStore.retraido ? '115px' : '250px' }}>
       <Sider
         style={{ background: Base.Roxo, height: '100%' }}
-        collapsed={retraido}
-        onCollapse={retraido}
+        collapsed={NavegacaoStore.retraido}
+        onCollapse={NavegacaoStore.retraido}
         width="250px"
         collapsedWidth="115px"
       >
@@ -60,28 +87,28 @@ const Sider = () => {
               <i
                 style={{ color: Base.Branco }}
                 className={
-                  retraido
+                  NavegacaoStore.retraido
                     ? 'fas fa-chevron-circle-right'
                     : 'fas fa-chevron-circle-left'
                 }
               />
             </a>
           </div>
-          <div className={retraido ? 'perfil-retraido' : 'perfil'}>
+          <div className={NavegacaoStore.retraido ? 'perfil-retraido' : 'perfil'}>
             <div className="circulo-perfil">
               <img
                 id="imagem-perfil"
                 src="https://graziellanicolai.com.br/wp-content/uploads/2018/03/Graziella-perfil.jpg"
               />
             </div>
-            <div hidden={retraido}>
+            <div hidden={NavegacaoStore.retraido}>
               <span id="nome" className="nome">
                 Nome + Sobrenome
               </span>
             </div>
             <div
               className="perfil-edit"
-              style={{ paddingTop: retraido ? '0' : '12px' }}
+              style={{ paddingTop: NavegacaoStore.retraido ? '0' : '12px' }}
             >
               <a id="perfil-edit">
                 <i className="fas fa-user-edit" />
@@ -93,7 +120,7 @@ const Sider = () => {
 
         <MenuScope>
           <div
-            className={`menu-scope${retraido ? ' menu-scope-retraido' : ''}`}
+            className={`menu-scope${NavegacaoStore.retraido ? ' menu-scope-retraido' : ''}`}
           >
             <Menu
               id="menuPrincipal"
@@ -101,18 +128,19 @@ const Sider = () => {
               theme="dark"
               openKeys={openKeys}
               onOpenChange={onOpenChange}
-              onSelect={selecionarItem.bind(itemMenuSelecionado)}
-              selectedKeys={itemMenuSelecionado}
+              onSelect={selecionarItem.bind(NavegacaoStore.menuSelecionado)}
+              selectedKeys={NavegacaoStore.menuSelecionado}
             >
               <SubMenu
                 id="diarioClasse"
                 key="subDiarioClasse"
+                onMouseEnter={(e) => alterarPosicaoJanelaPopup('diarioClasse', 9)}
                 title={
                   <div className="item-menu-retraido">
                     <i
                       className={`fas fa-book-reader ${
-                        retraido ? 'icons-retraido' : 'icons'
-                      }`}
+                        NavegacaoStore.retraido ? 'icons-retraido' : 'icons'
+                        }`}
                     />
                     <span>Diário de Classe</span>
                   </div>
@@ -149,19 +177,20 @@ const Sider = () => {
               <SubMenu
                 id="planejamento"
                 key="subPlanejamento"
+                onMouseEnter={(e) => alterarPosicaoJanelaPopup('planejamento', 2)}
                 title={
                   <div className="item-menu-retraido">
                     <i
                       className={`fas fa-list-alt ${
-                        retraido ? 'icons-retraido' : 'icons'
-                      }`}
+                        NavegacaoStore.retraido ? 'icons-retraido' : 'icons'
+                        }`}
                     />
                     <span>Planejamento</span>
                   </div>
                 }
               >
                 <Menu.Item key="30" id="plaPlanoCiclo" htmlFor="linkPlanoCiclo">
-                  <span className="menuItem"> Plano de Ciclo</span>
+                  <span className="menuItem">{ modalidadeEja ? 'Plano de Etapa' : 'Plano de Ciclo'}</span>
                   <Link
                     to="/planejamento/plano-ciclo"
                     className="nav-link text-white"
@@ -180,12 +209,13 @@ const Sider = () => {
               <SubMenu
                 id="fechamento"
                 key="subFechamento"
+                onMouseEnter={(e) => alterarPosicaoJanelaPopup('fechamento', 3)}
                 title={
                   <div className="item-menu-retraido">
                     <i
                       className={`fas fa-pencil-ruler ${
-                        retraido ? 'icons-retraido' : 'icons'
-                      }`}
+                        NavegacaoStore.retraido ? 'icons-retraido' : 'icons'
+                        }`}
                     />
                     <span>Fechamento</span>
                   </div>
@@ -204,12 +234,13 @@ const Sider = () => {
               <SubMenu
                 id="relatorios"
                 key="subRelatorios"
+                onMouseEnter={(e) => alterarPosicaoJanelaPopup('relatorios', 8)}
                 title={
                   <div className="item-menu-retraido">
                     <i
                       className={`fas fa-file-alt ${
-                        retraido ? 'icons-retraido' : 'icons'
-                      }`}
+                        NavegacaoStore.retraido ? 'icons-retraido' : 'icons'
+                        }`}
                     />
                     <span>Relatórios</span>
                   </div>
@@ -225,7 +256,7 @@ const Sider = () => {
                   <span className="menuItem">Componente Finalizado</span>
                 </Menu.Item>
                 <Menu.Item key="73" id="relContraturno">
-                  <span className="menuItem">Contraturo</span>
+                  <span className="menuItem">Contraturno</span>
                 </Menu.Item>
                 <Menu.Item key="74" id="relHistoricoEscolar">
                   <span className="menuItem">Histórico Escolar</span>
@@ -243,12 +274,13 @@ const Sider = () => {
               <SubMenu
                 id="gestao"
                 key="subGestao"
+                onMouseEnter={(e) => alterarPosicaoJanelaPopup('gestao', 5)}
                 title={
                   <div className="item-menu-retraido">
                     <i
                       className={`fas fa-user-cog ${
-                        retraido ? 'icons-retraido' : 'icons'
-                      }`}
+                        NavegacaoStore.retraido ? 'icons-retraido' : 'icons'
+                        }`}
                     />
                     <span>Gestão</span>
                   </div>
@@ -287,8 +319,8 @@ const Sider = () => {
                   <div className="item-menu-retraido">
                     <i
                       className={`fas fa-cog ${
-                        retraido ? 'icons-retraido' : 'icons'
-                      }`}
+                        NavegacaoStore.retraido ? 'icons-retraido' : 'icons'
+                        }`}
                     />
                     <span>Configurações</span>
                   </div>
@@ -304,8 +336,7 @@ const Sider = () => {
                 <img src={LogoMenuFooter} />
               </div>
               <div className="descricao">
-                <span>SME-SP-SGA - Distribuído sob a Licença AGPL V3</span>
-                <Link to="/teste/notificacoes">.</Link>
+                <span>SME-SP-SGP - Distribuído sob a Licença AGPL V3</span>
               </div>
             </Footer>
           </DivFooter>

@@ -5,16 +5,23 @@ export function menuRetraido(retraido) {
   };
 }
 
-export function rotaAtiva(route) {
+export function menuSelecionado(chave){
+  return{
+    type: '@navegacao/menuSelecionado',
+    payload: chave,
+  }
+}
+
+export function rotaAtiva(rota) {
   return {
     type: '@navegacao/rotaAtiva',
-    payload: route,
+    payload: rota,
   };
 }
 
-export function setRotas(routas) {
+export function setRotas(rotas) {
   return {
     type: '@navegacao/rotas',
-    payload: routas,
+    payload: rotas,
   };
 }
