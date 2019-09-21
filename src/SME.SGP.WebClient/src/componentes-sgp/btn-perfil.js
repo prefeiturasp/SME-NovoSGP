@@ -3,63 +3,40 @@ import styled from 'styled-components';
 import { Base } from '../componentes/colors';
 
 const BtnPerfil = () => {
-  const [perfilSelecionado, setPerfilSelecionado] = useState({
-    id: 4,
-    descricao: 'Professor Orientador de Área',
-    abreviacao: 'POA'
+  const [ocultaPerfis, setarOcultaPerfis] = useState(true);
+  const [perfilSelecionado, setarPerfilSelecionado] = useState({
+    id: "2",
+    descricao: 'Professor'
   });
 
   const perfis = {
     perfilSelecionado: {
-      id: 4,
-      descricao: 'Professor Orientador de Área',
-      abreviacao: 'POA'
+      id: "2",
+      descricao: 'Professor'
     },
     data: [
       {
-        id: 1,
+        id: "1",
         descricao: 'Diretor',
       },
       {
-        id: 2,
+        id: "2",
         descricao: 'Professor'
       },
       {
-        id: 3,
+        id: "3",
         descricao: 'Coordenador Pedagógico',
         abreviacao: 'CP'
       },
       {
-        id: 4,
+        id: "4",
         descricao: 'Professor Orientador de Área',
         abreviacao: 'POA'
       }
     ]
   };
-  const Perfil = styled.div`
-    margin: 0 5px 0 5px;
-    align-items: center !important;
-  `;
 
-  const IconePerfil = styled.a`
-    padding-bottom: 10px;
-
-    i{
-      justify-content: center !important;
-      display: flex !important;
-      background: ${Base.Roxo} !important;
-      border-radius: 50% !important;
-      color: ${Base.Branco} !important;
-      font-size: 18px !important;
-      height: 28px !important;
-      width: 28px !important;
-    }
-    .btn{
-      background: ${Base.Roxo};
-      color: ${Base.Branco};
-    }
-  `
-  const ItensPerfil = styled.ul`
+  const ItensPerfil = styled.div`
     border-top-left-radius: 5px;
     border-bottom-left-radius: 5px;
     border-bottom-right-radius: 5px;
@@ -68,10 +45,10 @@ const BtnPerfil = () => {
     background: ${Base.Branco};
     border: solid ${Base.CinzaDesabilitado} 1px;
     position: absolute;
-    right:100px;
+    right:16%;
   `;
 
-  const Item = styled.div`  
+  const Item = styled.tr`  
     text-align: left;
     width: 100%;
     height:100%;
@@ -83,55 +60,90 @@ const BtnPerfil = () => {
 
     &:hover{
       cursor: pointer;
+      background: #e7e6f8;
+      font-weight: bold !important;  
     }
     
-    li{
+    td{
       height: 35px;
-      list-style-type: none;
       font-size: 10px;
       padding-left: 7px;
-      vertical-align: middle;
-      display: table-cell;
       width: 145px;
     }
 
     i{
-      padding-right: 7px;
       font-size: 14px;
       color: #707683;
     }
+  `;
 
-    li:hover{
-      background: #e7e6f8;
-      font-weight: bold !important;      
+  const Botao = styled.a`
+    display: block !important;
+    text-align: center !important;
+  `;
+
+  const IconePerfil = styled.div`
+    background: ${Base.Roxo};
+    color: ${Base.Branco};
+    font-size: 18px !important;
+    height: 28px !important;
+    width: 28px !important;
+    vertical-align: middle;
+    box-sizing: border-box;
+    align-items: center !important;
+    border-radius: 50%;
+    display: inline-block;
+    justify-content: center !important;
+
+    i{
+      margin-top:5px;
     }
   `;
 
   const gravarPerfilSelecionado = (perfil) => {
-    if (perfil.value) {
-      const perfilNovo = perfis.data.filter(item => item.id === perfil.value)
-      setPerfilSelecionado(perfilNovo[0]);
+    if (perfil) {
+      const perfilNovo = perfis.data.filter(item => item.id === perfil)
+      setarPerfilSelecionado(perfilNovo[0]);
+      setarOcultaPerfis(true);
     }
   }
 
+  const onClickBotao = () => {
+    if (perfis.data.length > 1) {
+      setarOcultaPerfis(!ocultaPerfis);
+    }
+  };
+
 
   return (
-    <Perfil>
-      <IconePerfil>
-        <i className="fas fa-user-circle btn fa-lg mb-1"></i>
-      </IconePerfil>
-      {perfilSelecionado.abreviacao ? perfilSelecionado.abreviacao : perfilSelecionado.descricao}
-      <ItensPerfil className="list-inline">
-        {perfis.data.map(item =>
-          <Item key={item.id} onClick={(e) => gravarPerfilSelecionado(e.target)}>
-            <li style={{ fontWeight: item.id === perfilSelecionado.id ? 'bold' : 'initial' }} value={item.id}>
-              <i value={item.id} className="fas fa-user-circle"></i>
-              {item.descricao + (item.abreviacao ? "(" + item.abreviacao + ")" : "")}
-            </li>
-          </Item>
-        )}
+    <div className="position-relative">
+      <Botao className="text-center" onClick={onClickBotao} style={{ cursor: perfis.data.length > 1 ? 'pointer' : 'default' }}>
+        <IconePerfil>
+          <i className="fas fa-user-circle" />
+        </IconePerfil>
+        <span className={`d-block mt-1 ${ocultaPerfis ? '' : ' font-weight-bold'}`} >
+          {perfilSelecionado.abreviacao ? perfilSelecionado.abreviacao : perfilSelecionado.descricao}
+        </span>
+      </Botao>
+      <ItensPerfil hidden={ocultaPerfis} className="list-inline">
+        <table>
+          <tbody>
+            {perfis.data.map(item =>
+              <Item key={item.id}
+                onClick={(e) => gravarPerfilSelecionado(e.currentTarget.accessKey)}
+                accessKey={item.id}>
+                <td style={{ width: '20px' }}>
+                  <i value={item.id} className="fas fa-user-circle"></i>
+                </td>
+                <td style={{ width: '100%', fontWeight: item.id === perfilSelecionado.id ? 'bold' : 'initial' }}>
+                  {item.descricao + (item.abreviacao ? "(" + item.abreviacao + ")" : "")}
+                </td>
+              </Item>
+            )}
+          </tbody>
+        </table>
       </ItensPerfil>
-    </Perfil>
+    </div>
   )
 }
 
