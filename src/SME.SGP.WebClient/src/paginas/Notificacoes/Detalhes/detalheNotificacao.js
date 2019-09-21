@@ -16,7 +16,7 @@ import notificacaoCategoria from '~/dtos/notificacaoCategoria';
 import notificacaoStatus from '~/dtos/notificacaoStatus';
 import servicoNotificacao from '~/servicos/Paginas/ServicoNotificacao';
 
-const urlTelaNotificacoes = '/teste/notificacoes';
+const urlTelaNotificacoes = '/notificacoes';
 
 const DetalheNotificacao = ({ match }) => {
   const [idNotificacao, setIdNotificacao] = useState('');
@@ -134,8 +134,9 @@ const DetalheNotificacao = ({ match }) => {
     <>
       <Cabecalho pagina="Notificações" />
       <Formik
+        enableReinitialize={true}
         initialValues={{
-          observacao: '',
+          observacao: notificacao.observacao || '',
         }}
         validationSchema={validacoes}
         onSubmit={values => enviarAprovacao(values)}
@@ -275,18 +276,21 @@ const DetalheNotificacao = ({ match }) => {
                     MENSAGEM: {notificacao.mensagem}
                   </div>
                 </div>
-                <div className="row">
-                  <div className="col-xs-12 col-md-12 col-lg-12 obs">
-                    <label>Observações</label>
-                    <CampoTexto
-                      name="observacao"
-                      type="textarea"
-                      form={form}
-                      maxlength="100"
-                      desabilitado={!notificacao.mostrarBotoesDeAprovacao}
-                    />
+                {notificacao.categoriaId ===
+                  notificacaoCategoria.Workflow_Aprovacao && (
+                  <div className="row">
+                    <div className="col-xs-12 col-md-12 col-lg-12 obs">
+                      <label>Observações</label>
+                      <CampoTexto
+                        name="observacao"
+                        type="textarea"
+                        form={form}
+                        maxlength="100"
+                        desabilitado={!notificacao.mostrarBotoesDeAprovacao}
+                      />
+                    </div>
                   </div>
-                </div>
+                )}
               </EstiloDetalhe>
               {notificacao.categoriaId ===
                 notificacaoCategoria.Workflow_Aprovacao && (
