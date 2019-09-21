@@ -1,7 +1,7 @@
 ﻿using SME.SGP.Dto;
 using System.Threading.Tasks;
 
-namespace SME.SGP.Dominio.Interfaces
+namespace SME.SGP.Aplicacao.Integracoes
 {
     public interface IServicoAutenticacao
     {
