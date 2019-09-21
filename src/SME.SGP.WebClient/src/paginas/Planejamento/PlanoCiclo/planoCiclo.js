@@ -430,7 +430,8 @@ export default function PlanoCiclo() {
         <Titulo>
           {modalidadeEja ? 'Plano de Etapa' : 'Plano de Ciclo'}
           <TituloAno>
-            /2019 <i className="fas fa-retweet" />
+            {' / 2019 '}
+            <i className="fas fa-retweet" />
           </TituloAno>
         </Titulo>
       </div>
@@ -547,18 +548,25 @@ export default function PlanoCiclo() {
                     <ul>
                       {listaMatriz.map(item => {
                         return (
-                          <li key={item.id}>
-                            {
-                              <Badge
-                                id={`matriz-${item.id}`}
-                                className="btn-li-item btn-li-item-matriz"
-                                opcao-selecionada={validaMatrizSelecionada}
-                                onClick={e => addRemoverMatriz(e, item)}
-                              >
-                                {item.id}
-                              </Badge>
-                            }
-                            {item.descricao}
+                          <li key={item.id} className="row">
+                            <div className="col-md-12">
+                              <div className="row aling-center">
+                                <div className="col-md-2">
+                                  <Badge
+                                    id={`matriz-${item.id}`}
+                                    className="btn-li-item btn-li-item-matriz"
+                                    opcao-selecionada={validaMatrizSelecionada}
+                                    onClick={e => addRemoverMatriz(e, item)}
+                                  >
+                                    {item.id}
+                                  </Badge>
+                                </div>
+
+                                <div className="col-md-10 pl-3">
+                                  {item.descricao}
+                                </div>
+                              </div>
+                            </div>
                           </li>
                         );
                       })}
@@ -581,18 +589,25 @@ export default function PlanoCiclo() {
                     <ul>
                       {listaODS.map(item => {
                         return (
-                          <li key={item.id}>
-                            {
-                              <Badge
-                                id={`ods-${item.id}`}
-                                className="btn-li-item btn-li-item-ods"
-                                opcao-selecionada={validaODSSelecionado}
-                                onClick={e => addRemoverODS(e, item)}
-                              >
-                                {item.id}
-                              </Badge>
-                            }
-                            {item.descricao}
+                          <li key={item.id} className="row">
+                            <div className="col-md-12">
+                              <div className="row aling-center">
+                                <div className="col-md-2">
+                                  <Badge
+                                    id={`ods-${item.id}`}
+                                    className="btn-li-item btn-li-item-ods"
+                                    opcao-selecionada={validaODSSelecionado}
+                                    onClick={e => addRemoverODS(e, item)}
+                                  >
+                                    {item.id}
+                                  </Badge>
+                                </div>
+
+                                <div className="col-md-10 pl-3">
+                                  {item.descricao}
+                                </div>
+                              </div>
+                            </div>
                           </li>
                         );
                       })}
