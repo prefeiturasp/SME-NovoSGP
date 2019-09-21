@@ -20,7 +20,7 @@ TextEditor.propTypes = {
   disabled: PropTypes.bool,
   onClick: PropTypes.func,
   alt: PropTypes.string,
-  stateAdicional: PropTypes.object
+  estadoAdicional: PropTypes.object
 };
 
 export default TextEditor;
