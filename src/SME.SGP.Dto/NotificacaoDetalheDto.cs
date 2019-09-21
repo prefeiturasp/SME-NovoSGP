@@ -13,6 +13,7 @@
         public bool MostrarBotaoMarcarComoLido { get; set; }
         public bool MostrarBotaoRemover { get; set; }
         public bool MostrarBotoesDeAprovacao { get; set; }
+        public string Observacao { get; set; }
         public string Situacao { get; set; }
         public int StatusId { get; set; }
         public string Tipo { get; set; }

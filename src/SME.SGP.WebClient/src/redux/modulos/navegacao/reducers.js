@@ -5,6 +5,7 @@ const inicial = {
   retraido: false,
   rotaAtiva: '/',
   rotas,
+  menuSelecionado: []
 };
 
 export default function navegacao(state = inicial, action) {
@@ -18,6 +19,9 @@ export default function navegacao(state = inicial, action) {
         break;
       case '@navegacao/rotas':
         draft.rotas.set(action.payload.path, action.payload);
+        break;
+      case '@navegacao/menuSelecionado':
+        draft.menuSelecionado = action.payload;
         break;
       default:
         break;

@@ -20,7 +20,7 @@ namespace SME.SGP.Aplicacao
 
         public IEnumerable<NotificacaoBasicaDto> Listar(NotificacaoFiltroDto filtroNotificacaoDto)
         {
-            var retorno = repositorioNotificacao.ObterPorDreOuEscolaOuStatusOuTurmoOuUsuarioOuTipoOuCategoriaOuTitulo(filtroNotificacaoDto.DreId,
+            var retorno = repositorioNotificacao.Obter(filtroNotificacaoDto.DreId,
                 filtroNotificacaoDto.UeId, (int)filtroNotificacaoDto.Status, filtroNotificacaoDto.TurmaId, filtroNotificacaoDto.UsuarioRf,
                 (int)filtroNotificacaoDto.Tipo, (int)filtroNotificacaoDto.Categoria, filtroNotificacaoDto.Titulo, filtroNotificacaoDto.Codigo, filtroNotificacaoDto.AnoLetivo);
 
@@ -51,11 +51,6 @@ namespace SME.SGP.Aplicacao
                 repositorioNotificacao.Salvar(notificacao);
 
             var retorno = MapearEntidadeParaDetalheDto(notificacao);
-            if (notificacao.UsuarioId.HasValue)
-            {
-                notificacao.Usuario = repositorioUsuario.ObterPorId(notificacao.UsuarioId.Value);
-                retorno.UsuarioRf = notificacao.Usuario.CodigoRf;
-            }
 
             return retorno;
         }
@@ -106,7 +101,8 @@ namespace SME.SGP.Aplicacao
                 CategoriaId = (int)retorno.Categoria,
                 TipoId = (int)retorno.Tipo,
                 StatusId = (int)retorno.Status,
-                Codigo = retorno.Codigo
+                Codigo = retorno.Codigo,
+                Observacao = retorno.WorkflowAprovacaoNivel == null ? string.Empty : retorno.WorkflowAprovacaoNivel.Observacao
             };
         }
     }
