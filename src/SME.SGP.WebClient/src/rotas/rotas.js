@@ -86,7 +86,7 @@ export default function Rotas() {
     tipo: RotasTipo.EstruturadaAutenticada,
   });
 
-  rotas.set('/teste/notificacoes', {
+  rotas.set('/notificacoes', {
     breadcrumbName: 'Notificações',
     parent: '/',
     component: NotificacoesLista,
