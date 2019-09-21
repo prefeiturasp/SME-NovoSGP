@@ -26,6 +26,10 @@ const Container = styled.div`
   .ant-select-selection__placeholder {
     display: block;
   }
+  .ant-select .ant-select-search__field {
+    display: block;
+    max-width: 100% !important;
+  }
   .ant-select-selection-selected-value {
     font-weight: bold;
   }
@@ -65,9 +69,9 @@ const SelectComponent = props => {
     <Container>
       {label ? <Label text={label} control={name} /> : ''}
       <Select
-        mode={multiple ? 'multiple' : ''}
+        mode={multiple && 'multiple'}
         suffixIcon={<Icon type="caret-down" />}
-        className={className}
+        className={`overflow-hidden ${className}`}
         name={name}
         id={id}
         onChange={onChange}

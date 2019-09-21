@@ -8,6 +8,8 @@ import { Colors } from './colors';
 const Container = styled(Modal)`
   .ant-modal-footer {
     border-top: none;
+    padding-left: 24px !important;
+    padding-right: 24px !important;
   }
 
   .padding-btn-confirmacao {

@@ -10,6 +10,8 @@ import BreadcrumbSgp from '../componentes-sgp/breadcrumb-sgp';
 import Alert from '~/componentes/alert';
 import Grid from '~/componentes/grid';
 import shortid from 'shortid';
+import Navbar from './navbar';
+import Sider from './sider';
 
 const ContainerModal = styled.div`
   .ant-modal-footer {
@@ -22,7 +24,23 @@ const ContainerBotoes = styled.div`
   justify-content: flex-end;
 `;
 
-const Conteudo = () => {
+const Pagina = props => {
+  const { children } = props;
+
+  return (
+    <>
+      <Navbar />
+      <div className="container-fluid h-100">
+        <Sider />
+        <Conteudo>{children}</Conteudo>
+      </div>
+    </>
+  );
+};
+
+const Conteudo = props => {
+  const { children } = props;
+
   const NavegacaoStore = useSelector(store => store.navegacao);
   const [retraido, setRetraido] = useState(false);
   const dispatch = useDispatch();
@@ -78,13 +96,13 @@ const Conteudo = () => {
           </ContainerModal>
           <div className="card-body m-r-0 m-l-0 p-l-0 p-r-0 m-t-0">
             {notificacoes.alertas.map(alerta => (
-              <Row>
+              <Row key={shortid.generate()}>
                 <Grid cols={12}>
                   <Alert alerta={alerta} key={alerta.id} closable />
                 </Grid>
               </Row>
             ))}
-            <Rotas />
+            {children}
           </div>
         </main>
       </div>
@@ -92,4 +110,4 @@ const Conteudo = () => {
   );
 };
 
-export default Conteudo;
+export default Pagina;
