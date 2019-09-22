@@ -21,15 +21,11 @@ namespace SME.SGP.Aplicacao.Integracoes
         {
             httpClient.DefaultRequestHeaders.Clear();
 
-            var post = JsonConvert.SerializeObject(new
-            {
-                Login = login,
-                Senha = senha
-            });
+            IList<KeyValuePair<string, string>> valoresParaEnvio = new List<KeyValuePair<string, string>> {
+                { new KeyValuePair<string, string>("login", login) },
+                { new KeyValuePair<string, string>("senha", senha) }};
 
-            var jsonParaPost = new StringContent(post, UnicodeEncoding.UTF8, "application/json");
-
-            var resposta = await httpClient.PostAsync($"/AutenticacaoSgp/Autenticar", jsonParaPost);
+            var resposta = await httpClient.PostAsync($"AutenticacaoSgp/Autenticar", new FormUrlEncodedContent(valoresParaEnvio));
 
             if (resposta.IsSuccessStatusCode)
             {
