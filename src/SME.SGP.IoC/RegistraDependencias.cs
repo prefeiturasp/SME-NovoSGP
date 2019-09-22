@@ -28,6 +28,7 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IComandosSupervisor, ComandosSupervisor>();
             services.TryAddScoped<IComandosNotificacao, ComandosNotificacao>();
             services.TryAddScoped<IComandosWorkflowAprovacao, ComandosWorkflowAprovacao>();
+            services.TryAddScoped<IComandoAuth, ComandoAuth>();
         }
 
         private static void RegistrarConsultas(IServiceCollection services)
