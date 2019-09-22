@@ -23,9 +23,9 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(401)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [ProducesResponseType(typeof(UsuarioAutenticacaoRetornoDto), 200)]
-        public async Task<IActionResult> Autenticar([FromForm]string login, [FromForm]string senha)
+        public async Task<IActionResult> Autenticar(AutenticacaoDto autenticacaoDto)
         {
-            var retornoAutenticacao = await servicoAutenticacao.AutenticarNoEol(login, senha);
+            var retornoAutenticacao = await servicoAutenticacao.AutenticarNoEol(autenticacaoDto.Login, autenticacaoDto.Senha);
 
             if (!retornoAutenticacao.Autenticado)
                 return StatusCode(401);
