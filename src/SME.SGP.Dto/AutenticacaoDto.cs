@@ -9,7 +9,7 @@ namespace SME.SGP.Dto
         public string Login { get; set; }
 
         [Required(ErrorMessage = "É necessário informar a senha.")]
-        [MinLength(4, ErrorMessage = "A senha deve conter no mínimo 6 caracteres.")]
+        [MinLength(4, ErrorMessage = "A senha deve conter no mínimo 4 caracteres.")]
         public string Senha { get; set; }
     }
 }
