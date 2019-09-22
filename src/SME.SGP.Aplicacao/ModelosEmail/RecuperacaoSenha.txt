@@ -1,0 +1,8 @@
+﻿Olá, #NOME
+Você acionou a opção "Esqueci minha senha" do SGP. Para concluir esta operação, basta clicar no botão abaixo ou copiar o endereço do link e colar no seu navegador.
+Atenção, link é válido por apenas 6 horas. Após esse período, você deverá fazer uma nova solicitação.
+O seu login de acesso continua o mesmo: #RF
+Clique no botão abaixo e defina uma nova senha:
+   BOTÃO
+Ou, utilize o link:
+    #LINK
