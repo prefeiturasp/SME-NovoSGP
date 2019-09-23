@@ -592,6 +592,7 @@ const Filtro = () => {
                   valueText="turma"
                   valueSelect={turmaFiltroSelecionada}
                   placeholder="Turma"
+                  disabled={!modalidadeFiltroSelecionada}
                 />
               </Grid>
               <Grid cols={3} className="form-group text-right">
