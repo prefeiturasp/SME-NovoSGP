@@ -33,6 +33,7 @@ namespace SME.SGP.Aplicacao
                        DescricaoStatus = r.Status.ToString(),
                        Status = r.Status,
                        Categoria = r.Categoria,
+                       DescricaoCategoria = r.Categoria.GetAttribute<DisplayAttribute>().Name,
                        Tipo = r.Tipo.GetAttribute<DisplayAttribute>().Name,
                        Codigo = r.Codigo,
                        PodeRemover = r.PodeRemover,
