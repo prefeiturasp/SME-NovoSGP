@@ -53,6 +53,11 @@ export default function NotificacoesLista() {
         render: (text, row) => montarLinhasTabela(text, row),
       },
       {
+        title: 'Categoria',
+        dataIndex: 'descricaoCategoria',
+        render: (text, row) => montarLinhasTabela(text, row),
+      },
+      {
         title: 'Título',
         dataIndex: 'titulo',
         render: (text, row) => montarLinhasTabela(text, row),
@@ -219,6 +224,7 @@ export default function NotificacoesLista() {
     const listaNotifi = await api.get('v1/notificacoes', {
       params: paramsQuery,
     });
+    debugger
     setListaNotificacoes(listaNotifi.data);
     setIdNotificacoesSelecionadas([]);
     onSelectRow([]);
