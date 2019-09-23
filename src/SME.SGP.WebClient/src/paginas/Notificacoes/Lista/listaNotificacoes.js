@@ -53,6 +53,11 @@ export default function NotificacoesLista() {
         render: (text, row) => montarLinhasTabela(text, row),
       },
       {
+        title: 'Categoria',
+        dataIndex: 'descricaoCategoria',
+        render: (text, row) => montarLinhasTabela(text, row),
+      },
+      {
         title: 'Título',
         dataIndex: 'titulo',
         render: (text, row) => montarLinhasTabela(text, row),
