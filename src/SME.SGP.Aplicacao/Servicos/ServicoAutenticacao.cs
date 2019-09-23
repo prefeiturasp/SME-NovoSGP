@@ -3,7 +3,7 @@ using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Dto;
 using System.Threading.Tasks;
 
-namespace SME.SGP.Aplicacao.Integracoes
+namespace SME.SGP.Aplicacao.Servicos
 {
     public class ServicoAutenticacao : IServicoAutenticacao
     {

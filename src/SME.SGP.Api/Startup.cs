@@ -1,17 +1,21 @@
 ﻿using Dapper;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.IdentityModel.Tokens;
 using Prometheus;
 using SME.SGP.Api.Filtros;
 using SME.SGP.Api.Middlewares;
+using SME.SGP.Aplicacao.Configuracoes;
 using SME.SGP.Aplicacao.Integracoes;
 using SME.SGP.Dados.Mapeamentos;
 using SME.SGP.IoC;
 using Swashbuckle.AspNetCore.Swagger;
 using System;
+using static System.Text.Encoding;
 
 namespace SME.SGP.Api
 {
@@ -97,6 +101,44 @@ namespace SME.SGP.Api
             {
                 c.BaseAddress = new Uri(Configuration.GetSection("UrlApiEOL").Value);
                 c.DefaultRequestHeaders.Add("Accept", "application/json");
+            });
+
+            var jwtConfiguration = Configuration
+       .GetSection(nameof(JwtTokenSettings));
+            services.Configure<JwtTokenSettings>(jwtConfiguration);
+            var jwtTokenSettings = jwtConfiguration
+                .Get<JwtTokenSettings>();
+
+            services.AddAuthentication(o =>
+            {
+                o.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                o.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+            }).AddJwtBearer(o =>
+            {
+                o.TokenValidationParameters = new TokenValidationParameters
+                {
+                    ValidateLifetime = true,
+                    ValidateAudience = true,
+                    ValidAudience = jwtTokenSettings.Audience,
+                    ValidateIssuer = true,
+                    ValidIssuer = jwtTokenSettings.Issuer,
+                    ValidateIssuerSigningKey = true,
+                    ClockSkew = TimeSpan.Zero,
+                    IssuerSigningKey = new SymmetricSecurityKey(UTF8
+                        .GetBytes(jwtTokenSettings.IssuerSigningKey))
+                };
+                //o.Events = new JwtBearerEvents()
+                //{
+                //    OnAuthenticationFailed = c =>
+                //    {
+                //        if (c.Exception.GetType() == typeof(SecurityTokenExpiredException))
+                //        {
+                //            c.NoResult();
+                //            c.Response.Headers.Add("Token-Expired", "true");
+                //        }
+                //        return Task.CompletedTask;
+                //    }
+                //};
             });
         }
     }
