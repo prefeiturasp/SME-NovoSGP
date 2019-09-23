@@ -1,20 +1,23 @@
 import React, { useState } from 'react'
 import styled from 'styled-components';
 import { Base } from '../componentes/colors';
+import history from '../servicos/history';
+import { store } from '../redux';
+import { perfilSelecionado } from '../redux/modulos/perfil/actions';
+import { useSelector } from 'react-redux';
 
-const BtnPerfil = () => {
+
+const Perfil = () => {
   const [ocultaPerfis, setarOcultaPerfis] = useState(true);
-  const [perfilSelecionado, setarPerfilSelecionado] = useState({
-    id: "2",
-    descricao: 'Professor'
-  });
+
+  const PerfilStore = useSelector(store => store.perfil);
 
   const perfis = {
     perfilSelecionado: {
       id: "2",
       descricao: 'Professor'
     },
-    data: [
+    dados: [
       {
         id: "1",
         descricao: 'Diretor',
@@ -102,14 +105,17 @@ const BtnPerfil = () => {
 
   const gravarPerfilSelecionado = (perfil) => {
     if (perfil) {
-      const perfilNovo = perfis.data.filter(item => item.id === perfil)
-      setarPerfilSelecionado(perfilNovo[0]);
+      const perfilNovo = perfis.dados.filter(item => item.id === perfil)
+      store.dispatch(perfilSelecionado(perfilNovo[0]));
       setarOcultaPerfis(true);
+      if (PerfilStore.perfilSelecionado.id !== perfilNovo[0].id) {
+        history.push('/');
+      }
     }
   }
 
   const onClickBotao = () => {
-    if (perfis.data.length > 1) {
+    if (perfis.dados.length > 1) {
       setarOcultaPerfis(!ocultaPerfis);
     }
   };
@@ -117,25 +123,25 @@ const BtnPerfil = () => {
 
   return (
     <div className="position-relative">
-      <Botao className="text-center" onClick={onClickBotao} style={{ cursor: perfis.data.length > 1 ? 'pointer' : 'default' }}>
+      <Botao className="text-center" onClick={onClickBotao} style={{ cursor: perfis.dados.length > 1 ? 'pointer' : 'default' }}>
         <IconePerfil>
           <i className="fas fa-user-circle" />
         </IconePerfil>
         <span className={`d-block mt-1 ${ocultaPerfis ? '' : ' font-weight-bold'}`} >
-          {perfilSelecionado.abreviacao ? perfilSelecionado.abreviacao : perfilSelecionado.descricao}
+          {PerfilStore.perfilSelecionado.abreviacao ? PerfilStore.perfilSelecionado.abreviacao : PerfilStore.perfilSelecionado.descricao}
         </span>
       </Botao>
       <ItensPerfil hidden={ocultaPerfis} className="list-inline">
         <table>
           <tbody>
-            {perfis.data.map(item =>
+            {perfis.dados.map(item =>
               <Item key={item.id}
                 onClick={(e) => gravarPerfilSelecionado(e.currentTarget.accessKey)}
                 accessKey={item.id}>
                 <td style={{ width: '20px' }}>
                   <i value={item.id} className="fas fa-user-circle"></i>
                 </td>
-                <td style={{ width: '100%', fontWeight: item.id === perfilSelecionado.id ? 'bold' : 'initial' }}>
+                <td style={{ width: '100%', fontWeight: item.id === PerfilStore.perfilSelecionado.id ? 'bold' : 'initial' }}>
                   {item.descricao + (item.abreviacao ? "(" + item.abreviacao + ")" : "")}
                 </td>
               </Item>
@@ -147,4 +153,4 @@ const BtnPerfil = () => {
   )
 }
 
-export default BtnPerfil;
+export default Perfil;
