@@ -8,8 +8,6 @@ import { Base } from './colors';
 import Label from './label';
 
 const Container = styled.div`
-  display: flex;
-
   .ant-select {
     width: 100%;
   }

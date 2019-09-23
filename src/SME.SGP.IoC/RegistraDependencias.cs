@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using SME.SGP.Aplicacao;
+using SME.SGP.Aplicacao.Integracoes;
 using SME.SGP.Dados;
 using SME.SGP.Dados.Contexto;
 using SME.SGP.Dados.Repositorios;
@@ -78,6 +79,7 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IServicoWorkflowAprovacao, ServicoWorkflowAprovacao>();
             services.TryAddScoped<IServicoNotificacao, ServicoNotificacao>();
             services.TryAddScoped<IServicoUsuario, ServicoUsuario>();
+            services.TryAddScoped<IServicoAutenticacao, ServicoAutenticacao>();
         }
     }
 }

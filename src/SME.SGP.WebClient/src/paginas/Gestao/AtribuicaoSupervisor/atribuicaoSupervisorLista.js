@@ -105,7 +105,11 @@ export default function AtribuicaoSupervisorLista() {
   }
 
   function onClickNovaAtribuicao() {
-    history.push('/gestao/atribuicao-supervisor');
+    if (dresSelecionadas) {
+      history.push(`/gestao/atribuicao-supervisor/${dresSelecionadas}/`);
+    } else {
+      history.push('/gestao/atribuicao-supervisor');
+    }
   }
 
   function onChangeUesSemSup(e) {
