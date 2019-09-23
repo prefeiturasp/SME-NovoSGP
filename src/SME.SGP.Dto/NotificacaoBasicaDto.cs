@@ -5,6 +5,7 @@ namespace SME.SGP.Dto
     public class NotificacaoBasicaDto
     {
         public NotificacaoCategoria Categoria { get; set; }
+        public string DescricaoCategoria { get; set; }
         public long Codigo { get; set; }
         public string Data { get; set; }
         public string DescricaoStatus { get; set; }
