@@ -6,6 +6,9 @@ export const Container = styled.div`
     .ant-table-selection-column {
       display: none !important;
     }
+    .ant-table-selection-col {
+      display: none !important;
+    }
   }
 
   .ant-table table {
