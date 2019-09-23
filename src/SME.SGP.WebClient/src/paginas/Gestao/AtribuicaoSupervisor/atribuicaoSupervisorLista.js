@@ -73,18 +73,21 @@ export default function AtribuicaoSupervisorLista() {
 
   const columns = [
     {
-      title: 'dre',
+      title: 'DRE',
       dataIndex: 'dre',
+      width: '15%'
     },
     {
-      title: 'escola',
+      title: 'Unidade Escolar',
       dataIndex: 'escola',
+      width: '55%'
     },
     {
-      title: 'supervisor',
+      title: 'Supervisor',
       dataIndex: 'supervisor',
+      width: '30%',
       render: text => {
-        return text ? text : <a className="texto-vermelho">NÃO ATRIBUIDO</a>;
+        return text ? text : <a className="texto-vermelho-negrito">NÃO ATRIBUIDO</a>;
       },
     },
   ];
