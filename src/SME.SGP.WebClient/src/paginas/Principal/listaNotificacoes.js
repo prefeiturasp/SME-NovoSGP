@@ -1,5 +1,6 @@
 import React, { useState, useLayoutEffect } from 'react';
 import { useSelector } from 'react-redux';
+import styled from 'styled-components';
 import DataTable from '~/componentes/table/dataTable';
 import { Colors } from '~/componentes/colors';
 import Button from '~/componentes/button';
@@ -23,18 +24,20 @@ const ListaNotificacoes = () => {
       title: 'Tipo',
       dataIndex: 'categoria',
       key: 'categoria',
+      className: 'px-4',
       render: categoria => categoriaLista[categoria],
     },
     {
       title: 'Título',
       dataIndex: 'titulo',
       key: 'titulo',
+      className: 'px-4',
     },
     {
       title: 'Situação',
       dataIndex: 'status',
       key: 'status',
-      className: 'text-uppercase',
+      className: 'text-uppercase px-4',
       render: status => (
         <span className={`${status === 1 && 'cor-vermelho font-weight-bold'}`}>
           {statusLista[status]}
@@ -45,11 +48,9 @@ const ListaNotificacoes = () => {
       title: 'Data/Hora',
       dataIndex: 'data',
       key: 'data',
-      className: 'text-right',
-      width: '100px',
-      textWrap: 'word-break',
-      ellipsis: true,
-      render: data => <span style={{ width: 50 }}>{data}</span>,
+      className: 'text-right py-0 data-hora',
+      width: 100,
+      render: data => <span>{data}</span>,
     },
   ];
 
@@ -67,14 +68,22 @@ const ListaNotificacoes = () => {
     history.push(`/notificacoes`);
   };
 
+  const Container = styled.span`
+    .data-hora {
+      width: 80px;
+      white-space: normal !important;
+    }
+  `;
+
   return (
-    <>
+    <Container>
       <DataTable
         columns={colunas}
         dataSource={notificacoes.notificacoes}
         pageSize={0}
         onSelectRow={onSelectRow}
         selectedRowKeys={selectedRowKeys}
+        locale={{ emptyText: 'Você não tem nenhuma notificação!' }}
       />
       <Button
         label="Ver tudo"
@@ -87,7 +96,7 @@ const ListaNotificacoes = () => {
         bold
         onClick={onClickVerTudo}
       />
-    </>
+    </Container>
   );
 };
 

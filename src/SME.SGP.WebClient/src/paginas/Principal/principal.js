@@ -91,13 +91,13 @@ const Principal = props => {
           </Grid>
         </Row>
       ) : null}
-      <Card>
+      <Card className="rounded">
         <Grid cols={12}>
           <Label>
-            <span className="fas fa-thumbtack m-r-10 m-b-10" />
+            <span className="fas fa-thumbtack mr-2 mb-0" />
             Notificações
           </Label>
-          <Row>
+          <Row className="pt-3 pb-4">
             <Grid cols={12}>
               <ListaNotificacoes />
             </Grid>
