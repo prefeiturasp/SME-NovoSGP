@@ -358,6 +358,7 @@ const Filtro = () => {
       setDreFiltroSelecionada(dados[0].codDre.toString());
       setUnidadeEscolarFiltroSelecionada(dados[0].codEscola.toString());
       setTurmaFiltroSelecionada(dados[0].codTurma.toString());
+      setPeriodoFiltroSelecionado(dados[0].semestre.toString());
       store.dispatch(selecionarTurma(dados));
     }
   };
@@ -450,7 +451,11 @@ const Filtro = () => {
       unidadeEscolarFiltroSelecionada &&
       turmaFiltroSelecionada
     ) {
-      selecionaTurma();
+      if (modalidadeFiltroSelecionada == 3 && !periodoFiltroSelecionado) {
+        erro('É necessário informar todos os dados da turma!');
+      } else {
+        selecionaTurma();
+      }
     } else {
       erro('É necessário informar todos os dados da turma!');
     }
