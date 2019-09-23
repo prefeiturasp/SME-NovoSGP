@@ -110,10 +110,10 @@ const Sider = () => {
               className="perfil-edit"
               style={{ paddingTop: NavegacaoStore.retraido ? '0' : '12px' }}
             >
-              <a id="perfil-edit">
+              <Link id="perfil-edit" to="/meus-dados">
                 <i className="fas fa-user-edit" />
                 <span>Perfil</span>
-              </a>
+              </Link>
             </div>
           </div>
         </Topo>

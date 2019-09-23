@@ -14,6 +14,7 @@ import RotasTipo from '~/constantes/rotasTipo';
 import Login from '~/paginas/Login';
 import RotaNaoAutenticadaDesestruturada from './rotaNaoAutenticadaDesestruturada';
 import RotaAutenticadaDesestruturada from './rotaAutenticadaDesestruturada';
+import MeusDados from  '~/paginas/Perfil/meusDados';
 
 export default function Rotas() {
   const rotas = new Map();
@@ -90,6 +91,14 @@ export default function Rotas() {
     breadcrumbName: 'Notificações',
     parent: '/',
     component: NotificacoesLista,
+    exact: true,
+    tipo: RotasTipo.EstruturadaAutenticada,
+  });
+
+  rotas.set('/meus-dados', {
+    breadcrumbName: 'Perfil',
+    parent: '/',
+    component: MeusDados,
     exact: true,
     tipo: RotasTipo.EstruturadaAutenticada,
   });
