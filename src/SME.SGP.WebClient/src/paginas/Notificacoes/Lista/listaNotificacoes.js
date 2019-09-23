@@ -224,7 +224,6 @@ export default function NotificacoesLista() {
     const listaNotifi = await api.get('v1/notificacoes', {
       params: paramsQuery,
     });
-    debugger
     setListaNotificacoes(listaNotifi.data);
     setIdNotificacoesSelecionadas([]);
     onSelectRow([]);
