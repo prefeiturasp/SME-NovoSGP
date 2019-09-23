@@ -1,123 +1,74 @@
-import React, { useEffect } from 'react';
-import LoginController from './controller';
+import React, { useEffect, useState, useRef, useLayoutEffect } from 'react';
+import LoginHelper from './helper';
 import Row from '~/componentes/row';
-import styled from 'styled-components';
-import FundoLogin from '~/recursos/FundoLogin.svg';
 import LogoDoSgp from '~/recursos/LogoSgpTexto.svg';
 import LogoCidadeSP from '~/recursos/LogoCidadeSP.svg';
-import Card from '~/componentes/cardBootstrap';
 import Grid from '~/componentes/grid';
 import { Base, Colors } from '~/componentes/colors';
-import CardBody from '~/componentes/cardBody';
 import FormGroup from '~/componentes/formGroup';
 import Button from '~/componentes/button';
 import { Tooltip } from 'antd';
 import Icon from '~/componentes/icon';
-import LinkRouter from '~/componentes/linkRouter';
+import {
+  Fundo,
+  Logo,
+  Formulario,
+  LogoSGP,
+  CampoTexto,
+  Rotulo,
+  Cartao,
+  LogoSP,
+  CorpoCartao,
+  Centralizar,
+  Link,
+  LabelLink,
+  TextoAjuda,
+  ErroTexto,
+  ErroGeral,
+} from './login.css';
 
-const Fundo = styled(Row)`
-  background: url(${FundoLogin});
-  height: 100%;
-  height: -moz-available;
-  height: -webkit-fill-available;
-  height: fill-available;
-  background-position: center;
-  background-repeat: no-repeat;
-  background-size: cover;
-`;
+const Login = () => {
+  const errosDefault = { erroGeral: '', erroUsuario: '', erroSenha: '' };
 
-const Logo = styled.img`
-  align-self: center;
-  justify-self: center;
-`;
+  const [login, setLogin] = useState({
+    usuario: '',
+    senha: '',
+    ...errosDefault,
+  });
 
-const Formulario = styled.form`
-  padding: 0px;
+  const usuario = login.usuario;
+  const senha = login.senha;
 
-  align-self: center;
-  justify-self: center;
-`;
+  const campoUsuario = useRef(null);
+  const campoSenha = useRef(null);
 
-const LogoSGP = styled.div`
-  padding: 0px;
-`;
+  useEffect(() => {
+    campoUsuario.current.focus();
+  }, [usuario]);
 
-const CampoTexto = styled.input`
-  ::-webkit-input-placeholder {
-    font-size: 14px !important;
-    font-family: Roboto !important;
-    font-size: 14px !important;
-    font-weight: normal !important;
-    font-style: normal !important;
-    font-stretch: normal !important;
-    line-height: 1.6 !important;
-    letter-spacing: normal !important;
-    color: ${Base.CinzaBotao} !important;
-  }
-  ::-moz-placeholder {
-    font-size: 14px !import;
-  }
-  :-ms-input-placeholder {
-    font-size: 14px !import;
-  }
-  :-moz-placeholder {
-    font-size: 14px !import;
-  }
-`;
+  useEffect(() => {
+    campoSenha.current.focus();
+  }, [senha]);
 
-const Rotulo = styled.label`
-  font-family: Roboto !important;
-  font-size: 14px !important;
-  font-weight: normal !important;
-  font-style: normal !important;
-  font-stretch: normal !important;
-  line-height: normal !important;
-  letter-spacing: normal !important;
-  color: ${Base.CinzaMako} !important;
-`;
+  const DefinirUsuario = e => {
+    setLogin({ ...login, ...errosDefault, usuario: e.target.value });
+  };
 
-const LogoSP = styled(LogoSGP)`
-  align-self: end;
-  justify-self: center;
-  justify-content: center;
-  justify-items: center;
-`;
+  const DefinirSenha = e => {
+    setLogin({ ...login, ...errosDefault, senha: e.target.value });
+  };
 
-const Cartao = styled(Card)`
-  height: auto;
-  border-radius: 6px;
-`;
+  const Acessar = async () => {
+    const { sucesso, ...retorno } = await LoginHelper.acessar(login);
 
-const CorpoCartao = styled(CardBody)`
-  display: flex;
-  height: 100%;
-  justify-content: center;
-`;
+    console.log(retorno, sucesso);
 
-const Centralizar = styled.div`
-  display: flex;
-  justify-content: center;
-`;
+    if (!sucesso) {
+      setLogin({ ...login, ...retorno });
+      return;
+    }
+  };
 
-const Link = styled(LinkRouter)`
-  justify-self: center;
-  justify-content: center;
-  justify-items: center;
-`;
-
-const LabelLink = styled.label`
-  font-family: Roboto;
-  font-size: 12px;
-  font-weight: normal;
-  font-style: normal;
-  font-stretch: normal;
-  color: ${Base.Roxo} !important;
-`;
-
-const TextoAjuda =
-  'Para usuários externos, insira seus dados de usuário. Caso não possua, procure a SME.';
-
-export default function Login() {
   return (
     <Fundo className="p-0">
       <Grid cols={12} className="d-flex justify-content-end">
@@ -138,21 +89,34 @@ export default function Login() {
                     <Rotulo className="d-block" htmlFor="Usuario">
                       Usuário
                     </Rotulo>
-                    <Centralizar class="col-md-12">
-                      <CampoTexto
-                        id="Usuario"
-                        placeholder="Insira seu usuário ou RF"
-                        className="col-md-12 form-control"
-                      />
-                    </Centralizar>
+                    <CampoTexto
+                      id="Usuario"
+                      ref={campoUsuario}
+                      value={usuario}
+                      onChange={DefinirUsuario}
+                      placeholder="Insira seu usuário ou RF"
+                      className={`col-md-12 form-control ${login.erroSenha &&
+                        'is-invalid'}`}
+                    />
+                    {login.erroUsuario && (
+                      <ErroTexto>{login.erroUsuario}</ErroTexto>
+                    )}
                   </FormGroup>
                   <FormGroup className="col-md-12 p-0">
                     <Rotulo htmlFor="Senha">Senha</Rotulo>
                     <CampoTexto
                       id="Senha"
+                      ref={campoSenha}
+                      value={senha}
+                      onChange={DefinirSenha}
+                      type="password"
                       placeholder="Insira sua senha"
-                      className="col-md-12 form-control"
+                      className={`col-md-12 form-control ${login.erroSenha &&
+                        'is-invalid'}`}
                     />
+                    {login.erroSenha && (
+                      <ErroTexto>{login.erroSenha}</ErroTexto>
+                    )}
                   </FormGroup>
                   <FormGroup>
                     <Button
@@ -160,12 +124,18 @@ export default function Login() {
                       className="btn-block d-block"
                       label="Acessar"
                       color={Colors.Roxo}
+                      onClick={Acessar}
                     />
                     <Centralizar className="mt-1">
                       <Link to="/" isactive>
                         <LabelLink>Esqueci minha senha</LabelLink>
                       </Link>
                     </Centralizar>
+                  </FormGroup>
+                  <FormGroup>
+                    {login.erroGeral && (
+                      <ErroGeral>{login.erroGeral}</ErroGeral>
+                    )}
                   </FormGroup>
                 </Formulario>
               </Row>
@@ -180,4 +150,6 @@ export default function Login() {
       </Grid>
     </Fundo>
   );
-}
+};
+
+export default Login;

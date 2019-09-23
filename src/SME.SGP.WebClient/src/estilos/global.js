@@ -1,5 +1,6 @@
 import { createGlobalStyle } from 'styled-components';
 import { Base } from '../componentes/colors';
+import ExclamacaoCampoErro from '~/recursos/ExclamacaoCampoErro.svg';
 
 export default createGlobalStyle`
   @import url('https://fonts.googleapis.com/css?family=Roboto:400,700&display=swap');
@@ -291,5 +292,10 @@ export default createGlobalStyle`
     border-color: ${Base.CinzaDesabilitado} !important;
     color: ${Base.CinzaDesabilitado} !important;
     cursor: unset !important;
+  }
+
+  .form-control.is-invalid, .was-validated .form-control:invalid{
+    background-image : url(${ExclamacaoCampoErro}) !important;
+    background-size: auto !important;
   }
 `;
