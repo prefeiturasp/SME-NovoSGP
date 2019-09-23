@@ -67,6 +67,7 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(IEnumerable<EnumeradoRetornoDto>), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [Route("status")]
+        //[Authorize("Bearer")]
         public IActionResult ObtemStatus()
         {
             return Ok(consultasNotificacao.ObterStatus());
