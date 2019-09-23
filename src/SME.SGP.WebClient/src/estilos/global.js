@@ -95,7 +95,7 @@ export default createGlobalStyle`
   .p-r-11{
     padding-right: 11px !important;
   }
-  
+
   .p-l-20{
     padding-left: 20px !important;
   }
@@ -180,6 +180,10 @@ export default createGlobalStyle`
     border-radius: 4px !important;
   }
 
+  .mb-6 {
+    margin-bottom: 6rem !important;
+  }
+
 /*MENU*/
 
 .menuItem{
@@ -216,23 +220,10 @@ export default createGlobalStyle`
     background: ${Base.Branco} !important;
   }
 
-  .ant-menu-sub{
-    max-height: 160px;
+  .ant-menu-sub, .ant-menu-submenu-popup{
     box-shadow: 2px 5px 6px rgba(50,50,50,0.77) !important;
     -webkit-box-shadow: 2px 5px 6px rgba(50,50,50,0.77) !important;
     -moz-box-shadow: 2px 5px 6px rgba(50,50,50,0.77) !important;
-    overflow: auto;
-    ::-webkit-scrollbar {
-      width: 10px;
-      position: absolute;
-      background:${Base.Branco} !important;
-      border-top-right-radius: 4px;
-      border-bottom-right-radius: 4px;
-    }
-    ::-webkit-scrollbar-thumb {
-      background: #dad7d7;
-      border-radius: 4px;
-    }
   }
 
   .ant-menu-inline, .ant-menu-submenu-title, .ant-menu-item{
@@ -241,8 +232,30 @@ export default createGlobalStyle`
     top: 0;
   }
 
+  :root{
+    --posicao-item-menu: 0;
+  }
+
+  div > div > .ant-menu-submenu-popup{
+    top: var(--posicao-item-menu) !important;
+  }
+
   .ant-menu-submenu-popup{
     position: fixed !important;
+    overflow-y: auto;
+    max-height: calc(100vh - 140px);
+    margin-bottom:800px !important;
+
+    ::-webkit-scrollbar {
+      width: 10px;
+      border-radius: 4px;
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: #dad7d7;
+      border-radius: 4px;
+      padding-right:5px;
+    }
   }
 
   .texto-vermelho {

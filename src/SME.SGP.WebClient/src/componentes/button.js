@@ -41,6 +41,7 @@ const Button = props => {
 
   const Btn = styled.button`
     background: ${border ? 'transparent' : Active[color]} !important;
+    text-align: center;
     ${
       border
         ? `border-color: ${Active[color]} !important; color: ${Active[color]} !important;`
