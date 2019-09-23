@@ -72,6 +72,9 @@ export const Topo = styled.div`
     height: 150px;
     color: ${Base.Branco};
     width: 100%;
+    a, a:hover{
+      color: ${Base.Branco} !important;
+    }
   }
 
   .perfil-retraido{
