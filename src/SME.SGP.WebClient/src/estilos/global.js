@@ -180,6 +180,10 @@ export default createGlobalStyle`
     border-radius: 4px !important;
   }
 
+  .mb-6 {
+    margin-bottom: 6rem !important;
+  }
+
 /*MENU*/
 
 .menuItem{
