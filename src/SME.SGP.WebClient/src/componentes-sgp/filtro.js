@@ -14,6 +14,7 @@ import { Base, Colors } from '../componentes/colors';
 import SelectComponent from '../componentes/select';
 import { sucesso, erro } from '../servicos/alertas';
 import api from '../servicos/api';
+import modalidade from '~/dtos/modalidade';
 
 const Filtro = () => {
   const [dados, setDados] = useState([]);
@@ -50,6 +51,8 @@ const Filtro = () => {
   const [toggleBusca, setToggleBusca] = useState(false);
 
   const [turmaUeSelecionada, setTurmaUeSelecionada] = useState();
+
+  const [desabilitarTurma, setDesabilitarTurma] = useState(true);
 
   const Container = styled.div`
     margin-left: -3px;
@@ -336,6 +339,33 @@ const Filtro = () => {
     unidadeEscolarFiltroSelecionada,
   ]);
 
+  useEffect(() => {
+    if (modalidadeFiltroSelecionada) {
+      if (
+        modalidade.EJA == modalidadeFiltroSelecionada &&
+        !periodoFiltroSelecionado
+      ) {
+        setDesabilitarTurma(true);
+      } else {
+        setDesabilitarTurma(false);
+      }
+    } else {
+      setDesabilitarTurma(true);
+    }
+  }, [modalidadeFiltroSelecionada, turmaFiltroSelecionada]);
+
+  useEffect(() => {
+    if (
+      modalidadeFiltroSelecionada &&
+      periodoFiltroSelecionado &&
+      modalidade.EJA == modalidadeFiltroSelecionada
+    ) {
+      setDesabilitarTurma(false);
+    } else {
+      setDesabilitarTurma(true);
+    }
+  }, [periodoFiltroSelecionado]);
+
   const handleClickFora = event => {
     if (
       !event.target.classList.contains('fa-caret-down') &&
@@ -592,7 +622,7 @@ const Filtro = () => {
                   valueText="turma"
                   valueSelect={turmaFiltroSelecionada}
                   placeholder="Turma"
-                  disabled={!modalidadeFiltroSelecionada}
+                  disabled={desabilitarTurma}
                 />
               </Grid>
               <Grid cols={3} className="form-group text-right">
