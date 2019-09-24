@@ -13,6 +13,7 @@ import {
 } from '../../constantes/url';
 import { salvarRf } from '../../redux/modulos/usuario/actions';
 import { store } from '../../redux';
+import modalidade from '~/dtos/modalidade';
 
 const Principal = props => {
   const FREQUENCIA_TYPE = 'frequencia';
@@ -41,7 +42,7 @@ const Principal = props => {
       FiltroStore &&
       FiltroStore.turmaSelecionada &&
       FiltroStore.turmaSelecionada.length &&
-      FiltroStore.turmaSelecionada[0].codModalidade == 3
+      FiltroStore.turmaSelecionada[0].codModalidade == modalidade.EJA
     ) {
       setModalidadeEja(true);
     } else {
@@ -153,7 +154,7 @@ const Principal = props => {
             disabled={(e => ehDisabled(ANUAL_TYPE))()}
             icone="fa-calendar-alt"
             pack="far"
-            label="Plano Anual"
+            label={ modalidadeEja ? 'Plano Semestral' : 'Plano Anual'}
           />
         </Grid>
       </Row>
