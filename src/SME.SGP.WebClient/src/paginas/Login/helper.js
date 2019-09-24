@@ -1,45 +1,52 @@
 import LoginService from '~/servicos/Paginas/LoginServices';
+import { SalvarDadosLogin } from '~/redux/modulos/usuario/actions';
 import history from '~/servicos/history';
 import { URL_HOME, URL_MODIFICARSENHA } from '~/constantes/url';
 
 class LoginHelper {
-  validarDados = Login => {
-    const Validacao = {
+  constructor(dispatch, redirect) {
+    this.dispatch = dispatch;
+    this.redirect = redirect;
+  }
+
+  validarDados = login => {
+    const validacao = {
       falha: false,
     };
 
     const UsuarioNaoInformado =
-      !Login.usuario ||
-      Login.usuario === '' ||
-      typeof Login.usuario === 'undefined';
+      !login.usuario ||
+      login.usuario === '' ||
+      typeof login.usuario === 'undefined';
+
     const SenhaNaoInformada =
-      !Login.senha || Login.senha === '' || typeof Login.senha === 'undefined';
+      !login.senha || login.senha === '' || typeof login.senha === 'undefined';
 
     if (UsuarioNaoInformado) {
-      Validacao.erroUsuario = 'Digite seu Usuário';
-      Validacao.falha = true;
+      validacao.erroUsuario = 'Digite seu Usuário';
+      validacao.falha = true;
     }
 
-    if (!UsuarioNaoInformado && Login.usuario.length < 5) {
-      Validacao.erroUsuario = 'O usuário deve conter no mínimo 5 caracteres.';
-      Validacao.falha = true;
+    if (!UsuarioNaoInformado && login.usuario.length < 5) {
+      validacao.erroUsuario = 'O usuário deve conter no mínimo 5 caracteres.';
+      validacao.falha = true;
     }
 
     if (SenhaNaoInformada) {
-      Validacao.erroSenha = 'Digite sua Senha';
-      Validacao.falha = true;
+      validacao.erroSenha = 'Digite sua Senha';
+      validacao.falha = true;
     }
 
-    if (!SenhaNaoInformada && Login.senha.length < 4) {
-      Validacao.erroSenha = 'A senha deve conter no mínimo 4 caracteres.';
-      Validacao.falha = true;
+    if (!SenhaNaoInformada && login.senha.length < 4) {
+      validacao.erroSenha = 'A senha deve conter no mínimo 4 caracteres.';
+      validacao.falha = true;
     }
 
-    return Validacao;
+    return validacao;
   };
 
-  acessar = async Login => {
-    const validacao = this.validarDados(Login);
+  acessar = async login => {
+    const validacao = this.validarDados(login);
 
     if (validacao.falha)
       return {
@@ -50,19 +57,25 @@ class LoginHelper {
         erroSenha: validacao.erroSenha && validacao.erroSenha,
       };
 
-    const Autenticacao = await LoginService.autenticar(Login);
+    const autenticacao = await LoginService.autenticar(login);
 
-    if (!Autenticacao.sucesso) {
-      return Autenticacao;
+    if (!autenticacao.sucesso) {
+      return autenticacao;
     }
 
-    //Salvar Dados no Redux
+    this.dispatch(SalvarDadosLogin({ token: '7777710', rf: '7777710' }));
 
-    //Salvar Token na storage
+    if (autenticacao.dados.modificarSenha) {
+      history.push(URL_MODIFICARSENHA);
+      return;
+    }
 
-    if (Autenticacao.dados.modificarSenha) history.push(URL_MODIFICARSENHA);
+    console.log(this.redirect);
+    if (this.redirect) history.push(atob(this.redirect));
     else history.push(URL_HOME);
+
+    return autenticacao;
   };
 }
 
-export default new LoginHelper();
+export default LoginHelper;

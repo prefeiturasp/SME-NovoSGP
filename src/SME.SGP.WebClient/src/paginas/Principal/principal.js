@@ -29,6 +29,7 @@ const Principal = props => {
       const { rf } = props.match.params;
       store.dispatch(salvarRf(rf));
     }
+
     validarFiltro();
   }, []);
 
@@ -124,7 +125,7 @@ const Principal = props => {
           </Row>
         </Grid>
       </Card>
-      <Row>
+      <Row className="mt-3">
         <Grid cols={12} className="form-inline">
           <CardLink
             cols={[4, 4, 4, 12]}
@@ -143,7 +144,7 @@ const Principal = props => {
             disabled={(e => ehDisabled(CICLOS_TYPE))()}
             icone="fa-calendar-minus"
             pack="far"
-            label={ modalidadeEja ? 'Plano de Etapa' : 'Plano de Ciclo'}
+            label={modalidadeEja ? 'Plano de Etapa' : 'Plano de Ciclo'}
           />
           <CardLink
             cols={[4, 4, 4, 12]}

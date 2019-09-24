@@ -1,4 +1,4 @@
-import storage from 'redux-persist/lib/storage';
+import storage from 'redux-persist/lib/storage/session';
 import { persistReducer } from 'redux-persist';
 
 export default reducers => {
@@ -6,7 +6,7 @@ export default reducers => {
     {
       key: 'sme-sgp',
       storage,
-      whitelist: ['auth'],
+      whitelist: ['usuario'],
     },
     reducers
   );
