@@ -301,6 +301,15 @@ export default function PlanoCiclo() {
 
     const anoLetivo = String(usuario.turmaSelecionada[0].anoLetivo);
     const codEscola = String(usuario.turmaSelecionada[0].codEscola);
+
+    const textoReal = textEditorRef.current.state.value.replace(/<[^>]*>/g, '').trim();
+
+    if (!textoReal) {
+      erro(
+        'A descrição deve ser informada'
+      );
+      return;
+    }
     const params = {
       ano: anoLetivo,
       cicloId: cicloSelecionado,
