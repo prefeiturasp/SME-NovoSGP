@@ -18,7 +18,7 @@ const ListaNotificacoes = () => {
       title: 'ID',
       dataIndex: 'codigo',
       key: 'codigo',
-      className: 'px-4',
+      className: 'px-4 d-sm-none d-md-none d-lg-table-cell d-xl-table-cell',
     },
     {
       title: 'Tipo',
@@ -31,7 +31,7 @@ const ListaNotificacoes = () => {
       title: 'Título',
       dataIndex: 'titulo',
       key: 'titulo',
-      className: 'px-4',
+      className: 'px-4 d-sm-none d-md-none d-lg-table-cell d-xl-table-cell',
     },
     {
       title: 'Situação',
