@@ -1,13 +1,21 @@
 import produce from 'immer';
 
 const inicial = {
-    perfilSelecionado : {}
+  perfilSelecionado: {},
+  perfis: []
 };
 
 export default function perfil(state = inicial, action) {
-    return produce(state, draft => {
-        if (action.type === '@perfil/perfilSelecionado') {
-            draft.perfilSelecionado = action.payload;
-        }
-    });
+  return produce(state, draft => {
+    switch (action.type) {
+      case '@perfil/perfilSelecionado':
+        draft.perfilSelecionado = action.payload;
+        break;
+      case '@perfil/perfis':
+        draft.perfis = action.payload;
+        break;
+      default:
+        break;
+    }
+  });
 }
