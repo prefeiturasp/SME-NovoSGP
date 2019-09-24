@@ -29,6 +29,7 @@ import {
   Planejamento,
   ParagrafoAlerta,
 } from './planoAnual.css.js';
+import modalidade from '~/dtos/modalidade';
 
 export default function PlanoAnual() {
   const diciplinasSemObjetivo = [1061];
@@ -48,12 +49,12 @@ export default function PlanoAnual() {
   });
 
   const ehEja =
-    turmaSelecionada[0] && turmaSelecionada[0].codModalidade === 3
+    turmaSelecionada[0] && turmaSelecionada[0].codModalidade === modalidade.EJA
       ? true
       : false;
 
   const ehMedio =
-    turmaSelecionada[0] && turmaSelecionada[0].codModalidade === 6
+    turmaSelecionada[0] && turmaSelecionada[0].codModalidade === modalidade.ENSINO_MEDIO
       ? true
       : false;
 

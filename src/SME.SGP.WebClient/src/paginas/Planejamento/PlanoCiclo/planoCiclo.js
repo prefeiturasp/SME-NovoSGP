@@ -20,6 +20,7 @@ import {
   Titulo,
   TituloAno,
 } from './planoCiclo.css';
+import modalidade from '~/dtos/modalidade';
 
 export default function PlanoCiclo() {
   const urlPrefeitura = 'https://curriculo.sme.prefeitura.sp.gov.br';
@@ -125,7 +126,7 @@ export default function PlanoCiclo() {
         const anoLetivo = String(usuario.turmaSelecionada[0].anoLetivo);
         const codEscola = String(usuario.turmaSelecionada[0].codEscola);
 
-        if (usuario.turmaSelecionada[0].codModalidade == 3) {
+        if (usuario.turmaSelecionada[0].codModalidade == modalidade.EJA) {
           setModalidadeEja(true);
         } else {
           setModalidadeEja(false);
