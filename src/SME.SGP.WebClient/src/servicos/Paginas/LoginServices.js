@@ -1,4 +1,3 @@
-import Axios from 'axios';
 import api from '../api';
 
 class LoginService {
@@ -16,16 +15,16 @@ class LoginService {
         };
       })
       .catch(err => {
-        const status = err.response.status;
+        const status = err.response ? err.response.status : null;
 
-        if (status === 401)
+        if (status && status === 401)
           return { sucesso: false, erroGeral: 'Usuário e/ou senha invalida' };
 
         return {
           sucesso: false,
-          errosModal:
+          erroGeral:
             err.data && err.data.mensagens
-              ? err.data.mensagens
+              ? err.data.mensagens.join(',')
               : 'Falha ao tentar autenticar o servidor',
         };
       });

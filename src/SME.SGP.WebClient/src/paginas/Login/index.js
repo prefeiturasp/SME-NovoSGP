@@ -1,4 +1,5 @@
 import React, { useEffect, useState, useRef, useLayoutEffect } from 'react';
+import { useDispatch } from 'react-redux';
 import LoginHelper from './helper';
 import Row from '~/componentes/row';
 import LogoDoSgp from '~/recursos/LogoSgpTexto.svg';
@@ -7,8 +8,6 @@ import Grid from '~/componentes/grid';
 import { Base, Colors } from '~/componentes/colors';
 import FormGroup from '~/componentes/formGroup';
 import Button from '~/componentes/button';
-import { Tooltip } from 'antd';
-import Icon from '~/componentes/icon';
 import {
   Fundo,
   Logo,
@@ -26,9 +25,19 @@ import {
   ErroTexto,
   ErroGeral,
 } from './login.css';
+import { Tooltip } from 'antd';
+import Icon from '~/componentes/icon';
 
-const Login = () => {
+const Login = props => {
   const errosDefault = { erroGeral: '', erroUsuario: '', erroSenha: '' };
+
+  const dispatch = useDispatch();
+
+  let redirect = null;
+  if (props.match && props.match.params && props.match.params.redirect)
+    redirect = props.match.params.redirect;
+
+  const helper = new LoginHelper(dispatch, redirect);
 
   const [login, setLogin] = useState({
     usuario: '',
@@ -59,9 +68,7 @@ const Login = () => {
   };
 
   const Acessar = async () => {
-    const { sucesso, ...retorno } = await LoginHelper.acessar(login);
-
-    console.log(retorno, sucesso);
+    const { sucesso, ...retorno } = await helper.acessar(login);
 
     if (!sucesso) {
       setLogin({ ...login, ...retorno });
@@ -77,7 +84,10 @@ const Login = () => {
             <Centralizar className="row col-md-12">
               <Row className="col-md-12 p-0 d-flex justify-content-center align-self-start">
                 <LogoSGP className="col-xl-8 col-md-8 col-sm-8 col-xs-12">
-                  <Logo src={LogoDoSgp} alt="SGP" />
+                  <Logo
+                    src={LogoDoSgp}
+                    alt="Novo Sistema de Gestão Pedagógica"
+                  />
                 </LogoSGP>
               </Row>
               <Row className="col-md-12 d-flex justify-content-center align-self-start">
@@ -87,14 +97,17 @@ const Login = () => {
                 >
                   <FormGroup className="col-md-12 p-0">
                     <Rotulo className="d-block" htmlFor="Usuario">
-                      Usuário
+                      Usuário{' '}
+                      <Tooltip placement="top" title={TextoAjuda}>
+                        <i className="fas fa-question-circle"></i>
+                      </Tooltip>
                     </Rotulo>
                     <CampoTexto
                       id="Usuario"
                       ref={campoUsuario}
                       value={usuario}
                       onChange={DefinirUsuario}
-                      placeholder="Insira seu usuário ou RF"
+                      placeholder="Insira seu RF ou usuário"
                       className={`col-md-12 form-control ${login.erroSenha &&
                         'is-invalid'}`}
                     />
@@ -139,9 +152,12 @@ const Login = () => {
                   </FormGroup>
                 </Formulario>
               </Row>
-              <Row className="col-md-12 d-flex justify-content-center align-self-end mb-5">
+              <Row className="col-md-12 d-flex justify-content-center align-self-end mb-3">
                 <LogoSP className="col-xl-8 col-md-8 col-sm-8 col-xs-12 d-flex">
-                  <Logo src={LogoCidadeSP} alt="Cidade de São Paulo" />
+                  <Logo
+                    src={LogoCidadeSP}
+                    alt="Cidade de São Paulo - Educação"
+                  />
                 </LogoSP>
               </Row>
             </Centralizar>

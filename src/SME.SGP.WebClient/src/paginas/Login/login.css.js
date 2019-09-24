@@ -102,6 +102,7 @@ export const LabelLink = styled.label`
   font-style: normal;
   font-stretch: normal;
   color: ${Base.Roxo} !important;
+  cursor: pointer;
 `;
 
 export const ErroTexto = styled.label`
