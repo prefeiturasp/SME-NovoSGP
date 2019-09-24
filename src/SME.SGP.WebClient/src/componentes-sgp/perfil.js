@@ -1,18 +1,29 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import styled from 'styled-components';
 import { Base } from '../componentes/colors';
 import history from '../servicos/history';
 import { store } from '../redux';
 import { perfilSelecionado } from '../redux/modulos/perfil/actions';
 import { useSelector } from 'react-redux';
+import api from '../servicos/api';
 
 
 const Perfil = () => {
   const [ocultaPerfis, setarOcultaPerfis] = useState(true);
-
+  const [perfis, setarPerfis] = useState({});
   const PerfilStore = useSelector(store => store.perfil);
 
-  const perfis = {
+  const buscarPerfis = () => {
+    api.get(
+      `api/v1/perfis`
+    ).then(result => {
+      console.log(result);
+    })
+  };
+
+  useEffect(buscarPerfis(), []);
+
+  const perfisOld = {
     perfilSelecionado: {
       id: "2",
       descricao: 'Professor'
@@ -29,12 +40,12 @@ const Perfil = () => {
       {
         id: "3",
         descricao: 'Coordenador Pedagógico',
-        abreviacao: 'CP'
+        sigla: 'CP'
       },
       {
         id: "4",
         descricao: 'Professor Orientador de Área',
-        abreviacao: 'POA'
+        sigla: 'POA'
       }
     ]
   };
@@ -105,7 +116,7 @@ const Perfil = () => {
 
   const gravarPerfilSelecionado = (perfil) => {
     if (perfil) {
-      const perfilNovo = perfis.dados.filter(item => item.id === perfil)
+      const perfilNovo = perfisOld.dados.filter(item => item.id === perfil)
       store.dispatch(perfilSelecionado(perfilNovo[0]));
       setarOcultaPerfis(true);
       if (PerfilStore.perfilSelecionado.id !== perfilNovo[0].id) {
@@ -115,7 +126,7 @@ const Perfil = () => {
   }
 
   const onClickBotao = () => {
-    if (perfis.dados.length > 1) {
+    if (perfisOld.dados.length > 1) {
       setarOcultaPerfis(!ocultaPerfis);
     }
   };
@@ -123,18 +134,18 @@ const Perfil = () => {
 
   return (
     <div className="position-relative">
-      <Botao className="text-center" onClick={onClickBotao} style={{ cursor: perfis.dados.length > 1 ? 'pointer' : 'default' }}>
+      <Botao className="text-center" onClick={onClickBotao} style={{ cursor: perfisOld.dados.length > 1 ? 'pointer' : 'default' }}>
         <IconePerfil>
           <i className="fas fa-user-circle" />
         </IconePerfil>
         <span className={`d-block mt-1 ${ocultaPerfis ? '' : ' font-weight-bold'}`} >
-          {PerfilStore.perfilSelecionado.abreviacao ? PerfilStore.perfilSelecionado.abreviacao : PerfilStore.perfilSelecionado.descricao}
+          {PerfilStore.perfilSelecionado.sigla ? PerfilStore.perfilSelecionado.sigla : PerfilStore.perfilSelecionado.descricao}
         </span>
       </Botao>
       <ItensPerfil hidden={ocultaPerfis} className="list-inline">
         <table>
           <tbody>
-            {perfis.dados.map(item =>
+            {perfisOld.dados.map(item =>
               <Item key={item.id}
                 onClick={(e) => gravarPerfilSelecionado(e.currentTarget.accessKey)}
                 accessKey={item.id}>
@@ -142,7 +153,7 @@ const Perfil = () => {
                   <i value={item.id} className="fas fa-user-circle"></i>
                 </td>
                 <td style={{ width: '100%', fontWeight: item.id === PerfilStore.perfilSelecionado.id ? 'bold' : 'initial' }}>
-                  {item.descricao + (item.abreviacao ? "(" + item.abreviacao + ")" : "")}
+                  {item.descricao + (item.sigla ? "(" + item.sigla + ")" : "")}
                 </td>
               </Item>
             )}
