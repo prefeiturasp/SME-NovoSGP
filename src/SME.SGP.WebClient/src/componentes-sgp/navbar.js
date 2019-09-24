@@ -8,15 +8,21 @@ import { Base } from '../componentes/colors';
 import NavbarNotificacoes from './navbar-notificacoes';
 
 const Navbar = () => {
+  const collapsed = useSelector(state => state.navegacao.collapsed);
+  const usuario = useSelector(state => state.usuario.rf);
+
   const Nav = styled.nav`
     height: 70px !important;
     padding-left: 15px !important;
     padding-right: 15px !important;
+    @media (max-width: 767.98px) {
+      height: 140px !important;
+    }
   `;
 
   const Logo = styled.img`
-    max-height: 65px !important;
-    max-width: 75px !important;
+    height: 65px !important;
+    width: 75px !important;
   `;
 
   const Botoes = styled.div`
@@ -44,45 +50,62 @@ const Navbar = () => {
     font-size: 10px !important;
   `;
 
-  const collapsed = useSelector(state => state.navegacao.collapsed);
-  const usuario = useSelector(state => state.usuario.rf);
+  const Div = styled.div`
+    margin-left: ${collapsed ? '120px' : '260px'} !important;
+    @media (max-width: 767.98px) {
+      left: 50%;
+      margin-left: 0 !important;
+      transform: translateX(-50%) translateY(-0.5rem);
+    }
+  `;
 
   return (
     <Nav className="navbar navbar-expand-md navbar-light bg-white shadow-sm sticky-top py-0">
-      <Link
-        className={`${
-          collapsed
-            ? 'col-xl-1 col-lg-2 col-md-2 col-sm-2'
-            : 'col-xl-2 col-lg-3 col-md-3 col-sm-4'
-        }`}
-        to={`/${usuario}`}
-      >
-        <Logo src={LogoDoSgp} alt="SGP" className="mx-auto d-block" />
-      </Link>
-      <div
-        className={`d-flex justify-content-between ${
-          collapsed
-            ? 'col-xl-11 col-lg-10 col-md-10 col-sm-10'
-            : 'col-xl-10 col-lg-9 col-md-9 col-sm-8'
-        }`}
-      >
-        <div className="col-xl-8 col-lg-8 col-md-8 col-sm-12 col-xl-6 pl-5 ml-n2">
-          <Filtro />
-        </div>
-        <div className="col-xl-4 col-lg-4 col-md-4 col-sm-12 d-flex justify-content-end pr-xl-2 pr-lg-2 pr-md-2">
-          <Botoes className="d-flex align-items-center">
-            <ul className="list-inline p-0 m-0">
-              <li className="list-inline-item mr-4">
-                <NavbarNotificacoes Botao={Botao} Icone={Icone} Texto={Texto} />
-              </li>
-              <li className="list-inline-item">
-                <Botao className="text-center">
-                  <Icone className="fa fa-power-off fa-lg" />
-                  <Texto className="d-block mt-1">Sair</Texto>
-                </Botao>
-              </li>
-            </ul>
-          </Botoes>
+      <div className="container-fluid h-100">
+        <div className="d-flex w-100 h-100 position-relative">
+          <div
+            className={`${
+              collapsed
+                ? 'col-xl-1 col-lg-1 col-md-1 col-sm-4'
+                : 'col-xl-2 col-lg-2 col-md-2 col-sm-4'
+            }`}
+          >
+            <Link to={`/${usuario}`}>
+              <Logo
+                src={LogoDoSgp}
+                alt="SGP"
+                className="mx-xl-auto mx-lg-auto mt-xl-0 mt-lg-0 mt-md-2 mt-sm-2 d-block"
+              />
+            </Link>
+          </div>
+          <div
+            className={`d-flex justify-content-end ${
+              collapsed
+                ? 'col-xl-11 col-lg-11 col-md-11'
+                : 'col-xl-10 col-lg-10 col-md-10'
+            } col-sm-8`}
+          >
+            <Botoes className="align-self-xl-center align-self-lg-center align-self-md-start align-self-sm-start mt-xl-0 mt-lg-0 mt-md-4 mt-sm-4">
+              <ul className="list-inline p-0 m-0">
+                <li className="list-inline-item mr-4">
+                  <NavbarNotificacoes
+                    Botao={Botao}
+                    Icone={Icone}
+                    Texto={Texto}
+                  />
+                </li>
+                <li className="list-inline-item">
+                  <Botao className="text-center">
+                    <Icone className="fa fa-power-off fa-lg" />
+                    <Texto className="d-block mt-1">Sair</Texto>
+                  </Botao>
+                </li>
+              </ul>
+            </Botoes>
+          </div>
+          <Div className="d-flex align-self-xl-center align-self-lg-center align-self-md-end align-self-sm-end w-100 position-absolute mb-sm-2 mb-md-2">
+            <Filtro />
+          </Div>
         </div>
       </div>
     </Nav>

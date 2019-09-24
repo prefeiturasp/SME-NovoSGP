@@ -10,7 +10,6 @@ import { store } from './redux';
 import Conteudo from './componentes-sgp/conteudo';
 
 function App() {
-
   return (
     <Provider store={store}>
       <Router history={history}>

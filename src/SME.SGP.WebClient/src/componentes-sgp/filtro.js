@@ -52,8 +52,10 @@ const Filtro = () => {
   const [turmaUeSelecionada, setTurmaUeSelecionada] = useState();
 
   const Container = styled.div`
-    margin-left: -3px;
-    max-width: 568px !important;
+    width: 568px !important;
+    @media (max-width: 575.98px) {
+      max-width: 80% !important;
+    }
   `;
 
   const Input = styled.input`

@@ -12,6 +12,7 @@ const DataTable = props => {
     selectMultipleRows,
     pageSize,
     pagination,
+    locale,
   } = props;
 
   const rowSelection = {
@@ -51,7 +52,7 @@ const DataTable = props => {
         pageSize={{ pageSize }}
         bordered
         size="middle"
-        locale={{ emptyText: 'Sem dados' }}
+        locale={locale}
       />
     </Container>
   );
@@ -66,6 +67,7 @@ DataTable.propTypes = {
   pageSize: PropTypes.number,
   pagination: PropTypes.bool,
   onRowClick: PropTypes.func,
+  locale: PropTypes.object,
 };
 
 DataTable.defaultProps = {
@@ -75,6 +77,7 @@ DataTable.defaultProps = {
   pageSize: 10,
   pagination: false,
   onRowClick: () => {},
+  locale: { emptyText: 'Sem dados' },
 };
 
 export default DataTable;
