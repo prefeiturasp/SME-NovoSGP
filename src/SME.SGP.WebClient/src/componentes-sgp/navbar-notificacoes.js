@@ -43,7 +43,7 @@ const NavbarNotificacoes = props => {
     margin-top: 5px !important;
     min-width: 360px !important;
     right: 0 !important;
-    z-index: 0 !important;
+    z-index: 1 !important;
   `;
 
   const Tr = styled.tr`
