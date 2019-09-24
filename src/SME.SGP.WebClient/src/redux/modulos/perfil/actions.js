@@ -4,3 +4,10 @@ export function perfilSelecionado(perfil) {
     payload: perfil,
   };
 }
+
+export function setarPerfis(perfis) {
+  return {
+    type: '@perfil/perfis',
+    payload: perfis,
+  };
+}
