@@ -30,16 +30,16 @@ namespace SME.SGP.Aplicacao
             this.configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
         }
 
-        public async Task<bool> DisciplinaPossuiObjetivosDeAprendizagem(long codigoDisciplina)
+        public bool DisciplinaPossuiObjetivosDeAprendizagem(long codigoDisciplina)
         {
-            var objetivos = await Listar();
+            var objetivos = Listar().Result;
             if (objetivos == null)
             {
                 throw new NegocioException("Não foi possível obter a lista de objetivos de aprendizagem");
             }
             IEnumerable<ComponenteCurricular> componentesCurriculares = ObterComponentesCurriculares();
             var componentesFiltro = componentesCurriculares.Where(c => c.CodigoEOL == codigoDisciplina);
-            var componentesJurema = componentesFiltro.Select(c => c.CodigoJurema);
+            var componentesJurema = componentesFiltro?.Select(c => c.CodigoJurema);
             if (componentesJurema == null)
             {
                 return false;

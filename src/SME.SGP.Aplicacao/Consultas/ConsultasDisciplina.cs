@@ -58,7 +58,7 @@ namespace SME.SGP.Aplicacao
                     {
                         CodigoComponenteCurricular = disciplina.CodigoComponenteCurricular,
                         Nome = disciplina.Nome,
-                        PossuiObjetivos = objetivosAprendizagem.Any(c => c.)
+                        PossuiObjetivos = consultasObjetivoAprendizagem.DisciplinaPossuiObjetivosDeAprendizagem(disciplina.CodigoComponenteCurricular)
                     };
                 }
             }
