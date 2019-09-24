@@ -11,14 +11,17 @@ namespace SME.SGP.Aplicacao
 {
     public class ConsultasDisciplina : IConsultasDisciplina
     {
+        private readonly IConsultasObjetivoAprendizagem consultasObjetivoAprendizagem;
         private readonly IRepositorioCache repositorioCache;
         private readonly IServicoEOL servicoEOL;
 
         public ConsultasDisciplina(IServicoEOL servicoEOL,
-                                   IRepositorioCache repositorioCache)
+                                   IRepositorioCache repositorioCache,
+                                   IConsultasObjetivoAprendizagem consultasObjetivoAprendizagem)
         {
             this.servicoEOL = servicoEOL ?? throw new System.ArgumentNullException(nameof(servicoEOL));
             this.repositorioCache = repositorioCache ?? throw new System.ArgumentNullException(nameof(repositorioCache));
+            this.consultasObjetivoAprendizagem = consultasObjetivoAprendizagem ?? throw new System.ArgumentNullException(nameof(consultasObjetivoAprendizagem));
         }
 
         public async Task<IEnumerable<DisciplinaDto>> ObterDisciplinasPorProfessorETurma(long codigoTurma, string rfProfessor)
@@ -36,7 +39,8 @@ namespace SME.SGP.Aplicacao
                 var disciplinas = await servicoEOL.ObterDisciplinasPorProfessorETurma(codigoTurma, rfProfessor);
                 if (disciplinas != null && disciplinas.Any())
                 {
-                    disciplinasDto = MapearParaDto(disciplinas);
+                    var objetivosAprendizagem = await consultasObjetivoAprendizagem.Listar();
+                    disciplinasDto = MapearParaDto(disciplinas, objetivosAprendizagem);
 
                     await repositorioCache.SalvarAsync(chaveCache, JsonConvert.SerializeObject(disciplinasDto));
                 }
@@ -44,7 +48,7 @@ namespace SME.SGP.Aplicacao
             return disciplinasDto;
         }
 
-        private IEnumerable<DisciplinaDto> MapearParaDto(IEnumerable<DisciplinaResposta> disciplinas)
+        private IEnumerable<DisciplinaDto> MapearParaDto(IEnumerable<DisciplinaResposta> disciplinas, IEnumerable<ObjetivoAprendizagemDto> objetivosAprendizagem)
         {
             if (disciplinas != null)
             {
@@ -53,7 +57,8 @@ namespace SME.SGP.Aplicacao
                     yield return new DisciplinaDto()
                     {
                         CodigoComponenteCurricular = disciplina.CodigoComponenteCurricular,
-                        Nome = disciplina.Nome
+                        Nome = disciplina.Nome,
+                        PossuiObjetivos = objetivosAprendizagem.Any(c => c.)
                     };
                 }
             }
