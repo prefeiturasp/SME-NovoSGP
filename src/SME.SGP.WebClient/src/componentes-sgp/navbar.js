@@ -1,8 +1,12 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import { Deslogar } from '~/redux/modulos/usuario/actions';
+import { useDispatch } from 'react-redux';
+import history from '~/servicos/history';
 import Filtro from './filtro';
 import styled from 'styled-components';
 import LogoDoSgp from '../recursos/LogoDoSgp.svg';
+import { URL_LOGIN } from '~/constantes/url';
 import { Base } from '../componentes/colors';
 import { useSelector } from 'react-redux';
 
@@ -39,6 +43,13 @@ const Navbar = () => {
 
   const retraido = useSelector(state => state.navegacao.retraido);
 
+  const dispatch = useDispatch();
+
+  const onClickSair = () => {
+    dispatch(Deslogar());
+    history.push(URL_LOGIN);
+  };
+
   return (
     <Nav className="navbar navbar-expand-md navbar-light bg-white shadow-sm sticky-top">
       <Link
@@ -62,7 +73,7 @@ const Navbar = () => {
         <Botoes className="float-right d-flex align-items-center mr-4">
           <ul className="list-inline p-0 m-0">
             <li className="list-inline-item text-center">
-              <BtnSair>
+              <BtnSair onClick={onClickSair}>
                 <Icone className="fa fa-power-off fa-lg mb-1" />
                 Sair
               </BtnSair>

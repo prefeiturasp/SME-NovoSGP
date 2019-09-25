@@ -5,7 +5,11 @@ const Row = props => {
   const { children, className } = props;
 
   return (
-    <div {...props} key={shortid.generate()} className={`row ${className}`}>
+    <div
+      {...props}
+      key={shortid.generate()}
+      className={`row ${className && className}`}
+    >
       {children}
     </div>
   );

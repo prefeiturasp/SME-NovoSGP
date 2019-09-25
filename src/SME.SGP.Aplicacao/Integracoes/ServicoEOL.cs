@@ -17,6 +17,24 @@ namespace SME.SGP.Aplicacao.Integracoes
             this.httpClient = httpClient;
         }
 
+        public async Task<UsuarioEolAutenticacaoRetornoDto> Autenticar(string login, string senha)
+        {
+            httpClient.DefaultRequestHeaders.Clear();
+
+            IList<KeyValuePair<string, string>> valoresParaEnvio = new List<KeyValuePair<string, string>> {
+                { new KeyValuePair<string, string>("login", login) },
+                { new KeyValuePair<string, string>("senha", senha) }};
+
+            var resposta = await httpClient.PostAsync($"AutenticacaoSgp/Autenticar", new FormUrlEncodedContent(valoresParaEnvio));
+
+            if (resposta.IsSuccessStatusCode)
+            {
+                var json = await resposta.Content.ReadAsStringAsync();
+                return JsonConvert.DeserializeObject<UsuarioEolAutenticacaoRetornoDto>(json);
+            }
+            else return null;
+        }
+
         public async Task<IEnumerable<DisciplinaResposta>> ObterDisciplinasPorProfessorETurma(long codigoTurma, string rfProfessor)
         {
             var resposta = await httpClient.GetAsync($"professores/{rfProfessor}/turmas/{codigoTurma}/disciplinas");
