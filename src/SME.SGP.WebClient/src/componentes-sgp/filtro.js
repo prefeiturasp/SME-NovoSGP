@@ -55,8 +55,10 @@ const Filtro = () => {
   const [desabilitarTurma, setDesabilitarTurma] = useState(true);
 
   const Container = styled.div`
-    margin-left: -3px;
-    max-width: 571px !important;
+    width: 568px !important;
+    @media (max-width: 575.98px) {
+      max-width: 80% !important;
+    }
   `;
 
   const Input = styled.input`
@@ -151,7 +153,7 @@ const Filtro = () => {
     const b = y.turma.toLowerCase();
 
     if (a > b) return 1;
-    else if (a < b) return -1;
+    if (a < b) return -1;
 
     return 0;
   };
@@ -183,7 +185,7 @@ const Filtro = () => {
       }
 
       if (dado.semestre === 2) {
-        for (let semestre = 1; semestre <= dado.semestre; semestre++) {
+        for (let semestre = 1; semestre <= dado.semestre; semestre += 1) {
           if (periodos.findIndex(periodo => periodo.codigo === semestre) < 0) {
             periodos.push({
               codigo: semestre,
@@ -503,7 +505,7 @@ const Filtro = () => {
   };
 
   return (
-    <Container className="position-relative w-100 float-left">
+    <Container className="position-relative w-100">
       <form className="w-100">
         <div className="form-group mb-0 w-100 position-relative">
           <Search className="fa fa-search fa-lg bg-transparent position-absolute text-center" />
@@ -514,8 +516,8 @@ const Filtro = () => {
             ref={inputBuscaRef}
             onFocus={onFocusBusca}
             onChange={onChangeAutocomplete}
-            readOnly={turmaUeSelecionada ? true : false}
-            value={turmaUeSelecionada ? turmaUeSelecionada : textoAutocomplete}
+            readOnly={!!turmaUeSelecionada}
+            value={turmaUeSelecionada || textoAutocomplete}
           />
           {dados.length > 1 && turmaUeSelecionada && (
             <Times
