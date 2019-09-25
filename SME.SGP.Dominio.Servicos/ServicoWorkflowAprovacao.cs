@@ -99,7 +99,7 @@ namespace SME.SGP.Dominio.Servicos
 
                 foreach (var usuario in funcionariosRetornoEol)
                 {
-                    usuarios.Add(servicoUsuario.ObterUsuarioPorCodigoRfOuAdiciona(usuario.CodigoRf));
+                    usuarios.Add(servicoUsuario.ObterUsuarioPorCodigoRfLoginOuAdiciona(usuario.CodigoRf));
                 }
             }
 

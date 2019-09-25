@@ -26,7 +26,7 @@ namespace SME.SGP.Aplicacao.Integracoes
                 retornoDto.Autenticado = retornoServicoEol.Status == AutenticacaoStatusEol.Ok;
                 retornoDto.ModificarSenha = retornoServicoEol.Status == AutenticacaoStatusEol.SenhaPadrao;
 
-                var usuario = servicoUsuario.ObterUsuarioPorCodigoRfOuAdiciona(retornoServicoEol.CodigoRf);
+                var usuario = servicoUsuario.ObterUsuarioPorCodigoRfLoginOuAdiciona(retornoServicoEol.CodigoRf, login);
 
                 retornoDto.Token = GeraTokenSeguranca(usuario);
             }
