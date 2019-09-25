@@ -37,7 +37,7 @@ const Principal = props => {
 
   useEffect(() => {
     validarFiltro();
-  }, [FiltroStore]);
+  }, [filtroStore]);
 
   useEffect(() => {
     if (

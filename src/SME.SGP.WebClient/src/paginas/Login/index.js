@@ -98,7 +98,7 @@ const Login = props => {
                   />
                 </LogoSGP>
               </Row>
-              <Row className="col-md-12 d-flex justify-content-center align-self-start">
+              <Row className="col-md-12 d-flex justify-content-center align-self-start p-0">
                 <Formulario
                   id="Formulario"
                   className="col-xl-8 col-md-8 col-sm-8 col-xs-12 p-0"
