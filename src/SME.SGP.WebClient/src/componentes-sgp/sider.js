@@ -57,9 +57,6 @@ const Sider = () => {
       document.documentElement.style.setProperty('--posicao-item-menu-top', `${posicaoTop}px`)
       document.documentElement.style.setProperty('--posicao-item-menu-right', `${posicaoRight}px`)
     }
-    // if(left){
-    //   document.documentElement.style.setProperty('--posicao-item-menu-left', `${left}px`)
-    // }
   }
 
   const alternarRetraido = () => {
