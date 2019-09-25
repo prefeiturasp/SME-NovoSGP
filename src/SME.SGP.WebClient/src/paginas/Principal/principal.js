@@ -100,13 +100,12 @@ const Principal = props => {
                   mensagem: 'Você precisa escolher uma turma.',
                   estiloTitulo: { fontSize: '18px' },
                 }}
-                className="mb-0"
               />
             </Container>
           </Grid>
         </Row>
       ) : null}
-      <Card className="rounded">
+      <Card className="rounded mb-4">
         <Grid cols={12}>
           <Label>
             <span className="fas fa-thumbtack mr-2 mb-0" />
