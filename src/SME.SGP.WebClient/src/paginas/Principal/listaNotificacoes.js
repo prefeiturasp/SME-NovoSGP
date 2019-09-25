@@ -18,26 +18,28 @@ const ListaNotificacoes = () => {
       title: 'ID',
       dataIndex: 'codigo',
       key: 'codigo',
-      className: 'px-4 d-sm-none d-md-none d-lg-table-cell d-xl-table-cell',
+      className:
+        'text-left px-4 d-sm-none d-md-none d-lg-table-cell d-xl-table-cell',
     },
     {
       title: 'Tipo',
       dataIndex: 'categoria',
       key: 'categoria',
-      className: 'px-4',
+      className: 'text-left px-4',
       render: categoria => categoriaLista[categoria],
     },
     {
       title: 'Título',
       dataIndex: 'titulo',
       key: 'titulo',
-      className: 'px-4 d-sm-none d-md-none d-lg-table-cell d-xl-table-cell',
+      className:
+        'text-left px-4 d-sm-none d-md-none d-lg-table-cell d-xl-table-cell',
     },
     {
       title: 'Situação',
       dataIndex: 'status',
       key: 'status',
-      className: 'text-uppercase px-4',
+      className: 'text-left text-uppercase px-4',
       render: status => (
         <span className={`${status === 1 && 'cor-vermelho font-weight-bold'}`}>
           {statusLista[status]}
@@ -48,7 +50,7 @@ const ListaNotificacoes = () => {
       title: 'Data/Hora',
       dataIndex: 'data',
       key: 'data',
-      className: 'text-right py-0 data-hora',
+      className: 'text-left px-4 py-0 data-hora',
       width: 100,
       render: data => <span>{data}</span>,
     },
@@ -70,7 +72,7 @@ const ListaNotificacoes = () => {
 
   const Container = styled.span`
     .data-hora {
-      width: 80px;
+      line-height: 1rem;
       white-space: normal !important;
     }
   `;
