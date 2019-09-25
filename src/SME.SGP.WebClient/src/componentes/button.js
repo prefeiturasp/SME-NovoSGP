@@ -25,18 +25,19 @@ const Button = props => {
     label,
     hidden,
     id,
+    customRadius,
   } = props;
 
   const Icon = styled.i``;
 
   const Remove = styled(Icon)`
-    background: ${Base.Roxo} url(${Remover}) center;
-    border: 2px solid ${Base.Branco};
-    box-sizing: border-box;
-    height: 15px;
-    right: -5px;
-    top: -5px;
-    width: 15px;
+    background: ${Base.Roxo} url(${Remover}) center !important;
+    border: 2px solid ${Base.Branco} !important;
+    box-sizing: border-box !important;
+    height: 15px !important;
+    right: -5px !important;
+    top: -5px !important;
+    width: 15px !important;
   `;
 
   const Btn = styled.button`
@@ -47,13 +48,12 @@ const Button = props => {
         ? `border-color: ${Active[color]} !important; color: ${Active[color]} !important;`
         : `border: 0 none !important;`
     };
-    display: flex;
-    position: relative;
+    ${customRadius && customRadius};
     font-weight: ${bold ? 'bold' : 'normal'} !important;
     ${width ? `width: ${width};` : ''}
-    ${fontSize ? `font-size: ${fontSize};` : ''}
-    ${padding ? `padding: ${padding};` : ''}
-    height: ${height ? height : '38px'};
+    ${fontSize && `font-size: ${fontSize} !important;`}
+    ${padding && `padding: ${padding} !important;`}
+    height: ${height} !important;
     ${lineHeight && `line-height: ${lineHeight}`}
     &:hover {
       background: ${Hover[color]} !important;
@@ -71,9 +71,9 @@ const Button = props => {
     <Btn
       hidden={hidden}
       type={type}
-      className={`btn btn-${style} ${className} ${padding ? '' : 'py-2 px-3'} ${
-        fontSize ? '' : 'fonte-14'
-      }`}
+      className={`btn btn-${style} ${className} position-relative d-flex justify-content-center align-items-center ${
+        padding ? '' : 'py-2 px-3'
+      } ${fontSize ? '' : 'fonte-14'}`}
       onClick={onClick}
       disabled={disabled}
       id={id}
@@ -102,8 +102,14 @@ Button.propTypes = {
   onClick: PropTypes.func,
   disabled: PropTypes.bool,
   icon: PropTypes.string,
+  padding: PropTypes.string,
+  height: PropTypes.string,
+  width: PropTypes.string,
+  fontSize: PropTypes.string,
   label: PropTypes.string,
   hidden: PropTypes.bool,
+  id: PropTypes.string,
+  customRadius: PropTypes.string,
 };
 
 Button.defaultProps = {
@@ -118,8 +124,14 @@ Button.defaultProps = {
   onClick: () => {},
   disabled: false,
   icon: '',
+  padding: '',
+  height: '38px',
+  width: '',
+  fontSize: '',
   label: '',
   hidden: false,
+  id: '',
+  customRadius: '',
 };
 
 export default Button;
