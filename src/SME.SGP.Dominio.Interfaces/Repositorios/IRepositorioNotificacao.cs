@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 
 namespace SME.SGP.Dominio.Interfaces
 {
@@ -7,7 +7,9 @@ namespace SME.SGP.Dominio.Interfaces
         IEnumerable<Notificacao> Obter(string dreId, string escolaId, int statusId, string turmaId,
             string usuarioId, int tipoId, int categoriaId, string titulo, long codigo, int anoLetivo);
 
-        //(Notificacao, string) ObterDetalhePorId(long idNotificacao);
+        IEnumerable<Notificacao> ObterNotificacoesPorAnoLetivoERf(int anoLetivo, string usuarioRf, int limite);
+
+        int ObterQuantidadeNotificacoesNaoLidasPorAnoLetivoERf(int anoLetivo, string usuarioRf);
 
         long ObterUltimoCodigoPorAno(int ano);
     }
