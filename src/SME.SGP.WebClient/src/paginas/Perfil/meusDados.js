@@ -25,11 +25,23 @@ const MeusDados = () => {
         justify-content: center;
         flex-direction: column;
         align-items: center;
+
+        @media (max-width: 850px) {
+          img{
+            width: 100px !important;
+            height: 100px !important;
+          }
+        }
+
+        @media (max-width: 700px) {
+          img{
+            width: 70px !important;
+            height: 70px !important;
+          }
+        }
         img{
-            width:100%;
-            height: 100%;
-            max-width: 172px;
-            max-height: 172px;
+            width: 172px;
+            height: 172px;
             border-radius: 50%;
         }
         span{
@@ -63,7 +75,13 @@ const MeusDados = () => {
         display: inline-block;
         justify-content: center !important;
         i{
-            margin-top:9px;
+            margin-top:25%;
+        }
+
+        @media (max-width: 850px) {
+          font-size: 10px !important;
+          height: 20px !important;
+          width:20px !important;
         }
   `;
 
@@ -90,7 +108,6 @@ const MeusDados = () => {
                     </DadosPerfil>
                 </Perfil>
                 <Conteudo className="col-8">
-                    teste Conteudo
                 </Conteudo>
             </Card>
         </div>
