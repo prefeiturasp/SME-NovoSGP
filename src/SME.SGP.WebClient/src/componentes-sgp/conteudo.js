@@ -4,13 +4,11 @@ import { Modal, Row } from 'antd';
 import styled from 'styled-components';
 import shortid from 'shortid';
 import { alertaFechar } from '../redux/modulos/alertas/actions';
-import Rotas from '../rotas/rotas';
 import Button from '../componentes/button';
 import { Colors } from '../componentes/colors';
 import BreadcrumbSgp from './breadcrumb-sgp';
 import Alert from '~/componentes/alert';
 import Grid from '~/componentes/grid';
-import shortid from 'shortid';
 import Navbar from './navbar';
 import Sider from './sider';
 
