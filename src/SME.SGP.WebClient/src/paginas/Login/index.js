@@ -59,6 +59,14 @@ const Login = props => {
     campoSenha.current.focus();
   }, [senha]);
 
+  const aoPressionarTecla = e => {
+    if (e.key === 'Enter') {
+      Acessar();
+    }
+  };
+
+  document.onkeyup = aoPressionarTecla;
+
   const DefinirUsuario = e => {
     setLogin({ ...login, ...errosDefault, usuario: e.target.value });
   };

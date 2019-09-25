@@ -134,4 +134,4 @@ export const ErroGeral = styled.h2`
 `;
 
 export const TextoAjuda =
-  'Para usuários externos, insira seus dados de usuário. Caso não possua, procure a SME.';
+  'Digite seu RF. Para usuários externos, insira seus dados de usuário. Caso não possua, procure a SME.';
