@@ -3,28 +3,39 @@ import { Link } from 'react-router-dom';
 import { Deslogar } from '~/redux/modulos/usuario/actions';
 import { useDispatch } from 'react-redux';
 import history from '~/servicos/history';
-import Filtro from './filtro';
+import { useSelector } from 'react-redux';
 import styled from 'styled-components';
+import Filtro from './filtro';
 import LogoDoSgp from '../recursos/LogoDoSgp.svg';
 import { URL_LOGIN } from '~/constantes/url';
 import { Base } from '../componentes/colors';
-import { useSelector } from 'react-redux';
+import NavbarNotificacoes from './navbar-notificacoes';
 
 const Navbar = () => {
+  const retraido = useSelector(state => state.navegacao.retraido);
+  const usuario = useSelector(state => state.usuario.rf);
+
   const Nav = styled.nav`
     height: 70px !important;
     padding-left: 15px !important;
     padding-right: 15px !important;
+    @media (max-width: 767.98px) {
+      height: 140px !important;
+    }
   `;
 
   const Logo = styled.img`
-    max-height: 65px !important;
-    max-width: 75px !important;
+    height: 65px !important;
+    width: 75px !important;
   `;
 
   const Botoes = styled.div`
-    font-size: 10px !important;
     height: 45px !important;
+  `;
+
+  const Botao = styled.a`
+    display: block !important;
+    text-align: center !important;
   `;
 
   const Icone = styled.i`
@@ -34,14 +45,23 @@ const Navbar = () => {
     color: ${Base.Branco} !important;
     display: flex !important;
     justify-content: center !important;
-    font-size: 18px !important;
+    font-size: 15px !important;
     height: 28px !important;
     width: 28px !important;
   `;
 
-  const BtnSair = styled.a``;
+  const Texto = styled.span`
+    font-size: 10px !important;
+  `;
 
-  const retraido = useSelector(state => state.navegacao.retraido);
+  const Div = styled.div`
+    margin-left: ${retraido ? '120px' : '260px'} !important;
+    @media (max-width: 767.98px) {
+      left: 50%;
+      margin-left: 0 !important;
+      transform: translateX(-50%) translateY(-0.5rem);
+    }
+  `;
 
   const dispatch = useDispatch();
 
@@ -51,35 +71,53 @@ const Navbar = () => {
   };
 
   return (
-    <Nav className="navbar navbar-expand-md navbar-light bg-white shadow-sm sticky-top">
-      <Link
-        className={`navbar-brand ${
-          retraido
-            ? 'col-lg-2 col-md-2 col-sm-2 col-xl-1 pl-0'
-            : 'col-sm-4 col-md-3 col-lg-3 col-xl-2'
-        }`}
-        to="/"
-      >
-        <Logo src={LogoDoSgp} alt="SGP" className="mx-auto d-block" />
-      </Link>
-      <div
-        className={`${
-          retraido
-            ? 'col-lg-10 col-md-10 col-sm-10 col-xl-11'
-            : 'col-sm-8 col-md-9 col-lg-9 col-xl-10'
-        }`}
-      >
-        <Filtro />
-        <Botoes className="float-right d-flex align-items-center mr-4">
-          <ul className="list-inline p-0 m-0">
-            <li className="list-inline-item text-center">
-              <BtnSair onClick={onClickSair}>
-                <Icone className="fa fa-power-off fa-lg mb-1" />
-                Sair
-              </BtnSair>
-            </li>
-          </ul>
-        </Botoes>
+    <Nav className="navbar navbar-expand-md navbar-light bg-white shadow-sm sticky-top py-0">
+      <div className="container-fluid h-100">
+        <div className="d-flex w-100 h-100 position-relative">
+          <div
+            className={`${
+              retraido
+                ? 'col-xl-1 col-lg-1 col-md-1 col-sm-4'
+                : 'col-xl-2 col-lg-2 col-md-2 col-sm-4'
+            }`}
+          >
+            <Link to={`/${usuario}`}>
+              <Logo
+                src={LogoDoSgp}
+                alt="SGP"
+                className="mx-xl-auto mx-lg-auto mt-xl-0 mt-lg-0 mt-md-2 mt-sm-2 d-block"
+              />
+            </Link>
+          </div>
+          <div
+            className={`d-flex justify-content-end ${
+              retraido
+                ? 'col-xl-11 col-lg-11 col-md-11'
+                : 'col-xl-10 col-lg-10 col-md-10'
+            } col-sm-8`}
+          >
+            <Botoes className="align-self-xl-center align-self-lg-center align-self-md-start align-self-sm-start mt-xl-0 mt-lg-0 mt-md-4 mt-sm-4">
+              <ul className="list-inline p-0 m-0">
+                <li className="list-inline-item mr-4">
+                  <NavbarNotificacoes
+                    Botao={Botao}
+                    Icone={Icone}
+                    Texto={Texto}
+                  />
+                </li>
+                <li className="list-inline-item">
+                  <Botao className="text-center">
+                    <Icone className="fa fa-power-off fa-lg" />
+                    <Texto className="d-block mt-1">Sair</Texto>
+                  </Botao>
+                </li>
+              </ul>
+            </Botoes>
+          </div>
+          <Div className="d-flex align-self-xl-center align-self-lg-center align-self-md-end align-self-sm-end w-100 position-absolute mb-sm-2 mb-md-2">
+            <Filtro />
+          </Div>
+        </div>
       </div>
     </Nav>
   );
