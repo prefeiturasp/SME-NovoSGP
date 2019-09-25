@@ -112,7 +112,9 @@ const Filtro = () => {
 
   const ListItem = styled.li`
     cursor: pointer !important;
-    &:hover {
+    &:hover,
+    &:focus,
+    &.selecionado {
       background: ${Base.Roxo} !important;
       color: ${Base.Branco} !important;
     }
@@ -416,6 +418,50 @@ const Filtro = () => {
     }
   };
 
+  let selecionado = -1;
+
+  const onKeyDownAutocomplete = event => {
+    if (resultadosFiltro && resultadosFiltro.length > 0) {
+      const resultados = document.querySelectorAll('.list-group-item');
+      if (resultados && resultados.length > 0) {
+        if (event.key === 'ArrowUp') {
+          if (selecionado > 0) selecionado -= 1;
+        } else if (event.key === 'ArrowDown') {
+          if (selecionado < resultados.length - 1) selecionado += 1;
+        }
+        resultados.forEach(resultado =>
+          resultado.classList.remove('selecionado')
+        );
+        if (resultados[selecionado]) {
+          resultados[selecionado].classList.add('selecionado');
+          inputBuscaRef.current.focus();
+        }
+      }
+    }
+  };
+
+  const onSubmitAutocomplete = event => {
+    event.preventDefault();
+    if (resultadosFiltro) {
+      if (resultadosFiltro.length === 1) {
+        selecionaTurmaAutocomplete(resultadosFiltro[0]);
+      } else {
+        const selecionado = document.querySelector(
+          '.list-group-item.selecionado'
+        );
+        if (selecionado) {
+          const indice = selecionado.getAttribute('tabindex');
+          if (indice) {
+            const resultado = resultadosFiltro[indice];
+            if (resultado) {
+              selecionaTurmaAutocomplete(resultado);
+            }
+          }
+        }
+      }
+    }
+  };
+
   const selecionaTurmaAutocomplete = resultado => {
     store.dispatch(selecionarTurma([resultado]));
     setResultadosFiltro([]);
@@ -506,7 +552,7 @@ const Filtro = () => {
 
   return (
     <Container className="position-relative w-100">
-      <form className="w-100">
+      <form className="w-100" onSubmit={onSubmitAutocomplete}>
         <div className="form-group mb-0 w-100 position-relative">
           <Search className="fa fa-search fa-lg bg-transparent position-absolute text-center" />
           <Input
@@ -516,6 +562,7 @@ const Filtro = () => {
             ref={inputBuscaRef}
             onFocus={onFocusBusca}
             onChange={onChangeAutocomplete}
+            onKeyDown={onKeyDownAutocomplete}
             readOnly={!!turmaUeSelecionada}
             value={turmaUeSelecionada || textoAutocomplete}
           />
@@ -533,12 +580,13 @@ const Filtro = () => {
         {resultadosFiltro.length > 0 && (
           <div className="container position-absolute bg-white shadow rounded mt-1 p-0">
             <div className="list-group">
-              {resultadosFiltro.map(resultado => {
+              {resultadosFiltro.map((resultado, indice) => {
                 return (
                   <ListItem
                     key={shortid.generate()}
                     className="list-group-item list-group-item-action border-0 rounded-0"
                     onClick={() => selecionaTurmaAutocomplete(resultado)}
+                    tabIndex={indice}
                   >
                     {`${resultado.modalidade} - ${resultado.nomeTurma} - ${resultado.tipoEscola} - ${resultado.ue}`}
                   </ListItem>
