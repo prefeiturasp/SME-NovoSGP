@@ -3,59 +3,35 @@ import styled from 'styled-components';
 import { Base } from '../componentes/colors';
 import history from '../servicos/history';
 import { store } from '../redux';
-import { perfilSelecionado, setarPerfis } from '../redux/modulos/perfil/actions';
+import { perfilSelecionado } from '../redux/modulos/perfil/actions';
 import { useSelector } from 'react-redux';
-import api from '../servicos/api';
 
 
 const Perfil = () => {
   const [ocultaPerfis, setarOcultaPerfis] = useState(true);
   const PerfilStore = useSelector(store => store.perfil);
 
-  const buscarPerfis = () => {
-    if (!PerfilStore.perfilSelecionado.id) {
-      api.get(
-        `/v1/perfis`
-      ).then(result => {
-        if (result.data) {
-          const perfisNovos = result.data.perfis;
-          const selecionado = perfisNovos.filter(p => p.id === result.data.perfilSelecionado);
-          store.dispatch(perfilSelecionado(selecionado[0]));
-          store.dispatch(setarPerfis(perfisNovos));
-        }
-      })
+  /** TODO - Retirar o mock quando o backend estiver pronto */
+  const perfis = [
+    {
+      id: "1",
+      descricao: 'Diretor',
+    },
+    {
+      id: "2",
+      descricao: 'Professor'
+    },
+    {
+      id: "3",
+      descricao: 'Coordenador Pedagógico',
+      sigla: 'CP'
+    },
+    {
+      id: "4",
+      descricao: 'Professor Orientador de Área',
+      sigla: 'POA'
     }
-  };
-
-  //Ajustar com a conslusão do login
-  useEffect(() => buscarPerfis(), []);
-
-  // const perfis = {
-  //   perfilSelecionado: {
-  //     id: "2",
-  //     descricao: 'Professor'
-  //   },
-  //   dados: [
-  //     {
-  //       id: "1",
-  //       descricao: 'Diretor',
-  //     },
-  //     {
-  //       id: "2",
-  //       descricao: 'Professor'
-  //     },
-  //     {
-  //       id: "3",
-  //       descricao: 'Coordenador Pedagógico',
-  //       sigla: 'CP'
-  //     },
-  //     {
-  //       id: "4",
-  //       descricao: 'Professor Orientador de Área',
-  //       sigla: 'POA'
-  //     }
-  //   ]
-  // };
+  ];
 
   const ItensPerfil = styled.div`
     border-top-left-radius: 5px;
@@ -123,7 +99,7 @@ const Perfil = () => {
 
   const gravarPerfilSelecionado = (perfil) => {
     if (perfil) {
-      const perfilNovo = PerfilStore.perfis.filter(item => item.id === perfil)
+      const perfilNovo = perfis.filter(item => item.id === perfil)
       store.dispatch(perfilSelecionado(perfilNovo[0]));
       setarOcultaPerfis(true);
       if (PerfilStore.perfilSelecionado.id !== perfilNovo[0].id) {
@@ -133,7 +109,7 @@ const Perfil = () => {
   }
 
   const onClickBotao = () => {
-    if (PerfilStore.perfis.length > 1) {
+    if (perfis.length > 1) {
       setarOcultaPerfis(!ocultaPerfis);
     }
   };
@@ -141,7 +117,7 @@ const Perfil = () => {
 
   return (
     <div className="position-relative">
-      <Botao className="text-center" onClick={onClickBotao} style={{ cursor: PerfilStore.perfis.length > 1 ? 'pointer' : 'default' }}>
+      <Botao className="text-center" onClick={onClickBotao} style={{ cursor: perfis.length > 1 ? 'pointer' : 'default' }}>
         <IconePerfil>
           <i className="fas fa-user-circle" />
         </IconePerfil>
@@ -152,7 +128,7 @@ const Perfil = () => {
       <ItensPerfil hidden={ocultaPerfis} className="list-inline">
         <table>
           <tbody>
-            {PerfilStore.perfis.map(item =>
+            {perfis.map(item =>
               <Item key={item.id}
                 onClick={(e) => gravarPerfilSelecionado(e.currentTarget.accessKey)}
                 accessKey={item.id}>
