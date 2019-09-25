@@ -50,7 +50,7 @@ namespace SME.SGP.Aplicacao
         public async Task<IEnumerable<ObjetivoAprendizagemDto>> Filtrar(FiltroObjetivosAprendizagemDto filtroObjetivosAprendizagemDto)
         {
             var objetivos = await Listar();
-            IEnumerable<long> componentesJurema = ObterComponentesJuremaPorIdEOL(filtroObjetivosAprendizagemDto.ComponentesCurricularesIds);
+            var componentesJurema = ObterComponentesJuremaPorIdEOL(filtroObjetivosAprendizagemDto.ComponentesCurricularesIds);
 
             return objetivos?
                 .Where(c => componentesJurema.Contains(c.IdComponenteCurricular)
@@ -59,7 +59,7 @@ namespace SME.SGP.Aplicacao
 
         public async Task<IEnumerable<ObjetivoAprendizagemDto>> Listar()
         {
-            var objetivos = new List<ObjetivoAprendizagemDto>();
+            List<ObjetivoAprendizagemDto> objetivos;
 
             var objetivosCacheString = repositorioCache.Obter("ObjetivosAprendizagem");
 

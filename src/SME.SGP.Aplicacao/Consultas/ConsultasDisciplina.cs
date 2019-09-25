@@ -39,8 +39,7 @@ namespace SME.SGP.Aplicacao
                 var disciplinas = await servicoEOL.ObterDisciplinasPorProfessorETurma(codigoTurma, rfProfessor);
                 if (disciplinas != null && disciplinas.Any())
                 {
-                    var objetivosAprendizagem = await consultasObjetivoAprendizagem.Listar();
-                    disciplinasDto = MapearParaDto(disciplinas, objetivosAprendizagem);
+                    disciplinasDto = MapearParaDto(disciplinas);
 
                     await repositorioCache.SalvarAsync(chaveCache, JsonConvert.SerializeObject(disciplinasDto));
                 }
@@ -48,7 +47,7 @@ namespace SME.SGP.Aplicacao
             return disciplinasDto;
         }
 
-        private IEnumerable<DisciplinaDto> MapearParaDto(IEnumerable<DisciplinaResposta> disciplinas, IEnumerable<ObjetivoAprendizagemDto> objetivosAprendizagem)
+        private IEnumerable<DisciplinaDto> MapearParaDto(IEnumerable<DisciplinaResposta> disciplinas)
         {
             if (disciplinas != null)
             {
