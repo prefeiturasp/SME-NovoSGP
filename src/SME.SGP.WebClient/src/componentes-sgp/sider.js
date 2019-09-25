@@ -347,9 +347,6 @@ const Sider = () => {
                   <Menu.Item key="110" id="usuTrocaSenha">
                     <span className="menuItem">Troca de Senha</span>
                   </Menu.Item>
-                  <Menu.Item key="120" id="usuTrocaNome">
-                    <span className="menuItem">Troca de nome</span>
-                  </Menu.Item>
                 </SubMenu>
               </SubMenu>
             </Menu>
