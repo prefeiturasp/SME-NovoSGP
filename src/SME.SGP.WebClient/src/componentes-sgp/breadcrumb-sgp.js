@@ -6,6 +6,7 @@ import { Base } from '../componentes/colors';
 import { store } from '../redux';
 import styled from 'styled-components';
 import { rotaAtiva } from '../redux/modulos/navegacao/actions';
+import modalidade from '~/dtos/modalidade';
 
 const BreadcrumbSgp = () => {
   const BreadcrumbBody = styled.div`
@@ -27,15 +28,38 @@ const BreadcrumbSgp = () => {
 
   const NavegacaoStore = useSelector(store => store.navegacao);
 
+  const UsuarioStrore = useSelector(store => store.usuario);
+
   const rotas = NavegacaoStore.rotas;
 
   const [itens, setItens] = useState([]);
 
   const rotaAtual = window.location.pathname;
+  const itemRotaAtual = rotas.get(rotaAtual);
+
+  const rotaDinamica = localStorage.getItem('rota-dinamica');
+  const itemRotaDinamica = rotaDinamica ? JSON.parse(rotaDinamica) : null;
+
+  const verificaTrocaNomesBreadcrumb = () => {
+    if (
+      UsuarioStrore &&
+      UsuarioStrore.turmaSelecionada &&
+      UsuarioStrore.turmaSelecionada.length &&
+      UsuarioStrore.turmaSelecionada[0].codModalidade == modalidade.EJA
+    ) {
+      rotas.get('/planejamento/plano-ciclo').breadcrumbName = "Plano de Etapa";
+      rotas.get('/planejamento/plano-anual').breadcrumbName = "Plano Semestral";
+    } else {
+      rotas.get('/planejamento/plano-ciclo').breadcrumbName = "Plano de Ciclo";
+      rotas.get('/planejamento/plano-anual').breadcrumbName = "Plano Anual";
+    }
+  }
 
   useEffect(() => {
     carregaBreadcrumbs();
   }, [NavegacaoStore.rotaAtiva]);
+
+  useEffect(() => { carregaBreadcrumbs(); }, [UsuarioStrore.turmaSelecionada]);
 
   useEffect(window.onbeforeunload = () => {
     depoisDeCarregar()
@@ -47,11 +71,10 @@ const BreadcrumbSgp = () => {
   }
 
   const carregaBreadcrumbs = () => {
-    const rotaDinamica = localStorage.getItem('rota-dinamica');
-    const itemRotaDinamica = rotaDinamica ? JSON.parse(rotaDinamica) : null;
-    const item = rotas.get(rotaAtual);
-    if (item) {
-      setItensBreadcrumb(item);
+    verificaTrocaNomesBreadcrumb();
+
+    if (itemRotaAtual) {
+      setItensBreadcrumb(itemRotaAtual);
     } else if (rotaDinamica && itemRotaDinamica.path === rotaAtual) {
       setItensBreadcrumb(itemRotaDinamica);
     } else {
@@ -106,12 +129,21 @@ const BreadcrumbSgp = () => {
     return { breadcrumbName, path, ehEstatico, ehRotaAtual, icone, dicaIcone };
   };
 
+  const ocultarBreadcrumb = () =>{
+   const path = itens[0].path;
+   if(itens.length === 1){
+     return  path === '/' || (itemRotaAtual && itemRotaAtual.path !== path)
+     || (itemRotaDinamica && itemRotaDinamica.path !== path);
+   }
+   return false;
+  }
+
   return (
     <BreadcrumbBody>
 
       {itens.map(item => {
         return (
-          <Breadcrumb.Item key={item.path} separator="" hidden={itens.length === 1 && item.path === '/'}>
+          <Breadcrumb.Item key={item.path} separator="" hidden={ocultarBreadcrumb()}>
             <Link hidden={item.ehEstatico} to={item.path}>
               <i className={item.icone} title={item.breadcrumbName} title={item.dicaIcone}/>
               <span hidden={item.path === '/'}>{item.breadcrumbName}</span>
