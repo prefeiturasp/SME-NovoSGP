@@ -29,8 +29,7 @@ namespace SME.SGP.Aplicacao
             repositorioUsuario.Salvar(usuario);
             EnviarEmailRecuperacao(usuario);
 
-            //TODO retornar e-mail do usuário
-            return "emaildousuario@gmail.com";
+            return usuario.Email;
         }
 
         private void EnviarEmailRecuperacao(Usuario usuario)
@@ -39,7 +38,7 @@ namespace SME.SGP.Aplicacao
             var textoArquivo = File.ReadAllText(caminho);
             var urlFrontEnd = configuration["UrlFrontEnt"];
             var textoEmail = textoArquivo
-                .Replace("#NOME", "usuario.Nome")
+                .Replace("#NOME", usuario.Nome)
                 .Replace("#RF", usuario.CodigoRf)
                 .Replace("#LINK", $"{urlFrontEnd}redefinir/{usuario.TokenRecuperacaoSenha.ToString()}");
             //TODO - Enviar E-mail
