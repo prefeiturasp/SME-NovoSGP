@@ -10,6 +10,9 @@ import { Colors } from '../componentes/colors';
 import BreadcrumbSgp from './breadcrumb-sgp';
 import Alert from '~/componentes/alert';
 import Grid from '~/componentes/grid';
+import shortid from 'shortid';
+import Navbar from './navbar';
+import Sider from './sider';
 
 const ContainerModal = styled.div`
   .ant-modal-footer {
@@ -22,19 +25,35 @@ const ContainerBotoes = styled.div`
   justify-content: flex-end;
 `;
 
-const Conteudo = () => {
+const Pagina = props => {
+  const { children } = props;
+
+  return (
+    <>
+      <Navbar />
+      <div className="container-fluid h-100">
+        <Sider />
+        <Conteudo>{children}</Conteudo>
+      </div>
+    </>
+  );
+};
+
+const Conteudo = props => {
+  const { children } = props;
+
   const NavegacaoStore = useSelector(store => store.navegacao);
-  const [collapsed, setCollapsed] = useState(false);
+  const [retraido, setRetraido] = useState(false);
   const dispatch = useDispatch();
   useEffect(() => {
-    setCollapsed(NavegacaoStore.collapsed);
-  }, [NavegacaoStore.collapsed]);
+    setRetraido(NavegacaoStore.retraido);
+  }, [NavegacaoStore.retraido]);
 
   const confirmacao = useSelector(state => state.alertas.confirmacao);
 
   useEffect(() => {
-    setCollapsed(NavegacaoStore.collapsed);
-  }, [NavegacaoStore.collapsed]);
+    setRetraido(NavegacaoStore.retraido);
+  }, [NavegacaoStore.retraido]);
 
   const fecharConfirmacao = resultado => {
     confirmacao.resolve(resultado);
@@ -42,7 +61,7 @@ const Conteudo = () => {
   };
   const alertas = useSelector(state => state.alertas);
   return (
-    <div style={{ marginLeft: collapsed ? '115px' : '250px' }}>
+    <div style={{ marginLeft: retraido ? '115px' : '250px' }}>
       <BreadcrumbSgp />
       <div className="row h-100">
         <main role="main" className="col-md-12 col-lg-12 col-sm-12 col-xl-12">
@@ -78,13 +97,13 @@ const Conteudo = () => {
           </ContainerModal>
           <div className="card-body m-r-0 m-l-0 p-l-0 p-r-0 m-t-0">
             {alertas.alertas.map(alerta => (
-              <Row>
+              <Row key={shortid.generate()}>
                 <Grid cols={12}>
                   <Alert alerta={alerta} key={alerta.id} closable />
                 </Grid>
               </Row>
             ))}
-            <Rotas />
+            {children}
           </div>
         </main>
       </div>
@@ -92,4 +111,4 @@ const Conteudo = () => {
   );
 };
 
-export default Conteudo;
+export default Pagina;

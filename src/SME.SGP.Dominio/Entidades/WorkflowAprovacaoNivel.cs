@@ -39,6 +39,12 @@ namespace SME.SGP.Dominio
                 usuarios.Add(usuario);
         }
 
+        public void PodeAprovar()
+        {
+            if (Status != WorkflowAprovacaoNivelStatus.AguardandoAprovacao)
+                throw new NegocioException($"Não é possível aprovar/reprovar este nível pois o mesmo não está Aguardando Aprovação.");
+        }
+
         internal void ModificaStatus(WorkflowAprovacaoNivelStatus status, string observacao)
         {
             if (status == WorkflowAprovacaoNivelStatus.Reprovado)

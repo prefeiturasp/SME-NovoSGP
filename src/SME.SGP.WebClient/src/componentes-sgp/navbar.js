@@ -8,7 +8,7 @@ import { Base } from '../componentes/colors';
 import NavbarNotificacoes from './navbar-notificacoes';
 
 const Navbar = () => {
-  const collapsed = useSelector(state => state.navegacao.collapsed);
+  const retraido = useSelector(state => state.navegacao.retraido);
   const usuario = useSelector(state => state.usuario.rf);
 
   const Nav = styled.nav`
@@ -51,7 +51,7 @@ const Navbar = () => {
   `;
 
   const Div = styled.div`
-    margin-left: ${collapsed ? '120px' : '260px'} !important;
+    margin-left: ${retraido ? '120px' : '260px'} !important;
     @media (max-width: 767.98px) {
       left: 50%;
       margin-left: 0 !important;
@@ -65,7 +65,7 @@ const Navbar = () => {
         <div className="d-flex w-100 h-100 position-relative">
           <div
             className={`${
-              collapsed
+              retraido
                 ? 'col-xl-1 col-lg-1 col-md-1 col-sm-4'
                 : 'col-xl-2 col-lg-2 col-md-2 col-sm-4'
             }`}
@@ -80,7 +80,7 @@ const Navbar = () => {
           </div>
           <div
             className={`d-flex justify-content-end ${
-              collapsed
+              retraido
                 ? 'col-xl-11 col-lg-11 col-md-11'
                 : 'col-xl-10 col-lg-10 col-md-10'
             } col-sm-8`}

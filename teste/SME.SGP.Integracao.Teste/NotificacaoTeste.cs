@@ -43,7 +43,7 @@ namespace SME.SGP.Integracao.Teste
 
             if (postResult.IsSuccessStatusCode)
             {
-                var getResult = _fixture._clientApi.GetAsync($"api/v1/notificacoes?UsuarioId={notificacaoDto.UsuarioRf}").Result;
+                var getResult = _fixture._clientApi.GetAsync($"api/v1/notificacoes?UsuarioRf={notificacaoDto.UsuarioRf}").Result;
                 var notificacoesDto = JsonConvert.DeserializeObject<IEnumerable<NotificacaoBasicaDto>>(getResult.Content.ReadAsStringAsync().Result);
 
                 Assert.True(notificacoesDto.Count() == 1);
@@ -83,7 +83,7 @@ namespace SME.SGP.Integracao.Teste
 
             if (postResult.IsSuccessStatusCode)
             {
-                var getResult = _fixture._clientApi.GetAsync($"api/v1/notificacoes?UsuarioId={notificacaoDto.UsuarioRf}").Result;
+                var getResult = _fixture._clientApi.GetAsync($"api/v1/notificacoes?UsuarioRf={notificacaoDto.UsuarioRf}").Result;
                 var notificacoesDto = JsonConvert.DeserializeObject<IEnumerable<NotificacaoBasicaDto>>(getResult.Content.ReadAsStringAsync().Result);
 
                 Assert.True(notificacoesDto.Count() == 1);
@@ -123,7 +123,7 @@ namespace SME.SGP.Integracao.Teste
 
             Assert.True(postResult.IsSuccessStatusCode);
 
-            var getResult = _fixture._clientApi.GetAsync($"api/v1/notificacoes?UsuarioId={notificacaoDto.UsuarioRf}").Result;
+            var getResult = _fixture._clientApi.GetAsync($"api/v1/notificacoes?UsuarioRf={notificacaoDto.UsuarioRf}").Result;
             var notificacoesDto = JsonConvert.DeserializeObject<IEnumerable<NotificacaoBasicaDto>>(getResult.Content.ReadAsStringAsync().Result);
 
             var jsonDelete = new StringContent(JsonConvert.SerializeObject(notificacoesDto.Select(c => c.Id)), UnicodeEncoding.UTF8, "application/json");
@@ -139,7 +139,7 @@ namespace SME.SGP.Integracao.Teste
             Assert.True(putResult.IsSuccessStatusCode);
             var listaMensagens = JsonConvert.DeserializeObject<IEnumerable<AlteracaoStatusNotificacaoDto>>(putResult.Content.ReadAsStringAsync().Result);
             var id = notificacoesDto.FirstOrDefault().Id;
-            Assert.Contains(listaMensagens, c => c.Sucesso && c.Mensagem == $"Notificação com id: '{id}' excluída com sucesso.");
+            Assert.True(listaMensagens.Count(c => c.Sucesso) == 1);
         }
 
         [Fact, Order(5)]
@@ -188,17 +188,14 @@ namespace SME.SGP.Integracao.Teste
 
             Assert.True(postResult.IsSuccessStatusCode);
 
-            var getResult = _fixture._clientApi.GetAsync($"api/v1/notificacoes?UsuarioId={notificacaoDto.UsuarioRf}").Result;
+            var getResult = _fixture._clientApi.GetAsync($"api/v1/notificacoes?UsuarioRf={notificacaoDto.UsuarioRf}").Result;
             var notificacoesDto = JsonConvert.DeserializeObject<IEnumerable<NotificacaoBasicaDto>>(getResult.Content.ReadAsStringAsync().Result);
 
-            var jsonPut = new StringContent(string.Empty, UnicodeEncoding.Default, "text/plain");
-
-            var queryParameters = string.Join("&notificaoesId=", notificacoesDto.Select(a => a.Id.ToString()));
-
-            var putResult = _fixture._clientApi.PutAsync($"api/v1/notificacoes/status/lida?notificaoesId={queryParameters}", jsonPut).Result;
+            var jsonPut = new StringContent(JsonConvert.SerializeObject(notificacoesDto.Select(c => c.Id)), UnicodeEncoding.UTF8, "application/json");
+            var putResult = _fixture._clientApi.PutAsync($"api/v1/notificacoes/status/lida", jsonPut).Result;
 
             Assert.True(putResult.IsSuccessStatusCode);
-            getResult = _fixture._clientApi.GetAsync($"api/v1/notificacoes?UsuarioId={notificacaoDto.UsuarioRf}").Result;
+            getResult = _fixture._clientApi.GetAsync($"api/v1/notificacoes?UsuarioRf={notificacaoDto.UsuarioRf}").Result;
             notificacoesDto = JsonConvert.DeserializeObject<IEnumerable<NotificacaoBasicaDto>>(getResult.Content.ReadAsStringAsync().Result);
             Assert.Contains(notificacoesDto, c => c.Status == NotificacaoStatus.Lida && c.Categoria == NotificacaoCategoria.Alerta);
             Assert.Contains(notificacoesDto, c => c.Status == NotificacaoStatus.Pendente && c.Categoria == NotificacaoCategoria.Aviso);

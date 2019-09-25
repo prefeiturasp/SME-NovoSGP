@@ -33,12 +33,16 @@ export const ListaItens = styled.div`
     margin-bottom: 5px;
   }
 
+  .aling-center {
+    align-items: center;
+  }
+
   font-size: 12px;
   color: #42474a;
 
   .btn-li-item {
-    width: 30px;
-    height: 30px;
+    width: 32px;
+    height: 32px;
     border: solid 0.8px ${Base.AzulAnakiwa};
     display: inline-block;
     font-weight: bold;
@@ -58,7 +62,7 @@ export const ListaItens = styled.div`
 
 export const Badge = styled.span`
   cursor: pointer;
-  padding-top: 5.5px;
+  padding-top: 6px;
 
   &[opcao-selecionada='true'] {
     background: ${Base.AzulAnakiwa} !important;
@@ -92,7 +96,7 @@ export const Titulo = styled.div`
   line-height: normal;
   letter-spacing: normal;
   color: #42474a;
-  margin-bottom: -23px;
+  margin-bottom: 10px;
 `;
 
 export const TituloAno = styled.span`

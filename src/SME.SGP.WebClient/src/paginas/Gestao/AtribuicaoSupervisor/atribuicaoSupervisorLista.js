@@ -9,7 +9,7 @@ import { Colors } from '../../../componentes/colors';
 import SelectComponent from '../../../componentes/select';
 import DataTable from '../../../componentes/table/dataTable';
 import api from '../../../servicos/api';
-import { NovoSGP, Titulo } from './atribuicaoSupervisor.css';
+import Cabecalho from '~/componentes-sgp/cabecalho';
 
 export default function AtribuicaoSupervisorLista() {
   const [selectedRowKeys, setSelectedRowKeys] = useState([]);
@@ -61,7 +61,7 @@ export default function AtribuicaoSupervisorLista() {
 
   useEffect(() => {
     if (uesSemSupervisorCheck) {
-      montaListaUesSemSup();
+      montaListaUesSemSup(dresSelecionadas);
     } else {
       setSupervisoresSelecionados([]);
       setUeSelecionada('');
@@ -73,18 +73,21 @@ export default function AtribuicaoSupervisorLista() {
 
   const columns = [
     {
-      title: 'dre',
+      title: 'DRE',
       dataIndex: 'dre',
+      width: '15%'
     },
     {
-      title: 'escola',
+      title: 'Unidade Escolar',
       dataIndex: 'escola',
+      width: '55%'
     },
     {
-      title: 'supervisor',
+      title: 'Supervisor',
       dataIndex: 'supervisor',
+      width: '30%',
       render: text => {
-        return text ? text : <a className="coluna-vermelha">NÃO ATRIBUIDO</a>
+        return text ? text : <a className="texto-vermelho-negrito">NÃO ATRIBUIDO</a>;
       },
     },
   ];
@@ -100,14 +103,16 @@ export default function AtribuicaoSupervisorLista() {
     const ueSelecionada = listaFiltroAtribuicao.find(
       ue => ue.id == selectedRowKeys[0]
     );
-    history.push(
-      `/gestao/atribuicao-supervisor/${dresSelecionadas}/${ueSelecionada.supervisorId ||
-        ''}`
-    );
+    const path = `/gestao/atribuicao-supervisor/${dresSelecionadas}/${ueSelecionada.supervisorId || ''}`
+    history.push(path);
   }
 
   function onClickNovaAtribuicao() {
-    history.push('/gestao/atribuicao-supervisor');
+    if (dresSelecionadas) {
+      history.push(`/gestao/atribuicao-supervisor/${dresSelecionadas}/`);
+    } else {
+      history.push('/gestao/atribuicao-supervisor');
+    }
   }
 
   function onChangeUesSemSup(e) {
@@ -118,20 +123,20 @@ export default function AtribuicaoSupervisorLista() {
     }
   }
 
-  async function montaListaUesSemSup() {
+  async function montaListaUesSemSup(dre) {
     setSupervisoresSelecionados([]);
     setUeSelecionada('');
     setDesabilitarSupervisor(true);
     setDesabilitarUe(true);
     const vinculoEscolasDreSemAtrib = await api.get(
-      `/v1/dres/${dresSelecionadas}/ues/sem-atribuicao`
+      `/v1/dres/${dre}/ues/sem-atribuicao`
     );
     const novaLista = [
       {
         escolas: vinculoEscolasDreSemAtrib.data,
       },
     ];
-    montarListaAtribuicao(novaLista, dresSelecionadas, true);
+    montarListaAtribuicao(novaLista, dre, true);
   }
 
   function onChangeAssumirFiltroPrinc(e) {
@@ -164,7 +169,7 @@ export default function AtribuicaoSupervisorLista() {
     setUeSelecionada('');
     if (dre) {
       if (uesSemSupervisorCheck) {
-        montaListaUesSemSup();
+        montaListaUesSemSup(dre);
       } else {
         const vinculoEscolasDre = await api.get(
           `v1/supervisores/dre/${dre}/vinculo-escolas`
@@ -207,7 +212,7 @@ export default function AtribuicaoSupervisorLista() {
           dre: dreSelecionada.sigla,
           escola: escola.nome,
           supervisor: item.supervisorId ? item.supervisorNome : '',
-          supervisorId: item.supervisorId
+          supervisorId: item.supervisorId,
         });
       });
       return dadosAtribuicao;
@@ -256,10 +261,7 @@ export default function AtribuicaoSupervisorLista() {
 
   return (
     <>
-      <div className="col-md-12">
-        <NovoSGP>NOVO SGP</NovoSGP>
-        <Titulo>Atribuição de Supervisor - Listagem</Titulo>
-      </div>
+      <Cabecalho pagina="Atribuição de Supervisor - Listagem" />
       <Card>
         <div className="col-md-12 d-flex justify-content-end pb-4">
           <Button

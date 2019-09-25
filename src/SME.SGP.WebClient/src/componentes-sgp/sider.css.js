@@ -122,8 +122,22 @@ export const Topo = styled.div`
 export const MenuScope = styled.div`
 /*----MENU EXPANDIDO----*/
   position: absolute;
-  z-index: 1001;
   width: 100%;
+  overflow-y: auto;
+  height: calc(100vh - 270px);
+
+  ::-webkit-scrollbar {
+    width: 10px;
+    background:${Base.RoxoFundo};
+    border-radius: 4px;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: #dad7d7;
+    border-radius: 4px !important;
+    border: solid 2px ${Base.RoxoFundo};
+    background: ${Base.RoxoClaro};
+  }
 
   .menu-scope{
     display: flex;

@@ -11,7 +11,7 @@ export const Titulo = styled.div`
   line-height: normal;
   letter-spacing: normal;
   color: #42474a;
-  margin-bottom: -23px;
+  margin-bottom: 10px;
 `;
 
 export const TituloAno = styled.span`
@@ -31,4 +31,8 @@ export const Planejamento = styled.div`
   letter-spacing: normal;
   color: #c8c8c8;
   padding-top: 6px;
+`;
+
+export const ParagrafoAlerta = styled.p`
+  color: ${Base.VermelhoAlerta};
 `;

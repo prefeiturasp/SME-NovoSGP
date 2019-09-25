@@ -14,6 +14,7 @@ import {
 import { salvarRf } from '../../redux/modulos/usuario/actions';
 import { store } from '../../redux';
 import ListaNotificacoes from './listaNotificacoes';
+import modalidade from '~/dtos/modalidade';
 
 const Principal = props => {
   const FREQUENCIA_TYPE = 'frequencia';
@@ -21,8 +22,22 @@ const Principal = props => {
   const ANUAL_TYPE = 'anual';
   const [escolaSelecionada, setEscolaSelecionada] = useState(false);
   const [turmaSelecionada, setTurmaSelecionada] = useState(false);
+  const [modalidadeEja, setModalidadeEja] = useState(false);
 
   const filtroStore = useSelector(state => state.usuario);
+
+  useEffect(() => {
+    if (
+      FiltroStore &&
+      FiltroStore.turmaSelecionada &&
+      FiltroStore.turmaSelecionada.length &&
+      FiltroStore.turmaSelecionada[0].codModalidade == modalidade.EJA
+    ) {
+      setModalidadeEja(true);
+    } else {
+      setModalidadeEja(false);
+    }
+  }, [FiltroStore.turmaSelecionada]);
 
   const validarFiltro = () => {
     if (!filtroStore.turmaSelecionada) {
@@ -123,7 +138,7 @@ const Principal = props => {
             disabled={isDesabilitado(CICLOS_TYPE)}
             icone="fa-calendar-minus"
             pack="far"
-            label="Plano de Ciclo"
+            label={ modalidadeEja ? 'Plano de Etapa' : 'Plano de Ciclo'}
           />
           <CardLink
             cols={[4, 4, 4, 12]}
@@ -133,7 +148,7 @@ const Principal = props => {
             disabled={isDesabilitado(ANUAL_TYPE)}
             icone="fa-calendar-alt"
             pack="far"
-            label="Plano Anual"
+            label={ modalidadeEja ? 'Plano Semestral' : 'Plano Anual'}
           />
         </Grid>
       </Row>

@@ -1,20 +1,27 @@
-export function menuCollapsed(collapsed) {
+export function menuRetraido(retraido) {
   return {
-    type: '@navegacao/collapsed',
-    payload: collapsed,
+    type: '@navegacao/retraido',
+    payload: retraido,
   };
 }
 
-export function activeRoute(route) {
+export function menuSelecionado(chave){
+  return{
+    type: '@navegacao/menuSelecionado',
+    payload: chave,
+  }
+}
+
+export function rotaAtiva(rota) {
   return {
-    type: '@navegacao/activeRoute',
-    payload: route,
+    type: '@navegacao/rotaAtiva',
+    payload: rota,
   };
 }
 
-export function getRotas(routas) {
+export function setRotas(rotas) {
   return {
     type: '@navegacao/rotas',
-    payload: routas,
+    payload: rotas,
   };
 }
