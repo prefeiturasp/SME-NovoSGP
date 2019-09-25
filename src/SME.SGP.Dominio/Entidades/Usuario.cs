@@ -6,7 +6,9 @@ namespace SME.SGP.Dominio
     public class Usuario : EntidadeBase
     {
         public string CodigoRf { get; set; }
+        public string Email { get; set; }
         public DateTime ExpiracaoRecuperacaoSenha { get; set; }
+        public string Nome { get; set; }
         public IEnumerable<Notificacao> Notificacoes { get { return notificacoes; } }
         public Guid TokenRecuperacaoSenha { get; set; }
         private IList<Notificacao> notificacoes { get; set; }
