@@ -28,16 +28,16 @@ const Principal = props => {
 
   useEffect(() => {
     if (
-      FiltroStore &&
-      FiltroStore.turmaSelecionada &&
-      FiltroStore.turmaSelecionada.length &&
-      FiltroStore.turmaSelecionada[0].codModalidade == modalidade.EJA
+      filtroStore &&
+      filtroStore.turmaSelecionada &&
+      filtroStore.turmaSelecionada.length &&
+      filtroStore.turmaSelecionada[0].codModalidade == modalidade.EJA
     ) {
       setModalidadeEja(true);
     } else {
       setModalidadeEja(false);
     }
-  }, [FiltroStore.turmaSelecionada]);
+  }, [filtroStore.turmaSelecionada]);
 
   const validarFiltro = () => {
     if (!filtroStore.turmaSelecionada) {
@@ -138,7 +138,7 @@ const Principal = props => {
             disabled={isDesabilitado(CICLOS_TYPE)}
             icone="fa-calendar-minus"
             pack="far"
-            label={ modalidadeEja ? 'Plano de Etapa' : 'Plano de Ciclo'}
+            label={modalidadeEja ? 'Plano de Etapa' : 'Plano de Ciclo'}
           />
           <CardLink
             cols={[4, 4, 4, 12]}
@@ -148,7 +148,7 @@ const Principal = props => {
             disabled={isDesabilitado(ANUAL_TYPE)}
             icone="fa-calendar-alt"
             pack="far"
-            label={ modalidadeEja ? 'Plano Semestral' : 'Plano Anual'}
+            label={modalidadeEja ? 'Plano Semestral' : 'Plano Anual'}
           />
         </Grid>
       </Row>
