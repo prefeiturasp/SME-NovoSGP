@@ -7,8 +7,10 @@ import Button from '~/componentes/button';
 import { Colors } from '~/componentes/colors';
 import Auditoria from '~/componentes/auditoria';
 import api from '~/servicos/api';
-import { erro, sucesso } from '~/servicos/alertas';
+import { erro, sucesso, confirmar } from '~/servicos/alertas';
 import history from '~/servicos/history';
+import Cabecalho from '~/componentes-sgp/cabecalho';
+import {setBreadcrumbManual} from '~/servicos/breadcrumb-services';
 
 const AtribuicaoSupervisorCadastro = ({ match }) => {
   const [auditoria, setAuditoria] = useState([]);
@@ -24,11 +26,16 @@ const AtribuicaoSupervisorCadastro = ({ match }) => {
   const [listaUES, setListaUES] = useState([]);
   const [uesAtribuidas, setUESAtribuidas] = useState([]);
 
+  const [modoEdicao, setModoEdicao] = useState(false);
+
   function exibeErro(erros) {
     if (erros && erros.response && erros.response.data)
       erros.response.data.mensagens.forEach(mensagem => erro(mensagem));
   }
 
+  useEffect(() =>{
+    setBreadcrumbManual(match.url,'Editar Atribuição', '/gestao/atribuicao-supervisor-lista');
+  },[])
   // 1 - carrega dres
   useEffect(() => {
     async function obterListaDres() {
@@ -103,6 +110,7 @@ const AtribuicaoSupervisorCadastro = ({ match }) => {
           } else {
             setUESAtribuidas([]);
           }
+          setModoEdicao(false);
         })
         .catch(erros => {
           exibeErro(erros);
@@ -135,6 +143,7 @@ const AtribuicaoSupervisorCadastro = ({ match }) => {
 
   function handleChange(targetKeys) {
     setUESAtribuidas(targetKeys);
+    setModoEdicao(true);
   }
 
   function selecionaDre(idDre) {
@@ -148,7 +157,22 @@ const AtribuicaoSupervisorCadastro = ({ match }) => {
     setFiltroSupervisor(idSupervisor);
   }
 
-  function cancelarAlteracoes() {
+  async function cancelarAlteracoes() {
+    if (modoEdicao) {
+      const confirmou = await confirmar(
+        'Atenção',
+        'Você não salvou as informações preenchidas.',
+        'Deseja realmente cancelar as alterações?'
+      );
+      if (confirmou) {
+        limparListas();
+      }
+    } else {
+      limparListas();
+    }
+  }
+
+  function limparListas() {
     setDreSelecionada('');
     setSupervisorSelecionado('');
     setFiltroSupervisor('');
@@ -178,9 +202,27 @@ const AtribuicaoSupervisorCadastro = ({ match }) => {
     );
   };
 
+  async function onClickVoltar() {
+    if (modoEdicao) {
+      const confirmado = await confirmar(
+        'Atenção',
+        '',
+        'Suas alterações não foram salvas, deseja salvar agora?'
+      );
+
+      if (confirmado) {
+        salvarAtribuicao();
+      } else {
+        history.push('/gestao/atribuicao-supervisor-lista');
+      }
+    } else {
+      history.push('/gestao/atribuicao-supervisor-lista');
+    }
+  }
+
   return (
     <>
-      <h3>Atribuição de Supervisor</h3>
+      <Cabecalho pagina="Atribuição de Supervisor" />
       <Card>
         <div className="col-xs-12 col-md-12 col-lg-12 d-flex justify-content-end mb-4">
           <Button
@@ -189,8 +231,7 @@ const AtribuicaoSupervisorCadastro = ({ match }) => {
             color={Colors.Azul}
             border
             className="mr-3"
-            onClick={() => history.push('/gestao/atribuicao-supervisor-lista')}
-          />
+            onClick={onClickVoltar}/>
           {dreSelecionada && supervisorSelecionado && (
             <Button
               label="Cancelar"

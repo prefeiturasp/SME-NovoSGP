@@ -29,8 +29,12 @@ export const ListItemButton = styled(ListItem)`
 `;
 
 export const H5 = styled.h5`
-  padding-top: 5px !important;
   font-family: Roboto !important;
   font-size: 10px !important;
   font-weight: bold !important;
+  margin-bottom: 0px !important;
+`;
+
+export const BoxAuditoria = styled.div`
+  margin-top: 10px !important;
 `;

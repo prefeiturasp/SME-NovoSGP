@@ -10,7 +10,6 @@ namespace SME.SGP.Dominio.Servicos
     public class ServicoWorkflowAprovacao : IServicoWorkflowAprovacao
     {
         private readonly IRepositorioNotificacao repositorioNotificacao;
-        private readonly IRepositorioWorkflowAprovacao repositorioWorkflowAprovacao;
         private readonly IRepositorioWorkflowAprovacaoNivelNotificacao repositorioWorkflowAprovacaoNivelNotificacao;
         private readonly IServicoEOL servicoEOL;
         private readonly IServicoNotificacao servicoNotificacao;
@@ -20,8 +19,7 @@ namespace SME.SGP.Dominio.Servicos
 
         public ServicoWorkflowAprovacao(IUnitOfWork unitOfWork, IRepositorioNotificacao repositorioNotificacao,
             IRepositorioWorkflowAprovacaoNivelNotificacao repositorioWorkflowAprovacaoNivelNotificacao, IServicoEOL servicoEOL,
-            IServicoUsuario servicoUsuario, IServicoNotificacao servicoNotificacao, IRepositorioWorkflowAprovacaoNivel workflowAprovacaoNivel,
-            IRepositorioWorkflowAprovacao repositorioWorkflowAprovacao)
+            IServicoUsuario servicoUsuario, IServicoNotificacao servicoNotificacao, IRepositorioWorkflowAprovacaoNivel workflowAprovacaoNivel)
         {
             this.unitOfWork = unitOfWork ?? throw new System.ArgumentNullException(nameof(unitOfWork));
             this.repositorioNotificacao = repositorioNotificacao ?? throw new System.ArgumentNullException(nameof(repositorioNotificacao));
@@ -30,12 +28,13 @@ namespace SME.SGP.Dominio.Servicos
             this.servicoUsuario = servicoUsuario ?? throw new System.ArgumentNullException(nameof(servicoUsuario));
             this.servicoNotificacao = servicoNotificacao ?? throw new System.ArgumentNullException(nameof(servicoNotificacao));
             this.workflowAprovacaoNivel = workflowAprovacaoNivel ?? throw new System.ArgumentNullException(nameof(workflowAprovacaoNivel));
-            this.repositorioWorkflowAprovacao = repositorioWorkflowAprovacao ?? throw new System.ArgumentNullException(nameof(repositorioWorkflowAprovacao));
         }
 
         public void Aprovar(WorkflowAprovacao workflow, bool aprovar, string observacao, long notificacaoId)
         {
             WorkflowAprovacaoNivel nivel = workflow.ObterNivelPorNotificacaoId(notificacaoId);
+
+            nivel.PodeAprovar();
 
             var niveisParaPersistir = workflow.ModificarStatusPorNivel(aprovar ? WorkflowAprovacaoNivelStatus.Aprovado : WorkflowAprovacaoNivelStatus.Reprovado, nivel.Nivel, observacao);
             AtualizaNiveis(niveisParaPersistir);
@@ -68,6 +67,11 @@ namespace SME.SGP.Dominio.Servicos
             foreach (var nivel in niveis)
             {
                 workflowAprovacaoNivel.Salvar(nivel);
+
+                foreach (var notificacao in nivel.Notificacoes)
+                {
+                    repositorioNotificacao.Salvar(notificacao);
+                }
             }
         }
 

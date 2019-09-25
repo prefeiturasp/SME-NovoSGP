@@ -11,8 +11,7 @@
         public int Ano { get; set; }
         public NotificacaoCategoria Categoria { get; set; }
         public long Codigo { get; set; }
-        public string CodigoFormatado { get { return Codigo.ToString().PadLeft(9, '0'); } }
-        public bool DeveAprovar { get { return Categoria == NotificacaoCategoria.Workflow_Aprovacao; } }
+        public bool DeveAprovar { get { return Categoria == NotificacaoCategoria.Workflow_Aprovacao && Status == NotificacaoStatus.Pendente; } }
         public bool DeveMarcarComoLido { get { return Categoria == NotificacaoCategoria.Alerta && Status != NotificacaoStatus.Lida; } }
         public string DreId { get; set; }
         public bool Excluida { get; set; }
@@ -25,13 +24,14 @@
         public string UeId { get; set; }
         public Usuario Usuario { get; set; }
         public long? UsuarioId { get; set; }
+        public WorkflowAprovacaoNivel WorkflowAprovacaoNivel { get; set; }
 
         public void MarcarComoLida()
         {
             if (DeveMarcarComoLido && Status != NotificacaoStatus.Lida)
                 Status = NotificacaoStatus.Lida;
             else
-                throw new NegocioException($"A notificação com id: '{Id}' não pode ser marcada como lida ou já está nesse status.");
+                throw new NegocioException($"A notificação com Código: '{Codigo}' não pode ser marcada como lida ou já está nesse status.");
         }
 
         public bool MarcarComoLidaAoObterDetalhe()
@@ -49,7 +49,13 @@
             if (PodeRemover)
                 Excluida = true;
             else
-                throw new NegocioException($"A notificação com id: '{Id}' não pode ser excluída ou já está nesse status.");
+            {
+                if (Categoria != NotificacaoCategoria.Aviso)
+                    throw new NegocioException($"Somente notificações de categoria Aviso, podem ser removidas.");
+
+                if (Excluida)
+                    throw new NegocioException($"Esta notificação ja está excluída.");
+            }
         }
     }
 }

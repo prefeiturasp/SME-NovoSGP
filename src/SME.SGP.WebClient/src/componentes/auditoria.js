@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import styled from 'styled-components';
 
 const Container = styled.div`
@@ -9,11 +9,19 @@ const Container = styled.div`
   color: #42474a;
 `;
 const Auditoria = ({ criadoPor, criadoEm, alteradoPor, alteradoEm }) => {
+  const [criado] = useState(
+    criadoEm ? window.moment(criadoEm) : window.moment()
+  );
+  const [alterado] = useState(
+    alteradoEm ? window.moment(alteradoEm) : window.moment()
+  );
+
   return (
     <Container>
       {criadoPor ? (
         <div className="col-xs-12 col-md-6 col-lg-12 d-flex justify-content-start mt-2">
-          INSERIDO por {criadoPor} em {window.moment(criadoEm).format('LLL')}
+          INSERIDO por {criadoPor} em{' '}
+          {`${criado.format('DD/MM/YYYY')} às ${criado.format('HH:mm')}`}
         </div>
       ) : (
         ''
@@ -21,7 +29,7 @@ const Auditoria = ({ criadoPor, criadoEm, alteradoPor, alteradoEm }) => {
       {alteradoPor ? (
         <div className="col-xs-12 col-md-6 col-lg-12 d-flex justify-content-start mt-2">
           ALTERADO por {alteradoPor} em{' '}
-          {window.moment(alteradoEm).format('LLL')}
+          {`${alterado.format('DD/MM/YYYY')} às ${alterado.format('HH:mm')}`}
         </div>
       ) : (
         ''

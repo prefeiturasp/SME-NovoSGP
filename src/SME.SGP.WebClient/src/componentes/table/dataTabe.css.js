@@ -6,6 +6,13 @@ export const Container = styled.div`
     .ant-table-selection-column {
       display: none !important;
     }
+    .ant-table-selection-col {
+      display: none !important;
+    }
+  }
+
+  .ant-table table {
+    border-collapse: collapse;
   }
 
   .ant-checkbox-indeterminate .ant-checkbox-inner::after {
@@ -116,7 +123,16 @@ export const Container = styled.div`
   .ant-table-tbody tr:hover td {
     background: ${Base.Roxo} !important;
     color: ${Base.Branco} !important;
+
     span.cor-vermelho {
+      color: ${Base.Branco} !important;
+    }
+
+    a.texto-vermelho-negrito {
+      color: ${Base.Branco} !important;
+    }
+
+    a.texto-negrito {
       color: ${Base.Branco} !important;
     }
   }
@@ -129,6 +145,14 @@ export const Container = styled.div`
   .ant-table-tbody tr.ant-table-row-selected > td {
     background: ${Base.Roxo};
     color: ${Base.Branco} !important;
+
+    a.texto-vermelho-negrito {
+      color: ${Base.Branco} !important;
+    }
+
+    a.texto-negrito {
+      color: ${Base.Branco} !important;
+    }
   }
 
   .ant-table-tbody > tr {
@@ -138,6 +162,11 @@ export const Container = styled.div`
     td {
       -webkit-transition: none;
       transition: none;
+
+      a {
+        -webkit-transition: none;
+        transition: none;
+      }
     }
   }
 `;

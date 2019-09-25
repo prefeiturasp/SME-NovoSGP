@@ -65,6 +65,22 @@ const Service = {
       });
   },
 
+  validarPlanoExistente: FiltroPlanoAnual => {
+    const requisicao = API.post(
+      Service._getBaseUrlValidarPlanoAnualExistente(),
+      FiltroPlanoAnual
+    );
+
+    return requisicao
+      .then(res => res.data)
+      .catch(() => {
+        throw {
+          error:
+            'Não foi possivel realizar a consulta, por favor contate a equipe de suporte',
+        };
+      });
+  },
+
   _getBaseUrlDisciplinasProfessor: (RF, CodigoTurma) => {
     return `v1/professores/${RF}/turmas/${CodigoTurma}/disciplinas/`;
   },
@@ -79,6 +95,10 @@ const Service = {
 
   _getUrlMigrarPlanoAnual: () => {
     return 'v1/planos/anual/migrar';
+  },
+
+  _getBaseUrlValidarPlanoAnualExistente: () => {
+    return 'v1/planos/anual/validar-existente';
   },
 
   _getObjetoPostPlanoAnual: Bimestres => {
@@ -159,23 +179,23 @@ const Service = {
       x => x
     );
 
-    Bimestres.forEach((bimestre, index) => {
+    Bimestres.forEach(bimestre => {
       if (
         !bimestre.Descricao ||
         bimestre.Descricao === '' ||
         typeof bimestre.Descricao === 'undefined' ||
         bimestre.Descricao === '<p><br></p>'
       )
-        Erros.push(
-          `${BimestresFront[index + 1].nome}: Descrição não informada`
-        );
+        Erros.push(`${bimestre.Bimestre}º Bimestre: Descrição não informada`);
 
       if (
         (!bimestre.ObjetivosAprendizagem ||
           bimestre.ObjetivosAprendizagem.length === 0) &&
         LayoutEspecial.length === 0
       )
-        Erros.push(`${index + 1}º Bimestre: Nenhum objetivo selecionado`);
+        Erros.push(
+          `${bimestre.Bimestre}º Bimestre: Nenhum objetivo selecionado`
+        );
     });
 
     return Erros;

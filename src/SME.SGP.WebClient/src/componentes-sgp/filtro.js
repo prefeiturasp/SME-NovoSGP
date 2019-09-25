@@ -14,6 +14,7 @@ import { Base, Colors } from '../componentes/colors';
 import SelectComponent from '../componentes/select';
 import { sucesso, erro } from '../servicos/alertas';
 import api from '../servicos/api';
+import modalidade from '~/dtos/modalidade';
 
 const Filtro = () => {
   const [dados, setDados] = useState([]);
@@ -50,6 +51,8 @@ const Filtro = () => {
   const [toggleBusca, setToggleBusca] = useState(false);
 
   const [turmaUeSelecionada, setTurmaUeSelecionada] = useState();
+
+  const [desabilitarTurma, setDesabilitarTurma] = useState(true);
 
   const Container = styled.div`
     width: 568px !important;
@@ -338,6 +341,33 @@ const Filtro = () => {
     unidadeEscolarFiltroSelecionada,
   ]);
 
+  useEffect(() => {
+    if (modalidadeFiltroSelecionada) {
+      if (
+        modalidade.EJA == modalidadeFiltroSelecionada &&
+        !periodoFiltroSelecionado
+      ) {
+        setDesabilitarTurma(true);
+      } else {
+        setDesabilitarTurma(false);
+      }
+    } else {
+      setDesabilitarTurma(true);
+    }
+  }, [modalidadeFiltroSelecionada, turmaFiltroSelecionada]);
+
+  useEffect(() => {
+    if (
+      modalidadeFiltroSelecionada &&
+      periodoFiltroSelecionado &&
+      modalidade.EJA == modalidadeFiltroSelecionada
+    ) {
+      setDesabilitarTurma(false);
+    } else {
+      setDesabilitarTurma(true);
+    }
+  }, [periodoFiltroSelecionado]);
+
   const handleClickFora = event => {
     if (
       !event.target.classList.contains('fa-caret-down') &&
@@ -360,6 +390,7 @@ const Filtro = () => {
       setDreFiltroSelecionada(dados[0].codDre.toString());
       setUnidadeEscolarFiltroSelecionada(dados[0].codEscola.toString());
       setTurmaFiltroSelecionada(dados[0].codTurma.toString());
+      setPeriodoFiltroSelecionado(dados[0].semestre.toString());
       store.dispatch(selecionarTurma(dados));
     }
   };
@@ -452,7 +483,11 @@ const Filtro = () => {
       unidadeEscolarFiltroSelecionada &&
       turmaFiltroSelecionada
     ) {
-      selecionaTurma();
+      if (modalidadeFiltroSelecionada == 3 && !periodoFiltroSelecionado) {
+        erro('É necessário informar todos os dados da turma!');
+      } else {
+        selecionaTurma();
+      }
     } else {
       erro('É necessário informar todos os dados da turma!');
     }
@@ -589,6 +624,7 @@ const Filtro = () => {
                   valueText="turma"
                   valueSelect={turmaFiltroSelecionada}
                   placeholder="Turma"
+                  disabled={desabilitarTurma}
                 />
               </Grid>
               <Grid cols={3} className="form-group text-right">

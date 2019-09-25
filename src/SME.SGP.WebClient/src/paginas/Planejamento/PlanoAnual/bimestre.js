@@ -5,6 +5,7 @@ import {
   ListItemButton,
   ListItem,
   H5,
+  BoxAuditoria,
 } from './bimestre.css';
 import CardCollapse from '../../../componentes/cardCollapse';
 import Grid from '../../../componentes/grid';
@@ -23,9 +24,11 @@ import {
   ObterBimestreServidor,
   removerSelecaoTodosObjetivos,
 } from '../../../redux/modulos/planoAnual/action';
+import Auditoria from '~/componentes/auditoria';
 
 //Utilizado para importar a função scrollIntoViewIfNeeded para navegadores que não possuem essa funcionalidade.
 import '../../../componentes/scrollIntoViewIfNeeded';
+import modalidade from '~/dtos/modalidade';
 
 const BimestreComponent = props => {
   const dispatch = useDispatch();
@@ -40,11 +43,33 @@ const BimestreComponent = props => {
 
   const [idObjetivoFocado, setIDObjetivoFocado] = useState('0');
 
+  const [estadoAdicionalEditorTexto, setEstadoAdicionalEditorTexto] = useState({
+    focado: false,
+    ultimoFoco: null,
+  });
+
   const textEditorRef = useRef(null);
 
   const ListRef = useRef(null);
 
   const bimestreJaObtidoServidor = bimestres[indice].ehExpandido;
+
+  const [modalidadeEja, setModalidadeEja] = useState(false);
+
+  const usuario = useSelector(store => store.usuario);
+
+  useEffect(() => {
+    if (
+      usuario &&
+      usuario.turmaSelecionada &&
+      usuario.turmaSelecionada.length &&
+      usuario.turmaSelecionada[0].codModalidade == modalidade.EJA
+    ) {
+      setModalidadeEja(true);
+    } else {
+      setModalidadeEja(false);
+    }
+  }, [usuario.turmaSelecionada]);
 
   useLayoutEffect(() => {
     if (!bimestres[indice].setarObjetivo) {
@@ -121,8 +146,15 @@ const BimestreComponent = props => {
     selecionarObjetivo(index, ariaPressed);
   };
 
-  const onClickTextEditor = () => {
-    setEhExpandido(true);
+  const onClickTextEditor = ultimoFoco => {
+    if (!bimestres[indice].ehEdicao) {
+      setEhExpandido(true);
+
+      setEstadoAdicionalEditorTexto({
+        focado: true,
+        ultimoFoco,
+      });
+    }
   };
 
   const removeObjetivoSelecionado = e => {
@@ -139,6 +171,11 @@ const BimestreComponent = props => {
 
   const onBlurTextEditor = value => {
     setEhExpandido(true);
+
+    setEstadoAdicionalEditorTexto({
+      focado: false,
+      ultimoFoco: null,
+    });
 
     setarDescricao(value);
   };
@@ -172,7 +209,7 @@ const BimestreComponent = props => {
                     <Badge
                       role="button"
                       onClick={selecionaMateria}
-                      aria-pressed={materia.selected && true}
+                      aria-pressed={materia.selecionada && true}
                       id={materia.codigo}
                       data-index={indice}
                       alt={materia.materia}
@@ -235,7 +272,7 @@ const BimestreComponent = props => {
           )}
           {LayoutEspecial ? null : (
             <div
-              className="row col-md-12"
+              className="row col-md-12 d-flex"
               role="group"
               aria-label={`${bimestres[indice].objetivosAprendizagem &&
                 bimestres[indice].objetivosAprendizagem.length > 0 &&
@@ -250,7 +287,7 @@ const BimestreComponent = props => {
                     .map(selecionado => {
                       return (
                         <Button
-                          key={selecionado.id}
+                          key={`Objetivo${selecionado.id}Selecionado${indice}`}
                           label={selecionado.codigo}
                           color={Colors.AzulAnakiwa}
                           bold
@@ -278,10 +315,10 @@ const BimestreComponent = props => {
                   height="38px !important"
                   width="92px !important"
                   fontSize="12px !important"
-                  padding="0px !important"
+                  padding="0px 5px !important"
+                  lineHeight="1.2 !important"
                   steady
                   border
-                  padding="0px !important"
                   className="text-dark mt-3 mr-2 stretched-link"
                   onClick={removerTodosObjetivoSelecionado}
                 />
@@ -290,7 +327,7 @@ const BimestreComponent = props => {
           )}
           <div className="mt-4">
             <h6 className="d-inline-block font-weight-bold my-0 mr-2 fonte-14">
-              Planejamento Anual
+              {modalidadeEja ? 'Planejamento Semestral' : 'Planejamento Anual'}
             </h6>
             <span className="text-secondary font-italic fonte-12">
               Itens autorais do professor
@@ -328,9 +365,9 @@ const BimestreComponent = props => {
                   ref={textEditorRef}
                   id="textEditor"
                   height="135px"
-                  height="135px"
                   alt="Descrição do plano Anual"
                   disabled={disabled}
+                  estadoAdicional={estadoAdicionalEditorTexto}
                   onClick={onClickTextEditor}
                   value={bimestres[indice].objetivo}
                   onBlur={onBlurTextEditor}
@@ -338,12 +375,20 @@ const BimestreComponent = props => {
               </form>
             </fieldset>
             <Grid cols={12} className="p-0">
-              {bimestres[indice].criadoPor ? (
-                <H5>{bimestres[indice].criadoPor}</H5>
-              ) : null}
-              {bimestres[indice].alteradoPor ? (
-                <H5>{bimestres[indice].alteradoPor}</H5>
-              ) : null}
+              <Auditoria
+                criadoPor={bimestres[indice].criadoPor}
+                criadoEm={bimestres[indice].criadoEm}
+                alteradoPor={bimestres[indice].alteradoPor}
+                alteradoEm={bimestres[indice].alteradoEm}
+              />
+              {/* <BoxAuditoria>
+                {bimestres[indice].criadoPor ? (
+                  <H5>{bimestres[indice].criadoPor}</H5>
+                ) : null}
+                {bimestres[indice].alteradoPor ? (
+                  <H5>{bimestres[indice].alteradoPor}</H5>
+                ) : null}
+              </BoxAuditoria> */}
             </Grid>
           </div>
         </Grid>

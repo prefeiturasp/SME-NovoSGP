@@ -20,8 +20,8 @@ import {
   Titulo,
   TituloAno,
 } from './planoCiclo.css';
+import modalidade from '~/dtos/modalidade';
 
-// import ControleEstado from '../../../componentes/controleEstado';
 export default function PlanoCiclo() {
   const urlPrefeitura = 'https://curriculo.sme.prefeitura.sp.gov.br';
   const urlMatrizSaberes = `${urlPrefeitura}/matriz-de-saberes`;
@@ -126,7 +126,7 @@ export default function PlanoCiclo() {
         const anoLetivo = String(usuario.turmaSelecionada[0].anoLetivo);
         const codEscola = String(usuario.turmaSelecionada[0].codEscola);
 
-        if (usuario.turmaSelecionada.codModalidade == 3) {
+        if (usuario.turmaSelecionada[0].codModalidade == modalidade.EJA) {
           setModalidadeEja(true);
         } else {
           setModalidadeEja(false);
@@ -301,6 +301,15 @@ export default function PlanoCiclo() {
 
     const anoLetivo = String(usuario.turmaSelecionada[0].anoLetivo);
     const codEscola = String(usuario.turmaSelecionada[0].codEscola);
+
+    const textoReal = textEditorRef.current.state.value.replace(/<[^>]*>/g, '').trim();
+
+    if (!textoReal) {
+      erro(
+        'A descrição deve ser informada'
+      );
+      return;
+    }
     const params = {
       ano: anoLetivo,
       cicloId: cicloSelecionado,
@@ -431,7 +440,8 @@ export default function PlanoCiclo() {
         <Titulo>
           {modalidadeEja ? 'Plano de Etapa' : 'Plano de Ciclo'}
           <TituloAno>
-            /2019 <i className="fas fa-retweet" />
+            {' / 2019 '}
+            <i className="fas fa-retweet" />
           </TituloAno>
         </Titulo>
       </div>
@@ -491,11 +501,11 @@ export default function PlanoCiclo() {
             <div className="col-md-6">
               Este é um espaço para construção coletiva. Considere os diversos
               ritmos de aprendizagem para planejar e traçar o percurso de cada
-              ciclo.
+              {modalidadeEja ? ' etapa' : ' ciclo'}.
             </div>
             <div className="col-md-6">
-              Considerando as especificações de cada{' '}
-              {modalidadeEja ? 'etapa' : 'ciclo'} desta unidade escolar e o
+              Considerando as especificações de cada
+              {modalidadeEja ? ' etapa ' : ' ciclo '} desta unidade escolar e o
               currículo da cidade, <b>selecione</b> os itens da matriz do saber
               e dos objetivos de desenvolvimento e sustentabilidade que
               contemplam as propostas que planejaram:
@@ -548,18 +558,25 @@ export default function PlanoCiclo() {
                     <ul>
                       {listaMatriz.map(item => {
                         return (
-                          <li key={item.id}>
-                            {
-                              <Badge
-                                id={`matriz-${item.id}`}
-                                className="btn-li-item btn-li-item-matriz"
-                                opcao-selecionada={validaMatrizSelecionada}
-                                onClick={e => addRemoverMatriz(e, item)}
-                              >
-                                {item.id}
-                              </Badge>
-                            }
-                            {item.descricao}
+                          <li key={item.id} className="row">
+                            <div className="col-md-12">
+                              <div className="row aling-center">
+                                <div className="col-md-2">
+                                  <Badge
+                                    id={`matriz-${item.id}`}
+                                    className="btn-li-item btn-li-item-matriz"
+                                    opcao-selecionada={validaMatrizSelecionada}
+                                    onClick={e => addRemoverMatriz(e, item)}
+                                  >
+                                    {item.id}
+                                  </Badge>
+                                </div>
+
+                                <div className="col-md-10 pl-3">
+                                  {item.descricao}
+                                </div>
+                              </div>
+                            </div>
                           </li>
                         );
                       })}
@@ -582,18 +599,25 @@ export default function PlanoCiclo() {
                     <ul>
                       {listaODS.map(item => {
                         return (
-                          <li key={item.id}>
-                            {
-                              <Badge
-                                id={`ods-${item.id}`}
-                                className="btn-li-item btn-li-item-ods"
-                                opcao-selecionada={validaODSSelecionado}
-                                onClick={e => addRemoverODS(e, item)}
-                              >
-                                {item.id}
-                              </Badge>
-                            }
-                            {item.descricao}
+                          <li key={item.id} className="row">
+                            <div className="col-md-12">
+                              <div className="row aling-center">
+                                <div className="col-md-2">
+                                  <Badge
+                                    id={`ods-${item.id}`}
+                                    className="btn-li-item btn-li-item-ods"
+                                    opcao-selecionada={validaODSSelecionado}
+                                    onClick={e => addRemoverODS(e, item)}
+                                  >
+                                    {item.id}
+                                  </Badge>
+                                </div>
+
+                                <div className="col-md-10 pl-3">
+                                  {item.descricao}
+                                </div>
+                              </div>
+                            </div>
                           </li>
                         );
                       })}

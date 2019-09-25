@@ -4,14 +4,33 @@ import React, { useState, useEffect } from 'react';
 import ReactQuill from 'react-quill';
 
 const TextEditor = React.forwardRef((props, ref) => {
-  const { value, onBlur, disabled, onClick, alt } = props;
+  const { value, onBlur, disabled, onClick, alt, estadoAdicional } = props;
 
-  const onBlurQuill = () => {
-    if (onBlur) onBlur(ref.current.state.value);
+  useEffect(() => {
+
+    if (estadoAdicional && estadoAdicional.focado) ref.current.focus();
+
+    if (estadoAdicional && estadoAdicional.ultimoFoco)
+      ref.current.setEditorSelection(
+        ref.current.getEditor(),
+        estadoAdicional.ultimoFoco
+      );
+
+    return () => {
+      if (onBlur) {
+        if (value !== ref.current.state.value) onBlur(ref.current.state.value);
+      }
+    };
+  });
+
+  const onBlurQuill = (posicaoAnterior, origem, editor) => {
+
+    if (onBlur && origem === "user") onBlur(ref.current.state.value);
+
   };
 
-  const onClickQuill = () => {
-    if (onClick) onClick();
+  const onClickQuill = posicao => {
+    if (onClick) onClick(posicao);
   };
 
   return (
@@ -20,7 +39,7 @@ const TextEditor = React.forwardRef((props, ref) => {
       modules={modules}
       onBlur={onBlurQuill}
       alt={alt}
-      value={value || ''}
+      defaultValue={value && value}
       onFocus={onClickQuill}
       readOnly={disabled}
       disabled={disabled}
@@ -35,7 +54,7 @@ TextEditor.propTypes = {
 };
 
 TextEditor.defaultProps = {
-  onBlur: () => {},
+  onBlur: () => { },
   value: '',
 };
 
@@ -48,4 +67,9 @@ const toolbarOptions = [
 
 const modules = {
   toolbar: toolbarOptions,
+  keyboard: {
+    bindings: {
+      tab: false,
+    },
+  },
 };

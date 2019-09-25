@@ -22,25 +22,30 @@ namespace SME.SGP.Aplicacao
             return wf;
         }
 
-        public IEnumerable<WorkflowAprovacaoTimeRespostaDto> ObtemTimelinePorCodigoNotificacao(long notificacaoId)
+        public List<WorkflowAprovacaoTimeRespostaDto> ObtemTimelinePorCodigoNotificacao(long notificacaoId)
         {
             var workflow = repositorioWorkflowAprovacao.ObterEntidadeCompleta(0, notificacaoId);
 
             if (workflow == null)
                 throw new NegocioException($"Não foi possível obter o workflow através da mensagem de id {notificacaoId}");
 
+            var listaWorkflows = new List<WorkflowAprovacaoTimeRespostaDto>();
+
             foreach (var nivel in workflow.ObtemNiveisUnicosEStatus())
             {
-                yield return new WorkflowAprovacaoTimeRespostaDto()
+                listaWorkflows.Add(new WorkflowAprovacaoTimeRespostaDto()
                 {
                     AlteracaoData = nivel.AlteradoEm.HasValue ? nivel.AlteradoEm.Value.ToString() : null,
                     AlteracaoUsuario = nivel.AlteradoPor,
+                    AlteracaoUsuarioRf = nivel.AlteradoRF,
                     NivelDescricao = nivel.Cargo.HasValue ? nivel.Cargo.GetAttribute<DisplayAttribute>().Name : null,
                     NivelId = nivel.Id,
                     Status = nivel.Status.GetAttribute<DisplayAttribute>().Name,
-                    StatusId = (int)nivel.Status
-                };
+                    StatusId = (int)nivel.Status,
+                    Nivel = nivel.Nivel
+                });
             }
+            return listaWorkflows;
         }
     }
 }

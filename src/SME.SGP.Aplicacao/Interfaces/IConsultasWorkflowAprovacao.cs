@@ -8,6 +8,6 @@ namespace SME.SGP.Aplicacao
     {
         WorkflowAprovacao ObtemPorId(long id);
 
-        IEnumerable<WorkflowAprovacaoTimeRespostaDto> ObtemTimelinePorCodigoNotificacao(long notificacaoId);
+        List<WorkflowAprovacaoTimeRespostaDto> ObtemTimelinePorCodigoNotificacao(long notificacaoId);
     }
 }
