@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-
-namespace SME.SGP.Dto
+﻿namespace SME.SGP.Dto
 {
     public class UsuarioAutenticacaoRetornoDto
     {
@@ -12,7 +10,7 @@ namespace SME.SGP.Dto
 
         public bool Autenticado { get; set; }
         public bool ModificarSenha { get; set; }
-        public IEnumerable<PerfilDto> Perfis { get; set; }
+        public PerfisPorPrioridadeDto PerfisUsuario { get; set; }
         public string Token { get; set; }
     }
 }
