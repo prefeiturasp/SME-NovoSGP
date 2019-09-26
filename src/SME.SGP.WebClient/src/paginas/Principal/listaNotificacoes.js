@@ -82,7 +82,7 @@ const ListaNotificacoes = () => {
       <DataTable
         columns={colunas}
         dataSource={notificacoes.notificacoes}
-        pageSize={0}
+        pagination={false}
         onSelectRow={onSelectRow}
         selectedRowKeys={selectedRowKeys}
         locale={{ emptyText: 'Você não tem nenhuma notificação!' }}

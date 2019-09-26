@@ -75,7 +75,7 @@ DataTable.defaultProps = {
   columns: [],
   selectMultipleRows: false,
   pageSize: 10,
-  pagination: false,
+  pagination: true,
   onRowClick: () => {},
   locale: { emptyText: 'Sem dados' },
 };
