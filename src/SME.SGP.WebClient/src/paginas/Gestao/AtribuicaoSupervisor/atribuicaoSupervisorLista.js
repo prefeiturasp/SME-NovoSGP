@@ -61,7 +61,7 @@ export default function AtribuicaoSupervisorLista() {
 
   useEffect(() => {
     if (uesSemSupervisorCheck) {
-      montaListaUesSemSup();
+      montaListaUesSemSup(dresSelecionadas);
     } else {
       setSupervisoresSelecionados([]);
       setUeSelecionada('');
@@ -123,20 +123,20 @@ export default function AtribuicaoSupervisorLista() {
     }
   }
 
-  async function montaListaUesSemSup() {
+  async function montaListaUesSemSup(dre) {
     setSupervisoresSelecionados([]);
     setUeSelecionada('');
     setDesabilitarSupervisor(true);
     setDesabilitarUe(true);
     const vinculoEscolasDreSemAtrib = await api.get(
-      `/v1/dres/${dresSelecionadas}/ues/sem-atribuicao`
+      `/v1/dres/${dre}/ues/sem-atribuicao`
     );
     const novaLista = [
       {
         escolas: vinculoEscolasDreSemAtrib.data,
       },
     ];
-    montarListaAtribuicao(novaLista, dresSelecionadas, true);
+    montarListaAtribuicao(novaLista, dre, true);
   }
 
   function onChangeAssumirFiltroPrinc(e) {
@@ -169,7 +169,7 @@ export default function AtribuicaoSupervisorLista() {
     setUeSelecionada('');
     if (dre) {
       if (uesSemSupervisorCheck) {
-        montaListaUesSemSup();
+        montaListaUesSemSup(dre);
       } else {
         const vinculoEscolasDre = await api.get(
           `v1/supervisores/dre/${dre}/vinculo-escolas`

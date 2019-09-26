@@ -28,6 +28,7 @@ import Auditoria from '~/componentes/auditoria';
 
 //Utilizado para importar a função scrollIntoViewIfNeeded para navegadores que não possuem essa funcionalidade.
 import '../../../componentes/scrollIntoViewIfNeeded';
+import modalidade from '~/dtos/modalidade';
 
 const BimestreComponent = props => {
   const dispatch = useDispatch();
@@ -52,6 +53,23 @@ const BimestreComponent = props => {
   const ListRef = useRef(null);
 
   const bimestreJaObtidoServidor = bimestres[indice].ehExpandido;
+
+  const [modalidadeEja, setModalidadeEja] = useState(false);
+
+  const usuario = useSelector(store => store.usuario);
+
+  useEffect(() => {
+    if (
+      usuario &&
+      usuario.turmaSelecionada &&
+      usuario.turmaSelecionada.length &&
+      usuario.turmaSelecionada[0].codModalidade == modalidade.EJA
+    ) {
+      setModalidadeEja(true);
+    } else {
+      setModalidadeEja(false);
+    }
+  }, [usuario.turmaSelecionada]);
 
   useLayoutEffect(() => {
     if (!bimestres[indice].setarObjetivo) {
@@ -309,7 +327,7 @@ const BimestreComponent = props => {
           )}
           <div className="mt-4">
             <h6 className="d-inline-block font-weight-bold my-0 mr-2 fonte-14">
-              Planejamento Anual
+              {modalidadeEja ? 'Planejamento Semestral' : 'Planejamento Anual'}
             </h6>
             <span className="text-secondary font-italic fonte-12">
               Itens autorais do professor

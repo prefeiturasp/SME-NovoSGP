@@ -13,7 +13,7 @@ namespace SME.SGP.Dominio
         [Display(Name = "Aprovada")]
         Aceita = 3,
 
-        [Display(Name = "Recusada")]
-        Recusada = 4
+        [Display(Name = "Reprovada")]
+        Reprovada = 4
     }
 }
