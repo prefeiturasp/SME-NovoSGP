@@ -135,7 +135,7 @@ const Filtro = () => {
   };
 
   useEffect(() => {
-    if (usuario.rf.length > 0) {
+    if (usuario.rf) {
       if (dados.length === 0) buscaDadosPoRf(usuario.rf);
     }
     if (usuario.turmaSelecionada.length > 0) {
