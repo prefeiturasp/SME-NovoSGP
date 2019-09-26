@@ -1,10 +1,11 @@
-import React, { UseState } from 'react';
+import React, { useState } from 'react';
 import Cabecalho from '~/componentes-sgp/cabecalho';
 import Card from '~/componentes/card';
 import styled from 'styled-components';
 import { Base } from '~/componentes/colors';
 import history from '~/servicos/history';
 import Button from '~/componentes/button';
+import ModalConteudoHtml from '~/componentes/modalConteudoHtml';
 
 const MeusDados = () => {
 
@@ -15,6 +16,8 @@ const MeusDados = () => {
         empresa: 'SME',
         foto: 'https://graziellanicolai.com.br/wp-content/uploads/2018/03/Graziella-perfil.jpg'
     }
+
+    const [alterarFoto, setAlterarFoto] = useState(false);
 
     const Perfil = styled.div`
         padding: 0 !important;
@@ -41,6 +44,12 @@ const MeusDados = () => {
             height: 70px !important;
           }
         }
+
+        .img-edit{
+            width: 215px !important; 
+            height: 215px !important;
+        }
+
         img{
             width: 172px;
             height: 172px;
@@ -89,6 +98,11 @@ const MeusDados = () => {
 
     const Conteudo = styled.div``;
 
+    const SelecionarFoto = styled.a`
+        color: ${Base.Roxo} !important;
+        font-size: 14px !important;
+    `;
+
     const Topo = styled.div`
         padding-bottom: 30px;
         button{
@@ -107,10 +121,33 @@ const MeusDados = () => {
         history.push('/');
     }
 
+    const mostrarModal = () => {
+        setAlterarFoto(!alterarFoto)
+    }
+
     return (
         <div>
             <Cabecalho pagina="Meus Dados" />
             <Card>
+                <ModalConteudoHtml
+                    key={'trocarFoto'}
+                    visivel={alterarFoto}
+                    onConfirmacaoPrincipal={() => { }}
+                    onConfirmacaoSecundaria={mostrarModal}
+                    onClose={() => { }}
+                    labelBotaoPrincipal="Confirmar"
+                    labelBotaoSecundario="Cancelar"
+                    titulo="Alterar Foto"
+                    closable={true}
+                >
+                    <DadosPerfil className="col-12">
+                        <img className="img-edit" id="foto-perfil" src={dados.foto}/>
+                    </DadosPerfil>
+                    <DadosPerfil className="col-12">
+                        <SelecionarFoto className="text-center">Selecionar nova foto</SelecionarFoto>
+                    </DadosPerfil>
+
+                </ModalConteudoHtml>
                 <Topo className="col-12 d-flex justify-content-end">
                     <Button
                         label="Voltar"
@@ -124,7 +161,7 @@ const MeusDados = () => {
                 <Perfil className="col-4">
                     <DadosPerfil className="col-12">
                         <img id="foto-perfil" src={dados.foto} />
-                        <Botao className="text-center">
+                        <Botao className="text-center" onClick={mostrarModal}>
                             <Icone>
                                 <i className="fas fa-camera" />
                             </Icone>
