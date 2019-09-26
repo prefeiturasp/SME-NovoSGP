@@ -88,7 +88,7 @@ namespace SME.SGP.Aplicacao
                 {
                     foreach (var usuarioRf in nivel.UsuariosRf)
                     {
-                        workflowNivel.Adicionar(servicoUsuario.ObterUsuarioPorCodigoRfOuAdiciona(usuarioRf));
+                        workflowNivel.Adicionar(servicoUsuario.ObterUsuarioPorCodigoRfLoginOuAdiciona(usuarioRf));
                     }
                 }
 
