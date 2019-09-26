@@ -6,26 +6,23 @@ import { Base } from '~/componentes/colors';
 import history from '~/servicos/history';
 import Button from '~/componentes/button';
 import ModalConteudoHtml from '~/componentes/modalConteudoHtml';
+import { store } from '~/redux';
+import { useSelector } from 'react-redux';
+import { meusDados} from '~/redux/modulos/usuario/actions';
 
 const MeusDados = () => {
+  const usuarioStore = useSelector(store => store.usuario);
+  const [foto, setFoto] = useState('https://graziellanicolai.com.br/wp-content/uploads/2018/03/Graziella-perfil.jpg');
 
-    const dados = {
-        nome: 'Teste com Sobrenome Um tanto Quanto Maior',
-        rf: '123456',
-        cpf: '12345678901',
-        empresa: 'SME',
-        foto: 'https://graziellanicolai.com.br/wp-content/uploads/2018/03/Graziella-perfil.jpg'
-    }
+  const [alterarFoto, setAlterarFoto] = useState(false);
 
-    const [alterarFoto, setAlterarFoto] = useState(false);
-
-    const Perfil = styled.div`
+  const Perfil = styled.div`
         padding: 0 !important;
         margin: 0 !important;
         border-right: 1px solid ${Base.CinzaBarras};
     `;
 
-    const DadosPerfil = styled.div`
+  const DadosPerfil = styled.div`
         display: flex;
         justify-content: center;
         flex-direction: column;
@@ -46,15 +43,19 @@ const MeusDados = () => {
         }
 
         .img-edit{
-            width: 215px !important; 
+            width: 215px !important;
             height: 215px !important;
         }
 
-        img{
+        .img-profile{
             width: 172px;
             height: 172px;
-            border-radius: 50%;
         }
+
+        img{
+          border-radius: 50%;
+        }
+
         span{
             font-size: 14px;
         }
@@ -65,7 +66,7 @@ const MeusDados = () => {
         }
     `;
 
-    const Botao = styled.a`
+  const Botao = styled.a`
         display: flex !important;
         text-align: center !important;
         position: absolute;
@@ -73,7 +74,7 @@ const MeusDados = () => {
         left:65%;
     `;
 
-    const Icone = styled.div`
+  const Icone = styled.div`
         background: ${Base.Roxo};
         color: ${Base.Branco};
         font-size: 17px !important;
@@ -96,14 +97,14 @@ const MeusDados = () => {
         }
   `;
 
-    const Conteudo = styled.div``;
+  const Conteudo = styled.div``;
 
-    const SelecionarFoto = styled.a`
+  const SelecionarFoto = styled.a`
         color: ${Base.Roxo} !important;
         font-size: 14px !important;
     `;
 
-    const Topo = styled.div`
+  const Topo = styled.div`
         padding-bottom: 30px;
         button{
             color: ${Base.Azul} !important;
@@ -117,68 +118,98 @@ const MeusDados = () => {
         }
     `;
 
-    const irParaDashboard = () => {
-        history.push('/');
+  const irParaDashboard = () => {
+    history.push('/');
+  }
+
+  const mostrarModal = () => {
+    setAlterarFoto(!alterarFoto)
+  }
+
+  const selecionarNovaFoto = () => {
+    window.document.getElementById('selecionar-foto').click();
+  }
+
+  const arquivoSelecionado = event => {
+    const arquivo = event.target.files[0];
+    if (arquivo) {
+      const fileReader = new FileReader();
+      const img = new Image();
+      img.src = window.URL.createObjectURL( arquivo );
+      img.onload = e => {
+        console.log(img);
+      }
+      fileReader.onloadend = () => {
+        const novosDados = usuarioStore.meusDados;
+        const novaFoto = fileReader.result;
+        setFoto(novaFoto);
+        // store.dispatch(meusDados(novosDados));
+      }
+      fileReader.readAsDataURL(arquivo);
+      if (arquivo.size > 2000000) {
+        console.log('acima do permitido');
+      }
     }
+  }
 
-    const mostrarModal = () => {
-        setAlterarFoto(!alterarFoto)
-    }
+  return (
+    <div>
+      <Cabecalho pagina="Meus Dados" />
+      <Card>
+        <ModalConteudoHtml
+          key={'trocarFoto'}
+          visivel={alterarFoto}
+          onConfirmacaoPrincipal={() => { }}
+          onConfirmacaoSecundaria={mostrarModal}
+          onClose={() => { }}
+          labelBotaoPrincipal="Confirmar"
+          labelBotaoSecundario="Cancelar"
+          titulo="Alterar Foto"
+          closable={true}
+        >
+          <DadosPerfil className="col-12">
+            <img className="img-edit" id="foto-perfil" src={foto} />
+          </DadosPerfil>
+          <DadosPerfil className="col-12">
+            <SelecionarFoto className="text-center" onClick={selecionarNovaFoto}>
+              <input type="file" hidden accept="image/jpeg, image/png"
+                id="selecionar-foto" onChange={arquivoSelecionado} />
+              Selecionar nova foto
+            </SelecionarFoto>
+          </DadosPerfil>
 
-    return (
-        <div>
-            <Cabecalho pagina="Meus Dados" />
-            <Card>
-                <ModalConteudoHtml
-                    key={'trocarFoto'}
-                    visivel={alterarFoto}
-                    onConfirmacaoPrincipal={() => { }}
-                    onConfirmacaoSecundaria={mostrarModal}
-                    onClose={() => { }}
-                    labelBotaoPrincipal="Confirmar"
-                    labelBotaoSecundario="Cancelar"
-                    titulo="Alterar Foto"
-                    closable={true}
-                >
-                    <DadosPerfil className="col-12">
-                        <img className="img-edit" id="foto-perfil" src={dados.foto}/>
-                    </DadosPerfil>
-                    <DadosPerfil className="col-12">
-                        <SelecionarFoto className="text-center">Selecionar nova foto</SelecionarFoto>
-                    </DadosPerfil>
-
-                </ModalConteudoHtml>
-                <Topo className="col-12 d-flex justify-content-end">
-                    <Button
-                        label="Voltar"
-                        icon="arrow-left"
-                        color={Base.Azul}
-                        border
-                        className="mr-3"
-                        onClick={irParaDashboard}
-                    />
-                </Topo>
-                <Perfil className="col-4">
-                    <DadosPerfil className="col-12">
-                        <img id="foto-perfil" src={dados.foto} />
-                        <Botao className="text-center" onClick={mostrarModal}>
-                            <Icone>
-                                <i className="fas fa-camera" />
-                            </Icone>
-                        </Botao>
-                    </DadosPerfil>
-                    <DadosPerfil className="text-center">
-                        <span className="nome">{dados.nome}</span>
-                        <span hidden={!dados.rf}>RF: {dados.rf}</span>
-                        <span hidden={!dados.cpf}>CPF: {dados.cpf}</span>
-                        <span hidden={!dados.empresa}>Empresa: {dados.empresa}</span>
-                    </DadosPerfil>
-                </Perfil>
-                <Conteudo className="col-8">
-                </Conteudo>
-            </Card>
-        </div>
-    );
+        </ModalConteudoHtml>
+        <Topo className="col-12 d-flex justify-content-end">
+          <Button
+            label="Voltar"
+            icon="arrow-left"
+            color={Base.Azul}
+            border
+            className="mr-3"
+            onClick={irParaDashboard}
+          />
+        </Topo>
+        <Perfil className="col-4">
+          <DadosPerfil className="col-12">
+            <img id="foto-perfil" className="img-profile" src={usuarioStore.meusDados.foto} />
+            <Botao className="text-center" onClick={mostrarModal}>
+              <Icone>
+                <i className="fas fa-camera" />
+              </Icone>
+            </Botao>
+          </DadosPerfil>
+          <DadosPerfil className="text-center">
+            <span className="nome">{usuarioStore.meusDados.nome}</span>
+            <span hidden={!usuarioStore.meusDados.rf}>RF: {usuarioStore.meusDados.rf}</span>
+            <span hidden={!usuarioStore.meusDados.cpf}>CPF: {usuarioStore.meusDados.cpf}</span>
+            <span hidden={!usuarioStore.meusDados.empresa}>Empresa: {usuarioStore.meusDados.empresa}</span>
+          </DadosPerfil>
+        </Perfil>
+        <Conteudo className="col-8">
+        </Conteudo>
+      </Card>
+    </div>
+  );
 }
 
 export default MeusDados;
