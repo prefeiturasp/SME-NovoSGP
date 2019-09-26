@@ -36,7 +36,7 @@ export default function Rotas() {
     tipo: RotasTipo.EstruturadaAutenticada,
   });
 
-  rotas.set('/login', {
+  rotas.set('/login/:redirect?/', {
     breadcrumbName: '',
     menu: '',
     parent: '/',

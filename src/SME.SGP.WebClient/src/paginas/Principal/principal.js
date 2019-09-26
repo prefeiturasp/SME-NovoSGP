@@ -27,6 +27,19 @@ const Principal = props => {
   const filtroStore = useSelector(state => state.usuario);
 
   useEffect(() => {
+    if (props.match.params.rf) {
+      const { rf } = props.match.params;
+      store.dispatch(salvarRf(rf));
+    }
+
+    validarFiltro();
+  }, []);
+
+  useEffect(() => {
+    validarFiltro();
+  }, [filtroStore]);
+
+  useEffect(() => {
     if (
       filtroStore &&
       filtroStore.turmaSelecionada &&
@@ -119,7 +132,7 @@ const Principal = props => {
           </Row>
         </Grid>
       </Card>
-      <Row>
+      <Row className="mt-3">
         <Grid cols={12} className="form-inline">
           <CardLink
             cols={[4, 4, 4, 12]}
