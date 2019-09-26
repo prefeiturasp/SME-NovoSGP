@@ -1,6 +1,4 @@
-﻿using SME.SGP.Dominio;
-using SME.SGP.Dominio.Interfaces;
-using SME.SGP.Dto;
+﻿using SME.SGP.Dto;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao.Integracoes
@@ -8,15 +6,13 @@ namespace SME.SGP.Aplicacao.Integracoes
     public class ServicoAutenticacao : IServicoAutenticacao
     {
         private readonly IServicoEOL servicoEOL;
-        private readonly IServicoUsuario servicoUsuario;
 
-        public ServicoAutenticacao(IServicoEOL servicoEOL, IServicoUsuario servicoUsuario)
+        public ServicoAutenticacao(IServicoEOL servicoEOL)
         {
             this.servicoEOL = servicoEOL ?? throw new System.ArgumentNullException(nameof(servicoEOL));
-            this.servicoUsuario = servicoUsuario ?? throw new System.ArgumentNullException(nameof(servicoUsuario));
         }
 
-        public async Task<UsuarioAutenticacaoRetornoDto> AutenticarNoEol(string login, string senha)
+        public async Task<(UsuarioAutenticacaoRetornoDto, string)> AutenticarNoEol(string login, string senha)
         {
             var retornoServicoEol = await servicoEOL.Autenticar(login, senha);
 
@@ -26,16 +22,16 @@ namespace SME.SGP.Aplicacao.Integracoes
                 retornoDto.Autenticado = retornoServicoEol.Status == AutenticacaoStatusEol.Ok;
                 retornoDto.ModificarSenha = retornoServicoEol.Status == AutenticacaoStatusEol.SenhaPadrao;
 
-                var usuario = servicoUsuario.ObterUsuarioPorCodigoRfLoginOuAdiciona(retornoServicoEol.CodigoRf, login);
-
-                retornoDto.Token = GeraTokenSeguranca(usuario);
+                retornoDto.Token = GeraTokenSeguranca(retornoDto);
             }
 
-            return retornoDto;
+            return (retornoDto, retornoServicoEol.CodigoRf);
         }
 
-        private string GeraTokenSeguranca(Usuario usuario)
+        private string GeraTokenSeguranca(UsuarioAutenticacaoRetornoDto retornoEol)
         {
+            // priorizar os perfis
+            //Gerar o token com os permissionamentos do perfil priorizado
             return string.Empty;
         }
     }

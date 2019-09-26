@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace SME.SGP.Dominio
 {
@@ -6,6 +7,7 @@ namespace SME.SGP.Dominio
     {
         public string CodigoRf { get; set; }
         public IEnumerable<Notificacao> Notificacoes { get { return notificacoes; } }
+        public DateTime UltimoLogin { get; set; }
         private IList<Notificacao> notificacoes { get; set; }
 
         public void Adicionar(Notificacao notificacao)
@@ -14,5 +16,9 @@ namespace SME.SGP.Dominio
                 notificacoes.Add(notificacao);
         }
 
+        public void AtualizaUltimoLogin()
+        {
+            this.UltimoLogin = DateTime.Now;
+        }
     }
 }
