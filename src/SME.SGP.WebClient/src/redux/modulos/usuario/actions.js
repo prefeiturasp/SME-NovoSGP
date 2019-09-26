@@ -24,3 +24,10 @@ export function removerTurma() {
     type: '@usuario/removerTurma',
   };
 }
+
+export function meusDados(dados) {
+  return {
+    type: '@usuario/meusDados',
+    payload: dados
+  };
+}
