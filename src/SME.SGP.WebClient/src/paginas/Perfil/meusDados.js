@@ -3,6 +3,8 @@ import Cabecalho from '~/componentes-sgp/cabecalho';
 import Card from '~/componentes/card';
 import styled from 'styled-components';
 import { Base } from '~/componentes/colors';
+import history from '~/servicos/history';
+import Button from '~/componentes/button';
 
 const MeusDados = () => {
 
@@ -87,10 +89,38 @@ const MeusDados = () => {
 
     const Conteudo = styled.div``;
 
+    const Topo = styled.div`
+        padding-bottom: 30px;
+        button{
+            color: ${Base.Azul} !important;
+            background: ${Base.Branco} !important;
+            border: 1px solid ${Base.Azul} !important;
+        }
+
+        button:hover{
+            color: ${Base.Branco} !important;
+            background: ${Base.Azul} !important;
+        }
+    `;
+
+    const irParaDashboard = () => {
+        history.push('/');
+    }
+
     return (
         <div>
             <Cabecalho pagina="Meus Dados" />
             <Card>
+                <Topo className="col-12 d-flex justify-content-end">
+                    <Button
+                        label="Voltar"
+                        icon="arrow-left"
+                        color={Base.Azul}
+                        border
+                        className="mr-3"
+                        onClick={irParaDashboard}
+                    />
+                </Topo>
                 <Perfil className="col-4">
                     <DadosPerfil className="col-12">
                         <img id="foto-perfil" src={dados.foto} />
