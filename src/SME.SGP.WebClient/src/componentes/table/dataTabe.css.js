@@ -53,7 +53,6 @@ export const Container = styled.div`
     border-radius: 0;
 
     a {
-      color: ${Base.Branco} !important;
       font-family: Roboto;
       font-style: normal;
       font-stretch: normal;
