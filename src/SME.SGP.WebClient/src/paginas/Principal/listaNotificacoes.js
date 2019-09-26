@@ -15,7 +15,7 @@ const ListaNotificacoes = () => {
 
   const colunas = [
     {
-      title: 'ID',
+      title: 'Código',
       dataIndex: 'codigo',
       key: 'codigo',
       className:
