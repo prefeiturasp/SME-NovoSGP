@@ -1,4 +1,5 @@
 ﻿using SME.SGP.Dominio;
+using System;
 
 namespace SME.SGP.Dto
 {
@@ -7,7 +8,7 @@ namespace SME.SGP.Dto
         public NotificacaoCategoria Categoria { get; set; }
         public string DescricaoCategoria { get; set; }
         public long Codigo { get; set; }
-        public string Data { get; set; }
+        public DateTime Data { get; set; }
         public string DescricaoStatus { get; set; }
         public long Id { get; set; }
         public bool PodeMarcarComoLida { get; set; }
