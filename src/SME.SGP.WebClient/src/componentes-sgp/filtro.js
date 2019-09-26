@@ -444,6 +444,9 @@ const Filtro = () => {
     event.preventDefault();
     if (resultadosFiltro) {
       if (resultadosFiltro.length === 1) {
+        setDreFiltroSelecionada(resultadosFiltro[0].codDre);
+        setUnidadeEscolarFiltroSelecionada(resultadosFiltro[0].codEscola);
+        setTurmaFiltroSelecionada(resultadosFiltro[0].codTurma.toString());
         selecionaTurmaAutocomplete(resultadosFiltro[0]);
       } else {
         const selecionado = document.querySelector(
@@ -454,6 +457,12 @@ const Filtro = () => {
           if (indice) {
             const resultado = resultadosFiltro[indice];
             if (resultado) {
+              setModalidadeFiltroSelecionada(
+                resultado.codModalidade.toString()
+              );
+              setDreFiltroSelecionada(resultado.codDre);
+              setUnidadeEscolarFiltroSelecionada(resultado.codEscola);
+              setTurmaFiltroSelecionada(resultado.codTurma.toString());
               selecionaTurmaAutocomplete(resultado);
             }
           }
