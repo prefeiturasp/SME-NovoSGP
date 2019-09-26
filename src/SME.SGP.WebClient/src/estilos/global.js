@@ -229,11 +229,18 @@ export default createGlobalStyle`
   }
 
   :root{
-    --posicao-item-menu: 0;
+    --posicao-item-menu-top: 0;
+    --posicao-item-menu-left: 110px;
   }
 
   div > div > .ant-menu-submenu-popup{
-    top: var(--posicao-item-menu) !important;
+    top: var(--posicao-item-menu-top) !important;
+    left: var(--posicao-item-menu-left) !important;
+  }
+
+  .ant-menu-submenu .ant-menu-submenu-vertical{
+    background: ${Base.Branco} !important;
+    color: ${Base.CinzaMenuItem} !important;
   }
 
   .ant-menu-submenu-popup{
