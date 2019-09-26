@@ -5,6 +5,19 @@ export function salvarRf(rf) {
   };
 }
 
+export function SalvarDadosLogin(Login) {
+  return {
+    type: '@usuario/salvarLogin',
+    payload: Login,
+  };
+}
+
+export function Deslogar() {
+  return {
+    type: '@usuario/deslogar',
+  };
+}
+
 export function turmasUsuario(turmas) {
   return {
     type: '@usuario/turmasUsuario',

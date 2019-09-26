@@ -50,7 +50,7 @@ namespace SME.SGP.Aplicacao
                 Id = x.Id,
                 Categoria = x.Categoria,
                 Codigo = x.Codigo,
-                Data = x.CriadoEm,
+                Data = x.CriadoEm.ToString(),
                 DescricaoStatus = x.Mensagem,
                 Status = x.Status,
                 Tipo = x.Tipo.ToString(),
