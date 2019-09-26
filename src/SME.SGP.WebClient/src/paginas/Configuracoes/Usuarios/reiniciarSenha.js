@@ -33,8 +33,8 @@ export default function ReiniciarSenha() {
   const [validacoes, setValidacoes] = useState(
     Yup.object({
       emailUsuario: Yup.string()
-        .email('Digite um email válido.')
-        .required('Campo obrigatório'),
+        .email('Digite um e-mail válido.')
+        .required('E-mail é obrigatório'),
     })
   );
 
@@ -276,7 +276,7 @@ export default function ReiniciarSenha() {
               titulo="Reiniciar Senha"
               closable={false}
             >
-              <b> Deseja realmente reininicar essa senha? </b>
+              <b> Deseja realmente reiniciar essa senha? </b>
 
               <CampoTexto
                 label="E-mail"
