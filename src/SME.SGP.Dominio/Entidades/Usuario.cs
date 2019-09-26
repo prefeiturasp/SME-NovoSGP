@@ -21,8 +21,7 @@ namespace SME.SGP.Dominio
 
         public void IniciarRecuperacaoDeSenha()
         {
-            //se não tiver e-mail cadastrado
-            if (false)
+            if (string.IsNullOrWhiteSpace(Email))
             {
                 //se for usuario com nivel UE
                 throw new NegocioException("Você não tem um e-mail cadastrado para recuperar sua senha. Para restabelecer o seu acesso, procure o Diretor da sua unidade.");
