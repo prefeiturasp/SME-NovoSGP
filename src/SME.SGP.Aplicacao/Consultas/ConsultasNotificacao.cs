@@ -29,7 +29,7 @@ namespace SME.SGP.Aplicacao
                    {
                        Id = r.Id,
                        Titulo = r.Titulo,
-                       Data = r.CriadoEm.ToString(),
+                       Data = r.CriadoEm,
                        DescricaoStatus = r.Status.ToString(),
                        Status = r.Status,
                        Categoria = r.Categoria,
@@ -50,7 +50,7 @@ namespace SME.SGP.Aplicacao
                 Id = x.Id,
                 Categoria = x.Categoria,
                 Codigo = x.Codigo,
-                Data = x.CriadoEm.ToString(),
+                Data = x.CriadoEm,
                 DescricaoStatus = x.Mensagem,
                 Status = x.Status,
                 Tipo = x.Tipo.ToString(),

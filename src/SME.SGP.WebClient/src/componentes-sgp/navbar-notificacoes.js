@@ -13,6 +13,7 @@ import {
 } from '../redux/modulos/notificacoes/actions';
 import api from '../servicos/api';
 import history from '~/servicos/history';
+import * as moment from 'moment';
 
 const NavbarNotificacoes = props => {
   const { Botao, Icone, Texto } = props;
@@ -232,7 +233,7 @@ const NavbarNotificacoes = props => {
                         {statusLista[notificacao.status]}
                       </td>
                       <td className="py-1 px-2 align-middle w-25 text-right">
-                        {notificacao.data}
+                        { moment(notificacao.data).format('DD/MM/YYYY HH:mm:ss') }
                       </td>
                     </Tr>
                   );
