@@ -13,6 +13,5 @@ namespace SME.SGP.Dominio
             if (notificacao != null)
                 notificacoes.Add(notificacao);
         }
-
     }
 }
