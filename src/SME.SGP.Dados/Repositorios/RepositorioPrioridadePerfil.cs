@@ -17,7 +17,7 @@ namespace SME.SGP.Dados.Repositorios
         public IEnumerable<PrioridadePerfil> ObterPerfisPorIds(IEnumerable<Guid> idsPerfis)
         {
             var query = new StringBuilder();
-            query.AppendLine("select * from prioridade_perfil where codigo_perfil in (@Ids) order by ordem");
+            query.AppendLine("select * from prioridade_perfil where codigo_perfil = Any(@Ids) order by ordem");
 
             return database.Conexao.Query<PrioridadePerfil>(query.ToString(), new { Ids = idsPerfis });
         }

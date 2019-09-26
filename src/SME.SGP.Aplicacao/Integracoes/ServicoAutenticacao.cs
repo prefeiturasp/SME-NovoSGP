@@ -3,6 +3,7 @@ using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Dto;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao.Integracoes
@@ -35,22 +36,38 @@ namespace SME.SGP.Aplicacao.Integracoes
                 var usuario = servicoUsuario.ObterUsuarioPorCodigoRfLoginOuAdiciona(retornoServicoEol.CodigoRf, login);
 
                 retornoDto.Token = GeraTokenSeguranca(usuario);
-                retornoDto.Perfis = DefinirPerfilPrioritario(usuario, retornoServicoEol.Perfis);
+                retornoDto.PerfisUsuario = DefinirPerfilPrioritario(retornoServicoEol.Perfis, usuario);
             }
 
             return retornoDto;
         }
 
-        private IEnumerable<PerfilDto> DefinirPerfilPrioritario(Usuario usuario, IEnumerable<Guid> perfis)
+        private PerfisPorPrioridadeDto DefinirPerfilPrioritario(IEnumerable<Guid> perfis, Usuario usuario)
         {
             var perfisUsuario = repositorioPrioridadePerfil.ObterPerfisPorIds(perfis);
 
-            return null;
+            Guid perfilPrioritario = usuario.ObterPerfilPrioritario(perfisUsuario);
+
+            var perfisPorPrioridade = new PerfisPorPrioridadeDto
+            {
+                PerfilSelecionado = perfilPrioritario,
+                Perfis = MapearPerfisParaDto(perfisUsuario)
+            };
+            return perfisPorPrioridade;
         }
 
         private string GeraTokenSeguranca(Usuario usuario)
         {
             return string.Empty;
+        }
+
+        private IList<PerfilDto> MapearPerfisParaDto(IEnumerable<PrioridadePerfil> perfisUsuario)
+        {
+            return perfisUsuario?.Select(c => new PerfilDto
+            {
+                CodigoPerfil = c.CodigoPerfil,
+                NomePerfil = c.NomePerfil
+            }).ToList();
         }
     }
 }
