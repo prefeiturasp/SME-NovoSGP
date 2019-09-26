@@ -7,6 +7,7 @@ import LogoMenuFooter from '../recursos/LogoMenuFooter.svg';
 import { store } from '../redux';
 import { menuRetraido, menuSelecionado } from '../redux/modulos/navegacao/actions';
 import { useSelector } from 'react-redux';
+import modalidade from '~/dtos/modalidade';
 
 const Sider = () => {
   const { Sider, Footer } = Layout;
@@ -26,7 +27,7 @@ const Sider = () => {
       usuario &&
       usuario.turmaSelecionada &&
       usuario.turmaSelecionada.length &&
-      usuario.turmaSelecionada[0].codModalidade == 3
+      usuario.turmaSelecionada[0].codModalidade == modalidade.EJA
     ) {
       setModalidadeEja(true);
     } else {
@@ -198,7 +199,7 @@ const Sider = () => {
                   />
                 </Menu.Item>
                 <Menu.Item key="31" id="plaPlanoAnual" htmlFor="linkPlanoAnual">
-                  <span className="menuItem"> Plano Anual</span>
+                  <span className="menuItem">{ modalidadeEja ? 'Plano Semestral' : 'Plano Anual'}</span>
                   <Link
                     to="/planejamento/plano-anual"
                     className="nav-link text-white"

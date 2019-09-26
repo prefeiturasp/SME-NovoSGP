@@ -14,17 +14,20 @@ const Base = {
   Branco: '#FFF',
   CinzaBadge: '#F3F3F3',
   CinzaBarras: '#C8C8C8',
+  CinzaBotao: '#A4A4A4',
+  CinzaDesabilitado: '#DADADA',
+  CinzaFundo: '#F5F6F8',
+  CinzaIconeNotificacao: '#707683',
+  CinzaMako: '#42474A',
   CinzaMenu: '#EEEEEE',
   CinzaMenuItem: '#686868',
-  CinzaDesabilitado: '#DADADA',
-  CinzaBotao: '#A4A4A4',
-  CinzaFundo: '#F5F6F8',
-  CinzaMako: '#42474A',
-  VermelhoAlerta: '#b40c02',
   Preto: '#000',
   Roxo: '#6933FF',
   RoxoFundo: '#6331EA',
   RoxoClaro: '#B99FFF',
+  RoxoNotificacao: '#E7E6F8',
+  VermelhoAlerta: '#B40C02',
+  VermelhoNotificacao: '#B40C02',
   Vermelho: '#B40C02',
 };
 
@@ -39,7 +42,7 @@ const Active = {
 const Hover = {
   Azul: '#064F79',
   Roxo: '#490CF5',
-  Vermelho: '#ad0007',
+  Vermelho: '#AD0007',
 };
 
 export { Colors, Base, Active, Hover };

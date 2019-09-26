@@ -142,6 +142,26 @@ namespace SME.SGP.Integracao.Teste
             Assert.True(listaMensagens.Count(c => c.Sucesso) == 1);
         }
 
+        [Fact, Order(5)]
+        public void Deve_Consultar_Notificacao_Basica_Lista()
+        {
+            _fixture._clientApi.DefaultRequestHeaders.Clear();
+
+            var getResult = _fixture._clientApi.GetAsync($"api/v1/notificacoes/resumo?anoLetivo={2019}&usuarioRf={1}").Result;
+
+            Assert.True(getResult.IsSuccessStatusCode);
+        }
+
+        [Fact, Order(6)]
+        public void Deve_Consultar_Quantidade_Notificacao_Nao_Lidas()
+        {
+            _fixture._clientApi.DefaultRequestHeaders.Clear();
+
+            var getResult = _fixture._clientApi.GetAsync($"api/v1/notificacoes/quantidade/naolidas?anoLetivo={2019}&usuarioRf={1}").Result;
+
+            Assert.True(getResult.IsSuccessStatusCode);
+        }
+
         [Fact, Order(3)]
         public void Deve_Marcar_Como_Lida()
         {

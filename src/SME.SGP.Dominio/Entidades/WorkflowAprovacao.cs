@@ -120,7 +120,7 @@ namespace SME.SGP.Dominio
                     return NotificacaoStatus.Aceita;
 
                 case WorkflowAprovacaoNivelStatus.Reprovado:
-                    return NotificacaoStatus.Recusada;
+                    return NotificacaoStatus.Reprovada;
 
                 default:
                     throw new NegocioException("Não foi possível atualizar o status da notificação.");

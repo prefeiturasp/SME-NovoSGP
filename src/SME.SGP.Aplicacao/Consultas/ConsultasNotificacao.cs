@@ -33,11 +33,43 @@ namespace SME.SGP.Aplicacao
                        DescricaoStatus = r.Status.ToString(),
                        Status = r.Status,
                        Categoria = r.Categoria,
+                       DescricaoCategoria = r.Categoria.GetAttribute<DisplayAttribute>().Name,
                        Tipo = r.Tipo.GetAttribute<DisplayAttribute>().Name,
                        Codigo = r.Codigo,
                        PodeRemover = r.PodeRemover,
                        PodeMarcarComoLida = r.DeveMarcarComoLido
                    };
+        }
+
+        public IEnumerable<NotificacaoBasicaDto> ListarPorAnoLetivoRf(int anoLetivo, string usuarioRf, int limite = 5)
+        {
+            var notificacao = repositorioNotificacao.ObterNotificacoesPorAnoLetivoERf(anoLetivo, usuarioRf, limite);
+
+            return notificacao.Select(x => new NotificacaoBasicaDto
+            {
+                Id = x.Id,
+                Categoria = x.Categoria,
+                Codigo = x.Codigo,
+                Data = x.CriadoEm.ToString(),
+                DescricaoStatus = x.Mensagem,
+                Status = x.Status,
+                Tipo = x.Tipo.ToString(),
+                Titulo = x.Titulo
+            });
+        }
+
+        public int QuantidadeNotificacoesNaoLidas(int anoLetivo, string usuarioRf)
+        {
+            return repositorioNotificacao.ObterQuantidadeNotificacoesNaoLidasPorAnoLetivoERf(anoLetivo, usuarioRf);
+        }
+
+        public NotificacaoBasicaListaDto ObterNotificacaoBasicaLista(int anoLetivo, string usuarioRf)
+        {
+            return new NotificacaoBasicaListaDto
+            {
+                Notificacoes = ListarPorAnoLetivoRf(anoLetivo, usuarioRf),
+                QuantidadeNaoLidas = QuantidadeNotificacoesNaoLidas(anoLetivo, usuarioRf)
+            };
         }
 
         public NotificacaoDetalheDto Obter(long notificacaoId)
@@ -105,5 +137,6 @@ namespace SME.SGP.Aplicacao
                 Observacao = retorno.WorkflowAprovacaoNivel == null ? string.Empty : retorno.WorkflowAprovacaoNivel.Observacao
             };
         }
+
     }
 }
