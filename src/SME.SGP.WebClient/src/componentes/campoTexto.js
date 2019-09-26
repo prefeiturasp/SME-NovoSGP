@@ -4,6 +4,7 @@ import { Field, ErrorMessage } from 'formik';
 import styled from 'styled-components';
 import { Input } from 'antd';
 import { Base } from './colors';
+import Label from './label';
 
 const Campo = styled.div`
   span {
@@ -29,6 +30,7 @@ const CampoTexto = ({
   value,
   desabilitado,
   maxlength,
+  label
 }) => {
   const possuiErro = () => {
     return form && form.errors[name] && form.touched[name];
@@ -42,6 +44,7 @@ const CampoTexto = ({
   return (
     <>
       <Campo>
+        {label ? <Label text={label} /> : ''}
         {form ? (
           <>
             {' '}
@@ -51,7 +54,7 @@ const CampoTexto = ({
               className={`form-control campo ${
                 possuiErro() ? 'is-invalid' : ''
               } ${className || ''} ${desabilitado ? 'desabilitado' : ''}`}
-              component={type || 'text'}
+              component={type || 'input'}
               disabled={desabilitado}
               onBlur={executaOnBlur}
               maxLength={maxlength || ''}

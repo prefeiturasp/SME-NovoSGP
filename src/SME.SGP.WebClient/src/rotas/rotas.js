@@ -14,13 +14,14 @@ import RotasTipo from '~/constantes/rotasTipo';
 import Login from '~/paginas/Login';
 import RotaNaoAutenticadaDesestruturada from './rotaNaoAutenticadaDesestruturada';
 import RotaAutenticadaDesestruturada from './rotaAutenticadaDesestruturada';
+import ReiniciarSenha from '~/paginas/Configuracoes/Usuarios/reiniciarSenha';
 
 export default function Rotas() {
   const rotas = new Map();
 
   rotas.set('/planejamento/plano-ciclo', {
     breadcrumbName: 'Plano de Ciclo',
-    menu: 'Planejamento',
+    menu: ['Planejamento'],
     parent: '/',
     component: PlanoCiclo,
     exact: true,
@@ -29,7 +30,7 @@ export default function Rotas() {
 
   rotas.set('/planejamento/plano-anual', {
     breadcrumbName: 'Plano Anual',
-    menu: 'Planejamento',
+    menu: ['Planejamento'],
     parent: '/',
     component: PlanoAnual,
     exact: false,
@@ -38,7 +39,6 @@ export default function Rotas() {
 
   rotas.set('/login', {
     breadcrumbName: '',
-    menu: '',
     parent: '/',
     component: Login,
     exact: true,
@@ -47,7 +47,7 @@ export default function Rotas() {
 
   rotas.set('/gestao/atribuicao-supervisor-lista', {
     breadcrumbName: 'Atribuição de Supervisor',
-    menu: 'Gestão',
+    menu: ['Gestão'],
     parent: '/',
     component: AtribuicaoSupervisorLista,
     exact: true,
@@ -90,6 +90,15 @@ export default function Rotas() {
     breadcrumbName: 'Notificações',
     parent: '/',
     component: NotificacoesLista,
+    exact: true,
+    tipo: RotasTipo.EstruturadaAutenticada,
+  });
+
+  rotas.set('/usuarios/reiniciar-senha', {
+    breadcrumbName: 'Reiniciar Senha',
+    menu: ['Configurações', 'Usuários'],
+    parent: '/usuarios',
+    component: ReiniciarSenha,
     exact: true,
     tipo: RotasTipo.EstruturadaAutenticada,
   });
