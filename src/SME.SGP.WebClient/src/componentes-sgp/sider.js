@@ -342,7 +342,12 @@ const Sider = () => {
                   }
                 >
                   <Menu.Item key="110" id="usuTrocaSenha">
-                    <span className="menuItem">Troca de Senha</span>
+                    <span className="menuItem">Reiniciar Senha</span>
+                    <Link
+                      to="/usuarios/reiniciar-senha"
+                      className="nav-link text-white"
+                      id="linkReiniciarSenha"
+                    />
                   </Menu.Item>
                 </SubMenu>
               </SubMenu>
