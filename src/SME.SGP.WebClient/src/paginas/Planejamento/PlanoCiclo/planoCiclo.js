@@ -20,6 +20,7 @@ import {
   Titulo,
   TituloAno,
 } from './planoCiclo.css';
+import modalidade from '~/dtos/modalidade';
 
 export default function PlanoCiclo() {
   const urlPrefeitura = 'https://curriculo.sme.prefeitura.sp.gov.br';
@@ -125,7 +126,7 @@ export default function PlanoCiclo() {
         const anoLetivo = String(usuario.turmaSelecionada[0].anoLetivo);
         const codEscola = String(usuario.turmaSelecionada[0].codEscola);
 
-        if (usuario.turmaSelecionada.codModalidade == 3) {
+        if (usuario.turmaSelecionada[0].codModalidade == modalidade.EJA) {
           setModalidadeEja(true);
         } else {
           setModalidadeEja(false);
@@ -300,6 +301,15 @@ export default function PlanoCiclo() {
 
     const anoLetivo = String(usuario.turmaSelecionada[0].anoLetivo);
     const codEscola = String(usuario.turmaSelecionada[0].codEscola);
+
+    const textoReal = textEditorRef.current.state.value.replace(/<[^>]*>/g, '').trim();
+
+    if (!textoReal) {
+      erro(
+        'A descrição deve ser informada'
+      );
+      return;
+    }
     const params = {
       ano: anoLetivo,
       cicloId: cicloSelecionado,
@@ -491,11 +501,11 @@ export default function PlanoCiclo() {
             <div className="col-md-6">
               Este é um espaço para construção coletiva. Considere os diversos
               ritmos de aprendizagem para planejar e traçar o percurso de cada
-              ciclo.
+              {modalidadeEja ? ' etapa' : ' ciclo'}.
             </div>
             <div className="col-md-6">
-              Considerando as especificações de cada{' '}
-              {modalidadeEja ? 'etapa' : 'ciclo'} desta unidade escolar e o
+              Considerando as especificações de cada
+              {modalidadeEja ? ' etapa ' : ' ciclo '} desta unidade escolar e o
               currículo da cidade, <b>selecione</b> os itens da matriz do saber
               e dos objetivos de desenvolvimento e sustentabilidade que
               contemplam as propostas que planejaram:
