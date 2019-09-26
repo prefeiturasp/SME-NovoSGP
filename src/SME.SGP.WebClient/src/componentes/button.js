@@ -42,13 +42,14 @@ const Button = props => {
 
   const Btn = styled.button`
     background: ${border ? 'transparent' : Active[color]} !important;
+    text-align: center;
     ${
       border
         ? `border-color: ${Active[color]} !important; color: ${Active[color]} !important;`
         : `border: 0 none !important;`
     };
     ${customRadius && customRadius};
-    font-weight: ${bold ? 'bold' : 'normal'} !important;
+    font-weight: bold !important;
     ${width ? `width: ${width};` : ''}
     ${fontSize && `font-size: ${fontSize} !important;`}
     ${padding && `padding: ${padding} !important;`}

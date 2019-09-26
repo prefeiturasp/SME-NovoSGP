@@ -1,9 +1,13 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import { Deslogar } from '~/redux/modulos/usuario/actions';
+import { useDispatch } from 'react-redux';
+import history from '~/servicos/history';
 import { useSelector } from 'react-redux';
 import styled from 'styled-components';
 import Filtro from './filtro';
 import LogoDoSgp from '../recursos/LogoDoSgp.svg';
+import { URL_LOGIN } from '~/constantes/url';
 import { Base } from '../componentes/colors';
 import NavbarNotificacoes from './navbar-notificacoes';
 
@@ -58,6 +62,13 @@ const Navbar = () => {
       transform: translateX(-50%) translateY(-0.5rem);
     }
   `;
+
+  const dispatch = useDispatch();
+
+  const onClickSair = () => {
+    dispatch(Deslogar());
+    history.push(URL_LOGIN);
+  };
 
   return (
     <Nav className="navbar navbar-expand-md navbar-light bg-white shadow-sm sticky-top py-0">
