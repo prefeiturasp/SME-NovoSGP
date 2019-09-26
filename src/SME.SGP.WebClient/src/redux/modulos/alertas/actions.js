@@ -12,10 +12,10 @@ export function removerAlerta(id) {
   };
 }
 
-export function alertaConfirmar(titulo, texto, textoNegrito, resolve) {
+export function alertaConfirmar(titulo, texto, textoNegrito, resolve, textoOk, textoCancelar) {
   return {
     type: '@alertas/confirmar',
-    payload: { titulo, texto, textoNegrito, resolve },
+    payload: { titulo, texto, textoNegrito, resolve, textoOk, textoCancelar },
   };
 }
 
