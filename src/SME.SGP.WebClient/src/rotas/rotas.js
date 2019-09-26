@@ -1,5 +1,5 @@
 import React from 'react';
-import { Switch, Route } from 'react-router-dom';
+import { Switch } from 'react-router-dom';
 import { setRotas } from '../redux/modulos/navegacao/actions';
 import { store } from '../redux';
 import Principal from '../paginas/Principal/principal';
@@ -12,6 +12,7 @@ import NotificacoesLista from '~/paginas/Notificacoes/Lista/listaNotificacoes';
 import RotaAutenticadaEstruturada from './rotaAutenticadaEstruturada';
 import RotasTipo from '~/constantes/rotasTipo';
 import Login from '~/paginas/Login';
+import RecuperarSenha from '~/paginas/RecuperarSenha';
 import RotaNaoAutenticadaDesestruturada from './rotaNaoAutenticadaDesestruturada';
 import RotaAutenticadaDesestruturada from './rotaAutenticadaDesestruturada';
 
@@ -41,6 +42,15 @@ export default function Rotas() {
     menu: '',
     parent: '/',
     component: Login,
+    exact: true,
+    tipo: RotasTipo.DesestruturadaNaoAutenticada,
+  });
+
+  rotas.set('/recuperar-senha', {
+    breadcrumbName: '',
+    menu: '',
+    parent: '/',
+    component: RecuperarSenha,
     exact: true,
     tipo: RotasTipo.DesestruturadaNaoAutenticada,
   });
