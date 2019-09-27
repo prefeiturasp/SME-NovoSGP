@@ -1,5 +1,7 @@
 ﻿CREATE TABLE if not exists public.configuracao_email (
 	id int8 NOT NULL GENERATED ALWAYS AS identity,
+	email_remetente varchar(100) NOT NULL,
+	nome_remetente varchar(100) NOT NULL,
 	servidor_smtp varchar(100) NOT NULL,
 	usuario varchar(50) NOT NULL,
 	senha varchar(50) NOT NULL,
@@ -30,12 +32,12 @@ insert
 	criado_rf)
 select  
 'institucional@sme.prefeitura.sp.gov.br',
-'SME Novo SGP',
+'Institucional - ASCOM',
 'smtp.office365.com',
 'institucional@sme.prefeitura.sp.gov.br',
-'',
+'S2M7e3@i8n6s2t5!',
 587,
-true,
+false,
 now(),
 'Carga',
 'Carga'
