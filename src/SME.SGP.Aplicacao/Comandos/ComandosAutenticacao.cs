@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.Configuration;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
+using System;
 using System.IO;
 using System.Reflection;
 
@@ -33,6 +34,12 @@ namespace SME.SGP.Aplicacao
             EnviarEmailRecuperacao(usuarioLocalizado);
 
             return usuarioLocalizado.Email;
+        }
+
+        public bool TokenRecuperacaoSenhaEstaValido(Guid token)
+        {
+            Usuario usuario = repositorioUsuario.ObterPorTokenRecuperacaoSenha(token);
+            return usuario != null && usuario.TokenRecuperacaoSenhaEstaValido();
         }
 
         private void EnviarEmailRecuperacao(Usuario usuario)
