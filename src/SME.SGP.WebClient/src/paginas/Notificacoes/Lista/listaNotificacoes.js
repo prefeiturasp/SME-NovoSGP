@@ -139,7 +139,7 @@ export default function NotificacoesLista() {
   function montarLinhasTabela(text, row, colunaSituacao) {
     return row.status === notificacaoStatus.Pendente ? (
       colunaSituacao ? (
-        <span className="texto-vermelho-negrito text-uppercase">
+        <span className="cor-vermelho font-weight-bold text-uppercase">
           {statusLista[row.status]}
         </span>
       ) : (
