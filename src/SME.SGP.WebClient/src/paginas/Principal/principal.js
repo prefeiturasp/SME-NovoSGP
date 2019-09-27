@@ -87,6 +87,15 @@ const Principal = props => {
     font-size: 16px !important;
   `;
 
+  const Dashboard = styled.div`
+    .alinhar-itens-topo{
+      align-items: initial !important;
+    }
+    .card{
+      height: 100% !important;
+    }
+  `;
+
   return (
     <div className="col-md-12">
       {!turmaSelecionada ? (
@@ -118,39 +127,44 @@ const Principal = props => {
           </Row>
         </Grid>
       </Card>
-      <Row>
-        <Grid cols={12} className="form-inline">
-          <CardLink
-            cols={[4, 4, 4, 12]}
-            iconSize="90px"
-            url={URL_FREQ_PLANO_AULA}
-            disabled={isDesabilitado(FREQUENCIA_TYPE)}
-            icone="fa-columns"
-            pack="fas"
-            label="Frequência/ Plano de Aula"
-          />
-          <CardLink
-            cols={[4, 4, 4, 12]}
-            classHidden="hidden-xs-down"
-            iconSize="90px"
-            url={URL_PLANO_CICLO}
-            disabled={isDesabilitado(CICLOS_TYPE)}
-            icone="fa-calendar-minus"
-            pack="far"
-            label={modalidadeEja ? 'Plano de Etapa' : 'Plano de Ciclo'}
-          />
-          <CardLink
-            cols={[4, 4, 4, 12]}
-            classHidden="hidden-xs-down"
-            iconSize="90px"
-            url={URL_PLANO_ANUAL}
-            disabled={isDesabilitado(ANUAL_TYPE)}
-            icone="fa-calendar-alt"
-            pack="far"
-            label={modalidadeEja ? 'Plano Semestral' : 'Plano Anual'}
-          />
-        </Grid>
-      </Row>
+      <Dashboard>
+        <Row>
+          <Grid cols={12} className="form-inline alinhar-itens-topo">
+            <CardLink
+              cols={[4, 4, 4, 12]}
+              iconSize="90px"
+              url={URL_FREQ_PLANO_AULA}
+              disabled={isDesabilitado(FREQUENCIA_TYPE)}
+              icone="fa-columns"
+              pack="fas"
+              label="Frequência/ Plano de Aula"
+              minHeight="177px"
+            />
+            <CardLink
+              cols={[4, 4, 4, 12]}
+              classHidden="hidden-xs-down"
+              iconSize="90px"
+              url={URL_PLANO_CICLO}
+              disabled={isDesabilitado(CICLOS_TYPE)}
+              icone="fa-calendar-minus"
+              pack="far"
+              label={modalidadeEja ? 'Plano de Etapa' : 'Plano de Ciclo'}
+              minHeight="177px"
+            />
+            <CardLink
+              cols={[4, 4, 4, 12]}
+              classHidden="hidden-xs-down"
+              iconSize="90px"
+              url={URL_PLANO_ANUAL}
+              disabled={isDesabilitado(ANUAL_TYPE)}
+              icone="fa-calendar-alt"
+              pack="far"
+              label={modalidadeEja ? 'Plano Semestral' : 'Plano Anual'}
+              minHeight="177px"
+            />
+          </Grid>
+        </Row>
+      </Dashboard>
     </div>
   );
 };
