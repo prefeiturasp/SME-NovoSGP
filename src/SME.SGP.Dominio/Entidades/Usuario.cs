@@ -41,5 +41,10 @@ namespace SME.SGP.Dominio
             }
             return perfisUsuario.FirstOrDefault().CodigoPerfil;
         }
+
+        public bool TokenRecuperacaoSenhaEstaValido()
+        {
+            return ExpiracaoRecuperacaoSenha > DateTime.Now;
+        }
     }
 }
