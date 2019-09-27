@@ -20,7 +20,7 @@ namespace SME.SGP.Aplicacao
 
         public string RecuperarSenha(string codigo)
         {
-            var usuario = repositorioUsuario.ObterPorCodigoRf(codigo);
+            var usuario = repositorioUsuario.ObterPorCodigoRfLogin(codigo, null);
             if (usuario == null)
             {
                 throw new NegocioException("Usuário não encontrado.");
