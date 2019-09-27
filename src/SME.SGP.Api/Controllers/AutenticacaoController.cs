@@ -21,6 +21,16 @@ namespace SME.SGP.Api.Controllers
             this.servicoAutenticacao = servicoAutenticacao ?? throw new System.ArgumentNullException(nameof(servicoAutenticacao));
         }
 
+        [HttpPost("alterar-senha")]
+        [ProducesResponseType(typeof(bool), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [AllowAnonymous]
+        public async Task<IActionResult> AlterarSenha(Guid token, string novaSenha, [FromServices]IComandosAutenticacao comandosAutenticacao)
+        {
+            await comandosAutenticacao.AlterarSenha(token, novaSenha);
+            return Ok();
+        }
+
         [HttpPost]
         [ProducesResponseType(200)]
         [ProducesResponseType(401)]
