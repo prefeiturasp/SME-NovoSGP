@@ -1,5 +1,6 @@
 import LoginService from '~/servicos/Paginas/LoginServices';
 import { SalvarDadosLogin } from '~/redux/modulos/usuario/actions';
+import { setarPerfis, perfilSelecionado} from '~/redux/modulos/perfil/actions';
 import history from '~/servicos/history';
 import { URL_HOME, URL_MODIFICARSENHA } from '~/constantes/url';
 
@@ -56,13 +57,18 @@ class LoginHelper {
         erroUsuario: validacao.erroUsuario && validacao.erroUsuario,
         erroSenha: validacao.erroSenha && validacao.erroSenha,
       };
-
     const autenticacao = await LoginService.autenticar(login);
 
     if (!autenticacao.sucesso) {
+      if(autenticacao.dados && autenticacao.dados.perfisUsuario){
+        const perfis = autenticacao.dados.perfisUsuario.perfis;
+        const selecionado = perfis.find(perfil => perfil.codigoPerfil === autenticacao.dados.perfisUsuario.perfilSelecionado);
+        this.dispatch(setarPerfis(perfis));
+        this.dispatch(perfilSelecionado(selecionado));
+      }
       return autenticacao;
     }
-
+    
     this.dispatch(SalvarDadosLogin({ token: '7777710', rf: '7777710' }));
 
     if (autenticacao.dados.modificarSenha) {

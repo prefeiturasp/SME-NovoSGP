@@ -77,6 +77,7 @@ const Perfil = () => {
   const Botao = styled.a`
     display: block !important;
     text-align: center !important;
+    font-size: 10px;
   `;
 
   const IconePerfil = styled.div`
@@ -117,7 +118,7 @@ const Perfil = () => {
 
   return (
     <div className="position-relative">
-      <Botao className="text-center" onClick={onClickBotao} style={{ cursor: perfis.length > 1 ? 'pointer' : 'default' }}>
+      <Botao className="text-center" onClick={onClickBotao} style={{ cursor: perfis.length > 1 ? 'pointer !important' : 'default !important' }}>
         <IconePerfil>
           <i className="fas fa-user-circle" />
         </IconePerfil>

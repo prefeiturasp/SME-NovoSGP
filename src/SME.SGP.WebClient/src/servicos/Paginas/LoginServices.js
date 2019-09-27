@@ -8,10 +8,11 @@ class LoginService {
         senha: Login.senha,
       })
       .then(res => {
+        console.log(res.data);
         return {
           sucesso: true,
           mensagem: 'Usuario Logado com sucesso',
-          dados: res.data,
+          dados: res.data
         };
       })
       .catch(err => {
