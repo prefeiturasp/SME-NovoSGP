@@ -14,19 +14,19 @@ namespace SME.SGP.Dominio.Teste
 
             Usuario.CodigoRf = "7777710";
 
-            Usuario.Senha = "1aA";
+            Usuario.Senha = "1aA23233";
 
             Usuario.validarSenha();
 
-            Usuario.Senha = "Aa@";
+            Usuario.Senha = "Aa@dfgsdfg";
 
             Usuario.validarSenha();
             
-            Usuario.Senha = " 1a@";
+            Usuario.Senha = "1a@egrgeg";
 
             Assert.Throws<NegocioException>(Usuario.validarSenha);
 
-            Usuario.Senha = @"1a@82193490!@#$%&*()";
+            Usuario.Senha = @"1aA@82193490!@#$%&*()";
 
             Assert.Throws<NegocioException>(Usuario.validarSenha);
 
@@ -36,13 +36,7 @@ namespace SME.SGP.Dominio.Teste
 
             Usuario.Senha = "Sgp7710";
 
-            Assert.Throws<NegocioException>(Usuario.validarSenha);
-
-            Assert.Throws<NegocioException>(() => { Usuario.validarSenha(new List<string> { "Sgp7710" }); });
-
-            Usuario.Senha = "Sg7710";
-
-            Usuario.validarSenha(new List<string> { "7710" });
+            Assert.Throws<NegocioException>(Usuario.validarSenha);            
         }
     }
 }
