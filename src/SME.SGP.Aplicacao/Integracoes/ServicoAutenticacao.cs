@@ -7,30 +7,24 @@ namespace SME.SGP.Aplicacao.Integracoes
 {
     public class ServicoAutenticacao : IServicoAutenticacao
     {
+        private readonly IRepositorioUsuario repositorioUsuario;
         private readonly IServicoEOL servicoEOL;
         private readonly IServicoUsuario servicoUsuario;
 
-        public ServicoAutenticacao(IServicoEOL servicoEOL, IServicoUsuario servicoUsuario)
+        public ServicoAutenticacao(IServicoEOL servicoEOL, IRepositorioUsuario repositorioUsuario)
         {
             this.servicoEOL = servicoEOL ?? throw new System.ArgumentNullException(nameof(servicoEOL));
-            this.servicoUsuario = servicoUsuario ?? throw new System.ArgumentNullException(nameof(servicoUsuario));
+            this.repositorioUsuario = repositorioUsuario ?? throw new System.ArgumentNullException(nameof(repositorioUsuario));
         }
 
         public async Task<AlterarSenhaRespostaDto> AlterarSenhaPrimeiroAcesso(PrimeiroAcessoDto primeiroAcessoDto)
         {
-            var usuario = new Usuario();
+            //TODO: NOGUEIRA obter usuário pelo login, metodo vai vir da branch 4924
+            var usuario = repositorioUsuario.ObterPorCodigoRf("");
 
-            if (primeiroAcessoDto.UsuarioExterno)
-                usuario.CPF = primeiroAcessoDto.RFCPF;
-            else
-                usuario.CodigoRf = primeiroAcessoDto.RFCPF;
+            usuario.ValidarSenha(primeiroAcessoDto.NovaSenha);
 
-            usuario.Login = primeiroAcessoDto.Usuario;
-            usuario.Senha = primeiroAcessoDto.NovaSenha;
-
-            usuario.ValidarSenha();
-
-            return await servicoEOL.AlterarSenha(usuario.Login, usuario.Senha);
+            return await servicoEOL.AlterarSenha(usuario.Login, primeiroAcessoDto.NovaSenha);
         }
 
         public async Task<UsuarioAutenticacaoRetornoDto> AutenticarNoEol(string login, string senha)
