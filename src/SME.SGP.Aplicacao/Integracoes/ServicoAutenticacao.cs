@@ -23,6 +23,26 @@ namespace SME.SGP.Aplicacao.Integracoes
             this.repositorioPrioridadePerfil = repositorioPrioridadePerfil ?? throw new System.ArgumentNullException(nameof(repositorioPrioridadePerfil));
         }
 
+        public async Task<AlterarSenhaRespostaDto> AlterarSenhaPrimeiroAcesso(PrimeiroAcessoDto primeiroAcessoDto)
+        {
+            var usuario = new Usuario();
+
+            if (primeiroAcessoDto.UsuarioExterno)
+                usuario.CPF = primeiroAcessoDto.RFCPF;
+            else
+                usuario.CodigoRf = primeiroAcessoDto.RFCPF;
+
+            usuario.Login = primeiroAcessoDto.Usuario;
+            usuario.Senha = primeiroAcessoDto.NovaSenha;
+
+            usuario.ValidarSenha();
+
+            //return await servicoEOL.AlterarSenha(usuario.Login, usuario.Senha);
+
+            //Irei descomentar assim que a api do EOL for mergeada para a master
+            return new AlterarSenhaRespostaDto { SenhaAlterada = true };
+        }
+
         public async Task<UsuarioAutenticacaoRetornoDto> AutenticarNoEol(string login, string senha)
         {
             var retornoServicoEol = await servicoEOL.Autenticar(login, senha);
