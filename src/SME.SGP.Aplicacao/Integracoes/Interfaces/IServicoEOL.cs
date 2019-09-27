@@ -27,6 +27,6 @@ namespace SME.SGP.Aplicacao.Integracoes
 
         Task<IEnumerable<TurmaDto>> ObterTurmasAtribuidasAoProfessorPorEscolaEAnoLetivo(string rfProfessor, string codigoEscola, int anoLetivo);
 
-        void AlterarSenha(string login, string novaSenha);
+        Task<AlterarSenhaRespostaDto> AlterarSenha(string login, string novaSenha);
     }
 }
