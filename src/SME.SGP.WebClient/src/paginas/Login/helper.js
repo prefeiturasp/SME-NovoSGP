@@ -60,15 +60,9 @@ class LoginHelper {
     const autenticacao = await LoginService.autenticar(login);
 
     if (!autenticacao.sucesso) {
-      if(autenticacao.dados && autenticacao.dados.perfisUsuario){
-        const perfis = autenticacao.dados.perfisUsuario.perfis;
-        const selecionado = perfis.find(perfil => perfil.codigoPerfil === autenticacao.dados.perfisUsuario.perfilSelecionado);
-        this.dispatch(setarPerfis(perfis));
-        this.dispatch(perfilSelecionado(selecionado));
-      }
       return autenticacao;
     }
-    
+
     this.dispatch(SalvarDadosLogin({ token: '7777710', rf: '7777710' }));
 
     if (autenticacao.dados.modificarSenha) {
@@ -76,7 +70,6 @@ class LoginHelper {
       return;
     }
 
-    console.log(this.redirect);
     if (this.redirect) history.push(atob(this.redirect));
     else history.push(URL_HOME);
 
