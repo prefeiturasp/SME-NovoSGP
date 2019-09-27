@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using SME.SGP.Api.Filtros;
 using SME.SGP.Aplicacao.Integracoes;
+using SME.SGP.Aplicacao.Servicos;
 using SME.SGP.Dto;
 using System.Threading.Tasks;
 
@@ -31,6 +32,13 @@ namespace SME.SGP.Api.Controllers
                 return StatusCode(401);
 
             return Ok(retornoAutenticacao);
+        }
+
+        [HttpPost("email")]
+        public IActionResult Teste([FromServices]IServicoEmail servicoEmail)
+        {
+            servicoEmail.Enviar("everton.nogueira@amcom.com.br", "Teste Email", "<h1>Eita</h1>");
+            return Ok();
         }
     }
 }
