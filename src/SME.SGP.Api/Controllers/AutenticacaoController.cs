@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using SME.SGP.Api.Filtros;
-using SME.SGP.Aplicacao.Integracoes;
+using SME.SGP.Aplicacao;
 using SME.SGP.Dto;
 using System.Threading.Tasks;
 
@@ -11,11 +11,11 @@ namespace SME.SGP.Api.Controllers
     [ValidaDto]
     public class AutenticacaoController : ControllerBase
     {
-        private readonly IServicoAutenticacao servicoAutenticacao;
+        private readonly IComandosUsuario comandosUsuario;
 
-        public AutenticacaoController(IServicoAutenticacao servicoAutenticacao)
+        public AutenticacaoController(IComandosUsuario comandosUsuario)
         {
-            this.servicoAutenticacao = servicoAutenticacao ?? throw new System.ArgumentNullException(nameof(servicoAutenticacao));
+            this.comandosUsuario = comandosUsuario ?? throw new System.ArgumentNullException(nameof(comandosUsuario));
         }
 
         [HttpPost]
@@ -25,7 +25,7 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(UsuarioAutenticacaoRetornoDto), 200)]
         public async Task<IActionResult> Autenticar(AutenticacaoDto autenticacaoDto)
         {
-            var retornoAutenticacao = await servicoAutenticacao.AutenticarNoEol(autenticacaoDto.Login, autenticacaoDto.Senha);
+            var retornoAutenticacao = await comandosUsuario.Autenticar(autenticacaoDto.Login, autenticacaoDto.Senha);
 
             if (!retornoAutenticacao.Autenticado)
                 return StatusCode(401);
