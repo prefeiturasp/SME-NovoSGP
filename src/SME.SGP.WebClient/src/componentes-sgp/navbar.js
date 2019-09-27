@@ -6,6 +6,7 @@ import Filtro from './filtro';
 import LogoDoSgp from '../recursos/LogoDoSgp.svg';
 import { Base } from '../componentes/colors';
 import NavbarNotificacoes from './navbar-notificacoes';
+import Perfil from './perfil';
 
 const Navbar = () => {
   const retraido = useSelector(state => state.navegacao.retraido);
@@ -94,6 +95,9 @@ const Navbar = () => {
                     Texto={Texto}
                   />
                 </li>
+                <li className="list-inline-item mr-4">
+                  <Perfil/>
+                </li>
                 <li className="list-inline-item">
                   <Botao className="text-center">
                     <Icone className="fa fa-power-off fa-lg" />
@@ -103,9 +107,9 @@ const Navbar = () => {
               </ul>
             </Botoes>
           </div>
-          <Div className="d-flex align-self-xl-center align-self-lg-center align-self-md-end align-self-sm-end w-100 position-absolute mb-sm-2 mb-md-2">
+          {/* <Div className="d-flex align-self-xl-center align-self-lg-center align-self-md-end align-self-sm-end w-100 position-absolute mb-sm-2 mb-md-2">
             <Filtro />
-          </Div>
+          </Div> */}
         </div>
       </div>
     </Nav>

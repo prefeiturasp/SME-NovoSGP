@@ -6,7 +6,7 @@ const inicial = {
   dataLogin: null,
   logado: false,
   turmasUsuario: [],
-  turmaSelecionada: [],
+  turmaSelecionada: []
 };
 
 export default function usuario(state = inicial, action) {
