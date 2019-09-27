@@ -96,7 +96,11 @@ const Navbar = () => {
                   />
                 </li>
                 <li className="list-inline-item mr-4">
-                  <Perfil/>
+                  <Perfil
+                    Botao={Botao}
+                    Icone={Icone}
+                    Texto={Texto}
+                  />
                 </li>
                 <li className="list-inline-item">
                   <Botao className="text-center">
@@ -107,9 +111,9 @@ const Navbar = () => {
               </ul>
             </Botoes>
           </div>
-          {/* <Div className="d-flex align-self-xl-center align-self-lg-center align-self-md-end align-self-sm-end w-100 position-absolute mb-sm-2 mb-md-2">
+          <Div className="d-flex align-self-xl-center align-self-lg-center align-self-md-end align-self-sm-end w-100 position-absolute mb-sm-2 mb-md-2">
             <Filtro />
-          </Div> */}
+          </Div>
         </div>
       </div>
     </Nav>
