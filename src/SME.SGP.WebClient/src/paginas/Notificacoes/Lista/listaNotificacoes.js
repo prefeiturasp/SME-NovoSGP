@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
+import * as moment from 'moment';
 import Cabecalho from '~/componentes-sgp/cabecalho';
 import Button from '~/componentes/button';
 import CampoTexto from '~/componentes/campoTexto';
@@ -53,6 +54,11 @@ export default function NotificacoesLista() {
         render: (text, row) => montarLinhasTabela(text, row),
       },
       {
+        title: 'Categoria',
+        dataIndex: 'descricaoCategoria',
+        render: (text, row) => montarLinhasTabela(text, row),
+      },
+      {
         title: 'Título',
         dataIndex: 'titulo',
         render: (text, row) => montarLinhasTabela(text, row),
@@ -65,7 +71,10 @@ export default function NotificacoesLista() {
       {
         title: 'Data/Hora',
         dataIndex: 'data',
-        render: (text, row) => montarLinhasTabela(text, row),
+        render: (text, row) => {
+          const dataFormatada = moment(text).format('DD/MM/YYYY HH:mm:ss');
+          return montarLinhasTabela(dataFormatada, row);
+        },
       },
     ];
 

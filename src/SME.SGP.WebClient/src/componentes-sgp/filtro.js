@@ -14,6 +14,7 @@ import { Base, Colors } from '../componentes/colors';
 import SelectComponent from '../componentes/select';
 import { sucesso, erro } from '../servicos/alertas';
 import api from '../servicos/api';
+import modalidade from '~/dtos/modalidade';
 
 const Filtro = () => {
   const [dados, setDados] = useState([]);
@@ -51,9 +52,13 @@ const Filtro = () => {
 
   const [turmaUeSelecionada, setTurmaUeSelecionada] = useState();
 
+  const [desabilitarTurma, setDesabilitarTurma] = useState(true);
+
   const Container = styled.div`
-    margin-left: -3px;
-    max-width: 571px !important;
+    width: 568px !important;
+    @media (max-width: 575.98px) {
+      max-width: 80% !important;
+    }
   `;
 
   const Input = styled.input`
@@ -107,7 +112,9 @@ const Filtro = () => {
 
   const ListItem = styled.li`
     cursor: pointer !important;
-    &:hover {
+    &:hover,
+    &:focus,
+    &.selecionado {
       background: ${Base.Roxo} !important;
       color: ${Base.Branco} !important;
     }
@@ -148,7 +155,7 @@ const Filtro = () => {
     const b = y.turma.toLowerCase();
 
     if (a > b) return 1;
-    else if (a < b) return -1;
+    if (a < b) return -1;
 
     return 0;
   };
@@ -180,7 +187,7 @@ const Filtro = () => {
       }
 
       if (dado.semestre === 2) {
-        for (let semestre = 1; semestre <= dado.semestre; semestre++) {
+        for (let semestre = 1; semestre <= dado.semestre; semestre += 1) {
           if (periodos.findIndex(periodo => periodo.codigo === semestre) < 0) {
             periodos.push({
               codigo: semestre,
@@ -336,6 +343,33 @@ const Filtro = () => {
     unidadeEscolarFiltroSelecionada,
   ]);
 
+  useEffect(() => {
+    if (modalidadeFiltroSelecionada) {
+      if (
+        modalidade.EJA == modalidadeFiltroSelecionada &&
+        !periodoFiltroSelecionado
+      ) {
+        setDesabilitarTurma(true);
+      } else {
+        setDesabilitarTurma(false);
+      }
+    } else {
+      setDesabilitarTurma(true);
+    }
+  }, [modalidadeFiltroSelecionada, turmaFiltroSelecionada]);
+
+  useEffect(() => {
+    if (
+      modalidadeFiltroSelecionada &&
+      periodoFiltroSelecionado &&
+      modalidade.EJA == modalidadeFiltroSelecionada
+    ) {
+      setDesabilitarTurma(false);
+    } else {
+      setDesabilitarTurma(true);
+    }
+  }, [periodoFiltroSelecionado]);
+
   const handleClickFora = event => {
     if (
       !event.target.classList.contains('fa-caret-down') &&
@@ -381,6 +415,59 @@ const Filtro = () => {
           return resultadosAutocomplete.push(dado);
         });
       setResultadosFiltro(resultadosAutocomplete);
+    }
+  };
+
+  let selecionado = -1;
+
+  const onKeyDownAutocomplete = event => {
+    if (resultadosFiltro && resultadosFiltro.length > 0) {
+      const resultados = document.querySelectorAll('.list-group-item');
+      if (resultados && resultados.length > 0) {
+        if (event.key === 'ArrowUp') {
+          if (selecionado > 0) selecionado -= 1;
+        } else if (event.key === 'ArrowDown') {
+          if (selecionado < resultados.length - 1) selecionado += 1;
+        }
+        resultados.forEach(resultado =>
+          resultado.classList.remove('selecionado')
+        );
+        if (resultados[selecionado]) {
+          resultados[selecionado].classList.add('selecionado');
+          inputBuscaRef.current.focus();
+        }
+      }
+    }
+  };
+
+  const onSubmitAutocomplete = event => {
+    event.preventDefault();
+    if (resultadosFiltro) {
+      if (resultadosFiltro.length === 1) {
+        setDreFiltroSelecionada(resultadosFiltro[0].codDre);
+        setUnidadeEscolarFiltroSelecionada(resultadosFiltro[0].codEscola);
+        setTurmaFiltroSelecionada(resultadosFiltro[0].codTurma.toString());
+        selecionaTurmaAutocomplete(resultadosFiltro[0]);
+      } else {
+        const selecionado = document.querySelector(
+          '.list-group-item.selecionado'
+        );
+        if (selecionado) {
+          const indice = selecionado.getAttribute('tabindex');
+          if (indice) {
+            const resultado = resultadosFiltro[indice];
+            if (resultado) {
+              setModalidadeFiltroSelecionada(
+                resultado.codModalidade.toString()
+              );
+              setDreFiltroSelecionada(resultado.codDre);
+              setUnidadeEscolarFiltroSelecionada(resultado.codEscola);
+              setTurmaFiltroSelecionada(resultado.codTurma.toString());
+              selecionaTurmaAutocomplete(resultado);
+            }
+          }
+        }
+      }
     }
   };
 
@@ -473,8 +560,8 @@ const Filtro = () => {
   };
 
   return (
-    <Container className="position-relative w-100 float-left">
-      <form className="w-100">
+    <Container className="position-relative w-100">
+      <form className="w-100" onSubmit={onSubmitAutocomplete}>
         <div className="form-group mb-0 w-100 position-relative">
           <Search className="fa fa-search fa-lg bg-transparent position-absolute text-center" />
           <Input
@@ -484,8 +571,9 @@ const Filtro = () => {
             ref={inputBuscaRef}
             onFocus={onFocusBusca}
             onChange={onChangeAutocomplete}
-            readOnly={turmaUeSelecionada ? true : false}
-            value={turmaUeSelecionada ? turmaUeSelecionada : textoAutocomplete}
+            onKeyDown={onKeyDownAutocomplete}
+            readOnly={!!turmaUeSelecionada}
+            value={turmaUeSelecionada || textoAutocomplete}
           />
           {dados.length > 1 && turmaUeSelecionada && (
             <Times
@@ -501,12 +589,13 @@ const Filtro = () => {
         {resultadosFiltro.length > 0 && (
           <div className="container position-absolute bg-white shadow rounded mt-1 p-0">
             <div className="list-group">
-              {resultadosFiltro.map(resultado => {
+              {resultadosFiltro.map((resultado, indice) => {
                 return (
                   <ListItem
                     key={shortid.generate()}
                     className="list-group-item list-group-item-action border-0 rounded-0"
                     onClick={() => selecionaTurmaAutocomplete(resultado)}
+                    tabIndex={indice}
                   >
                     {`${resultado.modalidade} - ${resultado.nomeTurma} - ${resultado.tipoEscola} - ${resultado.ue}`}
                   </ListItem>
@@ -592,7 +681,7 @@ const Filtro = () => {
                   valueText="turma"
                   valueSelect={turmaFiltroSelecionada}
                   placeholder="Turma"
-                  disabled={!modalidadeFiltroSelecionada}
+                  disabled={desabilitarTurma}
                 />
               </Grid>
               <Grid cols={3} className="form-group text-right">

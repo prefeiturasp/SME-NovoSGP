@@ -10,6 +10,7 @@
 
         public bool Autenticado { get; set; }
         public bool ModificarSenha { get; set; }
+        public PerfisPorPrioridadeDto PerfisUsuario { get; set; }
         public string Token { get; set; }
     }
 }

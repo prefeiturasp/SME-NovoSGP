@@ -68,6 +68,7 @@ const ModalConteudoHtml = props => {
     children,
     closable,
     loader,
+    desabilitarBotaoPrincipal
   } = props;
   return (
     <Container
@@ -105,6 +106,7 @@ const ModalConteudoHtml = props => {
                         bold
                         className="padding-btn-confirmacao"
                         onClick={onConfirmacaoPrincipal}
+                        disabled={desabilitarBotaoPrincipal}
                       />
                     </div>
                   </CardBody>
@@ -130,6 +132,7 @@ const ModalConteudoHtml = props => {
               bold
               className="padding-btn-confirmacao"
               onClick={onConfirmacaoPrincipal}
+              disabled={desabilitarBotaoPrincipal}
             />
           </>
         )
@@ -138,6 +141,10 @@ const ModalConteudoHtml = props => {
       {children}
     </Container>
   );
+};
+
+ModalConteudoHtml.defaultProps = {
+  desabilitarBotaoPrincipal: false
 };
 
 export default ModalConteudoHtml;
