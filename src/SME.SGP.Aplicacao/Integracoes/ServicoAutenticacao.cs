@@ -16,7 +16,7 @@ namespace SME.SGP.Aplicacao.Integracoes
             this.servicoUsuario = servicoUsuario ?? throw new System.ArgumentNullException(nameof(servicoUsuario));
         }
 
-        public void AlterarSenhaPrimeiroAcesso(PrimeiroAcessoDto primeiroAcessoDto)
+        public async Task<AlterarSenhaRespostaDto> AlterarSenhaPrimeiroAcesso(PrimeiroAcessoDto primeiroAcessoDto)
         {
             var usuario = new Usuario();
 
@@ -30,7 +30,7 @@ namespace SME.SGP.Aplicacao.Integracoes
 
             usuario.validarSenha();
 
-            servicoEOL.AlterarSenha(usuario.Login, usuario.Senha);
+            return await servicoEOL.AlterarSenha(usuario.Login, usuario.Senha);
         }
 
         public async Task<UsuarioAutenticacaoRetornoDto> AutenticarNoEol(string login, string senha)

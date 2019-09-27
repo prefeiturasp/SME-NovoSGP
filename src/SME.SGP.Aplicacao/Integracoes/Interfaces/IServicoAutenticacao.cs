@@ -7,6 +7,6 @@ namespace SME.SGP.Aplicacao.Integracoes
     {
         Task<UsuarioAutenticacaoRetornoDto> AutenticarNoEol(string login, string senha);
 
-        void AlterarSenhaPrimeiroAcesso(PrimeiroAcessoDto primeiroAcessoDto);
+        Task<AlterarSenhaRespostaDto> AlterarSenhaPrimeiroAcesso(PrimeiroAcessoDto primeiroAcessoDto);
     }
 }

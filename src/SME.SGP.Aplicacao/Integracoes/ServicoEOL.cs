@@ -2,6 +2,7 @@
 using SME.SGP.Aplicacao.Integracoes.Respostas;
 using SME.SGP.Dominio;
 using SME.SGP.Dto;
+using System;
 using System.Collections.Generic;
 using System.Net.Http;
 using System.Text;
@@ -36,7 +37,7 @@ namespace SME.SGP.Aplicacao.Integracoes
             else return null;
         }
 
-        public async void AlterarSenha(string login, string novaSenha)
+        public async Task<AlterarSenhaRespostaDto> AlterarSenha(string login, string novaSenha)
         {
             httpClient.DefaultRequestHeaders.Clear();
 
@@ -46,8 +47,13 @@ namespace SME.SGP.Aplicacao.Integracoes
 
             var resposta = await httpClient.PostAsync($"AutenticacaoSgp/AlterarSenha", new FormUrlEncodedContent(valoresParaEnvio));
 
-            if (!resposta.IsSuccessStatusCode)
-                throw new HttpRequestException(await resposta.Content.ReadAsStringAsync());
+            return new AlterarSenhaRespostaDto
+            {
+                Mensagem = resposta.IsSuccessStatusCode ? "" : resposta.ReasonPhrase,
+                StatusRetorno = (int)resposta.StatusCode,
+                SenhaAlterada = resposta.IsSuccessStatusCode
+            };
+
         }
 
         public async Task<IEnumerable<DisciplinaResposta>> ObterDisciplinasPorProfessorETurma(long codigoTurma, string rfProfessor)
