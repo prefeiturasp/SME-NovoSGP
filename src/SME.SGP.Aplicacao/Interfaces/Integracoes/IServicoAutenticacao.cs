@@ -6,5 +6,7 @@ namespace SME.SGP.Aplicacao.Integracoes
     public interface IServicoAutenticacao
     {
         Task<UsuarioAutenticacaoRetornoDto> AutenticarNoEol(string login, string senha);
+
+        Task<AlterarSenhaRespostaDto> AlterarSenhaPrimeiroAcesso(PrimeiroAcessoDto primeiroAcessoDto);
     }
 }
