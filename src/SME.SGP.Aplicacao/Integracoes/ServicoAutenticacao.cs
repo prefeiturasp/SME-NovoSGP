@@ -33,9 +33,8 @@ namespace SME.SGP.Aplicacao.Integracoes
                 usuario.CodigoRf = primeiroAcessoDto.RFCPF;
 
             usuario.Login = primeiroAcessoDto.Usuario;
-            usuario.Senha = primeiroAcessoDto.NovaSenha;
 
-            usuario.ValidarSenha();
+            usuario.ValidarSenha(primeiroAcessoDto.NovaSenha);
 
             //return await servicoEOL.AlterarSenha(usuario.Login, usuario.Senha);
 

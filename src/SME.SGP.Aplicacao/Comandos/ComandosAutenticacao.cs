@@ -1,9 +1,11 @@
 ﻿using Microsoft.Extensions.Configuration;
+using SME.SGP.Aplicacao.Integracoes;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using System;
 using System.IO;
 using System.Reflection;
+using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
@@ -12,14 +14,34 @@ namespace SME.SGP.Aplicacao
         private readonly IConfiguration configuration;
         private readonly IRepositorioUsuario repositorioUsuario;
         private readonly IServicoEmail servicoEmail;
+        private readonly IServicoEOL servicoEOL;
 
         public ComandosAutenticacao(IRepositorioUsuario repositorioUsuario,
                                     IConfiguration configuration,
-                                    IServicoEmail servicoEmail)
+                                    IServicoEmail servicoEmail,
+                                    IServicoEOL servicoEOL)
         {
             this.repositorioUsuario = repositorioUsuario ?? throw new System.ArgumentNullException(nameof(repositorioUsuario));
             this.configuration = configuration ?? throw new System.ArgumentNullException(nameof(configuration));
             this.servicoEmail = servicoEmail ?? throw new System.ArgumentNullException(nameof(servicoEmail));
+            this.servicoEOL = servicoEOL ?? throw new ArgumentNullException(nameof(servicoEOL));
+        }
+
+        public async Task AlterarSenha(Guid token, string novaSenha)
+        {
+            Usuario usuario = repositorioUsuario.ObterPorTokenRecuperacaoSenha(token);
+            if (usuario == null)
+            {
+                throw new NegocioException("Usuário não encontrado.");
+            }
+            if (!usuario.TokenRecuperacaoSenhaEstaValido())
+            {
+                throw new NegocioException("Este link expirou. Clique em continuar para solicitar um novo link de recuperação de senha.");
+            }
+
+            usuario.ValidarSenha(novaSenha);
+
+            await servicoEOL.AlterarSenha(usuario.Login, novaSenha);
         }
 
         public string RecuperarSenha(string usuario)
