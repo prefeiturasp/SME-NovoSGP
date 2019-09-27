@@ -32,5 +32,16 @@ namespace SME.SGP.Api.Controllers
 
             return Ok(retornoAutenticacao);
         }
+
+        [HttpPost]
+        [ProducesResponseType(200)]
+        [ProducesResponseType(401)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        public IActionResult PrimeiroAcesso(PrimeiroAcessoDto primeiroAcessoDto)
+        {
+            servicoAutenticacao.AlterarSenhaPrimeiroAcesso(primeiroAcessoDto);
+
+            return Ok();
+        }
     }
 }

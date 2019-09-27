@@ -16,6 +16,23 @@ namespace SME.SGP.Aplicacao.Integracoes
             this.servicoUsuario = servicoUsuario ?? throw new System.ArgumentNullException(nameof(servicoUsuario));
         }
 
+        public void AlterarSenhaPrimeiroAcesso(PrimeiroAcessoDto primeiroAcessoDto)
+        {
+            var usuario = new Usuario();
+
+            if (primeiroAcessoDto.UsuarioExterno)
+                usuario.CPF = primeiroAcessoDto.RFCPF;
+            else
+                usuario.CodigoRf = primeiroAcessoDto.RFCPF;
+
+            usuario.Login = primeiroAcessoDto.Usuario;
+            usuario.Senha = primeiroAcessoDto.NovaSenha;
+
+            usuario.validarSenha();
+
+            servicoEOL.AlterarSenha(usuario.Login, usuario.Senha);
+        }
+
         public async Task<UsuarioAutenticacaoRetornoDto> AutenticarNoEol(string login, string senha)
         {
             var retornoServicoEol = await servicoEOL.Autenticar(login, senha);

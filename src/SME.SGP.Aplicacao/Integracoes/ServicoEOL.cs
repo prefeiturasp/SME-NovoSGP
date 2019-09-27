@@ -1,5 +1,6 @@
 ﻿using Newtonsoft.Json;
 using SME.SGP.Aplicacao.Integracoes.Respostas;
+using SME.SGP.Dominio;
 using SME.SGP.Dto;
 using System.Collections.Generic;
 using System.Net.Http;
@@ -33,6 +34,20 @@ namespace SME.SGP.Aplicacao.Integracoes
                 return JsonConvert.DeserializeObject<UsuarioEolAutenticacaoRetornoDto>(json);
             }
             else return null;
+        }
+
+        public async void AlterarSenha(string login, string novaSenha)
+        {
+            httpClient.DefaultRequestHeaders.Clear();
+
+            var valoresParaEnvio = new List<KeyValuePair<string, string>> {
+                { new KeyValuePair<string, string>("login", login) },
+                { new KeyValuePair<string, string>("senha", novaSenha) }};
+
+            var resposta = await httpClient.PostAsync($"AutenticacaoSgp/AlterarSenha", new FormUrlEncodedContent(valoresParaEnvio));
+
+            if (!resposta.IsSuccessStatusCode)
+                throw new HttpRequestException(await resposta.Content.ReadAsStringAsync());
         }
 
         public async Task<IEnumerable<DisciplinaResposta>> ObterDisciplinasPorProfessorETurma(long codigoTurma, string rfProfessor)
