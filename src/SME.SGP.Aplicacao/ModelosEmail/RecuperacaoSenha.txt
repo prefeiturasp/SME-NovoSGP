@@ -68,7 +68,7 @@
     <div class="main">
       <div class="logo">
         <div class="imagem">
-          <img src="../recursos/LogoDoSgp.svg" alt="SGP" />
+          <img src="#URL_BASE#static/media/LogoDoSgp.72cce5ec.svg" alt="SGP" />
         </div>
         <div class="texto">
           Novo Sistema de Gestão Pedagógica

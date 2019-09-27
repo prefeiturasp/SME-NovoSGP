@@ -23,6 +23,26 @@ namespace SME.SGP.Integracao.Teste
             _fixture = fixture;
         }
 
+        [Fact, Order(5)]
+        public void Deve_Consultar_Notificacao_Basica_Lista()
+        {
+            _fixture._clientApi.DefaultRequestHeaders.Clear();
+
+            var getResult = _fixture._clientApi.GetAsync($"api/v1/notificacoes/resumo?anoLetivo={2019}&usuarioRf={1}").Result;
+
+            Assert.True(getResult.IsSuccessStatusCode);
+        }
+
+        [Fact, Order(6)]
+        public void Deve_Consultar_Quantidade_Notificacao_Nao_Lidas()
+        {
+            _fixture._clientApi.DefaultRequestHeaders.Clear();
+
+            var getResult = _fixture._clientApi.GetAsync($"api/v1/notificacoes/quantidade/naolidas?anoLetivo={2019}&usuarioRf={1}").Result;
+
+            Assert.True(getResult.IsSuccessStatusCode);
+        }
+
         [Fact, Order(2)]
         public void Deve_Incluir_e_Consultar_Alerta()
         {
@@ -73,7 +93,7 @@ namespace SME.SGP.Integracao.Teste
             notificacaoDto.Titulo = "Titulo de Teste";
             notificacaoDto.UsuarioRf = "987654321";
 
-            notificacaoDto.Tipo = Dominio.NotificacaoTipo.Frequencia;
+            notificacaoDto.Tipo = NotificacaoTipo.Frequencia;
 
             var jsonParaPost = new StringContent(TransformarEmJson(notificacaoDto), UnicodeEncoding.UTF8, "application/json");
 
@@ -90,7 +110,7 @@ namespace SME.SGP.Integracao.Teste
 
                 var getResult2 = _fixture._clientApi.GetAsync($"api/v1/notificacoes?Tipo={(int)Dominio.NotificacaoTipo.Notas}").Result;
                 var notificacoesDto2 = JsonConvert.DeserializeObject<IEnumerable<NotificacaoBasicaDto>>(getResult2.Content.ReadAsStringAsync().Result);
-                Assert.True(notificacoesDto2.Count() == 0);
+                Assert.False(notificacoesDto2.Any());
 
                 var getResultDetalhe = _fixture._clientApi.GetAsync($"api/v1/notificacoes/{notificacoesDto.FirstOrDefault().Id}").Result;
 
@@ -138,28 +158,7 @@ namespace SME.SGP.Integracao.Teste
 
             Assert.True(putResult.IsSuccessStatusCode);
             var listaMensagens = JsonConvert.DeserializeObject<IEnumerable<AlteracaoStatusNotificacaoDto>>(putResult.Content.ReadAsStringAsync().Result);
-            var id = notificacoesDto.FirstOrDefault().Id;
             Assert.True(listaMensagens.Count(c => c.Sucesso) == 1);
-        }
-
-        [Fact, Order(5)]
-        public void Deve_Consultar_Notificacao_Basica_Lista()
-        {
-            _fixture._clientApi.DefaultRequestHeaders.Clear();
-
-            var getResult = _fixture._clientApi.GetAsync($"api/v1/notificacoes/resumo?anoLetivo={2019}&usuarioRf={1}").Result;
-
-            Assert.True(getResult.IsSuccessStatusCode);
-        }
-
-        [Fact, Order(6)]
-        public void Deve_Consultar_Quantidade_Notificacao_Nao_Lidas()
-        {
-            _fixture._clientApi.DefaultRequestHeaders.Clear();
-
-            var getResult = _fixture._clientApi.GetAsync($"api/v1/notificacoes/quantidade/naolidas?anoLetivo={2019}&usuarioRf={1}").Result;
-
-            Assert.True(getResult.IsSuccessStatusCode);
         }
 
         [Fact, Order(3)]
