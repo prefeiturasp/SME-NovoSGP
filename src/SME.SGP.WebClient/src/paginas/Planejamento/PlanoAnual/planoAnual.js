@@ -32,8 +32,6 @@ import modalidade from '~/dtos/modalidade';
 import SelectComponent from '~/componentes/select';
 
 export default function PlanoAnual() {
-  const diciplinasSemObjetivo = [1061];
-
   const bimestres = useSelector(store => store.bimestres.bimestres);
   const notificacoes = useSelector(store => store.notificacoes);
   const bimestresErro = useSelector(store => store.bimestres.bimestresErro);
@@ -250,13 +248,13 @@ export default function PlanoAnual() {
   const ObtenhaBimestres = (disciplinas = [], ehEdicao) => {
     let semObjetivo = false;
 
-    if (disciplinas.length === 1) {
-      const arraySemObjetivo = diciplinasSemObjetivo.filter(
-        x => x === disciplinas[0].codigo
-      );
+    console.log(disciplinas);
 
-      if (arraySemObjetivo.length > 0) semObjetivo = true;
-    }
+    const disciplinasComObjetivo = disciplinas.filter(
+      disciplina => disciplina.possuiObjetivos
+    );
+
+    if (disciplinasComObjetivo.length === 0) semObjetivo = true;
 
     for (let i = 1; i <= qtdBimestres; i++) {
       const Nome = ObtenhaNomebimestre(i);
