@@ -106,9 +106,11 @@ const DetalheNotificacao = ({ match }) => {
     );
     if (confirmado) {
       const idsNotificacoes = [idNotificacao];
-      servicoNotificacao.excluir(idsNotificacoes, () =>
-        history.push(urlTelaNotificacoes)
-      );
+      servicoNotificacao.excluir(idsNotificacoes, () => {
+        history.push(urlTelaNotificacoes);
+        if (usuario.rf.length > 0)
+          servicoNotificacao.buscaNotificacoesPorAnoRf(2019, usuario.rf);
+      });
     }
   };
 
