@@ -10,6 +10,7 @@ const Service = {
       return {
         codigo: req.codigoComponenteCurricular,
         materia: req.nome,
+        possuiObjetivos: req.possuiObjetivos,
       };
     });
   },
