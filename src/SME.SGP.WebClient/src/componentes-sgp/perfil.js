@@ -1,37 +1,19 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useLayoutEffect, useRef } from 'react'
 import styled from 'styled-components';
 import { Base } from '../componentes/colors';
 import history from '../servicos/history';
 import { store } from '../redux';
 import { perfilSelecionado } from '../redux/modulos/perfil/actions';
 import { useSelector } from 'react-redux';
+import PropTypes from 'prop-types';
 
 
-const Perfil = () => {
+const Perfil = props => {
+  const { Botao, Icone, Texto } = props;
   const [ocultaPerfis, setarOcultaPerfis] = useState(true);
   const PerfilStore = useSelector(store => store.perfil);
 
-  /** TODO - Retirar o mock quando o backend estiver pronto */
-  const perfis = [
-    {
-      id: "1",
-      descricao: 'Diretor',
-    },
-    {
-      id: "2",
-      descricao: 'Professor'
-    },
-    {
-      id: "3",
-      descricao: 'Coordenador Pedagógico',
-      sigla: 'CP'
-    },
-    {
-      id: "4",
-      descricao: 'Professor Orientador de Área',
-      sigla: 'POA'
-    }
-  ];
+  const listaRef = useRef();
 
   const ItensPerfil = styled.div`
     border-top-left-radius: 5px;
@@ -74,13 +56,9 @@ const Perfil = () => {
     }
   `;
 
-  const Botao = styled.a`
-    display: block !important;
-    text-align: center !important;
-  `;
 
-  const IconePerfil = styled.div`
-    background: ${Base.Roxo};
+  const ContainerIcone = styled.div`
+    background: ${PerfilStore.perfis.length>1?Base.Roxo:Base.CinzaDesabilitado};
     color: ${Base.Branco};
     font-size: 18px !important;
     height: 28px !important;
@@ -91,52 +69,63 @@ const Perfil = () => {
     border-radius: 50%;
     display: inline-block;
     justify-content: center !important;
-
-    i{
-      margin-top:5px;
+    i {
+      background: ${PerfilStore.perfis.length>1?Base.Roxo:Base.CinzaDesabilitado} !important;
     }
   `;
 
   const gravarPerfilSelecionado = (perfil) => {
     if (perfil) {
-      const perfilNovo = perfis.filter(item => item.id === perfil)
+      const perfilNovo = PerfilStore.perfis.filter(item => item.codigoPerfil === perfil)
       store.dispatch(perfilSelecionado(perfilNovo[0]));
       setarOcultaPerfis(true);
-      if (PerfilStore.perfilSelecionado.id !== perfilNovo[0].id) {
+      if (PerfilStore.perfilSelecionado.codigoPerfil !== perfilNovo[0].codigoPerfil) {
         history.push('/');
       }
     }
   }
 
   const onClickBotao = () => {
-    if (perfis.length > 1) {
+    if (PerfilStore.perfis.length > 1) {
       setarOcultaPerfis(!ocultaPerfis);
     }
   };
 
+  const handleClickFora = event => {
+    if (listaRef.current && !listaRef.current.contains(event.target)) {
+      setarOcultaPerfis(true);
+    }
+  };
+
+  useLayoutEffect(() => {
+    if (ocultaPerfis) document.addEventListener('click', handleClickFora);
+    else document.removeEventListener('click', handleClickFora);
+  }, [ocultaPerfis]);
+
 
   return (
-    <div className="position-relative">
-      <Botao className="text-center" onClick={onClickBotao} style={{ cursor: perfis.length > 1 ? 'pointer' : 'default' }}>
-        <IconePerfil>
-          <i className="fas fa-user-circle" />
-        </IconePerfil>
-        <span className={`d-block mt-1 ${ocultaPerfis ? '' : ' font-weight-bold'}`} >
-          {PerfilStore.perfilSelecionado.sigla ? PerfilStore.perfilSelecionado.sigla : PerfilStore.perfilSelecionado.descricao}
-        </span>
+    <div className="position-relative" ref={listaRef}>
+      <Botao className="text-center stretched-link" onClick={onClickBotao} disabled={PerfilStore.perfis.length <= 1}>
+        <ContainerIcone>
+          <Icone className="fas fa-user-circle"/>
+        </ContainerIcone>
+        <Texto className={`d-block mt-1 ${ocultaPerfis ? '' : ' font-weight-bold'}`}>
+          {PerfilStore.perfilSelecionado.sigla ? PerfilStore.perfilSelecionado.sigla : PerfilStore.perfilSelecionado.nomePerfil}
+        </Texto>
       </Botao>
+      {ocultaPerfis}
       <ItensPerfil hidden={ocultaPerfis} className="list-inline">
         <table>
           <tbody>
-            {perfis.map(item =>
-              <Item key={item.id}
+            {PerfilStore.perfis.map(item =>
+              <Item key={item.codigoPerfil}
                 onClick={(e) => gravarPerfilSelecionado(e.currentTarget.accessKey)}
-                accessKey={item.id}>
+                accessKey={item.codigoPerfil}>
                 <td style={{ width: '20px' }}>
-                  <i value={item.id} className="fas fa-user-circle"></i>
+                  <i value={item.codigoPerfil} className="fas fa-user-circle"></i>
                 </td>
-                <td style={{ width: '100%', fontWeight: item.id === PerfilStore.perfilSelecionado.id ? 'bold' : 'initial' }}>
-                  {item.descricao + (item.sigla ? "(" + item.sigla + ")" : "")}
+                <td style={{ width: '100%', fontWeight: item.codigoPerfil === PerfilStore.perfilSelecionado.codigoPerfil ? 'bold' : 'initial' }}>
+                  {item.nomePerfil + (item.sigla ? "(" + item.sigla + ")" : "")}
                 </td>
               </Item>
             )}
@@ -146,5 +135,11 @@ const Perfil = () => {
     </div>
   )
 }
+
+Perfil.propTypes = {
+  Botao: PropTypes.object.isRequired,
+  Icone: PropTypes.object.isRequired,
+  Texto: PropTypes.object.isRequired,
+};
 
 export default Perfil;
