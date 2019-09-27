@@ -5,7 +5,7 @@ import {
   PrePost,
   Post,
   setBimestresErro,
-  setLimpartBimestresErro,
+  setLimpartBimestresErro, LimparBimestres,
 } from '../../../redux/modulos/planoAnual/action';
 import Grid from '../../../componentes/grid';
 import Button from '../../../componentes/button';
@@ -70,26 +70,21 @@ export default function PlanoAnual() {
 
   const LayoutEspecial = ehEja || ehMedio || disciplinaSemObjetivo;
 
-  const qtdBimestres = ehEja ? 2 : 4;
-
   const anoLetivo = turmaSelecionada[0] ? turmaSelecionada[0].anoLetivo : 0;
   const escolaId = turmaSelecionada[0] ? turmaSelecionada[0].codEscola : 0;
   const anoEscolar = turmaSelecionada[0] ? turmaSelecionada[0].ano : 0;
   const turmaId = turmaSelecionada[0] ? turmaSelecionada[0].codTurma : 0;
-
-  useEffect(() => {}, []);
-
-  useEffect(() => {
-    if (!ehDisabled) ObtenhaBimestres();
-
-    verificarSeEhEdicao();
-  }, [usuario]);
 
   useEffect(() => {
     VerificarEnvio();
 
     if (recarregarPlanoAnual) verificarSeEhEdicao();
   }, [bimestres]);
+
+  useEffect(() => {
+    if (!ehDisabled) ObtenhaBimestres();
+
+  }, [turmaSelecionada])
 
   const onF5Click = e => {
     if (e.code === 'F5') {
@@ -135,7 +130,7 @@ export default function PlanoAnual() {
       .catch(() => {
         erro(
           `Não foi possivel obter os dados do ${
-            ehEja ? 'plano semestral' : 'plano anual'
+          ehEja ? 'plano semestral' : 'plano anual'
           }`
         );
       });
@@ -246,9 +241,12 @@ export default function PlanoAnual() {
   };
 
   const ObtenhaBimestres = (disciplinas = [], ehEdicao) => {
+
+    dispatch(LimparBimestres());
+
     let semObjetivo = false;
 
-    console.log(disciplinas);
+    const qtdBimestres = ehEja ? 2 : 4;
 
     const disciplinasComObjetivo = disciplinas.filter(
       disciplina => disciplina.possuiObjetivos
@@ -329,23 +327,23 @@ export default function PlanoAnual() {
   const modalCopiarConteudoAtencaoTexto = () => {
     const turmasReportar = usuario.turmasUsuario
       ? usuario.turmasUsuario
-          .filter(
-            turma =>
-              modalCopiarConteudo.turmasSelecionadas.includes(
-                `${turma.codigo}`
-              ) &&
-              modalCopiarConteudo.turmasComPlanoAnual.includes(turma.codigo)
-          )
-          .map(turma => turma.turma)
+        .filter(
+          turma =>
+            modalCopiarConteudo.turmasSelecionadas.includes(
+              `${turma.codigo}`
+            ) &&
+            modalCopiarConteudo.turmasComPlanoAnual.includes(turma.codigo)
+        )
+        .map(turma => turma.turma)
       : [];
 
     return turmasReportar.length > 1
       ? `As turmas ${turmasReportar.join(
-          ', '
-        )} já possuem plano anual que serão sobrescritos ao realizar a cópia. Deseja continuar?`
+        ', '
+      )} já possuem plano anual que serão sobrescritos ao realizar a cópia. Deseja continuar?`
       : `A turma ${
-          turmasReportar[0]
-        } já possui plano anual que será sobrescrito ao realizar a cópia. Deseja continuar?`;
+      turmasReportar[0]
+      } já possui plano anual que será sobrescrito ao realizar a cópia. Deseja continuar?`;
   };
 
   const onChangeCopiarConteudo = selecionadas => {
@@ -375,6 +373,8 @@ export default function PlanoAnual() {
 
   const CopiarConteudo = async () => {
     const promissesBimestres = [];
+
+    const qtdBimestres = ehEja ? 2 : 4;
 
     for (let i = 1; i <= qtdBimestres; i++) {
       const promise = Service.obterBimestre({
@@ -503,8 +503,8 @@ export default function PlanoAnual() {
         titulo="Copiar Conteúdo"
         closable={false}
         loader={modalCopiarConteudo.loader}
-        desabilitarBotaoPrincipal={ modalCopiarConteudo.turmasSelecionadas
-                                  && modalCopiarConteudo.turmasSelecionadas.length < 1}
+        desabilitarBotaoPrincipal={modalCopiarConteudo.turmasSelecionadas
+          && modalCopiarConteudo.turmasSelecionadas.length < 1}
       >
         <label
           htmlFor="SelecaoTurma"
@@ -571,15 +571,15 @@ export default function PlanoAnual() {
         <Grid cols={12}>
           {bimestres
             ? bimestres.map(bim => {
-                return (
-                  <Bimestre
-                    disabled={ehDisabled}
-                    key={bim.indice}
-                    indice={bim.indice}
-                    LayoutEspecial={LayoutEspecial}
-                  />
-                );
-              })
+              return (
+                <Bimestre
+                  disabled={ehDisabled}
+                  key={bim.indice}
+                  indice={bim.indice}
+                  LayoutEspecial={LayoutEspecial}
+                />
+              );
+            })
             : null}
         </Grid>
       </Card>
