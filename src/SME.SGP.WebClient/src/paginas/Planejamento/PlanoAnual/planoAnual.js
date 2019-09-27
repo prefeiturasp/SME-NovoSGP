@@ -78,12 +78,6 @@ export default function PlanoAnual() {
   useEffect(() => { }, []);
 
   useEffect(() => {
-    if (!ehDisabled) ObtenhaBimestres();
-
-    verificarSeEhEdicao();
-  }, [usuario]);
-
-  useEffect(() => {
     VerificarEnvio();
 
     if (recarregarPlanoAnual) verificarSeEhEdicao();
@@ -93,11 +87,6 @@ export default function PlanoAnual() {
     if (!ehDisabled) ObtenhaBimestres();
 
   }, [turmaSelecionada])
-
-  useEffect(() => {
-    if (!ehDisabled) ObtenhaBimestres();
-
-  }, [ehEja])
 
   const onF5Click = e => {
     if (e.code === 'F5') {
