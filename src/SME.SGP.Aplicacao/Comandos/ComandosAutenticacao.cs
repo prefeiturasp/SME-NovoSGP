@@ -46,7 +46,7 @@ namespace SME.SGP.Aplicacao
                 .Replace("#URL_BASE#", urlFrontEnd)
                 .Replace("#LINK", $"{urlFrontEnd}redefinir/{usuario.TokenRecuperacaoSenha.ToString()}");
 
-            servicoEmail.Enviar(usuario.Email, "Teste", textoEmail);
+            servicoEmail.Enviar(usuario.Email, "Recuperação de senha do SGP", textoEmail);
         }
     }
 }
