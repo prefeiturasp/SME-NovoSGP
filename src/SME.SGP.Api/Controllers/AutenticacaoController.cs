@@ -37,9 +37,9 @@ namespace SME.SGP.Api.Controllers
         [HttpPost("recuperar-senha")]
         [ProducesResponseType(200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        public IActionResult RecuperarSenha(string codigo, [FromServices]IComandoAuth comandoAuth)
+        public IActionResult RecuperarSenha(string codigo, [FromServices]IComandosAutenticacao comandosAutenticacao)
         {
-            return Ok(comandoAuth.RecuperarSenha(codigo));
+            return Ok(comandosAutenticacao.RecuperarSenha(codigo));
         }
     }
 }

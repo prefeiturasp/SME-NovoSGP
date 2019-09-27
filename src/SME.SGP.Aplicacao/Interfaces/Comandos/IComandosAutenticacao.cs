@@ -2,5 +2,6 @@
 {
     public interface IComandosAutenticacao
     {
+        string RecuperarSenha(string usuario);
     }
 }

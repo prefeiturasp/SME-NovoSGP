@@ -9,10 +9,10 @@ namespace SME.SGP.Dominio
         private readonly Guid PERFIL_PROFESSOR = Guid.Parse("40E1E074-37D6-E911-ABD6-F81654FE895D");
         public string CodigoRf { get; set; }
         public string Email { get; set; }
-        public DateTime ExpiracaoRecuperacaoSenha { get; set; }
+        public DateTime? ExpiracaoRecuperacaoSenha { get; set; }
         public string Nome { get; set; }
         public IEnumerable<Notificacao> Notificacoes { get { return notificacoes; } }
-        public Guid TokenRecuperacaoSenha { get; set; }
+        public Guid? TokenRecuperacaoSenha { get; set; }
         private IList<Notificacao> notificacoes { get; set; }
 
         public void Adicionar(Notificacao notificacao)
@@ -21,15 +21,6 @@ namespace SME.SGP.Dominio
                 notificacoes.Add(notificacao);
         }
 
-        public Guid ObterPerfilPrioritario(IEnumerable<PrioridadePerfil> perfisUsuario)
-        {
-            var possuiPerfilPrioritario = perfisUsuario.Any(c => c.CodigoPerfil == PERFIL_PROFESSOR);
-            if (possuiPerfilPrioritario)
-            {
-                return PERFIL_PROFESSOR;
-            }
-            return perfisUsuario.FirstOrDefault().CodigoPerfil;
-        }
         public void IniciarRecuperacaoDeSenha()
         {
             if (string.IsNullOrWhiteSpace(Email))
@@ -41,6 +32,16 @@ namespace SME.SGP.Dominio
             }
             TokenRecuperacaoSenha = Guid.NewGuid();
             ExpiracaoRecuperacaoSenha = DateTime.Now.AddHours(6);
+        }
+
+        public Guid ObterPerfilPrioritario(IEnumerable<PrioridadePerfil> perfisUsuario)
+        {
+            var possuiPerfilPrioritario = perfisUsuario.Any(c => c.CodigoPerfil == PERFIL_PROFESSOR);
+            if (possuiPerfilPrioritario)
+            {
+                return PERFIL_PROFESSOR;
+            }
+            return perfisUsuario.FirstOrDefault().CodigoPerfil;
         }
     }
 }
