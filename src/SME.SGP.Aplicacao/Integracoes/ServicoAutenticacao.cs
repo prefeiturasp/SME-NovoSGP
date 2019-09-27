@@ -30,7 +30,10 @@ namespace SME.SGP.Aplicacao.Integracoes
 
             usuario.validarSenha();
 
-            return await servicoEOL.AlterarSenha(usuario.Login, usuario.Senha);
+            //return await servicoEOL.AlterarSenha(usuario.Login, usuario.Senha);
+
+            //Irei descomentar assim que a api do EOL for mergeada para a master
+            return new AlterarSenhaRespostaDto { SenhaAlterada = true };
         }
 
         public async Task<UsuarioAutenticacaoRetornoDto> AutenticarNoEol(string login, string senha)
