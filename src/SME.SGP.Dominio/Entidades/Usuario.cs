@@ -25,11 +25,9 @@ namespace SME.SGP.Dominio
         {
             if (string.IsNullOrWhiteSpace(Email))
             {
-                //se for usuario com nivel UE
-                throw new NegocioException("Você não tem um e-mail cadastrado para recuperar sua senha. Para restabelecer o seu acesso, procure o Diretor da sua unidade.");
-                //se for usuario com nivel DRE ou SME
-                throw new NegocioException("Você não tem um e-mail cadastrado para recuperar sua senha. Para restabelecer o seu acesso, procure o Administrador do SGP da sua unidade.");
+                throw new NegocioException("Você não tem um e-mail cadastrado para recuperar sua senha. Para restabelecer o seu acesso, procure o Diretor da sua UE ou Administrador do SGP da sua unidade.");
             }
+
             TokenRecuperacaoSenha = Guid.NewGuid();
             ExpiracaoRecuperacaoSenha = DateTime.Now.AddHours(6);
         }
