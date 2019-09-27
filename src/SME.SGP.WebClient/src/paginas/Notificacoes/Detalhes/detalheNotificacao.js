@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react';
+import { useSelector } from 'react-redux';
 import { Formik, Form } from 'formik';
 import * as Yup from 'yup';
-import { erros, erro, sucesso, confirmar } from '~/servicos/alertas';
+import { erros, sucesso, confirmar } from '~/servicos/alertas';
 import Card from '~/componentes/card';
 import { EstiloDetalhe } from './detalheNotificacao.css';
 import api from '~/servicos/api';
@@ -22,6 +23,8 @@ const DetalheNotificacao = ({ match }) => {
   const [idNotificacao, setIdNotificacao] = useState('');
   const [listaDeStatus, setListaDeStatus] = useState([]);
   const [aprovar, setAprovar] = useState(false);
+
+  const usuario = useSelector(state => state.usuario);
 
   const [validacoes, setValidacoes] = useState(
     Yup.object({
@@ -88,10 +91,12 @@ const DetalheNotificacao = ({ match }) => {
   }, [notificacao]);
 
   const marcarComoLida = () => {
-    const idsNotificacoes = [...idNotificacao];
-    servicoNotificacao.marcarComoLida(idsNotificacoes, () =>
-      history.push(urlTelaNotificacoes)
-    );
+    const idsNotificacoes = [idNotificacao];
+    servicoNotificacao.marcarComoLida(idsNotificacoes, () => {
+      history.push(urlTelaNotificacoes);
+      if (usuario.rf.length > 0)
+        servicoNotificacao.buscaNotificacoesPorAnoRf(2019, usuario.rf);
+    });
   };
 
   const excluir = async () => {
@@ -100,7 +105,7 @@ const DetalheNotificacao = ({ match }) => {
       'Você tem certeza que deseja excluir esta notificação?'
     );
     if (confirmado) {
-      const idsNotificacoes = [...idNotificacao];
+      const idsNotificacoes = [idNotificacao];
       servicoNotificacao.excluir(idsNotificacoes, () =>
         history.push(urlTelaNotificacoes)
       );
@@ -134,7 +139,7 @@ const DetalheNotificacao = ({ match }) => {
     <>
       <Cabecalho pagina="Notificações" />
       <Formik
-        enableReinitialize={true}
+        enableReinitialize
         initialValues={{
           observacao: notificacao.observacao || '',
         }}
