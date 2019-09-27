@@ -25,7 +25,7 @@ namespace SME.SGP.Aplicacao.Integracoes
                 retornoDto.Token = GeraTokenSeguranca(retornoDto);
             }
 
-            return (retornoDto, retornoServicoEol.CodigoRf);
+            return (retornoDto, retornoServicoEol == null ? string.Empty : retornoServicoEol.CodigoRf);
         }
 
         private string GeraTokenSeguranca(UsuarioAutenticacaoRetornoDto retornoEol)
