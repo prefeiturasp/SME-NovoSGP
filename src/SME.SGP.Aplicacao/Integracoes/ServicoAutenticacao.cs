@@ -28,7 +28,7 @@ namespace SME.SGP.Aplicacao.Integracoes
             usuario.Login = primeiroAcessoDto.Usuario;
             usuario.Senha = primeiroAcessoDto.NovaSenha;
 
-            usuario.validarSenha();
+            usuario.ValidarSenha();
 
             //return await servicoEOL.AlterarSenha(usuario.Login, usuario.Senha);
 

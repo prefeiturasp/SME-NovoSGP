@@ -16,27 +16,27 @@ namespace SME.SGP.Dominio.Teste
 
             Usuario.Senha = "1aA23233";
 
-            Usuario.validarSenha();
+            Usuario.ValidarSenha();
 
             Usuario.Senha = "Aa@dfgsdfg";
 
-            Usuario.validarSenha();
+            Usuario.ValidarSenha();
             
             Usuario.Senha = "1a@egrgeg";
 
-            Assert.Throws<NegocioException>(Usuario.validarSenha);
+            Assert.Throws<NegocioException>(Usuario.ValidarSenha);
 
             Usuario.Senha = @"1aA@82193490!@#$%&*()";
 
-            Assert.Throws<NegocioException>(Usuario.validarSenha);
+            Assert.Throws<NegocioException>(Usuario.ValidarSenha);
 
             Usuario.Senha = "7710";
 
-            Assert.Throws<NegocioException>(Usuario.validarSenha);
+            Assert.Throws<NegocioException>(Usuario.ValidarSenha);
 
             Usuario.Senha = "Sgp7710";
 
-            Assert.Throws<NegocioException>(Usuario.validarSenha);            
+            Assert.Throws<NegocioException>(Usuario.ValidarSenha);            
         }
     }
 }

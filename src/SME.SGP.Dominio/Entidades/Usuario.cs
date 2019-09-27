@@ -8,12 +8,18 @@ namespace SME.SGP.Dominio
     {
         public string CodigoRf { get; set; }
         public string CPF { get; set; }
-        public IEnumerable<Notificacao> Notificacoes { get { return notificacoes; } }
-        private IList<Notificacao> notificacoes { get; set; }
         public string Login { get; set; }
+        public IEnumerable<Notificacao> Notificacoes { get { return notificacoes; } }
         public string Senha { get; set; }
+        private IList<Notificacao> notificacoes { get; set; }
 
-        public void validarSenha()
+        public void Adicionar(Notificacao notificacao)
+        {
+            if (notificacao != null)
+                notificacoes.Add(notificacao);
+        }
+
+        public void ValidarSenha()
         {
             var RFCPF = string.IsNullOrWhiteSpace(CodigoRf) ? CPF : CodigoRf;
 
@@ -22,7 +28,6 @@ namespace SME.SGP.Dominio
             var regexSenha = new Regex(@"(?=.*?[A-Z])(?=.*?[a-z])(?=((?=.*[!@#$\-%&/\\\[\]|*()_=+])|(?=.*?[0-9]+)))");
 
             var regexEspacoBranco = new Regex(@"([\s])");
-
 
             if (Senha.Length < 8)
                 throw new NegocioException("A senha deve conter no minimo 8 caracteres");
@@ -38,16 +43,6 @@ namespace SME.SGP.Dominio
 
             if (!regexSenha.IsMatch(Senha))
                 throw new NegocioException("A senha deve conter pelo menos 1 letra Maiuscula, 1 minuscula, 1 numero e/ou caractere especial");
-
         }
-
-        public void Adicionar(Notificacao notificacao)
-        {
-            if (notificacao != null)
-                notificacoes.Add(notificacao);
-        }
-
-
-
     }
 }
