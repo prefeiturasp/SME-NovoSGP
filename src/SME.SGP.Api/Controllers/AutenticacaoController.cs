@@ -27,7 +27,7 @@ namespace SME.SGP.Api.Controllers
         [AllowAnonymous]
         public async Task<IActionResult> AlterarSenha(Guid token, string novaSenha, [FromServices]IComandosAutenticacao comandosAutenticacao)
         {
-            await comandosAutenticacao.AlterarSenha(token, novaSenha);
+            await comandosAutenticacao.AlterarSenhaComTokenRecuperacao(token, novaSenha);
             return Ok();
         }
 
@@ -46,7 +46,7 @@ namespace SME.SGP.Api.Controllers
             return Ok(retornoAutenticacao);
         }
 
-        [HttpPost("PrimeiroAcesso")]
+        [HttpPost("primeiro-acesso")]
         [ProducesResponseType(200)]
         [ProducesResponseType(401)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
@@ -63,9 +63,9 @@ namespace SME.SGP.Api.Controllers
         [HttpPost("recuperar-senha")]
         [ProducesResponseType(typeof(string), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        public IActionResult RecuperarSenha(string codigo, [FromServices]IComandosAutenticacao comandosAutenticacao)
+        public IActionResult SolicitarRecuperacaoSenha(string login, [FromServices]IComandosAutenticacao comandosAutenticacao)
         {
-            return Ok(comandosAutenticacao.RecuperarSenha(codigo));
+            return Ok(comandosAutenticacao.SolicitarRecuperacaoSenha(login));
         }
 
         [HttpPost("valida-token-recuperacao-senha")]

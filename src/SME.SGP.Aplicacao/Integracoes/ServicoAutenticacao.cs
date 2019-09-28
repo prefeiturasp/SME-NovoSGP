@@ -11,35 +11,28 @@ namespace SME.SGP.Aplicacao.Integracoes
     public class ServicoAutenticacao : IServicoAutenticacao
     {
         private readonly IRepositorioPrioridadePerfil repositorioPrioridadePerfil;
+        private readonly IRepositorioUsuario repositorioUsuario;
         private readonly IServicoEOL servicoEOL;
         private readonly IServicoUsuario servicoUsuario;
 
         public ServicoAutenticacao(IServicoEOL servicoEOL,
+                                   IRepositorioUsuario repositorioUsuario,
                                    IServicoUsuario servicoUsuario,
                                    IRepositorioPrioridadePerfil repositorioPrioridadePerfil)
         {
             this.servicoEOL = servicoEOL ?? throw new System.ArgumentNullException(nameof(servicoEOL));
-            this.servicoUsuario = servicoUsuario ?? throw new System.ArgumentNullException(nameof(servicoUsuario));
+            this.repositorioUsuario = repositorioUsuario ?? throw new ArgumentNullException(nameof(repositorioUsuario));
+            this.servicoUsuario = servicoUsuario ?? throw new ArgumentNullException(nameof(servicoUsuario));
             this.repositorioPrioridadePerfil = repositorioPrioridadePerfil ?? throw new System.ArgumentNullException(nameof(repositorioPrioridadePerfil));
         }
 
         public async Task<AlterarSenhaRespostaDto> AlterarSenhaPrimeiroAcesso(PrimeiroAcessoDto primeiroAcessoDto)
         {
-            var usuario = new Usuario();
-
-            if (primeiroAcessoDto.UsuarioExterno)
-                usuario.CPF = primeiroAcessoDto.RFCPF;
-            else
-                usuario.CodigoRf = primeiroAcessoDto.RFCPF;
-
-            usuario.Login = primeiroAcessoDto.Usuario;
+            var usuario = repositorioUsuario.ObterPorCodigoRfLogin(primeiroAcessoDto.RFCPF, primeiroAcessoDto.Usuario);
 
             usuario.ValidarSenha(primeiroAcessoDto.NovaSenha);
 
-            //return await servicoEOL.AlterarSenha(usuario.Login, usuario.Senha);
-
-            //Irei descomentar assim que a api do EOL for mergeada para a master
-            return new AlterarSenhaRespostaDto { SenhaAlterada = true };
+            return await servicoEOL.AlterarSenha(usuario.Login, primeiroAcessoDto.NovaSenha);
         }
 
         public async Task<UsuarioAutenticacaoRetornoDto> AutenticarNoEol(string login, string senha)
