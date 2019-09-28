@@ -14,6 +14,7 @@ namespace SME.SGP.Dominio
         public string Login { get; set; }
         public string Nome { get; set; }
         public IEnumerable<Notificacao> Notificacoes { get { return notificacoes; } }
+        public DateTime UltimoLogin { get; set; }
         public Guid? TokenRecuperacaoSenha { get; set; }
         private IList<Notificacao> notificacoes { get; set; }
 
@@ -63,6 +64,10 @@ namespace SME.SGP.Dominio
             var regexSenha = new Regex(@"(?=.*?[A-Z])(?=.*?[a-z])(?=((?=.*[!@#$\-%&/\\\[\]|*()_=+])|(?=.*?[0-9]+)))");
             if (!regexSenha.IsMatch(novaSenha))
                 throw new NegocioException("A senha deve conter pelo menos 1 letra Maiuscula, 1 minuscula, 1 numero e/ou caractere especial");
+        }
+        public void AtualizaUltimoLogin()
+        {
+            this.UltimoLogin = DateTime.Now;
         }
     }
 }

@@ -17,14 +17,14 @@ namespace SME.SGP.Dados.Repositorios
         public Usuario ObterPorCodigoRfLogin(string codigoRf, string login)
         {
             var query = new StringBuilder();
-            query.Append("select * from usuario ");
-            query.Append("where 1=1 ");
+            query.AppendLine("select * from usuario");
+            query.AppendLine("where 1=1");
 
             if (!string.IsNullOrEmpty(codigoRf))
-                query.Append("and rf_codigo = @codigoRf ");
+                query.AppendLine("and rf_codigo = @codigoRf");
 
             if (!string.IsNullOrEmpty(login))
-                query.Append("and login = @login");
+                query.AppendLine("and login = @login");
 
             return database.Conexao.Query<Usuario>(query.ToString(), new { codigoRf, login })
                 .FirstOrDefault();
