@@ -6,6 +6,7 @@ import Filtro from './filtro';
 import LogoDoSgp from '../recursos/LogoDoSgp.svg';
 import { Base } from '../componentes/colors';
 import NavbarNotificacoes from './navbar-notificacoes';
+import Perfil from './perfil';
 
 const Navbar = () => {
   const retraido = useSelector(state => state.navegacao.retraido);
@@ -89,6 +90,13 @@ const Navbar = () => {
               <ul className="list-inline p-0 m-0">
                 <li className="list-inline-item mr-4">
                   <NavbarNotificacoes
+                    Botao={Botao}
+                    Icone={Icone}
+                    Texto={Texto}
+                  />
+                </li>
+                <li className="list-inline-item mr-4">
+                  <Perfil
                     Botao={Botao}
                     Icone={Icone}
                     Texto={Texto}

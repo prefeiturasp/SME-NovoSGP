@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using SME.SGP.Aplicacao;
+using SME.SGP.Aplicacao.Servicos;
 using SME.SGP.Aplicacao.Integracoes;
 using SME.SGP.Dados;
 using SME.SGP.Dados.Contexto;
@@ -29,7 +30,7 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IComandosSupervisor, ComandosSupervisor>();
             services.TryAddScoped<IComandosNotificacao, ComandosNotificacao>();
             services.TryAddScoped<IComandosWorkflowAprovacao, ComandosWorkflowAprovacao>();
-            services.TryAddScoped<IComandosAutenticacao, ComandosAutenticacao>();
+            services.TryAddScoped<IComandosUsuario, ComandosUsuario>();
         }
 
         private static void RegistrarConsultas(IServiceCollection services)
@@ -83,7 +84,9 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IServicoNotificacao, ServicoNotificacao>();
             services.TryAddScoped<IServicoUsuario, ServicoUsuario>();
             services.TryAddScoped<IServicoAutenticacao, ServicoAutenticacao>();
+            services.TryAddScoped<IServicoPerfil, ServicoPerfil>();
             services.TryAddScoped<IServicoEmail, ServicoEmail>();
+            services.TryAddScoped<IServicoTokenJwt, ServicoTokenJwt>();
         }
     }
 }
