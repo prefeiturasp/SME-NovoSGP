@@ -82,7 +82,7 @@ export default function PlanoAnual() {
   }, [bimestres]);
 
   useEffect(() => {
-    if (!ehDisabled) ObtenhaBimestres();
+    if (!ehDisabled) verificarSeEhEdicao();
 
   }, [turmaSelecionada])
 
