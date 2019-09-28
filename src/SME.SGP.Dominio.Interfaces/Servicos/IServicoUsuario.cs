@@ -2,6 +2,6 @@
 {
     public interface IServicoUsuario
     {
-        Usuario ObterUsuarioPorCodigoRfOuAdiciona(string codigoRf);
+        Usuario ObterUsuarioPorCodigoRfLoginOuAdiciona(string codigoRf, string login = "");
     }
 }

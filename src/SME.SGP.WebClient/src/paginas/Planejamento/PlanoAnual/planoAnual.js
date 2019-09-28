@@ -22,13 +22,14 @@ import history from '../../../servicos/history';
 import { URL_HOME } from '../../../constantes/url';
 import { erro, sucesso } from '../../../servicos/alertas';
 import ModalConteudoHtml from '../../../componentes/modalConteudoHtml';
-import Select from '../../../componentes/selectMultiple';
 import {
   Titulo,
   TituloAno,
   Planejamento,
   ParagrafoAlerta,
 } from './planoAnual.css.js';
+import modalidade from '~/dtos/modalidade';
+import SelectComponent from '~/componentes/select';
 
 export default function PlanoAnual() {
   const diciplinasSemObjetivo = [1061];
@@ -48,12 +49,12 @@ export default function PlanoAnual() {
   });
 
   const ehEja =
-    turmaSelecionada[0] && turmaSelecionada[0].codModalidade === 3
+    turmaSelecionada[0] && turmaSelecionada[0].codModalidade === modalidade.EJA
       ? true
       : false;
 
   const ehMedio =
-    turmaSelecionada[0] && turmaSelecionada[0].codModalidade === 6
+    turmaSelecionada[0] && turmaSelecionada[0].codModalidade === modalidade.ENSINO_MEDIO
       ? true
       : false;
 
@@ -504,6 +505,8 @@ export default function PlanoAnual() {
         titulo="Copiar Conteúdo"
         closable={false}
         loader={modalCopiarConteudo.loader}
+        desabilitarBotaoPrincipal={ modalCopiarConteudo.turmasSelecionadas
+                                  && modalCopiarConteudo.turmasSelecionadas.length < 1}
       >
         <label
           htmlFor="SelecaoTurma"
@@ -511,16 +514,15 @@ export default function PlanoAnual() {
         >
           Copiar para a(s) turma(s)
         </label>
-        <Select
-          lista={modalCopiarConteudo.listSelect}
-          label="turma"
+        <SelectComponent
           id="SelecaoTurma"
+          lista={modalCopiarConteudo.listSelect}
           valueOption="codigo"
-          className="col-xl-12 col-md-12 col-sm-12 col-xs-12"
-          placeholder="Selecione uma turma destino"
-          valueSelect={modalCopiarConteudo.turmasSelecionadas}
+          valueText="turma"
           onChange={onChangeCopiarConteudo}
-        ></Select>
+          valueSelect={modalCopiarConteudo.turmasSelecionadas}
+          multiple
+        />
       </ModalConteudoHtml>
       <Grid cols={12} className="p-l-10 mb-10">
         <Planejamento>PLANEJAMENTO</Planejamento>
