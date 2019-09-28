@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using Xunit;
+﻿using Xunit;
 
 namespace SME.SGP.Dominio.Teste
 {
@@ -14,29 +11,17 @@ namespace SME.SGP.Dominio.Teste
 
             Usuario.CodigoRf = "7777710";
 
-            Usuario.Senha = "1aA23233";
+            Usuario.ValidarSenha("1aA23233");
 
-            Usuario.ValidarSenha();
+            Usuario.ValidarSenha("Aa@dfgsdfg");
 
-            Usuario.Senha = "Aa@dfgsdfg";
+            Assert.Throws<NegocioException>(() => Usuario.ValidarSenha("1a@egrgeg"));
 
-            Usuario.ValidarSenha();
-            
-            Usuario.Senha = "1a@egrgeg";
+            Assert.Throws<NegocioException>(() => Usuario.ValidarSenha(@"1aA@82193490!@#$%&*()"));
 
-            Assert.Throws<NegocioException>(Usuario.ValidarSenha);
+            Assert.Throws<NegocioException>(() => Usuario.ValidarSenha("7710"));
 
-            Usuario.Senha = @"1aA@82193490!@#$%&*()";
-
-            Assert.Throws<NegocioException>(Usuario.ValidarSenha);
-
-            Usuario.Senha = "7710";
-
-            Assert.Throws<NegocioException>(Usuario.ValidarSenha);
-
-            Usuario.Senha = "Sgp7710";
-
-            Assert.Throws<NegocioException>(Usuario.ValidarSenha);            
+            Assert.Throws<NegocioException>(() => Usuario.ValidarSenha("Sgp7710"));
         }
     }
 }
