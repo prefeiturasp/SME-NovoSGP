@@ -1,4 +1,5 @@
-﻿using SME.SGP.Dto;
+﻿using SME.SGP.Aplicacao.Integracoes;
+using SME.SGP.Dto;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
