@@ -27,7 +27,7 @@ namespace SME.SGP.Aplicacao
             this.servicoEOL = servicoEOL ?? throw new ArgumentNullException(nameof(servicoEOL));
         }
 
-        public async Task AlterarSenha(Guid token, string novaSenha)
+        public async Task AlterarSenhaComTokenRecuperacao(Guid token, string novaSenha)
         {
             Usuario usuario = repositorioUsuario.ObterPorTokenRecuperacaoSenha(token);
             if (usuario == null)
@@ -44,18 +44,18 @@ namespace SME.SGP.Aplicacao
             await servicoEOL.AlterarSenha(usuario.Login, novaSenha);
         }
 
-        public string RecuperarSenha(string usuario)
+        public string SolicitarRecuperacaoSenha(string login)
         {
-            var usuarioLocalizado = repositorioUsuario.ObterPorCodigoRfLogin(usuario, null);
-            if (usuarioLocalizado == null)
+            var usuario = repositorioUsuario.ObterPorCodigoRfLogin(login, null);
+            if (usuario == null)
             {
                 throw new NegocioException("Usuário não encontrado.");
             }
-            usuarioLocalizado.IniciarRecuperacaoDeSenha();
-            repositorioUsuario.Salvar(usuarioLocalizado);
-            EnviarEmailRecuperacao(usuarioLocalizado);
+            usuario.IniciarRecuperacaoDeSenha();
+            repositorioUsuario.Salvar(usuario);
+            EnviarEmailRecuperacao(usuario);
 
-            return usuarioLocalizado.Email;
+            return usuario.Email;
         }
 
         public bool TokenRecuperacaoSenhaEstaValido(Guid token)

@@ -5,9 +5,9 @@ namespace SME.SGP.Aplicacao
 {
     public interface IComandosAutenticacao
     {
-        Task AlterarSenha(Guid token, string novaSenha);
+        Task AlterarSenhaComTokenRecuperacao(Guid token, string novaSenha);
 
-        string RecuperarSenha(string usuario);
+        string SolicitarRecuperacaoSenha(string login);
 
         bool TokenRecuperacaoSenhaEstaValido(Guid token);
     }
