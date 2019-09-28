@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.RegularExpressions;
 
 namespace SME.SGP.Dominio
 {
@@ -47,6 +48,27 @@ namespace SME.SGP.Dominio
                 return PERFIL_PROFESSOR;
             }
             return perfisUsuario.FirstOrDefault().CodigoPerfil;
+        }
+
+        public bool TokenRecuperacaoSenhaEstaValido()
+        {
+            return ExpiracaoRecuperacaoSenha > DateTime.Now;
+        }
+
+        public void ValidarSenha(string novaSenha)
+        {
+            if (novaSenha.Length < 8)
+                throw new NegocioException("A senha deve conter no minimo 8 caracteres.");
+
+            if (novaSenha.Length > 12)
+                throw new NegocioException("A senha deve conter no máximo 12 caracteres.");
+
+            if (novaSenha.Contains(" "))
+                throw new NegocioException("A senhão não pode conter espaço em branco.");
+
+            var regexSenha = new Regex(@"(?=.*?[A-Z])(?=.*?[a-z])(?=((?=.*[!@#$\-%&/\\\[\]|*()_=+])|(?=.*?[0-9]+)))");
+            if (!regexSenha.IsMatch(novaSenha))
+                throw new NegocioException("A senha deve conter pelo menos 1 letra maiúscula, 1 minúscula, 1 número e/ou 1 caractere especial.");
         }
     }
 }
