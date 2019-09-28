@@ -1,6 +1,4 @@
-﻿using SME.SGP.Dominio;
-using SME.SGP.Dominio.Interfaces;
-using SME.SGP.Dto;
+﻿using SME.SGP.Dto;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,7 +10,6 @@ namespace SME.SGP.Aplicacao.Integracoes
     {
         private readonly IRepositorioPrioridadePerfil repositorioPrioridadePerfil;
         private readonly IServicoEOL servicoEOL;
-        private readonly IServicoUsuario servicoUsuario;
 
         public ServicoAutenticacao(IServicoEOL servicoEOL,
                                    IServicoUsuario servicoUsuario,
@@ -23,7 +20,7 @@ namespace SME.SGP.Aplicacao.Integracoes
             this.repositorioPrioridadePerfil = repositorioPrioridadePerfil ?? throw new System.ArgumentNullException(nameof(repositorioPrioridadePerfil));
         }
 
-        public async Task<UsuarioAutenticacaoRetornoDto> AutenticarNoEol(string login, string senha)
+        public async Task<(UsuarioAutenticacaoRetornoDto, string)> AutenticarNoEol(string login, string senha)
         {
             var retornoServicoEol = await servicoEOL.Autenticar(login, senha);
 
@@ -39,7 +36,7 @@ namespace SME.SGP.Aplicacao.Integracoes
                 retornoDto.PerfisUsuario = DefinirPerfilPrioritario(retornoServicoEol.Perfis, usuario);
             }
 
-            return retornoDto;
+            return (retornoDto, retornoServicoEol == null ? string.Empty : retornoServicoEol.CodigoRf);
         }
 
         private PerfisPorPrioridadeDto DefinirPerfilPrioritario(IEnumerable<Guid> perfis, Usuario usuario)
@@ -58,6 +55,8 @@ namespace SME.SGP.Aplicacao.Integracoes
 
         private string GeraTokenSeguranca(Usuario usuario)
         {
+            // priorizar os perfis
+            //Gerar o token com os permissionamentos do perfil priorizado
             return string.Empty;
         }
 
