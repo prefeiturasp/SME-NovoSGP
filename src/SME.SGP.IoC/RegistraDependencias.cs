@@ -2,6 +2,7 @@
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using SME.SGP.Aplicacao;
 using SME.SGP.Aplicacao.Integracoes;
+using SME.SGP.Aplicacao.Servicos;
 using SME.SGP.Dados;
 using SME.SGP.Dados.Contexto;
 using SME.SGP.Dados.Repositorios;
@@ -73,6 +74,7 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IRepositorioUsuario, RepositorioUsuario>();
             services.TryAddScoped<IRepositorioWorkflowAprovacaoNivelUsuario, RepositorioWorkflowAprovacaoNivelUsuario>();
             services.TryAddScoped<IRepositorioPrioridadePerfil, RepositorioPrioridadePerfil>();
+            services.TryAddScoped<IRepositorioConfiguracaoEmail, RepositorioConfiguracaoEmail>();
         }
 
         private static void RegistrarServicos(IServiceCollection services)
@@ -81,6 +83,7 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IServicoNotificacao, ServicoNotificacao>();
             services.TryAddScoped<IServicoUsuario, ServicoUsuario>();
             services.TryAddScoped<IServicoAutenticacao, ServicoAutenticacao>();
+            services.TryAddScoped<IServicoEmail, ServicoEmail>();
         }
     }
 }
