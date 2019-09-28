@@ -52,7 +52,7 @@
         background: #6933ff;
         border: 0 none;
         border-radius: 3px;
-        color: #fff;
+        color: #ffffff;
         cursor: pointer;
         display: block;
         font-weight: bold;
@@ -75,14 +75,14 @@
         </div>
       </div>
       <div class="mensagem">
-        <p>Olá, #NOME</p>
+        <p>Olá, #NOME - #RF</p>
         <p>
           Você acionou a opção "Esqueci minha senha" do SGP. Para concluir esta
           operação, basta clicar no botão abaixo ou copiar o endereço do link e
           colar no seu navegador.
         </p>
         <p class="atencao">
-          Atenção, link é válido por apenas 6 horas. Após esse período, você
+          Atenção, o link é válido por apenas 6 horas. Após esse período, você
           deverá fazer uma nova solicitação.
         </p>
         <p>O seu login de acesso continua o mesmo: <strong>#RF</strong></p>

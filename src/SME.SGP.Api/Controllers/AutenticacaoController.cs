@@ -2,7 +2,6 @@
 using Microsoft.AspNetCore.Mvc;
 using SME.SGP.Api.Filtros;
 using SME.SGP.Aplicacao;
-using SME.SGP.Aplicacao.Integracoes;
 using SME.SGP.Dto;
 using System;
 using System.Threading.Tasks;
@@ -21,16 +20,6 @@ namespace SME.SGP.Api.Controllers
             this.comandosUsuario = comandosUsuario ?? throw new System.ArgumentNullException(nameof(comandosUsuario));
         }
 
-        [HttpPost("alterar-senha")]
-        [ProducesResponseType(typeof(bool), 200)]
-        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        [AllowAnonymous]
-        public async Task<IActionResult> AlterarSenha(Guid token, string novaSenha, [FromServices]IComandosAutenticacao comandosAutenticacao)
-        {
-            await comandosAutenticacao.AlterarSenhaComTokenRecuperacao(token, novaSenha);
-            return Ok();
-        }
-
         [HttpPost]
         [ProducesResponseType(200)]
         [ProducesResponseType(401)]
@@ -46,35 +35,31 @@ namespace SME.SGP.Api.Controllers
             return Ok(retornoAutenticacao);
         }
 
-        [HttpPost("primeiro-acesso")]
-        [ProducesResponseType(200)]
-        [ProducesResponseType(401)]
+        [HttpPost("recuperar-senha")]
+        [ProducesResponseType(typeof(bool), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        public async Task<IActionResult> PrimeiroAcesso(PrimeiroAcessoDto primeiroAcessoDto)
+        [AllowAnonymous]
+        public async Task<IActionResult> RecuperarSenha([FromBody]RecuperacaoSenhaDto recuperacaoSenhaDto)
         {
-            var retornoAlteracao = await servicoAutenticacao.AlterarSenhaPrimeiroAcesso(primeiroAcessoDto);
-
-            if (!retornoAlteracao.SenhaAlterada)
-                return StatusCode(retornoAlteracao.StatusRetorno, retornoAlteracao.Mensagem);
-
+            await comandosUsuario.AlterarSenhaComTokenRecuperacao(recuperacaoSenhaDto);
             return Ok();
         }
 
-        [HttpPost("recuperar-senha")]
+        [HttpPost("solicitar-recuperacao-senha")]
         [ProducesResponseType(typeof(string), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        public IActionResult SolicitarRecuperacaoSenha(string login, [FromServices]IComandosAutenticacao comandosAutenticacao)
+        public IActionResult SolicitarRecuperacaoSenha([FromBody] string login)
         {
-            return Ok(comandosAutenticacao.SolicitarRecuperacaoSenha(login));
+            return Ok(comandosUsuario.SolicitarRecuperacaoSenha(login));
         }
 
         [HttpPost("valida-token-recuperacao-senha")]
         [ProducesResponseType(typeof(bool), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [AllowAnonymous]
-        public IActionResult TokenRecuperacaoSenhaEstaValido(Guid token, [FromServices]IComandosAutenticacao comandosAutenticacao)
+        public IActionResult TokenRecuperacaoSenhaEstaValido([FromBody] Guid token)
         {
-            return Ok(comandosAutenticacao.TokenRecuperacaoSenhaEstaValido(token));
+            return Ok(comandosUsuario.TokenRecuperacaoSenhaEstaValido(token));
         }
     }
 }
