@@ -1,7 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using SME.SGP.Api.Filtros;
 using SME.SGP.Aplicacao;
-using SME.SGP.Aplicacao.Integracoes;
 using SME.SGP.Dto;
 using System.Threading.Tasks;
 
@@ -32,14 +31,6 @@ namespace SME.SGP.Api.Controllers
                 return StatusCode(401);
 
             return Ok(retornoAutenticacao);
-        }
-
-        [HttpPost("recuperar-senha")]
-        [ProducesResponseType(200)]
-        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        public IActionResult RecuperarSenha(string codigo, [FromServices]IComandosAutenticacao comandosAutenticacao)
-        {
-            return Ok(comandosAutenticacao.RecuperarSenha(codigo));
         }
     }
 }
