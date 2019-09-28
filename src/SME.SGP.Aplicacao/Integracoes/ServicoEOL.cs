@@ -1,6 +1,7 @@
 ﻿using Newtonsoft.Json;
 using SME.SGP.Aplicacao.Integracoes.Respostas;
 using SME.SGP.Dto;
+using System;
 using System.Collections.Generic;
 using System.Net.Http;
 using System.Text;
@@ -102,6 +103,18 @@ namespace SME.SGP.Aplicacao.Integracoes
             {
                 var json = resposta.Content.ReadAsStringAsync().Result;
                 return JsonConvert.DeserializeObject<IEnumerable<ProfessorTurmaReposta>>(json);
+            }
+            return null;
+        }
+
+        public async Task<int[]> ObterPermissoesPorPerfil(Guid perfilGuid)
+        {
+            var resposta = await httpClient.GetAsync($"autenticacaoSgp/CarregarPermissoesPorPerfil/{perfilGuid}");
+
+            if (resposta.IsSuccessStatusCode)
+            {
+                var json = await resposta.Content.ReadAsStringAsync();
+                return JsonConvert.DeserializeObject<int[]>(json);
             }
             return null;
         }
