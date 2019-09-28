@@ -84,6 +84,7 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IServicoNotificacao, ServicoNotificacao>();
             services.TryAddScoped<IServicoUsuario, ServicoUsuario>();
             services.TryAddScoped<IServicoAutenticacao, ServicoAutenticacao>();
+            services.TryAddScoped<IServicoPerfil, ServicoPerfil>();
             services.TryAddScoped<IServicoEmail, ServicoEmail>();
         }
     }
