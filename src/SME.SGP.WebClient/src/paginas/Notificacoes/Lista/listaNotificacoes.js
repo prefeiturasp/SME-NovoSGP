@@ -15,6 +15,7 @@ import servicoNotificacao from '~/servicos/Paginas/ServicoNotificacao';
 import { EstiloLista } from './estiloLista';
 import notificacaoStatus from '~/dtos/notificacaoStatus';
 import CampoTextoBusca from '~/componentes/campoTextoBusca';
+import { URL_HOME } from '~/constantes/url';
 
 export default function NotificacoesLista() {
   const [idNotificacoesSelecionadas, setIdNotificacoesSelecionadas] = useState(
@@ -143,11 +144,11 @@ export default function NotificacoesLista() {
           {statusLista[row.status]}
         </span>
       ) : (
-        <span>{text}</span>
-      )
+          <span>{text}</span>
+        )
     ) : (
-      text
-    );
+        text
+      );
   }
 
   function onSelectRow(ids) {
@@ -265,6 +266,14 @@ export default function NotificacoesLista() {
     }
   }
 
+  function quandoTeclaParaBaixoPesquisaCodigo(e) {
+    if (e.key === 'e') e.preventDefault();
+  }
+
+  function quandoClicarVoltar(){
+    history.push(URL_HOME);
+  }
+
   return (
     <>
       <Cabecalho pagina="Notificações" />
@@ -282,6 +291,8 @@ export default function NotificacoesLista() {
             onSearch={onSearchCodigo}
             onChange={onChangeCodigo}
             value={codigoSelecionado}
+            onKeyDown={quandoTeclaParaBaixoPesquisaCodigo}
+            type="number"
           />
         </div>
         <div className="col-md-3 pb-3">
@@ -354,9 +365,16 @@ export default function NotificacoesLista() {
             label="Editar"
             color={Colors.Azul}
             border
-            className="mb-2 float-right"
+            className="mb-2 ml-2 float-right"
             onClick={onClickEditar}
             disabled={desabilitarBotaoEditar}
+          />
+          <Button
+            label="Voltar"
+            color={Colors.Azul}
+            border
+            className="mb-2 float-right"
+            onClick={quandoClicarVoltar}
           />
         </div>
         <div className="col-md-12 pt-2">
