@@ -82,7 +82,7 @@ export default function PlanoAnual() {
   }, [bimestres]);
 
   useEffect(() => {
-    if (!ehDisabled) ObtenhaBimestres();
+    if (!ehDisabled) verificarSeEhEdicao();
 
   }, [turmaSelecionada])
 
@@ -205,8 +205,8 @@ export default function PlanoAnual() {
                 const disciplinasResultado = resultados[i];
 
                 turmasCopiarConteudo[i].disponivelCopia = _.isEqual(
-                  disciplinasAtual,
-                  disciplinasResultado
+                  disciplinasAtual.map(x => x.codigo),
+                  disciplinasResultado.map(x => x.codigo)
                 );
 
                 const temTurmaElegivel =
