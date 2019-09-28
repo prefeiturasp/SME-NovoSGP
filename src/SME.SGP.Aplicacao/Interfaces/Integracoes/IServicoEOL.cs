@@ -1,5 +1,6 @@
 ﻿using SME.SGP.Aplicacao.Integracoes.Respostas;
 using SME.SGP.Dto;
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -20,6 +21,8 @@ namespace SME.SGP.Aplicacao.Integracoes
         IEnumerable<UsuarioEolRetornoDto> ObterFuncionariosPorCargoUe(string UeId, long cargoId);
 
         IEnumerable<ProfessorTurmaReposta> ObterListaTurmasPorProfessor(string codigoRf);
+
+        Task<int[]> ObterPermissoesPorPerfil(Guid perfilGuid);
 
         IEnumerable<SupervisoresRetornoDto> ObterSupervisoresPorCodigo(string[] codigoUes);
 

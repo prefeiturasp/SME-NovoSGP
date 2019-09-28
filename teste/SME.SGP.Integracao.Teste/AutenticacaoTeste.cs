@@ -22,7 +22,7 @@ namespace SME.SGP.Integracao.Teste
         {
             fixture._clientApi.DefaultRequestHeaders.Clear();
 
-            var autenticacaoDto = new AutenticacaoDto() { Login = "teste", Senha = "senha123" };
+            var autenticacaoDto = new AutenticacaoDto() { Login = "testea", Senha = "senha123" };
 
             var jsonParaPost = new StringContent(JsonConvert.SerializeObject(autenticacaoDto), UnicodeEncoding.UTF8, "application/json");
 
