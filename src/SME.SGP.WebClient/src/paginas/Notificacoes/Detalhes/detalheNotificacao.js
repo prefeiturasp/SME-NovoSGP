@@ -137,6 +137,25 @@ const DetalheNotificacao = ({ match }) => {
     }
   };
 
+  const formatarData = dataString => {
+    const data = new Date(dataString);
+    if(data && data.getDate()){
+      const mes = transformaUnidadeData(data.getMonth().toString());
+      const dia = transformaUnidadeData(data.getDate().toString());
+      const hora = transformaUnidadeData(data.getHours().toString());
+      const minutos = transformaUnidadeData(data.getMinutes().toString());
+      return (dia+'/'+mes+'/'+data.getFullYear()+", "+hora+":"+minutos);
+    }
+    return dataString;
+  }
+
+  const transformaUnidadeData = unidade => {
+    if(unidade.length === 1){
+      unidade = '0'+unidade;
+    }
+    return unidade;
+  }
+
   return (
     <>
       <Cabecalho pagina="Notificações" />
@@ -241,7 +260,7 @@ const DetalheNotificacao = ({ match }) => {
                       <div className="row">
                         <div className="col-xs-12 col-md-12 col-lg-12">
                           <div className="notificacao-horario">
-                            Notificação automática {notificacao.criadoEm}
+                            Notificação automática {formatarData(notificacao.criadoEm)}
                           </div>
                         </div>
                         <div className="col-xs-12 col-md-12 col-lg-12">
