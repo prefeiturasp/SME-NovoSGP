@@ -1,10 +1,7 @@
 import produce from 'immer';
 
 const inicial = {
-  perfilSelecionado: {
-    id: "2",
-    descricao: 'Professor'
-  },
+  perfilSelecionado: {},
   perfis: []
 };
 

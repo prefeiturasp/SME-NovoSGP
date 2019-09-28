@@ -1,5 +1,6 @@
 import LoginService from '~/servicos/Paginas/LoginServices';
 import { SalvarDadosLogin } from '~/redux/modulos/usuario/actions';
+import { setarPerfis, perfilSelecionado} from '~/redux/modulos/perfil/actions';
 import history from '~/servicos/history';
 import { URL_HOME, URL_MODIFICARSENHA } from '~/constantes/url';
 
@@ -56,7 +57,6 @@ class LoginHelper {
         erroUsuario: validacao.erroUsuario && validacao.erroUsuario,
         erroSenha: validacao.erroSenha && validacao.erroSenha,
       };
-
     const autenticacao = await LoginService.autenticar(login);
 
     if (!autenticacao.sucesso) {
@@ -70,7 +70,6 @@ class LoginHelper {
       return;
     }
 
-    console.log(this.redirect);
     if (this.redirect) history.push(atob(this.redirect));
     else history.push(URL_HOME);
 

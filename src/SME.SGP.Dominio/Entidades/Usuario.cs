@@ -13,6 +13,7 @@ namespace SME.SGP.Dominio
         public string Nome { get; set; }
         public IEnumerable<Notificacao> Notificacoes { get { return notificacoes; } }
         public Guid? TokenRecuperacaoSenha { get; set; }
+        public DateTime UltimoLogin { get; set; }
         private IList<Notificacao> notificacoes { get; set; }
 
         public void Adicionar(Notificacao notificacao)
@@ -40,6 +41,10 @@ namespace SME.SGP.Dominio
                 return PERFIL_PROFESSOR;
             }
             return perfisUsuario.FirstOrDefault().CodigoPerfil;
+        }
+        public void AtualizaUltimoLogin()
+        {
+            this.UltimoLogin = DateTime.Now;
         }
     }
 }
