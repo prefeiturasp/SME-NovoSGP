@@ -1,4 +1,3 @@
-import React from 'react';
 import {store} from '~/redux';
 import {setRotas, rotaAtiva} from '~/redux/modulos/navegacao/actions';
 

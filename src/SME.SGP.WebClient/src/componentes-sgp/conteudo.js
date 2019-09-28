@@ -2,14 +2,13 @@ import React, { useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { Modal, Row } from 'antd';
 import styled from 'styled-components';
+import shortid from 'shortid';
 import { alertaFechar } from '../redux/modulos/alertas/actions';
-import Rotas from '../rotas/rotas';
 import Button from '../componentes/button';
 import { Colors } from '../componentes/colors';
-import BreadcrumbSgp from '../componentes-sgp/breadcrumb-sgp';
+import BreadcrumbSgp from './breadcrumb-sgp';
 import Alert from '~/componentes/alert';
 import Grid from '~/componentes/grid';
-import shortid from 'shortid';
 import Navbar from './navbar';
 import Sider from './sider';
 
@@ -48,7 +47,7 @@ const Conteudo = props => {
     setRetraido(NavegacaoStore.retraido);
   }, [NavegacaoStore.retraido]);
 
-  const confirmacao = useSelector(state => state.notificacoes.confirmacao);
+  const confirmacao = useSelector(state => state.alertas.confirmacao);
 
   useEffect(() => {
     setRetraido(NavegacaoStore.retraido);
@@ -58,7 +57,7 @@ const Conteudo = props => {
     confirmacao.resolve(resultado);
     dispatch(alertaFechar());
   };
-  const notificacoes = useSelector(state => state.notificacoes);
+  const alertas = useSelector(state => state.alertas);
   return (
     <div style={{ marginLeft: retraido ? '115px' : '250px' }}>
       <BreadcrumbSgp />
@@ -95,7 +94,7 @@ const Conteudo = props => {
             </Modal>
           </ContainerModal>
           <div className="card-body m-r-0 m-l-0 p-l-0 p-r-0 m-t-0">
-            {notificacoes.alertas.map(alerta => (
+            {alertas.alertas.map(alerta => (
               <Row key={shortid.generate()}>
                 <Grid cols={12}>
                   <Alert alerta={alerta} key={alerta.id} closable />

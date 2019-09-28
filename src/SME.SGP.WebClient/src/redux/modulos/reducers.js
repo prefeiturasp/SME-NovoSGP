@@ -1,13 +1,17 @@
 import { combineReducers } from 'redux';
 
-import notificacoes from './alertas/reducers';
+import navegacao from './navegacao/reducers';
+import notificacoes from './notificacoes/reducers';
+import alertas from './alertas/reducers';
 import bimestres from './planoAnual/reducers';
 import usuario from './usuario/reducers';
-import navegacao from './navegacao/reducers'
+import perfil from './perfil/reducers';
 
 export default combineReducers({
-  notificacoes, 
+  navegacao,
+  notificacoes,
+  alertas,
   bimestres,
   usuario,
-  navegacao
+  perfil
 });

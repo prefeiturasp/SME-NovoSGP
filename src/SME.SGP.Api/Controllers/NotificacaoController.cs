@@ -90,5 +90,26 @@ namespace SME.SGP.Api.Controllers
             comandosNotificacao.Salvar(notificacaoDto);
             return Ok();
         }
+
+        [HttpGet]
+        [ProducesResponseType(typeof(NotificacaoBasicaListaDto), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [Route("resumo")]
+        public IActionResult ObtenhaPorRFAnoLetivo(int anoLetivo, string usuarioRf)
+        {
+            return Ok(consultasNotificacao.ObterNotificacaoBasicaLista(anoLetivo, usuarioRf));
+        }
+
+        [HttpGet]
+        [ProducesResponseType(typeof(object), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [Route("quantidade/naolidas")]
+        public IActionResult ObtemQuantidadeNaoLida(int anoLetivo, string usuarioRf)
+        {
+            return Ok(new
+            {
+                quantidade = consultasNotificacao.QuantidadeNotificacoesNaoLidas(anoLetivo, usuarioRf)
+            });
+        }
     }
 }
