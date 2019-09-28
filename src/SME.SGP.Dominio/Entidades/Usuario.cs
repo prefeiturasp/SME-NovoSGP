@@ -14,14 +14,19 @@ namespace SME.SGP.Dominio
         public string Login { get; set; }
         public string Nome { get; set; }
         public IEnumerable<Notificacao> Notificacoes { get { return notificacoes; } }
-        public DateTime UltimoLogin { get; set; }
         public Guid? TokenRecuperacaoSenha { get; set; }
+        public DateTime UltimoLogin { get; set; }
         private IList<Notificacao> notificacoes { get; set; }
 
         public void Adicionar(Notificacao notificacao)
         {
             if (notificacao != null)
                 notificacoes.Add(notificacao);
+        }
+
+        public void AtualizaUltimoLogin()
+        {
+            this.UltimoLogin = DateTime.Now;
         }
 
         public void IniciarRecuperacaoDeSenha()
@@ -53,21 +58,17 @@ namespace SME.SGP.Dominio
         public void ValidarSenha(string novaSenha)
         {
             if (novaSenha.Length < 8)
-                throw new NegocioException("A senha deve conter no minimo 8 caracteres");
+                throw new NegocioException("A senha deve conter no minimo 8 caracteres.");
 
             if (novaSenha.Length > 12)
-                throw new NegocioException("A senha deve conter no maximo 12 caracteres");
+                throw new NegocioException("A senha deve conter no máximo 12 caracteres.");
 
             if (novaSenha.Contains(" "))
-                throw new NegocioException("A senhão não pode conter espaço em branco");
+                throw new NegocioException("A senhão não pode conter espaço em branco.");
 
             var regexSenha = new Regex(@"(?=.*?[A-Z])(?=.*?[a-z])(?=((?=.*[!@#$\-%&/\\\[\]|*()_=+])|(?=.*?[0-9]+)))");
             if (!regexSenha.IsMatch(novaSenha))
-                throw new NegocioException("A senha deve conter pelo menos 1 letra Maiuscula, 1 minuscula, 1 numero e/ou caractere especial");
-        }
-        public void AtualizaUltimoLogin()
-        {
-            this.UltimoLogin = DateTime.Now;
+                throw new NegocioException("A senha deve conter pelo menos 1 letra maiúscula, 1 minúscula, 1 número e/ou 1 caractere especial.");
         }
     }
 }
