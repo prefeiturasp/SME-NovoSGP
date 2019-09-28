@@ -1,9 +1,10 @@
-﻿using SME.SGP.Dto;
+﻿using SME.SGP.Aplicacao.Integracoes;
+using SME.SGP.Dto;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace SME.SGP.Aplicacao.Integracoes
+namespace SME.SGP.Aplicacao.Servicos
 {
     public class ServicoAutenticacao : IServicoAutenticacao
     {
