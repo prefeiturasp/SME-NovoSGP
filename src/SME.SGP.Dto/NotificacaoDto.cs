@@ -7,17 +7,16 @@ namespace SME.SGP.Dto
     {
         public int Ano { get; set; }
 
-        [Required(ErrorMessage = "A Categoria é obrigatória.")]
+        [EnumeradoRequirido(ErrorMessage = "A Categoria é obrigatória.")]
         public NotificacaoCategoria Categoria { get; set; }
 
         public string DreId { get; set; }
-        public string UeId { get; set; }
 
         [Required(ErrorMessage = "A Mensagem é obrigatória.")]
         [MinLength(3, ErrorMessage = "A Mensagem deve conter no mínimo 3 caracteres.")]
         public string Mensagem { get; set; }
-        
-        [Required(ErrorMessage = "O tipo é obrigatório.")]
+
+        [EnumeradoRequirido(ErrorMessage = "O tipo é obrigatório.")]
         public NotificacaoTipo Tipo { get; set; }
 
         [Required(ErrorMessage = "O título é obrigatório.")]
@@ -25,7 +24,7 @@ namespace SME.SGP.Dto
         public string Titulo { get; set; }
 
         public string TurmaId { get; set; }
-
+        public string UeId { get; set; }
         public string UsuarioRf { get; set; }
     }
 }
