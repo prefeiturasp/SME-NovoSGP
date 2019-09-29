@@ -26,6 +26,7 @@ const CampoTexto = ({
   className,
   classNameCampo,
   type,
+  maskType,
   placeholder,
   onChange,
   value,
@@ -56,7 +57,8 @@ const CampoTexto = ({
               className={`form-control campo ${
                 possuiErro() ? 'is-invalid' : ''
               } ${className || ''} ${desabilitado ? 'desabilitado' : ''}`}
-              component={type || 'text'}
+              component={type || 'input'}
+              type = {maskType && maskType}
               disabled={desabilitado}
               onBlur={executaOnBlur}
               maxLength={maxlength || ''}

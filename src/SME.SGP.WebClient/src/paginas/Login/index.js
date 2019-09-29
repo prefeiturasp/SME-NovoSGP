@@ -65,6 +65,7 @@ const Login = props => {
       usuario: dados.usuario,
       senha: dados.senha,
     });
+    setErroGeral("");
 
     const { sucesso, ...retorno } = await helper.acessar(dados);
 
@@ -75,8 +76,6 @@ const Login = props => {
   };
 
   const AoClicarBotaoAutenticar = (form, e) => {
-
-    setErroGeral("");
 
     form.validateForm().then(() => form.handleSubmit(e));
 
@@ -135,7 +134,7 @@ const Login = props => {
                           classNameCampo="mb-3"
                           placeholder="Informe sua senha"
                           type="input"
-                          password
+                          maskType="password"
                           icon />
                         <FormGroup>
                           <Button
@@ -152,7 +151,7 @@ const Login = props => {
                           </Centralizar>
                         </FormGroup>
                         {form.errors.usuario || form.errors.senha ? (<ErroGeral>Você precisa informar um usuário e senha para acessar o sistema.</ErroGeral>) : null}
-                        {erroGeral && <ErroGeral>{erroGeral}</ErroGeral>}
+                        {erroGeral && !(form.errors.usuario || form.errors.senha) ? <ErroGeral>{erroGeral}</ErroGeral> : null}
                       </Form>
                     )}
                   </Formik>
