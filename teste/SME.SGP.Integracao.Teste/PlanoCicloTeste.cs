@@ -31,7 +31,7 @@ namespace SME.SGP.Integracao.Teste
             planoDeCicloDto.Ano = 2019;
             planoDeCicloDto.CicloId = 1;
             planoDeCicloDto.Descricao = "Teste";
-            planoDeCicloDto.EscolaId = 1;
+            planoDeCicloDto.EscolaId = "1";
             planoDeCicloDto.IdsMatrizesSaber = new List<long> { 1 };
             planoDeCicloDto.IdsObjetivosDesenvolvimento = new List<long> { 1 };
 
@@ -69,7 +69,7 @@ namespace SME.SGP.Integracao.Teste
             planoDeCicloDto.Ano = 2020;
             planoDeCicloDto.CicloId = 1;
             planoDeCicloDto.Descricao = "Teste";
-            planoDeCicloDto.EscolaId = 1;
+            planoDeCicloDto.EscolaId = "1";
             planoDeCicloDto.IdsMatrizesSaber = new List<long> { 1 };
             planoDeCicloDto.IdsObjetivosDesenvolvimento = new List<long> { 1 };
 
