@@ -8,13 +8,13 @@ import Button from '~/componentes/button';
 import ModalConteudoHtml from '~/componentes/modalConteudoHtml';
 import { store } from '~/redux';
 import { useSelector } from 'react-redux';
-import { meusDados} from '~/redux/modulos/usuario/actions';
+import { meusDados } from '~/redux/modulos/usuario/actions';
 
 const MeusDados = () => {
   const usuarioStore = useSelector(store => store.usuario);
   const [foto, setFoto] = useState('https://graziellanicolai.com.br/wp-content/uploads/2018/03/Graziella-perfil.jpg');
-
   const [alterarFoto, setAlterarFoto] = useState(false);
+  const [ehFotoInvalida, setEhFotoInvalida] = useState(false);
 
   const Perfil = styled.div`
         padding: 0 !important;
@@ -132,23 +132,21 @@ const MeusDados = () => {
 
   const arquivoSelecionado = event => {
     const arquivo = event.target.files[0];
-    if (arquivo) {
-      const fileReader = new FileReader();
+    if (arquivo && arquivo.size <= 2000000) {
       const img = new Image();
-      img.src = window.URL.createObjectURL( arquivo );
+      img.src = window.URL.createObjectURL(arquivo);
       img.onload = e => {
-        console.log(img);
+        if (img.naturalHeight > 180 && img.naturalWidth > 180) {
+          const fileReader = new FileReader();
+          fileReader.readAsDataURL(arquivo);
+          fileReader.onloadend = () => {
+            const novaFoto = fileReader.result;
+            setFoto(novaFoto);
+          }
+        }
       }
-      fileReader.onloadend = () => {
-        const novosDados = usuarioStore.meusDados;
-        const novaFoto = fileReader.result;
-        setFoto(novaFoto);
-        // store.dispatch(meusDados(novosDados));
-      }
-      fileReader.readAsDataURL(arquivo);
-      if (arquivo.size > 2000000) {
-        console.log('acima do permitido');
-      }
+    } else {
+      console.log('acima do permitido')
     }
   }
 
