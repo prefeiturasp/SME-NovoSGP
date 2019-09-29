@@ -5,13 +5,14 @@ import styled from 'styled-components';
 import { Input } from 'antd';
 import { Base } from './colors';
 
+import PropTypes from 'prop-types';
+
 const Campo = styled.div`
   span {
     color: ${Base.Vermelho};
   }
   .campo {
     margin-bottom: 5px;
-    background-image: none !important;
   }
   .ant-input {
     height: 38px;
@@ -23,25 +24,30 @@ const CampoTexto = ({
   id,
   form,
   className,
+  classNameCampo,
   type,
+  maskType,
   placeholder,
   onChange,
   value,
   desabilitado,
   maxlength,
 }) => {
+
   const possuiErro = () => {
     return form && form.errors[name] && form.touched[name];
   };
+
   const executaOnBlur = event => {
     const { relatedTarget } = event;
     if (relatedTarget && relatedTarget.getAttribute('type') === 'button') {
       event.preventDefault();
     }
   };
+  
   return (
     <>
-      <Campo>
+      <Campo className={classNameCampo}>
         {form ? (
           <>
             {' '}
@@ -51,7 +57,8 @@ const CampoTexto = ({
               className={`form-control campo ${
                 possuiErro() ? 'is-invalid' : ''
               } ${className || ''} ${desabilitado ? 'desabilitado' : ''}`}
-              component={type || 'text'}
+              component={type || 'input'}
+              type = {maskType && maskType}
               disabled={desabilitado}
               onBlur={executaOnBlur}
               maxLength={maxlength || ''}
@@ -65,4 +72,6 @@ const CampoTexto = ({
     </>
   );
 };
+
+
 export default CampoTexto;

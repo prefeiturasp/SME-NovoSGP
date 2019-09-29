@@ -60,7 +60,7 @@ namespace SME.SGP.Dados.Repositorios
                     workflowAprovacao.Adicionar(workflowNivel.Id, usuario);
 
                     return workflowAprovacao;
-                }, param: new { workflowId, notificacaoId }).FirstOrDefault();
+                }, param: new { workflowId, notificacaoId });
 
             return lookup.Values.FirstOrDefault();
         }

@@ -27,6 +27,19 @@ const Principal = props => {
   const filtroStore = useSelector(state => state.usuario);
 
   useEffect(() => {
+    if (props.match.params.rf) {
+      const { rf } = props.match.params;
+      store.dispatch(salvarRf(rf));
+    }
+
+    validarFiltro();
+  }, []);
+
+  useEffect(() => {
+    validarFiltro();
+  }, [filtroStore]);
+
+  useEffect(() => {
     if (
       filtroStore &&
       filtroStore.turmaSelecionada &&
