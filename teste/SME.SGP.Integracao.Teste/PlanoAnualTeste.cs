@@ -1,8 +1,10 @@
 ﻿using Newtonsoft.Json;
+using SME.SGP.Dominio;
 using SME.SGP.Dto;
 using System;
 using System.Collections.Generic;
 using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Text;
 using Xunit;
 using Xunit.Extensions.Ordering;
@@ -12,11 +14,11 @@ namespace SME.SGP.Integracao.Teste
     [Collection("Testserver collection")]
     public class PlanoAnualTeste
     {
-        private readonly TestServerFixture fixture;
+        private readonly TestServerFixture _fixture;
 
         public PlanoAnualTeste(TestServerFixture fixture)
         {
-            this.fixture = fixture ?? throw new System.ArgumentNullException(nameof(fixture));
+            this._fixture = fixture ?? throw new System.ArgumentNullException(nameof(fixture));
         }
 
         [Fact, Order(3)]
@@ -24,14 +26,16 @@ namespace SME.SGP.Integracao.Teste
         {
             try
             {
+                _fixture._clientApi.DefaultRequestHeaders.Clear();
 
-            
-                fixture._clientApi.DefaultRequestHeaders.Clear();
+                _fixture._clientApi.DefaultRequestHeaders.Authorization =
+                    new AuthenticationHeaderValue("Bearer", _fixture.GerarToken(new Permissao[] { Permissao.PA_I, Permissao.PA_C }));
+
                 PlanoAnualDto planoAnualDto = CriarDtoPlanoAnual();
 
                 var jsonParaPost = new StringContent(JsonConvert.SerializeObject(planoAnualDto), Encoding.UTF8, "application/json");
 
-                var postResult = fixture._clientApi.PostAsync("api/v1/planos/anual/", jsonParaPost).Result;
+                var postResult = _fixture._clientApi.PostAsync("api/v1/planos/anual/", jsonParaPost).Result;
 
                 Assert.True(postResult.IsSuccessStatusCode);
                 var filtro = new FiltroPlanoAnualDto()
@@ -43,13 +47,13 @@ namespace SME.SGP.Integracao.Teste
                 };
                 var filtroPlanoAnual = new StringContent(JsonConvert.SerializeObject(filtro), Encoding.UTF8, "application/json");
 
-                var planoAnualCompletoResponse = fixture._clientApi.PostAsync("api/v1/planos/anual/obter", filtroPlanoAnual).Result;
+                var planoAnualCompletoResponse = _fixture._clientApi.PostAsync("api/v1/planos/anual/obter", filtroPlanoAnual).Result;
                 if (planoAnualCompletoResponse.IsSuccessStatusCode)
                 {
                     var planoAnualCompleto = JsonConvert.DeserializeObject<PlanoCicloCompletoDto>(planoAnualCompletoResponse.Content.ReadAsStringAsync().Result);
                     Assert.Contains(planoAnualDto.Bimestres, c => c.Descricao == planoAnualCompleto.Descricao);
 
-                    var planoAnualExistenteResponse = fixture._clientApi.PostAsync("api/v1/planos/anual/validar-existente", filtroPlanoAnual).Result;
+                    var planoAnualExistenteResponse = _fixture._clientApi.PostAsync("api/v1/planos/anual/validar-existente", filtroPlanoAnual).Result;
                     Assert.True(bool.Parse(planoAnualExistenteResponse.Content.ReadAsStringAsync().Result));
                 }
                 else
@@ -60,19 +64,23 @@ namespace SME.SGP.Integracao.Teste
             }
             catch (AggregateException ae)
             {
-                throw new Exception("Erros: " + string.Join(",", ae.InnerExceptions));                
+                throw new Exception("Erros: " + string.Join(",", ae.InnerExceptions));
             }
         }
 
         [Fact, Order(4)]
         public void NaoDeveIncluirPlanoAnualEExibirMensagemErro()
         {
-            fixture._clientApi.DefaultRequestHeaders.Clear();
+            _fixture._clientApi.DefaultRequestHeaders.Clear();
+
+            _fixture._clientApi.DefaultRequestHeaders.Authorization =
+                new AuthenticationHeaderValue("Bearer", _fixture.GerarToken(new Permissao[] { Permissao.PA_I, Permissao.PA_C }));
+
             PlanoAnualDto planoAnualDto = CriarDtoPlanoAnual();
             planoAnualDto.EscolaId = null;
             var jsonParaPost = new StringContent(JsonConvert.SerializeObject(planoAnualDto), Encoding.UTF8, "application/json");
 
-            var postResult = fixture._clientApi.PostAsync("api/v1/planos/anual/", jsonParaPost).Result;
+            var postResult = _fixture._clientApi.PostAsync("api/v1/planos/anual/", jsonParaPost).Result;
 
             Assert.False(postResult.IsSuccessStatusCode);
             var jsonErro = postResult.Content.ReadAsStringAsync().Result;

@@ -1,6 +1,7 @@
 ﻿using Newtonsoft.Json;
 using SME.SGP.Aplicacao.Integracoes.Respostas;
 using SME.SGP.Dto;
+using System;
 using System.Collections.Generic;
 using System.Net.Http;
 using System.Text;
@@ -15,6 +16,24 @@ namespace SME.SGP.Aplicacao.Integracoes
         public ServicoEOL(HttpClient httpClient)
         {
             this.httpClient = httpClient;
+        }
+
+        public async Task<UsuarioEolAutenticacaoRetornoDto> Autenticar(string login, string senha)
+        {
+            httpClient.DefaultRequestHeaders.Clear();
+
+            IList<KeyValuePair<string, string>> valoresParaEnvio = new List<KeyValuePair<string, string>> {
+                { new KeyValuePair<string, string>("login", login) },
+                { new KeyValuePair<string, string>("senha", senha) }};
+
+            var resposta = await httpClient.PostAsync($"AutenticacaoSgp/Autenticar", new FormUrlEncodedContent(valoresParaEnvio));
+
+            if (resposta.IsSuccessStatusCode)
+            {
+                var json = await resposta.Content.ReadAsStringAsync();
+                return JsonConvert.DeserializeObject<UsuarioEolAutenticacaoRetornoDto>(json);
+            }
+            else return null;
         }
 
         public async Task<IEnumerable<DisciplinaResposta>> ObterDisciplinasPorProfessorETurma(long codigoTurma, string rfProfessor)
@@ -84,6 +103,18 @@ namespace SME.SGP.Aplicacao.Integracoes
             {
                 var json = resposta.Content.ReadAsStringAsync().Result;
                 return JsonConvert.DeserializeObject<IEnumerable<ProfessorTurmaReposta>>(json);
+            }
+            return null;
+        }
+
+        public async Task<int[]> ObterPermissoesPorPerfil(Guid perfilGuid)
+        {
+            var resposta = await httpClient.GetAsync($"autenticacaoSgp/CarregarPermissoesPorPerfil/{perfilGuid}");
+
+            if (resposta.IsSuccessStatusCode)
+            {
+                var json = await resposta.Content.ReadAsStringAsync();
+                return JsonConvert.DeserializeObject<int[]>(json);
             }
             return null;
         }

@@ -12,13 +12,14 @@ namespace SME.SGP.Dominio
             this.repositorioUsuario = repositorioUsuario ?? throw new ArgumentNullException(nameof(repositorioUsuario));
         }
 
-        public Usuario ObterUsuarioPorCodigoRfOuAdiciona(string codigoRf)
+        public Usuario ObterUsuarioPorCodigoRfLoginOuAdiciona(string codigoRf, string login = "")
         {
-            var usuario = repositorioUsuario.ObterPorCodigoRf(codigoRf);
+            var usuario = repositorioUsuario.ObterPorCodigoRfLogin(codigoRf, login);
             if (usuario != null)
                 return usuario;
 
-            usuario = new Usuario() { CodigoRf = codigoRf };
+            usuario = new Usuario() { CodigoRf = codigoRf, Login = login };
+
             repositorioUsuario.Salvar(usuario);
 
             return usuario;
