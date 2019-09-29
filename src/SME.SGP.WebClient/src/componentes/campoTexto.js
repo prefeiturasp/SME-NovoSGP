@@ -5,6 +5,8 @@ import styled from 'styled-components';
 import { Input } from 'antd';
 import { Base } from './colors';
 
+import PropTypes from 'prop-types';
+
 const Campo = styled.div`
   span {
     color: ${Base.Vermelho};
@@ -65,4 +67,5 @@ const CampoTexto = ({
     </>
   );
 };
+
 export default CampoTexto;
