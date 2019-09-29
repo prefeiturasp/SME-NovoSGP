@@ -5,6 +5,6 @@
         public int Ano { get; set; }
         public long CicloId { get; set; }
         public string Descricao { get; set; }
-        public long EscolaId { get; set; }
+        public string EscolaId { get; set; }
     }
 }
