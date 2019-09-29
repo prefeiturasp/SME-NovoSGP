@@ -1,8 +1,10 @@
 ﻿using Newtonsoft.Json;
+using SME.SGP.Dominio;
 using SME.SGP.Dto;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Text;
 using Xunit;
 using Xunit.Extensions.Ordering;
@@ -29,6 +31,9 @@ namespace SME.SGP.Integracao.Teste
         {
             _fixture._clientApi.DefaultRequestHeaders.Clear();
 
+            _fixture._clientApi.DefaultRequestHeaders.Authorization =
+                new AuthenticationHeaderValue("Bearer", _fixture.GerarToken(new Permissao[] { }));
+
             var postResult = _fixture._clientApi.GetAsync($"api/v1/supervisores/dre/{dreId}?nome={parteNome}").Result;
 
             Assert.Equal(sucesso, postResult.IsSuccessStatusCode);
@@ -44,6 +49,9 @@ namespace SME.SGP.Integracao.Teste
         public void DeveAtribuirEscolaAoSupervisor()
         {
             _fixture._clientApi.DefaultRequestHeaders.Clear();
+
+            _fixture._clientApi.DefaultRequestHeaders.Authorization =
+                new AuthenticationHeaderValue("Bearer", _fixture.GerarToken(new Permissao[] { }));
 
             var post = JsonConvert.SerializeObject(new AtribuicaoSupervisorUEDto
             {
