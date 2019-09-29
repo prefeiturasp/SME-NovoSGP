@@ -24,7 +24,7 @@ namespace SME.SGP.Api.Controllers
         [Route("{ano}/{cicloId}/{escolaId}")]
         [ProducesResponseType(typeof(PlanoCicloCompletoDto), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        public IActionResult Get(int ano, long cicloId, long escolaId)
+        public IActionResult Get(int ano, long cicloId, string escolaId)
         {
             return Ok(consultasPlanoCiclo.ObterPorAnoCicloEEscola(ano, cicloId, escolaId));
         }
