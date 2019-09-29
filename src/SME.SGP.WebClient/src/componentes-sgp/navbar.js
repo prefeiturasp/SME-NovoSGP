@@ -9,7 +9,7 @@ import NavbarNotificacoes from './navbar-notificacoes';
 import Perfil from './perfil';
 import { Deslogar } from '~/redux/modulos/usuario/actions';
 import history from '~/servicos/history';
-import { URL_LOGIN } from '~/constantes/url';
+import { URL_LOGIN, URL_HOME } from '~/constantes/url';
 
 const Navbar = () => {
   const retraido = useSelector(state => state.navegacao.retraido);
@@ -79,9 +79,9 @@ const Navbar = () => {
               retraido
                 ? 'col-xl-1 col-lg-1 col-md-1 col-sm-4'
                 : 'col-xl-2 col-lg-2 col-md-2 col-sm-4'
-            }`}
+              }`}
           >
-            <Link to={`/${usuario}`}>
+            <Link to={URL_HOME}>
               <Logo
                 src={LogoDoSgp}
                 alt="SGP"
@@ -94,7 +94,7 @@ const Navbar = () => {
               retraido
                 ? 'col-xl-11 col-lg-11 col-md-11'
                 : 'col-xl-10 col-lg-10 col-md-10'
-            } col-sm-8`}
+              } col-sm-8`}
           >
             <Botoes className="align-self-xl-center align-self-lg-center align-self-md-start align-self-sm-start mt-xl-0 mt-lg-0 mt-md-4 mt-sm-4">
               <ul className="list-inline p-0 m-0">
