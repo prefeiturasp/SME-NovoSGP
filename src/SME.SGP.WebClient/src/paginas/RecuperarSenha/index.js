@@ -56,6 +56,7 @@ const RecuperarSenha = props => {
 
   const [rf, setRf] = useState();
   const [retorno, setRetorno] = useState(false);
+  const [email, setEmail] = useState('');
   const refInput = useRef();
 
   useLayoutEffect(() => {
@@ -72,11 +73,12 @@ const RecuperarSenha = props => {
 
   const consultaAPI = async () => {
     api
-      .post('/v1/autenticacao/solicitar-recuperacao-senha')
+      .post(`/v1/autenticacao/solicitar-recuperacao-senha/?login=${rf}`)
       .then(resposta => {
+        setEmail(resposta.data);
         setRetorno({ status: true });
       })
-      .catch(e => erros(e));
+      .catch(() => setRetorno({ status: false }));
   };
 
   const onChangeUsuario = () => {
@@ -97,7 +99,7 @@ const RecuperarSenha = props => {
 
   const renderizaConteudo = () => {
     if (typeof retorno === 'object') {
-      if (retorno.status) return <Sucesso />;
+      if (retorno.status) return <Sucesso email={email} />;
       return <Erro />;
     }
     return <Orientacoes />;

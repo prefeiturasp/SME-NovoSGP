@@ -32,7 +32,8 @@ const Erro = () => {
         Você não tem um e-mail cadastrado para recuperar sua senha.
       </div>
       <div className="mb-3">
-        Para restabelecer o seu acesso, procure o Diretor da sua unidade.
+        Para restabelecer o seu acesso, procure o Diretor da sua UE ou
+        Administrador do SGP da sua unidade.
       </div>
     </Span>
   );

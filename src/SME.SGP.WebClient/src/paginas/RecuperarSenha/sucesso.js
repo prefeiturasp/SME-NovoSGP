@@ -26,7 +26,11 @@ const Sucesso = ({ email }) => {
 
   const emailFormatado = () => {
     const inicioServidor = email.lastIndexOf('@');
-    return email.replace(email.substring(2, inicioServidor), '***');
+    const totalASubstituir = email.substring(2, inicioServidor).length;
+    return `   ${email.replace(
+      email.substring(2, inicioServidor),
+      '*'.repeat(totalASubstituir)
+    )}`;
   };
 
   return (
