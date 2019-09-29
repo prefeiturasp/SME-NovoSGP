@@ -7,6 +7,8 @@ import history from '~/servicos/history';
 import Sucesso from './sucesso';
 import Erro from './erro';
 import Orientacoes from './orientacoes';
+import api from '~/servicos/api';
+import { erros } from '~/servicos/alertas';
 
 const RecuperarSenha = props => {
   const Nav = styled.nav`
@@ -68,8 +70,13 @@ const RecuperarSenha = props => {
     refInput.current.focus();
   }, [rf]);
 
-  const consultaAPI = () => {
-    setRetorno({ status: true });
+  const consultaAPI = async () => {
+    api
+      .post('/v1/autenticacao/solicitar-recuperacao-senha')
+      .then(resposta => {
+        setRetorno({ status: true });
+      })
+      .catch(e => erros(e));
   };
 
   const onChangeUsuario = () => {

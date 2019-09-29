@@ -1,8 +1,9 @@
 import React from 'react';
 import styled from 'styled-components';
+import PropTypes from 'prop-types';
 import { Base } from '~/componentes/colors';
 
-const Sucesso = () => {
+const Sucesso = ({ email }) => {
   const Span = styled.span`
     color: ${Base.Verde};
     margin-top: 70px;
@@ -23,6 +24,11 @@ const Sucesso = () => {
     transform: translateX(-50%) translateY(-50%);
   `;
 
+  const emailFormatado = () => {
+    const inicioServidor = email.lastIndexOf('@');
+    return email.replace(email.substring(2, inicioServidor), '***');
+  };
+
   return (
     <Span className="d-block mx-auto">
       <Alerta className="d-block rounded-circle mx-auto position-relative">
@@ -30,11 +36,17 @@ const Sucesso = () => {
       </Alerta>
       <div className="mb-3">
         Seu link de recuperação de senha foi enviado para
-        mar**********@gmail.com.
+        {emailFormatado()}
       </div>
       <div className="mb-3">Verifique sua caixa de entrada!</div>
     </Span>
   );
 };
 
+Sucesso.propTypes = {
+  email: PropTypes.string,
+};
+Sucesso.defaultProps = {
+  email: '',
+};
 export default Sucesso;
