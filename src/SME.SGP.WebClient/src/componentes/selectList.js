@@ -81,13 +81,6 @@ const Container = styled.div`
     color: #686868;
   }
 
-  .ant-transfer-list-header-selected span:first-child {
-    display: none !important;
-  }
-  .ant-transfer-list-header-selected span:last-child {
-    display: contents !important;
-  }
-
   .ant-transfer-operation button {
     background-color: ${Base.Roxo};
     border-color: ${Base.Roxo};
@@ -101,35 +94,15 @@ const Container = styled.div`
     i {
       font-style: normal;
       font-size: 26px !important;
-      svg {
-        display: none;
-      }
     }
 
     &[disabled] {
       background-color: #ffffff !important;
       border-color: ${Base.Roxo} !important;
-      i {
-        color: transparent;
-        -webkit-text-stroke-width: 1px;
-        -webkit-text-stroke-color: ${Base.Roxo};
+      svg {
+        color:  ${Base.Roxo} !important;
       }
     }
-  }
-
-  .ant-transfer-operation button:first-child {
-    i::after {
-      content: '\f054' !important;
-    }
-    padding-right: 3px !important;
-    margin-bottom: 20px;
-  }
-
-  .ant-transfer-operation button:last-child {
-    i::after {
-      content: '\f053' !important;
-    }
-    padding-left: 3px !important;
   }
 
   .ant-btn-primary[disabled] {

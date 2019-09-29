@@ -9,7 +9,7 @@ import LinkRouter from '../linkRouter';
 
 const CardLink = (props) => {
 
-    const { icone, pack, label, url, disabled, alt, cols, className, classHidden, iconSize } = props;
+    const { icone, pack, label, url, disabled, alt, cols, className, classHidden, iconSize, minHeight } = props;
 
     const color = disabled ? Base.CinzaDesabilitado : Base.Roxo;
     const colorActive = disabled ? Base.CinzaDesabilitado : Base.Branco;
@@ -48,7 +48,15 @@ const CardLink = (props) => {
         font-weight: 500;        
     `;
 
-    const Div = styled.div`   
+    const Div = styled.div`
+        min-height: ${minHeight};
+        height: 100%;
+        .card-body{
+            min-height: ${minHeight} !important;
+        }
+        .altura-100{
+            height: 100%;
+        }
     `;
 
     const getCols = () => {
@@ -74,10 +82,10 @@ const CardLink = (props) => {
 
     return (
         <Div className={`${getCols()} px-2 ${classHidden}`}>
-            <LinkRouter to={url} alt={disabled ? "" : alt} isactive={!disabled}>
-                <Div className={className}>
-                    <CardLine className={`card`}>
-                        <CardBody className={`text-center`}>
+            <LinkRouter className="altura-100" to={url} alt={disabled ? "" : alt} isactive={!disabled}>
+                <Div className={className+" altura-100"}>
+                    <CardLine className={`card altura-100`}>
+                        <CardBody className={`text-center altura-100`}>
                             <div className={`col-md-12 p-0 text-center`}>
                                 <Icon icon={icone} pack={pack} color={color} iconSize={iconSize} />
                                 <Label>{label}</Label>
@@ -100,7 +108,8 @@ CardLink.defaultProps = {
     cols: [3],
     className: "",
     iconSize: "15px",
-    classHidden: ""
+    classHidden: "",
+    minHeight: "20px"
 };
 
 CardLink.propTypes = {
@@ -113,7 +122,8 @@ CardLink.propTypes = {
     cols: PropTypes.array,
     className: PropTypes.string,
     iconSize: PropTypes.string,
-    classHidden: PropTypes.string
+    classHidden: PropTypes.string,
+    minHeight: PropTypes.string
 };
 
 
