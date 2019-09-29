@@ -148,7 +148,7 @@ const Login = props => {
                       onClick={Acessar}
                     />
                     <Centralizar className="mt-1">
-                      <Link to="/" isactive>
+                      <Link to="/recuperar-senha" isactive>
                         <LabelLink>Esqueci minha senha</LabelLink>
                       </Link>
                     </Centralizar>

@@ -115,7 +115,7 @@ namespace SME.SGP.Aplicacao
                 .Replace("#NOME", usuario.Nome)
                 .Replace("#RF", usuario.CodigoRf)
                 .Replace("#URL_BASE#", urlFrontEnd)
-                .Replace("#LINK", $"{urlFrontEnd}redefinir/{usuario.TokenRecuperacaoSenha.ToString()}");
+                .Replace("#LINK", $"{urlFrontEnd}redefinir-senha/{usuario.TokenRecuperacaoSenha.ToString()}");
 
             servicoEmail.Enviar(usuario.Email, "Recuperação de senha do SGP", textoEmail);
         }
