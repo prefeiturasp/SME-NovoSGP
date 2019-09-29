@@ -7,33 +7,31 @@ import { Base } from './colors';
 
 import PropTypes from 'prop-types';
 
+const Campo = styled.div`
+  span {
+    color: ${Base.Vermelho};
+  }
+  .campo {
+    margin-bottom: 5px;
+  }
+  .ant-input {
+    height: 38px;
+  }
+`;
+
 const CampoTexto = ({
   name,
   id,
   form,
   className,
-  classNameCampo, 
+  classNameCampo,
   type,
   placeholder,
   onChange,
   value,
   desabilitado,
   maxlength,
-  icon
 }) => {
-
-  const Campo = styled.div`
-  span {
-    color: ${Base.Vermelho};
-  }
-  .campo {
-    margin-bottom: 5px;
-    ${icon ? "" : "background-image: none !important;"}
-  }
-  .ant-input {
-    height: 38px;
-  }
-`;
 
   const possuiErro = () => {
     return form && form.errors[name] && form.touched[name];
@@ -45,6 +43,7 @@ const CampoTexto = ({
       event.preventDefault();
     }
   };
+  
   return (
     <>
       <Campo className={classNameCampo}>
@@ -71,5 +70,6 @@ const CampoTexto = ({
     </>
   );
 };
+
 
 export default CampoTexto;

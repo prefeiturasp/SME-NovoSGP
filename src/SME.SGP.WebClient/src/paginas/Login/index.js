@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { useDispatch } from 'react-redux';
-import LoginHelper from './helper';
+import LoginHelper from './loginHelper';
 import * as Yup from 'yup';
 import Row from '~/componentes/row';
 import LogoDoSgp from '~/recursos/LogoSgpTexto.svg';
@@ -28,12 +28,17 @@ import {
 import { Tooltip } from 'antd';
 import { Formik, Form } from 'formik';
 import CampoTexto from '~/componentes/campoTexto';
+import { from } from 'rxjs';
 
 const Login = props => {
 
-  const [erroGeral, setErroGeral] = useState("");
-
   const dispatch = useDispatch();
+
+  const [erroGeral, setErroGeral] = useState("");
+  const [login, setLogin] = useState({
+    usuario: '',
+    senha: '',
+  })
 
   let redirect = null;
 
@@ -44,7 +49,7 @@ const Login = props => {
 
   const [validacoes, setValidacoes] = useState(Yup.object({
     usuario: Yup.string().required("Digite seu Usuário").min(5, "O usuário deve conter no mínimo 5 caracteres."),
-    senha: Yup.string().required("Digite sua Senha").min(4, 'A senha deve conter no mínimo 4 caracteres.')
+    senha: Yup.string().required("Digite sua Senha").min(4, 'A senha deve conter no mínimo 4 caracteres.'),
   }));
 
   const aoPressionarTecla = e => {
@@ -54,10 +59,17 @@ const Login = props => {
   };
   document.onkeyup = aoPressionarTecla;;
 
-  const Acessar = async (login) => {
-    const { sucesso, ...retorno } = await helper.acessar(login);
+  const Acessar = async (dados) => {
+
+    setLogin({
+      usuario: dados.usuario,
+      senha: dados.senha,
+    });
+
+    const { sucesso, ...retorno } = await helper.acessar(dados);
 
     if (!sucesso) {
+      setErroGeral(retorno.erroGeral);
       return;
     }
   };
@@ -66,7 +78,8 @@ const Login = props => {
 
     setErroGeral("");
 
-    form.validateForm().then(a => {form.handleSubmit(e); return a;}).catch(() => console.log(e));
+    form.validateForm().then(() => form.handleSubmit(e));
+
   };
 
   return (
@@ -90,14 +103,14 @@ const Login = props => {
                 >
                   <Formik
                     enableReinitialize
-                    initialValues={{ usuario: '', senha: '' }}
-                    onSubmit={login => Acessar(login)}
+                    initialValues={{ usuario: login.usuario, senha: login.senha }}
+                    onSubmit={dados => Acessar(dados)}
                     validationSchema={validacoes}
                     validateOnBlur={false}
                     validateOnChange={false}
                   >
                     {form => (
-                      <Formulario>
+                      <Form>
                         <Rotulo className="d-block" htmlFor="usuario">
                           Usuário{' '}
                           <Tooltip placement="top" title={TextoAjuda}>
@@ -107,9 +120,9 @@ const Login = props => {
                         <CampoTexto
                           form={form}
                           name="usuario"
-                          classNameCampo="mb-3"
                           id="usuario"
                           maxlength={50}
+                          classNameCampo="mb-3"
                           placeholder="Informe o RF ou usuário"
                           type="input"
                           icon />
@@ -118,10 +131,11 @@ const Login = props => {
                           form={form}
                           name="senha"
                           id="senha"
-                          classNameCampo="mb-3"
                           maxlength={50}
+                          classNameCampo="mb-3"
                           placeholder="Informe sua senha"
                           type="input"
+                          password
                           icon />
                         <FormGroup>
                           <Button
@@ -137,10 +151,9 @@ const Login = props => {
                             </Link>
                           </Centralizar>
                         </FormGroup>
-                        <FormGroup>
-                          {erroGeral && <ErroGeral>{erroGeral}</ErroGeral>}                          
-                        </FormGroup>
-                      </Formulario>
+                        {form.errors.usuario || form.errors.senha ? (<ErroGeral>Você precisa informar um usuário e senha para acessar o sistema.</ErroGeral>) : null}
+                        {erroGeral && <ErroGeral>{erroGeral}</ErroGeral>}
+                      </Form>
                     )}
                   </Formik>
                 </Formulario>
