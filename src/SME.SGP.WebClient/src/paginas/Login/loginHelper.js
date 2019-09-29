@@ -11,7 +11,6 @@ class LoginHelper {
   }
 
   acessar = async login => {
-
     const autenticacao = await LoginService.autenticar(login);
 
     if (!autenticacao.sucesso) {
@@ -22,11 +21,17 @@ class LoginHelper {
 
     const RF = Number.isInteger(login.usuario * 1) ? login.usuario : '';
 
-    this.dispatch(SalvarDadosLogin({ token: autenticacao.dados.token, rf: RF, perfisUsuario: autenticacao.dados.PerfisUsuario }));
+    this.dispatch(
+      SalvarDadosLogin({
+        token: autenticacao.dados.token,
+        rf: RF,
+        perfisUsuario: autenticacao.dados.PerfisUsuario,
+      })
+    );
 
     if (autenticacao.dados.modificarSenha) {
       history.push(URL_MODIFICARSENHA);
-      return;
+      return { sucesso: false, erroGeral: '' };
     }
 
     if (this.redirect) history.push(atob(this.redirect));
