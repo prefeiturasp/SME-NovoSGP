@@ -30,7 +30,8 @@ import { Formik, Form } from 'formik';
 import CampoTexto from '~/componentes/campoTexto';
 
 const Login = props => {
-  const errosDefault = { erroGeral: '', erroUsuario: '', erroSenha: '' };
+
+  const [erroGeral, setErroGeral] = useState("");
 
   const dispatch = useDispatch();
 
@@ -41,13 +42,9 @@ const Login = props => {
 
   const helper = new LoginHelper(dispatch, redirect);
 
-  const [login, setLogin] = useState({
-    ...errosDefault,
-  });
-
   const [validacoes, setValidacoes] = useState(Yup.object({
-    usuario: Yup.string().required().min(5, "O usuário deve conter no mínimo 5 caracteres."),
-    senha: Yup.string().required().min(4,'A senha deve conter no mínimo 4 caracteres.')
+    usuario: Yup.string().required("Digite seu Usuário").min(5, "O usuário deve conter no mínimo 5 caracteres."),
+    senha: Yup.string().required("Digite sua Senha").min(4, 'A senha deve conter no mínimo 4 caracteres.')
   }));
 
   const aoPressionarTecla = e => {
@@ -57,16 +54,20 @@ const Login = props => {
   };
   document.onkeyup = aoPressionarTecla;;
 
-  const Acessar = async () => {
+  const Acessar = async (login) => {
     const { sucesso, ...retorno } = await helper.acessar(login);
 
     if (!sucesso) {
-      setLogin({ ...login, ...retorno });
       return;
     }
   };
 
-  const onSubmit = (obj) => console.log(obj);
+  const AoClicarBotaoAutenticar = (form, e) => {
+
+    setErroGeral("");
+
+    form.validateForm().then(a => {form.handleSubmit(e); return a;}).catch(() => console.log(e));
+  };
 
   return (
     <Fundo className="p-0">
@@ -87,18 +88,59 @@ const Login = props => {
                   id="Formulario"
                   className="col-xl-8 col-md-8 col-sm-8 col-xs-12 p-0"
                 >
-                  <Formik 
-                  enableReinitialize={true} 
-                  initialValues={{usuario: '', login: ''}} 
-                  onSubmit={onSubmit} 
-                  validationSchema={validacoes} 
-                  validateOnBlur 
-                  validateOnChange
+                  <Formik
+                    enableReinitialize
+                    initialValues={{ usuario: '', senha: '' }}
+                    onSubmit={login => Acessar(login)}
+                    validationSchema={validacoes}
+                    validateOnBlur={false}
+                    validateOnChange={false}
                   >
                     {form => (
-                      <Form>
-                        <CampoTexto form={form} maxlength={50} placeholder="Informe o RF ou usuário"></CampoTexto>
-                      </Form>
+                      <Formulario>
+                        <Rotulo className="d-block" htmlFor="usuario">
+                          Usuário{' '}
+                          <Tooltip placement="top" title={TextoAjuda}>
+                            <i className="fas fa-question-circle"></i>
+                          </Tooltip>
+                        </Rotulo>
+                        <CampoTexto
+                          form={form}
+                          name="usuario"
+                          classNameCampo="mb-3"
+                          id="usuario"
+                          maxlength={50}
+                          placeholder="Informe o RF ou usuário"
+                          type="input"
+                          icon />
+                        <Rotulo htmlFor="Senha">Senha</Rotulo>
+                        <CampoTexto
+                          form={form}
+                          name="senha"
+                          id="senha"
+                          classNameCampo="mb-3"
+                          maxlength={50}
+                          placeholder="Informe sua senha"
+                          type="input"
+                          icon />
+                        <FormGroup>
+                          <Button
+                            style="primary"
+                            className="btn-block d-block"
+                            label="Acessar"
+                            color={Colors.Roxo}
+                            onClick={e => AoClicarBotaoAutenticar(form, e)}
+                          />
+                          <Centralizar className="mt-1">
+                            <Link to="/" isactive>
+                              <LabelLink>Esqueci minha senha</LabelLink>
+                            </Link>
+                          </Centralizar>
+                        </FormGroup>
+                        <FormGroup>
+                          {erroGeral && <ErroGeral>{erroGeral}</ErroGeral>}                          
+                        </FormGroup>
+                      </Formulario>
                     )}
                   </Formik>
                 </Formulario>

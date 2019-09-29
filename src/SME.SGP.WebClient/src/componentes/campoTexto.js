@@ -7,34 +7,38 @@ import { Base } from './colors';
 
 import PropTypes from 'prop-types';
 
-const Campo = styled.div`
-  span {
-    color: ${Base.Vermelho};
-  }
-  .campo {
-    margin-bottom: 5px;
-    background-image: none !important;
-  }
-  .ant-input {
-    height: 38px;
-  }
-`;
-
 const CampoTexto = ({
   name,
   id,
   form,
   className,
+  classNameCampo, 
   type,
   placeholder,
   onChange,
   value,
   desabilitado,
   maxlength,
+  icon
 }) => {
+
+  const Campo = styled.div`
+  span {
+    color: ${Base.Vermelho};
+  }
+  .campo {
+    margin-bottom: 5px;
+    ${icon ? "" : "background-image: none !important;"}
+  }
+  .ant-input {
+    height: 38px;
+  }
+`;
+
   const possuiErro = () => {
     return form && form.errors[name] && form.touched[name];
   };
+
   const executaOnBlur = event => {
     const { relatedTarget } = event;
     if (relatedTarget && relatedTarget.getAttribute('type') === 'button') {
@@ -43,7 +47,7 @@ const CampoTexto = ({
   };
   return (
     <>
-      <Campo>
+      <Campo className={classNameCampo}>
         {form ? (
           <>
             {' '}
