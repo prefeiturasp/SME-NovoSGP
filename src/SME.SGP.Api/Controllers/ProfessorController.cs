@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using SME.SGP.Api.Filtros;
 using SME.SGP.Aplicacao;
 using SME.SGP.Dto;
@@ -10,6 +11,7 @@ namespace SME.SGP.Api.Controllers
     [Route("api/v1/professores")]
     [ApiController]
     [ValidaDto]
+    [Authorize("Bearer")]
     public class ProfessorController : ControllerBase
     {
         private readonly IConsultasProfessor consultasProfessor;
@@ -27,7 +29,7 @@ namespace SME.SGP.Api.Controllers
         {
             return Ok(consultasProfessor.Listar(codigoRf));
         }
-               
+
         [HttpGet("{codigoRF}/turmas/{codigoTurma}/disciplinas/")]
         [ProducesResponseType(typeof(IEnumerable<DisciplinaDto>), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]

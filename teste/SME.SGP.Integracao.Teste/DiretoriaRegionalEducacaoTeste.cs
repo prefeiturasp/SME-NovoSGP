@@ -1,6 +1,8 @@
 ﻿using Newtonsoft.Json;
+using SME.SGP.Dominio;
 using SME.SGP.Dto;
 using System.Collections.Generic;
+using System.Net.Http.Headers;
 using Xunit;
 using Xunit.Extensions.Ordering;
 
@@ -21,6 +23,9 @@ namespace SME.SGP.Integracao.Teste
         {
             _fixture._clientApi.DefaultRequestHeaders.Clear();
 
+            _fixture._clientApi.DefaultRequestHeaders.Authorization =
+                new AuthenticationHeaderValue("Bearer", _fixture.GerarToken(new Permissao[] { }));
+
             var postResult = _fixture._clientApi.GetAsync("api/v1/dres").Result;
 
             if (postResult.IsSuccessStatusCode)
@@ -34,6 +39,9 @@ namespace SME.SGP.Integracao.Teste
         public void Deve_Consultar_Escolas_Sem_Atribuicao()
         {
             _fixture._clientApi.DefaultRequestHeaders.Clear();
+
+            _fixture._clientApi.DefaultRequestHeaders.Authorization =
+                new AuthenticationHeaderValue("Bearer", _fixture.GerarToken(new Permissao[] { }));
 
             var postResult = _fixture._clientApi.GetAsync("api/v1/dres/18100/escolas/sem-atribuicao").Result;
 
