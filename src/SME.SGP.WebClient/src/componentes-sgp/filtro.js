@@ -444,9 +444,14 @@ const Filtro = () => {
     event.preventDefault();
     if (resultadosFiltro) {
       if (resultadosFiltro.length === 1) {
+        setModalidadeFiltroSelecionada(
+          resultadosFiltro[0].codModalidade.toString()
+        );
         setDreFiltroSelecionada(resultadosFiltro[0].codDre);
         setUnidadeEscolarFiltroSelecionada(resultadosFiltro[0].codEscola);
-        setTurmaFiltroSelecionada(resultadosFiltro[0].codTurma.toString());
+        setTimeout(() => {
+          setTurmaFiltroSelecionada(resultadosFiltro[0].codTurma.toString());
+        }, 1000);
         selecionaTurmaAutocomplete(resultadosFiltro[0]);
       } else {
         const selecionado = document.querySelector(
@@ -462,7 +467,9 @@ const Filtro = () => {
               );
               setDreFiltroSelecionada(resultado.codDre);
               setUnidadeEscolarFiltroSelecionada(resultado.codEscola);
-              setTurmaFiltroSelecionada(resultado.codTurma.toString());
+              setTimeout(() => {
+                setTurmaFiltroSelecionada(resultado.codTurma.toString());
+              }, 1000);
               selecionaTurmaAutocomplete(resultado);
             }
           }
