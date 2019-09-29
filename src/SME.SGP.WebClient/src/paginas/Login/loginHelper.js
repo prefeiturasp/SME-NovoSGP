@@ -17,8 +17,6 @@ class LoginHelper {
       return autenticacao;
     }
 
-    console.log(autenticacao);
-
     const RF = Number.isInteger(login.usuario * 1) ? login.usuario : '';
 
     this.dispatch(

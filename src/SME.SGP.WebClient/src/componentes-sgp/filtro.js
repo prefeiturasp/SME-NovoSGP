@@ -56,6 +56,7 @@ const Filtro = () => {
 
   const Container = styled.div`
     width: 568px !important;
+    z-index: 100;
     @media (max-width: 575.98px) {
       max-width: 80% !important;
     }
