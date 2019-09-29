@@ -21,7 +21,7 @@ export const Logo = styled.img`
   justify-self: center;
 `;
 
-export const Formulario = styled.form`
+export const Formulario = styled.div`
   padding: 0px;
 
   align-self: center;
