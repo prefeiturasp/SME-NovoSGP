@@ -1,6 +1,7 @@
-import React, { useEffect, useState, useRef, useLayoutEffect } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { useDispatch } from 'react-redux';
 import LoginHelper from './helper';
+import * as Yup from 'yup';
 import Row from '~/componentes/row';
 import LogoDoSgp from '~/recursos/LogoSgpTexto.svg';
 import LogoCidadeSP from '~/recursos/LogoCidadeSP.svg';
@@ -13,7 +14,6 @@ import {
   Logo,
   Formulario,
   LogoSGP,
-  CampoTexto,
   Rotulo,
   Cartao,
   LogoSP,
@@ -26,7 +26,8 @@ import {
   ErroGeral,
 } from './login.css';
 import { Tooltip } from 'antd';
-import Icon from '~/componentes/icon';
+import { Formik, Form } from 'formik';
+import CampoTexto from '~/componentes/campoTexto';
 
 const Login = props => {
   const errosDefault = { erroGeral: '', erroUsuario: '', erroSenha: '' };
@@ -34,46 +35,27 @@ const Login = props => {
   const dispatch = useDispatch();
 
   let redirect = null;
+
   if (props.match && props.match.params && props.match.params.redirect)
     redirect = props.match.params.redirect;
 
   const helper = new LoginHelper(dispatch, redirect);
 
   const [login, setLogin] = useState({
-    usuario: '',
-    senha: '',
     ...errosDefault,
   });
 
-  const usuario = login.usuario;
-  const senha = login.senha;
-
-  const campoUsuario = useRef(null);
-  const campoSenha = useRef(null);
-
-  useEffect(() => {
-    campoUsuario.current.focus();
-  }, [usuario]);
-
-  useEffect(() => {
-    campoSenha.current.focus();
-  }, [senha]);
+  const [validacoes, setValidacoes] = useState(Yup.object({
+    usuario: Yup.string().required().min(5, "O usuário deve conter no mínimo 5 caracteres."),
+    senha: Yup.string().required().min(4,'A senha deve conter no mínimo 4 caracteres.')
+  }));
 
   const aoPressionarTecla = e => {
     if (e.key === 'Enter') {
       Acessar();
     }
   };
-
-  document.onkeyup = aoPressionarTecla;
-
-  const DefinirUsuario = e => {
-    setLogin({ ...login, ...errosDefault, usuario: e.target.value });
-  };
-
-  const DefinirSenha = e => {
-    setLogin({ ...login, ...errosDefault, senha: e.target.value });
-  };
+  document.onkeyup = aoPressionarTecla;;
 
   const Acessar = async () => {
     const { sucesso, ...retorno } = await helper.acessar(login);
@@ -83,6 +65,8 @@ const Login = props => {
       return;
     }
   };
+
+  const onSubmit = (obj) => console.log(obj);
 
   return (
     <Fundo className="p-0">
@@ -103,61 +87,20 @@ const Login = props => {
                   id="Formulario"
                   className="col-xl-8 col-md-8 col-sm-8 col-xs-12 p-0"
                 >
-                  <FormGroup className="col-md-12 p-0">
-                    <Rotulo className="d-block" htmlFor="Usuario">
-                      Usuário{' '}
-                      <Tooltip placement="top" title={TextoAjuda}>
-                        <i className="fas fa-question-circle"></i>
-                      </Tooltip>
-                    </Rotulo>
-                    <CampoTexto
-                      id="Usuario"
-                      ref={campoUsuario}
-                      value={usuario}
-                      onChange={DefinirUsuario}
-                      placeholder="Insira seu RF ou usuário"
-                      className={`col-md-12 form-control ${login.erroSenha &&
-                        'is-invalid'}`}
-                    />
-                    {login.erroUsuario && (
-                      <ErroTexto>{login.erroUsuario}</ErroTexto>
+                  <Formik 
+                  enableReinitialize={true} 
+                  initialValues={{usuario: '', login: ''}} 
+                  onSubmit={onSubmit} 
+                  validationSchema={validacoes} 
+                  validateOnBlur 
+                  validateOnChange
+                  >
+                    {form => (
+                      <Form>
+                        <CampoTexto form={form} maxlength={50} placeholder="Informe o RF ou usuário"></CampoTexto>
+                      </Form>
                     )}
-                  </FormGroup>
-                  <FormGroup className="col-md-12 p-0">
-                    <Rotulo htmlFor="Senha">Senha</Rotulo>
-                    <CampoTexto
-                      id="Senha"
-                      ref={campoSenha}
-                      value={senha}
-                      onChange={DefinirSenha}
-                      type="password"
-                      placeholder="Insira sua senha"
-                      className={`col-md-12 form-control ${login.erroSenha &&
-                        'is-invalid'}`}
-                    />
-                    {login.erroSenha && (
-                      <ErroTexto>{login.erroSenha}</ErroTexto>
-                    )}
-                  </FormGroup>
-                  <FormGroup>
-                    <Button
-                      style="primary"
-                      className="btn-block d-block"
-                      label="Acessar"
-                      color={Colors.Roxo}
-                      onClick={Acessar}
-                    />
-                    <Centralizar className="mt-1">
-                      <Link to="/" isactive>
-                        <LabelLink>Esqueci minha senha</LabelLink>
-                      </Link>
-                    </Centralizar>
-                  </FormGroup>
-                  <FormGroup>
-                    {login.erroGeral && (
-                      <ErroGeral>{login.erroGeral}</ErroGeral>
-                    )}
-                  </FormGroup>
+                  </Formik>
                 </Formulario>
               </Row>
               <Row className="col-md-12 d-flex justify-content-center align-self-end mb-3">
