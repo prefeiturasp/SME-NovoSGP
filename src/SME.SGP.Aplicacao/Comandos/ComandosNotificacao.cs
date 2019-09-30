@@ -117,7 +117,7 @@ namespace SME.SGP.Aplicacao
 
         private void TrataUsuario(Notificacao notificacao, string usuarioRf)
         {
-            var usuario = servicoUsuario.ObterUsuarioPorCodigoRfOuAdiciona(usuarioRf);
+            var usuario = servicoUsuario.ObterUsuarioPorCodigoRfLoginOuAdiciona(usuarioRf);
             notificacao.Usuario = usuario;
             notificacao.UsuarioId = usuario.Id;
         }
