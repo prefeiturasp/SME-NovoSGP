@@ -9,6 +9,7 @@ import ModalConteudoHtml from '~/componentes/modalConteudoHtml';
 import { store } from '~/redux';
 import { useSelector } from 'react-redux';
 import { meusDados } from '~/redux/modulos/usuario/actions';
+import AlertaBalao from '~/componentes/alertaBalao';
 
 const MeusDados = () => {
   const usuarioStore = useSelector(store => store.usuario);
@@ -141,12 +142,15 @@ const MeusDados = () => {
           fileReader.readAsDataURL(arquivo);
           fileReader.onloadend = () => {
             const novaFoto = fileReader.result;
+            setEhFotoInvalida(false);
             setFoto(novaFoto);
           }
+        }else{
+          setEhFotoInvalida(true);
         }
       }
     } else {
-      console.log('acima do permitido')
+      setEhFotoInvalida(true);
     }
   }
 
@@ -174,8 +178,9 @@ const MeusDados = () => {
                 id="selecionar-foto" onChange={arquivoSelecionado} />
               Selecionar nova foto
             </SelecionarFoto>
+            <AlertaBalao maxWidth={294} marginTop={14} mostrarAlerta={ehFotoInvalida}
+                texto="A resolução mínima é de 180 x 180 pixels, com tamanho máximo de 2Mb."/>
           </DadosPerfil>
-
         </ModalConteudoHtml>
         <Topo className="col-12 d-flex justify-content-end">
           <Button
