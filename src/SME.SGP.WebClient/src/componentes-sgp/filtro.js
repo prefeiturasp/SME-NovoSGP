@@ -56,6 +56,7 @@ const Filtro = () => {
 
   const Container = styled.div`
     width: 568px !important;
+    z-index: 100;
     @media (max-width: 575.98px) {
       max-width: 80% !important;
     }
@@ -135,7 +136,7 @@ const Filtro = () => {
   };
 
   useEffect(() => {
-    if (usuario.rf.length > 0) {
+    if (usuario.rf) {
       if (dados.length === 0) buscaDadosPoRf(usuario.rf);
     }
     if (usuario.turmaSelecionada.length > 0) {

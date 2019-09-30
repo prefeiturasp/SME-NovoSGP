@@ -1,5 +1,6 @@
 import { createGlobalStyle } from 'styled-components';
 import { Base } from '../componentes/colors';
+import ExclamacaoCampoErro from '~/recursos/ExclamacaoCampoErro.svg';
 
 export default createGlobalStyle`
   @import url('https://fonts.googleapis.com/css?family=Roboto:400,700&display=swap');
@@ -19,6 +20,9 @@ export default createGlobalStyle`
     height: 100%;
     letter-spacing: normal;
     line-height: normal;
+    @media (max-width: 767.98px) {
+      height: auto;
+    }
   }
   body {
     -webkit-font-smoothing: antialiased;
@@ -180,6 +184,10 @@ export default createGlobalStyle`
     border-radius: 4px !important;
   }
 
+  .mb-6 {
+    margin-bottom: 6rem !important;
+  }
+
 /*MENU*/
 
 .menuItem{
@@ -294,5 +302,10 @@ export default createGlobalStyle`
     border-color: ${Base.CinzaDesabilitado} !important;
     color: ${Base.CinzaDesabilitado} !important;
     cursor: unset !important;
+  }
+
+  .form-control.is-invalid, .was-validated .form-control:invalid{
+    background-image : url(${ExclamacaoCampoErro}) !important;
+    background-size: auto !important;
   }
 `;

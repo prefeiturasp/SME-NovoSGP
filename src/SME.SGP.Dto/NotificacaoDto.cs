@@ -14,6 +14,7 @@ namespace SME.SGP.Dto
 
         [Required(ErrorMessage = "A Mensagem é obrigatória.")]
         [MinLength(3, ErrorMessage = "A Mensagem deve conter no mínimo 3 caracteres.")]
+        [MaxLength(500, ErrorMessage = "A Mensagem deve conter no máximo 500 caracteres.")]
         public string Mensagem { get; set; }
 
         [EnumeradoRequirido(ErrorMessage = "O tipo é obrigatório.")]
@@ -21,6 +22,7 @@ namespace SME.SGP.Dto
 
         [Required(ErrorMessage = "O título é obrigatório.")]
         [MinLength(3, ErrorMessage = "O título deve conter no mínimo 3 caracteres.")]
+        [MaxLength(50, ErrorMessage = "O título deve conter no máximo 50 caracteres.")]
         public string Titulo { get; set; }
 
         public string TurmaId { get; set; }
