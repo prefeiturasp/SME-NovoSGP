@@ -32,11 +32,12 @@ api.interceptors.request.use(async config => {
 api.interceptors.response.use(
   response => response,
   error => {
-    const autenticacao = error.response.config.url.includes(
+
+    const autenticacao = error.response && error.response.config.url.includes(
       '/api/v1/autenticacao'
     );
 
-    if (error.response.status === 401 && !autenticacao) {
+    if (error.response && error.response.status === 401 && !autenticacao) {
       const path = window.location.pathname;
 
       store.dispatch(Deslogar());
