@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Text;
 using Xunit;
 
@@ -13,17 +14,20 @@ namespace SME.SGP.Integracao.Teste
     [Collection("Testserver collection")]
     public class WorkflowAprovacaoTeste
     {
-        private readonly TestServerFixture fixture;
+        private readonly TestServerFixture _fixture;
 
         public WorkflowAprovacaoTeste(TestServerFixture fixture)
         {
-            this.fixture = fixture;
+            this._fixture = fixture;
         }
 
         [Fact]
         public void Deve_Inserir_Consultar_LinhaTempo_Aprovar_E_Reprovar()
         {
-            fixture._clientApi.DefaultRequestHeaders.Clear();
+            _fixture._clientApi.DefaultRequestHeaders.Clear();
+
+            _fixture._clientApi.DefaultRequestHeaders.Authorization =
+                new AuthenticationHeaderValue("Bearer", _fixture.GerarToken(new Permissao[] { Permissao.N_C }));
 
             var tituloParaLocalizarRegistro = Guid.NewGuid().ToString();
 
@@ -56,13 +60,13 @@ namespace SME.SGP.Integracao.Teste
 
             var jsonParaPost = new StringContent(post, UnicodeEncoding.UTF8, "application/json");
 
-            var postResult = fixture._clientApi.PostAsync("api/v1/workflows/aprovacoes", jsonParaPost).Result;
+            var postResult = _fixture._clientApi.PostAsync("api/v1/workflows/aprovacoes", jsonParaPost).Result;
 
             Assert.True(postResult.IsSuccessStatusCode);
 
             if (postResult.IsSuccessStatusCode)
             {
-                var getResult = fixture._clientApi.GetAsync($"api/v1/notificacoes?titulo={tituloParaLocalizarRegistro}").Result;
+                var getResult = _fixture._clientApi.GetAsync($"api/v1/notificacoes?titulo={tituloParaLocalizarRegistro}").Result;
 
                 Assert.True(getResult.IsSuccessStatusCode);
 
@@ -74,7 +78,7 @@ namespace SME.SGP.Integracao.Teste
                     {
                         var notificacao = notificacoes.FirstOrDefault();
 
-                        var getResultTimeline = fixture._clientApi.GetAsync($"api/v1/workflows/aprovacoes/notificacoes/{notificacao.Id}/linha-tempo").Result;
+                        var getResultTimeline = _fixture._clientApi.GetAsync($"api/v1/workflows/aprovacoes/notificacoes/{notificacao.Id}/linha-tempo").Result;
                         Assert.True(getResultTimeline.IsSuccessStatusCode);
                         if (getResultTimeline.IsSuccessStatusCode)
                         {
@@ -94,13 +98,13 @@ namespace SME.SGP.Integracao.Teste
 
                                 var jsonParaPostAprovacaoNivel = new StringContent(postAprovacaoNivel, UnicodeEncoding.UTF8, "application/json");
 
-                                var postResultAprovacaoNivel = fixture._clientApi.PutAsync($"api/v1/workflows/aprovacoes/notificacoes/{notificacao.Id}/aprova", jsonParaPostAprovacaoNivel).Result;
+                                var postResultAprovacaoNivel = _fixture._clientApi.PutAsync($"api/v1/workflows/aprovacoes/notificacoes/{notificacao.Id}/aprova", jsonParaPostAprovacaoNivel).Result;
 
                                 Assert.True(postResultAprovacaoNivel.IsSuccessStatusCode);
 
                                 if (postResultAprovacaoNivel.IsSuccessStatusCode)
                                 {
-                                    var getResultMensagemNivel2 = fixture._clientApi.GetAsync($"api/v1/notificacoes?titulo={tituloParaLocalizarRegistro}&status=1").Result;
+                                    var getResultMensagemNivel2 = _fixture._clientApi.GetAsync($"api/v1/notificacoes?titulo={tituloParaLocalizarRegistro}&status=1").Result;
 
                                     Assert.True(getResultMensagemNivel2.IsSuccessStatusCode);
 
@@ -112,7 +116,7 @@ namespace SME.SGP.Integracao.Teste
                                         {
                                             var notificacaoNivel2 = notificacoesNivel2.FirstOrDefault();
 
-                                            var getResultTimelineNivel2 = fixture._clientApi.GetAsync($"api/v1/workflows/aprovacoes/notificacoes/{notificacaoNivel2.Id}/linha-tempo").Result;
+                                            var getResultTimelineNivel2 = _fixture._clientApi.GetAsync($"api/v1/workflows/aprovacoes/notificacoes/{notificacaoNivel2.Id}/linha-tempo").Result;
                                             Assert.True(getResultTimeline.IsSuccessStatusCode);
                                             if (getResultTimelineNivel2.IsSuccessStatusCode)
                                             {
@@ -133,12 +137,12 @@ namespace SME.SGP.Integracao.Teste
 
                                                     var jsonParaPutReprovacaoNivel = new StringContent(postReprovacaoNivel, UnicodeEncoding.UTF8, "application/json");
 
-                                                    var putResultReprovacaoNivel = fixture._clientApi.PutAsync($"api/v1/workflows/aprovacoes/notificacoes/{notificacaoNivel2.Id}/aprova", jsonParaPutReprovacaoNivel).Result;
+                                                    var putResultReprovacaoNivel = _fixture._clientApi.PutAsync($"api/v1/workflows/aprovacoes/notificacoes/{notificacaoNivel2.Id}/aprova", jsonParaPutReprovacaoNivel).Result;
 
                                                     Assert.True(putResultReprovacaoNivel.IsSuccessStatusCode);
                                                     if (putResultReprovacaoNivel.IsSuccessStatusCode)
                                                     {
-                                                        getResultTimelineNivel2 = fixture._clientApi.GetAsync($"api/v1/workflows/aprovacoes/notificacoes/{notificacaoNivel2.Id}/linha-tempo").Result;
+                                                        getResultTimelineNivel2 = _fixture._clientApi.GetAsync($"api/v1/workflows/aprovacoes/notificacoes/{notificacaoNivel2.Id}/linha-tempo").Result;
                                                         timelineNivel2 = JsonConvert.DeserializeObject<List<WorkflowAprovacaoTimeRespostaDto>>(getResultTimelineNivel2.Content.ReadAsStringAsync().Result);
                                                         Assert.True(timelineNivel2.Count() == 3);
                                                         Assert.True(timelineNivel2.FirstOrDefault(a => a.Nivel == 1).StatusId == (int)WorkflowAprovacaoNivelStatus.Aprovado);

@@ -1,8 +1,10 @@
 ﻿using Newtonsoft.Json;
+using SME.SGP.Dominio;
 using SME.SGP.Dto;
 using System;
 using System.Collections.Generic;
 using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Text;
 using Xunit;
 using Xunit.Extensions.Ordering;
@@ -12,17 +14,20 @@ namespace SME.SGP.Integracao.Teste
     [Collection("Testserver collection")]
     public class ObjetivoAprendizagemTeste
     {
-        private readonly TestServerFixture fixture;
+        private readonly TestServerFixture _fixture;
 
         public ObjetivoAprendizagemTeste(TestServerFixture fixture)
         {
-            this.fixture = fixture ?? throw new ArgumentNullException(nameof(fixture));
+            this._fixture = fixture ?? throw new ArgumentNullException(nameof(fixture));
         }
 
         [Fact, Order(8)]
         public void Deve_Consultar_Objetivos_Aprendizagem()
         {
-            fixture._clientApi.DefaultRequestHeaders.Clear();
+            _fixture._clientApi.DefaultRequestHeaders.Clear();
+
+            _fixture._clientApi.DefaultRequestHeaders.Authorization =
+                new AuthenticationHeaderValue("Bearer", _fixture.GerarToken(new Permissao[] { Permissao.PA_C }));
 
             var filtros = new FiltroObjetivosAprendizagemDto();
             filtros.ComponentesCurricularesIds.Add(139);
@@ -30,7 +35,7 @@ namespace SME.SGP.Integracao.Teste
 
             var jsonParaPost = new StringContent(TransformarEmJson(filtros), UnicodeEncoding.UTF8, "application/json");
 
-            var getResult = fixture._clientApi.PostAsync("api/v1/objetivos-aprendizagem/", jsonParaPost).Result;
+            var getResult = _fixture._clientApi.PostAsync("api/v1/objetivos-aprendizagem/", jsonParaPost).Result;
 
             Assert.True(getResult.IsSuccessStatusCode);
             var disciplinas = JsonConvert.DeserializeObject<IEnumerable<ObjetivoAprendizagemDto>>(getResult.Content.ReadAsStringAsync().Result);

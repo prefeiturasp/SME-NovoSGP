@@ -1,11 +1,14 @@
-import React, { useEffect, useState, useRef, useLayoutEffect } from 'react';
+import React, { useState } from 'react';
 import { useDispatch } from 'react-redux';
-import LoginHelper from './helper';
+import * as Yup from 'yup';
+import { Tooltip } from 'antd';
+import { Formik, Form } from 'formik';
+import LoginHelper from './loginHelper';
 import Row from '~/componentes/row';
 import LogoDoSgp from '~/recursos/LogoSgpTexto.svg';
 import LogoCidadeSP from '~/recursos/LogoCidadeSP.svg';
 import Grid from '~/componentes/grid';
-import { Base, Colors } from '~/componentes/colors';
+import { Colors } from '~/componentes/colors';
 import FormGroup from '~/componentes/formGroup';
 import Button from '~/componentes/button';
 import {
@@ -13,7 +16,6 @@ import {
   Logo,
   Formulario,
   LogoSGP,
-  CampoTexto,
   Rotulo,
   Cartao,
   LogoSP,
@@ -22,70 +24,65 @@ import {
   Link,
   LabelLink,
   TextoAjuda,
-  ErroTexto,
   ErroGeral,
 } from './login.css';
-import { Tooltip } from 'antd';
-import Icon from '~/componentes/icon';
+import CampoTexto from '~/componentes/campoTexto';
 
 const Login = props => {
-  const errosDefault = { erroGeral: '', erroUsuario: '', erroSenha: '' };
-
   const dispatch = useDispatch();
 
+  const [erroGeral, setErroGeral] = useState('');
+  const [login, setLogin] = useState({
+    usuario: '',
+    senha: '',
+  });
+
   let redirect = null;
+
   if (props.match && props.match.params && props.match.params.redirect)
     redirect = props.match.params.redirect;
 
   const helper = new LoginHelper(dispatch, redirect);
 
-  const [login, setLogin] = useState({
-    usuario: '',
-    senha: '',
-    ...errosDefault,
-  });
-
-  const usuario = login.usuario;
-  const senha = login.senha;
-
-  const campoUsuario = useRef(null);
-  const campoSenha = useRef(null);
-
-  useEffect(() => {
-    campoUsuario.current.focus();
-  }, [usuario]);
-
-  useEffect(() => {
-    campoSenha.current.focus();
-  }, [senha]);
+  const [validacoes] = useState(
+    Yup.object({
+      usuario: Yup.string()
+        .required('Digite seu Usuário')
+        .min(5, 'O usuário deve conter no mínimo 5 caracteres.'),
+      senha: Yup.string()
+        .required('Digite sua Senha')
+        .min(4, 'A senha deve conter no mínimo 4 caracteres.'),
+    })
+  );
 
   const aoPressionarTecla = e => {
     if (e.key === 'Enter') {
       Acessar();
     }
   };
-
   document.onkeyup = aoPressionarTecla;
 
-  const DefinirUsuario = e => {
-    setLogin({ ...login, ...errosDefault, usuario: e.target.value });
-  };
+  const Acessar = async dados => {
+    setLogin({
+      usuario: dados.usuario,
+      senha: dados.senha,
+    });
+    setErroGeral('');
 
-  const DefinirSenha = e => {
-    setLogin({ ...login, ...errosDefault, senha: e.target.value });
-  };
-
-  const Acessar = async () => {
-    const { sucesso, ...retorno } = await helper.acessar(login);
+    const { sucesso, ...retorno } = await helper.acessar(dados);
 
     if (!sucesso) {
-      setLogin({ ...login, ...retorno });
+      setErroGeral(retorno.erroGeral);
       return;
     }
   };
 
+  const AoClicarBotaoAutenticar = (form, e) => {
+    form.validateForm().then(() => form.handleSubmit(e));
+  };
+
   return (
-    <Fundo className="p-0">
+    <Fundo className="p-0 h-100">
       <Grid cols={12} className="d-flex justify-content-end">
         <Cartao className="col-xl-6 col-lg-6 col-md-8 col-sm-8 col-xs-12">
           <CorpoCartao className="">
@@ -103,61 +100,74 @@ const Login = props => {
                   id="Formulario"
                   className="col-xl-8 col-md-8 col-sm-8 col-xs-12 p-0"
                 >
-                  <FormGroup className="col-md-12 p-0">
-                    <Rotulo className="d-block" htmlFor="Usuario">
-                      Usuário{' '}
-                      <Tooltip placement="top" title={TextoAjuda}>
-                        <i className="fas fa-question-circle"></i>
-                      </Tooltip>
-                    </Rotulo>
-                    <CampoTexto
-                      id="Usuario"
-                      ref={campoUsuario}
-                      value={usuario}
-                      onChange={DefinirUsuario}
-                      placeholder="Insira seu RF ou usuário"
-                      className={`col-md-12 form-control ${login.erroSenha &&
-                        'is-invalid'}`}
-                    />
-                    {login.erroUsuario && (
-                      <ErroTexto>{login.erroUsuario}</ErroTexto>
+                  <Formik
+                    enableReinitialize
+                    initialValues={{
+                      usuario: login.usuario,
+                      senha: login.senha,
+                    }}
+                    onSubmit={dados => Acessar(dados)}
+                    validationSchema={validacoes}
+                    validateOnBlur={false}
+                    validateOnChange={false}
+                  >
+                    {form => (
+                      <Form>
+                        <Rotulo className="d-block" htmlFor="usuario">
+                          Usuário{' '}
+                          <Tooltip placement="top" title={TextoAjuda}>
+                            <i className="fas fa-question-circle"></i>
+                          </Tooltip>
+                        </Rotulo>
+                        <CampoTexto
+                          form={form}
+                          name="usuario"
+                          id="usuario"
+                          maxlength={50}
+                          classNameCampo="mb-3"
+                          placeholder="Informe o RF ou usuário"
+                          type="input"
+                          icon
+                        />
+                        <Rotulo htmlFor="Senha">Senha</Rotulo>
+                        <CampoTexto
+                          form={form}
+                          name="senha"
+                          id="senha"
+                          maxlength={50}
+                          classNameCampo="mb-3"
+                          placeholder="Informe sua senha"
+                          type="input"
+                          maskType="password"
+                          icon
+                        />
+                        <FormGroup>
+                          <Button
+                            style="primary"
+                            className="btn-block d-block"
+                            label="Acessar"
+                            color={Colors.Roxo}
+                            onClick={e => AoClicarBotaoAutenticar(form, e)}
+                          />
+                          <Centralizar className="mt-1">
+                            <Link to="/" isactive>
+                              <LabelLink>Esqueci minha senha</LabelLink>
+                            </Link>
+                          </Centralizar>
+                        </FormGroup>
+                        {form.errors.usuario || form.errors.senha ? (
+                          <ErroGeral>
+                            Você precisa informar um usuário e senha para
+                            acessar o sistema.
+                          </ErroGeral>
+                        ) : null}
+                        {erroGeral &&
+                        !(form.errors.usuario || form.errors.senha) ? (
+                          <ErroGeral>{erroGeral}</ErroGeral>
+                        ) : null}
+                      </Form>
                     )}
-                  </FormGroup>
-                  <FormGroup className="col-md-12 p-0">
-                    <Rotulo htmlFor="Senha">Senha</Rotulo>
-                    <CampoTexto
-                      id="Senha"
-                      ref={campoSenha}
-                      value={senha}
-                      onChange={DefinirSenha}
-                      type="password"
-                      placeholder="Insira sua senha"
-                      className={`col-md-12 form-control ${login.erroSenha &&
-                        'is-invalid'}`}
-                    />
-                    {login.erroSenha && (
-                      <ErroTexto>{login.erroSenha}</ErroTexto>
-                    )}
-                  </FormGroup>
-                  <FormGroup>
-                    <Button
-                      style="primary"
-                      className="btn-block d-block"
-                      label="Acessar"
-                      color={Colors.Roxo}
-                      onClick={Acessar}
-                    />
-                    <Centralizar className="mt-1">
-                      <Link to="/recuperar-senha" isactive>
-                        <LabelLink>Esqueci minha senha</LabelLink>
-                      </Link>
-                    </Centralizar>
-                  </FormGroup>
-                  <FormGroup>
-                    {login.erroGeral && (
-                      <ErroGeral>{login.erroGeral}</ErroGeral>
-                    )}
-                  </FormGroup>
+                  </Formik>
                 </Formulario>
               </Row>
               <Row className="col-md-12 d-flex justify-content-center align-self-end mb-3">
