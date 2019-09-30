@@ -14,6 +14,7 @@ import RotasTipo from '~/constantes/rotasTipo';
 import Login from '~/paginas/Login';
 import RotaNaoAutenticadaDesestruturada from './rotaNaoAutenticadaDesestruturada';
 import RotaAutenticadaDesestruturada from './rotaAutenticadaDesestruturada';
+import PrimeiroAcesso from '~/paginas/PrimeiroAcesso';
 
 export default function Rotas() {
   const rotas = new Map();
@@ -41,6 +42,15 @@ export default function Rotas() {
     menu: '',
     parent: '/',
     component: Login,
+    exact: true,
+    tipo: RotasTipo.DesestruturadaNaoAutenticada,
+  });
+
+  rotas.set('/redefinir-senha', {
+    breadcrumbName: '',
+    menu: '',
+    parent: '/',
+    component: PrimeiroAcesso,
     exact: true,
     tipo: RotasTipo.DesestruturadaNaoAutenticada,
   });
