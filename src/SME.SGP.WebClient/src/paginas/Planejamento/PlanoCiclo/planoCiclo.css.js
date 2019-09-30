@@ -96,13 +96,25 @@ export const Titulo = styled.div`
   line-height: normal;
   letter-spacing: normal;
   color: #42474a;
-  margin-bottom: 10px;
+  margin-bottom: 3px;
 `;
 
 export const TituloAno = styled.span`
   font-weight: bold;
   font-size: 16px;
   color: ${Base.Roxo};
+`;
+
+export const RegistroMigrado = styled.div`
+  text-align: center;
+  font-size: 11px;
+  color: ${Base.Branco};
+  object-fit: contain;
+  font-weight: bold;
+  border-radius: 3px;
+  border: solid 0.5px ${Base.Roxo};
+  background-color: ${Base.Roxo};
+  padding: 5px 10px 5px 10px;
 `;
 
 export const Planejamento = styled.div`

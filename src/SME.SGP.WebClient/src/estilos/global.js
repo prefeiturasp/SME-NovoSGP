@@ -20,6 +20,9 @@ export default createGlobalStyle`
     height: 100%;
     letter-spacing: normal;
     line-height: normal;
+    @media (max-width: 767.98px) {
+      height: auto;
+    }
   }
   body {
     -webkit-font-smoothing: antialiased;

@@ -1,9 +1,9 @@
-import LinkRouter from '~/componentes/linkRouter';
 import styled from 'styled-components';
+import LinkRouter from '~/componentes/linkRouter';
 import Row from '~/componentes/row';
 import FundoLogin from '~/recursos/FundoLogin.svg';
 import Card from '~/componentes/cardBootstrap';
-import { Base, Colors } from '~/componentes/colors';
+import { Base } from '~/componentes/colors';
 import CardBody from '~/componentes/cardBody';
 
 export const Fundo = styled(Row)`
@@ -21,7 +21,7 @@ export const Logo = styled.img`
   justify-self: center;
 `;
 
-export const Formulario = styled.form`
+export const Formulario = styled.div`
   padding: 0px;
 
   align-self: center;

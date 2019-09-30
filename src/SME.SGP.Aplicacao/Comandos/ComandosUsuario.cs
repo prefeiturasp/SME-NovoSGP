@@ -71,17 +71,21 @@ namespace SME.SGP.Aplicacao
                 var permissionamentos = await servicoEOL.ObterPermissoesPorPerfil(retornoAutenticacaoEol.Item1.PerfisUsuario.PerfilSelecionado);
 
                 if (permissionamentos == null || !permissionamentos.Any())
-                    throw new NegocioException($"Não foi possível localizar os permissionamentos do usuário {login}.");
+                {
+                    retornoAutenticacaoEol.Item1.Autenticado = false;
+                }
+                else
+                {
+                    var listaPermissoes = permissionamentos
+                        .Distinct()
+                        .Select(a => (Permissao)a)
+                        .ToList();
 
-                var listaPermissoes = permissionamentos
-                    .Distinct()
-                    .Select(a => (Permissao)a)
-                    .ToList();
+                    retornoAutenticacaoEol.Item1.Token = servicoTokenJwt.GerarToken(login, listaPermissoes);
 
-                retornoAutenticacaoEol.Item1.Token = servicoTokenJwt.GerarToken(login, listaPermissoes);
-
-                usuario.AtualizaUltimoLogin();
-                repositorioUsuario.Salvar(usuario);
+                    usuario.AtualizaUltimoLogin();
+                    repositorioUsuario.Salvar(usuario);
+                }
             }
             return retornoAutenticacaoEol.Item1;
         }

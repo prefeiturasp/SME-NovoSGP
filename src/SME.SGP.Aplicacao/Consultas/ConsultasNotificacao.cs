@@ -28,7 +28,7 @@ namespace SME.SGP.Aplicacao
                        Id = r.Id,
                        Titulo = r.Titulo,
                        Data = r.CriadoEm,
-                       DescricaoStatus = r.Status.ToString(),
+                       DescricaoStatus = r.Status.GetAttribute<DisplayAttribute>().Name,
                        Status = r.Status,
                        Categoria = r.Categoria,
                        DescricaoCategoria = r.Categoria.GetAttribute<DisplayAttribute>().Name,

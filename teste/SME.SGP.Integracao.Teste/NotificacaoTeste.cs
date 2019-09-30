@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Text;
 using Xunit;
 using Xunit.Extensions.Ordering;
@@ -28,6 +29,9 @@ namespace SME.SGP.Integracao.Teste
         {
             _fixture._clientApi.DefaultRequestHeaders.Clear();
 
+            _fixture._clientApi.DefaultRequestHeaders.Authorization =
+                new AuthenticationHeaderValue("Bearer", _fixture.GerarToken(new Permissao[] { Permissao.N_C }));
+
             var getResult = _fixture._clientApi.GetAsync($"api/v1/notificacoes/resumo?anoLetivo={2019}&usuarioRf={1}").Result;
 
             Assert.True(getResult.IsSuccessStatusCode);
@@ -38,6 +42,9 @@ namespace SME.SGP.Integracao.Teste
         {
             _fixture._clientApi.DefaultRequestHeaders.Clear();
 
+            _fixture._clientApi.DefaultRequestHeaders.Authorization =
+                new AuthenticationHeaderValue("Bearer", _fixture.GerarToken(new Permissao[] { Permissao.N_I, Permissao.N_C }));
+
             var getResult = _fixture._clientApi.GetAsync($"api/v1/notificacoes/quantidade/naolidas?anoLetivo={2019}&usuarioRf={1}").Result;
 
             Assert.True(getResult.IsSuccessStatusCode);
@@ -47,6 +54,9 @@ namespace SME.SGP.Integracao.Teste
         public void Deve_Incluir_e_Consultar_Alerta()
         {
             _fixture._clientApi.DefaultRequestHeaders.Clear();
+
+            _fixture._clientApi.DefaultRequestHeaders.Authorization =
+                new AuthenticationHeaderValue("Bearer", _fixture.GerarToken(new Permissao[] { Permissao.N_I, Permissao.N_C }));
 
             var notificacaoDto = new NotificacaoDto();
             notificacaoDto.Categoria = Dominio.NotificacaoCategoria.Alerta;
@@ -86,6 +96,9 @@ namespace SME.SGP.Integracao.Teste
         public void Deve_Incluir_e_Consultar_Aviso()
         {
             _fixture._clientApi.DefaultRequestHeaders.Clear();
+
+            _fixture._clientApi.DefaultRequestHeaders.Authorization =
+                new AuthenticationHeaderValue("Bearer", _fixture.GerarToken(new Permissao[] { Permissao.N_I, Permissao.N_C }));
 
             var notificacaoDto = new NotificacaoDto();
             notificacaoDto.Categoria = Dominio.NotificacaoCategoria.Aviso;
@@ -130,6 +143,9 @@ namespace SME.SGP.Integracao.Teste
         {
             _fixture._clientApi.DefaultRequestHeaders.Clear();
 
+            _fixture._clientApi.DefaultRequestHeaders.Authorization =
+                new AuthenticationHeaderValue("Bearer", _fixture.GerarToken(new Permissao[] { Permissao.N_I, Permissao.N_E, Permissao.N_C }));
+
             var notificacaoDto = new NotificacaoDto();
             notificacaoDto.Categoria = NotificacaoCategoria.Aviso;
             notificacaoDto.Mensagem = "Notificação de aviso";
@@ -165,6 +181,9 @@ namespace SME.SGP.Integracao.Teste
         public void Deve_Marcar_Como_Lida()
         {
             _fixture._clientApi.DefaultRequestHeaders.Clear();
+
+            _fixture._clientApi.DefaultRequestHeaders.Authorization =
+                new AuthenticationHeaderValue("Bearer", _fixture.GerarToken(new Permissao[] { Permissao.N_I, Permissao.N_A, Permissao.N_C }));
 
             var notificacaoDto = new NotificacaoDto();
             notificacaoDto.Categoria = NotificacaoCategoria.Alerta;
