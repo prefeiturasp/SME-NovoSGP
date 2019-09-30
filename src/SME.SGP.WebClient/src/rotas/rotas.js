@@ -136,7 +136,7 @@ export default function Rotas() {
   }
 
   return (
-    <div>
+    <div className="h-100">
       <Switch>
         {rotasArray.map(rota => {
           switch (rota.tipo) {

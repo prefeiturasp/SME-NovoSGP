@@ -112,6 +112,11 @@ export default function bimestres(state = INICIAL, action) {
 
         break;
 
+      case '@bimestres/LimparBimestres':
+        draft.bimestres = [];
+        
+        break;
+
       case '@bimestres/BimestresErro':
         draft.bimestres = state.bimestres;
         draft.bimestresErro = action.payload;

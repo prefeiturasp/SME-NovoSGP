@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using SME.SGP.Api.Filtros;
 using SME.SGP.Aplicacao;
 using SME.SGP.Dto;
@@ -9,6 +10,7 @@ namespace SME.SGP.Api.Controllers
     [ApiController]
     [Route("api/v1/workflows/aprovacoes")]
     [ValidaDto]
+    [Authorize("Bearer")]
     public class WorkflowAprovacaoController : ControllerBase
     {
         private readonly IComandosWorkflowAprovacao comandosWorkflowAprovacao;

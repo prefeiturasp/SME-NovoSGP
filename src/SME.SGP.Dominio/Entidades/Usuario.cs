@@ -42,7 +42,11 @@ namespace SME.SGP.Dominio
 
         public Guid ObterPerfilPrioritario(IEnumerable<PrioridadePerfil> perfisUsuario)
         {
-            var possuiPerfilPrioritario = perfisUsuario.Any(c => c.CodigoPerfil == PERFIL_PROFESSOR);
+            if (perfisUsuario == null || !perfisUsuario.Any())
+            {
+                return Guid.Empty;
+            }
+            var possuiPerfilPrioritario = perfisUsuario.OrderBy(c => c.Ordem).Any(c => c.CodigoPerfil == PERFIL_PROFESSOR);
             if (possuiPerfilPrioritario)
             {
                 return PERFIL_PROFESSOR;

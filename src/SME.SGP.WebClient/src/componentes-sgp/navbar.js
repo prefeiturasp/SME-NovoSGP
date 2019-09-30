@@ -1,16 +1,20 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import styled from 'styled-components';
 import Filtro from './filtro';
 import LogoDoSgp from '../recursos/LogoDoSgp.svg';
 import { Base } from '../componentes/colors';
 import NavbarNotificacoes from './navbar-notificacoes';
 import Perfil from './perfil';
+import { Deslogar } from '~/redux/modulos/usuario/actions';
+import history from '~/servicos/history';
+import { URL_LOGIN, URL_HOME } from '~/constantes/url';
 
 const Navbar = () => {
   const retraido = useSelector(state => state.navegacao.retraido);
   const usuario = useSelector(state => state.usuario.rf);
+  const dispatch = useDispatch();
 
   const Nav = styled.nav`
     height: 70px !important;
@@ -28,11 +32,13 @@ const Navbar = () => {
 
   const Botoes = styled.div`
     height: 45px !important;
+    z-index: 101;
   `;
 
   const Botao = styled.a`
     display: block !important;
     text-align: center !important;
+    cursor: pointer;
   `;
 
   const Icone = styled.i`
@@ -60,6 +66,11 @@ const Navbar = () => {
     }
   `;
 
+  const onClickSair = () => {
+    dispatch(Deslogar());
+    history.push(URL_LOGIN);
+  };
+
   return (
     <Nav className="navbar navbar-expand-md navbar-light bg-white shadow-sm sticky-top py-0">
       <div className="container-fluid h-100">
@@ -71,7 +82,7 @@ const Navbar = () => {
                 : 'col-xl-2 col-lg-2 col-md-2 col-sm-4'
             }`}
           >
-            <Link to={`/${usuario}`}>
+            <Link to={URL_HOME}>
               <Logo
                 src={LogoDoSgp}
                 alt="SGP"
@@ -96,14 +107,10 @@ const Navbar = () => {
                   />
                 </li>
                 <li className="list-inline-item mr-4">
-                  <Perfil
-                    Botao={Botao}
-                    Icone={Icone}
-                    Texto={Texto}
-                  />
+                  <Perfil Botao={Botao} Icone={Icone} Texto={Texto} />
                 </li>
                 <li className="list-inline-item">
-                  <Botao className="text-center">
+                  <Botao className="text-center" onClick={onClickSair}>
                     <Icone className="fa fa-power-off fa-lg" />
                     <Texto className="d-block mt-1">Sair</Texto>
                   </Botao>

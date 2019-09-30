@@ -1,11 +1,11 @@
 import React, { useState, useLayoutEffect } from 'react';
 import { useSelector } from 'react-redux';
 import styled from 'styled-components';
+import * as moment from 'moment';
 import DataTable from '~/componentes/table/dataTable';
 import { Colors } from '~/componentes/colors';
 import Button from '~/componentes/button';
 import history from '~/servicos/history';
-import * as moment from 'moment';
 
 const ListaNotificacoes = () => {
   const notificacoes = useSelector(state => state.notificacoes);
@@ -56,7 +56,7 @@ const ListaNotificacoes = () => {
       render: data => {
         const dataFormatada = moment(data).format('DD/MM/YYYY HH:mm:ss');
         return <span>{dataFormatada}</span>;
-      }
+      },
     },
   ];
 
