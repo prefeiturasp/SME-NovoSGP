@@ -1,12 +1,14 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useState } from 'react';
 import { useDispatch } from 'react-redux';
-import LoginHelper from './loginHelper';
 import * as Yup from 'yup';
+import { Tooltip } from 'antd';
+import { Formik, Form } from 'formik';
+import LoginHelper from './loginHelper';
 import Row from '~/componentes/row';
 import LogoDoSgp from '~/recursos/LogoSgpTexto.svg';
 import LogoCidadeSP from '~/recursos/LogoCidadeSP.svg';
 import Grid from '~/componentes/grid';
-import { Base, Colors } from '~/componentes/colors';
+import { Colors } from '~/componentes/colors';
 import FormGroup from '~/componentes/formGroup';
 import Button from '~/componentes/button';
 import {
@@ -22,23 +24,18 @@ import {
   Link,
   LabelLink,
   TextoAjuda,
-  ErroTexto,
   ErroGeral,
 } from './login.css';
-import { Tooltip } from 'antd';
-import { Formik, Form } from 'formik';
 import CampoTexto from '~/componentes/campoTexto';
-import { from } from 'rxjs';
 
 const Login = props => {
-
   const dispatch = useDispatch();
 
-  const [erroGeral, setErroGeral] = useState("");
+  const [erroGeral, setErroGeral] = useState('');
   const [login, setLogin] = useState({
     usuario: '',
     senha: '',
-  })
+  });
 
   let redirect = null;
 
@@ -47,25 +44,30 @@ const Login = props => {
 
   const helper = new LoginHelper(dispatch, redirect);
 
-  const [validacoes, setValidacoes] = useState(Yup.object({
-    usuario: Yup.string().required("Digite seu Usuário").min(5, "O usuário deve conter no mínimo 5 caracteres."),
-    senha: Yup.string().required("Digite sua Senha").min(4, 'A senha deve conter no mínimo 4 caracteres.'),
-  }));
+  const [validacoes] = useState(
+    Yup.object({
+      usuario: Yup.string()
+        .required('Digite seu Usuário')
+        .min(5, 'O usuário deve conter no mínimo 5 caracteres.'),
+      senha: Yup.string()
+        .required('Digite sua Senha')
+        .min(4, 'A senha deve conter no mínimo 4 caracteres.'),
+    })
+  );
 
   const aoPressionarTecla = e => {
     if (e.key === 'Enter') {
       Acessar();
     }
   };
-  document.onkeyup = aoPressionarTecla;;
+  document.onkeyup = aoPressionarTecla;
 
-  const Acessar = async (dados) => {
-
+  const Acessar = async dados => {
     setLogin({
       usuario: dados.usuario,
       senha: dados.senha,
     });
-    setErroGeral("");
+    setErroGeral('');
 
     const { sucesso, ...retorno } = await helper.acessar(dados);
 
@@ -76,13 +78,11 @@ const Login = props => {
   };
 
   const AoClicarBotaoAutenticar = (form, e) => {
-
     form.validateForm().then(() => form.handleSubmit(e));
-
   };
 
   return (
-    <Fundo className="p-0">
+    <Fundo className="p-0 h-100">
       <Grid cols={12} className="d-flex justify-content-end">
         <Cartao className="col-xl-6 col-lg-6 col-md-8 col-sm-8 col-xs-12">
           <CorpoCartao className="">
@@ -102,7 +102,10 @@ const Login = props => {
                 >
                   <Formik
                     enableReinitialize
-                    initialValues={{ usuario: login.usuario, senha: login.senha }}
+                    initialValues={{
+                      usuario: login.usuario,
+                      senha: login.senha,
+                    }}
                     onSubmit={dados => Acessar(dados)}
                     validationSchema={validacoes}
                     validateOnBlur={false}
@@ -124,7 +127,8 @@ const Login = props => {
                           classNameCampo="mb-3"
                           placeholder="Informe o RF ou usuário"
                           type="input"
-                          icon />
+                          icon
+                        />
                         <Rotulo htmlFor="Senha">Senha</Rotulo>
                         <CampoTexto
                           form={form}
@@ -135,7 +139,8 @@ const Login = props => {
                           placeholder="Informe sua senha"
                           type="input"
                           maskType="password"
-                          icon />
+                          icon
+                        />
                         <FormGroup>
                           <Button
                             style="primary"
@@ -150,8 +155,16 @@ const Login = props => {
                             </Link>
                           </Centralizar>
                         </FormGroup>
-                        {form.errors.usuario || form.errors.senha ? (<ErroGeral>Você precisa informar um usuário e senha para acessar o sistema.</ErroGeral>) : null}
-                        {erroGeral && !(form.errors.usuario || form.errors.senha) ? <ErroGeral>{erroGeral}</ErroGeral> : null}
+                        {form.errors.usuario || form.errors.senha ? (
+                          <ErroGeral>
+                            Você precisa informar um usuário e senha para
+                            acessar o sistema.
+                          </ErroGeral>
+                        ) : null}
+                        {erroGeral &&
+                        !(form.errors.usuario || form.errors.senha) ? (
+                          <ErroGeral>{erroGeral}</ErroGeral>
+                        ) : null}
                       </Form>
                     )}
                   </Formik>
