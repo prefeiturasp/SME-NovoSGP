@@ -7,7 +7,7 @@ import Button from '~/componentes/button';
 import history from '~/servicos/history';
 import Servico from '~/servicos/Paginas/RedefinirSenhaService';
 import { Nav, Logo, Div, Container, Texto, Titulo, Rotulo, CampoTexto, Validacoes, Itens, Icone, MensagemErro } from './index.css';
-import { URL_LOGIN } from '~/constantes/url';
+import { URL_LOGIN, URL_RECUPERARSENHA } from '~/constantes/url';
 
 const RedefinirSenha = (props) => {
 
@@ -17,9 +17,12 @@ const RedefinirSenha = (props) => {
   });
 
   const [tokenValidado, setTokenValidado] = useState(false);
+  const [erroGeral, setErroGeral] = useState("");
+  const [tokenExpirado, setTokenExpirado] = useState(false);
 
   const senha = dados.senha;
   const confirmarSenha = dados.confirmarSenha;
+  const token = props.match && props.match.params && props.match.params.token;
 
   const [validacoes, setValidacoes] = useState({
     maiuscula: '',
@@ -55,23 +58,23 @@ const RedefinirSenha = (props) => {
   }, [senha]);
 
   useEffect(() => {
+    inputConfSenhaRef.current.focus();
+  }, [confirmarSenha]);
+
+  useEffect(() => {
     if (!tokenValidado)
       validarToken();
   });
 
-  useEffect(() => {
-    inputConfSenhaRef.current.focus();
-  }, [confirmarSenha]);
-
   const AoMudarSenha = () => {
     setDados({ ...dados, senha: inputSenhaRef.current.value });
+
+    setErroGeral("");
 
     realizarValidacoes(inputSenhaRef.current.value);
   };
 
   const validarToken = async () => {
-
-    const token = props.match && props.match.params && props.match.params.token;
 
     if (!token)
       history.push(URL_LOGIN);
@@ -87,7 +90,11 @@ const RedefinirSenha = (props) => {
   const AoMudarConfSenha = () => {
     setDados({ ...dados, confirmarSenha: inputConfSenhaRef.current.value });
 
-    realizarValidacoes(inputConfSenhaRef.current.value);
+    setErroGeral("");
+
+    const iguais = inputConfSenhaRef.current.value === inputSenhaRef.current.value;
+
+    setValidacoes({ ...validacoes, iguais: iguais });
   };
 
   const realizarValidacoes = (valor) => {
@@ -120,12 +127,27 @@ const RedefinirSenha = (props) => {
     history.push('/');
   };
 
-  const alterarSenha = () => {
-    Servico.redefinirSenha();
+  const alterarSenha = async () => {
+    const requisicao = await Servico.redefinirSenha({ token: token, novaSenha: senha });
+
+    if (requisicao.sucesso)
+      history.push(URL_LOGIN);
+
+    if (requisicao.tokenExpirado)
+      setTokenExpirado(requisicao.tokenExpirado);
+
+    setErroGeral(requisicao.erro);
   };
 
   const aoClicarContinuar = () => {
     realizarValidacoes(inputSenhaRef.current.value);
+
+    setErroGeral("");
+
+    if (tokenExpirado) {
+      history.push(URL_RECUPERARSENHA);
+      return;
+    }
 
     if (!validarSeFormularioTemErro())
       alterarSenha();
@@ -238,6 +260,12 @@ const RedefinirSenha = (props) => {
                       outra senha
                         </MensagemErro>
                   )}
+                  {
+                    (erroGeral && !validarSeFormularioTemErro()) &&
+                    <MensagemErro className="rounded p-3 mb-3">
+                      {erroGeral}
+                    </MensagemErro>
+                  }
                   <Div className="mx-auto d-flex justify-content-end">
                     <Button
                       label="Sair"

@@ -39,7 +39,7 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(bool), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [AllowAnonymous]
-        public async Task<IActionResult> RecuperarSenha([FromBody]RecuperacaoSenhaDto recuperacaoSenhaDto)
+        public async Task<IActionResult> RecuperarSenha([FromForm]RecuperacaoSenhaDto recuperacaoSenhaDto)
         {
             await comandosUsuario.AlterarSenhaComTokenRecuperacao(recuperacaoSenhaDto);
             return Ok();
@@ -59,7 +59,7 @@ namespace SME.SGP.Api.Controllers
         [AllowAnonymous]
         public IActionResult TokenRecuperacaoSenhaEstaValido(Guid token)
         {
-            return Ok(comandosUsuario.TokenRecuperacaoSenhaEstaValido(id));
+            return Ok(comandosUsuario.TokenRecuperacaoSenhaEstaValido(token));
         }
     }
 }
