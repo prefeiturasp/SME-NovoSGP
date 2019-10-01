@@ -226,19 +226,21 @@ export default function NotificacoesLista() {
       tipo: tipoSelecionado,
       titulo: tituloSelecionado || null,
       usuarioRf: usuario.rf,
+      anoLetivo: '2019'
     };
-    if (usuario.turmaSelecionada && usuario.turmaSelecionada.length) {
-      paramsQuery.ano = usuario.turmaSelecionada[0].ano;
-      paramsQuery.dreId = usuario.turmaSelecionada[0].codDre;
-      paramsQuery.ueId = usuario.turmaSelecionada[0].codEscola;
-    }
-    if (
-      usuario.turmaSelecionada &&
-      usuario.turmaSelecionada.length &&
-      !desabilitarTurma
-    ) {
-      paramsQuery.turmaId = usuario.turmaSelecionada[0].codEscola;
-    }
+    // TODO
+    // if (usuario.turmaSelecionada && usuario.turmaSelecionada.length) {
+    //   paramsQuery.ano = usuario.turmaSelecionada[0].ano;
+    //   paramsQuery.dreId = usuario.turmaSelecionada[0].codDre;
+    //   paramsQuery.ueId = usuario.turmaSelecionada[0].codEscola;
+    // }
+    // if (
+    //   usuario.turmaSelecionada &&
+    //   usuario.turmaSelecionada.length &&
+    //   !desabilitarTurma
+    // ) {
+    //   paramsQuery.turmaId = usuario.turmaSelecionada[0].codEscola;
+    // }
     const listaNotifi = await api.get('v1/notificacoes', {
       params: paramsQuery,
     });
