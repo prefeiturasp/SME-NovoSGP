@@ -4,7 +4,7 @@ import styled from 'styled-components';
 import { Base, Active, Hover } from './colors';
 import Remover from '../recursos/Remover.svg';
 
-const Button = props => {
+const Button = React.forwardRef((props, ref) => {
   const {
     type,
     style,
@@ -77,6 +77,7 @@ const Button = props => {
       onClick={onClick}
       disabled={disabled}
       id={id}
+      ref={ref && ref}
     >
       {icon ? <Icon className={`fa fa-${icon} mr-2 py-1`} /> : null}
       {label}
@@ -88,7 +89,7 @@ const Button = props => {
       ) : null}
     </Btn>
   );
-};
+});
 
 Button.propTypes = {
   type: PropTypes.string,
