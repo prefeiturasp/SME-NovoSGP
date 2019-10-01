@@ -49,14 +49,18 @@ namespace SME.SGP.Aplicacao
             {
                 throw new NegocioException("Usuário não encontrado.");
             }
+
             if (!usuario.TokenRecuperacaoSenhaEstaValido())
             {
-                throw new NegocioException("Este link expirou. Clique em continuar para solicitar um novo link de recuperação de senha.");
+                throw new NegocioException("Este link expirou. Clique em continuar para solicitar um novo link de recuperação de senha.", 403);
             }
 
             usuario.ValidarSenha(recuperacaoSenhaDto.NovaSenha);
 
             await servicoEOL.AlterarSenha(usuario.Login, recuperacaoSenhaDto.NovaSenha);
+
+            usuario.FinalizarRecuperacaoSenha();
+            repositorioUsuario.Salvar(usuario);
         }
 
         public async Task<UsuarioAutenticacaoRetornoDto> Autenticar(string login, string senha)
@@ -92,7 +96,7 @@ namespace SME.SGP.Aplicacao
 
         public string SolicitarRecuperacaoSenha(string login)
         {
-            var usuario = repositorioUsuario.ObterPorCodigoRfLogin(login, null);
+            var usuario = repositorioUsuario.ObterPorCodigoRfLogin(null, login);
             if (usuario == null)
             {
                 throw new NegocioException("Usuário não encontrado.");
