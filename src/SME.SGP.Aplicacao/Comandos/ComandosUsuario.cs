@@ -3,6 +3,7 @@ using SME.SGP.Aplicacao.Servicos;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Dto;
+using System;
 using System.Linq;
 using System.Threading.Tasks;
 
