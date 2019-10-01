@@ -3,21 +3,36 @@ import Api from '../api';
 
 class RedefinirSenhaService {
 
-    redefinirSenha = async () => {
+    redefinirSenha = async (redefinirSenhaDto) => {
 
-        Api
-            .post('/v1/autenticacao/TROCAR PARA RECUPERAR', {
-                usuario: 'string',
-                rfcpf: 'string',
-                usuarioExterno: 'boolean',
-                novaSenha: 'string',
-                confirmarSenha: 'string',
-            })
+        var formData = new FormData();
+        formData.set('token', redefinirSenhaDto.token);
+        formData.set('novaSenha', redefinirSenhaDto.novaSenha)
+
+        return await Api.post(this._obtenhaUrlSolicitarRecuperacao(), formData)
             .then(res => {
-                if (res.data) {
-                    return res.data;
-                }
-                return false;
+                return { sucesso: true };
+            }).catch(err => {
+                const response = err.response && err.response;
+
+                if (!response)
+                    return { sucesso: false, erro: "Ocorreu uma falha na comunicação com o servidor, por favor contate o suporte" }
+
+                if (response.status === 403)
+                    return {
+                        sucesso: false,
+                        tokenExpirado: true,
+                        erro: response.data.mensagens.join(",")
+                    };
+
+                if (response.data)
+                    return {
+                        sucesso: false,
+                        erro: response.data.mensagens.join(",")
+                    };
+
+                return { sucesso: false, erro: "Ocorreu uma falha na comunicação com o servidor, por favor contate o suporte" }
+
             });
 
     };
@@ -30,7 +45,7 @@ class RedefinirSenhaService {
     }
 
     _obtenhaUrlSolicitarRecuperacao = () => {
-        return "v1/autenticacao/solicitar-recuperacao-senha";
+        return "v1/autenticacao/recuperar-senha";
     }
 
     _obtenhaUrlValidarToken = (token) => {

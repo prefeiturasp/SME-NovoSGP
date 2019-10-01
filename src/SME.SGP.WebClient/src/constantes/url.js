@@ -4,3 +4,5 @@ export const URL_FREQ_PLANO_AULA = '/';
 export const URL_HOME = '/';
 export const URL_MODIFICARSENHA = '/';
 export const URL_LOGIN = '/login';
+export const URL_RECUPERARSENHA = '/recuperar-senha';
+export const URL_REDEFINIRSENHA = '';

@@ -27,6 +27,7 @@ import {
   ErroGeral,
 } from './login.css';
 import CampoTexto from '~/componentes/campoTexto';
+import { URL_RECUPERARSENHA } from '~/constantes/url';
 
 const Login = props => {
   const dispatch = useDispatch();
@@ -150,7 +151,7 @@ const Login = props => {
                             onClick={e => AoClicarBotaoAutenticar(form, e)}
                           />
                           <Centralizar className="mt-1">
-                            <Link to="/" isactive>
+                            <Link to={URL_RECUPERARSENHA} isactive>
                               <LabelLink>Esqueci minha senha</LabelLink>
                             </Link>
                           </Centralizar>
@@ -162,9 +163,9 @@ const Login = props => {
                           </ErroGeral>
                         ) : null}
                         {erroGeral &&
-                        !(form.errors.usuario || form.errors.senha) ? (
-                          <ErroGeral>{erroGeral}</ErroGeral>
-                        ) : null}
+                          !(form.errors.usuario || form.errors.senha) ? (
+                            <ErroGeral>{erroGeral}</ErroGeral>
+                          ) : null}
                       </Form>
                     )}
                   </Formik>

@@ -57,7 +57,12 @@ namespace SME.SGP.Aplicacao
 
             usuario.ValidarSenha(recuperacaoSenhaDto.NovaSenha);
 
-            await servicoEOL.AlterarSenha(usuario.Login, recuperacaoSenhaDto.NovaSenha);
+            var retornoApi = await servicoEOL.AlterarSenha(usuario.Login, recuperacaoSenhaDto.NovaSenha);
+
+            if(!retornoApi.SenhaAlterada)
+            {
+                throw new NegocioException(retornoApi.Mensagem, retornoApi.StatusRetorno);
+            }
 
             usuario.FinalizarRecuperacaoSenha();
             repositorioUsuario.Salvar(usuario);
