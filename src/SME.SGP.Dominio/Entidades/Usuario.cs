@@ -29,6 +29,12 @@ namespace SME.SGP.Dominio
             this.UltimoLogin = DateTime.Now;
         }
 
+        public void FinalizarRecuperacaoSenha()
+        {
+            TokenRecuperacaoSenha = null;
+            ExpiracaoRecuperacaoSenha = null;
+        }
+
         public void IniciarRecuperacaoDeSenha()
         {
             if (string.IsNullOrWhiteSpace(Email))
