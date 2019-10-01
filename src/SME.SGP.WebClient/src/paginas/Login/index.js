@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { useDispatch } from 'react-redux';
 import * as Yup from 'yup';
 import { Tooltip } from 'antd';
@@ -37,6 +37,8 @@ const Login = props => {
     senha: '',
   });
 
+  const inputFormik = useRef(null);
+
   let redirect = null;
 
   if (props.match && props.match.params && props.match.params.redirect)
@@ -57,7 +59,9 @@ const Login = props => {
 
   const aoPressionarTecla = e => {
     if (e.key === 'Enter') {
-      Acessar();
+      e.preventDefault();
+
+      inputFormik.current.click();
     }
   };
   document.onkeyup = aoPressionarTecla;
@@ -147,6 +151,7 @@ const Login = props => {
                             className="btn-block d-block"
                             label="Acessar"
                             color={Colors.Roxo}
+                            ref={inputFormik}
                             onClick={e => AoClicarBotaoAutenticar(form, e)}
                           />
                           <Centralizar className="mt-1">
