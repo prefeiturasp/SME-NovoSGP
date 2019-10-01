@@ -56,7 +56,7 @@ export default function Rotas() {
     tipo: RotasTipo.DesestruturadaNaoAutenticada,
   });
 
-  rotas.set('/redefinir-senha', {
+  rotas.set('/redefinir-senha/:token?/', {
     breadcrumbName: '',
     menu: '',
     parent: '/',

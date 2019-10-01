@@ -1,14 +1,26 @@
-import React, { useState, useRef, useLayoutEffect } from 'react';
+import React, { useState, useRef, useLayoutEffect, useEffect } from 'react';
 import styled from 'styled-components';
 import { Formik, Form } from 'formik';
 import LogoDoSgp from '~/recursos/LogoDoSgp.svg';
 import { Base, Colors } from '~/componentes/colors';
 import Button from '~/componentes/button';
 import history from '~/servicos/history';
-import api from '~/servicos/api';
+import Servico from '~/servicos/Paginas/RedefinirSenhaService';
+import { Nav, Logo, Div, Container, Texto, Titulo, Rotulo, CampoTexto, Validacoes, Itens, Icone, MensagemErro } from './index.css';
+import { URL_LOGIN } from '~/constantes/url';
 
-const RedefinirSenha = () => {
-  const [senha, setSenha] = useState('');
+const RedefinirSenha = (props) => {
+
+  const [dados, setDados] = useState({
+    senha: '',
+    confirmarSenha: '',
+  });
+
+  const [tokenValidado, setTokenValidado] = useState(false);
+
+  const senha = dados.senha;
+  const confirmarSenha = dados.confirmarSenha;
+
   const [validacoes, setValidacoes] = useState({
     maiuscula: '',
     minuscula: '',
@@ -16,60 +28,9 @@ const RedefinirSenha = () => {
     simbolo: '',
     acentos: '',
     tamanho: '',
+    iguais: '',
+    espacoBranco: '',
   });
-
-  const Nav = styled.nav`
-    height: 70px;
-  `;
-
-  const Logo = styled.img`
-    max-height: 65px;
-    max-width: 75px;
-  `;
-
-  const Div = styled.div`
-    button {
-      margin-right: 1rem;
-    }
-    button:last-child {
-      margin-right: 0;
-    }
-  `;
-
-  const Container = styled(Div)`
-    background: ${Base.Branco};
-    height: 100%;
-  `;
-
-  const Texto = styled(Div)`
-    font-size: 14px;
-    letter-spacing: normal;
-    line-height: normal;
-  `;
-
-  const Titulo = styled.h1`
-    font-size: 24px;
-    font-weight: bold;
-  `;
-
-  const Rotulo = styled.label`
-    color: ${Base.CinzaMako};
-  `;
-
-  const CampoTexto = styled.input`
-    color: ${Base.CinzaBotao};
-    font-size: 14px;
-  `;
-
-  const Validacoes = styled(Div)`
-    color: ${Base.CinzaBotao};
-    font-size: 12px;
-    font-weight: bold;
-  `;
-
-  const Itens = styled.ul`
-    line-height: 18px;
-  `;
 
   const Item = styled.li`
     ${props => props.status === true && `color: ${Base.Verde}`};
@@ -77,87 +38,97 @@ const RedefinirSenha = () => {
     font-weight: normal;
   `;
 
-  const Icone = styled.i`
-    font-size: 16px;
-    font-style: normal;
-    line-height: 18px;
-    margin-left: 5px;
-  `;
-
   const montaIcone = status => {
     let estilo = 'd-none';
     if (typeof status === 'boolean') {
-      if (status) estilo = 'd-inline-block fa-check';
-      else estilo = 'd-inline-block fa-times';
+      if (status) estilo = 'd-inline-block fa fa-check';
+      else estilo = 'd-inline-block fa fa-times';
     }
     return <Icone className={estilo} />;
   };
 
-  const MensagemErro = styled(Div)`
-    border: solid 2px ${Base.VermelhoNotificacao};
-    color: ${Base.VermelhoNotificacao};
-    max-height: 85px;
-    max-width: 295px;
-  `;
-
   const inputSenhaRef = useRef();
+  const inputConfSenhaRef = useRef();
 
-  useLayoutEffect(() => {
+  useEffect(() => {
     inputSenhaRef.current.focus();
   }, [senha]);
 
-  const onChangeSenha = () => {
-    setSenha(inputSenhaRef.current.value);
-    const temMaiuscula = inputSenhaRef.current.value.match(/([A-Z])/);
-    const temMinuscula = inputSenhaRef.current.value.match(/([a-z])/);
-    const temAlgarismo = inputSenhaRef.current.value.match(/([0-9])/);
-    const temSimbolo = inputSenhaRef.current.value.match(
-      /([!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?])/
-    );
-    const temAcento = inputSenhaRef.current.value.match(/([A-Za-zÀ-ÖØ-öø-ÿ])/);
+  useEffect(() => {
+    if (!tokenValidado)
+      validarToken();
+  });
 
-    let tamanho = false;
-    if (
-      inputSenhaRef.current.value.length >= 8 &&
-      inputSenhaRef.current.value.length <= 12
-    ) {
-      tamanho = true;
-    }
+  useEffect(() => {
+    inputConfSenhaRef.current.focus();
+  }, [confirmarSenha]);
+
+  const AoMudarSenha = () => {
+    setDados({ ...dados, senha: inputSenhaRef.current.value });
+
+    realizarValidacoes(inputSenhaRef.current.value);
+  };
+
+  const validarToken = async () => {
+
+    const token = props.match && props.match.params && props.match.params.token;
+
+    if (!token)
+      history.push(URL_LOGIN);
+
+    const tokenValido = await Servico.validarToken(token);
+
+    if (!tokenValido)
+      history.push(URL_LOGIN);
+    else
+      setTokenValidado(true);
+  };
+
+  const AoMudarConfSenha = () => {
+    setDados({ ...dados, confirmarSenha: inputConfSenhaRef.current.value });
+
+    realizarValidacoes(inputConfSenhaRef.current.value);
+  };
+
+  const realizarValidacoes = (valor) => {
+    const temMaiuscula = valor.match(/([A-Z])/);
+    const temMinuscula = valor.match(/([a-z])/);
+    const temAlgarismo = valor.match(/([0-9])/);
+    const temSimbolo = valor.match(/([!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?])/);
+    const temAcento = valor.match(/([À-ÖØ-öø-ÿ])/);
+    const espacoBranco = valor.includes(" ");
+
+    const iguais = inputConfSenhaRef.current.value === inputSenhaRef.current.value;
+
+    let tamanho = valor.length >= 8 && valor.length <= 12;
 
     setValidacoes({
       maiuscula: !!temMaiuscula,
       minuscula: !!temMinuscula,
-      algarismo: !!temAlgarismo,
-      simbolo: !!temSimbolo,
+      algarismo: !!temAlgarismo || !!temSimbolo,
+      simbolo: !!temSimbolo || !!temAlgarismo,
       acentuados: !temAcento,
+      espacoBranco: !espacoBranco,
       tamanho: !!tamanho,
+      iguais: !!iguais
     });
-  };
+  }
 
-  const alterarSenha = () => {
-    api
-      .post('/v1/autenticacao/TROCAR PARA RECUPERAR', {
-        usuario: 'string',
-        rfcpf: 'string',
-        usuarioExterno: 'boolean',
-        novaSenha: 'string',
-        confirmarSenha: 'string',
-      })
-      .then(res => {
-        if (res.data) {
-          return res.data;
-        }
-        return false;
-      });
-  };
+  const validarSeFormularioTemErro = () => Object.entries(validacoes).filter(validar => !validar[1]).length > 0;
 
   const onClickSair = () => {
     history.push('/');
   };
 
-  const onClickContinuar = (form, e) => {
-    form.validateForm().then(() => form.handleSubmit(e));
-    alterarSenha();
+  const alterarSenha = () => {
+    Servico.redefinirSenha();
+  };
+
+  const aoClicarContinuar = () => {
+    realizarValidacoes(inputSenhaRef.current.value);
+
+    if (!validarSeFormularioTemErro())
+      alterarSenha();
   };
 
   return (
@@ -185,103 +156,104 @@ const RedefinirSenha = () => {
                 acesso ao sistema.
               </Div>
               <Div style={{ maxWidth: '295px' }} className="w-100 mx-auto">
-                <Formik enableReinitialize>
-                  {form => (
-                    <Form>
-                      <Div
-                        style={{ marginBottom: '30px' }}
-                        className="form-group text-left"
-                      >
-                        <Rotulo htmlFor="senha">Nova Senha</Rotulo>
-                        <CampoTexto
-                          name="senha"
-                          id="senha"
-                          maxlength={50}
-                          className="form-control form-control-lg rounded"
-                          placeholder="Insira sua nova senha"
-                          type="password"
-                          value={senha}
-                          ref={inputSenhaRef}
-                          onChange={onChangeSenha}
-                        />
-                      </Div>
-                      <Div
-                        style={{ marginBottom: '25px' }}
-                        className="form-group text-left"
-                      >
-                        <Rotulo htmlFor="confirmacao">
-                          Confirmação da Nova Senha
+                <Form>
+                  <Div
+                    style={{ marginBottom: '30px' }}
+                    className="form-group text-left"
+                  >
+                    <Rotulo htmlFor="senha">Nova Senha</Rotulo>
+                    <CampoTexto
+                      name="senha"
+                      id="senha"
+                      maxlength={50}
+                      className="form-control form-control-lg rounded"
+                      placeholder="Insira sua nova senha"
+                      type="password"
+                      value={senha}
+                      ref={inputSenhaRef}
+                      onChange={AoMudarSenha}
+                    />
+                  </Div>
+                  <Div
+                    style={{ marginBottom: '25px' }}
+                    className="form-group text-left"
+                  >
+                    <Rotulo htmlFor="confirmacao">
+                      Confirmação da Nova Senha
                         </Rotulo>
-                        <CampoTexto
-                          name="confirmacao"
-                          id="confirmacao"
-                          maxlength={50}
-                          className="form-control form-control-lg rounded"
-                          placeholder="Confirme sua nova senha"
-                          type="password"
-                          icon
-                        />
-                      </Div>
-                      <Validacoes
-                        className="text-left"
-                        style={{ marginBottom: '30px' }}
-                      >
-                        <Div style={{ lineHeight: '1.8' }}>
-                          Requisitos de segurança da senha:
+                    <CampoTexto
+                      name="confirmacao"
+                      id="confirmacao"
+                      maxlength={50}
+                      className="form-control form-control-lg rounded"
+                      placeholder="Confirme sua nova senha"
+                      type="password"
+                      ref={inputConfSenhaRef}
+                      onChange={AoMudarConfSenha}
+                      icon
+                    />
+                  </Div>
+                  <Validacoes
+                    className="text-left"
+                    style={{ marginBottom: '30px' }}
+                  >
+                    <Div style={{ lineHeight: '1.8' }}>
+                      Requisitos de segurança da senha:
                         </Div>
-                        <Itens className="list-unstyled">
-                          <Item status={validacoes.maiuscula}>
-                            Uma letra maiúscula
+                    <Itens className="list-unstyled">
+                      <Item status={validacoes.maiuscula}>
+                        Uma letra maiúscula
                             {montaIcone(validacoes.maiuscula)}
-                          </Item>
-                          <Item status={validacoes.minuscula}>
-                            Uma letra minúscula
+                      </Item>
+                      <Item status={validacoes.minuscula}>
+                        Uma letra minúscula
                             {montaIcone(validacoes.minuscula)}
-                          </Item>
-                          <Item status={validacoes.algarismo}>
-                            Um algarismo (número)
-                            {montaIcone(validacoes.algarismo)}
-                          </Item>
-                          <Item status={validacoes.simbolo}>
-                            Um símbolo (caractere especial)
-                            {montaIcone(validacoes.simbolo)}
-                          </Item>
-                          <Item status={validacoes.acentuados}>
-                            Não pode permitir caracteres acentuados
+                      </Item>
+                      <Item status={validacoes.iguais}>
+                        As senhas devem ser iguais
+                            {montaIcone(validacoes.iguais)}
+                      </Item>
+                      <Item status={validacoes.espacoBranco}>
+                        Não pode conter espaços em branco
+                            {montaIcone(validacoes.espacoBranco)}
+                      </Item>
+                      <Item status={validacoes.acentuados}>
+                        Não pode conter caracteres acentuados
                             {montaIcone(validacoes.acentuados)}
-                          </Item>
-                          <Item status={validacoes.tamanho}>
-                            Deve ter no mínimo 8 e no máximo 12 caracteres
+                      </Item>
+                      <Item status={validacoes.algarismo || validacoes.simbolo}>
+                        Um número ou símbolo (caractere especial)
+                            {montaIcone(validacoes.algarismo || validacoes.simbolo)}
+                      </Item>
+                      <Item status={validacoes.tamanho}>
+                        Deve ter no mínimo 8 e no máximo 12 caracteres
                             {montaIcone(validacoes.tamanho)}
-                          </Item>
-                        </Itens>
-                      </Validacoes>
-                      {Object.entries(validacoes).filter(validar => !validar[1])
-                        .length > 0 && (
-                        <MensagemErro className="rounded p-3">
-                          Sua nova senha deve conter letras maiúsculas,
-                          minúsculas, números e símbolos. Por favor, digite
-                          outra senha
+                      </Item>
+                    </Itens>
+                  </Validacoes>
+                  {validarSeFormularioTemErro() && (
+                    <MensagemErro className="rounded p-3 mb-3">
+                      Sua nova senha deve conter letras maiúsculas,
+                      minúsculas, números e símbolos. Por favor, digite
+                      outra senha
                         </MensagemErro>
-                      )}
-                      <Div className="mx-auto d-flex justify-content-end">
-                        <Button
-                          label="Sair"
-                          color={Colors.Roxo}
-                          border
-                          onClick={onClickSair}
-                          id="btnSair"
-                        />
-                        <Button
-                          label="Continuar"
-                          color={Colors.Roxo}
-                          onClick={e => onClickContinuar(form, e)}
-                          id="btnContinuar"
-                        />
-                      </Div>
-                    </Form>
                   )}
-                </Formik>
+                  <Div className="mx-auto d-flex justify-content-end">
+                    <Button
+                      label="Sair"
+                      color={Colors.Roxo}
+                      border
+                      onClick={onClickSair}
+                      id="btnSair"
+                    />
+                    <Button
+                      label="Continuar"
+                      color={Colors.Roxo}
+                      onClick={aoClicarContinuar}
+                      id="btnContinuar"
+                    />
+                  </Div>
+                </Form>
               </Div>
             </Texto>
           </Div>
