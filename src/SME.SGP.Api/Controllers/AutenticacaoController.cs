@@ -53,13 +53,13 @@ namespace SME.SGP.Api.Controllers
             return Ok(comandosUsuario.SolicitarRecuperacaoSenha(login));
         }
 
-        [HttpPost("valida-token-recuperacao-senha")]
+        [HttpGet("valida-token-recuperacao-senha/{id}")]
         [ProducesResponseType(typeof(bool), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [AllowAnonymous]
-        public IActionResult TokenRecuperacaoSenhaEstaValido([FromBody] Guid token)
+        public IActionResult TokenRecuperacaoSenhaEstaValido(Guid id)
         {
-            return Ok(comandosUsuario.TokenRecuperacaoSenhaEstaValido(token));
+            return Ok(comandosUsuario.TokenRecuperacaoSenhaEstaValido(id));
         }
     }
 }
