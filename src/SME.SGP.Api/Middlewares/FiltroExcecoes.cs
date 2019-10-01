@@ -25,14 +25,9 @@ namespace SME.SGP.Api.Middlewares
                 SentrySdk.CaptureException(context.Exception);
             }
 
-            if (context.Exception is NegocioException)
-            {
-                context.Result = new ResultadoBaseResult(context.Exception.Message);
-            }
-            else
-            {
-                context.Result = new ResultadoBaseResult("Ocorreu um erro interno. Favor contatar o suporte.");
-            }
+            context.Result = context.Exception is NegocioException
+                ? new ResultadoBaseResult(context.Exception.Message, ((NegocioException)context.Exception).StatusCode)
+                : new ResultadoBaseResult("Ocorreu um erro interno. Favor contatar o suporte.");
 
             base.OnException(context);
         }

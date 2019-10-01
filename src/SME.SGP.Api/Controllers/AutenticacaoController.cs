@@ -59,7 +59,7 @@ namespace SME.SGP.Api.Controllers
         [AllowAnonymous]
         public IActionResult TokenRecuperacaoSenhaEstaValido(Guid token)
         {
-            return Ok(comandosUsuario.TokenRecuperacaoSenhaEstaValido(token));
+            return Ok(comandosUsuario.TokenRecuperacaoSenhaEstaValido(id));
         }
     }
 }
