@@ -37,7 +37,7 @@ const AlertaBalao = props => {
     background: ${props.background};
 
     .texto{
-      padding: 14px 5px;
+      padding: 1px 5px 14px 5px;
       display:flex;
       text-align: center;
       justify-content: center;
