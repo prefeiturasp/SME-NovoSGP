@@ -16,9 +16,9 @@ import {
   BtnLink,
   InseridoAlterado,
   ListaItens,
-  Planejamento,
   Titulo,
   TituloAno,
+  RegistroMigrado,
 } from './planoCiclo.css';
 import modalidade from '~/dtos/modalidade';
 
@@ -173,7 +173,10 @@ export default function PlanoCiclo() {
   function configuraValoresPlanoCiclo(ciclo) {
     if (ciclo.data.idsMatrizesSaber && ciclo.data.idsMatrizesSaber.length) {
       ciclo.data.idsMatrizesSaber.forEach(id => {
-        document.getElementById(`matriz-${id}`).click();
+        const matriz = document.querySelector(
+          `#matriz-${id}:not([opcao-selecionada='true'])`
+        );
+        if (matriz) matriz.click();
       });
     }
     if (
@@ -181,7 +184,10 @@ export default function PlanoCiclo() {
       ciclo.data.idsObjetivosDesenvolvimentoSustentavel.length
     ) {
       ciclo.data.idsObjetivosDesenvolvimentoSustentavel.forEach(id => {
-        document.getElementById(`ods-${id}`).click();
+        const objetivo = document.querySelector(
+          `#ods-${id}:not([opcao-selecionada='true'])`
+        );
+        if (objetivo) objetivo.click();
       });
     }
     setDescricaoCiclo(ciclo.data.descricao);
@@ -302,12 +308,12 @@ export default function PlanoCiclo() {
     const anoLetivo = String(usuario.turmaSelecionada[0].anoLetivo);
     const codEscola = String(usuario.turmaSelecionada[0].codEscola);
 
-    const textoReal = textEditorRef.current.state.value.replace(/<[^>]*>/g, '').trim();
+    const textoReal = textEditorRef.current.state.value
+      .replace(/<[^>]*>/g, '')
+      .trim();
 
     if (!textoReal) {
-      erro(
-        'A descrição deve ser informada'
-      );
+      erro('A descrição deve ser informada');
       return;
     }
     const params = {
@@ -435,21 +441,23 @@ export default function PlanoCiclo() {
           />
         )}
       </div>
-      <div className="col-md-12">
-        <Planejamento>PLANEJAMENTO</Planejamento>
+      <div className="col-md-12 mt-1">
         <Titulo>
           {modalidadeEja ? 'Plano de Etapa' : 'Plano de Ciclo'}
           <TituloAno>
             {' / 2019 '}
             <i className="fas fa-retweet" />
           </TituloAno>
+          {registroMigrado ? (
+            <RegistroMigrado className="float-right">
+              Registro Migrado
+            </RegistroMigrado>
+          ) : (
+            ''
+          )}
         </Titulo>
       </div>
-
       <Card>
-        <div className="col-md-12 pb-3">
-          {registroMigrado ? <span> REGISTRO MIGRADO </span> : ''}
-        </div>
         <div className="col-md-12">
           <div className="row mb-3">
             <div className="col-md-6">

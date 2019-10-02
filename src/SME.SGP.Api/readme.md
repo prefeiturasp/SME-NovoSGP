@@ -37,3 +37,7 @@ Com este comando, a base de dados estará disponível, com todos os scripts já 
 
    - *Nome da variável:* ConnectionStrings__SGP-Redis
    - *Valor da variável:*  localhost
+
+   - *Nome da variável:* JwtTokenSettings__IssuerSigningKey
+   - *Valor da variável:*  2A3B40C8D2215897C5EF1CC6D7D8469C687D17FDF85E675B6EBD9FBA26615B93805556652B9DDFD96CA9565C8D42EA83EF44CAC3B79AF64B343461B52FBB62EA
+

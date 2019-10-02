@@ -255,6 +255,16 @@ export const MenuScope = styled.div`
     align-items: center
   }
 
+  .submenu-subnivel{
+    padding-left: 25px !important;
+    color: ${Base.CinzaMenuItem} !important;
+    font-size: 14px !important;
+
+    &:hover{
+      color: ${Base.Roxo} !important;
+    }
+  }
+
   /*----MENU RETRAÍDO----*/
   .ant-menu-vertical{
     width:100%;
