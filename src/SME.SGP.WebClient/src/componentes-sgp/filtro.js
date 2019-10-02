@@ -56,6 +56,7 @@ const Filtro = () => {
 
   const Container = styled.div`
     width: 568px !important;
+    z-index: 100;
     @media (max-width: 575.98px) {
       max-width: 80% !important;
     }
@@ -135,7 +136,7 @@ const Filtro = () => {
   };
 
   useEffect(() => {
-    if (usuario.rf.length > 0) {
+    if (usuario.rf) {
       if (dados.length === 0) buscaDadosPoRf(usuario.rf);
     }
     if (usuario.turmaSelecionada.length > 0) {
@@ -444,6 +445,14 @@ const Filtro = () => {
     event.preventDefault();
     if (resultadosFiltro) {
       if (resultadosFiltro.length === 1) {
+        setModalidadeFiltroSelecionada(
+          resultadosFiltro[0].codModalidade.toString()
+        );
+        setDreFiltroSelecionada(resultadosFiltro[0].codDre);
+        setUnidadeEscolarFiltroSelecionada(resultadosFiltro[0].codEscola);
+        setTimeout(() => {
+          setTurmaFiltroSelecionada(resultadosFiltro[0].codTurma.toString());
+        }, 1000);
         selecionaTurmaAutocomplete(resultadosFiltro[0]);
       } else {
         const selecionado = document.querySelector(
@@ -454,6 +463,14 @@ const Filtro = () => {
           if (indice) {
             const resultado = resultadosFiltro[indice];
             if (resultado) {
+              setModalidadeFiltroSelecionada(
+                resultado.codModalidade.toString()
+              );
+              setDreFiltroSelecionada(resultado.codDre);
+              setUnidadeEscolarFiltroSelecionada(resultado.codEscola);
+              setTimeout(() => {
+                setTurmaFiltroSelecionada(resultado.codTurma.toString());
+              }, 1000);
               selecionaTurmaAutocomplete(resultado);
             }
           }

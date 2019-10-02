@@ -1,7 +1,9 @@
 ﻿using Newtonsoft.Json;
+using SME.SGP.Dominio;
 using SME.SGP.Dto;
 using System.Collections.Generic;
 using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Text;
 using Xunit;
 using Xunit.Extensions.Ordering;
@@ -27,11 +29,14 @@ namespace SME.SGP.Integracao.Teste
         {
             _fixture._clientApi.DefaultRequestHeaders.Clear();
 
+            _fixture._clientApi.DefaultRequestHeaders.Authorization =
+                new AuthenticationHeaderValue("Bearer", _fixture.GerarToken(new Permissao[] { Permissao.PDC_I, Permissao.PDC_C }));
+
             var planoDeCicloDto = new PlanoCicloDto();
             planoDeCicloDto.Ano = 2019;
             planoDeCicloDto.CicloId = 1;
             planoDeCicloDto.Descricao = "Teste";
-            planoDeCicloDto.EscolaId = 1;
+            planoDeCicloDto.EscolaId = "1";
             planoDeCicloDto.IdsMatrizesSaber = new List<long> { 1 };
             planoDeCicloDto.IdsObjetivosDesenvolvimento = new List<long> { 1 };
 
@@ -65,11 +70,14 @@ namespace SME.SGP.Integracao.Teste
         {
             _fixture._clientApi.DefaultRequestHeaders.Clear();
 
+            _fixture._clientApi.DefaultRequestHeaders.Authorization =
+                new AuthenticationHeaderValue("Bearer", _fixture.GerarToken(new Permissao[] { Permissao.PDC_I, Permissao.PDC_C }));
+
             var planoDeCicloDto = new PlanoCicloDto();
             planoDeCicloDto.Ano = 2020;
             planoDeCicloDto.CicloId = 1;
             planoDeCicloDto.Descricao = "Teste";
-            planoDeCicloDto.EscolaId = 1;
+            planoDeCicloDto.EscolaId = "1";
             planoDeCicloDto.IdsMatrizesSaber = new List<long> { 1 };
             planoDeCicloDto.IdsObjetivosDesenvolvimento = new List<long> { 1 };
 
@@ -79,7 +87,7 @@ namespace SME.SGP.Integracao.Teste
 
             if (postResult.IsSuccessStatusCode)
             {
-                var planoCicloCompletoResult = _fixture._clientApi.GetAsync("api/v1/planos/ciclo/2019/1/1").Result;
+                var planoCicloCompletoResult = _fixture._clientApi.GetAsync("api/v1/planos/ciclo/2020/1/1").Result;
                 if (planoCicloCompletoResult.IsSuccessStatusCode)
                 {
                     var planoCicloCompletoDto = JsonConvert.DeserializeObject<PlanoCicloCompletoDto>(planoCicloCompletoResult.Content.ReadAsStringAsync().Result);

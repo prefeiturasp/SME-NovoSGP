@@ -30,17 +30,27 @@ namespace SME.SGP.Aplicacao
             this.configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
         }
 
+        public bool DisciplinaPossuiObjetivosDeAprendizagem(long codigoDisciplina)
+        {
+            var objetivos = Listar().Result;
+            if (objetivos == null)
+            {
+                throw new NegocioException("Não foi possível obter a lista de objetivos de aprendizagem");
+            }
+            IEnumerable<ComponenteCurricular> componentesCurriculares = ObterComponentesCurriculares();
+            var componentesFiltro = componentesCurriculares.Where(c => c.CodigoEOL == codigoDisciplina);
+            var componentesJurema = componentesFiltro?.Select(c => c.CodigoJurema);
+            if (componentesJurema == null)
+            {
+                return false;
+            }
+            return objetivos.Any(c => componentesJurema.Contains(c.IdComponenteCurricular));
+        }
+
         public async Task<IEnumerable<ObjetivoAprendizagemDto>> Filtrar(FiltroObjetivosAprendizagemDto filtroObjetivosAprendizagemDto)
         {
             var objetivos = await Listar();
-            var componentesCurriculares = repositorioComponenteCurricular.Listar();
-            if (componentesCurriculares == null)
-            {
-                throw new NegocioException("Não foi possível recuperar a lista de componentes curriculares.");
-            }
-
-            var componentesFiltro = componentesCurriculares.Where(c => filtroObjetivosAprendizagemDto.ComponentesCurricularesIds.Contains(c.CodigoEOL));
-            var componentesJurema = componentesFiltro.Select(c => c.CodigoJurema);
+            var componentesJurema = ObterComponentesJuremaPorIdEOL(filtroObjetivosAprendizagemDto.ComponentesCurricularesIds);
 
             return objetivos?
                 .Where(c => componentesJurema.Contains(c.IdComponenteCurricular)
@@ -49,7 +59,7 @@ namespace SME.SGP.Aplicacao
 
         public async Task<IEnumerable<ObjetivoAprendizagemDto>> Listar()
         {
-            var objetivos = new List<ObjetivoAprendizagemDto>();
+            List<ObjetivoAprendizagemDto> objetivos;
 
             var objetivosCacheString = repositorioCache.Obter("ObjetivosAprendizagem");
 
@@ -87,6 +97,26 @@ namespace SME.SGP.Aplicacao
                     };
                 }
             }
+        }
+
+        private IEnumerable<ComponenteCurricular> ObterComponentesCurriculares()
+        {
+            var componentesCurriculares = repositorioComponenteCurricular.Listar();
+            if (componentesCurriculares == null)
+            {
+                throw new NegocioException("Não foi possível recuperar a lista de componentes curriculares.");
+            }
+
+            return componentesCurriculares;
+        }
+
+        private IEnumerable<long> ObterComponentesJuremaPorIdEOL(IEnumerable<long> componentesCurricularesIds)
+        {
+            IEnumerable<ComponenteCurricular> componentesCurriculares = ObterComponentesCurriculares();
+
+            var componentesFiltro = componentesCurriculares.Where(c => componentesCurricularesIds.Contains(c.CodigoEOL));
+            var componentesJurema = componentesFiltro.Select(c => c.CodigoJurema);
+            return componentesJurema;
         }
     }
 }
