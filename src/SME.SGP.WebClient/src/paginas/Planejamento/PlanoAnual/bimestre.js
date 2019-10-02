@@ -214,7 +214,9 @@ const BimestreComponent = props => {
                       data-index={indice}
                       alt={materia.materia}
                       key={materia.codigo}
-                      disabled={disabled || LayoutEspecial}
+                      disabled={
+                        disabled || LayoutEspecial || !materia.possuiObjetivos
+                      }
                       readonly={LayoutEspecial}
                       className={`badge badge-pill border text-dark bg-white font-weight-light px-2 py-1 ${
                         LayoutEspecial ? '' : 'mt-3'

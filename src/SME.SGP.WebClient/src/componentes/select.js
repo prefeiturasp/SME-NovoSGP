@@ -21,7 +21,7 @@ const Container = styled.div`
     height: 38px;
   }
   .ant-select-selection__rendered {
-    width: 100%;
+    width: 98%;
   }
   .ant-select-selection__placeholder {
     display: block;

@@ -13,6 +13,7 @@ import {
 } from '../../constantes/url';
 import { salvarRf } from '../../redux/modulos/usuario/actions';
 import { store } from '../../redux';
+import ListaNotificacoes from './listaNotificacoes';
 import modalidade from '~/dtos/modalidade';
 
 const Principal = props => {
@@ -23,60 +24,70 @@ const Principal = props => {
   const [turmaSelecionada, setTurmaSelecionada] = useState(false);
   const [modalidadeEja, setModalidadeEja] = useState(false);
 
-  const FiltroStore = useSelector(store => store.usuario);
+  const filtroStore = useSelector(state => state.usuario);
 
   useEffect(() => {
     if (props.match.params.rf) {
       const { rf } = props.match.params;
       store.dispatch(salvarRf(rf));
     }
+
     validarFiltro();
   }, []);
 
   useEffect(() => {
     validarFiltro();
-  }, [FiltroStore]);
+  }, [filtroStore]);
 
   useEffect(() => {
     if (
-      FiltroStore &&
-      FiltroStore.turmaSelecionada &&
-      FiltroStore.turmaSelecionada.length &&
-      FiltroStore.turmaSelecionada[0].codModalidade == modalidade.EJA
+      filtroStore &&
+      filtroStore.turmaSelecionada &&
+      filtroStore.turmaSelecionada.length &&
+      filtroStore.turmaSelecionada[0].codModalidade == modalidade.EJA
     ) {
       setModalidadeEja(true);
     } else {
       setModalidadeEja(false);
     }
-  }, [FiltroStore.turmaSelecionada]);
+  }, [filtroStore.turmaSelecionada]);
 
   const validarFiltro = () => {
-    if (!FiltroStore.turmaSelecionada) {
+    if (!filtroStore.turmaSelecionada) {
       setTurmaSelecionada(false);
       setEscolaSelecionada(false);
       return;
     }
 
-    const temTurma = FiltroStore.turmaSelecionada.length > 0;
+    const temTurma = filtroStore.turmaSelecionada.length > 0;
     const temEscola =
       temTurma &&
-      (FiltroStore.turmaSelecionada[0].ue !== '' &&
-        typeof FiltroStore.turmaSelecionada[0].ue !== 'undefined');
+      (filtroStore.turmaSelecionada[0].ue !== '' &&
+        typeof filtroStore.turmaSelecionada[0].ue !== 'undefined');
 
     setTurmaSelecionada(temTurma);
     setEscolaSelecionada(temEscola);
   };
 
-  const ehDisabled = tipo => {
-    if (!escolaSelecionada) return true;
+  useEffect(() => {
+    if (props.match.params && props.match.params.rf) {
+      const { rf } = props.match.params;
+      store.dispatch(salvarRf(rf));
+    }
+  }, []);
 
-    if (tipo === CICLOS_TYPE) return !cicloLiberado();
-
-    return !turmaSelecionada;
-  };
+  useEffect(() => {
+    validarFiltro();
+  }, [filtroStore]);
 
   const cicloLiberado = () => {
     return escolaSelecionada;
+  };
+
+  const isDesabilitado = tipo => {
+    if (!escolaSelecionada) return true;
+    if (tipo === CICLOS_TYPE) return !cicloLiberado();
+    return !turmaSelecionada;
   };
 
   const Container = styled.div`
@@ -85,12 +96,17 @@ const Principal = props => {
     margin-top: 20px !important;
   `;
 
-  const Img = styled.img`
-    width: 100% !important;
-  `;
-
   const Label = styled.h5`
     font-size: 16px !important;
+  `;
+
+  const Dashboard = styled.div`
+    .alinhar-itens-topo{
+      align-items: initial !important;
+    }
+    .card{
+      height: 100% !important;
+    }
   `;
 
   return (
@@ -106,58 +122,62 @@ const Principal = props => {
                   mensagem: 'Você precisa escolher uma turma.',
                   estiloTitulo: { fontSize: '18px' },
                 }}
-                className="mb-0"
               />
             </Container>
           </Grid>
         </Row>
       ) : null}
-      <Card>
+      <Card className="rounded mb-4">
         <Grid cols={12}>
           <Label>
-            <span className="fas fa-thumbtack m-r-10 m-b-10" />
+            <span className="fas fa-thumbtack mr-2 mb-0" />
             Notificações
           </Label>
-          <Row>
+          <Row className="pt-3 pb-4">
             <Grid cols={12}>
-              <Img src="https://i.imgur.com/UOrwcA9.png" />
+              <ListaNotificacoes />
             </Grid>
           </Row>
         </Grid>
       </Card>
-      <Row>
-        <Grid cols={12} className="form-inline">
-          <CardLink
-            cols={[4, 4, 4, 12]}
-            iconSize="90px"
-            url={URL_FREQ_PLANO_AULA}
-            disabled={(e => ehDisabled(FREQUENCIA_TYPE))()}
-            icone="fa-columns"
-            pack="fas"
-            label="Frequência/ Plano de Aula"
-          />
-          <CardLink
-            cols={[4, 4, 4, 12]}
-            classHidden="hidden-xs-down"
-            iconSize="90px"
-            url={URL_PLANO_CICLO}
-            disabled={(e => ehDisabled(CICLOS_TYPE))()}
-            icone="fa-calendar-minus"
-            pack="far"
-            label={ modalidadeEja ? 'Plano de Etapa' : 'Plano de Ciclo'}
-          />
-          <CardLink
-            cols={[4, 4, 4, 12]}
-            classHidden="hidden-xs-down"
-            iconSize="90px"
-            url={URL_PLANO_ANUAL}
-            disabled={(e => ehDisabled(ANUAL_TYPE))()}
-            icone="fa-calendar-alt"
-            pack="far"
-            label={ modalidadeEja ? 'Plano Semestral' : 'Plano Anual'}
-          />
-        </Grid>
-      </Row>
+      <Dashboard>
+        <Row>
+          <Grid cols={12} className="form-inline alinhar-itens-topo">
+            <CardLink
+              cols={[4, 4, 4, 12]}
+              iconSize="90px"
+              url={URL_FREQ_PLANO_AULA}
+              disabled={isDesabilitado(FREQUENCIA_TYPE)}
+              icone="fa-columns"
+              pack="fas"
+              label="Frequência/ Plano de Aula"
+              minHeight="177px"
+            />
+            <CardLink
+              cols={[4, 4, 4, 12]}
+              classHidden="hidden-xs-down"
+              iconSize="90px"
+              url={URL_PLANO_CICLO}
+              disabled={isDesabilitado(CICLOS_TYPE)}
+              icone="fa-calendar-minus"
+              pack="far"
+              label={modalidadeEja ? 'Plano de Etapa' : 'Plano de Ciclo'}
+              minHeight="177px"
+            />
+            <CardLink
+              cols={[4, 4, 4, 12]}
+              classHidden="hidden-xs-down"
+              iconSize="90px"
+              url={URL_PLANO_ANUAL}
+              disabled={isDesabilitado(ANUAL_TYPE)}
+              icone="fa-calendar-alt"
+              pack="far"
+              label={modalidadeEja ? 'Plano Semestral' : 'Plano Anual'}
+              minHeight="177px"
+            />
+          </Grid>
+        </Row>
+      </Dashboard>
     </div>
   );
 };

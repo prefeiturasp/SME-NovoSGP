@@ -12,7 +12,7 @@ namespace SME.SGP.Aplicacao
             this.repositorioPlanoCiclo = repositorioPlanoCiclo ?? throw new System.ArgumentNullException(nameof(repositorioPlanoCiclo));
         }
 
-        public PlanoCicloCompletoDto ObterPorAnoCicloEEscola(int ano, long cicloId, long escolaId)
+        public PlanoCicloCompletoDto ObterPorAnoCicloEEscola(int ano, long cicloId, string escolaId)
         {
             return repositorioPlanoCiclo.ObterPlanoCicloComMatrizesEObjetivos(ano, cicloId, escolaId);
         }

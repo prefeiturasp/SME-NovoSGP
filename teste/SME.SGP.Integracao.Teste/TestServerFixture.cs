@@ -5,6 +5,8 @@ using Microsoft.Extensions.PlatformAbstractions;
 using Npgsql;
 using Postgres2Go;
 using SME.SGP.Api;
+using SME.SGP.Aplicacao.Servicos;
+using SME.SGP.Dominio;
 using System;
 using System.IO;
 using System.Linq;
@@ -17,6 +19,7 @@ namespace SME.SGP.Integracao.Teste
     {
         private readonly TestServer _testServerCliente;
         private readonly PostgresRunner runner;
+        private readonly ServicoTokenJwt servicoTokenJwt;
 
         public TestServerFixture()
         {
@@ -39,6 +42,12 @@ namespace SME.SGP.Integracao.Teste
                 _testServerCliente = new TestServer(builderCliente);
 
                 _clientApi = _testServerCliente.CreateClient();
+
+                var config = new ConfigurationBuilder()
+                    .AddJsonFile(ObterArquivoConfiguracao(), optional: false)
+                    .Build();
+
+                servicoTokenJwt = new ServicoTokenJwt(config);
             }
             catch (Exception ex)
             {
@@ -55,6 +64,19 @@ namespace SME.SGP.Integracao.Teste
             _clientApi.Dispose();
             _testServerCliente.Dispose();
             runner.Dispose();
+        }
+
+        public string GerarToken(Permissao[] permissoes)
+        {
+            return servicoTokenJwt.GerarToken("teste", permissoes);
+        }
+
+        public string ObterArquivoConfiguracao()
+        {
+            var testProjectPath = PlatformServices.Default.Application.ApplicationBasePath;
+            var relativePathToHostProject = @"../../../../../src/SME.SGP.Api/appsettings.teste-integrado.json";
+
+            return Path.GetFullPath(Path.Combine(testProjectPath, relativePathToHostProject));
         }
 
         public string ObterScripts()
