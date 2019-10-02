@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import Cabecalho from '~/componentes-sgp/cabecalho';
 import Card from '~/componentes/card';
 import styled from 'styled-components';
-import { Base } from '~/componentes/colors';
+import { Base, Colors } from '~/componentes/colors';
 import history from '~/servicos/history';
 import Button from '~/componentes/button';
 import ModalConteudoHtml from '~/componentes/modalConteudoHtml';
@@ -18,16 +18,18 @@ const MeusDados = () => {
   const [alterarFoto, setAlterarFoto] = useState(false);
   const [ehFotoInvalida, setEhFotoInvalida] = useState(false);
   const [desabilitaConfirmar, setDesabilitaConfirmar] = useState(true);
+  const [ocultarAlteracoesNaoSalvas, setOcultarAlteracoesNaoSalvas] = useState(true);
 
   const irParaDashboard = () => {
     history.push('/');
   }
 
-  const mostrarModal = () => {
+  const ocultarModal = () => {
     setEhFotoInvalida(false);
     setFoto(usuarioStore.meusDados.foto);
     setAlterarFoto(!alterarFoto);
     setDesabilitaConfirmar(true);
+    setOcultarAlteracoesNaoSalvas(true);
   }
 
   const selecionarNovaFoto = () => {
@@ -36,25 +38,35 @@ const MeusDados = () => {
 
   const arquivoSelecionado = event => {
     const arquivo = event.target.files[0];
-    if (arquivo && arquivo.size <= 2000000) {
-      const img = new Image();
-      img.src = window.URL.createObjectURL(arquivo);
-      img.onload = e => {
-        if (img.naturalHeight > 180 && img.naturalWidth > 180) {
-          const fileReader = new FileReader();
-          fileReader.readAsDataURL(arquivo);
-          fileReader.onloadend = () => {
-            const novaFoto = fileReader.result;
-            setEhFotoInvalida(false);
-            setFoto(novaFoto);
-            setDesabilitaConfirmar(false)
+    if (arquivo) {
+      if (arquivo.size <= 2000000) {
+        const img = new Image();
+        img.src = window.URL.createObjectURL(arquivo);
+        img.onload = e => {
+          if (img.naturalHeight > 180 && img.naturalWidth > 180) {
+            const fileReader = new FileReader();
+            fileReader.readAsDataURL(arquivo);
+            fileReader.onloadend = () => {
+              const novaFoto = fileReader.result;
+              setEhFotoInvalida(false);
+              setFoto(novaFoto);
+              setDesabilitaConfirmar(false)
+            }
+          } else {
+            setEhFotoInvalida(true);
           }
-        } else {
-          setEhFotoInvalida(true);
         }
+      } else {
+        setEhFotoInvalida(true);
       }
+    }
+  }
+
+  const cancelarTrocaFoto = () => {
+    if (foto !== usuarioStore.meusDados.foto) {
+      setOcultarAlteracoesNaoSalvas(false);
     } else {
-      setEhFotoInvalida(true);
+      ocultarModal();
     }
   }
 
@@ -66,53 +78,57 @@ const MeusDados = () => {
           key={'trocarFoto'}
           visivel={alterarFoto}
           onConfirmacaoPrincipal={() => { }}
-          onConfirmacaoSecundaria={mostrarModal}
+          onConfirmacaoSecundaria={cancelarTrocaFoto}
           onClose={() => { }}
           labelBotaoPrincipal="Confirmar"
           labelBotaoSecundario="Cancelar"
           desabilitarBotaoPrincipal={desabilitaConfirmar}
+          esconderBotoes={!ocultarAlteracoesNaoSalvas}
           titulo="Alterar Foto"
           closable={true}
         >
-          <DadosPerfil className="col-12">
-            <img className="img-edit" id="foto-perfil" src={foto} />
-          </DadosPerfil>
-          <DadosPerfil className="col-12">
-            <SelecionarFoto className="text-center" onClick={selecionarNovaFoto}>
-              <input type="file" hidden accept="image/jpeg, image/png"
-                id="selecionar-foto" onChange={arquivoSelecionado} />
-              Selecionar nova foto
+          <div id="troca-foto" hidden={!ocultarAlteracoesNaoSalvas}>
+            <DadosPerfil className="col-12">
+              <img className="img-edit" id="foto-perfil" src={foto} />
+            </DadosPerfil>
+            <DadosPerfil className="col-12">
+              <SelecionarFoto className="text-center" onClick={selecionarNovaFoto}>
+                <input type="file" hidden accept="image/jpeg, image/png"
+                  id="selecionar-foto" onChange={arquivoSelecionado} />
+                Selecionar nova foto
             </SelecionarFoto>
-            <AlertaBalao maxWidth={294} marginTop={14} mostrarAlerta={ehFotoInvalida}
-              texto="A resolução mínima é de 180 x 180 pixels, com tamanho máximo de 2Mb." />
-          </DadosPerfil>
-        </ModalConteudoHtml>
-        <MensagemAlerta>
-          <span className="titulo">Alerta</span><br />
-          <span>Suas alterações não foram salvas, deseja salvar agora?</span>
-          <div className="d-flex justify-content-end">
-            <Button
-              key="btn-confirma-alteracao"
-              label="Não"
-              color={Base.Azul}
-              bold
-              border
-              className="mr-2 padding-btn-confirmacao"
-            />
-            <Button
-              key="btn-cancela-alteracao"
-              label="Sim"
-              color={Base.Azul}
-              bold
-              className="padding-btn-confirmacao"
-            />
+              <AlertaBalao maxWidth={294} marginTop={14} mostrarAlerta={ehFotoInvalida}
+                texto="A resolução mínima é de 180 x 180 pixels, com tamanho máximo de 2Mb." />
+            </DadosPerfil>
           </div>
-        </MensagemAlerta>
+          <MensagemAlerta id="mensagem-alerta" hidden={ocultarAlteracoesNaoSalvas}>
+            <span className="titulo">Alerta</span><br />
+            <span>Suas alterações não foram salvas, deseja salvar agora?</span>
+            <div className="d-flex justify-content-end p-t-20">
+              <Button
+                key="btn-confirma-alteracao"
+                label="Não"
+                color={Colors.Azul}
+                bold
+                border
+                className="mr-2 padding-btn-confirmacao"
+                onClick={ocultarModal}
+              />
+              <Button
+                key="btn-cancela-alteracao"
+                label="Sim"
+                color={Colors.Azul}
+                bold
+                className="padding-btn-confirmacao"
+              />
+            </div>
+          </MensagemAlerta>
+        </ModalConteudoHtml>
         <Topo className="col-12 d-flex justify-content-end">
           <Button
             label="Voltar"
             icon="arrow-left"
-            color={Base.Azul}
+            color={Colors.Azul}
             border
             className="mr-3"
             onClick={irParaDashboard}
@@ -121,7 +137,7 @@ const MeusDados = () => {
         <Perfil className="col-4">
           <DadosPerfil className="col-12">
             <img id="foto-perfil" className="img-profile" src={usuarioStore.meusDados.foto} />
-            <Botao className="text-center" onClick={mostrarModal}>
+            <Botao className="text-center" onClick={ocultarModal}>
               <Icone>
                 <i className="fas fa-camera" />
               </Icone>
