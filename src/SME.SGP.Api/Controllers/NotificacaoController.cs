@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using SME.SGP.Api.Filtros;
 using SME.SGP.Aplicacao;
+using SME.SGP.Dominio;
 using SME.SGP.Dto;
 using System.Collections.Generic;
 
@@ -23,6 +24,7 @@ namespace SME.SGP.Api.Controllers
         [HttpDelete]
         [ProducesResponseType(200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [Permissao(Permissao.N_E, Policy = "Bearer")]
         public IActionResult Delete(long[] notificacoesId)
         {
             return Ok(comandosNotificacao.Excluir(notificacoesId));
@@ -31,6 +33,7 @@ namespace SME.SGP.Api.Controllers
         [HttpGet]
         [ProducesResponseType(typeof(IEnumerable<NotificacaoBasicaDto>), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [Permissao(Permissao.N_C, Policy = "Bearer")]
         public IActionResult Get([FromQuery]NotificacaoFiltroDto notificacaoFiltroDto)
         {
             return Ok(consultasNotificacao.Listar(notificacaoFiltroDto));
@@ -40,6 +43,7 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(200)]
         [ProducesResponseType(typeof(NotificacaoDetalheDto), 500)]
         [Route("{notificacaoId}")]
+        [Permissao(Permissao.N_C, Policy = "Bearer")]
         public IActionResult Get(long notificacaoId)
         {
             return Ok(consultasNotificacao.Obter(notificacaoId));
@@ -49,6 +53,7 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [Route("status/lida")]
+        [Permissao(Permissao.N_A, Policy = "Bearer")]
         public IActionResult MarcarComoLida(IList<long> notificaoesId)
         {
             return Ok(comandosNotificacao.MarcarComoLida(notificaoesId));
@@ -58,15 +63,29 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(IEnumerable<EnumeradoRetornoDto>), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [Route("categorias")]
+        [Permissao(Permissao.N_C, Policy = "Bearer")]
         public IActionResult ObtemCategorias()
         {
             return Ok(consultasNotificacao.ObterCategorias());
         }
 
         [HttpGet]
+        [ProducesResponseType(typeof(object), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [Route("quantidade/naolidas")]
+        public IActionResult ObtemQuantidadeNaoLida(int anoLetivo, string usuarioRf)
+        {
+            return Ok(new
+            {
+                quantidade = consultasNotificacao.QuantidadeNotificacoesNaoLidas(anoLetivo, usuarioRf)
+            });
+        }
+
+        [HttpGet]
         [ProducesResponseType(typeof(IEnumerable<EnumeradoRetornoDto>), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [Route("status")]
+        [Permissao(Permissao.N_C, Policy = "Bearer")]
         public IActionResult ObtemStatus()
         {
             return Ok(consultasNotificacao.ObterStatus());
@@ -76,14 +95,25 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(IEnumerable<EnumeradoRetornoDto>), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [Route("tipos")]
+        [Permissao(Permissao.N_C, Policy = "Bearer")]
         public IActionResult ObtemTipos()
         {
             return Ok(consultasNotificacao.ObterTipos());
         }
 
+        [HttpGet]
+        [ProducesResponseType(typeof(NotificacaoBasicaListaDto), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [Route("resumo")]
+        public IActionResult ObtenhaPorRFAnoLetivo(int anoLetivo, string usuarioRf)
+        {
+            return Ok(consultasNotificacao.ObterNotificacaoBasicaLista(anoLetivo, usuarioRf));
+        }
+
         [HttpPost]
         [ProducesResponseType(200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [Permissao(Permissao.N_I, Policy = "Bearer")]
         public IActionResult Post([FromBody]NotificacaoDto notificacaoDto)
         {
             comandosNotificacao.Salvar(notificacaoDto);

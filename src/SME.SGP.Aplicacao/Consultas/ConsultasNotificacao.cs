@@ -29,8 +29,8 @@ namespace SME.SGP.Aplicacao
                    {
                        Id = r.Id,
                        Titulo = r.Titulo,
-                       Data = r.CriadoEm.ToString(),
-                       DescricaoStatus = r.Status.ToString(),
+                       Data = r.CriadoEm,
+                       DescricaoStatus = r.Status.GetAttribute<DisplayAttribute>().Name,
                        Status = r.Status,
                        Categoria = r.Categoria,
                        DescricaoCategoria = r.Categoria.GetAttribute<DisplayAttribute>().Name,
@@ -39,6 +39,23 @@ namespace SME.SGP.Aplicacao
                        PodeRemover = r.PodeRemover,
                        PodeMarcarComoLida = r.DeveMarcarComoLido
                    };
+        }
+
+        public IEnumerable<NotificacaoBasicaDto> ListarPorAnoLetivoRf(int anoLetivo, string usuarioRf, int limite = 5)
+        {
+            var notificacao = repositorioNotificacao.ObterNotificacoesPorAnoLetivoERf(anoLetivo, usuarioRf, limite);
+
+            return notificacao.Select(x => new NotificacaoBasicaDto
+            {
+                Id = x.Id,
+                Categoria = x.Categoria,
+                Codigo = x.Codigo,
+                Data = x.CriadoEm,
+                DescricaoStatus = x.Mensagem,
+                Status = x.Status,
+                Tipo = x.Tipo.ToString(),
+                Titulo = x.Titulo
+            });
         }
 
         public NotificacaoDetalheDto Obter(long notificacaoId)
@@ -65,6 +82,15 @@ namespace SME.SGP.Aplicacao
             }).ToList();
         }
 
+        public NotificacaoBasicaListaDto ObterNotificacaoBasicaLista(int anoLetivo, string usuarioRf)
+        {
+            return new NotificacaoBasicaListaDto
+            {
+                Notificacoes = ListarPorAnoLetivoRf(anoLetivo, usuarioRf),
+                QuantidadeNaoLidas = QuantidadeNotificacoesNaoLidas(anoLetivo, usuarioRf)
+            };
+        }
+
         public IEnumerable<EnumeradoRetornoDto> ObterStatus()
         {
             return NotificacaoCategoria.GetValues(typeof(NotificacaoStatus)).Cast<NotificacaoStatus>().Select(v => new EnumeradoRetornoDto
@@ -81,6 +107,11 @@ namespace SME.SGP.Aplicacao
                 Descricao = v.GetAttribute<DisplayAttribute>().Name,
                 Id = (int)v
             }).ToList();
+        }
+
+        public int QuantidadeNotificacoesNaoLidas(int anoLetivo, string usuarioRf)
+        {
+            return repositorioNotificacao.ObterQuantidadeNotificacoesNaoLidasPorAnoLetivoERf(anoLetivo, usuarioRf);
         }
 
         private static NotificacaoDetalheDto MapearEntidadeParaDetalheDto(Dominio.Notificacao retorno)

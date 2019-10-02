@@ -18,6 +18,8 @@ const Sider = () => {
 
   const usuario = useSelector(store => store.usuario);
 
+  const subMenusPrincipais = ['subDiarioClasse', 'subPlanejamento', 'subFechamento', 'subRelatorios', 'subGestao', 'subConfiguracoes'];
+
   useEffect(() => {
     verificaSelecaoMenu(NavegacaoStore.rotaAtiva);
   }, [NavegacaoStore.rotaAtiva]);
@@ -49,9 +51,11 @@ const Sider = () => {
       const alturaItens = (quantidadeItens * 40) + 6;
       const alturaTela = window.innerHeight
       const posicaoY = itemMenu.getBoundingClientRect().y;
+      const posicaoRight = itemMenu.getBoundingClientRect().right;
       const alturaTotalItens = posicaoY + alturaItens;
       const posicaoTop = alturaTotalItens > alturaTela ? (posicaoY-(alturaTotalItens - alturaTela)) : posicaoY;
-      document.documentElement.style.setProperty('--posicao-item-menu', `${posicaoTop}px`)
+      document.documentElement.style.setProperty('--posicao-item-menu-top', `${posicaoTop}px`)
+      document.documentElement.style.setProperty('--posicao-item-menu-right', `${posicaoRight}px`)
     }
   }
 
@@ -61,11 +65,11 @@ const Sider = () => {
   };
 
   const onOpenChange = openKeys => {
-    if (openKeys.length > 0) {
-      const latestOpenKey = openKeys[openKeys.length - 1];
-      setOpenKeys([latestOpenKey]);
+    const latestOpenKey = openKeys[openKeys.length - 1];
+    if (subMenusPrincipais.indexOf(latestOpenKey) === -1) {
+      setOpenKeys(openKeys);
     } else {
-      setOpenKeys([]);
+      setOpenKeys(latestOpenKey ? [latestOpenKey] : []);
     }
   };
 
@@ -178,7 +182,7 @@ const Sider = () => {
               <SubMenu
                 id="planejamento"
                 key="subPlanejamento"
-                onMouseEnter={(e) => alterarPosicaoJanelaPopup('planejamento', 2)}
+                onMouseEnter={(e) => alterarPosicaoJanelaPopup('planejamento', 2, 200)}
                 title={
                   <div className="item-menu-retraido">
                     <i
@@ -313,7 +317,7 @@ const Sider = () => {
                 </Menu.Item>
               </SubMenu>
               <SubMenu
-                disabled
+                onMouseEnter={(e) => alterarPosicaoJanelaPopup('configuracoes', 1)}
                 id="configuracoes"
                 key="subConfiguracoes"
                 title={
@@ -326,7 +330,22 @@ const Sider = () => {
                     <span>Configurações</span>
                   </div>
                 }
-              />
+              >
+                <SubMenu
+                  id="usuarios"
+                  key="subUsuarios"
+                  onMouseEnter={(e) => alterarPosicaoJanelaPopup('usuarios', 1)}
+                  title={
+                    <div className="item-menu-retraido submenu-subnivel">
+                      <span>Usuários</span>
+                    </div>
+                  }
+                >
+                  <Menu.Item key="110" id="usuTrocaSenha">
+                    <span className="menuItem">Troca de Senha</span>
+                  </Menu.Item>
+                </SubMenu>
+              </SubMenu>
             </Menu>
           </div>
         </MenuScope>

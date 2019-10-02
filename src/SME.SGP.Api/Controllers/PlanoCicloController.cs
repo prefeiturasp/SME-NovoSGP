@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using SME.SGP.Api.Filtros;
 using SME.SGP.Aplicacao;
+using SME.SGP.Dominio;
 using SME.SGP.Dto;
 
 namespace SME.SGP.Api.Controllers
@@ -24,7 +25,8 @@ namespace SME.SGP.Api.Controllers
         [Route("{ano}/{cicloId}/{escolaId}")]
         [ProducesResponseType(typeof(PlanoCicloCompletoDto), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        public IActionResult Get(int ano, long cicloId, long escolaId)
+        [Permissao(Permissao.PDC_C, Policy = "Bearer")]
+        public IActionResult Get(int ano, long cicloId, string escolaId)
         {
             return Ok(consultasPlanoCiclo.ObterPorAnoCicloEEscola(ano, cicloId, escolaId));
         }
@@ -32,6 +34,7 @@ namespace SME.SGP.Api.Controllers
         [HttpPost]
         [ProducesResponseType(200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [Permissao(Permissao.PDC_I, Permissao.PDC_A, Policy = "Bearer")]
         public IActionResult Post(PlanoCicloDto planoCicloDto)
         {
             comandosPlanoCiclo.Salvar(planoCicloDto);
