@@ -87,7 +87,7 @@ const Login = props => {
 
   return (
     <Fundo className="p-0 h-100">
-      <Grid cols={12} className="d-flex justify-content-end">
+      <Grid cols={12} className="d-flex justify-content-end overflow-hidden">
         <Cartao className="col-xl-6 col-lg-6 col-md-8 col-sm-8 col-xs-12">
           <CorpoCartao className="">
             <Centralizar className="row col-md-12">
