@@ -26,7 +26,7 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(PlanoCicloCompletoDto), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [Permissao(Permissao.PDC_C, Policy = "Bearer")]
-        public IActionResult Get(int ano, long cicloId, long escolaId)
+        public IActionResult Get(int ano, long cicloId, string escolaId)
         {
             return Ok(consultasPlanoCiclo.ObterPorAnoCicloEEscola(ano, cicloId, escolaId));
         }

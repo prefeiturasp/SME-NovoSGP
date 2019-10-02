@@ -26,8 +26,8 @@ namespace SME.SGP.Aplicacao.Teste.Consultas
         [Fact(DisplayName = "DeveObterPlanoCicloPorAnoCicloEEscola")]
         public void DeveObterPlanoCicloPorAnoCicloEEscola()
         {
-            consultasPlanoCiclo.ObterPorAnoCicloEEscola(2019, 1, 1);
-            repositorioPlanoCiclo.Verify(c => c.ObterPlanoCicloComMatrizesEObjetivos(It.IsAny<int>(), It.IsAny<long>(), It.IsAny<long>()), Times.Once);
+            consultasPlanoCiclo.ObterPorAnoCicloEEscola(2019, 1, "1");
+            repositorioPlanoCiclo.Verify(c => c.ObterPlanoCicloComMatrizesEObjetivos(It.IsAny<int>(), It.IsAny<long>(), It.IsAny<string>()), Times.Once);
         }
     }
 }

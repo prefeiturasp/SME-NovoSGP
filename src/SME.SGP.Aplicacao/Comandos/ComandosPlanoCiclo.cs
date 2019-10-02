@@ -93,20 +93,22 @@ namespace SME.SGP.Aplicacao
             {
                 throw new NegocioException("Já existe um plano ciclo referente a este Ano/Ciclo/Escola.");
             }
-            //TODO VALIDAR SE FOR TURMA DE ENSINO FUNDAMENTAL REGULAR DEVE PREENCHER OS COMPONENTES: MATRIZ E OBJETIVOS, CASO CONTRÁRIO NÃO É OBRIGATÓRIO
-            if (planoCicloDto.IdsMatrizesSaber == null || !planoCicloDto.IdsMatrizesSaber.Any())
-            {
-                throw new NegocioException("A matriz de saberes deve conter ao menos 1 elemento.");
-            }
-            if (planoCicloDto.IdsObjetivosDesenvolvimento == null || !planoCicloDto.IdsObjetivosDesenvolvimento.Any())
-            {
-                throw new NegocioException("Os objetivos de desenvolvimento sustentável devem conter ao menos 1 elemento.");
-            }
 
             var planoCiclo = repositorioPlanoCiclo.ObterPorId(planoCicloDto.Id);
             if (planoCiclo == null)
             {
                 planoCiclo = new PlanoCiclo();
+            }
+            if (!planoCiclo.Migrado)
+            {
+                if (planoCicloDto.IdsMatrizesSaber == null || !planoCicloDto.IdsMatrizesSaber.Any())
+                {
+                    throw new NegocioException("A matriz de saberes deve conter ao menos 1 elemento.");
+                }
+                if (planoCicloDto.IdsObjetivosDesenvolvimento == null || !planoCicloDto.IdsObjetivosDesenvolvimento.Any())
+                {
+                    throw new NegocioException("Os objetivos de desenvolvimento sustentável devem conter ao menos 1 elemento.");
+                }
             }
             planoCiclo.Descricao = planoCicloDto.Descricao;
             planoCiclo.CicloId = planoCicloDto.CicloId;
