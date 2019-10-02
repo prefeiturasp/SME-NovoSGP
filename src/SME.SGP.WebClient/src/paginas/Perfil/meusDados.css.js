@@ -92,16 +92,6 @@ export const SelecionarFoto = styled.a`
 
 export const Topo = styled.div`
       padding-bottom: 30px;
-      button{
-          color: ${Base.Azul} !important;
-          background: ${Base.Branco} !important;
-          border: 1px solid ${Base.Azul} !important;
-      }
-
-      button:hover{
-          color: ${Base.Branco} !important;
-          background: ${Base.Azul} !important;
-      }
   `;
 
 export const MensagemAlerta = styled.div`
