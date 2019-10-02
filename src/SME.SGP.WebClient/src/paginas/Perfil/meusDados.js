@@ -13,9 +13,10 @@ import AlertaBalao from '~/componentes/alertaBalao';
 
 const MeusDados = () => {
   const usuarioStore = useSelector(store => store.usuario);
-  const [foto, setFoto] = useState('https://graziellanicolai.com.br/wp-content/uploads/2018/03/Graziella-perfil.jpg');
+  const [foto, setFoto] = useState(usuarioStore.meusDados.foto);
   const [alterarFoto, setAlterarFoto] = useState(false);
   const [ehFotoInvalida, setEhFotoInvalida] = useState(false);
+  const [desabilitaConfirmar, setDesabilitaConfirmar] = useState(true);
 
   const Perfil = styled.div`
         padding: 0 !important;
@@ -126,7 +127,9 @@ const MeusDados = () => {
 
   const mostrarModal = () => {
     setEhFotoInvalida(false);
-    setAlterarFoto(!alterarFoto)
+    setFoto(usuarioStore.meusDados.foto);
+    setAlterarFoto(!alterarFoto);
+    setDesabilitaConfirmar(true);
   }
 
   const selecionarNovaFoto = () => {
@@ -146,6 +149,7 @@ const MeusDados = () => {
             const novaFoto = fileReader.result;
             setEhFotoInvalida(false);
             setFoto(novaFoto);
+            setDesabilitaConfirmar(false)
           }
         }else{
           setEhFotoInvalida(true);
@@ -168,6 +172,7 @@ const MeusDados = () => {
           onClose={() => { }}
           labelBotaoPrincipal="Confirmar"
           labelBotaoSecundario="Cancelar"
+          desabilitarBotaoPrincipal={desabilitaConfirmar}
           titulo="Alterar Foto"
           closable={true}
         >
