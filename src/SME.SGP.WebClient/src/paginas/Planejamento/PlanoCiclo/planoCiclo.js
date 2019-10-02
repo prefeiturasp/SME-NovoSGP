@@ -448,12 +448,13 @@ export default function PlanoCiclo() {
             {' / 2019 '}
             <i className="fas fa-retweet" />
           </TituloAno>
-          {
-            !registroMigrado ?
+          {registroMigrado ? (
             <RegistroMigrado className="float-right">
               Registro Migrado
-            </RegistroMigrado> : ''
-          }
+            </RegistroMigrado>
+          ) : (
+            ''
+          )}
         </Titulo>
       </div>
       <Card>
