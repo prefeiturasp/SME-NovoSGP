@@ -103,6 +103,7 @@ const MeusDados = () => {
   const SelecionarFoto = styled.a`
         color: ${Base.Roxo} !important;
         font-size: 14px !important;
+        margin-top: 19px;
     `;
 
   const Topo = styled.div`
@@ -124,6 +125,7 @@ const MeusDados = () => {
   }
 
   const mostrarModal = () => {
+    setEhFotoInvalida(false);
     setAlterarFoto(!alterarFoto)
   }
 
