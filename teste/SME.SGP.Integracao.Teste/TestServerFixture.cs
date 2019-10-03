@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.PlatformAbstractions;
@@ -47,6 +48,10 @@ namespace SME.SGP.Integracao.Teste
                     .AddJsonFile(ObterArquivoConfiguracao(), optional: false)
                     .Build();
 
+                var context = new DefaultHttpContext();
+                var obj = new HttpContextAccessor();
+                obj.HttpContext = context;
+                                
                 servicoTokenJwt = new ServicoTokenJwt(config);
             }
             catch (Exception ex)
