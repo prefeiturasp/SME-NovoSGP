@@ -48,11 +48,7 @@ namespace SME.SGP.Integracao.Teste
                     .AddJsonFile(ObterArquivoConfiguracao(), optional: false)
                     .Build();
 
-                var context = new DefaultHttpContext();
-                var obj = new HttpContextAccessor();
-                obj.HttpContext = context;
-                                
-                servicoTokenJwt = new ServicoTokenJwt(config);
+                servicoTokenJwt = new ServicoTokenJwt(config, null);
             }
             catch (Exception ex)
             {
