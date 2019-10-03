@@ -29,7 +29,7 @@ class LoginService {
         const status = err.response ? err.response.status : null;
 
         if (status && status === 401)
-          return { sucesso: false, erroGeral: 'Usuário e/ou senha inválida' };
+          return { sucesso: false, erroGeral: 'Usuário e/ou senha invalida' };
 
         return {
           sucesso: false,
