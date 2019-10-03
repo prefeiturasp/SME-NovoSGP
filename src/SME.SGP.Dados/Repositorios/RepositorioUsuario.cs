@@ -2,6 +2,7 @@
 using SME.SGP.Dados.Contexto;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
+using System;
 using System.Linq;
 using System.Text;
 
@@ -26,6 +27,16 @@ namespace SME.SGP.Dados.Repositorios
                 query.AppendLine("and login = @login");
 
             return database.Conexao.Query<Usuario>(query.ToString(), new { codigoRf, login })
+                .FirstOrDefault();
+        }
+
+        public Usuario ObterPorTokenRecuperacaoSenha(Guid token)
+        {
+            var query = new StringBuilder();
+            query.Append("select * from usuario ");
+            query.Append("where token_recuperacao_senha = @token ");
+
+            return database.Conexao.Query<Usuario>(query.ToString(), new { token })
                 .FirstOrDefault();
         }
     }
