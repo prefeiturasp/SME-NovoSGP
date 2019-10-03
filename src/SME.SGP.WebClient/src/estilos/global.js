@@ -20,6 +20,9 @@ export default createGlobalStyle`
     height: 100%;
     letter-spacing: normal;
     line-height: normal;
+    @media (max-width: 767.98px) {
+      height: auto;
+    }
   }
   body {
     -webkit-font-smoothing: antialiased;
@@ -275,7 +278,7 @@ export default createGlobalStyle`
     font-weight: bold !important;
   }
 
-  .texto-negrito {
+  .cor-novo-registro-lista {
     font-weight: bold !important;
     color: #42474a !important;
   }
