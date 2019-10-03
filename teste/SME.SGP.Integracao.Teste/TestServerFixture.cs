@@ -47,7 +47,7 @@ namespace SME.SGP.Integracao.Teste
                     .AddJsonFile(ObterArquivoConfiguracao(), optional: false)
                     .Build();
 
-                servicoTokenJwt = new ServicoTokenJwt(config);
+                servicoTokenJwt = new ServicoTokenJwt(config, null);
             }
             catch (Exception ex)
             {
