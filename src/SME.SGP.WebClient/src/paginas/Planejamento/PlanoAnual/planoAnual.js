@@ -5,7 +5,8 @@ import {
   PrePost,
   Post,
   setBimestresErro,
-  setLimpartBimestresErro, LimparBimestres,
+  setLimpartBimestresErro,
+  LimparBimestres,
 } from '../../../redux/modulos/planoAnual/action';
 import Grid from '../../../componentes/grid';
 import Button from '../../../componentes/button';
@@ -26,7 +27,7 @@ import {
   Titulo,
   TituloAno,
   Planejamento,
-  ParagrafoAlerta,
+  RegistroMigrado,
 } from './planoAnual.css.js';
 import modalidade from '~/dtos/modalidade';
 import SelectComponent from '~/componentes/select';
@@ -52,7 +53,8 @@ export default function PlanoAnual() {
       : false;
 
   const ehMedio =
-    turmaSelecionada[0] && turmaSelecionada[0].codModalidade === modalidade.ENSINO_MEDIO
+    turmaSelecionada[0] &&
+      turmaSelecionada[0].codModalidade === modalidade.ENSINO_MEDIO
       ? true
       : false;
 
@@ -83,8 +85,7 @@ export default function PlanoAnual() {
 
   useEffect(() => {
     if (!ehDisabled) verificarSeEhEdicao();
-
-  }, [turmaSelecionada])
+  }, [turmaSelecionada]);
 
   const onF5Click = e => {
     if (e.code === 'F5') {
@@ -241,7 +242,6 @@ export default function PlanoAnual() {
   };
 
   const ObtenhaBimestres = (disciplinas = [], ehEdicao) => {
-
     dispatch(LimparBimestres());
 
     let semObjetivo = false;
@@ -503,8 +503,10 @@ export default function PlanoAnual() {
         titulo="Copiar Conteúdo"
         closable={false}
         loader={modalCopiarConteudo.loader}
-        desabilitarBotaoPrincipal={modalCopiarConteudo.turmasSelecionadas
-          && modalCopiarConteudo.turmasSelecionadas.length < 1}
+        desabilitarBotaoPrincipal={
+          modalCopiarConteudo.turmasSelecionadas &&
+          modalCopiarConteudo.turmasSelecionadas.length < 1
+        }
       >
         <label
           htmlFor="SelecaoTurma"
@@ -522,16 +524,23 @@ export default function PlanoAnual() {
           multiple
         />
       </ModalConteudoHtml>
-      <Grid cols={12} className="p-l-10 mb-10">
+      <Grid cols={12} className="p-0">
         <Planejamento>PLANEJAMENTO</Planejamento>
         <Titulo>
           {ehEja ? 'Plano Semestral' : 'Plano Anual'}
           <TituloAno>
             {` / ${anoLetivo ? anoLetivo : new Date().getFullYear()}`}
           </TituloAno>
+          {
+            bimestres.filter(bimestre => bimestre.migrado).length > 0 && (
+              <RegistroMigrado className="float-right">
+                Registro Migrado
+              </RegistroMigrado>
+            )
+          }
         </Titulo>
       </Grid>
-      <Card>
+      <Card className="col-md-12 p-0" mx="mx-0">
         <Grid cols={6} className="d-flex justify-content-start mb-3">
           <Button
             label="Copiar Conteúdo"
@@ -576,7 +585,7 @@ export default function PlanoAnual() {
                   disabled={ehDisabled}
                   key={bim.indice}
                   indice={bim.indice}
-                  LayoutEspecial={LayoutEspecial}
+                  modalidadeEja={ehEja}
                 />
               );
             })
