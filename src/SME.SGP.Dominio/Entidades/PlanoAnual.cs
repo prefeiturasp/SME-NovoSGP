@@ -6,6 +6,7 @@
         public long Bimestre { get; set; }
         public string Descricao { get; set; }
         public string EscolaId { get; set; }
+        public bool Migrado { get; set; }
         public long TurmaId { get; set; }
     }
 }
