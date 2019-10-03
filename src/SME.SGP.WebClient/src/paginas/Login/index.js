@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef } from 'react';
 import { useDispatch } from 'react-redux';
 import * as Yup from 'yup';
 import { Tooltip } from 'antd';
@@ -82,7 +82,7 @@ const Login = props => {
     }
   };
 
-  const AoClicarBotaoAutenticar = (form, e) => {
+  const aoClicarBotaoAutenticar = (form, e) => {
     form.validateForm().then(() => form.handleSubmit(e));
   };
 
@@ -121,7 +121,7 @@ const Login = props => {
                         <Rotulo className="d-block" htmlFor="usuario">
                           Usuário{' '}
                           <Tooltip placement="top" title={TextoAjuda}>
-                            <i className="fas fa-question-circle"></i>
+                            <i className="fas fa-question-circle" />
                           </Tooltip>
                         </Rotulo>
                         <CampoTexto
@@ -153,7 +153,7 @@ const Login = props => {
                             label="Acessar"
                             color={Colors.Roxo}
                             ref={inputFormik}
-                            onClick={e => AoClicarBotaoAutenticar(form, e)}
+                            onClick={e => aoClicarBotaoAutenticar(form, e)}
                           />
                           <Centralizar className="mt-1">
                             <Link to={URL_RECUPERARSENHA} isactive>
@@ -168,9 +168,9 @@ const Login = props => {
                           </ErroGeral>
                         ) : null}
                         {erroGeral &&
-                          !(form.errors.usuario || form.errors.senha) ? (
-                            <ErroGeral>{erroGeral}</ErroGeral>
-                          ) : null}
+                        !(form.errors.usuario || form.errors.senha) ? (
+                          <ErroGeral>{erroGeral}</ErroGeral>
+                        ) : null}
                       </Form>
                     )}
                   </Formik>

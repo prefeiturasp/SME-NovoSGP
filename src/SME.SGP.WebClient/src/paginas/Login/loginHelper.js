@@ -1,6 +1,5 @@
 import LoginService from '~/servicos/Paginas/LoginServices';
-import { SalvarDadosLogin } from '~/redux/modulos/usuario/actions';
-import { setarPerfis, perfilSelecionado } from '~/redux/modulos/perfil/actions';
+import { salvarDadosLogin } from '~/redux/modulos/usuario/actions';
 import history from '~/servicos/history';
 import { URL_HOME, URL_MODIFICARSENHA } from '~/constantes/url';
 
@@ -20,7 +19,7 @@ class LoginHelper {
     const RF = Number.isInteger(login.usuario * 1) ? login.usuario : '';
 
     this.dispatch(
-      SalvarDadosLogin({
+      salvarDadosLogin({
         token: autenticacao.dados.token,
         rf: RF,
         perfisUsuario: autenticacao.dados.PerfisUsuario,
@@ -28,6 +27,7 @@ class LoginHelper {
     );
 
     if (autenticacao.dados.modificarSenha) {
+      console.log(autenticacao.dados.modificarSenha, URL_MODIFICARSENHA);
       history.push(URL_MODIFICARSENHA);
       return { sucesso: false, erroGeral: '' };
     }

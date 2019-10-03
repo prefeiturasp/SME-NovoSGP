@@ -5,7 +5,7 @@ export function salvarRf(rf) {
   };
 }
 
-export function SalvarDadosLogin(Login) {
+export function salvarDadosLogin(Login) {
   return {
     type: '@usuario/salvarLogin',
     payload: Login,
