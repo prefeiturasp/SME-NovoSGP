@@ -86,11 +86,11 @@ const Login = props => {
   };
 
   return (
-    <Fundo className="p-0 h-100">
-      <Grid cols={12} className="d-flex justify-content-end">
-        <Cartao className="col-xl-6 col-lg-6 col-md-8 col-sm-8 col-xs-12">
-          <CorpoCartao className="">
-            <Centralizar className="row col-md-12">
+    <Fundo className="p-0 h-100 overflow-hidden">
+      <Grid cols={12} className="d-flex justify-content-end overflow-hidden">
+        <Cartao className="col-xl-6 col-lg-6 col-md-8 pt-1 pb-0 col-sm-8 col-xs-12 overflow-hidden">
+          <CorpoCartao className=" overflow-hidden">
+            <Centralizar className="row col-md-12 overflow-hidden">
               <Row className="col-md-12 p-0 d-flex justify-content-center align-self-start">
                 <LogoSGP className="col-xl-8 col-md-8 col-sm-8 col-xs-12">
                   <Logo

@@ -66,7 +66,6 @@ namespace SME.SGP.Aplicacao
                         planoAnual.Descricao = planoAnualOrigem.Descricao;
                         Salvar(planoCopia, planoAnual, bimestrePlanoAnual);
                     }
-
                 }
 
                 unitOfWork.PersistirTransacao();
@@ -188,7 +187,8 @@ namespace SME.SGP.Aplicacao
         private void Salvar(PlanoAnualDto planoAnualDto, PlanoAnual planoAnual, BimestrePlanoAnualDto bimestrePlanoAnualDto)
         {
             planoAnualDto.Id = repositorioPlanoAnual.Salvar(planoAnual);
-            AjustarObjetivosAprendizagem(planoAnualDto, bimestrePlanoAnualDto);
+            if (!planoAnual.Migrado)
+                AjustarObjetivosAprendizagem(planoAnualDto, bimestrePlanoAnualDto);
         }
 
         private void SalvarObjetivoAprendizagem(PlanoAnualDto planoAnualDto,
