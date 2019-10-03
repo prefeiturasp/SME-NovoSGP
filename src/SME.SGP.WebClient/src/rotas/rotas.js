@@ -12,6 +12,8 @@ import NotificacoesLista from '~/paginas/Notificacoes/Lista/listaNotificacoes';
 import RotaAutenticadaEstruturada from './rotaAutenticadaEstruturada';
 import RotasTipo from '~/constantes/rotasTipo';
 import Login from '~/paginas/Login';
+import RecuperarSenha from '~/paginas/RecuperarSenha';
+import RedefinirSenha from '~/paginas/RedefinirSenha';
 import RotaNaoAutenticadaDesestruturada from './rotaNaoAutenticadaDesestruturada';
 import RotaAutenticadaDesestruturada from './rotaAutenticadaDesestruturada';
 
@@ -41,6 +43,24 @@ export default function Rotas() {
     menu: '',
     parent: '/',
     component: Login,
+    exact: true,
+    tipo: RotasTipo.DesestruturadaNaoAutenticada,
+  });
+
+  rotas.set('/recuperar-senha', {
+    breadcrumbName: '',
+    menu: '',
+    parent: '/',
+    component: RecuperarSenha,
+    exact: true,
+    tipo: RotasTipo.DesestruturadaNaoAutenticada,
+  });
+
+  rotas.set('/redefinir-senha/:token?/', {
+    breadcrumbName: '',
+    menu: '',
+    parent: '/',
+    component: RedefinirSenha,
     exact: true,
     tipo: RotasTipo.DesestruturadaNaoAutenticada,
   });
