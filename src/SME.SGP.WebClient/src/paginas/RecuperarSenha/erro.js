@@ -1,8 +1,9 @@
 import React from 'react';
 import styled from 'styled-components';
+import PropTypes from 'prop-types';
 import { Base } from '~/componentes/colors';
 
-const Erro = () => {
+const Erro = ({ mensagem }) => {
   const Span = styled.span`
     color: ${Base.Vermelho};
     margin-top: 70px;
@@ -28,15 +29,17 @@ const Erro = () => {
       <Alerta className="d-block rounded-circle mx-auto position-relative">
         <Icon className="fa fa-times position-absolute" />
       </Alerta>
-      <div className="mb-3">
-        Você não tem um e-mail cadastrado para recuperar sua senha.
-      </div>
-      <div className="mb-3">
-        Para restabelecer o seu acesso, procure o Diretor da sua UE ou
-        Administrador do SGP da sua unidade.
-      </div>
+      <div className="mb-3">{mensagem}</div>
     </Span>
   );
+};
+
+Erro.propTypes = {
+  mensagem: PropTypes.string,
+};
+
+Erro.defaultProps = {
+  mensagem: '',
 };
 
 export default Erro;

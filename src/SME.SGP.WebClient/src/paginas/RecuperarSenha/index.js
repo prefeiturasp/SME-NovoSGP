@@ -8,7 +8,6 @@ import Sucesso from './sucesso';
 import Erro from './erro';
 import Orientacoes from './orientacoes';
 import api from '~/servicos/api';
-import { erros } from '~/servicos/alertas';
 
 const RecuperarSenha = props => {
   const Nav = styled.nav`
@@ -56,6 +55,7 @@ const RecuperarSenha = props => {
 
   const [rf, setRf] = useState();
   const [retorno, setRetorno] = useState(false);
+  const [mensagem, setMensagem] = useState('');
   const [email, setEmail] = useState('');
   const refInput = useRef();
 
@@ -78,7 +78,10 @@ const RecuperarSenha = props => {
         setEmail(resposta.data);
         setRetorno({ status: true });
       })
-      .catch(() => setRetorno({ status: false }));
+      .catch(erro => {
+        setMensagem(erro.response.data.mensagens[0]);
+        setRetorno({ status: false });
+      });
   };
 
   const onChangeUsuario = () => {
@@ -100,7 +103,7 @@ const RecuperarSenha = props => {
   const renderizaConteudo = () => {
     if (typeof retorno === 'object') {
       if (retorno.status) return <Sucesso email={email} />;
-      return <Erro />;
+      return <Erro mensagem={mensagem} />;
     }
     return <Orientacoes />;
   };
