@@ -6,5 +6,9 @@ namespace SME.SGP.Aplicacao.Servicos
     public interface IServicoTokenJwt
     {
         string GerarToken(string usuarioLogin, IEnumerable<Permissao> permissionamentos);
+
+        string ObterLoginAtual();
+
+        bool TemPerfilNoToken(string guid);
     }
 }

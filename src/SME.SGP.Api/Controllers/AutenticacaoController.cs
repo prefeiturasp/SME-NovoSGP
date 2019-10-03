@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using SME.SGP.Api.Filtros;
 using SME.SGP.Aplicacao;
+using SME.SGP.Dominio;
 using SME.SGP.Dto;
 using System;
 using System.Threading.Tasks;
@@ -18,6 +19,23 @@ namespace SME.SGP.Api.Controllers
         public AutenticacaoController(IComandosUsuario comandosUsuario)
         {
             this.comandosUsuario = comandosUsuario ?? throw new System.ArgumentNullException(nameof(comandosUsuario));
+        }
+
+        [HttpPut]
+        [ProducesResponseType(200)]
+        [ProducesResponseType(401)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [ProducesResponseType(typeof(UsuarioAutenticacaoRetornoDto), 200)]
+        [Route("perfis/{guid}")]
+        [Authorize("Bearer")]
+        public async Task<IActionResult> AtualizarPerfil(string guid)
+        {
+            if (string.IsNullOrEmpty(guid))
+                throw new NegocioException("Informe um perfil");
+
+            var retornoAutenticacao = await comandosUsuario.ModificarPerfil(guid);
+
+            return Ok(retornoAutenticacao);
         }
 
         [HttpPost]
