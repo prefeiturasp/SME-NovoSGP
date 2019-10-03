@@ -54,7 +54,7 @@ export default function PlanoAnual() {
 
   const ehMedio =
     turmaSelecionada[0] &&
-    turmaSelecionada[0].codModalidade === modalidade.ENSINO_MEDIO
+      turmaSelecionada[0].codModalidade === modalidade.ENSINO_MEDIO
       ? true
       : false;
 
@@ -131,7 +131,7 @@ export default function PlanoAnual() {
       .catch(() => {
         erro(
           `Não foi possivel obter os dados do ${
-            ehEja ? 'plano semestral' : 'plano anual'
+          ehEja ? 'plano semestral' : 'plano anual'
           }`
         );
       });
@@ -327,23 +327,23 @@ export default function PlanoAnual() {
   const modalCopiarConteudoAtencaoTexto = () => {
     const turmasReportar = usuario.turmasUsuario
       ? usuario.turmasUsuario
-          .filter(
-            turma =>
-              modalCopiarConteudo.turmasSelecionadas.includes(
-                `${turma.codigo}`
-              ) &&
-              modalCopiarConteudo.turmasComPlanoAnual.includes(turma.codigo)
-          )
-          .map(turma => turma.turma)
+        .filter(
+          turma =>
+            modalCopiarConteudo.turmasSelecionadas.includes(
+              `${turma.codigo}`
+            ) &&
+            modalCopiarConteudo.turmasComPlanoAnual.includes(turma.codigo)
+        )
+        .map(turma => turma.turma)
       : [];
 
     return turmasReportar.length > 1
       ? `As turmas ${turmasReportar.join(
-          ', '
-        )} já possuem plano anual que serão sobrescritos ao realizar a cópia. Deseja continuar?`
+        ', '
+      )} já possuem plano anual que serão sobrescritos ao realizar a cópia. Deseja continuar?`
       : `A turma ${
-          turmasReportar[0]
-        } já possui plano anual que será sobrescrito ao realizar a cópia. Deseja continuar?`;
+      turmasReportar[0]
+      } já possui plano anual que será sobrescrito ao realizar a cópia. Deseja continuar?`;
   };
 
   const onChangeCopiarConteudo = selecionadas => {
@@ -524,19 +524,23 @@ export default function PlanoAnual() {
           multiple
         />
       </ModalConteudoHtml>
-      <Grid cols={12} className="p-l-10 mb-10">
+      <Grid cols={12} className="p-0">
         <Planejamento>PLANEJAMENTO</Planejamento>
         <Titulo>
           {ehEja ? 'Plano Semestral' : 'Plano Anual'}
           <TituloAno>
             {` / ${anoLetivo ? anoLetivo : new Date().getFullYear()}`}
           </TituloAno>
+          {
+            bimestres.filter(bimestre => bimestre.migrado).length > 0 && (
+              <RegistroMigrado className="float-right">
+                Registro Migrado
+              </RegistroMigrado>
+            )
+          }
         </Titulo>
-        <RegistroMigrado className="float-right">
-          Registro Migrado
-        </RegistroMigrado>
       </Grid>
-      <Card className="col-md-12 p-0">
+      <Card className="col-md-12 p-0" mx="mx-0">
         <Grid cols={6} className="d-flex justify-content-start mb-3">
           <Button
             label="Copiar Conteúdo"
@@ -576,15 +580,15 @@ export default function PlanoAnual() {
         <Grid cols={12}>
           {bimestres
             ? bimestres.map(bim => {
-                return (
-                  <Bimestre
-                    disabled={ehDisabled}
-                    key={bim.indice}
-                    indice={bim.indice}
-                    LayoutEspecial={LayoutEspecial}
-                  />
-                );
-              })
+              return (
+                <Bimestre
+                  disabled={ehDisabled}
+                  key={bim.indice}
+                  indice={bim.indice}
+                  modalidadeEja={ehEja}
+                />
+              );
+            })
             : null}
         </Grid>
       </Card>
