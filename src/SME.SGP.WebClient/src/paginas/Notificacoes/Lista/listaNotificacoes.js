@@ -226,7 +226,7 @@ export default function NotificacoesLista() {
       tipo: tipoSelecionado,
       titulo: tituloSelecionado || null,
       usuarioRf: usuario.rf,
-      anoLetivo: '2019'
+      anoLetivo: usuario.filtroAtual.anoLetivo
     };
     if (dropdownTurmaSelecionada && dropdownTurmaSelecionada == '2') {
       if (usuario.turmaSelecionada && usuario.turmaSelecionada.length) {
