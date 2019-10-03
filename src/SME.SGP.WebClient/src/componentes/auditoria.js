@@ -8,7 +8,7 @@ const Container = styled.div`
   font-weight: bold;
   color: #42474a;
 `;
-const Auditoria = ({ criadoPor, criadoEm, alteradoPor, alteradoEm }) => {
+const Auditoria = ({ criadoPor, criadoEm, alteradoPor, alteradoEm, criadoRf, alteradoRf }) => {
   const [criado] = useState(
     criadoEm ? window.moment(criadoEm) : window.moment()
   );
@@ -20,20 +20,20 @@ const Auditoria = ({ criadoPor, criadoEm, alteradoPor, alteradoEm }) => {
     <Container>
       {criadoPor ? (
         <div className="col-xs-12 col-md-6 col-lg-12 d-flex justify-content-start mt-2">
-          INSERIDO por {criadoPor} em{' '}
+          INSERIDO por {criadoPor} {criadoRf && (`(rf: ${criadoRf})`)}  em{' '}
           {`${criado.format('DD/MM/YYYY')} às ${criado.format('HH:mm')}`}
         </div>
       ) : (
-        ''
-      )}
+          ''
+        )}
       {alteradoPor ? (
         <div className="col-xs-12 col-md-6 col-lg-12 d-flex justify-content-start mt-2">
-          ALTERADO por {alteradoPor} em{' '}
-          {`${alterado.format('DD/MM/YYYY')} às ${alterado.format('HH:mm')}`}
+          ALTERADO por {alteradoPor} {alteradoRf && (`(rf: ${alteradoRf})`)} em{' '}
+          {`${alterado.format('DD/MM/YYYY')}  às ${alterado.format('HH:mm')}`}
         </div>
       ) : (
-        ''
-      )}
+          ''
+        )}
     </Container>
   );
 };
