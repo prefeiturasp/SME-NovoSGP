@@ -1,5 +1,5 @@
 import React from 'react';
-import { Switch, Route } from 'react-router-dom';
+import { Switch } from 'react-router-dom';
 import { setRotas } from '../redux/modulos/navegacao/actions';
 import { store } from '../redux';
 import Principal from '../paginas/Principal/principal';
@@ -126,7 +126,7 @@ export default function Rotas() {
   }
 
   return (
-    <div>
+    <div className="h-100">
       <Switch>
         {rotasArray.map(rota => {
           switch (rota.tipo) {
