@@ -20,6 +20,18 @@ export const TituloAno = styled.span`
   color: ${Base.Roxo};
 `;
 
+export const RegistroMigrado = styled.div`
+  text-align: center;
+  font-size: 11px;
+  color: ${Base.Branco};
+  object-fit: contain;
+  font-weight: bold;
+  border-radius: 3px;
+  border: solid 0.5px ${Base.Roxo};
+  background-color: ${Base.Roxo};
+  padding: 5px 10px 5px 10px;
+`;
+
 export const Planejamento = styled.div`
   object-fit: contain;
   font-family: Roboto;

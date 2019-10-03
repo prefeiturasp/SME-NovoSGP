@@ -48,7 +48,7 @@ namespace SME.SGP.Aplicacao.Teste.Comandos
                 Ano = 2019,
                 CicloId = 1,
                 Descricao = "Teste",
-                EscolaId = 1,
+                EscolaId = "1",
                 IdsMatrizesSaber = new List<long>()
                 {
                     1,2,3
@@ -91,7 +91,7 @@ namespace SME.SGP.Aplicacao.Teste.Comandos
                 Ano = 2019,
                 CicloId = 1,
                 Descricao = "Teste",
-                EscolaId = 1,
+                EscolaId = "1",
                 IdsMatrizesSaber = new List<long>()
                 {
                     3,4,5
@@ -107,7 +107,7 @@ namespace SME.SGP.Aplicacao.Teste.Comandos
         [Fact(DisplayName = "NaoDeveSalvarPlanoCicloDuplicado")]
         public void NaoDeveSalvarPlanoCicloDuplicado()
         {
-            repositorioPlanoCiclo.Setup(c => c.ObterPlanoCicloPorAnoCicloEEscola(It.IsAny<int>(), It.IsAny<long>(), It.IsAny<long>()))
+            repositorioPlanoCiclo.Setup(c => c.ObterPlanoCicloPorAnoCicloEEscola(It.IsAny<int>(), It.IsAny<long>(), It.IsAny<string>()))
                 .Returns(true);
 
             repositorioPlanoCiclo.Setup(c => c.Salvar(It.IsAny<PlanoCiclo>()))
@@ -119,7 +119,7 @@ namespace SME.SGP.Aplicacao.Teste.Comandos
                     Ano = 2019,
                     CicloId = 1,
                     Descricao = "Teste",
-                    EscolaId = 1,
+                    EscolaId = "1",
                     IdsMatrizesSaber = new List<long>()
                 {
                     1,2,3
@@ -141,7 +141,7 @@ namespace SME.SGP.Aplicacao.Teste.Comandos
                     Ano = 2019,
                     CicloId = 1,
                     Descricao = "Teste",
-                    EscolaId = 1,
+                    EscolaId = "1",
                     IdsObjetivosDesenvolvimento = new List<long>()
                     {
                         1,2,3
@@ -159,7 +159,7 @@ namespace SME.SGP.Aplicacao.Teste.Comandos
                     Ano = 2019,
                     CicloId = 1,
                     Descricao = "Teste",
-                    EscolaId = 1,
+                    EscolaId = "1",
                     IdsMatrizesSaber = new List<long>()
                     {
                         1,2,3

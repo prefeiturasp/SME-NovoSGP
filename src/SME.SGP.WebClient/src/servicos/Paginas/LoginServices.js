@@ -1,6 +1,6 @@
 import api from '../api';
-import {store} from '~/redux';
-import {perfilSelecionado, setarPerfis} from '~/redux/modulos/perfil/actions';
+import { store } from '~/redux';
+import { perfilSelecionado, setarPerfis } from '~/redux/modulos/perfil/actions';
 
 class LoginService {
   autenticar = async Login => {
@@ -10,16 +10,19 @@ class LoginService {
         senha: Login.senha,
       })
       .then(res => {
-        if(res.data && res.data.perfisUsuario){
+        if (res.data && res.data.perfisUsuario) {
           const perfis = res.data.perfisUsuario.perfis;
-          const selecionado = perfis.find(perfil => perfil.codigoPerfil === res.data.perfisUsuario.perfilSelecionado);
+          const selecionado = perfis.find(
+            perfil =>
+              perfil.codigoPerfil === res.data.perfisUsuario.perfilSelecionado
+          );
           store.dispatch(setarPerfis(perfis));
           store.dispatch(perfilSelecionado(selecionado));
         }
         return {
           sucesso: true,
           mensagem: 'Usuario Logado com sucesso',
-          dados: res.data
+          dados: res.data,
         };
       })
       .catch(err => {

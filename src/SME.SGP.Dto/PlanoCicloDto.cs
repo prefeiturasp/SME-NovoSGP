@@ -15,7 +15,7 @@ namespace SME.SGP.Dto
         public string Descricao { get; set; }
 
         [Required(ErrorMessage = "A escola deve ser informada")]
-        public long EscolaId { get; set; }
+        public string EscolaId { get; set; }
 
         public long Id { get; set; }
 

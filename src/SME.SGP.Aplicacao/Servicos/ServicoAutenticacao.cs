@@ -22,7 +22,7 @@ namespace SME.SGP.Aplicacao.Servicos
             var retornoDto = new UsuarioAutenticacaoRetornoDto();
             if (retornoServicoEol != null)
             {
-                retornoDto.Autenticado = retornoServicoEol.Status == AutenticacaoStatusEol.Ok;
+                retornoDto.Autenticado = retornoServicoEol.Status == AutenticacaoStatusEol.Ok || retornoServicoEol.Status == AutenticacaoStatusEol.SenhaPadrao;
                 retornoDto.ModificarSenha = retornoServicoEol.Status == AutenticacaoStatusEol.SenhaPadrao;
             }
 
