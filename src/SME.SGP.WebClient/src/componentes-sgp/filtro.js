@@ -228,8 +228,8 @@ const Filtro = () => {
     });
 
     setAnosLetivosFiltro([...anosLetivos]);
-    if (anosLetivos.length > 0) {
-      setAnoAtual(anosLetivos[0])
+    if (anosLetivos.length > 0 && anosLetivos[0].ano) {
+      setAnoAtual(anosLetivos[0].ano)
     } else {
       setAnoAtual(new Date().getFullYear());
     }
@@ -244,8 +244,8 @@ const Filtro = () => {
   }, [dados]);
 
   const setAnoAtual = ano => {
-    setAnoLetivoFiltroSelecionado(ano);
-    store.dispatch(filtroAtual({anoLetivo:ano}))
+    setAnoLetivoFiltroSelecionado(`${ano}`);
+    store.dispatch(filtroAtual({anoLetivo:`${ano}`}))
   }
 
   useEffect(() => {
