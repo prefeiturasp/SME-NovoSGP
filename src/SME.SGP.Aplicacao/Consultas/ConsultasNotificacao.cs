@@ -10,10 +10,12 @@ namespace SME.SGP.Aplicacao
     public class ConsultasNotificacao : IConsultasNotificacao
     {
         private readonly IRepositorioNotificacao repositorioNotificacao;
+        private readonly IRepositorioUsuario repositorioUsuario;
 
         public ConsultasNotificacao(IRepositorioNotificacao repositorioNotificacao, IRepositorioUsuario repositorioUsuario)
         {
             this.repositorioNotificacao = repositorioNotificacao ?? throw new System.ArgumentNullException(nameof(repositorioNotificacao));
+            this.repositorioUsuario = repositorioUsuario ?? throw new System.ArgumentNullException(nameof(repositorioUsuario));
         }
 
         public IEnumerable<NotificacaoBasicaDto> Listar(NotificacaoFiltroDto filtroNotificacaoDto)

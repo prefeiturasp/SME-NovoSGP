@@ -264,7 +264,6 @@ const Filtro = () => {
   useLayoutEffect(() => {
     if (!toggleBusca && toggleInputFocus) inputBuscaRef.current.focus();
     if (toggleBusca) document.addEventListener('click', handleClickFora);
-    else document.removeEventListener('click', handleClickFora);
   }, [toggleBusca, toggleInputFocus]);
 
   useEffect(() => {
