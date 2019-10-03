@@ -23,7 +23,7 @@ services:
   sme-flyway:
     container_name: sme-flyway
     image: boxfuse/flyway:5.2.4
-    command: -url=jdbc:postgresql://sme-db:5432/sgp_db?user=postgres&password=postgres -locations='filesystem:/opt/scripts' migrate
+    command: -url=jdbc:postgresql://sme-db:5432/sgp_db?user=postgres&password=postgres -locations='filesystem:/opt/scripts' -outOfOrder=true migrate
     volumes:
       - ./scripts:/opt/scripts
     depends_on:
