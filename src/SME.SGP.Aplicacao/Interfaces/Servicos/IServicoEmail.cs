@@ -1,4 +1,4 @@
-﻿namespace SME.SGP.Aplicacao
+﻿namespace SME.SGP.Aplicacao.Servicos
 {
     public interface IServicoEmail
     {

@@ -26,7 +26,6 @@ const Base = {
   RoxoFundo: '#6331EA',
   RoxoClaro: '#B99FFF',
   RoxoNotificacao: '#E7E6F8',
-  Verde: '#297805',
   VermelhoAlerta: '#B40C02',
   VermelhoNotificacao: '#B40C02',
   Vermelho: '#B40C02',
