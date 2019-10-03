@@ -278,7 +278,7 @@ export default createGlobalStyle`
     font-weight: bold !important;
   }
 
-  .texto-negrito {
+  .cor-novo-registro-lista {
     font-weight: bold !important;
     color: #42474a !important;
   }
