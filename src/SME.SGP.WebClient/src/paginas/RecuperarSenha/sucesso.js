@@ -50,7 +50,9 @@ const Sucesso = ({ email }) => {
 Sucesso.propTypes = {
   email: PropTypes.string,
 };
+
 Sucesso.defaultProps = {
   email: '',
 };
+
 export default Sucesso;

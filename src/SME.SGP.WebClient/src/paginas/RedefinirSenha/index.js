@@ -1,23 +1,35 @@
-import React, { useState, useRef, useLayoutEffect, useEffect } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import styled from 'styled-components';
-import { Formik, Form } from 'formik';
+import { Form } from 'formik';
 import LogoDoSgp from '~/recursos/LogoDoSgp.svg';
 import { Base, Colors } from '~/componentes/colors';
 import Button from '~/componentes/button';
 import history from '~/servicos/history';
 import Servico from '~/servicos/Paginas/RedefinirSenhaService';
-import { Nav, Logo, Div, Container, Texto, Titulo, Rotulo, CampoTexto, Validacoes, Itens, Icone, MensagemErro } from './index.css';
+import {
+  Nav,
+  Logo,
+  Div,
+  Container,
+  Texto,
+  Titulo,
+  Rotulo,
+  CampoTexto,
+  Validacoes,
+  Itens,
+  Icone,
+  MensagemErro,
+} from './index.css';
 import { URL_LOGIN, URL_RECUPERARSENHA } from '~/constantes/url';
 
-const RedefinirSenha = (props) => {
-
+const RedefinirSenha = props => {
   const [dados, setDados] = useState({
     senha: '',
     confirmarSenha: '',
   });
 
   const [tokenValidado, setTokenValidado] = useState(false);
-  const [erroGeral, setErroGeral] = useState("");
+  const [erroGeral, setErroGeral] = useState('');
   const [tokenExpirado, setTokenExpirado] = useState(false);
 
   const senha = dados.senha;
@@ -62,50 +74,47 @@ const RedefinirSenha = (props) => {
   }, [confirmarSenha]);
 
   useEffect(() => {
-    if (!tokenValidado)
-      validarToken();
+    if (!tokenValidado) validarToken();
   });
 
   const AoMudarSenha = () => {
     setDados({ ...dados, senha: inputSenhaRef.current.value });
 
-    setErroGeral("");
+    setErroGeral('');
 
     realizarValidacoes(inputSenhaRef.current.value);
   };
 
   const validarToken = async () => {
-
-    if (!token)
-      history.push(URL_LOGIN);
+    if (!token) history.push(URL_LOGIN);
 
     const tokenValido = await Servico.validarToken(token);
 
-    if (!tokenValido)
-      history.push(URL_LOGIN);
-    else
-      setTokenValidado(true);
+    if (!tokenValido) history.push(URL_LOGIN);
+    else setTokenValidado(true);
   };
 
   const AoMudarConfSenha = () => {
     setDados({ ...dados, confirmarSenha: inputConfSenhaRef.current.value });
 
-    setErroGeral("");
+    setErroGeral('');
 
-    const iguais = inputConfSenhaRef.current.value === inputSenhaRef.current.value;
+    const iguais =
+      inputConfSenhaRef.current.value === inputSenhaRef.current.value;
 
     setValidacoes({ ...validacoes, iguais: iguais });
   };
 
-  const realizarValidacoes = (valor) => {
+  const realizarValidacoes = valor => {
     const temMaiuscula = valor.match(/([A-Z])/);
     const temMinuscula = valor.match(/([a-z])/);
     const temAlgarismo = valor.match(/([0-9])/);
     const temSimbolo = valor.match(/([!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?])/);
     const temAcento = valor.match(/([À-ÖØ-öø-ÿ])/);
-    const espacoBranco = valor.includes(" ");
+    const espacoBranco = valor.includes(' ');
 
-    const iguais = inputConfSenhaRef.current.value === inputSenhaRef.current.value;
+    const iguais =
+      inputConfSenhaRef.current.value === inputSenhaRef.current.value;
 
     let tamanho = valor.length >= 8 && valor.length <= 12;
 
@@ -117,24 +126,26 @@ const RedefinirSenha = (props) => {
       acentuados: !temAcento,
       espacoBranco: !espacoBranco,
       tamanho: !!tamanho,
-      iguais: !!iguais
+      iguais: !!iguais,
     });
-  }
+  };
 
-  const validarSeFormularioTemErro = () => Object.entries(validacoes).filter(validar => !validar[1]).length > 0;
+  const validarSeFormularioTemErro = () =>
+    Object.entries(validacoes).filter(validar => !validar[1]).length > 0;
 
   const onClickSair = () => {
     history.push('/');
   };
 
   const alterarSenha = async () => {
-    const requisicao = await Servico.redefinirSenha({ token: token, novaSenha: senha });
+    const requisicao = await Servico.redefinirSenha({
+      token: token,
+      novaSenha: senha,
+    });
 
-    if (requisicao.sucesso)
-      history.push(URL_LOGIN);
+    if (requisicao.sucesso) history.push(URL_LOGIN);
 
-    if (requisicao.tokenExpirado)
-      setTokenExpirado(requisicao.tokenExpirado);
+    if (requisicao.tokenExpirado) setTokenExpirado(requisicao.tokenExpirado);
 
     setErroGeral(requisicao.erro);
   };
@@ -142,15 +153,14 @@ const RedefinirSenha = (props) => {
   const aoClicarContinuar = () => {
     realizarValidacoes(inputSenhaRef.current.value);
 
-    setErroGeral("");
+    setErroGeral('');
 
     if (tokenExpirado) {
       history.push(URL_RECUPERARSENHA);
       return;
     }
 
-    if (!validarSeFormularioTemErro())
-      alterarSenha();
+    if (!validarSeFormularioTemErro()) alterarSenha();
   };
 
   return (
@@ -202,7 +212,7 @@ const RedefinirSenha = (props) => {
                   >
                     <Rotulo htmlFor="confirmacao">
                       Confirmação da Nova Senha
-                        </Rotulo>
+                    </Rotulo>
                     <CampoTexto
                       name="confirmacao"
                       id="confirmacao"
@@ -221,51 +231,49 @@ const RedefinirSenha = (props) => {
                   >
                     <Div style={{ lineHeight: '1.8' }}>
                       Requisitos de segurança da senha:
-                        </Div>
+                    </Div>
                     <Itens className="list-unstyled">
                       <Item status={validacoes.maiuscula}>
                         Uma letra maiúscula
-                            {montaIcone(validacoes.maiuscula)}
+                        {montaIcone(validacoes.maiuscula)}
                       </Item>
                       <Item status={validacoes.minuscula}>
                         Uma letra minúscula
-                            {montaIcone(validacoes.minuscula)}
+                        {montaIcone(validacoes.minuscula)}
                       </Item>
                       <Item status={validacoes.iguais}>
                         As senhas devem ser iguais
-                            {montaIcone(validacoes.iguais)}
+                        {montaIcone(validacoes.iguais)}
                       </Item>
                       <Item status={validacoes.espacoBranco}>
                         Não pode conter espaços em branco
-                            {montaIcone(validacoes.espacoBranco)}
+                        {montaIcone(validacoes.espacoBranco)}
                       </Item>
                       <Item status={validacoes.acentuados}>
                         Não pode conter caracteres acentuados
-                            {montaIcone(validacoes.acentuados)}
+                        {montaIcone(validacoes.acentuados)}
                       </Item>
                       <Item status={validacoes.algarismo || validacoes.simbolo}>
                         Um número ou símbolo (caractere especial)
-                            {montaIcone(validacoes.algarismo || validacoes.simbolo)}
+                        {montaIcone(validacoes.algarismo || validacoes.simbolo)}
                       </Item>
                       <Item status={validacoes.tamanho}>
                         Deve ter no mínimo 8 e no máximo 12 caracteres
-                            {montaIcone(validacoes.tamanho)}
+                        {montaIcone(validacoes.tamanho)}
                       </Item>
                     </Itens>
                   </Validacoes>
                   {validarSeFormularioTemErro() && (
-                    <MensagemErro className="rounded p-3 mb-3">
-                      Sua nova senha deve conter letras maiúsculas,
-                      minúsculas, números e símbolos. Por favor, digite
-                      outra senha
-                        </MensagemErro>
+                    <MensagemErro className="rounded p-3 mb-4">
+                      Sua nova senha deve conter letras maiúsculas, minúsculas,
+                      números e símbolos. Por favor, digite outra senha
+                    </MensagemErro>
                   )}
-                  {
-                    (erroGeral && !validarSeFormularioTemErro()) &&
-                    <MensagemErro className="rounded p-3 mb-3">
+                  {erroGeral && !validarSeFormularioTemErro() && (
+                    <MensagemErro className="rounded p-3 mb-4">
                       {erroGeral}
                     </MensagemErro>
-                  }
+                  )}
                   <Div className="mx-auto d-flex justify-content-end">
                     <Button
                       label="Sair"
