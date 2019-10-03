@@ -41,9 +41,12 @@ namespace SME.SGP.Dominio.Servicos
 
             if (aprovar)
             {
+                var codigoDaNotificacao = nivel.Notificacoes
+                    .FirstOrDefault(a => a.Id == notificacaoId).Codigo;
+
                 var niveis = workflow.ObtemNiveisParaEnvioPosAprovacao();
                 if (niveis != null)
-                    EnviaNotificacaoParaNiveis(niveis.ToList());
+                    EnviaNotificacaoParaNiveis(niveis.ToList(), codigoDaNotificacao);
             }
         }
 
@@ -75,17 +78,20 @@ namespace SME.SGP.Dominio.Servicos
             }
         }
 
-        private void EnviaNotificacaoParaNiveis(List<WorkflowAprovacaoNivel> niveis)
+        private void EnviaNotificacaoParaNiveis(List<WorkflowAprovacaoNivel> niveis, long codigoNotificacao = 0)
         {
             unitOfWork.IniciarTransacao();
 
+            if (codigoNotificacao == 0)
+                codigoNotificacao = servicoNotificacao.ObtemNovoCodigo();
+
             foreach (var aprovaNivel in niveis)
             {
-                EnviaNotificacaoParaNivel(aprovaNivel);
+                EnviaNotificacaoParaNivel(aprovaNivel, codigoNotificacao);
             }
         }
 
-        private void EnviaNotificacaoParaNivel(WorkflowAprovacaoNivel nivel)
+        private void EnviaNotificacaoParaNivel(WorkflowAprovacaoNivel nivel, long codigoNotificacao)
         {
             Notificacao notificacao;
             List<Usuario> usuarios = nivel.Usuarios.ToList();
@@ -115,12 +121,12 @@ namespace SME.SGP.Dominio.Servicos
                     Tipo = nivel.Workflow.NotificacaoTipo,
                     Titulo = nivel.Workflow.NotifacaoTitulo,
                     TurmaId = nivel.Workflow.TurmaId,
-                    UsuarioId = usuario.Id
+                    UsuarioId = usuario.Id,
+                    Codigo = codigoNotificacao
                 };
 
                 nivel.Adicionar(notificacao);
 
-                servicoNotificacao.GeraNovoCodigo(notificacao);
                 repositorioNotificacao.Salvar(notificacao);
 
                 repositorioWorkflowAprovacaoNivelNotificacao.Salvar(new WorkflowAprovacaoNivelNotificacao()
