@@ -32,5 +32,19 @@ namespace SME.SGP.Api.Controllers
 
             return Ok(retornoAutenticacao);
         }
+
+        [HttpPost("PrimeiroAcesso")]
+        [ProducesResponseType(200)]
+        [ProducesResponseType(401)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        public async Task<IActionResult> PrimeiroAcesso(PrimeiroAcessoDto primeiroAcessoDto)
+        {
+            var retornoAlteracao = await servicoAutenticacao.AlterarSenhaPrimeiroAcesso(primeiroAcessoDto);
+
+            if (!retornoAlteracao.SenhaAlterada)
+                return StatusCode(retornoAlteracao.StatusRetorno, retornoAlteracao.Mensagem);
+
+            return Ok();
+        }
     }
 }
