@@ -26,7 +26,7 @@ export default function NotificacoesLista() {
   const [listaStatus, setListaStatus] = useState([]);
   const [listaTipos, setTipos] = useState([]);
 
-  const [turmaSelecionada, setTurmaSelecionada] = useState();
+  const [dropdownTurmaSelecionada, setTurmaSelecionada] = useState();
   const [statusSelecionado, setStatusSelecionado] = useState();
   const [categoriaSelecionada, setCategoriaSelecionada] = useState();
   const [tipoSelecionado, setTipoSelecionado] = useState();
@@ -124,7 +124,7 @@ export default function NotificacoesLista() {
     onClickFiltrar();
   }, [
     statusSelecionado,
-    turmaSelecionada,
+    dropdownTurmaSelecionada,
     categoriaSelecionada,
     tipoSelecionado,
     tituloSelecionado,
@@ -226,18 +226,21 @@ export default function NotificacoesLista() {
       tipo: tipoSelecionado,
       titulo: tituloSelecionado || null,
       usuarioRf: usuario.rf,
+      anoLetivo: usuario.turmaSelecionada[0].anoLetivo
     };
-    if (usuario.turmaSelecionada && usuario.turmaSelecionada.length) {
-      paramsQuery.ano = usuario.turmaSelecionada[0].ano;
-      paramsQuery.dreId = usuario.turmaSelecionada[0].codDre;
-      paramsQuery.ueId = usuario.turmaSelecionada[0].codEscola;
-    }
-    if (
-      usuario.turmaSelecionada &&
-      usuario.turmaSelecionada.length &&
-      !desabilitarTurma
-    ) {
-      paramsQuery.turmaId = usuario.turmaSelecionada[0].codEscola;
+    if (dropdownTurmaSelecionada && dropdownTurmaSelecionada == '2') {
+      if (usuario.turmaSelecionada && usuario.turmaSelecionada.length) {
+        paramsQuery.ano = usuario.turmaSelecionada[0].ano;
+        paramsQuery.dreId = usuario.turmaSelecionada[0].codDre;
+        paramsQuery.ueId = usuario.turmaSelecionada[0].codEscola;
+      }
+      if (
+        usuario.turmaSelecionada &&
+        usuario.turmaSelecionada.length &&
+        !desabilitarTurma
+      ) {
+        paramsQuery.turmaId = usuario.turmaSelecionada[0].codEscola;
+      }
     }
     const listaNotifi = await api.get('v1/notificacoes', {
       params: paramsQuery,
@@ -270,7 +273,7 @@ export default function NotificacoesLista() {
     if (e.key === 'e') e.preventDefault();
   }
 
-  function quandoClicarVoltar(){
+  function quandoClicarVoltar() {
     history.push(URL_HOME);
   }
 
@@ -303,7 +306,7 @@ export default function NotificacoesLista() {
             valueOption="id"
             valueText="descricao"
             onChange={onChangeTurma}
-            valueSelect={turmaSelecionada || []}
+            valueSelect={dropdownTurmaSelecionada || []}
             placeholder="Turma"
             disabled={desabilitarTurma}
           />
