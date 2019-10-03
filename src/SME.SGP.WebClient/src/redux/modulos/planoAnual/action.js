@@ -11,7 +11,7 @@ export function Salvar(indice, bimestre) {
   };
 }
 
-export function LimparBimestres(){
+export function LimparBimestres() {
   return {
     type: '@bimestres/LimparBimestres'
   };
@@ -242,7 +242,11 @@ export function ObterBimestreServidor(Bimestre) {
             id: bimestreDTO.id,
             alteradoPor: bimestreDTO.alteradoPor,
             alteradoEm: bimestreDTO.alteradoEm,
+            alteradoRF: bimestreDTO.alteradoRF,
+            criadoRF: bimestreDTO.criadoRF,
             criadoEm: bimestreDTO.criadoEm,
+            LayoutEspecial: bimestreDTO.migrado,
+            migrado: bimestreDTO.migrado,
             criadoPor: bimestreDTO.criadoPor,
             objetivosAprendizagem: bimestreDTO.objetivosAprendizagem.map(
               obj => {
