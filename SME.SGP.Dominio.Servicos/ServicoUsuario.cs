@@ -2,6 +2,7 @@
 using SME.SGP.Dominio.Interfaces;
 using System;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace SME.SGP.Dominio
 {
@@ -16,16 +17,6 @@ namespace SME.SGP.Dominio
             this.servicoEOL = servicoEOL ?? throw new ArgumentNullException(nameof(servicoEOL));
         }
 
-        public async void ModificarPerfil(string perfilParaModificar, string login)
-        {
-            var perfisDoUsuario = await servicoEOL.ObterPerfisPorLogin(login);
-            if (perfisDoUsuario == null)
-                throw new NegocioException($"Não foi possível obter os perfis do usuário {login}");
-
-            if (!perfisDoUsuario.Perfis.Contains(Guid.Parse(perfilParaModificar)))
-                throw new NegocioException($"O usuário {login} não possui acesso ao perfil {perfilParaModificar}");
-        }
-
         public Usuario ObterUsuarioPorCodigoRfLoginOuAdiciona(string codigoRf, string login = "")
         {
             var usuario = repositorioUsuario.ObterPorCodigoRfLogin(codigoRf, login);
@@ -37,6 +28,16 @@ namespace SME.SGP.Dominio
             repositorioUsuario.Salvar(usuario);
 
             return usuario;
+        }
+
+        public async Task PodeModificarPerfil(string perfilParaModificar, string login)
+        {
+            var perfisDoUsuario = await servicoEOL.ObterPerfisPorLogin(login);
+            if (perfisDoUsuario == null)
+                throw new NegocioException($"Não foi possível obter os perfis do usuário {login}");
+
+            if (!perfisDoUsuario.Perfis.Contains(Guid.Parse(perfilParaModificar)))
+                throw new NegocioException($"O usuário {login} não possui acesso ao perfil {perfilParaModificar}");
         }
     }
 }
