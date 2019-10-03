@@ -64,7 +64,7 @@ namespace SME.SGP.Aplicacao
         {
             string loginAtual = servicoTokenJwt.ObterLoginAtual();
 
-            servicoUsuario.ModificarPerfil(guid, loginAtual);
+            await servicoUsuario.PodeModificarPerfil(guid, loginAtual);
 
             var permissionamentos = await servicoEOL.ObterPermissoesPorPerfil(Guid.Parse(guid));
 
