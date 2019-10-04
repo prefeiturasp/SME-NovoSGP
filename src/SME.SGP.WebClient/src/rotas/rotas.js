@@ -16,6 +16,7 @@ import RecuperarSenha from '~/paginas/RecuperarSenha';
 import RedefinirSenha from '~/paginas/RedefinirSenha';
 import RotaNaoAutenticadaDesestruturada from './rotaNaoAutenticadaDesestruturada';
 import RotaAutenticadaDesestruturada from './rotaAutenticadaDesestruturada';
+import RotaMista from './rotaMista';
 
 export default function Rotas() {
   const rotas = new Map();
@@ -62,7 +63,7 @@ export default function Rotas() {
     parent: '/',
     component: RedefinirSenha,
     exact: true,
-    tipo: RotasTipo.DesestruturadaNaoAutenticada,
+    tipo: RotasTipo.Mista,
   });
 
   rotas.set('/gestao/atribuicao-supervisor-lista', {
@@ -114,7 +115,7 @@ export default function Rotas() {
     tipo: RotasTipo.EstruturadaAutenticada,
   });
 
-  rotas.set('/:rf?', {
+  rotas.set('/', {
     icone: 'fas fa-home',
     parent: null,
     component: Principal,
@@ -173,6 +174,16 @@ export default function Rotas() {
             case RotasTipo.DesestruturadaAutenticada:
               return (
                 <RotaAutenticadaDesestruturada
+                  path={rota.path}
+                  key={rota.path}
+                  exact={rota.exact}
+                  component={rota.component}
+                />
+              );
+
+            case RotasTipo.Mista:
+              return (
+                <RotaMista
                   path={rota.path}
                   key={rota.path}
                   exact={rota.exact}

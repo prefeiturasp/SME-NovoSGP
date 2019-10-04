@@ -12,6 +12,8 @@ class LoginHelper {
   acessar = async login => {
     const autenticacao = await LoginService.autenticar(login);
 
+    console.log(autenticacao);
+
     if (!autenticacao.sucesso) return autenticacao;
 
     const rf = Number.isInteger(login.usuario * 1) ? login.usuario : '';
@@ -25,16 +27,12 @@ class LoginHelper {
     );
 
     if (autenticacao.dados.modificarSenha) {
-      history.push('/redefinir-senha');
-      console.log(history);
+      history.push(URL_MODIFICARSENHA);
       return { sucesso: false, erroGeral: '' };
     }
 
     if (this.redirect) history.push(atob(this.redirect));
     else history.push(URL_HOME);
-
-    console.log(history);
-    console.log(autenticacao);
 
     return autenticacao;
   };

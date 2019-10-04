@@ -1,11 +1,12 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useLayoutEffect } from 'react';
+import { useSelector } from 'react-redux';
 import styled from 'styled-components';
 import { Form } from 'formik';
 import LogoDoSgp from '~/recursos/LogoDoSgp.svg';
 import { Base, Colors } from '~/componentes/colors';
 import Button from '~/componentes/button';
 import history from '~/servicos/history';
-import Servico from '~/servicos/Paginas/RedefinirSenhaService';
+import RedefinirSenhaServico from '~/servicos/Paginas/RedefinirSenhaService';
 import {
   Nav,
   Logo,
@@ -64,6 +65,7 @@ const RedefinirSenha = props => {
 
   const inputSenhaRef = useRef();
   const inputConfSenhaRef = useRef();
+  const logado = useSelector(state => state.usuario.logado);
 
   useEffect(() => {
     inputSenhaRef.current.focus();
@@ -73,23 +75,22 @@ const RedefinirSenha = props => {
     inputConfSenhaRef.current.focus();
   }, [confirmarSenha]);
 
-  useEffect(() => {
-    console.log(tokenValidado);
-    if (!tokenValidado) validarToken();
-  });
+  useLayoutEffect(() => {
+    if (!tokenValidado && !logado) {
+      validarToken();
+    }
+  }, []);
 
-  const AoMudarSenha = () => {
-    setDados({ ...dados, senha: inputSenhaRef.current.value });
-
+  const aoMudarSenha = () => {
     setErroGeral('');
-
+    setDados({ ...dados, senha: inputSenhaRef.current.value });
     realizarValidacoes(inputSenhaRef.current.value);
   };
 
   const validarToken = async () => {
     if (!token) history.push(URL_LOGIN);
 
-    const tokenValido = await Servico.validarToken(token);
+    const tokenValido = await RedefinirSenhaServico.validarToken(token);
 
     if (!tokenValido) history.push(URL_LOGIN);
     else setTokenValidado(true);
@@ -139,21 +140,26 @@ const RedefinirSenha = props => {
   };
 
   const alterarSenha = async () => {
-    const requisicao = await Servico.redefinirSenha({
-      token: token,
-      novaSenha: senha,
-    });
+    if (!logado) {
+      const requisicao = await RedefinirSenhaServico.redefinirSenha({
+        token,
+        novaSenha: senha,
+      });
 
-    if (requisicao.sucesso) history.push(URL_LOGIN);
+      if (requisicao.sucesso) history.push(URL_LOGIN);
+      if (requisicao.tokenExpirado) setTokenExpirado(requisicao.tokenExpirado);
 
-    if (requisicao.tokenExpirado) setTokenExpirado(requisicao.tokenExpirado);
-
-    setErroGeral(requisicao.erro);
+      setErroGeral(requisicao.erro);
+    } else {
+      const requisicao = await RedefinirSenhaServico.redefinirSenha({
+        novaSenha: senha,
+      });
+      console.log(requisicao);
+    }
   };
 
   const aoClicarContinuar = () => {
     realizarValidacoes(inputSenhaRef.current.value);
-
     setErroGeral('');
 
     if (tokenExpirado) {
@@ -204,7 +210,7 @@ const RedefinirSenha = props => {
                       type="password"
                       value={senha}
                       ref={inputSenhaRef}
-                      onChange={AoMudarSenha}
+                      onChange={aoMudarSenha}
                     />
                   </Div>
                   <Div
