@@ -6,6 +6,7 @@ import { store } from '../redux';
 import { perfilSelecionado } from '../redux/modulos/perfil/actions';
 import { useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
+import api from '~/servicos/api';
 
 
 const Perfil = props => {
@@ -80,6 +81,10 @@ const Perfil = props => {
       store.dispatch(perfilSelecionado(perfilNovo[0]));
       setarOcultaPerfis(true);
       if (PerfilStore.perfilSelecionado.codigoPerfil !== perfilNovo[0].codigoPerfil) {
+        api.put(`v1/perfis/${perfilNovo[0].codigoPerfil}`)
+        .then( resp => {
+          console.log(resp);
+        });
         history.push('/');
       }
     }
