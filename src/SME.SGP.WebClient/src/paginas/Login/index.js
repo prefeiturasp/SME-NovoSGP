@@ -66,6 +66,7 @@ const Login = props => {
   document.onkeyup = aoPressionarTecla;
 
   const Acessar = async dados => {
+    console.log('acessar');
     setLogin({
       usuario: dados.usuario,
       senha: dados.senha,
@@ -74,8 +75,6 @@ const Login = props => {
     setErroGeral('');
 
     const { sucesso, ...retorno } = await helper.acessar(dados);
-
-    console.log(sucesso, retorno);
 
     if (!sucesso) setErroGeral(retorno.erroGeral);
   };
