@@ -106,6 +106,11 @@ namespace SME.SGP.Dominio.Servicos
                     var supervisoresEscola = repositorioSupervisorEscolaDre.ObtemSupervisoresPorUe(nivel.Workflow.UeId);
                     if (supervisoresEscola == null || supervisoresEscola.Count() == 0)
                         throw new NegocioException($"Não foram encontrados supervisores atribuídos para a escola de código {nivel.Workflow.UeId} para enviar para o nível {nivel.Nivel}.");
+
+                    foreach (var supervisorEscola in supervisoresEscola)
+                    {
+                        usuarios.Add(servicoUsuario.ObterUsuarioPorCodigoRfLoginOuAdiciona(supervisorEscola.SupervisorId));
+                    }
                 }
                 else
                 {
