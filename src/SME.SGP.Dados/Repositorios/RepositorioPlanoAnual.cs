@@ -19,7 +19,7 @@ namespace SME.SGP.Dados.Repositorios
             StringBuilder query = new StringBuilder();
 
             query.AppendLine("select");
-            query.AppendLine("	pa.ano as AnoLetivo, pa.*,");
+            query.AppendLine("	pa.ano as AnoLetivo, pa.*, pa.migrado, ");
             query.AppendLine("	string_agg(distinct cast(oap.objetivo_aprendizagem_jurema_id as text), ',') as ObjetivosAprendizagemPlano");
             query.AppendLine("from");
             query.AppendLine("	plano_anual pa");
@@ -38,7 +38,7 @@ namespace SME.SGP.Dados.Repositorios
 
         public PlanoAnual ObterPlanoAnualSimplificadoPorAnoEscolaBimestreETurma(int ano, string escolaId, long turmaId, int bimestre)
         {
-            return database.Conexao.Query<PlanoAnual>("select id, escola_id, turma_id, ano, bimestre, descricao, criado_em, alterado_em, criado_por, alterado_por, criado_rf, alterado_rf from plano_anual where ano = @ano and escola_id = @escolaId and bimestre = @bimestre and turma_id = @turmaId", new { ano, escolaId, turmaId, bimestre }).SingleOrDefault();
+            return database.Conexao.Query<PlanoAnual>("select id, escola_id, turma_id, ano, bimestre, descricao, migrado, criado_em, alterado_em, criado_por, alterado_por, criado_rf, alterado_rf from plano_anual where ano = @ano and escola_id = @escolaId and bimestre = @bimestre and turma_id = @turmaId", new { ano, escolaId, turmaId, bimestre }).SingleOrDefault();
         }
 
         public bool ValidarPlanoExistentePorAnoEscolaTurmaEBimestre(int ano, string escolaId, long turmaId, int bimestre)

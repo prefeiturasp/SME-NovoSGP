@@ -6,6 +6,17 @@
 
 
   <ItemGroup>
+    <None Remove="ModelosEmail\RecuperacaoSenha.txt" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="ModelosEmail\RecuperacaoSenha.txt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="MailKit" Version="2.3.1.6" />
   <PackageReference Include="MailKit" Version="2.3.1.6" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="2.2.0" />
     <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="5.5.0" />

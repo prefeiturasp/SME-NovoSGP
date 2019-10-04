@@ -32,7 +32,6 @@ export default function NotificacoesLista() {
   const [tipoSelecionado, setTipoSelecionado] = useState();
   const [tituloSelecionado, setTituloSelecionado] = useState();
   const [codigoSelecionado, setCodigoSelecionado] = useState();
-  const [desabilitarBotaoEditar, setDesabilitarBotaoEditar] = useState(true);
   const [desabilitarBotaoExcluir, setDesabilitarBotaoExcluir] = useState(true);
   const [desabilitarBotaoMarcarLido, setDesabilitarBotaoMarcarLido] = useState(
     true
@@ -47,40 +46,32 @@ export default function NotificacoesLista() {
       {
         title: 'Código',
         dataIndex: 'codigo',
-        className:
-          'text-left px-4 d-sm-none d-md-none d-lg-table-cell d-xl-table-cell',
         render: (text, row) => montarLinhasTabela(text, row),
       },
       {
         title: 'Tipo',
         dataIndex: 'tipo',
-        className: 'text-left px-4',
         render: (text, row) => montarLinhasTabela(text, row),
       },
       {
         title: 'Categoria',
         dataIndex: 'descricaoCategoria',
-        className: 'text-left px-4',
         render: (text, row) => montarLinhasTabela(text, row),
       },
       {
         title: 'Título',
         dataIndex: 'titulo',
-        className:
-          'text-left px-4 d-sm-none d-md-none d-lg-table-cell d-xl-table-cell',
         render: (text, row) => montarLinhasTabela(text, row),
       },
       {
         title: 'Situação',
         dataIndex: 'descricaoStatus',
-        className: 'text-left text-uppercase px-4',
         render: (text, row) => montarLinhasTabela(text, row, true),
       },
       {
         title: 'Data/Hora',
         dataIndex: 'data',
-        className: 'text-left px-4 py-0 data-hora',
-        width: 100,
+        width: 200,
         render: (text, row) => {
           const dataFormatada = moment(text).format('DD/MM/YYYY HH:mm:ss');
           return montarLinhasTabela(dataFormatada, row);
@@ -144,7 +135,7 @@ export default function NotificacoesLista() {
           {statusLista[row.status]}
         </span>
       ) : (
-          <span>{text}</span>
+          <span className="cor-novo-registro-lista">{text}</span>
         )
     ) : (
         text
@@ -152,11 +143,6 @@ export default function NotificacoesLista() {
   }
 
   function onSelectRow(ids) {
-    if (ids && ids.length == 1) {
-      setDesabilitarBotaoEditar(false);
-    } else {
-      setDesabilitarBotaoEditar(true);
-    }
 
     if (ids && ids.length > 0) {
       const notifSelecionadas = listaNotificacoes.filter(noti => {
@@ -184,6 +170,10 @@ export default function NotificacoesLista() {
     }
 
     setIdNotificacoesSelecionadas(ids);
+  }
+
+  function onClickRow(row) {
+    onClickEditar(row.id);
   }
 
   function onChangeTurma(turma) {
@@ -214,8 +204,8 @@ export default function NotificacoesLista() {
     setTipoSelecionado(tipo);
   }
 
-  function onClickEditar() {
-    history.push(`/notificacoes/${idNotificacoesSelecionadas[0]}`);
+  function onClickEditar(id) {
+    history.push(`/notificacoes/${id}`);
   }
 
   async function onClickFiltrar() {
@@ -365,14 +355,6 @@ export default function NotificacoesLista() {
             disabled={desabilitarBotaoMarcarLido}
           />
           <Button
-            label="Editar"
-            color={Colors.Azul}
-            border
-            className="mb-2 ml-2 float-right"
-            onClick={onClickEditar}
-            disabled={desabilitarBotaoEditar}
-          />
-          <Button
             label="Voltar"
             color={Colors.Azul}
             border
@@ -385,6 +367,7 @@ export default function NotificacoesLista() {
             id="lista-notificacoes"
             selectedRowKeys={idNotificacoesSelecionadas}
             onSelectRow={onSelectRow}
+            onClickRow={onClickRow}
             columns={colunasTabela}
             dataSource={listaNotificacoes}
             selectMultipleRows

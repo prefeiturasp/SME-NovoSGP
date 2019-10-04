@@ -1,4 +1,4 @@
-version: "3.1"
+version: '3.1'
 
 volumes:
   grafana-data: {}
@@ -11,12 +11,12 @@ services:
       context: .
       dockerfile: ./src/SME.SGP.Api/Dockerfile
     ports:
-      - "8080:80"
+      - '8080:80'
     networks:
       - sme-network
     depends_on:
-      - "sme-db"
-      - "sme-redis"
+      - 'sme-db'
+      - 'sme-redis'
     env_file:
       - sme-api.env
   sme-db:
@@ -24,7 +24,7 @@ services:
     restart: always
     image: postgres:11-alpine
     ports:
-      - "5432:5432"
+      - '5432:5432'
     environment:
       POSTGRES_PASSWORD: postgres
       POSTGRES_DB: sgp_db
@@ -35,11 +35,11 @@ services:
   sme-flyway:
     container_name: sme-flyway
     image: boxfuse/flyway:5.2.4
-    command: -url=jdbc:postgresql://sme-db:5432/sgp_db?user=postgres&password=postgres -locations='filesystem:/opt/scripts' migrate
+    command: -url=jdbc:postgresql://sme-db:5432/sgp_db?user=postgres&password=postgres -locations='filesystem:/opt/scripts' -outOfOrder=true migrate
     volumes:
       - ./scripts:/opt/scripts
     depends_on:
-      - "sme-db"
+      - 'sme-db'
     networks:
       - sme-network
   sme-webclient:
@@ -49,11 +49,11 @@ services:
       context: .
       dockerfile: ./src/SME.SGP.WebClient/Dockerfile
     ports:
-      - "80:80"
+      - '80:80'
     networks:
       - sme-network
     depends_on:
-      - "sme-api"
+      - 'sme-api'
     environment:
       - API_URL=http://localhost:8080/api
   grafana:
@@ -61,7 +61,7 @@ services:
     restart: always
     image: grafana/grafana
     ports:
-      - "3000:3000"
+      - '3000:3000'
     volumes:
       # Data persistency
       # sudo mkdir -p /srv/docker/influxdb/data
@@ -69,7 +69,7 @@ services:
     networks:
       - sme-network
     depends_on:
-      - "prom"
+      - 'prom'
   prom:
     container_name: sme-prometheus
     image: sme-prometheus
@@ -81,14 +81,14 @@ services:
     networks:
       - sme-network
     depends_on:
-      - "sme-api"
+      - 'sme-api'
   sme-redis:
     image: redis:5.0.5-alpine
     container_name: sme-redis
     ports:
-      - "6379:6379"
+      - '6379:6379'
     networks:
-      - sme-network 
+      - sme-network
 networks:
   sme-network:
     driver: bridge

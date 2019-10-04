@@ -12,7 +12,6 @@ import api from '../../../servicos/api';
 import Cabecalho from '~/componentes-sgp/cabecalho';
 
 export default function AtribuicaoSupervisorLista() {
-  const [selectedRowKeys, setSelectedRowKeys] = useState([]);
   const [uesSemSupervisorCheck, setUesSemSupervisorCheck] = useState(false);
   const [assumirFiltroPrincCheck, setAssumirFiltroPrincCheck] = useState(false);
   const [dresSelecionadas, setDresSelecionadas] = useState('');
@@ -91,19 +90,17 @@ export default function AtribuicaoSupervisorLista() {
       },
     },
   ];
-  function onSelectRow(row) {
-    setSelectedRowKeys(row);
+
+  function onClickRow(row) {
+    onClickEditar(row.supervisorId)
   }
 
   function onClickVoltar() {
     history.push('/');
   }
 
-  function onClickEditar() {
-    const ueSelecionada = listaFiltroAtribuicao.find(
-      ue => ue.id == selectedRowKeys[0]
-    );
-    const path = `/gestao/atribuicao-supervisor/${dresSelecionadas}/${ueSelecionada.supervisorId || ''}`
+  function onClickEditar(supervisorId) {
+    const path = `/gestao/atribuicao-supervisor/${dresSelecionadas}/${supervisorId || ''}`
     history.push(path);
   }
 
@@ -273,15 +270,6 @@ export default function AtribuicaoSupervisorLista() {
             onClick={onClickVoltar}
           />
           <Button
-            label="Editar"
-            color={Colors.Roxo}
-            border
-            bold
-            className="mr-2"
-            onClick={onClickEditar}
-            hidden={selectedRowKeys && selectedRowKeys.length < 1}
-          />
-          <Button
             label="Nova Atribuição"
             color={Colors.Roxo}
             border
@@ -354,8 +342,7 @@ export default function AtribuicaoSupervisorLista() {
 
         <div className="col-md-12 pt-4">
           <DataTable
-            selectedRowKeys={selectedRowKeys}
-            onSelectRow={onSelectRow}
+            onClickRow={onClickRow}
             columns={columns}
             dataSource={listaFiltroAtribuicao}
           />

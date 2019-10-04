@@ -127,6 +127,7 @@ namespace SME.SGP.Integracao.Teste
                                                     Assert.True(timelineNivel2.FirstOrDefault(a => a.Nivel == 1).StatusId == (int)WorkflowAprovacaoNivelStatus.Aprovado);
                                                     Assert.True(timelineNivel2.FirstOrDefault(a => a.Nivel == 2).StatusId == (int)WorkflowAprovacaoNivelStatus.AguardandoAprovacao);
                                                     Assert.True(timelineNivel2.FirstOrDefault(a => a.Nivel == 3).StatusId == (int)WorkflowAprovacaoNivelStatus.SemStatus);
+                                                    Assert.True(notificacoes.FirstOrDefault().Codigo == notificacoesNivel2.FirstOrDefault().Codigo);
 
                                                     //Reprovacao 2 nivel
                                                     var reprovacaoNivel = new WorkflowAprovacaoAprovacaoDto();
