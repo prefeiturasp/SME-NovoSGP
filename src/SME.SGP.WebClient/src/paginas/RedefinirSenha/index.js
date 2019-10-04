@@ -74,6 +74,7 @@ const RedefinirSenha = props => {
   }, [confirmarSenha]);
 
   useEffect(() => {
+    console.log(tokenValidado);
     if (!tokenValidado) validarToken();
   });
 
@@ -102,21 +103,21 @@ const RedefinirSenha = props => {
     const iguais =
       inputConfSenhaRef.current.value === inputSenhaRef.current.value;
 
-    setValidacoes({ ...validacoes, iguais: iguais });
+    setValidacoes({ ...validacoes, iguais });
   };
 
   const realizarValidacoes = valor => {
     const temMaiuscula = valor.match(/([A-Z])/);
     const temMinuscula = valor.match(/([a-z])/);
     const temAlgarismo = valor.match(/([0-9])/);
-    const temSimbolo = valor.match(/([!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?])/);
+    const temSimbolo = valor.match(/([!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?])/);
     const temAcento = valor.match(/([À-ÖØ-öø-ÿ])/);
     const espacoBranco = valor.includes(' ');
 
     const iguais =
       inputConfSenhaRef.current.value === inputSenhaRef.current.value;
 
-    let tamanho = valor.length >= 8 && valor.length <= 12;
+    const tamanho = valor.length >= 8 && valor.length <= 12;
 
     setValidacoes({
       maiuscula: !!temMaiuscula,

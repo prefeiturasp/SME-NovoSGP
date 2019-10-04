@@ -31,14 +31,13 @@ import { URL_RECUPERARSENHA } from '~/constantes/url';
 
 const Login = props => {
   const dispatch = useDispatch();
+  const btnAcessar = useRef();
 
   const [erroGeral, setErroGeral] = useState('');
   const [login, setLogin] = useState({
     usuario: '',
     senha: '',
   });
-
-  const inputFormik = useRef(null);
 
   let redirect = null;
 
@@ -61,8 +60,7 @@ const Login = props => {
   const aoPressionarTecla = e => {
     if (e.key === 'Enter') {
       e.preventDefault();
-
-      inputFormik.current.click();
+      btnAcessar.current.click();
     }
   };
   document.onkeyup = aoPressionarTecla;
@@ -72,17 +70,18 @@ const Login = props => {
       usuario: dados.usuario,
       senha: dados.senha,
     });
+
     setErroGeral('');
 
     const { sucesso, ...retorno } = await helper.acessar(dados);
 
-    if (!sucesso) {
-      setErroGeral(retorno.erroGeral);
-      return;
-    }
+    console.log(sucesso, retorno);
+
+    if (!sucesso) setErroGeral(retorno.erroGeral);
   };
 
   const aoClicarBotaoAutenticar = (form, e) => {
+    e.persist();
     form.validateForm().then(() => form.handleSubmit(e));
   };
 
@@ -119,7 +118,7 @@ const Login = props => {
                     {form => (
                       <Form>
                         <Rotulo className="d-block" htmlFor="usuario">
-                          Usuário{' '}
+                          Usuário
                           <Tooltip placement="top" title={TextoAjuda}>
                             <i className="fas fa-question-circle" />
                           </Tooltip>
@@ -148,11 +147,10 @@ const Login = props => {
                         />
                         <FormGroup>
                           <Button
-                            style="primary"
                             className="btn-block d-block"
                             label="Acessar"
                             color={Colors.Roxo}
-                            ref={inputFormik}
+                            ref={btnAcessar}
                             onClick={e => aoClicarBotaoAutenticar(form, e)}
                           />
                           <Centralizar className="mt-1">
