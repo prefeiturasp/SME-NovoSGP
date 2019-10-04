@@ -98,14 +98,19 @@ namespace SME.SGP.Dominio.Servicos
 
             if (nivel.Cargo.HasValue)
             {
-                var funcionariosRetornoEol = servicoEOL.ObterFuncionariosPorCargoUe(nivel.Workflow.UeId, (int)nivel.Cargo.Value).ToList();
-
-                if (funcionariosRetornoEol == null || funcionariosRetornoEol.Count() == 0)
-                    throw new NegocioException($"Não foram encontrados funcionários de cargo {nivel.Cargo.GetAttribute<DisplayAttribute>().Name} para a escola de código {nivel.Workflow.UeId} para enviar para o nível {nivel.Nivel}.");
-
-                foreach (var usuario in funcionariosRetornoEol)
+                if (nivel.Cargo == Cargo.Supervisor)
                 {
-                    usuarios.Add(servicoUsuario.ObterUsuarioPorCodigoRfLoginOuAdiciona(usuario.CodigoRf));
+                }
+                else
+                {
+                    var funcionariosRetornoEol = servicoEOL.ObterFuncionariosPorCargoUe(nivel.Workflow.UeId, (int)nivel.Cargo.Value);
+                    if (funcionariosRetornoEol == null || funcionariosRetornoEol.Count() == 0)
+                        throw new NegocioException($"Não foram encontrados funcionários de cargo {nivel.Cargo.GetAttribute<DisplayAttribute>().Name} para a escola de código {nivel.Workflow.UeId} para enviar para o nível {nivel.Nivel}.");
+
+                    foreach (var usuario in funcionariosRetornoEol)
+                    {
+                        usuarios.Add(servicoUsuario.ObterUsuarioPorCodigoRfLoginOuAdiciona(usuario.CodigoRf));
+                    }
                 }
             }
 
