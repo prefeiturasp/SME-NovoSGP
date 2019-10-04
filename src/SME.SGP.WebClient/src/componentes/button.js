@@ -10,7 +10,6 @@ const Button = React.forwardRef((props, ref) => {
     style,
     color,
     border,
-    bold,
     steady,
     remove,
     className,
@@ -41,12 +40,14 @@ const Button = React.forwardRef((props, ref) => {
   `;
 
   const Btn = styled.button`
+  display: flex;
+    position: relative;
     background: ${border ? 'transparent' : Active[color]} !important;
     text-align: center;
     ${
-      border
-        ? `border-color: ${Active[color]} !important; color: ${Active[color]} !important;`
-        : `border: 0 none !important;`
+    border
+      ? `border-color: ${Active[color]} !important; color: ${Active[color]} !important;`
+      : `border: 0 none !important;`
     };
     ${customRadius && customRadius};
     font-weight: bold !important;
@@ -73,7 +74,7 @@ const Button = React.forwardRef((props, ref) => {
       type={type}
       className={`btn btn-${style} ${className} position-relative d-flex justify-content-center align-items-center ${
         padding ? '' : 'py-2 px-3'
-      } ${fontSize ? '' : 'fonte-14'}`}
+        } ${fontSize ? '' : 'fonte-14'}`}
       onClick={onClick}
       disabled={disabled}
       id={id}
@@ -96,7 +97,6 @@ Button.propTypes = {
   style: PropTypes.string,
   color: PropTypes.string,
   border: PropTypes.bool,
-  bold: PropTypes.bool,
   steady: PropTypes.bool,
   remove: PropTypes.bool,
   className: PropTypes.string,
@@ -105,6 +105,7 @@ Button.propTypes = {
   icon: PropTypes.string,
   padding: PropTypes.string,
   height: PropTypes.string,
+  lineHeight: PropTypes.string,
   width: PropTypes.string,
   fontSize: PropTypes.string,
   label: PropTypes.string,
@@ -118,15 +119,15 @@ Button.defaultProps = {
   style: 'primary',
   color: Base.Roxo,
   border: false,
-  bold: false,
   steady: false,
   remove: false,
   className: '',
-  onClick: () => {},
+  onClick: () => { },
   disabled: false,
   icon: '',
   padding: '',
   height: '38px',
+  lineHeight: 'auto',
   width: '',
   fontSize: '',
   label: '',

@@ -27,6 +27,7 @@ import {
   ErroGeral,
 } from './login.css';
 import CampoTexto from '~/componentes/campoTexto';
+import { URL_RECUPERARSENHA } from '~/constantes/url';
 
 const Login = props => {
   const dispatch = useDispatch();
@@ -86,11 +87,11 @@ const Login = props => {
   };
 
   return (
-    <Fundo className="p-0 h-100">
-      <Grid cols={12} className="d-flex justify-content-end">
-        <Cartao className="col-xl-6 col-lg-6 col-md-8 col-sm-8 col-xs-12">
-          <CorpoCartao className="">
-            <Centralizar className="row col-md-12">
+    <Fundo className="p-0 h-100 overflow-hidden">
+      <Grid cols={12} className="d-flex justify-content-end overflow-hidden">
+        <Cartao className="col-xl-6 col-lg-6 col-md-8 pt-1 pb-0 col-sm-8 col-xs-12 overflow-hidden">
+          <CorpoCartao className=" overflow-hidden">
+            <Centralizar className="row col-md-12 overflow-hidden">
               <Row className="col-md-12 p-0 d-flex justify-content-center align-self-start">
                 <LogoSGP className="col-xl-8 col-md-8 col-sm-8 col-xs-12">
                   <Logo
@@ -155,7 +156,7 @@ const Login = props => {
                             onClick={e => AoClicarBotaoAutenticar(form, e)}
                           />
                           <Centralizar className="mt-1">
-                            <Link to="/" isactive>
+                            <Link to={URL_RECUPERARSENHA} isactive>
                               <LabelLink>Esqueci minha senha</LabelLink>
                             </Link>
                           </Centralizar>
@@ -167,9 +168,9 @@ const Login = props => {
                           </ErroGeral>
                         ) : null}
                         {erroGeral &&
-                        !(form.errors.usuario || form.errors.senha) ? (
-                          <ErroGeral>{erroGeral}</ErroGeral>
-                        ) : null}
+                          !(form.errors.usuario || form.errors.senha) ? (
+                            <ErroGeral>{erroGeral}</ErroGeral>
+                          ) : null}
                       </Form>
                     )}
                   </Formik>
