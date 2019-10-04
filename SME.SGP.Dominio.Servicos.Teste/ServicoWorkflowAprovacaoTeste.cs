@@ -26,8 +26,8 @@ namespace SME.SGP.Dominio.Servicos.Teste
             unitOfWork = new Mock<IUnitOfWork>();
             repositorioWorkflowAprovacaoNivel = new Mock<IRepositorioWorkflowAprovacaoNivel>();
 
-            servicoWorkflowAprovacao = new ServicoWorkflowAprovacao(unitOfWork.Object, repositorioNotificacao.Object, repositorioWorkflowAprovacaoNivelNotificacao.Object,
-                servicoEOL.Object, servicoUsuario.Object, servicoNotificacao.Object, repositorioWorkflowAprovacaoNivel.Object);
+            //servicoWorkflowAprovacao = new ServicoWorkflowAprovacao(unitOfWork.Object, repositorioNotificacao.Object, repositorioWorkflowAprovacaoNivelNotificacao.Object,
+            //    servicoEOL.Object, servicoUsuario.Object, servicoNotificacao.Object, repositorioWorkflowAprovacaoNivel.Object);
         }
 
         [Fact]
