@@ -3,6 +3,7 @@ using SME.SGP.Aplicacao.Servicos;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Dto;
+using System;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -57,6 +58,29 @@ namespace SME.SGP.Aplicacao
                 }
             }
             return retornoAutenticacaoEol.Item1;
+        }
+
+        public async Task<string> ModificarPerfil(string guid)
+        {
+            string loginAtual = servicoTokenJwt.ObterLoginAtual();
+
+            await servicoUsuario.PodeModificarPerfil(guid, loginAtual);
+
+            var permissionamentos = await servicoEOL.ObterPermissoesPorPerfil(Guid.Parse(guid));
+
+            if (permissionamentos == null || !permissionamentos.Any())
+            {
+                throw new NegocioException($"Não foi possível obter os permissionamentos do perfil {guid}");
+            }
+            else
+            {
+                var listaPermissoes = permissionamentos
+                    .Distinct()
+                    .Select(a => (Permissao)a)
+                    .ToList();
+
+                return servicoTokenJwt.GerarToken(loginAtual, listaPermissoes);
+            }
         }
     }
 }
