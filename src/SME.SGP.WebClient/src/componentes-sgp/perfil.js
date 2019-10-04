@@ -8,12 +8,17 @@ import { useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
 import api from '~/servicos/api';
 import { SalvarDadosLogin } from '~/redux/modulos/usuario/actions';
+import { erro } from '~/servicos/alertas';
+import { Deslogar } from '~/redux/modulos/usuario/actions';
 
 
 const Perfil = props => {
   const { Botao, Icone, Texto } = props;
   const [ocultaPerfis, setarOcultaPerfis] = useState(true);
   const PerfilStore = useSelector(store => store.perfil);
+
+
+  const UsuarioStore = useSelector(store => store.usuario);
 
   const listaRef = useRef();
 
@@ -84,17 +89,19 @@ const Perfil = props => {
       if (PerfilStore.perfilSelecionado.codigoPerfil !== perfilNovo[0].codigoPerfil) {
         api.put(`v1/autenticacao/perfis/${perfilNovo[0].codigoPerfil}`)
           .then(resp => {
-            const dados = resp.data;
-            console.log(resp);
-            // store.dispatch(
-            //   SalvarDadosLogin({
-            //     token: dados.token,
-            //     rf: dados.RF,
-            //     perfisUsuario: dados.PerfisUsuario,
-            //   })
-            // );
+            const token = resp.data;
+            store.dispatch(
+              SalvarDadosLogin({
+                token: token,
+                rf: UsuarioStore.rf
+              })
+            );
           })
           .catch(err => {
+            erro("Sua sessão expirou");
+            setTimeout(() => {
+              store.dispatch(Deslogar());
+            }, 2000);
           });
         history.push('/');
       }
