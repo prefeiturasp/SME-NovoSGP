@@ -4,7 +4,7 @@ using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using System.Linq;
 
-namespace SME.SGP.Aplicacao.Servicos
+namespace SME.SGP.Aplicacao
 {
     public class ServicoEmail : IServicoEmail
     {
