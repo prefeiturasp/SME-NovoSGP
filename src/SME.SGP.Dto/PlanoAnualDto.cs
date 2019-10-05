@@ -28,7 +28,8 @@ namespace SME.SGP.Dto
         [ListaTemElementos(ErrorMessage = "Os bimestres devem ser informados")]
         public IEnumerable<BimestrePlanoAnualDto> Bimestres { get; set; }
 
-        public long ComponenteCurricularId { get; set; }
+        [Required(ErrorMessage = "A disciplina deve ser informada")]
+        public long ComponenteCurricularEolId { get; set; }
 
         [Required(ErrorMessage = "A escola deve ser informada")]
         public string EscolaId { get; set; }

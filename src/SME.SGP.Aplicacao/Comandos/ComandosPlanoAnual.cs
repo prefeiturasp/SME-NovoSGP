@@ -137,6 +137,7 @@ namespace SME.SGP.Aplicacao
             planoAnual.Descricao = bimestrePlanoAnual.Descricao;
             planoAnual.EscolaId = planoAnualDto.EscolaId;
             planoAnual.TurmaId = planoAnualDto.TurmaId.Value;
+            planoAnual.ComponenteCurricularEolId = planoAnualDto.ComponenteCurricularEolId;
             return planoAnual;
         }
 
