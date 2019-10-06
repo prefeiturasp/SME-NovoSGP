@@ -11,74 +11,31 @@ import SelectComponent from '~/componentes/select';
 
 import { BoxTextoBimetre, CaixaBimestre } from './PeriodosEscoladres.css';
 
-
 const PeriodosEscolares = () => {
-  const [validacoes, setValidacoes] = useState();
-
-  const [primeiroBimDataInicial, setPrimeiroBimDataInicial] = useState();
-  const [primeiroBimDataFinal, setPrimeiroBimDataFinal] = useState();
-
-  const [valoresDatas, setValoresDatas] = useState({
-    primeiroBimDataInicial: '',
-    primeiroBimDataFinal: '',
-  });
-
   const [listaCalendarioEscolar, setListaCalendarioEscolar] = useState([]);
   const [
     calendarioEscolarSelecionado,
     setCalendarioEscolarSelecionado,
   ] = useState('1');
 
-  useEffect(() => {
-    montarMetodosYup();
-    montarValidacoesYup();
+  const validacoes = Yup.object().shape({
+    primeiroBimDataInicial: momentSchema.required('Data inicial obrigatória'),
+    primeiroBimDataFinal: momentSchema
+      .required('Data final obrigatória')
+      .dataMenorQue(
+        'primeiroBimDataInicial',
+        'primeiroBimDataFinal',
+        'Data inválida'
+      ),
+  });
 
+  useEffect(() => {
     const lista = [
       { id: '1', nome: '2019 - Calendário escolar' },
       { id: '2', nome: '2018 - Calendário escolar' },
     ];
     setListaCalendarioEscolar(lista);
   }, []);
-
-  // useEffect(() => {
-  //   console.log(' A - useEffect - A');
-  //   montarValidacoesYup();
-  // }, [primeiroBimDataFinal, primeiroBimDataInicial]);
-
-  const montarValidacoesYup = () => {
-
-    const validacaoCampoData = Yup.object().shape({
-      primeiroBimDataInicial: momentSchema.required('Data inicial obrigatória'),
-      primeiroBimDataFinal: momentSchema
-        .required('Data final obrigatória')
-        .isMenor('primeiroBimDataInicial', 'Data inválida',valoresDatas)
-    });
-    setValidacoes(validacaoCampoData);
-  };
-
-  const montarMetodosYup = () => {
-    Yup.addMethod(Yup.mixed, 'isMenor', function(
-      nomeCampoComparacao,
-      mensagem,
-      valores
-    ) {
-
-      return this.test( 'isMenor', mensagem, function(dataCampo) {
-        let dataValida = false;
-
-        const dataComparacao = valores[nomeCampoComparacao];
-
-        if (
-          dataCampo &&
-          dataComparacao &&
-          dataCampo.isAfter(dataComparacao, 'date')
-        ) {
-          dataValida = true;
-        }
-        return dataValida;
-      });
-    });
-  };
 
   const onSubmit = data => {
     console.log(data);
@@ -97,23 +54,10 @@ const PeriodosEscolares = () => {
     setCalendarioEscolarSelecionado(valor);
   };
 
-  const onChangePrimeiroBimDataInicial = data => {
-    const datas = valoresDatas;
-    setValoresDatas({
-      ...datas,
-      primeiroBimDataInicial: data,
-    });
-    // setPrimeiroBimDataInicial(data);
-  };
+  // TODO VER SE ESSES ONCHANGE SÃO NECESSÁRIOS
+  const onChangePrimeiroBimDataInicial = data => {};
 
-  const onChangePrimeiroBimDataFinal = data => {
-    const datas = valoresDatas;
-    setValoresDatas({
-      ...datas,
-      primeiroBimDataFinal: data,
-    });
-    // setPrimeiroBimDataFinal(data);
-  };
+  const onChangePrimeiroBimDataFinal = data => {};
 
   return (
     <>
@@ -122,8 +66,8 @@ const PeriodosEscolares = () => {
         <Formik
           enableReinitialize
           initialValues={{
-            primeiroBimDataInicial: primeiroBimDataInicial || '',
-            primeiroBimDataFinal: primeiroBimDataFinal || '',
+            primeiroBimDataInicial: '',
+            primeiroBimDataFinal: '',
           }}
           validationSchema={validacoes}
           onSubmit={values => onSubmit(values)}
