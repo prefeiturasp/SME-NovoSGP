@@ -119,6 +119,25 @@ CampoData.defaultProps = {
   onChange: () => {},
 };
 
-const momentSchema =new MomentSchema();
+const momentSchema = new MomentSchema();
 
-export { CampoData,  momentSchema } ;
+Yup.addMethod(
+  Yup.mixed,
+  'dataMenorQue',
+  // eslint-disable-next-line func-names
+  function(nomeDataInicial, nomeDataFinal, mensagem) {
+    // eslint-disable-next-line func-names
+    return this.test('dataMenorQue', mensagem, function() {
+      let dataValida = true;
+
+      const dataInicial = this.parent[nomeDataInicial];
+      const dataFinal = this.parent[nomeDataFinal];
+
+      if (dataInicial && dataFinal && dataInicial.isAfter(dataFinal)) {
+        dataValida = false;
+      }
+      return dataValida;
+    });
+  }
+);
+export { CampoData, momentSchema };
