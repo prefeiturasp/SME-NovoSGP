@@ -48,6 +48,32 @@ namespace SME.SGP.Aplicacao
             this.configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
         }
 
+        public async Task AlterarEmail(AlterarEmailDto alterarEmailDto)
+        {
+            Usuario usuario = repositorioUsuario.ObterPorCodigoRfLogin("");
+            if (usuario == null)
+            {
+                throw new NegocioException("Usuário não encontrado.");
+            }
+
+            if (!usuario.TokenRecuperacaoSenhaEstaValido())
+            {
+                throw new NegocioException("Este link expirou. Clique em continuar para solicitar um novo link de recuperação de senha.", 403);
+            }
+
+            usuario.ValidarSenha(recuperacaoSenhaDto.NovaSenha);
+
+            var retornoApi = await servicoEOL.AlterarSenha(usuario.Login, recuperacaoSenhaDto.NovaSenha);
+
+            if (!retornoApi.SenhaAlterada)
+            {
+                throw new NegocioException(retornoApi.Mensagem, retornoApi.StatusRetorno);
+            }
+
+            usuario.FinalizarRecuperacaoSenha();
+            repositorioUsuario.Salvar(usuario);
+        }
+
         public async Task AlterarSenhaComTokenRecuperacao(RecuperacaoSenhaDto recuperacaoSenhaDto)
         {
             Usuario usuario = repositorioUsuario.ObterPorTokenRecuperacaoSenha(recuperacaoSenhaDto.Token);
