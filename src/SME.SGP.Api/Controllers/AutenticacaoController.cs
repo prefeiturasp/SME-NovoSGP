@@ -53,7 +53,7 @@ namespace SME.SGP.Api.Controllers
             return Ok(retornoAutenticacao);
         }
 
-        [HttpPost("PrimeiroAcesso")]
+        [HttpPost("primeiro-acesso")]
         [ProducesResponseType(200)]
         [ProducesResponseType(401)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
