@@ -76,10 +76,9 @@ namespace SME.SGP.Aplicacao
 
         public async Task<AlterarSenhaRespostaDto> AlterarSenhaPrimeiroAcesso(PrimeiroAcessoDto primeiroAcessoDto)
         {
-            //TODO: NOGUEIRA obter usuário pelo login, metodo vai vir da branch 4924
-            //var usuario = repositorioUsuario.ObterPorCodigoRf("");
-
             var usuario = new Usuario();
+
+            usuario.Login = primeiroAcessoDto.Usuario;
 
             usuario.ValidarSenha(primeiroAcessoDto.NovaSenha);
 
