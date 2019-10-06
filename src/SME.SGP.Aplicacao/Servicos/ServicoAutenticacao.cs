@@ -1,4 +1,5 @@
 ﻿using SME.SGP.Aplicacao.Integracoes;
+using SME.SGP.Dominio;
 using SME.SGP.Dto;
 using System;
 using System.Collections.Generic;
@@ -29,6 +30,18 @@ namespace SME.SGP.Aplicacao.Servicos
             }
 
             return (retornoDto, retornoServicoEol?.CodigoRf, retornoServicoEol?.Perfis);
+        }
+
+        public async Task<AlterarSenhaRespostaDto> AlterarSenhaPrimeiroAcesso(PrimeiroAcessoDto primeiroAcessoDto)
+        {
+            var usuario = new Usuario
+            {
+                Login = primeiroAcessoDto.Usuario,
+            };
+
+            usuario.ValidarSenha(primeiroAcessoDto.NovaSenha);
+
+            return await servicoEOL.AlterarSenha(usuario.Login, primeiroAcessoDto.NovaSenha);
         }
 
         public bool TemPerfilNoToken(string guid)

@@ -27,6 +27,7 @@ namespace SME.SGP.Aplicacao.Integracoes
                 { new KeyValuePair<string, string>("senha", novaSenha) }};
 
             var resposta = await httpClient.PostAsync($"AutenticacaoSgp/AlterarSenha", new FormUrlEncodedContent(valoresParaEnvio));
+
             return new AlterarSenhaRespostaDto
             {
                 Mensagem = resposta.IsSuccessStatusCode ? "" : await resposta.Content.ReadAsStringAsync(),
