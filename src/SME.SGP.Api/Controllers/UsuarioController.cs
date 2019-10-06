@@ -9,6 +9,13 @@ namespace SME.SGP.Api.Controllers
     {
         [Route("imagens/perfil")]
         [HttpPost]
+        public IActionResult AlterarEmail([FromBody])
+        {
+            return Ok("https://telegramic.org/media/avatars/stickers/52cae315e8a464eb80a3.png");
+        }
+
+        [Route("imagens/perfil")]
+        [HttpPost]
         public IActionResult ModificarImagem([FromBody]ImagemPerfilDto imagemPerfilDto)
         {
             return Ok("https://telegramic.org/media/avatars/stickers/52cae315e8a464eb80a3.png");
