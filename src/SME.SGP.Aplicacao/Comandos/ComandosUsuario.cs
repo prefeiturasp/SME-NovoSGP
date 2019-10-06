@@ -48,30 +48,16 @@ namespace SME.SGP.Aplicacao
             this.configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
         }
 
-        public async Task AlterarEmail(AlterarEmailDto alterarEmailDto)
+        //  TODO: aplicar validações permissão de acesso
+        public void AlterarEmail(AlterarEmailDto alterarEmailDto)
         {
-            Usuario usuario = repositorioUsuario.ObterPorCodigoRfLogin("");
-            if (usuario == null)
-            {
-                throw new NegocioException("Usuário não encontrado.");
-            }
+            servicoUsuario.AlterarEmail(alterarEmailDto.LoginUsuarioASerAlterado, alterarEmailDto.NovoEmail);
+        }
 
-            if (!usuario.TokenRecuperacaoSenhaEstaValido())
-            {
-                throw new NegocioException("Este link expirou. Clique em continuar para solicitar um novo link de recuperação de senha.", 403);
-            }
-
-            usuario.ValidarSenha(recuperacaoSenhaDto.NovaSenha);
-
-            var retornoApi = await servicoEOL.AlterarSenha(usuario.Login, recuperacaoSenhaDto.NovaSenha);
-
-            if (!retornoApi.SenhaAlterada)
-            {
-                throw new NegocioException(retornoApi.Mensagem, retornoApi.StatusRetorno);
-            }
-
-            usuario.FinalizarRecuperacaoSenha();
-            repositorioUsuario.Salvar(usuario);
+        public async Task AlterarEmailUsuarioLogado(string novoEmail)
+        {
+            var login = servicoTokenJwt.ObterLoginAtual();
+            await servicoUsuario.AlterarEmail(login, novoEmail);
         }
 
         public async Task AlterarSenhaComTokenRecuperacao(RecuperacaoSenhaDto recuperacaoSenhaDto)
