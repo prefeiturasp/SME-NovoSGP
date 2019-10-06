@@ -63,6 +63,19 @@ namespace SME.SGP.Api.Controllers
             return Ok();
         }
 
+        [HttpPut("reiniciar-senha")]
+        [ProducesResponseType(typeof(UsuarioReinicioSenhaDto), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [ProducesResponseType(typeof(UsuarioReinicioSenhaDto), 601)]
+        [AllowAnonymous]
+        public async Task<IActionResult> ReiniciarSenha(string login)
+        {
+            var retorno = await comandosUsuario.ReiniciarSenha(login);
+            if (retorno.DeveAtualizarEmail)
+                return StatusCode(601, retorno);
+            else return Ok(retorno);
+        }
+
         [HttpPost("solicitar-recuperacao-senha")]
         [ProducesResponseType(typeof(string), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]

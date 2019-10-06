@@ -60,6 +60,11 @@ namespace SME.SGP.Dominio
             return perfisUsuario.FirstOrDefault().CodigoPerfil;
         }
 
+        public bool PodeReiniciarSenha()
+        {
+            return !string.IsNullOrEmpty(Email);
+        }
+
         public bool TokenRecuperacaoSenhaEstaValido()
         {
             return ExpiracaoRecuperacaoSenha > DateTime.Now;

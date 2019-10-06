@@ -128,6 +128,23 @@ namespace SME.SGP.Aplicacao
             }
         }
 
+        public async Task<UsuarioReinicioSenhaDto> ReiniciarSenha(string codigoRf)
+        {
+            var usuario = servicoUsuario.ObterUsuarioPorCodigoRfLoginOuAdiciona(codigoRf);
+
+            var retorno = new UsuarioReinicioSenhaDto();
+
+            if (!usuario.PodeReiniciarSenha())
+                retorno.DeveAtualizarEmail = true;
+            else
+            {
+                await servicoEOL.ReiniciarSenha(codigoRf);
+                retorno.DeveAtualizarEmail = false;
+            }
+
+            return retorno;
+        }
+
         public string SolicitarRecuperacaoSenha(string login)
         {
             var usuario = repositorioUsuario.ObterPorCodigoRfLogin(null, login);
