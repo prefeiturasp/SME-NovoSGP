@@ -1,14 +1,26 @@
-import React from 'react';
-import styled from 'styled-components';
+import 'moment/locale/pt-br';
 
-import PropTypes from 'prop-types';
 import { DatePicker } from 'antd';
 import locale from 'antd/es/date-picker/locale/pt_BR';
-import { Base } from './colors';
-import 'moment/locale/pt-br';
-import Label from './label';
 import { Field } from 'formik';
+import * as moment from 'moment';
+import PropTypes from 'prop-types';
+import React from 'react';
+import styled from 'styled-components';
+import * as Yup from 'yup';
 
+import { Base } from './colors';
+import Label from './label';
+
+class MomentSchema extends Yup.mixed {
+  constructor() {
+    super({ type: 'momentschema' });
+    this.transforms.push(function(value) {
+      if (this.isType(value)) return moment(value);
+      return moment.invalid();
+    });
+  }
+}
 
 const Campo = styled.div`
   span {
@@ -39,7 +51,8 @@ const CampoData = props => {
     id,
     form,
     desabilitado,
-    className
+    className,
+    onChange,
   } = props;
 
   const possuiErro = () => {
@@ -67,10 +80,12 @@ const CampoData = props => {
         id={id || name}
         onBlur={executaOnBlur}
         className={
-          form
-            ? `${possuiErro() ? 'is-invalid' : ''} ${className || ''}`
-            : ''
+          form ? `${possuiErro() ? 'is-invalid' : ''} ${className || ''}` : ''
         }
+        onChange={valorData => {
+          form.setFieldValue(name, valorData);
+          onChange(valorData); // TODO
+        }}
       />
     );
   };
@@ -92,6 +107,7 @@ CampoData.propTypes = {
   placeholder: PropTypes.string,
   label: PropTypes.string,
   desabilitado: PropTypes.bool,
+  onChange: PropTypes.func,
 };
 
 CampoData.defaultProps = {
@@ -100,6 +116,9 @@ CampoData.defaultProps = {
   placeholder: 'placeholder',
   label: 'Label',
   desabilitado: false,
+  onChange: () => {},
 };
 
-export default CampoData;
+const momentSchema =new MomentSchema();
+
+export { CampoData,  momentSchema } ;
