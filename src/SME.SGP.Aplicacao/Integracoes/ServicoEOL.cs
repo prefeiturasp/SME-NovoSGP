@@ -1,5 +1,6 @@
 ﻿using Newtonsoft.Json;
 using SME.SGP.Aplicacao.Integracoes.Respostas;
+using SME.SGP.Dominio;
 using SME.SGP.Dto;
 using System;
 using System.Collections.Generic;
@@ -191,6 +192,19 @@ namespace SME.SGP.Aplicacao.Integracoes
                 return JsonConvert.DeserializeObject<IEnumerable<TurmaDto>>(json);
             }
             return null;
+        }
+
+        public async Task ReiniciarSenha(string codigoRf)
+        {
+            httpClient.DefaultRequestHeaders.Clear();
+
+            IList<KeyValuePair<string, string>> valoresParaEnvio = new List<KeyValuePair<string, string>> {
+                { new KeyValuePair<string, string>("login", codigoRf) }};
+
+            var resposta = await httpClient.PostAsync($"AutenticacaoSgp/ReiniciarSenha", new FormUrlEncodedContent(valoresParaEnvio));
+
+            if (!resposta.IsSuccessStatusCode)
+                throw new NegocioException("Não foi possível reiniciar a senha deste usuário");
         }
     }
 }
