@@ -74,6 +74,17 @@ namespace SME.SGP.Aplicacao
             repositorioUsuario.Salvar(usuario);
         }
 
+        public async Task<AlterarSenhaRespostaDto> AlterarSenhaPrimeiroAcesso(PrimeiroAcessoDto primeiroAcessoDto)
+        {
+            var usuario = new Usuario();
+
+            usuario.Login = primeiroAcessoDto.Usuario;
+
+            usuario.ValidarSenha(primeiroAcessoDto.NovaSenha);
+
+            return await servicoEOL.AlterarSenha(usuario.Login, primeiroAcessoDto.NovaSenha);
+        }
+
         public async Task<UsuarioAutenticacaoRetornoDto> Autenticar(string login, string senha)
         {
             var retornoAutenticacaoEol = await servicoAutenticacao.AutenticarNoEol(login, senha);
