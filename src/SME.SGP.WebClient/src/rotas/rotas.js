@@ -16,9 +16,19 @@ import RecuperarSenha from '~/paginas/RecuperarSenha';
 import RedefinirSenha from '~/paginas/RedefinirSenha';
 import RotaNaoAutenticadaDesestruturada from './rotaNaoAutenticadaDesestruturada';
 import RotaAutenticadaDesestruturada from './rotaAutenticadaDesestruturada';
+import CadastroTipoEventos from '~/paginas/Calendario/TipoEventos/cadastroTipoEventos';
 
 export default function Rotas() {
   const rotas = new Map();
+
+  rotas.set('/calendario/tipo-eventos', {
+    breadcrumbName: 'Tipo de Eventos',
+    menu: 'Calendário',
+    parent: '/calendario/tipo-eventos-lista',
+    component: CadastroTipoEventos,
+    exact: true,
+    tipo: RotasTipo.EstruturadaAutenticada,
+  });
 
   rotas.set('/planejamento/plano-ciclo', {
     breadcrumbName: 'Plano de Ciclo',
@@ -114,7 +124,7 @@ export default function Rotas() {
     tipo: RotasTipo.EstruturadaAutenticada,
   });
 
-  rotas.set('/:rf?', {
+  rotas.set('/', {
     icone: 'fas fa-home',
     parent: null,
     component: Principal,
