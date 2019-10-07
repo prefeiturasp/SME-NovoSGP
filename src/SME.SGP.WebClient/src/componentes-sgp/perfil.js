@@ -7,12 +7,18 @@ import { perfilSelecionado } from '../redux/modulos/perfil/actions';
 import { useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
 import api from '~/servicos/api';
+import { SalvarDadosLogin } from '~/redux/modulos/usuario/actions';
+import { erro } from '~/servicos/alertas';
+import { Deslogar } from '~/redux/modulos/usuario/actions';
 
 
 const Perfil = props => {
   const { Botao, Icone, Texto } = props;
   const [ocultaPerfis, setarOcultaPerfis] = useState(true);
-  const PerfilStore = useSelector(store => store.perfil);
+  const perfilStore = useSelector(store => store.perfil);
+
+
+  const usuarioStore = useSelector(store => store.usuario);
 
   const listaRef = useRef();
 
@@ -59,7 +65,7 @@ const Perfil = props => {
 
 
   const ContainerIcone = styled.div`
-    background: ${PerfilStore.perfis.length>1?Base.Roxo:Base.CinzaDesabilitado};
+    background: ${perfilStore.perfis.length > 1 ? Base.Roxo : Base.CinzaDesabilitado};
     color: ${Base.Branco};
     font-size: 18px !important;
     height: 28px !important;
@@ -71,27 +77,39 @@ const Perfil = props => {
     display: inline-block;
     justify-content: center !important;
     i {
-      background: ${PerfilStore.perfis.length>1?Base.Roxo:Base.CinzaDesabilitado} !important;
+      background: ${perfilStore.perfis.length > 1 ? Base.Roxo : Base.CinzaDesabilitado} !important;
     }
   `;
 
   const gravarPerfilSelecionado = (perfil) => {
     if (perfil) {
-      const perfilNovo = PerfilStore.perfis.filter(item => item.codigoPerfil === perfil)
+      const perfilNovo = perfilStore.perfis.filter(item => item.codigoPerfil === perfil)
       store.dispatch(perfilSelecionado(perfilNovo[0]));
       setarOcultaPerfis(true);
-      if (PerfilStore.perfilSelecionado.codigoPerfil !== perfilNovo[0].codigoPerfil) {
-        api.put(`v1/perfis/${perfilNovo[0].codigoPerfil}`)
-        .then( resp => {
-          console.log(resp);
-        });
+      if (perfilStore.perfilSelecionado.codigoPerfil !== perfilNovo[0].codigoPerfil) {
+        api.put(`v1/autenticacao/perfis/${perfilNovo[0].codigoPerfil}`)
+          .then(resp => {
+            const token = resp.data;
+            store.dispatch(
+              SalvarDadosLogin({
+                token: token,
+                rf: usuarioStore.rf
+              })
+            );
+          })
+          .catch(err => {
+            erro("Sua sessão expirou");
+            setTimeout(() => {
+              store.dispatch(Deslogar());
+            }, 2000);
+          });
         history.push('/');
       }
     }
   }
 
   const onClickBotao = () => {
-    if (PerfilStore.perfis.length > 1) {
+    if (perfilStore.perfis.length > 1) {
       setarOcultaPerfis(!ocultaPerfis);
     }
   };
@@ -110,26 +128,26 @@ const Perfil = props => {
 
   return (
     <div className="position-relative" ref={listaRef}>
-      <Botao className="text-center stretched-link" onClick={onClickBotao} disabled={PerfilStore.perfis.length <= 1}>
+      <Botao className="text-center stretched-link" onClick={onClickBotao} disabled={perfilStore.perfis.length <= 1}>
         <ContainerIcone>
-          <Icone className="fas fa-user-circle"/>
+          <Icone className="fas fa-user-circle" />
         </ContainerIcone>
         <Texto className={`d-block mt-1 ${ocultaPerfis ? '' : ' font-weight-bold'}`}>
-          {PerfilStore.perfilSelecionado.sigla ? PerfilStore.perfilSelecionado.sigla : PerfilStore.perfilSelecionado.nomePerfil}
+          {perfilStore.perfilSelecionado.sigla ? perfilStore.perfilSelecionado.sigla : perfilStore.perfilSelecionado.nomePerfil}
         </Texto>
       </Botao>
       {ocultaPerfis}
       <ItensPerfil hidden={ocultaPerfis} className="list-inline">
         <table>
           <tbody>
-            {PerfilStore.perfis.map(item =>
+            {perfilStore.perfis.map(item =>
               <Item key={item.codigoPerfil}
                 onClick={(e) => gravarPerfilSelecionado(e.currentTarget.accessKey)}
                 accessKey={item.codigoPerfil}>
                 <td style={{ width: '20px' }}>
                   <i value={item.codigoPerfil} className="fas fa-user-circle"></i>
                 </td>
-                <td style={{ width: '100%', fontWeight: item.codigoPerfil === PerfilStore.perfilSelecionado.codigoPerfil ? 'bold' : 'initial' }}>
+                <td style={{ width: '100%', fontWeight: item.codigoPerfil === perfilStore.perfilSelecionado.codigoPerfil ? 'bold' : 'initial' }}>
                   {item.nomePerfil + (item.sigla ? "(" + item.sigla + ")" : "")}
                 </td>
               </Item>

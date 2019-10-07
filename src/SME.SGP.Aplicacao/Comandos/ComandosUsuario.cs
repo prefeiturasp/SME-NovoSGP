@@ -1,5 +1,14 @@
-﻿using System;
+﻿using Microsoft.Extensions.Configuration;
+using SME.SGP.Aplicacao.Integracoes;
+using SME.SGP.Aplicacao.Integracoes;
+using SME.SGP.Aplicacao.Servicos;
+using SME.SGP.Dominio;
+using SME.SGP.Dominio.Interfaces;
+using SME.SGP.Dto;
+using System;
+using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
