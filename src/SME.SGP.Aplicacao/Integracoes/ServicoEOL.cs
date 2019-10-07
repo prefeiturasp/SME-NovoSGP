@@ -114,14 +114,18 @@ namespace SME.SGP.Aplicacao.Integracoes
             return null;
         }
 
-        public async Task<IEnumerable<UsuarioEolRetornoDto>> ObterFuncionariosPorUe(string ueId, string codigoRf, string nome)
+        public async Task<IEnumerable<UsuarioEolRetornoDto>> ObterFuncionariosPorUe(BuscaFuncionariosFiltroDto buscaFuncionariosFiltroDto)
         {
-            var resposta = await httpClient.GetAsync($"escolas/{ueId}/funcionarios/");
+            var jsonParaPost = new StringContent(JsonConvert.SerializeObject(buscaFuncionariosFiltroDto), UnicodeEncoding.UTF8, "application/json");
+
+            var resposta = await httpClient.PostAsync("funcionarios/", jsonParaPost);
+
             if (resposta.IsSuccessStatusCode)
             {
                 var json = await resposta.Content.ReadAsStringAsync();
                 return JsonConvert.DeserializeObject<IEnumerable<UsuarioEolRetornoDto>>(json);
             }
+
             return null;
         }
 
