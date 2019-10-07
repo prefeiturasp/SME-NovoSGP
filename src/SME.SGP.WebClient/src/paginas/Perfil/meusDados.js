@@ -76,14 +76,16 @@ const MeusDados = () => {
 
   const salvarFoto = () => {
     setOcultarProgresso(false);
-    api.post('v1/usuarios/imagens/perfil', foto, {
+    const dados = {imagemBase64:foto};
+    api.post('v1/usuarios/imagens/perfil', dados, {
       onUploadProgress: progressEvent =>{
         setProgresso(Math.round(progressEvent.loaded/progressEvent.total*100));
       }
     }).then(resp =>{
       const novosDados = usuarioStore.meusDados;
-      novosDados.foto = resp;
+      novosDados.foto = resp.data;
       store.dispatch(meusDados(novosDados));
+      ocultarModal();
     }).catch(erro =>{
       erros(erro);
     })
