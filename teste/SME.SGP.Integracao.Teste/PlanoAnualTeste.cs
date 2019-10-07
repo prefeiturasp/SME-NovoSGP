@@ -95,6 +95,7 @@ namespace SME.SGP.Integracao.Teste
                 AnoLetivo = 2019,
                 EscolaId = "095346",
                 TurmaId = 2008187,
+                ComponenteCurricularEolId = 9,
                 Bimestres = new List<BimestrePlanoAnualDto>
                 {
                     new BimestrePlanoAnualDto
