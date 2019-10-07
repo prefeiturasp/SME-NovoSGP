@@ -3,7 +3,7 @@ import React, { useEffect, useState } from 'react';
 import * as Yup from 'yup';
 import Cabecalho from '~/componentes-sgp/cabecalho';
 import Button from '~/componentes/button';
-import { CampoData, momentSchema } from '~/componentes/campoData';
+import { CampoData, momentSchema } from '~/componentes/campoData/campoData.js';
 import Card from '~/componentes/card';
 import { Colors } from '~/componentes/colors';
 import Label from '~/componentes/label';
