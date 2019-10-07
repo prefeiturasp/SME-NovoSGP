@@ -1,16 +1,18 @@
 import React, { useState } from 'react';
-import Cabecalho from '~/componentes-sgp/cabecalho';
-import Card from '~/componentes/card';
-import styled from 'styled-components';
-import { Base, Colors } from '~/componentes/colors';
-import history from '~/servicos/history';
-import Button from '~/componentes/button';
-import ModalConteudoHtml from '~/componentes/modalConteudoHtml';
-import { store } from '~/redux';
 import { useSelector } from 'react-redux';
-import { meusDados } from '~/redux/modulos/usuario/actions';
+import Cabecalho from '~/componentes-sgp/cabecalho';
 import AlertaBalao from '~/componentes/alertaBalao';
-import { DadosPerfil, Perfil, Botao, Icone, Conteudo, SelecionarFoto, Topo, MensagemAlerta } from './meusDados.css';
+import Button from '~/componentes/button';
+import Card from '~/componentes/card';
+import { Colors, Base } from '~/componentes/colors';
+import ModalConteudoHtml from '~/componentes/modalConteudoHtml';
+import history from '~/servicos/history';
+import { Progress } from 'antd';
+import api from '~/servicos/api';
+import { erros } from '~/servicos/alertas';
+import { meusDados } from '~/redux/modulos/usuario/actions';
+import { Botao, Conteudo, DadosPerfil, Icone, MensagemAlerta, Perfil, SelecionarFoto, Topo, BarraProgresso } from './meusDados.css';
+import { store } from '~/redux';
 
 const MeusDados = () => {
   const usuarioStore = useSelector(store => store.usuario);
@@ -19,6 +21,8 @@ const MeusDados = () => {
   const [ehFotoInvalida, setEhFotoInvalida] = useState(false);
   const [desabilitaConfirmar, setDesabilitaConfirmar] = useState(true);
   const [ocultarAlteracoesNaoSalvas, setOcultarAlteracoesNaoSalvas] = useState(true);
+  const [ocultarProgresso, setOcultarProgresso] = useState(true);
+  const [progresso, setProgresso] = useState(0);
 
   const irParaDashboard = () => {
     history.push('/');
@@ -70,6 +74,21 @@ const MeusDados = () => {
     }
   }
 
+  const salvarFoto = () => {
+    setOcultarProgresso(false);
+    api.post('v1/usuarios/imagens/perfil', foto, {
+      onUploadProgress: progressEvent =>{
+        setProgresso(Math.round(progressEvent.loaded/progressEvent.total*100));
+      }
+    }).then(resp =>{
+      const novosDados = usuarioStore.meusDados;
+      novosDados.foto = resp;
+      store.dispatch(meusDados(novosDados));
+    }).catch(erro =>{
+      erros(erro);
+    })
+  }
+
   return (
     <div>
       <Cabecalho pagina="Meus Dados" />
@@ -77,7 +96,7 @@ const MeusDados = () => {
         <ModalConteudoHtml
           key={'trocarFoto'}
           visivel={alterarFoto}
-          onConfirmacaoPrincipal={() => { }}
+          onConfirmacaoPrincipal={salvarFoto}
           onConfirmacaoSecundaria={cancelarTrocaFoto}
           onClose={() => { }}
           labelBotaoPrincipal="Confirmar"
@@ -86,8 +105,9 @@ const MeusDados = () => {
           esconderBotoes={!ocultarAlteracoesNaoSalvas}
           titulo="Alterar Foto"
           closable={true}
+          onClose={cancelarTrocaFoto}
         >
-          <div id="troca-foto" hidden={!ocultarAlteracoesNaoSalvas}>
+          <div id="troca-foto" hidden={!ocultarAlteracoesNaoSalvas || !ocultarProgresso}>
             <DadosPerfil className="col-12">
               <img className="img-edit" id="foto-perfil" src={foto} />
             </DadosPerfil>
@@ -120,9 +140,14 @@ const MeusDados = () => {
                 color={Colors.Azul}
                 bold
                 className="padding-btn-confirmacao"
+                onClick={salvarFoto}
               />
             </div>
           </MensagemAlerta>
+          <BarraProgresso hidden={ocultarProgresso}>
+            <span>Salvando..</span>
+            <Progress strokeColor={Base.Roxo} percent={progresso} showInfo={false} />
+          </BarraProgresso>
         </ModalConteudoHtml>
         <Topo className="col-12 d-flex justify-content-end">
           <Button
