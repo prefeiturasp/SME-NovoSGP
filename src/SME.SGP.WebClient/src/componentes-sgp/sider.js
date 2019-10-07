@@ -297,11 +297,6 @@ const Sider = () => {
                   className="popup-gestao"
                 >
                   <span className="menuItem">Calendário Escolar</span>
-                  <Link
-                    to="/calendario-escolar/periodos-escolares"
-                    className="nav-link text-white"
-                    id="linkTesteRemover"
-                  />
                 </Menu.Item>
                 <Menu.Item key="91" id="gesAtribuicaoCj">
                   <span className="menuItem">Atribuição CJ</span>
