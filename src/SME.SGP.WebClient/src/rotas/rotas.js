@@ -62,7 +62,7 @@ export default function Rotas() {
     menu: '',
     parent: '/',
     component: RedefinirSenha,
-    exact: true,
+    exact: false,
     tipo: RotasTipo.Mista,
   });
 

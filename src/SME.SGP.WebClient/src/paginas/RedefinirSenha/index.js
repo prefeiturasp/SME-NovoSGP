@@ -21,7 +21,8 @@ import {
   Icone,
   MensagemErro,
 } from './index.css';
-import { URL_LOGIN, URL_RECUPERARSENHA } from '~/constantes/url';
+import { URL_LOGIN, URL_RECUPERARSENHA, URL_HOME } from '~/constantes/url';
+import ServicoPrimeiroAcesso from '~/servicos/Paginas/ServicoPrimeiroAcesso';
 
 const RedefinirSenha = props => {
   const [dados, setDados] = useState({
@@ -66,6 +67,7 @@ const RedefinirSenha = props => {
   const inputSenhaRef = useRef();
   const inputConfSenhaRef = useRef();
   const logado = useSelector(state => state.usuario.logado);
+  const usuario = useSelector(state => state.usuario.usuario);
 
   useEffect(() => {
     inputSenhaRef.current.focus();
@@ -76,9 +78,7 @@ const RedefinirSenha = props => {
   }, [confirmarSenha]);
 
   useLayoutEffect(() => {
-    if (!tokenValidado && !logado) {
-      validarToken();
-    }
+    if (!tokenValidado && !logado) validarToken();
   }, []);
 
   const aoMudarSenha = () => {
@@ -90,7 +90,8 @@ const RedefinirSenha = props => {
   const validarToken = async () => {
     if (!token) history.push(URL_LOGIN);
 
-    const tokenValido = await RedefinirSenhaServico.validarToken(token);
+    let tokenValido = true;
+    if (token) tokenValido = await RedefinirSenhaServico.validarToken(token);
 
     if (!tokenValido) history.push(URL_LOGIN);
     else setTokenValidado(true);
@@ -151,10 +152,13 @@ const RedefinirSenha = props => {
 
       setErroGeral(requisicao.erro);
     } else {
-      const requisicao = await RedefinirSenhaServico.redefinirSenha({
+      const requisicao = await ServicoPrimeiroAcesso.alterarSenha({
+        usuario,
         novaSenha: senha,
+        confirmarSenha: senha,
       });
-      console.log(requisicao);
+      if (requisicao.sucesso) history.push(URL_HOME);
+      setErroGeral(requisicao.erro);
     }
   };
 

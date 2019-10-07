@@ -12,8 +12,6 @@ class LoginHelper {
   acessar = async login => {
     const autenticacao = await LoginService.autenticar(login);
 
-    console.log(autenticacao);
-
     if (!autenticacao.sucesso) return autenticacao;
 
     const rf = Number.isInteger(login.usuario * 1) ? login.usuario : '';
@@ -22,6 +20,7 @@ class LoginHelper {
       salvarDadosLogin({
         token: autenticacao.dados.token,
         rf,
+        usuario: login.usuario,
         perfisUsuario: autenticacao.dados.PerfisUsuario,
       })
     );
