@@ -44,3 +44,10 @@ export function meusDados(dados) {
     payload: dados
   };
 }
+
+export function filtroAtual(filtro) {
+  return {
+    type: '@usuario/filtroAtual',
+    payload: filtro
+  }
+}

@@ -13,7 +13,8 @@ const inicial = {
     cpf: '12345678901',
     empresa: 'SME',
     foto: 'https://graziellanicolai.com.br/wp-content/uploads/2018/03/Graziella-perfil.jpg'
-  }
+  },
+  filtroAtual:{}
 };
 
 export default function usuario(state = inicial, action) {
@@ -51,6 +52,9 @@ export default function usuario(state = inicial, action) {
         draft.meusDados = action.payload;
         break;
       }
+      case '@usuario/filtroAtual':
+        draft.turmaSelecionada = [];
+        break;
       default:
         break;
     }
