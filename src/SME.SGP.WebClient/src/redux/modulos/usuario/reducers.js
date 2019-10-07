@@ -3,11 +3,12 @@ import produce from 'immer';
 const inicial = {
   rf: '',
   token: '',
+  usuario: '',
   dataLogin: null,
   logado: false,
   turmasUsuario: [],
   turmaSelecionada: [],
-  filtroAtual:{}
+  filtroAtual: {},
 };
 
 export default function usuario(state = inicial, action) {
@@ -24,6 +25,7 @@ export default function usuario(state = inicial, action) {
         draft.rf = action.payload.rf;
         draft.token = action.payload.token;
         draft.logado = true;
+        draft.usuario = action.payload.usuario;
         draft.dataLogin = new Date();
         break;
       case '@usuario/deslogar':
@@ -31,6 +33,7 @@ export default function usuario(state = inicial, action) {
         draft.token = '';
         draft.dataLogin = null;
         draft.logado = false;
+        draft.usuario = '';
         draft.turmasUsuario = [];
         draft.turmaSelecionada = [];
         break;
