@@ -64,7 +64,12 @@ namespace SME.SGP.Api.Controllers
             if (!retornoAlteracao.SenhaAlterada)
                 return StatusCode(retornoAlteracao.StatusRetorno, retornoAlteracao.Mensagem);
 
-            return Ok();
+            var retornoAutenticacao = await comandosUsuario.Autenticar(primeiroAcessoDto.Usuario, primeiroAcessoDto.NovaSenha);
+
+            if (!retornoAutenticacao.Autenticado)
+                return StatusCode(401);
+
+            return Ok(retornoAutenticacao);
         }
 
         [HttpPost("recuperar-senha")]

@@ -41,7 +41,6 @@ namespace SME.SGP.Integracao.Teste
             var resultado = RequisicaoPrimeiroAcesso(primeiroAcessoDto).Result;
 
             Assert.False(resultado.IsSuccessStatusCode);
-            //Assert.Equal(HttpStatusCode.Unauthorized, resultado.StatusCode);
         }
 
         [Fact]
@@ -51,8 +50,7 @@ namespace SME.SGP.Integracao.Teste
 
             var resultado = RequisicaoPrimeiroAcesso(primeiroAcessoDto).Result;
 
-            Assert.False(resultado.IsSuccessStatusCode);
-            //Assert.Equal(HttpStatusCode.Unauthorized, resultado.StatusCode);
+            Assert.False(resultado.IsSuccessStatusCode);            
         }
 
         [Fact]
@@ -63,7 +61,6 @@ namespace SME.SGP.Integracao.Teste
             var resultado = RequisicaoPrimeiroAcesso(primeiroAcessoDto).Result;
 
             Assert.False(resultado.IsSuccessStatusCode);
-            //Assert.Equal(HttpStatusCode.Unauthorized, resultado.StatusCode);
         }
 
         [Fact]
@@ -74,7 +71,6 @@ namespace SME.SGP.Integracao.Teste
             var resultado = RequisicaoPrimeiroAcesso(primeiroAcessoDto).Result;
 
             Assert.False(resultado.IsSuccessStatusCode);
-            //Assert.Equal(HttpStatusCode.Unauthorized, resultado.StatusCode);
         }
 
         [Fact]
@@ -85,7 +81,7 @@ namespace SME.SGP.Integracao.Teste
             var resultado = RequisicaoPrimeiroAcesso(primeiroAcessoDto).Result;
 
             Assert.False(resultado.IsSuccessStatusCode);
-            Assert.Equal(HttpStatusCode.Unauthorized, resultado.StatusCode);
+            Assert.Equal(HttpStatusCode.NotFound, resultado.StatusCode);
         }
 
 
