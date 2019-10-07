@@ -83,9 +83,11 @@ const CampoData = props => {
           form ? `${possuiErro() ? 'is-invalid' : ''} ${className || ''}` : ''
         }
         onChange={valorData => {
+          valorData = valorData || '';
           form.setFieldValue(name, valorData);
-          onChange(valorData); // TODO
+          onChange(valorData);
         }}
+        value={form.values[name] || ''}
       />
     );
   };
@@ -93,7 +95,7 @@ const CampoData = props => {
   return (
     <>
       <Campo>
-        <Label text={label} control={name} />
+        {label ? <Label text={label} control={name} /> : ''}
         {campoDataAnt()}
         {form ? <span>{form.errors[name]}</span> : ''}
       </Campo>
@@ -114,7 +116,7 @@ CampoData.defaultProps = {
   className: '',
   formatoData: 'DD/MM/YYYY HH:mm:ss',
   placeholder: 'placeholder',
-  label: 'Label',
+  label: '',
   desabilitado: false,
   onChange: () => {},
 };
@@ -123,17 +125,16 @@ const momentSchema = new MomentSchema();
 
 Yup.addMethod(
   Yup.mixed,
-  'dataMenorQue',
+  'dataMenorIgualQue',
   // eslint-disable-next-line func-names
   function(nomeDataInicial, nomeDataFinal, mensagem) {
     // eslint-disable-next-line func-names
-    return this.test('dataMenorQue', mensagem, function() {
+    return this.test('dataMenorIgualQue', mensagem, function() {
       let dataValida = true;
-
       const dataInicial = this.parent[nomeDataInicial];
       const dataFinal = this.parent[nomeDataFinal];
 
-      if (dataInicial && dataFinal && dataInicial.isAfter(dataFinal)) {
+      if (dataInicial && dataFinal && dataInicial.isSameOrAfter(dataFinal, 'date')) {
         dataValida = false;
       }
       return dataValida;
