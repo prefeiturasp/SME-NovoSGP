@@ -36,9 +36,9 @@ namespace SME.SGP.Dados.Repositorios
             return database.Conexao.Query<PlanoAnualCompletoDto>(query.ToString(), new { ano, escolaId, turmaId, bimestre }).SingleOrDefault();
         }
 
-        public PlanoAnual ObterPlanoAnualSimplificadoPorAnoEscolaBimestreETurma(int ano, string escolaId, long turmaId, int bimestre)
+        public PlanoAnual ObterPlanoAnualSimplificadoPorAnoEscolaBimestreETurma(int ano, string escolaId, long turmaId, int bimestre, long disciplinaId)
         {
-            return database.Conexao.Query<PlanoAnual>("select id, escola_id, turma_id, ano, bimestre, descricao, migrado, criado_em, alterado_em, criado_por, alterado_por, criado_rf, alterado_rf from plano_anual where ano = @ano and escola_id = @escolaId and bimestre = @bimestre and turma_id = @turmaId", new { ano, escolaId, turmaId, bimestre }).SingleOrDefault();
+            return database.Conexao.Query<PlanoAnual>("select id, escola_id, turma_id, ano, bimestre, descricao, migrado, criado_em, alterado_em, criado_por, alterado_por, criado_rf, alterado_rf from plano_anual where ano = @ano and escola_id = @escolaId and bimestre = @bimestre and turma_id = @turmaId and componente_curricular_eol_id = @disciplinaId", new { ano, escolaId, turmaId, bimestre, disciplinaId }).SingleOrDefault();
         }
 
         public bool ValidarPlanoExistentePorAnoEscolaTurmaEBimestre(int ano, string escolaId, long turmaId, int bimestre)
