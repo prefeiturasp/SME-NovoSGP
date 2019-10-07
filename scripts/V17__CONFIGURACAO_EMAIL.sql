@@ -31,11 +31,11 @@ insert
 	criado_por,
 	criado_rf)
 select  
-'institucional@sme.prefeitura.sp.gov.br',
+'sgp-nao_responder@sme.prefeitura.sp.gov.br',
 'Institucional - ASCOM',
 'smtp.office365.com',
-'institucional@sme.prefeitura.sp.gov.br',
-'S2M7e3@i8n6s2t5!',
+'sgp-nao_responder@sme.prefeitura.sp.gov.br',
+'Noh27146',
 587,
 false,
 now(),

@@ -1,7 +1,6 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using SME.SGP.Aplicacao;
-using SME.SGP.Aplicacao.Servicos;
 using SME.SGP.Aplicacao.Integracoes;
 using SME.SGP.Aplicacao.Servicos;
 using SME.SGP.Dados;
@@ -48,6 +47,7 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IConsultaDres, ConsultaDres>();
             services.TryAddScoped<IConsultasNotificacao, ConsultasNotificacao>();
             services.TryAddScoped<IConsultasWorkflowAprovacao, ConsultasWorkflowAprovacao>();
+            services.TryAddScoped<IConsultasUnidadesEscolares, ConsultasUnidadesEscolares>();
         }
 
         private static void RegistrarContextos(IServiceCollection services)

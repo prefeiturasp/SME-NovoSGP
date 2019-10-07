@@ -4,6 +4,7 @@ using SME.SGP.Api.Filtros;
 using SME.SGP.Aplicacao;
 using SME.SGP.Dominio;
 using SME.SGP.Dto;
+using System;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Api.Controllers
@@ -50,6 +51,33 @@ namespace SME.SGP.Api.Controllers
                 return StatusCode(401);
 
             return Ok(retornoAutenticacao);
+        }
+
+        [HttpPost("recuperar-senha")]
+        [ProducesResponseType(typeof(bool), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [AllowAnonymous]
+        public async Task<IActionResult> RecuperarSenha([FromForm]RecuperacaoSenhaDto recuperacaoSenhaDto)
+        {
+            await comandosUsuario.AlterarSenhaComTokenRecuperacao(recuperacaoSenhaDto);
+            return Ok();
+        }
+
+        [HttpPost("solicitar-recuperacao-senha")]
+        [ProducesResponseType(typeof(string), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        public IActionResult SolicitarRecuperacaoSenha(string login)
+        {
+            return Ok(comandosUsuario.SolicitarRecuperacaoSenha(login));
+        }
+
+        [HttpGet("valida-token-recuperacao-senha/{token}")]
+        [ProducesResponseType(typeof(bool), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [AllowAnonymous]
+        public IActionResult TokenRecuperacaoSenhaEstaValido(Guid token)
+        {
+            return Ok(comandosUsuario.TokenRecuperacaoSenhaEstaValido(token));
         }
     }
 }
