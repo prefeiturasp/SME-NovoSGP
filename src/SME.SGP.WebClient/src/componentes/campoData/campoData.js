@@ -9,8 +9,8 @@ import React from 'react';
 import styled from 'styled-components';
 import * as Yup from 'yup';
 
-import { Base } from './colors';
-import Label from './label';
+import { Base } from '../colors';
+import Label from '../label';
 
 class MomentSchema extends Yup.mixed {
   constructor() {
@@ -87,7 +87,7 @@ const CampoData = props => {
           form.setFieldValue(name, valorData);
           onChange(valorData);
         }}
-        value={form.values[name] || ''}
+        value={form.values[name] || null}
       />
     );
   };
