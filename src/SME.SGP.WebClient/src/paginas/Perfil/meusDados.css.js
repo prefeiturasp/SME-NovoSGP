@@ -107,3 +107,8 @@ export const MensagemAlerta = styled.div`
     margin-bottom: 10px;
   }
 `;
+
+export const BarraProgresso = styled.div`
+  font-size: 14px;
+  color: ${Base.CinzaMako};
+`;

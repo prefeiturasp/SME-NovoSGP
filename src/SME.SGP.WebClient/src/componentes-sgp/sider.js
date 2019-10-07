@@ -103,7 +103,7 @@ const Sider = () => {
             <div className="circulo-perfil">
               <img
                 id="imagem-perfil"
-                src="https://graziellanicolai.com.br/wp-content/uploads/2018/03/Graziella-perfil.jpg"
+                src={usuario.meusDados.foto}
               />
             </div>
             <div hidden={NavegacaoStore.retraido}>
