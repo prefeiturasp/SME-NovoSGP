@@ -103,9 +103,9 @@ namespace SME.SGP.Aplicacao.Integracoes
             return null;
         }
 
-        public IEnumerable<UsuarioEolRetornoDto> ObterFuncionariosPorCargoUe(string UeId, long cargoId)
+        public IEnumerable<UsuarioEolRetornoDto> ObterFuncionariosPorCargoUe(string ueId, long cargoId)
         {
-            var resposta = httpClient.GetAsync($"escolas/{UeId}/funcionarios/cargos/{cargoId}").Result;
+            var resposta = httpClient.GetAsync($"escolas/{ueId}/funcionarios/cargos/{cargoId}").Result;
             if (resposta.IsSuccessStatusCode)
             {
                 var json = resposta.Content.ReadAsStringAsync().Result;
@@ -114,9 +114,9 @@ namespace SME.SGP.Aplicacao.Integracoes
             return null;
         }
 
-        public async Task<IEnumerable<UsuarioEolRetornoDto>> ObterFuncionariosPorUe(string UeId)
+        public async Task<IEnumerable<UsuarioEolRetornoDto>> ObterFuncionariosPorUe(string ueId, string codigoRf, string nome)
         {
-            var resposta = await httpClient.GetAsync($"escolas/{UeId}/funcionarios/");
+            var resposta = await httpClient.GetAsync($"escolas/{ueId}/funcionarios/");
             if (resposta.IsSuccessStatusCode)
             {
                 var json = await resposta.Content.ReadAsStringAsync();
