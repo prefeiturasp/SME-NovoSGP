@@ -22,7 +22,7 @@ namespace SME.SGP.Aplicacao.Integracoes
 
         IEnumerable<UsuarioEolRetornoDto> ObterFuncionariosPorCargoUe(string UeId, long cargoId);
 
-        Task<IEnumerable<UsuarioEolRetornoDto>> ObterFuncionariosPorUe(string ueId, string codigoRf, string nome);
+        Task<IEnumerable<UsuarioEolRetornoDto>> ObterFuncionariosPorUe(BuscaFuncionariosFiltroDto buscaFuncionariosFiltroDto);
 
         IEnumerable<ProfessorTurmaReposta> ObterListaTurmasPorProfessor(string codigoRf);
 

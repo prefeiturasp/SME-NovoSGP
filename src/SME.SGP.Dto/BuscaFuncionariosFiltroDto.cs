@@ -2,7 +2,13 @@
 {
     public class BuscaFuncionariosFiltroDto
     {
-        public string CodigoRf { get; set; }
-        public string Nome { get; set; }
+        public string CodigoRF { get; set; }
+        public string CodigoUE { get; set; }
+        public string NomeServidor { get; set; }
+
+        public void AtualizaCodigoUe(string codigoUe)
+        {
+            CodigoUE = codigoUe;
+        }
     }
 }
