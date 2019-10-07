@@ -114,7 +114,7 @@ export default function Rotas() {
     tipo: RotasTipo.EstruturadaAutenticada,
   });
 
-  rotas.set('/:rf?', {
+  rotas.set('/', {
     icone: 'fas fa-home',
     parent: null,
     component: Principal,

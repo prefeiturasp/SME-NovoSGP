@@ -7,7 +7,8 @@ const inicial = {
   logado: false,
   turmasUsuario: [],
   turmaSelecionada: [],
-  filtroAtual:{}
+  filtroAtual: {},
+  dadosUsuario: [],
 };
 
 export default function usuario(state = inicial, action) {
@@ -35,14 +36,16 @@ export default function usuario(state = inicial, action) {
         draft.turmaSelecionada = [];
         break;
       case '@usuario/selecionarTurma':
-        draft.turmaSelecionada = [];
         draft.turmaSelecionada = action.payload;
         break;
       case '@usuario/removerTurma':
         draft.turmaSelecionada = [];
         break;
       case '@usuario/filtroAtual':
-        draft.turmaSelecionada = [];
+        draft.filtroAtual = action.payload;
+        break;
+      case '@usuario/salvarDadosUsuario':
+        draft.dadosUsuario = action.payload;
         break;
       default:
         break;
