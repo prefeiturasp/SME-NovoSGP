@@ -37,3 +37,10 @@ export function removerTurma() {
     type: '@usuario/removerTurma',
   };
 }
+
+export function filtroAtual(filtro) {
+  return {
+    type: '@usuario/filtroAtual',
+    payload: filtro
+  }
+}

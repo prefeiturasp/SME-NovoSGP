@@ -7,6 +7,7 @@ import {
   turmasUsuario,
   selecionarTurma,
   removerTurma,
+  filtroAtual
 } from '../redux/modulos/usuario/actions';
 import Grid from '../componentes/grid';
 import Button from '../componentes/button';
@@ -227,7 +228,11 @@ const Filtro = () => {
     });
 
     setAnosLetivosFiltro([...anosLetivos]);
-    if (anosLetivos.length > 0) setAnoLetivoFiltroSelecionado('2019');
+    if (anosLetivos.length > 0 && anosLetivos[0].ano) {
+      setAnoAtual(anosLetivos[0].ano)
+    } else {
+      setAnoAtual(new Date().getFullYear());
+    }
 
     setModalidadesFiltro([...modalidades]);
     setPeriodosFiltro([...periodos]);
@@ -237,6 +242,11 @@ const Filtro = () => {
     store.dispatch(turmasUsuario(turmas.sort(ordenaTurmas)));
     selecionaTurmaCasosEspecificos();
   }, [dados]);
+
+  const setAnoAtual = ano => {
+    setAnoLetivoFiltroSelecionado(`${ano}`);
+    store.dispatch(filtroAtual({anoLetivo:`${ano}`}))
+  }
 
   useEffect(() => {
     if (modalidadesFiltro.length === 1)
@@ -264,6 +274,7 @@ const Filtro = () => {
   useLayoutEffect(() => {
     if (!toggleBusca && toggleInputFocus) inputBuscaRef.current.focus();
     if (toggleBusca) document.addEventListener('click', handleClickFora);
+    else document.removeEventListener('click', handleClickFora);
   }, [toggleBusca, toggleInputFocus]);
 
   useEffect(() => {

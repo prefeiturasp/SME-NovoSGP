@@ -8,6 +8,8 @@ namespace SME.SGP.Aplicacao.Integracoes
 {
     public interface IServicoEOL
     {
+        Task<AlterarSenhaRespostaDto> AlterarSenha(string login, string novaSenha);
+
         Task<UsuarioEolAutenticacaoRetornoDto> Autenticar(string login, string senha);
 
         Task<IEnumerable<DisciplinaResposta>> ObterDisciplinasPorProfessorETurma(long codigoTurma, string rfProfessor);
@@ -19,6 +21,8 @@ namespace SME.SGP.Aplicacao.Integracoes
         IEnumerable<EscolasRetornoDto> ObterEscolasPorDre(string dreId);
 
         IEnumerable<UsuarioEolRetornoDto> ObterFuncionariosPorCargoUe(string UeId, long cargoId);
+
+        Task<IEnumerable<UsuarioEolRetornoDto>> ObterFuncionariosPorUe(string UeId);
 
         IEnumerable<ProfessorTurmaReposta> ObterListaTurmasPorProfessor(string codigoRf);
 

@@ -6,7 +6,8 @@ const inicial = {
   dataLogin: null,
   logado: false,
   turmasUsuario: [],
-  turmaSelecionada: []
+  turmaSelecionada: [],
+  filtroAtual:{}
 };
 
 export default function usuario(state = inicial, action) {
@@ -38,6 +39,9 @@ export default function usuario(state = inicial, action) {
         draft.turmaSelecionada = action.payload;
         break;
       case '@usuario/removerTurma':
+        draft.turmaSelecionada = [];
+        break;
+      case '@usuario/filtroAtual':
         draft.turmaSelecionada = [];
         break;
       default:
