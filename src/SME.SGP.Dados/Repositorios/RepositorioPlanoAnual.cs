@@ -40,16 +40,16 @@ namespace SME.SGP.Dados.Repositorios
         {
             StringBuilder query = new StringBuilder();
 
-            query.AppendLine("select ");
-            query.AppendLine("id, escola_id, turma_id, ano, bimestre, descricao, migrado, ");
-            query.AppendLine("criado_em, alterado_em, criado_por, alterado_por, criado_rf, alterado_rf ");
+            query.AppendLine("select");
+            query.AppendLine("id, escola_id, turma_id, ano, bimestre, descricao, migrado,");
+            query.AppendLine("criado_em, alterado_em, criado_por, alterado_por, criado_rf, alterado_rf");
             query.AppendLine("from plano_anual");
             query.AppendLine("where");
-            query.AppendLine("	ano = @ano and ");
-            query.AppendLine("	escola_id = @escolaId and ");
-            query.AppendLine("	bimestre = @bimestre and ");
-            query.AppendLine("	turma_id = @turmaId and ");
-            query.AppendLine("	componente_curricular_eol_id = @disciplinaId");
+            query.AppendLine("ano = @ano and");
+            query.AppendLine("escola_id = @escolaId and");
+            query.AppendLine("bimestre = @bimestre and");
+            query.AppendLine("turma_id = @turmaId and");
+            query.AppendLine("componente_curricular_eol_id = @disciplinaId");
 
             return database.Conexao.Query<PlanoAnual>(query.ToString(),
                 new
