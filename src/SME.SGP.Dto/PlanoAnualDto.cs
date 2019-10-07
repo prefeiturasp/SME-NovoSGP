@@ -13,13 +13,15 @@ namespace SME.SGP.Dto
             IEnumerable<BimestrePlanoAnualDto> bimestres,
             string escolaId,
             long id,
-            long? turmaId)
+            long? turmaId,
+            long componenteCurricularEolId)
         {
             AnoLetivo = anoLetivo;
             Bimestres = bimestres;
             EscolaId = escolaId;
             Id = id;
             TurmaId = turmaId;
+            ComponenteCurricularEolId = componenteCurricularEolId;
         }
 
         [Required(ErrorMessage = "O ano deve ser informado")]
@@ -28,7 +30,7 @@ namespace SME.SGP.Dto
         [ListaTemElementos(ErrorMessage = "Os bimestres devem ser informados")]
         public IEnumerable<BimestrePlanoAnualDto> Bimestres { get; set; }
 
-        [Required(ErrorMessage = "A disciplina deve ser informada")]
+        [Range(1, long.MaxValue, ErrorMessage = "A disciplina deve ser informada")]
         public long ComponenteCurricularEolId { get; set; }
 
         [Required(ErrorMessage = "A escola deve ser informada")]

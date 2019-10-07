@@ -54,7 +54,8 @@ namespace SME.SGP.Aplicacao
                             planoAnualDto.Bimestres,
                             planoAnualDto.EscolaId,
                             planoAnualDto.Id,
-                            planoAnualDto.TurmaId);
+                            planoAnualDto.TurmaId,
+                            planoAnualDto.ComponenteCurricularEolId);
 
                         planoCopia.TurmaId = turmaId;
 
@@ -168,7 +169,8 @@ namespace SME.SGP.Aplicacao
             return repositorioPlanoAnual.ObterPlanoAnualSimplificadoPorAnoEscolaBimestreETurma(planoAnualDto.AnoLetivo.Value,
                                                                                                       planoAnualDto.EscolaId,
                                                                                                       planoAnualDto.TurmaId.Value,
-                                                                                                      bimestre);
+                                                                                                      bimestre,
+                                                                                                      planoAnualDto.ComponenteCurricularEolId);
         }
 
         private void RemoverObjetivos(IEnumerable<ObjetivoAprendizagemPlano> objetivosAprendizagemPlanoAnual, BimestrePlanoAnualDto bimestrePlanoAnualDto)
