@@ -9,10 +9,12 @@ namespace SME.SGP.Aplicacao.Servicos
     public class ServicoAutenticacao : IServicoAutenticacao
     {
         private readonly IServicoEOL servicoEOL;
+        private readonly IServicoTokenJwt servicoTokenJwt;
 
-        public ServicoAutenticacao(IServicoEOL servicoEOL)
+        public ServicoAutenticacao(IServicoEOL servicoEOL, IServicoTokenJwt servicoTokenJwt)
         {
             this.servicoEOL = servicoEOL ?? throw new System.ArgumentNullException(nameof(servicoEOL));
+            this.servicoTokenJwt = servicoTokenJwt ?? throw new ArgumentNullException(nameof(servicoTokenJwt));
         }
 
         public async Task<(UsuarioAutenticacaoRetornoDto, string, IEnumerable<Guid>)> AutenticarNoEol(string login, string senha)
@@ -27,6 +29,11 @@ namespace SME.SGP.Aplicacao.Servicos
             }
 
             return (retornoDto, retornoServicoEol?.CodigoRf, retornoServicoEol?.Perfis);
+        }
+
+        public bool TemPerfilNoToken(string guid)
+        {
+            throw new NotImplementedException();
         }
     }
 }

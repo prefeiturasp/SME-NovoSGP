@@ -6,12 +6,19 @@ import { store } from '../redux';
 import { perfilSelecionado } from '../redux/modulos/perfil/actions';
 import { useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
+import api from '~/servicos/api';
+import { SalvarDadosLogin } from '~/redux/modulos/usuario/actions';
+import { erro } from '~/servicos/alertas';
+import { Deslogar } from '~/redux/modulos/usuario/actions';
 
 
 const Perfil = props => {
   const { Botao, Icone, Texto } = props;
   const [ocultaPerfis, setarOcultaPerfis] = useState(true);
   const PerfilStore = useSelector(store => store.perfil);
+
+
+  const UsuarioStore = useSelector(store => store.usuario);
 
   const listaRef = useRef();
 
@@ -58,7 +65,7 @@ const Perfil = props => {
 
 
   const ContainerIcone = styled.div`
-    background: ${PerfilStore.perfis.length>1?Base.Roxo:Base.CinzaDesabilitado};
+    background: ${PerfilStore.perfis.length > 1 ? Base.Roxo : Base.CinzaDesabilitado};
     color: ${Base.Branco};
     font-size: 18px !important;
     height: 28px !important;
@@ -70,7 +77,7 @@ const Perfil = props => {
     display: inline-block;
     justify-content: center !important;
     i {
-      background: ${PerfilStore.perfis.length>1?Base.Roxo:Base.CinzaDesabilitado} !important;
+      background: ${PerfilStore.perfis.length > 1 ? Base.Roxo : Base.CinzaDesabilitado} !important;
     }
   `;
 
@@ -80,6 +87,22 @@ const Perfil = props => {
       store.dispatch(perfilSelecionado(perfilNovo[0]));
       setarOcultaPerfis(true);
       if (PerfilStore.perfilSelecionado.codigoPerfil !== perfilNovo[0].codigoPerfil) {
+        api.put(`v1/autenticacao/perfis/${perfilNovo[0].codigoPerfil}`)
+          .then(resp => {
+            const token = resp.data;
+            store.dispatch(
+              SalvarDadosLogin({
+                token: token,
+                rf: UsuarioStore.rf
+              })
+            );
+          })
+          .catch(err => {
+            erro("Sua sessão expirou");
+            setTimeout(() => {
+              store.dispatch(Deslogar());
+            }, 2000);
+          });
         history.push('/');
       }
     }
@@ -107,7 +130,7 @@ const Perfil = props => {
     <div className="position-relative" ref={listaRef}>
       <Botao className="text-center stretched-link" onClick={onClickBotao} disabled={PerfilStore.perfis.length <= 1}>
         <ContainerIcone>
-          <Icone className="fas fa-user-circle"/>
+          <Icone className="fas fa-user-circle" />
         </ContainerIcone>
         <Texto className={`d-block mt-1 ${ocultaPerfis ? '' : ' font-weight-bold'}`}>
           {PerfilStore.perfilSelecionado.sigla ? PerfilStore.perfilSelecionado.sigla : PerfilStore.perfilSelecionado.nomePerfil}

@@ -22,6 +22,8 @@ namespace SME.SGP.Aplicacao.Integracoes
 
         IEnumerable<ProfessorTurmaReposta> ObterListaTurmasPorProfessor(string codigoRf);
 
+        Task<UsuarioEolAutenticacaoRetornoDto> ObterPerfisPorLogin(string login);
+
         Task<int[]> ObterPermissoesPorPerfil(Guid perfilGuid);
 
         IEnumerable<SupervisoresRetornoDto> ObterSupervisoresPorCodigo(string[] codigoUes);
