@@ -2,6 +2,7 @@
 using SME.SGP.Dominio.Interfaces;
 using System;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace SME.SGP.Dominio
 {
