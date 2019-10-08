@@ -29,6 +29,18 @@ namespace SME.SGP.Dominio
             this.UltimoLogin = DateTime.Now;
         }
 
+        public void DefinirEmail(string novoEmail, IEnumerable<PrioridadePerfil> perfisUsuario)
+        {
+            if (perfisUsuario != null && perfisUsuario.Any() &&
+                (PossuiPerfilDre(perfisUsuario) ||
+                 PossuiPerfilSme(perfisUsuario)) &&
+                !novoEmail.Contains("@sme.prefeitura.sp.gov.br"))
+            {
+                throw new NegocioException("Usuários da SME ou DRE devem utilizar e-mail profissional. Ex: usuario@sme.prefeitura.sp.gov.br");
+            }
+            Email = novoEmail;
+        }
+
         public void FinalizarRecuperacaoSenha()
         {
             TokenRecuperacaoSenha = null;
@@ -58,6 +70,16 @@ namespace SME.SGP.Dominio
                 return PERFIL_PROFESSOR;
             }
             return perfisUsuario.FirstOrDefault().CodigoPerfil;
+        }
+
+        public bool PossuiPerfilDre(IEnumerable<PrioridadePerfil> perfisUsuario)
+        {
+            return perfisUsuario.Any(c => c.Tipo == TipoPerfil.DRE);
+        }
+
+        public bool PossuiPerfilSme(IEnumerable<PrioridadePerfil> perfisUsuario)
+        {
+            return perfisUsuario.Any(c => c.Tipo == TipoPerfil.SME);
         }
 
         public bool PodeReiniciarSenha()
