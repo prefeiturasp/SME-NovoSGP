@@ -7,6 +7,8 @@ const inicial = {
   logado: false,
   turmasUsuario: [],
   turmaSelecionada: [],
+  filtroAtual: {},
+  dadosUsuario: [],
   meusDados: {
     nome: 'Teste com Sobrenome Um tanto Quanto Maior',
     rf: '123456',
@@ -14,7 +16,6 @@ const inicial = {
     empresa: 'SME',
     foto: 'https://graziellanicolai.com.br/wp-content/uploads/2018/03/Graziella-perfil.jpg'
   },
-  filtroAtual:{}
 };
 
 export default function usuario(state = inicial, action) {
@@ -42,7 +43,6 @@ export default function usuario(state = inicial, action) {
         draft.turmaSelecionada = [];
         break;
       case '@usuario/selecionarTurma':
-        draft.turmaSelecionada = [];
         draft.turmaSelecionada = action.payload;
         break;
       case '@usuario/removerTurma':
@@ -53,7 +53,10 @@ export default function usuario(state = inicial, action) {
         break;
       }
       case '@usuario/filtroAtual':
-        draft.turmaSelecionada = [];
+        draft.filtroAtual = action.payload;
+        break;
+      case '@usuario/salvarDadosUsuario':
+        draft.dadosUsuario = action.payload;
         break;
       default:
         break;
