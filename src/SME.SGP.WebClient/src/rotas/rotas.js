@@ -17,9 +17,19 @@ import RedefinirSenha from '~/paginas/RedefinirSenha';
 import RotaNaoAutenticadaDesestruturada from './rotaNaoAutenticadaDesestruturada';
 import RotaAutenticadaDesestruturada from './rotaAutenticadaDesestruturada';
 import CadastroTipoEventos from '~/paginas/Calendario/TipoEventos/cadastroTipoEventos';
+import ListaTipoEventos from '~/paginas/Calendario/TipoEventos/listaTipoEventos';
 
 export default function Rotas() {
   const rotas = new Map();
+
+  rotas.set('/calendario/tipo-eventos-lista', {
+    breadcrumbName: 'Cadastro de Eventos',
+    menu: 'Calendário',
+    parent: '/calendario',
+    component: ListaTipoEventos,
+    exact: true,
+    tipo: RotasTipo.EstruturadaAutenticada,
+  });
 
   rotas.set('/calendario/tipo-eventos', {
     breadcrumbName: 'Tipo de Eventos',

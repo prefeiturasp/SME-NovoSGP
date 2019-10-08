@@ -1,14 +1,25 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import styled from 'styled-components';
+import { Radio } from 'antd';
 import Card from '~/componentes/card';
 import Grid from '~/componentes/grid';
 import Button from '~/componentes/button';
-import { Radio } from 'antd';
 import { Colors, Base } from '~/componentes/colors';
 import history from '~/servicos/history';
 import SelectComponent from '~/componentes/select';
 
 const CadastroTipoEventos = () => {
+  const [concomitancia, setConcomitancia] = useState(true);
+  const [tipoData, setTipoData] = useState(true);
+  const [dependencia, setDependencia] = useState(false);
+  const [situacao, setSituacao] = useState(true);
+
+  const [letivoSelecionado, setLetivoSelecionado] = useState();
+  const [
+    localOcorrenciaSelecionado,
+    setLocalOcorrenciaSelecionado,
+  ] = useState();
+
   const [inseridoAlterado, setInseridoAlterado] = useState({
     alteradoEm: '02/05/2019 às 20:28',
     alteradoPor: 'ELISANGELA DOS SANTOS ARRUDA (RF 1234567)',
@@ -39,10 +50,6 @@ const CadastroTipoEventos = () => {
   const CampoTexto = styled.input`
     color: ${Base.CinzaBotao};
     font-size: 14px;
-    &[type='radio'] {
-      background: ${Base.Branco};
-      border: 1px solid ${Base.CinzaDesabilitado};
-    }
   `;
 
   const InseridoAlterado = styled(Div)`
@@ -54,8 +61,10 @@ const CadastroTipoEventos = () => {
     }
   `;
 
+  const botaoCadastrarRef = useRef();
+
   const clicouBotaoVoltar = () => {
-    history.push('/');
+    history.push('/calendario/tipo-eventos-lista');
   };
 
   const clicouBotaoCancelar = () => {
@@ -64,6 +73,30 @@ const CadastroTipoEventos = () => {
 
   const clicouBotaoCadastrar = () => {
     history.push('/');
+  };
+
+  const aoSelecionarLocalOcorrencia = local => {
+    setLocalOcorrenciaSelecionado(local);
+  };
+
+  const aoSelecionarLetivo = letivo => {
+    setLetivoSelecionado(letivo);
+  };
+
+  const aoSelecionarConcomitancia = () => {
+    setConcomitancia(!concomitancia);
+  };
+
+  const aoSelecionarTipoData = () => {
+    setTipoData(!tipoData);
+  };
+
+  const aoSelecionarDependencia = () => {
+    setDependencia(!dependencia);
+  };
+
+  const aoSelecionarSituacao = () => {
+    setSituacao(!situacao);
   };
 
   return (
@@ -96,6 +129,7 @@ const CadastroTipoEventos = () => {
             disabled
             border
             bold
+            ref={botaoCadastrarRef}
           />
         </Grid>
         <Grid cols={12}>
@@ -105,72 +139,99 @@ const CadastroTipoEventos = () => {
               <CampoTexto
                 className="form-control form-control-lg"
                 placeholder="Nome do evento"
+                maxLength={100}
               />
             </Div>
             <Div className="col-4">
               <Rotulo>Local de ocorrência</Rotulo>
               <SelectComponent
                 placeholder="Local de ocorrência"
-                lista={{ nome: 'flavio' }}
+                valueOption="valor"
+                valueText="descricao"
+                lista={[
+                  { valor: 0, descricao: 'SME' },
+                  { valor: 1, descricao: 'DRE' },
+                  { valor: 2, descricao: 'SME/UE' },
+                  { valor: 3, descricao: 'Todos' },
+                ]}
+                valueSelect={localOcorrenciaSelecionado}
+                onChange={aoSelecionarLocalOcorrencia}
               />
             </Div>
             <Div className="col-2">
               <Rotulo>Letivo</Rotulo>
-              <SelectComponent placeholder="Tipo" lista={{ nome: 'flavio' }} />
+              <SelectComponent
+                placeholder="Tipo"
+                valueOption="valor"
+                valueText="descricao"
+                lista={[
+                  { valor: 0, descricao: 'Sim' },
+                  { valor: 1, descricao: 'Não' },
+                  { valor: 2, descricao: 'Opcional' },
+                ]}
+                valueSelect={letivoSelecionado}
+                onChange={aoSelecionarLetivo}
+              />
             </Div>
           </Div>
           <Div className="row">
-            <Div className="col-2">
+            <Div className="col-3">
               <Rotulo>Permite concomitância</Rotulo>
             </Div>
-            <Div className="col-2">
+            <Div className="col-3">
               <Rotulo>Tipo de data</Rotulo>
             </Div>
-            <Div className="col-2">
+            <Div className="col-3">
               <Rotulo>Dependência</Rotulo>
             </Div>
-            <Div className="col-2">
+            <Div className="col-3">
               <Rotulo>Situação</Rotulo>
             </Div>
           </Div>
           <Div className="row">
-            <Div className="col-2">
-              <Radio.Group>
+            <Div className="col-3">
+              <Radio.Group
+                value={concomitancia}
+                onChange={aoSelecionarConcomitancia}
+              >
                 <Div className="form-check form-check-inline">
-                  <Radio>Sim</Radio>
+                  <Radio value>Sim</Radio>
                 </Div>
                 <Div className="form-check form-check-inline">
-                  <Radio>Não</Radio>
-                </Div>
-              </Radio.Group>
-            </Div>
-            <Div className="col-2">
-              <Radio.Group>
-                <Div className="form-check form-check-inline">
-                  <Radio>Única</Radio>
-                </Div>
-                <Div className="form-check form-check-inline">
-                  <Radio>Início e fim</Radio>
+                  <Radio value={false}>Não</Radio>
                 </Div>
               </Radio.Group>
             </Div>
-            <Div className="col-2">
-              <Radio.Group>
+            <Div className="col-3">
+              <Radio.Group value={tipoData} onChange={aoSelecionarTipoData}>
                 <Div className="form-check form-check-inline">
-                  <Radio>Sim</Radio>
+                  <Radio value>Única</Radio>
                 </Div>
                 <Div className="form-check form-check-inline">
-                  <Radio>Não</Radio>
+                  <Radio value={false}>Início e fim</Radio>
                 </Div>
               </Radio.Group>
             </Div>
-            <Div className="col-2">
-              <Radio.Group>
+            <Div className="col-3">
+              <Radio.Group
+                value={dependencia}
+                onChange={aoSelecionarDependencia}
+              >
                 <Div className="form-check form-check-inline">
-                  <Radio>Ativo</Radio>
+                  <Radio value>Sim</Radio>
                 </Div>
                 <Div className="form-check form-check-inline">
-                  <Radio>Inativo</Radio>
+                  <Radio value={false}>Não</Radio>
+                </Div>
+              </Radio.Group>
+            </Div>
+            <Div className="col-3">
+              <Radio.Group value={situacao} onChange={aoSelecionarSituacao}>
+                <Div className="form-check form-check-inline">
+                  <Radio value>Ativo</Radio>
+                </Div>
+                <Div className="form-check form-check-inline">
+                  <Radio value={false}>Inativo</Radio>
                 </Div>
               </Radio.Group>
             </Div>
