@@ -8,6 +8,7 @@ import { store } from '../redux';
 import { menuRetraido, menuSelecionado } from '../redux/modulos/navegacao/actions';
 import { useSelector } from 'react-redux';
 import modalidade from '~/dtos/modalidade';
+import { Tooltip } from 'antd';
 
 const Sider = () => {
   const { Sider, Footer } = Layout;
@@ -53,7 +54,7 @@ const Sider = () => {
       const posicaoY = itemMenu.getBoundingClientRect().y;
       const posicaoRight = itemMenu.getBoundingClientRect().right;
       const alturaTotalItens = posicaoY + alturaItens;
-      const posicaoTop = alturaTotalItens > alturaTela ? (posicaoY-(alturaTotalItens - alturaTela)) : posicaoY;
+      const posicaoTop = alturaTotalItens > alturaTela ? (posicaoY - (alturaTotalItens - alturaTela)) : posicaoY;
       document.documentElement.style.setProperty('--posicao-item-menu-top', `${posicaoTop}px`)
       document.documentElement.style.setProperty('--posicao-item-menu-right', `${posicaoRight}px`)
     }
@@ -103,22 +104,24 @@ const Sider = () => {
             <div className="circulo-perfil">
               <img
                 id="imagem-perfil"
-                src="https://graziellanicolai.com.br/wp-content/uploads/2018/03/Graziella-perfil.jpg"
+                src={usuario.meusDados.foto}
               />
             </div>
             <div hidden={NavegacaoStore.retraido}>
-              <span id="nome" className="nome">
-                Nome + Sobrenome
-              </span>
+              <Tooltip title={usuario.meusDados.nome} placement="bottom" overlayStyle={{fontSize:'12px'}}>
+                <span id="nome" className="nome">
+                  {usuario.meusDados.nome}
+                </span>
+              </Tooltip>
             </div>
             <div
               className="perfil-edit"
               style={{ paddingTop: NavegacaoStore.retraido ? '0' : '12px' }}
             >
-              <a id="perfil-edit">
+              <Link id="perfil-edit" to="/meus-dados">
                 <i className="fas fa-user-edit" />
                 <span>Perfil</span>
-              </a>
+              </Link>
             </div>
           </div>
         </Topo>
@@ -195,7 +198,7 @@ const Sider = () => {
                 }
               >
                 <Menu.Item key="30" id="plaPlanoCiclo" htmlFor="linkPlanoCiclo">
-                  <span className="menuItem">{ modalidadeEja ? 'Plano de Etapa' : 'Plano de Ciclo'}</span>
+                  <span className="menuItem">{modalidadeEja ? 'Plano de Etapa' : 'Plano de Ciclo'}</span>
                   <Link
                     to="/planejamento/plano-ciclo"
                     className="nav-link text-white"
@@ -203,7 +206,7 @@ const Sider = () => {
                   />
                 </Menu.Item>
                 <Menu.Item key="31" id="plaPlanoAnual" htmlFor="linkPlanoAnual">
-                  <span className="menuItem">{ modalidadeEja ? 'Plano Semestral' : 'Plano Anual'}</span>
+                  <span className="menuItem">{modalidadeEja ? 'Plano Semestral' : 'Plano Anual'}</span>
                   <Link
                     to="/planejamento/plano-anual"
                     className="nav-link text-white"
