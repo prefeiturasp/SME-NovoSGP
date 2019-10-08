@@ -8,13 +8,41 @@ namespace SME.SGP.Dominio
 {
     public class ServicoUsuario : IServicoUsuario
     {
+        private readonly IRepositorioPrioridadePerfil repositorioPrioridadePerfil;
         private readonly IRepositorioUsuario repositorioUsuario;
         private readonly IServicoEOL servicoEOL;
 
-        public ServicoUsuario(IRepositorioUsuario repositorioUsuario, IServicoEOL servicoEOL)
+        public ServicoUsuario(IRepositorioUsuario repositorioUsuario,
+                              IServicoEOL servicoEOL,
+                              IRepositorioPrioridadePerfil repositorioPrioridadePerfil)
         {
             this.repositorioUsuario = repositorioUsuario ?? throw new ArgumentNullException(nameof(repositorioUsuario));
             this.servicoEOL = servicoEOL ?? throw new ArgumentNullException(nameof(servicoEOL));
+            this.repositorioPrioridadePerfil = repositorioPrioridadePerfil;
+        }
+
+        public async Task AlterarEmail(string login, string novoEmail)
+        {
+            Usuario usuario = repositorioUsuario.ObterPorCodigoRfLogin(null, login);
+            if (usuario == null)
+            {
+                throw new NegocioException("Usuário não encontrado.");
+            }
+
+            var outrosUsuariosComMesmoEmail = repositorioUsuario.ExisteUsuarioComMesmoEmail(novoEmail, usuario.Id);
+            if (outrosUsuariosComMesmoEmail)
+            {
+                throw new NegocioException("Já existe outro usuário com o e-mail informado.");
+            }
+
+            var retornoEol = await servicoEOL.ObterPerfisPorLogin(login);
+            if (retornoEol == null || retornoEol.Status != Dto.AutenticacaoStatusEol.Ok)
+            {
+                throw new NegocioException("Ocorreu um erro ao obter os dados do usuário no EOL.");
+            }
+            var perfisUsuario = repositorioPrioridadePerfil.ObterPerfisPorIds(retornoEol.Perfis);
+            usuario.DefinirEmail(novoEmail, perfisUsuario);
+            repositorioUsuario.Salvar(usuario);
         }
 
         public async void ModificarPerfil(string perfilParaModificar, string login)
