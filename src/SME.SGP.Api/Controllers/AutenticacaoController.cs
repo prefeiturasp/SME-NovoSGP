@@ -71,6 +71,13 @@ namespace SME.SGP.Api.Controllers
             return Ok(comandosUsuario.SolicitarRecuperacaoSenha(login));
         }
 
+        [HttpPost("testeemail")]
+        public IActionResult TesteEmail()
+        {
+            comandosUsuario.TesteEmail();
+            return Ok();
+        }
+
         [HttpGet("valida-token-recuperacao-senha/{token}")]
         [ProducesResponseType(typeof(bool), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]

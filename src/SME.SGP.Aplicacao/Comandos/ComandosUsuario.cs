@@ -141,6 +141,12 @@ namespace SME.SGP.Aplicacao
             return usuario.Email;
         }
 
+        public void TesteEmail()
+        {
+            var usuario = repositorioUsuario.ObterPorId(3);
+            EnviarEmailRecuperacao(usuario);
+        }
+
         public bool TokenRecuperacaoSenhaEstaValido(Guid token)
         {
             Usuario usuario = repositorioUsuario.ObterPorTokenRecuperacaoSenha(token);
