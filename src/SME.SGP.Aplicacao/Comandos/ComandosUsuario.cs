@@ -48,6 +48,18 @@ namespace SME.SGP.Aplicacao
             this.configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
         }
 
+        //  TODO: aplicar validações permissão de acesso
+        public void AlterarEmail(AlterarEmailDto alterarEmailDto)
+        {
+            servicoUsuario.AlterarEmail(alterarEmailDto.LoginUsuarioASerAlterado, alterarEmailDto.NovoEmail);
+        }
+
+        public async Task AlterarEmailUsuarioLogado(string novoEmail)
+        {
+            var login = servicoTokenJwt.ObterLoginAtual();
+            await servicoUsuario.AlterarEmail(login, novoEmail);
+        }
+
         public async Task AlterarSenhaComTokenRecuperacao(RecuperacaoSenhaDto recuperacaoSenhaDto)
         {
             Usuario usuario = repositorioUsuario.ObterPorTokenRecuperacaoSenha(recuperacaoSenhaDto.Token);

@@ -1,11 +1,10 @@
 import React from 'react';
-import Pagina from '~/componentes-sgp/conteudo';
 import { Route, Redirect } from 'react-router-dom';
 import { useSelector } from 'react-redux';
+import Pagina from '~/componentes-sgp/conteudo';
 
 const RotaAutenticadaEstruturada = props => {
   const { component: Componente, ...propriedades } = props;
-
   const logado = useSelector(state => state.usuario.logado);
 
   return (
