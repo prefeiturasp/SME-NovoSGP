@@ -48,6 +48,13 @@ export function meusDados(dados) {
 export function filtroAtual(filtro) {
   return {
     type: '@usuario/filtroAtual',
-    payload: filtro
-  }
+    payload: filtro,
+  };
+}
+
+export function salvarDadosUsuario(filtro) {
+  return {
+    type: '@usuario/salvarDadosUsuario',
+    payload: filtro,
+  };
 }
