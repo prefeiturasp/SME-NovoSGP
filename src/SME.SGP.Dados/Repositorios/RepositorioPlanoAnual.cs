@@ -14,7 +14,7 @@ namespace SME.SGP.Dados.Repositorios
         {
         }
 
-        public PlanoAnualCompletoDto ObterPlanoAnualCompletoPorAnoEscolaBimestreETurma(int ano, string escolaId, long turmaId, int bimestre)
+        public PlanoAnualCompletoDto ObterPlanoAnualCompletoPorAnoEscolaBimestreETurma(int ano, string escolaId, long turmaId, int bimestre, long componenteCurricularEolId)
         {
             StringBuilder query = new StringBuilder();
 
@@ -30,10 +30,11 @@ namespace SME.SGP.Dados.Repositorios
             query.AppendLine("	and pa.bimestre = @bimestre");
             query.AppendLine("	and pa.escola_id = @escolaId");
             query.AppendLine("	and pa.turma_id = @turmaId");
+            query.AppendLine("	and pa.componente_curricular_eol_id = @componenteCurricularEolId");
             query.AppendLine("group by");
             query.AppendLine("	pa.id");
 
-            return database.Conexao.Query<PlanoAnualCompletoDto>(query.ToString(), new { ano, escolaId, turmaId, bimestre }).SingleOrDefault();
+            return database.Conexao.Query<PlanoAnualCompletoDto>(query.ToString(), new { ano, escolaId, turmaId, bimestre, componenteCurricularEolId }).SingleOrDefault();
         }
 
         public PlanoAnual ObterPlanoAnualSimplificadoPorAnoEscolaBimestreETurma(int ano, string escolaId, long turmaId, int bimestre, long disciplinaId)
@@ -62,9 +63,20 @@ namespace SME.SGP.Dados.Repositorios
                 }).SingleOrDefault();
         }
 
-        public bool ValidarPlanoExistentePorAnoEscolaTurmaEBimestre(int ano, string escolaId, long turmaId, int bimestre)
+        public bool ValidarPlanoExistentePorAnoEscolaTurmaEBimestre(int ano, string escolaId, long turmaId, int bimestre, long componenteCurricularEolId)
         {
-            return database.Conexao.Query<bool>("select 1 from plano_anual where ano = @ano and escola_id = @escolaId and bimestre = @bimestre and turma_id = @turmaId", new { ano, escolaId, turmaId, bimestre }).SingleOrDefault();
+            var query = @"select
+	                            1
+                            from
+	                            plano_anual
+                            where
+	                            ano = @ano
+	                            and escola_id = @escolaId
+	                            and bimestre = @bimestre
+	                            and turma_id = @turmaId
+	                            and componente_curricular_eol_id = @componenteCurricularEolId";
+
+            return database.Conexao.Query<bool>(query, new { ano, escolaId, turmaId, bimestre, componenteCurricularEolId }).SingleOrDefault();
         }
     }
 }
