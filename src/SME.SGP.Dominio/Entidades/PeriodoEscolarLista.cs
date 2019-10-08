@@ -30,7 +30,10 @@ namespace SME.SGP.Dominio.Entidades
 
         private void ValidarBimestresRepetidos()
         {
-            var bimestres = Periodos.Select(x => x.Bimestre).GroupBy(x => x).Where(x => x.Count() > 1);            
+            var bimestres = Periodos.Select(x => x.Bimestre).GroupBy(x => x).Where(x => x.Count() > 1);
+
+            if (bimestres.Count() > 0)
+                throw new NegocioException("Deve ser informado apenas um periodo por bimestre");
         }
 
         private void ValidarInicioPeriodoAntesFimPeriodoAnterior()
