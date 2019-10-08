@@ -21,6 +21,7 @@ class LoginHelper {
         token: autenticacao.dados.token,
         rf,
         usuario: login.usuario,
+        modificarSenha: autenticacao.dados.modificarSenha,
         perfisUsuario: autenticacao.dados.PerfisUsuario,
       })
     );

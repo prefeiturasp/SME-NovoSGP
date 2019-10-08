@@ -14,6 +14,12 @@ class ServicoPrimeiroAcesso {
             erro: 'Falha de comunicação com o servidor.',
           };
         }
+        if (!erro.response.data.mensagens) {
+          return {
+            sucesso: false,
+            erro: erro.response.data,
+          };
+        }
         return { sucesso: false, erro: erro.response.data.mensagens.join(',') };
       });
   };

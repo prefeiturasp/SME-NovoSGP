@@ -10,5 +10,7 @@ namespace SME.SGP.Dominio.Interfaces
         IEnumerable<SupervisorEscolasDreDto> ObtemPorDreESupervisores(string dreId, string[] supervisoresId);
 
         SupervisorEscolasDreDto ObtemPorUe(string ueId);
+
+        IEnumerable<SupervisorEscolasDreDto> ObtemSupervisoresPorUe(string ueId);
     }
 }

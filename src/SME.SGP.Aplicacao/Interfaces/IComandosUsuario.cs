@@ -1,21 +1,23 @@
-﻿using SME.SGP.Dto;
-using System;
+﻿using System;
 using System.Threading.Tasks;
+using SME.SGP.Dto;
 
-namespace SME.SGP.Aplicacao
-{
-    public interface IComandosUsuario
-    {
-        Task AlterarSenhaComTokenRecuperacao(RecuperacaoSenhaDto recuperacaoSenhaDto);
+namespace SME.SGP.Aplicacao {
+    public interface IComandosUsuario {
+        void AlterarEmail (AlterarEmailDto alterarEmailDto);
 
-        Task<AlterarSenhaRespostaDto> AlterarSenhaPrimeiroAcesso(PrimeiroAcessoDto primeiroAcessoDto);
+        Task AlterarEmailUsuarioLogado (string novoEmail);
 
-        Task<UsuarioAutenticacaoRetornoDto> Autenticar(string login, string senha);
+        Task AlterarSenhaComTokenRecuperacao (RecuperacaoSenhaDto recuperacaoSenhaDto);
 
-        Task<string> ModificarPerfil(string guid);
+        Task<AlterarSenhaRespostaDto> AlterarSenhaPrimeiroAcesso (PrimeiroAcessoDto primeiroAcessoDto);
 
-        string SolicitarRecuperacaoSenha(string login);
+        Task<UsuarioAutenticacaoRetornoDto> Autenticar (string login, string senha);
 
-        bool TokenRecuperacaoSenhaEstaValido(Guid token);
+        Task<string> ModificarPerfil (string guid);
+
+        string SolicitarRecuperacaoSenha (string login);
+
+        bool TokenRecuperacaoSenhaEstaValido (Guid token);
     }
 }
