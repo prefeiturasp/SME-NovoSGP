@@ -6,7 +6,7 @@ namespace SME.SGP.Aplicacao
 {
     public interface IComandosUsuario
     {
-        void AlterarEmail(AlterarEmailDto alterarEmailDto);
+        Task AlterarEmail(AlterarEmailDto alterarEmailDto, string codigoRf);
 
         Task AlterarEmailUsuarioLogado(string novoEmail);
 
@@ -15,6 +15,8 @@ namespace SME.SGP.Aplicacao
         Task<UsuarioAutenticacaoRetornoDto> Autenticar(string login, string senha);
 
         Task<string> ModificarPerfil(string guid);
+
+        Task<UsuarioReinicioSenhaDto> ReiniciarSenha(string codigoRf);
 
         string SolicitarRecuperacaoSenha(string login);
 
