@@ -49,15 +49,15 @@ namespace SME.SGP.Aplicacao
         }
 
         //  TODO: aplicar validações permissão de acesso
-        public void AlterarEmail(AlterarEmailDto alterarEmailDto)
+        public async Task AlterarEmail(AlterarEmailDto alterarEmailDto, string codigoRf)
         {
-            servicoUsuario.AlterarEmail(alterarEmailDto.LoginUsuarioASerAlterado, alterarEmailDto.NovoEmail);
+            await servicoUsuario.AlterarEmailUsuarioPorRfOuInclui(codigoRf, alterarEmailDto.NovoEmail);
         }
 
         public async Task AlterarEmailUsuarioLogado(string novoEmail)
         {
             var login = servicoTokenJwt.ObterLoginAtual();
-            await servicoUsuario.AlterarEmail(login, novoEmail);
+            await servicoUsuario.AlterarEmailUsuarioPorLogin(login, novoEmail);
         }
 
         public async Task AlterarSenhaComTokenRecuperacao(RecuperacaoSenhaDto recuperacaoSenhaDto)

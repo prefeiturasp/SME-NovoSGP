@@ -4,7 +4,9 @@ namespace SME.SGP.Dominio.Interfaces
 {
     public interface IServicoUsuario
     {
-        Task AlterarEmail(string login, string novoEmail);
+        Task AlterarEmailUsuarioPorLogin(string login, string novoEmail);
+
+        Task AlterarEmailUsuarioPorRfOuInclui(string codigoRf, string novoEmail);
 
         void ModificarPerfil(string perfilParaModificar, string login);
 
