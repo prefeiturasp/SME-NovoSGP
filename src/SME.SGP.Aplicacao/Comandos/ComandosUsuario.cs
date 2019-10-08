@@ -161,7 +161,7 @@ namespace SME.SGP.Aplicacao
 
         private void EnviarEmailRecuperacao(Usuario usuario)
         {
-            string caminho = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), @"ModelosEmail/RecuperacaoSenha.txt");
+            string caminho = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), @"ModelosEmail\RecuperacaoSenha.txt");
             Console.WriteLine(caminho);
             var textoArquivo = File.ReadAllText(caminho);
             var urlFrontEnd = configuration["UrlFrontEnt"];
