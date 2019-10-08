@@ -148,9 +148,20 @@ const Filtro = () => {
 
   useEffect(() => {
     if (turmaSelecionada.length > 0) {
-      const { modalidade, nomeTurma, tipoEscola, ue } = turmaSelecionada[0];
+      const {
+        modalidade,
+        nomeTurma,
+        tipoEscola,
+        ue,
+        codTurma,
+      } = turmaSelecionada[0];
       const selecionada = `${modalidade.trim()} - ${nomeTurma.trim()} - ${tipoEscola.trim()} - ${ue.trim()}`;
       setTurmaUeSelecionada(selecionada);
+      if (!turmaFiltroSelecionada) {
+        setTimeout(() => {
+          setTurmaFiltroSelecionada(codTurma.toString());
+        }, 1000);
+      }
     }
   }, [turmaSelecionada]);
 
@@ -276,7 +287,7 @@ const Filtro = () => {
   useLayoutEffect(() => {
     if (!toggleBusca && toggleInputFocus) inputBuscaRef.current.focus();
     if (toggleBusca) document.addEventListener('click', handleClickFora);
-    else document.removeEventListener('click', handleClickFora);
+    return () => document.removeEventListener('click', handleClickFora);
   }, [toggleBusca, toggleInputFocus]);
 
   useEffect(() => {
