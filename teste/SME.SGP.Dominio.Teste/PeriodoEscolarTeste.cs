@@ -9,13 +9,13 @@ namespace SME.SGP.Dominio.Teste
     public class PeriodoEscolarTeste
     {
         [Fact]
-        public void Deve_Validar_Quantidade_Bimestres()
+        public void Deve_Validar_Quantidade_Bimestres_EJA()
         {
             var periodos = new PeriodoEscolarLista();
 
             Assert.Throws<NegocioException>(periodos.Validar);
 
-            periodos.Eja = false;
+            periodos.Eja = true;
 
             periodos.Periodos.Add(new PeriodoEscolar
             {
@@ -24,6 +24,37 @@ namespace SME.SGP.Dominio.Teste
                 PeriodoFim = DateTime.Now.AddMinutes(1),
                 PeriodoInicio = DateTime.Now
             });
+
+            Assert.Throws<NegocioException>(periodos.Validar);
+
+            periodos.Periodos.Add(new PeriodoEscolar
+            {
+                TipoCalendario = 1,
+                Bimestre = 2,
+                PeriodoFim = DateTime.Now.AddMinutes(3),
+                PeriodoInicio = DateTime.Now.AddMinutes(2)
+            });
+
+            periodos.Validar();
+          
+        }
+
+        [Fact]
+        public void Deve_Validar_Quantidade_Bimestres_Regular()
+        {
+            var periodos = new PeriodoEscolarLista();
+
+            Assert.Throws<NegocioException>(periodos.Validar);
+
+            periodos.Periodos.Add(new PeriodoEscolar
+            {
+                TipoCalendario = 1,
+                Bimestre = 1,
+                PeriodoFim = DateTime.Now.AddMinutes(1),
+                PeriodoInicio = DateTime.Now
+            });
+
+            Assert.Throws<NegocioException>(periodos.Validar);
 
             periodos.Periodos.Add(new PeriodoEscolar
             {
@@ -35,12 +66,6 @@ namespace SME.SGP.Dominio.Teste
 
             Assert.Throws<NegocioException>(periodos.Validar);
 
-            periodos.Eja = true;
-
-            periodos.Validar();
-
-            periodos.Eja = false;
-
             periodos.Periodos.Add(new PeriodoEscolar
             {
                 TipoCalendario = 1,
@@ -48,6 +73,8 @@ namespace SME.SGP.Dominio.Teste
                 PeriodoFim = DateTime.Now.AddMinutes(5),
                 PeriodoInicio = DateTime.Now.AddMinutes(4)
             });
+
+            Assert.Throws<NegocioException>(periodos.Validar);
 
             periodos.Periodos.Add(new PeriodoEscolar
             {
@@ -134,7 +161,7 @@ namespace SME.SGP.Dominio.Teste
             periodos.Periodos.Add(new PeriodoEscolar
             {
                 TipoCalendario = 1,
-                Bimestre = 1,
+                Bimestre = 3,
                 PeriodoFim = DateTime.Now.AddMinutes(3),
                 PeriodoInicio = DateTime.Now.AddMinutes(2)
             });
@@ -142,7 +169,7 @@ namespace SME.SGP.Dominio.Teste
             periodos.Periodos.Add(new PeriodoEscolar
             {
                 TipoCalendario = 1,
-                Bimestre = 2,
+                Bimestre = 4,
                 PeriodoFim = DateTime.Now.AddMinutes(5),
                 PeriodoInicio = DateTime.Now.AddMinutes(4)
             });
