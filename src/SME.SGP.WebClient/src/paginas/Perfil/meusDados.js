@@ -34,6 +34,7 @@ const MeusDados = () => {
     setAlterarFoto(!alterarFoto);
     setDesabilitaConfirmar(true);
     setOcultarAlteracoesNaoSalvas(true);
+    setOcultarProgresso(true);
   }
 
   const selecionarNovaFoto = () => {

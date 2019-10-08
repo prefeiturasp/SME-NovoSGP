@@ -102,15 +102,21 @@ export const Topo = styled.div`
     width: 60px;
     height: 60px;
     margin-bottom: 10px;
+    background:${Base.Branco};
   }
 
   .nome{
-    width: 100%;
+    width: 200px;
     border-radius: 15px;
     border: 1px solid ${Base.Branco};
     color: white;
     padding: 5px 15px;
     font-size: 12px;
+    display: inline-block;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    direction: ltr;
   }
 
   .perfil-edit{
