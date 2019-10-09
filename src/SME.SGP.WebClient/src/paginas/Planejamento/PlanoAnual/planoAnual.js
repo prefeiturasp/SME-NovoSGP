@@ -7,6 +7,7 @@ import {
   setBimestresErro,
   setLimpartBimestresErro,
   LimparBimestres,
+  SalvarBimestres,
 } from '../../../redux/modulos/planoAnual/action';
 import Grid from '../../../componentes/grid';
 import Button from '../../../componentes/button';
@@ -23,6 +24,8 @@ import history from '../../../servicos/history';
 import { URL_HOME } from '../../../constantes/url';
 import { erro, sucesso } from '../../../servicos/alertas';
 import ModalConteudoHtml from '../../../componentes/modalConteudoHtml';
+import PlanoAnualHelper from './planoAnualHelper';
+import FiltroPlanoAnualDto from '~/dtos/filtroPlanoAnualDto';
 import {
   Titulo,
   TituloAno,
@@ -54,7 +57,7 @@ export default function PlanoAnual() {
 
   const ehMedio =
     turmaSelecionada[0] &&
-      turmaSelecionada[0].codModalidade === modalidade.ENSINO_MEDIO
+    turmaSelecionada[0].codModalidade === modalidade.ENSINO_MEDIO
       ? true
       : false;
 
@@ -110,34 +113,35 @@ export default function PlanoAnual() {
       dispatch(Post(BimestresParaEnviar));
   };
 
-  const verificarSeEhEdicao = () => {
+  const verificarSeEhEdicao = async () => {
     if (!turmaSelecionada[0]) return;
 
-    Service.validarPlanoExistente({
-      AnoLetivo: anoLetivo,
-      Bimestre: 1,
-      EscolaId: escolaId,
-      TurmaId: turmaId,
-    })
-      .then(ehEdicao => {
-        Service.getDisciplinasProfessor(usuario.rf, turmaId)
-          .then(res => {
-            ObtenhaBimestres(_.cloneDeep(res), !ehEdicao);
-          })
-          .catch(() => {
-            erro(`Não foi possivel obter as disciplinas do professor`);
-          });
-      })
-      .catch(() => {
-        erro(
-          `Não foi possivel obter os dados do ${
-          ehEja ? 'plano semestral' : 'plano anual'
-          }`
-        );
-      });
-  };
+    dispatch(LimparBimestres());
 
-  const ObtenhaNomebimestre = index => `${index}º Bimestre`;
+    const filtro = new FiltroPlanoAnualDto(anoLetivo, 1, escolaId, turmaId);
+
+    const ehEdicao = await PlanoAnualHelper.verificarEdicao(filtro, ehEja);
+
+    const disciplinas = await PlanoAnualHelper.ObterDisciplinasObjetivo(
+      usuario.rf,
+      turmaId
+    );
+
+    const semObjetivos = disciplinas.filter(x => !x.possuiObjetivos).length > 0;
+
+    setDisciplinaSemObjetivo(semObjetivos);
+
+    const bimestres = PlanoAnualHelper.ObtenhaBimestres(
+      disciplinas,
+      ehEdicao,
+      filtro,
+      anoEscolar,
+      LayoutEspecial,
+      ehEja
+    );
+
+    dispatch(SalvarBimestres(bimestres));
+  };
 
   const confirmarCancelamento = () => {
     if (modalConfirmacaoVisivel.sairTela) {
@@ -241,48 +245,6 @@ export default function PlanoAnual() {
       });
   };
 
-  const ObtenhaBimestres = (disciplinas = [], ehEdicao) => {
-    dispatch(LimparBimestres());
-
-    let semObjetivo = false;
-
-    const qtdBimestres = ehEja ? 2 : 4;
-
-    const disciplinasComObjetivo = disciplinas.filter(
-      disciplina => disciplina.possuiObjetivos
-    );
-
-    if (disciplinasComObjetivo.length === 0) semObjetivo = true;
-
-    for (let i = 1; i <= qtdBimestres; i++) {
-      const Nome = ObtenhaNomebimestre(i);
-
-      const objetivo = '';
-
-      const bimestre = {
-        anoLetivo,
-        anoEscolar,
-        escolaId,
-        turmaId,
-        ehExpandido: false,
-        indice: i,
-        nome: Nome,
-        materias: disciplinas,
-        objetivo: objetivo,
-        paraEnviar: false,
-        recarregarPlanoAnual: false,
-        ehEdicao,
-        LayoutEspecial: LayoutEspecial || semObjetivo,
-        ehExpandido: ehEdicao,
-        jaSincronizou: false,
-      };
-
-      dispatch(Salvar(i, bimestre));
-    }
-
-    setDisciplinaSemObjetivo(semObjetivo);
-  };
-
   const ObtenhaTurmasCopiarConteudo = async () => {
     const turmasIrmas = usuario.turmasUsuario.filter(
       turma =>
@@ -327,23 +289,23 @@ export default function PlanoAnual() {
   const modalCopiarConteudoAtencaoTexto = () => {
     const turmasReportar = usuario.turmasUsuario
       ? usuario.turmasUsuario
-        .filter(
-          turma =>
-            modalCopiarConteudo.turmasSelecionadas.includes(
-              `${turma.codigo}`
-            ) &&
-            modalCopiarConteudo.turmasComPlanoAnual.includes(turma.codigo)
-        )
-        .map(turma => turma.turma)
+          .filter(
+            turma =>
+              modalCopiarConteudo.turmasSelecionadas.includes(
+                `${turma.codigo}`
+              ) &&
+              modalCopiarConteudo.turmasComPlanoAnual.includes(turma.codigo)
+          )
+          .map(turma => turma.turma)
       : [];
 
     return turmasReportar.length > 1
       ? `As turmas ${turmasReportar.join(
-        ', '
-      )} já possuem plano anual que serão sobrescritos ao realizar a cópia. Deseja continuar?`
+          ', '
+        )} já possuem plano anual que serão sobrescritos ao realizar a cópia. Deseja continuar?`
       : `A turma ${
-      turmasReportar[0]
-      } já possui plano anual que será sobrescrito ao realizar a cópia. Deseja continuar?`;
+          turmasReportar[0]
+        } já possui plano anual que será sobrescrito ao realizar a cópia. Deseja continuar?`;
   };
 
   const onChangeCopiarConteudo = selecionadas => {
@@ -531,13 +493,11 @@ export default function PlanoAnual() {
           <TituloAno>
             {` / ${anoLetivo ? anoLetivo : new Date().getFullYear()}`}
           </TituloAno>
-          {
-            bimestres.filter(bimestre => bimestre.migrado).length > 0 && (
-              <RegistroMigrado className="float-right">
-                Registro Migrado
-              </RegistroMigrado>
-            )
-          }
+          {bimestres.filter(bimestre => bimestre.migrado).length > 0 && (
+            <RegistroMigrado className="float-right">
+              Registro Migrado
+            </RegistroMigrado>
+          )}
         </Titulo>
       </Grid>
       <Card className="col-md-12 p-0" mx="mx-0">
@@ -580,15 +540,15 @@ export default function PlanoAnual() {
         <Grid cols={12}>
           {bimestres
             ? bimestres.map(bim => {
-              return (
-                <Bimestre
-                  disabled={ehDisabled}
-                  key={bim.indice}
-                  indice={bim.indice}
-                  modalidadeEja={ehEja}
-                />
-              );
-            })
+                return (
+                  <Bimestre
+                    disabled={ehDisabled}
+                    key={bim.indice}
+                    indice={bim.indice}
+                    modalidadeEja={ehEja}
+                  />
+                );
+              })
             : null}
         </Grid>
       </Card>

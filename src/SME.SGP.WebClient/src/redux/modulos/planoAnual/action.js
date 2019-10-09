@@ -11,9 +11,16 @@ export function Salvar(indice, bimestre) {
   };
 }
 
+export function SalvarBimestres(bimestres) {
+  return {
+    type: '@bimestres/SalvarTodosBimestres',
+    payload: bimestres,
+  };
+}
+
 export function LimparBimestres() {
   return {
-    type: '@bimestres/LimparBimestres'
+    type: '@bimestres/LimparBimestres',
   };
 }
 
