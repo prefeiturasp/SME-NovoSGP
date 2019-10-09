@@ -66,5 +66,17 @@ namespace SME.SGP.Dados.Repositorios
                 .AsList()
                 .FirstOrDefault();
         }
+
+        public IEnumerable<SupervisorEscolasDreDto> ObtemSupervisoresPorUe(string ueId)
+        {
+            StringBuilder query = new StringBuilder();
+
+            query.AppendLine("select id, dre_id, escola_id, supervisor_id, criado_em, criado_por, alterado_em, alterado_por ");
+            query.AppendLine("from supervisor_escola_dre sed");
+            query.AppendLine("where escola_id = @ueId");
+
+            return database.Conexao.Query<SupervisorEscolasDreDto>(query.ToString(), new { ueId })
+                .AsList();
+        }
     }
 }

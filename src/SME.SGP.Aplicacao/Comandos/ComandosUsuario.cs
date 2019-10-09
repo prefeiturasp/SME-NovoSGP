@@ -1,6 +1,5 @@
 ﻿using Microsoft.Extensions.Configuration;
 using SME.SGP.Aplicacao.Integracoes;
-using SME.SGP.Aplicacao.Integracoes;
 using SME.SGP.Aplicacao.Servicos;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
@@ -106,38 +105,6 @@ namespace SME.SGP.Aplicacao
             return retornoAutenticacaoEol.Item1;
         }
 
-        public string SolicitarRecuperacaoSenha(string login)
-        {
-            var usuario = repositorioUsuario.ObterPorCodigoRfLogin(null, login);
-            if (usuario == null)
-            {
-                throw new NegocioException("Usuário não encontrado.");
-            }
-            usuario.IniciarRecuperacaoDeSenha();
-            repositorioUsuario.Salvar(usuario);
-            EnviarEmailRecuperacao(usuario);
-            return usuario.Email;
-        }
-
-        private void EnviarEmailRecuperacao(Usuario usuario)
-        {
-            string caminho = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), @"ModelosEmail\RecuperacaoSenha.txt");
-            var textoArquivo = File.ReadAllText(caminho);
-            var urlFrontEnd = configuration["UrlFrontEnt"];
-            var textoEmail = textoArquivo
-                .Replace("#NOME", usuario.Nome)
-                .Replace("#RF", usuario.CodigoRf)
-                .Replace("#URL_BASE#", urlFrontEnd)
-                .Replace("#LINK", $"{urlFrontEnd}redefinir-senha/{usuario.TokenRecuperacaoSenha.ToString()}");
-            servicoEmail.Enviar(usuario.Email, "Recuperação de senha do SGP", textoEmail);
-        }
-
-        public bool TokenRecuperacaoSenhaEstaValido(Guid token)
-        {
-            Usuario usuario = repositorioUsuario.ObterPorTokenRecuperacaoSenha(token);
-            return usuario != null && usuario.TokenRecuperacaoSenhaEstaValido();
-        }
-
         public async Task<string> ModificarPerfil(string guid)
         {
             string loginAtual = servicoTokenJwt.ObterLoginAtual();
@@ -159,6 +126,39 @@ namespace SME.SGP.Aplicacao
 
                 return servicoTokenJwt.GerarToken(loginAtual, listaPermissoes);
             }
+        }
+
+        public string SolicitarRecuperacaoSenha(string login)
+        {
+            var usuario = repositorioUsuario.ObterPorCodigoRfLogin(null, login);
+            if (usuario == null)
+            {
+                throw new NegocioException("Usuário não encontrado.");
+            }
+            usuario.IniciarRecuperacaoDeSenha();
+            repositorioUsuario.Salvar(usuario);
+            EnviarEmailRecuperacao(usuario);
+            return usuario.Email;
+        }
+
+        public bool TokenRecuperacaoSenhaEstaValido(Guid token)
+        {
+            Usuario usuario = repositorioUsuario.ObterPorTokenRecuperacaoSenha(token);
+            return usuario != null && usuario.TokenRecuperacaoSenhaEstaValido();
+        }
+
+        private void EnviarEmailRecuperacao(Usuario usuario)
+        {
+            string caminho = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), @"ModelosEmail/RecuperacaoSenha.txt");
+            Console.WriteLine(caminho);
+            var textoArquivo = File.ReadAllText(caminho);
+            var urlFrontEnd = configuration["UrlFrontEnt"];
+            var textoEmail = textoArquivo
+                .Replace("#NOME", usuario.Nome)
+                .Replace("#RF", usuario.CodigoRf)
+                .Replace("#URL_BASE#", urlFrontEnd)
+                .Replace("#LINK", $"{urlFrontEnd}redefinir-senha/{usuario.TokenRecuperacaoSenha.ToString()}");
+            servicoEmail.Enviar(usuario.Email, "Recuperação de senha do SGP", textoEmail);
         }
     }
 }
