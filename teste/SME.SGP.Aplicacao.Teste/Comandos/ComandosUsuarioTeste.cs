@@ -46,25 +46,36 @@ namespace SME.SGP.Aplicacao.Teste.Comandos
             Assert.True(!retorno.DeveAtualizarEmail);
         }
 
-        //public async void Deve_Atualizar_Email_Por_Login()
-        //{
-        //    //ARRANGE
-        //    var loginTeste = "loginTeste";
-        //    var usuario = new Usuario() { Email = "teste@teste.com" };
-        //    repositorioUsuario.Setup(a => a.ObterPorCodigoRfLogin(string.Empty, loginTeste)).Returns(usuario);
-        //    repositorioUsuario.Setup(a => a.ExisteUsuarioComMesmoEmail(loginTeste, 0)).Returns(false);
+        [Fact]
+        public async void Deve_Atualizar_Email_Por_Login()
+        {
+            //ARRANGE
+            var codigoRfTeste = "loginTeste";
 
-        //    servicoUsuario.Setup(a => a.AlterarEmailUsuarioPorLogin(loginTeste, "jose@jose.com"))
-        //        .Returns(Task.FromResult(usuario));
+            servicoUsuario.Setup(a => a.AlterarEmailUsuarioPorRfOuInclui(codigoRfTeste, "jose@jose.com"));
+            servicoTokenJwt.Setup(a => a.ObterLoginAtual()).Returns(codigoRfTeste);
 
-        //    servicoEOL.Setup(a => a.ObterPerfisPorLogin(loginTeste)).Returns(Task.FromResult(new Dto.UsuarioEolAutenticacaoRetornoDto() { Status = Dto.AutenticacaoStatusEol.Ok }));
+            //ACT
+            await comandosUsuario.AlterarEmailUsuarioLogado("jose@jose.com");
 
-        //    //ACT
-        //    var retorno = await comandosUsuario.ReiniciarSenha(codifoRfTeste);
+            //ASSERT
+            Assert.True(true);
+        }
 
-        //    //ASSERT
-        //    Assert.True(retorno.DeveAtualizarEmail);
-        //}
+        [Fact]
+        public async void Deve_Atualizar_Email_Por_RF()
+        {
+            //ARRANGE
+            var codigoRfTeste = "loginTeste";
+
+            servicoUsuario.Setup(a => a.AlterarEmailUsuarioPorRfOuInclui(codigoRfTeste, "jose@jose.com"));
+
+            //ACT
+            await comandosUsuario.AlterarEmail(new Dto.AlterarEmailDto() { NovoEmail = "jose@jose.com" }, codigoRfTeste);
+
+            //ASSERT
+            Assert.True(true);
+        }
 
         [Fact]
         public async void Deve_Retornar_Atualizar_Email_Ao_Reiniciar_Senha()
