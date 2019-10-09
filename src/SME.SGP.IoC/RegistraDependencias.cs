@@ -48,6 +48,7 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IConsultasNotificacao, ConsultasNotificacao>();
             services.TryAddScoped<IConsultasWorkflowAprovacao, ConsultasWorkflowAprovacao>();
             services.TryAddScoped<IConsultasUnidadesEscolares, ConsultasUnidadesEscolares>();
+            services.TryAddScoped<IConsultasTipoCalendarioEscolar, ConsultasTipoCalendarioEscolar>();
         }
 
         private static void RegistrarContextos(IServiceCollection services)
