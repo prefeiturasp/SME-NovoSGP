@@ -141,12 +141,6 @@ namespace SME.SGP.Aplicacao
             return usuario.Email;
         }
 
-        public void TesteEmail()
-        {
-            var usuario = repositorioUsuario.ObterPorId(3);
-            EnviarEmailRecuperacao(usuario);
-        }
-
         public bool TokenRecuperacaoSenhaEstaValido(Guid token)
         {
             Usuario usuario = repositorioUsuario.ObterPorTokenRecuperacaoSenha(token);
@@ -155,8 +149,10 @@ namespace SME.SGP.Aplicacao
 
         private void EnviarEmailRecuperacao(Usuario usuario)
         {
-            string caminho = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), @"ModelosEmail\RecuperacaoSenha.txt");
-            Console.WriteLine(caminho);
+            string caminho = $"ModelosEmail/RecuperacaoSenha.txt";
+#if DEBUG
+            caminho = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), @"ModelosEmail/RecuperacaoSenha.txt");
+#endif
             var textoArquivo = File.ReadAllText(caminho);
             var urlFrontEnd = configuration["UrlFrontEnt"];
             var textoEmail = textoArquivo
