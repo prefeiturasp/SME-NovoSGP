@@ -21,7 +21,7 @@ namespace SME.SGP.Dados.Repositorios
             query.AppendLine("select ");
             query.AppendLine("id, ");
             query.AppendLine("nome, ");
-            query.AppendLine("ano-letivo, ");
+            query.AppendLine("ano_letivo, ");
             query.AppendLine("periodo ");
             query.AppendLine("from tipo_calendario_escolar");
 
