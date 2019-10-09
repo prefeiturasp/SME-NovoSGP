@@ -30,7 +30,6 @@
   <ItemGroup>
     <ProjectReference Include="..\..\src\SME.SGP.Api\SME.SGP.Api.csproj" />
     <ProjectReference Include="..\..\src\SME.SGP.Aplicacao\SME.SGP.Aplicacao.csproj" />
-    <ProjectReference Include="..\..\src\SME.SGP.Dto\SME.SGP.Dto.csproj" />
   </ItemGroup>
 
 </Project>

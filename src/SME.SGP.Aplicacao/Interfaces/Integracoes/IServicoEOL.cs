@@ -1,5 +1,5 @@
 ﻿using SME.SGP.Aplicacao.Integracoes.Respostas;
-using SME.SGP.Dto;
+using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
