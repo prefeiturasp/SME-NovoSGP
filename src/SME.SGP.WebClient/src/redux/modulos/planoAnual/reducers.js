@@ -19,6 +19,11 @@ export default function bimestres(state = INICIAL, action) {
         draft.bimestresErro = state.bimestresErro;
 
         break;
+      case '@bimestres/SalvarTodosBimestres':
+        draft.bimestres = action.payload;
+        draft.bimestresErro = state.bimestresErro;
+
+        break;
       case '@bimestres/PrePostBimestre':
         const paraEnvio = state.bimestres.filter(x => x.ehEdicao);
         paraEnvio.forEach(elem => {
@@ -114,7 +119,7 @@ export default function bimestres(state = INICIAL, action) {
 
       case '@bimestres/LimparBimestres':
         draft.bimestres = [];
-        
+
         break;
 
       case '@bimestres/BimestresErro':
