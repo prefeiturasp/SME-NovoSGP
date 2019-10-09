@@ -48,6 +48,18 @@ namespace SME.SGP.Aplicacao
             this.configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
         }
 
+        //  TODO: aplicar validações permissão de acesso
+        public async Task AlterarEmail(AlterarEmailDto alterarEmailDto, string codigoRf)
+        {
+            await servicoUsuario.AlterarEmailUsuarioPorRfOuInclui(codigoRf, alterarEmailDto.NovoEmail);
+        }
+
+        public async Task AlterarEmailUsuarioLogado(string novoEmail)
+        {
+            var login = servicoTokenJwt.ObterLoginAtual();
+            await servicoUsuario.AlterarEmailUsuarioPorLogin(login, novoEmail);
+        }
+
         public async Task AlterarSenhaComTokenRecuperacao(RecuperacaoSenhaDto recuperacaoSenhaDto)
         {
             Usuario usuario = repositorioUsuario.ObterPorTokenRecuperacaoSenha(recuperacaoSenhaDto.Token);
@@ -126,6 +138,23 @@ namespace SME.SGP.Aplicacao
 
                 return servicoTokenJwt.GerarToken(loginAtual, listaPermissoes);
             }
+        }
+
+        public async Task<UsuarioReinicioSenhaDto> ReiniciarSenha(string codigoRf)
+        {
+            var usuario = servicoUsuario.ObterUsuarioPorCodigoRfLoginOuAdiciona(codigoRf);
+
+            var retorno = new UsuarioReinicioSenhaDto();
+
+            if (!usuario.PodeReiniciarSenha())
+                retorno.DeveAtualizarEmail = true;
+            else
+            {
+                await servicoEOL.ReiniciarSenha(codigoRf);
+                retorno.DeveAtualizarEmail = false;
+            }
+
+            return retorno;
         }
 
         public string SolicitarRecuperacaoSenha(string login)

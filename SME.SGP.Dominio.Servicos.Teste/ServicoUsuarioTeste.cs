@@ -11,15 +11,19 @@ namespace SME.SGP.Dominio.Servicos.Teste
 {
     public class ServicoUsuarioTeste
     {
+        private readonly Mock<IRepositorioPrioridadePerfil> repositorioPrioridadePerfil;
         private readonly Mock<IRepositorioUsuario> repositorioUsuario;
         private readonly Mock<IServicoEOL> servicoEol;
         private readonly ServicoUsuario servicoUsuario;
+        private readonly Mock<IUnitOfWork> unitOfWork;
 
         public ServicoUsuarioTeste()
         {
             repositorioUsuario = new Mock<IRepositorioUsuario>();
             servicoEol = new Mock<IServicoEOL>();
-            servicoUsuario = new ServicoUsuario(repositorioUsuario.Object, servicoEol.Object);
+            repositorioPrioridadePerfil = new Mock<IRepositorioPrioridadePerfil>();
+            unitOfWork = new Mock<IUnitOfWork>();
+            servicoUsuario = new ServicoUsuario(repositorioUsuario.Object, servicoEol.Object, repositorioPrioridadePerfil.Object, unitOfWork.Object);
         }
 
         [Fact]

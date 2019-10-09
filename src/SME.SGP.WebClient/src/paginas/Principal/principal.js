@@ -11,12 +11,10 @@ import {
   URL_PLANO_CICLO,
   URL_FREQ_PLANO_AULA,
 } from '../../constantes/url';
-import { salvarRf } from '../../redux/modulos/usuario/actions';
-import { store } from '../../redux';
 import ListaNotificacoes from './listaNotificacoes';
 import modalidade from '~/dtos/modalidade';
 
-const Principal = props => {
+const Principal = () => {
   const FREQUENCIA_TYPE = 'frequencia';
   const CICLOS_TYPE = 'ciclos';
   const ANUAL_TYPE = 'anual';
@@ -24,61 +22,41 @@ const Principal = props => {
   const [turmaSelecionada, setTurmaSelecionada] = useState(false);
   const [modalidadeEja, setModalidadeEja] = useState(false);
 
-  const filtroStore = useSelector(state => state.usuario);
-
-  useEffect(() => {
-    if (props.match.params.rf) {
-      const { rf } = props.match.params;
-      store.dispatch(salvarRf(rf));
-    }
-
-    validarFiltro();
-  }, []);
-
-  useEffect(() => {
-    validarFiltro();
-  }, [filtroStore]);
+  const usuario = useSelector(state => state.usuario);
 
   useEffect(() => {
     if (
-      filtroStore &&
-      filtroStore.turmaSelecionada &&
-      filtroStore.turmaSelecionada.length &&
-      filtroStore.turmaSelecionada[0].codModalidade == modalidade.EJA
+      usuario &&
+      usuario.turmaSelecionada &&
+      usuario.turmaSelecionada.length &&
+      usuario.turmaSelecionada[0].codModalidade == modalidade.EJA
     ) {
       setModalidadeEja(true);
     } else {
       setModalidadeEja(false);
     }
-  }, [filtroStore.turmaSelecionada]);
+  }, [usuario.turmaSelecionada]);
 
   const validarFiltro = () => {
-    if (!filtroStore.turmaSelecionada) {
+    if (!usuario.turmaSelecionada) {
       setTurmaSelecionada(false);
       setEscolaSelecionada(false);
       return;
     }
 
-    const temTurma = filtroStore.turmaSelecionada.length > 0;
+    const temTurma = usuario.turmaSelecionada.length > 0;
     const temEscola =
       temTurma &&
-      (filtroStore.turmaSelecionada[0].ue !== '' &&
-        typeof filtroStore.turmaSelecionada[0].ue !== 'undefined');
+      (usuario.turmaSelecionada[0].ue !== '' &&
+        typeof usuario.turmaSelecionada[0].ue !== 'undefined');
 
     setTurmaSelecionada(temTurma);
     setEscolaSelecionada(temEscola);
   };
 
   useEffect(() => {
-    if (props.match.params && props.match.params.rf) {
-      const { rf } = props.match.params;
-      store.dispatch(salvarRf(rf));
-    }
-  }, []);
-
-  useEffect(() => {
     validarFiltro();
-  }, [filtroStore]);
+  }, [usuario]);
 
   const cicloLiberado = () => {
     return escolaSelecionada;
@@ -101,10 +79,10 @@ const Principal = props => {
   `;
 
   const Dashboard = styled.div`
-    .alinhar-itens-topo{
+    .alinhar-itens-topo {
       align-items: initial !important;
     }
-    .card{
+    .card {
       height: 100% !important;
     }
   `;

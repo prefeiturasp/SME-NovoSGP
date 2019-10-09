@@ -10,6 +10,7 @@ namespace SME.SGP.Dominio.Servicos
     public class ServicoWorkflowAprovacao : IServicoWorkflowAprovacao
     {
         private readonly IRepositorioNotificacao repositorioNotificacao;
+        private readonly IRepositorioSupervisorEscolaDre repositorioSupervisorEscolaDre;
         private readonly IRepositorioWorkflowAprovacaoNivelNotificacao repositorioWorkflowAprovacaoNivelNotificacao;
         private readonly IServicoEOL servicoEOL;
         private readonly IServicoNotificacao servicoNotificacao;
@@ -19,7 +20,8 @@ namespace SME.SGP.Dominio.Servicos
 
         public ServicoWorkflowAprovacao(IUnitOfWork unitOfWork, IRepositorioNotificacao repositorioNotificacao,
             IRepositorioWorkflowAprovacaoNivelNotificacao repositorioWorkflowAprovacaoNivelNotificacao, IServicoEOL servicoEOL,
-            IServicoUsuario servicoUsuario, IServicoNotificacao servicoNotificacao, IRepositorioWorkflowAprovacaoNivel workflowAprovacaoNivel)
+            IServicoUsuario servicoUsuario, IServicoNotificacao servicoNotificacao, IRepositorioWorkflowAprovacaoNivel workflowAprovacaoNivel,
+            IRepositorioSupervisorEscolaDre repositorioSupervisorEscolaDre)
         {
             this.unitOfWork = unitOfWork ?? throw new System.ArgumentNullException(nameof(unitOfWork));
             this.repositorioNotificacao = repositorioNotificacao ?? throw new System.ArgumentNullException(nameof(repositorioNotificacao));
@@ -28,6 +30,7 @@ namespace SME.SGP.Dominio.Servicos
             this.servicoUsuario = servicoUsuario ?? throw new System.ArgumentNullException(nameof(servicoUsuario));
             this.servicoNotificacao = servicoNotificacao ?? throw new System.ArgumentNullException(nameof(servicoNotificacao));
             this.workflowAprovacaoNivel = workflowAprovacaoNivel ?? throw new System.ArgumentNullException(nameof(workflowAprovacaoNivel));
+            this.repositorioSupervisorEscolaDre = repositorioSupervisorEscolaDre ?? throw new System.ArgumentNullException(nameof(repositorioSupervisorEscolaDre));
         }
 
         public void Aprovar(WorkflowAprovacao workflow, bool aprovar, string observacao, long notificacaoId)
@@ -98,14 +101,27 @@ namespace SME.SGP.Dominio.Servicos
 
             if (nivel.Cargo.HasValue)
             {
-                var funcionariosRetornoEol = servicoEOL.ObterFuncionariosPorCargoUe(nivel.Workflow.UeId, (int)nivel.Cargo.Value).ToList();
-
-                if (funcionariosRetornoEol == null || funcionariosRetornoEol.Count() == 0)
-                    throw new NegocioException($"Não foram encontrados funcionários de cargo {nivel.Cargo.GetAttribute<DisplayAttribute>().Name} para a escola de código {nivel.Workflow.UeId} para enviar para o nível {nivel.Nivel}.");
-
-                foreach (var usuario in funcionariosRetornoEol)
+                if (nivel.Cargo == Cargo.Supervisor)
                 {
-                    usuarios.Add(servicoUsuario.ObterUsuarioPorCodigoRfLoginOuAdiciona(usuario.CodigoRf));
+                    var supervisoresEscola = repositorioSupervisorEscolaDre.ObtemSupervisoresPorUe(nivel.Workflow.UeId);
+                    if (supervisoresEscola == null || supervisoresEscola.Count() == 0)
+                        throw new NegocioException($"Não foram encontrados supervisores atribuídos para a escola de código {nivel.Workflow.UeId} para enviar para o nível {nivel.Nivel}.");
+
+                    foreach (var supervisorEscola in supervisoresEscola)
+                    {
+                        usuarios.Add(servicoUsuario.ObterUsuarioPorCodigoRfLoginOuAdiciona(supervisorEscola.SupervisorId));
+                    }
+                }
+                else
+                {
+                    var funcionariosRetornoEol = servicoEOL.ObterFuncionariosPorCargoUe(nivel.Workflow.UeId, (int)nivel.Cargo.Value);
+                    if (funcionariosRetornoEol == null || funcionariosRetornoEol.Count() == 0)
+                        throw new NegocioException($"Não foram encontrados funcionários de cargo {nivel.Cargo.GetAttribute<DisplayAttribute>().Name} para a escola de código {nivel.Workflow.UeId} para enviar para o nível {nivel.Nivel}.");
+
+                    foreach (var usuario in funcionariosRetornoEol)
+                    {
+                        usuarios.Add(servicoUsuario.ObterUsuarioPorCodigoRfLoginOuAdiciona(usuario.CodigoRf));
+                    }
                 }
             }
 
