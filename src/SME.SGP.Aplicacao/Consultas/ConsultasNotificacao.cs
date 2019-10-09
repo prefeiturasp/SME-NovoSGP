@@ -1,17 +1,18 @@
-﻿using SME.SGP.Dominio;
+﻿using Microsoft.AspNetCore.Http;
+using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
-using SME.SGP.Dto;
+using SME.SGP.Infra;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 
 namespace SME.SGP.Aplicacao
 {
-    public class ConsultasNotificacao : IConsultasNotificacao
+    public class ConsultasNotificacao : ConsultasBase, IConsultasNotificacao
     {
         private readonly IRepositorioNotificacao repositorioNotificacao;
 
-        public ConsultasNotificacao(IRepositorioNotificacao repositorioNotificacao, IRepositorioUsuario repositorioUsuario)
+        public ConsultasNotificacao(IRepositorioNotificacao repositorioNotificacao, IRepositorioUsuario repositorioUsuario, IHttpContextAccessor httpContext) : base(httpContext)
         {
             this.repositorioNotificacao = repositorioNotificacao ?? throw new System.ArgumentNullException(nameof(repositorioNotificacao));
         }
@@ -20,7 +21,7 @@ namespace SME.SGP.Aplicacao
         {
             var retorno = repositorioNotificacao.Obter(filtroNotificacaoDto.DreId,
                 filtroNotificacaoDto.UeId, (int)filtroNotificacaoDto.Status, filtroNotificacaoDto.TurmaId, filtroNotificacaoDto.UsuarioRf,
-                (int)filtroNotificacaoDto.Tipo, (int)filtroNotificacaoDto.Categoria, filtroNotificacaoDto.Titulo, filtroNotificacaoDto.Codigo, filtroNotificacaoDto.AnoLetivo);
+                (int)filtroNotificacaoDto.Tipo, (int)filtroNotificacaoDto.Categoria, filtroNotificacaoDto.Titulo, filtroNotificacaoDto.Codigo, filtroNotificacaoDto.AnoLetivo, Paginacao);
 
             return from r in retorno
                    select new NotificacaoBasicaDto()

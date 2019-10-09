@@ -2,6 +2,7 @@ using Dapper;
 using SME.SGP.Dados.Contexto;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
+using SME.SGP.Infra;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -14,40 +15,8 @@ namespace SME.SGP.Dados.Repositorios
         {
         }
 
-        public IEnumerable<Notificacao> ObterNotificacoesPorAnoLetivoERf(int anoLetivo, string usuarioRf, int limite)
-        {
-            var query = new StringBuilder();
-
-            query.AppendLine("select n.* from notificacao n");
-            query.AppendLine("left join usuario u");
-            query.AppendLine("on n.usuario_id = u.id");
-            query.AppendLine("where u.rf_codigo = @usuarioRf");
-            query.AppendLine("and EXTRACT(year FROM n.criado_em) = @anoLetivo");
-            query.AppendLine("and excluida = @excluida");
-            query.AppendLine("order by n.status asc, n.criado_em desc");
-            query.AppendLine("limit @limite");
-
-
-            return database.Conexao.Query<Notificacao>(query.ToString(), new { anoLetivo, usuarioRf, limite, excluida = false });
-        }
-
-        public int ObterQuantidadeNotificacoesNaoLidasPorAnoLetivoERf(int anoLetivo, string usuarioRf)
-        {
-            var query = new StringBuilder();
-
-            query.AppendLine("select count(*) from notificacao n");
-            query.AppendLine("left join usuario u");
-            query.AppendLine("on n.usuario_id = u.id");
-            query.AppendLine("where u.rf_codigo = @usuarioRf");
-            query.AppendLine("and excluida = @excluida");
-            query.AppendLine("and n.status = @naoLida");
-            query.AppendLine("and EXTRACT(year FROM n.criado_em) = @anoLetivo");
-
-            return database.Conexao.QueryFirst<int>(query.ToString(), new { anoLetivo, usuarioRf, excluida = false, naoLida = (int)NotificacaoStatus.Pendente });
-        }
-
         public IEnumerable<Notificacao> Obter(string dreId, string ueId, int statusId,
-            string turmaId, string usuarioRf, int tipoId, int categoriaId, string titulo, long codigo, int anoLetivo)
+            string turmaId, string usuarioRf, int tipoId, int categoriaId, string titulo, long codigo, int anoLetivo, Paginacao paginacao)
         {
             var query = new StringBuilder();
 
@@ -92,7 +61,26 @@ namespace SME.SGP.Dados.Repositorios
 
             query.AppendLine("order by id desc");
 
-            return database.Conexao.Query<Notificacao>(query.ToString(), new { dreId, ueId, turmaId, statusId, tipoId, usuarioRf, categoriaId, titulo, codigo, anoLetivo });
+            if (paginacao.QuantidadeRegistros != 0)
+                query.AppendLine("OFFSET @registrosIgnorados ROWS FETCH NEXT  @registros ROWS ONLY");
+
+            return database.Conexao.Query<Notificacao>(query.ToString(), new { dreId, ueId, turmaId, statusId, tipoId, usuarioRf, categoriaId, titulo, codigo, anoLetivo, registrosIgnorados = paginacao.QuantidadeRegistrosIgnorados, registros = paginacao.QuantidadeRegistros });
+        }
+
+        public IEnumerable<Notificacao> ObterNotificacoesPorAnoLetivoERf(int anoLetivo, string usuarioRf, int limite)
+        {
+            var query = new StringBuilder();
+
+            query.AppendLine("select n.* from notificacao n");
+            query.AppendLine("left join usuario u");
+            query.AppendLine("on n.usuario_id = u.id");
+            query.AppendLine("where u.rf_codigo = @usuarioRf");
+            query.AppendLine("and EXTRACT(year FROM n.criado_em) = @anoLetivo");
+            query.AppendLine("and excluida = @excluida");
+            query.AppendLine("order by n.status asc, n.criado_em desc");
+            query.AppendLine("limit @limite");
+
+            return database.Conexao.Query<Notificacao>(query.ToString(), new { anoLetivo, usuarioRf, limite, excluida = false });
         }
 
         public override Notificacao ObterPorId(long id)
@@ -119,6 +107,21 @@ namespace SME.SGP.Dados.Repositorios
 
                     return notificacao;
                 }, param: new { id }).FirstOrDefault();
+        }
+
+        public int ObterQuantidadeNotificacoesNaoLidasPorAnoLetivoERf(int anoLetivo, string usuarioRf)
+        {
+            var query = new StringBuilder();
+
+            query.AppendLine("select count(*) from notificacao n");
+            query.AppendLine("left join usuario u");
+            query.AppendLine("on n.usuario_id = u.id");
+            query.AppendLine("where u.rf_codigo = @usuarioRf");
+            query.AppendLine("and excluida = @excluida");
+            query.AppendLine("and n.status = @naoLida");
+            query.AppendLine("and EXTRACT(year FROM n.criado_em) = @anoLetivo");
+
+            return database.Conexao.QueryFirst<int>(query.ToString(), new { anoLetivo, usuarioRf, excluida = false, naoLida = (int)NotificacaoStatus.Pendente });
         }
 
         public long ObterUltimoCodigoPorAno(int ano)

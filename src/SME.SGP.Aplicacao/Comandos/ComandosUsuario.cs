@@ -3,7 +3,7 @@ using SME.SGP.Aplicacao.Integracoes;
 using SME.SGP.Aplicacao.Servicos;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
-using SME.SGP.Dto;
+using SME.SGP.Infra;
 using System;
 using System.IO;
 using System.Linq;
