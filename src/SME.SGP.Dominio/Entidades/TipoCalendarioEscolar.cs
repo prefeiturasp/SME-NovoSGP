@@ -9,6 +9,7 @@ namespace SME.SGP.Dominio
         public int AnoLetivo { get; set; }
         public string Nome { get; set; }
         public Periodo Periodo { get; set; }
-        public bool Ativo { get; set; }
+        public bool Situacao { get; set; }
+        public Modalidade Modalidade { get; set; }
     }
 }

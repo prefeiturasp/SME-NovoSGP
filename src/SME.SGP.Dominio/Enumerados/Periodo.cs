@@ -1,12 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using System.ComponentModel.DataAnnotations;
 
 namespace SME.SGP.Dominio
 {
     public enum Periodo
     {
-        Anual = 0,
-        Semestral = 1
+        [Display(Name = "Anual")]
+        Anual = 1,
+
+        [Display(Name = "Semestral")]
+        Semestral = 2
     }
 }
