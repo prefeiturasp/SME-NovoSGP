@@ -18,7 +18,7 @@ const Sider = () => {
 
   const usuario = useSelector(store => store.usuario);
 
-  const subMenusPrincipais = ['subDiarioClasse', 'subPlanejamento', 'subFechamento', 'subRelatorios', 'subGestao', 'subConfiguracoes'];
+  const subMenusPrincipais = ['subDiarioClasse', 'subPlanejamento', 'subFechamento', 'subRelatorios', 'subGestao', 'subConfiguracoes', 'calendario-escolar'];
 
   useEffect(() => {
     verificaSelecaoMenu(NavegacaoStore.rotaAtiva);
@@ -198,7 +198,7 @@ const Sider = () => {
                   <span className="menuItem">{ modalidadeEja ? 'Plano de Etapa' : 'Plano de Ciclo'}</span>
                   <Link
                     to="/planejamento/plano-ciclo"
-                    className="nav-link text-white"
+                    className="text-white"
                     id="linkPlanoCiclo"
                   />
                 </Menu.Item>
@@ -206,7 +206,7 @@ const Sider = () => {
                   <span className="menuItem">{ modalidadeEja ? 'Plano Semestral' : 'Plano Anual'}</span>
                   <Link
                     to="/planejamento/plano-anual"
-                    className="nav-link text-white"
+                    className="text-white"
                     id="linkPlanoAnual"
                   />
                 </Menu.Item>
@@ -277,6 +277,48 @@ const Sider = () => {
                 </Menu.Item>
               </SubMenu>
               <SubMenu
+                id="calendario-escolar"
+                key="subCalendarioEscolar"
+                onMouseEnter={(e) => alterarPosicaoJanelaPopup('calendario-escolar', 9)}
+                title={
+                  <div className="item-menu-retraido">
+                    <i
+                      className={`fas fa-calendar-alt ${
+                        NavegacaoStore.retraido ? 'icons-retraido' : 'icons'
+                        }`}
+                    />
+                    <span>Calendário Escolar</span>
+                  </div>
+                }>
+                <Menu.Item key="80" id="calCalendarioEscolar">
+                  <span className="menuItem">Calendário Escolar</span>
+                </Menu.Item>
+                <Menu.Item key="81" id="calCalendarioProfessor">
+                  <span className="menuItem">Calendário do Professor</span>
+                </Menu.Item>
+                <Menu.Item key="82" id="calTipoCalendárioEscolar">
+                  <span className="menuItem">Tipo de Calendário Escolar</span>
+                </Menu.Item>
+                <Menu.Item key="83" id="calPeriodosEscolares">
+                  <span className="menuItem">Períodos Escolares</span>
+                </Menu.Item>
+                <Menu.Item key="84" id="calPeriodosFechamentoAbertura" style={{lineHeight: '18px !important'}}>
+                  <span className="menuItem">Períodos de fechamento (Abertura)</span>
+                </Menu.Item>
+                <Menu.Item key="85" id="calPeriodosFechamentoReabertura">
+                  <span className="menuItem">Períodos de fechamento (Reabertura)</span>
+                </Menu.Item>
+                <Menu.Item key="86" id="calTipoFeriados">
+                  <span className="menuItem">Tipo de Feriado</span>
+                </Menu.Item>
+                <Menu.Item key="87" id="calTipoEvento">
+                  <span className="menuItem">Tipo de Evento</span>
+                </Menu.Item>
+                <Menu.Item key="88" id="calEventos">
+                  <span className="menuItem">Eventos</span>
+                </Menu.Item>
+              </SubMenu>
+              <SubMenu
                 id="gestao"
                 key="subGestao"
                 onMouseEnter={(e) => alterarPosicaoJanelaPopup('gestao', 5)}
@@ -311,7 +353,7 @@ const Sider = () => {
                   <span className="menuItem">Atribuição Supervisor</span>
                   <Link
                     to="/gestao/atribuicao-supervisor-lista"
-                    className="nav-link text-white"
+                    className="text-white"
                     id="linkAtribuicaoSupervisor"
                   />
                 </Menu.Item>
