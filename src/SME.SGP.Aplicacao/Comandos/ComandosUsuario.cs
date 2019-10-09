@@ -7,7 +7,6 @@ using SME.SGP.Dto;
 using System;
 using System.IO;
 using System.Linq;
-using System.Reflection;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
@@ -178,10 +177,7 @@ namespace SME.SGP.Aplicacao
 
         private void EnviarEmailRecuperacao(Usuario usuario)
         {
-            string caminho = $"ModelosEmail/RecuperacaoSenha.txt";
-#if DEBUG
-            caminho = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), @"ModelosEmail/RecuperacaoSenha.txt");
-#endif
+            string caminho = $"{Directory.GetCurrentDirectory()}/wwwroot/ModelosEmail/RecuperacaoSenha.txt";
             var textoArquivo = File.ReadAllText(caminho);
             var urlFrontEnd = configuration["UrlFrontEnt"];
             var textoEmail = textoArquivo
