@@ -81,6 +81,22 @@ namespace SME.SGP.Api.Controllers
             return Ok();
         }
 
+        [HttpPut("{codigoRf}/reiniciar-senha")]
+        [ProducesResponseType(typeof(UsuarioReinicioSenhaDto), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [ProducesResponseType(typeof(UsuarioReinicioSenhaDto), 601)]
+        [AllowAnonymous]
+        public async Task<IActionResult> ReiniciarSenha(string codigoRf)
+        {
+            if (string.IsNullOrEmpty(codigoRf))
+                throw new NegocioException("Informe o Código Rf.");
+
+            var retorno = await comandosUsuario.ReiniciarSenha(codigoRf);
+            if (retorno.DeveAtualizarEmail)
+                return StatusCode(601, retorno);
+            else return Ok(retorno);
+        }
+
         [HttpPost("solicitar-recuperacao-senha")]
         [ProducesResponseType(typeof(string), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]

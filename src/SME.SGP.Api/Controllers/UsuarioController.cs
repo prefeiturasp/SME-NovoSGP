@@ -18,6 +18,17 @@ namespace SME.SGP.Api.Controllers
             this.comandosUsuario = comandosUsuario;
         }
 
+        [Route("{codigoRf}/email")]
+        [HttpPut]
+        [ProducesResponseType(200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 601)]
+        public async Task<IActionResult> AlterarEmail([FromBody]AlterarEmailDto novoEmail, string codigoRf)
+        {
+            await comandosUsuario.AlterarEmail(novoEmail, codigoRf);
+            return Ok();
+        }
+
         [Route("autenticado/email")]
         [HttpPut]
         [ProducesResponseType(200)]

@@ -198,9 +198,12 @@ export const MenuScope = styled.div`
 
 
   .ant-menu-item {
-    padding-left: 34px !important;
-    font-size: 12px !important;
     padding-left: 40px !important;
+    font-size: 12px !important;
+    height: auto !important;
+    line-height: normal !important;
+    padding-top: 10px !important;
+    padding-bottom: 10px !important;
   }
 
   .ant-menu-item-selected{
@@ -233,6 +236,7 @@ export const MenuScope = styled.div`
 
   .menuItem{
     color: ${Base.CinzaMenuItem} !important;
+    white-space: normal;
   }
 
   .ant-menu-submenu-title:hover:not(:disabled), .ant-menu-inline.ant-menu-sub, .ant-menu-submenu-open{
