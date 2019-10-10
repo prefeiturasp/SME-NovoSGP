@@ -6,11 +6,20 @@ namespace SME.SGP.Aplicacao
 {
     public interface IComandosUsuario
     {
+        Task AlterarEmail(AlterarEmailDto alterarEmailDto, string codigoRf);
+
+        Task AlterarEmailUsuarioLogado(string novoEmail);
+
         Task AlterarSenhaComTokenRecuperacao(RecuperacaoSenhaDto recuperacaoSenhaDto);
+
         Task<UsuarioAutenticacaoRetornoDto> Autenticar(string login, string senha);
+
+        Task<string> ModificarPerfil(string guid);
+
+        Task<UsuarioReinicioSenhaDto> ReiniciarSenha(string codigoRf);
+
         string SolicitarRecuperacaoSenha(string login);
 
         bool TokenRecuperacaoSenhaEstaValido(Guid token);
-        Task<string> ModificarPerfil(string guid);
     }
 }

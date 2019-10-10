@@ -4,17 +4,6 @@
     <TargetFramework>netstandard2.0</TargetFramework>
   </PropertyGroup>
 
-
-  <ItemGroup>
-    <None Remove="ModelosEmail\RecuperacaoSenha.txt" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Content Include="ModelosEmail\RecuperacaoSenha.txt">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-  </ItemGroup>
-
   <ItemGroup>
     <PackageReference Include="MailKit" Version="2.3.1.6" />
   <PackageReference Include="MailKit" Version="2.3.1.6" />

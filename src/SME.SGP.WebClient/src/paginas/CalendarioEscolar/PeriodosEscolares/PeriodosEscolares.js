@@ -184,7 +184,7 @@ const PeriodosEscolares = () => {
           validateOnBlur
         >
           {form => (
-            <Form>
+            <Form className="col-md-12">
               <div className="row">
                 <div className="col-sm-12 col-md-5 col-lg-4 col-xl-4 mb-4">
                   <SelectComponent
