@@ -12,8 +12,13 @@ import NotificacoesLista from '~/paginas/Notificacoes/Lista/listaNotificacoes';
 import RotaAutenticadaEstruturada from './rotaAutenticadaEstruturada';
 import RotasTipo from '~/constantes/rotasTipo';
 import Login from '~/paginas/Login';
+import RecuperarSenha from '~/paginas/RecuperarSenha';
+import RedefinirSenha from '~/paginas/RedefinirSenha';
 import RotaNaoAutenticadaDesestruturada from './rotaNaoAutenticadaDesestruturada';
 import RotaAutenticadaDesestruturada from './rotaAutenticadaDesestruturada';
+import RotaMista from './rotaMista';
+import MeusDados from '~/paginas/Perfil/meusDados';
+import PeriodosEscolares from '~/paginas/CalendarioEscolar/PeriodosEscolares/PeriodosEscolares';
 
 export default function Rotas() {
   const rotas = new Map();
@@ -43,6 +48,24 @@ export default function Rotas() {
     component: Login,
     exact: true,
     tipo: RotasTipo.DesestruturadaNaoAutenticada,
+  });
+
+  rotas.set('/recuperar-senha', {
+    breadcrumbName: '',
+    menu: '',
+    parent: '/',
+    component: RecuperarSenha,
+    exact: true,
+    tipo: RotasTipo.DesestruturadaNaoAutenticada,
+  });
+
+  rotas.set('/redefinir-senha/:token?/', {
+    breadcrumbName: '',
+    menu: '',
+    parent: '/',
+    component: RedefinirSenha,
+    exact: false,
+    tipo: RotasTipo.Mista,
   });
 
   rotas.set('/gestao/atribuicao-supervisor-lista', {
@@ -94,7 +117,24 @@ export default function Rotas() {
     tipo: RotasTipo.EstruturadaAutenticada,
   });
 
-  rotas.set('/:rf?', {
+  rotas.set('/meus-dados', {
+    breadcrumbName: 'Perfil',
+    parent: '/',
+    component: MeusDados,
+    exact: true,
+    tipo: RotasTipo.EstruturadaAutenticada,
+  });
+
+  rotas.set('/calendario-escolar/periodos-escolares', {
+    breadcrumbName: 'Períodos Escolares',
+    menu: 'Calendário Escolar',
+    parent: '/',
+    component: PeriodosEscolares,
+    exact: true,
+    tipo: RotasTipo.EstruturadaAutenticada,
+  });
+
+  rotas.set('/', {
     icone: 'fas fa-home',
     parent: null,
     component: Principal,
@@ -153,6 +193,16 @@ export default function Rotas() {
             case RotasTipo.DesestruturadaAutenticada:
               return (
                 <RotaAutenticadaDesestruturada
+                  path={rota.path}
+                  key={rota.path}
+                  exact={rota.exact}
+                  component={rota.component}
+                />
+              );
+
+            case RotasTipo.Mista:
+              return (
+                <RotaMista
                   path={rota.path}
                   key={rota.path}
                   exact={rota.exact}

@@ -7,7 +7,8 @@ import {
   turmasUsuario,
   selecionarTurma,
   removerTurma,
-  filtroAtual
+  filtroAtual,
+  salvarDadosUsuario,
 } from '../redux/modulos/usuario/actions';
 import Grid from '../componentes/grid';
 import Button from '../componentes/button';
@@ -18,7 +19,8 @@ import api from '../servicos/api';
 import modalidade from '~/dtos/modalidade';
 
 const Filtro = () => {
-  const [dados, setDados] = useState([]);
+  const dadosUsuario = useSelector(state => state.usuario.dadosUsuario);
+  const [dados, setDados] = useState(dadosUsuario);
 
   const [anosLetivosFiltro, setAnosLetivosFiltro] = useState([]);
   const [
@@ -127,30 +129,41 @@ const Filtro = () => {
 
   const divBuscaRef = useRef();
 
-  const usuario = useSelector(state => state.usuario);
+  const rf = useSelector(state => state.usuario.rf);
+  const turmasUsuarioLista = useSelector(state => state.usuario.turmasUsuario);
+  const turmaSelecionada = useSelector(state => state.usuario.turmaSelecionada);
 
-  const buscaDadosPoRf = async rf => {
-    await api.get(`v1/professores/${rf}/turmas`).then(res => {
-      if (res.data.length > 0) setDados(res.data);
-      else erro('Usuário sem turmas atribuídas!');
+  const buscaDadosPorRf = () => {
+    api.get(`v1/professores/${rf}/turmas`).then(res => {
+      if (res.data.length > 0) {
+        setDados(res.data);
+        store.dispatch(salvarDadosUsuario(res.data));
+      } else erro('Usuário sem turmas atribuídas!');
     });
   };
 
   useEffect(() => {
-    if (usuario.rf) {
-      if (dados.length === 0) buscaDadosPoRf(usuario.rf);
-    }
-    if (usuario.turmaSelecionada.length > 0) {
+    if (rf && dados.length === 0) buscaDadosPorRf();
+  }, [rf]);
+
+  useEffect(() => {
+    if (turmaSelecionada.length > 0) {
       const {
         modalidade,
         nomeTurma,
         tipoEscola,
         ue,
-      } = usuario.turmaSelecionada[0];
+        codTurma,
+      } = turmaSelecionada[0];
       const selecionada = `${modalidade.trim()} - ${nomeTurma.trim()} - ${tipoEscola.trim()} - ${ue.trim()}`;
       setTurmaUeSelecionada(selecionada);
+      if (!turmaFiltroSelecionada) {
+        setTimeout(() => {
+          setTurmaFiltroSelecionada(codTurma.toString());
+        }, 1000);
+      }
     }
-  }, [usuario.turmaSelecionada, usuario.rf]);
+  }, [turmaSelecionada]);
 
   const ordenaTurmas = (x, y) => {
     const a = x.turma.toLowerCase();
@@ -229,7 +242,7 @@ const Filtro = () => {
 
     setAnosLetivosFiltro([...anosLetivos]);
     if (anosLetivos.length > 0 && anosLetivos[0].ano) {
-      setAnoAtual(anosLetivos[0].ano)
+      setAnoAtual(anosLetivos[0].ano);
     } else {
       setAnoAtual(new Date().getFullYear());
     }
@@ -245,8 +258,8 @@ const Filtro = () => {
 
   const setAnoAtual = ano => {
     setAnoLetivoFiltroSelecionado(`${ano}`);
-    store.dispatch(filtroAtual({anoLetivo:`${ano}`}))
-  }
+    store.dispatch(filtroAtual({ anoLetivo: `${ano}` }));
+  };
 
   useEffect(() => {
     if (modalidadesFiltro.length === 1)
@@ -257,13 +270,13 @@ const Filtro = () => {
       setUnidadeEscolarFiltroSelecionada(
         unidadesEscolaresFiltro[0].codigo.toString()
       );
-    if (usuario.turmasUsuario.length === 1)
-      setTurmaFiltroSelecionada(usuario.turmasUsuario[0].codigo.toString());
+    if (turmasUsuarioLista.length === 1)
+      setTurmaFiltroSelecionada(turmasUsuarioLista[0].codigo.toString());
   }, [
     modalidadesFiltro,
     dresFiltro,
     unidadesEscolaresFiltro,
-    usuario.turmasUsuario,
+    turmasUsuarioLista,
   ]);
 
   useEffect(() => {
@@ -274,6 +287,7 @@ const Filtro = () => {
   useLayoutEffect(() => {
     if (!toggleBusca && toggleInputFocus) inputBuscaRef.current.focus();
     if (toggleBusca) document.addEventListener('click', handleClickFora);
+    return () => document.removeEventListener('click', handleClickFora);
   }, [toggleBusca, toggleInputFocus]);
 
   useEffect(() => {
@@ -694,7 +708,7 @@ const Filtro = () => {
                 <SelectComponent
                   className="fonte-14"
                   onChange={onChangeTurma}
-                  lista={usuario.turmasUsuario}
+                  lista={turmasUsuarioLista}
                   valueOption="codigo"
                   valueText="turma"
                   valueSelect={turmaFiltroSelecionada}
