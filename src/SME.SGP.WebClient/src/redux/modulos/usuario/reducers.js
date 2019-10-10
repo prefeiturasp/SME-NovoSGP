@@ -3,18 +3,21 @@ import produce from 'immer';
 const inicial = {
   rf: '',
   token: '',
+  usuario: '',
   dataLogin: null,
   logado: false,
   turmasUsuario: [],
   turmaSelecionada: [],
   filtroAtual: {},
   dadosUsuario: [],
+  modificarSenha: '',
   meusDados: {
     nome: 'Teste com Sobrenome Um tanto Quanto Maior',
     rf: '123456',
     cpf: '12345678901',
     empresa: 'SME',
-    foto: 'https://graziellanicolai.com.br/wp-content/uploads/2018/03/Graziella-perfil.jpg'
+    foto:
+      'https://graziellanicolai.com.br/wp-content/uploads/2018/03/Graziella-perfil.jpg',
   },
 };
 
@@ -31,14 +34,18 @@ export default function usuario(state = inicial, action) {
       case '@usuario/salvarLogin':
         draft.rf = action.payload.rf;
         draft.token = action.payload.token;
-        draft.logado = true;
         draft.dataLogin = new Date();
+        draft.logado = true;
+        draft.usuario = action.payload.usuario;
+        draft.modificarSenha = action.payload.modificarSenha;
         break;
       case '@usuario/deslogar':
         draft.rf = '';
         draft.token = '';
         draft.dataLogin = null;
         draft.logado = false;
+        draft.usuario = '';
+        draft.modificarSenha = '';
         draft.turmasUsuario = [];
         draft.turmaSelecionada = [];
         break;
