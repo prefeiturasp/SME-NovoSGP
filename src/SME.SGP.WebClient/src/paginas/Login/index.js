@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef } from 'react';
 import { useDispatch } from 'react-redux';
 import * as Yup from 'yup';
 import { Tooltip } from 'antd';
@@ -27,17 +27,17 @@ import {
   ErroGeral,
 } from './login.css';
 import CampoTexto from '~/componentes/campoTexto';
+import { URL_RECUPERARSENHA } from '~/constantes/url';
 
 const Login = props => {
   const dispatch = useDispatch();
+  const btnAcessar = useRef();
 
   const [erroGeral, setErroGeral] = useState('');
   const [login, setLogin] = useState({
     usuario: '',
     senha: '',
   });
-
-  const inputFormik = useRef(null);
 
   let redirect = null;
 
@@ -60,8 +60,7 @@ const Login = props => {
   const aoPressionarTecla = e => {
     if (e.key === 'Enter') {
       e.preventDefault();
-
-      inputFormik.current.click();
+      btnAcessar.current.click();
     }
   };
   document.onkeyup = aoPressionarTecla;
@@ -71,17 +70,16 @@ const Login = props => {
       usuario: dados.usuario,
       senha: dados.senha,
     });
+
     setErroGeral('');
 
     const { sucesso, ...retorno } = await helper.acessar(dados);
 
-    if (!sucesso) {
-      setErroGeral(retorno.erroGeral);
-      return;
-    }
+    if (!sucesso) setErroGeral(retorno.erroGeral);
   };
 
-  const AoClicarBotaoAutenticar = (form, e) => {
+  const aoClicarBotaoAutenticar = (form, e) => {
+    e.persist();
     form.validateForm().then(() => form.handleSubmit(e));
   };
 
@@ -118,9 +116,9 @@ const Login = props => {
                     {form => (
                       <Form>
                         <Rotulo className="d-block" htmlFor="usuario">
-                          Usuário{' '}
+                          Usuário
                           <Tooltip placement="top" title={TextoAjuda}>
-                            <i className="fas fa-question-circle"></i>
+                            <i className="fas fa-question-circle" />
                           </Tooltip>
                         </Rotulo>
                         <CampoTexto
@@ -147,15 +145,14 @@ const Login = props => {
                         />
                         <FormGroup>
                           <Button
-                            style="primary"
                             className="btn-block d-block"
                             label="Acessar"
                             color={Colors.Roxo}
-                            ref={inputFormik}
-                            onClick={e => AoClicarBotaoAutenticar(form, e)}
+                            ref={btnAcessar}
+                            onClick={e => aoClicarBotaoAutenticar(form, e)}
                           />
                           <Centralizar className="mt-1">
-                            <Link to="/" isactive>
+                            <Link to={URL_RECUPERARSENHA} isactive>
                               <LabelLink>Esqueci minha senha</LabelLink>
                             </Link>
                           </Centralizar>

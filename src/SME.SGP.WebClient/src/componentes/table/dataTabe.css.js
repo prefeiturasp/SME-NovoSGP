@@ -27,7 +27,12 @@ export const Container = styled.div`
   .ant-table-thead tr th {
     background: ${Base.CinzaFundo} !important;
     border-right: solid 1px ${Base.CinzaDesabilitado};
-    text-align: center;
+    text-align: left;
+  }
+
+  .ant-table-selection-column {
+    text-align: center !important;
+    cursor: pointer;
   }
 
   .ant-table-tbody tr td {
@@ -127,11 +132,15 @@ export const Container = styled.div`
       color: ${Base.Branco} !important;
     }
 
+    span.cor-novo-registro-lista {
+      color: ${Base.Branco} !important;
+    }
+
     a.texto-vermelho-negrito {
       color: ${Base.Branco} !important;
     }
 
-    a.texto-negrito {
+    a.cor-novo-registro-lista {
       color: ${Base.Branco} !important;
     }
   }
@@ -145,11 +154,19 @@ export const Container = styled.div`
     background: ${Base.Roxo};
     color: ${Base.Branco} !important;
 
+    span.cor-vermelho {
+      color: ${Base.Branco} !important;
+    }
+
+    span.cor-novo-registro-lista {
+      color: ${Base.Branco} !important;
+    }
+
     a.texto-vermelho-negrito {
       color: ${Base.Branco} !important;
     }
 
-    a.texto-negrito {
+    a.cor-novo-registro-lista {
       color: ${Base.Branco} !important;
     }
   }
