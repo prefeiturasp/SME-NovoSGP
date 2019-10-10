@@ -1,10 +1,11 @@
 import React from 'react';
-import { Field, ErrorMessage } from 'formik';
+import { Field } from 'formik';
 
 import styled from 'styled-components';
 import { Input } from 'antd';
 import { Base } from './colors';
 
+import Label from './label';
 import PropTypes from 'prop-types';
 
 const Campo = styled.div`
@@ -32,6 +33,7 @@ const CampoTexto = ({
   value,
   desabilitado,
   maxlength,
+  label
 }) => {
 
   const possuiErro = () => {
@@ -44,10 +46,11 @@ const CampoTexto = ({
       event.preventDefault();
     }
   };
-  
+
   return (
     <>
       <Campo className={classNameCampo}>
+      {label ? <Label text={label} control={name || ''} /> : ''}
         {form ? (
           <>
             {' '}
@@ -62,6 +65,10 @@ const CampoTexto = ({
               disabled={desabilitado}
               onBlur={executaOnBlur}
               maxLength={maxlength || ''}
+              onChange={e => {
+                form.setFieldValue(name, e.target.value);
+                onChange(e);
+              }}
             />
             <span>{form.errors[name]}</span>
           </>
@@ -73,5 +80,12 @@ const CampoTexto = ({
   );
 };
 
+CampoTexto.propTypes = {
+  onChange: PropTypes.func,
+};
+
+CampoTexto.defaultProps = {
+  onChange: () => {},
+};
 
 export default CampoTexto;
