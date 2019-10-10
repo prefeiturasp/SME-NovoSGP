@@ -8,7 +8,7 @@ namespace SME.SGP.Aplicacao.Integracoes
 {
     public interface IServicoEOL
     {
-        Task<AlterarSenhaRespostaDto> AlterarSenha(string usuario, string novaSenha);
+        Task<AlterarSenhaRespostaDto> AlterarSenha(string login, string novaSenha);
 
         Task<UsuarioEolAutenticacaoRetornoDto> Autenticar(string login, string senha);
 
