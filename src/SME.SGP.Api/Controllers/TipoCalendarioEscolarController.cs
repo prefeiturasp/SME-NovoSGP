@@ -13,16 +13,19 @@ namespace SME.SGP.Api.Controllers
     public class TipoCalendarioEscolarController : ControllerBase
     {
         private readonly IConsultasTipoCalendarioEscolar consultas;
-        public TipoCalendarioEscolarController(IConsultasTipoCalendarioEscolar consultas)
+        private readonly IComandosTipoCalendarioEscolar comandos;
+        public TipoCalendarioEscolarController(IConsultasTipoCalendarioEscolar consultas,
+            IComandosTipoCalendarioEscolar comandos)
         {
             this.consultas = consultas ?? throw new System.ArgumentNullException(nameof(consultas));
+            this.comandos = comandos ?? throw new System.ArgumentNullException(nameof(comandos));
         }
 
         [HttpGet]
         [ProducesResponseType(typeof(IEnumerable<TipoCalendarioEscolarDto>), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [Permissao(Permissao.C_C, Policy = "Bearer")]
-        public IActionResult Get()
+        public IActionResult BuscarTodos()
         {
             return Ok(consultas.Listar());
         }
