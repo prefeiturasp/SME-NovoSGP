@@ -49,6 +49,16 @@ namespace SME.SGP.Api.Controllers
             comandos.Salvar(dto);
             return Ok();
         }
+
+        [HttpDelete]
+        [ProducesResponseType(200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [Permissao(Permissao.C_E, Permissao.C_A, Policy = "Bearer")]
+        public IActionResult MarcarExcluidos([FromBody]long[] ids)
+        {
+            comandos.MarcarExcluidos(ids);
+            return Ok();
+        }
     }
 
 }

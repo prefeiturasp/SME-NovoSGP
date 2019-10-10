@@ -10,5 +10,6 @@
 	alterado_em timestamp NULL,
 	alterado_por varchar(200) NULL,
 	criado_rf varchar(200) NOT NULL,
-	alterado_rf varchar(200) NULL
+	alterado_rf varchar(200) NULL,
+	excluido boolean not null default false
 );

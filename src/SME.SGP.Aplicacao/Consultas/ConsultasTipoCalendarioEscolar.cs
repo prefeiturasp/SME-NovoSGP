@@ -20,7 +20,7 @@ namespace SME.SGP.Aplicacao
 
         public TipoCalendarioEscolarCompletoDto BuscarPorId(long id)
         {
-            var entidade = repositorio.ObterPorId(id);
+            var entidade = repositorio.ObterUmPorId(id);
             TipoCalendarioEscolarCompletoDto dto = new TipoCalendarioEscolarCompletoDto();
             if (entidade != null)
             {
