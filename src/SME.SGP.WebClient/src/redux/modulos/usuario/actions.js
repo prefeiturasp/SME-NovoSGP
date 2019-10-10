@@ -5,7 +5,7 @@ export function salvarRf(rf) {
   };
 }
 
-export function SalvarDadosLogin(Login) {
+export function salvarDadosLogin(Login) {
   return {
     type: '@usuario/salvarLogin',
     payload: Login,
@@ -41,7 +41,7 @@ export function removerTurma() {
 export function meusDados(dados) {
   return {
     type: '@usuario/meusDados',
-    payload: dados
+    payload: dados,
   };
 }
 

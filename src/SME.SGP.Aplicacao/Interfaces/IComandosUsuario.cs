@@ -1,6 +1,6 @@
-﻿using SME.SGP.Dto;
-using System;
+﻿using System;
 using System.Threading.Tasks;
+using SME.SGP.Dto;
 
 namespace SME.SGP.Aplicacao
 {
@@ -8,18 +8,20 @@ namespace SME.SGP.Aplicacao
     {
         Task AlterarEmail(AlterarEmailDto alterarEmailDto, string codigoRf);
 
-        Task AlterarEmailUsuarioLogado(string novoEmail);
+        Task AlterarEmailUsuarioLogado (string novoEmail);
 
-        Task AlterarSenhaComTokenRecuperacao(RecuperacaoSenhaDto recuperacaoSenhaDto);
+        Task AlterarSenhaComTokenRecuperacao (RecuperacaoSenhaDto recuperacaoSenhaDto);
 
-        Task<UsuarioAutenticacaoRetornoDto> Autenticar(string login, string senha);
+        Task<AlterarSenhaRespostaDto> AlterarSenhaPrimeiroAcesso (PrimeiroAcessoDto primeiroAcessoDto);
 
-        Task<string> ModificarPerfil(string guid);
+        Task<UsuarioAutenticacaoRetornoDto> Autenticar (string login, string senha);
+
+        Task<string> ModificarPerfil (string guid);
 
         Task<UsuarioReinicioSenhaDto> ReiniciarSenha(string codigoRf);
 
         string SolicitarRecuperacaoSenha(string login);
 
-        bool TokenRecuperacaoSenhaEstaValido(Guid token);
+        bool TokenRecuperacaoSenhaEstaValido (Guid token);
     }
 }
