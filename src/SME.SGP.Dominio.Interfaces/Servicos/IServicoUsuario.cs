@@ -4,7 +4,11 @@ namespace SME.SGP.Dominio.Interfaces
 {
     public interface IServicoUsuario
     {
-        void ModificarPerfil(string perfilParaModificar, string login);
+        string ObterClaim(string nomeClaim);
+
+        string ObterLoginAtual();
+
+        string ObterRf();
 
         Usuario ObterUsuarioPorCodigoRfLoginOuAdiciona(string codigoRf, string login = "");
 
