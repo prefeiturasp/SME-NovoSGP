@@ -38,5 +38,21 @@ namespace SME.SGP.Aplicacao
             entidade.Modalidade = dto.Modalidade;
             return entidade;
         }
+
+        public void MarcarExcluidos(long[] ids)
+        {
+            foreach(long id in ids)
+            {
+                var tipoCalendario = repositorio.ObterUmPorId(id);
+                if(tipoCalendario != null)
+                {
+                    tipoCalendario.Excluido = true;
+                    repositorio.Salvar(tipoCalendario);
+                }
+                else {
+                    throw new NegocioException("Houve um erro ao excluir os tipos de calendário. Um dos tipos de calendário não existe");
+                }
+            }
+        }
     }
 }
