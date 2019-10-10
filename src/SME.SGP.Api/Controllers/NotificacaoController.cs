@@ -4,6 +4,7 @@ using SME.SGP.Aplicacao;
 using SME.SGP.Dominio;
 using SME.SGP.Infra;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace SME.SGP.Api.Controllers
 {
@@ -34,9 +35,9 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(IEnumerable<NotificacaoBasicaDto>), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [Permissao(Permissao.N_C, Policy = "Bearer")]
-        public IActionResult Get([FromQuery]NotificacaoFiltroDto notificacaoFiltroDto)
+        public async Task<IActionResult> Get([FromQuery]NotificacaoFiltroDto notificacaoFiltroDto)
         {
-            return Ok(consultasNotificacao.Listar(notificacaoFiltroDto));
+            return Ok(await consultasNotificacao.Listar(notificacaoFiltroDto));
         }
 
         [HttpGet]
