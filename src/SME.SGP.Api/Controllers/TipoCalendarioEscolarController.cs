@@ -30,21 +30,21 @@ namespace SME.SGP.Api.Controllers
             return Ok(consultas.Listar());
         }
 
+        [HttpGet]
+        [ProducesResponseType(typeof(IEnumerable<TipoCalendarioEscolarDto>), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [Route("{id}")]
+        [Permissao(Permissao.C_C, Policy = "Bearer")]
+        public IActionResult BuscarUm(long id)
+        {
+            return Ok(consultas.BuscarPorId(id));
+        }
+
         [HttpPost]
         [ProducesResponseType(200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        [Permissao(Permissao.C_I, Policy = "Bearer")]
-        public IActionResult Inserir([FromBody]TipoCalendarioEscolarDto dto)
-        {
-            comandos.Salvar(dto);
-            return Ok();
-        }
-
-        [HttpPut]
-        [ProducesResponseType(200)]
-        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        [Permissao(Permissao.C_A, Policy = "Bearer")]
-        public IActionResult Alterar([FromBody]TipoCalendarioEscolarDto dto)
+        [Permissao(Permissao.C_I, Permissao.C_A, Policy = "Bearer")]
+        public IActionResult Salvar([FromBody]TipoCalendarioEscolarDto dto)
         {
             comandos.Salvar(dto);
             return Ok();

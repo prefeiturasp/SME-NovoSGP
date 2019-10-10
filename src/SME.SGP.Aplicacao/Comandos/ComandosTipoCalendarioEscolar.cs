@@ -32,6 +32,7 @@ namespace SME.SGP.Aplicacao
                 entidade = new TipoCalendarioEscolar();
             }
             entidade.Nome = dto.Nome;
+            entidade.AnoLetivo = dto.AnoLetivo;
             entidade.Periodo = dto.Periodo;
             entidade.Situacao = dto.Situacao;
             entidade.Modalidade = dto.Modalidade;
