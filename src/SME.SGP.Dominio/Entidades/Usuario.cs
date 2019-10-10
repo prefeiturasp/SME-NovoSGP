@@ -72,6 +72,11 @@ namespace SME.SGP.Dominio
             return perfisUsuario.FirstOrDefault().CodigoPerfil;
         }
 
+        public bool PodeReiniciarSenha()
+        {
+            return !string.IsNullOrEmpty(Email);
+        }
+
         public bool PossuiPerfilDre(IEnumerable<PrioridadePerfil> perfisUsuario)
         {
             return perfisUsuario.Any(c => c.Tipo == TipoPerfil.DRE);

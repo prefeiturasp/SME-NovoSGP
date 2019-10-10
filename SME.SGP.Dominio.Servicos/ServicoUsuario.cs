@@ -11,38 +11,36 @@ namespace SME.SGP.Dominio
         private readonly IRepositorioPrioridadePerfil repositorioPrioridadePerfil;
         private readonly IRepositorioUsuario repositorioUsuario;
         private readonly IServicoEOL servicoEOL;
+        private readonly IUnitOfWork unitOfWork;
 
         public ServicoUsuario(IRepositorioUsuario repositorioUsuario,
                               IServicoEOL servicoEOL,
-                              IRepositorioPrioridadePerfil repositorioPrioridadePerfil)
+                              IRepositorioPrioridadePerfil repositorioPrioridadePerfil,
+                              IUnitOfWork unitOfWork)
         {
             this.repositorioUsuario = repositorioUsuario ?? throw new ArgumentNullException(nameof(repositorioUsuario));
             this.servicoEOL = servicoEOL ?? throw new ArgumentNullException(nameof(servicoEOL));
             this.repositorioPrioridadePerfil = repositorioPrioridadePerfil;
+            this.unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
         }
 
-        public async Task AlterarEmail(string login, string novoEmail)
+        public async Task AlterarEmailUsuarioPorLogin(string login, string novoEmail)
         {
-            Usuario usuario = repositorioUsuario.ObterPorCodigoRfLogin(null, login);
+            var usuario = repositorioUsuario.ObterPorCodigoRfLogin(string.Empty, login);
             if (usuario == null)
-            {
                 throw new NegocioException("Usuário não encontrado.");
-            }
 
-            var outrosUsuariosComMesmoEmail = repositorioUsuario.ExisteUsuarioComMesmoEmail(novoEmail, usuario.Id);
-            if (outrosUsuariosComMesmoEmail)
-            {
-                throw new NegocioException("Já existe outro usuário com o e-mail informado.");
-            }
+            await AlterarEmail(usuario, novoEmail);
+        }
 
-            var retornoEol = await servicoEOL.ObterPerfisPorLogin(login);
-            if (retornoEol == null || retornoEol.Status != Dto.AutenticacaoStatusEol.Ok)
-            {
-                throw new NegocioException("Ocorreu um erro ao obter os dados do usuário no EOL.");
-            }
-            var perfisUsuario = repositorioPrioridadePerfil.ObterPerfisPorIds(retornoEol.Perfis);
-            usuario.DefinirEmail(novoEmail, perfisUsuario);
-            repositorioUsuario.Salvar(usuario);
+        public async Task AlterarEmailUsuarioPorRfOuInclui(string codigoRf, string novoEmail)
+        {
+            unitOfWork.IniciarTransacao();
+
+            var usuario = ObterUsuarioPorCodigoRfLoginOuAdiciona(codigoRf);
+            await AlterarEmail(usuario, novoEmail);
+
+            unitOfWork.PersistirTransacao();
         }
 
         public async void ModificarPerfil(string perfilParaModificar, string login)
@@ -61,6 +59,9 @@ namespace SME.SGP.Dominio
             if (usuario != null)
                 return usuario;
 
+            if (string.IsNullOrEmpty(login))
+                login = codigoRf;
+
             usuario = new Usuario() { CodigoRf = codigoRf, Login = login };
 
             repositorioUsuario.Salvar(usuario);
@@ -76,6 +77,22 @@ namespace SME.SGP.Dominio
 
             if (!perfisDoUsuario.Perfis.Contains(Guid.Parse(perfilParaModificar)))
                 throw new NegocioException($"O usuário {login} não possui acesso ao perfil {perfilParaModificar}");
+        }
+
+        private async Task AlterarEmail(Usuario usuario, string novoEmail)
+        {
+            var outrosUsuariosComMesmoEmail = repositorioUsuario.ExisteUsuarioComMesmoEmail(novoEmail, usuario.Id);
+
+            if (outrosUsuariosComMesmoEmail)
+                throw new NegocioException("Já existe outro usuário com o e-mail informado.");
+
+            var retornoEol = await servicoEOL.ObterPerfisPorLogin(usuario.Login);
+            if (retornoEol == null || retornoEol.Status != Dto.AutenticacaoStatusEol.Ok)
+                throw new NegocioException("Ocorreu um erro ao obter os dados do usuário no EOL.");
+
+            var perfisUsuario = repositorioPrioridadePerfil.ObterPerfisPorIds(retornoEol.Perfis);
+            usuario.DefinirEmail(novoEmail, perfisUsuario);
+            repositorioUsuario.Salvar(usuario);
         }
     }
 }

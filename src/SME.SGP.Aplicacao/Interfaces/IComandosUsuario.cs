@@ -2,9 +2,11 @@
 using System.Threading.Tasks;
 using SME.SGP.Dto;
 
-namespace SME.SGP.Aplicacao {
-    public interface IComandosUsuario {
-        void AlterarEmail (AlterarEmailDto alterarEmailDto);
+namespace SME.SGP.Aplicacao
+{
+    public interface IComandosUsuario
+    {
+        Task AlterarEmail(AlterarEmailDto alterarEmailDto, string codigoRf);
 
         Task AlterarEmailUsuarioLogado (string novoEmail);
 
@@ -16,7 +18,9 @@ namespace SME.SGP.Aplicacao {
 
         Task<string> ModificarPerfil (string guid);
 
-        string SolicitarRecuperacaoSenha (string login);
+        Task<UsuarioReinicioSenhaDto> ReiniciarSenha(string codigoRf);
+
+        string SolicitarRecuperacaoSenha(string login);
 
         bool TokenRecuperacaoSenhaEstaValido (Guid token);
     }

@@ -15,13 +15,53 @@ namespace SME.SGP.Dominio.Servicos.Teste
         private readonly Mock<IRepositorioUsuario> repositorioUsuario;
         private readonly Mock<IServicoEOL> servicoEol;
         private readonly ServicoUsuario servicoUsuario;
+        private readonly Mock<IUnitOfWork> unitOfWork;
 
         public ServicoUsuarioTeste()
         {
             repositorioUsuario = new Mock<IRepositorioUsuario>();
             servicoEol = new Mock<IServicoEOL>();
             repositorioPrioridadePerfil = new Mock<IRepositorioPrioridadePerfil>();
-            servicoUsuario = new ServicoUsuario(repositorioUsuario.Object, servicoEol.Object, repositorioPrioridadePerfil.Object);
+            unitOfWork = new Mock<IUnitOfWork>();
+            servicoUsuario = new ServicoUsuario(repositorioUsuario.Object, servicoEol.Object, repositorioPrioridadePerfil.Object, unitOfWork.Object);
+        }
+
+        [Fact]
+        public async void Deve_Modificar_Email_Por_Login()
+        {
+            //ARRANGE
+            var login = "loginTeste";
+            var email = "teste@teste.com";
+            var usuario = new Usuario() { Id = 5, Login = login };
+            repositorioUsuario.Setup(a => a.ObterPorCodigoRfLogin(string.Empty, login)).Returns(usuario);
+            repositorioUsuario.Setup(a => a.ExisteUsuarioComMesmoEmail(email, usuario.Id)).Returns(false);
+            servicoEol.Setup(a => a.ObterPerfisPorLogin(login)).Returns(Task.FromResult(new UsuarioEolAutenticacaoRetornoDto()));
+            repositorioUsuario.Setup(a => a.Salvar(usuario)).Returns(usuario.Id);
+
+            //ACT
+            await servicoUsuario.AlterarEmailUsuarioPorLogin(login, "teste@teste.com");
+
+            //ASSERT
+            Assert.True(true);
+        }
+
+        [Fact]
+        public async void Deve_Modificar_Email_Por_Rf()
+        {
+            //ARRANGE
+            var codigoRf = "7777";
+            var email = "teste@teste.com";
+            var usuario = new Usuario() { Id = 5, Login = codigoRf, CodigoRf = codigoRf };
+            repositorioUsuario.Setup(a => a.ObterPorCodigoRfLogin(codigoRf, string.Empty)).Returns(usuario);
+            repositorioUsuario.Setup(a => a.ExisteUsuarioComMesmoEmail(email, usuario.Id)).Returns(false);
+            servicoEol.Setup(a => a.ObterPerfisPorLogin(codigoRf)).Returns(Task.FromResult(new UsuarioEolAutenticacaoRetornoDto()));
+            repositorioUsuario.Setup(a => a.Salvar(usuario)).Returns(usuario.Id);
+
+            //ACT
+            await servicoUsuario.AlterarEmailUsuarioPorRfOuInclui(codigoRf, "teste@teste.com");
+
+            //ASSERT
+            Assert.True(true);
         }
 
         [Fact]
