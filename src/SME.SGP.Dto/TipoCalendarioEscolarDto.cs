@@ -14,7 +14,7 @@ namespace SME.SGP.Dto
         [MaxLength(50, ErrorMessage = "O Nome do Calendário deve conter no máximo 50 caracteres.")]
         public string Nome { get; set; }
         [Required(ErrorMessage = "O campo Ano Letivo é obrigatório")]
-        public int anoLetivo { get; set; }
+        public int AnoLetivo { get; set; }
         [Required(ErrorMessage = "O campo Período é obrigatório")]
         public Periodo Periodo { get; set; }
         [Required(ErrorMessage = "O campo Modalidade é obrigatório")]

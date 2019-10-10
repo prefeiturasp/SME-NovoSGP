@@ -17,5 +17,27 @@ namespace SME.SGP.Aplicacao
         {
             return this.repositorio.ObterTiposCalendarioEscolar();
         }
+
+        public TipoCalendarioEscolarCompletoDto BuscarPorId(long id)
+        {
+            var entidade = repositorio.ObterPorId(id);
+            TipoCalendarioEscolarCompletoDto dto = new TipoCalendarioEscolarCompletoDto();
+            if (entidade != null)
+            {
+                dto.Id = entidade.Id;
+                dto.Nome = entidade.Nome;
+                dto.anoLetivo = entidade.AnoLetivo;
+                dto.Periodo = entidade.Periodo;
+                dto.Modalidade = entidade.Modalidade;
+                dto.Situacao = entidade.Situacao;
+                dto.AlteradoEm = entidade.AlteradoEm;
+                dto.AlteradoPor = entidade.AlteradoPor;
+                dto.CriadoRF = entidade.CriadoRF;
+                dto.AlteradoRF = entidade.AlteradoRF;
+                dto.CriadoEm = entidade.CriadoEm;
+                dto.CriadoPor = entidade.CriadoPor;
+            }
+            return dto;
+        }
     }
 }
