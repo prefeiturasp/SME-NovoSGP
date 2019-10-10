@@ -29,6 +29,26 @@ namespace SME.SGP.Api.Controllers
         {
             return Ok(consultas.Listar());
         }
+
+        [HttpPost]
+        [ProducesResponseType(200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [Permissao(Permissao.C_I, Policy = "Bearer")]
+        public IActionResult Inserir([FromBody]TipoCalendarioEscolarDto dto)
+        {
+            comandos.Salvar(dto);
+            return Ok();
+        }
+
+        [HttpPut]
+        [ProducesResponseType(200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [Permissao(Permissao.C_A, Policy = "Bearer")]
+        public IActionResult Alterar([FromBody]TipoCalendarioEscolarDto dto)
+        {
+            comandos.Salvar(dto);
+            return Ok();
+        }
     }
 
 }

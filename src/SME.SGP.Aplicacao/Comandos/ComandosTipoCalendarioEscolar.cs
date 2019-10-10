@@ -12,13 +12,18 @@ namespace SME.SGP.Aplicacao
         {
             this.repositorio = repositorio ?? throw new ArgumentNullException(nameof(repositorio));
         }
-        public void Salvar(TipoCalendarioEscolarCompletoDto dto)
+        public void Salvar(TipoCalendarioEscolarDto dto)
         {
             var tipoCalendario = MapearParaDominio(dto);
+            bool ehRegistroExistente = repositorio.VerificarRegistroExistente(dto.Id, dto.Nome);
+            if (ehRegistroExistente)
+            {
+                throw new NegocioException($"O Tipo de Calendário Escolar '{dto.Nome}' já existe");
+            }
             repositorio.Salvar(tipoCalendario);
         }
 
-        public TipoCalendarioEscolar MapearParaDominio(TipoCalendarioEscolarCompletoDto dto)
+        public TipoCalendarioEscolar MapearParaDominio(TipoCalendarioEscolarDto dto)
         {
             var tipoCalendario = new TipoCalendarioEscolar()
             {
