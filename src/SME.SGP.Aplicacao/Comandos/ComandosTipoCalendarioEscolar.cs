@@ -14,7 +14,8 @@ namespace SME.SGP.Aplicacao
         }
         public void Salvar(TipoCalendarioEscolarDto dto)
         {
-            var tipoCalendario = MapearParaDominio(dto);
+            var tipoCalendario = MapearParaDominio(dto); 
+
             bool ehRegistroExistente = repositorio.VerificarRegistroExistente(dto.Id, dto.Nome);
             if (ehRegistroExistente)
             {
@@ -25,15 +26,16 @@ namespace SME.SGP.Aplicacao
 
         public TipoCalendarioEscolar MapearParaDominio(TipoCalendarioEscolarDto dto)
         {
-            var tipoCalendario = new TipoCalendarioEscolar()
+            TipoCalendarioEscolar entidade = repositorio.ObterPorId(dto.Id);
+            if (entidade == null)
             {
-                Id = dto.Id,
-                Nome = dto.Nome,
-                Periodo = dto.Periodo,
-                Situacao = dto.Situacao,
-                Modalidade = dto.Modalidade
-            };
-            return tipoCalendario;
+                entidade = new TipoCalendarioEscolar();
+            }
+            entidade.Nome = dto.Nome;
+            entidade.Periodo = dto.Periodo;
+            entidade.Situacao = dto.Situacao;
+            entidade.Modalidade = dto.Modalidade;
+            return entidade;
         }
     }
 }
