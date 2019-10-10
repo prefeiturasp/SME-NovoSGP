@@ -16,6 +16,8 @@ import RecuperarSenha from '~/paginas/RecuperarSenha';
 import RedefinirSenha from '~/paginas/RedefinirSenha';
 import RotaNaoAutenticadaDesestruturada from './rotaNaoAutenticadaDesestruturada';
 import RotaAutenticadaDesestruturada from './rotaAutenticadaDesestruturada';
+import TipoCalendarioEscolarLista from '~/paginas/CalendarioEscolar/TipoCalendarioEscolar/tipoCalendarioEscolarLista';
+import TipoCalendarioEscolarForm from '~/paginas/CalendarioEscolar/TipoCalendarioEscolar/tipoCalendarioEscolarForm';
 
 export default function Rotas() {
   const rotas = new Map();
@@ -113,6 +115,32 @@ export default function Rotas() {
     exact: true,
     tipo: RotasTipo.EstruturadaAutenticada,
   });
+
+  rotas.set('/calendario-escolar/tipo-calendario-escolar', {
+    breadcrumbName: 'Tipo de Calendário Escolar',
+    menu: 'Calendário Escolar',
+    parent: '/',
+    component: TipoCalendarioEscolarLista,
+    exact: true,
+    tipo: RotasTipo.EstruturadaAutenticada,
+  });
+
+  rotas.set('/calendario-escolar/tipo-calendario-escolar/novo', {
+    breadcrumbName: 'Cadastro do tipo de calendário escolar',
+    parent: '/calendario-escolar/tipo-calendario-escolar',
+    component: TipoCalendarioEscolarForm,
+    exact: true,
+    tipo: RotasTipo.EstruturadaAutenticada,
+  });
+
+  rotas.set('/calendario-escolar/tipo-calendario-escolar/editar/:id', {
+    breadcrumbName: 'Cadastro do tipo de calendário escolar',
+    parent: '/calendario-escolar/tipo-calendario-escolar',
+    component: TipoCalendarioEscolarForm,
+    exact: true,
+    tipo: RotasTipo.EstruturadaAutenticada,
+  });
+
 
   rotas.set('/:rf?', {
     icone: 'fas fa-home',
