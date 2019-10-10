@@ -14,7 +14,6 @@ namespace SME.SGP.Aplicacao
             this.httpContextAccessor = httpContext ?? throw new ArgumentNullException(nameof(httpContext));
         }
 
-        //
         public Paginacao Paginacao
         {
             get
