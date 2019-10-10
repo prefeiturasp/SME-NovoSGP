@@ -17,6 +17,7 @@ import RedefinirSenha from '~/paginas/RedefinirSenha';
 import RotaNaoAutenticadaDesestruturada from './rotaNaoAutenticadaDesestruturada';
 import RotaAutenticadaDesestruturada from './rotaAutenticadaDesestruturada';
 import MeusDados from  '~/paginas/Perfil/meusDados';
+import PeriodosEscolares from '~/paginas/CalendarioEscolar/PeriodosEscolares/PeriodosEscolares';
 
 export default function Rotas() {
   const rotas = new Map();
@@ -119,6 +120,15 @@ export default function Rotas() {
     breadcrumbName: 'Perfil',
     parent: '/',
     component: MeusDados,
+    exact: true,
+    tipo: RotasTipo.EstruturadaAutenticada,
+  });
+
+  rotas.set('/calendario-escolar/periodos-escolares', {
+    breadcrumbName: 'Períodos Escolares',
+    menu: 'Calendário Escolar',
+    parent: '/',
+    component: PeriodosEscolares,
     exact: true,
     tipo: RotasTipo.EstruturadaAutenticada,
   });
