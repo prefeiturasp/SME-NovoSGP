@@ -19,12 +19,12 @@ namespace SME.SGP.Aplicacao.Integracoes
             this.httpClient = httpClient;
         }
 
-        public async Task<AlterarSenhaRespostaDto> AlterarSenha(string usuario, string novaSenha)
+        public async Task<AlterarSenhaRespostaDto> AlterarSenha(string login, string novaSenha)
         {
             httpClient.DefaultRequestHeaders.Clear();
 
             var valoresParaEnvio = new List<KeyValuePair<string, string>> {
-                { new KeyValuePair<string, string>("usuario", usuario) },
+                { new KeyValuePair<string, string>("usuario", login) },
                 { new KeyValuePair<string, string>("senha", novaSenha) }};
 
             var resposta = await httpClient.PostAsync($"AutenticacaoSgp/AlterarSenha", new FormUrlEncodedContent(valoresParaEnvio));
