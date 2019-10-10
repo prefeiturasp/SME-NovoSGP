@@ -16,6 +16,7 @@ import RecuperarSenha from '~/paginas/RecuperarSenha';
 import RedefinirSenha from '~/paginas/RedefinirSenha';
 import RotaNaoAutenticadaDesestruturada from './rotaNaoAutenticadaDesestruturada';
 import RotaAutenticadaDesestruturada from './rotaAutenticadaDesestruturada';
+import MeusDados from  '~/paginas/Perfil/meusDados';
 import PeriodosEscolares from '~/paginas/CalendarioEscolar/PeriodosEscolares/PeriodosEscolares';
 
 export default function Rotas() {
@@ -115,7 +116,15 @@ export default function Rotas() {
     tipo: RotasTipo.EstruturadaAutenticada,
   });
 
- rotas.set('/calendario-escolar/periodos-escolares', {
+  rotas.set('/meus-dados', {
+    breadcrumbName: 'Perfil',
+    parent: '/',
+    component: MeusDados,
+    exact: true,
+    tipo: RotasTipo.EstruturadaAutenticada,
+  });
+
+  rotas.set('/calendario-escolar/periodos-escolares', {
     breadcrumbName: 'Períodos Escolares',
     menu: 'Calendário Escolar',
     parent: '/',
@@ -124,7 +133,7 @@ export default function Rotas() {
     tipo: RotasTipo.EstruturadaAutenticada,
   });
 
-  rotas.set('/:rf?', {
+  rotas.set('/', {
     icone: 'fas fa-home',
     parent: null,
     component: Principal,

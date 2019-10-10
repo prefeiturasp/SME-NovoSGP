@@ -113,6 +113,10 @@ export default createGlobalStyle`
     padding-top: 24px !important;
   }
 
+  .p-t-20{
+    padding-top: 20px !important;
+  }
+
   .p-r-8{
     padding-right: 8px !important;
   }
