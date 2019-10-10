@@ -12,6 +12,7 @@ namespace SME.SGP.Aplicacao
         {
             this.repositorio = repositorio ?? throw new System.ArgumentNullException(nameof(repositorio));
         }
+
         public IEnumerable<TipoCalendarioEscolarDto> Listar()
         {
             return this.repositorio.ObterTiposCalendarioEscolar();

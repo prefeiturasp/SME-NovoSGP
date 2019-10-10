@@ -27,5 +27,23 @@ namespace SME.SGP.Dados.Repositorios
 
             return database.Conexao.Query<TipoCalendarioEscolarDto>(query.ToString());
         }
+
+        public bool VerificarRegistroExistente(int id, string nome)
+        {
+            StringBuilder query = new StringBuilder();
+
+            var nomeMaiusculo = nome.ToUpper().Trim();
+            query.AppendLine("select count(*) ");
+            query.AppendLine("from tipo_calendario_escolar ");
+            query.AppendLine("where upper(nome) = @nomeMaiusculo");
+            if (id > 0)
+            {
+                query.AppendLine("and id <> @id");
+            }
+
+            int quantidadeRegistrosExistentes = database.Conexao.QueryFirst<int>(query.ToString(), new { id, nomeMaiusculo }); ;
+
+            return quantidadeRegistrosExistentes > 0;
+        }
     }
 }
