@@ -10,7 +10,7 @@ namespace SME.SGP.Dados.Mapeamentos
             Map(t => t.AnoLetivo).ToColumn("ano_letivo");
             Map(t => t.Nome).ToColumn("nome");
             Map(t => t.Periodo).ToColumn("periodo");
-            Map(t => t.Ativo).ToColumn("ativo");
+            Map(t => t.Situacao).ToColumn("situacao");
         }
     }
 }
