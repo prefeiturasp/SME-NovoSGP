@@ -6,7 +6,7 @@ import LogoDoSgp from '~/recursos/LogoDoSgp.svg';
 import { Base, Colors } from '~/componentes/colors';
 import Button from '~/componentes/button';
 import history from '~/servicos/history';
-import RedefinirSenhaServico from '~/servicos/Paginas/RedefinirSenhaService';
+import RedefinirSenhaServico from '~/servicos/Paginas/ServicoRedefinirSenha';
 import {
   Nav,
   Logo,
@@ -27,7 +27,7 @@ import { salvarDadosLogin, Deslogar } from '~/redux/modulos/usuario/actions';
 import { store } from '~/redux';
 
 const RedefinirSenha = props => {
-  const [dados, setDados] = useState({
+  const [senhas, setSenhas] = useState({
     senha: '',
     confirmarSenha: '',
   });
@@ -36,8 +36,7 @@ const RedefinirSenha = props => {
   const [erroGeral, setErroGeral] = useState('');
   const [tokenExpirado, setTokenExpirado] = useState(false);
 
-  const { senha } = dados;
-  const { confirmarSenha } = dados;
+  const { senha, confirmarSenha } = senhas;
   const token = props.match && props.match.params && props.match.params.token;
 
   const [validacoes, setValidacoes] = useState({
@@ -68,8 +67,7 @@ const RedefinirSenha = props => {
 
   const inputSenhaRef = useRef();
   const inputConfSenhaRef = useRef();
-  const logado = useSelector(state => state.usuario.logado);
-  const usuario = useSelector(state => state.usuario.usuario);
+  const { logado, usuario } = useSelector(state => state.usuario);
   const modificarSenha = useSelector(state => state.usuario.modificarSenha);
 
   const trataAcaoTeclado = e => {
@@ -96,10 +94,10 @@ const RedefinirSenha = props => {
     inputConfSenhaRef.current.focus();
   }, [confirmarSenha]);
 
-  const aoMudarSenha = () => {
+  const aoMudarSenha = e => {
     setErroGeral('');
-    setDados({ ...dados, senha: inputSenhaRef.current.value });
-    realizarValidacoes(inputSenhaRef.current.value);
+    setSenhas({ ...senhas, senha: e.target.value });
+    realizarValidacoes(e.target.value);
   };
 
   const validarToken = async () => {
@@ -112,13 +110,12 @@ const RedefinirSenha = props => {
     else setTokenValidado(true);
   };
 
-  const aoMudarConfSenha = () => {
-    setDados({ ...dados, confirmarSenha: inputConfSenhaRef.current.value });
+  const aoMudarConfSenha = e => {
+    setSenhas({ ...senhas, confirmarSenha: e.target.value });
 
     setErroGeral('');
 
-    const iguais =
-      inputConfSenhaRef.current.value === inputSenhaRef.current.value;
+    const iguais = e.target.value === inputSenhaRef.current.value;
 
     setValidacoes({ ...validacoes, iguais });
   };

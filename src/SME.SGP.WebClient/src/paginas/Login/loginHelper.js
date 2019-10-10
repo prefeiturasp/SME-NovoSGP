@@ -1,7 +1,7 @@
 import LoginService from '~/servicos/Paginas/LoginServices';
 import { salvarDadosLogin } from '~/redux/modulos/usuario/actions';
 import history from '~/servicos/history';
-import { URL_HOME, URL_MODIFICARSENHA } from '~/constantes/url';
+import { URL_HOME, URL_REDEFINIRSENHA } from '~/constantes/url';
 
 class LoginHelper {
   constructor(dispatch, redirect) {
@@ -27,7 +27,7 @@ class LoginHelper {
     );
 
     if (autenticacao.dados.modificarSenha) {
-      history.push(URL_MODIFICARSENHA);
+      history.push(URL_REDEFINIRSENHA);
       return { sucesso: false, erroGeral: '' };
     }
 
