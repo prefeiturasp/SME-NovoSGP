@@ -5,6 +5,13 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="MailKit" Version="2.3.1.6" />
+  <PackageReference Include="MailKit" Version="2.3.1.6" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="2.2.0" />
+    <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="5.5.0" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\SME.SGP.Dados\SME.SGP.Dados.csproj" />
     <ProjectReference Include="..\SME.SGP.Dominio.Interfaces\SME.SGP.Dominio.Interfaces.csproj" />
     <ProjectReference Include="..\SME.SGP.Dominio\SME.SGP.Dominio.csproj" />

@@ -1,6 +1,8 @@
 ﻿using Newtonsoft.Json;
 using SME.SGP.Aplicacao.Integracoes.Respostas;
+using SME.SGP.Dominio;
 using SME.SGP.Dto;
+using System;
 using System.Collections.Generic;
 using System.Net.Http;
 using System.Text;
@@ -15,6 +17,41 @@ namespace SME.SGP.Aplicacao.Integracoes
         public ServicoEOL(HttpClient httpClient)
         {
             this.httpClient = httpClient;
+        }
+
+        public async Task<AlterarSenhaRespostaDto> AlterarSenha(string login, string novaSenha)
+        {
+            httpClient.DefaultRequestHeaders.Clear();
+
+            var valoresParaEnvio = new List<KeyValuePair<string, string>> {
+                { new KeyValuePair<string, string>("usuario", login) },
+                { new KeyValuePair<string, string>("senha", novaSenha) }};
+
+            var resposta = await httpClient.PostAsync($"AutenticacaoSgp/AlterarSenha", new FormUrlEncodedContent(valoresParaEnvio));
+            return new AlterarSenhaRespostaDto
+            {
+                Mensagem = resposta.IsSuccessStatusCode ? "" : await resposta.Content.ReadAsStringAsync(),
+                StatusRetorno = (int)resposta.StatusCode,
+                SenhaAlterada = resposta.IsSuccessStatusCode
+            };
+        }
+
+        public async Task<UsuarioEolAutenticacaoRetornoDto> Autenticar(string login, string senha)
+        {
+            httpClient.DefaultRequestHeaders.Clear();
+
+            IList<KeyValuePair<string, string>> valoresParaEnvio = new List<KeyValuePair<string, string>> {
+                { new KeyValuePair<string, string>("login", login) },
+                { new KeyValuePair<string, string>("senha", senha) }};
+
+            var resposta = await httpClient.PostAsync($"AutenticacaoSgp/Autenticar", new FormUrlEncodedContent(valoresParaEnvio));
+
+            if (resposta.IsSuccessStatusCode)
+            {
+                var json = await resposta.Content.ReadAsStringAsync();
+                return JsonConvert.DeserializeObject<UsuarioEolAutenticacaoRetornoDto>(json);
+            }
+            else return null;
         }
 
         public async Task<IEnumerable<DisciplinaResposta>> ObterDisciplinasPorProfessorETurma(long codigoTurma, string rfProfessor)
@@ -66,14 +103,29 @@ namespace SME.SGP.Aplicacao.Integracoes
             return null;
         }
 
-        public IEnumerable<UsuarioEolRetornoDto> ObterFuncionariosPorCargoUe(string UeId, long cargoId)
+        public IEnumerable<UsuarioEolRetornoDto> ObterFuncionariosPorCargoUe(string ueId, long cargoId)
         {
-            var resposta = httpClient.GetAsync($"escolas/{UeId}/funcionarios/cargos/{cargoId}").Result;
+            var resposta = httpClient.GetAsync($"escolas/{ueId}/funcionarios/cargos/{cargoId}").Result;
             if (resposta.IsSuccessStatusCode)
             {
                 var json = resposta.Content.ReadAsStringAsync().Result;
                 return JsonConvert.DeserializeObject<IEnumerable<UsuarioEolRetornoDto>>(json);
             }
+            return null;
+        }
+
+        public async Task<IEnumerable<UsuarioEolRetornoDto>> ObterFuncionariosPorUe(BuscaFuncionariosFiltroDto buscaFuncionariosFiltroDto)
+        {
+            var jsonParaPost = new StringContent(JsonConvert.SerializeObject(buscaFuncionariosFiltroDto), UnicodeEncoding.UTF8, "application/json");
+
+            var resposta = await httpClient.PostAsync("funcionarios/", jsonParaPost);
+
+            if (resposta.IsSuccessStatusCode)
+            {
+                var json = await resposta.Content.ReadAsStringAsync();
+                return JsonConvert.DeserializeObject<IEnumerable<UsuarioEolRetornoDto>>(json);
+            }
+
             return null;
         }
 
@@ -84,6 +136,30 @@ namespace SME.SGP.Aplicacao.Integracoes
             {
                 var json = resposta.Content.ReadAsStringAsync().Result;
                 return JsonConvert.DeserializeObject<IEnumerable<ProfessorTurmaReposta>>(json);
+            }
+            return null;
+        }
+
+        public async Task<UsuarioEolAutenticacaoRetornoDto> ObterPerfisPorLogin(string login)
+        {
+            var resposta = await httpClient.GetAsync($"autenticacaoSgp/CarregarPerfisPorLogin/{login}");
+
+            if (resposta.IsSuccessStatusCode)
+            {
+                var json = await resposta.Content.ReadAsStringAsync();
+                return JsonConvert.DeserializeObject<UsuarioEolAutenticacaoRetornoDto>(json);
+            }
+            return null;
+        }
+
+        public async Task<int[]> ObterPermissoesPorPerfil(Guid perfilGuid)
+        {
+            var resposta = await httpClient.GetAsync($"autenticacaoSgp/CarregarPermissoesPorPerfil/{perfilGuid}");
+
+            if (resposta.IsSuccessStatusCode)
+            {
+                var json = await resposta.Content.ReadAsStringAsync();
+                return JsonConvert.DeserializeObject<int[]>(json);
             }
             return null;
         }
@@ -120,6 +196,19 @@ namespace SME.SGP.Aplicacao.Integracoes
                 return JsonConvert.DeserializeObject<IEnumerable<TurmaDto>>(json);
             }
             return null;
+        }
+
+        public async Task ReiniciarSenha(string codigoRf)
+        {
+            httpClient.DefaultRequestHeaders.Clear();
+
+            IList<KeyValuePair<string, string>> valoresParaEnvio = new List<KeyValuePair<string, string>> {
+                { new KeyValuePair<string, string>("login", codigoRf) }};
+
+            var resposta = await httpClient.PostAsync($"AutenticacaoSgp/ReiniciarSenha", new FormUrlEncodedContent(valoresParaEnvio));
+
+            if (!resposta.IsSuccessStatusCode)
+                throw new NegocioException("Não foi possível reiniciar a senha deste usuário");
         }
     }
 }

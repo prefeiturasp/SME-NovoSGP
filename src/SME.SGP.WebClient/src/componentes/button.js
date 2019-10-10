@@ -4,13 +4,12 @@ import styled from 'styled-components';
 import { Base, Active, Hover } from './colors';
 import Remover from '../recursos/Remover.svg';
 
-const Button = props => {
+const Button = React.forwardRef((props, ref) => {
   const {
     type,
     style,
     color,
     border,
-    bold,
     steady,
     remove,
     className,
@@ -41,14 +40,17 @@ const Button = props => {
   `;
 
   const Btn = styled.button`
+  display: flex;
+    position: relative;
     background: ${border ? 'transparent' : Active[color]} !important;
+    text-align: center;
     ${
-      border
-        ? `border-color: ${Active[color]} !important; color: ${Active[color]} !important;`
-        : `border: 0 none !important;`
+    border
+      ? `border-color: ${Active[color]} !important; color: ${Active[color]} !important;`
+      : `border: 0 none !important;`
     };
     ${customRadius && customRadius};
-    font-weight: ${bold ? 'bold' : 'normal'} !important;
+    font-weight: bold !important;
     ${width ? `width: ${width};` : ''}
     ${fontSize && `font-size: ${fontSize} !important;`}
     ${padding && `padding: ${padding} !important;`}
@@ -72,10 +74,11 @@ const Button = props => {
       type={type}
       className={`btn btn-${style} ${className} position-relative d-flex justify-content-center align-items-center ${
         padding ? '' : 'py-2 px-3'
-      } ${fontSize ? '' : 'fonte-14'}`}
+        } ${fontSize ? '' : 'fonte-14'}`}
       onClick={onClick}
       disabled={disabled}
       id={id}
+      ref={ref && ref}
     >
       {icon ? <Icon className={`fa fa-${icon} mr-2 py-1`} /> : null}
       {label}
@@ -87,14 +90,13 @@ const Button = props => {
       ) : null}
     </Btn>
   );
-};
+});
 
 Button.propTypes = {
   type: PropTypes.string,
   style: PropTypes.string,
   color: PropTypes.string,
   border: PropTypes.bool,
-  bold: PropTypes.bool,
   steady: PropTypes.bool,
   remove: PropTypes.bool,
   className: PropTypes.string,
@@ -103,6 +105,7 @@ Button.propTypes = {
   icon: PropTypes.string,
   padding: PropTypes.string,
   height: PropTypes.string,
+  lineHeight: PropTypes.string,
   width: PropTypes.string,
   fontSize: PropTypes.string,
   label: PropTypes.string,
@@ -116,15 +119,15 @@ Button.defaultProps = {
   style: 'primary',
   color: Base.Roxo,
   border: false,
-  bold: false,
   steady: false,
   remove: false,
   className: '',
-  onClick: () => {},
+  onClick: () => { },
   disabled: false,
   icon: '',
   padding: '',
   height: '38px',
+  lineHeight: 'auto',
   width: '',
   fontSize: '',
   label: '',

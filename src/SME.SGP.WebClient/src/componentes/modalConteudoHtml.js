@@ -68,6 +68,8 @@ const ModalConteudoHtml = props => {
     children,
     closable,
     loader,
+    desabilitarBotaoPrincipal,
+    esconderBotoes
   } = props;
   return (
     <Container
@@ -88,7 +90,7 @@ const ModalConteudoHtml = props => {
                     <TextoAlerta className="m-b-20">
                       {perguntaAtencao}
                     </TextoAlerta>
-                    <div className="d-flex justify-content-end">
+                    <div className="d-flex justify-content-end" hidden={esconderBotoes}>
                       <Button
                         key="btn-sim-confirmacao"
                         label={labelBotaoSecundario}
@@ -105,6 +107,7 @@ const ModalConteudoHtml = props => {
                         bold
                         className="padding-btn-confirmacao"
                         onClick={onConfirmacaoPrincipal}
+                        disabled={desabilitarBotaoPrincipal}
                       />
                     </div>
                   </CardBody>
@@ -113,7 +116,7 @@ const ModalConteudoHtml = props => {
             </Row>
           </>
         ) : (
-          <>
+          <div className="d-flex justify-content-end" hidden={esconderBotoes}>
             <Button
               key="btn-sim-confirmacao"
               label={labelBotaoSecundario}
@@ -130,14 +133,19 @@ const ModalConteudoHtml = props => {
               bold
               className="padding-btn-confirmacao"
               onClick={onConfirmacaoPrincipal}
+              disabled={desabilitarBotaoPrincipal}
             />
-          </>
+          </div>
         )
       }
     >
       {children}
     </Container>
   );
+};
+
+ModalConteudoHtml.defaultProps = {
+  desabilitarBotaoPrincipal: false
 };
 
 export default ModalConteudoHtml;

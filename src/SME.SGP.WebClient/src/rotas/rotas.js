@@ -1,5 +1,5 @@
 import React from 'react';
-import { Switch, Route } from 'react-router-dom';
+import { Switch } from 'react-router-dom';
 import { setRotas } from '../redux/modulos/navegacao/actions';
 import { store } from '../redux';
 import Principal from '../paginas/Principal/principal';
@@ -12,8 +12,12 @@ import NotificacoesLista from '~/paginas/Notificacoes/Lista/listaNotificacoes';
 import RotaAutenticadaEstruturada from './rotaAutenticadaEstruturada';
 import RotasTipo from '~/constantes/rotasTipo';
 import Login from '~/paginas/Login';
+import RecuperarSenha from '~/paginas/RecuperarSenha';
+import RedefinirSenha from '~/paginas/RedefinirSenha';
 import RotaNaoAutenticadaDesestruturada from './rotaNaoAutenticadaDesestruturada';
 import RotaAutenticadaDesestruturada from './rotaAutenticadaDesestruturada';
+import MeusDados from  '~/paginas/Perfil/meusDados';
+import PeriodosEscolares from '~/paginas/CalendarioEscolar/PeriodosEscolares/PeriodosEscolares';
 import ReiniciarSenha from '~/paginas/Configuracoes/Usuarios/reiniciarSenha';
 
 export default function Rotas() {
@@ -37,10 +41,29 @@ export default function Rotas() {
     tipo: RotasTipo.EstruturadaAutenticada,
   });
 
-  rotas.set('/login', {
+  rotas.set('/login/:redirect?/', {
     breadcrumbName: '',
+    menu: '',
     parent: '/',
     component: Login,
+    exact: true,
+    tipo: RotasTipo.DesestruturadaNaoAutenticada,
+  });
+
+  rotas.set('/recuperar-senha', {
+    breadcrumbName: '',
+    menu: '',
+    parent: '/',
+    component: RecuperarSenha,
+    exact: true,
+    tipo: RotasTipo.DesestruturadaNaoAutenticada,
+  });
+
+  rotas.set('/redefinir-senha/:token?/', {
+    breadcrumbName: '',
+    menu: '',
+    parent: '/',
+    component: RedefinirSenha,
     exact: true,
     tipo: RotasTipo.DesestruturadaNaoAutenticada,
   });
@@ -79,7 +102,7 @@ export default function Rotas() {
   });
 
   rotas.set('/notificacoes/:id', {
-    breadcrumbName: 'Notificações',
+    breadcrumbName: ['Notificações'],
     parent: '/',
     component: DetalheNotificacao,
     exact: true,
@@ -87,9 +110,26 @@ export default function Rotas() {
   });
 
   rotas.set('/notificacoes', {
-    breadcrumbName: 'Notificações',
+    breadcrumbName: ['Notificações'],
     parent: '/',
     component: NotificacoesLista,
+    exact: true,
+    tipo: RotasTipo.EstruturadaAutenticada,
+  });
+
+  rotas.set('/meus-dados', {
+    breadcrumbName: 'Perfil',
+    parent: '/',
+    component: MeusDados,
+    exact: true,
+    tipo: RotasTipo.EstruturadaAutenticada,
+  });
+
+  rotas.set('/calendario-escolar/periodos-escolares', {
+    breadcrumbName: 'Períodos Escolares',
+    menu: ['Calendário Escolar'],
+    parent: '/',
+    component: PeriodosEscolares,
     exact: true,
     tipo: RotasTipo.EstruturadaAutenticada,
   });
@@ -103,7 +143,7 @@ export default function Rotas() {
     tipo: RotasTipo.EstruturadaAutenticada,
   });
 
-  rotas.set('/:rf?', {
+  rotas.set('/', {
     icone: 'fas fa-home',
     parent: null,
     component: Principal,
@@ -135,7 +175,7 @@ export default function Rotas() {
   }
 
   return (
-    <div>
+    <div className="h-100">
       <Switch>
         {rotasArray.map(rota => {
           switch (rota.tipo) {

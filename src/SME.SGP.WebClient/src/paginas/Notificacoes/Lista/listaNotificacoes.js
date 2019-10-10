@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
+import * as moment from 'moment';
 import Cabecalho from '~/componentes-sgp/cabecalho';
 import Button from '~/componentes/button';
 import CampoTexto from '~/componentes/campoTexto';
@@ -14,6 +15,7 @@ import servicoNotificacao from '~/servicos/Paginas/ServicoNotificacao';
 import { EstiloLista } from './estiloLista';
 import notificacaoStatus from '~/dtos/notificacaoStatus';
 import CampoTextoBusca from '~/componentes/campoTextoBusca';
+import { URL_HOME } from '~/constantes/url';
 
 export default function NotificacoesLista() {
   const [idNotificacoesSelecionadas, setIdNotificacoesSelecionadas] = useState(
@@ -24,13 +26,12 @@ export default function NotificacoesLista() {
   const [listaStatus, setListaStatus] = useState([]);
   const [listaTipos, setTipos] = useState([]);
 
-  const [turmaSelecionada, setTurmaSelecionada] = useState();
+  const [dropdownTurmaSelecionada, setTurmaSelecionada] = useState();
   const [statusSelecionado, setStatusSelecionado] = useState();
   const [categoriaSelecionada, setCategoriaSelecionada] = useState();
   const [tipoSelecionado, setTipoSelecionado] = useState();
   const [tituloSelecionado, setTituloSelecionado] = useState();
   const [codigoSelecionado, setCodigoSelecionado] = useState();
-  const [desabilitarBotaoEditar, setDesabilitarBotaoEditar] = useState(true);
   const [desabilitarBotaoExcluir, setDesabilitarBotaoExcluir] = useState(true);
   const [desabilitarBotaoMarcarLido, setDesabilitarBotaoMarcarLido] = useState(
     true
@@ -70,7 +71,11 @@ export default function NotificacoesLista() {
       {
         title: 'Data/Hora',
         dataIndex: 'data',
-        render: (text, row) => montarLinhasTabela(text, row),
+        width: 200,
+        render: (text, row) => {
+          const dataFormatada = moment(text).format('DD/MM/YYYY HH:mm:ss');
+          return montarLinhasTabela(dataFormatada, row);
+        },
       },
     ];
 
@@ -110,7 +115,7 @@ export default function NotificacoesLista() {
     onClickFiltrar();
   }, [
     statusSelecionado,
-    turmaSelecionada,
+    dropdownTurmaSelecionada,
     categoriaSelecionada,
     tipoSelecionado,
     tituloSelecionado,
@@ -121,24 +126,23 @@ export default function NotificacoesLista() {
     { id: 2, descricao: 'Turma selecionada' },
   ];
 
+  const statusLista = ['', 'Não lida', 'Lida', 'Aceita', 'Recusada'];
+
   function montarLinhasTabela(text, row, colunaSituacao) {
     return row.status === notificacaoStatus.Pendente ? (
       colunaSituacao ? (
-        <a className="texto-vermelho-negrito text-uppercase">{text}</a>
+        <span className="cor-vermelho font-weight-bold text-uppercase">
+          {statusLista[row.status]}
+        </span>
       ) : (
-        <a className="texto-negrito">{text}</a>
-      )
+          <span className="cor-novo-registro-lista">{text}</span>
+        )
     ) : (
-      text
-    );
+        text
+      );
   }
 
   function onSelectRow(ids) {
-    if (ids && ids.length == 1) {
-      setDesabilitarBotaoEditar(false);
-    } else {
-      setDesabilitarBotaoEditar(true);
-    }
 
     if (ids && ids.length > 0) {
       const notifSelecionadas = listaNotificacoes.filter(noti => {
@@ -166,6 +170,10 @@ export default function NotificacoesLista() {
     }
 
     setIdNotificacoesSelecionadas(ids);
+  }
+
+  function onClickRow(row) {
+    onClickEditar(row.id);
   }
 
   function onChangeTurma(turma) {
@@ -196,8 +204,8 @@ export default function NotificacoesLista() {
     setTipoSelecionado(tipo);
   }
 
-  function onClickEditar() {
-    history.push(`/notificacoes/${idNotificacoesSelecionadas[0]}`);
+  function onClickEditar(id) {
+    history.push(`/notificacoes/${id}`);
   }
 
   async function onClickFiltrar() {
@@ -208,18 +216,21 @@ export default function NotificacoesLista() {
       tipo: tipoSelecionado,
       titulo: tituloSelecionado || null,
       usuarioRf: usuario.rf,
+      anoLetivo: usuario.filtroAtual.anoLetivo
     };
-    if (usuario.turmaSelecionada && usuario.turmaSelecionada.length) {
-      paramsQuery.ano = usuario.turmaSelecionada[0].ano;
-      paramsQuery.dreId = usuario.turmaSelecionada[0].codDre;
-      paramsQuery.ueId = usuario.turmaSelecionada[0].codEscola;
-    }
-    if (
-      usuario.turmaSelecionada &&
-      usuario.turmaSelecionada.length &&
-      !desabilitarTurma
-    ) {
-      paramsQuery.turmaId = usuario.turmaSelecionada[0].codEscola;
+    if (dropdownTurmaSelecionada && dropdownTurmaSelecionada == '2') {
+      if (usuario.turmaSelecionada && usuario.turmaSelecionada.length) {
+        paramsQuery.ano = usuario.turmaSelecionada[0].ano;
+        paramsQuery.dreId = usuario.turmaSelecionada[0].codDre;
+        paramsQuery.ueId = usuario.turmaSelecionada[0].codEscola;
+      }
+      if (
+        usuario.turmaSelecionada &&
+        usuario.turmaSelecionada.length &&
+        !desabilitarTurma
+      ) {
+        paramsQuery.turmaId = usuario.turmaSelecionada[0].codEscola;
+      }
     }
     const listaNotifi = await api.get('v1/notificacoes', {
       params: paramsQuery,
@@ -248,6 +259,14 @@ export default function NotificacoesLista() {
     }
   }
 
+  function quandoTeclaParaBaixoPesquisaCodigo(e) {
+    if (e.key === 'e') e.preventDefault();
+  }
+
+  function quandoClicarVoltar() {
+    history.push(URL_HOME);
+  }
+
   return (
     <>
       <Cabecalho pagina="Notificações" />
@@ -265,6 +284,8 @@ export default function NotificacoesLista() {
             onSearch={onSearchCodigo}
             onChange={onChangeCodigo}
             value={codigoSelecionado}
+            onKeyDown={quandoTeclaParaBaixoPesquisaCodigo}
+            type="number"
           />
         </div>
         <div className="col-md-3 pb-3">
@@ -275,7 +296,7 @@ export default function NotificacoesLista() {
             valueOption="id"
             valueText="descricao"
             onChange={onChangeTurma}
-            valueSelect={turmaSelecionada || []}
+            valueSelect={dropdownTurmaSelecionada || []}
             placeholder="Turma"
             disabled={desabilitarTurma}
           />
@@ -334,12 +355,11 @@ export default function NotificacoesLista() {
             disabled={desabilitarBotaoMarcarLido}
           />
           <Button
-            label="Editar"
+            label="Voltar"
             color={Colors.Azul}
             border
             className="mb-2 float-right"
-            onClick={onClickEditar}
-            disabled={desabilitarBotaoEditar}
+            onClick={quandoClicarVoltar}
           />
         </div>
         <div className="col-md-12 pt-2">
@@ -347,6 +367,7 @@ export default function NotificacoesLista() {
             id="lista-notificacoes"
             selectedRowKeys={idNotificacoesSelecionadas}
             onSelectRow={onSelectRow}
+            onClickRow={onClickRow}
             columns={colunasTabela}
             dataSource={listaNotificacoes}
             selectMultipleRows

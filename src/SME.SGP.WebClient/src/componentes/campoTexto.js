@@ -1,9 +1,10 @@
 import React from 'react';
-import { Field, ErrorMessage } from 'formik';
+import { Field } from 'formik';
 
 import styled from 'styled-components';
 import { Input } from 'antd';
 import { Base } from './colors';
+
 import Label from './label';
 
 const Campo = styled.div`
@@ -12,7 +13,6 @@ const Campo = styled.div`
   }
   .campo {
     margin-bottom: 5px;
-    background-image: none !important;
   }
   .ant-input {
     height: 38px;
@@ -24,7 +24,9 @@ const CampoTexto = ({
   id,
   form,
   className,
+  classNameCampo,
   type,
+  maskType,
   placeholder,
   onChange,
   value,
@@ -32,19 +34,22 @@ const CampoTexto = ({
   maxlength,
   label
 }) => {
+
   const possuiErro = () => {
     return form && form.errors[name] && form.touched[name];
   };
+
   const executaOnBlur = event => {
     const { relatedTarget } = event;
     if (relatedTarget && relatedTarget.getAttribute('type') === 'button') {
       event.preventDefault();
     }
   };
+
   return (
     <>
-      <Campo>
-        {label ? <Label text={label} /> : ''}
+      <Campo className={classNameCampo}>
+        {label ? <Label text={label} control={name || ''} /> : ''}
         {form ? (
           <>
             {' '}
@@ -55,6 +60,7 @@ const CampoTexto = ({
                 possuiErro() ? 'is-invalid' : ''
               } ${className || ''} ${desabilitado ? 'desabilitado' : ''}`}
               component={type || 'input'}
+              type = {maskType && maskType}
               disabled={desabilitado}
               onBlur={executaOnBlur}
               maxLength={maxlength || ''}
@@ -68,4 +74,6 @@ const CampoTexto = ({
     </>
   );
 };
+
+
 export default CampoTexto;
