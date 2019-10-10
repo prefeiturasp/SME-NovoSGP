@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using SME.SGP.Aplicacao;
 using SME.SGP.Dto;
 using System.Collections.Generic;
@@ -7,6 +8,7 @@ namespace SME.SGP.Api.Controllers
 {
     [ApiController]
     [Route("api/v1/dres")]
+    [Authorize("Bearer")]
     public class DiretoriaRegionalEducacaoController : ControllerBase
     {
         private readonly IConsultaDres consultaDres;

@@ -1,6 +1,8 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using SME.SGP.Aplicacao;
+using SME.SGP.Aplicacao.Integracoes;
+using SME.SGP.Aplicacao.Servicos;
 using SME.SGP.Dados;
 using SME.SGP.Dados.Contexto;
 using SME.SGP.Dados.Repositorios;
@@ -28,6 +30,7 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IComandosSupervisor, ComandosSupervisor>();
             services.TryAddScoped<IComandosNotificacao, ComandosNotificacao>();
             services.TryAddScoped<IComandosWorkflowAprovacao, ComandosWorkflowAprovacao>();
+            services.TryAddScoped<IComandosUsuario, ComandosUsuario>();
         }
 
         private static void RegistrarConsultas(IServiceCollection services)
@@ -44,6 +47,7 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IConsultaDres, ConsultaDres>();
             services.TryAddScoped<IConsultasNotificacao, ConsultasNotificacao>();
             services.TryAddScoped<IConsultasWorkflowAprovacao, ConsultasWorkflowAprovacao>();
+            services.TryAddScoped<IConsultasUnidadesEscolares, ConsultasUnidadesEscolares>();
         }
 
         private static void RegistrarContextos(IServiceCollection services)
@@ -71,6 +75,8 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IRepositorioWorkflowAprovacaoNivel, RepositorioWorkflowAprovacaoNivel>();
             services.TryAddScoped<IRepositorioUsuario, RepositorioUsuario>();
             services.TryAddScoped<IRepositorioWorkflowAprovacaoNivelUsuario, RepositorioWorkflowAprovacaoNivelUsuario>();
+            services.TryAddScoped<IRepositorioPrioridadePerfil, RepositorioPrioridadePerfil>();
+            services.TryAddScoped<IRepositorioConfiguracaoEmail, RepositorioConfiguracaoEmail>();
         }
 
         private static void RegistrarServicos(IServiceCollection services)
@@ -78,6 +84,10 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IServicoWorkflowAprovacao, ServicoWorkflowAprovacao>();
             services.TryAddScoped<IServicoNotificacao, ServicoNotificacao>();
             services.TryAddScoped<IServicoUsuario, ServicoUsuario>();
+            services.TryAddScoped<IServicoAutenticacao, ServicoAutenticacao>();
+            services.TryAddScoped<IServicoPerfil, ServicoPerfil>();
+            services.TryAddScoped<IServicoEmail, ServicoEmail>();
+            services.TryAddScoped<IServicoTokenJwt, ServicoTokenJwt>();
         }
     }
 }

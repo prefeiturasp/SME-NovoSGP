@@ -17,6 +17,8 @@ const CampoTextoBusca = ({
   desabilitado,
   onSearch,
   onChange,
+  onKeyDown,
+  type
 }) => {
   return (
     <>
@@ -27,6 +29,8 @@ const CampoTextoBusca = ({
           onSearch={onSearch}
           disabled={desabilitado}
           value={value}
+          type={type && type}
+          onKeyDown={onKeyDown}
         />
       </Campo>
     </>

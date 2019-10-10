@@ -5,6 +5,19 @@ export function salvarRf(rf) {
   };
 }
 
+export function SalvarDadosLogin(Login) {
+  return {
+    type: '@usuario/salvarLogin',
+    payload: Login,
+  };
+}
+
+export function Deslogar() {
+  return {
+    type: '@usuario/deslogar',
+  };
+}
+
 export function turmasUsuario(turmas) {
   return {
     type: '@usuario/turmasUsuario',
@@ -22,5 +35,26 @@ export function selecionarTurma(turma) {
 export function removerTurma() {
   return {
     type: '@usuario/removerTurma',
+  };
+}
+
+export function meusDados(dados) {
+  return {
+    type: '@usuario/meusDados',
+    payload: dados
+  };
+}
+
+export function filtroAtual(filtro) {
+  return {
+    type: '@usuario/filtroAtual',
+    payload: filtro,
+  };
+}
+
+export function salvarDadosUsuario(filtro) {
+  return {
+    type: '@usuario/salvarDadosUsuario',
+    payload: filtro,
   };
 }

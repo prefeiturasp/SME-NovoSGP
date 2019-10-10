@@ -11,12 +11,10 @@ import {
   URL_PLANO_CICLO,
   URL_FREQ_PLANO_AULA,
 } from '../../constantes/url';
-import { salvarRf } from '../../redux/modulos/usuario/actions';
-import { store } from '../../redux';
 import ListaNotificacoes from './listaNotificacoes';
 import modalidade from '~/dtos/modalidade';
 
-const Principal = props => {
+const Principal = () => {
   const FREQUENCIA_TYPE = 'frequencia';
   const CICLOS_TYPE = 'ciclos';
   const ANUAL_TYPE = 'anual';
@@ -24,48 +22,41 @@ const Principal = props => {
   const [turmaSelecionada, setTurmaSelecionada] = useState(false);
   const [modalidadeEja, setModalidadeEja] = useState(false);
 
-  const filtroStore = useSelector(state => state.usuario);
+  const usuario = useSelector(state => state.usuario);
 
   useEffect(() => {
     if (
-      filtroStore &&
-      filtroStore.turmaSelecionada &&
-      filtroStore.turmaSelecionada.length &&
-      filtroStore.turmaSelecionada[0].codModalidade == modalidade.EJA
+      usuario &&
+      usuario.turmaSelecionada &&
+      usuario.turmaSelecionada.length &&
+      usuario.turmaSelecionada[0].codModalidade == modalidade.EJA
     ) {
       setModalidadeEja(true);
     } else {
       setModalidadeEja(false);
     }
-  }, [filtroStore.turmaSelecionada]);
+  }, [usuario.turmaSelecionada]);
 
   const validarFiltro = () => {
-    if (!filtroStore.turmaSelecionada) {
+    if (!usuario.turmaSelecionada) {
       setTurmaSelecionada(false);
       setEscolaSelecionada(false);
       return;
     }
 
-    const temTurma = filtroStore.turmaSelecionada.length > 0;
+    const temTurma = usuario.turmaSelecionada.length > 0;
     const temEscola =
       temTurma &&
-      (filtroStore.turmaSelecionada[0].ue !== '' &&
-        typeof filtroStore.turmaSelecionada[0].ue !== 'undefined');
+      (usuario.turmaSelecionada[0].ue !== '' &&
+        typeof usuario.turmaSelecionada[0].ue !== 'undefined');
 
     setTurmaSelecionada(temTurma);
     setEscolaSelecionada(temEscola);
   };
 
   useEffect(() => {
-    if (props.match.params && props.match.params.rf) {
-      const { rf } = props.match.params;
-      store.dispatch(salvarRf(rf));
-    }
-  }, []);
-
-  useEffect(() => {
     validarFiltro();
-  }, [filtroStore]);
+  }, [usuario]);
 
   const cicloLiberado = () => {
     return escolaSelecionada;
@@ -85,6 +76,15 @@ const Principal = props => {
 
   const Label = styled.h5`
     font-size: 16px !important;
+  `;
+
+  const Dashboard = styled.div`
+    .alinhar-itens-topo {
+      align-items: initial !important;
+    }
+    .card {
+      height: 100% !important;
+    }
   `;
 
   return (
@@ -118,39 +118,44 @@ const Principal = props => {
           </Row>
         </Grid>
       </Card>
-      <Row>
-        <Grid cols={12} className="form-inline">
-          <CardLink
-            cols={[4, 4, 4, 12]}
-            iconSize="90px"
-            url={URL_FREQ_PLANO_AULA}
-            disabled={isDesabilitado(FREQUENCIA_TYPE)}
-            icone="fa-columns"
-            pack="fas"
-            label="Frequência/ Plano de Aula"
-          />
-          <CardLink
-            cols={[4, 4, 4, 12]}
-            classHidden="hidden-xs-down"
-            iconSize="90px"
-            url={URL_PLANO_CICLO}
-            disabled={isDesabilitado(CICLOS_TYPE)}
-            icone="fa-calendar-minus"
-            pack="far"
-            label={modalidadeEja ? 'Plano de Etapa' : 'Plano de Ciclo'}
-          />
-          <CardLink
-            cols={[4, 4, 4, 12]}
-            classHidden="hidden-xs-down"
-            iconSize="90px"
-            url={URL_PLANO_ANUAL}
-            disabled={isDesabilitado(ANUAL_TYPE)}
-            icone="fa-calendar-alt"
-            pack="far"
-            label={modalidadeEja ? 'Plano Semestral' : 'Plano Anual'}
-          />
-        </Grid>
-      </Row>
+      <Dashboard>
+        <Row>
+          <Grid cols={12} className="form-inline alinhar-itens-topo">
+            <CardLink
+              cols={[4, 4, 4, 12]}
+              iconSize="90px"
+              url={URL_FREQ_PLANO_AULA}
+              disabled={isDesabilitado(FREQUENCIA_TYPE)}
+              icone="fa-columns"
+              pack="fas"
+              label="Frequência/ Plano de Aula"
+              minHeight="177px"
+            />
+            <CardLink
+              cols={[4, 4, 4, 12]}
+              classHidden="hidden-xs-down"
+              iconSize="90px"
+              url={URL_PLANO_CICLO}
+              disabled={isDesabilitado(CICLOS_TYPE)}
+              icone="fa-calendar-minus"
+              pack="far"
+              label={modalidadeEja ? 'Plano de Etapa' : 'Plano de Ciclo'}
+              minHeight="177px"
+            />
+            <CardLink
+              cols={[4, 4, 4, 12]}
+              classHidden="hidden-xs-down"
+              iconSize="90px"
+              url={URL_PLANO_ANUAL}
+              disabled={isDesabilitado(ANUAL_TYPE)}
+              icone="fa-calendar-alt"
+              pack="far"
+              label={modalidadeEja ? 'Plano Semestral' : 'Plano Anual'}
+              minHeight="177px"
+            />
+          </Grid>
+        </Row>
+      </Dashboard>
     </div>
   );
 };

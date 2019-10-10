@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react';
+import { useSelector } from 'react-redux';
 import { Formik, Form } from 'formik';
 import * as Yup from 'yup';
-import { erros, erro, sucesso, confirmar } from '~/servicos/alertas';
+import { erros, sucesso, confirmar } from '~/servicos/alertas';
 import Card from '~/componentes/card';
 import { EstiloDetalhe } from './detalheNotificacao.css';
 import api from '~/servicos/api';
@@ -22,6 +23,8 @@ const DetalheNotificacao = ({ match }) => {
   const [idNotificacao, setIdNotificacao] = useState('');
   const [listaDeStatus, setListaDeStatus] = useState([]);
   const [aprovar, setAprovar] = useState(false);
+
+  const usuario = useSelector(state => state.usuario);
 
   const [validacoes, setValidacoes] = useState(
     Yup.object({
@@ -49,6 +52,7 @@ const DetalheNotificacao = ({ match }) => {
       .then(resposta => setNotificacao(resposta.data))
       .catch(listaErros => erros(listaErros));
   };
+
   useEffect(() => {
     if (idNotificacao) {
       buscaNotificacao(idNotificacao);
@@ -85,13 +89,19 @@ const DetalheNotificacao = ({ match }) => {
     ) {
       buscaLinhaTempo();
     }
+    if (notificacao.categoriaId === notificacaoCategoria.Aviso) {
+      if (usuario.rf.length > 0)
+        servicoNotificacao.buscaNotificacoesPorAnoRf(2019, usuario.rf);
+    }
   }, [notificacao]);
 
   const marcarComoLida = () => {
-    const idsNotificacoes = [...idNotificacao];
-    servicoNotificacao.marcarComoLida(idsNotificacoes, () =>
-      history.push(urlTelaNotificacoes)
-    );
+    const idsNotificacoes = [idNotificacao];
+    servicoNotificacao.marcarComoLida(idsNotificacoes, () => {
+      history.push(urlTelaNotificacoes);
+      if (usuario.rf.length > 0)
+        servicoNotificacao.buscaNotificacoesPorAnoRf(2019, usuario.rf);
+    });
   };
 
   const excluir = async () => {
@@ -100,10 +110,12 @@ const DetalheNotificacao = ({ match }) => {
       'Você tem certeza que deseja excluir esta notificação?'
     );
     if (confirmado) {
-      const idsNotificacoes = [...idNotificacao];
-      servicoNotificacao.excluir(idsNotificacoes, () =>
-        history.push(urlTelaNotificacoes)
-      );
+      const idsNotificacoes = [idNotificacao];
+      servicoNotificacao.excluir(idsNotificacoes, () => {
+        history.push(urlTelaNotificacoes);
+        if (usuario.rf.length > 0)
+          servicoNotificacao.buscaNotificacoesPorAnoRf(2019, usuario.rf);
+      });
     }
   };
 
@@ -130,11 +142,30 @@ const DetalheNotificacao = ({ match }) => {
     }
   };
 
+  const formatarData = dataString => {
+    const data = new Date(dataString);
+    if (data && data.getDate()) {
+      const mes = transformaUnidadeData(data.getMonth().toString());
+      const dia = transformaUnidadeData(data.getDate().toString());
+      const hora = transformaUnidadeData(data.getHours().toString());
+      const minutos = transformaUnidadeData(data.getMinutes().toString());
+      return `${dia}/${mes}/${data.getFullYear()}, ${hora}:${minutos}`;
+    }
+    return dataString;
+  };
+
+  const transformaUnidadeData = unidade => {
+    if (unidade.length === 1) {
+      unidade = '0' + unidade;
+    }
+    return unidade;
+  };
+
   return (
     <>
       <Cabecalho pagina="Notificações" />
       <Formik
-        enableReinitialize={true}
+        enableReinitialize
         initialValues={{
           observacao: notificacao.observacao || '',
         }}
@@ -174,6 +205,11 @@ const DetalheNotificacao = ({ match }) => {
                         })
                       );
                       setAprovar(true);
+                      if (usuario.rf.length > 0)
+                        servicoNotificacao.buscaNotificacoesPorAnoRf(
+                          2019,
+                          usuario.rf
+                        );
                       form.validateForm().then(() => form.handleSubmit(e));
                     }}
                   />
@@ -234,7 +270,8 @@ const DetalheNotificacao = ({ match }) => {
                       <div className="row">
                         <div className="col-xs-12 col-md-12 col-lg-12">
                           <div className="notificacao-horario">
-                            Notificação automática {notificacao.criadoEm}
+                            Notificação automática{' '}
+                            {formatarData(notificacao.criadoEm)}
                           </div>
                         </div>
                         <div className="col-xs-12 col-md-12 col-lg-12">
