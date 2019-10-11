@@ -1,8 +1,7 @@
 import LoginService from '~/servicos/Paginas/LoginServices';
-import { SalvarDadosLogin } from '~/redux/modulos/usuario/actions';
-import { setarPerfis, perfilSelecionado } from '~/redux/modulos/perfil/actions';
+import { salvarDadosLogin } from '~/redux/modulos/usuario/actions';
 import history from '~/servicos/history';
-import { URL_HOME, URL_MODIFICARSENHA } from '~/constantes/url';
+import { URL_HOME, URL_REDEFINIRSENHA } from '~/constantes/url';
 
 class LoginHelper {
   constructor(dispatch, redirect) {
@@ -13,22 +12,22 @@ class LoginHelper {
   acessar = async login => {
     const autenticacao = await LoginService.autenticar(login);
 
-    if (!autenticacao.sucesso) {
-      return autenticacao;
-    }
+    if (!autenticacao.sucesso) return autenticacao;
 
-    const RF = Number.isInteger(login.usuario * 1) ? login.usuario : '';
+    const rf = Number.isInteger(login.usuario * 1) ? login.usuario : '';
 
     this.dispatch(
-      SalvarDadosLogin({
+      salvarDadosLogin({
         token: autenticacao.dados.token,
-        rf: RF,
+        rf,
+        usuario: login.usuario,
+        modificarSenha: autenticacao.dados.modificarSenha,
         perfisUsuario: autenticacao.dados.PerfisUsuario,
       })
     );
 
     if (autenticacao.dados.modificarSenha) {
-      history.push(URL_MODIFICARSENHA);
+      history.push(URL_REDEFINIRSENHA);
       return { sucesso: false, erroGeral: '' };
     }
 
