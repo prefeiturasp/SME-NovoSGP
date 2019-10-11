@@ -114,7 +114,6 @@ namespace SME.SGP.Api.Controllers
         [HttpPost]
         [ProducesResponseType(200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        [Permissao(Permissao.N_I, Policy = "Bearer")]
         public IActionResult Post([FromBody]NotificacaoDto notificacaoDto)
         {
             comandosNotificacao.Salvar(notificacaoDto);

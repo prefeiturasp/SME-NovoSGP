@@ -38,6 +38,11 @@ export default function NotificacoesLista() {
   );
   const [desabilitarTurma, setDesabilitarTurma] = useState(true);
   const [colunasTabela, setColunasTabela] = useState([]);
+  const [paginacao, setPaginacao] = useState({
+    numeroPagina: 1,
+    numeroRegistros: 5,
+    totalRegistros: 0,
+  });
 
   const usuario = useSelector(store => store.usuario);
 
@@ -135,15 +140,14 @@ export default function NotificacoesLista() {
           {statusLista[row.status]}
         </span>
       ) : (
-          <span className="cor-novo-registro-lista">{text}</span>
-        )
+        <span className="cor-novo-registro-lista">{text}</span>
+      )
     ) : (
-        text
-      );
+      text
+    );
   }
 
   function onSelectRow(ids) {
-
     if (ids && ids.length > 0) {
       const notifSelecionadas = listaNotificacoes.filter(noti => {
         return ids.includes(noti.id);
@@ -208,7 +212,7 @@ export default function NotificacoesLista() {
     history.push(`/notificacoes/${id}`);
   }
 
-  async function onClickFiltrar() {
+  const filtrarNotificacoes = async () => {
     const paramsQuery = {
       categoria: categoriaSelecionada,
       codigo: codigoSelecionado || null,
@@ -216,7 +220,7 @@ export default function NotificacoesLista() {
       tipo: tipoSelecionado,
       titulo: tituloSelecionado || null,
       usuarioRf: usuario.rf,
-      anoLetivo: usuario.filtroAtual.anoLetivo
+      anoLetivo: usuario.filtroAtual.anoLetivo,
     };
     if (dropdownTurmaSelecionada && dropdownTurmaSelecionada == '2') {
       if (usuario.turmaSelecionada && usuario.turmaSelecionada.length) {
@@ -232,12 +236,28 @@ export default function NotificacoesLista() {
         paramsQuery.turmaId = usuario.turmaSelecionada[0].codEscola;
       }
     }
-    const listaNotifi = await api.get('v1/notificacoes', {
-      params: paramsQuery,
+
+    const listaNotifi = await api.get(
+      `v1/notificacoes/?numeroPagina=${paginacao.numeroPagina}&numeroRegistros=${paginacao.numeroRegistros}`,
+      {
+        params: paramsQuery,
+      }
+    );
+    setListaNotificacoes(listaNotifi.data.items);
+    setPaginacao({
+      ...paginacao,
+      totalRegistros: listaNotifi.data.totalRegistros,
     });
-    setListaNotificacoes(listaNotifi.data);
     setIdNotificacoesSelecionadas([]);
     onSelectRow([]);
+  };
+
+  useEffect(() => {
+    filtrarNotificacoes();
+  }, [paginacao]);
+
+  async function onClickFiltrar() {
+    filtrarNotificacoes();
   }
 
   function marcarComoLida() {
@@ -267,6 +287,10 @@ export default function NotificacoesLista() {
     history.push(URL_HOME);
   }
 
+  const onPaginacao = e => {
+    debugger;
+    setPaginacao(e);
+  };
   return (
     <>
       <Cabecalho pagina="Notificações" />
@@ -371,6 +395,8 @@ export default function NotificacoesLista() {
             columns={colunasTabela}
             dataSource={listaNotificacoes}
             selectMultipleRows
+            paginacao={paginacao}
+            onPaginacao={onPaginacao}
           />
         </div>
       </EstiloLista>
