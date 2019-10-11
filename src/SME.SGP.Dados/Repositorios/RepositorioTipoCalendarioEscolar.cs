@@ -47,9 +47,7 @@ namespace SME.SGP.Dados.Repositorios
 
             return quantidadeRegistrosExistentes > 0;
         }
-
-        override
-        public TipoCalendarioEscolar ObterPorId(long id)
+        public override TipoCalendarioEscolar ObterPorId(long id)
         {
             StringBuilder query = new StringBuilder();
 
