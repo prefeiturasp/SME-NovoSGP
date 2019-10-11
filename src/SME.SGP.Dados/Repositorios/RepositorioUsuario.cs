@@ -14,6 +14,16 @@ namespace SME.SGP.Dados.Repositorios
         {
         }
 
+        public bool ExisteUsuarioComMesmoEmail(string email, long idUsuarioExistente)
+        {
+            var query = new StringBuilder();
+            query.Append("select * from usuario ");
+            query.Append("where email = @email and id <> @id");
+
+            return database.Conexao.Query<Usuario>(query.ToString(), new { email, id = idUsuarioExistente })
+                .Any();
+        }
+
         public Usuario ObterPorCodigoRfLogin(string codigoRf, string login)
         {
             var query = new StringBuilder();
