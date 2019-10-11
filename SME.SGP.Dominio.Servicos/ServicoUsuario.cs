@@ -9,9 +9,9 @@ namespace SME.SGP.Dominio
 {
     public class ServicoUsuario : IServicoUsuario
     {
-        private readonly IRepositorioPrioridadePerfil repositorioPrioridadePerfil;
         private const string CLAIM_RF = "rf";
         private readonly IHttpContextAccessor httpContextAccessor;
+        private readonly IRepositorioPrioridadePerfil repositorioPrioridadePerfil;
         private readonly IRepositorioUsuario repositorioUsuario;
         private readonly IServicoEOL servicoEOL;
         private readonly IUnitOfWork unitOfWork;
@@ -19,7 +19,7 @@ namespace SME.SGP.Dominio
         public ServicoUsuario(IRepositorioUsuario repositorioUsuario,
                               IServicoEOL servicoEOL,
                               IRepositorioPrioridadePerfil repositorioPrioridadePerfil,
-                              IUnitOfWork unitOfWork)
+                              IUnitOfWork unitOfWork,
                               IHttpContextAccessor httpContextAccessor)
         {
             this.repositorioUsuario = repositorioUsuario ?? throw new ArgumentNullException(nameof(repositorioUsuario));
@@ -36,6 +36,16 @@ namespace SME.SGP.Dominio
                 throw new NegocioException("Usuário não encontrado.");
 
             await AlterarEmail(usuario, novoEmail);
+        }
+
+        public async Task AlterarEmailUsuarioPorRfOuInclui(string codigoRf, string novoEmail)
+        {
+            unitOfWork.IniciarTransacao();
+
+            var usuario = ObterUsuarioPorCodigoRfLoginOuAdiciona(codigoRf);
+            await AlterarEmail(usuario, novoEmail);
+
+            unitOfWork.PersistirTransacao();
         }
 
         public string ObterClaim(string nomeClaim)
@@ -58,16 +68,8 @@ namespace SME.SGP.Dominio
             var rf = ObterClaim(CLAIM_RF);
             return rf;
         }
-    public async Task AlterarEmailUsuarioPorRfOuInclui(string codigoRf, string novoEmail)
-    {
-        unitOfWork.IniciarTransacao();
 
-        var usuario = ObterUsuarioPorCodigoRfLoginOuAdiciona(codigoRf);
-        await AlterarEmail(usuario, novoEmail);
-
-        unitOfWork.PersistirTransacao();
-    }
-    public Usuario ObterUsuarioPorCodigoRfLoginOuAdiciona(string codigoRf, string login = "")
+        public Usuario ObterUsuarioPorCodigoRfLoginOuAdiciona(string codigoRf, string login = "")
         {
             var usuario = repositorioUsuario.ObterPorCodigoRfLogin(codigoRf, login);
             if (usuario != null)
