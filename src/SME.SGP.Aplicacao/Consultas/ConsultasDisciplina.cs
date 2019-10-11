@@ -91,6 +91,7 @@ namespace SME.SGP.Aplicacao
                     {
                         CodigoComponenteCurricular = disciplina.CodigoComponenteCurricular,
                         Nome = disciplina.Nome,
+                        Regencia = disciplina.Regencia,
                         PossuiObjetivos = await consultasObjetivoAprendizagem.DisciplinaPossuiObjetivosDeAprendizagem(disciplina.CodigoComponenteCurricular)
                     });
                 }
