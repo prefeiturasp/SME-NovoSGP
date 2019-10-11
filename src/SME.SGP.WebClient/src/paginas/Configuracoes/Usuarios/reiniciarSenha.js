@@ -1,6 +1,6 @@
+import { Form, Formik } from 'formik';
 import React, { useEffect, useState } from 'react';
 import * as Yup from 'yup';
-import { Formik, Form } from 'formik';
 import Cabecalho from '~/componentes-sgp/cabecalho';
 import Button from '~/componentes/button';
 import CampoTexto from '~/componentes/campoTexto';
@@ -12,17 +12,19 @@ import { confirmar, sucesso } from '~/servicos/alertas';
 import api from '~/servicos/api';
 
 import Card from '../../../componentes/card';
+import history from '~/servicos/history';
+import { URL_HOME } from '~/constantes/url';
 
 export default function ReiniciarSenha() {
-  const [selectedRowKeys, setSelectedRowKeys] = useState([]);
+  const [linhaSelecionada, setLinhaSelecionada] = useState({});
   const [listaUsuario, setListaUsuario] = useState([]);
 
   const [listaDres, setListaDres] = useState([]);
   const [dreSelecionada, setDreSelecionada] = useState('');
   const [listaUes, setListaUes] = useState([]);
-  const [ueSelecionada, setUeSelecionada] = useState([]);
-  const [nomeUsuarioSelecionado, setNomeUsuarioSelecionado] = useState([]);
-  const [rfSelecionado, setRfSelecionado] = useState([]);
+  const [ueSelecionada, setUeSelecionada] = useState('');
+  const [nomeUsuarioSelecionado, setNomeUsuarioSelecionado] = useState('');
+  const [rfSelecionado, setRfSelecionado] = useState('');
   const [emailUsuarioSelecionado, setEmailUsuarioSelecionado] = useState('');
   const [exibirModalReiniciarSenha, setExibirModalReiniciarSenha] = useState(
     false
@@ -30,7 +32,7 @@ export default function ReiniciarSenha() {
   const [semEmailCadastrado, setSemEmailCadastrado] = useState(false);
   const [refForm, setRefForm] = useState();
 
-  const [validacoes, setValidacoes] = useState(
+  const [validacoes] = useState(
     Yup.object({
       emailUsuario: Yup.string()
         .email('Digite um e-mail válido.')
@@ -41,77 +43,98 @@ export default function ReiniciarSenha() {
   const colunas = [
     {
       title: 'Nome do usuário',
-      dataIndex: 'nomeUsuario',
-      width: '50%',
+      dataIndex: 'nomeServidor',
+      width: '66%',
     },
     {
       title: 'Registro Funcional (RF)',
-      dataIndex: 'registroFuncional',
-      width: '40%',
+      dataIndex: 'codigoRf',
+      width: '30%',
+    },
+    {
+      title: 'Ação',
+      dataIndex: 'acaoReiniciar',
+      width: '3%',
+      render: (texto, linha) => {
+        return (
+          <div className="botao-reiniciar-tabela-acao">
+            <Button
+              label="Reiniciar"
+              color={Colors.Roxo}
+              border
+              className="ml-2 text-center"
+              onClick={() => onClickReiniciar(linha)}
+            />
+          </div>
+        );
+      },
     },
   ];
 
   useEffect(() => {
-    async function carregarDres() {
+    const carregarDres = async () => {
       const dres = await api.get('v1/dres');
       setListaDres(dres.data);
-    }
+    };
     carregarDres();
-
-    // TODO - Mock
-    setListaUsuario([
-      { id: 1, nomeUsuario: 'Teste mock 01', registroFuncional: '001', emailUsuario:'' },
-      { id: 2, nomeUsuario: 'Teste mock 02', registroFuncional: '002', emailUsuario:'' },
-      { id: 3, nomeUsuario: 'Teste mock 03', registroFuncional: '003', emailUsuario:'' },
-      { id: 4, nomeUsuario: 'Teste mock 04', registroFuncional: '004' },
-      { id: 5, nomeUsuario: 'Teste mock 05', registroFuncional: '005' },
-      { id: 6, nomeUsuario: 'Teste mock 06', registroFuncional: '006' },
-      { id: 7, nomeUsuario: 'Teste mock 07', registroFuncional: '007' },
-      { id: 8, nomeUsuario: 'Teste mock 08', registroFuncional: '008' },
-    ]);
   }, []);
 
-  function onClickVoltar() {
-    console.log('voltar');
-  }
+  const onClickVoltar = () => history.push(URL_HOME);
 
-  function onChangeDre(dre) {
+  const onChangeDre = dre => {
     setDreSelecionada(dre);
     setUeSelecionada([]);
     setListaUes([]);
     if (dre) {
       carregarUes(dre);
     }
-  }
+  };
 
-  function onChangeUe(ue) {
+  const onChangeUe = ue => {
     setUeSelecionada(ue);
-  }
+  };
 
-  function onChangeNomeUsuario(nomeUsuario) {
+  const onChangeNomeUsuario = nomeUsuario => {
     setNomeUsuarioSelecionado(nomeUsuario.target.value);
-  }
+  };
 
-  function onChangeRf(rf) {
+  const onChangeRf = rf => {
     setRfSelecionado(rf.target.value);
-  }
+  };
 
-  async function carregarUes(dre) {
+  const carregarUes = async dre => {
     const ues = await api.get(`/v1/dres/${dre}/ues`);
     setListaUes(ues.data || []);
-  }
+  };
 
-  function onClickFiltrar() {
-    const paramsQuery = {
-      ue: ueSelecionada,
-      nomeUsuario: nomeUsuarioSelecionado,
-      dre: dreSelecionada,
-      rf: rfSelecionado,
-    };
-    console.log(paramsQuery);
-  }
+  const onClickFiltrar = async () => {
+    if (ueSelecionada) {
+      const parametrosPost = {
+        codigoUE: ueSelecionada,
+        nomeServidor: nomeUsuarioSelecionado,
+        codigoRF: rfSelecionado,
+      };
+      const lista = await api
+        .post(
+          `v1/unidades-escolares/${ueSelecionada}/funcionarios`,
+          parametrosPost
+        )
+        .catch(() => {
+          setListaUsuario([]);
+        });
+      if (lista && lista.data) {
+        setListaUsuario([]);
+        setListaUsuario(lista.data);
+      } else {
+        setListaUsuario([]);
+      }
+    } else {
+      setListaUsuario([]);
+    }
+  };
 
-  async function onClickReiniciar() {
+  const onClickReiniciar = async linha => {
+    setLinhaSelecionada(linha);
     const confirmou = await confirmar(
       'Reiniciar Senha',
       '',
@@ -120,42 +143,49 @@ export default function ReiniciarSenha() {
       'Cancelar'
     );
     if (confirmou) {
-      // TODO - MOCK simular sem e-mail cadastrado
-      if (selectedRowKeys[0] == 3 || selectedRowKeys[0] == 5) {
-        setEmailUsuarioSelecionado('');
-        setSemEmailCadastrado(true);
-        setExibirModalReiniciarSenha(true);
-      } else {
-        setSemEmailCadastrado(false);
-      }
+      reiniciarSenha(linha);
     }
-  }
+  };
 
-  function onSelectRow(row) {
-    setSelectedRowKeys(row);
-    const linhaSelecionada = listaUsuario.find(item => item.id == row[0])
-    setEmailUsuarioSelecionado(linhaSelecionada.emailUsuario);
-  }
+  const reiniciarSenha = async linha => {
+    let deveAtualizarEmail = false;
+    await api
+      .put(`v1/autenticacao/${linha.codigoRf}/reiniciar-senha`)
+      .catch(error => {
+        if (error && error.response && error.response.data) {
+          deveAtualizarEmail = error.response.data.deveAtualizarEmail;
+        }
+      });
+    if (deveAtualizarEmail) {
+      setEmailUsuarioSelecionado('');
+      setSemEmailCadastrado(true);
+      setExibirModalReiniciarSenha(true);
+    } else {
+      setSemEmailCadastrado(false);
+      sucesso(
+        `Senha do usuário ${linha.nomeServidor} foi reiniciada com sucesso.`
+      );
+      onClickFiltrar();
+    }
+  };
 
-  function onConfirmarReiniciarSenha(form) {
-    console.log(form);
-    alert(`Chamar endpoint para reiniciar senha ID: ${selectedRowKeys[0]} `);
+  const onConfirmarReiniciarSenha = async form => {
+    const parametro = { novoEmail: form.emailUsuario };
+    await api.put(`v1/usuarios/${linhaSelecionada.codigoRf}/email`, parametro);
     onCloseModalReiniciarSenha();
-    sucesso(
-      `Senha do usuário ${selectedRowKeys[0]} foi reiniciada com sucesso.`
-    );
+    reiniciarSenha(linhaSelecionada);
     refForm.resetForm();
-  }
+  };
 
-  function onCancelarReiniciarSenha() {
+  const onCancelarReiniciarSenha = () => {
     onCloseModalReiniciarSenha();
-  }
+  };
 
-  function onCloseModalReiniciarSenha() {
+  const onCloseModalReiniciarSenha = () => {
     setExibirModalReiniciarSenha(false);
     setSemEmailCadastrado(false);
     refForm.resetForm();
-  }
+  };
 
   const validaSeTemEmailCadastrado = () => {
     return semEmailCadastrado
@@ -212,7 +242,7 @@ export default function ReiniciarSenha() {
             value={nomeUsuarioSelecionado}
           />
         </div>
-        <div className="col-sm-12 col-md-6 col-lg-6 col-xl-6 pb-3">
+        <div className="col-sm-12 col-md-6 col-lg-4 col-xl-5 pb-3">
           <CampoTexto
             label="Registro Funcional (RF)"
             placeholder="Registro Funcional (RF)"
@@ -220,36 +250,23 @@ export default function ReiniciarSenha() {
             value={rfSelecionado}
           />
         </div>
-        <div className="col-md-12">
+        <div className="col-sm-12 col-md-12 col-lg-2 col-xl-1 pb-3">
           <Button
-            label="Reiniciar"
-            color={Colors.Roxo}
-            border
-            className="ml-2 text-center d-block mt-4 float-right"
-            onClick={onClickReiniciar}
-            disabled={selectedRowKeys && selectedRowKeys.length < 1}
-          />
-          <Button
-            label="Aplicar Filtro"
+            label="Filtrar"
             color={Colors.Azul}
             border
-            className="text-center d-block mt-4 float-right"
+            className="text-center d-block mt-4 float-right w-100"
             onClick={onClickFiltrar}
           />
         </div>
 
         <div className="col-md-12 pt-4">
-          <DataTable
-            selectedRowKeys={selectedRowKeys}
-            onSelectRow={onSelectRow}
-            columns={colunas}
-            dataSource={listaUsuario}
-          />
+          <DataTable rowKey="codigoRf" columns={colunas} dataSource={listaUsuario} />
         </div>
       </Card>
 
       <Formik
-        ref={(refFormik) => setRefForm(refFormik)}
+        ref={refFormik => setRefForm(refFormik)}
         enableReinitialize
         initialValues={{
           emailUsuario: emailUsuarioSelecionado,
@@ -264,10 +281,10 @@ export default function ReiniciarSenha() {
             <ModalConteudoHtml
               key="reiniciarSenha"
               visivel={exibirModalReiniciarSenha}
-              onConfirmacaoPrincipal={(e)=>{
-                form.validateForm().then(() =>form.handleSubmit(e))
+              onConfirmacaoPrincipal={() => {
+                form.validateForm().then(() => form.handleSubmit(e => e));
               }}
-              onConfirmacaoSecundaria={onCancelarReiniciarSenha}
+              onConfirmacaoSecundaria={() => onCancelarReiniciarSenha()}
               onClose={onCloseModalReiniciarSenha}
               labelBotaoPrincipal="Cadastrar e reiniciar"
               tituloAtencao={semEmailCadastrado ? 'Atenção' : null}

@@ -14,6 +14,7 @@ const DataTable = props => {
     pageSize,
     pagination,
     locale,
+    rowKey
   } = props;
 
   const rowSelection = {
@@ -46,7 +47,7 @@ const DataTable = props => {
     <Container className="table-responsive">
       <Table
         className={selectMultipleRows ? '' : 'ocultar-coluna-multi-selecao'}
-        rowKey="id"
+        rowKey={rowKey}
         rowSelection={rowSelection}
         columns={columns}
         dataSource={dataSource}
@@ -102,6 +103,7 @@ DataTable.propTypes = {
   pagination: PropTypes.bool,
   onClickRow: PropTypes.func,
   locale: PropTypes.object,
+  rowKey: PropTypes.string,
 };
 
 DataTable.defaultProps = {
@@ -112,6 +114,7 @@ DataTable.defaultProps = {
   pagination: true,
   onRowClick: () => {},
   locale: { emptyText: 'Sem dados' },
+  rowKey: 'id',
 };
 
 export default DataTable;
