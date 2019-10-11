@@ -8,34 +8,34 @@ using System.Text;
 
 namespace SME.SGP.Dados.Repositorios
 {
-    public class RepositorioTipoCalendarioEscolar : RepositorioBase<TipoCalendarioEscolar>, IRepositorioTipoCalendarioEscolar
+    public class RepositorioTipoCalendario : RepositorioBase<TipoCalendario>, IRepositorioTipoCalendario
     {
-        public RepositorioTipoCalendarioEscolar(ISgpContext conexao) : base(conexao)
+        public RepositorioTipoCalendario(ISgpContext conexao) : base(conexao)
         {
         }
 
-        public IEnumerable<TipoCalendarioEscolarDto> ObterTiposCalendarioEscolar()
+        public IEnumerable<TipoCalendario> ObterTiposCalendario()
         {
             StringBuilder query = new StringBuilder();
-
-            query.AppendLine("select ");
-            query.AppendLine("id, ");
-            query.AppendLine("nome, ");
-            query.AppendLine("ano_letivo, ");
-            query.AppendLine("periodo ");
-            query.AppendLine("from tipo_calendario_escolar ");
+            
+            query.AppendLine("select");
+            query.AppendLine("id,");
+            query.AppendLine("nome,");
+            query.AppendLine("ano_letivo,");
+            query.AppendLine("periodo");
+            query.AppendLine("from tipo_calendario");
             query.AppendLine("where excluido = false");
 
-            return database.Conexao.Query<TipoCalendarioEscolarDto>(query.ToString());
+            return database.Conexao.Query<TipoCalendario>(query.ToString());
         }
 
-        public bool VerificarRegistroExistente(int id, string nome)
+        public bool VerificarRegistroExistente(long id, string nome)
         {
             StringBuilder query = new StringBuilder();
 
             var nomeMaiusculo = nome.ToUpper().Trim();
             query.AppendLine("select count(*) ");
-            query.AppendLine("from tipo_calendario_escolar ");
+            query.AppendLine("from tipo_calendario ");
             query.AppendLine("where upper(nome) = @nomeMaiusculo ");
             query.AppendLine("and excluido = false");
             if (id > 0)
@@ -47,16 +47,16 @@ namespace SME.SGP.Dados.Repositorios
 
             return quantidadeRegistrosExistentes > 0;
         }
-        public override TipoCalendarioEscolar ObterPorId(long id)
+        public override TipoCalendario ObterPorId(long id)
         {
             StringBuilder query = new StringBuilder();
 
             query.AppendLine("select * ");
-            query.AppendLine("from tipo_calendario_escolar ");
+            query.AppendLine("from tipo_calendario ");
             query.AppendLine("where excluido = false ");
             query.AppendLine("and id = @id ");
 
-            return database.Conexao.QueryFirstOrDefault<TipoCalendarioEscolar>(query.ToString(), new { id });
+            return database.Conexao.QueryFirstOrDefault<TipoCalendario>(query.ToString(), new { id });
         }
     }
 }
