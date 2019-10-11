@@ -23,9 +23,41 @@ namespace SME.SGP.Dados.Repositorios
             query.AppendLine("nome, ");
             query.AppendLine("ano_letivo, ");
             query.AppendLine("periodo ");
-            query.AppendLine("from tipo_calendario_escolar");
+            query.AppendLine("from tipo_calendario_escolar ");
+            query.AppendLine("where excluido = false");
 
             return database.Conexao.Query<TipoCalendarioEscolarDto>(query.ToString());
+        }
+
+        public bool VerificarRegistroExistente(int id, string nome)
+        {
+            StringBuilder query = new StringBuilder();
+
+            var nomeMaiusculo = nome.ToUpper().Trim();
+            query.AppendLine("select count(*) ");
+            query.AppendLine("from tipo_calendario_escolar ");
+            query.AppendLine("where upper(nome) = @nomeMaiusculo ");
+            query.AppendLine("and excluido = false");
+            if (id > 0)
+            {
+                query.AppendLine("and id <> @id");
+            }
+
+            int quantidadeRegistrosExistentes = database.Conexao.QueryFirst<int>(query.ToString(), new { id, nomeMaiusculo }); ;
+
+            return quantidadeRegistrosExistentes > 0;
+        }
+
+        public TipoCalendarioEscolar ObterUmPorId(long id)
+        {
+            StringBuilder query = new StringBuilder();
+
+            query.AppendLine("select * ");
+            query.AppendLine("from tipo_calendario_escolar ");
+            query.AppendLine("where excluido = false ");
+            query.AppendLine("and id = @id ");
+
+            return database.Conexao.QueryFirst<TipoCalendarioEscolar>(query.ToString(), new { id });
         }
     }
 }
