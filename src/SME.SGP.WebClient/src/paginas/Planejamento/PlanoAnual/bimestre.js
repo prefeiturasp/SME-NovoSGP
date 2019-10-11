@@ -166,8 +166,7 @@ const BimestreComponent = props => {
   };
 
   const onClickBimestre = () => {
-    if (!bimestreJaObtidoServidor)
-      dispatch(ObterBimestreServidor(bimestre));
+    if (!bimestreJaObtidoServidor) dispatch(ObterBimestreServidor(bimestre));
   };
 
   return (
@@ -190,35 +189,34 @@ const BimestreComponent = props => {
           <div>
             {bimestre.materias && bimestre.materias.length > 0
               ? bimestre.materias.map((materia, indice) => {
-                return (
-                  <Badge
-                    role="button"
-                    onClick={selecionaMateria}
-                    aria-pressed={materia.selecionada && true}
-                    id={materia.codigo}
-                    data-index={indice}
-                    alt={materia.materia}
-                    key={materia.codigo}
-                    disabled={
-                      disabled || LayoutEspecial || !materia.possuiObjetivos
-                    }
-                    readonly={LayoutEspecial}
-                    className={`badge badge-pill border text-dark bg-white font-weight-light px-2 py-1 ${
-                      LayoutEspecial ? '' : 'mt-3'
+                  return (
+                    <Badge
+                      role="button"
+                      onClick={selecionaMateria}
+                      aria-pressed={materia.selecionada && true}
+                      id={materia.codigo}
+                      data-index={indice}
+                      alt={materia.materia}
+                      key={materia.codigo}
+                      disabled={
+                        disabled || LayoutEspecial || !materia.possuiObjetivos
+                      }
+                      readonly={LayoutEspecial}
+                      className={`badge badge-pill border text-dark bg-white font-weight-light px-2 py-1 ${
+                        LayoutEspecial ? '' : 'mt-3'
                       } mr-2`}
-                  >
-                    {materia.materia}
-                  </Badge>
-                );
-              })
+                    >
+                      {materia.materia}
+                    </Badge>
+                  );
+                })
               : null}
           </div>
           {LayoutEspecial ? null : (
             <ObjetivosList ref={ListRef} className="mt-4 overflow-auto">
               {bimestre.objetivosAprendizagem &&
-                bimestre.objetivosAprendizagem.length > 0
-                ? bimestre.objetivosAprendizagem.map(
-                  (objetivo, index) => {
+              bimestre.objetivosAprendizagem.length > 0
+                ? bimestre.objetivosAprendizagem.map((objetivo, index) => {
                     return (
                       <ul
                         key={`${objetivo.id}Bimestre${index}`}
@@ -245,8 +243,7 @@ const BimestreComponent = props => {
                         </ListItem>
                       </ul>
                     );
-                  }
-                )
+                  })
                 : null}
             </ObjetivosList>
           )}
@@ -268,48 +265,48 @@ const BimestreComponent = props => {
                 ).length} objetivos selecionados`}
             >
               {bimestre.objetivosAprendizagem &&
-                bimestre.objetivosAprendizagem.length > 0
+              bimestre.objetivosAprendizagem.length > 0
                 ? bimestre.objetivosAprendizagem
-                  .filter(objetivo => objetivo.selected)
-                  .map(selecionado => {
-                    return (
-                      <Button
-                        key={`Objetivo${selecionado.id}Selecionado${indice}`}
-                        label={selecionado.codigo}
-                        color={Colors.AzulAnakiwa}
-                        bold
-                        id={selecionado.id}
-                        disabled={disabled}
-                        steady
-                        remove
-                        className="text-dark mt-3 mr-2 stretched-link"
-                        onClick={removeObjetivoSelecionado}
-                      />
-                    );
-                  })
+                    .filter(objetivo => objetivo.selected)
+                    .map(selecionado => {
+                      return (
+                        <Button
+                          key={`Objetivo${selecionado.id}Selecionado${indice}`}
+                          label={selecionado.codigo}
+                          color={Colors.AzulAnakiwa}
+                          bold
+                          id={selecionado.id}
+                          disabled={disabled}
+                          steady
+                          remove
+                          className="text-dark mt-3 mr-2 stretched-link"
+                          onClick={removeObjetivoSelecionado}
+                        />
+                      );
+                    })
                 : null}
               {bimestre.objetivosAprendizagem &&
-                bimestre.objetivosAprendizagem.length > 0 &&
-                bimestre.objetivosAprendizagem.filter(x => x.selected)
-                  .length > 1 ? (
-                  <Button
-                    key={`removerTodos`}
-                    label={`Remover Todos`}
-                    color={Colors.CinzaBotao}
-                    bold
-                    alt="Remover todos os objetivos selecionados"
-                    id={`removerTodos`}
-                    height="38px"
-                    width="92px"
-                    fontSize="12px"
-                    padding="0px 5px"
-                    lineHeight="1.2"
-                    steady
-                    border
-                    className="text-dark mt-3 mr-2 stretched-link"
-                    onClick={removerTodosObjetivoSelecionado}
-                  />
-                ) : null}
+              bimestre.objetivosAprendizagem.length > 0 &&
+              bimestre.objetivosAprendizagem.filter(x => x.selected).length >
+                1 ? (
+                <Button
+                  key={`removerTodos`}
+                  label={`Remover Todos`}
+                  color={Colors.CinzaBotao}
+                  bold
+                  alt="Remover todos os objetivos selecionados"
+                  id={`removerTodos`}
+                  height="38px"
+                  width="92px"
+                  fontSize="12px"
+                  padding="0px 5px"
+                  lineHeight="1.2"
+                  steady
+                  border
+                  className="text-dark mt-3 mr-2 stretched-link"
+                  onClick={removerTodosObjetivoSelecionado}
+                />
+              ) : null}
             </div>
           )}
           <div className="mt-4">
@@ -367,8 +364,8 @@ const BimestreComponent = props => {
                 criadoEm={bimestre.criadoEm}
                 alteradoPor={bimestre.alteradoPor}
                 alteradoEm={bimestre.alteradoEm}
-                alteradoRf={bimestre.alteradoRF}
-                criadoRf={bimestre.criadoRF}
+                alteradoRf={bimestre.alteradoRF > 0 && bimestre.alteradoRF}
+                criadoRf={bimestre.criadoRF > 0 && bimestre.criadoRF}
               />
             </Grid>
           </div>

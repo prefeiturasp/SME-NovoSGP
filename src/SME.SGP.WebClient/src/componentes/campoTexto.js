@@ -1,12 +1,11 @@
-import React from 'react';
-import { Field } from 'formik';
-
-import styled from 'styled-components';
 import { Input } from 'antd';
-import { Base } from './colors';
-
-import Label from './label';
+import { Field } from 'formik';
 import PropTypes from 'prop-types';
+import React from 'react';
+import styled from 'styled-components';
+
+import { Base } from './colors';
+import Label from './label';
 
 const Campo = styled.div`
   span {
@@ -50,7 +49,7 @@ const CampoTexto = ({
   return (
     <>
       <Campo className={classNameCampo}>
-      {label ? <Label text={label} control={name || ''} /> : ''}
+        {label ? <Label text={label} control={name || ''} /> : ''}
         {form ? (
           <>
             {' '}
