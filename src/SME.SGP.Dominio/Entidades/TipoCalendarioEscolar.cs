@@ -11,5 +11,6 @@ namespace SME.SGP.Dominio
         public Periodo Periodo { get; set; }
         public bool Situacao { get; set; }
         public Modalidade Modalidade { get; set; }
+        public bool Excluido { get; set; }
     }
 }

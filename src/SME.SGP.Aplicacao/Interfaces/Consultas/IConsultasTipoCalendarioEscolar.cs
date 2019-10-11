@@ -6,5 +6,6 @@ namespace SME.SGP.Aplicacao
     public interface IConsultasTipoCalendarioEscolar
     {
         IEnumerable<TipoCalendarioEscolarDto> Listar();
+        TipoCalendarioEscolarCompletoDto BuscarPorId(long id);
     }
 }
