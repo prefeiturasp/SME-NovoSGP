@@ -1,6 +1,6 @@
-import { Table } from 'antd';
+import { Table, Pagination } from 'antd';
 import PropTypes from 'prop-types';
-import React from 'react';
+import React, { useState } from 'react';
 import { Container } from './dataTabe.css';
 
 const DataTable = props => {
@@ -12,8 +12,9 @@ const DataTable = props => {
     onClickRow,
     selectMultipleRows,
     pageSize,
-    pagination,
+    paginacao,
     locale,
+    onPaginacao,
   } = props;
 
   const rowSelection = {
@@ -42,6 +43,46 @@ const DataTable = props => {
     }
   };
 
+  const [paginaAtual, setPagina] = useState({
+    defaultPageSize: 5,
+    pageSize: 5,
+    total: paginacao.totalRegistros,
+    showSizeChanger: true,
+    pageSizeOptions: ['10', '20', '50', '100'],
+    locale: { items_per_page: '' },
+    current: 1,
+  });
+  const executaPaginacao = pagina => {
+    // setPagina({ ...paginaAtual, ...pagina });
+    onPaginacao({
+      numeroPagina: pagina.current,
+      numeroRegistros: pagina.pageSize,
+    });
+  };
+
+  const data = [];
+  for (let i = 0; i < 30; i++) {
+    data.push({
+      key: i,
+      name: `Edward King ${i}`,
+      age: 32,
+      address: `London, Park Lane no. ${i}`,
+    });
+  }
+  const colunas = [
+    {
+      title: 'Name',
+      dataIndex: 'name',
+    },
+    {
+      title: 'Age',
+      dataIndex: 'age',
+    },
+    {
+      title: 'Address',
+      dataIndex: 'address',
+    },
+  ];
   return (
     <Container className="table-responsive">
       <Table
@@ -63,7 +104,7 @@ const DataTable = props => {
             }
           },
         })}
-        pagination={pagination}
+        pagination={paginacao ? paginaAtual : ''}
         pageSize={{ pageSize }}
         bordered
         size="middle"
@@ -74,7 +115,7 @@ const DataTable = props => {
               if (
                 colunaClicada &&
                 colunaClicada.target &&
-                colunaClicada.target.className == 'ant-table-selection-column'
+                colunaClicada.target.className === 'ant-table-selection-column'
               ) {
                 const checkboxSelecionarTodos = document
                   .getElementsByClassName('ant-table-selection')[0]
@@ -87,6 +128,7 @@ const DataTable = props => {
             },
           };
         }}
+        onChange={executaPaginacao}
       />
     </Container>
   );
@@ -99,8 +141,9 @@ DataTable.propTypes = {
   columns: PropTypes.array,
   selectMultipleRows: PropTypes.bool,
   pageSize: PropTypes.number,
-  pagination: PropTypes.bool,
+  paginacao: PropTypes.bool,
   onClickRow: PropTypes.func,
+  onPaginacao: PropTypes.func,
   locale: PropTypes.object,
 };
 
@@ -109,9 +152,10 @@ DataTable.defaultProps = {
   columns: [],
   selectMultipleRows: false,
   pageSize: 10,
-  pagination: true,
+  paginacao: true,
   onRowClick: () => {},
   locale: { emptyText: 'Sem dados' },
+  onPaginacao: () => {},
 };
 
 export default DataTable;

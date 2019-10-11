@@ -16,7 +16,7 @@ import RecuperarSenha from '~/paginas/RecuperarSenha';
 import RedefinirSenha from '~/paginas/RedefinirSenha';
 import RotaNaoAutenticadaDesestruturada from './rotaNaoAutenticadaDesestruturada';
 import RotaAutenticadaDesestruturada from './rotaAutenticadaDesestruturada';
-import MeusDados from  '~/paginas/Perfil/meusDados';
+import MeusDados from '~/paginas/Perfil/meusDados';
 
 export default function Rotas() {
   const rotas = new Map();
