@@ -29,6 +29,10 @@ export default function bimestres(state = INICIAL, action) {
         draft.disciplinasPlanoAnual = action.payload;
         break;
       case '@bimestres/SelecionarDisciplinaPlanoAnual':
+        draft.disciplinasPlanoAnual.forEach(disciplina => {
+          disciplina.selecionada = false;
+        });
+
         draft.disciplinasPlanoAnual.find(
           disciplina => disciplina.codigo == action.payload.codigo
         ).selecionada = true;

@@ -66,9 +66,9 @@ const SelectComponent = props => {
 
   const { Option } = Select;
 
-  console.log(valueSelect);
-  console.log(valueOption);
-  console.log(valueText);
+  console.log('valueText ' + valueText);
+  console.log('valueSelect ' + valueSelect);
+  console.log('valueOption ' + valueOption);
 
   return (
     <Container className={classNameContainer && classNameContainer}>
@@ -88,7 +88,8 @@ const SelectComponent = props => {
         allowClear
         disabled={disabled}
       >
-        {lista && lista.length &&
+        {lista &&
+          lista.length &&
           lista.map(item => {
             return (
               <Option key={shortid.generate()} value={`${item[valueOption]}`}>
