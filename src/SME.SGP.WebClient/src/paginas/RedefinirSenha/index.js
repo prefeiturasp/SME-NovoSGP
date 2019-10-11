@@ -1,11 +1,12 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useLayoutEffect } from 'react';
+import { useSelector } from 'react-redux';
 import styled from 'styled-components';
 import { Form } from 'formik';
 import LogoDoSgp from '~/recursos/LogoDoSgp.svg';
 import { Base, Colors } from '~/componentes/colors';
 import Button from '~/componentes/button';
 import history from '~/servicos/history';
-import Servico from '~/servicos/Paginas/RedefinirSenhaService';
+import RedefinirSenhaServico from '~/servicos/Paginas/ServicoRedefinirSenha';
 import {
   Nav,
   Logo,
@@ -20,10 +21,13 @@ import {
   Icone,
   MensagemErro,
 } from './index.css';
-import { URL_LOGIN, URL_RECUPERARSENHA } from '~/constantes/url';
+import { URL_LOGIN, URL_RECUPERARSENHA, URL_HOME } from '~/constantes/url';
+import ServicoPrimeiroAcesso from '~/servicos/Paginas/ServicoPrimeiroAcesso';
+import { salvarDadosLogin, Deslogar } from '~/redux/modulos/usuario/actions';
+import { store } from '~/redux';
 
 const RedefinirSenha = props => {
-  const [dados, setDados] = useState({
+  const [senhas, setSenhas] = useState({
     senha: '',
     confirmarSenha: '',
   });
@@ -32,8 +36,7 @@ const RedefinirSenha = props => {
   const [erroGeral, setErroGeral] = useState('');
   const [tokenExpirado, setTokenExpirado] = useState(false);
 
-  const senha = dados.senha;
-  const confirmarSenha = dados.confirmarSenha;
+  const { senha, confirmarSenha } = senhas;
   const token = props.match && props.match.params && props.match.params.token;
 
   const [validacoes, setValidacoes] = useState({
@@ -64,6 +67,24 @@ const RedefinirSenha = props => {
 
   const inputSenhaRef = useRef();
   const inputConfSenhaRef = useRef();
+  const { logado, usuario } = useSelector(state => state.usuario);
+  const modificarSenha = useSelector(state => state.usuario.modificarSenha);
+
+  const trataAcaoTeclado = e => {
+    if (e.code === 'F5') {
+      store.dispatch(Deslogar());
+      history.push(URL_LOGIN);
+    }
+  };
+
+  useLayoutEffect(() => {
+    if (!tokenValidado && !logado) validarToken();
+
+    document.addEventListener('keydown', trataAcaoTeclado);
+    return () => {
+      document.removeEventListener('keydown', trataAcaoTeclado);
+    };
+  }, []);
 
   useEffect(() => {
     inputSenhaRef.current.focus();
@@ -73,50 +94,44 @@ const RedefinirSenha = props => {
     inputConfSenhaRef.current.focus();
   }, [confirmarSenha]);
 
-  useEffect(() => {
-    if (!tokenValidado) validarToken();
-  });
-
-  const AoMudarSenha = () => {
-    setDados({ ...dados, senha: inputSenhaRef.current.value });
-
+  const aoMudarSenha = e => {
     setErroGeral('');
-
-    realizarValidacoes(inputSenhaRef.current.value);
+    setSenhas({ ...senhas, senha: e.target.value });
+    realizarValidacoes(e.target.value);
   };
 
   const validarToken = async () => {
     if (!token) history.push(URL_LOGIN);
 
-    const tokenValido = await Servico.validarToken(token);
+    let tokenValido = true;
+    if (token) tokenValido = await RedefinirSenhaServico.validarToken(token);
 
     if (!tokenValido) history.push(URL_LOGIN);
     else setTokenValidado(true);
   };
 
-  const AoMudarConfSenha = () => {
-    setDados({ ...dados, confirmarSenha: inputConfSenhaRef.current.value });
+  const aoMudarConfSenha = e => {
+    setSenhas({ ...senhas, confirmarSenha: e.target.value });
 
     setErroGeral('');
 
-    const iguais =
-      inputConfSenhaRef.current.value === inputSenhaRef.current.value;
+    const iguais = e.target.value === inputSenhaRef.current.value;
 
-    setValidacoes({ ...validacoes, iguais: iguais });
+    setValidacoes({ ...validacoes, iguais });
   };
 
   const realizarValidacoes = valor => {
     const temMaiuscula = valor.match(/([A-Z])/);
     const temMinuscula = valor.match(/([a-z])/);
     const temAlgarismo = valor.match(/([0-9])/);
-    const temSimbolo = valor.match(/([!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?])/);
+    const temSimbolo = valor.match(/([!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?])/);
     const temAcento = valor.match(/([À-ÖØ-öø-ÿ])/);
     const espacoBranco = valor.includes(' ');
 
     const iguais =
       inputConfSenhaRef.current.value === inputSenhaRef.current.value;
 
-    let tamanho = valor.length >= 8 && valor.length <= 12;
+    const tamanho = valor.length >= 8 && valor.length <= 12;
 
     setValidacoes({
       maiuscula: !!temMaiuscula,
@@ -134,25 +149,43 @@ const RedefinirSenha = props => {
     Object.entries(validacoes).filter(validar => !validar[1]).length > 0;
 
   const onClickSair = () => {
-    history.push('/');
+    if (modificarSenha) store.dispatch(Deslogar());
+    history.push(URL_LOGIN);
   };
 
   const alterarSenha = async () => {
-    const requisicao = await Servico.redefinirSenha({
-      token: token,
-      novaSenha: senha,
-    });
+    if (!logado) {
+      const requisicao = await RedefinirSenhaServico.redefinirSenha({
+        token,
+        novaSenha: senha,
+      });
 
-    if (requisicao.sucesso) history.push(URL_LOGIN);
+      if (requisicao.sucesso) history.push(URL_LOGIN);
+      if (requisicao.tokenExpirado) setTokenExpirado(requisicao.tokenExpirado);
 
-    if (requisicao.tokenExpirado) setTokenExpirado(requisicao.tokenExpirado);
-
-    setErroGeral(requisicao.erro);
+      setErroGeral(requisicao.erro);
+    } else {
+      const requisicao = await ServicoPrimeiroAcesso.alterarSenha({
+        usuario,
+        novaSenha: senha,
+        confirmarSenha: senha,
+      });
+      if (requisicao.sucesso) {
+        salvarDadosLogin({
+          token: requisicao.resposta.data.token,
+          rf: usuario,
+          usuario,
+          perfisUsuario: requisicao.resposta.data.perfisUsuario,
+        });
+        history.push(URL_HOME);
+      } else {
+        setErroGeral(requisicao.erro);
+      }
+    }
   };
 
   const aoClicarContinuar = () => {
     realizarValidacoes(inputSenhaRef.current.value);
-
     setErroGeral('');
 
     if (tokenExpirado) {
@@ -203,7 +236,7 @@ const RedefinirSenha = props => {
                       type="password"
                       value={senha}
                       ref={inputSenhaRef}
-                      onChange={AoMudarSenha}
+                      onChange={aoMudarSenha}
                     />
                   </Div>
                   <Div
@@ -221,7 +254,7 @@ const RedefinirSenha = props => {
                       placeholder="Confirme sua nova senha"
                       type="password"
                       ref={inputConfSenhaRef}
-                      onChange={AoMudarConfSenha}
+                      onChange={aoMudarConfSenha}
                       icon
                     />
                   </Div>

@@ -15,9 +15,9 @@ namespace SME.SGP.Aplicacao
             this.servicoEOL = servicoEOL ?? throw new ArgumentNullException(nameof(servicoEOL));
         }
 
-        public async Task<IEnumerable<UsuarioEolRetornoDto>> ObtemFuncionariosPorUe(string ueId)
+        public async Task<IEnumerable<UsuarioEolRetornoDto>> ObtemFuncionariosPorUe(BuscaFuncionariosFiltroDto buscaFuncionariosFiltroDto)
         {
-            return await servicoEOL.ObterFuncionariosPorUe(ueId);
+            return await servicoEOL.ObterFuncionariosPorUe(buscaFuncionariosFiltroDto);
         }
     }
 }
