@@ -42,7 +42,7 @@ const Cabecalho = ({ titulo, pagina }) => {
 };
 
 Cabecalho.defaultProps = {
-  titulo: 'NOVO SGP',
+  titulo: '',
   pagina: '',
 };
 

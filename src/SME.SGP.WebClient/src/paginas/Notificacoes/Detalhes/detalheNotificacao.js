@@ -52,6 +52,7 @@ const DetalheNotificacao = ({ match }) => {
       .then(resposta => setNotificacao(resposta.data))
       .catch(listaErros => erros(listaErros));
   };
+
   useEffect(() => {
     if (idNotificacao) {
       buscaNotificacao(idNotificacao);
@@ -87,6 +88,10 @@ const DetalheNotificacao = ({ match }) => {
       notificacao.categoriaId === notificacaoCategoria.Workflow_Aprovacao
     ) {
       buscaLinhaTempo();
+    }
+    if (notificacao.categoriaId === notificacaoCategoria.Aviso) {
+      if (usuario.rf.length > 0)
+        servicoNotificacao.buscaNotificacoesPorAnoRf(2019, usuario.rf);
     }
   }, [notificacao]);
 
@@ -144,9 +149,7 @@ const DetalheNotificacao = ({ match }) => {
       const dia = transformaUnidadeData(data.getDate().toString());
       const hora = transformaUnidadeData(data.getHours().toString());
       const minutos = transformaUnidadeData(data.getMinutes().toString());
-      return (
-        dia + '/' + mes + '/' + data.getFullYear() + ', ' + hora + ':' + minutos
-      );
+      return `${dia}/${mes}/${data.getFullYear()}, ${hora}:${minutos}`;
     }
     return dataString;
   };
