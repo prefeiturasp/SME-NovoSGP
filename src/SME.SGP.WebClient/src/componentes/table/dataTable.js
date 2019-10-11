@@ -1,7 +1,7 @@
 import { Table } from 'antd';
 import PropTypes from 'prop-types';
 import React from 'react';
-import { Container } from './dataTabe.css';
+import { Container } from './dataTable.css';
 
 const DataTable = props => {
   const {
@@ -14,7 +14,7 @@ const DataTable = props => {
     pageSize,
     pagination,
     locale,
-    rowKey
+    idLinha
   } = props;
 
   const rowSelection = {
@@ -47,7 +47,7 @@ const DataTable = props => {
     <Container className="table-responsive">
       <Table
         className={selectMultipleRows ? '' : 'ocultar-coluna-multi-selecao'}
-        rowKey={rowKey}
+        rowKey={idLinha}
         rowSelection={rowSelection}
         columns={columns}
         dataSource={dataSource}
@@ -103,7 +103,7 @@ DataTable.propTypes = {
   pagination: PropTypes.bool,
   onClickRow: PropTypes.func,
   locale: PropTypes.object,
-  rowKey: PropTypes.string,
+  idLinha: PropTypes.string,
 };
 
 DataTable.defaultProps = {
@@ -114,7 +114,7 @@ DataTable.defaultProps = {
   pagination: true,
   onRowClick: () => {},
   locale: { emptyText: 'Sem dados' },
-  rowKey: 'id',
+  idLinha: 'id',
 };
 
 export default DataTable;
