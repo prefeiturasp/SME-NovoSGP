@@ -2,9 +2,9 @@
 
 namespace SME.SGP.Aplicacao
 {
-    public interface IComandosTipoCalendarioEscolar
+    public interface IComandosTipoCalendario
     {
-        void Salvar(TipoCalendarioEscolarDto dto);
+        void Salvar(TipoCalendarioDto dto);
         void MarcarExcluidos(long[] ids);
     }
 }
