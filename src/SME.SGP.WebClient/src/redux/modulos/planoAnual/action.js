@@ -18,6 +18,28 @@ export function SalvarBimestres(bimestres) {
   };
 }
 
+export function SalvarDisciplinasPlanoAnual(disciplinas) {
+  return {
+    type: '@bimestres/SalvarDisciplinasPlanoAnual',
+    payload: disciplinas,
+  };
+}
+
+export function SelecionarDisciplinaPlanoAnual(codigo) {
+  return {
+    type: '@bimestres/SelecionarDisciplinaPlanoAnual',
+    payload: {
+      codigo,
+    },
+  };
+}
+
+export function LimparDisciplinaPlanoAnual() {
+  return {
+    type: '@bimestres/LimparDisciplinaPlanoAnual',
+  };
+}
+
 export function LimparBimestres() {
   return {
     type: '@bimestres/LimparBimestres',

@@ -21,7 +21,7 @@ export default class PlanoAnualHelper {
     return validarExistente;
   }
 
-  static async ObterDisciplinasObjetivo(codigoRf, turmaId) {
+  static async ObterDisciplinasPlano(codigoRf, turmaId) {
     const disciplinas = await Service.getDisciplinasProfessor(codigoRf, turmaId)
       .then(res => res)
       .catch(() => {
@@ -30,6 +30,10 @@ export default class PlanoAnualHelper {
       });
 
     return disciplinas;
+  }
+
+  static async ObterDiscplinasObjetivos(codigoRf, turmaId) {
+    //retornar discplinas que tem objetivos;
   }
 
   static ObtenhaBimestres = (

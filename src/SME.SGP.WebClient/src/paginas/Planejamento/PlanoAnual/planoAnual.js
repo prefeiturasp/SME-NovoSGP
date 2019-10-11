@@ -1,11 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import {
-  Salvar,
+  SalvarDisciplinasPlanoAnual,
   PrePost,
   Post,
   setBimestresErro,
   setLimpartBimestresErro,
+  LimparDisciplinaPlanoAnual,
+  SelecionarDisciplinaPlanoAnual,
   LimparBimestres,
   SalvarBimestres,
 } from '../../../redux/modulos/planoAnual/action';
@@ -37,7 +39,11 @@ import SelectComponent from '~/componentes/select';
 
 export default function PlanoAnual() {
   const bimestres = useSelector(store => store.bimestres.bimestres);
-  const notificacoes = useSelector(store => store.notificacoes);
+  const disciplinasPlanoAnual = useSelector(
+    store => store.bimestres.disciplinasPlanoAnual
+  );
+
+  const disciplinaSelecionada = disciplinasPlanoAnual.find(x => x.selecionada);
   const bimestresErro = useSelector(store => store.bimestres.bimestresErro);
   const usuario = useSelector(store => store.usuario);
 
@@ -87,7 +93,7 @@ export default function PlanoAnual() {
   }, [bimestres]);
 
   useEffect(() => {
-    if (!ehDisabled) verificarSeEhEdicao();
+    if (!ehDisabled) obterDisciplinasPlanoAnual();
   }, [turmaSelecionada]);
 
   const onF5Click = e => {
@@ -102,6 +108,11 @@ export default function PlanoAnual() {
     }
   };
 
+  useEffect(() => {
+    console.log(disciplinaSelecionada);
+    console.log(disciplinasPlanoAnual);
+  }, [disciplinaSelecionada]);
+
   document.onkeydown = onF5Click;
   document.onkeypress = onF5Click;
   document.onkeyup = onF5Click;
@@ -113,6 +124,15 @@ export default function PlanoAnual() {
       dispatch(Post(BimestresParaEnviar));
   };
 
+  const obterDisciplinasPlanoAnual = async () => {
+    const disciplinas = await PlanoAnualHelper.ObterDisciplinasPlano(
+      usuario.rf,
+      turmaId
+    );
+
+    dispatch(SalvarDisciplinasPlanoAnual(disciplinas));
+  };
+
   const verificarSeEhEdicao = async () => {
     if (!turmaSelecionada[0]) return;
 
@@ -122,7 +142,7 @@ export default function PlanoAnual() {
 
     const ehEdicao = await PlanoAnualHelper.verificarEdicao(filtro, ehEja);
 
-    const disciplinas = await PlanoAnualHelper.ObterDisciplinasObjetivo(
+    const disciplinas = await PlanoAnualHelper.ObterDiscplinasObjetivos(
       usuario.rf,
       turmaId
     );
@@ -154,6 +174,15 @@ export default function PlanoAnual() {
 
   const onClickCancelar = () => {
     verificarSeEhEdicao();
+  };
+
+  const AoMudarDisciplinaPlanoAnual = e => {
+    if (e === 0 || !e) {
+      dispatch(LimparDisciplinaPlanoAnual());
+      return;
+    }
+
+    dispatch(SelecionarDisciplinaPlanoAnual(e));
   };
 
   const cancelarModalConfirmacao = () => {
@@ -501,7 +530,18 @@ export default function PlanoAnual() {
         </Titulo>
       </Grid>
       <Card className="col-md-12 p-0" mx="mx-0">
-        <Grid cols={6} className="d-flex justify-content-start mb-3">
+        <Grid cols={8} className="d-flex justify-content-start mb-3">
+          <SelectComponent
+            id="selecao"
+            placeholder="Selecione uma disciplina"
+            classNameContainer="col-md-8"
+            lista={disciplinasPlanoAnual}
+            valueSelect={disciplinaSelecionada && disciplinaSelecionada.codigo}
+            valueOption="codigo"
+            valueText="materia"
+            onChange={AoMudarDisciplinaPlanoAnual}
+            disabled={turmaSelecionada[0] ? false : true}
+          ></SelectComponent>
           <Button
             label="Copiar Conteúdo"
             icon="share-square"
@@ -511,7 +551,7 @@ export default function PlanoAnual() {
             disabled={turmaSelecionada[0] ? false : true}
           />
         </Grid>
-        <Grid cols={6} className="d-flex justify-content-end mb-3">
+        <Grid cols={4} className="d-flex justify-content-end mb-3">
           <Button
             label="Voltar"
             icon="arrow-left"

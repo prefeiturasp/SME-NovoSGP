@@ -1,6 +1,7 @@
 import produce from 'immer';
 
 const INICIAL = {
+  disciplinasPlanoAnual: [],
   bimestres: [],
   bimestresErro: {
     type: '',
@@ -23,6 +24,19 @@ export default function bimestres(state = INICIAL, action) {
         draft.bimestres = action.payload;
         draft.bimestresErro = state.bimestresErro;
 
+        break;
+      case '@bimestres/SalvarDisciplinasPlanoAnual':
+        draft.disciplinasPlanoAnual = action.payload;
+        break;
+      case '@bimestres/SelecionarDisciplinaPlanoAnual':
+        draft.disciplinasPlanoAnual.find(
+          disciplina => disciplina.codigo == action.payload.codigo
+        ).selecionada = true;
+        break;
+      case '@bimestres/LimparDisciplinaPlanoAnual':
+        draft.disciplinasPlanoAnual.find(
+          disciplina => disciplina.selecionada
+        ).selecionada = false;
         break;
       case '@bimestres/PrePostBimestre':
         const paraEnvio = state.bimestres.filter(x => x.ehEdicao);

@@ -51,6 +51,7 @@ const SelectComponent = props => {
     name,
     id,
     className,
+    classNameContainer,
     onChange,
     label,
     valueText,
@@ -66,12 +67,12 @@ const SelectComponent = props => {
   const { Option } = Select;
 
   return (
-    <Container>
+    <Container className={classNameContainer && classNameContainer}>
       {label ? <Label text={label} control={name} /> : ''}
       <Select
         mode={multiple && 'multiple'}
         suffixIcon={<Icon type="caret-down" />}
-        className={`overflow-hidden ${className}`}
+        className={`overflow-hidden ${className && className}`}
         name={name}
         id={id}
         onChange={onChange}
