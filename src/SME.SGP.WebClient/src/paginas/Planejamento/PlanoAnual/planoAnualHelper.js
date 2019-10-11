@@ -8,11 +8,11 @@ export default class PlanoAnualHelper {
     const validarExistente = await Service.validarPlanoExistente(
       filtroPlanoAnualDto
     )
-      .then(ehEdicao => ehEdicao)
+      .then(res => !res)
       .catch(() => {
         erro(
           `Não foi possivel obter os dados do ${
-            ehEja ? 'plano semestral' : 'plano anual'
+          ehEja ? 'plano semestral' : 'plano anual'
           }`
         );
         return false;
@@ -33,7 +33,14 @@ export default class PlanoAnualHelper {
   }
 
   static async ObterDiscplinasObjetivos(codigoRf, turmaId) {
-    //retornar discplinas que tem objetivos;
+    const disciplinas = await Service.getDisciplinasProfessor(codigoRf, turmaId)
+      .then(res => res)
+      .catch(() => {
+        erro(`Não foi possivel obter as disciplinas do professor`);
+        return null;
+      });
+
+    return disciplinas;
   }
 
   static ObtenhaBimestres = (

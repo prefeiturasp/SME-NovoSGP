@@ -66,6 +66,10 @@ const SelectComponent = props => {
 
   const { Option } = Select;
 
+  console.log(valueSelect);
+  console.log(valueOption);
+  console.log(valueText);
+
   return (
     <Container className={classNameContainer && classNameContainer}>
       {label ? <Label text={label} control={name} /> : ''}
@@ -76,7 +80,7 @@ const SelectComponent = props => {
         name={name}
         id={id}
         onChange={onChange}
-        value={valueSelect}
+        value={valueSelect && valueSelect}
         placeholder={placeholder}
         notFoundContent="Sem dados"
         alt={alt}
@@ -84,7 +88,7 @@ const SelectComponent = props => {
         allowClear
         disabled={disabled}
       >
-        {lista.length &&
+        {lista && lista.length &&
           lista.map(item => {
             return (
               <Option key={shortid.generate()} value={`${item[valueOption]}`}>

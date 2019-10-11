@@ -1,5 +1,6 @@
 import Servico from '../../../servicos/Paginas/PlanoAnualServices';
 import { sucesso, erro } from '../../../servicos/alertas';
+import filtroPlanoAnualDto from '~/dtos/filtroPlanoAnualDto';
 
 export function Salvar(indice, bimestre) {
   return {
@@ -186,9 +187,9 @@ export function PosPost(recarregar) {
   };
 }
 
-export function Post(bimestres) {
+export function Post(bimestres, codigoDisciplinaPlanoAnual) {
   return dispatch => {
-    Servico.postPlanoAnual(bimestres)
+    Servico.postPlanoAnual(bimestres, codigoDisciplinaPlanoAnual)
       .then(() => {
         requestAnimationFrame(() => dispatch(setNaoEdicao()));
         sucesso('Suas informações foram salvas com sucesso.');
@@ -252,14 +253,12 @@ export function removerSelecaoTodosObjetivos(indice) {
   };
 }
 
-export function ObterBimestreServidor(Bimestre) {
+export function ObterBimestreServidor(Bimestre, disciplinaSelecionada) {
+
+  const filtro = new filtroPlanoAnualDto(Bimestre.anoLetivo, Bimestre.indice, Bimestre.escolaId, Bimestre.turmaId, disciplinaSelecionada);
+
   return dispatch => {
-    Servico.obterBimestre({
-      AnoLetivo: Bimestre.anoLetivo,
-      Bimestre: Bimestre.indice,
-      EscolaId: Bimestre.escolaId,
-      TurmaId: Bimestre.turmaId,
-    })
+    Servico.obterBimestre(filtro)
       .then(res => {
         const bimestreDTO = res.data;
 
