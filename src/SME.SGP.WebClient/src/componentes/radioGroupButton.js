@@ -61,7 +61,7 @@ const RadioGroupButton = ({
               }}
               defaultValue={valorInicial}
               disabled={desabilitado}
-              value={form.values[name] || undefined}
+              value={form.values[name]}
             />
             <br />
             <Error>

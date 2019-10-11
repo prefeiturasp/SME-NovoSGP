@@ -3,17 +3,18 @@ import React, { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import * as Yup from 'yup';
 import Cabecalho from '~/componentes-sgp/cabecalho';
+import Auditoria from '~/componentes/auditoria';
 import Button from '~/componentes/button';
 import CampoTexto from '~/componentes/campoTexto';
 import Card from '~/componentes/card';
 import { Colors } from '~/componentes/colors';
 import Label from '~/componentes/label';
 import RadioGroupButton from '~/componentes/radioGroupButton';
+import { confirmar, erro, sucesso } from '~/servicos/alertas';
+import api from '~/servicos/api';
+import history from '~/servicos/history';
 
 import { CaixaAno, CaixaTextoAno } from './tipoCalendarioEscolar.css';
-import history from '~/servicos/history';
-import { sucesso, confirmar } from '~/servicos/alertas';
-import Auditoria from '~/componentes/auditoria';
 
 const TipoCalendarioEscolarForm = ({ match }) => {
   const usuario = useSelector(store => store.usuario);
@@ -23,6 +24,8 @@ const TipoCalendarioEscolarForm = ({ match }) => {
   const [modoEdicao, setModoEdicao] = useState(false);
   const [novoRegistro, setNovoRegistro] = useState(true);
   const [anoLetivo, setAnoLetivo] = useState('');
+  const [idTipoCalendario, setIdTipoCalendario] = useState(0);
+  const [exibirAuditoria, setExibirAuditoria] = useState(false);
   const [valoresIniciais, setValoresIniciais] = useState({
     situacao: true,
     nome: '',
@@ -32,7 +35,9 @@ const TipoCalendarioEscolarForm = ({ match }) => {
 
   const [validacoes] = useState(
     Yup.object({
-      nome: Yup.string().required('Nome obrigatório'),
+      nome: Yup.string()
+        .required('Nome obrigatório')
+        .max(50, 'Máximo 50 caracteres'),
       periodo: Yup.string().required('Período obrigatório'),
       modalidade: Yup.string().required('Modalidade obrigatória'),
       situacao: Yup.string().required('Situação obrigatória'),
@@ -57,36 +62,46 @@ const TipoCalendarioEscolarForm = ({ match }) => {
 
   useEffect(() => {
     if (match && match.params && match.params.id) {
-      // TODO Chamar endpoint consultar por ID
-      // MOCK
-      console.log(`Editando ID: ${match.params.id}`);
-      setValoresIniciais({
-        nome: '2019 - Calendário Escolar Educação Infantil',
-        periodo: 1,
-        situacao: true,
-        modalidade: 1,
-      });
-      setAnoLetivo('2019');
-      setNovoRegistro(false);
-      setAuditoria({
-        criadoPor: 'ELISANGELA DOS SANTOS ARRUDA',
-        criadoRf: '1234567',
-        criadoEm: new window.moment(),
-        alteradoPor: 'JOÃO DA SILVA',
-        alteradoRf: '7654321',
-        alteradoEm: new window.moment(),
-      });
+      setIdTipoCalendario(match.params.id);
+      consultaPorId(match.params.id);
     } else if (
       usuario.turmaSelecionada &&
       usuario.turmaSelecionada[0] &&
       usuario.turmaSelecionada[0].anoLetivo
     ) {
       setAnoLetivo(usuario.turmaSelecionada[0].anoLetivo);
-      console.log(
-        `Novo registro, ano letivo: ${usuario.turmaSelecionada[0].anoLetivo}`
-      );
     }
   }, []);
+
+  const consultaPorId = async id => {
+    const tipoCalendadio = await api
+      .get(`v1/tipo-calendario-escolar/${id}`)
+      .catch(e => mostrarErros(e));
+
+    if (tipoCalendadio) {
+      setValoresIniciais({
+        nome: tipoCalendadio.data.nome,
+        periodo: tipoCalendadio.data.periodo,
+        situacao: tipoCalendadio.data.situacao,
+        modalidade: tipoCalendadio.data.modalidade,
+      });
+      setAnoLetivo(tipoCalendadio.data.anoLetivo);
+      setAuditoria({
+        criadoPor: tipoCalendadio.data.criadoPor,
+        criadoRf:
+          tipoCalendadio.data.criadoRF > 0 ? tipoCalendadio.data.criadoRF : '',
+        criadoEm: tipoCalendadio.data.criadoEm,
+        alteradoPor: tipoCalendadio.data.alteradoPor,
+        alteradoRf:
+          tipoCalendadio.data.alteradoRF > 0
+            ? tipoCalendadio.data.alteradoRF
+            : '',
+        alteradoEm: tipoCalendadio.data.alteradoEm,
+      });
+      setNovoRegistro(false);
+      setExibirAuditoria(true);
+    }
+  };
 
   const onClickVoltar = async () => {
     if (modoEdicao) {
@@ -121,10 +136,23 @@ const TipoCalendarioEscolarForm = ({ match }) => {
     setModoEdicao(false);
   };
 
-  const onClickCadastrar = valoresForm => {
-    console.log(valoresForm);
-    sucesso('Suas informações foram salvas com sucesso.');
-    history.push('/calendario-escolar/tipo-calendario-escolar');
+  const onClickCadastrar = async valoresForm => {
+    valoresForm.id = idTipoCalendario || 0;
+    valoresForm.anoLetivo = anoLetivo;
+    const cadastrado = await api
+      .post('v1/tipo-calendario-escolar', valoresForm)
+      .catch(erros => mostrarErros(erros));
+    if (cadastrado) {
+      sucesso('Suas informações foram salvas com sucesso.');
+      history.push('/calendario-escolar/tipo-calendario-escolar');
+    }
+  };
+
+  const mostrarErros = e => {
+    if (e && e.response && e.response.data && e.response.data) {
+      return e.response.data.mensagens.forEach(mensagem => erro(mensagem));
+    }
+    return '';
   };
 
   const onChangeCampos = () => {
@@ -143,9 +171,14 @@ const TipoCalendarioEscolarForm = ({ match }) => {
         'Cancelar'
       );
       if (confirmado) {
-        // TODO Chamar endpoint de excluir
-        sucesso('Tipo de calendário excluído com sucesso.')
-        history.push('/calendario-escolar/tipo-calendario-escolar');
+        const parametrosDelete = {data: [idTipoCalendario]}
+        const excluir = await api
+          .delete('v1/tipo-calendario-escolar', parametrosDelete)
+          .catch(erros => mostrarErros(erros));
+        if (excluir) {
+          sucesso('Tipo de calendário excluído com sucesso.');
+          history.push('/calendario-escolar/tipo-calendario-escolar');
+        }
       }
     }
   };
@@ -191,7 +224,7 @@ const TipoCalendarioEscolarForm = ({ match }) => {
                   onClick={onClickExcluir}
                 />
                 <Button
-                  label="Cadastrar"
+                  label={idTipoCalendario > 0 ? 'Alterar' : 'Cadastrar'}
                   color={Colors.Roxo}
                   border
                   bold
@@ -248,12 +281,18 @@ const TipoCalendarioEscolarForm = ({ match }) => {
             </Form>
           )}
         </Formik>
-        <Auditoria
-          criadoEm={auditoria.criadoEm}
-          criadoPor={auditoria.criadoPor}
-          alteradoPor={auditoria.alteradoPor}
-          alteradoEm={auditoria.alteradoEm}
-        />
+        {exibirAuditoria ? (
+          <Auditoria
+            criadoEm={auditoria.criadoEm}
+            criadoPor={auditoria.criadoPor}
+            criadoRf={auditoria.criadoRf}
+            alteradoPor={auditoria.alteradoPor}
+            alteradoEm={auditoria.alteradoEm}
+            alteradoRf={auditoria.alteradoRf}
+          />
+        ) : (
+          ''
+        )}
       </Card>
     </>
   );

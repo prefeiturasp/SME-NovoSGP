@@ -6,7 +6,8 @@ import { Colors } from '~/componentes/colors';
 import DataTable from '~/componentes/table/dataTable';
 import { URL_HOME } from '~/constantes/url';
 import history from '~/servicos/history';
-import { confirmar, sucesso } from '~/servicos/alertas';
+import { confirmar, sucesso, erro } from '~/servicos/alertas';
+import api from '~/servicos/api';
 
 const TipoCalendarioEscolarLista = () => {
   const [idTiposSelecionados, setIdTiposSelecionados] = useState([]);
@@ -18,11 +19,11 @@ const TipoCalendarioEscolarLista = () => {
   const colunas = [
     {
       title: 'Nome do tipo de calendário',
-      dataIndex: 'descricaoTipoCalendario',
+      dataIndex: 'nome',
     },
     {
       title: 'Ano',
-      dataIndex: 'ano',
+      dataIndex: 'anoLetivo',
     },
     {
       title: 'Período',
@@ -31,39 +32,12 @@ const TipoCalendarioEscolarLista = () => {
   ];
 
   useEffect(() => {
-    // TODO - Chamar endpoint
     onFiltrar();
   }, []);
 
-  const onFiltrar = () => {
-    // TODO - MOCK
-    const lsitaMock = [
-      {
-        id: 1,
-        descricaoTipoCalendario: '2019 - Calendário Escolar Educação Infantil',
-        ano: '2019',
-        periodo: 'Anual',
-      },
-      {
-        id: 2,
-        descricaoTipoCalendario: '2019 - Calendário Escolar',
-        ano: '2019',
-        periodo: 'Anual',
-      },
-      {
-        id: 3,
-        descricaoTipoCalendario: '2019 - Calendário Escolar EJA / 1º Semestre',
-        ano: '2019',
-        periodo: 'Semestral',
-      },
-      {
-        id: 4,
-        descricaoTipoCalendario: '2019 - Calendário Escolar EJA / 2º Semestre',
-        ano: '2019',
-        periodo: 'Semestral',
-      },
-    ];
-    setListaTiposCalendarioEscolar(lsitaMock);
+  const onFiltrar = async () => {
+    const tipos = await api.get('v1/tipo-calendario-escolar');
+    setListaTiposCalendarioEscolar(tipos.data);
   };
 
   const onSelectRow = ids => {
@@ -87,18 +61,46 @@ const TipoCalendarioEscolarLista = () => {
   };
 
   const onClickExcluir = async () => {
+    const listaParaExcluir = [];
+    idTiposSelecionados.forEach(id => {
+      const achou = listaTiposCalendarioEscolar.find(tipo => id == tipo.id);
+      if (achou) {
+        listaParaExcluir.push(achou);
+      }
+    });
+
+    const listaNomeExcluir = listaParaExcluir.map(item => item.nome);
     const confirmado = await confirmar(
       'Excluir tipo de calendário escolar',
-      '',
-      'Deseja realmente excluir este calendário?',
+      listaNomeExcluir,
+      `Deseja realmente excluir ${
+        idTiposSelecionados.length > 1 ? 'estes calendários' : 'este calendário'
+      }?`,
       'Excluir',
       'Cancelar'
     );
     if (confirmado) {
-      sucesso('Tipo de calendário excluído com sucesso.')
+      const parametrosDelete = { data: idTiposSelecionados };
+      const excluir = await api
+        .delete('v1/tipo-calendario-escolar', parametrosDelete)
+        .catch(erros => mostrarErros(erros));
+      if (excluir) {
+        const mensagemSucesso = `${
+          idTiposSelecionados.length > 1 ? 'Tipos' : 'Tipo'
+        } de calendário excluído com sucesso.`;
+        sucesso(mensagemSucesso);
+        history.push('/calendario-escolar/tipo-calendario-escolar');
+        onFiltrar();
+      }
     }
   };
 
+  const mostrarErros = e => {
+    if (e && e.response && e.response.data && e.response.data) {
+      return e.response.data.mensagens.forEach(mensagem => erro(mensagem));
+    }
+    return '';
+  };
 
   return (
     <>
