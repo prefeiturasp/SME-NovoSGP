@@ -10,7 +10,7 @@ namespace SME.SGP.Dto
     {
         public long Id { get; set; }
         public string Nome { get; set; }
-        public int anoLetivo { get; set; }
+        public int AnoLetivo { get; set; }
         public Periodo Periodo { get; set; }
         public Modalidade Modalidade { get; set; }
         public bool Situacao { get; set; }
