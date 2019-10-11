@@ -6,54 +6,52 @@ import styled from 'styled-components';
 
 const DadosEmail = () => {
 
-    const Campos = styled.div`
-        display: flex;
+  const Campos = styled.div`
+    margin-right: 10px;
+  `;
 
-        .campo{
-            min-width: 390px !important;
-        }
-
-        .btn-editar{
-            margin-left: 10px !important;
-        }
-    `;
-
-    return (
-        <div>
-            <Campos>
-                <CampoTexto
-                    label="E-mail"
-                    className="col-11 campo"
-                    placeholder="Insira um e-mail"
-                    onChange={() => { }}
-                />
-                <Button
-                    className="col-1 btn-editar"
-                    label="Editar"
-                    color={Colors.Roxo}
-                    border
-                    bold
-                    onClick={() => { }}
-                />
-            </Campos>
-            <Campos>
-                <CampoTexto
-                    label="Senha"
-                    className="col-11 campo"
-                    placeholder="Insira uma senha"
-                    onChange={() => { }}
-                />
-                <Button
-                    className="col-1 btn-editar"
-                    label="Editar"
-                    color={Colors.Roxo}
-                    border
-                    bold
-                    onClick={() => { }}
-                />
-            </Campos>
+  return (
+    <Campos>
+      <div className="row">
+        <div className="col-md-10">
+          <CampoTexto
+            label="E-mail"
+            placeholder="Insira um e-mail"
+            onChange={() => { }}
+            type="email"
+          />
         </div>
-    );
+        <div className="col-md-2">
+          <Button
+            label="Editar"
+            color={Colors.Roxo}
+            border
+            bold
+            onClick={() => { }}
+          />
+        </div>
+      </div>
+      <div className="row">
+        <div className="col-md-10">
+          <CampoTexto
+            label="Senha"
+            className="col-11 campo"
+            placeholder="Insira uma senha"
+            onChange={() => { }}
+          />
+        </div>
+        <div className="col-md-2">
+          <Button
+            label="Editar"
+            color={Colors.Roxo}
+            border
+            bold
+            onClick={() => { }}
+          />
+        </div>
+      </div>
+    </Campos>
+  );
 }
 
 export default DadosEmail;
