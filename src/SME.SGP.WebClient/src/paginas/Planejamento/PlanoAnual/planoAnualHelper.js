@@ -12,7 +12,7 @@ export default class PlanoAnualHelper {
       .catch(() => {
         erro(
           `Não foi possivel obter os dados do ${
-          ehEja ? 'plano semestral' : 'plano anual'
+            ehEja ? 'plano semestral' : 'plano anual'
           }`
         );
         return false;
@@ -32,15 +32,21 @@ export default class PlanoAnualHelper {
     return disciplinas;
   }
 
-  static async ObterDiscplinasObjetivos(codigoRf, turmaId) {
-    const disciplinas = await Service.getDisciplinasProfessor(codigoRf, turmaId)
+  static async ObterDiscplinasObjetivos(turmaId, disciplinaSelecionada) {
+    const disciplinas = await Service.getDisciplinasProfessorObjetivos(turmaId)
       .then(res => res)
       .catch(() => {
         erro(`Não foi possivel obter as disciplinas do professor`);
         return null;
       });
 
-    return disciplinas;
+    if (disciplinaSelecionada.regencia) return disciplinas;
+
+    const retorno =
+      disciplinas &&
+      disciplinas.find(x => x.codigo === disciplinaSelecionada.codigo);
+
+    return [retorno];
   }
 
   static ObtenhaBimestres = (

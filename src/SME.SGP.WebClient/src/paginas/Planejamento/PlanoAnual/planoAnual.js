@@ -24,7 +24,7 @@ import ModalMultiLinhas from '../../../componentes/modalMultiLinhas';
 import ModalConfirmacao from '../../../componentes/modalConfirmacao';
 import history from '../../../servicos/history';
 import { URL_HOME } from '../../../constantes/url';
-import { erro, sucesso } from '../../../servicos/alertas';
+import { erro, sucesso, confirmar } from '../../../servicos/alertas';
 import ModalConteudoHtml from '../../../componentes/modalConteudoHtml';
 import PlanoAnualHelper from './planoAnualHelper';
 import FiltroPlanoAnualDto from '~/dtos/filtroPlanoAnualDto';
@@ -42,9 +42,12 @@ export default function PlanoAnual() {
   const disciplinasPlanoAnual = useSelector(
     store => store.bimestres.disciplinasPlanoAnual
   );
+  const disciplinaSelecionada = useSelector(
+    store =>
+      store.bimestres.disciplinasPlanoAnual &&
+      store.bimestres.disciplinasPlanoAnual.find(x => x.selecionada)
+  );
 
-  console.log(disciplinasPlanoAnual);
-  const disciplinaSelecionada = disciplinasPlanoAnual && disciplinasPlanoAnual.find(x => x.selecionada);
   const bimestresErro = useSelector(store => store.bimestres.bimestresErro);
   const usuario = useSelector(store => store.usuario);
 
@@ -64,7 +67,7 @@ export default function PlanoAnual() {
 
   const ehMedio =
     turmaSelecionada[0] &&
-      turmaSelecionada[0].codModalidade === modalidade.ENSINO_MEDIO
+    turmaSelecionada[0].codModalidade === modalidade.ENSINO_MEDIO
       ? true
       : false;
 
@@ -111,7 +114,6 @@ export default function PlanoAnual() {
 
   useEffect(() => {
     verificarSeEhEdicao();
-
   }, [disciplinaSelecionada]);
 
   document.onkeydown = onF5Click;
@@ -122,7 +124,7 @@ export default function PlanoAnual() {
     const BimestresParaEnviar = bimestres.filter(x => x.paraEnviar);
 
     if (BimestresParaEnviar && BimestresParaEnviar.length > 0) {
-      console.log("codigo disciplina: " + disciplinaSelecionada.codigo);
+      console.log('codigo disciplina: ' + disciplinaSelecionada.codigo);
       dispatch(Post(BimestresParaEnviar, disciplinaSelecionada.codigo));
     }
   };
@@ -134,6 +136,9 @@ export default function PlanoAnual() {
     );
 
     dispatch(SalvarDisciplinasPlanoAnual(disciplinas));
+
+    if (disciplinas.length === 1)
+      dispatch(SelecionarDisciplinaPlanoAnual(disciplinas[0].codigo));
   };
 
   const verificarSeEhEdicao = async () => {
@@ -143,18 +148,25 @@ export default function PlanoAnual() {
 
     if (!disciplinaSelecionada) return;
 
-    const filtro = new FiltroPlanoAnualDto(anoLetivo, 1, escolaId, turmaId, disciplinaSelecionada.codigo);
+    const filtro = new FiltroPlanoAnualDto(
+      anoLetivo,
+      1,
+      escolaId,
+      turmaId,
+      disciplinaSelecionada.codigo
+    );
 
     const ehEdicao = await PlanoAnualHelper.verificarEdicao(filtro, ehEja);
 
-    console.log("Eh Edicao " + ehEdicao);
-
     const disciplinas = await PlanoAnualHelper.ObterDiscplinasObjetivos(
-      usuario.rf,
-      turmaId
+      turmaId,
+      disciplinaSelecionada
     );
 
-    const semObjetivos = disciplinas.filter(x => !x.possuiObjetivos).length > 0;
+    const semObjetivos =
+      disciplinas && disciplinas.filter(x => !x.possuiObjetivos).length > 0;
+
+    console.log(semObjetivos);
 
     setDisciplinaSemObjetivo(semObjetivos);
 
@@ -163,7 +175,7 @@ export default function PlanoAnual() {
       ehEdicao,
       filtro,
       anoEscolar,
-      LayoutEspecial,
+      LayoutEspecial || semObjetivos,
       ehEja
     );
 
@@ -183,7 +195,21 @@ export default function PlanoAnual() {
     verificarSeEhEdicao();
   };
 
-  const AoMudarDisciplinaPlanoAnual = e => {
+  const AoMudarDisciplinaPlanoAnual = async e => {
+    if (!emEdicao) return alterarValorDisciplina(e);
+
+    const confirmarPerderDados = await confirmar(
+      'Atenção',
+      'Você não salvou as informações preenchidas',
+      'Deseja realmente cancelar as alterações?',
+      'Sim',
+      'Não'
+    );
+
+    if (confirmarPerderDados) alterarValorDisciplina(e);
+  };
+
+  const alterarValorDisciplina = e => {
     if (e === 0 || !e) {
       dispatch(LimparDisciplinaPlanoAnual());
       return;
@@ -325,23 +351,23 @@ export default function PlanoAnual() {
   const modalCopiarConteudoAtencaoTexto = () => {
     const turmasReportar = usuario.turmasUsuario
       ? usuario.turmasUsuario
-        .filter(
-          turma =>
-            modalCopiarConteudo.turmasSelecionadas.includes(
-              `${turma.codigo}`
-            ) &&
-            modalCopiarConteudo.turmasComPlanoAnual.includes(turma.codigo)
-        )
-        .map(turma => turma.turma)
+          .filter(
+            turma =>
+              modalCopiarConteudo.turmasSelecionadas.includes(
+                `${turma.codigo}`
+              ) &&
+              modalCopiarConteudo.turmasComPlanoAnual.includes(turma.codigo)
+          )
+          .map(turma => turma.turma)
       : [];
 
     return turmasReportar.length > 1
       ? `As turmas ${turmasReportar.join(
-        ', '
-      )} já possuem plano anual que serão sobrescritos ao realizar a cópia. Deseja continuar?`
+          ', '
+        )} já possuem plano anual que serão sobrescritos ao realizar a cópia. Deseja continuar?`
       : `A turma ${
-      turmasReportar[0]
-      } já possui plano anual que será sobrescrito ao realizar a cópia. Deseja continuar?`;
+          turmasReportar[0]
+        } já possui plano anual que será sobrescrito ao realizar a cópia. Deseja continuar?`;
   };
 
   const onChangeCopiarConteudo = selecionadas => {
@@ -545,7 +571,7 @@ export default function PlanoAnual() {
             lista={disciplinasPlanoAnual}
             valueSelect={disciplinaSelecionada && disciplinaSelecionada.codigo}
             valueOption="codigo"
-            valueText="materia"
+            valueText="nome"
             onChange={AoMudarDisciplinaPlanoAnual}
             disabled={turmaSelecionada[0] ? false : true}
           ></SelectComponent>
@@ -585,18 +611,20 @@ export default function PlanoAnual() {
           />
         </Grid>
         <Grid cols={12}>
-          {bimestres
+          {bimestres && disciplinaSelecionada
             ? bimestres.map(bim => {
-              return (
-                <Bimestre
-                  disabled={ehDisabled}
-                  key={bim.indice}
-                  indice={bim.indice}
-                  modalidadeEja={ehEja}
-                  disciplinaSelecionada={disciplinaSelecionada.codigo}
-                />
-              );
-            })
+                return (
+                  <Bimestre
+                    disabled={ehDisabled}
+                    key={bim.indice}
+                    indice={bim.indice}
+                    modalidadeEja={ehEja}
+                    disciplinaSelecionada={
+                      disciplinaSelecionada && disciplinaSelecionada.codigo
+                    }
+                  />
+                );
+              })
             : null}
         </Grid>
       </Card>
