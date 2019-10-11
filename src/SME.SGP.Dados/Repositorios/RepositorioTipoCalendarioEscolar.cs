@@ -48,7 +48,8 @@ namespace SME.SGP.Dados.Repositorios
             return quantidadeRegistrosExistentes > 0;
         }
 
-        public TipoCalendarioEscolar ObterUmPorId(long id)
+        override
+        public TipoCalendarioEscolar ObterPorId(long id)
         {
             StringBuilder query = new StringBuilder();
 
@@ -57,7 +58,7 @@ namespace SME.SGP.Dados.Repositorios
             query.AppendLine("where excluido = false ");
             query.AppendLine("and id = @id ");
 
-            return database.Conexao.QueryFirst<TipoCalendarioEscolar>(query.ToString(), new { id });
+            return database.Conexao.QueryFirstOrDefault<TipoCalendarioEscolar>(query.ToString(), new { id });
         }
     }
 }

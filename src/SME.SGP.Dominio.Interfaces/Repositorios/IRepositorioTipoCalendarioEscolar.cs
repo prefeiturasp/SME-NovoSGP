@@ -8,6 +8,5 @@ namespace SME.SGP.Dominio.Interfaces
     {
         IEnumerable<TipoCalendarioEscolarDto> ObterTiposCalendarioEscolar();
         bool VerificarRegistroExistente(int id, string nome);
-        TipoCalendarioEscolar ObterUmPorId(long id);
     }
 }

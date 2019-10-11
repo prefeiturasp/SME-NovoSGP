@@ -43,7 +43,7 @@ namespace SME.SGP.Aplicacao
         {
             foreach(long id in ids)
             {
-                var tipoCalendario = repositorio.ObterUmPorId(id);
+                var tipoCalendario = repositorio.ObterPorId(id);
                 if(tipoCalendario != null)
                 {
                     tipoCalendario.Excluido = true;
