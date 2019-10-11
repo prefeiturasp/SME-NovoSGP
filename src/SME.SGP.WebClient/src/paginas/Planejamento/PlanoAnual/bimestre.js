@@ -29,11 +29,12 @@ import Auditoria from '~/componentes/auditoria';
 //Utilizado para importar a função scrollIntoViewIfNeeded para navegadores que não possuem essa funcionalidade.
 import '../../../componentes/scrollIntoViewIfNeeded';
 import modalidade from '~/dtos/modalidade';
+import { erro } from '~/servicos/alertas';
 
 const BimestreComponent = props => {
   const dispatch = useDispatch();
 
-  const { indice, disabled, modalidadeEja } = props;
+  const { indice, disabled, modalidadeEja, disciplinaSelecionada } = props;
 
   const bimestre = useSelector(store => store.bimestres.bimestres[indice]);
 
@@ -166,8 +167,13 @@ const BimestreComponent = props => {
   };
 
   const onClickBimestre = () => {
+    if (!disciplinaSelecionada) {
+      erro("Não é possivel salvar um plano anual sem selecionar uma disciplina");
+      return;
+    }
+
     if (!bimestreJaObtidoServidor)
-      dispatch(ObterBimestreServidor(bimestre));
+      dispatch(ObterBimestreServidor(bimestre, disciplinaSelecionada));
   };
 
   return (
