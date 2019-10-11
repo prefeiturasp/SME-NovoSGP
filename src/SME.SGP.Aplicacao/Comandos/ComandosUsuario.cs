@@ -7,7 +7,6 @@ using SME.SGP.Dto;
 using System;
 using System.IO;
 using System.Linq;
-using System.Reflection;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
@@ -48,6 +47,18 @@ namespace SME.SGP.Aplicacao
             this.configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
         }
 
+        //  TODO: aplicar validações permissão de acesso
+        public async Task AlterarEmail(AlterarEmailDto alterarEmailDto, string codigoRf)
+        {
+            await servicoUsuario.AlterarEmailUsuarioPorRfOuInclui(codigoRf, alterarEmailDto.NovoEmail);
+        }
+
+        public async Task AlterarEmailUsuarioLogado(string novoEmail)
+        {
+            var login = servicoTokenJwt.ObterLoginAtual();
+            await servicoUsuario.AlterarEmailUsuarioPorLogin(login, novoEmail);
+        }
+
         public async Task AlterarSenhaComTokenRecuperacao(RecuperacaoSenhaDto recuperacaoSenhaDto)
         {
             Usuario usuario = repositorioUsuario.ObterPorTokenRecuperacaoSenha(recuperacaoSenhaDto.Token);
@@ -72,6 +83,17 @@ namespace SME.SGP.Aplicacao
 
             usuario.FinalizarRecuperacaoSenha();
             repositorioUsuario.Salvar(usuario);
+        }
+
+        public async Task<AlterarSenhaRespostaDto> AlterarSenhaPrimeiroAcesso(PrimeiroAcessoDto primeiroAcessoDto)
+        {
+            var usuario = new Usuario();
+
+            usuario.Login = primeiroAcessoDto.Usuario;
+
+            usuario.ValidarSenha(primeiroAcessoDto.NovaSenha);
+
+            return await servicoEOL.AlterarSenha(usuario.Login, primeiroAcessoDto.NovaSenha);
         }
 
         public async Task<UsuarioAutenticacaoRetornoDto> Autenticar(string login, string senha)
@@ -129,6 +151,23 @@ namespace SME.SGP.Aplicacao
             }
         }
 
+        public async Task<UsuarioReinicioSenhaDto> ReiniciarSenha(string codigoRf)
+        {
+            var usuario = servicoUsuario.ObterUsuarioPorCodigoRfLoginOuAdiciona(codigoRf);
+
+            var retorno = new UsuarioReinicioSenhaDto();
+
+            if (!usuario.PodeReiniciarSenha())
+                retorno.DeveAtualizarEmail = true;
+            else
+            {
+                await servicoEOL.ReiniciarSenha(codigoRf);
+                retorno.DeveAtualizarEmail = false;
+            }
+
+            return retorno;
+        }
+
         public string SolicitarRecuperacaoSenha(string login)
         {
             var usuario = repositorioUsuario.ObterPorCodigoRfLogin(null, login);
@@ -150,8 +189,7 @@ namespace SME.SGP.Aplicacao
 
         private void EnviarEmailRecuperacao(Usuario usuario)
         {
-            string caminho = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), @"ModelosEmail/RecuperacaoSenha.txt");
-            Console.WriteLine(caminho);
+            string caminho = $"{Directory.GetCurrentDirectory()}/wwwroot/ModelosEmail/RecuperacaoSenha.txt";
             var textoArquivo = File.ReadAllText(caminho);
             var urlFrontEnd = configuration["UrlFrontEnt"];
             var textoEmail = textoArquivo

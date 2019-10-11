@@ -1,6 +1,7 @@
 import { createGlobalStyle } from 'styled-components';
 import { Base } from '../componentes/colors';
 import ExclamacaoCampoErro from '~/recursos/ExclamacaoCampoErro.svg';
+import '../componentes/campoData/campoData.css'
 
 export default createGlobalStyle`
   @import url('https://fonts.googleapis.com/css?family=Roboto:400,700&display=swap');
@@ -110,6 +111,10 @@ export default createGlobalStyle`
 
   .p-t-24{
     padding-top: 24px !important;
+  }
+
+  .p-t-20{
+    padding-top: 20px !important;
   }
 
   .p-r-8{
