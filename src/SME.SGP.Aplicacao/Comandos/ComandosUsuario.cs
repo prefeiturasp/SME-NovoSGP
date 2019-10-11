@@ -55,7 +55,7 @@ namespace SME.SGP.Aplicacao
 
         public async Task AlterarEmailUsuarioLogado(string novoEmail)
         {
-            var login = servicoTokenJwt.ObterLoginAtual();
+            var login = servicoUsuario.ObterLoginAtual();
             await servicoUsuario.AlterarEmailUsuarioPorLogin(login, novoEmail);
         }
 
