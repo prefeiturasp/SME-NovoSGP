@@ -4,8 +4,8 @@ create table if not exists public.abrangencia_dres
  	id bigint NOT NULL generated always as identity,
  	usuario_id bigint not null ,
  	dre_id varchar(15) not null,
- 	abreviacao varchar(50) not null,
- 	nome varchar(200) not null, 	
+ 	abreviacao varchar(10) not null,
+ 	nome varchar(100) not null, 	
  	
  	CONSTRAINT abrangencia_dres_pk PRIMARY KEY (id)
 );
@@ -46,11 +46,11 @@ create table if not exists public.abrangencia_turmas
  	usuario_id bigint not null,
  	turma_id varchar(15) not null,
  	abrangencia_ues_id bigint not null,
- 	nome varchar(200) not null, 	
+ 	nome varchar(10) not null, 	
  	ano int not null,
  	anoLetivo int not null,
- 	modalidade varchar(30) not null,
- 	modalidade_codigo varchar(10) not null,
+ 	modalidade varchar(50) not null,
+ 	modalidade_codigo varchar(5) not null,
  	
  	CONSTRAINT abrangencia_turmas_pk PRIMARY KEY (id)
 );
