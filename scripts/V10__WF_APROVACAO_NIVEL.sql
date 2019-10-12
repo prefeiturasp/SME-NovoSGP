@@ -15,7 +15,7 @@
     CONSTRAINT wf_aprova_nivel_nivel_pk PRIMARY KEY (id)
 
 );
-ALTER TABLE public.wf_aprovacao_nivel ADD CONSTRAINT wf_aprovacao_nivel_wf_aprovacao_fk FOREIGN KEY (wf_aprovacao_id) REFERENCES wf_aprovacao(id);
+ALTER TABLE if exists public.wf_aprovacao_nivel ADD CONSTRAINT wf_aprovacao_nivel_wf_aprovacao_fk FOREIGN KEY (wf_aprovacao_id) REFERENCES wf_aprovacao(id);
 
 
 
