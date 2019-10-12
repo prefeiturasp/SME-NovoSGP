@@ -75,7 +75,7 @@ const TipoCalendarioEscolarForm = ({ match }) => {
 
   const consultaPorId = async id => {
     const tipoCalendadio = await api
-      .get(`v1/tipo-calendario-escolar/${id}`)
+      .get(`v1/tipo-calendario/${id}`)
       .catch(e => mostrarErros(e));
 
     if (tipoCalendadio) {
@@ -140,7 +140,7 @@ const TipoCalendarioEscolarForm = ({ match }) => {
     valoresForm.id = idTipoCalendario || 0;
     valoresForm.anoLetivo = anoLetivo;
     const cadastrado = await api
-      .post('v1/tipo-calendario-escolar', valoresForm)
+      .post('v1/tipo-calendario', valoresForm)
       .catch(erros => mostrarErros(erros));
     if (cadastrado) {
       sucesso('Suas informações foram salvas com sucesso.');
@@ -173,7 +173,7 @@ const TipoCalendarioEscolarForm = ({ match }) => {
       if (confirmado) {
         const parametrosDelete = {data: [idTipoCalendario]}
         const excluir = await api
-          .delete('v1/tipo-calendario-escolar', parametrosDelete)
+          .delete('v1/tipo-calendario', parametrosDelete)
           .catch(erros => mostrarErros(erros));
         if (excluir) {
           sucesso('Tipo de calendário excluído com sucesso.');

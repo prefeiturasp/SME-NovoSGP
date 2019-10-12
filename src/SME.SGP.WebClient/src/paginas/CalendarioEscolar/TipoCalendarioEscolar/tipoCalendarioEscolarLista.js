@@ -27,7 +27,7 @@ const TipoCalendarioEscolarLista = () => {
     },
     {
       title: 'Período',
-      dataIndex: 'periodo',
+      dataIndex: 'descricaoPeriodo',
     },
   ];
 
@@ -36,7 +36,7 @@ const TipoCalendarioEscolarLista = () => {
   }, []);
 
   const onFiltrar = async () => {
-    const tipos = await api.get('v1/tipo-calendario-escolar');
+    const tipos = await api.get('v1/tipo-calendario');
     setListaTiposCalendarioEscolar(tipos.data);
   };
 
@@ -82,14 +82,14 @@ const TipoCalendarioEscolarLista = () => {
     if (confirmado) {
       const parametrosDelete = { data: idTiposSelecionados };
       const excluir = await api
-        .delete('v1/tipo-calendario-escolar', parametrosDelete)
+        .delete('v1/tipo-calendario', parametrosDelete)
         .catch(erros => mostrarErros(erros));
       if (excluir) {
         const mensagemSucesso = `${
           idTiposSelecionados.length > 1 ? 'Tipos' : 'Tipo'
         } de calendário excluído com sucesso.`;
         sucesso(mensagemSucesso);
-        history.push('/calendario-escolar/tipo-calendario-escolar');
+        history.push('/calendario-escolar/tipo-calendario');
         onFiltrar();
       }
     }
