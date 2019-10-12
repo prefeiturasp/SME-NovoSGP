@@ -38,9 +38,9 @@ const BimestreComponent = props => {
 
   const bimestre = useSelector(store => store.bimestres.bimestres[indice]);
 
-  const LayoutEspecial = bimestre.LayoutEspecial;
+  const { LayoutEspecial } = bimestre;
 
-  const materias = bimestre.materias;
+  const { materias } = bimestre;
 
   const objetivos = bimestre.objetivosAprendizagem;
 
@@ -173,7 +173,7 @@ const BimestreComponent = props => {
     }
 
     if (!bimestreJaObtidoServidor)
-      dispatch(ObterBimestreServidor(bimestre, disciplinaSelecionada));
+      dispatch(ObterBimestreServidor(bimestre, disciplinaSelecionada, LayoutEspecial));
   };
 
   return (
@@ -196,61 +196,61 @@ const BimestreComponent = props => {
           <div>
             {bimestre.materias && bimestre.materias.length > 0
               ? bimestre.materias.map((materia, indice) => {
-                  return (
-                    <Badge
-                      role="button"
-                      onClick={selecionaMateria}
-                      aria-pressed={materia.selecionada && true}
-                      id={materia.codigo}
-                      data-index={indice}
-                      alt={materia.materia}
-                      key={materia.codigo}
-                      disabled={
-                        disabled || LayoutEspecial || !materia.possuiObjetivos
-                      }
-                      readonly={LayoutEspecial}
-                      className={`badge badge-pill border text-dark bg-white font-weight-light px-2 py-1 ${
-                        LayoutEspecial ? '' : 'mt-3'
+                return (
+                  <Badge
+                    role="button"
+                    onClick={selecionaMateria}
+                    aria-pressed={materia.selecionada && true}
+                    id={materia.codigo}
+                    data-index={indice}
+                    alt={materia.materia}
+                    key={materia.codigo}
+                    disabled={
+                      disabled || LayoutEspecial || !materia.possuiObjetivos
+                    }
+                    readonly={LayoutEspecial}
+                    className={`badge badge-pill border text-dark bg-white font-weight-light px-2 py-1 ${
+                      LayoutEspecial ? '' : 'mt-3'
                       } mr-2`}
-                    >
-                      {materia.materia}
-                    </Badge>
-                  );
-                })
+                  >
+                    {materia.materia}
+                  </Badge>
+                );
+              })
               : null}
           </div>
           {LayoutEspecial ? null : (
             <ObjetivosList ref={ListRef} className="mt-4 overflow-auto">
               {bimestre.objetivosAprendizagem &&
-              bimestre.objetivosAprendizagem.length > 0
+                bimestre.objetivosAprendizagem.length > 0
                 ? bimestre.objetivosAprendizagem.map((objetivo, index) => {
-                    return (
-                      <ul
-                        key={`${objetivo.id}Bimestre${index}`}
-                        className="list-group list-group-horizontal mt-3"
+                  return (
+                    <ul
+                      key={`${objetivo.id}Bimestre${index}`}
+                      className="list-group list-group-horizontal mt-3"
+                    >
+                      <ListItemButton
+                        className="list-group-item d-flex align-items-center font-weight-bold fonte-14"
+                        role="button"
+                        id={`${indice}Bimestre${objetivo.id}`}
+                        aria-pressed={objetivo.selected ? true : false}
+                        data-index={index}
+                        onClick={selecionaObjetivo}
+                        onKeyUp={selecionaObjetivo}
+                        disabled={disabled}
+                        alt={`Codigo do Objetivo : ${objetivo.codigo} `}
                       >
-                        <ListItemButton
-                          className="list-group-item d-flex align-items-center font-weight-bold fonte-14"
-                          role="button"
-                          id={`${indice}Bimestre${objetivo.id}`}
-                          aria-pressed={objetivo.selected ? true : false}
-                          data-index={index}
-                          onClick={selecionaObjetivo}
-                          onKeyUp={selecionaObjetivo}
-                          disabled={disabled}
-                          alt={`Codigo do Objetivo : ${objetivo.codigo} `}
-                        >
-                          {objetivo.codigo}
-                        </ListItemButton>
-                        <ListItem
-                          alt={objetivo.descricao}
-                          className="list-group-item flex-fill p-2 fonte-12"
-                        >
-                          {objetivo.descricao}
-                        </ListItem>
-                      </ul>
-                    );
-                  })
+                        {objetivo.codigo}
+                      </ListItemButton>
+                      <ListItem
+                        alt={objetivo.descricao}
+                        className="list-group-item flex-fill p-2 fonte-12"
+                      >
+                        {objetivo.descricao}
+                      </ListItem>
+                    </ul>
+                  );
+                })
                 : null}
             </ObjetivosList>
           )}
@@ -272,48 +272,48 @@ const BimestreComponent = props => {
                 ).length} objetivos selecionados`}
             >
               {bimestre.objetivosAprendizagem &&
-              bimestre.objetivosAprendizagem.length > 0
+                bimestre.objetivosAprendizagem.length > 0
                 ? bimestre.objetivosAprendizagem
-                    .filter(objetivo => objetivo.selected)
-                    .map(selecionado => {
-                      return (
-                        <Button
-                          key={`Objetivo${selecionado.id}Selecionado${indice}`}
-                          label={selecionado.codigo}
-                          color={Colors.AzulAnakiwa}
-                          bold
-                          id={selecionado.id}
-                          disabled={disabled}
-                          steady
-                          remove
-                          className="text-dark mt-3 mr-2 stretched-link"
-                          onClick={removeObjetivoSelecionado}
-                        />
-                      );
-                    })
+                  .filter(objetivo => objetivo.selected)
+                  .map(selecionado => {
+                    return (
+                      <Button
+                        key={`Objetivo${selecionado.id}Selecionado${indice}`}
+                        label={selecionado.codigo}
+                        color={Colors.AzulAnakiwa}
+                        bold
+                        id={selecionado.id}
+                        disabled={disabled}
+                        steady
+                        remove
+                        className="text-dark mt-3 mr-2 stretched-link"
+                        onClick={removeObjetivoSelecionado}
+                      />
+                    );
+                  })
                 : null}
               {bimestre.objetivosAprendizagem &&
-              bimestre.objetivosAprendizagem.length > 0 &&
-              bimestre.objetivosAprendizagem.filter(x => x.selected).length >
+                bimestre.objetivosAprendizagem.length > 0 &&
+                bimestre.objetivosAprendizagem.filter(x => x.selected).length >
                 1 ? (
-                <Button
-                  key={`removerTodos`}
-                  label={`Remover Todos`}
-                  color={Colors.CinzaBotao}
-                  bold
-                  alt="Remover todos os objetivos selecionados"
-                  id={`removerTodos`}
-                  height="38px"
-                  width="92px"
-                  fontSize="12px"
-                  padding="0px 5px"
-                  lineHeight="1.2"
-                  steady
-                  border
-                  className="text-dark mt-3 mr-2 stretched-link"
-                  onClick={removerTodosObjetivoSelecionado}
-                />
-              ) : null}
+                  <Button
+                    key={`removerTodos`}
+                    label={`Remover Todos`}
+                    color={Colors.CinzaBotao}
+                    bold
+                    alt="Remover todos os objetivos selecionados"
+                    id={`removerTodos`}
+                    height="38px"
+                    width="92px"
+                    fontSize="12px"
+                    padding="0px 5px"
+                    lineHeight="1.2"
+                    steady
+                    border
+                    className="text-dark mt-3 mr-2 stretched-link"
+                    onClick={removerTodosObjetivoSelecionado}
+                  />
+                ) : null}
             </div>
           )}
           <div className="mt-4">

@@ -253,9 +253,11 @@ export function removerSelecaoTodosObjetivos(indice) {
   };
 }
 
-export function ObterBimestreServidor(Bimestre, disciplinaSelecionada) {
+export function ObterBimestreServidor(Bimestre, disciplinaSelecionada, layoutEspecial) {
 
   const filtro = new filtroPlanoAnualDto(Bimestre.anoLetivo, Bimestre.indice, Bimestre.escolaId, Bimestre.turmaId, disciplinaSelecionada);
+
+  console.log(layoutEspecial);
 
   return dispatch => {
     Servico.obterBimestre(filtro)
@@ -273,7 +275,7 @@ export function ObterBimestreServidor(Bimestre, disciplinaSelecionada) {
             alteradoRF: bimestreDTO.alteradoRF,
             criadoRF: bimestreDTO.criadoRF,
             criadoEm: bimestreDTO.criadoEm,
-            LayoutEspecial: bimestreDTO.migrado,
+            LayoutEspecial: bimestreDTO.migrado || layoutEspecial,
             migrado: bimestreDTO.migrado,
             criadoPor: bimestreDTO.criadoPor,
             objetivosAprendizagem: bimestreDTO.objetivosAprendizagem.map(
