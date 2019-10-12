@@ -66,10 +66,6 @@ const SelectComponent = props => {
 
   const { Option } = Select;
 
-  console.log('valueText ' + valueText);
-  console.log('valueSelect ' + valueSelect);
-  console.log('valueOption ' + valueOption);
-
   return (
     <Container className={classNameContainer && classNameContainer}>
       {label ? <Label text={label} control={name} /> : ''}
