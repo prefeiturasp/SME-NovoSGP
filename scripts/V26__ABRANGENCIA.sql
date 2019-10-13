@@ -21,7 +21,6 @@ CREATE index if not exists abrangencia_dres_dre_id_idx ON public.abrangencia_dre
 create table if not exists public.abrangencia_ues
 (
  	id bigint NOT NULL generated always as identity,
- 	usuario_id bigint not null ,
  	ue_id varchar(15) not null,
  	abrangencia_dres_id bigint not null,
  	nome varchar(200) not null, 	
@@ -29,10 +28,8 @@ create table if not exists public.abrangencia_ues
  	CONSTRAINT abrangencia_ues_pk PRIMARY KEY (id)
 );
 
-select f_cria_fk_se_nao_existir('abrangencia_ues', 'abrangencia_ues_usario_fk', 'FOREIGN KEY (usuario_id) REFERENCES usuario(id)');
 select f_cria_fk_se_nao_existir('abrangencia_ues', 'abrangencia_ues_abrangencia_dres_id_fk', 'FOREIGN KEY (abrangencia_dres_id) REFERENCES abrangencia_dres(id)');
 
-CREATE index if not exists abrangencia_ues_usuario_idx ON public.abrangencia_ues (usuario_id);
 CREATE index if not exists abrangencia_ues_ue_idx ON public.abrangencia_ues (ue_id);
 CREATE index if not exists abrangencia_ues_abrangecia_dres_idx ON public.abrangencia_ues (abrangencia_dres_id);
 
@@ -43,7 +40,6 @@ CREATE index if not exists abrangencia_ues_abrangecia_dres_idx ON public.abrange
 create table if not exists public.abrangencia_turmas
 (
  	id bigint NOT NULL generated always as identity,
- 	usuario_id bigint not null,
  	turma_id varchar(15) not null,
  	abrangencia_ues_id bigint not null,
  	nome varchar(10) not null, 	
@@ -55,10 +51,8 @@ create table if not exists public.abrangencia_turmas
  	CONSTRAINT abrangencia_turmas_pk PRIMARY KEY (id)
 );
 
-select f_cria_fk_se_nao_existir('abrangencia_turmas', 'abrangencia_turmas_usario_fk', 'FOREIGN KEY (usuario_id) REFERENCES usuario(id)');
 select f_cria_fk_se_nao_existir('abrangencia_turmas', 'abrangencia_turmas_abrangencia_ues_id_fk', 'FOREIGN KEY (abrangencia_ues_id) REFERENCES abrangencia_ues(id)');
 
-CREATE index if not exists abrangencia_turmas_usuario_idx ON public.abrangencia_turmas (usuario_id);
 CREATE index if not exists abrangencia_turmas_ue_idx ON public.abrangencia_turmas (turma_id);
 CREATE index if not exists abrangencia_turmas_abrangecia_ues_idx ON public.abrangencia_turmas (abrangencia_ues_id);
 
