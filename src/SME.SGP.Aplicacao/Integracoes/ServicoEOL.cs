@@ -55,14 +55,14 @@ namespace SME.SGP.Aplicacao.Integracoes
             else return null;
         }
 
-        public async Task<AbragenciaRetornoEolDto> ObterAbrangencia(string codigoRf, string codigoPerfil)
+        public async Task<AbrangenciaRetornoEolDto> ObterAbrangencia(string codigoRf, string codigoPerfil)
         {
             var resposta = await httpClient.GetAsync($"funcinarios/{codigoRf}/{codigoPerfil}");
 
             if (resposta.IsSuccessStatusCode)
             {
                 var json = await resposta.Content.ReadAsStringAsync();
-                return JsonConvert.DeserializeObject<AbragenciaRetornoEolDto>(json);
+                return JsonConvert.DeserializeObject<AbrangenciaRetornoEolDto>(json);
             }
             return null;
         }

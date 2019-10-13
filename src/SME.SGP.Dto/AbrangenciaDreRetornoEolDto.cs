@@ -2,16 +2,16 @@
 
 namespace SME.SGP.Dto
 {
-    public class AbragenciaDreRetornoEolDto
+    public class AbrangenciaDreRetornoEolDto
     {
-        public AbragenciaDreRetornoEolDto()
+        public AbrangenciaDreRetornoEolDto()
         {
-            Ues = new List<AbragenciaUeRetornoEolDto>();
+            Ues = new List<AbrangenciaUeRetornoEolDto>();
         }
 
         public string Abreviacao { get; set; }
         public string Codigo { get; set; }
         public string Nome { get; set; }
-        public IList<AbragenciaUeRetornoEolDto> Ues { get; set; }
+        public IList<AbrangenciaUeRetornoEolDto> Ues { get; set; }
     }
 }
