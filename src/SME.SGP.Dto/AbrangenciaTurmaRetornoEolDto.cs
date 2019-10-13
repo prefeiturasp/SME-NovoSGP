@@ -1,6 +1,6 @@
 ﻿namespace SME.SGP.Dto
 {
-    public class AbragenciaTurmaRetornoEolDto
+    public class AbrangenciaTurmaRetornoEolDto
     {
         public int Ano { get; set; }
         public int AnoLetivo { get; set; }
