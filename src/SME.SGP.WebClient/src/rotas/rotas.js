@@ -158,8 +158,8 @@ export default function Rotas() {
   });
 
   rotas.set('/calendario-escolar/tipo-feriado', {
-    breadcrumbName: 'Lista de tipo de feriado',
-    menu: ['Tipo feriado'],
+    breadcrumbName: 'Lista de Tipo de Feriado',
+    menu: ['Tipo Feriado'],
     parent: '/',
     component: TipoFeriadoLista,
     exact: true,
@@ -167,7 +167,7 @@ export default function Rotas() {
   });
 
   rotas.set('/calendario-escolar/tipo-feriado/novo', {
-    breadcrumbName: 'Cadastro de tipo de feriado',
+    breadcrumbName: 'Cadastro de Tipo de Feriado',
     parent: '/calendario-escolar/tipo-feriado',
     component: TipoFeriadoForm,
     exact: true,
@@ -175,7 +175,7 @@ export default function Rotas() {
   });
 
   rotas.set('/calendario-escolar/tipo-feriado/editar/:id', {
-    breadcrumbName: 'Alterar tipo de feriado',
+    breadcrumbName: 'Alterar Tipo de Feriado',
     parent: '/calendario-escolar/tipo-feriado',
     component: TipoFeriadoForm,
     exact: true,
