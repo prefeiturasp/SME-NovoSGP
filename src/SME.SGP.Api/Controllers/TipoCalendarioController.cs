@@ -2,7 +2,9 @@
 using Microsoft.AspNetCore.Mvc;
 using SME.SGP.Api.Filtros;
 using SME.SGP.Aplicacao;
+using SME.SGP.Aplicacao.Interfaces.Comandos;
 using SME.SGP.Dto;
+using System;
 using System.Collections.Generic;
 
 namespace SME.SGP.Api.Controllers
@@ -15,11 +17,14 @@ namespace SME.SGP.Api.Controllers
     {
         private readonly IConsultasTipoCalendario consultas;
         private readonly IComandosTipoCalendario comandos;
+        private readonly IComandosPeriodoEscolar periodoEscolar;
+
         public TipoCalendarioController(IConsultasTipoCalendario consultas,
-            IComandosTipoCalendario comandos)
+            IComandosTipoCalendario comandos, IComandosPeriodoEscolar periodoEscolar)
         {
             this.consultas = consultas ?? throw new System.ArgumentNullException(nameof(consultas));
             this.comandos = comandos ?? throw new System.ArgumentNullException(nameof(comandos));
+            this.periodoEscolar = periodoEscolar ?? throw new ArgumentNullException(nameof(periodoEscolar));
         }
 
         [HttpGet]
@@ -56,6 +61,16 @@ namespace SME.SGP.Api.Controllers
             comandos.MarcarExcluidos(ids);
             return Ok();
         }
+
+        [HttpPost("periodo-escolar")]
+        [ProducesResponseType(200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        public IActionResult PeriodoEscolar([FromBody]PeriodoEscolarListaDto periodo)
+        {
+            periodoEscolar.Salvar(periodo);
+            return Ok();
+        }
+        
     }
 
 }

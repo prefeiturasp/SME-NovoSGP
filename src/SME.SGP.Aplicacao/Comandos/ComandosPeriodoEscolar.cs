@@ -1,6 +1,7 @@
 ﻿using SME.SGP.Aplicacao.Interfaces.Comandos;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Entidades;
+using SME.SGP.Dominio.Interfaces.Repositorios;
 using SME.SGP.Dto;
 using System;
 using System.Collections.Generic;
@@ -12,21 +13,23 @@ namespace SME.SGP.Aplicacao.Comandos
     public class ComandosPeriodoEscolar : IComandosPeriodoEscolar
     {
         private readonly IUnitOfWork unitOfWork;
-        private readonly IConsultasTipoCalendario tipoCalendario;
+        private readonly IConsultasTipoCalendario consultaTipoCalendario;
+        private readonly IRepositorioPeriodoEscolar repositorioPeriodo;
 
-        public ComandosPeriodoEscolar(IUnitOfWork unitOfWork, IConsultasTipoCalendario tipoCalendario)
+        public ComandosPeriodoEscolar(IUnitOfWork unitOfWork, IConsultasTipoCalendario consultaTipoCalendario, IRepositorioPeriodoEscolar repositorioPeriodo)
         {
             this.unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
-            this.tipoCalendario = tipoCalendario ?? throw new ArgumentNullException(nameof(tipoCalendario));
+            this.consultaTipoCalendario = consultaTipoCalendario ?? throw new ArgumentNullException(nameof(consultaTipoCalendario));
+            this.repositorioPeriodo = repositorioPeriodo ?? throw new ArgumentException(nameof(repositorioPeriodo));
         }
 
         public void Salvar(PeriodoEscolarListaDto periodosDto)
         {
             using (var transacao = unitOfWork.IniciarTransacao())
             {
-                TipoCalendarioCompletoDto tipo = tipoCalendario.BuscarPorId(periodosDto.TipoCalendario);
+                TipoCalendarioCompletoDto tipo = consultaTipoCalendario.BuscarPorId(periodosDto.TipoCalendario);
 
-                if (tipo.Id == 0) throw new NegocioException("O tipo de calendario informado não foi encontrado");
+                if (tipo == null || tipo.Id == 0) throw new NegocioException("O tipo de calendario informado não foi encontrado");
 
                 var lista = new PeriodoEscolarLista
                 {

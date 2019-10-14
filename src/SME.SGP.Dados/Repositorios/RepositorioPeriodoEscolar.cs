@@ -8,7 +8,6 @@ namespace SME.SGP.Dados.Repositorios
     {
         public RepositorioPeriodoEscolar(ISgpContext conexao) : base(conexao)
         {
-        }
-
+        }        
     }
 }
