@@ -20,7 +20,7 @@ namespace SME.SGP.Dto
         [Required(ErrorMessage = "O campo Situação é obrigatório")]
         public bool Situacao { get; set; }
 
-        public string DescricaoModalidade { get; set; }
+        public string DescricaoPeriodo { get; set; }
 
     }
 }

@@ -11,6 +11,7 @@ namespace SME.SGP.Dados.Mapeamentos
             Map(t => t.Nome).ToColumn("nome");
             Map(t => t.Periodo).ToColumn("periodo");
             Map(t => t.Situacao).ToColumn("situacao");
+            Map(t => t.Modalidade).ToColumn("modalidade");
         }
     }
 }

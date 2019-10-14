@@ -9,7 +9,7 @@ namespace SME.SGP.Api.Controllers
     [ApiController]
     [Route("api/v1/tipo-calendario")]
     [ValidaDto]
-    //[Authorize("Bearer")]
+    [Authorize("Bearer")]
     public class TipoCalendarioController : ControllerBase
     {
         private readonly IConsultasTipoCalendario consultas;
