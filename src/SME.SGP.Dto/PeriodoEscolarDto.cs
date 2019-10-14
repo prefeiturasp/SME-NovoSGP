@@ -7,6 +7,7 @@ namespace SME.SGP.Dto
 {
     public class PeriodoEscolarDto
     {
+        public long Codigo { get; set; }
         [Required(ErrorMessage = "É necessario informar o tipo de calendario")]
         public int TipoCalendario { get; set; }
         [Required(ErrorMessage = "É necessario informar o bimestre")]
