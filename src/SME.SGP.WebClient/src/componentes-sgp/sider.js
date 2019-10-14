@@ -319,6 +319,12 @@ const Sider = () => {
                 </Menu.Item>
                 <Menu.Item key="86" id="calTipoFeriados">
                   <span className="menuItem">Tipo de Feriado</span>
+                  {/* TODO - Descomentar quando estiver DONE a estoria */}
+                  {/* <Link
+                    to="/calendario-escolar/tipo-feriado"
+                    className="nav-link text-white"
+                    id="linkTipoFeriado"
+                  /> */}
                 </Menu.Item>
                 <Menu.Item key="87" id="calTipoEvento">
                   <span className="menuItem">Tipo de Evento</span>
@@ -393,7 +399,12 @@ const Sider = () => {
                   }
                 >
                   <Menu.Item key="110" id="usuTrocaSenha">
-                    <span className="menuItem">Troca de Senha</span>
+                    <span className="menuItem">Reiniciar Senha</span>
+                    <Link
+                      to="/usuarios/reiniciar-senha"
+                      className="nav-link text-white"
+                      id="linkReiniciarSenha"
+                    />
                   </Menu.Item>
                 </SubMenu>
               </SubMenu>
