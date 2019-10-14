@@ -4,7 +4,6 @@ import { useSelector } from 'react-redux';
 
 const RotaAutenticadaDesestruturada = props => {
   const { component: Componente, ...propriedades } = props;
-
   const logado = useSelector(state => state.usuario.logado);
 
   return (

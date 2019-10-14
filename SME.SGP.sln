@@ -37,6 +37,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "scripts", "scripts", "{CF91
 		scripts\V19__EMAIL_USUARIO.sql = scripts\V19__EMAIL_USUARIO.sql
 		scripts\V1__AUDITORIA_CREATE.sql = scripts\V1__AUDITORIA_CREATE.sql
 		scripts\V21__PLANO_ANUAL_AJUSTE.sql = scripts\V21__PLANO_ANUAL_AJUSTE.sql
+		scripts\V22__PLANO_ANUAL_DISCIPLINAS.sql = scripts\V22__PLANO_ANUAL_DISCIPLINAS.sql
 		scripts\V2__PLANO_CICLO_CREATE.sql = scripts\V2__PLANO_CICLO_CREATE.sql
 		scripts\V3__TIPO_CICLO.sql = scripts\V3__TIPO_CICLO.sql
 		scripts\V4__PLANO_ANUAL.sql = scripts\V4__PLANO_ANUAL.sql

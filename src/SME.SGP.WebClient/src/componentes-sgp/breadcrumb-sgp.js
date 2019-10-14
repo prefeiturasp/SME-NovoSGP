@@ -111,10 +111,12 @@ const BreadcrumbSgp = () => {
       );
     }
 
-    if (item.menu) {
-      newItens.push(
-        criarItemBreadcrumb(item.menu, item.path + '-menu', true, false, item.icone, item.dicaIcone)
-      );
+    if (item.menu && item.menu.length) {
+      item.menu.forEach((menu, i) => {
+        newItens.push(
+          criarItemBreadcrumb(menu, item.path + '-menu' + i, true, false, item.icone, item.dicaIcone)
+        );
+      })
     }
   };
 
