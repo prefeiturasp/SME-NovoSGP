@@ -68,6 +68,8 @@ export default function bimestres(state = INICIAL, action) {
 
         break;
       case '@bimestres/SalvarEhExpandido':
+        if (!state.bimestres[action.payload.indice]) return;
+
         draft.bimestres[action.payload.indice].ehExpandido =
           action.payload.ehExpandido;
         draft.bimestres[action.payload.indice].ehEdicao =
@@ -129,6 +131,8 @@ export default function bimestres(state = INICIAL, action) {
         break;
 
       case '@bimestres/SetarDescricao':
+        if (!state.bimestres[action.payload.indice]) return;
+
         draft.bimestres[action.payload.indice].objetivo =
           action.payload.descricao;
         draft.bimestresErro = state.bimestresErro;
