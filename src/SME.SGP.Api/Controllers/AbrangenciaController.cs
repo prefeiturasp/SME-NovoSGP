@@ -65,6 +65,15 @@ namespace SME.SGP.Api.Controllers
             return Ok(retorno);
         }
 
+        [HttpGet("semestres")]
+        [ProducesResponseType(typeof(int[]), 200)]
+        [ProducesResponseType(401)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        public async Task<IActionResult> ObterSemestres()
+        {
+            return Ok(new int[] { 0, 1, 2 });
+        }
+
         [HttpGet("dres/ues/{codigoUe}/turmas")]
         [ProducesResponseType(typeof(IEnumerable<AbrangenciaTurmaRetorno>), 200)]
         [ProducesResponseType(401)]
