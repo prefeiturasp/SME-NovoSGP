@@ -20,7 +20,8 @@ namespace SME.SGP.Aplicacao.Comandos
 
         public void Salvar(PeriodoEscolarListaDto periodosDto)
         {
-
+           
+                
         }
 
         private PeriodoEscolarLista MapearParaDominio(PeriodoEscolarListaDto periodosDto, bool ehEja)
@@ -31,7 +32,7 @@ namespace SME.SGP.Aplicacao.Comandos
                 Bimestre = x.Bimestre,
                 PeriodoInicio = x.PeriodoInicio,
                 PeriodoFim = x.PeriodoFim,
-                TipoCalendario = x.TipoCalendario
+                TipoCalendario = periodosDto.TipoCalendario
             }).ToList();
 
             return new PeriodoEscolarLista
