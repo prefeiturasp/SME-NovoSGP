@@ -11,17 +11,14 @@ const Campo = styled.div`
   .ant-radio-inner::after {
     background-color: ${Base.Roxo} !important;
   }
-
   .ant-radio-checked .ant-radio-inner {
     border-color: ${Base.Roxo} !important;
   }
-
   .ant-radio-wrapper:hover .ant-radio,
   .ant-radio:hover .ant-radio-inner,
   .ant-radio-input:focus + .ant-radio-inner {
     border-color: ${Base.Roxo} !important;
   }
-
   .ant-radio-group {
     white-space: nowrap;
     margin-bottom: 5px;
@@ -61,7 +58,7 @@ const RadioGroupButton = ({
               }}
               defaultValue={valorInicial}
               disabled={desabilitado}
-              value={form.values[name] || undefined}
+              value={form.values[name]}
             />
             <br />
             <Error>
