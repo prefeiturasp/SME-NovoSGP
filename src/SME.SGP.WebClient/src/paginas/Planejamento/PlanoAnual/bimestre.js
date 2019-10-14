@@ -111,7 +111,7 @@ const BimestreComponent = props => {
   };
 
   const setEhExpandido = ehExpandido => {
-    dispatch(SalvarEhExpandido(indice, ehExpandido));
+    if (bimestre) dispatch(SalvarEhExpandido(indice, ehExpandido));
   };
 
   const selecionaMateria = async e => {
@@ -156,6 +156,8 @@ const BimestreComponent = props => {
   };
 
   const onBlurTextEditor = value => {
+    if (!bimestre) return;
+
     setEhExpandido(true);
 
     setEstadoAdicionalEditorTexto({

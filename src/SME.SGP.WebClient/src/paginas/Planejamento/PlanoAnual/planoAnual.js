@@ -108,8 +108,9 @@ export default function PlanoAnual() {
       document.removeEventListener('keydown', null);
       document.removeEventListener('keyup', null);
 
-      dispatch(LimparBimestres());
-      dispatch(LimparDisciplinaPlanoAnual());
+      if (bimestres) dispatch(LimparBimestres());
+
+      if (disciplinasPlanoAnual) dispatch(LimparDisciplinaPlanoAnual());
     };
   }, []);
 
