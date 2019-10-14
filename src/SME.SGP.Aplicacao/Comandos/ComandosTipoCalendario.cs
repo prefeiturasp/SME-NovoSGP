@@ -5,14 +5,14 @@ using System;
 
 namespace SME.SGP.Aplicacao
 {
-    public class ComandosTipoCalendarioEscolar : IComandosTipoCalendarioEscolar
+    public class ComandosTipoCalendario : IComandosTipoCalendario
     {
-        private readonly IRepositorioTipoCalendarioEscolar repositorio;
-        public ComandosTipoCalendarioEscolar(IRepositorioTipoCalendarioEscolar repositorio)
+        private readonly IRepositorioTipoCalendario repositorio;
+        public ComandosTipoCalendario(IRepositorioTipoCalendario repositorio)
         {
             this.repositorio = repositorio ?? throw new ArgumentNullException(nameof(repositorio));
         }
-        public void Salvar(TipoCalendarioEscolarDto dto)
+        public void Salvar(TipoCalendarioDto dto)
         {
             var tipoCalendario = MapearParaDominio(dto); 
 
@@ -24,12 +24,12 @@ namespace SME.SGP.Aplicacao
             repositorio.Salvar(tipoCalendario);
         }
 
-        public TipoCalendarioEscolar MapearParaDominio(TipoCalendarioEscolarDto dto)
+        public TipoCalendario MapearParaDominio(TipoCalendarioDto dto)
         {
-            TipoCalendarioEscolar entidade = repositorio.ObterPorId(dto.Id);
+            TipoCalendario entidade = repositorio.ObterPorId(dto.Id);
             if (entidade == null)
             {
-                entidade = new TipoCalendarioEscolar();
+                entidade = new TipoCalendario();
             }
             entidade.Nome = dto.Nome;
             entidade.AnoLetivo = dto.AnoLetivo;

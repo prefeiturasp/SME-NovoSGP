@@ -1,4 +1,5 @@
-﻿using Moq;
+﻿using Microsoft.AspNetCore.Http;
+using Moq;
 using SME.SGP.Aplicacao.Integracoes;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Dto;
@@ -23,7 +24,11 @@ namespace SME.SGP.Dominio.Servicos.Teste
             servicoEol = new Mock<IServicoEOL>();
             repositorioPrioridadePerfil = new Mock<IRepositorioPrioridadePerfil>();
             unitOfWork = new Mock<IUnitOfWork>();
-            servicoUsuario = new ServicoUsuario(repositorioUsuario.Object, servicoEol.Object, repositorioPrioridadePerfil.Object, unitOfWork.Object);
+            var context = new DefaultHttpContext();
+            var obj = new HttpContextAccessor();
+            obj.HttpContext = context;
+
+            servicoUsuario = new ServicoUsuario(repositorioUsuario.Object, servicoEol.Object, repositorioPrioridadePerfil.Object, unitOfWork.Object, obj);
         }
 
         [Fact]
