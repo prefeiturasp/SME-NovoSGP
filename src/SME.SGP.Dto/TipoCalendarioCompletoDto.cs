@@ -6,7 +6,7 @@ using System.Text;
 
 namespace SME.SGP.Dto
 {
-    public class TipoCalendarioEscolarCompletoDto
+    public class TipoCalendarioCompletoDto
     {
         public long Id { get; set; }
         public string Nome { get; set; }

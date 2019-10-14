@@ -1,14 +1,12 @@
 ﻿using SME.SGP.Dominio;
-using System;
-using System.Collections.Generic;
+using SME.SGP.Infra;
 using System.ComponentModel.DataAnnotations;
-using System.Text;
 
 namespace SME.SGP.Dto
 {
-    public class TipoCalendarioEscolarDto
+    public class TipoCalendarioDto
     {
-        public int Id { get; set; }
+        public long Id { get; set; }
         [Required(ErrorMessage = "O campo Nome do Calendário é obrigatório")]
         [MinLength(1, ErrorMessage = "O Nome do Calendário deve conter no mínimo 1 caracteres.")]
         [MaxLength(50, ErrorMessage = "O Nome do Calendário deve conter no máximo 50 caracteres.")]
@@ -21,6 +19,8 @@ namespace SME.SGP.Dto
         public Modalidade Modalidade { get; set; }
         [Required(ErrorMessage = "O campo Situação é obrigatório")]
         public bool Situacao { get; set; }
+
+        public string DescricaoPeriodo { get; set; }
 
     }
 }
