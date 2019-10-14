@@ -32,7 +32,6 @@ api.interceptors.request.use(async config => {
 api.interceptors.response.use(
   response => response,
   error => {
-
     const autenticacao = error.response && error.response.config.url.includes(
       '/api/v1/autenticacao'
     );

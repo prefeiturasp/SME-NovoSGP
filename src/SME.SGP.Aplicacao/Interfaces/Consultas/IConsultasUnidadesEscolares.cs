@@ -6,6 +6,6 @@ namespace SME.SGP.Aplicacao
 {
     public interface IConsultasUnidadesEscolares
     {
-        Task<IEnumerable<UsuarioEolRetornoDto>> ObtemFuncionariosPorUe(string ueId);
+        Task<IEnumerable<UsuarioEolRetornoDto>> ObtemFuncionariosPorUe(BuscaFuncionariosFiltroDto buscaFuncionariosFiltroDto);
     }
 }
