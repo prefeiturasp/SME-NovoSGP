@@ -9,5 +9,8 @@ namespace SME.SGP.Aplicacao.Integracoes.Respostas
 
         [JsonProperty("disciplina")]
         public string Nome { get; set; }
+
+        [JsonProperty("regencia")]
+        public bool Regencia { get; set; }
     }
 }

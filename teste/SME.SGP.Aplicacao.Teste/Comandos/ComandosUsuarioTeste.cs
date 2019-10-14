@@ -52,8 +52,8 @@ namespace SME.SGP.Aplicacao.Teste.Comandos
             //ARRANGE
             var codigoRfTeste = "loginTeste";
 
+            servicoUsuario.Setup(a => a.ObterLoginAtual()).Returns(codigoRfTeste);
             servicoUsuario.Setup(a => a.AlterarEmailUsuarioPorRfOuInclui(codigoRfTeste, "jose@jose.com"));
-            servicoTokenJwt.Setup(a => a.ObterLoginAtual()).Returns(codigoRfTeste);
 
             //ACT
             await comandosUsuario.AlterarEmailUsuarioLogado("jose@jose.com");
