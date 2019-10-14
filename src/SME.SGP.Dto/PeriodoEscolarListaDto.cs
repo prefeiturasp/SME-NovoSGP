@@ -9,8 +9,12 @@ namespace SME.SGP.Dto
     {
         [Required(ErrorMessage = "Nenhum periodo foi informado")]
         public List<PeriodoEscolarDto> Periodos { get; set; }
+
         [Required(ErrorMessage = "É necessario informar o tipo de calendario")]
         public int TipoCalendario { get; set; }
+
+        [Required(ErrorMessage = "É necessario informar o ano base do calendario")]
+        public int AnoBase { get; set; }
         
     }
 }
