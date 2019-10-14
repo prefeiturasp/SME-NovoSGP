@@ -5,10 +5,10 @@ namespace SME.SGP.Dominio
     public enum Modalidade
     {
         [Display(Name = "Fundamental")]
-        Fundamental = 1,
+        Fundamental = 5,
         
         [Display(Name = "Médio")]
-        Medio = 2,
+        Medio = 6,
 
         [Display(Name = "EJA")]
         EJA = 3
