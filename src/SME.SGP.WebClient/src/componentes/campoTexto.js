@@ -1,10 +1,10 @@
-import React from 'react';
-import { Field } from 'formik';
-
-import styled from 'styled-components';
 import { Input } from 'antd';
-import { Base } from './colors';
+import { Field } from 'formik';
+import PropTypes from 'prop-types';
+import React from 'react';
+import styled from 'styled-components';
 
+import { Base } from './colors';
 import Label from './label';
 
 const Campo = styled.div`
@@ -64,6 +64,10 @@ const CampoTexto = ({
               disabled={desabilitado}
               onBlur={executaOnBlur}
               maxLength={maxlength || ''}
+              onChange={e => {
+                form.setFieldValue(name, e.target.value);
+                onChange(e);
+              }}
             />
             <span>{form.errors[name]}</span>
           </>
@@ -75,5 +79,12 @@ const CampoTexto = ({
   );
 };
 
+CampoTexto.propTypes = {
+  onChange: PropTypes.func,
+};
+
+CampoTexto.defaultProps = {
+  onChange: () => {},
+};
 
 export default CampoTexto;
