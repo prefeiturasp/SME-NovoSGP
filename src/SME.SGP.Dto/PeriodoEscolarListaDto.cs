@@ -9,6 +9,5 @@ namespace SME.SGP.Dto
     {
         [Required(ErrorMessage = "Nenhum periodo foi informado")]
         public List<PeriodoEscolarDto> Periodos { get; set; }
-        public bool Eja { get; set; }
     }
 }
