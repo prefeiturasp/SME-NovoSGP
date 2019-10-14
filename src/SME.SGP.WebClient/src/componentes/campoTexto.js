@@ -1,11 +1,11 @@
 import React from 'react';
-import { Field, ErrorMessage } from 'formik';
+import { Field } from 'formik';
 
 import styled from 'styled-components';
 import { Input } from 'antd';
 import { Base } from './colors';
 
-import PropTypes from 'prop-types';
+import Label from './label';
 
 const Campo = styled.div`
   span {
@@ -32,6 +32,7 @@ const CampoTexto = ({
   value,
   desabilitado,
   maxlength,
+  label
 }) => {
 
   const possuiErro = () => {
@@ -44,10 +45,11 @@ const CampoTexto = ({
       event.preventDefault();
     }
   };
-  
+
   return (
     <>
       <Campo className={classNameCampo}>
+        {label ? <Label text={label} control={name || ''} /> : ''}
         {form ? (
           <>
             {' '}

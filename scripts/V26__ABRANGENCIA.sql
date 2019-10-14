@@ -5,7 +5,8 @@ create table if not exists public.abrangencia_dres
  	usuario_id bigint not null ,
  	dre_id varchar(15) not null,
  	abreviacao varchar(10) not null,
- 	nome varchar(100) not null, 	
+ 	nome varchar(100) not null,
+	perfil varchar(40) not null,
  	
  	CONSTRAINT abrangencia_dres_pk PRIMARY KEY (id)
 );

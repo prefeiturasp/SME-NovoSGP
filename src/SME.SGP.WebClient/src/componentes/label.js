@@ -32,7 +32,7 @@ Label.propTypes = {
 
 Label.defaultProps = {
   text: PropTypes.string,
-  control: PropTypes.string,
+  control: null,
 };
 
 export default Label;
