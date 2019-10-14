@@ -1,6 +1,6 @@
-﻿using SME.SGP.Dominio;
+﻿using SME.SGP.Aplicacao.Integracoes;
+using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
-using SME.SGP.Dto;
 using System;
 using System.Threading.Tasks;
 
@@ -9,23 +9,27 @@ namespace SME.SGP.Aplicacao
     public class ComandosAbrangencia : IComandosAbrangencia
     {
         private readonly IRepositorioAbrangencia repositorioAbrangencia;
+        private readonly IServicoEOL servicoEOL;
         private readonly IUnitOfWork unitOfWork;
 
-        public ComandosAbrangencia(IRepositorioAbrangencia repositorioAbrangencia, IUnitOfWork unitOfWork, IServicoUsuario servicoUsuario)
+        public ComandosAbrangencia(IRepositorioAbrangencia repositorioAbrangencia, IUnitOfWork unitOfWork, IServicoEOL servicoEOL)
         {
             this.repositorioAbrangencia = repositorioAbrangencia ?? throw new ArgumentNullException(nameof(repositorioAbrangencia));
             this.unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
+            this.servicoEOL = servicoEOL ?? throw new ArgumentNullException(nameof(servicoEOL));
         }
 
-        public async Task Salvar(AbrangenciaRetornoEolDto abrangenciaRetornoEolDto, long usuarioId)
+        public async Task Salvar()
         {
+            var abrangenciaRetornoEolDto = await servicoEOL.ObterAbrangencia("6941583", "5AE1E074-37D6-E911-ABD6-F81654FE895D");
+
             unitOfWork.IniciarTransacao();
 
-            await repositorioAbrangencia.RemoverAbrangencias(usuarioId);
+            await repositorioAbrangencia.RemoverAbrangencias(1);
 
             foreach (var abrangenciaDre in abrangenciaRetornoEolDto.Dres)
             {
-                var idAbragenciaDre = await repositorioAbrangencia.SalvarDre(abrangenciaDre, usuarioId);
+                var idAbragenciaDre = await repositorioAbrangencia.SalvarDre(abrangenciaDre, 1);
                 if (idAbragenciaDre > 0)
                 {
                     foreach (var abrangenciaUe in abrangenciaDre.Ues)
