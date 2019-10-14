@@ -42,7 +42,7 @@ namespace SME.SGP.Dados.Repositorios
             StringBuilder query = new StringBuilder();
 
             query.AppendLine("select");
-            query.AppendLine("id, escola_id, turma_id, ano, bimestre, descricao, migrado,");
+            query.AppendLine("id, escola_id, turma_id, ano, bimestre, componente_curricular_eol_id, descricao, migrado,");
             query.AppendLine("criado_em, alterado_em, criado_por, alterado_por, criado_rf, alterado_rf");
             query.AppendLine("from plano_anual");
             query.AppendLine("where");
