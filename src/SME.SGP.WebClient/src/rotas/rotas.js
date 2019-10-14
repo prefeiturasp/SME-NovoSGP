@@ -21,7 +21,7 @@ import MeusDados from '~/paginas/Perfil/meusDados';
 import PeriodosEscolares from '~/paginas/CalendarioEscolar/PeriodosEscolares/PeriodosEscolares';
 import ReiniciarSenha from '~/paginas/Configuracoes/Usuarios/reiniciarSenha';
 import TipoFeriadoLista from '~/paginas/CalendarioEscolar/TipoFeriado/tipoFeriadoLista';
-// import TipoFeriadoForm from '~/paginas/CalendarioEscolar/TipoCalendarioEscolar/tipoFeriadoForm';
+import TipoFeriadoForm from '~/paginas/CalendarioEscolar/TipoFeriado/tipoFeriadoForm';
 
 export default function Rotas() {
   const rotas = new Map();
@@ -166,21 +166,21 @@ export default function Rotas() {
     tipo: RotasTipo.EstruturadaAutenticada,
   });
 
-  // rotas.set('/calendario-escolar/tipo-feriado/novo', {
-  //   breadcrumbName: 'Cadastro de tipo de feriado',
-  //   parent: '/calendario-escolar/tipo-feriado',
-  //   component: TipoFeriadoForm,
-  //   exact: true,
-  //   tipo: RotasTipo.EstruturadaAutenticada,
-  // });
+  rotas.set('/calendario-escolar/tipo-feriado/novo', {
+    breadcrumbName: 'Cadastro de tipo de feriado',
+    parent: '/calendario-escolar/tipo-feriado',
+    component: TipoFeriadoForm,
+    exact: true,
+    tipo: RotasTipo.EstruturadaAutenticada,
+  });
 
-  // rotas.set('/calendario-escolar/tipo-feriado/editar/:id', {
-  //   breadcrumbName: 'Alterar tipo de feriado',
-  //   parent: '/calendario-escolar/tipo-feriado',
-  //   component: TipoFeriadoForm,
-  //   exact: true,
-  //   tipo: RotasTipo.EstruturadaAutenticada,
-  // });
+  rotas.set('/calendario-escolar/tipo-feriado/editar/:id', {
+    breadcrumbName: 'Alterar tipo de feriado',
+    parent: '/calendario-escolar/tipo-feriado',
+    component: TipoFeriadoForm,
+    exact: true,
+    tipo: RotasTipo.EstruturadaAutenticada,
+  });
 
   const rotasArray = [];
   for (var [key, value] of rotas) {
