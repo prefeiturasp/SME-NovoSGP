@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Switch } from 'react-router-dom';
 import { setRotas } from '../redux/modulos/navegacao/actions';
@@ -20,8 +21,11 @@ import RotaMista from './rotaMista';
 import MeusDados from '~/paginas/Perfil/meusDados';
 import PeriodosEscolares from '~/paginas/CalendarioEscolar/PeriodosEscolares/PeriodosEscolares';
 import ReiniciarSenha from '~/paginas/Configuracoes/Usuarios/reiniciarSenha';
+import TipoCalendarioEscolarLista from '~/paginas/CalendarioEscolar/TipoCalendarioEscolar/tipoCalendarioEscolarLista';
+import TipoCalendarioEscolarForm from '~/paginas/CalendarioEscolar/TipoCalendarioEscolar/tipoCalendarioEscolarForm';
 import TipoFeriadoLista from '~/paginas/CalendarioEscolar/TipoFeriado/tipoFeriadoLista';
 import TipoFeriadoForm from '~/paginas/CalendarioEscolar/TipoFeriado/tipoFeriadoForm';
+
 
 export default function Rotas() {
   const rotas = new Map();
@@ -142,6 +146,31 @@ export default function Rotas() {
     menu: ['Configurações', 'Usuários'],
     parent: '/usuarios',
     component: ReiniciarSenha,
+    exact: true,
+    tipo: RotasTipo.EstruturadaAutenticada,
+  });
+
+  rotas.set('/calendario-escolar/tipo-calendario-escolar', {
+    breadcrumbName: 'Tipo de Calendário Escolar',
+    menu: ['Calendário Escolar'],
+    parent: '/',
+    component: TipoCalendarioEscolarLista,
+    exact: true,
+    tipo: RotasTipo.EstruturadaAutenticada,
+  });
+
+  rotas.set('/calendario-escolar/tipo-calendario-escolar/novo', {
+    breadcrumbName: 'Cadastro do Tipo de Calendário Escolar',
+    parent: '/calendario-escolar/tipo-calendario-escolar',
+    component: TipoCalendarioEscolarForm,
+    exact: true,
+    tipo: RotasTipo.EstruturadaAutenticada,
+  });
+
+  rotas.set('/calendario-escolar/tipo-calendario-escolar/editar/:id', {
+    breadcrumbName: 'Cadastro do Tipo de Calendário Escolar',
+    parent: '/calendario-escolar/tipo-calendario-escolar',
+    component: TipoCalendarioEscolarForm,
     exact: true,
     tipo: RotasTipo.EstruturadaAutenticada,
   });
