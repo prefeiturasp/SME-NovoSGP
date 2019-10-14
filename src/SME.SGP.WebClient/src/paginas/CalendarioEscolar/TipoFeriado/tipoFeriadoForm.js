@@ -155,7 +155,7 @@ const TipoFeriadoForm = ({ match }) => {
 
   return (
     <>
-      <Cabecalho pagina={`${idTipoFeriadoEdicao > 0 ? 'Alterar' : 'Cadastro de'} tipo de feriado`} />
+      <Cabecalho pagina={`${idTipoFeriadoEdicao > 0 ? 'Alterar' : 'Cadastro de'} Tipo de Feriado`} />
       <Card>
         <Formik
           ref={refFormik => setRefForm(refFormik)}
