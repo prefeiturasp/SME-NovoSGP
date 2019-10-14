@@ -29,6 +29,7 @@ namespace SME.SGP.Dados.Mapeamentos
                config.AddMap(new UsuarioMap());
                config.AddMap(new PrioridadePerfilMap());
                config.AddMap(new ConfiguracaoEmailMap());
+               config.AddMap(new TipoCalendarioMap());
                config.ForDommel();
            });
         }

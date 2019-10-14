@@ -1,7 +1,8 @@
-import React from 'react';
-import { Field } from 'formik';
-import styled from 'styled-components';
 import { Input } from 'antd';
+import { Field } from 'formik';
+import PropTypes from 'prop-types';
+import React from 'react';
+import styled from 'styled-components';
 import { Base } from './colors';
 import Label from './label';
 
@@ -64,6 +65,10 @@ const CampoTexto = React.forwardRef((props, ref) => {
               onBlur={executaOnBlur}
               maxLength={maxlength || ''}
               innerRef={ref}
+              onChange={e => {
+                form.setFieldValue(name, e.target.value);
+                onChange(e);
+              }}
             />
             <span>{form.errors[name]}</span>
           </>
@@ -79,5 +84,13 @@ const CampoTexto = React.forwardRef((props, ref) => {
     </>
   );
 });
+
+CampoTexto.propTypes = {
+  onChange: PropTypes.func,
+};
+
+CampoTexto.defaultProps = {
+  onChange: () => {},
+};
 
 export default CampoTexto;
