@@ -19,13 +19,16 @@ import RotaAutenticadaDesestruturada from './rotaAutenticadaDesestruturada';
 import RotaMista from './rotaMista';
 import MeusDados from '~/paginas/Perfil/meusDados';
 import PeriodosEscolares from '~/paginas/CalendarioEscolar/PeriodosEscolares/PeriodosEscolares';
+import ReiniciarSenha from '~/paginas/Configuracoes/Usuarios/reiniciarSenha';
+import TipoFeriadoLista from '~/paginas/CalendarioEscolar/TipoFeriado/tipoFeriadoLista';
+import TipoFeriadoForm from '~/paginas/CalendarioEscolar/TipoFeriado/tipoFeriadoForm';
 
 export default function Rotas() {
   const rotas = new Map();
 
   rotas.set('/planejamento/plano-ciclo', {
     breadcrumbName: 'Plano de Ciclo',
-    menu: 'Planejamento',
+    menu: ['Planejamento'],
     parent: '/',
     component: PlanoCiclo,
     exact: true,
@@ -34,7 +37,7 @@ export default function Rotas() {
 
   rotas.set('/planejamento/plano-anual', {
     breadcrumbName: 'Plano Anual',
-    menu: 'Planejamento',
+    menu: ['Planejamento'],
     parent: '/',
     component: PlanoAnual,
     exact: false,
@@ -70,7 +73,7 @@ export default function Rotas() {
 
   rotas.set('/gestao/atribuicao-supervisor-lista', {
     breadcrumbName: 'Atribuição de Supervisor',
-    menu: 'Gestão',
+    menu: ['Gestão'],
     parent: '/',
     component: AtribuicaoSupervisorLista,
     exact: true,
@@ -102,7 +105,7 @@ export default function Rotas() {
   });
 
   rotas.set('/notificacoes/:id', {
-    breadcrumbName: 'Notificações',
+    breadcrumbName: ['Notificações'],
     parent: '/',
     component: DetalheNotificacao,
     exact: true,
@@ -110,7 +113,7 @@ export default function Rotas() {
   });
 
   rotas.set('/notificacoes', {
-    breadcrumbName: 'Notificações',
+    breadcrumbName: ['Notificações'],
     parent: '/',
     component: NotificacoesLista,
     exact: true,
@@ -127,9 +130,18 @@ export default function Rotas() {
 
   rotas.set('/calendario-escolar/periodos-escolares', {
     breadcrumbName: 'Períodos Escolares',
-    menu: 'Calendário Escolar',
+    menu: ['Calendário Escolar'],
     parent: '/',
     component: PeriodosEscolares,
+    exact: true,
+    tipo: RotasTipo.EstruturadaAutenticada,
+  });
+
+  rotas.set('/usuarios/reiniciar-senha', {
+    breadcrumbName: 'Reiniciar Senha',
+    menu: ['Configurações', 'Usuários'],
+    parent: '/usuarios',
+    component: ReiniciarSenha,
     exact: true,
     tipo: RotasTipo.EstruturadaAutenticada,
   });
@@ -142,6 +154,31 @@ export default function Rotas() {
     limpaSelecaoMenu: true,
     paginaInicial: true,
     dicaIcone: 'Página Inicial',
+    tipo: RotasTipo.EstruturadaAutenticada,
+  });
+
+  rotas.set('/calendario-escolar/tipo-feriado', {
+    breadcrumbName: 'Lista de Tipo de Feriado',
+    menu: ['Tipo Feriado'],
+    parent: '/',
+    component: TipoFeriadoLista,
+    exact: true,
+    tipo: RotasTipo.EstruturadaAutenticada,
+  });
+
+  rotas.set('/calendario-escolar/tipo-feriado/novo', {
+    breadcrumbName: 'Cadastro de Tipo de Feriado',
+    parent: '/calendario-escolar/tipo-feriado',
+    component: TipoFeriadoForm,
+    exact: true,
+    tipo: RotasTipo.EstruturadaAutenticada,
+  });
+
+  rotas.set('/calendario-escolar/tipo-feriado/editar/:id', {
+    breadcrumbName: 'Alterar Tipo de Feriado',
+    parent: '/calendario-escolar/tipo-feriado',
+    component: TipoFeriadoForm,
+    exact: true,
     tipo: RotasTipo.EstruturadaAutenticada,
   });
 

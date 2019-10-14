@@ -55,7 +55,7 @@ namespace SME.SGP.Aplicacao
 
         public async Task AlterarEmailUsuarioLogado(string novoEmail)
         {
-            var login = servicoTokenJwt.ObterLoginAtual();
+            var login = servicoUsuario.ObterLoginAtual();
             await servicoUsuario.AlterarEmailUsuarioPorLogin(login, novoEmail);
         }
 
@@ -118,7 +118,7 @@ namespace SME.SGP.Aplicacao
                         .Select(a => (Permissao)a)
                         .ToList();
 
-                    retornoAutenticacaoEol.Item1.Token = servicoTokenJwt.GerarToken(login, listaPermissoes);
+                    retornoAutenticacaoEol.Item1.Token = servicoTokenJwt.GerarToken(login, usuario.CodigoRf, listaPermissoes);
 
                     usuario.AtualizaUltimoLogin();
                     repositorioUsuario.Salvar(usuario);
@@ -129,7 +129,8 @@ namespace SME.SGP.Aplicacao
 
         public async Task<string> ModificarPerfil(string guid)
         {
-            string loginAtual = servicoTokenJwt.ObterLoginAtual();
+            string loginAtual = servicoUsuario.ObterLoginAtual();
+            string codigoRfAtual = servicoUsuario.ObterRf();
 
             await servicoUsuario.PodeModificarPerfil(guid, loginAtual);
 
@@ -146,7 +147,7 @@ namespace SME.SGP.Aplicacao
                     .Select(a => (Permissao)a)
                     .ToList();
 
-                return servicoTokenJwt.GerarToken(loginAtual, listaPermissoes);
+                return servicoTokenJwt.GerarToken(loginAtual, codigoRfAtual, listaPermissoes);
             }
         }
 
