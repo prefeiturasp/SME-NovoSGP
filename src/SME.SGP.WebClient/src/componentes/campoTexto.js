@@ -68,7 +68,7 @@ const CampoTexto = ({
             <span>{form.errors[name]}</span>
           </>
         ) : (
-          <Input placeholder={placeholder} onChange={onChange} value={value} />
+          <Input placeholder={placeholder} onChange={onChange} value={value} type={type}/>
         )}
       </Campo>
     </>

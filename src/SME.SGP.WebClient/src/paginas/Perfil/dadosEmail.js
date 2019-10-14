@@ -11,14 +11,19 @@ const DadosEmail = () => {
 
   const Campos = styled.div`
     margin-right: 10px;
+    margin-left: 40px;
     .campo{
       margin-top: 50px;
+    }
+
+    .botao{
+      margin-top: 25px;
     }
   `;
 
   return (
     <Campos>
-      <div className="row campo">
+      <div className="row campo w-100">
         <div className="col-md-10">
           <CampoTexto
             desabilitado={true}
@@ -29,7 +34,7 @@ const DadosEmail = () => {
             type="email"
           />
         </div>
-        <div className="col-md-2">
+        <div className="col-md-2 botao">
           <Button
             label="Editar"
             color={Colors.Roxo}
@@ -39,7 +44,7 @@ const DadosEmail = () => {
           />
         </div>
       </div>
-      <div className="row campo">
+      <div className="row campo w-100">
         <div className="col-md-10">
           <CampoTexto
             desabilitado={true}
@@ -51,7 +56,7 @@ const DadosEmail = () => {
             type="password"
           />
         </div>
-        <div className="col-md-2">
+        <div className="col-md-2 botao">
           <Button
             label="Editar"
             color={Colors.Roxo}
