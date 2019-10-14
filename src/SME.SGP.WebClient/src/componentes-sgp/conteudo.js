@@ -88,7 +88,15 @@ const Conteudo = props => {
                 </ContainerBotoes>,
               ]}
             >
-              {confirmacao.texto}
+              {
+                confirmacao.texto && Array.isArray(confirmacao.texto) ?
+                confirmacao.texto.map((item, i)=> (
+                  <div key={item + '-' + i}>
+                    {item}
+                  </div>
+                ))
+                : confirmacao.texto
+              }
               {confirmacao.texto ? <br /> : ''}
               <b>{confirmacao.textoNegrito}</b>
             </Modal>
