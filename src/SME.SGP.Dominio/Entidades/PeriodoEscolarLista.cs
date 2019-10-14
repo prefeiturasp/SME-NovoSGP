@@ -14,6 +14,7 @@ namespace SME.SGP.Dominio.Entidades
 
         public List<PeriodoEscolar> Periodos { get; set; }
         public bool Eja { get; set; }
+        public int AnoBase { get; set; }
 
         private int quantidade => Eja ? 2 : 4;
 
@@ -23,7 +24,7 @@ namespace SME.SGP.Dominio.Entidades
 
             ValidarBimestresRepetidos();
 
-            ValidarInicioAposFim();
+            ValidarPeriodos();
 
             ValidarInicioPeriodoAntesFimPeriodoAnterior();
         }
@@ -45,10 +46,13 @@ namespace SME.SGP.Dominio.Entidades
             }
         }
 
-        private void ValidarInicioAposFim()
+        private void ValidarPeriodos()
         {
-            foreach (var periodo in Periodos)            
-                periodo.Validar();            
+            foreach (var periodo in Periodos)
+            {
+                periodo.ValidarIncioBimestre();
+                periodo.ValidarAnoBase(AnoBase);
+            }       
         }
 
         private void ValidarQuantidadePeriodos()
