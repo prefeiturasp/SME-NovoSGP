@@ -13,6 +13,7 @@ import { sucesso, confirmar } from '~/servicos/alertas';
 import Auditoria from '~/componentes/auditoria';
 import SelectComponent from '~/componentes/select';
 import { CampoData, momentSchema } from '~/componentes/campoData/campoData.js';
+import {setBreadcrumbManual} from '~/servicos/breadcrumb-services';
 
 const TipoFeriadoForm = ({ match }) => {
 
@@ -53,6 +54,7 @@ const TipoFeriadoForm = ({ match }) => {
 
   useEffect(() => {
     if (match && match.params && match.params.id) {
+      setBreadcrumbManual(match.url,'Alterar Tipo de Feriado', '/calendario-escolar/tipo-feriado');
       // TODO Chamar endpoint consultar por ID
       // MOCK
       console.log(`Editando ID: ${match.params.id}`);
