@@ -69,14 +69,14 @@ namespace SME.SGP.Aplicacao.Integracoes
 
         public async Task<IEnumerable<DisciplinaResposta>> ObterDisciplinasPorProfessorETurma(long codigoTurma, string rfProfessor)
         {
-            var resposta = await httpClient.GetAsync($"professores/{rfProfessor}/turmas/{codigoTurma}/disciplinas");
+            var url = $"professores/{rfProfessor}/turmas/{codigoTurma}/disciplinas/planejamento";
+            return await ObterDisciplinas(url);
+        }
 
-            if (resposta.IsSuccessStatusCode)
-            {
-                var json = await resposta.Content.ReadAsStringAsync();
-                return JsonConvert.DeserializeObject<IEnumerable<DisciplinaResposta>>(json);
-            }
-            return null;
+        public async Task<IEnumerable<DisciplinaResposta>> ObterDisciplinasPorProfessorETurma(long codigoTurma, string rfProfessor)
+        {
+            var url = $"professores/{rfProfessor}/turmas/{codigoTurma}/disciplinas";
+            return await ObterDisciplinas(url);
         }
 
         public IEnumerable<DreRespostaEolDto> ObterDres()
@@ -222,6 +222,18 @@ namespace SME.SGP.Aplicacao.Integracoes
 
             if (!resposta.IsSuccessStatusCode)
                 throw new NegocioException("Não foi possível reiniciar a senha deste usuário");
+        }
+
+        private async Task<IEnumerable<DisciplinaResposta>> ObterDisciplinas(string url)
+        {
+            var resposta = await httpClient.GetAsync(url);
+
+            if (resposta.IsSuccessStatusCode)
+            {
+                var json = await resposta.Content.ReadAsStringAsync();
+                return JsonConvert.DeserializeObject<IEnumerable<DisciplinaResposta>>(json);
+            }
+            return null;
         }
     }
 }
