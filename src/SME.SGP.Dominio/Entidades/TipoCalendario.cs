@@ -4,7 +4,7 @@ using System.Text;
 
 namespace SME.SGP.Dominio
 {
-    public class TipoCalendarioEscolar: EntidadeBase
+    public class TipoCalendario: EntidadeBase
     {
         public int AnoLetivo { get; set; }
         public string Nome { get; set; }

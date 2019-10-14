@@ -1,4 +1,4 @@
-﻿CREATE TABLE IF NOT EXISTS public.tipo_calendario_escolar (
+﻿CREATE TABLE IF NOT EXISTS public.tipo_calendario (
 	id int8 NOT NULL GENERATED ALWAYS AS IDENTITY,	
 	ano_letivo int4 not  null,
 	nome varchar(50) not null,

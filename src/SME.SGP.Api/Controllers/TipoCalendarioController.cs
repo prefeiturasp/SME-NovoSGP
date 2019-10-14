@@ -2,29 +2,28 @@
 using Microsoft.AspNetCore.Mvc;
 using SME.SGP.Api.Filtros;
 using SME.SGP.Aplicacao;
-using SME.SGP.Dominio;
 using SME.SGP.Dto;
 using System.Collections.Generic;
 
 namespace SME.SGP.Api.Controllers
 {
     [ApiController]
-    [Route("api/v1/tipo-calendario-escolar")]
+    [Route("api/v1/tipo-calendario")]
     [ValidaDto]
     [Authorize("Bearer")]
-    public class TipoCalendarioEscolarController : ControllerBase
+    public class TipoCalendarioController : ControllerBase
     {
-        private readonly IConsultasTipoCalendarioEscolar consultas;
-        private readonly IComandosTipoCalendarioEscolar comandos;
-        public TipoCalendarioEscolarController(IConsultasTipoCalendarioEscolar consultas,
-            IComandosTipoCalendarioEscolar comandos)
+        private readonly IConsultasTipoCalendario consultas;
+        private readonly IComandosTipoCalendario comandos;
+        public TipoCalendarioController(IConsultasTipoCalendario consultas,
+            IComandosTipoCalendario comandos)
         {
             this.consultas = consultas ?? throw new System.ArgumentNullException(nameof(consultas));
             this.comandos = comandos ?? throw new System.ArgumentNullException(nameof(comandos));
         }
 
         [HttpGet]
-        [ProducesResponseType(typeof(IEnumerable<TipoCalendarioEscolarDto>), 200)]
+        [ProducesResponseType(typeof(IEnumerable<TipoCalendarioDto>), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         public IActionResult BuscarTodos()
         {
@@ -32,7 +31,7 @@ namespace SME.SGP.Api.Controllers
         }
 
         [HttpGet]
-        [ProducesResponseType(typeof(IEnumerable<TipoCalendarioEscolarDto>), 200)]
+        [ProducesResponseType(typeof(TipoCalendarioCompletoDto), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [Route("{id}")]
         public IActionResult BuscarUm(long id)
@@ -43,7 +42,7 @@ namespace SME.SGP.Api.Controllers
         [HttpPost]
         [ProducesResponseType(200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        public IActionResult Salvar([FromBody]TipoCalendarioEscolarDto dto)
+        public IActionResult Salvar([FromBody]TipoCalendarioDto dto)
         {
             comandos.Salvar(dto);
             return Ok();
