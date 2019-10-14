@@ -41,6 +41,7 @@ namespace SME.SGP.Aplicacao
 
         public void MarcarExcluidos(long[] ids)
         {
+            var idsInválidos = "";
             foreach(long id in ids)
             {
                 var tipoCalendario = repositorio.ObterPorId(id);
@@ -50,8 +51,12 @@ namespace SME.SGP.Aplicacao
                     repositorio.Salvar(tipoCalendario);
                 }
                 else {
-                    throw new NegocioException("Houve um erro ao excluir os tipos de calendário. Um dos tipos de calendário não existe");
+                    idsInválidos += idsInválidos.Equals("") ? $"{id}" : $", {id}";
                 }
+            }
+            if (!idsInválidos.Trim().Equals(""))
+            {
+                throw new NegocioException($"Houve um erro ao excluir os tipos de calendário ids '{idsInválidos}'. Um dos tipos de calendário não existe");
             }
         }
     }
