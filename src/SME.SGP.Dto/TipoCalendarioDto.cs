@@ -13,9 +13,9 @@ namespace SME.SGP.Dto
         public string Nome { get; set; }
         [Required(ErrorMessage = "O campo Ano Letivo é obrigatório")]
         public int AnoLetivo { get; set; }
-        [Required(ErrorMessage = "O campo Período é obrigatório")]
+        [EnumeradoRequirido(ErrorMessage = "O Período é obrigatório.")]
         public Periodo Periodo { get; set; }
-        [Required(ErrorMessage = "O campo Modalidade é obrigatório")]
+        [EnumeradoRequirido(ErrorMessage = "A Modalidade é obrigatória.")]
         public Modalidade Modalidade { get; set; }
         [Required(ErrorMessage = "O campo Situação é obrigatório")]
         public bool Situacao { get; set; }
