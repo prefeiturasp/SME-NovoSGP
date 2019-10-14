@@ -1,6 +1,7 @@
 ﻿using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Dto;
+using SME.SGP.Infra;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
