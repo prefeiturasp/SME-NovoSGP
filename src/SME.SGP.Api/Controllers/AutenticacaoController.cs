@@ -110,22 +110,22 @@ namespace SME.SGP.Api.Controllers
         [HttpGet("salvar-abrangencia")]
         public async Task<IActionResult> Teste()
         {
-            var abrangencia = new AbrangenciaRetornoEolDto();
-            var abrangenciaDre = new AbrangenciaDreRetornoEolDto()
-            {
-                Abreviacao = "TST",
-                Codigo = "TSTS",
-                Nome = "DRE DE TESTE VIA CODIGO"
-            };
+            //var abrangencia = new AbrangenciaRetornoEolDto();
+            //var abrangenciaDre = new AbrangenciaDreRetornoEolDto()
+            //{
+            //    Abreviacao = "TST",
+            //    Codigo = "TSTS",
+            //    Nome = "DRE DE TESTE VIA CODIGO"
+            //};
 
-            var abrangenciaUe = new AbrangenciaUeRetornoEolDto() { Nome = "ESCOLA TESTE", Codigo = "ET" };
-            abrangenciaUe.Turmas.Add(new AbrangenciaTurmaRetornoEolDto() { Ano = 2019, AnoLetivo = 1, Codigo = "TUR AB", NomeTurma = "TURMA AB", CodigoModalidade = "1", Modalidade = "VESPERTINO" });
+            //var abrangenciaUe = new AbrangenciaUeRetornoEolDto() { Nome = "ESCOLA TESTE", Codigo = "ET" };
+            //abrangenciaUe.Turmas.Add(new AbrangenciaTurmaRetornoEolDto() { Ano = 2019, AnoLetivo = 1, Codigo = "TUR AB", NomeTurma = "TURMA AB", CodigoModalidade = "1", Modalidade = "VESPERTINO" });
 
-            abrangenciaDre.Ues.Add(abrangenciaUe);
+            //abrangenciaDre.Ues.Add(abrangenciaUe);
 
-            abrangencia.Dres.Add(abrangenciaDre);
+            //abrangencia.Dres.Add(abrangenciaDre);
 
-            await comandosAbrangencia.Salvar(abrangencia, 1);
+            await comandosAbrangencia.Salvar();
             return Ok();
         }
 
