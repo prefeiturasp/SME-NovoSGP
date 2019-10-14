@@ -89,7 +89,6 @@ const TipoCalendarioEscolarLista = () => {
           idTiposSelecionados.length > 1 ? 'Tipos' : 'Tipo'
         } de calendário excluído com sucesso.`;
         sucesso(mensagemSucesso);
-        history.push('/calendario-escolar/tipo-calendario');
         onFiltrar();
       }
     }
@@ -104,7 +103,7 @@ const TipoCalendarioEscolarLista = () => {
 
   return (
     <>
-      <Cabecalho pagina="Tipo de calendário escolar" />
+      <Cabecalho pagina="Tipo de Calendário Escolar" />
 
       <Card>
         <div className="col-md-12 d-flex justify-content-end pb-4">

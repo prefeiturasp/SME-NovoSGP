@@ -45,8 +45,8 @@ const TipoCalendarioEscolarForm = ({ match }) => {
   );
 
   const opcoesPeriodo = [
-    { label: 'Semestral', value: 1 },
-    { label: 'Anual', value: 2 },
+    { label: 'Anual', value: 1 },
+    { label: 'Semestral', value: 2 },
   ];
 
   const opcoesModalidade = [
@@ -185,7 +185,7 @@ const TipoCalendarioEscolarForm = ({ match }) => {
 
   return (
     <>
-      <Cabecalho pagina="Cadastro do tipo de calendário escolar" />
+      <Cabecalho pagina="Cadastro do Tipo de Calendário Escolar" />
       <Card>
         <Formik
           ref={refFormik => setRefForm(refFormik)}
