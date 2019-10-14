@@ -26,7 +26,7 @@ namespace SME.SGP.Aplicacao
                        Nome = t.Nome,
                        AnoLetivo = t.AnoLetivo,
                        Modalidade = t.Modalidade,
-                       DescricaoModalidade = t.Modalidade.GetAttribute<DisplayAttribute>().Name
+                       DescricaoPeriodo = t.Periodo.GetAttribute<DisplayAttribute>().Name
                    };
         }
 
