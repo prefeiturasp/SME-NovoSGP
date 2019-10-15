@@ -31,7 +31,6 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IComandosNotificacao, ComandosNotificacao>();
             services.TryAddScoped<IComandosWorkflowAprovacao, ComandosWorkflowAprovacao>();
             services.TryAddScoped<IComandosUsuario, ComandosUsuario>();
-            services.TryAddScoped<IComandosAbrangencia, ComandosAbrangencia>();
         }
 
         private static void RegistrarConsultas(IServiceCollection services)
@@ -90,6 +89,7 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IServicoPerfil, ServicoPerfil>();
             services.TryAddScoped<IServicoEmail, ServicoEmail>();
             services.TryAddScoped<IServicoTokenJwt, ServicoTokenJwt>();
+            services.TryAddScoped<IServicoAbrangencia, ServicoAbrangencia>();
         }
     }
 }

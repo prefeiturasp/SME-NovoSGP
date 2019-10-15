@@ -55,9 +55,9 @@ namespace SME.SGP.Aplicacao.Integracoes
             else return null;
         }
 
-        public async Task<AbrangenciaRetornoEolDto> ObterAbrangencia(string codigoRf, string codigoPerfil)
+        public async Task<AbrangenciaRetornoEolDto> ObterAbrangencia(string login, Guid perfil)
         {
-            var resposta = await httpClient.GetAsync($"funcionarios/{codigoRf}/perfis/{codigoPerfil}/turmas");
+            var resposta = await httpClient.GetAsync($"funcionarios/{login}/perfis/{perfil.ToString()}/turmas");
 
             if (resposta.IsSuccessStatusCode)
             {

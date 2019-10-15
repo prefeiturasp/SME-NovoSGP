@@ -12,7 +12,7 @@ namespace SME.SGP.Aplicacao.Integracoes
 
         Task<UsuarioEolAutenticacaoRetornoDto> Autenticar(string login, string senha);
 
-        Task<AbrangenciaRetornoEolDto> ObterAbrangencia(string codigoRf, string codigoPerfil);
+        Task<AbrangenciaRetornoEolDto> ObterAbrangencia(string login, Guid perfil);
 
         Task<IEnumerable<DisciplinaResposta>> ObterDisciplinasParaPlanejamento(long codigoTurma, string rfProfessor);
 

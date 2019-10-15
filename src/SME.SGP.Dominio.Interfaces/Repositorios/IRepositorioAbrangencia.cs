@@ -1,13 +1,16 @@
 ﻿using SME.SGP.Dto;
+using System;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Dominio.Interfaces
 {
     public interface IRepositorioAbrangencia
     {
-        Task RemoverAbrangencias(long idUsuario);
+        Task<bool> JaExisteAbrangencia(string login, Guid perfil);
 
-        Task<long> SalvarDre(AbrangenciaDreRetornoEolDto abrangenciaDre, long usuarioId, string perfil);
+        Task RemoverAbrangencias(string login);
+
+        Task<long> SalvarDre(AbrangenciaDreRetornoEolDto abrangenciaDre, long usuarioId, Guid perfil);
 
         Task<long> SalvarTurma(AbrangenciaTurmaRetornoEolDto abrangenciaTurma, long idAbragenciaUe);
 
