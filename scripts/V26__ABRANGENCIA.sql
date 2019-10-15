@@ -44,7 +44,7 @@ create table if not exists public.abrangencia_turmas
  	turma_id varchar(15) not null,
  	abrangencia_ues_id bigint not null,
  	nome varchar(10) not null, 	
- 	ano int not null,
+ 	ano char not null,
  	ano_letivo int not null,
  	modalidade varchar(50) not null,
  	modalidade_codigo varchar(5) not null,
