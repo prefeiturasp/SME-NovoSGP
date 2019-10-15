@@ -16,7 +16,7 @@ namespace SME.SGP.Dto
         [EnumeradoRequirido(ErrorMessage = "O Período é obrigatório.")]
         public Periodo Periodo { get; set; }
         [EnumeradoRequirido(ErrorMessage = "A Modalidade é obrigatória.")]
-        public Modalidade Modalidade { get; set; }
+        public ModalidadeTipoCalendario Modalidade { get; set; }
         [Required(ErrorMessage = "O campo Situação é obrigatório")]
         public bool Situacao { get; set; }
 
