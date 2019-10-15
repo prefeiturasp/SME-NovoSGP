@@ -20,13 +20,15 @@ namespace SME.SGP.Aplicacao.Comandos
         {
             this.unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
             this.consultaTipoCalendario = consultaTipoCalendario ?? throw new ArgumentNullException(nameof(consultaTipoCalendario));
-            this.repositorioPeriodo = repositorioPeriodo ?? throw new ArgumentException(nameof(repositorioPeriodo));
+            this.repositorioPeriodo = repositorioPeriodo ?? throw new ArgumentNullException(nameof(repositorioPeriodo));
         }
 
         public void Salvar(PeriodoEscolarListaDto periodosDto)
         {
             using (var transacao = unitOfWork.IniciarTransacao())
             {
+                if (periodosDto.TipoCalendario == 0) throw new NegocioException("É necessario informar o tipo de calendario");
+
                 TipoCalendarioCompletoDto tipo = consultaTipoCalendario.BuscarPorId(periodosDto.TipoCalendario);
 
                 if (tipo == null || tipo.Id == 0) throw new NegocioException("O tipo de calendario informado não foi encontrado");
@@ -40,6 +42,13 @@ namespace SME.SGP.Aplicacao.Comandos
                 lista = MapearListaPeriodos(periodosDto, lista);
 
                 lista.Validar();
+
+                foreach (var periodo in lista.Periodos)
+                {
+                    repositorioPeriodo.Salvar(periodo);
+                }
+
+                unitOfWork.PersistirTransacao();
             }
         }
 
