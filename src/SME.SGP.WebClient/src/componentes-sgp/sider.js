@@ -120,7 +120,7 @@ const Sider = () => {
             >
               <Link id="perfil-edit" to="/meus-dados">
                 <i className="fas fa-user-edit" />
-                <span>Perfil</span>
+                <span>Meus Dados</span>
               </Link>
             </div>
           </div>
