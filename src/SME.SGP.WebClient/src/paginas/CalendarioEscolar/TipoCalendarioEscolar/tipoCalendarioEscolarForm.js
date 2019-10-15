@@ -13,6 +13,7 @@ import RadioGroupButton from '~/componentes/radioGroupButton';
 import { confirmar, erro, sucesso } from '~/servicos/alertas';
 import api from '~/servicos/api';
 import history from '~/servicos/history';
+import modalidade from '~/dtos/modalidade'
 
 import { CaixaAno, CaixaTextoAno } from './tipoCalendarioEscolar.css';
 
@@ -50,9 +51,8 @@ const TipoCalendarioEscolarForm = ({ match }) => {
   ];
 
   const opcoesModalidade = [
-    { label: 'Fundamental', value: 1 },
-    { label: 'Médio', value: 2 },
-    { label: 'EJA', value: 3 },
+    { label: 'Fundamental/Médio', value: 1 },
+    { label: 'EJA', value: 2 },
   ];
 
   const opcoesSituacao = [
