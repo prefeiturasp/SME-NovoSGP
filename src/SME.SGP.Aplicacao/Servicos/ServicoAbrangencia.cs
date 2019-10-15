@@ -4,30 +4,33 @@ using SME.SGP.Dominio.Interfaces;
 using System;
 using System.Threading.Tasks;
 
-namespace SME.SGP.Aplicacao
+namespace SME.SGP.Aplicacao.Servicos
 {
-    public class ComandosAbrangencia : IComandosAbrangencia
+    public class ServicoAbrangencia : IServicoAbrangencia
     {
         private readonly IRepositorioAbrangencia repositorioAbrangencia;
         private readonly IServicoEOL servicoEOL;
         private readonly IUnitOfWork unitOfWork;
 
-        public ComandosAbrangencia(IRepositorioAbrangencia repositorioAbrangencia, IUnitOfWork unitOfWork, IServicoEOL servicoEOL)
+        public ServicoAbrangencia(IRepositorioAbrangencia repositorioAbrangencia, IUnitOfWork unitOfWork, IServicoEOL servicoEOL)
         {
             this.repositorioAbrangencia = repositorioAbrangencia ?? throw new ArgumentNullException(nameof(repositorioAbrangencia));
             this.unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
             this.servicoEOL = servicoEOL ?? throw new ArgumentNullException(nameof(servicoEOL));
         }
 
-        public async Task Salvar()
+        public void Salvar(string login, Guid perfil, bool ehLogin)
         {
-            var perfil = "5AE1E074-37D6-E911-ABD6-F81654FE895D";
+            if (ehLogin)
+                TrataAbrangenciaLogin(login, perfil);
+            else TrataAbrangenciaModificaoPerfil(login, perfil);
+        }
 
-            var abrangenciaRetornoEolDto = await servicoEOL.ObterAbrangencia("6941583", perfil);
-
-            unitOfWork.IniciarTransacao();
-
-            await repositorioAbrangencia.RemoverAbrangencias(1);
+        private async Task BuscaAbrangenciaEPersiste(string login, Guid perfil)
+        {
+            var abrangenciaRetornoEolDto = await servicoEOL.ObterAbrangencia(login, perfil);
+            if (abrangenciaRetornoEolDto == null)
+                throw new NegocioException("Não foi possível localizar registros de abrangencia para este usuário.");
 
             foreach (var abrangenciaDre in abrangenciaRetornoEolDto.Dres)
             {
@@ -49,8 +52,24 @@ namespace SME.SGP.Aplicacao
                 }
                 else throw new NegocioException("Não foi possível salvar a abrangecia Dre.");
             }
+        }
 
+        private async void TrataAbrangenciaLogin(string login, Guid perfil)
+        {
+            unitOfWork.IniciarTransacao();
+            await repositorioAbrangencia.RemoverAbrangencias(login);
+            await BuscaAbrangenciaEPersiste(login, perfil);
             unitOfWork.PersistirTransacao();
+        }
+
+        private async void TrataAbrangenciaModificaoPerfil(string login, Guid perfil)
+        {
+            if (!(await repositorioAbrangencia.JaExisteAbrangencia(login, perfil)))
+            {
+                unitOfWork.IniciarTransacao();
+                await BuscaAbrangenciaEPersiste(login, perfil);
+                unitOfWork.PersistirTransacao();
+            }
         }
     }
 }

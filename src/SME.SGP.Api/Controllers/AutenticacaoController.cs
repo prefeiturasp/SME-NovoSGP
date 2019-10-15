@@ -14,13 +14,11 @@ namespace SME.SGP.Api.Controllers
     [ValidaDto]
     public class AutenticacaoController : ControllerBase
     {
-        private readonly IComandosAbrangencia comandosAbrangencia;
         private readonly IComandosUsuario comandosUsuario;
 
-        public AutenticacaoController(IComandosUsuario comandosUsuario, IComandosAbrangencia comandosAbrangencia)
+        public AutenticacaoController(IComandosUsuario comandosUsuario)
         {
             this.comandosUsuario = comandosUsuario ?? throw new System.ArgumentNullException(nameof(comandosUsuario));
-            this.comandosAbrangencia = comandosAbrangencia ?? throw new System.ArgumentNullException(nameof(comandosAbrangencia));
         }
 
         [HttpPut]
@@ -105,28 +103,6 @@ namespace SME.SGP.Api.Controllers
         public IActionResult SolicitarRecuperacaoSenha(string login)
         {
             return Ok(comandosUsuario.SolicitarRecuperacaoSenha(login));
-        }
-
-        [HttpGet("salvar-abrangencia")]
-        public async Task<IActionResult> Teste()
-        {
-            //var abrangencia = new AbrangenciaRetornoEolDto();
-            //var abrangenciaDre = new AbrangenciaDreRetornoEolDto()
-            //{
-            //    Abreviacao = "TST",
-            //    Codigo = "TSTS",
-            //    Nome = "DRE DE TESTE VIA CODIGO"
-            //};
-
-            //var abrangenciaUe = new AbrangenciaUeRetornoEolDto() { Nome = "ESCOLA TESTE", Codigo = "ET" };
-            //abrangenciaUe.Turmas.Add(new AbrangenciaTurmaRetornoEolDto() { Ano = 2019, AnoLetivo = 1, Codigo = "TUR AB", NomeTurma = "TURMA AB", CodigoModalidade = "1", Modalidade = "VESPERTINO" });
-
-            //abrangenciaDre.Ues.Add(abrangenciaUe);
-
-            //abrangencia.Dres.Add(abrangenciaDre);
-
-            await comandosAbrangencia.Salvar();
-            return Ok();
         }
 
         [HttpGet("valida-token-recuperacao-senha/{token}")]

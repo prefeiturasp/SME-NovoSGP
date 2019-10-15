@@ -2,6 +2,7 @@
 using SME.SGP.Dados.Contexto;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Dto;
+using System;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -16,14 +17,27 @@ namespace SME.SGP.Dados.Repositorios
             this.database = database;
         }
 
-        public async Task RemoverAbrangencias(long idUsuario)
+        public async Task<bool> JaExisteAbrangencia(string login, Guid perfil)
         {
-            var query = "delete from abrangencia_dres where usuario_id = @idUsuario";
+            var query = @"select
+	                            1
+                            from
+	                            abrangencia
+                            where
+	                            usuario_id = (select id from usuario where login = @login)
+	                            and perfil = @perfil";
 
-            await database.ExecuteAsync(query, new { idUsuario });
+            return (await database.Conexao.QueryAsync<bool>(query, new { login, perfil })).Single();
         }
 
-        public async Task<long> SalvarDre(AbrangenciaDreRetornoEolDto abrangenciaDre, long usuarioId, string perfil)
+        public async Task RemoverAbrangencias(string login)
+        {
+            var query = "delete from abrangencia_dres where usuario_id = (select id from usuario where login = @login)";
+
+            await database.ExecuteAsync(query, new { login });
+        }
+
+        public async Task<long> SalvarDre(AbrangenciaDreRetornoEolDto abrangenciaDre, long usuarioId, Guid perfil)
         {
             var query = @"insert into abrangencia_dres
             (usuario_id, dre_id, abreviacao, nome, perfil)values

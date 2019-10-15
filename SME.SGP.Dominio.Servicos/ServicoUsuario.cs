@@ -9,6 +9,7 @@ namespace SME.SGP.Dominio
 {
     public class ServicoUsuario : IServicoUsuario
     {
+        private const string CLAIM_PERFIL = "perfil";
         private const string CLAIM_RF = "rf";
         private readonly IHttpContextAccessor httpContextAccessor;
         private readonly IRepositorioPrioridadePerfil repositorioPrioridadePerfil;
@@ -61,6 +62,11 @@ namespace SME.SGP.Dominio
                 throw new NegocioException("Não foi possível localizar o login no token");
 
             return loginAtual.Value;
+        }
+
+        public Guid ObterPerfilAtual()
+        {
+            return Guid.Parse(ObterClaim(CLAIM_PERFIL));
         }
 
         public string ObterRf()

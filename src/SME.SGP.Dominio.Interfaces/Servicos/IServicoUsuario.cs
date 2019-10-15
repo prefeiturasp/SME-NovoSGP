@@ -13,6 +13,8 @@ namespace SME.SGP.Dominio.Interfaces
 
         string ObterLoginAtual();
 
+        Guid ObterPerfilAtual();
+
         string ObterRf();
 
         Usuario ObterUsuarioPorCodigoRfLoginOuAdiciona(string codigoRf, string login = "");
