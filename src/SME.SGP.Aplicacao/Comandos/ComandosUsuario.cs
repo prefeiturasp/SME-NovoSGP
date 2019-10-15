@@ -15,6 +15,7 @@ namespace SME.SGP.Aplicacao
     {
         private readonly IConfiguration configuration;
         private readonly IRepositorioUsuario repositorioUsuario;
+        private readonly IServicoAbrangencia servicoAbrangencia;
         private readonly IServicoAutenticacao servicoAutenticacao;
         private readonly IServicoEmail servicoEmail;
         private readonly IServicoEOL servicoEOL;
@@ -29,7 +30,8 @@ namespace SME.SGP.Aplicacao
             IServicoEOL servicoEOL,
             IServicoTokenJwt servicoTokenJwt,
             IServicoEmail servicoEmail,
-            IConfiguration configuration)
+            IConfiguration configuration,
+            IServicoAbrangencia servicoAbrangencia)
         {
             this.repositorioUsuario = repositorioUsuario ??
                 throw new System.ArgumentNullException(nameof(repositorioUsuario));
@@ -43,6 +45,9 @@ namespace SME.SGP.Aplicacao
                 throw new System.ArgumentNullException(nameof(servicoEOL));
             this.servicoTokenJwt = servicoTokenJwt ??
                 throw new System.ArgumentNullException(nameof(servicoTokenJwt));
+            this.servicoAbrangencia = servicoAbrangencia ??
+                throw new System.ArgumentNullException(nameof(servicoAbrangencia));
+
             this.servicoEmail = servicoEmail ?? throw new ArgumentNullException(nameof(servicoEmail));
             this.configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
         }
@@ -105,7 +110,10 @@ namespace SME.SGP.Aplicacao
                 var usuario = servicoUsuario.ObterUsuarioPorCodigoRfLoginOuAdiciona(retornoAutenticacaoEol.Item2, login);
 
                 retornoAutenticacaoEol.Item1.PerfisUsuario = servicoPerfil.DefinirPerfilPrioritario(retornoAutenticacaoEol.Item3, usuario);
-                var permissionamentos = await servicoEOL.ObterPermissoesPorPerfil(retornoAutenticacaoEol.Item1.PerfisUsuario.PerfilSelecionado);
+
+                var perfilSelecionado = retornoAutenticacaoEol.Item1.PerfisUsuario.PerfilSelecionado;
+
+                var permissionamentos = await servicoEOL.ObterPermissoesPorPerfil(perfilSelecionado);
 
                 if (permissionamentos == null || !permissionamentos.Any())
                 {
@@ -118,27 +126,28 @@ namespace SME.SGP.Aplicacao
                         .Select(a => (Permissao)a)
                         .ToList();
 
-                    retornoAutenticacaoEol.Item1.Token = servicoTokenJwt.GerarToken(login, usuario.CodigoRf, listaPermissoes);
+                    retornoAutenticacaoEol.Item1.Token = servicoTokenJwt.GerarToken(login, usuario.CodigoRf, perfilSelecionado, listaPermissoes);
 
                     usuario.AtualizaUltimoLogin();
                     repositorioUsuario.Salvar(usuario);
+                    await servicoAbrangencia.Salvar(login, perfilSelecionado, true);
                 }
             }
             return retornoAutenticacaoEol.Item1;
         }
 
-        public async Task<string> ModificarPerfil(string guid)
+        public async Task<string> ModificarPerfil(Guid perfil)
         {
             string loginAtual = servicoUsuario.ObterLoginAtual();
             string codigoRfAtual = servicoUsuario.ObterRf();
 
-            await servicoUsuario.PodeModificarPerfil(guid, loginAtual);
+            await servicoUsuario.PodeModificarPerfil(perfil, loginAtual);
 
-            var permissionamentos = await servicoEOL.ObterPermissoesPorPerfil(Guid.Parse(guid));
+            var permissionamentos = await servicoEOL.ObterPermissoesPorPerfil(perfil);
 
             if (permissionamentos == null || !permissionamentos.Any())
             {
-                throw new NegocioException($"Não foi possível obter os permissionamentos do perfil {guid}");
+                throw new NegocioException($"Não foi possível obter os permissionamentos do perfil {perfil.ToString()}");
             }
             else
             {
@@ -147,7 +156,9 @@ namespace SME.SGP.Aplicacao
                     .Select(a => (Permissao)a)
                     .ToList();
 
-                return servicoTokenJwt.GerarToken(loginAtual, codigoRfAtual, listaPermissoes);
+                await servicoAbrangencia.Salvar(loginAtual, perfil, false);
+
+                return servicoTokenJwt.GerarToken(loginAtual, codigoRfAtual, perfil, listaPermissoes);
             }
         }
 

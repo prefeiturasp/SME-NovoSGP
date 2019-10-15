@@ -79,6 +79,7 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IRepositorioWorkflowAprovacaoNivelUsuario, RepositorioWorkflowAprovacaoNivelUsuario>();
             services.TryAddScoped<IRepositorioPrioridadePerfil, RepositorioPrioridadePerfil>();
             services.TryAddScoped<IRepositorioConfiguracaoEmail, RepositorioConfiguracaoEmail>();
+            services.TryAddScoped<IRepositorioAbrangencia, RepositorioAbrangencia>();
             services.TryAddScoped<IRepositorioTipoCalendario, RepositorioTipoCalendario>();
         }
 
@@ -91,6 +92,7 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IServicoPerfil, ServicoPerfil>();
             services.TryAddScoped<IServicoEmail, ServicoEmail>();
             services.TryAddScoped<IServicoTokenJwt, ServicoTokenJwt>();
+            services.TryAddScoped<IServicoAbrangencia, ServicoAbrangencia>();
         }
     }
 }

@@ -1,6 +1,7 @@
 import produce from 'immer';
 
 const INICIAL = {
+  disciplinasPlanoAnual: [],
   bimestres: [],
   bimestresErro: {
     type: '',
@@ -18,6 +19,28 @@ export default function bimestres(state = INICIAL, action) {
         draft.bimestres[action.payload.indice] = action.payload.bimestre;
         draft.bimestresErro = state.bimestresErro;
 
+        break;
+      case '@bimestres/SalvarTodosBimestres':
+        draft.bimestres = action.payload;
+        draft.bimestresErro = state.bimestresErro;
+
+        break;
+      case '@bimestres/SalvarDisciplinasPlanoAnual':
+        draft.disciplinasPlanoAnual = action.payload;
+        break;
+      case '@bimestres/SelecionarDisciplinaPlanoAnual':
+        draft.disciplinasPlanoAnual.forEach(disciplina => {
+          disciplina.selecionada = false;
+        });
+
+        draft.disciplinasPlanoAnual.find(
+          disciplina => disciplina.codigo == action.payload.codigo
+        ).selecionada = true;
+        break;
+      case '@bimestres/LimparDisciplinaPlanoAnual':
+        draft.disciplinasPlanoAnual.find(
+          disciplina => disciplina.selecionada
+        ).selecionada = false;
         break;
       case '@bimestres/PrePostBimestre':
         const paraEnvio = state.bimestres.filter(x => x.ehEdicao);
@@ -45,6 +68,8 @@ export default function bimestres(state = INICIAL, action) {
 
         break;
       case '@bimestres/SalvarEhExpandido':
+        if (!state.bimestres[action.payload.indice]) return;
+
         draft.bimestres[action.payload.indice].ehExpandido =
           action.payload.ehExpandido;
         draft.bimestres[action.payload.indice].ehEdicao =
@@ -106,6 +131,8 @@ export default function bimestres(state = INICIAL, action) {
         break;
 
       case '@bimestres/SetarDescricao':
+        if (!state.bimestres[action.payload.indice]) return;
+
         draft.bimestres[action.payload.indice].objetivo =
           action.payload.descricao;
         draft.bimestresErro = state.bimestresErro;
@@ -114,7 +141,7 @@ export default function bimestres(state = INICIAL, action) {
 
       case '@bimestres/LimparBimestres':
         draft.bimestres = [];
-        
+
         break;
 
       case '@bimestres/BimestresErro':
