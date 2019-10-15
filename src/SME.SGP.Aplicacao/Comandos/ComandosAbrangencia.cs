@@ -21,7 +21,9 @@ namespace SME.SGP.Aplicacao
 
         public async Task Salvar()
         {
-            var abrangenciaRetornoEolDto = await servicoEOL.ObterAbrangencia("6941583", "5AE1E074-37D6-E911-ABD6-F81654FE895D");
+            var perfil = "5AE1E074-37D6-E911-ABD6-F81654FE895D";
+
+            var abrangenciaRetornoEolDto = await servicoEOL.ObterAbrangencia("6941583", perfil);
 
             unitOfWork.IniciarTransacao();
 
@@ -29,7 +31,7 @@ namespace SME.SGP.Aplicacao
 
             foreach (var abrangenciaDre in abrangenciaRetornoEolDto.Dres)
             {
-                var idAbragenciaDre = await repositorioAbrangencia.SalvarDre(abrangenciaDre, 1);
+                var idAbragenciaDre = await repositorioAbrangencia.SalvarDre(abrangenciaDre, 1, perfil);
                 if (idAbragenciaDre > 0)
                 {
                     foreach (var abrangenciaUe in abrangenciaDre.Ues)

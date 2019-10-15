@@ -23,11 +23,11 @@ namespace SME.SGP.Dados.Repositorios
             await database.ExecuteAsync(query, new { idUsuario });
         }
 
-        public async Task<long> SalvarDre(AbrangenciaDreRetornoEolDto abrangenciaDre, long usuarioId)
+        public async Task<long> SalvarDre(AbrangenciaDreRetornoEolDto abrangenciaDre, long usuarioId, string perfil)
         {
             var query = @"insert into abrangencia_dres
-            (usuario_id, dre_id, abreviacao, nome)values
-            (@usuarioId, @dre_id, @abreviacao, @nome)
+            (usuario_id, dre_id, abreviacao, nome, perfil)values
+            (@usuarioId, @dre_id, @abreviacao, @nome, @perfil)
             RETURNING id";
 
             var resultadoTask = await database.Conexao.QueryAsync<long>(query, new
@@ -35,7 +35,8 @@ namespace SME.SGP.Dados.Repositorios
                 dre_id = abrangenciaDre.Codigo,
                 abreviacao = abrangenciaDre.Abreviacao,
                 nome = abrangenciaDre.Nome,
-                usuarioId
+                usuarioId,
+                perfil
             });
 
             return resultadoTask.Single();
@@ -44,8 +45,8 @@ namespace SME.SGP.Dados.Repositorios
         public async Task<long> SalvarTurma(AbrangenciaTurmaRetornoEolDto abrangenciaTurma, long idAbragenciaUe)
         {
             var query = @"insert into abrangencia_turmas
-            (turma_id, abrangencia_ues_id, nome, ano_letivo, ano, modalidade, modalidade_codigo)
-            values(@turma_id, @abrangencia_ues_id, @nome, @ano_letivo, @ano, @modalidade, @modalidade_codigo )
+            (turma_id, abrangencia_ues_id, nome, ano_letivo, ano, modalidade, modalidade_codigo, semestre)
+            values(@turma_id, @abrangencia_ues_id, @nome, @ano_letivo, @ano, @modalidade, @modalidade_codigo, @semestre )
             RETURNING id";
 
             var resultadoTask = await database.Conexao.QueryAsync<long>(query, new
@@ -56,7 +57,8 @@ namespace SME.SGP.Dados.Repositorios
                 ano_letivo = abrangenciaTurma.AnoLetivo,
                 ano = abrangenciaTurma.Ano,
                 modalidade = abrangenciaTurma.Modalidade,
-                modalidade_codigo = abrangenciaTurma.CodigoModalidade
+                modalidade_codigo = abrangenciaTurma.CodigoModalidade,
+                semestre = abrangenciaTurma.Semestre
             });
 
             return resultadoTask.Single();

@@ -8,5 +8,6 @@
         public string CodigoModalidade { get; set; }
         public string Modalidade { get; set; }
         public string NomeTurma { get; set; }
+        public int Semestre { get; set; }
     }
 }

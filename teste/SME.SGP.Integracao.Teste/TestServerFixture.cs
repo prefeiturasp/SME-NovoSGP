@@ -68,7 +68,7 @@ namespace SME.SGP.Integracao.Teste
 
         public string GerarToken(Permissao[] permissoes)
         {
-            return servicoTokenJwt.GerarToken("teste", "123", permissoes);
+            return servicoTokenJwt.GerarToken("teste", "123", Guid.NewGuid(), permissoes);
         }
 
         public string ObterArquivoConfiguracao()
