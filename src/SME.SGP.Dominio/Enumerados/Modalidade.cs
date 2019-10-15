@@ -4,13 +4,13 @@ namespace SME.SGP.Dominio
 {
     public enum Modalidade
     {
-        [Display(Name = "Fundamental")]
+        [Display(Name = "Fundamental", ShortName = "EF")]
         Fundamental = 5,
 
-        [Display(Name = "Médio")]
+        [Display(Name = "Médio", ShortName = "EM")]
         Medio = 6,
 
-        [Display(Name = "EJA")]
+        [Display(Name = "EJA", ShortName = "EJA")]
         EJA = 3
     }
 }

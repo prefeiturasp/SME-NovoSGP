@@ -32,6 +32,27 @@ namespace SME.SGP.Api.Controllers
 
         public IList<AbrangenciaDreRetorno> ListaDres { get; set; }
 
+        [HttpGet("{filtro}")]
+        [ProducesResponseType(typeof(IEnumerable<AbrangenciaFiltroRetorno>), 200)]
+        [ProducesResponseType(401)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        public async Task<IActionResult> ObterAbnragenciaAutoComplete(string filtro)
+        {
+            if (filtro.Length < 2)
+                return StatusCode(204);
+
+            var registros = new List<AbrangenciaFiltroRetorno>();
+
+            GeraRegistrosMockFiltros(registros);
+
+            filtro = filtro.ToUpper();
+
+            var retorno = registros.Where(a => a.NomeTurma.Contains(filtro) || a.NomeUe.Contains(filtro)).ToList();
+            if (retorno.Count > 0)
+                return Ok(retorno);
+            else return StatusCode(204);
+        }
+
         [HttpGet("anos-letivos")]
         [ProducesResponseType(typeof(int[]), 200)]
         [ProducesResponseType(401)]
@@ -85,23 +106,23 @@ namespace SME.SGP.Api.Controllers
             switch (codigoUe)
             {
                 case "000191":
-                    listaTurmas.Add(new AbrangenciaTurmaRetorno() { Ano = 1, AnoLetivo = 2019, Codigo = "191", ModalidadeCodigo = 3, Nome = "191-A", Semestre = 1 });
+                    listaTurmas.Add(new AbrangenciaTurmaRetorno() { Ano = 1, AnoLetivo = 2019, Codigo = "191", CodigoModalidade = 3, Nome = "191-A", Semestre = 1 });
                     break;
 
                 case "000477":
-                    listaTurmas.Add(new AbrangenciaTurmaRetorno() { Ano = 1, AnoLetivo = 2019, Codigo = "477", ModalidadeCodigo = 3, Nome = "477-A", Semestre = 1 });
+                    listaTurmas.Add(new AbrangenciaTurmaRetorno() { Ano = 1, AnoLetivo = 2019, Codigo = "477", CodigoModalidade = 3, Nome = "477-A", Semestre = 1 });
                     break;
 
                 case "000281":
-                    listaTurmas.Add(new AbrangenciaTurmaRetorno() { Ano = 1, AnoLetivo = 2019, Codigo = "281", ModalidadeCodigo = 3, Nome = "281-A", Semestre = 1 });
+                    listaTurmas.Add(new AbrangenciaTurmaRetorno() { Ano = 1, AnoLetivo = 2019, Codigo = "281", CodigoModalidade = 3, Nome = "281-A", Semestre = 1 });
                     break;
 
                 case "000311":
-                    listaTurmas.Add(new AbrangenciaTurmaRetorno() { Ano = 1, AnoLetivo = 2019, Codigo = "311", ModalidadeCodigo = 3, Nome = "311-A", Semestre = 1 });
+                    listaTurmas.Add(new AbrangenciaTurmaRetorno() { Ano = 1, AnoLetivo = 2019, Codigo = "311", CodigoModalidade = 3, Nome = "311-A", Semestre = 1 });
                     break;
 
                 case "000566":
-                    listaTurmas.Add(new AbrangenciaTurmaRetorno() { Ano = 1, AnoLetivo = 2019, Codigo = "566", ModalidadeCodigo = 3, Nome = "566-A", Semestre = 1 });
+                    listaTurmas.Add(new AbrangenciaTurmaRetorno() { Ano = 1, AnoLetivo = 2019, Codigo = "566", CodigoModalidade = 3, Nome = "566-A", Semestre = 1 });
                     break;
 
                 default:
@@ -132,6 +153,84 @@ namespace SME.SGP.Api.Controllers
             }
 
             return Ok(listaUes);
+        }
+
+        private static void GeraRegistrosMockFiltros(List<AbrangenciaFiltroRetorno> registros)
+        {
+            registros.Add(new AbrangenciaFiltroRetorno()
+            {
+                AnoLetivo = 2019,
+                CodigoDre = "108100",
+                CodigoModalidade = (int)Modalidade.EJA,
+                CodigoTurma = "191",
+                CodigoUe = "000191",
+                NomeDre = "DIRETORIA REGIONAL DE EDUCACAO BUTANTA",
+                NomeModalidade = Modalidade.EJA.GetAttribute<DisplayAttribute>().Name,
+                NomeTurma = "191-A",
+                NomeUe = "ALIPIO CORREA NETO, PROF.",
+                Semestre = 1,
+                AbreviacaoModalidade = Modalidade.EJA.GetAttribute<DisplayAttribute>().ShortName
+            });
+
+            registros.Add(new AbrangenciaFiltroRetorno()
+            {
+                AnoLetivo = 2019,
+                CodigoDre = "108100",
+                CodigoModalidade = (int)Modalidade.EJA,
+                CodigoTurma = "477",
+                CodigoUe = "000477",
+                NomeDre = "DIRETORIA REGIONAL DE EDUCACAO BUTANTA",
+                NomeModalidade = Modalidade.EJA.GetAttribute<DisplayAttribute>().Name,
+                NomeTurma = "477-A",
+                NomeUe = "EDA TEREZINHA CHICA MEDEIROS, PROFA.",
+                Semestre = 1,
+                AbreviacaoModalidade = Modalidade.EJA.GetAttribute<DisplayAttribute>().ShortName
+            });
+
+            registros.Add(new AbrangenciaFiltroRetorno()
+            {
+                AnoLetivo = 2019,
+                CodigoDre = "108200",
+                CodigoModalidade = (int)Modalidade.EJA,
+                CodigoTurma = "281",
+                CodigoUe = "000281",
+                NomeDre = "DIRETORIA REGIONAL DE EDUCACAO CAMPO LIMPO",
+                NomeModalidade = Modalidade.EJA.GetAttribute<DisplayAttribute>().Name,
+                NomeTurma = "281-A",
+                NomeUe = "VERA LUCIA FUSCO BORBA, PROFA.",
+                Semestre = 1,
+                AbreviacaoModalidade = Modalidade.EJA.GetAttribute<DisplayAttribute>().ShortName
+            });
+
+            registros.Add(new AbrangenciaFiltroRetorno()
+            {
+                AnoLetivo = 2019,
+                CodigoDre = "108200",
+                CodigoModalidade = (int)Modalidade.EJA,
+                CodigoTurma = "311",
+                CodigoUe = "000311",
+                NomeDre = "DIRETORIA REGIONAL DE EDUCACAO CAMPO LIMPO",
+                NomeModalidade = Modalidade.EJA.GetAttribute<DisplayAttribute>().Name,
+                NomeTurma = "311-A",
+                NomeUe = "ANTONIO ALVES DA SILVA, SG.",
+                Semestre = 1,
+                AbreviacaoModalidade = Modalidade.EJA.GetAttribute<DisplayAttribute>().ShortName
+            });
+
+            registros.Add(new AbrangenciaFiltroRetorno()
+            {
+                AnoLetivo = 2019,
+                CodigoDre = "108200",
+                CodigoModalidade = (int)Modalidade.EJA,
+                CodigoTurma = "566",
+                CodigoUe = "000566",
+                NomeDre = "DIRETORIA REGIONAL DE EDUCACAO CAMPO LIMPO",
+                NomeModalidade = Modalidade.EJA.GetAttribute<DisplayAttribute>().Name,
+                NomeTurma = "566-A",
+                NomeUe = "TERESA MARGARIDA DA SILVA E ORTA",
+                Semestre = 1,
+                AbreviacaoModalidade = Modalidade.EJA.GetAttribute<DisplayAttribute>().ShortName
+            });
         }
     }
 }
