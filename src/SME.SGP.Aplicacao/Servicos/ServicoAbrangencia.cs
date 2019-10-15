@@ -19,11 +19,11 @@ namespace SME.SGP.Aplicacao.Servicos
             this.servicoEOL = servicoEOL ?? throw new ArgumentNullException(nameof(servicoEOL));
         }
 
-        public void Salvar(string login, Guid perfil, bool ehLogin)
+        public async Task Salvar(string login, Guid perfil, bool ehLogin)
         {
             if (ehLogin)
-                TrataAbrangenciaLogin(login, perfil);
-            else TrataAbrangenciaModificaoPerfil(login, perfil);
+                await TrataAbrangenciaLogin(login, perfil);
+            else await TrataAbrangenciaModificaoPerfil(login, perfil);
         }
 
         private async Task BuscaAbrangenciaEPersiste(string login, Guid perfil)
@@ -34,7 +34,7 @@ namespace SME.SGP.Aplicacao.Servicos
 
             foreach (var abrangenciaDre in abrangenciaRetornoEolDto.Dres)
             {
-                var idAbragenciaDre = await repositorioAbrangencia.SalvarDre(abrangenciaDre, 1, perfil);
+                var idAbragenciaDre = await repositorioAbrangencia.SalvarDre(abrangenciaDre, login, perfil);
                 if (idAbragenciaDre > 0)
                 {
                     foreach (var abrangenciaUe in abrangenciaDre.Ues)
@@ -54,7 +54,7 @@ namespace SME.SGP.Aplicacao.Servicos
             }
         }
 
-        private async void TrataAbrangenciaLogin(string login, Guid perfil)
+        private async Task TrataAbrangenciaLogin(string login, Guid perfil)
         {
             unitOfWork.IniciarTransacao();
             await repositorioAbrangencia.RemoverAbrangencias(login);
@@ -62,7 +62,7 @@ namespace SME.SGP.Aplicacao.Servicos
             unitOfWork.PersistirTransacao();
         }
 
-        private async void TrataAbrangenciaModificaoPerfil(string login, Guid perfil)
+        private async Task TrataAbrangenciaModificaoPerfil(string login, Guid perfil)
         {
             if (!(await repositorioAbrangencia.JaExisteAbrangencia(login, perfil)))
             {
