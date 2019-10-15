@@ -50,8 +50,7 @@ namespace SME.SGP.Dominio.Entidades
         {
             foreach (var periodo in Periodos)
             {
-                periodo.ValidarIncioBimestre();
-                periodo.ValidarAnoBase(AnoBase);
+                periodo.Validar(AnoBase, Eja);
             }       
         }
 

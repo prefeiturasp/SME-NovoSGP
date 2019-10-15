@@ -1,6 +1,7 @@
 ﻿using Moq;
 using SME.SGP.Aplicacao.Comandos;
 using SME.SGP.Dominio;
+using SME.SGP.Dominio.Entidades;
 using SME.SGP.Dominio.Interfaces.Repositorios;
 using SME.SGP.Dto;
 using System;
@@ -34,6 +35,56 @@ namespace SME.SGP.Aplicacao.Teste.Comandos
             Assert.Throws<ArgumentNullException>(() => new ComandosPeriodoEscolar(unitOfWork.Object, consultasTipoCalendario.Object, null));
         }
 
+        [Fact(DisplayName = "Nao_Deve_Salvar_Sem_Tipo_Calendario")]
+        public void Nao_Deve_Salvar_Sem_Tipo_Calendario()
+        {
+            consultasTipoCalendario.Setup(x => x.BuscarPorId(It.IsAny<long>())).Returns(new TipoCalendarioCompletoDto
+            {
+                Id = 1,
+                Modalidade = Modalidade.Fundamental,
+                Situacao = true,
+                Periodo = Periodo.Anual,
+                Nome = "Teste",
+                AnoLetivo = 2019
+            });
+
+            repositorioPeriodo.Setup(x => x.Salvar(It.IsAny<PeriodoEscolar>())).Returns(1);
+
+            Assert.Throws<NegocioException>(() =>
+            comandosPeriodoEscolar.Salvar(new PeriodoEscolarListaDto
+            {
+                AnoBase = 2019,
+                TipoCalendario = 0,
+                Periodos = new List<PeriodoEscolarDto>
+                {
+                    new PeriodoEscolarDto
+                    {
+                        Bimestre = 1,
+                        PeriodoInicio = DateTime.Now,
+                        PeriodoFim = DateTime.Now.AddMinutes(1),
+                    },
+                    new PeriodoEscolarDto
+                    {
+                        Bimestre = 2,
+                        PeriodoInicio = DateTime.Now.AddMinutes(2),
+                        PeriodoFim = DateTime.Now.AddMinutes(3),
+                    },
+                    new PeriodoEscolarDto
+                    {
+                        Bimestre = 3,
+                        PeriodoInicio = DateTime.Now.AddMinutes(4),
+                        PeriodoFim = DateTime.Now.AddMinutes(5),
+                    },
+                    new PeriodoEscolarDto
+                    {
+                        Bimestre = 4,
+                        PeriodoInicio = DateTime.Now.AddMinutes(6),
+                        PeriodoFim = DateTime.Now.AddMinutes(7),
+                    }
+                }
+            }));
+        }
+
         [Fact(DisplayName = "Deve_Salvar_Periodo_Escolar")]
         public void Deve_Salvar_Periodo_Escolar()
         {
@@ -47,7 +98,7 @@ namespace SME.SGP.Aplicacao.Teste.Comandos
                 AnoLetivo = 2019
             });
 
-            repositorioPeriodo.Setup(x => x.Salvar())
+            repositorioPeriodo.Setup(x => x.Salvar(It.IsAny<PeriodoEscolar>())).Returns(1);
 
             comandosPeriodoEscolar.Salvar(new PeriodoEscolarListaDto
             {
@@ -81,6 +132,47 @@ namespace SME.SGP.Aplicacao.Teste.Comandos
                     }
                 }
             });
+        }
+
+        [Fact(DisplayName = "Nao_Deve_Salvar_Sem_Encontrar_Tipo_Calendario")]
+        public void Nao_Deve_Salvar_Sem_Encontrar_Tipo_Calendario ()
+        {
+            consultasTipoCalendario.Setup(x => x.BuscarPorId(It.IsAny<long>())).Returns(new TipoCalendarioCompletoDto());
+
+            repositorioPeriodo.Setup(x => x.Salvar(It.IsAny<PeriodoEscolar>())).Returns(1);
+
+            Assert.Throws<NegocioException>(() => comandosPeriodoEscolar.Salvar(new PeriodoEscolarListaDto
+            {
+                AnoBase = 2019,
+                TipoCalendario = 1,
+                Periodos = new List<PeriodoEscolarDto>
+                {
+                    new PeriodoEscolarDto
+                    {
+                        Bimestre = 1,
+                        PeriodoInicio = DateTime.Now,
+                        PeriodoFim = DateTime.Now.AddMinutes(1),
+                    },
+                    new PeriodoEscolarDto
+                    {
+                        Bimestre = 2,
+                        PeriodoInicio = DateTime.Now.AddMinutes(2),
+                        PeriodoFim = DateTime.Now.AddMinutes(3),
+                    },
+                    new PeriodoEscolarDto
+                    {
+                        Bimestre = 3,
+                        PeriodoInicio = DateTime.Now.AddMinutes(4),
+                        PeriodoFim = DateTime.Now.AddMinutes(5),
+                    },
+                    new PeriodoEscolarDto
+                    {
+                        Bimestre = 4,
+                        PeriodoInicio = DateTime.Now.AddMinutes(6),
+                        PeriodoFim = DateTime.Now.AddMinutes(7),
+                    }
+                }
+            }));
         }
     }
 }

@@ -14,7 +14,6 @@ namespace SME.SGP.Dto
         public int TipoCalendario { get; set; }
 
         [Required(ErrorMessage = "É necessario informar o ano base do calendario")]
-        public int AnoBase { get; set; }
-        
+        public int AnoBase { get; set; }        
     }
 }
