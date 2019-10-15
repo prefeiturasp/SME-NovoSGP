@@ -2,7 +2,7 @@
 {
     public class AbrangenciaTurmaRetornoEolDto
     {
-        public int Ano { get; set; }
+        public string Ano { get; set; }
         public int AnoLetivo { get; set; }
         public string Codigo { get; set; }
         public string CodigoModalidade { get; set; }

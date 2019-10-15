@@ -27,7 +27,8 @@ namespace SME.SGP.Dados.Repositorios
         {
             var query = @"insert into abrangencia_dres
             (usuario_id, dre_id, abreviacao, nome)values
-            (@usuarioId, @dre_id, @abreviacao, @nome) RETURNING id";
+            (@usuarioId, @dre_id, @abreviacao, @nome)
+            RETURNING id";
 
             var resultadoTask = await database.Conexao.QueryAsync<long>(query, new
             {
@@ -43,7 +44,9 @@ namespace SME.SGP.Dados.Repositorios
         public async Task<long> SalvarTurma(AbrangenciaTurmaRetornoEolDto abrangenciaTurma, long idAbragenciaUe)
         {
             var query = @"insert into abrangencia_turmas
-            (turma_id, abrangencia_ues_id, nome, ano_letivo, ano, modalidade, modalidade_codigo)values(@turma_id, @abrangencia_ues_id, @nome, @ano_letivo, @ano, @modalidade, @modalidade_codigo ) RETURNING id";
+            (turma_id, abrangencia_ues_id, nome, ano_letivo, ano, modalidade, modalidade_codigo)
+            values(@turma_id, @abrangencia_ues_id, @nome, @ano_letivo, @ano, @modalidade, @modalidade_codigo )
+            RETURNING id";
 
             var resultadoTask = await database.Conexao.QueryAsync<long>(query, new
             {
@@ -62,7 +65,8 @@ namespace SME.SGP.Dados.Repositorios
         public async Task<long> SalvarUe(AbrangenciaUeRetornoEolDto abrangenciaUe, long idAbragenciaDre)
         {
             var query = @"insert into abrangencia_ues
-            (ue_id, abrangencia_dres_id, nome)values(@ue_id, @abrangencia_dres_id, @nome) RETURNING id";
+            (ue_id, abrangencia_dres_id, nome)values(@ue_id, @abrangencia_dres_id, @nome)
+            RETURNING id";
 
             var resultadoTask = await database.Conexao.QueryAsync<long>(query, new
             {
