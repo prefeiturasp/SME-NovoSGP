@@ -31,6 +31,7 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IComandosNotificacao, ComandosNotificacao>();
             services.TryAddScoped<IComandosWorkflowAprovacao, ComandosWorkflowAprovacao>();
             services.TryAddScoped<IComandosUsuario, ComandosUsuario>();
+            services.TryAddScoped<IComandosTipoCalendario, ComandosTipoCalendario>();
         }
 
         private static void RegistrarConsultas(IServiceCollection services)
@@ -48,6 +49,7 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IConsultasNotificacao, ConsultasNotificacao>();
             services.TryAddScoped<IConsultasWorkflowAprovacao, ConsultasWorkflowAprovacao>();
             services.TryAddScoped<IConsultasUnidadesEscolares, ConsultasUnidadesEscolares>();
+            services.TryAddScoped<IConsultasTipoCalendario, ConsultasTipoCalendario>();
         }
 
         private static void RegistrarContextos(IServiceCollection services)
@@ -78,6 +80,7 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IRepositorioPrioridadePerfil, RepositorioPrioridadePerfil>();
             services.TryAddScoped<IRepositorioConfiguracaoEmail, RepositorioConfiguracaoEmail>();
             services.TryAddScoped<IRepositorioAbrangencia, RepositorioAbrangencia>();
+            services.TryAddScoped<IRepositorioTipoCalendario, RepositorioTipoCalendario>();
         }
 
         private static void RegistrarServicos(IServiceCollection services)
