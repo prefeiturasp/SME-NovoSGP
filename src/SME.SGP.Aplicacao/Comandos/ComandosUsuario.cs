@@ -130,7 +130,7 @@ namespace SME.SGP.Aplicacao
 
                     usuario.AtualizaUltimoLogin();
                     repositorioUsuario.Salvar(usuario);
-                    servicoAbrangencia.Salvar(login, perfilSelecionado, true);
+                    await servicoAbrangencia.Salvar(login, perfilSelecionado, true);
                 }
             }
             return retornoAutenticacaoEol.Item1;
@@ -156,7 +156,7 @@ namespace SME.SGP.Aplicacao
                     .Select(a => (Permissao)a)
                     .ToList();
 
-                servicoAbrangencia.Salvar(loginAtual, perfil, false);
+                await servicoAbrangencia.Salvar(loginAtual, perfil, false);
 
                 return servicoTokenJwt.GerarToken(loginAtual, codigoRfAtual, perfil, listaPermissoes);
             }

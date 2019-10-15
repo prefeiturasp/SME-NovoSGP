@@ -10,7 +10,7 @@ namespace SME.SGP.Dominio.Interfaces
 
         Task RemoverAbrangencias(string login);
 
-        Task<long> SalvarDre(AbrangenciaDreRetornoEolDto abrangenciaDre, long usuarioId, Guid perfil);
+        Task<long> SalvarDre(AbrangenciaDreRetornoEolDto abrangenciaDre, string login, Guid perfil);
 
         Task<long> SalvarTurma(AbrangenciaTurmaRetornoEolDto abrangenciaTurma, long idAbragenciaUe);
 

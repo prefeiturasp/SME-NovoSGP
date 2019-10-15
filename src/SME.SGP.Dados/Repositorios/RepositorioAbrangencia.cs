@@ -37,11 +37,11 @@ namespace SME.SGP.Dados.Repositorios
             await database.ExecuteAsync(query, new { login });
         }
 
-        public async Task<long> SalvarDre(AbrangenciaDreRetornoEolDto abrangenciaDre, long usuarioId, Guid perfil)
+        public async Task<long> SalvarDre(AbrangenciaDreRetornoEolDto abrangenciaDre, string login, Guid perfil)
         {
             var query = @"insert into abrangencia_dres
             (usuario_id, dre_id, abreviacao, nome, perfil)values
-            (@usuarioId, @dre_id, @abreviacao, @nome, @perfil)
+            ((select id from usuario where login = @login), @dre_id, @abreviacao, @nome, @perfil)
             RETURNING id";
 
             var resultadoTask = await database.Conexao.QueryAsync<long>(query, new
@@ -49,7 +49,7 @@ namespace SME.SGP.Dados.Repositorios
                 dre_id = abrangenciaDre.Codigo,
                 abreviacao = abrangenciaDre.Abreviacao,
                 nome = abrangenciaDre.Nome,
-                usuarioId,
+                login,
                 perfil
             });
 
