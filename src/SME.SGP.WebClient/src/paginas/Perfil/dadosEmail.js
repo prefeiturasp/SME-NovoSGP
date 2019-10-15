@@ -8,12 +8,17 @@ import AlertaBalao from '~/componentes/alertaBalao';
 import { Formik } from 'formik';
 import * as Yup from 'yup';
 import { Form } from 'antd';
+import api from '~/servicos/api';
+import { sucesso, confirmar } from '~/servicos/alertas';
+import MensagemAlerta from './mensagemAlerta';
 
 const DadosEmail = () => {
 
   const [email, setEmail] = useState('teste@teste.com');
-  const [senha, setSenha] = useState('123456');
+  const [emailEdicao, setEmailEdicao] = useState();
+  const [senha, setSenha] = useState('******');
   const [visualizarEmail, setVisualizarEmail] = useState(false);
+  const [ocultarModalCancelamento, setOcultarModalCancelamento] = useState(true);
 
   const Campos = styled.div`
     margin-right: 10px;
@@ -27,30 +32,34 @@ const DadosEmail = () => {
     }
   `;
 
-  const onChangeEmail = campoEmail => {
-    setEmail(campoEmail.target.value);
-  };
+  const [validacoes] = useState(
+    Yup.object({
+      emailUsuario: Yup.string()
+        .email('Digite um e-mail válido.')
+    })
+  );
 
-  // const [refForm, setRefForm] = useState();
+  const salvarEmail = novoEmail => {
+    api.put('v1/usuarios/autenticado/email', {novoEmail: novoEmail}).then(resp =>{
+      setEmail(novoEmail);
+      setVisualizarEmail(false);
+      sucesso('Solicitação realizada com sucesso. Verifique sua caixa de entrada');
+    })
+  }
 
-  // const [validacoes] = useState(
-  //   Yup.object({
-  //     emailUsuario: Yup.string()
-  //       .email('Digite um e-mail válido.')
-  //   })
-  // );
+  const cancelarEdicao = () =>{
+    //setVisualizarEmail(false);
+    setOcultarModalCancelamento(false);
+  }
 
   return (
     <Campos>
-
-      {/* <Formik
-        ref={refFormik => setRefForm(refFormik)}
+      <Formik
         enableReinitialize
         initialValues={{
-          emailUsuario: email,
+          emailUsuario: emailEdicao? emailEdicao: email,
         }}
         validationSchema={validacoes}
-        onSubmit={() => {}}
         validateOnChange
         validateOnBlur
       >
@@ -58,60 +67,50 @@ const DadosEmail = () => {
           <Form>
             <ModalConteudoHtml
               key="reiniciarSenha"
-              visivel={true}
+              visivel={visualizarEmail}
               onConfirmacaoPrincipal={() => {
-                form.validateForm().then(() => form.handleSubmit(e => e));
+                form.validateForm().then(() => {
+                  form.handleSubmit(e => e);
+                  if(form.errors && !form.errors.emailUsuario){
+                    salvarEmail(form.values.emailUsuario);
+                  }
+                });
               }}
-              onConfirmacaoSecundaria={() => setVisualizarEmail(false)}
-              onClose={() => setVisualizarEmail(false)}
+              onConfirmacaoSecundaria={() => cancelarEdicao()}
+              onClose={() => cancelarEdicao()}
               labelBotaoPrincipal="Confirmar"
               labelBotaoSecundario="Cancelar"
               titulo="Editar E-mail"
               closable={false}
+              esconderBotoes={!ocultarModalCancelamento}
             >
-              <CampoTexto
-                label="E-mail"
-                name="emailUsuario"
-                form={form}
-                maxlength="50"
-              />
+              <div hidden={!ocultarModalCancelamento}>
+                <CampoTexto
+                  label="E-mail"
+                  name="emailUsuario"
+                  form={form}
+                  maxlength="50"
+                />
+                <div>
+                  <AlertaBalao maxWidth={472} marginTop={14} mostrarAlerta={true}
+                          texto="Você já possui um endereço de e-mail cadastrado. Ao alterá-lo, todas as comunicações
+                          passarão a ser feitas no novo e-mail" />
+                </div>
+              </div>
+              <MensagemAlerta
+                oculto={ocultarModalCancelamento}
+                confirmar={() => {}}
+                cancelar={()=>setVisualizarEmail(false)}/>
             </ModalConteudoHtml>
           </Form>
         )}
-      </Formik> */}
-
-      <ModalConteudoHtml
-        key={'editarEmail'}
-        visivel={visualizarEmail}
-        onConfirmacaoPrincipal={() => { }}
-        onConfirmacaoSecundaria={() => setVisualizarEmail(false)}
-        onClose={() => { }}
-        labelBotaoPrincipal="Confirmar"
-        labelBotaoSecundario="Cancelar"
-        desabilitarBotaoPrincipal={false}
-        titulo="Editar E-mail"
-        closable={true}
-        onClose={() => setVisualizarEmail(false)}
-      >
-        <CampoTexto
-          desabilitado={false}
-          label="E-mail"
-          value={email}
-          placeholder="Insira um e-mail"
-          onChange={(e) => onChangeEmail(e)}
-          type="email"
-        />
-        <div>
-        <AlertaBalao maxWidth={472} marginTop={14} mostrarAlerta={true}
-                texto="Você já possui um endereço de e-mail cadastrado. Ao alterá-lo, todas as comunicações
-                passarão a ser feitas no novo e-mail" />
-        </div>
-      </ModalConteudoHtml>
+      </Formik>
 
       <div className="row campo w-100">
         <div className="col-md-10">
           <CampoTexto
             desabilitado={true}
+            value={email}
             label="E-mail"
             placeholder="Insira um e-mail"
             onChange={() => { }}

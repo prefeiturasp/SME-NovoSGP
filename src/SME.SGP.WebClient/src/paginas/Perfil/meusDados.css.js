@@ -31,6 +31,11 @@ align-items: center;
     height: 172px;
 }
 
+.icon-profile{
+  font-size: 172px;
+  color: ${Base.CinzaBotao};
+}
+
 img{
   border-radius: 50%;
 }
