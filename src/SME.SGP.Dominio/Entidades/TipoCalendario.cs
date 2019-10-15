@@ -10,7 +10,7 @@ namespace SME.SGP.Dominio
         public string Nome { get; set; }
         public Periodo Periodo { get; set; }
         public bool Situacao { get; set; }
-        public Modalidade Modalidade { get; set; }
+        public ModalidadeTipoCalendario Modalidade { get; set; }
         public bool Excluido { get; set; }
     }
 }

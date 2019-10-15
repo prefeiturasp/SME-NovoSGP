@@ -25,6 +25,7 @@ import { URL_LOGIN, URL_RECUPERARSENHA, URL_HOME } from '~/constantes/url';
 import ServicoPrimeiroAcesso from '~/servicos/Paginas/ServicoPrimeiroAcesso';
 import { salvarDadosLogin, Deslogar } from '~/redux/modulos/usuario/actions';
 import { store } from '~/redux';
+import Erro from '../RecuperarSenha/erro';
 
 const RedefinirSenha = props => {
   const [senhas, setSenhas] = useState({
@@ -71,7 +72,7 @@ const RedefinirSenha = props => {
   const modificarSenha = useSelector(state => state.usuario.modificarSenha);
 
   const trataAcaoTeclado = e => {
-    if (e.code === 'F5') {
+    if (!token && e.code === 'F5') {
       store.dispatch(Deslogar());
       history.push(URL_LOGIN);
     }
@@ -87,11 +88,11 @@ const RedefinirSenha = props => {
   }, []);
 
   useEffect(() => {
-    inputSenhaRef.current.focus();
+    if (inputSenhaRef.current) inputSenhaRef.current.focus();
   }, [senha]);
 
   useEffect(() => {
-    inputConfSenhaRef.current.focus();
+    if (inputConfSenhaRef.current) inputConfSenhaRef.current.focus();
   }, [confirmarSenha]);
 
   const aoMudarSenha = e => {
@@ -101,22 +102,22 @@ const RedefinirSenha = props => {
   };
 
   const validarToken = async () => {
-    if (!token) history.push(URL_LOGIN);
-
     let tokenValido = true;
+    if (!token) history.push(URL_LOGIN);
     if (token) tokenValido = await RedefinirSenhaServico.validarToken(token);
 
-    if (!tokenValido) history.push(URL_LOGIN);
-    else setTokenValidado(true);
+    if (!tokenValido) {
+      setErroGeral(
+        'Esse link expirou. Clique em continuar para solicitar um link novo.'
+      );
+    } else setTokenValidado(true);
   };
 
   const aoMudarConfSenha = e => {
     setSenhas({ ...senhas, confirmarSenha: e.target.value });
-
     setErroGeral('');
 
     const iguais = e.target.value === inputSenhaRef.current.value;
-
     setValidacoes({ ...validacoes, iguais });
   };
 
@@ -146,7 +147,7 @@ const RedefinirSenha = props => {
   };
 
   const validarSeFormularioTemErro = () =>
-    Object.entries(validacoes).filter(validar => !validar[1]).length > 0;
+    Object.entries(validacoes).filter(validacao => !validacao[1]).length > 0;
 
   const onClickSair = () => {
     if (modificarSenha) store.dispatch(Deslogar());
@@ -196,6 +197,10 @@ const RedefinirSenha = props => {
     if (!validarSeFormularioTemErro()) alterarSenha();
   };
 
+  const aoClicarContinuarExpirado = () => {
+    if (token && !tokenValidado) history.push(URL_RECUPERARSENHA);
+  };
+
   return (
     <>
       <Nav className="navbar navbar-expand-md navbar-light bg-white shadow-sm sticky-top py-0">
@@ -212,118 +217,141 @@ const RedefinirSenha = props => {
               className="mx-auto"
               style={{ marginBottom: '70px', maxWidth: '560px' }}
             >
-              <Titulo style={{ marginTop: '70px', marginBottom: '40px' }}>
-                Nova Senha
-              </Titulo>
-              <Div style={{ marginBottom: '60px' }}>
-                Identificamos que você ainda não definiu uma senha pessoal para
-                acesso ao SGP. Este passo é obrigatório para que você tenha
-                acesso ao sistema.
-              </Div>
-              <Div style={{ maxWidth: '295px' }} className="w-100 mx-auto">
-                <Form>
-                  <Div
-                    style={{ marginBottom: '30px' }}
-                    className="form-group text-left"
-                  >
-                    <Rotulo htmlFor="senha">Nova Senha</Rotulo>
-                    <CampoTexto
-                      name="senha"
-                      id="senha"
-                      maxlength={50}
-                      className="form-control form-control-lg rounded"
-                      placeholder="Insira sua nova senha"
-                      type="password"
-                      value={senha}
-                      ref={inputSenhaRef}
-                      onChange={aoMudarSenha}
-                    />
+              {token && !tokenValidado ? (
+                <>
+                  <Titulo style={{ marginTop: '70px', marginBottom: '40px' }}>
+                    Recuperação de Senha
+                  </Titulo>
+                  <Erro mensagem="Esse link expirou. Clique em continuar para solicitar um link novo." />
+                  <Button
+                    label="Continuar"
+                    color={Colors.Roxo}
+                    className="btn-block w-75 mx-auto mt-5"
+                    onClick={aoClicarContinuarExpirado}
+                    bold
+                  />
+                </>
+              ) : (
+                <>
+                  <Titulo style={{ marginTop: '70px', marginBottom: '40px' }}>
+                    Nova Senha
+                  </Titulo>
+                  <Div style={{ marginBottom: '60px' }}>
+                    Identificamos que você ainda não definiu uma senha pessoal
+                    para acesso ao SGP. Este passo é obrigatório para que você
+                    tenha acesso ao sistema.
                   </Div>
-                  <Div
-                    style={{ marginBottom: '25px' }}
-                    className="form-group text-left"
-                  >
-                    <Rotulo htmlFor="confirmacao">
-                      Confirmação da Nova Senha
-                    </Rotulo>
-                    <CampoTexto
-                      name="confirmacao"
-                      id="confirmacao"
-                      maxlength={50}
-                      className="form-control form-control-lg rounded"
-                      placeholder="Confirme sua nova senha"
-                      type="password"
-                      ref={inputConfSenhaRef}
-                      onChange={aoMudarConfSenha}
-                      icon
-                    />
+                  <Div style={{ maxWidth: '295px' }} className="w-100 mx-auto">
+                    <Form>
+                      <Div
+                        style={{ marginBottom: '30px' }}
+                        className="form-group text-left"
+                      >
+                        <Rotulo htmlFor="senha">Nova Senha</Rotulo>
+                        <CampoTexto
+                          name="senha"
+                          id="senha"
+                          maxlength={50}
+                          className="form-control form-control-lg rounded"
+                          placeholder="Insira sua nova senha"
+                          type="password"
+                          value={senha}
+                          ref={inputSenhaRef}
+                          onChange={aoMudarSenha}
+                        />
+                      </Div>
+                      <Div
+                        style={{ marginBottom: '25px' }}
+                        className="form-group text-left"
+                      >
+                        <Rotulo htmlFor="confirmacao">
+                          Confirmação da Nova Senha
+                        </Rotulo>
+                        <CampoTexto
+                          name="confirmacao"
+                          id="confirmacao"
+                          maxlength={50}
+                          className="form-control form-control-lg rounded"
+                          placeholder="Confirme sua nova senha"
+                          type="password"
+                          ref={inputConfSenhaRef}
+                          onChange={aoMudarConfSenha}
+                          icon
+                        />
+                      </Div>
+                      <Validacoes
+                        className="text-left"
+                        style={{ marginBottom: '30px' }}
+                      >
+                        <Div style={{ lineHeight: '1.8' }}>
+                          Requisitos de segurança da senha:
+                        </Div>
+                        <Itens className="list-unstyled">
+                          <Item status={validacoes.maiuscula}>
+                            Uma letra maiúscula
+                            {montaIcone(validacoes.maiuscula)}
+                          </Item>
+                          <Item status={validacoes.minuscula}>
+                            Uma letra minúscula
+                            {montaIcone(validacoes.minuscula)}
+                          </Item>
+                          <Item status={validacoes.iguais}>
+                            As senhas devem ser iguais
+                            {montaIcone(validacoes.iguais)}
+                          </Item>
+                          <Item status={validacoes.espacoBranco}>
+                            Não pode conter espaços em branco
+                            {montaIcone(validacoes.espacoBranco)}
+                          </Item>
+                          <Item status={validacoes.acentuados}>
+                            Não pode conter caracteres acentuados
+                            {montaIcone(validacoes.acentuados)}
+                          </Item>
+                          <Item
+                            status={validacoes.algarismo || validacoes.simbolo}
+                          >
+                            Um número ou símbolo (caractere especial)
+                            {montaIcone(
+                              validacoes.algarismo || validacoes.simbolo
+                            )}
+                          </Item>
+                          <Item status={validacoes.tamanho}>
+                            Deve ter no mínimo 8 e no máximo 12 caracteres
+                            {montaIcone(validacoes.tamanho)}
+                          </Item>
+                        </Itens>
+                      </Validacoes>
+                      {validarSeFormularioTemErro() && (
+                        <MensagemErro className="rounded p-3 mb-4">
+                          Sua nova senha deve conter letras maiúsculas,
+                          minúsculas, números e símbolos. Por favor, digite
+                          outra senha
+                        </MensagemErro>
+                      )}
+                      {erroGeral && !validarSeFormularioTemErro() && (
+                        <MensagemErro className="rounded p-3 mb-4">
+                          {erroGeral}
+                        </MensagemErro>
+                      )}
+                      <Div className="mx-auto d-flex justify-content-end">
+                        <Button
+                          label="Sair"
+                          color={Colors.Roxo}
+                          border
+                          onClick={onClickSair}
+                          id="btnSair"
+                        />
+                        <Button
+                          label="Continuar"
+                          color={Colors.Roxo}
+                          onClick={aoClicarContinuar}
+                          id="btnContinuar"
+                        />
+                      </Div>
+                    </Form>
                   </Div>
-                  <Validacoes
-                    className="text-left"
-                    style={{ marginBottom: '30px' }}
-                  >
-                    <Div style={{ lineHeight: '1.8' }}>
-                      Requisitos de segurança da senha:
-                    </Div>
-                    <Itens className="list-unstyled">
-                      <Item status={validacoes.maiuscula}>
-                        Uma letra maiúscula
-                        {montaIcone(validacoes.maiuscula)}
-                      </Item>
-                      <Item status={validacoes.minuscula}>
-                        Uma letra minúscula
-                        {montaIcone(validacoes.minuscula)}
-                      </Item>
-                      <Item status={validacoes.iguais}>
-                        As senhas devem ser iguais
-                        {montaIcone(validacoes.iguais)}
-                      </Item>
-                      <Item status={validacoes.espacoBranco}>
-                        Não pode conter espaços em branco
-                        {montaIcone(validacoes.espacoBranco)}
-                      </Item>
-                      <Item status={validacoes.acentuados}>
-                        Não pode conter caracteres acentuados
-                        {montaIcone(validacoes.acentuados)}
-                      </Item>
-                      <Item status={validacoes.algarismo || validacoes.simbolo}>
-                        Um número ou símbolo (caractere especial)
-                        {montaIcone(validacoes.algarismo || validacoes.simbolo)}
-                      </Item>
-                      <Item status={validacoes.tamanho}>
-                        Deve ter no mínimo 8 e no máximo 12 caracteres
-                        {montaIcone(validacoes.tamanho)}
-                      </Item>
-                    </Itens>
-                  </Validacoes>
-                  {validarSeFormularioTemErro() && (
-                    <MensagemErro className="rounded p-3 mb-4">
-                      Sua nova senha deve conter letras maiúsculas, minúsculas,
-                      números e símbolos. Por favor, digite outra senha
-                    </MensagemErro>
-                  )}
-                  {erroGeral && !validarSeFormularioTemErro() && (
-                    <MensagemErro className="rounded p-3 mb-4">
-                      {erroGeral}
-                    </MensagemErro>
-                  )}
-                  <Div className="mx-auto d-flex justify-content-end">
-                    <Button
-                      label="Sair"
-                      color={Colors.Roxo}
-                      border
-                      onClick={onClickSair}
-                      id="btnSair"
-                    />
-                    <Button
-                      label="Continuar"
-                      color={Colors.Roxo}
-                      onClick={aoClicarContinuar}
-                      id="btnContinuar"
-                    />
-                  </Div>
-                </Form>
-              </Div>
+                </>
+              )}
             </Texto>
           </Div>
         </Div>

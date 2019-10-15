@@ -34,14 +34,14 @@ namespace SME.SGP.Integracao.Teste
             tipoCalendarioDto.AnoLetivo = 2019;
             tipoCalendarioDto.Nome = "Teste 1";
             tipoCalendarioDto.Periodo = Periodo.Anual;
-            tipoCalendarioDto.Modalidade = Modalidade.Medio;
+            tipoCalendarioDto.Modalidade = ModalidadeTipoCalendario.FundamentalMedio;
             tipoCalendarioDto.Situacao = true;
 
             var tipoCalendarioDto2 = new TipoCalendarioDto();
             tipoCalendarioDto2.AnoLetivo = 2019;
             tipoCalendarioDto2.Nome = "Teste 2";
             tipoCalendarioDto2.Periodo = Periodo.Semestral;
-            tipoCalendarioDto2.Modalidade = Modalidade.EJA;
+            tipoCalendarioDto2.Modalidade = ModalidadeTipoCalendario.FundamentalMedio;
             tipoCalendarioDto2.Situacao = true;
 
             var jsonParaPost = new StringContent(TransformarEmJson(tipoCalendarioDto), UnicodeEncoding.UTF8, "application/json");
@@ -82,14 +82,14 @@ namespace SME.SGP.Integracao.Teste
             tipoCalendarioDto.AnoLetivo = 2019;
             tipoCalendarioDto.Nome = "Teste 1";
             tipoCalendarioDto.Periodo = Periodo.Anual;
-            tipoCalendarioDto.Modalidade = Modalidade.Medio;
+            tipoCalendarioDto.Modalidade = ModalidadeTipoCalendario.FundamentalMedio;
             tipoCalendarioDto.Situacao = true;
 
             var tipoCalendarioDto2 = new TipoCalendarioDto();
             tipoCalendarioDto2.AnoLetivo = 2019;
             tipoCalendarioDto2.Nome = "Teste 2";
             tipoCalendarioDto2.Periodo = Periodo.Semestral;
-            tipoCalendarioDto2.Modalidade = Modalidade.EJA;
+            tipoCalendarioDto2.Modalidade = ModalidadeTipoCalendario.FundamentalMedio;
             tipoCalendarioDto2.Situacao = true;
 
             var jsonParaPost = new StringContent(TransformarEmJson(tipoCalendarioDto), UnicodeEncoding.UTF8, "application/json");
