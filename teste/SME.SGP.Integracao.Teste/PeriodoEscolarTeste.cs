@@ -46,6 +46,19 @@ namespace SME.SGP.Integracao.Teste
             }
         }
 
+        [Fact, Order(2)]
+        public void Deve_Consultar_Periodo_Escolar()
+        {
+            _fixture._clientApi.DefaultRequestHeaders.Clear();
+
+            _fixture._clientApi.DefaultRequestHeaders.Authorization =
+                new AuthenticationHeaderValue("Bearer", _fixture.GerarToken(new Permissao[] { Permissao.PA_I, Permissao.PA_C }));
+                       
+            var getResult = _fixture._clientApi.GetAsync("api/v1/periodo-escolar?codigoTipoCalendario=1").Result;
+
+            Assert.True(getResult.IsSuccessStatusCode);
+        }
+
         private PeriodoEscolarListaDto ObtenhaDto()
         {
             return new PeriodoEscolarListaDto
