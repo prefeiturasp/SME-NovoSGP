@@ -17,7 +17,7 @@ const Erro = ({ mensagem }) => {
     width: 100px;
   `;
 
-  const Icon = styled.i`
+  const Icone = styled.i`
     font-size: 36px;
     left: 50%;
     top: 50%;
@@ -27,7 +27,7 @@ const Erro = ({ mensagem }) => {
   return (
     <Span className="d-block mx-auto">
       <Alerta className="d-block rounded-circle mx-auto position-relative">
-        <Icon className="fa fa-times position-absolute" />
+        <Icone className="fa fa-times position-absolute" />
       </Alerta>
       <div className="mb-3">{mensagem}</div>
     </Span>

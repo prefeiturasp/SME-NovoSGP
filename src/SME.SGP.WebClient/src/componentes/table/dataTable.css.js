@@ -143,6 +143,11 @@ export const Container = styled.div`
     a.cor-novo-registro-lista {
       color: ${Base.Branco} !important;
     }
+
+    div button {
+      color: ${Base.Roxo} !important;
+      background: ${Base.Branco} !important;
+    }
   }
 
   .ant-table-tbody tr:hover {
@@ -169,6 +174,11 @@ export const Container = styled.div`
     a.cor-novo-registro-lista {
       color: ${Base.Branco} !important;
     }
+
+    div button {
+      color: ${Base.Roxo} !important;
+      background: ${Base.Branco} !important;
+    }
   }
 
   .ant-table-tbody > tr {
@@ -183,6 +193,15 @@ export const Container = styled.div`
         -webkit-transition: none;
         transition: none;
       }
+
+      div button {
+        -webkit-transition: none;
+        transition: none;
+      }
     }
+  }
+
+  .botao-reiniciar-tabela-acao {
+    margin: -10px -7px -10px -14px;
   }
 `;
