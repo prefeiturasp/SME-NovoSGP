@@ -30,9 +30,9 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(UsuarioAutenticacaoRetornoDto), 200)]
         [Route("perfis/{guid}")]
         [Authorize("Bearer")]
-        public async Task<IActionResult> AtualizarPerfil(string guid)
+        public async Task<IActionResult> AtualizarPerfil(Guid guid)
         {
-            if (string.IsNullOrEmpty(guid))
+            if (guid == null)
                 throw new NegocioException("Informe um perfil");
 
             var retornoAutenticacao = await comandosUsuario.ModificarPerfil(guid);
