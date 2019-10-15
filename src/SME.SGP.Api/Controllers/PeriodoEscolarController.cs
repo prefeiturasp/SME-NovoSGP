@@ -24,5 +24,20 @@ namespace SME.SGP.Api.Controllers
             comandoPeriodo.Salvar(periodos);
             return Ok();
         }
+
+        [HttpGet]
+        [ProducesResponseType(204)]
+        [ProducesResponseType(typeof(PeriodoEscolarDto), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [Permissao(Policy = "Bearer")]
+        public IActionResult Get(long codigoTipoCalendario, [FromServices]IConsultasPeriodoEscolar consultas)
+        {
+            var periodoEscolar = consultas.ObterPorTipoCalendario(codigoTipoCalendario);
+
+            if (periodoEscolar == null)
+                return NoContent();
+
+            return Ok(periodoEscolar);
+        }
     }
 }
