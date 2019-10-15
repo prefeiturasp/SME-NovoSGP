@@ -22,6 +22,7 @@ export default function NotificacoesLista() {
     []
   );
   const [listaNotificacoes, setListaNotificacoes] = useState([]);
+  const [notificacoes, setNotificacoes] = useState([]);
   const [listaCategorias, setListaCategorias] = useState([]);
   const [listaStatus, setListaStatus] = useState([]);
   const [listaTipos, setTipos] = useState([]);
@@ -212,7 +213,7 @@ export default function NotificacoesLista() {
     history.push(`/notificacoes/${id}`);
   }
 
-  const filtrarNotificacoes = async () => {
+  const filtrarNotificacoes = async paginas => {
     const paramsQuery = {
       categoria: categoriaSelecionada,
       codigo: codigoSelecionado || null,
@@ -238,26 +239,27 @@ export default function NotificacoesLista() {
     }
 
     const listaNotifi = await api.get(
-      `v1/notificacoes/?numeroPagina=${paginacao.numeroPagina}&numeroRegistros=${paginacao.numeroRegistros}`,
+      `v1/notificacoes/?numeroPagina=${paginas.numeroPagina}&numeroRegistros=${paginas.numeroRegistros}`,
       {
         params: paramsQuery,
       }
     );
     setListaNotificacoes(listaNotifi.data.items);
-    setPaginacao({
-      ...paginacao,
-      totalRegistros: listaNotifi.data.totalRegistros,
-    });
+    setNotificacoes(listaNotifi.data);
+    // setPaginacao({
+    //   ...paginacao,
+    //   totalRegistros: listaNotifi.data.totalRegistros,
+    // });
     setIdNotificacoesSelecionadas([]);
     onSelectRow([]);
   };
 
   useEffect(() => {
-    filtrarNotificacoes();
-  }, [paginacao]);
+    filtrarNotificacoes(paginacao);
+  }, []);
 
   async function onClickFiltrar() {
-    filtrarNotificacoes();
+    filtrarNotificacoes(paginacao);
   }
 
   function marcarComoLida() {
@@ -288,8 +290,12 @@ export default function NotificacoesLista() {
   }
 
   const onPaginacao = e => {
-    debugger;
-    setPaginacao(e);
+    const novaPaginacao = {
+      totalRegistros: 0,
+      ...e,
+    };
+    setPaginacao(novaPaginacao);
+    filtrarNotificacoes(novaPaginacao);
   };
   return (
     <>
@@ -393,7 +399,7 @@ export default function NotificacoesLista() {
             onSelectRow={onSelectRow}
             onClickRow={onClickRow}
             columns={colunasTabela}
-            dataSource={listaNotificacoes}
+            dataSource={notificacoes}
             selectMultipleRows
             paginacao={paginacao}
             onPaginacao={onPaginacao}

@@ -43,46 +43,24 @@ const DataTable = props => {
     }
   };
 
-  const [paginaAtual, setPagina] = useState({
+  const [paginaAtual, setPaginaAtual] = useState({
     defaultPageSize: 5,
     pageSize: 5,
-    total: paginacao.totalRegistros,
+    total: dataSource.totalRegistros,
     showSizeChanger: true,
     pageSizeOptions: ['10', '20', '50', '100'],
     locale: { items_per_page: '' },
     current: 1,
   });
+
   const executaPaginacao = pagina => {
-    // setPagina({ ...paginaAtual, ...pagina });
+    setPaginaAtual({ ...paginaAtual, ...pagina });
     onPaginacao({
       numeroPagina: pagina.current,
       numeroRegistros: pagina.pageSize,
     });
   };
 
-  const data = [];
-  for (let i = 0; i < 30; i++) {
-    data.push({
-      key: i,
-      name: `Edward King ${i}`,
-      age: 32,
-      address: `London, Park Lane no. ${i}`,
-    });
-  }
-  const colunas = [
-    {
-      title: 'Name',
-      dataIndex: 'name',
-    },
-    {
-      title: 'Age',
-      dataIndex: 'age',
-    },
-    {
-      title: 'Address',
-      dataIndex: 'address',
-    },
-  ];
   return (
     <Container className="table-responsive">
       <Table
@@ -90,7 +68,7 @@ const DataTable = props => {
         rowKey="id"
         rowSelection={rowSelection}
         columns={columns}
-        dataSource={dataSource}
+        dataSource={dataSource.items}
         onRow={row => ({
           onClick: colunaClicada => {
             if (
@@ -104,7 +82,15 @@ const DataTable = props => {
             }
           },
         })}
-        pagination={paginacao ? paginaAtual : ''}
+        pagination={{
+          defaultPageSize: 5,
+          pageSize: 5,
+          total: dataSource.totalRegistros,
+          showSizeChanger: true,
+          pageSizeOptions: ['10', '20', '50', '100'],
+          locale: { items_per_page: '' },
+          current: paginaAtual.current,
+        }}
         pageSize={{ pageSize }}
         bordered
         size="middle"
@@ -141,7 +127,7 @@ DataTable.propTypes = {
   columns: PropTypes.array,
   selectMultipleRows: PropTypes.bool,
   pageSize: PropTypes.number,
-  paginacao: PropTypes.bool,
+  paginacao: PropTypes.object,
   onClickRow: PropTypes.func,
   onPaginacao: PropTypes.func,
   locale: PropTypes.object,
@@ -152,7 +138,15 @@ DataTable.defaultProps = {
   columns: [],
   selectMultipleRows: false,
   pageSize: 10,
-  paginacao: true,
+  paginacao: {
+    defaultPageSize: 5,
+    pageSize: 5,
+    total: 0,
+    showSizeChanger: true,
+    pageSizeOptions: ['10', '20', '50', '100'],
+    locale: { items_per_page: '' },
+    current: 1,
+  },
   onRowClick: () => {},
   locale: { emptyText: 'Sem dados' },
   onPaginacao: () => {},
