@@ -80,7 +80,7 @@ namespace SME.SGP.Dominio.Servicos.Teste
             servicoEol.Setup(a => a.ObterPerfisPorLogin(login))
                 .Returns(Task.FromResult(usuarioRetornoEol));
 
-            await servicoUsuario.PodeModificarPerfil("f7b7f917-16c7-4891-9251-8efc9e7f8cea", login);
+            await servicoUsuario.PodeModificarPerfil(Guid.Parse("f7b7f917-16c7-4891-9251-8efc9e7f8cea"), login);
             Assert.True(true);
         }
 
@@ -95,7 +95,7 @@ namespace SME.SGP.Dominio.Servicos.Teste
             servicoEol.Setup(a => a.ObterPerfisPorLogin(login))
                 .Returns(Task.FromResult(usuarioRetornoEol));
 
-            await Assert.ThrowsAsync<NegocioException>(() => servicoUsuario.PodeModificarPerfil("fac1d917-16c7-4891-9251-8efc9e7f8cea", login));
+            await Assert.ThrowsAsync<NegocioException>(() => servicoUsuario.PodeModificarPerfil(Guid.Parse("fac1d917-16c7-4891-9251-8efc9e7f8cea"), login));
         }
     }
 }
