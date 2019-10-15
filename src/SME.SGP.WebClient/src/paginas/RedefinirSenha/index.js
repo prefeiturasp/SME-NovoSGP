@@ -107,9 +107,8 @@ const RedefinirSenha = props => {
     if (token) tokenValido = await RedefinirSenhaServico.validarToken(token);
 
     if (!tokenValido) {
-      console.log('expirou');
       setErroGeral(
-        'Esse link expirou / Cliquei em continuar para solicitar um novo link'
+        'Esse link expirou. Clique em continuar para solicitar um link novo.'
       );
     } else setTokenValidado(true);
   };
