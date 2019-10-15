@@ -51,9 +51,8 @@ const TipoCalendarioEscolarForm = ({ match }) => {
   ];
 
   const opcoesModalidade = [
-    { label: 'Fundamental', value: modalidade.FUNDAMENTAL },
-    { label: 'Médio', value: modalidade.ENSINO_MEDIO },
-    { label: 'EJA', value: modalidade.EJA },
+    { label: 'Fundamental/Médio', value: 1 },
+    { label: 'EJA', value: 2 },
   ];
 
   const opcoesSituacao = [
