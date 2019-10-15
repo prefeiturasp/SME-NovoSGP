@@ -18,7 +18,7 @@ namespace SME.SGP.Api.Controllers
         [HttpPost]
         [ProducesResponseType(typeof(bool), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        [Permissao(Permissao.PA_I, Permissao.PA_A, Policy = "Bearer")]
+        [Permissao(Policy = "Bearer")]
         public IActionResult Post([FromBody]PeriodoEscolarListaDto periodos, [FromServices]IComandosPeriodoEscolar comandoPeriodo)
         {
             comandoPeriodo.Salvar(periodos);
