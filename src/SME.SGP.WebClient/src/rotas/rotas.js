@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Switch } from 'react-router-dom';
 import { setRotas } from '../redux/modulos/navegacao/actions';
@@ -20,6 +21,11 @@ import RotaMista from './rotaMista';
 import MeusDados from '~/paginas/Perfil/meusDados';
 import PeriodosEscolares from '~/paginas/CalendarioEscolar/PeriodosEscolares/PeriodosEscolares';
 import ReiniciarSenha from '~/paginas/Configuracoes/Usuarios/reiniciarSenha';
+import TipoCalendarioEscolarLista from '~/paginas/CalendarioEscolar/TipoCalendarioEscolar/tipoCalendarioEscolarLista';
+import TipoCalendarioEscolarForm from '~/paginas/CalendarioEscolar/TipoCalendarioEscolar/tipoCalendarioEscolarForm';
+import TipoFeriadoLista from '~/paginas/CalendarioEscolar/TipoFeriado/tipoFeriadoLista';
+import TipoFeriadoForm from '~/paginas/CalendarioEscolar/TipoFeriado/tipoFeriadoForm';
+
 
 export default function Rotas() {
   const rotas = new Map();
@@ -144,6 +150,31 @@ export default function Rotas() {
     tipo: RotasTipo.EstruturadaAutenticada,
   });
 
+  rotas.set('/calendario-escolar/tipo-calendario-escolar', {
+    breadcrumbName: 'Tipo de Calendário Escolar',
+    menu: ['Calendário Escolar'],
+    parent: '/',
+    component: TipoCalendarioEscolarLista,
+    exact: true,
+    tipo: RotasTipo.EstruturadaAutenticada,
+  });
+
+  rotas.set('/calendario-escolar/tipo-calendario-escolar/novo', {
+    breadcrumbName: 'Cadastro do Tipo de Calendário Escolar',
+    parent: '/calendario-escolar/tipo-calendario-escolar',
+    component: TipoCalendarioEscolarForm,
+    exact: true,
+    tipo: RotasTipo.EstruturadaAutenticada,
+  });
+
+  rotas.set('/calendario-escolar/tipo-calendario-escolar/editar/:id', {
+    breadcrumbName: 'Cadastro do Tipo de Calendário Escolar',
+    parent: '/calendario-escolar/tipo-calendario-escolar',
+    component: TipoCalendarioEscolarForm,
+    exact: true,
+    tipo: RotasTipo.EstruturadaAutenticada,
+  });
+
   rotas.set('/', {
     icone: 'fas fa-home',
     parent: null,
@@ -152,6 +183,31 @@ export default function Rotas() {
     limpaSelecaoMenu: true,
     paginaInicial: true,
     dicaIcone: 'Página Inicial',
+    tipo: RotasTipo.EstruturadaAutenticada,
+  });
+
+  rotas.set('/calendario-escolar/tipo-feriado', {
+    breadcrumbName: 'Lista de Tipo de Feriado',
+    menu: ['Tipo Feriado'],
+    parent: '/',
+    component: TipoFeriadoLista,
+    exact: true,
+    tipo: RotasTipo.EstruturadaAutenticada,
+  });
+
+  rotas.set('/calendario-escolar/tipo-feriado/novo', {
+    breadcrumbName: 'Cadastro de Tipo de Feriado',
+    parent: '/calendario-escolar/tipo-feriado',
+    component: TipoFeriadoForm,
+    exact: true,
+    tipo: RotasTipo.EstruturadaAutenticada,
+  });
+
+  rotas.set('/calendario-escolar/tipo-feriado/editar/:id', {
+    breadcrumbName: 'Alterar Tipo de Feriado',
+    parent: '/calendario-escolar/tipo-feriado',
+    component: TipoFeriadoForm,
+    exact: true,
     tipo: RotasTipo.EstruturadaAutenticada,
   });
 

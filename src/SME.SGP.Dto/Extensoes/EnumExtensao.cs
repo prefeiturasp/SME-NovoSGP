@@ -2,7 +2,7 @@
 using System.Linq;
 using System.Reflection;
 
-namespace SME.SGP.Aplicacao
+namespace SME.SGP.Infra
 {
     public static class EnumExtensao
     {
