@@ -47,7 +47,7 @@ namespace SME.SGP.Aplicacao.Teste.Comandos
                 AnoLetivo = 2019
             });
 
-            repositorioPeriodo.Setup(x => x.Salvar())
+            
 
             comandosPeriodoEscolar.Salvar(new PeriodoEscolarListaDto
             {
