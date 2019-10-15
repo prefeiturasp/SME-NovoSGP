@@ -67,7 +67,7 @@ namespace SME.SGP.Aplicacao.Integracoes
             return null;
         }
 
-        public async Task<IEnumerable<DisciplinaResposta>> ObterDisciplinasPorProfessorETurma(long codigoTurma, string rfProfessor)
+        public async Task<IEnumerable<DisciplinaResposta>> ObterDisciplinasParaPlanejamento(long codigoTurma, string rfProfessor)
         {
             var url = $"professores/{rfProfessor}/turmas/{codigoTurma}/disciplinas/planejamento";
             return await ObterDisciplinas(url);
