@@ -12,5 +12,6 @@ CREATE TABLE public.evento_tipo (
 	alterado_por varchar(200) NOT NULL,
 	criado_por varchar(200) NOT NULL,
 	criado_rf varchar(200) NOT NULL,
-	alterado_rf varchar(200) NOT NULL
+	alterado_rf varchar(200) NOT NULL,
+	migrado bool NOT NULL DEFAULT false
 );
