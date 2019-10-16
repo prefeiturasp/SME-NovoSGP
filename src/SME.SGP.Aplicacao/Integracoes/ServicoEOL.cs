@@ -55,6 +55,18 @@ namespace SME.SGP.Aplicacao.Integracoes
             else return null;
         }
 
+        public async Task<AbrangenciaRetornoEolDto> ObterAbrangencia(string login, Guid perfil)
+        {
+            var resposta = await httpClient.GetAsync($"funcionarios/{login}/perfis/{perfil.ToString()}/turmas");
+
+            if (resposta.IsSuccessStatusCode)
+            {
+                var json = await resposta.Content.ReadAsStringAsync();
+                return JsonConvert.DeserializeObject<AbrangenciaRetornoEolDto>(json);
+            }
+            return null;
+        }
+
         public async Task<IEnumerable<DisciplinaResposta>> ObterDisciplinasParaPlanejamento(long codigoTurma, string rfProfessor)
         {
             var url = $"professores/{rfProfessor}/turmas/{codigoTurma}/disciplinas/planejamento";

@@ -10,6 +10,9 @@ namespace SME.SGP.Dto
         [Required(ErrorMessage = "O bimestre deve ser informado")]
         public int Bimestre { get; set; }
 
+        [Range(1, long.MaxValue, ErrorMessage = "A disciplina deve ser informada")]
+        public long ComponenteCurricularEolId { get; set; }
+
         [Required(ErrorMessage = "A escola deve ser informada")]
         public string EscolaId { get; set; }
 

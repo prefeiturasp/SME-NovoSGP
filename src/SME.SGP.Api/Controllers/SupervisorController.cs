@@ -4,6 +4,8 @@ using SME.SGP.Api.Filtros;
 using SME.SGP.Aplicacao;
 using SME.SGP.Dto;
 using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace SME.SGP.Api.Controllers
 {
@@ -48,9 +50,12 @@ namespace SME.SGP.Api.Controllers
         [HttpGet("dre/{dreId}/vinculo-escolas")]
         [ProducesResponseType(typeof(IEnumerable<SupervisorEscolasDto>), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        public IActionResult ObterSupervisoresEEscolasPorDre(string dreId)
+        public async Task<IActionResult> ObterSupervisoresEEscolasPorDre(string dreId)
         {
-            return Ok(consultasSupervisor.ObterPorDre(dreId));
+            var retorno = await consultasSupervisor.ObterPorDre(dreId);
+            if (retorno.Count() > 0)
+                return Ok(retorno);
+            else return StatusCode(204);
         }
 
         [HttpGet("{supervisoresId}/dre/{dreId}")]

@@ -62,6 +62,7 @@ const SelectComponent = React.forwardRef((props, ref) => {
     name,
     id,
     className,
+    classNameContainer,
     onChange,
     label,
     valueText,
@@ -146,7 +147,7 @@ const SelectComponent = React.forwardRef((props, ref) => {
     </Select>
   );
   return (
-    <Container>
+    <Container className={classNameContainer && classNameContainer}>
       {label ? <Label text={label} control={name} /> : ''}
       {form ? campoComValidacoes() : campoSemValidacoes()}
       {form ? <Erro>{form.errors[name]}</Erro> : ''}
