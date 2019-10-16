@@ -48,6 +48,7 @@ export default function usuario(state = inicial, action) {
         draft.modificarSenha = '';
         draft.turmasUsuario = [];
         draft.turmaSelecionada = [];
+        draft.dadosUsuario = [];
         break;
       case '@usuario/selecionarTurma':
         draft.turmaSelecionada = action.payload;

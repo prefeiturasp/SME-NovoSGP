@@ -29,17 +29,18 @@ import Auditoria from '~/componentes/auditoria';
 //Utilizado para importar a função scrollIntoViewIfNeeded para navegadores que não possuem essa funcionalidade.
 import '../../../componentes/scrollIntoViewIfNeeded';
 import modalidade from '~/dtos/modalidade';
+import { erro } from '~/servicos/alertas';
 
 const BimestreComponent = props => {
   const dispatch = useDispatch();
 
-  const { indice, disabled, modalidadeEja } = props;
+  const { indice, disabled, modalidadeEja, disciplinaSelecionada } = props;
 
   const bimestre = useSelector(store => store.bimestres.bimestres[indice]);
 
-  const LayoutEspecial = bimestre.LayoutEspecial;
+  const { LayoutEspecial } = bimestre;
 
-  const materias = bimestre.materias;
+  const { materias } = bimestre;
 
   const objetivos = bimestre.objetivosAprendizagem;
 
@@ -60,7 +61,7 @@ const BimestreComponent = props => {
     if (!bimestre.setarObjetivo) {
       setarDescricaoFunction(descricaoFunction);
     }
-  });
+  }, []);
 
   useEffect(() => {
     obterObjetivos();
@@ -110,7 +111,7 @@ const BimestreComponent = props => {
   };
 
   const setEhExpandido = ehExpandido => {
-    dispatch(SalvarEhExpandido(indice, ehExpandido));
+    if (bimestre) dispatch(SalvarEhExpandido(indice, ehExpandido));
   };
 
   const selecionaMateria = async e => {
@@ -155,6 +156,8 @@ const BimestreComponent = props => {
   };
 
   const onBlurTextEditor = value => {
+    if (!bimestre) return;
+
     setEhExpandido(true);
 
     setEstadoAdicionalEditorTexto({
@@ -166,7 +169,17 @@ const BimestreComponent = props => {
   };
 
   const onClickBimestre = () => {
-    if (!bimestreJaObtidoServidor) dispatch(ObterBimestreServidor(bimestre));
+    if (!disciplinaSelecionada) {
+      erro(
+        'Não é possivel salvar um plano anual sem selecionar uma disciplina'
+      );
+      return;
+    }
+
+    if (!bimestreJaObtidoServidor)
+      dispatch(
+        ObterBimestreServidor(bimestre, disciplinaSelecionada, LayoutEspecial)
+      );
   };
 
   return (

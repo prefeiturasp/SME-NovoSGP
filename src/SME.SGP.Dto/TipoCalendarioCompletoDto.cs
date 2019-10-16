@@ -12,7 +12,7 @@ namespace SME.SGP.Dto
         public string Nome { get; set; }
         public int AnoLetivo { get; set; }
         public Periodo Periodo { get; set; }
-        public Modalidade Modalidade { get; set; }
+        public ModalidadeTipoCalendario Modalidade { get; set; }
         public bool Situacao { get; set; }
         public DateTime? AlteradoEm { get; set; }
         public string AlteradoPor { get; set; }
