@@ -7,7 +7,7 @@ const inicial = {
   dataLogin: null,
   logado: false,
   turmasUsuario: [],
-  turmaSelecionada: [],
+  turmaSelecionada: {},
   filtroAtual: {},
   dadosUsuario: [],
   modificarSenha: '',
