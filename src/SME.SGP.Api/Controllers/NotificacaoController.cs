@@ -25,7 +25,7 @@ namespace SME.SGP.Api.Controllers
         [HttpDelete]
         [ProducesResponseType(200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        //[Permissao(Permissao.N_E, Policy = "Bearer")]
+        [Permissao(Permissao.N_E, Policy = "Bearer")]
         public IActionResult Delete(long[] notificacoesId)
         {
             return Ok(comandosNotificacao.Excluir(notificacoesId));
@@ -74,6 +74,7 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(object), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [Route("quantidade/naolidas")]
+        [Permissao(Permissao.N_C, Policy = "Bearer")]
         public IActionResult ObtemQuantidadeNaoLida(int anoLetivo, string usuarioRf)
         {
             return Ok(new
@@ -106,6 +107,7 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(NotificacaoBasicaListaDto), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [Route("resumo")]
+        [Permissao(Permissao.N_C, Policy = "Bearer")]
         public IActionResult ObtenhaPorRFAnoLetivo(int anoLetivo, string usuarioRf)
         {
             return Ok(consultasNotificacao.ObterNotificacaoBasicaLista(anoLetivo, usuarioRf));
