@@ -28,8 +28,7 @@ namespace SME.SGP.Aplicacao.Servicos
 
         private async Task BuscaAbrangenciaEPersiste(string login, Guid perfil)
         {
-            var abrangenciaRetornoEolDto = await servicoEOL.ObterAbrangencia("6941583", Guid.Parse("5AE1E074-37D6-E911-ABD6-F81654FE895D"));
-            //var abrangenciaRetornoEolDto = await servicoEOL.ObterAbrangencia(login, perfil);
+            var abrangenciaRetornoEolDto = await servicoEOL.ObterAbrangencia(login, perfil);
             if (abrangenciaRetornoEolDto == null)
                 throw new NegocioException("Não foi possível localizar registros de abrangencia para este usuário.");
 

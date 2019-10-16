@@ -40,7 +40,7 @@ const AtribuicaoSupervisorCadastro = ({ match }) => {
   useEffect(() => {
     async function obterListaDres() {
       await api
-        .get('v1/dres')
+        .get('v1/abrangencia/dres')
         .then(resposta => {
           setListaDres(resposta.data);
           if (match.params.dreId) {
@@ -257,7 +257,7 @@ const AtribuicaoSupervisorCadastro = ({ match }) => {
             name="dre"
             id="dre"
             lista={listaDres}
-            valueOption="id"
+            valueOption="codigo"
             valueText="nome"
             onChange={selecionaDre}
             valueSelect={dreSelecionada}
