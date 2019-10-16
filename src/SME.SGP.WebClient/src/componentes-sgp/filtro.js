@@ -1,61 +1,45 @@
-import React, { useState, useEffect, useLayoutEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useSelector } from 'react-redux';
 import styled from 'styled-components';
 import shortid from 'shortid';
 import { store } from '../redux';
-import {
-  turmasUsuario,
-  selecionarTurma,
-  removerTurma,
-  filtroAtual,
-  salvarDadosUsuario,
-} from '../redux/modulos/usuario/actions';
+import { selecionarTurma } from '../redux/modulos/usuario/actions';
 import Grid from '../componentes/grid';
 import Button from '../componentes/button';
 import { Base, Colors } from '../componentes/colors';
 import SelectComponent from '../componentes/select';
-import { sucesso, erro } from '../servicos/alertas';
 import api from '../servicos/api';
-import modalidade from '~/dtos/modalidade';
+// import modalidade from '~/dtos/modalidade';
+// import ServicoFiltro from '~/servicos/Componentes/ServicoFiltro';
 
 const Filtro = () => {
   const dadosUsuario = useSelector(state => state.usuario.dadosUsuario);
-  const [dados, setDados] = useState(dadosUsuario);
+  const [dados] = useState(dadosUsuario);
 
-  const [anosLetivosFiltro, setAnosLetivosFiltro] = useState([]);
-  const [
-    anoLetivoFiltroSelecionado,
-    setAnoLetivoFiltroSelecionado,
-  ] = useState();
+  const [] = useState([]);
 
-  const [modalidadesFiltro, setModalidadesFiltro] = useState([]);
-  const [
-    modalidadeFiltroSelecionada,
-    setModalidadeFiltroSelecionada,
-  ] = useState();
+  const [] = useState([]);
+  const [, setModalidadeFiltroSelecionada] = useState();
 
-  const [periodosFiltro, setPeriodosFiltro] = useState([]);
-  const [periodoFiltroSelecionado, setPeriodoFiltroSelecionado] = useState();
+  const [] = useState([]);
+  const [] = useState();
 
-  const [dresFiltro, setDresFiltro] = useState([]);
-  const [dreFiltroSelecionada, setDreFiltroSelecionada] = useState();
+  const [] = useState([]);
+  const [, setDreFiltroSelecionada] = useState();
 
-  const [unidadesEscolaresFiltro, setUnidadesEscolaresFiltro] = useState([]);
-  const [
-    unidadeEscolarFiltroSelecionada,
-    setUnidadeEscolarFiltroSelecionada,
-  ] = useState();
+  const [] = useState([]);
+  const [, setUnidadeEscolarFiltroSelecionada] = useState();
 
-  const [turmaFiltroSelecionada, setTurmaFiltroSelecionada] = useState();
+  const [, setTurmaFiltroSelecionada] = useState();
 
   const [resultadosFiltro, setResultadosFiltro] = useState([]);
 
-  const [toggleInputFocus, setToggleInputFocus] = useState(false);
+  const [, setToggleInputFocus] = useState(false);
   const [toggleBusca, setToggleBusca] = useState(false);
 
-  const [turmaUeSelecionada, setTurmaUeSelecionada] = useState();
+  const [turmaUeSelecionada] = useState();
 
-  const [desabilitarTurma, setDesabilitarTurma] = useState(true);
+  const [] = useState(true);
 
   const Container = styled.div`
     width: 568px !important;
@@ -85,12 +69,12 @@ const Filtro = () => {
     }
   `;
 
-  const Icon = styled.i`
+  const Icone = styled.i`
     color: ${Base.CinzaMako} !important;
     cursor: pointer !important;
   `;
 
-  const Search = styled(Icon)`
+  const Search = styled(Icone)`
     left: 0 !important;
     max-height: 23px !important;
     max-width: 14px !important;
@@ -99,12 +83,12 @@ const Filtro = () => {
     top: 0 !important;
   `;
 
-  const Times = styled(Icon)`
+  const Times = styled(Icone)`
     right: 50px !important;
     top: 15px !important;
   `;
 
-  const Caret = styled(Icon)`
+  const Caret = styled(Icone)`
     background: ${Base.CinzaDesabilitado} !important;
     max-height: 36px !important;
     max-width: 36px !important;
@@ -124,306 +108,349 @@ const Filtro = () => {
     }
   `;
 
-  const inputBuscaRef = useRef();
-  const [textoAutocomplete, setTextoAutocomplete] = useState();
+  // Novo Filtro
 
   const divBuscaRef = useRef();
+  const campoBuscaRef = useRef();
 
-  const rf = useSelector(state => state.usuario.rf);
-  const turmasUsuarioLista = useSelector(state => state.usuario.turmasUsuario);
-  const turmaSelecionada = useSelector(state => state.usuario.turmaSelecionada);
+  const [campoAnoLetivoDesabilitado, setCampoAnoLetivoDesabilitado] = useState(
+    true
+  );
+  const [
+    campoModalidadeDesabilitado,
+    setCampoModalidadeDesabilitado,
+  ] = useState(true);
+  const [campoPeriodoDesabilitado, setCampoPeriodoDesabilitado] = useState(
+    true
+  );
+  const [campoDreDesabilitado, setCampoDreDesabilitado] = useState(true);
+  const [
+    campoUnidadeEscolarDesabilitado,
+    setCampoUnidadeEscolarDesabilitado,
+  ] = useState(true);
+  const [campoTurmaDesabilitado, setCampoTurmaDesabilitado] = useState(true);
 
-  const buscaDadosPorRf = () => {
-    api.get(`v1/professores/${rf}/turmas`).then(res => {
-      if (res.data.length > 0) {
-        setDados(res.data);
-        store.dispatch(salvarDadosUsuario(res.data));
-      } else erro('Usuário sem turmas atribuídas!');
-    });
-  };
-
-  useEffect(() => {
-    if (rf && dados.length === 0) buscaDadosPorRf();
-  }, [rf]);
-
-  useEffect(() => {
-    if (turmaSelecionada.length > 0) {
-      const {
-        modalidade,
-        nomeTurma,
-        tipoEscola,
-        ue,
-        codTurma,
-      } = turmaSelecionada[0];
-      const selecionada = `${modalidade.trim()} - ${nomeTurma.trim()} - ${tipoEscola.trim()} - ${ue.trim()}`;
-      setTurmaUeSelecionada(selecionada);
-      if (!turmaFiltroSelecionada) {
-        setTimeout(() => {
-          setTurmaFiltroSelecionada(codTurma.toString());
-        }, 1000);
-      }
-    }
-  }, [turmaSelecionada]);
-
-  const ordenaTurmas = (x, y) => {
-    const a = x.turma.toLowerCase();
-    const b = y.turma.toLowerCase();
-
-    if (a > b) return 1;
-    if (a < b) return -1;
-
-    return 0;
-  };
+  const [novoAnosLetivos, setNovoAnosLetivos] = useState([]);
+  const [anoLetivoSelecionado, setAnoLetivoSelecionado] = useState();
 
   useEffect(() => {
     const anosLetivos = [];
-    const modalidades = [];
-    const periodos = [];
-    const dres = [];
-    const unidadesEscolares = [];
-    const turmas = [];
-
-    dados.forEach(dado => {
-      if (anosLetivos.findIndex(ano => ano.ano === dado.anoLetivo) < 0) {
-        anosLetivos.push({
-          ano: dado.anoLetivo,
+    api.get('v1/abrangencia/anos-letivos').then(resposta => {
+      if (resposta.data) {
+        resposta.data.forEach(ano => {
+          anosLetivos.push({ desc: ano, valor: ano });
         });
-      }
-
-      if (
-        modalidades.findIndex(
-          modalidade => modalidade.codigo === dado.codModalidade
-        ) < 0
-      ) {
-        modalidades.push({
-          codigo: dado.codModalidade,
-          modalidade: dado.modalidade,
-        });
-      }
-
-      if (dado.semestre === 2) {
-        for (let semestre = 1; semestre <= dado.semestre; semestre += 1) {
-          if (periodos.findIndex(periodo => periodo.codigo === semestre) < 0) {
-            periodos.push({
-              codigo: semestre,
-              periodo: `${semestre}º Semestre`,
-            });
-          }
-        }
-      }
-
-      if (dres.findIndex(dre => dre.codigo === dado.codDre) < 0) {
-        dres.push({
-          codigo: dado.codDre,
-          dre: dado.dre,
-        });
-      }
-
-      if (
-        unidadesEscolares.findIndex(
-          unidade => unidade.codigo === dado.codEscola
-        ) < 0
-      ) {
-        unidadesEscolares.push({
-          codigo: dado.codEscola,
-          unidade: dado.ue,
-        });
-      }
-
-      if (turmas.findIndex(turma => turma.codigo === dado.codTurma) < 0) {
-        turmas.push({
-          codigo: dado.codTurma,
-          ano: dado.ano,
-          turma: dado.nomeTurma,
-          codEscola: dado.codEscola,
-        });
+        setNovoAnosLetivos(anosLetivos);
+        setCampoAnoLetivoDesabilitado(false);
       }
     });
+  }, []);
 
-    setAnosLetivosFiltro([...anosLetivos]);
-    if (anosLetivos.length > 0 && anosLetivos[0].ano) {
-      setAnoAtual(anosLetivos[0].ano);
+  useEffect(() => {
+    if (novoAnosLetivos && novoAnosLetivos.length === 1)
+      setAnoLetivoSelecionado(novoAnosLetivos[0].valor);
+  }, [novoAnosLetivos]);
+
+  const [novoModalidades, setNovoModalidades] = useState([]);
+  const [modalidadeSelecionada, setModalidadeSelecionada] = useState();
+
+  useEffect(() => {
+    if (anoLetivoSelecionado) {
+      const modalidades = [];
+      api.get('v1/abrangencia/modalidades').then(resposta => {
+        if (resposta.data) {
+          resposta.data.forEach(modalidade => {
+            modalidades.push({
+              desc: modalidade.descricao,
+              valor: modalidade.id,
+            });
+          });
+          setNovoModalidades(modalidades);
+          setCampoModalidadeDesabilitado(false);
+        }
+      });
     } else {
-      setAnoAtual(new Date().getFullYear());
+      setModalidadeSelecionada();
+      setCampoModalidadeDesabilitado(true);
     }
-
-    setModalidadesFiltro([...modalidades]);
-    setPeriodosFiltro([...periodos]);
-    setDresFiltro([...dres]);
-    setUnidadesEscolaresFiltro([...unidadesEscolares]);
-
-    store.dispatch(turmasUsuario(turmas.sort(ordenaTurmas)));
-    selecionaTurmaCasosEspecificos();
-  }, [dados]);
-
-  const setAnoAtual = ano => {
-    setAnoLetivoFiltroSelecionado(`${ano}`);
-    store.dispatch(filtroAtual({ anoLetivo: `${ano}` }));
-  };
+  }, [anoLetivoSelecionado]);
 
   useEffect(() => {
-    if (modalidadesFiltro.length === 1)
-      setModalidadeFiltroSelecionada(modalidadesFiltro[0].codigo.toString());
-    if (dresFiltro.length === 1)
-      setDreFiltroSelecionada(dresFiltro[0].codigo.toString());
-    if (unidadesEscolaresFiltro.length === 1)
-      setUnidadeEscolarFiltroSelecionada(
-        unidadesEscolaresFiltro[0].codigo.toString()
-      );
-    if (turmasUsuarioLista.length === 1)
-      setTurmaFiltroSelecionada(turmasUsuarioLista[0].codigo.toString());
-  }, [
-    modalidadesFiltro,
-    dresFiltro,
-    unidadesEscolaresFiltro,
-    turmasUsuarioLista,
-  ]);
+    if (novoModalidades && novoModalidades.length === 1)
+      setModalidadeSelecionada(novoModalidades[0].valor);
+  }, [novoModalidades]);
+
+  const [novoPeriodos, setNovoPeriodos] = useState([]);
+  const [periodoSelecionado, setPeriodoSelecionado] = useState();
+
+  const [novoDres, setNovoDres] = useState([]);
+  const [dreSelecionada, setDreSelecionada] = useState();
 
   useEffect(() => {
-    inputBuscaRef.current.focus();
-    if (!textoAutocomplete) setResultadosFiltro([]);
-  }, [textoAutocomplete]);
-
-  useLayoutEffect(() => {
-    if (!toggleBusca && toggleInputFocus) inputBuscaRef.current.focus();
-    if (toggleBusca) document.addEventListener('click', handleClickFora);
-    return () => document.removeEventListener('click', handleClickFora);
-  }, [toggleBusca, toggleInputFocus]);
-
-  useEffect(() => {
-    const dres = [];
-    const unidadesEscolares = [];
-    const turmas = [];
-
-    dados
-      .filter(dado => {
-        if (modalidadeFiltroSelecionada)
-          return dado.codModalidade.toString() === modalidadeFiltroSelecionada;
-        return true;
-      })
-      .filter(dado => {
-        if (periodoFiltroSelecionado)
-          return dado.semestre.toString() === periodoFiltroSelecionado;
-        return true;
-      })
-      .filter(dado => {
-        if (dreFiltroSelecionada)
-          return dado.codDre.toString() === dreFiltroSelecionada;
-        return true;
-      })
-      .filter(dado => {
-        if (unidadeEscolarFiltroSelecionada)
-          return dado.codEscola.toString() === unidadeEscolarFiltroSelecionada;
-        return true;
-      })
-      .forEach(dado => {
-        if (dres.findIndex(dre => dre.codigo === dado.codDre) < 0) {
-          dres.push({
-            codigo: dado.codDre,
-            dre: dado.dre,
+    if (modalidadeSelecionada) {
+      const periodos = [];
+      api.get('v1/abrangencia/semestres').then(resposta => {
+        if (resposta.data) {
+          resposta.data.forEach(periodo => {
+            periodos.push({ desc: periodo, valor: periodo });
           });
-        }
-        if (
-          unidadesEscolares.findIndex(
-            unidade => unidade.codigo === dado.codEscola
-          ) < 0
-        ) {
-          unidadesEscolares.push({
-            codigo: dado.codEscola,
-            unidade: dado.ue,
-          });
-        }
-        if (turmas.findIndex(turma => turma.codigo === dado.codTurma) < 0) {
-          turmas.push({
-            codigo: dado.codTurma,
-            ano: dado.ano,
-            turma: dado.nomeTurma,
-            codEscola: dado.codEscola,
-          });
+          setNovoPeriodos(periodos);
+          setCampoPeriodoDesabilitado(false);
         }
       });
 
-    if (dres.filter(dre => dre.codigo === dreFiltroSelecionada).length === 0)
-      setDreFiltroSelecionada();
-    setDresFiltro([...dres]);
-
-    if (
-      unidadesEscolares.filter(
-        unidade => unidade.codigo === unidadeEscolarFiltroSelecionada
-      ).length === 0
-    )
-      setUnidadeEscolarFiltroSelecionada();
-    setUnidadesEscolaresFiltro([...unidadesEscolares]);
-
-    if (
-      turmas.filter(turma => turma.codigo === turmaFiltroSelecionada).length ===
-      0
-    )
-      setTurmaFiltroSelecionada();
-    store.dispatch(turmasUsuario(turmas.sort(ordenaTurmas)));
-  }, [
-    modalidadeFiltroSelecionada,
-    periodoFiltroSelecionado,
-    dreFiltroSelecionada,
-    unidadeEscolarFiltroSelecionada,
-  ]);
+      const dres = [];
+      api.get('v1/abrangencia/dres').then(resposta => {
+        if (resposta.data) {
+          resposta.data.forEach(dre => {
+            dres.push({
+              desc: dre.nome,
+              valor: dre.codigo,
+              abrev: dre.abreviacao,
+            });
+          });
+          setNovoDres(dres);
+          setCampoDreDesabilitado(false);
+        }
+      });
+    } else {
+      setPeriodoSelecionado();
+      setCampoPeriodoDesabilitado(true);
+      setDreSelecionada();
+      setCampoDreDesabilitado(true);
+    }
+  }, [modalidadeSelecionada]);
 
   useEffect(() => {
-    if (modalidadeFiltroSelecionada) {
-      if (
-        modalidade.EJA == modalidadeFiltroSelecionada &&
-        !periodoFiltroSelecionado
-      ) {
-        setDesabilitarTurma(true);
-      } else {
-        setDesabilitarTurma(false);
-      }
-    } else {
-      setDesabilitarTurma(true);
-    }
-  }, [modalidadeFiltroSelecionada, turmaFiltroSelecionada]);
+    if (novoDres && novoDres.length === 1) setDreSelecionada(novoDres[0].valor);
+  }, [novoDres]);
+
+  const [novoUnidadesEscolares, setNovoUnidadesEscolares] = useState([]);
+  const [unidadeEscolarSelecionada, setUnidadeEscolarSelecionada] = useState();
 
   useEffect(() => {
-    if (
-      modalidadeFiltroSelecionada &&
-      periodoFiltroSelecionado &&
-      modalidade.EJA == modalidadeFiltroSelecionada
-    ) {
-      setDesabilitarTurma(false);
+    if (dreSelecionada) {
+      const unidades = [];
+      api.get(`v1/abrangencia/dres/${dreSelecionada}/ues`).then(resposta => {
+        if (resposta.data) {
+          resposta.data.forEach(unidade => {
+            unidades.push({ desc: unidade.nome, valor: unidade.codigo });
+          });
+          setNovoUnidadesEscolares(unidades);
+          setCampoUnidadeEscolarDesabilitado(false);
+        }
+      });
     } else {
-      setDesabilitarTurma(true);
+      setUnidadeEscolarSelecionada();
+      setCampoUnidadeEscolarDesabilitado(true);
     }
-  }, [periodoFiltroSelecionado]);
+  }, [dreSelecionada]);
 
-  const handleClickFora = event => {
-    if (
-      !event.target.classList.contains('fa-caret-down') &&
-      !event.target.classList.contains(
-        'ant-select-dropdown-menu-item-active'
-      ) &&
-      !event.target.classList.contains('ant-select-selection-selected-value') &&
-      !event.target.classList.contains(
-        'ant-select-dropdown-menu-item-selected'
-      ) &&
-      divBuscaRef.current &&
-      !divBuscaRef.current.contains(event.target)
-    )
-      mostraBusca();
-  };
+  useEffect(() => {
+    if (novoUnidadesEscolares && novoUnidadesEscolares.length === 1)
+      setUnidadeEscolarSelecionada(novoUnidadesEscolares[0].valor);
+  }, [novoUnidadesEscolares]);
 
-  const selecionaTurmaCasosEspecificos = () => {
-    if (dados.length === 1) {
-      setModalidadeFiltroSelecionada(dados[0].codModalidade.toString());
-      setDreFiltroSelecionada(dados[0].codDre.toString());
-      setUnidadeEscolarFiltroSelecionada(dados[0].codEscola.toString());
-      setTurmaFiltroSelecionada(dados[0].codTurma.toString());
-      setPeriodoFiltroSelecionado(dados[0].semestre.toString());
-      store.dispatch(selecionarTurma(dados));
+  const [novoTurmas, setNovoTurmas] = useState([]);
+  const [turmaSelecionada, setTurmaSelecionada] = useState();
+
+  useEffect(() => {
+    if (unidadeEscolarSelecionada) {
+      const turmas = [];
+      api
+        .get(`v1/abrangencia/dres/ues/${unidadeEscolarSelecionada}/turmas`)
+        .then(resposta => {
+          if (resposta.data) {
+            resposta.data.forEach(turma => {
+              turmas.push({ desc: turma.nome, valor: turma.codigo });
+            });
+            setNovoTurmas(turmas);
+            setCampoTurmaDesabilitado(false);
+          }
+        });
+    } else {
+      setTurmaSelecionada();
+      setCampoTurmaDesabilitado(true);
     }
-  };
+  }, [unidadeEscolarSelecionada]);
+
+  useEffect(() => {
+    if (novoTurmas && novoTurmas.length === 1)
+      setTurmaSelecionada(novoTurmas[0].valor);
+  }, [novoTurmas]);
+
+  // Novo Filtro
+
+  const [textoAutocomplete, setTextoAutocomplete] = useState();
+
+  // const setAnoAtual = ano => {
+  // setAnoLetivoFiltroSelecionado(`${ano}`);
+  // store.dispatch(filtroAtual({ anoLetivo: `${ano}` }));
+  // };
+
+  // useEffect(() => {
+  //   if (modalidadesFiltro.length === 1)
+  //     setModalidadeFiltroSelecionada(modalidadesFiltro[0].codigo.toString());
+  //   if (dresFiltro.length === 1)
+  //     setDreFiltroSelecionada(dresFiltro[0].codigo.toString());
+  //   if (unidadesEscolaresFiltro.length === 1)
+  //     setUnidadeEscolarFiltroSelecionada(
+  //       unidadesEscolaresFiltro[0].codigo.toString()
+  //     );
+  //   if (turmasUsuarioLista.length === 1)
+  //     setTurmaFiltroSelecionada(turmasUsuarioLista[0].codigo.toString());
+  // }, [
+  //   modalidadesFiltro,
+  //   dresFiltro,
+  //   unidadesEscolaresFiltro,
+  //   turmasUsuarioLista,
+  // ]);
+
+  // useEffect(() => {
+  //   campoBuscaRef.current.focus();
+  //   if (!textoAutocomplete) setResultadosFiltro([]);
+  // }, [textoAutocomplete]);
+
+  // useLayoutEffect(() => {
+  //   if (!toggleBusca && toggleInputFocus) campoBuscaRef.current.focus();
+  //   if (toggleBusca) document.addEventListener('click', handleClickFora);
+  //   return () => document.removeEventListener('click', handleClickFora);
+  // }, [toggleBusca, toggleInputFocus]);
+
+  // useEffect(() => {
+  //   const dres = [];
+  //   const unidadesEscolares = [];
+  //   const turmas = [];
+
+  //   dados
+  //     .filter(dado => {
+  //       if (modalidadeFiltroSelecionada)
+  //         return dado.codModalidade.toString() === modalidadeFiltroSelecionada;
+  //       return true;
+  //     })
+  //     .filter(dado => {
+  //       if (periodoFiltroSelecionado)
+  //         return dado.semestre.toString() === periodoFiltroSelecionado;
+  //       return true;
+  //     })
+  //     .filter(dado => {
+  //       if (dreFiltroSelecionada)
+  //         return dado.codDre.toString() === dreFiltroSelecionada;
+  //       return true;
+  //     })
+  //     .filter(dado => {
+  //       if (unidadeEscolarFiltroSelecionada)
+  //         return dado.codEscola.toString() === unidadeEscolarFiltroSelecionada;
+  //       return true;
+  //     })
+  //     .forEach(dado => {
+  //       if (dres.findIndex(dre => dre.codigo === dado.codDre) < 0) {
+  //         dres.push({
+  //           codigo: dado.codDre,
+  //           dre: dado.dre,
+  //         });
+  //       }
+  //       if (
+  //         unidadesEscolares.findIndex(
+  //           unidade => unidade.codigo === dado.codEscola
+  //         ) < 0
+  //       ) {
+  //         unidadesEscolares.push({
+  //           codigo: dado.codEscola,
+  //           unidade: dado.ue,
+  //         });
+  //       }
+  //       if (turmas.findIndex(turma => turma.codigo === dado.codTurma) < 0) {
+  //         turmas.push({
+  //           codigo: dado.codTurma,
+  //           ano: dado.ano,
+  //           turma: dado.nomeTurma,
+  //           codEscola: dado.codEscola,
+  //         });
+  //       }
+  //     });
+
+  //   if (dres.filter(dre => dre.codigo === dreFiltroSelecionada).length === 0)
+  //     setDreFiltroSelecionada();
+  //   setDresFiltro([...dres]);
+
+  //   if (
+  //     unidadesEscolares.filter(
+  //       unidade => unidade.codigo === unidadeEscolarFiltroSelecionada
+  //     ).length === 0
+  //   )
+  //     setUnidadeEscolarFiltroSelecionada();
+  //   setUnidadesEscolaresFiltro([...unidadesEscolares]);
+
+  //   if (
+  //     turmas.filter(turma => turma.codigo === turmaFiltroSelecionada).length ===
+  //     0
+  //   )
+  //     setTurmaFiltroSelecionada();
+  //   store.dispatch(turmasUsuario(turmas.sort(ordenaTurmas)));
+  // }, [
+  //   modalidadeFiltroSelecionada,
+  //   periodoFiltroSelecionado,
+  //   dreFiltroSelecionada,
+  //   unidadeEscolarFiltroSelecionada,
+  // ]);
+
+  // useEffect(() => {
+  //   if (modalidadeFiltroSelecionada) {
+  //     if (
+  //       modalidade.EJA == modalidadeFiltroSelecionada &&
+  //       !periodoFiltroSelecionado
+  //     ) {
+  //       setDesabilitarTurma(true);
+  //     } else {
+  //       setDesabilitarTurma(false);
+  //     }
+  //   } else {
+  //     setDesabilitarTurma(true);
+  //   }
+  // }, [modalidadeFiltroSelecionada, turmaFiltroSelecionada]);
+
+  // useEffect(() => {
+  //   if (
+  //     modalidadeFiltroSelecionada &&
+  //     periodoFiltroSelecionado &&
+  //     modalidade.EJA == modalidadeFiltroSelecionada
+  //   ) {
+  //     setDesabilitarTurma(false);
+  //   } else {
+  //     setDesabilitarTurma(true);
+  //   }
+  // }, [periodoFiltroSelecionado]);
+
+  // const handleClickFora = event => {
+  //   if (
+  //     !event.target.classList.contains('fa-caret-down') &&
+  //     !event.target.classList.contains(
+  //       'ant-select-dropdown-menu-item-active'
+  //     ) &&
+  //     !event.target.classList.contains('ant-select-selection-selected-value') &&
+  //     !event.target.classList.contains(
+  //       'ant-select-dropdown-menu-item-selected'
+  //     ) &&
+  //     divBuscaRef.current &&
+  //     !divBuscaRef.current.contains(event.target)
+  //   )
+  //     mostraBusca();
+  // };
+
+  // const selecionaTurmaCasosEspecificos = () => {
+  //   if (dados.length === 1) {
+  //     setModalidadeFiltroSelecionada(dados[0].codModalidade.toString());
+  //     setDreFiltroSelecionada(dados[0].codDre.toString());
+  //     setUnidadeEscolarFiltroSelecionada(dados[0].codEscola.toString());
+  //     setTurmaFiltroSelecionada(dados[0].codTurma.toString());
+  //     setPeriodoFiltroSelecionado(dados[0].semestre.toString());
+  //     store.dispatch(selecionarTurma(dados));
+  //   }
+  // };
 
   const onChangeAutocomplete = () => {
-    const texto = inputBuscaRef.current.value;
+    const texto = campoBuscaRef.current.value;
     setTextoAutocomplete(texto);
 
     const resultadosAutocomplete = [];
@@ -459,7 +486,7 @@ const Filtro = () => {
         );
         if (resultados[selecionado]) {
           resultados[selecionado].classList.add('selecionado');
-          inputBuscaRef.current.focus();
+          campoBuscaRef.current.focus();
         }
       }
     }
@@ -520,75 +547,75 @@ const Filtro = () => {
     setToggleInputFocus(false);
   };
 
-  const onChangeAnoLetivo = ano => {
-    setAnoLetivoFiltroSelecionado(ano);
+  const aoTrocarAnoLetivo = ano => {
+    setAnoLetivoSelecionado(ano);
   };
 
-  const onChangeModalidade = modalidade => {
-    setModalidadeFiltroSelecionada(modalidade);
+  const aoTrocarModalidade = modalidade => {
+    setModalidadeSelecionada(modalidade);
   };
 
-  const onChangePeriodo = periodo => {
-    setPeriodoFiltroSelecionado(periodo);
+  const aoTrocarPeriodo = periodo => {
+    setPeriodoSelecionado(periodo);
   };
 
-  const onChangeDre = dre => {
-    setDreFiltroSelecionada(dre);
+  const aoTrocarDre = dre => {
+    setDreSelecionada(dre);
   };
 
-  const onChangeUnidadeEscolarFiltro = unidade => {
-    setUnidadeEscolarFiltroSelecionada(unidade);
+  const aoTrocarUnidadeEscolar = unidade => {
+    setUnidadeEscolarSelecionada(unidade);
   };
 
-  const onChangeTurma = turma => {
-    setTurmaFiltroSelecionada(turma);
+  const aoTrocarTurma = turma => {
+    setTurmaSelecionada(turma);
   };
 
-  const selecionaTurma = () => {
-    const turma = dados.filter(dado => {
-      return (
-        dado.anoLetivo.toString() === anoLetivoFiltroSelecionado &&
-        dado.codModalidade.toString() === modalidadeFiltroSelecionada &&
-        dado.codDre.toString() === dreFiltroSelecionada &&
-        dado.codEscola.toString() === unidadeEscolarFiltroSelecionada &&
-        dado.codTurma.toString() === turmaFiltroSelecionada
-      );
-    });
+  // const selecionaTurma = () => {
+  // const turma = dados.filter(dado => {
+  //   return (
+  //     dado.anoLetivo.toString() === anoLetivoFiltroSelecionado &&
+  //     dado.codModalidade.toString() === modalidadeFiltroSelecionada &&
+  //     dado.codDre.toString() === dreFiltroSelecionada &&
+  //     dado.codEscola.toString() === unidadeEscolarFiltroSelecionada &&
+  //     dado.codTurma.toString() === turmaFiltroSelecionada
+  //   );
+  // });
 
-    if (turma.length > 0) {
-      store.dispatch(selecionarTurma(turma));
-      setToggleBusca(false);
-      sucesso('Turma selecionada com sucesso!');
-    }
-  };
+  // if (turma.length > 0) {
+  //   store.dispatch(selecionarTurma(turma));
+  //   setToggleBusca(false);
+  //   sucesso('Turma selecionada com sucesso!');
+  // }
+  // };
 
   const aplicarFiltro = () => {
-    if (
-      anoLetivoFiltroSelecionado &&
-      modalidadeFiltroSelecionada &&
-      dreFiltroSelecionada &&
-      unidadeEscolarFiltroSelecionada &&
-      turmaFiltroSelecionada
-    ) {
-      if (modalidadeFiltroSelecionada == 3 && !periodoFiltroSelecionado) {
-        erro('É necessário informar todos os dados da turma!');
-      } else {
-        selecionaTurma();
-      }
-    } else {
-      erro('É necessário informar todos os dados da turma!');
-    }
+    //   if (
+    //     // anoLetivoFiltroSelecionado &&
+    //     modalidadeFiltroSelecionada &&
+    //     dreFiltroSelecionada &&
+    //     unidadeEscolarFiltroSelecionada &&
+    //     turmaFiltroSelecionada
+    //   ) {
+    //     if (modalidadeFiltroSelecionada == 3 && !periodoFiltroSelecionado) {
+    //       erro('É necessário informar todos os dados da turma!');
+    //     } else {
+    //       selecionaTurma();
+    //     }
+    //   } else {
+    //     erro('É necessário informar todos os dados da turma!');
+    //   }
   };
 
   const removerTurmaSelecionada = () => {
-    store.dispatch(removerTurma());
-    setTextoAutocomplete();
-    setModalidadeFiltroSelecionada();
-    setPeriodoFiltroSelecionado();
-    setDreFiltroSelecionada();
-    setUnidadeEscolarFiltroSelecionada();
-    setTurmaFiltroSelecionada();
-    setTurmaUeSelecionada();
+    // store.dispatch(removerTurma());
+    // setTextoAutocomplete();
+    // setModalidadeFiltroSelecionada();
+    // setPeriodoFiltroSelecionado();
+    // setDreFiltroSelecionada();
+    // setUnidadeEscolarFiltroSelecionada();
+    // setTurmaFiltroSelecionada();
+    // setTurmaUeSelecionada();
   };
 
   return (
@@ -600,7 +627,7 @@ const Filtro = () => {
             type="text"
             className="form-control form-control-lg rounded d-flex px-5 border-0 fonte-14"
             placeholder="Pesquisar Turma"
-            ref={inputBuscaRef}
+            ref={campoBuscaRef}
             onFocus={onFocusBusca}
             onChange={onChangeAutocomplete}
             onKeyDown={onKeyDownAutocomplete}
@@ -645,38 +672,41 @@ const Filtro = () => {
               <Grid cols={3} className="form-group">
                 <SelectComponent
                   className="fonte-14"
-                  onChange={onChangeAnoLetivo}
-                  lista={anosLetivosFiltro}
-                  valueOption="ano"
-                  valueText="ano"
-                  valueSelect={anoLetivoFiltroSelecionado}
+                  onChange={aoTrocarAnoLetivo}
+                  lista={novoAnosLetivos}
+                  valueOption="valor"
+                  valueText="desc"
+                  valueSelect={anoLetivoSelecionado}
                   placeholder="Ano"
+                  disabled={campoAnoLetivoDesabilitado}
                 />
               </Grid>
               <Grid
-                cols={modalidadeFiltroSelecionada === '3' ? 5 : 9}
+                cols={modalidadeSelecionada === '3' ? 5 : 9}
                 className="form-group"
               >
                 <SelectComponent
                   className="fonte-14"
-                  onChange={onChangeModalidade}
-                  lista={modalidadesFiltro}
-                  valueOption="codigo"
-                  valueText="modalidade"
-                  valueSelect={modalidadeFiltroSelecionada}
+                  onChange={aoTrocarModalidade}
+                  lista={novoModalidades}
+                  valueOption="valor"
+                  valueText="desc"
+                  valueSelect={modalidadeSelecionada}
                   placeholder="Modalidade"
+                  disabled={campoModalidadeDesabilitado}
                 />
               </Grid>
-              {modalidadeFiltroSelecionada === '3' && (
+              {modalidadeSelecionada === '3' && (
                 <Grid cols={4} className="form-group">
                   <SelectComponent
                     className="fonte-14"
-                    onChange={onChangePeriodo}
-                    lista={periodosFiltro}
-                    valueOption="codigo"
-                    valueText="periodo"
-                    valueSelect={periodoFiltroSelecionado}
+                    onChange={aoTrocarPeriodo}
+                    lista={novoPeriodos}
+                    valueOption="valor"
+                    valueText="desc"
+                    valueSelect={periodoSelecionado}
                     placeholder="Período"
+                    disabled={campoPeriodoDesabilitado}
                   />
                 </Grid>
               )}
@@ -684,36 +714,38 @@ const Filtro = () => {
             <div className="form-group">
               <SelectComponent
                 className="fonte-14"
-                onChange={onChangeDre}
-                lista={dresFiltro}
-                valueOption="codigo"
-                valueText="dre"
-                valueSelect={dreFiltroSelecionada}
+                onChange={aoTrocarDre}
+                lista={novoDres}
+                valueOption="valor"
+                valueText="desc"
+                valueSelect={dreSelecionada}
                 placeholder="Diretoria Regional De Educação (DRE)"
+                disabled={campoDreDesabilitado}
               />
             </div>
             <div className="form-group">
               <SelectComponent
                 className="fonte-14"
-                onChange={onChangeUnidadeEscolarFiltro}
-                lista={unidadesEscolaresFiltro}
-                valueOption="codigo"
-                valueText="unidade"
-                valueSelect={unidadeEscolarFiltroSelecionada}
+                onChange={aoTrocarUnidadeEscolar}
+                lista={novoUnidadesEscolares}
+                valueOption="valor"
+                valueText="desc"
+                valueSelect={unidadeEscolarSelecionada}
                 placeholder="Unidade Escolar (UE)"
+                disabled={campoUnidadeEscolarDesabilitado}
               />
             </div>
             <div className="form-row d-flex justify-content-between">
               <Grid cols={3} className="form-group">
                 <SelectComponent
                   className="fonte-14"
-                  onChange={onChangeTurma}
-                  lista={turmasUsuarioLista}
-                  valueOption="codigo"
-                  valueText="turma"
-                  valueSelect={turmaFiltroSelecionada}
+                  onChange={aoTrocarTurma}
+                  lista={novoTurmas}
+                  valueOption="valor"
+                  valueText="desc"
+                  valueSelect={turmaSelecionada}
                   placeholder="Turma"
-                  disabled={desabilitarTurma}
+                  disabled={campoTurmaDesabilitado}
                 />
               </Grid>
               <Grid cols={3} className="form-group text-right">
