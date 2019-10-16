@@ -29,7 +29,10 @@ namespace SME.SGP.Dados.Repositorios
             MontaQueryObterCount(dreId, ueId, statusId, turmaId, usuarioRf, tipoId, categoriaId, titulo, codigo, anoLetivo, query);
 
             var retornoPaginado = new PaginacaoResultadoDto<Notificacao>();
-
+            if (!string.IsNullOrEmpty(titulo))
+            {
+                titulo = $"%{titulo}%";
+            }
             using (var multi = await database.Conexao.QueryMultipleAsync(query.ToString(), new { dreId, ueId, turmaId, statusId, tipoId, usuarioRf, categoriaId, titulo, codigo, anoLetivo, registrosIgnorados = paginacao.QuantidadeRegistrosIgnorados, registros = paginacao.QuantidadeRegistros }))
             {
                 retornoPaginado.Items = multi.Read<Notificacao>().ToList();
@@ -72,8 +75,7 @@ namespace SME.SGP.Dados.Repositorios
 
             if (!string.IsNullOrEmpty(titulo))
             {
-                titulo = $"%{titulo}%";
-                query.AppendLine("and lower(f_unaccent(n.titulo)) LIKE @titulo ");
+                query.AppendLine("and lower(f_unaccent(n.titulo)) LIKE  @titulo");
             }
         }
 
