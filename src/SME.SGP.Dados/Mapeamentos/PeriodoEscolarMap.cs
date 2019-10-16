@@ -12,7 +12,7 @@ namespace SME.SGP.Dados.Mapeamentos
             ToTable("periodo_escolar");
             Map(c => c.TipoCalendario).ToColumn("tipo_calendario_id");
             Map(c => c.PeriodoFim).ToColumn("periodo_fim");
-            Map(c => c.PeriodoInicio).ToColumn("periodo_incio");
+            Map(c => c.PeriodoInicio).ToColumn("periodo_inicio");
         }
     }
 }
