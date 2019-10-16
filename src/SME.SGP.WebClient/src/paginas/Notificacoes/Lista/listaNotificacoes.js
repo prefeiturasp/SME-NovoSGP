@@ -21,11 +21,11 @@ export default function NotificacoesLista() {
   const [idNotificacoesSelecionadas, setIdNotificacoesSelecionadas] = useState(
     []
   );
-  const [listaNotificacoes, setListaNotificacoes] = useState([]);
   const [notificacoes, setNotificacoes] = useState([]);
   const [listaCategorias, setListaCategorias] = useState([]);
   const [listaStatus, setListaStatus] = useState([]);
   const [listaTipos, setTipos] = useState([]);
+  const [paginacao, setPaginacao] = useState({});
 
   const [dropdownTurmaSelecionada, setTurmaSelecionada] = useState();
   const [statusSelecionado, setStatusSelecionado] = useState();
@@ -39,11 +39,6 @@ export default function NotificacoesLista() {
   );
   const [desabilitarTurma, setDesabilitarTurma] = useState(true);
   const [colunasTabela, setColunasTabela] = useState([]);
-  const [paginacao, setPaginacao] = useState({
-    numeroPagina: 1,
-    numeroRegistros: 5,
-    totalRegistros: 0,
-  });
 
   const usuario = useSelector(store => store.usuario);
 
@@ -150,7 +145,7 @@ export default function NotificacoesLista() {
 
   function onSelectRow(ids) {
     if (ids && ids.length > 0) {
-      const notifSelecionadas = listaNotificacoes.filter(noti => {
+      const notifSelecionadas = notificacoes.items.filter(noti => {
         return ids.includes(noti.id);
       });
 
@@ -213,7 +208,13 @@ export default function NotificacoesLista() {
     history.push(`/notificacoes/${id}`);
   }
 
-  const filtrarNotificacoes = async paginas => {
+  const obterPaginacao = paginacao => {
+    return paginacao
+      ? `numeroPagina=${paginacao.numeroPagina}&numeroRegistros=${paginacao.numeroRegistros}`
+      : '';
+  };
+
+  const filtrarNotificacoes = async novaPaginacao => {
     const paramsQuery = {
       categoria: categoriaSelecionada,
       codigo: codigoSelecionado || null,
@@ -237,29 +238,26 @@ export default function NotificacoesLista() {
         paramsQuery.turmaId = usuario.turmaSelecionada[0].codEscola;
       }
     }
-
-    const listaNotifi = await api.get(
-      `v1/notificacoes/?numeroPagina=${paginas.numeroPagina}&numeroRegistros=${paginas.numeroRegistros}`,
-      {
-        params: paramsQuery,
-      }
-    );
-    setListaNotificacoes(listaNotifi.data.items);
+    const url = `v1/notificacoes/?${obterPaginacao(
+      novaPaginacao || paginacao
+    )}`;
+    const listaNotifi = await api.get(url, {
+      params: paramsQuery,
+    });
     setNotificacoes(listaNotifi.data);
-    // setPaginacao({
-    //   ...paginacao,
-    //   totalRegistros: listaNotifi.data.totalRegistros,
-    // });
     setIdNotificacoesSelecionadas([]);
     onSelectRow([]);
   };
 
-  useEffect(() => {
-    filtrarNotificacoes(paginacao);
-  }, []);
+  // useEffect(() => {
+  //   console.log(paginacao);
+
+  //   debugger;
+  //   filtrarNotificacoes();
+  // }, [paginacao]);
 
   async function onClickFiltrar() {
-    filtrarNotificacoes(paginacao);
+    filtrarNotificacoes();
   }
 
   function marcarComoLida() {
@@ -289,14 +287,11 @@ export default function NotificacoesLista() {
     history.push(URL_HOME);
   }
 
-  const onPaginacao = e => {
-    const novaPaginacao = {
-      totalRegistros: 0,
-      ...e,
-    };
+  const executaPaginacao = novaPaginacao => {
     setPaginacao(novaPaginacao);
     filtrarNotificacoes(novaPaginacao);
   };
+
   return (
     <>
       <Cabecalho pagina="Notificações" />
@@ -401,8 +396,8 @@ export default function NotificacoesLista() {
             columns={colunasTabela}
             dataSource={notificacoes}
             selectMultipleRows
-            paginacao={paginacao}
-            onPaginacao={onPaginacao}
+            paginacao
+            onPaginacao={novaPaginacao => executaPaginacao(novaPaginacao)}
           />
         </div>
       </EstiloLista>

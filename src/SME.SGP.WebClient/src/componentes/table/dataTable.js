@@ -1,6 +1,6 @@
-import { Table, Pagination } from 'antd';
+import { Table } from 'antd';
 import PropTypes from 'prop-types';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Container } from './dataTabe.css';
 
 const DataTable = props => {
@@ -43,23 +43,40 @@ const DataTable = props => {
     }
   };
 
-  const [paginaAtual, setPaginaAtual] = useState({
-    defaultPageSize: 5,
-    pageSize: 5,
-    total: dataSource.totalRegistros,
-    showSizeChanger: true,
-    pageSizeOptions: ['10', '20', '50', '100'],
-    locale: { items_per_page: '' },
-    current: 1,
-  });
+  const retornaPaginacaoInicial = () => {
+    return {
+      defaultPageSize: 10,
+      pageSize: 10,
+      total: dataSource.totalRegistros,
+      showSizeChanger: true,
+      pageSizeOptions: ['10', '20', '50', '100'],
+      locale: { items_per_page: 'Linhas' },
+      current: 1,
+    };
+  };
+
+  const [paginaAtual, setPaginaAtual] = useState(retornaPaginacaoInicial());
 
   const executaPaginacao = pagina => {
-    setPaginaAtual({ ...paginaAtual, ...pagina });
+    const novaPagina = { ...paginaAtual, ...pagina };
+    if (pagina.total < pagina.pageSize) {
+      novaPagina.current = 1;
+    }
+    setPaginaAtual(novaPagina);
     onPaginacao({
-      numeroPagina: pagina.current,
+      totalRegistros: pagina.total,
+      numeroPagina: novaPagina.current,
       numeroRegistros: pagina.pageSize,
     });
   };
+
+  useEffect(() => {
+    executaPaginacao(paginaAtual);
+  }, []);
+
+  useEffect(() => {
+    executaPaginacao(paginaAtual);
+  }, [dataSource]);
 
   return (
     <Container className="table-responsive">
@@ -82,15 +99,17 @@ const DataTable = props => {
             }
           },
         })}
-        pagination={{
-          defaultPageSize: 5,
-          pageSize: 5,
-          total: dataSource.totalRegistros,
-          showSizeChanger: true,
-          pageSizeOptions: ['10', '20', '50', '100'],
-          locale: { items_per_page: '' },
-          current: paginaAtual.current,
-        }}
+        pagination={
+          paginacao && {
+            defaultPageSize: paginaAtual.defaultPageSize,
+            pageSize: paginaAtual.pageSize,
+            total: dataSource.totalRegistros,
+            showSizeChanger: true,
+            pageSizeOptions: ['10', '20', '50', '100'],
+            locale: { items_per_page: '' },
+            current: paginaAtual.current,
+          }
+        }
         pageSize={{ pageSize }}
         bordered
         size="middle"
@@ -121,33 +140,29 @@ const DataTable = props => {
 };
 
 DataTable.propTypes = {
-  selectedRowKeys: PropTypes.array,
+  selectedRowKeys: PropTypes.oneOfType([PropTypes.array, PropTypes.func]),
   onSelectRow: PropTypes.func,
-  dataSource: PropTypes.array,
+  onRowClick: PropTypes.func,
+  dataSource: PropTypes.oneOfType([PropTypes.object, PropTypes.array]),
   columns: PropTypes.array,
   selectMultipleRows: PropTypes.bool,
   pageSize: PropTypes.number,
-  paginacao: PropTypes.object,
+  paginacao: PropTypes.bool,
   onClickRow: PropTypes.func,
   onPaginacao: PropTypes.func,
   locale: PropTypes.object,
 };
 
 DataTable.defaultProps = {
-  dataSource: [],
+  dataSource: {},
   columns: [],
   selectMultipleRows: false,
   pageSize: 10,
-  paginacao: {
-    defaultPageSize: 5,
-    pageSize: 5,
-    total: 0,
-    showSizeChanger: true,
-    pageSizeOptions: ['10', '20', '50', '100'],
-    locale: { items_per_page: '' },
-    current: 1,
-  },
+  paginacao: false,
+  selectedRowKeys: () => {},
   onRowClick: () => {},
+  onClickRow: () => {},
+  onSelectRow: () => {},
   locale: { emptyText: 'Sem dados' },
   onPaginacao: () => {},
 };

@@ -185,4 +185,8 @@ export const Container = styled.div`
       }
     }
   }
+
+  .ant-pagination-options {
+    padding-left: 20px;
+  }
 `;
