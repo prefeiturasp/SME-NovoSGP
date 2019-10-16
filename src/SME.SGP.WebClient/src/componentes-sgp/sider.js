@@ -301,9 +301,20 @@ const Sider = () => {
                 </Menu.Item>
                 <Menu.Item key="82" id="calTipoCalendárioEscolar">
                   <span className="menuItem">Tipo de Calendário Escolar</span>
+                  <Link
+                    to="/calendario-escolar/tipo-calendario-escolar"
+                    className="nav-link text-white"
+                    id="linkTipoCalendarioEscolar"
+                  />
                 </Menu.Item>
                 <Menu.Item key="83" id="calPeriodosEscolares">
                   <span className="menuItem">Períodos Escolares</span>
+                  {/* TODO - Descomentar quando estiver DONE a estoria */}
+                  {/* <Link
+                    to="/calendario-escolar/periodos-escolares"
+                    className="nav-link text-white"
+                    id="linkPeriodosEscolares"
+                  /> */}
                 </Menu.Item>
                 <Menu.Item key="84" id="calPeriodosFechamentoAbertura" style={{lineHeight: '18px !important'}}>
                   <span className="menuItem">Períodos de fechamento (Abertura)</span>
@@ -313,6 +324,12 @@ const Sider = () => {
                 </Menu.Item>
                 <Menu.Item key="86" id="calTipoFeriados">
                   <span className="menuItem">Tipo de Feriado</span>
+                  {/* TODO - Descomentar quando estiver DONE a estoria */}
+                  {/* <Link
+                    to="/calendario-escolar/tipo-feriado"
+                    className="nav-link text-white"
+                    id="linkTipoFeriado"
+                  /> */}
                 </Menu.Item>
                 <Menu.Item key="87" id="calTipoEvento">
                   <span className="menuItem">Tipo de Evento</span>
@@ -387,7 +404,12 @@ const Sider = () => {
                   }
                 >
                   <Menu.Item key="110" id="usuTrocaSenha">
-                    <span className="menuItem">Troca de Senha</span>
+                    <span className="menuItem">Reiniciar Senha</span>
+                    <Link
+                      to="/usuarios/reiniciar-senha"
+                      className="nav-link text-white"
+                      id="linkReiniciarSenha"
+                    />
                   </Menu.Item>
                 </SubMenu>
               </SubMenu>

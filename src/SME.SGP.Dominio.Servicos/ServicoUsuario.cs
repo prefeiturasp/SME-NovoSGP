@@ -1,4 +1,5 @@
-﻿using SME.SGP.Aplicacao.Integracoes;
+﻿using Microsoft.AspNetCore.Http;
+using SME.SGP.Aplicacao.Integracoes;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System;
@@ -9,6 +10,8 @@ namespace SME.SGP.Dominio
 {
     public class ServicoUsuario : IServicoUsuario
     {
+        private const string CLAIM_RF = "rf";
+        private readonly IHttpContextAccessor httpContextAccessor;
         private readonly IRepositorioPrioridadePerfil repositorioPrioridadePerfil;
         private readonly IRepositorioUsuario repositorioUsuario;
         private readonly IServicoEOL servicoEOL;
@@ -17,12 +20,14 @@ namespace SME.SGP.Dominio
         public ServicoUsuario(IRepositorioUsuario repositorioUsuario,
                               IServicoEOL servicoEOL,
                               IRepositorioPrioridadePerfil repositorioPrioridadePerfil,
-                              IUnitOfWork unitOfWork)
+                              IUnitOfWork unitOfWork,
+                              IHttpContextAccessor httpContextAccessor)
         {
             this.repositorioUsuario = repositorioUsuario ?? throw new ArgumentNullException(nameof(repositorioUsuario));
             this.servicoEOL = servicoEOL ?? throw new ArgumentNullException(nameof(servicoEOL));
             this.repositorioPrioridadePerfil = repositorioPrioridadePerfil;
             this.unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
+            this.httpContextAccessor = httpContextAccessor ?? throw new ArgumentNullException(nameof(httpContextAccessor));
         }
 
         public async Task AlterarEmailUsuarioPorLogin(string login, string novoEmail)
@@ -44,14 +49,25 @@ namespace SME.SGP.Dominio
             unitOfWork.PersistirTransacao();
         }
 
-        public async void ModificarPerfil(string perfilParaModificar, string login)
+        public string ObterClaim(string nomeClaim)
         {
-            var perfisDoUsuario = await servicoEOL.ObterPerfisPorLogin(login);
-            if (perfisDoUsuario == null)
-                throw new NegocioException($"Não foi possível obter os perfis do usuário {login}");
+            var claim = httpContextAccessor.HttpContext.User.Claims.FirstOrDefault(a => a.Type == nomeClaim);
+            return claim?.Value;
+        }
 
-            if (!perfisDoUsuario.Perfis.Contains(Guid.Parse(perfilParaModificar)))
-                throw new NegocioException($"O usuário {login} não possui acesso ao perfil {perfilParaModificar}");
+        public string ObterLoginAtual()
+        {
+            var loginAtual = httpContextAccessor.HttpContext.User.Claims.FirstOrDefault(a => a.Type == "login");
+            if (loginAtual == null)
+                throw new NegocioException("Não foi possível localizar o login no token");
+
+            return loginAtual.Value;
+        }
+
+        public string ObterRf()
+        {
+            var rf = ObterClaim(CLAIM_RF);
+            return rf;
         }
 
         public Usuario ObterUsuarioPorCodigoRfLoginOuAdiciona(string codigoRf, string login = "")

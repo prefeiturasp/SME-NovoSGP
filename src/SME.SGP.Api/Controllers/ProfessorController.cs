@@ -45,5 +45,13 @@ namespace SME.SGP.Api.Controllers
         {
             return Ok(await consultasProfessor.ObterTurmasAtribuidasAoProfessorPorEscolaEAnoLetivo(codigoRF, codigoEscola, anoLetivo));
         }
+
+        [HttpGet("turmas/{codigoTurma}/disciplinas/planejamento")]
+        [ProducesResponseType(typeof(IEnumerable<DisciplinaDto>), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        public async Task<IActionResult> ObterDisciplinasParaPlanejamento(long codigoTurma, [FromServices]IConsultasDisciplina consultasDisciplina)
+        {
+            return Ok(await consultasDisciplina.ObterDisciplinasParaPlanejamento(codigoTurma));
+        }
     }
 }

@@ -1,7 +1,7 @@
 import { Table } from 'antd';
 import PropTypes from 'prop-types';
 import React from 'react';
-import { Container } from './dataTabe.css';
+import { Container } from './dataTable.css';
 
 const DataTable = props => {
   const {
