@@ -50,6 +50,7 @@ export default function NotificacoesLista() {
         title: 'Código',
         dataIndex: 'codigo',
         render: (text, row) => montarLinhasTabela(text, row),
+        align: 'center',
       },
       {
         title: 'Tipo',
@@ -75,6 +76,7 @@ export default function NotificacoesLista() {
         title: 'Data/Hora',
         dataIndex: 'data',
         width: 200,
+        align: 'center',
         render: (text, row) => {
           const dataFormatada = moment(text).format('DD/MM/YYYY HH:mm:ss');
           return montarLinhasTabela(dataFormatada, row);
@@ -147,7 +149,6 @@ export default function NotificacoesLista() {
   const onSelecionarItems = items => {
     if (items && items.length > 0) {
       setNotificacoesSelecionadas(items);
-      debugger;
       const naoPodeRemover = items.find(item => !item.podeRemover);
       if (naoPodeRemover) {
         setDesabilitarBotaoExcluir(true);
@@ -233,6 +234,7 @@ export default function NotificacoesLista() {
   }
 
   function marcarComoLida() {
+    debugger;
     servicoNotificacao.marcarComoLida(idNotificacoesSelecionadas, () =>
       onClickFiltrar()
     );
@@ -245,7 +247,7 @@ export default function NotificacoesLista() {
     );
     if (confirmado) {
       servicoNotificacao.excluir(idNotificacoesSelecionadas, () => {
-        onClickFiltrar();
+        // onClickFiltrar();
         setIdNotificacoesSelecionadas([]);
       });
     }
