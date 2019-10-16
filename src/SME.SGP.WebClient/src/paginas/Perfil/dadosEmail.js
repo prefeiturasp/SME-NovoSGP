@@ -15,9 +15,9 @@ import MensagemAlerta from './mensagemAlerta';
 const DadosEmail = () => {
 
   const [email, setEmail] = useState('teste@teste.com');
-  const [emailEdicao, setEmailEdicao] = useState();
+  const [emailEdicao, setEmailEdicao] = useState('teste@teste.com');
   const [senha, setSenha] = useState('******');
-  const [visualizarEmail, setVisualizarEmail] = useState(false);
+  const [visualizarFormEmail, setVisualizarFormEmail] = useState(false);
   const [ocultarModalCancelamento, setOcultarModalCancelamento] = useState(true);
 
   const Campos = styled.div`
@@ -40,16 +40,56 @@ const DadosEmail = () => {
   );
 
   const salvarEmail = novoEmail => {
-    api.put('v1/usuarios/autenticado/email', {novoEmail: novoEmail}).then(resp =>{
-      setEmail(novoEmail);
-      setVisualizarEmail(false);
-      sucesso('Solicitação realizada com sucesso. Verifique sua caixa de entrada');
-    })
+      api.put('v1/usuarios/autenticado/email', {novoEmail: novoEmail.emailUsuario}).then(resp =>{
+        setEmail(novoEmail.emailUsuario);
+        setEmailEdicao(novoEmail.emailEdicao)
+        setVisualizarFormEmail(false);
+        setOcultarModalCancelamento(true);
+        sucesso('Solicitação realizada com sucesso. Verifique sua caixa de entrada');
+      })
   }
 
-  const cancelarEdicao = () =>{
-    //setVisualizarEmail(false);
-    setOcultarModalCancelamento(false);
+  const cancelarEdicao = novoEmail =>{
+    setEmailEdicao(novoEmail);
+    if(novoEmail !== email){
+      setOcultarModalCancelamento(false);
+    }else{
+      setVisualizarFormEmail(false);
+    }
+  }
+
+  const confirmaCancelamento = () => {
+    setEmailEdicao(email);
+    setOcultarModalCancelamento(true);
+    setVisualizarFormEmail(false)
+  }
+
+  const onClickCancelar = async form => {
+    const novoEmail = form.values.emailUsuario;
+    if(email !== novoEmail){
+      setVisualizarFormEmail(false);
+      const confirmado = await confirmar(
+        'Atenção',
+        '',
+        'Suas alterações não foram salvas, deseja salvar agora?'
+      );
+      if (confirmado) {
+        setEmailEdicao(novoEmail);
+        setVisualizarFormEmail(true);
+        form.validateForm().then(err => {
+          console.log(err);
+          form.setErrors(err);
+          form.handleSubmit(e => e);
+        });
+      } else {
+        setVisualizarFormEmail(false);
+      }
+      // setOcultarModalCancelamento(true);
+      // form.setFieldTouched('emailUsuario', true, true);
+    }else{
+      setVisualizarFormEmail(false);
+      setEmailEdicao(email);
+    }
   }
 
   return (
@@ -60,6 +100,7 @@ const DadosEmail = () => {
           emailUsuario: emailEdicao? emailEdicao: email,
         }}
         validationSchema={validacoes}
+        onSubmit = {valor => salvarEmail(valor)}
         validateOnChange
         validateOnBlur
       >
@@ -67,24 +108,18 @@ const DadosEmail = () => {
           <Form>
             <ModalConteudoHtml
               key="reiniciarSenha"
-              visivel={visualizarEmail}
+              visivel={visualizarFormEmail}
               onConfirmacaoPrincipal={() => {
-                form.validateForm().then(() => {
-                  form.handleSubmit(e => e);
-                  if(form.errors && !form.errors.emailUsuario){
-                    salvarEmail(form.values.emailUsuario);
-                  }
-                });
+                form.validateForm().then(() => {form.handleSubmit(e => e);});
               }}
-              onConfirmacaoSecundaria={() => cancelarEdicao()}
-              onClose={() => cancelarEdicao()}
+              onConfirmacaoSecundaria={() => onClickCancelar(form)}
+              onClose={() => cancelarEdicao(form.values.emailUsuario)}
               labelBotaoPrincipal="Confirmar"
               labelBotaoSecundario="Cancelar"
               titulo="Editar E-mail"
               closable={false}
-              esconderBotoes={!ocultarModalCancelamento}
             >
-              <div hidden={!ocultarModalCancelamento}>
+              <div>
                 <CampoTexto
                   label="E-mail"
                   name="emailUsuario"
@@ -97,10 +132,19 @@ const DadosEmail = () => {
                           passarão a ser feitas no novo e-mail" />
                 </div>
               </div>
-              <MensagemAlerta
+              {/* <MensagemAlerta
                 oculto={ocultarModalCancelamento}
-                confirmar={() => {}}
-                cancelar={()=>setVisualizarEmail(false)}/>
+                confirmar={() => {
+                  form.validateForm().then(resp => {
+                    if(resp.emailUsuario){
+                      setOcultarModalCancelamento(true);
+                      form.setFieldTouched('emailUsuario', true, true);
+                    }else{
+                      form.handleSubmit(e => e)
+                    }
+                  });
+                }}
+                cancelar={()=>confirmaCancelamento()}/> */}
             </ModalConteudoHtml>
           </Form>
         )}
@@ -123,7 +167,7 @@ const DadosEmail = () => {
             color={Colors.Roxo}
             border
             bold
-            onClick={() => setVisualizarEmail(true)}
+            onClick={() => setVisualizarFormEmail(true)}
           />
         </div>
       </div>
