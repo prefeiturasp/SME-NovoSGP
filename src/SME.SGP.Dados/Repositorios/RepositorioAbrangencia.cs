@@ -23,12 +23,12 @@ namespace SME.SGP.Dados.Repositorios
             var query = @"select
 	                            1
                             from
-	                            abrangencia
+	                            abrangencia_dres
                             where
 	                            usuario_id = (select id from usuario where login = @login)
 	                            and perfil = @perfil";
 
-            return (await database.Conexao.QueryAsync<bool>(query, new { login, perfil })).Single();
+            return (await database.Conexao.QueryAsync<bool>(query, new { login, perfil })).FirstOrDefault();
         }
 
         public async Task<IEnumerable<AbrangenciaFiltroRetorno>> ObterAbrangenciaPorFiltro(string texto, string login, Guid perfil)
