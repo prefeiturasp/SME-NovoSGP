@@ -28,6 +28,7 @@ namespace SME.SGP.Aplicacao.Integracoes
                 { new KeyValuePair<string, string>("senha", novaSenha) }};
 
             var resposta = await httpClient.PostAsync($"AutenticacaoSgp/AlterarSenha", new FormUrlEncodedContent(valoresParaEnvio));
+
             return new AlterarSenhaRespostaDto
             {
                 Mensagem = resposta.IsSuccessStatusCode ? "" : await resposta.Content.ReadAsStringAsync(),
@@ -54,16 +55,16 @@ namespace SME.SGP.Aplicacao.Integracoes
             else return null;
         }
 
+        public async Task<IEnumerable<DisciplinaResposta>> ObterDisciplinasParaPlanejamento(long codigoTurma, string rfProfessor)
+        {
+            var url = $"professores/{rfProfessor}/turmas/{codigoTurma}/disciplinas/planejamento";
+            return await ObterDisciplinas(url);
+        }
+
         public async Task<IEnumerable<DisciplinaResposta>> ObterDisciplinasPorProfessorETurma(long codigoTurma, string rfProfessor)
         {
-            var resposta = await httpClient.GetAsync($"professores/{rfProfessor}/turmas/{codigoTurma}/disciplinas");
-
-            if (resposta.IsSuccessStatusCode)
-            {
-                var json = await resposta.Content.ReadAsStringAsync();
-                return JsonConvert.DeserializeObject<IEnumerable<DisciplinaResposta>>(json);
-            }
-            return null;
+            var url = $"professores/{rfProfessor}/turmas/{codigoTurma}/disciplinas";
+            return await ObterDisciplinas(url);
         }
 
         public IEnumerable<DreRespostaEolDto> ObterDres()
@@ -209,6 +210,18 @@ namespace SME.SGP.Aplicacao.Integracoes
 
             if (!resposta.IsSuccessStatusCode)
                 throw new NegocioException("Não foi possível reiniciar a senha deste usuário");
+        }
+
+        private async Task<IEnumerable<DisciplinaResposta>> ObterDisciplinas(string url)
+        {
+            var resposta = await httpClient.GetAsync(url);
+
+            if (resposta.IsSuccessStatusCode)
+            {
+                var json = await resposta.Content.ReadAsStringAsync();
+                return JsonConvert.DeserializeObject<IEnumerable<DisciplinaResposta>>(json);
+            }
+            return null;
         }
     }
 }
