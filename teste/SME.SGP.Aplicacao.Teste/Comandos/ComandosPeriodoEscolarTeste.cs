@@ -41,7 +41,7 @@ namespace SME.SGP.Aplicacao.Teste.Comandos
             consultasTipoCalendario.Setup(x => x.BuscarPorId(It.IsAny<long>())).Returns(new TipoCalendarioCompletoDto
             {
                 Id = 1,
-                Modalidade = Modalidade.Fundamental,
+                Modalidade = ModalidadeTipoCalendario.FundamentalMedio,
                 Situacao = true,
                 Periodo = Periodo.Anual,
                 Nome = "Teste",
@@ -91,7 +91,7 @@ namespace SME.SGP.Aplicacao.Teste.Comandos
             consultasTipoCalendario.Setup(x => x.BuscarPorId(It.IsAny<long>())).Returns(new TipoCalendarioCompletoDto
             {
                 Id = 1,
-                Modalidade = Modalidade.Fundamental,
+                Modalidade = ModalidadeTipoCalendario.FundamentalMedio,
                 Situacao = true,
                 Periodo = Periodo.Anual,
                 Nome = "Teste",

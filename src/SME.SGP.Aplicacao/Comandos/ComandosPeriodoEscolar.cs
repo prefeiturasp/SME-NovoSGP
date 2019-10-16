@@ -36,7 +36,7 @@ namespace SME.SGP.Aplicacao.Comandos
                 var lista = new PeriodoEscolarLista
                 {
                     AnoBase = periodosDto.AnoBase,
-                    Eja = tipo.Modalidade == Modalidade.EJA
+                    Eja = tipo.Modalidade == ModalidadeTipoCalendario.EJA
                 };
 
                 lista = MapearListaPeriodos(periodosDto, lista);

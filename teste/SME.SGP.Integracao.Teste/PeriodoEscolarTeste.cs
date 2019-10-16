@@ -22,22 +22,51 @@ namespace SME.SGP.Integracao.Teste
         }
 
         [Fact, Order(1)]
-        public void Deve_Incluir_Periodo_Escolar()
+        public void Deve_Incluir_Tipo_Calendario_e_Periodo_Escolar()
         {
             try
             {
                 _fixture._clientApi.DefaultRequestHeaders.Clear();
 
                 _fixture._clientApi.DefaultRequestHeaders.Authorization =
-                    new AuthenticationHeaderValue("Bearer", _fixture.GerarToken(new Permissao[] { Permissao.PA_I, Permissao.PA_C }));
+                    new AuthenticationHeaderValue("Bearer", _fixture.GerarToken(new Permissao[] { Permissao.C_C, Permissao.C_I, Permissao.C_E }));
+
+                var tipoCalendarioDto = new TipoCalendarioDto();
+                tipoCalendarioDto.AnoLetivo = 2019;
+                tipoCalendarioDto.Nome = "Teste 1";
+                tipoCalendarioDto.Periodo = Periodo.Anual;
+                tipoCalendarioDto.Modalidade = ModalidadeTipoCalendario.FundamentalMedio;
+                tipoCalendarioDto.Situacao = true;
+
+                var tipoCalendarioDto2 = new TipoCalendarioDto();
+                tipoCalendarioDto2.AnoLetivo = 2019;
+                tipoCalendarioDto2.Nome = "Teste 2";
+                tipoCalendarioDto2.Periodo = Periodo.Semestral;
+                tipoCalendarioDto2.Modalidade = ModalidadeTipoCalendario.FundamentalMedio;
+                tipoCalendarioDto2.Situacao = true;
+
+                var jsonParaPost = new StringContent(JsonConvert.SerializeObject(tipoCalendarioDto), UnicodeEncoding.UTF8, "application/json");
+                var postResult = _fixture._clientApi.PostAsync("api/v1/tipo-calendario/", jsonParaPost).Result;
+
+
+                var jsonParaPost2 = new StringContent(JsonConvert.SerializeObject(tipoCalendarioDto2), UnicodeEncoding.UTF8, "application/json");
+                var postResult2 = _fixture._clientApi.PostAsync("api/v1/tipo-calendario/", jsonParaPost2).Result;
+
+                Assert.True(postResult.IsSuccessStatusCode);
+                Assert.True(postResult2.IsSuccessStatusCode);
+
+                _fixture._clientApi.DefaultRequestHeaders.Clear();
+
+                _fixture._clientApi.DefaultRequestHeaders.Authorization =
+                    new AuthenticationHeaderValue("Bearer", _fixture.GerarToken(new Permissao[] { Permissao.PA_I, Permissao.PA_A }));
 
                 PeriodoEscolarListaDto Dto = ObtenhaDto();
 
-                var jsonParaPost = new StringContent(JsonConvert.SerializeObject(Dto), Encoding.UTF8, "application/json");
+                var jsonParaPost3 = new StringContent(JsonConvert.SerializeObject(Dto), Encoding.UTF8, "application/json");
 
-                var postResult = _fixture._clientApi.PostAsync("api/v1/periodo-escolar", jsonParaPost).Result;
+                var postResult3 = _fixture._clientApi.PostAsync("api/v1/periodo-escolar", jsonParaPost3).Result;
 
-                Assert.True(postResult.IsSuccessStatusCode);
+                Assert.True(postResult3.IsSuccessStatusCode);
 
             }
             catch (AggregateException ae)
