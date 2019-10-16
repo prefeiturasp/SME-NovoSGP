@@ -41,6 +41,8 @@ namespace SME.SGP.Dados.Repositorios
 
         private static void MontaFiltrosObter(string dreId, string ueId, int statusId, string turmaId, string usuarioRf, int tipoId, int categoriaId, string titulo, long codigo, int anoLetivo, StringBuilder query)
         {
+            query.AppendLine("where excluida = false ");
+
             if (!string.IsNullOrEmpty(dreId))
                 query.AppendLine("and n.dre_id = @dreId");
 
@@ -73,7 +75,6 @@ namespace SME.SGP.Dados.Repositorios
                 titulo = $"%{titulo}%";
                 query.AppendLine("and lower(f_unaccent(n.titulo)) LIKE @titulo ");
             }
-            query.AppendLine("where excluida = false ");
         }
 
         private static void MontaQueryObterCabecalho(StringBuilder query, bool EhParaCount)
