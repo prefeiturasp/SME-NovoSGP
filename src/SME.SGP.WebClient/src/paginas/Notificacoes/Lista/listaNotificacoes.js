@@ -6,7 +6,7 @@ import Button from '~/componentes/button';
 import CampoTexto from '~/componentes/campoTexto';
 import { Colors } from '~/componentes/colors';
 import SelectComponent from '~/componentes/select';
-import DataTable from '~/componentes/table/dataTable';
+import ListaPaginada from '~/componentes/listaPaginada/listaPaginada';
 import { confirmar } from '~/servicos/alertas';
 import api from '~/servicos/api';
 import history from '~/servicos/history';
@@ -21,11 +21,13 @@ export default function NotificacoesLista() {
   const [idNotificacoesSelecionadas, setIdNotificacoesSelecionadas] = useState(
     []
   );
+
+  const [notificacoesSelecionadas, setNotificacoesSelecionadas] = useState([]);
   const [notificacoes, setNotificacoes] = useState([]);
   const [listaCategorias, setListaCategorias] = useState([]);
   const [listaStatus, setListaStatus] = useState([]);
   const [listaTipos, setTipos] = useState([]);
-  const [paginacao, setPaginacao] = useState({});
+  const [filtro, setFiltro] = useState({});
 
   const [dropdownTurmaSelecionada, setTurmaSelecionada] = useState();
   const [statusSelecionado, setStatusSelecionado] = useState();
@@ -142,23 +144,18 @@ export default function NotificacoesLista() {
       text
     );
   }
-
-  function onSelectRow(ids) {
-    if (ids && ids.length > 0) {
-      const notifSelecionadas = notificacoes.items.filter(noti => {
-        return ids.includes(noti.id);
-      });
-
-      const naoPodeRemover = notifSelecionadas.find(item => !item.podeRemover);
+  const onSelecionarItems = items => {
+    if (items && items.length > 0) {
+      setNotificacoesSelecionadas(items);
+      debugger;
+      const naoPodeRemover = items.find(item => !item.podeRemover);
       if (naoPodeRemover) {
         setDesabilitarBotaoExcluir(true);
       } else {
         setDesabilitarBotaoExcluir(false);
       }
 
-      const naoPodeMarcarLido = notifSelecionadas.find(
-        item => !item.podeMarcarComoLida
-      );
+      const naoPodeMarcarLido = items.find(item => !item.podeMarcarComoLida);
       if (naoPodeMarcarLido) {
         setDesabilitarBotaoMarcarLido(true);
       } else {
@@ -169,12 +166,8 @@ export default function NotificacoesLista() {
       setDesabilitarBotaoMarcarLido(true);
     }
 
-    setIdNotificacoesSelecionadas(ids);
-  }
-
-  function onClickRow(row) {
-    onClickEditar(row.id);
-  }
+    setIdNotificacoesSelecionadas(items.map(c => c.id));
+  };
 
   function onChangeTurma(turma) {
     setTurmaSelecionada(turma);
@@ -204,17 +197,11 @@ export default function NotificacoesLista() {
     setTipoSelecionado(tipo);
   }
 
-  function onClickEditar(id) {
-    history.push(`/notificacoes/${id}`);
+  function onClickEditar(notificacao) {
+    history.push(`/notificacoes/${notificacao.id}`);
   }
 
-  const obterPaginacao = paginacao => {
-    return paginacao
-      ? `numeroPagina=${paginacao.numeroPagina}&numeroRegistros=${paginacao.numeroRegistros}`
-      : '';
-  };
-
-  const filtrarNotificacoes = async novaPaginacao => {
+  const filtrarNotificacoes = async () => {
     const paramsQuery = {
       categoria: categoriaSelecionada,
       codigo: codigoSelecionado || null,
@@ -238,23 +225,8 @@ export default function NotificacoesLista() {
         paramsQuery.turmaId = usuario.turmaSelecionada[0].codEscola;
       }
     }
-    const url = `v1/notificacoes/?${obterPaginacao(
-      novaPaginacao || paginacao
-    )}`;
-    const listaNotifi = await api.get(url, {
-      params: paramsQuery,
-    });
-    setNotificacoes(listaNotifi.data);
-    setIdNotificacoesSelecionadas([]);
-    onSelectRow([]);
+    setFiltro(paramsQuery);
   };
-
-  // useEffect(() => {
-  //   console.log(paginacao);
-
-  //   debugger;
-  //   filtrarNotificacoes();
-  // }, [paginacao]);
 
   async function onClickFiltrar() {
     filtrarNotificacoes();
@@ -286,11 +258,6 @@ export default function NotificacoesLista() {
   function quandoClicarVoltar() {
     history.push(URL_HOME);
   }
-
-  const executaPaginacao = novaPaginacao => {
-    setPaginacao(novaPaginacao);
-    filtrarNotificacoes(novaPaginacao);
-  };
 
   return (
     <>
@@ -388,16 +355,15 @@ export default function NotificacoesLista() {
           />
         </div>
         <div className="col-md-12 pt-2">
-          <DataTable
+          <ListaPaginada
+            url="v1/notificacoes/"
             id="lista-notificacoes"
-            selectedRowKeys={idNotificacoesSelecionadas}
-            onSelectRow={onSelectRow}
-            onClickRow={onClickRow}
-            columns={colunasTabela}
-            dataSource={notificacoes}
-            selectMultipleRows
-            paginacao
-            onPaginacao={novaPaginacao => executaPaginacao(novaPaginacao)}
+            colunaChave="codigo"
+            colunas={colunasTabela}
+            filtro={filtro}
+            onClick={onClickEditar}
+            multiSelecao
+            selecionarItems={onSelecionarItems}
           />
         </div>
       </EstiloLista>
