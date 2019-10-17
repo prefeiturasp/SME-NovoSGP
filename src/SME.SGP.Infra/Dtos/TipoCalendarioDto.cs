@@ -1,7 +1,7 @@
 ﻿using SME.SGP.Dominio;
 using System.ComponentModel.DataAnnotations;
 
-namespace SME.SGP.Dto
+namespace SME.SGP.Infra
 {
     public class TipoCalendarioDto
     {
