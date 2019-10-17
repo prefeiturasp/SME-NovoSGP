@@ -45,6 +45,13 @@ export const Planejamento = styled.div`
   padding-top: 6px;
 `;
 
+export const Select = styled.select`
+  border-radius: 4px;
+  border: solid 1px #ced4da;
+  background-color: #ffffff;
+  margin-rigth: 10px !important;
+`;
+
 export const ParagrafoAlerta = styled.p`
   color: ${Base.VermelhoAlerta};
 `;

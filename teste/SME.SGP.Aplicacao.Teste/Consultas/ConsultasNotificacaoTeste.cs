@@ -1,8 +1,7 @@
-﻿using Moq;
+﻿using Microsoft.AspNetCore.Http;
+using Moq;
 using SME.SGP.Dominio.Interfaces;
 using System;
-using System.Collections.Generic;
-using System.Text;
 using Xunit;
 
 namespace SME.SGP.Aplicacao.Teste.Consultas
@@ -19,13 +18,24 @@ namespace SME.SGP.Aplicacao.Teste.Consultas
 
             repositorioUsuario = new Mock<IRepositorioUsuario>();
 
-            consultasNotificacao = new ConsultasNotificacao(repositorioNotificacao.Object, repositorioUsuario.Object);
+            var context = new DefaultHttpContext();
+            var obj = new HttpContextAccessor();
+            obj.HttpContext = context;
+
+            consultasNotificacao = new ConsultasNotificacao(repositorioNotificacao.Object, repositorioUsuario.Object, obj);
         }
 
         [Fact(DisplayName = "DeveDispararExcecaoAoInstanciarSemDependencias")]
         public void DeveDispararExcecaoAoInstanciarSemDependencias()
         {
-            Assert.Throws<ArgumentNullException>(() => new ConsultasNotificacao(null, null));
+            Assert.Throws<ArgumentNullException>(() => new ConsultasNotificacao(null, null, null));
+        }
+
+        [Fact(DisplayName = "ListarNotificacoesBasicaPorAnoLetivoRF")]
+        public void DeveListarNotificacoesBasicaPorAnoLetivoRF()
+        {
+            consultasNotificacao.ListarPorAnoLetivoRf(2019, "1");
+            repositorioNotificacao.Verify(r => r.ObterNotificacoesPorAnoLetivoERf(It.IsAny<int>(), It.IsAny<string>(), It.IsAny<int>()));
         }
 
         [Fact(DisplayName = "ObterNotificacaoBasicaListaPorAnoLetivoeRf")]
@@ -40,13 +50,6 @@ namespace SME.SGP.Aplicacao.Teste.Consultas
         {
             consultasNotificacao.QuantidadeNotificacoesNaoLidas(2019, "1");
             repositorioNotificacao.Verify(r => r.ObterQuantidadeNotificacoesNaoLidasPorAnoLetivoERf(It.IsAny<int>(), It.IsAny<string>()));
-        }
-
-        [Fact(DisplayName = "ListarNotificacoesBasicaPorAnoLetivoRF")]
-        public void DeveListarNotificacoesBasicaPorAnoLetivoRF()
-        {
-            consultasNotificacao.ListarPorAnoLetivoRf(2019, "1");
-            repositorioNotificacao.Verify(r => r.ObterNotificacoesPorAnoLetivoERf(It.IsAny<int>(), It.IsAny<string>(), It.IsAny<int>()));
         }
     }
 }

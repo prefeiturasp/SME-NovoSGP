@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SME.SGP.Infra;
+using System;
 using System.Threading.Tasks;
 using SME.SGP.Dto;
 
