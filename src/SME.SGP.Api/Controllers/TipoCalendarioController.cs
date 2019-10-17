@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using SME.SGP.Api.Filtros;
 using SME.SGP.Aplicacao;
 using SME.SGP.Dto;
+using SME.SGP.Infra;
 using System.Collections.Generic;
 
 namespace SME.SGP.Api.Controllers
@@ -13,8 +14,9 @@ namespace SME.SGP.Api.Controllers
     [Authorize("Bearer")]
     public class TipoCalendarioController : ControllerBase
     {
-        private readonly IConsultasTipoCalendario consultas;
         private readonly IComandosTipoCalendario comandos;
+        private readonly IConsultasTipoCalendario consultas;
+
         public TipoCalendarioController(IConsultasTipoCalendario consultas,
             IComandosTipoCalendario comandos)
         {
@@ -39,15 +41,6 @@ namespace SME.SGP.Api.Controllers
             return Ok(consultas.BuscarPorId(id));
         }
 
-        [HttpPost]
-        [ProducesResponseType(200)]
-        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        public IActionResult Salvar([FromBody]TipoCalendarioDto dto)
-        {
-            comandos.Salvar(dto);
-            return Ok();
-        }
-
         [HttpDelete]
         [ProducesResponseType(200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
@@ -56,6 +49,14 @@ namespace SME.SGP.Api.Controllers
             comandos.MarcarExcluidos(ids);
             return Ok();
         }
-    }
 
+        [HttpPost]
+        [ProducesResponseType(200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        public IActionResult Salvar([FromBody]TipoCalendarioDto dto)
+        {
+            comandos.Salvar(dto);
+            return Ok();
+        }
+    }
 }

@@ -2,9 +2,12 @@ using Dapper;
 using SME.SGP.Dados.Contexto;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
+using SME.SGP.Infra;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace SME.SGP.Dados.Repositorios
 {
@@ -14,47 +17,33 @@ namespace SME.SGP.Dados.Repositorios
         {
         }
 
-        public IEnumerable<Notificacao> ObterNotificacoesPorAnoLetivoERf(int anoLetivo, string usuarioRf, int limite)
+        #region Obter paginado
+
+        public async Task<PaginacaoResultadoDto<Notificacao>> Obter(string dreId, string ueId, int statusId,
+            string turmaId, string usuarioRf, int tipoId, int categoriaId, string titulo, long codigo, int anoLetivo, Paginacao paginacao)
         {
             var query = new StringBuilder();
 
-            query.AppendLine("select n.* from notificacao n");
-            query.AppendLine("left join usuario u");
-            query.AppendLine("on n.usuario_id = u.id");
-            query.AppendLine("where u.rf_codigo = @usuarioRf");
-            query.AppendLine("and EXTRACT(year FROM n.criado_em) = @anoLetivo");
-            query.AppendLine("and excluida = @excluida");
-            query.AppendLine("order by n.status asc, n.criado_em desc");
-            query.AppendLine("limit @limite");
+            MontaQueryObterCompleta(dreId, ueId, statusId, turmaId, usuarioRf, tipoId, categoriaId, titulo, codigo, anoLetivo, paginacao, query);
 
+            MontaQueryObterCount(dreId, ueId, statusId, turmaId, usuarioRf, tipoId, categoriaId, titulo, codigo, anoLetivo, query);
 
-            return database.Conexao.Query<Notificacao>(query.ToString(), new { anoLetivo, usuarioRf, limite, excluida = false });
+            var retornoPaginado = new PaginacaoResultadoDto<Notificacao>();
+            if (!string.IsNullOrEmpty(titulo))
+            {
+                titulo = $"%{titulo}%";
+            }
+            using (var multi = await database.Conexao.QueryMultipleAsync(query.ToString(), new { dreId, ueId, turmaId, statusId, tipoId, usuarioRf, categoriaId, titulo, codigo, anoLetivo, registrosIgnorados = paginacao.QuantidadeRegistrosIgnorados, registros = paginacao.QuantidadeRegistros }))
+            {
+                retornoPaginado.Items = multi.Read<Notificacao>().ToList();
+                retornoPaginado.TotalRegistros = multi.ReadFirst<int>();
+            }
+            retornoPaginado.TotalPaginas = (int)Math.Ceiling((double)retornoPaginado.TotalRegistros / paginacao.QuantidadeRegistros);
+            return retornoPaginado;
         }
 
-        public int ObterQuantidadeNotificacoesNaoLidasPorAnoLetivoERf(int anoLetivo, string usuarioRf)
+        private static void MontaFiltrosObter(string dreId, string ueId, int statusId, string turmaId, string usuarioRf, int tipoId, int categoriaId, string titulo, long codigo, int anoLetivo, StringBuilder query)
         {
-            var query = new StringBuilder();
-
-            query.AppendLine("select count(*) from notificacao n");
-            query.AppendLine("left join usuario u");
-            query.AppendLine("on n.usuario_id = u.id");
-            query.AppendLine("where u.rf_codigo = @usuarioRf");
-            query.AppendLine("and excluida = @excluida");
-            query.AppendLine("and n.status = @naoLida");
-            query.AppendLine("and EXTRACT(year FROM n.criado_em) = @anoLetivo");
-
-            return database.Conexao.QueryFirst<int>(query.ToString(), new { anoLetivo, usuarioRf, excluida = false, naoLida = (int)NotificacaoStatus.Pendente });
-        }
-
-        public IEnumerable<Notificacao> Obter(string dreId, string ueId, int statusId,
-            string turmaId, string usuarioRf, int tipoId, int categoriaId, string titulo, long codigo, int anoLetivo)
-        {
-            var query = new StringBuilder();
-
-            query.AppendLine("select n.* from notificacao n");
-            query.AppendLine("left join usuario u");
-            query.AppendLine("on n.usuario_id = u.id");
-
             query.AppendLine("where excluida = false ");
 
             if (!string.IsNullOrEmpty(dreId))
@@ -86,13 +75,52 @@ namespace SME.SGP.Dados.Repositorios
 
             if (!string.IsNullOrEmpty(titulo))
             {
-                titulo = $"%{titulo}%";
-                query.AppendLine("and lower(f_unaccent(n.titulo)) LIKE @titulo ");
+                query.AppendLine("and lower(f_unaccent(n.titulo)) LIKE  @titulo");
             }
+        }
 
+        private static void MontaQueryObterCabecalho(StringBuilder query, bool EhParaCount)
+        {
+            if (EhParaCount)
+                query.AppendLine("select count(n.*) from notificacao n");
+            else query.AppendLine("select n.* from notificacao n");
+
+            query.AppendLine("left join usuario u");
+            query.AppendLine("on n.usuario_id = u.id");
+        }
+
+        private static void MontaQueryObterCompleta(string dreId, string ueId, int statusId, string turmaId, string usuarioRf, int tipoId, int categoriaId, string titulo, long codigo, int anoLetivo, Paginacao paginacao, StringBuilder query)
+        {
+            MontaQueryObterCabecalho(query, false);
+            MontaFiltrosObter(dreId, ueId, statusId, turmaId, usuarioRf, tipoId, categoriaId, titulo, codigo, anoLetivo, query);
             query.AppendLine("order by id desc");
 
-            return database.Conexao.Query<Notificacao>(query.ToString(), new { dreId, ueId, turmaId, statusId, tipoId, usuarioRf, categoriaId, titulo, codigo, anoLetivo });
+            if (paginacao.QuantidadeRegistros != 0)
+                query.AppendLine("OFFSET @registrosIgnorados ROWS FETCH NEXT  @registros ROWS ONLY;");
+        }
+
+        private static void MontaQueryObterCount(string dreId, string ueId, int statusId, string turmaId, string usuarioRf, int tipoId, int categoriaId, string titulo, long codigo, int anoLetivo, StringBuilder query)
+        {
+            MontaQueryObterCabecalho(query, true);
+            MontaFiltrosObter(dreId, ueId, statusId, turmaId, usuarioRf, tipoId, categoriaId, titulo, codigo, anoLetivo, query);
+        }
+
+        #endregion Obter paginado
+
+        public IEnumerable<Notificacao> ObterNotificacoesPorAnoLetivoERf(int anoLetivo, string usuarioRf, int limite)
+        {
+            var query = new StringBuilder();
+
+            query.AppendLine("select n.* from notificacao n");
+            query.AppendLine("left join usuario u");
+            query.AppendLine("on n.usuario_id = u.id");
+            query.AppendLine("where u.rf_codigo = @usuarioRf");
+            query.AppendLine("and EXTRACT(year FROM n.criado_em) = @anoLetivo");
+            query.AppendLine("and excluida = @excluida");
+            query.AppendLine("order by n.status asc, n.criado_em desc");
+            query.AppendLine("limit @limite");
+
+            return database.Conexao.Query<Notificacao>(query.ToString(), new { anoLetivo, usuarioRf, limite, excluida = false });
         }
 
         public override Notificacao ObterPorId(long id)
@@ -119,6 +147,21 @@ namespace SME.SGP.Dados.Repositorios
 
                     return notificacao;
                 }, param: new { id }).FirstOrDefault();
+        }
+
+        public int ObterQuantidadeNotificacoesNaoLidasPorAnoLetivoERf(int anoLetivo, string usuarioRf)
+        {
+            var query = new StringBuilder();
+
+            query.AppendLine("select count(*) from notificacao n");
+            query.AppendLine("left join usuario u");
+            query.AppendLine("on n.usuario_id = u.id");
+            query.AppendLine("where u.rf_codigo = @usuarioRf");
+            query.AppendLine("and excluida = @excluida");
+            query.AppendLine("and n.status = @naoLida");
+            query.AppendLine("and EXTRACT(year FROM n.criado_em) = @anoLetivo");
+
+            return database.Conexao.QueryFirst<int>(query.ToString(), new { anoLetivo, usuarioRf, excluida = false, naoLida = (int)NotificacaoStatus.Pendente });
         }
 
         public long ObterUltimoCodigoPorAno(int ano)
