@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Switch } from 'react-router-dom';
 import { setRotas } from '../redux/modulos/navegacao/actions';
@@ -25,7 +24,6 @@ import TipoCalendarioEscolarLista from '~/paginas/CalendarioEscolar/TipoCalendar
 import TipoCalendarioEscolarForm from '~/paginas/CalendarioEscolar/TipoCalendarioEscolar/tipoCalendarioEscolarForm';
 import TipoFeriadoLista from '~/paginas/CalendarioEscolar/TipoFeriado/tipoFeriadoLista';
 import TipoFeriadoForm from '~/paginas/CalendarioEscolar/TipoFeriado/tipoFeriadoForm';
-
 
 export default function Rotas() {
   const rotas = new Map();
