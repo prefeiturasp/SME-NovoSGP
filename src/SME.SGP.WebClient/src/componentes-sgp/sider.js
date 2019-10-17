@@ -309,12 +309,11 @@ const Sider = () => {
                 </Menu.Item>
                 <Menu.Item key="83" id="calPeriodosEscolares">
                   <span className="menuItem">Períodos Escolares</span>
-                  {/* TODO - Descomentar quando estiver DONE a estoria */}
-                  {/* <Link
+                  <Link
                     to="/calendario-escolar/periodos-escolares"
                     className="nav-link text-white"
                     id="linkPeriodosEscolares"
-                  /> */}
+                  />
                 </Menu.Item>
                 <Menu.Item key="84" id="calPeriodosFechamentoAbertura" style={{lineHeight: '18px !important'}}>
                   <span className="menuItem">Períodos de fechamento (Abertura)</span>
