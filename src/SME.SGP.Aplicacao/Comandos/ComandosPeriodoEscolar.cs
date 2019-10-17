@@ -1,4 +1,5 @@
 ﻿using SME.SGP.Aplicacao.Interfaces.Comandos;
+using SME.SGP.Aplicacao.Interfaces.Consultas;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Entidades;
 using SME.SGP.Dominio.Interfaces.Repositorios;
@@ -71,7 +72,7 @@ namespace SME.SGP.Aplicacao.Comandos
 
         private PeriodoEscolar ObterPeriodo(long codigo, PeriodoEscolarDto periodo)
         {
-            var periodoSalvar = new PeriodoEscolar();
+            var periodoSalvar = repositorioPeriodo.ObterPorId(codigo);
 
             periodoSalvar.PeriodoInicio = periodo.PeriodoInicio;
             periodoSalvar.PeriodoFim = periodo.PeriodoFim;
