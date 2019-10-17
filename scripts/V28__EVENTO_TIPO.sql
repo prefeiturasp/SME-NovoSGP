@@ -6,7 +6,7 @@ CREATE TABLE public.evento_tipo (
 	tipo_data int4 NOT NULL,
 	dependencia bool NOT NULL DEFAULT false,
 	letivo int4 NOT NULL,
-	situacao bool NOT NULL DEFAULT true,
+	ativo bool NOT NULL DEFAULT true,
 	criado_em timestamp NOT NULL,
 	alterado_em timestamp NOT NULL,
 	alterado_por varchar(200) NOT NULL,
