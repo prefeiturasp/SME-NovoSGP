@@ -1,14 +1,25 @@
-import React, { useState, useEffect, useRef, useLayoutEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useSelector } from 'react-redux';
 import styled from 'styled-components';
 import shortid from 'shortid';
 import { store } from '../redux';
-import { selecionarTurma } from '../redux/modulos/usuario/actions';
+import {
+  selecionarTurma,
+  removerTurma,
+} from '../redux/modulos/usuario/actions';
 import Grid from '../componentes/grid';
 import Button from '../componentes/button';
 import { Base, Colors } from '../componentes/colors';
 import SelectComponent from '../componentes/select';
 import api from '../servicos/api';
+import {
+  salvarAnosLetivos,
+  salvarModalidades,
+  salvarPeriodos,
+  salvarDres,
+  salvarUnidadesEscolares,
+  salvarTurmas,
+} from '~/redux/modulos/filtro/actions';
 
 const Filtro = () => {
   const [alternarFocoCampo, setAlternarFocoCampo] = useState(false);
@@ -22,7 +33,7 @@ const Filtro = () => {
     }
   `;
 
-  const Input = styled.input`
+  const Campo = styled.input`
     background: ${Base.CinzaFundo};
     font-weight: bold;
     height: 45px;
@@ -47,7 +58,7 @@ const Filtro = () => {
     cursor: pointer;
   `;
 
-  const Search = styled(Icone)`
+  const Busca = styled(Icone)`
     left: 0;
     max-height: 23px;
     max-width: 14px;
@@ -56,12 +67,12 @@ const Filtro = () => {
     top: 0;
   `;
 
-  const Times = styled(Icone)`
+  const Fechar = styled(Icone)`
     right: 50px;
     top: 15px;
   `;
 
-  const Caret = styled(Icone)`
+  const Seta = styled(Icone)`
     background: ${Base.CinzaDesabilitado};
     max-height: 36px;
     max-width: 36px;
@@ -72,7 +83,7 @@ const Filtro = () => {
     ${alternarFocoBusca && 'transform: rotate(180deg);'}
   `;
 
-  const ListItem = styled.li`
+  const ItemLista = styled.li`
     cursor: pointer;
     &:hover,
     &:focus,
@@ -102,7 +113,8 @@ const Filtro = () => {
   ] = useState(true);
   const [campoTurmaDesabilitado, setCampoTurmaDesabilitado] = useState(true);
 
-  const [novoAnosLetivos, setNovoAnosLetivos] = useState([]);
+  const anosLetivoStore = useSelector(state => state.filtro.anosLetivos);
+  const [anosLetivos, setAnosLetivos] = useState(anosLetivoStore);
   const [anoLetivoSelecionado, setAnoLetivoSelecionado] = useState();
 
   useEffect(() => {
@@ -112,18 +124,20 @@ const Filtro = () => {
         resposta.data.forEach(ano => {
           anosLetivos.push({ desc: ano, valor: ano });
         });
-        setNovoAnosLetivos(anosLetivos);
+        store.dispatch(salvarAnosLetivos(anosLetivos));
+        setAnosLetivos(anosLetivos);
         setCampoAnoLetivoDesabilitado(false);
       }
     });
   }, []);
 
   useEffect(() => {
-    if (novoAnosLetivos && novoAnosLetivos.length === 1)
-      setAnoLetivoSelecionado(novoAnosLetivos[0].valor);
-  }, [novoAnosLetivos]);
+    if (anosLetivos && anosLetivos.length === 1)
+      setAnoLetivoSelecionado(anosLetivos[0].valor);
+  }, [anosLetivos]);
 
-  const [novoModalidades, setNovoModalidades] = useState([]);
+  const modalidadesStore = useSelector(state => state.filtro.modalidades);
+  const [modalidades, setModalidades] = useState(modalidadesStore);
   const [modalidadeSelecionada, setModalidadeSelecionada] = useState();
 
   useEffect(() => {
@@ -137,7 +151,8 @@ const Filtro = () => {
               valor: modalidade.id,
             });
           });
-          setNovoModalidades(modalidades);
+          store.dispatch(salvarModalidades(modalidades));
+          setModalidades(modalidades);
           setCampoModalidadeDesabilitado(false);
         }
       });
@@ -148,14 +163,16 @@ const Filtro = () => {
   }, [anoLetivoSelecionado]);
 
   useEffect(() => {
-    if (novoModalidades && novoModalidades.length === 1)
-      setModalidadeSelecionada(novoModalidades[0].valor);
-  }, [novoModalidades]);
+    if (modalidades && modalidades.length === 1)
+      setModalidadeSelecionada(modalidades[0].valor);
+  }, [modalidades]);
 
-  const [novoPeriodos, setNovoPeriodos] = useState([]);
+  const periodosStore = useSelector(state => state.filtro.periodos);
+  const [periodos, setPeriodos] = useState(periodosStore);
   const [periodoSelecionado, setPeriodoSelecionado] = useState();
 
-  const [novoDres, setNovoDres] = useState([]);
+  const dresStore = useSelector(state => state.filtro.dres);
+  const [dres, setDres] = useState(dresStore);
   const [dreSelecionada, setDreSelecionada] = useState();
 
   useEffect(() => {
@@ -166,7 +183,8 @@ const Filtro = () => {
           resposta.data.forEach(periodo => {
             periodos.push({ desc: periodo, valor: periodo });
           });
-          setNovoPeriodos(periodos);
+          store.dispatch(salvarPeriodos(periodos));
+          setPeriodos(periodos);
           setCampoPeriodoDesabilitado(false);
         }
       });
@@ -181,7 +199,8 @@ const Filtro = () => {
               abrev: dre.abreviacao,
             });
           });
-          setNovoDres(dres);
+          store.dispatch(salvarDres(dres));
+          setDres(dres);
           setCampoDreDesabilitado(false);
         }
       });
@@ -194,21 +213,30 @@ const Filtro = () => {
   }, [modalidadeSelecionada]);
 
   useEffect(() => {
-    if (novoDres && novoDres.length === 1) setDreSelecionada(novoDres[0].valor);
-  }, [novoDres]);
+    if (dres && dres.length === 1) setDreSelecionada(dres[0].valor);
+  }, [dres]);
 
-  const [novoUnidadesEscolares, setNovoUnidadesEscolares] = useState([]);
+  const unidadesEscolaresStore = useSelector(
+    state => state.filtro.unidadesEscolares
+  );
+  const [unidadesEscolares, setUnidadesEscolares] = useState(
+    unidadesEscolaresStore
+  );
   const [unidadeEscolarSelecionada, setUnidadeEscolarSelecionada] = useState();
 
   useEffect(() => {
     if (dreSelecionada) {
-      const unidades = [];
+      const unidadesEscolares = [];
       api.get(`v1/abrangencia/dres/${dreSelecionada}/ues`).then(resposta => {
         if (resposta.data) {
           resposta.data.forEach(unidade => {
-            unidades.push({ desc: unidade.nome, valor: unidade.codigo });
+            unidadesEscolares.push({
+              desc: unidade.nome,
+              valor: unidade.codigo,
+            });
           });
-          setNovoUnidadesEscolares(unidades);
+          store.dispatch(salvarUnidadesEscolares(unidadesEscolares));
+          setUnidadesEscolares(unidadesEscolares);
           setCampoUnidadeEscolarDesabilitado(false);
         }
       });
@@ -219,11 +247,12 @@ const Filtro = () => {
   }, [dreSelecionada]);
 
   useEffect(() => {
-    if (novoUnidadesEscolares && novoUnidadesEscolares.length === 1)
-      setUnidadeEscolarSelecionada(novoUnidadesEscolares[0].valor);
-  }, [novoUnidadesEscolares]);
+    if (unidadesEscolares && unidadesEscolares.length === 1)
+      setUnidadeEscolarSelecionada(unidadesEscolares[0].valor);
+  }, [unidadesEscolares]);
 
-  const [novoTurmas, setNovoTurmas] = useState([]);
+  const turmasStore = useSelector(state => state.filtro.turmas);
+  const [turmas, setTurmas] = useState(turmasStore);
   const [turmaSelecionada, setTurmaSelecionada] = useState();
 
   useEffect(() => {
@@ -236,7 +265,8 @@ const Filtro = () => {
             resposta.data.forEach(turma => {
               turmas.push({ desc: turma.nome, valor: turma.codigo });
             });
-            setNovoTurmas(turmas);
+            store.dispatch(salvarTurmas(turmas));
+            setTurmas(turmas);
             setCampoTurmaDesabilitado(false);
           }
         });
@@ -247,18 +277,23 @@ const Filtro = () => {
   }, [unidadeEscolarSelecionada]);
 
   useEffect(() => {
-    if (novoTurmas && novoTurmas.length === 1)
-      setTurmaSelecionada(novoTurmas[0].valor);
-  }, [novoTurmas]);
+    if (turmas && turmas.length === 1) setTurmaSelecionada(turmas[0].valor);
+  }, [turmas]);
 
-  const usuario = useSelector(state => state.usuario);
+  const usuarioStore = useSelector(state => state.usuario);
   const [turmaUsuarioSelecionada, setTurmaUsuarioSelecionada] = useState(
-    usuario.turmaSelecionada
+    usuarioStore.turmaSelecionada
   );
 
   useEffect(() => {
-    if (typeof turmaUsuarioSelecionada === 'object')
+    if (typeof turmaUsuarioSelecionada === 'object') {
+      setAnoLetivoSelecionado(turmaUsuarioSelecionada.anoLetivo);
+      setModalidadeSelecionada(turmaUsuarioSelecionada.modalidade.toString());
+      setDreSelecionada(turmaUsuarioSelecionada.dre);
+      setUnidadeEscolarSelecionada(turmaUsuarioSelecionada.unidadeEscolar);
+      setTurmaSelecionada(turmaUsuarioSelecionada.turma);
       setTurmaUsuarioSelecionada(turmaUsuarioSelecionada.desc);
+    }
   }, [turmaUsuarioSelecionada]);
 
   const aplicarFiltro = () => {
@@ -269,13 +304,13 @@ const Filtro = () => {
       unidadeEscolarSelecionada &&
       turmaSelecionada
     ) {
-      const modalidadeDesc = novoModalidades.filter(
+      const modalidadeDesc = modalidades.filter(
         modalidade => modalidade.valor.toString() === modalidadeSelecionada
       );
-      const turmaDesc = novoTurmas.filter(
+      const turmaDesc = turmas.filter(
         turma => turma.valor === turmaSelecionada
       );
-      const unidadeEscolarDesc = novoUnidadesEscolares.filter(
+      const unidadeEscolarDesc = unidadesEscolares.filter(
         unidade => unidade.valor === unidadeEscolarSelecionada
       );
       setTurmaUsuarioSelecionada(
@@ -321,7 +356,7 @@ const Filtro = () => {
       mostrarEsconderBusca();
   };
 
-  useLayoutEffect(() => {
+  useEffect(() => {
     if (!alternarFocoBusca && alternarFocoCampo) campoBuscaRef.current.focus();
     if (alternarFocoBusca)
       document.addEventListener('click', controlaClickFora);
@@ -331,45 +366,51 @@ const Filtro = () => {
   const [textoAutocomplete, setTextoAutocomplete] = useState();
   const [resultadosFiltro, setResultadosFiltro] = useState([]);
 
+  useEffect(() => {
+    campoBuscaRef.current.focus();
+    if (!textoAutocomplete) setResultadosFiltro([]);
+  }, [textoAutocomplete]);
+
+  useEffect(() => {
+    campoBuscaRef.current.focus();
+  }, [resultadosFiltro]);
+
   const onChangeAutocomplete = () => {
     const texto = campoBuscaRef.current.value;
     setTextoAutocomplete(texto);
 
-    api.get(`v1/abrangencia/${texto}`).then(resposta => {
-      console.log(resposta);
-    });
-
-    // const resultadosAutocomplete = [];
-    // if (texto.length >= 2) {
-    //   dados
-    //     .filter(dado => {
-    //       return (
-    //         dado.modalidade.toLowerCase().includes(texto) ||
-    //         dado.nomeTurma.toLowerCase().includes(texto) ||
-    //         dado.ue.toLowerCase().includes(texto)
-    //       );
-    //     })
-    //     .map(dado => {
-    //       return resultadosAutocomplete.push(dado);
-    //     });
-    //   setResultadosFiltro(resultadosAutocomplete);
-    // }
+    if (texto.length >= 2) {
+      api.get(`v1/abrangencia/${texto}`).then(resposta => {
+        if (resposta.data) {
+          setResultadosFiltro(resposta.data);
+        }
+      });
+    }
   };
 
   const selecionaTurmaAutocomplete = resultado => {
-    store.dispatch(selecionarTurma(resultado));
+    setTurmaUsuarioSelecionada(resultado.descricaoFiltro);
+    const turma = {
+      anoLetivo: resultado.anoLetivo,
+      modalidade: resultado.codigoModalidade,
+      dre: resultado.codigoDre,
+      unidadeEscolar: resultado.codigoUe,
+      turma: resultado.codigoTurma,
+      desc: resultado.descricaoFiltro,
+    };
+    store.dispatch(selecionarTurma(turma));
     setResultadosFiltro([]);
   };
 
   let selecionado = -1;
 
-  const onKeyDownAutocomplete = event => {
+  const aoPressionarTeclaBaixoAutocomplete = evento => {
     if (resultadosFiltro && resultadosFiltro.length > 0) {
       const resultados = document.querySelectorAll('.list-group-item');
       if (resultados && resultados.length > 0) {
-        if (event.key === 'ArrowUp') {
+        if (evento.key === 'ArrowUp') {
           if (selecionado > 0) selecionado -= 1;
-        } else if (event.key === 'ArrowDown') {
+        } else if (evento.key === 'ArrowDown') {
           if (selecionado < resultados.length - 1) selecionado += 1;
         }
         resultados.forEach(resultado =>
@@ -383,15 +424,17 @@ const Filtro = () => {
     }
   };
 
-  const onSubmitAutocomplete = event => {
-    event.preventDefault();
+  const aoSubmeterAutocomplete = evento => {
+    evento.preventDefault();
     if (resultadosFiltro) {
       if (resultadosFiltro.length === 1) {
-        setModalidadeSelecionada(resultadosFiltro[0].codModalidade.toString());
-        setDreSelecionada(resultadosFiltro[0].codDre);
-        setUnidadeEscolarSelecionada(resultadosFiltro[0].codEscola);
+        setModalidadeSelecionada(
+          resultadosFiltro[0].codigoModalidade.toString()
+        );
+        setDreSelecionada(resultadosFiltro[0].codigoDre);
+        setUnidadeEscolarSelecionada(resultadosFiltro[0].codigoUe);
         setTimeout(() => {
-          setTurmaSelecionada(resultadosFiltro[0].codTurma.toString());
+          setTurmaSelecionada(resultadosFiltro[0].codigoTurma);
         }, 1000);
         selecionaTurmaAutocomplete(resultadosFiltro[0]);
       } else {
@@ -403,11 +446,11 @@ const Filtro = () => {
           if (indice) {
             const resultado = resultadosFiltro[indice];
             if (resultado) {
-              setModalidadeSelecionada(resultado.codModalidade.toString());
-              setDreSelecionada(resultado.codDre);
-              setUnidadeEscolarSelecionada(resultado.codEscola);
+              setModalidadeSelecionada(resultado.codigoModalidade.toString());
+              setDreSelecionada(resultado.codigoDre);
+              setUnidadeEscolarSelecionada(resultado.codigoUe);
               setTimeout(() => {
-                setTurmaSelecionada(resultado.codTurma.toString());
+                setTurmaSelecionada(resultado.codigoTurma);
               }, 1000);
               selecionaTurmaAutocomplete(resultado);
             }
@@ -448,76 +491,40 @@ const Filtro = () => {
     setTurmaSelecionada(turma);
   };
 
-  // const selecionaTurma = () => {
-  // const turma = dados.filter(dado => {
-  //   return (
-  //     dado.anoLetivo.toString() === anoLetivoFiltroSelecionado &&
-  //     dado.codModalidade.toString() === modalidadeFiltroSelecionada &&
-  //     dado.codDre.toString() === dreFiltroSelecionada &&
-  //     dado.codEscola.toString() === unidadeEscolarFiltroSelecionada &&
-  //     dado.codTurma.toString() === turmaFiltroSelecionada
-  //   );
-  // });
-
-  // if (turma.length > 0) {
-  //   store.dispatch(selecionarTurma(turma));
-  //   setAlternarFocoBusca(false);
-  //   sucesso('Turma selecionada com sucesso!');
-  // }
-  // };
-
-  // const aplicarFiltro = () => {
-  //   if (
-  //     // anoLetivoFiltroSelecionado &&
-  //     modalidadeFiltroSelecionada &&
-  //     dreFiltroSelecionada &&
-  //     unidadeEscolarFiltroSelecionada &&
-  //     turmaFiltroSelecionada
-  //   ) {
-  //     if (modalidadeFiltroSelecionada == 3 && !periodoFiltroSelecionado) {
-  //       erro('É necessário informar todos os dados da turma!');
-  //     } else {
-  //       selecionaTurma();
-  //     }
-  //   } else {
-  //     erro('É necessário informar todos os dados da turma!');
-  //   }
-  // };
-
   const removerTurmaSelecionada = () => {
-    // store.dispatch(removerTurma());
-    // setTextoAutocomplete();
-    // setModalidadeFiltroSelecionada();
-    // setPeriodoFiltroSelecionado();
-    // setDreFiltroSelecionada();
-    // setUnidadeEscolarFiltroSelecionada();
-    // setTurmaFiltroSelecionada();
-    // setTurmaUeSelecionada();
+    store.dispatch(removerTurma());
+    setTextoAutocomplete();
+    setModalidadeSelecionada();
+    setPeriodoSelecionado();
+    setDreSelecionada();
+    setUnidadeEscolarSelecionada();
+    setTurmaSelecionada();
+    setTurmaUsuarioSelecionada();
   };
 
   return (
     <Container className="position-relative w-100">
-      <form className="w-100" onSubmit={onSubmitAutocomplete}>
+      <form className="w-100" onSubmit={aoSubmeterAutocomplete}>
         <div className="form-group mb-0 w-100 position-relative">
-          <Search className="fa fa-search fa-lg bg-transparent position-absolute text-center" />
-          <Input
+          <Busca className="fa fa-search fa-lg bg-transparent position-absolute text-center" />
+          <Campo
             type="text"
             className="form-control form-control-lg rounded d-flex px-5 border-0 fonte-14"
             placeholder="Pesquisar Turma"
             ref={campoBuscaRef}
             onFocus={aoFocarBusca}
             onChange={onChangeAutocomplete}
-            onKeyDown={onKeyDownAutocomplete}
+            onKeyDown={aoPressionarTeclaBaixoAutocomplete}
             readOnly={!!turmaUsuarioSelecionada}
             value={turmaUsuarioSelecionada || textoAutocomplete}
           />
           {turmaUsuarioSelecionada && (
-            <Times
+            <Fechar
               className="fa fa-times position-absolute"
               onClick={removerTurmaSelecionada}
             />
           )}
-          <Caret
+          <Seta
             className="fa fa-caret-down rounded-circle position-absolute text-center"
             onClick={mostrarEsconderBusca}
           />
@@ -527,14 +534,14 @@ const Filtro = () => {
             <div className="list-group">
               {resultadosFiltro.map((resultado, indice) => {
                 return (
-                  <ListItem
+                  <ItemLista
                     key={shortid.generate()}
                     className="list-group-item list-group-item-action border-0 rounded-0"
                     onClick={() => selecionaTurmaAutocomplete(resultado)}
                     tabIndex={indice}
                   >
-                    {`${resultado.modalidade} - ${resultado.nomeTurma} - ${resultado.tipoEscola} - ${resultado.ue}`}
-                  </ListItem>
+                    {resultado.descricaoFiltro}
+                  </ItemLista>
                 );
               })}
             </div>
@@ -550,7 +557,7 @@ const Filtro = () => {
                 <SelectComponent
                   className="fonte-14"
                   onChange={aoTrocarAnoLetivo}
-                  lista={novoAnosLetivos}
+                  lista={anosLetivos}
                   valueOption="valor"
                   valueText="desc"
                   valueSelect={anoLetivoSelecionado}
@@ -565,7 +572,7 @@ const Filtro = () => {
                 <SelectComponent
                   className="fonte-14"
                   onChange={aoTrocarModalidade}
-                  lista={novoModalidades}
+                  lista={modalidades}
                   valueOption="valor"
                   valueText="desc"
                   valueSelect={modalidadeSelecionada}
@@ -578,7 +585,7 @@ const Filtro = () => {
                   <SelectComponent
                     className="fonte-14"
                     onChange={aoTrocarPeriodo}
-                    lista={novoPeriodos}
+                    lista={periodos}
                     valueOption="valor"
                     valueText="desc"
                     valueSelect={periodoSelecionado}
@@ -592,7 +599,7 @@ const Filtro = () => {
               <SelectComponent
                 className="fonte-14"
                 onChange={aoTrocarDre}
-                lista={novoDres}
+                lista={dres}
                 valueOption="valor"
                 valueText="desc"
                 valueSelect={dreSelecionada}
@@ -604,7 +611,7 @@ const Filtro = () => {
               <SelectComponent
                 className="fonte-14"
                 onChange={aoTrocarUnidadeEscolar}
-                lista={novoUnidadesEscolares}
+                lista={unidadesEscolares}
                 valueOption="valor"
                 valueText="desc"
                 valueSelect={unidadeEscolarSelecionada}
@@ -617,7 +624,7 @@ const Filtro = () => {
                 <SelectComponent
                   className="fonte-14"
                   onChange={aoTrocarTurma}
-                  lista={novoTurmas}
+                  lista={turmas}
                   valueOption="valor"
                   valueText="desc"
                   valueSelect={turmaSelecionada}
