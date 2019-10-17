@@ -16,7 +16,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\SME.SGP.Dominio.Servicos\SME.SGP.Dominio.Servicos.csproj" />
     <ProjectReference Include="..\src\SME.SGP.Aplicacao\SME.SGP.Aplicacao.csproj" />
     <ProjectReference Include="..\src\SME.SGP.Dominio.Interfaces\SME.SGP.Dominio.Interfaces.csproj" />
   </ItemGroup>

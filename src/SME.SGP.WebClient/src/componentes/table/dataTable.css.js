@@ -201,6 +201,10 @@ export const Container = styled.div`
     }
   }
 
+  .ant-pagination-options {
+    padding-left: 20px;
+  }
+
   .botao-reiniciar-tabela-acao {
     margin: -10px -7px -10px -14px;
   }
