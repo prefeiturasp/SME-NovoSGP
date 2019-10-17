@@ -8,6 +8,7 @@ using SME.SGP.Dados.Contexto;
 using SME.SGP.Dados.Repositorios;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
+using SME.SGP.Dominio.Interfaces.Repositorios;
 using SME.SGP.Dominio.Servicos;
 
 namespace SME.SGP.IoC
@@ -77,6 +78,8 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IRepositorioWorkflowAprovacaoNivelUsuario, RepositorioWorkflowAprovacaoNivelUsuario>();
             services.TryAddScoped<IRepositorioPrioridadePerfil, RepositorioPrioridadePerfil>();
             services.TryAddScoped<IRepositorioConfiguracaoEmail, RepositorioConfiguracaoEmail>();
+            services.TryAddScoped<IRepositorioTipoEvento, RepositorioTipoEvento>();
+            
         }
 
         private static void RegistrarServicos(IServiceCollection services)
