@@ -10,7 +10,6 @@ import * as Yup from 'yup';
 import { Form } from 'antd';
 import api from '~/servicos/api';
 import { sucesso, confirmar } from '~/servicos/alertas';
-import MensagemAlerta from './mensagemAlerta';
 
 const DadosEmail = () => {
 
@@ -49,21 +48,6 @@ const DadosEmail = () => {
       })
   }
 
-  const cancelarEdicao = novoEmail =>{
-    setEmailEdicao(novoEmail);
-    if(novoEmail !== email){
-      setOcultarModalCancelamento(false);
-    }else{
-      setVisualizarFormEmail(false);
-    }
-  }
-
-  const confirmaCancelamento = () => {
-    setEmailEdicao(email);
-    setOcultarModalCancelamento(true);
-    setVisualizarFormEmail(false)
-  }
-
   const onClickCancelar = async form => {
     const novoEmail = form.values.emailUsuario;
     if(email !== novoEmail){
@@ -84,8 +68,6 @@ const DadosEmail = () => {
       } else {
         setVisualizarFormEmail(false);
       }
-      // setOcultarModalCancelamento(true);
-      // form.setFieldTouched('emailUsuario', true, true);
     }else{
       setVisualizarFormEmail(false);
       setEmailEdicao(email);
@@ -113,11 +95,11 @@ const DadosEmail = () => {
                 form.validateForm().then(() => {form.handleSubmit(e => e);});
               }}
               onConfirmacaoSecundaria={() => onClickCancelar(form)}
-              onClose={() => cancelarEdicao(form.values.emailUsuario)}
+              onClose={() => onClickCancelar(form)}
               labelBotaoPrincipal="Confirmar"
               labelBotaoSecundario="Cancelar"
               titulo="Editar E-mail"
-              closable={false}
+              closable={true}
             >
               <div>
                 <CampoTexto
@@ -132,19 +114,6 @@ const DadosEmail = () => {
                           passarão a ser feitas no novo e-mail" />
                 </div>
               </div>
-              {/* <MensagemAlerta
-                oculto={ocultarModalCancelamento}
-                confirmar={() => {
-                  form.validateForm().then(resp => {
-                    if(resp.emailUsuario){
-                      setOcultarModalCancelamento(true);
-                      form.setFieldTouched('emailUsuario', true, true);
-                    }else{
-                      form.handleSubmit(e => e)
-                    }
-                  });
-                }}
-                cancelar={()=>confirmaCancelamento()}/> */}
             </ModalConteudoHtml>
           </Form>
         )}
