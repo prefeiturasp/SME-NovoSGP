@@ -33,18 +33,20 @@ namespace SME.SGP.Dados.Repositorios
             {
                 titulo = $"%{titulo}%";
             }
+
             using (var multi = await database.Conexao.QueryMultipleAsync(query.ToString(), new { dreId, ueId, turmaId, statusId, tipoId, usuarioRf, categoriaId, titulo, codigo, anoLetivo, registrosIgnorados = paginacao.QuantidadeRegistrosIgnorados, registros = paginacao.QuantidadeRegistros }))
             {
                 retornoPaginado.Items = multi.Read<Notificacao>().ToList();
                 retornoPaginado.TotalRegistros = multi.ReadFirst<int>();
             }
+
             retornoPaginado.TotalPaginas = (int)Math.Ceiling((double)retornoPaginado.TotalRegistros / paginacao.QuantidadeRegistros);
             return retornoPaginado;
         }
 
         private static void MontaFiltrosObter(string dreId, string ueId, int statusId, string turmaId, string usuarioRf, int tipoId, int categoriaId, string titulo, long codigo, int anoLetivo, StringBuilder query)
         {
-            query.AppendLine("where excluida = false ");
+            query.AppendLine("where excluida = false");
 
             if (!string.IsNullOrEmpty(dreId))
                 query.AppendLine("and n.dre_id = @dreId");
@@ -81,6 +83,8 @@ namespace SME.SGP.Dados.Repositorios
 
         private static void MontaQueryObterCabecalho(StringBuilder query, bool EhParaCount)
         {
+            query.Append(";");
+
             if (EhParaCount)
                 query.AppendLine("select count(n.*) from notificacao n");
             else query.AppendLine("select n.* from notificacao n");

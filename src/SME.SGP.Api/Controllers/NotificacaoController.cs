@@ -34,7 +34,7 @@ namespace SME.SGP.Api.Controllers
         }
 
         [HttpGet]
-        [ProducesResponseType(typeof(IEnumerable<NotificacaoBasicaDto>), 200)]
+        [ProducesResponseType(typeof(PaginacaoResultadoDto<NotificacaoBasicaDto>), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         //[Permissao(Permissao.N_C, Policy = "Bearer")]
         public async Task<IActionResult> Get([FromQuery]NotificacaoFiltroDto notificacaoFiltroDto)
