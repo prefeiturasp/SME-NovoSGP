@@ -223,5 +223,19 @@ namespace SME.SGP.Aplicacao.Integracoes
             }
             return null;
         }
+
+        public async Task<MeusDadosDto> ObterMeusDados(string login)
+        {
+            var url = $"{login}/dados";
+            var resposta = await httpClient.GetAsync(url);
+
+            if (!resposta.IsSuccessStatusCode)
+            {
+                throw new NegocioException("Não foi possível obter os dados do usuário"); 
+            }
+            var json = await resposta.Content.ReadAsStringAsync();
+            return JsonConvert.DeserializeObject<MeusDadosDto>(json);
+            
+        }
     }
 }
