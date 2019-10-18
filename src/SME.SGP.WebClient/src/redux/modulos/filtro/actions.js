@@ -39,3 +39,9 @@ export function salvarTurmas(turmas) {
     payload: turmas,
   };
 }
+
+export function limparDadosFiltro() {
+  return {
+    type: '@filtro/limparDadosFiltro',
+  };
+}
