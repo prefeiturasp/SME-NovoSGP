@@ -100,7 +100,7 @@ namespace SME.SGP.Dados.Repositorios
             query.AppendLine("order by id desc");
 
             if (paginacao.QuantidadeRegistros != 0)
-                query.AppendLine("OFFSET @registrosIgnorados ROWS FETCH NEXT  @registros ROWS ONLY;");
+                query.AppendLine("OFFSET @registrosIgnorados ROWS FETCH NEXT  @registros ROWS ONLY");
         }
 
         private static void MontaQueryObterCount(string dreId, string ueId, int statusId, string turmaId, string usuarioRf, int tipoId, int categoriaId, string titulo, long codigo, int anoLetivo, StringBuilder query)
