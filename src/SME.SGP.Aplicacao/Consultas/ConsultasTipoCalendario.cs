@@ -1,5 +1,4 @@
 ﻿using SME.SGP.Dominio.Interfaces;
-using SME.SGP.Dto;
 using SME.SGP.Infra;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -14,20 +13,6 @@ namespace SME.SGP.Aplicacao
         public ConsultasTipoCalendario(IRepositorioTipoCalendario repositorio)
         {
             this.repositorio = repositorio ?? throw new System.ArgumentNullException(nameof(repositorio));
-        }
-
-        public IEnumerable<TipoCalendarioDto> Listar()
-        {
-            var retorno = repositorio.ObterTiposCalendario();
-            return from t in retorno
-                   select new TipoCalendarioDto()
-                   {
-                       Id = t.Id,
-                       Nome = t.Nome,
-                       AnoLetivo = t.AnoLetivo,
-                       Modalidade = t.Modalidade,
-                       DescricaoPeriodo = t.Periodo.GetAttribute<DisplayAttribute>().Name
-                   };
         }
 
         public TipoCalendarioCompletoDto BuscarPorId(long id)
@@ -50,6 +35,20 @@ namespace SME.SGP.Aplicacao
                 dto.CriadoPor = entidade.CriadoPor;
             }
             return dto;
+        }
+
+        public IEnumerable<TipoCalendarioDto> Listar()
+        {
+            var retorno = repositorio.ObterTiposCalendario();
+            return from t in retorno
+                   select new TipoCalendarioDto()
+                   {
+                       Id = t.Id,
+                       Nome = t.Nome,
+                       AnoLetivo = t.AnoLetivo,
+                       Modalidade = t.Modalidade,
+                       DescricaoPeriodo = t.Periodo.GetAttribute<DisplayAttribute>().Name
+                   };
         }
     }
 }

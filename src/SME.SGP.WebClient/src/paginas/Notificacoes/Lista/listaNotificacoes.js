@@ -234,7 +234,6 @@ export default function NotificacoesLista() {
   }
 
   function marcarComoLida() {
-    debugger;
     servicoNotificacao.marcarComoLida(idNotificacoesSelecionadas, () =>
       onClickFiltrar()
     );
@@ -247,7 +246,7 @@ export default function NotificacoesLista() {
     );
     if (confirmado) {
       servicoNotificacao.excluir(idNotificacoesSelecionadas, () => {
-        // onClickFiltrar();
+        onClickFiltrar();
         setIdNotificacoesSelecionadas([]);
       });
     }

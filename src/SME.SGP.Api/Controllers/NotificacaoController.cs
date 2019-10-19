@@ -2,7 +2,8 @@
 using Microsoft.AspNetCore.Mvc;
 using SME.SGP.Api.Filtros;
 using SME.SGP.Aplicacao;
-using SME.SGP.Dto;
+using SME.SGP.Dominio;
+using SME.SGP.Infra;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -33,10 +34,10 @@ namespace SME.SGP.Api.Controllers
         }
 
         [HttpGet]
-        [ProducesResponseType(typeof(IEnumerable<NotificacaoBasicaDto>), 200)]
+        [ProducesResponseType(typeof(PaginacaoResultadoDto<NotificacaoBasicaDto>), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         //[Permissao(Permissao.N_C, Policy = "Bearer")]
-        public IActionResult Get([FromQuery]NotificacaoFiltroDto notificacaoFiltroDto)
+        public async Task<IActionResult> Get([FromQuery]NotificacaoFiltroDto notificacaoFiltroDto)
         {
             return Ok(await consultasNotificacao.Listar(notificacaoFiltroDto));
         }
@@ -112,6 +113,14 @@ namespace SME.SGP.Api.Controllers
         public IActionResult ObtenhaPorRFAnoLetivo(int anoLetivo, string usuarioRf)
         {
             return Ok(consultasNotificacao.ObterNotificacaoBasicaLista(anoLetivo, usuarioRf));
+        }
+
+        [HttpGet("/api/v1/ping")]
+        [ProducesResponseType(200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        public IActionResult Ping()
+        {
+            return Ok("pong");
         }
 
         [HttpPost]
