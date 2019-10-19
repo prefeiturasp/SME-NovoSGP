@@ -36,7 +36,7 @@ namespace SME.SGP.Dados.Repositorios
             }
 
             retornoPaginado.Items = await database.Conexao.QueryAsync<Notificacao>(queryFull.ToString(), new { dreId, ueId, turmaId, statusId, tipoId, usuarioRf, categoriaId, titulo, codigo, anoLetivo, registrosIgnorados = paginacao.QuantidadeRegistrosIgnorados, registros = paginacao.QuantidadeRegistros });
-            retornoPaginado.TotalRegistros = await database.Conexao.QueryFirstAsync<int>(queryCount.ToString(), new { dreId, ueId, turmaId, statusId, tipoId, usuarioRf, categoriaId, titulo, codigo, anoLetivo, registrosIgnorados = paginacao.QuantidadeRegistrosIgnorados, registros = paginacao.QuantidadeRegistros });
+            retornoPaginado.TotalRegistros = 10;//await database.Conexao.QueryFirstAsync<int>(queryCount.ToString(), new { dreId, ueId, turmaId, statusId, tipoId, usuarioRf, categoriaId, titulo, codigo, anoLetivo, registrosIgnorados = paginacao.QuantidadeRegistrosIgnorados, registros = paginacao.QuantidadeRegistros });
             //using (var multi = await database.Conexao.QueryMultipleAsync(query.ToString(), new { dreId, ueId, turmaId, statusId, tipoId, usuarioRf, categoriaId, titulo, codigo, anoLetivo, registrosIgnorados = paginacao.QuantidadeRegistrosIgnorados, registros = paginacao.QuantidadeRegistros }))
             //{
             //    retornoPaginado.Items = multi.Read<Notificacao>().ToList();
