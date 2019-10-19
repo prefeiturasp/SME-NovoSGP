@@ -7,6 +7,7 @@ namespace SME.SGP.Dominio
 {
     public class Usuario : EntidadeBase
     {
+        private const string MENSAGEM_ERRO_USUARIO_SEM_ACESSO = "Usuário sem perfis de acesso.";
         private readonly Guid PERFIL_PROFESSOR = Guid.Parse("40E1E074-37D6-E911-ABD6-F81654FE895D");
         public string CodigoRf { get; set; }
         public string Email { get; set; }
@@ -14,6 +15,7 @@ namespace SME.SGP.Dominio
         public string Login { get; set; }
         public string Nome { get; set; }
         public IEnumerable<Notificacao> Notificacoes { get { return notificacoes; } }
+        public IEnumerable<PrioridadePerfil> Perfis { get; private set; }
         public Guid? TokenRecuperacaoSenha { get; set; }
         public DateTime UltimoLogin { get; set; }
         private IList<Notificacao> notificacoes { get; set; }
@@ -29,16 +31,24 @@ namespace SME.SGP.Dominio
             this.UltimoLogin = DateTime.Now;
         }
 
-        public void DefinirEmail(string novoEmail, IEnumerable<PrioridadePerfil> perfisUsuario)
+        public void DefinirEmail(string novoEmail)
         {
-            if (perfisUsuario != null && perfisUsuario.Any() &&
-                (PossuiPerfilDre(perfisUsuario) ||
-                 PossuiPerfilSme(perfisUsuario)) &&
+            if (Perfis == null || !Perfis.Any())
+            {
+                throw new NegocioException(MENSAGEM_ERRO_USUARIO_SEM_ACESSO);
+            }
+            if ((PossuiPerfilDre() ||
+                 PossuiPerfilSme()) &&
                 !novoEmail.Contains("@sme.prefeitura.sp.gov.br"))
             {
                 throw new NegocioException("Usuários da SME ou DRE devem utilizar e-mail profissional. Ex: usuario@sme.prefeitura.sp.gov.br");
             }
             Email = novoEmail;
+        }
+
+        public void DefinirPerfis(IEnumerable<PrioridadePerfil> perfisUsuario)
+        {
+            Perfis = perfisUsuario;
         }
 
         public void FinalizarRecuperacaoSenha()
@@ -58,18 +68,18 @@ namespace SME.SGP.Dominio
             ExpiracaoRecuperacaoSenha = DateTime.Now.AddHours(6);
         }
 
-        public Guid ObterPerfilPrioritario(IEnumerable<PrioridadePerfil> perfisUsuario)
+        public Guid ObterPerfilPrioritario()
         {
-            if (perfisUsuario == null || !perfisUsuario.Any())
+            if (Perfis == null || !Perfis.Any())
             {
-                return Guid.Empty;
+                throw new NegocioException(MENSAGEM_ERRO_USUARIO_SEM_ACESSO);
             }
-            var possuiPerfilPrioritario = perfisUsuario.OrderBy(c => c.Ordem).Any(c => c.CodigoPerfil == PERFIL_PROFESSOR);
+            var possuiPerfilPrioritario = Perfis.Any(c => c.CodigoPerfil == PERFIL_PROFESSOR);
             if (possuiPerfilPrioritario)
             {
                 return PERFIL_PROFESSOR;
             }
-            return perfisUsuario.FirstOrDefault().CodigoPerfil;
+            return Perfis.FirstOrDefault().CodigoPerfil;
         }
 
         public bool PodeReiniciarSenha()
@@ -77,23 +87,23 @@ namespace SME.SGP.Dominio
             return !string.IsNullOrEmpty(Email);
         }
 
-        public bool PossuiPerfilDre(IEnumerable<PrioridadePerfil> perfisUsuario)
+        public bool PossuiPerfilDre()
         {
-            return perfisUsuario.Any(c => c.Tipo == TipoPerfil.DRE);
+            return Perfis != null && Perfis.Any(c => c.Tipo == TipoPerfil.DRE);
         }
 
-        public bool PossuiPerfilSme(IEnumerable<PrioridadePerfil> perfisUsuario)
+        public bool PossuiPerfilSme()
         {
-            return perfisUsuario.Any(c => c.Tipo == TipoPerfil.SME);
+            return Perfis != null && Perfis.Any(c => c.Tipo == TipoPerfil.SME);
         }
 
-        public bool PossuiPerfilSmeOuDre(IEnumerable<PrioridadePerfil> perfisUsuario)
+        public bool PossuiPerfilSmeOuDre()
         {
-            if (perfisUsuario == null || !perfisUsuario.Any())
+            if (Perfis == null || !Perfis.Any())
             {
-                return false;
+                throw new NegocioException(MENSAGEM_ERRO_USUARIO_SEM_ACESSO);
             }
-            return PossuiPerfilSme(perfisUsuario) || PossuiPerfilDre(perfisUsuario);
+            return PossuiPerfilSme() || PossuiPerfilDre();
         }
 
         public bool TokenRecuperacaoSenhaEstaValido()

@@ -40,6 +40,14 @@ namespace SME.SGP.Dominio.Servicos.Teste
             var usuario = new Usuario() { Id = 5, Login = login };
             repositorioUsuario.Setup(a => a.ObterPorCodigoRfLogin(string.Empty, login)).Returns(usuario);
             repositorioUsuario.Setup(a => a.ExisteUsuarioComMesmoEmail(email, usuario.Id)).Returns(false);
+            repositorioPrioridadePerfil.Setup(c => c.ObterPerfisPorIds(It.IsAny<IEnumerable<Guid>>()))
+                .Returns(new List<PrioridadePerfil>() {
+                    new PrioridadePerfil
+                    {
+                        Id=1,
+                        Ordem=10
+                    }
+                });
             servicoEol.Setup(a => a.ObterPerfisPorLogin(login)).Returns(Task.FromResult(new UsuarioEolAutenticacaoRetornoDto()));
             repositorioUsuario.Setup(a => a.Salvar(usuario)).Returns(usuario.Id);
 
@@ -61,6 +69,14 @@ namespace SME.SGP.Dominio.Servicos.Teste
             repositorioUsuario.Setup(a => a.ExisteUsuarioComMesmoEmail(email, usuario.Id)).Returns(false);
             servicoEol.Setup(a => a.ObterPerfisPorLogin(codigoRf)).Returns(Task.FromResult(new UsuarioEolAutenticacaoRetornoDto()));
             repositorioUsuario.Setup(a => a.Salvar(usuario)).Returns(usuario.Id);
+            repositorioPrioridadePerfil.Setup(c => c.ObterPerfisPorIds(It.IsAny<IEnumerable<Guid>>()))
+               .Returns(new List<PrioridadePerfil>() {
+                    new PrioridadePerfil
+                    {
+                        Id=1,
+                        Ordem=10
+                    }
+               });
 
             //ACT
             await servicoUsuario.AlterarEmailUsuarioPorRfOuInclui(codigoRf, "teste@teste.com");
