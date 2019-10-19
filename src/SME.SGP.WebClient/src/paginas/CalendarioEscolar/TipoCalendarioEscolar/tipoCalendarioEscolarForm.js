@@ -13,7 +13,7 @@ import RadioGroupButton from '~/componentes/radioGroupButton';
 import { confirmar, erro, sucesso } from '~/servicos/alertas';
 import api from '~/servicos/api';
 import history from '~/servicos/history';
-import modalidade from '~/dtos/modalidade'
+import {setBreadcrumbManual} from '~/servicos/breadcrumb-services';
 
 import { CaixaAno, CaixaTextoAno } from './tipoCalendarioEscolar.css';
 
@@ -62,6 +62,7 @@ const TipoCalendarioEscolarForm = ({ match }) => {
 
   useEffect(() => {
     if (match && match.params && match.params.id) {
+      setBreadcrumbManual(match.url,'Alterar Tipo de Calendário Escolar', '/calendario-escolar/tipo-calendario-escolar');
       setIdTipoCalendario(match.params.id);
       consultaPorId(match.params.id);
     } else if (
@@ -185,7 +186,7 @@ const TipoCalendarioEscolarForm = ({ match }) => {
 
   return (
     <>
-      <Cabecalho pagina="Cadastro do Tipo de Calendário Escolar" />
+      <Cabecalho pagina={`${idTipoCalendario > 0 ? 'Alterar' : 'Cadastro do' } Tipo de Calendário Escolar`} />
       <Card>
         <Formik
           ref={refFormik => setRefForm(refFormik)}

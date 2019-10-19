@@ -72,11 +72,11 @@ namespace SME.SGP.Integracao.Teste
 
                 if (getResult.IsSuccessStatusCode)
                 {
-                    var notificacoes = JsonConvert.DeserializeObject<List<NotificacaoBasicaDto>>(getResult.Content.ReadAsStringAsync().Result);
-                    Assert.True(notificacoes.Count > 0);
-                    if (notificacoes.Count > 0)
+                    var notificacoes = JsonConvert.DeserializeObject<PaginacaoResultadoDto<NotificacaoBasicaDto>>(getResult.Content.ReadAsStringAsync().Result);
+                    Assert.True(notificacoes.Items.Count() > 0);
+                    if (notificacoes.Items.Count() > 0)
                     {
-                        var notificacao = notificacoes.FirstOrDefault();
+                        var notificacao = notificacoes.Items.FirstOrDefault();
 
                         var getResultTimeline = _fixture._clientApi.GetAsync($"api/v1/workflows/aprovacoes/notificacoes/{notificacao.Id}/linha-tempo").Result;
                         Assert.True(getResultTimeline.IsSuccessStatusCode);
@@ -110,11 +110,11 @@ namespace SME.SGP.Integracao.Teste
 
                                     if (getResultMensagemNivel2.IsSuccessStatusCode)
                                     {
-                                        var notificacoesNivel2 = JsonConvert.DeserializeObject<List<NotificacaoBasicaDto>>(getResultMensagemNivel2.Content.ReadAsStringAsync().Result);
-                                        Assert.True(notificacoesNivel2.Count == 1);
-                                        if (notificacoesNivel2.Count == 1)
+                                        var notificacoesNivel2 = JsonConvert.DeserializeObject<PaginacaoResultadoDto<NotificacaoBasicaDto>>(getResultMensagemNivel2.Content.ReadAsStringAsync().Result);
+                                        Assert.True(notificacoesNivel2.Items.Count() == 1);
+                                        if (notificacoesNivel2.Items.Count() == 1)
                                         {
-                                            var notificacaoNivel2 = notificacoesNivel2.FirstOrDefault();
+                                            var notificacaoNivel2 = notificacoesNivel2.Items.FirstOrDefault();
 
                                             var getResultTimelineNivel2 = _fixture._clientApi.GetAsync($"api/v1/workflows/aprovacoes/notificacoes/{notificacaoNivel2.Id}/linha-tempo").Result;
                                             Assert.True(getResultTimeline.IsSuccessStatusCode);
@@ -127,7 +127,7 @@ namespace SME.SGP.Integracao.Teste
                                                     Assert.True(timelineNivel2.FirstOrDefault(a => a.Nivel == 1).StatusId == (int)WorkflowAprovacaoNivelStatus.Aprovado);
                                                     Assert.True(timelineNivel2.FirstOrDefault(a => a.Nivel == 2).StatusId == (int)WorkflowAprovacaoNivelStatus.AguardandoAprovacao);
                                                     Assert.True(timelineNivel2.FirstOrDefault(a => a.Nivel == 3).StatusId == (int)WorkflowAprovacaoNivelStatus.SemStatus);
-                                                    Assert.True(notificacoes.FirstOrDefault().Codigo == notificacoesNivel2.FirstOrDefault().Codigo);
+                                                    Assert.True(notificacoes.Items.FirstOrDefault().Codigo == notificacoesNivel2.Items.FirstOrDefault().Codigo);
 
                                                     //Reprovacao 2 nivel
                                                     var reprovacaoNivel = new WorkflowAprovacaoAprovacaoDto();
