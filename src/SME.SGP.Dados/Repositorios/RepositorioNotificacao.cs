@@ -41,7 +41,7 @@ namespace SME.SGP.Dados.Repositorios
                             where excluida = false
                             and u.rf_codigo = @usuarioRf
                             order by id desc
-                            OFFSET @registrosIgnorados ROWS FETCH NEXT  @registros ROWS ONLY;";
+                            OFFSET 0 ROWS FETCH NEXT  10 ROWS ONLY;";
 
             retornoPaginado.Items = await database.Conexao.QueryAsync<Notificacao>(query, new { usuarioRf, registrosIgnorados = paginacao.QuantidadeRegistrosIgnorados, registros = paginacao.QuantidadeRegistros });
             retornoPaginado.TotalRegistros = 10;//await database.Conexao.QueryFirstAsync<int>(queryCount.ToString(), new { dreId, ueId, turmaId, statusId, tipoId, usuarioRf, categoriaId, titulo, codigo, anoLetivo, registrosIgnorados = paginacao.QuantidadeRegistrosIgnorados, registros = paginacao.QuantidadeRegistros });
