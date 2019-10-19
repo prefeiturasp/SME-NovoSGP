@@ -25,7 +25,8 @@ namespace SME.SGP.Aplicacao.Integracoes
             var perfisPorPrioridade = new PerfisPorPrioridadeDto
             {
                 PerfilSelecionado = perfilPrioritario,
-                Perfis = MapearPerfisParaDto(perfisUsuario)
+                Perfis = MapearPerfisParaDto(perfisUsuario),
+                PossuiPerfilSmeOuDre = usuario.PossuiPerfilSmeOuDre(perfisUsuario)
             };
             return perfisPorPrioridade;
         }

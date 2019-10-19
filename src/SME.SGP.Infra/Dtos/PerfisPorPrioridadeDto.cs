@@ -12,5 +12,6 @@ namespace SME.SGP.Infra
 
         public Guid PerfilSelecionado { get; set; }
         public IList<PerfilDto> Perfis { get; set; }
+        public bool PossuiPerfilSmeOuDre { get; set; }
     }
 }
