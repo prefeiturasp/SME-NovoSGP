@@ -8,10 +8,10 @@ CREATE TABLE public.evento_tipo (
 	letivo int4 NOT NULL,
 	ativo bool NOT NULL DEFAULT true,
 	criado_em timestamp NOT NULL,
-	alterado_em timestamp NOT NULL,
-	alterado_por varchar(200) NOT NULL,
+	alterado_em timestamp,
+	alterado_por varchar(200),
 	criado_por varchar(200) NOT NULL,
 	criado_rf varchar(200) NOT NULL,
-	alterado_rf varchar(200) NOT NULL,
+	alterado_rf varchar(200),
 	migrado bool NOT NULL DEFAULT false
 );

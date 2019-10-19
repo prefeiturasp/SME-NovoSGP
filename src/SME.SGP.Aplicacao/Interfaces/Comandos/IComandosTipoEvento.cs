@@ -5,8 +5,9 @@ using System.Text;
 
 namespace SME.SGP.Aplicacao.Interfaces.Comandos
 {
-    public interface IComandosTipoEvento
+    public interface IComandosEventoTipo
     {
         void Salvar(EventoTipoDto eventoTipoDto);
+        void Remover(long Codigo);
     }
 }

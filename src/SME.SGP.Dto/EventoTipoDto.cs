@@ -21,9 +21,9 @@ namespace SME.SGP.Dto
 
         [Required(ErrorMessage = "Deve ser informado se o feriado é letivo, opcional ou não letivo")]
         public EventoLetivo Letivo { get; set; }
-
         public bool Dependencia { get; set; }
         public bool Concomitancia { get; set; }
         public bool Ativo { get; set; }
+        public bool Migrado { get; set; }
     }
 }

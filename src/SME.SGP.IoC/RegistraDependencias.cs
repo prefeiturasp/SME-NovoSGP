@@ -1,7 +1,11 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using SME.SGP.Aplicacao;
+using SME.SGP.Aplicacao.Comandos;
+using SME.SGP.Aplicacao.Consultas;
 using SME.SGP.Aplicacao.Integracoes;
+using SME.SGP.Aplicacao.Interfaces.Comandos;
+using SME.SGP.Aplicacao.Interfaces.Consultas;
 using SME.SGP.Aplicacao.Servicos;
 using SME.SGP.Dados;
 using SME.SGP.Dados.Contexto;
@@ -32,6 +36,7 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IComandosNotificacao, ComandosNotificacao>();
             services.TryAddScoped<IComandosWorkflowAprovacao, ComandosWorkflowAprovacao>();
             services.TryAddScoped<IComandosUsuario, ComandosUsuario>();
+            services.TryAddScoped<IComandosEventoTipo, ComandosEventoTipo>();            
         }
 
         private static void RegistrarConsultas(IServiceCollection services)
@@ -49,6 +54,7 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IConsultasNotificacao, ConsultasNotificacao>();
             services.TryAddScoped<IConsultasWorkflowAprovacao, ConsultasWorkflowAprovacao>();
             services.TryAddScoped<IConsultasUnidadesEscolares, ConsultasUnidadesEscolares>();
+            services.TryAddScoped<IConsultasEventoTipo, ConsultasEventoTipo>();        
         }
 
         private static void RegistrarContextos(IServiceCollection services)
@@ -78,7 +84,7 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IRepositorioWorkflowAprovacaoNivelUsuario, RepositorioWorkflowAprovacaoNivelUsuario>();
             services.TryAddScoped<IRepositorioPrioridadePerfil, RepositorioPrioridadePerfil>();
             services.TryAddScoped<IRepositorioConfiguracaoEmail, RepositorioConfiguracaoEmail>();
-            services.TryAddScoped<IRepositorioTipoEvento, RepositorioTipoEvento>();
+            services.TryAddScoped<IRepositorioEventoTipo, RepositorioEventoTipo>();
             
         }
 
