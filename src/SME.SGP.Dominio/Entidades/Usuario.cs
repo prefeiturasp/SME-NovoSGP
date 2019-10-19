@@ -87,6 +87,15 @@ namespace SME.SGP.Dominio
             return perfisUsuario.Any(c => c.Tipo == TipoPerfil.SME);
         }
 
+        public bool PossuiPerfilSmeOuDre(IEnumerable<PrioridadePerfil> perfisUsuario)
+        {
+            if (perfisUsuario == null || !perfisUsuario.Any())
+            {
+                return false;
+            }
+            return PossuiPerfilSme(perfisUsuario) || PossuiPerfilDre(perfisUsuario);
+        }
+
         public bool TokenRecuperacaoSenhaEstaValido()
         {
             return ExpiracaoRecuperacaoSenha > DateTime.Now;
