@@ -40,7 +40,6 @@ namespace SME.SGP.Dados.Repositorios
                             on n.usuario_id = u.id
                             where excluida = false
                             and u.rf_codigo = @usuarioRf
-                            and EXTRACT(year FROM n.criado_em) = @anoLetivo
                             order by id desc
                             OFFSET @registrosIgnorados ROWS FETCH NEXT  @registros ROWS ONLY;";
 
