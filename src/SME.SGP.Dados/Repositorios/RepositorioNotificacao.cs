@@ -22,20 +22,29 @@ namespace SME.SGP.Dados.Repositorios
         public async Task<PaginacaoResultadoDto<Notificacao>> Obter(string dreId, string ueId, int statusId,
             string turmaId, string usuarioRf, int tipoId, int categoriaId, string titulo, long codigo, int anoLetivo, Paginacao paginacao)
         {
-            var queryFull = new StringBuilder();
-            var queryCount = new StringBuilder();
+            //var queryFull = new StringBuilder();
+            //var queryCount = new StringBuilder();
 
-            MontaQueryObterCompleta(dreId, ueId, statusId, turmaId, usuarioRf, tipoId, categoriaId, titulo, codigo, anoLetivo, paginacao, queryFull);
+            //MontaQueryObterCompleta(dreId, ueId, statusId, turmaId, usuarioRf, tipoId, categoriaId, titulo, codigo, anoLetivo, paginacao, queryFull);
 
-            MontaQueryObterCount(dreId, ueId, statusId, turmaId, usuarioRf, tipoId, categoriaId, titulo, codigo, anoLetivo, queryCount);
+            //MontaQueryObterCount(dreId, ueId, statusId, turmaId, usuarioRf, tipoId, categoriaId, titulo, codigo, anoLetivo, queryCount);
 
             var retornoPaginado = new PaginacaoResultadoDto<Notificacao>();
-            if (!string.IsNullOrEmpty(titulo))
-            {
-                titulo = $"%{titulo}%";
-            }
+            //if (!string.IsNullOrEmpty(titulo))
+            //{
+            //    titulo = $"%{titulo}%";
+            //}
 
-            retornoPaginado.Items = await database.Conexao.QueryAsync<Notificacao>(queryFull.ToString(), new { dreId, ueId, turmaId, statusId, tipoId, usuarioRf, categoriaId, titulo, codigo, anoLetivo, registrosIgnorados = paginacao.QuantidadeRegistrosIgnorados, registros = paginacao.QuantidadeRegistros });
+            var query = @"select n.* from notificacao n
+                            left join usuario u
+                            on n.usuario_id = u.id
+                            where excluida = false
+                            and u.rf_codigo = @usuarioRf
+                            and EXTRACT(year FROM n.criado_em) = @anoLetivo
+                            order by id desc
+                            OFFSET @registrosIgnorados ROWS FETCH NEXT  @registros ROWS ONLY;";
+
+            retornoPaginado.Items = await database.Conexao.QueryAsync<Notificacao>(query, new { dreId, ueId, turmaId, statusId, tipoId, usuarioRf, categoriaId, titulo, codigo, anoLetivo, registrosIgnorados = paginacao.QuantidadeRegistrosIgnorados, registros = paginacao.QuantidadeRegistros });
             retornoPaginado.TotalRegistros = 10;//await database.Conexao.QueryFirstAsync<int>(queryCount.ToString(), new { dreId, ueId, turmaId, statusId, tipoId, usuarioRf, categoriaId, titulo, codigo, anoLetivo, registrosIgnorados = paginacao.QuantidadeRegistrosIgnorados, registros = paginacao.QuantidadeRegistros });
             //using (var multi = await database.Conexao.QueryMultipleAsync(query.ToString(), new { dreId, ueId, turmaId, statusId, tipoId, usuarioRf, categoriaId, titulo, codigo, anoLetivo, registrosIgnorados = paginacao.QuantidadeRegistrosIgnorados, registros = paginacao.QuantidadeRegistros }))
             //{
