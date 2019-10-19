@@ -17,7 +17,8 @@ namespace SME.SGP.Dominio.Teste
             };
             var usuario = new Usuario();
             var novoEmail = "teste@sme.prefeitura.sp.gov.br";
-            usuario.DefinirEmail(novoEmail, perfisUsuario);
+            usuario.DefinirPerfis(perfisUsuario);
+            usuario.DefinirEmail(novoEmail);
             Assert.Equal(usuario.Email, novoEmail);
         }
 
@@ -33,7 +34,8 @@ namespace SME.SGP.Dominio.Teste
             };
             var usuario = new Usuario();
             var novoEmail = "teste@gmail.com";
-            usuario.DefinirEmail(novoEmail, perfisUsuario);
+            usuario.DefinirPerfis(perfisUsuario);
+            usuario.DefinirEmail(novoEmail);
             Assert.Equal(usuario.Email, novoEmail);
         }
 
@@ -69,7 +71,8 @@ namespace SME.SGP.Dominio.Teste
             };
             var usuario = new Usuario();
             var novoEmail = "teste@gmail.com";
-            Assert.Throws<NegocioException>(() => usuario.DefinirEmail(novoEmail, perfisUsuario));
+            usuario.DefinirPerfis(perfisUsuario);
+            Assert.Throws<NegocioException>(() => usuario.DefinirEmail(novoEmail));
         }
     }
 }
