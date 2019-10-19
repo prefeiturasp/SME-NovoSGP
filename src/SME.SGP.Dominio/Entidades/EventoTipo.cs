@@ -14,5 +14,6 @@ namespace SME.SGP.Dominio.Entidades
         public EventoTipoData TipoData { get; set; }
         public EventoLetivo Letivo { get; set; }
         public bool Ativo { get; set; }
+        public bool Migrado { get; set; }
     }
 }
