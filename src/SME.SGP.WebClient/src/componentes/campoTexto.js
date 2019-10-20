@@ -33,6 +33,7 @@ const CampoTexto = React.forwardRef((props, ref) => {
     desabilitado,
     maxlength,
     label,
+    semMensagem,
   } = props;
 
   const possuiErro = () => {
@@ -67,10 +68,11 @@ const CampoTexto = React.forwardRef((props, ref) => {
               innerRef={ref}
               onChange={e => {
                 form.setFieldValue(name, e.target.value);
+                form.setFieldTouched(name, true);
                 onChange(e);
               }}
             />
-            <span>{form.errors[name]}</span>
+            {!semMensagem ? <span>{form.errors[name]}</span> : ''}
           </>
         ) : (
           <Input
@@ -87,10 +89,12 @@ const CampoTexto = React.forwardRef((props, ref) => {
 
 CampoTexto.propTypes = {
   onChange: PropTypes.func,
+  semMensagem: PropTypes.bool,
 };
 
 CampoTexto.defaultProps = {
   onChange: () => {},
+  semMensagem: false,
 };
 
 export default CampoTexto;
