@@ -22,10 +22,10 @@ namespace SME.SGP.Dados.Repositorios
         public async Task<PaginacaoResultadoDto<Notificacao>> Obter(string dreId, string ueId, int statusId,
             string turmaId, string usuarioRf, int tipoId, int categoriaId, string titulo, long codigo, int anoLetivo, Paginacao paginacao)
         {
-            //var queryFull = new StringBuilder();
+            var queryFull = new StringBuilder();
             //var queryCount = new StringBuilder();
 
-            //MontaQueryObterCompleta(dreId, ueId, statusId, turmaId, usuarioRf, tipoId, categoriaId, titulo, codigo, anoLetivo, paginacao, queryFull);
+            MontaQueryObterCompleta(dreId, ueId, statusId, turmaId, usuarioRf, tipoId, categoriaId, titulo, codigo, anoLetivo, paginacao, queryFull);
 
             //MontaQueryObterCount(dreId, ueId, statusId, turmaId, usuarioRf, tipoId, categoriaId, titulo, codigo, anoLetivo, queryCount);
 
@@ -35,14 +35,14 @@ namespace SME.SGP.Dados.Repositorios
             //    titulo = $"%{titulo}%";
             //}
 
-            var query = @"select n.* from notificacao n
-                            left join usuario u
-                            on n.usuario_id = u.id
-                            where excluida = false
-                            and u.rf_codigo = @usuarioRf
-                            order by id desc";
+            //var query = @"select n.* from notificacao n
+            //                left join usuario u
+            //                on n.usuario_id = u.id
+            //                where excluida = false
+            //                and u.rf_codigo = @usuarioRf
+            //                order by id desc";
 
-            retornoPaginado.Items = await database.Conexao.QueryAsync<Notificacao>(query, new { usuarioRf });
+            retornoPaginado.Items = await database.Conexao.QueryAsync<Notificacao>(queryFull.ToString(), new { dreId, ueId, turmaId, statusId, tipoId, usuarioRf, categoriaId, titulo, codigo, anoLetivo });
             retornoPaginado.TotalRegistros = 10;//await database.Conexao.QueryFirstAsync<int>(queryCount.ToString(), new { dreId, ueId, turmaId, statusId, tipoId, usuarioRf, categoriaId, titulo, codigo, anoLetivo, registrosIgnorados = paginacao.QuantidadeRegistrosIgnorados, registros = paginacao.QuantidadeRegistros });
             //using (var multi = await database.Conexao.QueryMultipleAsync(query.ToString(), new { dreId, ueId, turmaId, statusId, tipoId, usuarioRf, categoriaId, titulo, codigo, anoLetivo, registrosIgnorados = paginacao.QuantidadeRegistrosIgnorados, registros = paginacao.QuantidadeRegistros }))
             //{
@@ -110,7 +110,7 @@ namespace SME.SGP.Dados.Repositorios
             query.AppendLine("order by id desc");
 
             if (paginacao.QuantidadeRegistros != 0)
-                query.AppendLine("OFFSET @registrosIgnorados ROWS FETCH NEXT  @registros ROWS ONLY");
+                query.AppendLine("OFFSET 0 ROWS FETCH NEXT 10 ROWS ONLY");
         }
 
         private static void MontaQueryObterCount(string dreId, string ueId, int statusId, string turmaId, string usuarioRf, int tipoId, int categoriaId, string titulo, long codigo, int anoLetivo, StringBuilder query)
