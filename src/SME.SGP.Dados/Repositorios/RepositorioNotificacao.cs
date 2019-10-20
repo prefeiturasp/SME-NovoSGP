@@ -47,8 +47,8 @@ namespace SME.SGP.Dados.Repositorios
                 titulo,
                 codigo,
                 anoLetivo,
-                registrosignorados = paginacao.QuantidadeRegistrosIgnorados,
-                quantidaderegistros = paginacao.QuantidadeRegistros
+                registrosignorados = 0,
+                quantidaderegistros = 10
             }))
             {
                 retornoPaginado.Items = multi.Read<Notificacao>().ToList();
