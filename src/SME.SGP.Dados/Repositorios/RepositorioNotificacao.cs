@@ -23,32 +23,26 @@ namespace SME.SGP.Dados.Repositorios
             string turmaId, string usuarioRf, int tipoId, int categoriaId, string titulo, long codigo, int anoLetivo, Paginacao paginacao)
         {
             var queryFull = new StringBuilder();
-            //var queryCount = new StringBuilder();
+            var queryCount = new StringBuilder();
 
             MontaQueryObterCompleta(dreId, ueId, statusId, turmaId, usuarioRf, tipoId, categoriaId, titulo, codigo, anoLetivo, paginacao, queryFull);
 
-            //MontaQueryObterCount(dreId, ueId, statusId, turmaId, usuarioRf, tipoId, categoriaId, titulo, codigo, anoLetivo, queryCount);
+            MontaQueryObterCount(dreId, ueId, statusId, turmaId, usuarioRf, tipoId, categoriaId, titulo, codigo, anoLetivo, queryFull);
 
             var retornoPaginado = new PaginacaoResultadoDto<Notificacao>();
-            //if (!string.IsNullOrEmpty(titulo))
-            //{
-            //    titulo = $"%{titulo}%";
-            //}
 
-            //var query = @"select n.* from notificacao n
-            //                left join usuario u
-            //                on n.usuario_id = u.id
-            //                where excluida = false
-            //                and u.rf_codigo = @usuarioRf
-            //                order by id desc";
+            if (!string.IsNullOrEmpty(titulo))
+            {
+                titulo = $"%{titulo}%";
+            }
 
-            retornoPaginado.Items = await database.Conexao.QueryAsync<Notificacao>(queryFull.ToString(), new { dreId, ueId, turmaId, statusId, tipoId, usuarioRf, categoriaId, titulo, codigo, anoLetivo });
-            retornoPaginado.TotalRegistros = 10;//await database.Conexao.QueryFirstAsync<int>(queryCount.ToString(), new { dreId, ueId, turmaId, statusId, tipoId, usuarioRf, categoriaId, titulo, codigo, anoLetivo, registrosIgnorados = paginacao.QuantidadeRegistrosIgnorados, registros = paginacao.QuantidadeRegistros });
-            //using (var multi = await database.Conexao.QueryMultipleAsync(query.ToString(), new { dreId, ueId, turmaId, statusId, tipoId, usuarioRf, categoriaId, titulo, codigo, anoLetivo, registrosIgnorados = paginacao.QuantidadeRegistrosIgnorados, registros = paginacao.QuantidadeRegistros }))
-            //{
-            //    retornoPaginado.Items = multi.Read<Notificacao>().ToList();
-            //    retornoPaginado.TotalRegistros = multi.ReadFirst<int>();
-            //}
+            //retornoPaginado.Items = await database.Conexao.QueryAsync<Notificacao>(queryFull.ToString(), new { dreId, ueId, turmaId, statusId, tipoId, usuarioRf, categoriaId, titulo, codigo, anoLetivo });
+            //retornoPaginado.TotalRegistros = await database.Conexao.QueryFirstAsync<int>(queryCount.ToString(), new { dreId, ueId, turmaId, statusId, tipoId, usuarioRf, categoriaId, titulo, codigo, anoLetivo });
+            using (var multi = await database.Conexao.QueryMultipleAsync(queryFull.ToString(), new { dreId, ueId, turmaId, statusId, tipoId, usuarioRf, categoriaId, titulo, codigo, anoLetivo }))
+            {
+                retornoPaginado.Items = multi.Read<Notificacao>().ToList();
+                retornoPaginado.TotalRegistros = multi.ReadFirst<int>();
+            }
 
             retornoPaginado.TotalPaginas = (int)Math.Ceiling((double)retornoPaginado.TotalRegistros / paginacao.QuantidadeRegistros);
             return retornoPaginado;
