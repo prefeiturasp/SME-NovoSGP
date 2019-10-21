@@ -49,14 +49,14 @@ namespace SME.SGP.Api.Controllers
             return Ok("https://telegramic.org/media/avatars/stickers/52cae315e8a464eb80a3.png");
         }
 
-        [Route("meus-dados/{login}")]
+        [Route("meus-dados")]
         [HttpGet]
         [ProducesResponseType(200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [ProducesResponseType(typeof(RetornoBaseDto), 601)]
-        public IActionResult BuscarMeusDados(string login)
+        public async Task<IActionResult> BuscarMeusDados(string login)
         {
-            return Ok(consultasUsuario.BuscarMeusDados(login));
+            return Ok(await consultasUsuario.BuscarMeusDados());
         }
     }
 }

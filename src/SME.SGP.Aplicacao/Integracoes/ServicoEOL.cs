@@ -226,7 +226,7 @@ namespace SME.SGP.Aplicacao.Integracoes
 
         public async Task<MeusDadosDto> ObterMeusDados(string login)
         {
-            var url = $"{login}/dados";
+            var url = $"AutenticacaoSgp/{login}/dados";
             var resposta = await httpClient.GetAsync(url);
 
             if (!resposta.IsSuccessStatusCode)
