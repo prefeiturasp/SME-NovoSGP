@@ -24,9 +24,29 @@ import TipoCalendarioEscolarLista from '~/paginas/CalendarioEscolar/TipoCalendar
 import TipoCalendarioEscolarForm from '~/paginas/CalendarioEscolar/TipoCalendarioEscolar/tipoCalendarioEscolarForm';
 import TipoFeriadoLista from '~/paginas/CalendarioEscolar/TipoFeriado/tipoFeriadoLista';
 import TipoFeriadoForm from '~/paginas/CalendarioEscolar/TipoFeriado/tipoFeriadoForm';
+import CadastroTipoEventos from '~/paginas/Calendario/TipoEventos/cadastroTipoEventos';
+import ListaTipoEventos from '~/paginas/Calendario/TipoEventos/listaTipoEventos';
 
 export default function Rotas() {
   const rotas = new Map();
+
+  rotas.set('/calendario/tipo-eventos-lista', {
+    breadcrumbName: 'Cadastro de Eventos',
+    menu: 'Calendário',
+    parent: '/calendario',
+    component: ListaTipoEventos,
+    exact: true,
+    tipo: RotasTipo.EstruturadaAutenticada,
+  });
+
+  rotas.set('/calendario/tipo-eventos', {
+    breadcrumbName: 'Tipo de Eventos',
+    menu: 'Calendário',
+    parent: '/calendario/tipo-eventos-lista',
+    component: CadastroTipoEventos,
+    exact: true,
+    tipo: RotasTipo.EstruturadaAutenticada,
+  });
 
   rotas.set('/planejamento/plano-ciclo', {
     breadcrumbName: 'Plano de Ciclo',
@@ -122,6 +142,7 @@ export default function Rotas() {
     tipo: RotasTipo.EstruturadaAutenticada,
   });
 
+<<<<<<< HEAD
   rotas.set('/meus-dados', {
     breadcrumbName: 'Perfil',
     parent: '/',
@@ -173,6 +194,8 @@ export default function Rotas() {
     tipo: RotasTipo.EstruturadaAutenticada,
   });
 
+=======
+>>>>>>> feature/6323
   rotas.set('/', {
     icone: 'fas fa-home',
     parent: null,
