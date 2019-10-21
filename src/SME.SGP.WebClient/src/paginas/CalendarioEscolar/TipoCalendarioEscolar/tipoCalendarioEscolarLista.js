@@ -36,6 +36,7 @@ const TipoCalendarioEscolarLista = () => {
   }, []);
 
   const onFiltrar = async () => {
+    setIdTiposSelecionados([]);
     const tipos = await api.get('v1/tipo-calendario');
     setListaTiposCalendarioEscolar(tipos.data);
   };
