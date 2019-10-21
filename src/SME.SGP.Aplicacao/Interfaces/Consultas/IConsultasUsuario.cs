@@ -5,6 +5,6 @@ namespace SME.SGP.Aplicacao
 {
     public interface IConsultasUsuario
     {
-        Task<MeusDadosDto> BuscarMeusDados(string login);
+        Task<MeusDadosDto> BuscarMeusDados();
     }
 }
