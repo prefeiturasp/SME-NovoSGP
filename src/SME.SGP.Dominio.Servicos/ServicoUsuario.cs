@@ -108,7 +108,8 @@ namespace SME.SGP.Dominio
                 throw new NegocioException("Ocorreu um erro ao obter os dados do usuário no EOL.");
 
             var perfisUsuario = repositorioPrioridadePerfil.ObterPerfisPorIds(retornoEol.Perfis);
-            usuario.DefinirEmail(novoEmail, perfisUsuario);
+            usuario.DefinirPerfis(perfisUsuario);
+            usuario.DefinirEmail(novoEmail);
             repositorioUsuario.Salvar(usuario);
         }
     }
