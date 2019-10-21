@@ -74,25 +74,27 @@ export default function AtribuicaoSupervisorLista() {
     {
       title: 'DRE',
       dataIndex: 'dre',
-      width: '15%'
+      width: '15%',
     },
     {
       title: 'Unidade Escolar',
       dataIndex: 'escola',
-      width: '55%'
+      width: '55%',
     },
     {
       title: 'Supervisor',
       dataIndex: 'supervisor',
       width: '30%',
       render: text => {
-        return text ? text : <a className="texto-vermelho-negrito">NÃO ATRIBUIDO</a>;
+        return text || (
+          <a className="texto-vermelho-negrito">NÃO ATRIBUIDO</a>
+        );
       },
     },
   ];
 
   function onClickRow(row) {
-    onClickEditar(row.supervisorId)
+    onClickEditar(row.supervisorId);
   }
 
   function onClickVoltar() {
@@ -100,7 +102,8 @@ export default function AtribuicaoSupervisorLista() {
   }
 
   function onClickEditar(supervisorId) {
-    const path = `/gestao/atribuicao-supervisor/${dresSelecionadas}/${supervisorId || ''}`
+    const path = `/gestao/atribuicao-supervisor/${dresSelecionadas}/${supervisorId ||
+      ''}`;
     history.push(path);
   }
 

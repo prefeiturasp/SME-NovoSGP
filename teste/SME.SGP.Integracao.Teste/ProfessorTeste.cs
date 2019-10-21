@@ -1,6 +1,6 @@
 ﻿using Newtonsoft.Json;
 using SME.SGP.Dominio;
-using SME.SGP.Dto;
+using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
 using System.Net.Http.Headers;
@@ -20,17 +20,17 @@ namespace SME.SGP.Integracao.Teste
         }
 
         [Fact, Order(5)]
-        public void DeveObterDisciplinasDoProfessorPorTurma()
+        public async void DeveObterDisciplinasDoProfessorPorTurma()
         {
             _fixture._clientApi.DefaultRequestHeaders.Clear();
 
             _fixture._clientApi.DefaultRequestHeaders.Authorization =
                 new AuthenticationHeaderValue("Bearer", _fixture.GerarToken(new Permissao[] { }));
 
-            var getResult = _fixture._clientApi.GetAsync("api/v1/professores/6082840/turmas/1982186/disciplinas/").Result;
+            var getResult = await _fixture._clientApi.GetAsync("api/v1/professores/6082840/turmas/1982186/disciplinas/");
 
             Assert.True(getResult.IsSuccessStatusCode);
-            var disciplinas = JsonConvert.DeserializeObject<IEnumerable<DisciplinaDto>>(getResult.Content.ReadAsStringAsync().Result);
+            var disciplinas = JsonConvert.DeserializeObject<IEnumerable<DisciplinaDto>>(await getResult.Content.ReadAsStringAsync());
             Assert.True(disciplinas != null);
         }
 

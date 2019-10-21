@@ -1,11 +1,10 @@
-import React from 'react';
-import { Field, ErrorMessage } from 'formik';
-
-import styled from 'styled-components';
 import { Input } from 'antd';
-import { Base } from './colors';
-
+import { Field } from 'formik';
 import PropTypes from 'prop-types';
+import React from 'react';
+import styled from 'styled-components';
+import { Base } from './colors';
+import Label from './label';
 
 const Campo = styled.div`
   span {
@@ -19,20 +18,22 @@ const Campo = styled.div`
   }
 `;
 
-const CampoTexto = ({
-  name,
-  id,
-  form,
-  className,
-  classNameCampo,
-  type,
-  maskType,
-  placeholder,
-  onChange,
-  value,
-  desabilitado,
-  maxlength,
-}) => {
+const CampoTexto = React.forwardRef((props, ref) => {
+  const {
+    name,
+    id,
+    form,
+    className,
+    classNameCampo,
+    type,
+    maskType,
+    placeholder,
+    onChange,
+    value,
+    desabilitado,
+    maxlength,
+    label,
+  } = props;
 
   const possuiErro = () => {
     return form && form.errors[name] && form.touched[name];
@@ -44,10 +45,11 @@ const CampoTexto = ({
       event.preventDefault();
     }
   };
-  
+
   return (
     <>
       <Campo className={classNameCampo}>
+        {label ? <Label text={label} control={name || ''} /> : ''}
         {form ? (
           <>
             {' '}
@@ -58,20 +60,37 @@ const CampoTexto = ({
                 possuiErro() ? 'is-invalid' : ''
               } ${className || ''} ${desabilitado ? 'desabilitado' : ''}`}
               component={type || 'input'}
-              type = {maskType && maskType}
+              type={maskType && maskType}
               disabled={desabilitado}
               onBlur={executaOnBlur}
               maxLength={maxlength || ''}
+              innerRef={ref}
+              onChange={e => {
+                form.setFieldValue(name, e.target.value);
+                onChange(e);
+              }}
             />
             <span>{form.errors[name]}</span>
           </>
         ) : (
-          <Input placeholder={placeholder} onChange={onChange} value={value} />
+          <Input
+            ref={ref}
+            placeholder={placeholder}
+            onChange={onChange}
+            value={value}
+          />
         )}
       </Campo>
     </>
   );
+});
+
+CampoTexto.propTypes = {
+  onChange: PropTypes.func,
 };
 
+CampoTexto.defaultProps = {
+  onChange: () => {},
+};
 
 export default CampoTexto;
