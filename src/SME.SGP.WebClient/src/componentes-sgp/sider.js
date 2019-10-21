@@ -336,6 +336,11 @@ const Sider = () => {
                 </Menu.Item>
                 <Menu.Item key="88" id="calEventos">
                   <span className="menuItem">Eventos</span>
+                    <Link
+                    to="/calendario-escolar/eventos"
+                    className="nav-link text-white"
+                    id="linkEventos"
+                  />
                 </Menu.Item>
               </SubMenu>
               <SubMenu

@@ -24,6 +24,7 @@ import TipoCalendarioEscolarLista from '~/paginas/CalendarioEscolar/TipoCalendar
 import TipoCalendarioEscolarForm from '~/paginas/CalendarioEscolar/TipoCalendarioEscolar/tipoCalendarioEscolarForm';
 import TipoFeriadoLista from '~/paginas/CalendarioEscolar/TipoFeriado/tipoFeriadoLista';
 import TipoFeriadoForm from '~/paginas/CalendarioEscolar/TipoFeriado/tipoFeriadoForm';
+import Eventos from '~/paginas/CalendarioEscolar/Eventos/eventos';
 
 export default function Rotas() {
   const rotas = new Map();
@@ -205,6 +206,15 @@ export default function Rotas() {
     breadcrumbName: 'Alterar Tipo de Feriado',
     parent: '/calendario-escolar/tipo-feriado',
     component: TipoFeriadoForm,
+    exact: true,
+    tipo: RotasTipo.EstruturadaAutenticada,
+  });
+
+  rotas.set('/calendario-escolar/eventos', {
+    breadcrumbName: 'Evento do Calendário Escolar',
+    menu: ['Calendário Escolar'],
+    parent: '/',
+    component: Eventos,
     exact: true,
     tipo: RotasTipo.EstruturadaAutenticada,
   });
