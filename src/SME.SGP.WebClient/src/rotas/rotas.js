@@ -24,26 +24,33 @@ import TipoCalendarioEscolarLista from '~/paginas/CalendarioEscolar/TipoCalendar
 import TipoCalendarioEscolarForm from '~/paginas/CalendarioEscolar/TipoCalendarioEscolar/tipoCalendarioEscolarForm';
 import TipoFeriadoLista from '~/paginas/CalendarioEscolar/TipoFeriado/tipoFeriadoLista';
 import TipoFeriadoForm from '~/paginas/CalendarioEscolar/TipoFeriado/tipoFeriadoForm';
-import CadastroTipoEventos from '~/paginas/Calendario/TipoEventos/cadastroTipoEventos';
-import ListaTipoEventos from '~/paginas/Calendario/TipoEventos/listaTipoEventos';
+import TipoEventosLista from '~/paginas/CalendarioEscolar/TipoEventos/tipoEventosLista';
+import TipoEventosForm from '~/paginas/CalendarioEscolar/TipoEventos/tipoEventosForm';
 
 export default function Rotas() {
   const rotas = new Map();
 
-  rotas.set('/calendario/tipo-eventos-lista', {
-    breadcrumbName: 'Cadastro de Eventos',
-    menu: 'Calendário',
-    parent: '/calendario',
-    component: ListaTipoEventos,
+  rotas.set('/calendario-escolar/tipo-eventos', {
+    breadcrumbName: 'Tipo de Eventos',
+    menu: ['Calendário Escolar'],
+    parent: '/',
+    component: TipoEventosLista,
     exact: true,
     tipo: RotasTipo.EstruturadaAutenticada,
   });
 
-  rotas.set('/calendario/tipo-eventos', {
-    breadcrumbName: 'Tipo de Eventos',
-    menu: 'Calendário',
-    parent: '/calendario/tipo-eventos-lista',
-    component: CadastroTipoEventos,
+  rotas.set('/calendario-escolar/tipo-eventos/novo', {
+    breadcrumbName: 'Cadastro de Tipo de Eventos',
+    parent: '/calendario-escolar/tipo-eventos',
+    component: TipoEventosForm,
+    exact: true,
+    tipo: RotasTipo.EstruturadaAutenticada,
+  });
+
+  rotas.set('/calendario-escolar/tipo-eventos/editar/:id', {
+    breadcrumbName: 'Cadastro de Tipo de Eventos',
+    parent: '/calendario-escolar/tipo-eventos',
+    component: TipoEventosForm,
     exact: true,
     tipo: RotasTipo.EstruturadaAutenticada,
   });
@@ -142,7 +149,6 @@ export default function Rotas() {
     tipo: RotasTipo.EstruturadaAutenticada,
   });
 
-<<<<<<< HEAD
   rotas.set('/meus-dados', {
     breadcrumbName: 'Perfil',
     parent: '/',
@@ -194,8 +200,6 @@ export default function Rotas() {
     tipo: RotasTipo.EstruturadaAutenticada,
   });
 
-=======
->>>>>>> feature/6323
   rotas.set('/', {
     icone: 'fas fa-home',
     parent: null,
