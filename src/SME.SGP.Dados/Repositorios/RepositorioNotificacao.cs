@@ -24,17 +24,31 @@ namespace SME.SGP.Dados.Repositorios
         {
             var query = new StringBuilder();
 
-            MontaQueryObterCompleta(dreId, ueId, statusId, turmaId, usuarioRf, tipoId, categoriaId, titulo, codigo, anoLetivo, paginacao, query);
+            MontaQueryObterCompleta(dreId, ueId, statusId, turmaId, usuarioRf, tipoId, categoriaId, titulo, codigo, anoLetivo, paginacao, query,
+                paginacao.QuantidadeRegistros, paginacao.QuantidadeRegistrosIgnorados);
 
             MontaQueryObterCount(dreId, ueId, statusId, turmaId, usuarioRf, tipoId, categoriaId, titulo, codigo, anoLetivo, query);
 
             var retornoPaginado = new PaginacaoResultadoDto<Notificacao>();
+
             if (!string.IsNullOrEmpty(titulo))
             {
                 titulo = $"%{titulo}%";
             }
 
-            using (var multi = await database.Conexao.QueryMultipleAsync(query.ToString(), new { dreId, ueId, turmaId, statusId, tipoId, usuarioRf, categoriaId, titulo, codigo, anoLetivo, registrosIgnorados = paginacao.QuantidadeRegistrosIgnorados, registros = paginacao.QuantidadeRegistros }))
+            using (var multi = await database.Conexao.QueryMultipleAsync(query.ToString(), new
+            {
+                dreId,
+                ueId,
+                turmaId,
+                statusId,
+                tipoId,
+                usuarioRf,
+                categoriaId,
+                titulo,
+                codigo,
+                anoLetivo
+            }))
             {
                 retornoPaginado.Items = multi.Read<Notificacao>().ToList();
                 retornoPaginado.TotalRegistros = multi.ReadFirst<int>();
@@ -93,17 +107,19 @@ namespace SME.SGP.Dados.Repositorios
             query.AppendLine("on n.usuario_id = u.id");
         }
 
-        private static void MontaQueryObterCompleta(string dreId, string ueId, int statusId, string turmaId, string usuarioRf, int tipoId, int categoriaId, string titulo, long codigo, int anoLetivo, Paginacao paginacao, StringBuilder query)
+        private static void MontaQueryObterCompleta(string dreId, string ueId, int statusId, string turmaId, string usuarioRf, int tipoId, int categoriaId, string titulo,
+            long codigo, int anoLetivo, Paginacao paginacao, StringBuilder query, int quantidadeRegistros, int quantidadeRegistrosIgnorados)
         {
             MontaQueryObterCabecalho(query, false);
             MontaFiltrosObter(dreId, ueId, statusId, turmaId, usuarioRf, tipoId, categoriaId, titulo, codigo, anoLetivo, query);
             query.AppendLine("order by id desc");
 
             if (paginacao.QuantidadeRegistros != 0)
-                query.AppendLine("OFFSET @registrosIgnorados ROWS FETCH NEXT  @registros ROWS ONLY;");
+                query.AppendFormat(" OFFSET {0} ROWS FETCH NEXT {1} ROWS ONLY ", quantidadeRegistrosIgnorados, quantidadeRegistros);
         }
 
-        private static void MontaQueryObterCount(string dreId, string ueId, int statusId, string turmaId, string usuarioRf, int tipoId, int categoriaId, string titulo, long codigo, int anoLetivo, StringBuilder query)
+        private static void MontaQueryObterCount(string dreId, string ueId, int statusId, string turmaId, string usuarioRf, int tipoId, int categoriaId, string titulo,
+            long codigo, int anoLetivo, StringBuilder query)
         {
             MontaQueryObterCabecalho(query, true);
             MontaFiltrosObter(dreId, ueId, statusId, turmaId, usuarioRf, tipoId, categoriaId, titulo, codigo, anoLetivo, query);
