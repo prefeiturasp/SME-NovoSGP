@@ -8,6 +8,7 @@ import { store } from '../redux';
 import { menuRetraido, menuSelecionado } from '../redux/modulos/navegacao/actions';
 import { useSelector } from 'react-redux';
 import modalidade from '~/dtos/modalidade';
+import { Tooltip } from 'antd';
 
 const Sider = () => {
   const { Sider, Footer } = Layout;
@@ -18,7 +19,7 @@ const Sider = () => {
 
   const usuario = useSelector(store => store.usuario);
 
-  const subMenusPrincipais = ['subDiarioClasse', 'subPlanejamento', 'subFechamento', 'subRelatorios', 'subGestao', 'subConfiguracoes'];
+  const subMenusPrincipais = ['subDiarioClasse', 'subPlanejamento', 'subFechamento', 'subRelatorios', 'subGestao', 'subConfiguracoes', 'calendario-escolar'];
 
   useEffect(() => {
     verificaSelecaoMenu(NavegacaoStore.rotaAtiva);
@@ -53,7 +54,7 @@ const Sider = () => {
       const posicaoY = itemMenu.getBoundingClientRect().y;
       const posicaoRight = itemMenu.getBoundingClientRect().right;
       const alturaTotalItens = posicaoY + alturaItens;
-      const posicaoTop = alturaTotalItens > alturaTela ? (posicaoY-(alturaTotalItens - alturaTela)) : posicaoY;
+      const posicaoTop = alturaTotalItens > alturaTela ? (posicaoY - (alturaTotalItens - alturaTela)) : posicaoY;
       document.documentElement.style.setProperty('--posicao-item-menu-top', `${posicaoTop}px`)
       document.documentElement.style.setProperty('--posicao-item-menu-right', `${posicaoRight}px`)
     }
@@ -103,22 +104,24 @@ const Sider = () => {
             <div className="circulo-perfil">
               <img
                 id="imagem-perfil"
-                src="https://graziellanicolai.com.br/wp-content/uploads/2018/03/Graziella-perfil.jpg"
+                src={usuario.meusDados.foto}
               />
             </div>
             <div hidden={NavegacaoStore.retraido}>
-              <span id="nome" className="nome">
-                Nome + Sobrenome
-              </span>
+              <Tooltip title={usuario.meusDados.nome} placement="bottom" overlayStyle={{fontSize:'12px'}}>
+                <span id="nome" className="nome">
+                  {usuario.meusDados.nome}
+                </span>
+              </Tooltip>
             </div>
             <div
               className="perfil-edit"
               style={{ paddingTop: NavegacaoStore.retraido ? '0' : '12px' }}
             >
-              <a id="perfil-edit">
+              <Link id="perfil-edit" to="/meus-dados">
                 <i className="fas fa-user-edit" />
                 <span>Perfil</span>
-              </a>
+              </Link>
             </div>
           </div>
         </Topo>
@@ -195,18 +198,18 @@ const Sider = () => {
                 }
               >
                 <Menu.Item key="30" id="plaPlanoCiclo" htmlFor="linkPlanoCiclo">
-                  <span className="menuItem">{ modalidadeEja ? 'Plano de Etapa' : 'Plano de Ciclo'}</span>
+                  <span className="menuItem">{modalidadeEja ? 'Plano de Etapa' : 'Plano de Ciclo'}</span>
                   <Link
                     to="/planejamento/plano-ciclo"
-                    className="nav-link text-white"
+                    className="text-white"
                     id="linkPlanoCiclo"
                   />
                 </Menu.Item>
                 <Menu.Item key="31" id="plaPlanoAnual" htmlFor="linkPlanoAnual">
-                  <span className="menuItem">{ modalidadeEja ? 'Plano Semestral' : 'Plano Anual'}</span>
+                  <span className="menuItem">{modalidadeEja ? 'Plano Semestral' : 'Plano Anual'}</span>
                   <Link
                     to="/planejamento/plano-anual"
-                    className="nav-link text-white"
+                    className="text-white"
                     id="linkPlanoAnual"
                   />
                 </Menu.Item>
@@ -277,6 +280,65 @@ const Sider = () => {
                 </Menu.Item>
               </SubMenu>
               <SubMenu
+                id="calendario-escolar"
+                key="subCalendarioEscolar"
+                onMouseEnter={(e) => alterarPosicaoJanelaPopup('calendario-escolar', 9)}
+                title={
+                  <div className="item-menu-retraido">
+                    <i
+                      className={`fas fa-calendar-alt ${
+                        NavegacaoStore.retraido ? 'icons-retraido' : 'icons'
+                        }`}
+                    />
+                    <span>Calendário Escolar</span>
+                  </div>
+                }>
+                <Menu.Item key="80" id="calCalendarioEscolar">
+                  <span className="menuItem">Calendário Escolar</span>
+                </Menu.Item>
+                <Menu.Item key="81" id="calCalendarioProfessor">
+                  <span className="menuItem">Calendário do Professor</span>
+                </Menu.Item>
+                <Menu.Item key="82" id="calTipoCalendárioEscolar">
+                  <span className="menuItem">Tipo de Calendário Escolar</span>
+                  <Link
+                    to="/calendario-escolar/tipo-calendario-escolar"
+                    className="nav-link text-white"
+                    id="linkTipoCalendarioEscolar"
+                  />
+                </Menu.Item>
+                <Menu.Item key="83" id="calPeriodosEscolares">
+                  <span className="menuItem">Períodos Escolares</span>
+                  {/* TODO - Descomentar quando estiver DONE a estoria */}
+                  {/* <Link
+                    to="/calendario-escolar/periodos-escolares"
+                    className="nav-link text-white"
+                    id="linkPeriodosEscolares"
+                  /> */}
+                </Menu.Item>
+                <Menu.Item key="84" id="calPeriodosFechamentoAbertura" style={{lineHeight: '18px !important'}}>
+                  <span className="menuItem">Períodos de fechamento (Abertura)</span>
+                </Menu.Item>
+                <Menu.Item key="85" id="calPeriodosFechamentoReabertura">
+                  <span className="menuItem">Períodos de fechamento (Reabertura)</span>
+                </Menu.Item>
+                <Menu.Item key="86" id="calTipoFeriados">
+                  <span className="menuItem">Tipo de Feriado</span>
+                  {/* TODO - Descomentar quando estiver DONE a estoria */}
+                  {/* <Link
+                    to="/calendario-escolar/tipo-feriado"
+                    className="nav-link text-white"
+                    id="linkTipoFeriado"
+                  /> */}
+                </Menu.Item>
+                <Menu.Item key="87" id="calTipoEvento">
+                  <span className="menuItem">Tipo de Evento</span>
+                </Menu.Item>
+                <Menu.Item key="88" id="calEventos">
+                  <span className="menuItem">Eventos</span>
+                </Menu.Item>
+              </SubMenu>
+              <SubMenu
                 id="gestao"
                 key="subGestao"
                 onMouseEnter={(e) => alterarPosicaoJanelaPopup('gestao', 5)}
@@ -311,7 +373,7 @@ const Sider = () => {
                   <span className="menuItem">Atribuição Supervisor</span>
                   <Link
                     to="/gestao/atribuicao-supervisor-lista"
-                    className="nav-link text-white"
+                    className="text-white"
                     id="linkAtribuicaoSupervisor"
                   />
                 </Menu.Item>
@@ -342,7 +404,12 @@ const Sider = () => {
                   }
                 >
                   <Menu.Item key="110" id="usuTrocaSenha">
-                    <span className="menuItem">Troca de Senha</span>
+                    <span className="menuItem">Reiniciar Senha</span>
+                    <Link
+                      to="/usuarios/reiniciar-senha"
+                      className="nav-link text-white"
+                      id="linkReiniciarSenha"
+                    />
                   </Menu.Item>
                 </SubMenu>
               </SubMenu>

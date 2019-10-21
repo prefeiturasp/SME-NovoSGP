@@ -1,6 +1,6 @@
 ﻿using Newtonsoft.Json;
 using SME.SGP.Dominio;
-using SME.SGP.Dto;
+using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
 using System.Net.Http;
@@ -43,7 +43,8 @@ namespace SME.SGP.Integracao.Teste
                     AnoLetivo = 2019,
                     Bimestre = 1,
                     EscolaId = "095346",
-                    TurmaId = 2008187
+                    TurmaId = 2008187,
+                    ComponenteCurricularEolId = 9
                 };
                 var filtroPlanoAnual = new StringContent(JsonConvert.SerializeObject(filtro), Encoding.UTF8, "application/json");
 
@@ -95,6 +96,7 @@ namespace SME.SGP.Integracao.Teste
                 AnoLetivo = 2019,
                 EscolaId = "095346",
                 TurmaId = 2008187,
+                ComponenteCurricularEolId = 9,
                 Bimestres = new List<BimestrePlanoAnualDto>
                 {
                     new BimestrePlanoAnualDto

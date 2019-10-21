@@ -1,4 +1,4 @@
-﻿using SME.SGP.Dto;
+﻿using SME.SGP.Infra;
 using System.Collections.Generic;
 
 namespace SME.SGP.Dominio.Interfaces
@@ -10,5 +10,7 @@ namespace SME.SGP.Dominio.Interfaces
         IEnumerable<SupervisorEscolasDreDto> ObtemPorDreESupervisores(string dreId, string[] supervisoresId);
 
         SupervisorEscolasDreDto ObtemPorUe(string ueId);
+
+        IEnumerable<SupervisorEscolasDreDto> ObtemSupervisoresPorUe(string ueId);
     }
 }

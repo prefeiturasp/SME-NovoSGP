@@ -7,6 +7,8 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.Http" Version="2.2.2" />
+    <PackageReference Include="Microsoft.AspNetCore.StaticFiles" Version="2.2.0" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.0.1" />
     <PackageReference Include="Moq" Version="4.12.0" />
     <PackageReference Include="xunit" Version="2.4.1" />
@@ -20,7 +22,6 @@
     <ProjectReference Include="..\..\src\SME.SGP.Aplicacao\SME.SGP.Aplicacao.csproj" />
     <ProjectReference Include="..\..\src\SME.SGP.Dominio.Interfaces\SME.SGP.Dominio.Interfaces.csproj" />
     <ProjectReference Include="..\..\src\SME.SGP.Dominio\SME.SGP.Dominio.csproj" />
-    <ProjectReference Include="..\..\src\SME.SGP.Dto\SME.SGP.Dto.csproj" />
   </ItemGroup>
 
 </Project>

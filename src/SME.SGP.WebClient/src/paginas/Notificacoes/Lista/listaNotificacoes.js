@@ -6,7 +6,7 @@ import Button from '~/componentes/button';
 import CampoTexto from '~/componentes/campoTexto';
 import { Colors } from '~/componentes/colors';
 import SelectComponent from '~/componentes/select';
-import DataTable from '~/componentes/table/dataTable';
+import ListaPaginada from '~/componentes/listaPaginada/listaPaginada';
 import { confirmar } from '~/servicos/alertas';
 import api from '~/servicos/api';
 import history from '~/servicos/history';
@@ -21,10 +21,13 @@ export default function NotificacoesLista() {
   const [idNotificacoesSelecionadas, setIdNotificacoesSelecionadas] = useState(
     []
   );
-  const [listaNotificacoes, setListaNotificacoes] = useState([]);
+
+  const [notificacoesSelecionadas, setNotificacoesSelecionadas] = useState([]);
+  const [notificacoes, setNotificacoes] = useState([]);
   const [listaCategorias, setListaCategorias] = useState([]);
   const [listaStatus, setListaStatus] = useState([]);
   const [listaTipos, setTipos] = useState([]);
+  const [filtro, setFiltro] = useState({});
 
   const [dropdownTurmaSelecionada, setTurmaSelecionada] = useState();
   const [statusSelecionado, setStatusSelecionado] = useState();
@@ -47,6 +50,7 @@ export default function NotificacoesLista() {
         title: 'Código',
         dataIndex: 'codigo',
         render: (text, row) => montarLinhasTabela(text, row),
+        align: 'center',
       },
       {
         title: 'Tipo',
@@ -72,6 +76,7 @@ export default function NotificacoesLista() {
         title: 'Data/Hora',
         dataIndex: 'data',
         width: 200,
+        align: 'center',
         render: (text, row) => {
           const dataFormatada = moment(text).format('DD/MM/YYYY HH:mm:ss');
           return montarLinhasTabela(dataFormatada, row);
@@ -135,30 +140,23 @@ export default function NotificacoesLista() {
           {statusLista[row.status]}
         </span>
       ) : (
-          <span className="cor-novo-registro-lista">{text}</span>
-        )
+        <span className="cor-novo-registro-lista">{text}</span>
+      )
     ) : (
-        text
-      );
+      text
+    );
   }
-
-  function onSelectRow(ids) {
-
-    if (ids && ids.length > 0) {
-      const notifSelecionadas = listaNotificacoes.filter(noti => {
-        return ids.includes(noti.id);
-      });
-
-      const naoPodeRemover = notifSelecionadas.find(item => !item.podeRemover);
+  const onSelecionarItems = items => {
+    if (items && items.length > 0) {
+      setNotificacoesSelecionadas(items);
+      const naoPodeRemover = items.find(item => !item.podeRemover);
       if (naoPodeRemover) {
         setDesabilitarBotaoExcluir(true);
       } else {
         setDesabilitarBotaoExcluir(false);
       }
 
-      const naoPodeMarcarLido = notifSelecionadas.find(
-        item => !item.podeMarcarComoLida
-      );
+      const naoPodeMarcarLido = items.find(item => !item.podeMarcarComoLida);
       if (naoPodeMarcarLido) {
         setDesabilitarBotaoMarcarLido(true);
       } else {
@@ -169,12 +167,8 @@ export default function NotificacoesLista() {
       setDesabilitarBotaoMarcarLido(true);
     }
 
-    setIdNotificacoesSelecionadas(ids);
-  }
-
-  function onClickRow(row) {
-    onClickEditar(row.id);
-  }
+    setIdNotificacoesSelecionadas(items.map(c => c.id));
+  };
 
   function onChangeTurma(turma) {
     setTurmaSelecionada(turma);
@@ -204,11 +198,11 @@ export default function NotificacoesLista() {
     setTipoSelecionado(tipo);
   }
 
-  function onClickEditar(id) {
-    history.push(`/notificacoes/${id}`);
+  function onClickEditar(notificacao) {
+    history.push(`/notificacoes/${notificacao.id}`);
   }
 
-  async function onClickFiltrar() {
+  const filtrarNotificacoes = async () => {
     const paramsQuery = {
       categoria: categoriaSelecionada,
       codigo: codigoSelecionado || null,
@@ -216,7 +210,7 @@ export default function NotificacoesLista() {
       tipo: tipoSelecionado,
       titulo: tituloSelecionado || null,
       usuarioRf: usuario.rf,
-      anoLetivo: usuario.filtroAtual.anoLetivo
+      anoLetivo: usuario.filtroAtual.anoLetivo,
     };
     if (dropdownTurmaSelecionada && dropdownTurmaSelecionada == '2') {
       if (usuario.turmaSelecionada && usuario.turmaSelecionada.length) {
@@ -232,12 +226,11 @@ export default function NotificacoesLista() {
         paramsQuery.turmaId = usuario.turmaSelecionada[0].codEscola;
       }
     }
-    const listaNotifi = await api.get('v1/notificacoes', {
-      params: paramsQuery,
-    });
-    setListaNotificacoes(listaNotifi.data);
-    setIdNotificacoesSelecionadas([]);
-    onSelectRow([]);
+    setFiltro(paramsQuery);
+  };
+
+  async function onClickFiltrar() {
+    filtrarNotificacoes();
   }
 
   function marcarComoLida() {
@@ -363,14 +356,15 @@ export default function NotificacoesLista() {
           />
         </div>
         <div className="col-md-12 pt-2">
-          <DataTable
+          <ListaPaginada
+            url="v1/notificacoes/"
             id="lista-notificacoes"
-            selectedRowKeys={idNotificacoesSelecionadas}
-            onSelectRow={onSelectRow}
-            onClickRow={onClickRow}
-            columns={colunasTabela}
-            dataSource={listaNotificacoes}
-            selectMultipleRows
+            colunaChave="codigo"
+            colunas={colunasTabela}
+            filtro={filtro}
+            onClick={onClickEditar}
+            multiSelecao
+            selecionarItems={onSelecionarItems}
           />
         </div>
       </EstiloLista>

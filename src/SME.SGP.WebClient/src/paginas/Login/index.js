@@ -21,24 +21,24 @@ import {
   LogoSP,
   CorpoCartao,
   Centralizar,
-  Link,
   LabelLink,
   TextoAjuda,
   ErroGeral,
 } from './login.css';
 import CampoTexto from '~/componentes/campoTexto';
 import { URL_RECUPERARSENHA } from '~/constantes/url';
+import history from '~/servicos/history';
 
 const Login = props => {
   const dispatch = useDispatch();
+  const inputUsuarioRf = useRef();
+  const btnAcessar = useRef();
 
   const [erroGeral, setErroGeral] = useState('');
   const [login, setLogin] = useState({
     usuario: '',
     senha: '',
   });
-
-  const inputFormik = useRef(null);
 
   let redirect = null;
 
@@ -58,16 +58,7 @@ const Login = props => {
     })
   );
 
-  const aoPressionarTecla = e => {
-    if (e.key === 'Enter') {
-      e.preventDefault();
-
-      inputFormik.current.click();
-    }
-  };
-  document.onkeyup = aoPressionarTecla;
-
-  const Acessar = async dados => {
+  const realizarLogin = async dados => {
     setLogin({
       usuario: dados.usuario,
       senha: dados.senha,
@@ -75,15 +66,35 @@ const Login = props => {
     setErroGeral('');
 
     const { sucesso, ...retorno } = await helper.acessar(dados);
+    if (!sucesso) setErroGeral(retorno.erroGeral);
+  };
 
-    if (!sucesso) {
-      setErroGeral(retorno.erroGeral);
-      return;
+  const aoPressionarTecla = e => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      btnAcessar.current.click();
     }
   };
 
-  const AoClicarBotaoAutenticar = (form, e) => {
+  const aoClicarBotaoAutenticar = (form, e) => {
+    e.persist();
     form.validateForm().then(() => form.handleSubmit(e));
+  };
+
+  useEffect(() => {
+    document.addEventListener('keyup', aoPressionarTecla);
+    return () => {
+      document.removeEventListener('keyup', aoPressionarTecla);
+    };
+  }, []);
+
+  const navegarParaRecuperarSenha = () => {
+    history.push({
+      pathname: URL_RECUPERARSENHA,
+      state: {
+        rf: inputUsuarioRf.current.value,
+      },
+    });
   };
 
   return (
@@ -111,7 +122,7 @@ const Login = props => {
                       usuario: login.usuario,
                       senha: login.senha,
                     }}
-                    onSubmit={dados => Acessar(dados)}
+                    onSubmit={dados => realizarLogin(dados)}
                     validationSchema={validacoes}
                     validateOnBlur={false}
                     validateOnChange={false}
@@ -119,9 +130,9 @@ const Login = props => {
                     {form => (
                       <Form>
                         <Rotulo className="d-block" htmlFor="usuario">
-                          Usuário{' '}
+                          Usuário
                           <Tooltip placement="top" title={TextoAjuda}>
-                            <i className="fas fa-question-circle"></i>
+                            <i className="fas fa-question-circle" />
                           </Tooltip>
                         </Rotulo>
                         <CampoTexto
@@ -132,6 +143,7 @@ const Login = props => {
                           classNameCampo="mb-3"
                           placeholder="Informe o RF ou usuário"
                           type="input"
+                          ref={inputUsuarioRf}
                           icon
                         />
                         <Rotulo htmlFor="Senha">Senha</Rotulo>
@@ -148,17 +160,16 @@ const Login = props => {
                         />
                         <FormGroup>
                           <Button
-                            style="primary"
                             className="btn-block d-block"
                             label="Acessar"
                             color={Colors.Roxo}
-                            ref={inputFormik}
-                            onClick={e => AoClicarBotaoAutenticar(form, e)}
+                            ref={btnAcessar}
+                            onClick={e => aoClicarBotaoAutenticar(form, e)}
                           />
                           <Centralizar className="mt-1">
-                            <Link to={URL_RECUPERARSENHA} isactive>
-                              <LabelLink>Esqueci minha senha</LabelLink>
-                            </Link>
+                            <LabelLink onClick={navegarParaRecuperarSenha}>
+                              Esqueci minha senha
+                            </LabelLink>
                           </Centralizar>
                         </FormGroup>
                         {form.errors.usuario || form.errors.senha ? (
@@ -168,9 +179,9 @@ const Login = props => {
                           </ErroGeral>
                         ) : null}
                         {erroGeral &&
-                          !(form.errors.usuario || form.errors.senha) ? (
-                            <ErroGeral>{erroGeral}</ErroGeral>
-                          ) : null}
+                        !(form.errors.usuario || form.errors.senha) ? (
+                          <ErroGeral>{erroGeral}</ErroGeral>
+                        ) : null}
                       </Form>
                     )}
                   </Formik>
