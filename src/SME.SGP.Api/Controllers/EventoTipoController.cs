@@ -4,6 +4,7 @@ using SME.SGP.Aplicacao.Interfaces.Comandos;
 using SME.SGP.Aplicacao.Interfaces.Consultas;
 using SME.SGP.Dominio;
 using SME.SGP.Dto;
+using SME.SGP.Infra;
 using System.Collections;
 using System.Collections.Generic;
 
