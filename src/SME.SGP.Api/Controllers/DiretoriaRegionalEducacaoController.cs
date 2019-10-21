@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SME.SGP.Aplicacao;
-using SME.SGP.Dto;
+using SME.SGP.Infra;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
