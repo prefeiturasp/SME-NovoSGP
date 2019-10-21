@@ -2,7 +2,6 @@
 using Microsoft.AspNetCore.Mvc;
 using SME.SGP.Api.Filtros;
 using SME.SGP.Aplicacao;
-using SME.SGP.Dominio;
 using SME.SGP.Infra;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -27,7 +26,7 @@ namespace SME.SGP.Api.Controllers
         [HttpDelete]
         [ProducesResponseType(200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        //[Permissao(Permissao.N_E, Policy = "Bearer")]
+        [Permissao(Permissao.N_E, Permissao.ACJ_A, Policy = "Bearer")]
         public IActionResult Delete(long[] notificacoesId)
         {
             return Ok(comandosNotificacao.Excluir(notificacoesId));

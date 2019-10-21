@@ -1,59 +1,74 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace SME.SGP.Dominio
+namespace SME.SGP.Infra
 {
     public enum Permissao
     {
-        [Display(Name = "Sondagem - Consulta")]
+        #region Diário de Classe
+
+        [PermissaoMenu(Descricao = "Sondagem", Agrupamento = "Diário de Classe", Url = "sondagem/")]
         S_C = 1,
 
-        [Display(Name = "Sondagem - Inclusão")]
+        [Display(Name = "Sondagem - Inclusão", ShortName = "Sondagem", GroupName = "Diário de Classe", Prompt = "sondagem/novo/")]
         S_I = 2,
 
-        [Display(Name = "Sondagem - Exclusão")]
+        [Display(Name = "Sondagem - Exclusão", ShortName = "Sondagem", GroupName = "Diário de Classe")]
         S_E = 3,
 
-        [Display(Name = "Sondagem - Alteração")]
+        [Display(Name = "Sondagem - Alteração", ShortName = "Sondagem", GroupName = "Diário de Classe", Prompt = "sondagem/editar/:id")]
         S_A = 4,
 
-        [Display(Name = "Sondagem - Relatório - Consulta")]
-        SR_C = 5,
-
-        [Display(Name = "Sondagem - Relatório - Inclusão")]
-        SR_I = 6,
-
-        [Display(Name = "Sondagem - Relatório - Exclusão")]
-        SR_E = 7,
-
-        [Display(Name = "Sondagem - Relatório - Alteração")]
-        SR_A = 8,
-
-        [Display(Name = "Boletim - Consulta")]
+        [Display(Name = "Boletim - Consulta", ShortName = "Boletim", GroupName = "Diário de Classe", Prompt = "boletim/")]
         B_C = 9,
 
-        [Display(Name = "Calendário - Consulta")]
-        C_C = 10,
-
-        [Display(Name = "Calendário - Inclusão")]
-        C_I = 11,
-
-        [Display(Name = "Calendário - Exclusão")]
-        C_E = 12,
-
-        [Display(Name = "Calendário - Alteração")]
-        C_A = 13,
-
-        [Display(Name = "Frequência- Consulta")]
+        [Display(Name = "Frequência- Consulta", ShortName = "Frequência", GroupName = "Diário de Classe", Prompt = "frequencia/")]
         F_C = 14,
 
-        [Display(Name = "Frequência - Inclusão")]
+        [Display(Name = "Frequência - Inclusão", ShortName = "Frequência", GroupName = "Diário de Classe", Prompt = "frequencia/novo")]
         F_I = 15,
 
-        [Display(Name = "Frequência - Exclusão")]
+        [Display(Name = "Frequência - Exclusão", ShortName = "Frequência", GroupName = "Diário de Classe")]
         F_E = 16,
 
-        [Display(Name = "Frequência - Alteração")]
+        [Display(Name = "Frequência - Alteração", ShortName = "Frequência", GroupName = "Diário de Classe", Prompt = "frequencia/editar/:id")]
         F_A = 17,
+
+        #endregion Diário de Classe
+
+        #region Relatórios
+
+        [Display(Name = "Sondagem - Relatório - Consulta", ShortName = "Sondagem - Relatório", GroupName = "Relatórios")]
+        SR_C = 5,
+
+        [Display(Name = "Sondagem - Relatório - Inclusão", ShortName = "Sondagem - Relatório", GroupName = "Relatórios")]
+        SR_I = 6,
+
+        [Display(Name = "Sondagem - Relatório - Exclusão", ShortName = "Sondagem - Relatório", GroupName = "Relatórios")]
+        SR_E = 7,
+
+        [Display(Name = "Sondagem - Relatório - Alteração", ShortName = "Sondagem - Relatório", GroupName = "Relatórios")]
+        SR_A = 8,
+
+        [Display(Name = "Relatório - Consulta")]
+        R_C = 46,
+
+        #endregion Relatórios
+
+        #region Calendário Escolar
+
+        [Display(Name = "Calendário - Consulta", ShortName = "Calendário", GroupName = "Calendário Escolar")]
+        C_C = 10,
+
+        [Display(Name = "Calendário - Inclusão", ShortName = "Calendário", GroupName = "Calendário Escolar")]
+        C_I = 11,
+
+        [Display(Name = "Calendário - Exclusão", ShortName = "Calendário", GroupName = "Calendário Escolar")]
+        C_E = 12,
+
+        [Display(Name = "Calendário - Alteração", ShortName = "Calendário", GroupName = "Calendário Escolar")]
+        C_A = 13,
+
+        #endregion Calendário Escolar
 
         [Display(Name = "Atribuição de CJ - Consulta")]
         ACJ_C = 18,
@@ -138,9 +153,6 @@ namespace SME.SGP.Dominio
 
         [Display(Name = "Atribuição Professor - Alteração")]
         AP_A = 45,
-
-        [Display(Name = "Relatório - Consulta")]
-        R_C = 46,
 
         [Display(Name = "Reiniciar Senha - Alteração")]
         AS_C = 47,
