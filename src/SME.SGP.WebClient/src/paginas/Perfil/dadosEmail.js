@@ -1,23 +1,25 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import CampoTexto from '~/componentes/campoTexto';
 import Button from '~/componentes/button';
 import { Colors } from '~/componentes/colors';
 import styled from 'styled-components';
 import ModalConteudoHtml from '~/componentes/modalConteudoHtml';
 import AlertaBalao from '~/componentes/alertaBalao';
-import { Formik } from 'formik';
+import { Formik, Form } from 'formik';
 import * as Yup from 'yup';
-import { Form } from 'antd';
 import api from '~/servicos/api';
 import { sucesso, confirmar } from '~/servicos/alertas';
+import { useSelector } from 'react-redux';
+import { store } from '~/redux';
+import { meusDados } from '~/redux/modulos/usuario/actions'
 
 const DadosEmail = () => {
 
-  const [email, setEmail] = useState('teste@teste.com');
-  const [emailEdicao, setEmailEdicao] = useState('teste@teste.com');
+  const usuarioStore = useSelector(store => store.usuario);
+  const [email, setEmail] = useState(usuarioStore.meusDados.email);
+  const [emailEdicao, setEmailEdicao] = useState(usuarioStore.meusDados.email);
   const [senha, setSenha] = useState('******');
   const [visualizarFormEmail, setVisualizarFormEmail] = useState(false);
-  const [ocultarModalCancelamento, setOcultarModalCancelamento] = useState(true);
 
   const Campos = styled.div`
     margin-right: 10px;
@@ -33,8 +35,15 @@ const DadosEmail = () => {
 
   const [validacoes] = useState(
     Yup.object({
-      emailUsuario: Yup.string()
+      emailUsuario: Yup.string().nullable()
+        .required('E-mail obrigatório')
         .email('Digite um e-mail válido.')
+        .test({
+          name: 'ehSme',
+          exclusive: true,
+          message: 'O e-mail deve ser do domínio \'@sme.prefeitura.sp.gov.br\'',
+          test: value => usuarioStore.possuiPerfilSmeOuDre ? value.includes('@sme.prefeitura.sp.gov.br'): true,
+        })
     })
   );
 
@@ -43,14 +52,16 @@ const DadosEmail = () => {
         setEmail(novoEmail.emailUsuario);
         setEmailEdicao(novoEmail.emailEdicao)
         setVisualizarFormEmail(false);
-        setOcultarModalCancelamento(true);
         sucesso('Solicitação realizada com sucesso. Verifique sua caixa de entrada');
+        const meusDadosAntigos = usuarioStore.meusDados;
+        meusDadosAntigos.email = novoEmail;
+        store.dispatch(meusDados(meusDadosAntigos));
       })
   }
 
   const onClickCancelar = async form => {
     const novoEmail = form.values.emailUsuario;
-    if(email !== novoEmail){
+    if(email !== novoEmail && !form.errors.emailUsuario){
       setVisualizarFormEmail(false);
       const confirmado = await confirmar(
         'Atenção',
@@ -59,14 +70,12 @@ const DadosEmail = () => {
       );
       if (confirmado) {
         setEmailEdicao(novoEmail);
-        setVisualizarFormEmail(true);
         form.validateForm().then(err => {
-          console.log(err);
-          form.setErrors(err);
           form.handleSubmit(e => e);
         });
       } else {
         setVisualizarFormEmail(false);
+        setEmailEdicao(email);
       }
     }else{
       setVisualizarFormEmail(false);
@@ -77,7 +86,6 @@ const DadosEmail = () => {
   return (
     <Campos>
       <Formik
-        enableReinitialize
         initialValues={{
           emailUsuario: emailEdicao? emailEdicao: email,
         }}
