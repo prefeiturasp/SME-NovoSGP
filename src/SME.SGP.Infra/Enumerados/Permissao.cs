@@ -6,50 +6,50 @@ namespace SME.SGP.Infra
     {
         #region Diário de Classe
 
-        [PermissaoMenu(Descricao = "Sondagem", Agrupamento = "Diário de Classe", Url = "sondagem/")]
+        [PermissaoMenu(Descricao = "Sondagem", Icone = "fas fa-book-reader", Agrupamento = "Diário de Classe", OrdemAgrupamento = 1, OrdemMenu = 9, Url = "sondagem/")]
         S_C = 1,
 
-        [Display(Name = "Sondagem - Inclusão", ShortName = "Sondagem", GroupName = "Diário de Classe", Prompt = "sondagem/novo/")]
+        [PermissaoMenu(Descricao = "Sondagem", Icone = "fas fa-book-reader", Agrupamento = "Diário de Classe", OrdemAgrupamento = 1, OrdemMenu = 9, Url = "sondagem/novo/")]
         S_I = 2,
 
-        [Display(Name = "Sondagem - Exclusão", ShortName = "Sondagem", GroupName = "Diário de Classe")]
+        [PermissaoMenu(Descricao = "Sondagem", Icone = "fas fa-book-reader", Agrupamento = "Diário de Classe", OrdemAgrupamento = 1, OrdemMenu = 9)]
         S_E = 3,
 
-        [Display(Name = "Sondagem - Alteração", ShortName = "Sondagem", GroupName = "Diário de Classe", Prompt = "sondagem/editar/:id")]
+        [PermissaoMenu(Descricao = "Sondagem", Icone = "fas fa-book-reader", Agrupamento = "Diário de Classe", OrdemAgrupamento = 1, OrdemMenu = 9, Url = "sondagem/editar/:id")]
         S_A = 4,
 
-        [Display(Name = "Boletim - Consulta", ShortName = "Boletim", GroupName = "Diário de Classe", Prompt = "boletim/")]
+        [PermissaoMenu(Descricao = "Boletim", Icone = "fas fa-book-reader", Agrupamento = "Diário de Classe", OrdemAgrupamento = 1, OrdemMenu = 3, Url = "boletim/")]
         B_C = 9,
 
-        [Display(Name = "Frequência- Consulta", ShortName = "Frequência", GroupName = "Diário de Classe", Prompt = "frequencia/")]
+        [PermissaoMenu(Descricao = "Plano de aula/Frequência", Icone = "fas fa-book-reader", Agrupamento = "Diário de Classe", OrdemAgrupamento = 1, OrdemMenu = 1, Url = "frequencia/")]
         F_C = 14,
 
-        [Display(Name = "Frequência - Inclusão", ShortName = "Frequência", GroupName = "Diário de Classe", Prompt = "frequencia/novo")]
+        [PermissaoMenu(Descricao = "Plano de aula/Frequência", Icone = "fas fa-book-reader", Agrupamento = "Diário de Classe", OrdemAgrupamento = 1, OrdemMenu = 1, Url = "frequencia/novo")]
         F_I = 15,
 
-        [Display(Name = "Frequência - Exclusão", ShortName = "Frequência", GroupName = "Diário de Classe")]
+        [PermissaoMenu(Descricao = "Plano de aula/Frequência", Icone = "fas fa-book-reader", Agrupamento = "Diário de Classe", OrdemAgrupamento = 1, OrdemMenu = 1)]
         F_E = 16,
 
-        [Display(Name = "Frequência - Alteração", ShortName = "Frequência", GroupName = "Diário de Classe", Prompt = "frequencia/editar/:id")]
+        [PermissaoMenu(Descricao = "Plano de aula/Frequência", Icone = "fas fa-book-reader", Agrupamento = "Diário de Classe", OrdemAgrupamento = 1, OrdemMenu = 1, Url = "frequencia/editar/:id")]
         F_A = 17,
 
         #endregion Diário de Classe
 
         #region Relatórios
 
-        [Display(Name = "Sondagem - Relatório - Consulta", ShortName = "Sondagem - Relatório", GroupName = "Relatórios")]
+        [PermissaoMenu(Descricao = "Relatório de Sondagem", Icone = "fas fa-file-alt", Agrupamento = "Relatórios", OrdemAgrupamento = 2, OrdemMenu = 8, Url = "relatorios/sondagem/")]
         SR_C = 5,
 
-        [Display(Name = "Sondagem - Relatório - Inclusão", ShortName = "Sondagem - Relatório", GroupName = "Relatórios")]
+        [PermissaoMenu(Descricao = "Relatório de Sondagem", Icone = "fas fa-file-alt", Agrupamento = "Relatórios", OrdemAgrupamento = 2, OrdemMenu = 8, Url = "relatorios/sondagem/novo")]
         SR_I = 6,
 
-        [Display(Name = "Sondagem - Relatório - Exclusão", ShortName = "Sondagem - Relatório", GroupName = "Relatórios")]
+        [PermissaoMenu(Descricao = "Relatório de Sondagem", Icone = "fas fa-file-alt", Agrupamento = "Relatórios", OrdemAgrupamento = 2, OrdemMenu = 8)]
         SR_E = 7,
 
-        [Display(Name = "Sondagem - Relatório - Alteração", ShortName = "Sondagem - Relatório", GroupName = "Relatórios")]
+        [PermissaoMenu(Descricao = "Relatório de Sondagem", Icone = "fas fa-file-alt", Agrupamento = "Relatórios", OrdemAgrupamento = 2, OrdemMenu = 8, Url = "relatorios/sondagem/editar/:id")]
         SR_A = 8,
 
-        [Display(Name = "Relatório - Consulta")]
+        [PermissaoMenu(Descricao = "Relatório Consulta", Icone = "fas fa-file-alt", Agrupamento = "Relatórios", OrdemAgrupamento = 2, OrdemMenu = 2, Url = "relatorios/")]
         R_C = 46,
 
         #endregion Relatórios

@@ -1,25 +1,38 @@
 ﻿using SME.SGP.Infra;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
 using System.Linq;
 
 namespace SME.SGP.Aplicacao
 {
     public class ServicoMenu
     {
-        public void ObterMenu(IEnumerable<Permissao> permissoes)
+        public IEnumerable<MenuRetornoDto> ObterMenu(IEnumerable<Permissao> permissoes)
         {
-            var agrupamentos = permissoes
-                               .GroupBy(a => a.GetAttribute<DisplayAttribute>().GroupName)
-                               .Distinct()
-                               .ToList();
+            //var agrupamentos = permissoes
+            //                   .GroupBy(a => a.GetAttribute<PermissaoMenuAttribute>().Agrupamento)
+            //                   .Distinct()
+            //                   .ToList();
 
-            //var listaRetorno = ;
-
-            foreach (var agrupamento in agrupamentos)
+            var agrupamentos = permissoes.GroupBy(item => new
             {
-                var permissaoAgrupamento = agrupamento.First();
-            }
+                Descricao = item.GetAttribute<PermissaoMenuAttribute>().Agrupamento
+            }).ToList();
+
+            var listaRetorno = new List<MenuRetornoDto>();
+
+            //foreach (var agrupamento in agrupamentos.OrderBy(a => a.GetAttribute<PermissaoMenuAttribute>().OrdemAgrupamento))
+            //{
+            //    var atributoEnumerado = agrupamento.GetAttribute<PermissaoMenuAttribute>();
+            //    var menuRetornoDto = new MenuRetornoDto()
+            //    {
+            //        Codigo = (int)agrupamento,
+            //        Descricao = atributoEnumerado.Agrupamento,
+            //        Icone = atributoEnumerado.Icone
+            //    };
+
+            //    listaRetorno.Add(menuRetornoDto);
+            //}
+            return listaRetorno;
         }
     }
 }
