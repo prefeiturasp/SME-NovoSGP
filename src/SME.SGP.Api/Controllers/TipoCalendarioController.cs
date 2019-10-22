@@ -2,9 +2,8 @@
 using Microsoft.AspNetCore.Mvc;
 using SME.SGP.Api.Filtros;
 using SME.SGP.Aplicacao;
-using SME.SGP.Aplicacao.Interfaces.Comandos;
+using SME.SGP.Aplicacao.Interfaces;
 using SME.SGP.Dto;
-using System;
 using System.Collections.Generic;
 
 namespace SME.SGP.Api.Controllers
@@ -15,16 +14,14 @@ namespace SME.SGP.Api.Controllers
     [Authorize("Bearer")]
     public class TipoCalendarioController : ControllerBase
     {
-        private readonly IConsultasTipoCalendario consultas;
         private readonly IComandosTipoCalendario comandos;
-        private readonly IComandosPeriodoEscolar periodoEscolar;
+        private readonly IConsultasTipoCalendario consultas;
 
         public TipoCalendarioController(IConsultasTipoCalendario consultas,
             IComandosTipoCalendario comandos, IComandosPeriodoEscolar periodoEscolar)
         {
             this.consultas = consultas ?? throw new System.ArgumentNullException(nameof(consultas));
             this.comandos = comandos ?? throw new System.ArgumentNullException(nameof(comandos));
-            this.periodoEscolar = periodoEscolar ?? throw new ArgumentNullException(nameof(periodoEscolar));
         }
 
         [HttpGet]
@@ -44,15 +41,6 @@ namespace SME.SGP.Api.Controllers
             return Ok(consultas.BuscarPorId(id));
         }
 
-        [HttpPost]
-        [ProducesResponseType(200)]
-        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        public IActionResult Salvar([FromBody]TipoCalendarioDto dto)
-        {
-            comandos.Salvar(dto);
-            return Ok();
-        }
-
         [HttpDelete]
         [ProducesResponseType(200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
@@ -62,15 +50,13 @@ namespace SME.SGP.Api.Controllers
             return Ok();
         }
 
-        [HttpPost("periodo-escolar")]
+        [HttpPost]
         [ProducesResponseType(200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        public IActionResult PeriodoEscolar([FromBody]PeriodoEscolarListaDto periodo)
+        public IActionResult Salvar([FromBody]TipoCalendarioDto dto)
         {
-            periodoEscolar.Salvar(periodo);
+            comandos.Salvar(dto);
             return Ok();
         }
-        
     }
-
 }

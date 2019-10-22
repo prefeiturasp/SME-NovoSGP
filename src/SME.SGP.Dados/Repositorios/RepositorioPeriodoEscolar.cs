@@ -1,10 +1,9 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using Dapper;
+﻿using Dapper;
 using SME.SGP.Dados.Contexto;
 using SME.SGP.Dominio.Entidades;
-using SME.SGP.Dominio.Interfaces.Repositorios;
+using SME.SGP.Dominio.Interfaces;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace SME.SGP.Dados.Repositorios
 {
@@ -14,15 +13,11 @@ namespace SME.SGP.Dados.Repositorios
         {
         }
 
-        public IList<PeriodoEscolar> ObterPorTipoCalendario(long codigoTipoCalendario)
+        public IEnumerable<PeriodoEscolar> ObterPorTipoCalendario(long codigoTipoCalendario)
         {
-            StringBuilder query = new StringBuilder();
+            string query = "select * from periodo_escolar where tipo_calendario_id = @tipoCalendario";
 
-            query.AppendLine("select * from periodo_escolar");
-
-            query.AppendLine("where tipo_calendario_id = @tipoCalendario");
-
-            return database.Conexao.Query<PeriodoEscolar>(query.ToString(), new {tipoCalendario = codigoTipoCalendario }).ToList();
+            return database.Conexao.Query<PeriodoEscolar>(query, new { tipoCalendario = codigoTipoCalendario }).ToList();
         }
     }
 }

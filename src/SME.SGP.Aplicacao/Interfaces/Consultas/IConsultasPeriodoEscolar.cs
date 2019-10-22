@@ -1,12 +1,9 @@
 ﻿using SME.SGP.Dto;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
-namespace SME.SGP.Aplicacao.Interfaces.Consultas
+namespace SME.SGP.Aplicacao.Interfaces
 {
     public interface IConsultasPeriodoEscolar
     {
-        PeriodoEscolarListaDto ObterPorTipoCalendario(long codigoTipoCalendario);
+        PeriodoEscolarListaDto ObterPorTipoCalendario(long tipoCalendarioId);
     }
 }

@@ -1,9 +1,6 @@
 ﻿using SME.SGP.Dto;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
-namespace SME.SGP.Aplicacao.Interfaces.Comandos
+namespace SME.SGP.Aplicacao.Interfaces
 {
     public interface IComandosPeriodoEscolar
     {
