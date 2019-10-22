@@ -49,7 +49,7 @@ namespace SME.SGP.Dominio.Entidades
         private void ValidarCamposObrigatorios()
         {
             if (TipoCalendario == 0)
-                throw new NegocioException("Deve ser informado o tipo de calendario");
+                throw new NegocioException("Deve ser informado o tipo de calendário");
 
             if (Bimestre == 0)
                 throw new NegocioException("Deve ser informado o bimestre");
