@@ -90,12 +90,16 @@ namespace SME.SGP.Integracao.Teste
 
         private void EditarPeriodo(PeriodoEscolarListaDto Dto)
         {
+            Dto.Periodos[0].Id = 1;
             Dto.Periodos[0].PeriodoInicio = DateTime.Now.AddMinutes(0);
             Dto.Periodos[0].PeriodoFim = DateTime.Now.AddMinutes(1);
+            Dto.Periodos[1].Id = 2;
             Dto.Periodos[1].PeriodoInicio = DateTime.Now.AddMinutes(2);
             Dto.Periodos[1].PeriodoFim = DateTime.Now.AddMinutes(3);
+            Dto.Periodos[2].Id = 3;
             Dto.Periodos[2].PeriodoInicio = DateTime.Now.AddMinutes(4);
             Dto.Periodos[2].PeriodoFim = DateTime.Now.AddMinutes(5);
+            Dto.Periodos[3].Id = 4;
             Dto.Periodos[3].PeriodoInicio = DateTime.Now.AddMinutes(6);
             Dto.Periodos[3].PeriodoFim = DateTime.Now.AddMinutes(7);
 
