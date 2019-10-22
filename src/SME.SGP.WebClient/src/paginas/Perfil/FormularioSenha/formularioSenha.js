@@ -156,7 +156,7 @@ const FormularioSenha = () => {
                       <div style={{ lineHeight: '1.8' }}>
                         Requisitos de segurança da senha:
                       </div>
-                      <ul className="validacoes list-unstyled">
+                      <ul className="validacoes list-unstyled mt-1">
                         {validacao(
                           possuiErroCampo(form, 'novaSenha', 'maiuscula'),
                           'Uma letra maiúscula'
@@ -199,7 +199,7 @@ const FormularioSenha = () => {
           desabilitado
           label="Senha"
           className="col-11 campo"
-          placeholder="Insira uma senha"
+          placeholder="************"
           onChange={() => {}}
           type="password"
         />
