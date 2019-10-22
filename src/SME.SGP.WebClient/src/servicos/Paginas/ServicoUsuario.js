@@ -6,7 +6,6 @@ const obterMeusDados = () =>{
     api.get('v1/usuarios/meus-dados').then(resp => {
         if (resp && resp.data) {
           const dados = resp.data
-          console.log(dados);
           store.dispatch(meusDados(
             {
               nome: dados.nome,
