@@ -1,6 +1,6 @@
 ﻿using Moq;
 using SME.SGP.Dominio.Interfaces;
-using SME.SGP.Dto;
+using SME.SGP.Infra;
 using System.Collections.Generic;
 using Xunit;
 
@@ -23,7 +23,7 @@ namespace SME.SGP.Aplicacao.Teste.Consultas
         {
             List<string> anos = new List<string>();
             for (int ano = 1; ano <= 9; ano++) anos.Add(ano.ToString());
-            consultasCiclo.Listar(new Dto.FiltroCicloDto { Anos = anos, AnoSelecionado = "1", Modalidade = 5 });
+            consultasCiclo.Listar(new FiltroCicloDto { Anos = anos, AnoSelecionado = "1", Modalidade = 5 });
             repositorioCiclo.Verify(c => c.ObterCiclosPorAnoModalidade(It.IsAny<FiltroCicloDto>()), Times.Once);
         }
 
@@ -32,7 +32,7 @@ namespace SME.SGP.Aplicacao.Teste.Consultas
         {
             List<string> anos = new List<string>();
             for (int ano = 1; ano <= 3; ano++) anos.Add(ano.ToString());
-            consultasCiclo.Listar(new Dto.FiltroCicloDto { Anos = anos, AnoSelecionado = "1", Modalidade = 6 });
+            consultasCiclo.Listar(new FiltroCicloDto { Anos = anos, AnoSelecionado = "1", Modalidade = 6 });
             repositorioCiclo.Verify(c => c.ObterCiclosPorAnoModalidade(It.IsAny<FiltroCicloDto>()), Times.Once);
         }
     }
