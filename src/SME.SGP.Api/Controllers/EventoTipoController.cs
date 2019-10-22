@@ -40,10 +40,10 @@ namespace SME.SGP.Api.Controllers
             return Ok(eventoTipoDto);
         }
 
-        [HttpPost("listar")]
+        [HttpGet("listar")]
         [ProducesResponseType(typeof(PaginacaoResultadoDto<EventoTipoDto>), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        public async Task<IActionResult> Listar([FromBody]FiltroEventoTipoDto filtroEventoTipoDto, [FromServices]IConsultasEventoTipo consultasEventoTipo)
+        public async Task<IActionResult> Listar([FromQuery]FiltroEventoTipoDto filtroEventoTipoDto, [FromServices]IConsultasEventoTipo consultasEventoTipo)
         {
             var listaEventoTipo = await consultasEventoTipo.Listar(filtroEventoTipoDto);
 

@@ -44,7 +44,7 @@ namespace SME.SGP.Dados.Repositorios
 
             sql.AppendLine(";");
 
-            MontaQueryConsulta(eventoLocalOcorrencia, eventoLetivo, descricao, paginacao, sql, contador: false);
+            MontaQueryConsulta(eventoLocalOcorrencia, eventoLetivo, descricao, paginacao, sql, contador: true);
             return sql;
         }
 
