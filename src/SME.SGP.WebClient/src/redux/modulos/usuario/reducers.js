@@ -14,6 +14,7 @@ const inicial = {
   meusDados: {
     foto:'https://graziellanicolai.com.br/wp-content/uploads/2018/03/Graziella-perfil.jpg'
   },
+  possuiPerfilSmeOuDre: false
 };
 
 export default function usuario(state = inicial, action) {
@@ -33,6 +34,7 @@ export default function usuario(state = inicial, action) {
         draft.logado = true;
         draft.usuario = action.payload.usuario;
         draft.modificarSenha = action.payload.modificarSenha;
+        draft.possuiPerfilSmeOuDre = action.payload.possuiPerfilSmeOuDre;
         break;
       case '@usuario/deslogar':
         draft.rf = '';
