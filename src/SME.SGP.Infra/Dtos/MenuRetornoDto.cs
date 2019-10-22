@@ -13,6 +13,6 @@ namespace SME.SGP.Infra
         public string Descricao { get; set; }
         public string Icone { get; set; }
         public IList<MenuPermissaoDto> Menus { get; set; }
-        public int QuantidadeMenus { get; set; }
+        public int QuantidadeMenus { get { return Menus.Count; } }
     }
 }
