@@ -1,6 +1,6 @@
 ﻿using SME.SGP.Aplicacao.Interfaces;
 using SME.SGP.Dominio.Interfaces;
-using SME.SGP.Dto;
+using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
 using System.Linq;

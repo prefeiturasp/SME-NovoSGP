@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
-namespace SME.SGP.Dto
+namespace SME.SGP.Infra
 {
     public class PeriodoEscolarListaDto
     {
