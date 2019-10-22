@@ -35,7 +35,7 @@ namespace SME.SGP.Aplicacao.Teste.Consultas
         {
             repositorioEventoTipo.Setup(r => r.ObterPorId(It.IsAny<long>())).Returns(It.IsAny<EventoTipo>());
 
-            consultasEventoTipo.ObtenhaPorCodigo(1);
+            consultasEventoTipo.ObtenhaPorId(1);
         }
 
         [Fact(DisplayName = "Deve_Listar_Tipos")]

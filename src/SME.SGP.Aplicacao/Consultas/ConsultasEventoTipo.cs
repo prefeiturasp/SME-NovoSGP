@@ -5,22 +5,16 @@ using SME.SGP.Dto;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 
 namespace SME.SGP.Aplicacao.Consultas
 {
     public class ConsultasEventoTipo : IConsultasEventoTipo
     {
-        private IRepositorioEventoTipo repositorioEventoTipo;
+        private readonly IRepositorioEventoTipo repositorioEventoTipo;
 
         public ConsultasEventoTipo(IRepositorioEventoTipo repositorioEventoTipo)
         {
             this.repositorioEventoTipo = repositorioEventoTipo ?? throw new ArgumentNullException(nameof(repositorioEventoTipo));
-        }
-
-        public EventoTipoDto ObtenhaPorCodigo(long codigo)
-        {
-            return EntidadeParaDto(repositorioEventoTipo.ObterPorId(codigo));
         }
 
         public IList<EventoTipoDto> Listar(FiltroEventoTipoDto Filtro)
@@ -31,6 +25,15 @@ namespace SME.SGP.Aplicacao.Consultas
                 return null;
 
             return listaEventoTipo.Select(x => EntidadeParaDto(x)).ToList();
+        }
+
+        public EventoTipoDto ObtenhaPorId(long id)
+        {
+            var entidade = repositorioEventoTipo.ObterPorId(id);
+
+            if (entidade.Excluido) return null;
+
+            return EntidadeParaDto(entidade);
         }
 
         private EventoTipoDto EntidadeParaDto(EventoTipo eventoTipo)
@@ -47,8 +50,7 @@ namespace SME.SGP.Aplicacao.Consultas
                 Letivo = eventoTipo.Letivo,
                 Ativo = eventoTipo.Ativo,
                 LocalOcorrencia = eventoTipo.LocalOcorrencia,
-                TipoData = eventoTipo.TipoData,
-                Migrado = eventoTipo.Migrado
+                TipoData = eventoTipo.TipoData
             };
         }
     }
