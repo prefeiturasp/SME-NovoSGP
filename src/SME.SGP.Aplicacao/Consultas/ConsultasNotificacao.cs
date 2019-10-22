@@ -1,43 +1,50 @@
-﻿using SME.SGP.Dominio;
+﻿using Microsoft.AspNetCore.Http;
+using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
-using SME.SGP.Dto;
 using SME.SGP.Infra;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
-    public class ConsultasNotificacao : IConsultasNotificacao
+    public class ConsultasNotificacao : ConsultasBase, IConsultasNotificacao
     {
         private readonly IRepositorioNotificacao repositorioNotificacao;
 
-        public ConsultasNotificacao(IRepositorioNotificacao repositorioNotificacao, IRepositorioUsuario repositorioUsuario)
+        public ConsultasNotificacao(IRepositorioNotificacao repositorioNotificacao, IRepositorioUsuario repositorioUsuario, IHttpContextAccessor httpContext) : base(httpContext)
         {
             this.repositorioNotificacao = repositorioNotificacao ?? throw new System.ArgumentNullException(nameof(repositorioNotificacao));
         }
 
-        public IEnumerable<NotificacaoBasicaDto> Listar(NotificacaoFiltroDto filtroNotificacaoDto)
+        public async Task<PaginacaoResultadoDto<NotificacaoBasicaDto>> Listar(NotificacaoFiltroDto filtroNotificacaoDto)
         {
-            var retorno = repositorioNotificacao.Obter(filtroNotificacaoDto.DreId,
+            var retorno = await repositorioNotificacao.Obter(filtroNotificacaoDto.DreId,
                 filtroNotificacaoDto.UeId, (int)filtroNotificacaoDto.Status, filtroNotificacaoDto.TurmaId, filtroNotificacaoDto.UsuarioRf,
-                (int)filtroNotificacaoDto.Tipo, (int)filtroNotificacaoDto.Categoria, filtroNotificacaoDto.Titulo, filtroNotificacaoDto.Codigo, filtroNotificacaoDto.AnoLetivo);
+                (int)filtroNotificacaoDto.Tipo, (int)filtroNotificacaoDto.Categoria, filtroNotificacaoDto.Titulo, filtroNotificacaoDto.Codigo, filtroNotificacaoDto.AnoLetivo, Paginacao);
 
-            return from r in retorno
-                   select new NotificacaoBasicaDto()
-                   {
-                       Id = r.Id,
-                       Titulo = r.Titulo,
-                       Data = r.CriadoEm,
-                       DescricaoStatus = r.Status.GetAttribute<DisplayAttribute>().Name,
-                       Status = r.Status,
-                       Categoria = r.Categoria,
-                       DescricaoCategoria = r.Categoria.GetAttribute<DisplayAttribute>().Name,
-                       Tipo = r.Tipo.GetAttribute<DisplayAttribute>().Name,
-                       Codigo = r.Codigo,
-                       PodeRemover = r.PodeRemover,
-                       PodeMarcarComoLida = r.DeveMarcarComoLido
-                   };
+            var retornoPaginadoDto = new PaginacaoResultadoDto<NotificacaoBasicaDto>();
+            retornoPaginadoDto.TotalRegistros = retorno.TotalRegistros;
+            retornoPaginadoDto.TotalPaginas = retorno.TotalPaginas;
+
+            retornoPaginadoDto.Items = from r in retorno.Items
+                                       select new NotificacaoBasicaDto()
+                                       {
+                                           Id = r.Id,
+                                           Titulo = r.Titulo,
+                                           Data = r.CriadoEm,
+                                           DescricaoStatus = r.Status.GetAttribute<DisplayAttribute>().Name,
+                                           Status = r.Status,
+                                           Categoria = r.Categoria,
+                                           DescricaoCategoria = r.Categoria.GetAttribute<DisplayAttribute>().Name,
+                                           Tipo = r.Tipo.GetAttribute<DisplayAttribute>().Name,
+                                           Codigo = r.Codigo,
+                                           PodeRemover = r.PodeRemover,
+                                           PodeMarcarComoLida = r.DeveMarcarComoLido
+                                       };
+
+            return retornoPaginadoDto;
         }
 
         public IEnumerable<NotificacaoBasicaDto> ListarPorAnoLetivoRf(int anoLetivo, string usuarioRf, int limite = 5)

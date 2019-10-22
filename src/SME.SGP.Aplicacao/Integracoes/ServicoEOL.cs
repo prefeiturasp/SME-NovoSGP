@@ -1,7 +1,7 @@
 ﻿using Newtonsoft.Json;
 using SME.SGP.Aplicacao.Integracoes.Respostas;
 using SME.SGP.Dominio;
-using SME.SGP.Dto;
+using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
 using System.Net.Http;
@@ -222,6 +222,20 @@ namespace SME.SGP.Aplicacao.Integracoes
                 return JsonConvert.DeserializeObject<IEnumerable<DisciplinaResposta>>(json);
             }
             return null;
+        }
+
+        public async Task<MeusDadosDto> ObterMeusDados(string login)
+        {
+            var url = $"AutenticacaoSgp/{login}/dados";
+            var resposta = await httpClient.GetAsync(url);
+
+            if (!resposta.IsSuccessStatusCode)
+            {
+                throw new NegocioException("Não foi possível obter os dados do usuário"); 
+            }
+            var json = await resposta.Content.ReadAsStringAsync();
+            return JsonConvert.DeserializeObject<MeusDadosDto>(json);
+            
         }
     }
 }
