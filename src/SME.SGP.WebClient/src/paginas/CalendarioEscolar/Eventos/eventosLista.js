@@ -7,8 +7,9 @@ import Card from '~/componentes/card';
 import { Colors } from '~/componentes/colors';
 import SelectComponent from '~/componentes/select';
 import api from '~/servicos/api';
+import history from '~/servicos/history';
 
-const Eventos = () => {
+const EventosLista = () => {
   const [listaCalendarioEscolar, setListaCalendarioEscolar] = useState([]);
   const [tipoCalendario, setTipoCalendario] = useState('');
   const [nomeEvento, setNomeEvento] = useState('');
@@ -57,7 +58,7 @@ const Eventos = () => {
   };
 
   const onClickNovo = () => {
-    console.log('onClickNovo');
+    history.push('eventos/novo');
   };
 
   const onChangeTipoCalendario = tipo => {
@@ -109,7 +110,6 @@ const Eventos = () => {
             border
             className="mr-2"
             onClick={onClickExcluir}
-            hidden={!tipoCalendario}
           />
           <Button
             label="Novo"
@@ -118,7 +118,6 @@ const Eventos = () => {
             bold
             className="mr-2"
             onClick={onClickNovo}
-            hidden={!tipoCalendario}
           />
         </div>
         <div className="col-sm-12 col-md-3 col-lg-3 col-xl-3 pb-2">
@@ -182,4 +181,4 @@ const Eventos = () => {
   );
 };
 
-export default Eventos;
+export default EventosLista;
