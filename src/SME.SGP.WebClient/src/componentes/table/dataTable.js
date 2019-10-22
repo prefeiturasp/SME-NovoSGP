@@ -14,7 +14,7 @@ const DataTable = props => {
     pageSize,
     pagination,
     locale,
-    idLinha
+    idLinha,
   } = props;
 
   const rowSelection = {

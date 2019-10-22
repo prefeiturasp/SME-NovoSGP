@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SME.SGP.Aplicacao;
-using SME.SGP.Dto;
+using SME.SGP.Infra;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Api.Controllers
@@ -11,11 +11,13 @@ namespace SME.SGP.Api.Controllers
     [Authorize("Bearer")]
     public class UsuarioController : ControllerBase
     {
-        private readonly IComandosUsuario comandosUsuario;
+        private readonly IComandosUsuario comandosUsuario; 
+        private readonly IConsultasUsuario consultasUsuario;
 
-        public UsuarioController(IComandosUsuario comandosUsuario)
+        public UsuarioController(IComandosUsuario comandosUsuario, IConsultasUsuario consultasUsuario)
         {
             this.comandosUsuario = comandosUsuario;
+            this.consultasUsuario = consultasUsuario;
         }
 
         [Route("{codigoRf}/email")]
@@ -45,6 +47,16 @@ namespace SME.SGP.Api.Controllers
         public IActionResult ModificarImagem([FromBody]ImagemPerfilDto imagemPerfilDto)
         {
             return Ok("https://telegramic.org/media/avatars/stickers/52cae315e8a464eb80a3.png");
+        }
+
+        [Route("meus-dados")]
+        [HttpGet]
+        [ProducesResponseType(typeof(MeusDadosDto), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 601)]
+        public async Task<IActionResult> BuscarMeusDados(string login)
+        {
+            return Ok(await consultasUsuario.BuscarMeusDados());
         }
     }
 }

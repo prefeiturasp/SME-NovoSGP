@@ -102,10 +102,11 @@ const Sider = () => {
           </div>
           <div className={NavegacaoStore.retraido ? 'perfil-retraido' : 'perfil'}>
             <div className="circulo-perfil">
-              <img
+              <i className="fas fa-user-circle icone-perfil"></i>
+              {/* <img
                 id="imagem-perfil"
                 src={usuario.meusDados.foto}
-              />
+              /> */}
             </div>
             <div hidden={NavegacaoStore.retraido}>
               <Tooltip title={usuario.meusDados.nome} placement="bottom" overlayStyle={{fontSize:'12px'}}>
@@ -120,7 +121,7 @@ const Sider = () => {
             >
               <Link id="perfil-edit" to="/meus-dados">
                 <i className="fas fa-user-edit" />
-                <span>Perfil</span>
+                <span>Meus Dados</span>
               </Link>
             </div>
           </div>
@@ -185,7 +186,7 @@ const Sider = () => {
               <SubMenu
                 id="planejamento"
                 key="subPlanejamento"
-                onMouseEnter={(e) => alterarPosicaoJanelaPopup('planejamento', 2, 200)}
+                onMouseEnter={(e) => alterarPosicaoJanelaPopup('planejamento', 2)}
                 title={
                   <div className="item-menu-retraido">
                     <i

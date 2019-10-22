@@ -3,6 +3,7 @@ using Moq;
 using SME.SGP.Aplicacao.Integracoes;
 using SME.SGP.Aplicacao.Servicos;
 using SME.SGP.Dominio.Interfaces;
+using SME.SGP.Infra;
 using Xunit;
 
 namespace SME.SGP.Aplicacao.Teste.Comandos
@@ -71,7 +72,7 @@ namespace SME.SGP.Aplicacao.Teste.Comandos
             servicoUsuario.Setup(a => a.AlterarEmailUsuarioPorRfOuInclui(codigoRfTeste, "jose@jose.com"));
 
             //ACT
-            await comandosUsuario.AlterarEmail(new Dto.AlterarEmailDto() { NovoEmail = "jose@jose.com" }, codigoRfTeste);
+            await comandosUsuario.AlterarEmail(new AlterarEmailDto() { NovoEmail = "jose@jose.com" }, codigoRfTeste);
 
             //ASSERT
             Assert.True(true);

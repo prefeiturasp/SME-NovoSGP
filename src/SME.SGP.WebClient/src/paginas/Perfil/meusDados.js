@@ -164,12 +164,13 @@ const MeusDados = () => {
         </Topo>
         <Perfil className="col-4">
           <DadosPerfil className="col-12">
-            <img id="foto-perfil" className="img-profile" src={usuarioStore.meusDados.foto} />
+            {/* <img id="foto-perfil" className="img-profile" src={usuarioStore.meusDados.foto} />
             <Botao className="text-center" onClick={ocultarModal}>
               <Icone>
                 <i className="fas fa-camera" />
               </Icone>
-            </Botao>
+            </Botao> */}
+            <i className="fas fa-user-circle icone-perfil"></i>
           </DadosPerfil>
           <DadosPerfil className="text-center">
             <span className="nome">{usuarioStore.meusDados.nome}</span>

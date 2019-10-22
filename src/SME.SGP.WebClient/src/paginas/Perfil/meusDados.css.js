@@ -21,6 +21,11 @@ align-items: center;
   }
 }
 
+.icone-perfil{  
+  color: ${Base.CinzaBotao};
+  font-size: 215px;
+}
+
 .img-edit{
     width: 215px !important;
     height: 215px !important;
