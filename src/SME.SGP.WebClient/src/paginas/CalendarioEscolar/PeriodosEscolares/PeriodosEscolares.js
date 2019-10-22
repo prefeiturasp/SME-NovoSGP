@@ -172,13 +172,13 @@ const PeriodosEscolares = () => {
       const paramsCadastrar = {
         periodos: [
           {
-            codigo: 0,
+            id: 0,
             bimestre: 1,
             periodoInicio: dadosForm.primeiroBimestreDataInicial.toDate(),
             periodoFim: dadosForm.primeiroBimestreDataFinal.toDate(),
           },
           {
-            codigo: 0,
+            id: 0,
             bimestre: 2,
             periodoInicio: dadosForm.segundoBimestreDataInicial.toDate(),
             periodoFim: dadosForm.segundoBimestreDataFinal.toDate(),
@@ -191,13 +191,13 @@ const PeriodosEscolares = () => {
       if (isTipoCalendarioAnual) {
         paramsCadastrar.periodos.push(
           {
-            codigo: 0,
+            id: 0,
             bimestre: 3,
             periodoInicio: dadosForm.terceiroBimestreDataInicial.toDate(),
             periodoFim: dadosForm.terceiroBimestreDataFinal.toDate(),
           },
           {
-            codigo: 0,
+            id: 0,
             bimestre: 4,
             periodoInicio: dadosForm.quartoBimestreDataInicial.toDate(),
             periodoFim: dadosForm.quartoBimestreDataFinal.toDate(),
