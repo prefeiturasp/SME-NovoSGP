@@ -29,6 +29,7 @@ const CampoTexto = React.forwardRef((props, ref) => {
     maskType,
     placeholder,
     onChange,
+    onKeyDown,
     value,
     desabilitado,
     maxlength,
@@ -65,6 +66,7 @@ const CampoTexto = React.forwardRef((props, ref) => {
               onBlur={executaOnBlur}
               maxLength={maxlength || ''}
               innerRef={ref}
+              onKeyDown={onKeyDown}
               onChange={e => {
                 form.setFieldValue(name, e.target.value);
                 onChange(e);
@@ -77,6 +79,7 @@ const CampoTexto = React.forwardRef((props, ref) => {
             ref={ref}
             placeholder={placeholder}
             onChange={onChange}
+            onKeyDown={onKeyDown}
             value={value}
           />
         )}

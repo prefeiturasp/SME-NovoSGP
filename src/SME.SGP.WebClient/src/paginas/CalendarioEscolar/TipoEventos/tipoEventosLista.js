@@ -8,6 +8,7 @@ import SelectComponent from '~/componentes/select';
 import history from '~/servicos/history';
 import { confirmar } from '~/servicos/alertas';
 import ListaPaginada from '~/componentes/listaPaginada/listaPaginada';
+import api from '~/servicos/api';
 
 const TipoEventosLista = () => {
   const Div = styled.div`
@@ -45,6 +46,8 @@ const TipoEventosLista = () => {
     }
   `;
 
+  const [linhasSelecionadas, setLinhasSelecionadas] = useState([]);
+
   const clicouBotaoVoltar = () => {
     history.push('/');
   };
@@ -55,7 +58,10 @@ const TipoEventosLista = () => {
       'Você tem certeza que deseja excluir estes itens?'
     );
     if (confirmado) {
-      console.log('clicouBotaoExcluir');
+      console.log(linhasSelecionadas);
+      api.delete('v1/evento/tipo', linhasSelecionadas).then(resposta => {
+        console.log(resposta);
+      });
     }
   };
 
@@ -64,27 +70,48 @@ const TipoEventosLista = () => {
   };
 
   const clicouBotaoEditar = tipoEvento => {
-    history.push(`/calendario-escolar/tipo-eventos/editar/${tipoEvento.id}`);
+    history.push(
+      `/calendario-escolar/tipo-eventos/editar/${tipoEvento.codigo}`
+    );
   };
+
+  const listaLetivo = [
+    { valor: 1, descricao: 'Sim' },
+    { valor: 2, descricao: 'Não' },
+    { valor: 3, descricao: 'Opcional' },
+  ];
+
+  const listaLocalOcorrencia = [
+    { valor: 1, descricao: 'UE' },
+    { valor: 2, descricao: 'DRE' },
+    { valor: 3, descricao: 'SME' },
+    { valor: 4, descricao: 'SME/UE' },
+    { valor: 5, descricao: 'Todos' },
+  ];
 
   const colunas = [
     {
       title: 'Tipo de Evento',
-      dataIndex: 'tipo',
-      key: 'tipo',
+      dataIndex: 'descricao',
+      key: 'descricao',
       className: 'text-left px-4',
     },
     {
       title: 'Local de ocorrência',
-      dataIndex: 'local',
-      key: 'local',
+      dataIndex: 'localOcorrencia',
+      key: 'localOcorrencia',
       className: 'text-left px-4',
+      render: localOcorrencia =>
+        listaLocalOcorrencia.filter(l => l.valor === localOcorrencia)[0]
+          .descricao,
     },
     {
       title: 'Letivo',
       dataIndex: 'letivo',
       key: 'letivo',
       className: 'text-left px-4',
+      render: letivo =>
+        listaLetivo.filter(l => l.valor === letivo)[0].descricao,
     },
   ];
 
@@ -95,14 +122,10 @@ const TipoEventosLista = () => {
     localOcorrenciaSelecionado,
     setLocalOcorrenciaSelecionado,
   ] = useState();
-  const [linhasSelecionadas, setLinhasSelecionadas] = useState([]);
 
-  useEffect(() => {
-    if (linhasSelecionadas.length > 0) botaoExcluirRef.current.disabled = false;
-    if (linhasSelecionadas[0]) {
-      history.push(`/calendario/tipo-eventos/${linhasSelecionadas[0]}`);
-    }
-  }, [linhasSelecionadas]);
+  // useEffect(() => {
+  //   if (linhasSelecionadas.length > 0) botaoExcluirRef.current.disabled = false;
+  // }, [linhasSelecionadas]);
 
   const aoSelecionarLocalOcorrencia = local => {
     setLocalOcorrenciaSelecionado(local);
@@ -116,7 +139,7 @@ const TipoEventosLista = () => {
   const aoDigitarNomeTipoEvento = () => {};
 
   const aoSelecionarLinhas = items => {
-    setLinhasSelecionadas(items.map(item => item.id));
+    setLinhasSelecionadas(items.map(item => item.codigo));
   };
 
   return (
@@ -131,12 +154,7 @@ const TipoEventosLista = () => {
               placeholder="Local de ocorrência"
               valueOption="valor"
               valueText="descricao"
-              lista={[
-                { valor: 0, descricao: 'SME' },
-                { valor: 1, descricao: 'DRE' },
-                { valor: 2, descricao: 'SME/UE' },
-                { valor: 3, descricao: 'Todos' },
-              ]}
+              lista={listaLocalOcorrencia}
               valueSelect={localOcorrenciaSelecionado}
               onChange={aoSelecionarLocalOcorrencia}
               className="select-local"
@@ -147,11 +165,7 @@ const TipoEventosLista = () => {
               placeholder="Letivo"
               valueOption="valor"
               valueText="descricao"
-              lista={[
-                { valor: 0, descricao: 'Sim' },
-                { valor: 1, descricao: 'Não' },
-                { valor: 2, descricao: 'Opcional' },
-              ]}
+              lista={listaLetivo}
               valueSelect={letivoSelecionado}
               onChange={aoSelecionarLetivo}
             />
@@ -196,7 +210,7 @@ const TipoEventosLista = () => {
         </Div>
         <Grid cols={12} className="mb-4">
           <ListaPaginada
-            url="v1/evento/tipo/Listar"
+            url="v1/evento/tipo/listar"
             colunas={colunas}
             colunaChave="codigo"
             filtro={filtro}
