@@ -8,33 +8,33 @@ const AlertaBalao = props => {
 
 
   const SetaNotificacao = styled.div`
-  padding-left: ${((props.maxWidth/2)-5)+'px'};
+  padding-left: ${(maxWidth/2)+'px'};
   position: relative;
   display: block;
   top: -8px;
   .seta{
     height: 14px;
     width:14px;
-    border-top: 2px ${props.color} solid;
-    border-left: 2px ${props.color} solid;
+    border-top: 2px ${color} solid;
+    border-left: 2px ${color} solid;
     transform: translateX(-50%) rotate(45deg);
     left: 50%;
-    background: ${props.background};
+    background: ${background};
     display:flex;
     text-align: center;
     justify-content: center;
   }
   `;
   const Notificacao = styled.div`
-    max-width: ${props.maxWidth+'px'};
+    max-width: ${maxWidth+'px'};
     height: auto;
     border-radius: 4px;
-    border: 2px ${props.color} solid;
-    color: ${props.color};
+    border: 2px ${color} solid;
+    color: ${color};
     font-size: 14px;
     font-weight: bold;
-    margin-top: ${props.marginTop+'px'};
-    background: ${props.background};
+    margin-top: ${marginTop+'px'};
+    background: ${background};
 
     .texto{
       padding: 1px 5px 14px 5px;
@@ -45,11 +45,11 @@ const AlertaBalao = props => {
   `;
 
   return (
-    <Notificacao hidden={!props.mostrarAlerta}>
+    <Notificacao hidden={!mostrarAlerta}>
       <SetaNotificacao className="text-center">
         <div className="seta" />
       </SetaNotificacao>
-      <span className="texto">{props.texto}</span>
+      <span className="texto">{texto}</span>
     </Notificacao>
 
   )
