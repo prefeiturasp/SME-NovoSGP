@@ -14,6 +14,7 @@ import history from '~/servicos/history';
 import SelectComponent from '~/componentes/select';
 import CampoTexto from '~/componentes/campoTexto';
 import { CampoData, momentSchema } from '~/componentes/campoData/campoData';
+import RadioGroupButton from '~/componentes/radioGroupButton';
 
 const EventosForm = ({ match }) => {
   const usuario = useSelector(store => store.usuario);
@@ -35,7 +36,13 @@ const EventosForm = ({ match }) => {
     nomeEvento: '',
     tipoEvento: undefined,
     dataEvento: '',
+    letivo: true,
   });
+
+  const opcoesLetivo = [
+    { label: 'Sim', value: true },
+    { label: 'Não', value: false },
+  ];
 
   // TODO - Rever
   const [validacoes] = useState(
@@ -303,6 +310,16 @@ const EventosForm = ({ match }) => {
                     border
                     className="mt-4"
                     onClick={onClickRepetir}
+                  />
+                </div>
+                <div className="col-sm-12 col-md-6 col-lg-3 col-xl-3 mb-2">
+                  <RadioGroupButton
+                    label="Letivo"
+                    form={form}
+                    opcoes={opcoesLetivo}
+                    name="letivo"
+                    valorInicial
+                    onChange={onChangeCampos}
                   />
                 </div>
               </div>
