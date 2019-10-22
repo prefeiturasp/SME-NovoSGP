@@ -59,6 +59,22 @@ namespace SME.SGP.Aplicacao
             await servicoUsuario.AlterarEmailUsuarioPorLogin(login, novoEmail);
         }
 
+        public async Task AlterarSenha(AlterarSenhaDto alterarSenhaDto)
+        {
+            var login = servicoUsuario.ObterLoginAtual();
+            var autenticacao = await servicoEOL.Autenticar(login, alterarSenhaDto.SenhaAtual);
+            if (autenticacao.Status != AutenticacaoStatusEol.Ok)
+            {
+                throw new NegocioException("Senha atual incorreta.");
+            }
+
+            var alteracaoSenha = await servicoEOL.AlterarSenha(login, alterarSenhaDto.NovaSenha);
+            if (!alteracaoSenha.SenhaAlterada)
+            {
+                throw new NegocioException("Ocorreu um erro ao alterar a senha. Verifique se a nova senha atende aos requisitos mínimos.");
+            }
+        }
+
         public async Task AlterarSenhaComTokenRecuperacao(RecuperacaoSenhaDto recuperacaoSenhaDto)
         {
             Usuario usuario = repositorioUsuario.ObterPorTokenRecuperacaoSenha(recuperacaoSenhaDto.Token);
