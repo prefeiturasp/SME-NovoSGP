@@ -5,6 +5,6 @@ namespace SME.SGP.Dominio.Interfaces
 {
     public interface IRepositorioPeriodoEscolar : IRepositorioBase<PeriodoEscolar>
     {
-        IEnumerable<PeriodoEscolar> ObterPorTipoCalendario(long codigoTipoCalendario);
+        IEnumerable<PeriodoEscolar> ObterPorTipoCalendario(long tipoCalendarioId);
     }
 }
