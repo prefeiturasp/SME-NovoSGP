@@ -1,35 +1,51 @@
-﻿using SME.SGP.Aplicacao.Interfaces.Consultas;
+﻿using Microsoft.AspNetCore.Http;
+using SME.SGP.Aplicacao.Interfaces.Consultas;
 using SME.SGP.Dominio.Entidades;
 using SME.SGP.Dominio.Interfaces.Repositorios;
 using SME.SGP.Dto;
+using SME.SGP.Infra;
 using System;
-using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao.Consultas
 {
-    public class ConsultasEventoTipo : IConsultasEventoTipo
+    public class ConsultasEventoTipo : ConsultasBase, IConsultasEventoTipo
     {
         private readonly IRepositorioEventoTipo repositorioEventoTipo;
 
-        public ConsultasEventoTipo(IRepositorioEventoTipo repositorioEventoTipo)
+        public ConsultasEventoTipo(IRepositorioEventoTipo repositorioEventoTipo, IHttpContextAccessor httpContext) : base(httpContext)
         {
             this.repositorioEventoTipo = repositorioEventoTipo ?? throw new ArgumentNullException(nameof(repositorioEventoTipo));
         }
 
-        public IList<EventoTipoDto> Listar(FiltroEventoTipoDto Filtro)
+        public async Task<PaginacaoResultadoDto<EventoTipoDto>> Listar(FiltroEventoTipoDto Filtro)
         {
-            var listaEventoTipo = repositorioEventoTipo.ListarTipos(Filtro.LocalOcorrencia, Filtro.Letivo, Filtro.Descricao);
+            var retornoQueryPaginada = await repositorioEventoTipo.ListarTipos(Filtro.LocalOcorrencia, Filtro.Letivo, Filtro.Descricao, Paginacao);
 
-            if (listaEventoTipo == null || listaEventoTipo.Count == 0 || listaEventoTipo[0].Id == 0)
-                return null;
+            var retornoConsultaPaginada = new PaginacaoResultadoDto<EventoTipoDto>
+            {
+                TotalPaginas = retornoQueryPaginada.TotalPaginas,
+                TotalRegistros = retornoQueryPaginada.TotalRegistros
+            };
 
-            return listaEventoTipo.Select(x => EntidadeParaDto(x)).ToList();
+            bool nenhumItemEncontrado = retornoQueryPaginada == null ||
+                retornoQueryPaginada.Items == null ||
+                !retornoQueryPaginada.Items.Any() ||
+                retornoQueryPaginada.Items.ElementAt(0).Id == 0;
+
+            retornoConsultaPaginada.Items = nenhumItemEncontrado
+                ? null
+                : retornoQueryPaginada.Items.Select(x => EntidadeParaDto(x)).ToList();
+
+            return retornoConsultaPaginada;
         }
 
         public EventoTipoDto ObtenhaPorId(long id)
         {
             var entidade = repositorioEventoTipo.ObterPorId(id);
+
+            if (entidade == null || entidade.Id == 0) return null;
 
             if (entidade.Excluido) return null;
 
@@ -50,7 +66,13 @@ namespace SME.SGP.Aplicacao.Consultas
                 Letivo = eventoTipo.Letivo,
                 Ativo = eventoTipo.Ativo,
                 LocalOcorrencia = eventoTipo.LocalOcorrencia,
-                TipoData = eventoTipo.TipoData
+                TipoData = eventoTipo.TipoData,
+                AlteradoEm = eventoTipo.AlteradoEm,
+                AlteradoPor = eventoTipo.AlteradoPor,
+                AlteradoRF = eventoTipo.AlteradoRF,
+                CriadoEm = eventoTipo.CriadoEm,
+                CriadoPor = eventoTipo.CriadoPor,
+                CriadoRF = eventoTipo.CriadoRF
             };
         }
     }

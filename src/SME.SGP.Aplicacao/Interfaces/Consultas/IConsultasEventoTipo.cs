@@ -1,11 +1,12 @@
 ﻿using SME.SGP.Dto;
-using System.Collections.Generic;
+using SME.SGP.Infra;
+using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao.Interfaces.Consultas
 {
     public interface IConsultasEventoTipo
     {
-        IList<EventoTipoDto> Listar(FiltroEventoTipoDto Filtro);
+        Task<PaginacaoResultadoDto<EventoTipoDto>> Listar(FiltroEventoTipoDto Filtro);
 
         EventoTipoDto ObtenhaPorId(long id);
     }
