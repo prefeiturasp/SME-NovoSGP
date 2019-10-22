@@ -6,6 +6,7 @@ using SME.SGP.Dominio;
 using SME.SGP.Dto;
 using SME.SGP.Infra;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace SME.SGP.Api.Controllers
 {
@@ -39,16 +40,12 @@ namespace SME.SGP.Api.Controllers
             return Ok(eventoTipoDto);
         }
 
-        [HttpPost("Listar")]
-        [ProducesResponseType(204)]
-        [ProducesResponseType(typeof(IList<EventoTipoDto>), 200)]
+        [HttpPost("listar")]
+        [ProducesResponseType(typeof(PaginacaoResultadoDto<EventoTipoDto>), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        public IActionResult Listar([FromBody]FiltroEventoTipoDto filtroEventoTipoDto, [FromServices]IConsultasEventoTipo consultasEventoTipo)
+        public async Task<IActionResult> Listar([FromBody]FiltroEventoTipoDto filtroEventoTipoDto, [FromServices]IConsultasEventoTipo consultasEventoTipo)
         {
-            var listaEventoTipo = consultasEventoTipo.Listar(filtroEventoTipoDto);
-
-            if (listaEventoTipo == null)
-                return NoContent();
+            var listaEventoTipo = await consultasEventoTipo.Listar(filtroEventoTipoDto);
 
             return Ok(listaEventoTipo);
         }
