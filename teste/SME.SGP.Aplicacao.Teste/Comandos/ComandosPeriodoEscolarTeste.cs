@@ -1,9 +1,8 @@
 ﻿using Moq;
-using SME.SGP.Aplicacao.Comandos;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Entidades;
 using SME.SGP.Dominio.Interfaces;
-using SME.SGP.Dto;
+using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
 using Xunit;
