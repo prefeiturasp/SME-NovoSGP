@@ -5,7 +5,6 @@ using SME.SGP.Aplicacao.Interfaces.Consultas;
 using SME.SGP.Dominio;
 using SME.SGP.Dto;
 using SME.SGP.Infra;
-using System.Collections;
 using System.Collections.Generic;
 
 namespace SME.SGP.Api.Controllers
@@ -15,23 +14,14 @@ namespace SME.SGP.Api.Controllers
     [ValidaDto]
     public class EventoTipoController : ControllerBase
     {
-        [HttpPost]
+        [HttpDelete]
         [ProducesResponseType(200)]
+        [ProducesResponseType(typeof(object), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [Permissao(Permissao.PA_I, Permissao.PA_A, Policy = "Bearer")]
-        public IActionResult Post([FromBody]EventoTipoDto eventoTipo, [FromServices]IComandosEventoTipo comandosEventoTipo)
+        public IActionResult Delete([FromBody]IEnumerable<long> codigos, [FromServices]IComandosEventoTipo comandosEventoTipo)
         {
-            comandosEventoTipo.Salvar(eventoTipo);
-            return Ok();
-        }
-
-        [HttpDelete("{codigo}")]
-        [ProducesResponseType(200)]
-        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        [Permissao(Permissao.PA_I, Permissao.PA_A, Policy = "Bearer")]
-        public IActionResult Delete(long codigo, [FromServices]IComandosEventoTipo comandosEventoTipo)
-        {
-            comandosEventoTipo.Remover(codigo);
+            comandosEventoTipo.Remover(codigos);
             return Ok();
         }
 
@@ -41,7 +31,7 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         public IActionResult Get(long codigo, [FromServices]IConsultasEventoTipo consultasEventoTipo)
         {
-            var eventoTipoDto = consultasEventoTipo.ObtenhaPorCodigo(codigo);
+            var eventoTipoDto = consultasEventoTipo.ObtenhaPorId(codigo);
 
             if (eventoTipoDto == null)
                 NoContent();
@@ -61,6 +51,16 @@ namespace SME.SGP.Api.Controllers
                 return NoContent();
 
             return Ok(listaEventoTipo);
+        }
+
+        [HttpPost]
+        [ProducesResponseType(200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [Permissao(Permissao.PA_I, Permissao.PA_A, Policy = "Bearer")]
+        public IActionResult Post([FromBody]EventoTipoDto eventoTipo, [FromServices]IComandosEventoTipo comandosEventoTipo)
+        {
+            comandosEventoTipo.Salvar(eventoTipo);
+            return Ok();
         }
     }
 }

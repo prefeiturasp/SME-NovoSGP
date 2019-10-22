@@ -1,51 +1,62 @@
 ﻿using Moq;
 using SME.SGP.Aplicacao.Comandos;
 using SME.SGP.Aplicacao.Interfaces.Comandos;
+using SME.SGP.Dominio;
 using SME.SGP.Dominio.Entidades;
 using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Dominio.Interfaces.Repositorios;
 using SME.SGP.Dto;
 using System;
 using System.Collections.Generic;
-using System.Text;
 using Xunit;
 
 namespace SME.SGP.Aplicacao.Teste.Comandos
 {
     public class ComandosEventoTipoTeste
     {
+        private readonly Mock<IRepositorioEventoTipo> repositorioEventoTipo;
+        private readonly Mock<IUnitOfWork> unitOfWork;
         private IComandosEventoTipo comandosEventoTipo;
-        private Mock<IRepositorioEventoTipo> repositorioEventoTipo;
 
         public ComandosEventoTipoTeste()
         {
             repositorioEventoTipo = new Mock<IRepositorioEventoTipo>();
-            comandosEventoTipo = new ComandosEventoTipo(repositorioEventoTipo.Object);
+            unitOfWork = new Mock<IUnitOfWork>();
+            comandosEventoTipo = new ComandosEventoTipo(repositorioEventoTipo.Object, unitOfWork.Object);
         }
 
         [Fact(DisplayName = "Deve_Disparar_Excecao_Ao_Instanciar_Sem_Dependencia")]
         public void Deve_Disparar_Excecao_Ao_Instanciar_Sem_Dependencia()
         {
-            Assert.Throws<ArgumentNullException>(() => comandosEventoTipo = new ComandosEventoTipo(null));
+            Assert.Throws<ArgumentNullException>(() => comandosEventoTipo = new ComandosEventoTipo(null, unitOfWork.Object));
+            Assert.Throws<ArgumentNullException>(() => comandosEventoTipo = new ComandosEventoTipo(repositorioEventoTipo.Object, null));
         }
 
-        [Fact(DisplayName = "Deve_Salvar_Evento_Tipo")]
-        public void Deve_Salvar_Evento_Tipo()
+        [Fact(DisplayName = "Deve_Disparer_Excecao_Ao_Remover_Evento_Inexistente")]
+        public void Deve_Disparer_Excecao_Ao_Remover_Evento_Inexistente()
         {
+            repositorioEventoTipo.Setup(x => x.ObterPorId(It.IsAny<long>())).Returns<EventoTipo>(null);
 
-           repositorioEventoTipo.Setup(x => x.Salvar(It.IsAny<EventoTipo>())).Returns(1);
-
-           var eventoTipoDto = ObterDto();
-
-            comandosEventoTipo.Salvar(eventoTipoDto);
+            Assert.Throws<NegocioException>(() => comandosEventoTipo.Remover(new List<long> { 1, 2, 3 }));
         }
 
         [Fact(DisplayName = "Deve_Remover_Evento_Tipo")]
         public void Deve_Remover_Evento_Tipo()
         {
-            repositorioEventoTipo.Setup(x => x.Remover(It.IsAny<int>()));
+            repositorioEventoTipo.Setup(x => x.ObterPorId(It.IsAny<long>())).Returns(new EventoTipo());
+            repositorioEventoTipo.Setup(x => x.Salvar(It.IsAny<EventoTipo>()));
 
-            comandosEventoTipo.Remover(It.IsAny<long>());
+            comandosEventoTipo.Remover(new List<long> { 1, 2, 3 });
+        }
+
+        [Fact(DisplayName = "Deve_Salvar_Evento_Tipo")]
+        public void Deve_Salvar_Evento_Tipo()
+        {
+            repositorioEventoTipo.Setup(x => x.Salvar(It.IsAny<EventoTipo>())).Returns(1);
+
+            var eventoTipoDto = ObterDto();
+
+            comandosEventoTipo.Salvar(eventoTipoDto);
         }
 
         private EventoTipoDto ObterDto()

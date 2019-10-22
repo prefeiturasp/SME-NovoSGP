@@ -3,7 +3,6 @@ using SME.SGP.Dados.Contexto;
 using SME.SGP.Dominio.Entidades;
 using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Dominio.Interfaces.Repositorios;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -20,19 +19,18 @@ namespace SME.SGP.Dados.Repositorios
         {
             StringBuilder sql = new StringBuilder();
 
-            sql.AppendLine("select * from evento_tipo where 1=1");
+            sql.AppendLine("select * from evento_tipo where excluido = false");
 
             if (eventoLocalOcorrencia != 0)
-                sql.AppendLine("local_ocorrencia = @local_ocorrencia");
+                sql.AppendLine("and local_ocorrencia = @local_ocorrencia");
 
-            if(eventoLetivo != 0)
-                sql.AppendLine("letivo = @letivo");
+            if (eventoLetivo != 0)
+                sql.AppendLine("and letivo = @letivo");
 
-            if(!string.IsNullOrWhiteSpace(descricao))
-                sql.AppendLine("descricao like '%@descricao%'");
+            if (!string.IsNullOrWhiteSpace(descricao))
+                sql.AppendLine("and descricao like @descricao");
 
-            return database.Conexao.Query<EventoTipo>(sql.ToString(), new { local_ocorrencia = eventoLocalOcorrencia, letivo = eventoLetivo, descricao }).ToList();
-
+            return database.Conexao.Query<EventoTipo>(sql.ToString(), new { local_ocorrencia = eventoLocalOcorrencia, letivo = eventoLetivo, descricao = $"%{descricao}%" }).ToList();
         }
     }
 }
