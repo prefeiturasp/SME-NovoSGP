@@ -1,5 +1,5 @@
 ﻿using SME.SGP.Dominio.Interfaces;
-using SME.SGP.Dto;
+using SME.SGP.Infra;
 
 namespace SME.SGP.Aplicacao
 {

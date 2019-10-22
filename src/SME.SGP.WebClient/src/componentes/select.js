@@ -62,6 +62,7 @@ const SelectComponent = props => {
     name,
     id,
     className,
+    classNameContainer,
     onChange,
     label,
     valueText,
@@ -144,7 +145,7 @@ const SelectComponent = props => {
     </Select>
   );
   return (
-    <Container>
+    <Container className={classNameContainer && classNameContainer}>
       {label ? <Label text={label} control={name} /> : ''}
       {form ? campoComValidacoes() : campoSemValidacoes()}
       {form ? <Erro>{form.errors[name]}</Erro> : ''}

@@ -1,6 +1,6 @@
 ﻿using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
-using SME.SGP.Dto;
+using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -20,12 +20,13 @@ namespace SME.SGP.Aplicacao.Integracoes
         {
             var perfisUsuario = repositorioPrioridadePerfil.ObterPerfisPorIds(perfis);
 
-            Guid perfilPrioritario = usuario.ObterPerfilPrioritario(perfisUsuario);
+            usuario.DefinirPerfis(perfisUsuario);
 
             var perfisPorPrioridade = new PerfisPorPrioridadeDto
             {
-                PerfilSelecionado = perfilPrioritario,
-                Perfis = MapearPerfisParaDto(perfisUsuario)
+                PerfilSelecionado = usuario.ObterPerfilPrioritario(),
+                Perfis = MapearPerfisParaDto(perfisUsuario),
+                PossuiPerfilSmeOuDre = usuario.PossuiPerfilSmeOuDre()
             };
             return perfisPorPrioridade;
         }
