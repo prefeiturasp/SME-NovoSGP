@@ -4,15 +4,13 @@ using SME.SGP.Aplicacao;
 using SME.SGP.Aplicacao.Comandos;
 using SME.SGP.Aplicacao.Consultas;
 using SME.SGP.Aplicacao.Integracoes;
-using SME.SGP.Aplicacao.Interfaces.Comandos;
-using SME.SGP.Aplicacao.Interfaces.Consultas;
+using SME.SGP.Aplicacao.Interfaces;
 using SME.SGP.Aplicacao.Servicos;
 using SME.SGP.Dados;
 using SME.SGP.Dados.Contexto;
 using SME.SGP.Dados.Repositorios;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
-using SME.SGP.Dominio.Interfaces.Repositorios;
 using SME.SGP.Dominio.Servicos;
 
 namespace SME.SGP.IoC
@@ -87,7 +85,7 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IRepositorioPrioridadePerfil, RepositorioPrioridadePerfil>();
             services.TryAddScoped<IRepositorioConfiguracaoEmail, RepositorioConfiguracaoEmail>();
             services.TryAddScoped<IRepositorioTipoCalendario, RepositorioTipoCalendario>();
-            services.TryAddScoped<IRepositorioPeriodoEscolar, RepositorioPeriodoEscolar>();             
+            services.TryAddScoped<IRepositorioPeriodoEscolar, RepositorioPeriodoEscolar>();
         }
 
         private static void RegistrarServicos(IServiceCollection services)
@@ -99,6 +97,7 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IServicoPerfil, ServicoPerfil>();
             services.TryAddScoped<IServicoEmail, ServicoEmail>();
             services.TryAddScoped<IServicoTokenJwt, ServicoTokenJwt>();
+            services.TryAddScoped<IServicoPeriodoEscolar, ServicoPeriodoEscolar>();
         }
     }
 }

@@ -1,40 +1,52 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace SME.SGP.Dominio.Entidades
 {
     public class PeriodoEscolar : EntidadeBase
     {
-        public long TipoCalendario { get; set; }
         public int Bimestre { get; set; }
-        public DateTime PeriodoInicio { get; set; }
         public DateTime PeriodoFim { get; set; }
+        public DateTime PeriodoInicio { get; set; }
+        public long TipoCalendario { get; set; }
 
         public void Validar(int anoBase, bool eja)
         {
-            ValidarCamposNaoInformados();
-            ValidarBimestre(eja);
-            ValidarAnoBase(anoBase);
-            ValidarIncioBimestre();
+            ValidarCamposObrigatorios();
+            NumeroBimestreValido(eja);
+            PeriodoDeveEstarDentroAnoBase(anoBase);
+            DataInicioPeriodoEMaiorDataFimPeriodo();
         }
 
-        private void ValidarIncioBimestre()
+        private void DataInicioPeriodoEMaiorDataFimPeriodo()
         {
             if (PeriodoFim < PeriodoInicio)
-                throw new NegocioException($"{Bimestre}º Bimestre: A data de inicio não pode ser posterior a data de fim do periodo");
+                throw new NegocioException($"{Bimestre}º Bimestre: A data de início não pode ser posterior a data de fim do período");
         }
 
-        private void ValidarBimestre(bool eja)
+        private void NumeroBimestreValido(bool eja)
         {
             int maxBimestre = eja ? 2 : 4;
 
             if (Bimestre < 1 || Bimestre > maxBimestre)
-                throw new NegocioException($"O bimestre do periodo não pode ser menor que 1 ou maior que {maxBimestre}");
-
+                throw new NegocioException($"O bimestre do período não pode ser menor que 1 ou maior que {maxBimestre}");
         }
 
-        private void ValidarCamposNaoInformados()
+        private void PeriodoDeveEstarDentroAnoBase(int anoBase)
+        {
+            if (PeriodoInicio.Year < anoBase)
+                throw new NegocioException("O início do período não pode ser anterior ao ano base");
+
+            if (PeriodoInicio.Year > anoBase)
+                throw new NegocioException("O início do período não pode ser posterior ao ano base");
+
+            if (PeriodoFim.Year < anoBase)
+                throw new NegocioException("O fim do período não pode ser anterior ao ano base");
+
+            if (PeriodoFim.Year > anoBase)
+                throw new NegocioException("O fim do período não pode ser posterior ao ano base");
+        }
+
+        private void ValidarCamposObrigatorios()
         {
             if (TipoCalendario == 0)
                 throw new NegocioException("Deve ser informado o tipo de calendario");
@@ -42,26 +54,11 @@ namespace SME.SGP.Dominio.Entidades
             if (Bimestre == 0)
                 throw new NegocioException("Deve ser informado o bimestre");
 
-            if (PeriodoInicio == null)
-                throw new NegocioException("Deve ser informado o incio do periodo");
+            if (PeriodoInicio == DateTime.MinValue)
+                throw new NegocioException("Deve ser informado o início do período");
 
-            if (PeriodoFim == null)
-                throw new NegocioException("Deve ser informado o fim do periodo");
-        }
-
-        private void ValidarAnoBase(int anoBase)
-        {
-            if (PeriodoInicio.Year < anoBase)
-                throw new NegocioException("O incio do periodo não pode ser anterior ao ano base");
-
-            if (PeriodoFim.Year > anoBase)
-                throw new NegocioException("O fim do periodo não pode ser posterior ao ano base");
-
-            if (PeriodoInicio.Year > anoBase)
-                throw new NegocioException("O incio do periodo não pode ser posterior ao ano base");
-
-            if (PeriodoFim.Year < anoBase)
-                throw new NegocioException("O fim do periodo não pode ser anterior ao ano base");
+            if (PeriodoFim == DateTime.MinValue)
+                throw new NegocioException("Deve ser informado o fim do período");
         }
     }
 }

@@ -1,95 +1,68 @@
-﻿using SME.SGP.Aplicacao.Interfaces.Comandos;
-using SME.SGP.Aplicacao.Interfaces.Consultas;
+﻿using SME.SGP.Aplicacao.Interfaces;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Entidades;
-using SME.SGP.Dominio.Interfaces.Repositorios;
+using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Dto;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
 namespace SME.SGP.Aplicacao.Comandos
 {
     public class ComandosPeriodoEscolar : IComandosPeriodoEscolar
     {
-        private readonly IUnitOfWork unitOfWork;
-        private readonly IConsultasTipoCalendario consultaTipoCalendario;
         private readonly IRepositorioPeriodoEscolar repositorioPeriodo;
+        private readonly IServicoPeriodoEscolar servicoPeriodoEscolar;
 
-        public ComandosPeriodoEscolar(IUnitOfWork unitOfWork, IConsultasTipoCalendario consultaTipoCalendario, IRepositorioPeriodoEscolar repositorioPeriodo)
+        public ComandosPeriodoEscolar(IRepositorioPeriodoEscolar repositorioPeriodo, IServicoPeriodoEscolar servicoPeriodoEscolar)
         {
-            this.unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
-            this.consultaTipoCalendario = consultaTipoCalendario ?? throw new ArgumentNullException(nameof(consultaTipoCalendario));
             this.repositorioPeriodo = repositorioPeriodo ?? throw new ArgumentNullException(nameof(repositorioPeriodo));
+            this.servicoPeriodoEscolar = servicoPeriodoEscolar ?? throw new ArgumentNullException(nameof(servicoPeriodoEscolar));
         }
 
         public void Salvar(PeriodoEscolarListaDto periodosDto)
         {
-            using (var transacao = unitOfWork.IniciarTransacao())
-            {
-                if (periodosDto.TipoCalendario == 0) throw new NegocioException("É necessario informar o tipo de calendario");
+            if (periodosDto.TipoCalendario == 0) throw new NegocioException("É necessario informar o tipo de calendario");
 
-                TipoCalendarioCompletoDto tipo = consultaTipoCalendario.BuscarPorId(periodosDto.TipoCalendario);
+            var listaPeriodoEscolar = MapearListaPeriodos(periodosDto);
 
-                if (tipo == null || tipo.Id == 0) throw new NegocioException("O tipo de calendario informado não foi encontrado");
-
-                var lista = new PeriodoEscolarLista
-                {
-                    AnoBase = periodosDto.AnoBase,
-                    Eja = tipo.Modalidade == ModalidadeTipoCalendario.EJA
-                };
-
-                lista = MapearListaPeriodos(periodosDto, lista);
-
-                lista.Validar();
-
-                foreach (var periodo in lista.Periodos)
-                {
-                    repositorioPeriodo.Salvar(periodo);
-                }
-
-                unitOfWork.PersistirTransacao();
-            }
+            servicoPeriodoEscolar.SalvarPeriodoEscolar(listaPeriodoEscolar, periodosDto.TipoCalendario);
         }
 
-        private PeriodoEscolarLista MapearListaPeriodos(PeriodoEscolarListaDto periodosDto, PeriodoEscolarLista lista)
+        private IEnumerable<PeriodoEscolar> MapearListaPeriodos(PeriodoEscolarListaDto periodosDto)
         {
+            var retorno = new List<PeriodoEscolar>();
+
             foreach (var periodo in periodosDto.Periodos)
             {
-                PeriodoEscolar periodoSalvar = null;
-
-                if (periodo.Codigo > 0)
-                    periodoSalvar = ObterPeriodo(periodo.Codigo, periodo);
+                if (periodo.Id > 0)
+                    retorno.Add(ObterPeriodo(periodo.Id, periodo));
                 else
-                    periodoSalvar = MapearParaDominio(periodo, periodosDto.TipoCalendario);
-
-                lista.Periodos.Add(periodoSalvar);
+                    retorno.Add(MapearParaDominio(periodo, periodosDto.TipoCalendario));
             }
 
-            return lista;
-        }
-
-        private PeriodoEscolar ObterPeriodo(long codigo, PeriodoEscolarDto periodo)
-        {
-            var periodoSalvar = repositorioPeriodo.ObterPorId(codigo);
-
-            periodoSalvar.PeriodoInicio = periodo.PeriodoInicio;
-            periodoSalvar.PeriodoFim = periodo.PeriodoFim;
-
-            return periodoSalvar;
+            return retorno;
         }
 
         private PeriodoEscolar MapearParaDominio(PeriodoEscolarDto periodoDto, long tipoCalendario)
         {
             return new PeriodoEscolar
             {
-                Id = periodoDto.Codigo,
+                Id = periodoDto.Id,
                 Bimestre = periodoDto.Bimestre,
                 PeriodoInicio = periodoDto.PeriodoInicio,
                 PeriodoFim = periodoDto.PeriodoFim,
                 TipoCalendario = tipoCalendario
             };
+        }
+
+        private PeriodoEscolar ObterPeriodo(long Id, PeriodoEscolarDto periodo)
+        {
+            var periodoSalvar = repositorioPeriodo.ObterPorId(Id);
+
+            periodoSalvar.PeriodoInicio = periodo.PeriodoInicio;
+            periodoSalvar.PeriodoFim = periodo.PeriodoFim;
+
+            return periodoSalvar;
         }
     }
 }

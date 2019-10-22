@@ -21,6 +21,19 @@ namespace SME.SGP.Integracao.Teste
             this._fixture = fixture ?? throw new System.ArgumentNullException(nameof(fixture));
         }
 
+        [Fact, Order(2)]
+        public void Deve_Consultar_Periodo_Escolar()
+        {
+            _fixture._clientApi.DefaultRequestHeaders.Clear();
+
+            _fixture._clientApi.DefaultRequestHeaders.Authorization =
+                new AuthenticationHeaderValue("Bearer", _fixture.GerarToken(new Permissao[] { Permissao.PA_I, Permissao.PA_C }));
+
+            var getResult = _fixture._clientApi.GetAsync("api/v1/periodo-escolar?codigoTipoCalendario=1").Result;
+
+            Assert.True(getResult.IsSuccessStatusCode);
+        }
+
         [Fact, Order(1)]
         public void Deve_Incluir_Tipo_Calendario_e_Periodo_Escolar_e_Editar_Periodo_Escolar()
         {
@@ -41,30 +54,11 @@ namespace SME.SGP.Integracao.Teste
                 PeriodoEscolarListaDto Dto = AdicionarPeriodo();
 
                 EditarPeriodo(Dto);
-
             }
             catch (AggregateException ae)
             {
                 throw new Exception("Erros: " + string.Join(",", ae.InnerExceptions));
             }
-        }
-
-        private void EditarPeriodo(PeriodoEscolarListaDto Dto)
-        {
-            Dto.Periodos[0].PeriodoInicio = DateTime.Now.AddMinutes(0);
-            Dto.Periodos[0].PeriodoFim = DateTime.Now.AddMinutes(1);
-            Dto.Periodos[1].PeriodoInicio = DateTime.Now.AddMinutes(2);
-            Dto.Periodos[1].PeriodoFim = DateTime.Now.AddMinutes(3);
-            Dto.Periodos[2].PeriodoInicio = DateTime.Now.AddMinutes(4);
-            Dto.Periodos[2].PeriodoFim = DateTime.Now.AddMinutes(5);
-            Dto.Periodos[3].PeriodoInicio = DateTime.Now.AddMinutes(6);
-            Dto.Periodos[3].PeriodoFim = DateTime.Now.AddMinutes(7);
-
-            var jsonParaPost3 = new StringContent(JsonConvert.SerializeObject(Dto), Encoding.UTF8, "application/json");
-
-            var postResult3 = _fixture._clientApi.PostAsync("api/v1/periodo-escolar", jsonParaPost3).Result;
-
-            Assert.True(postResult3.IsSuccessStatusCode);
         }
 
         private PeriodoEscolarListaDto AdicionarPeriodo()
@@ -94,24 +88,28 @@ namespace SME.SGP.Integracao.Teste
             Assert.True(postResult.IsSuccessStatusCode);
         }
 
-        [Fact, Order(2)]
-        public void Deve_Consultar_Periodo_Escolar()
+        private void EditarPeriodo(PeriodoEscolarListaDto Dto)
         {
-            _fixture._clientApi.DefaultRequestHeaders.Clear();
+            Dto.Periodos[0].PeriodoInicio = DateTime.Now.AddMinutes(0);
+            Dto.Periodos[0].PeriodoFim = DateTime.Now.AddMinutes(1);
+            Dto.Periodos[1].PeriodoInicio = DateTime.Now.AddMinutes(2);
+            Dto.Periodos[1].PeriodoFim = DateTime.Now.AddMinutes(3);
+            Dto.Periodos[2].PeriodoInicio = DateTime.Now.AddMinutes(4);
+            Dto.Periodos[2].PeriodoFim = DateTime.Now.AddMinutes(5);
+            Dto.Periodos[3].PeriodoInicio = DateTime.Now.AddMinutes(6);
+            Dto.Periodos[3].PeriodoFim = DateTime.Now.AddMinutes(7);
 
-            _fixture._clientApi.DefaultRequestHeaders.Authorization =
-                new AuthenticationHeaderValue("Bearer", _fixture.GerarToken(new Permissao[] { Permissao.PA_I, Permissao.PA_C }));
-                       
-            var getResult = _fixture._clientApi.GetAsync("api/v1/periodo-escolar?codigoTipoCalendario=1").Result;
+            var jsonParaPost3 = new StringContent(JsonConvert.SerializeObject(Dto), Encoding.UTF8, "application/json");
 
-            Assert.True(getResult.IsSuccessStatusCode);
+            var postResult3 = _fixture._clientApi.PostAsync("api/v1/periodo-escolar", jsonParaPost3).Result;
+
+            Assert.True(postResult3.IsSuccessStatusCode);
         }
 
         private PeriodoEscolarListaDto ObtenhaDto()
         {
             return new PeriodoEscolarListaDto
             {
-                AnoBase = DateTime.Now.Year,
                 TipoCalendario = 1,
                 Periodos = new List<PeriodoEscolarDto>
                 {
@@ -142,6 +140,5 @@ namespace SME.SGP.Integracao.Teste
                 }
             };
         }
-
     }
 }
