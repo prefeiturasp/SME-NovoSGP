@@ -9,15 +9,13 @@ namespace SME.SGP.Infra
             SubMenus = new List<MenuPermissaoDto>();
         }
 
-        public bool Alterar { get; set; }
-        public string AlterarUrl { get; set; }
         public int Codigo { get; set; }
-        public bool Consultar { get; set; }
-        public string ConsultarUrl { get; set; }
         public string Descricao { get; set; }
-        public bool Excluir { get; set; }
-        public bool Incluir { get; set; }
-        public string IncluirUrl { get; set; }
+        public bool PodeAlterar { get; set; }
+        public bool PodeConsultar { get; set; }
+        public bool PodeExcluir { get; set; }
+        public bool PodeIncluir { get; set; }
+
         public IList<MenuPermissaoDto> SubMenus { get; set; }
     }
 }
