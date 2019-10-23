@@ -55,14 +55,14 @@ namespace SME.SGP.Integracao.Teste
             };
 
             var jsonParaPost = new StringContent(TransformarEmJson(feriadoCalendarioDto), Encoding.UTF8, "application/json");
-            var postResult = await _fixture._clientApi.PostAsync("api/v1/feriado-calendario/", jsonParaPost);
+            var postResult = await _fixture._clientApi.PostAsync("api/v1/calendarios/feriados/", jsonParaPost);
 
             Assert.True(postResult.IsSuccessStatusCode);
 
             if (postResult.IsSuccessStatusCode)
             {
                 var jsonParaPost2 = new StringContent(TransformarEmJson(feriadoCalendarioDto2), Encoding.UTF8, "application/json");
-                var postResult2 = await _fixture._clientApi.PostAsync("api/v1/feriado-calendario/", jsonParaPost2);
+                var postResult2 = await _fixture._clientApi.PostAsync("api/v1/calendarios/feriados/", jsonParaPost2);
                 Assert.True(postResult2.IsSuccessStatusCode);
 
                 if (postResult2.IsSuccessStatusCode)
@@ -74,7 +74,7 @@ namespace SME.SGP.Integracao.Teste
                     {
                         Content = jsonDelete,
                         Method = HttpMethod.Delete,
-                        RequestUri = new Uri($"{ _fixture._clientApi.BaseAddress}api/v1/feriado-calendario/")
+                        RequestUri = new Uri($"{ _fixture._clientApi.BaseAddress}api/v1/calendarios/feriados/")
                     };
 
                     var deleteResult = await _fixture._clientApi.SendAsync(request);
@@ -82,12 +82,12 @@ namespace SME.SGP.Integracao.Teste
                     Assert.True(deleteResult.IsSuccessStatusCode);
 
                     var jsonGetAll = new StringContent(JsonConvert.SerializeObject(filtro), Encoding.UTF8, "application/json");
-                    var getAllResult = await _fixture._clientApi.PostAsync($"api/v1/feriado-calendario/feriados", jsonGetAll);
+                    var getAllResult = await _fixture._clientApi.PostAsync($"api/v1/calendarios/feriados/listar", jsonGetAll);
                     var dtoTodos = JsonConvert.DeserializeObject<IEnumerable<FeriadoCalendarioDto>>(getAllResult.Content.ReadAsStringAsync().Result);
 
                     Assert.True(dtoTodos.Count() == 1);
 
-                    var getOneResult = await _fixture._clientApi.GetAsync($"api/v1/feriado-calendario/13");
+                    var getOneResult = await _fixture._clientApi.GetAsync($"api/v1/calendarios/feriados/13");
                     var dtoUm = JsonConvert.DeserializeObject<TipoCalendarioCompletoDto>(getOneResult.Content.ReadAsStringAsync().Result);
 
                     Assert.NotNull(dtoUm.Nome);
