@@ -1,14 +1,16 @@
 import React, { useState, useEffect } from 'react';
-import { Menu, Layout } from 'antd';
+import { Menu, Layout, Tooltip } from 'antd';
 import { Link } from 'react-router-dom';
+import { useSelector } from 'react-redux';
 import { Base } from '../componentes/colors';
 import { MenuBody, DivFooter, MenuScope, Topo } from './sider.css';
 import LogoMenuFooter from '../recursos/LogoMenuFooter.svg';
 import { store } from '../redux';
-import { menuRetraido, menuSelecionado } from '../redux/modulos/navegacao/actions';
-import { useSelector } from 'react-redux';
+import {
+  menuRetraido,
+  menuSelecionado,
+} from '../redux/modulos/navegacao/actions';
 import modalidade from '~/dtos/modalidade';
-import { Tooltip } from 'antd';
 
 const Sider = () => {
   const { Sider, Footer } = Layout;
@@ -19,7 +21,15 @@ const Sider = () => {
 
   const usuario = useSelector(store => store.usuario);
 
-  const subMenusPrincipais = ['subDiarioClasse', 'subPlanejamento', 'subFechamento', 'subRelatorios', 'subGestao', 'subConfiguracoes', 'calendario-escolar'];
+  const subMenusPrincipais = [
+    'subDiarioClasse',
+    'subPlanejamento',
+    'subFechamento',
+    'subRelatorios',
+    'subGestao',
+    'subConfiguracoes',
+    'calendario-escolar',
+  ];
 
   useEffect(() => {
     verificaSelecaoMenu(NavegacaoStore.rotaAtiva);
@@ -49,16 +59,25 @@ const Sider = () => {
   const alterarPosicaoJanelaPopup = (idElementoHtml, quantidadeItens) => {
     const itemMenu = window.document.getElementById(idElementoHtml);
     if (itemMenu) {
-      const alturaItens = (quantidadeItens * 40) + 6;
-      const alturaTela = window.innerHeight
+      const alturaItens = quantidadeItens * 40 + 6;
+      const alturaTela = window.innerHeight;
       const posicaoY = itemMenu.getBoundingClientRect().y;
       const posicaoRight = itemMenu.getBoundingClientRect().right;
       const alturaTotalItens = posicaoY + alturaItens;
-      const posicaoTop = alturaTotalItens > alturaTela ? (posicaoY - (alturaTotalItens - alturaTela)) : posicaoY;
-      document.documentElement.style.setProperty('--posicao-item-menu-top', `${posicaoTop}px`)
-      document.documentElement.style.setProperty('--posicao-item-menu-right', `${posicaoRight}px`)
+      const posicaoTop =
+        alturaTotalItens > alturaTela
+          ? posicaoY - (alturaTotalItens - alturaTela)
+          : posicaoY;
+      document.documentElement.style.setProperty(
+        '--posicao-item-menu-top',
+        `${posicaoTop}px`
+      );
+      document.documentElement.style.setProperty(
+        '--posicao-item-menu-right',
+        `${posicaoRight}px`
+      );
     }
-  }
+  };
 
   const alternarRetraido = () => {
     setOpenKeys([]);
@@ -76,10 +95,13 @@ const Sider = () => {
 
   const selecionarItem = item => {
     store.dispatch(menuSelecionado([item.key]));
-  }
+  };
 
   return (
-    <MenuBody id="main" style={{ width: NavegacaoStore.retraido ? '115px' : '250px' }}>
+    <MenuBody
+      id="main"
+      style={{ width: NavegacaoStore.retraido ? '115px' : '250px' }}
+    >
       <Sider
         style={{ background: Base.Roxo, height: '100%' }}
         collapsed={NavegacaoStore.retraido}
@@ -100,16 +122,22 @@ const Sider = () => {
               />
             </a>
           </div>
-          <div className={NavegacaoStore.retraido ? 'perfil-retraido' : 'perfil'}>
+          <div
+            className={NavegacaoStore.retraido ? 'perfil-retraido' : 'perfil'}
+          >
             <div className="circulo-perfil">
-              <i className="fas fa-user-circle icone-perfil"></i>
+              <i className="fas fa-user-circle icone-perfil" />
               {/* <img
                 id="imagem-perfil"
                 src={usuario.meusDados.foto}
               /> */}
             </div>
             <div hidden={NavegacaoStore.retraido}>
-              <Tooltip title={usuario.meusDados.nome} placement="bottom" overlayStyle={{fontSize:'12px'}}>
+              <Tooltip
+                title={usuario.meusDados.nome}
+                placement="bottom"
+                overlayStyle={{ fontSize: '12px' }}
+              >
                 <span id="nome" className="nome">
                   {usuario.meusDados.nome}
                 </span>
@@ -129,7 +157,9 @@ const Sider = () => {
 
         <MenuScope>
           <div
-            className={`menu-scope${NavegacaoStore.retraido ? ' menu-scope-retraido' : ''}`}
+            className={`menu-scope${
+              NavegacaoStore.retraido ? ' menu-scope-retraido' : ''
+            }`}
           >
             <Menu
               id="menuPrincipal"
@@ -143,13 +173,13 @@ const Sider = () => {
               <SubMenu
                 id="diarioClasse"
                 key="subDiarioClasse"
-                onMouseEnter={(e) => alterarPosicaoJanelaPopup('diarioClasse', 9)}
+                onMouseEnter={e => alterarPosicaoJanelaPopup('diarioClasse', 9)}
                 title={
                   <div className="item-menu-retraido">
                     <i
                       className={`fas fa-book-reader ${
                         NavegacaoStore.retraido ? 'icons-retraido' : 'icons'
-                        }`}
+                      }`}
                     />
                     <span>Diário de Classe</span>
                   </div>
@@ -186,20 +216,22 @@ const Sider = () => {
               <SubMenu
                 id="planejamento"
                 key="subPlanejamento"
-                onMouseEnter={(e) => alterarPosicaoJanelaPopup('planejamento', 2)}
+                onMouseEnter={e => alterarPosicaoJanelaPopup('planejamento', 2)}
                 title={
                   <div className="item-menu-retraido">
                     <i
                       className={`fas fa-list-alt ${
                         NavegacaoStore.retraido ? 'icons-retraido' : 'icons'
-                        }`}
+                      }`}
                     />
                     <span>Planejamento</span>
                   </div>
                 }
               >
                 <Menu.Item key="30" id="plaPlanoCiclo" htmlFor="linkPlanoCiclo">
-                  <span className="menuItem">{modalidadeEja ? 'Plano de Etapa' : 'Plano de Ciclo'}</span>
+                  <span className="menuItem">
+                    {modalidadeEja ? 'Plano de Etapa' : 'Plano de Ciclo'}
+                  </span>
                   <Link
                     to="/planejamento/plano-ciclo"
                     className="text-white"
@@ -207,7 +239,9 @@ const Sider = () => {
                   />
                 </Menu.Item>
                 <Menu.Item key="31" id="plaPlanoAnual" htmlFor="linkPlanoAnual">
-                  <span className="menuItem">{modalidadeEja ? 'Plano Semestral' : 'Plano Anual'}</span>
+                  <span className="menuItem">
+                    {modalidadeEja ? 'Plano Semestral' : 'Plano Anual'}
+                  </span>
                   <Link
                     to="/planejamento/plano-anual"
                     className="text-white"
@@ -218,13 +252,13 @@ const Sider = () => {
               <SubMenu
                 id="fechamento"
                 key="subFechamento"
-                onMouseEnter={(e) => alterarPosicaoJanelaPopup('fechamento', 3)}
+                onMouseEnter={e => alterarPosicaoJanelaPopup('fechamento', 3)}
                 title={
                   <div className="item-menu-retraido">
                     <i
                       className={`fas fa-pencil-ruler ${
                         NavegacaoStore.retraido ? 'icons-retraido' : 'icons'
-                        }`}
+                      }`}
                     />
                     <span>Fechamento</span>
                   </div>
@@ -243,13 +277,13 @@ const Sider = () => {
               <SubMenu
                 id="relatorios"
                 key="subRelatorios"
-                onMouseEnter={(e) => alterarPosicaoJanelaPopup('relatorios', 8)}
+                onMouseEnter={e => alterarPosicaoJanelaPopup('relatorios', 8)}
                 title={
                   <div className="item-menu-retraido">
                     <i
                       className={`fas fa-file-alt ${
                         NavegacaoStore.retraido ? 'icons-retraido' : 'icons'
-                        }`}
+                      }`}
                     />
                     <span>Relatórios</span>
                   </div>
@@ -283,19 +317,27 @@ const Sider = () => {
               <SubMenu
                 id="calendario-escolar"
                 key="subCalendarioEscolar"
-                onMouseEnter={(e) => alterarPosicaoJanelaPopup('calendario-escolar', 9)}
+                onMouseEnter={e =>
+                  alterarPosicaoJanelaPopup('calendario-escolar', 9)
+                }
                 title={
                   <div className="item-menu-retraido">
                     <i
                       className={`fas fa-calendar-alt ${
                         NavegacaoStore.retraido ? 'icons-retraido' : 'icons'
-                        }`}
+                      }`}
                     />
                     <span>Calendário Escolar</span>
                   </div>
-                }>
+                }
+              >
                 <Menu.Item key="80" id="calCalendarioEscolar">
                   <span className="menuItem">Calendário Escolar</span>
+                  <Link
+                    to="/calendario-escolar"
+                    className="nav-link text-white"
+                    id="linkCalendarioEscolar"
+                  />
                 </Menu.Item>
                 <Menu.Item key="81" id="calCalendarioProfessor">
                   <span className="menuItem">Calendário do Professor</span>
@@ -316,11 +358,19 @@ const Sider = () => {
                     id="linkPeriodosEscolares"
                   />
                 </Menu.Item>
-                <Menu.Item key="84" id="calPeriodosFechamentoAbertura" style={{lineHeight: '18px !important'}}>
-                  <span className="menuItem">Períodos de fechamento (Abertura)</span>
+                <Menu.Item
+                  key="84"
+                  id="calPeriodosFechamentoAbertura"
+                  style={{ lineHeight: '18px !important' }}
+                >
+                  <span className="menuItem">
+                    Períodos de fechamento (Abertura)
+                  </span>
                 </Menu.Item>
                 <Menu.Item key="85" id="calPeriodosFechamentoReabertura">
-                  <span className="menuItem">Períodos de fechamento (Reabertura)</span>
+                  <span className="menuItem">
+                    Períodos de fechamento (Reabertura)
+                  </span>
                 </Menu.Item>
                 <Menu.Item key="86" id="calTipoFeriados">
                   <span className="menuItem">Tipo de Feriado</span>
@@ -341,13 +391,13 @@ const Sider = () => {
               <SubMenu
                 id="gestao"
                 key="subGestao"
-                onMouseEnter={(e) => alterarPosicaoJanelaPopup('gestao', 5)}
+                onMouseEnter={e => alterarPosicaoJanelaPopup('gestao', 5)}
                 title={
                   <div className="item-menu-retraido">
                     <i
                       className={`fas fa-user-cog ${
                         NavegacaoStore.retraido ? 'icons-retraido' : 'icons'
-                        }`}
+                      }`}
                     />
                     <span>Gestão</span>
                   </div>
@@ -379,7 +429,9 @@ const Sider = () => {
                 </Menu.Item>
               </SubMenu>
               <SubMenu
-                onMouseEnter={(e) => alterarPosicaoJanelaPopup('configuracoes', 1)}
+                onMouseEnter={e =>
+                  alterarPosicaoJanelaPopup('configuracoes', 1)
+                }
                 id="configuracoes"
                 key="subConfiguracoes"
                 title={
@@ -387,7 +439,7 @@ const Sider = () => {
                     <i
                       className={`fas fa-cog ${
                         NavegacaoStore.retraido ? 'icons-retraido' : 'icons'
-                        }`}
+                      }`}
                     />
                     <span>Configurações</span>
                   </div>
@@ -396,7 +448,7 @@ const Sider = () => {
                 <SubMenu
                   id="usuarios"
                   key="subUsuarios"
-                  onMouseEnter={(e) => alterarPosicaoJanelaPopup('usuarios', 1)}
+                  onMouseEnter={e => alterarPosicaoJanelaPopup('usuarios', 1)}
                   title={
                     <div className="item-menu-retraido submenu-subnivel">
                       <span>Usuários</span>
