@@ -8,7 +8,7 @@ using System.Collections.Generic;
 namespace SME.SGP.Api.Controllers
 {
     [ApiController]
-    [Route("api/v1/feriado-calendario")]
+    [Route("api/v1/calendarios/feriados")]
     [ValidaDto]
     [Authorize("Bearer")]
     public class FeriadoCalendarioController : ControllerBase
@@ -35,7 +35,7 @@ namespace SME.SGP.Api.Controllers
         [HttpPost]
         [ProducesResponseType(typeof(IEnumerable<FeriadoCalendarioDto>), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        [Route("feriados")]
+        [Route("listar")]
         public IActionResult BuscarTodos([FromBody] FiltroFeriadoCalendarioDto filtro)
         {
             return Ok(consultas.Listar(filtro));
