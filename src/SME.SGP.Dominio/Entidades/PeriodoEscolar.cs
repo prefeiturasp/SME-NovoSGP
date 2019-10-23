@@ -7,7 +7,7 @@ namespace SME.SGP.Dominio.Entidades
         public int Bimestre { get; set; }
         public DateTime PeriodoFim { get; set; }
         public DateTime PeriodoInicio { get; set; }
-        public long TipoCalendario { get; set; }
+        public long TipoCalendarioId { get; set; }
 
         public void Validar(int anoBase, bool eja)
         {
@@ -48,7 +48,7 @@ namespace SME.SGP.Dominio.Entidades
 
         private void ValidarCamposObrigatorios()
         {
-            if (TipoCalendario == 0)
+            if (TipoCalendarioId == 0)
                 throw new NegocioException("Deve ser informado o tipo de calendário");
 
             if (Bimestre == 0)
