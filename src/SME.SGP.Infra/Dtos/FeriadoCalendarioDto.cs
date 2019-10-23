@@ -6,7 +6,7 @@ namespace SME.SGP.Infra
 {
     public class FeriadoCalendarioDto
     {
-        [Range(1, 3, ErrorMessage = "A abrangência deve ser informada.")]
+        [EnumeradoRequirido(ErrorMessage = "A abrangência deve ser informada.")]
         public AbrangenciaFeriadoCalendario Abrangencia { get; set; }
 
         [Required(ErrorMessage = "O status (Ativo/Inativo) deve ser informado.")]
@@ -22,7 +22,7 @@ namespace SME.SGP.Infra
         [Required(ErrorMessage = "O nome  deve ser informado.")]
         public string Nome { get; set; }
 
-        [Range(1, 2, ErrorMessage = "O tipo deve ser informado.")]
+        [EnumeradoRequirido(ErrorMessage = "O tipo deve ser informado.")]
         public TipoFeriadoCalendario Tipo { get; set; }
     }
 }
