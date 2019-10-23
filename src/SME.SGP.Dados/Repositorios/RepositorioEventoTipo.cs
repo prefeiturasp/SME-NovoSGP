@@ -23,7 +23,7 @@ namespace SME.SGP.Dados.Repositorios
 
             StringBuilder sql = MontaQueryCompleta(eventoLocalOcorrencia, eventoLetivo, descricao, paginacao);
 
-            var parametros = new { local_ocorrencia = eventoLocalOcorrencia, letivo = eventoLetivo, descricao = $"%{descricao}%" };
+            var parametros = new { local_ocorrencia = eventoLocalOcorrencia, letivo = eventoLetivo, descricao = $"%{descricao.ToLowerInvariant()}%" };
 
             using (var multi = await database.Conexao.QueryMultipleAsync(sql.ToString(), parametros))
             {
@@ -75,7 +75,7 @@ namespace SME.SGP.Dados.Repositorios
                 sql.AppendLine("and letivo = @letivo");
 
             if (!string.IsNullOrWhiteSpace(descricao))
-                sql.AppendLine("and descricao like @descricao");
+                sql.AppendLine("and lower(descricao) like @descricao");
         }
     }
 }
