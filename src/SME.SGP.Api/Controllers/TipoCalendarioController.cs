@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using SME.SGP.Api.Filtros;
 using SME.SGP.Aplicacao;
+using SME.SGP.Aplicacao.Interfaces;
 using SME.SGP.Infra;
 using System.Collections.Generic;
 
@@ -17,7 +18,7 @@ namespace SME.SGP.Api.Controllers
         private readonly IConsultasTipoCalendario consultas;
 
         public TipoCalendarioController(IConsultasTipoCalendario consultas,
-            IComandosTipoCalendario comandos)
+            IComandosTipoCalendario comandos, IComandosPeriodoEscolar periodoEscolar)
         {
             this.consultas = consultas ?? throw new System.ArgumentNullException(nameof(consultas));
             this.comandos = comandos ?? throw new System.ArgumentNullException(nameof(comandos));
