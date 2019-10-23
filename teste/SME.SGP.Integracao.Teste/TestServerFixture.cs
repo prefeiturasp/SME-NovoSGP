@@ -66,9 +66,9 @@ namespace SME.SGP.Integracao.Teste
             runner.Dispose();
         }
 
-        public string GerarToken(Permissao[] permissoes)
+        public string GerarToken(Permissao[] permissoes, string login = "teste", string codigoRf = "123")
         {
-            return servicoTokenJwt.GerarToken("teste", "123", permissoes);
+            return servicoTokenJwt.GerarToken(login, codigoRf, permissoes);
         }
 
         public string ObterArquivoConfiguracao()
