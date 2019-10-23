@@ -47,7 +47,7 @@ namespace SME.SGP.Dominio.Servicos.Teste
 
             periodos.Add(new PeriodoEscolar
             {
-                TipoCalendario = 1,
+                TipoCalendarioId = 1,
                 Bimestre = 1,
                 PeriodoFim = DateTime.Now.AddMinutes(1),
                 PeriodoInicio = DateTime.Now
@@ -55,7 +55,7 @@ namespace SME.SGP.Dominio.Servicos.Teste
 
             periodos.Add(new PeriodoEscolar
             {
-                TipoCalendario = 1,
+                TipoCalendarioId = 1,
                 Bimestre = 2,
                 PeriodoFim = DateTime.Now.AddMinutes(3),
                 PeriodoInicio = DateTime.Now.AddMinutes(2)
@@ -88,7 +88,7 @@ namespace SME.SGP.Dominio.Servicos.Teste
             periodos.Add(new PeriodoEscolar
             {
                 Id = 1,
-                TipoCalendario = 1,
+                TipoCalendarioId = 1,
                 Bimestre = 1,
                 PeriodoFim = DateTime.Now.AddMinutes(1),
                 PeriodoInicio = DateTime.Now
@@ -97,7 +97,7 @@ namespace SME.SGP.Dominio.Servicos.Teste
             periodos.Add(new PeriodoEscolar
             {
                 Id = 1,
-                TipoCalendario = 1,
+                TipoCalendarioId = 1,
                 Bimestre = 2,
                 PeriodoFim = DateTime.Now.AddMinutes(3),
                 PeriodoInicio = DateTime.Now.AddMinutes(2)
@@ -125,7 +125,7 @@ namespace SME.SGP.Dominio.Servicos.Teste
 
             periodos.Add(new PeriodoEscolar
             {
-                TipoCalendario = 1,
+                TipoCalendarioId = 1,
                 Bimestre = 1,
                 PeriodoFim = DateTime.Now.AddMinutes(1),
                 PeriodoInicio = DateTime.Now
@@ -133,7 +133,7 @@ namespace SME.SGP.Dominio.Servicos.Teste
 
             periodos.Add(new PeriodoEscolar
             {
-                TipoCalendario = 1,
+                TipoCalendarioId = 1,
                 Bimestre = 2,
                 PeriodoFim = DateTime.Now.AddMinutes(3),
                 PeriodoInicio = DateTime.Now.AddMinutes(2)
@@ -175,7 +175,7 @@ namespace SME.SGP.Dominio.Servicos.Teste
 
             periodos.Add(new PeriodoEscolar
             {
-                TipoCalendario = 1,
+                TipoCalendarioId = 1,
                 Bimestre = 1,
                 PeriodoFim = DateTime.Now.AddMinutes(1),
                 PeriodoInicio = DateTime.Now
@@ -183,7 +183,7 @@ namespace SME.SGP.Dominio.Servicos.Teste
 
             periodos.Add(new PeriodoEscolar
             {
-                TipoCalendario = 1,
+                TipoCalendarioId = 1,
                 Bimestre = 2,
                 PeriodoFim = DateTime.Now.AddMinutes(3),
                 PeriodoInicio = DateTime.Now.AddMinutes(4)
@@ -207,7 +207,7 @@ namespace SME.SGP.Dominio.Servicos.Teste
 
             periodos.Add(new PeriodoEscolar
             {
-                TipoCalendario = 1,
+                TipoCalendarioId = 1,
                 Bimestre = 1,
                 PeriodoFim = DateTime.Now.AddMinutes(1),
                 PeriodoInicio = DateTime.Now
@@ -215,7 +215,7 @@ namespace SME.SGP.Dominio.Servicos.Teste
 
             periodos.Add(new PeriodoEscolar
             {
-                TipoCalendario = 1,
+                TipoCalendarioId = 1,
                 Bimestre = 2,
                 PeriodoFim = DateTime.Now,
                 PeriodoInicio = DateTime.Now.AddMinutes(4)
@@ -234,7 +234,7 @@ namespace SME.SGP.Dominio.Servicos.Teste
 
             periodos.Add(new PeriodoEscolar
             {
-                TipoCalendario = 1,
+                TipoCalendarioId = 1,
                 Bimestre = 1,
                 PeriodoFim = DateTime.Now.AddMinutes(1),
                 PeriodoInicio = DateTime.Now
@@ -242,7 +242,7 @@ namespace SME.SGP.Dominio.Servicos.Teste
 
             periodos.Add(new PeriodoEscolar
             {
-                TipoCalendario = 1,
+                TipoCalendarioId = 1,
                 Bimestre = 2,
                 PeriodoFim = DateTime.Now.AddMinutes(3),
                 PeriodoInicio = DateTime.Now.AddMinutes(2)
@@ -250,7 +250,7 @@ namespace SME.SGP.Dominio.Servicos.Teste
 
             periodos.Add(new PeriodoEscolar
             {
-                TipoCalendario = 1,
+                TipoCalendarioId = 1,
                 Bimestre = 3,
                 PeriodoFim = DateTime.Now.AddMinutes(3),
                 PeriodoInicio = DateTime.Now.AddMinutes(2)
@@ -258,7 +258,7 @@ namespace SME.SGP.Dominio.Servicos.Teste
 
             periodos.Add(new PeriodoEscolar
             {
-                TipoCalendario = 1,
+                TipoCalendarioId = 1,
                 Bimestre = 4,
                 PeriodoFim = DateTime.Now.AddMinutes(5),
                 PeriodoInicio = DateTime.Now.AddMinutes(4)
@@ -289,7 +289,7 @@ namespace SME.SGP.Dominio.Servicos.Teste
 
             periodos.Add(new PeriodoEscolar
             {
-                TipoCalendario = 1,
+                TipoCalendarioId = 1,
                 Bimestre = 1,
                 PeriodoFim = DateTime.Now.AddMinutes(1),
                 PeriodoInicio = DateTime.Now
@@ -299,7 +299,7 @@ namespace SME.SGP.Dominio.Servicos.Teste
 
             periodos.Add(new PeriodoEscolar
             {
-                TipoCalendario = 1,
+                TipoCalendarioId = 1,
                 Bimestre = 2,
                 PeriodoFim = DateTime.Now.AddMinutes(3),
                 PeriodoInicio = DateTime.Now.AddMinutes(2)
@@ -325,7 +325,7 @@ namespace SME.SGP.Dominio.Servicos.Teste
 
             periodos.Add(new PeriodoEscolar
             {
-                TipoCalendario = 1,
+                TipoCalendarioId = 1,
                 Bimestre = 1,
                 PeriodoFim = DateTime.Now.AddMinutes(1),
                 PeriodoInicio = DateTime.Now
@@ -335,7 +335,7 @@ namespace SME.SGP.Dominio.Servicos.Teste
 
             periodos.Add(new PeriodoEscolar
             {
-                TipoCalendario = 1,
+                TipoCalendarioId = 1,
                 Bimestre = 2,
                 PeriodoFim = DateTime.Now.AddMinutes(3),
                 PeriodoInicio = DateTime.Now.AddMinutes(2)
@@ -345,7 +345,7 @@ namespace SME.SGP.Dominio.Servicos.Teste
 
             periodos.Add(new PeriodoEscolar
             {
-                TipoCalendario = 1,
+                TipoCalendarioId = 1,
                 Bimestre = 3,
                 PeriodoFim = DateTime.Now.AddMinutes(5),
                 PeriodoInicio = DateTime.Now.AddMinutes(4)
@@ -355,7 +355,7 @@ namespace SME.SGP.Dominio.Servicos.Teste
 
             periodos.Add(new PeriodoEscolar
             {
-                TipoCalendario = 1,
+                TipoCalendarioId = 1,
                 Bimestre = 4,
                 PeriodoFim = DateTime.Now.AddMinutes(7),
                 PeriodoInicio = DateTime.Now.AddMinutes(6)
