@@ -1,4 +1,4 @@
-DROP TABLE plano_ciclo;
+DROP TABLE plano_ciclo cascade;
 
 CREATE TABLE plano_ciclo (
 	id int8 NOT NULL GENERATED ALWAYS AS IDENTITY,
