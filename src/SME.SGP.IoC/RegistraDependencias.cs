@@ -1,7 +1,9 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using SME.SGP.Aplicacao;
+using SME.SGP.Aplicacao.Consultas;
 using SME.SGP.Aplicacao.Integracoes;
+using SME.SGP.Aplicacao.Interfaces;
 using SME.SGP.Aplicacao.Servicos;
 using SME.SGP.Dados;
 using SME.SGP.Dados.Contexto;
@@ -33,6 +35,7 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IComandosUsuario, ComandosUsuario>();
             services.TryAddScoped<IComandosTipoCalendario, ComandosTipoCalendario>();
             services.TryAddScoped<IComandosFeriadoCalendario, ComandosFeriadoCalendario>();
+            services.TryAddScoped<IComandosPeriodoEscolar, ComandosPeriodoEscolar>();
         }
 
         private static void RegistrarConsultas(IServiceCollection services)
@@ -52,6 +55,8 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IConsultasUnidadesEscolares, ConsultasUnidadesEscolares>();
             services.TryAddScoped<IConsultasTipoCalendario, ConsultasTipoCalendario>();
             services.TryAddScoped<IConsultasFeriadoCalendario, ConsultasFeriadoCalendario>();
+            services.TryAddScoped<IConsultasPeriodoEscolar, ConsultasPeriodoEscolar>();
+            services.TryAddScoped<IConsultasUsuario, ConsultasUsuario>();
         }
 
         private static void RegistrarContextos(IServiceCollection services)
@@ -83,6 +88,7 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IRepositorioConfiguracaoEmail, RepositorioConfiguracaoEmail>();
             services.TryAddScoped<IRepositorioTipoCalendario, RepositorioTipoCalendario>();
             services.TryAddScoped<IRepositorioFeriadoCalendario, RepositorioFeriadoCalendario>();
+            services.TryAddScoped<IRepositorioPeriodoEscolar, RepositorioPeriodoEscolar>();
         }
 
         private static void RegistrarServicos(IServiceCollection services)
@@ -94,6 +100,7 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IServicoPerfil, ServicoPerfil>();
             services.TryAddScoped<IServicoEmail, ServicoEmail>();
             services.TryAddScoped<IServicoTokenJwt, ServicoTokenJwt>();
+            services.TryAddScoped<IServicoPeriodoEscolar, ServicoPeriodoEscolar>();
         }
     }
 }
