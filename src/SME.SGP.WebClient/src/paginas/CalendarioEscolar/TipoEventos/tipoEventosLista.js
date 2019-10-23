@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import styled from 'styled-components';
 import Card from '~/componentes/card';
 import Grid from '~/componentes/grid';
@@ -116,8 +116,13 @@ const TipoEventosLista = () => {
   ];
 
   const botaoExcluirRef = useRef();
+  const campoNomeTipoEventoRef = useRef();
 
-  const [filtro, setFiltro] = useState({});
+  const [filtro, setFiltro] = useState({
+    localOcorrencia: undefined,
+    letivo: undefined,
+    descricao: '',
+  });
   const [
     localOcorrenciaSelecionado,
     setLocalOcorrenciaSelecionado,
@@ -129,14 +134,25 @@ const TipoEventosLista = () => {
 
   const aoSelecionarLocalOcorrencia = local => {
     setLocalOcorrenciaSelecionado(local);
+    setFiltro({ ...filtro, localOcorrencia: local });
   };
   const [letivoSelecionado, setLetivoSelecionado] = useState();
 
   const aoSelecionarLetivo = letivo => {
     setLetivoSelecionado(letivo);
+    setFiltro({ ...filtro, letivo });
   };
 
-  const aoDigitarNomeTipoEvento = () => {};
+  const [nomeTipoEvento, setNomeTipoEvento] = useState('');
+
+  const aoDigitarNomeTipoEvento = () => {
+    setNomeTipoEvento(campoNomeTipoEventoRef.current.value);
+    setFiltro({ ...filtro, descricao: campoNomeTipoEventoRef.current.value });
+  };
+
+  useEffect(() => {
+    campoNomeTipoEventoRef.current.focus();
+  }, [nomeTipoEvento]);
 
   const aoSelecionarLinhas = items => {
     setLinhasSelecionadas(items.map(item => item.codigo));
@@ -176,6 +192,8 @@ const TipoEventosLista = () => {
               className="form-control form-control-lg"
               placeholder="Digite o nome do tipo de evento"
               onChange={aoDigitarNomeTipoEvento}
+              value={nomeTipoEvento}
+              ref={campoNomeTipoEventoRef}
             />
           </Div>
           <Div
