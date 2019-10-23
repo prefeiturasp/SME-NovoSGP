@@ -24,9 +24,19 @@ import TipoCalendarioEscolarLista from '~/paginas/CalendarioEscolar/TipoCalendar
 import TipoCalendarioEscolarForm from '~/paginas/CalendarioEscolar/TipoCalendarioEscolar/tipoCalendarioEscolarForm';
 import TipoFeriadoLista from '~/paginas/CalendarioEscolar/TipoFeriado/tipoFeriadoLista';
 import TipoFeriadoForm from '~/paginas/CalendarioEscolar/TipoFeriado/tipoFeriadoForm';
+import CalendarioEscolar from '~/paginas/CalendarioEscolar/Calendario';
 
 export default function Rotas() {
   const rotas = new Map();
+
+  rotas.set('/calendario-escolar', {
+    breadcrumbName: 'Calendário Escolar',
+    menu: ['Calendário Escolar'],
+    parent: '/',
+    component: CalendarioEscolar,
+    exact: true,
+    tipo: RotasTipo.EstruturadaAutenticada,
+  });
 
   rotas.set('/planejamento/plano-ciclo', {
     breadcrumbName: 'Plano de Ciclo',

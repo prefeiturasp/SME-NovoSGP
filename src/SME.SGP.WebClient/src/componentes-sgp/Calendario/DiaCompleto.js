@@ -1,0 +1,54 @@
+﻿import React from 'react';
+import { Transition } from 'react-spring/renderprops';
+import { animated } from 'react-spring';
+
+const SemEvento = () => {
+  return (
+    <div
+      className="d-flex w-100 h-100 justify-content-center d-flex align-items-center"
+      style={{ fontSize: 25, color: '#A4A4A4' }}
+    >
+      Sem evento
+    </div>
+  );
+};
+
+const DiaCompleto = props => {
+  const { days, calendar } = props;
+
+  let estaAberto = false;
+
+  for (let i = 0; i < days.length; i += 1)
+    if (days[i] === calendar.diaSelecionado) estaAberto = true;
+
+  return (
+    <Transition
+      items={estaAberto}
+      from={{
+        display: 'none',
+        height: 0,
+        overflow: 'hidden',
+      }}
+      enter={{
+        display: 'block',
+        height: 212,
+        overflow: 'hidden',
+      }}
+      leave={{
+        height: 0,
+        overflow: 'hidden',
+      }}
+    >
+      {toggle =>
+        toggle &&
+        (props => (
+          <animated.div className="border-bottom" style={props}>
+            <SemEvento />
+          </animated.div>
+        ))
+      }
+    </Transition>
+  );
+};
+
+export default DiaCompleto;

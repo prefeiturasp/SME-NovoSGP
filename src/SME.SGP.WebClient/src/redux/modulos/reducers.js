@@ -6,6 +6,7 @@ import alertas from './alertas/reducers';
 import bimestres from './planoAnual/reducers';
 import usuario from './usuario/reducers';
 import perfil from './perfil/reducers';
+import calendarioEscolar from './calendarioEscolar/reducers';
 
 export default combineReducers({
   navegacao,
@@ -13,5 +14,6 @@ export default combineReducers({
   alertas,
   bimestres,
   usuario,
-  perfil
+  perfil,
+  calendarioEscolar,
 });
