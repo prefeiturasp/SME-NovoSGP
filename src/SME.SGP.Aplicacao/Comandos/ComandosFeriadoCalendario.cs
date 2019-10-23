@@ -2,8 +2,6 @@
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System;
-using System.Collections.Generic;
-using System.Linq;
 
 namespace SME.SGP.Aplicacao
 {
@@ -33,7 +31,7 @@ namespace SME.SGP.Aplicacao
 
         public void MarcarExcluidos(long[] ids)
         {
-            List<long> idsInvalidos = new List<long>();
+            var idsInvalidos = "";
             foreach (long id in ids)
             {
                 var feriadoCalendario = repositorio.ObterPorId(id);
@@ -44,12 +42,12 @@ namespace SME.SGP.Aplicacao
                 }
                 else
                 {
-                    idsInvalidos.Add(id);
+                    idsInvalidos += idsInvalidos.Equals("") ? $"{id}" : $", {id}";
                 }
             }
-            if (idsInvalidos.Any())
+            if (!idsInvalidos.Trim().Equals(""))
             {
-                throw new NegocioException($"Houve um erro ao excluir os feriados id(s) '{string.Join(",", idsInvalidos.Select(n => n.ToString()).ToArray())}'. Um dos feriados não existe");
+                throw new NegocioException($"Houve um erro ao excluir os feriados ids '{idsInvalidos}'. Um dos feriados não existe");
             }
         }
 
