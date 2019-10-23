@@ -114,14 +114,6 @@ namespace SME.SGP.Api.Controllers
             return Ok(consultasNotificacao.ObterNotificacaoBasicaLista(anoLetivo, usuarioRf));
         }
 
-        [HttpGet("/api/v1/ping")]
-        [ProducesResponseType(200)]
-        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        public IActionResult Ping()
-        {
-            return Ok("pong");
-        }
-
         [HttpPost]
         [ProducesResponseType(200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
