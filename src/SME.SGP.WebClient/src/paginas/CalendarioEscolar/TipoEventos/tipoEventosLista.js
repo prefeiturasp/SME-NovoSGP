@@ -6,7 +6,7 @@ import Button from '~/componentes/button';
 import { Base, Colors } from '~/componentes/colors';
 import SelectComponent from '~/componentes/select';
 import history from '~/servicos/history';
-import { confirmar } from '~/servicos/alertas';
+import { confirmar, erro, sucesso } from '~/servicos/alertas';
 import ListaPaginada from '~/componentes/listaPaginada/listaPaginada';
 import api from '~/servicos/api';
 
@@ -46,7 +46,8 @@ const TipoEventosLista = () => {
     }
   `;
 
-  const [linhasSelecionadas, setLinhasSelecionadas] = useState([]);
+  const [desabilitarBotaoExcluir, setDesabilitarBotaoExcluir] = useState(true);
+  const [tipoEventoSelecionados, setTipoEventoSelecionados] = useState([]);
 
   const clicouBotaoVoltar = () => {
     history.push('/');
@@ -58,12 +59,22 @@ const TipoEventosLista = () => {
       'Você tem certeza que deseja excluir estes itens?'
     );
     if (confirmado) {
-      console.log(linhasSelecionadas);
-      api.delete('v1/evento/tipo', linhasSelecionadas).then(resposta => {
-        console.log(resposta);
-      });
+      api
+        .delete('v1/evento/tipo', { data: tipoEventoSelecionados })
+        .then(resposta => {
+          if (resposta) sucesso('Tipos de evento deletados com sucesso!');
+        })
+        .catch(e => {
+          if (e.response && e.response.data && e.response.data.mensagens)
+            erro(`${e.response.data.mensagens[0]}!`);
+        });
     }
   };
+
+  useEffect(() => {
+    if (tipoEventoSelecionados.length > 0) setDesabilitarBotaoExcluir(false);
+    else setDesabilitarBotaoExcluir(true);
+  }, [tipoEventoSelecionados]);
 
   const clicouBotaoNovo = () => {
     history.push('/calendario-escolar/tipo-eventos/novo');
@@ -93,13 +104,11 @@ const TipoEventosLista = () => {
     {
       title: 'Tipo de Evento',
       dataIndex: 'descricao',
-      key: 'descricao',
       className: 'text-left px-4',
     },
     {
       title: 'Local de ocorrência',
       dataIndex: 'localOcorrencia',
-      key: 'localOcorrencia',
       className: 'text-left px-4',
       render: localOcorrencia =>
         listaLocalOcorrencia.filter(l => l.valor === localOcorrencia)[0]
@@ -108,7 +117,6 @@ const TipoEventosLista = () => {
     {
       title: 'Letivo',
       dataIndex: 'letivo',
-      key: 'letivo',
       className: 'text-left px-4',
       render: letivo =>
         listaLetivo.filter(l => l.valor === letivo)[0].descricao,
@@ -118,24 +126,17 @@ const TipoEventosLista = () => {
   const botaoExcluirRef = useRef();
   const campoNomeTipoEventoRef = useRef();
 
-  const [filtro, setFiltro] = useState({
-    localOcorrencia: undefined,
-    letivo: undefined,
-    descricao: '',
-  });
+  const [filtro, setFiltro] = useState({});
   const [
     localOcorrenciaSelecionado,
     setLocalOcorrenciaSelecionado,
   ] = useState();
 
-  // useEffect(() => {
-  //   if (linhasSelecionadas.length > 0) botaoExcluirRef.current.disabled = false;
-  // }, [linhasSelecionadas]);
-
   const aoSelecionarLocalOcorrencia = local => {
     setLocalOcorrenciaSelecionado(local);
     setFiltro({ ...filtro, localOcorrencia: local });
   };
+
   const [letivoSelecionado, setLetivoSelecionado] = useState();
 
   const aoSelecionarLetivo = letivo => {
@@ -154,8 +155,8 @@ const TipoEventosLista = () => {
     campoNomeTipoEventoRef.current.focus();
   }, [nomeTipoEvento]);
 
-  const aoSelecionarLinhas = items => {
-    setLinhasSelecionadas(items.map(item => item.codigo));
+  const aoSelecionarItems = items => {
+    setTipoEventoSelecionados(items);
   };
 
   return (
@@ -212,7 +213,7 @@ const TipoEventosLista = () => {
               label="Excluir"
               color={Colors.Roxo}
               onClick={clicouBotaoExcluir}
-              disabled
+              disabled={desabilitarBotaoExcluir}
               border
               bold
               ref={botaoExcluirRef}
@@ -229,12 +230,14 @@ const TipoEventosLista = () => {
         <Grid cols={12} className="mb-4">
           <ListaPaginada
             url="v1/evento/tipo/listar"
-            colunas={colunas}
+            id="lista-tipo-eventos"
             colunaChave="codigo"
+            colunas={colunas}
             filtro={filtro}
             onClick={clicouBotaoEditar}
             multiSelecao
-            selecionarItems={aoSelecionarLinhas}
+            aoSelecionarLinhas={aoSelecionarItems}
+            linhasSelecionadas={tipoEventoSelecionados}
           />
         </Grid>
       </Card>
