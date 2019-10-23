@@ -4,6 +4,7 @@ using SME.SGP.Aplicacao;
 using SME.SGP.Aplicacao.Comandos;
 using SME.SGP.Aplicacao.Consultas;
 using SME.SGP.Aplicacao.Integracoes;
+using SME.SGP.Aplicacao.Interfaces;
 using SME.SGP.Aplicacao.Interfaces.Comandos;
 using SME.SGP.Aplicacao.Interfaces.Consultas;
 using SME.SGP.Aplicacao.Servicos;
@@ -34,6 +35,7 @@ namespace SME.SGP.IoC {
             services.TryAddScoped<IComandosUsuario, ComandosUsuario> ();
             services.TryAddScoped<IComandosEventoTipo, ComandosEventoTipo> ();
             services.TryAddScoped<IComandosTipoCalendario, ComandosTipoCalendario> ();
+            services.TryAddScoped<IComandosPeriodoEscolar, ComandosPeriodoEscolar> ();
         }
 
         private static void RegistrarConsultas (IServiceCollection services) {
@@ -51,6 +53,7 @@ namespace SME.SGP.IoC {
             services.TryAddScoped<IConsultasWorkflowAprovacao, ConsultasWorkflowAprovacao> ();
             services.TryAddScoped<IConsultasUnidadesEscolares, ConsultasUnidadesEscolares> ();
             services.TryAddScoped<IConsultasTipoCalendario, ConsultasTipoCalendario> ();
+            services.TryAddScoped<IConsultasPeriodoEscolar, ConsultasPeriodoEscolar> ();
             services.TryAddScoped<IConsultasUsuario, ConsultasUsuario> ();
             services.TryAddScoped<IConsultasEventoTipo, ConsultasEventoTipo> ();
         }
@@ -82,6 +85,7 @@ namespace SME.SGP.IoC {
             services.TryAddScoped<IRepositorioConfiguracaoEmail, RepositorioConfiguracaoEmail> ();
             services.TryAddScoped<IRepositorioEventoTipo, RepositorioEventoTipo> ();
             services.TryAddScoped<IRepositorioTipoCalendario, RepositorioTipoCalendario> ();
+            services.TryAddScoped<IRepositorioPeriodoEscolar, RepositorioPeriodoEscolar> ();
         }
 
         private static void RegistrarServicos (IServiceCollection services) {
@@ -92,6 +96,7 @@ namespace SME.SGP.IoC {
             services.TryAddScoped<IServicoPerfil, ServicoPerfil> ();
             services.TryAddScoped<IServicoEmail, ServicoEmail> ();
             services.TryAddScoped<IServicoTokenJwt, ServicoTokenJwt> ();
+            services.TryAddScoped<IServicoPeriodoEscolar, ServicoPeriodoEscolar> ();
         }
     }
 }

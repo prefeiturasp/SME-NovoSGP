@@ -127,7 +127,11 @@ const Sider = () => {
             className={NavegacaoStore.retraido ? 'perfil-retraido' : 'perfil'}
           >
             <div className="circulo-perfil">
-              <img id="imagem-perfil" src={usuario.meusDados.foto} />
+              <i className="fas fa-user-circle icone-perfil"></i>
+              {/* <img
+                id="imagem-perfil"
+                src={usuario.meusDados.foto}
+              /> */}
             </div>
             <div hidden={NavegacaoStore.retraido}>
               <Tooltip
@@ -146,7 +150,7 @@ const Sider = () => {
             >
               <Link id="perfil-edit" to="/meus-dados">
                 <i className="fas fa-user-edit" />
-                <span>Perfil</span>
+                <span>Meus Dados</span>
               </Link>
             </div>
           </div>
@@ -213,9 +217,7 @@ const Sider = () => {
               <SubMenu
                 id="planejamento"
                 key="subPlanejamento"
-                onMouseEnter={e =>
-                  alterarPosicaoJanelaPopup('planejamento', 2, 200)
-                }
+                onMouseEnter={e => alterarPosicaoJanelaPopup('planejamento', 2)}
                 title={
                   <div className="item-menu-retraido">
                     <i
@@ -346,12 +348,11 @@ const Sider = () => {
                 </Menu.Item>
                 <Menu.Item key="83" id="calPeriodosEscolares">
                   <span className="menuItem">Períodos Escolares</span>
-                  {/* TODO - Descomentar quando estiver DONE a estoria */}
-                  {/* <Link
+                  <Link
                     to="/calendario-escolar/periodos-escolares"
                     className="nav-link text-white"
                     id="linkPeriodosEscolares"
-                  /> */}
+                  />
                 </Menu.Item>
                 <Menu.Item
                   key="84"
