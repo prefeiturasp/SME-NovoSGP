@@ -18,26 +18,26 @@ namespace SME.SGP.Dados.Repositorios
         {
             if (!string.IsNullOrEmpty(filtro.Nome))
             {
-                filtro.Nome = $"%{filtro.Nome.ToUpper()}%";
+                filtro.Nome = $"%{filtro.Nome}%";
             }
 
             StringBuilder query = new StringBuilder();
-            query.AppendLine("select");
-            query.AppendLine("id,");
-            query.AppendLine("nome,");
-            query.AppendLine("abrangencia,");
-            query.AppendLine("data_feriado,");
-            query.AppendLine("tipo,");
-            query.AppendLine("ativo");
-            query.AppendLine("from feriado_calendario");
-            query.AppendLine("where excluido = false");
+            query.AppendLine("select ");
+            query.AppendLine("  id,	");
+            query.AppendLine("  nome, ");
+            query.AppendLine("  abrangencia, ");
+            query.AppendLine("  data_feriado, ");
+            query.AppendLine("  tipo, ");
+            query.AppendLine("  ativo ");
+            query.AppendLine("from feriado_calendario ");
+            query.AppendLine("where excluido = false ");
 
             if (!string.IsNullOrEmpty(filtro.Nome))
-                query.AppendLine("and upper(nome) LIKE @Nome ");
+                query.AppendLine("  and nome LIKE @Nome ");
             if (filtro.Abrangencia > 0)
-                query.AppendLine("and abrangencia = @Abrangencia ");
+                query.AppendLine("  and abrangencia = @Abrangencia ");
             if (filtro.Tipo > 0)
-                query.AppendLine("and tipo = @Tipo ");
+                query.AppendLine("  and tipo = @Tipo ");
 
             return database.Conexao.Query<FeriadoCalendario>(query.ToString(), new
             {
@@ -49,25 +49,27 @@ namespace SME.SGP.Dados.Repositorios
 
         FeriadoCalendario IRepositorioBase<FeriadoCalendario>.ObterPorId(long id)
         {
-            var query = @"select
-                            id,
-                            nome,
-                            abrangencia,
-                            data_feriado,
-                            tipo,
-                            ativo,
-                            criado_em,
-                            criado_por,
-                            alterado_em,
-                            alterado_por,
-                            criado_rf,
-                            alterado_rf,
-                            excluido
-                            from feriado_calendario
-                            where excluido = false
-                                and id = @id";
+            StringBuilder query = new StringBuilder();
 
-            return database.Conexao.QueryFirstOrDefault<FeriadoCalendario>(query, new { id });
+            query.AppendLine("select ");
+            query.AppendLine("  id,	");
+            query.AppendLine("  nome, ");
+            query.AppendLine("  abrangencia, ");
+            query.AppendLine("  data_feriado, ");
+            query.AppendLine("  tipo, ");
+            query.AppendLine("  ativo, ");
+            query.AppendLine("  criado_em, ");
+            query.AppendLine("  criado_por, ");
+            query.AppendLine("  alterado_em, ");
+            query.AppendLine("  alterado_por, ");
+            query.AppendLine("  criado_rf, ");
+            query.AppendLine("  alterado_rf, ");
+            query.AppendLine("  excluido ");
+            query.AppendLine("from feriado_calendario ");
+            query.AppendLine("where excluido = false ");
+            query.AppendLine("and id = @id ");
+
+            return database.Conexao.QueryFirstOrDefault<FeriadoCalendario>(query.ToString(), new { id });
         }
 
         public bool VerificarRegistroExistente(long id, string nome)
@@ -75,9 +77,9 @@ namespace SME.SGP.Dados.Repositorios
             StringBuilder query = new StringBuilder();
 
             var nomeMaiusculo = nome.ToUpper().Trim();
-            query.AppendLine("select count(*)");
-            query.AppendLine("from feriado_calendario");
-            query.AppendLine("where upper(nome) = @nomeMaiusculo");
+            query.AppendLine("select count(*) ");
+            query.AppendLine("from feriado_calendario ");
+            query.AppendLine("where upper(nome) = @nomeMaiusculo ");
             query.AppendLine("and excluido = false");
             if (id > 0)
             {
