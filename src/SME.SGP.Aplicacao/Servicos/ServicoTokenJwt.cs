@@ -17,12 +17,13 @@ namespace SME.SGP.Aplicacao.Servicos
             this.configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
         }
 
-        public string GerarToken(string usuarioLogin, string codigoRf, IEnumerable<Permissao> permissionamentos)
+        public string GerarToken(string usuarioLogin, string codigoRf, IEnumerable<Permissao> permissionamentos, string guidPerfil)
         {
             IList<Claim> claims = new List<Claim>();
 
             claims.Add(new Claim("login", usuarioLogin));
             claims.Add(new Claim("rf", codigoRf));
+            claims.Add(new Claim("perfilAtual", guidPerfil));
 
             foreach (var permissao in permissionamentos)
             {
