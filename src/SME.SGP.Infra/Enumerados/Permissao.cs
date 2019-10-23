@@ -1,6 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
-
-namespace SME.SGP.Infra
+﻿namespace SME.SGP.Infra
 {
     public enum Permissao
     {
@@ -124,61 +122,58 @@ namespace SME.SGP.Infra
         [PermissaoMenu(Menu = "Plano Anual", Icone = "fas fa-list-alt", Agrupamento = "Planejamento", OrdemAgrupamento = 2, OrdemMenu = 2, Url = "planejamento/plano-anual/", EhAlteracao = true)]
         PA_A = 29,
 
-        #endregion Planejamento
-
-        [Display(Name = "Plano de Ciclo - Consulta")]
+        [PermissaoMenu(Menu = "Plano de Ciclo", Icone = "fas fa-list-alt", Agrupamento = "Planejamento", OrdemAgrupamento = 2, OrdemMenu = 1, Url = "planejamento/plano-ciclo/", EhConsulta = true)]
         PDC_C = 34,
 
-        [Display(Name = "Plano de Ciclo - Inclusão")]
+        [PermissaoMenu(Menu = "Plano de Ciclo", Icone = "fas fa-list-alt", Agrupamento = "Planejamento", OrdemAgrupamento = 2, OrdemMenu = 1, Url = "planejamento/plano-ciclo/", EhInclusao = true)]
         PDC_I = 35,
 
-        [Display(Name = "Plano de Ciclo - Exclusão")]
+        [PermissaoMenu(Menu = "Plano de Ciclo", Icone = "fas fa-list-alt", Agrupamento = "Planejamento", OrdemAgrupamento = 2, OrdemMenu = 1, Url = "planejamento/plano-ciclo/", EhExclusao = true)]
         PDC_E = 36,
 
-        [Display(Name = "Plano de Ciclo - Alteração")]
+        [PermissaoMenu(Menu = "Plano de Ciclo", Icone = "fas fa-list-alt", Agrupamento = "Planejamento", OrdemAgrupamento = 2, OrdemMenu = 1, Url = "planejamento/plano-ciclo/", EhAlteracao = true)]
         PDC_A = 37,
 
-        [Display(Name = "Notificação - Consulta")]
+        #endregion Planejamento
+
+        [PermissaoMenu(EhMenu = false, EhConsulta = true, Menu = "Notificação", Agrupamento = "Notificação")]
         N_C = 38,
 
-        [Display(Name = "Notificação - Inclusão")]
+        [PermissaoMenu(EhMenu = false, EhInclusao = true, Menu = "Notificação", Agrupamento = "Notificação")]
         N_I = 39,
 
-        [Display(Name = "Notificação - Exclusão")]
+        [PermissaoMenu(EhMenu = false, EhExclusao = true, Menu = "Notificação", Agrupamento = "Notificação")]
         N_E = 40,
 
-        [Display(Name = "Notificação - Alteração")]
+        [PermissaoMenu(EhMenu = false, EhAlteracao = true, Menu = "Notificação", Agrupamento = "Notificação")]
         N_A = 41,
 
-        [Display(Name = "Atribuição Professor - Consulta")]
+        [PermissaoMenu(EhMenu = false, EhConsulta = true, Menu = "Atribuição Professor", Agrupamento = "Atribuição Professor")]
         AP_C = 42,
 
-        [Display(Name = "Atribuição Professor - Inclusão")]
+        [PermissaoMenu(EhMenu = false, EhInclusao = true, Menu = "Atribuição Professor", Agrupamento = "Atribuição Professor")]
         AP_I = 43,
 
-        [Display(Name = "Atribuição Professor - Exclusão")]
+        [PermissaoMenu(EhMenu = false, EhExclusao = true, Menu = "Atribuição Professor", Agrupamento = "Atribuição Professor")]
         AP_E = 44,
 
-        [Display(Name = "Atribuição Professor - Alteração")]
+        [PermissaoMenu(EhMenu = false, EhAlteracao = true, Menu = "Atribuição Professor", Agrupamento = "Atribuição Professor")]
         AP_A = 45,
 
-        [Display(Name = "Reiniciar Senha - Alteração")]
+        [PermissaoMenu(Menu = "Usuários", Icone = "fas fa-book-reader", Agrupamento = "Configurações", OrdemAgrupamento = 7, OrdemMenu = 1, Url = "usuarios/alterar-senha/", EhAlteracao = true,
+           EhSubMenu = true, SubMenu = "Reiniciar Senha")]
         AS_C = 47,
 
-        [Display(Name = "Meus Dados - Consulta")]
+        [PermissaoMenu(EhMenu = false, EhAlteracao = true, Menu = "Notificação", Agrupamento = "Notificação")]
         M_C = 48,
 
-        [Display(Name = "Meus Dados - Inclusão")]
+        [PermissaoMenu(EhMenu = false, EhAlteracao = true, Menu = "Notificação", Agrupamento = "Notificação")]
         M_I = 49,
 
-        [Display(Name = "Meus Dados - Exclusão")]
+        [PermissaoMenu(EhMenu = false, EhAlteracao = true, Menu = "Notificação", Agrupamento = "Notificação")]
         M_E = 50,
 
-        [Display(Name = "Meus Dados - Alteração")]
+        [PermissaoMenu(EhMenu = false, EhAlteracao = true, Menu = "Notificação", Agrupamento = "Notificação")]
         M_A = 51,
-
-        [PermissaoMenu(Menu = "Usuários", Icone = "fas fa-book-reader", Agrupamento = "Configurações", OrdemAgrupamento = 7, OrdemMenu = 1, Url = "alterar-senha/", EhAlteracao = true,
-            EhSubMenu = true, SubMenu = "Reiniciar Senha")]
-        USSA_A = 52,
     }
 }

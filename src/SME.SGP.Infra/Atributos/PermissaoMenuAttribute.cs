@@ -11,6 +11,7 @@ namespace SME.SGP.Infra
             EhExclusao = false;
             EhInclusao = false;
             EhSubMenu = false;
+            EhMenu = true;
         }
 
         public string Agrupamento { get; set; }
@@ -18,6 +19,7 @@ namespace SME.SGP.Infra
         public bool EhConsulta { get; set; }
         public bool EhExclusao { get; set; }
         public bool EhInclusao { get; set; }
+        public bool EhMenu { get; set; }
         public bool EhSubMenu { get; set; }
         public string Icone { get; set; }
         public string Menu { get; set; }

@@ -35,7 +35,8 @@ namespace SME.SGP.Aplicacao
                 {
                     Codigo = (int)permissao,
                     Descricao = atributoEnumerado.Agrupamento,
-                    Icone = atributoEnumerado.Icone
+                    Icone = atributoEnumerado.Icone,
+                    EhMenu = atributoEnumerado.EhMenu
                 };
 
                 var permissoesMenu = agrupamento.GroupBy(item => new
