@@ -1,5 +1,4 @@
-﻿create table if not exists public.plano_ciclo ( 
-descricao varchar not null,
+﻿create table if not exists public.plano_ciclo ( descricao varchar not null,
 id int8 not null generated always as identity,
 ano int8 not null,
 ciclo_id int8 not null,
