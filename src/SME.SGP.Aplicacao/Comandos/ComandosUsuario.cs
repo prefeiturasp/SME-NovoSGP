@@ -59,6 +59,18 @@ namespace SME.SGP.Aplicacao
             await servicoUsuario.AlterarEmailUsuarioPorLogin(login, novoEmail);
         }
 
+        public async Task AlterarSenha(AlterarSenhaDto alterarSenhaDto)
+        {
+            var login = servicoUsuario.ObterLoginAtual();
+            var usuario = servicoUsuario.ObterUsuarioPorCodigoRfLoginOuAdiciona(null, login);
+            if (usuario == null)
+            {
+                throw new NegocioException("Usuário não encontrado.");
+            }
+            usuario.ValidarSenha(alterarSenhaDto.NovaSenha);
+            await servicoAutenticacao.AlterarSenha(login, alterarSenhaDto.SenhaAtual, alterarSenhaDto.NovaSenha);
+        }
+
         public async Task AlterarSenhaComTokenRecuperacao(RecuperacaoSenhaDto recuperacaoSenhaDto)
         {
             Usuario usuario = repositorioUsuario.ObterPorTokenRecuperacaoSenha(recuperacaoSenhaDto.Token);
