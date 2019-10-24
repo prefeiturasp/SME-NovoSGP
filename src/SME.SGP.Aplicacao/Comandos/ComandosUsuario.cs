@@ -105,6 +105,7 @@ namespace SME.SGP.Aplicacao
                 var usuario = servicoUsuario.ObterUsuarioPorCodigoRfLoginOuAdiciona(retornoAutenticacaoEol.Item2, login);
 
                 retornoAutenticacaoEol.Item1.PerfisUsuario = servicoPerfil.DefinirPerfilPrioritario(retornoAutenticacaoEol.Item3, usuario);
+
                 var permissionamentos = await servicoEOL.ObterPermissoesPorPerfil(retornoAutenticacaoEol.Item1.PerfisUsuario.PerfilSelecionado);
 
                 if (permissionamentos == null || !permissionamentos.Any())
@@ -118,7 +119,7 @@ namespace SME.SGP.Aplicacao
                         .Select(a => (Permissao)a)
                         .ToList();
 
-                    retornoAutenticacaoEol.Item1.Token = servicoTokenJwt.GerarToken(login, usuario.CodigoRf, listaPermissoes);
+                    retornoAutenticacaoEol.Item1.Token = servicoTokenJwt.GerarToken(login, usuario.CodigoRf, listaPermissoes, retornoAutenticacaoEol.Item1.PerfisUsuario.PerfilSelecionado.ToString());
 
                     usuario.AtualizaUltimoLogin();
                     repositorioUsuario.Salvar(usuario);
@@ -147,7 +148,7 @@ namespace SME.SGP.Aplicacao
                     .Select(a => (Permissao)a)
                     .ToList();
 
-                return servicoTokenJwt.GerarToken(loginAtual, codigoRfAtual, listaPermissoes);
+                return servicoTokenJwt.GerarToken(loginAtual, codigoRfAtual, listaPermissoes, guid);
             }
         }
 

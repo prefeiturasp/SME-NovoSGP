@@ -14,6 +14,8 @@ namespace SME.SGP.Dominio.Interfaces
 
         string ObterLoginAtual();
 
+        string ObterPerfiltAtual();
+
         IEnumerable<Permissao> ObterPermissoes();
 
         string ObterRf();
