@@ -61,9 +61,10 @@ namespace SME.SGP.Aplicacao.Integracoes
             return await ObterDisciplinas(url);
         }
 
-        public async Task<IEnumerable<DisciplinaResposta>> ObterDisciplinasPorProfessorETurma(long codigoTurma, string rfProfessor)
+        public async Task<IEnumerable<DisciplinaResposta>> ObterDisciplinasPorCodigoTurmaLoginEPerfil(long codigoTurma, string login, string guidPerfil)
         {
-            var url = $"professores/{rfProfessor}/turmas/{codigoTurma}/disciplinas";
+            var url = $"/api/funcionarios/{login}/perfis/{guidPerfil}/turmas/{codigoTurma}/disciplinas";
+
             return await ObterDisciplinas(url);
         }
 
@@ -139,6 +140,19 @@ namespace SME.SGP.Aplicacao.Integracoes
                 return JsonConvert.DeserializeObject<IEnumerable<ProfessorTurmaReposta>>(json);
             }
             return null;
+        }
+
+        public async Task<MeusDadosDto> ObterMeusDados(string login)
+        {
+            var url = $"AutenticacaoSgp/{login}/dados";
+            var resposta = await httpClient.GetAsync(url);
+
+            if (!resposta.IsSuccessStatusCode)
+            {
+                throw new NegocioException("Não foi possível obter os dados do usuário");
+            }
+            var json = await resposta.Content.ReadAsStringAsync();
+            return JsonConvert.DeserializeObject<MeusDadosDto>(json);
         }
 
         public async Task<UsuarioEolAutenticacaoRetornoDto> ObterPerfisPorLogin(string login)
@@ -222,20 +236,6 @@ namespace SME.SGP.Aplicacao.Integracoes
                 return JsonConvert.DeserializeObject<IEnumerable<DisciplinaResposta>>(json);
             }
             return null;
-        }
-
-        public async Task<MeusDadosDto> ObterMeusDados(string login)
-        {
-            var url = $"AutenticacaoSgp/{login}/dados";
-            var resposta = await httpClient.GetAsync(url);
-
-            if (!resposta.IsSuccessStatusCode)
-            {
-                throw new NegocioException("Não foi possível obter os dados do usuário"); 
-            }
-            var json = await resposta.Content.ReadAsStringAsync();
-            return JsonConvert.DeserializeObject<MeusDadosDto>(json);
-            
         }
     }
 }
