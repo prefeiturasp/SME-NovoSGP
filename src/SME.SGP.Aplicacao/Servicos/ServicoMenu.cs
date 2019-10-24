@@ -62,6 +62,7 @@ namespace SME.SGP.Aplicacao
                         menuPai.SubMenus.Add(new MenuPermissaoDto()
                         {
                             Codigo = (int)menu,
+                            Url = menuEnumerado.Url,
                             Descricao = menuEnumerado.SubMenu,
                             PodeAlterar = permissaoMenu.Any(a => a.GetAttribute<PermissaoMenuAttribute>().EhAlteracao),
                             PodeIncluir = permissaoMenu.Any(a => a.GetAttribute<PermissaoMenuAttribute>().EhInclusao),
@@ -76,6 +77,7 @@ namespace SME.SGP.Aplicacao
                         menuRetornoDto.Menus.Add(new MenuPermissaoDto()
                         {
                             Codigo = (int)menu,
+                            Url = menuEnumerado.Url,
                             Descricao = menuEnumerado.Menu,
                             PodeAlterar = permissaoMenu.Any(a => a.GetAttribute<PermissaoMenuAttribute>().EhAlteracao),
                             PodeIncluir = permissaoMenu.Any(a => a.GetAttribute<PermissaoMenuAttribute>().EhInclusao),
