@@ -3,6 +3,7 @@ using SME.SGP.Aplicacao.Integracoes;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -11,6 +12,7 @@ namespace SME.SGP.Dominio
     public class ServicoUsuario : IServicoUsuario
     {
         private const string CLAIM_PERFIL_ATUAL = "perfilAtual";
+        private const string CLAIM_PERMISSAO = "http://schemas.microsoft.com/ws/2008/06/identity/claims/role";
         private const string CLAIM_RF = "rf";
         private readonly IHttpContextAccessor httpContextAccessor;
         private readonly IRepositorioPrioridadePerfil repositorioPrioridadePerfil;
@@ -63,6 +65,22 @@ namespace SME.SGP.Dominio
                 throw new NegocioException("Não foi possível localizar o login no token");
 
             return loginAtual.Value;
+        }
+
+        public IEnumerable<Permissao> ObterPermissoes()
+        {
+            var claims = httpContextAccessor.HttpContext.User.Claims.Where(a => a.Type == CLAIM_PERMISSAO);
+            List<Permissao> retorno = new List<Permissao>();
+
+            if (claims.Any())
+            {
+                foreach (var claim in claims)
+                {
+                    var permissao = (Permissao)Enum.Parse(typeof(Permissao), claim.Value);
+                    retorno.Add(permissao);
+                }
+            }
+            return retorno;
         }
 
         public string ObterPerfiltAtual()

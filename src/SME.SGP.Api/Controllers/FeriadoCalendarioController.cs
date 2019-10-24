@@ -8,36 +8,37 @@ using System.Collections.Generic;
 namespace SME.SGP.Api.Controllers
 {
     [ApiController]
-    [Route("api/v1/tipo-calendario")]
+    [Route("api/v1/calendarios/feriados")]
     [ValidaDto]
     [Authorize("Bearer")]
-    public class TipoCalendarioController : ControllerBase
+    public class FeriadoCalendarioController : ControllerBase
     {
-        private readonly IComandosTipoCalendario comandos;
-        private readonly IConsultasTipoCalendario consultas;
+        private readonly IComandosFeriadoCalendario comandos;
+        private readonly IConsultasFeriadoCalendario consultas;
 
-        public TipoCalendarioController(IConsultasTipoCalendario consultas,
-            IComandosTipoCalendario comandos)
+        public FeriadoCalendarioController(IConsultasFeriadoCalendario consultas,
+            IComandosFeriadoCalendario comandos)
         {
             this.consultas = consultas ?? throw new System.ArgumentNullException(nameof(consultas));
             this.comandos = comandos ?? throw new System.ArgumentNullException(nameof(comandos));
         }
 
         [HttpGet]
-        [ProducesResponseType(typeof(IEnumerable<TipoCalendarioDto>), 200)]
-        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        public IActionResult BuscarTodos()
-        {
-            return Ok(consultas.Listar());
-        }
-
-        [HttpGet]
-        [ProducesResponseType(typeof(TipoCalendarioCompletoDto), 200)]
+        [ProducesResponseType(typeof(FeriadoCalendarioCompletoDto), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [Route("{id}")]
-        public IActionResult BuscarUm(long id)
+        public IActionResult BuscarPorId(long id)
         {
             return Ok(consultas.BuscarPorId(id));
+        }
+
+        [HttpPost]
+        [ProducesResponseType(typeof(IEnumerable<FeriadoCalendarioDto>), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [Route("listar")]
+        public IActionResult BuscarTodos([FromBody] FiltroFeriadoCalendarioDto filtro)
+        {
+            return Ok(consultas.Listar(filtro));
         }
 
         [HttpDelete]
@@ -52,7 +53,7 @@ namespace SME.SGP.Api.Controllers
         [HttpPost]
         [ProducesResponseType(200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        public IActionResult Salvar([FromBody]TipoCalendarioDto dto)
+        public IActionResult Salvar([FromBody]FeriadoCalendarioDto dto)
         {
             comandos.Salvar(dto);
             return Ok();

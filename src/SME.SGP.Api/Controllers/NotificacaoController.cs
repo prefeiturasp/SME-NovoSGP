@@ -2,7 +2,6 @@
 using Microsoft.AspNetCore.Mvc;
 using SME.SGP.Api.Filtros;
 using SME.SGP.Aplicacao;
-using SME.SGP.Dominio;
 using SME.SGP.Infra;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -113,14 +112,6 @@ namespace SME.SGP.Api.Controllers
         public IActionResult ObtenhaPorRFAnoLetivo(int anoLetivo, string usuarioRf)
         {
             return Ok(consultasNotificacao.ObterNotificacaoBasicaLista(anoLetivo, usuarioRf));
-        }
-
-        [HttpGet("/api/v1/ping")]
-        [ProducesResponseType(200)]
-        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        public IActionResult Ping()
-        {
-            return Ok("pong");
         }
 
         [HttpPost]
