@@ -144,6 +144,7 @@ const FormularioSenha = () => {
                         label="Senha atual"
                         name="senhaAtual"
                         form={form}
+                        maskType="password"
                         maxlength="50"
                       />
                     </div>
@@ -159,6 +160,7 @@ const FormularioSenha = () => {
                         name="novaSenha"
                         form={form}
                         maxlength="12"
+                        maskType="password"
                         semMensagem
                       />
                     </div>
@@ -169,6 +171,7 @@ const FormularioSenha = () => {
                         label="Confirmação da Nova Senha"
                         name="confirmacaoNovaSenha"
                         form={form}
+                        maskType="password"
                         maxlength="12"
                       />
                     </div>
