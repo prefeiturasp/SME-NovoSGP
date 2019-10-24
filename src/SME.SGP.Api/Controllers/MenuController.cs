@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using SME.SGP.Aplicacao;
 using SME.SGP.Infra;
+using System.Collections.Generic;
 
 namespace SME.SGP.Api.Controllers
 {
@@ -10,10 +11,9 @@ namespace SME.SGP.Api.Controllers
     public class MenuController : ControllerBase
     {
         [HttpGet]
-        [ProducesResponseType(200)]
         [ProducesResponseType(401)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        [ProducesResponseType(typeof(UsuarioAutenticacaoRetornoDto), 200)]
+        [ProducesResponseType(typeof(IEnumerable<MenuRetornoDto>), 200)]
         [Authorize("Bearer")]
         public IActionResult Get([FromServices]IServicoMenu servicoMenu)
         {
