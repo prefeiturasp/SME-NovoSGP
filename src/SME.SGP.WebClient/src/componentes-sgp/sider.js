@@ -9,6 +9,7 @@ import { menuRetraido, menuSelecionado } from '../redux/modulos/navegacao/action
 import { useSelector } from 'react-redux';
 import modalidade from '~/dtos/modalidade';
 import { Tooltip } from 'antd';
+import { getMenu } from './mock-menu';
 
 const Sider = () => {
   const { Sider, Footer } = Layout;
@@ -19,11 +20,13 @@ const Sider = () => {
 
   const usuario = useSelector(store => store.usuario);
 
-  const subMenusPrincipais = ['subDiarioClasse', 'subPlanejamento', 'subFechamento', 'subRelatorios', 'subGestao', 'subConfiguracoes', 'calendario-escolar'];
+  const [subMenusPrincipais, setSubMenusPrincipais] = useState([]);
 
   useEffect(() => {
     verificaSelecaoMenu(NavegacaoStore.rotaAtiva);
   }, [NavegacaoStore.rotaAtiva]);
+
+  // useEffect(() => {  }, [usuario.menu]);
 
   useEffect(() => {
     if (
@@ -78,6 +81,44 @@ const Sider = () => {
     store.dispatch(menuSelecionado([item.key]));
   }
 
+  const criarItensMenu = menus => {
+    return menus.map(item => {
+      return (
+        <Menu.Item key={item.codigo} id={item.codigo}>
+          <span className="menuItem"> {item.descricao}</span>
+          <Link hidden={!item.url}
+            to={item.url}
+            id={"link-" + item.codigo}
+          />
+        </Menu.Item>
+      )
+    })
+  }
+
+  const criarMenus = () => {
+    return usuario.menu.map(subMenu => {
+      if (subMenu.ehMenu) {
+        return (
+          <SubMenu
+            id={subMenu.codigo}
+            key={'sub-' + subMenu.codigo}
+            onMouseEnter={(e) => alterarPosicaoJanelaPopup('diarioClasse', subMenu.quantidadeMenus)}
+            title={
+              <div className="item-menu-retraido">
+                <i
+                  className={`${subMenu.icone + (NavegacaoStore.retraido ? ' icons-retraido' : ' icons')}`}
+                />
+                <span>{subMenu.descricao}</span>
+              </div>
+            }
+          >
+            {criarItensMenu(subMenu.menus)}
+          </SubMenu>
+        );
+      }
+    })
+  }
+
   return (
     <MenuBody id="main" style={{ width: NavegacaoStore.retraido ? '115px' : '250px' }}>
       <Sider
@@ -109,7 +150,7 @@ const Sider = () => {
               /> */}
             </div>
             <div hidden={NavegacaoStore.retraido}>
-              <Tooltip title={usuario.meusDados.nome} placement="bottom" overlayStyle={{fontSize:'12px'}}>
+              <Tooltip title={usuario.meusDados.nome} placement="bottom" overlayStyle={{ fontSize: '12px' }}>
                 <span id="nome" className="nome">
                   {usuario.meusDados.nome}
                 </span>
@@ -140,7 +181,8 @@ const Sider = () => {
               onSelect={selecionarItem.bind(NavegacaoStore.menuSelecionado)}
               selectedKeys={NavegacaoStore.menuSelecionado}
             >
-              <SubMenu
+              {criarMenus()}
+              {/* <SubMenu
                 id="diarioClasse"
                 key="subDiarioClasse"
                 onMouseEnter={(e) => alterarPosicaoJanelaPopup('diarioClasse', 9)}
@@ -316,7 +358,7 @@ const Sider = () => {
                     id="linkPeriodosEscolares"
                   />
                 </Menu.Item>
-                <Menu.Item key="84" id="calPeriodosFechamentoAbertura" style={{lineHeight: '18px !important'}}>
+                <Menu.Item key="84" id="calPeriodosFechamentoAbertura" style={{ lineHeight: '18px !important' }}>
                   <span className="menuItem">Períodos de fechamento (Abertura)</span>
                 </Menu.Item>
                 <Menu.Item key="85" id="calPeriodosFechamentoReabertura">
@@ -324,12 +366,6 @@ const Sider = () => {
                 </Menu.Item>
                 <Menu.Item key="86" id="calTipoFeriados">
                   <span className="menuItem">Tipo de Feriado</span>
-                  {/* TODO - Descomentar quando estiver DONE a estoria */}
-                  {/* <Link
-                    to="/calendario-escolar/tipo-feriado"
-                    className="nav-link text-white"
-                    id="linkTipoFeriado"
-                  /> */}
                 </Menu.Item>
                 <Menu.Item key="87" id="calTipoEvento">
                   <span className="menuItem">Tipo de Evento</span>
@@ -412,7 +448,7 @@ const Sider = () => {
                     />
                   </Menu.Item>
                 </SubMenu>
-              </SubMenu>
+              </SubMenu>*/}
             </Menu>
           </div>
         </MenuScope>
