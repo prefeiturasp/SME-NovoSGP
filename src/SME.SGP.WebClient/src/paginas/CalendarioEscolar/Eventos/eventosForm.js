@@ -37,6 +37,7 @@ const EventosForm = ({ match }) => {
     tipoEvento: undefined,
     dataEvento: '',
     letivo: true,
+    descricao: '',
   });
 
   const opcoesLetivo = [
@@ -52,6 +53,7 @@ const EventosForm = ({ match }) => {
       nomeEvento: Yup.string().required('Nome obrigatório'),
       tipoEvento: Yup.string().required('Tipo obrigatório'),
       dataEvento: momentSchema.required('Data obrigatória'),
+      descricao: momentSchema.required('Descrição obrigatória'),
     })
   );
 
@@ -92,6 +94,9 @@ const EventosForm = ({ match }) => {
         dre: '',
         nomeEvento: '',
         tipoEvento: '',
+        dataEvento: '',
+        letivo: '',
+        descricao: '',
       });
       setAuditoria({
         criadoPor: evento.data.criadoPor,
@@ -195,6 +200,10 @@ const EventosForm = ({ match }) => {
 
   const onClickRepetir =  () => {
     console.log('onClickRepetir');
+  };
+
+  const onClickCopiarEvento =  () => {
+    console.log('onClickCopiarEvento');
   };
 
   return (
@@ -320,6 +329,26 @@ const EventosForm = ({ match }) => {
                     name="letivo"
                     valorInicial
                     onChange={onChangeCampos}
+                  />
+                </div>
+                <div className="col-sm-12 col-md-12 col-lg-12 col-xl-12 pb-2">
+                  <CampoTexto
+                    form={form}
+                    label="Descrição"
+                    placeholder="Descrição"
+                    onChange={onChangeCampos}
+                    name="descricao"
+                    type="textarea"
+                  />
+                </div>
+                <div className="col-sm-12 col-md-4 col-lg-4 col-xl-4 pb-2">
+                  <Button
+                    label="Copiar Evento"
+                    icon="fas fa-share"
+                    color={Colors.Azul}
+                    border
+                    className="mt-4"
+                    onClick={onClickCopiarEvento}
                   />
                 </div>
               </div>
