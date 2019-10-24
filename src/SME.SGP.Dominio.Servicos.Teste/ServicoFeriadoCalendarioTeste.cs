@@ -1,20 +1,46 @@
-﻿using Xunit;
+﻿using Moq;
+using SME.SGP.Dominio.Interfaces;
+using System.Collections.Generic;
+using Xunit;
 
 namespace SME.SGP.Dominio.Servicos.Teste
 {
     public class ServicoFeriadoCalendarioTeste
     {
+        private readonly Mock<IRepositorioFeriadoCalendario> repositorioFeriadoCalendario;
+
         public ServicoFeriadoCalendarioTeste()
         {
+            repositorioFeriadoCalendario = new Mock<IRepositorioFeriadoCalendario>();
         }
 
         [Fact]
-        public void Deve_Calcular_Feriados()
+        public void Deve_Calcular_Sexta_Santa()
         {
-            //var servicoFeriado = new ServicoFeriadoCalendario();
-            //var data = servicoFeriado.CalcularFeriado(2019, FeriadoEnum.SextaSanta);
+            //ARRANGE
+            var servicoferiado = new ServicoFeriadoCalendario(repositorioFeriadoCalendario.Object);
 
-            //Assert.True(data.Year == 2019);
+            //ACT
+            var data = servicoferiado.CalcularFeriado(2019, FeriadoEnum.SextaSanta);
+
+            //ASSERT
+            Assert.True(data.Year == 2019);
+        }
+
+        [Fact]
+        public async void Deve_Inserir_Feriados_Moveis()
+        {
+            //ARRANGE
+            var servicoferiado = new ServicoFeriadoCalendario(repositorioFeriadoCalendario.Object);
+            var retorno = new List<FeriadoCalendario>();
+            repositorioFeriadoCalendario.Setup(a => a.ObterFeriadosCalendario(new Infra.FiltroFeriadoCalendarioDto() { Tipo = TipoFeriadoCalendario.Movel, Ano = 2019 }))
+                .Returns(retorno);
+
+            //ACT
+            await servicoferiado.VerficaSeExisteFeriadosMoveisEInclui(2019);
+
+            //ASSERT
+            Assert.True(true);
         }
     }
 }
