@@ -15,7 +15,7 @@ namespace SME.SGP.Aplicacao
             this.repositorio = repositorio ?? throw new System.ArgumentNullException(nameof(repositorio));
         }
 
-        public FeriadoCalendarioDto BuscarPorId(long id)
+        public FeriadoCalendarioCompletoDto BuscarPorId(long id)
         {
             var entidade = repositorio.ObterPorId(id);
             FeriadoCalendarioDto dto = new FeriadoCalendarioDto();
