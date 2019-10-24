@@ -2,24 +2,31 @@
 import React, { useState } from 'react';
 import { Formik, Form } from 'formik';
 import * as Yup from 'yup';
-import regex from '~/servicos/Validacoes/regex';
+import '~/servicos/Validacoes/regex';
 import CampoTexto from '~/componentes/campoTexto';
 import Button from '~/componentes/button';
 import { Colors } from '~/componentes/colors';
 import ModalConteudoHtml from '~/componentes/modalConteudoHtml';
 import { Validacoes, Validacao } from './formularioSenha.css';
+import api from '~/servicos/api';
+import { sucesso } from '~/servicos/alertas';
+import AlertaBalao from '~/componentes/alertaBalao';
 
 const FormularioSenha = () => {
   const [exibirModal, setExibirModal] = useState(false);
+  const [erroAlertaBalao, setErroAlertaBalao] = useState('');
+  const [exibirAlertaBalao, setExibirAlertaBalao] = useState(false);
 
-  const cancelar = form => {
+  const fecharModal = form => {
     form.handleReset();
     setExibirModal(false);
+    setErroAlertaBalao('');
+    setExibirAlertaBalao(false);
   };
 
   const [validacoes] = useState(
     Yup.object({
-      senha: Yup.string().required('A senha atual deve ser informada'),
+      senhaAtual: Yup.string().required('A senha atual deve ser informada'),
       novaSenha: Yup.mixed()
         .contem(/([A-Z])/, 'maiuscula')
         .contem(/([a-z])/, 'minuscula')
@@ -77,17 +84,35 @@ const FormularioSenha = () => {
     );
   };
 
+  const alterarSenha = form => {
+    setErroAlertaBalao('');
+    setExibirAlertaBalao(false);
+    api
+      .put('v1/autenticacao/senha', form.values)
+      .then(() => {
+        sucesso('Senha alterada com sucesso.');
+        fecharModal(form);
+      })
+      .catch(listaErros => {
+        if (listaErros && listaErros.response && listaErros.response.data) {
+          const mensagens = listaErros.response.data.mensagens.join('<br>');
+          setErroAlertaBalao(mensagens);
+          setExibirAlertaBalao(true);
+        }
+      });
+  };
+
   return (
     <div className="row campo w-100">
       <Formik
         enableReinitialize
         initialValues={{
           novaSenha: '',
-          senha: '',
+          senhaAtual: '',
           confirmacaoNovaSenha: '',
         }}
         validationSchema={validacoes}
-        onSubmit={() => 1}
+        onSubmit={form => alterarSenha(form)}
         validateOnChange
         validateOnBlur
       >
@@ -98,11 +123,13 @@ const FormularioSenha = () => {
               visivel={exibirModal}
               onConfirmacaoPrincipal={() => {
                 form.validateForm().then(() => {
-                  form.handleSubmit(e => e);
+                  if (form.isValid) {
+                    alterarSenha(form);
+                  }
                 });
               }}
-              onConfirmacaoSecundaria={() => cancelar(form)}
-              onClose={() => cancelar(form)}
+              onConfirmacaoSecundaria={() => fecharModal(form)}
+              onClose={() => fecharModal(form)}
               labelBotaoPrincipal="Confirmar"
               labelBotaoSecundario="Cancelar"
               titulo="Nova Senha"
@@ -115,7 +142,7 @@ const FormularioSenha = () => {
                     <div className="col-xs-12 col-md-12 col-lg-12">
                       <CampoTexto
                         label="Senha atual"
-                        name="senha"
+                        name="senhaAtual"
                         form={form}
                         maxlength="50"
                       />
@@ -147,7 +174,7 @@ const FormularioSenha = () => {
                     </div>
                   </div>
                 </div>
-                <div className="col-xs-5 col-md-5 col-lg-4 pt-5 ml-4">
+                <div className="col-xs-5 col-md-5 col-lg-4 ml-4">
                   <div className="row">
                     <Validacoes
                       className="text-left"
@@ -190,6 +217,11 @@ const FormularioSenha = () => {
                   </div>
                 </div>
               </div>
+              <AlertaBalao
+                maxWidth={472}
+                mostrarAlerta={exibirAlertaBalao}
+                texto={erroAlertaBalao}
+              />
             </ModalConteudoHtml>
           </Form>
         )}
