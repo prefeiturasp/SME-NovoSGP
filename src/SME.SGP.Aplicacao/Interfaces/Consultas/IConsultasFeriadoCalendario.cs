@@ -5,7 +5,7 @@ namespace SME.SGP.Aplicacao
 {
     public interface IConsultasFeriadoCalendario
     {
-        FeriadoCalendarioDto BuscarPorId(long id);
+        FeriadoCalendarioCompletoDto BuscarPorId(long id);
 
         IEnumerable<FeriadoCalendarioDto> Listar(FiltroFeriadoCalendarioDto filtro);
     }
