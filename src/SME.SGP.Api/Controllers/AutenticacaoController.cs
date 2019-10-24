@@ -21,6 +21,18 @@ namespace SME.SGP.Api.Controllers
             this.comandosUsuario = comandosUsuario ?? throw new System.ArgumentNullException(nameof(comandosUsuario));
         }
 
+        [Route("senha")]
+        [HttpPut]
+        [ProducesResponseType(200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 601)]
+        [Authorize("Bearer")]
+        public async Task<IActionResult> AlterarSenha([FromBody]AlterarSenhaDto alterarSenhaDto)
+        {
+            await comandosUsuario.AlterarSenha(alterarSenhaDto);
+            return Ok();
+        }
+
         [HttpPut]
         [ProducesResponseType(200)]
         [ProducesResponseType(401)]

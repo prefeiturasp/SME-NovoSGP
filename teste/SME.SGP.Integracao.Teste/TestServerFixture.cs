@@ -6,7 +6,7 @@ using Npgsql;
 using Postgres2Go;
 using SME.SGP.Api;
 using SME.SGP.Aplicacao.Servicos;
-using SME.SGP.Dominio;
+using SME.SGP.Infra;
 using System;
 using System.IO;
 using System.Linq;
@@ -66,9 +66,12 @@ namespace SME.SGP.Integracao.Teste
             runner.Dispose();
         }
 
-        public string GerarToken(Permissao[] permissoes, string login = "teste", string codigoRf = "123")
+        public string GerarToken(Permissao[] permissoes, string login = "teste", string codigoRf = "123", string guidPerfil = "")
         {
-            return servicoTokenJwt.GerarToken(login, codigoRf, permissoes);
+            if (string.IsNullOrEmpty(guidPerfil))
+                guidPerfil = Guid.NewGuid().ToString();
+
+            return servicoTokenJwt.GerarToken(login, codigoRf, permissoes, guidPerfil);
         }
 
         public string ObterArquivoConfiguracao()
