@@ -6,7 +6,7 @@ using Npgsql;
 using Postgres2Go;
 using SME.SGP.Api;
 using SME.SGP.Aplicacao.Servicos;
-using SME.SGP.Dominio;
+using SME.SGP.Infra;
 using System;
 using System.IO;
 using System.Linq;
