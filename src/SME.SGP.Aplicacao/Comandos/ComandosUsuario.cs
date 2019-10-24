@@ -62,17 +62,13 @@ namespace SME.SGP.Aplicacao
         public async Task AlterarSenha(AlterarSenhaDto alterarSenhaDto)
         {
             var login = servicoUsuario.ObterLoginAtual();
-            var autenticacao = await servicoEOL.Autenticar(login, alterarSenhaDto.SenhaAtual);
-            if (autenticacao.Status != AutenticacaoStatusEol.Ok)
+            var usuario = servicoUsuario.ObterUsuarioPorCodigoRfLoginOuAdiciona(null, login);
+            if (usuario == null)
             {
-                throw new NegocioException("Senha atual incorreta.");
+                throw new NegocioException("Usuário não encontrado.");
             }
-
-            var alteracaoSenha = await servicoEOL.AlterarSenha(login, alterarSenhaDto.NovaSenha);
-            if (!alteracaoSenha.SenhaAlterada)
-            {
-                throw new NegocioException("Ocorreu um erro ao alterar a senha. Verifique se a nova senha atende aos requisitos mínimos.");
-            }
+            usuario.ValidarSenha(alterarSenhaDto.NovaSenha);
+            await servicoAutenticacao.AlterarSenha(login, alterarSenhaDto.SenhaAtual, alterarSenhaDto.NovaSenha);
         }
 
         public async Task AlterarSenhaComTokenRecuperacao(RecuperacaoSenhaDto recuperacaoSenhaDto)
