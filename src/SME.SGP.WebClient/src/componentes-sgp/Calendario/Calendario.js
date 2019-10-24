@@ -1,59 +1,41 @@
 ﻿import React from 'react';
-import PropTypes from 'prop-types';
-import Month from './Mes';
-import FullMonth from './MesCompleto';
+import styled from 'styled-components';
+import Mes from './Mes';
+import MesCompleto from './MesCompleto';
 
-const Calendario = props => {
-  const { nome } = props;
+const Div = styled.div``;
 
+const Calendario = () => {
   return (
-    <div className="px-3 pt-3 pb-5">
-      <div className="col-2 px-0 pb-4">
-        <input
-          type="text"
-          className="form-control form-control-sm"
-          value={nome}
-          readOnly
-          style={{ backgroundColor: 'rgba(0,0,0,0)' }}
-        />
-      </div>
+    <Div className="px-3 pt-3 pb-5">
+      <Div className="d-flex">
+        <Mes mes="1" />
+        <Mes mes="2" />
+        <Mes mes="3" />
+        <Mes mes="4" />
+      </Div>
 
-      <div className="d-flex">
-        <Month mes="1" />
-        <Month mes="2" />
-        <Month mes="3" />
-        <Month mes="4" />
-      </div>
+      <MesCompleto meses="1,2,3,4" />
 
-      <FullMonth months="1,2,3,4" />
+      <Div className="d-flex">
+        <Mes mes="5" />
+        <Mes mes="6" />
+        <Mes mes="7" />
+        <Mes mes="8" />
+      </Div>
 
-      <div className="d-flex">
-        <Month mes="5" />
-        <Month mes="6" />
-        <Month mes="7" />
-        <Month mes="8" />
-      </div>
+      <MesCompleto meses="5,6,7,8" />
 
-      <FullMonth months="5,6,7,8" />
+      <Div className="d-flex">
+        <Mes mes="9" />
+        <Mes mes="10" />
+        <Mes mes="11" />
+        <Mes mes="12" />
+      </Div>
 
-      <div className="d-flex">
-        <Month mes="9" />
-        <Month mes="10" />
-        <Month mes="11" />
-        <Month mes="12" />
-      </div>
-
-      <FullMonth months="9,10,11,12" />
-    </div>
+      <MesCompleto meses="9,10,11,12" />
+    </Div>
   );
-};
-
-Calendario.propTypes = {
-  nome: PropTypes.string,
-};
-
-Calendario.defaultProps = {
-  nome: 'Calendário',
 };
 
 export default Calendario;

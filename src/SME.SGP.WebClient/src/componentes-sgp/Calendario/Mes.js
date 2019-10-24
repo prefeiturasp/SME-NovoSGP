@@ -1,15 +1,21 @@
 ﻿import React, { useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
+import styled from 'styled-components';
 import { useTransition, animated } from 'react-spring';
+import { store } from '~/redux';
 import { alternaMes } from '~/redux/modulos/calendarioEscolar/actions';
 
-const MonthChevronIcon = props => {
-  const transitions = useTransition(props.isOpen, item => item, {
+const Div = styled.div``;
+
+const Seta = props => {
+  const transitions = useTransition(props.estaAberto, item => item, {
     from: { display: 'none' },
     enter: { display: 'block' },
     leave: { display: 'none' },
   });
+
+  console.log(props);
 
   return transitions.map(({ item, key, props }) =>
     item ? (
@@ -24,47 +30,56 @@ const MonthChevronIcon = props => {
   );
 };
 
-const Month = props => {
+const Mes = props => {
   const { mes } = props;
+  let meses = [];
 
-  const meses = useSelector(state => state.calendarioEscolar.meses);
+  useEffect(() => {
+    const dataAtual = new Date();
+    if (mes === (dataAtual.getMonth() + 1).toString())
+      store.dispatch(alternaMes(mes));
+  }, []);
+
+  meses = useSelector(state => state.calendarioEscolar.meses);
+
+  const mesSelecionado = Object.assign({}, meses[mes]);
+  mesSelecionado.style = { backgroundColor: '#F7F9FA' };
+  if (mesSelecionado.appointments > 0) mesSelecionado.chevronColor = '#10A3FB';
+
+  useEffect(() => {
+    if (mesSelecionado.estaAberto) {
+      mesSelecionado.chevronColor = 'rgba(0,0,0,0)';
+      mesSelecionado.className += ' border-bottom-0';
+      mesSelecionado.style = {};
+    }
+  }, [meses[mes].estaAberto]);
 
   const abrirMes = () => {
-    alternaMes(mes);
+    store.dispatch(alternaMes(mes));
   };
-
-  const month = Object.assign({}, meses[mes]);
-  month.style = { backgroundColor: '#F7F9FA' };
-
-  if (month.appointments > 0) month.chevronColor = '#10A3FB';
-
-  if (month.isOpen) {
-    month.chevronColor = 'rgba(0,0,0,0)';
-    month.className += ' border-bottom-0';
-    month.style = {};
-  }
 
   return (
     <div className="col-3 w-100 px-0">
-      <div className={month.className}>
-        <div
-          role="button"
-          tabIndex={0}
+      <div className={mesSelecionado.className}>
+        <Div
           className="d-flex align-items-center justify-content-center clickable"
           onClick={abrirMes}
           style={{
-            backgroundColor: month.chevronColor,
+            backgroundColor: mesSelecionado.chevronColor,
             height: 75,
             width: 33,
           }}
         >
-          <MonthChevronIcon isOpen={month.isOpen} />
-        </div>
+          <Seta estaAberto={mesSelecionado.estaAberto} />
+        </Div>
 
-        <div className="d-flex align-items-center w-100" style={month.style}>
-          <div className="w-100 pl-2">{month.name}</div>
+        <div
+          className="d-flex align-items-center w-100"
+          style={mesSelecionado.style}
+        >
+          <div className="w-100 pl-2">{mesSelecionado.name}</div>
           <div className="flex-shrink-1 d-flex align-items-center pr-3">
-            <div className="pr-2">{month.appointments}</div>
+            <div className="pr-2">{mesSelecionado.appointments}</div>
             <div>
               <i className="far fa-calendar-alt" />
             </div>
@@ -75,12 +90,12 @@ const Month = props => {
   );
 };
 
-Month.propTypes = {
+Mes.propTypes = {
   mes: PropTypes.string,
 };
 
-Month.defaultProps = {
+Mes.defaultProps = {
   mes: '',
 };
 
-export default Month;
+export default Mes;
