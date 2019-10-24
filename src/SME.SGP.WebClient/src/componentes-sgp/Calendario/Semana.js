@@ -72,7 +72,7 @@ const WeekDay = () => {
   );
 };
 
-const Week = props => {
+const Semana = props => {
   const {
     calendar,
     firstWeek,
@@ -120,4 +120,4 @@ const Week = props => {
   );
 };
 
-export default Week;
+export default Semana;
