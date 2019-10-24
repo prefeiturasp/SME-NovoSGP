@@ -56,10 +56,14 @@ namespace SME.SGP.Aplicacao
             return disciplinasDto;
         }
 
-        public async Task<IEnumerable<DisciplinaDto>> ObterDisciplinasPorProfessorETurma(long codigoTurma, string rfProfessor)
+        public async Task<IEnumerable<DisciplinaDto>> ObterDisciplinasPorProfessorETurma(long codigoTurma)
         {
             IEnumerable<DisciplinaDto> disciplinasDto = null;
-            var chaveCache = $"Disciplinas-{codigoTurma}-{rfProfessor}";
+
+            var login = servicoUsuario.ObterLoginAtual();
+            var perfilAtual = servicoUsuario.ObterPerfiltAtual();
+
+            var chaveCache = $"Disciplinas-{codigoTurma}-{login}--{perfilAtual}";
             var disciplinasCacheString = repositorioCache.Obter(chaveCache);
 
             if (!string.IsNullOrWhiteSpace(disciplinasCacheString))
@@ -68,7 +72,7 @@ namespace SME.SGP.Aplicacao
             }
             else
             {
-                var disciplinas = await servicoEOL.ObterDisciplinasPorProfessorETurma(codigoTurma, rfProfessor);
+                var disciplinas = await servicoEOL.ObterDisciplinasPorCodigoTurmaLoginEPerfil(codigoTurma, login, perfilAtual);
                 if (disciplinas != null && disciplinas.Any())
                 {
                     disciplinasDto = await MapearParaDto(disciplinas);
@@ -92,7 +96,7 @@ namespace SME.SGP.Aplicacao
                         CodigoComponenteCurricular = disciplina.CodigoComponenteCurricular,
                         Nome = disciplina.Nome,
                         Regencia = disciplina.Regencia,
-                        PossuiObjetivos = await consultasObjetivoAprendizagem.DisciplinaPossuiObjetivosDeAprendizagem(disciplina.CodigoComponenteCurricular)
+                        PossuiObjetivos = false
                     });
                 }
             }
