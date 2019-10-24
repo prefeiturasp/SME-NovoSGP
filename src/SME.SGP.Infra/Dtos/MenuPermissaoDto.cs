@@ -15,7 +15,7 @@ namespace SME.SGP.Infra
         public bool PodeConsultar { get; set; }
         public bool PodeExcluir { get; set; }
         public bool PodeIncluir { get; set; }
-
         public IList<MenuPermissaoDto> SubMenus { get; set; }
+        public string Url { get; set; }
     }
 }
