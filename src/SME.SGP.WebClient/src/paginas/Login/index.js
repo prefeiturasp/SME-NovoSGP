@@ -132,7 +132,7 @@ const Login = props => {
                         <Rotulo className="d-block" htmlFor="usuario">
                           Usuário
                           <Tooltip placement="top" title={TextoAjuda}>
-                            <i className="fas fa-question-circle" />
+                            <i className="fas fa-question-circle ml-1" />
                           </Tooltip>
                         </Rotulo>
                         <CampoTexto
