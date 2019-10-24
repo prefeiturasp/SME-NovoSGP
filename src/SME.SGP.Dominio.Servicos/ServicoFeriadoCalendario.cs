@@ -1,5 +1,9 @@
 ﻿using SME.SGP.Dominio.Interfaces;
+using SME.SGP.Infra;
 using System;
+using System.ComponentModel.DataAnnotations;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace SME.SGP.Dominio.Servicos
 {
@@ -34,9 +38,13 @@ namespace SME.SGP.Dominio.Servicos
             return data;
         }
 
-        public void VerficaSeExisteFeriadosMoveis(int ano)
+        public async Task VerficaSeExisteFeriadosMoveis(int ano)
         {
-            var feriadosMoveis = repositorioFeriadoCalendario.ObterFeriadosCalendario()
+            var feriadosMoveis = repositorioFeriadoCalendario.ObterFeriadosCalendario(new Infra.FiltroFeriadoCalendarioDto() { Tipo = TipoFeriadoCalendario.Movel, Ano = ano });
+            if (feriadosMoveis.Count() == 0)
+            {
+                IncluirFeriadosMoveis(ano);
+            }
         }
 
         private static DateTime CalcularPascoa(int ano)
@@ -60,6 +68,27 @@ namespace SME.SGP.Dominio.Servicos
                     break;
             }
             return dataPascoa.Date;
+        }
+
+        private void IncluiFeriadoMovel(DateTime carnaval, FeriadoEnum feriado)
+        {
+            var feriadoMovel = new FeriadoCalendario()
+            {
+                Abrangencia = AbrangenciaFeriadoCalendario.Nacional,
+                DataFeriado = carnaval,
+                Nome = feriado.GetAttribute<DisplayAttribute>().Name,
+                Tipo = TipoFeriadoCalendario.Movel
+            };
+
+            repositorioFeriadoCalendario.Salvar(feriadoMovel);
+        }
+
+        private void IncluirFeriadosMoveis(int ano)
+        {
+            IncluiFeriadoMovel(CalcularFeriado(ano, FeriadoEnum.Carnaval), FeriadoEnum.Carnaval);
+            IncluiFeriadoMovel(CalcularFeriado(ano, FeriadoEnum.SextaSanta), FeriadoEnum.SextaSanta);
+            IncluiFeriadoMovel(CalcularFeriado(ano, FeriadoEnum.CorpusChristi), FeriadoEnum.CorpusChristi);
+            IncluiFeriadoMovel(CalcularFeriado(ano, FeriadoEnum.QuartaCinzas), FeriadoEnum.QuartaCinzas);
         }
     }
 }
