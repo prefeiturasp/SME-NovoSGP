@@ -19,15 +19,19 @@ namespace SME.SGP.Integracao.Teste
             this._fixture = fixture ?? throw new ArgumentNullException(nameof(fixture));
         }
 
-        [Fact, Order(5)]
-        public async void DeveObterDisciplinasDoProfessorPorTurma()
+        [Theory, Order(5)]
+        [InlineData("7913583", "7913583", "3fe1e074-37d6-e911-abd6-f81654fe895d", "2001395")]
+        [InlineData("7913583", "7913583", "3fe1e074-37d6-e911-abd6-f81654fe895d", "2001401")]
+        [InlineData("7913583", "7913583", "3fe1e074-37d6-e911-abd6-f81654fe895d", "2001411")]
+        [InlineData("7913583", "7913583", "3fe1e074-37d6-e911-abd6-f81654fe895d", "2001418")]
+        public async void DeveObterDisciplinasDoProfessorPorTurma(string login, string rf, string perfil, string codigoTurma)
         {
             _fixture._clientApi.DefaultRequestHeaders.Clear();
 
             _fixture._clientApi.DefaultRequestHeaders.Authorization =
-                new AuthenticationHeaderValue("Bearer", _fixture.GerarToken(new Permissao[] { }));
+                new AuthenticationHeaderValue("Bearer", _fixture.GerarToken(new Permissao[] { }, login, rf, perfil));
 
-            var getResult = await _fixture._clientApi.GetAsync("api/v1/professores/6082840/turmas/1982186/disciplinas/");
+            var getResult = await _fixture._clientApi.GetAsync($"api/v1/professores/{login}/turmas/{codigoTurma}/disciplinas/");
 
             Assert.True(getResult.IsSuccessStatusCode);
             var disciplinas = JsonConvert.DeserializeObject<IEnumerable<DisciplinaDto>>(await getResult.Content.ReadAsStringAsync());
