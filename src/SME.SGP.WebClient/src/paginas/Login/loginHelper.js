@@ -24,6 +24,7 @@ class LoginHelper {
         usuario: login.usuario,
         modificarSenha: autenticacao.dados.modificarSenha,
         perfisUsuario: autenticacao.dados.PerfisUsuario,
+        possuiPerfilSmeOuDre: autenticacao.dados.perfisUsuario.possuiPerfilSmeOuDre
       })
     );
 

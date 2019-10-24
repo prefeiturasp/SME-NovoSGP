@@ -11,7 +11,8 @@ const obterMeusDados = () =>{
               nome: dados.nome,
               rf: dados.codigoRf,
               cpf: dados.cpf,
-              empresa: dados.empresa
+              empresa: dados.empresa,
+              email: dados.email
             }
           ))
         }

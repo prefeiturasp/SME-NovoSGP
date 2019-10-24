@@ -144,7 +144,7 @@ export default function Rotas() {
   rotas.set('/usuarios/reiniciar-senha', {
     breadcrumbName: 'Reiniciar Senha',
     menu: ['Configurações', 'Usuários'],
-    parent: '/usuarios',
+    parent: '/',
     component: ReiniciarSenha,
     exact: true,
     tipo: RotasTipo.EstruturadaAutenticada,
