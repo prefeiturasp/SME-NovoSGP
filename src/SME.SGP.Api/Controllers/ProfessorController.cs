@@ -35,7 +35,7 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         public async Task<IActionResult> Get(long codigoTurma, string codigoRF, [FromServices]IConsultasDisciplina consultasDisciplina)
         {
-            return Ok(await consultasDisciplina.ObterDisciplinasPorProfessorETurma(codigoTurma, codigoRF));
+            return Ok(await consultasDisciplina.ObterDisciplinasPorProfessorETurma(codigoTurma));
         }
 
         [HttpGet("{codigoRF}/escolas/{codigoEscola}/turmas/anos-letivos/{anoLetivo}")]
