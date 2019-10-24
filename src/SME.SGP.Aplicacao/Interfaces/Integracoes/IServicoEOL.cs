@@ -14,7 +14,7 @@ namespace SME.SGP.Aplicacao.Integracoes
 
         Task<IEnumerable<DisciplinaResposta>> ObterDisciplinasParaPlanejamento(long codigoTurma, string rfProfessor);
 
-        Task<IEnumerable<DisciplinaResposta>> ObterDisciplinasPorProfessorETurma(long codigoTurma, string rfProfessor);
+        Task<IEnumerable<DisciplinaResposta>> ObterDisciplinasPorCodigoTurmaLoginEPerfil(long codigoTurma, string login, string guidPerfil);
 
         IEnumerable<DreRespostaEolDto> ObterDres();
 
@@ -27,6 +27,8 @@ namespace SME.SGP.Aplicacao.Integracoes
         Task<IEnumerable<UsuarioEolRetornoDto>> ObterFuncionariosPorUe(BuscaFuncionariosFiltroDto buscaFuncionariosFiltroDto);
 
         IEnumerable<ProfessorTurmaReposta> ObterListaTurmasPorProfessor(string codigoRf);
+
+        Task<MeusDadosDto> ObterMeusDados(string login);
 
         Task<UsuarioEolAutenticacaoRetornoDto> ObterPerfisPorLogin(string login);
 
