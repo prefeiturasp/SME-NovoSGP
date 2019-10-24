@@ -53,7 +53,7 @@ const EventosForm = ({ match }) => {
       nomeEvento: Yup.string().required('Nome obrigatório'),
       tipoEvento: Yup.string().required('Tipo obrigatório'),
       dataEvento: momentSchema.required('Data obrigatória'),
-      descricao: momentSchema.required('Descrição obrigatória'),
+      descricao: Yup.string().required('Descrição obrigatória'),
     })
   );
 

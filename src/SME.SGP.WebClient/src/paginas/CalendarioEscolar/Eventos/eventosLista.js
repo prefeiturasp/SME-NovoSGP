@@ -1,7 +1,9 @@
+import { Form, Formik } from 'formik';
 import React, { useEffect, useState } from 'react';
+import * as Yup from 'yup';
 import Cabecalho from '~/componentes-sgp/cabecalho';
 import Button from '~/componentes/button';
-import { CampoData } from '~/componentes/campoData/campoData';
+import { CampoData, momentSchema } from '~/componentes/campoData/campoData';
 import CampoTexto from '~/componentes/campoTexto';
 import Card from '~/componentes/card';
 import { Colors } from '~/componentes/colors';
@@ -15,8 +17,34 @@ const EventosLista = () => {
   const [nomeEvento, setNomeEvento] = useState('');
   const [listaTipoEvento, setListaTipoEvento] = useState([]);
   const [tipoEvento, setTipoEvento] = useState([]);
-  const [dataInicio, setDataInicio] = useState();
-  const [dataFim, setDataFim] = useState();
+
+  const [refForm, setRefForm] = useState();
+  const [valoresIniciais] = useState({
+    dataInicio: '',
+    dataFim: '',
+  });
+  const [validacoes] = useState(
+    Yup.object({
+      dataInicio: momentSchema.test('validaInicio', 'Data obrigatória', function() {
+        const dataInicio = this.parent['dataInicio'];
+        const dataFim = this.parent['dataFim'];
+        if (!dataInicio && dataFim) {
+          return false;
+        } else {
+          return true;
+        }
+      }),
+      dataFim: momentSchema.test('validaFim', 'Data obrigatória', function() {
+        const dataInicio = this.parent['dataInicio'];
+        const dataFim = this.parent['dataFim'];
+        if (dataInicio && !dataFim) {
+          return false;
+        } else {
+          return true;
+        }
+      })
+    })
+  );
 
   useEffect(() => {
     setListaTipoEvento([
@@ -46,8 +74,8 @@ const EventosLista = () => {
   }, []);
 
   useEffect(() => {
-    onFiltrar();
-  }, [tipoCalendario, nomeEvento, tipoEvento, dataInicio, dataFim]);
+    validaFiltrar();
+  }, [tipoCalendario, nomeEvento, tipoEvento]);
 
   const onClickVoltar = () => {
     console.log('onClickVoltar');
@@ -73,22 +101,22 @@ const EventosLista = () => {
     setTipoEvento(tipoEvento);
   };
 
-  const onChangeDataInicio = dataInicio => {
-    setDataInicio(dataInicio);
-  };
-  const onChangeDataFim = dataFim => {
-    setDataFim(dataFim);
-  };
-
-  const onFiltrar = () => {
+  const onFiltrar = valoresForm => {
+    // TODO - Chamar endpoint
     const params = {
       tipoCalendario,
       nomeEvento,
       tipoEvento,
-      dataInicio,
-      dataFim,
+      dataInicio: valoresForm.dataInicio,
+      dataFim: valoresForm.dataFim,
     };
     console.log(params);
+  };
+
+  const validaFiltrar = () => {
+    if (refForm) {
+      refForm.validateForm().then(() => refForm.handleSubmit(e => e));
+    }
   };
 
   return (
@@ -120,62 +148,78 @@ const EventosLista = () => {
             onClick={onClickNovo}
           />
         </div>
-        <div className="col-sm-12 col-md-3 col-lg-3 col-xl-3 pb-2">
-          <SelectComponent
-            label="Tipo Calendário"
-            name="select-tipo-calendario"
-            id="select-tipo-calendario"
-            lista={listaCalendarioEscolar}
-            valueOption="id"
-            valueText="nome"
-            onChange={onChangeTipoCalendario}
-            valueSelect={tipoCalendario || []}
-            placeholder="Selecione um calendário"
-          />
-        </div>
 
-        <div className="col-sm-12 col-md-3 col-lg-3 col-xl-3 pb-2">
-          <CampoTexto
-            label="Nome do evento"
-            placeholder="Digite o nome do evento"
-            onChange={onChangeNomeEvento}
-            value={nomeEvento}
-          />
-        </div>
+        <Formik
+          ref={refFormik => setRefForm(refFormik)}
+          enableReinitialize
+          initialValues={valoresIniciais}
+          validationSchema={validacoes}
+          onSubmit={valores => onFiltrar(valores)}
+          validateOnChange
+          validateOnBlur
+        >
+          {form => (
+            <Form className="col-md-12 mb-4">
+              <div className="row">
+                <div className="col-sm-12 col-md-3 col-lg-3 col-xl-3 pb-2">
+                  <SelectComponent
+                    label="Tipo Calendário"
+                    name="select-tipo-calendario"
+                    id="select-tipo-calendario"
+                    lista={listaCalendarioEscolar}
+                    valueOption="id"
+                    valueText="nome"
+                    onChange={onChangeTipoCalendario}
+                    valueSelect={tipoCalendario || []}
+                    placeholder="Selecione um calendário"
+                  />
+                </div>
+                <div className="col-sm-12 col-md-3 col-lg-3 col-xl-3 pb-2">
+                  <CampoTexto
+                    label="Nome do evento"
+                    placeholder="Digite o nome do evento"
+                    onChange={onChangeNomeEvento}
+                    value={nomeEvento}
+                  />
+                </div>
+                <div className="col-sm-12 col-md-2 col-lg-2 col-xl-2 pb-2">
+                  <SelectComponent
+                    label="Tipo Evento"
+                    name="select-tipo-evento"
+                    id="select-tipo-evento"
+                    lista={listaTipoEvento}
+                    valueOption="id"
+                    valueText="nome"
+                    onChange={onChangeTipoEvento}
+                    valueSelect={tipoEvento || []}
+                    placeholder="Selecione um tipo"
+                  />
+                </div>
 
-        <div className="col-sm-12 col-md-2 col-lg-2 col-xl-2 pb-2">
-          <SelectComponent
-            label="Tipo Evento"
-            name="select-tipo-evento"
-            id="select-tipo-evento"
-            lista={listaTipoEvento}
-            valueOption="id"
-            valueText="nome"
-            onChange={onChangeTipoEvento}
-            valueSelect={tipoEvento || []}
-            placeholder="Selecione um tipo"
-          />
-        </div>
-        <div className="col-sm-12 col-md-2 col-lg-2 col-xl-2 pb-2">
-          <CampoData
-            label="Data início"
-            formatoData="DD/MM/YYYY"
-            name="dataInicio"
-            onChange={onChangeDataInicio}
-            valor={dataInicio}
-            placeholder="Data início"
-          />
-        </div>
-        <div className="col-sm-12 col-md-2 col-lg-2 col-xl-2 pb-2">
-          <CampoData
-            label="Data fim"
-            formatoData="DD/MM/YYYY"
-            name="dataFim"
-            onChange={onChangeDataFim}
-            valor={dataFim}
-            placeholder="Data fim"
-          />
-        </div>
+                <div className="col-sm-12 col-md-2 col-lg-2 col-xl-2 pb-2">
+                  <CampoData
+                    label="Data início"
+                    formatoData="DD/MM/YYYY"
+                    name="dataInicio"
+                    onChange={validaFiltrar}
+                    placeholder="Data início"
+                    form={form}
+                  />
+                </div>
+                <div className="col-sm-12 col-md-2 col-lg-2 col-xl-2 pb-2">
+                  <CampoData
+                    label="Data fim"
+                    formatoData="DD/MM/YYYY"
+                    name="dataFim"
+                    onChange={validaFiltrar}
+                    placeholder="Data fim"
+                    form={form}
+                  />
+                </div>
+              </div>
+            </Form>
+          )}
+        </Formik>
       </Card>
     </>
   );
