@@ -18,7 +18,7 @@ namespace SME.SGP.Aplicacao
         public FeriadoCalendarioCompletoDto BuscarPorId(long id)
         {
             var entidade = repositorio.ObterPorId(id);
-            FeriadoCalendarioDto dto = new FeriadoCalendarioDto();
+            FeriadoCalendarioCompletoDto dto = new FeriadoCalendarioCompletoDto();
             if (entidade != null)
             {
                 dto.Id = entidade.Id;
@@ -27,6 +27,12 @@ namespace SME.SGP.Aplicacao
                 dto.DataFeriado = entidade.DataFeriado;
                 dto.Ativo = entidade.Ativo;
                 dto.Abrangencia = entidade.Abrangencia;
+                dto.AlteradoEm = entidade.AlteradoEm;
+                dto.AlteradoPor = entidade.AlteradoPor;
+                dto.AlteradoRF = entidade.AlteradoRF;
+                dto.CriadoEm = entidade.CriadoEm;
+                dto.CriadoPor = entidade.CriadoPor;
+                dto.CriadoRF = entidade.CriadoRF;
             }
             return dto;
         }
