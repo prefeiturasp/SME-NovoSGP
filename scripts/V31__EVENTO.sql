@@ -13,7 +13,7 @@ CREATE TABLE if not exists evento (
 	data_inicio timestamp not null,
 	data_fim timestamp null,
 	dre_id varchar(15) not null,
-	letivo bool NOT NULL DEFAULT false,
+	letivo int4 NOT NULL,
 	feriado_id bigint not null,
 	tipo_calendario_id bigint not null,
 	tipo_evento_id bigint not null,

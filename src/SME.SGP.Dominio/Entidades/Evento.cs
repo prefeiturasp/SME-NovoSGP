@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SME.SGP.Dominio.Entidades;
+using System;
 
 namespace SME.SGP.Dominio
 {
@@ -14,6 +15,7 @@ namespace SME.SGP.Dominio
         public string Nome { get; set; }
         public TipoCalendario TipoCalendario { get; set; }
         public long TipoCalendarioId { get; set; }
+        public EventoTipo TipoEvento { get; set; }
         public long TipoEventoId { get; set; }
         public string UeId { get; set; }
     }
