@@ -1,7 +1,7 @@
 ﻿using SME.SGP.Dto;
 using System.Collections.Generic;
 
-namespace SME.SGP.Aplicacao.Interfaces.Comandos
+namespace SME.SGP.Aplicacao.Interfaces
 {
     public interface IComandosEventoTipo
     {

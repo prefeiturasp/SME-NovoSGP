@@ -1,10 +1,9 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Moq;
-using SME.SGP.Aplicacao.Consultas;
-using SME.SGP.Aplicacao.Interfaces.Consultas;
+using SME.SGP.Aplicacao.Interfaces;
+using SME.SGP.Dominio;
 using SME.SGP.Dominio.Entidades;
-using SME.SGP.Dominio.Enumerados;
-using SME.SGP.Dominio.Interfaces.Repositorios;
+using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Dto;
 using SME.SGP.Infra;
 using System;

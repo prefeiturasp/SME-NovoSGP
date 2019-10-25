@@ -1,8 +1,8 @@
 ﻿using Dapper;
 using SME.SGP.Dados.Contexto;
+using SME.SGP.Dominio;
 using SME.SGP.Dominio.Entidades;
-using SME.SGP.Dominio.Enumerados;
-using SME.SGP.Dominio.Interfaces.Repositorios;
+using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System;
 using System.Linq;
@@ -58,7 +58,7 @@ namespace SME.SGP.Dados.Repositorios
                 sql.AppendLine("order by id desc");
 
             if (paginacao.QuantidadeRegistros > 0 && !contador)
-                sql.AppendLine($"OFFSET {paginacao.QuantidadeRegistrosIgnorados} ROWS FETCH NEXT {paginacao.QuantidadeRegistros} ROWS ONLY");
+                sql.AppendFormat(" OFFSET {0} ROWS FETCH NEXT {1} ROWS ONLY", paginacao.QuantidadeRegistrosIgnorados, paginacao.QuantidadeRegistros);
         }
 
         private static void ObtenhaCabecalhoConsulta(StringBuilder sql, bool contador)
@@ -75,7 +75,7 @@ namespace SME.SGP.Dados.Repositorios
                 sql.AppendLine("and letivo = @letivo");
 
             if (!string.IsNullOrWhiteSpace(descricao))
-                sql.AppendLine("and lower(descricao) like @descricao");
+                sql.AppendLine("and lower(f_unaccent(descricao)) like @descricao");
         }
     }
 }

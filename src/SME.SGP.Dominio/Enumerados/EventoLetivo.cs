@@ -1,13 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using System.ComponentModel.DataAnnotations;
 
-namespace SME.SGP.Dominio.Enumerados
+namespace SME.SGP.Dominio
 {
     public enum EventoLetivo
     {
-        Sim =1,
+        [Display(Name = "Sim")]
+        Sim = 1,
+
+        [Display(Name = "Não")]
         Nao,
+
+        [Display(Name = "Opcional")]
         Opcional
     }
 }

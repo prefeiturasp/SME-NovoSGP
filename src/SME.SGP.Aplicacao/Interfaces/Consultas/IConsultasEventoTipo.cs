@@ -2,7 +2,7 @@
 using SME.SGP.Infra;
 using System.Threading.Tasks;
 
-namespace SME.SGP.Aplicacao.Interfaces.Consultas
+namespace SME.SGP.Aplicacao.Interfaces
 {
     public interface IConsultasEventoTipo
     {

@@ -1,7 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using SME.SGP.Api.Filtros;
-using SME.SGP.Aplicacao.Interfaces.Comandos;
-using SME.SGP.Aplicacao.Interfaces.Consultas;
+using SME.SGP.Aplicacao.Interfaces;
 using SME.SGP.Dto;
 using SME.SGP.Infra;
 using System.Collections.Generic;
