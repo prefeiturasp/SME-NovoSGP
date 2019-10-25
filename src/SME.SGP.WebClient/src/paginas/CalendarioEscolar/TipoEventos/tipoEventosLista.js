@@ -64,7 +64,9 @@ const TipoEventosLista = () => {
     );
     if (confirmado) {
       api
-        .delete('v1/evento/tipo', { data: codigoTipoEventoSelecionados })
+        .delete('v1/calendarios/eventos/tipos', {
+          data: codigoTipoEventoSelecionados,
+        })
         .then(resposta => {
           if (resposta) sucesso('Tipos de evento deletados com sucesso!');
         })
@@ -86,9 +88,7 @@ const TipoEventosLista = () => {
   };
 
   const clicouBotaoEditar = tipoEvento => {
-    history.push(
-      `/calendario-escolar/tipo-eventos/editar/${tipoEvento.codigo}`
-    );
+    history.push(`/calendario-escolar/tipo-eventos/editar/${tipoEvento.id}`);
   };
 
   const listaLetivo = [
@@ -128,7 +128,6 @@ const TipoEventosLista = () => {
     },
   ];
 
-  const botaoExcluirRef = useRef();
   const campoNomeTipoEventoRef = useRef();
 
   const [filtro, setFiltro] = useState({});
@@ -164,7 +163,7 @@ const TipoEventosLista = () => {
     if (items && items.length > 0) {
       setTipoEventoSelecionados(items);
     }
-    setCodigoTipoEventoSelecionados(items.map(item => item.codigo));
+    setCodigoTipoEventoSelecionados(items.map(item => item.id));
   };
 
   return (
@@ -224,7 +223,6 @@ const TipoEventosLista = () => {
               disabled={desabilitarBotaoExcluir}
               border
               bold
-              ref={botaoExcluirRef}
               className="mr-3"
             />
             <Button
@@ -237,9 +235,9 @@ const TipoEventosLista = () => {
         </Div>
         <Grid cols={12} className="mb-4">
           <ListaPaginada
-            url="v1/evento/tipo/listar"
+            url="v1/calendarios/eventos/tipos/listar"
             id="lista-tipo-eventos"
-            colunaChave="codigo"
+            colunaChave="id"
             colunas={colunas}
             filtro={filtro}
             onClick={clicouBotaoEditar}
