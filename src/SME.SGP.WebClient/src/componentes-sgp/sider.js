@@ -26,7 +26,13 @@ const Sider = () => {
     verificaSelecaoMenu(NavegacaoStore.rotaAtiva);
   }, [NavegacaoStore.rotaAtiva]);
 
-  // useEffect(() => {  }, [usuario.menu]);
+  useEffect(() =>
+    setSubMenusPrincipais(usuario.menu.filter(menu => {
+      if (menu.ehMenu)
+        return menu;
+    }).map(x => 'sub-' + x.codigo))
+    , [usuario.menu]
+  );
 
   useEffect(() => {
     if (
@@ -86,10 +92,13 @@ const Sider = () => {
       return (
         <Menu.Item key={item.codigo} id={item.codigo}>
           <span className="menuItem"> {item.descricao}</span>
-          <Link hidden={!item.url}
-            to={item.url}
-            id={"link-" + item.codigo}
-          />
+          {item.url ? (
+            <Link
+              to={item.url}
+              id={"link-" + item.codigo}
+            />)
+            : ''
+          }
         </Menu.Item>
       )
     })
