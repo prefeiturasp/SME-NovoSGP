@@ -17,8 +17,6 @@ const TipoFeriadoLista = () => {
   );
   const [listaTipoFeriado, setListaTipoFeriado] = useState([]);
   const [nomeTipoFeriado, setNomeTipoFeriado] = useState('');
-  const [listaDropdownAbrangencia, setListaDropdownAbrangencia] = useState([]);
-  const [listaDropdownTipoFeriado, setListaDropdownTipoFeriado] = useState([]);
   const [
     dropdownAbrangenciaSelecionada,
     setDropdownAbrangenciaSelecionada,
@@ -27,6 +25,17 @@ const TipoFeriadoLista = () => {
     dropdownTipoFeriadoSelecionado,
     setDropdownTipoFeriadoSelecionado,
   ] = useState(0);
+
+  const listaDropdownAbrangencia = [
+    { id: 1, nome: 'Nacional' },
+    { id: 2, nome: 'Estadual' },
+    { id: 3, nome: 'Municipal' },
+  ];
+
+  const listaDropdownTipoFeriado = [
+    { id: 1, nome: 'Fixo' },
+    { id: 2, nome: 'Móvel' },
+  ];
 
   const colunas = [
     {
@@ -42,20 +51,6 @@ const TipoFeriadoLista = () => {
       dataIndex: 'descricaoTipo',
     },
   ];
-
-  useEffect(() => {
-    // TODO - Mock
-    setListaDropdownAbrangencia([
-      { id: 1, nome: 'Nacional' },
-      { id: 2, nome: 'Estadual' },
-    ]);
-    setListaDropdownTipoFeriado([
-      { id: 1, nome: 'Fixo' },
-      { id: 2, nome: 'Móvel' },
-    ]);
-
-    onFiltrar();
-  }, []);
 
   useEffect(() => {
     onFiltrar();
