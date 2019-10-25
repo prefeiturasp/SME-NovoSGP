@@ -7,10 +7,9 @@ import { Colors } from '~/componentes/colors';
 import SelectComponent from '~/componentes/select';
 import DataTable from '~/componentes/table/dataTable';
 import { URL_HOME } from '~/constantes/url';
-import { confirmar, erro, sucesso } from '~/servicos/alertas';
+import { confirmar, erros, sucesso } from '~/servicos/alertas';
+import api from '~/servicos/api';
 import history from '~/servicos/history';
-
-// import api from '~/servicos/api';
 
 const TipoFeriadoLista = () => {
   const [idsTipoFeriadoSelecionado, setIdsTipoFeriadoSelecionado] = useState(
@@ -23,11 +22,11 @@ const TipoFeriadoLista = () => {
   const [
     dropdownAbrangenciaSelecionada,
     setDropdownAbrangenciaSelecionada,
-  ] = useState([]);
+  ] = useState(0);
   const [
     dropdownTipoFeriadoSelecionado,
     setDropdownTipoFeriadoSelecionado,
-  ] = useState([]);
+  ] = useState(0);
 
   const colunas = [
     {
@@ -36,11 +35,11 @@ const TipoFeriadoLista = () => {
     },
     {
       title: 'Abrangência',
-      dataIndex: 'abrangencia',
+      dataIndex: 'descricaoAbrangencia',
     },
     {
       title: 'Tipo',
-      dataIndex: 'tipo',
+      dataIndex: 'descricaoTipo',
     },
   ];
 
@@ -58,42 +57,19 @@ const TipoFeriadoLista = () => {
     onFiltrar();
   }, []);
 
+  useEffect(() => {
+    onFiltrar();
+  }, [nomeTipoFeriado, dropdownAbrangenciaSelecionada, dropdownTipoFeriadoSelecionado]);
+
   const onFiltrar = async () => {
-    // TODO - Chamar Endpoint
-    // const parametros = {
-    //   nome: nomeTipoFeriado,
-    //   abrangencia: dropdownAbrangenciaSelecionada,
-    //   tipo: dropdownTipoFeriadoSelecionado
-    // };
-    // const tipos = await api.get('v1/tipo-feriado, parametros');
-    // setIdsTipoFeriadoSelecionado(tipos.data);
-    const listaMock = [
-      {
-        id: 1,
-        nome: 'Feriado X fixo',
-        abrangencia: 'Nacional',
-        tipo: 'Fixo',
-      },
-      {
-        id: 2,
-        nome: 'Feriado Z fixo',
-        abrangencia: 'Estadual',
-        tipo: 'Fixo',
-      },
-      {
-        id: 3,
-        nome: 'Feriado Y fixo',
-        abrangencia: 'Nacional',
-        tipo: 'Móvel',
-      },
-      {
-        id: 4,
-        nome: 'Feriado W fixo',
-        abrangencia: 'Estadual',
-        tipo: 'Móvel',
-      },
-    ];
-    setListaTipoFeriado(listaMock);
+    setIdsTipoFeriadoSelecionado([]);
+    const parametros = {
+      nome: nomeTipoFeriado,
+      abrangencia: dropdownAbrangenciaSelecionada || 0,
+      tipo: dropdownTipoFeriadoSelecionado || 0
+    };
+    const tipos = await api.post('v1/calendarios/feriados/listar', parametros);
+    setListaTipoFeriado(tipos.data);
   };
 
   const onSelectRow = ids => {
@@ -136,18 +112,15 @@ const TipoFeriadoLista = () => {
       'Cancelar'
     );
     if (confirmado) {
-      // TODO Chamar Endpoint
-      // const parametrosDelete = { data: idsTipoFeriadoSelecionado };
-      // const excluir = await api
-      //   .delete('v1/tipo-feriado', parametrosDelete)
-      //   .catch(erros => mostrarErros(erros));
-      const excluir = true;
-      if (excluir) {
+      const parametrosDelete = { data: idsTipoFeriadoSelecionado };
+      const excluir = await api
+        .delete('v1/calendarios/feriados', parametrosDelete)
+        .catch(e => erros(e));
+      if (excluir && excluir.status == 200) {
         const mensagemSucesso = `${
           idsTipoFeriadoSelecionado.length > 1 ? 'Tipos' : 'Tipo'
         } de feriado excluído com sucesso.`;
         sucesso(mensagemSucesso);
-        history.push('/calendario-escolar/tipo-feriado');
         onFiltrar();
       }
     }
@@ -163,14 +136,6 @@ const TipoFeriadoLista = () => {
 
   const onChangeNomeTipoFeriado = e => {
     setNomeTipoFeriado(e.target.value);
-    onFiltrar();
-  };
-
-  const mostrarErros = e => {
-    if (e && e.response && e.response.data && e.response.data) {
-      return e.response.data.mensagens.forEach(mensagem => erro(mensagem));
-    }
-    return '';
   };
 
   return (
