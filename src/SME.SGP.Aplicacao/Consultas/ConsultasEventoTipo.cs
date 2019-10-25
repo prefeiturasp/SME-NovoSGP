@@ -1,14 +1,14 @@
 ﻿using Microsoft.AspNetCore.Http;
-using SME.SGP.Aplicacao.Interfaces.Consultas;
+using SME.SGP.Aplicacao.Interfaces;
 using SME.SGP.Dominio.Entidades;
-using SME.SGP.Dominio.Interfaces.Repositorios;
+using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Dto;
 using SME.SGP.Infra;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace SME.SGP.Aplicacao.Consultas
+namespace SME.SGP.Aplicacao
 {
     public class ConsultasEventoTipo : ConsultasBase, IConsultasEventoTipo
     {

@@ -1,9 +1,8 @@
 ﻿using SME.SGP.Dominio.Entidades;
-using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Infra;
 using System.Threading.Tasks;
 
-namespace SME.SGP.Dominio.Interfaces.Repositorios
+namespace SME.SGP.Dominio.Interfaces
 {
     public interface IRepositorioEventoTipo : IRepositorioBase<EventoTipo>
     {

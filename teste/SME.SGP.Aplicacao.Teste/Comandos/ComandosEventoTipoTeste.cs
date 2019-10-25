@@ -1,10 +1,8 @@
 ﻿using Moq;
-using SME.SGP.Aplicacao.Comandos;
-using SME.SGP.Aplicacao.Interfaces.Comandos;
+using SME.SGP.Aplicacao.Interfaces;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Entidades;
-using SME.SGP.Dominio.Enumerados;
-using SME.SGP.Dominio.Interfaces.Repositorios;
+using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Dto;
 using System;
 using System.Collections.Generic;

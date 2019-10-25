@@ -1,6 +1,4 @@
-﻿using SME.SGP.Dominio.Enumerados;
-
-namespace SME.SGP.Dominio.Entidades
+﻿namespace SME.SGP.Dominio.Entidades
 {
     public class EventoTipo : EntidadeBase
     {
