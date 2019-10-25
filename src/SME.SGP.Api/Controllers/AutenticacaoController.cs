@@ -117,6 +117,16 @@ namespace SME.SGP.Api.Controllers
             return Ok(comandosUsuario.SolicitarRecuperacaoSenha(login));
         }
 
+        [HttpGet("teste")]
+        [ProducesResponseType(typeof(bool), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [AllowAnonymous]
+        public IActionResult Teste()
+        {
+            comandosUsuario.ReiniciarSenha("123");
+            return Ok();
+        }
+
         [HttpGet("valida-token-recuperacao-senha/{token}")]
         [ProducesResponseType(typeof(bool), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
