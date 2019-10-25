@@ -8,9 +8,9 @@ namespace SME.SGP.Dominio
         Sim = 1,
 
         [Display(Name = "Não")]
-        Nao,
+        Nao = 2,
 
         [Display(Name = "Opcional")]
-        Opcional
+        Opcional = 3
     }
 }
