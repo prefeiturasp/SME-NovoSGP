@@ -89,14 +89,14 @@ const TipoEventosForm = ({ match }) => {
 
   useEffect(() => {
     if (idTipoEvento) {
-      api.get(`v1/evento/tipo/${idTipoEvento}`).then(resposta => {
+      api.get(`v1/calendarios/eventos/tipos/${idTipoEvento}`).then(resposta => {
         if (resposta && resposta.data) {
           setDadosTipoEvento({
             descricao: resposta.data.descricao,
             letivo: resposta.data.letivo.toString(),
             localOcorrencia: resposta.data.localOcorrencia.toString(),
             concomitancia: resposta.data.concomitancia,
-            tipoData: resposta.data.tipoData,
+            tipoData: !!resposta.data.tipoData,
             dependencia: resposta.data.dependencia,
             ativo: resposta.data.ativo,
           });
@@ -145,9 +145,9 @@ const TipoEventosForm = ({ match }) => {
   };
 
   const cadastrarTipoEvento = async dados => {
-    if (idTipoEvento && modoEdicao) dados.codigo = idTipoEvento;
+    if (idTipoEvento && modoEdicao) dados.id = idTipoEvento;
     api
-      .post('v1/evento/tipo', dados)
+      .post('v1/calendarios/eventos/tipos', dados)
       .then(resposta => {
         if (resposta.status === 200) {
           sucesso(
@@ -232,7 +232,7 @@ const TipoEventosForm = ({ match }) => {
             letivo: dadosTipoEvento.letivo,
             localOcorrencia: dadosTipoEvento.localOcorrencia,
             concomitancia: dadosTipoEvento.concomitancia,
-            tipoData: dadosTipoEvento.tipoData,
+            tipoData: !!dadosTipoEvento.tipoData,
             dependencia: dadosTipoEvento.dependencia,
             ativo: dadosTipoEvento.ativo,
           }}
