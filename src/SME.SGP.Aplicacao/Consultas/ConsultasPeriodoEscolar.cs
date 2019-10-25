@@ -30,7 +30,7 @@ namespace SME.SGP.Aplicacao.Consultas
         {
             return new PeriodoEscolarListaDto
             {
-                TipoCalendario = lista.ElementAt(0).TipoCalendario,
+                TipoCalendario = lista.ElementAt(0).TipoCalendarioId,
                 Periodos = lista.Select(x => new PeriodoEscolarDto
                 {
                     Bimestre = x.Bimestre,

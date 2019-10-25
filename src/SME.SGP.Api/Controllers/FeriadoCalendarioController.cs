@@ -24,7 +24,7 @@ namespace SME.SGP.Api.Controllers
         }
 
         [HttpGet]
-        [ProducesResponseType(typeof(FeriadoCalendarioDto), 200)]
+        [ProducesResponseType(typeof(FeriadoCalendarioCompletoDto), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [Route("{id}")]
         public IActionResult BuscarPorId(long id)
