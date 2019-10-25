@@ -3,7 +3,6 @@ import { salvarDadosLogin, meusDados } from '~/redux/modulos/usuario/actions';
 import history from '~/servicos/history';
 import { URL_HOME, URL_REDEFINIRSENHA } from '~/constantes/url';
 import { obterMeusDados } from '~/servicos/Paginas/ServicoUsuario';
-import { getMenu } from '~/componentes-sgp/mock-menu'
 
 class LoginHelper {
   constructor(dispatch, redirect) {
@@ -25,8 +24,7 @@ class LoginHelper {
         usuario: login.usuario,
         modificarSenha: autenticacao.dados.modificarSenha,
         perfisUsuario: autenticacao.dados.PerfisUsuario,
-        possuiPerfilSmeOuDre: autenticacao.dados.perfisUsuario.possuiPerfilSmeOuDre,
-        menu: getMenu()
+        possuiPerfilSmeOuDre: autenticacao.dados.perfisUsuario.possuiPerfilSmeOuDre
       })
     );
 
