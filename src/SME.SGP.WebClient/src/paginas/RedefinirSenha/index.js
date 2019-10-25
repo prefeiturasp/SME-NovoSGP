@@ -172,12 +172,18 @@ const RedefinirSenha = props => {
         confirmarSenha: senha,
       });
       if (requisicao.sucesso) {
-        salvarDadosLogin({
-          token: requisicao.resposta.data.token,
-          rf: usuario,
-          usuario,
-          perfisUsuario: requisicao.resposta.data.perfisUsuario,
-        });
+        const rf = Number.isInteger(usuario * 1) ? usuario : '';
+        store.dispatch(
+          salvarDadosLogin({
+            token: requisicao.resposta.data.token,
+            rf,
+            usuario,
+            perfisUsuario: requisicao.resposta.data.perfisUsuario,
+            modificarSenha: false,
+            possuiPerfilSmeOuDre:
+              requisicao.resposta.data.perfisUsuario.possuiPerfilSmeOuDre,
+          })
+        );
         history.push(URL_HOME);
       } else {
         setErroGeral(requisicao.erro);

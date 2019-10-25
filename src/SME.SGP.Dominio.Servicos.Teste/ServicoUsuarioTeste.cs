@@ -32,7 +32,7 @@ namespace SME.SGP.Dominio.Servicos.Teste
         }
 
         [Fact]
-        public async void Deve_Modificar_Email_Por_Login()
+        public async Task Deve_Modificar_Email_Por_Login()
         {
             //ARRANGE
             var login = "loginTeste";
@@ -59,7 +59,7 @@ namespace SME.SGP.Dominio.Servicos.Teste
         }
 
         [Fact]
-        public async void Deve_Modificar_Email_Por_Rf()
+        public async Task Deve_Modificar_Email_Por_Rf()
         {
             //ARRANGE
             var codigoRf = "7777";
@@ -86,7 +86,7 @@ namespace SME.SGP.Dominio.Servicos.Teste
         }
 
         [Fact]
-        public async void Deve_modificar_perfil_usuario()
+        public async Task Deve_modificar_perfil_usuario()
         {
             var login = "usuarioDeTeste";
             var usuarioRetornoEol = new UsuarioEolAutenticacaoRetornoDto();
@@ -101,7 +101,7 @@ namespace SME.SGP.Dominio.Servicos.Teste
         }
 
         [Fact]
-        public async void Nao_deve_modificar_perfil_usuario()
+        public async Task Nao_deve_modificar_perfil_usuario()
         {
             var login = "usuarioDeTeste";
             var usuarioRetornoEol = new UsuarioEolAutenticacaoRetornoDto();

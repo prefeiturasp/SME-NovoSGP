@@ -12,13 +12,9 @@ const inicial = {
   dadosUsuario: [],
   modificarSenha: '',
   meusDados: {
-    nome: 'Teste com Sobrenome Um tanto Quanto Maior',
-    rf: '123456',
-    cpf: '12345678901',
-    empresa: 'SME',
-    foto:
-      'https://graziellanicolai.com.br/wp-content/uploads/2018/03/Graziella-perfil.jpg',
+    foto:'https://graziellanicolai.com.br/wp-content/uploads/2018/03/Graziella-perfil.jpg'
   },
+  possuiPerfilSmeOuDre: false
 };
 
 export default function usuario(state = inicial, action) {
@@ -38,6 +34,7 @@ export default function usuario(state = inicial, action) {
         draft.logado = true;
         draft.usuario = action.payload.usuario;
         draft.modificarSenha = action.payload.modificarSenha;
+        draft.possuiPerfilSmeOuDre = action.payload.possuiPerfilSmeOuDre;
         break;
       case '@usuario/deslogar':
         draft.rf = '';
