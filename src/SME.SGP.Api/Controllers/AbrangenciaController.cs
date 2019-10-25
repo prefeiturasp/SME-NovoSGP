@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 namespace SME.SGP.Api.Controllers
 {
     [ApiController]
-    [Route("api/v1/abrangencia")]
+    [Route("api/v1/abrangencias")]
     [Authorize("Bearer")]
     public class AbrangenciaController : ControllerBase
     {
@@ -23,8 +23,6 @@ namespace SME.SGP.Api.Controllers
             this.consultasAbrangencia = consultasAbrangencia ??
                throw new System.ArgumentNullException(nameof(consultasAbrangencia));
         }
-
-        public IList<AbrangenciaDreRetorno> ListaDres { get; set; }
 
         [HttpGet("{filtro}")]
         [ProducesResponseType(typeof(IEnumerable<AbrangenciaFiltroRetorno>), 200)]

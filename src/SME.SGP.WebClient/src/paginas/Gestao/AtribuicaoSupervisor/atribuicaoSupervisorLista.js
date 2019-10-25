@@ -45,7 +45,7 @@ export default function AtribuicaoSupervisorLista() {
 
   useEffect(() => {
     async function carregarDres() {
-      const dres = await api.get('v1/abrangencia/dres');
+      const dres = await api.get('v1/abrangencias/dres');
       setListaDres(dres.data);
     }
     carregarDres();
@@ -220,12 +220,12 @@ export default function AtribuicaoSupervisorLista() {
   }
 
   async function carregarSupervisores(dre) {
-    const sups = await api.get(`/v1/supervisores/dre/${dre}`);
+    const sups = await api.get(`/v1/supervisores/dres/${dre}`);
     setListaSupervisores(sups.data || []);
   }
 
   async function carregarUes(dre) {
-    const ues = await api.get(`/v1/abrangencia/dres/${dre}/ues`);
+    const ues = await api.get(`/v1/abrangencias/dres/${dre}/ues`);
     setListaUes(ues.data || []);
   }
 
