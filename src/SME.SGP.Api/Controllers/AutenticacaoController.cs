@@ -79,7 +79,7 @@ namespace SME.SGP.Api.Controllers
             var retornoAutenticacao = await comandosUsuario.Autenticar(primeiroAcessoDto.Usuario, primeiroAcessoDto.NovaSenha);
 
             if (!retornoAutenticacao.Autenticado)
-                return StatusCode(401);
+                return StatusCode(403);
 
             return Ok(retornoAutenticacao);
         }
