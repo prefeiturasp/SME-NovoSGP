@@ -138,7 +138,7 @@ namespace SME.SGP.Aplicacao
                         .Select(a => (Permissao)a)
                         .ToList();
 
-                    retornoAutenticacaoEol.Item1.Token = servicoTokenJwt.GerarToken(login, usuario.CodigoRf, listaPermissoes, retornoAutenticacaoEol.Item1.PerfisUsuario.PerfilSelecionado.ToString());
+                    retornoAutenticacaoEol.Item1.Token = servicoTokenJwt.GerarToken(login, usuario.CodigoRf, retornoAutenticacaoEol.Item1.PerfisUsuario.PerfilSelecionado, listaPermissoes);
 
                     usuario.AtualizaUltimoLogin();
                     repositorioUsuario.Salvar(usuario);
@@ -170,7 +170,7 @@ namespace SME.SGP.Aplicacao
 
                 await servicoAbrangencia.Salvar(loginAtual, perfil, false);
 
-                return servicoTokenJwt.GerarToken(loginAtual, codigoRfAtual, perfil, listaPermissoes);                
+                return servicoTokenJwt.GerarToken(loginAtual, codigoRfAtual, perfil, listaPermissoes);
             }
         }
 

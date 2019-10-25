@@ -17,7 +17,7 @@ namespace SME.SGP.Aplicacao.Integracoes
 
         Task<IEnumerable<DisciplinaResposta>> ObterDisciplinasParaPlanejamento(long codigoTurma, string rfProfessor);
 
-        Task<IEnumerable<DisciplinaResposta>> ObterDisciplinasPorCodigoTurmaLoginEPerfil(long codigoTurma, string login, string guidPerfil);
+        Task<IEnumerable<DisciplinaResposta>> ObterDisciplinasPorCodigoTurmaLoginEPerfil(long codigoTurma, string login, Guid perfil);
 
         IEnumerable<DreRespostaEolDto> ObterDres();
 
