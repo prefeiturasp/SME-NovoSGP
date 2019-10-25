@@ -1,7 +1,7 @@
 ﻿using Newtonsoft.Json;
-using SME.SGP.Dominio;
 using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Dto;
+using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -13,10 +13,13 @@ namespace SME.SGP.Integracao.Teste
     [Collection("Testserver collection")]
     public class EventoTipoTeste
     {
-        private readonly Func<string> obterUrlDelete = () => "api/v1/evento/tipo";
-        private readonly Func<int, string> obterUrlGet = (codigo) => $"api/v1/evento/tipo/{codigo}";
-        private readonly Func<string> obterUrlListar = () => "api/v1/evento/tipo/Listar";
-        private readonly Func<string> obterUrlPost = () => "api/v1/evento/tipo";
+        private readonly Func<string> obterUrlDelete = () => "api/v1/calendarios/eventos/tipos";
+        private readonly Func<int, string> obterUrlGet = (codigo) => $"api/v1/calendarios/eventos/tipos/{codigo}";
+
+        private readonly Func<string, string, string, string> obterUrlListar = (descricao, letivo, localOcorrencia) =>
+            $"api/v1/calendarios/eventos/tipos/Listar?Descricao={descricao}&Letivo={letivo}&LocalOcorrencia={localOcorrencia}";
+
+        private readonly Func<string> obterUrlPost = () => "api/v1/calendarios/eventos/tipos";
         private TestServerFixture _fixture;
 
         public EventoTipoTeste(TestServerFixture fixture)
@@ -49,7 +52,7 @@ namespace SME.SGP.Integracao.Teste
 
             Assert.True(postResult.IsSuccessStatusCode);
 
-            Dto.Codigo = 1;
+            Dto.Id = 1;
             Dto.Descricao = "Teste Integracao";
 
             var postResult2 = TesteBase.ExecutePostAsync(_fixture, obterUrlPost(), Dto);
@@ -80,7 +83,7 @@ namespace SME.SGP.Integracao.Teste
         {
             _fixture = ObtenhaCabecalho();
 
-            var getResult = TesteBase.ExecuteGetAsync(_fixture, obterUrlGet(1));
+            var getResult = TesteBase.ExecuteGetAsync(_fixture, obterUrlGet(1000));
 
             Assert.True(getResult.IsSuccessStatusCode);
 
@@ -92,7 +95,7 @@ namespace SME.SGP.Integracao.Teste
         {
             _fixture = ObtenhaCabecalho();
 
-            var deleteResult = TesteBase.ExecuteDeleteAsync(_fixture, obterUrlDelete(), new List<long> { 10, 11, 12 });
+            var deleteResult = TesteBase.ExecuteDeleteAsync(_fixture, obterUrlDelete(), new List<long> { 100, 101, 102 });
 
             Assert.False(deleteResult.IsSuccessStatusCode);
         }
@@ -102,9 +105,14 @@ namespace SME.SGP.Integracao.Teste
         {
             _fixture = ObtenhaCabecalho();
 
-            FiltroEventoTipoDto Dto = new FiltroEventoTipoDto();
+            FiltroEventoTipoDto Dto = new FiltroEventoTipoDto
+            {
+                LocalOcorrencia = EventoLocalOcorrencia.DRE,
+                Letivo = EventoLetivo.Opcional,
+                Descricao = "teste"
+            };
 
-            var postResult = TesteBase.ExecutePostAsync(_fixture, obterUrlListar(), Dto);
+            var postResult = TesteBase.ExecuteGetAsync(_fixture, obterUrlListar(Dto.Descricao, ((int)Dto.Letivo).ToString(), ((int)Dto.LocalOcorrencia).ToString()));
 
             Assert.True(postResult.IsSuccessStatusCode);
         }

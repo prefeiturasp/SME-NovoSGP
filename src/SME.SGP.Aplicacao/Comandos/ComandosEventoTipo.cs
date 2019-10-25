@@ -57,8 +57,8 @@ namespace SME.SGP.Aplicacao.Comandos
 
         public void Salvar(EventoTipoDto eventoTipoDto)
         {
-            var evento = eventoTipoDto.Codigo > 0
-                ? ObterEntidadeBanco(eventoTipoDto.Codigo, eventoTipoDto)
+            var evento = eventoTipoDto.Id > 0
+                ? ObterEntidadeBanco(eventoTipoDto.Id, eventoTipoDto)
                 : ObterEntidade(eventoTipoDto);
 
             repositorioEventoTipo.Salvar(evento);
@@ -74,35 +74,28 @@ namespace SME.SGP.Aplicacao.Comandos
                 Descricao = eventoTipoDto.Descricao,
                 Letivo = eventoTipoDto.Letivo,
                 LocalOcorrencia = eventoTipoDto.LocalOcorrencia,
-                Id = eventoTipoDto.Codigo,
+                Id = eventoTipoDto.Id,
                 TipoData = eventoTipoDto.TipoData,
                 Excluido = false
             };
         }
 
-        private EventoTipo ObterEntidadeBanco(long Codigo, EventoTipoDto eventoTipoDto)
+        private EventoTipo ObterEntidadeBanco(long id, EventoTipoDto eventoTipoDto)
         {
-            try
-            {
-                var eventoTipo = repositorioEventoTipo.ObterPorId(Codigo);
+            var eventoTipo = repositorioEventoTipo.ObterPorId(id);
 
-                if (eventoTipo == null || eventoTipo.Id == 0)
-                    throw new NegocioException("Tipo de evento não existe na base de dados", 404);
+            if (eventoTipo == null || eventoTipo.Id == 0)
+                throw new NegocioException("Não é possivel editar um tipo de evento não cadastrado");
 
-                eventoTipo.Ativo = eventoTipoDto.Ativo;
-                eventoTipo.Concomitancia = eventoTipoDto.Concomitancia;
-                eventoTipo.Dependencia = eventoTipoDto.Dependencia;
-                eventoTipo.Descricao = eventoTipoDto.Descricao;
-                eventoTipo.Letivo = eventoTipoDto.Letivo;
-                eventoTipo.LocalOcorrencia = eventoTipoDto.LocalOcorrencia;
-                eventoTipo.TipoData = eventoTipoDto.TipoData;
+            eventoTipo.Ativo = eventoTipoDto.Ativo;
+            eventoTipo.Concomitancia = eventoTipoDto.Concomitancia;
+            eventoTipo.Dependencia = eventoTipoDto.Dependencia;
+            eventoTipo.Descricao = eventoTipoDto.Descricao;
+            eventoTipo.Letivo = eventoTipoDto.Letivo;
+            eventoTipo.LocalOcorrencia = eventoTipoDto.LocalOcorrencia;
+            eventoTipo.TipoData = eventoTipoDto.TipoData;
 
-                return eventoTipo;
-            }
-            catch (Exception)
-            {
-                throw new NegocioException("Tipo de evento não existe na base de dados", 404);
-            }
+            return eventoTipo;
         }
     }
 }
