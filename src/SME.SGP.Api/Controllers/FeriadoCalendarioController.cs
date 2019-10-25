@@ -50,6 +50,24 @@ namespace SME.SGP.Api.Controllers
             return Ok();
         }
 
+        [HttpGet]
+        [ProducesResponseType(typeof(IEnumerable<EnumeradoRetornoDto>), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [Route("abrangencias")]
+        public IActionResult ObterAbrangencias()
+        {
+            return Ok(consultas.ObterAbrangencias());
+        }
+
+        [HttpGet]
+        [ProducesResponseType(typeof(IEnumerable<EnumeradoRetornoDto>), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [Route("tipos")]
+        public IActionResult ObterTipos()
+        {
+            return Ok(consultas.ObterTipos());
+        }
+
         [HttpPost]
         [ProducesResponseType(200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]

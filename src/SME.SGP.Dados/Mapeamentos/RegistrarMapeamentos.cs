@@ -33,6 +33,7 @@ namespace SME.SGP.Dados.Mapeamentos
                config.AddMap(new TipoCalendarioMap());
                config.AddMap(new FeriadoCalendarioMap());
                config.AddMap(new EventoMap());
+               config.AddMap(new EventoTipoMap());
                config.ForDommel();
            });
         }
