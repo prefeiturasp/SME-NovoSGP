@@ -408,7 +408,7 @@ const Filtro = () => {
     setTextoAutocomplete(texto);
 
     if (texto.length >= 2) {
-      api.get(`v1/abrangencia/${texto}`).then(resposta => {
+      api.get(`v1/abrangencias/${texto}`).then(resposta => {
         if (resposta.data) {
           setResultadosFiltro(resposta.data);
         }
