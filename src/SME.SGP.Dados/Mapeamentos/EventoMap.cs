@@ -10,7 +10,7 @@ namespace SME.SGP.Dados.Mapeamentos
             Map(c => c.DataFim).ToColumn("data_fim");
             Map(c => c.DataInicio).ToColumn("data_inicio");
             Map(c => c.DreId).ToColumn("dre_id");
-            Map(c => c.EhLetivo).ToColumn("letivo");
+            Map(c => c.Letivo).ToColumn("letivo");
             Map(c => c.FeriadoId).ToColumn("feriado_id");
             Map(c => c.TipoCalendarioId).ToColumn("tipo_calendario_id");
             Map(c => c.TipoEventoId).ToColumn("tipo_evento_id");
