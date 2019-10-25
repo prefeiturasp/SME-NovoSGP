@@ -12,12 +12,13 @@ const ListaPaginada = props => {
     colunas,
     onClick,
     multiSelecao,
-    aoSelecionarLinhas,
-    linhasSelecionadas,
+    onSelecionarLinhas,
+    selecionarItems,
   } = props;
 
   const [total, setTotal] = useState(0);
   const [linhas, setLinhas] = useState([]);
+  const [linhasSelecionadas, setLinhasSelecionadas] = useState([]);
 
   const [paginaAtual, setPaginaAtual] = useState({
     defaultPageSize: 10,
@@ -29,9 +30,24 @@ const ListaPaginada = props => {
     current: 1,
   });
 
+  const selecionaItems = selecionadas => {
+    if (selecionarItems) {
+      const items = linhas.filter(
+        item => selecionadas.indexOf(item[colunaChave]) >= 0
+      );
+      selecionarItems(items);
+    }
+  };
+
+  const selecionar = ids => {
+    setLinhasSelecionadas(ids);
+    if (onSelecionarLinhas) onSelecionarLinhas(ids);
+    selecionaItems(ids);
+  };
+
   const selecaoLinha = {
     selectedRowKeys: linhasSelecionadas,
-    onChange: ids => aoSelecionarLinhas(ids),
+    onChange: ids => selecionar(ids),
   };
 
   const selecionarLinha = linha => {
@@ -44,7 +60,9 @@ const ListaPaginada = props => {
       selecionadas = [];
       selecionadas.push(linha[colunaChave]);
     }
-    aoSelecionarLinhas(selecionadas);
+    setLinhasSelecionadas(selecionadas);
+    if (onSelecionarLinhas) onSelecionarLinhas(selecionadas);
+    selecionaItems(selecionadas);
   };
 
   const clicarLinha = row => {
@@ -86,7 +104,7 @@ const ListaPaginada = props => {
     <Container className="table-responsive">
       <Table
         className={multiSelecao ? '' : 'ocultar-coluna-multi-selecao'}
-        rowKey={colunaChave}
+        rowKey="id"
         rowSelection={selecaoLinha}
         columns={colunas}
         dataSource={linhas}
@@ -144,22 +162,22 @@ ListaPaginada.propTypes = {
   colunas: PropTypes.oneOfType([PropTypes.array, PropTypes.object]),
   multiSelecao: PropTypes.oneOfType([PropTypes.bool]),
   onClick: PropTypes.oneOfType([PropTypes.func]),
+  onSelecionarLinhas: PropTypes.oneOfType([PropTypes.func]),
+  selecionarItems: PropTypes.oneOfType([PropTypes.func]),
   url: PropTypes.string,
   colunaChave: PropTypes.string,
   filtro: PropTypes.oneOfType([PropTypes.object]),
-  aoSelecionarLinhas: PropTypes.oneOfType([PropTypes.func]),
-  linhasSelecionadas: PropTypes.oneOfType([PropTypes.array]),
 };
 
 ListaPaginada.defaultProps = {
   colunas: [],
   multiSelecao: false,
   onClick: () => {},
+  onSelecionarLinhas: () => {},
+  selecionarItems: () => {},
   url: '',
   colunaChave: 'id',
-  filtro: {},
-  aoSelecionarLinhas: () => {},
-  linhasSelecionadas: [],
+  filtro: null,
 };
 
 export default ListaPaginada;
