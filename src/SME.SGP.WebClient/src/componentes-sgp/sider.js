@@ -1,15 +1,17 @@
 import React, { useState, useEffect } from 'react';
 import { Menu, Layout } from 'antd';
 import { Link } from 'react-router-dom';
+import { useSelector } from 'react-redux';
 import { Base } from '../componentes/colors';
 import { MenuBody, DivFooter, MenuScope, Topo } from './sider.css';
 import LogoMenuFooter from '../recursos/LogoMenuFooter.svg';
 import { store } from '../redux';
-import { menuRetraido, menuSelecionado } from '../redux/modulos/navegacao/actions';
-import { useSelector } from 'react-redux';
+import {
+  menuRetraido,
+  menuSelecionado,
+} from '../redux/modulos/navegacao/actions';
 import modalidade from '~/dtos/modalidade';
 import { Tooltip } from 'antd';
-import { setMenus } from '~/servicos/servico-navegacao'
 
 const Sider = () => {
   const { Sider, Footer } = Layout;
@@ -60,16 +62,25 @@ const Sider = () => {
   const alterarPosicaoJanelaPopup = (idElementoHtml, quantidadeItens) => {
     const itemMenu = window.document.getElementById(idElementoHtml);
     if (itemMenu) {
-      const alturaItens = (quantidadeItens * 40) + 6;
-      const alturaTela = window.innerHeight
+      const alturaItens = quantidadeItens * 40 + 6;
+      const alturaTela = window.innerHeight;
       const posicaoY = itemMenu.getBoundingClientRect().y;
       const posicaoRight = itemMenu.getBoundingClientRect().right;
       const alturaTotalItens = posicaoY + alturaItens;
-      const posicaoTop = alturaTotalItens > alturaTela ? (posicaoY - (alturaTotalItens - alturaTela)) : posicaoY;
-      document.documentElement.style.setProperty('--posicao-item-menu-top', `${posicaoTop}px`)
-      document.documentElement.style.setProperty('--posicao-item-menu-right', `${posicaoRight}px`)
+      const posicaoTop =
+        alturaTotalItens > alturaTela
+          ? posicaoY - (alturaTotalItens - alturaTela)
+          : posicaoY;
+      document.documentElement.style.setProperty(
+        '--posicao-item-menu-top',
+        `${posicaoTop}px`
+      );
+      document.documentElement.style.setProperty(
+        '--posicao-item-menu-right',
+        `${posicaoRight}px`
+      );
     }
-  }
+  };
 
   const alternarRetraido = () => {
     setOpenKeys([]);
@@ -87,7 +98,7 @@ const Sider = () => {
 
   const selecionarItem = item => {
     store.dispatch(menuSelecionado([item.key]));
-  }
+  };
 
   const criarItensMenu = menus => {
     return menus.map(item => {
@@ -109,46 +120,43 @@ const Sider = () => {
   }
 
   const criarMenus = menu => {
-    return menu.map(subMenu => {
-      const temSubmenu = (subMenu.subMenus && subMenu.subMenus.length > 0);
-      if (subMenu.ehMenu || temSubmenu) {
-        const menuKey = (temSubmenu ? 'sub-' : 'menu-') + subMenu.codigo;
-        return (
-          <SubMenu
-            id={subMenu.codigo}
-            key={menuKey}
-            onMouseEnter={(e) => alterarPosicaoJanelaPopup(subMenu.codigo, subMenu.quantidadeMenus)}
-            title={
-              subMenu.icone ?
-                <div className={"item-menu-retraido"}>
-                  <i
-                    className={subMenu.icone + (NavegacaoStore.retraido ? ' icons-retraido' : ' icons')}
-                  />
-                  <span>{subMenu.descricao}</span>
-                </div>
-                :
-                <div className={"item-menu-retraido" + temSubmenu ? " submenu-subnivel" : ""}>
-                  <span>{subMenu.descricao}</span>
-                </div>
-            }
-          >
-            {criarItensMenu(subMenu.menus ? subMenu.menus : subMenu.subMenus)}
-          </SubMenu>
-        );
-      }
-    })
-  }
-
-  const buscarMenus = () => {
-    if (usuario.menu && usuario.menu.length > 0) {
-      return criarMenus(usuario.menu)
-    } else {
-      setMenus();
+    if (menu && menu.length > 0) {
+      return menu.map(subMenu => {
+        const temSubmenu = (subMenu.subMenus && subMenu.subMenus.length > 0);
+        if (subMenu.ehMenu || temSubmenu) {
+          const menuKey = (temSubmenu ? 'sub-' : 'menu-') + subMenu.codigo;
+          return (
+            <SubMenu
+              id={subMenu.codigo}
+              key={menuKey}
+              onMouseEnter={(e) => alterarPosicaoJanelaPopup(subMenu.codigo, subMenu.quantidadeMenus)}
+              title={
+                subMenu.icone ?
+                  <div className={"item-menu-retraido"}>
+                    <i
+                      className={subMenu.icone + (NavegacaoStore.retraido ? ' icons-retraido' : ' icons')}
+                    />
+                    <span>{subMenu.descricao}</span>
+                  </div>
+                  :
+                  <div className={"item-menu-retraido" + temSubmenu ? " submenu-subnivel" : ""}>
+                    <span>{subMenu.descricao}</span>
+                  </div>
+              }
+            >
+              {criarItensMenu(subMenu.menus ? subMenu.menus : subMenu.subMenus)}
+            </SubMenu>
+          );
+        }
+      })
     }
   }
 
   return (
-    <MenuBody id="main" style={{ width: NavegacaoStore.retraido ? '115px' : '250px' }}>
+    <MenuBody
+      id="main"
+      style={{ width: NavegacaoStore.retraido ? '115px' : '250px' }}
+    >
       <Sider
         style={{ background: Base.Roxo, height: '100%' }}
         collapsed={NavegacaoStore.retraido}
@@ -169,7 +177,9 @@ const Sider = () => {
               />
             </a>
           </div>
-          <div className={NavegacaoStore.retraido ? 'perfil-retraido' : 'perfil'}>
+          <div
+            className={NavegacaoStore.retraido ? 'perfil-retraido' : 'perfil'}
+          >
             <div className="circulo-perfil">
               <i className="fas fa-user-circle icone-perfil"></i>
               {/* <img
@@ -198,7 +208,9 @@ const Sider = () => {
 
         <MenuScope>
           <div
-            className={`menu-scope${NavegacaoStore.retraido ? ' menu-scope-retraido' : ''}`}
+            className={`menu-scope${
+              NavegacaoStore.retraido ? ' menu-scope-retraido' : ''
+              }`}
           >
             <Menu
               id="menuPrincipal"
@@ -209,8 +221,36 @@ const Sider = () => {
               onSelect={selecionarItem.bind(NavegacaoStore.menuSelecionado)}
               selectedKeys={NavegacaoStore.menuSelecionado}
             >
-              {
-                buscarMenus()
+              {usuario.menu && usuario.menu.length > 0 ?
+                usuario.menu.map(subMenu => {
+                  const temSubmenu = (subMenu.subMenus && subMenu.subMenus.length > 0);
+                  if (subMenu.ehMenu || temSubmenu) {
+                    const menuKey = (temSubmenu ? 'sub-' : 'menu-') + subMenu.codigo;
+                    return (
+                      <SubMenu
+                        id={subMenu.codigo}
+                        key={menuKey}
+                        onMouseEnter={(e) => alterarPosicaoJanelaPopup(subMenu.codigo, subMenu.quantidadeMenus)}
+                        title={
+                          subMenu.icone ?
+                            <div className={"item-menu-retraido"}>
+                              <i
+                                className={subMenu.icone + (NavegacaoStore.retraido ? ' icons-retraido' : ' icons')}
+                              />
+                              <span>{subMenu.descricao}</span>
+                            </div>
+                            :
+                            <div className={"item-menu-retraido" + temSubmenu ? " submenu-subnivel" : ""}>
+                              <span>{subMenu.descricao}</span>
+                            </div>
+                        }
+                      >
+                        {criarItensMenu(subMenu.menus ? subMenu.menus : subMenu.subMenus)}
+                      </SubMenu>
+                    );
+                  }
+                }) :
+                ''
               }
             </Menu>
           </div>
