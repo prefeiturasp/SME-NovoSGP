@@ -74,9 +74,9 @@ namespace SME.SGP.Aplicacao.Integracoes
             return await ObterDisciplinas(url);
         }
 
-        public async Task<IEnumerable<DisciplinaResposta>> ObterDisciplinasPorCodigoTurmaLoginEPerfil(long codigoTurma, string login, string guidPerfil)
+        public async Task<IEnumerable<DisciplinaResposta>> ObterDisciplinasPorCodigoTurmaLoginEPerfil(long codigoTurma, string login, Guid perfil)
         {
-            var url = $"/api/funcionarios/{login}/perfis/{guidPerfil}/turmas/{codigoTurma}/disciplinas";
+            var url = $"/api/funcionarios/{login}/perfis/{perfil}/turmas/{codigoTurma}/disciplinas";
 
             return await ObterDisciplinas(url);
         }

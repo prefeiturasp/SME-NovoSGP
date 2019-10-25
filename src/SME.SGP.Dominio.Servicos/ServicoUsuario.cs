@@ -11,7 +11,7 @@ namespace SME.SGP.Dominio
 {
     public class ServicoUsuario : IServicoUsuario
     {
-        private const string CLAIM_PERFIL_ATUAL = "perfilAtual";
+        private const string CLAIM_PERFIL_ATUAL = "perfil";
         private const string CLAIM_PERMISSAO = "http://schemas.microsoft.com/ws/2008/06/identity/claims/role";
         private const string CLAIM_RF = "rf";
         private readonly IHttpContextAccessor httpContextAccessor;
@@ -67,6 +67,11 @@ namespace SME.SGP.Dominio
             return loginAtual.Value;
         }
 
+        public Guid ObterPerfilAtual()
+        {
+            return Guid.Parse(ObterClaim(CLAIM_PERFIL_ATUAL));
+        }
+
         public IEnumerable<Permissao> ObterPermissoes()
         {
             var claims = httpContextAccessor.HttpContext.User.Claims.Where(a => a.Type == CLAIM_PERMISSAO);
@@ -81,11 +86,6 @@ namespace SME.SGP.Dominio
                 }
             }
             return retorno;
-        }
-
-        public string ObterPerfiltAtual()
-        {
-            return ObterClaim(CLAIM_PERFIL_ATUAL);
         }
 
         public string ObterRf()
