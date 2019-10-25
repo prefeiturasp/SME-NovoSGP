@@ -2,39 +2,47 @@ import { Form, Formik } from 'formik';
 import React, { useEffect, useState } from 'react';
 import * as Yup from 'yup';
 import Cabecalho from '~/componentes-sgp/cabecalho';
+import Auditoria from '~/componentes/auditoria';
 import Button from '~/componentes/button';
+import { CampoData, momentSchema } from '~/componentes/campoData/campoData.js';
 import CampoTexto from '~/componentes/campoTexto';
 import Card from '~/componentes/card';
 import { Colors } from '~/componentes/colors';
 import RadioGroupButton from '~/componentes/radioGroupButton';
-
-import history from '~/servicos/history';
-import { sucesso, confirmar } from '~/servicos/alertas';
-import Auditoria from '~/componentes/auditoria';
 import SelectComponent from '~/componentes/select';
-import { CampoData, momentSchema } from '~/componentes/campoData/campoData.js';
-import {setBreadcrumbManual} from '~/servicos/breadcrumb-services';
+import { confirmar, erros, sucesso } from '~/servicos/alertas';
+import api from '~/servicos/api';
+import { setBreadcrumbManual } from '~/servicos/breadcrumb-services';
+import history from '~/servicos/history';
+import tipoFeriado from '~/dtos/tipoFeriado';
 
 const TipoFeriadoForm = ({ match }) => {
-
-  const [refForm, setRefForm] = useState();
   const [auditoria, setAuditoria] = useState([]);
   const [modoEdicao, setModoEdicao] = useState(false);
   const [novoRegistro, setNovoRegistro] = useState(true);
-  const [listaDropdownAbrangencia, setListaDropdownAbrangencia] = useState([]);
+  const [exibirAuditoria, setExibirAuditoria] = useState(false);
   const [idTipoFeriadoEdicao, setIdTipoFeriadoEdicao] = useState(0);
+  const [isTipoMovel, setIsTipoMovel] = useState(false);
 
   const [valoresIniciais, setValoresIniciais] = useState({
     nome: '',
     abrangencia: undefined,
-    tipo: '',
+    tipo: 1,
     dataFeriado: '',
     situacao: true,
   });
 
+  const listaDropdownAbrangencia = [
+    { id: 1, nome: 'Nacional' },
+    { id: 2, nome: 'Estadual' },
+    { id: 3, nome: 'Municipal' },
+  ];
+
   const [validacoes] = useState(
     Yup.object({
-      nome: Yup.string().required('Nome obrigatório').max(50, 'Máximo 50 caracteres'),
+      nome: Yup.string()
+        .required('Nome obrigatório')
+        .max(50, 'Máximo 50 caracteres'),
       abrangencia: Yup.string().required('Abrangência obrigatória'),
       tipo: Yup.string().required('Tipo obrigatória'),
       dataFeriado: momentSchema.required('Data obrigatória'),
@@ -53,40 +61,43 @@ const TipoFeriadoForm = ({ match }) => {
   ];
 
   useEffect(() => {
-    if (match && match.params && match.params.id) {
-      setBreadcrumbManual(match.url,'Alterar Tipo de Feriado', '/calendario-escolar/tipo-feriado');
-      // TODO Chamar endpoint consultar por ID
-      // MOCK
-      console.log(`Editando ID: ${match.params.id}`);
-      setIdTipoFeriadoEdicao(match.params.id);
-      setValoresIniciais({
-        nome: 'Feriado teste mock',
-        abrangencia: '1',
-        tipo: 1,
-        dataFeriado: new window.moment(),
-        situacao: true,
-      });
-      setNovoRegistro(false);
-      setAuditoria({
-        criadoPor: 'ELISANGELA DOS SANTOS ARRUDA',
-        criadoRf: '1234567',
-        criadoEm: new window.moment(),
-        alteradoPor: 'JOÃO DA SILVA',
-        alteradoRf: '7654321',
-        alteradoEm: new window.moment(),
-      });
-    } else {
-      console.log('Novo registro');
-    }
-  }, []);
+    const consultaPorId = async () => {
+      if (match && match.params && match.params.id) {
+        setBreadcrumbManual(
+          match.url,
+          'Alterar Tipo de Feriado',
+          '/calendario-escolar/tipo-feriado'
+        );
+        setIdTipoFeriadoEdicao(match.params.id);
 
-  useEffect(() => {
-    // TODO - Mock - Chamar endpoint?
-    setListaDropdownAbrangencia([
-      { id: 1, nome: 'Nacional' },
-      { id: 2, nome: 'Estadual' },
-      { id: 3, nome: 'Municipal' },
-    ]);
+        const cadastrado = await api
+          .get(`v1/calendarios/feriados/${match.params.id}`)
+          .catch(e => erros(e));
+
+        if (cadastrado && cadastrado.data) {
+          setIsTipoMovel(cadastrado.data.tipo == tipoFeriado.Movel);
+          setValoresIniciais({
+            abrangencia: String(cadastrado.data.abrangencia),
+            nome: cadastrado.data.nome,
+            tipo: cadastrado.data.tipo,
+            dataFeriado: window.moment(cadastrado.data.dataFeriado),
+            situacao: cadastrado.data.ativo,
+          });
+          setAuditoria({
+            criadoPor: cadastrado.data.criadoPor,
+            criadoRf: cadastrado.data.criadoRf,
+            criadoEm: cadastrado.data.criadoEm,
+            alteradoPor: cadastrado.data.alteradoPor,
+            alteradoRf: cadastrado.data.alteradoRf,
+            alteradoEm: cadastrado.data.alteradoEm,
+          });
+          setExibirAuditoria(true);
+        }
+        setNovoRegistro(false);
+      }
+    };
+
+    consultaPorId();
   }, []);
 
   const onClickVoltar = async () => {
@@ -104,7 +115,7 @@ const TipoFeriadoForm = ({ match }) => {
     }
   };
 
-  const onClickCancelar = async () => {
+  const onClickCancelar = async form => {
     if (modoEdicao) {
       const confirmou = await confirmar(
         'Atenção',
@@ -112,23 +123,39 @@ const TipoFeriadoForm = ({ match }) => {
         'Deseja realmente cancelar as alterações?'
       );
       if (confirmou) {
-        resetarTela();
+        resetarTela(form);
       }
     }
   };
 
-  const resetarTela = () => {
-    refForm.resetForm();
+  const resetarTela = form => {
+    form.resetForm();
     setModoEdicao(false);
   };
 
-  const onClickCadastrar = valoresForm => {
-    console.log(valoresForm);
-    if (idTipoFeriadoEdicao) {
-      sucesso('Tipo de feriado alterado com sucesso.');
-    } else {
-      sucesso('Novo tipo de feriado criado com sucesso.');
+  const onClickCadastrar = async valoresForm => {
+    let paramas = valoresForm;
+    if (isTipoMovel) {
+      paramas = valoresIniciais;
     }
+    if (novoRegistro) {
+      paramas.tipo = tipoFeriado.Fixo;
+    }
+    paramas.ativo = valoresForm.situacao;
+    paramas.id = idTipoFeriadoEdicao;
+
+    const cadastrado = await api
+      .post('v1/calendarios/feriados', paramas)
+      .catch(e => erros(e));
+
+    if (cadastrado && cadastrado.status == 200) {
+      if (idTipoFeriadoEdicao) {
+        sucesso('Tipo de feriado alterado com sucesso.');
+      } else {
+        sucesso('Novo tipo de feriado criado com sucesso.');
+      }
+    }
+
     history.push('/calendario-escolar/tipo-feriado');
   };
 
@@ -148,19 +175,46 @@ const TipoFeriadoForm = ({ match }) => {
         'Cancelar'
       );
       if (confirmado) {
-        // TODO Chamar endpoint de excluir
-        sucesso('Tipo de feriado excluído com sucesso.');
-        history.push('/calendario-escolar/tipo-feriado');
+        const parametrosDelete = { data: [idTipoFeriadoEdicao] };
+        const excluir = await api
+          .delete('v1/calendarios/feriados', parametrosDelete)
+          .catch(e => erros(e));
+
+        if (excluir && excluir.status == 200) {
+          sucesso('Tipo de feriado excluído com sucesso.');
+          history.push('/calendario-escolar/tipo-feriado');
+        }
       }
     }
   };
 
+  const tipoCampoDataFeriado = form => {
+    let formato = 'DD/MM/YYYY';
+    if (form.values.tipo == tipoFeriado.Fixo) {
+      formato = 'DD/MM';
+    }
+    return (
+      <CampoData
+        form={form}
+        label="Data do feriado"
+        placeholder="Data do feriado"
+        formatoData={formato}
+        name="dataFeriado"
+        onChange={onChangeCampos}
+        desabilitado={isTipoMovel}
+      />
+    );
+  };
+
   return (
     <>
-      <Cabecalho pagina={`${idTipoFeriadoEdicao > 0 ? 'Alterar' : 'Cadastro de'} Tipo de Feriado`} />
+      <Cabecalho
+        pagina={`${
+          idTipoFeriadoEdicao > 0 ? 'Alterar' : 'Cadastro de'
+        } Tipo de Feriado`}
+      />
       <Card>
         <Formik
-          ref={refFormik => setRefForm(refFormik)}
           enableReinitialize
           initialValues={valoresIniciais}
           validationSchema={validacoes}
@@ -184,7 +238,7 @@ const TipoFeriadoForm = ({ match }) => {
                   color={Colors.Roxo}
                   border
                   className="mr-2"
-                  onClick={onClickCancelar}
+                  onClick={() => onClickCancelar(form)}
                   disabled={!modoEdicao}
                 />
                 <Button
@@ -213,12 +267,13 @@ const TipoFeriadoForm = ({ match }) => {
                     placeholder="Meu novo feriado"
                     name="nome"
                     onChange={onChangeCampos}
+                    desabilitado={isTipoMovel}
                   />
                 </div>
 
                 <div className="col-sm-12 col-md-4 col-lg-4 col-xl-4 mb-2">
                   <SelectComponent
-                     form={form}
+                    form={form}
                     label="Abrangência"
                     name="abrangencia"
                     lista={listaDropdownAbrangencia}
@@ -226,6 +281,7 @@ const TipoFeriadoForm = ({ match }) => {
                     valueText="nome"
                     onChange={onChangeCampos}
                     placeholder="Abrangência do feriado"
+                    disabled={isTipoMovel}
                   />
                 </div>
 
@@ -235,19 +291,12 @@ const TipoFeriadoForm = ({ match }) => {
                     form={form}
                     opcoes={opcoesTipo}
                     name="tipo"
-                    onChange={onChangeCampos}
+                    desabilitado
                   />
                 </div>
 
                 <div className="col-sm-12 col-md-4 col-lg-4 col-xl-3">
-                  <CampoData
-                    form={form}
-                    label="Data do feriado"
-                    placeholder="Data do feriado"
-                    formatoData="DD/MM/YYYY"
-                    name="dataFeriado"
-                    onChange={onChangeCampos}
-                  />
+                  { tipoCampoDataFeriado(form) }
                 </div>
 
                 <div className="col-sm-12 col-md-3 col-lg-3 col-xl-3 mb-2">
@@ -264,12 +313,16 @@ const TipoFeriadoForm = ({ match }) => {
             </Form>
           )}
         </Formik>
-        <Auditoria
-          criadoEm={auditoria.criadoEm}
-          criadoPor={auditoria.criadoPor}
-          alteradoPor={auditoria.alteradoPor}
-          alteradoEm={auditoria.alteradoEm}
-        />
+        {exibirAuditoria ? (
+          <Auditoria
+            criadoEm={auditoria.criadoEm}
+            criadoPor={auditoria.criadoPor}
+            alteradoPor={auditoria.alteradoPor}
+            alteradoEm={auditoria.alteradoEm}
+          />
+        ) : (
+          ''
+        )}
       </Card>
     </>
   );
