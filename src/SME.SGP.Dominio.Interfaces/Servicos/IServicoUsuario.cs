@@ -1,4 +1,6 @@
 ﻿using System;
+using SME.SGP.Infra;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Dominio.Interfaces
@@ -13,6 +15,9 @@ namespace SME.SGP.Dominio.Interfaces
 
         string ObterLoginAtual();
 
+        string ObterPerfiltAtual();
+
+        IEnumerable<Permissao> ObterPermissoes();
         Guid ObterPerfilAtual();
 
         string ObterRf();
