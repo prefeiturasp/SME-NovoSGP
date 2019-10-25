@@ -102,6 +102,7 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IServicoTokenJwt, ServicoTokenJwt>();
             services.TryAddScoped<IServicoMenu, ServicoMenu>();
             services.TryAddScoped<IServicoPeriodoEscolar, ServicoPeriodoEscolar>();
+            services.TryAddScoped<IServicoFeriadoCalendario, ServicoFeriadoCalendario>();
         }
     }
 }
