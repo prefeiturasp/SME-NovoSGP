@@ -21,11 +21,14 @@ namespace SME.SGP.Dominio
 
         public void SalvarPeriodoEscolar(IEnumerable<PeriodoEscolar> periodos, long tipoCalendario)
         {
-            var tipo = repositorioTipoCalendario.ObterPorId(tipoCalendario);
+            ValidarPeriodoRepetido(periodos);
 
-            if (tipo == null || tipo.Id == 0) throw new NegocioException("O tipo de calendario informado não foi encontrado");
+            TipoCalendario tipo = ValidarEObterTipoCalendarioExistente(tipoCalendario);
+
+            ValidarSeTipoCalendarioPossuiPeriodoCadastrado(periodos, tipo);
 
             bool eja = tipo.Modalidade == ModalidadeTipoCalendario.EJA;
+
             int quantidadeBimestres = eja ? 2 : 4;
 
             ValidarEntidade(periodos, tipo.AnoLetivo, eja, quantidadeBimestres);
@@ -39,6 +42,14 @@ namespace SME.SGP.Dominio
 
                 unitOfWork.PersistirTransacao();
             }
+        }
+
+        private static void ValidarPeriodoRepetido(IEnumerable<PeriodoEscolar> periodos)
+        {
+            var codigosRepetidos = periodos.Select(x => x.Id).GroupBy(x => x).Where(x => x.Count() > 1 && x.Key > 0);
+
+            if (codigosRepetidos.Any())
+                throw new NegocioException("Não pode ser informado mais de um período com o mesmo Id");
         }
 
         private void ValidarBimestresRepetidos(IEnumerable<PeriodoEscolar> periodos)
@@ -58,6 +69,14 @@ namespace SME.SGP.Dominio
             ValidarPeriodos(periodos, anoBase, eja);
 
             ValidarInicioPeriodoAntesFimPeriodoAnterior(periodos);
+        }
+
+        private TipoCalendario ValidarEObterTipoCalendarioExistente(long tipoCalendario)
+        {
+            var tipo = repositorioTipoCalendario.ObterPorId(tipoCalendario);
+
+            if (tipo == null || tipo.Id == 0) throw new NegocioException("O tipo de calendario informado não foi encontrado");
+            return tipo;
         }
 
         private void ValidarInicioPeriodoAntesFimPeriodoAnterior(IEnumerable<PeriodoEscolar> periodos)
@@ -83,6 +102,17 @@ namespace SME.SGP.Dominio
 
             if (!valido)
                 throw new NegocioException($"Para período {(eja ? "semestral" : "anual")} devem ser informados {quantidadeBimestres} bimestres");
+        }
+
+        private void ValidarSeTipoCalendarioPossuiPeriodoCadastrado(IEnumerable<PeriodoEscolar> periodos, TipoCalendario tipo)
+        {
+            if (periodos.Any(x => x.Id == 0))
+            {
+                var periodoEscolar = repositorioPeriodoEscolar.ObterPorTipoCalendario(tipo.Id).ToList();
+
+                if (periodoEscolar != null && periodoEscolar.Any())
+                    throw new NegocioException("Não é possível inserir mais de um período escolar para o tipo de calendário informado");
+            }
         }
     }
 }

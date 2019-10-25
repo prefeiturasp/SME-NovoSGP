@@ -10,6 +10,8 @@ namespace SME.SGP.Aplicacao
 
         Task AlterarEmailUsuarioLogado(string novoEmail);
 
+        Task AlterarSenha(AlterarSenhaDto alterarSenhaDto);
+
         Task AlterarSenhaComTokenRecuperacao(RecuperacaoSenhaDto recuperacaoSenhaDto);
 
         Task<AlterarSenhaRespostaDto> AlterarSenhaPrimeiroAcesso(PrimeiroAcessoDto primeiroAcessoDto);

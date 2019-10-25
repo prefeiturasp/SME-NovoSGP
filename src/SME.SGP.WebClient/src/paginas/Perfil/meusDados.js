@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useSelector } from 'react-redux';
+import { Progress } from 'antd';
 import Cabecalho from '~/componentes-sgp/cabecalho';
 import AlertaBalao from '~/componentes/alertaBalao';
 import Button from '~/componentes/button';
@@ -7,11 +8,20 @@ import Card from '~/componentes/card';
 import { Colors, Base } from '~/componentes/colors';
 import ModalConteudoHtml from '~/componentes/modalConteudoHtml';
 import history from '~/servicos/history';
-import { Progress } from 'antd';
 import api from '~/servicos/api';
 import { erros } from '~/servicos/alertas';
 import { meusDados } from '~/redux/modulos/usuario/actions';
-import { Botao, Conteudo, DadosPerfil, Icone, MensagemAlerta, Perfil, SelecionarFoto, Topo, BarraProgresso } from './meusDados.css';
+import {
+  Botao,
+  Conteudo,
+  DadosPerfil,
+  Icone,
+  MensagemAlerta,
+  Perfil,
+  SelecionarFoto,
+  Topo,
+  BarraProgresso,
+} from './meusDados.css';
 import { store } from '~/redux';
 import DadosEmail from './dadosEmail';
 
@@ -21,13 +31,15 @@ const MeusDados = () => {
   const [alterarFoto, setAlterarFoto] = useState(false);
   const [ehFotoInvalida, setEhFotoInvalida] = useState(false);
   const [desabilitaConfirmar, setDesabilitaConfirmar] = useState(true);
-  const [ocultarAlteracoesNaoSalvas, setOcultarAlteracoesNaoSalvas] = useState(true);
+  const [ocultarAlteracoesNaoSalvas, setOcultarAlteracoesNaoSalvas] = useState(
+    true
+  );
   const [ocultarProgresso, setOcultarProgresso] = useState(true);
   const [progresso, setProgresso] = useState(0);
 
   const irParaDashboard = () => {
     history.push('/');
-  }
+  };
 
   const ocultarModal = () => {
     setEhFotoInvalida(false);
@@ -36,11 +48,11 @@ const MeusDados = () => {
     setDesabilitaConfirmar(true);
     setOcultarAlteracoesNaoSalvas(true);
     setOcultarProgresso(true);
-  }
+  };
 
   const selecionarNovaFoto = () => {
     window.document.getElementById('selecionar-foto').click();
-  }
+  };
 
   const arquivoSelecionado = event => {
     const arquivo = event.target.files[0];
@@ -56,17 +68,17 @@ const MeusDados = () => {
               const novaFoto = fileReader.result;
               setEhFotoInvalida(false);
               setFoto(novaFoto);
-              setDesabilitaConfirmar(false)
-            }
+              setDesabilitaConfirmar(false);
+            };
           } else {
             setEhFotoInvalida(true);
           }
-        }
+        };
       } else {
         setEhFotoInvalida(true);
       }
     }
-  }
+  };
 
   const cancelarTrocaFoto = () => {
     if (foto !== usuarioStore.meusDados.foto) {
@@ -74,59 +86,83 @@ const MeusDados = () => {
     } else {
       ocultarModal();
     }
-  }
+  };
 
   const salvarFoto = () => {
     setOcultarProgresso(false);
-    const dados = {imagemBase64:foto};
-    api.post('v1/usuarios/imagens/perfil', dados, {
-      onUploadProgress: progressEvent =>{
-        setProgresso(Math.round(progressEvent.loaded/progressEvent.total*100));
-      }
-    }).then(resp =>{
-      const novosDados = usuarioStore.meusDados;
-      novosDados.foto = resp.data;
-      store.dispatch(meusDados(novosDados));
-      ocultarModal();
-    }).catch(erro =>{
-      erros(erro);
-    })
-  }
+    const dados = { imagemBase64: foto };
+    api
+      .post('v1/usuarios/imagens/perfil', dados, {
+        onUploadProgress: progressEvent => {
+          setProgresso(
+            Math.round((progressEvent.loaded / progressEvent.total) * 100)
+          );
+        },
+      })
+      .then(resp => {
+        const novosDados = usuarioStore.meusDados;
+        novosDados.foto = resp.data;
+        store.dispatch(meusDados(novosDados));
+        ocultarModal();
+      })
+      .catch(erro => {
+        erros(erro);
+      });
+  };
 
   return (
     <div>
       <Cabecalho pagina="Meus Dados" />
       <Card>
         <ModalConteudoHtml
-          key={'trocarFoto'}
+          key="trocarFoto"
           visivel={alterarFoto}
           onConfirmacaoPrincipal={salvarFoto}
           onConfirmacaoSecundaria={cancelarTrocaFoto}
-          onClose={() => { }}
+          onClose={() => {}}
           labelBotaoPrincipal="Confirmar"
           labelBotaoSecundario="Cancelar"
           desabilitarBotaoPrincipal={desabilitaConfirmar}
           esconderBotoes={!ocultarAlteracoesNaoSalvas}
           titulo="Alterar Foto"
-          closable={true}
+          closable
           onClose={cancelarTrocaFoto}
         >
-          <div id="troca-foto" hidden={!ocultarAlteracoesNaoSalvas || !ocultarProgresso}>
+          <div
+            id="troca-foto"
+            hidden={!ocultarAlteracoesNaoSalvas || !ocultarProgresso}
+          >
             <DadosPerfil className="col-12">
               <img className="img-edit" id="foto-perfil" src={foto} />
             </DadosPerfil>
             <DadosPerfil className="col-12">
-              <SelecionarFoto className="text-center" onClick={selecionarNovaFoto}>
-                <input type="file" hidden accept="image/jpeg, image/png"
-                  id="selecionar-foto" onChange={arquivoSelecionado} />
+              <SelecionarFoto
+                className="text-center"
+                onClick={selecionarNovaFoto}
+              >
+                <input
+                  type="file"
+                  hidden
+                  accept="image/jpeg, image/png"
+                  id="selecionar-foto"
+                  onChange={arquivoSelecionado}
+                />
                 Selecionar nova foto
-            </SelecionarFoto>
-              <AlertaBalao maxWidth={294} marginTop={14} mostrarAlerta={ehFotoInvalida}
-                texto="A resolução mínima é de 180 x 180 pixels, com tamanho máximo de 2Mb." />
+              </SelecionarFoto>
+              <AlertaBalao
+                maxWidth={294}
+                marginTop={14}
+                mostrarAlerta={ehFotoInvalida}
+                texto="A resolução mínima é de 180 x 180 pixels, com tamanho máximo de 2Mb."
+              />
             </DadosPerfil>
           </div>
-          <MensagemAlerta id="mensagem-alerta" hidden={ocultarAlteracoesNaoSalvas}>
-            <span className="titulo">Alerta</span><br />
+          <MensagemAlerta
+            id="mensagem-alerta"
+            hidden={ocultarAlteracoesNaoSalvas}
+          >
+            <span className="titulo">Alerta</span>
+            <br />
             <span>Suas alterações não foram salvas, deseja salvar agora?</span>
             <div className="d-flex justify-content-end p-t-20">
               <Button
@@ -150,7 +186,11 @@ const MeusDados = () => {
           </MensagemAlerta>
           <BarraProgresso hidden={ocultarProgresso}>
             <span>Salvando..</span>
-            <Progress strokeColor={Base.Roxo} percent={progresso} showInfo={false} />
+            <Progress
+              strokeColor={Base.Roxo}
+              percent={progresso}
+              showInfo={false}
+            />
           </BarraProgresso>
         </ModalConteudoHtml>
         <Topo className="col-12 d-flex justify-content-end">
@@ -175,17 +215,23 @@ const MeusDados = () => {
           </DadosPerfil>
           <DadosPerfil className="text-center">
             <span className="nome">{usuarioStore.meusDados.nome}</span>
-            <span hidden={!usuarioStore.meusDados.rf}>RF: {usuarioStore.meusDados.rf}</span>
-            <span hidden={!usuarioStore.meusDados.cpf}>CPF: {usuarioStore.meusDados.cpf}</span>
-            <span hidden={!usuarioStore.meusDados.empresa}>Empresa: {usuarioStore.meusDados.empresa}</span>
+            <span hidden={!usuarioStore.meusDados.rf}>
+              RF: {usuarioStore.meusDados.rf}
+            </span>
+            <span hidden={!usuarioStore.meusDados.cpf}>
+              CPF: {usuarioStore.meusDados.cpf}
+            </span>
+            <span hidden={!usuarioStore.meusDados.empresa}>
+              Empresa: {usuarioStore.meusDados.empresa}
+            </span>
           </DadosPerfil>
         </Perfil>
         <Conteudo className="col-8">
-          <DadosEmail/>
+          <DadosEmail />
         </Conteudo>
       </Card>
     </div>
   );
-}
+};
 
 export default MeusDados;
