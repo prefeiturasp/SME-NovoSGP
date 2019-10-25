@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using SME.SGP.Api.Filtros;
 using SME.SGP.Aplicacao;
 using SME.SGP.Dominio;
+using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System;
 using System.Threading.Tasks;
@@ -15,10 +16,13 @@ namespace SME.SGP.Api.Controllers
     public class AutenticacaoController : ControllerBase
     {
         private readonly IComandosUsuario comandosUsuario;
+        private readonly IRepositorioEvento repositorioEvento;
 
-        public AutenticacaoController(IComandosUsuario comandosUsuario)
+        public AutenticacaoController(IComandosUsuario comandosUsuario,
+            IRepositorioEvento repositorioEvento)
         {
             this.comandosUsuario = comandosUsuario ?? throw new System.ArgumentNullException(nameof(comandosUsuario));
+            this.repositorioEvento = repositorioEvento;
         }
 
         [Route("senha")]
@@ -115,16 +119,6 @@ namespace SME.SGP.Api.Controllers
         public IActionResult SolicitarRecuperacaoSenha(string login)
         {
             return Ok(comandosUsuario.SolicitarRecuperacaoSenha(login));
-        }
-
-        [HttpGet("teste")]
-        [ProducesResponseType(typeof(bool), 200)]
-        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        [AllowAnonymous]
-        public IActionResult Teste()
-        {
-            comandosUsuario.ReiniciarSenha("123");
-            return Ok();
         }
 
         [HttpGet("valida-token-recuperacao-senha/{token}")]
