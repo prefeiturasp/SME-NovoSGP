@@ -11,15 +11,26 @@ class ServicoPrimeiroAcesso {
         if (!erro.response || !erro.response.data) {
           return {
             sucesso: false,
-            erro: 'Falha de comunicação com o servidor.',
+            erro:
+              'Falha de comunicação com o servidor, por favor contate o suporte',
           };
         }
+
+        if (erro.response.status == 403) {
+          return {
+            sucesso: false,
+            erro:
+              'Ocorreu uma falha na autenticação, por favor contate o suporte',
+          };
+        }
+
         if (!erro.response.data.mensagens) {
           return {
             sucesso: false,
             erro: erro.response.data,
           };
         }
+
         return { sucesso: false, erro: erro.response.data.mensagens.join(',') };
       });
   };
