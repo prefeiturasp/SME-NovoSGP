@@ -12,10 +12,10 @@ const inicial = {
   dadosUsuario: [],
   modificarSenha: '',
   meusDados: {
-    foto:'https://graziellanicolai.com.br/wp-content/uploads/2018/03/Graziella-perfil.jpg'
+    foto: 'https://graziellanicolai.com.br/wp-content/uploads/2018/03/Graziella-perfil.jpg'
   },
   possuiPerfilSmeOuDre: false,
-  menu:[]
+  menu: []
 };
 
 export default function usuario(state = inicial, action) {
@@ -65,6 +65,9 @@ export default function usuario(state = inicial, action) {
         break;
       case '@usuario/salvarDadosUsuario':
         draft.dadosUsuario = action.payload;
+        break;
+      case '@usuario/setMenu':
+        draft.menu = action.payload;
         break;
       default:
         break;

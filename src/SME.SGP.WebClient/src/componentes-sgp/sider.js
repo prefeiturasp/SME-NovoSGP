@@ -9,7 +9,7 @@ import { menuRetraido, menuSelecionado } from '../redux/modulos/navegacao/action
 import { useSelector } from 'react-redux';
 import modalidade from '~/dtos/modalidade';
 import { Tooltip } from 'antd';
-import { getMenu } from './mock-menu';
+import { setMenus } from '~/servicos/servico-navegacao'
 
 const Sider = () => {
   const { Sider, Footer } = Layout;
@@ -26,11 +26,13 @@ const Sider = () => {
     verificaSelecaoMenu(NavegacaoStore.rotaAtiva);
   }, [NavegacaoStore.rotaAtiva]);
 
-  useEffect(() =>
-    setSubMenusPrincipais(usuario.menu.filter(menu => {
-      if (menu.ehMenu)
-        return menu;
-    }).map(x => 'sub-' + x.codigo))
+  useEffect(() => {
+    if (usuario.menu)
+      setSubMenusPrincipais(usuario.menu.filter(menu => {
+        if (menu.ehMenu)
+          return menu;
+      }).map(x => 'menu-' + x.codigo))
+  }
     , [usuario.menu]
   );
 
@@ -90,42 +92,59 @@ const Sider = () => {
   const criarItensMenu = menus => {
     return menus.map(item => {
       return (
-        <Menu.Item key={item.codigo} id={item.codigo}>
-          <span className="menuItem"> {item.descricao}</span>
-          {item.url ? (
-            <Link
-              to={item.url}
-              id={"link-" + item.codigo}
-            />)
-            : ''
-          }
-        </Menu.Item>
+        item.subMenus && item.subMenus.length > 0 ?
+          criarMenus([item]) :
+          <Menu.Item key={item.codigo} id={item.codigo}>
+            <span className="menuItem"> {item.descricao}</span>
+            {item.url ? (
+              <Link
+                to={item.url}
+                id={"link-" + item.codigo}
+              />)
+              : ''
+            }
+          </Menu.Item>
       )
     })
   }
 
-  const criarMenus = () => {
-    return usuario.menu.map(subMenu => {
-      if (subMenu.ehMenu) {
+  const criarMenus = menu => {
+    return menu.map(subMenu => {
+      const temSubmenu = (subMenu.subMenus && subMenu.subMenus.length > 0);
+      if (subMenu.ehMenu || temSubmenu) {
+        const menuKey = (temSubmenu ? 'sub-' : 'menu-') + subMenu.codigo;
         return (
           <SubMenu
             id={subMenu.codigo}
-            key={'sub-' + subMenu.codigo}
-            onMouseEnter={(e) => alterarPosicaoJanelaPopup('diarioClasse', subMenu.quantidadeMenus)}
+            key={menuKey}
+            onMouseEnter={(e) => alterarPosicaoJanelaPopup(subMenu.codigo, subMenu.quantidadeMenus)}
             title={
-              <div className="item-menu-retraido">
-                <i
-                  className={`${subMenu.icone + (NavegacaoStore.retraido ? ' icons-retraido' : ' icons')}`}
-                />
-                <span>{subMenu.descricao}</span>
-              </div>
+              subMenu.icone ?
+                <div className={"item-menu-retraido"}>
+                  <i
+                    className={subMenu.icone + (NavegacaoStore.retraido ? ' icons-retraido' : ' icons')}
+                  />
+                  <span>{subMenu.descricao}</span>
+                </div>
+                :
+                <div className={"item-menu-retraido" + temSubmenu ? " submenu-subnivel" : ""}>
+                  <span>{subMenu.descricao}</span>
+                </div>
             }
           >
-            {criarItensMenu(subMenu.menus)}
+            {criarItensMenu(subMenu.menus ? subMenu.menus : subMenu.subMenus)}
           </SubMenu>
         );
       }
     })
+  }
+
+  const buscarMenus = () => {
+    if (usuario.menu && usuario.menu.length > 0) {
+      return criarMenus(usuario.menu)
+    } else {
+      setMenus();
+    }
   }
 
   return (
@@ -190,274 +209,9 @@ const Sider = () => {
               onSelect={selecionarItem.bind(NavegacaoStore.menuSelecionado)}
               selectedKeys={NavegacaoStore.menuSelecionado}
             >
-              {criarMenus()}
-              {/* <SubMenu
-                id="diarioClasse"
-                key="subDiarioClasse"
-                onMouseEnter={(e) => alterarPosicaoJanelaPopup('diarioClasse', 9)}
-                title={
-                  <div className="item-menu-retraido">
-                    <i
-                      className={`fas fa-book-reader ${
-                        NavegacaoStore.retraido ? 'icons-retraido' : 'icons'
-                        }`}
-                    />
-                    <span>Diário de Classe</span>
-                  </div>
-                }
-              >
-                <Menu.Item key="1" id="diaPlanoAulaFreq">
-                  <span className="menuItem"> Plano de aula/Frequência</span>
-                </Menu.Item>
-                <Menu.Item key="2" id="diaNotas">
-                  <span className="menuItem"> Notas</span>
-                </Menu.Item>
-                <Menu.Item key="3" id="diaBoletim">
-                  <span className="menuItem"> Boletim</span>
-                </Menu.Item>
-                <Menu.Item key="4" id="diaAulaPrevistaDada">
-                  <span className="menuItem"> Aula Prevista X Aula Dada</span>
-                </Menu.Item>
-                <Menu.Item key="5" id="diaCompensacaoAusencia">
-                  <span className="menuItem"> Compensação de Ausência</span>
-                </Menu.Item>
-                <Menu.Item key="6" id="diaCadastroAee">
-                  <span className="menuItem"> Cadastro AEE</span>
-                </Menu.Item>
-                <Menu.Item key="7" id="diaJustificativaFaltas">
-                  <span className="menuItem"> Justificativa de Faltas</span>
-                </Menu.Item>
-                <Menu.Item key="8" id="diaRegistro">
-                  <span className="menuItem"> Registro HA/HI/CCH/CJ</span>
-                </Menu.Item>
-                <Menu.Item key="9" id="diaSondagem">
-                  <span className="menuItem"> Sondagem</span>
-                </Menu.Item>
-              </SubMenu>
-              <SubMenu
-                id="planejamento"
-                key="subPlanejamento"
-                onMouseEnter={(e) => alterarPosicaoJanelaPopup('planejamento', 2)}
-                title={
-                  <div className="item-menu-retraido">
-                    <i
-                      className={`fas fa-list-alt ${
-                        NavegacaoStore.retraido ? 'icons-retraido' : 'icons'
-                        }`}
-                    />
-                    <span>Planejamento</span>
-                  </div>
-                }
-              >
-                <Menu.Item key="30" id="plaPlanoCiclo" htmlFor="linkPlanoCiclo">
-                  <span className="menuItem">{modalidadeEja ? 'Plano de Etapa' : 'Plano de Ciclo'}</span>
-                  <Link
-                    to="/planejamento/plano-ciclo"
-                    className="text-white"
-                    id="linkPlanoCiclo"
-                  />
-                </Menu.Item>
-                <Menu.Item key="31" id="plaPlanoAnual" htmlFor="linkPlanoAnual">
-                  <span className="menuItem">{modalidadeEja ? 'Plano Semestral' : 'Plano Anual'}</span>
-                  <Link
-                    to="/planejamento/plano-anual"
-                    className="text-white"
-                    id="linkPlanoAnual"
-                  />
-                </Menu.Item>
-              </SubMenu>
-              <SubMenu
-                id="fechamento"
-                key="subFechamento"
-                onMouseEnter={(e) => alterarPosicaoJanelaPopup('fechamento', 3)}
-                title={
-                  <div className="item-menu-retraido">
-                    <i
-                      className={`fas fa-pencil-ruler ${
-                        NavegacaoStore.retraido ? 'icons-retraido' : 'icons'
-                        }`}
-                    />
-                    <span>Fechamento</span>
-                  </div>
-                }
-              >
-                <Menu.Item key="50" id="fecConselhoClasse">
-                  <span className="menuItem"> Conselho de Classe</span>
-                </Menu.Item>
-                <Menu.Item key="51" id="fecNotaBimestre">
-                  <span className="menuItem"> Nota do Bimestre</span>
-                </Menu.Item>
-                <Menu.Item key="52" id="fecParecerConclusivo">
-                  <span className="menuItem"> Parecer Conclusivo</span>
-                </Menu.Item>
-              </SubMenu>
-              <SubMenu
-                id="relatorios"
-                key="subRelatorios"
-                onMouseEnter={(e) => alterarPosicaoJanelaPopup('relatorios', 8)}
-                title={
-                  <div className="item-menu-retraido">
-                    <i
-                      className={`fas fa-file-alt ${
-                        NavegacaoStore.retraido ? 'icons-retraido' : 'icons'
-                        }`}
-                    />
-                    <span>Relatórios</span>
-                  </div>
-                }
-              >
-                <Menu.Item key="70" id="relFrequencia">
-                  <span className="menuItem">Frequência</span>
-                </Menu.Item>
-                <Menu.Item key="71" id="relPendencias">
-                  <span className="menuItem">Pendências</span>
-                </Menu.Item>
-                <Menu.Item key="72" id="relComponenteFinalizado">
-                  <span className="menuItem">Componente Finalizado</span>
-                </Menu.Item>
-                <Menu.Item key="73" id="relContraturno">
-                  <span className="menuItem">Contraturno</span>
-                </Menu.Item>
-                <Menu.Item key="74" id="relHistoricoEscolar">
-                  <span className="menuItem">Histórico Escolar</span>
-                </Menu.Item>
-                <Menu.Item key="75" id="relAee">
-                  <span className="menuItem">Relatório AEE</span>
-                </Menu.Item>
-                <Menu.Item key="76" id="relRecuperacaoParalela">
-                  <span className="menuItem">Recuperação Paralela</span>
-                </Menu.Item>
-                <Menu.Item key="77" id="relSondagem">
-                  <span className="menuItem">Relatório de Sondagem</span>
-                </Menu.Item>
-              </SubMenu>
-              <SubMenu
-                id="calendario-escolar"
-                key="subCalendarioEscolar"
-                onMouseEnter={(e) => alterarPosicaoJanelaPopup('calendario-escolar', 9)}
-                title={
-                  <div className="item-menu-retraido">
-                    <i
-                      className={`fas fa-calendar-alt ${
-                        NavegacaoStore.retraido ? 'icons-retraido' : 'icons'
-                        }`}
-                    />
-                    <span>Calendário Escolar</span>
-                  </div>
-                }>
-                <Menu.Item key="80" id="calCalendarioEscolar">
-                  <span className="menuItem">Calendário Escolar</span>
-                </Menu.Item>
-                <Menu.Item key="81" id="calCalendarioProfessor">
-                  <span className="menuItem">Calendário do Professor</span>
-                </Menu.Item>
-                <Menu.Item key="82" id="calTipoCalendárioEscolar">
-                  <span className="menuItem">Tipo de Calendário Escolar</span>
-                  <Link
-                    to="/calendario-escolar/tipo-calendario-escolar"
-                    className="nav-link text-white"
-                    id="linkTipoCalendarioEscolar"
-                  />
-                </Menu.Item>
-                <Menu.Item key="83" id="calPeriodosEscolares">
-                  <span className="menuItem">Períodos Escolares</span>
-                  <Link
-                    to="/calendario-escolar/periodos-escolares"
-                    className="nav-link text-white"
-                    id="linkPeriodosEscolares"
-                  />
-                </Menu.Item>
-                <Menu.Item key="84" id="calPeriodosFechamentoAbertura" style={{ lineHeight: '18px !important' }}>
-                  <span className="menuItem">Períodos de fechamento (Abertura)</span>
-                </Menu.Item>
-                <Menu.Item key="85" id="calPeriodosFechamentoReabertura">
-                  <span className="menuItem">Períodos de fechamento (Reabertura)</span>
-                </Menu.Item>
-                <Menu.Item key="86" id="calTipoFeriados">
-                  <span className="menuItem">Tipo de Feriado</span>
-                </Menu.Item>
-                <Menu.Item key="87" id="calTipoEvento">
-                  <span className="menuItem">Tipo de Evento</span>
-                </Menu.Item>
-                <Menu.Item key="88" id="calEventos">
-                  <span className="menuItem">Eventos</span>
-                </Menu.Item>
-              </SubMenu>
-              <SubMenu
-                id="gestao"
-                key="subGestao"
-                onMouseEnter={(e) => alterarPosicaoJanelaPopup('gestao', 5)}
-                title={
-                  <div className="item-menu-retraido">
-                    <i
-                      className={`fas fa-user-cog ${
-                        NavegacaoStore.retraido ? 'icons-retraido' : 'icons'
-                        }`}
-                    />
-                    <span>Gestão</span>
-                  </div>
-                }
-              >
-                <Menu.Item
-                  key="90"
-                  id="gesCalendarioEscolar"
-                  className="popup-gestao"
-                >
-                  <span className="menuItem">Calendário Escolar</span>
-                </Menu.Item>
-                <Menu.Item key="91" id="gesAtribuicaoCj">
-                  <span className="menuItem">Atribuição CJ</span>
-                </Menu.Item>
-                <Menu.Item key="92" id="gesAtribuicaoDiretor">
-                  <span className="menuItem">Atribuição Diretor</span>
-                </Menu.Item>
-                <Menu.Item key="93" id="gesControleGrade">
-                  <span className="menuItem">Controle de Grade</span>
-                </Menu.Item>
-                <Menu.Item key="94" id="gesAtribuicaoSupervisor">
-                  <span className="menuItem">Atribuição Supervisor</span>
-                  <Link
-                    to="/gestao/atribuicao-supervisor-lista"
-                    className="text-white"
-                    id="linkAtribuicaoSupervisor"
-                  />
-                </Menu.Item>
-              </SubMenu>
-              <SubMenu
-                onMouseEnter={(e) => alterarPosicaoJanelaPopup('configuracoes', 1)}
-                id="configuracoes"
-                key="subConfiguracoes"
-                title={
-                  <div className="item-menu-retraido">
-                    <i
-                      className={`fas fa-cog ${
-                        NavegacaoStore.retraido ? 'icons-retraido' : 'icons'
-                        }`}
-                    />
-                    <span>Configurações</span>
-                  </div>
-                }
-              >
-                <SubMenu
-                  id="usuarios"
-                  key="subUsuarios"
-                  onMouseEnter={(e) => alterarPosicaoJanelaPopup('usuarios', 1)}
-                  title={
-                    <div className="item-menu-retraido submenu-subnivel">
-                      <span>Usuários</span>
-                    </div>
-                  }
-                >
-                  <Menu.Item key="110" id="usuTrocaSenha">
-                    <span className="menuItem">Reiniciar Senha</span>
-                    <Link
-                      to="/usuarios/reiniciar-senha"
-                      className="nav-link text-white"
-                      id="linkReiniciarSenha"
-                    />
-                  </Menu.Item>
-                </SubMenu>
-              </SubMenu>*/}
+              {
+                buscarMenus()
+              }
             </Menu>
           </div>
         </MenuScope>
