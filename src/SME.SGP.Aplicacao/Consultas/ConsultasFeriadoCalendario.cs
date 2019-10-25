@@ -2,6 +2,7 @@
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 
 namespace SME.SGP.Aplicacao
@@ -40,6 +41,24 @@ namespace SME.SGP.Aplicacao
         public IEnumerable<FeriadoCalendarioDto> Listar(FiltroFeriadoCalendarioDto filtro)
         {
             return MapearParaDto(repositorio.ObterFeriadosCalendario(filtro));
+        }
+
+        public IEnumerable<EnumeradoRetornoDto> ObterAbrangencias()
+        {
+            return System.Enum.GetValues(typeof(AbrangenciaFeriadoCalendario)).Cast<AbrangenciaFeriadoCalendario>().Select(v => new EnumeradoRetornoDto
+            {
+                Descricao = v.GetAttribute<DisplayAttribute>().Name,
+                Id = (int)v
+            }).ToList();
+        }
+
+        public IEnumerable<EnumeradoRetornoDto> ObterTipos()
+        {
+            return System.Enum.GetValues(typeof(TipoFeriadoCalendario)).Cast<TipoFeriadoCalendario>().Select(v => new EnumeradoRetornoDto
+            {
+                Descricao = v.GetAttribute<DisplayAttribute>().Name,
+                Id = (int)v
+            }).ToList();
         }
 
         private IEnumerable<FeriadoCalendarioDto> MapearParaDto(IEnumerable<FeriadoCalendario> feriados)

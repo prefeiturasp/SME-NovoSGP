@@ -8,5 +8,9 @@ namespace SME.SGP.Aplicacao
         FeriadoCalendarioCompletoDto BuscarPorId(long id);
 
         IEnumerable<FeriadoCalendarioDto> Listar(FiltroFeriadoCalendarioDto filtro);
+
+        IEnumerable<EnumeradoRetornoDto> ObterAbrangencias();
+
+        IEnumerable<EnumeradoRetornoDto> ObterTipos();
     }
 }
