@@ -23,7 +23,7 @@ namespace SME.SGP.Dados.Repositorios
 
             StringBuilder sql = MontaQueryCompleta(eventoLocalOcorrencia, eventoLetivo, descricao, paginacao);
 
-            var parametros = new { local_ocorrencia = eventoLocalOcorrencia, letivo = eventoLetivo, descricao = $"%{descricao.ToLowerInvariant()}%" };
+            var parametros = new { local_ocorrencia = eventoLocalOcorrencia, letivo = eventoLetivo, descricao = $"%{descricao?.ToLowerInvariant()}%" };
 
             using (var multi = await database.Conexao.QueryMultipleAsync(sql.ToString(), parametros))
             {

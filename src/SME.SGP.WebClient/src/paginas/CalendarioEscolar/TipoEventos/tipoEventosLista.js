@@ -48,6 +48,10 @@ const TipoEventosLista = () => {
 
   const [desabilitarBotaoExcluir, setDesabilitarBotaoExcluir] = useState(true);
   const [tipoEventoSelecionados, setTipoEventoSelecionados] = useState([]);
+  const [
+    codigoTipoEventoSelecionados,
+    setCodigoTipoEventoSelecionados,
+  ] = useState([]);
 
   const clicouBotaoVoltar = () => {
     history.push('/');
@@ -60,7 +64,7 @@ const TipoEventosLista = () => {
     );
     if (confirmado) {
       api
-        .delete('v1/evento/tipo', { data: tipoEventoSelecionados })
+        .delete('v1/evento/tipo', { data: codigoTipoEventoSelecionados })
         .then(resposta => {
           if (resposta) sucesso('Tipos de evento deletados com sucesso!');
         })
@@ -72,9 +76,10 @@ const TipoEventosLista = () => {
   };
 
   useEffect(() => {
-    if (tipoEventoSelecionados.length > 0) setDesabilitarBotaoExcluir(false);
+    if (codigoTipoEventoSelecionados.length > 0)
+      setDesabilitarBotaoExcluir(false);
     else setDesabilitarBotaoExcluir(true);
-  }, [tipoEventoSelecionados]);
+  }, [codigoTipoEventoSelecionados]);
 
   const clicouBotaoNovo = () => {
     history.push('/calendario-escolar/tipo-eventos/novo');
@@ -156,7 +161,10 @@ const TipoEventosLista = () => {
   }, [nomeTipoEvento]);
 
   const aoSelecionarItems = items => {
-    setTipoEventoSelecionados(items);
+    if (items && items.length > 0) {
+      setTipoEventoSelecionados(items);
+    }
+    setCodigoTipoEventoSelecionados(items.map(item => item.codigo));
   };
 
   return (
@@ -236,8 +244,7 @@ const TipoEventosLista = () => {
             filtro={filtro}
             onClick={clicouBotaoEditar}
             multiSelecao
-            aoSelecionarLinhas={aoSelecionarItems}
-            linhasSelecionadas={tipoEventoSelecionados}
+            onSelecionarLinhas={aoSelecionarItems}
           />
         </Grid>
       </Card>
