@@ -21,7 +21,6 @@ const TipoFeriadoForm = ({ match }) => {
   const [modoEdicao, setModoEdicao] = useState(false);
   const [novoRegistro, setNovoRegistro] = useState(true);
   const [exibirAuditoria, setExibirAuditoria] = useState(false);
-  const [listaDropdownAbrangencia, setListaDropdownAbrangencia] = useState([]);
   const [idTipoFeriadoEdicao, setIdTipoFeriadoEdicao] = useState(0);
   const [isTipoMovel, setIsTipoMovel] = useState(false);
 
@@ -32,6 +31,12 @@ const TipoFeriadoForm = ({ match }) => {
     dataFeriado: '',
     situacao: true,
   });
+
+  const listaDropdownAbrangencia = [
+    { id: 1, nome: 'Nacional' },
+    { id: 2, nome: 'Estadual' },
+    { id: 3, nome: 'Municipal' },
+  ];
 
   const [validacoes] = useState(
     Yup.object({
@@ -93,15 +98,6 @@ const TipoFeriadoForm = ({ match }) => {
     };
 
     consultaPorId();
-  }, []);
-
-  useEffect(() => {
-    // TODO - Mock - Chamar endpoint?
-    setListaDropdownAbrangencia([
-      { id: 1, nome: 'Nacional' },
-      { id: 2, nome: 'Estadual' },
-      { id: 3, nome: 'Municipal' },
-    ]);
   }, []);
 
   const onClickVoltar = async () => {
