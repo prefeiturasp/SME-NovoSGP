@@ -47,16 +47,18 @@ const MesCompleto = props => {
   let estaAberto = false;
 
   for (let i = 0; i < mesesCompleto.length; i += 1) {
-    // console.log(
-    //   mesesCalendario[mesesCompleto[i]],
-    //   mesesCalendario[mesesCompleto[i]].estaAberto
-    // );
+    console.log(
+      mesesCalendario[mesesCompleto[i]],
+      mesesCalendario[mesesCompleto[i]].estaAberto
+    );
 
     if (mesesCalendario[mesesCompleto[i]].estaAberto) {
       estaAberto = true;
       mes += Number(mesesCompleto[i]);
     }
   }
+
+  console.log(mes);
 
   if (mes >= 0 && diasSemana[mes] === undefined) {
     let currentDate = new Date();
