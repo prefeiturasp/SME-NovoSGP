@@ -31,7 +31,7 @@ namespace SME.SGP.Aplicacao.Teste.Consultas
         {
             repositorioEventoTipo.Setup(r => r.ObterPorId(It.IsAny<long>())).Returns(It.IsAny<EventoTipo>());
 
-            consultasEventoTipo.ObtenhaPorId(1);
+            consultasEventoTipo.ObterPorId(1);
         }
 
         [Fact(DisplayName = "Deve_Disparar_Excecao_Ao_Instanciar_Sem_Dependencias")]

@@ -1,5 +1,5 @@
 ﻿using Newtonsoft.Json;
-using SME.SGP.Dominio;
+using SME.SGP.Infra;
 using System;
 using System.Net.Http;
 using System.Net.Http.Headers;

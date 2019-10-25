@@ -2,7 +2,6 @@
 using SME.SGP.Api.Filtros;
 using SME.SGP.Aplicacao.Interfaces.Comandos;
 using SME.SGP.Aplicacao.Interfaces.Consultas;
-using SME.SGP.Dominio;
 using SME.SGP.Dto;
 using SME.SGP.Infra;
 using System.Collections.Generic;
@@ -11,7 +10,7 @@ using System.Threading.Tasks;
 namespace SME.SGP.Api.Controllers
 {
     [ApiController]
-    [Route("api/v1/evento/tipo")]
+    [Route("api/v1/calendarios/eventos/tipos")]
     [ValidaDto]
     public class EventoTipoController : ControllerBase
     {
@@ -32,7 +31,7 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         public IActionResult Get(long codigo, [FromServices]IConsultasEventoTipo consultasEventoTipo)
         {
-            var eventoTipoDto = consultasEventoTipo.ObtenhaPorId(codigo);
+            var eventoTipoDto = consultasEventoTipo.ObterPorId(codigo);
 
             if (eventoTipoDto == null)
                 NoContent();

@@ -29,8 +29,7 @@ namespace SME.SGP.Aplicacao.Consultas
                 TotalRegistros = retornoQueryPaginada.TotalRegistros
             };
 
-            bool nenhumItemEncontrado = retornoQueryPaginada == null ||
-                retornoQueryPaginada.Items == null ||
+            bool nenhumItemEncontrado = retornoQueryPaginada.Items == null ||
                 !retornoQueryPaginada.Items.Any() ||
                 retornoQueryPaginada.Items.ElementAt(0).Id == 0;
 
@@ -41,7 +40,7 @@ namespace SME.SGP.Aplicacao.Consultas
             return retornoConsultaPaginada;
         }
 
-        public EventoTipoDto ObtenhaPorId(long id)
+        public EventoTipoDto ObterPorId(long id)
         {
             var entidade = repositorioEventoTipo.ObterPorId(id);
 
@@ -60,7 +59,7 @@ namespace SME.SGP.Aplicacao.Consultas
             return new EventoTipoDto
             {
                 Descricao = eventoTipo.Descricao,
-                Codigo = eventoTipo.Id,
+                Id = eventoTipo.Id,
                 Concomitancia = eventoTipo.Concomitancia,
                 Dependencia = eventoTipo.Dependencia,
                 Letivo = eventoTipo.Letivo,

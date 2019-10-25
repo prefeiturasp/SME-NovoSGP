@@ -8,6 +8,6 @@ namespace SME.SGP.Aplicacao.Interfaces.Consultas
     {
         Task<PaginacaoResultadoDto<EventoTipoDto>> Listar(FiltroEventoTipoDto Filtro);
 
-        EventoTipoDto ObtenhaPorId(long id);
+        EventoTipoDto ObterPorId(long id);
     }
 }
