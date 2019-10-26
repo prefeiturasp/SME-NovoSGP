@@ -1,7 +1,9 @@
-﻿namespace SME.SGP.Dominio.Interfaces
+﻿using System.Threading.Tasks;
+
+namespace SME.SGP.Dominio.Interfaces
 {
     public interface IServicoEvento
     {
-        void Salvar(Evento evento);
+        Task Salvar(Evento evento);
     }
 }

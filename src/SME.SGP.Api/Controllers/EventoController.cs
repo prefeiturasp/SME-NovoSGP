@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using SME.SGP.Aplicacao.Interfaces;
 using SME.SGP.Infra;
+using System.Threading.Tasks;
 
 namespace SME.SGP.Api.Controllers
 {
@@ -21,9 +22,9 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [ProducesResponseType(typeof(RetornoBaseDto), 601)]
-        public IActionResult Post([FromBody]EventoDto eventoDto)
+        public async Task<IActionResult> Post([FromBody]EventoDto eventoDto)
         {
-            comandosEvento.Salvar(eventoDto);
+            await comandosEvento.Salvar(eventoDto);
             return Ok();
         }
     }
