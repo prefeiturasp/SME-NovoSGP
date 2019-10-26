@@ -24,13 +24,24 @@ namespace SME.SGP.Dominio
             TipoEvento = tipoEvento;
         }
 
+        public bool DeveSerEmDiaLetivo()
+        {
+            TipoEventoObrigatorio();
+            return TipoEvento.Letivo == EventoLetivo.Sim;
+        }
+
         public bool PermiteConcomitancia()
+        {
+            TipoEventoObrigatorio();
+            return TipoEvento.Concomitancia;
+        }
+
+        private void TipoEventoObrigatorio()
         {
             if (TipoEvento == null)
             {
                 throw new NegocioException("O tipo de evento não foi encontrado.");
             }
-            return TipoEvento.Concomitancia;
         }
     }
 }
