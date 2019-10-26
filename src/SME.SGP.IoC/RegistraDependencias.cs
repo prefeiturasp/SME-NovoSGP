@@ -91,6 +91,7 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IRepositorioTipoCalendario, RepositorioTipoCalendario>();
             services.TryAddScoped<IRepositorioFeriadoCalendario, RepositorioFeriadoCalendario>();
             services.TryAddScoped<IRepositorioPeriodoEscolar, RepositorioPeriodoEscolar>();
+            services.TryAddScoped<IRepositorioEvento, RepositorioEvento>();
             services.TryAddScoped<IRepositorioEventoTipo, RepositorioEventoTipo>();
         }
 
