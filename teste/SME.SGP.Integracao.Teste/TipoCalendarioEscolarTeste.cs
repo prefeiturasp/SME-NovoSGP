@@ -61,7 +61,7 @@ namespace SME.SGP.Integracao.Teste
                     var getAllResult = await _fixture._clientApi.GetAsync($"api/v1/tipo-calendario");
                     var dtoTodos = JsonConvert.DeserializeObject<IEnumerable<TipoCalendarioDto>>(getAllResult.Content.ReadAsStringAsync().Result);
 
-                    Assert.True(dtoTodos.Count() == 2);
+                    Assert.True(dtoTodos.Any());
 
                     var feriadoParaExcluir = dtoTodos.ElementAt(0);
 
