@@ -8,8 +8,8 @@ ALTER TABLE if exists public.tipo_calendario ADD CONSTRAINT tipo_calendario_un U
 
 CREATE TABLE if not exists evento (
 	id int8 NOT NULL GENERATED ALWAYS AS IDENTITY,
-	nome varchar not null,
-	descricao varchar NOT NULL,
+	nome varchar(50) not null,
+	descricao varchar(500) NOT NULL,
 	data_inicio timestamp not null,
 	data_fim timestamp null,
 	dre_id varchar(15) not null,
