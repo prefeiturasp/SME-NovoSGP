@@ -1,8 +1,9 @@
-﻿using SME.SGP.Dados.Contexto;
+﻿using Dapper;
+using SME.SGP.Dados.Contexto;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using System;
-using System.Collections.Generic;
+using System.Linq;
 
 namespace SME.SGP.Dados.Repositorios
 {
@@ -12,9 +13,9 @@ namespace SME.SGP.Dados.Repositorios
         {
         }
 
-        public IEnumerable<Evento> ObterEventosPorData(DateTime dataInicio)
+        public bool ExisteEventoNaDataEspecificada(DateTime dataInicio)
         {
-            throw new NotImplementedException();
+            return database.Conexao.Query<bool>("select 1 from evento where data_inicio = @dataInicio;", new { dataInicio }).FirstOrDefault();
         }
     }
 }
