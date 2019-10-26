@@ -1,5 +1,5 @@
 ﻿using SME.SGP.Dominio.Interfaces;
-using System.Linq;
+using System.Threading.Tasks;
 
 namespace SME.SGP.Dominio.Servicos
 {
@@ -21,7 +21,7 @@ namespace SME.SGP.Dominio.Servicos
             this.servicoUsuario = servicoUsuario ?? throw new System.ArgumentNullException(nameof(servicoUsuario));
         }
 
-        public void Salvar(Evento evento)
+        public async Task Salvar(Evento evento)
         {
             var tipoEvento = repositorioEventoTipo.ObterPorId(evento.TipoEventoId);
             if (tipoEvento == null)
@@ -30,7 +30,9 @@ namespace SME.SGP.Dominio.Servicos
             }
             evento.AdicionarTipoEvento(tipoEvento);
 
-            var usuario = servicoUsuario.ObterUsuarioLogado();
+            var usuario = await servicoUsuario.ObterUsuarioLogado();
+
+            usuario.PodeCriarEvento(evento);
 
             if (!evento.PermiteConcomitancia())
             {
@@ -45,10 +47,7 @@ namespace SME.SGP.Dominio.Servicos
             {
                 var periodos = repositorioPeriodoEscolar.ObterPorTipoCalendario(evento.TipoCalendarioId);
 
-                if (!periodos.Any(c => c.PeriodoInicio >= evento.DataInicio && c.PeriodoFim <= evento.DataInicio))
-                {
-                    throw new NegocioException("Não é permitido cadastrar um evento nesta data pois essa data não está dentro do 'Período Letivo'.");
-                }
+                evento.EstaNoPeriodoLetivo(periodos);
             }
 
             repositorioEvento.Salvar(evento);

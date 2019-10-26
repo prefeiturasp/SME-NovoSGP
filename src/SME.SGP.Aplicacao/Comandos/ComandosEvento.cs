@@ -2,6 +2,7 @@
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
+using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
@@ -17,12 +18,12 @@ namespace SME.SGP.Aplicacao
             this.servicoEvento = servicoEvento ?? throw new System.ArgumentNullException(nameof(servicoEvento));
         }
 
-        public void Salvar(EventoDto eventoDto)
+        public async Task Salvar(EventoDto eventoDto)
         {
             var evento = repositorioEvento.ObterPorId(eventoDto.Id);
 
             evento = MapearParaEntidade(evento, eventoDto);
-            servicoEvento.Salvar(evento);
+            await servicoEvento.Salvar(evento);
         }
 
         private Evento MapearParaEntidade(Evento evento, EventoDto eventoDto)
