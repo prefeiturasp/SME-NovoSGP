@@ -34,7 +34,7 @@ namespace SME.SGP.Api.Controllers
                 return StatusCode(204);
 
             var retorno = await consultasAbrangencia.ObterAbrangenciaPorfiltro(filtro);
-            if (retorno.Count() > 0)
+            if (retorno.Any())
                 return Ok(retorno);
             else return StatusCode(204);
         }
@@ -55,7 +55,7 @@ namespace SME.SGP.Api.Controllers
         public async Task<IActionResult> ObterDres()
         {
             var dres = await consultasAbrangencia.ObterDres();
-            if (dres.Count() > 0)
+            if (dres.Any())
                 return Ok(dres);
             else return StatusCode(204);
         }
@@ -81,7 +81,7 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         public IActionResult ObterSemestres()
         {
-            return Ok(new int[] { 0, 1, 2 });
+            return Ok(new int[] { 1, 2 });
         }
 
         [HttpGet("dres/ues/{codigoUe}/turmas")]
@@ -91,7 +91,7 @@ namespace SME.SGP.Api.Controllers
         public async Task<IActionResult> ObterTurmas(string codigoUe)
         {
             var turmas = await consultasAbrangencia.ObterTurmas(codigoUe);
-            if (turmas.Count() > 0)
+            if (turmas.Any())
                 return Ok(turmas);
             else return StatusCode(204);
         }
@@ -103,7 +103,7 @@ namespace SME.SGP.Api.Controllers
         public async Task<IActionResult> ObterUes(string codigoDre)
         {
             var ues = await consultasAbrangencia.ObterUes(codigoDre);
-            if (ues.Count() > 0)
+            if (ues.Any())
                 return Ok(ues);
             else return StatusCode(204);
         }
