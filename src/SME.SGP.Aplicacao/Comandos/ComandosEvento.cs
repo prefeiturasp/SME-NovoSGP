@@ -1,10 +1,11 @@
-﻿using SME.SGP.Dominio;
+﻿using SME.SGP.Aplicacao.Interfaces;
+using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 
-namespace SME.SGP.Aplicacao.Comandos
+namespace SME.SGP.Aplicacao
 {
-    public class ComandosEvento
+    public class ComandosEvento : IComandosEvento
     {
         private readonly IRepositorioEvento repositorioEvento;
         private readonly IServicoEvento servicoEvento;
@@ -20,11 +21,11 @@ namespace SME.SGP.Aplicacao.Comandos
         {
             var evento = repositorioEvento.ObterPorId(eventoDto.Id);
 
-            MapearParaEntidade(evento, eventoDto);
+            evento = MapearParaEntidade(evento, eventoDto);
             servicoEvento.Salvar(evento);
         }
 
-        private void MapearParaEntidade(Evento evento, EventoDto eventoDto)
+        private Evento MapearParaEntidade(Evento evento, EventoDto eventoDto)
         {
             if (evento == null)
             {
@@ -40,6 +41,7 @@ namespace SME.SGP.Aplicacao.Comandos
             evento.TipoCalendarioId = eventoDto.TipoCalendarioId;
             evento.TipoEventoId = eventoDto.TipoEventoId;
             evento.UeId = eventoDto.UeId;
+            return evento;
         }
     }
 }

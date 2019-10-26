@@ -18,5 +18,19 @@ namespace SME.SGP.Dominio
         public EventoTipo TipoEvento { get; set; }
         public long TipoEventoId { get; set; }
         public string UeId { get; set; }
+
+        public void AdicionarTipoEvento(EventoTipo tipoEvento)
+        {
+            TipoEvento = tipoEvento;
+        }
+
+        public bool PermiteConcomitancia()
+        {
+            if (TipoEvento == null)
+            {
+                throw new NegocioException("O tipo de evento não foi encontrado.");
+            }
+            return TipoEvento.Concomitancia;
+        }
     }
 }
