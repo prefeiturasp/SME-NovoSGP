@@ -67,6 +67,11 @@ namespace SME.SGP.Dominio
             return loginAtual.Value;
         }
 
+        public string ObterPerfiltAtual()
+        {
+            return ObterClaim(CLAIM_PERFIL_ATUAL);
+        }
+
         public IEnumerable<Permissao> ObterPermissoes()
         {
             var claims = httpContextAccessor.HttpContext.User.Claims.Where(a => a.Type == CLAIM_PERMISSAO);
@@ -83,15 +88,25 @@ namespace SME.SGP.Dominio
             return retorno;
         }
 
-        public string ObterPerfiltAtual()
-        {
-            return ObterClaim(CLAIM_PERFIL_ATUAL);
-        }
-
         public string ObterRf()
         {
             var rf = ObterClaim(CLAIM_RF);
             return rf;
+        }
+
+        public async Task<Usuario> ObterUsuarioLogado()
+        {
+            var login = ObterLoginAtual();
+            var usuario = repositorioUsuario.ObterPorCodigoRfLogin(string.Empty, login);
+
+            var perfisPorLogin = await servicoEOL.ObterPerfisPorLogin(login);
+            if (perfisPorLogin == null)
+                throw new NegocioException($"Não foi possível obter os perfis do usuário {login}");
+
+            var perfisDoUsuario = repositorioPrioridadePerfil.ObterPerfisPorIds(perfisPorLogin.Perfis);
+            usuario.DefinirPerfis(perfisDoUsuario);
+
+            return usuario;
         }
 
         public Usuario ObterUsuarioPorCodigoRfLoginOuAdiciona(string codigoRf, string login = "")

@@ -30,6 +30,8 @@ namespace SME.SGP.Dominio.Servicos
             }
             evento.AdicionarTipoEvento(tipoEvento);
 
+            var usuario = servicoUsuario.ObterUsuarioLogado();
+
             if (!evento.PermiteConcomitancia())
             {
                 var existeOutroEventoNaMesmaData = repositorioEvento.ExisteEventoNaDataEspecificada(evento.DataInicio);
