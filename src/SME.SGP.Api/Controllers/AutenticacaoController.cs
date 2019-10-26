@@ -3,7 +3,6 @@ using Microsoft.AspNetCore.Mvc;
 using SME.SGP.Api.Filtros;
 using SME.SGP.Aplicacao;
 using SME.SGP.Dominio;
-using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System;
 using System.Threading.Tasks;
@@ -16,13 +15,10 @@ namespace SME.SGP.Api.Controllers
     public class AutenticacaoController : ControllerBase
     {
         private readonly IComandosUsuario comandosUsuario;
-        private readonly IRepositorioEvento repositorioEvento;
 
-        public AutenticacaoController(IComandosUsuario comandosUsuario,
-            IRepositorioEvento repositorioEvento)
+        public AutenticacaoController(IComandosUsuario comandosUsuario)
         {
             this.comandosUsuario = comandosUsuario ?? throw new System.ArgumentNullException(nameof(comandosUsuario));
-            this.repositorioEvento = repositorioEvento;
         }
 
         [Route("senha")]
