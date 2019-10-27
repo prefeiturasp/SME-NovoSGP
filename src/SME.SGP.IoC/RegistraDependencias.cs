@@ -37,6 +37,7 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IComandosFeriadoCalendario, ComandosFeriadoCalendario>();
             services.TryAddScoped<IComandosPeriodoEscolar, ComandosPeriodoEscolar>();
             services.TryAddScoped<IComandosEventoTipo, ComandosEventoTipo>();
+            services.TryAddScoped<IComandosEvento, ComandosEvento>();
         }
 
         private static void RegistrarConsultas(IServiceCollection services)
@@ -107,6 +108,7 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IServicoMenu, ServicoMenu>();
             services.TryAddScoped<IServicoPeriodoEscolar, ServicoPeriodoEscolar>();
             services.TryAddScoped<IServicoFeriadoCalendario, ServicoFeriadoCalendario>();
+            services.TryAddScoped<IServicoEvento, ServicoEvento>();
         }
     }
 }
