@@ -22,6 +22,7 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [ProducesResponseType(typeof(RetornoBaseDto), 601)]
+        //[Permissao(Permissao.C_I, Policy = "Bearer")]
         public async Task<IActionResult> Post([FromBody]EventoDto eventoDto)
         {
             await comandosEvento.Salvar(eventoDto);
