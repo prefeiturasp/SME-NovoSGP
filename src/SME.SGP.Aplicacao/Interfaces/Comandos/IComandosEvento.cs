@@ -5,6 +5,8 @@ namespace SME.SGP.Aplicacao.Interfaces
 {
     public interface IComandosEvento
     {
-        Task Salvar(EventoDto eventoDto);
+        Task Alterar(long id, EventoDto eventoDto);
+
+        Task Criar(EventoDto eventoDto);
     }
 }

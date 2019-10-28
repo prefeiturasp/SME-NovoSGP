@@ -1,0 +1,1 @@
+alter table if exists evento ALTER COLUMN descricao DROP NOT NULL;
