@@ -53,7 +53,7 @@ namespace SME.SGP.Api.Controllers
         public async Task<IActionResult> ObterSupervisoresEEscolasPorDre(string dreId)
         {
             var retorno = await consultasSupervisor.ObterPorDre(dreId);
-            if (retorno.Count() > 0)
+            if (retorno.Any())
                 return Ok(retorno);
             else return StatusCode(204);
         }

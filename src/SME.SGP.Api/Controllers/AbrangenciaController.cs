@@ -5,7 +5,6 @@ using SME.SGP.Dominio;
 using SME.SGP.Dto;
 using SME.SGP.Infra;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -66,13 +65,7 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         public IActionResult ObterModalidades()
         {
-            var retorno = Modalidade.GetValues(typeof(Modalidade)).Cast<Modalidade>().Select(v => new EnumeradoRetornoDto
-            {
-                Descricao = v.GetAttribute<DisplayAttribute>().Name,
-                Id = (int)v
-            }).ToList();
-
-            return Ok(retorno);
+            return Ok(EnumExtensao.ListarDto<Modalidade>());
         }
 
         [HttpGet("semestres")]
