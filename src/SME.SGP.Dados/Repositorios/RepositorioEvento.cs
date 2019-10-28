@@ -13,9 +13,10 @@ namespace SME.SGP.Dados.Repositorios
         {
         }
 
-        public bool ExisteEventoNaDataEspecificada(DateTime dataInicio)
+        public bool ExisteEventoNaMesmaDataECalendario(DateTime dataInicio, long tipoCalendarioId)
         {
-            return database.Conexao.Query<bool>("select 1 from evento where data_inicio = @dataInicio;", new { dataInicio }).FirstOrDefault();
+            var query = "select 1 from evento where data_inicio = @dataInicio and tipo_calendario = @tipoCalendarioId;";
+            return database.Conexao.Query<bool>(query, new { dataInicio, tipoCalendarioId }).FirstOrDefault();
         }
     }
 }

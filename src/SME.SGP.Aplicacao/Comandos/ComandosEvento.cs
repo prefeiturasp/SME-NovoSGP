@@ -18,22 +18,24 @@ namespace SME.SGP.Aplicacao
             this.servicoEvento = servicoEvento ?? throw new System.ArgumentNullException(nameof(servicoEvento));
         }
 
-        public async Task Salvar(EventoDto eventoDto)
+        public async Task Alterar(long id, EventoDto eventoDto)
         {
-            var evento = repositorioEvento.ObterPorId(eventoDto.Id);
+            var evento = repositorioEvento.ObterPorId(id);
 
             evento = MapearParaEntidade(evento, eventoDto);
             await servicoEvento.Salvar(evento);
         }
 
+        public async Task Criar(EventoDto eventoDto)
+        {
+            var evento = MapearParaEntidade(new Evento(), eventoDto);
+            await servicoEvento.Salvar(evento);
+        }
+
         private Evento MapearParaEntidade(Evento evento, EventoDto eventoDto)
         {
-            if (evento == null)
-            {
-                evento = new Evento();
-            }
             evento.DataFim = eventoDto.DataFim;
-            evento.DataInicio = eventoDto.DataInicio;
+            evento.DataInicio = eventoDto.DataInicio.Value;
             evento.Descricao = eventoDto.Descricao;
             evento.DreId = eventoDto.DreId;
             evento.FeriadoId = eventoDto.FeriadoId;
