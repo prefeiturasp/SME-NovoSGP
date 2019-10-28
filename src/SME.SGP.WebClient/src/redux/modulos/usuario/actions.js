@@ -52,6 +52,13 @@ export function filtroAtual(filtro) {
   };
 }
 
+export function meusDadosSalvarEmail(email) {
+  return {
+    type: '@usuario/meusDadosSalvarEmail',
+    payload: email,
+  };
+}
+
 export function salvarDadosUsuario(filtro) {
   return {
     type: '@usuario/salvarDadosUsuario',
