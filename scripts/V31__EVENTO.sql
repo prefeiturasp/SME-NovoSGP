@@ -24,7 +24,6 @@ CREATE TABLE if not exists evento (
 	alterado_por varchar(200) NULL,
 	criado_rf varchar(200) NOT NULL,
 	alterado_rf varchar(200) NULL,
-	excluido boolean not null default false,
 	CONSTRAINT evento_pk PRIMARY KEY (id),
 	CONSTRAINT feriado_fk foreign key (feriado_id) references public.feriado_calendario (id),
 	CONSTRAINT tipo_calendario_fk foreign key (tipo_calendario_id) references public.tipo_calendario (id)
