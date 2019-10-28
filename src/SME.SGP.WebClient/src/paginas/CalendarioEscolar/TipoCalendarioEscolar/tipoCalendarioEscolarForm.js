@@ -10,7 +10,7 @@ import Card from '~/componentes/card';
 import { Colors } from '~/componentes/colors';
 import Label from '~/componentes/label';
 import RadioGroupButton from '~/componentes/radioGroupButton';
-import { confirmar, erro, sucesso } from '~/servicos/alertas';
+import { confirmar, erros, sucesso } from '~/servicos/alertas';
 import api from '~/servicos/api';
 import history from '~/servicos/history';
 import {setBreadcrumbManual} from '~/servicos/breadcrumb-services';
@@ -20,11 +20,10 @@ import { CaixaAno, CaixaTextoAno } from './tipoCalendarioEscolar.css';
 const TipoCalendarioEscolarForm = ({ match }) => {
   const usuario = useSelector(store => store.usuario);
 
-  const [refForm, setRefForm] = useState();
   const [auditoria, setAuditoria] = useState([]);
   const [modoEdicao, setModoEdicao] = useState(false);
   const [novoRegistro, setNovoRegistro] = useState(true);
-  const [anoLetivo, setAnoLetivo] = useState('');
+  const [anoLetivo, setAnoLetivo] = useState('2019');
   const [idTipoCalendario, setIdTipoCalendario] = useState(0);
   const [exibirAuditoria, setExibirAuditoria] = useState(false);
   const [valoresIniciais, setValoresIniciais] = useState({
@@ -77,7 +76,7 @@ const TipoCalendarioEscolarForm = ({ match }) => {
   const consultaPorId = async id => {
     const tipoCalendadio = await api
       .get(`v1/tipo-calendario/${id}`)
-      .catch(e => mostrarErros(e));
+      .catch(e => erros(e));
 
     if (tipoCalendadio) {
       setValoresIniciais({
@@ -119,7 +118,7 @@ const TipoCalendarioEscolarForm = ({ match }) => {
     }
   };
 
-  const onClickCancelar = async () => {
+  const onClickCancelar = async form => {
     if (modoEdicao) {
       const confirmou = await confirmar(
         'Atenção',
@@ -127,13 +126,13 @@ const TipoCalendarioEscolarForm = ({ match }) => {
         'Deseja realmente cancelar as alterações?'
       );
       if (confirmou) {
-        resetarTela();
+        resetarTela(form);
       }
     }
   };
 
-  const resetarTela = () => {
-    refForm.resetForm();
+  const resetarTela = form => {
+    form.resetForm();
     setModoEdicao(false);
   };
 
@@ -142,18 +141,11 @@ const TipoCalendarioEscolarForm = ({ match }) => {
     valoresForm.anoLetivo = anoLetivo;
     const cadastrado = await api
       .post('v1/tipo-calendario', valoresForm)
-      .catch(erros => mostrarErros(erros));
+      .catch(erros => erros);
     if (cadastrado) {
       sucesso('Suas informações foram salvas com sucesso.');
       history.push('/calendario-escolar/tipo-calendario-escolar');
     }
-  };
-
-  const mostrarErros = e => {
-    if (e && e.response && e.response.data && e.response.data) {
-      return e.response.data.mensagens.forEach(mensagem => erro(mensagem));
-    }
-    return '';
   };
 
   const onChangeCampos = () => {
@@ -175,7 +167,7 @@ const TipoCalendarioEscolarForm = ({ match }) => {
         const parametrosDelete = {data: [idTipoCalendario]}
         const excluir = await api
           .delete('v1/tipo-calendario', parametrosDelete)
-          .catch(erros => mostrarErros(erros));
+          .catch(e => erros(e));
         if (excluir) {
           sucesso('Tipo de calendário excluído com sucesso.');
           history.push('/calendario-escolar/tipo-calendario-escolar');
@@ -189,7 +181,6 @@ const TipoCalendarioEscolarForm = ({ match }) => {
       <Cabecalho pagina={`${idTipoCalendario > 0 ? 'Alterar' : 'Cadastro do' } Tipo de Calendário Escolar`} />
       <Card>
         <Formik
-          ref={refFormik => setRefForm(refFormik)}
           enableReinitialize
           initialValues={valoresIniciais}
           validationSchema={validacoes}
@@ -213,7 +204,7 @@ const TipoCalendarioEscolarForm = ({ match }) => {
                   color={Colors.Roxo}
                   border
                   className="mr-2"
-                  onClick={onClickCancelar}
+                  onClick={()=> onClickCancelar(form)}
                   disabled={!modoEdicao}
                 />
                 <Button
