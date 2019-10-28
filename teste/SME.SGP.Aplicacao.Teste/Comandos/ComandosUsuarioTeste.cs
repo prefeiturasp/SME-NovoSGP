@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Moq;
 using SME.SGP.Aplicacao.Integracoes;
+using SME.SGP.Aplicacao.Servicos;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using Xunit;
@@ -33,7 +34,7 @@ namespace SME.SGP.Aplicacao.Teste.Comandos
             servicoAbrangencia = new Mock<IServicoAbrangencia>();
 
             comandosUsuario = new ComandosUsuario(repositorioUsuario.Object, servicoAutenticacao.Object, servicoUsuario.Object, servicoPerfil.Object, servicoEOL.Object, servicoTokenJwt.Object, servicoEmail.Object,
-                mockConfiguration.Object, servicoAbrangencia.Object);
+                mockConfiguration.Object, repositorioCache.Object, servicoAbrangencia.Object);
         }
 
         [Fact]
