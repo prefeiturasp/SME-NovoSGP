@@ -12,7 +12,7 @@ namespace SME.SGP.Dominio
 {
     public class ServicoUsuario : IServicoUsuario
     {
-        private const string CLAIM_PERFIL_ATUAL = "perfilAtual";
+        private const string CLAIM_PERFIL_ATUAL = "perfil";
         private const string CLAIM_PERMISSAO = "http://schemas.microsoft.com/ws/2008/06/identity/claims/role";
         private const string CLAIM_RF = "rf";
         private readonly IHttpContextAccessor httpContextAccessor;
@@ -71,9 +71,9 @@ namespace SME.SGP.Dominio
             return loginAtual.Value;
         }
 
-        public string ObterPerfiltAtual()
+        public Guid ObterPerfilAtual()
         {
-            return ObterClaim(CLAIM_PERFIL_ATUAL);
+            return Guid.Parse(ObterClaim(CLAIM_PERFIL_ATUAL));
         }
 
         public IEnumerable<Permissao> ObterPermissoes()
@@ -147,13 +147,13 @@ namespace SME.SGP.Dominio
             return usuario;
         }
 
-        public async Task PodeModificarPerfil(string perfilParaModificar, string login)
+        public async Task PodeModificarPerfil(Guid perfilParaModificar, string login)
         {
             var perfisDoUsuario = await servicoEOL.ObterPerfisPorLogin(login);
             if (perfisDoUsuario == null)
                 throw new NegocioException($"Não foi possível obter os perfis do usuário {login}");
 
-            if (!perfisDoUsuario.Perfis.Contains(Guid.Parse(perfilParaModificar)))
+            if (!perfisDoUsuario.Perfis.Contains(perfilParaModificar))
                 throw new NegocioException($"O usuário {login} não possui acesso ao perfil {perfilParaModificar}");
         }
 

@@ -38,9 +38,10 @@ export default function bimestres(state = INICIAL, action) {
         ).selecionada = true;
         break;
       case '@bimestres/LimparDisciplinaPlanoAnual':
-        draft.disciplinasPlanoAnual.find(
-          disciplina => disciplina.selecionada
-        ).selecionada = false;
+        if (state.disciplinasPlanoAnual)
+          draft.disciplinasPlanoAnual.find(
+            disciplina => disciplina.selecionada
+          ).selecionada = false;
         break;
       case '@bimestres/PrePostBimestre':
         const paraEnvio = state.bimestres.filter(x => x.ehEdicao);

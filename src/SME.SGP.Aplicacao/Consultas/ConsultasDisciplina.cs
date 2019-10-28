@@ -61,7 +61,7 @@ namespace SME.SGP.Aplicacao
             IEnumerable<DisciplinaDto> disciplinasDto = null;
 
             var login = servicoUsuario.ObterLoginAtual();
-            var perfilAtual = servicoUsuario.ObterPerfiltAtual();
+            var perfilAtual = servicoUsuario.ObterPerfilAtual();
 
             var chaveCache = $"Disciplinas-{codigoTurma}-{login}--{perfilAtual}";
             var disciplinasCacheString = repositorioCache.Obter(chaveCache);

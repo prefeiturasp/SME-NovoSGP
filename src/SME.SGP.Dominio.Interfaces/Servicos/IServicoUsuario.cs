@@ -1,4 +1,5 @@
 ﻿using SME.SGP.Infra;
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -14,7 +15,7 @@ namespace SME.SGP.Dominio.Interfaces
 
         string ObterLoginAtual();
 
-        string ObterPerfiltAtual();
+        Guid ObterPerfilAtual();
 
         IEnumerable<Permissao> ObterPermissoes();
 
@@ -24,6 +25,6 @@ namespace SME.SGP.Dominio.Interfaces
 
         Usuario ObterUsuarioPorCodigoRfLoginOuAdiciona(string codigoRf, string login = "");
 
-        Task PodeModificarPerfil(string perfilParaModificar, string login);
+        Task PodeModificarPerfil(Guid perfilParaModificar, string login);
     }
 }
