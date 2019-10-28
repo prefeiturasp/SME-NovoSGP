@@ -12,6 +12,7 @@ namespace SME.SGP.Dominio.Servicos.Teste
 {
     public class ServicoUsuarioTeste
     {
+        private readonly Mock<IRepositorioCache> repositorioCache;
         private readonly Mock<IRepositorioPrioridadePerfil> repositorioPrioridadePerfil;
         private readonly Mock<IRepositorioUsuario> repositorioUsuario;
         private readonly Mock<IServicoEOL> servicoEol;
@@ -24,11 +25,12 @@ namespace SME.SGP.Dominio.Servicos.Teste
             servicoEol = new Mock<IServicoEOL>();
             repositorioPrioridadePerfil = new Mock<IRepositorioPrioridadePerfil>();
             unitOfWork = new Mock<IUnitOfWork>();
+            repositorioCache = new Mock<IRepositorioCache>();
             var context = new DefaultHttpContext();
             var obj = new HttpContextAccessor();
             obj.HttpContext = context;
 
-            servicoUsuario = new ServicoUsuario(repositorioUsuario.Object, servicoEol.Object, repositorioPrioridadePerfil.Object, unitOfWork.Object, obj);
+            servicoUsuario = new ServicoUsuario(repositorioUsuario.Object, servicoEol.Object, repositorioPrioridadePerfil.Object, unitOfWork.Object, obj, repositorioCache.Object);
         }
 
         [Fact]

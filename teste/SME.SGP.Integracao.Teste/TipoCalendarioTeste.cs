@@ -50,7 +50,7 @@ namespace SME.SGP.Integracao.Teste
                 if (buscarTodosCalendariosResultado.IsSuccessStatusCode)
                 {
                     var dtoTodos = JsonConvert.DeserializeObject<IEnumerable<TipoCalendarioDto>>(await buscarTodosCalendariosResultado.Content.ReadAsStringAsync());
-                    Assert.True(dtoTodos.Count() == 1);
+                    Assert.True(dtoTodos.Any());
 
                     var filtroFeriadoCalendarioDto = new FiltroFeriadoCalendarioDto() { Tipo = Dominio.TipoFeriadoCalendario.Movel, Ano = 2019 };
 

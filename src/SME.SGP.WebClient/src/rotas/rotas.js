@@ -24,9 +24,36 @@ import TipoCalendarioEscolarLista from '~/paginas/CalendarioEscolar/TipoCalendar
 import TipoCalendarioEscolarForm from '~/paginas/CalendarioEscolar/TipoCalendarioEscolar/tipoCalendarioEscolarForm';
 import TipoFeriadoLista from '~/paginas/CalendarioEscolar/TipoFeriado/tipoFeriadoLista';
 import TipoFeriadoForm from '~/paginas/CalendarioEscolar/TipoFeriado/tipoFeriadoForm';
+import TipoEventosLista from '~/paginas/CalendarioEscolar/TipoEventos/tipoEventosLista';
+import TipoEventosForm from '~/paginas/CalendarioEscolar/TipoEventos/tipoEventosForm';
 
 export default function Rotas() {
   const rotas = new Map();
+
+  rotas.set('/calendario-escolar/tipo-eventos', {
+    breadcrumbName: 'Tipo de Eventos',
+    menu: ['Calendário Escolar'],
+    parent: '/',
+    component: TipoEventosLista,
+    exact: true,
+    tipo: RotasTipo.EstruturadaAutenticada,
+  });
+
+  rotas.set('/calendario-escolar/tipo-eventos/novo', {
+    breadcrumbName: 'Cadastro de Tipo de Eventos',
+    parent: '/calendario-escolar/tipo-eventos',
+    component: TipoEventosForm,
+    exact: true,
+    tipo: RotasTipo.EstruturadaAutenticada,
+  });
+
+  rotas.set('/calendario-escolar/tipo-eventos/editar/:id', {
+    breadcrumbName: 'Cadastro de Tipo de Eventos',
+    parent: '/calendario-escolar/tipo-eventos',
+    component: TipoEventosForm,
+    exact: true,
+    tipo: RotasTipo.EstruturadaAutenticada,
+  });
 
   rotas.set('/planejamento/plano-ciclo', {
     breadcrumbName: 'Plano de Ciclo',

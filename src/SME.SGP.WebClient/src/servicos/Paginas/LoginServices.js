@@ -34,9 +34,9 @@ class LoginService {
         return {
           sucesso: false,
           erroGeral:
-            err.data && err.data.mensagens
-              ? err.data.mensagens.join(',')
-              : 'Falha ao tentar autenticar o servidor',
+            err.response.data && err.response.data.mensagens
+              ? err.response.data.mensagens.join(',')
+              : 'Falha ao tentar autenticar no servidor',
         };
       });
   };

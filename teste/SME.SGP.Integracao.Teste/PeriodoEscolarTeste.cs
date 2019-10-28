@@ -44,7 +44,7 @@ namespace SME.SGP.Integracao.Teste
                 _fixture._clientApi.DefaultRequestHeaders.Authorization =
                     new AuthenticationHeaderValue("Bearer", _fixture.GerarToken(new Permissao[] { Permissao.C_C, Permissao.C_I, Permissao.C_E }));
 
-                adicionarTipoCalendario();
+                AdicionarTipoCalendario();
 
                 _fixture._clientApi.DefaultRequestHeaders.Clear();
 
@@ -73,11 +73,11 @@ namespace SME.SGP.Integracao.Teste
             return Dto;
         }
 
-        private void adicionarTipoCalendario()
+        private void AdicionarTipoCalendario()
         {
             var tipoCalendarioDto = new TipoCalendarioDto();
             tipoCalendarioDto.AnoLetivo = 2019;
-            tipoCalendarioDto.Nome = "Teste 1";
+            tipoCalendarioDto.Nome = "Teste Periodo Escolar";
             tipoCalendarioDto.Periodo = Periodo.Anual;
             tipoCalendarioDto.Modalidade = ModalidadeTipoCalendario.FundamentalMedio;
             tipoCalendarioDto.Situacao = true;

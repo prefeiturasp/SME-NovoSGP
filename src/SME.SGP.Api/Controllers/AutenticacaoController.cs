@@ -109,6 +109,16 @@ namespace SME.SGP.Api.Controllers
             else return Ok(retorno);
         }
 
+        [HttpGet("sair")]
+        [ProducesResponseType(typeof(bool), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [Authorize(Policy = "Bearer")]
+        public IActionResult Sair()
+        {
+            comandosUsuario.Sair();
+            return Ok();
+        }
+
         [HttpPost("solicitar-recuperacao-senha")]
         [ProducesResponseType(typeof(string), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]

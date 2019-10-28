@@ -23,6 +23,8 @@ namespace SME.SGP.Aplicacao {
 
         string SolicitarRecuperacaoSenha (string login);
 
+        bool TokenRecuperacaoSenhaEstaValido(Guid token);
+        void Sair();
         bool TokenRecuperacaoSenhaEstaValido (Guid token);
     }
 }
