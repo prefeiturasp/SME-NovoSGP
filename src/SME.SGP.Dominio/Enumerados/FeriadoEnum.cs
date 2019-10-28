@@ -7,9 +7,6 @@ namespace SME.SGP.Dominio
         [Display(Name = "Carnaval")]
         Carnaval = 1,
 
-        [Display(Name = "Quarta feira de Cinzas")]
-        QuartaCinzas = 2,
-
         [Display(Name = "Sexta-feira Santa")]
         SextaSanta = 3,
 
