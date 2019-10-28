@@ -12,7 +12,7 @@ import SelectComponent from '~/componentes/select';
 import api from '~/servicos/api';
 import CampoTexto from '~/componentes/campoTexto';
 import { sucesso, erro } from '~/servicos/alertas';
-import servicoEvento from '~/servicos/Paginas/Calendario/servicoEvento'
+import servicoEvento from '~/servicos/Paginas/Calendario/ServicoTipoEvento'
 
 const TipoEventosForm = ({ match }) => {
   const campoNomeTipoEventoRef = useRef();
