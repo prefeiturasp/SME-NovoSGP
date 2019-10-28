@@ -3,6 +3,7 @@ using SME.SGP.Dados.Contexto;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 
 namespace SME.SGP.Dados.Repositorios
@@ -23,6 +24,19 @@ namespace SME.SGP.Dados.Repositorios
             query.AppendLine("and id = @id ");
 
             return database.Conexao.QueryFirstOrDefault<TipoCalendario>(query.ToString(), new { id });
+        }
+
+        public TipoCalendario BuscarPorAnoLetivoEModalidade(int anoLetivo, Modalidade modalidade)
+        {
+            StringBuilder query = new StringBuilder();
+
+            query.AppendLine("select *");
+            query.AppendLine("from tipo_calendario");
+            query.AppendLine("where excluido = false");
+            query.AppendLine("and ano_letivo = ?anoLetivo");
+            query.AppendLine("and modalidade = ?modalidade");
+
+            return database.Conexao.QueryFirstOrDefault<TipoCalendario>(query.ToString(), new { anoLetivo, modalidade = (int)modalidade });
         }
 
         public IEnumerable<TipoCalendario> ObterTiposCalendario()
@@ -50,11 +64,10 @@ namespace SME.SGP.Dados.Repositorios
             query.AppendLine("from tipo_calendario ");
             query.AppendLine("where upper(nome) = @nomeMaiusculo ");
             query.AppendLine("and excluido = false");
-            if (id > 0)
-            {
-                query.AppendLine("and id <> @id");
-            }
 
+            if (id > 0)
+                query.AppendLine("and id <> @id");
+                       
             int quantidadeRegistrosExistentes = database.Conexao.QueryFirst<int>(query.ToString(), new { id, nomeMaiusculo }); ;
 
             return quantidadeRegistrosExistentes > 0;

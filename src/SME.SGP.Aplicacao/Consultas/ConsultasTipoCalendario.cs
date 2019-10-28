@@ -1,5 +1,7 @@
-﻿using SME.SGP.Dominio.Interfaces;
+﻿using SME.SGP.Dominio;
+using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
@@ -18,38 +20,62 @@ namespace SME.SGP.Aplicacao
         public TipoCalendarioCompletoDto BuscarPorId(long id)
         {
             var entidade = repositorio.ObterPorId(id);
+
             TipoCalendarioCompletoDto dto = new TipoCalendarioCompletoDto();
-            if (entidade != null)
-            {
-                dto.Id = entidade.Id;
-                dto.Nome = entidade.Nome;
-                dto.AnoLetivo = entidade.AnoLetivo;
-                dto.Periodo = entidade.Periodo;
-                dto.Modalidade = entidade.Modalidade;
-                dto.Situacao = entidade.Situacao;
-                dto.AlteradoEm = entidade.AlteradoEm;
-                dto.AlteradoPor = entidade.AlteradoPor;
-                dto.CriadoRF = entidade.CriadoRF;
-                dto.AlteradoRF = entidade.AlteradoRF;
-                dto.CriadoEm = entidade.CriadoEm;
-                dto.CriadoPor = entidade.CriadoPor;
-            }
+
+            if (entidade != null)            
+                dto = EntidadeParaDtoCompleto(entidade);
+            
             return dto;
+        }
+
+        public TipoCalendarioCompletoDto BuscarPorAnoLetivoEModalidade(int anoLetivo, Modalidade modalidade)
+        {
+            var entidade = repositorio.BuscarPorAnoLetivoEModalidade(anoLetivo, modalidade);
+
+            if(entidade != null)
+                return EntidadeParaDtoCompleto(entidade);
+
+            return null;
         }
 
         public IEnumerable<TipoCalendarioDto> Listar()
         {
             var retorno = repositorio.ObterTiposCalendario();
             return from t in retorno
-                   select new TipoCalendarioDto()
-                   {
-                       Id = t.Id,
-                       Nome = t.Nome,
-                       AnoLetivo = t.AnoLetivo,
-                       Modalidade = t.Modalidade,
-                       DescricaoPeriodo = t.Periodo.GetAttribute<DisplayAttribute>().Name,
-                       Periodo = t.Periodo
-                   };
+                   select EntidadeParaDto(t);
+        }
+
+
+        public TipoCalendarioDto EntidadeParaDto(TipoCalendario entidade)
+        {
+           return new TipoCalendarioDto()
+            {
+                Id = entidade.Id,
+                Nome = entidade.Nome,
+                AnoLetivo = entidade.AnoLetivo,
+                Modalidade = entidade.Modalidade,
+                DescricaoPeriodo = entidade.Periodo.GetAttribute<DisplayAttribute>().Name,
+                Periodo = entidade.Periodo
+            };
+        }
+
+        public TipoCalendarioCompletoDto EntidadeParaDtoCompleto(TipoCalendario entidade)
+        {
+            return new TipoCalendarioCompletoDto
+            {
+                Id = entidade.Id,
+                Nome = entidade.Nome,
+                AnoLetivo = entidade.AnoLetivo,
+                Periodo = entidade.Periodo,
+                Modalidade = entidade.Modalidade,
+                Situacao = entidade.Situacao,
+                AlteradoPor = entidade.AlteradoPor,
+                CriadoRF = entidade.CriadoRF,
+                AlteradoRF = entidade.AlteradoRF,
+                CriadoEm = entidade.CriadoEm,
+                CriadoPor = entidade.CriadoPor
+            };
         }
     }
 }

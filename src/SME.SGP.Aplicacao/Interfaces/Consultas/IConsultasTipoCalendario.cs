@@ -1,4 +1,5 @@
-﻿using SME.SGP.Infra;
+﻿using SME.SGP.Dominio;
+using SME.SGP.Infra;
 using System.Collections.Generic;
 
 namespace SME.SGP.Aplicacao
@@ -8,5 +9,7 @@ namespace SME.SGP.Aplicacao
         TipoCalendarioCompletoDto BuscarPorId(long id);
 
         IEnumerable<TipoCalendarioDto> Listar();
+
+        TipoCalendarioCompletoDto BuscarPorAnoLetivoEModalidade(int anoLetivo, Modalidade modalidade);
     }
 }
