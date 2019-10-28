@@ -82,6 +82,31 @@ namespace SME.SGP.Dominio
             return Perfis.FirstOrDefault().CodigoPerfil;
         }
 
+        public void PodeCriarEvento(Evento evento)
+        {
+            if (!PossuiPerfilSme() && string.IsNullOrWhiteSpace(evento.DreId))
+            {
+                throw new NegocioException("É necessário informar a DRE.");
+            }
+
+            if (!PossuiPerfilSmeOuDre() && string.IsNullOrWhiteSpace(evento.UeId))
+            {
+                throw new NegocioException("É necessário informar a UE.");
+            }
+
+            if ((evento.TipoEvento.LocalOcorrencia == EventoLocalOcorrencia.SME ||
+                 evento.TipoEvento.LocalOcorrencia == EventoLocalOcorrencia.SMEUE) &&
+                 !PossuiPerfilSme())
+            {
+                throw new NegocioException("Somente usuários da SME podem criar este tipo de evento.");
+            }
+
+            if (evento.TipoEvento.LocalOcorrencia != EventoLocalOcorrencia.UE && !PossuiPerfilSmeOuDre())
+            {
+                throw new NegocioException("Somente usuários da SME ou da DRE podem criar este tipo de evento.");
+            }
+        }
+
         public bool PodeReiniciarSenha()
         {
             return !string.IsNullOrEmpty(Email);

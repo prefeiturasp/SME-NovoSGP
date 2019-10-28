@@ -1,6 +1,5 @@
 ﻿using Microsoft.Extensions.Configuration;
 using SME.SGP.Aplicacao.Integracoes;
-using SME.SGP.Aplicacao.Servicos;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
@@ -14,6 +13,7 @@ namespace SME.SGP.Aplicacao
     public class ComandosUsuario : IComandosUsuario
     {
         private readonly IConfiguration configuration;
+        private readonly IRepositorioCache repositorioCache;
         private readonly IRepositorioUsuario repositorioUsuario;
         private readonly IServicoAbrangencia servicoAbrangencia;
         private readonly IServicoAutenticacao servicoAutenticacao;
@@ -31,6 +31,7 @@ namespace SME.SGP.Aplicacao
             IServicoTokenJwt servicoTokenJwt,
             IServicoEmail servicoEmail,
             IConfiguration configuration,
+            IRepositorioCache repositorioCache,            
             IServicoAbrangencia servicoAbrangencia)
         {
             this.repositorioUsuario = repositorioUsuario ??
@@ -50,6 +51,7 @@ namespace SME.SGP.Aplicacao
 
             this.servicoEmail = servicoEmail ?? throw new ArgumentNullException(nameof(servicoEmail));
             this.configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
+            this.repositorioCache = repositorioCache ?? throw new ArgumentNullException(nameof(repositorioCache));
         }
 
         //  TODO: aplicar validações permissão de acesso
@@ -189,6 +191,13 @@ namespace SME.SGP.Aplicacao
             }
 
             return retorno;
+        }
+
+        public void Sair()
+        {
+            var login = servicoUsuario.ObterLoginAtual();
+            var chaveRedis = $"perfis-usuario-{login}";
+            repositorioCache.SalvarAsync(chaveRedis, string.Empty);
         }
 
         public string SolicitarRecuperacaoSenha(string login)

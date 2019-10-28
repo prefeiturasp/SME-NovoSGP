@@ -36,6 +36,8 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IComandosTipoCalendario, ComandosTipoCalendario>();
             services.TryAddScoped<IComandosFeriadoCalendario, ComandosFeriadoCalendario>();
             services.TryAddScoped<IComandosPeriodoEscolar, ComandosPeriodoEscolar>();
+            services.TryAddScoped<IComandosEventoTipo, ComandosEventoTipo>();
+            services.TryAddScoped<IComandosEvento, ComandosEvento>();
         }
 
         private static void RegistrarConsultas(IServiceCollection services)
@@ -58,6 +60,7 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IConsultasPeriodoEscolar, ConsultasPeriodoEscolar>();
             services.TryAddScoped<IConsultasUsuario, ConsultasUsuario>();
             services.TryAddScoped<IConsultasAbrangencia, ConsultasAbrangencia>();
+            services.TryAddScoped<IConsultasEventoTipo, ConsultasEventoTipo>();
         }
 
         private static void RegistrarContextos(IServiceCollection services)
@@ -91,6 +94,8 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IRepositorioTipoCalendario, RepositorioTipoCalendario>();
             services.TryAddScoped<IRepositorioFeriadoCalendario, RepositorioFeriadoCalendario>();
             services.TryAddScoped<IRepositorioPeriodoEscolar, RepositorioPeriodoEscolar>();
+            services.TryAddScoped<IRepositorioEvento, RepositorioEvento>();
+            services.TryAddScoped<IRepositorioEventoTipo, RepositorioEventoTipo>();
         }
 
         private static void RegistrarServicos(IServiceCollection services)
@@ -106,6 +111,7 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IServicoPeriodoEscolar, ServicoPeriodoEscolar>();
             services.TryAddScoped<IServicoFeriadoCalendario, ServicoFeriadoCalendario>();
             services.TryAddScoped<IServicoAbrangencia, ServicoAbrangencia>();
+            services.TryAddScoped<IServicoEvento, ServicoEvento>();
         }
     }
 }
