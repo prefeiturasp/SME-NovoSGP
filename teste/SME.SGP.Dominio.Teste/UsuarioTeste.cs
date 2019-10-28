@@ -40,6 +40,54 @@ namespace SME.SGP.Dominio.Teste
         }
 
         [Fact]
+        public void DevePermitirCriarEvento()
+        {
+            var perfisUsuario = new List<PrioridadePerfil>
+            {
+                new PrioridadePerfil
+                {
+                    Tipo=TipoPerfil.SME
+                }
+            };
+            var evento = new Evento
+            {
+                TipoEvento = new Entidades.EventoTipo
+                {
+                    LocalOcorrencia = EventoLocalOcorrencia.SME
+                }
+            };
+            var usuario = new Usuario();
+            usuario.DefinirPerfis(perfisUsuario);
+            usuario.PodeCriarEvento(evento);
+            Assert.True(true);
+        }
+
+        [Fact]
+        public void DevePermitirCriarEventoSemPerfilDeSMEouDRE()
+        {
+            var perfisUsuario = new List<PrioridadePerfil>
+            {
+                new PrioridadePerfil
+                {
+                    Tipo=TipoPerfil.UE
+                }
+            };
+            var evento = new Evento
+            {
+                TipoEvento = new Entidades.EventoTipo
+                {
+                    LocalOcorrencia = EventoLocalOcorrencia.UE
+                },
+                DreId = "123",
+                UeId = "123"
+            };
+            var usuario = new Usuario();
+            usuario.DefinirPerfis(perfisUsuario);
+            usuario.PodeCriarEvento(evento);
+            Assert.True(true);
+        }
+
+        [Fact]
         public void DeveValidarSenha()
         {
             var Usuario = new Usuario();
@@ -73,6 +121,60 @@ namespace SME.SGP.Dominio.Teste
             var novoEmail = "teste@gmail.com";
             usuario.DefinirPerfis(perfisUsuario);
             Assert.Throws<NegocioException>(() => usuario.DefinirEmail(novoEmail));
+        }
+
+        [Fact]
+        public void NaoDevePermitirCriarEventoSemInformarDREOuUE()
+        {
+            var perfisUsuario = new List<PrioridadePerfil>
+            {
+                new PrioridadePerfil
+                {
+                    Tipo=TipoPerfil.UE
+                }
+            };
+            var evento = new Evento
+            {
+                TipoEvento = new Entidades.EventoTipo
+                {
+                    LocalOcorrencia = EventoLocalOcorrencia.SME
+                },
+                UeId = "123"
+            };
+            var usuario = new Usuario();
+            usuario.DefinirPerfis(perfisUsuario);
+            var erro = Assert.Throws<NegocioException>(() => usuario.PodeCriarEvento(evento));
+            Assert.Equal("É necessário informar a DRE.", erro.Message);
+
+            evento.DreId = "123";
+            evento.UeId = "";
+            erro = Assert.Throws<NegocioException>(() => usuario.PodeCriarEvento(evento));
+            Assert.Equal("É necessário informar a UE.", erro.Message);
+        }
+
+        [Fact]
+        public void NaoDevePermitirCriarEventoSemPerfilDeSME()
+        {
+            var perfisUsuario = new List<PrioridadePerfil>
+            {
+                new PrioridadePerfil
+                {
+                    Tipo=TipoPerfil.UE
+                }
+            };
+            var evento = new Evento
+            {
+                TipoEvento = new Entidades.EventoTipo
+                {
+                    LocalOcorrencia = EventoLocalOcorrencia.SME
+                },
+                DreId = "123",
+                UeId = "123"
+            };
+            var usuario = new Usuario();
+            usuario.DefinirPerfis(perfisUsuario);
+            var erro = Assert.Throws<NegocioException>(() => usuario.PodeCriarEvento(evento));
+            Assert.Equal("Somente usuários da SME podem criar este tipo de evento.", erro.Message);
         }
     }
 }

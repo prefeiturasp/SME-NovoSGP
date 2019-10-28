@@ -160,7 +160,7 @@
         [PermissaoMenu(EhMenu = false, EhAlteracao = true, Menu = "Atribuição Professor", Agrupamento = "Atribuição Professor")]
         AP_A = 45,
 
-        [PermissaoMenu(Menu = "Usuários", Icone = "fas fa-book-reader", Agrupamento = "Configurações", OrdemAgrupamento = 7, OrdemMenu = 1, Url = "usuarios/alterar-senha/", EhAlteracao = true,
+        [PermissaoMenu(Menu = "Usuários", Icone = "fas fa-book-reader", Agrupamento = "Configurações", OrdemAgrupamento = 7, OrdemMenu = 1, Url = "usuarios/reiniciar-senha/", EhAlteracao = true,
            EhSubMenu = true, SubMenu = "Reiniciar Senha")]
         AS_C = 47,
 

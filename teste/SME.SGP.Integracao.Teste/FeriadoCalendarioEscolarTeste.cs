@@ -37,7 +37,7 @@ namespace SME.SGP.Integracao.Teste
                 Nome = "Feriado do dia de hoje teste 1",
                 Ativo = true,
                 Abrangencia = AbrangenciaFeriadoCalendario.Nacional,
-                Tipo = TipoFeriadoCalendario.Movel
+                Tipo = TipoFeriadoCalendario.Fixo
             };
 
             var feriadoCalendarioDto2 = new FeriadoCalendarioDto
@@ -46,7 +46,7 @@ namespace SME.SGP.Integracao.Teste
                 Nome = "Feriado do dia de hoje teste 2",
                 Ativo = true,
                 Abrangencia = AbrangenciaFeriadoCalendario.Estadual,
-                Tipo = TipoFeriadoCalendario.Movel
+                Tipo = TipoFeriadoCalendario.Fixo
             };
 
             var filtro = new FiltroFeriadoCalendarioDto
