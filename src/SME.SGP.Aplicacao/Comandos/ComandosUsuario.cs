@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.Configuration;
 using SME.SGP.Aplicacao.Integracoes;
+using SME.SGP.Aplicacao.Servicos;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
@@ -31,7 +32,7 @@ namespace SME.SGP.Aplicacao
             IServicoTokenJwt servicoTokenJwt,
             IServicoEmail servicoEmail,
             IConfiguration configuration,
-            IRepositorioCache repositorioCache,            
+            IRepositorioCache repositorioCache,
             IServicoAbrangencia servicoAbrangencia)
         {
             this.repositorioUsuario = repositorioUsuario ??

@@ -42,7 +42,7 @@ namespace SME.SGP.Api.Controllers
         [Authorize("Bearer")]
         public async Task<IActionResult> AtualizarPerfil(Guid guid)
         {
-            if (guid.Empty())
+            if (guid == Guid.Empty)
                 throw new NegocioException("Informe um perfil");
 
             var retornoAutenticacao = await comandosUsuario.ModificarPerfil(guid);
