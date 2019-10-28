@@ -159,7 +159,7 @@ namespace SME.SGP.Aplicacao
 
             if (permissionamentos == null || !permissionamentos.Any())
             {
-                throw new NegocioException($"Não foi possível obter os permissionamentos do perfil {perfil.ToString()}");
+                throw new NegocioException($"Não foi possível obter os permissionamentos do perfil selecionado");
             }
             else
             {
