@@ -101,7 +101,7 @@ const Sider = () => {
   };
 
   const criarItensMenu = menus => {
-    return menus.map(item => {
+    const itens = menus.map(item => {
       return (
         item.subMenus && item.subMenus.length > 0 ?
           criarMenus([item]) :
@@ -111,12 +111,14 @@ const Sider = () => {
               <Link
                 to={item.url}
                 id={"link-" + item.codigo}
-              />)
+              />
+            )
               : ''
             }
           </Menu.Item>
       )
     })
+    return itens;
   }
 
   const criarMenus = menu => {
@@ -221,37 +223,7 @@ const Sider = () => {
               onSelect={selecionarItem.bind(NavegacaoStore.menuSelecionado)}
               selectedKeys={NavegacaoStore.menuSelecionado}
             >
-              {usuario.menu && usuario.menu.length > 0 ?
-                usuario.menu.map(subMenu => {
-                  const temSubmenu = (subMenu.subMenus && subMenu.subMenus.length > 0);
-                  if (subMenu.ehMenu || temSubmenu) {
-                    const menuKey = (temSubmenu ? 'sub-' : 'menu-') + subMenu.codigo;
-                    return (
-                      <SubMenu
-                        id={subMenu.codigo}
-                        key={menuKey}
-                        onMouseEnter={(e) => alterarPosicaoJanelaPopup(subMenu.codigo, subMenu.quantidadeMenus)}
-                        title={
-                          subMenu.icone ?
-                            <div className={"item-menu-retraido"}>
-                              <i
-                                className={subMenu.icone + (NavegacaoStore.retraido ? ' icons-retraido' : ' icons')}
-                              />
-                              <span>{subMenu.descricao}</span>
-                            </div>
-                            :
-                            <div className={"item-menu-retraido" + temSubmenu ? " submenu-subnivel" : ""}>
-                              <span>{subMenu.descricao}</span>
-                            </div>
-                        }
-                      >
-                        {criarItensMenu(subMenu.menus ? subMenu.menus : subMenu.subMenus)}
-                      </SubMenu>
-                    );
-                  }
-                }) :
-                ''
-              }
+              {criarMenus(usuario.menu)}
             </Menu>
           </div>
         </MenuScope>
