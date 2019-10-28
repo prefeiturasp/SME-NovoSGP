@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.Configuration;
 using SME.SGP.Aplicacao.Integracoes;
+using SME.SGP.Aplicacao.Servicos;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
@@ -15,6 +16,7 @@ namespace SME.SGP.Aplicacao
         private readonly IConfiguration configuration;
         private readonly IRepositorioCache repositorioCache;
         private readonly IRepositorioUsuario repositorioUsuario;
+        private readonly IServicoAbrangencia servicoAbrangencia;
         private readonly IServicoAutenticacao servicoAutenticacao;
         private readonly IServicoEmail servicoEmail;
         private readonly IServicoEOL servicoEOL;
@@ -30,7 +32,8 @@ namespace SME.SGP.Aplicacao
             IServicoTokenJwt servicoTokenJwt,
             IServicoEmail servicoEmail,
             IConfiguration configuration,
-            IRepositorioCache repositorioCache)
+            IRepositorioCache repositorioCache,
+            IServicoAbrangencia servicoAbrangencia)
         {
             this.repositorioUsuario = repositorioUsuario ??
                 throw new System.ArgumentNullException(nameof(repositorioUsuario));
@@ -44,6 +47,9 @@ namespace SME.SGP.Aplicacao
                 throw new System.ArgumentNullException(nameof(servicoEOL));
             this.servicoTokenJwt = servicoTokenJwt ??
                 throw new System.ArgumentNullException(nameof(servicoTokenJwt));
+            this.servicoAbrangencia = servicoAbrangencia ??
+                throw new System.ArgumentNullException(nameof(servicoAbrangencia));
+
             this.servicoEmail = servicoEmail ?? throw new ArgumentNullException(nameof(servicoEmail));
             this.configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
             this.repositorioCache = repositorioCache ?? throw new ArgumentNullException(nameof(repositorioCache));
@@ -120,7 +126,9 @@ namespace SME.SGP.Aplicacao
 
                 retornoAutenticacaoEol.Item1.PerfisUsuario = servicoPerfil.DefinirPerfilPrioritario(retornoAutenticacaoEol.Item3, usuario);
 
-                var permissionamentos = await servicoEOL.ObterPermissoesPorPerfil(retornoAutenticacaoEol.Item1.PerfisUsuario.PerfilSelecionado);
+                var perfilSelecionado = retornoAutenticacaoEol.Item1.PerfisUsuario.PerfilSelecionado;
+
+                var permissionamentos = await servicoEOL.ObterPermissoesPorPerfil(perfilSelecionado);
 
                 if (permissionamentos == null || !permissionamentos.Any())
                 {
@@ -133,27 +141,28 @@ namespace SME.SGP.Aplicacao
                         .Select(a => (Permissao)a)
                         .ToList();
 
-                    retornoAutenticacaoEol.Item1.Token = servicoTokenJwt.GerarToken(login, usuario.CodigoRf, listaPermissoes, retornoAutenticacaoEol.Item1.PerfisUsuario.PerfilSelecionado.ToString());
+                    retornoAutenticacaoEol.Item1.Token = servicoTokenJwt.GerarToken(login, usuario.CodigoRf, retornoAutenticacaoEol.Item1.PerfisUsuario.PerfilSelecionado, listaPermissoes);
 
                     usuario.AtualizaUltimoLogin();
                     repositorioUsuario.Salvar(usuario);
+                    await servicoAbrangencia.Salvar(login, perfilSelecionado, true);
                 }
             }
             return retornoAutenticacaoEol.Item1;
         }
 
-        public async Task<string> ModificarPerfil(string guid)
+        public async Task<string> ModificarPerfil(Guid perfil)
         {
             string loginAtual = servicoUsuario.ObterLoginAtual();
             string codigoRfAtual = servicoUsuario.ObterRf();
 
-            await servicoUsuario.PodeModificarPerfil(guid, loginAtual);
+            await servicoUsuario.PodeModificarPerfil(perfil, loginAtual);
 
-            var permissionamentos = await servicoEOL.ObterPermissoesPorPerfil(Guid.Parse(guid));
+            var permissionamentos = await servicoEOL.ObterPermissoesPorPerfil(perfil);
 
             if (permissionamentos == null || !permissionamentos.Any())
             {
-                throw new NegocioException($"Não foi possível obter os permissionamentos do perfil {guid}");
+                throw new NegocioException($"Não foi possível obter os permissionamentos do perfil selecionado");
             }
             else
             {
@@ -162,7 +171,9 @@ namespace SME.SGP.Aplicacao
                     .Select(a => (Permissao)a)
                     .ToList();
 
-                return servicoTokenJwt.GerarToken(loginAtual, codigoRfAtual, listaPermissoes, guid);
+                await servicoAbrangencia.Salvar(loginAtual, perfil, false);
+
+                return servicoTokenJwt.GerarToken(loginAtual, codigoRfAtual, perfil, listaPermissoes);
             }
         }
 
