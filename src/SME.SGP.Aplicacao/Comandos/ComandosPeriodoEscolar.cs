@@ -47,11 +47,10 @@ namespace SME.SGP.Aplicacao
         {
             return new PeriodoEscolar
             {
-                Id = periodoDto.Id,
                 Bimestre = periodoDto.Bimestre,
                 PeriodoInicio = periodoDto.PeriodoInicio,
                 PeriodoFim = periodoDto.PeriodoFim,
-                TipoCalendario = tipoCalendario
+                TipoCalendarioId = tipoCalendario
             };
         }
 

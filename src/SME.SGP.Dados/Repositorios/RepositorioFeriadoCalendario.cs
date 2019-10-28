@@ -36,6 +36,7 @@ namespace SME.SGP.Dados.Repositorios
                 query.AppendLine("and upper(f_unaccent(nome)) LIKE f_unaccent(@Nome)");
             if (filtro.Abrangencia > 0)
                 query.AppendLine("and abrangencia = @Abrangencia");
+
             if (filtro.Tipo > 0)
                 query.AppendLine("and tipo = @Tipo");
 

@@ -21,6 +21,18 @@ namespace SME.SGP.Api.Controllers
             this.comandosUsuario = comandosUsuario ?? throw new System.ArgumentNullException(nameof(comandosUsuario));
         }
 
+        [Route("senha")]
+        [HttpPut]
+        [ProducesResponseType(200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 601)]
+        [Authorize("Bearer")]
+        public async Task<IActionResult> AlterarSenha([FromBody]AlterarSenhaDto alterarSenhaDto)
+        {
+            await comandosUsuario.AlterarSenha(alterarSenhaDto);
+            return Ok();
+        }
+
         [HttpPut]
         [ProducesResponseType(200)]
         [ProducesResponseType(401)]
@@ -67,7 +79,7 @@ namespace SME.SGP.Api.Controllers
             var retornoAutenticacao = await comandosUsuario.Autenticar(primeiroAcessoDto.Usuario, primeiroAcessoDto.NovaSenha);
 
             if (!retornoAutenticacao.Autenticado)
-                return StatusCode(401);
+                return StatusCode(403);
 
             return Ok(retornoAutenticacao);
         }
@@ -95,6 +107,16 @@ namespace SME.SGP.Api.Controllers
             if (retorno.DeveAtualizarEmail)
                 return StatusCode(601, retorno);
             else return Ok(retorno);
+        }
+
+        [HttpGet("sair")]
+        [ProducesResponseType(typeof(bool), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [Authorize(Policy = "Bearer")]
+        public IActionResult Sair()
+        {
+            comandosUsuario.Sair();
+            return Ok();
         }
 
         [HttpPost("solicitar-recuperacao-senha")]

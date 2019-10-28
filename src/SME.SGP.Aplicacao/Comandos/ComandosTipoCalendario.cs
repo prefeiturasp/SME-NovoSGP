@@ -8,10 +8,12 @@ namespace SME.SGP.Aplicacao
     public class ComandosTipoCalendario : IComandosTipoCalendario
     {
         private readonly IRepositorioTipoCalendario repositorio;
+        private readonly IServicoFeriadoCalendario servicoFeriadoCalendario;
 
-        public ComandosTipoCalendario(IRepositorioTipoCalendario repositorio)
+        public ComandosTipoCalendario(IRepositorioTipoCalendario repositorio, IServicoFeriadoCalendario servicoFeriadoCalendario)
         {
             this.repositorio = repositorio ?? throw new ArgumentNullException(nameof(repositorio));
+            this.servicoFeriadoCalendario = servicoFeriadoCalendario ?? throw new ArgumentNullException(nameof(servicoFeriadoCalendario));
         }
 
         public TipoCalendario MapearParaDominio(TipoCalendarioDto dto)
@@ -60,6 +62,9 @@ namespace SME.SGP.Aplicacao
             {
                 throw new NegocioException($"O Tipo de Calendário Escolar '{dto.Nome}' já existe");
             }
+
+            servicoFeriadoCalendario.VerficaSeExisteFeriadosMoveisEInclui(dto.AnoLetivo);
+
             repositorio.Salvar(tipoCalendario);
         }
     }
