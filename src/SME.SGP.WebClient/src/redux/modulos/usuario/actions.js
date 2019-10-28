@@ -65,3 +65,10 @@ export function salvarDadosUsuario(filtro) {
     payload: filtro,
   };
 }
+
+export function setMenu(menu) {
+  return {
+    type: '@usuario/setMenu',
+    payload: menu,
+  };
+}
