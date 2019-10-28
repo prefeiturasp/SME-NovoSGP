@@ -12,9 +12,10 @@ const inicial = {
   dadosUsuario: [],
   modificarSenha: '',
   meusDados: {
-    foto:'https://graziellanicolai.com.br/wp-content/uploads/2018/03/Graziella-perfil.jpg'
+    foto:
+      'https://graziellanicolai.com.br/wp-content/uploads/2018/03/Graziella-perfil.jpg',
   },
-  possuiPerfilSmeOuDre: false
+  possuiPerfilSmeOuDre: false,
 };
 
 export default function usuario(state = inicial, action) {
@@ -53,10 +54,12 @@ export default function usuario(state = inicial, action) {
       case '@usuario/removerTurma':
         draft.turmaSelecionada = [];
         break;
-      case '@usuario/meusDados': {
+      case '@usuario/meusDados':
         draft.meusDados = action.payload;
         break;
-      }
+      case '@usuario/meusDadosSalvarEmail':
+        draft.meusDados.email = action.payload;
+        break;
       case '@usuario/filtroAtual':
         draft.filtroAtual = action.payload;
         break;
