@@ -2,10 +2,11 @@
 using SME.SGP.Dados.Contexto;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
+using SME.SGP.Infra;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace SME.SGP.Dados.Repositorios
 {
@@ -20,11 +21,94 @@ namespace SME.SGP.Dados.Repositorios
             return database.Conexao.Query<bool>("select 1 from evento where data_inicio = @dataInicio;", new { dataInicio }).FirstOrDefault();
         }
 
-        public IEnumerable<Evento> Listar(long? tipoCalendarioId, long? tipoEventoId, string nomeEvento, DateTime? dataInicio, DateTime? dataFim)
+        public async Task<PaginacaoResultadoDto<Evento>> Listar(long? tipoCalendarioId, long? tipoEventoId, string nomeEvento, DateTime? dataInicio, DateTime? dataFim, Paginacao paginacao)
         {
-            var query = new StringBuilder();
+            StringBuilder query = new StringBuilder();
 
-            return database.Conexao.Query<Evento>(query.ToString());
+            query.AppendLine("select");
+            query.AppendLine("e.id as EventoId,");
+            query.AppendLine("e.nome,");
+            query.AppendLine("e.descricao,");
+            query.AppendLine("e.data_inicio,");
+            query.AppendLine("e.data_fim,");
+            query.AppendLine("e.dre_id,");
+            query.AppendLine("e.letivo,");
+            query.AppendLine("e.feriado_id,");
+            query.AppendLine("e.tipo_calendario_id,");
+            query.AppendLine("e.tipo_evento_id,");
+            query.AppendLine("e.ue_id,");
+            query.AppendLine("e.criado_em,");
+            query.AppendLine("e.criado_por,");
+            query.AppendLine("e.alterado_em,");
+            query.AppendLine("e.alterado_por,");
+            query.AppendLine("e.criado_rf,");
+            query.AppendLine("e.alterado_rf,");
+            query.AppendLine("et.id as TipoEventoId,");
+            query.AppendLine("et.ativo,");
+            query.AppendLine("et.descricao,");
+            query.AppendLine("et.excluido");
+
+            MontaQueryFrom(query);
+            MontaQueryFiltro(tipoCalendarioId, tipoEventoId, dataInicio, dataFim, nomeEvento, query);
+            query.Append(";");
+
+            query.AppendLine("select count(e.*)");
+
+            MontaQueryFrom(query);
+            MontaQueryFiltro(tipoCalendarioId, tipoEventoId, dataInicio, dataFim, nomeEvento, query);
+            query.AppendLine(" OFFSET @ignorar ROWS FETCH NEXT @quantidadeBuscar ROWS ONLY ");
+            query.Append(";");
+
+            if (!string.IsNullOrEmpty(nomeEvento))
+            {
+                nomeEvento = $"%{nomeEvento}%";
+            }
+
+            var retornoPaginado = new PaginacaoResultadoDto<Evento>();
+
+            using (var multi = await database.Conexao.QueryMultipleAsync(query.ToString(),
+            new { tipoCalendarioId, tipoEventoId, nomeEvento, ignorar = paginacao.QuantidadeRegistrosIgnorados, quantidadeBuscar = paginacao.QuantidadeRegistros }))
+
+            {
+                retornoPaginado.Items = multi.Read<Evento>();
+                retornoPaginado.TotalRegistros = multi.ReadFirst<int>();
+            }
+
+            retornoPaginado.TotalPaginas = (int)Math.Ceiling((double)retornoPaginado.TotalRegistros / paginacao.QuantidadeRegistros);
+
+            return retornoPaginado;
+        }
+
+        private static void MontaQueryFiltro(long? tipoCalendarioId, long? tipoEventoId, DateTime? dataInicio, DateTime? dataFim, string nomeEvento, StringBuilder query)
+        {
+            query.AppendLine("where");
+            query.AppendLine("e.excluido = false");
+            query.AppendLine("and et.ativo = true");
+            query.AppendLine("and et.excluido = false");
+
+            if (tipoCalendarioId.HasValue)
+                query.AppendLine("and e.tipo_calendario_id = @tipoCalendarioId");
+
+            if (tipoEventoId.HasValue)
+                query.AppendLine("and e.tipo_evento_id = @tipoEventoId");
+
+            if (dataInicio.HasValue && dataFim.HasValue)
+            {
+                query.AppendLine("and e.data_inicio = @dataInicio");
+                query.AppendLine("and e.data_fim = @dataFim");
+            }
+            if (string.IsNullOrWhiteSpace(nomeEvento))
+            {
+                query.AppendLine("and lower(f_unaccent(e.nome)) LIKE @nomeEvento");
+            }
+        }
+
+        private static void MontaQueryFrom(StringBuilder query)
+        {
+            query.AppendLine("from");
+            query.AppendLine("evento e");
+            query.AppendLine("inner join evento_tipo et on");
+            query.AppendLine("e.tipo_evento_id = et.id");
         }
     }
 }
