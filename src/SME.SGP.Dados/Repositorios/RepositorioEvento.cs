@@ -4,7 +4,6 @@ using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System;
-using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -25,6 +24,12 @@ namespace SME.SGP.Dados.Repositorios
         public async Task<PaginacaoResultadoDto<Evento>> Listar(long? tipoCalendarioId, long? tipoEventoId, string nomeEvento, DateTime? dataInicio, DateTime? dataFim, Paginacao paginacao)
         {
             StringBuilder query = new StringBuilder();
+
+            query.AppendLine("select count(e.*) as Total");
+
+            MontaQueryFrom(query);
+            MontaQueryFiltro(tipoCalendarioId, tipoEventoId, dataInicio, dataFim, nomeEvento, query);
+            query.Append(";");
 
             query.AppendLine("select");
             query.AppendLine("e.id as EventoId,");
@@ -51,13 +56,8 @@ namespace SME.SGP.Dados.Repositorios
 
             MontaQueryFrom(query);
             MontaQueryFiltro(tipoCalendarioId, tipoEventoId, dataInicio, dataFim, nomeEvento, query);
-            query.Append(";");
+            query.Append(" OFFSET @ignorar ROWS FETCH NEXT @quantidadeBuscar ROWS ONLY");
 
-            query.AppendLine("select count(e.*)");
-
-            MontaQueryFrom(query);
-            MontaQueryFiltro(tipoCalendarioId, tipoEventoId, dataInicio, dataFim, nomeEvento, query);
-            query.AppendLine(" OFFSET @ignorar ROWS FETCH NEXT @quantidadeBuscar ROWS ONLY ");
             query.Append(";");
 
             if (!string.IsNullOrEmpty(nomeEvento))
@@ -68,11 +68,17 @@ namespace SME.SGP.Dados.Repositorios
             var retornoPaginado = new PaginacaoResultadoDto<Evento>();
 
             using (var multi = await database.Conexao.QueryMultipleAsync(query.ToString(),
-            new { tipoCalendarioId, tipoEventoId, nomeEvento, ignorar = paginacao.QuantidadeRegistrosIgnorados, quantidadeBuscar = paginacao.QuantidadeRegistros }))
-
+            new
+            {
+                tipoCalendarioId,
+                tipoEventoId,
+                nomeEvento,
+                ignorar = paginacao.QuantidadeRegistrosIgnorados,
+                quantidadeBuscar = paginacao.QuantidadeRegistros
+            }))
             {
                 retornoPaginado.Items = multi.Read<Evento>();
-                retornoPaginado.TotalRegistros = multi.ReadFirst<int>();
+                retornoPaginado.TotalRegistros = multi.ReadFirstOrDefault<int>();
             }
 
             retornoPaginado.TotalPaginas = (int)Math.Ceiling((double)retornoPaginado.TotalRegistros / paginacao.QuantidadeRegistros);
@@ -98,7 +104,7 @@ namespace SME.SGP.Dados.Repositorios
                 query.AppendLine("and e.data_inicio = @dataInicio");
                 query.AppendLine("and e.data_fim = @dataFim");
             }
-            if (string.IsNullOrWhiteSpace(nomeEvento))
+            if (!string.IsNullOrWhiteSpace(nomeEvento))
             {
                 query.AppendLine("and lower(f_unaccent(e.nome)) LIKE @nomeEvento");
             }
