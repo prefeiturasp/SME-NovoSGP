@@ -1,4 +1,5 @@
 ﻿import React from 'react';
+import { useSelector } from 'react-redux';
 import { Transition } from 'react-spring/renderprops';
 import { animated } from 'react-spring';
 
@@ -16,10 +17,14 @@ const SemEvento = () => {
 const DiaCompleto = props => {
   const { days, calendar } = props;
 
+  const diaSelecionado = useSelector(
+    state => state.calendarioEscolar.diaSelecionado
+  );
+
   let estaAberto = false;
 
   for (let i = 0; i < days.length; i += 1)
-    if (days[i] === calendar.diaSelecionado) estaAberto = true;
+    if (days[i] === diaSelecionado) estaAberto = true;
 
   return (
     <Transition

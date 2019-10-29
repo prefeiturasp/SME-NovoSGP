@@ -1,4 +1,4 @@
-﻿import React, { useEffect } from 'react';
+﻿import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import { useSelector } from 'react-redux';
 import styled from 'styled-components';
@@ -34,41 +34,73 @@ const MesCompleto = props => {
 
   const mesesParam = meses.split(',');
   const mesesCalendario = useSelector(state => state.calendarioEscolar.meses);
-  const diasSemana = {};
+
   let mes = -1;
-  let dias = [];
   let ultimoUsado = -1;
-  let estaAberto = false;
+
+  const [weeks, setWeeks] = useState([]);
+  const [estaAberto, setEstaAberto] = useState(false);
 
   useEffect(() => {
     mesesParam.forEach(mesParam => {
       if (mesesCalendario[mesParam].estaAberto) {
-        estaAberto = true;
+        setEstaAberto(true);
         mes = parseInt(mesParam, 10);
       }
     });
 
+    let diasSemana = [];
+
     if (mes >= 0 && diasSemana[mes] === undefined) {
       const dataAtual = new Date();
-      const data = new Date(dataAtual.getFullYear(), mes, 1);
+      const data = new Date(dataAtual.getFullYear(), mes - 1, 1);
       data.setDate(data.getDate() - data.getDay() - 1);
 
-      for (let j = 0; j < 6; j += 1) {
-        const dia = [];
-        for (let k = 0; k < 7; k += 1)
-          dia.push(new Date(data.setDate(data.getDate() + 1)));
-        dias.push(dia);
+      let diasDaSemana = [];
+      for (var numSemanas = 0; numSemanas < 6; numSemanas += 1) {
+        diasDaSemana[numSemanas] = [];
+        for (var numDias = 0; numDias < 7; numDias += 1) {
+          diasDaSemana[numSemanas].push(
+            new Date(data.setDate(data.getDate() + 1))
+          );
+        }
+        // diasSemana.push(diasDaSemana);
       }
 
-      diasSemana[mes] = dias;
+      // console.log(diasDaSemana);
+
+      // console.log(diasSemana);
+
+      setWeeks(diasDaSemana);
     }
 
-    if (mes === -1) dias = diasSemana[ultimoUsado];
-    else {
-      dias = diasSemana[mes];
-      ultimoUsado = mes;
-    }
+    //   diasSemana[mes] = weeks;
+
+    // for (let numSemanas = 0; numSemanas < 6; numSemanas += 1) {
+    //   const diasLista = [];
+    //   for (let numDias = 0; numDias < 7; numDias += 1) {
+    //     diasLista.push(new Date(data.setDate(data.getDate() + 1)));
+    //   }
+    //   setDias(diasLista);
+    // }
+    // }
+
+    // if (mes === -1) setWeeks(diasSemana[ultimoUsado]);
+    // else {
+    //   // setWeeks(diasSemana[mes]);
+    //   ultimoUsado = mes;
+    // }
+
+    // if (mes === -1) setDias(diasSemana[ultimoUsado]);
+    // else {
+    //   setDias(diasSemana[mes]);
+    //   ultimoUsado = mes;
+    // }
   }, [mesesCalendario]);
+
+  useEffect(() => {
+    // console.log(weeks);
+  }, [weeks]);
 
   return (
     <Transition
@@ -104,22 +136,23 @@ const MesCompleto = props => {
               <DiaDaSemana nomeDia="Sexta" />
               <DiaDaSemana nomeDia="Sábado" />
             </Div>
-            <Semana firstWeek days={dias[0]} currentMonth={ultimoUsado} />
-            <FullDay days={dias[0]} />
-            <Semana days={dias[1]} currentMonth={ultimoUsado} />
-            <FullDay days={dias[1]} />
-            <Semana days={dias[2]} currentMonth={ultimoUsado} />
-            <FullDay days={dias[2]} />
-            <Semana days={dias[3]} currentMonth={ultimoUsado} />
-            <FullDay days={dias[3]} />
-            <Semana days={dias[4]} currentMonth={ultimoUsado} />
-            <FullDay days={dias[4]} />
+            {/* {console.log(weeks)} */}
+            <Semana firstWeek days={weeks[0]} currentMonth={ultimoUsado} />
+            <FullDay days={weeks[0]} />
+            <Semana days={weeks[1]} currentMonth={ultimoUsado} />
+            <FullDay days={weeks[1]} />
+            <Semana days={weeks[2]} currentMonth={ultimoUsado} />
+            <FullDay days={weeks[2]} />
+            <Semana days={weeks[3]} currentMonth={ultimoUsado} />
+            <FullDay days={weeks[3]} />
+            <Semana days={weeks[4]} currentMonth={ultimoUsado} />
+            <FullDay days={weeks[4]} />
             <Semana
               className="pb-4"
-              days={dias[5]}
+              days={weeks[5]}
               currentMonth={ultimoUsado}
             />
-            <FullDay days={dias[5]} />
+            <FullDay days={weeks[5]} />
           </animated.div>
         ))
       }
