@@ -4,6 +4,7 @@ import {
   SalvarDisciplinasPlanoAnual,
   PrePost,
   Post,
+  Salvar,
   setBimestresErro,
   setLimpartBimestresErro,
   LimparDisciplinaPlanoAnual,
@@ -38,6 +39,7 @@ import {
 import modalidade from '~/dtos/modalidade';
 import SelectComponent from '~/componentes/select';
 import { store } from '~/redux';
+import FiltroPlanoAnualExpandidoDto from '~/dtos/filtroPlanoAnualExpandidoDto';
 
 export default function PlanoAnual() {
   const bimestres = useSelector(store => store.bimestres.bimestres);
@@ -181,8 +183,6 @@ export default function PlanoAnual() {
       disciplinaSelecionada
     );
 
-    console.log(disciplinas);
-
     const semObjetivos =
       disciplinas && disciplinas.filter(x => !x.possuiObjetivos).length > 0;
 
@@ -198,6 +198,50 @@ export default function PlanoAnual() {
     );
 
     dispatch(SalvarBimestres(bimestres));
+
+    if (ehEdicao) {
+      const filtro = new FiltroPlanoAnualExpandidoDto(
+        anoLetivo,
+        disciplinaSelecionada.codigo,
+        escolaId,
+        turmaSelecionada.modalidade,
+        turmaId
+      );
+
+      const retornoBimestre = await PlanoAnualHelper.ObterBimestreExpandido(
+        filtro
+      );
+
+      if (!retornoBimestre.sucesso) return;
+
+      const bimestreExpandido = retornoBimestre.bimestre;
+
+      dispatch(
+        Salvar(bimestreExpandido.bimestre, {
+          ...bimestres[bimestreExpandido.bimestre],
+          objetivo: bimestreExpandido.descricao,
+          ehExpandido: true,
+          id: bimestreExpandido.id,
+          alteradoPor: bimestreExpandido.alteradoPor,
+          alteradoEm: bimestreExpandido.alteradoEm,
+          alteradoRF: bimestreExpandido.alteradoRF,
+          criadoRF: bimestreExpandido.criadoRF,
+          criadoEm: bimestreExpandido.criadoEm,
+          LayoutEspecial:
+            bimestreExpandido.migrado ||
+            (bimestres[bimestreExpandido.bimestre] &&
+              bimestres[bimestreExpandido.bimestre].LayoutEspecial),
+          migrado: bimestreExpandido.migrado,
+          criadoPor: bimestreExpandido.criadoPor,
+          objetivosAprendizagem: bimestreExpandido.objetivosAprendizagem
+            ? bimestreExpandido.objetivosAprendizagem.map(obj => {
+                obj.selected = true;
+                return obj;
+              })
+            : [],
+        })
+      );
+    }
   };
 
   const confirmarCancelamento = () => {

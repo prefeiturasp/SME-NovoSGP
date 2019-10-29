@@ -1,7 +1,6 @@
 ﻿using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
-using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
@@ -17,39 +16,31 @@ namespace SME.SGP.Aplicacao
             this.repositorio = repositorio ?? throw new System.ArgumentNullException(nameof(repositorio));
         }
 
+        public TipoCalendarioCompletoDto BuscarPorAnoLetivoEModalidade(int anoLetivo, ModalidadeTipoCalendario modalidade)
+        {
+            var entidade = repositorio.BuscarPorAnoLetivoEModalidade(anoLetivo, modalidade);
+
+            if (entidade != null)
+                return EntidadeParaDtoCompleto(entidade);
+
+            return null;
+        }
+
         public TipoCalendarioCompletoDto BuscarPorId(long id)
         {
             var entidade = repositorio.ObterPorId(id);
 
             TipoCalendarioCompletoDto dto = new TipoCalendarioCompletoDto();
 
-            if (entidade != null)            
+            if (entidade != null)
                 dto = EntidadeParaDtoCompleto(entidade);
-            
+
             return dto;
         }
 
-        public TipoCalendarioCompletoDto BuscarPorAnoLetivoEModalidade(int anoLetivo, Modalidade modalidade)
-        {
-            var entidade = repositorio.BuscarPorAnoLetivoEModalidade(anoLetivo, modalidade);
-
-            if(entidade != null)
-                return EntidadeParaDtoCompleto(entidade);
-
-            return null;
-        }
-
-        public IEnumerable<TipoCalendarioDto> Listar()
-        {
-            var retorno = repositorio.ObterTiposCalendario();
-            return from t in retorno
-                   select EntidadeParaDto(t);
-        }
-
-
         public TipoCalendarioDto EntidadeParaDto(TipoCalendario entidade)
         {
-           return new TipoCalendarioDto()
+            return new TipoCalendarioDto()
             {
                 Id = entidade.Id,
                 Nome = entidade.Nome,
@@ -76,6 +67,13 @@ namespace SME.SGP.Aplicacao
                 CriadoEm = entidade.CriadoEm,
                 CriadoPor = entidade.CriadoPor
             };
+        }
+
+        public IEnumerable<TipoCalendarioDto> Listar()
+        {
+            var retorno = repositorio.ObterTiposCalendario();
+            return from t in retorno
+                   select EntidadeParaDto(t);
         }
     }
 }

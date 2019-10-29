@@ -3,6 +3,7 @@ using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -11,8 +12,8 @@ namespace SME.SGP.Aplicacao
     public class ConsultasPlanoAnual : IConsultasPlanoAnual
     {
         private readonly IConsultasObjetivoAprendizagem consultasObjetivoAprendizagem;
-        private readonly IConsultasTipoCalendario consultasTipoCalendario;
         private readonly IConsultasPeriodoEscolar consultasPeriodoEscolar;
+        private readonly IConsultasTipoCalendario consultasTipoCalendario;
         private readonly IRepositorioPlanoAnual repositorioPlanoAnual;
 
         public ConsultasPlanoAnual(IRepositorioPlanoAnual repositorioPlanoAnual,
@@ -26,6 +27,26 @@ namespace SME.SGP.Aplicacao
             this.consultasPeriodoEscolar = consultasPeriodoEscolar ?? throw new System.ArgumentNullException(nameof(consultasPeriodoEscolar));
         }
 
+        public async Task<PlanoAnualCompletoDto> ObterBimestreExpandido(FiltroPlanoAnualBimestreExpandidoDto filtro)
+        {
+            var planoAnualLista = new List<PlanoAnualCompletoDto>();
+
+            var bimestres = filtro.ModalidadePlanoAnual == Modalidade.EJA ? 2 : 4;
+
+            var filtroPlanoAnualDto = ObtenhaFiltro(filtro.AnoLetivo, filtro.ComponenteCurricularEolId, filtro.EscolaId, filtro.TurmaId, 0);
+
+            for (int i = 1; i <= bimestres; i++)
+            {
+                filtroPlanoAnualDto.Bimestre = i;
+
+                planoAnualLista.Add(await ObterPorEscolaTurmaAnoEBimestre(filtroPlanoAnualDto));
+            }
+
+            var retorno = planoAnualLista.FirstOrDefault(x => VerificaSeBimestreEhExpandido(filtro.AnoLetivo, filtro.ModalidadePlanoAnual, x.Bimestre));
+
+            return retorno;
+        }
+
         public async Task<PlanoAnualCompletoDto> ObterPorEscolaTurmaAnoEBimestre(FiltroPlanoAnualDto filtroPlanoAnualDto)
         {
             var planoAnual = repositorioPlanoAnual.ObterPlanoAnualCompletoPorAnoEscolaBimestreETurma(filtroPlanoAnualDto.AnoLetivo, filtroPlanoAnualDto.EscolaId, filtroPlanoAnualDto.TurmaId, filtroPlanoAnualDto.Bimestre, filtroPlanoAnualDto.ComponenteCurricularEolId);
@@ -35,8 +56,6 @@ namespace SME.SGP.Aplicacao
 
                 if (planoAnual.IdsObjetivosAprendizagem == null)
                     return planoAnual;
-
-                planoAnual.EhExpandido = VerificaSePeriodoEhExpandido(planoAnual.AnoLetivo.Value, Modalidade.Fundamental, planoAnual.Bimestre);
 
                 foreach (var idObjetivo in planoAnual.IdsObjetivosAprendizagem)
                 {
@@ -50,9 +69,46 @@ namespace SME.SGP.Aplicacao
             return planoAnual;
         }
 
-        public bool VerificaSePeriodoEhExpandido(int anoLetivo, Modalidade modalidade, int bimestre)
+        public bool ValidarPlanoAnualExistente(FiltroPlanoAnualDto filtroPlanoAnualDto)
         {
-            var tipoCalendario = consultasTipoCalendario.BuscarPorAnoLetivoEModalidade(anoLetivo, modalidade);
+            return repositorioPlanoAnual.ValidarPlanoExistentePorAnoEscolaTurmaEBimestre(filtroPlanoAnualDto.AnoLetivo, filtroPlanoAnualDto.EscolaId, filtroPlanoAnualDto.TurmaId, filtroPlanoAnualDto.Bimestre, filtroPlanoAnualDto.ComponenteCurricularEolId);
+        }
+
+        private ModalidadeTipoCalendario ModalidadeParaModalidadeTipoCalendario(Modalidade modalidade)
+        {
+            switch (modalidade)
+            {
+                case Modalidade.Fundamental:
+                    return ModalidadeTipoCalendario.FundamentalMedio;
+
+                case Modalidade.Medio:
+                    return ModalidadeTipoCalendario.FundamentalMedio;
+
+                case Modalidade.EJA:
+                    return ModalidadeTipoCalendario.EJA;
+
+                default:
+                    return ModalidadeTipoCalendario.FundamentalMedio;
+            }
+        }
+
+        private FiltroPlanoAnualDto ObtenhaFiltro(int anoLetivo, long componenteCurricularEolId, string escolaId, int turmaId, int bimestre)
+        {
+            return new FiltroPlanoAnualDto
+            {
+                AnoLetivo = anoLetivo,
+                ComponenteCurricularEolId = componenteCurricularEolId,
+                EscolaId = escolaId,
+                TurmaId = turmaId,
+                Bimestre = bimestre
+            };
+        }
+
+        private bool VerificaSeBimestreEhExpandido(int anoLetivo, Modalidade modalidade, int bimestre)
+        {
+            var modalidadeTipoCalendario = ModalidadeParaModalidadeTipoCalendario(modalidade);
+
+            var tipoCalendario = consultasTipoCalendario.BuscarPorAnoLetivoEModalidade(anoLetivo, modalidadeTipoCalendario);
 
             if (tipoCalendario == null)
                 return false;
@@ -69,12 +125,7 @@ namespace SME.SGP.Aplicacao
 
             var dataAtual = DateTime.Now;
 
-            return periodo.PeriodoInicio <= dataAtual || periodo.PeriodoFim >= dataAtual;
-        }
-
-        public bool ValidarPlanoAnualExistente(FiltroPlanoAnualDto filtroPlanoAnualDto)
-        {
-            return repositorioPlanoAnual.ValidarPlanoExistentePorAnoEscolaTurmaEBimestre(filtroPlanoAnualDto.AnoLetivo, filtroPlanoAnualDto.EscolaId, filtroPlanoAnualDto.TurmaId, filtroPlanoAnualDto.Bimestre, filtroPlanoAnualDto.ComponenteCurricularEolId);
+            return periodo.PeriodoInicio <= dataAtual && periodo.PeriodoFim >= dataAtual;
         }
     }
 }

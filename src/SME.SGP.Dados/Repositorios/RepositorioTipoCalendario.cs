@@ -13,7 +13,7 @@ namespace SME.SGP.Dados.Repositorios
         {
         }
 
-        public TipoCalendario BuscarPorAnoLetivoEModalidade(int anoLetivo, Modalidade modalidade)
+        public TipoCalendario BuscarPorAnoLetivoEModalidade(int anoLetivo, ModalidadeTipoCalendario modalidade)
         {
             StringBuilder query = new StringBuilder();
 
