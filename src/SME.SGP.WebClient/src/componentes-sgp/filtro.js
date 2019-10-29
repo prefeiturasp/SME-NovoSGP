@@ -5,6 +5,7 @@ import shortid from 'shortid';
 import { store } from '../redux';
 import {
   selecionarTurma,
+  turmasUsuario,
   removerTurma,
 } from '../redux/modulos/usuario/actions';
 import Grid from '../componentes/grid';
@@ -362,6 +363,8 @@ const Filtro = () => {
         ano: turmaSelecionadaCompleta.ano,
         desc: `${modalidadeDesc[0].desc} - ${turmaDesc[0].desc} - ${unidadeEscolarDesc[0].desc}`,
       };
+
+      store.dispatch(turmasUsuario(turmas));
       store.dispatch(selecionarTurma(turma));
     }
   };
@@ -437,6 +440,7 @@ const Filtro = () => {
       desc: resultado.descricaoFiltro,
     };
     store.dispatch(selecionarTurma(turma));
+    store.dispatch(turmasUsuario(turmas));
     setResultadosFiltro([]);
   };
 

@@ -6,10 +6,10 @@ namespace SME.SGP.Aplicacao
 {
     public interface IConsultasTipoCalendario
     {
+        TipoCalendarioCompletoDto BuscarPorAnoLetivoEModalidade(int anoLetivo, ModalidadeTipoCalendario modalidade);
+
         TipoCalendarioCompletoDto BuscarPorId(long id);
 
         IEnumerable<TipoCalendarioDto> Listar();
-
-        TipoCalendarioCompletoDto BuscarPorAnoLetivoEModalidade(int anoLetivo, Modalidade modalidade);
     }
 }

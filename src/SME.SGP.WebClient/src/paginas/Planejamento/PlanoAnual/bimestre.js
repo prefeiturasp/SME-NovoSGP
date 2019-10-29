@@ -42,6 +42,8 @@ const BimestreComponent = props => {
 
   const { materias } = bimestre;
 
+  const { focado } = bimestre;
+
   const objetivos = bimestre.objetivosAprendizagem;
 
   const [idObjetivoFocado, setIDObjetivoFocado] = useState('0');
@@ -84,6 +86,7 @@ const BimestreComponent = props => {
   };
 
   const setarDescricao = descricao => {
+    setarDescricaoFunction(descricaoFunction);
     dispatch(SetarDescricao(indice, descricao));
   };
 
@@ -166,6 +169,7 @@ const BimestreComponent = props => {
     });
 
     setarDescricao(value);
+    setarDescricaoFunction(descricaoFunction);
   };
 
   const onClickBimestre = () => {
