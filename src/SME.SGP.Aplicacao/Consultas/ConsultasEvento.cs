@@ -2,7 +2,7 @@
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 
-namespace SME.SGP.Aplicacao.Consultas
+namespace SME.SGP.Aplicacao
 {
     public class ConsultasEvento : IConsultasEvento
     {

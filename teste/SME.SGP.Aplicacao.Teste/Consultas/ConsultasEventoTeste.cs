@@ -28,6 +28,7 @@ namespace SME.SGP.Aplicacao.Teste.Consultas
             var eventoDto = consultaEventos.ObterPorId(1);
             Assert.NotNull(eventoDto);
             Assert.Equal(1, eventoDto.Id);
+            repositorioEvento.Verify(c => c.ObterPorId(It.IsAny<long>()), Times.Once);
         }
     }
 }
