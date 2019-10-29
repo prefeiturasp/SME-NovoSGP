@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { Menu, Layout } from 'antd';
 import { Link } from 'react-router-dom';
 import { useSelector } from 'react-redux';
-import { Tooltip } from 'antd';
 import { Base } from '../componentes/colors';
 import { MenuBody, DivFooter, MenuScope, Topo } from './sider.css';
 import LogoMenuFooter from '../recursos/LogoMenuFooter.svg';
@@ -12,6 +11,7 @@ import {
   menuSelecionado,
 } from '../redux/modulos/navegacao/actions';
 import modalidade from '~/dtos/modalidade';
+import { Tooltip } from 'antd';
 
 const Sider = () => {
   const { Sider, Footer } = Layout;
@@ -22,19 +22,21 @@ const Sider = () => {
 
   const usuario = useSelector(store => store.usuario);
 
-  const subMenusPrincipais = [
-    'subDiarioClasse',
-    'subPlanejamento',
-    'subFechamento',
-    'subRelatorios',
-    'subGestao',
-    'subConfiguracoes',
-    'calendario-escolar',
-  ];
+  const [subMenusPrincipais, setSubMenusPrincipais] = useState([]);
 
   useEffect(() => {
     verificaSelecaoMenu(NavegacaoStore.rotaAtiva);
   }, [NavegacaoStore.rotaAtiva]);
+
+  useEffect(() => {
+    if (usuario.menu)
+      setSubMenusPrincipais(usuario.menu.filter(menu => {
+        if (menu.ehMenu)
+          return menu;
+      }).map(x => 'menu-' + x.codigo))
+  }
+    , [usuario.menu]
+  );
 
   useEffect(() => {
     if (
@@ -98,6 +100,60 @@ const Sider = () => {
     store.dispatch(menuSelecionado([item.key]));
   };
 
+  const criarItensMenu = menus => {
+    const itens = menus.map(item => {
+      return (
+        item.subMenus && item.subMenus.length > 0 ?
+          criarMenus([item]) :
+          <Menu.Item key={item.codigo} id={item.codigo}>
+            <span className="menuItem"> {item.descricao}</span>
+            {item.url ? (
+              <Link
+                to={item.url}
+                id={"link-" + item.codigo}
+              />
+            )
+              : ''
+            }
+          </Menu.Item>
+      )
+    })
+    return itens;
+  }
+
+  const criarMenus = menu => {
+    if (menu && menu.length > 0) {
+      return menu.map(subMenu => {
+        const temSubmenu = (subMenu.subMenus && subMenu.subMenus.length > 0);
+        if (subMenu.ehMenu || temSubmenu) {
+          const menuKey = (temSubmenu ? 'sub-' : 'menu-') + subMenu.codigo;
+          return (
+            <SubMenu
+              id={subMenu.codigo}
+              key={menuKey}
+              onMouseEnter={(e) => alterarPosicaoJanelaPopup(subMenu.codigo, subMenu.quantidadeMenus)}
+              title={
+                subMenu.icone ?
+                  <div className={"item-menu-retraido"}>
+                    <i
+                      className={subMenu.icone + (NavegacaoStore.retraido ? ' icons-retraido' : ' icons')}
+                    />
+                    <span>{subMenu.descricao}</span>
+                  </div>
+                  :
+                  <div className={"item-menu-retraido" + temSubmenu ? " submenu-subnivel" : ""}>
+                    <span>{subMenu.descricao}</span>
+                  </div>
+              }
+            >
+              {criarItensMenu(subMenu.menus ? subMenu.menus : subMenu.subMenus)}
+            </SubMenu>
+          );
+        }
+      })
+    }
+  }
+
   return (
     <MenuBody
       id="main"
@@ -134,11 +190,7 @@ const Sider = () => {
               /> */}
             </div>
             <div hidden={NavegacaoStore.retraido}>
-              <Tooltip
-                title={usuario.meusDados.nome}
-                placement="bottom"
-                overlayStyle={{ fontSize: '12px' }}
-              >
+              <Tooltip title={usuario.meusDados.nome} placement="bottom" overlayStyle={{ fontSize: '12px' }}>
                 <span id="nome" className="nome">
                   {usuario.meusDados.nome}
                 </span>
@@ -155,7 +207,6 @@ const Sider = () => {
             </div>
           </div>
         </Topo>
-
         <MenuScope>
           <div
             className={`menu-scope${
@@ -370,11 +421,12 @@ const Sider = () => {
                 </Menu.Item>
                 <Menu.Item key="86" id="calTipoFeriados">
                   <span className="menuItem">Tipo de Feriado</span>
-                  <Link
+                  {/* TODO - Descomentar quando estiver DONE a estoria */}
+                  {/* <Link
                     to="/calendario-escolar/tipo-feriado"
                     className="nav-link text-white"
                     id="linkTipoFeriado"
-                  />
+                  /> */}
                 </Menu.Item>
                 <Menu.Item key="87" id="calTipoEventos">
                   <span className="menuItem">Tipo de Eventos</span>
@@ -473,6 +525,25 @@ const Sider = () => {
             </Menu>
           </div>
         </MenuScope>
+        {/* <MenuScope>
+          <div
+            className={`menu-scope${
+              NavegacaoStore.retraido ? ' menu-scope-retraido' : ''
+              }`}
+          >
+            <Menu
+              id="menuPrincipal"
+              mode="inline"
+              theme="dark"
+              openKeys={openKeys}
+              onOpenChange={onOpenChange}
+              onSelect={selecionarItem.bind(NavegacaoStore.menuSelecionado)}
+              selectedKeys={NavegacaoStore.menuSelecionado}
+            >
+              {criarMenus(usuario.menu)}
+            </Menu>
+          </div>
+        </MenuScope> */}
         <div className="footer-content">
           <DivFooter>
             <Footer>

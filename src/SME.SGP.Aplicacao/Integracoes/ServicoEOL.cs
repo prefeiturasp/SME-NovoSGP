@@ -1,6 +1,7 @@
 ﻿using Newtonsoft.Json;
 using SME.SGP.Aplicacao.Integracoes.Respostas;
 using SME.SGP.Dominio;
+using SME.SGP.Dto;
 using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
@@ -55,15 +56,27 @@ namespace SME.SGP.Aplicacao.Integracoes
             else return null;
         }
 
+        public async Task<AbrangenciaRetornoEolDto> ObterAbrangencia(string login, Guid perfil)
+        {
+            var resposta = await httpClient.GetAsync($"funcionarios/{login}/perfis/{perfil.ToString()}/turmas");
+
+            if (resposta.IsSuccessStatusCode)
+            {
+                var json = await resposta.Content.ReadAsStringAsync();
+                return JsonConvert.DeserializeObject<AbrangenciaRetornoEolDto>(json);
+            }
+            return null;
+        }
+
         public async Task<IEnumerable<DisciplinaResposta>> ObterDisciplinasParaPlanejamento(long codigoTurma, string rfProfessor)
         {
             var url = $"professores/{rfProfessor}/turmas/{codigoTurma}/disciplinas/planejamento";
             return await ObterDisciplinas(url);
         }
 
-        public async Task<IEnumerable<DisciplinaResposta>> ObterDisciplinasPorCodigoTurmaLoginEPerfil(long codigoTurma, string login, string guidPerfil)
+        public async Task<IEnumerable<DisciplinaResposta>> ObterDisciplinasPorCodigoTurmaLoginEPerfil(long codigoTurma, string login, Guid perfil)
         {
-            var url = $"/api/funcionarios/{login}/perfis/{guidPerfil}/turmas/{codigoTurma}/disciplinas";
+            var url = $"/api/funcionarios/{login}/perfis/{perfil}/turmas/{codigoTurma}/disciplinas";
 
             return await ObterDisciplinas(url);
         }

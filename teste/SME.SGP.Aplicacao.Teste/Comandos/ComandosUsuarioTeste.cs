@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Moq;
 using SME.SGP.Aplicacao.Integracoes;
+using SME.SGP.Aplicacao.Servicos;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using Xunit;
@@ -11,6 +12,7 @@ namespace SME.SGP.Aplicacao.Teste.Comandos
     {
         private readonly ComandosUsuario comandosUsuario;
         private readonly Mock<IRepositorioUsuario> repositorioUsuario;
+        private readonly Mock<IServicoAbrangencia> servicoAbrangencia;
         private readonly Mock<IServicoAutenticacao> servicoAutenticacao;
         private readonly Mock<IServicoEmail> servicoEmail;
         private readonly Mock<IServicoEOL> servicoEOL;
@@ -29,7 +31,10 @@ namespace SME.SGP.Aplicacao.Teste.Comandos
             var repositorioCache = new Mock<IRepositorioCache>();
             servicoEmail = new Mock<IServicoEmail>();
             var mockConfiguration = new Mock<IConfiguration>();
-            comandosUsuario = new ComandosUsuario(repositorioUsuario.Object, servicoAutenticacao.Object, servicoUsuario.Object, servicoPerfil.Object, servicoEOL.Object, servicoTokenJwt.Object, servicoEmail.Object, mockConfiguration.Object, repositorioCache.Object); ;
+            servicoAbrangencia = new Mock<IServicoAbrangencia>();
+
+            comandosUsuario = new ComandosUsuario(repositorioUsuario.Object, servicoAutenticacao.Object, servicoUsuario.Object, servicoPerfil.Object, servicoEOL.Object, servicoTokenJwt.Object, servicoEmail.Object,
+                mockConfiguration.Object, repositorioCache.Object, servicoAbrangencia.Object);
         }
 
         [Fact]
