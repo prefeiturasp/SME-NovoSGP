@@ -7,6 +7,8 @@ namespace SME.SGP.Aplicacao.Interfaces
     {
         void Excluir(long[] idsEventos);
 
-        Task Salvar(EventoDto eventoDto);
+        Task Alterar(long id, EventoDto eventoDto);
+
+        Task Criar(EventoDto eventoDto);
     }
 }
