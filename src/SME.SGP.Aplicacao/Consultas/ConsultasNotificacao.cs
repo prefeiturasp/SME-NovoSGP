@@ -81,11 +81,7 @@ namespace SME.SGP.Aplicacao
 
         public IEnumerable<EnumeradoRetornoDto> ObterCategorias()
         {
-            return NotificacaoCategoria.GetValues(typeof(NotificacaoCategoria)).Cast<NotificacaoCategoria>().Select(v => new EnumeradoRetornoDto
-            {
-                Descricao = v.GetAttribute<DisplayAttribute>().Name,
-                Id = (int)v
-            }).ToList();
+            return EnumExtensao.ListarDto<NotificacaoCategoria>();
         }
 
         public NotificacaoBasicaListaDto ObterNotificacaoBasicaLista(int anoLetivo, string usuarioRf)
@@ -99,20 +95,12 @@ namespace SME.SGP.Aplicacao
 
         public IEnumerable<EnumeradoRetornoDto> ObterStatus()
         {
-            return NotificacaoCategoria.GetValues(typeof(NotificacaoStatus)).Cast<NotificacaoStatus>().Select(v => new EnumeradoRetornoDto
-            {
-                Descricao = v.GetAttribute<DisplayAttribute>().Name,
-                Id = (int)v
-            }).ToList();
+            return EnumExtensao.ListarDto<NotificacaoStatus>();
         }
 
         public IEnumerable<EnumeradoRetornoDto> ObterTipos()
         {
-            return NotificacaoCategoria.GetValues(typeof(NotificacaoTipo)).Cast<NotificacaoTipo>().Select(v => new EnumeradoRetornoDto
-            {
-                Descricao = v.GetAttribute<DisplayAttribute>().Name,
-                Id = (int)v
-            }).ToList();
+            return EnumExtensao.ListarDto<NotificacaoTipo>();
         }
 
         public int QuantidadeNotificacoesNaoLidas(int anoLetivo, string usuarioRf)

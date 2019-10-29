@@ -63,7 +63,7 @@ const CampoTexto = React.forwardRef((props, ref) => {
               } ${className || ''} ${desabilitado ? 'desabilitado' : ''}`}
               component={type || 'input'}
               type={maskType && maskType}
-              disabled={desabilitado}
+              readOnly={desabilitado}
               onBlur={executaOnBlur}
               maxLength={maxlength || ''}
               innerRef={ref}
@@ -81,6 +81,7 @@ const CampoTexto = React.forwardRef((props, ref) => {
             ref={ref}
             placeholder={placeholder}
             onChange={onChange}
+            readOnly={desabilitado}
             onKeyDown={onKeyDown}
             value={value}
           />
