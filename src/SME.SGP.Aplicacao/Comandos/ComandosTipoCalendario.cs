@@ -2,6 +2,7 @@
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System;
+using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
@@ -53,17 +54,16 @@ namespace SME.SGP.Aplicacao
             }
         }
 
-        public void Salvar(TipoCalendarioDto dto)
+        public async Task Salvar(TipoCalendarioDto dto)
         {
             var tipoCalendario = MapearParaDominio(dto);
 
-            bool ehRegistroExistente = repositorio.VerificarRegistroExistente(dto.Id, dto.Nome);
-            if (ehRegistroExistente)
-            {
-                throw new NegocioException($"O Tipo de Calendário Escolar '{dto.Nome}' já existe");
-            }
+            bool ehRegistroExistente = await repositorio.VerificarRegistroExistente(dto.Id, dto.Nome);
 
-            servicoFeriadoCalendario.VerficaSeExisteFeriadosMoveisEInclui(dto.AnoLetivo);
+            if (ehRegistroExistente)
+                throw new NegocioException($"O Tipo de Calendário Escolar '{dto.Nome}' já existe");
+
+            await servicoFeriadoCalendario.VerficaSeExisteFeriadosMoveisEInclui(dto.AnoLetivo).ConfigureAwait(false);
 
             repositorio.Salvar(tipoCalendario);
         }

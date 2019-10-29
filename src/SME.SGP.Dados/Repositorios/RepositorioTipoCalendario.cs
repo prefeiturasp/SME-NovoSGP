@@ -4,6 +4,7 @@ using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using System.Collections.Generic;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace SME.SGP.Dados.Repositorios
 {
@@ -41,7 +42,7 @@ namespace SME.SGP.Dados.Repositorios
             return database.Conexao.Query<TipoCalendario>(query.ToString());
         }
 
-        public bool VerificarRegistroExistente(long id, string nome)
+        public async Task<bool> VerificarRegistroExistente(long id, string nome)
         {
             StringBuilder query = new StringBuilder();
 
@@ -55,7 +56,7 @@ namespace SME.SGP.Dados.Repositorios
                 query.AppendLine("and id <> @id");
             }
 
-            int quantidadeRegistrosExistentes = database.Conexao.QueryFirst<int>(query.ToString(), new { id, nomeMaiusculo }); ;
+            int quantidadeRegistrosExistentes = await database.Conexao.QueryFirstAsync<int>(query.ToString(), new { id, nomeMaiusculo });
 
             return quantidadeRegistrosExistentes > 0;
         }
