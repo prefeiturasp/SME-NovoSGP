@@ -17,5 +17,11 @@ namespace SME.SGP.Dados.Repositorios
         {
             return database.Conexao.Query<bool>("select 1 from evento where data_inicio = @dataInicio;", new { dataInicio }).FirstOrDefault();
         }
+
+        public override Evento ObterPorId(long id)
+        {
+            var query = @"";
+            return base.ObterPorId(id);
+        }
     }
 }
