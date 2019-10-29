@@ -13,14 +13,14 @@ namespace SME.SGP.Aplicacao
             this.repositorioEvento = repositorioEvento ?? throw new System.ArgumentNullException(nameof(repositorioEvento));
         }
 
-        public EventoDto ObterPorId(long id)
+        public EventoObterParaEdicaoDto ObterPorId(long id)
         {
             return MapearParaDto(repositorioEvento.ObterPorId(id));
         }
 
-        private EventoDto MapearParaDto(Evento evento)
+        private EventoObterParaEdicaoDto MapearParaDto(Evento evento)
         {
-            return evento == null ? null : new EventoDto
+            return evento == null ? null : new EventoObterParaEdicaoDto
             {
                 DataFim = evento.DataFim,
                 DataInicio = evento.DataInicio,
