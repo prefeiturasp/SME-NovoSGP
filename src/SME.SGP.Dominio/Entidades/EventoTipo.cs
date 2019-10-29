@@ -2,6 +2,12 @@
 {
     public class EventoTipo : EntidadeBase
     {
+        public EventoTipo()
+        {
+            Ativo = true;
+            Excluido = false;
+        }
+
         public bool Ativo { get; set; }
         public bool Concomitancia { get; set; }
         public bool Dependencia { get; set; }
