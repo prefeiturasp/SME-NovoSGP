@@ -21,6 +21,20 @@ namespace SME.SGP.Aplicacao
             this.servicoEvento = servicoEvento ?? throw new System.ArgumentNullException(nameof(servicoEvento));
         }
 
+        public async Task Alterar(long id, EventoDto eventoDto)
+        {
+            var evento = repositorioEvento.ObterPorId(id);
+
+            evento = MapearParaEntidade(evento, eventoDto);
+            await servicoEvento.Salvar(evento);
+        }
+
+        public async Task Criar(EventoDto eventoDto)
+        {
+            var evento = MapearParaEntidade(new Evento(), eventoDto);
+            await servicoEvento.Salvar(evento);
+        }
+
         public void Excluir(long[] idsEventos)
         {
             List<long> idsComErroAoExcluir = new List<long>();
@@ -45,22 +59,10 @@ namespace SME.SGP.Aplicacao
                 throw new NegocioException($"Não foi possível excluir os eventos de ids {string.Join(",", idsComErroAoExcluir)}");
         }
 
-        public async Task Salvar(EventoDto eventoDto)
-        {
-            var evento = repositorioEvento.ObterPorId(eventoDto.Id);
-
-            evento = MapearParaEntidade(evento, eventoDto);
-            await servicoEvento.Salvar(evento);
-        }
-
         private Evento MapearParaEntidade(Evento evento, EventoDto eventoDto)
         {
-            if (evento == null)
-            {
-                evento = new Evento();
-            }
             evento.DataFim = eventoDto.DataFim;
-            evento.DataInicio = eventoDto.DataInicio;
+            evento.DataInicio = eventoDto.DataInicio.Value;
             evento.Descricao = eventoDto.Descricao;
             evento.DreId = eventoDto.DreId;
             evento.FeriadoId = eventoDto.FeriadoId;

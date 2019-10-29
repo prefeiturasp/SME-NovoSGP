@@ -88,6 +88,22 @@ namespace SME.SGP.Dominio
             return TipoEvento.Concomitancia;
         }
 
+        public void ValidaPeriodoEvento()
+        {
+            TipoEventoObrigatorio();
+            if (TipoEvento.TipoData == EventoTipoData.InicioFim && !DataFim.HasValue)
+            {
+                throw new NegocioException("Neste tipo de evento a data final do evento deve ser informada.");
+            }
+            else
+            {
+                if (TipoEvento.TipoData == EventoTipoData.Unico && DataFim.HasValue)
+                {
+                    throw new NegocioException("Neste tipo de evento a data final do evento não deve ser informada.");
+                }
+            }
+        }
+
         private void TipoEventoObrigatorio()
         {
             if (TipoEvento == null)
