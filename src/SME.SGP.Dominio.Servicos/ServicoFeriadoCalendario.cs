@@ -40,13 +40,13 @@ namespace SME.SGP.Dominio.Servicos
 
         public async Task VerficaSeExisteFeriadosMoveisEInclui(int ano)
         {
-            var feriadosMoveis = repositorioFeriadoCalendario.ObterFeriadosCalendario(new Infra.FiltroFeriadoCalendarioDto()
+            var feriadosMoveis = await repositorioFeriadoCalendario.ObterFeriadosCalendario(new Infra.FiltroFeriadoCalendarioDto()
             {
                 Tipo = TipoFeriadoCalendario.Movel,
                 Ano = ano
             });
 
-            if (feriadosMoveis.Count() == 0)
+            if (!feriadosMoveis.Any())
             {
                 IncluirFeriadosMoveis(ano);
             }
@@ -75,7 +75,7 @@ namespace SME.SGP.Dominio.Servicos
             return dataPascoa.Date;
         }
 
-        private void IncluiFeriadoMovel(DateTime dataFeriado, FeriadoEnum feriado)
+        private async void IncluiFeriadoMovel(DateTime dataFeriado, FeriadoEnum feriado)
         {
             var feriadoMovel = new FeriadoCalendario()
             {
@@ -85,7 +85,7 @@ namespace SME.SGP.Dominio.Servicos
                 Tipo = TipoFeriadoCalendario.Movel
             };
 
-            repositorioFeriadoCalendario.Salvar(feriadoMovel);
+            await repositorioFeriadoCalendario.SalvarAsync(feriadoMovel);
         }
 
         private void IncluirFeriadosMoveis(int ano)
