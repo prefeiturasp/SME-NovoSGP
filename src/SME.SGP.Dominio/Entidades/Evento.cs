@@ -7,10 +7,16 @@ namespace SME.SGP.Dominio
 {
     public class Evento : EntidadeBase
     {
+        public Evento()
+        {
+            Excluido = false;
+        }
+
         public DateTime? DataFim { get; set; }
         public DateTime DataInicio { get; set; }
         public string Descricao { get; set; }
         public string DreId { get; set; }
+        public bool Excluido { get; set; }
         public FeriadoCalendario FeriadoCalendario { get; set; }
         public long? FeriadoId { get; set; }
         public EventoLetivo Letivo { get; set; }
@@ -66,6 +72,14 @@ namespace SME.SGP.Dominio
             {
                 throw new NegocioException("Não é permitido cadastrar um evento nesta data pois essa data não está dentro do 'Período Letivo'.");
             }
+        }
+
+        public void Excluir()
+        {
+            if (Excluido)
+                throw new NegocioException("Este evento já está excluido.");
+
+            Excluido = true;
         }
 
         public bool PermiteConcomitancia()

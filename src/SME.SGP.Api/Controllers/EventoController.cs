@@ -19,6 +19,17 @@ namespace SME.SGP.Api.Controllers
             this.comandosEvento = comandosEvento ?? throw new System.ArgumentNullException(nameof(comandosEvento));
         }
 
+        [HttpDelete]
+        [ProducesResponseType(200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 601)]
+        //[Permissao(Permissao.C_I, Policy = "Bearer")]
+        public IActionResult Excluir(long[] eventosId)
+        {
+            comandosEvento.Excluir(eventosId);
+            return Ok();
+        }
+
         [HttpGet]
         [ProducesResponseType(200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
