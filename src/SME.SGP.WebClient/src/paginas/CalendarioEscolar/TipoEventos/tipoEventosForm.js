@@ -12,6 +12,7 @@ import SelectComponent from '~/componentes/select';
 import api from '~/servicos/api';
 import CampoTexto from '~/componentes/campoTexto';
 import { sucesso, erro } from '~/servicos/alertas';
+import servicoEvento from '~/servicos/Paginas/Calendario/ServicoTipoEvento'
 
 const TipoEventosForm = ({ match }) => {
   const campoNomeTipoEventoRef = useRef();
@@ -145,18 +146,15 @@ const TipoEventosForm = ({ match }) => {
   };
 
   const cadastrarTipoEvento = async dados => {
-    if (idTipoEvento && modoEdicao) dados.id = idTipoEvento;
-    api
-      .post('v1/calendarios/eventos/tipos', dados)
-      .then(resposta => {
-        if (resposta.status === 200) {
+    servicoEvento.salvar(idTipoEvento, dados)
+      .then( () => {
           sucesso(
             `Tipo de evento ${
               modoEdicao ? 'atualizado' : 'cadastrado'
             } com sucesso!`
           );
           history.push('/calendario-escolar/tipo-eventos');
-        }
+        
       })
       .catch(() => {
         erro(
@@ -221,7 +219,7 @@ const TipoEventosForm = ({ match }) => {
     <Div className="col-12">
       <Grid cols={12} className="mb-1 p-0">
         <Titulo className="font-weight-bold">
-          Cadastro de Tipo de Eventos
+          {idTipoEvento? "Alteração" : "Cadastro"} de Tipo de Eventos
         </Titulo>
       </Grid>
       <Card className="rounded" mx="mx-auto">
@@ -261,7 +259,7 @@ const TipoEventosForm = ({ match }) => {
                   className="mr-3"
                 />
                 <Button
-                  label="Cadastrar"
+                  label={idTipoEvento? "Alterar" : "Cadastrar"}
                   color={Colors.Roxo}
                   onClick={e => clicouBotaoCadastrar(form, e)}
                   border
