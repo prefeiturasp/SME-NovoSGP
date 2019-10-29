@@ -58,8 +58,16 @@ namespace SME.SGP.Integracao.Teste
 
                 if (postResult2.IsSuccessStatusCode)
                 {
-                    var ids = new int[1];
-                    ids[0] = 1;
+                    var getAllResult = await _fixture._clientApi.GetAsync($"api/v1/tipo-calendario");
+                    var dtoTodos = JsonConvert.DeserializeObject<IEnumerable<TipoCalendarioDto>>(getAllResult.Content.ReadAsStringAsync().Result);
+
+                    Assert.True(dtoTodos.Any());
+
+                    var feriadoParaExcluir = dtoTodos.ElementAt(0);
+
+                    var ids = new long[1];
+                    ids[0] = feriadoParaExcluir.Id;
+
                     var jsonDelete = new StringContent(JsonConvert.SerializeObject(ids), UnicodeEncoding.UTF8, "application/json");
                     HttpRequestMessage request = new HttpRequestMessage
                     {
@@ -71,16 +79,14 @@ namespace SME.SGP.Integracao.Teste
                     var deleteResult = await _fixture._clientApi.SendAsync(request);
 
                     Assert.True(deleteResult.IsSuccessStatusCode);
+                    var feriadoParaConsultar = dtoTodos.ElementAt(1);
+                    var getOneResult = await _fixture._clientApi.GetAsync($"api/v1/tipo-calendario/{feriadoParaConsultar.Id}");
 
-                    var getAllResult = await _fixture._clientApi.GetAsync($"api/v1/tipo-calendario");
-                    var dtoTodos = JsonConvert.DeserializeObject<IEnumerable<TipoCalendarioDto>>(getAllResult.Content.ReadAsStringAsync().Result);
+                    Assert.True(getOneResult.IsSuccessStatusCode);
 
-                    Assert.True(dtoTodos.Count() == 1);
-
-                    var getOneResult = await _fixture._clientApi.GetAsync($"api/v1/tipo-calendario/1");
                     var dtoUm = JsonConvert.DeserializeObject<TipoCalendarioCompletoDto>(getOneResult.Content.ReadAsStringAsync().Result);
 
-                    Assert.Null(dtoUm.Nome);
+                    Assert.True(dtoUm.Id == feriadoParaConsultar.Id);
                 }
             }
         }

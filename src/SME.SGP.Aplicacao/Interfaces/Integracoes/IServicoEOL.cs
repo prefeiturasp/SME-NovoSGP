@@ -1,4 +1,5 @@
 ﻿using SME.SGP.Aplicacao.Integracoes.Respostas;
+using SME.SGP.Dto;
 using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
@@ -12,9 +13,11 @@ namespace SME.SGP.Aplicacao.Integracoes
 
         Task<UsuarioEolAutenticacaoRetornoDto> Autenticar(string login, string senha);
 
+        Task<AbrangenciaRetornoEolDto> ObterAbrangencia(string login, Guid perfil);
+
         Task<IEnumerable<DisciplinaResposta>> ObterDisciplinasParaPlanejamento(long codigoTurma, string rfProfessor);
 
-        Task<IEnumerable<DisciplinaResposta>> ObterDisciplinasPorProfessorETurma(long codigoTurma, string rfProfessor);
+        Task<IEnumerable<DisciplinaResposta>> ObterDisciplinasPorCodigoTurmaLoginEPerfil(long codigoTurma, string login, Guid perfil);
 
         IEnumerable<DreRespostaEolDto> ObterDres();
 
@@ -28,6 +31,8 @@ namespace SME.SGP.Aplicacao.Integracoes
 
         IEnumerable<ProfessorTurmaReposta> ObterListaTurmasPorProfessor(string codigoRf);
 
+        Task<MeusDadosDto> ObterMeusDados(string login);
+
         Task<UsuarioEolAutenticacaoRetornoDto> ObterPerfisPorLogin(string login);
 
         Task<int[]> ObterPermissoesPorPerfil(Guid perfilGuid);
@@ -39,7 +44,5 @@ namespace SME.SGP.Aplicacao.Integracoes
         Task<IEnumerable<TurmaDto>> ObterTurmasAtribuidasAoProfessorPorEscolaEAnoLetivo(string rfProfessor, string codigoEscola, int anoLetivo);
 
         Task ReiniciarSenha(string login);
-
-        Task<MeusDadosDto> ObterMeusDados(string login);
     }
 }

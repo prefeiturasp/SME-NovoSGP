@@ -45,7 +45,7 @@ export default function AtribuicaoSupervisorLista() {
 
   useEffect(() => {
     async function carregarDres() {
-      const dres = await api.get('v1/dres');
+      const dres = await api.get('v1/abrangencias/dres');
       setListaDres(dres.data);
     }
     carregarDres();
@@ -204,12 +204,12 @@ export default function AtribuicaoSupervisorLista() {
     }
 
     function montarLista(item, dadosAtribuicao) {
-      const dreSelecionada = listaDres.find(d => d.id == dre);
+      const dreSelecionada = listaDres.find(d => d.codigo == dre);
       item.escolas.forEach(escola => {
         const contId = dadosAtribuicao.length + 1;
         dadosAtribuicao.push({
           id: contId,
-          dre: dreSelecionada.sigla,
+          dre: dreSelecionada.abreviacao,
           escola: escola.nome,
           supervisor: item.supervisorId ? item.supervisorNome : '',
           supervisorId: item.supervisorId,
@@ -220,12 +220,12 @@ export default function AtribuicaoSupervisorLista() {
   }
 
   async function carregarSupervisores(dre) {
-    const sups = await api.get(`/v1/supervisores/dre/${dre}`);
+    const sups = await api.get(`/v1/supervisores/dres/${dre}`);
     setListaSupervisores(sups.data || []);
   }
 
   async function carregarUes(dre) {
-    const ues = await api.get(`/v1/dres/${dre}/ues`);
+    const ues = await api.get(`/v1/abrangencias/dres/${dre}/ues`);
     setListaUes(ues.data || []);
   }
 
@@ -303,7 +303,7 @@ export default function AtribuicaoSupervisorLista() {
             name="dres-atribuicao-sup"
             id="dres-atribuicao-sup"
             lista={listaDres}
-            valueOption="id"
+            valueOption="codigo"
             valueText="nome"
             onChange={onChangeDre}
             valueSelect={dresSelecionadas || []}

@@ -57,7 +57,7 @@ const Erro = styled.span`
   color: ${Base.Vermelho};
 `;
 
-const SelectComponent = props => {
+const SelectComponent = React.forwardRef((props, ref) => {
   const {
     name,
     id,
@@ -120,6 +120,7 @@ const SelectComponent = props => {
         form.setFieldValue(name, e);
         onChange(e);
       }}
+      innerRef={ref}
     >
       {opcoesLista()}
     </Field>
@@ -140,6 +141,7 @@ const SelectComponent = props => {
       optionFilterProp="children"
       allowClear
       disabled={disabled}
+      ref={ref}
     >
       {opcoesLista()}
     </Select>
@@ -151,7 +153,7 @@ const SelectComponent = props => {
       {form ? <Erro>{form.errors[name]}</Erro> : ''}
     </Container>
   );
-};
+});
 
 SelectComponent.propTypes = {
   name: PropTypes.string,
