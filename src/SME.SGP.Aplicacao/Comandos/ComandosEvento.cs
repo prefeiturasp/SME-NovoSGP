@@ -35,6 +35,30 @@ namespace SME.SGP.Aplicacao
             await servicoEvento.Salvar(evento);
         }
 
+        public void Excluir(long[] idsEventos)
+        {
+            List<long> idsComErroAoExcluir = new List<long>();
+
+            foreach (var idEvento in idsEventos)
+            {
+                try
+                {
+                    var evento = repositorioEvento.ObterPorId(idEvento);
+
+                    evento.Excluir();
+
+                    repositorioEvento.Salvar(evento);
+                }
+                catch (Exception)
+                {
+                    idsComErroAoExcluir.Add(idEvento);
+                }
+            }
+
+            if (idsComErroAoExcluir.Any())
+                throw new NegocioException($"Não foi possível excluir os eventos de ids {string.Join(",", idsComErroAoExcluir)}");
+        }
+
         private Evento MapearParaEntidade(Evento evento, EventoDto eventoDto)
         {
             evento.DataFim = eventoDto.DataFim;
@@ -49,29 +73,5 @@ namespace SME.SGP.Aplicacao
             evento.UeId = eventoDto.UeId;
             return evento;
         }
-    }
-
-    public void Excluir(long[] idsEventos)
-    {
-        List<long> idsComErroAoExcluir = new List<long>();
-
-        foreach (var idEvento in idsEventos)
-        {
-            try
-            {
-                var evento = repositorioEvento.ObterPorId(idEvento);
-
-                evento.Excluir();
-
-                repositorioEvento.Salvar(evento);
-            }
-            catch (Exception)
-            {
-                idsComErroAoExcluir.Add(idEvento);
-            }
-        }
-
-        if (idsComErroAoExcluir.Any())
-            throw new NegocioException($"Não foi possível excluir os eventos de ids {string.Join(",", idsComErroAoExcluir)}");
     }
 }
