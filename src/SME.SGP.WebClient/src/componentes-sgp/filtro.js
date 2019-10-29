@@ -281,7 +281,11 @@ const Filtro = () => {
       ServicoFiltro.listarTurmas(unidadeEscolarSelecionada).then(resposta => {
         if (resposta.data) {
           resposta.data.forEach(turma => {
-            turmas.push({ desc: turma.nome, valor: turma.codigo });
+            turmas.push({
+              desc: turma.nome,
+              valor: turma.codigo,
+              ano: turma.ano,
+            });
           });
           if (estado) {
             store.dispatch(salvarTurmas(turmas));
@@ -344,12 +348,18 @@ const Filtro = () => {
         `${modalidadeDesc[0].desc} - ${turmaDesc[0].desc} - ${unidadeEscolarDesc[0].desc}`
       );
       setAlternarFocoBusca(false);
+
+      const turmaSelecionadaCompleta = turmas.find(
+        t => t.valor == turmaSelecionada
+      );
+
       const turma = {
         anoLetivo: anoLetivoSelecionado,
         modalidade: modalidadeSelecionada,
         dre: dreSelecionada,
         unidadeEscolar: unidadeEscolarSelecionada,
         turma: turmaSelecionada,
+        ano: turmaSelecionadaCompleta.ano,
         desc: `${modalidadeDesc[0].desc} - ${turmaDesc[0].desc} - ${unidadeEscolarDesc[0].desc}`,
       };
       store.dispatch(selecionarTurma(turma));

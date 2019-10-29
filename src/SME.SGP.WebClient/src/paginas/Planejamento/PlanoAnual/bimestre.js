@@ -288,7 +288,7 @@ const BimestreComponent = props => {
                           label={selecionado.codigo}
                           color={Colors.AzulAnakiwa}
                           bold
-                          id={selecionado.id}
+                          id={`Objetivo${selecionado.id}Selecionado${indice}Id`}
                           disabled={disabled}
                           steady
                           remove

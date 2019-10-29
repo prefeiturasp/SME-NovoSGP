@@ -57,7 +57,7 @@ export default function PlanoAnual() {
 
   const turmaSelecionada = usuario.turmaSelecionada;
   const emEdicao = bimestres.filter(x => x.ehEdicao).length > 0;
-  const ehDisabled = usuario.turmaSelecionada.length === 0;
+  const ehDisabled = !usuario.turmaSelecionada;
   const dispatch = useDispatch();
   const [modalConfirmacaoVisivel, setModalConfirmacaoVisivel] = useState({
     modalVisivel: false,
@@ -65,13 +65,13 @@ export default function PlanoAnual() {
   });
 
   const ehEja =
-    turmaSelecionada[0] && turmaSelecionada[0].codModalidade === modalidade.EJA
+    turmaSelecionada && turmaSelecionada.codModalidade === modalidade.EJA
       ? true
       : false;
 
   const ehMedio =
-    turmaSelecionada[0] &&
-    turmaSelecionada[0].codModalidade === modalidade.ENSINO_MEDIO
+    turmaSelecionada &&
+    turmaSelecionada.codModalidade === modalidade.ENSINO_MEDIO
       ? true
       : false;
 
@@ -89,10 +89,10 @@ export default function PlanoAnual() {
 
   const LayoutEspecial = () => ehEja || ehMedio || disciplinaSemObjetivo;
 
-  const anoLetivo = turmaSelecionada[0] ? turmaSelecionada[0].anoLetivo : 0;
-  const escolaId = turmaSelecionada[0] ? turmaSelecionada[0].codEscola : 0;
-  const anoEscolar = turmaSelecionada[0] ? turmaSelecionada[0].ano : 0;
-  const turmaId = turmaSelecionada[0] ? turmaSelecionada[0].codTurma : 0;
+  const anoLetivo = turmaSelecionada ? turmaSelecionada.anoLetivo : 0;
+  const escolaId = turmaSelecionada ? turmaSelecionada.unidadeEscolar : 0;
+  const anoEscolar = turmaSelecionada ? turmaSelecionada.ano : 0;
+  const turmaId = turmaSelecionada ? turmaSelecionada.turma : 0;
 
   useEffect(() => {
     VerificarEnvio();
@@ -115,6 +115,8 @@ export default function PlanoAnual() {
   }, []);
 
   useEffect(() => {
+    console.log(turmaSelecionada);
+
     if (!ehDisabled) obterDisciplinasPlanoAnual();
   }, [turmaSelecionada]);
 
@@ -160,7 +162,7 @@ export default function PlanoAnual() {
   const verificarSeEhEdicao = async () => {
     dispatch(LimparBimestres());
 
-    if (!turmaSelecionada[0]) return;
+    if (!turmaSelecionada) return;
 
     if (!disciplinaSelecionada) return;
 
@@ -376,7 +378,7 @@ export default function PlanoAnual() {
     <>
       <div className="col-md-12">
         {' '}
-        {!turmaSelecionada[0] ? (
+        {!turmaSelecionada ? (
           <Row className="mb-0 pb-0">
             <Grid cols={12} className="mb-0 pb-0">
               <Alert
@@ -470,7 +472,7 @@ export default function PlanoAnual() {
           <Select
             placeholder="Selecione uma disciplina"
             onChange={AoMudarDisciplinaPlanoAnual}
-            disabled={turmaSelecionada[0] ? false : true}
+            disabled={turmaSelecionada ? false : true}
             className="col-md-6 form-control p-r-10"
             value={disciplinaSelecionada ? disciplinaSelecionada.codigo : 0}
             disabled={
@@ -498,7 +500,7 @@ export default function PlanoAnual() {
             color={Colors.Azul}
             onClick={onCopiarConteudoClick}
             border
-            disabled={turmaSelecionada[0] && !emEdicao ? false : true}
+            disabled={turmaSelecionada && !emEdicao ? false : true}
           />{' '}
         </Grid>{' '}
         <Grid cols={4} className="d-flex justify-content-end mb-3">
