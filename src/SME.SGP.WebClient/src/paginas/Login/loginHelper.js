@@ -3,7 +3,7 @@ import { salvarDadosLogin, meusDados } from '~/redux/modulos/usuario/actions';
 import history from '~/servicos/history';
 import { URL_HOME, URL_REDEFINIRSENHA } from '~/constantes/url';
 import { obterMeusDados } from '~/servicos/Paginas/ServicoUsuario';
-import { setMenus } from '~/servicos/servico-navegacao';
+import { setMenusPermissoes } from '~/servicos/servico-navegacao';
 
 class LoginHelper {
   constructor(dispatch, redirect) {
@@ -30,7 +30,7 @@ class LoginHelper {
     );
 
     obterMeusDados();
-    setMenus();
+    setMenusPermissoes();
 
     if (autenticacao.dados.modificarSenha) {
       history.push(URL_REDEFINIRSENHA);
