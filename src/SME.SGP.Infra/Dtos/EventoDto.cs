@@ -9,7 +9,6 @@ namespace SME.SGP.Infra
     {
         public DateTime? DataFim { get; set; }
 
-        [DataType(DataType.Date)]
         [Required(ErrorMessage = "A data do evento deve ser informada.")]
         public DateTime? DataInicio { get; set; }
 
