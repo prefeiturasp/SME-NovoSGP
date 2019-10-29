@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace SME.SGP.Dominio.Interfaces
 {
@@ -6,6 +7,6 @@ namespace SME.SGP.Dominio.Interfaces
     {
         IEnumerable<TipoCalendario> ObterTiposCalendario();
 
-        bool VerificarRegistroExistente(long id, string nome);
+        Task<bool> VerificarRegistroExistente(long id, string nome);
     }
 }
