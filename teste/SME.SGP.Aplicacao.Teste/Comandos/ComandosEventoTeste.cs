@@ -28,7 +28,8 @@ namespace SME.SGP.Aplicacao.Teste.Comandos
             comandosEvento.Excluir(new long[] { 1 });
 
             //ASSERT
-            Assert.True(true);
+            repositorioEvento.Verify(a => a.ObterPorId(evento1.Id), Times.Once);
+            repositorioEvento.Verify(a => a.Salvar(evento1), Times.Once);
         }
     }
 }
