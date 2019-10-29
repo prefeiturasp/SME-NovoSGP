@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using SME.SGP.Aplicacao;
 using SME.SGP.Aplicacao.Interfaces;
 using SME.SGP.Infra;
 using System.Threading.Tasks;
@@ -7,15 +8,26 @@ using System.Threading.Tasks;
 namespace SME.SGP.Api.Controllers
 {
     [ApiController]
-    [Route("api/v1/eventos")]
+    [Route("api/v1/calendarios/eventos")]
     [Authorize("Bearer")]
     public class EventoController : ControllerBase
     {
-        private readonly IComandosEvento comandosEvento;
-
-        public EventoController(IComandosEvento comandosEvento)
+        [HttpPut("{id}")]
+        [ProducesResponseType(200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        public async Task<IActionResult> Alterar(long id, [FromBody]EventoDto eventoDto, [FromServices]IComandosEvento comandosEvento)
         {
-            this.comandosEvento = comandosEvento ?? throw new System.ArgumentNullException(nameof(comandosEvento));
+            await comandosEvento.Alterar(id, eventoDto);
+            return Ok();
+        }
+
+        [HttpPost]
+        [ProducesResponseType(200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        public async Task<IActionResult> Criar([FromServices]IComandosEvento comandosEvento, [FromBody]EventoDto eventoDto)
+        {
+            await comandosEvento.Criar(eventoDto);
+            return Ok();
         }
 
         [HttpDelete]
@@ -23,21 +35,20 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [ProducesResponseType(typeof(RetornoBaseDto), 601)]
         //[Permissao(Permissao.C_I, Policy = "Bearer")]
-        public IActionResult Excluir(long[] eventosId)
+        public IActionResult Excluir(long[] eventosId, [FromServices]IComandosEvento comandosEvento)
         {
             comandosEvento.Excluir(eventosId);
             return Ok();
         }
 
-        [HttpPost]
-        [ProducesResponseType(200)]
+        [HttpGet("{id}")]
+        [ProducesResponseType(typeof(EventoObterParaEdicaoDto), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [ProducesResponseType(typeof(RetornoBaseDto), 601)]
         //[Permissao(Permissao.C_I, Policy = "Bearer")]
-        public async Task<IActionResult> Post([FromBody]EventoDto eventoDto)
+        public IActionResult ObterPorId(long id, [FromServices] IConsultasEvento consultasEvento)
         {
-            await comandosEvento.Salvar(eventoDto);
-            return Ok();
+            return Ok(consultasEvento.ObterPorId(id));
         }
     }
 }
