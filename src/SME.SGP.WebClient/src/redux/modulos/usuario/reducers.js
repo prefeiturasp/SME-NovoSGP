@@ -15,7 +15,8 @@ const inicial = {
     foto: 'https://graziellanicolai.com.br/wp-content/uploads/2018/03/Graziella-perfil.jpg'
   },
   possuiPerfilSmeOuDre: false,
-  menu: []
+  menu: [],
+  permissoes: []
 };
 
 export default function usuario(state = inicial, action) {
@@ -68,6 +69,9 @@ export default function usuario(state = inicial, action) {
         break;
       case '@usuario/setMenu':
         draft.menu = action.payload;
+        break;
+      case '@usuario/setPermissoes':
+        draft.permissoes = action.payload;
         break;
       default:
         break;

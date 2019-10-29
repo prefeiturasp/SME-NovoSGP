@@ -26,9 +26,11 @@ import TipoFeriadoLista from '~/paginas/CalendarioEscolar/TipoFeriado/tipoFeriad
 import TipoFeriadoForm from '~/paginas/CalendarioEscolar/TipoFeriado/tipoFeriadoForm';
 import TipoEventosLista from '~/paginas/CalendarioEscolar/TipoEventos/tipoEventosLista';
 import TipoEventosForm from '~/paginas/CalendarioEscolar/TipoEventos/tipoEventosForm';
+import { useSelector } from 'react-redux';
 
 export default function Rotas() {
   const rotas = new Map();
+  const permissoes = useSelector(state => state.usuario.permissoes);
 
   rotas.set('/calendario-escolar/tipo-eventos', {
     breadcrumbName: 'Tipo de Eventos',
@@ -240,7 +242,9 @@ export default function Rotas() {
   for (var [key, value] of rotas) {
     const rota = value;
     rota.path = key + (value.params ? value.params : '');
-    rotasArray.push(rota);
+    if (permissoes[rota.path] || (rota.tipo !==RotasTipo.EstruturadaAutenticada|| rota.path === '/')) {
+      rotasArray.push(rota);
+    }
 
     const rotaRedux = {
       path: value.paginaInicial ? '/' : key,
