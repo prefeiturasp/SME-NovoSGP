@@ -30,6 +30,8 @@ namespace SME.SGP.Dominio.Servicos
             }
             evento.AdicionarTipoEvento(tipoEvento);
 
+            evento.ValidaPeriodoEvento();
+
             var usuario = await servicoUsuario.ObterUsuarioLogado();
 
             usuario.PodeCriarEvento(evento);
