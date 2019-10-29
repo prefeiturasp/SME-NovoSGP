@@ -117,8 +117,6 @@ export default function PlanoAnual() {
   }, []);
 
   useEffect(() => {
-    console.log(turmaSelecionada);
-
     if (!ehDisabled) obterDisciplinasPlanoAnual();
   }, [turmaSelecionada]);
 

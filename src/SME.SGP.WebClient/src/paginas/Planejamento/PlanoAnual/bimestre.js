@@ -42,8 +42,6 @@ const BimestreComponent = props => {
 
   const { materias } = bimestre;
 
-  const { focado } = bimestre;
-
   const objetivos = bimestre.objetivosAprendizagem;
 
   const [idObjetivoFocado, setIDObjetivoFocado] = useState('0');

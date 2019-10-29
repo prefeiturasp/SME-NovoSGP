@@ -113,7 +113,7 @@ const SelectComponent = React.forwardRef((props, ref) => {
       alt={alt}
       optionFilterProp="children"
       allowClear
-      readOnly={disabled}
+      disabled={disabled}
       component={Select}
       type="input"
       onChange={e => {
@@ -140,7 +140,7 @@ const SelectComponent = React.forwardRef((props, ref) => {
       alt={alt}
       optionFilterProp="children"
       allowClear
-      readOnly={disabled}
+      disabled={disabled}
       ref={ref}
     >
       {opcoesLista()}
