@@ -12,10 +12,10 @@ namespace SME.SGP.Api.Controllers
     [Authorize("Bearer")]
     public class EventoController : ControllerBase
     {
-        [HttpPut]
+        [HttpPut("{id}")]
         [ProducesResponseType(200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        public async Task<IActionResult> Alterar([FromServices]IComandosEvento comandosEvento, [FromQuery]long id, [FromBody]EventoDto eventoDto)
+        public async Task<IActionResult> Alterar(long id, [FromBody]EventoDto eventoDto, [FromServices]IComandosEvento comandosEvento)
         {
             await comandosEvento.Alterar(id, eventoDto);
             return Ok();
@@ -34,7 +34,6 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [ProducesResponseType(typeof(RetornoBaseDto), 601)]
-        [ProducesResponseType(typeof(EventoDto), 200)]
         //[Permissao(Permissao.C_I, Policy = "Bearer")]
         public IActionResult Excluir(long[] eventosId, [FromServices]IComandosEvento comandosEvento)
         {
@@ -42,12 +41,12 @@ namespace SME.SGP.Api.Controllers
             return Ok();
         }
 
-        [HttpGet]
-        [ProducesResponseType(200)]
+        [HttpGet("{id}")]
+        [ProducesResponseType(typeof(EventoObterParaEdicaoDto), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [ProducesResponseType(typeof(RetornoBaseDto), 601)]
         //[Permissao(Permissao.C_I, Policy = "Bearer")]
-        public IActionResult ObterPorId([FromQuery] long id, [FromServices] IConsultasEvento consultasEvento)
+        public IActionResult ObterPorId(long id, [FromServices] IConsultasEvento consultasEvento)
         {
             return Ok(consultasEvento.ObterPorId(id));
         }

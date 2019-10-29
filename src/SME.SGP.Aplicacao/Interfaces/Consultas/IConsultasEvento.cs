@@ -4,6 +4,6 @@ namespace SME.SGP.Aplicacao
 {
     public interface IConsultasEvento
     {
-        EventoDto ObterPorId(long id);
+        EventoObterParaEdicaoDto ObterPorId(long id);
     }
 }
