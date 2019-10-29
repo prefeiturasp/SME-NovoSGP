@@ -43,6 +43,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "scripts", "scripts", "{CF91
 		scripts\V29__FERIADO_CALENDARIO.sql = scripts\V29__FERIADO_CALENDARIO.sql
 		scripts\V2__PLANO_CICLO_CREATE.sql = scripts\V2__PLANO_CICLO_CREATE.sql
 		scripts\V31__EVENTO.sql = scripts\V31__EVENTO.sql
+		scripts\V32__EVENTO_COLUNA_EXCLUIDO.sql = scripts\V32__EVENTO_COLUNA_EXCLUIDO.sql
 		scripts\V3__TIPO_CICLO.sql = scripts\V3__TIPO_CICLO.sql
 		scripts\V4__PLANO_ANUAL.sql = scripts\V4__PLANO_ANUAL.sql
 		scripts\V5__SUPERVISOR_ESCOLA.sql = scripts\V5__SUPERVISOR_ESCOLA.sql

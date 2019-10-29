@@ -3,7 +3,7 @@ using SME.SGP.Aplicacao.Interfaces;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Entidades;
 using SME.SGP.Dominio.Interfaces;
-using SME.SGP.Dto;
+using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
 using Xunit;
@@ -57,9 +57,9 @@ namespace SME.SGP.Aplicacao.Teste.Comandos
             comandosEventoTipo.Salvar(eventoTipoDto);
         }
 
-        private EventoTipoDto ObterDto()
+        private EventoTipoInclusaoDto ObterDto()
         {
-            return new EventoTipoDto
+            return new EventoTipoInclusaoDto
             {
                 Ativo = true,
                 Concomitancia = true,

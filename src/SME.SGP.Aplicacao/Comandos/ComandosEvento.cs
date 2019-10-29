@@ -2,6 +2,9 @@
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
@@ -16,6 +19,30 @@ namespace SME.SGP.Aplicacao
         {
             this.repositorioEvento = repositorioEvento ?? throw new System.ArgumentNullException(nameof(repositorioEvento));
             this.servicoEvento = servicoEvento ?? throw new System.ArgumentNullException(nameof(servicoEvento));
+        }
+
+        public void Excluir(long[] idsEventos)
+        {
+            List<long> idsComErroAoExcluir = new List<long>();
+
+            foreach (var idEvento in idsEventos)
+            {
+                try
+                {
+                    var evento = repositorioEvento.ObterPorId(idEvento);
+
+                    evento.Excluir();
+
+                    repositorioEvento.Salvar(evento);
+                }
+                catch (Exception)
+                {
+                    idsComErroAoExcluir.Add(idEvento);
+                }
+            }
+
+            if (idsComErroAoExcluir.Any())
+                throw new NegocioException($"Não foi possível excluir os eventos de ids {string.Join(",", idsComErroAoExcluir)}");
         }
 
         public async Task Salvar(EventoDto eventoDto)
