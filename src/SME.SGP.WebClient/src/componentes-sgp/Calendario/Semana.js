@@ -1,19 +1,18 @@
-﻿import React from 'react';
+﻿import React, { useState } from 'react';
+import { useSelector } from 'react-redux';
 
-const WeekDay = () => {
-  this.isOpen = false;
-  this.lastSelectedDay = undefined;
-
-  this.selectDayClick = this.selectDayClick.bind(this);
+const WeekDay = props => {
+  const [estaAberto, setEstaAberto] = useState(false);
+  const [diaSelecionado, setDiaSelecionado] = useState();
+  const [ultimoDiaSelecionado, setUltimoDiaSelecionado] = useState();
 
   const selectDayClick = () => {
-    this.props.selectDay(this.props.day);
-    this.lastSelectedDay = this.props.day;
-    this.isOpen = !this.isOpen;
+    // this.props.selectDay(this.props.day);
+    // ultimoDiaSelecionado = sd;
+    setEstaAberto(!estaAberto);
   };
 
-  const {
-    style,
+  let {
     className,
     day,
     currentMonth,
@@ -21,20 +20,27 @@ const WeekDay = () => {
     selectedDay,
     toggleMonth,
     ...rest
-  } = this.props;
+  } = props;
 
-  if (day === selectedDay) this.lastSelectedDay = selectedDay;
+  let style = {};
 
-  if (
-    this.lastSelectedDay !== selectedDay ||
-    selectedDay === undefined ||
-    this.lastSelectedDay === undefined ||
-    this.lastSelectedDay.getMonth() !== currentMonth
-  )
-    this.isOpen = false;
-  else this.isOpen = true;
+  if (day === selectedDay) setUltimoDiaSelecionado(selectedDay);
 
-  if (style === undefined) style = { height: 61, cursor: 'pointer' };
+  // if (
+  //   ultimoDiaSelecionado !== selectedDay ||
+  //   selectedDay === undefined ||
+  //   ultimoDiaSelecionado === undefined ||
+  //   ultimoDiaSelecionado.getMonth() !== currentMonth
+  // )
+  //   setEstaAberto(false);
+  // else setEstaAberto(true);
+
+  // if (style === undefined) {
+  style.height = 61;
+  style.cursor = 'pointer';
+  // }
+
+  // console.log(day);
 
   if (day.getDay() === 0) style.backgroundColor = '#FEE4E2';
   else if (day.getDay() === 6) style.backgroundColor = '#F7F9FA';
@@ -43,7 +49,7 @@ const WeekDay = () => {
     className += ' col border border-left-0 border-bottom-0';
   else className = 'col border border-left-0 border-bottom-0';
 
-  if (this.isOpen === false)
+  if (!estaAberto)
     className = className.replace(' border-bottom-0', ' border-bottom');
 
   let formatedDay = day.getDate();
@@ -59,12 +65,7 @@ const WeekDay = () => {
   if (currentMonth !== day.getMonth()) dayStyle.color = 'rgba(66, 71, 74, 0.3)';
 
   return (
-    <div
-      className={className}
-      style={style}
-      {...rest}
-      onClick={this.selectDayClick}
-    >
+    <div className={className} style={style} {...rest} onClick={selectDayClick}>
       <div className="w-100 h-100 d-flex">
         <div style={dayStyle}>{formatedDay}</div>
       </div>
@@ -83,9 +84,15 @@ const Semana = props => {
     ...rest
   } = props;
 
+  // console.log(props);
+
+  const diaSelecionado = useSelector(
+    state => state.calendarioEscolar.diaSelecionado
+  );
+
   const childProps = {
     selectDay,
-    selectedDay: this.props.calendar.selectedDay,
+    selectedDay: diaSelecionado,
     currentMonth,
   };
 
