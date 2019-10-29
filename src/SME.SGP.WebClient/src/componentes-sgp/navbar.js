@@ -1,7 +1,8 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { useSelector, useDispatch } from 'react-redux';
+import { useSelector } from 'react-redux';
 import styled from 'styled-components';
+import { store } from '../redux';
 import Filtro from './filtro';
 import LogoDoSgp from '../recursos/LogoDoSgp.svg';
 import { Base } from '../componentes/colors';
@@ -10,11 +11,10 @@ import Perfil from './perfil';
 import { Deslogar } from '~/redux/modulos/usuario/actions';
 import history from '~/servicos/history';
 import { URL_LOGIN, URL_HOME } from '~/constantes/url';
+import { limparDadosFiltro } from '~/redux/modulos/filtro/actions';
 
 const Navbar = () => {
   const retraido = useSelector(state => state.navegacao.retraido);
-  const usuario = useSelector(state => state.usuario.rf);
-  const dispatch = useDispatch();
 
   const Nav = styled.nav`
     height: 70px !important;
@@ -67,7 +67,8 @@ const Navbar = () => {
   `;
 
   const onClickSair = () => {
-    dispatch(Deslogar());
+    store.dispatch(limparDadosFiltro());
+    store.dispatch(Deslogar());
     history.push(URL_LOGIN);
   };
 

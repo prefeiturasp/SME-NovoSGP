@@ -29,10 +29,12 @@ const CampoTexto = React.forwardRef((props, ref) => {
     maskType,
     placeholder,
     onChange,
+    onKeyDown,
     value,
     desabilitado,
     maxlength,
     label,
+    semMensagem,
   } = props;
 
   const possuiErro = () => {
@@ -61,22 +63,26 @@ const CampoTexto = React.forwardRef((props, ref) => {
               } ${className || ''} ${desabilitado ? 'desabilitado' : ''}`}
               component={type || 'input'}
               type={maskType && maskType}
-              disabled={desabilitado}
+              readOnly={desabilitado}
               onBlur={executaOnBlur}
               maxLength={maxlength || ''}
               innerRef={ref}
+              onKeyDown={onKeyDown}
               onChange={e => {
                 form.setFieldValue(name, e.target.value);
+                form.setFieldTouched(name, true);
                 onChange(e);
               }}
             />
-            <span>{form.errors[name]}</span>
+            {!semMensagem ? <span>{form.errors[name]}</span> : ''}
           </>
         ) : (
           <Input
             ref={ref}
             placeholder={placeholder}
             onChange={onChange}
+            readOnly={desabilitado}
+            onKeyDown={onKeyDown}
             value={value}
           />
         )}
@@ -87,10 +93,12 @@ const CampoTexto = React.forwardRef((props, ref) => {
 
 CampoTexto.propTypes = {
   onChange: PropTypes.func,
+  semMensagem: PropTypes.bool,
 };
 
 CampoTexto.defaultProps = {
   onChange: () => {},
+  semMensagem: false,
 };
 
 export default CampoTexto;

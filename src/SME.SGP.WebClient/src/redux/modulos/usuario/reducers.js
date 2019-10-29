@@ -7,14 +7,16 @@ const inicial = {
   dataLogin: null,
   logado: false,
   turmasUsuario: [],
-  turmaSelecionada: [],
+  turmaSelecionada: {},
   filtroAtual: {},
   dadosUsuario: [],
   modificarSenha: '',
   meusDados: {
-    foto:'https://graziellanicolai.com.br/wp-content/uploads/2018/03/Graziella-perfil.jpg'
+    foto:
+      'https://graziellanicolai.com.br/wp-content/uploads/2018/03/Graziella-perfil.jpg',
   },
-  possuiPerfilSmeOuDre: false
+  possuiPerfilSmeOuDre: false,
+  menu: []
 };
 
 export default function usuario(state = inicial, action) {
@@ -35,6 +37,7 @@ export default function usuario(state = inicial, action) {
         draft.usuario = action.payload.usuario;
         draft.modificarSenha = action.payload.modificarSenha;
         draft.possuiPerfilSmeOuDre = action.payload.possuiPerfilSmeOuDre;
+        draft.menu = action.payload.menu;
         break;
       case '@usuario/deslogar':
         draft.rf = '';
@@ -46,6 +49,7 @@ export default function usuario(state = inicial, action) {
         draft.turmasUsuario = [];
         draft.turmaSelecionada = [];
         draft.dadosUsuario = [];
+        draft.menu = [];
         break;
       case '@usuario/selecionarTurma':
         draft.turmaSelecionada = action.payload;
@@ -53,15 +57,20 @@ export default function usuario(state = inicial, action) {
       case '@usuario/removerTurma':
         draft.turmaSelecionada = [];
         break;
-      case '@usuario/meusDados': {
+      case '@usuario/meusDados':
         draft.meusDados = action.payload;
         break;
-      }
+      case '@usuario/meusDadosSalvarEmail':
+        draft.meusDados.email = action.payload;
+        break;
       case '@usuario/filtroAtual':
         draft.filtroAtual = action.payload;
         break;
       case '@usuario/salvarDadosUsuario':
         draft.dadosUsuario = action.payload;
+        break;
+      case '@usuario/setMenu':
+        draft.menu = action.payload;
         break;
       default:
         break;

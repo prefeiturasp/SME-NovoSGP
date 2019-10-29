@@ -21,19 +21,22 @@ const Sider = () => {
 
   const usuario = useSelector(store => store.usuario);
 
-  const subMenusPrincipais = [
-    'subDiarioClasse',
-    'subPlanejamento',
-    'subFechamento',
-    'subRelatorios',
-    'subGestao',
-    'subConfiguracoes',
-    'calendario-escolar',
-  ];
+  const [subMenusPrincipais, setSubMenusPrincipais] = useState([]);
 
   useEffect(() => {
     verificaSelecaoMenu(NavegacaoStore.rotaAtiva);
   }, [NavegacaoStore.rotaAtiva]);
+
+  useEffect(() => {
+    if (usuario.menu)
+      setSubMenusPrincipais(
+        usuario.menu
+          .filter(menu => {
+            if (menu.ehMenu) return menu;
+          })
+          .map(x => 'menu-' + x.codigo)
+      );
+  }, [usuario.menu]);
 
   useEffect(() => {
     if (
@@ -97,6 +100,68 @@ const Sider = () => {
     store.dispatch(menuSelecionado([item.key]));
   };
 
+  const criarItensMenu = menus => {
+    const itens = menus.map(item => {
+      return item.subMenus && item.subMenus.length > 0 ? (
+        criarMenus([item])
+      ) : (
+        <Menu.Item key={item.codigo} id={item.codigo}>
+          <span className="menuItem"> {item.descricao}</span>
+          {item.url ? <Link to={item.url} id={'link-' + item.codigo} /> : ''}
+        </Menu.Item>
+      );
+    });
+    return itens;
+  };
+
+  const criarMenus = menu => {
+    if (menu && menu.length > 0) {
+      return menu.map(subMenu => {
+        const temSubmenu = subMenu.subMenus && subMenu.subMenus.length > 0;
+        if (subMenu.ehMenu || temSubmenu) {
+          const menuKey = (temSubmenu ? 'sub-' : 'menu-') + subMenu.codigo;
+          return (
+            <SubMenu
+              id={subMenu.codigo}
+              key={menuKey}
+              onMouseEnter={e =>
+                alterarPosicaoJanelaPopup(
+                  subMenu.codigo,
+                  subMenu.quantidadeMenus
+                )
+              }
+              title={
+                subMenu.icone ? (
+                  <div className={'item-menu-retraido'}>
+                    <i
+                      className={
+                        subMenu.icone +
+                        (NavegacaoStore.retraido ? ' icons-retraido' : ' icons')
+                      }
+                    />
+                    <span>{subMenu.descricao}</span>
+                  </div>
+                ) : (
+                  <div
+                    className={
+                      'item-menu-retraido' + temSubmenu
+                        ? ' submenu-subnivel'
+                        : ''
+                    }
+                  >
+                    <span>{subMenu.descricao}</span>
+                  </div>
+                )
+              }
+            >
+              {criarItensMenu(subMenu.menus ? subMenu.menus : subMenu.subMenus)}
+            </SubMenu>
+          );
+        }
+      });
+    }
+  };
+
   return (
     <MenuBody
       id="main"
@@ -154,7 +219,6 @@ const Sider = () => {
             </div>
           </div>
         </Topo>
-
         <MenuScope>
           <div
             className={`menu-scope${
@@ -381,8 +445,13 @@ const Sider = () => {
                     id="linkTipoFeriado"
                   /> */}
                 </Menu.Item>
-                <Menu.Item key="87" id="calTipoEvento">
-                  <span className="menuItem">Tipo de Evento</span>
+                <Menu.Item key="87" id="calTipoEventos">
+                  <span className="menuItem">Tipo de Eventos</span>
+                  <Link
+                    to="/calendario-escolar/tipo-eventos"
+                    className="nav-link text-white"
+                    id="linkTipoEventos"
+                  />
                 </Menu.Item>
                 <Menu.Item key="88" id="calEventos">
                   <span className="menuItem">Eventos</span>
@@ -468,6 +537,25 @@ const Sider = () => {
             </Menu>
           </div>
         </MenuScope>
+        {/* <MenuScope>
+          <div
+            className={`menu-scope${
+              NavegacaoStore.retraido ? ' menu-scope-retraido' : ''
+              }`}
+          >
+            <Menu
+              id="menuPrincipal"
+              mode="inline"
+              theme="dark"
+              openKeys={openKeys}
+              onOpenChange={onOpenChange}
+              onSelect={selecionarItem.bind(NavegacaoStore.menuSelecionado)}
+              selectedKeys={NavegacaoStore.menuSelecionado}
+            >
+              {criarMenus(usuario.menu)}
+            </Menu>
+          </div>
+        </MenuScope> */}
         <div className="footer-content">
           <DivFooter>
             <Footer>
