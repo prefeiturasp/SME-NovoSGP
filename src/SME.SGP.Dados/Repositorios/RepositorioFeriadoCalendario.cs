@@ -5,6 +5,7 @@ using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System.Collections.Generic;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace SME.SGP.Dados.Repositorios
 {
@@ -14,7 +15,7 @@ namespace SME.SGP.Dados.Repositorios
         {
         }
 
-        public IEnumerable<FeriadoCalendario> ObterFeriadosCalendario(FiltroFeriadoCalendarioDto filtro)
+        public async Task<IEnumerable<FeriadoCalendario>> ObterFeriadosCalendario(FiltroFeriadoCalendarioDto filtro)
         {
             if (!string.IsNullOrEmpty(filtro.Nome))
             {
@@ -34,18 +35,25 @@ namespace SME.SGP.Dados.Repositorios
 
             if (!string.IsNullOrEmpty(filtro.Nome))
                 query.AppendLine("and upper(f_unaccent(nome)) LIKE f_unaccent(@Nome)");
+
             if (filtro.Abrangencia > 0)
                 query.AppendLine("and abrangencia = @Abrangencia");
 
             if (filtro.Tipo > 0)
                 query.AppendLine("and tipo = @Tipo");
 
-            return database.Conexao.Query<FeriadoCalendario>(query.ToString(), new
+            if (filtro.Ano > 0)
+                query.AppendLine("and EXTRACT(year FROM data_feriado) = @Ano");
+
+            var listaRetorno = await database.Conexao.QueryAsync<FeriadoCalendario>(query.ToString(), new
             {
                 filtro.Nome,
                 filtro.Abrangencia,
-                filtro.Tipo
+                filtro.Tipo,
+                filtro.Ano
             });
+
+            return listaRetorno;
         }
 
         FeriadoCalendario IRepositorioBase<FeriadoCalendario>.ObterPorId(long id)

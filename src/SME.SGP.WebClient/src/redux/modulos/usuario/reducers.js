@@ -16,7 +16,7 @@ const inicial = {
       'https://graziellanicolai.com.br/wp-content/uploads/2018/03/Graziella-perfil.jpg',
   },
   possuiPerfilSmeOuDre: false,
-  menu: []
+  menu: [],
 };
 
 export default function usuario(state = inicial, action) {
@@ -26,7 +26,6 @@ export default function usuario(state = inicial, action) {
         draft.rf = action.payload;
         break;
       case '@usuario/turmasUsuario':
-        draft.turmasUsuario = [];
         draft.turmasUsuario = action.payload;
         break;
       case '@usuario/salvarLogin':
