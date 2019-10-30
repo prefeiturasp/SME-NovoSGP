@@ -239,8 +239,22 @@ const Service = {
   urlObterPlanoAnual: () => {
     return `v1/planos/anual/obter`;
   },
+
+  urlObterBimestreExpandido: () => {
+    return `v1/planos/anual/obter/expandido`;
+  },
+
   obterBimestre: bimestre => {
     return API.post(Service.urlObterPlanoAnual(), bimestre);
+  },
+
+  obterBimestreExpandido: filtroPlanoAnualExpandidoDto => {
+    console.log(filtroPlanoAnualExpandidoDto);
+
+    return API.post(
+      Service.urlObterBimestreExpandido(),
+      filtroPlanoAnualExpandidoDto
+    );
   },
 };
 

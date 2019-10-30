@@ -1,6 +1,7 @@
 ﻿using Moq;
 using SME.SGP.Dominio.Interfaces;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using Xunit;
 
 namespace SME.SGP.Dominio.Servicos.Teste
@@ -28,13 +29,14 @@ namespace SME.SGP.Dominio.Servicos.Teste
         }
 
         [Fact]
-        public async void Deve_Inserir_Feriados_Moveis()
+        public async Task Deve_Inserir_Feriados_Moveis()
         {
             //ARRANGE
             var servicoferiado = new ServicoFeriadoCalendario(repositorioFeriadoCalendario.Object);
-            var retorno = new List<FeriadoCalendario>();
+            IEnumerable<FeriadoCalendario> retorno = new List<FeriadoCalendario>();
+
             repositorioFeriadoCalendario.Setup(a => a.ObterFeriadosCalendario(new Infra.FiltroFeriadoCalendarioDto() { Tipo = TipoFeriadoCalendario.Movel, Ano = 2019 }))
-                .Returns(retorno);
+                .Returns(Task.FromResult(retorno));
 
             //ACT
             await servicoferiado.VerficaSeExisteFeriadosMoveisEInclui(2019);

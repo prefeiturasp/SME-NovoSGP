@@ -7,10 +7,16 @@ namespace SME.SGP.Dominio
 {
     public class Evento : EntidadeBase
     {
+        public Evento()
+        {
+            Excluido = false;
+        }
+
         public DateTime? DataFim { get; set; }
         public DateTime DataInicio { get; set; }
         public string Descricao { get; set; }
         public string DreId { get; set; }
+        public bool Excluido { get; set; }
         public FeriadoCalendario FeriadoCalendario { get; set; }
         public long? FeriadoId { get; set; }
         public EventoLetivo Letivo { get; set; }
@@ -68,10 +74,34 @@ namespace SME.SGP.Dominio
             }
         }
 
+        public void Excluir()
+        {
+            if (Excluido)
+                throw new NegocioException("Este evento já está excluido.");
+
+            Excluido = true;
+        }
+
         public bool PermiteConcomitancia()
         {
             TipoEventoObrigatorio();
             return TipoEvento.Concomitancia;
+        }
+
+        public void ValidaPeriodoEvento()
+        {
+            TipoEventoObrigatorio();
+            if (TipoEvento.TipoData == EventoTipoData.InicioFim && !DataFim.HasValue)
+            {
+                throw new NegocioException("Neste tipo de evento a data final do evento deve ser informada.");
+            }
+            else
+            {
+                if (TipoEvento.TipoData == EventoTipoData.Unico && DataFim.HasValue)
+                {
+                    throw new NegocioException("Neste tipo de evento a data final do evento não deve ser informada.");
+                }
+            }
         }
 
         private void TipoEventoObrigatorio()

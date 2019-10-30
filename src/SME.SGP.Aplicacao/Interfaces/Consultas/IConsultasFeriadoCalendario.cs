@@ -1,5 +1,6 @@
 ﻿using SME.SGP.Infra;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
@@ -7,7 +8,7 @@ namespace SME.SGP.Aplicacao
     {
         FeriadoCalendarioCompletoDto BuscarPorId(long id);
 
-        IEnumerable<FeriadoCalendarioDto> Listar(FiltroFeriadoCalendarioDto filtro);
+        Task<IEnumerable<FeriadoCalendarioDto>> Listar(FiltroFeriadoCalendarioDto filtro);
 
         IEnumerable<EnumeradoRetornoDto> ObterAbrangencias();
 

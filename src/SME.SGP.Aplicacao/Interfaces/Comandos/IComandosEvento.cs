@@ -5,6 +5,10 @@ namespace SME.SGP.Aplicacao.Interfaces
 {
     public interface IComandosEvento
     {
-        Task Salvar(EventoDto eventoDto);
+        void Excluir(long[] idsEventos);
+
+        Task Alterar(long id, EventoDto eventoDto);
+
+        Task Criar(EventoDto eventoDto);
     }
 }

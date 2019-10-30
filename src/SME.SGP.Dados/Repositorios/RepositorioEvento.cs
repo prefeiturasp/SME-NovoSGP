@@ -3,7 +3,6 @@ using SME.SGP.Dados.Contexto;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using System;
-using System.Linq;
 
 namespace SME.SGP.Dados.Repositorios
 {
@@ -13,9 +12,10 @@ namespace SME.SGP.Dados.Repositorios
         {
         }
 
-        public bool ExisteEventoNaDataEspecificada(DateTime dataInicio)
+        public bool ExisteEventoNaMesmaDataECalendario(DateTime dataInicio, long tipoCalendarioId)
         {
-            return database.Conexao.Query<bool>("select 1 from evento where data_inicio = @dataInicio;", new { dataInicio }).FirstOrDefault();
+            var query = "select 1 from evento where data_inicio = @dataInicio and tipo_calendario = @tipoCalendarioId;";
+            return database.Conexao.QueryFirstOrDefault<bool>(query, new { dataInicio, tipoCalendarioId });
         }
     }
 }

@@ -1,4 +1,5 @@
 ﻿using SME.SGP.Infra;
+using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
@@ -6,6 +7,6 @@ namespace SME.SGP.Aplicacao
     {
         void MarcarExcluidos(long[] ids);
 
-        void Salvar(TipoCalendarioDto dto);
+        Task Salvar(TipoCalendarioDto dto);
     }
 }
