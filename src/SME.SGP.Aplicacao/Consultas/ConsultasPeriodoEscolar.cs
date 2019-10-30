@@ -1,4 +1,5 @@
 ﻿using SME.SGP.Aplicacao.Interfaces;
+using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System;
@@ -26,7 +27,7 @@ namespace SME.SGP.Aplicacao.Consultas
             return EntidadeParaDto(lista);
         }
 
-        private static PeriodoEscolarListaDto EntidadeParaDto(IEnumerable<Dominio.Entidades.PeriodoEscolar> lista)
+        private static PeriodoEscolarListaDto EntidadeParaDto(IEnumerable<PeriodoEscolar> lista)
         {
             return new PeriodoEscolarListaDto
             {
