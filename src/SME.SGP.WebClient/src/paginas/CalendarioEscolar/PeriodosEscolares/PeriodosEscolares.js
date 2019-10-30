@@ -104,7 +104,7 @@ const PeriodosEscolares = () => {
 
   useEffect(() => {
     async function consultaTipos() {
-      const listaTipo = await api.get('v1/tipo-calendario');
+      const listaTipo = await api.get('v1/calendarios/tipos');
       if (listaTipo && listaTipo.data && listaTipo.data.length) {
         listaTipo.data.map(item => {
           item.id = String(item.id);

@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 namespace SME.SGP.Api.Controllers
 {
     [ApiController]
-    [Route("api/v1/tipo-calendario")]
+    [Route("api/v1/calendarios/tipos")]
     [ValidaDto]
     [Authorize("Bearer")]
     public class TipoCalendarioController : ControllerBase
