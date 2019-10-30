@@ -72,9 +72,13 @@ const ModalConteudoHtml = props => {
     desabilitarBotaoPrincipal,
     esconderBotoes,
     width,
+    fecharAoClicarFora,
+    fecharAoClicarEsc
   } = props;
   return (
     <Container
+      keyboard={fecharAoClicarEsc}
+      maskClosable={fecharAoClicarFora}
       onCancel={onClose}
       title={titulo}
       visible={visivel}
@@ -153,11 +157,15 @@ const ModalConteudoHtml = props => {
 ModalConteudoHtml.propTypes = {
   width: PropTypes.number,
   desabilitarBotaoPrincipal: PropTypes.bool,
+  fecharAoClicarFora: PropTypes.bool,
+  fecharAoClicarEsc: PropTypes.bool,
 };
 
 ModalConteudoHtml.defaultProps = {
   desabilitarBotaoPrincipal: false,
   width: 520,
+  fecharAoClicarFora: true,
+  fecharAoClicarEsc: true,
 };
 
 export default ModalConteudoHtml;
