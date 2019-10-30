@@ -24,6 +24,7 @@ const Base = {
   CinzaMenu: '#EEEEEE',
   CinzaMenuItem: '#686868',
   Preto: '#000',
+  RosaCalendario: '#FEE4E2',
   Roxo: '#6933FF',
   RoxoFundo: '#6331EA',
   RoxoClaro: '#B99FFF',

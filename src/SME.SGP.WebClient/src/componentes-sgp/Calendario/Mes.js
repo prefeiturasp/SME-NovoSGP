@@ -1,11 +1,15 @@
-﻿import React, { useEffect, useState, useRef } from 'react';
+﻿import React, { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
 import styled from 'styled-components';
 import { useTransition, animated } from 'react-spring';
 import { store } from '~/redux';
-import { alternaMes } from '~/redux/modulos/calendarioEscolar/actions';
+import {
+  selecionaMes,
+  atribuiEventosMes,
+} from '~/redux/modulos/calendarioEscolar/actions';
 import { Base } from '~/componentes/colors';
+import api from '~/servicos/api';
 
 const Div = styled.div``;
 const Icone = styled.i`
@@ -41,28 +45,40 @@ const Mes = props => {
   useEffect(() => {
     const dataAtual = new Date();
     if (numeroMes === (dataAtual.getMonth() + 1).toString())
-      store.dispatch(alternaMes(numeroMes));
+      store.dispatch(selecionaMes(numeroMes));
+
+    api
+      .get(
+        'v1/calendarios/eventos/meses?DreId=1&EhEventoSme=true&IdTipoCalendario=2&UeId=3'
+      )
+      .then(resposta => {
+        if (resposta.data) {
+          resposta.data.forEach(item => {
+            store.dispatch(atribuiEventosMes(item.mes, item.eventos));
+          });
+        }
+      });
   }, []);
 
   const meses = useSelector(state => state.calendarioEscolar.meses);
 
   useEffect(() => {
     const mes = Object.assign({}, meses[numeroMes]);
-    mes.style = { backgroundColor: Base.CinzaCalendario };
+    mes.style = { backgroundColor: Base.CinzaCalendario, color: Base.Preto };
 
     if (mes.estaAberto) {
       mes.chevronColor = Base.Branco;
       mes.className += ' border-bottom-0';
-      mes.style = {};
+      mes.style = { color: Base.Preto };
     }
 
-    if (mes.appointments > 0) mes.chevronColor = Base.AzulCalendario;
+    if (mes.eventos > 0) mes.chevronColor = Base.AzulCalendario;
 
     setMesSelecionado(mes);
   }, [meses]);
 
   const abrirMes = () => {
-    store.dispatch(alternaMes(numeroMes));
+    store.dispatch(selecionaMes(numeroMes));
   };
 
   return (
@@ -74,19 +90,18 @@ const Mes = props => {
           style={{
             backgroundColor: mesSelecionado.chevronColor,
             height: 75,
-            width: 33,
+            width: 35,
           }}
         >
           <Seta estaAberto={mesSelecionado.estaAberto} />
         </Div>
-
         <Div
           className="d-flex align-items-center w-100"
           style={mesSelecionado.style}
         >
-          <Div className="w-100 pl-2">{mesSelecionado.name}</Div>
+          <Div className="w-100 pl-2">{mesSelecionado.nome}</Div>
           <Div className="flex-shrink-1 d-flex align-items-center pr-3">
-            <Div className="pr-2">{mesSelecionado.appointments}</Div>
+            <Div className="pr-2">{mesSelecionado.eventos}</Div>
             <Div>
               <Icone className="far fa-calendar-alt" />
             </Div>

@@ -3,86 +3,86 @@
 const inicial = {
   meses: {
     1: {
-      name: 'Janeiro',
+      nome: 'Janeiro',
       className: 'd-flex border',
-      appointments: 0,
+      eventos: 0,
       chevronColor: '#C4C4C4',
       estaAberto: false,
     },
     2: {
-      name: 'Fevereiro',
+      nome: 'Fevereiro',
       className: 'd-flex border border-left-0',
-      appointments: 0,
+      eventos: 0,
       chevronColor: '#C4C4C4',
       estaAberto: false,
     },
     3: {
-      name: 'Março',
+      nome: 'Março',
       className: 'd-flex border border-left-0',
-      appointments: 0,
+      eventos: 0,
       chevronColor: '#C4C4C4',
       estaAberto: false,
     },
     4: {
-      name: 'Abril',
+      nome: 'Abril',
       className: 'd-flex border border-left-0',
-      appointments: 0,
+      eventos: 0,
       chevronColor: '#C4C4C4',
       estaAberto: false,
     },
     5: {
-      name: 'Maio',
+      nome: 'Maio',
       className: 'd-flex border border-top-0',
-      appointments: 0,
+      eventos: 0,
       chevronColor: '#C4C4C4',
       estaAberto: false,
     },
     6: {
-      name: 'Junho',
+      nome: 'Junho',
       className: 'd-flex border border-top-0 border-left-0',
-      appointments: 6,
+      eventos: 0,
       chevronColor: '#C4C4C4',
       estaAberto: false,
     },
     7: {
-      name: 'Julho',
+      nome: 'Julho',
       className: 'd-flex border border-top-0 border-left-0',
-      appointments: 0,
+      eventos: 0,
       chevronColor: '#C4C4C4',
       estaAberto: false,
     },
     8: {
-      name: 'Agosto',
+      nome: 'Agosto',
       className: 'd-flex border border-top-0 border-left-0',
-      appointments: 0,
+      eventos: 0,
       chevronColor: '#C4C4C4',
       estaAberto: false,
     },
     9: {
-      name: 'Setembro',
+      nome: 'Setembro',
       className: 'd-flex border border-top-0',
-      appointments: 0,
+      eventos: 0,
       chevronColor: '#C4C4C4',
       estaAberto: false,
     },
     10: {
-      name: 'Outubro',
+      nome: 'Outubro',
       className: 'd-flex border border-top-0 border-left-0',
-      appointments: 0,
+      eventos: 0,
       chevronColor: '#C4C4C4',
       estaAberto: false,
     },
     11: {
-      name: 'Novembro',
+      nome: 'Novembro',
       className: 'd-flex border border-top-0 border-left-0',
-      appointments: 0,
+      eventos: 0,
       chevronColor: '#C4C4C4',
       estaAberto: false,
     },
     12: {
-      name: 'Dezembro',
+      nome: 'Dezembro',
       className: 'd-flex border border-top-0 border-left-0',
-      appointments: 0,
+      eventos: 0,
       chevronColor: '#C4C4C4',
       estaAberto: false,
     },
@@ -93,7 +93,7 @@ const inicial = {
 export default function calendarioEscolar(state = inicial, action) {
   return produce(state, draft => {
     switch (action.type) {
-      case '@calendarioEscolar/alternaMes': {
+      case '@calendarioEscolar/selecionaMes': {
         const meses = Object.assign({}, state.meses);
         const { estaAberto } = state.meses[action.payload];
 
@@ -102,13 +102,20 @@ export default function calendarioEscolar(state = inicial, action) {
         });
         meses[action.payload].estaAberto = !estaAberto;
 
-        draft.months = meses;
+        draft.meses = meses;
         break;
       }
       case '@calendarioEscolar/selecionaDia': {
         let diaSelecionado = action.payload;
         if (state.diaSelecionado === diaSelecionado) diaSelecionado = undefined;
         draft.diaSelecionado = diaSelecionado;
+        break;
+      }
+      case '@calendarioEscolar/atribuiEventosMes': {
+        const { mes, eventos } = action.payload;
+        const meses = Object.assign({}, state.meses);
+        meses[mes].eventos = eventos;
+        draft.meses = meses;
         break;
       }
       default:
