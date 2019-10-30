@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SME.SGP.Dto;
+using System;
 
 namespace SME.SGP.Infra
 {
@@ -11,5 +12,6 @@ namespace SME.SGP.Infra
         public string CriadoPor { get; set; }
         public string CriadoRF { get; set; }
         public long Id { get; set; }
+        public EventoTipoDto TipoEvento { get; set; }
     }
 }
