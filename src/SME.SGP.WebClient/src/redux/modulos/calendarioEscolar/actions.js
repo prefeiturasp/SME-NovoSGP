@@ -1,6 +1,6 @@
-export function alternaMes(mes) {
+export function selecionaMes(mes) {
   return {
-    type: '@calendarioEscolar/alternaMes',
+    type: '@calendarioEscolar/selecionaMes',
     payload: mes,
   };
 }
@@ -9,5 +9,15 @@ export function selecionaDia(dia) {
   return {
     type: '@calendarioEscolar/selecionaDia',
     payload: dia,
+  };
+}
+
+export function atribuiEventosMes(mes, eventos) {
+  return {
+    type: '@calendarioEscolar/atribuiEventosMes',
+    payload: {
+      mes,
+      eventos,
+    },
   };
 }

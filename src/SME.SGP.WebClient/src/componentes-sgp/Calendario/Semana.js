@@ -1,49 +1,39 @@
 ﻿import React, { useState } from 'react';
+import PropTypes from 'prop-types';
+import styled from 'styled-components';
 import { useSelector } from 'react-redux';
+import { Base } from '~/componentes/colors';
+
+const Div = styled.div``;
 
 const WeekDay = props => {
   const [estaAberto, setEstaAberto] = useState(false);
-  const [diaSelecionado, setDiaSelecionado] = useState();
+  // const [diaSelecionado, setDiaSelecionado] = useState();
   const [ultimoDiaSelecionado, setUltimoDiaSelecionado] = useState();
 
   const selectDayClick = () => {
-    // this.props.selectDay(this.props.day);
-    // ultimoDiaSelecionado = sd;
     setEstaAberto(!estaAberto);
   };
 
   let {
     className,
     day,
-    currentMonth,
+    mesSelecionado,
     selectDay,
-    selectedDay,
+    dSelecionado,
     toggleMonth,
     ...rest
   } = props;
 
   let style = {};
 
-  if (day === selectedDay) setUltimoDiaSelecionado(selectedDay);
+  if (day === dSelecionado) setUltimoDiaSelecionado(dSelecionado);
 
-  // if (
-  //   ultimoDiaSelecionado !== selectedDay ||
-  //   selectedDay === undefined ||
-  //   ultimoDiaSelecionado === undefined ||
-  //   ultimoDiaSelecionado.getMonth() !== currentMonth
-  // )
-  //   setEstaAberto(false);
-  // else setEstaAberto(true);
-
-  // if (style === undefined) {
-  style.height = 61;
+  style.height = 62;
   style.cursor = 'pointer';
-  // }
 
-  // console.log(day);
-
-  if (day.getDay() === 0) style.backgroundColor = '#FEE4E2';
-  else if (day.getDay() === 6) style.backgroundColor = '#F7F9FA';
+  if (day.getDay() === 0) style.backgroundColor = Base.RosaCalendario;
+  else if (day.getDay() === 6) style.backgroundColor = Base.CinzaCalendario;
 
   if (className !== undefined)
     className += ' col border border-left-0 border-bottom-0';
@@ -62,7 +52,8 @@ const WeekDay = props => {
     cursor: 'pointer',
   };
 
-  if (currentMonth !== day.getMonth()) dayStyle.color = 'rgba(66, 71, 74, 0.3)';
+  if (mesSelecionado !== day.getMonth())
+    dayStyle.color = 'rgba(66, 71, 74, 0.3)';
 
   return (
     <div className={className} style={style} {...rest} onClick={selectDayClick}>
@@ -74,57 +65,60 @@ const WeekDay = props => {
 };
 
 const Semana = props => {
-  const {
-    calendar,
-    firstWeek,
-    days,
-    currentMonth,
-    selectDay,
-    toggleMonth,
-    ...rest
-  } = props;
+  console.log(props);
 
-  // console.log(props);
+  const { inicial, dias, mesAtual } = props;
 
   const diaSelecionado = useSelector(
     state => state.calendarioEscolar.diaSelecionado
   );
 
   const childProps = {
-    selectDay,
-    selectedDay: diaSelecionado,
-    currentMonth,
+    diaSelecionado,
+    mesAtual,
   };
 
   return (
-    <div {...rest}>
-      {firstWeek ? (
-        <div className="w-100 d-flex">
-          <WeekDay day={days[0]} {...childProps} />
-          <WeekDay day={days[1]} {...childProps} />
-          <WeekDay day={days[2]} {...childProps} />
-          <WeekDay day={days[3]} {...childProps} />
-          <WeekDay day={days[4]} {...childProps} />
-          <WeekDay day={days[5]} {...childProps} />
-          <WeekDay className="border-right-0" day={days[6]} {...childProps} />
-        </div>
+    <Div>
+      {inicial ? (
+        <Div className="w-100 d-flex">
+          <WeekDay day={dias[0]} {...childProps} />
+          <WeekDay day={dias[1]} {...childProps} />
+          <WeekDay day={dias[2]} {...childProps} />
+          <WeekDay day={dias[3]} {...childProps} />
+          <WeekDay day={dias[4]} {...childProps} />
+          <WeekDay day={dias[5]} {...childProps} />
+          <WeekDay className="border-right-0" day={dias[6]} {...childProps} />
+        </Div>
       ) : (
-        <div className="w-100 d-flex">
-          <WeekDay className="border-top-0" day={days[0]} {...childProps} />
-          <WeekDay className="border-top-0" day={days[1]} {...childProps} />
-          <WeekDay className="border-top-0" day={days[2]} {...childProps} />
-          <WeekDay className="border-top-0" day={days[3]} {...childProps} />
-          <WeekDay className="border-top-0" day={days[4]} {...childProps} />
-          <WeekDay className="border-top-0" day={days[5]} {...childProps} />
+        <Div className="w-100 d-flex">
+          <WeekDay className="border-top-0" day={dias[0]} {...childProps} />
+          <WeekDay className="border-top-0" day={dias[1]} {...childProps} />
+          <WeekDay className="border-top-0" day={dias[2]} {...childProps} />
+          <WeekDay className="border-top-0" day={dias[3]} {...childProps} />
+          <WeekDay className="border-top-0" day={dias[4]} {...childProps} />
+          <WeekDay className="border-top-0" day={dias[5]} {...childProps} />
           <WeekDay
             className="border-top-0 border-right-0"
-            day={days[6]}
+            day={dias[6]}
             {...childProps}
           />
-        </div>
+        </Div>
       )}
-    </div>
+    </Div>
   );
+};
+
+Semana.propTypes = {
+  inicial: PropTypes.bool,
+  dias: PropTypes.oneOfType([PropTypes.array, PropTypes.object]),
+  mesAtual: PropTypes.number,
+};
+
+Semana.defaultProps = {
+  inicial: false,
+  dias: [],
+  mesAtual: 0,
 };
 
 export default Semana;

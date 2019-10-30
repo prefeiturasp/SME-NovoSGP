@@ -2,14 +2,15 @@
 import { useSelector } from 'react-redux';
 import { Transition } from 'react-spring/renderprops';
 import { animated } from 'react-spring';
+import { Base } from '~/componentes/colors';
 
 const SemEvento = () => {
   return (
     <div
       className="d-flex w-100 h-100 justify-content-center d-flex align-items-center"
-      style={{ fontSize: 25, color: '#A4A4A4' }}
+      style={{ fontSize: 25, color: Base.CinzaBotao }}
     >
-      Sem evento
+      Sem eventos neste dia
     </div>
   );
 };
@@ -40,6 +41,7 @@ const DiaCompleto = props => {
         overflow: 'hidden',
       }}
       leave={{
+        display: 'none',
         height: 0,
         overflow: 'hidden',
       }}
