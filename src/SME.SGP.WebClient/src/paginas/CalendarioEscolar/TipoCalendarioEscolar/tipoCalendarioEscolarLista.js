@@ -64,7 +64,9 @@ const TipoCalendarioEscolarLista = () => {
   const onClickExcluir = async () => {
     const listaParaExcluir = [];
     idTiposSelecionados.forEach(id => {
-      const tipoParaExcluir = listaTiposCalendarioEscolar.find(tipo => id == tipo.id);
+      const tipoParaExcluir = listaTiposCalendarioEscolar.find(
+        tipo => id == tipo.id
+      );
       if (tipoParaExcluir) {
         listaParaExcluir.push(tipoParaExcluir);
       }
@@ -83,7 +85,7 @@ const TipoCalendarioEscolarLista = () => {
     if (confirmado) {
       const parametrosDelete = { data: idTiposSelecionados };
       const excluir = await api
-        .delete('v1/tipo-calendario', parametrosDelete)
+        .delete('v1/calendarios/tipos', parametrosDelete)
         .catch(erros => mostrarErros(erros));
       if (excluir) {
         const mensagemSucesso = `${

@@ -38,16 +38,19 @@ export default function bimestres(state = INICIAL, action) {
         ).selecionada = true;
         break;
       case '@bimestres/LimparDisciplinaPlanoAnual':
-        draft.disciplinasPlanoAnual.find(
-          disciplina => disciplina.selecionada
-        ).selecionada = false;
+        if (state.disciplinasPlanoAnual)
+          draft.disciplinasPlanoAnual.find(
+            disciplina => disciplina.selecionada
+          ).selecionada = false;
         break;
       case '@bimestres/PrePostBimestre':
         const paraEnvio = state.bimestres.filter(x => x.ehEdicao);
         paraEnvio.forEach(elem => {
-          draft.bimestres[elem.indice].objetivo = state.bimestres[
-            elem.indice
-          ].setarObjetivo();
+          if (state.bimestres[elem.indice].setarObjetivo)
+            draft.bimestres[elem.indice].objetivo = state.bimestres[
+              elem.indice
+            ].setarObjetivo();
+
           draft.bimestres[elem.indice].paraEnviar = true;
         });
         draft.bimestresErro = state.bimestresErro;
@@ -159,10 +162,9 @@ export default function bimestres(state = INICIAL, action) {
       case '@bimestres/PosPostBimestre':
         draft.bimestres = draft.bimestres.map(x => {
           x.paraEnviar = false;
+          x.recarregarPlanoAnual = action.payload;
           return x;
         });
-
-        draft.bimestres[1].recarregarPlanoAnual = action.payload;
 
         break;
       case '@bimestres/setEdicaoFalse':

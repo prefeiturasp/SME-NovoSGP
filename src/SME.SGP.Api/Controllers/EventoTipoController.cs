@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using SME.SGP.Api.Filtros;
 using SME.SGP.Aplicacao.Interfaces;
 using SME.SGP.Dto;
@@ -11,26 +12,39 @@ namespace SME.SGP.Api.Controllers
     [ApiController]
     [Route("api/v1/calendarios/eventos/tipos")]
     [ValidaDto]
+    [Authorize("Bearer")]
     public class EventoTipoController : ControllerBase
     {
+        [HttpPut("{id}")]
+        [ProducesResponseType(200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        //[Permissao(Permissao.PA_I, Permissao.PA_A, Policy = "Bearer")]
+        public IActionResult Alterar([FromServices]IComandosEventoTipo comandosEventoTipo,
+            long id,
+            [FromBody]EventoTipoInclusaoDto eventoTipo)
+        {
+            comandosEventoTipo.Alterar(eventoTipo, id);
+            return Ok();
+        }
+
         [HttpDelete]
         [ProducesResponseType(200)]
         [ProducesResponseType(typeof(object), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        [Permissao(Permissao.PA_I, Permissao.PA_A, Policy = "Bearer")]
+        //[Permissao(Permissao.PA_I, Permissao.PA_A, Policy = "Bearer")]
         public IActionResult Delete([FromBody]IEnumerable<long> codigos, [FromServices]IComandosEventoTipo comandosEventoTipo)
         {
             comandosEventoTipo.Remover(codigos);
             return Ok();
         }
 
-        [HttpGet("{codigo}")]
+        [HttpGet("{id}")]
         [ProducesResponseType(204)]
         [ProducesResponseType(typeof(EventoTipoDto), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        public IActionResult Get(long codigo, [FromServices]IConsultasEventoTipo consultasEventoTipo)
+        public IActionResult Get(long id, [FromServices]IConsultasEventoTipo consultasEventoTipo)
         {
-            var eventoTipoDto = consultasEventoTipo.ObterPorId(codigo);
+            var eventoTipoDto = consultasEventoTipo.ObterPorId(id);
 
             if (eventoTipoDto == null)
                 NoContent();
@@ -51,8 +65,8 @@ namespace SME.SGP.Api.Controllers
         [HttpPost]
         [ProducesResponseType(200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        [Permissao(Permissao.PA_I, Permissao.PA_A, Policy = "Bearer")]
-        public IActionResult Post([FromBody]EventoTipoDto eventoTipo, [FromServices]IComandosEventoTipo comandosEventoTipo)
+        //[Permissao(Permissao.PA_I, Permissao.PA_A, Policy = "Bearer")]
+        public IActionResult Post([FromBody]EventoTipoInclusaoDto eventoTipo, [FromServices]IComandosEventoTipo comandosEventoTipo)
         {
             comandosEventoTipo.Salvar(eventoTipo);
             return Ok();

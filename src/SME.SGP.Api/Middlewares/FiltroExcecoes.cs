@@ -27,7 +27,7 @@ namespace SME.SGP.Api.Middlewares
 
             context.Result = context.Exception is NegocioException
                 ? new ResultadoBaseResult(context.Exception.Message, ((NegocioException)context.Exception).StatusCode)
-                : new ResultadoBaseResult("Ocorreu um erro interno. Favor contatar o suporte.");
+                : new ResultadoBaseResult("Ocorreu um erro interno. Favor contatar o suporte.", 500);
 
             base.OnException(context);
         }

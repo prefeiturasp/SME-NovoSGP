@@ -4,6 +4,7 @@ using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using System.Collections.Generic;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace SME.SGP.Dados.Repositorios
 {
@@ -11,6 +12,19 @@ namespace SME.SGP.Dados.Repositorios
     {
         public RepositorioTipoCalendario(ISgpContext conexao) : base(conexao)
         {
+        }
+
+        public TipoCalendario BuscarPorAnoLetivoEModalidade(int anoLetivo, ModalidadeTipoCalendario modalidade)
+        {
+            StringBuilder query = new StringBuilder();
+
+            query.AppendLine("select *");
+            query.AppendLine("from tipo_calendario");
+            query.AppendLine("where excluido = false");
+            query.AppendLine("and ano_letivo = @anoLetivo");
+            query.AppendLine("and modalidade = @modalidade");
+
+            return database.Conexao.QueryFirstOrDefault<TipoCalendario>(query.ToString(), new { anoLetivo, modalidade = (int)modalidade });
         }
 
         public override TipoCalendario ObterPorId(long id)
@@ -41,7 +55,7 @@ namespace SME.SGP.Dados.Repositorios
             return database.Conexao.Query<TipoCalendario>(query.ToString());
         }
 
-        public bool VerificarRegistroExistente(long id, string nome)
+        public async Task<bool> VerificarRegistroExistente(long id, string nome)
         {
             StringBuilder query = new StringBuilder();
 
@@ -50,12 +64,11 @@ namespace SME.SGP.Dados.Repositorios
             query.AppendLine("from tipo_calendario ");
             query.AppendLine("where upper(nome) = @nomeMaiusculo ");
             query.AppendLine("and excluido = false");
-            if (id > 0)
-            {
-                query.AppendLine("and id <> @id");
-            }
 
-            int quantidadeRegistrosExistentes = database.Conexao.QueryFirst<int>(query.ToString(), new { id, nomeMaiusculo }); ;
+            if (id > 0)
+                query.AppendLine("and id <> @id");
+
+            int quantidadeRegistrosExistentes = await database.Conexao.QueryFirstAsync<int>(query.ToString(), new { id, nomeMaiusculo });
 
             return quantidadeRegistrosExistentes > 0;
         }

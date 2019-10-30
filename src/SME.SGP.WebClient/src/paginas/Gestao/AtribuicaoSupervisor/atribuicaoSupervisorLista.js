@@ -32,11 +32,7 @@ export default function AtribuicaoSupervisorLista() {
   const usuario = useSelector(store => store.usuario);
 
   useEffect(() => {
-    if (
-      usuario &&
-      usuario.turmaSelecionada &&
-      usuario.turmaSelecionada.length
-    ) {
+    if (usuario && usuario.turmaSelecionada) {
       setDesabilitarAssumirFiltroPrincipal(false);
     } else {
       setDesabilitarAssumirFiltroPrincipal(true);
@@ -45,7 +41,7 @@ export default function AtribuicaoSupervisorLista() {
 
   useEffect(() => {
     async function carregarDres() {
-      const dres = await api.get('v1/dres');
+      const dres = await api.get('v1/abrangencias/dres');
       setListaDres(dres.data);
     }
     carregarDres();
@@ -53,8 +49,8 @@ export default function AtribuicaoSupervisorLista() {
 
   useEffect(() => {
     if (listaUes && listaUes.length && assumirFiltroPrincCheck) {
-      setUeSelecionada(usuario.turmaSelecionada[0].codEscola);
-      onChangeUes(usuario.turmaSelecionada[0].codEscola);
+      setUeSelecionada(usuario.turmaSelecionada.unidadeEscolar);
+      onChangeUes(usuario.turmaSelecionada.unidadeEscolar);
     }
   }, [listaUes]);
 
@@ -86,9 +82,7 @@ export default function AtribuicaoSupervisorLista() {
       dataIndex: 'supervisor',
       width: '30%',
       render: text => {
-        return text || (
-          <a className="texto-vermelho-negrito">NÃO ATRIBUIDO</a>
-        );
+        return text || <a className="texto-vermelho-negrito">NÃO ATRIBUIDO</a>;
       },
     },
   ];
@@ -152,8 +146,8 @@ export default function AtribuicaoSupervisorLista() {
       setDesabilitarDre(true);
       setUesSemSupervisorCheck(false);
 
-      carregarUes(usuario.turmaSelecionada[0].codDre);
-      setDresSelecionadas(usuario.turmaSelecionada[0].codDre);
+      carregarUes(usuario.turmaSelecionada.dre);
+      setDresSelecionadas(usuario.turmaSelecionada.dre);
     } else {
       setAssumirFiltroPrincCheck(false);
       setDesabilitarSupervisor(false);
@@ -204,12 +198,12 @@ export default function AtribuicaoSupervisorLista() {
     }
 
     function montarLista(item, dadosAtribuicao) {
-      const dreSelecionada = listaDres.find(d => d.id == dre);
+      const dreSelecionada = listaDres.find(d => d.codigo == dre);
       item.escolas.forEach(escola => {
         const contId = dadosAtribuicao.length + 1;
         dadosAtribuicao.push({
           id: contId,
-          dre: dreSelecionada.sigla,
+          dre: dreSelecionada.abreviacao,
           escola: escola.nome,
           supervisor: item.supervisorId ? item.supervisorNome : '',
           supervisorId: item.supervisorId,
@@ -220,12 +214,12 @@ export default function AtribuicaoSupervisorLista() {
   }
 
   async function carregarSupervisores(dre) {
-    const sups = await api.get(`/v1/supervisores/dre/${dre}`);
+    const sups = await api.get(`/v1/supervisores/dres/${dre}`);
     setListaSupervisores(sups.data || []);
   }
 
   async function carregarUes(dre) {
-    const ues = await api.get(`/v1/dres/${dre}/ues`);
+    const ues = await api.get(`/v1/abrangencias/dres/${dre}/ues`);
     setListaUes(ues.data || []);
   }
 
@@ -303,7 +297,7 @@ export default function AtribuicaoSupervisorLista() {
             name="dres-atribuicao-sup"
             id="dres-atribuicao-sup"
             lista={listaDres}
-            valueOption="id"
+            valueOption="codigo"
             valueText="nome"
             onChange={onChangeDre}
             valueSelect={dresSelecionadas || []}

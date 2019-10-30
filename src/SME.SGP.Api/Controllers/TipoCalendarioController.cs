@@ -4,11 +4,12 @@ using SME.SGP.Api.Filtros;
 using SME.SGP.Aplicacao;
 using SME.SGP.Infra;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace SME.SGP.Api.Controllers
 {
     [ApiController]
-    [Route("api/v1/tipo-calendario")]
+    [Route("api/v1/calendarios/tipos")]
     [ValidaDto]
     [Authorize("Bearer")]
     public class TipoCalendarioController : ControllerBase
@@ -52,9 +53,9 @@ namespace SME.SGP.Api.Controllers
         [HttpPost]
         [ProducesResponseType(200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        public IActionResult Salvar([FromBody]TipoCalendarioDto dto)
+        public async Task<IActionResult> Salvar([FromBody]TipoCalendarioDto dto)
         {
-            comandos.Salvar(dto);
+            await comandos.Salvar(dto);
             return Ok();
         }
     }
