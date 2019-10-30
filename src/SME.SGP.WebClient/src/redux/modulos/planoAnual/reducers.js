@@ -126,7 +126,7 @@ export default function bimestres(state = INICIAL, action) {
 
         draft.bimestres[action.payload.indice].ehEdicao = true;
 
-        if (state.bimestres[action.payload.indice])
+        if (state.bimestres[action.payload.indice].setarObjetivo)
           draft.bimestres[action.payload.indice].objetivo = state.bimestres[
             action.payload.indice
           ].setarObjetivo();
@@ -153,6 +153,15 @@ export default function bimestres(state = INICIAL, action) {
 
         break;
 
+      case '@bimestres/RemoverFocado':
+        draft.bimestres = draft.bimestres.map(x => {
+          if (!x) return x;
+
+          x.focado = false;
+
+          return x;
+        });
+        break;
       case '@bimestres/LimparBimestresErro':
         draft.bimestres = state.bimestres;
         draft.bimestresErro = action.payload;

@@ -1,4 +1,5 @@
 ﻿using SME.SGP.Dominio;
+using SME.SGP.Dominio.Entidades;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System;
@@ -41,7 +42,12 @@ namespace SME.SGP.Aplicacao
                 planoAnualLista.Add(await ObterPorEscolaTurmaAnoEBimestre(filtroPlanoAnualDto));
             }
 
-            var retorno = planoAnualLista.FirstOrDefault(x => VerificaSeBimestreEhExpandido(filtro.AnoLetivo, filtro.ModalidadePlanoAnual, x.Bimestre));
+            var periodosEscolares = ObtenhaPeriodoEscolar(filtro.AnoLetivo, filtro.ModalidadePlanoAnual);
+
+            if (periodosEscolares == null)
+                return null;
+
+            var retorno = planoAnualLista.FirstOrDefault(x => VerificaSeBimestreEhExpandido(periodosEscolares, x.Bimestre));
 
             return retorno;
         }
@@ -97,21 +103,23 @@ namespace SME.SGP.Aplicacao
             };
         }
 
-        private bool VerificaSeBimestreEhExpandido(int anoLetivo, Modalidade modalidade, int bimestre)
+        private IEnumerable<PeriodoEscolar> ObtenhaPeriodoEscolar(int anoLetivo, Modalidade modalidade)
         {
             var modalidadeTipoCalendario = ModalidadeParaModalidadeTipoCalendario(modalidade);
 
-            var tipoCalendario = consultasTipoCalendario.BuscarPorAnoLetivoEModalidade(anoLetivo, modalidadeTipoCalendario);
+            var tipoCalendario = repositorioTipoCalendario.BuscarPorAnoLetivoEModalidade(anoLetivo, modalidadeTipoCalendario);
 
             if (tipoCalendario == null)
-                return false;
+                return null;
 
-            var periodoEscolar = consultasPeriodoEscolar.ObterPorTipoCalendario(tipoCalendario.Id);
+            var periodoEscolar = repositorioPeriodoEscolar.ObterPorTipoCalendario(tipoCalendario.Id);
 
-            if (periodoEscolar == null)
-                return false;
+            return periodoEscolar;
+        }
 
-            var periodo = periodoEscolar.Periodos.FirstOrDefault(p => p.Bimestre == bimestre);
+        private bool VerificaSeBimestreEhExpandido(IEnumerable<PeriodoEscolar> periodosEscolares, int bimestre)
+        {
+            var periodo = periodosEscolares.FirstOrDefault(p => p.Bimestre == bimestre);
 
             if (periodo == null)
                 return false;

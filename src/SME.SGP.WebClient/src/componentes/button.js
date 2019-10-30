@@ -21,6 +21,7 @@ const Button = React.forwardRef((props, ref) => {
     lineHeight,
     width,
     fontSize,
+    indice,
     label,
     hidden,
     id,
@@ -45,9 +46,9 @@ const Button = React.forwardRef((props, ref) => {
     background: ${border ? 'transparent' : Active[color]} !important;
     text-align: center;
     ${
-    border
-      ? `border-color: ${Active[color]} !important; color: ${Active[color]} !important;`
-      : `border: 0 none !important;`
+      border
+        ? `border-color: ${Active[color]} !important; color: ${Active[color]} !important;`
+        : `border: 0 none !important;`
     };
     ${customRadius && customRadius};
     font-weight: bold !important;
@@ -74,9 +75,10 @@ const Button = React.forwardRef((props, ref) => {
       type={type}
       className={`btn btn-${style} ${className} position-relative d-flex justify-content-center align-items-center ${
         padding ? '' : 'py-2 px-3'
-        } ${fontSize ? '' : 'fonte-14'}`}
+      } ${fontSize ? '' : 'fonte-14'}`}
       onClick={onClick}
       disabled={disabled}
+      data-indice={indice}
       id={id}
       ref={ref && ref}
     >
@@ -122,7 +124,7 @@ Button.defaultProps = {
   steady: false,
   remove: false,
   className: '',
-  onClick: () => { },
+  onClick: () => {},
   disabled: false,
   icon: '',
   padding: '',
