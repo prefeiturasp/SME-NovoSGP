@@ -60,4 +60,17 @@ const setMenusPermissoes = () => {
   }
 }
 
-export { setMenusPermissoes };
+const getLogadoStorage = () => {
+  const persistSmeSgp = localStorage.getItem('persist:sme-sgp')
+  const usuario = persistSmeSgp && persistSmeSgp.includes('usuario') ? JSON.parse(persistSmeSgp).usuario : null;
+  return usuario ? JSON.parse(usuario).logado : false;
+}
+
+const getPermissoesStorage = () => {
+  const persistSmeSgp = localStorage.getItem('persist:sme-sgp')
+  const usuario = persistSmeSgp && (persistSmeSgp.includes('usuario') && persistSmeSgp.includes('permissoes'))
+  ? JSON.parse(persistSmeSgp).usuario : null;
+  return usuario ? JSON.parse(usuario).permissoes : false;
+}
+
+export { setMenusPermissoes, getLogadoStorage, getPermissoesStorage };
