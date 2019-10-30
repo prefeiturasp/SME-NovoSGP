@@ -77,8 +77,8 @@ namespace SME.SGP.Dados.Repositorios
                 quantidadeBuscar = paginacao.QuantidadeRegistros
             }))
             {
-                retornoPaginado.Items = multi.Read<Evento>();
                 retornoPaginado.TotalRegistros = multi.ReadFirstOrDefault<int>();
+                retornoPaginado.Items = multi.Read<Evento>();
             }
 
             retornoPaginado.TotalPaginas = (int)Math.Ceiling((double)retornoPaginado.TotalRegistros / paginacao.QuantidadeRegistros);
