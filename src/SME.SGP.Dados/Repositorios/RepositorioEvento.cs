@@ -1,6 +1,7 @@
 ﻿using Dapper;
 using SME.SGP.Dados.Contexto;
 using SME.SGP.Dominio;
+using SME.SGP.Dominio.Entidades;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System;
@@ -24,15 +25,58 @@ namespace SME.SGP.Dados.Repositorios
         public async Task<PaginacaoResultadoDto<Evento>> Listar(long? tipoCalendarioId, long? tipoEventoId, string nomeEvento, DateTime? dataInicio, DateTime? dataFim, Paginacao paginacao)
         {
             StringBuilder query = new StringBuilder();
-
-            query.AppendLine("select count(e.*) as Total");
-
+            MontaQueryCabecalho(query);
             MontaQueryFrom(query);
             MontaQueryFiltro(tipoCalendarioId, tipoEventoId, dataInicio, dataFim, nomeEvento, query);
-            query.Append(";");
+            query.AppendLine("order by e.id");
+            if (paginacao != null && paginacao.QuantidadeRegistros > 0)
+                MontaQueryPaginacao(query);
 
+            if (!string.IsNullOrEmpty(nomeEvento))
+            {
+                nomeEvento = $"%{nomeEvento}%";
+            }
+
+            var retornoPaginado = new PaginacaoResultadoDto<Evento>();
+
+            retornoPaginado.Items = await database.Conexao.QueryAsync<Evento, EventoTipo, Evento>(query.ToString(), (evento, tipoEvento) =>
+            {
+                evento.AdicionarTipoEvento(tipoEvento);
+                return evento;
+            }, new
+            {
+                tipoCalendarioId,
+                tipoEventoId,
+                nomeEvento,
+                dataInicio,
+                dataFim,
+                ignorar = paginacao.QuantidadeRegistrosIgnorados,
+                quantidadeBuscar = paginacao.QuantidadeRegistros
+            },
+            splitOn: "EventoId,TipoEventoId");
+
+            var queryCount = new StringBuilder("select count(e.*)");
+            MontaQueryFrom(queryCount);
+            MontaQueryFiltro(tipoCalendarioId, tipoEventoId, dataInicio, dataFim, nomeEvento, queryCount);
+            retornoPaginado.TotalRegistros = await database.Conexao.QueryFirstOrDefaultAsync<int>(queryCount.ToString(), new
+            {
+                tipoCalendarioId,
+                tipoEventoId,
+                nomeEvento,
+                dataInicio,
+                dataFim
+            });
+
+            retornoPaginado.TotalPaginas = (int)Math.Ceiling((double)retornoPaginado.TotalRegistros / paginacao.QuantidadeRegistros);
+
+            return retornoPaginado;
+        }
+
+        private static void MontaQueryCabecalho(StringBuilder query)
+        {
             query.AppendLine("select");
             query.AppendLine("e.id as EventoId,");
+            query.AppendLine("e.id,");
             query.AppendLine("e.nome,");
             query.AppendLine("e.descricao,");
             query.AppendLine("e.data_inicio,");
@@ -50,40 +94,11 @@ namespace SME.SGP.Dados.Repositorios
             query.AppendLine("e.criado_rf,");
             query.AppendLine("e.alterado_rf,");
             query.AppendLine("et.id as TipoEventoId,");
+            query.AppendLine("et.id,");
             query.AppendLine("et.ativo,");
+            query.AppendLine("et.tipo_data,");
             query.AppendLine("et.descricao,");
             query.AppendLine("et.excluido");
-
-            MontaQueryFrom(query);
-            MontaQueryFiltro(tipoCalendarioId, tipoEventoId, dataInicio, dataFim, nomeEvento, query);
-            query.Append(" OFFSET @ignorar ROWS FETCH NEXT @quantidadeBuscar ROWS ONLY");
-
-            query.Append(";");
-
-            if (!string.IsNullOrEmpty(nomeEvento))
-            {
-                nomeEvento = $"%{nomeEvento}%";
-            }
-
-            var retornoPaginado = new PaginacaoResultadoDto<Evento>();
-
-            using (var multi = await database.Conexao.QueryMultipleAsync(query.ToString(),
-            new
-            {
-                tipoCalendarioId,
-                tipoEventoId,
-                nomeEvento,
-                ignorar = paginacao.QuantidadeRegistrosIgnorados,
-                quantidadeBuscar = paginacao.QuantidadeRegistros
-            }))
-            {
-                retornoPaginado.TotalRegistros = multi.ReadFirstOrDefault<int>();
-                retornoPaginado.Items = multi.Read<Evento>();
-            }
-
-            retornoPaginado.TotalPaginas = (int)Math.Ceiling((double)retornoPaginado.TotalRegistros / paginacao.QuantidadeRegistros);
-
-            return retornoPaginado;
         }
 
         private static void MontaQueryFiltro(long? tipoCalendarioId, long? tipoEventoId, DateTime? dataInicio, DateTime? dataFim, string nomeEvento, StringBuilder query)
@@ -101,8 +116,8 @@ namespace SME.SGP.Dados.Repositorios
 
             if (dataInicio.HasValue && dataFim.HasValue)
             {
-                query.AppendLine("and e.data_inicio = @dataInicio");
-                query.AppendLine("and e.data_fim = @dataFim");
+                query.AppendLine("and e.data_inicio >= @dataInicio");
+                query.AppendLine("and (e.data_fim is null OR e.data_fim <= @dataFim)");
             }
             if (!string.IsNullOrWhiteSpace(nomeEvento))
             {
@@ -116,6 +131,11 @@ namespace SME.SGP.Dados.Repositorios
             query.AppendLine("evento e");
             query.AppendLine("inner join evento_tipo et on");
             query.AppendLine("e.tipo_evento_id = et.id");
+        }
+
+        private static void MontaQueryPaginacao(StringBuilder query)
+        {
+            query.AppendLine(" OFFSET @ignorar ROWS FETCH NEXT @quantidadeBuscar ROWS ONLY");
         }
     }
 }

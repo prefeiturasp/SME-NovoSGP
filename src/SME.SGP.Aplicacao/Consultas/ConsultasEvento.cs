@@ -1,6 +1,8 @@
 ﻿using Microsoft.AspNetCore.Http;
 using SME.SGP.Dominio;
+using SME.SGP.Dominio.Entidades;
 using SME.SGP.Dominio.Interfaces;
+using SME.SGP.Dto;
 using SME.SGP.Infra;
 using System.Collections.Generic;
 using System.Linq;
@@ -59,7 +61,8 @@ namespace SME.SGP.Aplicacao
                 AlteradoRF = evento.AlteradoRF,
                 CriadoEm = evento.CriadoEm,
                 CriadoPor = evento.CriadoPor,
-                CriadoRF = evento.CriadoRF
+                CriadoRF = evento.CriadoRF,
+                TipoEvento = MapearTipoEvento(evento.TipoEvento)
             };
         }
 
@@ -74,6 +77,16 @@ namespace SME.SGP.Aplicacao
                 Items = MapearEventosParaDto(eventosPaginados.Items),
                 TotalPaginas = eventosPaginados.TotalPaginas,
                 TotalRegistros = eventosPaginados.TotalRegistros
+            };
+        }
+
+        private EventoTipoDto MapearTipoEvento(EventoTipo tipoEvento)
+        {
+            return tipoEvento == null ? null : new EventoTipoDto
+            {
+                Descricao = tipoEvento.Descricao,
+                Id = tipoEvento.Id,
+                TipoData = tipoEvento.TipoData
             };
         }
     }
