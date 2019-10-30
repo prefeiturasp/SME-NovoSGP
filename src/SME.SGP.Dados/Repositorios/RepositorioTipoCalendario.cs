@@ -14,6 +14,19 @@ namespace SME.SGP.Dados.Repositorios
         {
         }
 
+        public TipoCalendario BuscarPorAnoLetivoEModalidade(int anoLetivo, ModalidadeTipoCalendario modalidade)
+        {
+            StringBuilder query = new StringBuilder();
+
+            query.AppendLine("select *");
+            query.AppendLine("from tipo_calendario");
+            query.AppendLine("where excluido = false");
+            query.AppendLine("and ano_letivo = @anoLetivo");
+            query.AppendLine("and modalidade = @modalidade");
+
+            return database.Conexao.QueryFirstOrDefault<TipoCalendario>(query.ToString(), new { anoLetivo, modalidade = (int)modalidade });
+        }
+
         public override TipoCalendario ObterPorId(long id)
         {
             StringBuilder query = new StringBuilder();
@@ -51,10 +64,9 @@ namespace SME.SGP.Dados.Repositorios
             query.AppendLine("from tipo_calendario ");
             query.AppendLine("where upper(nome) = @nomeMaiusculo ");
             query.AppendLine("and excluido = false");
+
             if (id > 0)
-            {
                 query.AppendLine("and id <> @id");
-            }
 
             int quantidadeRegistrosExistentes = await database.Conexao.QueryFirstAsync<int>(query.ToString(), new { id, nomeMaiusculo });
 

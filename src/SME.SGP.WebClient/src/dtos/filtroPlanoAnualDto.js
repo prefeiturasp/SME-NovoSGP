@@ -1,5 +1,11 @@
 export default class filtroPlanoAnualDto {
-  constructor(anoLetivo, bimestre, escolaId, turmaId, ComponenteCurricularEolId) {
+  constructor(
+    anoLetivo,
+    bimestre,
+    escolaId,
+    turmaId,
+    ComponenteCurricularEolId
+  ) {
     this.anoLetivo = anoLetivo;
     this.bimestre = bimestre;
     this.escolaId = escolaId;

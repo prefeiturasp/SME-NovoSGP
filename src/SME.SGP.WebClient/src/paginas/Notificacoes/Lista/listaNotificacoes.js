@@ -103,11 +103,7 @@ export default function NotificacoesLista() {
   }, []);
 
   useEffect(() => {
-    if (
-      usuario &&
-      usuario.turmaSelecionada &&
-      usuario.turmaSelecionada.length
-    ) {
+    if (usuario && usuario.turmaSelecionada) {
       setDesabilitarTurma(false);
     } else {
       setDesabilitarTurma(true);
@@ -213,17 +209,13 @@ export default function NotificacoesLista() {
       anoLetivo: usuario.filtroAtual.anoLetivo,
     };
     if (dropdownTurmaSelecionada && dropdownTurmaSelecionada == '2') {
-      if (usuario.turmaSelecionada && usuario.turmaSelecionada.length) {
-        paramsQuery.ano = usuario.turmaSelecionada[0].ano;
-        paramsQuery.dreId = usuario.turmaSelecionada[0].codDre;
-        paramsQuery.ueId = usuario.turmaSelecionada[0].codEscola;
+      if (usuario.turmaSelecionada) {
+        paramsQuery.ano = usuario.turmaSelecionada.ano;
+        paramsQuery.dreId = usuario.turmaSelecionada.dre;
+        paramsQuery.ueId = usuario.turmaSelecionada.unidadeEscolar;
       }
-      if (
-        usuario.turmaSelecionada &&
-        usuario.turmaSelecionada.length &&
-        !desabilitarTurma
-      ) {
-        paramsQuery.turmaId = usuario.turmaSelecionada[0].codEscola;
+      if (usuario.turmaSelecionada && !desabilitarTurma) {
+        paramsQuery.turmaId = usuario.turmaSelecionada.unidadeEscolar;
       }
     }
     setFiltro(paramsQuery);
