@@ -35,6 +35,12 @@ export function SelecionarDisciplinaPlanoAnual(codigo) {
   };
 }
 
+export function RemoverFocado() {
+  return {
+    type: '@bimestres/RemoverFocado',
+  };
+}
+
 export function LimparDisciplinaPlanoAnual() {
   return {
     type: '@bimestres/LimparDisciplinaPlanoAnual',
