@@ -44,6 +44,17 @@ namespace SME.SGP.Aplicacao
                    select new EnumeradoRetornoDto() { Id = a, Descricao = ((Modalidade)a).GetAttribute<DisplayAttribute>().Name };
         }
 
+        public async Task<IEnumerable<int>> ObterSemestres(Modalidade modalidade)
+        {
+            var login = servicoUsuario.ObterLoginAtual();
+            var perfil = servicoUsuario.ObterPerfilAtual();
+
+            var retorno = await repositorioAbrangencia.ObterSemestres(login, perfil, modalidade);
+
+            return retorno
+                    .Where(a => a != 0);
+        }
+
         public async Task<IEnumerable<AbrangenciaTurmaRetorno>> ObterTurmas(string codigoUe, Modalidade modalidade)
         {
             var login = servicoUsuario.ObterLoginAtual();
