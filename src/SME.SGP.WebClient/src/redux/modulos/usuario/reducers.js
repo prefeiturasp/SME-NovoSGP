@@ -50,6 +50,7 @@ export default function usuario(state = inicial, action) {
         draft.turmaSelecionada = [];
         draft.dadosUsuario = [];
         draft.menu = [];
+        draft.permissoes = [];
         break;
       case '@usuario/selecionarTurma':
         draft.turmaSelecionada = action.payload;
