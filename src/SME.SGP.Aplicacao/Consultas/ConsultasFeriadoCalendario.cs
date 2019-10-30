@@ -4,6 +4,7 @@ using SME.SGP.Infra;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
@@ -38,9 +39,9 @@ namespace SME.SGP.Aplicacao
             return dto;
         }
 
-        public IEnumerable<FeriadoCalendarioDto> Listar(FiltroFeriadoCalendarioDto filtro)
+        public async Task<IEnumerable<FeriadoCalendarioDto>> Listar(FiltroFeriadoCalendarioDto filtro)
         {
-            return MapearParaDto(repositorio.ObterFeriadosCalendario(filtro));
+            return MapearParaDto(await repositorio.ObterFeriadosCalendario(filtro));
         }
 
         public IEnumerable<EnumeradoRetornoDto> ObterAbrangencias()

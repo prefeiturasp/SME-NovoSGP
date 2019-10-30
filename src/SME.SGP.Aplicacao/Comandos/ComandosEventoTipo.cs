@@ -2,7 +2,7 @@
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Entidades;
 using SME.SGP.Dominio.Interfaces;
-using SME.SGP.Dto;
+using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -18,6 +18,13 @@ namespace SME.SGP.Aplicacao
         {
             this.repositorioEventoTipo = repositorioEventoTipo ?? throw new ArgumentNullException(nameof(repositorioEventoTipo));
             this.unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
+        }
+
+        public void Alterar(EventoTipoInclusaoDto eventoTipoDto, long idEvento)
+        {
+            var evento = ObterEntidadeBancoEAtualizar(idEvento, eventoTipoDto);
+
+            repositorioEventoTipo.Salvar(evento);
         }
 
         public void Remover(IEnumerable<long> idsRemover)
@@ -55,32 +62,27 @@ namespace SME.SGP.Aplicacao
             }
         }
 
-        public void Salvar(EventoTipoDto eventoTipoDto)
+        public void Salvar(EventoTipoInclusaoDto eventoTipoDto)
         {
-            var evento = eventoTipoDto.Id > 0
-                ? ObterEntidadeBanco(eventoTipoDto.Id, eventoTipoDto)
-                : ObterEntidade(eventoTipoDto);
+            var evento = MapearDtoParaDominio(eventoTipoDto);
 
             repositorioEventoTipo.Salvar(evento);
         }
 
-        private EventoTipo ObterEntidade(EventoTipoDto eventoTipoDto)
+        private EventoTipo MapearDtoParaDominio(EventoTipoInclusaoDto eventoTipoDto)
         {
             return new EventoTipo
             {
-                Ativo = eventoTipoDto.Ativo,
                 Concomitancia = eventoTipoDto.Concomitancia,
                 Dependencia = eventoTipoDto.Dependencia,
                 Descricao = eventoTipoDto.Descricao,
                 Letivo = eventoTipoDto.Letivo,
                 LocalOcorrencia = eventoTipoDto.LocalOcorrencia,
-                Id = eventoTipoDto.Id,
-                TipoData = eventoTipoDto.TipoData,
-                Excluido = false
+                TipoData = eventoTipoDto.TipoData
             };
         }
 
-        private EventoTipo ObterEntidadeBanco(long id, EventoTipoDto eventoTipoDto)
+        private EventoTipo ObterEntidadeBancoEAtualizar(long id, EventoTipoInclusaoDto eventoTipoDto)
         {
             var eventoTipo = repositorioEventoTipo.ObterPorId(id);
 

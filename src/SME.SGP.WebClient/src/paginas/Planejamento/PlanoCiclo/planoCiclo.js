@@ -51,6 +51,7 @@ export default function PlanoCiclo() {
   const [modalidadeEja, setModalidadeEja] = useState(false);
 
   const usuario = useSelector(store => store.usuario);
+  const turmaSelecionada = useSelector(store => store.usuario.turmaSelecionada);
 
   useEffect(() => {
     async function carregarListas() {
@@ -73,74 +74,72 @@ export default function PlanoCiclo() {
   }, [usuario.turmasUsuario]);
 
   useEffect(() => {
-    async function carregarCiclos() {
-      if (
-        usuario &&
-        usuario.turmaSelecionada &&
-        usuario.turmaSelecionada.length
-      ) {
-        let anoSelecionado = '';
-        let codModalidade = null;
-        if (usuario.turmaSelecionada && usuario.turmaSelecionada.length) {
-          anoSelecionado = String(usuario.turmaSelecionada[0].ano);
-          codModalidade = usuario.turmaSelecionada[0].codModalidade;
-        }
-
-        const params = {
-          anoSelecionado,
-          modalidade: codModalidade,
-        };
-
-        let anos = [];
-        if (
-          usuario.turmasUsuario &&
-          usuario.turmasUsuario.length &&
-          anosTurmasUsuario.length < 1
-        ) {
-          anos = usuario.turmasUsuario.map(item => item.ano);
-          anos = anos.filter((elem, pos) => anos.indexOf(elem) == pos);
-        }
-        if (anosTurmasUsuario.length < 1 && anos.length > 0) {
-          setAnosTurmasUsuario(anos);
-          params.anos = anos;
-        } else {
-          params.anos = anosTurmasUsuario;
-        }
-
-        const ciclos = await api.post('v1/ciclos/filtro', params);
-
-        let sugestaoCiclo = ciclos.data.find(item => item.selecionado);
-        if (sugestaoCiclo && sugestaoCiclo.id) {
-          sugestaoCiclo = sugestaoCiclo.id;
-        }
-        const listaCiclosAtual = ciclos.data.filter(item => !item.selecionado);
-
-        setListaCiclos(listaCiclosAtual);
-
-        if (sugestaoCiclo) {
-          setCicloSelecionado(String(sugestaoCiclo));
-        } else {
-          setCicloSelecionado(String(listaCiclosAtual[0]));
-        }
-
-        const anoLetivo = String(usuario.turmaSelecionada[0].anoLetivo);
-        const codEscola = String(usuario.turmaSelecionada[0].codEscola);
-
-        if (usuario.turmaSelecionada[0].codModalidade == modalidade.EJA) {
-          setModalidadeEja(true);
-        } else {
-          setModalidadeEja(false);
-        }
-        obterCicloExistente(
-          anoLetivo,
-          codEscola,
-          String(sugestaoCiclo) || String(listaCiclosAtual[0])
-        );
-      }
-    }
-
     carregarCiclos();
-  }, [usuario.turmaSelecionada]);
+  }, [turmaSelecionada]);
+
+  const carregarCiclos = async () => {
+    console.log('carregarCiclos');
+
+    if (usuario && turmaSelecionada) {
+      let anoSelecionado = '';
+      let codModalidade = null;
+      if (turmaSelecionada) {
+        anoSelecionado = String(turmaSelecionada.ano);
+        codModalidade = turmaSelecionada.modalidade;
+      }
+
+      const params = {
+        anoSelecionado,
+        modalidade: codModalidade,
+      };
+
+      let anos = [];
+      if (
+        usuario.turmasUsuario &&
+        usuario.turmasUsuario.length &&
+        anosTurmasUsuario.length < 1
+      ) {
+        anos = usuario.turmasUsuario.map(item => item.ano);
+        anos = anos.filter((elem, pos) => anos.indexOf(elem) == pos);
+      }
+      if (anosTurmasUsuario.length < 1 && anos.length > 0) {
+        setAnosTurmasUsuario(anos);
+        params.anos = anos;
+      } else {
+        params.anos = anosTurmasUsuario;
+      }
+
+      const ciclos = await api.post('v1/ciclos/filtro', params);
+
+      let sugestaoCiclo = ciclos.data.find(item => item.selecionado);
+      if (sugestaoCiclo && sugestaoCiclo.id) {
+        sugestaoCiclo = sugestaoCiclo.id;
+      }
+      const listaCiclosAtual = ciclos.data.filter(item => !item.selecionado);
+
+      setListaCiclos(listaCiclosAtual);
+
+      if (sugestaoCiclo) {
+        setCicloSelecionado(String(sugestaoCiclo));
+      } else {
+        setCicloSelecionado(String(listaCiclosAtual[0]));
+      }
+
+      const anoLetivo = String(turmaSelecionada.anoLetivo);
+      const codEscola = String(turmaSelecionada.unidadeEscolar);
+
+      if (turmaSelecionada.modalidade == modalidade.EJA) {
+        setModalidadeEja(true);
+      } else {
+        setModalidadeEja(false);
+      }
+      obterCicloExistente(
+        anoLetivo,
+        codEscola,
+        String(sugestaoCiclo) || String(listaCiclosAtual[0])
+      );
+    }
+  };
 
   async function obterCicloExistente(ano, escolaId, cicloId) {
     resetListas();
@@ -240,8 +239,8 @@ export default function PlanoCiclo() {
   }
 
   function trocaCiclo(value) {
-    const anoLetivo = String(usuario.turmaSelecionada[0].anoLetivo);
-    const codEscola = String(usuario.turmaSelecionada[0].codEscola);
+    const anoLetivo = String(turmaSelecionada.anoLetivo);
+    const codEscola = String(turmaSelecionada.unidadeEscolar);
     obterCicloExistente(anoLetivo, codEscola, value);
     setCicloSelecionado(value);
     setModoEdicao(false);
@@ -305,8 +304,8 @@ export default function PlanoCiclo() {
       idsObjetivosDesenvolvimento = listaODSSelecionado.map(ods => ods.id);
     }
 
-    const anoLetivo = String(usuario.turmaSelecionada[0].anoLetivo);
-    const codEscola = String(usuario.turmaSelecionada[0].codEscola);
+    const anoLetivo = String(turmaSelecionada.anoLetivo);
+    const codEscola = String(turmaSelecionada.unidadeEscolar);
 
     const textoReal = textEditorRef.current.state.value
       .replace(/<[^>]*>/g, '')
@@ -371,8 +370,8 @@ export default function PlanoCiclo() {
       ciclo = cicloParaTrocar;
       setCicloSelecionado(ciclo);
     }
-    const anoLetivo = String(usuario.turmaSelecionada[0].anoLetivo);
-    const codEscola = String(usuario.turmaSelecionada[0].codEscola);
+    const anoLetivo = String(turmaSelecionada.anoLetivo);
+    const codEscola = String(turmaSelecionada.unidadeEscolar);
     obterCicloExistente(anoLetivo, codEscola, ciclo || cicloSelecionado);
   }
   const onClickVoltar = async () => {
@@ -425,9 +424,7 @@ export default function PlanoCiclo() {
   return (
     <>
       <div className="col-md-12">
-        {usuario &&
-        usuario.turmaSelecionada &&
-        usuario.turmaSelecionada.length ? (
+        {usuario && turmaSelecionada ? (
           ''
         ) : (
           <Alert
@@ -467,7 +464,9 @@ export default function PlanoCiclo() {
                     className="col-md-12"
                     name="tipo-ciclo"
                     id="tipo-ciclo"
+                    placeHolder="Selecione um tipo de ciclo"
                     lista={listaCiclos}
+                    disabled={listaCiclos.length === 1}
                     valueOption="id"
                     valueText="descricao"
                     onChange={validaTrocaCiclo}

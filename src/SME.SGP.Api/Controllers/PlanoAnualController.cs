@@ -1,7 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using SME.SGP.Api.Filtros;
 using SME.SGP.Aplicacao;
-using SME.SGP.Dominio;
 using SME.SGP.Infra;
 using System.Threading.Tasks;
 
@@ -29,6 +28,15 @@ namespace SME.SGP.Api.Controllers
         public async Task<IActionResult> Obter(FiltroPlanoAnualDto filtroPlanoAnualDto, [FromServices]IConsultasPlanoAnual consultasPlanoAnual)
         {
             return Ok(await consultasPlanoAnual.ObterPorEscolaTurmaAnoEBimestre(filtroPlanoAnualDto));
+        }
+
+        [HttpPost("obter/expandido")]
+        [ProducesResponseType(typeof(PlanoAnualCompletoDto), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [Permissao(Permissao.PA_C, Policy = "Bearer")]
+        public async Task<IActionResult> ObterExpandido(FiltroPlanoAnualBimestreExpandidoDto filtroPlanoAnualDto, [FromServices]IConsultasPlanoAnual consultasPlanoAnual)
+        {
+            return Ok(await consultasPlanoAnual.ObterBimestreExpandido(filtroPlanoAnualDto));
         }
 
         [HttpPost]

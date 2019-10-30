@@ -1,4 +1,5 @@
 ﻿using SME.SGP.Aplicacao.Integracoes.Respostas;
+using SME.SGP.Dto;
 using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
@@ -12,9 +13,11 @@ namespace SME.SGP.Aplicacao.Integracoes
 
         Task<UsuarioEolAutenticacaoRetornoDto> Autenticar(string login, string senha);
 
+        Task<AbrangenciaRetornoEolDto> ObterAbrangencia(string login, Guid perfil);
+
         Task<IEnumerable<DisciplinaResposta>> ObterDisciplinasParaPlanejamento(long codigoTurma, string rfProfessor);
 
-        Task<IEnumerable<DisciplinaResposta>> ObterDisciplinasPorCodigoTurmaLoginEPerfil(long codigoTurma, string login, string guidPerfil);
+        Task<IEnumerable<DisciplinaResposta>> ObterDisciplinasPorCodigoTurmaLoginEPerfil(long codigoTurma, string login, Guid perfil);
 
         IEnumerable<DreRespostaEolDto> ObterDres();
 

@@ -1,4 +1,4 @@
-﻿using SME.SGP.Infra;
+using SME.SGP.Infra;
 using System;
 using System.Threading.Tasks;
 
@@ -18,13 +18,14 @@ namespace SME.SGP.Aplicacao
 
         Task<UsuarioAutenticacaoRetornoDto> Autenticar(string login, string senha);
 
-        Task<string> ModificarPerfil(string guid);
+        Task<string> ModificarPerfil(Guid guid);
 
         Task<UsuarioReinicioSenhaDto> ReiniciarSenha(string codigoRf);
+
+        void Sair();
 
         string SolicitarRecuperacaoSenha(string login);
 
         bool TokenRecuperacaoSenhaEstaValido(Guid token);
-        void Sair();
     }
 }

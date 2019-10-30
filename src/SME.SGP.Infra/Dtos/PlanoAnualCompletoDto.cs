@@ -16,6 +16,7 @@ namespace SME.SGP.Infra
         public string AlteradoRF { get; set; }
         public int? AnoLetivo { get; set; }
 
+        public int Bimestre { get; set; }
         public DateTime CriadoEm { get; set; }
         public string CriadoPor { get; set; }
         public string CriadoRF { get; set; }

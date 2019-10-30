@@ -4,6 +4,6 @@ namespace SME.SGP.Dominio.Interfaces
 {
     public interface IRepositorioEvento : IRepositorioBase<Evento>
     {
-        bool ExisteEventoNaDataEspecificada(DateTime dataInicio);
+        bool ExisteEventoNaMesmaDataECalendario(DateTime dataInicio, long tipoCalendarioId);
     }
 }
