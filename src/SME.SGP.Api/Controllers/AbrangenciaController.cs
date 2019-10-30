@@ -72,9 +72,12 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(int[]), 200)]
         [ProducesResponseType(401)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        public IActionResult ObterSemestres()
+        public async Task<IActionResult> ObterSemestres([FromQuery]Modalidade modalidade)
         {
-            return Ok(new int[] { 1, 2 });
+            var retorno = await consultasAbrangencia.ObterSemestres(modalidade);
+            if (retorno.Any())
+                return Ok(retorno);
+            else return StatusCode(204);
         }
 
         [HttpGet("dres/ues/{codigoUe}/turmas")]

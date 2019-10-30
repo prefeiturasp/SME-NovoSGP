@@ -90,6 +90,23 @@ namespace SME.SGP.Dados.Repositorios
             return (await database.Conexao.QueryAsync<int>(query)).AsList();
         }
 
+        public async Task<IEnumerable<int>> ObterSemestres(string login, Guid perfil, Modalidade modalidade)
+        {
+            var query = @"select distinct ab_turmas.semestre
+                    from
+	                    abrangencia_turmas ab_turmas
+                    inner join abrangencia_ues ab_ues on
+	                    ab_turmas.abrangencia_ues_id = ab_ues.id
+                    inner join abrangencia_dres ab_dres on
+	                    ab_ues.abrangencia_dres_id = ab_dres.id
+                    where
+                        ab_dres.usuario_id = (select id from usuario where login = @login)
+	                    and ab_dres.perfil = @perfil
+                        and ab_turmas.modalidade_codigo = @modalidade";
+
+            return (await database.Conexao.QueryAsync<int>(query, new { login, perfil, modalidade })).AsList();
+        }
+
         public async Task<IEnumerable<AbrangenciaTurmaRetorno>> ObterTurmas(string codigoUe, string login, Guid perfil, Modalidade modalidade)
         {
             var query = @"select distinct

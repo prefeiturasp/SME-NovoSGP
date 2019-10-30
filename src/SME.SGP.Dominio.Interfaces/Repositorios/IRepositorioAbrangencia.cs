@@ -15,6 +15,8 @@ namespace SME.SGP.Dominio.Interfaces
 
         Task<IEnumerable<int>> ObterModalidades();
 
+        Task<IEnumerable<int>> ObterSemestres(string login, Guid perfil, Modalidade modalidade);
+
         Task<IEnumerable<AbrangenciaTurmaRetorno>> ObterTurmas(string codigoUe, string login, Guid perfil, Modalidade modalidade);
 
         Task<IEnumerable<AbrangenciaUeRetorno>> ObterUes(string codigoDre, string login, Guid perfil, Modalidade? modalidade = null);

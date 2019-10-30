@@ -14,6 +14,8 @@ namespace SME.SGP.Aplicacao
 
         Task<IEnumerable<EnumeradoRetornoDto>> ObterModalidades();
 
+        Task<IEnumerable<int>> ObterSemestres(Modalidade modalidade);
+
         Task<IEnumerable<AbrangenciaTurmaRetorno>> ObterTurmas(string codigoUe, Modalidade modalidade);
 
         Task<IEnumerable<AbrangenciaUeRetorno>> ObterUes(string codigoDre, Modalidade modalidade);
