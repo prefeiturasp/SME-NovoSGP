@@ -1,5 +1,4 @@
 ﻿using SME.SGP.Dominio;
-using SME.SGP.Dominio.Entidades;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System;
@@ -42,7 +41,7 @@ namespace SME.SGP.Aplicacao
                 planoAnualLista.Add(await ObterPorEscolaTurmaAnoEBimestre(filtroPlanoAnualDto));
             }
 
-            var periodosEscolares = ObtenhaPeriodoEscolar(filtro.AnoLetivo, filtro.ModalidadePlanoAnual);
+            var periodosEscolares = ObterPeriodoEscolar(filtro.AnoLetivo, filtro.ModalidadePlanoAnual);
 
             if (periodosEscolares == null)
                 return null;
@@ -103,7 +102,7 @@ namespace SME.SGP.Aplicacao
             };
         }
 
-        private IEnumerable<PeriodoEscolar> ObtenhaPeriodoEscolar(int anoLetivo, Modalidade modalidade)
+        private IEnumerable<PeriodoEscolar> ObterPeriodoEscolar(int anoLetivo, Modalidade modalidade)
         {
             var modalidadeTipoCalendario = ModalidadeParaModalidadeTipoCalendario(modalidade);
 
