@@ -32,11 +32,7 @@ export default function AtribuicaoSupervisorLista() {
   const usuario = useSelector(store => store.usuario);
 
   useEffect(() => {
-    if (
-      usuario &&
-      usuario.turmaSelecionada &&
-      usuario.turmaSelecionada.length
-    ) {
+    if (usuario && usuario.turmaSelecionada) {
       setDesabilitarAssumirFiltroPrincipal(false);
     } else {
       setDesabilitarAssumirFiltroPrincipal(true);
@@ -53,8 +49,8 @@ export default function AtribuicaoSupervisorLista() {
 
   useEffect(() => {
     if (listaUes && listaUes.length && assumirFiltroPrincCheck) {
-      setUeSelecionada(usuario.turmaSelecionada[0].codEscola);
-      onChangeUes(usuario.turmaSelecionada[0].codEscola);
+      setUeSelecionada(usuario.turmaSelecionada.unidadeEscolar);
+      onChangeUes(usuario.turmaSelecionada.unidadeEscolar);
     }
   }, [listaUes]);
 
@@ -86,9 +82,7 @@ export default function AtribuicaoSupervisorLista() {
       dataIndex: 'supervisor',
       width: '30%',
       render: text => {
-        return text || (
-          <a className="texto-vermelho-negrito">NÃO ATRIBUIDO</a>
-        );
+        return text || <a className="texto-vermelho-negrito">NÃO ATRIBUIDO</a>;
       },
     },
   ];
@@ -152,8 +146,8 @@ export default function AtribuicaoSupervisorLista() {
       setDesabilitarDre(true);
       setUesSemSupervisorCheck(false);
 
-      carregarUes(usuario.turmaSelecionada[0].codDre);
-      setDresSelecionadas(usuario.turmaSelecionada[0].codDre);
+      carregarUes(usuario.turmaSelecionada.dre);
+      setDresSelecionadas(usuario.turmaSelecionada.dre);
     } else {
       setAssumirFiltroPrincCheck(false);
       setDesabilitarSupervisor(false);

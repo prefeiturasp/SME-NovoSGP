@@ -64,7 +64,9 @@ const TipoCalendarioEscolarLista = () => {
   const onClickExcluir = async () => {
     const listaParaExcluir = [];
     idTiposSelecionados.forEach(id => {
-      const tipoParaExcluir = listaTiposCalendarioEscolar.find(tipo => id == tipo.id);
+      const tipoParaExcluir = listaTiposCalendarioEscolar.find(
+        tipo => id == tipo.id
+      );
       if (tipoParaExcluir) {
         listaParaExcluir.push(tipoParaExcluir);
       }

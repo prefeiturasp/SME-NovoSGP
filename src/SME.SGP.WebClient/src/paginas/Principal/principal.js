@@ -28,8 +28,7 @@ const Principal = () => {
     if (
       usuario &&
       usuario.turmaSelecionada &&
-      usuario.turmaSelecionada.length &&
-      usuario.turmaSelecionada[0].codModalidade == modalidade.EJA
+      usuario.turmaSelecionada.modalidade == modalidade.EJA
     ) {
       setModalidadeEja(true);
     } else {
@@ -44,11 +43,12 @@ const Principal = () => {
       return;
     }
 
-    const temTurma = usuario.turmaSelecionada.length > 0;
+    const temTurma = !!usuario.turmaSelecionada;
     const temEscola =
       temTurma &&
-      (usuario.turmaSelecionada[0].ue !== '' &&
-        typeof usuario.turmaSelecionada[0].ue !== 'undefined');
+      (usuario.turmaSelecionada.unidadeEscolarSelecionada !== '' &&
+        typeof usuario.turmaSelecionada.unidadeEscolarSelecionada !==
+          'undefined');
 
     setTurmaSelecionada(temTurma);
     setEscolaSelecionada(temEscola);
