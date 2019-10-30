@@ -31,6 +31,8 @@ namespace SME.SGP.Dados.Repositorios
             query.AppendLine("order by e.id");
             if (paginacao != null && paginacao.QuantidadeRegistros > 0)
                 MontaQueryPaginacao(query);
+            else
+                paginacao = new Paginacao(1, 0);
 
             if (!string.IsNullOrEmpty(nomeEvento))
             {
