@@ -15,6 +15,12 @@ import SelectComponent from '~/componentes/select';
 import CampoTexto from '~/componentes/campoTexto';
 import { CampoData, momentSchema } from '~/componentes/campoData/campoData';
 import RadioGroupButton from '~/componentes/radioGroupButton';
+import ModalConteudoHtml from '~/componentes/modalConteudoHtml';
+import {
+  CaixaDiasLetivos,
+  TextoDiasLetivos,
+  ListaCopiarEventos,
+} from './eventos.css';
 
 const EventosForm = ({ match }) => {
   const usuario = useSelector(store => store.usuario);
@@ -24,10 +30,17 @@ const EventosForm = ({ match }) => {
   const [modoEdicao, setModoEdicao] = useState(false);
   const [novoRegistro, setNovoRegistro] = useState(true);
   const [exibirAuditoria, setExibirAuditoria] = useState(false);
+  const [exibirModalCopiarEvento, setExibirModalCopiarEvento] = useState(false);
 
+  const [listaCalendarioEscolar, setListaCalendarioEscolar] = useState([]);
   const [listaDres, setListaDres] = useState([]);
   const [listaUes, setListaUes] = useState([]);
   const [listaTipoEvento, setListaTipoEvento] = useState([]);
+  const [listaCalendarioParaCopiar, setlistaCalendarioParaCopiar] = useState([]);
+  const [
+    listaCalendarioParaCopiarInicial,
+    setlistaCalendarioParaCopiarInicial,
+  ] = useState([]);
 
   const [idEvento, setIdEvento] = useState(0);
   const [valoresIniciais, setValoresIniciais] = useState({
@@ -38,6 +51,7 @@ const EventosForm = ({ match }) => {
     dataEvento: '',
     letivo: true,
     descricao: '',
+    calendarioEscolar: '',
   });
 
   const opcoesLetivo = [
@@ -45,9 +59,9 @@ const EventosForm = ({ match }) => {
     { label: 'Não', value: false },
   ];
 
-  // TODO - Rever
   const [validacoes] = useState(
     Yup.object({
+      calendarioEscolar: Yup.string().required('Calendário obrigatório'),
       dre: Yup.string().required('DRE obrigatória'),
       ue: Yup.string().required('UE obrigatória'),
       nomeEvento: Yup.string().required('Nome obrigatório'),
@@ -62,7 +76,22 @@ const EventosForm = ({ match }) => {
       const dres = await api.get('v1/dres');
       setListaDres(dres.data);
     };
+
+    const consultaTipos = async () => {
+      const listaTipo = await api.get('v1/tipo-calendario');
+      if (listaTipo && listaTipo.data && listaTipo.data.length) {
+        listaTipo.data.map(item => {
+          item.id = String(item.id);
+          item.descricaoTipoCalendario = `${item.anoLetivo} - ${item.nome} - ${item.descricaoPeriodo}`;
+        });
+        setListaCalendarioEscolar(listaTipo.data);
+      } else {
+        setListaCalendarioEscolar([]);
+      }
+    };
+
     carregarDres();
+    consultaTipos();
 
     // TODO Mock
     setListaTipoEvento([
@@ -70,9 +99,7 @@ const EventosForm = ({ match }) => {
       { id: 2, nome: 'Tipo evento 02' },
       { id: 3, nome: 'Tipo evento 03' },
     ]);
-  }, []);
 
-  useEffect(() => {
     if (match && match.params && match.params.id) {
       setBreadcrumbManual(
         match.url,
@@ -97,6 +124,7 @@ const EventosForm = ({ match }) => {
         dataEvento: '',
         letivo: '',
         descricao: '',
+        calendarioEscolar: '',
       });
       setAuditoria({
         criadoPor: evento.data.criadoPor,
@@ -145,6 +173,7 @@ const EventosForm = ({ match }) => {
   };
 
   const onClickCadastrar = async valoresForm => {
+    valoresForm.listaCalendarioParaCopiar = listaCalendarioParaCopiar;
     console.log(valoresForm);
     // TODO - Ajustar
     // valoresForm.id = idEvento || 0;
@@ -198,14 +227,43 @@ const EventosForm = ({ match }) => {
     setListaUes(ues.data || []);
   };
 
-  const onClickRepetir =  () => {
+  const onClickRepetir = () => {
     console.log('onClickRepetir');
   };
 
-  const onClickCopiarEvento =  () => {
-    console.log('onClickCopiarEvento');
+  const onClickCopiarEvento = () => {
+    setlistaCalendarioParaCopiarInicial(listaCalendarioParaCopiar);
+    setExibirModalCopiarEvento(true);
   };
 
+  const onConfirmarCopiarEvento = () => {
+    onCloseCopiarConteudo();
+    console.log(listaCalendarioParaCopiar);
+  };
+
+  const onCancelarCopiarEvento = () => {
+    setlistaCalendarioParaCopiar(listaCalendarioParaCopiarInicial);
+    onCloseCopiarConteudo();
+  };
+
+  const onCloseCopiarConteudo = () => {
+    setExibirModalCopiarEvento(false);
+  };
+
+  const onChangeCopiarEvento = eventos => {
+    setlistaCalendarioParaCopiar(eventos);
+  };
+
+  const montarEcibicaoEventosCopiar = () => {
+    return listaCalendarioParaCopiar.map((id, i)=> {
+      const calendario = listaCalendarioEscolar.find(e => e.id == id);
+      if (calendario && calendario.descricaoTipoCalendario) {
+        return <div className="font-weight-bold"  key={'calendario-' + i} >{ '-  ' + calendario.descricaoTipoCalendario}</div>;
+      } else {
+        return '';
+      }
+    });
+  };
   return (
     <>
       <Cabecalho pagina="Cadastro de Eventos no Calendário Escolar" />
@@ -221,39 +279,61 @@ const EventosForm = ({ match }) => {
         >
           {form => (
             <Form className="col-md-12 mb-4">
-              <div className="col-md-12 d-flex justify-content-end pb-4">
-                <Button
-                  label="Voltar"
-                  icon="arrow-left"
-                  color={Colors.Azul}
-                  border
-                  className="mr-2"
-                  onClick={onClickVoltar}
-                />
-                <Button
-                  label="Cancelar"
-                  color={Colors.Roxo}
-                  border
-                  className="mr-2"
-                  onClick={onClickCancelar}
-                  disabled={!modoEdicao}
-                />
-                <Button
-                  label="Excluir"
-                  color={Colors.Vermelho}
-                  border
-                  className="mr-2"
-                  disabled={novoRegistro}
-                  onClick={onClickExcluir}
-                />
-                <Button
-                  label="Cadastrar"
-                  color={Colors.Roxo}
-                  border
-                  bold
-                  className="mr-2"
-                  type="submit"
-                />
+              <div className="row pb-5">
+                <div className="col-sm-12 col-md-6 col-lg-6 col-xl-4 pb-2">
+                  <SelectComponent
+                    form={form}
+                    name="calendarioEscolar"
+                    id="calendario-escolar"
+                    lista={listaCalendarioEscolar}
+                    valueOption="id"
+                    valueText="descricaoTipoCalendario"
+                    onChange={onChangeCampos}
+                    placeholder=" Selecione um Calendário Escolar"
+                  />
+                </div>
+                <div className="col-sm-12 col-md-6 col-lg-6 col-xl-4 pb-2">
+                  <div className="row">
+                    <CaixaDiasLetivos>2016</CaixaDiasLetivos>
+                    <TextoDiasLetivos>
+                      Nº de Dias Letivos no Calendário
+                    </TextoDiasLetivos>
+                  </div>
+                </div>
+                <div className="col-sm-12 col-md-12 col-lg-12 col-xl-4 pb-2 d-flex justify-content-end">
+                  <Button
+                    label="Voltar"
+                    icon="arrow-left"
+                    color={Colors.Azul}
+                    border
+                    className="mr-2"
+                    onClick={onClickVoltar}
+                  />
+                  <Button
+                    label="Cancelar"
+                    color={Colors.Roxo}
+                    border
+                    className="mr-2"
+                    onClick={onClickCancelar}
+                    disabled={!modoEdicao}
+                  />
+                  <Button
+                    label="Excluir"
+                    color={Colors.Vermelho}
+                    border
+                    className="mr-2"
+                    hidden={novoRegistro}
+                    onClick={onClickExcluir}
+                  />
+                  <Button
+                    label="Cadastrar"
+                    color={Colors.Roxo}
+                    border
+                    bold
+                    className="mr-2"
+                    type="submit"
+                  />
+                </div>
               </div>
               <div className="row">
                 <div className="col-sm-12 col-md-12 col-lg-6 col-xl-6 pb-2">
@@ -341,17 +421,29 @@ const EventosForm = ({ match }) => {
                     type="textarea"
                   />
                 </div>
-                <div className="col-sm-12 col-md-4 col-lg-4 col-xl-4 pb-2">
+              </div>
+
+              <div className="col-md-12 pb-2 ">
+                <div className="row">
                   <Button
                     label="Copiar Evento"
                     icon="fas fa-share"
                     color={Colors.Azul}
                     border
-                    className="mt-4"
+                    className="mt-4 mr-3"
                     onClick={onClickCopiarEvento}
                   />
+                  {
+                    listaCalendarioParaCopiar && listaCalendarioParaCopiar.length ?
+                      <ListaCopiarEventos>
+                        <div className="mb-1">Evento será copiado para os calendários:</div>
+                      { montarEcibicaoEventosCopiar() }
+                      </ListaCopiarEventos>
+                    : ''
+                  }
                 </div>
               </div>
+
             </Form>
           )}
         </Formik>
@@ -367,6 +459,29 @@ const EventosForm = ({ match }) => {
         ) : (
           ''
         )}
+        <ModalConteudoHtml
+          key="copiarEvento"
+          visivel={exibirModalCopiarEvento}
+          onConfirmacaoPrincipal={onConfirmarCopiarEvento}
+          onConfirmacaoSecundaria={onCancelarCopiarEvento}
+          onClose={onCloseCopiarConteudo}
+          labelBotaoPrincipal="Selecionar"
+          labelBotaoSecundario="Cancelar"
+          titulo="Copiar evento"
+          closable={false}
+          fecharAoClicarFora={false}
+          fecharAoClicarEsc={false}
+        >
+          <SelectComponent
+            id="copiar-evento-select"
+            lista={listaCalendarioEscolar}
+            valueOption="id"
+            valueText="descricaoTipoCalendario"
+            onChange={onChangeCopiarEvento}
+            valueSelect={listaCalendarioParaCopiar}
+            multiple
+          />
+        </ModalConteudoHtml>
       </Card>
     </>
   );
