@@ -1,5 +1,4 @@
-﻿using SME.SGP.Aplicacao.Interfaces;
-using SME.SGP.Dominio;
+﻿using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System;
@@ -12,19 +11,19 @@ namespace SME.SGP.Aplicacao
     public class ConsultasPlanoAnual : IConsultasPlanoAnual
     {
         private readonly IConsultasObjetivoAprendizagem consultasObjetivoAprendizagem;
-        private readonly IConsultasPeriodoEscolar consultasPeriodoEscolar;
-        private readonly IConsultasTipoCalendario consultasTipoCalendario;
+        private readonly IRepositorioPeriodoEscolar repositorioPeriodoEscolar;
         private readonly IRepositorioPlanoAnual repositorioPlanoAnual;
+        private readonly IRepositorioTipoCalendario repositorioTipoCalendario;
 
         public ConsultasPlanoAnual(IRepositorioPlanoAnual repositorioPlanoAnual,
                                    IConsultasObjetivoAprendizagem consultasObjetivoAprendizagem,
-                                   IConsultasTipoCalendario consultasTipoCalendario,
-                                   IConsultasPeriodoEscolar consultasPeriodoEscolar)
+                                   IRepositorioPeriodoEscolar repositorioPeriodoEscolar,
+                                   IRepositorioTipoCalendario repositorioTipoCalendario)
         {
             this.repositorioPlanoAnual = repositorioPlanoAnual ?? throw new System.ArgumentNullException(nameof(repositorioPlanoAnual));
             this.consultasObjetivoAprendizagem = consultasObjetivoAprendizagem ?? throw new System.ArgumentNullException(nameof(consultasObjetivoAprendizagem));
-            this.consultasTipoCalendario = consultasTipoCalendario ?? throw new System.ArgumentNullException(nameof(consultasTipoCalendario));
-            this.consultasPeriodoEscolar = consultasPeriodoEscolar ?? throw new System.ArgumentNullException(nameof(consultasPeriodoEscolar));
+            this.repositorioPeriodoEscolar = repositorioPeriodoEscolar ?? throw new ArgumentNullException(nameof(repositorioPeriodoEscolar));
+            this.repositorioTipoCalendario = repositorioTipoCalendario ?? throw new ArgumentNullException(nameof(repositorioTipoCalendario));
         }
 
         public async Task<PlanoAnualCompletoDto> ObterBimestreExpandido(FiltroPlanoAnualBimestreExpandidoDto filtro)
@@ -78,12 +77,6 @@ namespace SME.SGP.Aplicacao
         {
             switch (modalidade)
             {
-                case Modalidade.Fundamental:
-                    return ModalidadeTipoCalendario.FundamentalMedio;
-
-                case Modalidade.Medio:
-                    return ModalidadeTipoCalendario.FundamentalMedio;
-
                 case Modalidade.EJA:
                     return ModalidadeTipoCalendario.EJA;
 
