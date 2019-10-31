@@ -22,7 +22,7 @@ namespace SME.SGP.Dados.Repositorios
             return database.Conexao.QueryFirstOrDefault<bool>(query, new { dataInicio, tipoCalendarioId });
         }
 
-        public async Task<IEnumerable<CalendarioEventosMesesDto>> ObterQuantidadeDeEventosPorMeses(CalendarioEventosMesesFiltroDto calendarioEventosMesesFiltro)
+        public async Task<IEnumerable<CalendarioEventosMesesDto>> ObterQuantidadeDeEventosPorMeses(CalendarioEventosFiltroDto calendarioEventosMesesFiltro)
         {
             var query = new StringBuilder();
             query.AppendLine("SELECT a.mes,");
