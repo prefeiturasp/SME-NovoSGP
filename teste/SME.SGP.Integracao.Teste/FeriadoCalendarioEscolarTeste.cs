@@ -85,9 +85,9 @@ namespace SME.SGP.Integracao.Teste
                     var getAllResult = await _fixture._clientApi.PostAsync($"api/v1/calendarios/feriados/listar", jsonGetAll);
                     var dtoTodos = JsonConvert.DeserializeObject<IEnumerable<FeriadoCalendarioDto>>(getAllResult.Content.ReadAsStringAsync().Result);
 
-                    Assert.True(dtoTodos.Count() == 1);
+                    Assert.True(dtoTodos.Any());
 
-                    var getOneResult = await _fixture._clientApi.GetAsync($"api/v1/calendarios/feriados/13");
+                    var getOneResult = await _fixture._clientApi.GetAsync($"api/v1/calendarios/feriados/{dtoTodos.FirstOrDefault().Id}");
                     var dtoUm = JsonConvert.DeserializeObject<TipoCalendarioCompletoDto>(getOneResult.Content.ReadAsStringAsync().Result);
 
                     Assert.NotNull(dtoUm.Nome);
