@@ -86,7 +86,7 @@ const TipoCalendarioEscolarLista = () => {
       const parametrosDelete = { data: idTiposSelecionados };
       const excluir = await api
         .delete('v1/calendarios/tipos', parametrosDelete)
-        .catch(erros => mostrarErros(erros));
+        .catch(e => erros(e));
       if (excluir) {
         const mensagemSucesso = `${
           idTiposSelecionados.length > 1 ? 'Tipos' : 'Tipo'
