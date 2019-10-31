@@ -1,4 +1,5 @@
 import { Form, Formik } from 'formik';
+import * as moment from 'moment';
 import React, { useEffect, useState } from 'react';
 import * as Yup from 'yup';
 import Cabecalho from '~/componentes-sgp/cabecalho';
@@ -7,16 +8,21 @@ import { CampoData, momentSchema } from '~/componentes/campoData/campoData';
 import CampoTexto from '~/componentes/campoTexto';
 import Card from '~/componentes/card';
 import { Colors } from '~/componentes/colors';
+import ListaPaginada from '~/componentes/listaPaginada/listaPaginada';
 import SelectComponent from '~/componentes/select';
+import { confirmar, erros, sucesso } from '~/servicos/alertas';
 import api from '~/servicos/api';
 import history from '~/servicos/history';
+import servicoEvento from '~/servicos/Paginas/Calendario/ServicoEvento';
 
 const EventosLista = () => {
   const [listaCalendarioEscolar, setListaCalendarioEscolar] = useState([]);
-  const [tipoCalendario, setTipoCalendario] = useState('');
+  const [tipoCalendario, setTipoCalendario] = useState(undefined);
   const [nomeEvento, setNomeEvento] = useState('');
   const [listaTipoEvento, setListaTipoEvento] = useState([]);
-  const [tipoEvento, setTipoEvento] = useState([]);
+  const [tipoEvento, setTipoEvento] = useState(undefined);
+  const [eventosSelecionados, setEventosSelecionados] = useState([]);
+  const [filtro, setFiltro] = useState({});
 
   const [refForm, setRefForm] = useState();
   const [valoresIniciais] = useState({
@@ -25,35 +31,66 @@ const EventosLista = () => {
   });
   const [validacoes] = useState(
     Yup.object({
-      dataInicio: momentSchema.test('validaInicio', 'Data obrigatória', function() {
-        const dataInicio = this.parent['dataInicio'];
-        const dataFim = this.parent['dataFim'];
-        if (!dataInicio && dataFim) {
-          return false;
-        } else {
+      dataInicio: momentSchema.test(
+        'validaInicio',
+        'Data obrigatória',
+        function() {
+          const { dataInicio } = this.parent;
+          const { dataFim } = this.parent;
+          if (!dataInicio && dataFim) {
+            return false;
+          }
           return true;
         }
-      }),
+      ),
       dataFim: momentSchema.test('validaFim', 'Data obrigatória', function() {
-        const dataInicio = this.parent['dataInicio'];
-        const dataFim = this.parent['dataFim'];
+        const { dataInicio } = this.parent;
+        const { dataFim } = this.parent;
         if (dataInicio && !dataFim) {
           return false;
-        } else {
-          return true;
         }
-      })
+        return true;
+      }),
     })
   );
 
-  useEffect(() => {
-    setListaTipoEvento([
-      { id: 1, nome: 'Tipo evento 01' },
-      { id: 2, nome: 'Tipo evento 02' },
-      { id: 3, nome: 'Tipo evento 03' },
-    ]);
+  const colunas = [
+    {
+      title: 'Nome do evento',
+      dataIndex: 'nome',
+      width: '45%',
+    },
+    {
+      title: 'Tipo de evento',
+      dataIndex: 'tipo',
+      width: '20%',
+      render: (text, row) => <span> {row.tipoEvento.descricao}</span>,
+    },
+    {
+      title: 'Data início',
+      dataIndex: 'dataInicio',
+      width: '15%',
+      render: data => formatarCampoDataGrid(data),
+    },
+    {
+      title: 'Data fim',
+      dataIndex: 'dataFim',
+      width: '15%',
+      render: data => formatarCampoDataGrid(data),
+    },
+  ];
 
-    async function consultaTipoCalendario() {
+  useEffect(() => {
+    const obterListaEventos = async ()=> {
+      const tiposEvento = await api.get('v1/calendarios/eventos/tipos/listar');
+      if (tiposEvento && tiposEvento.data && tiposEvento.data.items) {
+        setListaTipoEvento(tiposEvento.data.items);
+      } else {
+        setListaTipoEvento([]);
+      }
+    }
+
+    const consultaTipoCalendario = async ()=> {
       const tiposCalendario = await api.get('v1/tipo-calendario');
       if (
         tiposCalendario &&
@@ -70,6 +107,8 @@ const EventosLista = () => {
       }
     }
 
+    obterListaEventos();
+
     consultaTipoCalendario();
   }, []);
 
@@ -77,12 +116,44 @@ const EventosLista = () => {
     validaFiltrar();
   }, [tipoCalendario, nomeEvento, tipoEvento]);
 
+  const formatarCampoDataGrid = data => {
+    let dataFormatada = '';
+    if (data) {
+      dataFormatada = moment(data).format('DD/MM/YYYY');
+    }
+    return <span> {dataFormatada}</span>;
+  };
+
   const onClickVoltar = () => {
     console.log('onClickVoltar');
   };
 
-  const onClickExcluir = () => {
-    console.log('onClickExcluir');
+  const onClickExcluir = async () => {
+    if (eventosSelecionados && eventosSelecionados.length > 0) {
+      const listaNomeExcluir = eventosSelecionados.map(item => item.nome);
+      const confirmado = await confirmar(
+        'Excluir evento',
+        listaNomeExcluir,
+        `Deseja realmente excluir ${
+          eventosSelecionados.length > 1 ? 'estes eventos' : 'este evento'
+        }?`,
+        'Excluir',
+        'Cancelar'
+      );
+      if (confirmado) {
+        const idsDeletar = eventosSelecionados.map(c => c.id);
+        const excluir = await servicoEvento
+          .deletar(idsDeletar)
+          .catch(e => erros(e));
+        if (excluir && excluir.status == 200) {
+          const mensagemSucesso = `${
+            eventosSelecionados.length > 1 ? 'Eventos excluídos' : 'Evento excluído'
+          } com sucesso.`;
+          sucesso(mensagemSucesso);
+          validaFiltrar();
+        }
+      }
+    }
   };
 
   const onClickNovo = () => {
@@ -102,21 +173,29 @@ const EventosLista = () => {
   };
 
   const onFiltrar = valoresForm => {
-    // TODO - Chamar endpoint
     const params = {
-      tipoCalendario,
+      tipoCalendarioId: tipoCalendario,
       nomeEvento,
-      tipoEvento,
+      tipoEventoId: tipoEvento,
       dataInicio: valoresForm.dataInicio,
       dataFim: valoresForm.dataFim,
     };
-    console.log(params);
+    setFiltro(params);
+    setEventosSelecionados([]);
   };
 
   const validaFiltrar = () => {
     if (refForm) {
       refForm.validateForm().then(() => refForm.handleSubmit(e => e));
     }
+  };
+
+  const onClickEditar = evento => {
+    history.push(`eventos/editar/${evento.id}`);
+  };
+
+  const onSelecionarItems = items => {
+    setEventosSelecionados(items);
   };
 
   return (
@@ -138,6 +217,7 @@ const EventosLista = () => {
             border
             className="mr-2"
             onClick={onClickExcluir}
+            disabled={ !(eventosSelecionados && eventosSelecionados.length) }
           />
           <Button
             label="Novo"
@@ -170,7 +250,7 @@ const EventosLista = () => {
                     valueOption="id"
                     valueText="nome"
                     onChange={onChangeTipoCalendario}
-                    valueSelect={tipoCalendario || []}
+                    valueSelect={tipoCalendario || undefined}
                     placeholder="Selecione um calendário"
                   />
                 </div>
@@ -189,9 +269,9 @@ const EventosLista = () => {
                     id="select-tipo-evento"
                     lista={listaTipoEvento}
                     valueOption="id"
-                    valueText="nome"
+                    valueText="descricao"
                     onChange={onChangeTipoEvento}
-                    valueSelect={tipoEvento || []}
+                    valueSelect={tipoEvento || undefined}
                     placeholder="Selecione um tipo"
                   />
                 </div>
@@ -220,6 +300,18 @@ const EventosLista = () => {
             </Form>
           )}
         </Formik>
+        <div className="col-md-12 pt-2">
+          <ListaPaginada
+            url="v1/calendarios/eventos"
+            id="lista-eventos"
+            colunaChave="id"
+            colunas={colunas}
+            filtro={filtro}
+            onClick={onClickEditar}
+            multiSelecao
+            selecionarItems={onSelecionarItems}
+          />
+        </div>
       </Card>
     </>
   );
