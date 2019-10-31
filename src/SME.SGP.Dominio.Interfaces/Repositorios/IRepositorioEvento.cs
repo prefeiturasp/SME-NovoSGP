@@ -9,6 +9,6 @@ namespace SME.SGP.Dominio.Interfaces
     {
         bool ExisteEventoNaMesmaDataECalendario(DateTime dataInicio, long tipoCalendarioId);
 
-        Task<IEnumerable<CalendarioEventosMesesDto>> ObterQuantidadeDeEventosPorMeses(CalendarioEventosMesesFiltroDto calendarioEventosMesesFiltro);
+        Task<IEnumerable<CalendarioEventosMesesDto>> ObterQuantidadeDeEventosPorMeses(CalendarioEventosFiltroDto calendarioEventosMesesFiltro);
     }
 }
