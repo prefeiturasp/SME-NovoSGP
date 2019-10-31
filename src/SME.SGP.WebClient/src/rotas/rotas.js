@@ -27,7 +27,7 @@ import TipoFeriadoForm from '~/paginas/CalendarioEscolar/TipoFeriado/tipoFeriado
 import TipoEventosLista from '~/paginas/CalendarioEscolar/TipoEventos/tipoEventosLista';
 import TipoEventosForm from '~/paginas/CalendarioEscolar/TipoEventos/tipoEventosForm';
 import { useSelector } from 'react-redux';
-import NaoPermissionada from '~/paginas/NaoPermissionada/nao-permissionada';
+import SemPermissao from '~/paginas/SemPermissao/sem-permissao';
 
 export default function Rotas() {
   const rotas = new Map();
@@ -263,7 +263,7 @@ export default function Rotas() {
   rotas.set('/sem-permissao', {
     breadcrumbName: 'Sem permissão',
     parent: '/',
-    component: NaoPermissionada,
+    component: SemPermissao,
     exact: true,
     tipo: RotasTipo.EstruturadaAutenticada,
     temPermissionamento: false

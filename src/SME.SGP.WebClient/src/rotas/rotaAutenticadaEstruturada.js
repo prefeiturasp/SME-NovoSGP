@@ -2,17 +2,17 @@ import React from 'react';
 import { Route, Redirect } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import Pagina from '~/componentes-sgp/conteudo';
-import { getLogadoStorage, getPermissoesStorage } from '~/servicos/servico-navegacao'
+import { getObjetoStorageUsuario } from '~/servicos/servico-navegacao'
 
 const RotaAutenticadaEstruturada = props => {
   const { component: Componente, ...propriedades } = props;
   let logado = useSelector(state => state.usuario.logado);
   let permissoes = useSelector(state => state.usuario.permissoes);
-  const logadoStorage = getLogadoStorage();
-  const permissoesStorage = getPermissoesStorage();
+  const logadoStorage = getObjetoStorageUsuario('logado');
+  const permissoesStorage = getObjetoStorageUsuario('permissoes');
   const primeiroAcesso = useSelector(state => state.usuario.modificarSenha);
   logado = logado ? logado : logadoStorage;
-  permissoes = permissoes ? permissoes : permissoesStorage;
+  permissoes = permissoes && permissoes.length>0 ? permissoes : permissoesStorage;
 
   return (
     <Route
