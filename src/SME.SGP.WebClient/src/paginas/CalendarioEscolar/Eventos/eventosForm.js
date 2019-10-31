@@ -20,9 +20,10 @@ import history from '~/servicos/history';
 import servicoEvento from '~/servicos/Paginas/Calendario/ServicoEvento';
 
 import { CaixaDiasLetivos, ListaCopiarEventos, TextoDiasLetivos } from './eventos.css';
+import eventoLetivo from '~/dtos/eventoLetivo';
 
 const EventosForm = ({ match }) => {
-  const usuario = useSelector(store => store.usuario);
+  const usuarioStore = useSelector(store => store.usuario);
 
   const [auditoria, setAuditoria] = useState([]);
   const [modoEdicao, setModoEdicao] = useState(false);
@@ -31,6 +32,7 @@ const EventosForm = ({ match }) => {
   const [exibirModalCopiarEvento, setExibirModalCopiarEvento] = useState(false);
   const [eventoTipoFeriadoSelecionado, setEventoTipoFeriadoSelecionado] = useState(false);
   const [tipoDataUnico, setTipoDataUnico] = useState(true);
+  const [desabilitarOpcaoLetivo, setDesabilitarOpcaoLetivo] = useState(true);
 
   const [listaFeriados, setListaFeriados] = useState([]);
   const [listaCalendarioEscolar, setListaCalendarioEscolar] = useState([]);
@@ -44,7 +46,7 @@ const EventosForm = ({ match }) => {
   ] = useState([]);
 
   const [idEvento, setIdEvento] = useState(0);
-  const [valoresIniciais, setValoresIniciais] = useState({
+  let inicial = {
     dataFim: '',
     dataInicio: '',
     descricao: '',
@@ -55,7 +57,8 @@ const EventosForm = ({ match }) => {
     tipoCalendarioId: undefined,
     tipoEventoId: undefined,
     ueId: undefined
-  });
+  }
+  const [valoresIniciais, setValoresIniciais] = useState(inicial);
 
   const opcoesLetivo = [
     { label: 'Sim', value: 1 },
@@ -65,12 +68,11 @@ const EventosForm = ({ match }) => {
   const [validacoes, setValidacoes] = useState({});
 
   useEffect(() => {
-    const carregarDres = async () => {
-      const dres = await api.get('v1/dres');
-      setListaDres(dres.data);
-    };
 
-    const consultaTipos = async () => {
+    const montarConsultas = async () => {
+      const dres = await api.get('v1/abrangencias/dres');
+      setListaDres(dres.data);
+
       const listaTipo = await api.get('v1/tipo-calendario');
       if (listaTipo && listaTipo.data && listaTipo.data.length) {
         listaTipo.data.map(item => {
@@ -81,22 +83,16 @@ const EventosForm = ({ match }) => {
       } else {
         setListaCalendarioEscolar([]);
       }
-    };
 
-    const consultaTipoEvento = async () => {
       const tiposEvento = await api.get('v1/calendarios/eventos/tipos/listar');
       if (tiposEvento && tiposEvento.data && tiposEvento.data.items) {
         setListaTipoEvento(tiposEvento.data.items);
       } else {
         setListaTipoEvento([]);
       }
-    };
+    }
 
-    carregarDres();
-    consultaTipos();
-    montaValidacoes();
-
-    consultaTipoEvento();
+    montarConsultas();
     }, []);
 
   useEffect(() => {
@@ -107,7 +103,7 @@ const EventosForm = ({ match }) => {
     montaValidacoes();
   }, [eventoTipoFeriadoSelecionado, tipoDataUnico]);
 
-  const consultaModoEdicao = ()=> {
+  const consultaModoEdicao = async ()=> {
     if (match && match.params && match.params.id) {
       setBreadcrumbManual(
         match.url,
@@ -116,6 +112,16 @@ const EventosForm = ({ match }) => {
         );
         setIdEvento(match.params.id);
         consultaPorId(match.params.id);
+    } else {
+      if (listaDres && listaDres.length == 1) {
+        inicial.dreId = String(listaDres[0].codigo);
+        const ues = await obterUesPorDre(inicial.dreId);
+        setListaUes(ues.data || []);
+        if (ues.data.length  == 1) {
+          inicial.ueId = String(ues.data[0].codigo);
+        }          
+        setValoresIniciais(inicial);
+      }
     }
   }
 
@@ -123,12 +129,19 @@ const EventosForm = ({ match }) => {
     let val = {
       dataInicio: momentSchema.required('Data obrigatória'),
       descricao: Yup.string().required('Descrição obrigatória'),
-      dreId: Yup.string().required('DRE obrigatória'),
       nome: Yup.string().required('Nome obrigatório'),
       tipoCalendarioId: Yup.string().required('Calendário obrigatório'),
       tipoEventoId: Yup.string().required('Tipo obrigatório'),
-      ueId: Yup.string().required('UE obrigatória'),
     };
+
+    if (usuarioStore.possuiPerfilDre) {
+      val.dreId = Yup.string().required('DRE obrigatória');
+    }
+
+    if (!usuarioStore.possuiPerfilSmeOuDre) {
+      val.dreId = Yup.string().required('DRE obrigatória');
+      val.ueId = Yup.string().required('UE obrigatória');
+    }
 
     if (eventoTipoFeriadoSelecionado) {
       val.feriadoId = Yup.string().required('Feriado obrigatório');
@@ -142,7 +155,7 @@ const EventosForm = ({ match }) => {
   }
 
   const consultaPorId = async id => {
-    const evento = await api.get(`v1/calendarios/eventos/${id}`).catch(e => erros(e));
+    const evento = await servicoEvento.obterPorId(id).catch(e => erros(e));
 
     if (evento && evento.data) {
       if (evento.data.dreId && evento.data.dreId > 0) {
@@ -242,10 +255,7 @@ const EventosForm = ({ match }) => {
         'Cancelar'
       );
       if (confirmado) {
-        const parametrosDelete = { data: [idEvento] };
-        const excluir = await api
-          .delete('v1/eventos', parametrosDelete)
-          .catch(erros => erros(erros));
+        const excluir = await servicoEvento.deletar([idEvento]).catch(e => erros(e));
         if (excluir) {
           sucesso('Evento excluído com sucesso.');
           history.push('/calendario-escolar/eventos');
@@ -254,8 +264,9 @@ const EventosForm = ({ match }) => {
     }
   };
 
-  const onChangeDre = dre => {
+  const onChangeDre = (dre,form) => {
     setListaUes([]);
+    form.setFieldValue('ueId', undefined);
     if (dre) {
       carregarUes(dre);
     }
@@ -263,9 +274,13 @@ const EventosForm = ({ match }) => {
   };
 
   const carregarUes = async dre => {
-    const ues = await api.get(`/v1/dres/${dre}/ues`);
+    const ues = await obterUesPorDre(dre);
     setListaUes(ues.data || []);
   };
+
+  const obterUesPorDre = dre => {
+    return api.get(`/v1/abrangencias/dres/${dre}/ues`);
+  }
 
   const onClickRepetir = () => {
     console.log('onClickRepetir');
@@ -315,6 +330,15 @@ const EventosForm = ({ match }) => {
       } else if (tipoEventoSelecionado && tipoEventoSelecionado.tipoData === eventoTipoData.InicioFim) {
         setTipoDataUnico(false);
       }
+
+      if (form  && tipoEventoSelecionado && tipoEventoSelecionado.letivo) {
+        if (tipoEventoSelecionado.letivo === eventoLetivo.Opcional) {
+          setDesabilitarOpcaoLetivo(false);
+        } else {
+          setDesabilitarOpcaoLetivo(true);
+          form.setFieldValue('letivo', tipoEventoSelecionado.letivo);
+        }
+      }
     } else {
       setEventoTipoFeriadoSelecionado(false);
     }
@@ -360,6 +384,7 @@ const EventosForm = ({ match }) => {
                 </div>
                 <div className="col-sm-12 col-md-6 col-lg-6 col-xl-4 pb-2">
                   <div className="row">
+                    {/* TODO - Mock */}
                     <CaixaDiasLetivos>2016</CaixaDiasLetivos>
                     <TextoDiasLetivos>
                       Nº de Dias Letivos no Calendário
@@ -407,9 +432,9 @@ const EventosForm = ({ match }) => {
                     form={form}
                     name="dreId"
                     lista={listaDres}
-                    valueOption="id"
+                    valueOption="codigo"
                     valueText="nome"
-                    onChange={onChangeDre}
+                    onChange={e => onChangeDre(e, form)}
                     label="Diretoria Regional de Educação (DRE)"
                     placeholder="Diretoria Regional de Educação (DRE)"
                   />
@@ -509,6 +534,7 @@ const EventosForm = ({ match }) => {
                     name="letivo"
                     valorInicial
                     onChange={onChangeCampos}
+                    desabilitado={desabilitarOpcaoLetivo}
                   />
                 </div>
                 <div className="col-sm-12 col-md-12 col-lg-12 col-xl-12 pb-2">
