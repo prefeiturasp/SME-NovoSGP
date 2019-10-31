@@ -4,6 +4,8 @@ using SME.SGP.Api.Filtros;
 using SME.SGP.Aplicacao;
 using SME.SGP.Infra;
 using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace SME.SGP.Api.Controllers
 {
@@ -36,9 +38,12 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(IEnumerable<FeriadoCalendarioDto>), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [Route("listar")]
-        public IActionResult BuscarTodos([FromBody] FiltroFeriadoCalendarioDto filtro)
+        public async Task<IActionResult> BuscarTodos([FromBody] FiltroFeriadoCalendarioDto filtro)
         {
-            return Ok(consultas.Listar(filtro));
+            var retorno = await consultas.Listar(filtro);
+            if (retorno.Any())
+                return Ok(retorno);
+            else return StatusCode(204);
         }
 
         [HttpDelete]
