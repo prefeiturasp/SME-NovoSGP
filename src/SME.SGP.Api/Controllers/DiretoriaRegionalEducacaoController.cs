@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using SME.SGP.Api.Filtros;
 using SME.SGP.Aplicacao;
 using SME.SGP.Infra;
 using System.Collections.Generic;
@@ -31,6 +32,7 @@ namespace SME.SGP.Api.Controllers
         [HttpGet("{dreId}/ues/sem-atribuicao")]
         [ProducesResponseType(typeof(IEnumerable<UnidadeEscolarDto>), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [Permissao(Permissao.ASP_I, Permissao.ASP_A, Permissao.ASP_C, Policy = "Bearer")]
         public async Task<IActionResult> ObterEscolasSemAtribuicao(string dreId)
         {
             var retorno = await consultaDres.ObterEscolasSemAtribuicao(dreId);
@@ -42,6 +44,7 @@ namespace SME.SGP.Api.Controllers
         [HttpGet("{dreId}/ues")]
         [ProducesResponseType(typeof(IEnumerable<UnidadeEscolarDto>), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [Permissao(Permissao.ASP_I, Permissao.ASP_A, Permissao.ASP_C, Policy = "Bearer")]
         public async Task<IActionResult> ObterUesPorDre(string dreId)
         {
             var retorno = await consultaDres.ObterEscolasPorDre(dreId);
