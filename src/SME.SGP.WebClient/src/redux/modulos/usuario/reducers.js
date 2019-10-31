@@ -16,7 +16,9 @@ const inicial = {
       'https://graziellanicolai.com.br/wp-content/uploads/2018/03/Graziella-perfil.jpg',
   },
   possuiPerfilSmeOuDre: false,
-  menu: []
+  possuiPerfilDre: false,
+  possuiPerfilSme: false,
+  menu: [],
 };
 
 export default function usuario(state = inicial, action) {
@@ -37,6 +39,8 @@ export default function usuario(state = inicial, action) {
         draft.usuario = action.payload.usuario;
         draft.modificarSenha = action.payload.modificarSenha;
         draft.possuiPerfilSmeOuDre = action.payload.possuiPerfilSmeOuDre;
+        draft.possuiPerfilDre = action.payload.possuiPerfilDre;
+        draft.possuiPerfilSme = action.payload.possuiPerfilSme;
         draft.menu = action.payload.menu;
         break;
       case '@usuario/deslogar':
