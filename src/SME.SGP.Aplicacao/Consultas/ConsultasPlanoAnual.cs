@@ -1,5 +1,4 @@
-﻿using SME.SGP.Aplicacao.Interfaces;
-using SME.SGP.Dominio;
+﻿using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System;
@@ -12,19 +11,19 @@ namespace SME.SGP.Aplicacao
     public class ConsultasPlanoAnual : IConsultasPlanoAnual
     {
         private readonly IConsultasObjetivoAprendizagem consultasObjetivoAprendizagem;
-        private readonly IConsultasPeriodoEscolar consultasPeriodoEscolar;
-        private readonly IConsultasTipoCalendario consultasTipoCalendario;
+        private readonly IRepositorioPeriodoEscolar repositorioPeriodoEscolar;
         private readonly IRepositorioPlanoAnual repositorioPlanoAnual;
+        private readonly IRepositorioTipoCalendario repositorioTipoCalendario;
 
         public ConsultasPlanoAnual(IRepositorioPlanoAnual repositorioPlanoAnual,
                                    IConsultasObjetivoAprendizagem consultasObjetivoAprendizagem,
-                                   IConsultasTipoCalendario consultasTipoCalendario,
-                                   IConsultasPeriodoEscolar consultasPeriodoEscolar)
+                                   IRepositorioPeriodoEscolar repositorioPeriodoEscolar,
+                                   IRepositorioTipoCalendario repositorioTipoCalendario)
         {
             this.repositorioPlanoAnual = repositorioPlanoAnual ?? throw new System.ArgumentNullException(nameof(repositorioPlanoAnual));
             this.consultasObjetivoAprendizagem = consultasObjetivoAprendizagem ?? throw new System.ArgumentNullException(nameof(consultasObjetivoAprendizagem));
-            this.consultasTipoCalendario = consultasTipoCalendario ?? throw new System.ArgumentNullException(nameof(consultasTipoCalendario));
-            this.consultasPeriodoEscolar = consultasPeriodoEscolar ?? throw new System.ArgumentNullException(nameof(consultasPeriodoEscolar));
+            this.repositorioPeriodoEscolar = repositorioPeriodoEscolar ?? throw new ArgumentNullException(nameof(repositorioPeriodoEscolar));
+            this.repositorioTipoCalendario = repositorioTipoCalendario ?? throw new ArgumentNullException(nameof(repositorioTipoCalendario));
         }
 
         public async Task<PlanoAnualCompletoDto> ObterBimestreExpandido(FiltroPlanoAnualBimestreExpandidoDto filtro)
@@ -42,7 +41,12 @@ namespace SME.SGP.Aplicacao
                 planoAnualLista.Add(await ObterPorEscolaTurmaAnoEBimestre(filtroPlanoAnualDto));
             }
 
-            var retorno = planoAnualLista.FirstOrDefault(x => VerificaSeBimestreEhExpandido(filtro.AnoLetivo, filtro.ModalidadePlanoAnual, x.Bimestre));
+            var periodosEscolares = ObterPeriodoEscolar(filtro.AnoLetivo, filtro.ModalidadePlanoAnual);
+
+            if (periodosEscolares == null)
+                return null;
+
+            var retorno = planoAnualLista.FirstOrDefault(x => VerificaSeBimestreEhExpandido(periodosEscolares, x.Bimestre));
 
             return retorno;
         }
@@ -78,12 +82,6 @@ namespace SME.SGP.Aplicacao
         {
             switch (modalidade)
             {
-                case Modalidade.Fundamental:
-                    return ModalidadeTipoCalendario.FundamentalMedio;
-
-                case Modalidade.Medio:
-                    return ModalidadeTipoCalendario.FundamentalMedio;
-
                 case Modalidade.EJA:
                     return ModalidadeTipoCalendario.EJA;
 
@@ -104,21 +102,23 @@ namespace SME.SGP.Aplicacao
             };
         }
 
-        private bool VerificaSeBimestreEhExpandido(int anoLetivo, Modalidade modalidade, int bimestre)
+        private IEnumerable<PeriodoEscolar> ObterPeriodoEscolar(int anoLetivo, Modalidade modalidade)
         {
             var modalidadeTipoCalendario = ModalidadeParaModalidadeTipoCalendario(modalidade);
 
-            var tipoCalendario = consultasTipoCalendario.BuscarPorAnoLetivoEModalidade(anoLetivo, modalidadeTipoCalendario);
+            var tipoCalendario = repositorioTipoCalendario.BuscarPorAnoLetivoEModalidade(anoLetivo, modalidadeTipoCalendario);
 
             if (tipoCalendario == null)
-                return false;
+                return null;
 
-            var periodoEscolar = consultasPeriodoEscolar.ObterPorTipoCalendario(tipoCalendario.Id);
+            var periodoEscolar = repositorioPeriodoEscolar.ObterPorTipoCalendario(tipoCalendario.Id);
 
-            if (periodoEscolar == null)
-                return false;
+            return periodoEscolar;
+        }
 
-            var periodo = periodoEscolar.Periodos.FirstOrDefault(p => p.Bimestre == bimestre);
+        private bool VerificaSeBimestreEhExpandido(IEnumerable<PeriodoEscolar> periodosEscolares, int bimestre)
+        {
+            var periodo = periodosEscolares.FirstOrDefault(p => p.Bimestre == bimestre);
 
             if (periodo == null)
                 return false;
