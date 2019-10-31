@@ -15,7 +15,7 @@ const api = axios.create({
 });
 
 api.interceptors.request.use(async config => {
-  const tokenStorage = getObjetoStorageUsuario('token');  
+  const tokenStorage = getObjetoStorageUsuario('token');
   const token = store.getState().usuario.token?store.getState().usuario.token:tokenStorage;
 
   if (!url) {

@@ -1,6 +1,8 @@
 import api from '~/servicos/api';
 import { store } from '~/redux';
 import { setMenu, setPermissoes } from '~/redux/modulos/usuario/actions';
+import tipoPermissao from '~/dtos/tipoPermissao';
+import { exibirAlerta } from '~/servicos/alertas';
 
 const setMenusPermissoes = () => {
   let permissoes = {};
@@ -60,11 +62,18 @@ const setMenusPermissoes = () => {
   }
 }
 
-const getObjetoStorageUsuario = objeto =>{ 
+const getObjetoStorageUsuario = objeto =>{
   const persistSmeSgp = localStorage.getItem('persist:sme-sgp')
   const usuario = persistSmeSgp && (persistSmeSgp.includes('usuario'))?JSON.parse(persistSmeSgp).usuario : null;
   const resultado = usuario?JSON.parse(usuario)[objeto]:null;
   return resultado;
 }
 
-export { setMenusPermissoes, getObjetoStorageUsuario};
+const verificaSomenteConsulta = permissoes => {
+  if( permissoes && permissoes[tipoPermissao.podeConsultar] && !permissoes[tipoPermissao.podeAlterar]
+    && !permissoes[tipoPermissao.podeIncluir] && !permissoes[tipoPermissao.podeExcluir]){
+      exibirAlerta('warning', 'Você tem apenas permissão de consulta nesta tela')
+    }
+}
+
+export { setMenusPermissoes, getObjetoStorageUsuario, verificaSomenteConsulta};
