@@ -4,6 +4,7 @@ import { store } from '~/redux';
 import history from '~/servicos/history';
 import { URL_LOGIN } from '~/constantes/url';
 import { Deslogar } from '~/redux/modulos/usuario/actions';
+import { getObjetoStorageUsuario} from '~/servicos/servico-navegacao';
 
 let url = '';
 
@@ -14,7 +15,8 @@ const api = axios.create({
 });
 
 api.interceptors.request.use(async config => {
-  const token = store.getState().usuario.token;
+  const tokenStorage = getObjetoStorageUsuario('token');  
+  const token = store.getState().usuario.token?store.getState().usuario.token:tokenStorage;
 
   if (!url) {
     url = await urlBase();
