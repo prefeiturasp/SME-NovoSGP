@@ -5,32 +5,34 @@ import MesCompleto from './MesCompleto';
 
 const Div = styled.div``;
 
-const Calendario = () => {
+const Calendario = props => {
+  const { filtros } = props;
+
   return (
-    <Div className="px-3 pt-3 pb-5">
+    <Div>
       <Div className="d-flex">
-        <Mes numeroMes="1" />
-        <Mes numeroMes="2" />
-        <Mes numeroMes="3" />
-        <Mes numeroMes="4" />
+        <Mes numeroMes="1" filtros={filtros} />
+        <Mes numeroMes="2" filtros={filtros} />
+        <Mes numeroMes="3" filtros={filtros} />
+        <Mes numeroMes="4" filtros={filtros} />
       </Div>
 
       <MesCompleto meses="1,2,3,4" />
 
       <Div className="d-flex">
-        <Mes numeroMes="5" />
-        <Mes numeroMes="6" />
-        <Mes numeroMes="7" />
-        <Mes numeroMes="8" />
+        <Mes numeroMes="5" filtros={filtros} />
+        <Mes numeroMes="6" filtros={filtros} />
+        <Mes numeroMes="7" filtros={filtros} />
+        <Mes numeroMes="8" filtros={filtros} />
       </Div>
 
       <MesCompleto meses="5,6,7,8" />
 
       <Div className="d-flex">
-        <Mes numeroMes="9" />
-        <Mes numeroMes="10" />
-        <Mes numeroMes="11" />
-        <Mes numeroMes="12" />
+        <Mes numeroMes="9" filtros={filtros} />
+        <Mes numeroMes="10" filtros={filtros} />
+        <Mes numeroMes="11" filtros={filtros} />
+        <Mes numeroMes="12" filtros={filtros} />
       </Div>
 
       <MesCompleto meses="9,10,11,12" />

@@ -129,7 +129,7 @@ Button.defaultProps = {
   icon: '',
   padding: '',
   height: '38px',
-  lineHeight: 'auto',
+  lineHeight: 'inherit',
   width: '',
   fontSize: '',
   label: '',
