@@ -5,6 +5,7 @@ import shortid from 'shortid';
 import { store } from '../redux';
 import {
   selecionarTurma,
+  turmasUsuario,
   removerTurma,
 } from '../redux/modulos/usuario/actions';
 import Grid from '../componentes/grid';
@@ -118,6 +119,38 @@ const Filtro = () => {
   const [anosLetivos, setAnosLetivos] = useState(anosLetivoStore);
   const [anoLetivoSelecionado, setAnoLetivoSelecionado] = useState();
 
+  const modalidadesStore = useSelector(state => state.filtro.modalidades);
+  const [modalidades, setModalidades] = useState(modalidadesStore);
+  const [modalidadeSelecionada, setModalidadeSelecionada] = useState();
+
+  const periodosStore = useSelector(state => state.filtro.periodos);
+  const [periodos, setPeriodos] = useState(periodosStore);
+  const [periodoSelecionado, setPeriodoSelecionado] = useState();
+
+  const dresStore = useSelector(state => state.filtro.dres);
+  const [dres, setDres] = useState(dresStore);
+  const [dreSelecionada, setDreSelecionada] = useState();
+
+  const unidadesEscolaresStore = useSelector(
+    state => state.filtro.unidadesEscolares
+  );
+  const [unidadesEscolares, setUnidadesEscolares] = useState(
+    unidadesEscolaresStore
+  );
+  const [unidadeEscolarSelecionada, setUnidadeEscolarSelecionada] = useState();
+
+  const turmasStore = useSelector(state => state.filtro.turmas);
+  const [turmas, setTurmas] = useState(turmasStore);
+  const [turmaSelecionada, setTurmaSelecionada] = useState();
+
+  const usuarioStore = useSelector(state => state.usuario);
+  const [turmaUsuarioSelecionada, setTurmaUsuarioSelecionada] = useState(
+    usuarioStore.turmaSelecionada
+  );
+
+  const [textoAutocomplete, setTextoAutocomplete] = useState();
+  const [resultadosFiltro, setResultadosFiltro] = useState([]);
+
   useEffect(() => {
     let estado = true;
     const anosLetivos = [];
@@ -137,29 +170,26 @@ const Filtro = () => {
   }, []);
 
   useEffect(() => {
-    if (anosLetivos && anosLetivos.length === 1)
+    if (anosLetivos && anosLetivos.length === 1) {
       setAnoLetivoSelecionado(anosLetivos[0].valor);
+    }
   }, [anosLetivos]);
-
-  const modalidadesStore = useSelector(state => state.filtro.modalidades);
-  const [modalidades, setModalidades] = useState(modalidadesStore);
-  const [modalidadeSelecionada, setModalidadeSelecionada] = useState();
 
   useEffect(() => {
     let estado = true;
     if (anoLetivoSelecionado) {
-      const modalidades = [];
+      const modalidadesLista = [];
       ServicoFiltro.listarModalidades().then(resposta => {
         if (resposta.data) {
           resposta.data.forEach(modalidade => {
-            modalidades.push({
+            modalidadesLista.push({
               desc: modalidade.descricao,
               valor: modalidade.id,
             });
           });
           if (estado) {
-            store.dispatch(salvarModalidades(modalidades));
-            setModalidades(modalidades);
+            setModalidades([...modalidadesLista]);
+            store.dispatch(salvarModalidades(modalidadesLista));
             setCampoModalidadeDesabilitado(false);
           }
         }
@@ -174,21 +204,17 @@ const Filtro = () => {
   useEffect(() => {
     if (modalidades && modalidades.length === 1)
       setModalidadeSelecionada(modalidades[0].valor);
-  }, [modalidades]);
-
-  const periodosStore = useSelector(state => state.filtro.periodos);
-  const [periodos, setPeriodos] = useState(periodosStore);
-  const [periodoSelecionado, setPeriodoSelecionado] = useState();
-
-  const dresStore = useSelector(state => state.filtro.dres);
-  const [dres, setDres] = useState(dresStore);
-  const [dreSelecionada, setDreSelecionada] = useState();
+  }, [modalidadesStore]);
 
   useEffect(() => {
     let estado = true;
+
     if (modalidadeSelecionada) {
+      setPeriodoSelecionado();
+      setDreSelecionada();
+
       const periodos = [];
-      ServicoFiltro.listarPeriodos().then(resposta => {
+      ServicoFiltro.listarPeriodos(modalidadeSelecionada).then(resposta => {
         if (resposta.data) {
           resposta.data.forEach(periodo => {
             periodos.push({ desc: periodo, valor: periodo });
@@ -202,7 +228,7 @@ const Filtro = () => {
       });
 
       const dres = [];
-      ServicoFiltro.listarDres().then(resposta => {
+      ServicoFiltro.listarDres(modalidadeSelecionada).then(resposta => {
         if (resposta.data) {
           resposta.data.forEach(dre => {
             dres.push({
@@ -220,8 +246,8 @@ const Filtro = () => {
       });
     } else {
       setPeriodoSelecionado();
-      setCampoPeriodoDesabilitado(true);
       setDreSelecionada();
+      setCampoPeriodoDesabilitado(true);
       setCampoDreDesabilitado(true);
     }
     return () => (estado = false);
@@ -231,19 +257,16 @@ const Filtro = () => {
     if (dres && dres.length === 1) setDreSelecionada(dres[0].valor);
   }, [dres]);
 
-  const unidadesEscolaresStore = useSelector(
-    state => state.filtro.unidadesEscolares
-  );
-  const [unidadesEscolares, setUnidadesEscolares] = useState(
-    unidadesEscolaresStore
-  );
-  const [unidadeEscolarSelecionada, setUnidadeEscolarSelecionada] = useState();
-
   useEffect(() => {
     let estado = true;
     if (dreSelecionada) {
+      setUnidadeEscolarSelecionada();
       const unidadesEscolares = [];
-      ServicoFiltro.listarUnidadesEscolares(dreSelecionada).then(resposta => {
+
+      ServicoFiltro.listarUnidadesEscolares(
+        dreSelecionada,
+        modalidadeSelecionada
+      ).then(resposta => {
         if (resposta.data) {
           resposta.data.forEach(unidade => {
             unidadesEscolares.push({
@@ -256,6 +279,8 @@ const Filtro = () => {
             setUnidadesEscolares(unidadesEscolares);
             setCampoUnidadeEscolarDesabilitado(false);
           }
+        } else {
+          setDreSelecionada();
         }
       });
     } else {
@@ -270,18 +295,23 @@ const Filtro = () => {
       setUnidadeEscolarSelecionada(unidadesEscolares[0].valor);
   }, [unidadesEscolares]);
 
-  const turmasStore = useSelector(state => state.filtro.turmas);
-  const [turmas, setTurmas] = useState(turmasStore);
-  const [turmaSelecionada, setTurmaSelecionada] = useState();
-
   useEffect(() => {
     let estado = true;
     if (unidadeEscolarSelecionada) {
       const turmas = [];
-      ServicoFiltro.listarTurmas(unidadeEscolarSelecionada).then(resposta => {
+      setTurmaSelecionada();
+
+      ServicoFiltro.listarTurmas(
+        unidadeEscolarSelecionada,
+        modalidadeSelecionada
+      ).then(resposta => {
         if (resposta.data) {
           resposta.data.forEach(turma => {
-            turmas.push({ desc: turma.nome, valor: turma.codigo });
+            turmas.push({
+              desc: turma.nome,
+              valor: turma.codigo,
+              ano: turma.ano,
+            });
           });
           if (estado) {
             store.dispatch(salvarTurmas(turmas));
@@ -300,11 +330,6 @@ const Filtro = () => {
   useEffect(() => {
     if (turmas && turmas.length === 1) setTurmaSelecionada(turmas[0].valor);
   }, [turmas]);
-
-  const usuarioStore = useSelector(state => state.usuario);
-  const [turmaUsuarioSelecionada, setTurmaUsuarioSelecionada] = useState(
-    usuarioStore.turmaSelecionada
-  );
 
   useEffect(() => {
     let estado = true;
@@ -331,27 +356,35 @@ const Filtro = () => {
       unidadeEscolarSelecionada &&
       turmaSelecionada
     ) {
-      const modalidadeDesc = modalidades.filter(
-        modalidade => modalidade.valor.toString() === modalidadeSelecionada
+      const modalidadeDesc = modalidades.find(
+        modalidade => modalidade.valor.toString() === `${modalidadeSelecionada}`
       );
-      const turmaDesc = turmas.filter(
-        turma => turma.valor === turmaSelecionada
-      );
-      const unidadeEscolarDesc = unidadesEscolares.filter(
+
+      const turmaDesc = turmas.find(turma => turma.valor === turmaSelecionada);
+
+      const unidadeEscolarDesc = unidadesEscolares.find(
         unidade => unidade.valor === unidadeEscolarSelecionada
       );
       setTurmaUsuarioSelecionada(
-        `${modalidadeDesc[0].desc} - ${turmaDesc[0].desc} - ${unidadeEscolarDesc[0].desc}`
+        `${modalidadeDesc.desc} - ${turmaDesc.desc} - ${unidadeEscolarDesc.desc}`
       );
       setAlternarFocoBusca(false);
+
+      const turmaSelecionadaCompleta = turmas.find(
+        t => t.valor == turmaSelecionada
+      );
+
       const turma = {
         anoLetivo: anoLetivoSelecionado,
         modalidade: modalidadeSelecionada,
         dre: dreSelecionada,
         unidadeEscolar: unidadeEscolarSelecionada,
         turma: turmaSelecionada,
-        desc: `${modalidadeDesc[0].desc} - ${turmaDesc[0].desc} - ${unidadeEscolarDesc[0].desc}`,
+        ano: turmaSelecionadaCompleta.ano,
+        desc: `${modalidadeDesc.desc} - ${turmaDesc.desc} - ${unidadeEscolarDesc.desc}`,
       };
+
+      store.dispatch(turmasUsuario(turmas));
       store.dispatch(selecionarTurma(turma));
     }
   };
@@ -391,9 +424,6 @@ const Filtro = () => {
     return () => document.removeEventListener('click', controlaClickFora);
   }, [alternarFocoBusca, alternarFocoCampo]);
 
-  const [textoAutocomplete, setTextoAutocomplete] = useState();
-  const [resultadosFiltro, setResultadosFiltro] = useState([]);
-
   useEffect(() => {
     if (!turmaUsuarioSelecionada) campoBuscaRef.current.focus();
     if (!textoAutocomplete) setResultadosFiltro([]);
@@ -427,6 +457,7 @@ const Filtro = () => {
       desc: resultado.descricaoFiltro,
     };
     store.dispatch(selecionarTurma(turma));
+    store.dispatch(turmasUsuario(turmas));
     setResultadosFiltro([]);
   };
 
@@ -603,7 +634,9 @@ const Filtro = () => {
                   lista={modalidades}
                   valueOption="valor"
                   valueText="desc"
-                  valueSelect={modalidadeSelecionada}
+                  valueSelect={
+                    modalidadeSelecionada && `${modalidadeSelecionada}`
+                  }
                   placeholder="Modalidade"
                   disabled={campoModalidadeDesabilitado}
                 />

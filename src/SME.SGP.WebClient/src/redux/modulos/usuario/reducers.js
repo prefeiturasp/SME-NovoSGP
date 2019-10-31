@@ -28,7 +28,6 @@ export default function usuario(state = inicial, action) {
         draft.rf = action.payload;
         break;
       case '@usuario/turmasUsuario':
-        draft.turmasUsuario = [];
         draft.turmasUsuario = action.payload;
         break;
       case '@usuario/salvarLogin':
