@@ -73,7 +73,7 @@ const EventosForm = ({ match }) => {
       const dres = await api.get('v1/abrangencias/dres');
       setListaDres(dres.data);
 
-      const listaTipo = await api.get('v1/tipo-calendario');
+      const listaTipo = await api.get('v1/calendarios/tipos');
       if (listaTipo && listaTipo.data && listaTipo.data.length) {
         listaTipo.data.map(item => {
           item.id = String(item.id);
