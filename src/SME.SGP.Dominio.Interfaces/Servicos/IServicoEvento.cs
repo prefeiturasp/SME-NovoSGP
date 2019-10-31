@@ -4,6 +4,6 @@ namespace SME.SGP.Dominio.Interfaces
 {
     public interface IServicoEvento
     {
-        Task<long> Salvar(Evento evento);
+        Task Salvar(Evento evento);
     }
 }
