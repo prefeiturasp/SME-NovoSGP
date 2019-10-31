@@ -38,7 +38,10 @@ namespace SME.SGP.Aplicacao
 
         public async Task<IEnumerable<EnumeradoRetornoDto>> ObterModalidades()
         {
-            var lista = await repositorioAbrangencia.ObterModalidades();
+            var login = servicoUsuario.ObterLoginAtual();
+            var perfil = servicoUsuario.ObterPerfilAtual();
+
+            var lista = await repositorioAbrangencia.ObterModalidades(login, perfil);
 
             return from a in lista
                    select new EnumeradoRetornoDto() { Id = a, Descricao = ((Modalidade)a).GetAttribute<DisplayAttribute>().Name };
