@@ -1,6 +1,8 @@
 ﻿using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
@@ -16,6 +18,11 @@ namespace SME.SGP.Aplicacao
         public EventoObterParaEdicaoDto ObterPorId(long id)
         {
             return MapearParaDto(repositorioEvento.ObterPorId(id));
+        }
+
+        public Task<IEnumerable<CalendarioEventosMesesDto>> ObterQuantidadeDeEventosPorMeses(CalendarioEventosMesesFiltroDto calendarioEventosMesesFiltro)
+        {
+            return repositorioEvento.ObterQuantidadeDeEventosPorMeses(calendarioEventosMesesFiltro);
         }
 
         private EventoObterParaEdicaoDto MapearParaDto(Evento evento)
