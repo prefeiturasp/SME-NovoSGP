@@ -28,6 +28,7 @@ import TipoEventosLista from '~/paginas/CalendarioEscolar/TipoEventos/tipoEvento
 import TipoEventosForm from '~/paginas/CalendarioEscolar/TipoEventos/tipoEventosForm';
 import { useSelector } from 'react-redux';
 import SemPermissao from '~/paginas/SemPermissao/sem-permissao';
+import RotasDto from '~/dtos/rotasDto';
 
 export default function Rotas() {
   const rotas = new Map();
@@ -61,7 +62,7 @@ export default function Rotas() {
     temPermissionamento: true
   });
 
-  rotas.set('/planejamento/plano-ciclo', {
+  rotas.set(RotasDto.PLANO_CICLO, {
     breadcrumbName: 'Plano de Ciclo',
     menu: ['Planejamento'],
     parent: '/',

@@ -207,7 +207,7 @@ const Sider = () => {
             </div>
           </div>
         </Topo>
-        <MenuScope>
+        {/* <MenuScope>
           <div
             className={`menu-scope${
               NavegacaoStore.retraido ? ' menu-scope-retraido' : ''
@@ -225,8 +225,8 @@ const Sider = () => {
               {criarMenus(usuario.menu)}
             </Menu>
           </div>
-        </MenuScope>
-        {/* <MenuScope>
+        </MenuScope> */}
+        <MenuScope>
           <div
             className={`menu-scope${
               NavegacaoStore.retraido ? ' menu-scope-retraido' : ''
@@ -445,7 +445,7 @@ const Sider = () => {
                     to="/calendario-escolar/tipo-feriado"
                     className="nav-link text-white"
                     id="linkTipoFeriado"
-                  />
+                  />*/}
                 </Menu.Item>
                 <Menu.Item key="87" id="calTipoEventos">
                   <span className="menuItem">Tipo de Eventos</span>
@@ -538,7 +538,7 @@ const Sider = () => {
               </SubMenu>
             </Menu>
           </div>
-        </MenuScope> */}
+        </MenuScope>
         <div className="footer-content">
           <DivFooter>
             <Footer>
