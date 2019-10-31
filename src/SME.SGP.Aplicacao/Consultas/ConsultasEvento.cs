@@ -7,8 +7,6 @@ using SME.SGP.Infra;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
@@ -36,6 +34,11 @@ namespace SME.SGP.Aplicacao
         public EventoCompletoDto ObterPorId(long id)
         {
             return MapearParaDto(repositorioEvento.ObterPorId(id));
+        }
+
+        public Task<IEnumerable<CalendarioEventosMesesDto>> ObterQuantidadeDeEventosPorMeses(CalendarioEventosMesesFiltroDto calendarioEventosMesesFiltro)
+        {
+            return repositorioEvento.ObterQuantidadeDeEventosPorMeses(calendarioEventosMesesFiltro);
         }
 
         private IEnumerable<EventoCompletoDto> MapearEventosParaDto(IEnumerable<Evento> items)
@@ -90,11 +93,6 @@ namespace SME.SGP.Aplicacao
                 Id = tipoEvento.Id,
                 TipoData = tipoEvento.TipoData
             };
-        }
-
-        public Task<IEnumerable<CalendarioEventosMesesDto>> ObterQuantidadeDeEventosPorMeses(CalendarioEventosMesesFiltroDto calendarioEventosMesesFiltro)
-        {
-            return repositorioEvento.ObterQuantidadeDeEventosPorMeses(calendarioEventosMesesFiltro);
         }
     }
 }
