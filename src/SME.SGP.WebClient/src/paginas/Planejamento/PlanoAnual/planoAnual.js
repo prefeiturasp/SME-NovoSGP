@@ -1,8 +1,9 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import {
   SalvarDisciplinasPlanoAnual,
   PrePost,
+  RemoverFocado,
   Post,
   Salvar,
   setBimestresErro,
@@ -42,7 +43,11 @@ import { store } from '~/redux';
 import FiltroPlanoAnualExpandidoDto from '~/dtos/filtroPlanoAnualExpandidoDto';
 
 export default function PlanoAnual() {
-  const bimestres = useSelector(store => store.bimestres.bimestres);
+  const bimestres = useSelector(state => state.bimestres.bimestres);
+
+  const bimestreFocado = useSelector(state =>
+    state.bimestres.bimestres.find(x => x && x.focado)
+  );
 
   const disciplinasPlanoAnual = useSelector(
     store => store.bimestres.disciplinasPlanoAnual
@@ -59,12 +64,14 @@ export default function PlanoAnual() {
 
   const turmaSelecionada = usuario.turmaSelecionada;
   const emEdicao = bimestres.filter(x => x.ehEdicao).length > 0;
-  const ehDisabled = !usuario.turmaSelecionada;
+  const ehDisabled = !usuario.turmaSelecionada.turma;
   const dispatch = useDispatch();
   const [modalConfirmacaoVisivel, setModalConfirmacaoVisivel] = useState({
     modalVisivel: false,
     sairTela: false,
   });
+
+  const refFocado = useRef(null);
 
   const ehEja =
     turmaSelecionada && turmaSelecionada.codModalidade === modalidade.EJA
@@ -134,6 +141,14 @@ export default function PlanoAnual() {
       }
     }
   }
+
+  useEffect(() => {
+    if (bimestreFocado && refFocado.current) {
+      refFocado.current.scrollIntoViewIfNeeded(refFocado.current);
+
+      dispatch(RemoverFocado());
+    }
+  }, [bimestreFocado]);
 
   useEffect(() => {
     verificarSeEhEdicao();
@@ -214,6 +229,8 @@ export default function PlanoAnual() {
 
       const bimestreExpandido = retornoBimestre.bimestre;
 
+      if (!bimestreExpandido) return;
+
       dispatch(
         Salvar(bimestreExpandido.bimestre, {
           ...bimestres[bimestreExpandido.bimestre],
@@ -225,6 +242,7 @@ export default function PlanoAnual() {
           alteradoRF: bimestreExpandido.alteradoRF,
           criadoRF: bimestreExpandido.criadoRF,
           criadoEm: bimestreExpandido.criadoEm,
+          focado: true,
           LayoutEspecial:
             bimestreExpandido.migrado ||
             (bimestres[bimestreExpandido.bimestre] &&
@@ -420,7 +438,7 @@ export default function PlanoAnual() {
     <>
       <div className="col-md-12">
         {' '}
-        {!turmaSelecionada ? (
+        {!turmaSelecionada.turma ? (
           <Row className="mb-0 pb-0">
             <Grid cols={12} className="mb-0 pb-0">
               <Alert
@@ -514,12 +532,12 @@ export default function PlanoAnual() {
           <Select
             placeholder="Selecione uma disciplina"
             onChange={AoMudarDisciplinaPlanoAnual}
-            disabled={turmaSelecionada ? false : true}
+            disabled={
+              ehDisabled ||
+              (disciplinasPlanoAnual && disciplinasPlanoAnual.length === 1)
+            }
             className="col-md-6 form-control p-r-10"
             value={disciplinaSelecionada ? disciplinaSelecionada.codigo : 0}
-            disabled={
-              disciplinasPlanoAnual && disciplinasPlanoAnual.length === 1
-            }
           >
             <option value={0}> Selecione uma disciplina </option>{' '}
             {disciplinasPlanoAnual &&
@@ -542,7 +560,9 @@ export default function PlanoAnual() {
             color={Colors.Azul}
             onClick={onCopiarConteudoClick}
             border
-            disabled={turmaSelecionada && !emEdicao ? false : true}
+            disabled={
+              ehDisabled || (turmaSelecionada && !emEdicao ? false : true)
+            }
           />{' '}
         </Grid>{' '}
         <Grid cols={4} className="d-flex justify-content-end mb-3">
@@ -575,11 +595,14 @@ export default function PlanoAnual() {
           {' '}
           {bimestres && disciplinaSelecionada
             ? bimestres.map(bim => {
+                console.log(bim.focado);
                 return (
                   <Bimestre
+                    ref={bim.focado ? refFocado : null}
                     disabled={ehDisabled}
                     key={bim.indice}
                     indice={bim.indice}
+                    focado={bim.focado}
                     modalidadeEja={ehEja}
                     disciplinaSelecionada={
                       disciplinaSelecionada && disciplinaSelecionada.codigo
