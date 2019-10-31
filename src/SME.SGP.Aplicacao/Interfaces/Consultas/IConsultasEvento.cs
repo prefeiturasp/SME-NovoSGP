@@ -8,6 +8,6 @@ namespace SME.SGP.Aplicacao
     {
         EventoObterParaEdicaoDto ObterPorId(long id);
 
-        Task<IEnumerable<CalendarioEventosMesesDto>> ObterQuantidadeDeEventosPorMeses(CalendarioEventosMesesFiltroDto calendarioEventosMesesFiltro);
+        Task<IEnumerable<CalendarioEventosMesesDto>> ObterQuantidadeDeEventosPorMeses(CalendarioEventosFiltroDto calendarioEventosMesesFiltro);
     }
 }
