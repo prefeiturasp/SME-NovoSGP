@@ -91,7 +91,7 @@ const EventosLista = () => {
     }
 
     const consultaTipoCalendario = async ()=> {
-      const tiposCalendario = await api.get('v1/tipo-calendario');
+      const tiposCalendario = await api.get('v1/calendarios/tipos');
       if (
         tiposCalendario &&
         tiposCalendario.data &&
