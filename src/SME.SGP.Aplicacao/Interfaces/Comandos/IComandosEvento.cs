@@ -6,9 +6,9 @@ namespace SME.SGP.Aplicacao.Interfaces
 {
     public interface IComandosEvento
     {
-        Task<IEnumerable<string>> Alterar(long id, EventoDto eventoDto);
+        Task<IEnumerable<RetornoCopiarEventoDto>> Alterar(long id, EventoDto eventoDto);
 
-        Task<IEnumerable<string>> Criar(EventoDto eventoDto);
+        Task<IEnumerable<RetornoCopiarEventoDto>> Criar(EventoDto eventoDto);
 
         void Excluir(long[] idsEventos);
     }

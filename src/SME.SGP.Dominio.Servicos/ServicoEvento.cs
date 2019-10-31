@@ -24,7 +24,7 @@ namespace SME.SGP.Dominio.Servicos
             this.repositorioTipoCalendario = repositorioTipoCalendario ?? throw new System.ArgumentNullException(nameof(repositorioTipoCalendario));
         }
 
-        public async Task<long> Salvar(Evento evento)
+        public async Task Salvar(Evento evento)
         {
             var tipoEvento = repositorioEventoTipo.ObterPorId(evento.TipoEventoId);
             if (tipoEvento == null)
@@ -61,7 +61,7 @@ namespace SME.SGP.Dominio.Servicos
                 evento.EstaNoPeriodoLetivo(periodos);
             }
 
-            return repositorioEvento.Salvar(evento);
+            repositorioEvento.Salvar(evento);
         }
     }
 }

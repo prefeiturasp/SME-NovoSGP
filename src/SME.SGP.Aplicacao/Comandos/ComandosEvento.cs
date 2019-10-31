@@ -21,7 +21,7 @@ namespace SME.SGP.Aplicacao
             this.servicoEvento = servicoEvento ?? throw new System.ArgumentNullException(nameof(servicoEvento));
         }
 
-        public async Task<IEnumerable<string>> Alterar(long id, EventoDto eventoDto)
+        public async Task<IEnumerable<RetornoCopiarEventoDto>> Alterar(long id, EventoDto eventoDto)
         {
             var evento = repositorioEvento.ObterPorId(id);
 
@@ -30,7 +30,7 @@ namespace SME.SGP.Aplicacao
             return await CopiarEventos(eventoDto);
         }
 
-        public async Task<IEnumerable<string>> Criar(EventoDto eventoDto)
+        public async Task<IEnumerable<RetornoCopiarEventoDto>> Criar(EventoDto eventoDto)
         {
             var evento = MapearParaEntidade(new Evento(), eventoDto);
             await servicoEvento.Salvar(evento);
@@ -61,9 +61,9 @@ namespace SME.SGP.Aplicacao
                 throw new NegocioException($"Não foi possível excluir os eventos de ids {string.Join(",", idsComErroAoExcluir)}");
         }
 
-        private async Task<IEnumerable<string>> CopiarEventos(EventoDto eventoDto)
+        private async Task<IEnumerable<RetornoCopiarEventoDto>> CopiarEventos(EventoDto eventoDto)
         {
-            var mensagens = new List<string>();
+            var mensagens = new List<RetornoCopiarEventoDto>();
             if (eventoDto.TiposCalendarioParaCopiar.Any())
             {
                 foreach (var tipoCalendario in eventoDto.TiposCalendarioParaCopiar)
@@ -73,10 +73,12 @@ namespace SME.SGP.Aplicacao
                     {
                         var eventoParaCopiar = MapearParaEntidade(new Evento(), eventoDto);
                         await servicoEvento.Salvar(eventoParaCopiar);
+
+                        mensagens.Add(new RetornoCopiarEventoDto($"Evento copiado para o calendário: '{tipoCalendario.NomeCalendario}'.", true));
                     }
                     catch (NegocioException nex)
                     {
-                        mensagens.Add($"Erro ao copiar para o calendário {tipoCalendario.NomeCalendario}: {nex.Message}.");
+                        mensagens.Add(new RetornoCopiarEventoDto($"Erro ao copiar para o calendário: '{tipoCalendario.NomeCalendario}'. Erro: {nex.Message}"));
                     }
                 }
             }
