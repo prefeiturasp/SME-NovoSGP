@@ -83,7 +83,7 @@ namespace SME.SGP.Integracao.Teste
             tipoCalendarioDto.Situacao = true;
 
             var jsonParaPost = new StringContent(JsonConvert.SerializeObject(tipoCalendarioDto), UnicodeEncoding.UTF8, "application/json");
-            var postResult = _fixture._clientApi.PostAsync("api/v1/tipo-calendario/", jsonParaPost).Result;
+            var postResult = _fixture._clientApi.PostAsync("api/v1/calendarios/tipos", jsonParaPost).Result;
 
             Assert.True(postResult.IsSuccessStatusCode);
         }

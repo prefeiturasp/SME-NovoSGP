@@ -13,7 +13,7 @@ import RadioGroupButton from '~/componentes/radioGroupButton';
 import { confirmar, erros, sucesso } from '~/servicos/alertas';
 import api from '~/servicos/api';
 import history from '~/servicos/history';
-import {setBreadcrumbManual} from '~/servicos/breadcrumb-services';
+import { setBreadcrumbManual } from '~/servicos/breadcrumb-services';
 
 import { CaixaAno, CaixaTextoAno } from './tipoCalendarioEscolar.css';
 
@@ -61,22 +61,22 @@ const TipoCalendarioEscolarForm = ({ match }) => {
 
   useEffect(() => {
     if (match && match.params && match.params.id) {
-      setBreadcrumbManual(match.url,'Alterar Tipo de Calendário Escolar', '/calendario-escolar/tipo-calendario-escolar');
+      setBreadcrumbManual(
+        match.url,
+        'Alterar Tipo de Calendário Escolar',
+        '/calendario-escolar/tipo-calendario-escolar'
+      );
       setIdTipoCalendario(match.params.id);
       consultaPorId(match.params.id);
-    } else if (
-      usuario.turmaSelecionada &&
-      usuario.turmaSelecionada[0] &&
-      usuario.turmaSelecionada[0].anoLetivo
-    ) {
-      setAnoLetivo(usuario.turmaSelecionada[0].anoLetivo);
+    } else if (usuario.turmaSelecionada && usuario.turmaSelecionada.anoLetivo) {
+      setAnoLetivo(usuario.turmaSelecionada.anoLetivo);
     }
   }, []);
 
   const consultaPorId = async id => {
     const tipoCalendadio = await api
-      .get(`v1/tipo-calendario/${id}`)
-      .catch(e => erros(e));
+      .get(`v1/calendarios/tipos/${id}`)
+      .catch(e => mostrarErros(e));
 
     if (tipoCalendadio) {
       setValoresIniciais({
@@ -140,8 +140,8 @@ const TipoCalendarioEscolarForm = ({ match }) => {
     valoresForm.id = idTipoCalendario || 0;
     valoresForm.anoLetivo = anoLetivo;
     const cadastrado = await api
-      .post('v1/tipo-calendario', valoresForm)
-      .catch(erros => erros);
+      .post('v1/calendarios/tipos', valoresForm)
+      .catch(erros => mostrarErros(erros));
     if (cadastrado) {
       sucesso('Suas informações foram salvas com sucesso.');
       history.push('/calendario-escolar/tipo-calendario-escolar');
@@ -164,10 +164,10 @@ const TipoCalendarioEscolarForm = ({ match }) => {
         'Cancelar'
       );
       if (confirmado) {
-        const parametrosDelete = {data: [idTipoCalendario]}
+        const parametrosDelete = { data: [idTipoCalendario] };
         const excluir = await api
-          .delete('v1/tipo-calendario', parametrosDelete)
-          .catch(e => erros(e));
+          .delete('v1/calendarios/tipos', parametrosDelete)
+          .catch(erros => mostrarErros(erros));
         if (excluir) {
           sucesso('Tipo de calendário excluído com sucesso.');
           history.push('/calendario-escolar/tipo-calendario-escolar');
@@ -178,7 +178,11 @@ const TipoCalendarioEscolarForm = ({ match }) => {
 
   return (
     <>
-      <Cabecalho pagina={`${idTipoCalendario > 0 ? 'Alterar' : 'Cadastro do' } Tipo de Calendário Escolar`} />
+      <Cabecalho
+        pagina={`${
+          idTipoCalendario > 0 ? 'Alterar' : 'Cadastro do'
+        } Tipo de Calendário Escolar`}
+      />
       <Card>
         <Formik
           enableReinitialize
