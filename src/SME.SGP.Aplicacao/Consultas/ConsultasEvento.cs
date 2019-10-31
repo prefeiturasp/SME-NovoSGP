@@ -22,7 +22,7 @@ namespace SME.SGP.Aplicacao
 
         public Task<IEnumerable<CalendarioEventosMesesDto>> ObterQuantidadeDeEventosPorMeses(CalendarioEventosMesesFiltroDto calendarioEventosMesesFiltro)
         {
-            throw new System.NotImplementedException();
+            return repositorioEvento.ObterQuantidadeDeEventosPorMeses(calendarioEventosMesesFiltro);
         }
 
         private EventoObterParaEdicaoDto MapearParaDto(Evento evento)
