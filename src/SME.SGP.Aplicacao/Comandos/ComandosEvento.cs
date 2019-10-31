@@ -21,18 +21,20 @@ namespace SME.SGP.Aplicacao
             this.servicoEvento = servicoEvento ?? throw new System.ArgumentNullException(nameof(servicoEvento));
         }
 
-        public async Task Alterar(long id, EventoDto eventoDto)
+        public async Task<IEnumerable<string>> Alterar(long id, EventoDto eventoDto)
         {
             var evento = repositorioEvento.ObterPorId(id);
 
             evento = MapearParaEntidade(evento, eventoDto);
             await servicoEvento.Salvar(evento);
+            return await CopiarEventos(eventoDto);
         }
 
-        public async Task Criar(EventoDto eventoDto)
+        public async Task<IEnumerable<string>> Criar(EventoDto eventoDto)
         {
             var evento = MapearParaEntidade(new Evento(), eventoDto);
             await servicoEvento.Salvar(evento);
+            return await CopiarEventos(eventoDto);
         }
 
         public void Excluir(long[] idsEventos)
@@ -57,6 +59,28 @@ namespace SME.SGP.Aplicacao
 
             if (idsComErroAoExcluir.Any())
                 throw new NegocioException($"Não foi possível excluir os eventos de ids {string.Join(",", idsComErroAoExcluir)}");
+        }
+
+        private async Task<IEnumerable<string>> CopiarEventos(EventoDto eventoDto)
+        {
+            var mensagens = new List<string>();
+            if (eventoDto.TiposCalendarioParaCopiar.Any())
+            {
+                foreach (var tipoCalendario in eventoDto.TiposCalendarioParaCopiar)
+                {
+                    eventoDto.TipoCalendarioId = tipoCalendario.TipoCalendarioId;
+                    try
+                    {
+                        var eventoParaCopiar = MapearParaEntidade(new Evento(), eventoDto);
+                        await servicoEvento.Salvar(eventoParaCopiar);
+                    }
+                    catch (NegocioException nex)
+                    {
+                        mensagens.Add($"Erro ao copiar para o calendário {tipoCalendario.NomeCalendario}: {nex.Message}.");
+                    }
+                }
+            }
+            return mensagens;
         }
 
         private Evento MapearParaEntidade(Evento evento, EventoDto eventoDto)
