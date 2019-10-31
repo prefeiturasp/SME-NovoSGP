@@ -13,7 +13,7 @@ namespace SME.SGP.Dominio.Interfaces
 
         Task<IEnumerable<AbrangenciaDreRetorno>> ObterDres(string login, Guid perfil, Modalidade modalidade);
 
-        Task<IEnumerable<int>> ObterModalidades();
+        Task<IEnumerable<int>> ObterModalidades(string login, Guid perfil);
 
         Task<IEnumerable<int>> ObterSemestres(string login, Guid perfil, Modalidade modalidade);
 
