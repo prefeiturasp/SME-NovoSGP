@@ -83,11 +83,21 @@ namespace SME.SGP.Dados.Repositorios
             return (await database.Conexao.QueryAsync<AbrangenciaDreRetorno>(query, new { login, perfil, modalidade })).AsList();
         }
 
-        public async Task<IEnumerable<int>> ObterModalidades()
+        public async Task<IEnumerable<int>> ObterModalidades(string login, Guid perfil)
         {
-            var query = @"select distinct at.modalidade_codigo from abrangencia_turmas at";
+            var query = @"select
+	                        distinct ab_turmas.modalidade_codigo
+                        from
+	                        abrangencia_dres ab_dres
+                        inner join abrangencia_ues ab_ues on
+	                        ab_ues.abrangencia_dres_id = ab_dres.id
+                        inner join abrangencia_turmas ab_turmas on
+	                        ab_turmas.abrangencia_ues_id = ab_ues.id
+                        where
+	                        ab_dres.usuario_id = ( select id from usuario where login = @login)
+	                        and ab_dres.perfil = @perfil";
 
-            return (await database.Conexao.QueryAsync<int>(query)).AsList();
+            return (await database.Conexao.QueryAsync<int>(query, new { login, perfil })).AsList();
         }
 
         public async Task<IEnumerable<int>> ObterSemestres(string login, Guid perfil, Modalidade modalidade)
