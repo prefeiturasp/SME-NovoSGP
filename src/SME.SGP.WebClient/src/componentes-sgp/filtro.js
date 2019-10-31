@@ -313,7 +313,6 @@ const Filtro = () => {
               ano: turma.ano,
             });
           });
-          console.log(turmas);
           if (estado) {
             store.dispatch(salvarTurmas(turmas));
             setTurmas(turmas);
