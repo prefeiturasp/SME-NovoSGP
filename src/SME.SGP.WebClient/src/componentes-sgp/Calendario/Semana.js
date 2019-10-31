@@ -1,10 +1,12 @@
-﻿import React, { useState } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import styled from 'styled-components';
 import { useSelector } from 'react-redux';
 import { Base } from '~/componentes/colors';
 
 const Div = styled.div``;
+const TipoEventosLista = styled(Div);
+const TipoEvento = styled(Div);
 
 const WeekDay = props => {
   const [estaAberto, setEstaAberto] = useState(false);
@@ -24,6 +26,10 @@ const WeekDay = props => {
     toggleMonth,
     ...rest
   } = props;
+
+  useEffect(() => {
+    // API EVENTOS TIPO
+  }, []);
 
   let style = {};
 
@@ -58,14 +64,20 @@ const WeekDay = props => {
   return (
     <div className={className} style={style} {...rest} onClick={selectDayClick}>
       <div className="w-100 h-100 d-flex">
-        <div style={dayStyle}>{formatedDay}</div>
+        <div style={dayStyle}>
+          {formatedDay}
+          <TipoEventosLista>
+            <TipoEvento>SME</TipoEvento>
+            <TipoEvento>UE</TipoEvento>
+          </TipoEventosLista>
+        </div>
       </div>
     </div>
   );
 };
 
 const Semana = props => {
-  console.log(props);
+  // console.log(props);
 
   const { inicial, dias, mesAtual } = props;
 

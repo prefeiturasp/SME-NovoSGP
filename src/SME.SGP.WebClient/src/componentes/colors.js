@@ -3,6 +3,7 @@ const Colors = {
   AzulAnakiwa: 'AzulAnakiwa',
   Roxo: 'Roxo',
   CinzaBotao: 'CinzaBotao',
+  Verde: 'Verde',
   Vermelho: 'Vermelho',
 };
 
@@ -40,6 +41,7 @@ const Active = {
   AzulAnakiwa: Base.AzulAnakiwa,
   Roxo: Base.Roxo,
   CinzaBotao: Base.CinzaBotao,
+  Verde: Base.Verde,
   Vermelho: Base.Vermelho,
 };
 

@@ -10,6 +10,7 @@ import {
 } from '~/redux/modulos/calendarioEscolar/actions';
 import { Base } from '~/componentes/colors';
 import api from '~/servicos/api';
+import { erro } from '~/servicos/alertas';
 
 const Div = styled.div``;
 const Icone = styled.i`
@@ -39,26 +40,41 @@ const Seta = props => {
 };
 
 const Mes = props => {
-  const { numeroMes } = props;
+  const { numeroMes, filtros } = props;
   const [mesSelecionado, setMesSelecionado] = useState({});
 
   useEffect(() => {
     const dataAtual = new Date();
     if (numeroMes === (dataAtual.getMonth() + 1).toString())
       store.dispatch(selecionaMes(numeroMes));
-
-    api
-      .get(
-        'v1/calendarios/eventos/meses?DreId=1&EhEventoSme=true&IdTipoCalendario=2&UeId=3'
-      )
-      .then(resposta => {
-        if (resposta.data) {
-          resposta.data.forEach(item => {
-            store.dispatch(atribuiEventosMes(item.mes, item.eventos));
-          });
-        }
-      });
   }, []);
+
+  useEffect(() => {
+    if (filtros && Object.entries(filtros).length > 0) {
+      const {
+        tipoCalendarioSelecionado,
+        eventoSme,
+        dreSelecionada,
+        unidadeEscolarSelecionada,
+      } = filtros;
+      api
+        .get(
+          `v1/calendarios/eventos/meses?DreId=${dreSelecionada}&EhEventoSme=${eventoSme}&IdTipoCalendario=${tipoCalendarioSelecionado}&UeId=${unidadeEscolarSelecionada}`
+        )
+        .then(resposta => {
+          if (resposta.data) {
+            resposta.data.forEach(item => {
+              store.dispatch(atribuiEventosMes(item.mes, item.eventos));
+            });
+          } else {
+          }
+        })
+        .catch(() => {
+          erro('Não encontramos eventos para estes filtros!');
+          store.dispatch(atribuiEventosMes(numeroMes, 0));
+        });
+    }
+  }, [filtros]);
 
   const meses = useSelector(state => state.calendarioEscolar.meses);
 
