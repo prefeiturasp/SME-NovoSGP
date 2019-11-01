@@ -18,8 +18,12 @@ import api from '~/servicos/api';
 import { setBreadcrumbManual } from '~/servicos/breadcrumb-services';
 import history from '~/servicos/history';
 import servicoEvento from '~/servicos/Paginas/Calendario/ServicoEvento';
-
-import { CaixaDiasLetivos, ListaCopiarEventos, TextoDiasLetivos } from './eventos.css';
+import ModalRecorrencia from './components/ModalRecorrencia';
+import {
+  CaixaDiasLetivos,
+  ListaCopiarEventos,
+  TextoDiasLetivos,
+} from './eventos.css';
 
 const EventosForm = ({ match }) => {
   const usuario = useSelector(store => store.usuario);
@@ -29,15 +33,21 @@ const EventosForm = ({ match }) => {
   const [novoRegistro, setNovoRegistro] = useState(true);
   const [exibirAuditoria, setExibirAuditoria] = useState(false);
   const [exibirModalCopiarEvento, setExibirModalCopiarEvento] = useState(false);
-  const [eventoTipoFeriadoSelecionado, setEventoTipoFeriadoSelecionado] = useState(false);
+  const [
+    eventoTipoFeriadoSelecionado,
+    setEventoTipoFeriadoSelecionado,
+  ] = useState(false);
   const [tipoDataUnico, setTipoDataUnico] = useState(true);
+  const [showModal, setShowModal] = useState(false);
 
   const [listaFeriados, setListaFeriados] = useState([]);
   const [listaCalendarioEscolar, setListaCalendarioEscolar] = useState([]);
   const [listaDres, setListaDres] = useState([]);
   const [listaUes, setListaUes] = useState([]);
   const [listaTipoEvento, setListaTipoEvento] = useState([]);
-  const [listaCalendarioParaCopiar, setlistaCalendarioParaCopiar] = useState([]);
+  const [listaCalendarioParaCopiar, setlistaCalendarioParaCopiar] = useState(
+    []
+  );
   const [
     listaCalendarioParaCopiarInicial,
     setlistaCalendarioParaCopiarInicial,
@@ -54,13 +64,10 @@ const EventosForm = ({ match }) => {
     nome: '',
     tipoCalendarioId: undefined,
     tipoEventoId: undefined,
-    ueId: undefined
+    ueId: undefined,
   });
 
-  const opcoesLetivo = [
-    { label: 'Sim', value: 1 },
-    { label: 'Não', value: 2 },
-  ];
+  const opcoesLetivo = [{ label: 'Sim', value: 1 }, { label: 'Não', value: 2 }];
 
   const [validacoes, setValidacoes] = useState({});
 
@@ -97,7 +104,7 @@ const EventosForm = ({ match }) => {
     montaValidacoes();
 
     consultaTipoEvento();
-    }, []);
+  }, []);
 
   useEffect(() => {
     consultaModoEdicao();
@@ -107,19 +114,19 @@ const EventosForm = ({ match }) => {
     montaValidacoes();
   }, [eventoTipoFeriadoSelecionado, tipoDataUnico]);
 
-  const consultaModoEdicao = ()=> {
+  const consultaModoEdicao = () => {
     if (match && match.params && match.params.id) {
       setBreadcrumbManual(
         match.url,
         'Cadastro de Eventos no Calendário Escolar',
         '/calendario-escolar/eventos'
-        );
-        setIdEvento(match.params.id);
-        consultaPorId(match.params.id);
+      );
+      setIdEvento(match.params.id);
+      consultaPorId(match.params.id);
     }
-  }
+  };
 
-  const montaValidacoes = ()=> {
+  const montaValidacoes = () => {
     let val = {
       dataInicio: momentSchema.required('Data obrigatória'),
       descricao: Yup.string().required('Descrição obrigatória'),
@@ -132,17 +139,19 @@ const EventosForm = ({ match }) => {
 
     if (eventoTipoFeriadoSelecionado) {
       val.feriadoId = Yup.string().required('Feriado obrigatório');
-    };
+    }
 
     if (!tipoDataUnico) {
       val.dataFim = Yup.string().required('Data obrigatória');
-    };
+    }
 
     setValidacoes(Yup.object(val));
-  }
+  };
 
   const consultaPorId = async id => {
-    const evento = await api.get(`v1/calendarios/eventos/${id}`).catch(e => erros(e));
+    const evento = await api
+      .get(`v1/calendarios/eventos/${id}`)
+      .catch(e => erros(e));
 
     if (evento && evento.data) {
       if (evento.data.dreId && evento.data.dreId > 0) {
@@ -159,7 +168,7 @@ const EventosForm = ({ match }) => {
         tipoCalendarioId: String(evento.data.tipoCalendarioId),
         tipoEventoId: String(evento.data.tipoEventoId),
         ueId: String(evento.data.ueId),
-        id: evento.data.id
+        id: evento.data.id,
       });
       setAuditoria({
         criadoPor: evento.data.criadoPor,
@@ -177,10 +186,10 @@ const EventosForm = ({ match }) => {
     }
   };
 
-  const consultaFeriados = async ()=> {
+  const consultaFeriados = async () => {
     const feriados = await api.post('v1/calendarios/feriados/listar', {});
     setListaFeriados(feriados.data);
-  }
+  };
 
   const onClickVoltar = async () => {
     if (modoEdicao) {
@@ -218,7 +227,8 @@ const EventosForm = ({ match }) => {
 
   const onClickCadastrar = async valoresForm => {
     valoresForm.listaCalendarioParaCopiar = listaCalendarioParaCopiar;
-    const cadastrado = await servicoEvento.salvar(idEvento || 0, valoresForm)
+    const cadastrado = await servicoEvento
+      .salvar(idEvento || 0, valoresForm)
       .catch(e => erros(e));
     if (cadastrado && cadastrado.status == 200) {
       sucesso('Suas informações foram salvas com sucesso.');
@@ -268,7 +278,11 @@ const EventosForm = ({ match }) => {
   };
 
   const onClickRepetir = () => {
-    console.log('onClickRepetir');
+    setShowModal(true);
+  };
+
+  const onCloseRepetir = () => {
+    setShowModal(false);
   };
 
   const onClickCopiarEvento = () => {
@@ -294,11 +308,15 @@ const EventosForm = ({ match }) => {
     setlistaCalendarioParaCopiar(eventos);
   };
 
-
   const onChangeTipoEvento = (evento, form) => {
     if (evento) {
-      const tipoEventoSelecionado = listaTipoEvento.find(item => item.id == evento)
-      if (tipoEventoSelecionado && String(tipoEventoSelecionado.descricao).toUpperCase() === 'FERIADO') {
+      const tipoEventoSelecionado = listaTipoEvento.find(
+        item => item.id == evento
+      );
+      if (
+        tipoEventoSelecionado &&
+        String(tipoEventoSelecionado.descricao).toUpperCase() === 'FERIADO'
+      ) {
         setEventoTipoFeriadoSelecionado(true);
         consultaFeriados();
       } else {
@@ -307,12 +325,18 @@ const EventosForm = ({ match }) => {
           form.setFieldValue('feriadoId', '');
         }
       }
-      if (tipoEventoSelecionado && tipoEventoSelecionado.tipoData === eventoTipoData.Unico) {
+      if (
+        tipoEventoSelecionado &&
+        tipoEventoSelecionado.tipoData === eventoTipoData.Unico
+      ) {
         setTipoDataUnico(true);
         if (form) {
           form.setFieldValue('dataFim', '');
         }
-      } else if (tipoEventoSelecionado && tipoEventoSelecionado.tipoData === eventoTipoData.InicioFim) {
+      } else if (
+        tipoEventoSelecionado &&
+        tipoEventoSelecionado.tipoData === eventoTipoData.InicioFim
+      ) {
         setTipoDataUnico(false);
       }
     } else {
@@ -321,10 +345,14 @@ const EventosForm = ({ match }) => {
   };
 
   const montarEcibicaoEventosCopiar = () => {
-    return listaCalendarioParaCopiar.map((id, i)=> {
+    return listaCalendarioParaCopiar.map((id, i) => {
       const calendario = listaCalendarioEscolar.find(e => e.id == id);
       if (calendario && calendario.descricaoTipoCalendario) {
-        return <div className="font-weight-bold"  key={'calendario-' + i} >{ '-  ' + calendario.descricaoTipoCalendario}</div>;
+        return (
+          <div className="font-weight-bold" key={'calendario-' + i}>
+            {'-  ' + calendario.descricaoTipoCalendario}
+          </div>
+        );
       } else {
         return '';
       }
@@ -334,6 +362,7 @@ const EventosForm = ({ match }) => {
   return (
     <>
       <Cabecalho pagina="Cadastro de Eventos no Calendário Escolar" />
+      <ModalRecorrencia onCloseRepetir={onCloseRepetir} show={showModal} />
       <Card>
         <Formik
           enableReinitialize
@@ -380,7 +409,7 @@ const EventosForm = ({ match }) => {
                     color={Colors.Roxo}
                     border
                     className="mr-2"
-                    onClick={()=> onClickCancelar(form)}
+                    onClick={() => onClickCancelar(form)}
                     disabled={!modoEdicao}
                   />
                   <Button
@@ -435,10 +464,13 @@ const EventosForm = ({ match }) => {
                     name="nome"
                   />
                 </div>
-                <div className={
-                  `col-sm-12 ${eventoTipoFeriadoSelecionado ?
-                      'col-md-3 col-lg-3 col-xl-3' : 'col-md-6 col-lg-6 col-xl-6' } pb-2`
-                  }>
+                <div
+                  className={`col-sm-12 ${
+                    eventoTipoFeriadoSelecionado
+                      ? 'col-md-3 col-lg-3 col-xl-3'
+                      : 'col-md-6 col-lg-6 col-xl-6'
+                  } pb-2`}
+                >
                   <SelectComponent
                     form={form}
                     name="tipoEventoId"
@@ -453,21 +485,22 @@ const EventosForm = ({ match }) => {
                     placeholder="Selecione um tipo"
                   />
                 </div>
-                {
-                  eventoTipoFeriadoSelecionado ?
-                    <div className="col-sm-12 col-md-3 col-lg-3 col-xl-3 pb-2">
-                      <SelectComponent
-                        form={form}
-                        label="Nome feriado"
-                        name="feriadoId"
-                        lista={listaFeriados}
-                        valueOption="id"
-                        valueText="nome"
-                        onChange={onChangeCampos}
-                        placeholder="Selecione o feriado"
-                      />
-                    </div> : ''
-                }
+                {eventoTipoFeriadoSelecionado ? (
+                  <div className="col-sm-12 col-md-3 col-lg-3 col-xl-3 pb-2">
+                    <SelectComponent
+                      form={form}
+                      label="Nome feriado"
+                      name="feriadoId"
+                      lista={listaFeriados}
+                      valueOption="id"
+                      valueText="nome"
+                      onChange={onChangeCampos}
+                      placeholder="Selecione o feriado"
+                    />
+                  </div>
+                ) : (
+                  ''
+                )}
                 <div className="col-sm-12 col-md-6 col-lg-3 col-xl-3 pb-2">
                   <CampoData
                     form={form}
@@ -478,19 +511,20 @@ const EventosForm = ({ match }) => {
                     onChange={onChangeCampos}
                   />
                 </div>
-                {
-                  tipoDataUnico ? '' :
-                    <div className="col-sm-12 col-md-6 col-lg-3 col-xl-3 pb-2">
-                      <CampoData
-                        form={form}
-                        label="Data fim do evento"
-                        placeholder="Data fim do evento"
-                        formatoData="DD/MM/YYYY"
-                        name="dataFim"
-                        onChange={onChangeCampos}
-                      />
-                    </div>
-                }
+                {tipoDataUnico ? (
+                  ''
+                ) : (
+                  <div className="col-sm-12 col-md-6 col-lg-3 col-xl-3 pb-2">
+                    <CampoData
+                      form={form}
+                      label="Data fim do evento"
+                      placeholder="Data fim do evento"
+                      formatoData="DD/MM/YYYY"
+                      name="dataFim"
+                      onChange={onChangeCampos}
+                    />
+                  </div>
+                )}
                 <div className="col-sm-12 col-md-2 col-lg-2 col-xl-2 pb-2">
                   <Button
                     label="Repetir"
@@ -533,17 +567,19 @@ const EventosForm = ({ match }) => {
                     className="mt-4 mr-3"
                     onClick={onClickCopiarEvento}
                   />
-                  {
-                    listaCalendarioParaCopiar && listaCalendarioParaCopiar.length ?
-                      <ListaCopiarEventos>
-                        <div className="mb-1">Evento será copiado para os calendários:</div>
-                      { montarEcibicaoEventosCopiar() }
-                      </ListaCopiarEventos>
-                    : ''
-                  }
+                  {listaCalendarioParaCopiar &&
+                  listaCalendarioParaCopiar.length ? (
+                    <ListaCopiarEventos>
+                      <div className="mb-1">
+                        Evento será copiado para os calendários:
+                      </div>
+                      {montarEcibicaoEventosCopiar()}
+                    </ListaCopiarEventos>
+                  ) : (
+                    ''
+                  )}
                 </div>
               </div>
-
             </Form>
           )}
         </Formik>
