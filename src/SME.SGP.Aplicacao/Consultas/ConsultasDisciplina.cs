@@ -3,6 +3,7 @@ using SME.SGP.Aplicacao.Integracoes;
 using SME.SGP.Aplicacao.Integracoes.Respostas;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
+using SME.SGP.Infra.Dtos;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -27,19 +28,19 @@ namespace SME.SGP.Aplicacao
             this.servicoUsuario = servicoUsuario ?? throw new System.ArgumentNullException(nameof(servicoUsuario));
         }
 
-        public async Task<IEnumerable<DisciplinaDto>> ObterDisciplinasParaPlanejamento(long codigoTurma)
+        public async Task<IEnumerable<DisciplinaDto>> ObterDisciplinasParaPlanejamento(FiltroDisciplinaPlanejamentoDto filtroDisciplinaPlanejamentoDto)
         {
             IEnumerable<DisciplinaDto> disciplinasDto = null;
 
             var login = servicoUsuario.ObterLoginAtual();
 
-            var chaveCache = $"Disciplinas-planejamento-{codigoTurma}-{login}";
+            var chaveCache = $"Disciplinas-planejamento-{filtroDisciplinaPlanejamentoDto.CodigoTurma}-{login}";
             var disciplinasCacheString = repositorioCache.Obter(chaveCache);
 
             if (!string.IsNullOrWhiteSpace(disciplinasCacheString))
-                return JsonConvert.DeserializeObject<IEnumerable<DisciplinaDto>>(disciplinasCacheString);
+                return TratarRetornoDisciplinasPlanejamento(JsonConvert.DeserializeObject<IEnumerable<DisciplinaDto>>(disciplinasCacheString), filtroDisciplinaPlanejamentoDto);
 
-            var disciplinas = await servicoEOL.ObterDisciplinasParaPlanejamento(codigoTurma, login, servicoUsuario.ObterPerfilAtual());
+            var disciplinas = await servicoEOL.ObterDisciplinasParaPlanejamento(filtroDisciplinaPlanejamentoDto.CodigoTurma, login, servicoUsuario.ObterPerfilAtual());
 
             if (disciplinas == null || !disciplinas.Any())
                 return disciplinasDto;
@@ -48,7 +49,20 @@ namespace SME.SGP.Aplicacao
 
             await repositorioCache.SalvarAsync(chaveCache, JsonConvert.SerializeObject(disciplinasDto));
 
-            return disciplinasDto;
+            return TratarRetornoDisciplinasPlanejamento(disciplinasDto, filtroDisciplinaPlanejamentoDto);
+        }
+
+        private IEnumerable<DisciplinaDto> TratarRetornoDisciplinasPlanejamento(IEnumerable<DisciplinaDto> disciplinas, FiltroDisciplinaPlanejamentoDto filtroDisciplinaPlanejamentoDto)
+        {
+            if (filtroDisciplinaPlanejamentoDto.CodigoDisciplina == 0)
+                return disciplinas;
+
+            var codigosRegencias = new List<int> { 138, 2, 89, 7, 8 };
+
+            if (filtroDisciplinaPlanejamentoDto.Regencia)
+                return disciplinas.Where(x => codigosRegencias.Contains(x.CodigoComponenteCurricular));
+
+            return disciplinas.Where(x => x.CodigoComponenteCurricular == filtroDisciplinaPlanejamentoDto.CodigoDisciplina);
         }
 
         public async Task<IEnumerable<DisciplinaDto>> ObterDisciplinasPorProfessorETurma(long codigoTurma)
