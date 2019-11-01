@@ -17,14 +17,14 @@ const RotaAutenticadaEstruturada = props => {
           primeiroAcesso ? (
             <Redirect to="/redefinir-senha" />
           ) : (
-              // !props.temPermissionamento || (props.temPermissionamento && permissoes[props.path]) ?
+              !props.temPermissionamento || (props.temPermissionamento && permissoes[props.path]) ?
                 <Pagina>
                   <Componente {...propriedade} />
                 </Pagina>
-                // :
-                // <Redirect
-                //   to={'/sem-permissao'}
-                // />
+                :
+                <Redirect
+                  to={'/sem-permissao'}
+                />
             )
         ) : (
             <Redirect
