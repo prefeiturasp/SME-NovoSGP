@@ -18,9 +18,15 @@ const Service = {
     );
   },
 
-  getDisciplinasProfessorObjetivos: async codigoTurma => {
+  getDisciplinasProfessorObjetivos: async (
+    codigoTurma,
+    disciplinaSelecionada
+  ) => {
     const requisicao = await API.get(
-      Service._getBaseUrlDisciplinasProfessorObjetivo(codigoTurma)
+      Service._getBaseUrlDisciplinasProfessorObjetivo(
+        codigoTurma,
+        disciplinaSelecionada
+      )
     );
 
     return requisicao.data.map(req => {
@@ -107,8 +113,11 @@ const Service = {
     return `v1/professores/${RF}/turmas/${CodigoTurma}/disciplinas/`;
   },
 
-  _getBaseUrlDisciplinasProfessorObjetivo: codigoTurma => {
-    return `v1/professores/turmas/${codigoTurma}/disciplinas/planejamento`;
+  _getBaseUrlDisciplinasProfessorObjetivo: (
+    codigoTurma,
+    disciplinaSelecionada
+  ) => {
+    return `v1/professores/turmas/${codigoTurma}/disciplinas/planejamento?codigoDisciplina=${disciplinaSelecionada.codigo}&regencia=${disciplinaSelecionada.regencia}`;
   },
 
   _getBaseUrlObjetivosFiltro: () => {
