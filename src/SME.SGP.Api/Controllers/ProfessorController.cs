@@ -50,9 +50,8 @@ namespace SME.SGP.Api.Controllers
         [HttpGet("turmas/{codigoTurma}/disciplinas/planejamento")]
         [ProducesResponseType(typeof(IEnumerable<DisciplinaDto>), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        public async Task<IActionResult> ObterDisciplinasParaPlanejamento(long codigoTurma, [FromQuery]FiltroDisciplinaPlanejamentoDto filtroDisciplinaPlanejamentoDto, [FromServices]IConsultasDisciplina consultasDisciplina)
         [Permissao(Permissao.PA_I, Permissao.PA_A, Permissao.PA_C, Policy = "Bearer")]
-        public async Task<IActionResult> ObterDisciplinasParaPlanejamento(long codigoTurma, [FromServices]IConsultasDisciplina consultasDisciplina)
+        public async Task<IActionResult> ObterDisciplinasParaPlanejamento(long codigoTurma, [FromQuery]FiltroDisciplinaPlanejamentoDto filtroDisciplinaPlanejamentoDto, [FromServices]IConsultasDisciplina consultasDisciplina)
         {
             filtroDisciplinaPlanejamentoDto.CodigoTurma = codigoTurma;
 
