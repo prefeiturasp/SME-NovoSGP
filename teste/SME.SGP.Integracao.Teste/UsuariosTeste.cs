@@ -20,7 +20,7 @@ namespace SME.SGP.Integracao.Teste
         public async void Deve_Retornar_Os_Dados_Do_Usuário()
         {
             fixture._clientApi.DefaultRequestHeaders.Clear();
-            fixture._clientApi.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", fixture.GerarToken(new Permissao[] { }, "7777710", "7777710"));
+            fixture._clientApi.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", fixture.GerarToken(new Permissao[] { Permissao.M_C }, "7777710", "7777710"));
 
             var result = await fixture._clientApi.GetAsync("api/v1/usuarios/meus-dados");
 
