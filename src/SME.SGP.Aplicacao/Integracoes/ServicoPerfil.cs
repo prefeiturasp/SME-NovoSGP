@@ -26,7 +26,9 @@ namespace SME.SGP.Aplicacao.Integracoes
             {
                 PerfilSelecionado = usuario.ObterPerfilPrioritario(),
                 Perfis = MapearPerfisParaDto(perfisUsuario),
-                PossuiPerfilSmeOuDre = usuario.PossuiPerfilSmeOuDre()
+                PossuiPerfilSmeOuDre = usuario.PossuiPerfilSmeOuDre(),
+                PossuiPerfilSme = usuario.PossuiPerfilSme(),
+                PossuiPerfilDre = usuario.PossuiPerfilDre()
             };
             return perfisPorPrioridade;
         }

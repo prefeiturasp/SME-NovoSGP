@@ -24,8 +24,11 @@ import TipoCalendarioEscolarLista from '~/paginas/CalendarioEscolar/TipoCalendar
 import TipoCalendarioEscolarForm from '~/paginas/CalendarioEscolar/TipoCalendarioEscolar/tipoCalendarioEscolarForm';
 import TipoFeriadoLista from '~/paginas/CalendarioEscolar/TipoFeriado/tipoFeriadoLista';
 import TipoFeriadoForm from '~/paginas/CalendarioEscolar/TipoFeriado/tipoFeriadoForm';
+import EventosLista from '~/paginas/CalendarioEscolar/Eventos/eventosLista';
+import EventosForm from '~/paginas/CalendarioEscolar/Eventos/eventosForm';
 import TipoEventosLista from '~/paginas/CalendarioEscolar/TipoEventos/tipoEventosLista';
 import TipoEventosForm from '~/paginas/CalendarioEscolar/TipoEventos/tipoEventosForm';
+
 
 export default function Rotas() {
   const rotas = new Map();
@@ -232,6 +235,31 @@ export default function Rotas() {
     breadcrumbName: 'Alterar Tipo de Feriado',
     parent: '/calendario-escolar/tipo-feriado',
     component: TipoFeriadoForm,
+    exact: true,
+    tipo: RotasTipo.EstruturadaAutenticada,
+  });
+
+  rotas.set('/calendario-escolar/eventos', {
+    breadcrumbName: 'Evento do Calendário Escolar',
+    menu: ['Calendário Escolar'],
+    parent: '/',
+    component: EventosLista,
+    exact: true,
+    tipo: RotasTipo.EstruturadaAutenticada,
+  });
+
+  rotas.set('/calendario-escolar/eventos/novo', {
+    breadcrumbName: 'Cadastro de Eventos no Calendário Escolar',
+    parent: '/calendario-escolar/eventos',
+    component: EventosForm,
+    exact: true,
+    tipo: RotasTipo.EstruturadaAutenticada,
+  });
+
+  rotas.set('/calendario-escolar/eventos/editar/:id', {
+    breadcrumbName: 'Cadastro de Eventos no Calendário Escolar',
+    parent: '/calendario-escolar/eventos',
+    component: EventosForm,
     exact: true,
     tipo: RotasTipo.EstruturadaAutenticada,
   });

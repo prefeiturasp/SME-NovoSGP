@@ -182,6 +182,10 @@ const RedefinirSenha = props => {
             modificarSenha: false,
             possuiPerfilSmeOuDre:
               requisicao.resposta.data.perfisUsuario.possuiPerfilSmeOuDre,
+            possuiPerfilDre:
+              requisicao.resposta.data.perfisUsuario.possuiPerfilDre,
+            possuiPerfilSme:
+              requisicao.resposta.data.perfisUsuario.possuiPerfilSme,
           })
         );
         history.push(URL_HOME);
