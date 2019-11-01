@@ -56,7 +56,7 @@ export default function PlanoCiclo() {
 
   const usuario = useSelector(store => store.usuario);
   const turmaSelecionada = useSelector(store => store.usuario.turmaSelecionada);
-  let permissoesTela = usuario.permissoes[RotasDto.PLANO_CICLO];
+  const permissoesTela = usuario.permissoes[RotasDto.PLANO_CICLO];
 
   useEffect(() => {
     async function carregarListas() {
@@ -67,9 +67,6 @@ export default function PlanoCiclo() {
       setListaODS(ods.data);
     }
     carregarListas();
-    permissoesTela.podeAlterar = false;
-    permissoesTela.podeExcluir = false;
-    permissoesTela.podeIncluir = false;
     setSomenteConsulta(verificaSomenteConsulta(permissoesTela));
   }, []);
 
@@ -431,7 +428,7 @@ export default function PlanoCiclo() {
   }
 
   const desabilitaCamposEdicao = () => {
-    if (podeAlterar()) return !modoEdicao  
+    if (podeAlterar()) return !modoEdicao
     else return true
   }
 
@@ -579,7 +576,7 @@ export default function PlanoCiclo() {
 
                 <div className="row">
                   <ListaItens
-                    className={registroMigrado ? 'desabilitar-elemento' : ''}
+                    className={registroMigrado || somenteConsulta ? 'desabilitar-elemento' : ''}
                   >
                     <ul>
                       {listaMatriz.map(item => {
@@ -588,8 +585,7 @@ export default function PlanoCiclo() {
                             <div className="col-md-12">
                               <div className="row aling-center">
                                 <div className="col-md-2">
-                                  <Badge 
-                                    disabled={somenteConsulta}                                
+                                  <Badge
                                     id={`matriz-${item.id}`}
                                     className="btn-li-item btn-li-item-matriz"
                                     opcao-selecionada={validaMatrizSelecionada}
@@ -621,7 +617,7 @@ export default function PlanoCiclo() {
                 </div>
                 <div className="row">
                   <ListaItens
-                    className={registroMigrado ? 'desabilitar-elemento' : ''}
+                    className={registroMigrado || somenteConsulta ? 'desabilitar-elemento' : ''}
                   >
                     <ul>
                       {listaODS.map(item => {
@@ -631,7 +627,6 @@ export default function PlanoCiclo() {
                               <div className="row aling-center">
                                 <div className="col-md-2">
                                   <Badge
-                                    disabled={somenteConsulta}
                                     id={`ods-${item.id}`}
                                     className="btn-li-item btn-li-item-ods"
                                     opcao-selecionada={validaODSSelecionado}

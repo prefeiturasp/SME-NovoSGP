@@ -45,7 +45,6 @@ import RotasDto from '~/dtos/rotasDto';
 import { verificaSomenteConsulta } from '~/servicos/servico-navegacao';
 
 export default function PlanoAnual() {
-  const [somenteConsulta, setSomenteConsulta] = useState(false);
   const bimestres = useSelector(state => state.bimestres.bimestres);
 
   const bimestreFocado = useSelector(state =>
@@ -65,9 +64,12 @@ export default function PlanoAnual() {
   const bimestresErro = useSelector(store => store.bimestres.bimestresErro);
   const usuario = useSelector(store => store.usuario);
 
+  const permissoesTela = usuario.permissoes[RotasDto.PLANO_ANUAL];
+  const [somenteConsulta, setSomenteConsulta] = useState(verificaSomenteConsulta(permissoesTela));
+
   const turmaSelecionada = usuario.turmaSelecionada;
   const emEdicao = bimestres.filter(x => x.ehEdicao).length > 0;
-  const ehDisabled = !usuario.turmaSelecionada.turma || somenteConsulta;
+  const ehDisabled = somenteConsulta || !permissoesTela.podeAlterar? true : !usuario.turmaSelecionada.turma;
   const dispatch = useDispatch();
   const [modalConfirmacaoVisivel, setModalConfirmacaoVisivel] = useState({
     modalVisivel: false,
@@ -105,7 +107,6 @@ export default function PlanoAnual() {
   const escolaId = turmaSelecionada ? turmaSelecionada.unidadeEscolar : 0;
   const anoEscolar = turmaSelecionada ? turmaSelecionada.ano : 0;
   const turmaId = turmaSelecionada ? turmaSelecionada.turma : 0;
-  let permissoesTela = usuario.permissoes[RotasDto.PLANO_ANUAL];
 
   useEffect(() => {
     VerificarEnvio();
@@ -114,10 +115,6 @@ export default function PlanoAnual() {
   }, [bimestres]);
 
   useEffect(() => {
-    permissoesTela.podeAlterar = false;
-    permissoesTela.podeExcluir = false;
-    permissoesTela.podeIncluir = false;
-    setSomenteConsulta(verificaSomenteConsulta(permissoesTela));
     document.addEventListener('keydown', onF5Click, true);
     document.addEventListener('keyup', onF5Click, true);
 
