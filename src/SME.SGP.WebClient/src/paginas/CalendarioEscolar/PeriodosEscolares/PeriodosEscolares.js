@@ -24,7 +24,6 @@ const PeriodosEscolares = () => {
   ] = useState('');
   const [isTipoCalendarioAnual, setIsTipoCalendarioAnual] = useState(true);
   const [validacoes, setValidacoes] = useState();
-  const [refForm, setRefForm] = useState();
   const [modoEdicao, setModoEdicao] = useState(false);
   const [periodoEscolarEdicao, setPeriodoEscolarEdicao] = useState({});
   const [valoresIniciais, setValoresIniciais] = useState({
@@ -217,7 +216,7 @@ const PeriodosEscolares = () => {
     history.push(URL_HOME);
   };
 
-  const onClickCancelar = async () => {
+  const onClickCancelar = async form => {
     if (modoEdicao) {
       const confirmou = await confirmar(
         'Atenção',
@@ -225,12 +224,12 @@ const PeriodosEscolares = () => {
         'Deseja realmente cancelar as alterações?'
       );
       if (confirmou) {
-        resetarTela();
+        resetarTela(form);
       }
     }
   };
 
-  const onchangeCalendarioEscolar = id => {
+  const onchangeCalendarioEscolar = (id, form) => {
     const tipoSelecionado = listaCalendarioEscolar.find(item => item.id == id);
 
     if (tipoSelecionado && tipoSelecionado.periodo == periodo.Anual) {
@@ -239,7 +238,7 @@ const PeriodosEscolares = () => {
       setIsTipoCalendarioAnual(false);
     }
     setCalendarioEscolarSelecionado(id);
-    resetarTela();
+    resetarTela(form);
     consultarPeriodoPorId(id);
   };
 
@@ -281,8 +280,8 @@ const PeriodosEscolares = () => {
     setValoresIniciais(bimestresValorInicial);
   };
 
-  const resetarTela = () => {
-    refForm.resetForm();
+  const resetarTela = form => {
+    form.resetForm();
     setModoEdicao(false);
     setValoresIniciais({});
   };
@@ -421,7 +420,6 @@ const PeriodosEscolares = () => {
       <Cabecalho pagina="Cadastro do período escolar" />
       <Card>
         <Formik
-          ref={refFormik => setRefForm(refFormik)}
           enableReinitialize
           initialValues={valoresIniciais}
           validationSchema={validacoes}
@@ -439,7 +437,7 @@ const PeriodosEscolares = () => {
                     lista={listaCalendarioEscolar}
                     valueOption="id"
                     valueText="descricaoTipoCalendario"
-                    onChange={onchangeCalendarioEscolar}
+                    onChange={ id => onchangeCalendarioEscolar(id, form)}
                     valueSelect={calendarioEscolarSelecionado}
                   />
                 </div>
@@ -458,7 +456,7 @@ const PeriodosEscolares = () => {
                     border
                     bold
                     className="mr-3"
-                    onClick={onClickCancelar}
+                    onClick={() => onClickCancelar(form)}
                     disabled={!modoEdicao}
                   />
                   <Button
