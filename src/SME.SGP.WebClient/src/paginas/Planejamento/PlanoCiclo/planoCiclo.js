@@ -86,10 +86,10 @@ export default function PlanoCiclo() {
   const carregarCiclos = async () => {
     console.log('carregarCiclos');
 
-    if (usuario && turmaSelecionada) {
+    if (usuario && turmaSelecionada.turma) {
       let anoSelecionado = '';
       let codModalidade = null;
-      if (turmaSelecionada) {
+      if (turmaSelecionada.turma) {
         anoSelecionado = String(turmaSelecionada.ano);
         codModalidade = turmaSelecionada.modalidade;
       }
@@ -430,7 +430,7 @@ export default function PlanoCiclo() {
   return (
     <>
       <div className="col-md-12">
-        {usuario && turmaSelecionada ? (
+        {usuario && turmaSelecionada.turma ? (
           ''
         ) : (
             <Alert

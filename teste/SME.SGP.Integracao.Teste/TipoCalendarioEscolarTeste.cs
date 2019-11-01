@@ -29,7 +29,7 @@ namespace SME.SGP.Integracao.Teste
             _fixture._clientApi.DefaultRequestHeaders.Clear();
 
             _fixture._clientApi.DefaultRequestHeaders.Authorization =
-                new AuthenticationHeaderValue("Bearer", _fixture.GerarToken(new Permissao[] { Permissao.C_C, Permissao.C_I, Permissao.C_E }));
+                new AuthenticationHeaderValue("Bearer", _fixture.GerarToken(new Permissao[] { Permissao.TCE_C, Permissao.TCE_I, Permissao.TCE_E }));
 
             var tipoCalendarioDto = new TipoCalendarioDto();
             tipoCalendarioDto.AnoLetivo = 2019;
@@ -46,19 +46,19 @@ namespace SME.SGP.Integracao.Teste
             tipoCalendarioDto2.Situacao = true;
 
             var jsonParaPost = new StringContent(TransformarEmJson(tipoCalendarioDto), UnicodeEncoding.UTF8, "application/json");
-            var postResult = await _fixture._clientApi.PostAsync("api/v1/tipo-calendario/", jsonParaPost);
+            var postResult = await _fixture._clientApi.PostAsync("api/v1/calendarios/tipos/", jsonParaPost);
 
             Assert.True(postResult.IsSuccessStatusCode);
 
             if (postResult.IsSuccessStatusCode)
             {
                 var jsonParaPost2 = new StringContent(TransformarEmJson(tipoCalendarioDto2), UnicodeEncoding.UTF8, "application/json");
-                var postResult2 = await _fixture._clientApi.PostAsync("api/v1/tipo-calendario/", jsonParaPost2);
+                var postResult2 = await _fixture._clientApi.PostAsync("api/v1/calendarios/tipos/", jsonParaPost2);
                 Assert.True(postResult2.IsSuccessStatusCode);
 
                 if (postResult2.IsSuccessStatusCode)
                 {
-                    var getAllResult = await _fixture._clientApi.GetAsync($"api/v1/tipo-calendario");
+                    var getAllResult = await _fixture._clientApi.GetAsync($"api/v1/calendarios/tipos/");
                     var dtoTodos = JsonConvert.DeserializeObject<IEnumerable<TipoCalendarioDto>>(getAllResult.Content.ReadAsStringAsync().Result);
 
                     Assert.True(dtoTodos.Any());
@@ -73,14 +73,14 @@ namespace SME.SGP.Integracao.Teste
                     {
                         Content = jsonDelete,
                         Method = HttpMethod.Delete,
-                        RequestUri = new Uri($"{ _fixture._clientApi.BaseAddress}api/v1/tipo-calendario/")
+                        RequestUri = new Uri($"{ _fixture._clientApi.BaseAddress}api/v1/calendarios/tipos/")
                     };
 
                     var deleteResult = await _fixture._clientApi.SendAsync(request);
 
                     Assert.True(deleteResult.IsSuccessStatusCode);
                     var feriadoParaConsultar = dtoTodos.ElementAt(1);
-                    var getOneResult = await _fixture._clientApi.GetAsync($"api/v1/tipo-calendario/{feriadoParaConsultar.Id}");
+                    var getOneResult = await _fixture._clientApi.GetAsync($"api/v1/calendarios/tipos/{feriadoParaConsultar.Id}");
 
                     Assert.True(getOneResult.IsSuccessStatusCode);
 
