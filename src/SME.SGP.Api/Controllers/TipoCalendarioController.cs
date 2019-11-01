@@ -27,6 +27,7 @@ namespace SME.SGP.Api.Controllers
         [HttpGet]
         [ProducesResponseType(typeof(IEnumerable<TipoCalendarioDto>), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [Permissao(Permissao.TCE_C, Policy = "Bearer")]
         public IActionResult BuscarTodos()
         {
             return Ok(consultas.Listar());
@@ -36,6 +37,7 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(TipoCalendarioCompletoDto), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [Route("{id}")]
+        [Permissao(Permissao.TCE_C, Policy = "Bearer")]
         public IActionResult BuscarUm(long id)
         {
             return Ok(consultas.BuscarPorId(id));
@@ -44,6 +46,7 @@ namespace SME.SGP.Api.Controllers
         [HttpDelete]
         [ProducesResponseType(200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [Permissao(Permissao.TCE_E, Policy = "Bearer")]
         public IActionResult MarcarExcluidos([FromBody]long[] ids)
         {
             comandos.MarcarExcluidos(ids);
@@ -53,6 +56,7 @@ namespace SME.SGP.Api.Controllers
         [HttpPost]
         [ProducesResponseType(200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [Permissao(Permissao.TCE_I, Permissao.TCE_A, Policy = "Bearer")]
         public async Task<IActionResult> Salvar([FromBody]TipoCalendarioDto dto)
         {
             await comandos.Salvar(dto);
