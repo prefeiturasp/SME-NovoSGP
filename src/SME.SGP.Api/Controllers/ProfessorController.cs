@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using SME.SGP.Api.Filtros;
 using SME.SGP.Aplicacao;
 using SME.SGP.Infra;
+using SME.SGP.Infra.Dtos;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -49,9 +50,9 @@ namespace SME.SGP.Api.Controllers
         [HttpGet("turmas/{codigoTurma}/disciplinas/planejamento")]
         [ProducesResponseType(typeof(IEnumerable<DisciplinaDto>), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        public async Task<IActionResult> ObterDisciplinasParaPlanejamento(long codigoTurma, [FromServices]IConsultasDisciplina consultasDisciplina)
+        public async Task<IActionResult> ObterDisciplinasParaPlanejamento(FiltroDisciplinaPlanejamentoDto filtroDisciplinaPlanejamentoDto, [FromServices]IConsultasDisciplina consultasDisciplina)
         {
-            return Ok(await consultasDisciplina.ObterDisciplinasParaPlanejamento(codigoTurma));
+            return Ok(await consultasDisciplina.ObterDisciplinasParaPlanejamento(filtroDisciplinaPlanejamentoDto));
         }
     }
 }
