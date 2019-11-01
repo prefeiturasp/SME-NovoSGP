@@ -52,6 +52,7 @@ export default function PlanoCiclo() {
   const [anosTurmasUsuario, setAnosTurmasUsuario] = useState([]);
   const [planoCicloId, setPlanoCicloId] = useState(0);
   const [modalidadeEja, setModalidadeEja] = useState(false);
+  const [somenteConsulta, setSomenteConsulta] = useState(false);
 
   const usuario = useSelector(store => store.usuario);
   const turmaSelecionada = useSelector(store => store.usuario.turmaSelecionada);
@@ -65,10 +66,11 @@ export default function PlanoCiclo() {
       const ods = await api.get('v1/objetivos-desenvolvimento-sustentavel');
       setListaODS(ods.data);
     }
-
     carregarListas();
-    // permissoesTela.podeAlterar = false;
-    verificaSomenteConsulta(permissoesTela);
+    permissoesTela.podeAlterar = false;
+    permissoesTela.podeExcluir = false;
+    permissoesTela.podeIncluir = false;
+    setSomenteConsulta(verificaSomenteConsulta(permissoesTela));
   }, []);
 
   useEffect(() => {
@@ -427,6 +429,16 @@ export default function PlanoCiclo() {
       trocaCiclo(value);
     }
   }
+
+  const desabilitaCamposEdicao = () => {
+    if (podeAlterar()) return !modoEdicao  
+    else return true
+  }
+
+  const podeAlterar = () => {
+    return (permissoesTela[tipoPermissao.podeAlterar]);
+  }
+
   return (
     <>
       <div className="col-md-12">
@@ -472,7 +484,7 @@ export default function PlanoCiclo() {
                     id="tipo-ciclo"
                     placeHolder="Selecione um tipo de ciclo"
                     lista={listaCiclos}
-                    disabled={listaCiclos.length === 1}
+                    disabled={somenteConsulta || !podeAlterar()? true:listaCiclos.length === 1}
                     valueOption="id"
                     valueText="descricao"
                     onChange={validaTrocaCiclo}
@@ -497,7 +509,7 @@ export default function PlanoCiclo() {
                 bold
                 className="mr-3"
                 onClick={onClickCancelar}
-                hidden={!modoEdicao}
+                hidden={desabilitaCamposEdicao()}
               />
               <Button
                 label="Salvar"
@@ -505,9 +517,8 @@ export default function PlanoCiclo() {
                 border
                 bold
                 onClick={() => salvarPlanoCiclo(false)}
-                disabled={!modoEdicao && !permissoesTela[tipoPermissao.podeAlterar]}
+                disabled={desabilitaCamposEdicao()}
               />
-              {permissoesTela}
             </div>
           </div>
 
@@ -535,6 +546,7 @@ export default function PlanoCiclo() {
                 maxHeight="calc(100vh)"
                 onBlur={onChangeTextEditor}
                 value={descricaoCiclo}
+                disabled={somenteConsulta}
               />
               <InseridoAlterado>
                 {inseridoAlterado.criadoPor && inseridoAlterado.criadoEm ? (
@@ -576,7 +588,8 @@ export default function PlanoCiclo() {
                             <div className="col-md-12">
                               <div className="row aling-center">
                                 <div className="col-md-2">
-                                  <Badge
+                                  <Badge 
+                                    disabled={somenteConsulta}                                
                                     id={`matriz-${item.id}`}
                                     className="btn-li-item btn-li-item-matriz"
                                     opcao-selecionada={validaMatrizSelecionada}
@@ -618,6 +631,7 @@ export default function PlanoCiclo() {
                               <div className="row aling-center">
                                 <div className="col-md-2">
                                   <Badge
+                                    disabled={somenteConsulta}
                                     id={`ods-${item.id}`}
                                     className="btn-li-item btn-li-item-ods"
                                     opcao-selecionada={validaODSSelecionado}

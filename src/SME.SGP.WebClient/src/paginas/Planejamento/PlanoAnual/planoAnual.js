@@ -41,8 +41,11 @@ import modalidade from '~/dtos/modalidade';
 import SelectComponent from '~/componentes/select';
 import { store } from '~/redux';
 import FiltroPlanoAnualExpandidoDto from '~/dtos/filtroPlanoAnualExpandidoDto';
+import RotasDto from '~/dtos/rotasDto';
+import { verificaSomenteConsulta } from '~/servicos/servico-navegacao';
 
 export default function PlanoAnual() {
+  const [somenteConsulta, setSomenteConsulta] = useState(false);
   const bimestres = useSelector(state => state.bimestres.bimestres);
 
   const bimestreFocado = useSelector(state =>
@@ -64,7 +67,7 @@ export default function PlanoAnual() {
 
   const turmaSelecionada = usuario.turmaSelecionada;
   const emEdicao = bimestres.filter(x => x.ehEdicao).length > 0;
-  const ehDisabled = !usuario.turmaSelecionada.turma;
+  const ehDisabled = !usuario.turmaSelecionada.turma || somenteConsulta;
   const dispatch = useDispatch();
   const [modalConfirmacaoVisivel, setModalConfirmacaoVisivel] = useState({
     modalVisivel: false,
@@ -102,6 +105,7 @@ export default function PlanoAnual() {
   const escolaId = turmaSelecionada ? turmaSelecionada.unidadeEscolar : 0;
   const anoEscolar = turmaSelecionada ? turmaSelecionada.ano : 0;
   const turmaId = turmaSelecionada ? turmaSelecionada.turma : 0;
+  let permissoesTela = usuario.permissoes[RotasDto.PLANO_ANUAL];
 
   useEffect(() => {
     VerificarEnvio();
@@ -110,6 +114,10 @@ export default function PlanoAnual() {
   }, [bimestres]);
 
   useEffect(() => {
+    permissoesTela.podeAlterar = false;
+    permissoesTela.podeExcluir = false;
+    permissoesTela.podeIncluir = false;
+    setSomenteConsulta(verificaSomenteConsulta(permissoesTela));
     document.addEventListener('keydown', onF5Click, true);
     document.addEventListener('keyup', onF5Click, true);
 
@@ -581,6 +589,7 @@ export default function PlanoAnual() {
             border
             bold
             className="mr-3"
+            disabled={somenteConsulta}
           />
           <Button
             label="Salvar"

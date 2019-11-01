@@ -62,18 +62,20 @@ const setMenusPermissoes = () => {
   }
 }
 
-const getObjetoStorageUsuario = objeto =>{
+const getObjetoStorageUsuario = objeto => {
   const persistSmeSgp = localStorage.getItem('persist:sme-sgp')
-  const usuario = persistSmeSgp && (persistSmeSgp.includes('usuario'))?JSON.parse(persistSmeSgp).usuario : null;
-  const resultado = usuario?JSON.parse(usuario)[objeto]:null;
+  const usuario = persistSmeSgp && (persistSmeSgp.includes('usuario')) ? JSON.parse(persistSmeSgp).usuario : null;
+  const resultado = usuario ? JSON.parse(usuario)[objeto] : null;
   return resultado;
 }
 
 const verificaSomenteConsulta = permissoes => {
-  if( permissoes && permissoes[tipoPermissao.podeConsultar] && !permissoes[tipoPermissao.podeAlterar]
-    && !permissoes[tipoPermissao.podeIncluir] && !permissoes[tipoPermissao.podeExcluir]){
-      exibirAlerta('warning', 'Você tem apenas permissão de consulta nesta tela')
-    }
+  if (permissoes && permissoes[tipoPermissao.podeConsultar] && !permissoes[tipoPermissao.podeAlterar]
+    && !permissoes[tipoPermissao.podeIncluir] && !permissoes[tipoPermissao.podeExcluir]) {
+    exibirAlerta('warning', 'Você tem apenas permissão de consulta nesta tela')
+    return true;
+  }
+  return false;
 }
 
-export { setMenusPermissoes, getObjetoStorageUsuario, verificaSomenteConsulta};
+export { setMenusPermissoes, getObjetoStorageUsuario, verificaSomenteConsulta };
