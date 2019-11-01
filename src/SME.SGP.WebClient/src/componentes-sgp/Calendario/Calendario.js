@@ -1,4 +1,5 @@
 ﻿import React from 'react';
+import PropTypes from 'prop-types';
 import styled from 'styled-components';
 import Mes from './Mes';
 import MesCompleto from './MesCompleto';
@@ -17,7 +18,7 @@ const Calendario = props => {
         <Mes numeroMes="4" filtros={filtros} />
       </Div>
 
-      <MesCompleto meses="1,2,3,4" />
+      <MesCompleto meses="1,2,3,4" filtros={filtros} />
 
       <Div className="d-flex">
         <Mes numeroMes="5" filtros={filtros} />
@@ -26,7 +27,7 @@ const Calendario = props => {
         <Mes numeroMes="8" filtros={filtros} />
       </Div>
 
-      <MesCompleto meses="5,6,7,8" />
+      <MesCompleto meses="5,6,7,8" filtros={filtros} />
 
       <Div className="d-flex">
         <Mes numeroMes="9" filtros={filtros} />
@@ -35,9 +36,17 @@ const Calendario = props => {
         <Mes numeroMes="12" filtros={filtros} />
       </Div>
 
-      <MesCompleto meses="9,10,11,12" />
+      <MesCompleto meses="9,10,11,12" filtros={filtros} />
     </Div>
   );
+};
+
+Calendario.propTypes = {
+  filtros: PropTypes.oneOfType([PropTypes.array, PropTypes.object]),
+};
+
+Calendario.defaultProps = {
+  filtros: {},
 };
 
 export default Calendario;

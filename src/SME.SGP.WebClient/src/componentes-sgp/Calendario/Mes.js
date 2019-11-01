@@ -29,11 +29,11 @@ const Seta = props => {
   return transitions.map(({ item, key, style }) =>
     item ? (
       <animated.div style={style} key={key}>
-        <Icone className="fas fa-chevron-down stretched-link" />
+        <Icone className="fas fa-chevron-down " />
       </animated.div>
     ) : (
       <animated.div style={style} key={key}>
-        <Icone className="fas fa-chevron-right stretched-link text-white" />
+        <Icone className="fas fa-chevron-right text-white" />
       </animated.div>
     )
   );
@@ -66,7 +66,6 @@ const Mes = props => {
             resposta.data.forEach(item => {
               store.dispatch(atribuiEventosMes(item.mes, item.eventos));
             });
-          } else {
           }
         })
         .catch(() => {
@@ -130,10 +129,12 @@ const Mes = props => {
 
 Mes.propTypes = {
   numeroMes: PropTypes.string,
+  filtros: PropTypes.oneOfType([PropTypes.array, PropTypes.object]),
 };
 
 Mes.defaultProps = {
   numeroMes: '',
+  filtros: {},
 };
 
 export default Mes;
