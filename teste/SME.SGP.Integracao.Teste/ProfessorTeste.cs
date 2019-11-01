@@ -1,5 +1,4 @@
 ﻿using Newtonsoft.Json;
-using SME.SGP.Dominio;
 using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
@@ -22,14 +21,12 @@ namespace SME.SGP.Integracao.Teste
         [Theory, Order(5)]
         [InlineData("7913583", "7913583", "3fe1e074-37d6-e911-abd6-f81654fe895d", "2001395")]
         [InlineData("7913583", "7913583", "3fe1e074-37d6-e911-abd6-f81654fe895d", "2001401")]
-        [InlineData("7913583", "7913583", "3fe1e074-37d6-e911-abd6-f81654fe895d", "2001411")]
-        [InlineData("7913583", "7913583", "3fe1e074-37d6-e911-abd6-f81654fe895d", "2001418")]
         public async void DeveObterDisciplinasDoProfessorPorTurma(string login, string rf, string perfil, string codigoTurma)
         {
             _fixture._clientApi.DefaultRequestHeaders.Clear();
 
             _fixture._clientApi.DefaultRequestHeaders.Authorization =
-                new AuthenticationHeaderValue("Bearer", _fixture.GerarToken(new Permissao[] { }, login, rf, perfil));
+                new AuthenticationHeaderValue("Bearer", _fixture.GerarToken(new Permissao[] { Permissao.PA_I, Permissao.PA_A, Permissao.PA_C }, login, rf, perfil));
 
             var getResult = await _fixture._clientApi.GetAsync($"api/v1/professores/{login}/turmas/{codigoTurma}/disciplinas/");
 
@@ -41,15 +38,12 @@ namespace SME.SGP.Integracao.Teste
         [Theory, Order(6)]
         [InlineData("6082840", "095346", "2019")]
         [InlineData("5512557", "095346", "2019")]
-        [InlineData("5773067", "095346", "2019")]
-        [InlineData("7866089", "017272", "2019")]
-        [InlineData("8029474", "095401", "2019")]
         public void DeveObterTurmasAtribuidasAoProfessorPorEscolaEAno(string rf, string escola, string ano)
         {
             _fixture._clientApi.DefaultRequestHeaders.Clear();
 
             _fixture._clientApi.DefaultRequestHeaders.Authorization =
-                new AuthenticationHeaderValue("Bearer", _fixture.GerarToken(new Permissao[] { }));
+                new AuthenticationHeaderValue("Bearer", _fixture.GerarToken(new Permissao[] { Permissao.PA_I, Permissao.PA_A, Permissao.PA_C }));
 
             var getResult = _fixture._clientApi.GetAsync($"api/v1/professores/{rf}/escolas/{escola}/turmas/anos-letivos/{ano}").Result;
 
@@ -65,7 +59,7 @@ namespace SME.SGP.Integracao.Teste
             _fixture._clientApi.DefaultRequestHeaders.Clear();
 
             _fixture._clientApi.DefaultRequestHeaders.Authorization =
-                new AuthenticationHeaderValue("Bearer", _fixture.GerarToken(new Permissao[] { }));
+                new AuthenticationHeaderValue("Bearer", _fixture.GerarToken(new Permissao[] { Permissao.PA_I, Permissao.PA_A, Permissao.PA_C }));
 
             var getResult = _fixture._clientApi.GetAsync($"api/v1/professores/{rf}/escolas/{escola}/turmas/anos-letivos/{ano}").Result;
 
