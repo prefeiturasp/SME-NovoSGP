@@ -27,7 +27,7 @@ namespace SME.SGP.Integracao.Teste
             _fixture._clientApi.DefaultRequestHeaders.Clear();
 
             _fixture._clientApi.DefaultRequestHeaders.Authorization =
-                new AuthenticationHeaderValue("Bearer", _fixture.GerarToken(new Permissao[] { Permissao.PA_I, Permissao.PA_C }));
+                new AuthenticationHeaderValue("Bearer", _fixture.GerarToken(new Permissao[] { Permissao.PE_I, Permissao.PE_C }));
 
             var getResult = _fixture._clientApi.GetAsync("api/v1/periodo-escolar?codigoTipoCalendario=1").Result;
 
@@ -42,14 +42,14 @@ namespace SME.SGP.Integracao.Teste
                 _fixture._clientApi.DefaultRequestHeaders.Clear();
 
                 _fixture._clientApi.DefaultRequestHeaders.Authorization =
-                    new AuthenticationHeaderValue("Bearer", _fixture.GerarToken(new Permissao[] { Permissao.C_C, Permissao.C_I, Permissao.C_E }));
+                    new AuthenticationHeaderValue("Bearer", _fixture.GerarToken(new Permissao[] { Permissao.TCE_I }));
 
                 AdicionarTipoCalendario();
 
                 _fixture._clientApi.DefaultRequestHeaders.Clear();
 
                 _fixture._clientApi.DefaultRequestHeaders.Authorization =
-                    new AuthenticationHeaderValue("Bearer", _fixture.GerarToken(new Permissao[] { Permissao.PA_I, Permissao.PA_A }));
+                    new AuthenticationHeaderValue("Bearer", _fixture.GerarToken(new Permissao[] { Permissao.PE_I, Permissao.PE_A }));
 
                 PeriodoEscolarListaDto Dto = AdicionarPeriodo();
 
@@ -83,7 +83,7 @@ namespace SME.SGP.Integracao.Teste
             tipoCalendarioDto.Situacao = true;
 
             var jsonParaPost = new StringContent(JsonConvert.SerializeObject(tipoCalendarioDto), UnicodeEncoding.UTF8, "application/json");
-            var postResult = _fixture._clientApi.PostAsync("api/v1/tipo-calendario/", jsonParaPost).Result;
+            var postResult = _fixture._clientApi.PostAsync("api/v1/calendarios/tipos", jsonParaPost).Result;
 
             Assert.True(postResult.IsSuccessStatusCode);
         }

@@ -43,12 +43,8 @@ const Principal = () => {
       return;
     }
 
-    const temTurma = !!usuario.turmaSelecionada;
-    const temEscola =
-      temTurma &&
-      (usuario.turmaSelecionada.unidadeEscolarSelecionada !== '' &&
-        typeof usuario.turmaSelecionada.unidadeEscolarSelecionada !==
-          'undefined');
+    const temTurma = !!usuario.turmaSelecionada.turma;
+    const temEscola = !!usuario.turmaSelecionada.unidadeEscolar;
 
     setTurmaSelecionada(temTurma);
     setEscolaSelecionada(temEscola);
