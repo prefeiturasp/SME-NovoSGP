@@ -1,4 +1,6 @@
 ﻿using SME.SGP.Dominio.Interfaces;
+using System;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Dominio.Servicos
@@ -7,27 +9,32 @@ namespace SME.SGP.Dominio.Servicos
     {
         private readonly IRepositorioEvento repositorioEvento;
         private readonly IRepositorioEventoTipo repositorioEventoTipo;
+        private readonly IRepositorioFeriadoCalendario repositorioFeriadoCalendario;
         private readonly IRepositorioPeriodoEscolar repositorioPeriodoEscolar;
         private readonly IServicoUsuario servicoUsuario;
 
         public ServicoEvento(IRepositorioEvento repositorioEvento,
                              IRepositorioEventoTipo repositorioEventoTipo,
                              IRepositorioPeriodoEscolar repositorioPeriodoEscolar,
-                             IServicoUsuario servicoUsuario)
+                             IServicoUsuario servicoUsuario,
+                             IRepositorioFeriadoCalendario repositorioFeriadoCalendario)
         {
             this.repositorioEvento = repositorioEvento ?? throw new System.ArgumentNullException(nameof(repositorioEvento));
             this.repositorioEventoTipo = repositorioEventoTipo ?? throw new System.ArgumentNullException(nameof(repositorioEventoTipo));
             this.repositorioPeriodoEscolar = repositorioPeriodoEscolar ?? throw new System.ArgumentNullException(nameof(repositorioPeriodoEscolar));
             this.servicoUsuario = servicoUsuario ?? throw new System.ArgumentNullException(nameof(servicoUsuario));
+            this.repositorioFeriadoCalendario = repositorioFeriadoCalendario ?? throw new System.ArgumentNullException(nameof(repositorioFeriadoCalendario));
         }
 
         public async Task Salvar(Evento evento)
         {
             var tipoEvento = repositorioEventoTipo.ObterPorId(evento.TipoEventoId);
+
             if (tipoEvento == null)
             {
                 throw new NegocioException("O tipo do evento deve ser informado.");
             }
+
             evento.AdicionarTipoEvento(tipoEvento);
 
             evento.ValidaPeriodoEvento();
@@ -53,6 +60,16 @@ namespace SME.SGP.Dominio.Servicos
             }
 
             repositorioEvento.Salvar(evento);
+        }
+
+        public async Task SalvarFeriadosAoCadastrarTipoCalendario(TipoCalendario tipoCalendario)
+        {
+            if (tipoCalendario.Id > 0)
+                return;
+
+            var feriados = repositorioFeriadoCalendario.ObterFeriadosCalendario(new Infra.FiltroFeriadoCalendarioDto { Ano = DateTime.Now.Year });
+
+            if (feriados == null || feriados.Any)
         }
     }
 }
