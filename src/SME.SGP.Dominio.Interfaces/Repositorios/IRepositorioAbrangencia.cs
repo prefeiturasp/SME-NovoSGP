@@ -11,7 +11,7 @@ namespace SME.SGP.Dominio.Interfaces
 
         Task<IEnumerable<AbrangenciaFiltroRetorno>> ObterAbrangenciaPorFiltro(string texto, string login, Guid perfil);
 
-        Task<IEnumerable<AbrangenciaDreRetorno>> ObterDres(string login, Guid perfil, Modalidade modalidade);
+        Task<IEnumerable<AbrangenciaDreRetorno>> ObterDres(string login, Guid perfil, Modalidade? modalidade = null);
 
         Task<IEnumerable<int>> ObterModalidades(string login, Guid perfil);
 

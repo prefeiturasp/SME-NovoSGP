@@ -81,7 +81,7 @@ const CampoTexto = React.forwardRef((props, ref) => {
             ref={ref}
             placeholder={placeholder}
             onChange={onChange}
-            readOnly={desabilitado}
+            disabled={desabilitado}
             onKeyDown={onKeyDown}
             value={value}
           />

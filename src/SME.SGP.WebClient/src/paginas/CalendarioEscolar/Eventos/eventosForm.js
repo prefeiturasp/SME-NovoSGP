@@ -71,18 +71,7 @@ const EventosForm = ({ match }) => {
 
     const montarConsultas = async () => {
       const dres = await api.get('v1/abrangencias/dres');
-      setListaDres(dres.data);
-
-      const listaTipo = await api.get('v1/calendarios/tipos');
-      if (listaTipo && listaTipo.data && listaTipo.data.length) {
-        listaTipo.data.map(item => {
-          item.id = String(item.id);
-          item.descricaoTipoCalendario = `${item.anoLetivo} - ${item.nome} - ${item.descricaoPeriodo}`;
-        });
-        setListaCalendarioEscolar(listaTipo.data);
-      } else {
-        setListaCalendarioEscolar([]);
-      }
+      setListaDres(dres.data || []);
 
       const tiposEvento = await api.get('v1/calendarios/eventos/tipos/listar');
       if (tiposEvento && tiposEvento.data && tiposEvento.data.items) {
@@ -96,15 +85,16 @@ const EventosForm = ({ match }) => {
     }, []);
 
   useEffect(() => {
-    consultaModoEdicao();
+    validarConsultaModoEdicaoENovo();
   }, [listaTipoEvento]);
 
   useEffect(() => {
     montaValidacoes();
   }, [eventoTipoFeriadoSelecionado, tipoDataUnico]);
 
-  const consultaModoEdicao = async ()=> {
+  const validarConsultaModoEdicaoENovo = async ()=> {
     if (match && match.params && match.params.id) {
+      setNovoRegistro(false);
       setBreadcrumbManual(
         match.url,
         'Cadastro de Eventos no Calendário Escolar',
@@ -113,22 +103,35 @@ const EventosForm = ({ match }) => {
         setIdEvento(match.params.id);
         consultaPorId(match.params.id);
     } else {
+
+      montarTipoCalendarioPorId(match.params.tipoCalendarioId);
+
       if (listaDres && listaDres.length == 1) {
         inicial.dreId = String(listaDres[0].codigo);
         const ues = await obterUesPorDre(inicial.dreId);
         setListaUes(ues.data || []);
         if (ues.data.length  == 1) {
           inicial.ueId = String(ues.data[0].codigo);
-        }          
-        setValoresIniciais(inicial);
+        }
       }
+      inicial.tipoCalendarioId = match.params.tipoCalendarioId;
+    }
+  }
+
+  const montarTipoCalendarioPorId = async id=> {
+    const tipoCalendario = await api.get(`v1/calendarios/tipos/${id}`);
+    if (tipoCalendario && tipoCalendario.data) {
+      tipoCalendario.data.id = String(tipoCalendario.data.id);
+      tipoCalendario.data.descricaoTipoCalendario = `${tipoCalendario.data.anoLetivo} - ${tipoCalendario.data.nome} - ${tipoCalendario.data.descricaoPeriodo}`;
+      setListaCalendarioEscolar([tipoCalendario.data]);
+    } else {
+      setListaCalendarioEscolar([]);
     }
   }
 
   const montaValidacoes = ()=> {
     let val = {
-      dataInicio: momentSchema.required('Data obrigatória'),
-      descricao: Yup.string().required('Descrição obrigatória'),
+      dataInicio: momentSchema.required('Data obrigatória'),      
       nome: Yup.string().required('Nome obrigatório'),
       tipoCalendarioId: Yup.string().required('Calendário obrigatório'),
       tipoEventoId: Yup.string().required('Tipo obrigatório'),
@@ -161,6 +164,9 @@ const EventosForm = ({ match }) => {
       if (evento.data.dreId && evento.data.dreId > 0) {
         carregarUes(evento.data.dreId);
       }
+
+      montarTipoCalendarioPorId(evento.data.tipoCalendarioId);
+      
       setValoresIniciais({
         dataFim: evento.data.dataFim ? window.moment(evento.data.dataFim) : '',
         dataInicio: window.moment(evento.data.dataInicio),
@@ -184,8 +190,7 @@ const EventosForm = ({ match }) => {
       });
 
       onChangeTipoEvento(evento.data.tipoEventoId);
-
-      setNovoRegistro(false);
+      
       setExibirAuditoria(true);
     }
   };
@@ -234,7 +239,7 @@ const EventosForm = ({ match }) => {
     const cadastrado = await servicoEvento.salvar(idEvento || 0, valoresForm)
       .catch(e => erros(e));
     if (cadastrado && cadastrado.status == 200) {
-      sucesso('Suas informações foram salvas com sucesso.');
+      sucesso('Evento cadastrado com sucesso');
       history.push('/calendario-escolar/eventos');
     }
   };
@@ -355,6 +360,13 @@ const EventosForm = ({ match }) => {
     });
   };
 
+  const desabilitarData = current => {
+    if (current) {
+      return current < window.moment().startOf('year') || current > window.moment().endOf('year');
+    }
+    return false;
+  }
+
   return (
     <>
       <Cabecalho pagina="Cadastro de Eventos no Calendário Escolar" />
@@ -380,6 +392,7 @@ const EventosForm = ({ match }) => {
                     valueText="descricaoTipoCalendario"
                     onChange={onChangeCampos}
                     placeholder=" Selecione um Calendário Escolar"
+                    disabled
                   />
                 </div>
                 <div className="col-sm-12 col-md-6 col-lg-6 col-xl-4 pb-2">
@@ -417,7 +430,7 @@ const EventosForm = ({ match }) => {
                     onClick={onClickExcluir}
                   />
                   <Button
-                    label="Cadastrar"
+                    label={ novoRegistro ? 'Cadastrar' : 'Alterar'}
                     color={Colors.Roxo}
                     border
                     bold
@@ -496,11 +509,12 @@ const EventosForm = ({ match }) => {
                 <div className="col-sm-12 col-md-6 col-lg-3 col-xl-3 pb-2">
                   <CampoData
                     form={form}
-                    label="Data início do evento"
+                    label={tipoDataUnico ? 'Data do evento': 'Data início do evento'}
                     placeholder="Data início do evento"
                     formatoData="DD/MM/YYYY"
                     name="dataInicio"
                     onChange={onChangeCampos}
+                    desabilitarData={desabilitarData}
                   />
                 </div>
                 {

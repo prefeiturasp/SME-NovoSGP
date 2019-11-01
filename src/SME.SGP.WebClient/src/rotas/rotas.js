@@ -248,7 +248,7 @@ export default function Rotas() {
     tipo: RotasTipo.EstruturadaAutenticada,
   });
 
-  rotas.set('/calendario-escolar/eventos/novo', {
+  rotas.set('/calendario-escolar/eventos/novo/:tipoCalendarioId', {
     breadcrumbName: 'Cadastro de Eventos no Calendário Escolar',
     parent: '/calendario-escolar/eventos',
     component: EventosForm,
