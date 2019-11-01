@@ -22,7 +22,7 @@ namespace SME.SGP.Aplicacao.Servicos
             IList<Claim> claims = new List<Claim>();
 
             claims.Add(new Claim("login", usuarioLogin));
-            claims.Add(new Claim("rf", codigoRf));
+            claims.Add(new Claim("rf", codigoRf ?? string.Empty));
             claims.Add(new Claim("perfil", guidPerfil.ToString()));
 
             foreach (var permissao in permissionamentos)
