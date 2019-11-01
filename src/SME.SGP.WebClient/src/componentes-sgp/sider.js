@@ -207,7 +207,7 @@ const Sider = () => {
             </div>
           </div>
         </Topo>
-      <MenuScope>
+        <MenuScope>
           <div
             className={`menu-scope${
               NavegacaoStore.retraido ? ' menu-scope-retraido' : ''
