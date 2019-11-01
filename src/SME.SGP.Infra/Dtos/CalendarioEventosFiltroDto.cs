@@ -1,6 +1,6 @@
 ﻿namespace SME.SGP.Infra
 {
-    public class CalendarioEventosMesesFiltroDto
+    public class CalendarioEventosFiltroDto
     {
         public string DreId { get; set; }
         public bool EhEventoSme { get; set; }
