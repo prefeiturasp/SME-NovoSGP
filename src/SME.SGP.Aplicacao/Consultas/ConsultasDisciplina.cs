@@ -3,7 +3,6 @@ using SME.SGP.Aplicacao.Integracoes;
 using SME.SGP.Aplicacao.Integracoes.Respostas;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
-using SME.SGP.Infra.Dtos;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -52,19 +51,6 @@ namespace SME.SGP.Aplicacao
             return TratarRetornoDisciplinasPlanejamento(disciplinasDto, filtroDisciplinaPlanejamentoDto);
         }
 
-        private IEnumerable<DisciplinaDto> TratarRetornoDisciplinasPlanejamento(IEnumerable<DisciplinaDto> disciplinas, FiltroDisciplinaPlanejamentoDto filtroDisciplinaPlanejamentoDto)
-        {
-            if (filtroDisciplinaPlanejamentoDto.CodigoDisciplina == 0)
-                return disciplinas;
-
-            var codigosRegencias = new List<int> { 138, 2, 89, 7, 8 };
-
-            if (filtroDisciplinaPlanejamentoDto.Regencia)
-                return disciplinas.Where(x => codigosRegencias.Contains(x.CodigoComponenteCurricular));
-
-            return disciplinas.Where(x => x.CodigoComponenteCurricular == filtroDisciplinaPlanejamentoDto.CodigoDisciplina);
-        }
-
         public async Task<IEnumerable<DisciplinaDto>> ObterDisciplinasPorProfessorETurma(long codigoTurma)
         {
             IEnumerable<DisciplinaDto> disciplinasDto = null;
@@ -110,6 +96,19 @@ namespace SME.SGP.Aplicacao
                 }
             }
             return retorno;
+        }
+
+        private IEnumerable<DisciplinaDto> TratarRetornoDisciplinasPlanejamento(IEnumerable<DisciplinaDto> disciplinas, FiltroDisciplinaPlanejamentoDto filtroDisciplinaPlanejamentoDto)
+        {
+            if (filtroDisciplinaPlanejamentoDto.CodigoDisciplina == 0)
+                return disciplinas;
+
+            var codigosRegencias = new List<int> { 138, 2, 89, 7, 8 };
+
+            if (filtroDisciplinaPlanejamentoDto.Regencia)
+                return disciplinas.Where(x => codigosRegencias.Contains(x.CodigoComponenteCurricular));
+
+            return disciplinas.Where(x => x.CodigoComponenteCurricular == filtroDisciplinaPlanejamentoDto.CodigoDisciplina);
         }
     }
 }
