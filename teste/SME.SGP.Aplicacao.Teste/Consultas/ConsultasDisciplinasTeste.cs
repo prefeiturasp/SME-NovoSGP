@@ -2,6 +2,8 @@
 using SME.SGP.Aplicacao.Integracoes;
 using SME.SGP.Aplicacao.Integracoes.Respostas;
 using SME.SGP.Dominio.Interfaces;
+using SME.SGP.Infra;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -44,13 +46,19 @@ namespace SME.SGP.Aplicacao.Teste.Consultas
                     Regencia=false
                 }
             };
-            servicoEol.Setup(c => c.ObterDisciplinasParaPlanejamento(It.IsAny<long>(), It.IsAny<string>()))
+            servicoEol.Setup(c => c.ObterDisciplinasParaPlanejamento(It.IsAny<long>(), It.IsAny<string>(), It.IsAny<Guid>()))
                   .Returns(Task.FromResult<IEnumerable<DisciplinaResposta>>(disciplinas));
 
             servicoUsuario.Setup(c => c.ObterRf())
                 .Returns("123");
 
-            var retorno = await consultasDisciplinas.ObterDisciplinasParaPlanejamento(10);
+            var filtro = new FiltroDisciplinaPlanejamentoDto
+            {
+                CodigoTurma = 10,
+                Regencia = false
+            };
+
+            var retorno = await consultasDisciplinas.ObterDisciplinasParaPlanejamento(filtro);
             Assert.True(retorno != null);
             Assert.True(retorno.Any());
             Assert.Contains(retorno, c => c.Regencia);

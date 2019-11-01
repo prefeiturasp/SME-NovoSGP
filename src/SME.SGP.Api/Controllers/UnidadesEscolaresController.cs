@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using SME.SGP.Api.Filtros;
 using SME.SGP.Aplicacao;
 using SME.SGP.Dominio;
 using SME.SGP.Infra;
@@ -14,6 +15,7 @@ namespace SME.SGP.Api.Controllers
     {
         [Route("{ueId}/funcionarios")]
         [HttpPost]
+        [Permissao(Permissao.AS_C, Policy = "Bearer")]
         public async Task<IActionResult> ObterFuncionariosPorUe([FromServices]IConsultasUnidadesEscolares consultasUnidadesEscolares,
             BuscaFuncionariosFiltroDto buscaFuncionariosFiltroDto, string ueId)
         {
