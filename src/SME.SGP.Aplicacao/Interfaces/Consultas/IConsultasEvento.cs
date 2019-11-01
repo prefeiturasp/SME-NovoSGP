@@ -6,7 +6,9 @@ namespace SME.SGP.Aplicacao
 {
     public interface IConsultasEvento
     {
-        EventoObterParaEdicaoDto ObterPorId(long id);
+        Task<PaginacaoResultadoDto<EventoCompletoDto>> Listar(FiltroEventosDto filtroEventosDto);
+
+        EventoCompletoDto ObterPorId(long id);
 
         Task<IEnumerable<CalendarioEventosMesesDto>> ObterQuantidadeDeEventosPorMeses(CalendarioEventosFiltroDto calendarioEventosMesesFiltro);
     }
