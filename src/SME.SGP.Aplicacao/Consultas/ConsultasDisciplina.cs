@@ -11,6 +11,7 @@ namespace SME.SGP.Aplicacao
 {
     public class ConsultasDisciplina : IConsultasDisciplina
     {
+        private readonly int[] codigosDisciplinasRegencia = { 138, 2, 89, 7, 8 };
         private readonly IConsultasObjetivoAprendizagem consultasObjetivoAprendizagem;
         private readonly IRepositorioCache repositorioCache;
         private readonly IServicoEOL servicoEOL;
@@ -103,10 +104,8 @@ namespace SME.SGP.Aplicacao
             if (filtroDisciplinaPlanejamentoDto.CodigoDisciplina == 0)
                 return disciplinas;
 
-            var codigosRegencias = new List<int> { 138, 2, 89, 7, 8 };
-
             if (filtroDisciplinaPlanejamentoDto.Regencia)
-                return disciplinas.Where(x => codigosRegencias.Contains(x.CodigoComponenteCurricular));
+                return disciplinas.Where(x => codigosDisciplinasRegencia.Contains(x.CodigoComponenteCurricular));
 
             return disciplinas.Where(x => x.CodigoComponenteCurricular == filtroDisciplinaPlanejamentoDto.CodigoDisciplina);
         }
