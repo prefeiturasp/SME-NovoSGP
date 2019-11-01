@@ -72,7 +72,7 @@ export default function Rotas() {
     temPermissionamento: true
   });
 
-  rotas.set('/planejamento/plano-anual', {
+  rotas.set(RotasDto.PLANO_ANUAL, {
     breadcrumbName: 'Plano Anual',
     menu: ['Planejamento'],
     parent: '/',
