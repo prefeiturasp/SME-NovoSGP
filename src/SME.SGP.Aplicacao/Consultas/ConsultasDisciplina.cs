@@ -1,7 +1,6 @@
 ﻿using Newtonsoft.Json;
 using SME.SGP.Aplicacao.Integracoes;
 using SME.SGP.Aplicacao.Integracoes.Respostas;
-using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System.Collections.Generic;
@@ -12,6 +11,7 @@ namespace SME.SGP.Aplicacao
 {
     public class ConsultasDisciplina : IConsultasDisciplina
     {
+        private readonly int[] codigosDisciplinasRegencia = { 138, 2, 89, 7, 8 };
         private readonly IConsultasObjetivoAprendizagem consultasObjetivoAprendizagem;
         private readonly IRepositorioCache repositorioCache;
         private readonly IServicoEOL servicoEOL;
@@ -28,32 +28,28 @@ namespace SME.SGP.Aplicacao
             this.servicoUsuario = servicoUsuario ?? throw new System.ArgumentNullException(nameof(servicoUsuario));
         }
 
-        public async Task<IEnumerable<DisciplinaDto>> ObterDisciplinasParaPlanejamento(long codigoTurma)
+        public async Task<IEnumerable<DisciplinaDto>> ObterDisciplinasParaPlanejamento(FiltroDisciplinaPlanejamentoDto filtroDisciplinaPlanejamentoDto)
         {
             IEnumerable<DisciplinaDto> disciplinasDto = null;
-            var rfProfessor = servicoUsuario.ObterRf();
-            if (string.IsNullOrWhiteSpace(rfProfessor))
-            {
-                throw new NegocioException("Usuário não possui RF para consultar disciplinas.");
-            }
-            var chaveCache = $"Disciplinas-planejamento-{codigoTurma}-{rfProfessor}";
+
+            var login = servicoUsuario.ObterLoginAtual();
+
+            var chaveCache = $"Disciplinas-planejamento-{filtroDisciplinaPlanejamentoDto.CodigoTurma}-{login}";
             var disciplinasCacheString = repositorioCache.Obter(chaveCache);
 
             if (!string.IsNullOrWhiteSpace(disciplinasCacheString))
-            {
-                disciplinasDto = JsonConvert.DeserializeObject<IEnumerable<DisciplinaDto>>(disciplinasCacheString);
-            }
-            else
-            {
-                var disciplinas = await servicoEOL.ObterDisciplinasParaPlanejamento(codigoTurma, rfProfessor);
-                if (disciplinas != null && disciplinas.Any())
-                {
-                    disciplinasDto = await MapearParaDto(disciplinas);
+                return TratarRetornoDisciplinasPlanejamento(JsonConvert.DeserializeObject<IEnumerable<DisciplinaDto>>(disciplinasCacheString), filtroDisciplinaPlanejamentoDto);
 
-                    await repositorioCache.SalvarAsync(chaveCache, JsonConvert.SerializeObject(disciplinasDto));
-                }
-            }
-            return disciplinasDto;
+            var disciplinas = await servicoEOL.ObterDisciplinasParaPlanejamento(filtroDisciplinaPlanejamentoDto.CodigoTurma, login, servicoUsuario.ObterPerfilAtual());
+
+            if (disciplinas == null || !disciplinas.Any())
+                return disciplinasDto;
+
+            disciplinasDto = await MapearParaDto(disciplinas);
+
+            await repositorioCache.SalvarAsync(chaveCache, JsonConvert.SerializeObject(disciplinasDto));
+
+            return TratarRetornoDisciplinasPlanejamento(disciplinasDto, filtroDisciplinaPlanejamentoDto);
         }
 
         public async Task<IEnumerable<DisciplinaDto>> ObterDisciplinasPorProfessorETurma(long codigoTurma)
@@ -101,6 +97,17 @@ namespace SME.SGP.Aplicacao
                 }
             }
             return retorno;
+        }
+
+        private IEnumerable<DisciplinaDto> TratarRetornoDisciplinasPlanejamento(IEnumerable<DisciplinaDto> disciplinas, FiltroDisciplinaPlanejamentoDto filtroDisciplinaPlanejamentoDto)
+        {
+            if (filtroDisciplinaPlanejamentoDto.CodigoDisciplina == 0)
+                return disciplinas;
+
+            if (filtroDisciplinaPlanejamentoDto.Regencia)
+                return disciplinas.Where(x => codigosDisciplinasRegencia.Contains(x.CodigoComponenteCurricular));
+
+            return disciplinas.Where(x => x.CodigoComponenteCurricular == filtroDisciplinaPlanejamentoDto.CodigoDisciplina);
         }
     }
 }

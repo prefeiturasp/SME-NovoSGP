@@ -24,8 +24,10 @@ class LoginHelper {
         rf,
         usuario: login.usuario,
         modificarSenha: autenticacao.dados.modificarSenha,
-        perfisUsuario: autenticacao.dados.PerfisUsuario,
-        possuiPerfilSmeOuDre: autenticacao.dados.perfisUsuario.possuiPerfilSmeOuDre
+        perfisUsuario: autenticacao.dados.perfisUsuario,
+        possuiPerfilSmeOuDre: autenticacao.dados.perfisUsuario.possuiPerfilSmeOuDre,
+        possuiPerfilDre: autenticacao.dados.perfisUsuario.possuiPerfilDre,
+        possuiPerfilSme: autenticacao.dados.perfisUsuario.possuiPerfilSme,
       })
     );
 

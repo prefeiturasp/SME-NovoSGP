@@ -36,6 +36,11 @@ namespace SME.SGP.Aplicacao
             return MapearParaDto(repositorioEvento.ObterPorId(id));
         }
 
+        public Task<IEnumerable<CalendarioEventosMesesDto>> ObterQuantidadeDeEventosPorMeses(CalendarioEventosFiltroDto calendarioEventosMesesFiltro)
+        {
+            return repositorioEvento.ObterQuantidadeDeEventosPorMeses(calendarioEventosMesesFiltro);
+        }
+
         private IEnumerable<EventoCompletoDto> MapearEventosParaDto(IEnumerable<Evento> items)
         {
             return items?.Select(c => MapearParaDto(c));

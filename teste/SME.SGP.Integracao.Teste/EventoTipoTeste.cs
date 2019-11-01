@@ -145,7 +145,7 @@ namespace SME.SGP.Integracao.Teste
 
         private TestServerFixture ObtenhaCabecalho()
         {
-            var permissoes = new Permissao[] { Permissao.PA_I };
+            var permissoes = new Permissao[] { Permissao.TE_I, Permissao.TE_A, Permissao.TE_C, Permissao.TE_E, };
 
             _fixture = TesteBase.ObtenhaCabecalhoAuthentication(_fixture, permissoes);
 

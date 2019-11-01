@@ -29,7 +29,7 @@ namespace SME.SGP.Integracao.Teste
             _fixture._clientApi.DefaultRequestHeaders.Clear();
 
             _fixture._clientApi.DefaultRequestHeaders.Authorization =
-                new AuthenticationHeaderValue("Bearer", _fixture.GerarToken(new Permissao[] { Permissao.C_C, Permissao.C_I, Permissao.C_E }));
+                new AuthenticationHeaderValue("Bearer", _fixture.GerarToken(new Permissao[] { Permissao.TF_A, Permissao.TF_I, Permissao.TF_E, Permissao.TF_C }));
 
             var feriadoCalendarioDto = new FeriadoCalendarioDto
             {
@@ -85,9 +85,9 @@ namespace SME.SGP.Integracao.Teste
                     var getAllResult = await _fixture._clientApi.PostAsync($"api/v1/calendarios/feriados/listar", jsonGetAll);
                     var dtoTodos = JsonConvert.DeserializeObject<IEnumerable<FeriadoCalendarioDto>>(getAllResult.Content.ReadAsStringAsync().Result);
 
-                    Assert.True(dtoTodos.Count() == 1);
+                    Assert.True(dtoTodos.Any());
 
-                    var getOneResult = await _fixture._clientApi.GetAsync($"api/v1/calendarios/feriados/13");
+                    var getOneResult = await _fixture._clientApi.GetAsync($"api/v1/calendarios/feriados/{dtoTodos.FirstOrDefault().Id}");
                     var dtoUm = JsonConvert.DeserializeObject<TipoCalendarioCompletoDto>(getOneResult.Content.ReadAsStringAsync().Result);
 
                     Assert.NotNull(dtoUm.Nome);

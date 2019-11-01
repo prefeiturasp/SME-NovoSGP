@@ -1,9 +1,11 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import {
   SalvarDisciplinasPlanoAnual,
   PrePost,
+  RemoverFocado,
   Post,
+  Salvar,
   setBimestresErro,
   setLimpartBimestresErro,
   LimparDisciplinaPlanoAnual,
@@ -38,9 +40,14 @@ import {
 import modalidade from '~/dtos/modalidade';
 import SelectComponent from '~/componentes/select';
 import { store } from '~/redux';
+import FiltroPlanoAnualExpandidoDto from '~/dtos/filtroPlanoAnualExpandidoDto';
 
 export default function PlanoAnual() {
-  const bimestres = useSelector(store => store.bimestres.bimestres);
+  const bimestres = useSelector(state => state.bimestres.bimestres);
+
+  const bimestreFocado = useSelector(state =>
+    state.bimestres.bimestres.find(x => x && x.focado)
+  );
 
   const disciplinasPlanoAnual = useSelector(
     store => store.bimestres.disciplinasPlanoAnual
@@ -57,21 +64,23 @@ export default function PlanoAnual() {
 
   const turmaSelecionada = usuario.turmaSelecionada;
   const emEdicao = bimestres.filter(x => x.ehEdicao).length > 0;
-  const ehDisabled = usuario.turmaSelecionada.length === 0;
+  const ehDisabled = !usuario.turmaSelecionada.turma;
   const dispatch = useDispatch();
   const [modalConfirmacaoVisivel, setModalConfirmacaoVisivel] = useState({
     modalVisivel: false,
     sairTela: false,
   });
 
+  const refFocado = useRef(null);
+
   const ehEja =
-    turmaSelecionada[0] && turmaSelecionada[0].codModalidade === modalidade.EJA
+    turmaSelecionada && turmaSelecionada.codModalidade === modalidade.EJA
       ? true
       : false;
 
   const ehMedio =
-    turmaSelecionada[0] &&
-    turmaSelecionada[0].codModalidade === modalidade.ENSINO_MEDIO
+    turmaSelecionada &&
+    turmaSelecionada.codModalidade === modalidade.ENSINO_MEDIO
       ? true
       : false;
 
@@ -89,10 +98,10 @@ export default function PlanoAnual() {
 
   const LayoutEspecial = () => ehEja || ehMedio || disciplinaSemObjetivo;
 
-  const anoLetivo = turmaSelecionada[0] ? turmaSelecionada[0].anoLetivo : 0;
-  const escolaId = turmaSelecionada[0] ? turmaSelecionada[0].codEscola : 0;
-  const anoEscolar = turmaSelecionada[0] ? turmaSelecionada[0].ano : 0;
-  const turmaId = turmaSelecionada[0] ? turmaSelecionada[0].codTurma : 0;
+  const anoLetivo = turmaSelecionada ? turmaSelecionada.anoLetivo : 0;
+  const escolaId = turmaSelecionada ? turmaSelecionada.unidadeEscolar : 0;
+  const anoEscolar = turmaSelecionada ? turmaSelecionada.ano : 0;
+  const turmaId = turmaSelecionada ? turmaSelecionada.turma : 0;
 
   useEffect(() => {
     VerificarEnvio();
@@ -134,6 +143,14 @@ export default function PlanoAnual() {
   }
 
   useEffect(() => {
+    if (bimestreFocado && refFocado.current) {
+      refFocado.current.scrollIntoViewIfNeeded(refFocado.current);
+
+      dispatch(RemoverFocado());
+    }
+  }, [bimestreFocado]);
+
+  useEffect(() => {
     verificarSeEhEdicao();
   }, [disciplinaSelecionada]);
 
@@ -160,7 +177,7 @@ export default function PlanoAnual() {
   const verificarSeEhEdicao = async () => {
     dispatch(LimparBimestres());
 
-    if (!turmaSelecionada[0]) return;
+    if (!turmaSelecionada) return;
 
     if (!disciplinaSelecionada) return;
 
@@ -179,8 +196,6 @@ export default function PlanoAnual() {
       disciplinaSelecionada
     );
 
-    console.log(disciplinas);
-
     const semObjetivos =
       disciplinas && disciplinas.filter(x => !x.possuiObjetivos).length > 0;
 
@@ -196,6 +211,53 @@ export default function PlanoAnual() {
     );
 
     dispatch(SalvarBimestres(bimestres));
+
+    if (ehEdicao) {
+      const filtro = new FiltroPlanoAnualExpandidoDto(
+        anoLetivo,
+        disciplinaSelecionada.codigo,
+        escolaId,
+        turmaSelecionada.modalidade,
+        turmaId
+      );
+
+      const retornoBimestre = await PlanoAnualHelper.ObterBimestreExpandido(
+        filtro
+      );
+
+      if (!retornoBimestre.sucesso) return;
+
+      const bimestreExpandido = retornoBimestre.bimestre;
+
+      if (!bimestreExpandido) return;
+
+      dispatch(
+        Salvar(bimestreExpandido.bimestre, {
+          ...bimestres[bimestreExpandido.bimestre],
+          objetivo: bimestreExpandido.descricao,
+          ehExpandido: true,
+          id: bimestreExpandido.id,
+          alteradoPor: bimestreExpandido.alteradoPor,
+          alteradoEm: bimestreExpandido.alteradoEm,
+          alteradoRF: bimestreExpandido.alteradoRF,
+          criadoRF: bimestreExpandido.criadoRF,
+          criadoEm: bimestreExpandido.criadoEm,
+          focado: true,
+          LayoutEspecial:
+            bimestreExpandido.migrado ||
+            (bimestres[bimestreExpandido.bimestre] &&
+              bimestres[bimestreExpandido.bimestre].LayoutEspecial),
+          migrado: bimestreExpandido.migrado,
+          criadoPor: bimestreExpandido.criadoPor,
+          objetivosAprendizagem: bimestreExpandido.objetivosAprendizagem
+            ? bimestreExpandido.objetivosAprendizagem.map(obj => {
+                obj.selected = true;
+                return obj;
+              })
+            : [],
+        })
+      );
+    }
   };
 
   const confirmarCancelamento = () => {
@@ -376,7 +438,7 @@ export default function PlanoAnual() {
     <>
       <div className="col-md-12">
         {' '}
-        {!turmaSelecionada[0] ? (
+        {!turmaSelecionada.turma ? (
           <Row className="mb-0 pb-0">
             <Grid cols={12} className="mb-0 pb-0">
               <Alert
@@ -470,12 +532,12 @@ export default function PlanoAnual() {
           <Select
             placeholder="Selecione uma disciplina"
             onChange={AoMudarDisciplinaPlanoAnual}
-            disabled={turmaSelecionada[0] ? false : true}
+            disabled={
+              ehDisabled ||
+              (disciplinasPlanoAnual && disciplinasPlanoAnual.length === 1)
+            }
             className="col-md-6 form-control p-r-10"
             value={disciplinaSelecionada ? disciplinaSelecionada.codigo : 0}
-            disabled={
-              disciplinasPlanoAnual && disciplinasPlanoAnual.length === 1
-            }
           >
             <option value={0}> Selecione uma disciplina </option>{' '}
             {disciplinasPlanoAnual &&
@@ -498,7 +560,9 @@ export default function PlanoAnual() {
             color={Colors.Azul}
             onClick={onCopiarConteudoClick}
             border
-            disabled={turmaSelecionada[0] && !emEdicao ? false : true}
+            disabled={
+              ehDisabled || (turmaSelecionada && !emEdicao ? false : true)
+            }
           />{' '}
         </Grid>{' '}
         <Grid cols={4} className="d-flex justify-content-end mb-3">
@@ -531,11 +595,14 @@ export default function PlanoAnual() {
           {' '}
           {bimestres && disciplinaSelecionada
             ? bimestres.map(bim => {
+                console.log(bim.focado);
                 return (
                   <Bimestre
+                    ref={bim.focado ? refFocado : null}
                     disabled={ehDisabled}
                     key={bim.indice}
                     indice={bim.indice}
+                    focado={bim.focado}
                     modalidadeEja={ehEja}
                     disciplinaSelecionada={
                       disciplinaSelecionada && disciplinaSelecionada.codigo

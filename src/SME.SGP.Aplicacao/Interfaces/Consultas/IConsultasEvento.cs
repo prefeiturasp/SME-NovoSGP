@@ -1,4 +1,5 @@
 ﻿using SME.SGP.Infra;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
@@ -8,5 +9,7 @@ namespace SME.SGP.Aplicacao
         Task<PaginacaoResultadoDto<EventoCompletoDto>> Listar(FiltroEventosDto filtroEventosDto);
 
         EventoCompletoDto ObterPorId(long id);
+
+        Task<IEnumerable<CalendarioEventosMesesDto>> ObterQuantidadeDeEventosPorMeses(CalendarioEventosFiltroDto calendarioEventosMesesFiltro);
     }
 }

@@ -35,6 +35,12 @@ export function SelecionarDisciplinaPlanoAnual(codigo) {
   };
 }
 
+export function RemoverFocado() {
+  return {
+    type: '@bimestres/RemoverFocado',
+  };
+}
+
 export function LimparDisciplinaPlanoAnual() {
   return {
     type: '@bimestres/LimparDisciplinaPlanoAnual',
@@ -253,11 +259,18 @@ export function removerSelecaoTodosObjetivos(indice) {
   };
 }
 
-export function ObterBimestreServidor(Bimestre, disciplinaSelecionada, layoutEspecial) {
-
-  const filtro = new filtroPlanoAnualDto(Bimestre.anoLetivo, Bimestre.indice, Bimestre.escolaId, Bimestre.turmaId, disciplinaSelecionada);
-
-  console.log(layoutEspecial);
+export function ObterBimestreServidor(
+  Bimestre,
+  disciplinaSelecionada,
+  layoutEspecial
+) {
+  const filtro = new filtroPlanoAnualDto(
+    Bimestre.anoLetivo,
+    Bimestre.indice,
+    Bimestre.escolaId,
+    Bimestre.turmaId,
+    disciplinaSelecionada
+  );
 
   return dispatch => {
     Servico.obterBimestre(filtro)
