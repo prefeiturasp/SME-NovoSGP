@@ -42,6 +42,7 @@ const PeriodosEscolares = () => {
   const usuario = useSelector(store => store.usuario);
   const permissoesTela = usuario.permissoes[RotasDto.PLANO_CICLO];
   const [somenteConsulta, setSomenteConsulta] = useState(false);
+  const [desabilitaCampos, setDesabilitaCampos] = useState(false);
 
   const validacaoPrimeiroBim = {
     primeiroBimestreDataInicial: momentSchema.required(
@@ -259,6 +260,7 @@ const PeriodosEscolares = () => {
       periodoAtual.data.periodos &&
       periodoAtual.data.periodos.length
     ) {
+      setDesabilitaCampos(!permissoesTela.podeAlterar || somenteConsulta);
       periodoAtual.data.periodos.forEach(item => {
         switch (item.bimestre) {
           case 1:
@@ -281,6 +283,8 @@ const PeriodosEscolares = () => {
             break;
         }
       });
+    }else{
+      setDesabilitaCampos(!permissoesTela.podeIncluir || somenteConsulta);
     }
     setPeriodoEscolarEdicao(periodoAtual.data);
     setValoresIniciais(bimestresValorInicial);
@@ -315,6 +319,7 @@ const PeriodosEscolares = () => {
             label="Início do Bimestre"
             name="primeiroBimestreDataInicial"
             onChange={onChangeCamposData}
+            disabled={desabilitaCampos}
           />
         </div>
         <div className="col-sm-4 col-md-4 col-lg-3 col-xl-3">
@@ -325,6 +330,7 @@ const PeriodosEscolares = () => {
             label="Fim do Bimestre"
             name="primeiroBimestreDataFinal"
             onChange={onChangeCamposData}
+            disabled={desabilitaCampos}
           />
         </div>
       </div>
@@ -346,6 +352,7 @@ const PeriodosEscolares = () => {
             formatoData="DD/MM/YYYY"
             name="segundoBimestreDataInicial"
             onChange={onChangeCamposData}
+            disabled={desabilitaCampos}
           />
         </div>
         <div className="col-sm-4 col-md-4 col-lg-3 col-xl-3">
@@ -355,6 +362,7 @@ const PeriodosEscolares = () => {
             formatoData="DD/MM/YYYY"
             name="segundoBimestreDataFinal"
             onChange={onChangeCamposData}
+            disabled={desabilitaCampos}
           />
         </div>
       </div>
@@ -376,6 +384,7 @@ const PeriodosEscolares = () => {
             formatoData="DD/MM/YYYY"
             name="terceiroBimestreDataInicial"
             onChange={onChangeCamposData}
+            disabled={desabilitaCampos}
           />
         </div>
         <div className="col-sm-4 col-md-4 col-lg-3 col-xl-3">
@@ -385,6 +394,7 @@ const PeriodosEscolares = () => {
             formatoData="DD/MM/YYYY"
             name="terceiroBimestreDataFinal"
             onChange={onChangeCamposData}
+            disabled={desabilitaCampos}
           />
         </div>
       </div>
@@ -406,6 +416,7 @@ const PeriodosEscolares = () => {
             formatoData="DD/MM/YYYY"
             name="quartoBimestreDataInicial"
             onChange={onChangeCamposData}
+            disabled={desabilitaCampos}
           />
         </div>
         <div className="col-sm-4 col-md-4 col-lg-3 col-xl-3">
@@ -415,6 +426,7 @@ const PeriodosEscolares = () => {
             formatoData="DD/MM/YYYY"
             name="quartoBimestreDataFinal"
             onChange={onChangeCamposData}
+            disabled={desabilitaCampos}
           />
         </div>
       </div>
@@ -463,7 +475,7 @@ const PeriodosEscolares = () => {
                     bold
                     className="mr-3"
                     onClick={() => onClickCancelar(form)}
-                    disabled={!modoEdicao}
+                    disabled={!modoEdicao || desabilitaCampos}
                   />
                   <Button
                     label="Cadastrar"
@@ -471,7 +483,7 @@ const PeriodosEscolares = () => {
                     border
                     bold
                     type="submit"
-                    disabled={!calendarioEscolarSelecionado}
+                    disabled={!calendarioEscolarSelecionado || desabilitaCampos}
                   />
                 </div>
               </div>
