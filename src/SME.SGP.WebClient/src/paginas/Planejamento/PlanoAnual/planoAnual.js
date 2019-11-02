@@ -65,11 +65,12 @@ export default function PlanoAnual() {
   const usuario = useSelector(store => store.usuario);
 
   const permissoesTela = usuario.permissoes[RotasDto.PLANO_ANUAL];
-  const [somenteConsulta, setSomenteConsulta] = useState(verificaSomenteConsulta(permissoesTela));
+  const [somenteConsulta, setSomenteConsulta] = useState(false);
 
   const turmaSelecionada = usuario.turmaSelecionada;
   const emEdicao = bimestres.filter(x => x.ehEdicao).length > 0;
   const ehDisabled = somenteConsulta || !permissoesTela.podeAlterar? true : !usuario.turmaSelecionada.turma;
+  const ehDisabledComPermissao = (!somenteConsulta || permissoesTela.podeAlterar) && usuario.turmaSelecionada.turma;
   const dispatch = useDispatch();
   const [modalConfirmacaoVisivel, setModalConfirmacaoVisivel] = useState({
     modalVisivel: false,
@@ -115,6 +116,7 @@ export default function PlanoAnual() {
   }, [bimestres]);
 
   useEffect(() => {
+    setSomenteConsulta(verificaSomenteConsulta(permissoesTela));
     document.addEventListener('keydown', onF5Click, true);
     document.addEventListener('keyup', onF5Click, true);
 
@@ -129,7 +131,7 @@ export default function PlanoAnual() {
   }, []);
 
   useEffect(() => {
-    if (!ehDisabled) obterDisciplinasPlanoAnual();
+    if (ehDisabledComPermissao) obterDisciplinasPlanoAnual();
   }, [turmaSelecionada]);
 
   function onF5Click(e) {
@@ -538,7 +540,7 @@ export default function PlanoAnual() {
             placeholder="Selecione uma disciplina"
             onChange={AoMudarDisciplinaPlanoAnual}
             disabled={
-              ehDisabled ||
+              ehDisabledComPermissao ||
               (disciplinasPlanoAnual && disciplinasPlanoAnual.length === 1)
             }
             className="col-md-6 form-control p-r-10"
