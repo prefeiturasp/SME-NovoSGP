@@ -6,7 +6,11 @@ const RotasDto = {
   TIPO_EVENTOS:'/calendario-escolar/tipo-eventos',
   ATRIBUICAO_SUPERVISOR_LISTA:'/gestao/atribuicao-supervisor-lista',
   MEUS_DADOS:'/meus-dados',
-  NOTIFICACOES: '/notificacoes'
+  NOTIFICACOES: '/notificacoes',
+  REINICIAR_SENHA: '/usuarios/reiniciar-senha',
+  TIPO_CALENDARIO_ESCOLAR: '/calendario-escolar/tipo-calendario-escolar',
+  TIPO_FERIADO: '/calendario-escolar/tipo-feriado',
+  EVENTOS:'/calendario-escolar/eventos'
 }
 
 export default RotasDto;
