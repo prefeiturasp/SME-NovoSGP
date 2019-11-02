@@ -1,18 +1,26 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useSelector } from 'react-redux';
-import styled from 'styled-components';
 import shortid from 'shortid';
-import { store } from '../redux';
+import { store } from '~/redux';
 import {
   selecionarTurma,
   turmasUsuario,
   removerTurma,
-} from '../redux/modulos/usuario/actions';
-import Grid from '../componentes/grid';
-import Button from '../componentes/button';
-import { Base, Colors } from '../componentes/colors';
-import SelectComponent from '../componentes/select';
-import api from '../servicos/api';
+} from '~/redux/modulos/usuario/actions';
+import Grid from '~/componentes/grid';
+import Button from '~/componentes/button';
+import { Base, Colors } from '~/componentes/colors';
+import SelectComponent from '~/componentes/select';
+import api from '~/servicos/api';
+import {
+  Container,
+  Campo,
+  Icone,
+  Busca,
+  Fechar,
+  SetaFunction,
+  ItemLista,
+} from './index.css';
 import {
   salvarAnosLetivos,
   salvarModalidades,
@@ -27,76 +35,15 @@ const Filtro = () => {
   const [alternarFocoCampo, setAlternarFocoCampo] = useState(false);
   const [alternarFocoBusca, setAlternarFocoBusca] = useState(false);
 
-  const Container = styled.div`
-    width: 568px !important;
-    z-index: 100;
-    @media (max-width: 575.98px) {
-      max-width: 80%;
-    }
-  `;
-
-  const Campo = styled.input`
-    background: ${Base.CinzaFundo};
-    font-weight: bold;
-    height: 45px;
-    &::placeholder {
-      font-weight: normal;
-    }
-    &:focus {
-      background: ${Base.Branco};
-      box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
-      color ${Base.Preto};
-      font-weight: normal;
-      &:read-only {
-        background: ${Base.CinzaFundo};
-        font-weight: bold;
-        box-shadow: none;
-      }
-    }
-  `;
-
-  const Icone = styled.i`
-    color: ${Base.CinzaMako};
-    cursor: pointer;
-  `;
-
-  const Busca = styled(Icone)`
-    left: 0;
-    max-height: 23px;
-    max-width: 14px;
-    padding: 1rem;
-    right: 0;
-    top: 0;
-  `;
-
-  const Fechar = styled(Icone)`
-    right: 50px;
-    top: 15px;
-  `;
-
-  const Seta = styled(Icone)`
-    background: ${Base.CinzaDesabilitado};
-    max-height: 36px;
-    max-width: 36px;
-    padding: 0.7rem 0.9rem;
-    right: 5px;
-    top: 5px;
-    transition: transform 0.3s;
-    ${alternarFocoBusca && 'transform: rotate(180deg);'}
-  `;
-
-  const ItemLista = styled.li`
-    cursor: pointer;
-    &:hover,
-    &:focus,
-    &.selecionado {
-      background: ${Base.Roxo};
-      color: ${Base.Branco};
-    }
-  `;
+  const Seta = SetaFunction(alternarFocoBusca);
 
   const divBuscaRef = useRef();
   const campoBuscaRef = useRef();
+
+  const usuarioStore = useSelector(state => state.usuario);
+  const [turmaUsuarioSelecionada, setTurmaUsuarioSelecionada] = useState(
+    usuarioStore.turmaSelecionada
+  );
 
   const [campoAnoLetivoDesabilitado, setCampoAnoLetivoDesabilitado] = useState(
     true
@@ -117,11 +64,15 @@ const Filtro = () => {
 
   const anosLetivoStore = useSelector(state => state.filtro.anosLetivos);
   const [anosLetivos, setAnosLetivos] = useState(anosLetivoStore);
-  const [anoLetivoSelecionado, setAnoLetivoSelecionado] = useState();
+  const [anoLetivoSelecionado, setAnoLetivoSelecionado] = useState(
+    turmaUsuarioSelecionada.anoLetivo
+  );
 
   const modalidadesStore = useSelector(state => state.filtro.modalidades);
   const [modalidades, setModalidades] = useState(modalidadesStore);
-  const [modalidadeSelecionada, setModalidadeSelecionada] = useState();
+  const [modalidadeSelecionada, setModalidadeSelecionada] = useState(
+    turmaUsuarioSelecionada.modalidade
+  );
 
   const periodosStore = useSelector(state => state.filtro.periodos);
   const [periodos, setPeriodos] = useState(periodosStore);
@@ -129,7 +80,9 @@ const Filtro = () => {
 
   const dresStore = useSelector(state => state.filtro.dres);
   const [dres, setDres] = useState(dresStore);
-  const [dreSelecionada, setDreSelecionada] = useState();
+  const [dreSelecionada, setDreSelecionada] = useState(
+    turmaUsuarioSelecionada.dre
+  );
 
   const unidadesEscolaresStore = useSelector(
     state => state.filtro.unidadesEscolares
@@ -137,15 +90,14 @@ const Filtro = () => {
   const [unidadesEscolares, setUnidadesEscolares] = useState(
     unidadesEscolaresStore
   );
-  const [unidadeEscolarSelecionada, setUnidadeEscolarSelecionada] = useState();
+  const [unidadeEscolarSelecionada, setUnidadeEscolarSelecionada] = useState(
+    turmaUsuarioSelecionada.unidadeEscolar
+  );
 
   const turmasStore = useSelector(state => state.filtro.turmas);
   const [turmas, setTurmas] = useState(turmasStore);
-  const [turmaSelecionada, setTurmaSelecionada] = useState();
-
-  const usuarioStore = useSelector(state => state.usuario);
-  const [turmaUsuarioSelecionada, setTurmaUsuarioSelecionada] = useState(
-    usuarioStore.turmaSelecionada
+  const [turmaSelecionada, setTurmaSelecionada] = useState(
+    turmaUsuarioSelecionada.turma
   );
 
   const [textoAutocomplete, setTextoAutocomplete] = useState();
@@ -154,6 +106,9 @@ const Filtro = () => {
   useEffect(() => {
     let estado = true;
     const anosLetivos = [];
+
+    if (anoLetivoSelecionado) return;
+
     ServicoFiltro.listarAnosLetivos().then(resposta => {
       if (resposta.data) {
         resposta.data.forEach(ano => {
@@ -168,6 +123,22 @@ const Filtro = () => {
     });
     return () => (estado = false);
   }, []);
+
+  useEffect(() => {
+    let estado = true;
+    if (
+      estado &&
+      typeof turmaUsuarioSelecionada === 'object' &&
+      Object.keys(turmaUsuarioSelecionada).length > 0
+    ) {
+      setAnoLetivoSelecionado(turmaUsuarioSelecionada.anoLetivo);
+      setModalidadeSelecionada(turmaUsuarioSelecionada.modalidade.toString());
+      setDreSelecionada(turmaUsuarioSelecionada.dre);
+      setUnidadeEscolarSelecionada(turmaUsuarioSelecionada.unidadeEscolar);
+      setTurmaSelecionada(turmaUsuarioSelecionada.turma);
+    }
+    return () => (estado = false);
+  }, [turmaUsuarioSelecionada]);
 
   useEffect(() => {
     if (anosLetivos && anosLetivos.length === 1) {
@@ -330,23 +301,6 @@ const Filtro = () => {
   useEffect(() => {
     if (turmas && turmas.length === 1) setTurmaSelecionada(turmas[0].valor);
   }, [turmas]);
-
-  useEffect(() => {
-    let estado = true;
-    if (
-      estado &&
-      typeof turmaUsuarioSelecionada === 'object' &&
-      Object.keys(turmaUsuarioSelecionada).length > 0
-    ) {
-      setAnoLetivoSelecionado(turmaUsuarioSelecionada.anoLetivo);
-      setModalidadeSelecionada(turmaUsuarioSelecionada.modalidade.toString());
-      setDreSelecionada(turmaUsuarioSelecionada.dre);
-      setUnidadeEscolarSelecionada(turmaUsuarioSelecionada.unidadeEscolar);
-      setTurmaSelecionada(turmaUsuarioSelecionada.turma);
-      setTurmaUsuarioSelecionada(turmaUsuarioSelecionada.desc);
-    }
-    return () => (estado = false);
-  }, [turmaUsuarioSelecionada]);
 
   const aplicarFiltro = () => {
     if (
@@ -575,7 +529,7 @@ const Filtro = () => {
             onChange={onChangeAutocomplete}
             onKeyDown={aoPressionarTeclaBaixoAutocomplete}
             readOnly={!!turmaUsuarioSelecionada}
-            value={turmaUsuarioSelecionada || textoAutocomplete}
+            value={turmaUsuarioSelecionada.desc || textoAutocomplete}
           />
           {turmaUsuarioSelecionada && turmaUsuarioSelecionada.length > 0 && (
             <Fechar

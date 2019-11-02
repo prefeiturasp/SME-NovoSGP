@@ -51,7 +51,7 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(IEnumerable<AbrangenciaDreRetorno>), 200)]
         [ProducesResponseType(401)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        public async Task<IActionResult> ObterDres([FromQuery]Modalidade modalidade)
+        public async Task<IActionResult> ObterDres([FromQuery]Modalidade? modalidade)
         {
             var dres = await consultasAbrangencia.ObterDres(modalidade);
             if (dres.Any())
@@ -98,7 +98,7 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(401)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [ProducesResponseType(typeof(RetornoBaseDto), 601)]
-        public async Task<IActionResult> ObterUes(string codigoDre, [FromQuery]Modalidade modalidade)
+        public async Task<IActionResult> ObterUes(string codigoDre, [FromQuery]Modalidade? modalidade)
         {
             var ues = await consultasAbrangencia.ObterUes(codigoDre, modalidade);
             if (ues.Any())
