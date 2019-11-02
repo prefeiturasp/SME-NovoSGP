@@ -1,5 +1,5 @@
 /* eslint-disable func-names */
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Formik, Form } from 'formik';
 import * as Yup from 'yup';
 import '~/servicos/Validacoes/regex';
@@ -11,11 +11,21 @@ import { Validacoes, Validacao } from './formularioSenha.css';
 import api from '~/servicos/api';
 import { sucesso } from '~/servicos/alertas';
 import AlertaBalao from '~/componentes/alertaBalao';
+import { useSelector } from 'react-redux';
+import RotasDto from '~/dtos/rotasDto';
+import { verificaSomenteConsulta } from '~/servicos/servico-navegacao';
 
 const FormularioSenha = () => {
   const [exibirModal, setExibirModal] = useState(false);
   const [erroAlertaBalao, setErroAlertaBalao] = useState('');
-  const [exibirAlertaBalao, setExibirAlertaBalao] = useState(false);
+  const [exibirAlertaBalao, setExibirAlertaBalao] = useState(false);  
+  const usuarioStore = useSelector(store => store.usuario);
+  const permissoesTela = usuarioStore.permissoes[RotasDto.PLANO_CICLO];
+  const [somenteConsulta, setSomenteConsulta] = useState(false);
+
+  useEffect(() =>{
+    setSomenteConsulta(verificaSomenteConsulta(permissoesTela));
+  }, [])
 
   const fecharModal = form => {
     form.handleReset();
@@ -243,6 +253,7 @@ const FormularioSenha = () => {
         <Button
           label="Editar"
           color={Colors.Roxo}
+          disabled={somenteConsulta || !permissoesTela.podeEditar}
           border
           bold
           onClick={() => setExibirModal(true)}
