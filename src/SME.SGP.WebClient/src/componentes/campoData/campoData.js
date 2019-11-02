@@ -110,7 +110,7 @@ const CampoData = props => {
           valorData = valorData || '';
           onChange(valorData);
         }}
-        value={valor || null}z
+        value={valor || null}
       />
     );
   };
