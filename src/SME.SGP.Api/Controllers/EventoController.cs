@@ -19,8 +19,7 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         public async Task<IActionResult> Alterar(long id, [FromBody]EventoDto eventoDto, [FromServices]IComandosEvento comandosEvento)
         {
-            await comandosEvento.Alterar(id, eventoDto);
-            return Ok();
+            return Ok(await comandosEvento.Alterar(id, eventoDto));
         }
 
         [HttpPost]
@@ -28,8 +27,7 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         public async Task<IActionResult> Criar([FromServices]IComandosEvento comandosEvento, [FromBody]EventoDto eventoDto)
         {
-            await comandosEvento.Criar(eventoDto);
-            return Ok();
+            return Ok(await comandosEvento.Criar(eventoDto));
         }
 
         [HttpDelete]
