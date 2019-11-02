@@ -78,7 +78,7 @@ namespace SME.SGP.Aplicacao
                     }
                     catch (NegocioException nex)
                     {
-                        mensagens.Add(new RetornoCopiarEventoDto($"Erro ao copiar para o calendário: '{tipoCalendario.NomeCalendario}'. Erro: {nex.Message}"));
+                        mensagens.Add(new RetornoCopiarEventoDto($"Erro ao copiar para o calendário: '{tipoCalendario.NomeCalendario}'. {nex.Message}"));
                     }
                 }
             }
