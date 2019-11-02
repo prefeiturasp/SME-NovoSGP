@@ -13,6 +13,7 @@ namespace SME.SGP.Dominio.Servicos.Teste
         private readonly Mock<IRepositorioEvento> repositorioEvento;
         private readonly Mock<IRepositorioEventoTipo> repositorioEventoTipo;
         private readonly Mock<IRepositorioPeriodoEscolar> repositorioPeriodoEscolar;
+        private readonly Mock<IRepositorioTipoCalendario> repositorioTipoCalendario;
         private readonly ServicoEvento servicoEvento;
         private readonly Mock<IServicoUsuario> servicoUsuario;
 
@@ -22,7 +23,8 @@ namespace SME.SGP.Dominio.Servicos.Teste
             repositorioEventoTipo = new Mock<IRepositorioEventoTipo>();
             repositorioPeriodoEscolar = new Mock<IRepositorioPeriodoEscolar>();
             servicoUsuario = new Mock<IServicoUsuario>();
-            servicoEvento = new ServicoEvento(repositorioEvento.Object, repositorioEventoTipo.Object, repositorioPeriodoEscolar.Object, servicoUsuario.Object);
+            repositorioTipoCalendario = new Mock<IRepositorioTipoCalendario>();
+            servicoEvento = new ServicoEvento(repositorioEvento.Object, repositorioEventoTipo.Object, repositorioPeriodoEscolar.Object, servicoUsuario.Object, repositorioTipoCalendario.Object);
         }
 
         [Fact]
@@ -35,6 +37,12 @@ namespace SME.SGP.Dominio.Servicos.Teste
                     TipoData = EventoTipoData.Unico,
                     LocalOcorrencia = EventoLocalOcorrencia.UE
                 });
+
+            repositorioTipoCalendario.Setup(c => c.ObterPorId(It.IsAny<long>()))
+               .Returns(new TipoCalendario
+               {
+                   Id = 1,
+               });
 
             var usuario = new Usuario();
             var perfilProfessor = new PrioridadePerfil
