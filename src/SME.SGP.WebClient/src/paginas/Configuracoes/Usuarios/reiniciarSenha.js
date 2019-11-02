@@ -86,7 +86,6 @@ export default function ReiniciarSenha() {
     carregarDres();
 
     verificaSomenteConsulta(permissoesTela);
-    console.log(permissoesTela);
   }, []);
 
   const onClickVoltar = () => history.push(URL_HOME);
