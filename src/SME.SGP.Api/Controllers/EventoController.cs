@@ -43,6 +43,24 @@ namespace SME.SGP.Api.Controllers
             return Ok();
         }
 
+        [HttpGet]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 601)]
+        public async Task<IActionResult> Listar([FromQuery]FiltroEventosDto filtroEventosDto, [FromServices] IConsultasEvento consultasEvento)
+        {
+            return Ok(await consultasEvento.Listar(filtroEventosDto));
+        }
+
+        [HttpGet("{id}")]
+        [ProducesResponseType(typeof(EventoCompletoDto), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 601)]
+        //[Permissao(Permissao.C_I, Policy = "Bearer")]
+        public IActionResult ObterPorId(long id, [FromServices] IConsultasEvento consultasEvento)
+        {
+            return Ok(consultasEvento.ObterPorId(id));
+        }
+
         [HttpGet("meses")]
         [ProducesResponseType(typeof(IEnumerable<CalendarioEventosMesesDto>), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
@@ -58,15 +76,6 @@ namespace SME.SGP.Api.Controllers
             else return StatusCode(204);
         }
 
-        [HttpGet("{id}")]
-        [ProducesResponseType(typeof(EventoObterParaEdicaoDto), 200)]
-        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        [ProducesResponseType(typeof(RetornoBaseDto), 601)]
-        //[Permissao(Permissao.C_I, Policy = "Bearer")]
-        public IActionResult ObterPorId(long id, [FromServices] IConsultasEvento consultasEvento)
-        {
-            return Ok(consultasEvento.ObterPorId(id));
-        }
 
         [HttpGet("meses/{mes}/tipos")]
         [ProducesResponseType(204)]
