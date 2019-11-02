@@ -12,3 +12,4 @@ const RotasDto = {
   EVENTOS:'/calendario-escolar/eventos'
 }
 
+export default RotasDto;
