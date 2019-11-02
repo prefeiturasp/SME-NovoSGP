@@ -6,12 +6,36 @@ import { Base } from '~/componentes/colors';
 import api from '~/servicos/api';
 
 const Div = styled.div``;
-const TipoEventosLista = styled(Div)``;
-const TipoEvento = styled(Div)``;
+const TipoEventosLista = styled(Div)`
+  bottom: 5px;
+  right: 10px;
+`;
+const TipoEvento = styled(Div)`
+  font-size: 10px;
+  margin-bottom: 2px;
+  &:last-child {
+    margin-bottom: 0;
+  }
+`;
 
 const Dia = props => {
   const [estaAberto, setEstaAberto] = useState(false);
   const { dia, mesAtual, filtros, diaSelecionado } = props;
+  const [tipoEventosDiaLista, setTipoEventosDiaLista] = useState([]);
+
+  useEffect(() => {
+    if (mesAtual && dia) {
+      api
+        .get(`v1/calendarios/eventos/meses/${mesAtual}/tipos`)
+        .then(resposta => {
+          if (resposta.data) {
+            setTipoEventosDiaLista(
+              resposta.data.filter(evento => evento.dia === dia.getDate())[0]
+            );
+          }
+        });
+    }
+  }, [dia]);
 
   const selecionaDiaAberto = () => {};
 
@@ -23,7 +47,8 @@ const Dia = props => {
   if (dia.getDay() === 0) style.backgroundColor = Base.RosaCalendario;
   else if (dia.getDay() === 6) style.backgroundColor = Base.CinzaCalendario;
 
-  const className = 'col border border-left-0 border-bottom-0';
+  const className = `col border border-left-0 border-bottom-0 position-relative ${dia.getDay() ===
+    6 && 'border-right-0'}`;
 
   let diaFormatado = dia.getDate();
   if (diaFormatado < 10) diaFormatado = `0${diaFormatado}`;
@@ -32,14 +57,29 @@ const Dia = props => {
     color:
       mesAtual === dia.getMonth() + 1 ? Base.Preto : Base.CinzaDesabilitado,
     cursor: 'pointer',
-    position: 'relative',
+    fontSize: '16px',
     top: 30,
   };
 
   return (
     <Div className={className} style={style} onClick={selecionaDiaAberto}>
       <Div className="w-100 h-100 d-flex">
-        <Div style={diaStyle}>{diaFormatado}</Div>
+        <Div className="position-relative" style={diaStyle}>
+          {diaFormatado}
+        </Div>
+        {mesAtual === dia.getMonth() + 1 &&
+          tipoEventosDiaLista &&
+          tipoEventosDiaLista.tiposEvento && (
+            <TipoEventosLista className="position-absolute">
+              {tipoEventosDiaLista.tiposEvento.map(tipoEvento => {
+                return (
+                  <TipoEvento className="d-block badge badge-pill badge-light">
+                    {tipoEvento}
+                  </TipoEvento>
+                );
+              })}
+            </TipoEventosLista>
+          )}
       </Div>
     </Div>
   );
