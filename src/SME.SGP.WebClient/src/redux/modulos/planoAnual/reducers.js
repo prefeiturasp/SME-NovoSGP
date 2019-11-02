@@ -38,10 +38,14 @@ export default function bimestres(state = INICIAL, action) {
         ).selecionada = true;
         break;
       case '@bimestres/LimparDisciplinaPlanoAnual':
-        if (state.disciplinasPlanoAnual)
-          draft.disciplinasPlanoAnual.find(
-            disciplina => disciplina.selecionada
-          ).selecionada = false;
+        if (
+          state.disciplinasPlanoAnual &&
+          state.disciplinasPlanoAnual.length > 0
+        )
+          draft.disciplinasPlanoAnual.map(disciplina => {
+            disciplina.selecionada = false;
+            return disciplina;
+          });
         break;
       case '@bimestres/PrePostBimestre':
         const paraEnvio = state.bimestres.filter(x => x.ehEdicao);
