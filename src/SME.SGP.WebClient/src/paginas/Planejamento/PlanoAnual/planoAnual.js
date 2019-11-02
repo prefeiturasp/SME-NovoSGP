@@ -70,7 +70,7 @@ export default function PlanoAnual() {
   const turmaSelecionada = usuario.turmaSelecionada;
   const emEdicao = bimestres.filter(x => x.ehEdicao).length > 0;
   const ehDisabled = somenteConsulta || !permissoesTela.podeAlterar? true : !usuario.turmaSelecionada.turma;
-  const ehDisabledComPermissao = (!somenteConsulta || permissoesTela.podeAlterar) && usuario.turmaSelecionada.turma;
+  const ehDisabledComPermissao = !usuario.turmaSelecionada.turma;
   const dispatch = useDispatch();
   const [modalConfirmacaoVisivel, setModalConfirmacaoVisivel] = useState({
     modalVisivel: false,
@@ -131,7 +131,7 @@ export default function PlanoAnual() {
   }, []);
 
   useEffect(() => {
-    if (ehDisabledComPermissao) obterDisciplinasPlanoAnual();
+    if (!ehDisabledComPermissao) obterDisciplinasPlanoAnual();
   }, [turmaSelecionada]);
 
   function onF5Click(e) {
