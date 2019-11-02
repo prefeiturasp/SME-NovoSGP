@@ -2,8 +2,6 @@
 import PropTypes from 'prop-types';
 import { useSelector } from 'react-redux';
 import styled from 'styled-components';
-import { Transition } from 'react-spring/renderprops';
-import { animated } from 'react-spring';
 import Semana from './Semana';
 import DiaCompleto from './DiaCompleto';
 
@@ -88,7 +86,7 @@ const MesCompleto = props => {
             mesAtual={ultimoUsado}
             filtros={filtros}
           />
-          {/* <DiaCompleto dias={diasDaSemana[0]} /> */}
+          <DiaCompleto dias={diasDaSemana[0]} />
           <Semana
             dias={diasDaSemana[1]}
             mesAtual={ultimoUsado}

@@ -16,7 +16,7 @@ const SemEvento = () => {
 };
 
 const DiaCompleto = props => {
-  const { days, calendar } = props;
+  const { dias, calendar } = props;
 
   const diaSelecionado = useSelector(
     state => state.calendarioEscolar.diaSelecionado
@@ -24,8 +24,8 @@ const DiaCompleto = props => {
 
   let estaAberto = false;
 
-  for (let i = 0; i < days.length; i += 1)
-    if (days[i] === diaSelecionado) estaAberto = true;
+  for (let i = 0; i < dias.length; i += 1)
+    if (dias[i] === diaSelecionado) estaAberto = true;
 
   return (
     <Transition
