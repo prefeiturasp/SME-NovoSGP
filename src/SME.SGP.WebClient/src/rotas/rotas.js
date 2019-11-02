@@ -241,7 +241,7 @@ export default function Rotas() {
     chavePermissao: RotasDto.TIPO_CALENDARIO_ESCOLAR
   });
 
-  rotas.set('/', {
+  rotas.set(RotasDto.PRINCIPAL, {
     icone: 'fas fa-home',
     parent: null,
     component: Principal,
@@ -304,7 +304,7 @@ export default function Rotas() {
     chavePermissao: RotasDto.EVENTOS
   });
 
-  rotas.set('/calendario-escolar/eventos/novo', {
+  rotas.set('/calendario-escolar/eventos/novo/:tipoCalendarioId', {
     breadcrumbName: 'Cadastro de Eventos no Calendário Escolar',
     parent: '/calendario-escolar/eventos',
     component: EventosForm,
