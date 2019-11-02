@@ -45,6 +45,7 @@ import RotasDto from '~/dtos/rotasDto';
 import { verificaSomenteConsulta } from '~/servicos/servico-navegacao';
 
 export default function PlanoAnual() {
+  //teste
   const bimestres = useSelector(state => state.bimestres.bimestres);
 
   const bimestreFocado = useSelector(state =>
