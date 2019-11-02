@@ -38,6 +38,7 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IComandosPeriodoEscolar, ComandosPeriodoEscolar>();
             services.TryAddScoped<IComandosEventoTipo, ComandosEventoTipo>();
             services.TryAddScoped<IComandosEvento, ComandosEvento>();
+            services.TryAddScoped<IComandosDiasLetivos, ComandosDiasLetivos>();
         }
 
         private static void RegistrarConsultas(IServiceCollection services)
