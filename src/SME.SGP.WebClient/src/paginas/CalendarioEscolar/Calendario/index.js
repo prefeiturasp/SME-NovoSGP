@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
+import { useSelector } from 'react-redux';
 import Card from '~/componentes/card';
 import Grid from '~/componentes/grid';
 import Calendario from '~/componentes-sgp/Calendario/Calendario';
 import { Base, Colors } from '~/componentes/colors';
 import SelectComponent from '~/componentes/select';
 import api from '~/servicos/api';
-import { useSelector } from 'react-redux';
 import Button from '~/componentes/button';
 import history from '~/servicos/history';
 
@@ -128,7 +128,7 @@ const CalendarioEscolar = () => {
                 onClick={aoClicarEventoSme}
               />
             </Div>
-            <Div className="col" style={{ maxWidth: 460 }}>
+            <Div className="col" style={{ maxWidth: 500 }}>
               <SelectComponent
                 className="fonte-14"
                 onChange={aoSelecionarDre}

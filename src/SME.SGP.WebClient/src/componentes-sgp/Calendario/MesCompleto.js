@@ -28,12 +28,12 @@ DiaDaSemana.defaultProps = {
 };
 
 const MesCompleto = props => {
-  const { meses } = props;
+  const { meses, filtros } = props;
 
   const mesesLista = meses.split(',');
   const mesesCalendario = useSelector(state => state.calendarioEscolar.meses);
 
-  let mesSelecionado = -1;
+  const [mesSelecionado, setMesSelecionado] = useState(-1);
   const [ultimoUsado, setUltimoUsado] = useState(-1);
 
   const [diasDaSemana, setDiasDaSemana] = useState([]);
@@ -42,11 +42,12 @@ const MesCompleto = props => {
   useEffect(() => {
     mesesLista.forEach(mes => {
       if (mesesCalendario[mes].estaAberto) {
-        setEstaAberto(true);
-        mesSelecionado = parseInt(mes, 10);
+        setMesSelecionado(parseInt(mes, 10));
       }
     });
+  }, [mesesCalendario]);
 
+  useEffect(() => {
     if (mesSelecionado > 0) {
       const dataAtual = new Date();
       const data = new Date(dataAtual.getFullYear(), mesSelecionado - 1, 1);
@@ -64,70 +65,100 @@ const MesCompleto = props => {
 
       setDiasDaSemana(diasDaSemanaLista);
       setUltimoUsado(mesSelecionado);
+      setEstaAberto(true);
     }
-  }, [mesesCalendario]);
+  }, [mesSelecionado]);
 
   return (
-    <Transition
-      items={estaAberto}
-      from={{
-        display: 'none',
-        height: 0,
-        overflow: 'hidden',
-      }}
-      enter={{
-        display: 'block',
-        height: 'auto',
-        overflow: 'hidden',
-      }}
-      leave={{
-        display: 'none',
-        height: 0,
-        overflow: 'hidden',
-      }}
-    >
-      {exibir =>
-        exibir &&
-        (style => (
-          <animated.div className="border border-top-0 w-100" style={style}>
-            <Div className="w-100 d-flex py-3">
-              <DiaDaSemana nomeDia="Domingo" />
-              <DiaDaSemana nomeDia="Segunda" />
-              <DiaDaSemana nomeDia="Terça" />
-              <DiaDaSemana nomeDia="Quarta" />
-              <DiaDaSemana nomeDia="Quinta" />
-              <DiaDaSemana nomeDia="Sexta" />
-              <DiaDaSemana nomeDia="Sábado" />
-            </Div>
-            <Semana inicial dias={diasDaSemana[0]} mesAtual={ultimoUsado} />
-            {/* <DiaCompleto dias={diasDaSemana[0]} /> */}
-            <Semana dias={diasDaSemana[1]} mesAtual={ultimoUsado} />
-            {/* <DiaCompleto dias={diasDaSemana[1]} /> */}
-            <Semana dias={diasDaSemana[2]} mesAtual={ultimoUsado} />
-            {/* <DiaCompleto dias={diasDaSemana[2]} /> */}
-            <Semana dias={diasDaSemana[3]} mesAtual={ultimoUsado} />
-            {/* <DiaCompleto dias={diasDaSemana[3]} /> */}
-            <Semana dias={diasDaSemana[4]} mesAtual={ultimoUsado} />
-            {/* <DiaCompleto dias={diasDaSemana[4]} /> */}
-            <Semana
-              className="pb-4"
-              dias={diasDaSemana[5]}
-              mesAtual={ultimoUsado}
-            />
-            {/* <DiaCompleto dias={diasDaSemana[5]} /> */}
-          </animated.div>
-        ))
-      }
-    </Transition>
+    // <Transition
+    //   items={estaAberto}
+    //   reset
+    //   from={{
+    //     display: 'none',
+    //     height: 0,
+    //     overflow: 'hidden',
+    //   }}
+    //   enter={{
+    //     display: 'block',
+    //     height: 'auto',
+    //     overflow: 'hidden',
+    //   }}
+    //   leave={{
+    //     display: 'none',
+    //     height: 0,
+    //     overflow: 'hidden',
+    //   }}
+    // >
+    //   {aberto =>
+    //     aberto &&
+    //     (style => (
+    //       <animated.div className="border border-top-0 w-100" style={style}>
+    estaAberto && (
+      <Div className="border border-top-0 w-100">
+        <Div className="w-100 d-flex py-3">
+          <DiaDaSemana nomeDia="Domingo" />
+          <DiaDaSemana nomeDia="Segunda" />
+          <DiaDaSemana nomeDia="Terça" />
+          <DiaDaSemana nomeDia="Quarta" />
+          <DiaDaSemana nomeDia="Quinta" />
+          <DiaDaSemana nomeDia="Sexta" />
+          <DiaDaSemana nomeDia="Sábado" />
+        </Div>
+        <Semana
+          inicial
+          dias={diasDaSemana[0]}
+          mesAtual={ultimoUsado}
+          filtros={filtros}
+        />
+        {/* <DiaCompleto dias={diasDaSemana[0]} /> */}
+        <Semana
+          dias={diasDaSemana[1]}
+          mesAtual={ultimoUsado}
+          filtros={filtros}
+        />
+        {/* <DiaCompleto dias={diasDaSemana[1]} /> */}
+        <Semana
+          dias={diasDaSemana[2]}
+          mesAtual={ultimoUsado}
+          filtros={filtros}
+        />
+        {/* <DiaCompleto dias={diasDaSemana[2]} /> */}
+        <Semana
+          dias={diasDaSemana[3]}
+          mesAtual={ultimoUsado}
+          filtros={filtros}
+        />
+        {/* <DiaCompleto dias={diasDaSemana[3]} /> */}
+        <Semana
+          dias={diasDaSemana[4]}
+          mesAtual={ultimoUsado}
+          filtros={filtros}
+        />
+        {/* <DiaCompleto dias={diasDaSemana[4]} /> */}
+        <Semana
+          className="pb-4"
+          dias={diasDaSemana[5]}
+          mesAtual={ultimoUsado}
+          filtros={filtros}
+        />
+        {/* <DiaCompleto dias={diasDaSemana[5]} /> */}
+      </Div>
+    )
+    //       </animated.div>
+    //     ))
+    //   }
+    // </Transition>
   );
 };
 
 MesCompleto.propTypes = {
   meses: PropTypes.string,
+  filtros: PropTypes.oneOfType([PropTypes.array, PropTypes.object]),
 };
 
 MesCompleto.defaultProps = {
   meses: '',
+  filtros: {},
 };
 
 export default MesCompleto;
