@@ -1,4 +1,5 @@
 const RotasDto = {
+  PRINCIPAL: '/',
   PLANO_CICLO:'/planejamento/plano-ciclo',
   PLANO_ANUAL:'/planejamento/plano-anual',
   PERIODOS_ESCOLARES:'/calendario-escolar/periodos-escolares',
@@ -11,4 +12,6 @@ const RotasDto = {
   TIPO_FERIADO: '/calendario-escolar/tipo-feriado',
   EVENTOS:'/calendario-escolar/eventos'
 }
+
+export default RotasDto;
 
