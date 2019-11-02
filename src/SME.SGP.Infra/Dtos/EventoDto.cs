@@ -26,6 +26,7 @@ namespace SME.SGP.Infra
         [Range(1, long.MaxValue, ErrorMessage = "O tipo de evento deve ser informado.")]
         public long TipoEventoId { get; set; }
 
+        public IEnumerable<CopiarEventoDto> TiposCalendarioParaCopiar { get; set; }
         public string UeId { get; set; }
 
         public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
