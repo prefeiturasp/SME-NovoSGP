@@ -1,8 +1,8 @@
-import api from '~/servicos/api';
-import { store } from '~/redux';
-import { setMenu, setPermissoes } from '~/redux/modulos/usuario/actions';
 import tipoPermissao from '~/dtos/tipoPermissao';
-import { exibirAlerta } from '~/servicos/alertas';
+import { store } from '~/redux';
+import { setSomenteConsulta } from '~/redux/modulos/navegacao/actions';
+import { setMenu, setPermissoes } from '~/redux/modulos/usuario/actions';
+import api from '~/servicos/api';
 
 const setMenusPermissoes = () => {
   let permissoes = {};
@@ -72,10 +72,12 @@ const getObjetoStorageUsuario = objeto => {
 const verificaSomenteConsulta = permissoes => {
   if (permissoes && permissoes[tipoPermissao.podeConsultar] && !permissoes[tipoPermissao.podeAlterar]
     && !permissoes[tipoPermissao.podeIncluir] && !permissoes[tipoPermissao.podeExcluir]) {
-    exibirAlerta('warning', 'Você tem apenas permissão de consulta nesta tela')
+    store.dispatch(setSomenteConsulta(true));
     return true;
   }
+  store.dispatch(setSomenteConsulta(false));
   return false;
 }
 
 export { setMenusPermissoes, getObjetoStorageUsuario, verificaSomenteConsulta };
+
