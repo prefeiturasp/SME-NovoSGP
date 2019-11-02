@@ -319,7 +319,7 @@ const PeriodosEscolares = () => {
             label="Início do Bimestre"
             name="primeiroBimestreDataInicial"
             onChange={onChangeCamposData}
-            disabled={desabilitaCampos}
+            desabilitado={desabilitaCampos}
           />
         </div>
         <div className="col-sm-4 col-md-4 col-lg-3 col-xl-3">
@@ -330,7 +330,7 @@ const PeriodosEscolares = () => {
             label="Fim do Bimestre"
             name="primeiroBimestreDataFinal"
             onChange={onChangeCamposData}
-            disabled={desabilitaCampos}
+            desabilitado={desabilitaCampos}
           />
         </div>
       </div>
@@ -352,7 +352,7 @@ const PeriodosEscolares = () => {
             formatoData="DD/MM/YYYY"
             name="segundoBimestreDataInicial"
             onChange={onChangeCamposData}
-            disabled={desabilitaCampos}
+            desabilitado={desabilitaCampos}
           />
         </div>
         <div className="col-sm-4 col-md-4 col-lg-3 col-xl-3">
@@ -362,7 +362,7 @@ const PeriodosEscolares = () => {
             formatoData="DD/MM/YYYY"
             name="segundoBimestreDataFinal"
             onChange={onChangeCamposData}
-            disabled={desabilitaCampos}
+            desabilitado={desabilitaCampos}
           />
         </div>
       </div>
@@ -384,7 +384,7 @@ const PeriodosEscolares = () => {
             formatoData="DD/MM/YYYY"
             name="terceiroBimestreDataInicial"
             onChange={onChangeCamposData}
-            disabled={desabilitaCampos}
+            desabilitado={desabilitaCampos}
           />
         </div>
         <div className="col-sm-4 col-md-4 col-lg-3 col-xl-3">
@@ -394,7 +394,7 @@ const PeriodosEscolares = () => {
             formatoData="DD/MM/YYYY"
             name="terceiroBimestreDataFinal"
             onChange={onChangeCamposData}
-            disabled={desabilitaCampos}
+            desabilitado={desabilitaCampos}
           />
         </div>
       </div>
@@ -416,7 +416,7 @@ const PeriodosEscolares = () => {
             formatoData="DD/MM/YYYY"
             name="quartoBimestreDataInicial"
             onChange={onChangeCamposData}
-            disabled={desabilitaCampos}
+            desabilitado={desabilitaCampos}
           />
         </div>
         <div className="col-sm-4 col-md-4 col-lg-3 col-xl-3">
@@ -426,7 +426,7 @@ const PeriodosEscolares = () => {
             formatoData="DD/MM/YYYY"
             name="quartoBimestreDataFinal"
             onChange={onChangeCamposData}
-            disabled={desabilitaCampos}
+            desabilitado={desabilitaCampos}
           />
         </div>
       </div>
