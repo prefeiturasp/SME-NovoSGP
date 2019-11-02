@@ -51,7 +51,10 @@ export default class PlanoAnualHelper {
   }
 
   static async ObterDiscplinasObjetivos(turmaId, disciplinaSelecionada) {
-    const disciplinas = await Service.getDisciplinasProfessorObjetivos(turmaId)
+    const disciplinas = await Service.getDisciplinasProfessorObjetivos(
+      turmaId,
+      disciplinaSelecionada
+    )
       .then(res => res)
       .catch(() => {
         erro(`Não foi possivel obter as disciplinas do professor`);

@@ -53,6 +53,7 @@ const CampoData = props => {
     desabilitado,
     className,
     onChange,
+    valor
   } = props;
 
   const possuiErro = () => {
@@ -66,7 +67,7 @@ const CampoData = props => {
     }
   };
 
-  const campoDataAnt = () => {
+  const campoDataAntComValidacoes = () => {
     return (
       <Field
         disabled={desabilitado}
@@ -74,7 +75,6 @@ const CampoData = props => {
         format={formatoData}
         component={DatePicker}
         placeholder={placeholder}
-        name={name}
         suffixIcon={<i className="fas fa-calendar-alt" />}
         name={name}
         id={id || name}
@@ -92,11 +92,32 @@ const CampoData = props => {
     );
   };
 
+  const campoDataAntSemValidacoes = () => {
+    return (
+      <DatePicker
+        disabled={desabilitado}
+        locale={locale}
+        format={formatoData}
+        placeholder={placeholder}
+        suffixIcon={<i className="fas fa-calendar-alt" />}
+        name={name}
+        id={id || name}
+        onBlur={executaOnBlur}
+        className={className || ''}
+        onChange={valorData => {
+          valorData = valorData || '';
+          onChange(valorData);
+        }}
+        value={valor || null}
+      />
+    );
+  };
+
   return (
     <>
       <Campo>
         {label ? <Label text={label} control={name} /> : ''}
-        {campoDataAnt()}
+        {form ? campoDataAntComValidacoes() : campoDataAntSemValidacoes()}
         {form ? <span>{form.errors[name]}</span> : ''}
       </Campo>
     </>
@@ -110,6 +131,7 @@ CampoData.propTypes = {
   label: PropTypes.string,
   desabilitado: PropTypes.bool,
   onChange: PropTypes.func,
+  valor: PropTypes.any,
 };
 
 CampoData.defaultProps = {

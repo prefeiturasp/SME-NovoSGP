@@ -3,7 +3,7 @@ import { salvarDadosLogin, meusDados } from '~/redux/modulos/usuario/actions';
 import history from '~/servicos/history';
 import { URL_HOME, URL_REDEFINIRSENHA } from '~/constantes/url';
 import { obterMeusDados } from '~/servicos/Paginas/ServicoUsuario';
-import { setMenus } from '~/servicos/servico-navegacao';
+import { setMenusPermissoes } from '~/servicos/servico-navegacao';
 
 class LoginHelper {
   constructor(dispatch, redirect) {
@@ -24,13 +24,15 @@ class LoginHelper {
         rf,
         usuario: login.usuario,
         modificarSenha: autenticacao.dados.modificarSenha,
-        perfisUsuario: autenticacao.dados.PerfisUsuario,
-        possuiPerfilSmeOuDre: autenticacao.dados.perfisUsuario.possuiPerfilSmeOuDre
+        perfisUsuario: autenticacao.dados.perfisUsuario,
+        possuiPerfilSmeOuDre: autenticacao.dados.perfisUsuario.possuiPerfilSmeOuDre,
+        possuiPerfilDre: autenticacao.dados.perfisUsuario.possuiPerfilDre,
+        possuiPerfilSme: autenticacao.dados.perfisUsuario.possuiPerfilSme,
       })
     );
 
     obterMeusDados();
-    setMenus();
+    setMenusPermissoes();
 
     if (autenticacao.dados.modificarSenha) {
       history.push(URL_REDEFINIRSENHA);

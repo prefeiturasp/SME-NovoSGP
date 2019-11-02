@@ -6,7 +6,7 @@ import { Colors } from '~/componentes/colors';
 import DataTable from '~/componentes/table/dataTable';
 import { URL_HOME } from '~/constantes/url';
 import history from '~/servicos/history';
-import { confirmar, sucesso, erro } from '~/servicos/alertas';
+import { confirmar, sucesso, erros } from '~/servicos/alertas';
 import api from '~/servicos/api';
 
 const TipoCalendarioEscolarLista = () => {
@@ -37,7 +37,7 @@ const TipoCalendarioEscolarLista = () => {
 
   const onFiltrar = async () => {
     setIdTiposSelecionados([]);
-    const tipos = await api.get('v1/tipo-calendario');
+    const tipos = await api.get('v1/calendarios/tipos');
     setListaTiposCalendarioEscolar(tipos.data);
   };
 
@@ -86,7 +86,7 @@ const TipoCalendarioEscolarLista = () => {
       const parametrosDelete = { data: idTiposSelecionados };
       const excluir = await api
         .delete('v1/calendarios/tipos', parametrosDelete)
-        .catch(erros => mostrarErros(erros));
+        .catch(e => erros(e));
       if (excluir) {
         const mensagemSucesso = `${
           idTiposSelecionados.length > 1 ? 'Tipos' : 'Tipo'
@@ -95,13 +95,6 @@ const TipoCalendarioEscolarLista = () => {
         onFiltrar();
       }
     }
-  };
-
-  const mostrarErros = e => {
-    if (e && e.response && e.response.data && e.response.data) {
-      return e.response.data.mensagens.forEach(mensagem => erro(mensagem));
-    }
-    return '';
   };
 
   return (

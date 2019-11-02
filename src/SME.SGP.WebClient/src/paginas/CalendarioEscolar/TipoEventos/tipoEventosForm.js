@@ -154,7 +154,7 @@ const TipoEventosForm = ({ match }) => {
             } com sucesso!`
           );
           history.push('/calendario-escolar/tipo-eventos');
-        
+
       })
       .catch(() => {
         erro(
