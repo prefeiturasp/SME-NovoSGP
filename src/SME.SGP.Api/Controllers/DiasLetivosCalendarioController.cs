@@ -1,7 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SME.SGP.Api.Filtros;
-using SME.SGP.Aplicacao.Interfaces;
 using SME.SGP.Dto;
 using SME.SGP.Infra;
 
@@ -13,11 +12,8 @@ namespace SME.SGP.Api.Controllers
     [Authorize("Bearer")]
     public class DiasLetivosCalendarioController : ControllerBase
     {
-        private readonly IComandosDiasLetivos comandos;
-
-        public DiasLetivosCalendarioController(IComandosDiasLetivos comandos)
+        public DiasLetivosCalendarioController()
         {
-            this.comandos = comandos ?? throw new System.ArgumentNullException(nameof(comandos));
         }
 
         [HttpGet]
