@@ -41,6 +41,8 @@ import modalidade from '~/dtos/modalidade';
 import SelectComponent from '~/componentes/select';
 import { store } from '~/redux';
 import FiltroPlanoAnualExpandidoDto from '~/dtos/filtroPlanoAnualExpandidoDto';
+import RotasDto from '~/dtos/rotasDto';
+import { verificaSomenteConsulta } from '~/servicos/servico-navegacao';
 
 export default function PlanoAnual() {
   const bimestres = useSelector(state => state.bimestres.bimestres);
@@ -62,9 +64,12 @@ export default function PlanoAnual() {
   const bimestresErro = useSelector(store => store.bimestres.bimestresErro);
   const usuario = useSelector(store => store.usuario);
 
+  const permissoesTela = usuario.permissoes[RotasDto.PLANO_ANUAL];
+  const [somenteConsulta, setSomenteConsulta] = useState(verificaSomenteConsulta(permissoesTela));
+
   const turmaSelecionada = usuario.turmaSelecionada;
   const emEdicao = bimestres.filter(x => x.ehEdicao).length > 0;
-  const ehDisabled = !usuario.turmaSelecionada.turma;
+  const ehDisabled = somenteConsulta || !permissoesTela.podeAlterar? true : !usuario.turmaSelecionada.turma;
   const dispatch = useDispatch();
   const [modalConfirmacaoVisivel, setModalConfirmacaoVisivel] = useState({
     modalVisivel: false,
@@ -581,6 +586,7 @@ export default function PlanoAnual() {
             border
             bold
             className="mr-3"
+            disabled={somenteConsulta}
           />
           <Button
             label="Salvar"
