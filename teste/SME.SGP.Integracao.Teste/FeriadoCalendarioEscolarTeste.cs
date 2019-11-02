@@ -29,7 +29,7 @@ namespace SME.SGP.Integracao.Teste
             _fixture._clientApi.DefaultRequestHeaders.Clear();
 
             _fixture._clientApi.DefaultRequestHeaders.Authorization =
-                new AuthenticationHeaderValue("Bearer", _fixture.GerarToken(new Permissao[] { Permissao.C_C, Permissao.C_I, Permissao.C_E }));
+                new AuthenticationHeaderValue("Bearer", _fixture.GerarToken(new Permissao[] { Permissao.TF_A, Permissao.TF_I, Permissao.TF_E, Permissao.TF_C }));
 
             var feriadoCalendarioDto = new FeriadoCalendarioDto
             {
