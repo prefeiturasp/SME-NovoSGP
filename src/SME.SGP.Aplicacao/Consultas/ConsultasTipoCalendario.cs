@@ -65,7 +65,8 @@ namespace SME.SGP.Aplicacao
                 CriadoRF = entidade.CriadoRF,
                 AlteradoRF = entidade.AlteradoRF,
                 CriadoEm = entidade.CriadoEm,
-                CriadoPor = entidade.CriadoPor
+                CriadoPor = entidade.CriadoPor,
+                DescricaoPeriodo = entidade.Periodo.GetAttribute<DisplayAttribute>().Name,
             };
         }
 
