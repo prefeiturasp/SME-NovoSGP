@@ -53,7 +53,8 @@ const CampoData = props => {
     desabilitado,
     className,
     onChange,
-    valor
+    valor,
+    desabilitarData,
   } = props;
 
   const possuiErro = () => {
@@ -88,6 +89,7 @@ const CampoData = props => {
           onChange(valorData);
         }}
         value={form.values[name] || null}
+        disabledDate={desabilitarData}
       />
     );
   };
@@ -156,7 +158,11 @@ Yup.addMethod(
       const dataInicial = this.parent[nomeDataInicial];
       const dataFinal = this.parent[nomeDataFinal];
 
-      if (dataInicial && dataFinal && dataInicial.isSameOrAfter(dataFinal, 'date')) {
+      if (
+        dataInicial &&
+        dataFinal &&
+        dataInicial.isSameOrAfter(dataFinal, 'date')
+      ) {
         dataValida = false;
       }
       return dataValida;
