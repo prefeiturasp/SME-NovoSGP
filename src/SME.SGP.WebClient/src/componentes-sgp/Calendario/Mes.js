@@ -19,23 +19,12 @@ const Icone = styled.i`
 
 const Seta = props => {
   const { estaAberto } = props;
-
-  const transitions = useTransition(estaAberto, item => item, {
-    from: { display: 'none' },
-    enter: { display: 'block' },
-    leave: { display: 'none' },
-  });
-
-  return transitions.map(({ item, key, style }) =>
-    item ? (
-      <animated.div style={style} key={key}>
-        <Icone className="fas fa-chevron-down " />
-      </animated.div>
-    ) : (
-      <animated.div style={style} key={key}>
-        <Icone className="fas fa-chevron-right text-white" />
-      </animated.div>
-    )
+  return (
+    <Icone
+      className={`fas ${
+        estaAberto ? 'fa-chevron-down' : 'fa-chevron-right text-white'
+      } `}
+    />
   );
 };
 
