@@ -15,6 +15,9 @@ import { URL_HOME } from '~/constantes/url';
 import { sucesso, confirmar, erros } from '~/servicos/alertas';
 import api from '~/servicos/api';
 import periodo from '~/dtos/periodo';
+import { useSelector } from 'react-redux';
+import RotasDto from '~/dtos/rotasDto';
+import { verificaSomenteConsulta } from '~/servicos/servico-navegacao';
 
 const PeriodosEscolares = () => {
   const [listaCalendarioEscolar, setListaCalendarioEscolar] = useState([]);
@@ -36,6 +39,9 @@ const PeriodosEscolares = () => {
     quartoBimestreDataInicial: '',
     quartoBimestreDataFinal: '',
   });
+  const usuario = useSelector(store => store.usuario);
+  const permissoesTela = usuario.permissoes[RotasDto.PLANO_CICLO];
+  const [somenteConsulta, setSomenteConsulta] = useState(false);
 
   const validacaoPrimeiroBim = {
     primeiroBimestreDataInicial: momentSchema.required(
@@ -114,7 +120,7 @@ const PeriodosEscolares = () => {
         setListaCalendarioEscolar([]);
       }
     }
-
+    setSomenteConsulta(verificaSomenteConsulta(permissoesTela));
     consultaTipos();
   }, []);
 
