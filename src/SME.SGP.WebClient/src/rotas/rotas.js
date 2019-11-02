@@ -241,7 +241,7 @@ export default function Rotas() {
     chavePermissao: RotasDto.TIPO_CALENDARIO_ESCOLAR
   });
 
-  rotas.set('/', {
+  rotas.set(RotasDto.PRINCIPAL, {
     icone: 'fas fa-home',
     parent: null,
     component: Principal,
