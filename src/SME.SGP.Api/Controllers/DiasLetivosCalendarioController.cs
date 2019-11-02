@@ -27,7 +27,7 @@ namespace SME.SGP.Api.Controllers
         //[Permissao(Permissao.C_C, Policy = "Bearer")]
         public IActionResult CalcularDiasLetivos(long tipoCalendarioId)
         {
-            return Ok(new DiasLetivosDto { DiasLetivos = 200, EstaAbaixoPermitido = false);
+            return Ok(new DiasLetivosDto { DiasLetivos = 200, EstaAbaixoPermitido = false });
         }
     }
 }
