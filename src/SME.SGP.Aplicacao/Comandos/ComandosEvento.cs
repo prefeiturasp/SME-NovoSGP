@@ -64,7 +64,7 @@ namespace SME.SGP.Aplicacao
         private async Task<IEnumerable<RetornoCopiarEventoDto>> CopiarEventos(EventoDto eventoDto)
         {
             var mensagens = new List<RetornoCopiarEventoDto>();
-            if (eventoDto.TiposCalendarioParaCopiar.Any())
+            if (eventoDto.TiposCalendarioParaCopiar != null && eventoDto.TiposCalendarioParaCopiar.Any())
             {
                 foreach (var tipoCalendario in eventoDto.TiposCalendarioParaCopiar)
                 {
