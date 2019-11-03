@@ -12,18 +12,24 @@ import { Colors } from '~/componentes/colors';
 import ModalConteudoHtml from '~/componentes/modalConteudoHtml';
 import RadioGroupButton from '~/componentes/radioGroupButton';
 import SelectComponent from '~/componentes/select';
+import eventoLetivo from '~/dtos/eventoLetivo';
 import eventoTipoData from '~/dtos/eventoTipoData';
+import RotasDto from '~/dtos/rotasDto';
 import { confirmar, erros, sucesso } from '~/servicos/alertas';
 import api from '~/servicos/api';
 import { setBreadcrumbManual } from '~/servicos/breadcrumb-services';
 import history from '~/servicos/history';
 import servicoEvento from '~/servicos/Paginas/Calendario/ServicoEvento';
+import { verificaSomenteConsulta } from '~/servicos/servico-navegacao';
 
 import { CaixaDiasLetivos, ListaCopiarEventos, TextoDiasLetivos } from './eventos.css';
-import eventoLetivo from '~/dtos/eventoLetivo';
 
-const EventosForm = ({ match }) => {
+const EventosForm = ({ match }) => {  
   const usuarioStore = useSelector(store => store.usuario);
+
+  const permissoesTela = usuarioStore.permissoes[RotasDto.EVENTOS];
+  const [somenteConsulta, setSomenteConsulta] = useState(false);
+  const [desabilitarCampos, setDesabilitarCampos] = useState(false);
 
   const [auditoria, setAuditoria] = useState([]);
   const [modoEdicao, setModoEdicao] = useState(false);
@@ -79,10 +85,16 @@ const EventosForm = ({ match }) => {
       } else {
         setListaTipoEvento([]);
       }
-    }
+    }    
+    setSomenteConsulta(verificaSomenteConsulta(permissoesTela));
 
     montarConsultas();
     }, []);
+
+  useEffect(() => {
+    const desabilitar = novoRegistro ? (somenteConsulta || !permissoesTela.podeIncluir) : (somenteConsulta || !permissoesTela.podeAlterar);
+    setDesabilitarCampos(desabilitar);    
+  }, [somenteConsulta, novoRegistro ]);
 
   useEffect(() => {
     validarConsultaModoEdicaoENovo();
@@ -428,6 +440,7 @@ const EventosForm = ({ match }) => {
                     className="mr-2"
                     hidden={novoRegistro}
                     onClick={onClickExcluir}
+                    disabled={somenteConsulta || !permissoesTela.podeExcluir || novoRegistro}
                   />
                   <Button
                     label={ novoRegistro ? 'Cadastrar' : 'Alterar'}
@@ -436,6 +449,7 @@ const EventosForm = ({ match }) => {
                     bold
                     className="mr-2"
                     type="submit"
+                    disabled={desabilitarCampos}
                   />
                 </div>
               </div>
@@ -450,6 +464,7 @@ const EventosForm = ({ match }) => {
                     onChange={e => onChangeDre(e, form)}
                     label="Diretoria Regional de Educação (DRE)"
                     placeholder="Diretoria Regional de Educação (DRE)"
+                    disabled={desabilitarCampos}
                   />
                 </div>
                 <div className="col-sm-12 col-md-12 col-lg-6 col-xl-6 pb-2">
@@ -462,6 +477,7 @@ const EventosForm = ({ match }) => {
                     onChange={onChangeCampos}
                     label="Unidade Escolar (UE)"
                     placeholder="Unidade Escolar (UE)"
+                    disabled={desabilitarCampos}
                   />
                 </div>
                 <div className="col-sm-12 col-md-6 col-lg-6 col-xl-6 pb-2">
@@ -471,6 +487,7 @@ const EventosForm = ({ match }) => {
                     placeholder="Nome do evento"
                     onChange={onChangeCampos}
                     name="nome"
+                    desabilitado={desabilitarCampos}
                   />
                 </div>
                 <div className={
@@ -489,6 +506,7 @@ const EventosForm = ({ match }) => {
                     }}
                     label="Tipo evento"
                     placeholder="Selecione um tipo"
+                    disabled={desabilitarCampos}
                   />
                 </div>
                 {
@@ -503,6 +521,7 @@ const EventosForm = ({ match }) => {
                         valueText="nome"
                         onChange={onChangeCampos}
                         placeholder="Selecione o feriado"
+                        disabled={desabilitarCampos}
                       />
                     </div> : ''
                 }
@@ -515,6 +534,7 @@ const EventosForm = ({ match }) => {
                     name="dataInicio"
                     onChange={onChangeCampos}
                     desabilitarData={desabilitarData}
+                    desabilitado={desabilitarCampos}
                   />
                 </div>
                 {
@@ -527,6 +547,7 @@ const EventosForm = ({ match }) => {
                         formatoData="DD/MM/YYYY"
                         name="dataFim"
                         onChange={onChangeCampos}
+                        desabilitado={desabilitarCampos}
                       />
                     </div>
                 }
@@ -538,6 +559,7 @@ const EventosForm = ({ match }) => {
                     border
                     className="mt-4"
                     onClick={onClickRepetir}
+                    disabled={desabilitarCampos}
                   />
                 </div>
                 <div className="col-sm-12 col-md-6 col-lg-3 col-xl-3 mb-2">
@@ -548,7 +570,7 @@ const EventosForm = ({ match }) => {
                     name="letivo"
                     valorInicial
                     onChange={onChangeCampos}
-                    desabilitado={desabilitarOpcaoLetivo}
+                    desabilitado={desabilitarCampos || desabilitarOpcaoLetivo}
                   />
                 </div>
                 <div className="col-sm-12 col-md-12 col-lg-12 col-xl-12 pb-2">
@@ -559,6 +581,7 @@ const EventosForm = ({ match }) => {
                     onChange={onChangeCampos}
                     name="descricao"
                     type="textarea"
+                    desabilitado={desabilitarCampos}
                   />
                 </div>
               </div>
@@ -572,6 +595,7 @@ const EventosForm = ({ match }) => {
                     border
                     className="mt-4 mr-3"
                     onClick={onClickCopiarEvento}
+                    disabled={desabilitarCampos}
                   />
                   {
                     listaCalendarioParaCopiar && listaCalendarioParaCopiar.length ?
