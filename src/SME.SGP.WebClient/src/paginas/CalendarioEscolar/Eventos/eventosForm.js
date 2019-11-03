@@ -30,12 +30,15 @@ const EventosForm = ({ match }) => {
   const [novoRegistro, setNovoRegistro] = useState(true);
   const [exibirAuditoria, setExibirAuditoria] = useState(false);
   const [exibirModalCopiarEvento, setExibirModalCopiarEvento] = useState(false);
+  const [exibirModalRetornoCopiarEvento, setExibirModalRetornoCopiarEvento] = useState(false);
   const [eventoTipoFeriadoSelecionado, setEventoTipoFeriadoSelecionado] = useState(false);
   const [tipoDataUnico, setTipoDataUnico] = useState(true);
   const [desabilitarOpcaoLetivo, setDesabilitarOpcaoLetivo] = useState(true);
 
+  const [listaMensagensCopiarEvento, setListaMensagensCopiarEvento] = useState([]);
   const [listaFeriados, setListaFeriados] = useState([]);
   const [listaCalendarioEscolar, setListaCalendarioEscolar] = useState([]);
+  const [calendarioEscolarAtual, setCalendarioEscolarAtual] = useState([]);
   const [listaDres, setListaDres] = useState([]);
   const [listaUes, setListaUes] = useState([]);
   const [listaTipoEvento, setListaTipoEvento] = useState([]);
@@ -123,15 +126,15 @@ const EventosForm = ({ match }) => {
     if (tipoCalendario && tipoCalendario.data) {
       tipoCalendario.data.id = String(tipoCalendario.data.id);
       tipoCalendario.data.descricaoTipoCalendario = `${tipoCalendario.data.anoLetivo} - ${tipoCalendario.data.nome} - ${tipoCalendario.data.descricaoPeriodo}`;
-      setListaCalendarioEscolar([tipoCalendario.data]);
+      setCalendarioEscolarAtual([tipoCalendario.data]);
     } else {
-      setListaCalendarioEscolar([]);
+      setCalendarioEscolarAtual([]);
     }
   }
 
   const montaValidacoes = ()=> {
     let val = {
-      dataInicio: momentSchema.required('Data obrigatória'),      
+      dataInicio: momentSchema.required('Data obrigatória'),
       nome: Yup.string().required('Nome obrigatório'),
       tipoCalendarioId: Yup.string().required('Calendário obrigatório'),
       tipoEventoId: Yup.string().required('Tipo obrigatório'),
@@ -166,7 +169,7 @@ const EventosForm = ({ match }) => {
       }
 
       montarTipoCalendarioPorId(evento.data.tipoCalendarioId);
-      
+
       setValoresIniciais({
         dataFim: evento.data.dataFim ? window.moment(evento.data.dataFim) : '',
         dataInicio: window.moment(evento.data.dataInicio),
@@ -190,7 +193,7 @@ const EventosForm = ({ match }) => {
       });
 
       onChangeTipoEvento(evento.data.tipoEventoId);
-      
+
       setExibirAuditoria(true);
     }
   };
@@ -235,12 +238,23 @@ const EventosForm = ({ match }) => {
   };
 
   const onClickCadastrar = async valoresForm => {
-    valoresForm.listaCalendarioParaCopiar = listaCalendarioParaCopiar;
+    const tiposCalendarioParaCopiar = listaCalendarioParaCopiar.map( id => {
+      const calendario = listaCalendarioEscolar.find(e => e.id == id);
+      return { tipoCalendarioId: calendario.id, nomeCalendario: calendario.descricaoTipoCalendario };
+    });
+    valoresForm.tiposCalendarioParaCopiar = tiposCalendarioParaCopiar;
     const cadastrado = await servicoEvento.salvar(idEvento || 0, valoresForm)
-      .catch(e => erros(e));
+    .catch(e => erros(e));
     if (cadastrado && cadastrado.status == 200) {
-      sucesso('Evento cadastrado com sucesso');
-      history.push('/calendario-escolar/eventos');
+      if (tiposCalendarioParaCopiar && tiposCalendarioParaCopiar.length) {
+
+        setListaMensagensCopiarEvento(cadastrado.data);
+        setExibirModalRetornoCopiarEvento(true);
+
+      } else {
+        sucesso('Evento cadastrado com sucesso');
+        history.push('/calendario-escolar/eventos');
+      }
     }
   };
 
@@ -291,14 +305,30 @@ const EventosForm = ({ match }) => {
     console.log('onClickRepetir');
   };
 
-  const onClickCopiarEvento = () => {
+  const onClickCopiarEvento = async() => {
+
+    const tiposCalendario = await api.get('v1/calendarios/tipos');
+    if (
+      tiposCalendario &&
+      tiposCalendario.data &&
+      tiposCalendario.data.length
+    ) {
+      tiposCalendario.data.map(item => {
+        item.id = String(item.id);
+        item.descricaoTipoCalendario = `${item.anoLetivo} - ${item.nome} - ${item.descricaoPeriodo}`;
+      });
+      const listaSemCalendarioAtual = tiposCalendario.data.filter(item => item.id != calendarioEscolarAtual[0].id);
+      setListaCalendarioEscolar(listaSemCalendarioAtual);
+    } else {
+      setListaCalendarioEscolar([]);
+    }
+
     setlistaCalendarioParaCopiarInicial(listaCalendarioParaCopiar);
     setExibirModalCopiarEvento(true);
   };
 
   const onConfirmarCopiarEvento = () => {
     onCloseCopiarConteudo();
-    console.log(listaCalendarioParaCopiar);
   };
 
   const onCancelarCopiarEvento = () => {
@@ -349,7 +379,7 @@ const EventosForm = ({ match }) => {
     }
   };
 
-  const montarEcibicaoEventosCopiar = () => {
+  const montarExibicaoEventosCopiar = () => {
     return listaCalendarioParaCopiar.map((id, i)=> {
       const calendario = listaCalendarioEscolar.find(e => e.id == id);
       if (calendario && calendario.descricaoTipoCalendario) {
@@ -366,6 +396,11 @@ const EventosForm = ({ match }) => {
     }
     return false;
   }
+
+  const onCloseRetornoCopiarEvento = () => {
+    setExibirModalRetornoCopiarEvento(false);
+    history.push('/calendario-escolar/eventos');
+  };
 
   return (
     <>
@@ -387,7 +422,7 @@ const EventosForm = ({ match }) => {
                     form={form}
                     name="tipoCalendarioId"
                     id="calendario-escolar"
-                    lista={listaCalendarioEscolar}
+                    lista={calendarioEscolarAtual}
                     valueOption="id"
                     valueText="descricaoTipoCalendario"
                     onChange={onChangeCampos}
@@ -577,7 +612,7 @@ const EventosForm = ({ match }) => {
                     listaCalendarioParaCopiar && listaCalendarioParaCopiar.length ?
                       <ListaCopiarEventos>
                         <div className="mb-1">Evento será copiado para os calendários:</div>
-                      { montarEcibicaoEventosCopiar() }
+                      { montarExibicaoEventosCopiar() }
                       </ListaCopiarEventos>
                     : ''
                   }
@@ -620,7 +655,37 @@ const EventosForm = ({ match }) => {
             onChange={onChangeCopiarEvento}
             valueSelect={listaCalendarioParaCopiar}
             multiple
+            placeholder="Selecione 1 ou mais tipos de calendários"
           />
+        </ModalConteudoHtml>
+
+        <ModalConteudoHtml
+          key="retornoCopiarEvento"
+          visivel={exibirModalRetornoCopiarEvento}
+          onConfirmacaoSecundaria={onCloseRetornoCopiarEvento}
+          onClose={onCloseRetornoCopiarEvento}
+          labelBotaoSecundario="Ok"
+          titulo="Cadastro de evento"
+          closable={false}
+          fecharAoClicarFora={false}
+          fecharAoClicarEsc={false}
+          esconderBotaoPrincipal={true}
+        >
+          {  listaMensagensCopiarEvento.map((item, i)=> (
+            <p key={i}>
+              {
+                item.sucesso ?
+                <strong>
+                  <i className="fas fa-check text-success mr-2"/>{item.mensagem}
+                </strong>
+                  :
+                <strong className="text-danger">
+                  <i className="fas fa-times mr-3"/>{item.mensagem}
+                </strong>
+              }
+            </p>
+            ))
+          }
         </ModalConteudoHtml>
       </Card>
     </>
