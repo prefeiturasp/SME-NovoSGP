@@ -36,6 +36,30 @@ namespace SME.SGP.Aplicacao
             return MapearParaDto(repositorioEvento.ObterPorId(id));
         }
 
+        public async Task<IEnumerable<CalendarioTipoEventoPorDiaDto>> ObterQuantidadeDeEventosPorDia(CalendarioEventosFiltroDto calendarioEventosMesesFiltro, int mes)
+        {
+            var listaQuery = await repositorioEvento.ObterQuantidadeDeEventosPorDia(calendarioEventosMesesFiltro, mes);
+            List<CalendarioTipoEventoPorDiaDto> listaRetorno = new List<CalendarioTipoEventoPorDiaDto>();
+
+            if (listaQuery.Any())
+            {
+                var listaDiasEventos = listaQuery.GroupBy(a => a.Dia).ToList();
+
+                listaDiasEventos.ForEach(a =>
+                {
+                    var tipoEventos = a.Take(3).Select(b => b.TipoEvento).ToList();
+                    listaRetorno.Add(new CalendarioTipoEventoPorDiaDto()
+                    {
+                        Dia = a.Key,
+                        TiposEvento = tipoEventos.ToArray(),
+                        QuantidadeDeEventos = a.Count()
+                    });
+                });
+            }
+
+            return listaRetorno;
+        }
+
         public Task<IEnumerable<CalendarioEventosMesesDto>> ObterQuantidadeDeEventosPorMeses(CalendarioEventosFiltroDto calendarioEventosMesesFiltro)
         {
             return repositorioEvento.ObterQuantidadeDeEventosPorMeses(calendarioEventosMesesFiltro);
