@@ -21,7 +21,7 @@ class LoginService {
         }
         return {
           sucesso: true,
-          mensagem: 'Usuario Logado com sucesso',
+          mensagem: 'Usuario logado com sucesso',
           dados: res.data,
         };
       })
@@ -29,12 +29,12 @@ class LoginService {
         const status = err.response ? err.response.status : null;
 
         if (status && status === 401)
-          return { sucesso: false, erroGeral: 'Usuário e/ou senha invalida' };
+          return { sucesso: false, erroGeral: 'Usuário e/ou senha inválida' };
 
         return {
           sucesso: false,
           erroGeral:
-            err.response.data && err.response.data.mensagens
+            err.response && err.response.data && err.response.data.mensagens
               ? err.response.data.mensagens.join(',')
               : 'Falha ao tentar autenticar no servidor',
         };
