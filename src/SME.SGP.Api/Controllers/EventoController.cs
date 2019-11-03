@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using SME.SGP.Api.Filtros;
 using SME.SGP.Aplicacao;
 using SME.SGP.Aplicacao.Interfaces;
 using SME.SGP.Infra;
@@ -49,16 +50,6 @@ namespace SME.SGP.Api.Controllers
             return Ok(await consultasEvento.Listar(filtroEventosDto));
         }
 
-        [HttpGet("{id}")]
-        [ProducesResponseType(typeof(EventoCompletoDto), 200)]
-        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        [ProducesResponseType(typeof(RetornoBaseDto), 601)]
-        //[Permissao(Permissao.C_I, Policy = "Bearer")]
-        public IActionResult ObterPorId(long id, [FromServices] IConsultasEvento consultasEvento)
-        {
-            return Ok(consultasEvento.ObterPorId(id));
-        }
-
         [HttpGet("meses")]
         [ProducesResponseType(typeof(IEnumerable<CalendarioEventosMesesDto>), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
@@ -74,6 +65,28 @@ namespace SME.SGP.Api.Controllers
             else return StatusCode(204);
         }
 
+        [HttpGet("meses/{mes}/dias/{dia}")]
+        [ProducesResponseType(204)]
+        [ProducesResponseType(typeof(IEnumerable<CalendarioTipoEventoPorDiaDto>), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [Permissao(Permissao.E_C, Policy = "Bearer")]
+        public async Task<IActionResult> ObterPorDia(int dia, int mes, [FromQuery]CalendarioEventosFiltroDto filtro, [FromServices] IConsultasEvento consultasEvento)
+        {
+            var retorno = await consultasEvento.ObterEventosPorDia(filtro, mes, dia);
+            if (retorno.Any())
+                return Ok(retorno);
+            else return StatusCode(204);
+        }
+
+        [HttpGet("{id}")]
+        [ProducesResponseType(typeof(EventoCompletoDto), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 601)]
+        //[Permissao(Permissao.C_I, Policy = "Bearer")]
+        public IActionResult ObterPorId(long id, [FromServices] IConsultasEvento consultasEvento)
+        {
+            return Ok(consultasEvento.ObterPorId(id));
+        }
 
         [HttpGet("meses/{mes}/tipos")]
         [ProducesResponseType(204)]
