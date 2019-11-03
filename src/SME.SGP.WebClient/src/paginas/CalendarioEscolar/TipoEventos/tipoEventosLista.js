@@ -1,4 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
+import { useSelector } from 'react-redux';
+import RotasDto from '~/dtos/rotasDto';
 import styled from 'styled-components';
 import Card from '~/componentes/card';
 import Grid from '~/componentes/grid';
@@ -9,6 +11,7 @@ import history from '~/servicos/history';
 import { confirmar, erro, sucesso } from '~/servicos/alertas';
 import ListaPaginada from '~/componentes/listaPaginada/listaPaginada';
 import api from '~/servicos/api';
+import { verificaSomenteConsulta } from '~/servicos/servico-navegacao';
 
 const TipoEventosLista = () => {
   const Div = styled.div`
@@ -45,6 +48,15 @@ const TipoEventosLista = () => {
       border: 1px solid ${Base.CinzaDesabilitado};
     }
   `;
+
+  const usuario = useSelector(store => store.usuario);
+  const permissoesTela = usuario.permissoes[RotasDto.CALENDARIO_ESCOLAR];
+  const [somenteConsulta, setSomenteConsulta] = useState(false);
+  const isDisabled = somenteConsulta || !permissoesTela.podeAlterar;
+
+  useEffect(() => {
+    setSomenteConsulta(verificaSomenteConsulta(permissoesTela));
+  }, []);
 
   const [desabilitarBotaoExcluir, setDesabilitarBotaoExcluir] = useState(true);
   const [tipoEventoSelecionados, setTipoEventoSelecionados] = useState([]);
@@ -88,7 +100,8 @@ const TipoEventosLista = () => {
   };
 
   const clicouBotaoEditar = tipoEvento => {
-    history.push(`/calendario-escolar/tipo-eventos/editar/${tipoEvento.id}`);
+    if (!isDisabled)
+      history.push(`/calendario-escolar/tipo-eventos/editar/${tipoEvento.id}`);
   };
 
   const listaLetivo = [
@@ -229,6 +242,7 @@ const TipoEventosLista = () => {
               label="Novo"
               color={Colors.Roxo}
               onClick={clicouBotaoNovo}
+              disabled={isDisabled}
               bold
             />
           </Div>
