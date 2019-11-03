@@ -147,7 +147,7 @@ const TipoCalendarioEscolarLista = () => {
             onClickRow={onClickRow}
             columns={colunas}
             dataSource={listaTiposCalendarioEscolar}
-            selectMultipleRows={permissoesTela.podeExcluir}
+            selectMultipleRows
           />
         </div>
       </Card>
