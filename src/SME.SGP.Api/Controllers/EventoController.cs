@@ -82,7 +82,7 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(204)]
         [ProducesResponseType(typeof(IEnumerable<CalendarioTipoEventoPorDiaDto>), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        //[Permissao(Permissao.E_C, Policy = "Bearer")]
+        [Permissao(Permissao.E_C, Policy = "Bearer")]
         public async Task<IActionResult> ObterPorMes([FromQuery]CalendarioEventosFiltroDto filtro, int mes, [FromServices]IConsultasEvento consultasEvento)
         {
             var listaRetorno = await consultasEvento.ObterQuantidadeDeEventosPorDia(filtro, mes);
