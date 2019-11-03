@@ -11,7 +11,6 @@ import history from '~/servicos/history';
 import { confirmar, erro, sucesso } from '~/servicos/alertas';
 import ListaPaginada from '~/componentes/listaPaginada/listaPaginada';
 import api from '~/servicos/api';
-import { verificaSomenteConsulta } from '~/servicos/servico-navegacao';
 
 const TipoEventosLista = () => {
   const Div = styled.div`
@@ -50,13 +49,7 @@ const TipoEventosLista = () => {
   `;
 
   const usuario = useSelector(store => store.usuario);
-  const permissoesTela = usuario.permissoes[RotasDto.CALENDARIO_ESCOLAR];
-  const [somenteConsulta, setSomenteConsulta] = useState(false);
-  const isDisabled = somenteConsulta || !permissoesTela.podeAlterar;
-
-  useEffect(() => {
-    setSomenteConsulta(verificaSomenteConsulta(permissoesTela));
-  }, []);
+  const permissoesTela = usuario.permissoes[RotasDto.TIPO_EVENTOS];
 
   const [desabilitarBotaoExcluir, setDesabilitarBotaoExcluir] = useState(true);
   const [tipoEventoSelecionados, setTipoEventoSelecionados] = useState([]);
@@ -90,17 +83,18 @@ const TipoEventosLista = () => {
   };
 
   useEffect(() => {
-    if (codigoTipoEventoSelecionados.length > 0)
+    if (codigoTipoEventoSelecionados.length > 0 && permissoesTela.podeExcluir)
       setDesabilitarBotaoExcluir(false);
     else setDesabilitarBotaoExcluir(true);
   }, [codigoTipoEventoSelecionados]);
 
   const clicouBotaoNovo = () => {
-    history.push('/calendario-escolar/tipo-eventos/novo');
+    if (permissoesTela.podeIncluir)
+      history.push('/calendario-escolar/tipo-eventos/novo');
   };
 
   const clicouBotaoEditar = tipoEvento => {
-    if (!isDisabled)
+    if (permissoesTela.podeAlterar)
       history.push(`/calendario-escolar/tipo-eventos/editar/${tipoEvento.id}`);
   };
 
@@ -242,7 +236,7 @@ const TipoEventosLista = () => {
               label="Novo"
               color={Colors.Roxo}
               onClick={clicouBotaoNovo}
-              disabled={isDisabled}
+              disabled={!permissoesTela.podeIncluir}
               bold
             />
           </Div>
