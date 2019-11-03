@@ -15,7 +15,6 @@ import api from '~/servicos/api';
 import {
   Container,
   Campo,
-  Icone,
   Busca,
   Fechar,
   SetaFunction,
@@ -30,6 +29,8 @@ import {
   salvarTurmas,
 } from '~/redux/modulos/filtro/actions';
 import ServicoFiltro from '~/servicos/Componentes/ServicoFiltro';
+import FiltroHelper from './helper';
+import { erro } from '~/servicos/alertas';
 
 const Filtro = () => {
   const [alternarFocoCampo, setAlternarFocoCampo] = useState(false);
@@ -100,27 +101,16 @@ const Filtro = () => {
     turmaUsuarioSelecionada.turma
   );
 
-  const [textoAutocomplete, setTextoAutocomplete] = useState();
+  const [textoAutocomplete, setTextoAutocomplete] = useState(
+    turmaUsuarioSelecionada.desc
+  );
   const [resultadosFiltro, setResultadosFiltro] = useState([]);
 
   useEffect(() => {
     let estado = true;
-    const anosLetivos = [];
 
-    if (anoLetivoSelecionado) return;
+    ObtenhaAnosLetivos(estado);
 
-    ServicoFiltro.listarAnosLetivos().then(resposta => {
-      if (resposta.data) {
-        resposta.data.forEach(ano => {
-          anosLetivos.push({ desc: ano, valor: ano });
-        });
-        if (estado) {
-          store.dispatch(salvarAnosLetivos(anosLetivos));
-          setAnosLetivos(anosLetivos);
-          setCampoAnoLetivoDesabilitado(false);
-        }
-      }
-    });
     return () => (estado = false);
   }, []);
 
@@ -136,6 +126,7 @@ const Filtro = () => {
       setDreSelecionada(turmaUsuarioSelecionada.dre);
       setUnidadeEscolarSelecionada(turmaUsuarioSelecionada.unidadeEscolar);
       setTurmaSelecionada(turmaUsuarioSelecionada.turma);
+      setTextoAutocomplete(turmaUsuarioSelecionada.desc);
     }
     return () => (estado = false);
   }, [turmaUsuarioSelecionada]);
@@ -148,27 +139,15 @@ const Filtro = () => {
 
   useEffect(() => {
     let estado = true;
-    if (anoLetivoSelecionado) {
-      const modalidadesLista = [];
-      ServicoFiltro.listarModalidades().then(resposta => {
-        if (resposta.data) {
-          resposta.data.forEach(modalidade => {
-            modalidadesLista.push({
-              desc: modalidade.descricao,
-              valor: modalidade.id,
-            });
-          });
-          if (estado) {
-            setModalidades([...modalidadesLista]);
-            store.dispatch(salvarModalidades(modalidadesLista));
-            setCampoModalidadeDesabilitado(false);
-          }
-        }
-      });
-    } else {
+
+    if (!anoLetivoSelecionado) {
       setModalidadeSelecionada();
       setCampoModalidadeDesabilitado(true);
+      return;
     }
+
+    ObtenhaModalidades(estado);
+
     return () => (estado = false);
   }, [anoLetivoSelecionado]);
 
@@ -180,47 +159,17 @@ const Filtro = () => {
   useEffect(() => {
     let estado = true;
 
-    if (modalidadeSelecionada) {
-      setPeriodoSelecionado();
-      setDreSelecionada();
-
-      const periodos = [];
-      ServicoFiltro.listarPeriodos(modalidadeSelecionada).then(resposta => {
-        if (resposta.data) {
-          resposta.data.forEach(periodo => {
-            periodos.push({ desc: periodo, valor: periodo });
-          });
-          if (estado) {
-            store.dispatch(salvarPeriodos(periodos));
-            setPeriodos(periodos);
-            setCampoPeriodoDesabilitado(false);
-          }
-        }
-      });
-
-      const dres = [];
-      ServicoFiltro.listarDres(modalidadeSelecionada).then(resposta => {
-        if (resposta.data) {
-          resposta.data.forEach(dre => {
-            dres.push({
-              desc: dre.nome,
-              valor: dre.codigo,
-              abrev: dre.abreviacao,
-            });
-          });
-          if (estado) {
-            store.dispatch(salvarDres(dres));
-            setDres(dres);
-            setCampoDreDesabilitado(false);
-          }
-        }
-      });
-    } else {
+    if (!modalidadeSelecionada) {
       setPeriodoSelecionado();
       setDreSelecionada();
       setCampoPeriodoDesabilitado(true);
       setCampoDreDesabilitado(true);
+      return;
     }
+
+    ObtenhaPeriodos(estado);
+    ObtenhaDres(estado);
+
     return () => (estado = false);
   }, [modalidadeSelecionada]);
 
@@ -230,34 +179,15 @@ const Filtro = () => {
 
   useEffect(() => {
     let estado = true;
-    if (dreSelecionada) {
-      setUnidadeEscolarSelecionada();
-      const unidadesEscolares = [];
 
-      ServicoFiltro.listarUnidadesEscolares(
-        dreSelecionada,
-        modalidadeSelecionada
-      ).then(resposta => {
-        if (resposta.data) {
-          resposta.data.forEach(unidade => {
-            unidadesEscolares.push({
-              desc: unidade.nome,
-              valor: unidade.codigo,
-            });
-          });
-          if (estado) {
-            store.dispatch(salvarUnidadesEscolares(unidadesEscolares));
-            setUnidadesEscolares(unidadesEscolares);
-            setCampoUnidadeEscolarDesabilitado(false);
-          }
-        } else {
-          setDreSelecionada();
-        }
-      });
-    } else {
+    if (!dreSelecionada) {
       setUnidadeEscolarSelecionada();
       setCampoUnidadeEscolarDesabilitado(true);
+      return;
     }
+
+    ObtenhaUnidadesEscolares(estado);
+
     return () => (estado = false);
   }, [dreSelecionada]);
 
@@ -268,33 +198,15 @@ const Filtro = () => {
 
   useEffect(() => {
     let estado = true;
-    if (unidadeEscolarSelecionada) {
-      const turmas = [];
-      setTurmaSelecionada();
 
-      ServicoFiltro.listarTurmas(
-        unidadeEscolarSelecionada,
-        modalidadeSelecionada
-      ).then(resposta => {
-        if (resposta.data) {
-          resposta.data.forEach(turma => {
-            turmas.push({
-              desc: turma.nome,
-              valor: turma.codigo,
-              ano: turma.ano,
-            });
-          });
-          if (estado) {
-            store.dispatch(salvarTurmas(turmas));
-            setTurmas(turmas);
-            setCampoTurmaDesabilitado(false);
-          }
-        }
-      });
-    } else {
+    if (!unidadeEscolarSelecionada) {
       setTurmaSelecionada();
       setCampoTurmaDesabilitado(true);
+      return;
     }
+
+    ObtenhaTurmas(estado);
+
     return () => (estado = false);
   }, [unidadeEscolarSelecionada]);
 
@@ -340,6 +252,8 @@ const Filtro = () => {
 
       store.dispatch(turmasUsuario(turmas));
       store.dispatch(selecionarTurma(turma));
+
+      setTextoAutocomplete(turma.desc);
     }
   };
 
@@ -397,6 +311,86 @@ const Filtro = () => {
           setResultadosFiltro(resposta.data);
         }
       });
+    }
+  };
+
+  const ObtenhaAnosLetivos = async estado => {
+    const anosLetivos = await FiltroHelper.ObtenhaAnosLetivos();
+
+    if (estado) {
+      store.dispatch(salvarAnosLetivos(anosLetivos));
+      setAnosLetivos(anosLetivos);
+      setCampoAnoLetivoDesabilitado(false);
+    }
+  };
+
+  const ObtenhaModalidades = async estado => {
+    const modalidadesLista = await FiltroHelper.ObtenhaModalidades();
+
+    if (estado) {
+      setModalidades([...modalidadesLista]);
+      store.dispatch(salvarModalidades(modalidadesLista));
+      setCampoModalidadeDesabilitado(false);
+    }
+  };
+
+  const ObtenhaPeriodos = async estado => {
+    const periodos = await FiltroHelper.ObtenhaPeriodos(modalidadeSelecionada);
+
+    if (estado) {
+      store.dispatch(salvarPeriodos(periodos));
+      setPeriodos(periodos);
+      setCampoPeriodoDesabilitado(false);
+    }
+  };
+
+  const ObtenhaDres = async estado => {
+    const dres = await FiltroHelper.ObtenhaDres(modalidadeSelecionada);
+
+    if (estado) {
+      store.dispatch(salvarDres(dres));
+      setDres(dres);
+      setCampoDreDesabilitado(false);
+    }
+  };
+
+  const ObtenhaUnidadesEscolares = async estado => {
+    const unidadesEscolares = await FiltroHelper.ObtenhaUnidadesEscolares(
+      modalidadeSelecionada,
+      dreSelecionada
+    );
+
+    if (!unidadesEscolares) {
+      setDreSelecionada();
+      setCampoDreDesabilitado(true);
+      erro('Esta DRE não possui unidades escolares da modalidade escolhida');
+      return;
+    }
+
+    if (estado) {
+      store.dispatch(salvarUnidadesEscolares(unidadesEscolares));
+      setUnidadesEscolares(unidadesEscolares);
+      setCampoUnidadeEscolarDesabilitado(false);
+    }
+  };
+
+  const ObtenhaTurmas = async estado => {
+    const turmas = await FiltroHelper.ObtenhaTurmas(
+      modalidadeSelecionada,
+      unidadeEscolarSelecionada
+    );
+
+    if (!turmas || turmas.length === 0) {
+      setUnidadeEscolarSelecionada();
+      setCampoUnidadeEscolarDesabilitado(true);
+      erro('Esta unidade escolar não possui turmas da modalidade escolhida');
+      return;
+    }
+
+    if (estado) {
+      store.dispatch(salvarTurmas(turmas));
+      setTurmas(turmas);
+      setCampoTurmaDesabilitado(false);
     }
   };
 
@@ -481,10 +475,17 @@ const Filtro = () => {
   };
 
   const aoTrocarAnoLetivo = ano => {
+    if (ano !== anoLetivoSelecionado) setModalidadeSelecionada();
+
     setAnoLetivoSelecionado(ano);
   };
 
   const aoTrocarModalidade = modalidade => {
+    if (modalidade !== modalidadeSelecionada) {
+      setDreSelecionada();
+      setPeriodoSelecionado();
+    }
+
     setModalidadeSelecionada(modalidade);
   };
 
@@ -493,10 +494,14 @@ const Filtro = () => {
   };
 
   const aoTrocarDre = dre => {
+    if (dre !== dreSelecionada) setUnidadeEscolarSelecionada();
+
     setDreSelecionada(dre);
   };
 
   const aoTrocarUnidadeEscolar = unidade => {
+    if (unidade !== unidadeEscolarSelecionada) setTurmaSelecionada();
+
     setUnidadeEscolarSelecionada(unidade);
   };
 
@@ -529,7 +534,7 @@ const Filtro = () => {
             onChange={onChangeAutocomplete}
             onKeyDown={aoPressionarTeclaBaixoAutocomplete}
             readOnly={!!turmaUsuarioSelecionada}
-            value={turmaUsuarioSelecionada.desc || textoAutocomplete}
+            value={textoAutocomplete}
           />
           {turmaUsuarioSelecionada && turmaUsuarioSelecionada.length > 0 && (
             <Fechar
@@ -588,9 +593,7 @@ const Filtro = () => {
                   lista={modalidades}
                   valueOption="valor"
                   valueText="desc"
-                  valueSelect={
-                    modalidadeSelecionada && `${modalidadeSelecionada}`
-                  }
+                  valueSelect={modalidadeSelecionada}
                   placeholder="Modalidade"
                   disabled={campoModalidadeDesabilitado}
                 />

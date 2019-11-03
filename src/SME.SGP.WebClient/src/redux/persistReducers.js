@@ -6,7 +6,7 @@ export default reducers => {
     {
       key: 'sme-sgp',
       storage,
-      whitelist: ['usuario', 'perfil'],
+      whitelist: ['usuario', 'perfil', 'filtro'],
     },
     reducers
   );
