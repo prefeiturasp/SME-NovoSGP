@@ -38,32 +38,6 @@ namespace SME.SGP.Dominio.Servicos
             return data.AddDays(diasParaAdicionar);
         }
 
-        public async Task GravarRecorrencia(Evento evento, DateTime dataInicial, DateTime? dataFinal, int? diaDeOcorrencia, IEnumerable<DayOfWeek> diasDaSemana, PadraoRecorrencia padraoRecorrencia, PadraoRecorrenciaMensal? padraoRecorrenciaMensal, int repeteACada)
-        {
-            if (!dataFinal.HasValue)
-            {
-                var periodoEscolar = repositorioPeriodoEscolar.ObterPorTipoCalendario(evento.TipoCalendarioId);
-                var periodoAtual = periodoEscolar.FirstOrDefault(c => DateTime.Now >= c.PeriodoInicio && DateTime.Now <= c.PeriodoFim);
-                dataFinal = periodoAtual.PeriodoFim;
-            }
-            var eventos = evento.ObterRecorrencia(padraoRecorrencia, padraoRecorrenciaMensal, dataInicial, dataFinal.Value, diasDaSemana, repeteACada, diaDeOcorrencia);
-            foreach (var novoEvento in eventos)
-            {
-                try
-                {
-                    await Salvar(novoEvento);
-                }
-                catch (NegocioException nex)
-                {
-                    //TODO GERAR NOTIFICAÇÃO DE FEEDBACK
-                }
-                catch (Exception ex)
-                {
-                    //TODO GERAR NOTIFICAÇÃO DE FEEDBACK
-                }
-            }
-        }
-
         public DateTime ObterDomingo(DateTime data)
         {
             int diferenca = (7 + (data.DayOfWeek - DayOfWeek.Monday)) % 7;
@@ -125,6 +99,32 @@ namespace SME.SGP.Dominio.Servicos
 
             if (feriadosErro.Any())
                 TratarErros(feriadosErro);
+        }
+
+        public async Task SalvarRecorrencia(Evento evento, DateTime dataInicial, DateTime? dataFinal, int? diaDeOcorrencia, IEnumerable<DayOfWeek> diasDaSemana, PadraoRecorrencia padraoRecorrencia, PadraoRecorrenciaMensal? padraoRecorrenciaMensal, int repeteACada)
+        {
+            if (!dataFinal.HasValue)
+            {
+                var periodoEscolar = repositorioPeriodoEscolar.ObterPorTipoCalendario(evento.TipoCalendarioId);
+                var periodoAtual = periodoEscolar.FirstOrDefault(c => DateTime.Now >= c.PeriodoInicio && DateTime.Now <= c.PeriodoFim);
+                dataFinal = periodoAtual.PeriodoFim;
+            }
+            var eventos = evento.ObterRecorrencia(padraoRecorrencia, padraoRecorrenciaMensal, dataInicial, dataFinal.Value, diasDaSemana, repeteACada, diaDeOcorrencia);
+            foreach (var novoEvento in eventos)
+            {
+                try
+                {
+                    await Salvar(novoEvento);
+                }
+                catch (NegocioException nex)
+                {
+                    //TODO GERAR NOTIFICAÇÃO DE FEEDBACK
+                }
+                catch (Exception ex)
+                {
+                    //TODO GERAR NOTIFICAÇÃO DE FEEDBACK
+                }
+            }
         }
 
         private static Evento MapearEntidade(TipoCalendario tipoCalendario, FeriadoCalendario x, Entidades.EventoTipo tipoEventoFeriado)
