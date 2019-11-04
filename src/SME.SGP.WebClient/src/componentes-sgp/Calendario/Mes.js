@@ -40,14 +40,18 @@ const Mes = props => {
   useEffect(() => {
     if (filtros && Object.entries(filtros).length > 0) {
       const {
-        tipoCalendarioSelecionado,
-        eventoSme,
-        dreSelecionada,
-        unidadeEscolarSelecionada,
+        tipoCalendarioSelecionado = '',
+        eventoSme = true,
+        dreSelecionada = '',
+        unidadeEscolarSelecionada = '',
       } = filtros;
       api
         .get(
-          `v1/calendarios/eventos/meses?DreId=${dreSelecionada}&EhEventoSme=${eventoSme}&IdTipoCalendario=${tipoCalendarioSelecionado}&UeId=${unidadeEscolarSelecionada}`
+          `v1/calendarios/eventos/meses?${dreSelecionada &&
+            `DreId=${dreSelecionada}&`}${eventoSme &&
+            `EhEventoSme=${eventoSme}&`}${tipoCalendarioSelecionado &&
+            `IdTipoCalendario=${tipoCalendarioSelecionado}&`}${unidadeEscolarSelecionada &&
+            `UeId=${unidadeEscolarSelecionada}`}`
         )
         .then(resposta => {
           if (resposta.data) {
