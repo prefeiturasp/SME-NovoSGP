@@ -1,0 +1,20 @@
+﻿CREATE TABLE IF NOT EXISTS public.aula (
+	id int8 NOT NULL GENERATED ALWAYS AS IDENTITY,
+	ue_id int8 NOT NULL,
+	disciplina_id int8 NOT NULL,
+	turma_id int8 NOT NULL,
+	tipo_calendario_id int8 NOT NULL,
+	professor_id int8 NOT NULL,
+	quantidade int4 NOT NULL,
+	data_aula timestamp not null,
+	recorrencia_aula int not null,
+	tipo_aula int not null,
+	criado_em timestamp NOT NULL,
+	criado_por varchar(200) NOT NULL,
+	alterado_em timestamp NULL,
+	alterado_por varchar(200) NULL,
+	criado_rf varchar(200) NOT NULL,
+	alterado_rf varchar(200) NULL,
+	excluido boolean not null default false,
+	migrado boolean not null default false
+);
