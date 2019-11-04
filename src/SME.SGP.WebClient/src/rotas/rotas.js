@@ -345,7 +345,16 @@ export default function Rotas() {
       temPermissionamento: false
   });
 
-  rotas.set(`${RotasDto.CADASTRO_DE_AULA}/:id`, {
+  rotas.set(`${RotasDto.CADASTRO_DE_AULA}/novo/:tipoCalendarioId`, {
+      breadcrumbName: 'Cadastro de Aula',
+      parent: RotasDto.CADASTRO_DE_AULA,
+      component: CadastroAula,
+      exact: true,
+      tipo: RotasTipo.EstruturadaAutenticada,
+      temPermissionamento: false
+  });
+
+  rotas.set(`${RotasDto.CADASTRO_DE_AULA}/editar/:id`, {
       breadcrumbName: 'Cadastro de Aula',
       parent: RotasDto.CADASTRO_DE_AULA,
       component: CadastroAula,
