@@ -21,8 +21,8 @@ const DadosEmail = () => {
   const [emailEdicao, setEmailEdicao] = useState(usuarioStore.meusDados.email);
   const [visualizarFormEmail, setVisualizarFormEmail] = useState(false);
   const [erroEmail, setErroEmail] = useState('');
-  
-  const permissoesTela = usuarioStore.permissoes[RotasDto.PLANO_CICLO];
+
+  const permissoesTela = usuarioStore.permissoes[RotasDto.MEUS_DADOS];
   const [somenteConsulta, setSomenteConsulta] = useState(false);
 
   useEffect(() =>{
@@ -192,7 +192,7 @@ const DadosEmail = () => {
           <Button
             label="Editar"
             color={Colors.Roxo}
-            disabled={somenteConsulta || !permissoesTela.podeEditar}
+            disabled={somenteConsulta || !permissoesTela.podeAlterar}
             border
             bold
             onClick={() => setVisualizarFormEmail(true)}
