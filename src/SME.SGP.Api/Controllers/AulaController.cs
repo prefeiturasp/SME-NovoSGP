@@ -14,20 +14,11 @@ namespace SME.SGP.Api.Controllers
     [Authorize("Bearer")]
     public class AulaController : ControllerBase
     {
-        private readonly IComandosAula comandos;
-        private readonly IConsultasAula consultas;
-
-        public AulaController(IComandosAula comandos, IConsultasAula consultas)
-        {
-            this.comandos = comandos ?? throw new System.ArgumentNullException(nameof(comandos));
-            this.consultas = consultas ?? throw new System.ArgumentNullException(nameof(consultas));
-        }
-
         [HttpPost]
         [ProducesResponseType(200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        [Permissao(Permissao.CP_I, Permissao.CP_A, Policy = "Bearer")]
-        public async Task<IActionResult> Inserir([FromBody]AulaDto dto)
+        [Permissao(Permissao.CP_I, Policy = "Bearer")]
+        public async Task<IActionResult> Inserir([FromBody]AulaDto dto, [FromServices]IComandosAula comandos)
         {
             await comandos.Inserir(dto);
             return Ok();
@@ -36,8 +27,8 @@ namespace SME.SGP.Api.Controllers
         [HttpPut("{id}")]
         [ProducesResponseType(200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        [Permissao(Permissao.CP_I, Permissao.CP_A, Policy = "Bearer")]
-        public async Task<IActionResult> Alterar([FromBody]AulaDto dto, long id)
+        [Permissao(Permissao.CP_A, Policy = "Bearer")]
+        public async Task<IActionResult> Alterar([FromBody]AulaDto dto, long id, [FromServices]IComandosAula comandos)
         {
             await comandos.Alterar(dto, id);
             return Ok();
@@ -46,8 +37,8 @@ namespace SME.SGP.Api.Controllers
         [HttpDelete("{id}")]
         [ProducesResponseType(200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        [Permissao(Permissao.CP_I, Permissao.CP_A, Policy = "Bearer")]
-        public IActionResult Excluir(long id)
+        [Permissao(Permissao.CP_E, Policy = "Bearer")]
+        public IActionResult Excluir(long id, [FromServices]IComandosAula comandos)
         {
             comandos.Excluir(id);
             return Ok();
@@ -57,7 +48,7 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(AulaConsultaDto), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [Permissao(Permissao.CP_C, Policy = "Bearer")]
-        public IActionResult BuscarPorId(long id)
+        public IActionResult BuscarPorId(long id, [FromServices]IConsultasAula consultas)
         {
             var aula = consultas.BuscarPorId(id);
             return Ok(aula);

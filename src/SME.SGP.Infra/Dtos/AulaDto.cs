@@ -8,11 +8,11 @@ namespace SME.SGP.Infra
     {
 
         [Required(ErrorMessage = "A UE deve ser informada")]
-        public long UeId { get; set; }
+        public string UeId { get; set; }
         [Required(ErrorMessage = "A disciplina deve ser informada")]
-        public long DisciplinaId { get; set; }
+        public string DisciplinaId { get; set; }
         [Required(ErrorMessage = "A turma deve ser informada")]
-        public long TurmaId { get; set; }
+        public string TurmaId { get; set; }
         [Required(ErrorMessage = "O tipo de calendário deve ser informado")]
         public long TipoCalendarioId { get; set; }
         [Required(ErrorMessage = "O tipo de aula deve ser informado")]
