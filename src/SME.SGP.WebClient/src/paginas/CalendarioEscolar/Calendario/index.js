@@ -9,6 +9,7 @@ import SelectComponent from '~/componentes/select';
 import api from '~/servicos/api';
 import Button from '~/componentes/button';
 import history from '~/servicos/history';
+import { erro } from '~/servicos/alertas';
 
 const Div = styled.div``;
 const Titulo = styled(Div)`
@@ -23,20 +24,34 @@ const CalendarioEscolar = () => {
 
   const [diasLetivos, setDiasLetivos] = useState({});
 
+  const turmaSelecionada = useSelector(state => state.usuario.turmaSelecionada);
+
   useEffect(() => {
-    const tiposCalendarioLista = [];
-    api.get('v1/calendarios/tipos').then(resposta => {
-      if (resposta.data) {
-        resposta.data.forEach(tipo => {
-          tiposCalendarioLista.push({ desc: tipo.nome, valor: tipo.id });
-        });
-        setTiposCalendario(tiposCalendarioLista);
-      }
-    });
+    if (turmaSelecionada) {
+      const tiposCalendarioLista = [];
+      api.get('v1/calendarios/tipos').then(resposta => {
+        if (resposta.data) {
+          resposta.data
+            .filter(
+              tipo =>
+                tipo.anoLetivo.toString() ===
+                  turmaSelecionada.anoLetivo.toString() &&
+                tipo.modalidade.toString() ===
+                  turmaSelecionada.modalidade.toString()
+            )
+            .forEach(tipo => {
+              tiposCalendarioLista.push({ desc: tipo.nome, valor: tipo.id });
+            });
+          setTiposCalendario(tiposCalendarioLista);
+        }
+      });
+    } else {
+      erro('Você precisa escolher uma turma');
+    }
   }, []);
 
   useEffect(() => {
-    if (tipoCalendarioSelecionado)
+    if (tipoCalendarioSelecionado) {
       api
         .get(
           `https://demo0765509.mockable.io/api/v1/calendarios/${tipoCalendarioSelecionado}/dias-letivos`
@@ -47,6 +62,8 @@ const CalendarioEscolar = () => {
         .catch(() => {
           setDiasLetivos({});
         });
+      setFiltros({ ...filtros, tipoCalendarioSelecionado });
+    }
   }, [tipoCalendarioSelecionado]);
 
   const aoSelecionarTipoCalendario = tipo => {
@@ -81,12 +98,16 @@ const CalendarioEscolar = () => {
     if (unidadesEscolaresStore) setUnidadesEscolares(unidadesEscolaresStore);
   }, [unidadesEscolaresStore]);
 
+  const [desabilitaBotaoFiltro, setDesabilitaBotaoFiltro] = useState(true);
+
   const aoSelecionarDre = dre => {
     setDreSelecionada(dre);
+    if (dre) setDesabilitaBotaoFiltro(false);
   };
 
   const aoSelecionarUnidadeEscolar = unidade => {
     setUnidadeEscolarSelecionada(unidade);
+    if (unidade) setDesabilitaBotaoFiltro(false);
   };
 
   const [filtros, setFiltros] = useState({
@@ -202,6 +223,7 @@ const CalendarioEscolar = () => {
                 color={Colors.Roxo}
                 className="ml-auto"
                 onClick={aoClicarBotaoFiltro}
+                disabled={desabilitaBotaoFiltro}
               />
             </Div>
           </Div>

@@ -9,7 +9,6 @@ import {
 } from '~/redux/modulos/calendarioEscolar/actions';
 import { Base } from '~/componentes/colors';
 import api from '~/servicos/api';
-import { erro } from '~/servicos/alertas';
 
 const Div = styled.div``;
 const Icone = styled.i`
@@ -27,14 +26,31 @@ const Seta = props => {
   );
 };
 
+Seta.propTypes = {
+  estaAberto: PropTypes.bool,
+};
+
+Seta.defaultProps = {
+  estaAberto: false,
+};
+
 const Mes = props => {
   const { numeroMes, filtros } = props;
   const [mesSelecionado, setMesSelecionado] = useState({});
 
+  const verificaMesAtual = () => {
+    if (filtros && Object.entries(filtros).length > 0) {
+      const { tipoCalendarioSelecionado = '' } = filtros;
+      if (tipoCalendarioSelecionado) {
+        const dataAtual = new Date();
+        if (numeroMes === (dataAtual.getMonth() + 1).toString())
+          store.dispatch(selecionaMes(numeroMes));
+      }
+    }
+  };
+
   useEffect(() => {
-    const dataAtual = new Date();
-    if (numeroMes === (dataAtual.getMonth() + 1).toString())
-      store.dispatch(selecionaMes(numeroMes));
+    verificaMesAtual();
   }, []);
 
   useEffect(() => {
@@ -45,25 +61,28 @@ const Mes = props => {
         dreSelecionada = '',
         unidadeEscolarSelecionada = '',
       } = filtros;
-      api
-        .get(
-          `v1/calendarios/eventos/meses?${dreSelecionada &&
-            `DreId=${dreSelecionada}&`}${eventoSme &&
-            `EhEventoSme=${eventoSme}&`}${tipoCalendarioSelecionado &&
-            `IdTipoCalendario=${tipoCalendarioSelecionado}&`}${unidadeEscolarSelecionada &&
-            `UeId=${unidadeEscolarSelecionada}`}`
-        )
-        .then(resposta => {
-          if (resposta.data) {
-            resposta.data.forEach(item => {
-              store.dispatch(atribuiEventosMes(item.mes, item.eventos));
-            });
-          }
-        })
-        .catch(() => {
-          erro('Não encontramos eventos para estes filtros!');
-          store.dispatch(atribuiEventosMes(numeroMes, 0));
-        });
+      if (tipoCalendarioSelecionado) {
+        api
+          .get(
+            `v1/calendarios/eventos/meses?${dreSelecionada &&
+              `DreId=${dreSelecionada}&`}${eventoSme &&
+              `EhEventoSme=${eventoSme}&`}${tipoCalendarioSelecionado &&
+              `IdTipoCalendario=${tipoCalendarioSelecionado}&`}${unidadeEscolarSelecionada &&
+              `UeId=${unidadeEscolarSelecionada}`}`
+          )
+          .then(resposta => {
+            if (resposta.data) {
+              resposta.data.forEach(item => {
+                if (item && item.mes > 0)
+                  store.dispatch(atribuiEventosMes(item.mes, item.eventos));
+              });
+            }
+          })
+          .catch(() => {
+            store.dispatch(atribuiEventosMes(numeroMes, 0));
+          });
+        verificaMesAtual();
+      }
     }
   }, [filtros]);
 
@@ -85,7 +104,10 @@ const Mes = props => {
   }, [meses]);
 
   const abrirMes = () => {
-    store.dispatch(selecionaMes(numeroMes));
+    if (filtros && Object.entries(filtros).length > 0) {
+      const { tipoCalendarioSelecionado = '' } = filtros;
+      if (tipoCalendarioSelecionado) store.dispatch(selecionaMes(numeroMes));
+    }
   };
 
   return (

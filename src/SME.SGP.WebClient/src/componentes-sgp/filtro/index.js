@@ -70,6 +70,7 @@ const Filtro = () => {
   );
 
   const modalidadesStore = useSelector(state => state.filtro.modalidades);
+  console.log(modalidadesStore);
   const [modalidades, setModalidades] = useState(modalidadesStore);
   const [modalidadeSelecionada, setModalidadeSelecionada] = useState(
     turmaUsuarioSelecionada.modalidade
