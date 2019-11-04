@@ -14,6 +14,9 @@ import api from '~/servicos/api';
 import Card from '../../../componentes/card';
 import history from '~/servicos/history';
 import { URL_HOME } from '~/constantes/url';
+import { store } from '~/redux';
+import RotasDto from '~/dtos/rotasDto';
+import { verificaSomenteConsulta } from '~/servicos/servico-navegacao';
 
 export default function ReiniciarSenha() {
   const [linhaSelecionada, setLinhaSelecionada] = useState({});
@@ -31,6 +34,9 @@ export default function ReiniciarSenha() {
   );
   const [semEmailCadastrado, setSemEmailCadastrado] = useState(false);
   const [refForm, setRefForm] = useState();
+
+  const usuario = store.getState().usuario;
+  const permissoesTela = usuario.permissoes[RotasDto.REINICIAR_SENHA];
 
   const [validacoes] = useState(
     Yup.object({
@@ -61,6 +67,7 @@ export default function ReiniciarSenha() {
             <Button
               label="Reiniciar"
               color={Colors.Roxo}
+              disabled={!permissoesTela.podeAlterar}
               border
               className="ml-2 text-center"
               onClick={() => onClickReiniciar(linha)}
@@ -77,6 +84,8 @@ export default function ReiniciarSenha() {
       setListaDres(dres.data);
     };
     carregarDres();
+
+    verificaSomenteConsulta(permissoesTela);
   }, []);
 
   const onClickVoltar = () => history.push(URL_HOME);
@@ -108,6 +117,8 @@ export default function ReiniciarSenha() {
   };
 
   const onClickFiltrar = async () => {
+    if (!permissoesTela.podeConsultar) return;
+
     if (ueSelecionada) {
       const parametrosPost = {
         codigoUE: ueSelecionada,
@@ -134,6 +145,8 @@ export default function ReiniciarSenha() {
   };
 
   const onClickReiniciar = async linha => {
+    if (!permissoesTela.podeAlterar) return;
+
     setLinhaSelecionada(linha);
     const confirmou = await confirmar(
       'Reiniciar Senha',
@@ -213,6 +226,7 @@ export default function ReiniciarSenha() {
             name="dre-reiniciar-senha"
             id="dre-reiniciar-senha"
             lista={listaDres}
+            disabled={!permissoesTela.podeConsultar}
             valueOption="id"
             valueText="nome"
             onChange={onChangeDre}
@@ -226,6 +240,7 @@ export default function ReiniciarSenha() {
             name="ues-list"
             id="ues-list"
             lista={listaUes}
+            disabled={!permissoesTela.podeConsultar}
             valueOption="codigo"
             valueText="nome"
             onChange={onChangeUe}
@@ -239,6 +254,7 @@ export default function ReiniciarSenha() {
             label="Nome do usuário"
             placeholder="Nome do usuário"
             onChange={onChangeNomeUsuario}
+            desabilitado={!permissoesTela.podeConsultar}
             value={nomeUsuarioSelecionado}
           />
         </div>
@@ -247,6 +263,7 @@ export default function ReiniciarSenha() {
             label="Registro Funcional (RF)"
             placeholder="Registro Funcional (RF)"
             onChange={onChangeRf}
+            desabilitado={!permissoesTela.podeConsultar}
             value={rfSelecionado}
           />
         </div>
@@ -254,6 +271,7 @@ export default function ReiniciarSenha() {
           <Button
             label="Filtrar"
             color={Colors.Azul}
+            disabled={!permissoesTela.podeConsultar}
             border
             className="text-center d-block mt-4 float-right w-100"
             onClick={onClickFiltrar}
@@ -261,7 +279,11 @@ export default function ReiniciarSenha() {
         </div>
 
         <div className="col-md-12 pt-4">
-          <DataTable rowKey="codigoRf" columns={colunas} dataSource={listaUsuario} />
+          <DataTable
+            rowKey="codigoRf"
+            columns={colunas}
+            dataSource={listaUsuario}
+          />
         </div>
       </Card>
 

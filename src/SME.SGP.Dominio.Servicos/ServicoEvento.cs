@@ -14,6 +14,7 @@ namespace SME.SGP.Dominio.Servicos
         private readonly IRepositorioEventoTipo repositorioEventoTipo;
         private readonly IRepositorioFeriadoCalendario repositorioFeriadoCalendario;
         private readonly IRepositorioPeriodoEscolar repositorioPeriodoEscolar;
+        private readonly IRepositorioTipoCalendario repositorioTipoCalendario;
         private readonly IServicoUsuario servicoUsuario;
 
         public ServicoEvento(IRepositorioEvento repositorioEvento,
@@ -21,12 +22,15 @@ namespace SME.SGP.Dominio.Servicos
                              IRepositorioPeriodoEscolar repositorioPeriodoEscolar,
                              IServicoUsuario servicoUsuario,
                              IRepositorioFeriadoCalendario repositorioFeriadoCalendario)
+                             IServicoUsuario servicoUsuario,
+                             IRepositorioTipoCalendario repositorioTipoCalendario)
         {
             this.repositorioEvento = repositorioEvento ?? throw new System.ArgumentNullException(nameof(repositorioEvento));
             this.repositorioEventoTipo = repositorioEventoTipo ?? throw new System.ArgumentNullException(nameof(repositorioEventoTipo));
             this.repositorioPeriodoEscolar = repositorioPeriodoEscolar ?? throw new System.ArgumentNullException(nameof(repositorioPeriodoEscolar));
             this.servicoUsuario = servicoUsuario ?? throw new System.ArgumentNullException(nameof(servicoUsuario));
             this.repositorioFeriadoCalendario = repositorioFeriadoCalendario ?? throw new System.ArgumentNullException(nameof(repositorioFeriadoCalendario));
+            this.repositorioTipoCalendario = repositorioTipoCalendario ?? throw new System.ArgumentNullException(nameof(repositorioTipoCalendario));
         }
 
         public async Task Salvar(Evento evento)
@@ -38,6 +42,11 @@ namespace SME.SGP.Dominio.Servicos
                 throw new NegocioException("O tipo do evento deve ser informado.");
             }
 
+            var tipoCalendario = repositorioTipoCalendario.ObterPorId(evento.TipoCalendarioId);
+            if (tipoCalendario == null)
+            {
+                throw new NegocioException("Calendário não encontrado.");
+            }
             evento.AdicionarTipoEvento(tipoEvento);
 
             evento.ValidaPeriodoEvento();

@@ -73,7 +73,9 @@ const ModalConteudoHtml = props => {
     esconderBotoes,
     width,
     fecharAoClicarFora,
-    fecharAoClicarEsc
+    fecharAoClicarEsc,
+    esconderBotaoPrincipal,
+    esconderBotaoSecundario,
   } = props;
   return (
     <Container
@@ -135,6 +137,7 @@ const ModalConteudoHtml = props => {
               border
               className="mr-2 padding-btn-confirmacao"
               onClick={onConfirmacaoSecundaria}
+              hidden={esconderBotaoSecundario}
             />
             <Button
               key="btn-nao-confirmacao"
@@ -144,6 +147,7 @@ const ModalConteudoHtml = props => {
               className="padding-btn-confirmacao"
               onClick={onConfirmacaoPrincipal}
               disabled={desabilitarBotaoPrincipal}
+              hidden={esconderBotaoPrincipal}
             />
           </div>
         )
@@ -159,6 +163,8 @@ ModalConteudoHtml.propTypes = {
   desabilitarBotaoPrincipal: PropTypes.bool,
   fecharAoClicarFora: PropTypes.bool,
   fecharAoClicarEsc: PropTypes.bool,
+  esconderBotaoPrincipal: PropTypes.bool,
+  esconderBotaoSecundario: PropTypes.bool,
 };
 
 ModalConteudoHtml.defaultProps = {
@@ -166,6 +172,8 @@ ModalConteudoHtml.defaultProps = {
   width: 520,
   fecharAoClicarFora: true,
   fecharAoClicarEsc: true,
+  esconderBotaoPrincipal: false,
+  esconderBotaoSecundario: false,
 };
 
 export default ModalConteudoHtml;

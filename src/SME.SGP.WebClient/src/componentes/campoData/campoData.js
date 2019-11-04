@@ -1,6 +1,6 @@
 import 'moment/locale/pt-br';
 
-import { DatePicker } from 'antd';
+import { DatePicker, TimePicker } from 'antd';
 import locale from 'antd/es/date-picker/locale/pt_BR';
 import { Field } from 'formik';
 import * as moment from 'moment';
@@ -31,10 +31,22 @@ const Campo = styled.div`
     .ant-calendar-picker-input {
       border-color: #dc3545 !important;
     }
+
+    .ant-time-picker-input {
+      border-color: #dc3545 !important;
+    }
   }
 
   .ant-calendar-picker-input {
     height: 38px;
+  }
+
+  .ant-time-picker-input {
+    height: 38px;
+  }
+
+  .ant-time-picker {
+    width: 100%;
   }
 
   .ant-calendar-picker {
@@ -53,7 +65,9 @@ const CampoData = props => {
     desabilitado,
     className,
     onChange,
-    valor
+    valor,
+    desabilitarData,
+    somenteHora,
   } = props;
 
   const possuiErro = () => {
@@ -88,6 +102,7 @@ const CampoData = props => {
           onChange(valorData);
         }}
         value={form.values[name] || null}
+        disabledDate={desabilitarData}
       />
     );
   };
@@ -113,11 +128,42 @@ const CampoData = props => {
     );
   };
 
+  const campoHoraAntComValidacoes = () => {
+    return (
+      <Field
+        disabled={desabilitado}
+        locale={locale}
+        format={formatoData}
+        component={TimePicker}
+        placeholder={placeholder}
+        name={name}
+        id={id || name}
+        onBlur={executaOnBlur}
+        className={
+          form ? `${possuiErro() ? 'is-invalid' : ''} ${className || ''}` : ''
+        }
+        onChange={valorHora => {
+          valorHora = valorHora || '';
+          form.setFieldValue(name, valorHora);
+          onChange(valorHora);
+        }}
+        value={form.values[name] || null}
+      />
+    );
+  };
+
+  const validaTipoCampo = () => {
+    if (somenteHora) {
+      return form ? campoHoraAntComValidacoes() : 'CRIAR COMPONENTE!!';
+    }
+    return form ? campoDataAntComValidacoes() : campoDataAntSemValidacoes();
+  };
+
   return (
     <>
       <Campo>
         {label ? <Label text={label} control={name} /> : ''}
-        {form ? campoDataAntComValidacoes() : campoDataAntSemValidacoes()}
+        {validaTipoCampo()}
         {form ? <span>{form.errors[name]}</span> : ''}
       </Campo>
     </>
@@ -130,6 +176,7 @@ CampoData.propTypes = {
   placeholder: PropTypes.string,
   label: PropTypes.string,
   desabilitado: PropTypes.bool,
+  somenteHora: PropTypes.bool,
   onChange: PropTypes.func,
   valor: PropTypes.any,
 };
@@ -140,6 +187,7 @@ CampoData.defaultProps = {
   placeholder: 'placeholder',
   label: '',
   desabilitado: false,
+  somenteHora: false,
   onChange: () => {},
 };
 
@@ -156,7 +204,11 @@ Yup.addMethod(
       const dataInicial = this.parent[nomeDataInicial];
       const dataFinal = this.parent[nomeDataFinal];
 
-      if (dataInicial && dataFinal && dataInicial.isSameOrAfter(dataFinal, 'date')) {
+      if (
+        dataInicial &&
+        dataFinal &&
+        dataInicial.isSameOrAfter(dataFinal, 'date')
+      ) {
         dataValida = false;
       }
       return dataValida;
