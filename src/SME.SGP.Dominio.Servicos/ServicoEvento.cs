@@ -21,8 +21,7 @@ namespace SME.SGP.Dominio.Servicos
                              IRepositorioEventoTipo repositorioEventoTipo,
                              IRepositorioPeriodoEscolar repositorioPeriodoEscolar,
                              IServicoUsuario servicoUsuario,
-                             IRepositorioFeriadoCalendario repositorioFeriadoCalendario)
-                             IServicoUsuario servicoUsuario,
+                             IRepositorioFeriadoCalendario repositorioFeriadoCalendario,
                              IRepositorioTipoCalendario repositorioTipoCalendario)
         {
             this.repositorioEvento = repositorioEvento ?? throw new System.ArgumentNullException(nameof(repositorioEvento));

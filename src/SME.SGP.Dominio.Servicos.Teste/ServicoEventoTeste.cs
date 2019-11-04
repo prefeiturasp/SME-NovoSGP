@@ -25,9 +25,9 @@ namespace SME.SGP.Dominio.Servicos.Teste
             repositorioPeriodoEscolar = new Mock<IRepositorioPeriodoEscolar>();
             servicoUsuario = new Mock<IServicoUsuario>();
             repositorioFeriadoCalendario = new Mock<IRepositorioFeriadoCalendario>();
-            servicoEvento = new ServicoEvento(repositorioEvento.Object, repositorioEventoTipo.Object, repositorioPeriodoEscolar.Object, servicoUsuario.Object, repositorioFeriadoCalendario.Object);
             repositorioTipoCalendario = new Mock<IRepositorioTipoCalendario>();
-            servicoEvento = new ServicoEvento(repositorioEvento.Object, repositorioEventoTipo.Object, repositorioPeriodoEscolar.Object, servicoUsuario.Object, repositorioTipoCalendario.Object);
+            servicoEvento = new ServicoEvento(repositorioEvento.Object, repositorioEventoTipo.Object, repositorioPeriodoEscolar.Object, servicoUsuario.Object, repositorioFeriadoCalendario.Object, repositorioTipoCalendario.Object);
+            
         }
 
         [Fact]
