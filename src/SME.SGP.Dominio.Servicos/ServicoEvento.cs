@@ -1,5 +1,8 @@
-﻿using SME.SGP.Dominio.Interfaces;
+﻿using SME.SGP.Dominio.Entidades;
+using SME.SGP.Dominio.Interfaces;
+using SME.SGP.Infra;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -62,14 +65,86 @@ namespace SME.SGP.Dominio.Servicos
             repositorioEvento.Salvar(evento);
         }
 
-        public async Task SalvarFeriadosAoCadastrarTipoCalendario(TipoCalendario tipoCalendario)
+        public async Task SalvarEventoFeriadosAoCadastrarTipoCalendario(TipoCalendario tipoCalendario)
         {
-            if (tipoCalendario.Id > 0)
-                return;
+            var feriados = await ObterEValidarFeriados();
 
-            var feriados = repositorioFeriadoCalendario.ObterFeriadosCalendario(new Infra.FiltroFeriadoCalendarioDto { Ano = DateTime.Now.Year });
+            var tipoEventoFeriado = ObterEValidarTipoEventoFeriado();
 
-            if (feriados == null || feriados.Any)
+            var eventos = feriados.Select(x => MapearEntidade(tipoCalendario, x, tipoEventoFeriado));
+
+            var feriadosErro = new List<long>();
+
+            await SalvarListaEventos(eventos, feriadosErro);
+
+            if (feriadosErro.Any())
+                TratarErros(feriadosErro);
+        }
+
+        private static void TratarErros(List<long> feriadosErro)
+        {
+            var multiplosErros = feriadosErro.Count > 1;
+
+            var mensagemErro = multiplosErros ? $"Os eventos dos feriados {string.Join(",", feriadosErro)} não foram cadastrados" :
+                $"O evento do feriado {feriadosErro.First()} não foi cadastrado";
+
+            throw new NegocioException(mensagemErro);
+        }
+
+        private async Task SalvarListaEventos(IEnumerable<Evento> eventos, List<long> feriadosErro)
+        {
+            foreach (var evento in eventos)
+            {
+                try
+                {
+                    await repositorioEvento.SalvarAsync(evento);
+                }
+                catch (Exception ex)
+                {
+                    feriadosErro.Add(evento.FeriadoId.Value);
+                }
+            }
+        }
+
+        private EventoTipo ObterEValidarTipoEventoFeriado()
+        {
+            var tipoEventoFeriado = repositorioEventoTipo.ObtenhaTipoEventoFeriado();
+
+            if (tipoEventoFeriado == null || tipoEventoFeriado.Id == 0)
+                throw new NegocioException("Nenhum tipo de evento de feriado foi encontrado");
+            return tipoEventoFeriado;
+        }
+
+        private async Task<IEnumerable<FeriadoCalendario>> ObterEValidarFeriados()
+        {
+            var feriadosMoveis = await repositorioFeriadoCalendario.ObterFeriadosCalendario(new FiltroFeriadoCalendarioDto { Ano = DateTime.Now.Year, Tipo = TipoFeriadoCalendario.Movel });
+            var feriadosFixos = await repositorioFeriadoCalendario.ObterFeriadosCalendario(new FiltroFeriadoCalendarioDto { Tipo = TipoFeriadoCalendario.Fixo });
+
+            var feriados = feriadosFixos.ToList();
+            feriados.AddRange(feriadosMoveis);
+
+            if (feriados == null || !feriados.Any())
+                throw new NegocioException("Nenhum feriado foi encontrado");
+            return feriados;
+        }
+
+        private static Evento MapearEntidade(TipoCalendario tipoCalendario, FeriadoCalendario x, Entidades.EventoTipo tipoEventoFeriado)
+        {
+            return new Evento
+            {
+                FeriadoCalendario = x,
+                DataFim = new DateTime(tipoCalendario.AnoLetivo, x.DataFeriado.Month, x.DataFeriado.Day),
+                DataInicio = new DateTime(tipoCalendario.AnoLetivo, x.DataFeriado.Month, x.DataFeriado.Day),
+                Descricao = x.Nome,
+                Nome = x.Nome,
+                FeriadoId = x.Id,
+                Letivo = tipoEventoFeriado.Letivo,
+                TipoCalendario = tipoCalendario,
+                TipoCalendarioId = tipoCalendario.Id,
+                TipoEvento = tipoEventoFeriado,
+                TipoEventoId = tipoEventoFeriado.Id,
+                Excluido = false
+            };
         }
     }
 }
