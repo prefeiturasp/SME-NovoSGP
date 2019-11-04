@@ -95,12 +95,13 @@ export default function calendarioEscolar(state = inicial, action) {
     switch (action.type) {
       case '@calendarioEscolar/selecionaMes': {
         const meses = Object.assign({}, state.meses);
-        const { estaAberto } = state.meses[action.payload];
+        const { estaAberto } =
+          action.payload > 0 ? state.meses[action.payload] : false;
 
         Object.entries(meses).forEach(([indice, _mes]) => {
           meses[indice].estaAberto = false;
         });
-        meses[action.payload].estaAberto = !estaAberto;
+        if (action.payload > 0) meses[action.payload].estaAberto = !estaAberto;
 
         draft.meses = meses;
         break;
@@ -115,6 +116,15 @@ export default function calendarioEscolar(state = inicial, action) {
         const { mes, eventos } = action.payload;
         const meses = Object.assign({}, state.meses);
         meses[mes].eventos = eventos;
+        draft.meses = meses;
+        break;
+      }
+      case '@calendarioEscolar/zeraCalendario': {
+        const meses = Object.assign({}, state.meses);
+        Object.entries(meses).forEach(([indice, _mes]) => {
+          meses[indice].eventos = 0;
+          meses[indice].estaAberto = false;
+        });
         draft.meses = meses;
         break;
       }

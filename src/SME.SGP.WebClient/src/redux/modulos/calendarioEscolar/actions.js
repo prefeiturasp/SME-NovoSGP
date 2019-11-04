@@ -21,3 +21,9 @@ export function atribuiEventosMes(mes, eventos) {
     },
   };
 }
+
+export function zeraCalendario() {
+  return {
+    type: '@calendarioEscolar/zeraCalendario',
+  };
+}

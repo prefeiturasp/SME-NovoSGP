@@ -38,14 +38,16 @@ const MesCompleto = props => {
   const [estaAberto, setEstaAberto] = useState(false);
 
   useEffect(() => {
-    if (filtros && Object.entries(filtros).length > 0) {
-      const { tipoCalendarioSelecionado = '' } = filtros;
-      if (tipoCalendarioSelecionado)
-        mesesLista.forEach(mes => {
-          if (mesesCalendario[mes].estaAberto) {
-            setMesSelecionado(parseInt(mes, 10));
-          }
-        });
+    if (mesesCalendario) {
+      if (filtros && Object.entries(filtros).length > 0) {
+        const { tipoCalendarioSelecionado = '' } = filtros;
+        if (tipoCalendarioSelecionado)
+          mesesLista.forEach(mes => {
+            if (mesesCalendario[mes].estaAberto) {
+              setMesSelecionado(parseInt(mes, 10));
+            }
+          });
+      }
     }
   }, [mesesCalendario]);
 
@@ -75,7 +77,7 @@ const MesCompleto = props => {
     mesSelecionado > 0 &&
     estaAberto && (
       <Div className="border border-top-0 h-100 w-100">
-        <Div className="w-100 d-flex py-3">
+        <Div className="w-100 d-flex py-3 border-bottom">
           <DiaDaSemana nomeDia="Domingo" />
           <DiaDaSemana nomeDia="Segunda" />
           <DiaDaSemana nomeDia="Terça" />
@@ -136,7 +138,6 @@ const MesCompleto = props => {
           filtros={filtros}
         />
         <Semana
-          className="pb-4"
           dias={diasDaSemana[5]}
           mesAtual={ultimoUsado}
           filtros={filtros}
