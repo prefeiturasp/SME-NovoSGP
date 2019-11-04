@@ -31,7 +31,7 @@ namespace SME.SGP.Dados.Repositorios
             MontaQueryFiltro(tipoCalendarioId, tipoEventoId, dataInicio, dataFim, nomeEvento, query);
             query.AppendLine("order by e.id");
             if (paginacao != null && paginacao.QuantidadeRegistros > 0)
-                MontaQueryPaginacao(query);
+                MontaQueryPaginacao(query, paginacao);
             else
                 paginacao = new Paginacao(1, 0);
 
@@ -52,9 +52,7 @@ namespace SME.SGP.Dados.Repositorios
                 tipoEventoId,
                 nomeEvento,
                 dataInicio,
-                dataFim,
-                ignorar = paginacao.QuantidadeRegistrosIgnorados,
-                quantidadeBuscar = paginacao.QuantidadeRegistros
+                dataFim
             },
             splitOn: "EventoId,TipoEventoId");
 
@@ -321,9 +319,9 @@ namespace SME.SGP.Dados.Repositorios
             query.AppendLine("e.tipo_evento_id = et.id");
         }
 
-        private static void MontaQueryPaginacao(StringBuilder query)
+        private static void MontaQueryPaginacao(StringBuilder query, Paginacao paginacao)
         {
-            query.AppendLine(" OFFSET @ignorar ROWS FETCH NEXT @quantidadeBuscar ROWS ONLY");
+            query.AppendFormat(" OFFSET {0} ROWS FETCH NEXT {1} ROWS ONLY", paginacao.QuantidadeRegistrosIgnorados, paginacao.QuantidadeRegistros);
         }
     }
 }

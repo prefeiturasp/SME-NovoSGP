@@ -15,6 +15,7 @@ namespace SME.SGP.Dominio.Servicos.Teste
         private readonly Mock<IRepositorioPeriodoEscolar> repositorioPeriodoEscolar;
         private readonly Mock<IRepositorioTipoCalendario> repositorioTipoCalendario;
         private readonly ServicoEvento servicoEvento;
+        private readonly Mock<IRepositorioFeriadoCalendario> repositorioFeriadoCalendario;
         private readonly Mock<IServicoUsuario> servicoUsuario;
 
         public ServicoEventoTeste()
@@ -23,8 +24,10 @@ namespace SME.SGP.Dominio.Servicos.Teste
             repositorioEventoTipo = new Mock<IRepositorioEventoTipo>();
             repositorioPeriodoEscolar = new Mock<IRepositorioPeriodoEscolar>();
             servicoUsuario = new Mock<IServicoUsuario>();
+            repositorioFeriadoCalendario = new Mock<IRepositorioFeriadoCalendario>();
             repositorioTipoCalendario = new Mock<IRepositorioTipoCalendario>();
-            servicoEvento = new ServicoEvento(repositorioEvento.Object, repositorioEventoTipo.Object, repositorioPeriodoEscolar.Object, servicoUsuario.Object, repositorioTipoCalendario.Object);
+            servicoEvento = new ServicoEvento(repositorioEvento.Object, repositorioEventoTipo.Object, repositorioPeriodoEscolar.Object, servicoUsuario.Object, repositorioFeriadoCalendario.Object, repositorioTipoCalendario.Object);
+            
         }
 
         [Fact]
