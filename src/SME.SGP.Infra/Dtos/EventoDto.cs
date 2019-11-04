@@ -19,6 +19,8 @@ namespace SME.SGP.Infra
         public long? FeriadoId { get; set; }
         public EventoLetivo Letivo { get; set; }
 
+        public bool Migrado { get; set; }
+
         [Required(ErrorMessage = "O nome do evento deve ser informado.")]
         [MaxLength(50, ErrorMessage = "O nome deve conter no máximo 50 caracteres.")]
         public string Nome { get; set; }

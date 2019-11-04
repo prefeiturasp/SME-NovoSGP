@@ -21,6 +21,7 @@ namespace SME.SGP.Dominio
         public FeriadoCalendario FeriadoCalendario { get; set; }
         public long? FeriadoId { get; set; }
         public EventoLetivo Letivo { get; set; }
+        public bool Migrado { get; set; }
         public string Nome { get; set; }
 
         public TipoCalendario TipoCalendario { get; set; }

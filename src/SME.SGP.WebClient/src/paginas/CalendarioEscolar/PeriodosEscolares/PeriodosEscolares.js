@@ -40,7 +40,7 @@ const PeriodosEscolares = () => {
     quartoBimestreDataFinal: '',
   });
   const usuario = useSelector(store => store.usuario);
-  const permissoesTela = usuario.permissoes[RotasDto.PLANO_CICLO];
+  const permissoesTela = usuario.permissoes[RotasDto.PERIODOS_ESCOLARES];
   const [somenteConsulta, setSomenteConsulta] = useState(false);
   const [desabilitaCampos, setDesabilitaCampos] = useState(false);
 
