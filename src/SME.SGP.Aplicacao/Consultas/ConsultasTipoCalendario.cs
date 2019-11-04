@@ -47,7 +47,8 @@ namespace SME.SGP.Aplicacao
                 AnoLetivo = entidade.AnoLetivo,
                 Modalidade = entidade.Modalidade,
                 DescricaoPeriodo = entidade.Periodo.GetAttribute<DisplayAttribute>().Name,
-                Periodo = entidade.Periodo
+                Periodo = entidade.Periodo,
+                Migrado = entidade.Migrado
             };
         }
 
