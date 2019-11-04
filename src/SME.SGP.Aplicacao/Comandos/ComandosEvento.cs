@@ -33,7 +33,7 @@ namespace SME.SGP.Aplicacao
         public async Task<IEnumerable<RetornoCopiarEventoDto>> Criar(EventoDto eventoDto)
         {
             var evento = MapearParaEntidade(new Evento(), eventoDto);
-            await servicoEvento.Salvar(evento);
+            await servicoEvento.Salvar(evento, eventoDto.DataConfirmada);
             return await CopiarEventos(eventoDto);
         }
 

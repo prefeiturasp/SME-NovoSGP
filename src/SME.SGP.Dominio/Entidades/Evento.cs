@@ -88,6 +88,33 @@ namespace SME.SGP.Dominio
             return TipoEvento.Concomitancia;
         }
 
+        public void PodeCriarEventoLiberacaoExcepcional(Evento evento, Usuario usuario, bool dataConfirmada, IEnumerable<PeriodoEscolar> periodos)
+        {
+            if (evento.TipoEvento.Codigo == (long)TipoEventoEnum.LiberacaoExcepcional)
+            {
+                if (!usuario.PossuiPerfilSme())
+                    throw new NegocioException("Somente usuário com perfil SME pode cadastrar esse tipo de evento.");
+
+                if (string.IsNullOrEmpty(evento.DreId))
+                    throw new NegocioException("Para este tipo de evento, deve ser informado uma Dre.");
+
+                if (string.IsNullOrEmpty(evento.UeId))
+                    throw new NegocioException("Para este tipo de evento, deve ser informado uma Ue.");
+
+                if (!periodos.Any(c => c.PeriodoInicio >= DataInicio && c.PeriodoFim <= DataInicio) && !dataConfirmada)
+                    throw new NegocioException("Esta data é fora do período escolar, tem certeza que deseja manter esta data? (Sim/Não).", 602);
+            }
+        }
+
+        public void PodeCriarEventoOrganizacaoEscolar(Usuario usuario)
+        {
+            if (this.TipoEvento.Codigo == (long)TipoEventoEnum.OrganizacaoEscolar)
+            {
+                if (!usuario.PossuiPerfilSme())
+                    throw new NegocioException("Somente usuário com perfil SME pode cadastrar esse tipo de evento.");
+            }
+        }
+
         public void ValidaPeriodoEvento()
         {
             TipoEventoObrigatorio();
@@ -100,6 +127,31 @@ namespace SME.SGP.Dominio
                 if (TipoEvento.TipoData == EventoTipoData.Unico && DataFim.HasValue)
                 {
                     throw new NegocioException("Neste tipo de evento a data final do evento não deve ser informada.");
+                }
+            }
+        }
+
+        public void VerificaSeEventoAconteceJuntoComOrganizacaoEscolar(IEnumerable<Evento> eventos, Usuario usuario)
+        {
+            if (eventos.Any())
+            {
+                if (usuario.PossuiPerfilDreOuUe())
+                {
+                    if (TipoEvento.TipoData == EventoTipoData.InicioFim)
+                    {
+                        if (eventos.Any(a => (a.DataInicio.Date >= this.DataInicio.Date && this.DataInicio.Date <= a.DataFim.Value.Date) ||
+                                              (a.DataInicio.Date >= this.DataFim.Value.Date && this.DataFim.Value.Date <= a.DataFim.Value.Date)))
+                        {
+                            throw new NegocioException($"Não é possível adicionar um evento nesta data pois ele se encontra no período do evento {eventos.FirstOrDefault().Nome} ");
+                        }
+                    }
+                    else
+                    {
+                        if (eventos.Any(a => (a.DataInicio >= this.DataInicio && a.DataInicio <= this.DataFim)))
+                        {
+                            throw new NegocioException($"Não é possível adicionar um evento nesta data pois ele se encontra no período do evento {eventos.FirstOrDefault().Nome} ");
+                        }
+                    }
                 }
             }
         }
