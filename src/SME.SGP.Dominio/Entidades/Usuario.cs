@@ -107,6 +107,12 @@ namespace SME.SGP.Dominio
             }
         }
 
+        public void PodeCriarEventoComDataPassada(Evento evento)
+        {
+            if ((evento.DataInicio < DateTime.Today) && !PossuiPerfilSme())
+                throw new NegocioException("Não é possível criar evento com datas passadas.");
+        }
+
         public bool PodeReiniciarSenha()
         {
             return !string.IsNullOrEmpty(Email);
