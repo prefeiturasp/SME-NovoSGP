@@ -1,6 +1,7 @@
 import { Form, Formik } from 'formik';
 import * as moment from 'moment';
 import React, { useEffect, useState } from 'react';
+import { useSelector } from 'react-redux';
 import * as Yup from 'yup';
 import Cabecalho from '~/componentes-sgp/cabecalho';
 import Button from '~/componentes/button';
@@ -10,13 +11,20 @@ import Card from '~/componentes/card';
 import { Colors } from '~/componentes/colors';
 import ListaPaginada from '~/componentes/listaPaginada/listaPaginada';
 import SelectComponent from '~/componentes/select';
+import { URL_HOME } from '~/constantes/url';
+import RotasDto from '~/dtos/rotasDto';
 import { confirmar, erros, sucesso } from '~/servicos/alertas';
 import api from '~/servicos/api';
 import history from '~/servicos/history';
 import servicoEvento from '~/servicos/Paginas/Calendario/ServicoEvento';
-import { URL_HOME } from '~/constantes/url';
+import { verificaSomenteConsulta } from '~/servicos/servico-navegacao';
 
 const EventosLista = () => {
+  const usuario = useSelector(store => store.usuario);
+  const permissoesTela = usuario.permissoes[RotasDto.EVENTOS];
+
+  const [somenteConsulta, setSomenteConsulta] = useState(false);
+
   const [listaCalendarioEscolar, setListaCalendarioEscolar] = useState([]);
   const [nomeEvento, setNomeEvento] = useState('');
   const [listaTipoEvento, setListaTipoEvento] = useState([]);
@@ -108,6 +116,7 @@ const EventosLista = () => {
         setListaCalendarioEscolar([]);
       }
     };
+    setSomenteConsulta(verificaSomenteConsulta(permissoesTela));
 
     obterListaEventos();
 
@@ -230,7 +239,7 @@ const EventosLista = () => {
             border
             className="mr-2"
             onClick={onClickExcluir}
-            disabled={!(eventosSelecionados && eventosSelecionados.length)}
+            disabled={!permissoesTela.podeExcluir || (eventosSelecionados && eventosSelecionados.length < 1) }
             hidden={!selecionouCalendario}
           />
           <Button
@@ -241,6 +250,7 @@ const EventosLista = () => {
             className="mr-2"
             onClick={onClickNovo}
             hidden={!selecionouCalendario}
+            disabled={somenteConsulta || !permissoesTela.podeIncluir}
           />
         </div>
 
