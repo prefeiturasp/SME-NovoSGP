@@ -10,6 +10,8 @@ import api from '~/servicos/api';
 import Button from '~/componentes/button';
 import history from '~/servicos/history';
 import { erro } from '~/servicos/alertas';
+import { store } from '~/redux';
+import { zeraCalendario } from '~/redux/modulos/calendarioEscolar/actions';
 
 const Div = styled.div``;
 const Titulo = styled(Div)`
@@ -29,41 +31,53 @@ const CalendarioEscolar = () => {
   useEffect(() => {
     if (turmaSelecionada) {
       const tiposCalendarioLista = [];
-      api.get('v1/calendarios/tipos').then(resposta => {
-        if (resposta.data) {
-          resposta.data
-            .filter(
-              tipo =>
-                tipo.anoLetivo.toString() ===
-                  turmaSelecionada.anoLetivo.toString() &&
-                tipo.modalidade.toString() ===
-                  turmaSelecionada.modalidade.toString()
-            )
-            .forEach(tipo => {
-              tiposCalendarioLista.push({ desc: tipo.nome, valor: tipo.id });
-            });
-          setTiposCalendario(tiposCalendarioLista);
-        }
-      });
+      api
+        .get('v1/calendarios/tipos')
+        .then(resposta => {
+          if (resposta.data) {
+            resposta.data
+              .filter(
+                tipo =>
+                  tipo.anoLetivo === turmaSelecionada.anoLetivo &&
+                  ((tipo.modalidade === 1 &&
+                    (turmaSelecionada.modalidade === '5' ||
+                      turmaSelecionada.modalidade === '6')) ||
+                    (tipo.modalidade === 2 &&
+                      turmaSelecionada.modalidade === '3'))
+              )
+              .forEach(tipo => {
+                tiposCalendarioLista.push({ desc: tipo.nome, valor: tipo.id });
+              });
+            setTiposCalendario(tiposCalendarioLista);
+          } else setTiposCalendario([]);
+        })
+        .catch(() => {
+          setTiposCalendario([]);
+        });
     } else {
       erro('Você precisa escolher uma turma');
     }
+    return () => store.dispatch(zeraCalendario());
   }, []);
 
   useEffect(() => {
-    if (tipoCalendarioSelecionado) {
-      api
-        .get(
-          `https://demo0765509.mockable.io/api/v1/calendarios/${tipoCalendarioSelecionado}/dias-letivos`
-        )
-        .then(resposta => {
-          if (resposta.data) setDiasLetivos(resposta.data);
-        })
-        .catch(() => {
-          setDiasLetivos({});
-        });
+    let estado = true;
+    if (estado) {
+      if (tipoCalendarioSelecionado) {
+        api
+          .get(
+            `https://demo0765509.mockable.io/api/v1/calendarios/${tipoCalendarioSelecionado}/dias-letivos`
+          )
+          .then(resposta => {
+            if (resposta.data) setDiasLetivos(resposta.data);
+          })
+          .catch(() => {
+            setDiasLetivos({});
+          });
+      }
       setFiltros({ ...filtros, tipoCalendarioSelecionado });
     }
+    return () => (estado = false);
   }, [tipoCalendarioSelecionado]);
 
   const aoSelecionarTipoCalendario = tipo => {
@@ -78,6 +92,7 @@ const CalendarioEscolar = () => {
 
   const aoClicarEventoSme = () => {
     setEventoSme(!eventoSme);
+    setFiltros({ ...filtros, eventoSme: !eventoSme });
   };
 
   const dresStore = useSelector(state => state.filtro.dres);
@@ -98,16 +113,14 @@ const CalendarioEscolar = () => {
     if (unidadesEscolaresStore) setUnidadesEscolares(unidadesEscolaresStore);
   }, [unidadesEscolaresStore]);
 
-  const [desabilitaBotaoFiltro, setDesabilitaBotaoFiltro] = useState(true);
-
   const aoSelecionarDre = dre => {
     setDreSelecionada(dre);
-    if (dre) setDesabilitaBotaoFiltro(false);
+    setFiltros({ ...filtros, dreSelecionada: dre });
   };
 
   const aoSelecionarUnidadeEscolar = unidade => {
     setUnidadeEscolarSelecionada(unidade);
-    if (unidade) setDesabilitaBotaoFiltro(false);
+    setFiltros({ ...filtros, unidadeEscolarSelecionada: unidade });
   };
 
   const [filtros, setFiltros] = useState({
@@ -116,15 +129,6 @@ const CalendarioEscolar = () => {
     dreSelecionada,
     unidadeEscolarSelecionada,
   });
-
-  const aoClicarBotaoFiltro = () => {
-    setFiltros({
-      tipoCalendarioSelecionado,
-      eventoSme,
-      dreSelecionada,
-      unidadeEscolarSelecionada,
-    });
-  };
 
   return (
     <Div className="col-12">
@@ -188,14 +192,14 @@ const CalendarioEscolar = () => {
         </Grid>
         <Grid cols={12} className="mb-4">
           <Div className="row">
-            <Div className="col" style={{ maxWidth: 90 }}>
+            <Grid cols={2}>
               <Button
                 label="SME"
                 color={eventoSme ? Colors.Verde : Colors.Vermelho}
                 onClick={aoClicarEventoSme}
               />
-            </Div>
-            <Div className="col" style={{ maxWidth: 600 }}>
+            </Grid>
+            <Grid cols={5}>
               <SelectComponent
                 className="fonte-14"
                 onChange={aoSelecionarDre}
@@ -204,9 +208,10 @@ const CalendarioEscolar = () => {
                 valueText="desc"
                 valueSelect={dreSelecionada}
                 placeholder="Diretoria Regional de Educação (DRE)"
+                disabled={!tipoCalendarioSelecionado}
               />
-            </Div>
-            <Div className="col" style={{ maxWidth: 300 }}>
+            </Grid>
+            <Grid cols={5}>
               <SelectComponent
                 className="fonte-14"
                 onChange={aoSelecionarUnidadeEscolar}
@@ -215,17 +220,9 @@ const CalendarioEscolar = () => {
                 valueText="desc"
                 valueSelect={unidadeEscolarSelecionada}
                 placeholder="Unidade Escolar (UE)"
+                disabled={!tipoCalendarioSelecionado}
               />
-            </Div>
-            <Div className="col w-100">
-              <Button
-                label="Aplicar filtro"
-                color={Colors.Roxo}
-                className="ml-auto"
-                onClick={aoClicarBotaoFiltro}
-                disabled={desabilitaBotaoFiltro}
-              />
-            </Div>
+            </Grid>
           </Div>
         </Grid>
         <Grid cols={12}>

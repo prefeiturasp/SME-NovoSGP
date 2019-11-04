@@ -16,6 +16,12 @@ const Evento = styled(Div)`
     color: ${Base.Branco};
   }
 `;
+const Botao = styled(Button)`
+  ${Evento}:hover & {
+    border-color: ${Base.Branco} !important;
+    color: ${Base.Branco} !important;
+  }
+`;
 
 const SemEvento = () => {
   return (
@@ -42,39 +48,43 @@ const DiaCompleto = props => {
     if (dias[i] === diaSelecionado) estaAberto = true;
 
   useEffect(() => {
-    if (diaSelecionado) {
-      if (filtros && Object.entries(filtros).length > 0) {
-        const {
-          tipoCalendarioSelecionado = '',
-          eventoSme = true,
-          dreSelecionada = '',
-          unidadeEscolarSelecionada = '',
-        } = filtros;
-        api
-          .get(
-            `v1/calendarios/eventos/meses/${mesAtual}/dias/${diaSelecionado.getDate()}?${dreSelecionada &&
-              `DreId=${dreSelecionada}&`}${eventoSme &&
-              `EhEventoSme=${eventoSme}&`}${tipoCalendarioSelecionado &&
-              `IdTipoCalendario=${tipoCalendarioSelecionado}&`}${unidadeEscolarSelecionada &&
-              `UeId=${unidadeEscolarSelecionada}`}`
-          )
-          .then(resposta => {
-            if (resposta.data) setEventosDia(resposta.data);
-          })
-          .catch(() => {
-            setEventosDia([]);
-          });
+    let estado = true;
+    if (estado) {
+      if (diaSelecionado && estaAberto) {
+        if (filtros && Object.entries(filtros).length > 0) {
+          const {
+            tipoCalendarioSelecionado = '',
+            eventoSme = true,
+            dreSelecionada = '',
+            unidadeEscolarSelecionada = '',
+          } = filtros;
+          api
+            .get(
+              `v1/calendarios/eventos/meses/${mesAtual}/dias/${diaSelecionado.getDate()}?EhEventoSme=${eventoSme}&${dreSelecionada &&
+                `DreId=${dreSelecionada}&`}${tipoCalendarioSelecionado &&
+                `IdTipoCalendario=${tipoCalendarioSelecionado}&`}${unidadeEscolarSelecionada &&
+                `UeId=${unidadeEscolarSelecionada}`}`
+            )
+            .then(resposta => {
+              if (resposta.data) setEventosDia(resposta.data);
+              else setEventosDia([]);
+            })
+            .catch(() => {
+              setEventosDia([]);
+            });
+        }
       }
     }
+    return () => (estado = false);
   }, [estaAberto]);
 
   const aoClicarEvento = id => {
-    history.push(`eventos/editar/${id}`);
+    history.push(`calendario-escolar/eventos/editar/${id}`);
   };
 
   return (
     estaAberto && (
-      <Div className="border-top border-bottom-0 h-100 p-3">
+      <Div className="border-bottom border-top-0 h-100 p-3">
         {eventosDia && eventosDia.length > 0 ? (
           <Div className="list-group list-group-flush">
             {eventosDia.map(evento => {
@@ -85,8 +95,8 @@ const DiaCompleto = props => {
                   onClick={() => aoClicarEvento(evento.id)}
                   style={{ cursor: 'pointer' }}
                 >
-                  <Grid cols={1}>
-                    <Button
+                  <Grid cols={1} className="pl-0">
+                    <Botao
                       label={evento.tipoEvento}
                       color={Colors.CinzaBotao}
                       border
