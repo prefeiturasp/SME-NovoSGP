@@ -20,17 +20,11 @@ namespace SME.SGP.Aplicacao
             return MapearParaDto(aula);
         }
 
-        public IEnumerable<AulaConsultaDto> Listar(FiltroAulaDto dto)
-        {
-            return repositorio.ObterAulasPorFiltro(dto);
-        }
-
         private AulaConsultaDto MapearParaDto(Aula aula)
         {
             AulaConsultaDto dto = new AulaConsultaDto()
             {
                 Id = aula.Id,
-                UeId = aula.UeId,
                 DisciplinaId = aula.DisciplinaId,
                 TurmaId = aula.TurmaId,
                 TipoCalendarioId = aula.TipoCalendarioId,

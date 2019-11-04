@@ -18,7 +18,7 @@ namespace SME.SGP.Dados.Repositorios
         public IEnumerable<AulaConsultaDto> ObterAulasPorFiltro(FiltroAulaDto dto)
         {
             StringBuilder sbSql = new StringBuilder();
-            sbSql.AppendLine("select ");
+            sbSql.AppendLine("select id");
             sbSql.AppendLine("ue_id,");
             sbSql.AppendLine("disciplina_id,");
             sbSql.AppendLine("turma_id, ");
@@ -33,7 +33,7 @@ namespace SME.SGP.Dados.Repositorios
             sbSql.AppendLine("criado_por,");
             sbSql.AppendLine("criado_rf");
             sbSql.AppendLine("from aula");
-            sbSql.AppendLine("where excluida = false");
+            sbSql.AppendLine("where excluido = false");
             if (dto.UeId > 0L)
             {
                 sbSql.AppendLine($"and ue_id = {dto.UeId}");

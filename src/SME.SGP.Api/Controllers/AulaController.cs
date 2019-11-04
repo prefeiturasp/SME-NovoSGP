@@ -17,15 +17,16 @@ namespace SME.SGP.Api.Controllers
         private readonly IComandosAula comandos;
         private readonly IConsultasAula consultas;
 
-        public AulaController(IComandosAula comandos)
+        public AulaController(IComandosAula comandos, IConsultasAula consultas)
         {
             this.comandos = comandos ?? throw new System.ArgumentNullException(nameof(comandos));
+            this.consultas = consultas ?? throw new System.ArgumentNullException(nameof(consultas));
         }
 
         [HttpPost]
         [ProducesResponseType(200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        //[Permissao(Permissao.CP_I, Permissao.CP_A, Policy = "Bearer")]
+        [Permissao(Permissao.CP_I, Permissao.CP_A, Policy = "Bearer")]
         public async Task<IActionResult> Inserir([FromBody]AulaDto dto)
         {
             await comandos.Inserir(dto);
@@ -52,20 +53,10 @@ namespace SME.SGP.Api.Controllers
             return Ok();
         }
 
-        [HttpGet("listar")]
-        [ProducesResponseType(typeof(IEnumerable<AulaConsultaDto>), 200)]
-        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        //[Permissao(Permissao.CP_C, Policy = "Bearer")]
-        public IActionResult Listar([FromQuery]FiltroAulaDto filtro)
-        {
-            var lista = consultas.Listar(filtro);
-            return Ok(lista);
-        }
-
         [HttpGet("{id}")]
         [ProducesResponseType(typeof(AulaConsultaDto), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        //[Permissao(Permissao.CP_C, Policy = "Bearer")]
+        [Permissao(Permissao.CP_C, Policy = "Bearer")]
         public IActionResult BuscarPorId(long id)
         {
             var aula = consultas.BuscarPorId(id);

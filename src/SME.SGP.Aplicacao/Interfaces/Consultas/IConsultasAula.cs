@@ -6,7 +6,6 @@ namespace SME.SGP.Aplicacao
 {
     public interface IConsultasAula
     {
-        IEnumerable<AulaConsultaDto> Listar(FiltroAulaDto dto);
         AulaConsultaDto BuscarPorId(long id);
     }
 }

@@ -8,7 +8,6 @@ namespace SME.SGP.Infra
     public class AulaConsultaDto
     {
         public long Id { get; set; }
-        public long UeId { get; set; }
         public long DisciplinaId { get; set; }
         public long TurmaId { get; set; }
         public long TipoCalendarioId { get; set; }
