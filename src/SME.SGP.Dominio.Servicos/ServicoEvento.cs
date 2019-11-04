@@ -38,12 +38,6 @@ namespace SME.SGP.Dominio.Servicos
             return data.AddDays(diasParaAdicionar);
         }
 
-        public DateTime ObterDomingo(DateTime data)
-        {
-            int diferenca = (7 + (data.DayOfWeek - DayOfWeek.Monday)) % 7;
-            return data.AddDays(-1 * diferenca).Date;
-        }
-
         public async Task Salvar(Evento evento)
         {
             var tipoEvento = repositorioEventoTipo.ObterPorId(evento.TipoEventoId);
@@ -127,7 +121,7 @@ namespace SME.SGP.Dominio.Servicos
             }
         }
 
-        private static Evento MapearEntidade(TipoCalendario tipoCalendario, FeriadoCalendario x, Entidades.EventoTipo tipoEventoFeriado)
+        private Evento MapearEntidade(TipoCalendario tipoCalendario, FeriadoCalendario x, Entidades.EventoTipo tipoEventoFeriado)
         {
             return new Evento
             {
@@ -144,16 +138,6 @@ namespace SME.SGP.Dominio.Servicos
                 TipoEventoId = tipoEventoFeriado.Id,
                 Excluido = false
             };
-        }
-
-        private static void TratarErros(List<long> feriadosErro)
-        {
-            var multiplosErros = feriadosErro.Count > 1;
-
-            var mensagemErro = multiplosErros ? $"Os eventos dos feriados {string.Join(",", feriadosErro)} não foram cadastrados" :
-                $"O evento do feriado {feriadosErro.First()} não foi cadastrado";
-
-            throw new NegocioException(mensagemErro);
         }
 
         private async Task<IEnumerable<FeriadoCalendario>> ObterEValidarFeriados()
@@ -191,6 +175,16 @@ namespace SME.SGP.Dominio.Servicos
                     feriadosErro.Add(evento.FeriadoId.Value);
                 }
             }
+        }
+
+        private void TratarErros(List<long> feriadosErro)
+        {
+            var multiplosErros = feriadosErro.Count > 1;
+
+            var mensagemErro = multiplosErros ? $"Os eventos dos feriados {string.Join(",", feriadosErro)} não foram cadastrados" :
+                $"O evento do feriado {feriadosErro.First()} não foi cadastrado";
+
+            throw new NegocioException(mensagemErro);
         }
     }
 }
