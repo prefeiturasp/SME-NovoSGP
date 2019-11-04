@@ -2,19 +2,22 @@
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System;
+using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
     public class ComandosAula : IComandosAula
     {
         private readonly IRepositorioAula repositorio;
-        public ComandosAula(IRepositorioAula repositorio)
+        private readonly IServicoUsuario servicoUsuario;
+        public ComandosAula(IRepositorioAula repositorio, IServicoUsuario servicoUsuario)
         {
             this.repositorio = repositorio ?? throw new ArgumentNullException(nameof(repositorio));
+            this.servicoUsuario = servicoUsuario ?? throw new ArgumentNullException(nameof(servicoUsuario));
         }
-        public void Alterar(AulaDto dto, long id)
+        public async Task Alterar(AulaDto dto, long id)
         {
-            var aula = MapearDtoParaEntidade(dto, id);
+            var aula = await MapearDtoParaEntidade(dto, id);
             repositorio.Salvar(aula);
         }
 
@@ -25,21 +28,29 @@ namespace SME.SGP.Aplicacao
             repositorio.Salvar(aula);
         }
 
-        public void Inserir(AulaDto dto)
+        public async Task Inserir(AulaDto dto)
         {
-            var aula = MapearDtoParaEntidade(dto, 0L);
+            var aula = await MapearDtoParaEntidade(dto, 0L);
             repositorio.Salvar(aula);
         }
 
-        private Aula MapearDtoParaEntidade(AulaDto dto, long id)
+        private async Task<Aula> MapearDtoParaEntidade(AulaDto dto, long id)
         {
             Aula aula = new Aula();
             if(id > 0L)
             {
                 aula = repositorio.ObterPorId(id);
             }
-            aula.Data = dto.Data;
+            if (aula.ProfessorId <= 0L)
+            {
+                var usuario = await servicoUsuario.ObterUsuarioLogado();
+                aula.ProfessorId = usuario.Id;
+            }
+            aula.UeId = dto.UeId;
             aula.DisciplinaId = dto.DisciplinaId;
+            aula.TurmaId = dto.TurmaId;
+            aula.TipoCalendarioId = dto.TipoCalendarioId;
+            aula.DataAula = dto.DataAula;
             aula.Quantidade = dto.Quantidade;
             aula.RecorrenciaAula = dto.RecorrenciaAula;
             aula.TipoAula = dto.TipoAula;

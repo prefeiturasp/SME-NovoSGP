@@ -1,11 +1,12 @@
 ﻿using SME.SGP.Infra;
+using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
     public interface IComandosAula
     {
-        void Inserir(AulaDto dto);
-        void Alterar(AulaDto dto, long id);
+        Task Inserir(AulaDto dto);
+        Task Alterar(AulaDto dto, long id);
         void Excluir(long id);
     }
 }
