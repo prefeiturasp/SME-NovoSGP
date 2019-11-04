@@ -16,7 +16,7 @@ const SemEvento = () => {
 };
 
 const DiaCompleto = props => {
-  const { dias, calendar } = props;
+  const { dias } = props;
 
   const diaSelecionado = useSelector(
     state => state.calendarioEscolar.diaSelecionado
@@ -49,7 +49,7 @@ const DiaCompleto = props => {
       {toggle =>
         toggle &&
         (props => (
-          <animated.div className="border-bottom" style={props}>
+          <animated.div className="border-top border-bottom-0" style={props}>
             <SemEvento />
           </animated.div>
         ))

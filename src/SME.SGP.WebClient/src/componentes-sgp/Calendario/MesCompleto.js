@@ -92,32 +92,32 @@ const MesCompleto = props => {
             mesAtual={ultimoUsado}
             filtros={filtros}
           />
-          {/* <DiaCompleto dias={diasDaSemana[1]} /> */}
+          <DiaCompleto dias={diasDaSemana[1]} />
           <Semana
             dias={diasDaSemana[2]}
             mesAtual={ultimoUsado}
             filtros={filtros}
           />
-          {/* <DiaCompleto dias={diasDaSemana[2]} /> */}
+          <DiaCompleto dias={diasDaSemana[2]} />
           <Semana
             dias={diasDaSemana[3]}
             mesAtual={ultimoUsado}
             filtros={filtros}
           />
-          {/* <DiaCompleto dias={diasDaSemana[3]} /> */}
+          <DiaCompleto dias={diasDaSemana[3]} />
           <Semana
             dias={diasDaSemana[4]}
             mesAtual={ultimoUsado}
             filtros={filtros}
           />
-          {/* <DiaCompleto dias={diasDaSemana[4]} /> */}
+          <DiaCompleto dias={diasDaSemana[4]} />
           <Semana
             className="pb-4"
             dias={diasDaSemana[5]}
             mesAtual={ultimoUsado}
             filtros={filtros}
           />
-          {/* <DiaCompleto dias={diasDaSemana[5]} /> */}
+          <DiaCompleto dias={diasDaSemana[5]} />
         </Div>
       ) : null}
     </Div>
