@@ -1,4 +1,5 @@
 ﻿using SME.SGP.Dominio.Interfaces;
+using System;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Dominio.Servicos
@@ -61,7 +62,15 @@ namespace SME.SGP.Dominio.Servicos
                 evento.EstaNoPeriodoLetivo(periodos);
             }
 
+            VerificaParticularidadesSME(evento, usuario);
+
             repositorioEvento.Salvar(evento);
+        }
+
+        private void VerificaParticularidadesSME(Evento evento, Usuario usuario)
+        {
+            usuario.PodeCriarEventoComDataPassada(evento);
+            throw new NotImplementedException();
         }
     }
 }
