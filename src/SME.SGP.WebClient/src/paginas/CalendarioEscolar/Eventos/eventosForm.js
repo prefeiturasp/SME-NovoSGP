@@ -225,8 +225,37 @@ const EventosForm = ({ match }) => {
     onChangeTipoEvento(form.initialValues.tipoEventoId);
   };
 
+  /**
+   * TODO: Remover metodo assim que o endpoint para verificar se contem evento pai for entregue
+   */
+  const mockHasEventoPai = () => {
+    return new Promise(resolve => {
+      resolve(true);
+    });
+  };
+
+  /**
+   * TODO: Implementar a chamada à API para atualizar os eventos filhos
+   * @param {object} valoresForm Valores do formuláio
+   */
   const onClickCadastrar = async valoresForm => {
     valoresForm.listaCalendarioParaCopiar = listaCalendarioParaCopiar;
+
+    const hasEventoPai = await mockHasEventoPai();
+    if (hasEventoPai) {
+      const confirmado = await confirmar(
+        'Atualizar eventos vinculados',
+        '',
+        'Deseja também atualizar os eventos vinculados a este?',
+        'Atualizar',
+        'Cancelar'
+      );
+
+      if (confirmado) {
+        sucesso('Os eventos vinculados a este serão atualizados.');
+      }
+    }
+
     const cadastrado = await servicoEvento
       .salvar(idEvento || 0, valoresForm)
       .catch(e => erros(e));
@@ -359,10 +388,26 @@ const EventosForm = ({ match }) => {
     });
   };
 
+  const [habilitaRecorrencia, setHabilitaRecorrencia] = useState(false);
+  const [dataInicioEvento, setDataInicioEvento] = useState(null);
+  const onValidate = values => {
+    if (values.dataInicio) {
+      setHabilitaRecorrencia(true);
+      setDataInicioEvento(values.dataInicio);
+    } else {
+      setHabilitaRecorrencia(false);
+      setDataInicioEvento(null);
+    }
+  };
+
   return (
     <>
       <Cabecalho pagina="Cadastro de Eventos no Calendário Escolar" />
-      <ModalRecorrencia onCloseRepetir={onCloseRepetir} show={showModal} />
+      <ModalRecorrencia
+        dataInicioEvento={dataInicioEvento}
+        onCloseRepetir={onCloseRepetir}
+        show={showModal}
+      />
       <Card>
         <Formik
           enableReinitialize
@@ -371,6 +416,7 @@ const EventosForm = ({ match }) => {
           onSubmit={valores => onClickCadastrar(valores)}
           validateOnChange
           validateOnBlur
+          validate={val => onValidate(val)}
         >
           {form => (
             <Form className="col-md-12 mb-4">
@@ -533,6 +579,7 @@ const EventosForm = ({ match }) => {
                     border
                     className="mt-4"
                     onClick={onClickRepetir}
+                    disabled={!habilitaRecorrencia}
                   />
                 </div>
                 <div className="col-sm-12 col-md-6 col-lg-3 col-xl-3 mb-2">
