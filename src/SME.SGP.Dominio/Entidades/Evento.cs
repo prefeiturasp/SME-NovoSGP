@@ -187,7 +187,7 @@ namespace SME.SGP.Dominio
 
         private void AdicionaEventosPorDiasDaSemana(IEnumerable<DayOfWeek> diasDaSemana, List<Evento> eventos, DateTime dataInicial, DateTime dataFinal)
         {
-            var dataLimite = ObterSabado(dataInicial);
+            var dataLimite = dataInicial.ObterSabado();
             if (dataFinal < dataLimite)
                 dataLimite = dataFinal;
             for (DateTime data = dataInicial; data <= dataLimite; data = data.AddDays(1))
@@ -218,14 +218,6 @@ namespace SME.SGP.Dominio
                 }
             }
             return dataAtual;
-        }
-
-        private DateTime ObterDomingo(DateTime data)
-        {
-            if (data.DayOfWeek == DayOfWeek.Sunday)
-                return data;
-            int diferenca = (7 + (data.DayOfWeek - DayOfWeek.Sunday)) % 7;
-            return data.AddDays(-1 * diferenca).Date;
         }
 
         private DateTime ObterProximaDataRecorrenciaMensal(DateTime dataAtual, PadraoRecorrenciaMensal padraoRecorrenciaMensal, IEnumerable<DayOfWeek> diasDaSemana, int? diaOcorrencia)
@@ -276,7 +268,7 @@ namespace SME.SGP.Dominio
 
         private IEnumerable<Evento> ObterRecorrenciaSemanal(DateTime dataInicio, DateTime dataFinal, IEnumerable<DayOfWeek> diasDaSemana, int repeteACada)
         {
-            var dataInicial = ObterDomingo(dataInicio);
+            var dataInicial = dataInicio.ObterDomingo();
             if (dataInicial.DayOfWeek < dataInicio.DayOfWeek)
                 dataInicial = dataInicio;
 
@@ -285,17 +277,9 @@ namespace SME.SGP.Dominio
             {
                 AdicionaEventosPorDiasDaSemana(diasDaSemana, eventos, dataInicial, dataFinal);
                 dataInicial = dataInicial.AddDays(7 * repeteACada);
-                dataInicial = ObterDomingo(dataInicial);
+                dataInicial = dataInicial.ObterDomingo();
             }
             return eventos;
-        }
-
-        private DateTime ObterSabado(DateTime data)
-        {
-            if (data.DayOfWeek == DayOfWeek.Saturday)
-                return data;
-            int diferenca = (((int)DayOfWeek.Saturday - (int)data.DayOfWeek + 7) % 7);
-            return data.AddDays(diferenca);
         }
 
         private void TipoEventoObrigatorio()
