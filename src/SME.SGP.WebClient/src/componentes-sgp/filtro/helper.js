@@ -24,6 +24,7 @@ export default class FiltroHelper {
       .then(resposta => {
         if (resposta.data) {
           resposta.data.forEach(modalidade => {
+            console.log(modalidade);
             modalidadesLista.push({
               desc: modalidade.descricao,
               valor: modalidade.id,
