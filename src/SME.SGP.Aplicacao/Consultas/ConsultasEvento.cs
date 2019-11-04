@@ -31,6 +31,11 @@ namespace SME.SGP.Aplicacao
                         Paginacao));
         }
 
+        public Task<IEnumerable<CalendarioEventosNoDiaRetornoDto>> ObterEventosPorDia(CalendarioEventosFiltroDto calendarioEventosMesesFiltro, int mes, int dia)
+        {
+            return repositorioEvento.ObterEventosPorDia(calendarioEventosMesesFiltro, mes, dia);
+        }
+
         public EventoCompletoDto ObterPorId(long id)
         {
             return MapearParaDto(repositorioEvento.ObterPorId(id));
