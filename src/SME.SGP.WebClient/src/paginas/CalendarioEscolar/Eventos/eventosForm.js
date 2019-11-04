@@ -239,14 +239,17 @@ const EventosForm = ({ match }) => {
    * @param {object} valoresForm Valores do formuláio
    */
   const onClickCadastrar = async valoresForm => {
-    valoresForm.listaCalendarioParaCopiar = listaCalendarioParaCopiar;
+    const data = {
+      ...valoresForm,
+      listaCalendarioParaCopiar,
+    };
 
     const hasEventoPai = await mockHasEventoPai();
     if (hasEventoPai) {
       const confirmado = await confirmar(
-        'Atualizar eventos vinculados',
+        'Atualizar série',
         '',
-        'Deseja também atualizar os eventos vinculados a este?',
+        'Deseja também atualizar os eventos futuros pertencentes a mesma série que este?',
         'Atualizar',
         'Cancelar'
       );
@@ -257,9 +260,9 @@ const EventosForm = ({ match }) => {
     }
 
     const cadastrado = await servicoEvento
-      .salvar(idEvento || 0, valoresForm)
+      .salvar(idEvento || 0, data)
       .catch(e => erros(e));
-    if (cadastrado && cadastrado.status == 200) {
+    if (cadastrado && cadastrado.status === 200) {
       sucesso('Suas informações foram salvas com sucesso.');
       history.push('/calendario-escolar/eventos');
     }
@@ -312,6 +315,10 @@ const EventosForm = ({ match }) => {
 
   const onCloseRepetir = () => {
     setShowModal(false);
+  };
+
+  const onSaveRecorrencia = recurrence => {
+    console.log(recurrence);
   };
 
   const onClickCopiarEvento = () => {
@@ -406,6 +413,7 @@ const EventosForm = ({ match }) => {
       <ModalRecorrencia
         dataInicioEvento={dataInicioEvento}
         onCloseRepetir={onCloseRepetir}
+        onSaveRecorrencia={onSaveRecorrencia}
         show={showModal}
       />
       <Card>
