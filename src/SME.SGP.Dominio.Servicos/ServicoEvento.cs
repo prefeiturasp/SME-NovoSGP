@@ -1,7 +1,6 @@
 ﻿using SME.SGP.Dominio.Interfaces;
 using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -31,7 +30,7 @@ namespace SME.SGP.Dominio.Servicos
             return data.AddDays(diasParaAdicionar);
         }
 
-        public void GravarRecorrencia(Evento evento, DateTime datatInicial, DateTime? dataFinal, DateTime? diaDeOcorrencia, IEnumerable<DayOfWeek> diasDaSemana, PadraoRecorrencia padraoRecorrencia, PadraoRecorrenciaMensal padraoRecorrenciaMensal, int repeteACada)
+        public void GravarRecorrencia(Evento evento, DateTime datatInicial, DateTime? dataFinal, int? diaDeOcorrencia, IEnumerable<DayOfWeek> diasDaSemana, PadraoRecorrencia padraoRecorrencia, PadraoRecorrenciaMensal padraoRecorrenciaMensal, int repeteACada)
         {
             if (!dataFinal.HasValue)
             {
@@ -46,8 +45,13 @@ namespace SME.SGP.Dominio.Servicos
                 {
                     Salvar(novoEvento);
                 }
+                catch (NegocioException nex)
+                {
+                    //TODO GERAR NOTIFICAÇÃO DE FEEDBACK
+                }
                 catch (Exception ex)
                 {
+                    //TODO GERAR NOTIFICAÇÃO DE FEEDBACK
                 }
             }
         }
@@ -90,83 +94,6 @@ namespace SME.SGP.Dominio.Servicos
             }
 
             repositorioEvento.Salvar(evento);
-        }
-
-        private int ObterSemanaDoAno(DateTime data)
-        {
-            DayOfWeek dia = CultureInfo.InvariantCulture.Calendar.GetDayOfWeek(data);
-            if (dia >= DayOfWeek.Monday && dia <= DayOfWeek.Wednesday)
-            {
-                data = data.AddDays(3);
-            }
-
-            return CultureInfo.InvariantCulture.Calendar.GetWeekOfYear(data, CalendarWeekRule.FirstFourDayWeek, DayOfWeek.Monday);
-        }
-
-        private void RecorrenciaMensal()
-        {
-            throw new NotImplementedException();
-        }
-
-        private void RecorrenciaSemanal(Evento eventoOriginal, DateTime dataInicio, DateTime? dataFinal, IEnumerable<DayOfWeek> diasDaSemana, int repeteACada)
-        {
-            var eventos = new List<Evento>();
-            dataFinal = dataFinal.HasValue ? dataFinal : new DateTime(DateTime.Now.Year, 12, 31);
-
-            //adicionar eventos na semana atual
-            for (DateTime data = dataInicio; data.DayOfWeek < DayOfWeek.Monday; data.AddDays(1))
-            {
-                var evento = (Evento)eventoOriginal.Clone();
-                evento.DataInicio = data;
-                evento.DataFim = data;
-                eventos.Add(evento);
-            }
-            //adicionar o numero de semanas a se repetir
-            dataInicio.AddDays(7 * repeteACada);
-            //pegar a domingo da semana atual
-            var domingo = ObterDomingo(dataInicio);
-
-            //iterar nos dias da semana
-            //adicionar os dias marcados
-            foreach (var diaDaSemana in diasDaSemana)
-            {
-                for (DateTime data = domingo; data.DayOfWeek < DayOfWeek.Monday; data.AddDays(1))
-                {
-                    var evento = (Evento)eventoOriginal.Clone();
-                    evento.DataInicio = data;
-                    evento.DataFim = data;
-                    eventos.Add(evento);
-                }
-            }
-
-            var dataParaAgendar = dataInicio;
-
-            for (int i = 0; i < 10; i++)
-            {
-                foreach (var diaDaSemana in diasDaSemana)
-                {
-                    dataParaAgendar = ObterProximoDiaDaSemana(dataInicio, diaDaSemana);
-                    var evento = (Evento)eventoOriginal.Clone();
-                    evento.DataInicio = dataParaAgendar;
-                    evento.DataFim = dataParaAgendar;
-                    eventos.Add(evento);
-                    if (diaDaSemana >= DayOfWeek.Saturday)
-                    {
-                        dataParaAgendar = dataParaAgendar.AddDays(7 * repeteACada);
-                    }
-                }
-            }
-
-            for (DateTime data = dataInicio.AddDays(1); data < dataFinal; data.AddDays(1))
-            {
-                if (diasDaSemana.Contains(data.DayOfWeek))
-                {
-                    var evento = (Evento)eventoOriginal.Clone();
-                    evento.DataInicio = data;
-                    evento.DataFim = data;
-                    eventos.Add(evento);
-                }
-            }
         }
     }
 }

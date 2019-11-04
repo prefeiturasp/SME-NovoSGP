@@ -16,7 +16,7 @@ namespace SME.SGP.Dominio
         public DateTime DataInicio { get; set; }
         public string Descricao { get; set; }
         public string DreId { get; set; }
-        public long? EventoPaiId { get; private set; }
+        public long? EventoPaiId { get; set; }
         public bool Excluido { get; set; }
         public FeriadoCalendario FeriadoCalendario { get; set; }
         public long? FeriadoId { get; set; }
@@ -111,7 +111,7 @@ namespace SME.SGP.Dominio
             Excluido = true;
         }
 
-        public IEnumerable<Evento> ObterRecorrencia(PadraoRecorrencia padraoRecorrencia, PadraoRecorrenciaMensal padraoRecorrenciaMensal, DateTime dataInicio, DateTime dataFinal, IEnumerable<DayOfWeek> diasDaSemana, int repeteACada, DateTime? diaDeOcorrencia)
+        public IEnumerable<Evento> ObterRecorrencia(PadraoRecorrencia padraoRecorrencia, PadraoRecorrenciaMensal padraoRecorrenciaMensal, DateTime dataInicio, DateTime dataFinal, IEnumerable<DayOfWeek> diasDaSemana, int repeteACada, int? diaDeOcorrencia)
         {
             if (Id == 0)
                 throw new NegocioException("Só é possível aplicar recorrência em eventos já registrados.");
@@ -125,7 +125,7 @@ namespace SME.SGP.Dominio
                 if (padraoRecorrenciaMensal == PadraoRecorrenciaMensal.NoDia && !diaDeOcorrencia.HasValue)
                     throw new NegocioException("O dia de ocorrência é obrigatório para calcular esse tipo recorrência de eventos.");
 
-                return ObterRecorrenciaMensal(padraoRecorrenciaMensal, dataInicio, dataFinal, diaDeOcorrencia, repeteACada, diasDaSemana.FirstOrDefault());
+                return ObterRecorrenciaMensal(padraoRecorrenciaMensal, dataInicio, dataFinal, diaDeOcorrencia, repeteACada, diasDaSemana);
             }
         }
 
@@ -151,33 +151,24 @@ namespace SME.SGP.Dominio
             }
         }
 
-        private void AdicionaEventoPorRecorrenciaMensal(PadraoRecorrenciaMensal padraoRecorrenciaMensal, List<Evento> eventos, DateTime dataAtual, DateTime diaOcorrencia)
+        private static DateTime ObterPrimeiroDiaDoMes(DateTime dataAtual)
         {
-            if (padraoRecorrenciaMensal == PadraoRecorrenciaMensal.NoDia && dataAtual.Day == diaOcorrencia.Day)
-            {
-                var evento = (Evento)Clone();
-                evento.DataInicio = dataAtual;
-                evento.DataFim = dataAtual;
-                evento.EventoPaiId = Id;
-                eventos.Add(evento);
-            }
+            return new DateTime(dataAtual.Year, dataAtual.Month, 1);
         }
 
-        private void AdicionaEventosMensais(PadraoRecorrenciaMensal padraoRecorrenciaMensal, DateTime dataInicial, DateTime diaOcorrencia, List<Evento> eventos)
+        private static DateTime ObterUltimoDiaDaSemanaDoMes(DateTime dataAtual, DayOfWeek diaDaSemana)
         {
-            var primeiroDiaDoMes = new DateTime(dataInicial.Year, dataInicial.Month, 1);
-            var ultimoDiaDoMes = primeiroDiaDoMes.AddMonths(1).AddDays(-1);
-
-            for (DateTime data = dataInicial; data <= ultimoDiaDoMes; data = data.AddDays(1))
-            {
-                AdicionaEventoPorRecorrenciaMensal(padraoRecorrenciaMensal, eventos, data, diaOcorrencia);
-            }
+            var ultimoDiaDoMes = new DateTime(dataAtual.Year, dataAtual.Month, 1).AddMonths(1).AddDays(-1);
+            var diferenca = diaDaSemana - ultimoDiaDoMes.DayOfWeek;
+            return ultimoDiaDoMes.AddDays(diferenca);
         }
 
-        private void AdicionaEventosPorDiasDaSemana(IEnumerable<DayOfWeek> diasDaSemana, List<Evento> eventos, DateTime dataInicial)
+        private void AdicionaEventosPorDiasDaSemana(IEnumerable<DayOfWeek> diasDaSemana, List<Evento> eventos, DateTime dataInicial, DateTime dataFinal)
         {
-            var sabado = ObterSabado(dataInicial);
-            for (DateTime data = dataInicial; data <= sabado; data = data.AddDays(1))
+            var dataLimite = ObterSabado(dataInicial);
+            if (dataFinal < dataLimite)
+                dataLimite = dataFinal;
+            for (DateTime data = dataInicial; data <= dataLimite; data = data.AddDays(1))
             {
                 if (diasDaSemana.Contains(data.DayOfWeek))
                 {
@@ -190,6 +181,22 @@ namespace SME.SGP.Dominio
             }
         }
 
+        private DateTime ObterDiaDaSemanaDoMes(DateTime dataAtual, PadraoRecorrenciaMensal padraoRecorrenciaMensal, DayOfWeek diaDaSemana)
+        {
+            DateTime primeiroDiaDoMes = ObterPrimeiroDiaDoMes(dataAtual);
+            var quantidadeDeDiasDaSemana = 0;
+
+            for (DateTime data = primeiroDiaDoMes; quantidadeDeDiasDaSemana < (int)padraoRecorrenciaMensal; data = data.AddDays(1))
+            {
+                if (data.DayOfWeek == diaDaSemana)
+                {
+                    quantidadeDeDiasDaSemana++;
+                    dataAtual = data;
+                }
+            }
+            return dataAtual;
+        }
+
         private DateTime ObterDomingo(DateTime data)
         {
             if (data.DayOfWeek == DayOfWeek.Sunday)
@@ -198,57 +205,49 @@ namespace SME.SGP.Dominio
             return data.AddDays(-1 * diferenca).Date;
         }
 
-        private DateTime ObterProximaDataRecorrenciaMensal(DateTime dataAtual, PadraoRecorrenciaMensal padraoRecorrenciaMensal, DayOfWeek diaDaSemana)
+        private DateTime ObterProximaDataRecorrenciaMensal(DateTime dataAtual, PadraoRecorrenciaMensal padraoRecorrenciaMensal, IEnumerable<DayOfWeek> diasDaSemana, int? diaOcorrencia)
         {
             if (padraoRecorrenciaMensal != PadraoRecorrenciaMensal.NoDia)
             {
-                dataAtual = ObterProximoDiaDaSemanaDoMes(dataAtual, padraoRecorrenciaMensal, diaDaSemana);
+                if (diasDaSemana == null)
+                {
+                    throw new NegocioException("Os dias da semana são obrigatórios para esse tipo de recorrência.");
+                }
+                if (padraoRecorrenciaMensal == PadraoRecorrenciaMensal.Ultima)
+                {
+                    return ObterUltimoDiaDaSemanaDoMes(dataAtual, diasDaSemana.FirstOrDefault());
+                }
+                dataAtual = ObterDiaDaSemanaDoMes
+                    (dataAtual, padraoRecorrenciaMensal, diasDaSemana.FirstOrDefault());
+            }
+            else
+            {
+                return ObterRecorrenciaParaDiaFixo(dataAtual, diaOcorrencia.Value);
             }
             return dataAtual;
         }
 
-        private DateTime ObterProximoDiaDaSemanaDoMes(DateTime dataAtual, PadraoRecorrenciaMensal padraoRecorrenciaMensal, DayOfWeek diaDaSemana)
-        {
-            int diferenca;
-            if (padraoRecorrenciaMensal == PadraoRecorrenciaMensal.Ultima)
-            {
-                var ultimoDiaDoMes = new DateTime(dataAtual.Year, dataAtual.Month, 1).AddMonths(1).AddDays(-1);
-                diferenca = diaDaSemana - ultimoDiaDoMes.DayOfWeek;
-                return ultimoDiaDoMes.AddDays(diferenca);
-            }
-
-            dataAtual = new DateTime(dataAtual.Year, dataAtual.Month, 1);
-            var multiplicador = 1;
-            dataAtual = dataAtual.AddDays(7 * ((int)padraoRecorrenciaMensal));
-            if (dataAtual.DayOfWeek > diaDaSemana)
-            {
-            }
-            else
-            {
-                multiplicador = ((int)padraoRecorrenciaMensal - 1);
-                dataAtual = dataAtual.AddDays(-(7 * multiplicador));
-            }
-            diferenca = diaDaSemana - dataAtual.DayOfWeek;
-            return dataAtual.AddDays(diferenca * multiplicador);
-        }
-
-        private IEnumerable<Evento> ObterRecorrenciaMensal(PadraoRecorrenciaMensal padraoRecorrenciaMensal, DateTime dataInicio, DateTime dataFinal, DateTime? diaOcorrencia, int repeteACada, DayOfWeek diaDaSemana)
+        private IEnumerable<Evento> ObterRecorrenciaMensal(PadraoRecorrenciaMensal padraoRecorrenciaMensal, DateTime dataInicio, DateTime dataFinal, int? diaOcorrencia, int repeteACada, IEnumerable<DayOfWeek> diasDaSemana)
         {
             var eventos = new List<Evento>();
             var dataAtual = dataInicio;
             while (dataAtual <= dataFinal)
             {
-                dataAtual = ObterProximaDataRecorrenciaMensal(dataAtual, padraoRecorrenciaMensal, diaDaSemana);
+                dataAtual = ObterProximaDataRecorrenciaMensal(dataAtual, padraoRecorrenciaMensal, diasDaSemana, diaOcorrencia);
                 var evento = (Evento)Clone();
                 evento.DataInicio = dataAtual;
                 evento.DataFim = dataAtual;
                 evento.EventoPaiId = Id;
                 eventos.Add(evento);
                 dataAtual = dataAtual.AddMonths(repeteACada);
-                //dataAtual = new DateTime(dataAtual.Year, dataAtual.AddMonths(repeteACada).Month, 1);
             }
 
             return eventos;
+        }
+
+        private DateTime ObterRecorrenciaParaDiaFixo(DateTime mesAtual, int diaOcorrencia)
+        {
+            return new DateTime(mesAtual.Year, mesAtual.Month, diaOcorrencia);
         }
 
         private IEnumerable<Evento> ObterRecorrenciaSemanal(DateTime dataInicio, DateTime dataFinal, IEnumerable<DayOfWeek> diasDaSemana, int repeteACada)
@@ -260,7 +259,7 @@ namespace SME.SGP.Dominio
             var eventos = new List<Evento>();
             while (dataInicial <= dataFinal)
             {
-                AdicionaEventosPorDiasDaSemana(diasDaSemana, eventos, dataInicial);
+                AdicionaEventosPorDiasDaSemana(diasDaSemana, eventos, dataInicial, dataFinal);
                 dataInicial = dataInicial.AddDays(7 * repeteACada);
                 dataInicial = ObterDomingo(dataInicial);
             }
