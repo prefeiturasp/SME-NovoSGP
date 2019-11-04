@@ -12,7 +12,7 @@ namespace SME.SGP.Dominio
             Excluido = false;
         }
 
-        public DateTime? DataFim { get; set; }
+        public DateTime DataFim { get; set; }
         public DateTime DataInicio { get; set; }
         public string Descricao { get; set; }
         public string DreId { get; set; }
@@ -97,7 +97,7 @@ namespace SME.SGP.Dominio
 
         public void EstaNoPeriodoLetivo(IEnumerable<PeriodoEscolar> periodos)
         {
-            if (!periodos.Any(c => c.PeriodoInicio >= DataInicio && c.PeriodoFim <= DataInicio))
+            if (!periodos.Any(c => c.PeriodoInicio.Date <= DataInicio.Date && c.PeriodoFim.Date >= DataFim.Date))
             {
                 throw new NegocioException("Não é permitido cadastrar um evento nesta data pois essa data não está dentro do 'Período Letivo'.");
             }
@@ -111,7 +111,7 @@ namespace SME.SGP.Dominio
             Excluido = true;
         }
 
-        public IEnumerable<Evento> ObterRecorrencia(PadraoRecorrencia padraoRecorrencia, PadraoRecorrenciaMensal padraoRecorrenciaMensal, DateTime dataInicio, DateTime dataFinal, IEnumerable<DayOfWeek> diasDaSemana, int repeteACada, int? diaDeOcorrencia)
+        public IEnumerable<Evento> ObterRecorrencia(PadraoRecorrencia padraoRecorrencia, PadraoRecorrenciaMensal? padraoRecorrenciaMensal, DateTime dataInicio, DateTime dataFinal, IEnumerable<DayOfWeek> diasDaSemana, int repeteACada, int? diaDeOcorrencia)
         {
             if (Id == 0)
                 throw new NegocioException("Só é possível aplicar recorrência em eventos já registrados.");
@@ -122,10 +122,13 @@ namespace SME.SGP.Dominio
                 return ObterRecorrenciaSemanal(dataInicio, dataFinal, diasDaSemana, repeteACada);
             else
             {
+                if (!padraoRecorrenciaMensal.HasValue)
+                    throw new NegocioException("Para esse padrão de recorrência o tipo de recorrência mensal deve ser informado.");
+
                 if (padraoRecorrenciaMensal == PadraoRecorrenciaMensal.NoDia && !diaDeOcorrencia.HasValue)
                     throw new NegocioException("O dia de ocorrência é obrigatório para calcular esse tipo recorrência de eventos.");
 
-                return ObterRecorrenciaMensal(padraoRecorrenciaMensal, dataInicio, dataFinal, diaDeOcorrencia, repeteACada, diasDaSemana);
+                return ObterRecorrenciaMensal(padraoRecorrenciaMensal.Value, dataInicio, dataFinal, diaDeOcorrencia, repeteACada, diasDaSemana);
             }
         }
 
@@ -138,7 +141,7 @@ namespace SME.SGP.Dominio
         public void ValidaPeriodoEvento()
         {
             TipoEventoObrigatorio();
-            if (TipoEvento.TipoData == EventoTipoData.InicioFim && !DataFim.HasValue)
+            if (TipoEvento.TipoData == EventoTipoData.InicioFim && DataFim == DateTime.MinValue)
             {
                 throw new NegocioException("Neste tipo de evento a data final do evento deve ser informada.");
             }
@@ -158,9 +161,22 @@ namespace SME.SGP.Dominio
 
         private static DateTime ObterUltimoDiaDaSemanaDoMes(DateTime dataAtual, DayOfWeek diaDaSemana)
         {
-            var ultimoDiaDoMes = new DateTime(dataAtual.Year, dataAtual.Month, 1).AddMonths(1).AddDays(-1);
-            var diferenca = diaDaSemana - ultimoDiaDoMes.DayOfWeek;
-            return ultimoDiaDoMes.AddDays(diferenca);
+            var primeiroDiaDoMes = ObterPrimeiroDiaDoMes(dataAtual);
+            var ultimoDiaDoMes = primeiroDiaDoMes.AddMonths(1).AddDays(-1);
+            if (ultimoDiaDoMes.DayOfWeek == diaDaSemana)
+                return ultimoDiaDoMes;
+            else
+            {
+                for (DateTime data = ultimoDiaDoMes; data >= primeiroDiaDoMes; data = data.AddDays(-1))
+                {
+                    if (data.DayOfWeek == diaDaSemana)
+                    {
+                        dataAtual = data;
+                        break;
+                    }
+                }
+                return dataAtual;
+            }
         }
 
         private void AdicionaEventosPorDiasDaSemana(IEnumerable<DayOfWeek> diasDaSemana, List<Evento> eventos, DateTime dataInicial, DateTime dataFinal)
@@ -176,6 +192,7 @@ namespace SME.SGP.Dominio
                     evento.DataInicio = data;
                     evento.DataFim = data;
                     evento.EventoPaiId = Id;
+                    evento.Id = 0;
                     eventos.Add(evento);
                 }
             }
@@ -238,6 +255,7 @@ namespace SME.SGP.Dominio
                 evento.DataInicio = dataAtual;
                 evento.DataFim = dataAtual;
                 evento.EventoPaiId = Id;
+                evento.Id = 0;
                 eventos.Add(evento);
                 dataAtual = dataAtual.AddMonths(repeteACada);
             }

@@ -17,8 +17,8 @@ namespace SME.SGP.Aplicacao
         public ComandosEvento(IRepositorioEvento repositorioEvento,
                               IServicoEvento servicoEvento)
         {
-            this.repositorioEvento = repositorioEvento ?? throw new System.ArgumentNullException(nameof(repositorioEvento));
-            this.servicoEvento = servicoEvento ?? throw new System.ArgumentNullException(nameof(servicoEvento));
+            this.repositorioEvento = repositorioEvento ?? throw new ArgumentNullException(nameof(repositorioEvento));
+            this.servicoEvento = servicoEvento ?? throw new ArgumentNullException(nameof(servicoEvento));
         }
 
         public async Task<IEnumerable<RetornoCopiarEventoDto>> Alterar(long id, EventoDto eventoDto)
@@ -27,6 +27,7 @@ namespace SME.SGP.Aplicacao
 
             evento = MapearParaEntidade(evento, eventoDto);
             await servicoEvento.Salvar(evento);
+            await GravarRecorrencia(eventoDto, evento);
             return await CopiarEventos(eventoDto);
         }
 
@@ -34,6 +35,7 @@ namespace SME.SGP.Aplicacao
         {
             var evento = MapearParaEntidade(new Evento(), eventoDto);
             await servicoEvento.Salvar(evento);
+            await GravarRecorrencia(eventoDto, evento);
             return await CopiarEventos(eventoDto);
         }
 
@@ -85,10 +87,26 @@ namespace SME.SGP.Aplicacao
             return mensagens;
         }
 
+        private async Task GravarRecorrencia(EventoDto eventoDto, Evento evento)
+        {
+            if (eventoDto.RecorrenciaEventos != null)
+            {
+                var recorrencia = eventoDto.RecorrenciaEventos;
+                await servicoEvento.GravarRecorrencia(evento,
+                                                recorrencia.DataInicio,
+                                                recorrencia.DataFim,
+                                                recorrencia.DiaDeOcorrencia,
+                                                recorrencia.DiasDaSemana,
+                                                recorrencia.Padrao,
+                                                recorrencia.PadraoRecorrenciaMensal,
+                                                recorrencia.RepeteACada);
+            }
+        }
+
         private Evento MapearParaEntidade(Evento evento, EventoDto eventoDto)
         {
-            evento.DataFim = eventoDto.DataFim;
-            evento.DataInicio = eventoDto.DataInicio.Value;
+            evento.DataFim = eventoDto.DataFim.HasValue ? eventoDto.DataFim.Value : eventoDto.DataInicio;
+            evento.DataInicio = eventoDto.DataInicio;
             evento.Descricao = eventoDto.Descricao;
             evento.DreId = eventoDto.DreId;
             evento.FeriadoId = eventoDto.FeriadoId;

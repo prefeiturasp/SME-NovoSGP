@@ -498,7 +498,7 @@ namespace SME.SGP.Dominio.Teste
                 CriadoEm = DateTime.Now,
                 CriadoPor = "7777710",
                 CriadoRF = "7777710",
-                DataFim = null,
+                DataFim = new DateTime(2019, 01, 01),
                 DataInicio = new DateTime(2019, 01, 01),
                 Descricao = "Novo evento",
                 DreId = "123",
