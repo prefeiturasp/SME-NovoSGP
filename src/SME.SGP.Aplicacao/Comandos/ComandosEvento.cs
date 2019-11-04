@@ -92,7 +92,7 @@ namespace SME.SGP.Aplicacao
             if (eventoDto.RecorrenciaEventos != null)
             {
                 var recorrencia = eventoDto.RecorrenciaEventos;
-                await servicoEvento.GravarRecorrencia(evento,
+                await servicoEvento.SalvarRecorrencia(evento,
                                                 recorrencia.DataInicio,
                                                 recorrencia.DataFim,
                                                 recorrencia.DiaDeOcorrencia,
