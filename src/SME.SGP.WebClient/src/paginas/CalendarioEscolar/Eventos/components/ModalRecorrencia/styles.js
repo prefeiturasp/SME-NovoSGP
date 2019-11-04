@@ -11,6 +11,10 @@ export const VerticalCentered = styled.div`
   display: flex;
   align-items: center;
   color: ${Base.CinzaMako};
+
+  .item {
+    margin-right: 16px;
+  }
 `;
 
 export const IconMargin = styled.i`
@@ -19,4 +23,15 @@ export const IconMargin = styled.i`
 
 export const DefaultDropDownLink = styled.a`
   color: ${Base.CinzaMako};
+  display: flex;
+  align-items: center;
+
+  .anticon {
+    font-size: 15px !important;
+    margin-left: 5px;
+  }
+`;
+
+export const SmallText = styled.small`
+  color: ${Base.RoxoFundo};
 `;

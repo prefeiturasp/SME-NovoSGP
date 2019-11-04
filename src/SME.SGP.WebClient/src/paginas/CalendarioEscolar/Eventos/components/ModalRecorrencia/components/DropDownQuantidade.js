@@ -28,7 +28,7 @@ function DropDownQuantidade({ onChange, value }) {
   return (
     <Dropdown trigger={['click']} overlay={options}>
       <DefaultDropDownLink href="#">
-        {value} <Icon type="down" />
+        <span>{value}</span> <Icon type="down" />
       </DefaultDropDownLink>
     </Dropdown>
   );

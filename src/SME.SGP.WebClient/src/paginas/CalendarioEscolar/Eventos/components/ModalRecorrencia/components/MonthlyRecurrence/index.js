@@ -1,22 +1,47 @@
 import React from 'react';
 
 // Components
-import BootstrapRow from '../BootstrapRow';
-import RadioStyleButton from './components/RadioStyledButton';
 import { VerticalCentered } from '../../styles';
+import BootstrapRow from '../BootstrapRow';
+import DaysDropDown from './components/DaysDropDown';
+import RecurrenceDropDown from './components/RecurrenceDropDown';
+import DayNumber from './components/DayNumber';
 
-function MonthlyRecurrence() {
+function MonthlyRecurrence({
+  currentRecurrence,
+  onChangeRecurrence,
+  currentDayNumber,
+  onChangeDayNumber,
+  currentWeekDay,
+  onChangeWeekDay,
+  form,
+}) {
   return (
     <>
       <BootstrapRow>
         <VerticalCentered className="col-lg-12">
-          <RadioStyleButton name="italo" value="D" />
+          <span style={{ paddingBottom: '7px' }}>Padrão de recorrência</span>
         </VerticalCentered>
-      </BootstrapRow>
-      <BootstrapRow>
-        <VerticalCentered className="col-lg-12">
-          <RadioStyleButton name="italo" value="P" />
+        <VerticalCentered className="col-lg-4">
+          <RecurrenceDropDown
+            selected={currentRecurrence}
+            onChange={onChangeRecurrence}
+            form={form}
+          />
         </VerticalCentered>
+        {currentRecurrence === '0' ? (
+          <VerticalCentered className="col-lg-4">
+            <DayNumber value={currentDayNumber} onChange={onChangeDayNumber} />
+          </VerticalCentered>
+        ) : (
+          <VerticalCentered className="col-lg-4">
+            <DaysDropDown
+              onChange={onChangeWeekDay}
+              selected={currentWeekDay}
+              form={form}
+            />
+          </VerticalCentered>
+        )}
       </BootstrapRow>
     </>
   );
