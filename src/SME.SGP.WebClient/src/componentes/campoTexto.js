@@ -16,6 +16,9 @@ const Campo = styled.div`
   .ant-input {
     height: 38px;
   }
+  label {
+    font-weight: bold;
+  }
 `;
 
 const CampoTexto = React.forwardRef((props, ref) => {

@@ -51,6 +51,10 @@ const Container = styled.div`
       border-color: #dc3545 !important;
     }
   }
+
+  label {
+    font-weight: bold;
+  }
 `;
 
 const Erro = styled.span`

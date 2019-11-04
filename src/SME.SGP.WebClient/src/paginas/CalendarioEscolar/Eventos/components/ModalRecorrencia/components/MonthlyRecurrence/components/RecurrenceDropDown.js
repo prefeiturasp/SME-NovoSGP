@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 
 // Styles
 import styled from 'styled-components';
@@ -56,5 +57,26 @@ function RecurrenceDropDown({ onChange, selected, form }) {
     </SelectWrapper>
   );
 }
+
+RecurrenceDropDown.defaultProps = {
+  onChange: () => {},
+  selected: {},
+  form: {},
+};
+
+RecurrenceDropDown.propTypes = {
+  onChange: PropTypes.func,
+  selected: PropTypes.oneOfType([
+    PropTypes.object,
+    PropTypes.any,
+    PropTypes.number,
+    PropTypes.string,
+  ]),
+  form: PropTypes.oneOfType([
+    PropTypes.object,
+    PropTypes.symbol,
+    PropTypes.any,
+  ]),
+};
 
 export default RecurrenceDropDown;
