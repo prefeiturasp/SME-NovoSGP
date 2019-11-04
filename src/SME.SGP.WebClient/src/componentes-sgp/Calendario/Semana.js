@@ -4,6 +4,8 @@ import styled from 'styled-components';
 import { useSelector } from 'react-redux';
 import { Base } from '~/componentes/colors';
 import api from '~/servicos/api';
+import { store } from '~/redux';
+import { selecionaDia } from '~/redux/modulos/calendarioEscolar/actions';
 
 const Div = styled.div``;
 const TipoEventosLista = styled(Div)`
@@ -19,25 +21,36 @@ const TipoEvento = styled(Div)`
 `;
 
 const Dia = props => {
-  const [estaAberto, setEstaAberto] = useState(false);
-  const { dia, mesAtual, filtros, diaSelecionado } = props;
+  const { dia, mesAtual, filtros } = props;
   const [tipoEventosDiaLista, setTipoEventosDiaLista] = useState([]);
 
   useEffect(() => {
     if (mesAtual && dia) {
-      api
-        .get(`v1/calendarios/eventos/meses/${mesAtual}/tipos`)
-        .then(resposta => {
-          if (resposta.data) {
-            setTipoEventosDiaLista(
-              resposta.data.filter(evento => evento.dia === dia.getDate())[0]
-            );
-          }
-        });
+      if (filtros && Object.entries(filtros).length > 0) {
+        const {
+          tipoCalendarioSelecionado,
+          eventoSme,
+          dreSelecionada,
+          unidadeEscolarSelecionada,
+        } = filtros;
+        api
+          .get(
+            `v1/calendarios/eventos/meses/${mesAtual}/tipos?DreId=${dreSelecionada}&EhEventoSme=${eventoSme}&IdTipoCalendario=${tipoCalendarioSelecionado}&UeId=${unidadeEscolarSelecionada}`
+          )
+          .then(resposta => {
+            if (resposta.data) {
+              setTipoEventosDiaLista(
+                resposta.data.filter(evento => evento.dia === dia.getDate())[0]
+              );
+            }
+          });
+      }
     }
   }, [dia]);
 
-  const selecionaDiaAberto = () => {};
+  const selecionaDiaAberto = () => {
+    store.dispatch(selecionaDia(dia));
+  };
 
   const style = {
     cursor: 'pointer',
@@ -89,14 +102,12 @@ Dia.propTypes = {
   dia: PropTypes.oneOfType([PropTypes.array, PropTypes.object]),
   mesAtual: PropTypes.number,
   filtros: PropTypes.oneOfType([PropTypes.array, PropTypes.object]),
-  diaSelecionado: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
 };
 
 Dia.defaultProps = {
   dia: {},
   mesAtual: 0,
   filtros: {},
-  diaSelecionado: '',
 };
 
 const Semana = props => {

@@ -15,10 +15,13 @@ const Titulo = styled(Div)`
   color: ${Base.CinzaMako};
   font-size: 24px;
 `;
+const Icone = styled.i``;
 
 const CalendarioEscolar = () => {
   const [tiposCalendario, setTiposCalendario] = useState([]);
   const [tipoCalendarioSelecionado, setTipoCalendarioSelecionado] = useState();
+
+  const [diasLetivos, setDiasLetivos] = useState({});
 
   useEffect(() => {
     const tiposCalendarioLista = [];
@@ -31,6 +34,20 @@ const CalendarioEscolar = () => {
       }
     });
   }, []);
+
+  useEffect(() => {
+    if (tipoCalendarioSelecionado)
+      api
+        .get(
+          `https://demo0765509.mockable.io/api/v1/calendarios/${tipoCalendarioSelecionado}/dias-letivos`
+        )
+        .then(resposta => {
+          if (resposta.data) setDiasLetivos(resposta.data);
+        })
+        .catch(() => {
+          setDiasLetivos({});
+        });
+  }, [tipoCalendarioSelecionado]);
 
   const aoSelecionarTipoCalendario = tipo => {
     setTipoCalendarioSelecionado(tipo);
@@ -105,7 +122,31 @@ const CalendarioEscolar = () => {
               />
             </Grid>
             <Grid cols={4}>
-              <Button label="190" color={Colors.Vermelho} />
+              {diasLetivos && diasLetivos.DiasLetivos && (
+                <Div>
+                  <Button
+                    label={diasLetivos.DiasLetivos.toString()}
+                    color={
+                      diasLetivos.EstaAbaixoPermitido
+                        ? Colors.Vermelho
+                        : Colors.Verde
+                    }
+                    className="float-left"
+                  />
+                  <Div className="float-left w-50 ml-2 mt-1">
+                    Nº de Dias Letivos no Calendário
+                  </Div>
+                </Div>
+              )}
+              {diasLetivos && diasLetivos.EstaAbaixoPermitido && (
+                <Div
+                  className="clearfix font-weight-bold pt-2"
+                  style={{ clear: 'both', color: Base.Vermelho, fontSize: 12 }}
+                >
+                  <Icone className="fa fa-exclamation-triangle mr-2" />
+                  Abaixo do mínimo estabelecido pela legislação.
+                </Div>
+              )}
             </Grid>
             <Grid cols={4}>
               <Button
@@ -128,7 +169,7 @@ const CalendarioEscolar = () => {
                 onClick={aoClicarEventoSme}
               />
             </Div>
-            <Div className="col" style={{ maxWidth: 500 }}>
+            <Div className="col" style={{ maxWidth: 600 }}>
               <SelectComponent
                 className="fonte-14"
                 onChange={aoSelecionarDre}
@@ -139,7 +180,7 @@ const CalendarioEscolar = () => {
                 placeholder="Diretoria Regional de Educação (DRE)"
               />
             </Div>
-            <Div className="col" style={{ maxWidth: 400 }}>
+            <Div className="col" style={{ maxWidth: 300 }}>
               <SelectComponent
                 className="fonte-14"
                 onChange={aoSelecionarUnidadeEscolar}
