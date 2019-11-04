@@ -2,6 +2,7 @@
 import PropTypes from 'prop-types';
 import styled from 'styled-components';
 import { useSelector } from 'react-redux';
+import shortid from 'shortid';
 import { Base } from '~/componentes/colors';
 import api from '~/servicos/api';
 import { store } from '~/redux';
@@ -28,14 +29,18 @@ const Dia = props => {
     if (mesAtual && dia) {
       if (filtros && Object.entries(filtros).length > 0) {
         const {
-          tipoCalendarioSelecionado,
-          eventoSme,
-          dreSelecionada,
-          unidadeEscolarSelecionada,
+          tipoCalendarioSelecionado = '',
+          eventoSme = true,
+          dreSelecionada = '',
+          unidadeEscolarSelecionada = '',
         } = filtros;
         api
           .get(
-            `v1/calendarios/eventos/meses/${mesAtual}/tipos?DreId=${dreSelecionada}&EhEventoSme=${eventoSme}&IdTipoCalendario=${tipoCalendarioSelecionado}&UeId=${unidadeEscolarSelecionada}`
+            `v1/calendarios/eventos/meses/${mesAtual}/tipos?${dreSelecionada &&
+              `DreId=${dreSelecionada}&`}${eventoSme &&
+              `EhEventoSme=${eventoSme}&`}${tipoCalendarioSelecionado &&
+              `IdTipoCalendario=${tipoCalendarioSelecionado}&`}${unidadeEscolarSelecionada &&
+              `UeId=${unidadeEscolarSelecionada}`}`
           )
           .then(resposta => {
             if (resposta.data) {
@@ -86,7 +91,10 @@ const Dia = props => {
             <TipoEventosLista className="position-absolute">
               {tipoEventosDiaLista.tiposEvento.map(tipoEvento => {
                 return (
-                  <TipoEvento className="d-block badge badge-pill badge-light">
+                  <TipoEvento
+                    key={shortid.generate()}
+                    className="d-block badge badge-pill badge-light"
+                  >
                     {tipoEvento}
                   </TipoEvento>
                 );

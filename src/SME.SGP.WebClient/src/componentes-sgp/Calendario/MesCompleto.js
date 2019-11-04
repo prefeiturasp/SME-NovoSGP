@@ -68,59 +68,82 @@ const MesCompleto = props => {
   }, [mesSelecionado]);
 
   return (
-    <Div>
-      {mesSelecionado > 0 && estaAberto ? (
-        <Div className="border border-top-0 w-100">
-          <Div className="w-100 d-flex py-3">
-            <DiaDaSemana nomeDia="Domingo" />
-            <DiaDaSemana nomeDia="Segunda" />
-            <DiaDaSemana nomeDia="Terça" />
-            <DiaDaSemana nomeDia="Quarta" />
-            <DiaDaSemana nomeDia="Quinta" />
-            <DiaDaSemana nomeDia="Sexta" />
-            <DiaDaSemana nomeDia="Sábado" />
-          </Div>
-          <Semana
-            inicial
-            dias={diasDaSemana[0]}
-            mesAtual={ultimoUsado}
-            filtros={filtros}
-          />
-          <DiaCompleto dias={diasDaSemana[0]} />
-          <Semana
-            dias={diasDaSemana[1]}
-            mesAtual={ultimoUsado}
-            filtros={filtros}
-          />
-          <DiaCompleto dias={diasDaSemana[1]} />
-          <Semana
-            dias={diasDaSemana[2]}
-            mesAtual={ultimoUsado}
-            filtros={filtros}
-          />
-          <DiaCompleto dias={diasDaSemana[2]} />
-          <Semana
-            dias={diasDaSemana[3]}
-            mesAtual={ultimoUsado}
-            filtros={filtros}
-          />
-          <DiaCompleto dias={diasDaSemana[3]} />
-          <Semana
-            dias={diasDaSemana[4]}
-            mesAtual={ultimoUsado}
-            filtros={filtros}
-          />
-          <DiaCompleto dias={diasDaSemana[4]} />
-          <Semana
-            className="pb-4"
-            dias={diasDaSemana[5]}
-            mesAtual={ultimoUsado}
-            filtros={filtros}
-          />
-          <DiaCompleto dias={diasDaSemana[5]} />
+    mesSelecionado > 0 &&
+    estaAberto && (
+      <Div className="border border-top-0 w-100">
+        <Div className="w-100 d-flex py-3">
+          <DiaDaSemana nomeDia="Domingo" />
+          <DiaDaSemana nomeDia="Segunda" />
+          <DiaDaSemana nomeDia="Terça" />
+          <DiaDaSemana nomeDia="Quarta" />
+          <DiaDaSemana nomeDia="Quinta" />
+          <DiaDaSemana nomeDia="Sexta" />
+          <DiaDaSemana nomeDia="Sábado" />
         </Div>
-      ) : null}
-    </Div>
+        <Semana
+          inicial
+          dias={diasDaSemana[0]}
+          mesAtual={ultimoUsado}
+          filtros={filtros}
+        />
+        <DiaCompleto
+          dias={diasDaSemana[0]}
+          mesAtual={ultimoUsado}
+          filtros={filtros}
+        />
+        <Semana
+          dias={diasDaSemana[1]}
+          mesAtual={ultimoUsado}
+          filtros={filtros}
+        />
+        <DiaCompleto
+          dias={diasDaSemana[1]}
+          mesAtual={ultimoUsado}
+          filtros={filtros}
+        />
+        <Semana
+          dias={diasDaSemana[2]}
+          mesAtual={ultimoUsado}
+          filtros={filtros}
+        />
+        <DiaCompleto
+          dias={diasDaSemana[2]}
+          mesAtual={ultimoUsado}
+          filtros={filtros}
+        />
+        <Semana
+          dias={diasDaSemana[3]}
+          mesAtual={ultimoUsado}
+          filtros={filtros}
+        />
+        <DiaCompleto
+          dias={diasDaSemana[3]}
+          mesAtual={ultimoUsado}
+          filtros={filtros}
+        />
+        <Semana
+          dias={diasDaSemana[4]}
+          mesAtual={ultimoUsado}
+          filtros={filtros}
+        />
+        <DiaCompleto
+          dias={diasDaSemana[4]}
+          mesAtual={ultimoUsado}
+          filtros={filtros}
+        />
+        <Semana
+          className="pb-4"
+          dias={diasDaSemana[5]}
+          mesAtual={ultimoUsado}
+          filtros={filtros}
+        />
+        <DiaCompleto
+          dias={diasDaSemana[5]}
+          mesAtual={ultimoUsado}
+          filtros={filtros}
+        />
+      </Div>
+    )
   );
 };
 

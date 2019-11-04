@@ -89,7 +89,12 @@ const CalendarioEscolar = () => {
     setUnidadeEscolarSelecionada(unidade);
   };
 
-  const [filtros, setFiltros] = useState({});
+  const [filtros, setFiltros] = useState({
+    tipoCalendarioSelecionado,
+    eventoSme,
+    dreSelecionada,
+    unidadeEscolarSelecionada,
+  });
 
   const aoClicarBotaoFiltro = () => {
     setFiltros({
