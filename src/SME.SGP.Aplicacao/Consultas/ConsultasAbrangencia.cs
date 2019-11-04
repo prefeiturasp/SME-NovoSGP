@@ -28,7 +28,7 @@ namespace SME.SGP.Aplicacao
             return await repositorioAbrangencia.ObterAbrangenciaPorFiltro(texto, login, perfil);
         }
 
-        public async Task<IEnumerable<AbrangenciaDreRetorno>> ObterDres(Modalidade modalidade)
+        public async Task<IEnumerable<AbrangenciaDreRetorno>> ObterDres(Modalidade? modalidade)
         {
             var login = servicoUsuario.ObterLoginAtual();
             var perfil = servicoUsuario.ObterPerfilAtual();
@@ -66,7 +66,7 @@ namespace SME.SGP.Aplicacao
             return await repositorioAbrangencia.ObterTurmas(codigoUe, login, perfil, modalidade);
         }
 
-        public async Task<IEnumerable<AbrangenciaUeRetorno>> ObterUes(string codigoDre, Modalidade modalidade)
+        public async Task<IEnumerable<AbrangenciaUeRetorno>> ObterUes(string codigoDre, Modalidade? modalidade)
         {
             var login = servicoUsuario.ObterLoginAtual();
             var perfil = servicoUsuario.ObterPerfilAtual();

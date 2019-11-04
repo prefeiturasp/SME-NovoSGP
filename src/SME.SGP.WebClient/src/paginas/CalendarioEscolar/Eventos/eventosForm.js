@@ -12,30 +12,39 @@ import { Colors } from '~/componentes/colors';
 import ModalConteudoHtml from '~/componentes/modalConteudoHtml';
 import RadioGroupButton from '~/componentes/radioGroupButton';
 import SelectComponent from '~/componentes/select';
+import eventoLetivo from '~/dtos/eventoLetivo';
 import eventoTipoData from '~/dtos/eventoTipoData';
+import RotasDto from '~/dtos/rotasDto';
 import { confirmar, erros, sucesso } from '~/servicos/alertas';
 import api from '~/servicos/api';
 import { setBreadcrumbManual } from '~/servicos/breadcrumb-services';
 import history from '~/servicos/history';
 import servicoEvento from '~/servicos/Paginas/Calendario/ServicoEvento';
+import { verificaSomenteConsulta } from '~/servicos/servico-navegacao';
 
 import { CaixaDiasLetivos, ListaCopiarEventos, TextoDiasLetivos } from './eventos.css';
-import eventoLetivo from '~/dtos/eventoLetivo';
 
-const EventosForm = ({ match }) => {
+const EventosForm = ({ match }) => {  
   const usuarioStore = useSelector(store => store.usuario);
+
+  const permissoesTela = usuarioStore.permissoes[RotasDto.EVENTOS];
+  const [somenteConsulta, setSomenteConsulta] = useState(false);
+  const [desabilitarCampos, setDesabilitarCampos] = useState(false);
 
   const [auditoria, setAuditoria] = useState([]);
   const [modoEdicao, setModoEdicao] = useState(false);
   const [novoRegistro, setNovoRegistro] = useState(true);
   const [exibirAuditoria, setExibirAuditoria] = useState(false);
   const [exibirModalCopiarEvento, setExibirModalCopiarEvento] = useState(false);
+  const [exibirModalRetornoCopiarEvento, setExibirModalRetornoCopiarEvento] = useState(false);
   const [eventoTipoFeriadoSelecionado, setEventoTipoFeriadoSelecionado] = useState(false);
   const [tipoDataUnico, setTipoDataUnico] = useState(true);
   const [desabilitarOpcaoLetivo, setDesabilitarOpcaoLetivo] = useState(true);
 
+  const [listaMensagensCopiarEvento, setListaMensagensCopiarEvento] = useState([]);
   const [listaFeriados, setListaFeriados] = useState([]);
   const [listaCalendarioEscolar, setListaCalendarioEscolar] = useState([]);
+  const [calendarioEscolarAtual, setCalendarioEscolarAtual] = useState([]);
   const [listaDres, setListaDres] = useState([]);
   const [listaUes, setListaUes] = useState([]);
   const [listaTipoEvento, setListaTipoEvento] = useState([]);
@@ -71,18 +80,7 @@ const EventosForm = ({ match }) => {
 
     const montarConsultas = async () => {
       const dres = await api.get('v1/abrangencias/dres');
-      setListaDres(dres.data);
-
-      const listaTipo = await api.get('v1/calendarios/tipos');
-      if (listaTipo && listaTipo.data && listaTipo.data.length) {
-        listaTipo.data.map(item => {
-          item.id = String(item.id);
-          item.descricaoTipoCalendario = `${item.anoLetivo} - ${item.nome} - ${item.descricaoPeriodo}`;
-        });
-        setListaCalendarioEscolar(listaTipo.data);
-      } else {
-        setListaCalendarioEscolar([]);
-      }
+      setListaDres(dres.data || []);
 
       const tiposEvento = await api.get('v1/calendarios/eventos/tipos/listar');
       if (tiposEvento && tiposEvento.data && tiposEvento.data.items) {
@@ -90,21 +88,28 @@ const EventosForm = ({ match }) => {
       } else {
         setListaTipoEvento([]);
       }
-    }
+    }    
+    setSomenteConsulta(verificaSomenteConsulta(permissoesTela));
 
     montarConsultas();
     }, []);
 
   useEffect(() => {
-    consultaModoEdicao();
+    const desabilitar = novoRegistro ? (somenteConsulta || !permissoesTela.podeIncluir) : (somenteConsulta || !permissoesTela.podeAlterar);
+    setDesabilitarCampos(desabilitar);    
+  }, [somenteConsulta, novoRegistro ]);
+
+  useEffect(() => {
+    validarConsultaModoEdicaoENovo();
   }, [listaTipoEvento]);
 
   useEffect(() => {
     montaValidacoes();
   }, [eventoTipoFeriadoSelecionado, tipoDataUnico]);
 
-  const consultaModoEdicao = async ()=> {
+  const validarConsultaModoEdicaoENovo = async ()=> {
     if (match && match.params && match.params.id) {
+      setNovoRegistro(false);
       setBreadcrumbManual(
         match.url,
         'Cadastro de Eventos no Calendário Escolar',
@@ -113,22 +118,35 @@ const EventosForm = ({ match }) => {
         setIdEvento(match.params.id);
         consultaPorId(match.params.id);
     } else {
+
+      montarTipoCalendarioPorId(match.params.tipoCalendarioId);
+
       if (listaDres && listaDres.length == 1) {
         inicial.dreId = String(listaDres[0].codigo);
         const ues = await obterUesPorDre(inicial.dreId);
         setListaUes(ues.data || []);
         if (ues.data.length  == 1) {
           inicial.ueId = String(ues.data[0].codigo);
-        }          
-        setValoresIniciais(inicial);
+        }
       }
+      inicial.tipoCalendarioId = match.params.tipoCalendarioId;
+    }
+  }
+
+  const montarTipoCalendarioPorId = async id=> {
+    const tipoCalendario = await api.get(`v1/calendarios/tipos/${id}`);
+    if (tipoCalendario && tipoCalendario.data) {
+      tipoCalendario.data.id = String(tipoCalendario.data.id);
+      tipoCalendario.data.descricaoTipoCalendario = `${tipoCalendario.data.anoLetivo} - ${tipoCalendario.data.nome} - ${tipoCalendario.data.descricaoPeriodo}`;
+      setCalendarioEscolarAtual([tipoCalendario.data]);
+    } else {
+      setCalendarioEscolarAtual([]);
     }
   }
 
   const montaValidacoes = ()=> {
     let val = {
       dataInicio: momentSchema.required('Data obrigatória'),
-      descricao: Yup.string().required('Descrição obrigatória'),
       nome: Yup.string().required('Nome obrigatório'),
       tipoCalendarioId: Yup.string().required('Calendário obrigatório'),
       tipoEventoId: Yup.string().required('Tipo obrigatório'),
@@ -161,6 +179,9 @@ const EventosForm = ({ match }) => {
       if (evento.data.dreId && evento.data.dreId > 0) {
         carregarUes(evento.data.dreId);
       }
+
+      montarTipoCalendarioPorId(evento.data.tipoCalendarioId);
+
       setValoresIniciais({
         dataFim: evento.data.dataFim ? window.moment(evento.data.dataFim) : '',
         dataInicio: window.moment(evento.data.dataInicio),
@@ -185,7 +206,6 @@ const EventosForm = ({ match }) => {
 
       onChangeTipoEvento(evento.data.tipoEventoId);
 
-      setNovoRegistro(false);
       setExibirAuditoria(true);
     }
   };
@@ -230,12 +250,23 @@ const EventosForm = ({ match }) => {
   };
 
   const onClickCadastrar = async valoresForm => {
-    valoresForm.listaCalendarioParaCopiar = listaCalendarioParaCopiar;
+    const tiposCalendarioParaCopiar = listaCalendarioParaCopiar.map( id => {
+      const calendario = listaCalendarioEscolar.find(e => e.id == id);
+      return { tipoCalendarioId: calendario.id, nomeCalendario: calendario.descricaoTipoCalendario };
+    });
+    valoresForm.tiposCalendarioParaCopiar = tiposCalendarioParaCopiar;
     const cadastrado = await servicoEvento.salvar(idEvento || 0, valoresForm)
-      .catch(e => erros(e));
+    .catch(e => erros(e));
     if (cadastrado && cadastrado.status == 200) {
-      sucesso('Suas informações foram salvas com sucesso.');
-      history.push('/calendario-escolar/eventos');
+      if (tiposCalendarioParaCopiar && tiposCalendarioParaCopiar.length) {
+
+        setListaMensagensCopiarEvento(cadastrado.data);
+        setExibirModalRetornoCopiarEvento(true);
+
+      } else {
+        sucesso('Evento cadastrado com sucesso');
+        history.push('/calendario-escolar/eventos');
+      }
     }
   };
 
@@ -286,14 +317,30 @@ const EventosForm = ({ match }) => {
     console.log('onClickRepetir');
   };
 
-  const onClickCopiarEvento = () => {
+  const onClickCopiarEvento = async() => {
+
+    const tiposCalendario = await api.get('v1/calendarios/tipos');
+    if (
+      tiposCalendario &&
+      tiposCalendario.data &&
+      tiposCalendario.data.length
+    ) {
+      tiposCalendario.data.map(item => {
+        item.id = String(item.id);
+        item.descricaoTipoCalendario = `${item.anoLetivo} - ${item.nome} - ${item.descricaoPeriodo}`;
+      });
+      const listaSemCalendarioAtual = tiposCalendario.data.filter(item => item.id != calendarioEscolarAtual[0].id);
+      setListaCalendarioEscolar(listaSemCalendarioAtual);
+    } else {
+      setListaCalendarioEscolar([]);
+    }
+
     setlistaCalendarioParaCopiarInicial(listaCalendarioParaCopiar);
     setExibirModalCopiarEvento(true);
   };
 
   const onConfirmarCopiarEvento = () => {
     onCloseCopiarConteudo();
-    console.log(listaCalendarioParaCopiar);
   };
 
   const onCancelarCopiarEvento = () => {
@@ -344,7 +391,7 @@ const EventosForm = ({ match }) => {
     }
   };
 
-  const montarEcibicaoEventosCopiar = () => {
+  const montarExibicaoEventosCopiar = () => {
     return listaCalendarioParaCopiar.map((id, i)=> {
       const calendario = listaCalendarioEscolar.find(e => e.id == id);
       if (calendario && calendario.descricaoTipoCalendario) {
@@ -353,6 +400,18 @@ const EventosForm = ({ match }) => {
         return '';
       }
     });
+  };
+
+  const desabilitarData = current => {
+    if (current) {
+      return current < window.moment().startOf('year') || current > window.moment().endOf('year');
+    }
+    return false;
+  }
+
+  const onCloseRetornoCopiarEvento = () => {
+    setExibirModalRetornoCopiarEvento(false);
+    history.push('/calendario-escolar/eventos');
   };
 
   return (
@@ -375,11 +434,12 @@ const EventosForm = ({ match }) => {
                     form={form}
                     name="tipoCalendarioId"
                     id="calendario-escolar"
-                    lista={listaCalendarioEscolar}
+                    lista={calendarioEscolarAtual}
                     valueOption="id"
                     valueText="descricaoTipoCalendario"
                     onChange={onChangeCampos}
                     placeholder=" Selecione um Calendário Escolar"
+                    disabled
                   />
                 </div>
                 <div className="col-sm-12 col-md-6 col-lg-6 col-xl-4 pb-2">
@@ -415,14 +475,16 @@ const EventosForm = ({ match }) => {
                     className="mr-2"
                     hidden={novoRegistro}
                     onClick={onClickExcluir}
+                    disabled={somenteConsulta || !permissoesTela.podeExcluir || novoRegistro}
                   />
                   <Button
-                    label="Cadastrar"
+                    label={ novoRegistro ? 'Cadastrar' : 'Alterar'}
                     color={Colors.Roxo}
                     border
                     bold
                     className="mr-2"
                     type="submit"
+                    disabled={desabilitarCampos}
                   />
                 </div>
               </div>
@@ -437,6 +499,7 @@ const EventosForm = ({ match }) => {
                     onChange={e => onChangeDre(e, form)}
                     label="Diretoria Regional de Educação (DRE)"
                     placeholder="Diretoria Regional de Educação (DRE)"
+                    disabled={desabilitarCampos}
                   />
                 </div>
                 <div className="col-sm-12 col-md-12 col-lg-6 col-xl-6 pb-2">
@@ -449,6 +512,7 @@ const EventosForm = ({ match }) => {
                     onChange={onChangeCampos}
                     label="Unidade Escolar (UE)"
                     placeholder="Unidade Escolar (UE)"
+                    disabled={desabilitarCampos}
                   />
                 </div>
                 <div className="col-sm-12 col-md-6 col-lg-6 col-xl-6 pb-2">
@@ -458,6 +522,7 @@ const EventosForm = ({ match }) => {
                     placeholder="Nome do evento"
                     onChange={onChangeCampos}
                     name="nome"
+                    desabilitado={desabilitarCampos}
                   />
                 </div>
                 <div className={
@@ -476,6 +541,7 @@ const EventosForm = ({ match }) => {
                     }}
                     label="Tipo evento"
                     placeholder="Selecione um tipo"
+                    disabled={desabilitarCampos}
                   />
                 </div>
                 {
@@ -490,17 +556,20 @@ const EventosForm = ({ match }) => {
                         valueText="nome"
                         onChange={onChangeCampos}
                         placeholder="Selecione o feriado"
+                        disabled={desabilitarCampos}
                       />
                     </div> : ''
                 }
                 <div className="col-sm-12 col-md-6 col-lg-3 col-xl-3 pb-2">
                   <CampoData
                     form={form}
-                    label="Data início do evento"
+                    label={tipoDataUnico ? 'Data do evento': 'Data início do evento'}
                     placeholder="Data início do evento"
                     formatoData="DD/MM/YYYY"
                     name="dataInicio"
                     onChange={onChangeCampos}
+                    desabilitarData={desabilitarData}
+                    desabilitado={desabilitarCampos}
                   />
                 </div>
                 {
@@ -513,6 +582,7 @@ const EventosForm = ({ match }) => {
                         formatoData="DD/MM/YYYY"
                         name="dataFim"
                         onChange={onChangeCampos}
+                        desabilitado={desabilitarCampos}
                       />
                     </div>
                 }
@@ -524,6 +594,7 @@ const EventosForm = ({ match }) => {
                     border
                     className="mt-4"
                     onClick={onClickRepetir}
+                    disabled={desabilitarCampos}
                   />
                 </div>
                 <div className="col-sm-12 col-md-6 col-lg-3 col-xl-3 mb-2">
@@ -534,7 +605,7 @@ const EventosForm = ({ match }) => {
                     name="letivo"
                     valorInicial
                     onChange={onChangeCampos}
-                    desabilitado={desabilitarOpcaoLetivo}
+                    desabilitado={desabilitarCampos || desabilitarOpcaoLetivo}
                   />
                 </div>
                 <div className="col-sm-12 col-md-12 col-lg-12 col-xl-12 pb-2">
@@ -545,6 +616,7 @@ const EventosForm = ({ match }) => {
                     onChange={onChangeCampos}
                     name="descricao"
                     type="textarea"
+                    desabilitado={desabilitarCampos}
                   />
                 </div>
               </div>
@@ -558,12 +630,13 @@ const EventosForm = ({ match }) => {
                     border
                     className="mt-4 mr-3"
                     onClick={onClickCopiarEvento}
+                    disabled={desabilitarCampos}
                   />
                   {
                     listaCalendarioParaCopiar && listaCalendarioParaCopiar.length ?
                       <ListaCopiarEventos>
                         <div className="mb-1">Evento será copiado para os calendários:</div>
-                      { montarEcibicaoEventosCopiar() }
+                      { montarExibicaoEventosCopiar() }
                       </ListaCopiarEventos>
                     : ''
                   }
@@ -606,7 +679,37 @@ const EventosForm = ({ match }) => {
             onChange={onChangeCopiarEvento}
             valueSelect={listaCalendarioParaCopiar}
             multiple
+            placeholder="Selecione 1 ou mais tipos de calendários"
           />
+        </ModalConteudoHtml>
+
+        <ModalConteudoHtml
+          key="retornoCopiarEvento"
+          visivel={exibirModalRetornoCopiarEvento}
+          onConfirmacaoSecundaria={onCloseRetornoCopiarEvento}
+          onClose={onCloseRetornoCopiarEvento}
+          labelBotaoSecundario="Ok"
+          titulo="Cadastro de evento"
+          closable={false}
+          fecharAoClicarFora={false}
+          fecharAoClicarEsc={false}
+          esconderBotaoPrincipal={true}
+        >
+          {  listaMensagensCopiarEvento.map((item, i)=> (
+            <p key={i}>
+              {
+                item.sucesso ?
+                <strong>
+                  <i className="fas fa-check text-success mr-2"/>{item.mensagem}
+                </strong>
+                  :
+                <strong className="text-danger">
+                  <i className="fas fa-times mr-3"/>{item.mensagem}
+                </strong>
+              }
+            </p>
+            ))
+          }
         </ModalConteudoHtml>
       </Card>
     </>

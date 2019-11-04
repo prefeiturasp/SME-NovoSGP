@@ -1,4 +1,5 @@
-﻿namespace SME.SGP.Infra
+﻿
+namespace SME.SGP.Infra
 {
     public enum Permissao
     {
@@ -29,16 +30,16 @@
         [PermissaoMenu(Menu = "Boletim", Icone = "fas fa-book-reader", Agrupamento = "Diário de Classe", OrdemAgrupamento = 1, OrdemMenu = 3, EhConsulta = true)]
         B_C = 9,
 
-        [PermissaoMenu(Menu = "Calendário Escolar", Icone = "fas fa-calendar-alt", Agrupamento = "Calendário Escolar", OrdemAgrupamento = 5, OrdemMenu = 1, Url = "/calendario-escolar/", EhConsulta = true)]
+        [PermissaoMenu(Menu = "Calendário Escolar", Icone = "fas fa-calendar-alt", Agrupamento = "Calendário Escolar", OrdemAgrupamento = 5, OrdemMenu = 1, Url = "/calendario-escolar", EhConsulta = true)]
         C_C = 10,
 
-        [PermissaoMenu(Menu = "Calendário Escolar", Icone = "fas fa-calendar-alt", Agrupamento = "Calendário Escolar", OrdemAgrupamento = 5, OrdemMenu = 1, Url = "/calendario-escolar/", EhInclusao = true)]
+        [PermissaoMenu(Menu = "Calendário Escolar", Icone = "fas fa-calendar-alt", Agrupamento = "Calendário Escolar", OrdemAgrupamento = 5, OrdemMenu = 1, Url = "/calendario-escolar", EhInclusao = true)]
         C_I = 11,
 
-        [PermissaoMenu(Menu = "Calendário Escolar", Icone = "fas fa-calendar-alt", Agrupamento = "Calendário Escolar", OrdemAgrupamento = 5, OrdemMenu = 1, Url = "/calendario-escolar/", EhExclusao = true)]
+        [PermissaoMenu(Menu = "Calendário Escolar", Icone = "fas fa-calendar-alt", Agrupamento = "Calendário Escolar", OrdemAgrupamento = 5, OrdemMenu = 1, Url = "/calendario-escolar", EhExclusao = true)]
         C_E = 12,
 
-        [PermissaoMenu(Menu = "Calendário Escolar", Icone = "fas fa-calendar-alt", Agrupamento = "Calendário Escolar", OrdemAgrupamento = 5, OrdemMenu = 1, Url = "/calendario-escolar/", EhAlteracao = true)]
+        [PermissaoMenu(Menu = "Calendário Escolar", Icone = "fas fa-calendar-alt", Agrupamento = "Calendário Escolar", OrdemAgrupamento = 5, OrdemMenu = 1, Url = "/calendario-escolar", EhAlteracao = true)]
         C_A = 13,
 
         [PermissaoMenu(Menu = "Frequência", Icone = "fas fa-file-alt", Agrupamento = "Relatórios", EhMenu = false, EhConsulta = true)]
@@ -77,16 +78,16 @@
         [PermissaoMenu(Menu = "Notas", Icone = "fas fa-file-alt", Agrupamento = "Diário de Classe", OrdemAgrupamento = 1, OrdemMenu = 2, EhAlteracao = true)]
         NC_A = 25,
 
-        [PermissaoMenu(Menu = "Plano Anual", Icone = "fas fa-list-alt", Agrupamento = "Planejamento", OrdemAgrupamento = 2, OrdemMenu = 2, Url = "/planejamento/plano-anual/", EhConsulta = true)]
+        [PermissaoMenu(Menu = "Plano Anual", Icone = "fas fa-list-alt", Agrupamento = "Planejamento", OrdemAgrupamento = 2, OrdemMenu = 2, Url = "/planejamento/plano-anual", EhConsulta = true)]
         PA_C = 26,
 
-        [PermissaoMenu(Menu = "Plano Anual", Icone = "fas fa-list-alt", Agrupamento = "Planejamento", OrdemAgrupamento = 2, OrdemMenu = 2, Url = "/planejamento/plano-anual/", EhInclusao = true)]
+        [PermissaoMenu(Menu = "Plano Anual", Icone = "fas fa-list-alt", Agrupamento = "Planejamento", OrdemAgrupamento = 2, OrdemMenu = 2, Url = "/planejamento/plano-anual", EhInclusao = true)]
         PA_I = 27,
 
-        [PermissaoMenu(Menu = "Plano Anual", Icone = "fas fa-list-alt", Agrupamento = "Planejamento", OrdemAgrupamento = 2, OrdemMenu = 2, Url = "/planejamento/plano-anual/", EhExclusao = true)]
+        [PermissaoMenu(Menu = "Plano Anual", Icone = "fas fa-list-alt", Agrupamento = "Planejamento", OrdemAgrupamento = 2, OrdemMenu = 2, Url = "/planejamento/plano-anual", EhExclusao = true)]
         PA_E = 28,
 
-        [PermissaoMenu(Menu = "Plano Anual", Icone = "fas fa-list-alt", Agrupamento = "Planejamento", OrdemAgrupamento = 2, OrdemMenu = 2, Url = "/planejamento/plano-anual/", EhAlteracao = true)]
+        [PermissaoMenu(Menu = "Plano Anual", Icone = "fas fa-list-alt", Agrupamento = "Planejamento", OrdemAgrupamento = 2, OrdemMenu = 2, Url = "/planejamento/plano-anual", EhAlteracao = true)]
         PA_A = 29,
 
         [PermissaoMenu(Menu = "Plano de aula/Frequência", Icone = "fas fa-book-reader", Agrupamento = "Diário de Classe", OrdemAgrupamento = 1, OrdemMenu = 1, EhConsulta = true)]
@@ -101,28 +102,28 @@
         [PermissaoMenu(Menu = "Plano de aula/Frequência", Icone = "fas fa-book-reader", Agrupamento = "Diário de Classe", OrdemAgrupamento = 1, OrdemMenu = 1, EhAlteracao = true)]
         PDA_A = 33,
 
-        [PermissaoMenu(Menu = "Plano de Ciclo", Icone = "fas fa-list-alt", Agrupamento = "Planejamento", OrdemAgrupamento = 2, OrdemMenu = 1, Url = "/planejamento/plano-ciclo/", EhConsulta = true)]
+        [PermissaoMenu(Menu = "Plano de Ciclo", Icone = "fas fa-list-alt", Agrupamento = "Planejamento", OrdemAgrupamento = 2, OrdemMenu = 1, Url = "/planejamento/plano-ciclo", EhConsulta = true)]
         PDC_C = 34,
 
-        [PermissaoMenu(Menu = "Plano de Ciclo", Icone = "fas fa-list-alt", Agrupamento = "Planejamento", OrdemAgrupamento = 2, OrdemMenu = 1, Url = "/planejamento/plano-ciclo/", EhInclusao = true)]
+        [PermissaoMenu(Menu = "Plano de Ciclo", Icone = "fas fa-list-alt", Agrupamento = "Planejamento", OrdemAgrupamento = 2, OrdemMenu = 1, Url = "/planejamento/plano-ciclo", EhInclusao = true)]
         PDC_I = 35,
 
-        [PermissaoMenu(Menu = "Plano de Ciclo", Icone = "fas fa-list-alt", Agrupamento = "Planejamento", OrdemAgrupamento = 2, OrdemMenu = 1, Url = "/planejamento/plano-ciclo/", EhExclusao = true)]
+        [PermissaoMenu(Menu = "Plano de Ciclo", Icone = "fas fa-list-alt", Agrupamento = "Planejamento", OrdemAgrupamento = 2, OrdemMenu = 1, Url = "/planejamento/plano-ciclo", EhExclusao = true)]
         PDC_E = 36,
 
-        [PermissaoMenu(Menu = "Plano de Ciclo", Icone = "fas fa-list-alt", Agrupamento = "Planejamento", OrdemAgrupamento = 2, OrdemMenu = 1, Url = "/planejamento/plano-ciclo/", EhAlteracao = true)]
+        [PermissaoMenu(Menu = "Plano de Ciclo", Icone = "fas fa-list-alt", Agrupamento = "Planejamento", OrdemAgrupamento = 2, OrdemMenu = 1, Url = "/planejamento/plano-ciclo", EhAlteracao = true)]
         PDC_A = 37,
 
-        [PermissaoMenu(EhMenu = false, EhConsulta = true, Menu = "Notificação", Agrupamento = "Notificação")]
+        [PermissaoMenu(EhMenu = false, EhConsulta = true, Menu = "Notificação", Agrupamento = "Notificação", Url = "/notificacoes")]
         N_C = 38,
 
-        [PermissaoMenu(EhMenu = false, EhInclusao = true, Menu = "Notificação", Agrupamento = "Notificação")]
+        [PermissaoMenu(EhMenu = false, EhInclusao = true, Menu = "Notificação", Agrupamento = "Notificação", Url = "/notificacoes")]
         N_I = 39,
 
-        [PermissaoMenu(EhMenu = false, EhExclusao = true, Menu = "Notificação", Agrupamento = "Notificação")]
+        [PermissaoMenu(EhMenu = false, EhExclusao = true, Menu = "Notificação", Agrupamento = "Notificação", Url = "/notificacoes")]
         N_E = 40,
 
-        [PermissaoMenu(EhMenu = false, EhAlteracao = true, Menu = "Notificação", Agrupamento = "Notificação")]
+        [PermissaoMenu(EhMenu = false, EhAlteracao = true, Menu = "Notificação", Agrupamento = "Notificação", Url = "/notificacoes")]
         N_A = 41,
 
         [PermissaoMenu(EhMenu = false, EhConsulta = true, Menu = "Atribuição Professor", Agrupamento = "Atribuição Professor")]
@@ -140,20 +141,20 @@
         [PermissaoMenu(Menu = "Relatório Consulta", Icone = "fas fa-file-alt", Agrupamento = "Relatórios", OrdemAgrupamento = 2, OrdemMenu = 2)]
         R_C = 46,
 
-        [PermissaoMenu(Menu = "Usuários", Icone = "fas fa-book-reader", Agrupamento = "Configurações", OrdemAgrupamento = 7, OrdemMenu = 1, Url = "/usuarios/reiniciar-senha/", EhAlteracao = true,
-           EhSubMenu = true, SubMenu = "Reiniciar Senha")]
+        [PermissaoMenu(Menu = "Usuários", Icone = "fas fa-book-reader", Agrupamento = "Configurações", OrdemAgrupamento = 7, OrdemMenu = 1, Url = "/usuarios/reiniciar-senha", EhAlteracao = true,
+           EhSubMenu = true, EhConsulta = true, SubMenu = "Reiniciar Senha")]
         AS_C = 47,
 
-        [PermissaoMenu(EhMenu = false, EhConsulta = true, Menu = "Meus Dados", Agrupamento = "Meus Dados")]
+        [PermissaoMenu(EhMenu = false, EhConsulta = true, Menu = "Meus Dados", Agrupamento = "Meus Dados", Url="/meus-dados")]
         M_C = 48,
 
-        [PermissaoMenu(EhMenu = false, EhInclusao = true, Menu = "Meus Dados", Agrupamento = "Meus Dados")]
+        [PermissaoMenu(EhMenu = false, EhInclusao = true, Menu = "Meus Dados", Agrupamento = "Meus Dados", Url = "/meus-dados")]
         M_I = 49,
 
-        [PermissaoMenu(EhMenu = false, EhExclusao = true, Menu = "Meus Dados", Agrupamento = "Meus Dados")]
+        [PermissaoMenu(EhMenu = false, EhExclusao = true, Menu = "Meus Dados", Agrupamento = "Meus Dados", Url = "/meus-dados")]
         M_E = 50,
 
-        [PermissaoMenu(EhMenu = false, EhAlteracao = true, Menu = "Meus Dados", Agrupamento = "Meus Dados")]
+        [PermissaoMenu(EhMenu = false, EhAlteracao = true, Menu = "Meus Dados", Agrupamento = "Meus Dados", Url = "/meus-dados")]
         M_A = 51,
 
         [PermissaoMenu(Icone = "fas fa-book-reader", Agrupamento = "Diário de Classe", OrdemAgrupamento = 1, OrdemMenu = 2, EhConsulta = true, Menu = "Notas")]
@@ -192,28 +193,28 @@
         [PermissaoMenu(Menu = "Calendário Professor", Icone = "fas fa-calendar-alt", Agrupamento = "Calendário Escolar", OrdemAgrupamento = 5, OrdemMenu = 2, EhAlteracao = true)]
         CP_A = 63,
 
-        [PermissaoMenu(Menu = "Tipo de Calendário Escolar", Icone = "fas fa-calendar-alt", Agrupamento = "Calendário Escolar", OrdemAgrupamento = 5, OrdemMenu = 3, EhConsulta = true, Url = "/calendario-escolar/tipo-calendario-escolar/")]
+        [PermissaoMenu(Menu = "Tipo de Calendário Escolar", Icone = "fas fa-calendar-alt", Agrupamento = "Calendário Escolar", OrdemAgrupamento = 5, OrdemMenu = 3, EhConsulta = true, Url = "/calendario-escolar/tipo-calendario-escolar")]
         TCE_C = 64,
 
-        [PermissaoMenu(Menu = "Tipo de Calendário Escolar", Icone = "fas fa-calendar-alt", Agrupamento = "Calendário Escolar", OrdemAgrupamento = 5, OrdemMenu = 3, EhInclusao = true, Url = "/calendario-escolar/tipo-calendario-escolar/")]
+        [PermissaoMenu(Menu = "Tipo de Calendário Escolar", Icone = "fas fa-calendar-alt", Agrupamento = "Calendário Escolar", OrdemAgrupamento = 5, OrdemMenu = 3, EhInclusao = true, Url = "/calendario-escolar/tipo-calendario-escolar")]
         TCE_I = 65,
 
-        [PermissaoMenu(Menu = "Tipo de Calendário Escolar", Icone = "fas fa-calendar-alt", Agrupamento = "Calendário Escolar", OrdemAgrupamento = 5, OrdemMenu = 3, EhExclusao = true, Url = "/calendario-escolar/tipo-calendario-escolar/")]
+        [PermissaoMenu(Menu = "Tipo de Calendário Escolar", Icone = "fas fa-calendar-alt", Agrupamento = "Calendário Escolar", OrdemAgrupamento = 5, OrdemMenu = 3, EhExclusao = true, Url = "/calendario-escolar/tipo-calendario-escolar")]
         TCE_E = 66,
 
-        [PermissaoMenu(Menu = "Tipo de Calendário Escolar", Icone = "fas fa-calendar-alt", Agrupamento = "Calendário Escolar", OrdemAgrupamento = 5, OrdemMenu = 3, EhAlteracao = true, Url = "/calendario-escolar/tipo-calendario-escolar/")]
+        [PermissaoMenu(Menu = "Tipo de Calendário Escolar", Icone = "fas fa-calendar-alt", Agrupamento = "Calendário Escolar", OrdemAgrupamento = 5, OrdemMenu = 3, EhAlteracao = true, Url = "/calendario-escolar/tipo-calendario-escolar")]
         TCE_A = 67,
 
-        [PermissaoMenu(Menu = "Períodos Escolares", Icone = "fas fa-calendar-alt", Agrupamento = "Calendário Escolar", OrdemAgrupamento = 5, OrdemMenu = 4, EhConsulta = true, Url = "/calendario-escolar/periodos-escolares/")]
+        [PermissaoMenu(Menu = "Períodos Escolares", Icone = "fas fa-calendar-alt", Agrupamento = "Calendário Escolar", OrdemAgrupamento = 5, OrdemMenu = 4, EhConsulta = true, Url = "/calendario-escolar/periodos-escolares")]
         PE_C = 68,
 
-        [PermissaoMenu(Menu = "Períodos Escolares", Icone = "fas fa-calendar-alt", Agrupamento = "Calendário Escolar", OrdemAgrupamento = 5, OrdemMenu = 4, EhInclusao = true, Url = "/calendario-escolar/periodos-escolares/")]
+        [PermissaoMenu(Menu = "Períodos Escolares", Icone = "fas fa-calendar-alt", Agrupamento = "Calendário Escolar", OrdemAgrupamento = 5, OrdemMenu = 4, EhInclusao = true, Url = "/calendario-escolar/periodos-escolares")]
         PE_I = 69,
 
-        [PermissaoMenu(Menu = "Períodos Escolares", Icone = "fas fa-calendar-alt", Agrupamento = "Calendário Escolar", OrdemAgrupamento = 5, OrdemMenu = 4, EhExclusao = true, Url = "/calendario-escolar/periodos-escolares/")]
+        [PermissaoMenu(Menu = "Períodos Escolares", Icone = "fas fa-calendar-alt", Agrupamento = "Calendário Escolar", OrdemAgrupamento = 5, OrdemMenu = 4, EhExclusao = true, Url = "/calendario-escolar/periodos-escolares")]
         PE_E = 70,
 
-        [PermissaoMenu(Menu = "Períodos Escolares", Icone = "fas fa-calendar-alt", Agrupamento = "Calendário Escolar", OrdemAgrupamento = 5, OrdemMenu = 4, EhAlteracao = true, Url = "/calendario-escolar/periodos-escolares/")]
+        [PermissaoMenu(Menu = "Períodos Escolares", Icone = "fas fa-calendar-alt", Agrupamento = "Calendário Escolar", OrdemAgrupamento = 5, OrdemMenu = 4, EhAlteracao = true, Url = "/calendario-escolar/periodos-escolares")]
         PE_A = 71,
 
         [PermissaoMenu(Menu = "Períodos de fechamento (Abertura)", Icone = "fas fa-calendar-alt", Agrupamento = "Calendário Escolar", OrdemAgrupamento = 5, OrdemMenu = 5, EhConsulta = true)]
@@ -240,40 +241,40 @@
         [PermissaoMenu(Menu = "Períodos de fechamento (Reabertura)", Icone = "fas fa-calendar-alt", Agrupamento = "Calendário Escolar", OrdemAgrupamento = 5, OrdemMenu = 6, EhAlteracao = true)]
         PFR_A = 79,
 
-        [PermissaoMenu(Menu = "Tipo de Feriado", Icone = "fas fa-calendar-alt", Agrupamento = "Calendário Escolar", OrdemAgrupamento = 5, OrdemMenu = 7, EhConsulta = true, Url = "/calendario-escolar/tipo-feriado/")]
+        [PermissaoMenu(Menu = "Tipo de Feriado", Icone = "fas fa-calendar-alt", Agrupamento = "Calendário Escolar", OrdemAgrupamento = 5, OrdemMenu = 7, EhConsulta = true, Url = "/calendario-escolar/tipo-feriado")]
         TF_C = 80,
 
-        [PermissaoMenu(Menu = "Tipo de Feriado", Icone = "fas fa-calendar-alt", Agrupamento = "Calendário Escolar", OrdemAgrupamento = 5, OrdemMenu = 7, EhInclusao = true, Url = "/calendario-escolar/tipo-feriado/")]
+        [PermissaoMenu(Menu = "Tipo de Feriado", Icone = "fas fa-calendar-alt", Agrupamento = "Calendário Escolar", OrdemAgrupamento = 5, OrdemMenu = 7, EhInclusao = true, Url = "/calendario-escolar/tipo-feriado")]
         TF_I = 81,
 
-        [PermissaoMenu(Menu = "Tipo de Feriado", Icone = "fas fa-calendar-alt", Agrupamento = "Calendário Escolar", OrdemAgrupamento = 5, OrdemMenu = 7, EhExclusao = true, Url = "/calendario-escolar/tipo-feriado/")]
+        [PermissaoMenu(Menu = "Tipo de Feriado", Icone = "fas fa-calendar-alt", Agrupamento = "Calendário Escolar", OrdemAgrupamento = 5, OrdemMenu = 7, EhExclusao = true, Url = "/calendario-escolar/tipo-feriado")]
         TF_E = 82,
 
-        [PermissaoMenu(Menu = "Tipo de Feriado", Icone = "fas fa-calendar-alt", Agrupamento = "Calendário Escolar", OrdemAgrupamento = 5, OrdemMenu = 7, EhAlteracao = true, Url = "/calendario-escolar/tipo-feriado/")]
+        [PermissaoMenu(Menu = "Tipo de Feriado", Icone = "fas fa-calendar-alt", Agrupamento = "Calendário Escolar", OrdemAgrupamento = 5, OrdemMenu = 7, EhAlteracao = true, Url = "/calendario-escolar/tipo-feriado")]
         TF_A = 83,
 
-        [PermissaoMenu(Menu = "Tipo de Eventos", Icone = "fas fa-calendar-alt", Agrupamento = "Calendário Escolar", OrdemAgrupamento = 5, OrdemMenu = 8, EhConsulta = true, Url = "/calendario-escolar/tipo-eventos/")]
+        [PermissaoMenu(Menu = "Tipo de Eventos", Icone = "fas fa-calendar-alt", Agrupamento = "Calendário Escolar", OrdemAgrupamento = 5, OrdemMenu = 8, EhConsulta = true, Url = "/calendario-escolar/tipo-eventos")]
         TE_C = 84,
 
-        [PermissaoMenu(Menu = "Tipo de Eventos", Icone = "fas fa-calendar-alt", Agrupamento = "Calendário Escolar", OrdemAgrupamento = 5, OrdemMenu = 8, EhInclusao = true, Url = "/calendario-escolar/tipo-eventos/")]
+        [PermissaoMenu(Menu = "Tipo de Eventos", Icone = "fas fa-calendar-alt", Agrupamento = "Calendário Escolar", OrdemAgrupamento = 5, OrdemMenu = 8, EhInclusao = true, Url = "/calendario-escolar/tipo-eventos")]
         TE_I = 85,
 
-        [PermissaoMenu(Menu = "Tipo de Eventos", Icone = "fas fa-calendar-alt", Agrupamento = "Calendário Escolar", OrdemAgrupamento = 5, OrdemMenu = 8, EhExclusao = true, Url = "/calendario-escolar/tipo-eventos/")]
+        [PermissaoMenu(Menu = "Tipo de Eventos", Icone = "fas fa-calendar-alt", Agrupamento = "Calendário Escolar", OrdemAgrupamento = 5, OrdemMenu = 8, EhExclusao = true, Url = "/calendario-escolar/tipo-eventos")]
         TE_E = 86,
 
-        [PermissaoMenu(Menu = "Tipo de Eventos", Icone = "fas fa-calendar-alt", Agrupamento = "Calendário Escolar", OrdemAgrupamento = 5, OrdemMenu = 8, EhAlteracao = true, Url = "/calendario-escolar/tipo-eventos/")]
+        [PermissaoMenu(Menu = "Tipo de Eventos", Icone = "fas fa-calendar-alt", Agrupamento = "Calendário Escolar", OrdemAgrupamento = 5, OrdemMenu = 8, EhAlteracao = true, Url = "/calendario-escolar/tipo-eventos")]
         TE_A = 87,
 
-        [PermissaoMenu(Menu = "Eventos", Icone = "fas fa-calendar-alt", Agrupamento = "Calendário Escolar", OrdemAgrupamento = 5, OrdemMenu = 9, EhConsulta = true, Url = "/calendario-escolar/eventos/")]
+        [PermissaoMenu(Menu = "Eventos", Icone = "fas fa-calendar-alt", Agrupamento = "Calendário Escolar", OrdemAgrupamento = 5, OrdemMenu = 9, EhConsulta = true, Url = "/calendario-escolar/eventos")]
         E_C = 88,
 
-        [PermissaoMenu(Menu = "Eventos", Icone = "fas fa-calendar-alt", Agrupamento = "Calendário Escolar", OrdemAgrupamento = 5, OrdemMenu = 9, EhInclusao = true, Url = "/calendario-escolar/eventos/")]
+        [PermissaoMenu(Menu = "Eventos", Icone = "fas fa-calendar-alt", Agrupamento = "Calendário Escolar", OrdemAgrupamento = 5, OrdemMenu = 9, EhInclusao = true, Url = "/calendario-escolar/eventos")]
         E_I = 89,
 
-        [PermissaoMenu(Menu = "Eventos", Icone = "fas fa-calendar-alt", Agrupamento = "Calendário Escolar", OrdemAgrupamento = 5, OrdemMenu = 9, EhExclusao = true, Url = "/calendario-escolar/eventos/")]
+        [PermissaoMenu(Menu = "Eventos", Icone = "fas fa-calendar-alt", Agrupamento = "Calendário Escolar", OrdemAgrupamento = 5, OrdemMenu = 9, EhExclusao = true, Url = "/calendario-escolar/eventos")]
         E_E = 90,
 
-        [PermissaoMenu(Menu = "Eventos", Icone = "fas fa-calendar-alt", Agrupamento = "Calendário Escolar", OrdemAgrupamento = 5, OrdemMenu = 9, EhAlteracao = true, Url = "/calendario-escolar/eventos/")]
+        [PermissaoMenu(Menu = "Eventos", Icone = "fas fa-calendar-alt", Agrupamento = "Calendário Escolar", OrdemAgrupamento = 5, OrdemMenu = 9, EhAlteracao = true, Url = "/calendario-escolar/eventos")]
         E_A = 91,
 
         [PermissaoMenu(Menu = "Atribuição esporádica", Icone = "fas fa-user-cog", Agrupamento = "Gestão", OrdemAgrupamento = 6, EhMenu = false, EhConsulta = true)]
@@ -288,16 +289,16 @@
         [PermissaoMenu(Menu = "Atribuição esporádica", Icone = "fas fa-user-cog", Agrupamento = "Gestão", OrdemAgrupamento = 6, EhMenu = false, EhAlteracao = true)]
         AE_A = 95,
 
-        [PermissaoMenu(Menu = "Atribuição Supervisor", Icone = "fas fa-user-cog", Agrupamento = "Gestão", OrdemAgrupamento = 6, OrdemMenu = 5, EhConsulta = true, Url = "/gestao/atribuicao-supervisor-lista/")]
+        [PermissaoMenu(Menu = "Atribuição Supervisor", Icone = "fas fa-user-cog", Agrupamento = "Gestão", OrdemAgrupamento = 6, OrdemMenu = 5, EhConsulta = true, Url = "/gestao/atribuicao-supervisor-lista")]
         ASP_C = 96,
 
-        [PermissaoMenu(Menu = "Atribuição Supervisor", Icone = "fas fa-user-cog", Agrupamento = "Gestão", OrdemAgrupamento = 6, OrdemMenu = 5, EhInclusao = true, Url = "/gestao/atribuicao-supervisor-lista/")]
+        [PermissaoMenu(Menu = "Atribuição Supervisor", Icone = "fas fa-user-cog", Agrupamento = "Gestão", OrdemAgrupamento = 6, OrdemMenu = 5, EhInclusao = true, Url = "/gestao/atribuicao-supervisor-lista")]
         ASP_I = 97,
 
-        [PermissaoMenu(Menu = "Atribuição Supervisor", Icone = "fas fa-user-cog", Agrupamento = "Gestão", OrdemAgrupamento = 6, OrdemMenu = 5, EhExclusao = true, Url = "/gestao/atribuicao-supervisor-lista/")]
+        [PermissaoMenu(Menu = "Atribuição Supervisor", Icone = "fas fa-user-cog", Agrupamento = "Gestão", OrdemAgrupamento = 6, OrdemMenu = 5, EhExclusao = true, Url = "/gestao/atribuicao-supervisor-lista")]
         ASP_E = 98,
 
-        [PermissaoMenu(Menu = "Atribuição Supervisor", Icone = "fas fa-user-cog", Agrupamento = "Gestão", OrdemAgrupamento = 6, OrdemMenu = 5, EhAlteracao = true, Url = "/gestao/atribuicao-supervisor-lista/")]
+        [PermissaoMenu(Menu = "Atribuição Supervisor", Icone = "fas fa-user-cog", Agrupamento = "Gestão", OrdemAgrupamento = 6, OrdemMenu = 5, EhAlteracao = true, Url = "/gestao/atribuicao-supervisor-lista")]
         ASP_A = 99,
     }
 }
