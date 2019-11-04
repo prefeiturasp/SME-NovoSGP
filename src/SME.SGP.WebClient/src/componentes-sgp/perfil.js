@@ -9,6 +9,7 @@ import { perfilSelecionado } from '../redux/modulos/perfil/actions';
 import api from '~/servicos/api';
 import { salvarDadosLogin, Deslogar } from '~/redux/modulos/usuario/actions';
 import { erro } from '~/servicos/alertas';
+import { setMenusPermissoes } from '~/servicos/servico-navegacao';
 
 const Perfil = props => {
   const { Botao, Icone, Texto } = props;
@@ -102,6 +103,7 @@ const Perfil = props => {
                 rf: usuarioStore.rf,
               })
             );
+            setMenusPermissoes();
           })
           .catch(err => {
             erro('Sua sessão expirou');
