@@ -96,7 +96,8 @@ namespace SME.SGP.Aplicacao
                 CriadoEm = evento.CriadoEm,
                 CriadoPor = evento.CriadoPor,
                 CriadoRF = evento.CriadoRF,
-                TipoEvento = MapearTipoEvento(evento.TipoEvento)
+                TipoEvento = MapearTipoEvento(evento.TipoEvento),
+                Migrado = evento.Migrado
             };
         }
 
