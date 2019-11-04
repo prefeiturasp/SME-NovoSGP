@@ -200,7 +200,7 @@ namespace SME.SGP.Dados.Repositorios
                 mes
             });
         }
-
+        
         public async Task<IEnumerable<CalendarioEventosMesesDto>> ObterQuantidadeDeEventosPorMeses(CalendarioEventosFiltroDto calendarioEventosMesesFiltro)
         {
             var query = new StringBuilder();

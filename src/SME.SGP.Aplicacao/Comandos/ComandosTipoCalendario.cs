@@ -10,11 +10,13 @@ namespace SME.SGP.Aplicacao
     {
         private readonly IRepositorioTipoCalendario repositorio;
         private readonly IServicoFeriadoCalendario servicoFeriadoCalendario;
+        private readonly IServicoEvento servicoEvento;
 
-        public ComandosTipoCalendario(IRepositorioTipoCalendario repositorio, IServicoFeriadoCalendario servicoFeriadoCalendario)
+        public ComandosTipoCalendario(IRepositorioTipoCalendario repositorio, IServicoFeriadoCalendario servicoFeriadoCalendario, IServicoEvento servicoEvento)
         {
             this.repositorio = repositorio ?? throw new ArgumentNullException(nameof(repositorio));
             this.servicoFeriadoCalendario = servicoFeriadoCalendario ?? throw new ArgumentNullException(nameof(servicoFeriadoCalendario));
+            this.servicoEvento = servicoEvento ?? throw new ArgumentNullException(nameof(servicoEvento));
         }
 
         public TipoCalendario MapearParaDominio(TipoCalendarioDto dto)
@@ -56,6 +58,8 @@ namespace SME.SGP.Aplicacao
 
         public async Task Salvar(TipoCalendarioDto dto)
         {
+            var inclusao = dto.Id == 0;
+
             var tipoCalendario = MapearParaDominio(dto);
 
             bool ehRegistroExistente = await repositorio.VerificarRegistroExistente(dto.Id, dto.Nome);
@@ -63,9 +67,17 @@ namespace SME.SGP.Aplicacao
             if (ehRegistroExistente)
                 throw new NegocioException($"O Tipo de Calendário Escolar '{dto.Nome}' já existe");
 
-            await servicoFeriadoCalendario.VerficaSeExisteFeriadosMoveisEInclui(dto.AnoLetivo).ConfigureAwait(false);
-
             repositorio.Salvar(tipoCalendario);
+
+            await ExecutarMetodosAsync(dto, inclusao, tipoCalendario).ConfigureAwait(false);
+        }
+
+        private async Task ExecutarMetodosAsync(TipoCalendarioDto dto, bool inclusao, TipoCalendario tipoCalendario)
+        {
+            await servicoFeriadoCalendario.VerficaSeExisteFeriadosMoveisEInclui(dto.AnoLetivo);
+
+            if (inclusao)
+                await servicoEvento.SalvarEventoFeriadosAoCadastrarTipoCalendario(tipoCalendario);
         }
     }
 }
