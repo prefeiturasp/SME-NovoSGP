@@ -24,7 +24,14 @@ import MonthlyRecurrence from './components/MonthlyRecurrence';
 import DropDownQuantidade from './components/DropDownQuantidade';
 import DropDownTipoRecorrencia from './components/DropDownTipoRecorrencia';
 
-function ModalRecorrencia({ show, onCloseRepetir, dataInicioEvento }) {
+function ModalRecorrencia({
+  show,
+  onCloseRepetir,
+  onSaveRecorrencia,
+  dataInicioEvento,
+}) {
+  const [habilitaSalvar, setHabilitaSalvar] = useState(false);
+
   const [dataInicio, setDataInicio] = useState('');
   const [dataTermino, setDataTermino] = useState('');
 
@@ -32,13 +39,13 @@ function ModalRecorrencia({ show, onCloseRepetir, dataInicioEvento }) {
   const [diasSemana, setDiasSemana] = useState([]);
 
   // Usado quando for selecionado a recorrencia mensal
-  const [diaSemana, setDiaSemana] = useState('0');
+  const [diaSemana, setDiaSemana] = useState();
 
   const [diaNumero, setDiaNumero] = useState(1);
-  const [padraoRecorrencia, setPadraoRecorrencia] = useState('0');
+  const [padraoRecorrencia, setPadraoRecorrencia] = useState();
   const [quantidadeRecorrencia, setQuantidadeRecorrencia] = useState(1);
   const [tipoRecorrencia, setTipoRecorrencia] = useState({
-    label: 'Mês(ses)',
+    label: 'Mês(es)',
     value: 'M',
   });
 
@@ -48,13 +55,24 @@ function ModalRecorrencia({ show, onCloseRepetir, dataInicioEvento }) {
     }
   });
 
-  const onChangeWeekDay = day => {
-    const exists = diasSemana.some(x => x.value === day.value);
-    if (exists) {
-      setDiasSemana([...diasSemana.filter(x => x.value !== day.value)]);
-    } else {
-      setDiasSemana([...diasSemana, day]);
+  /**
+   * @description Verifica se o botao de salvar deve ser habilitado
+   */
+  const formIsValid = () => {
+    const isMonthSelected = tipoRecorrencia.value === 'M';
+    const noDiaIsValid = padraoRecorrencia === '0' && diaNumero > 0;
+    const notNoDiaIsValid =
+      padraoRecorrencia && padraoRecorrencia !== '0' && diaSemana;
+
+    if (dataInicio && isMonthSelected && (noDiaIsValid || notNoDiaIsValid)) {
+      return true;
     }
+
+    if (dataInicio && !isMonthSelected && diasSemana.length > 0) {
+      return true;
+    }
+
+    return false;
   };
 
   /**
@@ -63,17 +81,39 @@ function ModalRecorrencia({ show, onCloseRepetir, dataInicioEvento }) {
   const renderHelperText = () => {
     let text = `Ocorre a cada `;
     if (diasSemana.length === 1) {
-      text += diasSemana[0].value;
+      text += diasSemana[0].description;
     } else if (diasSemana.length === 2) {
-      text += `${diasSemana[0].value} e ${diasSemana[1].value}`;
+      text += `${diasSemana[0].description} e ${diasSemana[1].description}`;
     } else if (diasSemana.length > 2) {
       text += `${diasSemana
         .map((item, index) =>
-          index !== diasSemana.length - 1 ? item.value : ''
+          index !== diasSemana.length - 1 ? item.description : ''
         )
-        .toString()} e ${diasSemana[diasSemana.length - 1].value}.`;
+        .toString()} e ${diasSemana[diasSemana.length - 1].description}.`;
     }
     return text;
+  };
+
+  useEffect(() => {
+    setHabilitaSalvar(formIsValid());
+  }, [
+    dataInicio,
+    dataTermino,
+    diasSemana,
+    diaSemana,
+    diaNumero,
+    padraoRecorrencia,
+    quantidadeRecorrencia,
+    tipoRecorrencia,
+  ]);
+
+  const onChangeWeekDay = day => {
+    const exists = diasSemana.some(x => x.value === day.value);
+    if (exists) {
+      setDiasSemana([...diasSemana.filter(x => x.value !== day.value)]);
+    } else {
+      setDiasSemana([...diasSemana, day]);
+    }
   };
 
   const onCloseModal = () => {
@@ -92,8 +132,8 @@ function ModalRecorrencia({ show, onCloseRepetir, dataInicioEvento }) {
   const onChangeTipoRecorrencia = value => {
     setTipoRecorrencia(value);
     setDiasSemana([]);
-    setPadraoRecorrencia('0');
-    setDiaSemana('0');
+    setPadraoRecorrencia(null);
+    setDiaSemana(null);
   };
 
   const buildValidations = () => {
@@ -114,6 +154,21 @@ function ModalRecorrencia({ show, onCloseRepetir, dataInicioEvento }) {
     return Yup.object(val);
   };
 
+  const onSubmitRecorrencia = () => {
+    const recurrence = {
+      dataInicio,
+      dataTermino,
+      diasSemana,
+      diaSemana,
+      diaNumero,
+      padraoRecorrencia,
+      quantidadeRecorrencia,
+      tipoRecorrencia,
+    };
+
+    onSaveRecorrencia(recurrence);
+  };
+
   return (
     <ContainerModal>
       <ModalConteudoHtml
@@ -121,15 +176,16 @@ function ModalRecorrencia({ show, onCloseRepetir, dataInicioEvento }) {
         closable={!!true}
         onClose={() => onCloseModal()}
         onConfirmacaoSecundaria={() => onCloseModal()}
+        onConfirmacaoPrincipal={() => onSubmitRecorrencia()}
         titulo="Repetir"
         labelBotaoPrincipal="Salvar"
         labelBotaoSecundario="Descartar"
+        desabilitarBotaoPrincipal={!habilitaSalvar}
       >
         <Formik
           enableReinitialize
           initialValues={null}
           validationSchema={buildValidations}
-          onSubmit={valores => null}
           validateOnChange
           validateOnBlur
           validate={val => console.log(val)}
@@ -137,7 +193,7 @@ function ModalRecorrencia({ show, onCloseRepetir, dataInicioEvento }) {
           {form => (
             <Form>
               <BootstrapRow paddingBottom={4}>
-                <VerticalCentered className="col-lg-6">
+                <div className="col-lg-6">
                   <CampoData
                     form={form}
                     name="dataInicio"
@@ -147,8 +203,8 @@ function ModalRecorrencia({ show, onCloseRepetir, dataInicioEvento }) {
                     placeholder="DD/MM/AAAA"
                     formatoData="DD/MM/YYYY"
                   />
-                </VerticalCentered>
-                <VerticalCentered className="col-lg-6">
+                </div>
+                <div className="col-lg-6">
                   <CampoData
                     label="Data fim"
                     valor={dataTermino}
@@ -156,7 +212,7 @@ function ModalRecorrencia({ show, onCloseRepetir, dataInicioEvento }) {
                     placeholder="DD/MM/AAAA"
                     formatoData="DD/MM/YYYY"
                   />
-                </VerticalCentered>
+                </div>
               </BootstrapRow>
               <BootstrapRow paddingBottom={3}>
                 <VerticalCentered className="col-lg-12">
@@ -224,13 +280,15 @@ function ModalRecorrencia({ show, onCloseRepetir, dataInicioEvento }) {
 ModalRecorrencia.defaultProps = {
   show: false,
   onCloseRepetir: () => {},
+  onSaveRecorrencia: () => {},
   dataInicioEvento: new Date(),
 };
 
 ModalRecorrencia.propTypes = {
   show: PropTypes.bool,
   onCloseRepetir: PropTypes.func,
-  dataInicioEvento: PropTypes.objectOf(PropTypes.object),
+  onSaveRecorrencia: PropTypes.func,
+  dataInicioEvento: PropTypes.oneOfType([PropTypes.any]),
 };
 
 export default ModalRecorrencia;

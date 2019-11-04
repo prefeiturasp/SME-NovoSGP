@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 
 // Styles
 import styled from 'styled-components';
@@ -60,5 +61,17 @@ function DaysDropDown({ onChange, selected, form }) {
     </SelectWrapper>
   );
 }
+
+DaysDropDown.defaultProps = {
+  onChange: () => {},
+  form: {},
+  selected: '0',
+};
+
+DaysDropDown.propTypes = {
+  onChange: PropTypes.func,
+  form: PropTypes.oneOfType([PropTypes.object, PropTypes.symbol]),
+  selected: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
+};
 
 export default DaysDropDown;

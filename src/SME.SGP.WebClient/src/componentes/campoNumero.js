@@ -71,10 +71,10 @@ const CampoNumero = React.forwardRef((props, ref) => {
               maxLength={maxlength || ''}
               innerRef={ref}
               onKeyDown={onKeyDown}
-              onChange={e => {
-                form.setFieldValue(name, e.target.value);
+              onChange={value => {
+                form.setFieldValue(name, value);
                 form.setFieldTouched(name, true);
-                onChange(e);
+                onChange(value);
               }}
             />
             {!semMensagem ? <span>{form.errors[name]}</span> : ''}
@@ -98,11 +98,18 @@ const CampoNumero = React.forwardRef((props, ref) => {
 CampoNumero.propTypes = {
   onChange: PropTypes.func,
   semMensagem: PropTypes.bool,
+  form: () => {},
 };
 
 CampoNumero.defaultProps = {
   onChange: () => {},
   semMensagem: false,
+  form: PropTypes.oneOfType([
+    PropTypes.symbol,
+    PropTypes.any,
+    PropTypes.func,
+    PropTypes.object,
+  ]),
 };
 
 export default CampoNumero;

@@ -7,13 +7,13 @@ import DayCircle from './components/DayCircle';
 
 function WeekDays({ onChange, currentState }) {
   const days = [
-    { label: 'D', value: 'Domingo' },
-    { label: 'S', value: 'Segunda-feira' },
-    { label: 'T', value: 'Terça-feira' },
-    { label: 'Q', value: 'Quarta-feira' },
-    { label: 'Q', value: 'Quinta-feira' },
-    { label: 'S', value: 'Sexta-feira' },
-    { label: 'S', value: 'Sábado' },
+    { label: 'D', value: '0', description: 'Domingo' },
+    { label: 'S', value: '1', description: 'Segunda-feira' },
+    { label: 'T', value: '2', description: 'Terça-feira' },
+    { label: 'Q', value: '3', description: 'Quarta-feira' },
+    { label: 'Q', value: '4', description: 'Quinta-feira' },
+    { label: 'S', value: '5', description: 'Sexta-feira' },
+    { label: 'S', value: '6', description: 'Sábado' },
   ];
 
   return (
