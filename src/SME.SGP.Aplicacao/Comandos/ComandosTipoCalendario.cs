@@ -9,8 +9,8 @@ namespace SME.SGP.Aplicacao
     public class ComandosTipoCalendario : IComandosTipoCalendario
     {
         private readonly IRepositorioTipoCalendario repositorio;
-        private readonly IServicoFeriadoCalendario servicoFeriadoCalendario;
         private readonly IServicoEvento servicoEvento;
+        private readonly IServicoFeriadoCalendario servicoFeriadoCalendario;
 
         public ComandosTipoCalendario(IRepositorioTipoCalendario repositorio, IServicoFeriadoCalendario servicoFeriadoCalendario, IServicoEvento servicoEvento)
         {
@@ -22,10 +22,12 @@ namespace SME.SGP.Aplicacao
         public TipoCalendario MapearParaDominio(TipoCalendarioDto dto)
         {
             TipoCalendario entidade = repositorio.ObterPorId(dto.Id);
+
             if (entidade == null)
             {
                 entidade = new TipoCalendario();
             }
+
             entidade.Nome = dto.Nome;
             entidade.AnoLetivo = dto.AnoLetivo;
             entidade.Periodo = dto.Periodo;
@@ -47,7 +49,7 @@ namespace SME.SGP.Aplicacao
                 }
                 else
                 {
-                    idsInvalidos += idsInvalidos.Equals("") ? $"{id}" : $", {id}";
+                    idsInvalidos += string.IsNullOrEmpty(idsInvalidos) ? $"{id}" : $", {id}";
                 }
             }
             if (!idsInvalidos.Trim().Equals(""))
