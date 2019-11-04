@@ -32,6 +32,12 @@ namespace SME.SGP.Dominio.Servicos
             this.repositorioTipoCalendario = repositorioTipoCalendario ?? throw new System.ArgumentNullException(nameof(repositorioTipoCalendario));
         }
 
+        public static DateTime ObterProximoDiaDaSemana(DateTime data, DayOfWeek diaDaSemana)
+        {
+            int diasParaAdicionar = ((int)diaDaSemana - (int)data.DayOfWeek + 7) % 7;
+            return data.AddDays(diasParaAdicionar);
+        }
+
         public async Task Salvar(Evento evento)
         {
             var tipoEvento = repositorioEventoTipo.ObterPorId(evento.TipoEventoId);
@@ -89,14 +95,71 @@ namespace SME.SGP.Dominio.Servicos
                 TratarErros(feriadosErro);
         }
 
-        private static void TratarErros(List<long> feriadosErro)
+        public async Task SalvarRecorrencia(Evento evento, DateTime dataInicial, DateTime? dataFinal, int? diaDeOcorrencia, IEnumerable<DayOfWeek> diasDaSemana, PadraoRecorrencia padraoRecorrencia, PadraoRecorrenciaMensal? padraoRecorrenciaMensal, int repeteACada)
         {
-            var multiplosErros = feriadosErro.Count > 1;
+            if (!dataFinal.HasValue)
+            {
+                var periodoEscolar = repositorioPeriodoEscolar.ObterPorTipoCalendario(evento.TipoCalendarioId);
+                var periodoAtual = periodoEscolar.FirstOrDefault(c => DateTime.Now >= c.PeriodoInicio && DateTime.Now <= c.PeriodoFim);
+                dataFinal = periodoAtual.PeriodoFim;
+            }
+            var eventos = evento.ObterRecorrencia(padraoRecorrencia, padraoRecorrenciaMensal, dataInicial, dataFinal.Value, diasDaSemana, repeteACada, diaDeOcorrencia);
+            foreach (var novoEvento in eventos)
+            {
+                try
+                {
+                    await Salvar(novoEvento);
+                }
+                catch (NegocioException nex)
+                {
+                    //TODO GERAR NOTIFICAÇÃO DE FEEDBACK
+                }
+                catch (Exception ex)
+                {
+                    //TODO GERAR NOTIFICAÇÃO DE FEEDBACK
+                }
+            }
+        }
 
-            var mensagemErro = multiplosErros ? $"Os eventos dos feriados {string.Join(",", feriadosErro)} não foram cadastrados" :
-                $"O evento do feriado {feriadosErro.First()} não foi cadastrado";
+        private Evento MapearEntidade(TipoCalendario tipoCalendario, FeriadoCalendario x, Entidades.EventoTipo tipoEventoFeriado)
+        {
+            return new Evento
+            {
+                FeriadoCalendario = x,
+                DataFim = new DateTime(tipoCalendario.AnoLetivo, x.DataFeriado.Month, x.DataFeriado.Day),
+                DataInicio = new DateTime(tipoCalendario.AnoLetivo, x.DataFeriado.Month, x.DataFeriado.Day),
+                Descricao = x.Nome,
+                Nome = x.Nome,
+                FeriadoId = x.Id,
+                Letivo = tipoEventoFeriado.Letivo,
+                TipoCalendario = tipoCalendario,
+                TipoCalendarioId = tipoCalendario.Id,
+                TipoEvento = tipoEventoFeriado,
+                TipoEventoId = tipoEventoFeriado.Id,
+                Excluido = false
+            };
+        }
 
-            throw new NegocioException(mensagemErro);
+        private async Task<IEnumerable<FeriadoCalendario>> ObterEValidarFeriados()
+        {
+            var feriadosMoveis = await repositorioFeriadoCalendario.ObterFeriadosCalendario(new FiltroFeriadoCalendarioDto { Ano = DateTime.Now.Year, Tipo = TipoFeriadoCalendario.Movel });
+            var feriadosFixos = await repositorioFeriadoCalendario.ObterFeriadosCalendario(new FiltroFeriadoCalendarioDto { Tipo = TipoFeriadoCalendario.Fixo });
+
+            var feriados = feriadosFixos.ToList();
+            feriados.AddRange(feriadosMoveis);
+
+            if (feriados == null || !feriados.Any())
+                throw new NegocioException("Nenhum feriado foi encontrado");
+            return feriados;
+        }
+
+        private EventoTipo ObterEValidarTipoEventoFeriado()
+        {
+            var tipoEventoFeriado = repositorioEventoTipo.ObtenhaTipoEventoFeriado();
+
+            if (tipoEventoFeriado == null || tipoEventoFeriado.Id == 0)
+                throw new NegocioException("Nenhum tipo de evento de feriado foi encontrado");
+            return tipoEventoFeriado;
         }
 
         private async Task SalvarListaEventos(IEnumerable<Evento> eventos, List<long> feriadosErro)
@@ -114,45 +177,14 @@ namespace SME.SGP.Dominio.Servicos
             }
         }
 
-        private EventoTipo ObterEValidarTipoEventoFeriado()
+        private void TratarErros(List<long> feriadosErro)
         {
-            var tipoEventoFeriado = repositorioEventoTipo.ObtenhaTipoEventoFeriado();
+            var multiplosErros = feriadosErro.Count > 1;
 
-            if (tipoEventoFeriado == null || tipoEventoFeriado.Id == 0)
-                throw new NegocioException("Nenhum tipo de evento de feriado foi encontrado");
-            return tipoEventoFeriado;
-        }
+            var mensagemErro = multiplosErros ? $"Os eventos dos feriados {string.Join(",", feriadosErro)} não foram cadastrados" :
+                $"O evento do feriado {feriadosErro.First()} não foi cadastrado";
 
-        private async Task<IEnumerable<FeriadoCalendario>> ObterEValidarFeriados()
-        {
-            var feriadosMoveis = await repositorioFeriadoCalendario.ObterFeriadosCalendario(new FiltroFeriadoCalendarioDto { Ano = DateTime.Now.Year, Tipo = TipoFeriadoCalendario.Movel });
-            var feriadosFixos = await repositorioFeriadoCalendario.ObterFeriadosCalendario(new FiltroFeriadoCalendarioDto { Tipo = TipoFeriadoCalendario.Fixo });
-
-            var feriados = feriadosFixos.ToList();
-            feriados.AddRange(feriadosMoveis);
-
-            if (feriados == null || !feriados.Any())
-                throw new NegocioException("Nenhum feriado foi encontrado");
-            return feriados;
-        }
-
-        private static Evento MapearEntidade(TipoCalendario tipoCalendario, FeriadoCalendario x, Entidades.EventoTipo tipoEventoFeriado)
-        {
-            return new Evento
-            {
-                FeriadoCalendario = x,
-                DataFim = new DateTime(tipoCalendario.AnoLetivo, x.DataFeriado.Month, x.DataFeriado.Day),
-                DataInicio = new DateTime(tipoCalendario.AnoLetivo, x.DataFeriado.Month, x.DataFeriado.Day),
-                Descricao = x.Nome,
-                Nome = x.Nome,
-                FeriadoId = x.Id,
-                Letivo = tipoEventoFeriado.Letivo,
-                TipoCalendario = tipoCalendario,
-                TipoCalendarioId = tipoCalendario.Id,
-                TipoEvento = tipoEventoFeriado,
-                TipoEventoId = tipoEventoFeriado.Id,
-                Excluido = false
-            };
+            throw new NegocioException(mensagemErro);
         }
     }
 }
