@@ -1,5 +1,5 @@
 ﻿using SME.SGP.Dominio.Interfaces;
-using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Dominio.Servicos
@@ -25,7 +25,7 @@ namespace SME.SGP.Dominio.Servicos
             this.repositorioTipoCalendario = repositorioTipoCalendario ?? throw new System.ArgumentNullException(nameof(repositorioTipoCalendario));
         }
 
-        public async Task Salvar(Evento evento)
+        public async Task Salvar(Evento evento, bool dataConfirmada = false)
         {
             var tipoEvento = repositorioEventoTipo.ObterPorId(evento.TipoEventoId);
             if (tipoEvento == null)
@@ -55,22 +55,31 @@ namespace SME.SGP.Dominio.Servicos
                 }
             }
 
+            var periodos = repositorioPeriodoEscolar.ObterPorTipoCalendario(evento.TipoCalendarioId);
+
             if (evento.DeveSerEmDiaLetivo())
             {
-                var periodos = repositorioPeriodoEscolar.ObterPorTipoCalendario(evento.TipoCalendarioId);
-
                 evento.EstaNoPeriodoLetivo(periodos);
             }
 
-            VerificaParticularidadesSME(evento, usuario);
+            await VerificaParticularidadesSME(evento, usuario, periodos, dataConfirmada);
 
             repositorioEvento.Salvar(evento);
         }
 
-        private void VerificaParticularidadesSME(Evento evento, Usuario usuario)
+        private async Task VerificaParticularidadesSME(Evento evento, Usuario usuario, IEnumerable<PeriodoEscolar> periodos, bool dataConfirmada)
         {
             usuario.PodeCriarEventoComDataPassada(evento);
-            throw new NotImplementedException();
+            evento.PodeCriarEventoOrganizacaoEscolar(usuario);
+            await VerificaSeEventoAconteceJuntoComOrganizacaoEscolar(evento, usuario);
+
+            evento.PodeCriarEventoLiberacaoExcepcional(evento, usuario, dataConfirmada, periodos);
+        }
+
+        private async Task VerificaSeEventoAconteceJuntoComOrganizacaoEscolar(Evento evento, Usuario usuario)
+        {
+            var eventos = await repositorioEvento.ObterEventosPorTipoETipoCalendario((long)TipoEventoEnum.OrganizacaoEscolar, evento.TipoCalendarioId);
+            evento.VerificaSeEventoAconteceJuntoComOrganizacaoEscolar(eventos, usuario);
         }
     }
 }

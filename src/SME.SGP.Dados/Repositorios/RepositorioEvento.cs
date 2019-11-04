@@ -75,6 +75,22 @@ namespace SME.SGP.Dados.Repositorios
             return retornoPaginado;
         }
 
+        public async Task<IEnumerable<Evento>> ObterEventosPorTipoETipoCalendario(long tipoEventoCodigo, long tipoCalendarioId)
+        {
+            var query = new StringBuilder();
+            query.AppendLine("select* from evento e");
+            query.AppendLine("where");
+            query.AppendLine("e.excluido = false");
+            query.AppendLine("and e.tipo_calendario_id = @tipoCalendarioId");
+            query.AppendLine("and tipo_evento_id = @tipoEventoCodigo");
+
+            return await database.Conexao.QueryAsync<Evento>(query.ToString(), new
+            {
+                tipoEventoCodigo,
+                tipoCalendarioId
+            });
+        }
+
         public async Task<IEnumerable<EventosPorDiaRetornoQueryDto>> ObterQuantidadeDeEventosPorDia(CalendarioEventosFiltroDto calendarioEventosMesesFiltro, int mes)
         {
             var query = new StringBuilder();

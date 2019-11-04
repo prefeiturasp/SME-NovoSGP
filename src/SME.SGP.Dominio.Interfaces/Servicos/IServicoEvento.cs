@@ -4,6 +4,6 @@ namespace SME.SGP.Dominio.Interfaces
 {
     public interface IServicoEvento
     {
-        Task Salvar(Evento evento);
+        Task Salvar(Evento evento, bool dataConfirmada = false);
     }
 }

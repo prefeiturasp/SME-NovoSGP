@@ -123,6 +123,15 @@ namespace SME.SGP.Dominio
             return Perfis != null && Perfis.Any(c => c.Tipo == TipoPerfil.DRE);
         }
 
+        public bool PossuiPerfilDreOuUe()
+        {
+            if (Perfis == null || !Perfis.Any())
+            {
+                throw new NegocioException(MENSAGEM_ERRO_USUARIO_SEM_ACESSO);
+            }
+            return PossuiPerfilDre() || PossuiPerfilUe();
+        }
+
         public bool PossuiPerfilSme()
         {
             return Perfis != null && Perfis.Any(c => c.Tipo == TipoPerfil.SME);
@@ -135,6 +144,11 @@ namespace SME.SGP.Dominio
                 throw new NegocioException(MENSAGEM_ERRO_USUARIO_SEM_ACESSO);
             }
             return PossuiPerfilSme() || PossuiPerfilDre();
+        }
+
+        public bool PossuiPerfilUe()
+        {
+            return Perfis != null && Perfis.Any(c => c.Tipo == TipoPerfil.UE);
         }
 
         public bool TokenRecuperacaoSenhaEstaValido()
