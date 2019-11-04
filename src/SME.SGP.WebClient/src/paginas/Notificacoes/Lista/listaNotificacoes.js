@@ -16,6 +16,7 @@ import { EstiloLista } from './estiloLista';
 import notificacaoStatus from '~/dtos/notificacaoStatus';
 import CampoTextoBusca from '~/componentes/campoTextoBusca';
 import { URL_HOME } from '~/constantes/url';
+import RotasDto from '~/dtos/rotasDto';
 
 export default function NotificacoesLista() {
   const [idNotificacoesSelecionadas, setIdNotificacoesSelecionadas] = useState(
@@ -43,6 +44,7 @@ export default function NotificacoesLista() {
   const [colunasTabela, setColunasTabela] = useState([]);
 
   const usuario = useSelector(store => store.usuario);
+  const permissoesTela = usuario.permissoes[RotasDto.NOTIFICACOES];
 
   useEffect(() => {
     const colunas = [
@@ -85,6 +87,9 @@ export default function NotificacoesLista() {
     ];
 
     setColunasTabela(colunas);
+
+    setDesabilitarBotaoExcluir(permissoesTela.podeExcluir);
+    setDesabilitarBotaoMarcarLido(permissoesTela.podeAlterar);
   }, []);
 
   useEffect(() => {
