@@ -51,9 +51,9 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(IEnumerable<AbrangenciaDreRetorno>), 200)]
         [ProducesResponseType(401)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        public async Task<IActionResult> ObterDres()
+        public async Task<IActionResult> ObterDres([FromQuery]Modalidade? modalidade)
         {
-            var dres = await consultasAbrangencia.ObterDres();
+            var dres = await consultasAbrangencia.ObterDres(modalidade);
             if (dres.Any())
                 return Ok(dres);
             else return StatusCode(204);
@@ -63,27 +63,31 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(IEnumerable<EnumeradoRetornoDto>), 200)]
         [ProducesResponseType(401)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        public IActionResult ObterModalidades()
+        public async Task<IActionResult> ObterModalidades()
         {
-            return Ok(EnumExtensao.ListarDto<Modalidade>());
+            return Ok(await consultasAbrangencia.ObterModalidades());
         }
 
         [HttpGet("semestres")]
         [ProducesResponseType(typeof(int[]), 200)]
         [ProducesResponseType(401)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        public IActionResult ObterSemestres()
+        public async Task<IActionResult> ObterSemestres([FromQuery]Modalidade modalidade)
         {
-            return Ok(new int[] { 1, 2 });
+            var retorno = await consultasAbrangencia.ObterSemestres(modalidade);
+            if (retorno.Any())
+                return Ok(retorno);
+            else return StatusCode(204);
         }
 
         [HttpGet("dres/ues/{codigoUe}/turmas")]
         [ProducesResponseType(typeof(IEnumerable<AbrangenciaTurmaRetorno>), 200)]
         [ProducesResponseType(401)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        public async Task<IActionResult> ObterTurmas(string codigoUe)
+        [ProducesResponseType(typeof(RetornoBaseDto), 601)]
+        public async Task<IActionResult> ObterTurmas(string codigoUe, [FromQuery]Modalidade modalidade)
         {
-            var turmas = await consultasAbrangencia.ObterTurmas(codigoUe);
+            var turmas = await consultasAbrangencia.ObterTurmas(codigoUe, modalidade);
             if (turmas.Any())
                 return Ok(turmas);
             else return StatusCode(204);
@@ -93,9 +97,10 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(IEnumerable<AbrangenciaUeRetorno>), 200)]
         [ProducesResponseType(401)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        public async Task<IActionResult> ObterUes(string codigoDre)
+        [ProducesResponseType(typeof(RetornoBaseDto), 601)]
+        public async Task<IActionResult> ObterUes(string codigoDre, [FromQuery]Modalidade? modalidade)
         {
-            var ues = await consultasAbrangencia.ObterUes(codigoDre);
+            var ues = await consultasAbrangencia.ObterUes(codigoDre, modalidade);
             if (ues.Any())
                 return Ok(ues);
             else return StatusCode(204);

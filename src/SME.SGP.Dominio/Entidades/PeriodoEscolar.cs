@@ -1,10 +1,11 @@
 ﻿using System;
 
-namespace SME.SGP.Dominio.Entidades
+namespace SME.SGP.Dominio
 {
     public class PeriodoEscolar : EntidadeBase
     {
         public int Bimestre { get; set; }
+        public bool Migrado { get; set; }
         public DateTime PeriodoFim { get; set; }
         public DateTime PeriodoInicio { get; set; }
         public long TipoCalendarioId { get; set; }

@@ -5,6 +5,8 @@ using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
 using Xunit;
 
 namespace SME.SGP.Integracao.Teste
@@ -20,12 +22,12 @@ namespace SME.SGP.Integracao.Teste
         }
 
         [Fact]
-        public async void Deve_Incluir_Calendario_E_Feriados_Moveis()
+        public async Task Deve_Incluir_Calendario_E_Feriados_Moveis()
         {
             _fixture._clientApi.DefaultRequestHeaders.Clear();
 
             _fixture._clientApi.DefaultRequestHeaders.Authorization =
-                new AuthenticationHeaderValue("Bearer", _fixture.GerarToken(new Permissao[] { Permissao.C_C, Permissao.C_I, Permissao.C_E }));
+                new AuthenticationHeaderValue("Bearer", _fixture.GerarToken(new Permissao[] { Permissao.TCE_C, Permissao.TCE_I, Permissao.TCE_E, Permissao.TF_C }));
 
             var calendarioParaIncluir = new TipoCalendarioDto()
             {
@@ -38,13 +40,13 @@ namespace SME.SGP.Integracao.Teste
             };
 
             var jsonParaPostCalendario = new StringContent(TransformarEmJson(calendarioParaIncluir), Encoding.UTF8, "application/json");
-            var postResultIncluiCalendario = await _fixture._clientApi.PostAsync("api/v1/tipo-calendario/", jsonParaPostCalendario);
+            var postResultIncluiCalendario = await _fixture._clientApi.PostAsync("api/v1/calendarios/tipos/", jsonParaPostCalendario);
 
             Assert.True(postResultIncluiCalendario.IsSuccessStatusCode);
 
             if (postResultIncluiCalendario.IsSuccessStatusCode)
             {
-                var buscarTodosCalendariosResultado = await _fixture._clientApi.GetAsync($"api/v1/tipo-calendario/");
+                var buscarTodosCalendariosResultado = await _fixture._clientApi.GetAsync($"api/v1/calendarios/tipos");
 
                 Assert.True(buscarTodosCalendariosResultado.IsSuccessStatusCode);
                 if (buscarTodosCalendariosResultado.IsSuccessStatusCode)
@@ -55,6 +57,9 @@ namespace SME.SGP.Integracao.Teste
                     var filtroFeriadoCalendarioDto = new FiltroFeriadoCalendarioDto() { Tipo = Dominio.TipoFeriadoCalendario.Movel, Ano = 2019 };
 
                     var jsonParaPostFiltroFeriados = new StringContent(TransformarEmJson(filtroFeriadoCalendarioDto), Encoding.UTF8, "application/json");
+
+                    Thread.Sleep(2000);
+
                     var postResultBuscaFeriados = await _fixture._clientApi.PostAsync("api/v1/calendarios/feriados/listar", jsonParaPostFiltroFeriados);
 
                     Assert.True(postResultBuscaFeriados.IsSuccessStatusCode);

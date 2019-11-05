@@ -1,6 +1,8 @@
 ﻿using Microsoft.AspNetCore.Http;
 using SME.SGP.Dominio;
+using SME.SGP.Dominio.Entidades;
 using SME.SGP.Dominio.Interfaces;
+using SME.SGP.Dto;
 using SME.SGP.Infra;
 using System.Collections.Generic;
 using System.Linq;
@@ -29,9 +31,43 @@ namespace SME.SGP.Aplicacao
                         Paginacao));
         }
 
+        public Task<IEnumerable<CalendarioEventosNoDiaRetornoDto>> ObterEventosPorDia(CalendarioEventosFiltroDto calendarioEventosMesesFiltro, int mes, int dia)
+        {
+            return repositorioEvento.ObterEventosPorDia(calendarioEventosMesesFiltro, mes, dia);
+        }
+
         public EventoCompletoDto ObterPorId(long id)
         {
             return MapearParaDto(repositorioEvento.ObterPorId(id));
+        }
+
+        public async Task<IEnumerable<CalendarioTipoEventoPorDiaDto>> ObterQuantidadeDeEventosPorDia(CalendarioEventosFiltroDto calendarioEventosMesesFiltro, int mes)
+        {
+            var listaQuery = await repositorioEvento.ObterQuantidadeDeEventosPorDia(calendarioEventosMesesFiltro, mes);
+            List<CalendarioTipoEventoPorDiaDto> listaRetorno = new List<CalendarioTipoEventoPorDiaDto>();
+
+            if (listaQuery.Any())
+            {
+                var listaDiasEventos = listaQuery.GroupBy(a => a.Dia).ToList();
+
+                listaDiasEventos.ForEach(a =>
+                {
+                    var tipoEventos = a.Take(3).Select(b => b.TipoEvento).ToList();
+                    listaRetorno.Add(new CalendarioTipoEventoPorDiaDto()
+                    {
+                        Dia = a.Key,
+                        TiposEvento = tipoEventos.ToArray(),
+                        QuantidadeDeEventos = a.Count()
+                    });
+                });
+            }
+
+            return listaRetorno;
+        }
+
+        public Task<IEnumerable<CalendarioEventosMesesDto>> ObterQuantidadeDeEventosPorMeses(CalendarioEventosFiltroDto calendarioEventosMesesFiltro)
+        {
+            return repositorioEvento.ObterQuantidadeDeEventosPorMeses(calendarioEventosMesesFiltro);
         }
 
         private IEnumerable<EventoCompletoDto> MapearEventosParaDto(IEnumerable<Evento> items)
@@ -59,7 +95,9 @@ namespace SME.SGP.Aplicacao
                 AlteradoRF = evento.AlteradoRF,
                 CriadoEm = evento.CriadoEm,
                 CriadoPor = evento.CriadoPor,
-                CriadoRF = evento.CriadoRF
+                CriadoRF = evento.CriadoRF,
+                TipoEvento = MapearTipoEvento(evento.TipoEvento),
+                Migrado = evento.Migrado
             };
         }
 
@@ -74,6 +112,16 @@ namespace SME.SGP.Aplicacao
                 Items = MapearEventosParaDto(eventosPaginados.Items),
                 TotalPaginas = eventosPaginados.TotalPaginas,
                 TotalRegistros = eventosPaginados.TotalRegistros
+            };
+        }
+
+        private EventoTipoDto MapearTipoEvento(EventoTipo tipoEvento)
+        {
+            return tipoEvento == null ? null : new EventoTipoDto
+            {
+                Descricao = tipoEvento.Descricao,
+                Id = tipoEvento.Id,
+                TipoData = tipoEvento.TipoData
             };
         }
     }

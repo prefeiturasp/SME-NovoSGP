@@ -1,4 +1,6 @@
-﻿using SME.SGP.Dto;
+﻿using SME.SGP.Dominio;
+using SME.SGP.Dto;
+using SME.SGP.Infra;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -8,10 +10,14 @@ namespace SME.SGP.Aplicacao
     {
         Task<IEnumerable<AbrangenciaFiltroRetorno>> ObterAbrangenciaPorfiltro(string texto);
 
-        Task<IEnumerable<AbrangenciaDreRetorno>> ObterDres();
+        Task<IEnumerable<AbrangenciaDreRetorno>> ObterDres(Modalidade? modalidade);
 
-        Task<IEnumerable<AbrangenciaTurmaRetorno>> ObterTurmas(string codigoUe);
+        Task<IEnumerable<EnumeradoRetornoDto>> ObterModalidades();
 
-        Task<IEnumerable<AbrangenciaUeRetorno>> ObterUes(string codigoDre);
+        Task<IEnumerable<int>> ObterSemestres(Modalidade modalidade);
+
+        Task<IEnumerable<AbrangenciaTurmaRetorno>> ObterTurmas(string codigoUe, Modalidade modalidade);
+
+        Task<IEnumerable<AbrangenciaUeRetorno>> ObterUes(string codigoDre, Modalidade? modalidade);
     }
 }

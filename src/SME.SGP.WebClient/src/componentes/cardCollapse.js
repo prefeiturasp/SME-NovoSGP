@@ -6,7 +6,7 @@ import CardHeader from './cardHeader';
 import CardBody from './cardBody';
 import { Base } from './colors';
 
-const CardCollapse = props => {
+const CardCollapse = React.forwardRef((props, ref) => {
   const { titulo, indice, children, show, onClick } = props;
 
   const Card = styled.div`
@@ -18,7 +18,7 @@ const CardCollapse = props => {
   `;
 
   return (
-    <Card className="card shadow-sm mb-3">
+    <Card ref={ref} className="card shadow-sm mb-3">
       <CardHeader indice={indice} border icon show={show} onclick={onClick}>
         {titulo}
       </CardHeader>
@@ -27,7 +27,7 @@ const CardCollapse = props => {
       </div>
     </Card>
   );
-};
+});
 
 CardCollapse.propTypes = {
   titulo: PropTypes.string,

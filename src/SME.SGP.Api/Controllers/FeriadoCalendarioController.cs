@@ -29,6 +29,7 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(FeriadoCalendarioCompletoDto), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [Route("{id}")]
+        [Permissao(Permissao.TF_C, Policy = "Bearer")]
         public IActionResult BuscarPorId(long id)
         {
             return Ok(consultas.BuscarPorId(id));
@@ -38,6 +39,7 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(IEnumerable<FeriadoCalendarioDto>), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [Route("listar")]
+        [Permissao(Permissao.TF_C, Policy = "Bearer")]
         public async Task<IActionResult> BuscarTodos([FromBody] FiltroFeriadoCalendarioDto filtro)
         {
             var retorno = await consultas.Listar(filtro);
@@ -49,6 +51,7 @@ namespace SME.SGP.Api.Controllers
         [HttpDelete]
         [ProducesResponseType(200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [Permissao(Permissao.TF_E, Policy = "Bearer")]
         public IActionResult MarcarExcluidos([FromBody]long[] ids)
         {
             comandos.MarcarExcluidos(ids);
@@ -59,6 +62,7 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(IEnumerable<EnumeradoRetornoDto>), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [Route("abrangencias")]
+        [Permissao(Permissao.TF_C, Policy = "Bearer")]
         public IActionResult ObterAbrangencias()
         {
             return Ok(consultas.ObterAbrangencias());
@@ -68,6 +72,7 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(IEnumerable<EnumeradoRetornoDto>), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [Route("tipos")]
+        [Permissao(Permissao.TF_C, Policy = "Bearer")]
         public IActionResult ObterTipos()
         {
             return Ok(consultas.ObterTipos());
@@ -76,6 +81,7 @@ namespace SME.SGP.Api.Controllers
         [HttpPost]
         [ProducesResponseType(200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [Permissao(Permissao.TF_I, Permissao.TF_A, Policy = "Bearer")]
         public IActionResult Salvar([FromBody]FeriadoCalendarioDto dto)
         {
             comandos.Salvar(dto);
