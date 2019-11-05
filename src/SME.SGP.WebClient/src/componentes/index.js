@@ -7,3 +7,4 @@ export { Colors, Base, Active, Hover } from './colors';
 export { default as ModalConteudoHtml } from './modalConteudoHtml';
 export { default as RadioGroupButton } from './radioGroupButton';
 export { default as SelectComponent } from './select';
+export { default as Loader } from './loader';
