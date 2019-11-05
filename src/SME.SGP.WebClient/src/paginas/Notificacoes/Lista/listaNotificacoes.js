@@ -16,6 +16,8 @@ import { EstiloLista } from './estiloLista';
 import notificacaoStatus from '~/dtos/notificacaoStatus';
 import CampoTextoBusca from '~/componentes/campoTextoBusca';
 import { URL_HOME } from '~/constantes/url';
+import RotasDto from '~/dtos/rotasDto';
+import { verificaSomenteConsulta } from '~/servicos/servico-navegacao';
 
 export default function NotificacoesLista() {
   const [idNotificacoesSelecionadas, setIdNotificacoesSelecionadas] = useState(
@@ -43,6 +45,7 @@ export default function NotificacoesLista() {
   const [colunasTabela, setColunasTabela] = useState([]);
 
   const usuario = useSelector(store => store.usuario);
+  const permissoesTela = usuario.permissoes[RotasDto.NOTIFICACOES];
 
   useEffect(() => {
     const colunas = [
@@ -85,6 +88,8 @@ export default function NotificacoesLista() {
     ];
 
     setColunasTabela(colunas);
+    verificaSomenteConsulta(permissoesTela);
+    setDesabilitarBotaoExcluir(permissoesTela.podeExcluir);
   }, []);
 
   useEffect(() => {
@@ -195,6 +200,8 @@ export default function NotificacoesLista() {
   }
 
   function onClickEditar(notificacao) {
+    if (!permissoesTela.podeAlterar) return;
+
     history.push(`/notificacoes/${notificacao.id}`);
   }
 
@@ -226,12 +233,16 @@ export default function NotificacoesLista() {
   }
 
   function marcarComoLida() {
+    if (!permissoesTela.podeAlterar) return;
+
     servicoNotificacao.marcarComoLida(idNotificacoesSelecionadas, () =>
       onClickFiltrar()
     );
   }
 
   async function excluir() {
+    if (!permissoesTela.podeExcluir) return;
+
     const confirmado = await confirmar(
       'Atenção',
       'Você tem certeza que deseja excluir estas notificações?'
@@ -261,6 +272,7 @@ export default function NotificacoesLista() {
             placeholder="Título"
             onChange={onChangeTitulo}
             value={tituloSelecionado}
+            desabilitado={!permissoesTela.podeConsultar}
           />
         </div>
         <div className="col-md-6 pb-3">
@@ -269,6 +281,7 @@ export default function NotificacoesLista() {
             onSearch={onSearchCodigo}
             onChange={onChangeCodigo}
             value={codigoSelecionado}
+            desabilitado={!permissoesTela.podeConsultar}
             onKeyDown={quandoTeclaParaBaixoPesquisaCodigo}
             type="number"
           />
@@ -283,7 +296,7 @@ export default function NotificacoesLista() {
             onChange={onChangeTurma}
             valueSelect={dropdownTurmaSelecionada || []}
             placeholder="Turma"
-            disabled={desabilitarTurma}
+            disabled={desabilitarTurma || !permissoesTela.podeConsultar}
           />
         </div>
         <div className="col-md-3 pb-3">
@@ -292,6 +305,7 @@ export default function NotificacoesLista() {
             id="status-noti"
             lista={listaStatus}
             valueOption="id"
+            disabled={!permissoesTela.podeConsultar}
             valueText="descricao"
             onChange={onChangeStatus}
             valueSelect={statusSelecionado || []}
@@ -304,6 +318,7 @@ export default function NotificacoesLista() {
             id="categoria-noti"
             lista={listaCategorias}
             valueOption="id"
+            disabled={!permissoesTela.podeConsultar}
             valueText="descricao"
             onChange={onChangeCategoria}
             valueSelect={categoriaSelecionada || []}
@@ -317,6 +332,7 @@ export default function NotificacoesLista() {
             lista={listaTipos}
             valueOption="id"
             valueText="descricao"
+            disabled={!permissoesTela.podeConsultar}
             onChange={onChangeTipo}
             valueSelect={tipoSelecionado || []}
             placeholder="Tipo"
@@ -329,7 +345,7 @@ export default function NotificacoesLista() {
             border
             className="mb-2 ml-2 float-right"
             onClick={excluir}
-            disabled={desabilitarBotaoExcluir}
+            disabled={desabilitarBotaoExcluir || !permissoesTela.podeExcluir}
           />
           <Button
             label="Marcar como lida"
@@ -337,7 +353,7 @@ export default function NotificacoesLista() {
             border
             className="mb-2 ml-2 float-right"
             onClick={marcarComoLida}
-            disabled={desabilitarBotaoMarcarLido}
+            disabled={desabilitarBotaoMarcarLido || !permissoesTela.podeAlterar}
           />
           <Button
             label="Voltar"
@@ -354,7 +370,7 @@ export default function NotificacoesLista() {
             colunaChave="codigo"
             colunas={colunasTabela}
             filtro={filtro}
-            onClick={onClickEditar}
+            onClick={permissoesTela.podeAlterar && onClickEditar}
             multiSelecao
             selecionarItems={onSelecionarItems}
           />
