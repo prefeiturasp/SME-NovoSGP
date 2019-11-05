@@ -8,6 +8,8 @@ import api from '~/servicos/api';
 import history from '~/servicos/history';
 import Grid from '~/componentes/grid';
 import Button from '~/componentes/button';
+import { store } from '~/redux';
+import { selecionaDia } from '~/redux/modulos/calendarioEscolar/actions';
 
 const Div = styled.div``;
 const Evento = styled(Div)`
@@ -58,25 +60,32 @@ const DiaCompleto = props => {
             dreSelecionada = '',
             unidadeEscolarSelecionada = '',
           } = filtros;
-          api
-            .get(
-              `v1/calendarios/eventos/meses/${mesAtual}/dias/${diaSelecionado.getDate()}?EhEventoSme=${eventoSme}&${dreSelecionada &&
-                `DreId=${dreSelecionada}&`}${tipoCalendarioSelecionado &&
-                `IdTipoCalendario=${tipoCalendarioSelecionado}&`}${unidadeEscolarSelecionada &&
-                `UeId=${unidadeEscolarSelecionada}`}`
-            )
-            .then(resposta => {
-              if (resposta.data) setEventosDia(resposta.data);
-              else setEventosDia([]);
-            })
-            .catch(() => {
-              setEventosDia([]);
-            });
+          if (tipoCalendarioSelecionado) {
+            api
+              .get(
+                `v1/calendarios/eventos/meses/${mesAtual}/dias/${diaSelecionado.getDate()}?EhEventoSme=${eventoSme}&${dreSelecionada &&
+                  `DreId=${dreSelecionada}&`}${tipoCalendarioSelecionado &&
+                  `IdTipoCalendario=${tipoCalendarioSelecionado}&`}${unidadeEscolarSelecionada &&
+                  `UeId=${unidadeEscolarSelecionada}`}`
+              )
+              .then(resposta => {
+                if (resposta.data) setEventosDia(resposta.data);
+                else setEventosDia([]);
+              })
+              .catch(() => {
+                setEventosDia([]);
+              });
+          } else setEventosDia([]);
         }
-      }
+      } else setEventosDia([]);
     }
     return () => (estado = false);
   }, [estaAberto]);
+
+  useEffect(() => {
+    estaAberto = false;
+    store.dispatch(selecionaDia(undefined));
+  }, [filtros]);
 
   const aoClicarEvento = id => {
     history.push(`calendario-escolar/eventos/editar/${id}`);
@@ -107,7 +116,7 @@ const DiaCompleto = props => {
                     cols={11}
                     className="align-self-center font-weight-bold"
                   >
-                    {evento.descricao}
+                    <Div>{evento.descricao ? evento.descricao : 'Evento'}</Div>
                   </Grid>
                 </Evento>
               );
