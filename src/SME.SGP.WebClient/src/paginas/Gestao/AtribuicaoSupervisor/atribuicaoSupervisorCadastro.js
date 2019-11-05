@@ -13,6 +13,7 @@ import Cabecalho from '~/componentes-sgp/cabecalho';
 import { setBreadcrumbManual } from '~/servicos/breadcrumb-services';
 import { store } from '~/redux';
 import RotasDto from '~/dtos/rotasDto';
+import { verificaSomenteConsulta } from '~/servicos/servico-navegacao';
 
 const AtribuicaoSupervisorCadastro = ({ match }) => {
   const [auditoria, setAuditoria] = useState([]);
@@ -68,6 +69,7 @@ const AtribuicaoSupervisorCadastro = ({ match }) => {
         });
     }
     obterListaDres();
+    verificaSomenteConsulta(permissoesTela);
   }, []);
 
   // 2 - carrega supervisores e ues
