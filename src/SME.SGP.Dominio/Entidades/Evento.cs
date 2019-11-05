@@ -187,6 +187,31 @@ namespace SME.SGP.Dominio
             }
         }
 
+        public void VerificaSeEventoAconteceJuntoComOrganizacaoEscolar(IEnumerable<Evento> eventos, Usuario usuario)
+        {
+            if (eventos.Any())
+            {
+                if (usuario.PossuiPerfilDreOuUe())
+                {
+                    if (TipoEvento.TipoData == EventoTipoData.InicioFim)
+                    {
+                        if (eventos.Any(a => (a.DataInicio.Date >= this.DataInicio.Date && this.DataInicio.Date <= a.DataFim.Date) ||
+                                              (a.DataInicio.Date >= this.DataFim.Date && this.DataFim.Date <= a.DataFim.Date)))
+                        {
+                            throw new NegocioException($"Não é possível adicionar um evento nesta data pois ele se encontra no período do evento {eventos.FirstOrDefault().Nome} ");
+                        }
+                    }
+                    else
+                    {
+                        if (eventos.Any(a => (a.DataInicio >= this.DataInicio && a.DataInicio <= this.DataFim)))
+                        {
+                            throw new NegocioException($"Não é possível adicionar um evento nesta data pois ele se encontra no período do evento {eventos.FirstOrDefault().Nome} ");
+                        }
+                    }
+                }
+            }
+        }
+
         private static DateTime ObterPrimeiroDiaDoMes(DateTime dataAtual)
         {
             return new DateTime(dataAtual.Year, dataAtual.Month, 1);
@@ -307,31 +332,6 @@ namespace SME.SGP.Dominio
                 dataInicial = dataInicial.ObterDomingo();
             }
             return eventos;
-        }
-
-        public void VerificaSeEventoAconteceJuntoComOrganizacaoEscolar(IEnumerable<Evento> eventos, Usuario usuario)
-        {
-            if (eventos.Any())
-            {
-                if (usuario.PossuiPerfilDreOuUe())
-                {
-                    if (TipoEvento.TipoData == EventoTipoData.InicioFim)
-                    {
-                        if (eventos.Any(a => (a.DataInicio.Date >= this.DataInicio.Date && this.DataInicio.Date <= a.DataFim.Value.Date) ||
-                                              (a.DataInicio.Date >= this.DataFim.Value.Date && this.DataFim.Value.Date <= a.DataFim.Value.Date)))
-                        {
-                            throw new NegocioException($"Não é possível adicionar um evento nesta data pois ele se encontra no período do evento {eventos.FirstOrDefault().Nome} ");
-                        }
-                    }
-                    else
-                    {
-                        if (eventos.Any(a => (a.DataInicio >= this.DataInicio && a.DataInicio <= this.DataFim)))
-                        {
-                            throw new NegocioException($"Não é possível adicionar um evento nesta data pois ele se encontra no período do evento {eventos.FirstOrDefault().Nome} ");
-                        }
-                    }
-                }
-            }
         }
 
         private void TipoEventoObrigatorio()
