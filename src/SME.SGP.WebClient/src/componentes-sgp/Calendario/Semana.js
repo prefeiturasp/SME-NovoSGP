@@ -16,6 +16,7 @@ const TipoEventosLista = styled(Div)`
 const TipoEvento = styled(Div)`
   font-size: 10px;
   margin-bottom: 2px;
+  width: 60px;
   &:last-child {
     margin-bottom: 0;
   }
@@ -36,25 +37,27 @@ const Dia = props => {
             dreSelecionada = '',
             unidadeEscolarSelecionada = '',
           } = filtros;
-          api
-            .get(
-              `v1/calendarios/eventos/meses/${mesAtual}/tipos?EhEventoSme=${eventoSme}&${dreSelecionada &&
-                `DreId=${dreSelecionada}&`}${tipoCalendarioSelecionado &&
-                `IdTipoCalendario=${tipoCalendarioSelecionado}&`}${unidadeEscolarSelecionada &&
-                `UeId=${unidadeEscolarSelecionada}`}`
-            )
-            .then(resposta => {
-              if (resposta.data)
-                setTipoEventosDiaLista(
-                  resposta.data.filter(
+          if (tipoCalendarioSelecionado) {
+            api
+              .get(
+                `v1/calendarios/eventos/meses/${mesAtual}/tipos?EhEventoSme=${eventoSme}&${dreSelecionada &&
+                  `DreId=${dreSelecionada}&`}${tipoCalendarioSelecionado &&
+                  `IdTipoCalendario=${tipoCalendarioSelecionado}&`}${unidadeEscolarSelecionada &&
+                  `UeId=${unidadeEscolarSelecionada}`}`
+              )
+              .then(resposta => {
+                if (resposta.data) {
+                  const lista = resposta.data.filter(
                     evento => evento.dia === dia.getDate()
-                  )[0]
-                );
-              else setTipoEventosDiaLista([]);
-            })
-            .catch(() => {
-              setTipoEventosDiaLista([]);
-            });
+                  )[0];
+                  if (lista.tiposEvento.length > 2) lista.tiposEvento.pop();
+                  setTipoEventosDiaLista(lista);
+                } else setTipoEventosDiaLista([]);
+              })
+              .catch(() => {
+                setTipoEventosDiaLista([]);
+              });
+          } else setTipoEventosDiaLista([]);
         }
       }
     }
@@ -74,7 +77,8 @@ const Dia = props => {
   else if (dia.getDay() === 6) style.backgroundColor = Base.CinzaCalendario;
 
   const className = `col border border-left-0 border-top-0 position-relative ${dia.getDay() ===
-    6 && 'border-right-0'} ${dia.getDate() === diaSelecionado.getDate() &&
+    6 && 'border-right-0'} ${diaSelecionado &&
+    dia.getDate() === diaSelecionado.getDate() &&
     'border-bottom-0'}`;
 
   let diaFormatado = dia.getDate();
@@ -102,7 +106,7 @@ const Dia = props => {
                 return (
                   <TipoEvento
                     key={shortid.generate()}
-                    className="d-block badge badge-pill badge-light"
+                    className="d-block badge badge-pill badge-light mr-0"
                   >
                     {tipoEvento}
                   </TipoEvento>
@@ -124,14 +128,17 @@ Dia.propTypes = {
   dia: PropTypes.oneOfType([PropTypes.array, PropTypes.object]),
   mesAtual: PropTypes.number,
   filtros: PropTypes.oneOfType([PropTypes.array, PropTypes.object]),
-  diaSelecionado: PropTypes.instanceOf(Date),
+  diaSelecionado: PropTypes.oneOfType([
+    PropTypes.instanceOf(Date),
+    PropTypes.string,
+  ]),
 };
 
 Dia.defaultProps = {
   dia: {},
   mesAtual: 0,
   filtros: {},
-  diaSelecionado: new Date(),
+  diaSelecionado: '',
 };
 
 const Semana = props => {
