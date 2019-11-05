@@ -27,6 +27,7 @@ namespace SME.SGP.Aplicacao
                 Id = aula.Id,
                 DisciplinaId = aula.DisciplinaId,
                 TurmaId = aula.TurmaId,
+                UeId = aula.UeId,
                 TipoCalendarioId = aula.TipoCalendarioId,
                 TipoAula = aula.TipoAula,
                 Quantidade = aula.Quantidade,
