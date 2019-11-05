@@ -19,10 +19,9 @@ namespace SME.SGP.Aplicacao
 
         public DiasLetivosDto CalcularDiasLetivos(long tipoCalendarioId)
         {
-            return new DiasLetivosDto { DiasLetivos = 200, EstaAbaixoPermitido = false };
-            //var diasLetivosCalendario = BuscarDiasLetivos(tipoCalendarioId);
-            //var eventos = repositorioEvento.ObterPorTipoDeCalendario(tipoCalendarioId);
-            //return null;
+            var diasLetivosCalendario = BuscarDiasLetivos(tipoCalendarioId);
+            var eventos = repositorioEvento.ObterEventosPorTipoDeCalendario(tipoCalendarioId);
+            return null;
         }
 
         private int BuscarDiasLetivos(long tipoCalendarioId)

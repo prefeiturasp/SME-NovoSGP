@@ -1,6 +1,6 @@
-﻿namespace SME.SGP.Dto
+﻿namespace SME.SGP.Dominio
 {
-    public class DiasLetivosDto
+    public class DiasLetivos
     {
         public int Dias { get; set; }
         public bool EstaAbaixoPermitido { get; set; }
