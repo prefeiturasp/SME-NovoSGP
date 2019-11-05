@@ -18,9 +18,9 @@ import { verificaSomenteConsulta } from '~/servicos/servico-navegacao';
 const FormularioSenha = () => {
   const [exibirModal, setExibirModal] = useState(false);
   const [erroAlertaBalao, setErroAlertaBalao] = useState('');
-  const [exibirAlertaBalao, setExibirAlertaBalao] = useState(false);  
+  const [exibirAlertaBalao, setExibirAlertaBalao] = useState(false);
   const usuarioStore = useSelector(store => store.usuario);
-  const permissoesTela = usuarioStore.permissoes[RotasDto.PLANO_CICLO];
+  const permissoesTela = usuarioStore.permissoes[RotasDto.MEUS_DADOS];
   const [somenteConsulta, setSomenteConsulta] = useState(false);
 
   useEffect(() =>{
@@ -253,7 +253,7 @@ const FormularioSenha = () => {
         <Button
           label="Editar"
           color={Colors.Roxo}
-          disabled={somenteConsulta || !permissoesTela.podeEditar}
+          disabled={somenteConsulta || !permissoesTela.podeAlterar}
           border
           bold
           onClick={() => setExibirModal(true)}

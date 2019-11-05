@@ -4,14 +4,14 @@ import { perfilSelecionado, setarPerfis } from '~/redux/modulos/perfil/actions';
 
 class LoginService {
   autenticar = async Login => {
-    return await api
+    return api
       .post(this.obtenhaUrlAutenticacao(), {
         login: Login.usuario,
         senha: Login.senha,
       })
       .then(res => {
         if (res.data && res.data.perfisUsuario) {
-          const perfis = res.data.perfisUsuario.perfis;
+          const { perfis } = res.data.perfisUsuario;
           const selecionado = perfis.find(
             perfil =>
               perfil.codigoPerfil === res.data.perfisUsuario.perfilSelecionado
