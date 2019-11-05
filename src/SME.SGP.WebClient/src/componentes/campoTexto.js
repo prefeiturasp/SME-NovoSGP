@@ -38,6 +38,7 @@ const CampoTexto = React.forwardRef((props, ref) => {
     maxlength,
     label,
     semMensagem,
+    style,
   } = props;
 
   const possuiErro = () => {
@@ -76,6 +77,7 @@ const CampoTexto = React.forwardRef((props, ref) => {
                 form.setFieldTouched(name, true);
                 onChange(e);
               }}
+              style={style}
             />
             {!semMensagem ? <span>{form.errors[name]}</span> : ''}
           </>
@@ -84,7 +86,7 @@ const CampoTexto = React.forwardRef((props, ref) => {
             ref={ref}
             placeholder={placeholder}
             onChange={onChange}
-            readOnly={desabilitado}
+            disabled={desabilitado}
             onKeyDown={onKeyDown}
             value={value}
           />

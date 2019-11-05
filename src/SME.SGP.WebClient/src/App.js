@@ -4,8 +4,9 @@ import { Router } from 'react-router-dom';
 import './configuracao/ReactotronConfig';
 import history from './servicos/history';
 import GlobalStyle from './estilos/global';
-import { store } from './redux';
+import { store, persistor } from './redux';
 import { rotaAtiva } from './redux/modulos/navegacao/actions';
+import { PersistGate } from 'redux-persist/integration/react';
 import Rotas from './rotas/rotas';
 
 function App() {
@@ -16,10 +17,12 @@ function App() {
 
   return (
     <Provider store={store}>
-      <Router history={history}>
-        <GlobalStyle />
-        <Rotas />
-      </Router>
+      <PersistGate loading={null} persistor={persistor}>
+        <Router history={history}>
+          <GlobalStyle />
+          <Rotas />
+        </Router>
+      </PersistGate>
     </Provider>
   );
 }

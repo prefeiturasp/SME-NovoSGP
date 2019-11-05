@@ -1,5 +1,7 @@
 import { Form, Formik } from 'formik';
+import * as moment from 'moment';
 import React, { useEffect, useState } from 'react';
+import { useSelector } from 'react-redux';
 import * as Yup from 'yup';
 import Cabecalho from '~/componentes-sgp/cabecalho';
 import Button from '~/componentes/button';
@@ -7,54 +9,99 @@ import { CampoData, momentSchema } from '~/componentes/campoData/campoData';
 import CampoTexto from '~/componentes/campoTexto';
 import Card from '~/componentes/card';
 import { Colors } from '~/componentes/colors';
+import ListaPaginada from '~/componentes/listaPaginada/listaPaginada';
 import SelectComponent from '~/componentes/select';
+import { URL_HOME } from '~/constantes/url';
+import RotasDto from '~/dtos/rotasDto';
+import { confirmar, erros, sucesso } from '~/servicos/alertas';
 import api from '~/servicos/api';
 import history from '~/servicos/history';
+import servicoEvento from '~/servicos/Paginas/Calendario/ServicoEvento';
+import { verificaSomenteConsulta } from '~/servicos/servico-navegacao';
 
 const EventosLista = () => {
+  const usuario = useSelector(store => store.usuario);
+  const permissoesTela = usuario.permissoes[RotasDto.EVENTOS];
+
+  const [somenteConsulta, setSomenteConsulta] = useState(false);
+
   const [listaCalendarioEscolar, setListaCalendarioEscolar] = useState([]);
-  const [tipoCalendario, setTipoCalendario] = useState('');
   const [nomeEvento, setNomeEvento] = useState('');
   const [listaTipoEvento, setListaTipoEvento] = useState([]);
-  const [tipoEvento, setTipoEvento] = useState([]);
+  const [tipoEvento, setTipoEvento] = useState(undefined);
+  const [eventosSelecionados, setEventosSelecionados] = useState([]);
+  const [filtro, setFiltro] = useState({});
+  const [selecionouCalendario, setSelecionouCalendario] = useState(false);
 
   const [refForm, setRefForm] = useState();
   const [valoresIniciais] = useState({
+    tipoCalendarioId: undefined,
     dataInicio: '',
     dataFim: '',
   });
   const [validacoes] = useState(
     Yup.object({
-      dataInicio: momentSchema.test('validaInicio', 'Data obrigatória', function() {
-        const dataInicio = this.parent['dataInicio'];
-        const dataFim = this.parent['dataFim'];
-        if (!dataInicio && dataFim) {
-          return false;
-        } else {
+      dataInicio: momentSchema.test(
+        'validaInicio',
+        'Data obrigatória',
+        function() {
+          const { dataInicio } = this.parent;
+          const { dataFim } = this.parent;
+          if (!dataInicio && dataFim) {
+            return false;
+          }
           return true;
         }
-      }),
+      ),
       dataFim: momentSchema.test('validaFim', 'Data obrigatória', function() {
-        const dataInicio = this.parent['dataInicio'];
-        const dataFim = this.parent['dataFim'];
+        const { dataInicio } = this.parent;
+        const { dataFim } = this.parent;
         if (dataInicio && !dataFim) {
           return false;
-        } else {
-          return true;
         }
-      })
+        return true;
+      }),
     })
   );
 
-  useEffect(() => {
-    setListaTipoEvento([
-      { id: 1, nome: 'Tipo evento 01' },
-      { id: 2, nome: 'Tipo evento 02' },
-      { id: 3, nome: 'Tipo evento 03' },
-    ]);
+  const colunas = [
+    {
+      title: 'Nome do evento',
+      dataIndex: 'nome',
+      width: '45%',
+    },
+    {
+      title: 'Tipo de evento',
+      dataIndex: 'tipo',
+      width: '20%',
+      render: (text, row) => <span> {row.tipoEvento.descricao}</span>,
+    },
+    {
+      title: 'Data início',
+      dataIndex: 'dataInicio',
+      width: '15%',
+      render: data => formatarCampoDataGrid(data),
+    },
+    {
+      title: 'Data fim',
+      dataIndex: 'dataFim',
+      width: '15%',
+      render: data => formatarCampoDataGrid(data),
+    },
+  ];
 
-    async function consultaTipoCalendario() {
-      const tiposCalendario = await api.get('v1/tipo-calendario');
+  useEffect(() => {
+    const obterListaEventos = async () => {
+      const tiposEvento = await api.get('v1/calendarios/eventos/tipos/listar');
+      if (tiposEvento && tiposEvento.data && tiposEvento.data.items) {
+        setListaTipoEvento(tiposEvento.data.items);
+      } else {
+        setListaTipoEvento([]);
+      }
+    };
+
+    const consultaTipoCalendario = async () => {
+      const tiposCalendario = await api.get('v1/calendarios/tipos');
       if (
         tiposCalendario &&
         tiposCalendario.data &&
@@ -68,29 +115,63 @@ const EventosLista = () => {
       } else {
         setListaCalendarioEscolar([]);
       }
-    }
+    };
+    setSomenteConsulta(verificaSomenteConsulta(permissoesTela));
+
+    obterListaEventos();
 
     consultaTipoCalendario();
   }, []);
 
   useEffect(() => {
     validaFiltrar();
-  }, [tipoCalendario, nomeEvento, tipoEvento]);
+  }, [nomeEvento, tipoEvento]);
 
-  const onClickVoltar = () => {
-    console.log('onClickVoltar');
+  const formatarCampoDataGrid = data => {
+    let dataFormatada = '';
+    if (data) {
+      dataFormatada = moment(data).format('DD/MM/YYYY');
+    }
+    return <span> {dataFormatada}</span>;
   };
 
-  const onClickExcluir = () => {
-    console.log('onClickExcluir');
+  const onClickVoltar = () => {
+    history.push(URL_HOME);
+  };
+
+  const onClickExcluir = async () => {
+    if (eventosSelecionados && eventosSelecionados.length > 0) {
+      const listaNomeExcluir = eventosSelecionados.map(item => item.nome);
+      const confirmado = await confirmar(
+        'Excluir evento',
+        listaNomeExcluir,
+        `Deseja realmente excluir ${
+          eventosSelecionados.length > 1 ? 'estes eventos' : 'este evento'
+        }?`,
+        'Excluir',
+        'Cancelar'
+      );
+      if (confirmado) {
+        const idsDeletar = eventosSelecionados.map(c => c.id);
+        const excluir = await servicoEvento
+          .deletar(idsDeletar)
+          .catch(e => erros(e));
+        if (excluir && excluir.status == 200) {
+          const mensagemSucesso = `${
+            eventosSelecionados.length > 1
+              ? 'Eventos excluídos'
+              : 'Evento excluído'
+          } com sucesso.`;
+          sucesso(mensagemSucesso);
+          validaFiltrar();
+        }
+      }
+    }
   };
 
   const onClickNovo = () => {
-    history.push('eventos/novo');
-  };
-
-  const onChangeTipoCalendario = tipo => {
-    setTipoCalendario(tipo);
+    const calendarioId = refForm.getFormikContext().values.tipoCalendarioId;
+    history.push(`eventos/novo/${calendarioId}`);
   };
 
   const onChangeNomeEvento = e => {
@@ -102,21 +183,41 @@ const EventosLista = () => {
   };
 
   const onFiltrar = valoresForm => {
-    // TODO - Chamar endpoint
     const params = {
-      tipoCalendario,
+      tipoCalendarioId: valoresForm.tipoCalendarioId,
       nomeEvento,
-      tipoEvento,
+      tipoEventoId: tipoEvento,
       dataInicio: valoresForm.dataInicio,
       dataFim: valoresForm.dataFim,
     };
-    console.log(params);
+    setFiltro(params);
+    setEventosSelecionados([]);
   };
+
+  const onChangeCalendarioId = tipoCalendarioId => {
+    if (tipoCalendarioId) {
+      setSelecionouCalendario(true);
+    } else {
+      setSelecionouCalendario(false);
+      setTipoEvento('');
+      setNomeEvento('');
+      refForm.resetForm();
+    }
+    validaFiltrar();
+  }; 
 
   const validaFiltrar = () => {
     if (refForm) {
       refForm.validateForm().then(() => refForm.handleSubmit(e => e));
     }
+  };
+
+  const onClickEditar = evento => {
+    history.push(`eventos/editar/${evento.id}`);
+  };
+
+  const onSelecionarItems = items => {
+    setEventosSelecionados(items);
   };
 
   return (
@@ -138,6 +239,8 @@ const EventosLista = () => {
             border
             className="mr-2"
             onClick={onClickExcluir}
+            disabled={!permissoesTela.podeExcluir || (eventosSelecionados && eventosSelecionados.length < 1) }
+            hidden={!selecionouCalendario}
           />
           <Button
             label="Novo"
@@ -146,6 +249,8 @@ const EventosLista = () => {
             bold
             className="mr-2"
             onClick={onClickNovo}
+            hidden={!selecionouCalendario}
+            disabled={somenteConsulta || !permissoesTela.podeIncluir}
           />
         </div>
 
@@ -163,63 +268,77 @@ const EventosLista = () => {
               <div className="row">
                 <div className="col-sm-12 col-md-3 col-lg-3 col-xl-3 pb-2">
                   <SelectComponent
-                    label="Tipo Calendário"
-                    name="select-tipo-calendario"
+                    name="tipoCalendarioId"
                     id="select-tipo-calendario"
                     lista={listaCalendarioEscolar}
                     valueOption="id"
-                    valueText="nome"
-                    onChange={onChangeTipoCalendario}
-                    valueSelect={tipoCalendario || []}
+                    valueText="descricaoTipoCalendario"
+                    onChange={onChangeCalendarioId}
                     placeholder="Selecione um calendário"
+                    form={form}
                   />
                 </div>
                 <div className="col-sm-12 col-md-3 col-lg-3 col-xl-3 pb-2">
                   <CampoTexto
-                    label="Nome do evento"
                     placeholder="Digite o nome do evento"
                     onChange={onChangeNomeEvento}
                     value={nomeEvento}
+                    desabilitado={!selecionouCalendario}
                   />
                 </div>
                 <div className="col-sm-12 col-md-2 col-lg-2 col-xl-2 pb-2">
                   <SelectComponent
-                    label="Tipo Evento"
                     name="select-tipo-evento"
                     id="select-tipo-evento"
                     lista={listaTipoEvento}
                     valueOption="id"
-                    valueText="nome"
+                    valueText="descricao"
                     onChange={onChangeTipoEvento}
-                    valueSelect={tipoEvento || []}
+                    valueSelect={tipoEvento || undefined}
                     placeholder="Selecione um tipo"
+                    disabled={!selecionouCalendario}
                   />
                 </div>
 
                 <div className="col-sm-12 col-md-2 col-lg-2 col-xl-2 pb-2">
                   <CampoData
-                    label="Data início"
                     formatoData="DD/MM/YYYY"
                     name="dataInicio"
                     onChange={validaFiltrar}
                     placeholder="Data início"
                     form={form}
+                    desabilitado={!selecionouCalendario}
                   />
                 </div>
                 <div className="col-sm-12 col-md-2 col-lg-2 col-xl-2 pb-2">
                   <CampoData
-                    label="Data fim"
                     formatoData="DD/MM/YYYY"
                     name="dataFim"
                     onChange={validaFiltrar}
                     placeholder="Data fim"
                     form={form}
+                    desabilitado={!selecionouCalendario}
                   />
                 </div>
               </div>
             </Form>
           )}
         </Formik>
+        <div className="col-md-12 pt-2">
+          {
+            selecionouCalendario ?
+              <ListaPaginada
+                url="v1/calendarios/eventos"
+                id="lista-eventos"
+                colunaChave="id"
+                colunas={colunas}
+                filtro={filtro}
+                onClick={onClickEditar}
+                multiSelecao
+                selecionarItems={onSelecionarItems}
+              /> : ''
+          }
+        </div>
       </Card>
     </>
   );

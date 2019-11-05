@@ -31,7 +31,7 @@ import '../../../componentes/scrollIntoViewIfNeeded';
 import modalidade from '~/dtos/modalidade';
 import { erro } from '~/servicos/alertas';
 
-const BimestreComponent = props => {
+const BimestreComponent = React.forwardRef((props, ref) => {
   const dispatch = useDispatch();
 
   const { indice, disabled, modalidadeEja, disciplinaSelecionada } = props;
@@ -84,6 +84,7 @@ const BimestreComponent = props => {
   };
 
   const setarDescricao = descricao => {
+    setarDescricaoFunction(descricaoFunction);
     dispatch(SetarDescricao(indice, descricao));
   };
 
@@ -145,7 +146,7 @@ const BimestreComponent = props => {
 
   const removeObjetivoSelecionado = e => {
     const index = bimestre.objetivosAprendizagem.findIndex(
-      objetivo => objetivo.id == e.target.id
+      objetivo => objetivo.id == e.target.getAttribute('data-indice')
     );
 
     selecionarObjetivo(index, false);
@@ -166,6 +167,7 @@ const BimestreComponent = props => {
     });
 
     setarDescricao(value);
+    setarDescricaoFunction(descricaoFunction);
   };
 
   const onClickBimestre = () => {
@@ -185,6 +187,7 @@ const BimestreComponent = props => {
   return (
     <CardCollapse
       key={indice}
+      ref={ref}
       onClick={onClickBimestre}
       titulo={bimestre.nome}
       indice={`Bimestre${indice}`}
@@ -288,7 +291,8 @@ const BimestreComponent = props => {
                           label={selecionado.codigo}
                           color={Colors.AzulAnakiwa}
                           bold
-                          id={selecionado.id}
+                          id={`Objetivo${selecionado.id}Selecionado${indice}Id`}
+                          indice={selecionado.id}
                           disabled={disabled}
                           steady
                           remove
@@ -386,6 +390,6 @@ const BimestreComponent = props => {
       </div>
     </CardCollapse>
   );
-};
+});
 
 export default BimestreComponent;

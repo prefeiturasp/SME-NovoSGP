@@ -1,6 +1,5 @@
 ﻿using SME.SGP.Aplicacao.Interfaces;
 using SME.SGP.Dominio;
-using SME.SGP.Dominio.Entidades;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System;
@@ -50,7 +49,8 @@ namespace SME.SGP.Aplicacao
                 Bimestre = periodoDto.Bimestre,
                 PeriodoInicio = periodoDto.PeriodoInicio,
                 PeriodoFim = periodoDto.PeriodoFim,
-                TipoCalendarioId = tipoCalendario
+                TipoCalendarioId = tipoCalendario,
+                Migrado = false,
             };
         }
 

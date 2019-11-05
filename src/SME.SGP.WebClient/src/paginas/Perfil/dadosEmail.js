@@ -13,12 +13,21 @@ import { store } from '~/redux';
 import { meusDadosSalvarEmail } from '~/redux/modulos/usuario/actions';
 import styled from 'styled-components';
 import FormularioSenha from './FormularioSenha/formularioSenha';
+import RotasDto from '~/dtos/rotasDto';
+import { verificaSomenteConsulta } from '~/servicos/servico-navegacao';
 const DadosEmail = () => {
   const usuarioStore = useSelector(store => store.usuario);
   const [email, setEmail] = useState(usuarioStore.meusDados.email);
   const [emailEdicao, setEmailEdicao] = useState(usuarioStore.meusDados.email);
   const [visualizarFormEmail, setVisualizarFormEmail] = useState(false);
   const [erroEmail, setErroEmail] = useState('');
+
+  const permissoesTela = usuarioStore.permissoes[RotasDto.MEUS_DADOS];
+  const [somenteConsulta, setSomenteConsulta] = useState(false);
+
+  useEffect(() =>{
+    setSomenteConsulta(verificaSomenteConsulta(permissoesTela));
+  }, [])
 
   const Campos = styled.div`
     margin-right: 10px;
@@ -183,6 +192,7 @@ const DadosEmail = () => {
           <Button
             label="Editar"
             color={Colors.Roxo}
+            disabled={somenteConsulta || !permissoesTela.podeAlterar}
             border
             bold
             onClick={() => setVisualizarFormEmail(true)}

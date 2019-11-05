@@ -21,6 +21,24 @@ export default class PlanoAnualHelper {
     return validarExistente;
   }
 
+  static async ObterBimestreExpandido(filtroPlanoAnualExpandidoDto) {
+    console.log(filtroPlanoAnualExpandidoDto);
+
+    return await Service.obterBimestreExpandido(filtroPlanoAnualExpandidoDto)
+      .then(res => {
+        return {
+          sucesso: true,
+          bimestre: res.data,
+        };
+      })
+      .catch(err => {
+        return {
+          sucesso: false,
+          response: err.response ? err.response : null,
+        };
+      });
+  }
+
   static async ObterDisciplinasPlano(codigoRf, turmaId) {
     const disciplinas = await Service.getDisciplinasProfessor(codigoRf, turmaId)
       .then(res => res)
@@ -33,7 +51,10 @@ export default class PlanoAnualHelper {
   }
 
   static async ObterDiscplinasObjetivos(turmaId, disciplinaSelecionada) {
-    const disciplinas = await Service.getDisciplinasProfessorObjetivos(turmaId)
+    const disciplinas = await Service.getDisciplinasProfessorObjetivos(
+      turmaId,
+      disciplinaSelecionada
+    )
       .then(res => res)
       .catch(() => {
         erro(`Não foi possivel obter as disciplinas do professor`);
