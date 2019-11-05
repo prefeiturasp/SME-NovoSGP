@@ -31,6 +31,11 @@ namespace SME.SGP.Aplicacao
                         Paginacao));
         }
 
+        public Task<IEnumerable<CalendarioEventosNoDiaRetornoDto>> ObterEventosPorDia(CalendarioEventosFiltroDto calendarioEventosMesesFiltro, int mes, int dia)
+        {
+            return repositorioEvento.ObterEventosPorDia(calendarioEventosMesesFiltro, mes, dia);
+        }
+
         public EventoCompletoDto ObterPorId(long id)
         {
             return MapearParaDto(repositorioEvento.ObterPorId(id));
@@ -91,7 +96,8 @@ namespace SME.SGP.Aplicacao
                 CriadoEm = evento.CriadoEm,
                 CriadoPor = evento.CriadoPor,
                 CriadoRF = evento.CriadoRF,
-                TipoEvento = MapearTipoEvento(evento.TipoEvento)
+                TipoEvento = MapearTipoEvento(evento.TipoEvento),
+                Migrado = evento.Migrado
             };
         }
 

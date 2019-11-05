@@ -63,7 +63,20 @@ namespace SME.SGP.Api.Controllers
 
         {
             var retorno = await consultasEvento.ObterQuantidadeDeEventosPorMeses(calendarioEventoMesesFiltro);
-            if (retorno.Count() > 0)
+            if (retorno.Any())
+                return Ok(retorno);
+            else return StatusCode(204);
+        }
+
+        [HttpGet("meses/{mes}/dias/{dia}")]
+        [ProducesResponseType(204)]
+        [ProducesResponseType(typeof(IEnumerable<CalendarioTipoEventoPorDiaDto>), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [Permissao(Permissao.E_C, Policy = "Bearer")]
+        public async Task<IActionResult> ObterPorDia(int dia, int mes, [FromQuery]CalendarioEventosFiltroDto filtro, [FromServices] IConsultasEvento consultasEvento)
+        {
+            var retorno = await consultasEvento.ObterEventosPorDia(filtro, mes, dia);
+            if (retorno.Any())
                 return Ok(retorno);
             else return StatusCode(204);
         }

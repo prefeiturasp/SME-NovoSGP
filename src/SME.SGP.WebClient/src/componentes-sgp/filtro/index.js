@@ -9,7 +9,7 @@ import {
 } from '~/redux/modulos/usuario/actions';
 import Grid from '~/componentes/grid';
 import Button from '~/componentes/button';
-import { Base, Colors } from '~/componentes/colors';
+import { Colors } from '~/componentes/colors';
 import SelectComponent from '~/componentes/select';
 import api from '~/servicos/api';
 import {
@@ -28,7 +28,6 @@ import {
   salvarUnidadesEscolares,
   salvarTurmas,
 } from '~/redux/modulos/filtro/actions';
-import ServicoFiltro from '~/servicos/Componentes/ServicoFiltro';
 import FiltroHelper from './helper';
 import { erro } from '~/servicos/alertas';
 

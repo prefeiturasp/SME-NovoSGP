@@ -5,6 +5,7 @@ using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -56,6 +57,9 @@ namespace SME.SGP.Integracao.Teste
                     var filtroFeriadoCalendarioDto = new FiltroFeriadoCalendarioDto() { Tipo = Dominio.TipoFeriadoCalendario.Movel, Ano = 2019 };
 
                     var jsonParaPostFiltroFeriados = new StringContent(TransformarEmJson(filtroFeriadoCalendarioDto), Encoding.UTF8, "application/json");
+
+                    Thread.Sleep(2000);
+
                     var postResultBuscaFeriados = await _fixture._clientApi.PostAsync("api/v1/calendarios/feriados/listar", jsonParaPostFiltroFeriados);
 
                     Assert.True(postResultBuscaFeriados.IsSuccessStatusCode);
