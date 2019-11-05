@@ -11,13 +11,13 @@ function DropDownTipoRecorrencia({ onChange, value }) {
   const options = (
     <Menu>
       <Menu.Item
-        onClick={() => onChange({ label: 'Semana(s)', value: 'S' })}
+        onClick={() => onChange({ label: 'Semana(s)', value: '1' })}
         key="0"
       >
         Semana (s)
       </Menu.Item>
       <Menu.Item
-        onClick={() => onChange({ label: 'Mês(ses)', value: 'M' })}
+        onClick={() => onChange({ label: 'Mês(ses)', value: '2' })}
         key="1"
       >
         Mês (es)
