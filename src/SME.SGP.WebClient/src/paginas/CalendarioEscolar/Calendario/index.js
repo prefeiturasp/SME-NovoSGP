@@ -81,6 +81,7 @@ const CalendarioEscolar = () => {
   }, [tipoCalendarioSelecionado]);
 
   const aoSelecionarTipoCalendario = tipo => {
+    store.dispatch(zeraCalendario());
     setTipoCalendarioSelecionado(tipo);
   };
 

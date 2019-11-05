@@ -5,7 +5,11 @@ import styled from 'styled-components';
 import Semana from './Semana';
 import DiaCompleto from './DiaCompleto';
 
-const Div = styled.div``;
+const Div = styled.div`
+  &.mes-completo {
+    display: ${props => (props.estaAberto ? 'block' : 'none')};
+  }
+`;
 
 const DiaDaSemana = props => {
   const { nomeDia } = props;
@@ -76,7 +80,10 @@ const MesCompleto = props => {
   return (
     mesSelecionado > 0 &&
     estaAberto && (
-      <Div className="border border-top-0 h-100 w-100">
+      <Div
+        estaAberto={estaAberto}
+        className="mes-completo border border-top-0 border-bottom-0 h-100 w-100"
+      >
         <Div className="w-100 d-flex py-3 border-bottom">
           <DiaDaSemana nomeDia="Domingo" />
           <DiaDaSemana nomeDia="Segunda" />
