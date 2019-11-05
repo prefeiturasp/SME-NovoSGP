@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SME.SGP.Api.Filtros;
+using SME.SGP.Aplicacao.Interfaces;
 using SME.SGP.Dto;
 using SME.SGP.Infra;
 
@@ -12,8 +13,12 @@ namespace SME.SGP.Api.Controllers
     [Authorize("Bearer")]
     public class DiasLetivosCalendarioController : ControllerBase
     {
-        public DiasLetivosCalendarioController()
+        private readonly IComandosDiasLetivos comandosDiasLetivos;
+
+        public DiasLetivosCalendarioController(IComandosDiasLetivos comandosDiasLetivos)
         {
+            this.comandosDiasLetivos = comandosDiasLetivos ??
+              throw new System.ArgumentNullException(nameof(comandosDiasLetivos));
         }
 
         [HttpGet]
@@ -23,7 +28,7 @@ namespace SME.SGP.Api.Controllers
         //[Permissao(Permissao.C_C, Policy = "Bearer")]
         public IActionResult CalcularDiasLetivos(long tipoCalendarioId)
         {
-            return Ok(new DiasLetivosDto { DiasLetivos = 200, EstaAbaixoPermitido = false });
+            return Ok(comandosDiasLetivos.CalcularDiasLetivos(tipoCalendarioId));
         }
     }
 }
