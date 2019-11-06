@@ -107,6 +107,12 @@ namespace SME.SGP.Dominio
             }
         }
 
+        public void PodeCriarEventoComDataPassada(Evento evento)
+        {
+            if ((evento.DataInicio < DateTime.Today) && !PossuiPerfilSme())
+                throw new NegocioException("Não é possível criar evento com datas passadas.");
+        }
+
         public bool PodeReiniciarSenha()
         {
             return !string.IsNullOrEmpty(Email);
@@ -115,6 +121,15 @@ namespace SME.SGP.Dominio
         public bool PossuiPerfilDre()
         {
             return Perfis != null && Perfis.Any(c => c.Tipo == TipoPerfil.DRE);
+        }
+
+        public bool PossuiPerfilDreOuUe()
+        {
+            if (Perfis == null || !Perfis.Any())
+            {
+                throw new NegocioException(MENSAGEM_ERRO_USUARIO_SEM_ACESSO);
+            }
+            return PossuiPerfilDre() || PossuiPerfilUe();
         }
 
         public bool PossuiPerfilSme()
@@ -129,6 +144,11 @@ namespace SME.SGP.Dominio
                 throw new NegocioException(MENSAGEM_ERRO_USUARIO_SEM_ACESSO);
             }
             return PossuiPerfilSme() || PossuiPerfilDre();
+        }
+
+        public bool PossuiPerfilUe()
+        {
+            return Perfis != null && Perfis.Any(c => c.Tipo == TipoPerfil.UE);
         }
 
         public bool TokenRecuperacaoSenhaEstaValido()
