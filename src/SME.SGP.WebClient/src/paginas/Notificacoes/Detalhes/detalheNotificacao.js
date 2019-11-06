@@ -26,6 +26,8 @@ const DetalheNotificacao = ({ match }) => {
   const [listaDeStatus, setListaDeStatus] = useState([]);
   const [aprovar, setAprovar] = useState(false);
 
+  const titulosNiveis = ['', 'Aguardando aceite', 'Aceita', 'Recusada', 'Sem status'];
+
   const usuario = useSelector(state => state.usuario);
   const permissoesTela = usuario.permissoes[RotasDto.NOTIFICACOES];
 
@@ -79,7 +81,7 @@ const DetalheNotificacao = ({ match }) => {
         .then(resposta => {
           const status = resposta.data.map(item => {
             return {
-              titulo: item.status,
+              titulo: titulosNiveis[item.statusId],
               status: item.statusId,
               timestamp: item.alteracaoData,
               rf: item.alteracaoUsuarioRf,
@@ -317,7 +319,10 @@ const DetalheNotificacao = ({ match }) => {
                                     : ''
                                 }`}
                               >
-                                {notificacao.situacao}
+                                {
+                                  notificacao.statusId ===
+                                  notificacaoStatus.Pendente
+                                  ? 'Não Lida' : notificacao.situacao}
                               </div>
                             </div>
                           </div>

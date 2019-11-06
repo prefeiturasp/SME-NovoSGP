@@ -135,15 +135,11 @@ export default function NotificacoesLista() {
   const statusLista = ['', 'Não lida', 'Lida', 'Aceita', 'Recusada'];
 
   function montarLinhasTabela(text, row, colunaSituacao) {
-    return row.status === notificacaoStatus.Pendente ? (
-      colunaSituacao ? (
-        <span className="cor-vermelho font-weight-bold text-uppercase">
+    return colunaSituacao ? (
+        <span className={row.status === notificacaoStatus.Pendente ? 'cor-vermelho font-weight-bold text-uppercase' : 'cor-novo-registro-lista'}>
           {statusLista[row.status]}
         </span>
       ) : (
-        <span className="cor-novo-registro-lista">{text}</span>
-      )
-    ) : (
       text
     );
   }
