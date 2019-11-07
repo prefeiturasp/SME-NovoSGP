@@ -2,8 +2,10 @@
 using Microsoft.AspNetCore.Mvc;
 using SME.SGP.Api.Filtros;
 using SME.SGP.Aplicacao;
-using SME.SGP.Dto;
+using SME.SGP.Infra;
 using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace SME.SGP.Api.Controllers
 {
@@ -23,6 +25,7 @@ namespace SME.SGP.Api.Controllers
         [HttpPost("atribuir-ue")]
         [ProducesResponseType(200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [Permissao(Permissao.ASP_I, Permissao.ASP_A, Policy = "Bearer")]
         public IActionResult AtribuirUE(AtribuicaoSupervisorUEDto atribuicaoSupervisorUEDto, [FromServices] IComandosSupervisor comandosSupervisor)
         {
             comandosSupervisor.AtribuirUE(atribuicaoSupervisorUEDto);
@@ -32,6 +35,7 @@ namespace SME.SGP.Api.Controllers
         [HttpGet("ues/{ueId}/vinculo")]
         [ProducesResponseType(typeof(SupervisorEscolasDto), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [Permissao(Permissao.ASP_C, Policy = "Bearer")]
         public IActionResult ObterPorUe(string ueId)
         {
             return Ok(consultasSupervisor.ObterPorUe(ueId));
@@ -40,6 +44,7 @@ namespace SME.SGP.Api.Controllers
         [HttpGet("dre/{dreId}")]
         [ProducesResponseType(typeof(IEnumerable<SupervisorDto>), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [Permissao(Permissao.ASP_C, Policy = "Bearer")]
         public IActionResult ObterSupervidoresPorDreENome(string dreId, [FromQuery]BuscaSupervisorPorNomeDto supervisorNome)
         {
             return Ok(consultasSupervisor.ObterPorDreENomeSupervisor(supervisorNome.Nome, dreId));
@@ -48,14 +53,19 @@ namespace SME.SGP.Api.Controllers
         [HttpGet("dre/{dreId}/vinculo-escolas")]
         [ProducesResponseType(typeof(IEnumerable<SupervisorEscolasDto>), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        public IActionResult ObterSupervisoresEEscolasPorDre(string dreId)
+        [Permissao(Permissao.ASP_C, Policy = "Bearer")]
+        public async Task<IActionResult> ObterSupervisoresEEscolasPorDre(string dreId)
         {
-            return Ok(consultasSupervisor.ObterPorDre(dreId));
+            var retorno = await consultasSupervisor.ObterPorDre(dreId);
+            if (retorno.Any())
+                return Ok(retorno);
+            else return StatusCode(204);
         }
 
         [HttpGet("{supervisoresId}/dre/{dreId}")]
         [ProducesResponseType(typeof(IEnumerable<SupervisorEscolasDto>), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [Permissao(Permissao.ASP_C, Policy = "Bearer")]
         public IActionResult ObterSupervisoresEEscolasPorSupervisoresEDre(string supervisoresId, string dreId)
         {
             var listaretorno = consultasSupervisor.ObterPorDreESupervisores(supervisoresId.Split(","), dreId);

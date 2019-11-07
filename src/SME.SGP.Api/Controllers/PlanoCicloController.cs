@@ -2,7 +2,7 @@
 using SME.SGP.Api.Filtros;
 using SME.SGP.Aplicacao;
 using SME.SGP.Dominio;
-using SME.SGP.Dto;
+using SME.SGP.Infra;
 
 namespace SME.SGP.Api.Controllers
 {

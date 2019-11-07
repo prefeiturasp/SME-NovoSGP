@@ -1,23 +1,14 @@
 ﻿using Dapper;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.IdentityModel.Tokens;
 using Prometheus;
-using SME.SGP.Api.Filtros;
-using SME.SGP.Api.Middlewares;
-using SME.SGP.Aplicacao.Integracoes;
 using SME.SGP.Dados.Mapeamentos;
 using SME.SGP.IoC;
 using Swashbuckle.AspNetCore.Swagger;
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using static System.Text.Encoding;
 
 namespace SME.SGP.Api
 {
@@ -59,26 +50,22 @@ namespace SME.SGP.Api
 
             app.UseMvc();
             app.UseMetricServer();
+            app.UseStaticFiles();
         }
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddSingleton(Configuration);
+            services.AddHttpContextAccessor();
+
             RegistraDependencias.Registrar(services);
-            DefaultTypeMap.MatchNamesWithUnderscores = true;
             RegistrarMapeamentos.Registrar();
-            services.Configure<ApiBehaviorOptions>(options =>
-            {
-                options.SuppressModelStateInvalidFilter = true;
-            });
-            services.AddMvc(options =>
-            {
-                options.AllowValidatingTopLevelNodes = false;
-                options.EnableEndpointRouting = true;
-                options.Filters.Add(new ValidaDtoAttribute());
-                options.Filters.Add(new FiltroExcecoesAttribute(Configuration));
-            }).SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
+            RegistraClientesHttp.Registrar(services, Configuration);
+            RegistraAutenticacao.Registrar(services, Configuration);
+            RegistrarMvc.Registrar(services, Configuration);
+
+            DefaultTypeMap.MatchNamesWithUnderscores = true;
 
             services.AddSwaggerGen(c =>
             {
@@ -96,52 +83,10 @@ namespace SME.SGP.Api
                             });
             });
 
-            services.AddHttpContextAccessor();
-
-            services.AddHttpClient<IServicoJurema, ServicoJurema>(c =>
-            {
-                c.BaseAddress = new Uri(Configuration.GetSection("UrlApiJurema").Value);
-                c.DefaultRequestHeaders.Add("Accept", "application/json");
-            });
-
             services.AddDistributedRedisCache(options =>
             {
                 options.Configuration = Configuration.GetConnectionString("SGP-Redis");
                 options.InstanceName = Configuration.GetValue<string>("Nome-Instancia-Redis");
-            });
-
-            services.AddHttpClient<IServicoEOL, ServicoEOL>(c =>
-            {
-                c.BaseAddress = new Uri(Configuration.GetSection("UrlApiEOL").Value);
-                c.DefaultRequestHeaders.Add("Accept", "application/json");
-            });
-
-            services.AddAuthentication(o =>
-            {
-                o.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-                o.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-            }).AddJwtBearer(o =>
-            {
-                o.TokenValidationParameters = new TokenValidationParameters
-                {
-                    ValidateLifetime = true,
-                    ValidateAudience = true,
-                    ValidAudience = Configuration.GetValue<string>("JwtTokenSettings:Audience"),
-                    ValidateIssuer = true,
-                    ValidIssuer = Configuration.GetValue<string>("JwtTokenSettings:Issuer"),
-                    ValidateIssuerSigningKey = true,
-                    ClockSkew = TimeSpan.Zero,
-                    IssuerSigningKey = new SymmetricSecurityKey(UTF8
-                        .GetBytes(Configuration.GetValue<string>("JwtTokenSettings:IssuerSigningKey")))
-                };
-            });
-
-            services.AddAuthorization(auth =>
-            {
-                auth.AddPolicy("Bearer", new AuthorizationPolicyBuilder()
-                   .AddAuthenticationSchemes(JwtBearerDefaults.AuthenticationScheme)
-                   .RequireAuthenticatedUser()
-                   .Build());
             });
         }
     }

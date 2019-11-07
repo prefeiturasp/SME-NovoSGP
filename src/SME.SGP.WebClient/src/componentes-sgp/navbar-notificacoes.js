@@ -119,7 +119,11 @@ const NavbarNotificacoes = props => {
 
   return (
     <div ref={listaRef} className="position-relative">
-      <Botao className="text-center stretched-link" onClick={onClickBotao}>
+      <Botao
+        className="text-center stretched-link"
+        onClick={onClickBotao}
+        disabled={notificacoes.quantidade === 0}
+      >
         <Count count={notificacoes.quantidade} overflowCount={99}>
           <Icone className="fa fa-bell fa-lg" />
         </Count>

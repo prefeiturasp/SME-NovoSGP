@@ -21,6 +21,9 @@ import {
   RegistroMigrado,
 } from './planoCiclo.css';
 import modalidade from '~/dtos/modalidade';
+import RotasDto from '~/dtos/rotasDto';
+import { verificaSomenteConsulta } from '~/servicos/servico-navegacao';
+import tipoPermissao from '~/dtos/tipoPermissao';
 
 export default function PlanoCiclo() {
   const urlPrefeitura = 'https://curriculo.sme.prefeitura.sp.gov.br';
@@ -49,8 +52,11 @@ export default function PlanoCiclo() {
   const [anosTurmasUsuario, setAnosTurmasUsuario] = useState([]);
   const [planoCicloId, setPlanoCicloId] = useState(0);
   const [modalidadeEja, setModalidadeEja] = useState(false);
+  const [somenteConsulta, setSomenteConsulta] = useState(false);
 
   const usuario = useSelector(store => store.usuario);
+  const turmaSelecionada = useSelector(store => store.usuario.turmaSelecionada);
+  const permissoesTela = usuario.permissoes[RotasDto.PLANO_CICLO];
 
   useEffect(() => {
     async function carregarListas() {
@@ -60,8 +66,8 @@ export default function PlanoCiclo() {
       const ods = await api.get('v1/objetivos-desenvolvimento-sustentavel');
       setListaODS(ods.data);
     }
-
     carregarListas();
+    setSomenteConsulta(verificaSomenteConsulta(permissoesTela));
   }, []);
 
   useEffect(() => {
@@ -73,74 +79,72 @@ export default function PlanoCiclo() {
   }, [usuario.turmasUsuario]);
 
   useEffect(() => {
-    async function carregarCiclos() {
-      if (
-        usuario &&
-        usuario.turmaSelecionada &&
-        usuario.turmaSelecionada.length
-      ) {
-        let anoSelecionado = '';
-        let codModalidade = null;
-        if (usuario.turmaSelecionada && usuario.turmaSelecionada.length) {
-          anoSelecionado = String(usuario.turmaSelecionada[0].ano);
-          codModalidade = usuario.turmaSelecionada[0].codModalidade;
-        }
-
-        const params = {
-          anoSelecionado,
-          modalidade: codModalidade,
-        };
-
-        let anos = [];
-        if (
-          usuario.turmasUsuario &&
-          usuario.turmasUsuario.length &&
-          anosTurmasUsuario.length < 1
-        ) {
-          anos = usuario.turmasUsuario.map(item => item.ano);
-          anos = anos.filter((elem, pos) => anos.indexOf(elem) == pos);
-        }
-        if (anosTurmasUsuario.length < 1 && anos.length > 0) {
-          setAnosTurmasUsuario(anos);
-          params.anos = anos;
-        } else {
-          params.anos = anosTurmasUsuario;
-        }
-
-        const ciclos = await api.post('v1/ciclos/filtro', params);
-
-        let sugestaoCiclo = ciclos.data.find(item => item.selecionado);
-        if (sugestaoCiclo && sugestaoCiclo.id) {
-          sugestaoCiclo = sugestaoCiclo.id;
-        }
-        const listaCiclosAtual = ciclos.data.filter(item => !item.selecionado);
-
-        setListaCiclos(listaCiclosAtual);
-
-        if (sugestaoCiclo) {
-          setCicloSelecionado(String(sugestaoCiclo));
-        } else {
-          setCicloSelecionado(String(listaCiclosAtual[0]));
-        }
-
-        const anoLetivo = String(usuario.turmaSelecionada[0].anoLetivo);
-        const codEscola = String(usuario.turmaSelecionada[0].codEscola);
-
-        if (usuario.turmaSelecionada[0].codModalidade == modalidade.EJA) {
-          setModalidadeEja(true);
-        } else {
-          setModalidadeEja(false);
-        }
-        obterCicloExistente(
-          anoLetivo,
-          codEscola,
-          String(sugestaoCiclo) || String(listaCiclosAtual[0])
-        );
-      }
-    }
-
     carregarCiclos();
-  }, [usuario.turmaSelecionada]);
+  }, [turmaSelecionada]);
+
+  const carregarCiclos = async () => {
+    console.log('carregarCiclos');
+
+    if (usuario && turmaSelecionada.turma) {
+      let anoSelecionado = '';
+      let codModalidade = null;
+      if (turmaSelecionada.turma) {
+        anoSelecionado = String(turmaSelecionada.ano);
+        codModalidade = turmaSelecionada.modalidade;
+      }
+
+      const params = {
+        anoSelecionado,
+        modalidade: codModalidade,
+      };
+
+      let anos = [];
+      if (
+        usuario.turmasUsuario &&
+        usuario.turmasUsuario.length &&
+        anosTurmasUsuario.length < 1
+      ) {
+        anos = usuario.turmasUsuario.map(item => item.ano);
+        anos = anos.filter((elem, pos) => anos.indexOf(elem) == pos);
+      }
+      if (anosTurmasUsuario.length < 1 && anos.length > 0) {
+        setAnosTurmasUsuario(anos);
+        params.anos = anos;
+      } else {
+        params.anos = anosTurmasUsuario;
+      }
+
+      const ciclos = await api.post('v1/ciclos/filtro', params);
+
+      let sugestaoCiclo = ciclos.data.find(item => item.selecionado);
+      if (sugestaoCiclo && sugestaoCiclo.id) {
+        sugestaoCiclo = sugestaoCiclo.id;
+      }
+      const listaCiclosAtual = ciclos.data.filter(item => !item.selecionado);
+
+      setListaCiclos(listaCiclosAtual);
+
+      if (sugestaoCiclo) {
+        setCicloSelecionado(String(sugestaoCiclo));
+      } else {
+        setCicloSelecionado(String(listaCiclosAtual[0]));
+      }
+
+      const anoLetivo = String(turmaSelecionada.anoLetivo);
+      const codEscola = String(turmaSelecionada.unidadeEscolar);
+
+      if (turmaSelecionada.modalidade == modalidade.EJA) {
+        setModalidadeEja(true);
+      } else {
+        setModalidadeEja(false);
+      }
+      obterCicloExistente(
+        anoLetivo,
+        codEscola,
+        String(sugestaoCiclo) || String(listaCiclosAtual[0])
+      );
+    }
+  };
 
   async function obterCicloExistente(ano, escolaId, cicloId) {
     resetListas();
@@ -240,8 +244,8 @@ export default function PlanoCiclo() {
   }
 
   function trocaCiclo(value) {
-    const anoLetivo = String(usuario.turmaSelecionada[0].anoLetivo);
-    const codEscola = String(usuario.turmaSelecionada[0].codEscola);
+    const anoLetivo = String(turmaSelecionada.anoLetivo);
+    const codEscola = String(turmaSelecionada.unidadeEscolar);
     obterCicloExistente(anoLetivo, codEscola, value);
     setCicloSelecionado(value);
     setModoEdicao(false);
@@ -305,8 +309,8 @@ export default function PlanoCiclo() {
       idsObjetivosDesenvolvimento = listaODSSelecionado.map(ods => ods.id);
     }
 
-    const anoLetivo = String(usuario.turmaSelecionada[0].anoLetivo);
-    const codEscola = String(usuario.turmaSelecionada[0].codEscola);
+    const anoLetivo = String(turmaSelecionada.anoLetivo);
+    const codEscola = String(turmaSelecionada.unidadeEscolar);
 
     const textoReal = textEditorRef.current.state.value
       .replace(/<[^>]*>/g, '')
@@ -371,8 +375,8 @@ export default function PlanoCiclo() {
       ciclo = cicloParaTrocar;
       setCicloSelecionado(ciclo);
     }
-    const anoLetivo = String(usuario.turmaSelecionada[0].anoLetivo);
-    const codEscola = String(usuario.turmaSelecionada[0].codEscola);
+    const anoLetivo = String(turmaSelecionada.anoLetivo);
+    const codEscola = String(turmaSelecionada.unidadeEscolar);
     obterCicloExistente(anoLetivo, codEscola, ciclo || cicloSelecionado);
   }
   const onClickVoltar = async () => {
@@ -422,24 +426,32 @@ export default function PlanoCiclo() {
       trocaCiclo(value);
     }
   }
+
+  const desabilitaCamposEdicao = () => {
+    if (podeAlterar()) return !modoEdicao
+    else return true
+  }
+
+  const podeAlterar = () => {
+    return (permissoesTela[tipoPermissao.podeAlterar]);
+  }
+
   return (
     <>
       <div className="col-md-12">
-        {usuario &&
-        usuario.turmaSelecionada &&
-        usuario.turmaSelecionada.length ? (
+        {usuario && turmaSelecionada.turma ? (
           ''
         ) : (
-          <Alert
-            alerta={{
-              tipo: 'warning',
-              id: 'plano-ciclo-selecione-turma',
-              mensagem: 'Você precisa escolher uma turma.',
-              estiloTitulo: { fontSize: '18px' },
-            }}
-            className="mb-0"
-          />
-        )}
+            <Alert
+              alerta={{
+                tipo: 'warning',
+                id: 'plano-ciclo-selecione-turma',
+                mensagem: 'Você precisa escolher uma turma.',
+                estiloTitulo: { fontSize: '18px' },
+              }}
+              className="mb-0"
+            />
+          )}
       </div>
       <div className="col-md-12 mt-1">
         <Titulo>
@@ -453,8 +465,8 @@ export default function PlanoCiclo() {
               Registro Migrado
             </RegistroMigrado>
           ) : (
-            ''
-          )}
+              ''
+            )}
         </Titulo>
       </div>
       <Card>
@@ -467,7 +479,9 @@ export default function PlanoCiclo() {
                     className="col-md-12"
                     name="tipo-ciclo"
                     id="tipo-ciclo"
+                    placeHolder="Selecione um tipo de ciclo"
                     lista={listaCiclos}
+                    disabled={somenteConsulta || !podeAlterar()? true:listaCiclos.length === 1}
                     valueOption="id"
                     valueText="descricao"
                     onChange={validaTrocaCiclo}
@@ -492,7 +506,7 @@ export default function PlanoCiclo() {
                 bold
                 className="mr-3"
                 onClick={onClickCancelar}
-                hidden={!modoEdicao}
+                hidden={desabilitaCamposEdicao()}
               />
               <Button
                 label="Salvar"
@@ -500,7 +514,7 @@ export default function PlanoCiclo() {
                 border
                 bold
                 onClick={() => salvarPlanoCiclo(false)}
-                disabled={!modoEdicao}
+                disabled={desabilitaCamposEdicao()}
               />
             </div>
           </div>
@@ -529,6 +543,7 @@ export default function PlanoCiclo() {
                 maxHeight="calc(100vh)"
                 onBlur={onChangeTextEditor}
                 value={descricaoCiclo}
+                disabled={somenteConsulta}
               />
               <InseridoAlterado>
                 {inseridoAlterado.criadoPor && inseridoAlterado.criadoEm ? (
@@ -537,8 +552,8 @@ export default function PlanoCiclo() {
                     {inseridoAlterado.criadoEm}
                   </p>
                 ) : (
-                  ''
-                )}
+                    ''
+                  )}
 
                 {inseridoAlterado.alteradoPor && inseridoAlterado.alteradoEm ? (
                   <p>
@@ -546,8 +561,8 @@ export default function PlanoCiclo() {
                     {inseridoAlterado.alteradoEm}
                   </p>
                 ) : (
-                  ''
-                )}
+                    ''
+                  )}
               </InseridoAlterado>
             </div>
             <div className="col-md-6 btn-link-plano-ciclo">
@@ -561,7 +576,7 @@ export default function PlanoCiclo() {
 
                 <div className="row">
                   <ListaItens
-                    className={registroMigrado ? 'desabilitar-elemento' : ''}
+                    className={registroMigrado || somenteConsulta ? 'desabilitar-elemento' : ''}
                   >
                     <ul>
                       {listaMatriz.map(item => {
@@ -602,7 +617,7 @@ export default function PlanoCiclo() {
                 </div>
                 <div className="row">
                   <ListaItens
-                    className={registroMigrado ? 'desabilitar-elemento' : ''}
+                    className={registroMigrado || somenteConsulta ? 'desabilitar-elemento' : ''}
                   >
                     <ul>
                       {listaODS.map(item => {

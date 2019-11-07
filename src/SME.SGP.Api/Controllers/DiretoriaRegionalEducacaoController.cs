@@ -1,8 +1,11 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using SME.SGP.Api.Filtros;
 using SME.SGP.Aplicacao;
-using SME.SGP.Dto;
+using SME.SGP.Infra;
 using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace SME.SGP.Api.Controllers
 {
@@ -29,17 +32,25 @@ namespace SME.SGP.Api.Controllers
         [HttpGet("{dreId}/ues/sem-atribuicao")]
         [ProducesResponseType(typeof(IEnumerable<UnidadeEscolarDto>), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        public IActionResult ObterEscolasSemAtribuicao(string dreId)
+        [Permissao(Permissao.ASP_I, Permissao.ASP_A, Permissao.ASP_C, Policy = "Bearer")]
+        public async Task<IActionResult> ObterEscolasSemAtribuicao(string dreId)
         {
-            return Ok(consultaDres.ObterEscolasSemAtribuicao(dreId));
+            var retorno = await consultaDres.ObterEscolasSemAtribuicao(dreId);
+            if (retorno.Count() > 0)
+                return Ok(retorno);
+            else return StatusCode(204);
         }
 
         [HttpGet("{dreId}/ues")]
         [ProducesResponseType(typeof(IEnumerable<UnidadeEscolarDto>), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        public IActionResult ObterUesPorDre(string dreId)
+        [Permissao(Permissao.ASP_I, Permissao.ASP_A, Permissao.ASP_C, Policy = "Bearer")]
+        public async Task<IActionResult> ObterUesPorDre(string dreId)
         {
-            return Ok(consultaDres.ObterEscolasPorDre(dreId));
+            var retorno = await consultaDres.ObterEscolasPorDre(dreId);
+            if (retorno.Count() > 0)
+                return Ok(retorno);
+            else return StatusCode(204);
         }
     }
 }
