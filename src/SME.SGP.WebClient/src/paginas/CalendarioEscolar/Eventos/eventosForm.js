@@ -303,6 +303,10 @@ const EventosForm = ({ match }) => {
     return false;
   };
 
+  const exibirModalConfirmaData = response => {
+    return confirmar('Confirmar data', '', response.mensagens[0], 'Sim', 'Não');
+  };
+
   const onClickCadastrar = async valoresForm => {
     const tiposCalendarioParaCopiar = listaCalendarioParaCopiar.map(id => {
       const calendario = listaCalendarioEscolar.find(e => e.id === id);
@@ -349,6 +353,18 @@ const EventosForm = ({ match }) => {
       const cadastrado = await servicoEvento.salvar(idEvento || 0, payload);
       if (cadastrado && cadastrado.status === 200) {
         onSuccessSave(cadastrado);
+      } else if (cadastrado && cadastrado.status === 602) {
+        const confirmaData = exibirModalConfirmaData(cadastrado);
+        if (confirmaData) {
+          const request = servicoEvento.salvar(idEvento || 0, {
+            ...payload,
+            DataConfirmada: true,
+          });
+          if (request) {
+            onSuccessSave(request);
+          }
+        }
+        return false;
       }
     } catch (e) {
       erros(e);
