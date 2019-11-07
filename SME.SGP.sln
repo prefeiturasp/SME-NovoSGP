@@ -48,6 +48,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "scripts", "scripts", "{CF91
 		scripts\V34__ABRANGENCIA_AJUSTES.sql = scripts\V34__ABRANGENCIA_AJUSTES.sql
 		scripts\V35__CALENDARIO_PROFESSOR_AULAS.sql = scripts\V35__CALENDARIO_PROFESSOR_AULAS.sql
 		scripts\V37__ID_EVENTO_PAI.sql = scripts\V37__ID_EVENTO_PAI.sql
+		scripts\V36__EVENTO_TIPO_COL_CODIGO.sql = scripts\V36__EVENTO_TIPO_COL_CODIGO.sql
 		scripts\V3__TIPO_CICLO.sql = scripts\V3__TIPO_CICLO.sql
 		scripts\V4__PLANO_ANUAL.sql = scripts\V4__PLANO_ANUAL.sql
 		scripts\V5__SUPERVISOR_ESCOLA.sql = scripts\V5__SUPERVISOR_ESCOLA.sql
