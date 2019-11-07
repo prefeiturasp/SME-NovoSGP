@@ -40,6 +40,12 @@ namespace SME.SGP.Aplicacao
 
         public void Salvar(WorkflowAprovacaoDto workflowAprovacaoNiveisDto)
         {
+            if (workflowAprovacaoNiveisDto.Tipo != WorkflowAprovacaoTipo.Basica)
+            {
+                if (workflowAprovacaoNiveisDto.EntidadeParaAprovarId == 0)
+                    throw new NegocioException("Para um workflow diferente de básico, é necessário informar o Id da entidade para Aprovar.");
+            }
+
             WorkflowAprovacao workflowAprovacao = MapearDtoParaEntidade(workflowAprovacaoNiveisDto);
 
             unitOfWork.IniciarTransacao();
@@ -75,6 +81,7 @@ namespace SME.SGP.Aplicacao
             workflowAprovacao.NotifacaoTitulo = workflowAprovacaoNiveisDto.NotificacaoTitulo;
             workflowAprovacao.NotificacaoTipo = workflowAprovacaoNiveisDto.NotificacaoTipo;
             workflowAprovacao.NotificacaoCategoria = workflowAprovacaoNiveisDto.NotificacaoCategoria;
+            workflowAprovacao.Tipo = workflowAprovacaoNiveisDto.Tipo;
 
             foreach (var nivel in workflowAprovacaoNiveisDto.Niveis)
             {

@@ -1,5 +1,4 @@
-﻿using SME.SGP.Aplicacao;
-using SME.SGP.Aplicacao.Integracoes;
+﻿using SME.SGP.Aplicacao.Integracoes;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System.Collections.Generic;
@@ -54,8 +53,12 @@ namespace SME.SGP.Dominio.Servicos
             }
         }
 
-        public void ConfiguracaoInicial(WorkflowAprovacao workflowAprovacao)
+        public void ConfiguracaoInicial(WorkflowAprovacao workflowAprovacao, long idEntidadeParaAprovar)
         {
+            if (workflowAprovacao.Tipo == WorkflowAprovacaoTipo.Evento)
+            {
+            }
+
             if (workflowAprovacao.NotificacaoCategoria == NotificacaoCategoria.Workflow_Aprovacao)
             {
                 var niveisIniciais = workflowAprovacao.ObtemNiveis(workflowAprovacao.ObtemPrimeiroNivel()).ToList();
