@@ -92,7 +92,7 @@ const Mes = props => {
               store.dispatch(atribuiEventosMes(numeroMes, 0));
             });
           verificaMesAtual();
-        }
+        } else store.dispatch(atribuiEventosMes(numeroMes, 0));
       }
     }
     return () => (estado = false);

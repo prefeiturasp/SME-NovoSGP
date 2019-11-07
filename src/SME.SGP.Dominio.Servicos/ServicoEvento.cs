@@ -38,7 +38,7 @@ namespace SME.SGP.Dominio.Servicos
             return data.AddDays(diasParaAdicionar);
         }
 
-        public async Task Salvar(Evento evento)
+        public async Task Salvar(Evento evento, bool dataConfirmada = false)
         {
             var tipoEvento = repositorioEventoTipo.ObterPorId(evento.TipoEventoId);
 
@@ -69,12 +69,14 @@ namespace SME.SGP.Dominio.Servicos
                 }
             }
 
+            var periodos = repositorioPeriodoEscolar.ObterPorTipoCalendario(evento.TipoCalendarioId);
+
             if (evento.DeveSerEmDiaLetivo())
             {
-                var periodos = repositorioPeriodoEscolar.ObterPorTipoCalendario(evento.TipoCalendarioId);
-
                 evento.EstaNoPeriodoLetivo(periodos);
             }
+
+            await VerificaParticularidadesSME(evento, usuario, periodos, dataConfirmada);
 
             repositorioEvento.Salvar(evento);
         }
@@ -185,6 +187,21 @@ namespace SME.SGP.Dominio.Servicos
                 $"O evento do feriado {feriadosErro.First()} não foi cadastrado";
 
             throw new NegocioException(mensagemErro);
+        }
+
+        private async Task VerificaParticularidadesSME(Evento evento, Usuario usuario, IEnumerable<PeriodoEscolar> periodos, bool dataConfirmada)
+        {
+            usuario.PodeCriarEventoComDataPassada(evento);
+            evento.PodeCriarEventoOrganizacaoEscolar(usuario);
+            await VerificaSeEventoAconteceJuntoComOrganizacaoEscolar(evento, usuario);
+
+            evento.PodeCriarEventoLiberacaoExcepcional(evento, usuario, dataConfirmada, periodos);
+        }
+
+        private async Task VerificaSeEventoAconteceJuntoComOrganizacaoEscolar(Evento evento, Usuario usuario)
+        {
+            var eventos = await repositorioEvento.ObterEventosPorTipoETipoCalendario((long)TipoEventoEnum.OrganizacaoEscolar, evento.TipoCalendarioId);
+            evento.VerificaSeEventoAconteceJuntoComOrganizacaoEscolar(eventos, usuario);
         }
     }
 }

@@ -1,5 +1,4 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.ModelBinding;
 using SME.SGP.Infra;
 
 namespace SME.SGP.Api.Middlewares
