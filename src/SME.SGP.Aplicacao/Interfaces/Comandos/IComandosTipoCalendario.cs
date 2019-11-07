@@ -8,5 +8,7 @@ namespace SME.SGP.Aplicacao
         void MarcarExcluidos(long[] ids);
 
         Task Salvar(TipoCalendarioDto dto);
+        Task Incluir(TipoCalendarioDto dto);
+        Task Alterar(TipoCalendarioDto dto, long id);
     }
 }

@@ -19,9 +19,37 @@ namespace SME.SGP.Aplicacao
             this.servicoEvento = servicoEvento ?? throw new ArgumentNullException(nameof(servicoEvento));
         }
 
-        public TipoCalendario MapearParaDominio(TipoCalendarioDto dto)
+        public async Task Alterar(TipoCalendarioDto dto, long id)
         {
-            TipoCalendario entidade = repositorio.ObterPorId(dto.Id);
+            var tipoCalendario = MapearParaDominio(dto, id);
+
+            bool ehRegistroExistente = await repositorio.VerificarRegistroExistente(dto.Id, dto.Nome);
+
+            if (ehRegistroExistente)
+                throw new NegocioException($"O Tipo de Calendário Escolar '{dto.Nome}' já existe");
+
+            repositorio.Salvar(tipoCalendario);
+
+            await ExecutarMetodosAsync(dto, false, tipoCalendario).ConfigureAwait(false);
+        }
+
+        public async Task Incluir(TipoCalendarioDto dto)
+        {
+            var tipoCalendario = MapearParaDominio(dto, 0);
+
+            bool ehRegistroExistente = await repositorio.VerificarRegistroExistente(0, dto.Nome);
+
+            if (ehRegistroExistente)
+                throw new NegocioException($"O Tipo de Calendário Escolar '{dto.Nome}' já existe");
+
+            repositorio.Salvar(tipoCalendario);
+
+            await ExecutarMetodosAsync(dto, true, tipoCalendario).ConfigureAwait(false);
+        }
+
+        public TipoCalendario MapearParaDominio(TipoCalendarioDto dto, long id)
+        {
+            TipoCalendario entidade = repositorio.ObterPorId(id);
 
             if (entidade == null)
             {
@@ -62,7 +90,7 @@ namespace SME.SGP.Aplicacao
         {
             var inclusao = dto.Id == 0;
 
-            var tipoCalendario = MapearParaDominio(dto);
+            var tipoCalendario = MapearParaDominio(dto, dto.id);
 
             bool ehRegistroExistente = await repositorio.VerificarRegistroExistente(dto.Id, dto.Nome);
 
