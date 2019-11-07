@@ -7,7 +7,7 @@ pipeline {
     
     options {
       buildDiscarder(logRotator(numToKeepStr: '5', artifactNumToKeepStr: '5'))
-                    
+      disableConcurrentBuilds()              
     }
     
         
@@ -70,8 +70,50 @@ pipeline {
                 branch 'development'
             }
             steps {
-                sh 'echo analise codigo sonar aqui'
-                sh 'echo Deploy DEV'
+                 
+                 sh 'echo Deploying desenvolvimento'
+                
+                // Start JOB Rundeck para build das imagens Docker e push SME Registry
+      
+          script {
+           step([$class: "RundeckNotifier",
+              includeRundeckLogs: true,
+                               
+              //JOB DE BUILD
+              jobId: "743ccbae-bd30-4ac6-b2a3-2f0d1c64e937",
+              nodeFilters: "",
+              //options: """
+              //     PARAM_1=value1
+               //    PARAM_2=value2
+              //     PARAM_3=
+              //     """,
+              rundeckInstance: "Rundeck-SME",
+              shouldFailTheBuild: true,
+              shouldWaitForRundeckJob: true,
+              tags: "",
+              tailLog: true])
+           }
+                
+       //Start JOB Rundeck para update de deploy Kubernetes 
+         
+         script {
+            step([$class: "RundeckNotifier",
+              includeRundeckLogs: true,
+              jobId: "f6c3e74c-6411-466a-84a7-921d637c2645",
+              nodeFilters: "",
+              //options: """
+              //     PARAM_1=value1
+               //    PARAM_2=value2
+              //     PARAM_3=
+              //     """,
+              rundeckInstance: "Rundeck-SME",
+              shouldFailTheBuild: true,
+              shouldWaitForRundeckJob: true,
+              tags: "",
+              tailLog: true])
+           }
+      
+       
             }
         }
         

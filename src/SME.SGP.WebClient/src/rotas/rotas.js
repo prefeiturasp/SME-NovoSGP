@@ -19,26 +19,85 @@ import RotaAutenticadaDesestruturada from './rotaAutenticadaDesestruturada';
 import RotaMista from './rotaMista';
 import MeusDados from '~/paginas/Perfil/meusDados';
 import PeriodosEscolares from '~/paginas/CalendarioEscolar/PeriodosEscolares/PeriodosEscolares';
+import ReiniciarSenha from '~/paginas/Configuracoes/Usuarios/reiniciarSenha';
+import TipoCalendarioEscolarLista from '~/paginas/CalendarioEscolar/TipoCalendarioEscolar/tipoCalendarioEscolarLista';
+import TipoCalendarioEscolarForm from '~/paginas/CalendarioEscolar/TipoCalendarioEscolar/tipoCalendarioEscolarForm';
+import TipoFeriadoLista from '~/paginas/CalendarioEscolar/TipoFeriado/tipoFeriadoLista';
+import TipoFeriadoForm from '~/paginas/CalendarioEscolar/TipoFeriado/tipoFeriadoForm';
+import CalendarioEscolar from '~/paginas/CalendarioEscolar/Calendario';
+import EventosLista from '~/paginas/CalendarioEscolar/Eventos/eventosLista';
+import EventosForm from '~/paginas/CalendarioEscolar/Eventos/eventosForm';
+import TipoEventosLista from '~/paginas/CalendarioEscolar/TipoEventos/tipoEventosLista';
+import TipoEventosForm from '~/paginas/CalendarioEscolar/TipoEventos/tipoEventosForm';
+import { useSelector } from 'react-redux';
+import SemPermissao from '~/paginas/SemPermissao/sem-permissao';
+import RotasDto from '~/dtos/rotasDto';
+import CadastroAula from '~/paginas/CalendarioEscolar/CadastroAula/cadastroAula';
 
 export default function Rotas() {
   const rotas = new Map();
+  const permissoes = useSelector(state => state.usuario.permissoes);
 
-  rotas.set('/planejamento/plano-ciclo', {
-    breadcrumbName: 'Plano de Ciclo',
-    menu: 'Planejamento',
+  rotas.set('/calendario-escolar', {
+    breadcrumbName: 'Calendário Escolar',
+    menu: ['Calendário Escolar'],
     parent: '/',
-    component: PlanoCiclo,
+    component: CalendarioEscolar,
     exact: true,
     tipo: RotasTipo.EstruturadaAutenticada,
   });
 
-  rotas.set('/planejamento/plano-anual', {
+  rotas.set(RotasDto.TIPO_EVENTOS, {
+    breadcrumbName: 'Tipo de Eventos',
+    menu: ['Calendário Escolar'],
+    parent: '/',
+    component: TipoEventosLista,
+    exact: true,
+    tipo: RotasTipo.EstruturadaAutenticada,
+    temPermissionamento: true,
+    chavePermissao: RotasDto.TIPO_EVENTOS,
+  });
+
+  rotas.set('/calendario-escolar/tipo-eventos/novo', {
+    breadcrumbName: 'Cadastro de Tipo de Eventos',
+    parent: '/calendario-escolar/tipo-eventos',
+    component: TipoEventosForm,
+    exact: true,
+    tipo: RotasTipo.EstruturadaAutenticada,
+    temPermissionamento: true,
+    chavePermissao: RotasDto.TIPO_EVENTOS,
+  });
+
+  rotas.set('/calendario-escolar/tipo-eventos/editar/:id', {
+    breadcrumbName: 'Cadastro de Tipo de Eventos',
+    parent: '/calendario-escolar/tipo-eventos',
+    component: TipoEventosForm,
+    exact: true,
+    tipo: RotasTipo.EstruturadaAutenticada,
+    temPermissionamento: true,
+    chavePermissao: RotasDto.TIPO_EVENTOS,
+  });
+
+  rotas.set(RotasDto.PLANO_CICLO, {
+    breadcrumbName: 'Plano de Ciclo',
+    menu: ['Planejamento'],
+    parent: '/',
+    component: PlanoCiclo,
+    exact: true,
+    tipo: RotasTipo.EstruturadaAutenticada,
+    temPermissionamento: true,
+    chavePermissao: RotasDto.PLANO_CICLO,
+  });
+
+  rotas.set(RotasDto.PLANO_ANUAL, {
     breadcrumbName: 'Plano Anual',
-    menu: 'Planejamento',
+    menu: ['Planejamento'],
     parent: '/',
     component: PlanoAnual,
     exact: false,
     tipo: RotasTipo.EstruturadaAutenticada,
+    temPermissionamento: true,
+    chavePermissao: RotasDto.PLANO_ANUAL,
   });
 
   rotas.set('/login/:redirect?/', {
@@ -68,13 +127,15 @@ export default function Rotas() {
     tipo: RotasTipo.Mista,
   });
 
-  rotas.set('/gestao/atribuicao-supervisor-lista', {
+  rotas.set(RotasDto.ATRIBUICAO_SUPERVISOR_LISTA, {
     breadcrumbName: 'Atribuição de Supervisor',
-    menu: 'Gestão',
+    menu: ['Gestão'],
     parent: '/',
     component: AtribuicaoSupervisorLista,
     exact: true,
     tipo: RotasTipo.EstruturadaAutenticada,
+    temPermissionamento: true,
+    chavePermissao: RotasDto.ATRIBUICAO_SUPERVISOR_LISTA,
   });
 
   rotas.set('/gestao/atribuicao-supervisor', {
@@ -83,6 +144,8 @@ export default function Rotas() {
     component: AtribuicaoSupervisorCadastro,
     exact: true,
     tipo: RotasTipo.EstruturadaAutenticada,
+    temPermissionamento: true,
+    chavePermissao: RotasDto.ATRIBUICAO_SUPERVISOR_LISTA,
   });
 
   rotas.set('/gestao/atribuicao-supervisor/:dreId/', {
@@ -91,6 +154,8 @@ export default function Rotas() {
     component: AtribuicaoSupervisorCadastro,
     exact: true,
     tipo: RotasTipo.EstruturadaAutenticada,
+    temPermissionamento: true,
+    chavePermissao: RotasDto.ATRIBUICAO_SUPERVISOR_LISTA,
   });
 
   rotas.set('/gestao/atribuicao-supervisor/:dreId/:supervisorId', {
@@ -99,42 +164,95 @@ export default function Rotas() {
     component: AtribuicaoSupervisorCadastro,
     exact: true,
     tipo: RotasTipo.EstruturadaAutenticada,
+    temPermissionamento: true,
+    chavePermissao: RotasDto.ATRIBUICAO_SUPERVISOR_LISTA,
   });
 
   rotas.set('/notificacoes/:id', {
-    breadcrumbName: 'Notificações',
+    breadcrumbName: ['Notificações'],
     parent: '/',
     component: DetalheNotificacao,
     exact: true,
     tipo: RotasTipo.EstruturadaAutenticada,
+    temPermissionamento: true,
+    chavePermissao: RotasDto.NOTIFICACOES,
   });
 
-  rotas.set('/notificacoes', {
-    breadcrumbName: 'Notificações',
+  rotas.set(RotasDto.NOTIFICACOES, {
+    breadcrumbName: ['Notificações'],
     parent: '/',
     component: NotificacoesLista,
     exact: true,
     tipo: RotasTipo.EstruturadaAutenticada,
+    temPermissionamento: true,
+    chavePermissao: RotasDto.NOTIFICACOES,
   });
 
-  rotas.set('/meus-dados', {
+  rotas.set(RotasDto.MEUS_DADOS, {
     breadcrumbName: 'Perfil',
     parent: '/',
     component: MeusDados,
     exact: true,
     tipo: RotasTipo.EstruturadaAutenticada,
+    temPermissionamento: false,
+    temPermissionamento: true,
+    chavePermissao: RotasDto.MEUS_DADOS,
   });
 
-  rotas.set('/calendario-escolar/periodos-escolares', {
+  rotas.set(RotasDto.PERIODOS_ESCOLARES, {
     breadcrumbName: 'Períodos Escolares',
-    menu: 'Calendário Escolar',
+    menu: ['Calendário Escolar'],
     parent: '/',
     component: PeriodosEscolares,
     exact: true,
     tipo: RotasTipo.EstruturadaAutenticada,
+    temPermissionamento: true,
+    chavePermissao: RotasDto.PERIODOS_ESCOLARES,
   });
 
-  rotas.set('/', {
+  rotas.set(RotasDto.REINICIAR_SENHA, {
+    breadcrumbName: 'Reiniciar Senha',
+    menu: ['Configurações', 'Usuários'],
+    parent: '/',
+    component: ReiniciarSenha,
+    exact: true,
+    tipo: RotasTipo.EstruturadaAutenticada,
+    temPermissionamento: true,
+    chavePermissao: RotasDto.REINICIAR_SENHA,
+  });
+
+  rotas.set(RotasDto.TIPO_CALENDARIO_ESCOLAR, {
+    breadcrumbName: 'Tipo de Calendário Escolar',
+    menu: ['Calendário Escolar'],
+    parent: '/',
+    component: TipoCalendarioEscolarLista,
+    exact: true,
+    tipo: RotasTipo.EstruturadaAutenticada,
+    temPermissionamento: true,
+    chavePermissao: RotasDto.TIPO_CALENDARIO_ESCOLAR,
+  });
+
+  rotas.set('/calendario-escolar/tipo-calendario-escolar/novo', {
+    breadcrumbName: 'Cadastro do Tipo de Calendário Escolar',
+    parent: '/calendario-escolar/tipo-calendario-escolar',
+    component: TipoCalendarioEscolarForm,
+    exact: true,
+    tipo: RotasTipo.EstruturadaAutenticada,
+    temPermissionamento: true,
+    chavePermissao: RotasDto.TIPO_CALENDARIO_ESCOLAR,
+  });
+
+  rotas.set('/calendario-escolar/tipo-calendario-escolar/editar/:id', {
+    breadcrumbName: 'Cadastro do Tipo de Calendário Escolar',
+    parent: '/calendario-escolar/tipo-calendario-escolar',
+    component: TipoCalendarioEscolarForm,
+    exact: true,
+    tipo: RotasTipo.EstruturadaAutenticada,
+    temPermissionamento: true,
+    chavePermissao: RotasDto.TIPO_CALENDARIO_ESCOLAR,
+  });
+
+  rotas.set(RotasDto.PRINCIPAL, {
     icone: 'fas fa-home',
     parent: null,
     component: Principal,
@@ -143,19 +261,128 @@ export default function Rotas() {
     paginaInicial: true,
     dicaIcone: 'Página Inicial',
     tipo: RotasTipo.EstruturadaAutenticada,
+    temPermissionamento: false,
+  });
+
+  rotas.set(RotasDto.TIPO_FERIADO, {
+    breadcrumbName: 'Lista de Tipo de Feriado',
+    menu: ['Tipo Feriado'],
+    parent: '/',
+    component: TipoFeriadoLista,
+    exact: true,
+    tipo: RotasTipo.EstruturadaAutenticada,
+    temPermissionamento: true,
+    chavePermissao: RotasDto.TIPO_FERIADO,
+  });
+
+  rotas.set('/calendario-escolar/tipo-feriado/novo', {
+    breadcrumbName: 'Cadastro de Tipo de Feriado',
+    parent: '/calendario-escolar/tipo-feriado',
+    component: TipoFeriadoForm,
+    exact: true,
+    tipo: RotasTipo.EstruturadaAutenticada,
+    temPermissionamento: true,
+    chavePermissao: RotasDto.TIPO_FERIADO,
+  });
+
+  rotas.set('/calendario-escolar/tipo-feriado/editar/:id', {
+    breadcrumbName: 'Alterar Tipo de Feriado',
+    parent: '/calendario-escolar/tipo-feriado',
+    component: TipoFeriadoForm,
+    exact: true,
+    tipo: RotasTipo.EstruturadaAutenticada,
+    temPermissionamento: true,
+    chavePermissao: RotasDto.TIPO_FERIADO,
+  });
+
+  rotas.set('/sem-permissao', {
+    breadcrumbName: 'Sem permissão',
+    parent: '/',
+    component: SemPermissao,
+    exact: true,
+    tipo: RotasTipo.EstruturadaAutenticada,
+    temPermissionamento: false,
+  });
+
+  rotas.set(RotasDto.EVENTOS, {
+    breadcrumbName: 'Evento do Calendário Escolar',
+    menu: ['Calendário Escolar'],
+    parent: '/',
+    component: EventosLista,
+    exact: true,
+    tipo: RotasTipo.EstruturadaAutenticada,
+    temPermissionamento: true,
+    chavePermissao: RotasDto.EVENTOS,
+  });
+
+  rotas.set('/calendario-escolar/eventos/novo/:tipoCalendarioId', {
+    breadcrumbName: 'Cadastro de Eventos no Calendário Escolar',
+    parent: '/calendario-escolar/eventos',
+    component: EventosForm,
+    exact: true,
+    tipo: RotasTipo.EstruturadaAutenticada,
+    temPermissionamento: true,
+    chavePermissao: RotasDto.EVENTOS,
+  });
+
+  rotas.set('/calendario-escolar/eventos/editar/:id', {
+    breadcrumbName: 'Cadastro de Eventos no Calendário Escolar',
+    parent: '/calendario-escolar/eventos',
+    component: EventosForm,
+    exact: true,
+    tipo: RotasTipo.EstruturadaAutenticada,
+    temPermissionamento: true,
+    chavePermissao: RotasDto.EVENTOS,
+  });
+
+  // TODO - Alterar quando tiver o calendário do professor
+  rotas.set(RotasDto.CALENDARIO_PROFESSOR, {
+    breadcrumbName: 'Calendário do Professor',
+    menu: ['Calendário Escolar'],
+    parent: '/',
+    component: Principal,
+    exact: true,
+    tipo: RotasTipo.EstruturadaAutenticada,
+    temPermissionamento: false
+  });
+
+  rotas.set(RotasDto.CADASTRO_DE_AULA, {
+      breadcrumbName: 'Cadastro de Aula',
+      parent: '/calendario-escolar/calendario-professor',
+      component: CadastroAula,
+      exact: true,
+      tipo: RotasTipo.EstruturadaAutenticada,
+      temPermissionamento: false
+  });
+
+  rotas.set(`${RotasDto.CADASTRO_DE_AULA}/novo/:tipoCalendarioId`, {
+      breadcrumbName: 'Cadastro de Aula',
+      parent: RotasDto.CADASTRO_DE_AULA,
+      component: CadastroAula,
+      exact: true,
+      tipo: RotasTipo.EstruturadaAutenticada,
+      temPermissionamento: false
+  });
+
+  rotas.set(`${RotasDto.CADASTRO_DE_AULA}/editar/:id`, {
+      breadcrumbName: 'Cadastro de Aula',
+      parent: RotasDto.CADASTRO_DE_AULA,
+      component: CadastroAula,
+      exact: true,
+      tipo: RotasTipo.EstruturadaAutenticada,
+      temPermissionamento: false
   });
 
   const rotasArray = [];
   for (var [key, value] of rotas) {
     const rota = value;
-    rota.path = key + (value.params ? value.params : '');
+    rota.path = key;
     rotasArray.push(rota);
 
     const rotaRedux = {
       path: value.paginaInicial ? '/' : key,
       icone: value.icone,
       dicaIcone: value.dicaIcone,
-      params: value.params,
       breadcrumbName: value.breadcrumbName,
       menu: value.menu,
       parent: value.parent,
@@ -177,6 +404,8 @@ export default function Rotas() {
                   key={rota.path}
                   exact={rota.exact}
                   component={rota.component}
+                  temPermissionamento={rota.temPermissionamento}
+                  chavePermissao={rota.chavePermissao}
                 />
               );
 

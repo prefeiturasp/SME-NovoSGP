@@ -1,25 +1,35 @@
 ﻿using SME.SGP.Aplicacao.Integracoes;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Dto;
+using SME.SGP.Infra;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
     public class ConsultasSupervisor : IConsultasSupervisor
     {
+        private readonly IRepositorioAbrangencia repositorioAbrangencia;
         private readonly IRepositorioSupervisorEscolaDre repositorioSupervisorEscolaDre;
         private readonly IServicoEOL servicoEOL;
+        private readonly IServicoUsuario servicoUsuario;
 
-        public ConsultasSupervisor(IRepositorioSupervisorEscolaDre repositorioSupervisorEscolaDre, IServicoEOL servicoEOL)
+        public ConsultasSupervisor(IRepositorioSupervisorEscolaDre repositorioSupervisorEscolaDre, IServicoEOL servicoEOL,
+            IRepositorioAbrangencia repositorioAbrangencia, IServicoUsuario servicoUsuario)
         {
             this.repositorioSupervisorEscolaDre = repositorioSupervisorEscolaDre ?? throw new System.ArgumentNullException(nameof(repositorioSupervisorEscolaDre));
             this.servicoEOL = servicoEOL ?? throw new System.ArgumentNullException(nameof(servicoEOL));
+            this.repositorioAbrangencia = repositorioAbrangencia ?? throw new System.ArgumentNullException(nameof(repositorioAbrangencia));
+            this.servicoUsuario = servicoUsuario ?? throw new System.ArgumentNullException(nameof(servicoUsuario));
         }
 
-        public IEnumerable<SupervisorEscolasDto> ObterPorDre(string dreId)
+        public async Task<IEnumerable<SupervisorEscolasDto>> ObterPorDre(string dreId)
         {
-            var escolasPorDre = servicoEOL.ObterEscolasPorDre(dreId);
+            var login = servicoUsuario.ObterLoginAtual();
+            var perfil = servicoUsuario.ObterPerfilAtual();
+
+            var escolasPorDre = await repositorioAbrangencia.ObterUes(dreId, login, perfil);
 
             var supervisoresEscolasDres = repositorioSupervisorEscolaDre.ObtemPorDreESupervisor(dreId, string.Empty);
 
@@ -51,7 +61,10 @@ namespace SME.SGP.Aplicacao
         {
             var supervisoresEscolasDres = repositorioSupervisorEscolaDre.ObtemPorDreESupervisor(dreId, supervisorId);
 
-            List<SupervisorEscolasDto> lista = MapearSupervisorEscolaDre(supervisoresEscolasDres).ToList();
+            IEnumerable<SupervisorEscolasDto> lista = new List<SupervisorEscolasDto>();
+
+            if (supervisoresEscolasDres.Any())
+                lista = MapearSupervisorEscolaDre(supervisoresEscolasDres).ToList();
 
             return lista;
         }
@@ -75,7 +88,7 @@ namespace SME.SGP.Aplicacao
                 .FirstOrDefault();
         }
 
-        private static void TrataEscolasSemSupervisores(IEnumerable<EscolasRetornoDto> escolasPorDre, List<SupervisorEscolasDto> listaRetorno)
+        private static void TrataEscolasSemSupervisores(IEnumerable<AbrangenciaUeRetorno> escolasPorDre, List<SupervisorEscolasDto> listaRetorno)
         {
             if (listaRetorno.Count != escolasPorDre.Count())
             {
@@ -83,12 +96,12 @@ namespace SME.SGP.Aplicacao
                     .SelectMany(a => a.Escolas.Select(b => b.Codigo))
                     .ToList();
 
-                var escolasSemSupervisor = escolasPorDre.Where(a => !escolasComSupervisor.Contains(a.CodigoEscola)).ToList();
+                var escolasSemSupervisor = escolasPorDre.Where(a => !escolasComSupervisor.Contains(a.Codigo)).ToList();
 
                 var escolaSupervisorRetorno = new SupervisorEscolasDto() { SupervisorId = string.Empty, SupervisorNome = "NÃO ATRIBUÍDO" };
 
                 var escolas = from t in escolasSemSupervisor
-                              select new UnidadeEscolarDto() { Codigo = t.CodigoEscola, Nome = t.NomeEscola };
+                              select new UnidadeEscolarDto() { Codigo = t.Codigo, Nome = t.Nome };
 
                 escolaSupervisorRetorno.Escolas = escolas.ToList();
 
@@ -146,7 +159,7 @@ namespace SME.SGP.Aplicacao
             }
         }
 
-        private void TratarRegistrosComSupervisores(IEnumerable<EscolasRetornoDto> escolasPorDre, IEnumerable<SupervisorEscolasDreDto> supervisoresEscolasDres, List<SupervisorEscolasDto> listaRetorno)
+        private void TratarRegistrosComSupervisores(IEnumerable<AbrangenciaUeRetorno> escolasPorDre, IEnumerable<SupervisorEscolasDreDto> supervisoresEscolasDres, List<SupervisorEscolasDto> listaRetorno)
         {
             if (supervisoresEscolasDres.Any())
             {
@@ -165,8 +178,8 @@ namespace SME.SGP.Aplicacao
                         .ToList();
 
                     var escolas = from t in escolasPorDre
-                                  where idsEscolasDoSupervisor.Contains(t.CodigoEscola)
-                                  select new UnidadeEscolarDto() { Codigo = t.CodigoEscola, Nome = t.NomeEscola };
+                                  where idsEscolasDoSupervisor.Contains(t.Codigo)
+                                  select new UnidadeEscolarDto() { Codigo = t.Codigo, Nome = t.Nome };
 
                     supervisorEscolasDto.Escolas = escolas.ToList();
 

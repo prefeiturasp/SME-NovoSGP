@@ -7,18 +7,19 @@ const inicial = {
   dataLogin: null,
   logado: false,
   turmasUsuario: [],
-  turmaSelecionada: [],
+  turmaSelecionada: {},
   filtroAtual: {},
   dadosUsuario: [],
   modificarSenha: '',
   meusDados: {
-    nome: 'Teste com Sobrenome Um tanto Quanto Maior',
-    rf: '123456',
-    cpf: '12345678901',
-    empresa: 'SME',
     foto:
       'https://graziellanicolai.com.br/wp-content/uploads/2018/03/Graziella-perfil.jpg',
   },
+  possuiPerfilSmeOuDre: false,
+  possuiPerfilDre: false,
+  possuiPerfilSme: false,
+  menu: [],
+  permissoes: []
 };
 
 export default function usuario(state = inicial, action) {
@@ -28,7 +29,6 @@ export default function usuario(state = inicial, action) {
         draft.rf = action.payload;
         break;
       case '@usuario/turmasUsuario':
-        draft.turmasUsuario = [];
         draft.turmasUsuario = action.payload;
         break;
       case '@usuario/salvarLogin':
@@ -38,6 +38,10 @@ export default function usuario(state = inicial, action) {
         draft.logado = true;
         draft.usuario = action.payload.usuario;
         draft.modificarSenha = action.payload.modificarSenha;
+        draft.possuiPerfilSmeOuDre = action.payload.possuiPerfilSmeOuDre;
+        draft.possuiPerfilDre = action.payload.possuiPerfilDre;
+        draft.possuiPerfilSme = action.payload.possuiPerfilSme;
+        draft.menu = action.payload.menu;
         break;
       case '@usuario/deslogar':
         draft.rf = '';
@@ -48,6 +52,9 @@ export default function usuario(state = inicial, action) {
         draft.modificarSenha = '';
         draft.turmasUsuario = [];
         draft.turmaSelecionada = [];
+        draft.dadosUsuario = [];
+        draft.menu = [];
+        draft.permissoes = [];
         break;
       case '@usuario/selecionarTurma':
         draft.turmaSelecionada = action.payload;
@@ -55,15 +62,23 @@ export default function usuario(state = inicial, action) {
       case '@usuario/removerTurma':
         draft.turmaSelecionada = [];
         break;
-      case '@usuario/meusDados': {
+      case '@usuario/meusDados':
         draft.meusDados = action.payload;
         break;
-      }
+      case '@usuario/meusDadosSalvarEmail':
+        draft.meusDados.email = action.payload;
+        break;
       case '@usuario/filtroAtual':
         draft.filtroAtual = action.payload;
         break;
       case '@usuario/salvarDadosUsuario':
         draft.dadosUsuario = action.payload;
+        break;
+      case '@usuario/setMenu':
+        draft.menu = action.payload;
+        break;
+      case '@usuario/setPermissoes':
+        draft.permissoes = action.payload;
         break;
       default:
         break;

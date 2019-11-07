@@ -12,20 +12,24 @@ import SelectComponent from '~/componentes/select';
 import { BoxTextoBimetre, CaixaBimestre } from './PeriodosEscoladres.css';
 import history from '~/servicos/history';
 import { URL_HOME } from '~/constantes/url';
-import { sucesso, confirmar } from '~/servicos/alertas';
+import { sucesso, confirmar, erros } from '~/servicos/alertas';
+import api from '~/servicos/api';
+import periodo from '~/dtos/periodo';
+import { useSelector } from 'react-redux';
+import RotasDto from '~/dtos/rotasDto';
+import { verificaSomenteConsulta } from '~/servicos/servico-navegacao';
 
 const PeriodosEscolares = () => {
   const [listaCalendarioEscolar, setListaCalendarioEscolar] = useState([]);
   const [
     calendarioEscolarSelecionado,
     setCalendarioEscolarSelecionado,
-  ] = useState('1');
+  ] = useState('');
   const [isTipoCalendarioAnual, setIsTipoCalendarioAnual] = useState(true);
   const [validacoes, setValidacoes] = useState();
-  const [refForm, setRefForm] = useState();
   const [modoEdicao, setModoEdicao] = useState(false);
-
-  const valoresIniciais = {
+  const [periodoEscolarEdicao, setPeriodoEscolarEdicao] = useState({});
+  const [valoresIniciais, setValoresIniciais] = useState({
     primeiroBimestreDataInicial: '',
     primeiroBimestreDataFinal: '',
     segundoBimestreDataInicial: '',
@@ -34,7 +38,11 @@ const PeriodosEscolares = () => {
     terceiroBimestreDataFinal: '',
     quartoBimestreDataInicial: '',
     quartoBimestreDataFinal: '',
-  };
+  });
+  const usuario = useSelector(store => store.usuario);
+  const permissoesTela = usuario.permissoes[RotasDto.PERIODOS_ESCOLARES];
+  const [somenteConsulta, setSomenteConsulta] = useState(false);
+  const [desabilitaCampos, setDesabilitaCampos] = useState(false);
 
   const validacaoPrimeiroBim = {
     primeiroBimestreDataInicial: momentSchema.required(
@@ -101,11 +109,20 @@ const PeriodosEscolares = () => {
   };
 
   useEffect(() => {
-    const lista = [
-      { id: '1', nome: '2019 - Calendário escolar - Anual', anual: true },
-      { id: '2', nome: '2019 - Calendário escolar - Semestral', anual: false },
-    ];
-    setListaCalendarioEscolar(lista);
+    async function consultaTipos() {
+      const listaTipo = await api.get('v1/calendarios/tipos');
+      if (listaTipo && listaTipo.data && listaTipo.data.length) {
+        listaTipo.data.map(item => {
+          item.id = String(item.id);
+          item.descricaoTipoCalendario = `${item.anoLetivo} - ${item.nome} - ${item.descricaoPeriodo}`;
+        });
+        setListaCalendarioEscolar(listaTipo.data);
+      } else {
+        setListaCalendarioEscolar([]);
+      }
+    }
+    setSomenteConsulta(verificaSomenteConsulta(permissoesTela));
+    consultaTipos();
   }, []);
 
   useEffect(() => {
@@ -124,16 +141,89 @@ const PeriodosEscolares = () => {
     setValidacoes(Yup.object().shape(periodos));
   }, [isTipoCalendarioAnual]);
 
-  const onSubmit = dados => {
-    console.log(dados);
-    sucesso('Suas informações foram salvas com sucesso.');
+  const onSubmit = async dadosForm => {
+    if (periodoEscolarEdicao) {
+      periodoEscolarEdicao.periodos.forEach(item => {
+        switch (item.bimestre) {
+          case 1:
+            item.periodoInicio = dadosForm.primeiroBimestreDataInicial.toDate();
+            item.periodoFim = dadosForm.primeiroBimestreDataFinal.toDate();
+            break;
+          case 2:
+            item.periodoInicio = dadosForm.segundoBimestreDataInicial.toDate();
+            item.periodoFim = dadosForm.segundoBimestreDataFinal.toDate();
+            break;
+          case 3:
+            item.periodoInicio = dadosForm.terceiroBimestreDataInicial.toDate();
+            item.periodoFim = dadosForm.terceiroBimestreDataFinal.toDate();
+            break;
+          case 4:
+            item.periodoInicio = dadosForm.quartoBimestreDataInicial.toDate();
+            item.periodoFim = dadosForm.quartoBimestreDataFinal.toDate();
+            break;
+          default:
+            break;
+        }
+      });
+      const editado = await api
+        .post('v1/periodo-escolar', periodoEscolarEdicao)
+        .catch(e => erros(e));
+      if (editado && editado.status == 200) {
+        sucesso('Suas informações foram editadas com sucesso.');
+      }
+    } else {
+      const calendarioParaCadastrar = listaCalendarioEscolar.find(item => {
+        return item.id == calendarioEscolarSelecionado;
+      });
+      const paramsCadastrar = {
+        periodos: [
+          {
+            id: 0,
+            bimestre: 1,
+            periodoInicio: dadosForm.primeiroBimestreDataInicial.toDate(),
+            periodoFim: dadosForm.primeiroBimestreDataFinal.toDate(),
+          },
+          {
+            id: 0,
+            bimestre: 2,
+            periodoInicio: dadosForm.segundoBimestreDataInicial.toDate(),
+            periodoFim: dadosForm.segundoBimestreDataFinal.toDate(),
+          },
+        ],
+        tipoCalendario: calendarioParaCadastrar.id,
+        anoBase: calendarioParaCadastrar.anoLetivo,
+      };
+
+      if (isTipoCalendarioAnual) {
+        paramsCadastrar.periodos.push(
+          {
+            id: 0,
+            bimestre: 3,
+            periodoInicio: dadosForm.terceiroBimestreDataInicial.toDate(),
+            periodoFim: dadosForm.terceiroBimestreDataFinal.toDate(),
+          },
+          {
+            id: 0,
+            bimestre: 4,
+            periodoInicio: dadosForm.quartoBimestreDataInicial.toDate(),
+            periodoFim: dadosForm.quartoBimestreDataFinal.toDate(),
+          }
+        );
+      }
+      const cadastrado = await api
+        .post('v1/periodo-escolar', paramsCadastrar)
+        .catch(e => erros(e));
+      if (cadastrado && cadastrado.status == 200) {
+        sucesso('Suas informações foram salvas com sucesso.');
+      }
+    }
   };
 
   const onClickVoltar = () => {
     history.push(URL_HOME);
   };
 
-  const onClickCancelar = async () => {
+  const onClickCancelar = async form => {
     if (modoEdicao) {
       const confirmou = await confirmar(
         'Atenção',
@@ -141,27 +231,69 @@ const PeriodosEscolares = () => {
         'Deseja realmente cancelar as alterações?'
       );
       if (confirmou) {
-        resetarTela();
+        resetarTela(form);
       }
     }
   };
 
-  const onchangeCalendarioEscolar = valor => {
-    const anual = listaCalendarioEscolar.find(
-      item => item.id == valor && !!item.anual
-    );
-    if (anual) {
+  const onchangeCalendarioEscolar = (id, form) => {
+    const tipoSelecionado = listaCalendarioEscolar.find(item => item.id == id);
+
+    if (tipoSelecionado && tipoSelecionado.periodo == periodo.Anual) {
       setIsTipoCalendarioAnual(true);
     } else {
       setIsTipoCalendarioAnual(false);
     }
-    setCalendarioEscolarSelecionado(valor);
-    resetarTela();
+    setCalendarioEscolarSelecionado(id);
+    resetarTela(form);
+    consultarPeriodoPorId(id);
   };
 
-  const resetarTela = () => {
-    refForm.resetForm();
+  const consultarPeriodoPorId = async id => {
+    const periodoAtual = await api.get('v1/periodo-escolar', {
+      params: { codigoTipoCalendario: id },
+    });
+
+    const bimestresValorInicial = {};
+    if (
+      periodoAtual.data &&
+      periodoAtual.data.periodos &&
+      periodoAtual.data.periodos.length
+    ) {
+      setDesabilitaCampos(!permissoesTela.podeAlterar || somenteConsulta);
+      periodoAtual.data.periodos.forEach(item => {
+        switch (item.bimestre) {
+          case 1:
+            bimestresValorInicial.primeiroBimestreDataInicial = window.moment(item.periodoInicio);
+            bimestresValorInicial.primeiroBimestreDataFinal = window.moment(item.periodoFim);
+            break;
+          case 2:
+            bimestresValorInicial.segundoBimestreDataInicial = window.moment(item.periodoInicio);
+            bimestresValorInicial.segundoBimestreDataFinal = window.moment(item.periodoFim);
+            break;
+          case 3:
+            bimestresValorInicial.terceiroBimestreDataInicial = window.moment(item.periodoInicio);
+            bimestresValorInicial.terceiroBimestreDataFinal = window.moment(item.periodoFim);
+            break;
+          case 4:
+            bimestresValorInicial.quartoBimestreDataInicial = window.moment(item.periodoInicio);
+            bimestresValorInicial.quartoBimestreDataFinal = window.moment(item.periodoFim);
+            break;
+          default:
+            break;
+        }
+      });
+    }else{
+      setDesabilitaCampos(!permissoesTela.podeIncluir || somenteConsulta);
+    }
+    setPeriodoEscolarEdicao(periodoAtual.data);
+    setValoresIniciais(bimestresValorInicial);
+  };
+
+  const resetarTela = form => {
+    form.resetForm();
     setModoEdicao(false);
+    setValoresIniciais({});
   };
 
   const onChangeCamposData = () => {
@@ -170,12 +302,142 @@ const PeriodosEscolares = () => {
     }
   };
 
+  const primeiroBimestre = form => {
+    return (
+      <div className="row">
+        <div className="col-sm-4 col-md-4 col-lg-2 col-xl-2 mb-2">
+          <Label text="Bimestre" control="bimestre" />
+          <CaixaBimestre>
+            <BoxTextoBimetre>1 ° Bimestre</BoxTextoBimetre>
+          </CaixaBimestre>
+        </div>
+        <div className="col-sm-4 col-md-4 col-lg-3 col-xl-3">
+          <CampoData
+            form={form}
+            placeholder="Início do Bimestre"
+            formatoData="DD/MM/YYYY"
+            label="Início do Bimestre"
+            name="primeiroBimestreDataInicial"
+            onChange={onChangeCamposData}
+            desabilitado={desabilitaCampos}
+          />
+        </div>
+        <div className="col-sm-4 col-md-4 col-lg-3 col-xl-3">
+          <CampoData
+            form={form}
+            placeholder="Início do Bimestre"
+            formatoData="DD/MM/YYYY"
+            label="Fim do Bimestre"
+            name="primeiroBimestreDataFinal"
+            onChange={onChangeCamposData}
+            desabilitado={desabilitaCampos}
+          />
+        </div>
+      </div>
+    );
+  };
+
+  const segundoBimestre = form => {
+    return (
+      <div className="row">
+        <div className="col-sm-4 col-md-4 col-lg-2 col-xl-2 mb-2">
+          <CaixaBimestre>
+            <BoxTextoBimetre>2 ° Bimestre</BoxTextoBimetre>
+          </CaixaBimestre>
+        </div>
+        <div className="col-sm-4 col-md-4 col-lg-3 col-xl-3">
+          <CampoData
+            form={form}
+            placeholder="Início do Bimestre"
+            formatoData="DD/MM/YYYY"
+            name="segundoBimestreDataInicial"
+            onChange={onChangeCamposData}
+            desabilitado={desabilitaCampos}
+          />
+        </div>
+        <div className="col-sm-4 col-md-4 col-lg-3 col-xl-3">
+          <CampoData
+            form={form}
+            placeholder="Início do Bimestre"
+            formatoData="DD/MM/YYYY"
+            name="segundoBimestreDataFinal"
+            onChange={onChangeCamposData}
+            desabilitado={desabilitaCampos}
+          />
+        </div>
+      </div>
+    );
+  };
+
+  const terceiroBimestre = form => {
+    return (
+      <div className="row">
+        <div className="col-sm-4 col-md-4 col-lg-2 col-xl-2 mb-2">
+          <CaixaBimestre>
+            <BoxTextoBimetre>3 ° Bimestre</BoxTextoBimetre>
+          </CaixaBimestre>
+        </div>
+        <div className="col-sm-4 col-md-4 col-lg-3 col-xl-3">
+          <CampoData
+            form={form}
+            placeholder="Início do Bimestre"
+            formatoData="DD/MM/YYYY"
+            name="terceiroBimestreDataInicial"
+            onChange={onChangeCamposData}
+            desabilitado={desabilitaCampos}
+          />
+        </div>
+        <div className="col-sm-4 col-md-4 col-lg-3 col-xl-3">
+          <CampoData
+            form={form}
+            placeholder="Início do Bimestre"
+            formatoData="DD/MM/YYYY"
+            name="terceiroBimestreDataFinal"
+            onChange={onChangeCamposData}
+            desabilitado={desabilitaCampos}
+          />
+        </div>
+      </div>
+    );
+  };
+
+  const quartoBimestre = form => {
+    return (
+      <div className="row">
+        <div className="col-sm-4 col-md-4 col-lg-2 col-xl-2 mb-2">
+          <CaixaBimestre>
+            <BoxTextoBimetre>4 ° Bimestre</BoxTextoBimetre>
+          </CaixaBimestre>
+        </div>
+        <div className="col-sm-4 col-md-4 col-lg-3 col-xl-3">
+          <CampoData
+            form={form}
+            placeholder="Início do Bimestre"
+            formatoData="DD/MM/YYYY"
+            name="quartoBimestreDataInicial"
+            onChange={onChangeCamposData}
+            desabilitado={desabilitaCampos}
+          />
+        </div>
+        <div className="col-sm-4 col-md-4 col-lg-3 col-xl-3">
+          <CampoData
+            form={form}
+            placeholder="Início do Bimestre"
+            formatoData="DD/MM/YYYY"
+            name="quartoBimestreDataFinal"
+            onChange={onChangeCamposData}
+            desabilitado={desabilitaCampos}
+          />
+        </div>
+      </div>
+    );
+  };
+
   return (
     <>
       <Cabecalho pagina="Cadastro do período escolar" />
       <Card>
         <Formik
-          ref={refFormik => setRefForm(refFormik)}
           enableReinitialize
           initialValues={valoresIniciais}
           validationSchema={validacoes}
@@ -192,8 +454,8 @@ const PeriodosEscolares = () => {
                     id="calEscolar"
                     lista={listaCalendarioEscolar}
                     valueOption="id"
-                    valueText="nome"
-                    onChange={onchangeCalendarioEscolar}
+                    valueText="descricaoTipoCalendario"
+                    onChange={ id => onchangeCalendarioEscolar(id, form)}
                     valueSelect={calendarioEscolarSelecionado}
                   />
                 </div>
@@ -212,8 +474,8 @@ const PeriodosEscolares = () => {
                     border
                     bold
                     className="mr-3"
-                    onClick={onClickCancelar}
-                    disabled={!modoEdicao}
+                    onClick={() => onClickCancelar(form)}
+                    disabled={!modoEdicao || desabilitaCampos}
                   />
                   <Button
                     label="Cadastrar"
@@ -221,120 +483,26 @@ const PeriodosEscolares = () => {
                     border
                     bold
                     type="submit"
+                    disabled={!calendarioEscolarSelecionado || desabilitaCampos}
                   />
                 </div>
               </div>
+              {listaCalendarioEscolar &&
+              listaCalendarioEscolar.length &&
+              calendarioEscolarSelecionado ? (
+                <>
+                  {primeiroBimestre(form)}
+                  {segundoBimestre(form)}
 
-              <div className="row">
-                <div className="col-sm-4 col-md-4 col-lg-2 col-xl-2 mb-2">
-                  <Label text="Bimestre" control="bimestre" />
-                  <CaixaBimestre>
-                    <BoxTextoBimetre>1 ° Bimestre</BoxTextoBimetre>
-                  </CaixaBimestre>
-                </div>
-                <div className="col-sm-4 col-md-4 col-lg-3 col-xl-3">
-                  <CampoData
-                    form={form}
-                    placeholder="Início do Bimestre"
-                    formatoData="DD/MM/YYYY"
-                    label="Início do Bimestre"
-                    name="primeiroBimestreDataInicial"
-                    onChange={onChangeCamposData}
-                  />
-                </div>
-                <div className="col-sm-4 col-md-4 col-lg-3 col-xl-3">
-                  <CampoData
-                    form={form}
-                    placeholder="Início do Bimestre"
-                    formatoData="DD/MM/YYYY"
-                    label="Fim do Bimestre"
-                    name="primeiroBimestreDataFinal"
-                    onChange={onChangeCamposData}
-                  />
-                </div>
-              </div>
-              <div className="row">
-                <div className="col-sm-4 col-md-4 col-lg-2 col-xl-2 mb-2">
-                  <CaixaBimestre>
-                    <BoxTextoBimetre>2 ° Bimestre</BoxTextoBimetre>
-                  </CaixaBimestre>
-                </div>
-                <div className="col-sm-4 col-md-4 col-lg-3 col-xl-3">
-                  <CampoData
-                    form={form}
-                    placeholder="Início do Bimestre"
-                    formatoData="DD/MM/YYYY"
-                    name="segundoBimestreDataInicial"
-                    onChange={onChangeCamposData}
-                  />
-                </div>
-                <div className="col-sm-4 col-md-4 col-lg-3 col-xl-3">
-                  <CampoData
-                    form={form}
-                    placeholder="Início do Bimestre"
-                    formatoData="DD/MM/YYYY"
-                    name="segundoBimestreDataFinal"
-                    onChange={onChangeCamposData}
-                  />
-                </div>
-              </div>
-
-              {isTipoCalendarioAnual ? (
-                <div className="row">
-                  <div className="col-sm-4 col-md-4 col-lg-2 col-xl-2 mb-2">
-                    <CaixaBimestre>
-                      <BoxTextoBimetre>3 ° Bimestre</BoxTextoBimetre>
-                    </CaixaBimestre>
-                  </div>
-                  <div className="col-sm-4 col-md-4 col-lg-3 col-xl-3">
-                    <CampoData
-                      form={form}
-                      placeholder="Início do Bimestre"
-                      formatoData="DD/MM/YYYY"
-                      name="terceiroBimestreDataInicial"
-                      onChange={onChangeCamposData}
-                    />
-                  </div>
-                  <div className="col-sm-4 col-md-4 col-lg-3 col-xl-3">
-                    <CampoData
-                      form={form}
-                      placeholder="Início do Bimestre"
-                      formatoData="DD/MM/YYYY"
-                      name="terceiroBimestreDataFinal"
-                      onChange={onChangeCamposData}
-                    />
-                  </div>
-                </div>
-              ) : (
-                ''
-              )}
-
-              {isTipoCalendarioAnual ? (
-                <div className="row">
-                  <div className="col-sm-4 col-md-4 col-lg-2 col-xl-2 mb-2">
-                    <CaixaBimestre>
-                      <BoxTextoBimetre>4 ° Bimestre</BoxTextoBimetre>
-                    </CaixaBimestre>
-                  </div>
-                  <div className="col-sm-4 col-md-4 col-lg-3 col-xl-3">
-                    <CampoData
-                      form={form}
-                      placeholder="Início do Bimestre"
-                      formatoData="DD/MM/YYYY"
-                      name="quartoBimestreDataInicial"
-                      onChange={onChangeCamposData}
-                    />
-                  </div>
-                  <div className="col-sm-4 col-md-4 col-lg-3 col-xl-3">
-                    <CampoData
-                      form={form}
-                      placeholder="Início do Bimestre"
-                      formatoData="DD/MM/YYYY"
-                      name="quartoBimestreDataFinal"
-                      onChange={onChangeCamposData}
-                    />
-                  </div>
-                </div>
+                  {isTipoCalendarioAnual ? (
+                    <>
+                      {terceiroBimestre(form)}
+                      {quartoBimestre(form)}
+                    </>
+                  ) : (
+                    ''
+                  )}
+                </>
               ) : (
                 ''
               )}

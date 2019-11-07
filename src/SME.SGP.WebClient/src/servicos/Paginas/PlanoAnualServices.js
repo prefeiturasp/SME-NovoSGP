@@ -1,4 +1,5 @@
 import API from '../api';
+import DisciplinaDTO from '~/dtos/disciplinaDto';
 
 const Service = {
   getDisciplinasProfessor: async (RF, CodigoTurma) => {
@@ -6,11 +7,34 @@ const Service = {
       Service._getBaseUrlDisciplinasProfessor(RF, CodigoTurma)
     );
 
+    return requisicao.data.map(
+      req =>
+        new DisciplinaDTO(
+          req.codigoComponenteCurricular,
+          req.nome,
+          req.possuiObjetivos,
+          req.regencia
+        )
+    );
+  },
+
+  getDisciplinasProfessorObjetivos: async (
+    codigoTurma,
+    disciplinaSelecionada
+  ) => {
+    const requisicao = await API.get(
+      Service._getBaseUrlDisciplinasProfessorObjetivo(
+        codigoTurma,
+        disciplinaSelecionada
+      )
+    );
+
     return requisicao.data.map(req => {
       return {
         codigo: req.codigoComponenteCurricular,
         materia: req.nome,
         possuiObjetivos: req.possuiObjetivos,
+        regencia: req.regencia,
       };
     });
   },
@@ -29,8 +53,11 @@ const Service = {
     return requisicao.data;
   },
 
-  postPlanoAnual: async Bimestres => {
-    const ObjetoEnviar = Service._getObjetoPostPlanoAnual(Bimestres);
+  postPlanoAnual: async (Bimestres, codigoDisciplinaPlanoAnual) => {
+    const ObjetoEnviar = Service._getObjetoPostPlanoAnual(
+      Bimestres,
+      codigoDisciplinaPlanoAnual
+    );
 
     const Erros = Service._validarDTO(ObjetoEnviar, Bimestres);
 
@@ -86,6 +113,13 @@ const Service = {
     return `v1/professores/${RF}/turmas/${CodigoTurma}/disciplinas/`;
   },
 
+  _getBaseUrlDisciplinasProfessorObjetivo: (
+    codigoTurma,
+    disciplinaSelecionada
+  ) => {
+    return `v1/professores/turmas/${codigoTurma}/disciplinas/planejamento?codigoDisciplina=${disciplinaSelecionada.codigo}&regencia=${disciplinaSelecionada.regencia}`;
+  },
+
   _getBaseUrlObjetivosFiltro: () => {
     return `v1/objetivos-aprendizagem`;
   },
@@ -102,7 +136,7 @@ const Service = {
     return 'v1/planos/anual/validar-existente';
   },
 
-  _getObjetoPostPlanoAnual: Bimestres => {
+  _getObjetoPostPlanoAnual: (Bimestres, codigoDisciplinaPlanoAnual) => {
     const BimestresFiltrados = Bimestres.filter(x => x.ehExpandido);
 
     const ObjetoEnviar = {
@@ -110,6 +144,7 @@ const Service = {
       EscolaId: 0,
       TurmaId: 0,
       Id: 0,
+      ComponenteCurricularEolId: 0,
       Bimestres: [],
     };
 
@@ -139,6 +174,7 @@ const Service = {
       ObjetoEnviar.EscolaId = bimestre.escolaId;
       ObjetoEnviar.TurmaId = bimestre.turmaId;
       ObjetoEnviar.Id = bimestre.id;
+      ObjetoEnviar.ComponenteCurricularEolId = codigoDisciplinaPlanoAnual;
 
       ObjetoEnviar.Bimestres.push(BimestreDTO);
     });
@@ -155,6 +191,13 @@ const Service = {
       typeof DTO.AnoLetivo === 'undefined'
     )
       Erros.push('Ano letivo não informado');
+
+    if (
+      !DTO.ComponenteCurricularEolId ||
+      DTO.ComponenteCurricularEolId === '' ||
+      typeof DTO.ComponenteCurricularEolId === 'undefined'
+    )
+      Erros.push('Disciplina do plano anual não informada');
 
     if (
       !DTO.EscolaId ||
@@ -205,8 +248,22 @@ const Service = {
   urlObterPlanoAnual: () => {
     return `v1/planos/anual/obter`;
   },
+
+  urlObterBimestreExpandido: () => {
+    return `v1/planos/anual/obter/expandido`;
+  },
+
   obterBimestre: bimestre => {
     return API.post(Service.urlObterPlanoAnual(), bimestre);
+  },
+
+  obterBimestreExpandido: filtroPlanoAnualExpandidoDto => {
+    console.log(filtroPlanoAnualExpandidoDto);
+
+    return API.post(
+      Service.urlObterBimestreExpandido(),
+      filtroPlanoAnualExpandidoDto
+    );
   },
 };
 

@@ -117,6 +117,7 @@ export const Topo = styled.div`
     overflow: hidden;
     text-overflow: ellipsis;
     direction: ltr;
+    text-align: center;
   }
 
   .perfil-edit{
@@ -125,6 +126,15 @@ export const Topo = styled.div`
 
   .perfil-edit i{
     margin-right: 4px;
+  }
+
+  .icone-perfil{
+    color: ${Base.CinzaBotao};
+    background: ${Base.Branco};
+    font-size: 60px;
+    border-radius: 50%;
+    padding: 1px 1px 0 1px;
+    margin-bottom: 10px;
   }
 `;
 

@@ -1,4 +1,7 @@
-﻿using System.Threading.Tasks;
+﻿using SME.SGP.Infra;
+using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace SME.SGP.Dominio.Interfaces
 {
@@ -8,10 +11,20 @@ namespace SME.SGP.Dominio.Interfaces
 
         Task AlterarEmailUsuarioPorRfOuInclui(string codigoRf, string novoEmail);
 
-        void ModificarPerfil(string perfilParaModificar, string login);
+        string ObterClaim(string nomeClaim);
+
+        string ObterLoginAtual();
+
+        Guid ObterPerfilAtual();
+
+        IEnumerable<Permissao> ObterPermissoes();
+
+        string ObterRf();
+
+        Task<Usuario> ObterUsuarioLogado();
 
         Usuario ObterUsuarioPorCodigoRfLoginOuAdiciona(string codigoRf, string login = "");
 
-        Task PodeModificarPerfil(string perfilParaModificar, string login);
+        Task PodeModificarPerfil(Guid perfilParaModificar, string login);
     }
 }

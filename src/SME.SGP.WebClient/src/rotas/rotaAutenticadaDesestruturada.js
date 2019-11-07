@@ -5,16 +5,21 @@ import { useSelector } from 'react-redux';
 const RotaAutenticadaDesestruturada = props => {
   const { component: Componente, ...propriedades } = props;
   const logado = useSelector(state => state.usuario.logado);
+  const primeiroAcesso = useSelector(state => state.usuario.modificarSenha);
 
   return (
     <Route
       {...propriedades}
       render={propriedade =>
         logado ? (
-          <Componente {...propriedade} />
+          primeiroAcesso ? (
+            <Redirect to="/redefinir-senha" />
+          ) : (
+            <Componente {...propriedade} />
+          )
         ) : (
           <Redirect
-            to={`/Login/${btoa(
+            to={`/login/${btoa(
               props.location.pathname + props.location.search
             )}`}
           />

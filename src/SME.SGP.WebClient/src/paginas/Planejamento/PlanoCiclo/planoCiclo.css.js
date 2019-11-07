@@ -64,8 +64,8 @@ export const Badge = styled.span`
   cursor: pointer;
   padding-top: 6px;
 
-  &[opcao-selecionada='true'] {
-    background: ${Base.AzulAnakiwa} !important;
+  &[opcao-selecionada='true'] {    
+    background: ${Base.AzulAnakiwa};
   }
 `;
 

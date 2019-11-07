@@ -7,7 +7,6 @@ const TextEditor = React.forwardRef((props, ref) => {
   const { value, onBlur, disabled, onClick, alt, estadoAdicional } = props;
 
   useEffect(() => {
-
     if (estadoAdicional && estadoAdicional.focado) ref.current.focus();
 
     if (estadoAdicional && estadoAdicional.ultimoFoco)
@@ -21,12 +20,10 @@ const TextEditor = React.forwardRef((props, ref) => {
         if (value !== ref.current.state.value) onBlur(ref.current.state.value);
       }
     };
-  });
+  }, []);
 
   const onBlurQuill = (posicaoAnterior, origem, editor) => {
-
-    if (onBlur && origem === "user") onBlur(ref.current.state.value);
-
+    if (onBlur && origem === 'user') onBlur(ref.current.state.value);
   };
 
   const onClickQuill = posicao => {
@@ -54,7 +51,7 @@ TextEditor.propTypes = {
 };
 
 TextEditor.defaultProps = {
-  onBlur: () => { },
+  onBlur: () => {},
   value: '',
 };
 

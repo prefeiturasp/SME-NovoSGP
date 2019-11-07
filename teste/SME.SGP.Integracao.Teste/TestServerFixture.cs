@@ -1,5 +1,4 @@
 ﻿using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.PlatformAbstractions;
@@ -7,7 +6,7 @@ using Npgsql;
 using Postgres2Go;
 using SME.SGP.Api;
 using SME.SGP.Aplicacao.Servicos;
-using SME.SGP.Dominio;
+using SME.SGP.Infra;
 using System;
 using System.IO;
 using System.Linq;
@@ -48,11 +47,7 @@ namespace SME.SGP.Integracao.Teste
                     .AddJsonFile(ObterArquivoConfiguracao(), optional: false)
                     .Build();
 
-                var context = new DefaultHttpContext();
-                var obj = new HttpContextAccessor();
-                obj.HttpContext = context;
-
-                servicoTokenJwt = new ServicoTokenJwt(config, obj);
+                servicoTokenJwt = new ServicoTokenJwt(config);
             }
             catch (Exception ex)
             {
@@ -71,9 +66,12 @@ namespace SME.SGP.Integracao.Teste
             runner.Dispose();
         }
 
-        public string GerarToken(Permissao[] permissoes)
+        public string GerarToken(Permissao[] permissoes, string login = "teste", string codigoRf = "123", string guidPerfil = "")
         {
-            return servicoTokenJwt.GerarToken("teste", permissoes);
+            if (string.IsNullOrEmpty(guidPerfil))
+                guidPerfil = Guid.NewGuid().ToString();
+
+            return servicoTokenJwt.GerarToken(login, codigoRf, Guid.Parse(guidPerfil), permissoes);
         }
 
         public string ObterArquivoConfiguracao()

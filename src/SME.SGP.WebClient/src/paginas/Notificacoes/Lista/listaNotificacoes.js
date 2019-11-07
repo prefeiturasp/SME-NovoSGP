@@ -6,7 +6,7 @@ import Button from '~/componentes/button';
 import CampoTexto from '~/componentes/campoTexto';
 import { Colors } from '~/componentes/colors';
 import SelectComponent from '~/componentes/select';
-import DataTable from '~/componentes/table/dataTable';
+import ListaPaginada from '~/componentes/listaPaginada/listaPaginada';
 import { confirmar } from '~/servicos/alertas';
 import api from '~/servicos/api';
 import history from '~/servicos/history';
@@ -16,15 +16,20 @@ import { EstiloLista } from './estiloLista';
 import notificacaoStatus from '~/dtos/notificacaoStatus';
 import CampoTextoBusca from '~/componentes/campoTextoBusca';
 import { URL_HOME } from '~/constantes/url';
+import RotasDto from '~/dtos/rotasDto';
+import { verificaSomenteConsulta } from '~/servicos/servico-navegacao';
 
 export default function NotificacoesLista() {
   const [idNotificacoesSelecionadas, setIdNotificacoesSelecionadas] = useState(
     []
   );
-  const [listaNotificacoes, setListaNotificacoes] = useState([]);
+
+  const [notificacoesSelecionadas, setNotificacoesSelecionadas] = useState([]);
+  const [notificacoes, setNotificacoes] = useState([]);
   const [listaCategorias, setListaCategorias] = useState([]);
   const [listaStatus, setListaStatus] = useState([]);
   const [listaTipos, setTipos] = useState([]);
+  const [filtro, setFiltro] = useState({});
 
   const [dropdownTurmaSelecionada, setTurmaSelecionada] = useState();
   const [statusSelecionado, setStatusSelecionado] = useState();
@@ -40,6 +45,7 @@ export default function NotificacoesLista() {
   const [colunasTabela, setColunasTabela] = useState([]);
 
   const usuario = useSelector(store => store.usuario);
+  const permissoesTela = usuario.permissoes[RotasDto.NOTIFICACOES];
 
   useEffect(() => {
     const colunas = [
@@ -47,6 +53,7 @@ export default function NotificacoesLista() {
         title: 'Código',
         dataIndex: 'codigo',
         render: (text, row) => montarLinhasTabela(text, row),
+        align: 'center',
       },
       {
         title: 'Tipo',
@@ -72,6 +79,7 @@ export default function NotificacoesLista() {
         title: 'Data/Hora',
         dataIndex: 'data',
         width: 200,
+        align: 'center',
         render: (text, row) => {
           const dataFormatada = moment(text).format('DD/MM/YYYY HH:mm:ss');
           return montarLinhasTabela(dataFormatada, row);
@@ -80,6 +88,8 @@ export default function NotificacoesLista() {
     ];
 
     setColunasTabela(colunas);
+    verificaSomenteConsulta(permissoesTela);
+    setDesabilitarBotaoExcluir(permissoesTela.podeExcluir);
   }, []);
 
   useEffect(() => {
@@ -98,11 +108,7 @@ export default function NotificacoesLista() {
   }, []);
 
   useEffect(() => {
-    if (
-      usuario &&
-      usuario.turmaSelecionada &&
-      usuario.turmaSelecionada.length
-    ) {
+    if (usuario && usuario.turmaSelecionada) {
       setDesabilitarTurma(false);
     } else {
       setDesabilitarTurma(true);
@@ -129,36 +135,25 @@ export default function NotificacoesLista() {
   const statusLista = ['', 'Não lida', 'Lida', 'Aceita', 'Recusada'];
 
   function montarLinhasTabela(text, row, colunaSituacao) {
-    return row.status === notificacaoStatus.Pendente ? (
-      colunaSituacao ? (
-        <span className="cor-vermelho font-weight-bold text-uppercase">
+    return colunaSituacao ? (
+        <span className={row.status === notificacaoStatus.Pendente ? 'cor-vermelho font-weight-bold text-uppercase' : 'cor-novo-registro-lista'}>
           {statusLista[row.status]}
         </span>
       ) : (
-          <span className="cor-novo-registro-lista">{text}</span>
-        )
-    ) : (
-        text
-      );
+      text
+    );
   }
-
-  function onSelectRow(ids) {
-
-    if (ids && ids.length > 0) {
-      const notifSelecionadas = listaNotificacoes.filter(noti => {
-        return ids.includes(noti.id);
-      });
-
-      const naoPodeRemover = notifSelecionadas.find(item => !item.podeRemover);
+  const onSelecionarItems = items => {
+    if (items && items.length > 0) {
+      setNotificacoesSelecionadas(items);
+      const naoPodeRemover = items.find(item => !item.podeRemover);
       if (naoPodeRemover) {
         setDesabilitarBotaoExcluir(true);
       } else {
         setDesabilitarBotaoExcluir(false);
       }
 
-      const naoPodeMarcarLido = notifSelecionadas.find(
-        item => !item.podeMarcarComoLida
-      );
+      const naoPodeMarcarLido = items.find(item => !item.podeMarcarComoLida);
       if (naoPodeMarcarLido) {
         setDesabilitarBotaoMarcarLido(true);
       } else {
@@ -169,12 +164,8 @@ export default function NotificacoesLista() {
       setDesabilitarBotaoMarcarLido(true);
     }
 
-    setIdNotificacoesSelecionadas(ids);
-  }
-
-  function onClickRow(row) {
-    onClickEditar(row.id);
-  }
+    setIdNotificacoesSelecionadas(items.map(c => c.id));
+  };
 
   function onChangeTurma(turma) {
     setTurmaSelecionada(turma);
@@ -204,11 +195,13 @@ export default function NotificacoesLista() {
     setTipoSelecionado(tipo);
   }
 
-  function onClickEditar(id) {
-    history.push(`/notificacoes/${id}`);
+  function onClickEditar(notificacao) {
+    if (!permissoesTela.podeAlterar) return;
+
+    history.push(`/notificacoes/${notificacao.id}`);
   }
 
-  async function onClickFiltrar() {
+  const filtrarNotificacoes = async () => {
     const paramsQuery = {
       categoria: categoriaSelecionada,
       codigo: codigoSelecionado || null,
@@ -216,37 +209,36 @@ export default function NotificacoesLista() {
       tipo: tipoSelecionado,
       titulo: tituloSelecionado || null,
       usuarioRf: usuario.rf,
-      anoLetivo: usuario.filtroAtual.anoLetivo
+      anoLetivo: usuario.filtroAtual.anoLetivo,
     };
     if (dropdownTurmaSelecionada && dropdownTurmaSelecionada == '2') {
-      if (usuario.turmaSelecionada && usuario.turmaSelecionada.length) {
-        paramsQuery.ano = usuario.turmaSelecionada[0].ano;
-        paramsQuery.dreId = usuario.turmaSelecionada[0].codDre;
-        paramsQuery.ueId = usuario.turmaSelecionada[0].codEscola;
+      if (usuario.turmaSelecionada) {
+        paramsQuery.ano = usuario.turmaSelecionada.ano;
+        paramsQuery.dreId = usuario.turmaSelecionada.dre;
+        paramsQuery.ueId = usuario.turmaSelecionada.unidadeEscolar;
       }
-      if (
-        usuario.turmaSelecionada &&
-        usuario.turmaSelecionada.length &&
-        !desabilitarTurma
-      ) {
-        paramsQuery.turmaId = usuario.turmaSelecionada[0].codEscola;
+      if (usuario.turmaSelecionada && !desabilitarTurma) {
+        paramsQuery.turmaId = usuario.turmaSelecionada.unidadeEscolar;
       }
     }
-    const listaNotifi = await api.get('v1/notificacoes', {
-      params: paramsQuery,
-    });
-    setListaNotificacoes(listaNotifi.data);
-    setIdNotificacoesSelecionadas([]);
-    onSelectRow([]);
+    setFiltro(paramsQuery);
+  };
+
+  async function onClickFiltrar() {
+    filtrarNotificacoes();
   }
 
   function marcarComoLida() {
+    if (!permissoesTela.podeAlterar) return;
+
     servicoNotificacao.marcarComoLida(idNotificacoesSelecionadas, () =>
       onClickFiltrar()
     );
   }
 
   async function excluir() {
+    if (!permissoesTela.podeExcluir) return;
+
     const confirmado = await confirmar(
       'Atenção',
       'Você tem certeza que deseja excluir estas notificações?'
@@ -276,6 +268,7 @@ export default function NotificacoesLista() {
             placeholder="Título"
             onChange={onChangeTitulo}
             value={tituloSelecionado}
+            desabilitado={!permissoesTela.podeConsultar}
           />
         </div>
         <div className="col-md-6 pb-3">
@@ -284,6 +277,7 @@ export default function NotificacoesLista() {
             onSearch={onSearchCodigo}
             onChange={onChangeCodigo}
             value={codigoSelecionado}
+            desabilitado={!permissoesTela.podeConsultar}
             onKeyDown={quandoTeclaParaBaixoPesquisaCodigo}
             type="number"
           />
@@ -298,7 +292,7 @@ export default function NotificacoesLista() {
             onChange={onChangeTurma}
             valueSelect={dropdownTurmaSelecionada || []}
             placeholder="Turma"
-            disabled={desabilitarTurma}
+            disabled={desabilitarTurma || !permissoesTela.podeConsultar}
           />
         </div>
         <div className="col-md-3 pb-3">
@@ -307,6 +301,7 @@ export default function NotificacoesLista() {
             id="status-noti"
             lista={listaStatus}
             valueOption="id"
+            disabled={!permissoesTela.podeConsultar}
             valueText="descricao"
             onChange={onChangeStatus}
             valueSelect={statusSelecionado || []}
@@ -319,6 +314,7 @@ export default function NotificacoesLista() {
             id="categoria-noti"
             lista={listaCategorias}
             valueOption="id"
+            disabled={!permissoesTela.podeConsultar}
             valueText="descricao"
             onChange={onChangeCategoria}
             valueSelect={categoriaSelecionada || []}
@@ -332,6 +328,7 @@ export default function NotificacoesLista() {
             lista={listaTipos}
             valueOption="id"
             valueText="descricao"
+            disabled={!permissoesTela.podeConsultar}
             onChange={onChangeTipo}
             valueSelect={tipoSelecionado || []}
             placeholder="Tipo"
@@ -344,7 +341,7 @@ export default function NotificacoesLista() {
             border
             className="mb-2 ml-2 float-right"
             onClick={excluir}
-            disabled={desabilitarBotaoExcluir}
+            disabled={desabilitarBotaoExcluir || !permissoesTela.podeExcluir}
           />
           <Button
             label="Marcar como lida"
@@ -352,7 +349,7 @@ export default function NotificacoesLista() {
             border
             className="mb-2 ml-2 float-right"
             onClick={marcarComoLida}
-            disabled={desabilitarBotaoMarcarLido}
+            disabled={desabilitarBotaoMarcarLido || !permissoesTela.podeAlterar}
           />
           <Button
             label="Voltar"
@@ -363,14 +360,15 @@ export default function NotificacoesLista() {
           />
         </div>
         <div className="col-md-12 pt-2">
-          <DataTable
+          <ListaPaginada
+            url="v1/notificacoes/"
             id="lista-notificacoes"
-            selectedRowKeys={idNotificacoesSelecionadas}
-            onSelectRow={onSelectRow}
-            onClickRow={onClickRow}
-            columns={colunasTabela}
-            dataSource={listaNotificacoes}
-            selectMultipleRows
+            colunaChave="codigo"
+            colunas={colunasTabela}
+            filtro={filtro}
+            onClick={permissoesTela.podeAlterar && onClickEditar}
+            multiSelecao
+            selecionarItems={onSelecionarItems}
           />
         </div>
       </EstiloLista>

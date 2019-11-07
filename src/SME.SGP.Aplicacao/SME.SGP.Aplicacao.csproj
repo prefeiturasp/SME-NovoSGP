@@ -15,7 +15,11 @@
     <ProjectReference Include="..\SME.SGP.Dados\SME.SGP.Dados.csproj" />
     <ProjectReference Include="..\SME.SGP.Dominio.Interfaces\SME.SGP.Dominio.Interfaces.csproj" />
     <ProjectReference Include="..\SME.SGP.Dominio\SME.SGP.Dominio.csproj" />
-    <ProjectReference Include="..\SME.SGP.Dto\SME.SGP.Dto.csproj" />
+    <ProjectReference Include="..\SME.SGP.Infra\SME.SGP.Infra.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Servicos\Interfaces\" />
   </ItemGroup>
 
 </Project>

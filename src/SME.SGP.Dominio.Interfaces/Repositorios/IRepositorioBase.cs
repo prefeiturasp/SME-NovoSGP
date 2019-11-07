@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace SME.SGP.Dominio.Interfaces
 {
@@ -13,5 +14,7 @@ namespace SME.SGP.Dominio.Interfaces
         void Remover(T entidade);
 
         long Salvar(T entidade);
+
+        Task<long> SalvarAsync(T entidade);
     }
 }

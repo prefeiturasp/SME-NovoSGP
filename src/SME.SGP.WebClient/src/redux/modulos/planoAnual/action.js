@@ -1,5 +1,6 @@
 import Servico from '../../../servicos/Paginas/PlanoAnualServices';
 import { sucesso, erro } from '../../../servicos/alertas';
+import filtroPlanoAnualDto from '~/dtos/filtroPlanoAnualDto';
 
 export function Salvar(indice, bimestre) {
   return {
@@ -11,9 +12,44 @@ export function Salvar(indice, bimestre) {
   };
 }
 
+export function SalvarBimestres(bimestres) {
+  return {
+    type: '@bimestres/SalvarTodosBimestres',
+    payload: bimestres,
+  };
+}
+
+export function SalvarDisciplinasPlanoAnual(disciplinas) {
+  return {
+    type: '@bimestres/SalvarDisciplinasPlanoAnual',
+    payload: disciplinas,
+  };
+}
+
+export function SelecionarDisciplinaPlanoAnual(codigo) {
+  return {
+    type: '@bimestres/SelecionarDisciplinaPlanoAnual',
+    payload: {
+      codigo,
+    },
+  };
+}
+
+export function RemoverFocado() {
+  return {
+    type: '@bimestres/RemoverFocado',
+  };
+}
+
+export function LimparDisciplinaPlanoAnual() {
+  return {
+    type: '@bimestres/LimparDisciplinaPlanoAnual',
+  };
+}
+
 export function LimparBimestres() {
   return {
-    type: '@bimestres/LimparBimestres'
+    type: '@bimestres/LimparBimestres',
   };
 }
 
@@ -157,9 +193,9 @@ export function PosPost(recarregar) {
   };
 }
 
-export function Post(bimestres) {
+export function Post(bimestres, codigoDisciplinaPlanoAnual) {
   return dispatch => {
-    Servico.postPlanoAnual(bimestres)
+    Servico.postPlanoAnual(bimestres, codigoDisciplinaPlanoAnual)
       .then(() => {
         requestAnimationFrame(() => dispatch(setNaoEdicao()));
         sucesso('Suas informações foram salvas com sucesso.');
@@ -223,14 +259,21 @@ export function removerSelecaoTodosObjetivos(indice) {
   };
 }
 
-export function ObterBimestreServidor(Bimestre) {
+export function ObterBimestreServidor(
+  Bimestre,
+  disciplinaSelecionada,
+  layoutEspecial
+) {
+  const filtro = new filtroPlanoAnualDto(
+    Bimestre.anoLetivo,
+    Bimestre.indice,
+    Bimestre.escolaId,
+    Bimestre.turmaId,
+    disciplinaSelecionada
+  );
+
   return dispatch => {
-    Servico.obterBimestre({
-      AnoLetivo: Bimestre.anoLetivo,
-      Bimestre: Bimestre.indice,
-      EscolaId: Bimestre.escolaId,
-      TurmaId: Bimestre.turmaId,
-    })
+    Servico.obterBimestre(filtro)
       .then(res => {
         const bimestreDTO = res.data;
 
@@ -245,7 +288,7 @@ export function ObterBimestreServidor(Bimestre) {
             alteradoRF: bimestreDTO.alteradoRF,
             criadoRF: bimestreDTO.criadoRF,
             criadoEm: bimestreDTO.criadoEm,
-            LayoutEspecial: bimestreDTO.migrado,
+            LayoutEspecial: bimestreDTO.migrado || layoutEspecial,
             migrado: bimestreDTO.migrado,
             criadoPor: bimestreDTO.criadoPor,
             objetivosAprendizagem: bimestreDTO.objetivosAprendizagem.map(
