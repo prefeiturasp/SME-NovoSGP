@@ -29,7 +29,6 @@ function ModalRecorrencia({
   initialValues,
   onCloseRecorrencia,
   onSaveRecorrencia,
-  dataInicioEvento,
 }) {
   const [habilitaSalvar, setHabilitaSalvar] = useState(false);
 
@@ -59,28 +58,6 @@ function ModalRecorrencia({
     quantidadeRecorrencia: null,
   });
 
-  useEffect(() => {
-    debugger;
-    if (dataInicioEvento) {
-      setDataInicio(dataInicioEvento);
-    } else if (initialValues) {
-      setDefaultValues(initialValues);
-    }
-  });
-
-  useEffect(() => {
-    setHabilitaSalvar(formIsValid());
-  }, [
-    dataInicio,
-    dataTermino,
-    diasSemana,
-    diaSemana,
-    diaNumero,
-    padraoRecorrencia,
-    quantidadeRecorrencia,
-    tipoRecorrencia,
-  ]);
-
   /**
    * @description Verifica se o botao de salvar deve ser habilitado
    */
@@ -100,6 +77,26 @@ function ModalRecorrencia({
 
     return false;
   };
+
+  useEffect(() => {
+    if (initialValues) {
+      setDataInicio(initialValues.dataInicio);
+      setDefaultValues(initialValues);
+    }
+  });
+
+  useEffect(() => {
+    setHabilitaSalvar(formIsValid());
+  }, [
+    dataInicio,
+    dataTermino,
+    diasSemana,
+    diaSemana,
+    diaNumero,
+    padraoRecorrencia,
+    quantidadeRecorrencia,
+    tipoRecorrencia,
+  ]);
 
   const onChangeWeekDay = day => {
     const exists = diasSemana.some(x => x.value === day.value);
@@ -248,7 +245,7 @@ function ModalRecorrencia({
                   </VerticalCentered>
                 </BootstrapRow>
                 <HelperText diasSemana={diasSemana} />
-                <WarningText />
+                <WarningText dataTermino={dataTermino} />
               </Form>
             )}
           </Formik>
@@ -260,14 +257,16 @@ function ModalRecorrencia({
 
 ModalRecorrencia.defaultProps = {
   show: false,
-  dataInicioEvento: new Date(),
+  loading: false,
+  initialValues: {},
   onCloseRecorrencia: () => {},
   onSaveRecorrencia: () => {},
 };
 
 ModalRecorrencia.propTypes = {
   show: PropTypes.bool,
-  dataInicioEvento: PropTypes.oneOfType([PropTypes.any]),
+  loading: PropTypes.bool,
+  initialValues: PropTypes.oneOfType([PropTypes.any, PropTypes.object]),
   onCloseRecorrencia: PropTypes.func,
   onSaveRecorrencia: PropTypes.func,
 };
