@@ -23,16 +23,13 @@ namespace SME.SGP.Dominio
         public EventoLetivo Letivo { get; set; }
         public bool Migrado { get; set; }
         public string Nome { get; set; }
-
         public TipoCalendario TipoCalendario { get; set; }
-
         public long TipoCalendarioId { get; set; }
-
         public EventoTipo TipoEvento { get; set; }
-
         public long TipoEventoId { get; set; }
-
         public string UeId { get; set; }
+        public WorkflowAprovacao WorkflowAprovacao { get; set; }
+        public long? WorkflowAprovacaoId { get; set; }
 
         public void AdicionarTipoEvento(EventoTipo tipoEvento)
         {
