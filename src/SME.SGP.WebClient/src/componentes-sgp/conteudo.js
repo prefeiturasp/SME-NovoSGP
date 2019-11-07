@@ -88,7 +88,15 @@ const Conteudo = props => {
                 </ContainerBotoes>,
               ]}
             >
-              {confirmacao.texto}
+              {
+                confirmacao.texto && Array.isArray(confirmacao.texto) ?
+                  confirmacao.texto.map((item, i) => (
+                    <div key={item + '-' + i}>
+                      {item}
+                    </div>
+                  ))
+                  : confirmacao.texto
+              }
               {confirmacao.texto ? <br /> : ''}
               <b>{confirmacao.textoNegrito}</b>
             </Modal>
@@ -101,6 +109,18 @@ const Conteudo = props => {
                 </Grid>
               </Row>
             ))}
+            <Row key={shortid.generate()} hidden={!NavegacaoStore.somenteConsulta}>
+              <Grid cols={12}>
+                <Alert
+                  alerta={{
+                    tipo: 'warning',
+                    id: 'AlertaPrincipal',
+                    mensagem: 'Você tem apenas permissão de consulta nesta tela.',
+                    estiloTitulo: { fontSize: '18px' },
+                  }}
+                />
+              </Grid>
+            </Row>
             {children}
           </div>
         </main>

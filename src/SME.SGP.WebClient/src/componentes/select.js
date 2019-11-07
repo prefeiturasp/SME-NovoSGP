@@ -1,9 +1,10 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import styled from 'styled-components';
-import Select from 'antd/es/select';
+import { Select } from 'antd';
 import Icon from 'antd/es/icon';
 import shortid from 'shortid';
+import { Field } from 'formik';
 import { Base } from './colors';
 import Label from './label';
 
@@ -44,13 +45,24 @@ const Container = styled.div`
       margin-top: 3px;
     }
   }
+
+  div[class*='is-invalid'] {
+    .ant-select-selection {
+      border-color: #dc3545 !important;
+    }
+  }
 `;
 
-const SelectComponent = props => {
+const Erro = styled.span`
+  color: ${Base.Vermelho};
+`;
+
+const SelectComponent = React.forwardRef((props, ref) => {
   const {
     name,
     id,
     className,
+    classNameContainer,
     onChange,
     label,
     valueText,
@@ -61,40 +73,87 @@ const SelectComponent = props => {
     alt,
     multiple,
     disabled,
+    form,
   } = props;
 
   const { Option } = Select;
 
+  const possuiErro = () => {
+    return form && form.errors[name] && form.touched[name];
+  };
+
+  const opcoesLista = () => {
+    return (
+      lista.length &&
+      lista.map(item => {
+        return (
+          <Option key={shortid.generate()} value={`${item[valueOption]}`}>
+            {`${item[valueText]}`}
+          </Option>
+        );
+      })
+    );
+  };
+
+  const campoComValidacoes = () => (
+    <Field
+      mode={multiple && 'multiple'}
+      suffixIcon={<Icon type="caret-down" />}
+      className={
+        form
+          ? `overflow-hidden ${possuiErro() ? 'is-invalid' : ''} ${className ||
+              ''}`
+          : ''
+      }
+      name={name}
+      id={id || name}
+      value={form.values[name]}
+      placeholder={placeholder}
+      notFoundContent="Sem dados"
+      alt={alt}
+      optionFilterProp="children"
+      allowClear
+      disabled={disabled}
+      component={Select}
+      type="input"
+      onChange={e => {
+        form.setFieldValue(name, e);
+        onChange(e);
+      }}
+      innerRef={ref}
+    >
+      {opcoesLista()}
+    </Field>
+  );
+
+  const campoSemValidacoes = () => (
+    <Select
+      mode={multiple && 'multiple'}
+      suffixIcon={<Icon type="caret-down" />}
+      className={`overflow-hidden ${className}`}
+      name={name}
+      id={id}
+      onChange={onChange}
+      value={valueSelect}
+      placeholder={placeholder}
+      notFoundContent="Sem dados"
+      alt={alt}
+      optionFilterProp="children"
+      allowClear
+      disabled={disabled}
+      ref={ref}
+    >
+      {opcoesLista()}
+    </Select>
+  );
   return (
-    <Container>
+    <Container className={classNameContainer && classNameContainer}>
       {label ? <Label text={label} control={name} /> : ''}
-      <Select
-        mode={multiple && 'multiple'}
-        suffixIcon={<Icon type="caret-down" />}
-        className={`overflow-hidden ${className}`}
-        name={name}
-        id={id}
-        onChange={onChange}
-        value={valueSelect}
-        placeholder={placeholder}
-        notFoundContent="Sem dados"
-        alt={alt}
-        optionFilterProp="children"
-        allowClear
-        disabled={disabled}
-      >
-        {lista.length &&
-          lista.map(item => {
-            return (
-              <Option key={shortid.generate()} value={`${item[valueOption]}`}>
-                {`${item[valueText]}`}
-              </Option>
-            );
-          })}
-      </Select>
+      {form ? campoComValidacoes() : campoSemValidacoes()}
+      {form ? <Erro>{form.errors[name]}</Erro> : ''}
     </Container>
   );
-};
+});
 
 SelectComponent.propTypes = {
   name: PropTypes.string,

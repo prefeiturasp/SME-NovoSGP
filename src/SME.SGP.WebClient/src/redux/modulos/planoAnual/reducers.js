@@ -1,6 +1,7 @@
 import produce from 'immer';
 
 const INICIAL = {
+  disciplinasPlanoAnual: [],
   bimestres: [],
   bimestresErro: {
     type: '',
@@ -19,12 +20,41 @@ export default function bimestres(state = INICIAL, action) {
         draft.bimestresErro = state.bimestresErro;
 
         break;
+      case '@bimestres/SalvarTodosBimestres':
+        draft.bimestres = action.payload;
+        draft.bimestresErro = state.bimestresErro;
+
+        break;
+      case '@bimestres/SalvarDisciplinasPlanoAnual':
+        draft.disciplinasPlanoAnual = action.payload;
+        break;
+      case '@bimestres/SelecionarDisciplinaPlanoAnual':
+        draft.disciplinasPlanoAnual.forEach(disciplina => {
+          disciplina.selecionada = false;
+        });
+
+        draft.disciplinasPlanoAnual.find(
+          disciplina => disciplina.codigo == action.payload.codigo
+        ).selecionada = true;
+        break;
+      case '@bimestres/LimparDisciplinaPlanoAnual':
+        if (
+          state.disciplinasPlanoAnual &&
+          state.disciplinasPlanoAnual.length > 0
+        )
+          draft.disciplinasPlanoAnual.map(disciplina => {
+            disciplina.selecionada = false;
+            return disciplina;
+          });
+        break;
       case '@bimestres/PrePostBimestre':
         const paraEnvio = state.bimestres.filter(x => x.ehEdicao);
         paraEnvio.forEach(elem => {
-          draft.bimestres[elem.indice].objetivo = state.bimestres[
-            elem.indice
-          ].setarObjetivo();
+          if (state.bimestres[elem.indice].setarObjetivo)
+            draft.bimestres[elem.indice].objetivo = state.bimestres[
+              elem.indice
+            ].setarObjetivo();
+
           draft.bimestres[elem.indice].paraEnviar = true;
         });
         draft.bimestresErro = state.bimestresErro;
@@ -45,6 +75,8 @@ export default function bimestres(state = INICIAL, action) {
 
         break;
       case '@bimestres/SalvarEhExpandido':
+        if (!state.bimestres[action.payload.indice]) return;
+
         draft.bimestres[action.payload.indice].ehExpandido =
           action.payload.ehExpandido;
         draft.bimestres[action.payload.indice].ehEdicao =
@@ -98,7 +130,7 @@ export default function bimestres(state = INICIAL, action) {
 
         draft.bimestres[action.payload.indice].ehEdicao = true;
 
-        if (state.bimestres[action.payload.indice])
+        if (state.bimestres[action.payload.indice].setarObjetivo)
           draft.bimestres[action.payload.indice].objetivo = state.bimestres[
             action.payload.indice
           ].setarObjetivo();
@@ -106,6 +138,8 @@ export default function bimestres(state = INICIAL, action) {
         break;
 
       case '@bimestres/SetarDescricao':
+        if (!state.bimestres[action.payload.indice]) return;
+
         draft.bimestres[action.payload.indice].objetivo =
           action.payload.descricao;
         draft.bimestresErro = state.bimestresErro;
@@ -114,7 +148,7 @@ export default function bimestres(state = INICIAL, action) {
 
       case '@bimestres/LimparBimestres':
         draft.bimestres = [];
-        
+
         break;
 
       case '@bimestres/BimestresErro':
@@ -123,6 +157,15 @@ export default function bimestres(state = INICIAL, action) {
 
         break;
 
+      case '@bimestres/RemoverFocado':
+        draft.bimestres = draft.bimestres.map(x => {
+          if (!x) return x;
+
+          x.focado = false;
+
+          return x;
+        });
+        break;
       case '@bimestres/LimparBimestresErro':
         draft.bimestres = state.bimestres;
         draft.bimestresErro = action.payload;
@@ -132,10 +175,9 @@ export default function bimestres(state = INICIAL, action) {
       case '@bimestres/PosPostBimestre':
         draft.bimestres = draft.bimestres.map(x => {
           x.paraEnviar = false;
+          x.recarregarPlanoAnual = action.payload;
           return x;
         });
-
-        draft.bimestres[1].recarregarPlanoAnual = action.payload;
 
         break;
       case '@bimestres/setEdicaoFalse':

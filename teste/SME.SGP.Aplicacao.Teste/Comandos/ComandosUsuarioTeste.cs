@@ -3,6 +3,7 @@ using Moq;
 using SME.SGP.Aplicacao.Integracoes;
 using SME.SGP.Aplicacao.Servicos;
 using SME.SGP.Dominio.Interfaces;
+using SME.SGP.Infra;
 using Xunit;
 
 namespace SME.SGP.Aplicacao.Teste.Comandos
@@ -11,6 +12,7 @@ namespace SME.SGP.Aplicacao.Teste.Comandos
     {
         private readonly ComandosUsuario comandosUsuario;
         private readonly Mock<IRepositorioUsuario> repositorioUsuario;
+        private readonly Mock<IServicoAbrangencia> servicoAbrangencia;
         private readonly Mock<IServicoAutenticacao> servicoAutenticacao;
         private readonly Mock<IServicoEmail> servicoEmail;
         private readonly Mock<IServicoEOL> servicoEOL;
@@ -26,9 +28,13 @@ namespace SME.SGP.Aplicacao.Teste.Comandos
             servicoPerfil = new Mock<IServicoPerfil>();
             servicoTokenJwt = new Mock<IServicoTokenJwt>();
             servicoEOL = new Mock<IServicoEOL>();
+            var repositorioCache = new Mock<IRepositorioCache>();
             servicoEmail = new Mock<IServicoEmail>();
             var mockConfiguration = new Mock<IConfiguration>();
-            comandosUsuario = new ComandosUsuario(repositorioUsuario.Object, servicoAutenticacao.Object, servicoUsuario.Object, servicoPerfil.Object, servicoEOL.Object, servicoTokenJwt.Object, servicoEmail.Object, mockConfiguration.Object);
+            servicoAbrangencia = new Mock<IServicoAbrangencia>();
+
+            comandosUsuario = new ComandosUsuario(repositorioUsuario.Object, servicoAutenticacao.Object, servicoUsuario.Object, servicoPerfil.Object, servicoEOL.Object, servicoTokenJwt.Object, servicoEmail.Object,
+                mockConfiguration.Object, repositorioCache.Object, servicoAbrangencia.Object);
         }
 
         [Fact]
@@ -52,8 +58,8 @@ namespace SME.SGP.Aplicacao.Teste.Comandos
             //ARRANGE
             var codigoRfTeste = "loginTeste";
 
+            servicoUsuario.Setup(a => a.ObterLoginAtual()).Returns(codigoRfTeste);
             servicoUsuario.Setup(a => a.AlterarEmailUsuarioPorRfOuInclui(codigoRfTeste, "jose@jose.com"));
-            servicoTokenJwt.Setup(a => a.ObterLoginAtual()).Returns(codigoRfTeste);
 
             //ACT
             await comandosUsuario.AlterarEmailUsuarioLogado("jose@jose.com");
@@ -71,7 +77,7 @@ namespace SME.SGP.Aplicacao.Teste.Comandos
             servicoUsuario.Setup(a => a.AlterarEmailUsuarioPorRfOuInclui(codigoRfTeste, "jose@jose.com"));
 
             //ACT
-            await comandosUsuario.AlterarEmail(new Dto.AlterarEmailDto() { NovoEmail = "jose@jose.com" }, codigoRfTeste);
+            await comandosUsuario.AlterarEmail(new AlterarEmailDto() { NovoEmail = "jose@jose.com" }, codigoRfTeste);
 
             //ASSERT
             Assert.True(true);

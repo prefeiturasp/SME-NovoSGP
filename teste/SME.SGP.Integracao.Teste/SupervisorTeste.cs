@@ -1,6 +1,5 @@
 ﻿using Newtonsoft.Json;
-using SME.SGP.Dominio;
-using SME.SGP.Dto;
+using SME.SGP.Infra;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
@@ -32,7 +31,7 @@ namespace SME.SGP.Integracao.Teste
             _fixture._clientApi.DefaultRequestHeaders.Clear();
 
             _fixture._clientApi.DefaultRequestHeaders.Authorization =
-                new AuthenticationHeaderValue("Bearer", _fixture.GerarToken(new Permissao[] { }));
+                new AuthenticationHeaderValue("Bearer", _fixture.GerarToken(new Permissao[] { Permissao.ASP_I, Permissao.ASP_A, Permissao.ASP_E, Permissao.ASP_C }));
 
             var postResult = _fixture._clientApi.GetAsync($"api/v1/supervisores/dre/{dreId}?nome={parteNome}").Result;
 
@@ -51,7 +50,7 @@ namespace SME.SGP.Integracao.Teste
             _fixture._clientApi.DefaultRequestHeaders.Clear();
 
             _fixture._clientApi.DefaultRequestHeaders.Authorization =
-                new AuthenticationHeaderValue("Bearer", _fixture.GerarToken(new Permissao[] { }));
+                new AuthenticationHeaderValue("Bearer", _fixture.GerarToken(new Permissao[] { Permissao.ASP_I, Permissao.ASP_A, Permissao.ASP_E, Permissao.ASP_C }));
 
             var post = JsonConvert.SerializeObject(new AtribuicaoSupervisorUEDto
             {

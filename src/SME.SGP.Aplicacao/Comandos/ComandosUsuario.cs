@@ -3,7 +3,7 @@ using SME.SGP.Aplicacao.Integracoes;
 using SME.SGP.Aplicacao.Servicos;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
-using SME.SGP.Dto;
+using SME.SGP.Infra;
 using System;
 using System.IO;
 using System.Linq;
@@ -14,7 +14,9 @@ namespace SME.SGP.Aplicacao
     public class ComandosUsuario : IComandosUsuario
     {
         private readonly IConfiguration configuration;
+        private readonly IRepositorioCache repositorioCache;
         private readonly IRepositorioUsuario repositorioUsuario;
+        private readonly IServicoAbrangencia servicoAbrangencia;
         private readonly IServicoAutenticacao servicoAutenticacao;
         private readonly IServicoEmail servicoEmail;
         private readonly IServicoEOL servicoEOL;
@@ -29,7 +31,9 @@ namespace SME.SGP.Aplicacao
             IServicoEOL servicoEOL,
             IServicoTokenJwt servicoTokenJwt,
             IServicoEmail servicoEmail,
-            IConfiguration configuration)
+            IConfiguration configuration,
+            IRepositorioCache repositorioCache,
+            IServicoAbrangencia servicoAbrangencia)
         {
             this.repositorioUsuario = repositorioUsuario ??
                 throw new System.ArgumentNullException(nameof(repositorioUsuario));
@@ -43,8 +47,12 @@ namespace SME.SGP.Aplicacao
                 throw new System.ArgumentNullException(nameof(servicoEOL));
             this.servicoTokenJwt = servicoTokenJwt ??
                 throw new System.ArgumentNullException(nameof(servicoTokenJwt));
+            this.servicoAbrangencia = servicoAbrangencia ??
+                throw new System.ArgumentNullException(nameof(servicoAbrangencia));
+
             this.servicoEmail = servicoEmail ?? throw new ArgumentNullException(nameof(servicoEmail));
             this.configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
+            this.repositorioCache = repositorioCache ?? throw new ArgumentNullException(nameof(repositorioCache));
         }
 
         //  TODO: aplicar validações permissão de acesso
@@ -55,8 +63,20 @@ namespace SME.SGP.Aplicacao
 
         public async Task AlterarEmailUsuarioLogado(string novoEmail)
         {
-            var login = servicoTokenJwt.ObterLoginAtual();
+            var login = servicoUsuario.ObterLoginAtual();
             await servicoUsuario.AlterarEmailUsuarioPorLogin(login, novoEmail);
+        }
+
+        public async Task AlterarSenha(AlterarSenhaDto alterarSenhaDto)
+        {
+            var login = servicoUsuario.ObterLoginAtual();
+            var usuario = servicoUsuario.ObterUsuarioPorCodigoRfLoginOuAdiciona(null, login);
+            if (usuario == null)
+            {
+                throw new NegocioException("Usuário não encontrado.");
+            }
+            usuario.ValidarSenha(alterarSenhaDto.NovaSenha);
+            await servicoAutenticacao.AlterarSenha(login, alterarSenhaDto.SenhaAtual, alterarSenhaDto.NovaSenha);
         }
 
         public async Task AlterarSenhaComTokenRecuperacao(RecuperacaoSenhaDto recuperacaoSenhaDto)
@@ -105,7 +125,10 @@ namespace SME.SGP.Aplicacao
                 var usuario = servicoUsuario.ObterUsuarioPorCodigoRfLoginOuAdiciona(retornoAutenticacaoEol.Item2, login);
 
                 retornoAutenticacaoEol.Item1.PerfisUsuario = servicoPerfil.DefinirPerfilPrioritario(retornoAutenticacaoEol.Item3, usuario);
-                var permissionamentos = await servicoEOL.ObterPermissoesPorPerfil(retornoAutenticacaoEol.Item1.PerfisUsuario.PerfilSelecionado);
+
+                var perfilSelecionado = retornoAutenticacaoEol.Item1.PerfisUsuario.PerfilSelecionado;
+
+                var permissionamentos = await servicoEOL.ObterPermissoesPorPerfil(perfilSelecionado);
 
                 if (permissionamentos == null || !permissionamentos.Any())
                 {
@@ -118,26 +141,28 @@ namespace SME.SGP.Aplicacao
                         .Select(a => (Permissao)a)
                         .ToList();
 
-                    retornoAutenticacaoEol.Item1.Token = servicoTokenJwt.GerarToken(login, listaPermissoes);
+                    retornoAutenticacaoEol.Item1.Token = servicoTokenJwt.GerarToken(login, usuario.CodigoRf, retornoAutenticacaoEol.Item1.PerfisUsuario.PerfilSelecionado, listaPermissoes);
 
                     usuario.AtualizaUltimoLogin();
                     repositorioUsuario.Salvar(usuario);
+                    await servicoAbrangencia.Salvar(login, perfilSelecionado, true);
                 }
             }
             return retornoAutenticacaoEol.Item1;
         }
 
-        public async Task<string> ModificarPerfil(string guid)
+        public async Task<string> ModificarPerfil(Guid perfil)
         {
-            string loginAtual = servicoTokenJwt.ObterLoginAtual();
+            string loginAtual = servicoUsuario.ObterLoginAtual();
+            string codigoRfAtual = servicoUsuario.ObterRf();
 
-            await servicoUsuario.PodeModificarPerfil(guid, loginAtual);
+            await servicoUsuario.PodeModificarPerfil(perfil, loginAtual);
 
-            var permissionamentos = await servicoEOL.ObterPermissoesPorPerfil(Guid.Parse(guid));
+            var permissionamentos = await servicoEOL.ObterPermissoesPorPerfil(perfil);
 
             if (permissionamentos == null || !permissionamentos.Any())
             {
-                throw new NegocioException($"Não foi possível obter os permissionamentos do perfil {guid}");
+                throw new NegocioException($"Não foi possível obter os permissionamentos do perfil selecionado");
             }
             else
             {
@@ -146,7 +171,9 @@ namespace SME.SGP.Aplicacao
                     .Select(a => (Permissao)a)
                     .ToList();
 
-                return servicoTokenJwt.GerarToken(loginAtual, listaPermissoes);
+                await servicoAbrangencia.Salvar(loginAtual, perfil, false);
+
+                return servicoTokenJwt.GerarToken(loginAtual, codigoRfAtual, perfil, listaPermissoes);
             }
         }
 
@@ -165,6 +192,13 @@ namespace SME.SGP.Aplicacao
             }
 
             return retorno;
+        }
+
+        public void Sair()
+        {
+            var login = servicoUsuario.ObterLoginAtual();
+            var chaveRedis = $"perfis-usuario-{login}";
+            repositorioCache.SalvarAsync(chaveRedis, string.Empty);
         }
 
         public string SolicitarRecuperacaoSenha(string login)

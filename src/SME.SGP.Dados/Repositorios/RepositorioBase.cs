@@ -4,6 +4,7 @@ using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace SME.SGP.Dados.Repositorios
 {
@@ -60,9 +61,43 @@ namespace SME.SGP.Dados.Repositorios
             return entidade.Id;
         }
 
+        public virtual async Task<long> SalvarAsync(T entidade)
+        {
+            if (entidade.Id > 0)
+            {
+                entidade.AlteradoEm = DateTime.Now;
+                entidade.AlteradoPor = database.UsuarioLogadoNomeCompleto;
+                entidade.AlteradoRF = database.UsuarioLogadoRF;
+                await database.Conexao.UpdateAsync(entidade);
+                await AuditarAsync(entidade.Id, "A");
+            }
+            else
+            {
+                entidade.CriadoPor = database.UsuarioLogadoNomeCompleto;
+                entidade.CriadoRF = database.UsuarioLogadoRF;
+                entidade.Id = (long)(await database.Conexao.InsertAsync(entidade));
+                await AuditarAsync(entidade.Id, "I");
+            }
+
+            return entidade.Id;
+        }
+
         private void Auditar(long identificador, string acao)
         {
             database.Conexao.Insert<Auditoria>(new Auditoria()
+            {
+                Data = DateTime.Now,
+                Entidade = typeof(T).Name.ToLower(),
+                Chave = identificador,
+                Usuario = database.UsuarioLogadoNomeCompleto,
+                RF = database.UsuarioLogadoRF,
+                Acao = acao
+            });
+        }
+
+        private async Task AuditarAsync(long identificador, string acao)
+        {
+            await database.Conexao.InsertAsync<Auditoria>(new Auditoria()
             {
                 Data = DateTime.Now,
                 Entidade = typeof(T).Name.ToLower(),
