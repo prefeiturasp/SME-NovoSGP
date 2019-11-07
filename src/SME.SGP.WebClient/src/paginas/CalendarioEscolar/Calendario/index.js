@@ -25,40 +25,58 @@ const CalendarioEscolar = () => {
   const [tipoCalendarioSelecionado, setTipoCalendarioSelecionado] = useState();
 
   const [diasLetivos, setDiasLetivos] = useState({});
-
   const turmaSelecionada = useSelector(state => state.usuario.turmaSelecionada);
+  const modalidadesAbrangencia = useSelector(state => state.filtro.modalidades);
 
   useEffect(() => {
-    if (turmaSelecionada) {
-      const tiposCalendarioLista = [];
-      api
-        .get('v1/calendarios/tipos')
-        .then(resposta => {
-          if (resposta.data) {
-            resposta.data
-              .filter(
-                tipo =>
-                  tipo.anoLetivo === turmaSelecionada.anoLetivo &&
-                  ((tipo.modalidade === 1 &&
-                    (turmaSelecionada.modalidade === '5' ||
-                      turmaSelecionada.modalidade === '6')) ||
-                    (tipo.modalidade === 2 &&
-                      turmaSelecionada.modalidade === '3'))
-              )
-              .forEach(tipo => {
-                tiposCalendarioLista.push({ desc: tipo.nome, valor: tipo.id });
-              });
-            setTiposCalendario(tiposCalendarioLista);
-          } else setTiposCalendario([]);
-        })
-        .catch(() => {
-          setTiposCalendario([]);
-        });
-    } else {
-      erro('Você precisa escolher uma turma');
+    console.log('abriu');
+    const modalidades = [];
+    if (modalidadesAbrangencia) {
+      modalidadesAbrangencia.forEach(modalidade => {
+        if (
+          (modalidade.valor === 5 || modalidade.valor === 6) &&
+          !modalidades.includes(1)
+        )
+          modalidades.push(1);
+        if (modalidade.valor === 3 && !modalidades.includes(2))
+          modalidades.push(2);
+      });
     }
+
+    api.get('v1/calendarios/tipos').then(resposta => {
+      if (resposta.data) {
+        const tipos = resposta.data.filter(
+          tipo => modalidades.indexOf(tipo.modalidade) > -1
+        );
+        const tiposCalendarioLista = [];
+        tipos.forEach(tipo => {
+          tiposCalendarioLista.push({
+            desc: tipo.nome,
+            valor: tipo.id,
+            modalidade: tipo.modalidade,
+          });
+        });
+        setTiposCalendario(tiposCalendarioLista);
+        faalgo();
+      }
+    });
+    console.log('pegou');
     return () => store.dispatch(zeraCalendario());
   }, []);
+
+  useEffect(() => {
+    console.log('mudou');
+    console.log(tiposCalendario);
+    // if (Object.entries(turmaSelecionada).length > 0) {
+    //   console.log(tiposCalendario);
+    //   const modalidadeSelecionada = turmaSelecionada.modalidade === '3' ? 2 : 1;
+    //   console.log(
+    //     tiposCalendario.filter(
+    //       tipo => tipo.modalidade === modalidadeSelecionada
+    //     )
+    //   );
+    // }
+  }, [turmaSelecionada]);
 
   useEffect(() => {
     let estado = true;
@@ -74,6 +92,9 @@ const CalendarioEscolar = () => {
           .catch(() => {
             setDiasLetivos({});
           });
+      } else {
+        // const itensCalendario = document.querySelectorAll('.mes-completo');
+        // console.log(itensCalendario);
       }
       setFiltros({ ...filtros, tipoCalendarioSelecionado });
     }
