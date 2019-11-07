@@ -1,4 +1,4 @@
-import React, { useState, useLayoutEffect } from 'react';
+import React, { useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import styled from 'styled-components';
 import * as moment from 'moment';
@@ -6,10 +6,15 @@ import DataTable from '~/componentes/table/dataTable';
 import { Colors } from '~/componentes/colors';
 import Button from '~/componentes/button';
 import history from '~/servicos/history';
+import servicoNotificacao from '~/servicos/Paginas/ServicoNotificacao';
 
 const ListaNotificacoes = () => {
+  const usuario = useSelector(state => state.usuario);
+  
+  useEffect(()=>{
+    servicoNotificacao.buscaNotificacoesPorAnoRf(2019, usuario.rf);
+  },[]);
   const notificacoes = useSelector(state => state.notificacoes);
-  const [selectedRowKeys, setSelectedRowKeys] = useState([]);
 
   const categoriaLista = ['', 'Alerta', 'Ação', 'Aviso'];
   const statusLista = ['', 'Não lida', 'Lida', 'Aceita', 'Recusada'];
@@ -60,15 +65,9 @@ const ListaNotificacoes = () => {
     },
   ];
 
-  const onSelectRow = row => {
-    setSelectedRowKeys(row);
+  const aoClicarNaLinha = row => {
+    history.push(`/notificacoes/${row.id}`);
   };
-
-  useLayoutEffect(() => {
-    if (selectedRowKeys[0]) {
-      history.push(`/notificacoes/${selectedRowKeys[0]}`);
-    }
-  }, [selectedRowKeys]);
 
   const onClickVerTudo = () => {
     history.push(`/notificacoes`);
@@ -87,8 +86,7 @@ const ListaNotificacoes = () => {
         columns={colunas}
         dataSource={notificacoes.notificacoes}
         pagination={false}
-        onSelectRow={onSelectRow}
-        selectedRowKeys={selectedRowKeys}
+        onClickRow={aoClicarNaLinha}
         locale={{ emptyText: 'Você não tem nenhuma notificação!' }}
       />
       <Button

@@ -9,6 +9,7 @@
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <DocumentationFile></DocumentationFile>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
   </PropertyGroup>
 
   <ItemGroup>
@@ -26,8 +27,14 @@
   <ItemGroup>
     <ProjectReference Include="..\SME.SGP.Aplicacao\SME.SGP.Aplicacao.csproj" />
     <ProjectReference Include="..\SME.SGP.Dados\SME.SGP.Dados.csproj" />
-    <ProjectReference Include="..\SME.SGP.Dto\SME.SGP.Dto.csproj" />
+    <ProjectReference Include="..\SME.SGP.Infra\SME.SGP.Infra.csproj" />
     <ProjectReference Include="..\SME.SGP.IoC\SME.SGP.IoC.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Update="wwwroot\ModelosEmail\RecuperacaoSenha.txt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
 
 </Project>

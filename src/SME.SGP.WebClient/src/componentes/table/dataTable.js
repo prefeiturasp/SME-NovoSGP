@@ -1,7 +1,7 @@
 import { Table } from 'antd';
 import PropTypes from 'prop-types';
 import React from 'react';
-import { Container } from './dataTabe.css';
+import { Container } from './dataTable.css';
 
 const DataTable = props => {
   const {
@@ -9,10 +9,12 @@ const DataTable = props => {
     columns,
     dataSource,
     onSelectRow,
+    onClickRow,
     selectMultipleRows,
     pageSize,
     pagination,
     locale,
+    idLinha,
   } = props;
 
   const rowSelection = {
@@ -35,17 +37,31 @@ const DataTable = props => {
     onSelectRow(selected);
   };
 
+  const clickRow = row => {
+    if (onClickRow) {
+      onClickRow(row);
+    }
+  };
+
   return (
     <Container className="table-responsive">
       <Table
         className={selectMultipleRows ? '' : 'ocultar-coluna-multi-selecao'}
-        rowKey="id"
+        rowKey={idLinha}
         rowSelection={rowSelection}
         columns={columns}
         dataSource={dataSource}
         onRow={row => ({
-          onClick: () => {
-            selectRow(row);
+          onClick: colunaClicada => {
+            if (
+              colunaClicada &&
+              colunaClicada.target &&
+              colunaClicada.target.className == 'ant-table-selection-column'
+            ) {
+              selectRow(row);
+            } else {
+              clickRow(row);
+            }
           },
         })}
         pagination={pagination}
@@ -53,6 +69,25 @@ const DataTable = props => {
         bordered
         size="middle"
         locale={locale}
+        onHeaderRow={() => {
+          return {
+            onClick: colunaClicada => {
+              if (
+                colunaClicada &&
+                colunaClicada.target &&
+                colunaClicada.target.className == 'ant-table-selection-column'
+              ) {
+                const checkboxSelecionarTodos = document
+                  .getElementsByClassName('ant-table-selection')[0]
+                  .getElementsByClassName('ant-checkbox-wrapper')[0]
+                  .getElementsByClassName('ant-checkbox')[0]
+                  .getElementsByClassName('ant-checkbox-input')[0];
+
+                checkboxSelecionarTodos.click();
+              }
+            },
+          };
+        }}
       />
     </Container>
   );
@@ -66,8 +101,9 @@ DataTable.propTypes = {
   selectMultipleRows: PropTypes.bool,
   pageSize: PropTypes.number,
   pagination: PropTypes.bool,
-  onRowClick: PropTypes.func,
+  onClickRow: PropTypes.func,
   locale: PropTypes.object,
+  idLinha: PropTypes.string,
 };
 
 DataTable.defaultProps = {
@@ -78,6 +114,7 @@ DataTable.defaultProps = {
   pagination: true,
   onRowClick: () => {},
   locale: { emptyText: 'Sem dados' },
+  idLinha: 'id',
 };
 
 export default DataTable;

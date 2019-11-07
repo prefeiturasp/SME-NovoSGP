@@ -72,6 +72,9 @@ export const Topo = styled.div`
     height: 150px;
     color: ${Base.Branco};
     width: 100%;
+    a, a:hover{
+      color: ${Base.Branco} !important;
+    }
   }
 
   .perfil-retraido{
@@ -99,15 +102,22 @@ export const Topo = styled.div`
     width: 60px;
     height: 60px;
     margin-bottom: 10px;
+    background:${Base.Branco};
   }
 
   .nome{
-    width: 100%;
+    width: 200px;
     border-radius: 15px;
     border: 1px solid ${Base.Branco};
     color: white;
     padding: 5px 15px;
     font-size: 12px;
+    display: inline-block;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    direction: ltr;
+    text-align: center;
   }
 
   .perfil-edit{
@@ -116,6 +126,15 @@ export const Topo = styled.div`
 
   .perfil-edit i{
     margin-right: 4px;
+  }
+
+  .icone-perfil{
+    color: ${Base.CinzaBotao};
+    background: ${Base.Branco};
+    font-size: 60px;
+    border-radius: 50%;
+    padding: 1px 1px 0 1px;
+    margin-bottom: 10px;
   }
 `;
 
@@ -189,9 +208,12 @@ export const MenuScope = styled.div`
 
 
   .ant-menu-item {
-    padding-left: 34px !important;
-    font-size: 12px !important;
     padding-left: 40px !important;
+    font-size: 12px !important;
+    height: auto !important;
+    line-height: normal !important;
+    padding-top: 10px !important;
+    padding-bottom: 10px !important;
   }
 
   .ant-menu-item-selected{
@@ -224,6 +246,7 @@ export const MenuScope = styled.div`
 
   .menuItem{
     color: ${Base.CinzaMenuItem} !important;
+    white-space: normal;
   }
 
   .ant-menu-submenu-title:hover:not(:disabled), .ant-menu-inline.ant-menu-sub, .ant-menu-submenu-open{

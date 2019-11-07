@@ -2,7 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
-using SME.SGP.Dto;
+using SME.SGP.Infra;
 using System.Linq;
 
 namespace SME.SGP.Api.Filtros

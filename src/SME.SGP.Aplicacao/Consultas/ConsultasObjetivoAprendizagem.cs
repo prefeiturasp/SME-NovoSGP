@@ -4,7 +4,7 @@ using SME.SGP.Aplicacao.Integracoes;
 using SME.SGP.Aplicacao.Integracoes.Respostas;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
-using SME.SGP.Dto;
+using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -30,9 +30,9 @@ namespace SME.SGP.Aplicacao
             this.configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
         }
 
-        public bool DisciplinaPossuiObjetivosDeAprendizagem(long codigoDisciplina)
+        public async Task<bool> DisciplinaPossuiObjetivosDeAprendizagem(long codigoDisciplina)
         {
-            var objetivos = Listar().Result;
+            var objetivos = await Listar();
             if (objetivos == null)
             {
                 throw new NegocioException("Não foi possível obter a lista de objetivos de aprendizagem");

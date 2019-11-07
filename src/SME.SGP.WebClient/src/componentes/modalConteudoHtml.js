@@ -1,6 +1,7 @@
-import { Modal, Row } from 'antd';
 import React from 'react';
+import { Modal, Row } from 'antd';
 import styled from 'styled-components';
+import PropTypes from 'prop-types';
 import Card from './cardBootstrap';
 import Button from './button';
 import { Base, Colors } from './colors';
@@ -68,16 +69,25 @@ const ModalConteudoHtml = props => {
     children,
     closable,
     loader,
-    desabilitarBotaoPrincipal
+    desabilitarBotaoPrincipal,
+    esconderBotoes,
+    width,
+    fecharAoClicarFora,
+    fecharAoClicarEsc,
+    esconderBotaoPrincipal,
+    esconderBotaoSecundario,
   } = props;
   return (
     <Container
+      keyboard={fecharAoClicarEsc}
+      maskClosable={fecharAoClicarFora}
       onCancel={onClose}
       title={titulo}
       visible={visivel}
-      closable={closable ? true : false}
+      closable={!!closable}
       centered
       confirmLoading={loader}
+      width={width}
       footer={
         tituloAtencao || perguntaAtencao ? (
           <>
@@ -89,7 +99,10 @@ const ModalConteudoHtml = props => {
                     <TextoAlerta className="m-b-20">
                       {perguntaAtencao}
                     </TextoAlerta>
-                    <div className="d-flex justify-content-end">
+                    <div
+                      className="d-flex justify-content-end"
+                      hidden={esconderBotoes}
+                    >
                       <Button
                         key="btn-sim-confirmacao"
                         label={labelBotaoSecundario}
@@ -115,7 +128,7 @@ const ModalConteudoHtml = props => {
             </Row>
           </>
         ) : (
-          <>
+          <div className="d-flex justify-content-end" hidden={esconderBotoes}>
             <Button
               key="btn-sim-confirmacao"
               label={labelBotaoSecundario}
@@ -124,6 +137,7 @@ const ModalConteudoHtml = props => {
               border
               className="mr-2 padding-btn-confirmacao"
               onClick={onConfirmacaoSecundaria}
+              hidden={esconderBotaoSecundario}
             />
             <Button
               key="btn-nao-confirmacao"
@@ -133,8 +147,9 @@ const ModalConteudoHtml = props => {
               className="padding-btn-confirmacao"
               onClick={onConfirmacaoPrincipal}
               disabled={desabilitarBotaoPrincipal}
+              hidden={esconderBotaoPrincipal}
             />
-          </>
+          </div>
         )
       }
     >
@@ -143,8 +158,22 @@ const ModalConteudoHtml = props => {
   );
 };
 
+ModalConteudoHtml.propTypes = {
+  width: PropTypes.number,
+  desabilitarBotaoPrincipal: PropTypes.bool,
+  fecharAoClicarFora: PropTypes.bool,
+  fecharAoClicarEsc: PropTypes.bool,
+  esconderBotaoPrincipal: PropTypes.bool,
+  esconderBotaoSecundario: PropTypes.bool,
+};
+
 ModalConteudoHtml.defaultProps = {
-  desabilitarBotaoPrincipal: false
+  desabilitarBotaoPrincipal: false,
+  width: 520,
+  fecharAoClicarFora: true,
+  fecharAoClicarEsc: true,
+  esconderBotaoPrincipal: false,
+  esconderBotaoSecundario: false,
 };
 
 export default ModalConteudoHtml;

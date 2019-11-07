@@ -1,6 +1,5 @@
 ﻿using Newtonsoft.Json;
-using SME.SGP.Dominio;
-using SME.SGP.Dto;
+using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
 using System.Net.Http;
@@ -27,7 +26,7 @@ namespace SME.SGP.Integracao.Teste
             _fixture._clientApi.DefaultRequestHeaders.Clear();
 
             _fixture._clientApi.DefaultRequestHeaders.Authorization =
-                new AuthenticationHeaderValue("Bearer", _fixture.GerarToken(new Permissao[] { Permissao.PA_C }));
+                new AuthenticationHeaderValue("Bearer", _fixture.GerarToken(new Permissao[] { Permissao.PA_C, Permissao.PA_A, Permissao.PA_I, Permissao.PA_E }));
 
             var filtros = new FiltroObjetivosAprendizagemDto();
             filtros.ComponentesCurricularesIds.Add(139);

@@ -1,15 +1,17 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using SME.SGP.Api.Filtros;
 using SME.SGP.Aplicacao;
-using SME.SGP.Dominio;
-using SME.SGP.Dto;
+using SME.SGP.Infra;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace SME.SGP.Api.Controllers
 {
     [ApiController]
     [Route("api/v1/notificacoes")]
     [ValidaDto]
+    [Authorize("Bearer")]
     public class NotificacaoController : ControllerBase
     {
         private readonly IComandosNotificacao comandosNotificacao;
@@ -31,12 +33,12 @@ namespace SME.SGP.Api.Controllers
         }
 
         [HttpGet]
-        [ProducesResponseType(typeof(IEnumerable<NotificacaoBasicaDto>), 200)]
+        [ProducesResponseType(typeof(PaginacaoResultadoDto<NotificacaoBasicaDto>), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [Permissao(Permissao.N_C, Policy = "Bearer")]
-        public IActionResult Get([FromQuery]NotificacaoFiltroDto notificacaoFiltroDto)
+        public async Task<IActionResult> Get([FromQuery]NotificacaoFiltroDto notificacaoFiltroDto)
         {
-            return Ok(consultasNotificacao.Listar(notificacaoFiltroDto));
+            return Ok(await consultasNotificacao.Listar(notificacaoFiltroDto));
         }
 
         [HttpGet]
@@ -73,6 +75,7 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(object), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [Route("quantidade/naolidas")]
+        [Permissao(Permissao.N_C, Policy = "Bearer")]
         public IActionResult ObtemQuantidadeNaoLida(int anoLetivo, string usuarioRf)
         {
             return Ok(new
@@ -105,6 +108,7 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(NotificacaoBasicaListaDto), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [Route("resumo")]
+        [Permissao(Permissao.N_C, Policy = "Bearer")]
         public IActionResult ObtenhaPorRFAnoLetivo(int anoLetivo, string usuarioRf)
         {
             return Ok(consultasNotificacao.ObterNotificacaoBasicaLista(anoLetivo, usuarioRf));

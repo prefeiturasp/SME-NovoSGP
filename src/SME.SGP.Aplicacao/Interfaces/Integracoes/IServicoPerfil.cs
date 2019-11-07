@@ -1,5 +1,5 @@
 ﻿using SME.SGP.Dominio;
-using SME.SGP.Dto;
+using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
 
