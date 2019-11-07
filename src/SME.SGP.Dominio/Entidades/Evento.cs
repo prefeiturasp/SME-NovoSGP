@@ -10,6 +10,7 @@ namespace SME.SGP.Dominio
         public Evento()
         {
             Excluido = false;
+            Status = EntidadeStatus.Ativo;
         }
 
         public DateTime DataFim { get; set; }
@@ -23,6 +24,7 @@ namespace SME.SGP.Dominio
         public EventoLetivo Letivo { get; set; }
         public bool Migrado { get; set; }
         public string Nome { get; set; }
+        public EntidadeStatus Status { get; set; }
         public TipoCalendario TipoCalendario { get; set; }
         public long TipoCalendarioId { get; set; }
         public EventoTipo TipoEvento { get; set; }
@@ -166,6 +168,12 @@ namespace SME.SGP.Dominio
                 if (!usuario.PossuiPerfilSme())
                     throw new NegocioException("Somente usuário com perfil SME pode cadastrar esse tipo de evento.");
             }
+        }
+
+        public void PodeSerEnviadoParaAprovacao()
+        {
+            if (Status != EntidadeStatus.AguardandoAprovacao)
+                throw new NegocioException("Este envento não está Aguardando Aprovação.");
         }
 
         public void ValidaPeriodoEvento()
