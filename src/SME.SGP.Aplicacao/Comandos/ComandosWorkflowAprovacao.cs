@@ -67,7 +67,7 @@ namespace SME.SGP.Aplicacao
                 }
             }
 
-            servicoWorkflowAprovacao.ConfiguracaoInicial(workflowAprovacao);
+            servicoWorkflowAprovacao.ConfiguracaoInicial(workflowAprovacao, workflowAprovacaoNiveisDto.EntidadeParaAprovarId);
         }
 
         private WorkflowAprovacao MapearDtoParaEntidade(WorkflowAprovacaoDto workflowAprovacaoNiveisDto)
