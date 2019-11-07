@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import shortid from 'shortid';
 
 // Redux
 import { useSelector } from 'react-redux';
@@ -88,17 +89,17 @@ const EventosForm = ({ match }) => {
   ] = useState([]);
 
   const [idEvento, setIdEvento] = useState(0);
-  let inicial = {
+  const inicial = {
     dataFim: '',
     dataInicio: '',
     descricao: '',
-    dreId: null,
-    feriadoId: null,
+    dreId: '',
+    feriadoId: '',
     letivo: 1,
     nome: '',
-    tipoCalendarioId: null,
-    tipoEventoId: null,
-    ueId: null,
+    tipoCalendarioId: '',
+    tipoEventoId: '',
+    ueId: '',
     recorrenciaEventos: null,
   };
   const [valoresIniciais, setValoresIniciais] = useState(inicial);
@@ -290,12 +291,8 @@ const EventosForm = ({ match }) => {
   };
 
   const exibirModalAtualizarEventos = async () => {
-    if (
-      idEvento > 0 &&
-      dataAlterada &&
-      true //valoresIniciais.recorrenciaEventos
-    ) {
-      return await confirmar(
+    if (idEvento > 0 && !dataAlterada && valoresIniciais.recorrenciaEventos) {
+      return confirmar(
         'Atualizar série',
         '',
         'Deseja também atualizar os eventos futuros pertencentes a mesma série que este?',
@@ -303,11 +300,12 @@ const EventosForm = ({ match }) => {
         'Cancelar'
       );
     }
+    return false;
   };
 
   const onClickCadastrar = async valoresForm => {
     const tiposCalendarioParaCopiar = listaCalendarioParaCopiar.map(id => {
-      const calendario = listaCalendarioEscolar.find(e => e.id == id);
+      const calendario = listaCalendarioEscolar.find(e => e.id === id);
       return {
         tipoCalendarioId: calendario.id,
         nomeCalendario: calendario.descricaoTipoCalendario,
@@ -315,27 +313,42 @@ const EventosForm = ({ match }) => {
     });
 
     try {
-      const cadastrado = await servicoEvento.salvar(idEvento || 0, {
+      let payload = {
         ...valoresForm,
         recorrenciaEventos: {
           ...recorrencia,
         },
         tiposCalendarioParaCopiar,
-      });
+      };
 
       const atualizarEventosFuturos = await exibirModalAtualizarEventos();
       if (atualizarEventosFuturos) {
-        alert('italo');
+        /**
+         * TODO: Aguardando API ser disponibilizada
+         */
+        console.log('Atualizar eventos futuros');
+        payload = {
+          ...payload,
+          atualizarEventosFuturos: true,
+        };
       }
 
-      if (cadastrado && cadastrado.status == 200) {
+      /**
+       * @description Metodo a ser disparado quando receber a mensagem do servidor
+       */
+      const onSuccessSave = response => {
         if (tiposCalendarioParaCopiar && tiposCalendarioParaCopiar.length > 0) {
-          setListaMensagensCopiarEvento(cadastrado.data);
+          setListaMensagensCopiarEvento(response.data);
           setExibirModalRetornoCopiarEvento(true);
         } else {
           sucesso('Evento cadastrado com sucesso');
           history.push('/calendario-escolar/eventos');
         }
+      };
+
+      const cadastrado = await servicoEvento.salvar(idEvento || 0, payload);
+      if (cadastrado && cadastrado.status === 200) {
+        onSuccessSave(cadastrado);
       }
     } catch (e) {
       erros(e);
@@ -478,21 +491,23 @@ const EventosForm = ({ match }) => {
 
   const montarExibicaoEventosCopiar = () => {
     return listaCalendarioParaCopiar.map((id, i) => {
-      const calendario = listaCalendarioEscolar.find(e => e.id == id);
+      const calendario = listaCalendarioEscolar.find(e => e.id === id);
       if (calendario && calendario.descricaoTipoCalendario) {
         return (
-          <div className="font-weight-bold" key={'calendario-' + i}>
-            {'-  ' + calendario.descricaoTipoCalendario}
+          <div
+            className="font-weight-bold"
+            key={`calendario-${shortid.generate()}`}
+          >
+            `- ${calendario.descricaoTipoCalendario}`
           </div>
         );
-      } else {
-        return '';
       }
+      return '';
     });
   };
 
   useEffect(() => {
-    setHabilitaRecorrencia(dataInicioEvento ? true : false);
+    setHabilitaRecorrencia(!!dataInicioEvento);
   }, [dataInicioEvento]);
 
   useEffect(() => {
@@ -539,12 +554,11 @@ const EventosForm = ({ match }) => {
     <>
       <Cabecalho pagina="Cadastro de Eventos no Calendário Escolar" />
       <ModalRecorrencia
-        dataInicioEvento={dataInicioEvento}
         onCloseRecorrencia={onCloseRecorrencia}
         onSaveRecorrencia={onSaveRecorrencia}
         show={showModalRecorrencia}
         loading={loading}
-        initialValues={valoresIniciais.recorrenciaEventos || null}
+        initialValues={{ dataInicio: dataInicioEvento }}
       />
       <Card>
         <Formik
@@ -741,6 +755,9 @@ const EventosForm = ({ match }) => {
                       !!valoresIniciais.id
                     }
                   />
+                  {!!recorrencia && (
+                    <small>Existe recorrência cadastrada</small>
+                  )}
                 </div>
                 <div className="col-sm-12 col-md-6 col-lg-3 col-xl-3 mb-2">
                   <RadioGroupButton
