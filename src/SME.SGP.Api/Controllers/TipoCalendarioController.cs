@@ -27,7 +27,7 @@ namespace SME.SGP.Api.Controllers
         [HttpGet]
         [ProducesResponseType(typeof(IEnumerable<TipoCalendarioDto>), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        [Permissao(Permissao.TCE_C, Policy = "Bearer")]
+        [Permissao(Permissao.TCE_C, Permissao.E_C, Policy = "Bearer")]
         public IActionResult BuscarTodos()
         {
             return Ok(consultas.Listar());
