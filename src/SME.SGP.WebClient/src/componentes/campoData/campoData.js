@@ -100,6 +100,7 @@ const CampoData = props => {
           valorData = valorData || '';
           form.setFieldValue(name, valorData);
           onChange(valorData);
+          form.setFieldTouched(name, true, true);
         }}
         value={form.values[name] || null}
         disabledDate={desabilitarData}
@@ -146,6 +147,7 @@ const CampoData = props => {
           valorHora = valorHora || '';
           form.setFieldValue(name, valorHora);
           onChange(valorHora);
+          form.setFieldTouched(name, true, true);
         }}
         value={form.values[name] || null}
       />
@@ -159,12 +161,20 @@ const CampoData = props => {
     return form ? campoDataAntComValidacoes() : campoDataAntSemValidacoes();
   };
 
+  const obterErros = () => {
+    return form && form.touched[name] && form.errors[name] ? (
+      <span>{form.errors[name]}</span>
+    ) : (
+      ''
+    );
+  };
+
   return (
     <>
       <Campo>
         {label ? <Label text={label} control={name} /> : ''}
         {validaTipoCampo()}
-        {form ? <span>{form.errors[name]}</span> : ''}
+        {obterErros()}
       </Campo>
     </>
   );
