@@ -9,14 +9,17 @@ namespace SME.SGP.Aplicacao
     public class ComandosTipoCalendario : IComandosTipoCalendario
     {
         private readonly IRepositorioTipoCalendario repositorio;
+        private readonly IRepositorioEvento repositorioEvento;
         private readonly IServicoEvento servicoEvento;
         private readonly IServicoFeriadoCalendario servicoFeriadoCalendario;
 
-        public ComandosTipoCalendario(IRepositorioTipoCalendario repositorio, IServicoFeriadoCalendario servicoFeriadoCalendario, IServicoEvento servicoEvento)
+        public ComandosTipoCalendario(IRepositorioTipoCalendario repositorio, IServicoFeriadoCalendario servicoFeriadoCalendario, IServicoEvento servicoEvento,
+            IRepositorioEvento repositorioEvento)
         {
             this.repositorio = repositorio ?? throw new ArgumentNullException(nameof(repositorio));
             this.servicoFeriadoCalendario = servicoFeriadoCalendario ?? throw new ArgumentNullException(nameof(servicoFeriadoCalendario));
             this.servicoEvento = servicoEvento ?? throw new ArgumentNullException(nameof(servicoEvento));
+            this.repositorioEvento = repositorioEvento ?? throw new ArgumentNullException(nameof(repositorioEvento));
         }
 
         public async Task Alterar(TipoCalendarioDto dto, long id)
@@ -50,6 +53,7 @@ namespace SME.SGP.Aplicacao
         public TipoCalendario MapearParaDominio(TipoCalendarioDto dto, long id)
         {
             TipoCalendario entidade = repositorio.ObterPorId(id);
+            bool possuiEventos = repositorioEvento.ExisteEventoPorTipoCalendarioId(id);
 
             if (entidade == null)
             {
@@ -57,10 +61,14 @@ namespace SME.SGP.Aplicacao
             }
 
             entidade.Nome = dto.Nome;
-            entidade.AnoLetivo = dto.AnoLetivo;
-            entidade.Periodo = dto.Periodo;
             entidade.Situacao = dto.Situacao;
-            entidade.Modalidade = dto.Modalidade;
+
+            if (!possuiEventos)
+            {
+                entidade.AnoLetivo = dto.AnoLetivo;
+                entidade.Periodo = dto.Periodo;
+                entidade.Modalidade = dto.Modalidade;
+            }
             return entidade;
         }
 
@@ -90,7 +98,7 @@ namespace SME.SGP.Aplicacao
         {
             var inclusao = dto.Id == 0;
 
-            var tipoCalendario = MapearParaDominio(dto, dto.id);
+            var tipoCalendario = MapearParaDominio(dto, dto.Id);
 
             bool ehRegistroExistente = await repositorio.VerificarRegistroExistente(dto.Id, dto.Nome);
 

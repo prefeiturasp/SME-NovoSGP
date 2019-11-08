@@ -17,6 +17,6 @@ namespace SME.SGP.Dominio.Interfaces
         Task<IEnumerable<EventosPorDiaRetornoQueryDto>> ObterQuantidadeDeEventosPorDia(CalendarioEventosFiltroDto calendarioEventosMesesFiltro, int mes);
 
         Task<IEnumerable<CalendarioEventosMesesDto>> ObterQuantidadeDeEventosPorMeses(CalendarioEventosFiltroDto calendarioEventosMesesFiltro);
-        bool ExisteEventoPorTipoCalendario(long tipoCalendarioId);
+        bool ExisteEventoPorTipoCalendarioId(long tipoCalendarioId);
     }
 }
