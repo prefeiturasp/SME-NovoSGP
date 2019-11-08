@@ -1,4 +1,5 @@
-﻿using SME.SGP.Dominio.Entidades;
+﻿using SME.SGP.Aplicacao;
+using SME.SGP.Dominio.Entidades;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System;
@@ -10,6 +11,7 @@ namespace SME.SGP.Dominio.Servicos
 {
     public class ServicoEvento : IServicoEvento
     {
+        private readonly IComandosWorkflowAprovacao comandosWorkflowAprovacao;
         private readonly IRepositorioEvento repositorioEvento;
         private readonly IRepositorioEventoTipo repositorioEventoTipo;
         private readonly IRepositorioFeriadoCalendario repositorioFeriadoCalendario;
@@ -22,7 +24,7 @@ namespace SME.SGP.Dominio.Servicos
                              IRepositorioPeriodoEscolar repositorioPeriodoEscolar,
                              IServicoUsuario servicoUsuario,
                              IRepositorioFeriadoCalendario repositorioFeriadoCalendario,
-                             IRepositorioTipoCalendario repositorioTipoCalendario)
+                             IRepositorioTipoCalendario repositorioTipoCalendario, IComandosWorkflowAprovacao comandosWorkflowAprovacao)
         {
             this.repositorioEvento = repositorioEvento ?? throw new System.ArgumentNullException(nameof(repositorioEvento));
             this.repositorioEventoTipo = repositorioEventoTipo ?? throw new System.ArgumentNullException(nameof(repositorioEventoTipo));
@@ -30,6 +32,7 @@ namespace SME.SGP.Dominio.Servicos
             this.servicoUsuario = servicoUsuario ?? throw new System.ArgumentNullException(nameof(servicoUsuario));
             this.repositorioFeriadoCalendario = repositorioFeriadoCalendario ?? throw new System.ArgumentNullException(nameof(repositorioFeriadoCalendario));
             this.repositorioTipoCalendario = repositorioTipoCalendario ?? throw new System.ArgumentNullException(nameof(repositorioTipoCalendario));
+            this.comandosWorkflowAprovacao = comandosWorkflowAprovacao;
         }
 
         public static DateTime ObterProximoDiaDaSemana(DateTime data, DayOfWeek diaDaSemana)
@@ -196,6 +199,13 @@ namespace SME.SGP.Dominio.Servicos
             await VerificaSeEventoAconteceJuntoComOrganizacaoEscolar(evento, usuario);
 
             evento.PodeCriarEventoLiberacaoExcepcional(evento, usuario, dataConfirmada, periodos);
+            if (evento.TipoEventoId == (int)TipoEventoEnum.LiberacaoExcepcional)
+            {
+                comandosWorkflowAprovacao.Salvar(new WorkflowAprovacaoDto()
+                {
+                    //Ano = evento.d
+                });
+            }
         }
 
         private async Task VerificaSeEventoAconteceJuntoComOrganizacaoEscolar(Evento evento, Usuario usuario)
