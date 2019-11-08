@@ -34,7 +34,7 @@ const CadastroAula = ({ match }) => {
   const [valoresIniciais, setValoresIniciais] = useState({});
   const inicial = {
     tipoAula: 1,
-    disciplinaId: '',
+    disciplinaId: undefined,
     quantidadeTexto: '',
     quantidadeRadio: 1,
     dataAula: '',
@@ -269,6 +269,18 @@ const CadastroAula = ({ match }) => {
     }
   };
 
+  const validaAntesDoSubmit = form => {    
+    const arrayCampos = Object.keys(inicial);
+    arrayCampos.forEach(campo => {
+      form.setFieldTouched(campo, true, true);
+    });
+    form.validateForm().then(() => {
+      if (form.isValid || Object.keys(form.errors).length == 0) {
+        form.handleSubmit(e => e);
+      }      
+    });
+  };
+
   return (
     <>
       <Cabecalho
@@ -319,7 +331,7 @@ const CadastroAula = ({ match }) => {
                     border
                     bold
                     className="mr-2"
-                    type="submit"
+                    onClick={()=> validaAntesDoSubmit(form)}
                   />
                 </div>
               </div>
