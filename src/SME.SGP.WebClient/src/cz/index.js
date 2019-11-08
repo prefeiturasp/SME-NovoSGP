@@ -1,18 +1,17 @@
 /* eslint-disable object-shorthand */
-export default {
+module.exports = {
   prompter: (cz, commit) => {
     function executeCommit(answers) {
       // parentheses are only needed when a scope is present
-      let escopo = answers.escopo.trim();
+      console.log(answers);
+      let tipo = answers.tipo.trim();
       let estoria = answers.estoria.trim();
 
       estoria = `${estoria ? `[AB#${estoria}]` : ''}`;
-      escopo = escopo ? `(${escopo})` : '';
+      tipo = tipo ? `(${tipo})` : '';
 
       // Hard limit this line
-      const head = `${estoria} ${
-        answers.type
-      } ${escopo} : ${answers.subject.trim()}`;
+      const head = `${tipo} ${estoria} : ${answers.subject.trim()}`;
 
       commit(head);
     }
@@ -68,12 +67,12 @@ export default {
         {
           type: 'input',
           name: 'subject',
-          message: 'Digite um resumom deste commit:\n',
+          message: 'Digite um resumo deste commit:\n',
           validate(input) {
             if (input && input.length > 0) {
               return true;
             }
-            return 'You need to provide a short description';
+            return 'Voce precisa digitar uma descriçao';
           },
         },
       ],
