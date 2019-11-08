@@ -99,6 +99,14 @@ const SelectComponent = React.forwardRef((props, ref) => {
     );
   };
 
+  const obterErros = () => {
+    return form && form.touched[name] && form.errors[name] ? (
+      <Erro>{form.errors[name]}</Erro>
+    ) : (
+      ''
+    );
+  };
+
   const campoComValidacoes = () => (
     <Field
       mode={multiple && 'multiple'}
@@ -123,6 +131,7 @@ const SelectComponent = React.forwardRef((props, ref) => {
       onChange={e => {
         form.setFieldValue(name, e);
         onChange(e);
+        form.setFieldTouched(name, true, true);
       }}
       innerRef={ref}
     >
@@ -154,7 +163,7 @@ const SelectComponent = React.forwardRef((props, ref) => {
     <Container className={classNameContainer && classNameContainer}>
       {label ? <Label text={label} control={name} /> : ''}
       {form ? campoComValidacoes() : campoSemValidacoes()}
-      {form ? <Erro>{form.errors[name]}</Erro> : ''}
+      {form ? obterErros() : ''}
     </Container>
   );
 });
