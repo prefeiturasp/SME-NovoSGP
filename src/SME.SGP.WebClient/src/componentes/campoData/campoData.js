@@ -23,6 +23,8 @@ class MomentSchema extends Yup.mixed {
 }
 
 const Campo = styled.div`
+  width: 100%;
+
   span {
     color: ${Base.Vermelho};
   }
@@ -51,6 +53,10 @@ const Campo = styled.div`
 
   .ant-calendar-picker {
     width: 100%;
+  }
+
+  label {
+    font-weight: bold;
   }
 `;
 
@@ -97,8 +103,7 @@ const CampoData = props => {
           form ? `${possuiErro() ? 'is-invalid' : ''} ${className || ''}` : ''
         }
         onChange={valorData => {
-          valorData = valorData || '';
-          form.setFieldValue(name, valorData);
+          form.setFieldValue(name, valorData || '');
           onChange(valorData);
           form.setFieldTouched(name, true, true);
         }}
