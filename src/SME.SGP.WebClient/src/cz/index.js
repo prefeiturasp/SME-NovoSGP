@@ -11,7 +11,7 @@ module.exports = {
       tipo = tipo ? `(${tipo})` : '';
 
       // Hard limit this line
-      const head = `${tipo} ${estoria} : ${answers.subject.trim()}`;
+      const head = `${tipo} ${estoria}: ${answers.subject.trim()}`;
 
       commit(head);
     }
