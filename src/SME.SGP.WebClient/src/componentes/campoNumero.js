@@ -38,6 +38,7 @@ const CampoNumero = React.forwardRef((props, ref) => {
     label,
     semMensagem,
     max,
+    min,
   } = props;
 
   const possuiErro = () => {
@@ -88,6 +89,7 @@ const CampoNumero = React.forwardRef((props, ref) => {
             onKeyDown={onKeyDown}
             value={value}
             max={max}
+            min={min}
           />
         )}
       </Campo>

@@ -7,7 +7,7 @@ export const ContainerModal = styled.div`
   }
 `;
 
-export const VerticalCentered = styled.div`
+export const VerticalCentralizado = styled.div`
   display: flex;
   align-items: center;
   color: ${Base.CinzaMako};
@@ -32,6 +32,6 @@ export const DefaultDropDownLink = styled.a`
   }
 `;
 
-export const SmallText = styled.small`
+export const TextoPequeno = styled.small`
   color: ${Base.RoxoFundo};
 `;

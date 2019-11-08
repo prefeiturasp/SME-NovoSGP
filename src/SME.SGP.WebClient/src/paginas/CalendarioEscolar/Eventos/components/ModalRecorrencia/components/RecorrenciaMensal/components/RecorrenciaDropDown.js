@@ -13,7 +13,7 @@ const SelectWrapper = styled.div`
   }
 `;
 
-function RecurrenceDropDown({ onChange, selected, form }) {
+function RecorrenciaDropDown({ onChange, selected, form }) {
   const items = [
     {
       desc: 'No dia',
@@ -58,13 +58,13 @@ function RecurrenceDropDown({ onChange, selected, form }) {
   );
 }
 
-RecurrenceDropDown.defaultProps = {
+RecorrenciaDropDown.defaultProps = {
   onChange: () => {},
   selected: {},
   form: {},
 };
 
-RecurrenceDropDown.propTypes = {
+RecorrenciaDropDown.propTypes = {
   onChange: PropTypes.func,
   selected: PropTypes.oneOfType([
     PropTypes.object,
@@ -79,4 +79,4 @@ RecurrenceDropDown.propTypes = {
   ]),
 };
 
-export default RecurrenceDropDown;
+export default RecorrenciaDropDown;

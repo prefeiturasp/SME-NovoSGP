@@ -5,7 +5,7 @@ import PropTypes from 'prop-types';
 import styled from 'styled-components';
 import { Base } from '~/componentes/colors';
 
-const Circle = styled.a`
+const Circulo = styled.a`
     padding: 8px 14px;
     border-radius: 40px;
     border: solid 1px #e8e8e8;
@@ -27,15 +27,15 @@ const Circle = styled.a`
     }
 `;
 
-function DayCircle({ isActive, onChange, data }) {
+function LabelDia({ isActive, onChange, data }) {
   return (
-    <Circle className={isActive && 'active'} onClick={() => onChange(data)}>
+    <Circulo className={isActive && 'active'} onClick={() => onChange(data)}>
       {data.label}
-    </Circle>
+    </Circulo>
   );
 }
 
-DayCircle.defaultProps = {
+LabelDia.defaultProps = {
   data: {
     label: '',
     value: '',
@@ -44,10 +44,10 @@ DayCircle.defaultProps = {
   isActive: false,
 };
 
-DayCircle.propTypes = {
+LabelDia.propTypes = {
   data: PropTypes.objectOf(PropTypes.any),
   onChange: PropTypes.func,
   isActive: PropTypes.bool,
 };
 
-export default DayCircle;
+export default LabelDia;

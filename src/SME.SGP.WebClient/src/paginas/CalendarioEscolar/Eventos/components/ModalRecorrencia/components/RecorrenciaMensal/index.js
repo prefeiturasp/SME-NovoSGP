@@ -2,13 +2,13 @@ import React from 'react';
 import PropTypes from 'prop-types';
 
 // Components
-import { VerticalCentered } from '../../styles';
-import BootstrapRow from '../BootstrapRow';
-import DaysDropDown from './components/DaysDropDown';
-import RecurrenceDropDown from './components/RecurrenceDropDown';
-import DayNumber from './components/DayNumber';
+import { VerticalCentralizado } from '../../styles';
+import LinhaBootstrap from '../LinhaBootstrap';
+import DiasDropDown from './components/DiasDropDown';
+import RecorrenciaDropDown from './components/RecorrenciaDropDown';
+import NumeroDia from './components/NumeroDia';
 
-function MonthlyRecurrence({
+function RecorrenciaMensal({
   currentRecurrence,
   onChangeRecurrence,
   currentDayNumber,
@@ -19,42 +19,42 @@ function MonthlyRecurrence({
 }) {
   return (
     <>
-      <BootstrapRow>
-        <VerticalCentered className="col-lg-12">
+      <LinhaBootstrap>
+        <VerticalCentralizado className="col-lg-12">
           <span style={{ paddingBottom: '7px', fontWeight: 'bold' }}>
             Padrão de recorrência
           </span>
-        </VerticalCentered>
-        <VerticalCentered className="col-lg-4">
-          <RecurrenceDropDown
+        </VerticalCentralizado>
+        <VerticalCentralizado className="col-lg-4">
+          <RecorrenciaDropDown
             selected={currentRecurrence}
             onChange={onChangeRecurrence}
             form={form}
           />
-        </VerticalCentered>
+        </VerticalCentralizado>
         {currentRecurrence === '0' ? (
-          <VerticalCentered className="col-lg-4">
-            <DayNumber
+          <VerticalCentralizado className="col-lg-4">
+            <NumeroDia
               form={form}
               value={currentDayNumber}
               onChange={onChangeDayNumber}
             />
-          </VerticalCentered>
+          </VerticalCentralizado>
         ) : (
-          <VerticalCentered className="col-lg-4">
-            <DaysDropDown
+          <VerticalCentralizado className="col-lg-4">
+            <DiasDropDown
               onChange={onChangeWeekDay}
               selected={currentWeekDay}
               form={form}
             />
-          </VerticalCentered>
+          </VerticalCentralizado>
         )}
-      </BootstrapRow>
+      </LinhaBootstrap>
     </>
   );
 }
 
-MonthlyRecurrence.defaultProps = {
+RecorrenciaMensal.defaultProps = {
   form: {},
   onChangeRecurrence: () => {},
   onChangeDayNumber: () => {},
@@ -64,7 +64,7 @@ MonthlyRecurrence.defaultProps = {
   currentWeekDay: {},
 };
 
-MonthlyRecurrence.propTypes = {
+RecorrenciaMensal.propTypes = {
   form: PropTypes.oneOfType([PropTypes.array, PropTypes.object]),
   onChangeRecurrence: PropTypes.func,
   onChangeDayNumber: PropTypes.func,
@@ -84,4 +84,4 @@ MonthlyRecurrence.propTypes = {
   ]),
 };
 
-export default MonthlyRecurrence;
+export default RecorrenciaMensal;
