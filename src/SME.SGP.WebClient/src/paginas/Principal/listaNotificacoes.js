@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import styled from 'styled-components';
 import * as moment from 'moment';
@@ -6,8 +6,14 @@ import DataTable from '~/componentes/table/dataTable';
 import { Colors } from '~/componentes/colors';
 import Button from '~/componentes/button';
 import history from '~/servicos/history';
+import servicoNotificacao from '~/servicos/Paginas/ServicoNotificacao';
 
 const ListaNotificacoes = () => {
+  const usuario = useSelector(state => state.usuario);
+  
+  useEffect(()=>{
+    servicoNotificacao.buscaNotificacoesPorAnoRf(2019, usuario.rf);
+  },[]);
   const notificacoes = useSelector(state => state.notificacoes);
 
   const categoriaLista = ['', 'Alerta', 'Ação', 'Aviso'];

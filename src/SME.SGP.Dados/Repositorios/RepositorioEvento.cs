@@ -19,7 +19,7 @@ namespace SME.SGP.Dados.Repositorios
 
         public bool ExisteEventoNaMesmaDataECalendario(DateTime dataInicio, long tipoCalendarioId)
         {
-            var query = "select 1 from evento where data_inicio = @dataInicio and tipo_calendario = @tipoCalendarioId;";
+            var query = "select 1 from evento where data_inicio = @dataInicio and tipo_calendario_id = @tipoCalendarioId;";
             return database.Conexao.QueryFirstOrDefault<bool>(query, new { dataInicio, tipoCalendarioId });
         }
 
@@ -31,7 +31,7 @@ namespace SME.SGP.Dados.Repositorios
             MontaQueryFiltro(tipoCalendarioId, tipoEventoId, dataInicio, dataFim, nomeEvento, query);
             query.AppendLine("order by e.id");
             if (paginacao != null && paginacao.QuantidadeRegistros > 0)
-                MontaQueryPaginacao(query);
+                MontaQueryPaginacao(query, paginacao);
             else
                 paginacao = new Paginacao(1, 0);
 
@@ -52,9 +52,7 @@ namespace SME.SGP.Dados.Repositorios
                 tipoEventoId,
                 nomeEvento,
                 dataInicio,
-                dataFim,
-                ignorar = paginacao.QuantidadeRegistrosIgnorados,
-                quantidadeBuscar = paginacao.QuantidadeRegistros
+                dataFim
             },
             splitOn: "EventoId,TipoEventoId");
 
@@ -136,6 +134,22 @@ namespace SME.SGP.Dados.Repositorios
             });
         }
 
+        public async Task<IEnumerable<Evento>> ObterEventosPorTipoETipoCalendario(long tipoEventoCodigo, long tipoCalendarioId)
+        {
+            var query = new StringBuilder();
+            query.AppendLine("select* from evento e");
+            query.AppendLine("where");
+            query.AppendLine("e.excluido = false");
+            query.AppendLine("and e.tipo_calendario_id = @tipoCalendarioId");
+            query.AppendLine("and tipo_evento_id = @tipoEventoCodigo");
+
+            return await database.Conexao.QueryAsync<Evento>(query.ToString(), new
+            {
+                tipoEventoCodigo,
+                tipoCalendarioId
+            });
+        }
+
         public async Task<IEnumerable<EventosPorDiaRetornoQueryDto>> ObterQuantidadeDeEventosPorDia(CalendarioEventosFiltroDto calendarioEventosMesesFiltro, int mes)
         {
             var query = new StringBuilder();
@@ -200,7 +214,7 @@ namespace SME.SGP.Dados.Repositorios
                 mes
             });
         }
-        
+
         public async Task<IEnumerable<CalendarioEventosMesesDto>> ObterQuantidadeDeEventosPorMeses(CalendarioEventosFiltroDto calendarioEventosMesesFiltro)
         {
             var query = new StringBuilder();
@@ -321,9 +335,9 @@ namespace SME.SGP.Dados.Repositorios
             query.AppendLine("e.tipo_evento_id = et.id");
         }
 
-        private static void MontaQueryPaginacao(StringBuilder query)
+        private static void MontaQueryPaginacao(StringBuilder query, Paginacao paginacao)
         {
-            query.AppendLine(" OFFSET @ignorar ROWS FETCH NEXT @quantidadeBuscar ROWS ONLY");
+            query.AppendFormat(" OFFSET {0} ROWS FETCH NEXT {1} ROWS ONLY", paginacao.QuantidadeRegistrosIgnorados, paginacao.QuantidadeRegistros);
         }
     }
 }

@@ -63,7 +63,7 @@ namespace SME.SGP.Api.Controllers
 
         {
             var retorno = await consultasEvento.ObterQuantidadeDeEventosPorMeses(calendarioEventoMesesFiltro);
-            if (retorno.Count() > 0)
+            if (retorno.Any())
                 return Ok(retorno);
             else return StatusCode(204);
         }

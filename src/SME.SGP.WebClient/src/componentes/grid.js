@@ -9,7 +9,7 @@ const Grid = props => {
 };
 
 Grid.propTypes = {
-  cols: PropTypes.number,
+  cols: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
   className: PropTypes.string,
   children: PropTypes.node,
 };

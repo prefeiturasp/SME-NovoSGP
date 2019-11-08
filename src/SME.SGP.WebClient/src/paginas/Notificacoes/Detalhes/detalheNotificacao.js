@@ -16,6 +16,8 @@ import history from '~/servicos/history';
 import notificacaoCategoria from '~/dtos/notificacaoCategoria';
 import notificacaoStatus from '~/dtos/notificacaoStatus';
 import servicoNotificacao from '~/servicos/Paginas/ServicoNotificacao';
+import RotasDto from '~/dtos/rotasDto';
+import { verificaSomenteConsulta } from '~/servicos/servico-navegacao';
 
 const urlTelaNotificacoes = '/notificacoes';
 
@@ -24,7 +26,10 @@ const DetalheNotificacao = ({ match }) => {
   const [listaDeStatus, setListaDeStatus] = useState([]);
   const [aprovar, setAprovar] = useState(false);
 
+  const titulosNiveis = ['', 'Aguardando aceite', 'Aceita', 'Recusada', 'Sem status'];
+
   const usuario = useSelector(state => state.usuario);
+  const permissoesTela = usuario.permissoes[RotasDto.NOTIFICACOES];
 
   const [validacoes, setValidacoes] = useState(
     Yup.object({
@@ -54,6 +59,10 @@ const DetalheNotificacao = ({ match }) => {
   };
 
   useEffect(() => {
+    verificaSomenteConsulta(permissoesTela);
+  }, []);
+
+  useEffect(() => {
     if (idNotificacao) {
       buscaNotificacao(idNotificacao);
     }
@@ -72,7 +81,7 @@ const DetalheNotificacao = ({ match }) => {
         .then(resposta => {
           const status = resposta.data.map(item => {
             return {
-              titulo: item.status,
+              titulo: titulosNiveis[item.statusId],
               status: item.statusId,
               timestamp: item.alteracaoData,
               rf: item.alteracaoUsuarioRf,
@@ -194,7 +203,10 @@ const DetalheNotificacao = ({ match }) => {
                   <Button
                     label="Aceitar"
                     color={cores.Colors.Roxo}
-                    disabled={!notificacao.mostrarBotoesDeAprovacao}
+                    disabled={
+                      !notificacao.mostrarBotoesDeAprovacao ||
+                      !permissoesTela.podeAlterar
+                    }
                     className="mr-2"
                     border={!notificacao.mostrarBotoesDeAprovacao}
                     type="button"
@@ -217,7 +229,10 @@ const DetalheNotificacao = ({ match }) => {
                     label="Recusar"
                     color={cores.Colors.Roxo}
                     border
-                    disabled={!notificacao.mostrarBotoesDeAprovacao}
+                    disabled={
+                      !notificacao.mostrarBotoesDeAprovacao ||
+                      !permissoesTela.podeAlterar
+                    }
                     className="mr-2"
                     type="button"
                     onClick={async e => {
@@ -241,7 +256,10 @@ const DetalheNotificacao = ({ match }) => {
                   color={cores.Colors.Azul}
                   border
                   className="mr-2"
-                  disabled={!notificacao.mostrarBotaoMarcarComoLido}
+                  disabled={
+                    !notificacao.mostrarBotaoMarcarComoLido ||
+                    !permissoesTela.podeAlterar
+                  }
                   onClick={marcarComoLida}
                 />
                 <Button
@@ -249,7 +267,10 @@ const DetalheNotificacao = ({ match }) => {
                   color={cores.Colors.Vermelho}
                   border
                   className="mr-2"
-                  disabled={!notificacao.mostrarBotaoRemover}
+                  disabled={
+                    !notificacao.mostrarBotaoRemover ||
+                    !permissoesTela.podeExcluir
+                  }
                   onClick={excluir}
                 />
               </div>
@@ -298,7 +319,10 @@ const DetalheNotificacao = ({ match }) => {
                                     : ''
                                 }`}
                               >
-                                {notificacao.situacao}
+                                {
+                                  notificacao.statusId ===
+                                  notificacaoStatus.Pendente
+                                  ? 'Não Lida' : notificacao.situacao}
                               </div>
                             </div>
                           </div>
@@ -323,7 +347,10 @@ const DetalheNotificacao = ({ match }) => {
                         type="textarea"
                         form={form}
                         maxlength="100"
-                        desabilitado={!notificacao.mostrarBotoesDeAprovacao}
+                        desabilitado={
+                          !notificacao.mostrarBotoesDeAprovacao ||
+                          !permissoesTela.podeAlterar
+                        }
                       />
                     </div>
                   </div>
