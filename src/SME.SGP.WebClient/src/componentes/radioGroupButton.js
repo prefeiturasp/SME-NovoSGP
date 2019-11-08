@@ -23,6 +23,10 @@ const Campo = styled.div`
     white-space: nowrap;
     margin-bottom: 5px;
   }
+
+  label {
+    font-weight: bold;
+  }
 `;
 
 const Error = styled.span`
