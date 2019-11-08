@@ -2,12 +2,12 @@ import React from 'react';
 import PropTypes from 'prop-types';
 
 // Styles
-import { VerticalCentered } from '../styles';
+import { VerticalCentralizado } from '../styles';
 
 // Componentes
-import BootstrapRow from './BootstrapRow';
+import LinhaBootstrap from './LinhaBootstrap';
 
-function HelperText({ diasSemana }) {
+function TextoDiasDaSemana({ diasSemana }) {
   /**
    * @description Render helper text above WeekDays component
    */
@@ -29,21 +29,21 @@ function HelperText({ diasSemana }) {
 
   return (
     diasSemana.length > 0 && (
-      <BootstrapRow>
-        <VerticalCentered className="col-lg-12">
+      <LinhaBootstrap>
+        <VerticalCentralizado className="col-lg-12">
           {renderHelperText()}
-        </VerticalCentered>
-      </BootstrapRow>
+        </VerticalCentralizado>
+      </LinhaBootstrap>
     )
   );
 }
 
-HelperText.defaultProps = {
+TextoDiasDaSemana.defaultProps = {
   diasSemana: [],
 };
 
-HelperText.propTypes = {
-  diasSemana: PropTypes.array,
+TextoDiasDaSemana.propTypes = {
+  diasSemana: PropTypes.oneOfType([PropTypes.array]),
 };
 
-export default HelperText;
+export default TextoDiasDaSemana;

@@ -114,7 +114,6 @@ const EventosForm = ({ match }) => {
   const [dataInicioEvento, setDataInicioEvento] = useState(null);
   const [dataAlterada, setDataAlterada] = useState(false);
   const [recorrencia, setRecorrencia] = useState(null);
-  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     const montarConsultas = async () => {
@@ -528,10 +527,7 @@ const EventosForm = ({ match }) => {
 
   useEffect(() => {
     if (recorrencia) {
-      setTimeout(() => {
-        setLoading(false);
-        onCloseRecorrencia();
-      }, 200);
+      onCloseRecorrencia();
     }
   }, [recorrencia]);
 
@@ -547,7 +543,6 @@ const EventosForm = ({ match }) => {
   };
 
   const onSaveRecorrencia = recurrence => {
-    setLoading(true);
     setRecorrencia(parseScreenObject(recurrence));
   };
 
@@ -573,7 +568,6 @@ const EventosForm = ({ match }) => {
         onCloseRecorrencia={onCloseRecorrencia}
         onSaveRecorrencia={onSaveRecorrencia}
         show={showModalRecorrencia}
-        loading={loading}
         initialValues={{ dataInicio: dataInicioEvento }}
       />
       <Card>

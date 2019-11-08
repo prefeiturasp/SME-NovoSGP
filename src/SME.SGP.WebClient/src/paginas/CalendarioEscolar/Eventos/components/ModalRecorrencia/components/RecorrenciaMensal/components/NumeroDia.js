@@ -4,7 +4,7 @@ import PropTypes from 'prop-types';
 // Components
 import CampoNumero from '~/componentes/campoNumero';
 
-function DayNumber({ onChange, value, form }) {
+function NumeroDia({ onChange, value, form }) {
   return (
     <CampoNumero
       form={form}
@@ -17,16 +17,16 @@ function DayNumber({ onChange, value, form }) {
   );
 }
 
-DayNumber.defaultProps = {
+NumeroDia.defaultProps = {
   value: 0,
   onChange: () => {},
   form: {},
 };
 
-DayNumber.propTypes = {
+NumeroDia.propTypes = {
   form: PropTypes.oneOfType([PropTypes.object, PropTypes.symbol]),
   onChange: PropTypes.func,
   value: PropTypes.number,
 };
 
-export default DayNumber;
+export default NumeroDia;

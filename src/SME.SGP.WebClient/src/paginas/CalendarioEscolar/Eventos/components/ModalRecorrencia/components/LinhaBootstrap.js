@@ -1,19 +1,19 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-function BootstrapRow({ children, paddingBottom }) {
+function LinhaBootstrap({ children, paddingBottom }) {
   const className = `row ${paddingBottom ? `pb-${paddingBottom}` : ''}`;
   return <div className={className}>{children}</div>;
 }
 
-BootstrapRow.defaultProps = {
+LinhaBootstrap.defaultProps = {
   paddingBottom: 0,
   children: () => {},
 };
 
-BootstrapRow.propTypes = {
+LinhaBootstrap.propTypes = {
   paddingBottom: PropTypes.number,
   children: PropTypes.node,
 };
 
-export default BootstrapRow;
+export default LinhaBootstrap;
