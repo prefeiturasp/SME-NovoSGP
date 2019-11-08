@@ -4,6 +4,7 @@ using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Dominio.Servicos
@@ -15,6 +16,8 @@ namespace SME.SGP.Dominio.Servicos
         private readonly IRepositorioFeriadoCalendario repositorioFeriadoCalendario;
         private readonly IRepositorioPeriodoEscolar repositorioPeriodoEscolar;
         private readonly IRepositorioTipoCalendario repositorioTipoCalendario;
+        private readonly IServicoLog servicoLog;
+        private readonly IServicoNotificacao servicoNotificacao;
         private readonly IServicoUsuario servicoUsuario;
 
         public ServicoEvento(IRepositorioEvento repositorioEvento,
@@ -22,7 +25,9 @@ namespace SME.SGP.Dominio.Servicos
                              IRepositorioPeriodoEscolar repositorioPeriodoEscolar,
                              IServicoUsuario servicoUsuario,
                              IRepositorioFeriadoCalendario repositorioFeriadoCalendario,
-                             IRepositorioTipoCalendario repositorioTipoCalendario)
+                             IRepositorioTipoCalendario repositorioTipoCalendario,
+                             IServicoNotificacao servicoNotificacao,
+                             IServicoLog servicoLog)
         {
             this.repositorioEvento = repositorioEvento ?? throw new System.ArgumentNullException(nameof(repositorioEvento));
             this.repositorioEventoTipo = repositorioEventoTipo ?? throw new System.ArgumentNullException(nameof(repositorioEventoTipo));
@@ -30,6 +35,8 @@ namespace SME.SGP.Dominio.Servicos
             this.servicoUsuario = servicoUsuario ?? throw new System.ArgumentNullException(nameof(servicoUsuario));
             this.repositorioFeriadoCalendario = repositorioFeriadoCalendario ?? throw new System.ArgumentNullException(nameof(repositorioFeriadoCalendario));
             this.repositorioTipoCalendario = repositorioTipoCalendario ?? throw new System.ArgumentNullException(nameof(repositorioTipoCalendario));
+            this.servicoNotificacao = servicoNotificacao ?? throw new ArgumentNullException(nameof(servicoNotificacao));
+            this.servicoLog = servicoLog ?? throw new ArgumentNullException(nameof(servicoLog));
         }
 
         public static DateTime ObterProximoDiaDaSemana(DateTime data, DayOfWeek diaDaSemana)
@@ -106,21 +113,53 @@ namespace SME.SGP.Dominio.Servicos
                 dataFinal = periodoAtual.PeriodoFim;
             }
             var eventos = evento.ObterRecorrencia(padraoRecorrencia, padraoRecorrenciaMensal, dataInicial, dataFinal.Value, diasDaSemana, repeteACada, diaDeOcorrencia);
+            var notificacoesSucesso = new List<DateTime>();
+            var notificacoesFalha = new List<string>();
             foreach (var novoEvento in eventos)
             {
                 try
                 {
                     await Salvar(novoEvento);
+                    notificacoesSucesso.Add(novoEvento.DataInicio);
                 }
                 catch (NegocioException nex)
                 {
-                    //TODO GERAR NOTIFICAÇÃO DE FEEDBACK
+                    notificacoesFalha.Add($"{novoEvento.DataInicio.ToShortDateString()} - {nex.Message}");
                 }
                 catch (Exception ex)
                 {
-                    //TODO GERAR NOTIFICAÇÃO DE FEEDBACK
+                    notificacoesFalha.Add($"{novoEvento.DataInicio.ToShortDateString()} - Ocorreu um erro interno.");
+                    servicoLog.Registrar(ex);
                 }
             }
+            var usuarioLogado = await servicoUsuario.ObterUsuarioLogado();
+            EnviarNotificacao(evento, notificacoesSucesso, notificacoesFalha, usuarioLogado.Id);
+        }
+
+        private void EnviarNotificacao(Evento evento, List<DateTime> notificacoesSucesso, List<string> notificacoesFalha, long usuarioId)
+        {
+            var tipoCalendario = repositorioTipoCalendario.ObterPorId(evento.TipoCalendarioId);
+
+            var mensagemNotificacao = new StringBuilder();
+            if (notificacoesSucesso.Any())
+            {
+                mensagemNotificacao.Append($"Foram cadastrados {notificacoesSucesso.Count} eventos de Reunião Pedagógica no calendário '{tipoCalendario.Nome}' de {tipoCalendario.AnoLetivo} nas seguintes datas:");
+                notificacoesSucesso.ForEach(data => mensagemNotificacao.AppendLine(data.ToShortDateString()));
+            }
+            if (notificacoesFalha.Any())
+            {
+                mensagemNotificacao.AppendLine("Não foi possível cadastrar o(s) eventos na(s) seguinte(s) data(s)");
+                notificacoesFalha.ForEach(mensagem => mensagemNotificacao.AppendLine(mensagem));
+            }
+            var notificacao = new Notificacao()
+            {
+                Titulo = $"Criação de Eventos Recorrentes - {evento.Nome}",
+                Mensagem = mensagemNotificacao.ToString(),
+                UsuarioId = usuarioId,
+                Tipo = NotificacaoTipo.Calendario,
+                Categoria = NotificacaoCategoria.Aviso
+            };
+            servicoNotificacao.Salvar(notificacao);
         }
 
         private Evento MapearEntidade(TipoCalendario tipoCalendario, FeriadoCalendario x, Entidades.EventoTipo tipoEventoFeriado)
