@@ -7,6 +7,12 @@ namespace SME.SGP.Infra
 {
     public class EventoDto : IValidatableObject
     {
+        public EventoDto()
+        {
+            DataConfirmada = false;
+        }
+
+        public bool DataConfirmada { get; set; }
         public DateTime? DataFim { get; set; }
 
         [DataRequerida(ErrorMessage = "A data do evento deve ser informada.")]
