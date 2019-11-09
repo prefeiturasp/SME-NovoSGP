@@ -1,4 +1,4 @@
-import React, { useState, useLayoutEffect, useRef } from 'react';
+import React, { useState, useLayoutEffect, useRef, useEffect } from 'react';
 import styled from 'styled-components';
 import { useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
@@ -7,9 +7,14 @@ import history from '../servicos/history';
 import { store } from '../redux';
 import { perfilSelecionado } from '../redux/modulos/perfil/actions';
 import api from '~/servicos/api';
-import { salvarDadosLogin, Deslogar } from '~/redux/modulos/usuario/actions';
+import {
+  salvarDadosLogin,
+  Deslogar,
+  removerTurma,
+} from '~/redux/modulos/usuario/actions';
 import { erro } from '~/servicos/alertas';
 import { setMenusPermissoes } from '~/servicos/servico-navegacao';
+import { limparDadosFiltro } from '~/redux/modulos/filtro/actions';
 
 const Perfil = props => {
   const { Botao, Icone, Texto } = props;
@@ -87,8 +92,9 @@ const Perfil = props => {
       const perfilNovo = perfilStore.perfis.filter(
         item => item.codigoPerfil === perfil
       );
+
       store.dispatch(perfilSelecionado(perfilNovo[0]));
-      setarOcultaPerfis(true);
+
       if (
         perfilStore.perfilSelecionado.codigoPerfil !==
         perfilNovo[0].codigoPerfil
@@ -116,6 +122,10 @@ const Perfil = props => {
     }
   };
 
+  const limparFiltro = () => {
+    store.dispatch(limparDadosFiltro());
+    store.dispatch(removerTurma());
+  };
   const onClickBotao = () => {
     if (perfilStore.perfis.length > 1) {
       setarOcultaPerfis(!ocultaPerfis);
@@ -158,9 +168,10 @@ const Perfil = props => {
             {perfilStore.perfis.map(item => (
               <Item
                 key={item.codigoPerfil}
-                onClick={e =>
-                  gravarPerfilSelecionado(e.currentTarget.accessKey)
-                }
+                onClick={e => {
+                  gravarPerfilSelecionado(e.currentTarget.accessKey);
+                  limparFiltro();
+                }}
                 accessKey={item.codigoPerfil}
               >
                 <td style={{ width: '20px' }}>
