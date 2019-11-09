@@ -57,11 +57,6 @@ namespace SME.SGP.Dominio.Servicos
 
         public void ConfiguracaoInicial(WorkflowAprovacao workflowAprovacao, long idEntidadeParaAprovar)
         {
-            if (workflowAprovacao.Tipo == WorkflowAprovacaoTipo.Evento)
-            {
-                ConfiguraWorkflowParaEvento(workflowAprovacao, idEntidadeParaAprovar);
-            }
-
             if (workflowAprovacao.NotificacaoCategoria == NotificacaoCategoria.Workflow_Aprovacao)
             {
                 var niveisIniciais = workflowAprovacao.ObtemNiveis(workflowAprovacao.ObtemPrimeiroNivel()).ToList();
@@ -71,8 +66,6 @@ namespace SME.SGP.Dominio.Servicos
             {
                 EnviaNotificacaoParaNiveis(workflowAprovacao.Niveis.ToList());
             }
-
-            unitOfWork.PersistirTransacao();
         }
 
         private void AtualizaNiveis(IEnumerable<WorkflowAprovacaoNivel> niveis)
@@ -86,19 +79,6 @@ namespace SME.SGP.Dominio.Servicos
                     repositorioNotificacao.Salvar(notificacao);
                 }
             }
-        }
-
-        private void ConfiguraWorkflowParaEvento(WorkflowAprovacao workflowAprovacao, long idEntidadeParaAprovar)
-        {
-            var evento = repositorioEvento.ObterPorId(idEntidadeParaAprovar);
-            if (evento == null)
-                throw new NegocioException("Não foi possível obter este evento.");
-
-            evento.PodeSerEnviadoParaAprovacao();
-
-            evento.WorkflowAprovacaoId = workflowAprovacao.Id;
-
-            repositorioEvento.Salvar(evento);
         }
 
         private void EnviaNotificacaoParaNiveis(List<WorkflowAprovacaoNivel> niveis, long codigoNotificacao = 0)

@@ -1,4 +1,5 @@
-﻿using SME.SGP.Aplicacao;
+﻿using Microsoft.Extensions.Configuration;
+using SME.SGP.Aplicacao;
 using SME.SGP.Dominio.Entidades;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
@@ -12,19 +13,24 @@ namespace SME.SGP.Dominio.Servicos
     public class ServicoEvento : IServicoEvento
     {
         private readonly IComandosWorkflowAprovacao comandosWorkflowAprovacao;
+        private readonly IConfiguration configuration;
+        private readonly IRepositorioAbrangencia repositorioAbrangencia;
         private readonly IRepositorioEvento repositorioEvento;
         private readonly IRepositorioEventoTipo repositorioEventoTipo;
         private readonly IRepositorioFeriadoCalendario repositorioFeriadoCalendario;
         private readonly IRepositorioPeriodoEscolar repositorioPeriodoEscolar;
         private readonly IRepositorioTipoCalendario repositorioTipoCalendario;
         private readonly IServicoUsuario servicoUsuario;
+        private readonly IUnitOfWork unitOfWork;
 
         public ServicoEvento(IRepositorioEvento repositorioEvento,
                              IRepositorioEventoTipo repositorioEventoTipo,
                              IRepositorioPeriodoEscolar repositorioPeriodoEscolar,
                              IServicoUsuario servicoUsuario,
                              IRepositorioFeriadoCalendario repositorioFeriadoCalendario,
-                             IRepositorioTipoCalendario repositorioTipoCalendario, IComandosWorkflowAprovacao comandosWorkflowAprovacao)
+                             IRepositorioTipoCalendario repositorioTipoCalendario,
+                             IComandosWorkflowAprovacao comandosWorkflowAprovacao,
+                             IRepositorioAbrangencia repositorioAbrangencia, IConfiguration configuration, IUnitOfWork unitOfWork)
         {
             this.repositorioEvento = repositorioEvento ?? throw new System.ArgumentNullException(nameof(repositorioEvento));
             this.repositorioEventoTipo = repositorioEventoTipo ?? throw new System.ArgumentNullException(nameof(repositorioEventoTipo));
@@ -33,6 +39,9 @@ namespace SME.SGP.Dominio.Servicos
             this.repositorioFeriadoCalendario = repositorioFeriadoCalendario ?? throw new System.ArgumentNullException(nameof(repositorioFeriadoCalendario));
             this.repositorioTipoCalendario = repositorioTipoCalendario ?? throw new System.ArgumentNullException(nameof(repositorioTipoCalendario));
             this.comandosWorkflowAprovacao = comandosWorkflowAprovacao;
+            this.repositorioAbrangencia = repositorioAbrangencia ?? throw new ArgumentNullException(nameof(repositorioAbrangencia));
+            this.configuration = configuration;
+            this.unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
         }
 
         public static DateTime ObterProximoDiaDaSemana(DateTime data, DayOfWeek diaDaSemana)
@@ -81,7 +90,16 @@ namespace SME.SGP.Dominio.Servicos
 
             await VerificaParticularidadesSME(evento, usuario, periodos, dataConfirmada);
 
+            unitOfWork.IniciarTransacao();
+
             repositorioEvento.Salvar(evento);
+
+            if (evento.TipoEventoId == (int)TipoEventoEnum.LiberacaoExcepcional)
+            {
+                await PersistirWorflowEventoLiberacaoExcepcional(evento);
+            }
+
+            unitOfWork.PersistirTransacao();
         }
 
         public async Task SalvarEventoFeriadosAoCadastrarTipoCalendario(TipoCalendario tipoCalendario)
@@ -167,6 +185,45 @@ namespace SME.SGP.Dominio.Servicos
             return tipoEventoFeriado;
         }
 
+        private async Task PersistirWorflowEventoLiberacaoExcepcional(Evento evento)
+        {
+            var loginAtual = servicoUsuario.ObterLoginAtual();
+            var perfilAtual = servicoUsuario.ObterPerfilAtual();
+            var escola = await repositorioAbrangencia.ObterUe(evento.UeId, loginAtual, perfilAtual);
+
+            evento.TipoCalendario = repositorioTipoCalendario.ObterPorId(evento.TipoCalendarioId);
+
+            if (escola == null)
+                throw new NegocioException($"Não foi possível localizar a escola da criação do evento.");
+
+            var linkParaEvento = $"{configuration["UrlFrontEnd"]}calendario-escolar/eventos/editar/:{evento.Id}/";
+
+            var wfAprovacaoEvento = new WorkflowAprovacaoDto()
+            {
+                Ano = evento.DataInicio.Year,
+                NotificacaoCategoria = NotificacaoCategoria.Workflow_Aprovacao,
+                EntidadeParaAprovarId = evento.Id,
+                Tipo = WorkflowAprovacaoTipo.Evento,
+                UeId = evento.UeId,
+                NotificacaoTitulo = "Criação de Eventos Excepcionais",
+                NotificacaoMensagem = $"O evento {evento.Nome} - {evento.DataInicio.Day}/{evento.DataInicio.Month}/{evento.DataInicio.Year} foi criado no calendário {evento.TipoCalendario.Nome} da {escola.Nome}. Para que este evento seja considerado válido, você precisa aceitar esta notificação. Para visualizar o evento clique <a href='{linkParaEvento}'>aqui</a>."
+            };
+
+            wfAprovacaoEvento.Niveis.Add(new WorkflowAprovacaoNivelDto()
+            {
+                Cargo = Cargo.Diretor,
+                Nivel = 1
+            });
+            wfAprovacaoEvento.Niveis.Add(new WorkflowAprovacaoNivelDto()
+            {
+                Cargo = Cargo.Supervisor,
+                Nivel = 2
+            });
+
+            evento.WorkflowAprovacaoId = comandosWorkflowAprovacao.Salvar(wfAprovacaoEvento);
+            repositorioEvento.Salvar(evento);
+        }
+
         private async Task SalvarListaEventos(IEnumerable<Evento> eventos, List<long> feriadosErro)
         {
             foreach (var evento in eventos)
@@ -192,20 +249,20 @@ namespace SME.SGP.Dominio.Servicos
             throw new NegocioException(mensagemErro);
         }
 
+        private async Task ValidaLiberacaoExcepcional(Evento evento, Usuario usuario, IEnumerable<PeriodoEscolar> periodos, bool dataConfirmada)
+        {
+            evento.PodeCriarEventoLiberacaoExcepcional(evento, usuario, dataConfirmada, periodos);
+        }
+
         private async Task VerificaParticularidadesSME(Evento evento, Usuario usuario, IEnumerable<PeriodoEscolar> periodos, bool dataConfirmada)
         {
             usuario.PodeCriarEventoComDataPassada(evento);
             evento.PodeCriarEventoOrganizacaoEscolar(usuario);
             await VerificaSeEventoAconteceJuntoComOrganizacaoEscolar(evento, usuario);
 
-            evento.PodeCriarEventoLiberacaoExcepcional(evento, usuario, dataConfirmada, periodos);
             if (evento.TipoEventoId == (int)TipoEventoEnum.LiberacaoExcepcional)
             {
-                comandosWorkflowAprovacao.Salvar(new WorkflowAprovacaoDto()
-                {
-                    //Ano = evento.d
-                    //Ano = evento.d
-                });
+                await ValidaLiberacaoExcepcional(evento, usuario, periodos, dataConfirmada);
             }
         }
 

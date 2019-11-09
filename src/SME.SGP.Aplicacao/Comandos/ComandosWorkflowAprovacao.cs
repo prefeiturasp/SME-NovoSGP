@@ -38,7 +38,7 @@ namespace SME.SGP.Aplicacao
             unitOfWork.PersistirTransacao();
         }
 
-        public void Salvar(WorkflowAprovacaoDto workflowAprovacaoNiveisDto)
+        public long Salvar(WorkflowAprovacaoDto workflowAprovacaoNiveisDto)
         {
             if (workflowAprovacaoNiveisDto.Tipo != WorkflowAprovacaoTipo.Basica)
             {
@@ -48,9 +48,7 @@ namespace SME.SGP.Aplicacao
 
             WorkflowAprovacao workflowAprovacao = MapearDtoParaEntidade(workflowAprovacaoNiveisDto);
 
-            unitOfWork.IniciarTransacao();
-
-            repositorioWorkflowAprovacao.Salvar(workflowAprovacao);
+            var idWorkflow = repositorioWorkflowAprovacao.Salvar(workflowAprovacao);
 
             foreach (var workflowAprovacaoNivel in workflowAprovacao.Niveis)
             {
@@ -66,8 +64,9 @@ namespace SME.SGP.Aplicacao
                     });
                 }
             }
-
             servicoWorkflowAprovacao.ConfiguracaoInicial(workflowAprovacao, workflowAprovacaoNiveisDto.EntidadeParaAprovarId);
+
+            return idWorkflow;
         }
 
         private WorkflowAprovacao MapearDtoParaEntidade(WorkflowAprovacaoDto workflowAprovacaoNiveisDto)
