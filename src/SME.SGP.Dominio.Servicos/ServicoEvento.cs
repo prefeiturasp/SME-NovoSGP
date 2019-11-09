@@ -45,7 +45,7 @@ namespace SME.SGP.Dominio.Servicos
             return data.AddDays(diasParaAdicionar);
         }
 
-        public async Task Salvar(Evento evento, bool dataConfirmada = false)
+        public async Task Salvar(Evento evento, bool alterarRecorrenciaCompleta = false, bool dataConfirmada = false)
         {
             var tipoEvento = repositorioEventoTipo.ObterPorId(evento.TipoEventoId);
 
@@ -86,6 +86,19 @@ namespace SME.SGP.Dominio.Servicos
             await VerificaParticularidadesSME(evento, usuario, periodos, dataConfirmada);
 
             repositorioEvento.Salvar(evento);
+
+            if (evento.EventoPaiId > 0 && alterarRecorrenciaCompleta)
+            {
+                IEnumerable<Evento> eventos = null;
+                if (eventos != null && eventos.Any())
+                {
+                    foreach (var eventoASerAlterado in eventos)
+                    {
+                        var eventoAlterado = AlterarEventoDeRecorrencia(evento, eventoASerAlterado);
+                        repositorioEvento.Salvar(eventoASerAlterado);
+                    }
+                }
+            }
         }
 
         public async Task SalvarEventoFeriadosAoCadastrarTipoCalendario(TipoCalendario tipoCalendario)
@@ -106,6 +119,10 @@ namespace SME.SGP.Dominio.Servicos
 
         public async Task SalvarRecorrencia(Evento evento, DateTime dataInicial, DateTime? dataFinal, int? diaDeOcorrencia, IEnumerable<DayOfWeek> diasDaSemana, PadraoRecorrencia padraoRecorrencia, PadraoRecorrenciaMensal? padraoRecorrenciaMensal, int repeteACada)
         {
+            if (evento.EventoPaiId.HasValue && evento.EventoPaiId > 0)
+            {
+                throw new NegocioException("Este evento já pertence a uma recorrência, por isso não é permitido gerar uma nova.");
+            }
             if (!dataFinal.HasValue)
             {
                 var periodoEscolar = repositorioPeriodoEscolar.ObterPorTipoCalendario(evento.TipoCalendarioId);
@@ -134,6 +151,19 @@ namespace SME.SGP.Dominio.Servicos
             }
             var usuarioLogado = await servicoUsuario.ObterUsuarioLogado();
             EnviarNotificacao(evento, notificacoesSucesso, notificacoesFalha, usuarioLogado.Id);
+        }
+
+        private Evento AlterarEventoDeRecorrencia(Evento evento, Evento eventoASerAlterado)
+        {
+            eventoASerAlterado.Descricao = evento.Descricao;
+            eventoASerAlterado.DreId = evento.DreId;
+            eventoASerAlterado.FeriadoId = evento.FeriadoId;
+            eventoASerAlterado.Letivo = evento.Letivo;
+            eventoASerAlterado.Nome = evento.Nome;
+            eventoASerAlterado.TipoCalendarioId = evento.TipoCalendarioId;
+            eventoASerAlterado.TipoEventoId = evento.TipoEventoId;
+            eventoASerAlterado.UeId = evento.UeId;
+            return eventoASerAlterado;
         }
 
         private void EnviarNotificacao(Evento evento, List<DateTime> notificacoesSucesso, List<string> notificacoesFalha, long usuarioId)
