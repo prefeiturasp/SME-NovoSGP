@@ -109,6 +109,10 @@ namespace SME.SGP.Dominio.Servicos
             if (!dataFinal.HasValue)
             {
                 var periodoEscolar = repositorioPeriodoEscolar.ObterPorTipoCalendario(evento.TipoCalendarioId);
+                if (periodoEscolar == null || !periodoEscolar.Any())
+                {
+                    throw new NegocioException("Não é possível cadastrar o evento pois não existe período escolar cadastrado para este calendário.");
+                }
                 var periodoAtual = periodoEscolar.FirstOrDefault(c => DateTime.Now >= c.PeriodoInicio && DateTime.Now <= c.PeriodoFim);
                 dataFinal = periodoAtual.PeriodoFim;
             }
