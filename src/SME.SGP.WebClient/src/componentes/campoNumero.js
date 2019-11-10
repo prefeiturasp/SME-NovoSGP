@@ -1,4 +1,4 @@
-import { Input } from 'antd';
+import { InputNumber } from 'antd';
 import { Field } from 'formik';
 import PropTypes from 'prop-types';
 import React from 'react';
@@ -13,15 +13,14 @@ const Campo = styled.div`
   .campo {
     margin-bottom: 5px;
   }
-  .ant-input {
+  .ant-input-number {
     height: 38px;
   }
-  label {
-    font-weight: bold;
-  }
+
+  height: 45px;
 `;
 
-const CampoTexto = React.forwardRef((props, ref) => {
+const CampoNumero = React.forwardRef((props, ref) => {
   const {
     name,
     id,
@@ -38,7 +37,8 @@ const CampoTexto = React.forwardRef((props, ref) => {
     maxlength,
     label,
     semMensagem,
-    style,
+    max,
+    min,
   } = props;
 
   const possuiErro = () => {
@@ -65,34 +65,31 @@ const CampoTexto = React.forwardRef((props, ref) => {
               className={`form-control campo ${
                 possuiErro() ? 'is-invalid' : ''
               } ${className || ''} ${desabilitado ? 'desabilitado' : ''}`}
-              component={type || 'input'}
+              component={InputNumber}
               type={maskType && maskType}
               readOnly={desabilitado}
               onBlur={executaOnBlur}
               maxLength={maxlength || ''}
               innerRef={ref}
               onKeyDown={onKeyDown}
-              onChange={e => {
-                form.setFieldValue(name, e.target.value);
-                form.setFieldTouched(name, true, true);
-                onChange(e);
+              onChange={value => {
+                form.setFieldValue(name, value);
+                form.setFieldTouched(name, true);
+                onChange(value);
               }}
-              style={style}
             />
-            {!semMensagem && form && form.touched[name] ? (
-              <span>{form.errors[name]}</span>
-            ) : (
-              ''
-            )}
+            {!semMensagem ? <span>{form.errors[name]}</span> : ''}
           </>
         ) : (
-          <Input
+          <InputNumber
             ref={ref}
             placeholder={placeholder}
             onChange={onChange}
-            disabled={desabilitado}
+            readOnly={desabilitado}
             onKeyDown={onKeyDown}
             value={value}
+            max={max}
+            min={min}
           />
         )}
       </Campo>
@@ -100,14 +97,21 @@ const CampoTexto = React.forwardRef((props, ref) => {
   );
 });
 
-CampoTexto.propTypes = {
+CampoNumero.propTypes = {
   onChange: PropTypes.func,
   semMensagem: PropTypes.bool,
+  form: () => {},
 };
 
-CampoTexto.defaultProps = {
+CampoNumero.defaultProps = {
   onChange: () => {},
   semMensagem: false,
+  form: PropTypes.oneOfType([
+    PropTypes.symbol,
+    PropTypes.any,
+    PropTypes.func,
+    PropTypes.object,
+  ]),
 };
 
-export default CampoTexto;
+export default CampoNumero;

@@ -126,6 +126,10 @@ namespace SME.SGP.Dominio.Servicos
             if (!dataFinal.HasValue)
             {
                 var periodoEscolar = repositorioPeriodoEscolar.ObterPorTipoCalendario(evento.TipoCalendarioId);
+                if (periodoEscolar == null || !periodoEscolar.Any())
+                {
+                    throw new NegocioException("Não é possível cadastrar o evento pois não existe período escolar cadastrado para este calendário.");
+                }
                 var periodoAtual = periodoEscolar.FirstOrDefault(c => DateTime.Now >= c.PeriodoInicio && DateTime.Now <= c.PeriodoFim);
                 dataFinal = periodoAtual.PeriodoFim;
             }
@@ -173,13 +177,13 @@ namespace SME.SGP.Dominio.Servicos
             var mensagemNotificacao = new StringBuilder();
             if (notificacoesSucesso.Any())
             {
-                mensagemNotificacao.Append($"Foram cadastrados {notificacoesSucesso.Count} eventos de Reunião Pedagógica no calendário '{tipoCalendario.Nome}' de {tipoCalendario.AnoLetivo} nas seguintes datas:");
-                notificacoesSucesso.ForEach(data => mensagemNotificacao.AppendLine(data.ToShortDateString()));
+                mensagemNotificacao.Append($"<br>Foram cadastrados {notificacoesSucesso.Count} eventos de Reunião Pedagógica no calendário '{tipoCalendario.Nome}' de {tipoCalendario.AnoLetivo} nas seguintes datas:<br>");
+                notificacoesSucesso.ForEach(data => mensagemNotificacao.AppendLine($"<br>{data.ToShortDateString()}"));
             }
             if (notificacoesFalha.Any())
             {
-                mensagemNotificacao.AppendLine("Não foi possível cadastrar o(s) eventos na(s) seguinte(s) data(s)");
-                notificacoesFalha.ForEach(mensagem => mensagemNotificacao.AppendLine(mensagem));
+                mensagemNotificacao.AppendLine($"<br>Não foi possível cadastrar o(s) eventos na(s) seguinte(s) data(s)<br>");
+                notificacoesFalha.ForEach(mensagem => mensagemNotificacao.AppendLine($"<br>{mensagem}"));
             }
             var notificacao = new Notificacao()
             {
