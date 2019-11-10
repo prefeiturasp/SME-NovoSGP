@@ -137,10 +137,10 @@ namespace SME.SGP.Dominio.Servicos
                 }
             }
             var usuarioLogado = await servicoUsuario.ObterUsuarioLogado();
-            EnviarNotificacao(evento, notificacoesSucesso, notificacoesFalha, usuarioLogado.Id);
+            EnviarNotificacaoRegistroDeRecorrencia(evento, notificacoesSucesso, notificacoesFalha, usuarioLogado.Id);
         }
 
-        private void EnviarNotificacao(Evento evento, List<DateTime> notificacoesSucesso, List<string> notificacoesFalha, long usuarioId)
+        private void EnviarNotificacaoRegistroDeRecorrencia(Evento evento, List<DateTime> notificacoesSucesso, List<string> notificacoesFalha, long usuarioId)
         {
             var tipoCalendario = repositorioTipoCalendario.ObterPorId(evento.TipoCalendarioId);
 
