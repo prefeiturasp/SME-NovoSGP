@@ -23,6 +23,8 @@ class MomentSchema extends Yup.mixed {
 }
 
 const Campo = styled.div`
+  width: 100%;
+
   span {
     color: ${Base.Vermelho};
   }
@@ -51,6 +53,10 @@ const Campo = styled.div`
 
   .ant-calendar-picker {
     width: 100%;
+  }
+
+  label {
+    font-weight: bold;
   }
 `;
 
@@ -97,9 +103,9 @@ const CampoData = props => {
           form ? `${possuiErro() ? 'is-invalid' : ''} ${className || ''}` : ''
         }
         onChange={valorData => {
-          valorData = valorData || '';
-          form.setFieldValue(name, valorData);
+          form.setFieldValue(name, valorData || '');
           onChange(valorData);
+          form.setFieldTouched(name, true, true);
         }}
         value={form.values[name] || null}
         disabledDate={desabilitarData}
@@ -146,6 +152,7 @@ const CampoData = props => {
           valorHora = valorHora || '';
           form.setFieldValue(name, valorHora);
           onChange(valorHora);
+          form.setFieldTouched(name, true, true);
         }}
         value={form.values[name] || null}
       />
@@ -159,12 +166,20 @@ const CampoData = props => {
     return form ? campoDataAntComValidacoes() : campoDataAntSemValidacoes();
   };
 
+  const obterErros = () => {
+    return form && form.touched[name] && form.errors[name] ? (
+      <span>{form.errors[name]}</span>
+    ) : (
+      ''
+    );
+  };
+
   return (
     <>
       <Campo>
         {label ? <Label text={label} control={name} /> : ''}
         {validaTipoCampo()}
-        {form ? <span>{form.errors[name]}</span> : ''}
+        {obterErros()}
       </Campo>
     </>
   );
