@@ -1,6 +1,7 @@
 ﻿using Moq;
 using SME.SGP.Dominio.Entidades;
 using SME.SGP.Dominio.Interfaces;
+using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -12,10 +13,12 @@ namespace SME.SGP.Dominio.Servicos.Teste
     {
         private readonly Mock<IRepositorioEvento> repositorioEvento;
         private readonly Mock<IRepositorioEventoTipo> repositorioEventoTipo;
+        private readonly Mock<IRepositorioFeriadoCalendario> repositorioFeriadoCalendario;
         private readonly Mock<IRepositorioPeriodoEscolar> repositorioPeriodoEscolar;
         private readonly Mock<IRepositorioTipoCalendario> repositorioTipoCalendario;
         private readonly ServicoEvento servicoEvento;
-        private readonly Mock<IRepositorioFeriadoCalendario> repositorioFeriadoCalendario;
+        private readonly Mock<IServicoLog> servicoLog;
+        private readonly Mock<IServicoNotificacao> servicoNotificacao;
         private readonly Mock<IServicoUsuario> servicoUsuario;
 
         public ServicoEventoTeste()
@@ -26,8 +29,16 @@ namespace SME.SGP.Dominio.Servicos.Teste
             servicoUsuario = new Mock<IServicoUsuario>();
             repositorioFeriadoCalendario = new Mock<IRepositorioFeriadoCalendario>();
             repositorioTipoCalendario = new Mock<IRepositorioTipoCalendario>();
-            servicoEvento = new ServicoEvento(repositorioEvento.Object, repositorioEventoTipo.Object, repositorioPeriodoEscolar.Object, servicoUsuario.Object, repositorioFeriadoCalendario.Object, repositorioTipoCalendario.Object);
-            
+            servicoLog = new Mock<IServicoLog>();
+            servicoNotificacao = new Mock<IServicoNotificacao>();
+            servicoEvento = new ServicoEvento(repositorioEvento.Object,
+                                              repositorioEventoTipo.Object,
+                                              repositorioPeriodoEscolar.Object,
+                                              servicoUsuario.Object,
+                                              repositorioFeriadoCalendario.Object,
+                                              repositorioTipoCalendario.Object,
+                                              servicoNotificacao.Object,
+                                              servicoLog.Object);
         }
 
         [Fact]

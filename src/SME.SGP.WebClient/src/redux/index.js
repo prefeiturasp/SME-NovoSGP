@@ -1,8 +1,7 @@
 import { persistStore } from 'redux-persist';
-
+import thunk from 'redux-thunk';
 import createStore from './createStore';
 import persistReducers from './persistReducers';
-import thunk from 'redux-thunk';
 
 import rootReducer from './modulos/reducers';
 
