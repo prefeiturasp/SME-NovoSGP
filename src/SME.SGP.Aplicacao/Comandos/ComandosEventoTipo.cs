@@ -53,7 +53,7 @@ namespace SME.SGP.Aplicacao
                             repositorioEventoTipo.Salvar(entidade);
                         }
                     }
-                    catch (Exception ex)
+                    catch (Exception)
                     {
                         idFalhaExclusao.Add(codigo);
                     }
