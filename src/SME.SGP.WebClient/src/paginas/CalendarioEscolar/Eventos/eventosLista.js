@@ -218,7 +218,11 @@ const EventosLista = () => {
       return;
     }
 
-    if (!ues.conteudo || ues.conteudo.length === 0)
+    if (
+      !ues.conteudo ||
+      ues.conteudo.length === 0 ||
+      Object.entries(ues.conteudo).length === 0
+    )
       setCampoUeDesabilitado(true);
 
     setlistaUe(ues.conteudo);
@@ -286,6 +290,9 @@ const EventosLista = () => {
       setSelecionouCalendario(true);
     } else {
       setSelecionouCalendario(false);
+      setDreSelecionada([]);
+      setlistaUe([]);
+      setCampoUeDesabilitado(true);
       setTipoEvento('');
       setNomeEvento('');
       refForm.resetForm();
