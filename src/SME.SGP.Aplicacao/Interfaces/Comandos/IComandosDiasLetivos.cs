@@ -1,10 +1,10 @@
 ﻿using SME.SGP.Dto;
+using SME.SGP.Infra;
 
 namespace SME.SGP.Aplicacao.Interfaces
 {
     public interface IComandosDiasLetivos
     {
-        //mudar para async
-        DiasLetivosDto CalcularDiasLetivos(long tipoCalendarioId);
+        DiasLetivosDto CalcularDiasLetivos(FiltroDiasLetivosDTO filtro);
     }
 }

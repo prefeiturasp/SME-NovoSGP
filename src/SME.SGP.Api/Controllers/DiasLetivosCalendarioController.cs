@@ -21,14 +21,15 @@ namespace SME.SGP.Api.Controllers
               throw new System.ArgumentNullException(nameof(comandosDiasLetivos));
         }
 
-        [HttpGet]
+        //mudar pra async
+        [HttpPost]
         [ProducesResponseType(typeof(DiasLetivosDto), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        [Route("{tipoCalendarioId}/dias-letivos")]
-        //[Permissao(Permissao.C_C, Policy = "Bearer")]
-        public IActionResult CalcularDiasLetivos(long tipoCalendarioId)
+        [Route("dias-letivos")]
+        [Permissao(Permissao.C_C, Policy = "Bearer")]
+        public IActionResult CalcularDiasLetivos(FiltroDiasLetivosDTO filtro)
         {
-            return Ok(comandosDiasLetivos.CalcularDiasLetivos(tipoCalendarioId));
+            return Ok(comandosDiasLetivos.CalcularDiasLetivos(filtro));
         }
     }
 }
