@@ -23,7 +23,7 @@ namespace SME.SGP.Dados.Repositorios
             return database.Conexao.QueryFirstOrDefault<bool>(query, new { dataInicio, tipoCalendarioId });
         }
 
-        public async Task<PaginacaoResultadoDto<Evento>> Listar(long? tipoCalendarioId, long? tipoEventoId, string nomeEvento, DateTime? dataInicio, DateTime? dataFim, Paginacao paginacao, long? dreId, long? ueId)
+        public async Task<PaginacaoResultadoDto<Evento>> Listar(long? tipoCalendarioId, long? tipoEventoId, string nomeEvento, DateTime? dataInicio, DateTime? dataFim, Paginacao paginacao, string dreId, string ueId)
         {
             StringBuilder query = new StringBuilder();
             MontaQueryCabecalho(query);
@@ -68,8 +68,8 @@ namespace SME.SGP.Dados.Repositorios
                 nomeEvento,
                 dataInicio,
                 dataFim,
-                dreId,
-                ueId
+                dreId = dreId,
+                ueId = ueId
             });
 
             retornoPaginado.TotalPaginas = (int)Math.Ceiling((double)retornoPaginado.TotalRegistros / paginacao.QuantidadeRegistros);
@@ -307,14 +307,14 @@ namespace SME.SGP.Dados.Repositorios
             query.AppendLine("et.excluido");
         }
 
-        private static void MontaQueryFiltro(long? tipoCalendarioId, long? tipoEventoId, DateTime? dataInicio, DateTime? dataFim, string nomeEvento, StringBuilder query, long? dreId, long? ueId)
+        private static void MontaQueryFiltro(long? tipoCalendarioId, long? tipoEventoId, DateTime? dataInicio, DateTime? dataFim, string nomeEvento, StringBuilder query, string dreId, string ueId)
         {
             query.AppendLine("where");
             query.AppendLine("e.excluido = false");
             query.AppendLine("and et.ativo = true");
             query.AppendLine("and et.excluido = false");
-            query.AppendLine($"and e.dre_id {(!dreId.HasValue ? "is null" : "= @dreId")}");
-            query.AppendLine($"and e.ue_id {(!ueId.HasValue ? "is null" : "=  @ueId")}");
+            query.AppendLine($"and e.dre_id {(string.IsNullOrEmpty(dreId) ? "is null" : "= @dreId")}");
+            query.AppendLine($"and e.ue_id {(string.IsNullOrEmpty(ueId) ? "is null" : "=  @ueId")}");
 
             if (tipoCalendarioId.HasValue)
                 query.AppendLine("and e.tipo_calendario_id = @tipoCalendarioId");
@@ -330,8 +330,6 @@ namespace SME.SGP.Dados.Repositorios
 
             if (!string.IsNullOrWhiteSpace(nomeEvento))
                 query.AppendLine("and lower(f_unaccent(e.nome)) LIKE @nomeEvento");
-
-            var sql = query.ToString();
         }
 
         private static void MontaQueryFrom(StringBuilder query)
