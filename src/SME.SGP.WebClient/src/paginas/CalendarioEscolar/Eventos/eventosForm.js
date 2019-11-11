@@ -318,21 +318,15 @@ const EventosForm = ({ match }) => {
     try {
       let payload = {
         ...valoresForm,
-        recorrenciaEventos: {
-          ...recorrencia,
-        },
+        recorrenciaEventos: recorrencia ? { ...recorrencia } : null,
         tiposCalendarioParaCopiar,
       };
 
       const atualizarEventosFuturos = await exibirModalAtualizarEventos();
       if (atualizarEventosFuturos) {
-        /**
-         * TODO: Aguardando API ser disponibilizada
-         */
-        console.log('Atualizar eventos futuros');
         payload = {
           ...payload,
-          atualizarEventosFuturos: true,
+          AlterarARecorrenciaCompleta: true,
         };
       }
 
