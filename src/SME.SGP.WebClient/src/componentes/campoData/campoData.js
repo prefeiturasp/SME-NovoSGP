@@ -73,8 +73,41 @@ const CampoData = props => {
     onChange,
     valor,
     desabilitarData,
+    diasParaDesabilitar,
     somenteHora,
   } = props;
+
+  const desabilitarDatas = current => {
+    let retorno = false;
+    const ehPraDesabilitar =
+      !!diasParaDesabilitar &&
+      !!diasParaDesabilitar.find(x => x === current.format('YYYY-MM-DD'));
+
+    if (!!diasParaDesabilitar === false && !!desabilitarData === false) {
+      return false;
+    }
+
+    if (
+      !!diasParaDesabilitar === false &&
+      typeof desabilitarData === 'function'
+    ) {
+      retorno = desabilitarData(current);
+    } else if (
+      !!diasParaDesabilitar &&
+      diasParaDesabilitar.length >= 1 &&
+      typeof desabilitarData === 'function'
+    ) {
+      retorno = ehPraDesabilitar || desabilitarData(current);
+    } else if (
+      !!diasParaDesabilitar &&
+      diasParaDesabilitar.length >= 1 &&
+      !!desabilitarData === false
+    ) {
+      retorno = ehPraDesabilitar;
+    }
+
+    return retorno;
+  };
 
   const possuiErro = () => {
     return form && form.errors[name] && form.touched[name];
@@ -108,7 +141,7 @@ const CampoData = props => {
           form.setFieldTouched(name, true, true);
         }}
         value={form.values[name] || null}
-        disabledDate={desabilitarData}
+        disabledDate={desabilitarDatas}
       />
     );
   };
