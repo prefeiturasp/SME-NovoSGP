@@ -107,7 +107,7 @@ const SelectComponent = React.forwardRef((props, ref) => {
       }
       name={name}
       id={id || name}
-      value={form.values[name]}
+      value={form.values[name] || undefined}
       placeholder={placeholder}
       notFoundContent="Sem dados"
       alt={alt}
