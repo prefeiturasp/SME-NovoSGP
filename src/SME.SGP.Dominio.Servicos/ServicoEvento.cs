@@ -39,12 +39,6 @@ namespace SME.SGP.Dominio.Servicos
             this.servicoLog = servicoLog ?? throw new ArgumentNullException(nameof(servicoLog));
         }
 
-        public static DateTime ObterProximoDiaDaSemana(DateTime data, DayOfWeek diaDaSemana)
-        {
-            int diasParaAdicionar = ((int)diaDaSemana - (int)data.DayOfWeek + 7) % 7;
-            return data.AddDays(diasParaAdicionar);
-        }
-
         public async Task Salvar(Evento evento, bool alterarRecorrenciaCompleta = false, bool dataConfirmada = false)
         {
             var tipoEvento = repositorioEventoTipo.ObterPorId(evento.TipoEventoId);
@@ -163,7 +157,7 @@ namespace SME.SGP.Dominio.Servicos
         {
             if (evento.EventoPaiId.HasValue && evento.EventoPaiId > 0 && alterarRecorrenciaCompleta)
             {
-                IEnumerable<Evento> eventos = await repositorioEvento.ObterEventosPorRecorrencia(evento.EventoPaiId.Value, evento.Id, evento.DataInicio);
+                IEnumerable<Evento> eventos = await repositorioEvento.ObterEventosPorRecorrencia(evento.Id, evento.EventoPaiId.Value, evento.DataInicio);
                 if (eventos != null && eventos.Any())
                 {
                     foreach (var eventoASerAlterado in eventos)
