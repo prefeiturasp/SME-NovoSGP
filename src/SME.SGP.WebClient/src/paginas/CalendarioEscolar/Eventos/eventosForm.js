@@ -245,7 +245,6 @@ const EventosForm = ({ match }) => {
     setDesabilitarOpcaoLetivo(!tipoEventoOpcional);
   };
 
-  const consultaFeriados = async () => {
   const validaSeValorInvalido = valor => {
     const validacoesObjeto =
       !valor ||
