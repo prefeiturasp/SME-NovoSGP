@@ -14,15 +14,15 @@ function TextoDiasDaSemana({ diasSemana }) {
   const renderHelperText = () => {
     let text = `Ocorre a cada `;
     if (diasSemana.length === 1) {
-      text += diasSemana[0].description;
+      text += diasSemana[0].descricao;
     } else if (diasSemana.length === 2) {
-      text += `${diasSemana[0].description} e ${diasSemana[1].description}`;
+      text += `${diasSemana[0].descricao} e ${diasSemana[1].descricao}`;
     } else if (diasSemana.length > 2) {
       text += `${diasSemana
         .map((item, index) =>
-          index !== diasSemana.length - 1 ? item.description : ''
+          index !== diasSemana.length - 1 ? item.descricao : ''
         )
-        .toString()} e ${diasSemana[diasSemana.length - 1].description}.`;
+        .toString()} e ${diasSemana[diasSemana.length - 1].descricao}.`;
     }
     return text;
   };
