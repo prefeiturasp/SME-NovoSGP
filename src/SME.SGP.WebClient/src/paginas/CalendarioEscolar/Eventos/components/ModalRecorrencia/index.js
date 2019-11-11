@@ -42,7 +42,7 @@ function ModalRecorrencia({
     value: '2',
   });
 
-  const [valoresIniciais, setValoresIniciais] = useState({
+  const valoresDefault = {
     dataInicio: null,
     dataTermino: null,
     diaNumero: null,
@@ -50,7 +50,9 @@ function ModalRecorrencia({
     tipoRecorrencia: '',
     padraoRecorrencia: '',
     quantidadeRecorrencia: null,
-  });
+  };
+
+  const [valoresIniciais, setValoresIniciais] = useState(valoresDefault);
 
   /**
    * @description Verifica se o botao de salvar deve ser habilitado
@@ -93,9 +95,9 @@ function ModalRecorrencia({
   ]);
 
   const onChangeWeekDay = day => {
-    const exists = diasSemana.some(x => x.value === day.value);
+    const exists = diasSemana.some(x => x.valor === day.valor);
     if (exists) {
-      setDiasSemana([...diasSemana.filter(x => x.value !== day.value)]);
+      setDiasSemana([...diasSemana.filter(x => x.valor !== day.valor)]);
     } else {
       setDiasSemana([...diasSemana, day]);
     }
@@ -105,6 +107,7 @@ function ModalRecorrencia({
     setDataInicio('');
     setDataTermino('');
     setDiasSemana([]);
+    setValoresIniciais(valoresDefault);
     onCloseRecorrencia();
   };
 
