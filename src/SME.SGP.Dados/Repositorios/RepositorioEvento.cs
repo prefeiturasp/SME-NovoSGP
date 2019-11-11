@@ -23,12 +23,12 @@ namespace SME.SGP.Dados.Repositorios
             return database.Conexao.QueryFirstOrDefault<bool>(query, new { dataInicio, tipoCalendarioId });
         }
 
-        public async Task<PaginacaoResultadoDto<Evento>> Listar(long? tipoCalendarioId, long? tipoEventoId, string nomeEvento, DateTime? dataInicio, DateTime? dataFim, Paginacao paginacao)
+        public async Task<PaginacaoResultadoDto<Evento>> Listar(long? tipoCalendarioId, long? tipoEventoId, string nomeEvento, DateTime? dataInicio, DateTime? dataFim, Paginacao paginacao, bool deveVisualizarAguardandoAprovacao)
         {
             StringBuilder query = new StringBuilder();
             MontaQueryCabecalho(query);
             MontaQueryFrom(query);
-            MontaQueryFiltro(tipoCalendarioId, tipoEventoId, dataInicio, dataFim, nomeEvento, query);
+            MontaQueryFiltro(tipoCalendarioId, tipoEventoId, dataInicio, dataFim, nomeEvento, query, deveVisualizarAguardandoAprovacao);
             query.AppendLine("order by e.id");
             if (paginacao != null && paginacao.QuantidadeRegistros > 0)
                 MontaQueryPaginacao(query, paginacao);
@@ -58,7 +58,7 @@ namespace SME.SGP.Dados.Repositorios
 
             var queryCount = new StringBuilder("select count(e.*)");
             MontaQueryFrom(queryCount);
-            MontaQueryFiltro(tipoCalendarioId, tipoEventoId, dataInicio, dataFim, nomeEvento, queryCount);
+            MontaQueryFiltro(tipoCalendarioId, tipoEventoId, dataInicio, dataFim, nomeEvento, queryCount, deveVisualizarAguardandoAprovacao);
             retornoPaginado.TotalRegistros = await database.Conexao.QueryFirstOrDefaultAsync<int>(queryCount.ToString(), new
             {
                 tipoCalendarioId,
@@ -303,7 +303,7 @@ namespace SME.SGP.Dados.Repositorios
             query.AppendLine("et.excluido");
         }
 
-        private static void MontaQueryFiltro(long? tipoCalendarioId, long? tipoEventoId, DateTime? dataInicio, DateTime? dataFim, string nomeEvento, StringBuilder query)
+        private static void MontaQueryFiltro(long? tipoCalendarioId, long? tipoEventoId, DateTime? dataInicio, DateTime? dataFim, string nomeEvento, StringBuilder query, bool deveVisualizarAguardandoAprovacao)
         {
             query.AppendLine("where");
             query.AppendLine("e.excluido = false");
@@ -325,6 +325,10 @@ namespace SME.SGP.Dados.Repositorios
             {
                 query.AppendLine("and lower(f_unaccent(e.nome)) LIKE @nomeEvento");
             }
+            if (deveVisualizarAguardandoAprovacao)
+                query.AppendLine("and e.status = 2");
+
+            query.AppendLine("and e.status = 1");
         }
 
         private static void MontaQueryFrom(StringBuilder query)

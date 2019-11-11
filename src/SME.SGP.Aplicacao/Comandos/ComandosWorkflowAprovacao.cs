@@ -48,7 +48,7 @@ namespace SME.SGP.Aplicacao
 
             WorkflowAprovacao workflowAprovacao = MapearDtoParaEntidade(workflowAprovacaoNiveisDto);
 
-            var idWorkflow = repositorioWorkflowAprovacao.Salvar(workflowAprovacao);
+            repositorioWorkflowAprovacao.Salvar(workflowAprovacao);
 
             foreach (var workflowAprovacaoNivel in workflowAprovacao.Niveis)
             {
@@ -66,7 +66,7 @@ namespace SME.SGP.Aplicacao
             }
             servicoWorkflowAprovacao.ConfiguracaoInicial(workflowAprovacao, workflowAprovacaoNiveisDto.EntidadeParaAprovarId);
 
-            return idWorkflow;
+            return workflowAprovacao.Id;
         }
 
         private WorkflowAprovacao MapearDtoParaEntidade(WorkflowAprovacaoDto workflowAprovacaoNiveisDto)

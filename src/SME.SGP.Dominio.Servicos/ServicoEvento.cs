@@ -50,7 +50,7 @@ namespace SME.SGP.Dominio.Servicos
             return data.AddDays(diasParaAdicionar);
         }
 
-        public async Task Salvar(Evento evento, bool dataConfirmada = false)
+        public async Task<string> Salvar(Evento evento, bool dataConfirmada = false)
         {
             var tipoEvento = repositorioEventoTipo.ObterPorId(evento.TipoEventoId);
 
@@ -94,12 +94,17 @@ namespace SME.SGP.Dominio.Servicos
 
             repositorioEvento.Salvar(evento);
 
-            if (evento.TipoEventoId == (int)TipoEventoEnum.LiberacaoExcepcional)
+            var mensagemRetornoSucesso = "Evento cadastrado com sucesso.";
+
+            if (evento.TipoEvento.Codigo == (int)TipoEventoEnum.LiberacaoExcepcional)
             {
                 await PersistirWorflowEventoLiberacaoExcepcional(evento);
+                mensagemRetornoSucesso = "Evento cadastrado e será válido após aprovação.";
             }
 
             unitOfWork.PersistirTransacao();
+
+            return mensagemRetornoSucesso;
         }
 
         public async Task SalvarEventoFeriadosAoCadastrarTipoCalendario(TipoCalendario tipoCalendario)
@@ -220,7 +225,10 @@ namespace SME.SGP.Dominio.Servicos
                 Nivel = 2
             });
 
-            evento.WorkflowAprovacaoId = comandosWorkflowAprovacao.Salvar(wfAprovacaoEvento);
+            var idWorkflow = comandosWorkflowAprovacao.Salvar(wfAprovacaoEvento);
+
+            evento.EnviarParaWorkflowDeAprovacao(idWorkflow);
+
             repositorioEvento.Salvar(evento);
         }
 
@@ -260,7 +268,7 @@ namespace SME.SGP.Dominio.Servicos
             evento.PodeCriarEventoOrganizacaoEscolar(usuario);
             await VerificaSeEventoAconteceJuntoComOrganizacaoEscolar(evento, usuario);
 
-            if (evento.TipoEventoId == (int)TipoEventoEnum.LiberacaoExcepcional)
+            if (evento.TipoEvento.Codigo == (int)TipoEventoEnum.LiberacaoExcepcional)
             {
                 await ValidaLiberacaoExcepcional(evento, usuario, periodos, dataConfirmada);
             }

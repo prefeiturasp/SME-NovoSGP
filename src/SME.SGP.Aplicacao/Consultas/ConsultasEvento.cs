@@ -13,22 +13,29 @@ namespace SME.SGP.Aplicacao
     public class ConsultasEvento : ConsultasBase, IConsultasEvento
     {
         private readonly IRepositorioEvento repositorioEvento;
+        private readonly IServicoUsuario servicoUsuario;
 
         public ConsultasEvento(IRepositorioEvento repositorioEvento,
-                               IHttpContextAccessor httpContext) : base(httpContext)
+                               IHttpContextAccessor httpContext, IServicoUsuario servicoUsuario) : base(httpContext)
         {
             this.repositorioEvento = repositorioEvento ?? throw new System.ArgumentNullException(nameof(repositorioEvento));
+            this.servicoUsuario = servicoUsuario ?? throw new System.ArgumentNullException(nameof(servicoUsuario));
         }
 
         public async Task<PaginacaoResultadoDto<EventoCompletoDto>> Listar(FiltroEventosDto filtroEventosDto)
         {
+            var usuario = await servicoUsuario.ObterUsuarioLogado();
+            var perfilAtual = servicoUsuario.ObterPerfilAtual();
+            var podeVisualizarEventoLiberacaoExcepcionalAguardandoAprovacao = usuario.PodeVisualizarEventoLiberacaoExcepcionalAguardandoAprovacao(perfilAtual);
+
             return MapearParaDtoComPaginacao(await repositorioEvento
                 .Listar(filtroEventosDto.TipoCalendarioId,
                         filtroEventosDto.TipoEventoId,
                         filtroEventosDto.NomeEvento,
                         filtroEventosDto.DataInicio,
                         filtroEventosDto.DataFim,
-                        Paginacao));
+                        Paginacao,
+                        podeVisualizarEventoLiberacaoExcepcionalAguardandoAprovacao));
         }
 
         public Task<IEnumerable<CalendarioEventosNoDiaRetornoDto>> ObterEventosPorDia(CalendarioEventosFiltroDto calendarioEventosMesesFiltro, int mes, int dia)

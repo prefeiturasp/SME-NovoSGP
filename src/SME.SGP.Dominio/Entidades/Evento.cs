@@ -83,6 +83,12 @@ namespace SME.SGP.Dominio
             return TipoEvento.Letivo == EventoLetivo.Sim;
         }
 
+        public void EnviarParaWorkflowDeAprovacao(long idWorkflow)
+        {
+            WorkflowAprovacaoId = idWorkflow;
+            Status = EntidadeStatus.AguardandoAprovacao;
+        }
+
         public void EstaNoAnoLetivoDoCalendario()
         {
             if (TipoCalendario == null)
