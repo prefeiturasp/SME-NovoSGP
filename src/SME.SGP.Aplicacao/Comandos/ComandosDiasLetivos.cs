@@ -10,18 +10,23 @@ namespace SME.SGP.Aplicacao
 {
     public class ComandosDiasLetivos : IComandosDiasLetivos
     {
+        private const string ChaveDiasLetivosEja = "EjaDiasLetivos";
+        private const string ChaveDiasLetivosFundMedio = "FundamentalMedioDiasLetivos";
         private readonly IRepositorioEvento repositorioEvento;
+        private readonly IRepositorioParametrosSistema repositorioParametrosSistema;
         private readonly IRepositorioPeriodoEscolar repositorioPeriodoEscolar;
         private readonly IRepositorioTipoCalendario repositorioTipoCalendario;
 
         public ComandosDiasLetivos(
             IRepositorioPeriodoEscolar repositorioPeriodoEscolar,
             IRepositorioEvento repositorioEvento,
-            IRepositorioTipoCalendario repositorioTipoCalendario)
+            IRepositorioTipoCalendario repositorioTipoCalendario,
+            IRepositorioParametrosSistema repositorioParametrosSistema)
         {
             this.repositorioPeriodoEscolar = repositorioPeriodoEscolar ?? throw new ArgumentNullException(nameof(repositorioPeriodoEscolar));
             this.repositorioEvento = repositorioEvento ?? throw new ArgumentNullException(nameof(repositorioEvento));
             this.repositorioTipoCalendario = repositorioTipoCalendario ?? throw new ArgumentNullException(nameof(repositorioTipoCalendario));
+            this.repositorioParametrosSistema = repositorioParametrosSistema ?? throw new ArgumentNullException(nameof(repositorioParametrosSistema));
         }
 
         public DiasLetivosDto CalcularDiasLetivos(FiltroDiasLetivosDTO filtro)
@@ -31,6 +36,8 @@ namespace SME.SGP.Aplicacao
             var diasLetivosCalendario = BuscarDiasLetivos(filtro.TipoCalendarioId);
             var eventos = repositorioEvento.ObterEventosPorTipoDeCalendarioDreUe(filtro.TipoCalendarioId, filtro.DreId, filtro.UeId);
             var tipoCalendario = repositorioTipoCalendario.ObterPorId(filtro.TipoCalendarioId);
+
+            var anoLetivo = tipoCalendario.AnoLetivo;
 
             List<DateTime> diasEventosNaoLetivos = new List<DateTime>();
             List<DateTime> diasEventosLetivos = new List<DateTime>();
@@ -43,11 +50,11 @@ namespace SME.SGP.Aplicacao
             diasEventosNaoLetivos = diasEventosNaoLetivos.Where(w => !diasEventosLetivos.Contains(w)).ToList();
 
             var diasLetivos = diasLetivosCalendario.Count() - diasEventosNaoLetivos.Count();
+            var diasLetivosPermitidos = Convert.ToInt32(tipoCalendario.Modalidade == Dominio.ModalidadeTipoCalendario.EJA ?
+                repositorioParametrosSistema.ObterValorPorNomeAno(ChaveDiasLetivosEja, anoLetivo) :
+                repositorioParametrosSistema.ObterValorPorNomeAno(ChaveDiasLetivosFundMedio, anoLetivo));
 
-            if (tipoCalendario.Modalidade == Dominio.ModalidadeTipoCalendario.FundamentalMedio)
-                estaAbaixo = diasLetivos < 200;//mudar para parametro
-            else
-                estaAbaixo = diasLetivos < 100;
+            estaAbaixo = diasLetivos < diasLetivosPermitidos;
 
             return new DiasLetivosDto
             {
