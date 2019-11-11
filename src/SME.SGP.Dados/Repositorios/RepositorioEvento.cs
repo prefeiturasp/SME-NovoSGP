@@ -134,6 +134,12 @@ namespace SME.SGP.Dados.Repositorios
             });
         }
 
+        public async Task<IEnumerable<Evento>> ObterEventosPorRecorrencia(long eventoId, long eventoPaiId, DateTime dataEvento)
+        {
+            var query = "select * from evento where id <> @eventoId and evento_pai_id = @eventoPaiId and data_inicio ::date >= @dataEvento ";
+            return await database.Conexao.QueryAsync<Evento>(query.ToString(), new { eventoId, eventoPaiId, dataEvento });
+        }
+
         public async Task<IEnumerable<Evento>> ObterEventosPorTipoETipoCalendario(long tipoEventoCodigo, long tipoCalendarioId)
         {
             var query = new StringBuilder();

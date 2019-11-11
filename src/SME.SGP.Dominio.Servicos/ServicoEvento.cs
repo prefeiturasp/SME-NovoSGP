@@ -87,18 +87,7 @@ namespace SME.SGP.Dominio.Servicos
 
             repositorioEvento.Salvar(evento);
 
-            if (evento.EventoPaiId > 0 && alterarRecorrenciaCompleta)
-            {
-                IEnumerable<Evento> eventos = null;
-                if (eventos != null && eventos.Any())
-                {
-                    foreach (var eventoASerAlterado in eventos)
-                    {
-                        var eventoAlterado = AlterarEventoDeRecorrencia(evento, eventoASerAlterado);
-                        repositorioEvento.Salvar(eventoASerAlterado);
-                    }
-                }
-            }
+            await AlterarRecorrenciaEventos(evento, alterarRecorrenciaCompleta);
         }
 
         public async Task SalvarEventoFeriadosAoCadastrarTipoCalendario(TipoCalendario tipoCalendario)
@@ -170,6 +159,22 @@ namespace SME.SGP.Dominio.Servicos
             return eventoASerAlterado;
         }
 
+        private async Task AlterarRecorrenciaEventos(Evento evento, bool alterarRecorrenciaCompleta)
+        {
+            if (evento.EventoPaiId.HasValue && evento.EventoPaiId > 0 && alterarRecorrenciaCompleta)
+            {
+                IEnumerable<Evento> eventos = await repositorioEvento.ObterEventosPorRecorrencia(evento.EventoPaiId.Value, evento.Id, evento.DataInicio);
+                if (eventos != null && eventos.Any())
+                {
+                    foreach (var eventoASerAlterado in eventos)
+                    {
+                        var eventoAlterado = AlterarEventoDeRecorrencia(evento, eventoASerAlterado);
+                        repositorioEvento.Salvar(eventoAlterado);
+                    }
+                }
+            }
+        }
+
         private void EnviarNotificacaoRegistroDeRecorrencia(Evento evento, List<DateTime> notificacoesSucesso, List<string> notificacoesFalha, long usuarioId)
         {
             var tipoCalendario = repositorioTipoCalendario.ObterPorId(evento.TipoCalendarioId);
@@ -177,12 +182,13 @@ namespace SME.SGP.Dominio.Servicos
             var mensagemNotificacao = new StringBuilder();
             if (notificacoesSucesso.Any())
             {
-                mensagemNotificacao.Append($"<br>Foram cadastrados {notificacoesSucesso.Count} eventos de Reunião Pedagógica no calendário '{tipoCalendario.Nome}' de {tipoCalendario.AnoLetivo} nas seguintes datas:<br>");
+                var textoInicial = notificacoesSucesso.Count > 1 ? "Foram" : "Foi";
+                mensagemNotificacao.Append($"<br>{textoInicial} cadastrado(s) {notificacoesSucesso.Count} evento(s) de '{evento.TipoEvento.Descricao}' no calendário '{tipoCalendario.Nome}' de {tipoCalendario.AnoLetivo} nas seguintes datas:<br>");
                 notificacoesSucesso.ForEach(data => mensagemNotificacao.AppendLine($"<br>{data.ToShortDateString()}"));
             }
             if (notificacoesFalha.Any())
             {
-                mensagemNotificacao.AppendLine($"<br>Não foi possível cadastrar o(s) eventos na(s) seguinte(s) data(s)<br>");
+                mensagemNotificacao.AppendLine($"<br>Não foi possível cadastrar o(s) evento(s) na(s) seguinte(s) data(s)<br>");
                 notificacoesFalha.ForEach(mensagem => mensagemNotificacao.AppendLine($"<br>{mensagem}"));
             }
             var notificacao = new Notificacao()
