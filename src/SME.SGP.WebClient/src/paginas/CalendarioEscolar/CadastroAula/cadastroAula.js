@@ -15,6 +15,7 @@ import { confirmar, erros, sucesso } from '~/servicos/alertas';
 import api from '~/servicos/api';
 import { setBreadcrumbManual } from '~/servicos/breadcrumb-services';
 import history from '~/servicos/history';
+import { getMock } from './mock-aula';
 
 const CadastroAula = ({ match }) => {
   const usuario = useSelector(store => store.usuario);
@@ -30,6 +31,7 @@ const CadastroAula = ({ match }) => {
   const [listaDisciplinas, setListaDisciplinas] = useState([]);
   const [validacoes, setValidacoes] = useState({});
   const [exibirAuditoria, setExibirAuditoria] = useState(false);
+  const [quantidadeMaximaAulas, setQuantidadeMaximaAulas] = useState(0);
 
   const [valoresIniciais, setValoresIniciais] = useState({});
   const inicial = {
@@ -51,8 +53,8 @@ const CadastroAula = ({ match }) => {
   ];
 
   const opcoesQuantidadeAulas = [
-    { label: '1', value: 1 },
-    { label: '2', value: 2 },
+    { label: '1', value: 1, disabled: quantidadeMaximaAulas < 1 },
+    { label: '2', value: 2, disabled: quantidadeMaximaAulas < 2 },
   ];
 
   const opcoesRecorrencia = [
@@ -81,6 +83,12 @@ const CadastroAula = ({ match }) => {
       obterDisciplinas();
       validarConsultaModoEdicaoENovo();
     }
+    getMock().then(resp => {
+      const dados = resp;
+      if (dados && dados.quantidadeMaximaAulas) {
+        setQuantidadeMaximaAulas(dados.quantidadeMaximaAulas)
+      }
+    })
   }, []);
 
   useEffect(() => {
@@ -95,7 +103,7 @@ const CadastroAula = ({ match }) => {
       recorrenciaAula: Yup.string().required('Recorrência obrigatória'),
       quantidadeTexto: Yup.number()
         .positive('Valor inválido')
-        .integer(),
+        .integer().lessThan(quantidadeMaximaAulas+1, `Valor não pode ser maior que ${quantidadeMaximaAulas}`),
     };
 
     if (quantidadeRadio > 0) {
@@ -103,6 +111,9 @@ const CadastroAula = ({ match }) => {
       form.setFieldValue('quantidadeTexto', '');
     } else if (quantidadeTexto > 0) {
       form.setFieldValue('quantidadeRadio', '');
+      // if(quantidadeTexto > quantidadeAulas){
+      //   quantidadeTexto = Yup.number().lessThan(quantidadeAulas, `Valor deve ser menor ou igual a ${quantidadeAulas}`)
+      // }
     } else {
       quantidadeRadio = Yup.string().required('Quantidade obrigatória');
       if (form) {
@@ -234,8 +245,8 @@ const CadastroAula = ({ match }) => {
     const cadastrado = idAula
       ? await api.put(`v1/calendarios/professores/aulas/${idAula}`, valoresForm)
       : await api
-          .post('v1/calendarios/professores/aulas', valoresForm)
-          .catch(e => erros(e));
+        .post('v1/calendarios/professores/aulas', valoresForm)
+        .catch(e => erros(e));
 
     if (cadastrado && cadastrado.status == 200) {
       sucesso('Aula cadastrada com sucesso');
@@ -274,7 +285,7 @@ const CadastroAula = ({ match }) => {
       <Cabecalho
         pagina={`Cadastro de Aula - ${
           dataAula ? dataAula.format('dddd') : ''
-        }, ${dataAula ? dataAula.format('DD/MM/YYYY') : ''} `}
+          }, ${dataAula ? dataAula.format('DD/MM/YYYY') : ''} `}
       />
       <Card>
         <Formik
@@ -389,6 +400,7 @@ const CadastroAula = ({ match }) => {
                     className="mt-3"
                     style={{ width: '70px' }}
                     id="quantidadeTexto"
+                    desabilitado ={quantidadeMaximaAulas < 3}
                     onChange={e => {
                       onChangeCampos();
                       montaValidacoes(0, e.target.value, form);
@@ -421,8 +433,8 @@ const CadastroAula = ({ match }) => {
             alteradoRf={auditoria.alteradoRf}
           />
         ) : (
-          ''
-        )}
+            ''
+          )}
       </Card>
     </>
   );
