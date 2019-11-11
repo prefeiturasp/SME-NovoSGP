@@ -1,3 +1,6 @@
+/* eslint-disable no-param-reassign */
+/* eslint-disable no-return-assign */
+/* eslint-disable no-use-before-define */
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import { useSelector } from 'react-redux';
@@ -9,7 +12,6 @@ import SelectComponent from '~/componentes/select';
 import api from '~/servicos/api';
 import Button from '~/componentes/button';
 import history from '~/servicos/history';
-import { erro } from '~/servicos/alertas';
 import { store } from '~/redux';
 import { zeraCalendario } from '~/redux/modulos/calendarioEscolar/actions';
 
@@ -29,7 +31,6 @@ const CalendarioEscolar = () => {
   const modalidadesAbrangencia = useSelector(state => state.filtro.modalidades);
 
   useEffect(() => {
-    console.log('abriu');
     const modalidades = [];
     if (modalidadesAbrangencia) {
       modalidadesAbrangencia.forEach(modalidade => {
@@ -57,25 +58,24 @@ const CalendarioEscolar = () => {
           });
         });
         setTiposCalendario(tiposCalendarioLista);
-        faalgo();
       }
     });
-    console.log('pegou');
     return () => store.dispatch(zeraCalendario());
   }, []);
 
+  const filtrarPorTurmaSelecionada = () => {
+    if (tiposCalendario && Object.entries(turmaSelecionada).length > 0) {
+      const modalidadeSelecionada = turmaSelecionada.modalidade === '3' ? 2 : 1;
+      setTiposCalendario(
+        tiposCalendario.filter(
+          tipo => tipo.modalidade === modalidadeSelecionada
+        )
+      );
+    }
+  };
+
   useEffect(() => {
-    console.log('mudou');
-    console.log(tiposCalendario);
-    // if (Object.entries(turmaSelecionada).length > 0) {
-    //   console.log(tiposCalendario);
-    //   const modalidadeSelecionada = turmaSelecionada.modalidade === '3' ? 2 : 1;
-    //   console.log(
-    //     tiposCalendario.filter(
-    //       tipo => tipo.modalidade === modalidadeSelecionada
-    //     )
-    //   );
-    // }
+    filtrarPorTurmaSelecionada();
   }, [turmaSelecionada]);
 
   useEffect(() => {
@@ -84,7 +84,7 @@ const CalendarioEscolar = () => {
       if (tipoCalendarioSelecionado) {
         api
           .get(
-            `https://demo0765509.mockable.io/api/v1/calendarios/${tipoCalendarioSelecionado}/dias-letivos`
+            `https://demo0765509.mockable.io/api/v1/calendarios/1/dias-letivos`
           )
           .then(resposta => {
             if (resposta.data) setDiasLetivos(resposta.data);
@@ -92,9 +92,6 @@ const CalendarioEscolar = () => {
           .catch(() => {
             setDiasLetivos({});
           });
-      } else {
-        // const itensCalendario = document.querySelectorAll('.mes-completo');
-        // console.log(itensCalendario);
       }
       setFiltros({ ...filtros, tipoCalendarioSelecionado });
     }
