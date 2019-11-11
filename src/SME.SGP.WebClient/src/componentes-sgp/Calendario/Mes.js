@@ -1,4 +1,6 @@
-﻿import React, { useEffect, useState } from 'react';
+﻿/* eslint-disable no-param-reassign */
+/* eslint-disable no-return-assign */
+import React, { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
 import styled from 'styled-components';
@@ -47,21 +49,6 @@ const Mes = props => {
   const { numeroMes, filtros } = props;
   const [mesSelecionado, setMesSelecionado] = useState({});
 
-  const verificaMesAtual = () => {
-    if (filtros && Object.entries(filtros).length > 0) {
-      const { tipoCalendarioSelecionado = '' } = filtros;
-      if (tipoCalendarioSelecionado) {
-        const dataAtual = new Date();
-        if (numeroMes === (dataAtual.getMonth() + 1).toString())
-          store.dispatch(selecionaMes(numeroMes));
-      } else store.dispatch(selecionaMes(0));
-    }
-  };
-
-  useEffect(() => {
-    verificaMesAtual();
-  }, []);
-
   useEffect(() => {
     let estado = true;
     if (estado) {
@@ -91,7 +78,6 @@ const Mes = props => {
             .catch(() => {
               store.dispatch(atribuiEventosMes(numeroMes, 0));
             });
-          verificaMesAtual();
         } else store.dispatch(atribuiEventosMes(numeroMes, 0));
       }
     }

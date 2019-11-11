@@ -1,4 +1,5 @@
-﻿import React, { useState, useEffect } from 'react';
+﻿/* eslint-disable no-return-assign */
+import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import styled from 'styled-components';
 import { useSelector } from 'react-redux';
@@ -106,7 +107,7 @@ const Dia = props => {
                 return (
                   <TipoEvento
                     key={shortid.generate()}
-                    className="d-block badge badge-pill badge-light mr-0"
+                    className="d-block badge badge-pill badge-light ml-auto mr-0"
                   >
                     {tipoEvento}
                   </TipoEvento>
