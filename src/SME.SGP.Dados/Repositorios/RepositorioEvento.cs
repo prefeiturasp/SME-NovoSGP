@@ -339,5 +339,23 @@ namespace SME.SGP.Dados.Repositorios
         {
             query.AppendFormat(" OFFSET {0} ROWS FETCH NEXT {1} ROWS ONLY", paginacao.QuantidadeRegistrosIgnorados, paginacao.QuantidadeRegistros);
         }
+
+        public bool ExisteEventoPorTipoCalendarioId(long tipoCalendarioId)
+        {
+            var query = "select 1 from evento where tipo_calendario_id = @tipoCalendarioId;";
+            return database.Conexao.QueryFirstOrDefault<bool>(query, new {tipoCalendarioId });
+        }
+
+        public bool ExisteEventoPorFeriadoId(long feriadoId)
+        {
+            var query = "select 1 from evento where feriado_id = @feriadoId;";
+            return database.Conexao.QueryFirstOrDefault<bool>(query, new { feriadoId });
+        }
+
+        public bool ExisteEventoPorEventoTipoId(long eventoTipoId)
+        {
+            var query = "select 1 from evento where tipo_evento_id = @eventoTipoId;";
+            return database.Conexao.QueryFirstOrDefault<bool>(query, new { eventoTipoId }); ;
+        }
     }
 }
