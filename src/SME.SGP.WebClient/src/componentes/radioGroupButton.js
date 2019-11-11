@@ -23,6 +23,10 @@ const Campo = styled.div`
     white-space: nowrap;
     margin-bottom: 5px;
   }
+
+  label {
+    font-weight: bold;
+  }
 `;
 
 const Error = styled.span`
@@ -40,6 +44,16 @@ const RadioGroupButton = ({
   label,
   opcoes,
 }) => {
+  const obterErros = () => {
+    return form && form.touched[name] && form.errors[name] ? (
+      <Error>
+        <span>{form.errors[name]}</span>
+      </Error>
+    ) : (
+      ''
+    );
+  };
+
   return (
     <>
       <Campo className={className}>
@@ -55,15 +69,14 @@ const RadioGroupButton = ({
               onChange={e => {
                 form.setFieldValue(name, e.target.value);
                 onChange(e);
+                form.setFieldTouched(name, true, true);
               }}
               defaultValue={valorInicial}
               disabled={desabilitado}
               value={form.values[name]}
             />
             <br />
-            <Error>
-              <span>{form.errors[name]}</span>
-            </Error>
+            {obterErros()}
           </>
         }
       </Campo>
