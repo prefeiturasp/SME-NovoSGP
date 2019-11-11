@@ -75,13 +75,39 @@ namespace SME.SGP.Dados.Repositorios
             return retornoPaginado;
         }
 
-        public IEnumerable<Evento> ObterEventosPorTipoDeCalendario(long tipoCalendarioId)
+        public IEnumerable<Evento> ObterEventosPorTipoDeCalendarioDreUe(long tipoCalendarioId, string dreId, string ueId)
         {
             StringBuilder query = new StringBuilder();
             MontaQueryCabecalho(query);
             MontaQueryFrom(query);
-            MontaQueryFiltro(tipoCalendarioId, null, null, null, null, query);
-            return database.Conexao.Query<Evento>(query.ToString(), new { tipoCalendarioId });
+            MontaFiltroTipoCalendario(query);
+
+            if (!string.IsNullOrEmpty(dreId))
+                query.AppendLine("and e.dre_id = @dreId and e.ue_id is null");
+            else if (string.IsNullOrEmpty(ueId))
+                query.AppendLine("and e.dre_id is null and e.ue_id is null");
+
+            if (!string.IsNullOrEmpty(ueId))
+            {
+                query.AppendLine("UNION");
+                MontaQueryCabecalho(query);
+                MontaQueryFrom(query);
+                MontaFiltroTipoCalendario(query);
+                query.AppendLine("and e.dre_id = @dreId and e.ue_id = @ueId");
+            }
+            else if (!string.IsNullOrEmpty(dreId))
+                query.AppendLine("and e.ue_id is null");
+
+            if (!string.IsNullOrEmpty(dreId) || !string.IsNullOrEmpty(ueId))
+            {
+                query.AppendLine("UNION");
+                MontaQueryCabecalho(query);
+                MontaQueryFrom(query);
+                MontaFiltroTipoCalendario(query);
+                query.AppendLine("and e.dre_id is null and e.ue_id is null");
+            }
+
+            return database.Conexao.Query<Evento>(query.ToString(), new { tipoCalendarioId, dreId, ueId });
         }
 
         public async Task<IEnumerable<CalendarioEventosMesesDto>> ObterQuantidadeDeEventosPorMeses(CalendarioEventosFiltroDto calendarioEventosMesesFiltro)
@@ -141,6 +167,15 @@ namespace SME.SGP.Dados.Repositorios
                 DreId = calendarioEventosMesesFiltro.DreId,
                 UeId = calendarioEventosMesesFiltro.UeId
             });
+        }
+
+        private static void MontaFiltroTipoCalendario(StringBuilder query)
+        {
+            query.AppendLine("where");
+            query.AppendLine("e.excluido = false");
+            query.AppendLine("and et.ativo = true");
+            query.AppendLine("and et.excluido = false");
+            query.AppendLine("and e.tipo_calendario_id = @tipoCalendarioId");
         }
 
         private static void MontaQueryCabecalho(StringBuilder query)
