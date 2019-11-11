@@ -18,5 +18,7 @@ namespace SME.SGP.Dominio.Interfaces
 
         Task<IEnumerable<CalendarioEventosMesesDto>> ObterQuantidadeDeEventosPorMeses(CalendarioEventosFiltroDto calendarioEventosMesesFiltro);
         bool ExisteEventoPorTipoCalendarioId(long tipoCalendarioId);
+        bool ExisteEventoPorFeriadoId(long feriadoId);
+        bool ExisteEventoPorEventoTipoId(long eventoTipoId);
     }
 }

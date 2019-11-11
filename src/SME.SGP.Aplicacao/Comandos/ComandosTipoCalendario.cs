@@ -75,13 +75,22 @@ namespace SME.SGP.Aplicacao
         public void MarcarExcluidos(long[] ids)
         {
             var idsInvalidos = "";
+            var tiposInválidos = "";
             foreach (long id in ids)
             {
                 var tipoCalendario = repositorio.ObterPorId(id);
                 if (tipoCalendario != null)
                 {
-                    tipoCalendario.Excluido = true;
-                    repositorio.Salvar(tipoCalendario);
+                    var possuiEventos = repositorioEvento.ExisteEventoPorTipoCalendarioId(id);
+                    if (possuiEventos)
+                    {
+                        tiposInválidos += string.IsNullOrEmpty(tiposInválidos) ? $"{tipoCalendario.Nome}" : $", {tipoCalendario.Nome}";
+                    }
+                    else
+                    {
+                        tipoCalendario.Excluido = true;
+                        repositorio.Salvar(tipoCalendario);
+                    }
                 }
                 else
                 {
@@ -92,22 +101,10 @@ namespace SME.SGP.Aplicacao
             {
                 throw new NegocioException($"Houve um erro ao excluir os tipos de calendário ids '{idsInvalidos}'. Um dos tipos de calendário não existe");
             }
-        }
-
-        public async Task Salvar(TipoCalendarioDto dto)
-        {
-            var inclusao = dto.Id == 0;
-
-            var tipoCalendario = MapearParaDominio(dto, dto.Id);
-
-            bool ehRegistroExistente = await repositorio.VerificarRegistroExistente(dto.Id, dto.Nome);
-
-            if (ehRegistroExistente)
-                throw new NegocioException($"O Tipo de Calendário Escolar '{dto.Nome}' já existe");
-
-            repositorio.Salvar(tipoCalendario);
-
-            await ExecutarMetodosAsync(dto, inclusao, tipoCalendario).ConfigureAwait(false);
+            if (!tiposInválidos.Trim().Equals(""))
+            {
+                throw new NegocioException($"Houve um erro ao excluir os tipos de calendário '{tiposInválidos}'. Os tipos de calendário possuem eventos vínculados");
+            }
         }
 
         private async Task ExecutarMetodosAsync(TipoCalendarioDto dto, bool inclusao, TipoCalendario tipoCalendario)

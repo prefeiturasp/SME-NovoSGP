@@ -56,7 +56,7 @@ namespace SME.SGP.Aplicacao
 
         public TipoCalendarioCompletoDto EntidadeParaDtoCompleto(TipoCalendario entidade)
         {
-            bool temEvento = repositorioEvento.ExisteEventoPorTipoCalendarioId(entidade.Id);
+            bool possuiEventos = repositorioEvento.ExisteEventoPorTipoCalendarioId(entidade.Id);
             return new TipoCalendarioCompletoDto
             {
                 Id = entidade.Id,
@@ -71,7 +71,7 @@ namespace SME.SGP.Aplicacao
                 CriadoEm = entidade.CriadoEm,
                 CriadoPor = entidade.CriadoPor,
                 DescricaoPeriodo = entidade.Periodo.GetAttribute<DisplayAttribute>().Name,
-                temEvento = temEvento
+                PossuiEventos = possuiEventos
             };
         }
 
