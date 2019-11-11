@@ -76,7 +76,6 @@ const ListaPaginada = props => {
   };
 
   const filtrar = () => {
-    console.log(filtro);
     api.get(`${url}?${obterPaginacao()}`, { params: filtro }).then(resposta => {
       setTotal(resposta.data.totalRegistros);
       setLinhas(resposta.data.items);
