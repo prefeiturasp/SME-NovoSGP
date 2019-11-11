@@ -33,6 +33,7 @@ import { useSelector } from 'react-redux';
 import SemPermissao from '~/paginas/SemPermissao/sem-permissao';
 import RotasDto from '~/dtos/rotasDto';
 import CadastroAula from '~/paginas/CalendarioEscolar/CadastroAula/cadastroAula';
+import FrequenciaPlanoAula from '~/paginas/DiarioClasse/FrequenciaPlanoAula/frequenciaPlanoAula';
 
 export default function Rotas() {
   const rotas = new Map();
@@ -373,6 +374,16 @@ export default function Rotas() {
       temPermissionamento: false
   });
 
+  rotas.set(`${RotasDto.FREQUENCIA_PLANO_AULA}`, {
+      breadcrumbName: 'Frequência/Plano de aula',
+      menu: ['Diário de Classe'],
+      parent: '/',
+      component: FrequenciaPlanoAula,
+      exact: true,
+      tipo: RotasTipo.EstruturadaAutenticada,
+      temPermissionamento: false
+  });
+  
   const rotasArray = [];
   for (var [key, value] of rotas) {
     const rota = value;
