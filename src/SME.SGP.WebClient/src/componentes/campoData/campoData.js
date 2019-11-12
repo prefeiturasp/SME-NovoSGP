@@ -1,6 +1,6 @@
 import 'moment/locale/pt-br';
 
-import { DatePicker } from 'antd';
+import { DatePicker, TimePicker } from 'antd';
 import locale from 'antd/es/date-picker/locale/pt_BR';
 import { Field } from 'formik';
 import * as moment from 'moment';
@@ -23,6 +23,8 @@ class MomentSchema extends Yup.mixed {
 }
 
 const Campo = styled.div`
+  width: 100%;
+
   span {
     color: ${Base.Vermelho};
   }
@@ -31,14 +33,30 @@ const Campo = styled.div`
     .ant-calendar-picker-input {
       border-color: #dc3545 !important;
     }
+
+    .ant-time-picker-input {
+      border-color: #dc3545 !important;
+    }
   }
 
   .ant-calendar-picker-input {
     height: 38px;
   }
 
+  .ant-time-picker-input {
+    height: 38px;
+  }
+
+  .ant-time-picker {
+    width: 100%;
+  }
+
   .ant-calendar-picker {
     width: 100%;
+  }
+
+  label {
+    font-weight: bold;
   }
 `;
 
@@ -53,8 +71,43 @@ const CampoData = props => {
     desabilitado,
     className,
     onChange,
-    valor
+    valor,
+    desabilitarData,
+    diasParaDesabilitar,
+    somenteHora,
   } = props;
+
+  const desabilitarDatas = current => {
+    let retorno = false;
+    const ehPraDesabilitar =
+      !!diasParaDesabilitar &&
+      !!diasParaDesabilitar.find(x => x === current.format('YYYY-MM-DD'));
+
+    if (!!diasParaDesabilitar === false && !!desabilitarData === false) {
+      return false;
+    }
+
+    if (
+      !!diasParaDesabilitar === false &&
+      typeof desabilitarData === 'function'
+    ) {
+      retorno = desabilitarData(current);
+    } else if (
+      !!diasParaDesabilitar &&
+      diasParaDesabilitar.length >= 1 &&
+      typeof desabilitarData === 'function'
+    ) {
+      retorno = ehPraDesabilitar || desabilitarData(current);
+    } else if (
+      !!diasParaDesabilitar &&
+      diasParaDesabilitar.length >= 1 &&
+      !!desabilitarData === false
+    ) {
+      retorno = ehPraDesabilitar;
+    }
+
+    return retorno;
+  };
 
   const possuiErro = () => {
     return form && form.errors[name] && form.touched[name];
@@ -83,11 +136,12 @@ const CampoData = props => {
           form ? `${possuiErro() ? 'is-invalid' : ''} ${className || ''}` : ''
         }
         onChange={valorData => {
-          valorData = valorData || '';
-          form.setFieldValue(name, valorData);
+          form.setFieldValue(name, valorData || '');
           onChange(valorData);
+          form.setFieldTouched(name, true, true);
         }}
         value={form.values[name] || null}
+        disabledDate={desabilitarDatas}
       />
     );
   };
@@ -113,12 +167,52 @@ const CampoData = props => {
     );
   };
 
+  const campoHoraAntComValidacoes = () => {
+    return (
+      <Field
+        disabled={desabilitado}
+        locale={locale}
+        format={formatoData}
+        component={TimePicker}
+        placeholder={placeholder}
+        name={name}
+        id={id || name}
+        onBlur={executaOnBlur}
+        className={
+          form ? `${possuiErro() ? 'is-invalid' : ''} ${className || ''}` : ''
+        }
+        onChange={valorHora => {
+          valorHora = valorHora || '';
+          form.setFieldValue(name, valorHora);
+          onChange(valorHora);
+          form.setFieldTouched(name, true, true);
+        }}
+        value={form.values[name] || null}
+      />
+    );
+  };
+
+  const validaTipoCampo = () => {
+    if (somenteHora) {
+      return form ? campoHoraAntComValidacoes() : 'CRIAR COMPONENTE!!';
+    }
+    return form ? campoDataAntComValidacoes() : campoDataAntSemValidacoes();
+  };
+
+  const obterErros = () => {
+    return form && form.touched[name] && form.errors[name] ? (
+      <span>{form.errors[name]}</span>
+    ) : (
+      ''
+    );
+  };
+
   return (
     <>
       <Campo>
         {label ? <Label text={label} control={name} /> : ''}
-        {form ? campoDataAntComValidacoes() : campoDataAntSemValidacoes()}
-        {form ? <span>{form.errors[name]}</span> : ''}
+        {validaTipoCampo()}
+        {obterErros()}
       </Campo>
     </>
   );
@@ -130,6 +224,7 @@ CampoData.propTypes = {
   placeholder: PropTypes.string,
   label: PropTypes.string,
   desabilitado: PropTypes.bool,
+  somenteHora: PropTypes.bool,
   onChange: PropTypes.func,
   valor: PropTypes.any,
 };
@@ -140,6 +235,7 @@ CampoData.defaultProps = {
   placeholder: 'placeholder',
   label: '',
   desabilitado: false,
+  somenteHora: false,
   onChange: () => {},
 };
 
@@ -156,7 +252,11 @@ Yup.addMethod(
       const dataInicial = this.parent[nomeDataInicial];
       const dataFinal = this.parent[nomeDataFinal];
 
-      if (dataInicial && dataFinal && dataInicial.isSameOrAfter(dataFinal, 'date')) {
+      if (
+        dataInicial &&
+        dataFinal &&
+        dataInicial.isSameOrAfter(dataFinal, 'date')
+      ) {
         dataValida = false;
       }
       return dataValida;

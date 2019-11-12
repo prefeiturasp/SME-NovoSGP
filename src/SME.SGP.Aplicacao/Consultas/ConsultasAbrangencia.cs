@@ -28,12 +28,12 @@ namespace SME.SGP.Aplicacao
             return await repositorioAbrangencia.ObterAbrangenciaPorFiltro(texto, login, perfil);
         }
 
-        public async Task<IEnumerable<AbrangenciaDreRetorno>> ObterDres(Modalidade modalidade)
+        public async Task<IEnumerable<AbrangenciaDreRetorno>> ObterDres(Modalidade? modalidade, int periodo = 0)
         {
             var login = servicoUsuario.ObterLoginAtual();
             var perfil = servicoUsuario.ObterPerfilAtual();
 
-            return await repositorioAbrangencia.ObterDres(login, perfil, modalidade);
+            return await repositorioAbrangencia.ObterDres(login, perfil, modalidade, periodo);
         }
 
         public async Task<IEnumerable<EnumeradoRetornoDto>> ObterModalidades()
@@ -58,20 +58,20 @@ namespace SME.SGP.Aplicacao
                     .Where(a => a != 0);
         }
 
-        public async Task<IEnumerable<AbrangenciaTurmaRetorno>> ObterTurmas(string codigoUe, Modalidade modalidade)
+        public async Task<IEnumerable<AbrangenciaTurmaRetorno>> ObterTurmas(string codigoUe, Modalidade modalidade, int periodo = 0)
         {
             var login = servicoUsuario.ObterLoginAtual();
             var perfil = servicoUsuario.ObterPerfilAtual();
 
-            return await repositorioAbrangencia.ObterTurmas(codigoUe, login, perfil, modalidade);
+            return await repositorioAbrangencia.ObterTurmas(codigoUe, login, perfil, modalidade, periodo);
         }
 
-        public async Task<IEnumerable<AbrangenciaUeRetorno>> ObterUes(string codigoDre, Modalidade modalidade)
+        public async Task<IEnumerable<AbrangenciaUeRetorno>> ObterUes(string codigoDre, Modalidade? modalidade, int periodo = 0)
         {
             var login = servicoUsuario.ObterLoginAtual();
             var perfil = servicoUsuario.ObterPerfilAtual();
 
-            return await repositorioAbrangencia.ObterUes(codigoDre, login, perfil, modalidade);
+            return await repositorioAbrangencia.ObterUes(codigoDre, login, perfil, modalidade, periodo);
         }
     }
 }

@@ -63,7 +63,7 @@ const Button = React.forwardRef((props, ref) => {
     }
     &[disabled] {
       background: transparent !important;
-      border-color: ${Base.CinzaDesabilitado} !important;
+      border: 1px solid ${Base.CinzaDesabilitado} !important;
       color: ${Base.CinzaDesabilitado} !important;
       cursor: unset !important;
     }
@@ -129,7 +129,7 @@ Button.defaultProps = {
   icon: '',
   padding: '',
   height: '38px',
-  lineHeight: 'auto',
+  lineHeight: 'inherit',
   width: '',
   fontSize: '',
   label: '',
