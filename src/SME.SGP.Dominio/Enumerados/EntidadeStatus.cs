@@ -4,10 +4,13 @@ namespace SME.SGP.Dominio
 {
     public enum EntidadeStatus
     {
-        [Display(Description = "Ativo")]
-        Ativo = 1,
+        [Display(Description = "Aprovado")]
+        Aprovado = 1,
 
         [Display(Description = "Aguardando aprovação")]
-        AguardandoAprovacao = 2
+        AguardandoAprovacao = 2,
+
+        [Display(Description = "Recusado")]
+        Recusado = 3
     }
 }

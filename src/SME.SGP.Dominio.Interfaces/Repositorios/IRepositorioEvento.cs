@@ -15,8 +15,12 @@ namespace SME.SGP.Dominio.Interfaces
 
         Task<IEnumerable<Evento>> ObterEventosPorTipoETipoCalendario(long tipoEventoCodigo, long tipoCalendarioId);
 
+        Evento ObterPorWorkflowId(long workflowId);
+
         Task<IEnumerable<EventosPorDiaRetornoQueryDto>> ObterQuantidadeDeEventosPorDia(CalendarioEventosFiltroDto calendarioEventosMesesFiltro, int mes);
 
         Task<IEnumerable<CalendarioEventosMesesDto>> ObterQuantidadeDeEventosPorMeses(CalendarioEventosFiltroDto calendarioEventosMesesFiltro);
+
+        Task<bool> TemEventoNosDiasETipo(DateTime dataInicio, DateTime dataFim, TipoEventoEnum liberacaoExcepcional, long tipoCalendarioId);
     }
 }

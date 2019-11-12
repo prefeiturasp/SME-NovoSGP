@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.Configuration;
 using SME.SGP.Aplicacao;
+using SME.SGP.Aplicacao.Integracoes;
 using SME.SGP.Dominio.Entidades;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
@@ -12,6 +13,7 @@ namespace SME.SGP.Dominio.Servicos
 {
     public class ServicoEvento : IServicoEvento
     {
+        private readonly IComandosNotificacao comandosNotificacao;
         private readonly IComandosWorkflowAprovacao comandosWorkflowAprovacao;
         private readonly IConfiguration configuration;
         private readonly IRepositorioAbrangencia repositorioAbrangencia;
@@ -19,7 +21,9 @@ namespace SME.SGP.Dominio.Servicos
         private readonly IRepositorioEventoTipo repositorioEventoTipo;
         private readonly IRepositorioFeriadoCalendario repositorioFeriadoCalendario;
         private readonly IRepositorioPeriodoEscolar repositorioPeriodoEscolar;
+        private readonly IRepositorioSupervisorEscolaDre repositorioSupervisorEscolaDre;
         private readonly IRepositorioTipoCalendario repositorioTipoCalendario;
+        private readonly IServicoEOL servicoEOL;
         private readonly IServicoUsuario servicoUsuario;
         private readonly IUnitOfWork unitOfWork;
 
@@ -30,7 +34,8 @@ namespace SME.SGP.Dominio.Servicos
                              IRepositorioFeriadoCalendario repositorioFeriadoCalendario,
                              IRepositorioTipoCalendario repositorioTipoCalendario,
                              IComandosWorkflowAprovacao comandosWorkflowAprovacao,
-                             IRepositorioAbrangencia repositorioAbrangencia, IConfiguration configuration, IUnitOfWork unitOfWork)
+                             IRepositorioAbrangencia repositorioAbrangencia, IConfiguration configuration,
+                             IUnitOfWork unitOfWork, IComandosNotificacao comandosNotificacao, IServicoEOL servicoEOL, IRepositorioSupervisorEscolaDre repositorioSupervisorEscolaDre)
         {
             this.repositorioEvento = repositorioEvento ?? throw new System.ArgumentNullException(nameof(repositorioEvento));
             this.repositorioEventoTipo = repositorioEventoTipo ?? throw new System.ArgumentNullException(nameof(repositorioEventoTipo));
@@ -38,10 +43,13 @@ namespace SME.SGP.Dominio.Servicos
             this.servicoUsuario = servicoUsuario ?? throw new System.ArgumentNullException(nameof(servicoUsuario));
             this.repositorioFeriadoCalendario = repositorioFeriadoCalendario ?? throw new System.ArgumentNullException(nameof(repositorioFeriadoCalendario));
             this.repositorioTipoCalendario = repositorioTipoCalendario ?? throw new System.ArgumentNullException(nameof(repositorioTipoCalendario));
-            this.comandosWorkflowAprovacao = comandosWorkflowAprovacao;
+            this.comandosWorkflowAprovacao = comandosWorkflowAprovacao ?? throw new ArgumentNullException(nameof(comandosWorkflowAprovacao));
             this.repositorioAbrangencia = repositorioAbrangencia ?? throw new ArgumentNullException(nameof(repositorioAbrangencia));
             this.configuration = configuration;
             this.unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
+            this.comandosNotificacao = comandosNotificacao ?? throw new ArgumentNullException(nameof(comandosNotificacao));
+            this.servicoEOL = servicoEOL ?? throw new ArgumentNullException(nameof(servicoEOL));
+            this.repositorioSupervisorEscolaDre = repositorioSupervisorEscolaDre ?? throw new ArgumentNullException(nameof(repositorioSupervisorEscolaDre));
         }
 
         public static DateTime ObterProximoDiaDaSemana(DateTime data, DayOfWeek diaDaSemana)
@@ -55,15 +63,12 @@ namespace SME.SGP.Dominio.Servicos
             var tipoEvento = repositorioEventoTipo.ObterPorId(evento.TipoEventoId);
 
             if (tipoEvento == null)
-            {
                 throw new NegocioException("O tipo do evento deve ser informado.");
-            }
 
             var tipoCalendario = repositorioTipoCalendario.ObterPorId(evento.TipoCalendarioId);
             if (tipoCalendario == null)
-            {
                 throw new NegocioException("Calendário não encontrado.");
-            }
+
             evento.AdicionarTipoEvento(tipoEvento);
 
             evento.ValidaPeriodoEvento();
@@ -96,9 +101,11 @@ namespace SME.SGP.Dominio.Servicos
 
             var mensagemRetornoSucesso = "Evento cadastrado com sucesso.";
 
-            if (evento.TipoEvento.Codigo == (int)TipoEventoEnum.LiberacaoExcepcional)
+            var temEventoDeLiberacaoExcepcional = await repositorioEvento.TemEventoNosDiasETipo(evento.DataInicio, evento.DataFim, TipoEventoEnum.LiberacaoExcepcional, tipoCalendario.Id);
+
+            if (temEventoDeLiberacaoExcepcional)
             {
-                await PersistirWorflowEventoLiberacaoExcepcional(evento);
+                await PersistirWorkflowEvento(evento);
                 mensagemRetornoSucesso = "Evento cadastrado e será válido após aprovação.";
             }
 
@@ -190,13 +197,11 @@ namespace SME.SGP.Dominio.Servicos
             return tipoEventoFeriado;
         }
 
-        private async Task PersistirWorflowEventoLiberacaoExcepcional(Evento evento)
+        private async Task PersistirWorkflowEvento(Evento evento)
         {
             var loginAtual = servicoUsuario.ObterLoginAtual();
             var perfilAtual = servicoUsuario.ObterPerfilAtual();
             var escola = await repositorioAbrangencia.ObterUe(evento.UeId, loginAtual, perfilAtual);
-
-            evento.TipoCalendario = repositorioTipoCalendario.ObterPorId(evento.TipoCalendarioId);
 
             if (escola == null)
                 throw new NegocioException($"Não foi possível localizar a escola da criação do evento.");
@@ -211,6 +216,7 @@ namespace SME.SGP.Dominio.Servicos
                 Tipo = WorkflowAprovacaoTipo.Evento,
                 UeId = evento.UeId,
                 NotificacaoTitulo = "Criação de Eventos Excepcionais",
+                NotificacaoTipo = NotificacaoTipo.Calendario,
                 NotificacaoMensagem = $"O evento {evento.Nome} - {evento.DataInicio.Day}/{evento.DataInicio.Month}/{evento.DataInicio.Year} foi criado no calendário {evento.TipoCalendario.Nome} da {escola.Nome}. Para que este evento seja considerado válido, você precisa aceitar esta notificação. Para visualizar o evento clique <a href='{linkParaEvento}'>aqui</a>."
             };
 
