@@ -4,7 +4,7 @@ import * as Yup from 'yup';
 import Cabecalho from '~/componentes-sgp/cabecalho';
 import Auditoria from '~/componentes/auditoria';
 import Button from '~/componentes/button';
-import { CampoData, momentSchema } from '~/componentes/campoData/campoData.js';
+import { CampoData, momentSchema } from '~/componentes/campoData/campoData';
 import CampoTexto from '~/componentes/campoTexto';
 import Card from '~/componentes/card';
 import { Colors } from '~/componentes/colors';
@@ -67,6 +67,8 @@ const TipoFeriadoForm = ({ match }) => {
     { label: 'Inativo', value: false },
   ];
 
+  const [possuiEventos, setPossuiEventos] = useState(false);
+
   useEffect(() => {
     verificaSomenteConsulta(permissoesTela);
 
@@ -82,8 +84,6 @@ const TipoFeriadoForm = ({ match }) => {
         const cadastrado = await api
           .get(`v1/calendarios/feriados/${match.params.id}`)
           .catch(e => erros(e));
-
-        console.log(cadastrado);
 
         if (cadastrado && cadastrado.data) {
           setIsTipoMovel(cadastrado.data.tipo == tipoFeriado.Movel);
@@ -103,6 +103,7 @@ const TipoFeriadoForm = ({ match }) => {
             alteradoEm: cadastrado.data.alteradoEm,
           });
           setExibirAuditoria(true);
+          setPossuiEventos(cadastrado.data.possuiEventos);
         }
         setNovoRegistro(false);
       }
@@ -220,7 +221,8 @@ const TipoFeriadoForm = ({ match }) => {
         desabilitado={
           isTipoMovel ||
           (novoRegistro && !permissoesTela.podeIncluir) ||
-          (!novoRegistro && !permissoesTela.podeAlterar)
+          (!novoRegistro && !permissoesTela.podeAlterar) ||
+          possuiEventos
         }
       />
     );
@@ -278,7 +280,9 @@ const TipoFeriadoForm = ({ match }) => {
                   color={Colors.Vermelho}
                   border
                   className="mr-2"
-                  disabled={novoRegistro || !permissoesTela.podeExcluir}
+                  disabled={
+                    novoRegistro || !permissoesTela.podeExcluir || possuiEventos
+                  }
                   onClick={onClickExcluir}
                 />
                 <Button
@@ -306,7 +310,8 @@ const TipoFeriadoForm = ({ match }) => {
                     desabilitado={
                       isTipoMovel ||
                       ((novoRegistro && !permissoesTela.podeIncluir) ||
-                        (!novoRegistro && !permissoesTela.podeAlterar))
+                        (!novoRegistro && !permissoesTela.podeAlterar)) ||
+                      possuiEventos
                     }
                   />
                 </div>
@@ -324,7 +329,8 @@ const TipoFeriadoForm = ({ match }) => {
                     disabled={
                       isTipoMovel ||
                       (novoRegistro && !permissoesTela.podeIncluir) ||
-                      (!novoRegistro && !permissoesTela.podeAlterar)
+                      (!novoRegistro && !permissoesTela.podeAlterar) ||
+                      possuiEventos
                     }
                   />
                 </div>

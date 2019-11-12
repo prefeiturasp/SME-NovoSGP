@@ -11,7 +11,7 @@ import history from '~/servicos/history';
 import SelectComponent from '~/componentes/select';
 import api from '~/servicos/api';
 import CampoTexto from '~/componentes/campoTexto';
-import { sucesso, erro } from '~/servicos/alertas';
+import { sucesso, erro, confirmar, erros } from '~/servicos/alertas';
 import servicoEvento from '~/servicos/Paginas/Calendario/ServicoTipoEvento';
 
 const TipoEventosForm = ({ match }) => {
@@ -88,12 +88,12 @@ const TipoEventosForm = ({ match }) => {
     }
   }, []);
 
+  const [possuiEventos, setPossuiEventos] = useState(false);
+
   useEffect(() => {
     if (idTipoEvento) {
       api.get(`v1/calendarios/eventos/tipos/${idTipoEvento}`).then(resposta => {
         if (resposta && resposta.data) {
-          console.log(resposta);
-
           setDadosTipoEvento({
             descricao: resposta.data.descricao,
             letivo: resposta.data.letivo.toString(),
@@ -110,6 +110,7 @@ const TipoEventosForm = ({ match }) => {
             criadoPor: `${resposta.data.criadoPor} (${resposta.data.criadoRF})`,
           });
           setModoEdicao(true);
+          setPossuiEventos(resposta.data.possuiEventos);
         }
       });
     }
@@ -130,6 +131,28 @@ const TipoEventosForm = ({ match }) => {
       ativo: true,
     });
     setDesabilitarBotaoCadastrar(true);
+  };
+
+  const clicouBotaoExcluir = async () => {
+    if (idTipoEvento) {
+      const confirmado = await confirmar(
+        'Excluir tipo de calendário escolar',
+        '',
+        'Deseja realmente excluir este calendário?',
+        'Excluir',
+        'Cancelar'
+      );
+      if (confirmado) {
+        const parametrosDelete = { data: [idTipoEvento] };
+        const excluir = await api
+          .delete('v1/calendarios/eventos/tipos', parametrosDelete)
+          .catch(e => erros(e));
+        if (excluir) {
+          sucesso('Tipos de evento deletados com sucesso!');
+          history.push('/calendario-escolar/tipo-eventos');
+        }
+      }
+    }
   };
 
   const [validacoes] = useState(
@@ -258,7 +281,16 @@ const TipoEventosForm = ({ match }) => {
                   onClick={clicouBotaoCancelar}
                   border
                   bold
+                  disabled={idTipoEvento}
                   className="mr-3"
+                />
+                <Button
+                  label="Excluir"
+                  color={Colors.Vermelho}
+                  border
+                  className="mr-3"
+                  disabled={possuiEventos}
+                  onClick={clicouBotaoExcluir}
                 />
                 <Button
                   label={idTipoEvento ? 'Alterar' : 'Cadastrar'}
@@ -284,6 +316,7 @@ const TipoEventosForm = ({ match }) => {
                         type="input"
                         ref={campoNomeTipoEventoRef}
                         onChange={aoDigitarDescricao}
+                        desabilitado={possuiEventos}
                         icon
                       />
                     </Div>
@@ -298,6 +331,7 @@ const TipoEventosForm = ({ match }) => {
                         valueText="descricao"
                         lista={listaLocalOcorrencia}
                         onChange={aoSelecionarLocalOcorrencia}
+                        disabled={possuiEventos}
                       />
                     </Div>
                     <Div className="col-2">
@@ -311,6 +345,7 @@ const TipoEventosForm = ({ match }) => {
                         valueText="descricao"
                         lista={listaLetivo}
                         onChange={aoSelecionarLetivo}
+                        disabled={possuiEventos}
                       />
                     </Div>
                   </Div>
@@ -334,6 +369,7 @@ const TipoEventosForm = ({ match }) => {
                         form={form}
                         value={dadosTipoEvento.concomitancia}
                         onChange={aoSelecionarConcomitancia}
+                        disabled={possuiEventos}
                       >
                         <Div className="form-check form-check-inline">
                           <Radio value>Sim</Radio>
@@ -348,6 +384,7 @@ const TipoEventosForm = ({ match }) => {
                         form={form}
                         value={dadosTipoEvento.tipoData}
                         onChange={aoSelecionarTipoData}
+                        disabled={possuiEventos}
                       >
                         <Div className="form-check form-check-inline">
                           <Radio value>Única</Radio>
@@ -362,6 +399,7 @@ const TipoEventosForm = ({ match }) => {
                         form={form}
                         value={dadosTipoEvento.dependencia}
                         onChange={aoSelecionarDependencia}
+                        disabled={possuiEventos}
                       >
                         <Div className="form-check form-check-inline">
                           <Radio value>Sim</Radio>
