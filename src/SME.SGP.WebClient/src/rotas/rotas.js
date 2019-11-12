@@ -32,9 +32,18 @@ import TipoEventosForm from '~/paginas/CalendarioEscolar/TipoEventos/tipoEventos
 import SemPermissao from '~/paginas/SemPermissao/sem-permissao';
 import RotasDto from '~/dtos/rotasDto';
 import CadastroAula from '~/paginas/CalendarioEscolar/CadastroAula/cadastroAula';
+import CalendarioProfessor from '~/paginas/CalendarioProfessor/Calendario';
 
 export default function Rotas() {
   const rotas = new Map();
+
+  rotas.set('/calendario-professor', {
+    breadcrumbName: 'Calendário do Professor',
+    parent: '/',
+    component: CalendarioProfessor,
+    exact: true,
+    tipo: RotasTipo.EstruturadaAutenticada,
+  });
 
   rotas.set('/calendario-escolar', {
     breadcrumbName: 'Calendário Escolar',

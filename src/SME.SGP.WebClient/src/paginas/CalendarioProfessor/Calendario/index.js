@@ -21,7 +21,7 @@ const Icone = styled.i``;
 const Campo = styled.input``;
 const Label = styled.label``;
 
-const CalendarioEscolar = () => {
+const CalendarioProfessor = () => {
   const [tiposCalendario, setTiposCalendario] = useState([]);
   const [tipoCalendarioSelecionado, setTipoCalendarioSelecionado] = useState(
     undefined
@@ -206,9 +206,7 @@ const CalendarioEscolar = () => {
   return (
     <Div className="col-12">
       <Grid cols={12} className="mb-1 p-0">
-        <Titulo className="font-weight-bold">
-          Consulta de calendário escolar
-        </Titulo>
+        <Titulo className="font-weight-bold">Calendário do Professor</Titulo>
       </Grid>
       <Card className="rounded mb-4 mx-auto">
         <Grid cols={12} className="mb-4">
@@ -316,4 +314,4 @@ const CalendarioEscolar = () => {
   );
 };
 
-export default CalendarioEscolar;
+export default CalendarioProfessor;
