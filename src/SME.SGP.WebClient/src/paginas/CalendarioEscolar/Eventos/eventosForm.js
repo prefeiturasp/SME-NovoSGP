@@ -307,6 +307,9 @@ const EventosForm = ({ match }) => {
         nomeCalendario: calendario.descricaoTipoCalendario,
       };
     });
+
+    if (tipoDataUnico) valoresForm.dataFim = valoresForm.dataInicio;
+
     valoresForm.tiposCalendarioParaCopiar = tiposCalendarioParaCopiar;
     const cadastrado = await servicoEvento
       .salvar(idEvento || 0, valoresForm)
