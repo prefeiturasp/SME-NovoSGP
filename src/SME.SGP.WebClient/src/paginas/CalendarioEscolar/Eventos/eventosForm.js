@@ -264,7 +264,8 @@ const EventosForm = ({ match }) => {
         setExibirModalRetornoCopiarEvento(true);
 
       } else {
-        sucesso('Evento cadastrado com sucesso');
+        debugger;
+        sucesso(cadastrado.data[0].mensagem);
         history.push('/calendario-escolar/eventos');
       }
     }

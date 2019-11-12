@@ -1,7 +1,6 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Moq;
 using SME.SGP.Aplicacao;
-using SME.SGP.Aplicacao.Integracoes;
 using SME.SGP.Dominio.Entidades;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Dto;
@@ -14,7 +13,6 @@ namespace SME.SGP.Dominio.Servicos.Teste
 {
     public class ServicoEventoTeste
     {
-        private readonly Mock<IComandosNotificacao> comandosNotificacao;
         private readonly Mock<IComandosWorkflowAprovacao> comandosWorkflowAprovacao;
         private readonly Mock<IRepositorioAbrangencia> repositorioAbrangencia;
         private readonly Mock<IRepositorioEvento> repositorioEvento;
@@ -22,7 +20,6 @@ namespace SME.SGP.Dominio.Servicos.Teste
         private readonly Mock<IRepositorioFeriadoCalendario> repositorioFeriadoCalendario;
         private readonly Mock<IRepositorioPeriodoEscolar> repositorioPeriodoEscolar;
         private readonly Mock<IRepositorioTipoCalendario> repositorioTipoCalendario;
-        private readonly Mock<IServicoEOL> servicoEol;
         private readonly ServicoEvento servicoEvento;
         private readonly Mock<IServicoUsuario> servicoUsuario;
         private readonly Mock<IUnitOfWork> unitOfWork;
@@ -39,10 +36,9 @@ namespace SME.SGP.Dominio.Servicos.Teste
             comandosWorkflowAprovacao = new Mock<IComandosWorkflowAprovacao>();
             var mockConfiguration = new Mock<IConfiguration>();
             unitOfWork = new Mock<IUnitOfWork>();
-            servicoEol = new Mock<IServicoEOL>();
-            comandosNotificacao = new Mock<IComandosNotificacao>();
+
             servicoEvento = new ServicoEvento(repositorioEvento.Object, repositorioEventoTipo.Object, repositorioPeriodoEscolar.Object, servicoUsuario.Object, repositorioFeriadoCalendario.Object, repositorioTipoCalendario.Object, comandosWorkflowAprovacao.Object,
-                repositorioAbrangencia.Object, mockConfiguration.Object, unitOfWork.Object, comandosNotificacao.Object, servicoEol.Object);
+                repositorioAbrangencia.Object, mockConfiguration.Object, unitOfWork.Object);
         }
 
         [Fact]

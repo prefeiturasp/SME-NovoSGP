@@ -33,6 +33,15 @@ namespace SME.SGP.Dominio
         public WorkflowAprovacao WorkflowAprovacao { get; set; }
         public long? WorkflowAprovacaoId { get; set; }
 
+        public void AdicionarTipoCalendario(TipoCalendario tipoCalendario)
+        {
+            if (tipoCalendario == null)
+                throw new NegocioException("É necessário informar um tipo de Calendário.");
+
+            TipoCalendarioId = tipoCalendario.Id;
+            TipoCalendario = tipoCalendario;
+        }
+
         public void AdicionarTipoEvento(EventoTipo tipoEvento)
         {
             TipoEvento = tipoEvento;
@@ -170,7 +179,7 @@ namespace SME.SGP.Dominio
                 if (string.IsNullOrEmpty(evento.UeId))
                     throw new NegocioException("Para este tipo de evento, deve ser informado uma Ue.");
 
-                if (!periodos.Any(c => c.PeriodoInicio >= DataInicio && c.PeriodoFim <= DataInicio) && !dataConfirmada)
+                if (!periodos.Any(c => c.PeriodoInicio >= DataInicio && c.PeriodoFim >= DataInicio) && !dataConfirmada)
                     throw new NegocioException("Esta data é fora do período escolar, tem certeza que deseja manter esta data? (Sim/Não).", 602);
             }
         }
