@@ -456,6 +456,15 @@ namespace SME.SGP.Dados.Repositorios
             })) > 0;
         }
 
+        private static void MontaFiltroTipoCalendario(StringBuilder query)
+        {
+            query.AppendLine("where");
+            query.AppendLine("e.excluido = false");
+            query.AppendLine("and et.ativo = true");
+            query.AppendLine("and et.excluido = false");
+            query.AppendLine("and e.tipo_calendario_id = @tipoCalendarioId");
+        }
+
         private static void MontaQueryCabecalho(StringBuilder query)
         {
             query.AppendLine("select");
