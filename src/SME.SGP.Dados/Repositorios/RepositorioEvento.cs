@@ -6,6 +6,8 @@ using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -150,6 +152,61 @@ namespace SME.SGP.Dados.Repositorios
             });
         }
 
+        public Evento ObterPorWorkflowId(long workflowId)
+        {
+            var query = @"select
+	                e.id,
+	                e.nome,
+	                e.descricao,
+	                e.data_inicio,
+	                e.data_fim,
+	                e.dre_id,
+	                e.ue_id,
+	                e.letivo,
+	                e.feriado_id,
+	                e.tipo_calendario_id,
+	                e.tipo_evento_id,
+	                e.criado_em,
+	                e.criado_por,
+	                e.alterado_em,
+	                e.alterado_por,
+	                e.criado_rf,
+	                e.alterado_rf,
+	                e.status,
+	                et.id as TipoEventoId,
+	                et.id,
+	                et.codigo,
+	                et.ativo,
+	                et.tipo_data,
+	                et.descricao,
+	                et.excluido,
+                    tc.id as TipoCalendarioId,
+                    tc.Nome,
+                    tc.Ano_Letivo,
+                    tc.Situacao
+                from
+	                evento e
+                inner join evento_tipo et on
+	                e.tipo_evento_id = et.id
+                inner join tipo_calendario tc
+                on e.tipo_calendario_id = tc.id
+                where et.ativo = true
+	            and et.excluido = false
+	            and e.excluido = false
+                and e.wf_aprovacao_id = @workflowId ";
+
+            return database.Conexao.Query<Evento, EventoTipo, TipoCalendario, Evento>(query.ToString(), (evento, tipoEvento, tipoCalendario) =>
+           {
+               evento.AdicionarTipoEvento(tipoEvento);
+               evento.TipoCalendario = tipoCalendario;
+               return evento;
+           }, new
+           {
+               workflowId
+           },
+            splitOn: "EventoId,TipoEventoId,TipoCalendarioId").FirstOrDefault();
+        }
+
         public async Task<IEnumerable<EventosPorDiaRetornoQueryDto>> ObterQuantidadeDeEventosPorDia(CalendarioEventosFiltroDto calendarioEventosMesesFiltro, int mes)
         {
             var query = new StringBuilder();
@@ -272,6 +329,30 @@ namespace SME.SGP.Dados.Repositorios
                 DreId = calendarioEventosMesesFiltro.DreId,
                 UeId = calendarioEventosMesesFiltro.UeId
             });
+        }
+
+        public async Task<bool> TemEventoNosDiasETipo(DateTime dataInicio, DateTime dataFim, TipoEventoEnum tipoEventoCodigo, long tipoCalendarioId)
+        {
+            var query = @"select count(e.id) from evento e
+                inner join
+            evento_tipo et
+            on e.tipo_evento_id = et.id
+                where
+            et.codigo = @tipoEventoCodigo
+            and et.ativo = true
+	        and et.excluido = false
+	        and e.excluido = false
+            and (data_inicio between TO_DATE(@dataInicio, 'mm/dd/yyyy') and TO_DATE(@dataFim, 'mm/dd/yyyy')
+                   or data_fim between TO_DATE(@dataInicio, 'mm/dd/yyyy') and TO_DATE(@dataFim, 'mm/dd/yyyy'))
+            and e.tipo_calendario_id = @tipoCalendarioId";
+
+            return (await database.Conexao.QueryFirstAsync<int>(query.ToString(), new
+            {
+                dataInicio = dataInicio.ToString("MM/dd/yyyy", DateTimeFormatInfo.InvariantInfo),
+                dataFim = dataFim.ToString("MM/dd/yyyy", DateTimeFormatInfo.InvariantInfo),
+                tipoEventoCodigo = (int)tipoEventoCodigo,
+                tipoCalendarioId
+            })) > 0;
         }
 
         private static void MontaQueryCabecalho(StringBuilder query)

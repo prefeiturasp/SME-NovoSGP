@@ -14,6 +14,7 @@ namespace SME.SGP.Aplicacao.Teste.Consultas
     {
         private readonly ConsultasEvento consultaEventos;
         private readonly Mock<IRepositorioEvento> repositorioEvento;
+        private readonly Mock<IServicoUsuario> servicoUsuario;
 
         public ConsultasEventoTeste()
         {
@@ -21,8 +22,9 @@ namespace SME.SGP.Aplicacao.Teste.Consultas
             var context = new DefaultHttpContext();
             var httpContextAcessorObj = new HttpContextAccessor();
             httpContextAcessorObj.HttpContext = context;
+            servicoUsuario = new Mock<IServicoUsuario>();
 
-            consultaEventos = new ConsultasEvento(repositorioEvento.Object, httpContextAcessorObj);
+            consultaEventos = new ConsultasEvento(repositorioEvento.Object, httpContextAcessorObj, servicoUsuario.Object);
         }
 
         [Fact]
@@ -37,14 +39,14 @@ namespace SME.SGP.Aplicacao.Teste.Consultas
             };
             var paginado = new PaginacaoResultadoDto<Evento>();
             paginado.Items = listaEventos;
-            repositorioEvento.Setup(c => c.Listar(It.IsAny<long?>(), It.IsAny<long?>(), It.IsAny<string>(), It.IsAny<DateTime?>(), It.IsAny<DateTime?>(), It.IsAny<Paginacao>()))
+            repositorioEvento.Setup(c => c.Listar(It.IsAny<long?>(), It.IsAny<long?>(), It.IsAny<string>(), It.IsAny<DateTime?>(), It.IsAny<DateTime?>(), It.IsAny<Paginacao>(), true))
                 .Returns(Task.FromResult(paginado));
 
             var eventosPaginados = await consultaEventos.Listar(new FiltroEventosDto());
 
             Assert.NotNull(eventosPaginados);
             Assert.Contains(eventosPaginados.Items, c => c.Id == 1);
-            repositorioEvento.Verify(c => c.Listar(It.IsAny<long?>(), It.IsAny<long?>(), It.IsAny<string>(), It.IsAny<DateTime?>(), It.IsAny<DateTime?>(), It.IsAny<Paginacao>()), Times.Once);
+            repositorioEvento.Verify(c => c.Listar(It.IsAny<long?>(), It.IsAny<long?>(), It.IsAny<string>(), It.IsAny<DateTime?>(), It.IsAny<DateTime?>(), It.IsAny<Paginacao>(), true), Times.Once);
         }
 
         [Fact]

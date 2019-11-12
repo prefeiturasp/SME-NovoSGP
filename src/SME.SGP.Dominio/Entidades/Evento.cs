@@ -10,7 +10,7 @@ namespace SME.SGP.Dominio
         public Evento()
         {
             Excluido = false;
-            Status = EntidadeStatus.Ativo;
+            Status = EntidadeStatus.Aprovado;
         }
 
         public DateTime DataFim { get; set; }
@@ -36,6 +36,14 @@ namespace SME.SGP.Dominio
         public void AdicionarTipoEvento(EventoTipo tipoEvento)
         {
             TipoEvento = tipoEvento;
+        }
+
+        public void AprovarWorkflow()
+        {
+            if (Status != EntidadeStatus.AguardandoAprovacao)
+                throw new NegocioException("Este Evento não pode ser aprovado.");
+
+            Status = EntidadeStatus.Aprovado;
         }
 
         public object Clone()
@@ -180,6 +188,14 @@ namespace SME.SGP.Dominio
         {
             if (Status != EntidadeStatus.AguardandoAprovacao)
                 throw new NegocioException("Este envento não está Aguardando Aprovação.");
+        }
+
+        public void ReprovarWorkflow()
+        {
+            if (Status != EntidadeStatus.AguardandoAprovacao)
+                throw new NegocioException("Este Evento não pode ser recusado.");
+
+            Status = EntidadeStatus.Recusado;
         }
 
         public void ValidaPeriodoEvento()
