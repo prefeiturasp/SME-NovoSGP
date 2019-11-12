@@ -10,6 +10,9 @@ import { URL_HOME } from '~/constantes/url';
 import { confirmar, erros, sucesso } from '~/servicos/alertas';
 import api from '~/servicos/api';
 import history from '~/servicos/history';
+import { store } from '~/redux';
+import RotasDto from '~/dtos/rotasDto';
+import { verificaSomenteConsulta } from '~/servicos/servico-navegacao';
 
 const TipoFeriadoLista = () => {
   const [idsTipoFeriadoSelecionado, setIdsTipoFeriadoSelecionado] = useState(
@@ -25,6 +28,9 @@ const TipoFeriadoLista = () => {
     dropdownTipoFeriadoSelecionado,
     setDropdownTipoFeriadoSelecionado,
   ] = useState(0);
+
+  const usuario = store.getState().usuario;
+  const permissoesTela = usuario.permissoes[RotasDto.TIPO_FERIADO];
 
   const listaDropdownAbrangencia = [
     { id: 1, nome: 'Nacional' },
@@ -53,15 +59,23 @@ const TipoFeriadoLista = () => {
   ];
 
   useEffect(() => {
+    verificaSomenteConsulta(permissoesTela);
+  }, []);
+
+  useEffect(() => {
     onFiltrar();
-  }, [nomeTipoFeriado, dropdownAbrangenciaSelecionada, dropdownTipoFeriadoSelecionado]);
+  }, [
+    nomeTipoFeriado,
+    dropdownAbrangenciaSelecionada,
+    dropdownTipoFeriadoSelecionado,
+  ]);
 
   const onFiltrar = async () => {
     setIdsTipoFeriadoSelecionado([]);
     const parametros = {
       nome: nomeTipoFeriado,
       abrangencia: dropdownAbrangenciaSelecionada || 0,
-      tipo: dropdownTipoFeriadoSelecionado || 0
+      tipo: dropdownTipoFeriadoSelecionado || 0,
     };
     const tipos = await api.post('v1/calendarios/feriados/listar', parametros);
     setListaTipoFeriado(tipos.data);
@@ -72,6 +86,8 @@ const TipoFeriadoLista = () => {
   };
 
   const onClickRow = row => {
+    if (!permissoesTela.podeAlterar) return;
+
     onClickEditar(row.id);
   };
 
@@ -88,7 +104,10 @@ const TipoFeriadoLista = () => {
   };
 
   const onClickExcluir = async () => {
+    if (!permissoesTela.podeExcluir) return;
+
     const listaParaExcluir = [];
+
     idsTipoFeriadoSelecionado.forEach(id => {
       const achou = listaTipoFeriado.find(tipo => id == tipo.id);
       if (achou) {
@@ -152,7 +171,9 @@ const TipoFeriadoLista = () => {
             border
             className="mr-2"
             disabled={
-              idsTipoFeriadoSelecionado && idsTipoFeriadoSelecionado.length < 1
+              !permissoesTela.podeExcluir ||
+              (idsTipoFeriadoSelecionado &&
+                idsTipoFeriadoSelecionado.length < 1)
             }
             onClick={onClickExcluir}
           />
@@ -161,6 +182,7 @@ const TipoFeriadoLista = () => {
             color={Colors.Roxo}
             border
             bold
+            disabled={!permissoesTela.podeIncluir}
             className="mr-2"
             onClick={onClickNovo}
           />
@@ -173,6 +195,7 @@ const TipoFeriadoLista = () => {
             id="select-abrangencia"
             lista={listaDropdownAbrangencia}
             valueOption="id"
+            disabled={!permissoesTela.podeConsultar}
             valueText="nome"
             onChange={onChangeDropdownAbrangencia}
             valueSelect={dropdownAbrangenciaSelecionada || []}
@@ -185,6 +208,7 @@ const TipoFeriadoLista = () => {
             name="select-tipo-feiado"
             id="select-tipo-friado"
             lista={listaDropdownTipoFeriado}
+            disabled={!permissoesTela.podeConsultar}
             valueOption="id"
             valueText="nome"
             onChange={onChangeDropdownTipoFeriado}
@@ -196,6 +220,7 @@ const TipoFeriadoLista = () => {
         <div className="col-md-5 pb-2">
           <CampoTexto
             label="Nome do tipo de feriado"
+            desabilitado={!permissoesTela.podeConsultar}
             placeholder="DIGITE O NOME DO TIPO DE FERIADO"
             onChange={onChangeNomeTipoFeriado}
             value={nomeTipoFeriado}
@@ -207,7 +232,7 @@ const TipoFeriadoLista = () => {
             id="lista-tipo-calendario"
             selectedRowKeys={idsTipoFeriadoSelecionado}
             onSelectRow={onSelectRow}
-            onClickRow={onClickRow}
+            onClickRow={permissoesTela.podeAlterar && onClickRow}
             columns={colunas}
             dataSource={listaTipoFeriado}
             selectMultipleRows

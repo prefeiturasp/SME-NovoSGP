@@ -16,6 +16,9 @@ const Campo = styled.div`
   .ant-input {
     height: 38px;
   }
+  label {
+    font-weight: bold;
+  }
 `;
 
 const CampoTexto = React.forwardRef((props, ref) => {
@@ -35,6 +38,7 @@ const CampoTexto = React.forwardRef((props, ref) => {
     maxlength,
     label,
     semMensagem,
+    style,
   } = props;
 
   const possuiErro = () => {
@@ -70,18 +74,23 @@ const CampoTexto = React.forwardRef((props, ref) => {
               onKeyDown={onKeyDown}
               onChange={e => {
                 form.setFieldValue(name, e.target.value);
-                form.setFieldTouched(name, true);
+                form.setFieldTouched(name, true, true);
                 onChange(e);
               }}
+              style={style}
             />
-            {!semMensagem ? <span>{form.errors[name]}</span> : ''}
+            {!semMensagem && form && form.touched[name] ? (
+              <span>{form.errors[name]}</span>
+            ) : (
+              ''
+            )}
           </>
         ) : (
           <Input
             ref={ref}
             placeholder={placeholder}
             onChange={onChange}
-            readOnly={desabilitado}
+            disabled={desabilitado}
             onKeyDown={onKeyDown}
             value={value}
           />

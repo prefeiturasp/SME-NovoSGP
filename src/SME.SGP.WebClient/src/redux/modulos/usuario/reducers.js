@@ -19,6 +19,7 @@ const inicial = {
   possuiPerfilDre: false,
   possuiPerfilSme: false,
   menu: [],
+  permissoes: []
 };
 
 export default function usuario(state = inicial, action) {
@@ -53,6 +54,7 @@ export default function usuario(state = inicial, action) {
         draft.turmaSelecionada = [];
         draft.dadosUsuario = [];
         draft.menu = [];
+        draft.permissoes = [];
         break;
       case '@usuario/selecionarTurma':
         draft.turmaSelecionada = action.payload;
@@ -74,6 +76,9 @@ export default function usuario(state = inicial, action) {
         break;
       case '@usuario/setMenu':
         draft.menu = action.payload;
+        break;
+      case '@usuario/setPermissoes':
+        draft.permissoes = action.payload;
         break;
       default:
         break;
