@@ -81,7 +81,10 @@ const CalendarioEscolar = () => {
 
   useEffect(() => {
     setFiltros({ ...filtros, tipoCalendarioSelecionado });
-    if (tipoCalendarioSelecionado) consultarDiasLetivos();
+    if (tipoCalendarioSelecionado) {
+      consultarDiasLetivos();
+      buscarDres();
+    }
   }, [tipoCalendarioSelecionado]);
 
   const aoSelecionarTipoCalendario = tipo => {
@@ -104,9 +107,28 @@ const CalendarioEscolar = () => {
   const [dres, setDres] = useState([]);
   const [dreSelecionada, setDreSelecionada] = useState(undefined);
 
-  useEffect(() => {
-    if (dresStore) setDres(dresStore);
-  }, [dresStore]);
+  const buscarDres = () => {
+    api
+      .get('v1/abrangencias/dres')
+      .then(resposta => {
+        if (resposta.data) {
+          const lista = [];
+          if (resposta.data) {
+            resposta.data.forEach(dre => {
+              lista.push({
+                desc: dre.nome,
+                valor: dre.codigo,
+                abrev: dre.abreviacao,
+              });
+            });
+            setDres(lista);
+          }
+        }
+      })
+      .catch(() => {
+        setDres(dresStore);
+      });
+  };
 
   const unidadesEscolaresStore = useSelector(
     state => state.filtro.unidadesEscolares
@@ -116,9 +138,27 @@ const CalendarioEscolar = () => {
     undefined
   );
 
-  useEffect(() => {
-    if (unidadesEscolaresStore) setUnidadesEscolares(unidadesEscolaresStore);
-  }, [unidadesEscolaresStore]);
+  const buscarUnidadesEscolares = () => {
+    api
+      .get(`v1/abrangencias/dres/${dreSelecionada}/ues`)
+      .then(resposta => {
+        if (resposta.data) {
+          const lista = [];
+          if (resposta.data) {
+            resposta.data.forEach(unidade => {
+              lista.push({
+                desc: unidade.nome,
+                valor: unidade.codigo,
+              });
+            });
+            setUnidadesEscolares(lista);
+          }
+        }
+      })
+      .catch(() => {
+        setUnidadesEscolares(unidadesEscolaresStore);
+      });
+  };
 
   const aoSelecionarDre = dre => {
     setDreSelecionada(dre);
@@ -126,7 +166,10 @@ const CalendarioEscolar = () => {
   };
 
   useEffect(() => {
-    if (dreSelecionada) consultarDiasLetivos();
+    if (dreSelecionada) {
+      consultarDiasLetivos();
+      buscarUnidadesEscolares();
+    }
   }, [dreSelecionada]);
 
   const aoSelecionarUnidadeEscolar = unidade => {
@@ -260,7 +303,7 @@ const CalendarioEscolar = () => {
                 valueText="desc"
                 valueSelect={unidadeEscolarSelecionada}
                 placeholder="Unidade Escolar (UE)"
-                disabled={!tipoCalendarioSelecionado}
+                disabled={!dreSelecionada}
               />
             </Grid>
           </Div>
