@@ -37,7 +37,7 @@ const TipoCalendarioEscolarForm = ({ match }) => {
     nome: '',
     modalidade: '',
     periodo: '',
-  }
+  };
   const [valoresIniciais, setValoresIniciais] = useState(valoresIniciaisForm);
 
   const [validacoes] = useState(
@@ -82,16 +82,20 @@ const TipoCalendarioEscolarForm = ({ match }) => {
   }, []);
 
   useEffect(() => {
-    const desabilitar = novoRegistro ? (somenteConsulta || !permissoesTela.podeIncluir) : (somenteConsulta || !permissoesTela.podeAlterar);
-    setDesabilitarCampos(desabilitar);    
-  }, [somenteConsulta, novoRegistro ]);
+    const desabilitar = novoRegistro
+      ? somenteConsulta || !permissoesTela.podeIncluir
+      : somenteConsulta || !permissoesTela.podeAlterar;
+    setDesabilitarCampos(desabilitar);
+  }, [somenteConsulta, novoRegistro]);
+
+  const [possuiEventos, setPossuiEventos] = useState(false);
 
   const consultaPorId = async id => {
     const tipoCalendadio = await api
       .get(`v1/calendarios/tipos/${id}`)
       .catch(e => erros(e));
 
-    if (tipoCalendadio) {
+    if (tipoCalendadio && tipoCalendadio.data) {
       setValoresIniciais({
         nome: tipoCalendadio.data.nome,
         periodo: tipoCalendadio.data.periodo,
@@ -113,6 +117,7 @@ const TipoCalendarioEscolarForm = ({ match }) => {
       });
       setNovoRegistro(false);
       setExibirAuditoria(true);
+      setPossuiEventos(tipoCalendadio.data.possuiEventos);
     }
   };
 
@@ -189,7 +194,7 @@ const TipoCalendarioEscolarForm = ({ match }) => {
     }
   };
 
-  const validaAntesDoSubmit = form => {    
+  const validaAntesDoSubmit = form => {
     const arrayCampos = Object.keys(valoresIniciaisForm);
     arrayCampos.forEach(campo => {
       form.setFieldTouched(campo, true, true);
@@ -197,7 +202,7 @@ const TipoCalendarioEscolarForm = ({ match }) => {
     form.validateForm().then(() => {
       if (form.isValid || Object.keys(form.errors).length == 0) {
         form.handleSubmit(e => e);
-      }      
+      }
     });
   };
 
@@ -241,7 +246,12 @@ const TipoCalendarioEscolarForm = ({ match }) => {
                   color={Colors.Vermelho}
                   border
                   className="mr-2"
-                  disabled={somenteConsulta || !permissoesTela.podeExcluir || novoRegistro}
+                  disabled={
+                    somenteConsulta ||
+                    !permissoesTela.podeExcluir ||
+                    novoRegistro ||
+                    possuiEventos
+                  }
                   onClick={onClickExcluir}
                 />
                 <Button
@@ -250,7 +260,7 @@ const TipoCalendarioEscolarForm = ({ match }) => {
                   border
                   bold
                   className="mr-2"
-                  onClick={()=> validaAntesDoSubmit(form)}
+                  onClick={() => validaAntesDoSubmit(form)}
                   disabled={desabilitarCampos}
                 />
               </div>
@@ -290,7 +300,7 @@ const TipoCalendarioEscolarForm = ({ match }) => {
                     opcoes={opcoesPeriodo}
                     name="periodo"
                     onChange={onChangeCampos}
-                    desabilitado={desabilitarCampos}
+                    desabilitado={desabilitarCampos || possuiEventos}
                   />
                 </div>
                 <div className="col-sm-12  col-md-12 col-lg-6 col-xl-5 mb-2">
@@ -300,7 +310,7 @@ const TipoCalendarioEscolarForm = ({ match }) => {
                     opcoes={opcoesModalidade}
                     name="modalidade"
                     onChange={onChangeCampos}
-                    desabilitado={desabilitarCampos}
+                    desabilitado={desabilitarCampos || possuiEventos}
                   />
                 </div>
               </div>
