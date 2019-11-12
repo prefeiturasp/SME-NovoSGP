@@ -52,7 +52,7 @@ namespace SME.SGP.Integracao.Teste
                 if (diasLetivosResponse.IsSuccessStatusCode)
                 {
                     var diasLetivos = JsonConvert.DeserializeObject<DiasLetivosDto>(diasLetivosResponse.Content.ReadAsStringAsync().Result);
-                    Assert.False(diasLetivos.EstaAbaixoPermitido);
+                    Assert.True(diasLetivos.Dias > 0);
                 }
             }
         }
