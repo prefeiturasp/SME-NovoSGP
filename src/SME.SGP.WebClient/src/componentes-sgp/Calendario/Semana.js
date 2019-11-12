@@ -1,5 +1,4 @@
-﻿/* eslint-disable no-return-assign */
-import React, { useState, useEffect } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import styled from 'styled-components';
 import { useSelector } from 'react-redux';
@@ -78,9 +77,9 @@ const Dia = props => {
   else if (dia.getDay() === 6) style.backgroundColor = Base.CinzaCalendario;
 
   const className = `col border border-left-0 border-top-0 position-relative ${dia.getDay() ===
-    6 && 'border-right-0'} ${diaSelecionado &&
-    dia.getDate() === diaSelecionado.getDate() &&
-    'border-bottom-0'}`;
+    6 && 'border-right-0'} ${diaSelecionado && 'bg-light'} ${diaSelecionado &&
+    dia === diaSelecionado &&
+    'border-bottom-0 bg-white'}`;
 
   let diaFormatado = dia.getDate();
   if (diaFormatado < 10) diaFormatado = `0${diaFormatado}`;
