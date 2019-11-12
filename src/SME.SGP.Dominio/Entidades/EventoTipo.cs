@@ -9,6 +9,7 @@
         }
 
         public bool Ativo { get; set; }
+        public long Codigo { get; set; }
         public bool Concomitancia { get; set; }
         public bool Dependencia { get; set; }
         public string Descricao { get; set; }
