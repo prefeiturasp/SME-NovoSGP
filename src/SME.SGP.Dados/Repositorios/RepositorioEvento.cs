@@ -173,6 +173,7 @@ namespace SME.SGP.Dados.Repositorios
 	                e.criado_rf,
 	                e.alterado_rf,
 	                e.status,
+                    e.wf_aprovacao_id as WorkflowAprovacaoId,
 	                et.id as TipoEventoId,
 	                et.id,
 	                et.codigo,
@@ -331,7 +332,7 @@ namespace SME.SGP.Dados.Repositorios
             });
         }
 
-        public async Task<bool> TemEventoNosDiasETipo(DateTime dataInicio, DateTime dataFim, TipoEventoEnum tipoEventoCodigo, long tipoCalendarioId)
+        public async Task<bool> TemEventoNosDiasETipo(DateTime dataInicio, DateTime dataFim, TipoEventoEnum tipoEventoCodigo, long tipoCalendarioId, string UeId, string DreId)
         {
             var query = @"select count(e.id) from evento e
                 inner join
@@ -342,16 +343,22 @@ namespace SME.SGP.Dados.Repositorios
             and et.ativo = true
 	        and et.excluido = false
 	        and e.excluido = false
-            and (data_inicio between TO_DATE(@dataInicio, 'mm/dd/yyyy') and TO_DATE(@dataFim, 'mm/dd/yyyy')
-                   or data_fim between TO_DATE(@dataInicio, 'mm/dd/yyyy') and TO_DATE(@dataFim, 'mm/dd/yyyy'))
+            and e.ue_id = @ueId
+            and e.dre_id = @dreId
+             and ((e.data_inicio <= TO_DATE(@dataInicio, 'yyyy/mm/dd') and e.data_fim >= TO_DATE(@dataInicio, 'yyyy/mm/dd'))
+              or (e.data_inicio <= TO_DATE(@dataFim, 'yyyy/mm/dd') and e.data_fim >= TO_DATE(@dataFim, 'yyyy/mm/dd'))
+              or (e.data_inicio >= TO_DATE(@dataInicio, 'yyyy/mm/dd') and e.data_fim <= TO_DATE(@dataFim, 'yyyy/mm/dd'))
+              )
             and e.tipo_calendario_id = @tipoCalendarioId";
 
             return (await database.Conexao.QueryFirstAsync<int>(query.ToString(), new
             {
-                dataInicio = dataInicio.ToString("MM/dd/yyyy", DateTimeFormatInfo.InvariantInfo),
-                dataFim = dataFim.ToString("MM/dd/yyyy", DateTimeFormatInfo.InvariantInfo),
+                dataInicio = dataInicio.ToString("yyyy-MM-dd", DateTimeFormatInfo.InvariantInfo),
+                dataFim = dataFim.ToString("yyyy-MM-dd", DateTimeFormatInfo.InvariantInfo),
                 tipoEventoCodigo = (int)tipoEventoCodigo,
-                tipoCalendarioId
+                tipoCalendarioId,
+                UeId,
+                DreId
             })) > 0;
         }
 

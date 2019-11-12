@@ -227,6 +227,7 @@ namespace SME.SGP.Dominio.Servicos
                 DreId = evento.DreId,
                 Titulo = "Criação de Eventos Excepcionais",
                 Tipo = NotificacaoTipo.Calendario,
+                Codigo = codigoDaNotificacao,
                 Mensagem = $"O evento {evento.Nome} - {evento.DataInicio.Day}/{evento.DataInicio.Month}/{evento.DataInicio.Year} do calendário {evento.TipoCalendario.Nome} da {escola.Nome} foi aceito. Agora este evento está visível para todos os usuários. Para visualizá-lo clique <a href='{linkParaEvento}'>aqui</a>."
             });
         }
