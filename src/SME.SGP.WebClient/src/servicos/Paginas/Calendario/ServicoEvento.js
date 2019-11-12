@@ -21,7 +21,7 @@ class ServicoEvento {
   };
 
   listarDres = async () => {
-    return await api
+    return api
       .get('v1/abrangencias/dres')
       .then(res => {
         return { sucesso: true, conteudo: res.data };
@@ -35,7 +35,7 @@ class ServicoEvento {
   };
 
   listarUes = async dre => {
-    return await api
+    return api
       .get(`v1/abrangencias/dres/${dre}/ues`)
       .then(res => {
         return { sucesso: true, conteudo: res.data };
