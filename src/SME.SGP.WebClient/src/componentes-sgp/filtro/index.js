@@ -583,7 +583,7 @@ const Filtro = () => {
   };
 
   return (
-    <Container className="position-relative w-100">
+    <Container className="position-relative w-100" id="containerFiltro">
       <form className="w-100" onSubmit={aoSubmeterAutocomplete}>
         <div className="form-group mb-0 w-100 position-relative">
           <Busca className="fa fa-search fa-lg bg-transparent position-absolute text-center" />
@@ -638,6 +638,7 @@ const Filtro = () => {
                   className="fonte-14"
                   onChange={aoTrocarAnoLetivo}
                   lista={anosLetivos}
+                  containerVinculoId="containerFiltro"
                   valueOption="valor"
                   valueText="desc"
                   valueSelect={
@@ -658,6 +659,7 @@ const Filtro = () => {
                   onChange={aoTrocarModalidade}
                   lista={modalidades}
                   valueOption="valor"
+                  containerVinculoId="containerFiltro"
                   valueText="desc"
                   valueSelect={
                     modalidadeSelecionada && `${modalidadeSelecionada}`
@@ -673,6 +675,7 @@ const Filtro = () => {
                     onChange={aoTrocarPeriodo}
                     lista={periodos}
                     valueOption="valor"
+                    containerVinculoId="containerFiltro"
                     valueText="desc"
                     valueSelect={periodoSelecionado && `${periodoSelecionado}`}
                     placeholder="Período"
@@ -687,6 +690,7 @@ const Filtro = () => {
                 onChange={aoTrocarDre}
                 lista={dres}
                 valueOption="valor"
+                containerVinculoId="containerFiltro"
                 valueText="desc"
                 valueSelect={dreSelecionada && `${dreSelecionada}`}
                 placeholder="Diretoria Regional De Educação (DRE)"
@@ -699,6 +703,7 @@ const Filtro = () => {
                 onChange={aoTrocarUnidadeEscolar}
                 lista={unidadesEscolares}
                 valueOption="valor"
+                containerVinculoId="containerFiltro"
                 valueText="desc"
                 valueSelect={
                   unidadeEscolarSelecionada && `${unidadeEscolarSelecionada}`
@@ -715,6 +720,7 @@ const Filtro = () => {
                   lista={turmas}
                   valueOption="valor"
                   valueText="desc"
+                  containerVinculoId="containerFiltro"
                   valueSelect={turmaSelecionada && `${turmaSelecionada}`}
                   placeholder="Turma"
                   disabled={campoTurmaDesabilitado}
