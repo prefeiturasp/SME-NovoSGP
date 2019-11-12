@@ -3,7 +3,6 @@ module.exports = {
   prompter: (cz, commit) => {
     function executeCommit(answers) {
       // parentheses are only needed when a scope is present
-      console.log(answers);
       let tipo = answers.tipo.trim();
       let estoria = answers.estoria.trim();
 
