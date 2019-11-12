@@ -26,17 +26,17 @@ const TipoFeriadoForm = ({ match }) => {
   const [exibirAuditoria, setExibirAuditoria] = useState(false);
   const [idTipoFeriadoEdicao, setIdTipoFeriadoEdicao] = useState(0);
   const [isTipoMovel, setIsTipoMovel] = useState(false);
-  
-  const usuario = store.getState().usuario;
+
+  const { usuario } = store.getState();
   const permissoesTela = usuario.permissoes[RotasDto.TIPO_FERIADO];
-  
+
   const valoresIniciaisForm = {
     nome: '',
     abrangencia: undefined,
     tipo: 1,
     dataFeriado: '',
     situacao: true,
-  }  
+  };
   const [valoresIniciais, setValoresIniciais] = useState(valoresIniciaisForm);
 
   const listaDropdownAbrangencia = [
@@ -82,6 +82,8 @@ const TipoFeriadoForm = ({ match }) => {
         const cadastrado = await api
           .get(`v1/calendarios/feriados/${match.params.id}`)
           .catch(e => erros(e));
+
+        console.log(cadastrado);
 
         if (cadastrado && cadastrado.data) {
           setIsTipoMovel(cadastrado.data.tipo == tipoFeriado.Movel);
@@ -224,7 +226,7 @@ const TipoFeriadoForm = ({ match }) => {
     );
   };
 
-  const validaAntesDoSubmit = form => {    
+  const validaAntesDoSubmit = form => {
     const arrayCampos = Object.keys(valoresIniciais);
     arrayCampos.forEach(campo => {
       form.setFieldTouched(campo, true, true);
@@ -232,7 +234,7 @@ const TipoFeriadoForm = ({ match }) => {
     form.validateForm().then(() => {
       if (form.isValid || Object.keys(form.errors).length == 0) {
         form.handleSubmit(e => e);
-      }      
+      }
     });
   };
 
@@ -289,7 +291,7 @@ const TipoFeriadoForm = ({ match }) => {
                     (!novoRegistro && !permissoesTela.podeAlterar)
                   }
                   className="mr-2"
-                  onClick={()=> validaAntesDoSubmit(form)}
+                  onClick={() => validaAntesDoSubmit(form)}
                 />
               </div>
 
