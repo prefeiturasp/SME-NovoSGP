@@ -16,7 +16,8 @@ namespace SME.SGP.Dados.Repositorios
             var query = "";
             return database.Conexao.QueryFirst<bool>(query, new
             {
-                aula.TurmaId
+                aula.TurmaId,
+                aula.UeId
             });
         }
     }
