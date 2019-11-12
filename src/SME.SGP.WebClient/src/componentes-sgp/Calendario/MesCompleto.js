@@ -1,5 +1,4 @@
-﻿/* eslint-disable no-param-reassign */
-import React, { useEffect, useState } from 'react';
+﻿import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import { useSelector } from 'react-redux';
 import styled from 'styled-components';
@@ -54,13 +53,6 @@ const MesCompleto = props => {
   }, [mesesCalendario]);
 
   useEffect(() => {
-    const mesCompleto = document.querySelectorAll('.mesCompleto');
-    if (mesCompleto) {
-      mesCompleto.forEach(completo => {
-        completo.style.display = 'none';
-      });
-    }
-
     if (mesSelecionado > 0) {
       const dataAtual = new Date();
       const data = new Date(dataAtual.getFullYear(), mesSelecionado - 1, 1);
@@ -83,18 +75,9 @@ const MesCompleto = props => {
     return () => setEstaAberto({ ...estaAberto, [mesSelecionado]: false });
   }, [mesSelecionado]);
 
-  useEffect(() => {
-    if (mesesCalendario && estaAberto[mesSelecionado]) {
-      const mes = document.querySelector(
-        `.${mesesCalendario[mesSelecionado].nome}`
-      );
-      if (mes) mes.style.display = 'block';
-    }
-  }, [estaAberto]);
-
   return mesSelecionado > 0 && estaAberto[mesSelecionado] ? (
     <Div
-      className={`${mesesCalendario[mesSelecionado].nome} mesCompleto border border-top-0 border-bottom-0 h-100 w-100 fade show`}
+      className={`${mesesCalendario[mesSelecionado].nome} d-none border border-top-0 border-bottom-0 h-100 w-100 fade`}
     >
       <Div className="w-100 d-flex py-3 border-bottom">
         <DiaDaSemana nomeDia="Domingo" />

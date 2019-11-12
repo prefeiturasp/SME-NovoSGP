@@ -1,6 +1,3 @@
-/* eslint-disable no-param-reassign */
-/* eslint-disable no-return-assign */
-/* eslint-disable no-use-before-define */
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import { useSelector } from 'react-redux';
@@ -21,10 +18,14 @@ const Titulo = styled(Div)`
   font-size: 24px;
 `;
 const Icone = styled.i``;
+const Campo = styled.input``;
+const Label = styled.label``;
 
 const CalendarioEscolar = () => {
   const [tiposCalendario, setTiposCalendario] = useState([]);
-  const [tipoCalendarioSelecionado, setTipoCalendarioSelecionado] = useState();
+  const [tipoCalendarioSelecionado, setTipoCalendarioSelecionado] = useState(
+    undefined
+  );
 
   const [diasLetivos, setDiasLetivos] = useState({});
   const turmaSelecionada = useSelector(state => state.usuario.turmaSelecionada);
@@ -79,23 +80,8 @@ const CalendarioEscolar = () => {
   }, [turmaSelecionada]);
 
   useEffect(() => {
-    let estado = true;
-    if (estado) {
-      if (tipoCalendarioSelecionado) {
-        api
-          .get(
-            `https://demo0765509.mockable.io/api/v1/calendarios/1/dias-letivos`
-          )
-          .then(resposta => {
-            if (resposta.data) setDiasLetivos(resposta.data);
-          })
-          .catch(() => {
-            setDiasLetivos({});
-          });
-      }
-      setFiltros({ ...filtros, tipoCalendarioSelecionado });
-    }
-    return () => (estado = false);
+    setFiltros({ ...filtros, tipoCalendarioSelecionado });
+    if (tipoCalendarioSelecionado) consultarDiasLetivos();
   }, [tipoCalendarioSelecionado]);
 
   const aoSelecionarTipoCalendario = tipo => {
@@ -109,14 +95,14 @@ const CalendarioEscolar = () => {
 
   const [eventoSme, setEventoSme] = useState(true);
 
-  const aoClicarEventoSme = () => {
+  const aoTrocarEventoSme = () => {
     setEventoSme(!eventoSme);
     setFiltros({ ...filtros, eventoSme: !eventoSme });
   };
 
   const dresStore = useSelector(state => state.filtro.dres);
   const [dres, setDres] = useState([]);
-  const [dreSelecionada, setDreSelecionada] = useState();
+  const [dreSelecionada, setDreSelecionada] = useState(undefined);
 
   useEffect(() => {
     if (dresStore) setDres(dresStore);
@@ -126,7 +112,9 @@ const CalendarioEscolar = () => {
     state => state.filtro.unidadesEscolares
   );
   const [unidadesEscolares, setUnidadesEscolares] = useState([]);
-  const [unidadeEscolarSelecionada, setUnidadeEscolarSelecionada] = useState();
+  const [unidadeEscolarSelecionada, setUnidadeEscolarSelecionada] = useState(
+    undefined
+  );
 
   useEffect(() => {
     if (unidadesEscolaresStore) setUnidadesEscolares(unidadesEscolaresStore);
@@ -137,9 +125,32 @@ const CalendarioEscolar = () => {
     setFiltros({ ...filtros, dreSelecionada: dre });
   };
 
+  useEffect(() => {
+    if (dreSelecionada) consultarDiasLetivos();
+  }, [dreSelecionada]);
+
   const aoSelecionarUnidadeEscolar = unidade => {
     setUnidadeEscolarSelecionada(unidade);
     setFiltros({ ...filtros, unidadeEscolarSelecionada: unidade });
+  };
+
+  useEffect(() => {
+    if (unidadeEscolarSelecionada) consultarDiasLetivos();
+  }, [unidadeEscolarSelecionada]);
+
+  const consultarDiasLetivos = () => {
+    api
+      .post('v1/calendarios/dias-letivos', {
+        tipoCalendarioId: tipoCalendarioSelecionado,
+        dreId: dreSelecionada,
+        ueId: unidadeEscolarSelecionada,
+      })
+      .then(resposta => {
+        if (resposta.data) setDiasLetivos(resposta.data);
+      })
+      .catch(() => {
+        setDiasLetivos({});
+      });
   };
 
   const [filtros, setFiltros] = useState({
@@ -171,12 +182,12 @@ const CalendarioEscolar = () => {
               />
             </Grid>
             <Grid cols={4}>
-              {diasLetivos && diasLetivos.DiasLetivos && (
+              {diasLetivos && diasLetivos.dias && (
                 <Div>
                   <Button
-                    label={diasLetivos.DiasLetivos.toString()}
+                    label={diasLetivos.dias.toString()}
                     color={
-                      diasLetivos.EstaAbaixoPermitido
+                      diasLetivos.estaAbaixoPermitido
                         ? Colors.Vermelho
                         : Colors.Verde
                     }
@@ -187,7 +198,7 @@ const CalendarioEscolar = () => {
                   </Div>
                 </Div>
               )}
-              {diasLetivos && diasLetivos.EstaAbaixoPermitido && (
+              {diasLetivos && diasLetivos.estaAbaixoPermitido && (
                 <Div
                   className="clearfix font-weight-bold pt-2"
                   style={{ clear: 'both', color: Base.Vermelho, fontSize: 12 }}
@@ -211,12 +222,22 @@ const CalendarioEscolar = () => {
         </Grid>
         <Grid cols={12} className="mb-4">
           <Div className="row">
-            <Grid cols={2}>
-              <Button
-                label="SME"
-                color={eventoSme ? Colors.Verde : Colors.Vermelho}
-                onClick={aoClicarEventoSme}
-              />
+            <Grid cols={2} className="d-flex align-items-center">
+              <Div className="custom-control custom-switch">
+                <Campo
+                  id="eventoSme"
+                  type="checkbox"
+                  className="custom-control-input"
+                  onChange={aoTrocarEventoSme}
+                  checked={eventoSme}
+                />
+                <Label
+                  className="custom-control-label pt-1"
+                  htmlFor="eventoSme"
+                >
+                  Evento SME
+                </Label>
+              </Div>
             </Grid>
             <Grid cols={5}>
               <SelectComponent
