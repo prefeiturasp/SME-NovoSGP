@@ -40,7 +40,6 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IComandosEventoTipo, ComandosEventoTipo>();
             services.TryAddScoped<IComandosEvento, ComandosEvento>();
             services.TryAddScoped<IComandosAula, ComandosAula>();
-            services.TryAddScoped<IComandosDiasLetivos, ComandosDiasLetivos>();
         }
 
         private static void RegistrarConsultas(IServiceCollection services)
@@ -102,7 +101,6 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IRepositorioEvento, RepositorioEvento>();
             services.TryAddScoped<IRepositorioEventoTipo, RepositorioEventoTipo>();
             services.TryAddScoped<IRepositorioAula, RepositorioAula>();
-            services.TryAddScoped<IRepositorioParametrosSistema, RepositorioParametrosSistema>();
         }
 
         private static void RegistrarServicos(IServiceCollection services)
@@ -120,7 +118,6 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IServicoAbrangencia, ServicoAbrangencia>();
             services.TryAddScoped<IServicoEvento, ServicoEvento>();
             services.TryAddScoped<IServicoLog, ServicoLog>();
-            services.TryAddScoped<IServicoDiaLetivo, ServicoDiaLetivo>();
         }
     }
 }

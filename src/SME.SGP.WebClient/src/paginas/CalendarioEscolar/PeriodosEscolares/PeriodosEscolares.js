@@ -15,6 +15,9 @@ import { URL_HOME } from '~/constantes/url';
 import { sucesso, confirmar, erros } from '~/servicos/alertas';
 import api from '~/servicos/api';
 import periodo from '~/dtos/periodo';
+import { useSelector } from 'react-redux';
+import RotasDto from '~/dtos/rotasDto';
+import { verificaSomenteConsulta } from '~/servicos/servico-navegacao';
 
 const PeriodosEscolares = () => {
   const [listaCalendarioEscolar, setListaCalendarioEscolar] = useState([]);
@@ -26,7 +29,7 @@ const PeriodosEscolares = () => {
   const [validacoes, setValidacoes] = useState();
   const [modoEdicao, setModoEdicao] = useState(false);
   const [periodoEscolarEdicao, setPeriodoEscolarEdicao] = useState({});
-  const [valoresIniciais, setValoresIniciais] = useState({
+  const valoresFormInicial = {
     primeiroBimestreDataInicial: '',
     primeiroBimestreDataFinal: '',
     segundoBimestreDataInicial: '',
@@ -35,7 +38,12 @@ const PeriodosEscolares = () => {
     terceiroBimestreDataFinal: '',
     quartoBimestreDataInicial: '',
     quartoBimestreDataFinal: '',
-  });
+  }
+  const [valoresIniciais, setValoresIniciais] = useState(valoresFormInicial);
+  const usuario = useSelector(store => store.usuario);
+  const permissoesTela = usuario.permissoes[RotasDto.PERIODOS_ESCOLARES];
+  const [somenteConsulta, setSomenteConsulta] = useState(false);
+  const [desabilitaCampos, setDesabilitaCampos] = useState(false);
 
   const validacaoPrimeiroBim = {
     primeiroBimestreDataInicial: momentSchema.required(
@@ -114,7 +122,7 @@ const PeriodosEscolares = () => {
         setListaCalendarioEscolar([]);
       }
     }
-
+    setSomenteConsulta(verificaSomenteConsulta(permissoesTela));
     consultaTipos();
   }, []);
 
@@ -239,6 +247,7 @@ const PeriodosEscolares = () => {
     }
     setCalendarioEscolarSelecionado(id);
     resetarTela(form);
+    setValoresIniciais({});
     consultarPeriodoPorId(id);
   };
 
@@ -253,6 +262,7 @@ const PeriodosEscolares = () => {
       periodoAtual.data.periodos &&
       periodoAtual.data.periodos.length
     ) {
+      setDesabilitaCampos(!permissoesTela.podeAlterar || somenteConsulta);
       periodoAtual.data.periodos.forEach(item => {
         switch (item.bimestre) {
           case 1:
@@ -275,6 +285,8 @@ const PeriodosEscolares = () => {
             break;
         }
       });
+    }else{
+      setDesabilitaCampos(!permissoesTela.podeIncluir || somenteConsulta);
     }
     setPeriodoEscolarEdicao(periodoAtual.data);
     setValoresIniciais(bimestresValorInicial);
@@ -283,7 +295,6 @@ const PeriodosEscolares = () => {
   const resetarTela = form => {
     form.resetForm();
     setModoEdicao(false);
-    setValoresIniciais({});
   };
 
   const onChangeCamposData = () => {
@@ -309,6 +320,7 @@ const PeriodosEscolares = () => {
             label="Início do Bimestre"
             name="primeiroBimestreDataInicial"
             onChange={onChangeCamposData}
+            desabilitado={desabilitaCampos}
           />
         </div>
         <div className="col-sm-4 col-md-4 col-lg-3 col-xl-3">
@@ -319,6 +331,7 @@ const PeriodosEscolares = () => {
             label="Fim do Bimestre"
             name="primeiroBimestreDataFinal"
             onChange={onChangeCamposData}
+            desabilitado={desabilitaCampos}
           />
         </div>
       </div>
@@ -340,6 +353,7 @@ const PeriodosEscolares = () => {
             formatoData="DD/MM/YYYY"
             name="segundoBimestreDataInicial"
             onChange={onChangeCamposData}
+            desabilitado={desabilitaCampos}
           />
         </div>
         <div className="col-sm-4 col-md-4 col-lg-3 col-xl-3">
@@ -349,6 +363,7 @@ const PeriodosEscolares = () => {
             formatoData="DD/MM/YYYY"
             name="segundoBimestreDataFinal"
             onChange={onChangeCamposData}
+            desabilitado={desabilitaCampos}
           />
         </div>
       </div>
@@ -370,6 +385,7 @@ const PeriodosEscolares = () => {
             formatoData="DD/MM/YYYY"
             name="terceiroBimestreDataInicial"
             onChange={onChangeCamposData}
+            desabilitado={desabilitaCampos}
           />
         </div>
         <div className="col-sm-4 col-md-4 col-lg-3 col-xl-3">
@@ -379,6 +395,7 @@ const PeriodosEscolares = () => {
             formatoData="DD/MM/YYYY"
             name="terceiroBimestreDataFinal"
             onChange={onChangeCamposData}
+            desabilitado={desabilitaCampos}
           />
         </div>
       </div>
@@ -400,6 +417,7 @@ const PeriodosEscolares = () => {
             formatoData="DD/MM/YYYY"
             name="quartoBimestreDataInicial"
             onChange={onChangeCamposData}
+            desabilitado={desabilitaCampos}
           />
         </div>
         <div className="col-sm-4 col-md-4 col-lg-3 col-xl-3">
@@ -409,10 +427,23 @@ const PeriodosEscolares = () => {
             formatoData="DD/MM/YYYY"
             name="quartoBimestreDataFinal"
             onChange={onChangeCamposData}
+            desabilitado={desabilitaCampos}
           />
         </div>
       </div>
     );
+  };
+
+  const validaAntesDoSubmit = form => {    
+    const arrayCampos = Object.keys(valoresFormInicial);    
+    arrayCampos.forEach(campo => {
+      form.setFieldTouched(campo, true, true);
+    });
+    form.validateForm().then(() => {   
+      if (form.isValid || Object.keys(form.errors).length == 0 && Object.keys(form.values).length > 0) {
+        form.handleSubmit(e => e);
+      }      
+    });
   };
 
   return (
@@ -457,15 +488,15 @@ const PeriodosEscolares = () => {
                     bold
                     className="mr-3"
                     onClick={() => onClickCancelar(form)}
-                    disabled={!modoEdicao}
+                    disabled={!modoEdicao || desabilitaCampos}
                   />
                   <Button
                     label="Cadastrar"
                     color={Colors.Roxo}
                     border
                     bold
-                    type="submit"
-                    disabled={!calendarioEscolarSelecionado}
+                    onClick={() => validaAntesDoSubmit(form)}
+                    disabled={!calendarioEscolarSelecionado || desabilitaCampos}
                   />
                 </div>
               </div>
