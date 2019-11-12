@@ -1,4 +1,5 @@
-﻿using SME.SGP.Dados.Contexto;
+﻿using Dapper;
+using SME.SGP.Dados.Contexto;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 
@@ -8,6 +9,15 @@ namespace SME.SGP.Dados.Repositorios
     {
         public RepositorioAula(ISgpContext conexao) : base(conexao)
         {
+        }
+
+        public bool UsuarioPodeCriarAula(Aula aula, Usuario usuario)
+        {
+            var query = "";
+            return database.Conexao.QueryFirst<bool>(query, new
+            {
+                aula.TurmaId
+            });
         }
     }
 }

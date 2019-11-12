@@ -10,14 +10,17 @@ namespace SME.SGP.Aplicacao
     {
         private readonly IRepositorioAula repositorio;
         private readonly IServicoUsuario servicoUsuario;
+
         public ComandosAula(IRepositorioAula repositorio, IServicoUsuario servicoUsuario)
         {
             this.repositorio = repositorio ?? throw new ArgumentNullException(nameof(repositorio));
             this.servicoUsuario = servicoUsuario ?? throw new ArgumentNullException(nameof(servicoUsuario));
         }
+
         public async Task Alterar(AulaDto dto, long id)
         {
-            var aula = await MapearDtoParaEntidade(dto, id);
+            var usuario = await servicoUsuario.ObterUsuarioLogado();
+            var aula = MapearDtoParaEntidade(dto, id, usuario.Id);
             repositorio.Salvar(aula);
         }
 
@@ -30,21 +33,22 @@ namespace SME.SGP.Aplicacao
 
         public async Task Inserir(AulaDto dto)
         {
-            var aula = await MapearDtoParaEntidade(dto, 0L);
+            var usuario = await servicoUsuario.ObterUsuarioLogado();
+            var aula = MapearDtoParaEntidade(dto, 0L, usuario.Id);
+
             repositorio.Salvar(aula);
         }
 
-        private async Task<Aula> MapearDtoParaEntidade(AulaDto dto, long id)
+        private Aula MapearDtoParaEntidade(AulaDto dto, long id, long usuarioId)
         {
             Aula aula = new Aula();
-            if(id > 0L)
+            if (id > 0L)
             {
                 aula = repositorio.ObterPorId(id);
             }
             if (aula.ProfessorId <= 0L)
             {
-                var usuario = await servicoUsuario.ObterUsuarioLogado();
-                aula.ProfessorId = usuario.Id;
+                aula.ProfessorId = usuarioId;
             }
             aula.UeId = dto.UeId;
             aula.DisciplinaId = dto.DisciplinaId;
