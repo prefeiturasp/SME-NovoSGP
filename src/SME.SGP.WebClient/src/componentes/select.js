@@ -130,7 +130,7 @@ const SelectComponent = React.forwardRef((props, ref) => {
       type="input"
       onChange={e => {
         form.setFieldValue(name, e);
-        onChange(e);
+        onChange && onChange(e);
         form.setFieldTouched(name, true, true);
       }}
       innerRef={ref}
