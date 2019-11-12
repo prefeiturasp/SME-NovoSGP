@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using SME.SGP.Api.Filtros;
 using SME.SGP.Aplicacao.Interfaces;
+using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Dto;
 using SME.SGP.Infra;
 
@@ -14,14 +15,15 @@ namespace SME.SGP.Api.Controllers
     public class DiasLetivosCalendarioController : ControllerBase
     {
         private readonly IComandosDiasLetivos comandosDiasLetivos;
+        private readonly IServicoDiaLetivo servicoDiaLetivo;
 
-        public DiasLetivosCalendarioController(IComandosDiasLetivos comandosDiasLetivos)
+        public DiasLetivosCalendarioController(IComandosDiasLetivos comandosDiasLetivos, IServicoDiaLetivo servicoDiaLetivo)
         {
             this.comandosDiasLetivos = comandosDiasLetivos ??
               throw new System.ArgumentNullException(nameof(comandosDiasLetivos));
+            this.servicoDiaLetivo = servicoDiaLetivo;
         }
 
-        //mudar pra async
         [HttpPost]
         [ProducesResponseType(typeof(DiasLetivosDto), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
