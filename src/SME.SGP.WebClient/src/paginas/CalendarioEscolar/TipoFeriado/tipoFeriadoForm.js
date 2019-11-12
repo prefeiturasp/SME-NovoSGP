@@ -15,9 +15,6 @@ import api from '~/servicos/api';
 import { setBreadcrumbManual } from '~/servicos/breadcrumb-services';
 import history from '~/servicos/history';
 import tipoFeriado from '~/dtos/tipoFeriado';
-import { store } from '~/redux';
-import RotasDto from '~/dtos/rotasDto';
-import { verificaSomenteConsulta } from '~/servicos/servico-navegacao';
 
 const TipoFeriadoForm = ({ match }) => {
   const [auditoria, setAuditoria] = useState([]);
@@ -26,18 +23,14 @@ const TipoFeriadoForm = ({ match }) => {
   const [exibirAuditoria, setExibirAuditoria] = useState(false);
   const [idTipoFeriadoEdicao, setIdTipoFeriadoEdicao] = useState(0);
   const [isTipoMovel, setIsTipoMovel] = useState(false);
-  
-  const usuario = store.getState().usuario;
-  const permissoesTela = usuario.permissoes[RotasDto.TIPO_FERIADO];
-  
-  const valoresIniciaisForm = {
+
+  const [valoresIniciais, setValoresIniciais] = useState({
     nome: '',
     abrangencia: undefined,
     tipo: 1,
     dataFeriado: '',
     situacao: true,
-  }  
-  const [valoresIniciais, setValoresIniciais] = useState(valoresIniciaisForm);
+  });
 
   const listaDropdownAbrangencia = [
     { id: 1, nome: 'Nacional' },
@@ -68,8 +61,6 @@ const TipoFeriadoForm = ({ match }) => {
   ];
 
   useEffect(() => {
-    verificaSomenteConsulta(permissoesTela);
-
     const consultaPorId = async () => {
       if (match && match.params && match.params.id) {
         setBreadcrumbManual(
@@ -143,9 +134,6 @@ const TipoFeriadoForm = ({ match }) => {
   };
 
   const onClickCadastrar = async valoresForm => {
-    if (novoRegistro && !permissoesTela.podeIncluir) return;
-    if (!novoRegistro && !permissoesTela.podeAlterar) return;
-
     let paramas = valoresForm;
     if (isTipoMovel) {
       paramas = valoresIniciais;
@@ -178,8 +166,6 @@ const TipoFeriadoForm = ({ match }) => {
   };
 
   const onClickExcluir = async () => {
-    if (!permissoesTela.podeExcluir) return;
-
     if (!novoRegistro) {
       const confirmado = await confirmar(
         'Excluir tipo de feriado',
@@ -215,25 +201,9 @@ const TipoFeriadoForm = ({ match }) => {
         formatoData={formato}
         name="dataFeriado"
         onChange={onChangeCampos}
-        desabilitado={
-          isTipoMovel ||
-          (novoRegistro && !permissoesTela.podeIncluir) ||
-          (!novoRegistro && !permissoesTela.podeAlterar)
-        }
+        desabilitado={isTipoMovel}
       />
     );
-  };
-
-  const validaAntesDoSubmit = form => {    
-    const arrayCampos = Object.keys(valoresIniciais);
-    arrayCampos.forEach(campo => {
-      form.setFieldTouched(campo, true, true);
-    });
-    form.validateForm().then(() => {
-      if (form.isValid || Object.keys(form.errors).length == 0) {
-        form.handleSubmit(e => e);
-      }      
-    });
   };
 
   return (
@@ -276,7 +246,7 @@ const TipoFeriadoForm = ({ match }) => {
                   color={Colors.Vermelho}
                   border
                   className="mr-2"
-                  disabled={novoRegistro || !permissoesTela.podeExcluir}
+                  disabled={novoRegistro}
                   onClick={onClickExcluir}
                 />
                 <Button
@@ -284,12 +254,8 @@ const TipoFeriadoForm = ({ match }) => {
                   color={Colors.Roxo}
                   border
                   bold
-                  disabled={
-                    (novoRegistro && !permissoesTela.podeIncluir) ||
-                    (!novoRegistro && !permissoesTela.podeAlterar)
-                  }
                   className="mr-2"
-                  onClick={()=> validaAntesDoSubmit(form)}
+                  type="submit"
                 />
               </div>
 
@@ -301,11 +267,7 @@ const TipoFeriadoForm = ({ match }) => {
                     placeholder="Meu novo feriado"
                     name="nome"
                     onChange={onChangeCampos}
-                    desabilitado={
-                      isTipoMovel ||
-                      ((novoRegistro && !permissoesTela.podeIncluir) ||
-                        (!novoRegistro && !permissoesTela.podeAlterar))
-                    }
+                    desabilitado={isTipoMovel}
                   />
                 </div>
 
@@ -319,11 +281,7 @@ const TipoFeriadoForm = ({ match }) => {
                     valueText="nome"
                     onChange={onChangeCampos}
                     placeholder="Abrangência do feriado"
-                    disabled={
-                      isTipoMovel ||
-                      (novoRegistro && !permissoesTela.podeIncluir) ||
-                      (!novoRegistro && !permissoesTela.podeAlterar)
-                    }
+                    disabled={isTipoMovel}
                   />
                 </div>
 
@@ -338,7 +296,7 @@ const TipoFeriadoForm = ({ match }) => {
                 </div>
 
                 <div className="col-sm-12 col-md-4 col-lg-4 col-xl-3">
-                  {tipoCampoDataFeriado(form)}
+                  { tipoCampoDataFeriado(form) }
                 </div>
 
                 <div className="col-sm-12 col-md-3 col-lg-3 col-xl-3 mb-2">
@@ -348,10 +306,6 @@ const TipoFeriadoForm = ({ match }) => {
                     opcoes={opcoesSituacao}
                     name="situacao"
                     valorInicial
-                    desabilitado={
-                      (novoRegistro && !permissoesTela.podeIncluir) ||
-                      (!novoRegistro && !permissoesTela.podeAlterar)
-                    }
                     onChange={onChangeCampos}
                   />
                 </div>

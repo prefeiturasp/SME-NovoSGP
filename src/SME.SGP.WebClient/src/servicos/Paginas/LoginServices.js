@@ -4,14 +4,14 @@ import { perfilSelecionado, setarPerfis } from '~/redux/modulos/perfil/actions';
 
 class LoginService {
   autenticar = async Login => {
-    return api
+    return await api
       .post(this.obtenhaUrlAutenticacao(), {
         login: Login.usuario,
         senha: Login.senha,
       })
       .then(res => {
         if (res.data && res.data.perfisUsuario) {
-          const { perfis } = res.data.perfisUsuario;
+          const perfis = res.data.perfisUsuario.perfis;
           const selecionado = perfis.find(
             perfil =>
               perfil.codigoPerfil === res.data.perfisUsuario.perfilSelecionado
@@ -21,7 +21,7 @@ class LoginService {
         }
         return {
           sucesso: true,
-          mensagem: 'Usuario logado com sucesso',
+          mensagem: 'Usuario Logado com sucesso',
           dados: res.data,
         };
       })
@@ -29,12 +29,12 @@ class LoginService {
         const status = err.response ? err.response.status : null;
 
         if (status && status === 401)
-          return { sucesso: false, erroGeral: 'Usuário e/ou senha inválida' };
+          return { sucesso: false, erroGeral: 'Usuário e/ou senha invalida' };
 
         return {
           sucesso: false,
           erroGeral:
-            err.response && err.response.data && err.response.data.mensagens
+            err.response.data && err.response.data.mensagens
               ? err.response.data.mensagens.join(',')
               : 'Falha ao tentar autenticar no servidor',
         };

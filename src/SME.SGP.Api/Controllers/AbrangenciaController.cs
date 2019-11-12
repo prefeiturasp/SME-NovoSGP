@@ -51,14 +51,12 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(IEnumerable<AbrangenciaDreRetorno>), 200)]
         [ProducesResponseType(401)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        public async Task<IActionResult> ObterDres([FromQuery]Modalidade? modalidade, [FromQuery]int periodo = 0)
+        public async Task<IActionResult> ObterDres([FromQuery]Modalidade modalidade)
         {
-            var dres = await consultasAbrangencia.ObterDres(modalidade, periodo);
-
+            var dres = await consultasAbrangencia.ObterDres(modalidade);
             if (dres.Any())
                 return Ok(dres);
-
-            return StatusCode(204);
+            else return StatusCode(204);
         }
 
         [HttpGet("modalidades")]
@@ -87,9 +85,9 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(401)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [ProducesResponseType(typeof(RetornoBaseDto), 601)]
-        public async Task<IActionResult> ObterTurmas(string codigoUe, [FromQuery]Modalidade modalidade, int periodo = 0)
+        public async Task<IActionResult> ObterTurmas(string codigoUe, [FromQuery]Modalidade modalidade)
         {
-            var turmas = await consultasAbrangencia.ObterTurmas(codigoUe, modalidade, periodo);
+            var turmas = await consultasAbrangencia.ObterTurmas(codigoUe, modalidade);
             if (turmas.Any())
                 return Ok(turmas);
             else return StatusCode(204);
@@ -100,14 +98,12 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(401)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [ProducesResponseType(typeof(RetornoBaseDto), 601)]
-        public async Task<IActionResult> ObterUes(string codigoDre, [FromQuery]Modalidade? modalidade, [FromQuery]int periodo = 0)
+        public async Task<IActionResult> ObterUes(string codigoDre, [FromQuery]Modalidade modalidade)
         {
-            var ues = await consultasAbrangencia.ObterUes(codigoDre, modalidade, periodo);
-
+            var ues = await consultasAbrangencia.ObterUes(codigoDre, modalidade);
             if (ues.Any())
                 return Ok(ues);
-
-            return StatusCode(204);
+            else return StatusCode(204);
         }
     }
 }

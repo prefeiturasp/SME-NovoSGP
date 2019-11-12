@@ -37,7 +37,6 @@ namespace SME.SGP.Aplicacao.Consultas
                     Bimestre = x.Bimestre,
                     PeriodoInicio = x.PeriodoInicio,
                     PeriodoFim = x.PeriodoFim,
-                    Migrado = x.Migrado,
                     Id = x.Id
                 }).ToList()
             };

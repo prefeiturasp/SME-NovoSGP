@@ -10,7 +10,6 @@ namespace SME.SGP.Infra
 
         public string DescricaoPeriodo { get; set; }
         public long Id { get; set; }
-        public bool Migrado { get; set; }
 
         [EnumeradoRequirido(ErrorMessage = "A Modalidade é obrigatória.")]
         public ModalidadeTipoCalendario Modalidade { get; set; }

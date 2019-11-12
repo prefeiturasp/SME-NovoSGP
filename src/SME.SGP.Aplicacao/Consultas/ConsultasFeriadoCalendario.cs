@@ -11,19 +11,16 @@ namespace SME.SGP.Aplicacao
     public class ConsultasFeriadoCalendario : IConsultasFeriadoCalendario
     {
         private readonly IRepositorioFeriadoCalendario repositorio;
-        private readonly IRepositorioEvento repositorioEvento;
 
-        public ConsultasFeriadoCalendario(IRepositorioFeriadoCalendario repositorio, IRepositorioEvento repositorioEvento)
+        public ConsultasFeriadoCalendario(IRepositorioFeriadoCalendario repositorio)
         {
             this.repositorio = repositorio ?? throw new System.ArgumentNullException(nameof(repositorio));
-            this.repositorioEvento = repositorioEvento ?? throw new System.ArgumentNullException(nameof(repositorioEvento));
         }
 
         public FeriadoCalendarioCompletoDto BuscarPorId(long id)
         {
             var entidade = repositorio.ObterPorId(id);
             FeriadoCalendarioCompletoDto dto = new FeriadoCalendarioCompletoDto();
-            bool possuiEventos = repositorioEvento.ExisteEventoPorTipoCalendarioId(id);
             if (entidade != null)
             {
                 dto.Id = entidade.Id;
@@ -38,7 +35,6 @@ namespace SME.SGP.Aplicacao
                 dto.CriadoEm = entidade.CriadoEm;
                 dto.CriadoPor = entidade.CriadoPor;
                 dto.CriadoRF = entidade.CriadoRF;
-                dto.PossuiEventos = possuiEventos;
             }
             return dto;
         }

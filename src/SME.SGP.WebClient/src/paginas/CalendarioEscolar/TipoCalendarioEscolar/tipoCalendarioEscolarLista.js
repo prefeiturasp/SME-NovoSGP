@@ -1,23 +1,15 @@
 import React, { useEffect, useState } from 'react';
-import { useSelector } from 'react-redux';
 import Cabecalho from '~/componentes-sgp/cabecalho';
 import Button from '~/componentes/button';
 import Card from '~/componentes/card';
 import { Colors } from '~/componentes/colors';
 import DataTable from '~/componentes/table/dataTable';
 import { URL_HOME } from '~/constantes/url';
-import RotasDto from '~/dtos/rotasDto';
-import { confirmar, erros, sucesso } from '~/servicos/alertas';
-import api from '~/servicos/api';
 import history from '~/servicos/history';
-import { verificaSomenteConsulta } from '~/servicos/servico-navegacao';
+import { confirmar, sucesso, erros } from '~/servicos/alertas';
+import api from '~/servicos/api';
 
 const TipoCalendarioEscolarLista = () => {
-  const usuario = useSelector(store => store.usuario);
-  const permissoesTela = usuario.permissoes[RotasDto.TIPO_CALENDARIO_ESCOLAR];
-
-  const [somenteConsulta, setSomenteConsulta] = useState(false);
-
   const [idTiposSelecionados, setIdTiposSelecionados] = useState([]);
   const [
     listaTiposCalendarioEscolar,
@@ -41,7 +33,6 @@ const TipoCalendarioEscolarLista = () => {
 
   useEffect(() => {
     onFiltrar();
-    setSomenteConsulta(verificaSomenteConsulta(permissoesTela));
   }, []);
 
   const onFiltrar = async () => {
@@ -62,7 +53,7 @@ const TipoCalendarioEscolarLista = () => {
     history.push(URL_HOME);
   };
 
-  const onClickNovo = () => {    
+  const onClickNovo = () => {
     history.push(`/calendario-escolar/tipo-calendario-escolar/novo`);
   };
 
@@ -70,7 +61,7 @@ const TipoCalendarioEscolarLista = () => {
     history.push(`/calendario-escolar/tipo-calendario-escolar/editar/${id}`);
   };
 
-  const onClickExcluir = async () => {    
+  const onClickExcluir = async () => {
     const listaParaExcluir = [];
     idTiposSelecionados.forEach(id => {
       const tipoParaExcluir = listaTiposCalendarioEscolar.find(
@@ -103,7 +94,7 @@ const TipoCalendarioEscolarLista = () => {
         sucesso(mensagemSucesso);
         onFiltrar();
       }
-    }    
+    }
   };
 
   return (
@@ -125,7 +116,7 @@ const TipoCalendarioEscolarLista = () => {
             color={Colors.Vermelho}
             border
             className="mr-2"
-            disabled={!permissoesTela.podeExcluir || (idTiposSelecionados && idTiposSelecionados.length < 1) }
+            disabled={idTiposSelecionados && idTiposSelecionados.length < 1}
             onClick={onClickExcluir}
           />
           <Button
@@ -135,7 +126,6 @@ const TipoCalendarioEscolarLista = () => {
             bold
             className="mr-2"
             onClick={onClickNovo}
-            disabled={somenteConsulta || !permissoesTela.podeIncluir}
           />
         </div>
 

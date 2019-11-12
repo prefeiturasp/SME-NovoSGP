@@ -7,6 +7,5 @@ namespace SME.SGP.Dominio.Interfaces
     public interface IRepositorioEventoTipo : IRepositorioBase<EventoTipo>
     {
         Task<PaginacaoResultadoDto<EventoTipo>> ListarTipos(EventoLocalOcorrencia eventoLocalOcorrencia, EventoLetivo eventoLetivo, string descricao, Paginacao paginacao);
-        EventoTipo ObtenhaTipoEventoFeriado();
     }
 }

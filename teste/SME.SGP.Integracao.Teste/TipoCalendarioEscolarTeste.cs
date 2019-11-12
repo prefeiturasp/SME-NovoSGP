@@ -78,7 +78,7 @@ namespace SME.SGP.Integracao.Teste
 
                     var deleteResult = await _fixture._clientApi.SendAsync(request);
 
-                    Assert.False(deleteResult.IsSuccessStatusCode);
+                    Assert.True(deleteResult.IsSuccessStatusCode);
                     var feriadoParaConsultar = dtoTodos.ElementAt(1);
                     var getOneResult = await _fixture._clientApi.GetAsync($"api/v1/calendarios/tipos/{feriadoParaConsultar.Id}");
 

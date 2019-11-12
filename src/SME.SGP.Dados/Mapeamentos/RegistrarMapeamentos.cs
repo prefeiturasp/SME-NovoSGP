@@ -34,7 +34,6 @@ namespace SME.SGP.Dados.Mapeamentos
                config.AddMap(new FeriadoCalendarioMap());
                config.AddMap(new EventoMap());
                config.AddMap(new EventoTipoMap());
-               config.AddMap(new AulaMap());
                config.ForDommel();
            });
         }

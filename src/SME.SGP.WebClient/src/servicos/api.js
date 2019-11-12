@@ -4,7 +4,6 @@ import { store } from '~/redux';
 import history from '~/servicos/history';
 import { URL_LOGIN } from '~/constantes/url';
 import { Deslogar } from '~/redux/modulos/usuario/actions';
-import { getObjetoStorageUsuario} from '~/servicos/servico-navegacao';
 
 let url = '';
 

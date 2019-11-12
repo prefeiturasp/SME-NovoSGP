@@ -10,8 +10,6 @@ import SelectComponent from '../../../componentes/select';
 import DataTable from '../../../componentes/table/dataTable';
 import api from '../../../servicos/api';
 import Cabecalho from '~/componentes-sgp/cabecalho';
-import RotasDto from '~/dtos/rotasDto';
-import { verificaSomenteConsulta } from '~/servicos/servico-navegacao';
 
 export default function AtribuicaoSupervisorLista() {
   const [uesSemSupervisorCheck, setUesSemSupervisorCheck] = useState(false);
@@ -32,8 +30,6 @@ export default function AtribuicaoSupervisorLista() {
   ] = useState(true);
 
   const usuario = useSelector(store => store.usuario);
-  const permissoesTela =
-    usuario.permissoes[RotasDto.ATRIBUICAO_SUPERVISOR_LISTA];
 
   useEffect(() => {
     if (usuario && usuario.turmaSelecionada) {
@@ -44,17 +40,11 @@ export default function AtribuicaoSupervisorLista() {
   }, [usuario.turmaSelecionada]);
 
   useEffect(() => {
-    console.log(permissoesTela);
-  }, [permissoesTela]);
-
-  useEffect(() => {
     async function carregarDres() {
       const dres = await api.get('v1/abrangencias/dres');
       setListaDres(dres.data);
     }
-
     carregarDres();
-    verificaSomenteConsulta(permissoesTela);
   }, []);
 
   useEffect(() => {
@@ -98,8 +88,6 @@ export default function AtribuicaoSupervisorLista() {
   ];
 
   function onClickRow(row) {
-    if (!permissoesTela.podeAlterar) return;
-
     onClickEditar(row.supervisorId);
   }
 
@@ -108,16 +96,12 @@ export default function AtribuicaoSupervisorLista() {
   }
 
   function onClickEditar(supervisorId) {
-    if (!permissoesTela.podeAlterar) return;
-
     const path = `/gestao/atribuicao-supervisor/${dresSelecionadas}/${supervisorId ||
       ''}`;
     history.push(path);
   }
 
   function onClickNovaAtribuicao() {
-    if (!permissoesTela.podeIncluir) return;
-
     if (dresSelecionadas) {
       history.push(`/gestao/atribuicao-supervisor/${dresSelecionadas}/`);
     } else {
@@ -287,7 +271,6 @@ export default function AtribuicaoSupervisorLista() {
             color={Colors.Roxo}
             border
             bold
-            disabled={!permissoesTela.podeIncluir}
             className="mr-2"
             onClick={onClickNovaAtribuicao}
           />
@@ -298,20 +281,14 @@ export default function AtribuicaoSupervisorLista() {
             className="mb-2"
             label="Exibir apenas UE's sem supervisor"
             onChangeCheckbox={onChangeUesSemSup}
-            disabled={
-              !dresSelecionadas ||
-              assumirFiltroPrincCheck ||
-              !permissoesTela.podeConsultar
-            }
+            disabled={!dresSelecionadas || assumirFiltroPrincCheck}
             checked={uesSemSupervisorCheck}
           />
           <CheckboxComponent
             label="Assumir o filtro principal do sistema"
             onChangeCheckbox={onChangeAssumirFiltroPrinc}
             checked={assumirFiltroPrincCheck}
-            disabled={
-              desabilitarAssumirFiltroPrincipal || !permissoesTela.podeConsultar
-            }
+            disabled={desabilitarAssumirFiltroPrincipal}
           />
         </div>
         <div className="col-md-6 pb-2">
@@ -325,9 +302,10 @@ export default function AtribuicaoSupervisorLista() {
             onChange={onChangeDre}
             valueSelect={dresSelecionadas || []}
             placeholder="SELECIONE A DRE"
-            disabled={desabilitarDre || !permissoesTela.podeConsultar}
+            disabled={desabilitarDre}
           />
         </div>
+
         <div className="col-md-6">
           <SelectComponent
             className="col-md-12"
@@ -340,7 +318,7 @@ export default function AtribuicaoSupervisorLista() {
             valueSelect={supervisoresSelecionados}
             multiple
             placeholder="SELECIONE O SUPERVISOR"
-            disabled={desabilitarSupervisor || !permissoesTela.podeConsultar}
+            disabled={desabilitarSupervisor}
           />
         </div>
 
@@ -355,13 +333,13 @@ export default function AtribuicaoSupervisorLista() {
             onChange={onChangeUes}
             valueSelect={ueSelecionada || []}
             placeholder="SELECIONE A UE"
-            disabled={desabilitarUe || !permissoesTela.podeConsultar}
+            disabled={desabilitarUe}
           />
         </div>
 
         <div className="col-md-12 pt-4">
           <DataTable
-            onClickRow={permissoesTela.podeAlterar && onClickRow}
+            onClickRow={onClickRow}
             columns={columns}
             dataSource={listaFiltroAtribuicao}
           />

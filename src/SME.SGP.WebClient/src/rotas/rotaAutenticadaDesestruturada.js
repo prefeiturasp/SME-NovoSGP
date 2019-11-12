@@ -19,7 +19,7 @@ const RotaAutenticadaDesestruturada = props => {
           )
         ) : (
           <Redirect
-            to={`/login/${btoa(
+            to={`/Login/${btoa(
               props.location.pathname + props.location.search
             )}`}
           />

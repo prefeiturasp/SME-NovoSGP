@@ -21,9 +21,6 @@ import {
   RegistroMigrado,
 } from './planoCiclo.css';
 import modalidade from '~/dtos/modalidade';
-import RotasDto from '~/dtos/rotasDto';
-import { verificaSomenteConsulta } from '~/servicos/servico-navegacao';
-import tipoPermissao from '~/dtos/tipoPermissao';
 
 export default function PlanoCiclo() {
   const urlPrefeitura = 'https://curriculo.sme.prefeitura.sp.gov.br';
@@ -52,11 +49,9 @@ export default function PlanoCiclo() {
   const [anosTurmasUsuario, setAnosTurmasUsuario] = useState([]);
   const [planoCicloId, setPlanoCicloId] = useState(0);
   const [modalidadeEja, setModalidadeEja] = useState(false);
-  const [somenteConsulta, setSomenteConsulta] = useState(false);
 
   const usuario = useSelector(store => store.usuario);
   const turmaSelecionada = useSelector(store => store.usuario.turmaSelecionada);
-  const permissoesTela = usuario.permissoes[RotasDto.PLANO_CICLO];
 
   useEffect(() => {
     async function carregarListas() {
@@ -66,8 +61,8 @@ export default function PlanoCiclo() {
       const ods = await api.get('v1/objetivos-desenvolvimento-sustentavel');
       setListaODS(ods.data);
     }
+
     carregarListas();
-    setSomenteConsulta(verificaSomenteConsulta(permissoesTela));
   }, []);
 
   useEffect(() => {
@@ -426,32 +421,22 @@ export default function PlanoCiclo() {
       trocaCiclo(value);
     }
   }
-
-  const desabilitaCamposEdicao = () => {
-    if (podeAlterar()) return !modoEdicao
-    else return true
-  }
-
-  const podeAlterar = () => {
-    return (permissoesTela[tipoPermissao.podeAlterar]);
-  }
-
   return (
     <>
       <div className="col-md-12">
         {usuario && turmaSelecionada.turma ? (
           ''
         ) : (
-            <Alert
-              alerta={{
-                tipo: 'warning',
-                id: 'plano-ciclo-selecione-turma',
-                mensagem: 'Você precisa escolher uma turma.',
-                estiloTitulo: { fontSize: '18px' },
-              }}
-              className="mb-0"
-            />
-          )}
+          <Alert
+            alerta={{
+              tipo: 'warning',
+              id: 'plano-ciclo-selecione-turma',
+              mensagem: 'Você precisa escolher uma turma.',
+              estiloTitulo: { fontSize: '18px' },
+            }}
+            className="mb-0"
+          />
+        )}
       </div>
       <div className="col-md-12 mt-1">
         <Titulo>
@@ -465,8 +450,8 @@ export default function PlanoCiclo() {
               Registro Migrado
             </RegistroMigrado>
           ) : (
-              ''
-            )}
+            ''
+          )}
         </Titulo>
       </div>
       <Card>
@@ -481,7 +466,7 @@ export default function PlanoCiclo() {
                     id="tipo-ciclo"
                     placeHolder="Selecione um tipo de ciclo"
                     lista={listaCiclos}
-                    disabled={somenteConsulta || !podeAlterar()? true:listaCiclos.length === 1}
+                    disabled={listaCiclos.length === 1}
                     valueOption="id"
                     valueText="descricao"
                     onChange={validaTrocaCiclo}
@@ -506,7 +491,7 @@ export default function PlanoCiclo() {
                 bold
                 className="mr-3"
                 onClick={onClickCancelar}
-                hidden={desabilitaCamposEdicao()}
+                hidden={!modoEdicao}
               />
               <Button
                 label="Salvar"
@@ -514,7 +499,7 @@ export default function PlanoCiclo() {
                 border
                 bold
                 onClick={() => salvarPlanoCiclo(false)}
-                disabled={desabilitaCamposEdicao()}
+                disabled={!modoEdicao}
               />
             </div>
           </div>
@@ -543,7 +528,6 @@ export default function PlanoCiclo() {
                 maxHeight="calc(100vh)"
                 onBlur={onChangeTextEditor}
                 value={descricaoCiclo}
-                disabled={somenteConsulta}
               />
               <InseridoAlterado>
                 {inseridoAlterado.criadoPor && inseridoAlterado.criadoEm ? (
@@ -552,8 +536,8 @@ export default function PlanoCiclo() {
                     {inseridoAlterado.criadoEm}
                   </p>
                 ) : (
-                    ''
-                  )}
+                  ''
+                )}
 
                 {inseridoAlterado.alteradoPor && inseridoAlterado.alteradoEm ? (
                   <p>
@@ -561,8 +545,8 @@ export default function PlanoCiclo() {
                     {inseridoAlterado.alteradoEm}
                   </p>
                 ) : (
-                    ''
-                  )}
+                  ''
+                )}
               </InseridoAlterado>
             </div>
             <div className="col-md-6 btn-link-plano-ciclo">
@@ -576,7 +560,7 @@ export default function PlanoCiclo() {
 
                 <div className="row">
                   <ListaItens
-                    className={registroMigrado || somenteConsulta ? 'desabilitar-elemento' : ''}
+                    className={registroMigrado ? 'desabilitar-elemento' : ''}
                   >
                     <ul>
                       {listaMatriz.map(item => {
@@ -617,7 +601,7 @@ export default function PlanoCiclo() {
                 </div>
                 <div className="row">
                   <ListaItens
-                    className={registroMigrado || somenteConsulta ? 'desabilitar-elemento' : ''}
+                    className={registroMigrado ? 'desabilitar-elemento' : ''}
                   >
                     <ul>
                       {listaODS.map(item => {
