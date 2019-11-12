@@ -4,7 +4,7 @@ import * as Yup from 'yup';
 import Cabecalho from '~/componentes-sgp/cabecalho';
 import Auditoria from '~/componentes/auditoria';
 import Button from '~/componentes/button';
-import { CampoData, momentSchema } from '~/componentes/campoData/campoData.js';
+import { CampoData, momentSchema } from '~/componentes/campoData/campoData';
 import CampoTexto from '~/componentes/campoTexto';
 import Card from '~/componentes/card';
 import { Colors } from '~/componentes/colors';
@@ -26,17 +26,17 @@ const TipoFeriadoForm = ({ match }) => {
   const [exibirAuditoria, setExibirAuditoria] = useState(false);
   const [idTipoFeriadoEdicao, setIdTipoFeriadoEdicao] = useState(0);
   const [isTipoMovel, setIsTipoMovel] = useState(false);
-  
-  const usuario = store.getState().usuario;
+
+  const { usuario } = store.getState();
   const permissoesTela = usuario.permissoes[RotasDto.TIPO_FERIADO];
-  
+
   const valoresIniciaisForm = {
     nome: '',
     abrangencia: undefined,
     tipo: 1,
     dataFeriado: '',
     situacao: true,
-  }  
+  };
   const [valoresIniciais, setValoresIniciais] = useState(valoresIniciaisForm);
 
   const listaDropdownAbrangencia = [
@@ -66,6 +66,8 @@ const TipoFeriadoForm = ({ match }) => {
     { label: 'Ativo', value: true },
     { label: 'Inativo', value: false },
   ];
+
+  const [possuiEventos, setPossuiEventos] = useState(false);
 
   useEffect(() => {
     verificaSomenteConsulta(permissoesTela);
@@ -101,6 +103,7 @@ const TipoFeriadoForm = ({ match }) => {
             alteradoEm: cadastrado.data.alteradoEm,
           });
           setExibirAuditoria(true);
+          setPossuiEventos(cadastrado.data.possuiEventos);
         }
         setNovoRegistro(false);
       }
@@ -218,13 +221,14 @@ const TipoFeriadoForm = ({ match }) => {
         desabilitado={
           isTipoMovel ||
           (novoRegistro && !permissoesTela.podeIncluir) ||
-          (!novoRegistro && !permissoesTela.podeAlterar)
+          (!novoRegistro && !permissoesTela.podeAlterar) ||
+          possuiEventos
         }
       />
     );
   };
 
-  const validaAntesDoSubmit = form => {    
+  const validaAntesDoSubmit = form => {
     const arrayCampos = Object.keys(valoresIniciais);
     arrayCampos.forEach(campo => {
       form.setFieldTouched(campo, true, true);
@@ -232,7 +236,7 @@ const TipoFeriadoForm = ({ match }) => {
     form.validateForm().then(() => {
       if (form.isValid || Object.keys(form.errors).length == 0) {
         form.handleSubmit(e => e);
-      }      
+      }
     });
   };
 
@@ -276,7 +280,9 @@ const TipoFeriadoForm = ({ match }) => {
                   color={Colors.Vermelho}
                   border
                   className="mr-2"
-                  disabled={novoRegistro || !permissoesTela.podeExcluir}
+                  disabled={
+                    novoRegistro || !permissoesTela.podeExcluir || possuiEventos
+                  }
                   onClick={onClickExcluir}
                 />
                 <Button
@@ -289,7 +295,7 @@ const TipoFeriadoForm = ({ match }) => {
                     (!novoRegistro && !permissoesTela.podeAlterar)
                   }
                   className="mr-2"
-                  onClick={()=> validaAntesDoSubmit(form)}
+                  onClick={() => validaAntesDoSubmit(form)}
                 />
               </div>
 
@@ -304,7 +310,8 @@ const TipoFeriadoForm = ({ match }) => {
                     desabilitado={
                       isTipoMovel ||
                       ((novoRegistro && !permissoesTela.podeIncluir) ||
-                        (!novoRegistro && !permissoesTela.podeAlterar))
+                        (!novoRegistro && !permissoesTela.podeAlterar)) ||
+                      possuiEventos
                     }
                   />
                 </div>
@@ -322,7 +329,8 @@ const TipoFeriadoForm = ({ match }) => {
                     disabled={
                       isTipoMovel ||
                       (novoRegistro && !permissoesTela.podeIncluir) ||
-                      (!novoRegistro && !permissoesTela.podeAlterar)
+                      (!novoRegistro && !permissoesTela.podeAlterar) ||
+                      possuiEventos
                     }
                   />
                 </div>
