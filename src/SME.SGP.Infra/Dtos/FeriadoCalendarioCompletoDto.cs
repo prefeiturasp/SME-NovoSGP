@@ -20,6 +20,5 @@ namespace SME.SGP.Infra
         public long Id { get; set; }
         public string Nome { get; set; }
         public TipoFeriadoCalendario Tipo { get; set; }
-        public bool PossuiEventos { get; set; }
     }
 }

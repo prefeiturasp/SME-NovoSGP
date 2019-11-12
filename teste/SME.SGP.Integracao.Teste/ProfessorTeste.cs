@@ -3,7 +3,6 @@ using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
 using System.Net.Http.Headers;
-using System.Threading.Tasks;
 using Xunit;
 using Xunit.Extensions.Ordering;
 
@@ -22,7 +21,7 @@ namespace SME.SGP.Integracao.Teste
         [Theory, Order(5)]
         [InlineData("7913583", "7913583", "3fe1e074-37d6-e911-abd6-f81654fe895d", "2001395")]
         [InlineData("7913583", "7913583", "3fe1e074-37d6-e911-abd6-f81654fe895d", "2001401")]
-        public async Task DeveObterDisciplinasDoProfessorPorTurma(string login, string rf, string perfil, string codigoTurma)
+        public async void DeveObterDisciplinasDoProfessorPorTurma(string login, string rf, string perfil, string codigoTurma)
         {
             _fixture._clientApi.DefaultRequestHeaders.Clear();
 

@@ -10,10 +10,7 @@ import api from '~/servicos/api';
 import { erro, sucesso, confirmar } from '~/servicos/alertas';
 import history from '~/servicos/history';
 import Cabecalho from '~/componentes-sgp/cabecalho';
-import { setBreadcrumbManual } from '~/servicos/breadcrumb-services';
-import { store } from '~/redux';
-import RotasDto from '~/dtos/rotasDto';
-import { verificaSomenteConsulta } from '~/servicos/servico-navegacao';
+import {setBreadcrumbManual} from '~/servicos/breadcrumb-services';
 
 const AtribuicaoSupervisorCadastro = ({ match }) => {
   const [auditoria, setAuditoria] = useState([]);
@@ -31,22 +28,14 @@ const AtribuicaoSupervisorCadastro = ({ match }) => {
 
   const [modoEdicao, setModoEdicao] = useState(false);
 
-  const usuario = store.getState().usuario;
-  const permissoesTela =
-    usuario.permissoes[RotasDto.ATRIBUICAO_SUPERVISOR_LISTA];
-
   function exibeErro(erros) {
     if (erros && erros.response && erros.response.data)
       erros.response.data.mensagens.forEach(mensagem => erro(mensagem));
   }
 
-  useEffect(() => {
-    setBreadcrumbManual(
-      match.url,
-      'Editar Atribuição',
-      '/gestao/atribuicao-supervisor-lista'
-    );
-  }, []);
+  useEffect(() =>{
+    setBreadcrumbManual(match.url,'Editar Atribuição', '/gestao/atribuicao-supervisor-lista');
+  },[])
   // 1 - carrega dres
   useEffect(() => {
     async function obterListaDres() {
@@ -69,7 +58,6 @@ const AtribuicaoSupervisorCadastro = ({ match }) => {
         });
     }
     obterListaDres();
-    verificaSomenteConsulta(permissoesTela);
   }, []);
 
   // 2 - carrega supervisores e ues
@@ -243,8 +231,7 @@ const AtribuicaoSupervisorCadastro = ({ match }) => {
             color={Colors.Azul}
             border
             className="mr-3"
-            onClick={onClickVoltar}
-          />
+            onClick={onClickVoltar}/>
           {dreSelecionada && supervisorSelecionado && (
             <Button
               label="Cancelar"
@@ -260,9 +247,6 @@ const AtribuicaoSupervisorCadastro = ({ match }) => {
             color={Colors.Roxo}
             border
             bold
-            disabled={
-              !permissoesTela.podeIncluir && !permissoesTela.podeAlterar
-            }
             onClick={salvarAtribuicao}
           />
         </div>
@@ -275,7 +259,6 @@ const AtribuicaoSupervisorCadastro = ({ match }) => {
             lista={listaDres}
             valueOption="codigo"
             valueText="nome"
-            disabled={!permissoesTela.podeConsultar}
             onChange={selecionaDre}
             valueSelect={dreSelecionada}
           />
@@ -287,7 +270,6 @@ const AtribuicaoSupervisorCadastro = ({ match }) => {
             name="dre"
             id="dre"
             lista={listaSupervisores}
-            disabled={!permissoesTela.podeConsultar}
             valueField="supervisorId"
             textField="supervisorNome"
             onSelect={selecionaSupervisor}
@@ -301,7 +283,6 @@ const AtribuicaoSupervisorCadastro = ({ match }) => {
           dados={listaUES}
           targetKeys={uesAtribuidas}
           handleChange={handleChange}
-          disabled={!permissoesTela.podeConsultar}
           titulos={["UE'S SEM ATRIBUIÇÃO", "UE'S ATRIBUIDAS AO SUPERVISOR"]}
           texto="nome"
           codigo="codigo"

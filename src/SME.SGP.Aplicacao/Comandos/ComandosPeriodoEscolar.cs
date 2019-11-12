@@ -49,8 +49,7 @@ namespace SME.SGP.Aplicacao
                 Bimestre = periodoDto.Bimestre,
                 PeriodoInicio = periodoDto.PeriodoInicio,
                 PeriodoFim = periodoDto.PeriodoFim,
-                TipoCalendarioId = tipoCalendario,
-                Migrado = false,
+                TipoCalendarioId = tipoCalendario
             };
         }
 

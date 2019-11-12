@@ -3,9 +3,6 @@
     public interface IServicoNotificacao
     {
         void GeraNovoCodigo(Notificacao notificacao);
-
         long ObtemNovoCodigo();
-
-        void Salvar(Notificacao notificacao);
     }
 }

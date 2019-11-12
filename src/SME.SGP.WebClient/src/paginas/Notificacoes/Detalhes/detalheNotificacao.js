@@ -16,8 +16,6 @@ import history from '~/servicos/history';
 import notificacaoCategoria from '~/dtos/notificacaoCategoria';
 import notificacaoStatus from '~/dtos/notificacaoStatus';
 import servicoNotificacao from '~/servicos/Paginas/ServicoNotificacao';
-import RotasDto from '~/dtos/rotasDto';
-import { verificaSomenteConsulta } from '~/servicos/servico-navegacao';
 
 const urlTelaNotificacoes = '/notificacoes';
 
@@ -26,16 +24,7 @@ const DetalheNotificacao = ({ match }) => {
   const [listaDeStatus, setListaDeStatus] = useState([]);
   const [aprovar, setAprovar] = useState(false);
 
-  const titulosNiveis = [
-    '',
-    'Aguardando aceite',
-    'Aceita',
-    'Recusada',
-    'Sem status',
-  ];
-
   const usuario = useSelector(state => state.usuario);
-  const permissoesTela = usuario.permissoes[RotasDto.NOTIFICACOES];
 
   const [validacoes, setValidacoes] = useState(
     Yup.object({
@@ -65,10 +54,6 @@ const DetalheNotificacao = ({ match }) => {
   };
 
   useEffect(() => {
-    verificaSomenteConsulta(permissoesTela);
-  }, []);
-
-  useEffect(() => {
     if (idNotificacao) {
       buscaNotificacao(idNotificacao);
     }
@@ -87,7 +72,7 @@ const DetalheNotificacao = ({ match }) => {
         .then(resposta => {
           const status = resposta.data.map(item => {
             return {
-              titulo: titulosNiveis[item.statusId],
+              titulo: item.status,
               status: item.statusId,
               timestamp: item.alteracaoData,
               rf: item.alteracaoUsuarioRf,
@@ -209,10 +194,7 @@ const DetalheNotificacao = ({ match }) => {
                   <Button
                     label="Aceitar"
                     color={cores.Colors.Roxo}
-                    disabled={
-                      !notificacao.mostrarBotoesDeAprovacao ||
-                      !permissoesTela.podeAlterar
-                    }
+                    disabled={!notificacao.mostrarBotoesDeAprovacao}
                     className="mr-2"
                     border={!notificacao.mostrarBotoesDeAprovacao}
                     type="button"
@@ -235,10 +217,7 @@ const DetalheNotificacao = ({ match }) => {
                     label="Recusar"
                     color={cores.Colors.Roxo}
                     border
-                    disabled={
-                      !notificacao.mostrarBotoesDeAprovacao ||
-                      !permissoesTela.podeAlterar
-                    }
+                    disabled={!notificacao.mostrarBotoesDeAprovacao}
                     className="mr-2"
                     type="button"
                     onClick={async e => {
@@ -262,10 +241,7 @@ const DetalheNotificacao = ({ match }) => {
                   color={cores.Colors.Azul}
                   border
                   className="mr-2"
-                  disabled={
-                    !notificacao.mostrarBotaoMarcarComoLido ||
-                    !permissoesTela.podeAlterar
-                  }
+                  disabled={!notificacao.mostrarBotaoMarcarComoLido}
                   onClick={marcarComoLida}
                 />
                 <Button
@@ -273,10 +249,7 @@ const DetalheNotificacao = ({ match }) => {
                   color={cores.Colors.Vermelho}
                   border
                   className="mr-2"
-                  disabled={
-                    !notificacao.mostrarBotaoRemover ||
-                    !permissoesTela.podeExcluir
-                  }
+                  disabled={!notificacao.mostrarBotaoRemover}
                   onClick={excluir}
                 />
               </div>
@@ -325,10 +298,7 @@ const DetalheNotificacao = ({ match }) => {
                                     : ''
                                 }`}
                               >
-                                {notificacao.statusId ===
-                                notificacaoStatus.Pendente
-                                  ? 'Não Lida'
-                                  : notificacao.situacao}
+                                {notificacao.situacao}
                               </div>
                             </div>
                           </div>
@@ -340,10 +310,7 @@ const DetalheNotificacao = ({ match }) => {
                 <hr className="mt-hr" />
                 <div className="row">
                   <div className="col-xs-12 col-md-12 col-lg-12 mensagem">
-                    MENSAGEM:{' '}
-                    <span
-                      dangerouslySetInnerHTML={{ __html: notificacao.mensagem }}
-                    ></span>
+                    MENSAGEM: {notificacao.mensagem}
                   </div>
                 </div>
                 {notificacao.categoriaId ===
@@ -356,10 +323,7 @@ const DetalheNotificacao = ({ match }) => {
                         type="textarea"
                         form={form}
                         maxlength="100"
-                        desabilitado={
-                          !notificacao.mostrarBotoesDeAprovacao ||
-                          !permissoesTela.podeAlterar
-                        }
+                        desabilitado={!notificacao.mostrarBotoesDeAprovacao}
                       />
                     </div>
                   </div>

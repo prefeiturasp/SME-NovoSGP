@@ -1,7 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { useSelector } from 'react-redux';
 import styled from 'styled-components';
-import RotasDto from '~/dtos/rotasDto';
 import Card from '~/componentes/card';
 import Grid from '~/componentes/grid';
 import Button from '~/componentes/button';
@@ -11,7 +9,6 @@ import history from '~/servicos/history';
 import { confirmar, erro, sucesso } from '~/servicos/alertas';
 import ListaPaginada from '~/componentes/listaPaginada/listaPaginada';
 import api from '~/servicos/api';
-import { verificaSomenteConsulta } from '~/servicos/servico-navegacao';
 
 const TipoEventosLista = () => {
   const Div = styled.div`
@@ -49,9 +46,6 @@ const TipoEventosLista = () => {
     }
   `;
 
-  const usuario = useSelector(store => store.usuario);
-  const permissoesTela = usuario.permissoes[RotasDto.TIPO_EVENTOS];
-
   const [desabilitarBotaoExcluir, setDesabilitarBotaoExcluir] = useState(true);
   const [tipoEventoSelecionados, setTipoEventoSelecionados] = useState([]);
   const [
@@ -84,23 +78,17 @@ const TipoEventosLista = () => {
   };
 
   useEffect(() => {
-    verificaSomenteConsulta(permissoesTela);
-  }, []);
-
-  useEffect(() => {
-    if (codigoTipoEventoSelecionados.length > 0 && permissoesTela.podeExcluir)
+    if (codigoTipoEventoSelecionados.length > 0)
       setDesabilitarBotaoExcluir(false);
     else setDesabilitarBotaoExcluir(true);
   }, [codigoTipoEventoSelecionados]);
 
   const clicouBotaoNovo = () => {
-    if (permissoesTela.podeIncluir)
-      history.push('/calendario-escolar/tipo-eventos/novo');
+    history.push('/calendario-escolar/tipo-eventos/novo');
   };
 
   const clicouBotaoEditar = tipoEvento => {
-    if (permissoesTela.podeAlterar)
-      history.push(`/calendario-escolar/tipo-eventos/editar/${tipoEvento.id}`);
+    history.push(`/calendario-escolar/tipo-eventos/editar/${tipoEvento.id}`);
   };
 
   const listaLetivo = [
@@ -241,7 +229,6 @@ const TipoEventosLista = () => {
               label="Novo"
               color={Colors.Roxo}
               onClick={clicouBotaoNovo}
-              disabled={!permissoesTela.podeIncluir}
               bold
             />
           </Div>

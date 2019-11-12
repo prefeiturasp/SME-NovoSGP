@@ -36,13 +36,6 @@ namespace SME.SGP.Dados.Repositorios
             return retorno;
         }
 
-        public EventoTipo ObtenhaTipoEventoFeriado()
-        {
-            var sql = "select * from evento_tipo where descricao = @descricao";
-
-            return database.Conexao.QuerySingleOrDefault<EventoTipo>(sql, new { descricao = "Feriado"});
-        }
-
         private static StringBuilder MontaQueryCompleta(EventoLocalOcorrencia eventoLocalOcorrencia, EventoLetivo eventoLetivo, string descricao, Paginacao paginacao)
         {
             StringBuilder sql = new StringBuilder();

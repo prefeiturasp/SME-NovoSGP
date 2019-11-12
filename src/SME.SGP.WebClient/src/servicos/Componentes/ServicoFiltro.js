@@ -11,45 +11,25 @@ class ServicoFiltro {
 
   static listarPeriodos = async modalidade => {
     return api
-      .get(
-        `v1/abrangencias/semestres?modalidade=${modalidade ? modalidade : 0}`
-      )
+      .get(`v1/abrangencias/semestres?modalidade=${modalidade}`)
       .then(resposta => resposta);
   };
 
-  static listarDres = async (modalidade, periodo) => {
-    const periodoQuery = periodo ? `&periodo=${periodo}` : '';
-
+  static listarDres = async modalidade => {
     return api
-      .get(
-        `v1/abrangencias/dres?modalidade=${
-          modalidade ? modalidade : 0
-        }${periodoQuery}`
-      )
+      .get(`v1/abrangencias/dres?modalidade=${modalidade}`)
       .then(resposta => resposta);
   };
 
-  static listarUnidadesEscolares = async (dre, modalidade, periodo) => {
-    const periodoQuery = periodo ? `&periodo=${periodo}` : '';
-
+  static listarUnidadesEscolares = async (dre, modalidade) => {
     return api
-      .get(
-        `v1/abrangencias/dres/${dre}/ues?modalidade=${
-          modalidade ? modalidade : 0
-        }${periodoQuery}`
-      )
+      .get(`v1/abrangencias/dres/${dre}/ues?modalidade=${modalidade}`)
       .then(resposta => resposta);
   };
 
-  static listarTurmas = async (ue, modalidade, periodo) => {
-    const periodoQuery = periodo ? `&periodo=${periodo}` : '';
-
+  static listarTurmas = async (ue, modalidade) => {
     return api
-      .get(
-        `v1/abrangencias/dres/ues/${ue}/turmas?modalidade=${
-          modalidade ? modalidade : 0
-        }${periodoQuery}`
-      )
+      .get(`v1/abrangencias/dres/ues/${ue}/turmas?modalidade=${modalidade}`)
       .then(resposta => resposta);
   };
 }

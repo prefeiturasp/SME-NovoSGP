@@ -21,11 +21,5 @@ namespace SME.SGP.Dominio.Servicos
         {
             return repositorioNotificacao.ObterUltimoCodigoPorAno(DateTime.Now.Year) + 1;
         }
-
-        public void Salvar(Notificacao notificacao)
-        {
-            GeraNovoCodigo(notificacao);
-            repositorioNotificacao.Salvar(notificacao);
-        }
     }
 }

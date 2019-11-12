@@ -29,7 +29,6 @@ module.exports = {
         peerDependencies: false,
       },
     ],
-    'no-unused-vars': ['error', { argsIgnorePattern: '^_' }],
   },
   settings: {
     'import/resolver': {

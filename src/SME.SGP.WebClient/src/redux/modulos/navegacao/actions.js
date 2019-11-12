@@ -25,10 +25,3 @@ export function setRotas(rotas) {
     payload: rotas,
   };
 }
-
-export function setSomenteConsulta(somenteConsulta) {
-  return {
-    type: '@navegacao/somenteConsulta',
-    payload: somenteConsulta,
-  };
-}

@@ -61,10 +61,7 @@ namespace SME.SGP.Aplicacao
         {
             var supervisoresEscolasDres = repositorioSupervisorEscolaDre.ObtemPorDreESupervisor(dreId, supervisorId);
 
-            IEnumerable<SupervisorEscolasDto> lista = new List<SupervisorEscolasDto>();
-
-            if (supervisoresEscolasDres.Any())
-                lista = MapearSupervisorEscolaDre(supervisoresEscolasDres).ToList();
+            List<SupervisorEscolasDto> lista = MapearSupervisorEscolaDre(supervisoresEscolasDres).ToList();
 
             return lista;
         }

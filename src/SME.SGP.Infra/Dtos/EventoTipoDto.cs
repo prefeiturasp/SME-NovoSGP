@@ -17,7 +17,7 @@ namespace SME.SGP.Dto
         public string CriadoPor { get; set; }
         public string CriadoRF { get; set; }
         public bool Dependencia { get; set; }
-        public bool PossuiEventos { get; set; }
+
         [Required(ErrorMessage = "A Descrição é obrigatória")]
         public string Descricao { get; set; }
 

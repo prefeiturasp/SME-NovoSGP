@@ -10,48 +10,35 @@ namespace SME.SGP.Aplicacao
     public class ComandosFeriadoCalendario : IComandosFeriadoCalendario
     {
         private readonly IRepositorioFeriadoCalendario repositorio;
-        private readonly IRepositorioEvento repositorioEvento;
 
-        public ComandosFeriadoCalendario(IRepositorioFeriadoCalendario repositorio, IRepositorioEvento repositorioEvento)
+        public ComandosFeriadoCalendario(IRepositorioFeriadoCalendario repositorio)
         {
             this.repositorio = repositorio ?? throw new ArgumentNullException(nameof(repositorio));
-            this.repositorioEvento = repositorioEvento ?? throw new ArgumentNullException(nameof(repositorioEvento));
         }
 
         public FeriadoCalendario MapearParaDominio(FeriadoCalendarioDto dto)
         {
             FeriadoCalendario entidade = repositorio.ObterPorId(dto.Id);
-
             if (entidade == null)
             {
                 entidade = new FeriadoCalendario();
             }
-            bool possuiEventos = repositorioEvento.ExisteEventoPorFeriadoId(dto.Id);
-            if (!possuiEventos)
-            {
-                entidade.Nome = dto.Nome;
-                entidade.Abrangencia = dto.Abrangencia;
-                entidade.DataFeriado = dto.DataFeriado;
-                entidade.Tipo = dto.Tipo;
-            }
+            entidade.Nome = dto.Nome;
+            entidade.Abrangencia = dto.Abrangencia;
             entidade.Ativo = dto.Ativo;
+            entidade.DataFeriado = dto.DataFeriado;
+            entidade.Tipo = dto.Tipo;
             return entidade;
         }
 
         public void MarcarExcluidos(long[] ids)
         {
-            List<string>feriadosInvalidos = new List<string>();
             List<long> idsInvalidos = new List<long>();
             foreach (long id in ids)
             {
                 var feriadoCalendario = repositorio.ObterPorId(id);
                 if (feriadoCalendario != null)
                 {
-                    var possuiEventos = repositorioEvento.ExisteEventoPorFeriadoId(id);
-                    if (possuiEventos)
-                    {
-                        feriadosInvalidos.Add(feriadoCalendario.Nome);
-                    }
                     feriadoCalendario.Excluido = true;
                     repositorio.Salvar(feriadoCalendario);
                 }
@@ -59,10 +46,6 @@ namespace SME.SGP.Aplicacao
                 {
                     idsInvalidos.Add(id);
                 }
-            }
-            if (feriadosInvalidos.Any())
-            {
-                throw new NegocioException($"Houve um erro ao excluir os feriados '{string.Join(",", feriadosInvalidos.Select(n => n.ToString()).ToArray())}'. Os feriados possuem eventos vículados");
             }
             if (idsInvalidos.Any())
             {

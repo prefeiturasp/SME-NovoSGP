@@ -68,27 +68,6 @@ namespace SME.SGP.Aplicacao.Integracoes
             return null;
         }
 
-        public async Task<AbrangenciaRetornoEolDto> ObterAbrangenciaParaSupervisor(string[] uesIds)
-        {
-            var json = new StringContent(JsonConvert.SerializeObject(uesIds), Encoding.UTF8, "application/json");
-
-            var request = new HttpRequestMessage
-            {
-                Method = HttpMethod.Get,
-                RequestUri = new Uri(httpClient.BaseAddress.AbsoluteUri + "funcionarios/turmas"),
-                Content = json
-            };
-
-            var resposta = await httpClient.SendAsync(request);
-
-            if (resposta.IsSuccessStatusCode)
-            {
-                var jsonRetorno = await resposta.Content.ReadAsStringAsync();
-                return JsonConvert.DeserializeObject<AbrangenciaRetornoEolDto>(jsonRetorno);
-            }
-            else throw new NegocioException("Houve erro ao tentar obter a abrangência do Eol");
-        }
-
         public async Task<IEnumerable<DisciplinaResposta>> ObterDisciplinasParaPlanejamento(long codigoTurma, string login, Guid perfil)
         {
             var url = $"funcionarios/{login}/perfis/{perfil}/turmas/{codigoTurma}/disciplinas/planejamento";

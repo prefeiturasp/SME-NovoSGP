@@ -10,14 +10,14 @@ namespace SME.SGP.Aplicacao
     {
         Task<IEnumerable<AbrangenciaFiltroRetorno>> ObterAbrangenciaPorfiltro(string texto);
 
-        Task<IEnumerable<AbrangenciaDreRetorno>> ObterDres(Modalidade? modalidade, int periodo = 0);
+        Task<IEnumerable<AbrangenciaDreRetorno>> ObterDres(Modalidade modalidade);
 
         Task<IEnumerable<EnumeradoRetornoDto>> ObterModalidades();
 
         Task<IEnumerable<int>> ObterSemestres(Modalidade modalidade);
 
-        Task<IEnumerable<AbrangenciaTurmaRetorno>> ObterTurmas(string codigoUe, Modalidade modalidade, int periodo = 0);
+        Task<IEnumerable<AbrangenciaTurmaRetorno>> ObterTurmas(string codigoUe, Modalidade modalidade);
 
-        Task<IEnumerable<AbrangenciaUeRetorno>> ObterUes(string codigoDre, Modalidade? modalidade, int periodo = 0);
+        Task<IEnumerable<AbrangenciaUeRetorno>> ObterUes(string codigoDre, Modalidade modalidade);
     }
 }

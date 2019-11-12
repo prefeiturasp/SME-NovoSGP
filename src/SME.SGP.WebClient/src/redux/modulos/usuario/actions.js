@@ -72,10 +72,3 @@ export function setMenu(menu) {
     payload: menu,
   };
 }
-
-export function setPermissoes(permissoes) {
-  return {
-    type: '@usuario/setPermissoes',
-    payload: permissoes,
-  };
-}
