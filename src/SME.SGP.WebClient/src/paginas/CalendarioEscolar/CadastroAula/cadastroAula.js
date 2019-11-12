@@ -30,13 +30,15 @@ const CadastroAula = ({ match }) => {
   const [listaDisciplinas, setListaDisciplinas] = useState([]);
   const [validacoes, setValidacoes] = useState({});
   const [exibirAuditoria, setExibirAuditoria] = useState(false);
+  const [quantidadeMaximaAulas, setQuantidadeMaximaAulas] = useState(0);
+  const [controlaQuantidadeAula, setControlaQuantidadeAula] = useState(true);
 
   const [valoresIniciais, setValoresIniciais] = useState({});
   const inicial = {
     tipoAula: 1,
     disciplinaId: undefined,
     quantidadeTexto: '',
-    quantidadeRadio: 1,
+    quantidadeRadio: 0,
     dataAula: '',
     recorrenciaAula: '',
     quantidade: 0,
@@ -51,8 +53,8 @@ const CadastroAula = ({ match }) => {
   ];
 
   const opcoesQuantidadeAulas = [
-    { label: '1', value: 1 },
-    { label: '2', value: 2 },
+    { label: '1', value: 1, disabled: (quantidadeMaximaAulas < 1 && controlaQuantidadeAula) },
+    { label: '2', value: 2, disabled: (quantidadeMaximaAulas < 2 && controlaQuantidadeAula) },
   ];
 
   const opcoesRecorrencia = [
@@ -88,14 +90,15 @@ const CadastroAula = ({ match }) => {
   }, []);
 
   const montaValidacoes = (quantidadeRadio, quantidadeTexto, form) => {
+    const validacaoQuantidade = Yup.number().positive('Valor inválido').integer();
     const val = {
       tipoAula: Yup.string().required('Tipo obrigatório'),
       disciplinaId: Yup.string().required('Disciplina obrigatório'),
       dataAula: momentSchema.required('Hora obrigatória'),
       recorrenciaAula: Yup.string().required('Recorrência obrigatória'),
-      quantidadeTexto: Yup.number()
-        .positive('Valor inválido')
-        .integer(),
+      quantidadeTexto: controlaQuantidadeAula ? validacaoQuantidade.
+        lessThan(quantidadeMaximaAulas + 1, `Valor não pode ser maior que ${quantidadeMaximaAulas}`) :
+        validacaoQuantidade,
     };
 
     if (quantidadeRadio > 0) {
@@ -106,7 +109,6 @@ const CadastroAula = ({ match }) => {
     } else {
       quantidadeRadio = Yup.string().required('Quantidade obrigatória');
       if (form) {
-        form.setFieldValue('quantidadeRadio', 1);
         form.setFieldValue('quantidadeTexto', '');
       }
     }
@@ -209,6 +211,8 @@ const CadastroAula = ({ match }) => {
 
   const resetarTela = form => {
     form.resetForm();
+    setControlaQuantidadeAula(true);
+    setQuantidadeMaximaAulas(0)
     setModoEdicao(false);
   };
 
@@ -217,6 +221,27 @@ const CadastroAula = ({ match }) => {
       setModoEdicao(true);
     }
   };
+
+  const onChangeDisciplinas = async (id, form) => {
+    onChangeCampos();
+    form.setFieldValue('quantidadeTexto', '');
+    const resultado = await api.get(
+      `v1/grade/aulas/${turmaId}/${id}`
+    );
+    if (resultado) {
+      if (resultado.status == 200) {
+        setControlaQuantidadeAula(true)
+        const quantidade = resultado.data.quantidadeAulasRestante;
+        setQuantidadeMaximaAulas(5)
+        if (quantidade > 0) {
+          form.setFieldValue('quantidadeRadio', 1);
+        }
+      } else if (resultado.status == 204) {
+        setControlaQuantidadeAula(false)
+      }
+    }
+    montaValidacoes(0, 1, form);
+  }
 
   const onClickCadastrar = async valoresForm => {
     if (valoresForm.quantidadeRadio && valoresForm.quantidadeRadio > 0) {
@@ -234,15 +259,14 @@ const CadastroAula = ({ match }) => {
     const cadastrado = idAula
       ? await api.put(`v1/calendarios/professores/aulas/${idAula}`, valoresForm)
       : await api
-          .post('v1/calendarios/professores/aulas', valoresForm)
-          .catch(e => erros(e));
+        .post('v1/calendarios/professores/aulas', valoresForm)
+        .catch(e => erros(e));
 
     if (cadastrado && cadastrado.status == 200) {
       sucesso('Aula cadastrada com sucesso');
       // TODO - Voltar para o calendario quando ele existir!
       history.push('/calendario-escolar/calendario-professor');
     }
-    console.log(valoresForm);
   };
 
   const onClickExcluir = async () => {
@@ -269,7 +293,7 @@ const CadastroAula = ({ match }) => {
     }
   };
 
-  const validaAntesDoSubmit = form => {    
+  const validaAntesDoSubmit = form => {
     const arrayCampos = Object.keys(inicial);
     arrayCampos.forEach(campo => {
       form.setFieldTouched(campo, true, true);
@@ -277,7 +301,7 @@ const CadastroAula = ({ match }) => {
     form.validateForm().then(() => {
       if (form.isValid || Object.keys(form.errors).length == 0) {
         form.handleSubmit(e => e);
-      }      
+      }
     });
   };
 
@@ -286,7 +310,7 @@ const CadastroAula = ({ match }) => {
       <Cabecalho
         pagina={`Cadastro de Aula - ${
           dataAula ? dataAula.format('dddd') : ''
-        }, ${dataAula ? dataAula.format('DD/MM/YYYY') : ''} `}
+          }, ${dataAula ? dataAula.format('DD/MM/YYYY') : ''} `}
       />
       <Card>
         <Formik
@@ -331,7 +355,7 @@ const CadastroAula = ({ match }) => {
                     border
                     bold
                     className="mr-2"
-                    onClick={()=> validaAntesDoSubmit(form)}
+                    onClick={() => validaAntesDoSubmit(form)}
                   />
                 </div>
               </div>
@@ -355,7 +379,7 @@ const CadastroAula = ({ match }) => {
                     lista={listaDisciplinas}
                     valueOption="codigoComponenteCurricular"
                     valueText="nome"
-                    onChange={onChangeCampos}
+                    onChange={e => onChangeDisciplinas(e, form)}
                     label="Disciplina"
                     placeholder="Disciplina"
                     disabled={
@@ -401,6 +425,7 @@ const CadastroAula = ({ match }) => {
                     className="mt-3"
                     style={{ width: '70px' }}
                     id="quantidadeTexto"
+                    desabilitado={quantidadeMaximaAulas < 3 && controlaQuantidadeAula}
                     onChange={e => {
                       onChangeCampos();
                       montaValidacoes(0, e.target.value, form);
@@ -433,8 +458,8 @@ const CadastroAula = ({ match }) => {
             alteradoRf={auditoria.alteradoRf}
           />
         ) : (
-          ''
-        )}
+            ''
+          )}
       </Card>
     </>
   );
