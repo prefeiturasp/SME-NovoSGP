@@ -337,12 +337,15 @@ namespace SME.SGP.Dominio
             while (dataAtual <= dataFinal)
             {
                 dataAtual = ObterProximaDataRecorrenciaMensal(dataAtual, padraoRecorrenciaMensal, diasDaSemana, diaOcorrencia);
-                var evento = (Evento)Clone();
-                evento.DataInicio = dataAtual;
-                evento.DataFim = dataAtual;
-                evento.EventoPaiId = Id;
-                evento.Id = 0;
-                eventos.Add(evento);
+                if (dataAtual >= dataInicio)
+                {
+                    var evento = (Evento)Clone();
+                    evento.DataInicio = dataAtual;
+                    evento.DataFim = dataAtual;
+                    evento.EventoPaiId = Id;
+                    evento.Id = 0;
+                    eventos.Add(evento);
+                }
                 dataAtual = dataAtual.AddMonths(repeteACada);
             }
 

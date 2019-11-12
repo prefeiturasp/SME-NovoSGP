@@ -27,7 +27,7 @@ namespace SME.SGP.Api.Controllers
         [HttpGet]
         [ProducesResponseType(typeof(IEnumerable<TipoCalendarioDto>), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        [Permissao(Permissao.TCE_C, Policy = "Bearer")]
+        [Permissao(Permissao.TCE_C, Permissao.E_C, Policy = "Bearer")]
         public IActionResult BuscarTodos()
         {
             return Ok(consultas.Listar());
@@ -56,10 +56,20 @@ namespace SME.SGP.Api.Controllers
         [HttpPost]
         [ProducesResponseType(200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        [Permissao(Permissao.TCE_I, Permissao.TCE_A, Policy = "Bearer")]
-        public async Task<IActionResult> Salvar([FromBody]TipoCalendarioDto dto)
+        [Permissao(Permissao.TCE_I, Policy = "Bearer")]
+        public async Task<IActionResult> Incluir([FromBody]TipoCalendarioDto dto)
         {
-            await comandos.Salvar(dto);
+            await comandos.Incluir(dto);
+            return Ok();
+        }
+
+        [HttpPut("{id}")]
+        [ProducesResponseType(200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [Permissao(Permissao.TCE_A, Policy = "Bearer")]
+        public async Task<IActionResult> Alterar([FromBody]TipoCalendarioDto dto, long id)
+        {
+            await comandos.Alterar(dto, id);
             return Ok();
         }
     }
