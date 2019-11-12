@@ -120,9 +120,12 @@ namespace SME.SGP.Aplicacao
         {
             await servicoEvento.Salvar(evento, eventoDto.AlterarARecorrenciaCompleta, eventoDto.DataConfirmada);
             var retornoCadasradoEvento = await servicoEvento.Salvar(evento, eventoDto.DataConfirmada);
-            retorno.Add(new RetornoCopiarEventoDto(retornoCadasradoEvento, true));
+            var mensagens = new List<RetornoCopiarEventoDto>();
+            mensagens.Add(new RetornoCopiarEventoDto(retornoCadasradoEvento, true));
             await GravarRecorrencia(eventoDto, evento);
-            return await CopiarEventos(eventoDto);
+            mensagens.AddRange(await CopiarEventos(eventoDto));
+
+            return mensagens;
         }
     }
 }

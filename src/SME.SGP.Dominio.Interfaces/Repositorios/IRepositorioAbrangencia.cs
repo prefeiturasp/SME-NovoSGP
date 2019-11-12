@@ -21,7 +21,7 @@ namespace SME.SGP.Dominio.Interfaces
 
         Task<AbrangenciaUeRetorno> ObterUe(string codigo, string login, Guid perfil);
 
-        Task<IEnumerable<AbrangenciaUeRetorno>> ObterUes(string codigoDre, string login, Guid perfil, Modalidade? modalidade = null);
+        Task<IEnumerable<AbrangenciaUeRetorno>> ObterUes(string codigoDre, string login, Guid perfil, Modalidade? modalidade = null, int periodo = 0);
 
         Task RemoverAbrangencias(string login);
 

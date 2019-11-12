@@ -3,8 +3,8 @@ using Moq;
 using SME.SGP.Aplicacao;
 using SME.SGP.Dominio.Entidades;
 using SME.SGP.Dominio.Interfaces;
-using SME.SGP.Infra;
 using SME.SGP.Dto;
+using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -37,12 +37,20 @@ namespace SME.SGP.Dominio.Servicos.Teste
             repositorioTipoCalendario = new Mock<IRepositorioTipoCalendario>();
             servicoLog = new Mock<IServicoLog>();
             servicoNotificacao = new Mock<IServicoNotificacao>();
+            unitOfWork = new Mock<IUnitOfWork>();
+            repositorioAbrangencia = new Mock<IRepositorioAbrangencia>();
+            var mockConfiguration = new Mock<IConfiguration>();
+            comandosWorkflowAprovacao = new Mock<IComandosWorkflowAprovacao>();
             servicoEvento = new ServicoEvento(repositorioEvento.Object,
                                               repositorioEventoTipo.Object,
                                               repositorioPeriodoEscolar.Object,
                                               servicoUsuario.Object,
                                               repositorioFeriadoCalendario.Object,
                                               repositorioTipoCalendario.Object,
+                                              comandosWorkflowAprovacao.Object,
+                                              repositorioAbrangencia.Object,
+                                              mockConfiguration.Object,
+                                              unitOfWork.Object,
                                               servicoNotificacao.Object,
                                               servicoLog.Object);
         }
