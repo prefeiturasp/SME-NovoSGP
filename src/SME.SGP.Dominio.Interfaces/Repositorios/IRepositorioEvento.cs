@@ -13,8 +13,6 @@ namespace SME.SGP.Dominio.Interfaces
 
         bool ExisteEventoPorEventoTipoId(long eventoTipoId);
 
-        Task<PaginacaoResultadoDto<Evento>> Listar(long? tipoCalendarioId, long? tipoEventoId, string nomeEvento, DateTime? dataInicio, DateTime? dataFim, Paginacao paginacao, string dreId, string ueId);
-
         bool ExisteEventoPorFeriadoId(long feriadoId);
 
         bool ExisteEventoPorTipoCalendarioId(long tipoCalendarioId);
