@@ -11,8 +11,8 @@ import history from '~/servicos/history';
 import SelectComponent from '~/componentes/select';
 import api from '~/servicos/api';
 import CampoTexto from '~/componentes/campoTexto';
-import { sucesso, erro } from '~/servicos/alertas';
-import servicoEvento from '~/servicos/Paginas/Calendario/ServicoTipoEvento'
+import { sucesso, erro, confirmar, erros } from '~/servicos/alertas';
+import servicoEvento from '~/servicos/Paginas/Calendario/ServicoTipoEvento';
 
 const TipoEventosForm = ({ match }) => {
   const campoNomeTipoEventoRef = useRef();
@@ -88,6 +88,8 @@ const TipoEventosForm = ({ match }) => {
     }
   }, []);
 
+  const [possuiEventos, setPossuiEventos] = useState(false);
+
   useEffect(() => {
     if (idTipoEvento) {
       api.get(`v1/calendarios/eventos/tipos/${idTipoEvento}`).then(resposta => {
@@ -108,6 +110,7 @@ const TipoEventosForm = ({ match }) => {
             criadoPor: `${resposta.data.criadoPor} (${resposta.data.criadoRF})`,
           });
           setModoEdicao(true);
+          setPossuiEventos(resposta.data.possuiEventos);
         }
       });
     }
@@ -130,6 +133,28 @@ const TipoEventosForm = ({ match }) => {
     setDesabilitarBotaoCadastrar(true);
   };
 
+  const clicouBotaoExcluir = async () => {
+    if (idTipoEvento) {
+      const confirmado = await confirmar(
+        'Excluir tipo de calendário escolar',
+        '',
+        'Deseja realmente excluir este calendário?',
+        'Excluir',
+        'Cancelar'
+      );
+      if (confirmado) {
+        const parametrosDelete = { data: [idTipoEvento] };
+        const excluir = await api
+          .delete('v1/calendarios/eventos/tipos', parametrosDelete)
+          .catch(e => erros(e));
+        if (excluir) {
+          sucesso('Tipos de evento deletados com sucesso!');
+          history.push('/calendario-escolar/tipo-eventos');
+        }
+      }
+    }
+  };
+
   const [validacoes] = useState(
     Yup.object({
       descricao: Yup.string().required('Digite o nome do tipo de evento'),
@@ -146,15 +171,15 @@ const TipoEventosForm = ({ match }) => {
   };
 
   const cadastrarTipoEvento = async dados => {
-    servicoEvento.salvar(idTipoEvento, dados)
-      .then( () => {
-          sucesso(
-            `Tipo de evento ${
-              modoEdicao ? 'atualizado' : 'cadastrado'
-            } com sucesso!`
-          );
-          history.push('/calendario-escolar/tipo-eventos');
-
+    servicoEvento
+      .salvar(idTipoEvento, dados)
+      .then(() => {
+        sucesso(
+          `Tipo de evento ${
+            modoEdicao ? 'atualizado' : 'cadastrado'
+          } com sucesso!`
+        );
+        history.push('/calendario-escolar/tipo-eventos');
       })
       .catch(() => {
         erro(
@@ -219,7 +244,7 @@ const TipoEventosForm = ({ match }) => {
     <Div className="col-12">
       <Grid cols={12} className="mb-1 p-0">
         <Titulo className="font-weight-bold">
-          {idTipoEvento? "Alteração" : "Cadastro"} de Tipo de Eventos
+          {idTipoEvento ? 'Alteração' : 'Cadastro'} de Tipo de Eventos
         </Titulo>
       </Grid>
       <Card className="rounded" mx="mx-auto">
@@ -256,10 +281,19 @@ const TipoEventosForm = ({ match }) => {
                   onClick={clicouBotaoCancelar}
                   border
                   bold
+                  disabled={idTipoEvento}
                   className="mr-3"
                 />
                 <Button
-                  label={idTipoEvento? "Alterar" : "Cadastrar"}
+                  label="Excluir"
+                  color={Colors.Vermelho}
+                  border
+                  className="mr-3"
+                  disabled={possuiEventos}
+                  onClick={clicouBotaoExcluir}
+                />
+                <Button
+                  label={idTipoEvento ? 'Alterar' : 'Cadastrar'}
                   color={Colors.Roxo}
                   onClick={e => clicouBotaoCadastrar(form, e)}
                   border
@@ -282,6 +316,7 @@ const TipoEventosForm = ({ match }) => {
                         type="input"
                         ref={campoNomeTipoEventoRef}
                         onChange={aoDigitarDescricao}
+                        desabilitado={possuiEventos}
                         icon
                       />
                     </Div>
@@ -296,6 +331,7 @@ const TipoEventosForm = ({ match }) => {
                         valueText="descricao"
                         lista={listaLocalOcorrencia}
                         onChange={aoSelecionarLocalOcorrencia}
+                        disabled={possuiEventos}
                       />
                     </Div>
                     <Div className="col-2">
@@ -309,6 +345,7 @@ const TipoEventosForm = ({ match }) => {
                         valueText="descricao"
                         lista={listaLetivo}
                         onChange={aoSelecionarLetivo}
+                        disabled={possuiEventos}
                       />
                     </Div>
                   </Div>
@@ -332,6 +369,7 @@ const TipoEventosForm = ({ match }) => {
                         form={form}
                         value={dadosTipoEvento.concomitancia}
                         onChange={aoSelecionarConcomitancia}
+                        disabled={possuiEventos}
                       >
                         <Div className="form-check form-check-inline">
                           <Radio value>Sim</Radio>
@@ -346,6 +384,7 @@ const TipoEventosForm = ({ match }) => {
                         form={form}
                         value={dadosTipoEvento.tipoData}
                         onChange={aoSelecionarTipoData}
+                        disabled={possuiEventos}
                       >
                         <Div className="form-check form-check-inline">
                           <Radio value>Única</Radio>
@@ -360,6 +399,7 @@ const TipoEventosForm = ({ match }) => {
                         form={form}
                         value={dadosTipoEvento.dependencia}
                         onChange={aoSelecionarDependencia}
+                        disabled={possuiEventos}
                       >
                         <Div className="form-check form-check-inline">
                           <Radio value>Sim</Radio>

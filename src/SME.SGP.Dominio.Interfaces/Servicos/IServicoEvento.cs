@@ -6,7 +6,7 @@ namespace SME.SGP.Dominio.Interfaces
 {
     public interface IServicoEvento
     {
-        Task<string> Salvar(Evento evento, bool dataConfirmada = false);
+        Task Salvar(Evento evento, bool alterarRecorrenciaCompleta = false, bool dataConfirmada = false);
 
         Task SalvarEventoFeriadosAoCadastrarTipoCalendario(TipoCalendario tipoCalendario);
 

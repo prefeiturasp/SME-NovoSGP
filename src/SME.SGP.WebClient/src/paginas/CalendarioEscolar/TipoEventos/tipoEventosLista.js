@@ -8,7 +8,7 @@ import Button from '~/componentes/button';
 import { Base, Colors } from '~/componentes/colors';
 import SelectComponent from '~/componentes/select';
 import history from '~/servicos/history';
-import { confirmar, erro, sucesso } from '~/servicos/alertas';
+import { confirmar, sucesso, erros } from '~/servicos/alertas';
 import ListaPaginada from '~/componentes/listaPaginada/listaPaginada';
 import api from '~/servicos/api';
 import { verificaSomenteConsulta } from '~/servicos/servico-navegacao';
@@ -54,32 +54,36 @@ const TipoEventosLista = () => {
 
   const [desabilitarBotaoExcluir, setDesabilitarBotaoExcluir] = useState(true);
   const [tipoEventoSelecionados, setTipoEventoSelecionados] = useState([]);
-  const [
-    codigoTipoEventoSelecionados,
-    setCodigoTipoEventoSelecionados,
-  ] = useState([]);
 
   const clicouBotaoVoltar = () => {
     history.push('/');
   };
 
   const clicouBotaoExcluir = async () => {
-    const confirmado = await confirmar(
-      'Atenção',
-      'Você tem certeza que deseja excluir estes itens?'
-    );
-    if (confirmado) {
-      api
-        .delete('v1/calendarios/eventos/tipos', {
-          data: codigoTipoEventoSelecionados,
-        })
-        .then(resposta => {
-          if (resposta) sucesso('Tipos de evento deletados com sucesso!');
-        })
-        .catch(e => {
-          if (e.response && e.response.data && e.response.data.mensagens)
-            erro(`${e.response.data.mensagens[0]}!`);
-        });
+    if (tipoEventoSelecionados && tipoEventoSelecionados.length > 0) {
+      const listaNomesExcluir = tipoEventoSelecionados.map(
+        tipo => tipo.descricao
+      );
+
+      const confirmado = await confirmar(
+        'Atenção',
+        listaNomesExcluir,
+        'Você tem certeza que deseja excluir estes itens?',
+        'Excluir',
+        'Cancelar'
+      );
+      if (confirmado) {
+        const idsDeletar = tipoEventoSelecionados.map(tipo => tipo.id);
+
+        api
+          .delete('v1/calendarios/eventos/tipos', {
+            data: idsDeletar,
+          })
+          .then(resposta => {
+            if (resposta) sucesso('Tipos de evento deletados com sucesso!');
+          })
+          .catch(e => erros(e));
+      }
     }
   };
 
@@ -88,10 +92,14 @@ const TipoEventosLista = () => {
   }, []);
 
   useEffect(() => {
-    if (codigoTipoEventoSelecionados.length > 0 && permissoesTela.podeExcluir)
+    if (
+      tipoEventoSelecionados &&
+      tipoEventoSelecionados.length > 0 &&
+      permissoesTela.podeExcluir
+    )
       setDesabilitarBotaoExcluir(false);
     else setDesabilitarBotaoExcluir(true);
-  }, [codigoTipoEventoSelecionados]);
+  }, [tipoEventoSelecionados]);
 
   const clicouBotaoNovo = () => {
     if (permissoesTela.podeIncluir)
@@ -168,14 +176,15 @@ const TipoEventosLista = () => {
   };
 
   useEffect(() => {
+    setTipoEventoSelecionados([]);
+  }, [filtro]);
+
+  useEffect(() => {
     campoNomeTipoEventoRef.current.focus();
   }, [nomeTipoEvento]);
 
   const aoSelecionarItems = items => {
-    if (items && items.length > 0) {
-      setTipoEventoSelecionados(items);
-    }
-    setCodigoTipoEventoSelecionados(items.map(item => item.id));
+    setTipoEventoSelecionados(items);
   };
 
   return (
@@ -255,7 +264,7 @@ const TipoEventosLista = () => {
             filtro={filtro}
             onClick={clicouBotaoEditar}
             multiSelecao
-            onSelecionarLinhas={aoSelecionarItems}
+            selecionarItems={aoSelecionarItems}
           />
         </Grid>
       </Card>

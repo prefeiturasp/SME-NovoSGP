@@ -35,6 +35,8 @@ namespace SME.SGP.Aplicacao
                         filtroEventosDto.DataInicio,
                         filtroEventosDto.DataFim,
                         Paginacao,
+                        filtroEventosDto.DreId,
+                        filtroEventosDto.UeId,                        
                         podeVisualizarEventoLiberacaoExcepcionalAguardandoAprovacao));
         }
 
