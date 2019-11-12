@@ -16,6 +16,7 @@ namespace SME.SGP.Integracao.Teste
     public class DiasLetivosCalendarioTeste
     {
         private readonly TestServerFixture _fixture;
+        private readonly int ano = 2019;
 
         public DiasLetivosCalendarioTeste(TestServerFixture fixture)
         {
@@ -23,29 +24,10 @@ namespace SME.SGP.Integracao.Teste
         }
 
         [Fact, Order(1)]
-        public void Deve_Incluir_Calendario_Fundamental_E_Eventos_NaoLetivos_Retornar_Acima_200_dias_letivos()
+        public void Deve_Incluir_Calendario_Fundamental_E_Retornar_Acima_200_dias_letivos()
         {
-            _fixture._clientApi.DefaultRequestHeaders.Clear();
-
-            _fixture._clientApi.DefaultRequestHeaders.Authorization =
-                new AuthenticationHeaderValue("Bearer", _fixture.GerarToken(new Permissao[]
-                {
-                    Permissao.TCE_I,
-                    Permissao.PE_I,
-                    Permissao.C_C
-                })
-            );
-            var ano = 2019;
-
-            var tipoCalendario = new TipoCalendarioDto
-            {
-                AnoLetivo = ano,
-                DescricaoPeriodo = "teste",
-                Modalidade = ModalidadeTipoCalendario.FundamentalMedio,
-                Nome = "teste",
-                Periodo = Periodo.Anual,
-                Situacao = true
-            };
+            MontarCabecalho();
+            TipoCalendarioDto tipoCalendario = AdicionarTipoCalendario(ano);
 
             var jsonParaPost = new StringContent(JsonConvert.SerializeObject(tipoCalendario), Encoding.UTF8, "application/json");
             var postResult = _fixture._clientApi.PostAsync("api/v1/calendarios/tipos", jsonParaPost).Result;
@@ -54,10 +36,33 @@ namespace SME.SGP.Integracao.Teste
 
             if (postResult.IsSuccessStatusCode)
             {
-                var periodoEscolar = new PeriodoEscolarListaDto
+                PeriodoEscolarListaDto periodoEscolar = AdicionarPerioEscolar(ano);
+
+                var jsonParaPost2 = new StringContent(JsonConvert.SerializeObject(periodoEscolar), Encoding.UTF8, "application/json");
+                var postResult2 = _fixture._clientApi.PostAsync("api/v1/periodo-escolar", jsonParaPost2).Result;
+                Assert.True(postResult2.IsSuccessStatusCode);
+
+                var filtro = new FiltroDiasLetivosDTO()
                 {
-                    TipoCalendario = 1,
-                    Periodos = new List<PeriodoEscolarDto>
+                    TipoCalendarioId = 1
+                };
+
+                var filtroPeriodoEscolar = new StringContent(JsonConvert.SerializeObject(filtro), Encoding.UTF8, "application/json");
+                var diasLetivosResponse = _fixture._clientApi.PostAsync("api/v1/calendarios/dias-letivos", filtroPeriodoEscolar).Result;
+                if (diasLetivosResponse.IsSuccessStatusCode)
+                {
+                    var diasLetivos = JsonConvert.DeserializeObject<DiasLetivosDto>(diasLetivosResponse.Content.ReadAsStringAsync().Result);
+                    Assert.False(diasLetivos.EstaAbaixoPermitido);
+                }
+            }
+        }
+
+        private static PeriodoEscolarListaDto AdicionarPerioEscolar(int ano)
+        {
+            var periodoEscolar = new PeriodoEscolarListaDto
+            {
+                TipoCalendario = 1,
+                Periodos = new List<PeriodoEscolarDto>
                     {
                         new PeriodoEscolarDto
                         {
@@ -84,25 +89,37 @@ namespace SME.SGP.Integracao.Teste
                             PeriodoFim = new DateTime(ano,12,15) //aumentar
                         },
                     }
-                };
+            };
+            return periodoEscolar;
+        }
 
-                var jsonParaPost2 = new StringContent(JsonConvert.SerializeObject(periodoEscolar), Encoding.UTF8, "application/json");
-                var postResult2 = _fixture._clientApi.PostAsync("api/v1/periodo-escolar", jsonParaPost2).Result;
-                Assert.True(postResult2.IsSuccessStatusCode);
+        private static TipoCalendarioDto AdicionarTipoCalendario(int ano)
+        {
+            return new TipoCalendarioDto
+            {
+                AnoLetivo = ano,
+                DescricaoPeriodo = "teste",
+                Modalidade = ModalidadeTipoCalendario.FundamentalMedio,
+                Nome = "teste",
+                Periodo = Periodo.Anual,
+                Situacao = true
+            };
+        }
 
-                var filtro = new FiltroDiasLetivosDTO()
+        private void MontarCabecalho()
+        {
+            _fixture._clientApi.DefaultRequestHeaders.Clear();
+
+            _fixture._clientApi.DefaultRequestHeaders.Authorization =
+                new AuthenticationHeaderValue("Bearer", _fixture.GerarToken(new Permissao[]
                 {
-                    TipoCalendarioId = 1
-                };
-
-                var filtroPeriodoEscolar = new StringContent(JsonConvert.SerializeObject(filtro), Encoding.UTF8, "application/json");
-                var diasLetivosResponse = _fixture._clientApi.PostAsync("api/v1/calendarios/dias-letivos", filtroPeriodoEscolar).Result;
-                if (diasLetivosResponse.IsSuccessStatusCode)
-                {
-                    var diasLetivos = JsonConvert.DeserializeObject<DiasLetivosDto>(diasLetivosResponse.Content.ReadAsStringAsync().Result);
-                    Assert.False(diasLetivos.EstaAbaixoPermitido);
-                }
-            }
+                    Permissao.TCE_I,
+                    Permissao.PE_I,
+                    Permissao.C_C,
+                    Permissao.TE_I,
+                    Permissao.E_I
+                })
+            );
         }
     }
 }

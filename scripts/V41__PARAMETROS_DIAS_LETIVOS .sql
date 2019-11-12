@@ -296,7 +296,7 @@ insert
     into 
     public.parametros_sistema (nome,descricao,valor,ano,criado_em,criado_por, criado_rf) 
 select
-	'FundamentalMedioDiasLetivos','Dias letivos minimo permitido para Fundamental e Médio','200','2019',now(),'Carga Inicial','Carga Inicial'
+	'FundamentalMedioDiasLetivos','Dias letivos minimo permitido para Fundamental e MÃ©dio','200','2019',now(),'Carga Inicial','Carga Inicial'
 where
 	not exists(
 	select
@@ -310,7 +310,7 @@ insert
     into 
     public.parametros_sistema (nome,descricao,valor,ano,criado_em,criado_por, criado_rf) 
 select
-	'FundamentalMedioDiasLetivos','Dias letivos minimo permitido para Fundamental e Médio','200','2020',now(),'Carga Inicial','Carga Inicial'
+	'FundamentalMedioDiasLetivos','Dias letivos minimo permitido para Fundamental e MÃ©dio','200','2020',now(),'Carga Inicial','Carga Inicial'
 where
 	not exists(
 	select
@@ -324,7 +324,7 @@ insert
     into 
     public.parametros_sistema (nome,descricao,valor,ano,criado_em,criado_por, criado_rf) 
 select
-	'FundamentalMedioDiasLetivos','Dias letivos minimo permitido para Fundamental e Médio','200','2021',now(),'Carga Inicial','Carga Inicial'
+	'FundamentalMedioDiasLetivos','Dias letivos minimo permitido para Fundamental e MÃ©dio','200','2021',now(),'Carga Inicial','Carga Inicial'
 where
 	not exists(
 	select
@@ -338,7 +338,7 @@ insert
     into 
     public.parametros_sistema (nome,descricao,valor,ano,criado_em,criado_por, criado_rf) 
 select
-	'FundamentalMedioDiasLetivos','Dias letivos minimo permitido para Fundamental e Médio','200','2022',now(),'Carga Inicial','Carga Inicial'
+	'FundamentalMedioDiasLetivos','Dias letivos minimo permitido para Fundamental e MÃ©dio','200','2022',now(),'Carga Inicial','Carga Inicial'
 where
 	not exists(
 	select
@@ -352,7 +352,7 @@ insert
     into 
     public.parametros_sistema (nome,descricao,valor,ano,criado_em,criado_por, criado_rf) 
 select
-	'FundamentalMedioDiasLetivos','Dias letivos minimo permitido para Fundamental e Médio','200','2023',now(),'Carga Inicial','Carga Inicial'
+	'FundamentalMedioDiasLetivos','Dias letivos minimo permitido para Fundamental e MÃ©dio','200','2023',now(),'Carga Inicial','Carga Inicial'
 where
 	not exists(
 	select
@@ -366,7 +366,7 @@ insert
     into 
     public.parametros_sistema (nome,descricao,valor,ano,criado_em,criado_por, criado_rf) 
 select
-	'FundamentalMedioDiasLetivos','Dias letivos minimo permitido para Fundamental e Médio','200','2024',now(),'Carga Inicial','Carga Inicial'
+	'FundamentalMedioDiasLetivos','Dias letivos minimo permitido para Fundamental e MÃ©dio','200','2024',now(),'Carga Inicial','Carga Inicial'
 where
 	not exists(
 	select
@@ -380,7 +380,7 @@ insert
     into 
     public.parametros_sistema (nome,descricao,valor,ano,criado_em,criado_por, criado_rf) 
 select
-	'FundamentalMedioDiasLetivos','Dias letivos minimo permitido para Fundamental e Médio','200','2025',now(),'Carga Inicial','Carga Inicial'
+	'FundamentalMedioDiasLetivos','Dias letivos minimo permitido para Fundamental e MÃ©dio','200','2025',now(),'Carga Inicial','Carga Inicial'
 where
 	not exists(
 	select
@@ -394,7 +394,7 @@ insert
     into 
     public.parametros_sistema (nome,descricao,valor,ano,criado_em,criado_por, criado_rf) 
 select
-	'FundamentalMedioDiasLetivos','Dias letivos minimo permitido para Fundamental e Médio','200','2026',now(),'Carga Inicial','Carga Inicial'
+	'FundamentalMedioDiasLetivos','Dias letivos minimo permitido para Fundamental e MÃ©dio','200','2026',now(),'Carga Inicial','Carga Inicial'
 where
 	not exists(
 	select
@@ -408,7 +408,7 @@ insert
     into 
     public.parametros_sistema (nome,descricao,valor,ano,criado_em,criado_por, criado_rf) 
 select
-	'FundamentalMedioDiasLetivos','Dias letivos minimo permitido para Fundamental e Médio','200','2027',now(),'Carga Inicial','Carga Inicial'
+	'FundamentalMedioDiasLetivos','Dias letivos minimo permitido para Fundamental e MÃ©dio','200','2027',now(),'Carga Inicial','Carga Inicial'
 where
 	not exists(
 	select
@@ -422,7 +422,7 @@ insert
     into 
     public.parametros_sistema (nome,descricao,valor,ano,criado_em,criado_por, criado_rf) 
 select
-	'FundamentalMedioDiasLetivos','Dias letivos minimo permitido para Fundamental e Médio','200','2028',now(),'Carga Inicial','Carga Inicial'
+	'FundamentalMedioDiasLetivos','Dias letivos minimo permitido para Fundamental e MÃ©dio','200','2028',now(),'Carga Inicial','Carga Inicial'
 where
 	not exists(
 	select
@@ -436,7 +436,7 @@ insert
     into 
     public.parametros_sistema (nome,descricao,valor,ano,criado_em,criado_por, criado_rf) 
 select
-	'FundamentalMedioDiasLetivos','Dias letivos minimo permitido para Fundamental e Médio','200','2029',now(),'Carga Inicial','Carga Inicial'
+	'FundamentalMedioDiasLetivos','Dias letivos minimo permitido para Fundamental e MÃ©dio','200','2029',now(),'Carga Inicial','Carga Inicial'
 where
 	not exists(
 	select
@@ -450,7 +450,7 @@ insert
     into 
     public.parametros_sistema (nome,descricao,valor,ano,criado_em,criado_por, criado_rf) 
 select
-	'FundamentalMedioDiasLetivos','Dias letivos minimo permitido para Fundamental e Médio','200','2030',now(),'Carga Inicial','Carga Inicial'
+	'FundamentalMedioDiasLetivos','Dias letivos minimo permitido para Fundamental e MÃ©dio','200','2030',now(),'Carga Inicial','Carga Inicial'
 where
 	not exists(
 	select
@@ -464,7 +464,7 @@ insert
     into 
     public.parametros_sistema (nome,descricao,valor,ano,criado_em,criado_por, criado_rf) 
 select
-	'FundamentalMedioDiasLetivos','Dias letivos minimo permitido para Fundamental e Médio','200','2031',now(),'Carga Inicial','Carga Inicial'
+	'FundamentalMedioDiasLetivos','Dias letivos minimo permitido para Fundamental e MÃ©dio','200','2031',now(),'Carga Inicial','Carga Inicial'
 where
 	not exists(
 	select
@@ -478,7 +478,7 @@ insert
     into 
     public.parametros_sistema (nome,descricao,valor,ano,criado_em,criado_por, criado_rf) 
 select
-	'FundamentalMedioDiasLetivos','Dias letivos minimo permitido para Fundamental e Médio','200','2032',now(),'Carga Inicial','Carga Inicial'
+	'FundamentalMedioDiasLetivos','Dias letivos minimo permitido para Fundamental e MÃ©dio','200','2032',now(),'Carga Inicial','Carga Inicial'
 where
 	not exists(
 	select
@@ -492,7 +492,7 @@ insert
     into 
     public.parametros_sistema (nome,descricao,valor,ano,criado_em,criado_por, criado_rf) 
 select
-	'FundamentalMedioDiasLetivos','Dias letivos minimo permitido para Fundamental e Médio','200','2033',now(),'Carga Inicial','Carga Inicial'
+	'FundamentalMedioDiasLetivos','Dias letivos minimo permitido para Fundamental e MÃ©dio','200','2033',now(),'Carga Inicial','Carga Inicial'
 where
 	not exists(
 	select
@@ -506,7 +506,7 @@ insert
     into 
     public.parametros_sistema (nome,descricao,valor,ano,criado_em,criado_por, criado_rf) 
 select
-	'FundamentalMedioDiasLetivos','Dias letivos minimo permitido para Fundamental e Médio','200','2034',now(),'Carga Inicial','Carga Inicial'
+	'FundamentalMedioDiasLetivos','Dias letivos minimo permitido para Fundamental e MÃ©dio','200','2034',now(),'Carga Inicial','Carga Inicial'
 where
 	not exists(
 	select
@@ -521,7 +521,7 @@ insert
     into 
     public.parametros_sistema (nome,descricao,valor,ano,criado_em,criado_por, criado_rf) 
 select
-	'FundamentalMedioDiasLetivos','Dias letivos minimo permitido para Fundamental e Médio','200','2035',now(),'Carga Inicial','Carga Inicial'
+	'FundamentalMedioDiasLetivos','Dias letivos minimo permitido para Fundamental e MÃ©dio','200','2035',now(),'Carga Inicial','Carga Inicial'
 where
 	not exists(
 	select
@@ -535,7 +535,7 @@ insert
     into 
     public.parametros_sistema (nome,descricao,valor,ano,criado_em,criado_por, criado_rf) 
 select
-	'FundamentalMedioDiasLetivos','Dias letivos minimo permitido para Fundamental e Médio','200','2036',now(),'Carga Inicial','Carga Inicial'
+	'FundamentalMedioDiasLetivos','Dias letivos minimo permitido para Fundamental e MÃ©dio','200','2036',now(),'Carga Inicial','Carga Inicial'
 where
 	not exists(
 	select
@@ -548,7 +548,7 @@ insert
     into 
     public.parametros_sistema (nome,descricao,valor,ano,criado_em,criado_por, criado_rf) 
 select
-	'FundamentalMedioDiasLetivos','Dias letivos minimo permitido para Fundamental e Médio','200','2037',now(),'Carga Inicial','Carga Inicial'
+	'FundamentalMedioDiasLetivos','Dias letivos minimo permitido para Fundamental e MÃ©dio','200','2037',now(),'Carga Inicial','Carga Inicial'
 where
 	not exists(
 	select
@@ -561,7 +561,7 @@ insert
     into 
     public.parametros_sistema (nome,descricao,valor,ano,criado_em,criado_por, criado_rf) 
 select
-	'FundamentalMedioDiasLetivos','Dias letivos minimo permitido para Fundamental e Médio','200','2038',now(),'Carga Inicial','Carga Inicial'
+	'FundamentalMedioDiasLetivos','Dias letivos minimo permitido para Fundamental e MÃ©dio','200','2038',now(),'Carga Inicial','Carga Inicial'
 where
 	not exists(
 	select
@@ -575,7 +575,7 @@ insert
     into 
     public.parametros_sistema (nome,descricao,valor,ano,criado_em,criado_por, criado_rf) 
 select
-	'FundamentalMedioDiasLetivos','Dias letivos minimo permitido para Fundamental e Médio','200','2039',now(),'Carga Inicial','Carga Inicial'
+	'FundamentalMedioDiasLetivos','Dias letivos minimo permitido para Fundamental e MÃ©dio','200','2039',now(),'Carga Inicial','Carga Inicial'
 where
 	not exists(
 	select
