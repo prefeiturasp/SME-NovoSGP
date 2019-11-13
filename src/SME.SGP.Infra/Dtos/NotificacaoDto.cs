@@ -10,6 +10,7 @@ namespace SME.SGP.Infra
         [EnumeradoRequirido(ErrorMessage = "A Categoria é obrigatória.")]
         public NotificacaoCategoria Categoria { get; set; }
 
+        public long Codigo { get; set; }
         public string DreId { get; set; }
 
         [Required(ErrorMessage = "A Mensagem é obrigatória.")]
