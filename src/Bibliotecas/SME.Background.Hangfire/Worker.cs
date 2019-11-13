@@ -2,9 +2,11 @@
 using Hangfire.PostgreSql;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using SME.Background.Core.Interfaces;
 using System;
 using System.IO;
+using System.Linq;
 
 namespace SME.Background.Hangfire
 {
@@ -12,10 +14,12 @@ namespace SME.Background.Hangfire
     {
         readonly IConfiguration configuration;
         IWebHost host;
+        readonly Action<IServiceCollection> registryDI;
 
-        public Worker(IConfiguration configuration)
+        public Worker(IConfiguration configuration, Action<IServiceCollection> registryDI)
         {
             this.configuration = configuration;
+            this.registryDI = registryDI;
         }
 
         public void Dispose()
@@ -33,21 +37,7 @@ namespace SME.Background.Hangfire
                    config.SetBasePath(Directory.GetCurrentDirectory());
                    config.AddEnvironmentVariables();
                })
-               .ConfigureServices((hostContext, services) =>
-               {
-                   services.AddHangfire(configuration => configuration
-                       .SetDataCompatibilityLevel(CompatibilityLevel.Version_170)
-                       .UseSimpleAssemblyNameTypeSerializer()
-                       .UseRecommendedSerializerSettings()
-                       .UseFilter<AutomaticRetryAttribute>(new AutomaticRetryAttribute() { Attempts = 0 })
-                       .UsePostgreSqlStorage(hostContext.Configuration.GetConnectionString("SGP-Postgres"), new PostgreSqlStorageOptions()
-                       {
-                           QueuePollInterval = TimeSpan.FromSeconds(1),
-                           InvisibilityTimeout = TimeSpan.FromMinutes(1),
-                           SchemaName = "hangfire"
-                       }));
-                   services.AddHangfireServer();
-               })
+               .ConfigureServices(x=> registryDI(x))
                .UseStartup<Startup>()
                .Build();
 
