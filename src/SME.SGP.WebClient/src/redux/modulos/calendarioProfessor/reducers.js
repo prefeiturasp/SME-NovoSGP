@@ -91,10 +91,10 @@ const inicial = {
   diaSelecionado: undefined,
 };
 
-export default function calendarioEscolar(state = inicial, action) {
+export default function calendarioProfessor(state = inicial, action) {
   return produce(state, draft => {
     switch (action.type) {
-      case '@calendarioEscolar/selecionaMes': {
+      case '@calendarioProfessor/selecionaMes': {
         const meses = Object.assign({}, state.meses);
         const { estaAberto } =
           action.payload > 0 ? state.meses[action.payload] : false;
@@ -107,20 +107,20 @@ export default function calendarioEscolar(state = inicial, action) {
         draft.meses = meses;
         break;
       }
-      case '@calendarioEscolar/selecionaDia': {
+      case '@calendarioProfessor/selecionaDia': {
         let diaSelecionado = action.payload;
         if (state.diaSelecionado === diaSelecionado) diaSelecionado = undefined;
         draft.diaSelecionado = diaSelecionado;
         break;
       }
-      case '@calendarioEscolar/atribuiEventosMes': {
+      case '@calendarioProfessor/atribuiEventosMes': {
         const { mes, eventos } = action.payload;
         const meses = Object.assign({}, state.meses);
         meses[mes].eventos = eventos;
         draft.meses = meses;
         break;
       }
-      case '@calendarioEscolar/zeraCalendario': {
+      case '@calendarioProfessor/zeraCalendario': {
         const meses = Object.assign({}, state.meses);
         Object.entries(meses).forEach(([indice, _mes]) => {
           meses[indice].eventos = 0;
