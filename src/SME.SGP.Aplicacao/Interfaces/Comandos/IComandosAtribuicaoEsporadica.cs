@@ -1,6 +1,6 @@
-﻿namespace SME.SGP.Aplicacao.Interfaces.Comandos
+﻿namespace SME.SGP.Aplicacao
 {
-    public class IComandosAtribuicaoEsporadica
+    public interface IComandosAtribuicaoEsporadica
     {
     }
 }
