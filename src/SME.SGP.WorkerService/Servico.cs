@@ -39,12 +39,12 @@ namespace SME.SGP.Worker.Service
 
         public Task StartAsync(CancellationToken cancellationToken)
         {
-            SentrySdk.CaptureMessage($"[SME SGP] Serviço Background iniciado no ip: {IPLocal}");
+            SentrySdk.AddBreadcrumb($"[SME SGP] Serviço Background iniciado no ip: {IPLocal}", "Service Life cycle");
             return Task.CompletedTask;
         }
         public Task StopAsync(CancellationToken cancellationToken)
         {
-            SentrySdk.CaptureMessage($"[SME SGP] Serviço Background finalizado no ip: {IPLocal}");
+            SentrySdk.AddBreadcrumb($"[SME SGP] Serviço Background finalizado no ip: {IPLocal}", "Service Life cycle");
             return Task.CompletedTask;
         }
     }
