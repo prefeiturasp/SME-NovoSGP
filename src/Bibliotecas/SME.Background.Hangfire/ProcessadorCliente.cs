@@ -22,6 +22,11 @@ namespace SME.Background.Hangfire
             return BackgroundJob.Enqueue(metodo);
         }
 
+        public string Executar<T>(Expression<Action<T>> metodo)
+        {
+            return BackgroundJob.Enqueue<T>(metodo);
+        }
+
         public void ExecutarPeriodicamente(Expression<Action> metodo, string cron)
         {
             RecurringJob.AddOrUpdate(metodo, cron);
@@ -38,7 +43,10 @@ namespace SME.Background.Hangfire
                 .SetDataCompatibilityLevel(CompatibilityLevel.Version_170)
                 .UseSimpleAssemblyNameTypeSerializer()
                 .UseRecommendedSerializerSettings()
-                .UsePostgreSqlStorage(configuration.GetConnectionString("SGP-Postgres"));
+                .UsePostgreSqlStorage(configuration.GetConnectionString("SGP-Postgres"), new PostgreSqlStorageOptions()
+                { 
+                    SchemaName = "hangfire"
+                });
         }
     }
 }
