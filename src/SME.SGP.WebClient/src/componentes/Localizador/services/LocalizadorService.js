@@ -37,7 +37,7 @@ class LocalizadorService {
   metodoBuscar({ rf, nome }) {
     return new Promise(resolve => {
       if (rf) {
-        resolve({ data: dados.filter(x => x.rf === rf) });
+        resolve({ data: dados.filter(x => x.rf === parseInt(rf)) });
       }
       resolve({ data: dados.filter(x => x.nome.includes(nome)) });
     });

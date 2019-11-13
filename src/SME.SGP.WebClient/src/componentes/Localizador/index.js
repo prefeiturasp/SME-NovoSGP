@@ -14,8 +14,15 @@ function Localizador({ onChange }) {
   const [pessoaSelecionada, setPessoaSelecionada] = useState({});
 
   const onChangeInput = async valor => {
-    const novoDataSource = await service.buscarPessoasMock({ nome: valor });
-    setDataSource(novoDataSource.dados);
+    const { dados } = await service.buscarPessoasMock({ nome: valor });
+    setDataSource(dados);
+  };
+
+  const onBuscarPorRF = async ({ rf }) => {
+    debugger;
+    const { dados } = await service.buscarPessoasMock({ rf });
+    if (dados.length <= 0) return;
+    setPessoaSelecionada(dados[0]);
   };
 
   const onSelectPessoa = objeto => {
@@ -34,7 +41,7 @@ function Localizador({ onChange }) {
       <Grid cols={3}>
         <InputRF
           pessoaSelecionada={pessoaSelecionada}
-          onSelect={onSelectPessoa}
+          onSelect={onBuscarPorRF}
         />
       </Grid>
       <Grid cols={9}>
