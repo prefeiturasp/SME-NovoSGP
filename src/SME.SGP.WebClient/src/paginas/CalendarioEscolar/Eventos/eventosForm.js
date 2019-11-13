@@ -376,7 +376,7 @@ const EventosForm = ({ match }) => {
           setListaMensagensCopiarEvento(response.data);
           setExibirModalRetornoCopiarEvento(true);
         } else {
-          sucesso('Evento cadastrado com sucesso');
+          sucesso(response.data[0].mensagem);
           history.push('/calendario-escolar/eventos');
         }
       };
