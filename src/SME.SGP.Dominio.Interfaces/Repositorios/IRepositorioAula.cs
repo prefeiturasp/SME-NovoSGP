@@ -2,6 +2,6 @@
 {
     public interface IRepositorioAula : IRepositorioBase<Aula>
     {
-        bool UsuarioPodeCriarAula(Aula aula, Usuario usuario);
+        bool UsuarioPodeCriarAulaNaUeETurma(Aula aula);
     }
 }

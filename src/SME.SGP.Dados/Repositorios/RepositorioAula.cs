@@ -11,9 +11,9 @@ namespace SME.SGP.Dados.Repositorios
         {
         }
 
-        public bool UsuarioPodeCriarAula(Aula aula, Usuario usuario)
+        public bool UsuarioPodeCriarAulaNaUeETurma(Aula aula)
         {
-            var query = "";
+            var query = "select 1 from v_abrangencia where turma_id = @turmaId and ue_codigo = @ueId";
             return database.Conexao.QueryFirst<bool>(query, new
             {
                 aula.TurmaId,
