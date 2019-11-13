@@ -63,9 +63,8 @@ namespace SME.SGP.Dados.Repositorios
             return (await database.Conexao.QueryAsync<AbrangenciaFiltroRetorno>(query, new { texto, login, perfil })).AsList();
         }
 
-        public async Task<IEnumerable<AbrangenciaDreRetorno>> ObterDres(string login, Guid perfil, Modalidade? modalidade = null)
+        public async Task<IEnumerable<AbrangenciaDreRetorno>> ObterDres(string login, Guid perfil, Modalidade? modalidade = null, int periodo = 0)
         {
-
             var query = new StringBuilder();
 
             query.AppendLine("select distinct");
@@ -81,11 +80,14 @@ namespace SME.SGP.Dados.Repositorios
             query.AppendLine("where");
             query.AppendLine("ab_dres.usuario_id = (select id from usuario where login = @login)");
             query.AppendLine("and ab_dres.perfil = @perfil");
-            
+
             if (modalidade.HasValue)
                 query.AppendLine("and ab_turmas.modalidade_codigo = @modalidade");
 
-                        return (await database.Conexao.QueryAsync<AbrangenciaDreRetorno>(query.ToString(), new { login, perfil, modalidade = (modalidade.HasValue ? modalidade.Value : 0) })).AsList();
+            if (periodo > 0)
+                query.AppendLine("and ab_turmas.semestre = @semestre");
+
+            return (await database.Conexao.QueryAsync<AbrangenciaDreRetorno>(query.ToString(), new { login, perfil, modalidade = (modalidade.HasValue ? modalidade.Value : 0), semestre = periodo })).AsList();
         }
 
         public async Task<IEnumerable<int>> ObterModalidades(string login, Guid perfil)
@@ -122,9 +124,11 @@ namespace SME.SGP.Dados.Repositorios
             return (await database.Conexao.QueryAsync<int>(query, new { login, perfil, modalidade })).AsList();
         }
 
-        public async Task<IEnumerable<AbrangenciaTurmaRetorno>> ObterTurmas(string codigoUe, string login, Guid perfil, Modalidade modalidade)
+        public async Task<IEnumerable<AbrangenciaTurmaRetorno>> ObterTurmas(string codigoUe, string login, Guid perfil, Modalidade modalidade, int periodo = 0)
         {
-            var query = @"select distinct
+            StringBuilder query = new StringBuilder();
+
+            query.AppendLine(@"select distinct
 	                    ab_turmas.ano,
 	                    ab_turmas.ano_letivo as anoLetivo,
 	                    ab_turmas.turma_id as codigo,
@@ -138,15 +142,41 @@ namespace SME.SGP.Dados.Repositorios
                     inner join abrangencia_dres ab_dres on
 	                    ab_ues.abrangencia_dres_id = ab_dres.id
                     where
-                        ab_ues.ue_id = @codigoUe
-	                    and ab_dres.usuario_id = (select id from usuario where login = @login)
-	                    and ab_dres.perfil = @perfil
-                        and ab_turmas.modalidade_codigo = @modalidade";
+                        ab_ues.ue_id = @codigoUe	                    
+	                    and ab_dres.usuario_id = (select id from usuario where login = @login)	        
+	                    and ab_dres.perfil = @perfil");
 
-            return (await database.Conexao.QueryAsync<AbrangenciaTurmaRetorno>(query, new { codigoUe, login, perfil, modalidade })).AsList();
+            if (modalidade > 0)
+                query.AppendLine("and ab_turmas.modalidade_codigo = @modalidade");
+
+            if (periodo > 0)
+                query.AppendLine("and ab_turmas.semestre = @semestre");
+
+            return (await database.Conexao.QueryAsync<AbrangenciaTurmaRetorno>(query.ToString(), new { codigoUe, login, perfil, modalidade, semestre = periodo })).AsList();
         }
 
-        public async Task<IEnumerable<AbrangenciaUeRetorno>> ObterUes(string codigoDre, string login, Guid perfil, Modalidade? modalidade = null)
+        public async Task<AbrangenciaUeRetorno> ObterUe(string codigo, string login, Guid perfil)
+        {
+            var query = new StringBuilder();
+
+            query.AppendLine("select distinct");
+            query.AppendLine("ab_ues.ue_id as codigo,");
+            query.AppendLine("ab_ues.nome");
+            query.AppendLine("from");
+            query.AppendLine("abrangencia_turmas ab_turmas");
+            query.AppendLine("inner join abrangencia_ues ab_ues on");
+            query.AppendLine("ab_turmas.abrangencia_ues_id = ab_ues.id");
+            query.AppendLine("inner join abrangencia_dres ab_dres on");
+            query.AppendLine("ab_ues.abrangencia_dres_id = ab_dres.id");
+            query.AppendLine("where");
+            query.AppendLine("ab_ues.ue_id = @codigo");
+            query.AppendLine("and ab_dres.usuario_id = (select id from usuario where login = @login)");
+            query.AppendLine("and ab_dres.perfil = @perfil");
+
+            return (await database.Conexao.QueryFirstAsync<AbrangenciaUeRetorno>(query.ToString(), new { codigo, login, perfil }));
+        }
+
+        public async Task<IEnumerable<AbrangenciaUeRetorno>> ObterUes(string codigoDre, string login, Guid perfil, Modalidade? modalidade = null, int periodo = 0)
         {
             var query = new StringBuilder();
 
@@ -167,7 +197,10 @@ namespace SME.SGP.Dados.Repositorios
             if (modalidade.HasValue)
                 query.AppendLine("and ab_turmas.modalidade_codigo = @modalidade");
 
-            return (await database.Conexao.QueryAsync<AbrangenciaUeRetorno>(query.ToString(), new { codigoDre, login, perfil, modalidade = (modalidade.HasValue ? modalidade.Value : 0) })).AsList();
+            if (periodo > 0)
+                query.AppendLine("and ab_turmas.semestre = @semestre");
+
+            return (await database.Conexao.QueryAsync<AbrangenciaUeRetorno>(query.ToString(), new { codigoDre, login, perfil, modalidade = (modalidade.HasValue ? modalidade.Value : 0), semestre = periodo })).AsList();
         }
 
         public async Task RemoverAbrangencias(string login)

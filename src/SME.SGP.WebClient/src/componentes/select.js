@@ -51,6 +51,10 @@ const Container = styled.div`
       border-color: #dc3545 !important;
     }
   }
+
+  label {
+    font-weight: bold;
+  }
 `;
 
 const Erro = styled.span`
@@ -72,6 +76,7 @@ const SelectComponent = React.forwardRef((props, ref) => {
     placeholder,
     alt,
     multiple,
+    containerVinculoId,
     disabled,
     form,
   } = props;
@@ -95,6 +100,14 @@ const SelectComponent = React.forwardRef((props, ref) => {
     );
   };
 
+  const obterErros = () => {
+    return form && form.touched[name] && form.errors[name] ? (
+      <Erro>{form.errors[name]}</Erro>
+    ) : (
+      ''
+    );
+  };
+
   const campoComValidacoes = () => (
     <Field
       mode={multiple && 'multiple'}
@@ -107,7 +120,7 @@ const SelectComponent = React.forwardRef((props, ref) => {
       }
       name={name}
       id={id || name}
-      value={form.values[name]}
+      value={form.values[name] || undefined}
       placeholder={placeholder}
       notFoundContent="Sem dados"
       alt={alt}
@@ -118,13 +131,17 @@ const SelectComponent = React.forwardRef((props, ref) => {
       type="input"
       onChange={e => {
         form.setFieldValue(name, e);
-        onChange(e);
+        onChange && onChange(e);
+        form.setFieldTouched(name, true, true);
       }}
       innerRef={ref}
     >
       {opcoesLista()}
     </Field>
   );
+
+  const obtenhaContainerVinculo = () =>
+    document.getElementById(containerVinculoId);
 
   const campoSemValidacoes = () => (
     <Select
@@ -135,6 +152,7 @@ const SelectComponent = React.forwardRef((props, ref) => {
       id={id}
       onChange={onChange}
       value={valueSelect}
+      getPopupContainer={containerVinculoId && obtenhaContainerVinculo}
       placeholder={placeholder}
       notFoundContent="Sem dados"
       alt={alt}
@@ -150,7 +168,7 @@ const SelectComponent = React.forwardRef((props, ref) => {
     <Container className={classNameContainer && classNameContainer}>
       {label ? <Label text={label} control={name} /> : ''}
       {form ? campoComValidacoes() : campoSemValidacoes()}
-      {form ? <Erro>{form.errors[name]}</Erro> : ''}
+      {form ? obterErros() : ''}
     </Container>
   );
 });

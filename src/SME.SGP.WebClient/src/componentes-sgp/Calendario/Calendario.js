@@ -3,8 +3,16 @@ import PropTypes from 'prop-types';
 import styled from 'styled-components';
 import Mes from './Mes';
 import MesCompleto from './MesCompleto';
+import { Base } from '~/componentes/colors';
 
-const Div = styled.div``;
+const Div = styled.div`
+  .border {
+    border-color: ${Base.CinzaBordaCalendario} !important;
+  }
+  .badge-light {
+    background-color: ${Base.CinzaBadge} !important;
+  }
+`;
 
 const Calendario = props => {
   const { filtros } = props;
