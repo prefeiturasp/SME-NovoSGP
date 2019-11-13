@@ -19,7 +19,6 @@ function Localizador({ onChange }) {
   };
 
   const onBuscarPorRF = async ({ rf }) => {
-    debugger;
     const { dados } = await service.buscarPessoasMock({ rf });
     if (dados.length <= 0) return;
     setPessoaSelecionada(dados[0]);
@@ -27,7 +26,7 @@ function Localizador({ onChange }) {
 
   const onSelectPessoa = objeto => {
     setPessoaSelecionada({
-      rf: parseInt(objeto.key),
+      rf: parseInt(objeto.key, 10),
       nome: objeto.props.value,
     });
   };

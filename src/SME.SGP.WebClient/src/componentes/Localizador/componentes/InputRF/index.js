@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import PropTypes from 'prop-types';
 
 // Componentes
 import { Input, Button } from 'antd';
@@ -35,5 +36,15 @@ function InputRF({ pessoaSelecionada, onSelect }) {
     </InputRFEstilo>
   );
 }
+
+InputRF.propTypes = {
+  pessoaSelecionada: PropTypes.objectOf(PropTypes.object),
+  onSelect: PropTypes.func,
+};
+
+InputRF.defaultProps = {
+  pessoaSelecionada: {},
+  onSelect: () => null,
+};
 
 export default InputRF;
