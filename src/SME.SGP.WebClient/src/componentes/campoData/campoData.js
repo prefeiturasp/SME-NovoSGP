@@ -23,6 +23,8 @@ class MomentSchema extends Yup.mixed {
 }
 
 const Campo = styled.div`
+  width: 100%;
+
   span {
     color: ${Base.Vermelho};
   }
@@ -52,6 +54,10 @@ const Campo = styled.div`
   .ant-calendar-picker {
     width: 100%;
   }
+
+  label {
+    font-weight: bold;
+  }
 `;
 
 const CampoData = props => {
@@ -67,8 +73,41 @@ const CampoData = props => {
     onChange,
     valor,
     desabilitarData,
+    diasParaDesabilitar,
     somenteHora,
   } = props;
+
+  const desabilitarDatas = current => {
+    let retorno = false;
+    const ehPraDesabilitar =
+      !!diasParaDesabilitar &&
+      !!diasParaDesabilitar.find(x => x === current.format('YYYY-MM-DD'));
+
+    if (!!diasParaDesabilitar === false && !!desabilitarData === false) {
+      return false;
+    }
+
+    if (
+      !!diasParaDesabilitar === false &&
+      typeof desabilitarData === 'function'
+    ) {
+      retorno = desabilitarData(current);
+    } else if (
+      !!diasParaDesabilitar &&
+      diasParaDesabilitar.length >= 1 &&
+      typeof desabilitarData === 'function'
+    ) {
+      retorno = ehPraDesabilitar || desabilitarData(current);
+    } else if (
+      !!diasParaDesabilitar &&
+      diasParaDesabilitar.length >= 1 &&
+      !!desabilitarData === false
+    ) {
+      retorno = ehPraDesabilitar;
+    }
+
+    return retorno;
+  };
 
   const possuiErro = () => {
     return form && form.errors[name] && form.touched[name];
@@ -97,12 +136,12 @@ const CampoData = props => {
           form ? `${possuiErro() ? 'is-invalid' : ''} ${className || ''}` : ''
         }
         onChange={valorData => {
-          valorData = valorData || '';
-          form.setFieldValue(name, valorData);
+          form.setFieldValue(name, valorData || '');
           onChange(valorData);
+          form.setFieldTouched(name, true, true);
         }}
         value={form.values[name] || null}
-        disabledDate={desabilitarData}
+        disabledDate={desabilitarDatas}
       />
     );
   };
@@ -146,6 +185,7 @@ const CampoData = props => {
           valorHora = valorHora || '';
           form.setFieldValue(name, valorHora);
           onChange(valorHora);
+          form.setFieldTouched(name, true, true);
         }}
         value={form.values[name] || null}
       />
@@ -159,12 +199,20 @@ const CampoData = props => {
     return form ? campoDataAntComValidacoes() : campoDataAntSemValidacoes();
   };
 
+  const obterErros = () => {
+    return form && form.touched[name] && form.errors[name] ? (
+      <span>{form.errors[name]}</span>
+    ) : (
+      ''
+    );
+  };
+
   return (
     <>
       <Campo>
         {label ? <Label text={label} control={name} /> : ''}
         {validaTipoCampo()}
-        {form ? <span>{form.errors[name]}</span> : ''}
+        {obterErros()}
       </Campo>
     </>
   );
