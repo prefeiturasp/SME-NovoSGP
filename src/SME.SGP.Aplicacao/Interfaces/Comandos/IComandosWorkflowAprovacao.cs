@@ -6,6 +6,6 @@ namespace SME.SGP.Aplicacao
     {
         void Aprovar(bool aprovar, long notificacaoId, string observacao);
 
-        void Salvar(WorkflowAprovacaoDto workflowAprovacaoNiveisDto);
+        long Salvar(WorkflowAprovacaoDto workflowAprovacaoNiveisDto);
     }
 }
