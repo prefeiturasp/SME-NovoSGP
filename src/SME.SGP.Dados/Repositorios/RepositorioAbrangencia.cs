@@ -144,8 +144,10 @@ namespace SME.SGP.Dados.Repositorios
                     where
                         ab_ues.ue_id = @codigoUe
 	                    and ab_dres.usuario_id = (select id from usuario where login = @login)
-	                    and ab_dres.perfil = @perfil
-                        and ab_turmas.modalidade_codigo = @modalidade");
+	                    and ab_dres.perfil = @perfil");
+
+            if (modalidade > 0)
+                query.AppendLine("and ab_turmas.modalidade_codigo = @modalidade");
 
             if (periodo > 0)
                 query.AppendLine("and ab_turmas.semestre = @semestre");
