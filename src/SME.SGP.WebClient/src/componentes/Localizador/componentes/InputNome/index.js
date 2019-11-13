@@ -16,7 +16,7 @@ function InputNome({ dataSource, onSelect, onChange, pessoaSelecionada }) {
   }, [dataSource]);
 
   useEffect(() => {
-    setValor(pessoaSelecionada.nome);
+    setValor(pessoaSelecionada && pessoaSelecionada.nome);
   }, [pessoaSelecionada]);
 
   useEffect(() => {
@@ -25,7 +25,6 @@ function InputNome({ dataSource, onSelect, onChange, pessoaSelecionada }) {
 
   const onChangeValor = selecionado => {
     setValor(selecionado);
-    onChange(selecionado);
   };
 
   const options =
@@ -40,15 +39,14 @@ function InputNome({ dataSource, onSelect, onChange, pessoaSelecionada }) {
     <InputNomeEstilo>
       <AutoComplete
         onChange={onChangeValor}
+        onSearch={busca => onChange(busca)}
         onSelect={(value, option) => onSelect(option)}
         dataSource={options}
-        optionLabelProp="nome"
-        value={valor}
+        value={valor || ''}
       >
         <Input
           placeholder="Digite o nome da pessoa"
           prefix={<i className="fa fa-search fa-lg" />}
-          value={valor}
         />
       </AutoComplete>
     </InputNomeEstilo>

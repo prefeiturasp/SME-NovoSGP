@@ -271,9 +271,6 @@ const EventosLista = () => {
           {form => (
             <Form className="col-md-12 mb-4">
               <div className="row">
-                <Localizador onChange={pessoa => console.log(pessoa)} />
-              </div>
-              <div className="row">
                 <div className="col-sm-12 col-md-3 col-lg-3 col-xl-3 pb-2">
                   <SelectComponent
                     name="tipoCalendarioId"
