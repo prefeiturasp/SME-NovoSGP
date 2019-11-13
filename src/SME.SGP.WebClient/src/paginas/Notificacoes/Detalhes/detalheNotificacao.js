@@ -26,7 +26,13 @@ const DetalheNotificacao = ({ match }) => {
   const [listaDeStatus, setListaDeStatus] = useState([]);
   const [aprovar, setAprovar] = useState(false);
 
-  const titulosNiveis = ['', 'Aguardando aceite', 'Aceita', 'Recusada', 'Sem status'];
+  const titulosNiveis = [
+    '',
+    'Aguardando aceite',
+    'Aceita',
+    'Recusada',
+    'Sem status',
+  ];
 
   const usuario = useSelector(state => state.usuario);
   const permissoesTela = usuario.permissoes[RotasDto.NOTIFICACOES];
@@ -132,7 +138,7 @@ const DetalheNotificacao = ({ match }) => {
     const confirmado = await confirmar(
       'Atenção',
       `Você tem certeza que deseja "${
-      aprovar ? 'Aceitar' : 'Recusar'
+        aprovar ? 'Aceitar' : 'Recusar'
       }" esta notificação?`
     );
     if (confirmado) {
@@ -143,7 +149,7 @@ const DetalheNotificacao = ({ match }) => {
         .then(() => {
           const mensagemSucesso = `Notificação "${
             aprovar ? 'Aceita' : 'Recusada'
-            }" com sucesso.`;
+          }" com sucesso.`;
           sucesso(mensagemSucesso);
           history.push(urlTelaNotificacoes);
         })
@@ -314,15 +320,15 @@ const DetalheNotificacao = ({ match }) => {
                               <div
                                 className={`conteudo-coluna ${
                                   notificacao.statusId ===
-                                    notificacaoStatus.Pendente
+                                  notificacaoStatus.Pendente
                                     ? 'texto-vermelho-negrito'
                                     : ''
-                                  }`}
+                                }`}
                               >
-                                {
-                                  notificacao.statusId ===
-                                    notificacaoStatus.Pendente
-                                    ? 'Não Lida' : notificacao.situacao}
+                                {notificacao.statusId ===
+                                notificacaoStatus.Pendente
+                                  ? 'Não Lida'
+                                  : notificacao.situacao}
                               </div>
                             </div>
                           </div>
@@ -334,43 +340,46 @@ const DetalheNotificacao = ({ match }) => {
                 <hr className="mt-hr" />
                 <div className="row">
                   <div className="col-xs-12 col-md-12 col-lg-12 mensagem">
-                    MENSAGEM: <span dangerouslySetInnerHTML={{ __html: notificacao.mensagem }}></span>
+                    MENSAGEM:{' '}
+                    <span
+                      dangerouslySetInnerHTML={{ __html: notificacao.mensagem }}
+                    ></span>
                   </div>
                 </div>
                 {notificacao.categoriaId ===
                   notificacaoCategoria.Workflow_Aprovacao && (
-                    <div className="row">
-                      <div className="col-xs-12 col-md-12 col-lg-12 obs">
-                        <label>Observações</label>
-                        <CampoTexto
-                          name="observacao"
-                          type="textarea"
-                          form={form}
-                          maxlength="100"
-                          desabilitado={
-                            !notificacao.mostrarBotoesDeAprovacao ||
-                            !permissoesTela.podeAlterar
-                          }
-                        />
-                      </div>
+                  <div className="row">
+                    <div className="col-xs-12 col-md-12 col-lg-12 obs">
+                      <label>Observações</label>
+                      <CampoTexto
+                        name="observacao"
+                        type="textarea"
+                        form={form}
+                        maxlength="100"
+                        desabilitado={
+                          !notificacao.mostrarBotoesDeAprovacao ||
+                          !permissoesTela.podeAlterar
+                        }
+                      />
                     </div>
-                  )}
+                  </div>
+                )}
               </EstiloDetalhe>
               {notificacao.categoriaId ===
                 notificacaoCategoria.Workflow_Aprovacao && (
-                  <EstiloLinhaTempo>
-                    <div className="col-xs-12 col-md-12 col-lg-12">
-                      <div className="row">
-                        <div className="col-xs-12 col-md-12 col-lg-12">
-                          <p>SITUAÇÃO DA NOTIFICAÇÃO</p>
-                        </div>
-                        <div className="col-xs-12 col-md-12 col-lg-12">
-                          <LinhaTempo listaDeStatus={listaDeStatus} />
-                        </div>
+                <EstiloLinhaTempo>
+                  <div className="col-xs-12 col-md-12 col-lg-12">
+                    <div className="row">
+                      <div className="col-xs-12 col-md-12 col-lg-12">
+                        <p>SITUAÇÃO DA NOTIFICAÇÃO</p>
+                      </div>
+                      <div className="col-xs-12 col-md-12 col-lg-12">
+                        <LinhaTempo listaDeStatus={listaDeStatus} />
                       </div>
                     </div>
-                  </EstiloLinhaTempo>
-                )}
+                  </div>
+                </EstiloLinhaTempo>
+              )}
             </Card>
           </Form>
         )}

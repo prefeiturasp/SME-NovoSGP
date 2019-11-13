@@ -62,7 +62,7 @@ const TipoCalendarioEscolarLista = () => {
     history.push(URL_HOME);
   };
 
-  const onClickNovo = () => {    
+  const onClickNovo = () => {
     history.push(`/calendario-escolar/tipo-calendario-escolar/novo`);
   };
 
@@ -70,7 +70,7 @@ const TipoCalendarioEscolarLista = () => {
     history.push(`/calendario-escolar/tipo-calendario-escolar/editar/${id}`);
   };
 
-  const onClickExcluir = async () => {    
+  const onClickExcluir = async () => {
     const listaParaExcluir = [];
     idTiposSelecionados.forEach(id => {
       const tipoParaExcluir = listaTiposCalendarioEscolar.find(
@@ -103,7 +103,7 @@ const TipoCalendarioEscolarLista = () => {
         sucesso(mensagemSucesso);
         onFiltrar();
       }
-    }    
+    }
   };
 
   return (
@@ -125,7 +125,10 @@ const TipoCalendarioEscolarLista = () => {
             color={Colors.Vermelho}
             border
             className="mr-2"
-            disabled={!permissoesTela.podeExcluir || (idTiposSelecionados && idTiposSelecionados.length < 1) }
+            disabled={
+              !permissoesTela.podeExcluir ||
+              (idTiposSelecionados && idTiposSelecionados.length < 1)
+            }
             onClick={onClickExcluir}
           />
           <Button
