@@ -142,10 +142,12 @@ namespace SME.SGP.Dados.Repositorios
                     inner join abrangencia_dres ab_dres on
 	                    ab_ues.abrangencia_dres_id = ab_dres.id
                     where
-                        ab_ues.ue_id = @codigoUe
-	                    and ab_dres.usuario_id = (select id from usuario where login = @login)
-	                    and ab_dres.perfil = @perfil
-                        and ab_turmas.modalidade_codigo = @modalidade");
+                        ab_ues.ue_id = @codigoUe	                    
+	                    and ab_dres.usuario_id = (select id from usuario where login = @login)	        
+	                    and ab_dres.perfil = @perfil");
+
+            if (modalidade > 0)
+                query.AppendLine("and ab_turmas.modalidade_codigo = @modalidade");
 
             if (periodo > 0)
                 query.AppendLine("and ab_turmas.semestre = @semestre");
