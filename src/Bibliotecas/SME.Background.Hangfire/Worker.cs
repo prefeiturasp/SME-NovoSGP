@@ -11,7 +11,6 @@ namespace SME.Background.Hangfire
     public class Worker : IWorker
     {
         readonly IConfiguration configuration;
-        BackgroundJobServer hangFireServer;
         IWebHost host;
 
         public Worker(IConfiguration configuration)
@@ -21,7 +20,6 @@ namespace SME.Background.Hangfire
 
         public void Dispose()
         {
-            hangFireServer?.Dispose();
             host?.Dispose();
         }
 
