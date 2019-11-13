@@ -59,12 +59,13 @@ namespace SME.SGP.Worker.Service
 
         internal static void Configurar(IConfiguration config)
         {
-            HangfireWorkerService = new SME.Background.Core.Servidor<SME.Background.Hangfire.Worker>(new SME.Background.Hangfire.Worker(config));
+            HangfireWorkerService = new SME.Background.Core.Servidor<SME.Background.Hangfire.Worker>(new SME.Background.Hangfire.Worker(config, new Action<IServiceCollection>(RegistraDependencias.RegistrarWorkerService)));
         }
 
         internal static void ConfigurarDependencias(IServiceCollection services)
         {
-            RegistraDependencias.RegistrarWorkerService(services);
+            // Resolver para tratar por aqui a dependencia e tornar o Worker cliente deste host e abrir um novo host para o Dashboard
+            //RegistraDependencias.RegistrarWorkerService(services);
         }
     }
 }
