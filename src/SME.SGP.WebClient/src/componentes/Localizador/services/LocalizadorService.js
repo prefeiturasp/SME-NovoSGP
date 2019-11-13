@@ -6,6 +6,8 @@ import { dados } from '../__mocks__/autoComplete';
 class LocalizadorService {
   urlBuscarPessoa = '/buscarPessoaPorRfOuNome';
 
+  dados = dados || [];
+
   constructor() {
     api.interceptors.request.use(config => {
       return {
@@ -37,9 +39,9 @@ class LocalizadorService {
   metodoBuscar({ rf, nome }) {
     return new Promise(resolve => {
       if (rf) {
-        resolve({ data: dados.filter(x => x.rf === parseInt(rf)) });
+        resolve({ data: this.dados.filter(x => x.rf === parseInt(rf, 10)) });
       }
-      resolve({ data: dados.filter(x => x.nome.includes(nome)) });
+      resolve({ data: this.dados.filter(x => x.nome.includes(nome)) });
     });
   }
 

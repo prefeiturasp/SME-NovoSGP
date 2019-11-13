@@ -19,10 +19,6 @@ function InputNome({ dataSource, onSelect, onChange, pessoaSelecionada }) {
     setValor(pessoaSelecionada && pessoaSelecionada.nome);
   }, [pessoaSelecionada]);
 
-  useEffect(() => {
-    console.log(valor);
-  }, [valor]);
-
   const onChangeValor = selecionado => {
     setValor(selecionado);
   };
@@ -55,10 +51,16 @@ function InputNome({ dataSource, onSelect, onChange, pessoaSelecionada }) {
 
 InputNome.propTypes = {
   dataSource: PropTypes.oneOfType([PropTypes.array]),
+  pessoaSelecionada: PropTypes.objectOf(PropTypes.object),
+  onSelect: PropTypes.func,
+  onChange: PropTypes.func,
 };
 
 InputNome.defaultProps = {
   dataSource: [],
+  pessoaSelecionada: {},
+  onSelect: () => null,
+  onChange: () => null,
 };
 
 export default InputNome;
