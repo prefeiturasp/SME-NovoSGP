@@ -29,7 +29,6 @@ import EventosLista from '~/paginas/CalendarioEscolar/Eventos/eventosLista';
 import EventosForm from '~/paginas/CalendarioEscolar/Eventos/eventosForm';
 import TipoEventosLista from '~/paginas/CalendarioEscolar/TipoEventos/tipoEventosLista';
 import TipoEventosForm from '~/paginas/CalendarioEscolar/TipoEventos/tipoEventosForm';
-import { useSelector } from 'react-redux';
 import SemPermissao from '~/paginas/SemPermissao/sem-permissao';
 import RotasDto from '~/dtos/rotasDto';
 import CadastroAula from '~/paginas/CalendarioEscolar/CadastroAula/cadastroAula';
@@ -37,11 +36,9 @@ import FrequenciaPlanoAula from '~/paginas/DiarioClasse/FrequenciaPlanoAula/freq
 
 export default function Rotas() {
   const rotas = new Map();
-  const permissoes = useSelector(state => state.usuario.permissoes);
 
   rotas.set('/calendario-escolar', {
     breadcrumbName: 'Calendário Escolar',
-    menu: ['Calendário Escolar'],
     parent: '/',
     component: CalendarioEscolar,
     exact: true,
@@ -344,34 +341,34 @@ export default function Rotas() {
     component: Principal,
     exact: true,
     tipo: RotasTipo.EstruturadaAutenticada,
-    temPermissionamento: false
+    temPermissionamento: false,
   });
 
   rotas.set(RotasDto.CADASTRO_DE_AULA, {
-      breadcrumbName: 'Cadastro de Aula',
-      parent: '/calendario-escolar/calendario-professor',
-      component: CadastroAula,
-      exact: true,
-      tipo: RotasTipo.EstruturadaAutenticada,
-      temPermissionamento: false
+    breadcrumbName: 'Cadastro de Aula',
+    parent: '/calendario-escolar/calendario-professor',
+    component: CadastroAula,
+    exact: true,
+    tipo: RotasTipo.EstruturadaAutenticada,
+    temPermissionamento: false,
   });
 
   rotas.set(`${RotasDto.CADASTRO_DE_AULA}/novo/:tipoCalendarioId`, {
-      breadcrumbName: 'Cadastro de Aula',
-      parent: RotasDto.CADASTRO_DE_AULA,
-      component: CadastroAula,
-      exact: true,
-      tipo: RotasTipo.EstruturadaAutenticada,
-      temPermissionamento: false
+    breadcrumbName: 'Cadastro de Aula',
+    parent: RotasDto.CADASTRO_DE_AULA,
+    component: CadastroAula,
+    exact: true,
+    tipo: RotasTipo.EstruturadaAutenticada,
+    temPermissionamento: false,
   });
 
   rotas.set(`${RotasDto.CADASTRO_DE_AULA}/editar/:id`, {
-      breadcrumbName: 'Cadastro de Aula',
-      parent: RotasDto.CADASTRO_DE_AULA,
-      component: CadastroAula,
-      exact: true,
-      tipo: RotasTipo.EstruturadaAutenticada,
-      temPermissionamento: false
+    breadcrumbName: 'Cadastro de Aula',
+    parent: RotasDto.CADASTRO_DE_AULA,
+    component: CadastroAula,
+    exact: true,
+    tipo: RotasTipo.EstruturadaAutenticada,
+    temPermissionamento: false,
   });
 
   rotas.set(`${RotasDto.FREQUENCIA_PLANO_AULA}`, {

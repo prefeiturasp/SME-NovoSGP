@@ -30,7 +30,7 @@ const Circulo = styled.a`
 function LabelDia({ isActive, onChange, data }) {
   return (
     <Circulo className={isActive && 'active'} onClick={() => onChange(data)}>
-      {data.label}
+      {data.legenda}
     </Circulo>
   );
 }
