@@ -6,12 +6,11 @@ using System.Text;
 
 namespace SME.Background.Core.Interfaces
 {
-    public interface IProcessadorCliente
+    public interface IProcessor
     {
         void Registrar();
         string Executar(System.Linq.Expressions.Expression<Action> metodo);
         string Executar<T>(Expression<Action<T>> metodo);
         void ExecutarPeriodicamente(System.Linq.Expressions.Expression<Action> metodo, string cron);
-        EstadoProcessamento ObterEstadoProcessamento(string idCorrelato);
     }
 }

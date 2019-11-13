@@ -8,11 +8,11 @@ using System.Linq.Expressions;
 
 namespace SME.Background.Hangfire
 {
-    public class ProcessadorCliente : IProcessadorCliente
+    public class Processor : IProcessor
     {
         readonly IConfiguration configuration;
 
-        public ProcessadorCliente(IConfiguration configuration)
+        public Processor(IConfiguration configuration)
         {
             this.configuration = configuration;
         }
@@ -30,11 +30,6 @@ namespace SME.Background.Hangfire
         public void ExecutarPeriodicamente(Expression<Action> metodo, string cron)
         {
             RecurringJob.AddOrUpdate(metodo, cron);
-        }
-
-        public EstadoProcessamento ObterEstadoProcessamento(string idCorrelato)
-        {
-            throw new NotImplementedException();
         }
 
         public void Registrar()

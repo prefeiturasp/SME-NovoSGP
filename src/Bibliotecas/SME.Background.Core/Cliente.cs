@@ -23,12 +23,7 @@ namespace SME.Background.Core
         {
             Orquestrador.ObterProcessador(TipoProcessamento.ExecucaoRecorrente).ExecutarPeriodicamente(metodo, cron);
         }
-
-        public static EstadoProcessamento ObterEstadoProcessamento(string idCorrelato, TipoProcessamento tipoProcessamento)
-        {
-            return Orquestrador.ObterProcessador(tipoProcessamento).ObterEstadoProcessamento(idCorrelato);
-        }
-
+        
         static void GravarLog(string mensagem)
         {
             SentrySdk.AddBreadcrumb($"{mensagem} - {DateTime.Now.ToString("MM/dd/yyyy hh:mm:ss.fff tt")}", "Background Processing");

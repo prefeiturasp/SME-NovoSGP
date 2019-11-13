@@ -21,11 +21,7 @@ namespace SME.Background.Hangfire
             app.UseHangfireDashboard("/worker", new DashboardOptions()
             {
                 IsReadOnlyFunc = (DashboardContext context) => true
-            },
-            new PostgreSqlStorage(Configuration.GetConnectionString("SGP-Postgres"), new PostgreSqlStorageOptions()
-            {
-                SchemaName = "hangfire"
-            }));
+            });
 
         }
 
