@@ -19,6 +19,8 @@ import history from '~/servicos/history';
 import servicoEvento from '~/servicos/Paginas/Calendario/ServicoEvento';
 import { verificaSomenteConsulta } from '~/servicos/servico-navegacao';
 
+import { Localizador } from '~/componentes';
+
 const EventosLista = () => {
   const usuario = useSelector(store => store.usuario);
   const permissoesTela = usuario.permissoes[RotasDto.EVENTOS];
@@ -204,7 +206,7 @@ const EventosLista = () => {
       refForm.resetForm();
     }
     validaFiltrar();
-  }; 
+  };
 
   const validaFiltrar = () => {
     if (refForm) {
@@ -239,7 +241,10 @@ const EventosLista = () => {
             border
             className="mr-2"
             onClick={onClickExcluir}
-            disabled={!permissoesTela.podeExcluir || (eventosSelecionados && eventosSelecionados.length < 1) }
+            disabled={
+              !permissoesTela.podeExcluir ||
+              (eventosSelecionados && eventosSelecionados.length < 1)
+            }
             hidden={!selecionouCalendario}
           />
           <Button
@@ -265,6 +270,9 @@ const EventosLista = () => {
         >
           {form => (
             <Form className="col-md-12 mb-4">
+              <div className="row">
+                <Localizador onChange={pessoa => console.log(pessoa)} />
+              </div>
               <div className="row">
                 <div className="col-sm-12 col-md-3 col-lg-3 col-xl-3 pb-2">
                   <SelectComponent
@@ -325,19 +333,20 @@ const EventosLista = () => {
           )}
         </Formik>
         <div className="col-md-12 pt-2">
-          {
-            selecionouCalendario ?
-              <ListaPaginada
-                url="v1/calendarios/eventos"
-                id="lista-eventos"
-                colunaChave="id"
-                colunas={colunas}
-                filtro={filtro}
-                onClick={onClickEditar}
-                multiSelecao
-                selecionarItems={onSelecionarItems}
-              /> : ''
-          }
+          {selecionouCalendario ? (
+            <ListaPaginada
+              url="v1/calendarios/eventos"
+              id="lista-eventos"
+              colunaChave="id"
+              colunas={colunas}
+              filtro={filtro}
+              onClick={onClickEditar}
+              multiSelecao
+              selecionarItems={onSelecionarItems}
+            />
+          ) : (
+            ''
+          )}
         </div>
       </Card>
     </>
