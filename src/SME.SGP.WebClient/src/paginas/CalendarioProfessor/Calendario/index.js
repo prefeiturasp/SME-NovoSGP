@@ -28,7 +28,9 @@ const CalendarioProfessor = () => {
   );
 
   const [diasLetivos, setDiasLetivos] = useState({});
-  const turmaSelecionada = useSelector(state => state.usuario.turmaSelecionada);
+  const turmaSelecionadaStore = useSelector(
+    state => state.usuario.turmaSelecionada
+  );
   const modalidadesAbrangencia = useSelector(state => state.filtro.modalidades);
 
   useEffect(() => {
@@ -65,8 +67,9 @@ const CalendarioProfessor = () => {
   }, []);
 
   const filtrarPorTurmaSelecionada = () => {
-    if (tiposCalendario && Object.entries(turmaSelecionada).length > 0) {
-      const modalidadeSelecionada = turmaSelecionada.modalidade === '3' ? 2 : 1;
+    if (tiposCalendario && Object.entries(turmaSelecionadaStore).length > 0) {
+      const modalidadeSelecionada =
+        turmaSelecionadaStore.modalidade === '3' ? 2 : 1;
       setTiposCalendario(
         tiposCalendario.filter(
           tipo => tipo.modalidade === modalidadeSelecionada
@@ -77,20 +80,25 @@ const CalendarioProfessor = () => {
 
   useEffect(() => {
     filtrarPorTurmaSelecionada();
-  }, [turmaSelecionada]);
-
-  useEffect(() => {
-    setFiltros({ ...filtros, tipoCalendarioSelecionado });
-    if (tipoCalendarioSelecionado) {
-      consultarDiasLetivos();
-      buscarDres();
-    }
-  }, [tipoCalendarioSelecionado]);
+  }, [turmaSelecionadaStore]);
 
   const aoSelecionarTipoCalendario = tipo => {
     store.dispatch(zeraCalendario());
     setTipoCalendarioSelecionado(tipo);
   };
+
+  useEffect(() => {
+    if (tipoCalendarioSelecionado) {
+      consultarDiasLetivos();
+      listarDres();
+    } else {
+      setDiasLetivos({});
+      setDreSelecionada();
+      setUnidadeEscolarSelecionada();
+      setTurmaSelecionada();
+    }
+    setFiltros({ ...filtros, tipoCalendarioSelecionado });
+  }, [tipoCalendarioSelecionado]);
 
   const aoClicarBotaoVoltar = () => {
     history.push('/');
@@ -100,14 +108,17 @@ const CalendarioProfessor = () => {
 
   const aoTrocarEventoSme = () => {
     setEventoSme(!eventoSme);
-    setFiltros({ ...filtros, eventoSme: !eventoSme });
   };
+
+  useEffect(() => {
+    setFiltros({ ...filtros, eventoSme });
+  }, [eventoSme]);
 
   const dresStore = useSelector(state => state.filtro.dres);
   const [dres, setDres] = useState([]);
   const [dreSelecionada, setDreSelecionada] = useState(undefined);
 
-  const buscarDres = () => {
+  const listarDres = () => {
     api
       .get('v1/abrangencias/dres')
       .then(resposta => {
@@ -138,7 +149,7 @@ const CalendarioProfessor = () => {
     undefined
   );
 
-  const buscarUnidadesEscolares = () => {
+  const listarUnidadesEscolares = () => {
     api
       .get(`v1/abrangencias/dres/${dreSelecionada}/ues`)
       .then(resposta => {
@@ -160,26 +171,66 @@ const CalendarioProfessor = () => {
       });
   };
 
+  const [turmas, setTurmas] = useState([]);
+  const [turmaSelecionada, setTurmaSelecionada] = useState(undefined);
+
+  const listarTurmas = () => {
+    api
+      .get(`v1/abrangencias/dres/ues/${unidadeEscolarSelecionada}/turmas`)
+      .then(resposta => {
+        if (resposta.data) {
+          const lista = [];
+          resposta.data.forEach(turma => {
+            lista.push({
+              desc: turma.nome,
+              valor: turma.codigo,
+              ano: turma.ano,
+            });
+          });
+          setTurmas(lista);
+        }
+      })
+      .catch(() => {
+        setTurmas([]);
+      });
+  };
+
   const aoSelecionarDre = dre => {
     setDreSelecionada(dre);
-    setFiltros({ ...filtros, dreSelecionada: dre });
   };
 
   useEffect(() => {
     if (dreSelecionada) {
       consultarDiasLetivos();
-      buscarUnidadesEscolares();
+      listarUnidadesEscolares();
+    } else {
+      setUnidadeEscolarSelecionada();
+      setTurmaSelecionada();
     }
+    setFiltros({ ...filtros, dreSelecionada });
   }, [dreSelecionada]);
 
   const aoSelecionarUnidadeEscolar = unidade => {
     setUnidadeEscolarSelecionada(unidade);
-    setFiltros({ ...filtros, unidadeEscolarSelecionada: unidade });
   };
 
   useEffect(() => {
-    if (unidadeEscolarSelecionada) consultarDiasLetivos();
+    if (unidadeEscolarSelecionada) {
+      consultarDiasLetivos();
+      listarTurmas();
+    } else {
+      setTurmaSelecionada();
+    }
+    setFiltros({ ...filtros, unidadeEscolarSelecionada });
   }, [unidadeEscolarSelecionada]);
+
+  const aoSelecionarTurma = turma => {
+    setTurmaSelecionada(turma);
+  };
+
+  useEffect(() => {
+    setFiltros({ ...filtros, turmaSelecionada });
+  }, [turmaSelecionada]);
 
   const consultarDiasLetivos = () => {
     api
@@ -201,6 +252,7 @@ const CalendarioProfessor = () => {
     eventoSme,
     dreSelecionada,
     unidadeEscolarSelecionada,
+    turmaSelecionada,
   });
 
   return (
@@ -263,7 +315,7 @@ const CalendarioProfessor = () => {
         </Grid>
         <Grid cols={12} className="mb-4">
           <Div className="row">
-            <Grid cols={2} className="d-flex align-items-center">
+            <Grid cols={1} className="d-flex align-items-center">
               <Div className="custom-control custom-switch">
                 <Campo
                   id="eventoSme"
@@ -276,7 +328,7 @@ const CalendarioProfessor = () => {
                   className="custom-control-label pt-1"
                   htmlFor="eventoSme"
                 >
-                  Evento SME
+                  SME
                 </Label>
               </Div>
             </Grid>
@@ -292,7 +344,7 @@ const CalendarioProfessor = () => {
                 disabled={!tipoCalendarioSelecionado}
               />
             </Grid>
-            <Grid cols={5}>
+            <Grid cols={4}>
               <SelectComponent
                 className="fonte-14"
                 onChange={aoSelecionarUnidadeEscolar}
@@ -302,6 +354,18 @@ const CalendarioProfessor = () => {
                 valueSelect={unidadeEscolarSelecionada}
                 placeholder="Unidade Escolar (UE)"
                 disabled={!dreSelecionada}
+              />
+            </Grid>
+            <Grid cols={2}>
+              <SelectComponent
+                className="fonte-14"
+                onChange={aoSelecionarTurma}
+                lista={turmas}
+                valueOption="valor"
+                valueText="desc"
+                valueSelect={turmaSelecionada}
+                placeholder="Turma"
+                disabled={!unidadeEscolarSelecionada}
               />
             </Grid>
           </Div>
