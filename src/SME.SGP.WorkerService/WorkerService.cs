@@ -57,9 +57,9 @@ namespace SME.SGP.Worker.Service
             return Task.CompletedTask;
         }
 
-        internal static void Configurar(IConfiguration config)
+        internal static void Configurar(IConfiguration config, IServiceCollection services)
         {
-            HangfireWorkerService = new SME.Background.Core.Servidor<SME.Background.Hangfire.Worker>(new SME.Background.Hangfire.Worker(config, new Action<IServiceCollection>(RegistraDependencias.RegistrarWorkerService)));
+            HangfireWorkerService = new SME.Background.Core.Servidor<SME.Background.Hangfire.Worker>(new SME.Background.Hangfire.Worker(config, services));
         }
 
         internal static void ConfigurarDependencias(IServiceCollection services)

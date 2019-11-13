@@ -20,8 +20,6 @@ namespace SME.Background.Hangfire
 
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {
-            GlobalConfiguration.Configuration.UseActivator<HangfireActivator>(new HangfireActivator(app.ApplicationServices));
-
             app.UseHangfireDashboard("/worker", new DashboardOptions()
             {
                 IsReadOnlyFunc = (DashboardContext context) => true
@@ -41,7 +39,6 @@ namespace SME.Background.Hangfire
                     InvisibilityTimeout = TimeSpan.FromMinutes(1),
                     SchemaName = "hangfire"
                 }));
-            services.AddHangfireServer();
         }
 
     }
