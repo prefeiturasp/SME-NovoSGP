@@ -26,7 +26,13 @@ const DetalheNotificacao = ({ match }) => {
   const [listaDeStatus, setListaDeStatus] = useState([]);
   const [aprovar, setAprovar] = useState(false);
 
-  const titulosNiveis = ['', 'Aguardando aceite', 'Aceita', 'Recusada', 'Sem status'];
+  const titulosNiveis = [
+    '',
+    'Aguardando aceite',
+    'Aceita',
+    'Recusada',
+    'Sem status',
+  ];
 
   const usuario = useSelector(state => state.usuario);
   const permissoesTela = usuario.permissoes[RotasDto.NOTIFICACOES];
@@ -319,10 +325,10 @@ const DetalheNotificacao = ({ match }) => {
                                     : ''
                                 }`}
                               >
-                                {
-                                  notificacao.statusId ===
-                                  notificacaoStatus.Pendente
-                                  ? 'Não Lida' : notificacao.situacao}
+                                {notificacao.statusId ===
+                                notificacaoStatus.Pendente
+                                  ? 'Não Lida'
+                                  : notificacao.situacao}
                               </div>
                             </div>
                           </div>
@@ -334,7 +340,10 @@ const DetalheNotificacao = ({ match }) => {
                 <hr className="mt-hr" />
                 <div className="row">
                   <div className="col-xs-12 col-md-12 col-lg-12 mensagem">
-                    MENSAGEM: {notificacao.mensagem}
+                    MENSAGEM:{' '}
+                    <span
+                      dangerouslySetInnerHTML={{ __html: notificacao.mensagem }}
+                    ></span>
                   </div>
                 </div>
                 {notificacao.categoriaId ===

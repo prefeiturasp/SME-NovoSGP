@@ -6,6 +6,7 @@ import { store } from '~/redux';
 import {
   selecionaMes,
   atribuiEventosMes,
+  selecionaDia,
 } from '~/redux/modulos/calendarioEscolar/actions';
 import { Base } from '~/componentes/colors';
 import api from '~/servicos/api';
@@ -21,13 +22,20 @@ const Div = styled.div`
 `;
 const Icone = styled.i`
   cursor: pointer;
+  ${props =>
+    props.disabled &&
+    `
+    cursor: not-allowed;
+    pointer-events: none;
+  `}
 `;
 
 const Seta = props => {
-  const { estaAberto } = props;
+  const { estaAberto, disabled } = props;
 
   return (
     <Icone
+      disabled={disabled}
       className={`stretched-link fas ${
         estaAberto ? 'fa-chevron-down' : 'fa-chevron-right text-white'
       } `}
@@ -37,30 +45,17 @@ const Seta = props => {
 
 Seta.propTypes = {
   estaAberto: PropTypes.bool,
+  disabled: PropTypes.bool,
 };
 
 Seta.defaultProps = {
   estaAberto: false,
+  disabled: true,
 };
 
 const Mes = props => {
   const { numeroMes, filtros } = props;
   const [mesSelecionado, setMesSelecionado] = useState({});
-
-  const verificaMesAtual = () => {
-    if (filtros && Object.entries(filtros).length > 0) {
-      const { tipoCalendarioSelecionado = '' } = filtros;
-      if (tipoCalendarioSelecionado) {
-        const dataAtual = new Date();
-        if (numeroMes === (dataAtual.getMonth() + 1).toString())
-          store.dispatch(selecionaMes(numeroMes));
-      } else store.dispatch(selecionaMes(0));
-    }
-  };
-
-  useEffect(() => {
-    verificaMesAtual();
-  }, []);
 
   useEffect(() => {
     let estado = true;
@@ -91,7 +86,6 @@ const Mes = props => {
             .catch(() => {
               store.dispatch(atribuiEventosMes(numeroMes, 0));
             });
-          verificaMesAtual();
         } else store.dispatch(atribuiEventosMes(numeroMes, 0));
       }
     }
@@ -118,11 +112,32 @@ const Mes = props => {
   }, [meses]);
 
   const abrirMes = () => {
-    if (filtros && Object.entries(filtros).length > 0) {
+    if (
+      filtros &&
+      Object.entries(filtros).length > 0 &&
+      meses[numeroMes].eventos > 0
+    ) {
       const { tipoCalendarioSelecionado = '' } = filtros;
       if (tipoCalendarioSelecionado) store.dispatch(selecionaMes(numeroMes));
     }
   };
+
+  useEffect(() => {
+    const encontrarMes = setTimeout(() => {
+      const mes = document.querySelector(`.${meses[numeroMes].nome}`);
+      if (mes) {
+        if (meses[numeroMes].estaAberto) {
+          mes.classList.remove('d-none');
+          mes.classList.add('d-block', 'show');
+        } else {
+          mes.classList.remove('d-block', 'show');
+          mes.classList.add('d-none');
+          store.dispatch(selecionaDia(undefined));
+        }
+      }
+    }, 500);
+    return () => clearTimeout(encontrarMes);
+  }, [meses[numeroMes].estaAberto]);
 
   return (
     <Div
@@ -139,7 +154,12 @@ const Mes = props => {
             width: 35,
           }}
         >
-          <Seta estaAberto={mesSelecionado.estaAberto} />
+          <Seta
+            estaAberto={mesSelecionado.estaAberto}
+            disabled={
+              !mesSelecionado.estaAberto && mesSelecionado.eventos === 0
+            }
+          />
         </Div>
         <Div
           className="d-flex align-items-center w-100"
