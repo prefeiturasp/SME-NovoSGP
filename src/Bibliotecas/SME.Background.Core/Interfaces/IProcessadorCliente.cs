@@ -5,7 +5,7 @@ using System.Text;
 
 namespace SME.Background.Core.Interfaces
 {
-    public interface IProcessador
+    public interface IProcessadorCliente
     {
         void Registrar();
         string Executar(System.Linq.Expressions.Expression<Action> metodo);

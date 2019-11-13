@@ -26,6 +26,11 @@ namespace SME.SGP.IoC
             RegistrarServicos(services);
         }
 
+        public static void RegistrarWorkerService(IServiceCollection services)
+        {
+
+        }
+
         private static void RegistrarComandos(IServiceCollection services)
         {
             services.TryAddScoped<IComandosPlanoCiclo, ComandosPlanoCiclo>();

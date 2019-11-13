@@ -4,7 +4,7 @@ using System.Text;
 
 namespace SME.Background.Core.Interfaces
 {
-    public interface IRegistrador
+    public interface IWorker: IDisposable
     {
         void Registrar();
     }

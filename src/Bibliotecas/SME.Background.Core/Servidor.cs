@@ -5,19 +5,24 @@ using System.Text;
 
 namespace SME.Background.Core
 {
-    public class Servidor<T>
-        where T: IProcessador, new ()
+    public class Servidor<T> : IDisposable
+        where T: IWorker
     {
-        T processador;
+        readonly T worker;
 
-        public  Servidor()
+        public  Servidor(T worker)
         {
-            processador = new T();
+            this.worker = worker;
+        }
+
+        public void Dispose()
+        {
+            worker?.Dispose();
         }
 
         public void Registrar()
         {
-            processador.Registrar();
+            worker.Registrar();
         }
     }
 }

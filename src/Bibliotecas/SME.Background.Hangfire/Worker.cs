@@ -8,19 +8,19 @@ using System.Text;
 
 namespace SME.Background.Hangfire
 {
-    public class RegistradorServidor : IRegistrador, IDisposable
+    public class Worker : IWorker
     {
         readonly IConfiguration configuration;
         BackgroundJobServer hangFireServer;
 
-        public RegistradorServidor(IConfiguration configuration)
+        public Worker(IConfiguration configuration)
         {
             this.configuration = configuration;
         }
 
         public void Dispose()
         {
-            hangFireServer.Dispose();
+            hangFireServer?.Dispose();
         }
 
         public void Registrar()
@@ -31,7 +31,7 @@ namespace SME.Background.Hangfire
                 .UseRecommendedSerializerSettings()
                 .UsePostgreSqlStorage(configuration.GetConnectionString("SGP-Postgres"), new PostgreSqlStorageOptions()
                 {
-                    QueuePollInterval = TimeSpan.Zero,
+                    QueuePollInterval = TimeSpan.FromSeconds(1),
                     InvisibilityTimeout = TimeSpan.FromMinutes(1)
                 });
 
