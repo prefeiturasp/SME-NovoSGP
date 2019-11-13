@@ -26,7 +26,6 @@ namespace SME.SGP.Aplicacao
         {
             var usuario = await servicoUsuario.ObterUsuarioLogado();
             var perfilAtual = servicoUsuario.ObterPerfilAtual();
-            var podeVisualizarEventoLiberacaoExcepcionalAguardandoAprovacao = usuario.PodeVisualizarEventoLiberacaoExcepcionalAguardandoAprovacao(perfilAtual);
 
             return MapearParaDtoComPaginacao(await repositorioEvento
                 .Listar(filtroEventosDto.TipoCalendarioId,
@@ -36,7 +35,9 @@ namespace SME.SGP.Aplicacao
                         filtroEventosDto.DataFim,
                         Paginacao,
                         filtroEventosDto.DreId,
-                        filtroEventosDto.UeId));
+                        filtroEventosDto.UeId,
+                        usuario,
+                        perfilAtual));
         }
 
         public Task<IEnumerable<CalendarioEventosNoDiaRetornoDto>> ObterEventosPorDia(CalendarioEventosFiltroDto calendarioEventosMesesFiltro, int mes, int dia)
