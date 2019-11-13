@@ -8,15 +8,15 @@ namespace SME.Background.Core
 {
     public static class Orquestrador
     {
-        static Dictionary<TipoProcessamento, IProcessador> processadores;
+        static Dictionary<TipoProcessamento, IProcessadorCliente> processadores;
 
         static Orquestrador()
         {
-            processadores = new Dictionary<TipoProcessamento, IProcessador>();
+            processadores = new Dictionary<TipoProcessamento, IProcessadorCliente>();
         }
 
         public static void Registrar<T>(T processador)
-            where T: IProcessador
+            where T: IProcessadorCliente
         {
             processador.Registrar();
             processadores.Add(TipoProcessamento.ExecucaoLonga, processador);
@@ -25,15 +25,15 @@ namespace SME.Background.Core
         }
 
         public static void Registrar<T>(T processador, TipoProcessamento tipoProcessamento)
-            where T : IProcessador
+            where T : IProcessadorCliente
         {
             processador.Registrar();
             processadores.Add(tipoProcessamento, processador);
         }
 
-        public static IProcessador ObterProcessador(TipoProcessamento tipoProcessamento)
+        public static IProcessadorCliente ObterProcessador(TipoProcessamento tipoProcessamento)
         {
-            IProcessador processador = null;
+            IProcessadorCliente processador = null;
 
             if (processadores.TryGetValue(tipoProcessamento, out processador))
                 return processador;

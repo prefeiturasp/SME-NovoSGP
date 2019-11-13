@@ -2,6 +2,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using SME.SGP.IoC;
 using System;
 using System.Diagnostics;
 using System.IO;
@@ -32,9 +33,9 @@ namespace SME.SGP.Worker.Service
             })
             .ConfigureServices((hostContext, services) =>
             {
-                // Configure application service here
                 services.AddHostedService<Servico>();
-                // ...
+                Servico.ConfigurarDependencias(services);
+                Servico.Configurar(hostContext.Configuration);
             });
 
             builder.UseEnvironment(asService ? EnvironmentName.Production : EnvironmentName.Development);

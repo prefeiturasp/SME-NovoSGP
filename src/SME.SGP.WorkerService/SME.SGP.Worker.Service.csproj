@@ -15,6 +15,12 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Bibliotecas\SME.Background.Core\SME.Background.Core.csproj" />
+    <ProjectReference Include="..\Bibliotecas\SME.Background.Hangfire\SME.Background.Hangfire.csproj" />
+    <ProjectReference Include="..\SME.SGP.IoC\SME.SGP.IoC.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
     <None Update="appsettings.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>

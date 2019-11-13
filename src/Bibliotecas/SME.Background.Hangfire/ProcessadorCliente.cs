@@ -1,4 +1,6 @@
 ﻿using Hangfire;
+using Hangfire.PostgreSql;
+using Microsoft.Extensions.Configuration;
 using SME.Background.Core.Enumerados;
 using SME.Background.Core.Interfaces;
 using System;
@@ -6,13 +8,13 @@ using System.Linq.Expressions;
 
 namespace SME.Background.Hangfire
 {
-    public class Processador : IProcessador
+    public class ProcessadorCliente : IProcessadorCliente
     {
-        readonly IRegistrador registrador;
+        readonly IConfiguration configuration;
 
-        public Processador(IRegistrador registrador)
+        public ProcessadorCliente(IConfiguration configuration)
         {
-            this.registrador = registrador;
+            this.configuration = configuration;
         }
 
         public string Executar(Expression<Action> metodo)
@@ -32,7 +34,11 @@ namespace SME.Background.Hangfire
 
         public void Registrar()
         {
-            registrador.Registrar();
+            GlobalConfiguration.Configuration
+                .SetDataCompatibilityLevel(CompatibilityLevel.Version_170)
+                .UseSimpleAssemblyNameTypeSerializer()
+                .UseRecommendedSerializerSettings()
+                .UsePostgreSqlStorage(configuration.GetConnectionString("SGP-Postgres"));
         }
     }
 }
