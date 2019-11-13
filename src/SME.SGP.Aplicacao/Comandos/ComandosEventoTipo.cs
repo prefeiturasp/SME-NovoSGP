@@ -13,11 +13,13 @@ namespace SME.SGP.Aplicacao
     {
         private readonly IRepositorioEventoTipo repositorioEventoTipo;
         private readonly IUnitOfWork unitOfWork;
+        private readonly IRepositorioEvento repositorioEvento;
 
-        public ComandosEventoTipo(IRepositorioEventoTipo repositorioEventoTipo, IUnitOfWork unitOfWork)
+        public ComandosEventoTipo(IRepositorioEventoTipo repositorioEventoTipo, IUnitOfWork unitOfWork, IRepositorioEvento repositorioEvento)
         {
             this.repositorioEventoTipo = repositorioEventoTipo ?? throw new ArgumentNullException(nameof(repositorioEventoTipo));
             this.unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
+            this.repositorioEvento = repositorioEvento ?? throw new ArgumentNullException(nameof(repositorioEvento));
         }
 
         public void Alterar(EventoTipoInclusaoDto eventoTipoDto, long idEvento)
@@ -30,6 +32,7 @@ namespace SME.SGP.Aplicacao
         public void Remover(IEnumerable<long> idsRemover)
         {
             var idFalhaExclusao = new List<long>();
+            var tiposEventoInvalidos = new List<string>();
 
             using (var transacao = unitOfWork.IniciarTransacao())
             {
@@ -38,10 +41,17 @@ namespace SME.SGP.Aplicacao
                     try
                     {
                         var entidade = repositorioEventoTipo.ObterPorId(codigo);
+                        var possuiEventos = repositorioEvento.ExisteEventoPorEventoTipoId(codigo);
+                        if (possuiEventos)
+                        {
+                            tiposEventoInvalidos.Add(entidade.Descricao);
+                        }
+                        else
+                        {
+                            entidade.Excluido = true;
 
-                        entidade.Excluido = true;
-
-                        repositorioEventoTipo.Salvar(entidade);
+                            repositorioEventoTipo.Salvar(entidade);
+                        }
                     }
                     catch (Exception)
                     {
@@ -50,6 +60,14 @@ namespace SME.SGP.Aplicacao
                 }
 
                 unitOfWork.PersistirTransacao();
+            }
+            if (tiposEventoInvalidos.Any())
+            {
+                var erroMensagem = idFalhaExclusao.Count > 1 ?
+                    $"Os tipos de evento: {string.Join(",", tiposEventoInvalidos)} não foram removidos, pois possuem eventos vinculados" :
+                    $"O tipo de evento {tiposEventoInvalidos[0]} não foi removido, pois possue evento vinculado";
+
+                throw new NegocioException(erroMensagem);
             }
 
             if (idFalhaExclusao.Any())
@@ -89,13 +107,18 @@ namespace SME.SGP.Aplicacao
             if (eventoTipo == null || eventoTipo.Id == 0)
                 throw new NegocioException("Não é possivel editar um tipo de evento não cadastrado");
 
+            var possuiEventos = repositorioEvento.ExisteEventoPorEventoTipoId(id);
+
+            if (!possuiEventos)
+            {
+                eventoTipo.Concomitancia = eventoTipoDto.Concomitancia;
+                eventoTipo.Dependencia = eventoTipoDto.Dependencia;
+                eventoTipo.Descricao = eventoTipoDto.Descricao;
+                eventoTipo.Letivo = eventoTipoDto.Letivo;
+                eventoTipo.LocalOcorrencia = eventoTipoDto.LocalOcorrencia;
+                eventoTipo.TipoData = eventoTipoDto.TipoData;
+            }
             eventoTipo.Ativo = eventoTipoDto.Ativo;
-            eventoTipo.Concomitancia = eventoTipoDto.Concomitancia;
-            eventoTipo.Dependencia = eventoTipoDto.Dependencia;
-            eventoTipo.Descricao = eventoTipoDto.Descricao;
-            eventoTipo.Letivo = eventoTipoDto.Letivo;
-            eventoTipo.LocalOcorrencia = eventoTipoDto.LocalOcorrencia;
-            eventoTipo.TipoData = eventoTipoDto.TipoData;
 
             return eventoTipo;
         }

@@ -5,11 +5,7 @@ import styled from 'styled-components';
 import Semana from './Semana';
 import DiaCompleto from './DiaCompleto';
 
-const Div = styled.div`
-  &.mes-completo {
-    display: ${props => (props.estaAberto ? 'block' : 'none')};
-  }
-`;
+const Div = styled.div``;
 
 const DiaDaSemana = props => {
   const { nomeDia } = props;
@@ -39,18 +35,19 @@ const MesCompleto = props => {
   const [ultimoUsado, setUltimoUsado] = useState(-1);
 
   const [diasDaSemana, setDiasDaSemana] = useState([]);
-  const [estaAberto, setEstaAberto] = useState(false);
+  const [estaAberto, setEstaAberto] = useState([]);
 
   useEffect(() => {
     if (mesesCalendario) {
       if (filtros && Object.entries(filtros).length > 0) {
         const { tipoCalendarioSelecionado = '' } = filtros;
-        if (tipoCalendarioSelecionado)
+        if (tipoCalendarioSelecionado) {
           mesesLista.forEach(mes => {
             if (mesesCalendario[mes].estaAberto) {
               setMesSelecionado(parseInt(mes, 10));
             }
           });
+        }
       }
     }
   }, [mesesCalendario]);
@@ -73,89 +70,68 @@ const MesCompleto = props => {
 
       setDiasDaSemana(diasDaSemanaLista);
       setUltimoUsado(mesSelecionado);
-      setEstaAberto(true);
+      setEstaAberto({ ...estaAberto, [mesSelecionado]: true });
     }
+    return () => setEstaAberto({ ...estaAberto, [mesSelecionado]: false });
   }, [mesSelecionado]);
 
-  return (
-    mesSelecionado > 0 &&
-    estaAberto && (
-      <Div
-        estaAberto={estaAberto}
-        className="mes-completo border border-top-0 border-bottom-0 h-100 w-100"
-      >
-        <Div className="w-100 d-flex py-3 border-bottom">
-          <DiaDaSemana nomeDia="Domingo" />
-          <DiaDaSemana nomeDia="Segunda" />
-          <DiaDaSemana nomeDia="Terça" />
-          <DiaDaSemana nomeDia="Quarta" />
-          <DiaDaSemana nomeDia="Quinta" />
-          <DiaDaSemana nomeDia="Sexta" />
-          <DiaDaSemana nomeDia="Sábado" />
-        </Div>
-        <Semana
-          inicial
-          dias={diasDaSemana[0]}
-          mesAtual={ultimoUsado}
-          filtros={filtros}
-        />
-        <DiaCompleto
-          dias={diasDaSemana[0]}
-          mesAtual={ultimoUsado}
-          filtros={filtros}
-        />
-        <Semana
-          dias={diasDaSemana[1]}
-          mesAtual={ultimoUsado}
-          filtros={filtros}
-        />
-        <DiaCompleto
-          dias={diasDaSemana[1]}
-          mesAtual={ultimoUsado}
-          filtros={filtros}
-        />
-        <Semana
-          dias={diasDaSemana[2]}
-          mesAtual={ultimoUsado}
-          filtros={filtros}
-        />
-        <DiaCompleto
-          dias={diasDaSemana[2]}
-          mesAtual={ultimoUsado}
-          filtros={filtros}
-        />
-        <Semana
-          dias={diasDaSemana[3]}
-          mesAtual={ultimoUsado}
-          filtros={filtros}
-        />
-        <DiaCompleto
-          dias={diasDaSemana[3]}
-          mesAtual={ultimoUsado}
-          filtros={filtros}
-        />
-        <Semana
-          dias={diasDaSemana[4]}
-          mesAtual={ultimoUsado}
-          filtros={filtros}
-        />
-        <DiaCompleto
-          dias={diasDaSemana[4]}
-          mesAtual={ultimoUsado}
-          filtros={filtros}
-        />
-        <Semana
-          dias={diasDaSemana[5]}
-          mesAtual={ultimoUsado}
-          filtros={filtros}
-        />
-        <DiaCompleto
-          dias={diasDaSemana[5]}
-          mesAtual={ultimoUsado}
-          filtros={filtros}
-        />
+  return mesSelecionado > 0 && estaAberto[mesSelecionado] ? (
+    <Div
+      className={`${mesesCalendario[mesSelecionado].nome} d-none border border-top-0 border-bottom-0 h-100 w-100 fade`}
+    >
+      <Div className="w-100 d-flex py-3 border-bottom">
+        <DiaDaSemana nomeDia="Domingo" />
+        <DiaDaSemana nomeDia="Segunda" />
+        <DiaDaSemana nomeDia="Terça" />
+        <DiaDaSemana nomeDia="Quarta" />
+        <DiaDaSemana nomeDia="Quinta" />
+        <DiaDaSemana nomeDia="Sexta" />
+        <DiaDaSemana nomeDia="Sábado" />
       </Div>
-    )
+      <Semana
+        inicial
+        dias={diasDaSemana[0]}
+        mesAtual={ultimoUsado}
+        filtros={filtros}
+      />
+      <DiaCompleto
+        dias={diasDaSemana[0]}
+        mesAtual={ultimoUsado}
+        filtros={filtros}
+      />
+      <Semana dias={diasDaSemana[1]} mesAtual={ultimoUsado} filtros={filtros} />
+      <DiaCompleto
+        dias={diasDaSemana[1]}
+        mesAtual={ultimoUsado}
+        filtros={filtros}
+      />
+      <Semana dias={diasDaSemana[2]} mesAtual={ultimoUsado} filtros={filtros} />
+      <DiaCompleto
+        dias={diasDaSemana[2]}
+        mesAtual={ultimoUsado}
+        filtros={filtros}
+      />
+      <Semana dias={diasDaSemana[3]} mesAtual={ultimoUsado} filtros={filtros} />
+      <DiaCompleto
+        dias={diasDaSemana[3]}
+        mesAtual={ultimoUsado}
+        filtros={filtros}
+      />
+      <Semana dias={diasDaSemana[4]} mesAtual={ultimoUsado} filtros={filtros} />
+      <DiaCompleto
+        dias={diasDaSemana[4]}
+        mesAtual={ultimoUsado}
+        filtros={filtros}
+      />
+      <Semana dias={diasDaSemana[5]} mesAtual={ultimoUsado} filtros={filtros} />
+      <DiaCompleto
+        dias={diasDaSemana[5]}
+        mesAtual={ultimoUsado}
+        filtros={filtros}
+      />
+    </Div>
+  ) : (
+    <Div />
   );
 };
 
