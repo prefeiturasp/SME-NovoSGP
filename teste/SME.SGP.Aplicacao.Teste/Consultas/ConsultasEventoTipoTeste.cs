@@ -16,19 +16,22 @@ namespace SME.SGP.Aplicacao.Teste.Consultas
     {
         private readonly Mock<IHttpContextAccessor> httpContext;
         private readonly Mock<IRepositorioEventoTipo> repositorioEventoTipo;
+        private readonly Mock<IRepositorioEvento> repositorioEvento;
         private IConsultasEventoTipo consultasEventoTipo;
 
         public ConsultasEventoTipoTeste()
         {
             repositorioEventoTipo = new Mock<IRepositorioEventoTipo>();
             httpContext = new Mock<IHttpContextAccessor>();
-            consultasEventoTipo = new ConsultasEventoTipo(repositorioEventoTipo.Object, httpContext.Object);
+            repositorioEvento = new Mock<IRepositorioEvento>();
+            consultasEventoTipo = new ConsultasEventoTipo(repositorioEventoTipo.Object, httpContext.Object, repositorioEvento.Object);
         }
 
         [Fact(DisplayName = "Deve_Buscar_Evento_Tipo_Por_Id")]
         public void Deve_Buscar_Evento_Tipo_Por_Id()
         {
             repositorioEventoTipo.Setup(r => r.ObterPorId(It.IsAny<long>())).Returns(It.IsAny<EventoTipo>());
+            repositorioEvento.Setup(r => r.ExisteEventoPorEventoTipoId(It.IsAny<long>())).Returns(false);
 
             consultasEventoTipo.ObterPorId(1);
         }
@@ -36,8 +39,8 @@ namespace SME.SGP.Aplicacao.Teste.Consultas
         [Fact(DisplayName = "Deve_Disparar_Excecao_Ao_Instanciar_Sem_Dependencias")]
         public void Deve_Disparar_Excecao_Ao_Instanciar_Sem_Dependencias()
         {
-            Assert.Throws<ArgumentNullException>(() => consultasEventoTipo = new ConsultasEventoTipo(null, httpContext.Object));
-            Assert.Throws<ArgumentNullException>(() => consultasEventoTipo = new ConsultasEventoTipo(repositorioEventoTipo.Object, null));
+            Assert.Throws<ArgumentNullException>(() => consultasEventoTipo = new ConsultasEventoTipo(null, httpContext.Object, repositorioEvento.Object));
+            Assert.Throws<ArgumentNullException>(() => consultasEventoTipo = new ConsultasEventoTipo(repositorioEventoTipo.Object, null, repositorioEvento.Object));
         }
 
         [Fact(DisplayName = "Deve_Listar_Tipos")]
@@ -45,6 +48,7 @@ namespace SME.SGP.Aplicacao.Teste.Consultas
         {
             repositorioEventoTipo.Setup(r => r.ListarTipos(It.IsAny<EventoLocalOcorrencia>(), It.IsAny<EventoLetivo>(), It.IsAny<String>(), It.IsAny<Paginacao>()))
                 .Returns(It.IsAny<Task<PaginacaoResultadoDto<EventoTipo>>>());
+            repositorioEvento.Setup(r => r.ExisteEventoPorEventoTipoId(It.IsAny<long>())).Returns(false);
 
             consultasEventoTipo.Listar(new FiltroEventoTipoDto());
             consultasEventoTipo.Listar(new FiltroEventoTipoDto { Letivo = EventoLetivo.Sim });
