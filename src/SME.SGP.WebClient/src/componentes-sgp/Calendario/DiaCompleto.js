@@ -1,4 +1,5 @@
-﻿import React, { useEffect, useState } from 'react';
+﻿/* eslint-disable no-return-assign */
+import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import styled from 'styled-components';
 import { useSelector } from 'react-redux';
@@ -28,7 +29,7 @@ const Botao = styled(Button)`
 const SemEvento = () => {
   return (
     <div
-      className="d-flex w-100 h-100 justify-content-center d-flex align-items-center"
+      className="d-flex w-100 h-100 justify-content-center d-flex align-items-center fade show"
       style={{ fontSize: 25, color: Base.CinzaBotao }}
     >
       Sem eventos neste dia
@@ -54,6 +55,7 @@ const DiaCompleto = props => {
     if (estado) {
       if (diaSelecionado && estaAberto) {
         if (filtros && Object.entries(filtros).length > 0) {
+          setEventosDia([]);
           const {
             tipoCalendarioSelecionado = '',
             eventoSme = true,
@@ -80,7 +82,7 @@ const DiaCompleto = props => {
       } else setEventosDia([]);
     }
     return () => (estado = false);
-  }, [estaAberto]);
+  }, [diaSelecionado]);
 
   useEffect(() => {
     estaAberto = false;
@@ -95,7 +97,7 @@ const DiaCompleto = props => {
     estaAberto && (
       <Div className="border-bottom border-top-0 h-100 p-3">
         {eventosDia && eventosDia.length > 0 ? (
-          <Div className="list-group list-group-flush">
+          <Div className="list-group list-group-flush fade show">
             {eventosDia.map(evento => {
               return (
                 <Evento

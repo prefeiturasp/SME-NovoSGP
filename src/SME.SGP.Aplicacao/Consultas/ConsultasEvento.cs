@@ -28,7 +28,9 @@ namespace SME.SGP.Aplicacao
                         filtroEventosDto.NomeEvento,
                         filtroEventosDto.DataInicio,
                         filtroEventosDto.DataFim,
-                        Paginacao));
+                        Paginacao,
+                        filtroEventosDto.DreId,
+                        filtroEventosDto.UeId));
         }
 
         public Task<IEnumerable<CalendarioEventosNoDiaRetornoDto>> ObterEventosPorDia(CalendarioEventosFiltroDto calendarioEventosMesesFiltro, int mes, int dia)
