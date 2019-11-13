@@ -254,10 +254,24 @@ const EventosForm = ({ match }) => {
         alteradoEm: evento.data.alteradoEm,
       });
 
+      verificarAlteracaoLetivoEdicao(listaTipoEvento, evento.data.tipoEventoId);
+
       onChangeTipoEvento(evento.data.tipoEventoId);
 
       setExibirAuditoria(true);
     }
+  };
+
+  const verificarAlteracaoLetivoEdicao = (listaTipos, idTipoEvento) => {
+    if (!listaTipos) return;
+
+    const tipoEdicao = listaTipos.find(x => x.id === idTipoEvento);
+
+    if (!tipoEdicao) return;
+
+    const tipoEventoOpcional = tipoEdicao.letivo === eventoLetivo.Opcional;
+
+    setDesabilitarOpcaoLetivo(!tipoEventoOpcional);
   };
 
   const validaSeValorInvalido = valor => {
