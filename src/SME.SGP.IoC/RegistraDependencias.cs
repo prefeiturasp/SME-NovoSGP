@@ -11,6 +11,7 @@ using SME.SGP.Dados.Repositorios;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Dominio.Servicos;
+using SME.SGP.Infra;
 
 namespace SME.SGP.IoC
 {
@@ -38,6 +39,7 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IComandosPeriodoEscolar, ComandosPeriodoEscolar>();
             services.TryAddScoped<IComandosEventoTipo, ComandosEventoTipo>();
             services.TryAddScoped<IComandosEvento, ComandosEvento>();
+            services.TryAddScoped<IComandosDiasLetivos, ComandosDiasLetivos>();
             services.TryAddScoped<IComandosAula, ComandosAula>();
         }
 
@@ -99,6 +101,7 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IRepositorioPeriodoEscolar, RepositorioPeriodoEscolar>();
             services.TryAddScoped<IRepositorioEvento, RepositorioEvento>();
             services.TryAddScoped<IRepositorioEventoTipo, RepositorioEventoTipo>();
+            services.TryAddScoped<IRepositorioParametrosSistema, RepositorioParametrosSistema>();
             services.TryAddScoped<IRepositorioAula, RepositorioAula>();
         }
 
@@ -116,6 +119,8 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IServicoFeriadoCalendario, ServicoFeriadoCalendario>();
             services.TryAddScoped<IServicoAbrangencia, ServicoAbrangencia>();
             services.TryAddScoped<IServicoEvento, ServicoEvento>();
+            services.TryAddScoped<IServicoDiaLetivo, ServicoDiaLetivo>();
+            services.TryAddScoped<IServicoLog, ServicoLog>();
         }
     }
 }
