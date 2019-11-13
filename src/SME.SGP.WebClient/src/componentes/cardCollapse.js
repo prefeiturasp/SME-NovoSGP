@@ -7,7 +7,7 @@ import CardBody from './cardBody';
 import { Base } from './colors';
 
 const CardCollapse = React.forwardRef((props, ref) => {
-  const { titulo, indice, children, show, onClick } = props;
+  const { titulo, indice, children, show, onClick, configCabecalho } = props;
 
   const Card = styled.div`
     border-color: ${Base.CinzaDesabilitado} !important;
@@ -19,7 +19,7 @@ const CardCollapse = React.forwardRef((props, ref) => {
 
   return (
     <Card ref={ref} className="card shadow-sm mb-3">
-      <CardHeader indice={indice} border icon show={show} onclick={onClick}>
+      <CardHeader indice={indice} border icon show={show} onclick={onClick} configuracao={configCabecalho}>
         {titulo}
       </CardHeader>
       <div className={`collapse fade ${show && 'show'}`} id={`${indice}`}>
@@ -34,6 +34,7 @@ CardCollapse.propTypes = {
   indice: PropTypes.string,
   children: PropTypes.node,
   show: PropTypes.bool,
+  configCabecalho: PropTypes.object
 };
 
 CardCollapse.defaultProps = {

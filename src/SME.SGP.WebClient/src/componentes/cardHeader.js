@@ -5,14 +5,15 @@ import shortid from 'shortid';
 import { Base } from './colors';
 
 const CardHeader = props => {
-  const { indice, children, border, icon, show, onclick } = props;
+  const { indice, children, border, icon, show, onclick, configuracao } = props;
 
   const Header = styled.div`
+    height:${configuracao.altura};
     ${border
       ? `
       border-top-width: 0px !important;
       border-bottom-width: 0px !important;
-      border-left: 8px solid ${Base.AzulBordaCard} !important;`
+      border-left: 8px solid ${configuracao.corBorda} !important;`
       : null}
     &.expanded {
       border-bottom-width: 1px !important;
@@ -73,6 +74,7 @@ CardHeader.propTypes = {
   border: PropTypes.bool,
   icon: PropTypes.bool,
   show: PropTypes.bool,
+  configuracao: PropTypes.object,
 };
 
 CardHeader.defaultProps = {
@@ -81,6 +83,10 @@ CardHeader.defaultProps = {
   border: false,
   icon: false,
   show: false,
+  configuracao: {
+    altura: 'auto',
+    corBorda: Base.AzulBordaCard
+  }
 };
 
 export default CardHeader;

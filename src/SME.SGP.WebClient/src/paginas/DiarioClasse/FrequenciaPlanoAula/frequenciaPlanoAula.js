@@ -3,6 +3,7 @@ import Cabecalho from '~/componentes-sgp/cabecalho';
 import Button from '~/componentes/button';
 import Card from '~/componentes/card';
 import { Colors } from '~/componentes/colors';
+import PlanoAula from '../PlanoAula/plano-aula';
 
 const FrequenciaPlanoAula = () => {
   const onClickVoltar = () => {
@@ -45,6 +46,9 @@ const FrequenciaPlanoAula = () => {
             className="mr-2"
             onClick={onClickSalvar}
           />
+        </div>
+        <div className="col-sm-12 col-md-12 col-lg-12">
+          <PlanoAula />
         </div>
       </Card>
     </>
