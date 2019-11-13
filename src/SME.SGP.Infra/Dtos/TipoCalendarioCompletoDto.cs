@@ -18,5 +18,6 @@ namespace SME.SGP.Infra
         public Periodo Periodo { get; set; }
         public bool Situacao { get; set; }
         public string DescricaoPeriodo { get; set; }
+        public bool PossuiEventos { get; set; }
     }
 }
