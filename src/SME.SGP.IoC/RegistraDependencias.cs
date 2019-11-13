@@ -100,6 +100,9 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IRepositorioEvento, RepositorioEvento>();
             services.TryAddScoped<IRepositorioEventoTipo, RepositorioEventoTipo>();
             services.TryAddScoped<IRepositorioAula, RepositorioAula>();
+            services.TryAddScoped<IRepositorioGrade, RepositorioGrade>();
+            services.TryAddScoped<IRepositorioGradeFiltro, RepositorioGradeFiltro>();
+            services.TryAddScoped<IRepositorioGradeDisciplina, RepositorioGradeDisciplina>();
         }
 
         private static void RegistrarServicos(IServiceCollection services)
