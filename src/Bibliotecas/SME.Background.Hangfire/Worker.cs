@@ -13,13 +13,14 @@ namespace SME.Background.Hangfire
     public class Worker : IWorker
     {
         readonly IConfiguration configuration;
+        readonly IServiceCollection serviceCollection;
         IWebHost host;
-        readonly Action<IServiceCollection> registryDI;
+        BackgroundJobServer hangFireServer;
 
-        public Worker(IConfiguration configuration, Action<IServiceCollection> registryDI)
+        public Worker(IConfiguration configuration, IServiceCollection serviceCollection)
         {
             this.configuration = configuration;
-            this.registryDI = registryDI;
+            this.serviceCollection = serviceCollection;
         }
 
         public void Dispose()
@@ -29,19 +30,42 @@ namespace SME.Background.Hangfire
 
         public void Registrar()
         {
+            RegistrarHangfireServer();
+            RegistrarDashboard();
+        }
+
+        private void RegistrarDashboard()
+        {
             host = new WebHostBuilder()
-               .UseKestrel()
-               .UseContentRoot(Directory.GetCurrentDirectory())
-               .ConfigureAppConfiguration((hostContext, config) =>
-               {
-                   config.SetBasePath(Directory.GetCurrentDirectory());
-                   config.AddEnvironmentVariables();
-               })
-               .ConfigureServices(x=> registryDI(x))
-               .UseStartup<Startup>()
-               .Build();
+                           .UseKestrel()
+                           .UseContentRoot(Directory.GetCurrentDirectory())
+                           .ConfigureAppConfiguration((hostContext, config) =>
+                           {
+                               config.SetBasePath(Directory.GetCurrentDirectory());
+                               config.AddEnvironmentVariables();
+                           })
+                           .UseStartup<Startup>()
+                           .Build();
 
             host.RunAsync();
+        }
+
+        private void RegistrarHangfireServer()
+        {
+            GlobalConfiguration.Configuration
+                .SetDataCompatibilityLevel(CompatibilityLevel.Version_170)
+                .UseSimpleAssemblyNameTypeSerializer()
+                .UseRecommendedSerializerSettings()
+                .UseActivator<HangfireActivator>(new HangfireActivator(serviceCollection.BuildServiceProvider()))
+                .UseFilter<AutomaticRetryAttribute>(new AutomaticRetryAttribute() { Attempts = 0 })
+                .UsePostgreSqlStorage(configuration.GetConnectionString("SGP-Postgres"), new PostgreSqlStorageOptions()
+                {
+                    QueuePollInterval = TimeSpan.FromSeconds(1),
+                    InvisibilityTimeout = TimeSpan.FromMinutes(1),
+                    SchemaName = "hangfire"
+                });
+
+            hangFireServer = new BackgroundJobServer();
         }
     }
 }
