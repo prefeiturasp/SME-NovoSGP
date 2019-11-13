@@ -1,15 +1,8 @@
-﻿using System.Web.Http;
-using Hangfire;
-using Microsoft.AspNetCore.Builder;
-using Hangfire.AspNetCore;
+﻿using Hangfire;
 using Hangfire.Dashboard;
-using System.Threading.Tasks;
-using System.Collections.Generic;
-using System.Text;
-using System.IO;
-using System.Globalization;
-using Microsoft.AspNetCore.Hosting;
 using Hangfire.PostgreSql;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 
 namespace SME.Background.Hangfire
