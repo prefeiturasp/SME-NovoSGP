@@ -96,7 +96,7 @@ namespace SME.SGP.Dominio.Servicos
             evento.AprovarWorkflow();
             repositorioEvento.Salvar(evento);
 
-            NotifificarCriadorDoEventoQueFoiAprovado(evento, codigoDaNotificacao);
+            NotificarCriadorDoEventoQueFoiAprovado(evento, codigoDaNotificacao);
         }
 
         private void AtualizaNiveis(IEnumerable<WorkflowAprovacaoNivel> niveis)
@@ -190,22 +190,7 @@ namespace SME.SGP.Dominio.Servicos
             }
         }
 
-        private void NotificarEventoQueFoiReprovado(Evento evento, long codigoDaNotificacao, Usuario usuario, string motivoRecusa, string nomeEscola)
-        {
-            repositorioNotificacao.Salvar(new Notificacao()
-            {
-                UeId = evento.UeId,
-                UsuarioId = usuario.Id,
-                Ano = evento.CriadoEm.Year,
-                Categoria = NotificacaoCategoria.Aviso,
-                DreId = evento.DreId,
-                Titulo = "Criação de Eventos Excepcionais",
-                Tipo = NotificacaoTipo.Calendario,
-                Mensagem = $"O evento {evento.Nome} - {evento.DataInicio.Day}/{evento.DataInicio.Month}/{evento.DataInicio.Year} do calendário {evento.TipoCalendario.Nome} da {nomeEscola} foi recusado. < br/> Motivo: {motivoRecusa}"
-            });
-        }
-
-        private void NotifificarCriadorDoEventoQueFoiAprovado(Evento evento, long codigoDaNotificacao)
+        private void NotificarCriadorDoEventoQueFoiAprovado(Evento evento, long codigoDaNotificacao)
         {
             var loginAtual = servicoUsuario.ObterLoginAtual();
             var perfilAtual = servicoUsuario.ObterPerfilAtual();
@@ -229,6 +214,21 @@ namespace SME.SGP.Dominio.Servicos
                 Tipo = NotificacaoTipo.Calendario,
                 Codigo = codigoDaNotificacao,
                 Mensagem = $"O evento {evento.Nome} - {evento.DataInicio.Day}/{evento.DataInicio.Month}/{evento.DataInicio.Year} do calendário {evento.TipoCalendario.Nome} da {escola.Nome} foi aceito. Agora este evento está visível para todos os usuários. Para visualizá-lo clique <a href='{linkParaEvento}'>aqui</a>."
+            });
+        }
+
+        private void NotificarEventoQueFoiReprovado(Evento evento, long codigoDaNotificacao, Usuario usuario, string motivoRecusa, string nomeEscola)
+        {
+            repositorioNotificacao.Salvar(new Notificacao()
+            {
+                UeId = evento.UeId,
+                UsuarioId = usuario.Id,
+                Ano = evento.CriadoEm.Year,
+                Categoria = NotificacaoCategoria.Aviso,
+                DreId = evento.DreId,
+                Titulo = "Criação de Eventos Excepcionais",
+                Tipo = NotificacaoTipo.Calendario,
+                Mensagem = $"O evento {evento.Nome} - {evento.DataInicio.Day}/{evento.DataInicio.Month}/{evento.DataInicio.Year} do calendário {evento.TipoCalendario.Nome} da {nomeEscola} foi recusado. < br/> Motivo: {motivoRecusa}"
             });
         }
 

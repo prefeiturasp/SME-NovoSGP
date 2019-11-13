@@ -39,14 +39,15 @@ namespace SME.SGP.Aplicacao.Teste.Consultas
             };
             var paginado = new PaginacaoResultadoDto<Evento>();
             paginado.Items = listaEventos;
-            repositorioEvento.Setup(c => c.Listar(It.IsAny<long?>(), It.IsAny<long?>(), It.IsAny<string>(), It.IsAny<DateTime?>(), It.IsAny<DateTime?>(), It.IsAny<Paginacao>(), It.IsAny<string>(), It.IsAny<string>()))
+            var usuario = new Usuario();
+            repositorioEvento.Setup(c => c.Listar(It.IsAny<long?>(), It.IsAny<long?>(), It.IsAny<string>(), It.IsAny<DateTime?>(), It.IsAny<DateTime?>(), It.IsAny<Paginacao>(), It.IsAny<string>(), It.IsAny<string>(), usuario, It.IsAny<Guid>()))
                 .Returns(Task.FromResult(paginado));
 
             var eventosPaginados = await consultaEventos.Listar(new FiltroEventosDto());
 
             Assert.NotNull(eventosPaginados);
             Assert.Contains(eventosPaginados.Items, c => c.Id == 1);
-            repositorioEvento.Verify(c => c.Listar(It.IsAny<long?>(), It.IsAny<long?>(), It.IsAny<string>(), It.IsAny<DateTime?>(), It.IsAny<DateTime?>(), It.IsAny<Paginacao>(), It.IsAny<string>(), It.IsAny<string>()), Times.Once);
+            repositorioEvento.Verify(c => c.Listar(It.IsAny<long?>(), It.IsAny<long?>(), It.IsAny<string>(), It.IsAny<DateTime?>(), It.IsAny<DateTime?>(), It.IsAny<Paginacao>(), It.IsAny<string>(), It.IsAny<string>(), usuario, It.IsAny<Guid>()), Times.Once);
         }
 
         [Fact]
