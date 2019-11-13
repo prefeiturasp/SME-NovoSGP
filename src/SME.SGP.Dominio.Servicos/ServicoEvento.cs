@@ -79,6 +79,8 @@ namespace SME.SGP.Dominio.Servicos
 
             await VerificaParticularidadesSME(evento, usuario, periodos, dataConfirmada);
 
+            AtribuirNullSeVazio(evento);
+
             repositorioEvento.Salvar(evento);
 
             await AlterarRecorrenciaEventos(evento, alterarRecorrenciaCompleta);
@@ -138,6 +140,15 @@ namespace SME.SGP.Dominio.Servicos
             }
             var usuarioLogado = await servicoUsuario.ObterUsuarioLogado();
             EnviarNotificacaoRegistroDeRecorrencia(evento, notificacoesSucesso, notificacoesFalha, usuarioLogado.Id);
+        }
+
+        private static void AtribuirNullSeVazio(Evento evento)
+        {
+            if (string.IsNullOrWhiteSpace(evento.DreId))
+                evento.DreId = null;
+
+            if (string.IsNullOrWhiteSpace(evento.UeId))
+                evento.UeId = null;
         }
 
         private Evento AlterarEventoDeRecorrencia(Evento evento, Evento eventoASerAlterado)
