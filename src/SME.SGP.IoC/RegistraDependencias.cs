@@ -118,6 +118,7 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IServicoAbrangencia, ServicoAbrangencia>();
             services.TryAddScoped<IServicoEvento, ServicoEvento>();
             services.TryAddScoped<IServicoLog, ServicoLog>();
+            services.TryAddScoped<IServicoAula, ServicoAula>();
         }
     }
 }
