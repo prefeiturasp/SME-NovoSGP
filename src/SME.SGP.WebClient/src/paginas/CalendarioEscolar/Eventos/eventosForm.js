@@ -225,13 +225,23 @@ const EventosForm = ({ match }) => {
         dataFim: evento.data.dataFim ? window.moment(evento.data.dataFim) : '',
         dataInicio: window.moment(evento.data.dataInicio),
         descricao: evento.data.descricao,
-        dreId: String(evento.data.dreId),
-        feriadoId: evento.data.feriadoId || '',
+        dreId: !validaSeValorInvalido(evento.data.dreId)
+          ? String(evento.data.dreId)
+          : undefined,
+        feriadoId: !validaSeValorInvalido(evento.data.feriadoId)
+          ? String(evento.data.feriadoId)
+          : undefined,
         letivo: evento.data.letivo,
         nome: evento.data.nome,
-        tipoCalendarioId: String(evento.data.tipoCalendarioId),
-        tipoEventoId: String(evento.data.tipoEventoId),
-        ueId: String(evento.data.ueId),
+        tipoCalendarioId: !validaSeValorInvalido(evento.data.tipoCalendarioId)
+          ? String(evento.data.tipoCalendarioId)
+          : undefined,
+        tipoEventoId: !validaSeValorInvalido(evento.data.tipoEventoId)
+          ? String(evento.data.tipoEventoId)
+          : undefined,
+        ueId: !validaSeValorInvalido(evento.data.ueId)
+          ? String(evento.data.ueId)
+          : undefined,
         id: evento.data.id,
         recorrenciaEventos: evento.data.recorrenciaEventos,
       });
@@ -248,6 +258,21 @@ const EventosForm = ({ match }) => {
 
       setExibirAuditoria(true);
     }
+  };
+
+  const validaSeValorInvalido = valor => {
+    const validacoesObjeto =
+      !valor ||
+      (typeof valor === 'object' && Object.entries(valor).length === 0);
+
+    return (
+      !valor ||
+      valor === '' ||
+      valor === null ||
+      valor === 'null' ||
+      valor === undefined ||
+      validacoesObjeto
+    );
   };
 
   const consultaFeriados = async () => {
@@ -329,7 +354,6 @@ const EventosForm = ({ match }) => {
           AlterarARecorrenciaCompleta: true,
         };
       }
-
       /**
        * @description Metodo a ser disparado quando receber a mensagem do servidor
        */
@@ -342,7 +366,6 @@ const EventosForm = ({ match }) => {
           history.push('/calendario-escolar/eventos');
         }
       };
-
       const cadastrado = await servicoEvento.salvar(idEvento || 0, payload);
       if (cadastrado && cadastrado.status === 200) {
         onSuccessSave(cadastrado);
