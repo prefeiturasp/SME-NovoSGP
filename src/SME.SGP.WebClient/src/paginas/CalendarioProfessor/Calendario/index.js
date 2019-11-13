@@ -21,14 +21,16 @@ const Icone = styled.i``;
 const Campo = styled.input``;
 const Label = styled.label``;
 
-const CalendarioEscolar = () => {
+const CalendarioProfessor = () => {
   const [tiposCalendario, setTiposCalendario] = useState([]);
   const [tipoCalendarioSelecionado, setTipoCalendarioSelecionado] = useState(
     undefined
   );
 
   const [diasLetivos, setDiasLetivos] = useState({});
-  const turmaSelecionada = useSelector(state => state.usuario.turmaSelecionada);
+  const turmaSelecionadaStore = useSelector(
+    state => state.usuario.turmaSelecionada
+  );
   const modalidadesAbrangencia = useSelector(state => state.filtro.modalidades);
 
   useEffect(() => {
@@ -65,8 +67,9 @@ const CalendarioEscolar = () => {
   }, []);
 
   const filtrarPorTurmaSelecionada = () => {
-    if (tiposCalendario && Object.entries(turmaSelecionada).length > 0) {
-      const modalidadeSelecionada = turmaSelecionada.modalidade === '3' ? 2 : 1;
+    if (tiposCalendario && Object.entries(turmaSelecionadaStore).length > 0) {
+      const modalidadeSelecionada =
+        turmaSelecionadaStore.modalidade === '3' ? 2 : 1;
       setTiposCalendario(
         tiposCalendario.filter(
           tipo => tipo.modalidade === modalidadeSelecionada
@@ -77,7 +80,7 @@ const CalendarioEscolar = () => {
 
   useEffect(() => {
     filtrarPorTurmaSelecionada();
-  }, [turmaSelecionada]);
+  }, [turmaSelecionadaStore]);
 
   const aoSelecionarTipoCalendario = tipo => {
     store.dispatch(zeraCalendario());
@@ -87,11 +90,12 @@ const CalendarioEscolar = () => {
   useEffect(() => {
     if (tipoCalendarioSelecionado) {
       consultarDiasLetivos();
-      buscarDres();
+      listarDres();
     } else {
       setDiasLetivos({});
       setDreSelecionada();
       setUnidadeEscolarSelecionada();
+      setTurmaSelecionada();
     }
     setFiltros({ ...filtros, tipoCalendarioSelecionado });
   }, [tipoCalendarioSelecionado]);
@@ -114,7 +118,7 @@ const CalendarioEscolar = () => {
   const [dres, setDres] = useState([]);
   const [dreSelecionada, setDreSelecionada] = useState(undefined);
 
-  const buscarDres = () => {
+  const listarDres = () => {
     api
       .get('v1/abrangencias/dres')
       .then(resposta => {
@@ -145,7 +149,7 @@ const CalendarioEscolar = () => {
     undefined
   );
 
-  const buscarUnidadesEscolares = () => {
+  const listarUnidadesEscolares = () => {
     api
       .get(`v1/abrangencias/dres/${dreSelecionada}/ues`)
       .then(resposta => {
@@ -167,6 +171,30 @@ const CalendarioEscolar = () => {
       });
   };
 
+  const [turmas, setTurmas] = useState([]);
+  const [turmaSelecionada, setTurmaSelecionada] = useState(undefined);
+
+  const listarTurmas = () => {
+    api
+      .get(`v1/abrangencias/dres/ues/${unidadeEscolarSelecionada}/turmas`)
+      .then(resposta => {
+        if (resposta.data) {
+          const lista = [];
+          resposta.data.forEach(turma => {
+            lista.push({
+              desc: turma.nome,
+              valor: turma.codigo,
+              ano: turma.ano,
+            });
+          });
+          setTurmas(lista);
+        }
+      })
+      .catch(() => {
+        setTurmas([]);
+      });
+  };
+
   const aoSelecionarDre = dre => {
     setDreSelecionada(dre);
   };
@@ -174,9 +202,10 @@ const CalendarioEscolar = () => {
   useEffect(() => {
     if (dreSelecionada) {
       consultarDiasLetivos();
-      buscarUnidadesEscolares();
+      listarUnidadesEscolares();
     } else {
       setUnidadeEscolarSelecionada();
+      setTurmaSelecionada();
     }
     setFiltros({ ...filtros, dreSelecionada });
   }, [dreSelecionada]);
@@ -186,9 +215,22 @@ const CalendarioEscolar = () => {
   };
 
   useEffect(() => {
-    if (unidadeEscolarSelecionada) consultarDiasLetivos();
+    if (unidadeEscolarSelecionada) {
+      consultarDiasLetivos();
+      listarTurmas();
+    } else {
+      setTurmaSelecionada();
+    }
     setFiltros({ ...filtros, unidadeEscolarSelecionada });
   }, [unidadeEscolarSelecionada]);
+
+  const aoSelecionarTurma = turma => {
+    setTurmaSelecionada(turma);
+  };
+
+  useEffect(() => {
+    setFiltros({ ...filtros, turmaSelecionada });
+  }, [turmaSelecionada]);
 
   const consultarDiasLetivos = () => {
     api
@@ -210,14 +252,13 @@ const CalendarioEscolar = () => {
     eventoSme,
     dreSelecionada,
     unidadeEscolarSelecionada,
+    turmaSelecionada,
   });
 
   return (
     <Div className="col-12">
       <Grid cols={12} className="mb-1 p-0">
-        <Titulo className="font-weight-bold">
-          Consulta de calendário escolar
-        </Titulo>
+        <Titulo className="font-weight-bold">Calendário do Professor</Titulo>
       </Grid>
       <Card className="rounded mb-4 mx-auto">
         <Grid cols={12} className="mb-4">
@@ -291,7 +332,7 @@ const CalendarioEscolar = () => {
                 </Label>
               </Div>
             </Grid>
-            <Grid cols={6}>
+            <Grid cols={5}>
               <SelectComponent
                 className="fonte-14"
                 onChange={aoSelecionarDre}
@@ -303,7 +344,7 @@ const CalendarioEscolar = () => {
                 disabled={!tipoCalendarioSelecionado}
               />
             </Grid>
-            <Grid cols={5}>
+            <Grid cols={4}>
               <SelectComponent
                 className="fonte-14"
                 onChange={aoSelecionarUnidadeEscolar}
@@ -313,6 +354,18 @@ const CalendarioEscolar = () => {
                 valueSelect={unidadeEscolarSelecionada}
                 placeholder="Unidade Escolar (UE)"
                 disabled={!dreSelecionada}
+              />
+            </Grid>
+            <Grid cols={2}>
+              <SelectComponent
+                className="fonte-14"
+                onChange={aoSelecionarTurma}
+                lista={turmas}
+                valueOption="valor"
+                valueText="desc"
+                valueSelect={turmaSelecionada}
+                placeholder="Turma"
+                disabled={!unidadeEscolarSelecionada}
               />
             </Grid>
           </Div>
@@ -325,4 +378,4 @@ const CalendarioEscolar = () => {
   );
 };
 
-export default CalendarioEscolar;
+export default CalendarioProfessor;
