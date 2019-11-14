@@ -22,16 +22,19 @@ namespace SME.SGP.Dominio.Servicos
 
         public async Task Salvar(Aula aula, Usuario usuario)
         {
-            var disciplinasProfessor = await servicoEOL.ObterDisciplinasPorCodigoTurmaLoginEPerfil(aula.TurmaId, usuario.Login, usuario.ObterPerfilPrioritario());
-            if (!disciplinasProfessor.Any(c => c.CodigoComponenteCurricular.ToString() == aula.DisciplinaId) ||
-                !repositorioAula.UsuarioPodeCriarAulaNaUeETurma(aula))
-            {
-                throw new NegocioException("Você não pode criar aulas para essa UE/Turma/Disciplina.");
-            }
+            aula.TipoCalendarioId = 1;
             var tipoCalendario = repositorioTipoCalendario.ObterPorId(aula.TipoCalendarioId);
             if (tipoCalendario == null)
                 throw new NegocioException("O tipo de calendário não foi encontrado.");
 
+            var disciplinasProfessor = await servicoEOL.ObterDisciplinasPorCodigoTurmaLoginEPerfil(aula.TurmaId, usuario.Login, usuario.ObterPerfilPrioritario());
+
+            var usuarioPodeCriarAulaNaTurmaUeEModalidade = repositorioAula.UsuarioPodeCriarAulaNaUeTurmaEModalidade(aula, tipoCalendario.Modalidade);
+
+            if (!disciplinasProfessor.Any(c => c.CodigoComponenteCurricular.ToString() == aula.DisciplinaId) || !usuarioPodeCriarAulaNaTurmaUeEModalidade)
+            {
+                throw new NegocioException("Você não pode criar aulas para essa UE/Turma/Disciplina.");
+            }
             repositorioAula.Salvar(aula);
         }
     }
