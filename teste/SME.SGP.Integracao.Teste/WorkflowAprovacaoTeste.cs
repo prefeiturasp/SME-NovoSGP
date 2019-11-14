@@ -37,6 +37,7 @@ namespace SME.SGP.Integracao.Teste
                 NotificacaoMensagem = "Mensagem de teste",
                 NotificacaoTipo = Dominio.NotificacaoTipo.Fechamento,
                 NotificacaoTitulo = tituloParaLocalizarRegistro,
+                Tipo = WorkflowAprovacaoTipo.Basica,
                 UeId = "000892"
             };
 
