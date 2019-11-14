@@ -89,7 +89,7 @@ namespace SME.SGP.Api
                 options.InstanceName = Configuration.GetValue<string>("Nome-Instancia-Redis");
             });
 
-            SME.Background.Core.Orquestrador.Registrar<SME.Background.Hangfire.Processor>(new Background.Hangfire.Processor(Configuration));
+            SME.Background.Core.Orquestrador.Registrar<SME.Background.Hangfire.Processor>(new Background.Hangfire.Processor(Configuration, "SGP-Postgres"));
         }
     }
 }

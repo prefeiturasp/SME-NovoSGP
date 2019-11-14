@@ -11,10 +11,12 @@ namespace SME.Background.Hangfire
     public class Processor : IProcessor
     {
         readonly IConfiguration configuration;
+        readonly string connectionString;
 
-        public Processor(IConfiguration configuration)
+        public Processor(IConfiguration configuration, string connectionString)
         {
             this.configuration = configuration;
+            this.connectionString = connectionString;
         }
 
         public string Executar(Expression<Action> metodo)
@@ -38,7 +40,7 @@ namespace SME.Background.Hangfire
                 .SetDataCompatibilityLevel(CompatibilityLevel.Version_170)
                 .UseSimpleAssemblyNameTypeSerializer()
                 .UseRecommendedSerializerSettings()
-                .UsePostgreSqlStorage(configuration.GetConnectionString("SGP-Postgres"), new PostgreSqlStorageOptions()
+                .UsePostgreSqlStorage(configuration.GetConnectionString(connectionString), new PostgreSqlStorageOptions()
                 { 
                     SchemaName = "hangfire"
                 });
