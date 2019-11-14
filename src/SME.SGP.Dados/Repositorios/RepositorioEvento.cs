@@ -81,12 +81,9 @@ namespace SME.SGP.Dados.Repositorios
             Paginacao paginacao, string dreId, string ueId, Usuario usuario, Guid usuarioPerfil, bool usuarioTemPerfilSupervisorOuDiretor)
         {
             StringBuilder query = new StringBuilder();
-            var queryPaginacao = string.Empty;
 
             if (paginacao == null)
                 paginacao = new Paginacao(1, 10);
-
-            queryPaginacao = MontaQueryListarPaginacao(paginacao);
 
             MontaQueryCabecalho(query);
             MontaQueryFromWhereParaVisualizacaoGeral(query, tipoCalendarioId, tipoEventoId, dataInicio, dataFim, nomeEvento, dreId, ueId);
@@ -101,7 +98,8 @@ namespace SME.SGP.Dados.Repositorios
                 MontaQueryFromWhereParaSupervisorDiretorVisualizarEmAprovacao(query, tipoCalendarioId, tipoEventoId, dataInicio, dataFim, nomeEvento, dreId, ueId);
             }
 
-            query.AppendLine(queryPaginacao);
+            if (paginacao.QuantidadeRegistros != 0)
+                query.AppendFormat(" OFFSET {0} ROWS FETCH NEXT {1} ROWS ONLY ", paginacao.QuantidadeRegistrosIgnorados, paginacao.QuantidadeRegistros);
 
             if (!string.IsNullOrEmpty(nomeEvento))
             {
@@ -129,7 +127,7 @@ namespace SME.SGP.Dados.Repositorios
             },
             splitOn: "EventoId,TipoEventoId");
 
-            var queryCountCabecalho = "select count(e.*)";
+            var queryCountCabecalho = "select count(distinct e.id)";
             var queryCount = new StringBuilder(queryCountCabecalho);
             MontaQueryFromWhereParaVisualizacaoGeral(queryCount, tipoCalendarioId, tipoEventoId, dataInicio, dataFim, nomeEvento, dreId, ueId);
 
