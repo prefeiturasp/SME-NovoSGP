@@ -6,6 +6,8 @@ using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -17,23 +19,84 @@ namespace SME.SGP.Dados.Repositorios
         {
         }
 
+        public bool EhEventoLetivoPorTipoDeCalendarioDataDreUe(long tipoCalendarioId, DateTime data, string dreId, string ueId)
+        {
+            string cabecalho = "select min(letivo) from evento e where e.excluido = false";
+            string whereTipoCalendario = "and e.tipo_calendario_id = @tipoCalendarioId";
+            StringBuilder query = new StringBuilder();
+            query.AppendLine(cabecalho);
+            query.AppendLine(whereTipoCalendario);
+            if (!string.IsNullOrEmpty(dreId))
+                query.AppendLine("and e.dre_id = @dreId and e.ue_id is null");
+            else if (string.IsNullOrEmpty(ueId))
+                query.AppendLine("and e.dre_id is null and e.ue_id is null");
+            query.AppendLine("and e.data_inicio <= @data and e.data_fim >= @data");
+            if (!string.IsNullOrEmpty(ueId))
+            {
+                query.AppendLine("UNION");
+                query.AppendLine(cabecalho);
+                query.AppendLine(whereTipoCalendario);
+                query.AppendLine("and e.dre_id = @dreId and e.ue_id = @ueId");
+                query.AppendLine("and e.data_inicio <= @data and e.data_fim >= @data");
+            }
+
+            if (!string.IsNullOrEmpty(dreId) || !string.IsNullOrEmpty(ueId))
+            {
+                query.AppendLine("UNION");
+                query.AppendLine(cabecalho);
+                query.AppendLine(whereTipoCalendario);
+                query.AppendLine("and e.dre_id is null and e.ue_id is null");
+                query.AppendLine("and e.data_inicio <= @data and e.data_fim >= @data");
+            }
+
+            var retorno = database.Conexao.QueryFirstOrDefault<int?>(query.ToString(), new { tipoCalendarioId, dreId, ueId, data });
+            return retorno == 1 || retorno == null;
+        }
+
         public bool ExisteEventoNaMesmaDataECalendario(DateTime dataInicio, long tipoCalendarioId)
         {
             var query = "select 1 from evento where data_inicio = @dataInicio and tipo_calendario_id = @tipoCalendarioId;";
             return database.Conexao.QueryFirstOrDefault<bool>(query, new { dataInicio, tipoCalendarioId });
         }
 
-        public async Task<PaginacaoResultadoDto<Evento>> Listar(long? tipoCalendarioId, long? tipoEventoId, string nomeEvento, DateTime? dataInicio, DateTime? dataFim, Paginacao paginacao)
+        public bool ExisteEventoPorEventoTipoId(long eventoTipoId)
+        {
+            var query = "select 1 from evento where tipo_evento_id = @eventoTipoId;";
+            return database.Conexao.QueryFirstOrDefault<bool>(query, new { eventoTipoId }); ;
+        }
+
+        public bool ExisteEventoPorFeriadoId(long feriadoId)
+        {
+            var query = "select 1 from evento where feriado_id = @feriadoId;";
+            return database.Conexao.QueryFirstOrDefault<bool>(query, new { feriadoId });
+        }
+
+        public bool ExisteEventoPorTipoCalendarioId(long tipoCalendarioId)
+        {
+            var query = "select 1 from evento where tipo_calendario_id = @tipoCalendarioId;";
+            return database.Conexao.QueryFirstOrDefault<bool>(query, new { tipoCalendarioId });
+        }
+
+        public async Task<PaginacaoResultadoDto<Evento>> Listar(long? tipoCalendarioId, long? tipoEventoId, string nomeEvento, DateTime? dataInicio, DateTime? dataFim,
+            Paginacao paginacao, string dreId, string ueId, Usuario usuario, Guid usuarioPerfil)
         {
             StringBuilder query = new StringBuilder();
+
             MontaQueryCabecalho(query);
-            MontaQueryFrom(query);
-            MontaQueryFiltro(tipoCalendarioId, tipoEventoId, dataInicio, dataFim, nomeEvento, query);
-            query.AppendLine("order by e.id");
-            if (paginacao != null && paginacao.QuantidadeRegistros > 0)
-                MontaQueryPaginacao(query, paginacao);
-            else
-                paginacao = new Paginacao(1, 0);
+            MontaQueryFromWhereParaVisualizacaoGeral(query);
+            query.AppendLine("union distinct");
+            MontaQueryCabecalho(query);
+            MontaQueryFromWhereParaCriadorDeEventoEmAprovacaoERecusado(query);
+            query.AppendLine("union distinct");
+            MontaQueryCabecalho(query);
+            MontaQueryFromWhereParaSupervisorDiretorVisualizarEmAprovacao(query);
+
+            //MontaQueryFiltro(tipoCalendarioId, tipoEventoId, dataInicio, dataFim, nomeEvento, query, dreId, ueId);
+            //query.AppendLine("order by e.id");
+            //if (paginacao != null && paginacao.QuantidadeRegistros > 0)
+            //    MontaQueryPaginacao(query, paginacao);
+            //else
+            //    paginacao = new Paginacao(1, 0);
 
             if (!string.IsNullOrEmpty(nomeEvento))
             {
@@ -52,23 +115,30 @@ namespace SME.SGP.Dados.Repositorios
                 tipoEventoId,
                 nomeEvento,
                 dataInicio,
-                dataFim
+                dataFim,
+                dreId,
+                ueId,
+                usuarioId = usuario.Id,
+                usuarioPerfil,
+                usuarioRf = usuario.CodigoRf
             },
             splitOn: "EventoId,TipoEventoId");
 
-            var queryCount = new StringBuilder("select count(e.*)");
-            MontaQueryFrom(queryCount);
-            MontaQueryFiltro(tipoCalendarioId, tipoEventoId, dataInicio, dataFim, nomeEvento, queryCount);
-            retornoPaginado.TotalRegistros = await database.Conexao.QueryFirstOrDefaultAsync<int>(queryCount.ToString(), new
-            {
-                tipoCalendarioId,
-                tipoEventoId,
-                nomeEvento,
-                dataInicio,
-                dataFim
-            });
+            //var queryCount = new StringBuilder("select count(e.*)");
+            //MontaQueryFrom(queryCount);
+            //MontaQueryFiltro(tipoCalendarioId, tipoEventoId, dataInicio, dataFim, nomeEvento, queryCount, dreId, ueId);
+            //retornoPaginado.TotalRegistros = await database.Conexao.QueryFirstOrDefaultAsync<int>(queryCount.ToString(), new
+            //{
+            //    tipoCalendarioId,
+            //    tipoEventoId,
+            //    nomeEvento,
+            //    dataInicio,
+            //    dataFim,
+            //    dreId = dreId,
+            //    ueId = ueId
+            //});
 
-            retornoPaginado.TotalPaginas = (int)Math.Ceiling((double)retornoPaginado.TotalRegistros / paginacao.QuantidadeRegistros);
+            //retornoPaginado.TotalPaginas = (int)Math.Ceiling((double)retornoPaginado.TotalRegistros / paginacao.QuantidadeRegistros);
 
             return retornoPaginado;
         }
@@ -90,16 +160,13 @@ namespace SME.SGP.Dados.Repositorios
 
             if (!string.IsNullOrEmpty(calendarioEventosMesesFiltro.DreId))
                 query.AppendLine("and e.dre_id = @DreId");
-
             if (calendarioEventosMesesFiltro.IdTipoCalendario > 0)
                 query.AppendLine("and e.tipo_calendario_id = @IdTipoCalendario");
-
             if (!string.IsNullOrEmpty(calendarioEventosMesesFiltro.UeId))
                 query.AppendLine("and e.ue_id = @UeId");
 
             if (calendarioEventosMesesFiltro.EhEventoSme)
                 query.AppendLine("and e.ue_id is null and e.dre_id is null");
-
             query.AppendLine("union distinct");
             query.AppendLine("select id, e.descricao, ");
             query.AppendLine("case");
@@ -134,6 +201,47 @@ namespace SME.SGP.Dados.Repositorios
             });
         }
 
+        public async Task<IEnumerable<Evento>> ObterEventosPorRecorrencia(long eventoId, long eventoPaiId, DateTime dataEvento)
+        {
+            var query = "select * from evento where id <> @eventoId and evento_pai_id = @eventoPaiId and data_inicio ::date >= @dataEvento ";
+            return await database.Conexao.QueryAsync<Evento>(query, new { eventoId, eventoPaiId, dataEvento });
+        }
+
+        public IEnumerable<Evento> ObterEventosPorTipoDeCalendarioDreUe(long tipoCalendarioId, string dreId, string ueId)
+        {
+            StringBuilder query = new StringBuilder();
+            MontaQueryCabecalho(query);
+            MontaQueryFrom(query);
+            MontaFiltroTipoCalendario(query);
+
+            if (!string.IsNullOrEmpty(dreId))
+                query.AppendLine("and e.dre_id = @dreId and e.ue_id is null");
+            else if (string.IsNullOrEmpty(ueId))
+                query.AppendLine("and e.dre_id is null and e.ue_id is null");
+
+            if (!string.IsNullOrEmpty(ueId))
+            {
+                query.AppendLine("UNION");
+                MontaQueryCabecalho(query);
+                MontaQueryFrom(query);
+                MontaFiltroTipoCalendario(query);
+                query.AppendLine("and e.dre_id = @dreId and e.ue_id = @ueId");
+            }
+            else if (!string.IsNullOrEmpty(dreId))
+                query.AppendLine("and e.ue_id is null");
+
+            if (!string.IsNullOrEmpty(dreId) || !string.IsNullOrEmpty(ueId))
+            {
+                query.AppendLine("UNION");
+                MontaQueryCabecalho(query);
+                MontaQueryFrom(query);
+                MontaFiltroTipoCalendario(query);
+                query.AppendLine("and e.dre_id is null and e.ue_id is null");
+            }
+
+            return database.Conexao.Query<Evento>(query.ToString(), new { tipoCalendarioId, dreId, ueId });
+        }
+
         public async Task<IEnumerable<Evento>> ObterEventosPorTipoETipoCalendario(long tipoEventoCodigo, long tipoCalendarioId)
         {
             var query = new StringBuilder();
@@ -148,6 +256,62 @@ namespace SME.SGP.Dados.Repositorios
                 tipoEventoCodigo,
                 tipoCalendarioId
             });
+        }
+
+        public Evento ObterPorWorkflowId(long workflowId)
+        {
+            var query = @"select
+	                e.id,
+	                e.nome,
+	                e.descricao,
+	                e.data_inicio,
+	                e.data_fim,
+	                e.dre_id,
+	                e.ue_id,
+	                e.letivo,
+	                e.feriado_id,
+	                e.tipo_calendario_id,
+	                e.tipo_evento_id,
+	                e.criado_em,
+	                e.criado_por,
+	                e.alterado_em,
+	                e.alterado_por,
+	                e.criado_rf,
+	                e.alterado_rf,
+	                e.status,
+                    e.wf_aprovacao_id as WorkflowAprovacaoId,
+	                et.id as TipoEventoId,
+	                et.id,
+	                et.codigo,
+	                et.ativo,
+	                et.tipo_data,
+	                et.descricao,
+	                et.excluido,
+                    tc.id as TipoCalendarioId,
+                    tc.Nome,
+                    tc.Ano_Letivo,
+                    tc.Situacao
+                from
+	                evento e
+                inner join evento_tipo et on
+	                e.tipo_evento_id = et.id
+                inner join tipo_calendario tc
+                on e.tipo_calendario_id = tc.id
+                where et.ativo = true
+	            and et.excluido = false
+	            and e.excluido = false
+                and e.wf_aprovacao_id = @workflowId ";
+
+            return database.Conexao.Query<Evento, EventoTipo, TipoCalendario, Evento>(query.ToString(), (evento, tipoEvento, tipoCalendario) =>
+           {
+               evento.AdicionarTipoEvento(tipoEvento);
+               evento.TipoCalendario = tipoCalendario;
+               return evento;
+           }, new
+           {
+               workflowId
+           },
+            splitOn: "EventoId,TipoEventoId,TipoCalendarioId").FirstOrDefault();
         }
 
         public async Task<IEnumerable<EventosPorDiaRetornoQueryDto>> ObterQuantidadeDeEventosPorDia(CalendarioEventosFiltroDto calendarioEventosMesesFiltro, int mes)
@@ -274,6 +438,45 @@ namespace SME.SGP.Dados.Repositorios
             });
         }
 
+        public async Task<bool> TemEventoNosDiasETipo(DateTime dataInicio, DateTime dataFim, TipoEventoEnum tipoEventoCodigo, long tipoCalendarioId, string UeId, string DreId)
+        {
+            var query = @"select count(e.id) from evento e
+                inner join
+            evento_tipo et
+            on e.tipo_evento_id = et.id
+                where
+            et.codigo = @tipoEventoCodigo
+            and et.ativo = true
+	        and et.excluido = false
+	        and e.excluido = false
+            and e.ue_id = @ueId
+            and e.dre_id = @dreId
+             and ((e.data_inicio <= TO_DATE(@dataInicio, 'yyyy/mm/dd') and e.data_fim >= TO_DATE(@dataInicio, 'yyyy/mm/dd'))
+              or (e.data_inicio <= TO_DATE(@dataFim, 'yyyy/mm/dd') and e.data_fim >= TO_DATE(@dataFim, 'yyyy/mm/dd'))
+              or (e.data_inicio >= TO_DATE(@dataInicio, 'yyyy/mm/dd') and e.data_fim <= TO_DATE(@dataFim, 'yyyy/mm/dd'))
+              )
+            and e.tipo_calendario_id = @tipoCalendarioId";
+
+            return (await database.Conexao.QueryFirstAsync<int>(query.ToString(), new
+            {
+                dataInicio = dataInicio.ToString("yyyy-MM-dd", DateTimeFormatInfo.InvariantInfo),
+                dataFim = dataFim.ToString("yyyy-MM-dd", DateTimeFormatInfo.InvariantInfo),
+                tipoEventoCodigo = (int)tipoEventoCodigo,
+                tipoCalendarioId,
+                UeId,
+                DreId
+            })) > 0;
+        }
+
+        private static void MontaFiltroTipoCalendario(StringBuilder query)
+        {
+            query.AppendLine("where");
+            query.AppendLine("e.excluido = false");
+            query.AppendLine("and et.ativo = true");
+            query.AppendLine("and et.excluido = false");
+            query.AppendLine("and e.tipo_calendario_id = @tipoCalendarioId");
+        }
+
         private static void MontaQueryCabecalho(StringBuilder query)
         {
             query.AppendLine("select");
@@ -303,12 +506,14 @@ namespace SME.SGP.Dados.Repositorios
             query.AppendLine("et.excluido");
         }
 
-        private static void MontaQueryFiltro(long? tipoCalendarioId, long? tipoEventoId, DateTime? dataInicio, DateTime? dataFim, string nomeEvento, StringBuilder query)
+        private static void MontaQueryFiltro(long? tipoCalendarioId, long? tipoEventoId, DateTime? dataInicio, DateTime? dataFim, string nomeEvento, StringBuilder query, string dreId, string ueId)
         {
             query.AppendLine("where");
             query.AppendLine("e.excluido = false");
             query.AppendLine("and et.ativo = true");
             query.AppendLine("and et.excluido = false");
+            query.AppendLine($"and e.dre_id {(string.IsNullOrEmpty(dreId) ? "is null" : "= @dreId")}");
+            query.AppendLine($"and e.ue_id {(string.IsNullOrEmpty(ueId) ? "is null" : "=  @ueId")}");
 
             if (tipoCalendarioId.HasValue)
                 query.AppendLine("and e.tipo_calendario_id = @tipoCalendarioId");
@@ -321,10 +526,10 @@ namespace SME.SGP.Dados.Repositorios
                 query.AppendLine("and e.data_inicio >= @dataInicio");
                 query.AppendLine("and (e.data_fim is null OR e.data_fim <= @dataFim)");
             }
+
             if (!string.IsNullOrWhiteSpace(nomeEvento))
-            {
+
                 query.AppendLine("and lower(f_unaccent(e.nome)) LIKE @nomeEvento");
-            }
         }
 
         private static void MontaQueryFrom(StringBuilder query)
@@ -338,6 +543,73 @@ namespace SME.SGP.Dados.Repositorios
         private static void MontaQueryPaginacao(StringBuilder query, Paginacao paginacao)
         {
             query.AppendFormat(" OFFSET {0} ROWS FETCH NEXT {1} ROWS ONLY", paginacao.QuantidadeRegistrosIgnorados, paginacao.QuantidadeRegistros);
+        }
+
+        private void MontaQueryFromWhereParaCriadorDeEventoEmAprovacaoERecusado(StringBuilder query)
+        {
+            query.AppendLine("from");
+            query.AppendLine("evento e");
+            query.AppendLine("inner");
+            query.AppendLine("join evento_tipo et on");
+            query.AppendLine("e.tipo_evento_id = et.id");
+            query.AppendLine("inner");
+            query.AppendLine("join v_abrangencia a on");
+            query.AppendLine("a.ue_codigo = e.ue_id");
+            query.AppendLine("and a.dre_codigo = e.dre_id");
+            query.AppendLine("and a.usuario_id = @usuarioId");
+            query.AppendLine("and a.usuario_perfil = @usuarioPerfil");
+            query.AppendLine("where");
+            query.AppendLine("et.ativo = true");
+            query.AppendLine("and et.excluido = false");
+            query.AppendLine("and e.excluido = false");
+            query.AppendLine("and e.status in (2, 3)");
+            query.AppendLine("and e.criado_rf = @usuarioRf");
+        }
+
+        private void MontaQueryFromWhereParaSupervisorDiretorVisualizarEmAprovacao(StringBuilder query)
+        {
+            query.AppendLine("from");
+            query.AppendLine("evento e");
+            query.AppendLine("inner");
+            query.AppendLine("join evento_tipo et on");
+            query.AppendLine("e.tipo_evento_id = et.id");
+            query.AppendLine("inner");
+            query.AppendLine("join v_abrangencia a on");
+            query.AppendLine("a.ue_codigo = e.ue_id");
+            query.AppendLine("and a.dre_codigo = e.dre_id");
+            query.AppendLine("and a.usuario_id = @usuarioId");
+            query.AppendLine("and a.usuario_perfil = @usuarioPerfil");
+            query.AppendLine("where");
+            query.AppendLine("et.ativo = true");
+            query.AppendLine("and et.excluido = false");
+            query.AppendLine("and e.excluido = false");
+            query.AppendLine("and e.status = 2");
+        }
+
+        private void MontaQueryFromWhereParaVisualizacaoGeral(StringBuilder query)
+        {
+            query.AppendLine("from");
+            query.AppendLine("evento e");
+            query.AppendLine("inner");
+            query.AppendLine("join evento_tipo et on");
+            query.AppendLine("e.tipo_evento_id = et.id");
+            query.AppendLine("left");
+            query.AppendLine("join v_abrangencia a on");
+            query.AppendLine("a.ue_codigo = e.ue_id");
+            query.AppendLine("and a.dre_codigo = e.dre_id");
+            query.AppendLine("and a.usuario_id = @usuarioId");
+            query.AppendLine("and a.usuario_perfil = @usuarioPerfil");
+            query.AppendLine("where");
+            query.AppendLine("et.ativo = true");
+            query.AppendLine("and et.excluido = false");
+            query.AppendLine("and e.status = 1");
+            query.AppendLine("and e.excluido = false");
+
+            query.AppendLine("and((a.usuario_id is null");
+            query.AppendLine("and(e.dre_id is null");
+            query.AppendLine("and e.ue_id is null))");
+
+            query.AppendLine("or(a.usuario_id is not null))");
         }
     }
 }
