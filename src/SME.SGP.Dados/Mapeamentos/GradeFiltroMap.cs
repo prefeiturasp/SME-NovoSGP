@@ -1,7 +1,4 @@
-﻿using SME.SGP.Dominio.Entidades;
-using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using SME.SGP.Dominio;
 
 namespace SME.SGP.Dados.Mapeamentos
 {
