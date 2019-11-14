@@ -35,3 +35,10 @@ Para solicitar um processamento simplesmente faça a chamada abaixo:
  - Preferencialmente passe parâmetros de tipos primitivos, é possível a passagem de classe como parâmetro, porém entenda que essa classe será serializada e deserializada adicionando custo de processamento e pontos de falha
  - A injeção de dependencia deve ser do tipo Transient, para mais informações sugiro a [seguinte leitura](https://medium.com/volosoft/asp-net-core-dependency-injection-best-practices-tips-tricks-c6e9c67f9d96#9d32)
  - Separe um tempo de leitura para [as boas práticas do Hangfire](https://docs.hangfire.io/en/latest/best-practices.html)
+ 
+## Backlog para futuras implementações
+
+ - Criar método no cliente para obter os status por correlationID
+ - Talvez seja interessante direcionar a chamada do cliente para um método interno da biblioteca para possibilitar sinalização de erros para ferramentas externas. Hoje só é possivel acompanhar os erros no dashboard
+ - Disponibilizar a passagem de parâmetros como Intervalo de Pooling no BD, Quantidade de tentativas no caso de falha, nome do schema
+ - Criar formas de criar diferentes tipos de JobStorage, atualmente estamos usando o PostegreSQLStorage

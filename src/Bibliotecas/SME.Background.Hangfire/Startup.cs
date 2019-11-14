@@ -35,8 +35,7 @@ namespace SME.Background.Hangfire
                 .UseFilter<AutomaticRetryAttribute>(new AutomaticRetryAttribute() { Attempts = 0 })
                 .UsePostgreSqlStorage(this.configuration.GetConnectionString("SGP-Postgres"), new PostgreSqlStorageOptions()
                 {
-                    QueuePollInterval = TimeSpan.FromSeconds(1),
-                    InvisibilityTimeout = TimeSpan.FromMinutes(1),
+                    QueuePollInterval = TimeSpan.FromSeconds(10),
                     SchemaName = "hangfire"
                 }));
         }

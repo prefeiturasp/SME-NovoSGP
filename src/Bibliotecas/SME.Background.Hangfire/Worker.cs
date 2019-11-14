@@ -63,7 +63,6 @@ namespace SME.Background.Hangfire
                 .UsePostgreSqlStorage(configuration.GetConnectionString(connectionString), new PostgreSqlStorageOptions()
                 {
                     QueuePollInterval = TimeSpan.FromSeconds(1),
-                    InvisibilityTimeout = TimeSpan.FromMinutes(1),
                     SchemaName = "hangfire"
                 });
 
