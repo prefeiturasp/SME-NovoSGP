@@ -276,14 +276,18 @@ namespace SME.SGP.Dados.Repositorios
 	                        ano_letivo,
 	                        ano,
 	                        modalidade_codigo,
-	                        semestre)
+	                        semestre,
+                            qt_duracao_aula,
+                            tipo_turno)
                         values(@turma_id,
                         @abrangencia_ues_id,
                         @nome,
                         @ano_letivo,
                         @ano,
                         @modalidade_codigo,
-                        @semestre ) returning id";
+                        @semestre,
+                        @qt_duracao_aula,
+                        @tipo_turno) returning id";
 
             var resultadoTask = await database.Conexao.QueryAsync<long>(query, new
             {
@@ -293,7 +297,9 @@ namespace SME.SGP.Dados.Repositorios
                 ano_letivo = abrangenciaTurma.AnoLetivo,
                 ano = abrangenciaTurma.Ano,
                 modalidade_codigo = int.Parse(abrangenciaTurma.CodigoModalidade),
-                semestre = abrangenciaTurma.Semestre
+                semestre = abrangenciaTurma.Semestre,
+                qt_duracao_aula = abrangenciaTurma.DuracaoTurno,
+                tipo_turno = abrangenciaTurma.TipoTurno
             }); ;
 
             return resultadoTask.Single();
@@ -302,7 +308,7 @@ namespace SME.SGP.Dados.Repositorios
         public async Task<long> SalvarUe(AbrangenciaUeRetornoEolDto abrangenciaUe, long idAbragenciaDre)
         {
             var query = @"insert into abrangencia_ues
-            (ue_id, abrangencia_dres_id, nome)values(@ue_id, @abrangencia_dres_id, @nome)
+            (ue_id, abrangencia_dres_id, nome, tipo_escola)values(@ue_id, @abrangencia_dres_id, @nome, @tipoEscola)
             RETURNING id";
 
             var resultadoTask = await database.Conexao.QueryAsync<long>(query, new
@@ -310,6 +316,7 @@ namespace SME.SGP.Dados.Repositorios
                 ue_id = abrangenciaUe.Codigo,
                 abrangencia_dres_id = idAbragenciaDre,
                 nome = abrangenciaUe.Nome,
+                tipoEscola = abrangenciaUe.CodTipoEscola
             });
 
             return resultadoTask.Single();
