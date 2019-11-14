@@ -120,11 +120,6 @@ namespace SME.SGP.Dominio
             return !string.IsNullOrEmpty(Email);
         }
 
-        public bool PodeVisualizarEventoLiberacaoExcepcionalAguardandoAprovacao(Guid perfilAtual)
-        {
-            return (perfilAtual == PERFIL_DIRETOR || perfilAtual == PERFIL_SUPERVISOR);
-        }
-
         public bool PossuiPerfilDre()
         {
             return Perfis != null && Perfis.Any(c => c.Tipo == TipoPerfil.DRE);
@@ -156,6 +151,11 @@ namespace SME.SGP.Dominio
         public bool PossuiPerfilUe()
         {
             return Perfis != null && Perfis.Any(c => c.Tipo == TipoPerfil.UE);
+        }
+
+        public bool TemPerfilSupervisorOuDiretor(Guid perfilAtual)
+        {
+            return (perfilAtual == PERFIL_DIRETOR || perfilAtual == PERFIL_SUPERVISOR);
         }
 
         public bool TokenRecuperacaoSenhaEstaValido()
