@@ -14,7 +14,14 @@ export const CaixaTextoAno = styled.div`
 
 export const Row = styled.div`
   [class*='col-'] {
-    padding: 0 !important;
-    background-color: red;
+    padding: 0 8px !important;
+  }
+
+  [class*='col-']:first-child {
+    padding-left: 0px !important;
+  }
+
+  [class*='col-']:last-child {
+    padding-right: 0px !important;
   }
 `;

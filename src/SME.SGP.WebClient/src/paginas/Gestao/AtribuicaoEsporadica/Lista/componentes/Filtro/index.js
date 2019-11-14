@@ -7,9 +7,14 @@ import * as Yup from 'yup';
 
 // Componentes
 import { Grid, Localizador } from '~/componentes';
+import DreDropDown from './componentes/DreDropDown';
+import UeDropDown from './componentes/UeDropDown';
 
 // Styles
 import { CaixaAno, CaixaTextoAno, Row } from './styles';
+
+// Servico
+import AtribuicaoEsporadicaServico from '~/servicos/Paginas/AtribuicaoEsporadica';
 
 function Filtro({ onFiltrar }) {
   const [anoLetivo, setAnoLetivo] = useState('2019');
@@ -19,6 +24,7 @@ function Filtro({ onFiltrar }) {
     ueId: null,
     rf: null,
   });
+  const [dreId, setDreId] = useState('');
 
   const validacoes = () => {
     return Yup.object({
@@ -30,6 +36,11 @@ function Filtro({ onFiltrar }) {
     console.log(valores);
     onFiltrar(valores);
   };
+
+  useEffect(async () => {
+    const { data } = await AtribuicaoEsporadicaServico.buscarDres();
+    console.log(data);
+  });
 
   return (
     <Formik
@@ -48,13 +59,15 @@ function Filtro({ onFiltrar }) {
                 <CaixaTextoAno>{anoLetivo}</CaixaTextoAno>
               </CaixaAno>
             </Grid>
+            <Grid cols={5}>
+              <DreDropDown form={form} onChange={valor => setDreId(valor)} />
+            </Grid>
+            <Grid cols={5}>
+              <UeDropDown dreId={dreId} form={form} onChange={() => null} />
+            </Grid>
           </Row>
           <Row className="row">
-            <Grid cols={12}>
-              <div className="row">
-                <Localizador onChange={valor => console.log(valor)} />
-              </div>
-            </Grid>
+            <Localizador form={form} onChange={valor => console.log(valor)} />
           </Row>
         </Form>
       )}

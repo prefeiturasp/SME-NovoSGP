@@ -10,3 +10,4 @@ export { default as SelectComponent } from './select';
 export { default as Loader } from './loader';
 export { default as Localizador } from './Localizador';
 export { default as Grid } from './grid';
+export { default as DataTable } from './table/dataTable';
