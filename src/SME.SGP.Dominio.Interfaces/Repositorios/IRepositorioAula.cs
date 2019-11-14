@@ -2,6 +2,6 @@
 {
     public interface IRepositorioAula : IRepositorioBase<Aula>
     {
-        bool UsuarioPodeCriarAulaNaUeETurma(Aula aula);
+        bool UsuarioPodeCriarAulaNaUeTurmaEModalidade(Aula aula, ModalidadeTipoCalendario modalidade);
     }
 }
