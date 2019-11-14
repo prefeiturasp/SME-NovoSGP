@@ -27,6 +27,7 @@ const Container = styled.div`
     line-height: normal;
     letter-spacing: normal;
     color: #353535;
+    margin-bottom: 0.3rem;
   }
 `;
 

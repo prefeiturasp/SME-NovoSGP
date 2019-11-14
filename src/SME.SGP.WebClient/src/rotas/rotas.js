@@ -7,6 +7,7 @@ import PlanoCiclo from '../paginas/Planejamento/PlanoCiclo/planoCiclo';
 import PlanoAnual from '../paginas/Planejamento/PlanoAnual/planoAnual';
 import AtribuicaoSupervisorLista from '../paginas/Gestao/AtribuicaoSupervisor/atribuicaoSupervisorLista';
 import AtribuicaoSupervisorCadastro from '../paginas/Gestao/AtribuicaoSupervisor/atribuicaoSupervisorCadastro';
+import AtribuicaoEsporadicaLista from '../paginas/Gestao/AtribuicaoEsporadica/Lista';
 import DetalheNotificacao from '~/paginas/Notificacoes/Detalhes/detalheNotificacao';
 import NotificacoesLista from '~/paginas/Notificacoes/Lista/listaNotificacoes';
 import RotaAutenticadaEstruturada from './rotaAutenticadaEstruturada';
@@ -173,6 +174,17 @@ export default function Rotas() {
     tipo: RotasTipo.EstruturadaAutenticada,
     temPermissionamento: true,
     chavePermissao: RotasDto.ATRIBUICAO_SUPERVISOR_LISTA,
+  });
+
+  rotas.set('/gestao/atribuicao-esporadica/', {
+    breadcrumbName: 'Atribuição Esporádica',
+    menu: ['Gestão'],
+    parent: '/',
+    component: AtribuicaoEsporadicaLista,
+    exact: true,
+    tipo: RotasTipo.EstruturadaAutenticada,
+    temPermissionamento: false,
+    //chavePermissao: RotasDto.ATRIBUICAO_SUPERVISOR_LISTA,
   });
 
   rotas.set('/notificacoes/:id', {
