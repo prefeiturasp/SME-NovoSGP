@@ -22,7 +22,6 @@ namespace SME.SGP.Dominio.Servicos
 
         public async Task Salvar(Aula aula, Usuario usuario)
         {
-            aula.TipoCalendarioId = 1;
             var tipoCalendario = repositorioTipoCalendario.ObterPorId(aula.TipoCalendarioId);
             if (tipoCalendario == null)
                 throw new NegocioException("O tipo de calendário não foi encontrado.");
