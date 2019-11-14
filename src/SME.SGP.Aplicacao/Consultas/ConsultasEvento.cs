@@ -37,7 +37,8 @@ namespace SME.SGP.Aplicacao
                         filtroEventosDto.DreId,
                         filtroEventosDto.UeId,
                         usuario,
-                        perfilAtual));
+                        perfilAtual,
+                        usuario.TemPerfilSupervisorOuDiretor(perfilAtual)));
         }
 
         public Task<IEnumerable<CalendarioEventosNoDiaRetornoDto>> ObterEventosPorDia(CalendarioEventosFiltroDto calendarioEventosMesesFiltro, int mes, int dia)

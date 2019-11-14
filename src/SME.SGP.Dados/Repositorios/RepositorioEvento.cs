@@ -78,7 +78,7 @@ namespace SME.SGP.Dados.Repositorios
         }
 
         public async Task<PaginacaoResultadoDto<Evento>> Listar(long? tipoCalendarioId, long? tipoEventoId, string nomeEvento, DateTime? dataInicio, DateTime? dataFim,
-            Paginacao paginacao, string dreId, string ueId, Usuario usuario, Guid usuarioPerfil)
+            Paginacao paginacao, string dreId, string ueId, Usuario usuario, Guid usuarioPerfil, bool usuarioTemPerfilSupervisorOuDiretor)
         {
             StringBuilder query = new StringBuilder();
             var queryPaginacao = string.Empty;
@@ -94,10 +94,12 @@ namespace SME.SGP.Dados.Repositorios
             MontaQueryCabecalho(query);
             MontaQueryFromWhereParaCriadorDeEventoEmAprovacaoERecusado(query, tipoCalendarioId, tipoEventoId, dataInicio, dataFim, nomeEvento, dreId, ueId);
 
-            //Verificar se é Diretor/Supervisor
-            query.AppendLine("union distinct");
-            MontaQueryCabecalho(query);
-            MontaQueryFromWhereParaSupervisorDiretorVisualizarEmAprovacao(query, tipoCalendarioId, tipoEventoId, dataInicio, dataFim, nomeEvento, dreId, ueId);
+            if (usuarioTemPerfilSupervisorOuDiretor)
+            {
+                query.AppendLine("union distinct");
+                MontaQueryCabecalho(query);
+                MontaQueryFromWhereParaSupervisorDiretorVisualizarEmAprovacao(query, tipoCalendarioId, tipoEventoId, dataInicio, dataFim, nomeEvento, dreId, ueId);
+            }
 
             query.AppendLine(queryPaginacao);
 
@@ -135,11 +137,14 @@ namespace SME.SGP.Dados.Repositorios
             queryCount.AppendLine(queryCountCabecalho);
             MontaQueryFromWhereParaCriadorDeEventoEmAprovacaoERecusado(queryCount, tipoCalendarioId, tipoEventoId, dataInicio, dataFim, nomeEvento, dreId, ueId);
 
-            queryCount.AppendLine("union distinct");
-            queryCount.AppendLine(queryCountCabecalho);
-            MontaQueryFromWhereParaSupervisorDiretorVisualizarEmAprovacao(queryCount, tipoCalendarioId, tipoEventoId, dataInicio, dataFim, nomeEvento, dreId, ueId);
+            if (usuarioTemPerfilSupervisorOuDiretor)
+            {
+                queryCount.AppendLine("union distinct");
+                queryCount.AppendLine(queryCountCabecalho);
+                MontaQueryFromWhereParaSupervisorDiretorVisualizarEmAprovacao(queryCount, tipoCalendarioId, tipoEventoId, dataInicio, dataFim, nomeEvento, dreId, ueId);
+            }
 
-            retornoPaginado.TotalRegistros = await database.Conexao.QueryFirstOrDefaultAsync<int>(queryCount.ToString(), new
+            retornoPaginado.TotalRegistros = (await database.Conexao.QueryAsync<int>(queryCount.ToString(), new
             {
                 tipoCalendarioId,
                 tipoEventoId,
@@ -151,7 +156,7 @@ namespace SME.SGP.Dados.Repositorios
                 usuarioId = usuario.Id,
                 usuarioPerfil,
                 usuarioRf = usuario.CodigoRf
-            });
+            })).Sum();
 
             retornoPaginado.TotalPaginas = (int)Math.Ceiling((double)retornoPaginado.TotalRegistros / paginacao.QuantidadeRegistros);
 
@@ -554,8 +559,11 @@ namespace SME.SGP.Dados.Repositorios
             query.AppendLine("and e.status in (2, 3)");
             query.AppendLine("and e.criado_rf = @usuarioRf");
 
-            query.AppendLine($"and e.dre_id {(string.IsNullOrEmpty(dreId) ? "is null" : "= @dreId")}");
-            query.AppendLine($"and e.ue_id {(string.IsNullOrEmpty(ueId) ? "is null" : "=  @ueId")}");
+            if (!string.IsNullOrEmpty(dreId))
+                query.AppendLine($"and e.dre_id = @dreId");
+
+            if (!string.IsNullOrEmpty(ueId))
+                query.AppendLine($"and e.ue_id =  @ueId");
 
             if (tipoCalendarioId.HasValue)
                 query.AppendLine("and e.tipo_calendario_id = @tipoCalendarioId");
@@ -636,8 +644,11 @@ namespace SME.SGP.Dados.Repositorios
 
             query.AppendLine("or(a.usuario_id is not null))");
 
-            //query.AppendLine($"and e.dre_id {(string.IsNullOrEmpty(dreId) ? "is null" : "= @dreId")}");
-            //query.AppendLine($"and e.ue_id {(string.IsNullOrEmpty(ueId) ? "is null" : "=  @ueId")}");
+            if (!string.IsNullOrEmpty(dreId))
+                query.AppendLine($"and e.dre_id = @dreId");
+
+            if (!string.IsNullOrEmpty(ueId))
+                query.AppendLine($"and e.ue_id =  @ueId");
 
             if (tipoCalendarioId.HasValue)
                 query.AppendLine("and e.tipo_calendario_id = @tipoCalendarioId");
