@@ -179,7 +179,8 @@ namespace SME.SGP.Dominio
                 if (string.IsNullOrEmpty(evento.UeId))
                     throw new NegocioException("Para este tipo de evento, deve ser informado uma Ue.");
 
-                if (!periodos.Any(c => c.PeriodoInicio >= DataInicio && c.PeriodoFim >= DataInicio) && !dataConfirmada)
+                if (periodos.Any(a => (a.PeriodoInicio.Date >= this.DataInicio.Date && this.DataInicio.Date <= a.PeriodoInicio.Date) ||
+                                                  (a.PeriodoInicio.Date >= this.DataFim.Date && this.DataFim.Date <= a.PeriodoInicio.Date)))
                     throw new NegocioException("Esta data é fora do período escolar, tem certeza que deseja manter esta data? (Sim/Não).", 602);
             }
         }
