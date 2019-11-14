@@ -27,3 +27,23 @@ export function zeraCalendario() {
     type: '@calendarioEscolar/zeraCalendario',
   };
 }
+
+export function salvarEventoCalendarioEdicao(
+  tipoCalendario,
+  eventoSme,
+  dre,
+  unidadeEscolar,
+  mes,
+  dia
+) {
+  return {
+    type: '@calendarioEscolar/salvarEventoCalendarioEdicao',
+    payload: {
+      tipoCalendario,
+      eventoSme,
+      unidadeEscolar,
+      mes,
+      dia,
+    },
+  };
+}
