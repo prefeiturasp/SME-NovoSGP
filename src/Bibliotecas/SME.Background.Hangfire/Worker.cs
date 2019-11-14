@@ -14,13 +14,15 @@ namespace SME.Background.Hangfire
     {
         readonly IConfiguration configuration;
         readonly IServiceCollection serviceCollection;
+        readonly string connectionString;
         IWebHost host;
         BackgroundJobServer hangFireServer;
 
-        public Worker(IConfiguration configuration, IServiceCollection serviceCollection)
+        public Worker(IConfiguration configuration, IServiceCollection serviceCollection, string connectionString)
         {
             this.configuration = configuration;
             this.serviceCollection = serviceCollection;
+            this.connectionString = connectionString;
         }
 
         public void Dispose()
@@ -58,7 +60,7 @@ namespace SME.Background.Hangfire
                 .UseRecommendedSerializerSettings()
                 .UseActivator<HangfireActivator>(new HangfireActivator(serviceCollection.BuildServiceProvider()))
                 .UseFilter<AutomaticRetryAttribute>(new AutomaticRetryAttribute() { Attempts = 0 })
-                .UsePostgreSqlStorage(configuration.GetConnectionString("SGP-Postgres"), new PostgreSqlStorageOptions()
+                .UsePostgreSqlStorage(configuration.GetConnectionString(connectionString), new PostgreSqlStorageOptions()
                 {
                     QueuePollInterval = TimeSpan.FromSeconds(1),
                     InvisibilityTimeout = TimeSpan.FromMinutes(1),
