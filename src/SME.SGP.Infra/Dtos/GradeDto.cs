@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Text;
 
-namespace SME.SGP.Infra.Dtos
+namespace SME.SGP.Infra
 {
     public class GradeDto
     {
