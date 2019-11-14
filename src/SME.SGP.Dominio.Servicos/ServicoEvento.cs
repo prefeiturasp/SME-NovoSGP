@@ -341,7 +341,7 @@ namespace SME.SGP.Dominio.Servicos
 
         private void ValidaLiberacaoExcepcional(Evento evento, Usuario usuario, IEnumerable<PeriodoEscolar> periodos, bool dataConfirmada)
         {
-            evento.PodeCriarEventoLiberacaoExcepcional(evento, usuario, dataConfirmada, periodos);
+            evento.PodeCriarEventoLiberacaoExcepcional(usuario, dataConfirmada, periodos);
         }
 
         private async Task VerificarParticularidadesSME(Evento evento, Usuario usuario, IEnumerable<PeriodoEscolar> periodos, bool dataConfirmada)
