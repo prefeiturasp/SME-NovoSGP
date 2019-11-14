@@ -4,6 +4,9 @@ import PropTypes from 'prop-types';
 // Componentes
 import { Button, Colors } from '~/componentes';
 
+// Styles
+import { ButtonGroupEstilo } from './styles';
+
 function ButtonGroup({
   somenteConsulta,
   permissoesTela,
@@ -13,7 +16,7 @@ function ButtonGroup({
   onClickNovo,
 }) {
   return (
-    <div className="col-md-12 d-flex justify-content-end pb-4 p-0">
+    <ButtonGroupEstilo className="col-md-12 d-flex justify-content-end p-0">
       <Button
         label="Voltar"
         icon="arrow-left"
@@ -39,7 +42,7 @@ function ButtonGroup({
         onClick={onClickNovo}
         disabled={somenteConsulta || !permissoesTela.podeIncluir}
       />
-    </div>
+    </ButtonGroupEstilo>
   );
 }
 
