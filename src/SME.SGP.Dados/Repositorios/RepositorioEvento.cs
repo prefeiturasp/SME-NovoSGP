@@ -94,6 +94,7 @@ namespace SME.SGP.Dados.Repositorios
             MontaQueryCabecalho(query);
             MontaQueryFromWhereParaCriadorDeEventoEmAprovacaoERecusado(query, tipoCalendarioId, tipoEventoId, dataInicio, dataFim, nomeEvento, dreId, ueId);
 
+            //Verificar se é Diretor/Supervisor
             query.AppendLine("union distinct");
             MontaQueryCabecalho(query);
             MontaQueryFromWhereParaSupervisorDiretorVisualizarEmAprovacao(query, tipoCalendarioId, tipoEventoId, dataInicio, dataFim, nomeEvento, dreId, ueId);
@@ -635,8 +636,8 @@ namespace SME.SGP.Dados.Repositorios
 
             query.AppendLine("or(a.usuario_id is not null))");
 
-            query.AppendLine($"and e.dre_id {(string.IsNullOrEmpty(dreId) ? "is null" : "= @dreId")}");
-            query.AppendLine($"and e.ue_id {(string.IsNullOrEmpty(ueId) ? "is null" : "=  @ueId")}");
+            //query.AppendLine($"and e.dre_id {(string.IsNullOrEmpty(dreId) ? "is null" : "= @dreId")}");
+            //query.AppendLine($"and e.ue_id {(string.IsNullOrEmpty(ueId) ? "is null" : "=  @ueId")}");
 
             if (tipoCalendarioId.HasValue)
                 query.AppendLine("and e.tipo_calendario_id = @tipoCalendarioId");
