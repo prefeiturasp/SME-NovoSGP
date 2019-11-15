@@ -9,6 +9,5 @@ namespace SME.SGP.Dados.Repositorios
         public RepositorioGrade(ISgpContext conexao) : base(conexao)
         {
         }
-
     }
 }
