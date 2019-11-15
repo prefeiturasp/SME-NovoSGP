@@ -1,14 +1,63 @@
 ﻿using Newtonsoft.Json;
+using SME.SGP.Dominio;
 using SME.SGP.Infra;
 using System;
+using System.Collections.Generic;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
+using Xunit;
 
 namespace SME.SGP.Integracao.Teste
 {
     public static class TesteBase
     {
+        public static void AdicionarAula(TestServerFixture _fixture)
+        {
+            var jsonPost = JsonConvert.SerializeObject(new AulaDto
+            {
+                UeId = "094765",
+                DisciplinaId = "7",
+                TurmaId = "1992725",
+                TipoCalendarioId = 1,
+                TipoAula = Dominio.TipoAula.Normal,
+                Quantidade = 2,
+                DataAula = DateTime.Now.Date,
+                RecorrenciaAula = Dominio.RecorrenciaAula.AulaUnica
+            });
+
+            var respostaCadastroAula = TesteBase.ExecutePostAsync(_fixture, $"/api/v1/calendarios/professores/aulas", jsonPost);
+            Assert.True(respostaCadastroAula.IsSuccessStatusCode);
+        }
+
+        public static PeriodoEscolarListaDto AdicionarPeriodoEscolar(TestServerFixture _fixture)
+        {
+            PeriodoEscolarListaDto Dto = ObterPeriodoEscolarDto();
+
+            var jsonParaPost2 = new StringContent(JsonConvert.SerializeObject(Dto), Encoding.UTF8, "application/json");
+
+            var postResult2 = _fixture._clientApi.PostAsync("api/v1/periodo-escolar", jsonParaPost2).Result;
+
+            var a = postResult2.Content.ReadAsStringAsync().Result;
+            Assert.True(postResult2.IsSuccessStatusCode);
+            return Dto;
+        }
+
+        public static void AdicionarTipoCalendario(TestServerFixture _fixture)
+        {
+            var tipoCalendarioDto = new TipoCalendarioDto();
+            tipoCalendarioDto.AnoLetivo = 2019;
+            tipoCalendarioDto.Nome = "Teste Periodo Escolar";
+            tipoCalendarioDto.Periodo = Periodo.Anual;
+            tipoCalendarioDto.Modalidade = ModalidadeTipoCalendario.FundamentalMedio;
+            tipoCalendarioDto.Situacao = true;
+
+            var jsonParaPost = new StringContent(JsonConvert.SerializeObject(tipoCalendarioDto), UnicodeEncoding.UTF8, "application/json");
+            var postResult = _fixture._clientApi.PostAsync("api/v1/calendarios/tipos", jsonParaPost).Result;
+
+            Assert.True(postResult.IsSuccessStatusCode);
+        }
+
         public static HttpResponseMessage ExecuteDeleteAsync(TestServerFixture _fixture, string Url)
         {
             return _fixture._clientApi.DeleteAsync(Url).Result;
@@ -48,6 +97,41 @@ namespace SME.SGP.Integracao.Teste
                 new AuthenticationHeaderValue("Bearer", _fixture.GerarToken(permissoes));
 
             return _fixture;
+        }
+
+        private static PeriodoEscolarListaDto ObterPeriodoEscolarDto()
+        {
+            return new PeriodoEscolarListaDto
+            {
+                TipoCalendario = 1,
+                Periodos = new List<PeriodoEscolarDto>
+                {
+                    new PeriodoEscolarDto
+                    {
+                        Bimestre = 1,
+                        PeriodoInicio = DateTime.Now,
+                        PeriodoFim = DateTime.Now.AddMinutes(1)
+                    },
+                    new PeriodoEscolarDto
+                    {
+                        Bimestre = 2,
+                        PeriodoInicio = DateTime.Now.AddMinutes(2),
+                        PeriodoFim = DateTime.Now.AddMinutes(3)
+                    },
+                    new PeriodoEscolarDto
+                    {
+                        Bimestre = 3,
+                        PeriodoInicio = DateTime.Now.AddMinutes(4),
+                        PeriodoFim = DateTime.Now.AddMinutes(5)
+                    },
+                    new PeriodoEscolarDto
+                    {
+                        Bimestre = 4,
+                        PeriodoInicio = DateTime.Now.AddMinutes(6),
+                        PeriodoFim = DateTime.Now.AddMinutes(7)
+                    },
+                }
+            };
         }
     }
 }
