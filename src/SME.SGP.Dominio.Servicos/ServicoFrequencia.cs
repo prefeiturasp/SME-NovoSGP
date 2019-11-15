@@ -1,6 +1,6 @@
 ﻿using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
-using System.Linq;
+using System.Collections.Generic;
 
 namespace SME.SGP.Dominio.Servicos
 {
@@ -13,21 +13,22 @@ namespace SME.SGP.Dominio.Servicos
             this.repositorioFrequencia = repositorioFrequencia ?? throw new System.ArgumentNullException(nameof(repositorioFrequencia));
         }
 
-        public void ListarFrequenciaPorAula(long aulaId)
+        public List<RegistroFrequenciaDto> ObterListaFrequenciaPorAula(long aulaId)
         {
+            var listaFrequenciaDto = new List<RegistroFrequenciaDto>();
             var frequencias = repositorioFrequencia.ObterListaFrequenciaPorAula(aulaId);
-            for (int i = 0; i < frequencias.Count(); i++)
-            {
-            }
-            foreach (var frequencia in frequencias)
-            {
-                var registroFrequenciaDto = new RegistroFrequenciaDto
+            if (frequencias != null)
+                foreach (var frequencia in frequencias)
                 {
-                    CodigoAluno = frequencia.CodigoAluno,
-                    NumeroAula = frequencia.NumeroAula,
-                    Migrado = frequencia.Migrado,
-                };
-            }
+                    listaFrequenciaDto.Add(new RegistroFrequenciaDto
+                    {
+                        CodigoAluno = frequencia.CodigoAluno,
+                        NumeroAula = frequencia.NumeroAula,
+                        Migrado = frequencia.Migrado,
+                        Compareceu = false
+                    });
+                }
+            return listaFrequenciaDto;
         }
     }
 }
