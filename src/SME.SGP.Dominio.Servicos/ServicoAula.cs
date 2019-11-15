@@ -9,15 +9,18 @@ namespace SME.SGP.Dominio.Servicos
     {
         private readonly IRepositorioAula repositorioAula;
         private readonly IRepositorioTipoCalendario repositorioTipoCalendario;
+        private readonly IServicoDiaLetivo servicoDiaLetivo;
         private readonly IServicoEOL servicoEOL;
 
         public ServicoAula(IRepositorioAula repositorioAula,
                            IServicoEOL servicoEOL,
-                           IRepositorioTipoCalendario repositorioTipoCalendario)
+                           IRepositorioTipoCalendario repositorioTipoCalendario,
+                           IServicoDiaLetivo servicoDiaLetivo)
         {
             this.repositorioAula = repositorioAula ?? throw new System.ArgumentNullException(nameof(repositorioAula));
             this.servicoEOL = servicoEOL ?? throw new System.ArgumentNullException(nameof(servicoEOL));
             this.repositorioTipoCalendario = repositorioTipoCalendario ?? throw new System.ArgumentNullException(nameof(repositorioTipoCalendario));
+            this.servicoDiaLetivo = servicoDiaLetivo ?? throw new System.ArgumentNullException(nameof(servicoDiaLetivo));
         }
 
         public async Task Salvar(Aula aula, Usuario usuario)
@@ -34,6 +37,12 @@ namespace SME.SGP.Dominio.Servicos
             {
                 throw new NegocioException("Você não pode criar aulas para essa UE/Turma/Disciplina.");
             }
+
+            if (!servicoDiaLetivo.ValidarSeEhDiaLetivo(aula.DataAula, aula.TipoCalendarioId, null, aula.UeId))
+            {
+                throw new NegocioException("Não é possível cadastrar essa aula pois a data informada está fora do período letivo.");
+            }
+
             repositorioAula.Salvar(aula);
         }
     }
