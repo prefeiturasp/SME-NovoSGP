@@ -39,34 +39,32 @@ namespace SME.SGP.Aplicacao.Consultas
 
             var registroFrequencia = new FrequenciaDto(aulaId);
 
-            var frequencias = servicoFrequencia.ObterListaFrequenciaPorAula(aulaId);
-            if (frequencias == null)
+            var ausencias = servicoFrequencia.ObterListaAusenciasPorAula(aulaId);
+            if (ausencias == null)
             {
-                frequencias = new List<RegistroFrequenciaDto>();
+                ausencias = new List<RegistroAusenciaAluno>();
             }
-            foreach (var aluno in alunosDaTurma)
+            foreach (var aluno in alunosDaTurma.OrderBy(c => c.NumeroAlunoChamada))
             {
-                var frequenciaAula = new RegistroFrequenciaAlunoDto
+                var registroFrequenciaAluno = new RegistroFrequenciaAlunoDto
                 {
                     CodigoAluno = aluno.CodigoAluno,
-                    NomeAluno = aluno.NomeAluno
+                    NomeAluno = aluno.NomeAluno,
+                    NumeroAlunoChamada = aluno.NumeroAlunoChamada,
+                    CodigoSituacaoMatricula = aluno.CodigoSituacaoMatricula
                 };
-                var ausenciasAluno = frequencias.Where(c => c.CodigoAluno == aluno.CodigoAluno);
+
+                var ausenciasAluno = ausencias.Where(c => c.CodigoAluno == aluno.CodigoAluno);
+
                 for (int numeroAula = 1; numeroAula <= aula.Quantidade; numeroAula++)
                 {
-                    var aulaAusente = ausenciasAluno.FirstOrDefault(c => c.NumeroAula == numeroAula);
-                    var compareceu = true;
-                    if (aulaAusente != null)
-                    {
-                        compareceu = false;
-                    }
-                    frequenciaAula.Aulas.Add(new FrequenciaAulaDto
+                    registroFrequenciaAluno.Aulas.Add(new FrequenciaAulaDto
                     {
                         NumeroAula = numeroAula,
-                        Compareceu = compareceu
+                        Compareceu = !ausenciasAluno.Any(c => c.NumeroAula == numeroAula)
                     });
                 }
-                registroFrequencia.ListaFrequencia.Add(frequenciaAula);
+                registroFrequencia.ListaFrequencia.Add(registroFrequenciaAluno);
             }
 
             return registroFrequencia;
