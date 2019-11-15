@@ -15,13 +15,5 @@ namespace SME.SGP.Dominio
         public long TipoCalendarioId { get; set; }
         public string TurmaId { get; set; }
         public string UeId { get; set; }
-
-        //public bool EstaNoPeriodoLetivo(IEnumerable<PeriodoEscolar> periodosEscolares)
-        //{
-        //    if (periodosEscolares == null || !periodosEscolares.Any())
-        //        throw new NegocioException("Períodos escolares não encontrados.");
-
-        //    return periodosEscolares.Any(c => c.PeriodoInicio >= DataAula && c.PeriodoFim <= DataAula);
-        //}
     }
 }
