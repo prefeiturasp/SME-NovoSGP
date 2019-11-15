@@ -8,6 +8,7 @@ namespace SME.SGP.Dto
     {
         public string AbreviacaoModalidade { get { return this.Modalidade.GetAttribute<DisplayAttribute>().ShortName; } }
         public int AnoLetivo { get; set; }
+        public int Ano { get; set; }
         public string CodigoDre { get; set; }
         public int CodigoModalidade { get { return (int)this.Modalidade; } }
         public string CodigoTurma { get; set; }

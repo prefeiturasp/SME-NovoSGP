@@ -35,5 +35,23 @@ namespace SME.SGP.Dados.Repositorios
 
             return filtro.FirstOrDefault();
         }
+
+        public async Task<int> ObterHorasComponente(long grade, int componenteCurricular, int ano)
+        {
+            var query = @"select gd.quantidade_aulas
+                      from grade_disciplina gd
+                     where gd.grade_id = @grade
+                       and gd.componente_curricular_id = @componenteCurricular
+                       and gd.ano = @ano";
+
+            var consulta = await database.Conexao.QueryAsync<int>(query, new
+            {
+                grade,
+                componenteCurricular,
+                ano
+            });
+
+            return consulta.Count() > 0 ? consulta.Single() : 0;
+        }
     }
 }
