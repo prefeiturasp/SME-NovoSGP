@@ -10,5 +10,6 @@ namespace SME.SGP.Aplicacao
     public interface IConsultasGrade
     {
         Task<GradeDto> ObterGradeTurma(TipoEscola tipoEscola, Modalidade modalidade, int duracao);
+        Task<int> ObterHorasGradeComponente(long grade, int componenteCurricular, int ano);
     }
 }

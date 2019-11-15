@@ -21,6 +21,11 @@ namespace SME.SGP.Aplicacao
             return MapearParaDto(await repositorioGrade.ObterGradeTurma(tipoEscola, modalidade, duracao));
         }
 
+        public async Task<int> ObterHorasGradeComponente(long grade, int componenteCurricular, int ano)
+        {
+            return await repositorioGrade.ObterHorasComponente(grade, componenteCurricular, ano);
+        }
+
         private GradeDto MapearParaDto(Grade grade)
         {
             return grade == null ? null : new GradeDto

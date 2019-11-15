@@ -40,6 +40,7 @@ namespace SME.SGP.Dados.Repositorios
             var query = @"select
 	                    ab_turmas.modalidade_codigo as modalidade,
 	                    ab_turmas.ano_letivo as anoLetivo,
+	                    ab_turmas.ano,
 	                    ab_dres.dre_id as codigoDre,
 	                    ab_turmas.turma_id as codigoTurma,
 	                    ab_ues.ue_id as codigoUe,
@@ -71,6 +72,7 @@ namespace SME.SGP.Dados.Repositorios
             var query = @"select
 	                    ab_turmas.modalidade_codigo as modalidade,
 	                    ab_turmas.ano_letivo as anoLetivo,
+	                    ab_turmas.ano,
 	                    ab_dres.dre_id as codigoDre,
 	                    ab_turmas.turma_id as codigoTurma,
 	                    ab_ues.ue_id as codigoUe,
@@ -87,13 +89,16 @@ namespace SME.SGP.Dados.Repositorios
 	                    ab_turmas.abrangencia_ues_id = ab_ues.id
                     inner join abrangencia_dres ab_dres on
 	                    ab_ues.abrangencia_dres_id = ab_dres.id
+                    inner join usuario u on
+                        u.id = ab_dres.usuario_id
                     where
-                        ab_dres.usuario_id = (select id from usuario where login = @login)
+                            u.login = @login
 	                    and ab_dres.perfil = @perfil
-                        and ab_turmas.turma_id = @turma
+                        and ab_turmas.turma_id = cast(@turma as varchar)
                     order by nomeUe";
 
-            return (await database.Conexao.QueryAsync<AbrangenciaFiltroRetorno>(query, new { turma, login, perfil })).FirstOrDefault();
+            return (await database.Conexao.QueryAsync<AbrangenciaFiltroRetorno>(query, new { turma, login, perfil }))
+                .FirstOrDefault();
         }
 
         public async Task<IEnumerable<AbrangenciaDreRetorno>> ObterDres(string login, Guid perfil, Modalidade? modalidade = null, int periodo = 0)

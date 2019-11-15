@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
@@ -18,6 +20,13 @@ namespace SME.SGP.Aplicacao
         {
             var aula = repositorio.ObterPorId(id);
             return MapearParaDto(aula);
+        }
+
+        public async Task<int> ObterQuantidadeAulasTurma(string turma, string disciplina)
+        {
+            var aulas = await repositorio.ObterAulasTurmaDisciplina(turma, disciplina);
+
+            return aulas.Sum(a => a.Quantidade);
         }
 
         private AulaConsultaDto MapearParaDto(Aula aula)
