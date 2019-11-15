@@ -25,14 +25,6 @@ namespace SME.SGP.Dados.Repositorios
 	                        a.id = @aulaId";
 
             return database.Conexao.Query<RegistroAusenciaAluno>(query, new { aulaId });
-            //return database.Conexao.Query<RegistroAusenciaAluno, Aula, RegistroAusenciaAluno>(query, (registroAusenciaAluno, aula) =>
-            //{
-            //    registroAusenciaAluno
-            //    return registroAusenciaAluno;
-            //}, param: new
-            //{
-            //    aulaId
-            //});
         }
     }
 }
