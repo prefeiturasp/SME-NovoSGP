@@ -127,6 +127,7 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IServicoDiaLetivo, ServicoDiaLetivo>();
             services.TryAddScoped<IServicoLog, ServicoLog>();
             services.TryAddScoped<IServicoFrequencia, ServicoFrequencia>();
+            services.TryAddScoped<IServicoAula, ServicoAula>();
         }
     }
 }
