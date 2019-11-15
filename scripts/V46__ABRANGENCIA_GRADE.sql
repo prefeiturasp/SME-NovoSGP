@@ -1,8 +1,9 @@
-﻿alter table if exists public.abrangencia_ues add column if not exists tipo_escola int2 null;
+alter table if exists public.abrangencia_ues add column if not exists tipo_escola int2 null;
 alter table if exists public.abrangencia_turmas add column if not exists qt_duracao_aula int2 null;
 alter table if exists public.abrangencia_turmas add column if not exists tipo_turno int2 null;
 
-CREATE OR replace VIEW  v_abrangencia 
+drop view v_abrangencia;
+CREATE VIEW  v_abrangencia 
 as
 select ab_dres.dre_id as dre_codigo
 	, ab_dres.abreviacao as dre_abreviacao
