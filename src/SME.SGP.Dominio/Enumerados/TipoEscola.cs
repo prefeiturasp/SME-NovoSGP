@@ -7,6 +7,9 @@ namespace SME.SGP.Dominio
 {
     public enum TipoEscola
     {
+        [Display(Name = "Não Informado", ShortName = "NA")]
+        Nenhum = 1,
+
         [Display(Name = "Escola Municipal de Ensino Fundamental", ShortName = "EMEF")]
         EMEF = 1,
 

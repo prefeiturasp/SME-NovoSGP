@@ -1,9 +1,5 @@
-﻿using SME.SGP.Aplicacao.Interfaces;
-using SME.SGP.Dominio.Entidades;
-using SME.SGP.Dominio.Interfaces;
+﻿using SME.SGP.Dominio.Interfaces;
 using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace SME.SGP.Aplicacao
 {
