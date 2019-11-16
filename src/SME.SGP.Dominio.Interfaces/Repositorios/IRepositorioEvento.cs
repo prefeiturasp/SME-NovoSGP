@@ -29,7 +29,8 @@ namespace SME.SGP.Dominio.Interfaces
 
         Evento ObterPorWorkflowId(long workflowId);
 
-        Task<IEnumerable<EventosPorDiaRetornoQueryDto>> ObterQuantidadeDeEventosPorDia(CalendarioEventosFiltroDto calendarioEventosMesesFiltro, int mes);
+        Task<IEnumerable<EventosPorDiaRetornoQueryDto>> ObterQuantidadeDeEventosPorDia(CalendarioEventosFiltroDto calendarioEventosMesesFiltro, int mes,
+            Usuario usuario, Guid usuarioPerfil, bool usuarioTemPerfilSupervisorOuDiretor);
 
         Task<IEnumerable<CalendarioEventosMesesDto>> ObterQuantidadeDeEventosPorMeses(CalendarioEventosFiltroDto calendarioEventosMesesFiltro);
 
