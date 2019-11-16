@@ -345,7 +345,7 @@ namespace SME.SGP.Dados.Repositorios
 
         private static void MontaQueryEventosPorDiaCabecalho(StringBuilder query)
         {
-            query.AppendLine("select id, e.descricao,");
+            query.AppendLine("select e.id, e.descricao,");
             query.AppendLine("case");
             query.AppendLine("when e.dre_id is not null then 'DRE'");
             query.AppendLine("when e.ue_id is not null then 'UE'");
