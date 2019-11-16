@@ -41,9 +41,12 @@ namespace SME.SGP.Aplicacao
                         usuario.TemPerfilSupervisorOuDiretor(perfilAtual)));
         }
 
-        public Task<IEnumerable<CalendarioEventosNoDiaRetornoDto>> ObterEventosPorDia(CalendarioEventosFiltroDto calendarioEventosMesesFiltro, int mes, int dia)
+        public async Task<IEnumerable<CalendarioEventosNoDiaRetornoDto>> ObterEventosPorDia(CalendarioEventosFiltroDto calendarioEventosMesesFiltro, int mes, int dia)
         {
-            return repositorioEvento.ObterEventosPorDia(calendarioEventosMesesFiltro, mes, dia);
+            var usuario = await servicoUsuario.ObterUsuarioLogado();
+            var perfilAtual = servicoUsuario.ObterPerfilAtual();
+
+            return await repositorioEvento.ObterEventosPorDia(calendarioEventosMesesFiltro, mes, dia, usuario, perfilAtual, usuario.TemPerfilSupervisorOuDiretor(perfilAtual));
         }
 
         public EventoCompletoDto ObterPorId(long id)
