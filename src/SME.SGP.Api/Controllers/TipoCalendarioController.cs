@@ -24,6 +24,16 @@ namespace SME.SGP.Api.Controllers
             this.comandos = comandos ?? throw new System.ArgumentNullException(nameof(comandos));
         }
 
+        [HttpPut("{id}")]
+        [ProducesResponseType(200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [Permissao(Permissao.TCE_A, Policy = "Bearer")]
+        public async Task<IActionResult> Alterar([FromBody]TipoCalendarioDto dto, long id)
+        {
+            await comandos.Alterar(dto, id);
+            return Ok();
+        }
+
         [HttpGet]
         [ProducesResponseType(typeof(IEnumerable<TipoCalendarioDto>), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
@@ -43,16 +53,6 @@ namespace SME.SGP.Api.Controllers
             return Ok(consultas.BuscarPorId(id));
         }
 
-        [HttpDelete]
-        [ProducesResponseType(200)]
-        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        [Permissao(Permissao.TCE_E, Policy = "Bearer")]
-        public IActionResult MarcarExcluidos([FromBody]long[] ids)
-        {
-            comandos.MarcarExcluidos(ids);
-            return Ok();
-        }
-
         [HttpPost]
         [ProducesResponseType(200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
@@ -63,13 +63,13 @@ namespace SME.SGP.Api.Controllers
             return Ok();
         }
 
-        [HttpPut("{id}")]
+        [HttpDelete]
         [ProducesResponseType(200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        [Permissao(Permissao.TCE_A, Policy = "Bearer")]
-        public async Task<IActionResult> Alterar([FromBody]TipoCalendarioDto dto, long id)
+        [Permissao(Permissao.TCE_E, Policy = "Bearer")]
+        public IActionResult MarcarExcluidos([FromBody]long[] ids)
         {
-            await comandos.Alterar(dto, id);
+            comandos.MarcarExcluidos(ids);
             return Ok();
         }
     }
