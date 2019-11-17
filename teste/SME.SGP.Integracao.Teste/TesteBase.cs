@@ -12,35 +12,32 @@ namespace SME.SGP.Integracao.Teste
 {
     public static class TesteBase
     {
-        public static void AdicionarAula(TestServerFixture _fixture)
-        {
-            var jsonPost = JsonConvert.SerializeObject(new AulaDto
-            {
-                UeId = "094765",
-                DisciplinaId = "7",
-                TurmaId = "1992725",
-                TipoCalendarioId = 1,
-                TipoAula = Dominio.TipoAula.Normal,
-                Quantidade = 2,
-                DataAula = DateTime.Now.Date,
-                RecorrenciaAula = Dominio.RecorrenciaAula.AulaUnica
-            });
+        //TODO VOLTAR A UTILIZAR QUANDO O TESTE DE USUÁRIO FUNCIONAR
+        //public static void AdicionarAula(TestServerFixture _fixture)
+        //{
+        //    var aula = new AulaDto
+        //    {
+        //        UeId = "094765",
+        //        DisciplinaId = "7",
+        //        TurmaId = "1992725",
+        //        TipoCalendarioId = 1,
+        //        TipoAula = Dominio.TipoAula.Normal,
+        //        Quantidade = 2,
+        //        DataAula = DateTime.Now.Date,
+        //        RecorrenciaAula = RecorrenciaAula.AulaUnica
+        //    };
 
-            var respostaCadastroAula = TesteBase.ExecutePostAsync(_fixture, $"/api/v1/calendarios/professores/aulas", jsonPost);
-            Assert.True(respostaCadastroAula.IsSuccessStatusCode);
-        }
+        //    var respostaCadastroAula = ExecutePostAsync(_fixture, $"api/v1/calendarios/professores/aulas", aula);
+        //    Assert.True(respostaCadastroAula.IsSuccessStatusCode);
+        //}
 
         public static PeriodoEscolarListaDto AdicionarPeriodoEscolar(TestServerFixture _fixture)
         {
-            PeriodoEscolarListaDto Dto = ObterPeriodoEscolarDto();
+            PeriodoEscolarListaDto dto = ObterPeriodoEscolarDto();
 
-            var jsonParaPost2 = new StringContent(JsonConvert.SerializeObject(Dto), Encoding.UTF8, "application/json");
-
-            var postResult2 = _fixture._clientApi.PostAsync("api/v1/periodo-escolar", jsonParaPost2).Result;
-
-            var a = postResult2.Content.ReadAsStringAsync().Result;
-            Assert.True(postResult2.IsSuccessStatusCode);
-            return Dto;
+            var postResult = ExecutePostAsync(_fixture, "api/v1/periodo-escolar", dto);
+            Assert.True(postResult.IsSuccessStatusCode);
+            return dto;
         }
 
         public static void AdicionarTipoCalendario(TestServerFixture _fixture)
@@ -52,9 +49,7 @@ namespace SME.SGP.Integracao.Teste
             tipoCalendarioDto.Modalidade = ModalidadeTipoCalendario.FundamentalMedio;
             tipoCalendarioDto.Situacao = true;
 
-            var jsonParaPost = new StringContent(JsonConvert.SerializeObject(tipoCalendarioDto), UnicodeEncoding.UTF8, "application/json");
-            var postResult = _fixture._clientApi.PostAsync("api/v1/calendarios/tipos", jsonParaPost).Result;
-
+            var postResult = ExecutePostAsync(_fixture, "api/v1/calendarios/tipos", tipoCalendarioDto);
             Assert.True(postResult.IsSuccessStatusCode);
         }
 
