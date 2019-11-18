@@ -9,6 +9,7 @@ import api from '~/servicos/api';
 import { CampoData } from '~/componentes';
 import CardCollapse from '~/componentes/cardCollapse';
 import ListaFrequencia from '~/componentes-sgp/ListaFrequencia/listaFrequencia';
+import Ordenacao from '~/componentes-sgp/Ordenacao/ordenacao';
 
 const FrequenciaPlanoAula = () => {
   const usuario = useSelector(store => store.usuario);
@@ -20,23 +21,7 @@ const FrequenciaPlanoAula = () => {
   const [dataSelecionada, setDataSelecionada] = useState('');
   const [exibirFrequencia, setExibirFrequencia] = useState(false);
 
-  const [frequencia, setFrequencia] = useState([
-    {
-      codigoAluno : 1,
-      nomeEstudante: 'Alvaro Ramos Grassi',
-      aulaFalta: { primeira: true, segunda: true, terceira: true, quarta: true, quinta: true },
-    },
-    {
-      codigoAluno : 2,
-      nomeEstudante: 'Aline Grassi',
-      aulaFalta: { primeira: false, segunda: false, terceira: false, quarta: false, quinta: false },
-    },
-    {
-      codigoAluno : 3,
-      nomeEstudante: 'Cleiton Dutra',
-      aulaFalta: { primeira: true, segunda: false, terceira: false, quarta: true, quinta: true },
-    },
-  ]);
+  const [frequencia, setFrequencia] = useState([]);
 
   useEffect(() => {
     const obterDisciplinas = async () => {
@@ -48,6 +33,29 @@ const FrequenciaPlanoAula = () => {
     if (turmaId) {
       obterDisciplinas();
     }
+
+    setFrequencia([
+      {
+        codigoAluno : 1,
+        nomeEstudante: 'Alvaro Ramos Grassi',
+        aulaFalta: { primeira: true, segunda: false, terceira: true, quarta: true, quinta: true },
+      },
+      {
+        codigoAluno : 2,
+        nomeEstudante: 'Cleiton Dutra',
+        aulaFalta: { primeira: false, segunda: false, terceira: false, quarta: true, quinta: true },
+      },
+      {
+        codigoAluno : 3,
+        nomeEstudante: 'Joao',
+        aulaFalta: { primeira: true, segunda: false, terceira: false, quarta: true, quinta: true },
+      },
+      {
+        codigoAluno : 4,
+        nomeEstudante: 'Marcos teste',
+        aulaFalta: { primeira: false, segunda: true, terceira: true, quarta: true, quinta: true },
+      },
+    ])
   }, []);
 
   useEffect(() => {
@@ -143,9 +151,14 @@ const FrequenciaPlanoAula = () => {
                 onClick={onClickFrequencia}
                 titulo="Frequência"
                 indice="frequencia-collapse"
-                show={exibirFrequencia}
+                show={true}
                 alt="TESTE"
               >
+                <Ordenacao conteudoParaOrdenar={ frequencia }
+                           ordenarColunaNumero="codigoAluno"
+                           ordenarColunaTexto="nomeEstudante"
+                           retornoOrdenado={ retorno => setFrequencia(retorno) }>
+                </Ordenacao>
                 <ListaFrequencia
                   dataSource={frequencia}
                   onClickSwitch={onClickSwitch}
