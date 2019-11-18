@@ -104,13 +104,16 @@ namespace SME.SGP.Dominio.Servicos
 
             var mensagemRetornoSucesso = "Evento cadastrado com sucesso.";
 
-            var temEventoDeLiberacaoExcepcional = await repositorioEvento.TemEventoNosDiasETipo(evento.DataInicio, evento.DataFim, TipoEventoEnum.LiberacaoExcepcional,
+            if (evento.TipoEvento.Codigo != (int)TipoEventoEnum.LiberacaoExcepcional)
+            {
+                var temEventoDeLiberacaoExcepcional = await repositorioEvento.TemEventoNosDiasETipo(evento.DataInicio, evento.DataFim, TipoEventoEnum.LiberacaoExcepcional,
                 tipoCalendario.Id, evento.UeId, evento.DreId);
 
-            if (temEventoDeLiberacaoExcepcional)
-            {
-                await PersistirWorkflowEvento(evento);
-                mensagemRetornoSucesso = "Evento cadastrado e será válido após aprovação.";
+                if (temEventoDeLiberacaoExcepcional)
+                {
+                    await PersistirWorkflowEvento(evento);
+                    mensagemRetornoSucesso = "Evento cadastrado e será válido após aprovação.";
+                }
             }
 
             unitOfWork.PersistirTransacao();
@@ -349,7 +352,7 @@ namespace SME.SGP.Dominio.Servicos
 
         private void ValidaLiberacaoExcepcional(Evento evento, Usuario usuario, IEnumerable<PeriodoEscolar> periodos, bool dataConfirmada)
         {
-            evento.PodeCriarEventoLiberacaoExcepcional(evento, usuario, dataConfirmada, periodos);
+            evento.PodeCriarEventoLiberacaoExcepcional(usuario, dataConfirmada, periodos);
         }
 
         private async Task VerificarParticularidadesSME(Evento evento, Usuario usuario, IEnumerable<PeriodoEscolar> periodos, bool dataConfirmada)

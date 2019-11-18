@@ -166,20 +166,20 @@ namespace SME.SGP.Dominio
             return TipoEvento.Concomitancia;
         }
 
-        public void PodeCriarEventoLiberacaoExcepcional(Evento evento, Usuario usuario, bool dataConfirmada, IEnumerable<PeriodoEscolar> periodos)
+        public void PodeCriarEventoLiberacaoExcepcional(Usuario usuario, bool dataConfirmada, IEnumerable<PeriodoEscolar> periodos)
         {
-            if (evento.TipoEvento.Codigo == (long)TipoEventoEnum.LiberacaoExcepcional)
+            if (this.TipoEvento.Codigo == (long)TipoEventoEnum.LiberacaoExcepcional)
             {
                 if (!usuario.PossuiPerfilSme())
                     throw new NegocioException("Somente usuário com perfil SME pode cadastrar esse tipo de evento.");
 
-                if (string.IsNullOrEmpty(evento.DreId))
+                if (string.IsNullOrEmpty(this.DreId))
                     throw new NegocioException("Para este tipo de evento, deve ser informado uma Dre.");
 
-                if (string.IsNullOrEmpty(evento.UeId))
+                if (string.IsNullOrEmpty(this.UeId))
                     throw new NegocioException("Para este tipo de evento, deve ser informado uma Ue.");
 
-                if (!periodos.Any(c => c.PeriodoInicio >= DataInicio && c.PeriodoFim >= DataInicio) && !dataConfirmada)
+                if (periodos.Any(a => (a.PeriodoInicio >= this.DataInicio && a.PeriodoInicio <= this.DataFim)) && !dataConfirmada)
                     throw new NegocioException("Esta data é fora do período escolar, tem certeza que deseja manter esta data? (Sim/Não).", 602);
             }
         }
