@@ -88,9 +88,9 @@ namespace SME.SGP.Dominio.Servicos
             repositorioEvento.Salvar(evento);
         }
 
-        public async Task SalvarEventoFeriadosAoCadastrarTipoCalendario(TipoCalendario tipoCalendario)
+        public void SalvarEventoFeriadosAoCadastrarTipoCalendario(TipoCalendario tipoCalendario)
         {
-            var feriados = await ObterEValidarFeriados();
+            var feriados = ObterEValidarFeriados();
 
             var tipoEventoFeriado = ObterEValidarTipoEventoFeriado();
 
@@ -98,13 +98,13 @@ namespace SME.SGP.Dominio.Servicos
 
             var feriadosErro = new List<long>();
 
-            await SalvarListaEventos(eventos, feriadosErro);
+            SalvarListaEventos(eventos, feriadosErro);
 
             if (feriadosErro.Any())
                 TratarErros(feriadosErro);
         }
 
-        public async Task SalvarRecorrencia(Evento evento, DateTime dataInicial, DateTime? dataFinal, int? diaDeOcorrencia, IEnumerable<DayOfWeek> diasDaSemana, PadraoRecorrencia padraoRecorrencia, PadraoRecorrenciaMensal? padraoRecorrenciaMensal, int repeteACada)
+        public void SalvarRecorrencia(Evento evento, DateTime dataInicial, DateTime? dataFinal, int? diaDeOcorrencia, IEnumerable<DayOfWeek> diasDaSemana, PadraoRecorrencia padraoRecorrencia, PadraoRecorrenciaMensal? padraoRecorrenciaMensal, int repeteACada)
         {
             if (!dataFinal.HasValue)
             {
@@ -123,7 +123,7 @@ namespace SME.SGP.Dominio.Servicos
             {
                 try
                 {
-                    await Salvar(novoEvento);
+                    Salvar(novoEvento).ConfigureAwait(false);
                     notificacoesSucesso.Add(novoEvento.DataInicio);
                 }
                 catch (NegocioException nex)
@@ -136,7 +136,7 @@ namespace SME.SGP.Dominio.Servicos
                     servicoLog.Registrar(ex);
                 }
             }
-            var usuarioLogado = await servicoUsuario.ObterUsuarioLogado();
+            var usuarioLogado = servicoUsuario.ObterUsuarioLogado().Result;
             EnviarNotificacaoRegistroDeRecorrencia(evento, notificacoesSucesso, notificacoesFalha, usuarioLogado.Id);
         }
 
@@ -185,10 +185,10 @@ namespace SME.SGP.Dominio.Servicos
             };
         }
 
-        private async Task<IEnumerable<FeriadoCalendario>> ObterEValidarFeriados()
+        private IEnumerable<FeriadoCalendario> ObterEValidarFeriados()
         {
-            var feriadosMoveis = await repositorioFeriadoCalendario.ObterFeriadosCalendario(new FiltroFeriadoCalendarioDto { Ano = DateTime.Now.Year, Tipo = TipoFeriadoCalendario.Movel });
-            var feriadosFixos = await repositorioFeriadoCalendario.ObterFeriadosCalendario(new FiltroFeriadoCalendarioDto { Tipo = TipoFeriadoCalendario.Fixo });
+            var feriadosMoveis = repositorioFeriadoCalendario.ObterFeriadosCalendario(new FiltroFeriadoCalendarioDto { Ano = DateTime.Now.Year, Tipo = TipoFeriadoCalendario.Movel }).Result;
+            var feriadosFixos = repositorioFeriadoCalendario.ObterFeriadosCalendario(new FiltroFeriadoCalendarioDto { Tipo = TipoFeriadoCalendario.Fixo }).Result;
 
             var feriados = feriadosFixos.ToList();
             feriados.AddRange(feriadosMoveis);
@@ -207,13 +207,13 @@ namespace SME.SGP.Dominio.Servicos
             return tipoEventoFeriado;
         }
 
-        private async Task SalvarListaEventos(IEnumerable<Evento> eventos, List<long> feriadosErro)
+        private void SalvarListaEventos(IEnumerable<Evento> eventos, List<long> feriadosErro)
         {
             foreach (var evento in eventos)
             {
                 try
                 {
-                    await repositorioEvento.SalvarAsync(evento);
+                    repositorioEvento.Salvar(evento);
                 }
                 catch (Exception ex)
                 {
