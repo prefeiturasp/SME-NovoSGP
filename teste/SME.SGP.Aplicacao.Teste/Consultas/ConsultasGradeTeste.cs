@@ -1,4 +1,4 @@
-﻿using Moq;
+using Moq;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using System.Threading.Tasks;
@@ -12,6 +12,8 @@ namespace SME.SGP.Aplicacao.Teste.Consultas
         private readonly Mock<IConsultasAula> consultasAula;
         private readonly ConsultasGrade consultasGrade;
         private readonly Mock<IRepositorioGrade> repositorioGrade;
+        private readonly Mock<IConsultasAbrangencia> consultasAbrangencia;
+        private readonly Mock<IConsultasAula> consultasAula;
 
         public ConsultasGradeTeste()
         {
