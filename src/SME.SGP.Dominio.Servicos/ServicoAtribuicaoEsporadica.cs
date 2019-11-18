@@ -3,7 +3,7 @@ using System.Linq;
 
 namespace SME.SGP.Dominio.Servicos
 {
-    public class ServicoAtribuicaoEsporadica
+    public class ServicoAtribuicaoEsporadica : IServicoAtribuicaoEsporadica
     {
         private readonly IRepositorioAtribuicaoEsporadica repositorioAtribuicaoEsporadica;
         private readonly IRepositorioPeriodoEscolar repositorioPeriodoEscolar;
