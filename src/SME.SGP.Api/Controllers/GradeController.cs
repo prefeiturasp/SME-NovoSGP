@@ -20,29 +20,12 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(204)]
         [ProducesResponseType(typeof(IEnumerable<GradeComponenteTurmaAulasDto>), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        public async Task<IActionResult> ObterGradeAulasTurma(int turma, int disciplina, [FromServices] IConsultasGrade consultasGrade, [FromServices] IConsultasAbrangencia consultasAbrangencia, [FromServices] IConsultasAula consultasAula)
+        public async Task<IActionResult> ObterGradeAulasTurma(int turma, int disciplina, [FromServices] IConsultasGrade consultasGrade)
         {
-            // Busca abrangencia a partir da turma
-            var abrangencia = await consultasAbrangencia.ObterAbrangenciaTurma(turma);
-            if (abrangencia == null)
-                return StatusCode(601, "Abrangência da turma não localizada.");
+            var horasGrade = await consultasGrade.ObterGradeAulasTurma(turma, disciplina);
 
-            // Busca grade a partir dos dados da abrangencia da turma
-            var grade = await consultasGrade.ObterGradeTurma(abrangencia.TipoEscola, abrangencia.Modalidade, abrangencia.QtDuracaoAula);
-            if (grade == null)
-                return StatusCode(601, "Grade da turma não localizada.");
-
-            // Busca carga horaria na grade da disciplina para o ano da turma
-            var horasGrade = await consultasGrade.ObterHorasGradeComponente(grade.Id, disciplina, abrangencia.Ano);
-            // Busca horas aula cadastradas para a disciplina na turma
-            var horascadastradas = await consultasAula.ObterQuantidadeAulasTurma(turma.ToString(), disciplina.ToString());
-
-            if (horasGrade > 0)
-                return Ok(new GradeComponenteTurmaAulasDto 
-                { 
-                    QuantidadeAulasGrade = horasGrade, 
-                    QuantidadeAulasRestante = horasGrade - horascadastradas
-                });
+            if (horasGrade != null)
+                return Ok(horasGrade);
             else
                 return StatusCode(204);
         }
