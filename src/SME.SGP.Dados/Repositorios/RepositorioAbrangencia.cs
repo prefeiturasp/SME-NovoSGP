@@ -40,13 +40,17 @@ namespace SME.SGP.Dados.Repositorios
             var query = @"select
 	                    ab_turmas.modalidade_codigo as modalidade,
 	                    ab_turmas.ano_letivo as anoLetivo,
+	                    ab_turmas.ano,
 	                    ab_dres.dre_id as codigoDre,
 	                    ab_turmas.turma_id as codigoTurma,
 	                    ab_ues.ue_id as codigoUe,
+                        ab_ues.tipo_escola as tipoEscola,
 	                    ab_dres.nome as nomeDre,
 	                    ab_turmas.nome as nomeTurma,
 	                    ab_ues.nome as nomeUe,
-	                    ab_turmas.semestre
+	                    ab_turmas.semestre,
+	                    ab_turmas.qt_duracao_aula as qtDuracaoAula,
+	                    ab_turmas.tipo_turno as tipoTurno
                     from
 	                    abrangencia_turmas ab_turmas
                     inner join abrangencia_ues ab_ues on
@@ -61,6 +65,40 @@ namespace SME.SGP.Dados.Repositorios
                     OFFSET 0 ROWS FETCH NEXT  10 ROWS ONLY";
 
             return (await database.Conexao.QueryAsync<AbrangenciaFiltroRetorno>(query, new { texto, login, perfil })).AsList();
+        }
+
+        public async Task<AbrangenciaFiltroRetorno> ObterAbrangenciaTurma(int turma, string login, Guid perfil)
+        {
+            var query = @"select
+	                    ab_turmas.modalidade_codigo as modalidade,
+	                    ab_turmas.ano_letivo as anoLetivo,
+	                    ab_turmas.ano,
+	                    ab_dres.dre_id as codigoDre,
+	                    ab_turmas.turma_id as codigoTurma,
+	                    ab_ues.ue_id as codigoUe,
+                        ab_ues.tipo_escola as tipoEscola,
+	                    ab_dres.nome as nomeDre,
+	                    ab_turmas.nome as nomeTurma,
+	                    ab_ues.nome as nomeUe,
+	                    ab_turmas.semestre,
+	                    ab_turmas.qt_duracao_aula as qtDuracaoAula,
+	                    ab_turmas.tipo_turno as tipoTurno
+                    from
+	                    abrangencia_turmas ab_turmas
+                    inner join abrangencia_ues ab_ues on
+	                    ab_turmas.abrangencia_ues_id = ab_ues.id
+                    inner join abrangencia_dres ab_dres on
+	                    ab_ues.abrangencia_dres_id = ab_dres.id
+                    inner join usuario u on
+                        u.id = ab_dres.usuario_id
+                    where
+                            u.login = @login
+	                    and ab_dres.perfil = @perfil
+                        and ab_turmas.turma_id = cast(@turma as varchar)
+                    order by nomeUe";
+
+            return (await database.Conexao.QueryAsync<AbrangenciaFiltroRetorno>(query, new { turma, login, perfil }))
+                .FirstOrDefault();
         }
 
         public async Task<IEnumerable<AbrangenciaDreRetorno>> ObterDres(string login, Guid perfil, Modalidade? modalidade = null, int periodo = 0)
@@ -134,7 +172,9 @@ namespace SME.SGP.Dados.Repositorios
 	                    ab_turmas.turma_id as codigo,
 	                    ab_turmas.modalidade_codigo as codigoModalidade,
 	                    ab_turmas.nome,
-	                    ab_turmas.semestre
+	                    ab_turmas.semestre,
+                        ab_turmas.qt_duracao_aula as qtDuracaoAula,
+                        ab_turmas.tipo_turno as tipoTurno
                     from
 	                    abrangencia_turmas ab_turmas
                     inner join abrangencia_ues ab_ues on
@@ -142,15 +182,39 @@ namespace SME.SGP.Dados.Repositorios
                     inner join abrangencia_dres ab_dres on
 	                    ab_ues.abrangencia_dres_id = ab_dres.id
                     where
-                        ab_ues.ue_id = @codigoUe
-	                    and ab_dres.usuario_id = (select id from usuario where login = @login)
-	                    and ab_dres.perfil = @perfil
-                        and ab_turmas.modalidade_codigo = @modalidade");
+                        ab_ues.ue_id = @codigoUe	                    
+	                    and ab_dres.usuario_id = (select id from usuario where login = @login)	        
+	                    and ab_dres.perfil = @perfil");
+
+            if (modalidade > 0)
+                query.AppendLine("and ab_turmas.modalidade_codigo = @modalidade");
 
             if (periodo > 0)
                 query.AppendLine("and ab_turmas.semestre = @semestre");
 
             return (await database.Conexao.QueryAsync<AbrangenciaTurmaRetorno>(query.ToString(), new { codigoUe, login, perfil, modalidade, semestre = periodo })).AsList();
+        }
+
+        public async Task<AbrangenciaUeRetorno> ObterUe(string codigo, string login, Guid perfil)
+        {
+            var query = new StringBuilder();
+
+            query.AppendLine("select distinct");
+            query.AppendLine("ab_ues.ue_id as codigo,");
+            query.AppendLine("ab_ues.nome,");
+            query.AppendLine("ab_ues.tipo_escola as tipoEscola");
+            query.AppendLine("from");
+            query.AppendLine("abrangencia_turmas ab_turmas");
+            query.AppendLine("inner join abrangencia_ues ab_ues on");
+            query.AppendLine("ab_turmas.abrangencia_ues_id = ab_ues.id");
+            query.AppendLine("inner join abrangencia_dres ab_dres on");
+            query.AppendLine("ab_ues.abrangencia_dres_id = ab_dres.id");
+            query.AppendLine("where");
+            query.AppendLine("ab_ues.ue_id = @codigo");
+            query.AppendLine("and ab_dres.usuario_id = (select id from usuario where login = @login)");
+            query.AppendLine("and ab_dres.perfil = @perfil");
+
+            return (await database.Conexao.QueryFirstAsync<AbrangenciaUeRetorno>(query.ToString(), new { codigo, login, perfil }));
         }
 
         public async Task<IEnumerable<AbrangenciaUeRetorno>> ObterUes(string codigoDre, string login, Guid perfil, Modalidade? modalidade = null, int periodo = 0)
@@ -159,7 +223,8 @@ namespace SME.SGP.Dados.Repositorios
 
             query.AppendLine("select distinct");
             query.AppendLine("ab_ues.ue_id as codigo,");
-            query.AppendLine("ab_ues.nome");
+            query.AppendLine("ab_ues.nome,");
+            query.AppendLine("ab_ues.tipo_escola as tipoEscola");
             query.AppendLine("from");
             query.AppendLine("abrangencia_turmas ab_turmas");
             query.AppendLine("inner join abrangencia_ues ab_ues on");
@@ -216,14 +281,18 @@ namespace SME.SGP.Dados.Repositorios
 	                        ano_letivo,
 	                        ano,
 	                        modalidade_codigo,
-	                        semestre)
+	                        semestre,
+                            qt_duracao_aula,
+                            tipo_turno)
                         values(@turma_id,
                         @abrangencia_ues_id,
                         @nome,
                         @ano_letivo,
                         @ano,
                         @modalidade_codigo,
-                        @semestre ) returning id";
+                        @semestre,
+                        @qt_duracao_aula,
+                        @tipo_turno) returning id";
 
             var resultadoTask = await database.Conexao.QueryAsync<long>(query, new
             {
@@ -233,7 +302,9 @@ namespace SME.SGP.Dados.Repositorios
                 ano_letivo = abrangenciaTurma.AnoLetivo,
                 ano = abrangenciaTurma.Ano,
                 modalidade_codigo = int.Parse(abrangenciaTurma.CodigoModalidade),
-                semestre = abrangenciaTurma.Semestre
+                semestre = abrangenciaTurma.Semestre,
+                qt_duracao_aula = abrangenciaTurma.DuracaoTurno,
+                tipo_turno = abrangenciaTurma.TipoTurno
             }); ;
 
             return resultadoTask.Single();
@@ -242,7 +313,7 @@ namespace SME.SGP.Dados.Repositorios
         public async Task<long> SalvarUe(AbrangenciaUeRetornoEolDto abrangenciaUe, long idAbragenciaDre)
         {
             var query = @"insert into abrangencia_ues
-            (ue_id, abrangencia_dres_id, nome)values(@ue_id, @abrangencia_dres_id, @nome)
+            (ue_id, abrangencia_dres_id, nome, tipo_escola)values(@ue_id, @abrangencia_dres_id, @nome, @tipoEscola)
             RETURNING id";
 
             var resultadoTask = await database.Conexao.QueryAsync<long>(query, new
@@ -250,6 +321,7 @@ namespace SME.SGP.Dados.Repositorios
                 ue_id = abrangenciaUe.Codigo,
                 abrangencia_dres_id = idAbragenciaDre,
                 nome = abrangenciaUe.Nome,
+                tipoEscola = abrangenciaUe.CodTipoEscola
             });
 
             return resultadoTask.Single();

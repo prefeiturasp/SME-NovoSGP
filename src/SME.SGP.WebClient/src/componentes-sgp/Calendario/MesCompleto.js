@@ -12,7 +12,7 @@ const DiaDaSemana = props => {
 
   return (
     <Div className="col">
-      <Div className="text-muted text-center small">{nomeDia}</Div>
+      <Div className="text-muted text-center fonte-12">{nomeDia}</Div>
     </Div>
   );
 };
@@ -79,7 +79,7 @@ const MesCompleto = props => {
     <Div
       className={`${mesesCalendario[mesSelecionado].nome} d-none border border-top-0 border-bottom-0 h-100 w-100 fade`}
     >
-      <Div className="w-100 d-flex py-3 border-bottom">
+      <Div className="w-100 d-flex pt-4 pb-3 border-bottom">
         <DiaDaSemana nomeDia="Domingo" />
         <DiaDaSemana nomeDia="Segunda" />
         <DiaDaSemana nomeDia="Terça" />
