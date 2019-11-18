@@ -1,4 +1,4 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using SME.SGP.Aplicacao;
 using SME.SGP.Aplicacao.Consultas;
@@ -67,6 +67,7 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IConsultasEvento, ConsultasEvento>();
             services.TryAddScoped<IConsultasAula, ConsultasAula>();
             services.TryAddScoped<IConsultasGrade, ConsultasGrade>();
+            services.TryAddScoped<IComandoFrequencia, ComandoFrequencia>();
         }
 
         private static void RegistrarContextos(IServiceCollection services)
@@ -107,6 +108,7 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IRepositorioGrade, RepositorioGrade>();
             services.TryAddScoped<IRepositorioGradeFiltro, RepositorioGradeFiltro>();
             services.TryAddScoped<IRepositorioGradeDisciplina, RepositorioGradeDisciplina>();
+            services.TryAddScoped<IRepositorioFrequencia, RepositorioFrequencia>();
         }
 
         private static void RegistrarServicos(IServiceCollection services)
@@ -125,6 +127,8 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IServicoEvento, ServicoEvento>();
             services.TryAddScoped<IServicoDiaLetivo, ServicoDiaLetivo>();
             services.TryAddScoped<IServicoLog, ServicoLog>();
+            services.TryAddScoped<IServicoFrequencia, ServicoFrequencia>();
+            services.TryAddScoped<IServicoAula, ServicoAula>();
         }
     }
 }

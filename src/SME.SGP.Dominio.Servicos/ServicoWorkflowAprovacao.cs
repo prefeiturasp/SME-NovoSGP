@@ -114,8 +114,6 @@ namespace SME.SGP.Dominio.Servicos
 
         private void EnviaNotificacaoParaNiveis(List<WorkflowAprovacaoNivel> niveis, long codigoNotificacao = 0)
         {
-            unitOfWork.IniciarTransacao();
-
             if (codigoNotificacao == 0)
                 codigoNotificacao = servicoNotificacao.ObtemNovoCodigo();
 
