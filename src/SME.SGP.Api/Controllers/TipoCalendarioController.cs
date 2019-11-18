@@ -56,7 +56,7 @@ namespace SME.SGP.Api.Controllers
         [HttpPost]
         [ProducesResponseType(200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        [Permissao(Permissao.TCE_I, Policy = "Bearer")]
+        //[Permissao(Permissao.TCE_I, Policy = "Bearer")]
         public async Task<IActionResult> Incluir([FromBody]TipoCalendarioDto dto)
         {
             await comandos.Incluir(dto);
