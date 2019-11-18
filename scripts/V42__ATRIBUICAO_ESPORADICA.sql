@@ -1,4 +1,4 @@
-CREATE TABLE public.atribuicao_esporadica (
+CREATE TABLE if not exists public.atribuicao_esporadica (
 	id int8 NOT NULL GENERATED ALWAYS AS IDENTITY,
 	professor_rf varchar(10) NOT NULL,
 	ue_id varchar(15) NOT NULL,
