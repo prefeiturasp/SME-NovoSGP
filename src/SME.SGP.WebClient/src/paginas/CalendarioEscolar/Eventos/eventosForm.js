@@ -342,6 +342,7 @@ const EventosForm = ({ match }) => {
   };
 
   const exibirModalConfirmaData = response => {
+    debugger;
     return confirmar('Confirmar data', '', response.mensagens[0], 'Sim', 'Não');
   };
 
@@ -354,8 +355,24 @@ const EventosForm = ({ match }) => {
       };
     });
 
+    /**
+     * @description Metodo a ser disparado quando receber a mensagem do servidor
+     */
+    const onSuccessSave = response => {
+      if (tiposCalendarioParaCopiar && tiposCalendarioParaCopiar.length > 0) {
+        setListaMensagensCopiarEvento(response.data);
+        setExibirModalRetornoCopiarEvento(true);
+      } else {
+        debugger;
+        sucesso(response.data[0].mensagem);
+        history.push('/calendario-escolar/eventos');
+      }
+    };
+
+    let payload = {};
+    let cadastrado = {};
     try {
-      let payload = {
+      payload = {
         ...valoresForm,
         recorrenciaEventos: recorrencia ? { ...recorrencia } : null,
         tiposCalendarioParaCopiar,
@@ -368,25 +385,16 @@ const EventosForm = ({ match }) => {
           AlterarARecorrenciaCompleta: true,
         };
       }
-      /**
-       * @description Metodo a ser disparado quando receber a mensagem do servidor
-       */
-      const onSuccessSave = response => {
-        if (tiposCalendarioParaCopiar && tiposCalendarioParaCopiar.length > 0) {
-          setListaMensagensCopiarEvento(response.data);
-          setExibirModalRetornoCopiarEvento(true);
-        } else {
-          sucesso(response.data[0].mensagem);
-          history.push('/calendario-escolar/eventos');
-        }
-      };
-      const cadastrado = await servicoEvento.salvar(idEvento || 0, payload);
+
+      cadastrado = await servicoEvento.salvar(idEvento || 0, payload);
       if (cadastrado && cadastrado.status === 200) {
         onSuccessSave(cadastrado);
-      } else if (cadastrado && cadastrado.status === 602) {
-        const confirmaData = exibirModalConfirmaData(cadastrado);
+      }
+    } catch (e) {
+      if (e && e.response && e.response.status === 602) {
+        const confirmaData = await exibirModalConfirmaData(e.response.data);
         if (confirmaData) {
-          const request = servicoEvento.salvar(idEvento || 0, {
+          const request = await servicoEvento.salvar(idEvento || 0, {
             ...payload,
             DataConfirmada: true,
           });
@@ -396,7 +404,6 @@ const EventosForm = ({ match }) => {
         }
         return false;
       }
-    } catch (e) {
       erros(e);
     }
   };
