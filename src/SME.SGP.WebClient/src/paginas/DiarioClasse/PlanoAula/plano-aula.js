@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import CardCollapse from '~/componentes/cardCollapse';
 import styled from 'styled-components';
 import TextEditor from '~/componentes/textEditor/component';
@@ -18,7 +18,6 @@ const PlanoAula = () => {
     altura: '44px',
     corBorda: '#4072d6'
   }
-
   const [objetivosAprendizagem, setObjetivosAprendizagem] = useState(
     [
       {
@@ -35,6 +34,10 @@ const PlanoAula = () => {
       },
     ]
   );
+  const textEditorObjetivosRef = useRef(null);
+  const textEditorDesenvAulaRef = useRef(null);
+  const textEditorRecContinuaRef = useRef(null);
+  const textEditorLicaoCasaRef = useRef(null);
 
   const QuantidadeBotoes = styled.div`
     padding: 0 0 20px 0;
@@ -95,8 +98,8 @@ const PlanoAula = () => {
                         id={objetivo.id}
                         aria-pressed={objetivo.selected ? true : false}
                         data-index={index}
-                        onClick={()=>{}}
-                        onKeyUp={()=>{}}
+                        onClick={() => { }}
+                        onKeyUp={() => { }}
                         alt={`Codigo do Objetivo : ${objetivo.codigo} `}
                       >
                         {objetivo.codigo}
@@ -114,20 +117,28 @@ const PlanoAula = () => {
             </ObjetivosList>
           </Grid>
           <Grid cols={6}>
-            <h6 className="d-inline-block font-weight-bold my-0 fonte-14">
-              Meus objetivos específicos
-          </h6>
-            <fieldset className="mt-3">
-              <form action="">
-                <TextEditor
-                  className="form-control"
-                  id="textEditor-meus_objetivos"
-                  height="135px"
-                  alt="Meus objetivos específicos"
-                  value={planoAula.objetivosEspecificos}
-                />
-              </form>
-            </fieldset>
+            <Grid cols={12}>
+              <h6 className="d-inline-block font-weight-bold my-0 fonte-14">
+                Objetivos trabalhados na aula
+              </h6>
+            </Grid>
+            <Grid cols={12} className="mt-4">
+              <h6 className="d-inline-block font-weight-bold my-0 fonte-14">
+                Meus objetivos específicos
+              </h6>
+              <fieldset className="mt-3">
+                <form action="">
+                  <TextEditor
+                    className="form-control"
+                    ref={textEditorObjetivosRef}
+                    id="textEditor-meus_objetivos"
+                    height="135px"
+                    alt="Meus objetivos específicos"
+                    value={planoAula.objetivosEspecificos}
+                  />
+                </form>
+              </fieldset>
+            </Grid>
           </Grid>
         </div>
       </CardCollapse>
@@ -145,6 +156,7 @@ const PlanoAula = () => {
             <TextEditor
               className="form-control"
               id="textEditor-desenv-aula"
+              ref={textEditorDesenvAulaRef}
               height="135px"
               alt="Desenvolvimento da aula"
               value={planoAula.desenvolvimentoAula}
@@ -165,7 +177,8 @@ const PlanoAula = () => {
           <form action="">
             <TextEditor
               className="form-control"
-              id="textEditor-rec-=continua"
+              id="textEditor-rec-continua"
+              ref={textEditorRecContinuaRef}
               height="135px"
               alt="Recuperação contínua"
               value={planoAula.recuperacaoContinua}
@@ -187,6 +200,7 @@ const PlanoAula = () => {
             <TextEditor
               className="form-control"
               id="textEditor-licao-casa"
+              ref={textEditorLicaoCasaRef}
               height="135px"
               alt="Lição de casa"
               value={planoAula.licaoCasa}
