@@ -5,13 +5,15 @@ namespace SME.SGP.Dominio.Servicos
 {
     public class ServicoAtribuicaoEsporadica
     {
+        private readonly IRepositorioAtribuicaoEsporadica repositorioAtribuicaoEsporadica;
         private readonly IRepositorioPeriodoEscolar repositorioPeriodoEscolar;
         private readonly IRepositorioTipoCalendario repositorioTipoCalendario;
 
-        public ServicoAtribuicaoEsporadica(IRepositorioPeriodoEscolar repositorioPeriodoEscolar, IRepositorioTipoCalendario repositorioTipoCalendario)
+        public ServicoAtribuicaoEsporadica(IRepositorioPeriodoEscolar repositorioPeriodoEscolar, IRepositorioTipoCalendario repositorioTipoCalendario, IRepositorioAtribuicaoEsporadica repositorioAtribuicaoEsporadica)
         {
             this.repositorioPeriodoEscolar = repositorioPeriodoEscolar ?? throw new System.ArgumentNullException(nameof(repositorioPeriodoEscolar));
             this.repositorioTipoCalendario = repositorioTipoCalendario ?? throw new System.ArgumentNullException(nameof(repositorioTipoCalendario));
+            this.repositorioAtribuicaoEsporadica = repositorioAtribuicaoEsporadica ?? throw new System.ArgumentNullException(nameof(repositorioAtribuicaoEsporadica));
         }
 
         public void Salvar(AtribuicaoEsporadica atribuicaoEsporadica, int anoLetivo)
@@ -25,6 +27,10 @@ namespace SME.SGP.Dominio.Servicos
 
             if (periodosEscolares == null || !periodosEscolares.Any())
                 throw new NegocioException("Nenhum periodo escolar encontrado para o ano letivo vigente");
+
+            atribuicaoEsporadica.Validar(false, anoLetivo, periodosEscolares);
+
+            repositorioAtribuicaoEsporadica.Salvar(atribuicaoEsporadica);
         }
     }
 }
