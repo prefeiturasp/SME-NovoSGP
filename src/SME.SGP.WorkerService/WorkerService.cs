@@ -64,8 +64,7 @@ namespace SME.SGP.Worker.Service
 
         internal static void ConfigurarDependencias(IServiceCollection services)
         {
-            // Resolver para tratar por aqui a dependencia e tornar o Worker cliente deste host e abrir um novo host para o Dashboard
-            //RegistraDependencias.RegistrarWorkerService(services);
+            RegistraDependenciasWorkerServices.Registrar(services);
         }
     }
 }

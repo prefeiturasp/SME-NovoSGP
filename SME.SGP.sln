@@ -70,11 +70,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SME.SGP.Dominio.Servicos.Te
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Bibliotecas", "Bibliotecas", "{1146F24F-B029-408F-A257-EF418C424626}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SME.Background.Core", "src\Bibliotecas\SME.Background.Core\SME.Background.Core.csproj", "{1E72D637-ACAD-40C0-8C6F-D122B2D9D45C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SME.Background.Core", "src\Bibliotecas\SME.Background.Core\SME.Background.Core.csproj", "{1E72D637-ACAD-40C0-8C6F-D122B2D9D45C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SME.SGP.Worker.Service", "src\SME.SGP.WorkerService\SME.SGP.Worker.Service.csproj", "{7399F69E-152E-4506-A42E-B25BA4409E18}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SME.SGP.Worker.Service", "src\SME.SGP.WorkerService\SME.SGP.Worker.Service.csproj", "{7399F69E-152E-4506-A42E-B25BA4409E18}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SME.Background.Hangfire", "src\Bibliotecas\SME.Background.Hangfire\SME.Background.Hangfire.csproj", "{93844345-9C62-4EAF-A2C5-90B703FD3F3F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SME.Background.Hangfire", "src\Bibliotecas\SME.Background.Hangfire\SME.Background.Hangfire.csproj", "{93844345-9C62-4EAF-A2C5-90B703FD3F3F}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

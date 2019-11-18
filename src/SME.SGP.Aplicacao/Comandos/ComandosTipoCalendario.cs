@@ -71,15 +71,16 @@ namespace SME.SGP.Aplicacao
 
             repositorio.Salvar(tipoCalendario);
 
-            await ExecutarMetodosAsync(dto, inclusao, tipoCalendario).ConfigureAwait(false);
+            SME.Background.Core.Cliente.Executar<IComandosTipoCalendario>(x => x.ExecutarTratamentoFeriadosMoveis(dto, inclusao, tipoCalendario));
+
         }
 
-        private async Task ExecutarMetodosAsync(TipoCalendarioDto dto, bool inclusao, TipoCalendario tipoCalendario)
+        public void ExecutarTratamentoFeriadosMoveis(TipoCalendarioDto dto, bool inclusao, TipoCalendario tipoCalendario)
         {
-            await servicoFeriadoCalendario.VerficaSeExisteFeriadosMoveisEInclui(dto.AnoLetivo);
+            servicoFeriadoCalendario.VerficaSeExisteFeriadosMoveisEInclui(dto.AnoLetivo);
 
             if (inclusao)
-                await servicoEvento.SalvarEventoFeriadosAoCadastrarTipoCalendario(tipoCalendario);
+                servicoEvento.SalvarEventoFeriadosAoCadastrarTipoCalendario(tipoCalendario);
         }
     }
 }

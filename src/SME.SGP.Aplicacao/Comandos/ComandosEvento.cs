@@ -27,7 +27,7 @@ namespace SME.SGP.Aplicacao
 
             evento = MapearParaEntidade(evento, eventoDto);
             await servicoEvento.Salvar(evento);
-            await GravarRecorrencia(eventoDto, evento);
+            SME.Background.Core.Cliente.Executar<IComandosEvento>(x => x.GravarRecorrencia(eventoDto, evento));
             return await CopiarEventos(eventoDto);
         }
 
@@ -35,7 +35,7 @@ namespace SME.SGP.Aplicacao
         {
             var evento = MapearParaEntidade(new Evento(), eventoDto);
             await servicoEvento.Salvar(evento, eventoDto.DataConfirmada);
-            await GravarRecorrencia(eventoDto, evento);
+            SME.Background.Core.Cliente.Executar<IComandosEvento>(x => x.GravarRecorrencia(eventoDto, evento));
             return await CopiarEventos(eventoDto);
         }
 
@@ -87,19 +87,19 @@ namespace SME.SGP.Aplicacao
             return mensagens;
         }
 
-        private async Task GravarRecorrencia(EventoDto eventoDto, Evento evento)
+        public void GravarRecorrencia(EventoDto eventoDto, Evento evento)
         {
             if (eventoDto.RecorrenciaEventos != null)
             {
                 var recorrencia = eventoDto.RecorrenciaEventos;
-                await servicoEvento.SalvarRecorrencia(evento,
-                                                recorrencia.DataInicio,
-                                                recorrencia.DataFim,
-                                                recorrencia.DiaDeOcorrencia,
-                                                recorrencia.DiasDaSemana,
-                                                recorrencia.Padrao,
-                                                recorrencia.PadraoRecorrenciaMensal,
-                                                recorrencia.RepeteACada);
+                servicoEvento.SalvarRecorrencia(evento,
+                                               recorrencia.DataInicio,
+                                               recorrencia.DataFim,
+                                               recorrencia.DiaDeOcorrencia,
+                                               recorrencia.DiasDaSemana,
+                                               recorrencia.Padrao,
+                                               recorrencia.PadraoRecorrenciaMensal,
+                                               recorrencia.RepeteACada);
             }
         }
 
