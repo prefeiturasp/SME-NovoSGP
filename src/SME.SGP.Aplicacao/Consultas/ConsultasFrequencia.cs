@@ -31,7 +31,7 @@ namespace SME.SGP.Aplicacao.Consultas
             if (aula == null)
                 throw new NegocioException("Aula não encontrada.");
 
-            var alunosDaTurma = await servicoEOL.ObterAlunosPorTurna(aula.TurmaId);
+            var alunosDaTurma = await servicoEOL.ObterAlunosPorTurma(aula.TurmaId);
             if (alunosDaTurma == null || !alunosDaTurma.Any())
             {
                 throw new NegocioException("Não foram encontrados alunos para a aula/turma informada.");
