@@ -76,6 +76,7 @@ const SelectComponent = React.forwardRef((props, ref) => {
     placeholder,
     alt,
     multiple,
+    containerVinculoId,
     disabled,
     form,
   } = props;
@@ -119,7 +120,7 @@ const SelectComponent = React.forwardRef((props, ref) => {
       }
       name={name}
       id={id || name}
-      value={form.values[name]}
+      value={form.values[name] || undefined}
       placeholder={placeholder}
       notFoundContent="Sem dados"
       alt={alt}
@@ -139,6 +140,9 @@ const SelectComponent = React.forwardRef((props, ref) => {
     </Field>
   );
 
+  const obtenhaContainerVinculo = () =>
+    document.getElementById(containerVinculoId);
+
   const campoSemValidacoes = () => (
     <Select
       mode={multiple && 'multiple'}
@@ -148,6 +152,7 @@ const SelectComponent = React.forwardRef((props, ref) => {
       id={id}
       onChange={onChange}
       value={valueSelect}
+      getPopupContainer={containerVinculoId && obtenhaContainerVinculo}
       placeholder={placeholder}
       notFoundContent="Sem dados"
       alt={alt}

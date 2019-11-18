@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import { useSelector } from 'react-redux';
+import { Tooltip, Switch } from 'antd';
 import Card from '~/componentes/card';
 import Grid from '~/componentes/grid';
 import Calendario from '~/componentes-sgp/Calendario/Calendario';
@@ -18,7 +19,6 @@ const Titulo = styled(Div)`
   font-size: 24px;
 `;
 const Icone = styled.i``;
-const Campo = styled.input``;
 const Label = styled.label``;
 
 const CalendarioEscolar = () => {
@@ -79,18 +79,22 @@ const CalendarioEscolar = () => {
     filtrarPorTurmaSelecionada();
   }, [turmaSelecionada]);
 
-  useEffect(() => {
-    setFiltros({ ...filtros, tipoCalendarioSelecionado });
-    if (tipoCalendarioSelecionado) {
-      consultarDiasLetivos();
-      buscarDres();
-    }
-  }, [tipoCalendarioSelecionado]);
-
   const aoSelecionarTipoCalendario = tipo => {
     store.dispatch(zeraCalendario());
     setTipoCalendarioSelecionado(tipo);
   };
+
+  useEffect(() => {
+    if (tipoCalendarioSelecionado) {
+      consultarDiasLetivos();
+      buscarDres();
+    } else {
+      setDiasLetivos({});
+      setDreSelecionada();
+      setUnidadeEscolarSelecionada();
+    }
+    setFiltros({ ...filtros, tipoCalendarioSelecionado });
+  }, [tipoCalendarioSelecionado]);
 
   const aoClicarBotaoVoltar = () => {
     history.push('/');
@@ -100,8 +104,11 @@ const CalendarioEscolar = () => {
 
   const aoTrocarEventoSme = () => {
     setEventoSme(!eventoSme);
-    setFiltros({ ...filtros, eventoSme: !eventoSme });
   };
+
+  useEffect(() => {
+    setFiltros({ ...filtros, eventoSme });
+  }, [eventoSme]);
 
   const dresStore = useSelector(state => state.filtro.dres);
   const [dres, setDres] = useState([]);
@@ -162,23 +169,25 @@ const CalendarioEscolar = () => {
 
   const aoSelecionarDre = dre => {
     setDreSelecionada(dre);
-    setFiltros({ ...filtros, dreSelecionada: dre });
   };
 
   useEffect(() => {
     if (dreSelecionada) {
       consultarDiasLetivos();
       buscarUnidadesEscolares();
+    } else {
+      setUnidadeEscolarSelecionada();
     }
+    setFiltros({ ...filtros, dreSelecionada });
   }, [dreSelecionada]);
 
   const aoSelecionarUnidadeEscolar = unidade => {
     setUnidadeEscolarSelecionada(unidade);
-    setFiltros({ ...filtros, unidadeEscolarSelecionada: unidade });
   };
 
   useEffect(() => {
     if (unidadeEscolarSelecionada) consultarDiasLetivos();
+    setFiltros({ ...filtros, unidadeEscolarSelecionada });
   }, [unidadeEscolarSelecionada]);
 
   const consultarDiasLetivos = () => {
@@ -210,7 +219,7 @@ const CalendarioEscolar = () => {
           Consulta de calendário escolar
         </Titulo>
       </Grid>
-      <Card className="rounded mb-4">
+      <Card className="rounded mb-4 mx-auto">
         <Grid cols={12} className="mb-4">
           <Div className="row">
             <Grid cols={4}>
@@ -237,7 +246,7 @@ const CalendarioEscolar = () => {
                     className="float-left"
                   />
                   <Div className="float-left w-50 ml-2 mt-1">
-                    Nº de Dias Letivos no Calendário
+                    Nº de dias letivos no calendário
                   </Div>
                 </Div>
               )}
@@ -247,7 +256,7 @@ const CalendarioEscolar = () => {
                   style={{ clear: 'both', color: Base.Vermelho, fontSize: 12 }}
                 >
                   <Icone className="fa fa-exclamation-triangle mr-2" />
-                  Abaixo do mínimo estabelecido pela legislação.
+                  Abaixo do mínimo estabelecido pela legislação
                 </Div>
               )}
             </Grid>
@@ -265,24 +274,27 @@ const CalendarioEscolar = () => {
         </Grid>
         <Grid cols={12} className="mb-4">
           <Div className="row">
-            <Grid cols={2} className="d-flex align-items-center">
-              <Div className="custom-control custom-switch">
-                <Campo
-                  id="eventoSme"
-                  type="checkbox"
-                  className="custom-control-input"
-                  onChange={aoTrocarEventoSme}
-                  checked={eventoSme}
-                />
-                <Label
-                  className="custom-control-label pt-1"
-                  htmlFor="eventoSme"
+            <Grid cols={1} className="d-flex align-items-center pr-0">
+              <Div className="w-100">
+                <Tooltip
+                  placement="top"
+                  title={`${
+                    eventoSme
+                      ? 'Exibindo eventos da SME'
+                      : 'Não exibindo eventos da SME'
+                  }`}
                 >
-                  Evento SME
-                </Label>
+                  <Switch
+                    onChange={aoTrocarEventoSme}
+                    checked={eventoSme}
+                    size="small"
+                    className="mr-2"
+                  />
+                  <Label className="my-auto">SME</Label>
+                </Tooltip>
               </Div>
             </Grid>
-            <Grid cols={5}>
+            <Grid cols={6}>
               <SelectComponent
                 className="fonte-14"
                 onChange={aoSelecionarDre}

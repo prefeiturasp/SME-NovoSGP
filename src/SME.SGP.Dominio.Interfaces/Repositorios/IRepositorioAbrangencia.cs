@@ -10,6 +10,7 @@ namespace SME.SGP.Dominio.Interfaces
         Task<bool> JaExisteAbrangencia(string login, Guid perfil);
 
         Task<IEnumerable<AbrangenciaFiltroRetorno>> ObterAbrangenciaPorFiltro(string texto, string login, Guid perfil);
+        Task<AbrangenciaFiltroRetorno> ObterAbrangenciaTurma(int turma, string login, Guid perfil);
 
         Task<IEnumerable<AbrangenciaDreRetorno>> ObterDres(string login, Guid perfil, Modalidade? modalidade = null, int periodo = 0);
 
@@ -18,6 +19,8 @@ namespace SME.SGP.Dominio.Interfaces
         Task<IEnumerable<int>> ObterSemestres(string login, Guid perfil, Modalidade modalidade);
 
         Task<IEnumerable<AbrangenciaTurmaRetorno>> ObterTurmas(string codigoUe, string login, Guid perfil, Modalidade modalidade, int periodo = 0);
+
+        Task<AbrangenciaUeRetorno> ObterUe(string codigo, string login, Guid perfil);
 
         Task<IEnumerable<AbrangenciaUeRetorno>> ObterUes(string codigoDre, string login, Guid perfil, Modalidade? modalidade = null, int periodo = 0);
 
