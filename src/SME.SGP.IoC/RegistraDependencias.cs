@@ -1,9 +1,8 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using SME.SGP.Aplicacao;
 using SME.SGP.Aplicacao.Consultas;
 using SME.SGP.Aplicacao.Integracoes;
-using SME.SGP.Aplicacao.Interfaces;
 using SME.SGP.Aplicacao.Servicos;
 using SME.SGP.Dados;
 using SME.SGP.Dados.Contexto;
@@ -41,6 +40,8 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IComandosEvento, ComandosEvento>();
             services.TryAddScoped<IComandosDiasLetivos, ComandosDiasLetivos>();
             services.TryAddScoped<IComandosAula, ComandosAula>();
+            services.TryAddScoped<IComandosGrade, ComandosGrade>();
+            services.TryAddScoped<IComandoFrequencia, ComandoFrequencia>();
         }
 
         private static void RegistrarConsultas(IServiceCollection services)
@@ -66,7 +67,7 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IConsultasEventoTipo, ConsultasEventoTipo>();
             services.TryAddScoped<IConsultasEvento, ConsultasEvento>();
             services.TryAddScoped<IConsultasAula, ConsultasAula>();
-            services.TryAddScoped<IComandoFrequencia, ComandoFrequencia>();
+            services.TryAddScoped<IConsultasGrade, ConsultasGrade>();
         }
 
         private static void RegistrarContextos(IServiceCollection services)
