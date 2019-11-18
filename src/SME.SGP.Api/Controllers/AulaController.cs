@@ -3,7 +3,6 @@ using Microsoft.AspNetCore.Mvc;
 using SME.SGP.Api.Filtros;
 using SME.SGP.Aplicacao;
 using SME.SGP.Infra;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Api.Controllers
@@ -14,16 +13,6 @@ namespace SME.SGP.Api.Controllers
     [Authorize("Bearer")]
     public class AulaController : ControllerBase
     {
-        [HttpPost]
-        [ProducesResponseType(200)]
-        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        [Permissao(Permissao.CP_I, Policy = "Bearer")]
-        public async Task<IActionResult> Inserir([FromBody]AulaDto dto, [FromServices]IComandosAula comandos)
-        {
-            await comandos.Inserir(dto);
-            return Ok();
-        }
-
         [HttpPut("{id}")]
         [ProducesResponseType(200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
@@ -32,6 +21,16 @@ namespace SME.SGP.Api.Controllers
         {
             await comandos.Alterar(dto, id);
             return Ok();
+        }
+
+        [HttpGet("{id}")]
+        [ProducesResponseType(typeof(AulaConsultaDto), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [Permissao(Permissao.CP_C, Policy = "Bearer")]
+        public IActionResult BuscarPorId(long id, [FromServices]IConsultasAula consultas)
+        {
+            var aula = consultas.BuscarPorId(id);
+            return Ok(aula);
         }
 
         [HttpDelete("{id}")]
@@ -44,14 +43,13 @@ namespace SME.SGP.Api.Controllers
             return Ok();
         }
 
-        [HttpGet("{id}")]
-        [ProducesResponseType(typeof(AulaConsultaDto), 200)]
+        [HttpPost]
+        [ProducesResponseType(typeof(string), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        [Permissao(Permissao.CP_C, Policy = "Bearer")]
-        public IActionResult BuscarPorId(long id, [FromServices]IConsultasAula consultas)
+        [Permissao(Permissao.CP_I, Policy = "Bearer")]
+        public async Task<IActionResult> Inserir([FromBody]AulaDto dto, [FromServices]IComandosAula comandos)
         {
-            var aula = consultas.BuscarPorId(id);
-            return Ok(aula);
+            return Ok(await comandos.Inserir(dto));
         }
     }
 }

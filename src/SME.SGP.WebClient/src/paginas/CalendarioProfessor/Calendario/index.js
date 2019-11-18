@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import { useSelector } from 'react-redux';
+import { Tooltip, Switch } from 'antd';
 import Card from '~/componentes/card';
 import Grid from '~/componentes/grid';
 import Calendario from '~/componentes-sgp/Calendario/Calendario';
@@ -10,7 +11,7 @@ import api from '~/servicos/api';
 import Button from '~/componentes/button';
 import history from '~/servicos/history';
 import { store } from '~/redux';
-import { zeraCalendario } from '~/redux/modulos/calendarioEscolar/actions';
+import { zeraCalendario } from '~/redux/modulos/calendarioProfessor/actions';
 
 const Div = styled.div``;
 const Titulo = styled(Div)`
@@ -18,7 +19,6 @@ const Titulo = styled(Div)`
   font-size: 24px;
 `;
 const Icone = styled.i``;
-const Campo = styled.input``;
 const Label = styled.label``;
 
 const CalendarioProfessor = () => {
@@ -258,7 +258,7 @@ const CalendarioProfessor = () => {
   return (
     <Div className="col-12">
       <Grid cols={12} className="mb-1 p-0">
-        <Titulo className="font-weight-bold">Calendário do Professor</Titulo>
+        <Titulo className="font-weight-bold">Calendário do professor</Titulo>
       </Grid>
       <Card className="rounded mb-4 mx-auto">
         <Grid cols={12} className="mb-4">
@@ -287,7 +287,7 @@ const CalendarioProfessor = () => {
                     className="float-left"
                   />
                   <Div className="float-left w-50 ml-2 mt-1">
-                    Nº de Dias Letivos no Calendário
+                    Nº de dias letivos no calendário
                   </Div>
                 </Div>
               )}
@@ -297,7 +297,7 @@ const CalendarioProfessor = () => {
                   style={{ clear: 'both', color: Base.Vermelho, fontSize: 12 }}
                 >
                   <Icone className="fa fa-exclamation-triangle mr-2" />
-                  Abaixo do mínimo estabelecido pela legislação.
+                  Abaixo do mínimo estabelecido pela legislação
                 </Div>
               )}
             </Grid>
@@ -315,21 +315,24 @@ const CalendarioProfessor = () => {
         </Grid>
         <Grid cols={12} className="mb-4">
           <Div className="row">
-            <Grid cols={1} className="d-flex align-items-center">
-              <Div className="custom-control custom-switch">
-                <Campo
-                  id="eventoSme"
-                  type="checkbox"
-                  className="custom-control-input"
-                  onChange={aoTrocarEventoSme}
-                  checked={eventoSme}
-                />
-                <Label
-                  className="custom-control-label pt-1"
-                  htmlFor="eventoSme"
+            <Grid cols={1} className="d-flex align-items-center pr-0">
+              <Div className="w-100">
+                <Tooltip
+                  placement="top"
+                  title={`${
+                    eventoSme
+                      ? 'Exibindo eventos da SME'
+                      : 'Não exibindo eventos da SME'
+                  }`}
                 >
-                  SME
-                </Label>
+                  <Switch
+                    onChange={aoTrocarEventoSme}
+                    checked={eventoSme}
+                    size="small"
+                    className="mr-2"
+                  />
+                  <Label className="my-auto">SME</Label>
+                </Tooltip>
               </Div>
             </Grid>
             <Grid cols={5}>

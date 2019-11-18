@@ -4,6 +4,8 @@ import { useSelector } from 'react-redux';
 import styled from 'styled-components';
 import Semana from './Semana';
 import DiaCompleto from './DiaCompleto';
+import { store } from '~/redux';
+import { selecionaMes } from '~/redux/modulos/calendarioEscolar/actions';
 
 const Div = styled.div``;
 
@@ -12,7 +14,7 @@ const DiaDaSemana = props => {
 
   return (
     <Div className="col">
-      <Div className="text-muted text-center small">{nomeDia}</Div>
+      <Div className="text-muted text-center fonte-12">{nomeDia}</Div>
     </Div>
   );
 };
@@ -36,6 +38,18 @@ const MesCompleto = props => {
 
   const [diasDaSemana, setDiasDaSemana] = useState([]);
   const [estaAberto, setEstaAberto] = useState([]);
+
+  const eventoCalendarioEdicao = useSelector(
+    state => state.calendarioEscolar.eventoCalendarioEdicao
+  );
+
+  useEffect(() => {
+    const abrirMesEventoCalendarioEdicao = setTimeout(() => {
+      if (eventoCalendarioEdicao && eventoCalendarioEdicao.mes)
+        store.dispatch(selecionaMes(eventoCalendarioEdicao.mes));
+    }, 1000);
+    return () => clearTimeout(abrirMesEventoCalendarioEdicao);
+  }, [eventoCalendarioEdicao]);
 
   useEffect(() => {
     if (mesesCalendario) {
@@ -79,7 +93,7 @@ const MesCompleto = props => {
     <Div
       className={`${mesesCalendario[mesSelecionado].nome} d-none border border-top-0 border-bottom-0 h-100 w-100 fade`}
     >
-      <Div className="w-100 d-flex py-3 border-bottom">
+      <Div className="w-100 d-flex pt-4 pb-3 border-bottom">
         <DiaDaSemana nomeDia="Domingo" />
         <DiaDaSemana nomeDia="Segunda" />
         <DiaDaSemana nomeDia="Terça" />
