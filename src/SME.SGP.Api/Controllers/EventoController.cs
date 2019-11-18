@@ -2,7 +2,6 @@
 using Microsoft.AspNetCore.Mvc;
 using SME.SGP.Api.Filtros;
 using SME.SGP.Aplicacao;
-using SME.SGP.Aplicacao.Interfaces;
 using SME.SGP.Infra;
 using System.Collections.Generic;
 using System.Linq;
@@ -25,7 +24,7 @@ namespace SME.SGP.Api.Controllers
         }
 
         [HttpPost]
-        [ProducesResponseType(200)]
+        [ProducesResponseType(typeof(IEnumerable<RetornoCopiarEventoDto>), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [Permissao(Permissao.E_I, Policy = "Bearer")]
         public async Task<IActionResult> Criar([FromServices]IComandosEvento comandosEvento, [FromBody]EventoDto eventoDto)

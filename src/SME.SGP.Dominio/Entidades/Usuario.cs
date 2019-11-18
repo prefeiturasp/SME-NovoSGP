@@ -8,7 +8,9 @@ namespace SME.SGP.Dominio
     public class Usuario : EntidadeBase
     {
         private const string MENSAGEM_ERRO_USUARIO_SEM_ACESSO = "Usuário sem perfis de acesso.";
+        private readonly Guid PERFIL_DIRETOR = Guid.Parse("46E1E074-37D6-E911-ABD6-F81654FE895D");
         private readonly Guid PERFIL_PROFESSOR = Guid.Parse("40E1E074-37D6-E911-ABD6-F81654FE895D");
+        private readonly Guid PERFIL_SUPERVISOR = Guid.Parse("4EE1E074-37D6-E911-ABD6-F81654FE895D");
         public string CodigoRf { get; set; }
         public string Email { get; set; }
         public DateTime? ExpiracaoRecuperacaoSenha { get; set; }
@@ -149,6 +151,11 @@ namespace SME.SGP.Dominio
         public bool PossuiPerfilUe()
         {
             return Perfis != null && Perfis.Any(c => c.Tipo == TipoPerfil.UE);
+        }
+
+        public bool TemPerfilSupervisorOuDiretor(Guid perfilAtual)
+        {
+            return (perfilAtual == PERFIL_DIRETOR || perfilAtual == PERFIL_SUPERVISOR);
         }
 
         public bool TokenRecuperacaoSenhaEstaValido()

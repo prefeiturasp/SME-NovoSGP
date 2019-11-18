@@ -4,6 +4,6 @@
     {
         void Aprovar(WorkflowAprovacao workflow, bool aprovar, string observacao, long notificacaoId);
 
-        void ConfiguracaoInicial(WorkflowAprovacao workflowAprovacao);
+        void ConfiguracaoInicial(WorkflowAprovacao workflowAprovacao, long idEntidadeParaAprovar);
     }
 }

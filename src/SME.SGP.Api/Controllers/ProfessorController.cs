@@ -33,7 +33,7 @@ namespace SME.SGP.Api.Controllers
         [HttpGet("{codigoRF}/turmas/{codigoTurma}/disciplinas/")]
         [ProducesResponseType(typeof(IEnumerable<DisciplinaDto>), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        public async Task<IActionResult> Get(long codigoTurma, string codigoRF, [FromServices]IConsultasDisciplina consultasDisciplina)
+        public async Task<IActionResult> Get(string codigoTurma, string codigoRF, [FromServices]IConsultasDisciplina consultasDisciplina)
         {
             return Ok(await consultasDisciplina.ObterDisciplinasPorProfessorETurma(codigoTurma));
         }

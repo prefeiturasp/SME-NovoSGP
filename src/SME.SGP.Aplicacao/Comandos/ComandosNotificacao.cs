@@ -95,7 +95,8 @@ namespace SME.SGP.Aplicacao
                 Titulo = notificacaoDto.Titulo,
                 Ano = notificacaoDto.Ano,
                 TurmaId = notificacaoDto.TurmaId,
-                Tipo = notificacaoDto.Tipo
+                Tipo = notificacaoDto.Tipo,
+                Codigo = notificacaoDto.Codigo
             };
 
             TrataUsuario(notificacao, notificacaoDto.UsuarioRf);

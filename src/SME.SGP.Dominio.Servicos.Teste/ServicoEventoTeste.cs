@@ -1,6 +1,9 @@
-﻿using Moq;
+﻿using Microsoft.Extensions.Configuration;
+using Moq;
+using SME.SGP.Aplicacao;
 using SME.SGP.Dominio.Entidades;
 using SME.SGP.Dominio.Interfaces;
+using SME.SGP.Dto;
 using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
@@ -11,6 +14,8 @@ namespace SME.SGP.Dominio.Servicos.Teste
 {
     public class ServicoEventoTeste
     {
+        private readonly Mock<IComandosWorkflowAprovacao> comandosWorkflowAprovacao;
+        private readonly Mock<IRepositorioAbrangencia> repositorioAbrangencia;
         private readonly Mock<IRepositorioEvento> repositorioEvento;
         private readonly Mock<IRepositorioEventoTipo> repositorioEventoTipo;
         private readonly Mock<IRepositorioFeriadoCalendario> repositorioFeriadoCalendario;
@@ -20,6 +25,7 @@ namespace SME.SGP.Dominio.Servicos.Teste
         private readonly Mock<IServicoLog> servicoLog;
         private readonly Mock<IServicoNotificacao> servicoNotificacao;
         private readonly Mock<IServicoUsuario> servicoUsuario;
+        private readonly Mock<IUnitOfWork> unitOfWork;
 
         public ServicoEventoTeste()
         {
@@ -31,12 +37,20 @@ namespace SME.SGP.Dominio.Servicos.Teste
             repositorioTipoCalendario = new Mock<IRepositorioTipoCalendario>();
             servicoLog = new Mock<IServicoLog>();
             servicoNotificacao = new Mock<IServicoNotificacao>();
+            unitOfWork = new Mock<IUnitOfWork>();
+            repositorioAbrangencia = new Mock<IRepositorioAbrangencia>();
+            var mockConfiguration = new Mock<IConfiguration>();
+            comandosWorkflowAprovacao = new Mock<IComandosWorkflowAprovacao>();
             servicoEvento = new ServicoEvento(repositorioEvento.Object,
                                               repositorioEventoTipo.Object,
                                               repositorioPeriodoEscolar.Object,
                                               servicoUsuario.Object,
                                               repositorioFeriadoCalendario.Object,
                                               repositorioTipoCalendario.Object,
+                                              comandosWorkflowAprovacao.Object,
+                                              repositorioAbrangencia.Object,
+                                              mockConfiguration.Object,
+                                              unitOfWork.Object,
                                               servicoNotificacao.Object,
                                               servicoLog.Object);
         }
@@ -82,8 +96,80 @@ namespace SME.SGP.Dominio.Servicos.Teste
             repositorioEvento.Verify(c => c.Salvar(It.IsAny<Evento>()), Times.Once);
         }
 
+        [Theory]
+        [InlineData(TipoPerfil.DRE, false)]
+        [InlineData(TipoPerfil.UE, false)]
+        [InlineData(TipoPerfil.SME, true)]
+        public async Task DeveCriarEventoEValidarParticularidadesSME_LiberacaoExcepcional(TipoPerfil tipoPerfil, bool sucesso)
+        {
+            //ARRANGE
+            var tipoEvento = new EventoTipo
+            {
+                Id = 1,
+                Codigo = (int)TipoEventoEnum.LiberacaoExcepcional,
+                TipoData = EventoTipoData.InicioFim,
+                LocalOcorrencia = EventoLocalOcorrencia.UE
+            };
+            repositorioEventoTipo.Setup(c => c.ObterPorId(It.IsAny<long>()))
+                .Returns(tipoEvento);
+
+            var tipoCalendario = new TipoCalendario
+            {
+                Id = 1
+            };
+
+            repositorioTipoCalendario.Setup(c => c.ObterPorId(It.IsAny<long>()))
+               .Returns(tipoCalendario);
+
+            var listaPeriodoEscolar = new List<PeriodoEscolar>() { new PeriodoEscolar() { PeriodoInicio = DateTime.Today, PeriodoFim = DateTime.Today.AddDays(7) } };
+
+            repositorioPeriodoEscolar.Setup(a => a.ObterPorTipoCalendario(tipoCalendario.Id)).Returns(listaPeriodoEscolar);
+
+            var usuario = new Usuario();
+
+            var perfil = new PrioridadePerfil
+            {
+                CodigoPerfil = Guid.Parse("23A1E074-37D6-E911-ABD6-F81654FE895D"),
+                Tipo = tipoPerfil
+            };
+
+            usuario.DefinirPerfis(new List<PrioridadePerfil>
+            {
+                perfil
+            });
+
+            servicoUsuario.Setup(c => c.ObterUsuarioLogado())
+                .Returns(Task.FromResult(usuario));
+
+            var evento = new Evento
+            {
+                TipoCalendarioId = tipoCalendario.Id,
+                DreId = "1",
+                UeId = "2",
+                TipoEvento = tipoEvento,
+                DataInicio = DateTime.Now,
+                DataFim = DateTime.Now.AddDays(2),
+                Letivo = EventoLetivo.Sim
+            };
+
+            var ue = new AbrangenciaUeRetorno();
+            repositorioAbrangencia.Setup(a => a.ObterUe(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<Guid>())).Returns(Task.FromResult(ue));
+
+            //ASSERT
+            try
+            {
+                await servicoEvento.Salvar(evento, true);
+                Assert.True(true);
+            }
+            catch (Exception)
+            {
+                if (sucesso)
+                    Assert.True(false);
+            }
+        }
+
         [Fact]
-        public async Task DeveCriarEventoEValidarParticularidadesSME_LiberacaoExcepcional()
+        public async Task DeveCriarEventoEValidarParticularidadesSME_LiberacaoExcepcional_ConfirmaData()
         {
             //ARRANGE
             var tipoEvento = new EventoTipo
@@ -136,76 +222,7 @@ namespace SME.SGP.Dominio.Servicos.Teste
             };
 
             //ASSERT
-            await Assert.ThrowsAsync<NegocioException>(() => servicoEvento.Salvar(evento, true));
-        }
-
-        [Theory]
-        [InlineData(TipoPerfil.DRE, false)]
-        [InlineData(TipoPerfil.UE, false)]
-        [InlineData(TipoPerfil.SME, true)]
-        public async Task DeveCriarEventoEValidarParticularidadesSME_LiberacaoExcepcional_Perfil(TipoPerfil tipoPerfil, bool sucesso)
-        {
-            //ARRANGE
-            var tipoEvento = new EventoTipo
-            {
-                Id = 1,
-                Codigo = (int)TipoEventoEnum.LiberacaoExcepcional,
-                TipoData = EventoTipoData.InicioFim,
-                LocalOcorrencia = EventoLocalOcorrencia.UE
-            };
-            repositorioEventoTipo.Setup(c => c.ObterPorId(It.IsAny<long>()))
-                .Returns(tipoEvento);
-
-            var tipoCalendario = new TipoCalendario
-            {
-                Id = 1
-            };
-
-            repositorioTipoCalendario.Setup(c => c.ObterPorId(It.IsAny<long>()))
-               .Returns(tipoCalendario);
-
-            var listaPeriodoEscolar = new List<PeriodoEscolar>() { new PeriodoEscolar() { PeriodoInicio = DateTime.Today, PeriodoFim = DateTime.Today.AddDays(7) } };
-
-            repositorioPeriodoEscolar.Setup(a => a.ObterPorTipoCalendario(tipoCalendario.Id)).Returns(listaPeriodoEscolar);
-
-            var usuario = new Usuario();
-
-            var perfil = new PrioridadePerfil
-            {
-                CodigoPerfil = Guid.Parse("23A1E074-37D6-E911-ABD6-F81654FE895D"),
-                Tipo = tipoPerfil
-            };
-
-            usuario.DefinirPerfis(new List<PrioridadePerfil>
-            {
-                perfil
-            });
-
-            servicoUsuario.Setup(c => c.ObterUsuarioLogado())
-                .Returns(Task.FromResult(usuario));
-
-            var eventoQueNaoDevePassar = new Evento
-            {
-                TipoCalendarioId = tipoCalendario.Id,
-                DreId = "1",
-                UeId = "2",
-                TipoEvento = tipoEvento,
-                DataInicio = DateTime.Now,
-                DataFim = DateTime.Now.AddDays(2),
-                Letivo = EventoLetivo.Sim
-            };
-
-            //ASSERT
-            try
-            {
-                await servicoEvento.Salvar(eventoQueNaoDevePassar, true);
-                Assert.True(true);
-            }
-            catch (Exception)
-            {
-                if (sucesso)
-                    Assert.True(false);
-            }
+            await Assert.ThrowsAsync<NegocioException>(() => servicoEvento.Salvar(evento, false));
         }
 
         [Fact]
