@@ -78,8 +78,9 @@ const Mes = props => {
             .then(resposta => {
               if (resposta.data) {
                 resposta.data.forEach(item => {
-                  if (item && item.mes > 0)
+                  if (item && item.mes > 0) {
                     store.dispatch(atribuiEventosMes(item.mes, item.eventos));
+                  }
                 });
               } else store.dispatch(atribuiEventosMes(numeroMes, 0));
             })
@@ -89,7 +90,9 @@ const Mes = props => {
         } else store.dispatch(atribuiEventosMes(numeroMes, 0));
       }
     }
-    return () => (estado = false);
+    return () => {
+      estado = false;
+    };
   }, [filtros]);
 
   const meses = useSelector(state => state.calendarioEscolar.meses);
@@ -165,10 +168,10 @@ const Mes = props => {
           className="d-flex align-items-center w-100"
           style={mesSelecionado.style}
         >
-          <Div className="w-100 pl-2">{mesSelecionado.nome}</Div>
+          <Div className="w-100 pl-2 fonte-16">{mesSelecionado.nome}</Div>
           <Div className="flex-shrink-1 d-flex align-items-center pr-3">
-            <Div className="pr-2">{mesSelecionado.eventos}</Div>
-            <Div>
+            <Div className="pr-2 fonte-14">{mesSelecionado.eventos}</Div>
+            <Div className="fonte-14">
               <Icone className="far fa-calendar-alt" />
             </Div>
           </Div>

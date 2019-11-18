@@ -1,4 +1,5 @@
-﻿using SME.SGP.Aplicacao.Interfaces;
+using SME.SGP.Aplicacao.Interfaces;
+using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Dto;
 using SME.SGP.Infra;
@@ -29,11 +30,31 @@ namespace SME.SGP.Aplicacao
             this.repositorioParametrosSistema = repositorioParametrosSistema ?? throw new ArgumentNullException(nameof(repositorioParametrosSistema));
         }
 
+        public List<DateTime> BuscarDiasLetivos(IEnumerable<PeriodoEscolar> periodoEscolar)
+        {
+            List<DateTime> dias = new List<DateTime>();
+
+            periodoEscolar
+                .ToList()
+                .ForEach(x => dias
+                    .AddRange(
+                        Enumerable
+                        .Range(0, 1 + (x.PeriodoFim - x.PeriodoInicio).Days)
+                        .Select(y => x.PeriodoInicio.AddDays(y))
+                        .Where(w => EhDiaUtil(w))
+                        .ToList())
+            );
+
+            return dias;
+        }
+
         public DiasLetivosDto CalcularDiasLetivos(FiltroDiasLetivosDTO filtro)
         {
+            //se for letivo em um fds que esteja no calendário somar
             bool estaAbaixo = false;
 
-            var diasLetivosCalendario = BuscarDiasLetivos(filtro.TipoCalendarioId);
+            var periodoEscolar = repositorioPeriodoEscolar.ObterPorTipoCalendario(filtro.TipoCalendarioId);
+            var diasLetivosCalendario = BuscarDiasLetivos(periodoEscolar);
             var eventos = repositorioEvento.ObterEventosPorTipoDeCalendarioDreUe(filtro.TipoCalendarioId, filtro.DreId, filtro.UeId);
             var tipoCalendario = repositorioTipoCalendario.ObterPorId(filtro.TipoCalendarioId);
 
@@ -45,11 +66,21 @@ namespace SME.SGP.Aplicacao
             diasEventosNaoLetivos = ObterDias(eventos, diasEventosNaoLetivos, Dominio.EventoLetivo.Nao);
             diasEventosLetivos = ObterDias(eventos, diasEventosLetivos, Dominio.EventoLetivo.Sim);
 
+            //finais de semana letivos
+            foreach (var dia in diasEventosLetivos.Where(x => !EhDiaUtil(x)))
+            {
+                if (periodoEscolar.Any(w => w.PeriodoInicio <= dia && dia <= w.PeriodoFim))
+                    diasLetivosCalendario.Add(dia);
+            }
+
+            diasEventosNaoLetivos.RemoveAll(x => !diasLetivosCalendario.Contains(x));
+            diasEventosLetivos.RemoveAll(x => !diasLetivosCalendario.Contains(x));
+
             diasLetivosCalendario.AddRange(diasEventosLetivos.Except(diasLetivosCalendario));
 
             diasEventosNaoLetivos = diasEventosNaoLetivos.Where(w => !diasEventosLetivos.Contains(w)).ToList();
 
-            var diasLetivos = diasLetivosCalendario.Count() - diasEventosNaoLetivos.Count();
+            var diasLetivos = diasLetivosCalendario.Distinct().Count() - diasEventosNaoLetivos.Distinct().Count();
             var diasLetivosPermitidos = Convert.ToInt32(tipoCalendario.Modalidade == Dominio.ModalidadeTipoCalendario.EJA ?
                 repositorioParametrosSistema.ObterValorPorNomeAno(ChaveDiasLetivosEja, anoLetivo) :
                 repositorioParametrosSistema.ObterValorPorNomeAno(ChaveDiasLetivosFundMedio, anoLetivo));
@@ -68,25 +99,7 @@ namespace SME.SGP.Aplicacao
             return data.DayOfWeek != DayOfWeek.Saturday && data.DayOfWeek != DayOfWeek.Sunday;
         }
 
-        private List<DateTime> BuscarDiasLetivos(long tipoCalendarioId)
-        {
-            List<DateTime> dias = new List<DateTime>();
-            var periodoEscolar = repositorioPeriodoEscolar.ObterPorTipoCalendario(tipoCalendarioId);
-            periodoEscolar
-                .ToList()
-                .ForEach(x => dias
-                    .AddRange(
-                        Enumerable
-                        .Range(0, 1 + (x.PeriodoFim - x.PeriodoInicio).Days)
-                        .Select(y => x.PeriodoInicio.AddDays(y))
-                        .Where(w => EhDiaUtil(w))
-                        .ToList())
-            );
-
-            return dias;
-        }
-
-        private List<DateTime> ObterDias(IEnumerable<Dominio.Evento> eventos, List<DateTime> dias, Dominio.EventoLetivo eventoTipo)
+        public List<DateTime> ObterDias(IEnumerable<Dominio.Evento> eventos, List<DateTime> dias, Dominio.EventoLetivo eventoTipo)
         {
             eventos
                             .Where(w => w.Letivo == eventoTipo)
@@ -96,6 +109,9 @@ namespace SME.SGP.Aplicacao
                                     Enumerable
                                     .Range(0, 1 + (x.DataFim - x.DataInicio).Days)
                                     .Select(y => x.DataInicio.AddDays(y))
+                                    .Where(w => (eventoTipo == Dominio.EventoLetivo.Nao
+                                                && EhDiaUtil(w))
+                                            || eventoTipo == Dominio.EventoLetivo.Sim)
                             ));
             return dias.Distinct().ToList();
         }
