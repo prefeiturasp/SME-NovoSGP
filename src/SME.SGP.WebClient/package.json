@@ -55,7 +55,6 @@
   "devDependencies": {
     "babel-eslint": "10.0.1",
     "babel-plugin-root-import": "^6.4.1",
-    "commitizen": "^4.0.3",
     "customize-cra": "^0.6.0",
     "eslint": "^5.16.0",
     "eslint-config-airbnb": "^17.1.1",
@@ -68,10 +67,5 @@
     "prettier": "^1.18.2",
     "react-app-rewired": "^2.1.3",
     "react-redux": "^7.1.1"
-  },
-  "config": {
-    "commitizen": {
-      "path": "./src/SME.SGP.WebClient/src/cz"
-    }
   }
 }
