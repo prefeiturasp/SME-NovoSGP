@@ -34,7 +34,7 @@ namespace SME.SGP.Worker.Service
             .ConfigureServices((hostContext, services) =>
             {
                 services.AddHostedService<WorkerService>();
-                WorkerService.ConfigurarDependencias(services);
+                WorkerService.ConfigurarDependencias(hostContext.Configuration, services);
                 WorkerService.Configurar(hostContext.Configuration, services);
 
 

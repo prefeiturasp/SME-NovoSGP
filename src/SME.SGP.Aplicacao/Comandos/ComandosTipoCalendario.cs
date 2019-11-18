@@ -33,7 +33,7 @@ namespace SME.SGP.Aplicacao
 
             repositorio.Salvar(tipoCalendario);
 
-            await ExecutarMetodosAsync(dto, false, tipoCalendario).ConfigureAwait(false);
+            SME.Background.Core.Cliente.Executar<IComandosTipoCalendario>(x => x.ExecutarMetodosAsync(dto, false, tipoCalendario));
         }
 
         public async Task Incluir(TipoCalendarioDto dto)
@@ -47,7 +47,7 @@ namespace SME.SGP.Aplicacao
 
             repositorio.Salvar(tipoCalendario);
 
-            await ExecutarMetodosAsync(dto, true, tipoCalendario).ConfigureAwait(false);
+            SME.Background.Core.Cliente.Executar<IComandosTipoCalendario>(x => x.ExecutarMetodosAsync(dto, false, tipoCalendario));
         }
 
         public TipoCalendario MapearParaDominio(TipoCalendarioDto dto, long id)
@@ -107,12 +107,12 @@ namespace SME.SGP.Aplicacao
             }
         }
 
-        private async Task ExecutarMetodosAsync(TipoCalendarioDto dto, bool inclusao, TipoCalendario tipoCalendario)
+        public void ExecutarMetodosAsync(TipoCalendarioDto dto, bool inclusao, TipoCalendario tipoCalendario)
         {
-            await servicoFeriadoCalendario.VerficaSeExisteFeriadosMoveisEInclui(dto.AnoLetivo);
+            servicoFeriadoCalendario.VerficaSeExisteFeriadosMoveisEInclui(dto.AnoLetivo);
 
             if (inclusao)
-                await servicoEvento.SalvarEventoFeriadosAoCadastrarTipoCalendario(tipoCalendario);
+                servicoEvento.SalvarEventoFeriadosAoCadastrarTipoCalendario(tipoCalendario);
         }
     }
 }

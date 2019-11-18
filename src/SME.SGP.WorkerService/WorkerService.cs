@@ -2,6 +2,8 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Sentry;
+using SME.SGP.Api;
+using SME.SGP.Dados.Mapeamentos;
 using SME.SGP.IoC;
 using System;
 using System.Collections.Generic;
@@ -62,9 +64,11 @@ namespace SME.SGP.Worker.Service
             HangfireWorkerService = new SME.Background.Core.Servidor<SME.Background.Hangfire.Worker>(new SME.Background.Hangfire.Worker(config, services, "SGP-Postgres"));
         }
 
-        internal static void ConfigurarDependencias(IServiceCollection services)
+        internal static void ConfigurarDependencias(IConfiguration configuration, IServiceCollection services)
         {
             RegistraDependenciasWorkerServices.Registrar(services);
+            RegistrarMapeamentos.Registrar();
+            RegistraClientesHttp.Registrar(services, configuration);
         }
     }
 }
