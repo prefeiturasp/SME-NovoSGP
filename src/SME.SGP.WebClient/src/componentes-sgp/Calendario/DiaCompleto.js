@@ -83,7 +83,9 @@ const DiaCompleto = props => {
         }
       } else setEventosDia([]);
     }
-    return () => (estado = false);
+    return () => {
+      estado = false;
+    };
   }, [diaSelecionado]);
 
   useEffect(() => {

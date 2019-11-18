@@ -41,6 +41,7 @@ export function salvarEventoCalendarioEdicao(
     payload: {
       tipoCalendario,
       eventoSme,
+      dre,
       unidadeEscolar,
       mes,
       dia,

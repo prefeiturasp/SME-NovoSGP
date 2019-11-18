@@ -89,7 +89,7 @@ const inicial = {
     },
   },
   diaSelecionado: undefined,
-  eventoCalendarioEscolarSelecionado: {},
+  eventoCalendarioEdicao: {},
 };
 
 export default function calendarioEscolar(state = inicial, action) {
@@ -131,7 +131,7 @@ export default function calendarioEscolar(state = inicial, action) {
         break;
       }
       case '@calendarioEscolar/salvarEventoCalendarioEdicao': {
-        draft.eventoCalendarioEscolarSelecionado = action.payload;
+        draft.eventoCalendarioEdicao = action.payload;
         break;
       }
       default:

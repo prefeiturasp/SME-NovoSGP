@@ -211,8 +211,8 @@ const EventosForm = ({ match }) => {
     setValidacoes(Yup.object(val));
   };
 
-  const eventoCalendarioEscolarSelecionado = useSelector(
-    state => state.calendarioEscolar.eventoCalendarioEscolarSelecionado
+  const eventoCalendarioEdicao = useSelector(
+    state => state.calendarioEscolar.eventoCalendarioEdicao
   );
 
   const consultaPorId = async id => {
@@ -264,7 +264,7 @@ const EventosForm = ({ match }) => {
 
       setExibirAuditoria(true);
 
-      if (Object.entries(eventoCalendarioEscolarSelecionado).length > 0) {
+      if (Object.entries(eventoCalendarioEdicao).length > 0) {
         setBreadcrumbManual(
           match.url,
           'Cadastro de Eventos no Calendário Escolar',
@@ -313,13 +313,13 @@ const EventosForm = ({ match }) => {
         'Você não salvou as informações preenchidas.',
         'Deseja voltar para tela de listagem agora?'
       );
-      if (Object.entries(eventoCalendarioEscolarSelecionado).length > 0) {
+      if (Object.entries(eventoCalendarioEdicao).length > 0) {
         history.push('/calendario-escolar');
       } else if (confirmado) {
         history.push('/calendario-escolar/eventos');
       }
     } else {
-      if (Object.entries(eventoCalendarioEscolarSelecionado).length > 0) {
+      if (Object.entries(eventoCalendarioEdicao).length > 0) {
         history.push('/calendario-escolar');
       } else {
         history.push('/calendario-escolar/eventos');
@@ -391,9 +391,7 @@ const EventosForm = ({ match }) => {
         if (tiposCalendarioParaCopiar && tiposCalendarioParaCopiar.length > 0) {
           setListaMensagensCopiarEvento(response.data);
           setExibirModalRetornoCopiarEvento(true);
-        } else if (
-          Object.entries(eventoCalendarioEscolarSelecionado).length > 0
-        ) {
+        } else if (Object.entries(eventoCalendarioEdicao).length > 0) {
           history.push('/calendario-escolar');
         } else {
           sucesso(response.data[0].mensagem);
@@ -930,7 +928,7 @@ const EventosForm = ({ match }) => {
           closable={false}
           fecharAoClicarFora={false}
           fecharAoClicarEsc={false}
-          esconderBotaoPrincipal={true}
+          esconderBotaoPrincipal
         >
           {listaMensagensCopiarEvento.map((item, i) => (
             <p key={i}>
