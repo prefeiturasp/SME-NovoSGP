@@ -13,6 +13,7 @@ const Container = styled.div`
     line-height: normal;
     letter-spacing: 0.14px;
     color: #42474a;
+    font-weight: bold;
   }
 `;
 

@@ -4,12 +4,12 @@ import PropTypes from 'prop-types';
 // Componentes
 import InputRF from './componentes/InputRF';
 import InputNome from './componentes/InputNome';
-import { Grid } from '~/componentes';
+import { Grid, Label } from '~/componentes';
 
 // Services
 import service from './services/LocalizadorService';
 
-function Localizador({ onChange }) {
+function Localizador({ onChange, showLabel, form }) {
   const [dataSource, setDataSource] = useState([]);
   const [pessoaSelecionada, setPessoaSelecionada] = useState({});
 
@@ -37,18 +37,25 @@ function Localizador({ onChange }) {
 
   return (
     <>
-      <Grid cols={3}>
+      <Grid cols={4}>
+        {showLabel && (
+          <Label text="Registro Funcional (RF)" control="rfProfessor" />
+        )}
         <InputRF
           pessoaSelecionada={pessoaSelecionada}
           onSelect={onBuscarPorRF}
+          name="rfProfessor"
+          form={form}
         />
       </Grid>
-      <Grid cols={9}>
+      <Grid cols={8}>
+        {showLabel && <Label text="Nome" control="nomeProfessor" />}
         <InputNome
           dataSource={dataSource}
           onSelect={onSelectPessoa}
           onChange={onChangeInput}
           pessoaSelecionada={pessoaSelecionada}
+          name="nomeProfessor"
         />
       </Grid>
     </>
