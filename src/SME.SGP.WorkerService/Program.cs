@@ -29,12 +29,20 @@ namespace SME.SGP.Worker.Service
             {
                 logging.AddConfiguration(context.Configuration);
                 logging.AddSentry();
+
             })
             .ConfigureServices((hostContext, services) =>
             {
                 services.AddHostedService<WorkerService>();
                 WorkerService.ConfigurarDependencias(services);
                 WorkerService.Configurar(hostContext.Configuration, services);
+
+
+                services.AddDistributedRedisCache(options =>
+                {
+                    options.Configuration = hostContext.Configuration.GetConnectionString("SGP-Redis");
+                    options.InstanceName = hostContext.Configuration.GetValue<string>("Nome-Instancia-Redis");
+                });
             });
 
             builder.UseEnvironment(asService ? EnvironmentName.Production : EnvironmentName.Development);
