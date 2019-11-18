@@ -1,4 +1,5 @@
 ﻿using SME.SGP.Dominio.Interfaces;
+using System.Linq;
 
 namespace SME.SGP.Dominio.Servicos
 {
@@ -21,6 +22,9 @@ namespace SME.SGP.Dominio.Servicos
                 throw new NegocioException("Nenhum tipo de calendario para o ano letivo vigente encontrado");
 
             var periodosEscolares = repositorioPeriodoEscolar.ObterPorTipoCalendario(tipoCalendario.Id);
+
+            if (periodosEscolares == null || !periodosEscolares.Any())
+                throw new NegocioException("Nenhum periodo escolar encontrado para o ano letivo vigente");
         }
     }
 }

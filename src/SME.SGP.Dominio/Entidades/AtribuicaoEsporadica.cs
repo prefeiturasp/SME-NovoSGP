@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace SME.SGP.Dominio
 {
@@ -12,9 +14,14 @@ namespace SME.SGP.Dominio
         public string ProfessorRf { get; set; }
         public string UeId { get; set; }
 
-        public void ValidarDataInicio(bool ehSme, int ano)
+        public void ValidarDataInicio(bool ehSme, int anoLetivo, IEnumerable<PeriodoEscolar> periodosEscolares)
         {
-            if (ehSme && ano == DateTime.Now.Year)
+            var dentroPeriodo = periodosEscolares.Any(x => x.PeriodoInicio >= DataInicio && DataInicio >= x.PeriodoFim);
+
+            if (!dentroPeriodo)
+                throw new NegocioException("O Inicio da atribuição deve estar dentro de um periodo escolar cadastrado");
+
+            if (ehSme && anoLetivo == DateTime.Now.Year)
                 return;
 
             if (DataInicio < DateTime.Now)

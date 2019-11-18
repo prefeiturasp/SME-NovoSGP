@@ -16,6 +16,7 @@ const Base = {
   Branco: '#FFF',
   CinzaBadge: '#F3F3F3',
   CinzaBarras: '#C8C8C8',
+  CinzaBordaCalendario: '#C4C4C4',
   CinzaBotao: '#A4A4A4',
   CinzaCalendario: '#F7F9FA',
   CinzaDesabilitado: '#DADADA',
