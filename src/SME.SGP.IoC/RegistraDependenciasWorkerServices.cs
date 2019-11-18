@@ -117,7 +117,7 @@ namespace SME.SGP.IoC
             services.TryAddTransient<IServicoWorkflowAprovacao, ServicoWorkflowAprovacao>();
             services.TryAddTransient<IServicoNotificacao, ServicoNotificacao>();
             services.TryAddTransient<IServicoUsuario, ServicoUsuario>();
-            services.TryAddTransient<IServicoEOL, ServicoEOL>();
+            //services.TryAddTransient<IServicoEOL, ServicoEOL>();
             services.TryAddTransient<IServicoAutenticacao, ServicoAutenticacao>();
             services.TryAddTransient<IServicoPerfil, ServicoPerfil>();
             services.TryAddTransient<IServicoEmail, ServicoEmail>();
