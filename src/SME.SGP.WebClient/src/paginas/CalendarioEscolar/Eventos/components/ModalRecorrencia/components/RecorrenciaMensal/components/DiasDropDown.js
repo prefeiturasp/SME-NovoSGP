@@ -13,7 +13,7 @@ const SelectWrapper = styled.div`
   }
 `;
 
-function DaysDropDown({ onChange, selected, form }) {
+function DiasDropDown({ onChange, selected, form }) {
   const items = [
     {
       desc: 'Domingo',
@@ -62,16 +62,16 @@ function DaysDropDown({ onChange, selected, form }) {
   );
 }
 
-DaysDropDown.defaultProps = {
+DiasDropDown.defaultProps = {
   onChange: () => {},
   form: {},
   selected: '0',
 };
 
-DaysDropDown.propTypes = {
+DiasDropDown.propTypes = {
   onChange: PropTypes.func,
   form: PropTypes.oneOfType([PropTypes.object, PropTypes.symbol]),
   selected: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
 };
 
-export default DaysDropDown;
+export default DiasDropDown;
