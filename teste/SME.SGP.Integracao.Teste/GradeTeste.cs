@@ -17,20 +17,20 @@ namespace SME.SGP.Integracao.Teste
             _fixture = fixture;
         }
 
-        [Fact]
-        public void DeveRetornarHorasGradeEHorasRestantes()
-        {
-            _fixture._clientApi.DefaultRequestHeaders.Clear();
-            _fixture._clientApi.DefaultRequestHeaders.Authorization =
-                new AuthenticationHeaderValue("Bearer", _fixture.GerarToken(new Permissao[] { }));
+        //[Fact]
+        //public void DeveRetornarHorasGradeEHorasRestantes()
+        //{
+        //    _fixture._clientApi.DefaultRequestHeaders.Clear();
+        //    _fixture._clientApi.DefaultRequestHeaders.Authorization =
+        //        new AuthenticationHeaderValue("Bearer", _fixture.GerarToken(new Permissao[] { }));
 
-            var turma = 123;
-            var disciplina = 7;
+        //    var turma = 123;
+        //    var disciplina = 7;
 
-            var getResult = _fixture._clientApi.GetAsync($"api/v1/grade/aulas/{turma}/{disciplina}").Result;
+        //    var getResult = _fixture._clientApi.GetAsync($"api/v1/grade/aulas/{turma}/{disciplina}").Result;
 
-            Assert.True(getResult.IsSuccessStatusCode);
-        }
+        //    Assert.True(getResult.IsSuccessStatusCode);
+        //}
 
     }
 }
