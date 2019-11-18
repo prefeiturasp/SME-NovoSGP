@@ -39,23 +39,23 @@ function Localizador({ onChange, showLabel, form }) {
     <>
       <Grid cols={4}>
         {showLabel && (
-          <Label text="Registro Funcional (RF)" control="rfProfessor" />
+          <Label text="Registro Funcional (RF)" control="professorRf" />
         )}
         <InputRF
           pessoaSelecionada={pessoaSelecionada}
           onSelect={onBuscarPorRF}
-          name="rfProfessor"
+          name="professorRf"
           form={form}
         />
       </Grid>
       <Grid cols={8}>
-        {showLabel && <Label text="Nome" control="nomeProfessor" />}
+        {showLabel && <Label text="Nome" control="professorNome" />}
         <InputNome
           dataSource={dataSource}
           onSelect={onSelectPessoa}
           onChange={onChangeInput}
           pessoaSelecionada={pessoaSelecionada}
-          name="nomeProfessor"
+          name="professorNome"
         />
       </Grid>
     </>
