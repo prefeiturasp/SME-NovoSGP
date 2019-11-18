@@ -41,6 +41,7 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IComandosDiasLetivos, ComandosDiasLetivos>();
             services.TryAddScoped<IComandosAula, ComandosAula>();
             services.TryAddScoped<IComandosGrade, ComandosGrade>();
+            services.TryAddScoped<IComandoFrequencia, ComandoFrequencia>();
         }
 
         private static void RegistrarConsultas(IServiceCollection services)
@@ -67,7 +68,6 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IConsultasEvento, ConsultasEvento>();
             services.TryAddScoped<IConsultasAula, ConsultasAula>();
             services.TryAddScoped<IConsultasGrade, ConsultasGrade>();
-            services.TryAddScoped<IComandoFrequencia, ComandoFrequencia>();
         }
 
         private static void RegistrarContextos(IServiceCollection services)
