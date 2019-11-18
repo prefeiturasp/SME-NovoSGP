@@ -1,4 +1,4 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using SME.SGP.Aplicacao;
 using SME.SGP.Aplicacao.Consultas;
@@ -41,6 +41,8 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IComandosEvento, ComandosEvento>();
             services.TryAddScoped<IComandosDiasLetivos, ComandosDiasLetivos>();
             services.TryAddScoped<IComandosAula, ComandosAula>();
+            services.TryAddScoped<IComandosGrade, ComandosGrade>();
+            services.TryAddScoped<IComandoFrequencia, ComandoFrequencia>();
         }
 
         private static void RegistrarConsultas(IServiceCollection services)
@@ -66,6 +68,8 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IConsultasEventoTipo, ConsultasEventoTipo>();
             services.TryAddScoped<IConsultasEvento, ConsultasEvento>();
             services.TryAddScoped<IConsultasAula, ConsultasAula>();
+            services.TryAddScoped<IConsultasGrade, ConsultasGrade>();
+            services.TryAddScoped<IConsultasFrequencia, ConsultasFrequencia>();
         }
 
         private static void RegistrarContextos(IServiceCollection services)
@@ -103,6 +107,10 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IRepositorioEventoTipo, RepositorioEventoTipo>();
             services.TryAddScoped<IRepositorioParametrosSistema, RepositorioParametrosSistema>();
             services.TryAddScoped<IRepositorioAula, RepositorioAula>();
+            services.TryAddScoped<IRepositorioGrade, RepositorioGrade>();
+            services.TryAddScoped<IRepositorioGradeFiltro, RepositorioGradeFiltro>();
+            services.TryAddScoped<IRepositorioGradeDisciplina, RepositorioGradeDisciplina>();
+            services.TryAddScoped<IRepositorioFrequencia, RepositorioFrequencia>();
         }
 
         private static void RegistrarServicos(IServiceCollection services)
@@ -121,6 +129,8 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IServicoEvento, ServicoEvento>();
             services.TryAddScoped<IServicoDiaLetivo, ServicoDiaLetivo>();
             services.TryAddScoped<IServicoLog, ServicoLog>();
+            services.TryAddScoped<IServicoFrequencia, ServicoFrequencia>();
+            services.TryAddScoped<IServicoAula, ServicoAula>();
         }
     }
 }
