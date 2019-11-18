@@ -20,5 +20,14 @@ namespace SME.SGP.Api.Controllers
         {
             return Ok(await consultasFrequencia.ObterListaFrequenciaPorAula(aulaId));
         }
+
+        [HttpGet]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 601)]
+        [Permissao(Permissao.PDA_I, Policy = "Bearer")]
+        public async Task<IActionResult> Registrar(long aulaId, [FromServices] IConsultasFrequencia consultasFrequencia)
+        {
+            return Ok(await consultasFrequencia.ObterListaFrequenciaPorAula(aulaId));
+        }
     }
 }
