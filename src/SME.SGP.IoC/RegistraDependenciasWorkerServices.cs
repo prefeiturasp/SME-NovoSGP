@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using System;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using SME.SGP.Aplicacao;
 using SME.SGP.Aplicacao.Consultas;
@@ -19,13 +20,21 @@ namespace SME.SGP.IoC
     {
         public static void Registrar(IServiceCollection services)
         {
+            ResgistraDependenciaHttp(services);
             RegistrarRepositorios(services);
             RegistrarContextos(services);
             RegistrarComandos(services);
             RegistrarConsultas(services);
             RegistrarServicos(services);
         }
-        
+
+        private static void ResgistraDependenciaHttp(IServiceCollection services)
+        {
+            /// Este método não deveria existir, as dependencias dos objetos abaixo deveriam ser encapsuladas em um contexto da aplicação para serem utilizadas pela WebApi e WorkserService independentemente
+            services.TryAddTransient<System.Net.Http.HttpClient>();
+            services.TryAddTransient<Microsoft.AspNetCore.Http.IHttpContextAccessor, NoHttpContext>();
+        }
+
         private static void RegistrarComandos(IServiceCollection services)
         {
             services.TryAddTransient<IComandosPlanoCiclo, ComandosPlanoCiclo>();
@@ -69,7 +78,7 @@ namespace SME.SGP.IoC
 
         private static void RegistrarContextos(IServiceCollection services)
         {
-            services.TryAddTransient<ISgpContext, WorkerContext>();
+            services.TryAddTransient<ISgpContext, SgpContext>();
             services.TryAddTransient<IUnitOfWork, UnitOfWork>();
         }
 
@@ -109,8 +118,6 @@ namespace SME.SGP.IoC
             services.TryAddTransient<IServicoNotificacao, ServicoNotificacao>();
             services.TryAddTransient<IServicoUsuario, ServicoUsuario>();
             services.TryAddTransient<IServicoEOL, ServicoEOL>();
-            services.TryAddTransient<System.Net.Http.HttpClient>();
-            
             services.TryAddTransient<IServicoAutenticacao, ServicoAutenticacao>();
             services.TryAddTransient<IServicoPerfil, ServicoPerfil>();
             services.TryAddTransient<IServicoEmail, ServicoEmail>();
