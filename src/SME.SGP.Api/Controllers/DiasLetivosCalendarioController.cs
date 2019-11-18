@@ -1,10 +1,4 @@
-﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
-using SME.SGP.Api.Filtros;
-using SME.SGP.Aplicacao.Interfaces;
-using SME.SGP.Dominio.Interfaces;
-using SME.SGP.Dto;
-using SME.SGP.Infra;
+﻿using SME.SGP.Api.Filtros;
 
 namespace SME.SGP.Api.Controllers
 {
@@ -26,8 +20,7 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(DiasLetivosDto), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [Route("dias-letivos")]
-        //[Permissao(Permissao.C_C, Policy = "Bearer")]
-        [AllowAnonymous]
+        [Permissao(Permissao.C_C, Policy = "Bearer")]
         public IActionResult CalcularDiasLetivos(FiltroDiasLetivosDTO filtro)
         {
             return Ok(comandosDiasLetivos.CalcularDiasLetivos(filtro));
