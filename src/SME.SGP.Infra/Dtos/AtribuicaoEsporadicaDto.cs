@@ -18,8 +18,12 @@ namespace SME.SGP.Infra
         public string DreId { get; set; }
 
         public bool Excluido { get; set; }
+
         public long Id { get; set; }
+
         public bool Migrado { get; set; }
+
+        public string ProfessorNome { get; set; }
 
         [Required(ErrorMessage = "É necessario informar o RF do professor Atribuido")]
         public string ProfessorRf { get; set; }
