@@ -44,7 +44,7 @@ function ButtonGroup({
         color={Colors.Vermelho}
         border
         className="mr-2"
-        disabled={!permissoesTela.podeExcluir && temItemSelecionado}
+        disabled={!permissoesTela.podeExcluir && !temItemSelecionado}
         onClick={onClickExcluir}
       />
       <Button

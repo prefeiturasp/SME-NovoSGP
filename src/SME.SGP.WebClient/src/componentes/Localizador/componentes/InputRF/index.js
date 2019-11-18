@@ -51,6 +51,12 @@ function InputRF({
     }
   };
 
+  useEffect(() => {
+    if (form && form.initialValues) {
+      setValor(form.initialValues.professorRf);
+    }
+  }, [form.initialValues]);
+
   return (
     <>
       {form ? (
@@ -66,7 +72,6 @@ function InputRF({
             maxLength={maxlength || 7}
             value={valor}
             placeholder="Digite o RF"
-            // innerRef={ref}
             onKeyDown={onKeyDown}
             onChange={e => {
               form.setFieldValue(name, e.target.value);

@@ -1,6 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 
+// Form
+import { Field } from 'formik';
+
 // Componentes
 import { AutoComplete, Input } from 'antd';
 
@@ -31,7 +34,37 @@ function InputNome({ dataSource, onSelect, onChange, pessoaSelecionada }) {
       </AutoComplete.Option>
     ));
 
-  return (
+  return form ? (
+    <InputNomeEstilo>
+      <Field
+        name={name}
+        id={id || name}
+        className={`campo ${possuiErro() ? 'is-invalid' : ''} ${className ||
+          ''} ${desabilitado ? 'desabilitado' : ''}`}
+        component={Input}
+        readOnly={desabilitado}
+        onBlur={executaOnBlur}
+        maxLength={maxlength || 7}
+        value={valor}
+        placeholder="Digite o RF"
+        onKeyDown={onKeyDown}
+        onChange={e => {
+          form.setFieldValue(name, e.target.value);
+          form.setFieldTouched(name, true, true);
+          setValor(e.target.value);
+          onSelect(e);
+        }}
+        style={style}
+        suffix={botao}
+        onPressEnter={e => onSubmitRF(e.target.value)}
+      />
+      {form && form.touched[name] ? (
+        <span className="mensagemErro">{form.errors[name]}</span>
+      ) : (
+        ''
+      )}
+    </InputNomeEstilo>
+  ) : (
     <InputNomeEstilo>
       <AutoComplete
         onChange={onChangeValor}
