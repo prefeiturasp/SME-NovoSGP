@@ -19,7 +19,8 @@ namespace SME.SGP.Dados.Repositorios
         {
             var query = @"select professor_id, quantidade, data_aula 
                  from aula 
-                where turma_id = @turma 
+                where not excluido 
+                  and turma_id = @turma 
                   and disciplina_id = @disciplina";
 
             return await database.Conexao.QueryAsync<AulasPorTurmaDisciplinaDto>(query, new
