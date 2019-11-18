@@ -74,12 +74,16 @@ const CampoTexto = React.forwardRef((props, ref) => {
               onKeyDown={onKeyDown}
               onChange={e => {
                 form.setFieldValue(name, e.target.value);
-                form.setFieldTouched(name, true);
+                form.setFieldTouched(name, true, true);
                 onChange(e);
               }}
               style={style}
             />
-            {!semMensagem ? <span>{form.errors[name]}</span> : ''}
+            {!semMensagem && form && form.touched[name] ? (
+              <span>{form.errors[name]}</span>
+            ) : (
+              ''
+            )}
           </>
         ) : (
           <Input

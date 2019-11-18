@@ -114,7 +114,6 @@ const EventosForm = ({ match }) => {
   const [dataInicioEvento, setDataInicioEvento] = useState(null);
   const [dataAlterada, setDataAlterada] = useState(false);
   const [recorrencia, setRecorrencia] = useState(null);
-  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     const montarConsultas = async () => {
@@ -226,13 +225,23 @@ const EventosForm = ({ match }) => {
         dataFim: evento.data.dataFim ? window.moment(evento.data.dataFim) : '',
         dataInicio: window.moment(evento.data.dataInicio),
         descricao: evento.data.descricao,
-        dreId: String(evento.data.dreId),
-        feriadoId: evento.data.feriadoId || '',
+        dreId: !validaSeValorInvalido(evento.data.dreId)
+          ? String(evento.data.dreId)
+          : undefined,
+        feriadoId: !validaSeValorInvalido(evento.data.feriadoId)
+          ? String(evento.data.feriadoId)
+          : undefined,
         letivo: evento.data.letivo,
         nome: evento.data.nome,
-        tipoCalendarioId: String(evento.data.tipoCalendarioId),
-        tipoEventoId: String(evento.data.tipoEventoId),
-        ueId: String(evento.data.ueId),
+        tipoCalendarioId: !validaSeValorInvalido(evento.data.tipoCalendarioId)
+          ? String(evento.data.tipoCalendarioId)
+          : undefined,
+        tipoEventoId: !validaSeValorInvalido(evento.data.tipoEventoId)
+          ? String(evento.data.tipoEventoId)
+          : undefined,
+        ueId: !validaSeValorInvalido(evento.data.ueId)
+          ? String(evento.data.ueId)
+          : undefined,
         id: evento.data.id,
         recorrenciaEventos: evento.data.recorrenciaEventos,
       });
@@ -245,10 +254,39 @@ const EventosForm = ({ match }) => {
         alteradoEm: evento.data.alteradoEm,
       });
 
+      verificarAlteracaoLetivoEdicao(listaTipoEvento, evento.data.tipoEventoId);
+
       onChangeTipoEvento(evento.data.tipoEventoId);
 
       setExibirAuditoria(true);
     }
+  };
+
+  const verificarAlteracaoLetivoEdicao = (listaTipos, idTipoEvento) => {
+    if (!listaTipos) return;
+
+    const tipoEdicao = listaTipos.find(x => x.id === idTipoEvento);
+
+    if (!tipoEdicao) return;
+
+    const tipoEventoOpcional = tipoEdicao.letivo === eventoLetivo.Opcional;
+
+    setDesabilitarOpcaoLetivo(!tipoEventoOpcional);
+  };
+
+  const validaSeValorInvalido = valor => {
+    const validacoesObjeto =
+      !valor ||
+      (typeof valor === 'object' && Object.entries(valor).length === 0);
+
+    return (
+      !valor ||
+      valor === '' ||
+      valor === null ||
+      valor === 'null' ||
+      valor === undefined ||
+      validacoesObjeto
+    );
   };
 
   const consultaFeriados = async () => {
@@ -319,24 +357,17 @@ const EventosForm = ({ match }) => {
     try {
       let payload = {
         ...valoresForm,
-        recorrenciaEventos: {
-          ...recorrencia,
-        },
+        recorrenciaEventos: recorrencia ? { ...recorrencia } : null,
         tiposCalendarioParaCopiar,
       };
 
       const atualizarEventosFuturos = await exibirModalAtualizarEventos();
       if (atualizarEventosFuturos) {
-        /**
-         * TODO: Aguardando API ser disponibilizada
-         */
-        console.log('Atualizar eventos futuros');
         payload = {
           ...payload,
-          atualizarEventosFuturos: true,
+          AlterarARecorrenciaCompleta: true,
         };
       }
-
       /**
        * @description Metodo a ser disparado quando receber a mensagem do servidor
        */
@@ -345,11 +376,10 @@ const EventosForm = ({ match }) => {
           setListaMensagensCopiarEvento(response.data);
           setExibirModalRetornoCopiarEvento(true);
         } else {
-          sucesso('Evento cadastrado com sucesso');
+          sucesso(response.data[0].mensagem);
           history.push('/calendario-escolar/eventos');
         }
       };
-
       const cadastrado = await servicoEvento.salvar(idEvento || 0, payload);
       if (cadastrado && cadastrado.status === 200) {
         onSuccessSave(cadastrado);
@@ -528,10 +558,7 @@ const EventosForm = ({ match }) => {
 
   useEffect(() => {
     if (recorrencia) {
-      setTimeout(() => {
-        setLoading(false);
-        onCloseRecorrencia();
-      }, 200);
+      onCloseRecorrencia();
     }
   }, [recorrencia]);
 
@@ -547,7 +574,6 @@ const EventosForm = ({ match }) => {
   };
 
   const onSaveRecorrencia = recurrence => {
-    setLoading(true);
     setRecorrencia(parseScreenObject(recurrence));
   };
 
@@ -566,6 +592,18 @@ const EventosForm = ({ match }) => {
     history.push('/calendario-escolar/eventos');
   };
 
+  const validaAntesDoSubmit = form => {
+    const arrayCampos = Object.keys(inicial);
+    arrayCampos.forEach(campo => {
+      form.setFieldTouched(campo, true, true);
+    });
+    form.validateForm().then(() => {
+      if (form.isValid || Object.keys(form.errors).length == 0) {
+        form.handleSubmit(e => e);
+      }
+    });
+  };
+
   return (
     <>
       <Cabecalho pagina="Cadastro de Eventos no Calendário Escolar" />
@@ -573,7 +611,6 @@ const EventosForm = ({ match }) => {
         onCloseRecorrencia={onCloseRecorrencia}
         onSaveRecorrencia={onSaveRecorrencia}
         show={showModalRecorrencia}
-        loading={loading}
         initialValues={{ dataInicio: dataInicioEvento }}
       />
       <Card>
@@ -647,7 +684,7 @@ const EventosForm = ({ match }) => {
                     border
                     bold
                     className="mr-2"
-                    type="submit"
+                    onClick={() => validaAntesDoSubmit(form)}
                     disabled={desabilitarCampos}
                   />
                 </div>

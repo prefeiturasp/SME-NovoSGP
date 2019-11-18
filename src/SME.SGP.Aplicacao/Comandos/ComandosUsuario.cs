@@ -224,7 +224,7 @@ namespace SME.SGP.Aplicacao
         {
             string caminho = $"{Directory.GetCurrentDirectory()}/wwwroot/ModelosEmail/RecuperacaoSenha.txt";
             var textoArquivo = File.ReadAllText(caminho);
-            var urlFrontEnd = configuration["UrlFrontEnt"];
+            var urlFrontEnd = configuration["UrlFrontEnd"];
             var textoEmail = textoArquivo
                 .Replace("#NOME", usuario.Nome)
                 .Replace("#RF", usuario.CodigoRf)

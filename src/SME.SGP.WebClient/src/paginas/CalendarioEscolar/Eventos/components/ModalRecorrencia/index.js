@@ -6,26 +6,20 @@ import { Form, Formik } from 'formik';
 import * as Yup from 'yup';
 
 // Styles
-import { ContainerModal, VerticalCentered, IconMargin } from './styles';
+import { ContainerModal, VerticalCentralizado, IconMargin } from './styles';
 
 // Components
-import {
-  CampoData,
-  momentSchema,
-  ModalConteudoHtml,
-  Loader,
-} from '~/componentes';
-import BootstrapRow from './components/BootstrapRow';
-import WeekDays from './components/WeekDays';
-import MonthlyRecurrence from './components/MonthlyRecurrence';
+import { CampoData, momentSchema, ModalConteudoHtml } from '~/componentes';
+import LinhaBootstrap from './components/LinhaBootstrap';
+import DiasDaSemana from './components/DiasDaSemana';
+import RecorrenciaMensal from './components/RecorrenciaMensal';
 import DropDownQuantidade from './components/DropDownQuantidade';
 import DropDownTipoRecorrencia from './components/DropDownTipoRecorrencia';
-import HelperText from './components/HelperText';
-import WarningText from './components/WarningText';
+import TextoDiasDaSemana from './components/TextoDiasDaSemana';
+import TextoInformativo from './components/TextoInformativo';
 
 function ModalRecorrencia({
   show,
-  loading,
   initialValues,
   onCloseRecorrencia,
   onSaveRecorrencia,
@@ -48,7 +42,7 @@ function ModalRecorrencia({
     value: '2',
   });
 
-  const [defaultValues, setDefaultValues] = useState({
+  const valoresDefault = {
     dataInicio: null,
     dataTermino: null,
     diaNumero: null,
@@ -56,7 +50,9 @@ function ModalRecorrencia({
     tipoRecorrencia: '',
     padraoRecorrencia: '',
     quantidadeRecorrencia: null,
-  });
+  };
+
+  const [valoresIniciais, setValoresIniciais] = useState(valoresDefault);
 
   /**
    * @description Verifica se o botao de salvar deve ser habilitado
@@ -81,7 +77,7 @@ function ModalRecorrencia({
   useEffect(() => {
     if (initialValues) {
       setDataInicio(initialValues.dataInicio);
-      setDefaultValues(initialValues);
+      setValoresIniciais(initialValues);
     }
   });
 
@@ -99,9 +95,9 @@ function ModalRecorrencia({
   ]);
 
   const onChangeWeekDay = day => {
-    const exists = diasSemana.some(x => x.value === day.value);
+    const exists = diasSemana.some(x => x.valor === day.valor);
     if (exists) {
-      setDiasSemana([...diasSemana.filter(x => x.value !== day.value)]);
+      setDiasSemana([...diasSemana.filter(x => x.valor !== day.valor)]);
     } else {
       setDiasSemana([...diasSemana, day]);
     }
@@ -111,6 +107,7 @@ function ModalRecorrencia({
     setDataInicio('');
     setDataTermino('');
     setDiasSemana([]);
+    setValoresIniciais(valoresDefault);
     onCloseRecorrencia();
   };
 
@@ -127,7 +124,7 @@ function ModalRecorrencia({
     setDiaSemana(null);
   };
 
-  const buildValidations = () => {
+  const constroiValidacoes = () => {
     const val = {
       dataInicio: momentSchema.required('Data obrigatória'),
     };
@@ -169,87 +166,84 @@ function ModalRecorrencia({
         onConfirmacaoPrincipal={() => onSubmitRecorrencia()}
         labelBotaoPrincipal="Salvar"
         labelBotaoSecundario="Descartar"
-        desabilitarBotaoPrincipal={!habilitaSalvar || loading}
-        esconderBotaoSecundario={loading}
+        desabilitarBotaoPrincipal={!habilitaSalvar}
       >
-        <Loader loading={loading}>
-          <Formik
-            enableReinitialize
-            initialValues={defaultValues}
-            validationSchema={buildValidations}
-            validateOnChange
-            validateOnBlur
-          >
-            {form => (
-              <Form>
-                <BootstrapRow paddingBottom={4}>
-                  <div className="col-lg-6">
-                    <CampoData
+        <Formik
+          enableReinitialize
+          initialValues={valoresIniciais}
+          validationSchema={constroiValidacoes}
+          validateOnChange
+          validateOnBlur
+        >
+          {form => (
+            <Form>
+              <LinhaBootstrap paddingBottom={4}>
+                <div className="col-lg-6">
+                  <CampoData
+                    form={form}
+                    name="dataInicio"
+                    label="Data início"
+                    valor={dataInicio}
+                    onChange={onChangeDataInicio}
+                    placeholder="DD/MM/AAAA"
+                    formatoData="DD/MM/YYYY"
+                  />
+                </div>
+                <div className="col-lg-6">
+                  <CampoData
+                    label="Data fim"
+                    valor={dataTermino}
+                    onChange={onChangeDataTermino}
+                    placeholder="DD/MM/AAAA"
+                    formatoData="DD/MM/YYYY"
+                  />
+                </div>
+              </LinhaBootstrap>
+              <LinhaBootstrap paddingBottom={3}>
+                <VerticalCentralizado className="col-lg-12">
+                  <div className="item">
+                    <IconMargin className="fas fa-retweet" />
+                    <span>Repetir a cada</span>
+                  </div>
+                  <div className="item">
+                    <DropDownQuantidade
+                      onChange={value => setQuantidadeRecorrencia(value)}
+                      value={quantidadeRecorrencia}
+                    />
+                  </div>
+                  <div className="item">
+                    <DropDownTipoRecorrencia
+                      onChange={value => onChangeTipoRecorrencia(value)}
+                      value={tipoRecorrencia}
+                    />
+                  </div>
+                </VerticalCentralizado>
+              </LinhaBootstrap>
+              <LinhaBootstrap paddingBottom={3}>
+                <VerticalCentralizado className="col-lg-12">
+                  {tipoRecorrencia && tipoRecorrencia.value === '1' ? (
+                    <DiasDaSemana
+                      currentState={diasSemana || null}
+                      onChange={e => onChangeWeekDay(e)}
+                    />
+                  ) : (
+                    <RecorrenciaMensal
+                      currentRecurrence={padraoRecorrencia}
+                      currentDayNumber={diaNumero}
+                      currentWeekDay={diaSemana}
+                      onChangeRecurrence={onChangeRecurrence}
+                      onChangeWeekDay={onChangeWeekDayMonth}
+                      onChangeDayNumber={onChangeDayNumber}
                       form={form}
-                      name="dataInicio"
-                      label="Data início"
-                      valor={dataInicio}
-                      onChange={onChangeDataInicio}
-                      placeholder="DD/MM/AAAA"
-                      formatoData="DD/MM/YYYY"
                     />
-                  </div>
-                  <div className="col-lg-6">
-                    <CampoData
-                      label="Data fim"
-                      valor={dataTermino}
-                      onChange={onChangeDataTermino}
-                      placeholder="DD/MM/AAAA"
-                      formatoData="DD/MM/YYYY"
-                    />
-                  </div>
-                </BootstrapRow>
-                <BootstrapRow paddingBottom={3}>
-                  <VerticalCentered className="col-lg-12">
-                    <div className="item">
-                      <IconMargin className="fas fa-retweet" />
-                      <span>Repetir a cada</span>
-                    </div>
-                    <div className="item">
-                      <DropDownQuantidade
-                        onChange={value => setQuantidadeRecorrencia(value)}
-                        value={quantidadeRecorrencia}
-                      />
-                    </div>
-                    <div className="item">
-                      <DropDownTipoRecorrencia
-                        onChange={value => onChangeTipoRecorrencia(value)}
-                        value={tipoRecorrencia}
-                      />
-                    </div>
-                  </VerticalCentered>
-                </BootstrapRow>
-                <BootstrapRow paddingBottom={3}>
-                  <VerticalCentered className="col-lg-12">
-                    {tipoRecorrencia && tipoRecorrencia.value === '1' ? (
-                      <WeekDays
-                        currentState={diasSemana || null}
-                        onChange={e => onChangeWeekDay(e)}
-                      />
-                    ) : (
-                      <MonthlyRecurrence
-                        currentRecurrence={padraoRecorrencia}
-                        currentDayNumber={diaNumero}
-                        currentWeekDay={diaSemana}
-                        onChangeRecurrence={onChangeRecurrence}
-                        onChangeWeekDay={onChangeWeekDayMonth}
-                        onChangeDayNumber={onChangeDayNumber}
-                        form={form}
-                      />
-                    )}
-                  </VerticalCentered>
-                </BootstrapRow>
-                <HelperText diasSemana={diasSemana} />
-                <WarningText dataTermino={dataTermino} />
-              </Form>
-            )}
-          </Formik>
-        </Loader>
+                  )}
+                </VerticalCentralizado>
+              </LinhaBootstrap>
+              <TextoDiasDaSemana diasSemana={diasSemana} />
+              <TextoInformativo dataTermino={dataTermino} />
+            </Form>
+          )}
+        </Formik>
       </ModalConteudoHtml>
     </ContainerModal>
   );
@@ -257,7 +251,6 @@ function ModalRecorrencia({
 
 ModalRecorrencia.defaultProps = {
   show: false,
-  loading: false,
   initialValues: {},
   onCloseRecorrencia: () => {},
   onSaveRecorrencia: () => {},
@@ -265,7 +258,6 @@ ModalRecorrencia.defaultProps = {
 
 ModalRecorrencia.propTypes = {
   show: PropTypes.bool,
-  loading: PropTypes.bool,
   initialValues: PropTypes.oneOfType([PropTypes.any, PropTypes.object]),
   onCloseRecorrencia: PropTypes.func,
   onSaveRecorrencia: PropTypes.func,
