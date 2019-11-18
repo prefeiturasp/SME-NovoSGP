@@ -10,23 +10,40 @@ function DreDropDown({ form, onChange }) {
   const [listaDres, setListaDres] = useState([]);
 
   useEffect(() => {
-    AtribuicaoEsporadicaServico.buscarDres()
-      .then(({ data }) => setListaDres(data))
-      .catch(err => console.log(err));
+    async function buscarDres() {
+      const { data } = await AtribuicaoEsporadicaServico.buscarDres();
+      if (data) {
+        setListaDres(
+          data.map(item => ({
+            desc: item.nome,
+            valor: item.codigo,
+            abrev: item.abreviacao,
+          }))
+        );
+      }
+    }
+    buscarDres();
   }, []);
+
+  useEffect(() => {
+    if (listaDres.length === 1) {
+      form.setFieldValue('dreId', listaDres[0].valor);
+      onChange(listaDres[0].valor);
+    }
+  }, [listaDres]);
 
   return (
     <SelectComponent
       form={form}
+      name="dreId"
       className="fonte-14"
       onChange={onChange}
       lista={listaDres}
-      valueOption="codigo"
+      valueOption="valor"
       containerVinculoId="containerFiltro"
-      valueText="nome"
-      //valueSelect={dreSelecionada && `${dreSelecionada}`}
+      valueText="desc"
       placeholder="Diretoria Regional De Educação (DRE)"
-      //disabled={campoDreDesabilitado}
+      disabled={listaDres.length === 1}
     />
   );
 }

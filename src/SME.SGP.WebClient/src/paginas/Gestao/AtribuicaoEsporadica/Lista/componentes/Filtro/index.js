@@ -9,12 +9,10 @@ import * as Yup from 'yup';
 import { Grid, Localizador } from '~/componentes';
 import DreDropDown from './componentes/DreDropDown';
 import UeDropDown from './componentes/UeDropDown';
+import AnoLetivoDropDown from './componentes/AnoLetivoDropDown';
 
 // Styles
 import { CaixaAno, CaixaTextoAno, Row } from './styles';
-
-// Servico
-import AtribuicaoEsporadicaServico from '~/servicos/Paginas/AtribuicaoEsporadica';
 
 function Filtro({ onFiltrar }) {
   const [anoLetivo, setAnoLetivo] = useState('2019');
@@ -37,11 +35,6 @@ function Filtro({ onFiltrar }) {
     onFiltrar(valores);
   };
 
-  useEffect(async () => {
-    const { data } = await AtribuicaoEsporadicaServico.buscarDres();
-    console.log(data);
-  });
-
   return (
     <Formik
       enableReinitialize
@@ -55,9 +48,10 @@ function Filtro({ onFiltrar }) {
         <Form className="col-md-12 mb-4">
           <Row className="row mb-2">
             <Grid cols={2}>
-              <CaixaAno>
+              {/* <CaixaAno>
                 <CaixaTextoAno>{anoLetivo}</CaixaTextoAno>
-              </CaixaAno>
+              </CaixaAno> */}
+              <AnoLetivoDropDown form={form} name="anoLetivo" />
             </Grid>
             <Grid cols={5}>
               <DreDropDown form={form} onChange={valor => setDreId(valor)} />
