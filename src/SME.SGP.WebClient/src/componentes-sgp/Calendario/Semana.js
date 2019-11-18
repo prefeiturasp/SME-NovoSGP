@@ -6,7 +6,10 @@ import shortid from 'shortid';
 import { Base } from '~/componentes/colors';
 import api from '~/servicos/api';
 import { store } from '~/redux';
-import { selecionaDia } from '~/redux/modulos/calendarioEscolar/actions';
+import {
+  selecionaDia,
+  salvarEventoCalendarioEdicao,
+} from '~/redux/modulos/calendarioEscolar/actions';
 
 const Div = styled.div``;
 const TipoEventosLista = styled(Div)`
@@ -61,12 +64,33 @@ const Dia = props => {
         }
       }
     }
-    return () => (estado = false);
+    return () => {
+      estado = false;
+    };
   }, [filtros, mesAtual]);
 
   const selecionaDiaAberto = () => {
     store.dispatch(selecionaDia(dia));
   };
+
+  const eventoCalendarioEdicao = useSelector(
+    state => state.calendarioEscolar.eventoCalendarioEdicao
+  );
+
+  useEffect(() => {
+    const abrirDiaEventoCalendarioEdicao = setTimeout(() => {
+      if (
+        eventoCalendarioEdicao &&
+        eventoCalendarioEdicao.dia &&
+        dia &&
+        dia.getTime() === eventoCalendarioEdicao.dia.getTime()
+      ) {
+        selecionaDiaAberto();
+        store.dispatch(salvarEventoCalendarioEdicao());
+      }
+    }, 3000);
+    return () => clearTimeout(abrirDiaEventoCalendarioEdicao);
+  }, [eventoCalendarioEdicao]);
 
   const style = {
     cursor: 'pointer',
