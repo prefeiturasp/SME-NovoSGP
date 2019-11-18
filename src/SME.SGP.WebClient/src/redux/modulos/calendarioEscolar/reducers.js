@@ -89,6 +89,7 @@ const inicial = {
     },
   },
   diaSelecionado: undefined,
+  eventoCalendarioEdicao: {},
 };
 
 export default function calendarioEscolar(state = inicial, action) {
@@ -127,6 +128,10 @@ export default function calendarioEscolar(state = inicial, action) {
           meses[indice].estaAberto = false;
         });
         draft.meses = meses;
+        break;
+      }
+      case '@calendarioEscolar/salvarEventoCalendarioEdicao': {
+        draft.eventoCalendarioEdicao = action.payload;
         break;
       }
       default:
