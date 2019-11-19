@@ -12,7 +12,7 @@ import Button from '~/componentes/button';
 import history from '~/servicos/history';
 import { store } from '~/redux';
 import { zeraCalendario } from '~/redux/modulos/calendarioProfessor/actions';
-import ModalidadeDto from '~/dtos/modalidade';
+import ModalidadeDTO from '~/dtos/modalidade';
 
 const Div = styled.div``;
 const Titulo = styled(Div)`
@@ -71,12 +71,12 @@ const CalendarioProfessor = () => {
     if (modalidadesAbrangencia) {
       modalidadesAbrangencia.forEach(modalidade => {
         if (
-          (modalidade.valor === ModalidadeDto.FUNDAMENTAL ||
-            modalidade.valor === ModalidadeDto.ENSINO_MEDIO) &&
+          (modalidade.valor === ModalidadeDTO.FUNDAMENTAL ||
+            modalidade.valor === ModalidadeDTO.ENSINO_MEDIO) &&
           !modalidades.includes(1)
         )
           modalidades.push(1);
-        if (modalidade.valor === ModalidadeDto.EJA && !modalidades.includes(2))
+        if (modalidade.valor === ModalidadeDTO.EJA && !modalidades.includes(2))
           modalidades.push(2);
       });
     }
@@ -86,7 +86,7 @@ const CalendarioProfessor = () => {
   const listarTiposCalendarioPorTurmaSelecionada = async tiposLista => {
     if (Object.entries(turmaSelecionadaStore).length > 0) {
       const modalidadeSelecionada =
-        turmaSelecionadaStore.modalidade === ModalidadeDto.EJA.toString()
+        turmaSelecionadaStore.modalidade === ModalidadeDTO.EJA.toString()
           ? 2
           : 1;
 
