@@ -14,6 +14,7 @@ import {
   salvarEventoAulaCalendarioEdicao,
 } from '~/redux/modulos/calendarioProfessor/actions';
 import TiposEventoAulaDTO from '~/dtos/tiposEventoAula';
+import RotasDTO from '~/dtos/rotasDto';
 
 const Div = styled.div``;
 const Evento = styled(Div)`
@@ -28,6 +29,14 @@ const Botao = styled(Button)`
     border-color: ${Base.Branco} !important;
     color: ${Base.Branco} !important;
   }
+`;
+const BotoesAuxiliaresEstilo = styled.div`
+  display: flex;
+  align-items: right;
+  justify-content: flex-end;
+  width: 100%;
+  padding: 16px;
+  padding-bottom: 0;
 `;
 
 const SemEvento = () => {
@@ -45,6 +54,9 @@ const DiaCompleto = props => {
   const { dias, mesAtual, filtros } = props;
   const [eventosDia, setEventosDia] = useState([]);
 
+  const permissaoTela = useSelector(
+    state => state.usuario.permissoes[RotasDTO.CALENDARIO_PROFESSOR]
+  );
   const diaSelecionado = useSelector(
     state => state.calendarioProfessor.diaSelecionado
   );
@@ -93,6 +105,24 @@ const DiaCompleto = props => {
       estado = false;
     };
   }, [diaSelecionado]);
+
+  const BotoesAuxiliares = () => {
+    return (
+      <BotoesAuxiliaresEstilo>
+        <Button
+          key={shortid.generate()}
+          onClick={() =>
+            history.push(
+              `calendario-professor/cadastro-aula/novo/${props.filtros.tipoCalendarioSelecionado}`
+            )
+          }
+          label="Nova Aula"
+          color={Colors.Roxo}
+          disabled={permissaoTela && !permissaoTela.podeIncluir}
+        />
+      </BotoesAuxiliaresEstilo>
+    );
+  };
 
   useEffect(() => {
     estaAberto = false;
@@ -193,6 +223,9 @@ const DiaCompleto = props => {
                 </Evento>
               );
             })}
+            <Div className="">
+              <BotoesAuxiliares />
+            </Div>
           </Div>
         ) : (
           <SemEvento />
