@@ -6,7 +6,10 @@ import shortid from 'shortid';
 import { Base } from '~/componentes/colors';
 import api from '~/servicos/api';
 import { store } from '~/redux';
-import { selecionaDia } from '~/redux/modulos/calendarioEscolar/actions';
+import {
+  selecionaDia,
+  salvarEventoAulaCalendarioEdicao,
+} from '~/redux/modulos/calendarioProfessor/actions';
 
 const Div = styled.div``;
 const TipoEventosLista = styled(Div)`
@@ -36,14 +39,20 @@ const Dia = props => {
             eventoSme = true,
             dreSelecionada = '',
             unidadeEscolarSelecionada = '',
+            turmaSelecionada = '',
           } = filtros;
           if (tipoCalendarioSelecionado) {
             api
-              .get(
-                `v1/calendarios/eventos/meses/${mesAtual}/tipos?EhEventoSme=${eventoSme}&${dreSelecionada &&
-                  `DreId=${dreSelecionada}&`}${tipoCalendarioSelecionado &&
-                  `IdTipoCalendario=${tipoCalendarioSelecionado}&`}${unidadeEscolarSelecionada &&
-                  `UeId=${unidadeEscolarSelecionada}`}`
+              .post(
+                'https://demo9546116.mockable.io/api/v1/calendarios/meses/tipos/eventos-aulas',
+                {
+                  Mes: mesAtual,
+                  EhEventoSME: eventoSme,
+                  tipoCalendarioId: tipoCalendarioSelecionado,
+                  dreId: dreSelecionada,
+                  ueId: unidadeEscolarSelecionada,
+                  turmaId: turmaSelecionada,
+                }
               )
               .then(resposta => {
                 if (resposta.data) {
@@ -61,12 +70,33 @@ const Dia = props => {
         }
       }
     }
-    return () => (estado = false);
+    return () => {
+      estado = false;
+    };
   }, [filtros, mesAtual]);
 
   const selecionaDiaAberto = () => {
     store.dispatch(selecionaDia(dia));
   };
+
+  const eventoCalendarioEdicao = useSelector(
+    state => state.calendarioProfessor.eventoCalendarioEdicao
+  );
+
+  useEffect(() => {
+    const abrirDiaEventoCalendarioEdicao = setTimeout(() => {
+      if (
+        eventoCalendarioEdicao &&
+        eventoCalendarioEdicao.dia &&
+        dia &&
+        dia.getTime() === eventoCalendarioEdicao.dia.getTime()
+      ) {
+        selecionaDiaAberto();
+        store.dispatch(salvarEventoAulaCalendarioEdicao());
+      }
+    }, 3000);
+    return () => clearTimeout(abrirDiaEventoCalendarioEdicao);
+  }, [eventoCalendarioEdicao]);
 
   const style = {
     cursor: 'pointer',
@@ -143,7 +173,7 @@ Dia.defaultProps = {
 
 const Semana = props => {
   const diaSelecionado = useSelector(
-    state => state.calendarioEscolar.diaSelecionado
+    state => state.calendarioProfessor.diaSelecionado
   );
   const { inicial, dias, mesAtual, filtros } = props;
 

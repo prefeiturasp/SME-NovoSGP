@@ -20,7 +20,7 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(204)]
         [ProducesResponseType(typeof(IEnumerable<GradeComponenteTurmaAulasDto>), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        public async Task<IActionResult> ObterGradeAulasTurma(int turma, int disciplina, [FromServices] IConsultasGrade consultasGrade)
+        public async Task<IActionResult> ObterGradeAulasTurma(string turma, int disciplina, [FromServices] IConsultasGrade consultasGrade)
         {
             var horasGrade = await consultasGrade.ObterGradeAulasTurma(turma, disciplina);
 

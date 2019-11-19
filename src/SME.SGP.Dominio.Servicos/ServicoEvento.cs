@@ -97,7 +97,7 @@ namespace SME.SGP.Dominio.Servicos
 
             AtribuirNullSeVazio(evento);
 
-            unitOfWork.IniciarTransacao();
+            
 
             repositorioEvento.Salvar(evento);
             await AlterarRecorrenciaEventos(evento, alterarRecorrenciaCompleta);
@@ -114,9 +114,7 @@ namespace SME.SGP.Dominio.Servicos
                     await PersistirWorkflowEvento(evento);
                     mensagemRetornoSucesso = "Evento cadastrado e será válido após aprovação.";
                 }
-            }
-
-            unitOfWork.PersistirTransacao();
+            }            
 
             return mensagemRetornoSucesso;
         }
