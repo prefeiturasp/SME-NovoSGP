@@ -11,13 +11,15 @@ namespace SME.SGP.Dominio.Servicos
 {
     public class ServicoAula : IServicoAula
     {
+        private readonly IConsultasGrade consultasGrade;
+        private readonly IRepositorioAbrangencia repositorioAbrangencia;
         private readonly IRepositorioAula repositorioAula;
         private readonly IRepositorioPeriodoEscolar repositorioPeriodoEscolar;
         private readonly IRepositorioTipoCalendario repositorioTipoCalendario;
         private readonly IServicoDiaLetivo servicoDiaLetivo;
         private readonly IServicoEOL servicoEOL;
-        private readonly IConsultasGrade consultasGrade;
         private readonly IServicoLog servicoLog;
+        private readonly IServicoUsuario servicoUsuario;
 
         public ServicoAula(IRepositorioAula repositorioAula,
                            IServicoEOL servicoEOL,
@@ -25,7 +27,9 @@ namespace SME.SGP.Dominio.Servicos
                            IServicoDiaLetivo servicoDiaLetivo,
                            IConsultasGrade consultasGrade,
                            IRepositorioPeriodoEscolar repositorioPeriodoEscolar,
-                           IServicoLog servicoLog)
+                           IServicoLog servicoLog,
+                           IRepositorioAbrangencia repositorioAbrangencia,
+                           IServicoUsuario servicoUsuario)
         {
             this.repositorioAula = repositorioAula ?? throw new System.ArgumentNullException(nameof(repositorioAula));
             this.servicoEOL = servicoEOL ?? throw new System.ArgumentNullException(nameof(servicoEOL));
@@ -34,6 +38,8 @@ namespace SME.SGP.Dominio.Servicos
             this.consultasGrade = consultasGrade ?? throw new System.ArgumentNullException(nameof(consultasGrade));
             this.repositorioPeriodoEscolar = repositorioPeriodoEscolar ?? throw new ArgumentNullException(nameof(repositorioPeriodoEscolar));
             this.servicoLog = servicoLog ?? throw new ArgumentNullException(nameof(servicoLog));
+            this.repositorioAbrangencia = repositorioAbrangencia ?? throw new ArgumentNullException(nameof(repositorioAbrangencia));
+            this.servicoUsuario = servicoUsuario ?? throw new ArgumentNullException(nameof(servicoUsuario));
         }
 
         public async Task<string> Salvar(Aula aula, Usuario usuario)
@@ -56,7 +62,7 @@ namespace SME.SGP.Dominio.Servicos
                 throw new NegocioException("Não é possível cadastrar essa aula pois a data informada está fora do período letivo.");
             }
 
-            var gradeAulas = await consultasGrade.ObterGradeAulasTurma(int.Parse(aula.TurmaId), int.Parse(aula.DisciplinaId));
+            var gradeAulas = await consultasGrade.ObterGradeAulasTurma(aula.TurmaId, int.Parse(aula.DisciplinaId));
             if ((gradeAulas != null) && (gradeAulas.QuantidadeAulasRestante < aula.Quantidade))
                 throw new NegocioException("Quantidade de aulas superior ao limíte de aulas da grade.");
 
@@ -96,7 +102,9 @@ namespace SME.SGP.Dominio.Servicos
                     aulasQueDeramErro.Add((dia, "Erro Interno."));
                 }
             }
-
+            var perfilAtual = servicoUsuario.ObterPerfilAtual();
+            //var nomeTurma = repositorioAbrangencia.ObterAbrangenciaTurma(aula.TurmaId, usuario.Login, perfilAtual);
+            //var tituloMensagem = $"Criação de Aulas de {} na turma {aula.tur}";
             //Enviar Mensagem
         }
 
