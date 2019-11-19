@@ -1,4 +1,3 @@
-using SME.SGP.Aplicacao.Interfaces;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Dto;
@@ -63,8 +62,8 @@ namespace SME.SGP.Aplicacao
             List<DateTime> diasEventosNaoLetivos = new List<DateTime>();
             List<DateTime> diasEventosLetivos = new List<DateTime>();
 
-            diasEventosNaoLetivos = ObterDias(eventos, diasEventosNaoLetivos, Dominio.EventoLetivo.Nao);
-            diasEventosLetivos = ObterDias(eventos, diasEventosLetivos, Dominio.EventoLetivo.Sim);
+            diasEventosNaoLetivos = ObterDias(eventos, diasEventosNaoLetivos, EventoLetivo.Nao);
+            diasEventosLetivos = ObterDias(eventos, diasEventosLetivos, EventoLetivo.Sim);
 
             //finais de semana letivos
             foreach (var dia in diasEventosLetivos.Where(x => !EhDiaUtil(x)))
@@ -73,15 +72,10 @@ namespace SME.SGP.Aplicacao
                     diasLetivosCalendario.Add(dia);
             }
 
-            diasEventosNaoLetivos.RemoveAll(x => !diasLetivosCalendario.Contains(x));
-            diasEventosLetivos.RemoveAll(x => !diasLetivosCalendario.Contains(x));
-
-            diasLetivosCalendario.AddRange(diasEventosLetivos.Except(diasLetivosCalendario));
-
             diasEventosNaoLetivos = diasEventosNaoLetivos.Where(w => !diasEventosLetivos.Contains(w)).ToList();
 
             var diasLetivos = diasLetivosCalendario.Distinct().Count() - diasEventosNaoLetivos.Distinct().Count();
-            var diasLetivosPermitidos = Convert.ToInt32(tipoCalendario.Modalidade == Dominio.ModalidadeTipoCalendario.EJA ?
+            var diasLetivosPermitidos = Convert.ToInt32(tipoCalendario.Modalidade == ModalidadeTipoCalendario.EJA ?
                 repositorioParametrosSistema.ObterValorPorNomeAno(ChaveDiasLetivosEja, anoLetivo) :
                 repositorioParametrosSistema.ObterValorPorNomeAno(ChaveDiasLetivosFundMedio, anoLetivo));
 
