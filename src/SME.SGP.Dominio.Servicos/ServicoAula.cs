@@ -19,6 +19,7 @@ namespace SME.SGP.Dominio.Servicos
         private readonly IServicoDiaLetivo servicoDiaLetivo;
         private readonly IServicoEOL servicoEOL;
         private readonly IServicoLog servicoLog;
+        private readonly IServicoNotificacao servicoNotificacao;
         private readonly IServicoUsuario servicoUsuario;
 
         public ServicoAula(IRepositorioAula repositorioAula,
@@ -29,7 +30,8 @@ namespace SME.SGP.Dominio.Servicos
                            IRepositorioPeriodoEscolar repositorioPeriodoEscolar,
                            IServicoLog servicoLog,
                            IRepositorioAbrangencia repositorioAbrangencia,
-                           IServicoUsuario servicoUsuario)
+                           IServicoUsuario servicoUsuario,
+                           IServicoNotificacao servicoNotificacao)
         {
             this.repositorioAula = repositorioAula ?? throw new System.ArgumentNullException(nameof(repositorioAula));
             this.servicoEOL = servicoEOL ?? throw new System.ArgumentNullException(nameof(servicoEOL));
@@ -40,6 +42,7 @@ namespace SME.SGP.Dominio.Servicos
             this.servicoLog = servicoLog ?? throw new ArgumentNullException(nameof(servicoLog));
             this.repositorioAbrangencia = repositorioAbrangencia ?? throw new ArgumentNullException(nameof(repositorioAbrangencia));
             this.servicoUsuario = servicoUsuario ?? throw new ArgumentNullException(nameof(servicoUsuario));
+            this.servicoNotificacao = servicoNotificacao ?? throw new ArgumentNullException(nameof(servicoNotificacao));
         }
 
         public async Task<string> Salvar(Aula aula, Usuario usuario)
@@ -62,9 +65,9 @@ namespace SME.SGP.Dominio.Servicos
                 throw new NegocioException("Não é possível cadastrar essa aula pois a data informada está fora do período letivo.");
             }
 
-            var gradeAulas = await consultasGrade.ObterGradeAulasTurma(int.Parse(aula.TurmaId), int.Parse(aula.DisciplinaId));
-            if ((gradeAulas != null) && (gradeAulas.QuantidadeAulasRestante < aula.Quantidade))
-                throw new NegocioException("Quantidade de aulas superior ao limíte de aulas da grade.");
+            //var gradeAulas = await consultasGrade.ObterGradeAulasTurma(aula.TurmaId, int.Parse(aula.DisciplinaId));
+            //if ((gradeAulas != null) && (gradeAulas.QuantidadeAulasRestante < aula.Quantidade))
+            //    throw new NegocioException("Quantidade de aulas superior ao limíte de aulas da grade.");
 
             repositorioAula.Salvar(aula);
 
@@ -103,9 +106,46 @@ namespace SME.SGP.Dominio.Servicos
                 }
             }
             var perfilAtual = servicoUsuario.ObterPerfilAtual();
-            //var nomeTurma = repositorioAbrangencia.ObterAbrangenciaTurma(aula.TurmaId, usuario.Login, perfilAtual);
-            //var tituloMensagem = $"Criação de Aulas de {} na turma {aula.tur}";
-            //Enviar Mensagem
+            var turmaAbrangencia = await repositorioAbrangencia.ObterAbrangenciaTurma(aula.TurmaId, usuario.Login, perfilAtual);
+
+            if (turmaAbrangencia is null)
+                throw new NegocioException($"Não foi possível localizar a turma de Id {aula.TurmaId} na abrangência ");
+
+            var disciplinasEol = await servicoEOL.ObterDisciplinasPorCodigoTurmaLoginEPerfil(aula.TurmaId, usuario.Login, perfilAtual);
+
+            if (disciplinasEol is null && !disciplinasEol.Any())
+                throw new NegocioException($"Não foi possível localizar as disciplinas da turma {aula.TurmaId}");
+
+            var disciplina = disciplinasEol.FirstOrDefault(a => a.CodigoComponenteCurricular == int.Parse(aula.DisciplinaId));
+
+            if (disciplina == null)
+                throw new NegocioException($"Não foi possível localizar a disciplina de Id {aula.DisciplinaId}.");
+
+            var ue = await repositorioAbrangencia.ObterUe(aula.UeId, usuario.Login, perfilAtual);
+            if (ue == null)
+                throw new NegocioException($"Não foi possível localizar a Ue de Id {aula.UeId}.");
+
+            var dre = await repositorioAbrangencia.ObterDre(string.Empty, aula.UeId, usuario.Login, perfilAtual);
+            if (dre == null)
+                throw new NegocioException($"Não foi possível localizar a Dre da Ue de Id {aula.UeId}.");
+
+            var usuarioCriador = servicoUsuario.ObterUsuarioPorCodigoRfLoginOuAdiciona(aula.CriadoRF);
+
+            var tituloMensagem = $"Criação de Aulas de {disciplina.Nome} na turma {turmaAbrangencia.NomeTurma}";
+            var mensagem = $"Foram criadas {diasParaIncluirRecorrencia.Count} aulas da disciplina {disciplina.Nome} para a turma {turmaAbrangencia.NomeTurma} da {ue.Nome} ({dre.Nome}).";
+
+            servicoNotificacao.Salvar(new Notificacao()
+            {
+                Ano = aula.CriadoEm.Year,
+                Categoria = NotificacaoCategoria.Aviso,
+                DreId = dre.Codigo,
+                Mensagem = mensagem,
+                UsuarioId = usuario.Id,
+                Tipo = NotificacaoTipo.Calendario,
+                Titulo = tituloMensagem,
+                TurmaId = aula.TurmaId,
+                UeId = ue.Codigo
+            });
         }
 
         private void GerarRecorrencia(Aula aula, Usuario usuario)
