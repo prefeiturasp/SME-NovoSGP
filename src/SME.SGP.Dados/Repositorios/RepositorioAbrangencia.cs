@@ -67,7 +67,7 @@ namespace SME.SGP.Dados.Repositorios
             return (await database.Conexao.QueryAsync<AbrangenciaFiltroRetorno>(query, new { texto, login, perfil })).AsList();
         }
 
-        public async Task<AbrangenciaFiltroRetorno> ObterAbrangenciaTurma(int turma, string login, Guid perfil)
+        public async Task<AbrangenciaFiltroRetorno> ObterAbrangenciaTurma(string turma, string login, Guid perfil)
         {
             var query = @"select
 	                    ab_turmas.modalidade_codigo as modalidade,
@@ -94,7 +94,7 @@ namespace SME.SGP.Dados.Repositorios
                     where
                             u.login = @login
 	                    and ab_dres.perfil = @perfil
-                        and ab_turmas.turma_id = cast(@turma as varchar)
+                        and ab_turmas.turma_id = @turma
                     order by nomeUe";
 
             return (await database.Conexao.QueryAsync<AbrangenciaFiltroRetorno>(query, new { turma, login, perfil }))
