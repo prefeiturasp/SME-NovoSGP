@@ -16,6 +16,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\SME.Background.Core\SME.Background.Core.csproj" />
+    <ProjectReference Include="..\SME.SGP.Background\SME.SGP.Background.csproj" />
   </ItemGroup>
 
 </Project>

@@ -90,6 +90,7 @@ namespace SME.SGP.Api
             });
 
             SME.Background.Core.Orquestrador.Registrar<SME.Background.Hangfire.Processor>(new Background.Hangfire.Processor(Configuration, "SGP-Postgres"));
+            Hangfire.ContextFilterAttribute.RegistreredServices = services;
         }
     }
 }
