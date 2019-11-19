@@ -1,4 +1,5 @@
-﻿using SME.SGP.Infra.Interfaces;
+﻿using Microsoft.AspNetCore.Http;
+using SME.SGP.Infra.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,14 +16,16 @@ namespace SME.SGP.Infra.Contexto
 
             WorkerContext contextoTransiente;
 
-            if (TransientContexts.TryGetValue(Thread.CurrentThread.Name, out contextoTransiente))
-                AtribuirContexto(contextoTransiente);
+            if (!string.IsNullOrWhiteSpace(Thread.CurrentThread.Name))
+            {
+                if (TransientContexts.TryGetValue(Thread.CurrentThread.Name, out contextoTransiente))
+                    AtribuirContexto(contextoTransiente);
+            }
         }
 
         public override IContextoAplicacao AtribuirContexto(IContextoAplicacao contexto)
         {
             Variaveis = contexto.Variaveis;
-            Variaveis.Remove("Claims");
             return this;
         }
 
@@ -30,5 +33,10 @@ namespace SME.SGP.Infra.Contexto
         static WorkerContext()
         { TransientContexts = new Dictionary<string, WorkerContext>(); }
 
+    }
+
+    public class NoHttpContext : IHttpContextAccessor
+    {
+        public HttpContext HttpContext { get => null; set { } }
     }
 }

@@ -14,7 +14,7 @@ namespace SME.SGP.Infra.Contexto
         readonly IHttpContextAccessor httpContextAccessor;
 
         public ContextoHttp(IHttpContextAccessor httpContextAccessor)
-            :base()
+            : base()
         {
             this.httpContextAccessor = httpContextAccessor;
 
@@ -24,7 +24,7 @@ namespace SME.SGP.Infra.Contexto
         private void CapturarVariaveis()
         {
             Variaveis.Add("RF", httpContextAccessor.HttpContext?.User?.FindFirst("RF")?.Value ?? "0");
-            Variaveis.Add("Claims", httpContextAccessor.HttpContext?.User?.Claims ?? Enumerable.Empty<Claim>());
+            Variaveis.Add("Claims", GetInternalClaim());
             Variaveis.Add("login", httpContextAccessor.HttpContext?.User?.Claims?.FirstOrDefault(a => a.Type == "login")?.Value ?? string.Empty);
             Variaveis.Add("NumeroPagina", httpContextAccessor.HttpContext?.Request?.Query["NumeroPagina"].FirstOrDefault() ?? "0");
             Variaveis.Add("NumeroRegistros", httpContextAccessor.HttpContext?.Request?.Query["NumeroRegistros"].FirstOrDefault() ?? "0");
@@ -33,7 +33,11 @@ namespace SME.SGP.Infra.Contexto
             Variaveis.Add("NomeUsuario", httpContextAccessor.HttpContext?.User?.FindFirst("Nome")?.Value ?? "Sistema");
         }
 
-      
+        private IEnumerable<InternalClaim> GetInternalClaim()
+        {
+            return (httpContextAccessor.HttpContext?.User?.Claims ?? Enumerable.Empty<Claim>()).Select(x => new InternalClaim() { Type = x.Type, Value = x.Value }).ToList();
+        }
+
         public override IContextoAplicacao AtribuirContexto(IContextoAplicacao contexto)
         {
             throw new Exception("Este tipo de conexto não permite atribuição");

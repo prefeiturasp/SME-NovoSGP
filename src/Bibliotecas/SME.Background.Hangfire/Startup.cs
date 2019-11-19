@@ -22,7 +22,7 @@ namespace SME.Background.Hangfire
         {
             app.UseHangfireDashboard("/worker", new DashboardOptions()
             {
-                //IsReadOnlyFunc = (DashboardContext context) => true
+                IsReadOnlyFunc = (DashboardContext context) => env.IsDevelopment() ? true : false
             });
         }
 
