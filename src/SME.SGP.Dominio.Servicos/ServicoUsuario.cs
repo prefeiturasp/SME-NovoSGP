@@ -157,6 +157,13 @@ namespace SME.SGP.Dominio
                 throw new NegocioException($"O usuário {login} não possui acesso ao perfil {perfilParaModificar}");
         }
 
+        public bool UsuarioLogadoPossuiPerfilSme()
+        {
+            var usuarioLogado = ObterUsuarioLogado().Result;
+
+            return usuarioLogado.PossuiPerfilSme();
+        }
+
         private async Task AlterarEmail(Usuario usuario, string novoEmail)
         {
             var outrosUsuariosComMesmoEmail = repositorioUsuario.ExisteUsuarioComMesmoEmail(novoEmail, usuario.Id);

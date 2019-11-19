@@ -11,12 +11,13 @@ namespace SME.SGP.Dominio.Servicos
 {
     public class ServicoAula : IServicoAula
     {
+        private readonly IConsultasGrade consultasGrade;
+        private readonly IRepositorioAbrangencia repositorioAbrangencia;
         private readonly IRepositorioAula repositorioAula;
         private readonly IRepositorioPeriodoEscolar repositorioPeriodoEscolar;
         private readonly IRepositorioTipoCalendario repositorioTipoCalendario;
         private readonly IServicoDiaLetivo servicoDiaLetivo;
         private readonly IServicoEOL servicoEOL;
-        private readonly IConsultasGrade consultasGrade;
         private readonly IServicoLog servicoLog;
         private readonly IConsultasAula consultasAula;
         private readonly IConsultasAbrangencia consultasAbrangencia;
@@ -39,8 +40,6 @@ namespace SME.SGP.Dominio.Servicos
             this.consultasGrade = consultasGrade ?? throw new System.ArgumentNullException(nameof(consultasGrade));
             this.repositorioPeriodoEscolar = repositorioPeriodoEscolar ?? throw new ArgumentNullException(nameof(repositorioPeriodoEscolar));
             this.servicoLog = servicoLog ?? throw new ArgumentNullException(nameof(servicoLog));
-            this.consultasAula = consultasAula ?? throw new System.ArgumentNullException(nameof(consultasAula));
-            this.consultasAbrangencia = consultasAbrangencia ?? throw new System.ArgumentNullException(nameof(consultasAbrangencia));
         }
 
         public async Task<string> Salvar(Aula aula, Usuario usuario)
@@ -138,7 +137,9 @@ namespace SME.SGP.Dominio.Servicos
                     aulasQueDeramErro.Add((dia, "Erro Interno."));
                 }
             }
-
+            var perfilAtual = servicoUsuario.ObterPerfilAtual();
+            //var nomeTurma = repositorioAbrangencia.ObterAbrangenciaTurma(aula.TurmaId, usuario.Login, perfilAtual);
+            //var tituloMensagem = $"Criação de Aulas de {} na turma {aula.tur}";
             //Enviar Mensagem
         }
 
