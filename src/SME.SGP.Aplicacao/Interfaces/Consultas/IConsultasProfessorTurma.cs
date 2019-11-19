@@ -8,6 +8,8 @@ namespace SME.SGP.Aplicacao
     {
         IEnumerable<ProfessorTurmaDto> Listar(string codigoRf);
 
+        Task<ProfessorResumoDto> ObterResumoPorRFAnoLetivo(string codigoRF, int anoLetivo);
+
         Task<IEnumerable<TurmaDto>> ObterTurmasAtribuidasAoProfessorPorEscolaEAnoLetivo(string rfProfessor, string codigoEscola, int anoLetivo);
     }
 }
