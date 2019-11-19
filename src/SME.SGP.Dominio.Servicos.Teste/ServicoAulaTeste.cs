@@ -1,4 +1,5 @@
 ﻿using Moq;
+using SME.SGP.Aplicacao;
 using SME.SGP.Aplicacao.Integracoes;
 using SME.SGP.Aplicacao.Integracoes.Respostas;
 using SME.SGP.Dominio.Interfaces;
@@ -12,6 +13,7 @@ namespace SME.SGP.Dominio.Servicos.Teste
 {
     public class ServicoAulaTeste
     {
+        private readonly Mock<IConsultasGrade> consultasGrade;
         private readonly Mock<IRepositorioAula> repositorioAula;
         private readonly Mock<IRepositorioPeriodoEscolar> repositorioPeriodoEscolar;
         private readonly Mock<IRepositorioTipoCalendario> repositorioTipoCalendario;
@@ -29,7 +31,8 @@ namespace SME.SGP.Dominio.Servicos.Teste
             repositorioTipoCalendario = new Mock<IRepositorioTipoCalendario>();
             servicoLog = new Mock<IServicoLog>();
             servicoEol = new Mock<IServicoEOL>();
-            servicoAula = new ServicoAula(repositorioAula.Object, servicoEol.Object, repositorioTipoCalendario.Object, servicoDiaLetivo.Object, repositorioPeriodoEscolar.Object, servicoLog.Object);
+            consultasGrade = new Mock<IConsultasGrade>();
+            servicoAula = new ServicoAula(repositorioAula.Object, servicoEol.Object, repositorioTipoCalendario.Object, servicoDiaLetivo.Object, consultasGrade.Object, repositorioPeriodoEscolar.Object, servicoLog.Object);
         }
 
         [Fact]
