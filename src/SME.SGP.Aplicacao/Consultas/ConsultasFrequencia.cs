@@ -51,7 +51,9 @@ namespace SME.SGP.Aplicacao.Consultas
                     CodigoAluno = aluno.CodigoAluno,
                     NomeAluno = aluno.NomeAluno,
                     NumeroAlunoChamada = aluno.NumeroAlunoChamada,
-                    CodigoSituacaoMatricula = aluno.CodigoSituacaoMatricula
+                    CodigoSituacaoMatricula = aluno.CodigoSituacaoMatricula,
+                    SituacaoMatricula = aluno.SituacaoMatricula,
+                    Desabilitado = aluno.EstaInativo()
                 };
 
                 var ausenciasAluno = ausencias.Where(c => c.CodigoAluno == aluno.CodigoAluno);
