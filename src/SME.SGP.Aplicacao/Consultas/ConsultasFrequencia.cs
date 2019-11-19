@@ -44,7 +44,7 @@ namespace SME.SGP.Aplicacao
             {
                 ausencias = new List<RegistroAusenciaAluno>();
             }
-            foreach (var aluno in alunosDaTurma.OrderBy(c => c.NumeroAlunoChamada))
+            foreach (var aluno in alunosDaTurma)
             {
                 var registroFrequenciaAluno = new RegistroFrequenciaAlunoDto
                 {
