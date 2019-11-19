@@ -89,7 +89,7 @@ namespace SME.SGP.Aplicacao.Integracoes
             else throw new NegocioException("Houve erro ao tentar obter a abrangência do Eol");
         }
 
-        public async Task<IEnumerable<AlunoPorTurmaResposta>> ObterAlunosPorTurna(string turmaId)
+        public async Task<IEnumerable<AlunoPorTurmaResposta>> ObterAlunosPorTurma(string turmaId)
         {
             var alunos = new List<AlunoPorTurmaResposta>();
             var resposta = await httpClient.GetAsync($"turmas/{turmaId}");

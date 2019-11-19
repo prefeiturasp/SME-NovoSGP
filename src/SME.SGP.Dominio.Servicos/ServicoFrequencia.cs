@@ -55,7 +55,7 @@ namespace SME.SGP.Dominio.Servicos
 
         private async Task<IEnumerable<Aplicacao.Integracoes.Respostas.AlunoPorTurmaResposta>> ObterAlunos(Aula aula)
         {
-            var alunos = await servicoEOL.ObterAlunosPorTurna(aula.TurmaId);
+            var alunos = await servicoEOL.ObterAlunosPorTurma(aula.TurmaId);
             if (alunos == null || !alunos.Any())
             {
                 throw new NegocioException("Não foram encontrados alunos para a turma informada.");

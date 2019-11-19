@@ -63,7 +63,7 @@ namespace SME.SGP.Dominio.Servicos.Teste
                 }
             };
 
-            servicoEOL.Setup(c => c.ObterAlunosPorTurna(It.IsAny<string>()))
+            servicoEOL.Setup(c => c.ObterAlunosPorTurma(It.IsAny<string>()))
                 .Returns(Task.FromResult<IEnumerable<AlunoPorTurmaResposta>>(alunos));
 
             await servicoFrequencia.Registrar(1, new List<RegistroAusenciaAluno> {
@@ -73,7 +73,7 @@ namespace SME.SGP.Dominio.Servicos.Teste
 
             repositorioAula.Verify(c => c.ObterPorId(It.IsAny<long>()), Times.Once);
             servicoUsuario.Verify(c => c.ObterUsuarioLogado(), Times.Once);
-            servicoEOL.Verify(c => c.ObterAlunosPorTurna(It.IsAny<string>()), Times.Once);
+            servicoEOL.Verify(c => c.ObterAlunosPorTurma(It.IsAny<string>()), Times.Once);
             repositorioFrequencia.Verify(c => c.ObterRegistroFrequenciaPorAulaId(It.IsAny<long>()), Times.Once);
             repositorioFrequencia.Verify(c => c.Salvar(It.IsAny<RegistroFrequencia>()), Times.Once);
             repositorioRegistroAusenciaAluno.Verify(c => c.Salvar(It.IsAny<RegistroAusenciaAluno>()), Times.Exactly(2));
