@@ -140,7 +140,7 @@ const DiaCompleto = props => {
                   </Grid>
                   <Grid
                     cols={11}
-                    className="align-self-center font-weight-bold"
+                    className="align-self-center font-weight-bold pl-0"
                   >
                     <Div>{evento.descricao ? evento.descricao : 'Evento'}</Div>
                   </Grid>
