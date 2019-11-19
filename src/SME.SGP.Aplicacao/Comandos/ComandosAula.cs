@@ -35,12 +35,12 @@ namespace SME.SGP.Aplicacao
             repositorioAula.Salvar(aula);
         }
 
-        public async Task Inserir(AulaDto dto)
+        public async Task<string> Inserir(AulaDto dto)
         {
             var usuario = await servicoUsuario.ObterUsuarioLogado();
             var aula = MapearDtoParaEntidade(dto, 0L, usuario.Id);
 
-            await servicoAula.Salvar(aula, usuario);
+            return await servicoAula.Salvar(aula, usuario);
         }
 
         private Aula MapearDtoParaEntidade(AulaDto dto, long id, long usuarioId)
