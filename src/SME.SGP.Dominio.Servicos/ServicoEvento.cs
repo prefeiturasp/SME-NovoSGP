@@ -100,7 +100,8 @@ namespace SME.SGP.Dominio.Servicos
             unitOfWork.IniciarTransacao();
 
             repositorioEvento.Salvar(evento);
-            await AlterarRecorrenciaEventos(evento, alterarRecorrenciaCompleta);
+
+            SME.Background.Core.Cliente.Executar<IServicoEvento>(x => x.AlterarRecorrenciaEventos(evento, alterarRecorrenciaCompleta));
 
             var mensagemRetornoSucesso = "Evento cadastrado com sucesso.";
 
@@ -137,7 +138,7 @@ namespace SME.SGP.Dominio.Servicos
                 TratarErros(feriadosErro);
         }
 
-        public async Task SalvarRecorrencia(Evento evento, DateTime dataInicial, DateTime? dataFinal, int? diaDeOcorrencia, IEnumerable<DayOfWeek> diasDaSemana, PadraoRecorrencia padraoRecorrencia, PadraoRecorrenciaMensal? padraoRecorrenciaMensal, int repeteACada)
+        public void SalvarRecorrencia(Evento evento, DateTime dataInicial, DateTime? dataFinal, int? diaDeOcorrencia, IEnumerable<DayOfWeek> diasDaSemana, PadraoRecorrencia padraoRecorrencia, PadraoRecorrenciaMensal? padraoRecorrenciaMensal, int repeteACada)
         {
             if (evento.EventoPaiId.HasValue && evento.EventoPaiId > 0)
             {
@@ -160,7 +161,7 @@ namespace SME.SGP.Dominio.Servicos
             {
                 try
                 {
-                    await Salvar(novoEvento);
+                    Salvar(novoEvento).ConfigureAwait(false);
                     notificacoesSucesso.Add(novoEvento.DataInicio);
                 }
                 catch (NegocioException nex)
@@ -173,7 +174,7 @@ namespace SME.SGP.Dominio.Servicos
                     servicoLog.Registrar(ex);
                 }
             }
-            var usuarioLogado = await servicoUsuario.ObterUsuarioLogado();
+            var usuarioLogado = servicoUsuario.ObterUsuarioLogado().Result;
             EnviarNotificacaoRegistroDeRecorrencia(evento, notificacoesSucesso, notificacoesFalha, usuarioLogado.Id);
         }
 
@@ -199,11 +200,11 @@ namespace SME.SGP.Dominio.Servicos
             return eventoASerAlterado;
         }
 
-        private async Task AlterarRecorrenciaEventos(Evento evento, bool alterarRecorrenciaCompleta)
+        public void AlterarRecorrenciaEventos(Evento evento, bool alterarRecorrenciaCompleta)
         {
             if (evento.EventoPaiId.HasValue && evento.EventoPaiId > 0 && alterarRecorrenciaCompleta)
             {
-                IEnumerable<Evento> eventos = await repositorioEvento.ObterEventosPorRecorrencia(evento.Id, evento.EventoPaiId.Value, evento.DataInicio);
+                IEnumerable<Evento> eventos = repositorioEvento.ObterEventosPorRecorrencia(evento.Id, evento.EventoPaiId.Value, evento.DataInicio);
                 if (eventos != null && eventos.Any())
                 {
                     foreach (var eventoASerAlterado in eventos)

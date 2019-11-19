@@ -21,7 +21,7 @@ namespace SME.SGP.Dominio.Interfaces
 
         Task<IEnumerable<CalendarioEventosNoDiaRetornoDto>> ObterEventosPorDia(CalendarioEventosFiltroDto calendarioEventosMesesFiltro, int mes, int dia, Usuario usuario, Guid usuarioPerfil, bool usuarioTemPerfilSupervisorOuDiretor);
 
-        Task<IEnumerable<Evento>> ObterEventosPorRecorrencia(long eventoId, long eventoPaiId, DateTime dataEvento);
+        IEnumerable<Evento> ObterEventosPorRecorrencia(long eventoId, long eventoPaiId, DateTime dataEvento);
 
         IEnumerable<Evento> ObterEventosPorTipoDeCalendarioDreUe(long tipoCalendarioId, string dreId, string ueId);
 

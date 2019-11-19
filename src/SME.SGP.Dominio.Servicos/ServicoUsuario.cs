@@ -3,6 +3,7 @@ using Newtonsoft.Json;
 using SME.SGP.Aplicacao.Integracoes;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
+using SME.SGP.Infra.Contexto;
 using SME.SGP.Infra.Interfaces;
 using System;
 using System.Collections.Generic;
@@ -59,7 +60,7 @@ namespace SME.SGP.Dominio
 
         public string ObterClaim(string nomeClaim)
         {
-            var claim = contextoAplicacao.ObterVarivel<IEnumerable<System.Security.Claims.Claim>>("Claims").FirstOrDefault(a => a.Type == nomeClaim);
+            var claim = contextoAplicacao.ObterVarivel<IEnumerable<InternalClaim>>("Claims").FirstOrDefault(a => a.Type == nomeClaim);
             return claim?.Value;
         }
 
@@ -79,7 +80,7 @@ namespace SME.SGP.Dominio
 
         public IEnumerable<Permissao> ObterPermissoes()
         {
-            var claims = contextoAplicacao.ObterVarivel<IEnumerable<System.Security.Claims.Claim>>("Claims").Where(a => a.Type == CLAIM_PERMISSAO);
+            var claims = contextoAplicacao.ObterVarivel<IEnumerable<InternalClaim>>("Claims").Where(a => a.Type == CLAIM_PERMISSAO);
             List<Permissao> retorno = new List<Permissao>();
 
             if (claims.Any())
