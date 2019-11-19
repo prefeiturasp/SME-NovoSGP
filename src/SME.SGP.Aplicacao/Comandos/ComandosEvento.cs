@@ -1,5 +1,4 @@
-﻿using SME.SGP.Aplicacao.Interfaces;
-using SME.SGP.Dominio;
+﻿using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System;
@@ -116,9 +115,13 @@ namespace SME.SGP.Aplicacao
 
         private async Task<IEnumerable<RetornoCopiarEventoDto>> SalvarEvento(EventoDto eventoDto, Evento evento)
         {
-            await servicoEvento.Salvar(evento, eventoDto.AlterarARecorrenciaCompleta, eventoDto.DataConfirmada);
+            var retornoCadasradoEvento = await servicoEvento.Salvar(evento, eventoDto.AlterarARecorrenciaCompleta, eventoDto.DataConfirmada);
+            var mensagens = new List<RetornoCopiarEventoDto>();
+            mensagens.Add(new RetornoCopiarEventoDto(retornoCadasradoEvento, true));
             await GravarRecorrencia(eventoDto, evento);
-            return await CopiarEventos(eventoDto);
+            mensagens.AddRange(await CopiarEventos(eventoDto));
+
+            return mensagens;
         }
     }
 }
