@@ -18,6 +18,9 @@ namespace SME.SGP.Dominio.Servicos
         private readonly IServicoEOL servicoEOL;
         private readonly IConsultasGrade consultasGrade;
         private readonly IServicoLog servicoLog;
+        private readonly IConsultasAula consultasAula;
+        private readonly IConsultasAbrangencia consultasAbrangencia;
+
 
         public ServicoAula(IRepositorioAula repositorioAula,
                            IServicoEOL servicoEOL,
@@ -25,7 +28,9 @@ namespace SME.SGP.Dominio.Servicos
                            IServicoDiaLetivo servicoDiaLetivo,
                            IConsultasGrade consultasGrade,
                            IRepositorioPeriodoEscolar repositorioPeriodoEscolar,
-                           IServicoLog servicoLog)
+                           IServicoLog servicoLog,
+                           IConsultasAula consultasAula,
+                           IConsultasAbrangencia consultasAbrangencia)
         {
             this.repositorioAula = repositorioAula ?? throw new System.ArgumentNullException(nameof(repositorioAula));
             this.servicoEOL = servicoEOL ?? throw new System.ArgumentNullException(nameof(servicoEOL));
@@ -34,6 +39,8 @@ namespace SME.SGP.Dominio.Servicos
             this.consultasGrade = consultasGrade ?? throw new System.ArgumentNullException(nameof(consultasGrade));
             this.repositorioPeriodoEscolar = repositorioPeriodoEscolar ?? throw new ArgumentNullException(nameof(repositorioPeriodoEscolar));
             this.servicoLog = servicoLog ?? throw new ArgumentNullException(nameof(servicoLog));
+            this.consultasAula = consultasAula ?? throw new System.ArgumentNullException(nameof(consultasAula));
+            this.consultasAbrangencia = consultasAbrangencia ?? throw new System.ArgumentNullException(nameof(consultasAbrangencia));
         }
 
         public async Task<string> Salvar(Aula aula, Usuario usuario)
@@ -56,10 +63,45 @@ namespace SME.SGP.Dominio.Servicos
                 throw new NegocioException("Não é possível cadastrar essa aula pois a data informada está fora do período letivo.");
             }
 
-            var gradeAulas = await consultasGrade.ObterGradeAulasTurma(int.Parse(aula.TurmaId), int.Parse(aula.DisciplinaId));
-            if ((gradeAulas != null) && (gradeAulas.QuantidadeAulasRestante < aula.Quantidade))
-                throw new NegocioException("Quantidade de aulas superior ao limíte de aulas da grade.");
+            if (aula.RecorrenciaAula != RecorrenciaAula.AulaUnica && aula.TipoAula == TipoAula.Reposicao)
+            {
+                throw new NegocioException("Uma aula do tipo Reposição não pode ser recorrente.");
+            }
 
+            if (aula.RecorrenciaAula == RecorrenciaAula.AulaUnica && aula.TipoAula == TipoAula.Reposicao)
+            {
+                var aulas = await repositorioAula.ObterAulasTurmaDisciplina(aula.TurmaId, aula.DisciplinaId);
+                var quantidadeAulasExistentesNoDia = aulas.ToList().FindAll(x => x.DataAula.Date == aula.DataAula.Date).Sum(x => x.Quantidade) + aula.Quantidade;
+       
+                var abrangencia = await consultasAbrangencia.ObterAbrangenciaTurma(Convert.ToInt32(aula.TurmaId));
+                if (abrangencia == null)
+                    throw new NegocioException("Abrangência da turma não localizada.");
+
+                if ((abrangencia.Modalidade == Modalidade.Fundamental && abrangencia.Ano >= 1 && abrangencia.Ano <= 5) ||  //Valida se é Fund 1 
+                   (Modalidade.EJA == abrangencia.Modalidade && (abrangencia.Ano == 1 || abrangencia.Ano == 2)) // Valida se é Eja Alfabetizacao ou  Basica
+                   && quantidadeAulasExistentesNoDia > 1)
+                {
+                  // Notificação
+                }
+
+                else if ((abrangencia.Modalidade == Modalidade.Fundamental && abrangencia.Ano >= 6 && abrangencia.Ano <= 9) || //valida se é fund 2
+                         (Modalidade.EJA == abrangencia.Modalidade && abrangencia.Ano == 3 || abrangencia.Ano == 4) ||  // Valida se é Eja Complementar ou Final 
+                         (abrangencia.Modalidade == Modalidade.Medio) && quantidadeAulasExistentesNoDia > 2)
+                {
+                     // Notificacao
+                }
+            }
+
+            else
+            {
+              
+                var gradeAulas = await consultasGrade.ObterGradeAulasTurma(int.Parse(aula.TurmaId), int.Parse(aula.DisciplinaId));
+                if ((gradeAulas != null) && (gradeAulas.QuantidadeAulasRestante < aula.Quantidade))
+                    throw new NegocioException("Quantidade de aulas superior ao limíte de aulas da grade.");
+
+
+            }
+          
             repositorioAula.Salvar(aula);
 
             if (aula.RecorrenciaAula != RecorrenciaAula.AulaUnica)
