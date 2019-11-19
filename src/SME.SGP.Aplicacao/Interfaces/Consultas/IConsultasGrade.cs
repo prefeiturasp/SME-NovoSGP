@@ -12,6 +12,6 @@ namespace SME.SGP.Aplicacao
     {
         Task<GradeDto> ObterGradeTurma(TipoEscola tipoEscola, Modalidade modalidade, int duracao);
         Task<int> ObterHorasGradeComponente(long grade, int componenteCurricular, int ano);
-        Task<GradeComponenteTurmaAulasDto> ObterGradeAulasTurma(int turma, int disciplina);
+        Task<GradeComponenteTurmaAulasDto> ObterGradeAulasTurma(string turma, int disciplina);
     }
 }
