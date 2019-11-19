@@ -4,7 +4,7 @@ import { useSelector } from 'react-redux';
 import { Tooltip, Switch } from 'antd';
 import Card from '~/componentes/card';
 import Grid from '~/componentes/grid';
-import Calendario from '~/componentes-sgp/Calendario/Calendario';
+import Calendario from '~/componentes-sgp/calendarioEscolar/Calendario';
 import { Base, Colors } from '~/componentes/colors';
 import SelectComponent from '~/componentes/select';
 import api from '~/servicos/api';
@@ -29,7 +29,9 @@ const CalendarioEscolar = () => {
   );
 
   const [diasLetivos, setDiasLetivos] = useState({});
-  const turmaSelecionada = useSelector(state => state.usuario.turmaSelecionada);
+  const turmaSelecionadaStore = useSelector(
+    state => state.usuario.turmaSelecionada
+  );
   const modalidadesAbrangencia = useSelector(state => state.filtro.modalidades);
   const anosLetivosAbrangencia = useSelector(state => state.filtro.anosLetivos);
 
@@ -82,9 +84,11 @@ const CalendarioEscolar = () => {
   };
 
   const listarTiposCalendarioPorTurmaSelecionada = async tiposLista => {
-    if (Object.entries(turmaSelecionada).length > 0) {
+    if (Object.entries(turmaSelecionadaStore).length > 0) {
       const modalidadeSelecionada =
-        turmaSelecionada.modalidade === ModalidadeDto.EJA.toString() ? 2 : 1;
+        turmaSelecionadaStore.modalidade === ModalidadeDto.EJA.toString()
+          ? 2
+          : 1;
 
       if (tiposLista) {
         setTiposCalendario(
@@ -126,14 +130,15 @@ const CalendarioEscolar = () => {
       eventoCalendarioEdicao.tipoCalendario
     ) {
       setTipoCalendarioSelecionado(eventoCalendarioEdicao.tipoCalendario);
-      if (eventoCalendarioEdicao.eventoSme)
+      if (eventoCalendarioEdicao.eventoSme) {
         setEventoSme(eventoCalendarioEdicao.eventoSme);
+      }
     }
   }, [tiposCalendario]);
 
   useEffect(() => {
     listarTiposCalendarioPorTurmaSelecionada();
-  }, [turmaSelecionada]);
+  }, [turmaSelecionadaStore]);
 
   const consultarDiasLetivos = () => {
     api
