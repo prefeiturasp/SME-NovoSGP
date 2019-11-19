@@ -10,7 +10,7 @@ const inicial = {
     },
     {
       id: 2,
-      selected: false,
+      selected: true,
       codigo: 'EF45645',
       descricao: 'Teste de descrição, teste teste teste teste teste teste teste teste teste teste teste teste teste teste teste'
     },
