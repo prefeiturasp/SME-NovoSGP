@@ -375,12 +375,12 @@ const EventosForm = ({ match }) => {
     /**
      * @description Metodo a ser disparado quando receber a mensagem do servidor
      */
-    const onSuccessSave = response => {
+    const sucessoAoSalvar = resposta => {
       if (tiposCalendarioParaCopiar && tiposCalendarioParaCopiar.length > 0) {
-        setListaMensagensCopiarEvento(response.data);
+        setListaMensagensCopiarEvento(resposta.data);
         setExibirModalRetornoCopiarEvento(true);
       } else {
-        sucesso(response.data[0].mensagem);
+        sucesso(resposta.data[0].mensagem);
         history.push('/calendario-escolar/eventos');
       }
     };
@@ -404,7 +404,7 @@ const EventosForm = ({ match }) => {
 
       cadastrado = await servicoEvento.salvar(idEvento || 0, payload);
       if (cadastrado && cadastrado.status === 200) {
-        onSuccessSave(cadastrado);
+        sucessoAoSalvar(cadastrado);
       }
     } catch (e) {
       if (e && e.response && e.response.status === 602) {
@@ -415,7 +415,7 @@ const EventosForm = ({ match }) => {
             DataConfirmada: true,
           });
           if (request) {
-            onSuccessSave(request);
+            sucessoAoSalvar(request);
           }
         }
         return false;
