@@ -28,7 +28,7 @@ namespace SME.SGP.Aplicacao
             return await repositorioAbrangencia.ObterAbrangenciaPorFiltro(texto, login, perfil);
         }
 
-        public async Task<AbrangenciaFiltroRetorno> ObterAbrangenciaTurma(int turma)
+        public async Task<AbrangenciaFiltroRetorno> ObterAbrangenciaTurma(string turma)
         {
             var login = servicoUsuario.ObterLoginAtual();
             var perfil = servicoUsuario.ObterPerfilAtual();

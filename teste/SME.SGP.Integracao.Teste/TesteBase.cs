@@ -33,6 +33,8 @@ namespace SME.SGP.Integracao.Teste
 
         public static PeriodoEscolarListaDto AdicionarPeriodoEscolar(TestServerFixture _fixture)
         {
+            _fixture = ObtenhaCabecalhoAuthentication(_fixture, new Permissao[] { Permissao.PE_I });
+
             PeriodoEscolarListaDto dto = ObterPeriodoEscolarDto();
 
             var postResult = ExecutePostAsync(_fixture, "api/v1/periodo-escolar", dto);
@@ -42,6 +44,8 @@ namespace SME.SGP.Integracao.Teste
 
         public static void AdicionarTipoCalendario(TestServerFixture _fixture)
         {
+            _fixture = ObtenhaCabecalhoAuthentication(_fixture, new Permissao[] { Permissao.TCE_I });
+
             var tipoCalendarioDto = new TipoCalendarioDto();
             tipoCalendarioDto.AnoLetivo = 2019;
             tipoCalendarioDto.Nome = "Teste Periodo Escolar";
@@ -84,12 +88,12 @@ namespace SME.SGP.Integracao.Teste
             return _fixture._clientApi.PostAsync(Url, jsonParaPost).Result;
         }
 
-        public static TestServerFixture ObtenhaCabecalhoAuthentication(TestServerFixture _fixture, Permissao[] permissoes)
+        public static TestServerFixture ObtenhaCabecalhoAuthentication(TestServerFixture _fixture, Permissao[] permissoes, string usuario = "teste", string codigoRf = "123", string perfil = "")
         {
             _fixture._clientApi.DefaultRequestHeaders.Clear();
 
             _fixture._clientApi.DefaultRequestHeaders.Authorization =
-                new AuthenticationHeaderValue("Bearer", _fixture.GerarToken(permissoes));
+                new AuthenticationHeaderValue("Bearer", _fixture.GerarToken(permissoes, usuario, codigoRf, perfil));
 
             return _fixture;
         }

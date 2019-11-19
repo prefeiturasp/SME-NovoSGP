@@ -78,8 +78,9 @@ const Mes = props => {
             .then(resposta => {
               if (resposta.data) {
                 resposta.data.forEach(item => {
-                  if (item && item.mes > 0)
+                  if (item && item.mes > 0) {
                     store.dispatch(atribuiEventosMes(item.mes, item.eventos));
+                  }
                 });
               } else store.dispatch(atribuiEventosMes(numeroMes, 0));
             })
@@ -89,7 +90,9 @@ const Mes = props => {
         } else store.dispatch(atribuiEventosMes(numeroMes, 0));
       }
     }
-    return () => (estado = false);
+    return () => {
+      estado = false;
+    };
   }, [filtros]);
 
   const meses = useSelector(state => state.calendarioEscolar.meses);
