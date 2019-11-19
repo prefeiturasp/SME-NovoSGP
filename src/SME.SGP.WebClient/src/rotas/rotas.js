@@ -38,7 +38,7 @@ import FrequenciaPlanoAula from '~/paginas/DiarioClasse/FrequenciaPlanoAula/freq
 export default function Rotas() {
   const rotas = new Map();
 
-  rotas.set('/calendario-professor', {
+  rotas.set(RotasDto.CALENDARIO_PROFESSOR, {
     breadcrumbName: 'Calendário do Professor',
     parent: '/',
     component: CalendarioProfessor,
@@ -46,7 +46,7 @@ export default function Rotas() {
     tipo: RotasTipo.EstruturadaAutenticada,
   });
 
-  rotas.set('/calendario-escolar', {
+  rotas.set(RotasDto.CALENDARIO_ESCOLAR, {
     breadcrumbName: 'Calendário Escolar',
     parent: '/',
     component: CalendarioEscolar,
