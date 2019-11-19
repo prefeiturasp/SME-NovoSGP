@@ -1,10 +1,10 @@
-﻿using System;
+﻿using SME.SGP.Dominio;
+using SME.SGP.Dominio.Interfaces;
+using SME.SGP.Infra;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using SME.SGP.Dominio;
-using SME.SGP.Dominio.Interfaces;
-using SME.SGP.Infra;
 
 namespace SME.SGP.Aplicacao
 {
@@ -16,10 +16,20 @@ namespace SME.SGP.Aplicacao
         {
             this.repositorio = repositorio ?? throw new ArgumentNullException(nameof(repositorio));
         }
+
         public AulaConsultaDto BuscarPorId(long id)
         {
             var aula = repositorio.ObterPorId(id);
             return MapearParaDto(aula);
+        }
+
+        public IEnumerable<DataAulasProfessorDto> ObterDatasDeAulasPorCalendarioTurmaEDisciplina(long calendarioId, string turma, string disciplina)
+        {
+            return repositorio.ObterDatasDeAulasPorCalendarioTurmaEDisciplina(calendarioId, turma, disciplina)?.Select(a => new DataAulasProfessorDto
+            {
+                Data = a.DataAula,
+                IdAula = a.Id
+            });
         }
 
         public async Task<int> ObterQuantidadeAulasTurma(string turma, string disciplina)
@@ -51,6 +61,5 @@ namespace SME.SGP.Aplicacao
             };
             return dto;
         }
-
     }
 }
