@@ -13,6 +13,8 @@ using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Dominio.Servicos;
 using SME.SGP.Infra;
+using SME.SGP.Infra.Contexto;
+using SME.SGP.Infra.Interfaces;
 
 namespace SME.SGP.IoC
 {
@@ -31,7 +33,7 @@ namespace SME.SGP.IoC
         private static void ResgistraDependenciaHttp(IServiceCollection services)
         {
             /// Este método não deveria existir, as dependencias dos objetos abaixo deveriam ser encapsuladas em um contexto da aplicação para serem utilizadas pela WebApi e WorkserService independentemente
-            services.TryAddTransient<System.Net.Http.HttpClient>();
+            //services.TryAddTransient<System.Net.Http.HttpClient>();
             services.TryAddTransient<Microsoft.AspNetCore.Http.IHttpContextAccessor, NoHttpContext>();
         }
 
@@ -78,6 +80,7 @@ namespace SME.SGP.IoC
 
         private static void RegistrarContextos(IServiceCollection services)
         {
+            services.TryAddTransient<IContextoAplicacao, WorkerContext>();
             services.TryAddTransient<ISgpContext, SgpContext>();
             services.TryAddTransient<IUnitOfWork, UnitOfWork>();
         }

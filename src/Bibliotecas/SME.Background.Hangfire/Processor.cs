@@ -44,6 +44,7 @@ namespace SME.Background.Hangfire
                 { 
                     SchemaName = "hangfire"
                 });
+            GlobalJobFilters.Filters.Add(new SGP.Hangfire.ContextFilterAttribute());
         }
     }
 }

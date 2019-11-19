@@ -69,6 +69,7 @@ namespace SME.SGP.Worker.Service
             RegistraDependenciasWorkerServices.Registrar(services);
             RegistrarMapeamentos.Registrar();
             RegistraClientesHttp.Registrar(services, configuration);
+            Hangfire.ContextFilterAttribute.RegistreredServices = services;
         }
     }
 }
