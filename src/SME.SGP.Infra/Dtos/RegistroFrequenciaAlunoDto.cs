@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using SME.SGP.Dominio;
+using System.Collections.Generic;
 
 namespace SME.SGP.Infra
 {
@@ -11,8 +12,10 @@ namespace SME.SGP.Infra
 
         public List<FrequenciaAulaDto> Aulas { get; set; }
         public string CodigoAluno { get; set; }
-        public int CodigoSituacaoMatricula { get; set; }
+        public SituacaoMatriculaAluno CodigoSituacaoMatricula { get; set; }
         public string NomeAluno { get; set; }
         public int NumeroAlunoChamada { get; set; }
+        public string SituacaoMatricula { get; set; }
+        public bool Desabilitado { get; set; }
     }
 }
