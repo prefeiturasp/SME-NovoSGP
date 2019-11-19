@@ -211,6 +211,10 @@ const EventosForm = ({ match }) => {
     setValidacoes(Yup.object(val));
   };
 
+  const eventoCalendarioEdicao = useSelector(
+    state => state.calendarioEscolar.eventoCalendarioEdicao
+  );
+
   const consultaPorId = async id => {
     const evento = await servicoEvento.obterPorId(id).catch(e => erros(e));
 
@@ -259,6 +263,14 @@ const EventosForm = ({ match }) => {
       onChangeTipoEvento(evento.data.tipoEventoId);
 
       setExibirAuditoria(true);
+
+      if (Object.entries(eventoCalendarioEdicao).length > 0) {
+        setBreadcrumbManual(
+          match.url,
+          'Cadastro de Eventos no Calendário Escolar',
+          '/calendario-escolar'
+        );
+      }
     }
   };
 
@@ -301,11 +313,17 @@ const EventosForm = ({ match }) => {
         'Você não salvou as informações preenchidas.',
         'Deseja voltar para tela de listagem agora?'
       );
-      if (confirmado) {
+      if (Object.entries(eventoCalendarioEdicao).length > 0) {
+        history.push('/calendario-escolar');
+      } else if (confirmado) {
         history.push('/calendario-escolar/eventos');
       }
     } else {
-      history.push('/calendario-escolar/eventos');
+      if (Object.entries(eventoCalendarioEdicao).length > 0) {
+        history.push('/calendario-escolar');
+      } else {
+        history.push('/calendario-escolar/eventos');
+      }
     }
   };
 
@@ -368,13 +386,13 @@ const EventosForm = ({ match }) => {
           AlterarARecorrenciaCompleta: true,
         };
       }
-      /**
-       * @description Metodo a ser disparado quando receber a mensagem do servidor
-       */
+
       const onSuccessSave = response => {
         if (tiposCalendarioParaCopiar && tiposCalendarioParaCopiar.length > 0) {
           setListaMensagensCopiarEvento(response.data);
           setExibirModalRetornoCopiarEvento(true);
+        } else if (Object.entries(eventoCalendarioEdicao).length > 0) {
+          history.push('/calendario-escolar');
         } else {
           sucesso(response.data[0].mensagem);
           history.push('/calendario-escolar/eventos');
@@ -910,7 +928,7 @@ const EventosForm = ({ match }) => {
           closable={false}
           fecharAoClicarFora={false}
           fecharAoClicarEsc={false}
-          esconderBotaoPrincipal={true}
+          esconderBotaoPrincipal
         >
           {listaMensagensCopiarEvento.map((item, i) => (
             <p key={i}>
