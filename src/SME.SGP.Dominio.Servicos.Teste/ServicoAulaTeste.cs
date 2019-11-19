@@ -14,6 +14,7 @@ namespace SME.SGP.Dominio.Servicos.Teste
     public class ServicoAulaTeste
     {
         private readonly Mock<IConsultasGrade> consultasGrade;
+        private readonly Mock<IRepositorioAbrangencia> repositorioAbrangencia;
         private readonly Mock<IRepositorioAula> repositorioAula;
         private readonly Mock<IRepositorioPeriodoEscolar> repositorioPeriodoEscolar;
         private readonly Mock<IRepositorioTipoCalendario> repositorioTipoCalendario;
@@ -21,6 +22,7 @@ namespace SME.SGP.Dominio.Servicos.Teste
         private readonly Mock<IServicoDiaLetivo> servicoDiaLetivo;
         private readonly Mock<IServicoEOL> servicoEol;
         private readonly Mock<IServicoLog> servicoLog;
+        private readonly Mock<IServicoUsuario> servicoUsuario;
 
         public ServicoAulaTeste()
         {
@@ -32,7 +34,9 @@ namespace SME.SGP.Dominio.Servicos.Teste
             servicoLog = new Mock<IServicoLog>();
             servicoEol = new Mock<IServicoEOL>();
             consultasGrade = new Mock<IConsultasGrade>();
-            servicoAula = new ServicoAula(repositorioAula.Object, servicoEol.Object, repositorioTipoCalendario.Object, servicoDiaLetivo.Object, consultasGrade.Object, repositorioPeriodoEscolar.Object, servicoLog.Object);
+            repositorioAbrangencia = new Mock<IRepositorioAbrangencia>();
+            servicoUsuario = new Mock<IServicoUsuario>();
+            servicoAula = new ServicoAula(repositorioAula.Object, servicoEol.Object, repositorioTipoCalendario.Object, servicoDiaLetivo.Object, consultasGrade.Object, repositorioPeriodoEscolar.Object, servicoLog.Object, repositorioAbrangencia.Object, servicoUsuario.Object);
         }
 
         [Fact]
