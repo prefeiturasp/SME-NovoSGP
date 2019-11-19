@@ -26,11 +26,15 @@ function InputRF({
   const [valor, setValor] = useState('');
 
   useEffect(() => {
-    setValor(pessoaSelecionada && pessoaSelecionada.rf);
-    form.setFieldValue(name, pessoaSelecionada && pessoaSelecionada.rf);
+    setValor(pessoaSelecionada && pessoaSelecionada.professorRf);
+    form.setFieldValue(
+      name,
+      pessoaSelecionada && pessoaSelecionada.professorRf
+    );
   }, [pessoaSelecionada]);
 
   const onSubmitRF = rf => {
+    debugger;
     onSelect({ rf });
   };
 
@@ -107,11 +111,13 @@ function InputRF({
 InputRF.propTypes = {
   pessoaSelecionada: PropTypes.objectOf(PropTypes.object),
   onSelect: PropTypes.func,
+  form: PropTypes.objectOf(PropTypes.object),
 };
 
 InputRF.defaultProps = {
   pessoaSelecionada: {},
   onSelect: () => null,
+  form: {},
 };
 
 export default InputRF;

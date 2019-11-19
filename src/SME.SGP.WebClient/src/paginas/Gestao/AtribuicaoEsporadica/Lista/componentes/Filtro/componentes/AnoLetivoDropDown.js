@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 
 // Redux
 import { useSelector } from 'react-redux';
@@ -15,9 +16,20 @@ function AnoLetivoDropDown({ form, name }) {
       form={form}
       name={name}
       lista={anosLetivos}
-      disabled={anosLetivos && anosLetivos.length === 1}
+      valueSelect={anosLetivos && anosLetivos[0]}
+      placeholder="Ano letivo"
     />
   );
 }
+
+AnoLetivoDropDown.propTypes = {
+  form: PropTypes.objectOf(PropTypes.object),
+  name: PropTypes.string,
+};
+
+AnoLetivoDropDown.defaultProps = {
+  form: {},
+  name: '',
+};
 
 export default AnoLetivoDropDown;

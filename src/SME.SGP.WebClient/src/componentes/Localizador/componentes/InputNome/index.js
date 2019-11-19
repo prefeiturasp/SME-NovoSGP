@@ -1,9 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 
-// Form
-import { Field } from 'formik';
-
 // Componentes
 import { AutoComplete, Input } from 'antd';
 
@@ -19,7 +16,8 @@ function InputNome({ dataSource, onSelect, onChange, pessoaSelecionada }) {
   }, [dataSource]);
 
   useEffect(() => {
-    setValor(pessoaSelecionada && pessoaSelecionada.nome);
+    debugger;
+    setValor(pessoaSelecionada && pessoaSelecionada.professorNome);
   }, [pessoaSelecionada]);
 
   const onChangeValor = selecionado => {
@@ -29,42 +27,12 @@ function InputNome({ dataSource, onSelect, onChange, pessoaSelecionada }) {
   const options =
     sugestoes &&
     sugestoes.map(item => (
-      <AutoComplete.Option key={item.rf} value={item.nome}>
-        {item.nome}
+      <AutoComplete.Option key={item.professorRf} value={item.professorNome}>
+        {item.professorNome}
       </AutoComplete.Option>
     ));
 
-  return form ? (
-    <InputNomeEstilo>
-      <Field
-        name={name}
-        id={id || name}
-        className={`campo ${possuiErro() ? 'is-invalid' : ''} ${className ||
-          ''} ${desabilitado ? 'desabilitado' : ''}`}
-        component={Input}
-        readOnly={desabilitado}
-        onBlur={executaOnBlur}
-        maxLength={maxlength || 7}
-        value={valor}
-        placeholder="Digite o RF"
-        onKeyDown={onKeyDown}
-        onChange={e => {
-          form.setFieldValue(name, e.target.value);
-          form.setFieldTouched(name, true, true);
-          setValor(e.target.value);
-          onSelect(e);
-        }}
-        style={style}
-        suffix={botao}
-        onPressEnter={e => onSubmitRF(e.target.value)}
-      />
-      {form && form.touched[name] ? (
-        <span className="mensagemErro">{form.errors[name]}</span>
-      ) : (
-        ''
-      )}
-    </InputNomeEstilo>
-  ) : (
+  return (
     <InputNomeEstilo>
       <AutoComplete
         onChange={onChangeValor}

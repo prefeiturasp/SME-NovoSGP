@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import PropTypes from 'prop-types';
 
 // Form
 import { Formik, Form } from 'formik';
@@ -160,5 +161,13 @@ function AtribuicaoEsporadicaForm({ match }) {
     </>
   );
 }
+
+AtribuicaoEsporadicaForm.propTypes = {
+  match: PropTypes.objectOf(PropTypes.object),
+};
+
+AtribuicaoEsporadicaForm.defaultProps = {
+  match: {},
+};
 
 export default AtribuicaoEsporadicaForm;

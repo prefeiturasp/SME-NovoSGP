@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import PropTypes from 'prop-types';
 
 // Componentes
 import { SelectComponent } from '~/componentes';
@@ -49,5 +50,17 @@ function UeDropDown({ form, onChange, dreId }) {
     />
   );
 }
+
+UeDropDown.propTypes = {
+  form: PropTypes.objectOf(PropTypes.object),
+  onChange: PropTypes.func,
+  dreId: PropTypes.string,
+};
+
+UeDropDown.defaultProps = {
+  form: {},
+  onChange: () => {},
+  dreId: '',
+};
 
 export default UeDropDown;

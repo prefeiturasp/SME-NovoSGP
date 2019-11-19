@@ -1,11 +1,11 @@
+/* eslint-disable lines-between-class-members */
 import api from '~/servicos/api';
 
 // Mocks
 import { dados } from '../__mocks__/autoComplete';
 
 class LocalizadorService {
-  urlBuscarPessoa = '/buscarPessoaPorRfOuNome';
-
+  urlBuscarPessoa = '/v1/atribuicao-esporadica';
   dados = dados || [];
 
   constructor() {
@@ -14,7 +14,6 @@ class LocalizadorService {
         ...config,
         headers: {
           ...config.headers,
-          Italo: ';D',
         },
       };
     });
@@ -39,9 +38,11 @@ class LocalizadorService {
   metodoBuscar({ rf, nome }) {
     return new Promise(resolve => {
       if (rf) {
-        resolve({ data: this.dados.filter(x => x.rf === parseInt(rf, 10)) });
+        resolve({
+          data: this.dados.filter(x => x.professorRf === parseInt(rf, 10)),
+        });
       }
-      resolve({ data: this.dados.filter(x => x.nome.includes(nome)) });
+      resolve({ data: this.dados.filter(x => x.professorNome.includes(nome)) });
     });
   }
 
