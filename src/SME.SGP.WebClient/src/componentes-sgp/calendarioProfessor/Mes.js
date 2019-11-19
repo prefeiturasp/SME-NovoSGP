@@ -11,31 +11,16 @@ import {
 import { Base } from '~/componentes/colors';
 import api from '~/servicos/api';
 
-const Div = styled.div`
-  ${props =>
-    props.disabled &&
-    `
-    background: ${Base.CinzaBarras};
-    opacity: 0.5;
-    pointer-events: none;
-  `}
-`;
+const Div = styled.div``;
 const Icone = styled.i`
   cursor: pointer;
-  ${props =>
-    props.disabled &&
-    `
-    cursor: not-allowed;
-    pointer-events: none;
-  `}
 `;
 
 const Seta = props => {
-  const { estaAberto, disabled } = props;
+  const { estaAberto } = props;
 
   return (
     <Icone
-      disabled={disabled}
       className={`stretched-link fas ${
         estaAberto ? 'fa-chevron-down' : 'fa-chevron-right text-white'
       } `}
@@ -45,12 +30,10 @@ const Seta = props => {
 
 Seta.propTypes = {
   estaAberto: PropTypes.bool,
-  disabled: PropTypes.bool,
 };
 
 Seta.defaultProps = {
   estaAberto: false,
-  disabled: true,
 };
 
 const Mes = props => {
@@ -70,16 +53,13 @@ const Mes = props => {
         } = filtros;
         if (tipoCalendarioSelecionado) {
           api
-            .post(
-              'http://demo9546116.mockable.io/api/v1/calendarios/meses/eventos-aulas',
-              {
-                EhEventoSME: eventoSme,
-                tipoCalendarioId: tipoCalendarioSelecionado,
-                dreId: dreSelecionada,
-                ueId: unidadeEscolarSelecionada,
-                turmaId: turmaSelecionada,
-              }
-            )
+            .post('http://www.mocky.io/v2/5dd435fd2f00006b00d4f9ec', {
+              tipoCalendarioId: tipoCalendarioSelecionado,
+              EhEventoSME: eventoSme,
+              dreId: dreSelecionada,
+              ueId: unidadeEscolarSelecionada,
+              turmaId: turmaSelecionada,
+            })
             .then(resposta => {
               if (resposta.data) {
                 resposta.data.forEach(item => {
@@ -122,11 +102,7 @@ const Mes = props => {
   }, [meses]);
 
   const abrirMes = () => {
-    if (
-      filtros &&
-      Object.entries(filtros).length > 0 &&
-      meses[numeroMes].eventos > 0
-    ) {
+    if (filtros && Object.entries(filtros).length > 0) {
       const { tipoCalendarioSelecionado = '' } = filtros;
       if (tipoCalendarioSelecionado) store.dispatch(selecionaMes(numeroMes));
     }
@@ -150,10 +126,7 @@ const Mes = props => {
   }, [meses[numeroMes].estaAberto]);
 
   return (
-    <Div
-      className="col-3 w-100 px-0"
-      disabled={!mesSelecionado.estaAberto && mesSelecionado.eventos === 0}
-    >
+    <Div className="col-3 w-100 px-0">
       <Div className={mesSelecionado.className}>
         <Div
           className="d-flex align-items-center justify-content-center position-relative"
@@ -164,12 +137,7 @@ const Mes = props => {
             width: 35,
           }}
         >
-          <Seta
-            estaAberto={mesSelecionado.estaAberto}
-            disabled={
-              !mesSelecionado.estaAberto && mesSelecionado.eventos === 0
-            }
-          />
+          <Seta estaAberto={mesSelecionado.estaAberto} />
         </Div>
         <Div
           className="d-flex align-items-center w-100"
