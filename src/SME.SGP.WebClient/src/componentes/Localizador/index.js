@@ -20,20 +20,31 @@ function Localizador({ onChange, showLabel, form }) {
 
   const onBuscarPorRF = async ({ rf }) => {
     const { dados } = await service.buscarPessoasMock({ rf });
+    debugger;
     if (dados.length <= 0) return;
     setPessoaSelecionada(dados[0]);
   };
 
   const onSelectPessoa = objeto => {
     setPessoaSelecionada({
-      rf: parseInt(objeto.key, 10),
-      nome: objeto.props.value,
+      professorRf: parseInt(objeto.key, 10),
+      professorNome: objeto.props.value,
     });
   };
 
   useEffect(() => {
     onChange(pessoaSelecionada);
+    form.setValues({
+      ...form.values,
+      ...pessoaSelecionada,
+    });
   }, [pessoaSelecionada]);
+
+  useEffect(() => {
+    if (form.initialValues) {
+      setPessoaSelecionada(form.initialValues);
+    }
+  }, [form.initialValues]);
 
   return (
     <>
@@ -55,6 +66,7 @@ function Localizador({ onChange, showLabel, form }) {
           onSelect={onSelectPessoa}
           onChange={onChangeInput}
           pessoaSelecionada={pessoaSelecionada}
+          form={form}
           name="professorNome"
         />
       </Grid>
@@ -64,10 +76,12 @@ function Localizador({ onChange, showLabel, form }) {
 
 Localizador.defaultValues = {
   onChange: () => {},
+  form: PropTypes.objectOf(PropTypes.object),
 };
 
 Localizador.propTypes = {
   onChange: PropTypes.func.isRequired,
+  form: {},
 };
 
 export default Localizador;

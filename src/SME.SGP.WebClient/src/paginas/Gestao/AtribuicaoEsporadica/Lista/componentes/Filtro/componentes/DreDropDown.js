@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import PropTypes from 'prop-types';
 
 // Componentes
 import { SelectComponent } from '~/componentes';
@@ -47,5 +48,15 @@ function DreDropDown({ form, onChange }) {
     />
   );
 }
+
+DreDropDown.propTypes = {
+  form: PropTypes.objectOf(PropTypes.object),
+  onChange: PropTypes.func,
+};
+
+DreDropDown.defaultProps = {
+  form: {},
+  onChange: () => {},
+};
 
 export default DreDropDown;

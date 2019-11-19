@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 
 // Formulario
@@ -12,15 +12,15 @@ import UeDropDown from './componentes/UeDropDown';
 import AnoLetivoDropDown from './componentes/AnoLetivoDropDown';
 
 // Styles
-import { CaixaAno, CaixaTextoAno, Row } from './styles';
+import { Row } from './styles';
 
 function Filtro({ onFiltrar }) {
-  const [anoLetivo, setAnoLetivo] = useState('2019');
-  const [valoresIniciais, setValoresIniciais] = useState({
-    anoLetivo: '2019',
-    dreId: null,
-    ueId: null,
-    rf: null,
+  const [refForm, setRefForm] = useState({});
+  const [valoresIniciais] = useState({
+    anoLetivo: '',
+    dreId: '',
+    ueId: '',
+    professorRf: '',
   });
   const [dreId, setDreId] = useState('');
 
@@ -30,9 +30,11 @@ function Filtro({ onFiltrar }) {
     });
   };
 
-  const onFiltrarFormulario = valores => {
-    console.log(valores);
-    onFiltrar(valores);
+  const validarFiltro = valores => {
+    const formContext = refForm && refForm.getFormikContext();
+    if (formContext.isValid && Object.keys(formContext.errors).length === 0) {
+      onFiltrar(valores);
+    }
   };
 
   return (
@@ -40,7 +42,9 @@ function Filtro({ onFiltrar }) {
       enableReinitialize
       initialValues={valoresIniciais}
       validationSchema={validacoes()}
-      onSubmit={valores => onFiltrarFormulario(valores)}
+      onSubmit={valores => onFiltrar(valores)}
+      ref={refFormik => setRefForm(refFormik)}
+      validate={valores => validarFiltro(valores)}
       validateOnChange
       validateOnBlur
     >
@@ -48,10 +52,11 @@ function Filtro({ onFiltrar }) {
         <Form className="col-md-12 mb-4">
           <Row className="row mb-2">
             <Grid cols={2}>
-              {/* <CaixaAno>
-                <CaixaTextoAno>{anoLetivo}</CaixaTextoAno>
-              </CaixaAno> */}
-              <AnoLetivoDropDown form={form} name="anoLetivo" />
+              <AnoLetivoDropDown
+                form={form}
+                name="anoLetivo"
+                onChange={() => null}
+              />
             </Grid>
             <Grid cols={5}>
               <DreDropDown form={form} onChange={valor => setDreId(valor)} />
@@ -61,12 +66,20 @@ function Filtro({ onFiltrar }) {
             </Grid>
           </Row>
           <Row className="row">
-            <Localizador form={form} onChange={valor => console.log(valor)} />
+            <Localizador form={form} onChange={valor => valor} />
           </Row>
         </Form>
       )}
     </Formik>
   );
 }
+
+Filtro.propTypes = {
+  onFiltrar: PropTypes.func,
+};
+
+Filtro.defaultProps = {
+  onFiltrar: () => null,
+};
 
 export default Filtro;
