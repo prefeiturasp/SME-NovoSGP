@@ -1,5 +1,4 @@
 ﻿using Microsoft.AspNetCore.Http;
-using SME.SGP.Aplicacao.Interfaces;
 using SME.SGP.Dominio.Entidades;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Dto;

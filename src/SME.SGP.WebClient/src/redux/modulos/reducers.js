@@ -6,6 +6,7 @@ import usuario from './usuario/reducers';
 import notificacoes from './notificacoes/reducers';
 import perfil from './perfil/reducers';
 import calendarioEscolar from './calendarioEscolar/reducers';
+import calendarioProfessor from './calendarioProfessor/reducers';
 import bimestres from './planoAnual/reducers';
 import filtro from './filtro/reducers';
 import planoAula from './planoAula/reducers';
@@ -17,8 +18,8 @@ export default combineReducers({
   perfil,
   calendarioEscolar,
   notificacoes,
-  perfil,
   bimestres,
   filtro,
-  planoAula
+  planoAula,
+  calendarioProfessor,
 });
