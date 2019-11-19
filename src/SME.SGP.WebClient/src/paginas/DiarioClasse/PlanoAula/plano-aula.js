@@ -4,6 +4,8 @@ import styled from 'styled-components';
 import TextEditor from '~/componentes/textEditor/component';
 import Grid from '~/componentes/grid';
 import { Base } from '~/componentes';
+import { store } from '~/redux';
+import { useSelector } from 'react-redux';
 
 const PlanoAula = () => {
   const [mostrarCardPrincipal, setMostrarCardPrincipal] = useState(true);
@@ -18,22 +20,7 @@ const PlanoAula = () => {
     altura: '44px',
     corBorda: '#4072d6'
   }
-  const [objetivosAprendizagem, setObjetivosAprendizagem] = useState(
-    [
-      {
-        id: 1,
-        selected: false,
-        codigo: 'EF45644',
-        descricao: 'Teste de descrição'
-      },
-      {
-        id: 2,
-        selected: false,
-        codigo: 'EF45645',
-        descricao: 'Teste de descrição, teste teste teste teste teste teste teste teste teste teste teste teste teste teste teste'
-      },
-    ]
-  );
+  const objetivosAprendizagem = useSelector(store => store.planoAula.objetivosAprendizagem);
   const textEditorObjetivosRef = useRef(null);
   const textEditorDesenvAulaRef = useRef(null);
   const textEditorRecContinuaRef = useRef(null);
@@ -58,6 +45,12 @@ const PlanoAula = () => {
       background: ${Base.AzulAnakiwa} !important;
     }
   `;
+
+  const selecionarObjetivo = e => {
+    const index = e.target.getAttribute('data-index');
+    objetivosAprendizagem[index].selected = !objetivosAprendizagem[index].selected;
+    console.log(objetivosAprendizagem);
+  }
 
   return (
     <CardCollapse
@@ -98,8 +91,8 @@ const PlanoAula = () => {
                         id={objetivo.id}
                         aria-pressed={objetivo.selected ? true : false}
                         data-index={index}
-                        onClick={() => { }}
-                        onKeyUp={() => { }}
+                        onClick={selecionarObjetivo}
+                        onKeyUp={selecionarObjetivo}
                         alt={`Codigo do Objetivo : ${objetivo.codigo} `}
                       >
                         {objetivo.codigo}
