@@ -15,24 +15,31 @@ namespace SME.SGP.Dados.Repositorios
         {
         }
 
-        public async Task<IEnumerable<AulasPorTurmaDisciplinaDto>> ObterAulasPorDisciplina(string disciplinaId)
+        public IEnumerable<AulaConsultaDto> ObterDatasDeAulasPorCalendarioTurmaEDisciplina(long calendarioId, string turmaId, string disciplinaId)
         {
-            var query = @"select aula_id, data_aula
-                            from aula a
-                    inner join v_abrangencia v on
-	                    a.turma_id = a.turma_id
-                where not excluido
-                  and disciplina_id = @disciplina";
+            var query = @"select distinct
+	                        a.*
+                        from
+	                        aula a
+                        inner join v_abrangencia v on
+	                        a.turma_id = v.turma_id
+                        where
+	                        not a.excluido
+	                        and a.turma_id = @turmaId
+	                        and a.disciplina_id = @disciplinaId
+                            and a.tipo_calendario_id = @calendarioId";
 
-            return await database.Conexao.QueryAsync<AulasPorTurmaDisciplinaDto>(query, new
+            return database.Conexao.Query<AulaConsultaDto>(query, new
             {
+                calendarioId,
+                turmaId,
                 disciplinaId
             });
         }
 
         public async Task<IEnumerable<AulasPorTurmaDisciplinaDto>> ObterAulasTurmaDisciplina(string turma, string disciplina)
         {
-            var query = @"select professor_id, quantidade, data_aula
+            var query = @"select id, professor_id, quantidade, data_aula
                  from aula
                 where not excluido
                   and turma_id = @turma
