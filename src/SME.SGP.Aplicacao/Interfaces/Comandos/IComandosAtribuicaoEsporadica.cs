@@ -4,6 +4,6 @@ namespace SME.SGP.Aplicacao
 {
     public interface IComandosAtribuicaoEsporadica
     {
-        void Salvar(AtruibuicaoEsporadicaCompletaDto atruibuicaoEsporadicaCompletaDto);
+        void Salvar(AtribuicaoEsporadicaCompletaDto atruibuicaoEsporadicaCompletaDto);
     }
 }
