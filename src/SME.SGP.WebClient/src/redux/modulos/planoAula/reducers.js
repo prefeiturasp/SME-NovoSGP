@@ -21,7 +21,7 @@ export default function planoAula(state = inicial, action) {
   return produce(state, draft => {
     switch (action.type) {
       case '@planoAula/objetivosAprendizagem':
-        draft.rf = action.payload;
+        draft.objetivosAprendizagem = action.payload;
         break;
       default:
         break;
