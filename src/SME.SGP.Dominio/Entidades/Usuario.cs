@@ -126,6 +126,11 @@ namespace SME.SGP.Dominio
                 throw new NegocioException("Não é possível criar evento com datas passadas.");
         }
 
+        public bool PodeRegistrarFrequencia(Aula aula)
+        {
+            return aula.ProfessorRf == CodigoRf;
+        }
+
         public bool PodeReiniciarSenha()
         {
             return !string.IsNullOrEmpty(Email);
