@@ -12,6 +12,8 @@ using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Dominio.Servicos;
 using SME.SGP.Infra;
+using SME.SGP.Infra.Contexto;
+using SME.SGP.Infra.Interfaces;
 
 namespace SME.SGP.IoC
 {
@@ -75,6 +77,7 @@ namespace SME.SGP.IoC
 
         private static void RegistrarContextos(IServiceCollection services)
         {
+            services.TryAddScoped<IContextoAplicacao, ContextoHttp>();
             services.TryAddScoped<ISgpContext, SgpContext>();
             services.TryAddScoped<IUnitOfWork, UnitOfWork>();
         }
