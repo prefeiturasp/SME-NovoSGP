@@ -17,6 +17,7 @@ namespace SME.SGP.Dominio
         public string Login { get; set; }
         public string Nome { get; set; }
         public IEnumerable<Notificacao> Notificacoes { get { return notificacoes; } }
+        public Guid PerfilAtual { get; private set; }
         public IEnumerable<PrioridadePerfil> Perfis { get; private set; }
         public Guid? TokenRecuperacaoSenha { get; set; }
         public DateTime UltimoLogin { get; set; }
@@ -48,9 +49,19 @@ namespace SME.SGP.Dominio
             Email = novoEmail;
         }
 
+        public void DefinirPerfilAtual(Guid perfilAtual)
+        {
+            this.PerfilAtual = perfilAtual;
+        }
+
         public void DefinirPerfis(IEnumerable<PrioridadePerfil> perfisUsuario)
         {
             Perfis = perfisUsuario;
+        }
+
+        public bool EhProfessor()
+        {
+            return PerfilAtual == PERFIL_PROFESSOR;
         }
 
         public void FinalizarRecuperacaoSenha()
