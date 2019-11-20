@@ -54,8 +54,11 @@ namespace SME.SGP.Aplicacao.Consultas
             planoDto.ObjetivosAprendizagem = planoAnual.ObjetivosAprendizagem;
 
             // Carrega objetivos já cadastrados no plano de aula
-            var objetivosAula = await consultasObjetivosAula.ObterObjetivosPlanoAula(plano.Id);
-            planoDto.ObjetivosAprendizagemAula = objetivosAula.Select(o => o.Id).ToList();
+            if (plano != null && plano.Id > 0)
+            {
+                var objetivosAula = await consultasObjetivosAula.ObterObjetivosPlanoAula(plano.Id);
+                planoDto.ObjetivosAprendizagemAula = objetivosAula.Select(o => o.Id).ToList();
+            }
 
             return planoDto;
         }
