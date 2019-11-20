@@ -485,11 +485,6 @@ namespace SME.SGP.Dados.Repositorios
 
         #endregion Eventos Por Dia
 
-        public async Task<IEnumerable<Evento>> ObterEventosPorRecorrencia(long eventoId, long eventoPaiId, DateTime dataEvento)
-        {
-            var query = "select * from evento where id <> @eventoId and evento_pai_id = @eventoPaiId and data_inicio ::date >= @dataEvento ";
-            return await database.Conexao.QueryAsync<Evento>(query, new { eventoId, eventoPaiId, dataEvento });
-        }
 
         public IEnumerable<Evento> ObterEventosPorTipoDeCalendarioDreUe(long tipoCalendarioId, string dreId, string ueId)
         {
@@ -1048,6 +1043,12 @@ namespace SME.SGP.Dados.Repositorios
 
             if (calendarioEventosMesesFiltro.EhEventoSme)
                 query.AppendLine("and e.ue_id is null and e.dre_id is null");
+        }
+
+        public IEnumerable<Evento> ObterEventosPorRecorrencia(long eventoId, long eventoPaiId, DateTime dataEvento)
+        {
+            var query = "select * from evento where id <> @eventoId and evento_pai_id = @eventoPaiId and data_inicio ::date >= @dataEvento ";
+            return database.Conexao.Query<Evento>(query, new { eventoId, eventoPaiId, dataEvento });
         }
 
         #endregion Quantidade De Eventos Por Dia
