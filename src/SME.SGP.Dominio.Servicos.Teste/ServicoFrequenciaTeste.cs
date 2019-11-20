@@ -41,7 +41,7 @@ namespace SME.SGP.Dominio.Servicos.Teste
             repositorioAula.Setup(c => c.ObterPorId(It.IsAny<long>()))
                 .Returns(new Aula()
                 {
-                    ProfessorId = 1
+                    ProfessorRf = "1"
                 });
             servicoUsuario.Setup(c => c.ObterUsuarioLogado())
                 .Returns(Task.FromResult(new Usuario
