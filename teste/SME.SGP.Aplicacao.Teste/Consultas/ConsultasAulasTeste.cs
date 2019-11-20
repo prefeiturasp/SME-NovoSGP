@@ -4,7 +4,6 @@ using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -21,6 +20,24 @@ namespace SME.SGP.Aplicacao.Teste.Consultas
             consultas = new ConsultasAula(repositorio.Object);
 
             Setup();
+        }
+
+        [Fact]
+        public async Task DeveObterAulaPorId()
+        {
+            var aulaDto = consultas.BuscarPorId(1);
+
+            Assert.NotNull(aulaDto);
+            Assert.True(aulaDto.Id == 1);
+            Assert.True(aulaDto.Quantidade == 3);
+        }
+
+        [Fact]
+        public async Task DeveObterQuantidadeAulas()
+        {
+            var qtd = await consultas.ObterQuantidadeAulasTurma("123", "7");
+
+            Assert.True(qtd == 4);
         }
 
         private void Setup()
@@ -46,24 +63,6 @@ namespace SME.SGP.Aplicacao.Teste.Consultas
 
             repositorio.Setup(c => c.ObterAulasTurmaDisciplina(It.IsAny<string>(), It.IsAny<string>()))
                 .Returns(Task.FromResult(aulas));
-        }
-
-        [Fact]
-        public async Task DeveObterAulaPorId()
-        {
-            var aulaDto = consultas.BuscarPorId(1);
-
-            Assert.NotNull(aulaDto);
-            Assert.True(aulaDto.Id == 1);
-            Assert.True(aulaDto.Quantidade == 3);
-        }
-
-        [Fact]
-        public async Task DeveObterQuantidadeAulas()
-        {
-            var qtd = await consultas.ObterQuantidadeAulasTurma("123", "7");
-
-            Assert.True(qtd == 4);
         }
     }
 }
