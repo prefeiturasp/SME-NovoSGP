@@ -22,9 +22,7 @@ namespace SME.SGP.Aplicacao
             {
                 foreach (var objetivoAprendizagem in planoAulaDto.ObjetivosAprendizagemAula)
                 {
-                    //PlanoAnual planoAnual = ObterPlanoAnualSimplificado(planoAnualDto, bimestrePlanoAnual.Bimestre.Value);
-                    //planoAnual = MapearParaDominio(planoAnualDto, planoAnual, bimestrePlanoAnual);
-                    //Salvar(planoAulaDto, planoAula, bimestrePlanoAnual);
+                    //PlanoAula planoAula = repositorio.
                 }
                 unitOfWork.PersistirTransacao();
             }
