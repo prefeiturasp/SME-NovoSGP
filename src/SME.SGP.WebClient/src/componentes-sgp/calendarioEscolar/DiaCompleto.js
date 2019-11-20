@@ -1,5 +1,4 @@
-﻿/* eslint-disable no-return-assign */
-import React, { useEffect, useState } from 'react';
+﻿import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import styled from 'styled-components';
 import { useSelector } from 'react-redux';
@@ -10,7 +9,10 @@ import history from '~/servicos/history';
 import Grid from '~/componentes/grid';
 import Button from '~/componentes/button';
 import { store } from '~/redux';
-import { selecionaDia } from '~/redux/modulos/calendarioEscolar/actions';
+import {
+  selecionaDia,
+  salvarEventoCalendarioEdicao,
+} from '~/redux/modulos/calendarioEscolar/actions';
 
 const Div = styled.div``;
 const Evento = styled(Div)`
@@ -81,7 +83,9 @@ const DiaCompleto = props => {
         }
       } else setEventosDia([]);
     }
-    return () => (estado = false);
+    return () => {
+      estado = false;
+    };
   }, [diaSelecionado]);
 
   useEffect(() => {
@@ -90,6 +94,26 @@ const DiaCompleto = props => {
   }, [filtros]);
 
   const aoClicarEvento = id => {
+    if (filtros && Object.entries(filtros).length > 0) {
+      const {
+        tipoCalendarioSelecionado = '',
+        eventoSme = true,
+        dreSelecionada = '',
+        unidadeEscolarSelecionada = '',
+      } = filtros;
+
+      store.dispatch(
+        salvarEventoCalendarioEdicao(
+          tipoCalendarioSelecionado,
+          eventoSme,
+          dreSelecionada,
+          unidadeEscolarSelecionada,
+          mesAtual,
+          diaSelecionado
+        )
+      );
+    }
+
     history.push(`calendario-escolar/eventos/editar/${id}`);
   };
 
@@ -116,7 +140,7 @@ const DiaCompleto = props => {
                   </Grid>
                   <Grid
                     cols={11}
-                    className="align-self-center font-weight-bold"
+                    className="align-self-center font-weight-bold pl-0"
                   >
                     <Div>{evento.descricao ? evento.descricao : 'Evento'}</Div>
                   </Grid>
