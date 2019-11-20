@@ -82,12 +82,12 @@ namespace SME.SGP.Aplicacao
             return mensagens;
         }
 
-        private async Task GravarRecorrencia(EventoDto eventoDto, Evento evento)
+        public void GravarRecorrencia(EventoDto eventoDto, Evento evento)
         {
             if (eventoDto.RecorrenciaEventos != null)
             {
                 var recorrencia = eventoDto.RecorrenciaEventos;
-                await servicoEvento.SalvarRecorrencia(evento,
+                servicoEvento.SalvarRecorrencia(evento,
                                                 recorrencia.DataInicio,
                                                 recorrencia.DataFim,
                                                 recorrencia.DiaDeOcorrencia,
@@ -118,7 +118,7 @@ namespace SME.SGP.Aplicacao
             var retornoCadasradoEvento = await servicoEvento.Salvar(evento, eventoDto.AlterarARecorrenciaCompleta, eventoDto.DataConfirmada);
             var mensagens = new List<RetornoCopiarEventoDto>();
             mensagens.Add(new RetornoCopiarEventoDto(retornoCadasradoEvento, true));
-            await GravarRecorrencia(eventoDto, evento);
+            SME.Background.Core.Cliente.Executar<IComandosEvento>(x => x.GravarRecorrencia(eventoDto, evento));
             mensagens.AddRange(await CopiarEventos(eventoDto));
 
             return mensagens;

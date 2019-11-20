@@ -38,6 +38,8 @@ namespace SME.SGP.Dados.Mapeamentos
                config.AddMap(new GradeMap());
                config.AddMap(new GradeFiltroMap());
                config.AddMap(new GradeDisciplinaMap());
+               config.AddMap(new PlanoAulaMap());
+               config.AddMap(new ObjetivoAprendizagemAulaMap());
                config.AddMap(new AtribuicaoEsporadicaMap());
                config.ForDommel();
            });
