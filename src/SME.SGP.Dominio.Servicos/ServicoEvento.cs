@@ -56,6 +56,22 @@ namespace SME.SGP.Dominio.Servicos
             return data.AddDays(diasParaAdicionar);
         }
 
+        public void AlterarRecorrenciaEventos(Evento evento, bool alterarRecorrenciaCompleta)
+        {
+            if (evento.EventoPaiId.HasValue && evento.EventoPaiId > 0 && alterarRecorrenciaCompleta)
+            {
+                IEnumerable<Evento> eventos = repositorioEvento.ObterEventosPorRecorrencia(evento.Id, evento.EventoPaiId.Value, evento.DataInicio);
+                if (eventos != null && eventos.Any())
+                {
+                    foreach (var eventoASerAlterado in eventos)
+                    {
+                        var eventoAlterado = AlterarEventoDeRecorrencia(evento, eventoASerAlterado);
+                        repositorioEvento.Salvar(eventoAlterado);
+                    }
+                }
+            }
+        }
+
         public async Task<string> Salvar(Evento evento, bool alterarRecorrenciaCompleta = false, bool dataConfirmada = false)
         {
             var tipoEvento = repositorioEventoTipo.ObterPorId(evento.TipoEventoId);
@@ -97,8 +113,6 @@ namespace SME.SGP.Dominio.Servicos
 
             AtribuirNullSeVazio(evento);
 
-            
-
             repositorioEvento.Salvar(evento);
 
             SME.Background.Core.Cliente.Executar<IServicoEvento>(x => x.AlterarRecorrenciaEventos(evento, alterarRecorrenciaCompleta));
@@ -115,7 +129,7 @@ namespace SME.SGP.Dominio.Servicos
                     await PersistirWorkflowEvento(evento);
                     mensagemRetornoSucesso = "Evento cadastrado e será válido após aprovação.";
                 }
-            }            
+            }
 
             return mensagemRetornoSucesso;
         }
@@ -196,22 +210,6 @@ namespace SME.SGP.Dominio.Servicos
             eventoASerAlterado.TipoEventoId = evento.TipoEventoId;
             eventoASerAlterado.UeId = evento.UeId;
             return eventoASerAlterado;
-        }
-
-        public void AlterarRecorrenciaEventos(Evento evento, bool alterarRecorrenciaCompleta)
-        {
-            if (evento.EventoPaiId.HasValue && evento.EventoPaiId > 0 && alterarRecorrenciaCompleta)
-            {
-                IEnumerable<Evento> eventos = repositorioEvento.ObterEventosPorRecorrencia(evento.Id, evento.EventoPaiId.Value, evento.DataInicio);
-                if (eventos != null && eventos.Any())
-                {
-                    foreach (var eventoASerAlterado in eventos)
-                    {
-                        var eventoAlterado = AlterarEventoDeRecorrencia(evento, eventoASerAlterado);
-                        repositorioEvento.Salvar(eventoAlterado);
-                    }
-                }
-            }
         }
 
         private void EnviarNotificacaoRegistroDeRecorrencia(Evento evento, List<DateTime> notificacoesSucesso, List<string> notificacoesFalha, long usuarioId)
@@ -332,7 +330,7 @@ namespace SME.SGP.Dominio.Servicos
                 {
                     await repositorioEvento.SalvarAsync(evento);
                 }
-                catch (Exception ex)
+                catch (Exception)
                 {
                     feriadosErro.Add(evento.FeriadoId.Value);
                 }

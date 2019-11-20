@@ -11,10 +11,13 @@ namespace SME.SGP.Aplicacao
     public class ConsultasAula : IConsultasAula
     {
         private readonly IRepositorioAula repositorio;
+        private readonly IServicoUsuario servicoUsuario;
 
-        public ConsultasAula(IRepositorioAula repositorio)
+        public ConsultasAula(IRepositorioAula repositorio,
+                             IServicoUsuario servicoUsuario)
         {
             this.repositorio = repositorio ?? throw new ArgumentNullException(nameof(repositorio));
+            this.servicoUsuario = servicoUsuario ?? throw new ArgumentNullException(nameof(servicoUsuario));
         }
 
         public AulaConsultaDto BuscarPorId(long id)
@@ -23,9 +26,10 @@ namespace SME.SGP.Aplicacao
             return MapearParaDto(aula);
         }
 
-        public IEnumerable<DataAulasProfessorDto> ObterDatasDeAulasPorCalendarioTurmaEDisciplina(long calendarioId, string turma, string disciplina)
+        public async Task<IEnumerable<DataAulasProfessorDto>> ObterDatasDeAulasPorCalendarioTurmaEDisciplina(long calendarioId, string turma, string disciplina)
         {
-            return repositorio.ObterDatasDeAulasPorCalendarioTurmaEDisciplina(calendarioId, turma, disciplina)?.Select(a => new DataAulasProfessorDto
+            var usuarioLogado = await servicoUsuario.ObterUsuarioLogado();
+            return repositorio.ObterDatasDeAulasPorCalendarioTurmaEDisciplina(calendarioId, turma, disciplina, usuarioLogado.Id, usuarioLogado.PerfilAtual)?.Select(a => new DataAulasProfessorDto
             {
                 Data = a.DataAula,
                 IdAula = a.Id
