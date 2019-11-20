@@ -9,6 +9,7 @@ using SME.SGP.Aplicacao.Interfaces;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
+using SME.SGP.Infra.Interfaces;
 
 namespace SME.SGP.Aplicacao.Consultas
 {
@@ -17,7 +18,7 @@ namespace SME.SGP.Aplicacao.Consultas
         private readonly IRepositorioAtribuicaoEsporadica repositorioAtribuicaoEsporadica;
         private readonly IServicoEOL servicoEOL;
 
-        public ConsultasAtribuicaoEsporadica(IRepositorioAtribuicaoEsporadica repositorioAtribuicaoEsporadica, IServicoEOL servicoEOL,IHttpContextAccessor httpContext) : base(httpContext)
+        public ConsultasAtribuicaoEsporadica(IRepositorioAtribuicaoEsporadica repositorioAtribuicaoEsporadica, IServicoEOL servicoEOL, IContextoAplicacao contextoAplicacao) : base(contextoAplicacao)
         {
             this.repositorioAtribuicaoEsporadica = repositorioAtribuicaoEsporadica ?? throw new ArgumentNullException(nameof(repositorioAtribuicaoEsporadica));
             this.servicoEOL = servicoEOL ?? throw new ArgumentNullException(nameof(servicoEOL));
@@ -57,8 +58,8 @@ namespace SME.SGP.Aplicacao.Consultas
                 Excluido = entidade.Excluido,
                 Id = entidade.Id,
                 Migrado = entidade.Migrado,
-                ProfessorNome = professorResumo.Nome,
-                ProfessorRf = professorResumo.Nome,
+                ProfessorNome = professorResumo != null ? professorResumo.Nome : "Professor não encontrado",
+                ProfessorRf = entidade.ProfessorRf,
                 UeId = entidade.UeId
             };
         }
