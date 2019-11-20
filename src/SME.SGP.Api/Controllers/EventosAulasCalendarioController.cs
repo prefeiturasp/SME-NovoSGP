@@ -30,5 +30,16 @@ namespace SME.SGP.Api.Controllers
         {
             return Ok(consultasEventosAulasCalendario.ObterEventosAulasMensais(filtro));
         }
+
+        [HttpPost]
+        [ProducesResponseType(typeof(EventosAulasTipoCalendarioDto), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [Route("meses/{mes}/tipos/eventos-aulas")]
+        //[Permissao(Permissao.C_C, Policy = "Bearer")]
+        [AllowAnonymous]//mudar
+        public IActionResult ObterTipoEventosAulas(FiltroEventosAulasCalendarioMesDto filtro)
+        {
+            return Ok(consultasEventosAulasCalendario.ObterTipoEventosAulas(filtro));
+        }
     }
 }

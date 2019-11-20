@@ -54,6 +54,13 @@ namespace SME.SGP.Aplicacao
             return MapearParaDto(totalDias);
         }
 
+        public IEnumerable<EventosAulasTipoCalendarioDto> ObterTipoEventosAulas(FiltroEventosAulasCalendarioMesDto filtro)
+        {
+            var eventosAulas = new List<EventosAulasTipoCalendarioDto>();
+            var diasAulas = repositorioAula.ObterAulas(filtro.TipoCalendarioId, filtro.TurmaId, filtro.UeId, filtro.Mes);
+            var eventos = repositorioEvento.ObterEventosPorTipoDeCalendarioDreUeMes(filtro.TipoCalendarioId, filtro.DreId, filtro.UeId, filtro.Mes);
+        }
+
         private List<EventosAulasCalendarioDto> MapearParaDto(List<DateTime> dias)
         {
             List<EventosAulasCalendarioDto> eventosAulas = new List<EventosAulasCalendarioDto>();
@@ -62,7 +69,7 @@ namespace SME.SGP.Aplicacao
                 eventosAulas.Add(new EventosAulasCalendarioDto
                 {
                     Mes = mes,
-                    QuantidadeDias = dias
+                    EventosAulas = dias
                                     .Where(w => w.Month == mes)
                                     .Distinct()
                                     .Count()

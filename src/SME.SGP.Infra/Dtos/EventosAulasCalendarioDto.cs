@@ -2,7 +2,7 @@
 {
     public class EventosAulasCalendarioDto
     {
+        public int EventosAulas { get; set; }
         public int Mes { get; set; }
-        public int QuantidadeDias { get; set; }
     }
 }

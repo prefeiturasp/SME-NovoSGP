@@ -19,10 +19,17 @@ namespace SME.SGP.Dados.Repositorios
             StringBuilder query = new StringBuilder();
             MontaCabecalho(query);
             query.AppendLine("FROM public.aula");
-            query.AppendLine("WHERE tipo_calendario_id = @tipoCalendarioId");
-            query.AppendLine("AND turma_id = @turmaId");
-            query.AppendLine("AND ue_id = @ueId");
+            MontaWhere(query, turmaId, ueId);
             return (database.Conexao.Query<AulaDto>(query.ToString(), new { tipoCalendarioId, turmaId, ueId }));
+        }
+
+        public IEnumerable<AulaDto> ObterAulas(long tipoCalendarioId, string turmaId, string ueId, int mes)
+        {
+            StringBuilder query = new StringBuilder();
+            MontaCabecalho(query);
+            query.AppendLine("FROM public.aula");
+            MontaWhere(query, turmaId, ueId, mes);
+            return (database.Conexao.Query<AulaDto>(query.ToString(), new { tipoCalendarioId, turmaId, ueId, mes }));
         }
 
         private static void MontaCabecalho(StringBuilder query)
@@ -45,6 +52,17 @@ namespace SME.SGP.Dados.Repositorios
             query.AppendLine("alterado_rf,");
             query.AppendLine("excluido,");
             query.AppendLine("migrado");
+        }
+
+        private static void MontaWhere(StringBuilder query, string turmaId, string ueId, int? mes = null)
+        {
+            query.AppendLine("WHERE tipo_calendario_id = @tipoCalendarioId");
+            if (!string.IsNullOrEmpty(turmaId))
+                query.AppendLine("AND turma_id = @turmaId");
+            if (!string.IsNullOrEmpty(ueId))
+                query.AppendLine("AND ue_id = @ueId");
+            if (mes.HasValue)
+                query.AppendLine("AND extract(month from data_aula) = @mes");
         }
     }
 }

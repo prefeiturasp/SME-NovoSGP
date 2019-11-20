@@ -6,5 +6,7 @@ namespace SME.SGP.Dominio.Interfaces
     public interface IRepositorioAula : IRepositorioBase<Aula>
     {
         IEnumerable<AulaDto> ObterAulas(long tipoCalendarioId, string turmaId, string ueId);
+
+        IEnumerable<AulaDto> ObterAulas(long tipoCalendarioId, string turmaId, string ueId, int mes);
     }
 }
