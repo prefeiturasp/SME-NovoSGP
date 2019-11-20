@@ -47,6 +47,7 @@ namespace SME.Background.Hangfire
                                config.AddEnvironmentVariables();
                            })
                            .UseStartup<Startup>()
+                           .UseUrls(new[] { "http://*:5000" })
                            .Build();
 
             host.RunAsync();

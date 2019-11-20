@@ -161,7 +161,7 @@ namespace SME.SGP.Dominio.Servicos
             {
                 try
                 {
-                    Salvar(novoEvento).ConfigureAwait(false);
+                    Salvar(novoEvento).Wait();
                     notificacoesSucesso.Add(novoEvento.DataInicio);
                 }
                 catch (NegocioException nex)
