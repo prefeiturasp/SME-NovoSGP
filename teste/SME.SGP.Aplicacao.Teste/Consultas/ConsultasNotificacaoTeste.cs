@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Moq;
 using SME.SGP.Dominio.Interfaces;
+using SME.SGP.Infra.Contexto;
 using System;
 using Xunit;
 
@@ -22,7 +23,7 @@ namespace SME.SGP.Aplicacao.Teste.Consultas
             var obj = new HttpContextAccessor();
             obj.HttpContext = context;
 
-            consultasNotificacao = new ConsultasNotificacao(repositorioNotificacao.Object, repositorioUsuario.Object, obj);
+            consultasNotificacao = new ConsultasNotificacao(repositorioNotificacao.Object, repositorioUsuario.Object, new ContextoHttp(obj));
         }
 
         [Fact(DisplayName = "DeveDispararExcecaoAoInstanciarSemDependencias")]
