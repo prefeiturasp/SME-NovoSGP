@@ -1,6 +1,5 @@
 ﻿using SME.SGP.Dominio.Interfaces;
 using System;
-using System.Collections.Generic;
 
 namespace SME.SGP.Dominio.Servicos
 {
@@ -28,7 +27,9 @@ namespace SME.SGP.Dominio.Servicos
 
         public bool ValidarSeEhDiaLetivo(DateTime dataInicio, DateTime dataFim, long tipoCalendarioId, bool ehLetivo = false)
         {
-            var periodoEscolar = repositorioPeriodoEscolar.ObterPorTipoCalendarioData(tipoCalendarioId, dataInicio, dataFim);
+            DateTime dataInicial = dataInicio.Date;
+            DateTime dataFinal = dataFim.Date;
+            var periodoEscolar = repositorioPeriodoEscolar.ObterPorTipoCalendarioData(tipoCalendarioId, dataInicial, dataFinal);
             if (periodoEscolar == null)
                 return false;
             if (!ehLetivo)

@@ -25,7 +25,7 @@ namespace SME.SGP.Aplicacao
 
         public async Task<IEnumerable<RetornoCopiarEventoDto>> Alterar(long id, EventoDto eventoDto)
         {
-            if (!servicoDiaLetivo.ValidarSeEhDiaLetivo(eventoDto.DataInicio, eventoDto.DataFim.Value, eventoDto.TipoCalendarioId, eventoDto.Letivo == EventoLetivo.Sim))
+            if (!servicoDiaLetivo.ValidarSeEhDiaLetivo(eventoDto.DataInicio, eventoDto.DataFim ?? eventoDto.DataInicio, eventoDto.TipoCalendarioId, eventoDto.Letivo == EventoLetivo.Sim))
             {
                 throw new NegocioException("Não é possível alterar esse evento pois a data informada está fora do período letivo.");
             }
@@ -38,7 +38,7 @@ namespace SME.SGP.Aplicacao
 
         public async Task<IEnumerable<RetornoCopiarEventoDto>> Criar(EventoDto eventoDto)
         {
-            if (!servicoDiaLetivo.ValidarSeEhDiaLetivo(eventoDto.DataInicio, eventoDto.DataFim.Value, eventoDto.TipoCalendarioId, eventoDto.Letivo == EventoLetivo.Sim))
+            if (!servicoDiaLetivo.ValidarSeEhDiaLetivo(eventoDto.DataInicio, eventoDto.DataFim ?? eventoDto.DataInicio, eventoDto.TipoCalendarioId, eventoDto.Letivo == EventoLetivo.Sim))
             {
                 throw new NegocioException("Não é possível cadastrar esse evento pois a data informada está fora do período letivo.");
             }
@@ -129,9 +129,11 @@ namespace SME.SGP.Aplicacao
         private async Task<IEnumerable<RetornoCopiarEventoDto>> SalvarEvento(EventoDto eventoDto, Evento evento)
         {
             var retornoCadasradoEvento = await servicoEvento.Salvar(evento, eventoDto.AlterarARecorrenciaCompleta, eventoDto.DataConfirmada);
-            var mensagens = new List<RetornoCopiarEventoDto>();
-            mensagens.Add(new RetornoCopiarEventoDto(retornoCadasradoEvento, true));
-            SME.Background.Core.Cliente.Executar<IComandosEvento>(x => x.GravarRecorrencia(eventoDto, evento));
+            var mensagens = new List<RetornoCopiarEventoDto>
+            {
+                new RetornoCopiarEventoDto(retornoCadasradoEvento, true)
+            };
+            Background.Core.Cliente.Executar<IComandosEvento>(x => x.GravarRecorrencia(eventoDto, evento));
             mensagens.AddRange(await CopiarEventos(eventoDto));
 
             return mensagens;
