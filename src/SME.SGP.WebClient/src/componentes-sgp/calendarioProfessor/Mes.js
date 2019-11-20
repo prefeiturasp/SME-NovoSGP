@@ -6,19 +6,12 @@ import { store } from '~/redux';
 import {
   selecionaMes,
   atribuiEventosMes,
-} from '~/redux/modulos/calendarioEscolar/actions';
+  selecionaDia,
+} from '~/redux/modulos/calendarioProfessor/actions';
 import { Base } from '~/componentes/colors';
 import api from '~/servicos/api';
 
-const Div = styled.div`
-  ${props =>
-    props.disabled &&
-    `
-    background: ${Base.CinzaBarras};
-    opacity: 0.5;
-    pointer-events: none;
-  `}
-`;
+const Div = styled.div``;
 const Icone = styled.i`
   cursor: pointer;
 `;
@@ -47,21 +40,6 @@ const Mes = props => {
   const { numeroMes, filtros } = props;
   const [mesSelecionado, setMesSelecionado] = useState({});
 
-  const verificaMesAtual = () => {
-    if (filtros && Object.entries(filtros).length > 0) {
-      const { tipoCalendarioSelecionado = '' } = filtros;
-      if (tipoCalendarioSelecionado) {
-        const dataAtual = new Date();
-        if (numeroMes === (dataAtual.getMonth() + 1).toString())
-          store.dispatch(selecionaMes(numeroMes));
-      } else store.dispatch(selecionaMes(0));
-    }
-  };
-
-  useEffect(() => {
-    verificaMesAtual();
-  }, []);
-
   useEffect(() => {
     let estado = true;
     if (estado) {
@@ -71,34 +49,40 @@ const Mes = props => {
           eventoSme = true,
           dreSelecionada = '',
           unidadeEscolarSelecionada = '',
+          turmaSelecionada = '',
         } = filtros;
         if (tipoCalendarioSelecionado) {
           api
-            .get(
-              `v1/calendarios/eventos/meses?EhEventoSme=${eventoSme}&${dreSelecionada &&
-                `DreId=${dreSelecionada}&`}${tipoCalendarioSelecionado &&
-                `IdTipoCalendario=${tipoCalendarioSelecionado}&`}${unidadeEscolarSelecionada &&
-                `UeId=${unidadeEscolarSelecionada}`}`
-            )
+            .post('http://www.mocky.io/v2/5dd435fd2f00006b00d4f9ec', {
+              tipoCalendarioId: tipoCalendarioSelecionado,
+              EhEventoSME: eventoSme,
+              dreId: dreSelecionada,
+              ueId: unidadeEscolarSelecionada,
+              turmaId: turmaSelecionada,
+            })
             .then(resposta => {
               if (resposta.data) {
                 resposta.data.forEach(item => {
-                  if (item && item.mes > 0)
-                    store.dispatch(atribuiEventosMes(item.mes, item.eventos));
+                  if (item && item.mes > 0) {
+                    store.dispatch(
+                      atribuiEventosMes(item.mes, item.eventosAulas)
+                    );
+                  }
                 });
               } else store.dispatch(atribuiEventosMes(numeroMes, 0));
             })
             .catch(() => {
               store.dispatch(atribuiEventosMes(numeroMes, 0));
             });
-          verificaMesAtual();
         } else store.dispatch(atribuiEventosMes(numeroMes, 0));
       }
     }
-    return () => (estado = false);
+    return () => {
+      estado = false;
+    };
   }, [filtros]);
 
-  const meses = useSelector(state => state.calendarioEscolar.meses);
+  const meses = useSelector(state => state.calendarioProfessor.meses);
 
   useEffect(() => {
     const mes = Object.assign({}, meses[numeroMes]);
@@ -124,11 +108,25 @@ const Mes = props => {
     }
   };
 
+  useEffect(() => {
+    const encontrarMes = setTimeout(() => {
+      const mes = document.querySelector(`.${meses[numeroMes].nome}`);
+      if (mes) {
+        if (meses[numeroMes].estaAberto) {
+          mes.classList.remove('d-none');
+          mes.classList.add('d-block', 'show');
+        } else {
+          mes.classList.remove('d-block', 'show');
+          mes.classList.add('d-none');
+          store.dispatch(selecionaDia(undefined));
+        }
+      }
+    }, 500);
+    return () => clearTimeout(encontrarMes);
+  }, [meses[numeroMes].estaAberto]);
+
   return (
-    <Div
-      className="col-3 w-100 px-0"
-      disabled={!mesSelecionado.estaAberto && mesSelecionado.eventos === 0}
-    >
+    <Div className="col-3 w-100 px-0">
       <Div className={mesSelecionado.className}>
         <Div
           className="d-flex align-items-center justify-content-center position-relative"
@@ -145,10 +143,10 @@ const Mes = props => {
           className="d-flex align-items-center w-100"
           style={mesSelecionado.style}
         >
-          <Div className="w-100 pl-2">{mesSelecionado.nome}</Div>
+          <Div className="w-100 pl-2 fonte-16">{mesSelecionado.nome}</Div>
           <Div className="flex-shrink-1 d-flex align-items-center pr-3">
-            <Div className="pr-2">{mesSelecionado.eventos}</Div>
-            <Div>
+            <Div className="pr-2 fonte-14">{mesSelecionado.eventos}</Div>
+            <Div className="fonte-14">
               <Icone className="far fa-calendar-alt" />
             </Div>
           </Div>

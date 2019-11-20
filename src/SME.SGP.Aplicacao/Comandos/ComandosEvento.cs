@@ -1,5 +1,4 @@
-﻿using SME.SGP.Aplicacao.Interfaces;
-using SME.SGP.Dominio;
+﻿using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System;
@@ -26,17 +25,13 @@ namespace SME.SGP.Aplicacao
             var evento = repositorioEvento.ObterPorId(id);
 
             evento = MapearParaEntidade(evento, eventoDto);
-            await servicoEvento.Salvar(evento);
-            await GravarRecorrencia(eventoDto, evento);
-            return await CopiarEventos(eventoDto);
+            return await SalvarEvento(eventoDto, evento);
         }
 
         public async Task<IEnumerable<RetornoCopiarEventoDto>> Criar(EventoDto eventoDto)
         {
             var evento = MapearParaEntidade(new Evento(), eventoDto);
-            await servicoEvento.Salvar(evento, eventoDto.DataConfirmada);
-            await GravarRecorrencia(eventoDto, evento);
-            return await CopiarEventos(eventoDto);
+            return await SalvarEvento(eventoDto, evento);
         }
 
         public void Excluir(long[] idsEventos)
@@ -116,6 +111,17 @@ namespace SME.SGP.Aplicacao
             evento.TipoEventoId = eventoDto.TipoEventoId;
             evento.UeId = eventoDto.UeId;
             return evento;
+        }
+
+        private async Task<IEnumerable<RetornoCopiarEventoDto>> SalvarEvento(EventoDto eventoDto, Evento evento)
+        {
+            var retornoCadasradoEvento = await servicoEvento.Salvar(evento, eventoDto.AlterarARecorrenciaCompleta, eventoDto.DataConfirmada);
+            var mensagens = new List<RetornoCopiarEventoDto>();
+            mensagens.Add(new RetornoCopiarEventoDto(retornoCadasradoEvento, true));
+            await GravarRecorrencia(eventoDto, evento);
+            mensagens.AddRange(await CopiarEventos(eventoDto));
+
+            return mensagens;
         }
     }
 }

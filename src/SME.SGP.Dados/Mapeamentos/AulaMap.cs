@@ -18,6 +18,7 @@ namespace SME.SGP.Dados.Mapeamentos
             Map(a => a.TipoAula).ToColumn("tipo_aula");
             Map(a => a.Excluido).ToColumn("excluido");
             Map(a => a.Migrado).ToColumn("migrado");
+            Map(a => a.AulaPaiId).ToColumn("aula_pai_id");
         }
     }
 }

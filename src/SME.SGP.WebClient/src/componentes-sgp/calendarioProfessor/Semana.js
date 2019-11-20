@@ -6,9 +6,20 @@ import shortid from 'shortid';
 import { Base } from '~/componentes/colors';
 import api from '~/servicos/api';
 import { store } from '~/redux';
-import { selecionaDia } from '~/redux/modulos/calendarioEscolar/actions';
+import {
+  selecionaDia,
+  salvarEventoAulaCalendarioEdicao,
+} from '~/redux/modulos/calendarioProfessor/actions';
+import TiposEventoAulaDTO from '~/dtos/tiposEventoAula';
 
-const Div = styled.div``;
+const Div = styled.div`
+  .badge-aula {
+    background: ${Base.Roxo};
+  }
+  .badge-cj {
+    background: ${Base.Laranja};
+  }
+`;
 const TipoEventosLista = styled(Div)`
   bottom: 5px;
   right: 10px;
@@ -36,15 +47,18 @@ const Dia = props => {
             eventoSme = true,
             dreSelecionada = '',
             unidadeEscolarSelecionada = '',
+            turmaSelecionada = '',
           } = filtros;
           if (tipoCalendarioSelecionado) {
             api
-              .get(
-                `v1/calendarios/eventos/meses/${mesAtual}/tipos?EhEventoSme=${eventoSme}&${dreSelecionada &&
-                  `DreId=${dreSelecionada}&`}${tipoCalendarioSelecionado &&
-                  `IdTipoCalendario=${tipoCalendarioSelecionado}&`}${unidadeEscolarSelecionada &&
-                  `UeId=${unidadeEscolarSelecionada}`}`
-              )
+              .post('http://www.mocky.io/v2/5dd43f4d2f0000f905d4fa31', {
+                Mes: mesAtual,
+                tipoCalendarioId: tipoCalendarioSelecionado,
+                EhEventoSME: eventoSme,
+                dreId: dreSelecionada,
+                ueId: unidadeEscolarSelecionada,
+                turmaId: turmaSelecionada,
+              })
               .then(resposta => {
                 if (resposta.data) {
                   const lista = resposta.data.filter(
@@ -61,12 +75,33 @@ const Dia = props => {
         }
       }
     }
-    return () => (estado = false);
+    return () => {
+      estado = false;
+    };
   }, [filtros, mesAtual]);
 
   const selecionaDiaAberto = () => {
     store.dispatch(selecionaDia(dia));
   };
+
+  const eventoCalendarioEdicao = useSelector(
+    state => state.calendarioProfessor.eventoCalendarioEdicao
+  );
+
+  useEffect(() => {
+    const abrirDiaEventoCalendarioEdicao = setTimeout(() => {
+      if (
+        eventoCalendarioEdicao &&
+        eventoCalendarioEdicao.dia &&
+        dia &&
+        dia.getTime() === eventoCalendarioEdicao.dia.getTime()
+      ) {
+        selecionaDiaAberto();
+        store.dispatch(salvarEventoAulaCalendarioEdicao());
+      }
+    }, 3000);
+    return () => clearTimeout(abrirDiaEventoCalendarioEdicao);
+  }, [eventoCalendarioEdicao]);
 
   const style = {
     cursor: 'pointer',
@@ -77,9 +112,9 @@ const Dia = props => {
   else if (dia.getDay() === 6) style.backgroundColor = Base.CinzaCalendario;
 
   const className = `col border border-left-0 border-top-0 position-relative ${dia.getDay() ===
-    6 && 'border-right-0'} ${diaSelecionado &&
-    dia.getDate() === diaSelecionado.getDate() &&
-    'border-bottom-0'}`;
+    6 && 'border-right-0'} ${diaSelecionado && 'bg-light'} ${diaSelecionado &&
+    dia === diaSelecionado &&
+    'border-bottom-0 bg-white'}`;
 
   let diaFormatado = dia.getDate();
   if (diaFormatado < 10) diaFormatado = `0${diaFormatado}`;
@@ -106,15 +141,21 @@ const Dia = props => {
                 return (
                   <TipoEvento
                     key={shortid.generate()}
-                    className="d-block badge badge-pill badge-light mr-0"
+                    className={`d-block badge badge-pill ${tipoEvento ===
+                      TiposEventoAulaDTO.Aula &&
+                      'text-white badge-aula'} ${tipoEvento ===
+                      TiposEventoAulaDTO.CJ &&
+                      'text-white badge-cj'} ${TiposEventoAulaDTO.Evento.indexOf(
+                      tipoEvento
+                    ) > -1 && 'badge-light'} ml-auto mr-0`}
                   >
                     {tipoEvento}
                   </TipoEvento>
                 );
               })}
-              {tipoEventosDiaLista.quantidadeDeEventos > 3 && (
+              {tipoEventosDiaLista.quantidadeDeEventosAulas > 3 && (
                 <Div style={{ fontSize: 10 }}>
-                  Mais {tipoEventosDiaLista.quantidadeDeEventos} eventos
+                  Mais {tipoEventosDiaLista.quantidadeDeEventosAulas} eventos
                 </Div>
               )}
             </TipoEventosLista>
@@ -143,7 +184,7 @@ Dia.defaultProps = {
 
 const Semana = props => {
   const diaSelecionado = useSelector(
-    state => state.calendarioEscolar.diaSelecionado
+    state => state.calendarioProfessor.diaSelecionado
   );
   const { inicial, dias, mesAtual, filtros } = props;
 
