@@ -24,6 +24,27 @@ namespace SME.SGP.Dados.Repositorios
         public PeriodoEscolar ObterPorTipoCalendarioData(long tipoCalendarioId, DateTime data)
         {
             StringBuilder query = new StringBuilder();
+            MontaQuery(query);
+            query.AppendLine("where tipo_calendario_id = @tipoCalendarioId");
+            query.AppendLine("and periodo_inicio <= @data");
+            query.AppendLine("and periodo_fim >= @data");
+
+            return database.Conexao.QueryFirstOrDefault<PeriodoEscolar>(query.ToString(), new { tipoCalendarioId, data });
+        }
+
+        public PeriodoEscolar ObterPorTipoCalendarioData(long tipoCalendarioId, DateTime dataInicio, DateTime dataFim)
+        {
+            StringBuilder query = new StringBuilder();
+            MontaQuery(query);
+            query.AppendLine("where tipo_calendario_id = @tipoCalendarioId");
+            query.AppendLine("and periodo_inicio <= @dataInicio");
+            query.AppendLine("and periodo_fim >= @dataFim");
+
+            return database.Conexao.QueryFirstOrDefault<PeriodoEscolar>(query.ToString(), new { tipoCalendarioId, dataInicio, dataFim });
+        }
+
+        private static void MontaQuery(StringBuilder query)
+        {
             query.AppendLine("select ");
             query.AppendLine("id,");
             query.AppendLine("tipo_calendario_id,");
@@ -37,11 +58,6 @@ namespace SME.SGP.Dados.Repositorios
             query.AppendLine("criado_rf,");
             query.AppendLine("criado_em");
             query.AppendLine("from periodo_escolar");
-            query.AppendLine("where tipo_calendario_id = @tipoCalendarioId");
-            query.AppendLine("and periodo_inicio <= @data");
-            query.AppendLine("and periodo_fim >= @data");
-
-            return database.Conexao.QueryFirstOrDefault<PeriodoEscolar>(query.ToString(), new { tipoCalendarioId, data });
         }
     }
 }
