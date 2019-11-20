@@ -38,15 +38,7 @@ import FrequenciaPlanoAula from '~/paginas/DiarioClasse/FrequenciaPlanoAula/freq
 export default function Rotas() {
   const rotas = new Map();
 
-  rotas.set('/calendario-professor', {
-    breadcrumbName: 'Calendário do Professor',
-    parent: '/',
-    component: CalendarioProfessor,
-    exact: true,
-    tipo: RotasTipo.EstruturadaAutenticada,
-  });
-
-  rotas.set('/calendario-escolar', {
+  rotas.set(RotasDto.CALENDARIO_ESCOLAR, {
     breadcrumbName: 'Calendário Escolar',
     parent: '/',
     component: CalendarioEscolar,
@@ -347,10 +339,11 @@ export default function Rotas() {
     breadcrumbName: 'Calendário do Professor',
     menu: ['Calendário Escolar'],
     parent: '/',
-    component: Principal,
+    component: CalendarioProfessor,
     exact: true,
     tipo: RotasTipo.EstruturadaAutenticada,
-    temPermissionamento: false,
+    temPermissionamento: true,
+    chavePermissao: RotasDto.CALENDARIO_PROFESSOR,
   });
 
   rotas.set(RotasDto.CADASTRO_DE_AULA, {
@@ -359,7 +352,8 @@ export default function Rotas() {
     component: CadastroAula,
     exact: true,
     tipo: RotasTipo.EstruturadaAutenticada,
-    temPermissionamento: false,
+    temPermissionamento: true,
+    chavePermissao: RotasDto.CALENDARIO_PROFESSOR,
   });
 
   rotas.set(`${RotasDto.CADASTRO_DE_AULA}/novo/:tipoCalendarioId`, {
@@ -368,7 +362,8 @@ export default function Rotas() {
     component: CadastroAula,
     exact: true,
     tipo: RotasTipo.EstruturadaAutenticada,
-    temPermissionamento: false,
+    temPermissionamento: true,
+    chavePermissao: RotasDto.CALENDARIO_PROFESSOR,
   });
 
   rotas.set(`${RotasDto.CADASTRO_DE_AULA}/editar/:id`, {
@@ -377,7 +372,8 @@ export default function Rotas() {
     component: CadastroAula,
     exact: true,
     tipo: RotasTipo.EstruturadaAutenticada,
-    temPermissionamento: false,
+    temPermissionamento: true,
+    chavePermissao: RotasDto.CALENDARIO_PROFESSOR,
   });
 
   rotas.set(`${RotasDto.FREQUENCIA_PLANO_AULA}`, {

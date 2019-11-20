@@ -3,6 +3,7 @@ using SME.SGP.Dominio.Entidades;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Dto;
 using SME.SGP.Infra;
+using SME.SGP.Infra.Interfaces;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
@@ -14,8 +15,8 @@ namespace SME.SGP.Aplicacao
         private readonly IRepositorioEventoTipo repositorioEventoTipo;
         private readonly IRepositorioEvento repositorioEvento;
 
-        public ConsultasEventoTipo(IRepositorioEventoTipo repositorioEventoTipo, IHttpContextAccessor httpContext,
-            IRepositorioEvento repositorioEvento) : base(httpContext)
+        public ConsultasEventoTipo(IRepositorioEventoTipo repositorioEventoTipo, IContextoAplicacao contextoAplicacao,
+            IRepositorioEvento repositorioEvento) : base(contextoAplicacao)
         {
             this.repositorioEventoTipo = repositorioEventoTipo ?? throw new ArgumentNullException(nameof(repositorioEventoTipo));
             this.repositorioEvento = repositorioEvento ?? throw new ArgumentNullException(nameof(repositorioEvento));

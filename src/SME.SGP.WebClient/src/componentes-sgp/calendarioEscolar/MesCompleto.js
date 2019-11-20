@@ -4,6 +4,8 @@ import { useSelector } from 'react-redux';
 import styled from 'styled-components';
 import Semana from './Semana';
 import DiaCompleto from './DiaCompleto';
+import { store } from '~/redux';
+import { selecionaMes } from '~/redux/modulos/calendarioEscolar/actions';
 
 const Div = styled.div``;
 
@@ -36,6 +38,18 @@ const MesCompleto = props => {
 
   const [diasDaSemana, setDiasDaSemana] = useState([]);
   const [estaAberto, setEstaAberto] = useState([]);
+
+  const eventoCalendarioEdicao = useSelector(
+    state => state.calendarioEscolar.eventoCalendarioEdicao
+  );
+
+  useEffect(() => {
+    const abrirMesEventoCalendarioEdicao = setTimeout(() => {
+      if (eventoCalendarioEdicao && eventoCalendarioEdicao.mes)
+        store.dispatch(selecionaMes(eventoCalendarioEdicao.mes));
+    }, 1000);
+    return () => clearTimeout(abrirMesEventoCalendarioEdicao);
+  }, [eventoCalendarioEdicao]);
 
   useEffect(() => {
     if (mesesCalendario) {
