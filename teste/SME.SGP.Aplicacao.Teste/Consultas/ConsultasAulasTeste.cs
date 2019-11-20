@@ -47,7 +47,7 @@ namespace SME.SGP.Aplicacao.Teste.Consultas
             {
                 Id = 1,
                 DataAula = new DateTime(2019, 11, 15),
-                //ProfessorId = 123,
+                ProfessorRf = "123",
                 Quantidade = 3
             };
 
