@@ -26,7 +26,7 @@ namespace SME.SGP.Api.Controllers
         [HttpPost]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [ProducesResponseType(typeof(RetornoBaseDto), 601)]
-        [ProducesResponseType(typeof(RetornoBaseDto), 200)]
+        [ProducesResponseType(200)]
         [Permissao(Permissao.PDA_I, Policy = "Bearer")]
         public async Task<IActionResult> Registrar([FromBody] FrequenciaDto frequenciaDto, [FromServices] IComandoFrequencia comandoFrequencia)
         {
