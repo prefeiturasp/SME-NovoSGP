@@ -10,8 +10,16 @@ import {
   selecionaDia,
   salvarEventoAulaCalendarioEdicao,
 } from '~/redux/modulos/calendarioProfessor/actions';
+import TiposEventoAulaDTO from '~/dtos/tiposEventoAula';
 
-const Div = styled.div``;
+const Div = styled.div`
+  .badge-aula {
+    background: ${Base.Roxo};
+  }
+  .badge-cj {
+    background: ${Base.Laranja};
+  }
+`;
 const TipoEventosLista = styled(Div)`
   bottom: 5px;
   right: 10px;
@@ -43,17 +51,14 @@ const Dia = props => {
           } = filtros;
           if (tipoCalendarioSelecionado) {
             api
-              .post(
-                'https://demo9546116.mockable.io/api/v1/calendarios/meses/tipos/eventos-aulas',
-                {
-                  Mes: mesAtual,
-                  EhEventoSME: eventoSme,
-                  tipoCalendarioId: tipoCalendarioSelecionado,
-                  dreId: dreSelecionada,
-                  ueId: unidadeEscolarSelecionada,
-                  turmaId: turmaSelecionada,
-                }
-              )
+              .post('http://www.mocky.io/v2/5dd43f4d2f0000f905d4fa31', {
+                Mes: mesAtual,
+                tipoCalendarioId: tipoCalendarioSelecionado,
+                EhEventoSME: eventoSme,
+                dreId: dreSelecionada,
+                ueId: unidadeEscolarSelecionada,
+                turmaId: turmaSelecionada,
+              })
               .then(resposta => {
                 if (resposta.data) {
                   const lista = resposta.data.filter(
@@ -136,15 +141,21 @@ const Dia = props => {
                 return (
                   <TipoEvento
                     key={shortid.generate()}
-                    className="d-block badge badge-pill badge-light ml-auto mr-0"
+                    className={`d-block badge badge-pill ${tipoEvento ===
+                      TiposEventoAulaDTO.Aula &&
+                      'text-white badge-aula'} ${tipoEvento ===
+                      TiposEventoAulaDTO.CJ &&
+                      'text-white badge-cj'} ${TiposEventoAulaDTO.Evento.indexOf(
+                      tipoEvento
+                    ) > -1 && 'badge-light'} ml-auto mr-0`}
                   >
                     {tipoEvento}
                   </TipoEvento>
                 );
               })}
-              {tipoEventosDiaLista.quantidadeDeEventos > 3 && (
+              {tipoEventosDiaLista.quantidadeDeEventosAulas > 3 && (
                 <Div style={{ fontSize: 10 }}>
-                  Mais {tipoEventosDiaLista.quantidadeDeEventos} eventos
+                  Mais {tipoEventosDiaLista.quantidadeDeEventosAulas} eventos
                 </Div>
               )}
             </TipoEventosLista>
