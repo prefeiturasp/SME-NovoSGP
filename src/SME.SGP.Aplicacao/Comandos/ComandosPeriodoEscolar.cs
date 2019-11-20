@@ -46,8 +46,8 @@ namespace SME.SGP.Aplicacao
             return new PeriodoEscolar
             {
                 Bimestre = periodoDto.Bimestre,
-                PeriodoInicio = periodoDto.PeriodoInicio,
-                PeriodoFim = periodoDto.PeriodoFim,
+                PeriodoInicio = periodoDto.PeriodoInicio.Date,
+                PeriodoFim = periodoDto.PeriodoFim.Date,
                 TipoCalendarioId = tipoCalendario,
                 Migrado = false,
             };
@@ -57,8 +57,8 @@ namespace SME.SGP.Aplicacao
         {
             var periodoSalvar = repositorioPeriodo.ObterPorId(Id);
 
-            periodoSalvar.PeriodoInicio = periodo.PeriodoInicio;
-            periodoSalvar.PeriodoFim = periodo.PeriodoFim;
+            periodoSalvar.PeriodoInicio = periodo.PeriodoInicio.Date;
+            periodoSalvar.PeriodoFim = periodo.PeriodoFim.Date;
 
             return periodoSalvar;
         }
