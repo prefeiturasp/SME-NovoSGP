@@ -22,15 +22,16 @@ const PlanoAula = () => {
     altura: '44px',
     corBorda: '#4072d6'
   }
-  let plano = useSelector(store => store.planoAula);
+  let objetivosAprendizagem = useSelector(store => store.planoAula.objetivosAprendizagem);
+  // const [objetivosAprendizagem, setObjetivosTeste] = useState(plano.objetivosAprendizagem);
   const textEditorObjetivosRef = useRef(null);
   const textEditorDesenvAulaRef = useRef(null);
   const textEditorRecContinuaRef = useRef(null);
   const textEditorLicaoCasaRef = useRef(null);
 
   useEffect(() => {
-    console.log(plano.objetivosAprendizagem);
-  }, plano.objetivosAprendizagem);
+    console.log(objetivosAprendizagem);
+  }, [objetivosAprendizagem]);
 
   const QuantidadeBotoes = styled.div`
     padding: 0 0 20px 0;
@@ -54,11 +55,9 @@ const PlanoAula = () => {
       background: ${Base.AzulAnakiwa} !important;
     }
   `;
-  const selecionarObjetivo = e => {
-    const index = e.target.getAttribute('data-index');
-    let objetivos = plano.objetivosAprendizagem;
-    objetivos[index].selected = !objetivos[index].selected;
-    store.dispatch(setObjetivosAprendizagem(objetivos));
+  const selecionarObjetivo = index => {
+    objetivosAprendizagem[index].selected = !objetivosAprendizagem[index].selected;
+    store.dispatch(setObjetivosAprendizagem([...objetivosAprendizagem]));
   }
 
   return (
@@ -87,7 +86,7 @@ const PlanoAula = () => {
                 Objetivos de aprendizagem
             </h6>
               <ObjetivosList className="mt-4 overflow-auto">
-                {plano.objetivosAprendizagem.map((objetivo, index) => {
+                {objetivosAprendizagem.map((objetivo, index) => {
                   return (
                     <ul
                       key={`${objetivo.id}Bimestre${index}`}
@@ -100,7 +99,7 @@ const PlanoAula = () => {
                         id={objetivo.id}
                         aria-pressed={objetivo.selected ? true : false}
                         data-index={index}
-                        onClick={selecionarObjetivo}
+                        onClick={() => selecionarObjetivo(index)}
                         onKeyUp={selecionarObjetivo}
                         alt={`Codigo do Objetivo : ${objetivo.codigo} `}
                       >
@@ -123,7 +122,7 @@ const PlanoAula = () => {
                   Objetivos trabalhados na aula
               </h6>
                 <div className="row col-md-12 d-flex">
-                  {plano.objetivosAprendizagem
+                  {objetivosAprendizagem
                     .filter(objetivo => objetivo.selected)
                     .map(selecionado => {
                       return (
@@ -142,7 +141,7 @@ const PlanoAula = () => {
                         />
                       );
                     })}
-                  {plano.objetivosAprendizagem.filter(x => x.selected).length >
+                  {objetivosAprendizagem.filter(x => x.selected).length >
                     1 ? (
                       <Button
                         key={`removerTodos`}
