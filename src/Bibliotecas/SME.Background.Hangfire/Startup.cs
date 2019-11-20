@@ -22,7 +22,8 @@ namespace SME.Background.Hangfire
         {
             app.UseHangfireDashboard("/worker", new DashboardOptions()
             {
-                IsReadOnlyFunc = (DashboardContext context) => env.IsDevelopment() ? true : false
+                IsReadOnlyFunc = (DashboardContext context) => !env.IsDevelopment(),
+                Authorization = new[] { new DashboardAuthorizationFilter() }
             });
         }
 
