@@ -176,8 +176,8 @@ export default function Rotas() {
     component: AtribuicaoEsporadicaLista,
     exact: true,
     tipo: RotasTipo.EstruturadaAutenticada,
-    // temPermissionamento: true,
-    // chavePermissao: RotasDto.ATRIBUICAO_ESPORADICA_LISTA,
+    temPermissionamento: true,
+    chavePermissao: RotasDto.ATRIBUICAO_ESPORADICA_LISTA,
   });
 
   rotas.set('/gestao/atribuicao-esporadica/novo', {
@@ -186,8 +186,8 @@ export default function Rotas() {
     component: AtribuicaoEsporadicaForm,
     exact: true,
     tipo: RotasTipo.EstruturadaAutenticada,
-    // temPermissionamento: true,
-    // chavePermissao: RotasDto.ATRIBUICAO_ESPORADICA_LISTA,
+    temPermissionamento: true,
+    chavePermissao: RotasDto.ATRIBUICAO_ESPORADICA_LISTA,
   });
 
   rotas.set('/gestao/atribuicao-esporadica/editar/:id', {
@@ -196,8 +196,8 @@ export default function Rotas() {
     component: AtribuicaoEsporadicaForm,
     exact: true,
     tipo: RotasTipo.EstruturadaAutenticada,
-    temPermissionamento: false,
-    //chavePermissao: RotasDto.ATRIBUICAO_SUPERVISOR_LISTA,
+    temPermissionamento: true,
+    chavePermissao: RotasDto.ATRIBUICAO_ESPORADICA_LISTA,
   });
 
   rotas.set('/notificacoes/:id', {
