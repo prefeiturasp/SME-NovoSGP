@@ -8,7 +8,7 @@ namespace SME.SGP.Aplicacao
     {
         AulaConsultaDto BuscarPorId(long id);
 
-        IEnumerable<DataAulasProfessorDto> ObterDatasDeAulasPorCalendarioTurmaEDisciplina(long calendarioId, string turma, string disciplina);
+        Task<IEnumerable<DataAulasProfessorDto>> ObterDatasDeAulasPorCalendarioTurmaEDisciplina(long calendarioId, string turma, string disciplina);
 
         Task<int> ObterQuantidadeAulasTurma(string turma, string disciplina);
     }

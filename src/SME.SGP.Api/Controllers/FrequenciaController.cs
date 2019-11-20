@@ -28,9 +28,9 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(RetornoBaseDto), 601)]
         [ProducesResponseType(typeof(RetornoBaseDto), 200)]
         //[Permissao(Permissao.PDA_I, Policy = "Bearer")]
-        public IActionResult ObterDatasDeAulasPorCalendarioTurmaEDisciplina(long calendarioId, string turmaId, string disciplinaId, [FromServices] IConsultasAula consultasAula)
+        public async Task<IActionResult> ObterDatasDeAulasPorCalendarioTurmaEDisciplina(long calendarioId, string turmaId, string disciplinaId, [FromServices] IConsultasAula consultasAula)
         {
-            return Ok(consultasAula.ObterDatasDeAulasPorCalendarioTurmaEDisciplina(calendarioId, turmaId, disciplinaId));
+            return Ok(await consultasAula.ObterDatasDeAulasPorCalendarioTurmaEDisciplina(calendarioId, turmaId, disciplinaId));
         }
     }
 }
