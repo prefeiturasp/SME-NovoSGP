@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using SME.SGP.Api.Filtros;
+using SME.SGP.Aplicacao;
 using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
@@ -136,6 +137,17 @@ namespace SME.SGP.Api.Controllers
             };
 
             return Ok(MOCKLISTAGEM);
+        }
+
+        [HttpPost]
+        [ProducesResponseType(200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [Permissao(Permissao.AE_A, Permissao.AE_I, Policy = "Bearer")]
+        public IActionResult Post([FromBody]AtribuicaoEsporadicaCompletaDto atribuicaoEsporadicaCompletaDto, [FromServices]IComandosAtribuicaoEsporadica comandosAtribuicaoEsporadica)
+        {
+            comandosAtribuicaoEsporadica.Salvar(atribuicaoEsporadicaCompletaDto);
+
+            return Ok();
         }
     }
 }

@@ -2,7 +2,7 @@
 
 namespace SME.SGP.Infra
 {
-    public class AtruibuicaoEsporadicaCompletaDto : AtribuicaoEsporadicaDto
+    public class AtribuicaoEsporadicaCompletaDto : AtribuicaoEsporadicaDto
     {
         public DateTime? AlteradoEm { get; set; }
         public string AlteradoPor { get; set; }

@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Npgsql;
+using SME.SGP.Infra.Interfaces;
 using System;
 using System.Data;
 
@@ -8,13 +9,13 @@ namespace SME.SGP.Dados.Contexto
 {
     public class SgpContext : ISgpContext
     {
-        private readonly IHttpContextAccessor httpContextAccessor;
+        private readonly IContextoAplicacao contextoAplicacao;
 
-        public SgpContext(IConfiguration configuration, IHttpContextAccessor httpContextAccessor)
+        public SgpContext(IConfiguration configuration, IContextoAplicacao contextoAplicacao)
         {
             Conexao = new NpgsqlConnection(configuration.GetConnectionString("SGP-Postgres"));
             Open();
-            this.httpContextAccessor = httpContextAccessor ?? throw new ArgumentNullException(nameof(httpContextAccessor));
+            this.contextoAplicacao = contextoAplicacao ?? throw new ArgumentNullException(nameof(contextoAplicacao));
         }
 
         public NpgsqlConnection Conexao { get; }
@@ -27,13 +28,13 @@ namespace SME.SGP.Dados.Contexto
         public ConnectionState State => Conexao.State;
 
         public string UsuarioLogado =>
-                                       httpContextAccessor.HttpContext?.User?.Identity?.Name ?? "Sistema";
+                                       contextoAplicacao.UsuarioLogado;
 
         public string UsuarioLogadoNomeCompleto =>
-                                          httpContextAccessor.HttpContext?.User?.FindFirst("Nome")?.Value ?? "Sistema";
+                                          contextoAplicacao.NomeUsuario;
 
         public string UsuarioLogadoRF =>
-                                          httpContextAccessor.HttpContext?.User?.FindFirst("RF")?.Value ?? "0";
+                                          contextoAplicacao.ObterVarivel<string>("RF");
 
         public IDbTransaction BeginTransaction()
         {
