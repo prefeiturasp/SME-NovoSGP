@@ -54,7 +54,7 @@ function ButtonGroup({
         bold
         className="mr-0"
         onClick={onClickBotaoPrincipal}
-        // disabled={somenteConsulta || !permissoesTela.podeIncluir}
+        disabled={somenteConsulta || !permissoesTela.podeIncluir}
       />
     </ButtonGroupEstilo>
   );
