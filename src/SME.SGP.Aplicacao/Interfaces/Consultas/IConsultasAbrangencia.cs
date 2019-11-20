@@ -9,7 +9,7 @@ namespace SME.SGP.Aplicacao
     public interface IConsultasAbrangencia
     {
         Task<IEnumerable<AbrangenciaFiltroRetorno>> ObterAbrangenciaPorfiltro(string texto);
-        Task<AbrangenciaFiltroRetorno> ObterAbrangenciaTurma(int turma);
+        Task<AbrangenciaFiltroRetorno> ObterAbrangenciaTurma(string turma);
 
         Task<IEnumerable<AbrangenciaDreRetorno>> ObterDres(Modalidade? modalidade, int periodo = 0);
 
