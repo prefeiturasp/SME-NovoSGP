@@ -8,13 +8,14 @@ namespace SME.SGP.Aplicacao.Teste.Comandos
     {
         private readonly Mock<IRepositorioEvento> repositorioEvento;
         private ComandosEvento comandosEvento;
+        private Mock<IServicoDiaLetivo> servicoDiaLetivo;
         private Mock<IServicoEvento> servicoEvento;
 
         public ComandosEventoTeste()
         {
             repositorioEvento = new Mock<IRepositorioEvento>();
             servicoEvento = new Mock<IServicoEvento>();
-            comandosEvento = new ComandosEvento(repositorioEvento.Object, servicoEvento.Object);
+            comandosEvento = new ComandosEvento(repositorioEvento.Object, servicoEvento.Object, servicoDiaLetivo.Object);
         }
 
         [Fact]
