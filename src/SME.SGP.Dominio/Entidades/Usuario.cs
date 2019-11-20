@@ -17,6 +17,7 @@ namespace SME.SGP.Dominio
         public string Login { get; set; }
         public string Nome { get; set; }
         public IEnumerable<Notificacao> Notificacoes { get { return notificacoes; } }
+        public Guid PerfilAtual { get; private set; }
         public IEnumerable<PrioridadePerfil> Perfis { get; private set; }
         public Guid? TokenRecuperacaoSenha { get; set; }
         public DateTime UltimoLogin { get; set; }
@@ -46,6 +47,11 @@ namespace SME.SGP.Dominio
                 throw new NegocioException("Usuários da SME ou DRE devem utilizar e-mail profissional. Ex: usuario@sme.prefeitura.sp.gov.br");
             }
             Email = novoEmail;
+        }
+
+        public void DefinirPerfilAtual(Guid perfilAtual)
+        {
+            this.PerfilAtual = perfilAtual;
         }
 
         public void DefinirPerfis(IEnumerable<PrioridadePerfil> perfisUsuario)
