@@ -41,10 +41,10 @@ namespace SME.SGP.Aplicacao
             {
                 aula = repositorio.ObterPorId(id);
             }
-            if (aula.ProfessorId <= 0L)
+            if (string.IsNullOrEmpty(aula.ProfessorRf))
             {
                 var usuario = await servicoUsuario.ObterUsuarioLogado();
-                aula.ProfessorId = usuario.Id;
+                aula.ProfessorRf = usuario.CodigoRf;
             }
             aula.UeId = dto.UeId;
             aula.DisciplinaId = dto.DisciplinaId;

@@ -8,7 +8,7 @@ namespace SME.SGP.Dominio
         public string DisciplinaId { get; set; }
         public string TurmaId { get; set; }
         public long TipoCalendarioId { get; set; }
-        public long ProfessorId { get; set; }
+        public string ProfessorRf { get; set; }
         public int Quantidade { get; set; }
         public DateTime DataAula { get; set; }
         public TipoAula TipoAula { get; set; }
