@@ -4,7 +4,7 @@ import { useSelector } from 'react-redux';
 import { Tooltip, Switch } from 'antd';
 import Card from '~/componentes/card';
 import Grid from '~/componentes/grid';
-import Calendario from '~/componentes-sgp/Calendario/Calendario';
+import Calendario from '~/componentes-sgp/calendarioEscolar/Calendario';
 import { Base, Colors } from '~/componentes/colors';
 import SelectComponent from '~/componentes/select';
 import api from '~/servicos/api';
@@ -12,7 +12,7 @@ import Button from '~/componentes/button';
 import history from '~/servicos/history';
 import { store } from '~/redux';
 import { zeraCalendario } from '~/redux/modulos/calendarioEscolar/actions';
-import ModalidadeDto from '~/dtos/modalidade';
+import ModalidadeDTO from '~/dtos/modalidade';
 
 const Div = styled.div``;
 const Titulo = styled(Div)`
@@ -29,7 +29,9 @@ const CalendarioEscolar = () => {
   );
 
   const [diasLetivos, setDiasLetivos] = useState({});
-  const turmaSelecionada = useSelector(state => state.usuario.turmaSelecionada);
+  const turmaSelecionadaStore = useSelector(
+    state => state.usuario.turmaSelecionada
+  );
   const modalidadesAbrangencia = useSelector(state => state.filtro.modalidades);
   const anosLetivosAbrangencia = useSelector(state => state.filtro.anosLetivos);
 
@@ -69,12 +71,12 @@ const CalendarioEscolar = () => {
     if (modalidadesAbrangencia) {
       modalidadesAbrangencia.forEach(modalidade => {
         if (
-          (modalidade.valor === ModalidadeDto.FUNDAMENTAL ||
-            modalidade.valor === ModalidadeDto.ENSINO_MEDIO) &&
+          (modalidade.valor === ModalidadeDTO.FUNDAMENTAL ||
+            modalidade.valor === ModalidadeDTO.ENSINO_MEDIO) &&
           !modalidades.includes(1)
         )
           modalidades.push(1);
-        if (modalidade.valor === ModalidadeDto.EJA && !modalidades.includes(2))
+        if (modalidade.valor === ModalidadeDTO.EJA && !modalidades.includes(2))
           modalidades.push(2);
       });
     }
@@ -82,9 +84,11 @@ const CalendarioEscolar = () => {
   };
 
   const listarTiposCalendarioPorTurmaSelecionada = async tiposLista => {
-    if (Object.entries(turmaSelecionada).length > 0) {
+    if (Object.entries(turmaSelecionadaStore).length > 0) {
       const modalidadeSelecionada =
-        turmaSelecionada.modalidade === ModalidadeDto.EJA.toString() ? 2 : 1;
+        turmaSelecionadaStore.modalidade === ModalidadeDTO.EJA.toString()
+          ? 2
+          : 1;
 
       if (tiposLista) {
         setTiposCalendario(
@@ -126,14 +130,15 @@ const CalendarioEscolar = () => {
       eventoCalendarioEdicao.tipoCalendario
     ) {
       setTipoCalendarioSelecionado(eventoCalendarioEdicao.tipoCalendario);
-      if (eventoCalendarioEdicao.eventoSme)
+      if (eventoCalendarioEdicao.eventoSme) {
         setEventoSme(eventoCalendarioEdicao.eventoSme);
+      }
     }
   }, [tiposCalendario]);
 
   useEffect(() => {
     listarTiposCalendarioPorTurmaSelecionada();
-  }, [turmaSelecionada]);
+  }, [turmaSelecionadaStore]);
 
   const consultarDiasLetivos = () => {
     api
