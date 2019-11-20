@@ -4,6 +4,7 @@ using SME.SGP.Aplicacao;
 using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace SME.SGP.Api.Controllers
 {
@@ -12,6 +13,16 @@ namespace SME.SGP.Api.Controllers
     [ValidaDto]
     public class AtribuicaoEsporadicaController : ControllerBase
     {
+        [HttpDelete("{id}")]
+        [ProducesResponseType(200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [Permissao(Permissao.AE_E, Permissao.AE_I, Policy = "Bearer")]
+        public async Task<IActionResult> Excluir([FromServices]IComandosAtribuicaoEsporadica comandosAtribuicaoEsporadica, long id)
+        {
+            await comandosAtribuicaoEsporadica.Excluir(id);
+            return Ok();
+        }
+
         [HttpGet("listar")]
         [ProducesResponseType(typeof(PaginacaoResultadoDto<AtribuicaoEsporadicaDto>), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
