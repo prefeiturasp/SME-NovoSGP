@@ -16,10 +16,10 @@ namespace SME.SGP.Dados.Repositorios
         public async Task<PlanoAula> ObterPlanoAulaPorDataDisciplina(DateTime data, string disciplinaId)
         {
             var query = @"select pa.*
-                 from PlanoAula pa
-                inner join Aula a on a.Id = pa.aula_id
+                 from plano_aula pa
+                inner join aula a on a.Id = pa.aula_id
                 where a.data_aula = @data
-                  and a.disciplina_id = @disciplina";
+                  and a.disciplina_id = @disciplinaId";
 
             return database.Conexao.QueryFirstOrDefault<PlanoAula>(query, new { data, disciplinaId });
         }
