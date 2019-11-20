@@ -56,5 +56,13 @@ namespace SME.SGP.Api.Controllers
 
             return Ok(await consultasDisciplina.ObterDisciplinasParaPlanejamento(filtroDisciplinaPlanejamentoDto));
         }
+
+        [HttpGet("{codigoRF}/resumo/{anoLetivo}")]
+        [ProducesResponseType(typeof(IEnumerable<ProfessorResumoDto>), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        public async Task<IActionResult> Resumo(string codigoRF, int anoLetivo)
+        {
+            return Ok(await consultasProfessor.ObterResumoPorRFAnoLetivo(codigoRF, anoLetivo));
+        }
     }
 }

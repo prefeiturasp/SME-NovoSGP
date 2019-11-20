@@ -13,6 +13,8 @@ import {
   selecionaDia,
   salvarEventoAulaCalendarioEdicao,
 } from '~/redux/modulos/calendarioProfessor/actions';
+import TiposEventoAulaDTO from '~/dtos/tiposEventoAula';
+import RotasDTO from '~/dtos/rotasDto';
 
 const Div = styled.div``;
 const Evento = styled(Div)`
@@ -23,9 +25,18 @@ const Evento = styled(Div)`
 `;
 const Botao = styled(Button)`
   ${Evento}:hover & {
+    background: transparent !important;
     border-color: ${Base.Branco} !important;
     color: ${Base.Branco} !important;
   }
+`;
+const BotoesAuxiliaresEstilo = styled.div`
+  display: flex;
+  align-items: right;
+  justify-content: flex-end;
+  width: 100%;
+  padding: 16px;
+  padding-bottom: 0;
 `;
 
 const SemEvento = () => {
@@ -43,6 +54,9 @@ const DiaCompleto = props => {
   const { dias, mesAtual, filtros } = props;
   const [eventosDia, setEventosDia] = useState([]);
 
+  const permissaoTela = useSelector(
+    state => state.usuario.permissoes[RotasDTO.CALENDARIO_PROFESSOR]
+  );
   const diaSelecionado = useSelector(
     state => state.calendarioProfessor.diaSelecionado
   );
@@ -67,12 +81,15 @@ const DiaCompleto = props => {
           } = filtros;
           if (tipoCalendarioSelecionado) {
             api
-              .get(
-                `v1/calendarios/eventos/meses/${mesAtual}/dias/${diaSelecionado.getDate()}?EhEventoSme=${eventoSme}&${dreSelecionada &&
-                  `DreId=${dreSelecionada}&`}${tipoCalendarioSelecionado &&
-                  `IdTipoCalendario=${tipoCalendarioSelecionado}&`}${unidadeEscolarSelecionada &&
-                  `UeId=${unidadeEscolarSelecionada}`}`
-              )
+              .post('http://www.mocky.io/v2/5dd4449f2f000072c3d4fa4f', {
+                dia: diaSelecionado.getDate(),
+                Mes: mesAtual,
+                tipoCalendarioId: tipoCalendarioSelecionado,
+                EhEventoSME: eventoSme,
+                dreId: dreSelecionada,
+                ueId: unidadeEscolarSelecionada,
+                turmaId: turmaSelecionada,
+              })
               .then(resposta => {
                 if (resposta.data) setEventosDia(resposta.data);
                 else setEventosDia([]);
@@ -89,18 +106,37 @@ const DiaCompleto = props => {
     };
   }, [diaSelecionado]);
 
+  const BotoesAuxiliares = () => {
+    return (
+      <BotoesAuxiliaresEstilo>
+        <Button
+          key={shortid.generate()}
+          onClick={() =>
+            history.push(
+              `calendario-professor/cadastro-aula/novo/${props.filtros.tipoCalendarioSelecionado}`
+            )
+          }
+          label="Nova Aula"
+          color={Colors.Roxo}
+          disabled={permissaoTela && !permissaoTela.podeIncluir}
+        />
+      </BotoesAuxiliaresEstilo>
+    );
+  };
+
   useEffect(() => {
     estaAberto = false;
     store.dispatch(selecionaDia(undefined));
   }, [filtros]);
 
-  const aoClicarEvento = id => {
+  const aoClicarEvento = (id, tipo) => {
     if (filtros && Object.entries(filtros).length > 0) {
       const {
         tipoCalendarioSelecionado = '',
         eventoSme = true,
         dreSelecionada = '',
         unidadeEscolarSelecionada = '',
+        turmaSelecionada = '',
       } = filtros;
 
       store.dispatch(
@@ -109,13 +145,19 @@ const DiaCompleto = props => {
           eventoSme,
           dreSelecionada,
           unidadeEscolarSelecionada,
+          turmaSelecionada,
           mesAtual,
           diaSelecionado
         )
       );
     }
 
-    history.push(`calendario-escolar/eventos/editar/${id}`);
+    if (TiposEventoAulaDTO.Evento.indexOf(tipo) > -1)
+      history.push(`calendario-escolar/eventos/editar/${id}`);
+    else
+      history.push(
+        `/calendario-escolar/calendario-professor/cadastro-aula/editar/${id}`
+      );
   };
 
   return (
@@ -128,26 +170,62 @@ const DiaCompleto = props => {
                 <Evento
                   key={shortid.generate()}
                   className="list-group-item list-group-item-action d-flex rounded"
-                  onClick={() => aoClicarEvento(evento.id)}
+                  onClick={() => aoClicarEvento(evento.id, evento.tipoEvento)}
                   style={{ cursor: 'pointer' }}
                 >
                   <Grid cols={1} className="pl-0">
                     <Botao
                       label={evento.tipoEvento}
-                      color={Colors.CinzaBotao}
+                      color={
+                        (evento.tipoEvento === TiposEventoAulaDTO.Aula &&
+                          Colors.Roxo) ||
+                        (evento.tipoEvento === TiposEventoAulaDTO.CJ &&
+                          Colors.Laranja) ||
+                        (TiposEventoAulaDTO.Evento.indexOf(evento.tipoEvento) >
+                          -1 &&
+                          Colors.CinzaBotao)
+                      }
+                      className="w-100"
                       border
                       steady
                     />
                   </Grid>
+                  {TiposEventoAulaDTO.Evento.indexOf(evento.tipoEvento) ===
+                    -1 && (
+                    <Grid cols={1} className="pl-0">
+                      <Botao
+                        label={evento.dadosAula.horario}
+                        color={Colors.CinzaBotao}
+                        className="w-100"
+                        border
+                        steady
+                      />
+                    </Grid>
+                  )}
                   <Grid
-                    cols={11}
-                    className="align-self-center font-weight-bold"
+                    cols={
+                      TiposEventoAulaDTO.Evento.indexOf(evento.tipoEvento) > -1
+                        ? 11
+                        : 10
+                    }
+                    className="align-self-center font-weight-bold pl-0"
                   >
-                    <Div>{evento.descricao ? evento.descricao : 'Evento'}</Div>
+                    <Div>
+                      {TiposEventoAulaDTO.Evento.indexOf(evento.tipoEvento) >
+                        -1 && evento.descricao
+                        ? evento.descricao
+                        : 'Evento'}
+                      {TiposEventoAulaDTO.Evento.indexOf(evento.tipoEvento) ===
+                        -1 &&
+                        `${evento.dadosAula.turma} - ${evento.dadosAula.modalidade} - ${evento.dadosAula.tipo} - ${evento.dadosAula.unidadeEscolar} - ${evento.dadosAula.disciplina}`}
+                    </Div>
                   </Grid>
                 </Evento>
               );
             })}
+            <Div className="">
+              <BotoesAuxiliares />
+            </Div>
           </Div>
         ) : (
           <SemEvento />
