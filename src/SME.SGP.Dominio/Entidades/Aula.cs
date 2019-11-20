@@ -8,10 +8,10 @@ namespace SME.SGP.Dominio
         public long? AulaPaiId { get; set; }
         public DateTime DataAula { get; set; }
         public string DisciplinaId { get; set; }
-
+        
         public bool Excluido { get; set; }
         public bool Migrado { get; set; }
-        public long ProfessorId { get; set; }
+        public string ProfessorRf { get; set; }
         public int Quantidade { get; set; }
         public RecorrenciaAula RecorrenciaAula { get; set; }
         public TipoAula TipoAula { get; set; }
@@ -45,7 +45,7 @@ namespace SME.SGP.Dominio
                 DataAula = DataAula,
                 Migrado = Migrado,
                 TipoCalendario = TipoCalendario,
-                ProfessorId = ProfessorId,
+                ProfessorRf = ProfessorRf,
                 Quantidade = Quantidade,
                 RecorrenciaAula = RecorrenciaAula,
                 TipoAula = TipoAula,
