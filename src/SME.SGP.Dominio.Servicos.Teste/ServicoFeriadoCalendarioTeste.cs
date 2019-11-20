@@ -39,7 +39,7 @@ namespace SME.SGP.Dominio.Servicos.Teste
                 .Returns(Task.FromResult(retorno));
 
             //ACT
-            await servicoferiado.VerficaSeExisteFeriadosMoveisEInclui(2019);
+            servicoferiado.VerficaSeExisteFeriadosMoveisEInclui(2019);
 
             //ASSERT
             Assert.True(true);
