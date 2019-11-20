@@ -127,6 +127,7 @@ namespace SME.SGP.Dominio
                 perfisDoUsuario = JsonConvert.DeserializeObject<IEnumerable<PrioridadePerfil>>(perfisUsuarioString);
             }
             usuario.DefinirPerfis(perfisDoUsuario);
+            usuario.DefinirPerfilAtual(ObterPerfilAtual());
 
             return usuario;
         }
