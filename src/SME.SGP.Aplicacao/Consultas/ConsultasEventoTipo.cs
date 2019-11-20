@@ -1,5 +1,4 @@
 ﻿using Microsoft.AspNetCore.Http;
-using SME.SGP.Aplicacao.Interfaces;
 using SME.SGP.Dominio.Entidades;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Dto;
@@ -13,10 +12,13 @@ namespace SME.SGP.Aplicacao
     public class ConsultasEventoTipo : ConsultasBase, IConsultasEventoTipo
     {
         private readonly IRepositorioEventoTipo repositorioEventoTipo;
+        private readonly IRepositorioEvento repositorioEvento;
 
-        public ConsultasEventoTipo(IRepositorioEventoTipo repositorioEventoTipo, IHttpContextAccessor httpContext) : base(httpContext)
+        public ConsultasEventoTipo(IRepositorioEventoTipo repositorioEventoTipo, IHttpContextAccessor httpContext,
+            IRepositorioEvento repositorioEvento) : base(httpContext)
         {
             this.repositorioEventoTipo = repositorioEventoTipo ?? throw new ArgumentNullException(nameof(repositorioEventoTipo));
+            this.repositorioEvento = repositorioEvento ?? throw new ArgumentNullException(nameof(repositorioEvento));
         }
 
         public async Task<PaginacaoResultadoDto<EventoTipoDto>> Listar(FiltroEventoTipoDto Filtro)
@@ -56,6 +58,8 @@ namespace SME.SGP.Aplicacao
             if (eventoTipo == null || eventoTipo.Id == 0)
                 return null;
 
+            var possuiEventos = repositorioEvento.ExisteEventoPorEventoTipoId(eventoTipo.Id);
+
             return new EventoTipoDto
             {
                 Descricao = eventoTipo.Descricao,
@@ -71,7 +75,8 @@ namespace SME.SGP.Aplicacao
                 AlteradoRF = eventoTipo.AlteradoRF,
                 CriadoEm = eventoTipo.CriadoEm,
                 CriadoPor = eventoTipo.CriadoPor,
-                CriadoRF = eventoTipo.CriadoRF
+                CriadoRF = eventoTipo.CriadoRF,
+                PossuiEventos = possuiEventos
             };
         }
     }

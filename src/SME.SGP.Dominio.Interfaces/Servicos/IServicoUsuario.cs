@@ -26,5 +26,7 @@ namespace SME.SGP.Dominio.Interfaces
         Usuario ObterUsuarioPorCodigoRfLoginOuAdiciona(string codigoRf, string login = "");
 
         Task PodeModificarPerfil(Guid perfilParaModificar, string login);
+
+        bool UsuarioLogadoPossuiPerfilSme();
     }
 }

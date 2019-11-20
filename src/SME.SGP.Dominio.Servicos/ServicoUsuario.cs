@@ -127,6 +127,7 @@ namespace SME.SGP.Dominio
                 perfisDoUsuario = JsonConvert.DeserializeObject<IEnumerable<PrioridadePerfil>>(perfisUsuarioString);
             }
             usuario.DefinirPerfis(perfisDoUsuario);
+            usuario.DefinirPerfilAtual(ObterPerfilAtual());
 
             return usuario;
         }
@@ -155,6 +156,13 @@ namespace SME.SGP.Dominio
 
             if (!perfisDoUsuario.Perfis.Contains(perfilParaModificar))
                 throw new NegocioException($"O usuário {login} não possui acesso ao perfil {perfilParaModificar}");
+        }
+
+        public bool UsuarioLogadoPossuiPerfilSme()
+        {
+            var usuarioLogado = ObterUsuarioLogado().Result;
+
+            return usuarioLogado.PossuiPerfilSme();
         }
 
         private async Task AlterarEmail(Usuario usuario, string novoEmail)

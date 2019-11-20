@@ -35,6 +35,10 @@ namespace SME.SGP.Dados.Mapeamentos
                config.AddMap(new EventoMap());
                config.AddMap(new EventoTipoMap());
                config.AddMap(new AulaMap());
+               config.AddMap(new GradeMap());
+               config.AddMap(new GradeFiltroMap());
+               config.AddMap(new GradeDisciplinaMap());
+               config.AddMap(new AtribuicaoEsporadicaMap());
                config.ForDommel();
            });
         }

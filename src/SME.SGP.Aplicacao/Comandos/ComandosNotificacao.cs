@@ -81,8 +81,7 @@ namespace SME.SGP.Aplicacao
         public void Salvar(NotificacaoDto notificacaoDto)
         {
             var notificacao = MapearParaDominio(notificacaoDto);
-            servicoNotificacao.GeraNovoCodigo(notificacao);
-            repositorioNotificacao.Salvar(notificacao);
+            servicoNotificacao.Salvar(notificacao);
         }
 
         private Notificacao MapearParaDominio(NotificacaoDto notificacaoDto)
@@ -96,7 +95,8 @@ namespace SME.SGP.Aplicacao
                 Titulo = notificacaoDto.Titulo,
                 Ano = notificacaoDto.Ano,
                 TurmaId = notificacaoDto.TurmaId,
-                Tipo = notificacaoDto.Tipo
+                Tipo = notificacaoDto.Tipo,
+                Codigo = notificacaoDto.Codigo
             };
 
             TrataUsuario(notificacao, notificacaoDto.UsuarioRf);
