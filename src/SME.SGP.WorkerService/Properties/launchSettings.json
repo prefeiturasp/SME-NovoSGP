@@ -1,0 +1,17 @@
+{
+  "profiles": {
+    "SME.SGP.Worker.Service": {
+      "commandName": "Project"
+    },
+    "Docker": {
+      "commandName": "Docker",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        "Sentry__DSN": "https://e7979bdfffa2484e9eab9a58d029a24c@sentry.io/1523241",
+        "ConnectionStrings__SGP-Redis": "localhost",
+        "ConnectionStrings__SGP-Postgres": "User ID=postgres;Password=postgres;Host=host.docker.internal;Port=5432;Database=sgp_db;Pooling=true;MinPoolSize=1;MaxPoolSize=20"
+      },
+      "applicationUrl": "http://localhost:5000/"
+    }
+  }
+}

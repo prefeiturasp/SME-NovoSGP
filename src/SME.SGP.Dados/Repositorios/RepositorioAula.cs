@@ -3,6 +3,7 @@ using SME.SGP.Dados.Contexto;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
+using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
@@ -17,9 +18,10 @@ namespace SME.SGP.Dados.Repositorios
 
         public async Task<IEnumerable<AulasPorTurmaDisciplinaDto>> ObterAulasTurmaDisciplinaSemana(string turma, string disciplina, string semana)
         {
-            var query = @"select professor_id, quantidade, data_aula 
+            var query = @"select professor_rf, quantidade, data_aula 
                  from aula 
-                where turma_id = @turma 
+                where not excluido 
+                  and turma_id = @turma 
                   and disciplina_id = @disciplina
                   and to_char(data_aula, 'IW') = @semana";
 
@@ -28,6 +30,32 @@ namespace SME.SGP.Dados.Repositorios
                 turma,
                 disciplina,
                 semana
+            });
+        }
+
+        public IEnumerable<AulaConsultaDto> ObterDatasDeAulasPorCalendarioTurmaEDisciplina(long calendarioId, string turmaId, string disciplinaId, long usuarioId, Guid perfil)
+        {
+            var query = @"select distinct
+	                        a.*
+                        from
+	                        aula a
+                        inner join v_abrangencia v on
+	                        a.turma_id = v.turma_id
+                        where
+	                        not a.excluido
+	                        and v.usuario_id = @usuarioId
+	                        and v.usuario_perfil = @perfil
+	                        and a.turma_id = @turmaId
+	                        and a.disciplina_id = @disciplinaId
+                            and a.tipo_calendario_id = @calendarioId";
+
+            return database.Conexao.Query<AulaConsultaDto>(query, new
+            {
+                usuarioId,
+                perfil,
+                calendarioId,
+                turmaId,
+                disciplinaId
             });
         }
 

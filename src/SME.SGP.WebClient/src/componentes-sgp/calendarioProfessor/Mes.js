@@ -7,35 +7,20 @@ import {
   selecionaMes,
   atribuiEventosMes,
   selecionaDia,
-} from '~/redux/modulos/calendarioEscolar/actions';
+} from '~/redux/modulos/calendarioProfessor/actions';
 import { Base } from '~/componentes/colors';
 import api from '~/servicos/api';
 
-const Div = styled.div`
-  ${props =>
-    props.disabled &&
-    `
-    background: ${Base.CinzaBarras};
-    opacity: 0.5;
-    pointer-events: none;
-  `}
-`;
+const Div = styled.div``;
 const Icone = styled.i`
   cursor: pointer;
-  ${props =>
-    props.disabled &&
-    `
-    cursor: not-allowed;
-    pointer-events: none;
-  `}
 `;
 
 const Seta = props => {
-  const { estaAberto, disabled } = props;
+  const { estaAberto } = props;
 
   return (
     <Icone
-      disabled={disabled}
       className={`stretched-link fas ${
         estaAberto ? 'fa-chevron-down' : 'fa-chevron-right text-white'
       } `}
@@ -45,12 +30,10 @@ const Seta = props => {
 
 Seta.propTypes = {
   estaAberto: PropTypes.bool,
-  disabled: PropTypes.bool,
 };
 
 Seta.defaultProps = {
   estaAberto: false,
-  disabled: true,
 };
 
 const Mes = props => {
@@ -66,20 +49,25 @@ const Mes = props => {
           eventoSme = true,
           dreSelecionada = '',
           unidadeEscolarSelecionada = '',
+          turmaSelecionada = '',
         } = filtros;
         if (tipoCalendarioSelecionado) {
           api
-            .get(
-              `v1/calendarios/eventos/meses?EhEventoSme=${eventoSme}&${dreSelecionada &&
-                `DreId=${dreSelecionada}&`}${tipoCalendarioSelecionado &&
-                `IdTipoCalendario=${tipoCalendarioSelecionado}&`}${unidadeEscolarSelecionada &&
-                `UeId=${unidadeEscolarSelecionada}`}`
-            )
+            .post('http://www.mocky.io/v2/5dd435fd2f00006b00d4f9ec', {
+              tipoCalendarioId: tipoCalendarioSelecionado,
+              EhEventoSME: eventoSme,
+              dreId: dreSelecionada,
+              ueId: unidadeEscolarSelecionada,
+              turmaId: turmaSelecionada,
+            })
             .then(resposta => {
               if (resposta.data) {
                 resposta.data.forEach(item => {
-                  if (item && item.mes > 0)
-                    store.dispatch(atribuiEventosMes(item.mes, item.eventos));
+                  if (item && item.mes > 0) {
+                    store.dispatch(
+                      atribuiEventosMes(item.mes, item.eventosAulas)
+                    );
+                  }
                 });
               } else store.dispatch(atribuiEventosMes(numeroMes, 0));
             })
@@ -89,10 +77,12 @@ const Mes = props => {
         } else store.dispatch(atribuiEventosMes(numeroMes, 0));
       }
     }
-    return () => (estado = false);
+    return () => {
+      estado = false;
+    };
   }, [filtros]);
 
-  const meses = useSelector(state => state.calendarioEscolar.meses);
+  const meses = useSelector(state => state.calendarioProfessor.meses);
 
   useEffect(() => {
     const mes = Object.assign({}, meses[numeroMes]);
@@ -112,11 +102,7 @@ const Mes = props => {
   }, [meses]);
 
   const abrirMes = () => {
-    if (
-      filtros &&
-      Object.entries(filtros).length > 0 &&
-      meses[numeroMes].eventos > 0
-    ) {
+    if (filtros && Object.entries(filtros).length > 0) {
       const { tipoCalendarioSelecionado = '' } = filtros;
       if (tipoCalendarioSelecionado) store.dispatch(selecionaMes(numeroMes));
     }
@@ -140,10 +126,7 @@ const Mes = props => {
   }, [meses[numeroMes].estaAberto]);
 
   return (
-    <Div
-      className="col-3 w-100 px-0"
-      disabled={!mesSelecionado.estaAberto && mesSelecionado.eventos === 0}
-    >
+    <Div className="col-3 w-100 px-0">
       <Div className={mesSelecionado.className}>
         <Div
           className="d-flex align-items-center justify-content-center position-relative"
@@ -154,12 +137,7 @@ const Mes = props => {
             width: 35,
           }}
         >
-          <Seta
-            estaAberto={mesSelecionado.estaAberto}
-            disabled={
-              !mesSelecionado.estaAberto && mesSelecionado.eventos === 0
-            }
-          />
+          <Seta estaAberto={mesSelecionado.estaAberto} />
         </Div>
         <Div
           className="d-flex align-items-center w-100"

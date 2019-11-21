@@ -24,5 +24,25 @@ namespace SME.SGP.Dominio.Servicos
                 return false;
             return data.DayOfWeek != DayOfWeek.Saturday && data.DayOfWeek != DayOfWeek.Sunday;
         }
+
+        public bool ValidarSeEhDiaLetivo(DateTime dataInicio, DateTime dataFim, long tipoCalendarioId, bool ehLetivo = false, long tipoEventoId = 0)
+        {
+            DateTime dataInicial = dataInicio.Date;
+            DateTime dataFinal = dataFim.Date;
+            var periodoEscolar = repositorioPeriodoEscolar.ObterPorTipoCalendarioData(tipoCalendarioId, dataInicial, dataFinal);
+            if (periodoEscolar == null)
+                return false;
+            if (ehLetivo && tipoEventoId != (int)TipoEventoEnum.LiberacaoExcepcional)
+                return ValidaSeEhFinalSemana(dataInicio, dataFim);
+            return true;
+        }
+
+        private bool ValidaSeEhFinalSemana(DateTime inicio, DateTime fim)
+        {
+            for (DateTime data = inicio; data <= fim; data = data.AddDays(1))
+                if (data.DayOfWeek == DayOfWeek.Saturday || data.DayOfWeek == DayOfWeek.Sunday)
+                    return false;
+            return true;
+        }
     }
 }
