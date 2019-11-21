@@ -266,7 +266,6 @@ const CadastroAula = ({ match }) => {
       if (resultado.status === 200) {
         setControlaQuantidadeAula(true);
         const quantidade = resultado.data.quantidadeAulasRestante;
-        debugger;
         setQuantidadeMaximaAulas(5);
         if (quantidade > 0) {
           form.setFieldValue('quantidadeRadio', 1);
@@ -298,7 +297,7 @@ const CadastroAula = ({ match }) => {
           .catch(e => erros(e));
 
     if (cadastrado && cadastrado.status === 200) {
-      sucesso(cadastrado.data);
+      sucesso(cadastrado.data.mensagens.join(','));
       // TODO - Voltar para o calendario quando ele existir!
       history.push('/calendario-escolar/calendario-professor');
     }
