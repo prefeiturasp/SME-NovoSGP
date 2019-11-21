@@ -199,10 +199,10 @@ namespace SME.SGP.Dados.Repositorios
             return database.Conexao.Query<Evento>(query.ToString(), new { tipoCalendarioId, dreId, ueId });
         }
 
-        public IEnumerable<Evento> ObterEventosPorTipoDeCalendarioDreUeMes(long tipoCalendarioId, string dreId, string ueId, int mes)
+        public async Task<IEnumerable<Evento>> ObterEventosPorTipoDeCalendarioDreUeMes(long tipoCalendarioId, string dreId, string ueId, int mes)
         {
             var query = ObterEventos(tipoCalendarioId, dreId, ueId, mes);
-            return database.Conexao.Query<Evento>(query.ToString(), new { tipoCalendarioId, dreId, ueId, mes });
+            return await database.Conexao.QueryAsync<Evento>(query.ToString(), new { tipoCalendarioId, dreId, ueId, mes });
         }
 
         public async Task<IEnumerable<Evento>> ObterEventosPorTipoETipoCalendario(long tipoEventoCodigo, long tipoCalendarioId)
@@ -435,8 +435,8 @@ namespace SME.SGP.Dados.Repositorios
                 query.AppendLine("and e.dre_id is null and e.ue_id is null");
             if (mes.HasValue)
             {
-                query.AppendLine("and extract(month from e.data_inicio) = @mes");
-                query.AppendLine("and extract(month from e.data_fim) = @mes");
+                query.AppendLine("and (extract(month from e.data_inicio) = @mes");
+                query.AppendLine("  or extract(month from e.data_fim) = @mes)");
             }
 
             if (!string.IsNullOrEmpty(ueId))
@@ -451,8 +451,8 @@ namespace SME.SGP.Dados.Repositorios
                 query.AppendLine("and e.ue_id is null");
             if (mes.HasValue)
             {
-                query.AppendLine("and extract(month from e.data_inicio) = @mes");
-                query.AppendLine("and extract(month from e.data_fim) = @mes");
+                query.AppendLine("and (extract(month from e.data_inicio) = @mes");
+                query.AppendLine("  or extract(month from e.data_fim) = @mes)");
             }
 
             if (!string.IsNullOrEmpty(dreId) || !string.IsNullOrEmpty(ueId))
@@ -464,8 +464,8 @@ namespace SME.SGP.Dados.Repositorios
                 query.AppendLine("and e.dre_id is null and e.ue_id is null");
                 if (mes.HasValue)
                 {
-                    query.AppendLine("and extract(month from e.data_inicio) = @mes");
-                    query.AppendLine("and extract(month from e.data_fim) = @mes");
+                    query.AppendLine("and (extract(month from e.data_inicio) = @mes");
+                    query.AppendLine("  or extract(month from e.data_fim) = @mes)");
                 }
             }
             return query.ToString();

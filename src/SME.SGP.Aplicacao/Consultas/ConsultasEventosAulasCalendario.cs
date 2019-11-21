@@ -4,6 +4,7 @@ using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
@@ -30,14 +31,14 @@ namespace SME.SGP.Aplicacao
             return dias.Distinct().ToList();
         }
 
-        public IEnumerable<EventosAulasCalendarioDto> ObterEventosAulasMensais(FiltroEventosAulasCalendarioDto filtro)
+        public async Task<IEnumerable<EventosAulasCalendarioDto>> ObterEventosAulasMensais(FiltroEventosAulasCalendarioDto filtro)
         {
             List<DateTime> diasLetivos = new List<DateTime>();
             List<DateTime> diasNaoLetivos = new List<DateTime>();
             List<DateTime> totalDias = new List<DateTime>();
 
             var diasPeriodoEscolares = comandosDiasLetivos.BuscarDiasLetivos(filtro.TipoCalendarioId);
-            var diasAulas = repositorioAula.ObterAulas(filtro.TipoCalendarioId, filtro.TurmaId, filtro.UeId);
+            var diasAulas = await repositorioAula.ObterAulas(filtro.TipoCalendarioId, filtro.TurmaId, filtro.UeId);
             var eventos = repositorioEvento.ObterEventosPorTipoDeCalendarioDreUe(filtro.TipoCalendarioId, filtro.DreId, filtro.UeId);
 
             var diasEventosNaoLetivos = comandosDiasLetivos.ObterDias(eventos, diasNaoLetivos, Dominio.EventoLetivo.Nao);
@@ -54,11 +55,32 @@ namespace SME.SGP.Aplicacao
             return MapearParaDto(totalDias);
         }
 
-        public IEnumerable<EventosAulasTipoCalendarioDto> ObterTipoEventosAulas(FiltroEventosAulasCalendarioMesDto filtro)
+        public async Task<IEnumerable<EventosAulasTipoCalendarioDto>> ObterTipoEventosAulas(FiltroEventosAulasCalendarioMesDto filtro)
         {
             var eventosAulas = new List<EventosAulasTipoCalendarioDto>();
-            var diasAulas = repositorioAula.ObterAulas(filtro.TipoCalendarioId, filtro.TurmaId, filtro.UeId, filtro.Mes);
-            var eventos = repositorioEvento.ObterEventosPorTipoDeCalendarioDreUeMes(filtro.TipoCalendarioId, filtro.DreId, filtro.UeId, filtro.Mes);
+            var aulas = await repositorioAula.ObterAulas(filtro.TipoCalendarioId, filtro.TurmaId, filtro.UeId, filtro.Mes);
+            var eventos = await repositorioEvento.ObterEventosPorTipoDeCalendarioDreUeMes(filtro.TipoCalendarioId, filtro.DreId, filtro.UeId, filtro.Mes);
+
+            var diasAulas = ObterDiasAulas(aulas);
+            var diasEventos = ObterDiasEventos(eventos, filtro.Mes);
+            diasAulas.AddRange(diasEventos);
+            return MapearParaDtoTipo(eventosAulas, diasAulas);
+        }
+
+        private static IEnumerable<EventosAulasTipoCalendarioDto> MapearParaDtoTipo(List<EventosAulasTipoCalendarioDto> eventosAulas, List<KeyValuePair<int, string>> diasAulas)
+        {
+            foreach (var dia in diasAulas.Select(x => x.Key).Distinct())
+            {
+                var qtdEventosAulas = diasAulas.Where(x => x.Key == dia).Count();
+                eventosAulas.Add(new EventosAulasTipoCalendarioDto
+                {
+                    Dia = dia,
+                    QuantidadeDeEventosAulas = qtdEventosAulas,
+                    TiposEvento = diasAulas.Where(x => x.Key == dia).Select(w => w.Value).ToList()
+                });
+            }
+
+            return eventosAulas.OrderBy(x => x.Dia);
         }
 
         private List<EventosAulasCalendarioDto> MapearParaDto(List<DateTime> dias)
@@ -76,6 +98,31 @@ namespace SME.SGP.Aplicacao
                 });
             }
             return eventosAulas;
+        }
+
+        private List<KeyValuePair<int, string>> ObterDiasAulas(IEnumerable<AulaDto> aulas)
+        {
+            List<KeyValuePair<int, string>> dias = new List<KeyValuePair<int, string>>();
+            foreach (var aula in aulas)
+            {
+                dias.Add(new KeyValuePair<int, string>(aula.DataAula.Day, "Aula"));
+            }
+            return dias;
+        }
+
+        private List<KeyValuePair<int, string>> ObterDiasEventos(IEnumerable<Dominio.Evento> eventos, int mes)
+        {
+            List<KeyValuePair<int, string>> dias = new List<KeyValuePair<int, string>>();
+            foreach (var evento in eventos)
+            {
+                //se o evento ir para o próximo mês automaticamente ele já não irá nesse for
+                for (DateTime dia = evento.DataInicio; dia <= evento.DataFim; dia = dia.AddDays(1))
+                {
+                    if (dia.Month != mes) break;
+                    dias.Add(new KeyValuePair<int, string>(dia.Day, evento.Descricao));
+                }
+            }
+            return dias;
         }
     }
 }
