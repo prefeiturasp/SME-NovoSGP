@@ -49,5 +49,40 @@ namespace SME.SGP.Dados.Repositorios
                 aula.UeId
             });
         }
+
+        public Aula ObterPorWorkflowId(long workflowId)
+        {
+            var query = @"select a.id,
+                                 a.ue_id,
+                                 a.disciplina_id,
+                                 a.turma_id,
+                                 a.tipo_calendario_id,
+                                 a.professor_id,
+                                 a.quantidade,
+                                 a.data_aula,
+                                 a.recorrencia_aula,
+                                 a.tipo_aula,
+                                 a.criado_em,
+                                 a.criado_por,
+                                 a.alterado_em,
+                                 a.alterado_por,
+                                 a.criado_rf,
+                                 a.alterado_rf,
+                                 a.excluido,
+                                 a.migrado,
+                                 a.aula_pai_id,
+                                 a.wf_aprovacao_id,
+                                 a.status
+                             from  aula a
+                            where a.excluido = false
+                              and a.migrado = false
+                              and tipo_aula = 2
+                              and a.wf_aprovacao_id = @workflowId";
+
+            return database.Conexao.QueryFirst<Aula>(query.ToString(), new
+            {
+                workflowId
+            });
+        }
     }
 }

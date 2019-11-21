@@ -8,5 +8,7 @@ namespace SME.SGP.Dominio.Interfaces
     {
         Task<IEnumerable<AulasPorTurmaDisciplinaDto>> ObterAulasTurmaDisciplina(string turma, string disciplina);
         bool UsuarioPodeCriarAulaNaUeTurmaEModalidade(Aula aula, ModalidadeTipoCalendario modalidade);
+        Aula ObterPorWorkflowId(long workflowId);
+
     }
 }

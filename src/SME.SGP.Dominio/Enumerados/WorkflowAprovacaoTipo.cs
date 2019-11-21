@@ -3,6 +3,7 @@
     public enum WorkflowAprovacaoTipo
     {
         Basica = 1,
-        Evento = 2
+        Evento = 2,
+        ReposicaoAula = 3
     }
 }
