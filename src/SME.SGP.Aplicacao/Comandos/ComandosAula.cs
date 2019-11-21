@@ -8,43 +8,51 @@ namespace SME.SGP.Aplicacao
 {
     public class ComandosAula : IComandosAula
     {
-        private readonly IRepositorioAula repositorio;
+        private readonly IRepositorioAula repositorioAula;
+        private readonly IServicoAula servicoAula;
         private readonly IServicoUsuario servicoUsuario;
-        public ComandosAula(IRepositorioAula repositorio, IServicoUsuario servicoUsuario)
+
+        public ComandosAula(IRepositorioAula repositorio,
+                            IServicoUsuario servicoUsuario,
+                            IServicoAula servicoAula)
         {
-            this.repositorio = repositorio ?? throw new ArgumentNullException(nameof(repositorio));
+            this.repositorioAula = repositorio ?? throw new ArgumentNullException(nameof(repositorio));
             this.servicoUsuario = servicoUsuario ?? throw new ArgumentNullException(nameof(servicoUsuario));
+            this.servicoAula = servicoAula ?? throw new ArgumentNullException(nameof(servicoAula));
         }
+
         public async Task Alterar(AulaDto dto, long id)
         {
-            var aula = await MapearDtoParaEntidade(dto, id);
-            repositorio.Salvar(aula);
+            var usuario = await servicoUsuario.ObterUsuarioLogado();
+            var aula = MapearDtoParaEntidade(dto, id, usuario.CodigoRf);
+            await servicoAula.Salvar(aula, usuario);
         }
 
         public void Excluir(long id)
         {
-            var aula = repositorio.ObterPorId(id);
+            var aula = repositorioAula.ObterPorId(id);
             aula.Excluido = true;
-            repositorio.Salvar(aula);
+            repositorioAula.Salvar(aula);
         }
 
-        public async Task Inserir(AulaDto dto)
+        public async Task<string> Inserir(AulaDto dto)
         {
-            var aula = await MapearDtoParaEntidade(dto, 0L);
-            repositorio.Salvar(aula);
+            var usuario = await servicoUsuario.ObterUsuarioLogado();
+            var aula = MapearDtoParaEntidade(dto, 0L, usuario.CodigoRf);
+
+            return await servicoAula.Salvar(aula, usuario);
         }
 
-        private async Task<Aula> MapearDtoParaEntidade(AulaDto dto, long id)
+        private Aula MapearDtoParaEntidade(AulaDto dto, long id, string usuarioRf)
         {
             Aula aula = new Aula();
-            if(id > 0L)
+            if (id > 0L)
             {
-                aula = repositorio.ObterPorId(id);
+                aula = repositorioAula.ObterPorId(id);
             }
             if (string.IsNullOrEmpty(aula.ProfessorRf))
             {
-                var usuario = await servicoUsuario.ObterUsuarioLogado();
-                aula.ProfessorRf = usuario.CodigoRf;
+                aula.ProfessorRf = usuarioRf;
             }
             aula.UeId = dto.UeId;
             aula.DisciplinaId = dto.DisciplinaId;

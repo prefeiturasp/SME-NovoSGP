@@ -252,7 +252,9 @@ export default function NotificacoesLista() {
   }
 
   function quandoTeclaParaBaixoPesquisaCodigo(e) {
-    if (e.key === 'e') e.preventDefault();
+      if ((e.key === 'e') ||
+          (e.key === '-'))
+          e.preventDefault();
   }
 
   function quandoClicarVoltar() {
@@ -280,6 +282,7 @@ export default function NotificacoesLista() {
             desabilitado={!permissoesTela.podeConsultar}
             onKeyDown={quandoTeclaParaBaixoPesquisaCodigo}
             type="number"
+            minValue="0"
           />
         </div>
         <div className="col-md-3 pb-3">
