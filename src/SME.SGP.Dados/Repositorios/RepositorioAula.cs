@@ -5,6 +5,7 @@ using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System.Collections.Generic;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace SME.SGP.Dados.Repositorios
 {
@@ -14,22 +15,22 @@ namespace SME.SGP.Dados.Repositorios
         {
         }
 
-        public IEnumerable<AulaDto> ObterAulas(long tipoCalendarioId, string turmaId, string ueId)
+        public async Task<IEnumerable<AulaDto>> ObterAulas(long tipoCalendarioId, string turmaId, string ueId)
         {
             StringBuilder query = new StringBuilder();
             MontaCabecalho(query);
             query.AppendLine("FROM public.aula");
             MontaWhere(query, turmaId, ueId);
-            return (database.Conexao.Query<AulaDto>(query.ToString(), new { tipoCalendarioId, turmaId, ueId }));
+            return (await database.Conexao.QueryAsync<AulaDto>(query.ToString(), new { tipoCalendarioId, turmaId, ueId }));
         }
 
-        public IEnumerable<AulaDto> ObterAulas(long tipoCalendarioId, string turmaId, string ueId, int mes)
+        public async Task<IEnumerable<AulaDto>> ObterAulas(long tipoCalendarioId, string turmaId, string ueId, int mes)
         {
             StringBuilder query = new StringBuilder();
             MontaCabecalho(query);
             query.AppendLine("FROM public.aula");
             MontaWhere(query, turmaId, ueId, mes);
-            return (database.Conexao.Query<AulaDto>(query.ToString(), new { tipoCalendarioId, turmaId, ueId, mes }));
+            return (await database.Conexao.QueryAsync<AulaDto>(query.ToString(), new { tipoCalendarioId, turmaId, ueId, mes }));
         }
 
         private static void MontaCabecalho(StringBuilder query)

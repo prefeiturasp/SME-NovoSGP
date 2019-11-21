@@ -3,6 +3,8 @@ using Microsoft.AspNetCore.Mvc;
 using SME.SGP.Api.Filtros;
 using SME.SGP.Aplicacao;
 using SME.SGP.Infra;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace SME.SGP.Api.Controllers
 {
@@ -24,22 +26,26 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(EventosAulasCalendarioDto), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [Route("meses/eventos-aulas")]
-        //[Permissao(Permissao.C_C, Policy = "Bearer")]
-        [AllowAnonymous]//mudar
-        public IActionResult ObterEventosAulasMensais(FiltroEventosAulasCalendarioDto filtro)
+        [Permissao(Permissao.E_C, Policy = "Bearer")]
+        public async Task<IActionResult> ObterEventosAulasMensais(FiltroEventosAulasCalendarioDto filtro)
         {
-            return Ok(consultasEventosAulasCalendario.ObterEventosAulasMensais(filtro));
+            var retorno = await consultasEventosAulasCalendario.ObterEventosAulasMensais(filtro);
+            if (retorno.Any())
+                return Ok(retorno);
+            else return StatusCode(204);
         }
 
         [HttpPost]
         [ProducesResponseType(typeof(EventosAulasTipoCalendarioDto), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [Route("meses/{mes}/tipos/eventos-aulas")]
-        //[Permissao(Permissao.C_C, Policy = "Bearer")]
-        [AllowAnonymous]//mudar
-        public IActionResult ObterTipoEventosAulas(FiltroEventosAulasCalendarioMesDto filtro)
+        [Permissao(Permissao.E_C, Policy = "Bearer")]
+        public async Task<IActionResult> ObterTipoEventosAulas(FiltroEventosAulasCalendarioMesDto filtro)
         {
-            return Ok(consultasEventosAulasCalendario.ObterTipoEventosAulas(filtro));
+            var retorno = await consultasEventosAulasCalendario.ObterTipoEventosAulas(filtro);
+            if (retorno.Any())
+                return Ok(retorno);
+            else return StatusCode(204);
         }
     }
 }
