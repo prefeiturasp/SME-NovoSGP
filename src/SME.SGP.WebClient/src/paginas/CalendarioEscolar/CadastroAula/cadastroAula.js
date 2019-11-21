@@ -91,7 +91,6 @@ const CadastroAula = ({ match }) => {
           disciplinas.data[0].codigoComponenteCurricular
         );
         if (Object.keys(refForm).length > 0) {
-          console.log(disciplinas);
           onChangeDisciplinas(
             disciplinas.data[0].codigoComponenteCurricular,
             refForm
@@ -254,9 +253,17 @@ const CadastroAula = ({ match }) => {
   const onChangeDisciplinas = async (id, form) => {
     onChangeCampos();
     form.setFieldValue('quantidadeTexto', '');
-    const resultado = await api.get(`v1/grade/aulas/${turmaId}/${id}`);
+    debugger;
+    const resultado = await api.get(`v1/grade/aulas/turma-disciplina`, {
+      data: {
+        turma: turmaId,
+        disciplina: id,
+        data: dataAula,
+      },
+    });
+    debugger;
     if (resultado) {
-      if (resultado.status == 200) {
+      if (resultado.status === 200) {
         setControlaQuantidadeAula(true);
         const quantidade = resultado.data.quantidadeAulasRestante;
         debugger;
