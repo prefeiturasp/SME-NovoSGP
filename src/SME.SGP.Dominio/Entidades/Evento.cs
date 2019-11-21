@@ -10,6 +10,7 @@ namespace SME.SGP.Dominio
         public Evento()
         {
             Excluido = false;
+            Status = EntidadeStatus.Aprovado;
         }
 
         public DateTime DataFim { get; set; }
@@ -23,20 +24,35 @@ namespace SME.SGP.Dominio
         public EventoLetivo Letivo { get; set; }
         public bool Migrado { get; set; }
         public string Nome { get; set; }
-
+        public EntidadeStatus Status { get; set; }
         public TipoCalendario TipoCalendario { get; set; }
-
         public long TipoCalendarioId { get; set; }
-
         public EventoTipo TipoEvento { get; set; }
-
         public long TipoEventoId { get; set; }
-
         public string UeId { get; set; }
+        public WorkflowAprovacao WorkflowAprovacao { get; set; }
+        public long? WorkflowAprovacaoId { get; set; }
+
+        public void AdicionarTipoCalendario(TipoCalendario tipoCalendario)
+        {
+            if (tipoCalendario == null)
+                throw new NegocioException("É necessário informar um tipo de Calendário.");
+
+            TipoCalendarioId = tipoCalendario.Id;
+            TipoCalendario = tipoCalendario;
+        }
 
         public void AdicionarTipoEvento(EventoTipo tipoEvento)
         {
             TipoEvento = tipoEvento;
+        }
+
+        public void AprovarWorkflow()
+        {
+            if (Status != EntidadeStatus.AguardandoAprovacao)
+                throw new NegocioException("Este Evento não pode ser aprovado.");
+
+            Status = EntidadeStatus.Aprovado;
         }
 
         public object Clone()
@@ -82,6 +98,12 @@ namespace SME.SGP.Dominio
                 }
             }
             return TipoEvento.Letivo == EventoLetivo.Sim;
+        }
+
+        public void EnviarParaWorkflowDeAprovacao(long idWorkflow)
+        {
+            WorkflowAprovacaoId = idWorkflow;
+            Status = EntidadeStatus.AguardandoAprovacao;
         }
 
         public void EstaNoAnoLetivoDoCalendario()
@@ -144,20 +166,20 @@ namespace SME.SGP.Dominio
             return TipoEvento.Concomitancia;
         }
 
-        public void PodeCriarEventoLiberacaoExcepcional(Evento evento, Usuario usuario, bool dataConfirmada, IEnumerable<PeriodoEscolar> periodos)
+        public void PodeCriarEventoLiberacaoExcepcional(Usuario usuario, bool dataConfirmada, IEnumerable<PeriodoEscolar> periodos)
         {
-            if (evento.TipoEvento.Codigo == (long)TipoEventoEnum.LiberacaoExcepcional)
+            if (this.TipoEvento.Codigo == (long)TipoEventoEnum.LiberacaoExcepcional)
             {
                 if (!usuario.PossuiPerfilSme())
                     throw new NegocioException("Somente usuário com perfil SME pode cadastrar esse tipo de evento.");
 
-                if (string.IsNullOrEmpty(evento.DreId))
+                if (string.IsNullOrEmpty(this.DreId))
                     throw new NegocioException("Para este tipo de evento, deve ser informado uma Dre.");
 
-                if (string.IsNullOrEmpty(evento.UeId))
+                if (string.IsNullOrEmpty(this.UeId))
                     throw new NegocioException("Para este tipo de evento, deve ser informado uma Ue.");
 
-                if (!periodos.Any(c => c.PeriodoInicio >= DataInicio && c.PeriodoFim <= DataInicio) && !dataConfirmada)
+                if (periodos.Any(a => (a.PeriodoInicio >= this.DataInicio && a.PeriodoInicio <= this.DataFim)) && !dataConfirmada)
                     throw new NegocioException("Esta data é fora do período escolar, tem certeza que deseja manter esta data? (Sim/Não).", 602);
             }
         }
@@ -169,6 +191,20 @@ namespace SME.SGP.Dominio
                 if (!usuario.PossuiPerfilSme())
                     throw new NegocioException("Somente usuário com perfil SME pode cadastrar esse tipo de evento.");
             }
+        }
+
+        public void PodeSerEnviadoParaAprovacao()
+        {
+            if (Status != EntidadeStatus.AguardandoAprovacao)
+                throw new NegocioException("Este envento não está Aguardando Aprovação.");
+        }
+
+        public void ReprovarWorkflow()
+        {
+            if (Status != EntidadeStatus.AguardandoAprovacao)
+                throw new NegocioException("Este Evento não pode ser recusado.");
+
+            Status = EntidadeStatus.Recusado;
         }
 
         public void ValidaPeriodoEvento()
@@ -301,12 +337,15 @@ namespace SME.SGP.Dominio
             while (dataAtual <= dataFinal)
             {
                 dataAtual = ObterProximaDataRecorrenciaMensal(dataAtual, padraoRecorrenciaMensal, diasDaSemana, diaOcorrencia);
-                var evento = (Evento)Clone();
-                evento.DataInicio = dataAtual;
-                evento.DataFim = dataAtual;
-                evento.EventoPaiId = Id;
-                evento.Id = 0;
-                eventos.Add(evento);
+                if (dataAtual >= dataInicio)
+                {
+                    var evento = (Evento)Clone();
+                    evento.DataInicio = dataAtual;
+                    evento.DataFim = dataAtual;
+                    evento.EventoPaiId = Id;
+                    evento.Id = 0;
+                    eventos.Add(evento);
+                }
                 dataAtual = dataAtual.AddMonths(repeteACada);
             }
 

@@ -151,7 +151,7 @@ namespace SME.SGP.Aplicacao
             return retornoAutenticacaoEol.Item1;
         }
 
-        public async Task<string> ModificarPerfil(Guid perfil)
+        public async Task<(string, bool)> ModificarPerfil(Guid perfil)
         {
             string loginAtual = servicoUsuario.ObterLoginAtual();
             string codigoRfAtual = servicoUsuario.ObterRf();
@@ -172,8 +172,11 @@ namespace SME.SGP.Aplicacao
                     .ToList();
 
                 await servicoAbrangencia.Salvar(loginAtual, perfil, false);
+                var usuario = await servicoUsuario.ObterUsuarioLogado();
 
-                return servicoTokenJwt.GerarToken(loginAtual, codigoRfAtual, perfil, listaPermissoes);
+                usuario.DefinirPerfilAtual(perfil);
+
+                return (servicoTokenJwt.GerarToken(loginAtual, codigoRfAtual, perfil, listaPermissoes), usuario.EhProfessor());
             }
         }
 
@@ -224,7 +227,7 @@ namespace SME.SGP.Aplicacao
         {
             string caminho = $"{Directory.GetCurrentDirectory()}/wwwroot/ModelosEmail/RecuperacaoSenha.txt";
             var textoArquivo = File.ReadAllText(caminho);
-            var urlFrontEnd = configuration["UrlFrontEnt"];
+            var urlFrontEnd = configuration["UrlFrontEnd"];
             var textoEmail = textoArquivo
                 .Replace("#NOME", usuario.Nome)
                 .Replace("#RF", usuario.CodigoRf)

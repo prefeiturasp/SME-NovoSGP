@@ -1,23 +1,46 @@
-﻿using System;
-using System.Collections.Generic;
-using SME.SGP.Dominio;
+﻿using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
     public class ConsultasAula : IConsultasAula
     {
         private readonly IRepositorioAula repositorio;
+        private readonly IServicoUsuario servicoUsuario;
 
-        public ConsultasAula(IRepositorioAula repositorio)
+        public ConsultasAula(IRepositorioAula repositorio,
+                             IServicoUsuario servicoUsuario)
         {
             this.repositorio = repositorio ?? throw new ArgumentNullException(nameof(repositorio));
+            this.servicoUsuario = servicoUsuario ?? throw new ArgumentNullException(nameof(servicoUsuario));
         }
+
         public AulaConsultaDto BuscarPorId(long id)
         {
             var aula = repositorio.ObterPorId(id);
             return MapearParaDto(aula);
+        }
+
+        public async Task<IEnumerable<DataAulasProfessorDto>> ObterDatasDeAulasPorCalendarioTurmaEDisciplina(long calendarioId, string turma, string disciplina)
+        {
+            var usuarioLogado = await servicoUsuario.ObterUsuarioLogado();
+            return repositorio.ObterDatasDeAulasPorCalendarioTurmaEDisciplina(calendarioId, turma, disciplina, usuarioLogado.Id, usuarioLogado.PerfilAtual)?.Select(a => new DataAulasProfessorDto
+            {
+                Data = a.DataAula,
+                IdAula = a.Id
+            });
+        }
+
+        public async Task<int> ObterQuantidadeAulasTurmaSemana(string turma, string disciplina, string semana)
+        {
+            var aulas = await repositorio.ObterAulasTurmaDisciplinaSemana(turma, disciplina, semana);
+
+            return aulas.Sum(a => a.Quantidade);
         }
 
         private AulaConsultaDto MapearParaDto(Aula aula)
@@ -42,6 +65,5 @@ namespace SME.SGP.Aplicacao
             };
             return dto;
         }
-
     }
 }
