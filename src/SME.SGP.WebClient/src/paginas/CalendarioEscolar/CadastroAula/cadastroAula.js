@@ -253,19 +253,16 @@ const CadastroAula = ({ match }) => {
   const onChangeDisciplinas = async (id, form) => {
     onChangeCampos();
     form.setFieldValue('quantidadeTexto', '');
-    debugger;
-    const resultado = await api.get(`v1/grade/aulas/turma-disciplina`, {
-      data: {
-        turma: turmaId,
-        disciplina: id,
-        data: dataAula,
+    const resultado = await api.get(`v1/grades/aulas/${turmaId}/${id}`, {
+      params: {
+        data: dataAula.format('YYYY-MM-DD'),
       },
     });
-    debugger;
     if (resultado) {
       if (resultado.status === 200) {
         setControlaQuantidadeAula(true);
         const quantidade = resultado.data.quantidadeAulasRestante;
+        debugger;
         setQuantidadeMaximaAulas(5);
         if (quantidade > 0) {
           form.setFieldValue('quantidadeRadio', 1);
@@ -297,7 +294,7 @@ const CadastroAula = ({ match }) => {
           .catch(e => erros(e));
 
     if (cadastrado && cadastrado.status === 200) {
-      sucesso(cadastrado.data.mensagens.join(','));
+      sucesso(cadastrado.data);
       // TODO - Voltar para o calendario quando ele existir!
       history.push('/calendario-escolar/calendario-professor');
     }
