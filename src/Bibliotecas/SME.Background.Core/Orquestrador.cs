@@ -15,6 +15,12 @@ namespace SME.Background.Core
             processadores = new Dictionary<TipoProcessamento, IProcessor>();
         }
 
+        public static void Desativar(IServiceProvider provider)
+        {
+            processadores.Clear();
+            Registrar<DisabledProcessor>(new DisabledProcessor(provider));
+        }
+
         public static void Registrar<T>(T processador)
             where T: IProcessor
         {
