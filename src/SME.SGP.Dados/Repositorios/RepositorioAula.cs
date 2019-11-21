@@ -17,7 +17,7 @@ namespace SME.SGP.Dados.Repositorios
 
         public async Task<IEnumerable<AulasPorTurmaDisciplinaDto>> ObterAulasTurmaDisciplina(string turma, string disciplina)
         {
-            var query = @"select professor_id, quantidade, data_aula 
+            var query = @"select professor_rf, quantidade, data_aula 
                  from aula 
                 where not excluido 
                   and turma_id = @turma 

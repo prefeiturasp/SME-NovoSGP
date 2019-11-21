@@ -59,6 +59,11 @@ namespace SME.SGP.Dominio
             Perfis = perfisUsuario;
         }
 
+        public bool EhProfessor()
+        {
+            return PerfilAtual == PERFIL_PROFESSOR;
+        }
+
         public void FinalizarRecuperacaoSenha()
         {
             TokenRecuperacaoSenha = null;
@@ -119,6 +124,11 @@ namespace SME.SGP.Dominio
         {
             if ((evento.DataInicio < DateTime.Today) && !PossuiPerfilSme())
                 throw new NegocioException("Não é possível criar evento com datas passadas.");
+        }
+
+        public bool PodeRegistrarFrequencia(Aula aula)
+        {
+            return aula.ProfessorRf == CodigoRf;
         }
 
         public bool PodeReiniciarSenha()
