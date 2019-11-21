@@ -9,10 +9,10 @@ namespace SME.SGP.Api.Controllers
 {
     [ApiController]
     [Authorize("Bearer")]
+    [Route("api/v1/calendarios")]
     public class FrequenciaController : ControllerBase
     {
-        [HttpGet]
-        [Route("api/v1/calendarios/frequencias")]
+        [HttpGet("frequencias")]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [ProducesResponseType(typeof(RetornoBaseDto), 601)]
         [ProducesResponseType(typeof(RetornoBaseDto), 200)]
@@ -22,8 +22,7 @@ namespace SME.SGP.Api.Controllers
             return Ok(await consultasFrequencia.ObterListaFrequenciaPorAula(aulaId));
         }
 
-        [HttpGet]
-        [Route("api/v1/calendarios/{calendarioId}/frequencias/aulas/datas/turmas/{turmaId}/disciplinas/{disciplinaId}")]
+        [HttpGet("{calendarioId}/frequencias/aulas/datas/turmas/{turmaId}/disciplinas/{disciplinaId}")]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [ProducesResponseType(typeof(RetornoBaseDto), 601)]
         [ProducesResponseType(typeof(RetornoBaseDto), 200)]
@@ -33,7 +32,7 @@ namespace SME.SGP.Api.Controllers
             return Ok(await consultasAula.ObterDatasDeAulasPorCalendarioTurmaEDisciplina(calendarioId, turmaId, disciplinaId));
         }
 
-        [HttpPost]
+        [HttpPost("frequencias")]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [ProducesResponseType(typeof(RetornoBaseDto), 601)]
         [ProducesResponseType(200)]

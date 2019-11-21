@@ -1,15 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
-using SME.SGP.Aplicacao.Integracoes;
+﻿using SME.SGP.Aplicacao.Integracoes;
 using SME.SGP.Aplicacao.Interfaces;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Interfaces;
+using System;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao.Consultas
 {
@@ -43,6 +40,16 @@ namespace SME.SGP.Aplicacao.Consultas
                 : retornoConsultaPaginada.Items.Select(x => EntidadeParaDto(x)).ToList();
 
             return retorno;
+        }
+
+        public AtribuicaoEsporadicaDto ObterPorId(long id)
+        {
+            var atribuicaoEsporadica = repositorioAtribuicaoEsporadica.ObterPorId(id);
+
+            if (atribuicaoEsporadica is null)
+                return null;
+
+            return EntidadeParaDto(atribuicaoEsporadica);
         }
 
         private AtribuicaoEsporadicaDto EntidadeParaDto(AtribuicaoEsporadica entidade)
