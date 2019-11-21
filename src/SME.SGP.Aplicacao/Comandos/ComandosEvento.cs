@@ -25,7 +25,7 @@ namespace SME.SGP.Aplicacao
 
         public async Task<IEnumerable<RetornoCopiarEventoDto>> Alterar(long id, EventoDto eventoDto)
         {
-            if (!servicoDiaLetivo.ValidarSeEhDiaLetivo(eventoDto.DataInicio, eventoDto.DataFim ?? eventoDto.DataInicio, eventoDto.TipoCalendarioId, eventoDto.Letivo == EventoLetivo.Sim))
+            if (!servicoDiaLetivo.ValidarSeEhDiaLetivo(eventoDto.DataInicio, eventoDto.DataFim ?? eventoDto.DataInicio, eventoDto.TipoCalendarioId, eventoDto.Letivo == EventoLetivo.Sim, eventoDto.TipoEventoId))
             {
                 throw new NegocioException("Não é possível alterar esse evento pois a data informada está fora do período letivo.");
             }
@@ -38,7 +38,7 @@ namespace SME.SGP.Aplicacao
 
         public async Task<IEnumerable<RetornoCopiarEventoDto>> Criar(EventoDto eventoDto)
         {
-            if (!servicoDiaLetivo.ValidarSeEhDiaLetivo(eventoDto.DataInicio, eventoDto.DataFim ?? eventoDto.DataInicio, eventoDto.TipoCalendarioId, eventoDto.Letivo == EventoLetivo.Sim))
+            if (!servicoDiaLetivo.ValidarSeEhDiaLetivo(eventoDto.DataInicio, eventoDto.DataFim ?? eventoDto.DataInicio, eventoDto.TipoCalendarioId, eventoDto.Letivo == EventoLetivo.Sim, eventoDto.TipoEventoId))
             {
                 throw new NegocioException("Não é possível cadastrar esse evento pois a data informada está fora do período letivo.");
             }
