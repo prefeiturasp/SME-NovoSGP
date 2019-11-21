@@ -3,6 +3,7 @@ using SME.SGP.Api.Filtros;
 using SME.SGP.Aplicacao;
 using SME.SGP.Dominio;
 using SME.SGP.Infra;
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -27,6 +28,24 @@ namespace SME.SGP.Api.Controllers
         public async Task<IActionResult> Filtrar([FromBody]FiltroObjetivosAprendizagemDto filtroObjetivosAprendizagemDto)
         {
             return Ok(await consultasObjetivoAprendizagem.Filtrar(filtroObjetivosAprendizagemDto));
+        }
+
+        [HttpGet]
+        [Route("disciplinas")]
+        [ProducesResponseType(typeof(IEnumerable<ComponenteCurricularSimplificadoDto>), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        public async Task<IActionResult> ObterDisciplinasBimestrePlano([FromBody] FiltroObjetivosAprendizagemPlanoDto filtro)
+        {
+            return Ok(consultasObjetivoAprendizagem.ObterDisciplinasDoBimestrePlanoAnual(filtro.Ano, filtro.Bimestre, filtro.TurmaId, filtro.ComponenteId));
+        }
+
+        [HttpGet]
+        [Route("objetivos-disciplina")]
+        [ProducesResponseType(typeof(IEnumerable<ComponenteCurricularSimplificadoDto>), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        public async Task<IActionResult> ObterObjetivosPorDisciplina([FromBody] FiltroObjetivosAprendizagemPlanoDto filtro)
+        {
+            return Ok(consultasObjetivoAprendizagem.ObterObjetivosPlanoDisciplina(filtro.Ano, filtro.Bimestre, filtro.TurmaId, filtro.ComponenteId, filtro.DisciplinaId));
         }
     }
 }

@@ -19,8 +19,15 @@ namespace SME.SGP.Api.Controllers
         public async Task<IActionResult> ObterPlanoAula(FiltroPlanoAulaDto filtro, 
             [FromServices] IConsultasPlanoAula consultas)
         {
-            return Ok(await consultas.ObterPlanoAulaPorTurmaDisciplina(filtro.Data, filtro.EscolaId, filtro.TurmaId, filtro.DisciplinaId));
+            var planoDto = await consultas.ObterPlanoAulaPorTurmaDisciplina(filtro.Data, filtro.TurmaId, filtro.DisciplinaId);
+
+            if (planoDto != null)
+                return Ok(planoDto);
+            else
+                return StatusCode(204);
         }
+
+
 
         [HttpPost]
         [ProducesResponseType(200)]

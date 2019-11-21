@@ -30,6 +30,15 @@ namespace SME.SGP.Api.Controllers
             return Ok(await consultasPlanoAnual.ObterPorEscolaTurmaAnoEBimestre(filtroPlanoAnualDto));
         }
 
+        [HttpGet("objetivos-disciplina")]
+        [ProducesResponseType(typeof(PlanoAnualCompletoDto), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        //[Permissao(Permissao.PA_C, Policy = "Bearer")]
+        public async Task<IActionResult> ObterObjetivos(FiltroPlanoAnualDisciplinaDto filtro, [FromServices]IConsultasPlanoAnual consultasPlanoAnual)
+        {
+            return Ok(await consultasPlanoAnual.ObterObjetivosEscolaTurmaDisciplina(filtro));
+        }
+
         [HttpPost("obter/expandido")]
         [ProducesResponseType(typeof(PlanoAnualCompletoDto), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]

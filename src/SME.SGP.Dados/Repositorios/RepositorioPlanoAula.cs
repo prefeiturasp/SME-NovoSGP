@@ -13,46 +13,17 @@ namespace SME.SGP.Dados.Repositorios
     {
         public RepositorioPlanoAula(ISgpContext conexao) : base(conexao) { }
 
-        public async Task<PlanoAula> ObterPlanoAulaPorDataDisciplina(DateTime data, string disciplinaId)
+        public async Task<PlanoAula> ObterPlanoAulaPorDataDisciplina(DateTime data, string turmaId, string disciplinaId)
         {
             var query = @"select pa.*
                  from plano_aula pa
                 inner join aula a on a.Id = pa.aula_id
-                where a.data_aula = @data
+                where a.data_aula = @turmaId
+                  and a.turma_id = @turmaId
                   and a.disciplina_id = @disciplinaId";
 
-            return database.Conexao.QueryFirstOrDefault<PlanoAula>(query, new { data, disciplinaId });
+            return await database.Conexao.QueryFirstOrDefaultAsync<PlanoAula>(query, new { data, turmaId, disciplinaId });
         }
 
-        public IEnumerable<PlanoAula> Listar()
-        {
-            throw new NotImplementedException();
-        }
-
-
-        public PlanoAula ObterPorId(long id)
-        {
-            throw new NotImplementedException();
-        }
-
-        public void Remover(long id)
-        {
-            throw new NotImplementedException();
-        }
-
-        public void Remover(PlanoAula entidade)
-        {
-            throw new NotImplementedException();
-        }
-
-        public long Salvar(PlanoAula entidade)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task<long> SalvarAsync(PlanoAula entidade)
-        {
-            throw new NotImplementedException();
-        }
     }
 }

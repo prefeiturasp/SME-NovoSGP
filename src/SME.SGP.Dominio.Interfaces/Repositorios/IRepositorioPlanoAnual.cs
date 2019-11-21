@@ -8,6 +8,8 @@ namespace SME.SGP.Dominio.Interfaces
 
         PlanoAnual ObterPlanoAnualSimplificadoPorAnoEscolaBimestreETurma(int ano, string escolaId, long turmaId, int bimestre, long disciplinaId);
 
+        PlanoAnualObjetivosDisciplinaDto ObterPlanoObjetivosEscolaTurmaDisciplina(int ano, string escolaId, long turmaId, int bimestre, long componenteCurricularEolId, long disciplinaId);
+
         bool ValidarPlanoExistentePorAnoEscolaTurmaEBimestre(int ano, string escolaId, long turmaId, int bimestre, long componenteCurricularEolId);
     }
 }
