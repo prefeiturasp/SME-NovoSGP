@@ -22,9 +22,9 @@ namespace SME.SGP.Aplicacao
             return MapearParaDto(aula);
         }
 
-        public async Task<int> ObterQuantidadeAulasTurma(string turma, string disciplina)
+        public async Task<int> ObterQuantidadeAulasTurmaSemana(string turma, string disciplina, string semana)
         {
-            var aulas = await repositorio.ObterAulasTurmaDisciplina(turma, disciplina);
+            var aulas = await repositorio.ObterAulasTurmaDisciplinaSemana(turma, disciplina, semana);
 
             return aulas.Sum(a => a.Quantidade);
         }
