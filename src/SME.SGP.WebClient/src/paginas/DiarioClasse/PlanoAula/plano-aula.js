@@ -5,11 +5,14 @@ import TextEditor from '~/componentes/textEditor/component';
 import Grid from '~/componentes/grid';
 import { Base, Colors } from '~/componentes';
 import Button from '~/componentes/button';
+import {QuantidadeBotoes, ObjetivosList, ListItem, ListItemButton, Corpo, Descritivo, Badge} from './plano-aula.css';
 
 const PlanoAula = (props) => {
   const [mostrarCardPrincipal, setMostrarCardPrincipal] = useState(true);
   const [quantidadeAulas, setQuantidadeAulas] = useState(0);
   const [planoAula, setPlanoAula] = useState({
+    temObjetivos: true,
+    selecionaDisciplinas: true,
     objetivosEspecificos: 'teste',
     desenvolvimentoAula: 'teste',
     recuperacaoContinua: 'teste',
@@ -38,29 +41,6 @@ const PlanoAula = (props) => {
   const textEditorRecContinuaRef = useRef(null);
   const textEditorLicaoCasaRef = useRef(null);
 
-  const QuantidadeBotoes = styled.div`
-    padding: 0 0 20px 0;
-  `;
-
-  const ObjetivosList = styled.div`
-    max-height: 300px !important;
-  `;
-
-  const ListItem = styled.li`
-    border-color: ${Base.AzulAnakiwa} !important;
-  `;
-
-  const ListItemButton = styled.li`
-    border-color: ${Base.AzulAnakiwa} !important;
-    cursor: pointer;
-  `;
-
-  const Corpo = styled.div`
-    .selecionado{
-      background: ${Base.AzulAnakiwa} !important;
-    }
-  `;
-  
   const selecionarObjetivo = index => {
     objetivosAprendizagem[index].selected = !objetivosAprendizagem[index].selected;
     setObjetivosAprendizagem([...objetivosAprendizagem]);
@@ -72,7 +52,7 @@ const PlanoAula = (props) => {
   }
 
   const removerTodosObjetivos = () => {
-    const objetivos =  objetivosAprendizagem.map(objetivo =>{
+    const objetivos = objetivosAprendizagem.map(objetivo => {
       objetivo.selected = false;
       return objetivo;
     })
@@ -100,92 +80,101 @@ const PlanoAula = (props) => {
           configCabecalho={configCabecalho}
         >
           <div className="row">
-            <Grid cols={6}>
-              <h6 className="d-inline-block font-weight-bold my-0 fonte-14">
-                Objetivos de aprendizagem
+            {planoAula.temObjetivos ?
+              <Grid cols={6}>
+                <h6 className="d-inline-block font-weight-bold my-0 fonte-14">
+                  Objetivos de aprendizagem
             </h6>
-              <ObjetivosList className="mt-4 overflow-auto">
-                {objetivosAprendizagem.map((objetivo, index) => {
-                  return (
-                    <ul
-                      key={`${objetivo.id}Bimestre${index}`}
-                      className="list-group list-group-horizontal mt-3"
-                    >
-                      <ListItemButton
-                        className={`${objetivo.selected ? 'selecionado ' : ''}
+                <ObjetivosList className="mt-4 overflow-auto">
+                  {objetivosAprendizagem.map((objetivo, index) => {
+                    return (
+                      <ul
+                        key={`${objetivo.id}Bimestre${index}`}
+                        className="list-group list-group-horizontal mt-3"
+                      >
+                        <ListItemButton
+                          className={`${objetivo.selected ? 'selecionado ' : ''}
                         list-group-item d-flex align-items-center font-weight-bold fonte-14`}
-                        role="button"
-                        id={objetivo.id}
-                        aria-pressed={objetivo.selected ? true : false}
-                        data-index={index}
-                        onClick={() => selecionarObjetivo(index)}
-                        onKeyUp={selecionarObjetivo}
-                        alt={`Codigo do Objetivo : ${objetivo.codigo} `}
-                      >
-                        {objetivo.codigo}
-                      </ListItemButton>
-                      <ListItem
-                        alt={objetivo.descricao}
-                        className="list-group-item flex-fill p-2 fonte-12"
-                      >
-                        {objetivo.descricao}
-                      </ListItem>
-                    </ul>
-                  );
-                })}
-              </ObjetivosList>
-            </Grid>
-            <Grid cols={6}>
-              <Grid cols={12}>
-                <h6 className="d-inline-block font-weight-bold my-0 fonte-14">
-                  Objetivos trabalhados na aula
-              </h6>
-                <div className="row col-md-12 d-flex">
-                  {objetivosAprendizagem
-                    .filter(objetivo => objetivo.selected)
-                    .map((selecionado, i) => {
-                      return (
-                        <Button
-                          key={`Objetivo${selecionado.id}`}
-                          label={selecionado.codigo}
-                          color={Colors.AzulAnakiwa}
-                          bold
-                          id={`Objetivo${selecionado.id}`}
-                          indice={selecionado.id}
-                          disabled={false}
-                          steady
-                          remove
-                          className="text-dark mt-3 mr-2 stretched-link"
-                          onClick={() => removerObjetivo(i)}
-                        />
-                      );
-                    })}
-                  {objetivosAprendizagem.filter(x => x.selected).length >
-                    1 ? (
-                      <Button
-                        key={`removerTodos`}
-                        label={`Remover Todos`}
-                        color={Colors.CinzaBotao}
-                        bold
-                        alt="Remover todos os objetivos selecionados"
-                        id={`removerTodos`}
-                        height="38px"
-                        width="92px"
-                        fontSize="12px"
-                        padding="0px 5px"
-                        lineHeight="1.2"
-                        steady
-                        border
-                        className="text-dark mt-3 mr-2 stretched-link"
-                        onClick={() => removerTodosObjetivos()}
-                      />
-                    ) : null}
-                </div>
+                          role="button"
+                          id={objetivo.id}
+                          aria-pressed={objetivo.selected ? true : false}
+                          data-index={index}
+                          onClick={() => selecionarObjetivo(index)}
+                          onKeyUp={selecionarObjetivo}
+                          alt={`Codigo do Objetivo : ${objetivo.codigo} `}
+                        >
+                          {objetivo.codigo}
+                        </ListItemButton>
+                        <ListItem
+                          alt={objetivo.descricao}
+                          className="list-group-item flex-fill p-2 fonte-12"
+                        >
+                          {objetivo.descricao}
+                        </ListItem>
+                      </ul>
+                    );
+                  })}
+                </ObjetivosList>
               </Grid>
-              <Grid cols={12} className="mt-4">
-                <h6 className="d-inline-block font-weight-bold my-0 fonte-14">
-                  Meus objetivos específicos
+              : null}
+            <Grid cols={planoAula.temObjetivos ? 6 : 12}>
+              {planoAula.temObjetivos ?
+                <Grid cols={12}>
+                  <h6 className="d-inline-block font-weight-bold my-0 fonte-14">
+                    Objetivos trabalhados na aula
               </h6>
+                  <div className="row col-md-12 d-flex">
+                    {objetivosAprendizagem
+                      .filter(objetivo => objetivo.selected)
+                      .map((selecionado, i) => {
+                        return (
+                          <Button
+                            key={`Objetivo${selecionado.id}`}
+                            label={selecionado.codigo}
+                            color={Colors.AzulAnakiwa}
+                            bold
+                            id={`Objetivo${selecionado.id}`}
+                            indice={selecionado.id}
+                            disabled={false}
+                            steady
+                            remove
+                            className="text-dark mt-3 mr-2 stretched-link"
+                            onClick={() => removerObjetivo(i)}
+                          />
+                        );
+                      })}
+                    {objetivosAprendizagem.filter(x => x.selected).length >
+                      1 ? (
+                        <Button
+                          key={`removerTodos`}
+                          label={`Remover Todos`}
+                          color={Colors.CinzaBotao}
+                          bold
+                          alt="Remover todos os objetivos selecionados"
+                          id={`removerTodos`}
+                          height="38px"
+                          width="92px"
+                          fontSize="12px"
+                          padding="0px 5px"
+                          lineHeight="1.2"
+                          steady
+                          border
+                          className="text-dark mt-3 mr-2 stretched-link"
+                          onClick={() => removerTodosObjetivos()}
+                        />
+                      ) : null}
+                  </div>
+                </Grid>
+                : null}
+              <Grid cols={12} className="mt-4 d-inline-block">
+                <h6 className="font-weight-bold my-0 fonte-14">
+                  {planoAula.temObjetivos ? 'Meus objetivos específicos' : 'Objetivos trabalhados'}
+                </h6>
+                {!planoAula.temObjetivos ?
+                  <Descritivo className="d-inline-block my-0 fonte-14">
+                    Para este componente curricular é necessário descrever os objetivos de aprendizagem.
+                  </Descritivo>
+                  : null}
                 <fieldset className="mt-3">
                   <form action="">
                     <TextEditor
