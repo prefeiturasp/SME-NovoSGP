@@ -1,10 +1,8 @@
-﻿using System;
-using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using SME.SGP.Aplicacao;
 using SME.SGP.Aplicacao.Consultas;
 using SME.SGP.Aplicacao.Integracoes;
-using SME.SGP.Aplicacao.Interfaces;
 using SME.SGP.Aplicacao.Servicos;
 using SME.SGP.Dados;
 using SME.SGP.Dados.Contexto;
@@ -28,13 +26,6 @@ namespace SME.SGP.IoC
             RegistrarComandos(services);
             RegistrarConsultas(services);
             RegistrarServicos(services);
-        }
-
-        private static void ResgistraDependenciaHttp(IServiceCollection services)
-        {
-            /// Este método não deveria existir, as dependencias dos objetos abaixo deveriam ser encapsuladas em um contexto da aplicação para serem utilizadas pela WebApi e WorkserService independentemente
-            //services.TryAddTransient<System.Net.Http.HttpClient>();
-            services.TryAddTransient<Microsoft.AspNetCore.Http.IHttpContextAccessor, NoHttpContext>();
         }
 
         private static void RegistrarComandos(IServiceCollection services)
@@ -131,6 +122,13 @@ namespace SME.SGP.IoC
             services.TryAddTransient<IServicoAbrangencia, ServicoAbrangencia>();
             services.TryAddTransient<IServicoEvento, ServicoEvento>();
             services.TryAddTransient<IServicoLog, ServicoLog>();
+        }
+
+        private static void ResgistraDependenciaHttp(IServiceCollection services)
+        {
+            /// Este método não deveria existir, as dependencias dos objetos abaixo deveriam ser encapsuladas em um contexto da aplicação para serem utilizadas pela WebApi e WorkserService independentemente
+            //services.TryAddTransient<System.Net.Http.HttpClient>();
+            services.TryAddTransient<Microsoft.AspNetCore.Http.IHttpContextAccessor, NoHttpContext>();
         }
     }
 }
