@@ -7,7 +7,6 @@ namespace SME.SGP.Infra
     {
         public PlanoAulaRetornoDto()
         {
-            ObjetivosAprendizagem = new List<ObjetivoAprendizagemDto>();
             ObjetivosAprendizagemAula = new List<long>();
         }
 
@@ -17,7 +16,6 @@ namespace SME.SGP.Infra
         public string LicaoCasa { get; set; }
         public long AulaId { get; set; }
 
-        public List<ObjetivoAprendizagemDto> ObjetivosAprendizagem { get; set; }
         public List<long> ObjetivosAprendizagemAula { get; set; }
     }
 }
