@@ -63,7 +63,7 @@ namespace SME.SGP.Aplicacao.Teste.Consultas
                 new AulasPorTurmaDisciplinaDto() { ProfessorId = 1, Quantidade = 3, DataAula = new System.DateTime(2019,11,15) },
             };
 
-            repositorio.Setup(c => c.ObterAulasTurmaDisciplina(It.IsAny<string>(), It.IsAny<string>()))
+            repositorio.Setup(c => c.ObterAulasTurmaDisciplinaSemana(It.IsAny<string>(), It.IsAny<string>()))
                 .Returns(Task.FromResult(aulas));
         }
     }
