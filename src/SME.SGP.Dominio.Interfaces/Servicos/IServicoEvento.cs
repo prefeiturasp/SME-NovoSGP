@@ -10,6 +10,8 @@ namespace SME.SGP.Dominio.Interfaces
 
         Task SalvarEventoFeriadosAoCadastrarTipoCalendario(TipoCalendario tipoCalendario);
 
-        Task SalvarRecorrencia(Evento evento, DateTime dataInicial, DateTime? dataFinal, int? diaDeOcorrencia, IEnumerable<DayOfWeek> diasDaSemana, PadraoRecorrencia padraoRecorrencia, PadraoRecorrenciaMensal? padraoRecorrenciaMensal, int repeteACada);
+        void SalvarRecorrencia(Evento evento, DateTime dataInicial, DateTime? dataFinal, int? diaDeOcorrencia, IEnumerable<DayOfWeek> diasDaSemana, PadraoRecorrencia padraoRecorrencia, PadraoRecorrenciaMensal? padraoRecorrenciaMensal, int repeteACada);
+
+        void AlterarRecorrenciaEventos(Evento evento, bool alterarRecorrenciaCompleta);
     }
 }

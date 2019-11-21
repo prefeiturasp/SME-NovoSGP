@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
 using SME.SGP.Infra;
+using SME.SGP.Infra.Interfaces;
 using System;
 using System.Linq;
 
@@ -7,25 +8,25 @@ namespace SME.SGP.Aplicacao
 {
     public abstract class ConsultasBase
     {
-        private readonly IHttpContextAccessor httpContextAccessor;
+        private readonly IContextoAplicacao contextoAplicacao;
 
-        public ConsultasBase(IHttpContextAccessor httpContext)
+        public ConsultasBase(IContextoAplicacao contextoAplicacao)
         {
-            this.httpContextAccessor = httpContext ?? throw new ArgumentNullException(nameof(httpContext));
+            this.contextoAplicacao = contextoAplicacao ?? throw new ArgumentNullException(nameof(contextoAplicacao));
         }
 
         public Paginacao Paginacao
         {
             get
             {
-                var numeroPaginaQueryString = httpContextAccessor.HttpContext.Request.Query["NumeroPagina"];
-                var numeroRegistrosQueryString = httpContextAccessor.HttpContext.Request.Query["NumeroRegistros"];
+                var numeroPaginaQueryString = contextoAplicacao.ObterVarivel<string>("NumeroPagina");
+                var numeroRegistrosQueryString = contextoAplicacao.ObterVarivel<string>("NumeroRegistros");
 
-                if (numeroPaginaQueryString.Count == 0 || numeroRegistrosQueryString.Count == 0)
+                if (string.IsNullOrWhiteSpace(numeroPaginaQueryString) || string.IsNullOrWhiteSpace(numeroRegistrosQueryString))
                     return new Paginacao(0, 0);
 
-                var numeroPagina = int.Parse(numeroPaginaQueryString.FirstOrDefault());
-                var numeroRegistros = int.Parse(numeroRegistrosQueryString.FirstOrDefault());
+                var numeroPagina = int.Parse(numeroPaginaQueryString);
+                var numeroRegistros = int.Parse(numeroRegistrosQueryString);
 
                 return new Paginacao(numeroPagina, numeroRegistros);
             }

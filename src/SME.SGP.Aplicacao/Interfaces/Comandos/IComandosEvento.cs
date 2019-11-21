@@ -1,4 +1,5 @@
-﻿using SME.SGP.Infra;
+﻿using SME.SGP.Dominio;
+using SME.SGP.Infra;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -11,5 +12,7 @@ namespace SME.SGP.Aplicacao
         Task<IEnumerable<RetornoCopiarEventoDto>> Criar(EventoDto eventoDto);
 
         void Excluir(long[] idsEventos);
+
+        void GravarRecorrencia(EventoDto eventoDto, Evento evento);
     }
 }
