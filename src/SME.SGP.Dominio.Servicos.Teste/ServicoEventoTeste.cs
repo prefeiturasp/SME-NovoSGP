@@ -21,6 +21,7 @@ namespace SME.SGP.Dominio.Servicos.Teste
         private readonly Mock<IRepositorioFeriadoCalendario> repositorioFeriadoCalendario;
         private readonly Mock<IRepositorioPeriodoEscolar> repositorioPeriodoEscolar;
         private readonly Mock<IRepositorioTipoCalendario> repositorioTipoCalendario;
+        private readonly Mock<IServicoDiaLetivo> servicoDiaLetivo;
         private readonly ServicoEvento servicoEvento;
         private readonly Mock<IServicoLog> servicoLog;
         private readonly Mock<IServicoNotificacao> servicoNotificacao;
@@ -52,7 +53,8 @@ namespace SME.SGP.Dominio.Servicos.Teste
                                               mockConfiguration.Object,
                                               unitOfWork.Object,
                                               servicoNotificacao.Object,
-                                              servicoLog.Object);
+                                              servicoLog.Object,
+                                              servicoDiaLetivo.Object);
         }
 
         [Fact]
