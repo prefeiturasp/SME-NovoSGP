@@ -19,6 +19,7 @@ namespace SME.SGP.Dados.Mapeamentos
             Map(a => a.Excluido).ToColumn("excluido");
             Map(a => a.Migrado).ToColumn("migrado");
             Map(a => a.AulaPaiId).ToColumn("aula_pai_id");
+            Map(a => a.WorkflowAprovacaoId).ToColumn("wf_aprovacao_id");
         }
     }
 }
