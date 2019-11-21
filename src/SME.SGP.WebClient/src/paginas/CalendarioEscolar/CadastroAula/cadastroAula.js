@@ -39,6 +39,7 @@ const CadastroAula = ({ match }) => {
   const [exibirAuditoria, setExibirAuditoria] = useState(false);
   const [quantidadeMaximaAulas, setQuantidadeMaximaAulas] = useState(0);
   const [controlaQuantidadeAula, setControlaQuantidadeAula] = useState(true);
+  const [refForm, setRefForm] = useState({});
 
   const [valoresIniciais, setValoresIniciais] = useState({});
   const inicial = {
@@ -89,6 +90,13 @@ const CadastroAula = ({ match }) => {
         inicial.disciplinaId = String(
           disciplinas.data[0].codigoComponenteCurricular
         );
+        if (Object.keys(refForm).length > 0) {
+          console.log(disciplinas);
+          onChangeDisciplinas(
+            disciplinas.data[0].codigoComponenteCurricular,
+            refForm
+          );
+        }
       }
       if (novoRegistro) {
         setValoresIniciais(inicial);
@@ -98,7 +106,7 @@ const CadastroAula = ({ match }) => {
       obterDisciplinas();
       validarConsultaModoEdicaoENovo();
     }
-  }, []);
+  }, [refForm]);
 
   useEffect(() => {
     montaValidacoes();
@@ -251,6 +259,7 @@ const CadastroAula = ({ match }) => {
       if (resultado.status == 200) {
         setControlaQuantidadeAula(true);
         const quantidade = resultado.data.quantidadeAulasRestante;
+        debugger;
         setQuantidadeMaximaAulas(5);
         if (quantidade > 0) {
           form.setFieldValue('quantidadeRadio', 1);
@@ -336,6 +345,7 @@ const CadastroAula = ({ match }) => {
           enableReinitialize
           initialValues={valoresIniciais}
           validationSchema={validacoes}
+          ref={refFormik => setRefForm(refFormik)}
           onSubmit={valores => onClickCadastrar(valores)}
           validateOnChange
           validateOnBlur
