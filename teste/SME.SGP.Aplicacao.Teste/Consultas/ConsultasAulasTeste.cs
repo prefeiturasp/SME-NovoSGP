@@ -13,17 +13,19 @@ namespace SME.SGP.Aplicacao.Teste.Consultas
     {
         private readonly ConsultasAula consultas;
         private readonly Mock<IRepositorioAula> repositorio;
+        private readonly Mock<IServicoUsuario> servicoUsuario;
 
         public ConsultasAulasTeste()
         {
             repositorio = new Mock<IRepositorioAula>();
-            consultas = new ConsultasAula(repositorio.Object);
+            servicoUsuario = new Mock<IServicoUsuario>();
+            consultas = new ConsultasAula(repositorio.Object, servicoUsuario.Object);
 
             Setup();
         }
 
         [Fact]
-        public async Task DeveObterAulaPorId()
+        public void DeveObterAulaPorId()
         {
             var aulaDto = consultas.BuscarPorId(1);
 

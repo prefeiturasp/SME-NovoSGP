@@ -3,6 +3,7 @@ using SME.SGP.Dados.Contexto;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
+using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
@@ -27,6 +28,32 @@ namespace SME.SGP.Dados.Repositorios
             {
                 turma,
                 disciplina
+            });
+        }
+
+        public IEnumerable<AulaConsultaDto> ObterDatasDeAulasPorCalendarioTurmaEDisciplina(long calendarioId, string turmaId, string disciplinaId, long usuarioId, Guid perfil)
+        {
+            var query = @"select distinct
+	                        a.*
+                        from
+	                        aula a
+                        inner join v_abrangencia v on
+	                        a.turma_id = v.turma_id
+                        where
+	                        not a.excluido
+	                        and v.usuario_id = @usuarioId
+	                        and v.usuario_perfil = @perfil
+	                        and a.turma_id = @turmaId
+	                        and a.disciplina_id = @disciplinaId
+                            and a.tipo_calendario_id = @calendarioId";
+
+            return database.Conexao.Query<AulaConsultaDto>(query, new
+            {
+                usuarioId,
+                perfil,
+                calendarioId,
+                turmaId,
+                disciplinaId
             });
         }
 
