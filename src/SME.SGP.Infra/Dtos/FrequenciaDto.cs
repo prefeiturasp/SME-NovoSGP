@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 
 namespace SME.SGP.Infra
 {
@@ -10,7 +11,10 @@ namespace SME.SGP.Infra
             ListaFrequencia = new List<RegistroFrequenciaAlunoDto>();
         }
 
+        [Range(1, long.MaxValue, ErrorMessage = "A aula é obrigatória")]
         public long AulaId { get; set; }
+
+        [ListaTemElementos(ErrorMessage = "A lista de frequência é obrigatória")]
         public IList<RegistroFrequenciaAlunoDto> ListaFrequencia { get; set; }
     }
 }

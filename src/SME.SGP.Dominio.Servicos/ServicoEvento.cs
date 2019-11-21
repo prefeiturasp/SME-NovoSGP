@@ -21,6 +21,7 @@ namespace SME.SGP.Dominio.Servicos
         private readonly IRepositorioFeriadoCalendario repositorioFeriadoCalendario;
         private readonly IRepositorioPeriodoEscolar repositorioPeriodoEscolar;
         private readonly IRepositorioTipoCalendario repositorioTipoCalendario;
+        private readonly IServicoDiaLetivo servicoDiaLetivo;
         private readonly IServicoLog servicoLog;
         private readonly IServicoNotificacao servicoNotificacao;
         private readonly IServicoUsuario servicoUsuario;
@@ -34,7 +35,7 @@ namespace SME.SGP.Dominio.Servicos
                              IRepositorioTipoCalendario repositorioTipoCalendario,
                              IComandosWorkflowAprovacao comandosWorkflowAprovacao,
                              IRepositorioAbrangencia repositorioAbrangencia, IConfiguration configuration,
-                             IUnitOfWork unitOfWork, IServicoNotificacao servicoNotificacao, IServicoLog servicoLog)
+                             IUnitOfWork unitOfWork, IServicoNotificacao servicoNotificacao, IServicoLog servicoLog, IServicoDiaLetivo servicoDiaLetivo)
         {
             this.repositorioEvento = repositorioEvento ?? throw new System.ArgumentNullException(nameof(repositorioEvento));
             this.repositorioEventoTipo = repositorioEventoTipo ?? throw new System.ArgumentNullException(nameof(repositorioEventoTipo));
@@ -48,12 +49,29 @@ namespace SME.SGP.Dominio.Servicos
             this.unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
             this.servicoNotificacao = servicoNotificacao ?? throw new ArgumentNullException(nameof(servicoNotificacao));
             this.servicoLog = servicoLog ?? throw new ArgumentNullException(nameof(servicoLog));
+            this.servicoDiaLetivo = servicoDiaLetivo ?? throw new ArgumentNullException(nameof(servicoDiaLetivo));
         }
 
         public static DateTime ObterProximoDiaDaSemana(DateTime data, DayOfWeek diaDaSemana)
         {
             int diasParaAdicionar = ((int)diaDaSemana - (int)data.DayOfWeek + 7) % 7;
             return data.AddDays(diasParaAdicionar);
+        }
+
+        public void AlterarRecorrenciaEventos(Evento evento, bool alterarRecorrenciaCompleta)
+        {
+            if (evento.EventoPaiId.HasValue && evento.EventoPaiId > 0 && alterarRecorrenciaCompleta)
+            {
+                IEnumerable<Evento> eventos = repositorioEvento.ObterEventosPorRecorrencia(evento.Id, evento.EventoPaiId.Value, evento.DataInicio);
+                if (eventos != null && eventos.Any())
+                {
+                    foreach (var eventoASerAlterado in eventos)
+                    {
+                        var eventoAlterado = AlterarEventoDeRecorrencia(evento, eventoASerAlterado);
+                        repositorioEvento.Salvar(eventoAlterado);
+                    }
+                }
+            }
         }
 
         public async Task<string> Salvar(Evento evento, bool alterarRecorrenciaCompleta = false, bool dataConfirmada = false)
@@ -97,8 +115,6 @@ namespace SME.SGP.Dominio.Servicos
 
             AtribuirNullSeVazio(evento);
 
-            
-
             repositorioEvento.Salvar(evento);
 
             SME.Background.Core.Cliente.Executar<IServicoEvento>(x => x.AlterarRecorrenciaEventos(evento, alterarRecorrenciaCompleta));
@@ -115,7 +131,7 @@ namespace SME.SGP.Dominio.Servicos
                     await PersistirWorkflowEvento(evento);
                     mensagemRetornoSucesso = "Evento cadastrado e será válido após aprovação.";
                 }
-            }            
+            }
 
             return mensagemRetornoSucesso;
         }
@@ -159,8 +175,15 @@ namespace SME.SGP.Dominio.Servicos
             {
                 try
                 {
-                    Salvar(novoEvento).Wait();
-                    notificacoesSucesso.Add(novoEvento.DataInicio);
+                    if (!servicoDiaLetivo.ValidarSeEhDiaLetivo(novoEvento.DataInicio, novoEvento.DataInicio, novoEvento.TipoCalendarioId, novoEvento.Letivo == EventoLetivo.Sim))
+                    {
+                        notificacoesFalha.Add($"{novoEvento.DataInicio.ToShortDateString()} - Não é possível cadastrar esse evento pois a data informada está fora do período letivo.");
+                    }
+                    else
+                    {
+                        Salvar(novoEvento).Wait();
+                        notificacoesSucesso.Add(novoEvento.DataInicio);
+                    }
                 }
                 catch (NegocioException nex)
                 {
@@ -196,22 +219,6 @@ namespace SME.SGP.Dominio.Servicos
             eventoASerAlterado.TipoEventoId = evento.TipoEventoId;
             eventoASerAlterado.UeId = evento.UeId;
             return eventoASerAlterado;
-        }
-
-        public void AlterarRecorrenciaEventos(Evento evento, bool alterarRecorrenciaCompleta)
-        {
-            if (evento.EventoPaiId.HasValue && evento.EventoPaiId > 0 && alterarRecorrenciaCompleta)
-            {
-                IEnumerable<Evento> eventos = repositorioEvento.ObterEventosPorRecorrencia(evento.Id, evento.EventoPaiId.Value, evento.DataInicio);
-                if (eventos != null && eventos.Any())
-                {
-                    foreach (var eventoASerAlterado in eventos)
-                    {
-                        var eventoAlterado = AlterarEventoDeRecorrencia(evento, eventoASerAlterado);
-                        repositorioEvento.Salvar(eventoAlterado);
-                    }
-                }
-            }
         }
 
         private void EnviarNotificacaoRegistroDeRecorrencia(Evento evento, List<DateTime> notificacoesSucesso, List<string> notificacoesFalha, long usuarioId)
