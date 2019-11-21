@@ -27,10 +27,21 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [ProducesResponseType(typeof(RetornoBaseDto), 601)]
         [ProducesResponseType(typeof(RetornoBaseDto), 200)]
-        //[Permissao(Permissao.PDA_I, Policy = "Bearer")]
+        [Permissao(Permissao.PDA_I, Policy = "Bearer")]
         public async Task<IActionResult> ObterDatasDeAulasPorCalendarioTurmaEDisciplina(long calendarioId, string turmaId, string disciplinaId, [FromServices] IConsultasAula consultasAula)
         {
             return Ok(await consultasAula.ObterDatasDeAulasPorCalendarioTurmaEDisciplina(calendarioId, turmaId, disciplinaId));
+        }
+
+        [HttpPost]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 601)]
+        [ProducesResponseType(200)]
+        [Permissao(Permissao.PDA_I, Policy = "Bearer")]
+        public async Task<IActionResult> Registrar([FromBody] FrequenciaDto frequenciaDto, [FromServices] IComandoFrequencia comandoFrequencia)
+        {
+            await comandoFrequencia.Registrar(frequenciaDto);
+            return Ok();
         }
     }
 }
