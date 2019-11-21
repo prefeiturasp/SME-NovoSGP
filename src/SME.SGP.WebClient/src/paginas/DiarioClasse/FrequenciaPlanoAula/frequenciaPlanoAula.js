@@ -19,7 +19,6 @@ const FrequenciaPlanoAula = () => {
   const [listaDisciplinas, setListaDisciplinas] = useState([]);
   const [disciplinaSelecionada, setDisciplinaSelecionada] = useState(undefined);
   const [dataSelecionada, setDataSelecionada] = useState('');
-  const [exibirFrequencia, setExibirFrequencia] = useState(false);
 
   const [frequencia, setFrequencia] = useState([]);
 
@@ -34,37 +33,14 @@ const FrequenciaPlanoAula = () => {
       obterDisciplinas();
     }
 
-    setFrequencia([
-      {
-        codigoAluno : 1,
-        nomeEstudante: 'Alvaro Ramos Grassi',
-        aulaFalta: { primeira: true, segunda: false, terceira: true, quarta: true, quinta: true },
-      },
-      {
-        codigoAluno : 2,
-        nomeEstudante: 'Cleiton Dutra',
-        aulaFalta: { primeira: false, segunda: false, terceira: false, quarta: true, quinta: true },
-      },
-      {
-        codigoAluno : 3,
-        nomeEstudante: 'Joao',
-        aulaFalta: { primeira: true, segunda: false, terceira: false, quarta: true, quinta: true },
-      },
-      {
-        codigoAluno : 4,
-        nomeEstudante: 'Marcos teste',
-        aulaFalta: { primeira: false, segunda: true, terceira: true, quarta: true, quinta: true },
-      },
-    ])
   }, []);
 
-  useEffect(() => {
-    if (dataSelecionada) {
-      setExibirFrequencia(true);
-    } else {
-      setExibirFrequencia(false);
+  const obterListaFrequencia = async () => {
+    const frequenciaAlunos = await api.get(`v1/calendarios/frequencias`, { params: {aulaId: 34}});
+    if (frequenciaAlunos && frequenciaAlunos.data) {
+      setFrequencia(frequenciaAlunos.data.listaFrequencia);
     }
-  }, [dataSelecionada]);
+  }
 
   const onClickVoltar = () => {
     console.log('onClickVoltar');
@@ -84,7 +60,10 @@ const FrequenciaPlanoAula = () => {
   };
 
   const onChangeDisciplinas = e => setDisciplinaSelecionada(e);
-  const onChangeData = e => setDataSelecionada(e);
+
+  const onChangeData = e => {
+    obterListaFrequencia();
+  };
 
   const onClickSwitch = (linha, i) => {
     console.log(linha);
@@ -155,12 +134,12 @@ const FrequenciaPlanoAula = () => {
                 alt="TESTE"
               >
                 <Ordenacao conteudoParaOrdenar={ frequencia }
-                           ordenarColunaNumero="codigoAluno"
-                           ordenarColunaTexto="nomeEstudante"
+                           ordenarColunaNumero="numeroAlunoChamada"
+                           ordenarColunaTexto="nomeAluno"
                            retornoOrdenado={ retorno => setFrequencia(retorno) }>
                 </Ordenacao>
                 <ListaFrequencia
-                  dataSource={frequencia}
+                  dados={frequencia}
                   onClickSwitch={onClickSwitch}
                 ></ListaFrequencia>
               </CardCollapse>
