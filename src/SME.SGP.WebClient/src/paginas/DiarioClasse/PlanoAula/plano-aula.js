@@ -4,12 +4,9 @@ import styled from 'styled-components';
 import TextEditor from '~/componentes/textEditor/component';
 import Grid from '~/componentes/grid';
 import { Base, Colors } from '~/componentes';
-import { store } from '~/redux';
-import { useSelector } from 'react-redux';
-import { setObjetivosAprendizagem } from '~/redux/modulos/planoAula/actions'
 import Button from '~/componentes/button';
 
-const PlanoAula = () => {
+const PlanoAula = (props) => {
   const [mostrarCardPrincipal, setMostrarCardPrincipal] = useState(true);
   const [quantidadeAulas, setQuantidadeAulas] = useState(0);
   const [planoAula, setPlanoAula] = useState({
@@ -22,16 +19,24 @@ const PlanoAula = () => {
     altura: '44px',
     corBorda: '#4072d6'
   }
-  let objetivosAprendizagem = useSelector(store => store.planoAula.objetivosAprendizagem);
-  // const [objetivosAprendizagem, setObjetivosTeste] = useState(plano.objetivosAprendizagem);
+  const [objetivosAprendizagem, setObjetivosAprendizagem] = useState([
+    {
+      id: 1,
+      selected: false,
+      codigo: 'EF45644',
+      descricao: 'Teste de descrição'
+    },
+    {
+      id: 2,
+      selected: true,
+      codigo: 'EF45645',
+      descricao: 'Teste de descrição, teste teste teste teste teste teste teste teste teste teste teste teste teste teste teste'
+    },
+  ]);
   const textEditorObjetivosRef = useRef(null);
   const textEditorDesenvAulaRef = useRef(null);
   const textEditorRecContinuaRef = useRef(null);
   const textEditorLicaoCasaRef = useRef(null);
-
-  useEffect(() => {
-    console.log(objetivosAprendizagem);
-  }, [objetivosAprendizagem]);
 
   const QuantidadeBotoes = styled.div`
     padding: 0 0 20px 0;
@@ -55,9 +60,23 @@ const PlanoAula = () => {
       background: ${Base.AzulAnakiwa} !important;
     }
   `;
+  
   const selecionarObjetivo = index => {
     objetivosAprendizagem[index].selected = !objetivosAprendizagem[index].selected;
-    store.dispatch(setObjetivosAprendizagem([...objetivosAprendizagem]));
+    setObjetivosAprendizagem([...objetivosAprendizagem]);
+  }
+
+  const removerObjetivo = index => {
+    objetivosAprendizagem[index].selected = false;
+    setObjetivosAprendizagem([...objetivosAprendizagem]);
+  }
+
+  const removerTodosObjetivos = () => {
+    const objetivos =  objetivosAprendizagem.map(objetivo =>{
+      objetivo.selected = false;
+      return objetivo;
+    })
+    setObjetivosAprendizagem([...objetivos]);
   }
 
   return (
@@ -124,7 +143,7 @@ const PlanoAula = () => {
                 <div className="row col-md-12 d-flex">
                   {objetivosAprendizagem
                     .filter(objetivo => objetivo.selected)
-                    .map(selecionado => {
+                    .map((selecionado, i) => {
                       return (
                         <Button
                           key={`Objetivo${selecionado.id}`}
@@ -137,7 +156,7 @@ const PlanoAula = () => {
                           steady
                           remove
                           className="text-dark mt-3 mr-2 stretched-link"
-                          onClick={() => { }}
+                          onClick={() => removerObjetivo(i)}
                         />
                       );
                     })}
@@ -158,7 +177,7 @@ const PlanoAula = () => {
                         steady
                         border
                         className="text-dark mt-3 mr-2 stretched-link"
-                        onClick={() => { }}
+                        onClick={() => removerTodosObjetivos()}
                       />
                     ) : null}
                 </div>
