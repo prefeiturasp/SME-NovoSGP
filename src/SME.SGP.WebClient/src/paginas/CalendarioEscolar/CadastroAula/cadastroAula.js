@@ -253,21 +253,23 @@ const CadastroAula = ({ match }) => {
   const onChangeDisciplinas = async (id, form) => {
     onChangeCampos();
     form.setFieldValue('quantidadeTexto', '');
-    const resultado = await api.get(`v1/grades/aulas/${turmaId}/${id}`, {
-      params: {
-        data: dataAula.format('YYYY-MM-DD'),
-      },
-    });
+    const resultado = await api.get(
+      `v1/grades/aulas/turmas/${turmaId}/disciplinas/${id}`,
+      {
+        params: {
+          data: dataAula.format('YYYY-MM-DD'),
+        },
+      }
+    );
     if (resultado) {
       if (resultado.status === 200) {
         setControlaQuantidadeAula(true);
         const quantidade = resultado.data.quantidadeAulasRestante;
-        debugger;
-        setQuantidadeMaximaAulas(5);
+        setQuantidadeMaximaAulas(quantidade);
         if (quantidade > 0) {
           form.setFieldValue('quantidadeRadio', 1);
         }
-      } else if (resultado.status == 204) {
+      } else if (resultado.status === 204) {
         setControlaQuantidadeAula(false);
       }
     }
@@ -285,6 +287,7 @@ const CadastroAula = ({ match }) => {
       valoresForm.tipoCalendarioId = match.params.tipoCalendarioId;
       valoresForm.ueId = ueId;
       valoresForm.turmaId = turmaId;
+      valoresForm.dataAula = dataAula;
     }
 
     const cadastrado = idAula
@@ -294,7 +297,7 @@ const CadastroAula = ({ match }) => {
           .catch(e => erros(e));
 
     if (cadastrado && cadastrado.status === 200) {
-      sucesso(cadastrado.data);
+      sucesso(cadastrado.data.mensagens[0]);
       // TODO - Voltar para o calendario quando ele existir!
       history.push('/calendario-escolar/calendario-professor');
     }
