@@ -1,5 +1,4 @@
 ﻿using SME.SGP.Aplicacao.Integracoes;
-using SME.SGP.Aplicacao.Interfaces;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
@@ -44,7 +43,7 @@ namespace SME.SGP.Aplicacao
             {
                 ausencias = new List<RegistroAusenciaAluno>();
             }
-            foreach (var aluno in alunosDaTurma.OrderBy(c => c.NumeroAlunoChamada))
+            foreach (var aluno in alunosDaTurma)
             {
                 var registroFrequenciaAluno = new RegistroFrequenciaAlunoDto
                 {
