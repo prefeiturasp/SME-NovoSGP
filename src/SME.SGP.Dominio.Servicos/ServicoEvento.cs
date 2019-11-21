@@ -339,7 +339,7 @@ namespace SME.SGP.Dominio.Servicos
                 {
                     await repositorioEvento.SalvarAsync(evento);
                 }
-                catch (Exception ex)
+                catch (Exception)
                 {
                     feriadosErro.Add(evento.FeriadoId.Value);
                 }
