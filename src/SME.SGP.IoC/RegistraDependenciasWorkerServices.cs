@@ -1,5 +1,4 @@
-﻿using System;
-using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using SME.SGP.Aplicacao;
 using SME.SGP.Aplicacao.Consultas;
@@ -30,13 +29,6 @@ namespace SME.SGP.IoC
             RegistrarServicos(services);
         }
 
-        private static void ResgistraDependenciaHttp(IServiceCollection services)
-        {
-            /// Este método não deveria existir, as dependencias dos objetos abaixo deveriam ser encapsuladas em um contexto da aplicação para serem utilizadas pela WebApi e WorkserService independentemente
-            //services.TryAddTransient<System.Net.Http.HttpClient>();
-            services.TryAddTransient<Microsoft.AspNetCore.Http.IHttpContextAccessor, NoHttpContext>();
-        }
-
         private static void RegistrarComandos(IServiceCollection services)
         {
             services.TryAddTransient<IComandosPlanoCiclo, ComandosPlanoCiclo>();
@@ -50,7 +42,11 @@ namespace SME.SGP.IoC
             services.TryAddTransient<IComandosPeriodoEscolar, ComandosPeriodoEscolar>();
             services.TryAddTransient<IComandosEventoTipo, ComandosEventoTipo>();
             services.TryAddTransient<IComandosEvento, ComandosEvento>();
+            services.TryAddTransient<IComandosDiasLetivos, ComandosDiasLetivos>();
             services.TryAddTransient<IComandosAula, ComandosAula>();
+            services.TryAddTransient<IComandosGrade, ComandosGrade>();
+            services.TryAddTransient<IComandoFrequencia, ComandoFrequencia>();
+            services.TryAddTransient<IComandosAtribuicaoEsporadica, ComandosAtribuicaoEsporadica>();
         }
 
         private static void RegistrarConsultas(IServiceCollection services)
@@ -76,6 +72,9 @@ namespace SME.SGP.IoC
             services.TryAddTransient<IConsultasEventoTipo, ConsultasEventoTipo>();
             services.TryAddTransient<IConsultasEvento, ConsultasEvento>();
             services.TryAddTransient<IConsultasAula, ConsultasAula>();
+            services.TryAddTransient<IConsultasGrade, ConsultasGrade>();
+            services.TryAddTransient<IConsultasFrequencia, ConsultasFrequencia>();
+            services.TryAddTransient<IConsultasAtribuicaoEsporadica, ConsultasAtribuicaoEsporadica>();            
         }
 
         private static void RegistrarContextos(IServiceCollection services)
@@ -112,7 +111,14 @@ namespace SME.SGP.IoC
             services.TryAddTransient<IRepositorioPeriodoEscolar, RepositorioPeriodoEscolar>();
             services.TryAddTransient<IRepositorioEvento, RepositorioEvento>();
             services.TryAddTransient<IRepositorioEventoTipo, RepositorioEventoTipo>();
+            services.TryAddTransient<IRepositorioParametrosSistema, RepositorioParametrosSistema>();
             services.TryAddTransient<IRepositorioAula, RepositorioAula>();
+            services.TryAddTransient<IRepositorioGrade, RepositorioGrade>();
+            services.TryAddTransient<IRepositorioGradeFiltro, RepositorioGradeFiltro>();
+            services.TryAddTransient<IRepositorioGradeDisciplina, RepositorioGradeDisciplina>();
+            services.TryAddTransient<IRepositorioFrequencia, RepositorioFrequencia>();
+            services.TryAddTransient<IRepositorioRegistroAusenciaAluno, RepositorioRegistroAusenciaAluno>();
+            services.TryAddTransient<IRepositorioAtribuicaoEsporadica, RepositorioAtribuicaoEsporadica>();
         }
 
         private static void RegistrarServicos(IServiceCollection services)
@@ -120,7 +126,6 @@ namespace SME.SGP.IoC
             services.TryAddTransient<IServicoWorkflowAprovacao, ServicoWorkflowAprovacao>();
             services.TryAddTransient<IServicoNotificacao, ServicoNotificacao>();
             services.TryAddTransient<IServicoUsuario, ServicoUsuario>();
-            //services.TryAddTransient<IServicoEOL, ServicoEOL>();
             services.TryAddTransient<IServicoAutenticacao, ServicoAutenticacao>();
             services.TryAddTransient<IServicoPerfil, ServicoPerfil>();
             services.TryAddTransient<IServicoEmail, ServicoEmail>();
@@ -130,7 +135,18 @@ namespace SME.SGP.IoC
             services.TryAddTransient<IServicoFeriadoCalendario, ServicoFeriadoCalendario>();
             services.TryAddTransient<IServicoAbrangencia, ServicoAbrangencia>();
             services.TryAddTransient<IServicoEvento, ServicoEvento>();
+            services.TryAddTransient<IServicoDiaLetivo, ServicoDiaLetivo>();
             services.TryAddTransient<IServicoLog, ServicoLog>();
+            services.TryAddTransient<IServicoFrequencia, ServicoFrequencia>();
+            services.TryAddTransient<IServicoAula, ServicoAula>();
+            services.TryAddTransient<IServicoAtribuicaoEsporadica, ServicoAtribuicaoEsporadica>();
+        }
+
+        private static void ResgistraDependenciaHttp(IServiceCollection services)
+        {
+            /// Este método não deveria existir, as dependencias dos objetos abaixo deveriam ser encapsuladas em um contexto da aplicação para serem utilizadas pela WebApi e WorkserService independentemente
+            //services.TryAddTransient<System.Net.Http.HttpClient>();
+            services.TryAddTransient<Microsoft.AspNetCore.Http.IHttpContextAccessor, NoHttpContext>();
         }
     }
 }
