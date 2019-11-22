@@ -3,13 +3,13 @@
     public enum TipoParametroSistema
     {
         //Calendário
-        EjaDiasLetivos = 1,
 
+        EjaDiasLetivos = 1,
         FundamentalMedioDiasLetivos = 2,
 
         //Frequência
-        PercentualFrequenciaAlerta = 3,
 
+        PercentualFrequenciaAlerta = 3,
         PercentualFrequenciaCritico = 4,
         QuantidadeAulasNotificarProfessor = 5,
         QuantidadeAulasNotificarGestorUE = 6,
