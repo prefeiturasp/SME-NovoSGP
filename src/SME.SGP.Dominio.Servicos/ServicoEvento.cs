@@ -117,7 +117,10 @@ namespace SME.SGP.Dominio.Servicos
 
             repositorioEvento.Salvar(evento);
 
-            SME.Background.Core.Cliente.Executar<IServicoEvento>(x => x.AlterarRecorrenciaEventos(evento, alterarRecorrenciaCompleta));
+            if (evento.EventoPaiId.HasValue && evento.EventoPaiId > 0 && alterarRecorrenciaCompleta)
+            {
+                SME.Background.Core.Cliente.Executar<IServicoEvento>(x => x.AlterarRecorrenciaEventos(evento, alterarRecorrenciaCompleta));
+            }
 
             var mensagemRetornoSucesso = "Evento cadastrado com sucesso.";
 
