@@ -99,8 +99,8 @@ export const Lista = styled.div`
     width: 70px;
   }
 
-  .width-40 {
-    width: 40px;
+  .width-50 {
+    width: 50px;
   }
 
   .width-60 {
@@ -109,5 +109,10 @@ export const Lista = styled.div`
 
   .cursor-pointer {
     cursor: pointer;
+  }
+
+  .scroll-tabela-frequencia {
+    max-height: 240px;
+    overflow-y: scroll;
   }
 `;
