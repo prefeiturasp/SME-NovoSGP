@@ -131,6 +131,13 @@ namespace SME.SGP.Dominio
             }
         }
 
+        public bool EstaNoRangeDeDatas(IEnumerable<(DateTime, DateTime)> datas)
+        {
+            return datas.Any(a => (DataInicio.Date <= a.Item1.Date && DataFim >= a.Item2.Date)
+            || (DataInicio.Date <= a.Item2.Date && DataFim >= a.Item2.Date)
+            || (DataInicio.Date >= a.Item1.Date && DataFim <= a.Item2.Date));
+        }
+
         public void Excluir()
         {
             if (Excluido)
@@ -168,7 +175,7 @@ namespace SME.SGP.Dominio
 
         public void PodeCriarEventoLiberacaoExcepcional(Usuario usuario, bool dataConfirmada, IEnumerable<PeriodoEscolar> periodos)
         {
-            if (this.TipoEvento.Codigo == (long)TipoEventoEnum.LiberacaoExcepcional)
+            if (this.TipoEvento.Codigo == (long)Dominio.TipoEvento.LiberacaoExcepcional)
             {
                 if (!usuario.PossuiPerfilSme())
                     throw new NegocioException("Somente usuário com perfil SME pode cadastrar esse tipo de evento.");
@@ -186,7 +193,7 @@ namespace SME.SGP.Dominio
 
         public void PodeCriarEventoOrganizacaoEscolar(Usuario usuario)
         {
-            if (this.TipoEvento.Codigo == (long)TipoEventoEnum.OrganizacaoEscolar)
+            if (this.TipoEvento.Codigo == (long)Dominio.TipoEvento.OrganizacaoEscolar)
             {
                 if (!usuario.PossuiPerfilSme())
                     throw new NegocioException("Somente usuário com perfil SME pode cadastrar esse tipo de evento.");
@@ -221,6 +228,12 @@ namespace SME.SGP.Dominio
                     DataFim = DataInicio;
                 }
             }
+        }
+
+        public void VerificaSeDataMenorQueHoje()
+        {
+            if (DataInicio.Date < DateTime.Today)
+                throw new NegocioException("A data do evento não pode ser menor que a atual.");
         }
 
         public void VerificaSeEventoAconteceJuntoComOrganizacaoEscolar(IEnumerable<Evento> eventos, Usuario usuario)
