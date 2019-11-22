@@ -13,17 +13,19 @@ namespace SME.SGP.Aplicacao.Teste.Consultas
     {
         private readonly ConsultasAula consultas;
         private readonly Mock<IRepositorioAula> repositorio;
+        private readonly Mock<IServicoUsuario> servicoUsuario;
 
         public ConsultasAulasTeste()
         {
             repositorio = new Mock<IRepositorioAula>();
-            consultas = new ConsultasAula(repositorio.Object);
+            servicoUsuario = new Mock<IServicoUsuario>();
+            consultas = new ConsultasAula(repositorio.Object, servicoUsuario.Object);
 
             Setup();
         }
 
         [Fact]
-        public async Task DeveObterAulaPorId()
+        public void DeveObterAulaPorId()
         {
             var aulaDto = consultas.BuscarPorId(1);
 
@@ -35,7 +37,7 @@ namespace SME.SGP.Aplicacao.Teste.Consultas
         [Fact]
         public async Task DeveObterQuantidadeAulas()
         {
-            var qtd = await consultas.ObterQuantidadeAulasTurma("123", "7");
+            var qtd = await consultas.ObterQuantidadeAulasTurmaSemana("123", "7", "3");
 
             Assert.True(qtd == 4);
         }
@@ -61,7 +63,7 @@ namespace SME.SGP.Aplicacao.Teste.Consultas
                 new AulasPorTurmaDisciplinaDto() { ProfessorId = 1, Quantidade = 3, DataAula = new System.DateTime(2019,11,15) },
             };
 
-            repositorio.Setup(c => c.ObterAulasTurmaDisciplina(It.IsAny<string>(), It.IsAny<string>()))
+            repositorio.Setup(c => c.ObterAulasTurmaDisciplinaSemana(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()))
                 .Returns(Task.FromResult(aulas));
         }
     }

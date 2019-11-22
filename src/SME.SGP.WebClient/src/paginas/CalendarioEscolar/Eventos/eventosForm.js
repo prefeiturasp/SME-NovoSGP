@@ -364,6 +364,8 @@ const EventosForm = ({ match }) => {
   };
 
   const onClickCadastrar = async valoresForm => {
+    if (tipoDataUnico) valoresForm.dataFim = valoresForm.dataInicio;
+
     const tiposCalendarioParaCopiar = listaCalendarioParaCopiar.map(id => {
       const calendario = listaCalendarioEscolar.find(e => e.id === id);
       return {
