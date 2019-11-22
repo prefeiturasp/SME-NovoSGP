@@ -8,7 +8,7 @@ import Button from '~/componentes/button';
 import {QuantidadeBotoes, ObjetivosList, ListItem, ListItemButton, Corpo, Descritivo, Badge} from './plano-aula.css';
 
 const PlanoAula = (props) => {
-  const [mostrarCardPrincipal, setMostrarCardPrincipal] = useState(true);
+  const [mostrarCardPrincipal, setMostrarCardPrincipal] = useState(false);
   const [quantidadeAulas, setQuantidadeAulas] = useState(0);
   const [planoAula, setPlanoAula] = useState({
     temObjetivos: true,
@@ -41,12 +41,14 @@ const PlanoAula = (props) => {
   const textEditorRecContinuaRef = useRef(null);
   const textEditorLicaoCasaRef = useRef(null);
 
-  const selecionarObjetivo = index => {
+  const selecionarObjetivo = id => {
+    const index = objetivosAprendizagem.findIndex(a => a.id == id);
     objetivosAprendizagem[index].selected = !objetivosAprendizagem[index].selected;
     setObjetivosAprendizagem([...objetivosAprendizagem]);
   }
 
-  const removerObjetivo = index => {
+  const removerObjetivo = id => {
+    const index = objetivosAprendizagem.findIndex(a => a.id == id);
     objetivosAprendizagem[index].selected = false;
     setObjetivosAprendizagem([...objetivosAprendizagem]);
   }
@@ -89,7 +91,7 @@ const PlanoAula = (props) => {
                   {objetivosAprendizagem.map((objetivo, index) => {
                     return (
                       <ul
-                        key={`${objetivo.id}Bimestre${index}`}
+                        key={`${objetivo.id}-objetivo`}
                         className="list-group list-group-horizontal mt-3"
                       >
                         <ListItemButton
@@ -98,9 +100,8 @@ const PlanoAula = (props) => {
                           role="button"
                           id={objetivo.id}
                           aria-pressed={objetivo.selected ? true : false}
-                          data-index={index}
-                          onClick={() => selecionarObjetivo(index)}
-                          onKeyUp={selecionarObjetivo}
+                          onClick={() => selecionarObjetivo(objetivo.id)}
+                          onKeyUp={() => selecionarObjetivo(objetivo.id)}
                           alt={`Codigo do Objetivo : ${objetivo.codigo} `}
                         >
                           {objetivo.codigo}
@@ -126,7 +127,7 @@ const PlanoAula = (props) => {
                   <div className="row col-md-12 d-flex">
                     {objetivosAprendizagem
                       .filter(objetivo => objetivo.selected)
-                      .map((selecionado, i) => {
+                      .map((selecionado) => {
                         return (
                           <Button
                             key={`Objetivo${selecionado.id}`}
@@ -139,7 +140,7 @@ const PlanoAula = (props) => {
                             steady
                             remove
                             className="text-dark mt-3 mr-2 stretched-link"
-                            onClick={() => removerObjetivo(i)}
+                            onClick={() => removerObjetivo(selecionado.id)}
                           />
                         );
                       })}
