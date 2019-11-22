@@ -38,10 +38,19 @@ namespace SME.SGP.Aplicacao
 
         public async Task<int> ObterQuantidadeAulasTurmaSemana(string turma, string disciplina, string semana)
         {
-            var aulas = await repositorio.ObterAulasTurmaDisciplinaSemana(turma, disciplina, semana);
+            IEnumerable<AulasPorTurmaDisciplinaDto> aulas;
+
+            if (ExperienciaPedagogica(disciplina))
+                aulas = await repositorio.ObterAulasTurmaExperienciasPedagogicasSemana(turma, semana);
+            else
+                aulas = await repositorio.ObterAulasTurmaDisciplinaSemana(turma, disciplina, semana);
 
             return aulas.Sum(a => a.Quantidade);
         }
+
+        private bool ExperienciaPedagogica(string disciplina) 
+            => new string[] { "1214", "1215", "1216", "1217", "1218", "1219", "1220", "1221", "1222", "1223" }
+                .Contains(disciplina);
 
         private AulaConsultaDto MapearParaDto(Aula aula)
         {
