@@ -41,6 +41,8 @@ namespace SME.SGP.Aplicacao.Integracoes
 
         Task<int[]> ObterPermissoesPorPerfil(Guid perfilGuid);
 
+        Task<IEnumerable<ProfessorResumoDto>> ObterProfessoresAutoComplete(int anoLetivo, string dreId, string nomeProfessor);
+
         Task<ProfessorResumoDto> ObterResumoProfessorPorRFAnoLetivo(string codigoRF, int anoLetivo);
 
         IEnumerable<SupervisoresRetornoDto> ObterSupervisoresPorCodigo(string[] codigoSupervisores);
