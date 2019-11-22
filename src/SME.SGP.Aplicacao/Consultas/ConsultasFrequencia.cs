@@ -35,8 +35,7 @@ namespace SME.SGP.Aplicacao
             {
                 throw new NegocioException("Não foram encontrados alunos para a aula/turma informada.");
             }
-
-            var registroFrequencia = new FrequenciaDto(aulaId);
+            FrequenciaDto registroFrequenciaDto = ObterRegistroFrequencia(aulaId, aula);
 
             var ausencias = servicoFrequencia.ObterListaAusenciasPorAula(aulaId);
             if (ausencias == null)
@@ -65,10 +64,30 @@ namespace SME.SGP.Aplicacao
                         Compareceu = !ausenciasAluno.Any(c => c.NumeroAula == numeroAula)
                     });
                 }
-                registroFrequencia.ListaFrequencia.Add(registroFrequenciaAluno);
+                registroFrequenciaDto.ListaFrequencia.Add(registroFrequenciaAluno);
             }
 
-            return registroFrequencia;
+            return registroFrequenciaDto;
+        }
+
+        private FrequenciaDto ObterRegistroFrequencia(long aulaId, Aula aula)
+        {
+            var registroFrequencia = servicoFrequencia.ObterRegistroFrequenciaPorAulaId(aulaId);
+            if (registroFrequencia == null)
+            {
+                registroFrequencia = new RegistroFrequencia(aula);
+            }
+            var registroFrequenciaDto = new FrequenciaDto(aulaId)
+            {
+                AlteradoEm = registroFrequencia.AlteradoEm,
+                AlteradoPor = registroFrequencia.AlteradoPor,
+                AlteradoRF = registroFrequencia.AlteradoRF,
+                CriadoEm = registroFrequencia.CriadoEm,
+                CriadoPor = registroFrequencia.CriadoPor,
+                CriadoRF = registroFrequencia.CriadoRF,
+                Id = registroFrequencia.Id
+            };
+            return registroFrequenciaDto;
         }
     }
 }
