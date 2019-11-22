@@ -27,8 +27,6 @@ namespace SME.SGP.Api.Controllers
                 return StatusCode(204);
         }
 
-
-
         [HttpPost]
         [ProducesResponseType(200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
