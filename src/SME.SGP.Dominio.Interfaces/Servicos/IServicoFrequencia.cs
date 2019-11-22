@@ -7,6 +7,8 @@ namespace SME.SGP.Dominio.Interfaces
     {
         IEnumerable<RegistroAusenciaAluno> ObterListaAusenciasPorAula(long aulaId);
 
+        RegistroFrequencia ObterRegistroFrequenciaPorAulaId(long aulaId);
+
         Task Registrar(long aulaId, IEnumerable<RegistroAusenciaAluno> registroAusenciaAlunos);
     }
 }
