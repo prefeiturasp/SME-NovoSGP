@@ -39,3 +39,12 @@ export const Badge = styled.button`
     border-color: ${Base.CinzaBadge} !important;
   }
 `;
+
+export const HabilitaObjetivos = styled.div`
+  padding: 0 !important;
+  margin: 0 !important;
+  text-align: right;
+  label{
+    margin-right:10px;
+  }
+`;

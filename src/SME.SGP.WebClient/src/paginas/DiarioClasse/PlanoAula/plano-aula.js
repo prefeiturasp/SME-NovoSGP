@@ -5,11 +5,14 @@ import TextEditor from '~/componentes/textEditor/component';
 import Grid from '~/componentes/grid';
 import { Base, Colors } from '~/componentes';
 import Button from '~/componentes/button';
-import {QuantidadeBotoes, ObjetivosList, ListItem, ListItemButton, Corpo, Descritivo, Badge} from './plano-aula.css';
+import { QuantidadeBotoes, ObjetivosList, ListItem, ListItemButton, Corpo, Descritivo, Badge, HabilitaObjetivos } from './plano-aula.css';
+import { Switch } from 'antd';
 
 const PlanoAula = (props) => {
-  const [mostrarCardPrincipal, setMostrarCardPrincipal] = useState(false);
+  const [mostrarCardPrincipal, setMostrarCardPrincipal] = useState(true);
   const [quantidadeAulas, setQuantidadeAulas] = useState(0);
+  const [ehProfessorCj, setEhProfessorCJ] = useState(true);
+  const [informaObjetivos, setInformaObjetivos] = useState(true);
   const [planoAula, setPlanoAula] = useState({
     temObjetivos: true,
     selecionaDisciplinas: true,
@@ -61,6 +64,11 @@ const PlanoAula = (props) => {
     setObjetivosAprendizagem([...objetivos]);
   }
 
+  const habilitarDesabilitarObjetivos = () =>{
+    setInformaObjetivos(!informaObjetivos);
+    planoAula.temObjetivos = !informaObjetivos;
+  }
+
   return (
     <Corpo>
       <CardCollapse
@@ -70,9 +78,18 @@ const PlanoAula = (props) => {
         indice={'Plano de aula'}
         show={mostrarCardPrincipal}
       >
-        <QuantidadeBotoes className="col-md-12">
+        <QuantidadeBotoes className="col-md-12" hidden={ehProfessorCj}>
           <span>Quantidade de aulas: {quantidadeAulas}</span>
         </QuantidadeBotoes>
+        <HabilitaObjetivos className="row d-inline-block col-md-12" hidden={!ehProfessorCj}>
+          <label>Objetivos de aprendizagem</label>
+          <Switch
+            onChange={() => habilitarDesabilitarObjetivos()}
+            checked={informaObjetivos}
+            size="default"
+            className="mr-2"
+          />
+        </HabilitaObjetivos>
         <CardCollapse
           key="objetivos-aprendizagem"
           onClick={() => { }}

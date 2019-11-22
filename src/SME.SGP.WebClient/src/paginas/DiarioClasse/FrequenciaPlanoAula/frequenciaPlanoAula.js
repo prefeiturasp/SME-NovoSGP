@@ -152,7 +152,7 @@ const FrequenciaPlanoAula = () => {
                 onClick={onClickFrequencia}
                 titulo="Frequência"
                 indice="frequencia-collapse"
-                show={true}
+                show={false}
                 alt="TESTE"
               >
                 <Ordenacao conteudoParaOrdenar={ frequencia }
