@@ -115,7 +115,9 @@ namespace SME.SGP.Dominio.Servicos
 
             AtribuirNullSeVazio(evento);
 
-            var mensagemRetornoSucesso = "Evento cadastrado com sucesso.";
+            var ehAlteracao = evento.Id > 0;
+
+            var mensagemRetornoSucesso = $"Evento cadastrado com sucesso.";
 
             var devePassarPorWorkflow = await ValidaERetornaSeDevePassarPorWorkflowCadastroDatasLetivoOuLiberacaoExcepcional(evento, tipoCalendario);
 
@@ -135,7 +137,18 @@ namespace SME.SGP.Dominio.Servicos
                 SME.Background.Core.Cliente.Executar<IServicoEvento>(x => x.AlterarRecorrenciaEventos(evento, alterarRecorrenciaCompleta));
             }
 
-            return mensagemRetornoSucesso;
+            if (ehAlteracao)
+            {
+                if (devePassarPorWorkflow)
+                    return "Evento alterado e será válido após aprovação.";
+                else return "Evento alterado com sucesso.";
+            }
+            else
+            {
+                if (devePassarPorWorkflow)
+                    return "Evento cadastrado e será válido após aprovação.";
+                else return "Evento cadastrado com sucesso.";
+            }
         }
 
         public async Task SalvarEventoFeriadosAoCadastrarTipoCalendario(TipoCalendario tipoCalendario)
