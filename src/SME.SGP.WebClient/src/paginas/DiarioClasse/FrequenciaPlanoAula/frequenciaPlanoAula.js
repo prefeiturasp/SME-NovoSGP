@@ -10,6 +10,7 @@ import { CampoData } from '~/componentes';
 import CardCollapse from '~/componentes/cardCollapse';
 import ListaFrequencia from '~/componentes-sgp/ListaFrequencia/listaFrequencia';
 import Ordenacao from '~/componentes-sgp/Ordenacao/ordenacao';
+import { erros, sucesso } from '~/servicos/alertas';
 
 const FrequenciaPlanoAula = () => {
   const usuario = useSelector(store => store.usuario);
@@ -21,6 +22,7 @@ const FrequenciaPlanoAula = () => {
   const [dataSelecionada, setDataSelecionada] = useState('');
 
   const [frequencia, setFrequencia] = useState([]);
+  const [aulaId, setAulaId] = useState(0);
 
   useEffect(() => {
     const obterDisciplinas = async () => {
@@ -32,15 +34,17 @@ const FrequenciaPlanoAula = () => {
     if (turmaId) {
       obterDisciplinas();
     }
-
   }, []);
 
   const obterListaFrequencia = async () => {
-    const frequenciaAlunos = await api.get(`v1/calendarios/frequencias`, { params: {aulaId: 34}});
+    const frequenciaAlunos = await api
+      .get(`v1/calendarios/frequencias`, { params: { aulaId: 34 } })
+      .catch(e => erros(e));
     if (frequenciaAlunos && frequenciaAlunos.data) {
       setFrequencia(frequenciaAlunos.data.listaFrequencia);
+      setAulaId(frequenciaAlunos.data.aulaId)
     }
-  }
+  };
 
   const onClickVoltar = () => {
     console.log('onClickVoltar');
@@ -50,14 +54,33 @@ const FrequenciaPlanoAula = () => {
     console.log('onClickCancelar');
   };
 
-  const onClickSalvar = () => {
-    console.log(frequencia);
+  const onClickSalvar = async () => {
+    const valorParaSalvar = {
+      aulaId,
+      listaFrequencia: frequencia
+    };
+    const salvouFrequencia = await api
+      .post(`v1/calendarios/frequencias`, valorParaSalvar)
+        .catch(e => erros(e));
+
+    if (salvouFrequencia && salvouFrequencia.status == 200) {
+      sucesso('Frequência realizada com sucesso.');
+    }
 
   };
 
   const onClickFrequencia = () => {
     console.log('onClickFrequencia');
   };
+
+  // TODO
+  // const obterDatasDeAulasDisponiveis = async () => {
+    // const datasDeAulas = await api
+    //   .get(`v1/calendarios/{calendarioId}/frequencias/aulas/datas/turmas/{turmaId}/disciplinas/{disciplinaId}`)
+    //   .catch(e => erros(e));
+  // };
+
+
 
   const onChangeDisciplinas = e => setDisciplinaSelecionada(e);
 
@@ -133,15 +156,22 @@ const FrequenciaPlanoAula = () => {
                 show={true}
                 alt="TESTE"
               >
-                <Ordenacao conteudoParaOrdenar={ frequencia }
-                           ordenarColunaNumero="numeroAlunoChamada"
-                           ordenarColunaTexto="nomeAluno"
-                           retornoOrdenado={ retorno => setFrequencia(retorno) }>
-                </Ordenacao>
-                <ListaFrequencia
-                  dados={frequencia}
-                  onClickSwitch={onClickSwitch}
-                ></ListaFrequencia>
+                {
+                  frequencia && frequencia.length ?
+                  <>
+                    <Ordenacao
+                      conteudoParaOrdenar={frequencia}
+                      ordenarColunaNumero="numeroAlunoChamada"
+                      ordenarColunaTexto="nomeAluno"
+                      retornoOrdenado={retorno => setFrequencia(retorno)}
+                      ></Ordenacao>
+
+                    <ListaFrequencia
+                      dados={frequencia}
+                      onClickSwitch={onClickSwitch}
+                      ></ListaFrequencia>
+                  </> : ''
+                }
               </CardCollapse>
             </div>
           </div>

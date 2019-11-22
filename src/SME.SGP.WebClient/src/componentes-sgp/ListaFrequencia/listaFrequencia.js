@@ -53,17 +53,22 @@ const ListaFrequencia = props => {
     <>
     { dataSource && dataSource.length > 0 ?
         <Lista className="mt-4 table-responsive">
-          <table className="table mb-0">
+          <table className="table mb-0 ">
             <thead className="tabela-frequencia-thead">
               <tr>
                 <th className="width-60"></th>
                 <th className="text-left">Lista de estudantes</th>
-                <th className="width-40 cursor-pointer" onClick={()=> marcarPresencaFaltaTodosAlunos(true)}>C</th>
-                <th className="width-40 cursor-pointer" onClick={()=> marcarPresencaFaltaTodosAlunos(false)}>F</th>
+                { dataSource[0].aulas.length > 1 ?
+                  <>
+                    <th className="width-50 cursor-pointer" onClick={()=> marcarPresencaFaltaTodosAlunos(true)}>C</th>
+                    <th className="width-50 cursor-pointer" onClick={()=> marcarPresencaFaltaTodosAlunos(false)}>F</th>
+                  </>
+                  : ''
+                }
                 {
                   dataSource[0].aulas.map(( aula, i) => {
                     return (
-                      <th key={i} className={dataSource[0].aulas.length -1 == i ? 'width-70' : 'border-right-none'}>{aula.numeroAula}</th>
+                      <th key={i} className={dataSource[0].aulas.length -1 == i ? 'width-70' : 'border-right-none width-70'}>{aula.numeroAula}</th>
                     )
                   })
                 }
@@ -72,23 +77,33 @@ const ListaFrequencia = props => {
                 </th> */}
               </tr>
             </thead>
+            </table>
+            <div className="scroll-tabela-frequencia">
+
+            <table className="table mb-0">
             <tbody className="tabela-frequencia-tbody">
               {
                 dataSource.map((aluno, i) => {
                   return (
                   <tr key={i}>
-                    <td className="text-center font-weight-bold">{aluno.numeroAlunoChamada}</td>
+                    <td className="width-60 text-center font-weight-bold">{aluno.numeroAlunoChamada}</td>
                     <td className="text-left">{aluno.nomeAluno}</td>
-                    <td>
-                      <button onClick={()=> marcaPresencaFaltaTodasAulas(aluno, true)} type="button" className={`ant-btn ant-btn-circle ant-btn-sm btn-falta-presenca ${validaSeCompareceuTodasAulas(aluno) ? 'btn-compareceu' : ''} `} >
-                        <i className="fas fa-check fa-sm"></i>
-                      </button>
-                    </td>
-                    <td>
-                    <button onClick={()=> marcaPresencaFaltaTodasAulas(aluno, false)} type="button" className={`ant-btn ant-btn-circle ant-btn-sm btn-falta-presenca ${validaSeFaltouTodasAulas(aluno) ? 'btn-falta' : ''} `}>
-                      <i className="fas fa-times fa-sm"></i>
-                    </button>
-                    </td>
+                    {
+                      dataSource[0].aulas.length > 1 ?
+                      <>
+                        <td className="width-50">
+                          <button onClick={()=> marcaPresencaFaltaTodasAulas(aluno, true)} type="button" className={`ant-btn ant-btn-circle ant-btn-sm btn-falta-presenca ${validaSeCompareceuTodasAulas(aluno) ? 'btn-compareceu' : ''} `} >
+                            <i className="fas fa-check fa-sm"></i>
+                          </button>
+                        </td>
+                        <td className="width-50">
+                        <button onClick={()=> marcaPresencaFaltaTodasAulas(aluno, false)} type="button" className={`ant-btn ant-btn-circle ant-btn-sm btn-falta-presenca ${validaSeFaltouTodasAulas(aluno) ? 'btn-falta' : ''} `}>
+                          <i className="fas fa-times fa-sm"></i>
+                        </button>
+                        </td>
+                      </>
+                      : ''
+                    }
 
                     {
                       aluno.aulas.map((aula, i) => {
@@ -104,6 +119,8 @@ const ListaFrequencia = props => {
               }
             </tbody>
           </table>
+
+          </div>
         </Lista>
         : ''
     }
