@@ -34,6 +34,6 @@ namespace SME.SGP.Dominio.Interfaces
 
         Task<IEnumerable<CalendarioEventosMesesDto>> ObterQuantidadeDeEventosPorMeses(CalendarioEventosFiltroDto calendarioEventosMesesFiltro, Usuario usuario, Guid usuarioPerfil);
 
-        Task<bool> TemEventoNosDiasETipo(DateTime dataInicio, DateTime dataFim, TipoEventoEnum liberacaoExcepcional, long tipoCalendarioId, string UeId, string DreId);
+        Task<bool> TemEventoNosDiasETipo(DateTime dataInicio, DateTime dataFim, TipoEvento liberacaoExcepcional, long tipoCalendarioId, string UeId, string DreId);
     }
 }

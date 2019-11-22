@@ -783,7 +783,7 @@ namespace SME.SGP.Dados.Repositorios
 
         #endregion Quantidade Eventos Por Meses
 
-        public async Task<bool> TemEventoNosDiasETipo(DateTime dataInicio, DateTime dataFim, TipoEventoEnum tipoEventoCodigo, long tipoCalendarioId, string UeId, string DreId)
+        public async Task<bool> TemEventoNosDiasETipo(DateTime dataInicio, DateTime dataFim, TipoEvento tipoEventoCodigo, long tipoCalendarioId, string UeId, string DreId)
         {
             var query = @"select count(e.id) from evento e
                 inner join
