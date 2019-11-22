@@ -89,13 +89,12 @@ namespace SME.SGP.Api
                 options.InstanceName = Configuration.GetValue<string>("Nome-Instancia-Redis");
             });
 
+            SME.Background.Core.Orquestrador.Inicializar(services.BuildServiceProvider());
+
             if (Configuration.GetValue<bool>("FF_BackgroundEnabled", false))
-            {
                 SME.Background.Core.Orquestrador.Registrar<SME.Background.Hangfire.Processor>(new Background.Hangfire.Processor(Configuration, "SGP-Postgres"));
-                Hangfire.ContextFilterAttribute.RegistreredServices = services;
-            }
             else
-                SME.Background.Core.Orquestrador.Desativar(services.BuildServiceProvider());
+                SME.Background.Core.Orquestrador.Desativar();
         }
     }
 }
