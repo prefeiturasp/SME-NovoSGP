@@ -33,6 +33,22 @@ namespace SME.SGP.Dados.Repositorios
             });
         }
 
+        public async Task<IEnumerable<AulasPorTurmaDisciplinaDto>> ObterAulasTurmaExperienciasPedagogicasSemana(string turma, string semana)
+        {
+            var query = @"select professor_rf, quantidade, data_aula 
+                 from aula 
+                where not excluido 
+                  and turma_id = @turma 
+                  and disciplina_id in ('1214','1215','1216','1217','1218','1219','1220','1221','1222','1223')
+                  and to_char(data_aula, 'IW') = @semana";
+
+            return await database.Conexao.QueryAsync<AulasPorTurmaDisciplinaDto>(query, new
+            {
+                turma,
+                semana
+            });
+        }
+
         public IEnumerable<AulaConsultaDto> ObterDatasDeAulasPorCalendarioTurmaEDisciplina(long calendarioId, string turmaId, string disciplinaId, long usuarioId, Guid perfil)
         {
             var query = @"select distinct

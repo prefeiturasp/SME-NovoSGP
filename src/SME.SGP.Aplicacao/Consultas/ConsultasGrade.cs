@@ -39,17 +39,17 @@ namespace SME.SGP.Aplicacao
                 // Busca carga horaria na grade da disciplina para o ano da turma
                 horasGrade = await ObterHorasGradeComponente(grade.Id, disciplina, abrangencia.Ano);
 
+            if (horasGrade == 0)
+                return null;
+
             // Busca horas aula cadastradas para a disciplina na turma
             var horascadastradas = await consultasAula.ObterQuantidadeAulasTurmaSemana(turma.ToString(), disciplina.ToString(), semana);
 
-            if (horasGrade > 0)
-                return new GradeComponenteTurmaAulasDto
+            return new GradeComponenteTurmaAulasDto
                 {
                     QuantidadeAulasGrade = horasGrade,
                     QuantidadeAulasRestante = horasGrade - horascadastradas
                 };
-            else
-                return null;
         }
 
         public async Task<GradeDto> ObterGradeTurma(TipoEscola tipoEscola, Modalidade modalidade, int duracao)
