@@ -32,7 +32,8 @@ namespace SME.SGP.Aplicacao
             return repositorio.ObterDatasDeAulasPorCalendarioTurmaEDisciplina(calendarioId, turma, disciplina, usuarioLogado.Id, usuarioLogado.PerfilAtual)?.Select(a => new DataAulasProfessorDto
             {
                 Data = a.DataAula,
-                IdAula = a.Id
+                IdAula = a.Id,
+                TipoCalendarioId = a.TipoCalendarioId
             });
         }
 

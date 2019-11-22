@@ -6,5 +6,6 @@ namespace SME.SGP.Infra
     {
         public DateTime Data { get; set; }
         public long IdAula { get; set; }
+        public long TipoCalendarioId { get; set; }
     }
 }
