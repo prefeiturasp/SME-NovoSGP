@@ -111,8 +111,31 @@ export const Lista = styled.div`
     cursor: pointer;
   }
 
-  .scroll-tabela-frequencia {
-    max-height: 240px;
+  .scroll-tabela-frequencia-thead {
     overflow-y: scroll;
+    ::-webkit-scrollbar {
+      width: 9px !important;
+      background-color: rgba(229, 237, 244, 0.71) !important;
+    }
+  }
+
+  .scroll-tabela-frequencia-tbody {
+    max-height: 500px;
+    overflow-y: scroll;
+
+    ::-webkit-scrollbar-track {
+      background-color: #f4f4f4 !important;
+    }
+
+    ::-webkit-scrollbar {
+      width: 9px !important;
+      background-color: rgba(229, 237, 244, 0.71) !important;
+      border-radius: 2.5px !important;
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: #a8a8a8 !important;
+      border-radius: 3px !important;
+    }
   }
 `;
