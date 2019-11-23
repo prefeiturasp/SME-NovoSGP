@@ -48,7 +48,7 @@ namespace SME.SGP.Aplicacao
 
             WorkflowAprovacao workflowAprovacao = MapearDtoParaEntidade(workflowAprovacaoNiveisDto);
 
-            unitOfWork.IniciarTransacao();
+            //unitOfWork.IniciarTransacao();
 
             repositorioWorkflowAprovacao.Salvar(workflowAprovacao);
 
@@ -68,7 +68,7 @@ namespace SME.SGP.Aplicacao
             }
             servicoWorkflowAprovacao.ConfiguracaoInicial(workflowAprovacao, workflowAprovacaoNiveisDto.EntidadeParaAprovarId);
 
-            unitOfWork.PersistirTransacao();
+            //unitOfWork.PersistirTransacao();
 
             return workflowAprovacao.Id;
         }
