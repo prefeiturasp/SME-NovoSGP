@@ -26,22 +26,32 @@ namespace SME.SGP.Aplicacao
             return MapearParaDto(aula);
         }
 
-        public async Task<IEnumerable<DataAulasProfessorDto>> ObterDatasDeAulasPorCalendarioTurmaEDisciplina(long calendarioId, string turma, string disciplina)
+        public async Task<IEnumerable<DataAulasProfessorDto>> ObterDatasDeAulasPorCalendarioTurmaEDisciplina(int anoLetivo, string turma, string disciplina)
         {
             var usuarioLogado = await servicoUsuario.ObterUsuarioLogado();
-            return repositorio.ObterDatasDeAulasPorCalendarioTurmaEDisciplina(calendarioId, turma, disciplina, usuarioLogado.Id, usuarioLogado.PerfilAtual)?.Select(a => new DataAulasProfessorDto
+            var usuarioRF = usuarioLogado.EhProfessor() ? usuarioLogado.CodigoRf : string.Empty;
+            return repositorio.ObterDatasDeAulasPorAnoTurmaEDisciplina(anoLetivo, turma, disciplina, usuarioLogado.Id, usuarioRF, usuarioLogado.PerfilAtual)?.Select(a => new DataAulasProfessorDto
             {
                 Data = a.DataAula,
                 IdAula = a.Id
             });
         }
 
-        public async Task<int> ObterQuantidadeAulasTurma(string turma, string disciplina)
+        public async Task<int> ObterQuantidadeAulasTurmaSemana(string turma, string disciplina, string semana)
         {
-            var aulas = await repositorio.ObterAulasTurmaDisciplina(turma, disciplina);
+            IEnumerable<AulasPorTurmaDisciplinaDto> aulas;
+
+            if (ExperienciaPedagogica(disciplina))
+                aulas = await repositorio.ObterAulasTurmaExperienciasPedagogicasSemana(turma, semana);
+            else
+                aulas = await repositorio.ObterAulasTurmaDisciplinaSemana(turma, disciplina, semana);
 
             return aulas.Sum(a => a.Quantidade);
         }
+
+        private bool ExperienciaPedagogica(string disciplina) 
+            => new string[] { "1214", "1215", "1216", "1217", "1218", "1219", "1220", "1221", "1222", "1223" }
+                .Contains(disciplina);
 
         private AulaConsultaDto MapearParaDto(Aula aula)
         {

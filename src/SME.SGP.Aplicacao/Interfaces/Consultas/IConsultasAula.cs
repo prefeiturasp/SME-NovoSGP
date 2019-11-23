@@ -8,8 +8,8 @@ namespace SME.SGP.Aplicacao
     {
         AulaConsultaDto BuscarPorId(long id);
 
-        Task<IEnumerable<DataAulasProfessorDto>> ObterDatasDeAulasPorCalendarioTurmaEDisciplina(long calendarioId, string turma, string disciplina);
+        Task<IEnumerable<DataAulasProfessorDto>> ObterDatasDeAulasPorCalendarioTurmaEDisciplina(int anoLetivo, string turma, string disciplina);
 
-        Task<int> ObterQuantidadeAulasTurma(string turma, string disciplina);
+        Task<int> ObterQuantidadeAulasTurmaSemana(string turma, string disciplina, string semana);
     }
 }

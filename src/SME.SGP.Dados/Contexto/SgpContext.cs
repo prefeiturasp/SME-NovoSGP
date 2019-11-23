@@ -10,15 +10,23 @@ namespace SME.SGP.Dados.Contexto
     public class SgpContext : ISgpContext
     {
         private readonly IContextoAplicacao contextoAplicacao;
+        private readonly NpgsqlConnection conexao;
 
         public SgpContext(IConfiguration configuration, IContextoAplicacao contextoAplicacao)
         {
-            Conexao = new NpgsqlConnection(configuration.GetConnectionString("SGP-Postgres"));
-            Open();
+            conexao = new NpgsqlConnection(configuration.GetConnectionString("SGP-Postgres"));
             this.contextoAplicacao = contextoAplicacao ?? throw new ArgumentNullException(nameof(contextoAplicacao));
         }
 
-        public NpgsqlConnection Conexao { get; }
+        public NpgsqlConnection Conexao
+        {
+            get 
+            {
+                if (conexao.State != ConnectionState.Open)
+                    Open();
+                return conexao;
+            }
+        }
         public string ConnectionString { get { return Conexao.ConnectionString; } set { Conexao.ConnectionString = value; } }
 
         public int ConnectionTimeout => Conexao.ConnectionTimeout;
@@ -65,8 +73,8 @@ namespace SME.SGP.Dados.Contexto
 
         public void Open()
         {
-            if (Conexao.State != ConnectionState.Open)
-                Conexao.Open();
+            if (conexao.State != ConnectionState.Open)
+                conexao.Open();
         }
     }
 }
