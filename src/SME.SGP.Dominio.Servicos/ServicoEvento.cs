@@ -373,14 +373,17 @@ namespace SME.SGP.Dominio.Servicos
 
         private async Task<bool> ValidaERetornaSeDevePassarPorWorkflowCadastroDatasLetivoOuLiberacaoExcepcional(Evento evento, TipoCalendario tipoCalendario)
         {
-            if (!servicoDiaLetivo.ValidarSeEhDiaLetivo(evento.DataInicio, evento.DataFim, evento.TipoCalendarioId, evento.Letivo == EventoLetivo.Sim, evento.TipoEventoId))
+            if (evento.TipoEvento.Codigo != (long)TipoEventoEnum.LiberacaoExcepcional)
             {
-                var temEventoDeLiberacaoExcepcional = await repositorioEvento.TemEventoNosDiasETipo(evento.DataInicio, evento.DataFim, TipoEventoEnum.LiberacaoExcepcional,
-                    tipoCalendario.Id, evento.UeId, evento.DreId);
+                if (!servicoDiaLetivo.ValidarSeEhDiaLetivo(evento.DataInicio, evento.DataFim, evento.TipoCalendarioId, evento.Letivo == EventoLetivo.Sim, evento.TipoEventoId))
+                {
+                    var temEventoDeLiberacaoExcepcional = await repositorioEvento.TemEventoNosDiasETipo(evento.DataInicio, evento.DataFim, TipoEventoEnum.LiberacaoExcepcional,
+                        tipoCalendario.Id, evento.UeId, evento.DreId);
 
-                if (temEventoDeLiberacaoExcepcional)
-                    return temEventoDeLiberacaoExcepcional;
-                else throw new NegocioException("Não é possível persistir esse evento pois a data informada está fora do período letivo.");
+                    if (temEventoDeLiberacaoExcepcional)
+                        return temEventoDeLiberacaoExcepcional;
+                    else throw new NegocioException("Não é possível persistir esse evento pois a data informada está fora do período letivo.");
+                }
             }
             return false;
         }
