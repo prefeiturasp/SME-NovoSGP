@@ -5,19 +5,23 @@ import React, { useState } from 'react';
 import { Lista } from './listaFrequencia.css';
 
 const ListaFrequencia = props => {
-  const { dados } = props;
+  const { dados, onChangeFrequencia } = props;
 
   const [dataSource, setDataSource] = useState(dados);
 
-  const renderSwitch = (i, aula) => {
+  const renderSwitch = (i, aula, aluno) => {
     return (
       <div  id={`switch-${i}`} className={aula.compareceu ? 'presenca' : 'falta'} >
         <Switch
+          disabled={aluno.desabilitado}
           checkedChildren="C"
           unCheckedChildren="F"
           onChange={faltou => {
-            aula.compareceu = !faltou;
-            setDataSource([...dataSource]);
+            if (!aluno.desabilitado) {
+              aula.compareceu = !faltou;
+              setDataSource([...dataSource]);
+              onChangeFrequencia(true);
+            }
           }}
           checked={!aula.compareceu}
           />
@@ -38,15 +42,21 @@ const ListaFrequencia = props => {
   }
 
   const marcaPresencaFaltaTodasAulas = (aluno, marcarPresenca) => {
-    aluno.aulas.forEach(aula => aula.compareceu = marcarPresenca);
-    setDataSource([...dataSource]);
+    if (!aluno.desabilitado) {
+      aluno.aulas.forEach(aula => aula.compareceu = marcarPresenca);
+      setDataSource([...dataSource]);
+      onChangeFrequencia(true);
+    }
   }
 
   const marcarPresencaFaltaTodosAlunos = marcarPresenca => {
     dataSource.forEach(aluno => {
-      aluno.aulas.forEach(aula => aula.compareceu = marcarPresenca);
+      if (!aluno.desabilitado) {
+        aluno.aulas.forEach(aula => aula.compareceu = marcarPresenca);
+      }
     });
     setDataSource([...dataSource]);
+    onChangeFrequencia(true);
   }
 
   return (
@@ -86,19 +96,25 @@ const ListaFrequencia = props => {
                   {
                     dataSource.map((aluno, i) => {
                       return (
-                      <tr key={i}>
+                      <tr key={i} className={aluno.desabilitado ? 'desabilitar-aluno' : ''} >
                         <td className="width-60 text-center font-weight-bold">{aluno.numeroAlunoChamada}</td>
                         <td className="text-left">{aluno.nomeAluno}</td>
                         {
                           dataSource[0].aulas.length > 1 ?
                           <>
                             <td className="width-50">
-                              <button onClick={()=> marcaPresencaFaltaTodasAulas(aluno, true)} type="button" className={`ant-btn ant-btn-circle ant-btn-sm btn-falta-presenca ${validaSeCompareceuTodasAulas(aluno) ? 'btn-compareceu' : ''} `} >
+                              <button type="button"
+                                      onClick={()=> marcaPresencaFaltaTodasAulas(aluno, true)}
+                                      className={`ant-btn ant-btn-circle ant-btn-sm btn-falta-presenca ${validaSeCompareceuTodasAulas(aluno) ? 'btn-compareceu' : ''} `}
+                                      disabled={aluno.desabilitado}>
                                 <i className="fas fa-check fa-sm"></i>
                               </button>
                             </td>
                             <td className="width-50">
-                            <button onClick={()=> marcaPresencaFaltaTodasAulas(aluno, false)} type="button" className={`ant-btn ant-btn-circle ant-btn-sm btn-falta-presenca ${validaSeFaltouTodasAulas(aluno) ? 'btn-falta' : ''} `}>
+                            <button type="button"
+                                    onClick={()=> marcaPresencaFaltaTodasAulas(aluno, false)}
+                                    className={`ant-btn ant-btn-circle ant-btn-sm btn-falta-presenca ${validaSeFaltouTodasAulas(aluno) ? 'btn-falta' : ''} `}
+                                    disabled={aluno.desabilitado}>
                               <i className="fas fa-times fa-sm"></i>
                             </button>
                             </td>
@@ -109,7 +125,7 @@ const ListaFrequencia = props => {
                         {
                           aluno.aulas.map((aula, i) => {
                             return (
-                              <td key={i} className={dataSource[0].aulas.length -1 == i ? 'width-70' : 'border-right-none width-70'}>{renderSwitch(i, aula)}</td>
+                              <td key={i} className={dataSource[0].aulas.length -1 == i ? 'width-70' : 'border-right-none width-70'}>{renderSwitch(i, aula, aluno)}</td>
                             )
                           })
                         }
@@ -129,11 +145,13 @@ const ListaFrequencia = props => {
 };
 
 ListaFrequencia.propTypes = {
-  dados: PropTypes.array
+  dados: PropTypes.array,
+  onChangeFrequencia: PropTypes.func
 };
 
 ListaFrequencia.defaultProps = {
-  dados: []
+  dados: [],
+  onChangeFrequencia: ()=>{}
 };
 
 export default ListaFrequencia;

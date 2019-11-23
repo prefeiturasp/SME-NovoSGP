@@ -111,6 +111,11 @@ export const Lista = styled.div`
     cursor: pointer;
   }
 
+  .desabilitar-aluno {
+    opacity: 0.4 !important;
+    cursor: unset !important;
+  }
+
   .scroll-tabela-frequencia-thead {
     overflow-y: scroll;
     ::-webkit-scrollbar {

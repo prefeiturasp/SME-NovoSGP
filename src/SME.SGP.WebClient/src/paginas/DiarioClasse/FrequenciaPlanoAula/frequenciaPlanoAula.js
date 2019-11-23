@@ -1,16 +1,18 @@
 import React, { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
-import Cabecalho from '~/componentes-sgp/cabecalho';
-import Button from '~/componentes/button';
-import Card from '~/componentes/card';
-import { Colors } from '~/componentes/colors';
-import SelectComponent from '~/componentes/select';
-import api from '~/servicos/api';
 import { CampoData } from '~/componentes';
-import CardCollapse from '~/componentes/cardCollapse';
+import Cabecalho from '~/componentes-sgp/cabecalho';
 import ListaFrequencia from '~/componentes-sgp/ListaFrequencia/listaFrequencia';
 import Ordenacao from '~/componentes-sgp/Ordenacao/ordenacao';
-import { erros, sucesso } from '~/servicos/alertas';
+import Button from '~/componentes/button';
+import Card from '~/componentes/card';
+import CardCollapse from '~/componentes/cardCollapse';
+import { Colors } from '~/componentes/colors';
+import SelectComponent from '~/componentes/select';
+import { URL_HOME } from '~/constantes/url';
+import { confirmar, erros, sucesso } from '~/servicos/alertas';
+import api from '~/servicos/api';
+import history from '~/servicos/history';
 
 const FrequenciaPlanoAula = () => {
   const usuario = useSelector(store => store.usuario);
@@ -23,6 +25,8 @@ const FrequenciaPlanoAula = () => {
 
   const [frequencia, setFrequencia] = useState([]);
   const [aulaId, setAulaId] = useState(0);
+  const [exibirCardFrequencia, setExibirCardFrequencia] = useState(false);
+  const [modoEdicaoFrequencia, setModoEdicaoFrequencia] = useState(false);
 
   useEffect(() => {
     const obterDisciplinas = async () => {
@@ -36,9 +40,9 @@ const FrequenciaPlanoAula = () => {
     }
   }, []);
 
-  const obterListaFrequencia = async () => {
+  const obterListaFrequencia = async aulaId => {
     const frequenciaAlunos = await api
-      .get(`v1/calendarios/frequencias`, { params: { aulaId: 34 } })
+      .get(`v1/calendarios/frequencias`, { params: { aulaId } })
       .catch(e => erros(e));
     if (frequenciaAlunos && frequenciaAlunos.data) {
       setFrequencia(frequenciaAlunos.data.listaFrequencia);
@@ -46,12 +50,40 @@ const FrequenciaPlanoAula = () => {
     }
   };
 
-  const onClickVoltar = () => {
-    console.log('onClickVoltar');
+  const onClickVoltar = async () => {
+    if (modoEdicaoFrequencia) {
+      const confirmado = await confirmar(
+        'Atenção',
+        '',
+        'Suas alterações não foram salvas, deseja salvar agora?'
+      );
+      if (confirmado) {
+        onClickSalvar();
+        irParaHome();
+      } else {
+        irParaHome();
+      }
+    } else {
+      irParaHome();
+    }
   };
 
-  const onClickCancelar = () => {
-    console.log('onClickCancelar');
+  const irParaHome = () => {
+    history.push(URL_HOME);
+  }
+
+  const onClickCancelar = async () => {
+    if (modoEdicaoFrequencia) {
+      const confirmou = await confirmar(
+        'Atenção',
+        'Você não salvou as informações preenchidas.',
+        'Deseja realmente cancelar as alterações?'
+      );
+      if (confirmou) {
+        obterListaFrequencia(aulaId);
+        setModoEdicaoFrequencia(false);
+      }
+    }
   };
 
   const onClickSalvar = async () => {
@@ -70,7 +102,10 @@ const FrequenciaPlanoAula = () => {
   };
 
   const onClickFrequencia = () => {
-    console.log('onClickFrequencia');
+    if (!exibirCardFrequencia) {
+      setModoEdicaoFrequencia(true);
+    }
+    setExibirCardFrequencia(!exibirCardFrequencia);
   };
 
   // TODO
@@ -80,18 +115,18 @@ const FrequenciaPlanoAula = () => {
     //   .catch(e => erros(e));
   // };
 
-
-
   const onChangeDisciplinas = e => setDisciplinaSelecionada(e);
 
-  const onChangeData = e => {
-    obterListaFrequencia();
+  const onChangeData = data => {
+    setDataSelecionada(data);
+    // TODO - Pegar o ID pelar data selecionada;
+    obterListaFrequencia(34);
   };
 
-  const onClickSwitch = (linha, i) => {
-    console.log(linha);
-    console.log(i);
-  };
+  const onChangeFrequencia = () => {
+    setModoEdicaoFrequencia(true);
+  }
+
   return (
     <>
       <Cabecalho pagina="Frequência/Plano de aula" />
@@ -113,6 +148,7 @@ const FrequenciaPlanoAula = () => {
                 border
                 className="mr-2"
                 onClick={onClickCancelar}
+                disabled={!modoEdicaoFrequencia}
               />
               <Button
                 label="Salvar"
@@ -121,6 +157,7 @@ const FrequenciaPlanoAula = () => {
                 bold
                 className="mr-2"
                 onClick={onClickSalvar}
+                disabled={!modoEdicaoFrequencia}
               />
             </div>
           </div>
@@ -146,35 +183,30 @@ const FrequenciaPlanoAula = () => {
               />
             </div>
           </div>
-          <div className="row">
-            <div className="col-sm-12 col-md-12 col-lg-12 col-xl-12 mb-2">
-              <CardCollapse
-                key="frequencia-collapse"
-                onClick={onClickFrequencia}
-                titulo="Frequência"
-                indice="frequencia-collapse"
-                show={true}
-                alt="TESTE"
-              >
-                {
-                  frequencia && frequencia.length ?
-                  <>
+          {
+            frequencia && frequencia.length ?
+              <div className="row">
+                <div className="col-sm-12 col-md-12 col-lg-12 col-xl-12 mb-2">
+                  <CardCollapse
+                    key="frequencia-collapse"
+                    onClick={onClickFrequencia}
+                    titulo="Frequência"
+                    indice="frequencia-collapse"
+                    show={exibirCardFrequencia}
+                    alt="card-collapse-frequencia"
+                  >
                     <Ordenacao
                       conteudoParaOrdenar={frequencia}
                       ordenarColunaNumero="numeroAlunoChamada"
                       ordenarColunaTexto="nomeAluno"
                       retornoOrdenado={retorno => setFrequencia(retorno)}
-                      ></Ordenacao>
-
-                    <ListaFrequencia
-                      dados={frequencia}
-                      onClickSwitch={onClickSwitch}
-                      ></ListaFrequencia>
-                  </> : ''
-                }
-              </CardCollapse>
-            </div>
-          </div>
+                    ></Ordenacao>
+                    <ListaFrequencia dados={frequencia} onChangeFrequencia={onChangeFrequencia}></ListaFrequencia>
+                  </CardCollapse>
+                </div>
+              </div>
+              : ''
+          }
         </div>
       </Card>
     </>
