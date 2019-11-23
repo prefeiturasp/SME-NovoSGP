@@ -13,6 +13,7 @@ import { URL_HOME } from '~/constantes/url';
 import { confirmar, erros, sucesso } from '~/servicos/alertas';
 import api from '~/servicos/api';
 import history from '~/servicos/history';
+import Alert from '~/componentes/alert';
 
 const FrequenciaPlanoAula = () => {
   const usuario = useSelector(store => store.usuario);
@@ -27,6 +28,7 @@ const FrequenciaPlanoAula = () => {
   const [aulaId, setAulaId] = useState(0);
   const [exibirCardFrequencia, setExibirCardFrequencia] = useState(false);
   const [modoEdicaoFrequencia, setModoEdicaoFrequencia] = useState(false);
+  const [desabilitarDisciplina, setDesabilitarDisciplina] = useState(false);
 
   useEffect(() => {
     const obterDisciplinas = async () => {
@@ -34,11 +36,17 @@ const FrequenciaPlanoAula = () => {
         `v1/professores/${usuario.rf}/turmas/${turmaId}/disciplinas`
       );
       setListaDisciplinas(disciplinas.data);
+      if (disciplinas.data && disciplinas.data.length == 1) {
+        setDisciplinaSelecionada(String(disciplinas.data[0].codigoComponenteCurricular));
+        setDesabilitarDisciplina(true);
+      }
     };
     if (turmaId) {
       obterDisciplinas();
+    } else {
+      resetarTela();
     }
-  }, []);
+  }, [turmaSelecionada]);
 
   const obterListaFrequencia = async aulaId => {
     const frequenciaAlunos = await api
@@ -127,8 +135,32 @@ const FrequenciaPlanoAula = () => {
     setModoEdicaoFrequencia(true);
   }
 
+  const resetarTela = ()=> {
+    setListaDisciplinas([]);
+    setDisciplinaSelecionada([]);
+    setDataSelecionada('')
+    setFrequencia([]);
+    setAulaId(0);
+    setExibirCardFrequencia(false);
+    setModoEdicaoFrequencia(false)
+    setDesabilitarDisciplina(false);
+  }
+
   return (
     <>
+      {usuario && turmaSelecionada.turma ? (
+        ''
+      ) : (
+          <Alert
+            alerta={{
+              tipo: 'warning',
+              id: 'frequencia-selecione-turma',
+              mensagem: 'Você precisa escolher uma turma.',
+              estiloTitulo: { fontSize: '18px' },
+            }}
+            className="mb-2"
+          />
+        )}
       <Cabecalho pagina="Frequência/Plano de aula" />
       <Card>
         <div className="col-md-12">
@@ -172,6 +204,7 @@ const FrequenciaPlanoAula = () => {
                 valueSelect={disciplinaSelecionada}
                 onChange={onChangeDisciplinas}
                 placeholder="Disciplina"
+                disabled={desabilitarDisciplina}
               />
             </div>
             <div className="col-sm-12 col-md-4 col-lg-3 col-xl-2 mb-2">
