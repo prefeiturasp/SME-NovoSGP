@@ -63,7 +63,8 @@ namespace SME.SGP.Dominio.Servicos
                 throw new NegocioException("Não é possível cadastrar essa aula pois a data informada está fora do período letivo.");
             }
 
-            var gradeAulas = await consultasGrade.ObterGradeAulasTurma(aula.TurmaId, int.Parse(aula.DisciplinaId));
+            var semana = (aula.DataAula.DayOfYear / 7) + 1;
+            var gradeAulas = await consultasGrade.ObterGradeAulasTurma(aula.TurmaId, int.Parse(aula.DisciplinaId), semana.ToString());
             if ((gradeAulas != null) && (gradeAulas.QuantidadeAulasRestante < aula.Quantidade))
                 throw new NegocioException("Quantidade de aulas superior ao limíte de aulas da grade.");
 

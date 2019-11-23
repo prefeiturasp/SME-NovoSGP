@@ -115,25 +115,40 @@ namespace SME.SGP.Dominio.Servicos
 
             AtribuirNullSeVazio(evento);
 
+            var ehAlteracao = evento.Id > 0;
+
+            var mensagemRetornoSucesso = $"Evento cadastrado com sucesso.";
+
+            var devePassarPorWorkflow = await ValidaERetornaSeDevePassarPorWorkflowCadastroDatasLetivoOuLiberacaoExcepcional(evento, tipoCalendario);
+
+            unitOfWork.IniciarTransacao();
+
             repositorioEvento.Salvar(evento);
 
-            SME.Background.Core.Cliente.Executar<IServicoEvento>(x => x.AlterarRecorrenciaEventos(evento, alterarRecorrenciaCompleta));
-
-            var mensagemRetornoSucesso = "Evento cadastrado com sucesso.";
-
-            if (evento.TipoEvento.Codigo != (int)TipoEventoEnum.LiberacaoExcepcional)
+            if (devePassarPorWorkflow)
             {
-                var temEventoDeLiberacaoExcepcional = await repositorioEvento.TemEventoNosDiasETipo(evento.DataInicio, evento.DataFim, TipoEventoEnum.LiberacaoExcepcional,
-                tipoCalendario.Id, evento.UeId, evento.DreId);
+                await PersistirWorkflowEvento(evento);
+                mensagemRetornoSucesso = "Evento cadastrado e será válido após aprovação.";
+            }
+            unitOfWork.PersistirTransacao();
 
-                if (temEventoDeLiberacaoExcepcional)
-                {
-                    await PersistirWorkflowEvento(evento);
-                    mensagemRetornoSucesso = "Evento cadastrado e será válido após aprovação.";
-                }
+            if (evento.EventoPaiId.HasValue && evento.EventoPaiId > 0 && alterarRecorrenciaCompleta)
+            {
+                SME.Background.Core.Cliente.Executar<IServicoEvento>(x => x.AlterarRecorrenciaEventos(evento, alterarRecorrenciaCompleta));
             }
 
-            return mensagemRetornoSucesso;
+            if (ehAlteracao)
+            {
+                if (devePassarPorWorkflow)
+                    return "Evento alterado e será válido após aprovação.";
+                else return "Evento alterado com sucesso.";
+            }
+            else
+            {
+                if (devePassarPorWorkflow)
+                    return "Evento cadastrado e será válido após aprovação.";
+                else return "Evento cadastrado com sucesso.";
+            }
         }
 
         public async Task SalvarEventoFeriadosAoCadastrarTipoCalendario(TipoCalendario tipoCalendario)
@@ -175,7 +190,7 @@ namespace SME.SGP.Dominio.Servicos
             {
                 try
                 {
-                    if (!servicoDiaLetivo.ValidarSeEhDiaLetivo(novoEvento.DataInicio, novoEvento.DataInicio, novoEvento.TipoCalendarioId, novoEvento.Letivo == EventoLetivo.Sim))
+                    if (!servicoDiaLetivo.ValidarSeEhDiaLetivo(novoEvento.DataInicio, novoEvento.DataInicio, novoEvento.TipoCalendarioId, novoEvento.Letivo == EventoLetivo.Sim, novoEvento.TipoEventoId))
                     {
                         notificacoesFalha.Add($"{novoEvento.DataInicio.ToShortDateString()} - Não é possível cadastrar esse evento pois a data informada está fora do período letivo.");
                     }
@@ -354,6 +369,20 @@ namespace SME.SGP.Dominio.Servicos
                 $"O evento do feriado {feriadosErro.First()} não foi cadastrado";
 
             throw new NegocioException(mensagemErro);
+        }
+
+        private async Task<bool> ValidaERetornaSeDevePassarPorWorkflowCadastroDatasLetivoOuLiberacaoExcepcional(Evento evento, TipoCalendario tipoCalendario)
+        {
+            if (!servicoDiaLetivo.ValidarSeEhDiaLetivo(evento.DataInicio, evento.DataFim, evento.TipoCalendarioId, evento.Letivo == EventoLetivo.Sim, evento.TipoEventoId))
+            {
+                var temEventoDeLiberacaoExcepcional = await repositorioEvento.TemEventoNosDiasETipo(evento.DataInicio, evento.DataFim, TipoEventoEnum.LiberacaoExcepcional,
+                    tipoCalendario.Id, evento.UeId, evento.DreId);
+
+                if (temEventoDeLiberacaoExcepcional)
+                    return temEventoDeLiberacaoExcepcional;
+                else throw new NegocioException("Não é possível persistir esse evento pois a data informada está fora do período letivo.");
+            }
+            return false;
         }
 
         private void ValidaLiberacaoExcepcional(Evento evento, Usuario usuario, IEnumerable<PeriodoEscolar> periodos, bool dataConfirmada)
