@@ -35,6 +35,11 @@ namespace SME.SGP.Dominio.Servicos
             return repositorioFrequencia.ObterListaFrequenciaPorAula(aulaId);
         }
 
+        public RegistroFrequencia ObterRegistroFrequenciaPorAulaId(long aulaId)
+        {
+            return repositorioFrequencia.ObterRegistroFrequenciaPorAulaId(aulaId);
+        }
+
         public async Task Registrar(long aulaId, IEnumerable<RegistroAusenciaAluno> registroAusenciaAlunos)
         {
             var aula = ObterAula(aulaId);
@@ -48,7 +53,7 @@ namespace SME.SGP.Dominio.Servicos
 
             registroFrequencia = RegistraFrequenciaTurma(aula, registroFrequencia);
 
-            RegistraAusenciaAlunos(registroAusenciaAlunos, alunos, registroFrequencia);
+            RegistraAusenciaAlunos(registroAusenciaAlunos, alunos, registroFrequencia, aula.Quantidade);
 
             unitOfWork.PersistirTransacao();
         }
@@ -75,10 +80,14 @@ namespace SME.SGP.Dominio.Servicos
             return aula;
         }
 
-        private void RegistraAusenciaAlunos(IEnumerable<RegistroAusenciaAluno> registroAusenciaAlunos, IEnumerable<Aplicacao.Integracoes.Respostas.AlunoPorTurmaResposta> alunos, RegistroFrequencia registroFrequencia)
+        private void RegistraAusenciaAlunos(IEnumerable<RegistroAusenciaAluno> registroAusenciaAlunos, IEnumerable<Aplicacao.Integracoes.Respostas.AlunoPorTurmaResposta> alunos, RegistroFrequencia registroFrequencia, int quantidadeAulas)
         {
             foreach (var ausencia in registroAusenciaAlunos)
             {
+                if (ausencia.NumeroAula > quantidadeAulas)
+                {
+                    throw new NegocioException($"O número de aula informado: Aula {ausencia.NumeroAula} não foi encontrado.");
+                }
                 var aluno = alunos.FirstOrDefault(c => c.CodigoAluno == ausencia.CodigoAluno);
                 if (aluno == null)
                 {
