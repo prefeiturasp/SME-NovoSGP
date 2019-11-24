@@ -126,7 +126,7 @@ namespace SME.SGP.Dados.Repositorios
             query.AppendLine("and ab_dres.usuario_id = (select id from usuario where login = @login)");
             query.AppendLine("and ab_dres.perfil = @perfil");
 
-            return (await database.Conexao.QueryFirstAsync<AbrangenciaDreRetorno>(query.ToString(), new { dreCodigo, ueCodigo, login, perfil }));
+            return (await database.Conexao.QueryFirstOrDefaultAsync<AbrangenciaDreRetorno>(query.ToString(), new { dreCodigo, ueCodigo, login, perfil }));
         }
 
         public async Task<IEnumerable<AbrangenciaDreRetorno>> ObterDres(string login, Guid perfil, Modalidade? modalidade = null, int periodo = 0)
