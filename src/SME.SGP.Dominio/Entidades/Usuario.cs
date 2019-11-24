@@ -95,6 +95,11 @@ namespace SME.SGP.Dominio
             return Perfis.FirstOrDefault().CodigoPerfil;
         }
 
+        public TipoPerfil? ObterTipoPerfilAtual()
+        {
+            return Perfis.FirstOrDefault(a => a.CodigoPerfil == PerfilAtual).Tipo;
+        }
+
         public void PodeCriarEvento(Evento evento)
         {
             if (!PossuiPerfilSme() && string.IsNullOrWhiteSpace(evento.DreId))

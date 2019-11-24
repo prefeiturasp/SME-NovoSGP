@@ -93,6 +93,9 @@ namespace SME.SGP.Dominio.Servicos
 
             var usuario = await servicoUsuario.ObterUsuarioLogado();
 
+            if (evento.Id == 0)
+                evento.TipoPerfilCadastro = usuario.ObterTipoPerfilAtual();
+
             usuario.PodeCriarEvento(evento);
 
             if (!evento.PermiteConcomitancia())
@@ -375,11 +378,11 @@ namespace SME.SGP.Dominio.Servicos
 
         private async Task<bool> ValidaERetornaSeDevePassarPorWorkflowCadastroDatasLetivoOuLiberacaoExcepcional(Evento evento, TipoCalendario tipoCalendario)
         {
-            if (evento.TipoEvento.Codigo != (long)TipoEventoEnum.LiberacaoExcepcional)
+            if (evento.TipoEvento.Codigo != (long)TipoEvento.LiberacaoExcepcional)
             {
                 if (!servicoDiaLetivo.ValidarSeEhDiaLetivo(evento.DataInicio, evento.DataFim, evento.TipoCalendarioId, evento.Letivo == EventoLetivo.Sim, evento.TipoEventoId))
                 {
-                    var temEventoDeLiberacaoExcepcional = await repositorioEvento.TemEventoNosDiasETipo(evento.DataInicio, evento.DataFim, TipoEventoEnum.LiberacaoExcepcional,
+                    var temEventoDeLiberacaoExcepcional = await repositorioEvento.TemEventoNosDiasETipo(evento.DataInicio, evento.DataFim, TipoEvento.LiberacaoExcepcional,
                         tipoCalendario.Id, evento.UeId, evento.DreId);
 
                     if (temEventoDeLiberacaoExcepcional)
@@ -397,14 +400,20 @@ namespace SME.SGP.Dominio.Servicos
 
         private async Task VerificaParticularidadeUeEventosNoRecesso(Evento evento)
         {
-            if (await repositorioEvento.TemEventoNosDiasETipo(evento.DataInicio.Date, evento.DataFim.Date, TipoEvento.Recesso, evento.TipoCalendarioId, string.Empty, string.Empty))
+            if (await repositorioEvento.TemEventoNosDiasETipo(evento.DataInicio.Date, evento.DataFim.Date, TipoEvento.Recesso, evento.TipoCalendarioId, evento.UeId, string.Empty))
             {
-                if (!await repositorioEvento.TemEventoNosDiasETipo(evento.DataInicio.Date, evento.DataFim.Date, TipoEvento.LiberacaoExcepcional, evento.TipoCalendarioId, string.Empty, string.Empty))
+                if (!await repositorioEvento.TemEventoNosDiasETipo(evento.DataInicio.Date, evento.DataFim.Date, TipoEvento.LiberacaoExcepcional, evento.TipoCalendarioId, evento.UeId, string.Empty))
                 {
-                    if (!await repositorioEvento.TemEventoNosDiasETipo(evento.DataInicio.Date, evento.DataFim.Date, TipoEvento.ReposicaoNoRecesso, evento.TipoCalendarioId, string.Empty, string.Empty))
+                    var eventosReposicaoNoRecesso = await repositorioEvento.EventosNosDiasETipo(evento.DataInicio.Date, evento.DataFim.Date, TipoEvento.ReposicaoNoRecesso, evento.TipoCalendarioId, evento.UeId, string.Empty);
+                    if (eventosReposicaoNoRecesso != null && !eventosReposicaoNoRecesso.Any(a => a.TipoPerfilCadastro == TipoPerfil.SME))
                         throw new NegocioException("Data do evento fora do período escolar.");
                 }
             }
+        }
+
+        private Task VerificaParticularidadeUeEventosSuspensaoAtividades(Evento evento)
+        {
+            throw new NotImplementedException();
         }
 
         private async Task VerificarParticularidadesDre(Evento evento, Usuario usuario, IEnumerable<PeriodoEscolar> periodos)
@@ -430,7 +439,7 @@ namespace SME.SGP.Dominio.Servicos
 
         private async Task VerificarParticularidadesUe(Evento evento, Usuario usuario, IEnumerable<PeriodoEscolar> periodos)
         {
-            if (usuario.PossuiPerfilUe())
+            if (usuario.ObterTipoPerfilAtual() == TipoPerfil.UE)
             {
                 if (!string.IsNullOrEmpty(evento.UeId))
                 {
@@ -439,6 +448,7 @@ namespace SME.SGP.Dominio.Servicos
                 }
 
                 await VerificaParticularidadeUeEventosNoRecesso(evento);
+                await VerificaParticularidadeUeEventosSuspensaoAtividades(evento);
             }
         }
 
