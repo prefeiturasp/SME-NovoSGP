@@ -71,6 +71,7 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IConsultasEventoTipo, ConsultasEventoTipo>();
             services.TryAddScoped<IConsultasEvento, ConsultasEvento>();
             services.TryAddScoped<IConsultasAula, ConsultasAula>();
+            services.TryAddScoped<IConsultasEventosAulasCalendario, ConsultasEventosAulasCalendario>();
             services.TryAddScoped<IConsultasGrade, ConsultasGrade>();
             services.TryAddScoped<IConsultasFrequencia, ConsultasFrequencia>();
             services.TryAddScoped<IConsultasAtribuicaoEsporadica, ConsultasAtribuicaoEsporadica>();

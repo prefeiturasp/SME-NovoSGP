@@ -29,10 +29,27 @@ namespace SME.SGP.Aplicacao
             this.repositorioParametrosSistema = repositorioParametrosSistema ?? throw new ArgumentNullException(nameof(repositorioParametrosSistema));
         }
 
+
+        private List<DateTime> BuscarDiasLetivos(long tipoCalendarioId)
+        {
+            List<DateTime> dias = new List<DateTime>();
+            var periodoEscolar = repositorioPeriodoEscolar.ObterPorTipoCalendario(tipoCalendarioId);
+            periodoEscolar
+                .ToList()
+                .ForEach(x => dias
+                    .AddRange(
+                        Enumerable
+                        .Range(0, 1 + (x.PeriodoFim - x.PeriodoInicio).Days)
+                        .Select(y => x.PeriodoInicio.AddDays(y))
+                        .Where(w => EhDiaUtil(w))
+                        .ToList())
+            );
+
+            return dias;
+        }
         public List<DateTime> BuscarDiasLetivos(IEnumerable<PeriodoEscolar> periodoEscolar)
         {
             List<DateTime> dias = new List<DateTime>();
-
             periodoEscolar
                 .ToList()
                 .ForEach(x => dias
@@ -97,11 +114,11 @@ namespace SME.SGP.Aplicacao
             };
         }
 
-        public bool EhDiaUtil(DateTime data)
+
+        private bool EhDiaUtil(DateTime data)
         {
             return data.DayOfWeek != DayOfWeek.Saturday && data.DayOfWeek != DayOfWeek.Sunday;
         }
-
         public List<DateTime> ObterDias(IEnumerable<Dominio.Evento> eventos, List<DateTime> dias, Dominio.EventoLetivo eventoTipo)
         {
             eventos
@@ -117,6 +134,6 @@ namespace SME.SGP.Aplicacao
                                             || eventoTipo == Dominio.EventoLetivo.Sim)
                             ));
             return dias.Distinct().ToList();
-        }
+        }       
     }
 }
