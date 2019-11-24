@@ -127,8 +127,14 @@ namespace SME.SGP.Dominio
 
         public void PodeCriarEventoComDataPassada(Evento evento)
         {
-            if ((evento.DataInicio < DateTime.Today) && !PossuiPerfilSme())
-                throw new NegocioException("Não é possível criar evento com datas passadas.");
+            if (evento.DataInicio < DateTime.Today)
+            {
+                if (ObterTipoPerfilAtual() != TipoPerfil.SME)
+                {
+                    if (ObterTipoPerfilAtual() != TipoPerfil.DRE || evento.TipoEvento.LocalOcorrencia != EventoLocalOcorrencia.DRE)
+                        throw new NegocioException("Não é possível criar evento com datas passadas.");
+                }
+            }
         }
 
         public bool PodeRegistrarFrequencia(Aula aula)

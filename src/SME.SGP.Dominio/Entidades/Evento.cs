@@ -192,11 +192,11 @@ namespace SME.SGP.Dominio
             }
         }
 
-        public void PodeCriarEventoOrganizacaoEscolar(Usuario usuario)
+        public void PodeCriarEventoOrganizacaoEscolarComPerfilSme(Usuario usuario)
         {
             if (this.TipoEvento.Codigo == (long)Dominio.TipoEvento.OrganizacaoEscolar)
             {
-                if (!usuario.PossuiPerfilSme())
+                if (usuario.ObterTipoPerfilAtual() != TipoPerfil.SME)
                     throw new NegocioException("Somente usuário com perfil SME pode cadastrar esse tipo de evento.");
             }
         }

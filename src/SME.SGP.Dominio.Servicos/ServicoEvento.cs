@@ -114,6 +114,7 @@ namespace SME.SGP.Dominio.Servicos
                 evento.EstaNoPeriodoLetivo(periodos);
             }
 
+            usuario.PodeCriarEventoComDataPassada(evento);
             await VerificarParticularidadesSME(evento, usuario, periodos, dataConfirmada);
             await VerificarParticularidadesDre(evento, usuario, periodos);
             await VerificarParticularidadesUe(evento, usuario, periodos);
@@ -411,14 +412,22 @@ namespace SME.SGP.Dominio.Servicos
             }
         }
 
-        private Task VerificaParticularidadeUeEventosSuspensaoAtividades(Evento evento)
+        private async Task VerificaParticularidadeUeEventosSuspensaoAtividades(Evento evento)
         {
-            throw new NotImplementedException();
+            if (evento.Letivo == EventoLetivo.Sim)
+            {
+                var eventosSuspensaoAtividades = await repositorioEvento.EventosNosDiasETipo(evento.DataInicio.Date, evento.DataFim.Date, TipoEvento.SuspensaoAtividades, evento.TipoCalendarioId, evento.UeId, string.Empty);
+                if (eventosSuspensaoAtividades != null && !eventosSuspensaoAtividades.Any(a => a.TipoPerfilCadastro == TipoPerfil.SME))
+                    throw new NegocioException("Você está tentando criar um evento Letivo em dia Não Letivo. Se isso for realmente necessário contate a DRE para receber a autorização.");
+
+                if (eventosSuspensaoAtividades != null && !eventosSuspensaoAtividades.Any(a => a.TipoPerfilCadastro == TipoPerfil.UE))
+                    throw new NegocioException("A data do evento coincide com o evento de suspensão de atividades da UE. Ajuste a data do evento ou apague o evento de suspensão.");
+            }
         }
 
         private async Task VerificarParticularidadesDre(Evento evento, Usuario usuario, IEnumerable<PeriodoEscolar> periodos)
         {
-            if (usuario.PossuiPerfilDre())
+            if (usuario.ObterTipoPerfilAtual() == TipoPerfil.DRE)
             {
                 if (!string.IsNullOrEmpty(evento.DreId))
                 {
@@ -429,8 +438,7 @@ namespace SME.SGP.Dominio.Servicos
 
         private async Task VerificarParticularidadesSME(Evento evento, Usuario usuario, IEnumerable<PeriodoEscolar> periodos, bool dataConfirmada)
         {
-            usuario.PodeCriarEventoComDataPassada(evento);
-            evento.PodeCriarEventoOrganizacaoEscolar(usuario);
+            evento.PodeCriarEventoOrganizacaoEscolarComPerfilSme(usuario);
             await VerificaSeEventoAconteceJuntoComOrganizacaoEscolar(evento, usuario);
 
             if (evento.TipoEvento.Codigo == (int)TipoEvento.LiberacaoExcepcional)
@@ -441,11 +449,10 @@ namespace SME.SGP.Dominio.Servicos
         {
             if (usuario.ObterTipoPerfilAtual() == TipoPerfil.UE)
             {
-                if (!string.IsNullOrEmpty(evento.UeId))
-                {
-                    await VerificarSeUsuarioPodeCadastrarEventoParaUe(evento, usuario);
+                await VerificarSeUsuarioPodeCadastrarEventoParaUe(evento, usuario);
+
+                if (evento.TipoEvento.LocalOcorrencia == EventoLocalOcorrencia.UE)
                     evento.VerificaSeDataMenorQueHoje();
-                }
 
                 await VerificaParticularidadeUeEventosNoRecesso(evento);
                 await VerificaParticularidadeUeEventosSuspensaoAtividades(evento);

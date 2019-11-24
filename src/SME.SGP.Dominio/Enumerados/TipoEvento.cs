@@ -15,5 +15,8 @@ namespace SME.SGP.Dominio
 
         [Display(Name = "Reposição no recesso")]
         ReposicaoNoRecesso = 15,
+
+        [Display(Name = "Suspensão de Atividades")]
+        SuspensaoAtividades = 21
     }
 }
