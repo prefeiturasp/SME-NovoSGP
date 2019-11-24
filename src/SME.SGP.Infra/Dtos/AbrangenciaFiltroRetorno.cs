@@ -8,10 +8,12 @@ namespace SME.SGP.Dto
     {
         public string AbreviacaoModalidade { get { return this.Modalidade.GetAttribute<DisplayAttribute>().ShortName; } }
         public int AnoLetivo { get; set; }
+        public int Ano { get; set; }
         public string CodigoDre { get; set; }
         public int CodigoModalidade { get { return (int)this.Modalidade; } }
         public string CodigoTurma { get; set; }
         public string CodigoUe { get; set; }
+        public TipoEscola TipoEscola { get; set; }
         public string DescricaoFiltro { get { return $"{AbreviacaoModalidade} - {NomeTurma} - {NomeUe} "; } }
         public Modalidade Modalidade { get; set; }
         public string NomeDre { get; set; }
@@ -19,5 +21,7 @@ namespace SME.SGP.Dto
         public string NomeTurma { get; set; }
         public string NomeUe { get; set; }
         public int Semestre { get; set; }
+        public int QtDuracaoAula { get; set; }
+        public int TipoTurno { get; set; }
     }
 }

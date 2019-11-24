@@ -28,6 +28,14 @@ namespace SME.SGP.Aplicacao
             return await repositorioAbrangencia.ObterAbrangenciaPorFiltro(texto, login, perfil);
         }
 
+        public async Task<AbrangenciaFiltroRetorno> ObterAbrangenciaTurma(string turma)
+        {
+            var login = servicoUsuario.ObterLoginAtual();
+            var perfil = servicoUsuario.ObterPerfilAtual();
+
+            return await repositorioAbrangencia.ObterAbrangenciaTurma(turma, login, perfil);
+        }
+
         public async Task<IEnumerable<AbrangenciaDreRetorno>> ObterDres(Modalidade? modalidade, int periodo = 0)
         {
             var login = servicoUsuario.ObterLoginAtual();

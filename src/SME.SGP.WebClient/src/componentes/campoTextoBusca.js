@@ -18,7 +18,9 @@ const CampoTextoBusca = ({
   onSearch,
   onChange,
   onKeyDown,
-  type
+  type,
+  minValue,
+  maxValue
 }) => {
   return (
     <>
@@ -31,6 +33,8 @@ const CampoTextoBusca = ({
           value={value}
           type={type && type}
           onKeyDown={onKeyDown}
+          min={minValue}
+          max={maxValue}
         />
       </Campo>
     </>

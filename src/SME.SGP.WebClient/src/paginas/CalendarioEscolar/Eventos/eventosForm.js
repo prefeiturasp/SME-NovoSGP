@@ -211,6 +211,10 @@ const EventosForm = ({ match }) => {
     setValidacoes(Yup.object(val));
   };
 
+  const eventoCalendarioEdicao = useSelector(
+    state => state.calendarioEscolar.eventoCalendarioEdicao
+  );
+
   const consultaPorId = async id => {
     const evento = await servicoEvento.obterPorId(id).catch(e => erros(e));
 
@@ -225,13 +229,23 @@ const EventosForm = ({ match }) => {
         dataFim: evento.data.dataFim ? window.moment(evento.data.dataFim) : '',
         dataInicio: window.moment(evento.data.dataInicio),
         descricao: evento.data.descricao,
-        dreId: String(evento.data.dreId),
-        feriadoId: evento.data.feriadoId || '',
+        dreId: !validaSeValorInvalido(evento.data.dreId)
+          ? String(evento.data.dreId)
+          : undefined,
+        feriadoId: !validaSeValorInvalido(evento.data.feriadoId)
+          ? String(evento.data.feriadoId)
+          : undefined,
         letivo: evento.data.letivo,
         nome: evento.data.nome,
-        tipoCalendarioId: String(evento.data.tipoCalendarioId),
-        tipoEventoId: String(evento.data.tipoEventoId),
-        ueId: String(evento.data.ueId),
+        tipoCalendarioId: !validaSeValorInvalido(evento.data.tipoCalendarioId)
+          ? String(evento.data.tipoCalendarioId)
+          : undefined,
+        tipoEventoId: !validaSeValorInvalido(evento.data.tipoEventoId)
+          ? String(evento.data.tipoEventoId)
+          : undefined,
+        ueId: !validaSeValorInvalido(evento.data.ueId)
+          ? String(evento.data.ueId)
+          : undefined,
         id: evento.data.id,
         recorrenciaEventos: evento.data.recorrenciaEventos,
       });
@@ -244,10 +258,47 @@ const EventosForm = ({ match }) => {
         alteradoEm: evento.data.alteradoEm,
       });
 
+      verificarAlteracaoLetivoEdicao(listaTipoEvento, evento.data.tipoEventoId);
+
       onChangeTipoEvento(evento.data.tipoEventoId);
 
       setExibirAuditoria(true);
+
+      if (Object.entries(eventoCalendarioEdicao).length > 0) {
+        setBreadcrumbManual(
+          match.url,
+          'Cadastro de Eventos no Calendário Escolar',
+          '/calendario-escolar'
+        );
+      }
     }
+  };
+
+  const verificarAlteracaoLetivoEdicao = (listaTipos, idTipoEvento) => {
+    if (!listaTipos) return;
+
+    const tipoEdicao = listaTipos.find(x => x.id === idTipoEvento);
+
+    if (!tipoEdicao) return;
+
+    const tipoEventoOpcional = tipoEdicao.letivo === eventoLetivo.Opcional;
+
+    setDesabilitarOpcaoLetivo(!tipoEventoOpcional);
+  };
+
+  const validaSeValorInvalido = valor => {
+    const validacoesObjeto =
+      !valor ||
+      (typeof valor === 'object' && Object.entries(valor).length === 0);
+
+    return (
+      !valor ||
+      valor === '' ||
+      valor === null ||
+      valor === 'null' ||
+      valor === undefined ||
+      validacoesObjeto
+    );
   };
 
   const consultaFeriados = async () => {
@@ -262,11 +313,17 @@ const EventosForm = ({ match }) => {
         'Você não salvou as informações preenchidas.',
         'Deseja voltar para tela de listagem agora?'
       );
-      if (confirmado) {
+      if (Object.entries(eventoCalendarioEdicao).length > 0) {
+        history.push('/calendario-escolar');
+      } else if (confirmado) {
         history.push('/calendario-escolar/eventos');
       }
     } else {
-      history.push('/calendario-escolar/eventos');
+      if (Object.entries(eventoCalendarioEdicao).length > 0) {
+        history.push('/calendario-escolar');
+      } else {
+        history.push('/calendario-escolar/eventos');
+      }
     }
   };
 
@@ -307,6 +364,8 @@ const EventosForm = ({ match }) => {
   };
 
   const onClickCadastrar = async valoresForm => {
+    if (tipoDataUnico) valoresForm.dataFim = valoresForm.dataInicio;
+
     const tiposCalendarioParaCopiar = listaCalendarioParaCopiar.map(id => {
       const calendario = listaCalendarioEscolar.find(e => e.id === id);
       return {
@@ -315,8 +374,23 @@ const EventosForm = ({ match }) => {
       };
     });
 
+    /**
+     * @description Metodo a ser disparado quando receber a mensagem do servidor
+     */
+    const sucessoAoSalvar = resposta => {
+      if (tiposCalendarioParaCopiar && tiposCalendarioParaCopiar.length > 0) {
+        setListaMensagensCopiarEvento(resposta.data);
+        setExibirModalRetornoCopiarEvento(true);
+      } else {
+        sucesso(resposta.data[0].mensagem);
+        history.push('/calendario-escolar/eventos');
+      }
+    };
+
+    let payload = {};
+    let cadastrado = {};
     try {
-      let payload = {
+      payload = {
         ...valoresForm,
         recorrenciaEventos: recorrencia ? { ...recorrencia } : null,
         tiposCalendarioParaCopiar,
@@ -330,36 +404,24 @@ const EventosForm = ({ match }) => {
         };
       }
 
-      /**
-       * @description Metodo a ser disparado quando receber a mensagem do servidor
-       */
-      const onSuccessSave = response => {
-        if (tiposCalendarioParaCopiar && tiposCalendarioParaCopiar.length > 0) {
-          setListaMensagensCopiarEvento(response.data);
-          setExibirModalRetornoCopiarEvento(true);
-        } else {
-          sucesso('Evento cadastrado com sucesso');
-          history.push('/calendario-escolar/eventos');
-        }
-      };
-
-      const cadastrado = await servicoEvento.salvar(idEvento || 0, payload);
+      cadastrado = await servicoEvento.salvar(idEvento || 0, payload);
       if (cadastrado && cadastrado.status === 200) {
-        onSuccessSave(cadastrado);
-      } else if (cadastrado && cadastrado.status === 602) {
-        const confirmaData = exibirModalConfirmaData(cadastrado);
+        sucessoAoSalvar(cadastrado);
+      }
+    } catch (e) {
+      if (e && e.response && e.response.status === 602) {
+        const confirmaData = await exibirModalConfirmaData(e.response.data);
         if (confirmaData) {
-          const request = servicoEvento.salvar(idEvento || 0, {
+          const request = await servicoEvento.salvar(idEvento || 0, {
             ...payload,
             DataConfirmada: true,
           });
           if (request) {
-            onSuccessSave(request);
+            sucessoAoSalvar(request);
           }
         }
         return false;
       }
-    } catch (e) {
       erros(e);
     }
   };
@@ -873,7 +935,7 @@ const EventosForm = ({ match }) => {
           closable={false}
           fecharAoClicarFora={false}
           fecharAoClicarEsc={false}
-          esconderBotaoPrincipal={true}
+          esconderBotaoPrincipal
         >
           {listaMensagensCopiarEvento.map((item, i) => (
             <p key={i}>

@@ -52,7 +52,7 @@ namespace SME.SGP.Aplicacao
             return TratarRetornoDisciplinasPlanejamento(disciplinasDto, filtroDisciplinaPlanejamentoDto);
         }
 
-        public async Task<IEnumerable<DisciplinaDto>> ObterDisciplinasPorProfessorETurma(long codigoTurma)
+        public async Task<IEnumerable<DisciplinaDto>> ObterDisciplinasPorProfessorETurma(string codigoTurma)
         {
             IEnumerable<DisciplinaDto> disciplinasDto = null;
 

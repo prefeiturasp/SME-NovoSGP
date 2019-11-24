@@ -8,5 +8,7 @@
         public string CodigoModalidade { get; set; }
         public string NomeTurma { get; set; }
         public int Semestre { get; set; }
+        public int DuracaoTurno { get; set; }
+        public int TipoTurno { get; set; }
     }
 }
