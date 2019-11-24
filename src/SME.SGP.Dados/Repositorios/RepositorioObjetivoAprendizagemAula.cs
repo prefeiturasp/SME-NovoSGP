@@ -14,6 +14,13 @@ namespace SME.SGP.Dados.Repositorios
         public RepositorioObjetivoAprendizagemAula(ISgpContext database) : base(database)
         { }
 
+        public async Task LimparObjetivosAula(long planoAulaId)
+        {
+            var command = "delete from objetivo_aprendizagem_aula where plano_aula_id = @planoAulaId";
+
+            await database.ExecuteAsync(command, new { planoAulaId });
+        }
+
         public async Task<IEnumerable<ObjetivoAprendizagemAula>> ObterObjetivosPlanoAula(long planoAulaId)
         {
             var query = "select * from objetivo_aprendizagem_aula where plano_aula_id = @planoAulaId";

@@ -9,11 +9,15 @@ namespace SME.SGP.Aplicacao
     public class ComandosPlanoAula : IComandosPlanoAula
     {
         private readonly IRepositorioPlanoAula repositorio;
+        private readonly IRepositorioObjetivoAprendizagemAula repositorioObjetivosAula;
         private readonly IUnitOfWork unitOfWork;
 
-        public ComandosPlanoAula(IRepositorioPlanoAula repositorioPlanoAula, IUnitOfWork unitOfWork)
+        public ComandosPlanoAula(IRepositorioPlanoAula repositorioPlanoAula, 
+                        IRepositorioObjetivoAprendizagemAula repositorioObjetivosAula,
+                        IUnitOfWork unitOfWork)
         {
             this.repositorio = repositorioPlanoAula;
+            this.repositorioObjetivosAula = repositorioObjetivosAula;
             this.unitOfWork = unitOfWork;
         }
 
@@ -25,9 +29,15 @@ namespace SME.SGP.Aplicacao
                 {
                     PlanoAula planoAula = await repositorio.ObterPlanoAulaPorAula(planoAulaDto.AulaId);
                     planoAula = MapearParaDominio(planoAulaDto, planoAula);
-
                     repositorio.Salvar(planoAula);
-                    // TODO: Salvar Objetivos
+
+                    // Salvar Objetivos
+                    repositorioObjetivosAula.LimparObjetivosAula(planoAula.Id);
+                    planoAulaDto.ObjetivosAprendizagemAula.ForEach(objetivoId =>
+                    {
+                        repositorioObjetivosAula.Salvar(new ObjetivoAprendizagemAula(planoAula.Id, objetivoId));
+                    });
+
                 }
                 unitOfWork.PersistirTransacao();
             }
