@@ -27,7 +27,7 @@ namespace SME.SGP.Aplicacao
 
         public async Task<IEnumerable<ProfessorResumoDto>> ObterResumoAutoComplete(int anoLetivo, string dreId, string nomeProfessor)
         {
-            if (nomeProfessor.Length < 3)
+            if (nomeProfessor.Length < 2)
                 return null;
 
             return await servicoEOL.ObterProfessoresAutoComplete(anoLetivo, dreId, nomeProfessor);
