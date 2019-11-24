@@ -29,6 +29,7 @@ namespace SME.SGP.Dominio
         public long TipoCalendarioId { get; set; }
         public EventoTipo TipoEvento { get; set; }
         public long TipoEventoId { get; set; }
+        public TipoPerfil? TipoPerfilCadastro { get; set; }
         public string UeId { get; set; }
         public WorkflowAprovacao WorkflowAprovacao { get; set; }
         public long? WorkflowAprovacaoId { get; set; }
