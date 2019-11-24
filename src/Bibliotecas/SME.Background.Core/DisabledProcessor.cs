@@ -1,14 +1,12 @@
 ﻿using SME.Background.Core.Interfaces;
 using System;
-using System.Collections.Generic;
 using System.Linq.Expressions;
-using System.Text;
 
 namespace SME.Background.Core
 {
     public class DisabledProcessor : IProcessor
     {
-        readonly IServiceProvider provider;
+        private readonly IServiceProvider provider;
 
         public DisabledProcessor(IServiceProvider provider)
         {
@@ -33,6 +31,11 @@ namespace SME.Background.Core
         }
 
         public void ExecutarPeriodicamente(Expression<Action> metodo, string cron)
+        {
+            throw new Exception("O serviço de processamento em segundo plano está desativado");
+        }
+
+        public void ExecutarPeriodicamente<T>(Expression<Action<T>> metodo, string cron)
         {
             throw new Exception("O serviço de processamento em segundo plano está desativado");
         }

@@ -289,6 +289,20 @@ namespace SME.SGP.Aplicacao.Integracoes
             return null;
         }
 
+        public async Task<IEnumerable<TurmaPorUEResposta>> ObterTurmasPorUE(string ueId, string anoLetivo)
+        {
+            httpClient.DefaultRequestHeaders.Clear();
+
+            var resposta = await httpClient.GetAsync($"escolas/{ueId}/turmas/anos_letivos/{anoLetivo}");
+            var turmas = new List<TurmaPorUEResposta>();
+            if (resposta.IsSuccessStatusCode)
+            {
+                var json = resposta.Content.ReadAsStringAsync().Result;
+                turmas = JsonConvert.DeserializeObject<List<TurmaPorUEResposta>>(json);
+            }
+            return turmas;
+        }
+
         public async Task ReiniciarSenha(string codigoRf)
         {
             httpClient.DefaultRequestHeaders.Clear();

@@ -16,12 +16,23 @@ namespace SME.SGP.Dados.Repositorios
         {
         }
 
+        public IEnumerable<Aula> ObterAulasPorTurmaEAnoLetivo(string turmaId, string anoLetivo)
+        {
+            var query = "select * from aula where turma_id= @turmaId and date_part('year',data_aula) = @anoLetivo and not excluido";
+
+            return database.Conexao.Query<Aula>(query, new
+            {
+                turmaId,
+                anoLetivo
+            });
+        }
+
         public async Task<IEnumerable<AulasPorTurmaDisciplinaDto>> ObterAulasTurmaDisciplinaSemana(string turma, string disciplina, string semana)
         {
-            var query = @"select professor_rf, quantidade, data_aula 
-                 from aula 
-                where not excluido 
-                  and turma_id = @turma 
+            var query = @"select professor_rf, quantidade, data_aula
+                 from aula
+                where not excluido
+                  and turma_id = @turma
                   and disciplina_id = @disciplina
                   and to_char(data_aula, 'IW') = @semana";
 
@@ -35,10 +46,10 @@ namespace SME.SGP.Dados.Repositorios
 
         public async Task<IEnumerable<AulasPorTurmaDisciplinaDto>> ObterAulasTurmaExperienciasPedagogicasSemana(string turma, string semana)
         {
-            var query = @"select professor_rf, quantidade, data_aula 
-                 from aula 
-                where not excluido 
-                  and turma_id = @turma 
+            var query = @"select professor_rf, quantidade, data_aula
+                 from aula
+                where not excluido
+                  and turma_id = @turma
                   and disciplina_id in ('1214','1215','1216','1217','1218','1219','1220','1221','1222','1223')
                   and to_char(data_aula, 'IW') = @semana";
 
