@@ -199,6 +199,12 @@ namespace SME.SGP.Dados.Repositorios
             return database.Conexao.Query<Evento>(query.ToString(), new { tipoCalendarioId, dreId, ueId });
         }
 
+        public async Task<IEnumerable<Evento>> ObterEventosPorTipoDeCalendarioDreUeDia(long tipoCalendarioId, string dreId, string ueId, DateTime data)
+        {
+            var query = ObterEventos(tipoCalendarioId, dreId, ueId, null, data.Date);
+            return await database.Conexao.QueryAsync<Evento>(query.ToString(), new { tipoCalendarioId, dreId, ueId, data });
+        }
+
         public async Task<IEnumerable<Evento>> ObterEventosPorTipoDeCalendarioDreUeMes(long tipoCalendarioId, string dreId, string ueId, int mes)
         {
             var query = ObterEventos(tipoCalendarioId, dreId, ueId, mes);
@@ -422,7 +428,7 @@ namespace SME.SGP.Dados.Repositorios
             query.AppendFormat(" OFFSET {0} ROWS FETCH NEXT {1} ROWS ONLY", paginacao.QuantidadeRegistrosIgnorados, paginacao.QuantidadeRegistros);
         }
 
-        private string ObterEventos(long tipoCalendarioId, string dreId, string ueId, int? mes = null)
+        private string ObterEventos(long tipoCalendarioId, string dreId, string ueId, int? mes = null, DateTime? data = null)
         {
             StringBuilder query = new StringBuilder();
             MontaQueryCabecalho(query);
@@ -437,6 +443,11 @@ namespace SME.SGP.Dados.Repositorios
             {
                 query.AppendLine("and (extract(month from e.data_inicio) = @mes");
                 query.AppendLine("  or extract(month from e.data_fim) = @mes)");
+            }
+            if (data.HasValue)
+            {
+                query.AppendLine("and e.data_inicio <= @data");
+                query.AppendLine("and e.data_fim >= @data");
             }
 
             if (!string.IsNullOrEmpty(ueId))
@@ -454,6 +465,11 @@ namespace SME.SGP.Dados.Repositorios
                 query.AppendLine("and (extract(month from e.data_inicio) = @mes");
                 query.AppendLine("  or extract(month from e.data_fim) = @mes)");
             }
+            if (data.HasValue)
+            {
+                query.AppendLine("and e.data_inicio <= @data");
+                query.AppendLine("and e.data_fim >= @data");
+            }
 
             if (!string.IsNullOrEmpty(dreId) || !string.IsNullOrEmpty(ueId))
             {
@@ -466,6 +482,11 @@ namespace SME.SGP.Dados.Repositorios
                 {
                     query.AppendLine("and (extract(month from e.data_inicio) = @mes");
                     query.AppendLine("  or extract(month from e.data_fim) = @mes)");
+                }
+                if (data.HasValue)
+                {
+                    query.AppendLine("and e.data_inicio <= @data");
+                    query.AppendLine("and e.data_fim >= @data");
                 }
             }
             return query.ToString();
