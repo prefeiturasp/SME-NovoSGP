@@ -74,7 +74,7 @@ namespace SME.SGP.IoC
             services.TryAddTransient<IConsultasAula, ConsultasAula>();
             services.TryAddTransient<IConsultasGrade, ConsultasGrade>();
             services.TryAddTransient<IConsultasFrequencia, ConsultasFrequencia>();
-            services.TryAddTransient<IConsultasAtribuicaoEsporadica, ConsultasAtribuicaoEsporadica>();            
+            services.TryAddTransient<IConsultasAtribuicaoEsporadica, ConsultasAtribuicaoEsporadica>();
         }
 
         private static void RegistrarContextos(IServiceCollection services)
@@ -119,6 +119,7 @@ namespace SME.SGP.IoC
             services.TryAddTransient<IRepositorioFrequencia, RepositorioFrequencia>();
             services.TryAddTransient<IRepositorioRegistroAusenciaAluno, RepositorioRegistroAusenciaAluno>();
             services.TryAddTransient<IRepositorioAtribuicaoEsporadica, RepositorioAtribuicaoEsporadica>();
+            services.TryAddTransient<IRepositorioFrequenciaAlunoDisciplinaPeriodo, RepositorioFrequenciaAlunoDisciplinaPeriodo>();
         }
 
         private static void RegistrarServicos(IServiceCollection services)
@@ -140,6 +141,7 @@ namespace SME.SGP.IoC
             services.TryAddTransient<IServicoFrequencia, ServicoFrequencia>();
             services.TryAddTransient<IServicoAula, ServicoAula>();
             services.TryAddTransient<IServicoAtribuicaoEsporadica, ServicoAtribuicaoEsporadica>();
+            services.TryAddTransient<IServicoCalculoFrequencia, ServicoCalculoFrequencia>();
         }
 
         private static void ResgistraDependenciaHttp(IServiceCollection services)

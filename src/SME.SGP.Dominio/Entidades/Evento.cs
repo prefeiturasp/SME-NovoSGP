@@ -186,11 +186,8 @@ namespace SME.SGP.Dominio
 
         public void PodeCriarEventoOrganizacaoEscolar(Usuario usuario)
         {
-            if (this.TipoEvento.Codigo == (long)TipoEventoEnum.OrganizacaoEscolar)
-            {
-                if (!usuario.PossuiPerfilSme())
-                    throw new NegocioException("Somente usuário com perfil SME pode cadastrar esse tipo de evento.");
-            }
+            if (this.TipoEvento.Codigo == (long)TipoEventoEnum.OrganizacaoEscolar && !usuario.PossuiPerfilSme())
+                throw new NegocioException("Somente usuário com perfil SME pode cadastrar esse tipo de evento.");
         }
 
         public void PodeSerEnviadoParaAprovacao()
@@ -225,24 +222,21 @@ namespace SME.SGP.Dominio
 
         public void VerificaSeEventoAconteceJuntoComOrganizacaoEscolar(IEnumerable<Evento> eventos, Usuario usuario)
         {
-            if (eventos.Any())
+            if (eventos.Any() && usuario.PossuiPerfilDreOuUe())
             {
-                if (usuario.PossuiPerfilDreOuUe())
+                if (TipoEvento.TipoData == EventoTipoData.InicioFim)
                 {
-                    if (TipoEvento.TipoData == EventoTipoData.InicioFim)
+                    if (eventos.Any(a => (a.DataInicio.Date >= this.DataInicio.Date && this.DataInicio.Date <= a.DataFim.Date) ||
+                                          (a.DataInicio.Date >= this.DataFim.Date && this.DataFim.Date <= a.DataFim.Date)))
                     {
-                        if (eventos.Any(a => (a.DataInicio.Date >= this.DataInicio.Date && this.DataInicio.Date <= a.DataFim.Date) ||
-                                              (a.DataInicio.Date >= this.DataFim.Date && this.DataFim.Date <= a.DataFim.Date)))
-                        {
-                            throw new NegocioException($"Não é possível adicionar um evento nesta data pois ele se encontra no período do evento {eventos.FirstOrDefault().Nome} ");
-                        }
+                        throw new NegocioException($"Não é possível adicionar um evento nesta data pois ele se encontra no período do evento {eventos.FirstOrDefault().Nome} ");
                     }
-                    else
+                }
+                else
+                {
+                    if (eventos.Any(a => (a.DataInicio >= this.DataInicio && a.DataInicio <= this.DataFim)))
                     {
-                        if (eventos.Any(a => (a.DataInicio >= this.DataInicio && a.DataInicio <= this.DataFim)))
-                        {
-                            throw new NegocioException($"Não é possível adicionar um evento nesta data pois ele se encontra no período do evento {eventos.FirstOrDefault().Nome} ");
-                        }
+                        throw new NegocioException($"Não é possível adicionar um evento nesta data pois ele se encontra no período do evento {eventos.FirstOrDefault().Nome} ");
                     }
                 }
             }
