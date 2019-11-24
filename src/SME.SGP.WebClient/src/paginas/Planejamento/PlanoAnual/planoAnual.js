@@ -69,7 +69,10 @@ export default function PlanoAnual() {
 
   const turmaSelecionada = usuario.turmaSelecionada;
   const emEdicao = bimestres.filter(x => x.ehEdicao).length > 0;
-  const ehDisabled = somenteConsulta || !permissoesTela.podeAlterar? true : !usuario.turmaSelecionada.turma;
+  const ehDisabled =
+    somenteConsulta || !permissoesTela.podeAlterar
+      ? true
+      : !usuario.turmaSelecionada.turma;
   const ehDisabledComPermissao = !usuario.turmaSelecionada.turma;
   const dispatch = useDispatch();
   const [modalConfirmacaoVisivel, setModalConfirmacaoVisivel] = useState({
@@ -171,7 +174,7 @@ export default function PlanoAnual() {
 
   const obterDisciplinasPlanoAnual = async () => {
     const disciplinas = await PlanoAnualHelper.ObterDisciplinasPlano(
-      usuario.rf,
+      usuario.rf || usuario.usuario,
       turmaId
     );
 
@@ -411,7 +414,7 @@ export default function PlanoAnual() {
 
     const retornoCopia = await PlanoAnualHelper.CopiarConteudo(
       planoAnualEnviar,
-      usuario.rf,
+      usuario.rf || usuario.usuario,
       modalCopiarConteudo.turmasSelecionadas
     );
 

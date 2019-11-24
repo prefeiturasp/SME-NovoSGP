@@ -17,6 +17,7 @@ namespace SME.SGP.Dominio
         public string NotifacaoTitulo { get; set; }
         public NotificacaoCategoria NotificacaoCategoria { get; set; }
         public NotificacaoTipo NotificacaoTipo { get; set; }
+        public WorkflowAprovacaoTipo Tipo { get; set; }
         public string TurmaId { get; set; }
         public string UeId { get; set; }
         private List<WorkflowAprovacaoNivel> niveis { get; set; }

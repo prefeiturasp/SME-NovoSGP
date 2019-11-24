@@ -21,14 +21,16 @@ namespace SME.SGP.Aplicacao.Integracoes
             var perfisUsuario = repositorioPrioridadePerfil.ObterPerfisPorIds(perfis);
 
             usuario.DefinirPerfis(perfisUsuario);
+            usuario.DefinirPerfilAtual(usuario.ObterPerfilPrioritario());
 
             var perfisPorPrioridade = new PerfisPorPrioridadeDto
             {
-                PerfilSelecionado = usuario.ObterPerfilPrioritario(),
+                PerfilSelecionado = usuario.PerfilAtual,
                 Perfis = MapearPerfisParaDto(perfisUsuario),
                 PossuiPerfilSmeOuDre = usuario.PossuiPerfilSmeOuDre(),
                 PossuiPerfilSme = usuario.PossuiPerfilSme(),
-                PossuiPerfilDre = usuario.PossuiPerfilDre()
+                PossuiPerfilDre = usuario.PossuiPerfilDre(),
+                EhProfessor = usuario.EhProfessor()
             };
             return perfisPorPrioridade;
         }
