@@ -3,6 +3,7 @@ using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -13,22 +14,55 @@ namespace SME.SGP.Aplicacao
         private readonly IComandosDiasLetivos comandosDiasLetivos;
         private readonly IRepositorioAula repositorioAula;
         private readonly IRepositorioEvento repositorioEvento;
+        private readonly IServicoUsuario servicoUsuario;
 
         public ConsultasEventosAulasCalendario(
             IRepositorioEvento repositorioEvento,
             IComandosDiasLetivos comandosDiasLetivos,
-            IRepositorioAula repositorioAula)
+            IRepositorioAula repositorioAula,
+            IServicoUsuario servicoUsuario)
         {
             this.repositorioEvento = repositorioEvento ?? throw new ArgumentNullException(nameof(repositorioEvento));
             this.comandosDiasLetivos = comandosDiasLetivos ?? throw new ArgumentNullException(nameof(comandosDiasLetivos));
             this.repositorioAula = repositorioAula ?? throw new ArgumentNullException(nameof(repositorioAula));
+            this.servicoUsuario = servicoUsuario ?? throw new ArgumentException(nameof(servicoUsuario));
         }
 
-        public List<DateTime> ObterDias(IEnumerable<AulaDto> aulas)
+        public async Task<IEnumerable<EventosAulasTipoDiaDto>> ObterEventoAulasDia(FiltroEventosAulasCalendarioDiaDto filtro)
         {
-            List<DateTime> dias = new List<DateTime>();
-            dias.AddRange(aulas.Select(x => x.DataAula));
-            return dias.Distinct().ToList();
+            List<EventosAulasTipoDiaDto> eventosAulas = new List<EventosAulasTipoDiaDto>();
+            var perfil = servicoUsuario.ObterPerfilAtual();
+            var eventos = await repositorioEvento.ObterEventosPorTipoDeCalendarioDreUeDia(filtro.TipoCalendarioId, filtro.DreId, filtro.UeId, filtro.Data);
+            var aulas = await repositorioAula.ObterAulasCompleto(filtro.TipoCalendarioId, filtro.TurmaId, filtro.UeId, filtro.Data, perfil);
+            eventos
+            .ToList()
+            .ForEach(x => eventosAulas
+            .Add(new EventosAulasTipoDiaDto
+            {
+                Descricao = x.Nome,
+                Id = x.Id,
+                TipoEvento = x.Descricao
+            }));
+
+            aulas
+            .ToList()
+            .ForEach(x => eventosAulas
+            .Add(new EventosAulasTipoDiaDto
+            {
+                Id = x.Id,
+                TipoEvento = "Aula",
+                DadosAula = new DadosAulaDto
+                {
+                    Disciplina = "XPTO",
+                    Horario = x.DataAula.ToString("hh:mm tt", CultureInfo.InvariantCulture),
+                    Modalidade = "Médio",
+                    Tipo = "EMEF",
+                    Turma = x.TurmaNome,
+                    UnidadeEscolar = x.UeNome
+                }
+            }));
+
+            return eventosAulas;
         }
 
         public async Task<IEnumerable<EventosAulasCalendarioDto>> ObterEventosAulasMensais(FiltroEventosAulasCalendarioDto filtro)
@@ -98,6 +132,13 @@ namespace SME.SGP.Aplicacao
                 });
             }
             return eventosAulas;
+        }
+
+        private List<DateTime> ObterDias(IEnumerable<AulaDto> aulas)
+        {
+            List<DateTime> dias = new List<DateTime>();
+            dias.AddRange(aulas.Select(x => x.DataAula));
+            return dias.Distinct().ToList();
         }
 
         private List<KeyValuePair<int, string>> ObterDiasAulas(IEnumerable<AulaDto> aulas)

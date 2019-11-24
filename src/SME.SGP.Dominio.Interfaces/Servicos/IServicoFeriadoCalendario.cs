@@ -7,6 +7,6 @@ namespace SME.SGP.Dominio.Interfaces
     {
         DateTime CalcularFeriado(int ano, FeriadoEnum feriado);
 
-        Task VerficaSeExisteFeriadosMoveisEInclui(int ano);
+        void VerficaSeExisteFeriadosMoveisEInclui(int ano);
     }
 }

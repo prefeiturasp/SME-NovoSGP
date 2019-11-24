@@ -3,6 +3,7 @@ const Colors = {
   AzulAnakiwa: 'AzulAnakiwa',
   Roxo: 'Roxo',
   CinzaBotao: 'CinzaBotao',
+  Laranja: 'Laranja',
   Verde: 'Verde',
   Vermelho: 'Vermelho',
 };
@@ -16,6 +17,7 @@ const Base = {
   Branco: '#FFF',
   CinzaBadge: '#F3F3F3',
   CinzaBarras: '#C8C8C8',
+  CinzaBordaCalendario: '#C4C4C4',
   CinzaBotao: '#A4A4A4',
   CinzaCalendario: '#F7F9FA',
   CinzaDesabilitado: '#DADADA',
@@ -24,6 +26,7 @@ const Base = {
   CinzaMako: '#42474A',
   CinzaMenu: '#EEEEEE',
   CinzaMenuItem: '#686868',
+  Laranja: '#F39200',
   Preto: '#000',
   RosaCalendario: '#FEE4E2',
   Roxo: '#6933FF',
@@ -41,6 +44,7 @@ const Active = {
   AzulAnakiwa: Base.AzulAnakiwa,
   Roxo: Base.Roxo,
   CinzaBotao: Base.CinzaBotao,
+  Laranja: Base.Laranja,
   Verde: Base.Verde,
   Vermelho: Base.Vermelho,
 };

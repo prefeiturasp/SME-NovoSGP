@@ -23,10 +23,23 @@ namespace SME.SGP.Api.Controllers
         }
 
         [HttpPost]
+        [ProducesResponseType(typeof(EventosAulasTipoDiaDto), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [Route("meses/dias/eventos-aulas")]
+        [Permissao(Permissao.CP_C, Policy = "Bearer")]
+        public async Task<IActionResult> ObterEventoAulasDia(FiltroEventosAulasCalendarioDiaDto filtro)
+        {
+            var retorno = await consultasEventosAulasCalendario.ObterEventoAulasDia(filtro);
+            if (retorno.Any())
+                return Ok(retorno);
+            else return StatusCode(204);
+        }
+
+        [HttpPost]
         [ProducesResponseType(typeof(EventosAulasCalendarioDto), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [Route("meses/eventos-aulas")]
-        [Permissao(Permissao.E_C, Policy = "Bearer")]
+        [Permissao(Permissao.CP_C, Policy = "Bearer")]
         public async Task<IActionResult> ObterEventosAulasMensais(FiltroEventosAulasCalendarioDto filtro)
         {
             var retorno = await consultasEventosAulasCalendario.ObterEventosAulasMensais(filtro);
@@ -39,7 +52,7 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(EventosAulasTipoCalendarioDto), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [Route("meses/{mes}/tipos/eventos-aulas")]
-        [Permissao(Permissao.E_C, Policy = "Bearer")]
+        [Permissao(Permissao.CP_C, Policy = "Bearer")]
         public async Task<IActionResult> ObterTipoEventosAulas(FiltroEventosAulasCalendarioMesDto filtro)
         {
             var retorno = await consultasEventosAulasCalendario.ObterTipoEventosAulas(filtro);

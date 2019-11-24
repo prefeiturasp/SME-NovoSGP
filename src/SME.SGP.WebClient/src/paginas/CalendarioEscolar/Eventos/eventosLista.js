@@ -23,6 +23,8 @@ import Grid from '~/componentes/grid';
 import Alert from '~/componentes/alert';
 import ServicoEvento from '~/servicos/Paginas/Calendario/ServicoEvento';
 
+import { Localizador } from '~/componentes';
+
 const EventosLista = () => {
   const usuario = useSelector(store => store.usuario);
   const permissoesTela = usuario.permissoes[RotasDto.EVENTOS];

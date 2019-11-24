@@ -33,7 +33,7 @@ namespace SME.SGP.Api.Controllers
         [HttpGet("{codigoRF}/turmas/{codigoTurma}/disciplinas/")]
         [ProducesResponseType(typeof(IEnumerable<DisciplinaDto>), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        public async Task<IActionResult> Get(long codigoTurma, string codigoRF, [FromServices]IConsultasDisciplina consultasDisciplina)
+        public async Task<IActionResult> Get(string codigoTurma, string codigoRF, [FromServices]IConsultasDisciplina consultasDisciplina)
         {
             return Ok(await consultasDisciplina.ObterDisciplinasPorProfessorETurma(codigoTurma));
         }
@@ -55,6 +55,32 @@ namespace SME.SGP.Api.Controllers
             filtroDisciplinaPlanejamentoDto.CodigoTurma = codigoTurma;
 
             return Ok(await consultasDisciplina.ObterDisciplinasParaPlanejamento(filtroDisciplinaPlanejamentoDto));
+        }
+
+        [HttpGet("{codigoRF}/resumo/{anoLetivo}")]
+        [ProducesResponseType(typeof(ProfessorResumoDto), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        public async Task<IActionResult> Resumo(string codigoRF, int anoLetivo)
+        {
+            var retorno = await consultasProfessor.ObterResumoPorRFAnoLetivo(codigoRF, anoLetivo);
+
+            if (retorno == null)
+                return NoContent();
+
+            return Ok(retorno);
+        }
+
+        [HttpGet("{anoLetivo}/autocomplete/{dreId}")]
+        [ProducesResponseType(typeof(IEnumerable<ProfessorResumoDto>), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        public async Task<IActionResult> ResumoAutoComplete(int anoLetivo, string dreId, string nomeProfessor)
+        {
+            var retorno = await consultasProfessor.ObterResumoAutoComplete(anoLetivo, dreId, nomeProfessor);
+
+            if (retorno == null)
+                return NoContent();
+
+            return Ok(retorno);
         }
     }
 }
