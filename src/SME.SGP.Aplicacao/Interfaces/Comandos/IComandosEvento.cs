@@ -1,8 +1,9 @@
-﻿using SME.SGP.Infra;
+﻿using SME.SGP.Dominio;
+using SME.SGP.Infra;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace SME.SGP.Aplicacao.Interfaces
+namespace SME.SGP.Aplicacao
 {
     public interface IComandosEvento
     {
@@ -11,5 +12,7 @@ namespace SME.SGP.Aplicacao.Interfaces
         Task<IEnumerable<RetornoCopiarEventoDto>> Criar(EventoDto eventoDto);
 
         void Excluir(long[] idsEventos);
+
+        void GravarRecorrencia(EventoDto eventoDto, Evento evento);
     }
 }

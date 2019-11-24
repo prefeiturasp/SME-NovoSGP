@@ -24,7 +24,7 @@ const TipoEventosForm = ({ match }) => {
     letivo: undefined,
     localOcorrencia: undefined,
     concomitancia: true,
-    tipoData: true,
+    tipoData: 1,
     dependencia: true,
     ativo: true,
   });
@@ -99,7 +99,7 @@ const TipoEventosForm = ({ match }) => {
             letivo: resposta.data.letivo.toString(),
             localOcorrencia: resposta.data.localOcorrencia.toString(),
             concomitancia: resposta.data.concomitancia,
-            tipoData: !!resposta.data.tipoData,
+            tipoData: resposta.data.tipoData,
             dependencia: resposta.data.dependencia,
             ativo: resposta.data.ativo,
           });
@@ -126,7 +126,7 @@ const TipoEventosForm = ({ match }) => {
       letivo: undefined,
       localOcorrencia: undefined,
       concomitancia: true,
-      tipoData: true,
+      tipoData: 1,
       dependencia: true,
       ativo: true,
     });
@@ -255,7 +255,7 @@ const TipoEventosForm = ({ match }) => {
             letivo: dadosTipoEvento.letivo,
             localOcorrencia: dadosTipoEvento.localOcorrencia,
             concomitancia: dadosTipoEvento.concomitancia,
-            tipoData: !!dadosTipoEvento.tipoData,
+            tipoData: dadosTipoEvento.tipoData,
             dependencia: dadosTipoEvento.dependencia,
             ativo: dadosTipoEvento.ativo,
           }}
@@ -387,10 +387,10 @@ const TipoEventosForm = ({ match }) => {
                         disabled={possuiEventos}
                       >
                         <Div className="form-check form-check-inline">
-                          <Radio value>Única</Radio>
+                          <Radio value={1}>Única</Radio>
                         </Div>
                         <Div className="form-check form-check-inline">
-                          <Radio value={false}>Início e fim</Radio>
+                          <Radio value={2}>Início e fim</Radio>
                         </Div>
                       </Radio.Group>
                     </Div>
