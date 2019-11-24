@@ -19,9 +19,11 @@ const FrequenciaPlanoAula = () => {
   const usuario = useSelector(store => store.usuario);
   const { turmaSelecionada } = usuario;
   const turmaId = turmaSelecionada ? turmaSelecionada.turma : 0;
+  const anoLetivo = turmaSelecionada ? turmaSelecionada.anoLetivo : 0;
 
   const [listaDisciplinas, setListaDisciplinas] = useState([]);
   const [disciplinaSelecionada, setDisciplinaSelecionada] = useState(undefined);
+  const [listaDatasAulas, setListaDatasAulas] = useState([]);
   const [dataSelecionada, setDataSelecionada] = useState('');
 
   const [frequencia, setFrequencia] = useState([]);
@@ -29,6 +31,7 @@ const FrequenciaPlanoAula = () => {
   const [exibirCardFrequencia, setExibirCardFrequencia] = useState(false);
   const [modoEdicaoFrequencia, setModoEdicaoFrequencia] = useState(false);
   const [desabilitarDisciplina, setDesabilitarDisciplina] = useState(false);
+  const [diasParaHabilitar, setDiasParaHabilitar] = useState([]);
 
   useEffect(() => {
     const obterDisciplinas = async () => {
@@ -39,14 +42,22 @@ const FrequenciaPlanoAula = () => {
       if (disciplinas.data && disciplinas.data.length == 1) {
         setDisciplinaSelecionada(String(disciplinas.data[0].codigoComponenteCurricular));
         setDesabilitarDisciplina(true);
+        obterDatasDeAulasDisponiveis(disciplinas.data[0].codigoComponenteCurricular);
       }
     };
+
     if (turmaId) {
+      obterDatasDeAulasDisponiveis();
       obterDisciplinas();
     } else {
       resetarTela();
+      setAulaId(0);
+      setListaDisciplinas([]);
+      setListaDatasAulas([]);
+      setDesabilitarDisciplina(false);
+      setDiasParaHabilitar([]);
     }
-  }, [turmaSelecionada]);
+  }, [turmaSelecionada.turma]);
 
   const obterListaFrequencia = async aulaId => {
     const frequenciaAlunos = await api
@@ -60,13 +71,9 @@ const FrequenciaPlanoAula = () => {
 
   const onClickVoltar = async () => {
     if (modoEdicaoFrequencia) {
-      const confirmado = await confirmar(
-        'Atenção',
-        '',
-        'Suas alterações não foram salvas, deseja salvar agora?'
-      );
+      const confirmado = await pergutarParaSalvar();
       if (confirmado) {
-        onClickSalvar();
+        await onClickSalvar();
         irParaHome();
       } else {
         irParaHome();
@@ -75,6 +82,14 @@ const FrequenciaPlanoAula = () => {
       irParaHome();
     }
   };
+
+  const pergutarParaSalvar = () => {
+    return confirmar(
+      'Atenção',
+      '',
+      'Suas alterações não foram salvas, deseja salvar agora?'
+    );
+  }
 
   const irParaHome = () => {
     history.push(URL_HOME);
@@ -94,19 +109,26 @@ const FrequenciaPlanoAula = () => {
     }
   };
 
-  const onClickSalvar = async () => {
-    const valorParaSalvar = {
-      aulaId,
-      listaFrequencia: frequencia
-    };
-    const salvouFrequencia = await api
-      .post(`v1/calendarios/frequencias`, valorParaSalvar)
-        .catch(e => erros(e));
-
-    if (salvouFrequencia && salvouFrequencia.status == 200) {
-      sucesso('Frequência realizada com sucesso.');
-    }
-
+  const onClickSalvar = () => {
+    return new Promise((resolve, reject) => {
+      const valorParaSalvar = {
+        aulaId,
+        listaFrequencia: frequencia
+      };
+      return api
+        .post(`v1/calendarios/frequencias`, valorParaSalvar).then(salvouFrequencia => {
+          if (salvouFrequencia && salvouFrequencia.status == 200) {
+            sucesso('Frequência realizada com sucesso.');
+            resolve(true);
+          } else {
+            resolve(false);
+          }
+        })
+        .catch(e => {
+          erros(e)
+          reject(e);
+        });
+    });
   };
 
   const onClickFrequencia = () => {
@@ -116,34 +138,83 @@ const FrequenciaPlanoAula = () => {
     setExibirCardFrequencia(!exibirCardFrequencia);
   };
 
-  // TODO
-  // const obterDatasDeAulasDisponiveis = async () => {
-    // const datasDeAulas = await api
-    //   .get(`v1/calendarios/{calendarioId}/frequencias/aulas/datas/turmas/{turmaId}/disciplinas/{disciplinaId}`)
-    //   .catch(e => erros(e));
-  // };
+  const obterDatasDeAulasDisponiveis = async disciplinaId => {
+    const datasDeAulas = await api
+      .get(`v1/calendarios/frequencias/aulas/datas/${anoLetivo}/turmas/${turmaId}/disciplinas/${disciplinaId}`)
+      .catch(e => erros(e));
 
-  const onChangeDisciplinas = e => setDisciplinaSelecionada(e);
-
-  const onChangeData = data => {
-    setDataSelecionada(data);
-    // TODO - Pegar o ID pelar data selecionada;
-    obterListaFrequencia(34);
+      if (datasDeAulas && datasDeAulas.data) {
+        setListaDatasAulas(datasDeAulas.data);
+        const habilitar = datasDeAulas.data.map(item => window.moment(item.data).format('YYYY-MM-DD'));
+        setDiasParaHabilitar(habilitar);
+      } else {
+        setListaDatasAulas([]);
+        setDiasParaHabilitar([]);
+      }
   };
+
+  const onChangeDisciplinas = async disciplinaId => {
+    if (modoEdicaoFrequencia) {
+      const confirmar = await pergutarParaSalvar();
+      if (confirmar) {
+        await onClickSalvar();
+        setarDisciplina(disciplinaId);
+      } else {
+        setarDisciplina(disciplinaId);
+      }
+    } else {
+      setarDisciplina(disciplinaId);
+    }
+  };
+
+  const setarDisciplina =  disciplinaId => {
+    resetarTela(true);
+    setDisciplinaSelecionada(disciplinaId);
+    if (disciplinaId) {
+      obterDatasDeAulasDisponiveis(disciplinaId);
+    } else {
+      setListaDatasAulas([]);
+      setDiasParaHabilitar([]);
+    }
+  }
+
+  const onChangeData = async data => {
+    if (modoEdicaoFrequencia) {
+      const confirmar = await pergutarParaSalvar();
+      if (confirmar) {
+        await onClickSalvar();
+        validaSeTemIdAula(data);
+      } else {
+        validaSeTemIdAula(data);
+      }
+    } else {
+      validaSeTemIdAula(data);
+    }
+  };
+
+  const validaSeTemIdAula = data => {
+    setDataSelecionada(data);
+    resetarTela(true, true);
+    const aulaDataSelecionada = listaDatasAulas.find(item => window.moment(item.data).isSame(data, 'date'));
+    if (aulaDataSelecionada && aulaDataSelecionada.idAula) {
+      obterListaFrequencia(aulaDataSelecionada.idAula);
+    }
+  }
 
   const onChangeFrequencia = () => {
     setModoEdicaoFrequencia(true);
   }
 
-  const resetarTela = ()=> {
-    setListaDisciplinas([]);
-    setDisciplinaSelecionada([]);
-    setDataSelecionada('')
+  const resetarTela = (naoDisciplina, naoData) => {
+    if (!naoDisciplina) {
+      setDisciplinaSelecionada(undefined);
+    }
+    if (!naoData) {
+      setDataSelecionada('')
+    }
     setFrequencia([]);
-    setAulaId(0);
     setExibirCardFrequencia(false);
     setModoEdicaoFrequencia(false)
-    setDesabilitarDisciplina(false);
   }
 
   return (
@@ -213,6 +284,8 @@ const FrequenciaPlanoAula = () => {
                 onChange={onChangeData}
                 placeholder="DD/MM/AAAA"
                 formatoData="DD/MM/YYYY"
+                desabilitado={!disciplinaSelecionada}
+                diasParaHabilitar={diasParaHabilitar}
               />
             </div>
           </div>
