@@ -1104,11 +1104,6 @@ namespace SME.SGP.Dados.Repositorios
                 query.AppendLine("and e.ue_id is null and e.dre_id is null");
         }
         #endregion Quantidade De Eventos Por Dia
-        public IEnumerable<Evento> ObterEventosPorRecorrencia(long eventoId, long eventoPaiId, DateTime dataEvento)
-        {
-            var query = "select * from evento where id <> @eventoId and evento_pai_id = @eventoPaiId and data_inicio ::date >= @dataEvento ";
-            return database.Conexao.Query<Evento>(query, new { eventoId, eventoPaiId, dataEvento });
-        }
 
         private string ObterEventos(long tipoCalendarioId, string dreId, string ueId, int? mes = null, DateTime? data = null)
         {
