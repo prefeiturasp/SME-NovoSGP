@@ -5,6 +5,7 @@ using SME.SGP.Dominio;
 using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Api.Controllers
@@ -31,21 +32,33 @@ namespace SME.SGP.Api.Controllers
         }
 
         [HttpGet]
-        [Route("disciplinas")]
+        [Route("disciplinas/{anoLetivo}/{bimestre}/turma/{turmaId}/componente/{componenteId}")]
         [ProducesResponseType(typeof(IEnumerable<ComponenteCurricularSimplificadoDto>), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        public async Task<IActionResult> ObterDisciplinasBimestrePlano([FromBody] FiltroObjetivosAprendizagemPlanoDto filtro)
+        [ProducesResponseType(204)]
+        public async Task<IActionResult> ObterDisciplinasBimestrePlano(int anoLetivo, int bimestre, long turmaId, long componenteId)
         {
-            return Ok(consultasObjetivoAprendizagem.ObterDisciplinasDoBimestrePlanoAnual(filtro.Ano, filtro.Bimestre, filtro.TurmaId, filtro.ComponenteId));
+            var disciplinas = await consultasObjetivoAprendizagem.ObterDisciplinasDoBimestrePlanoAnual(anoLetivo, bimestre, turmaId, componenteId);
+
+            if (disciplinas.Any())
+                return Ok(disciplinas);
+            else
+                return StatusCode(204);
         }
 
         [HttpGet]
-        [Route("objetivos-disciplina")]
+        [Route("objetivos/{anoLetivo}/{bimestre}/turma/{turmaId}/componente/{componenteId}/disciplina/{disciplinaId}")]
         [ProducesResponseType(typeof(IEnumerable<ComponenteCurricularSimplificadoDto>), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        public async Task<IActionResult> ObterObjetivosPorDisciplina([FromBody] FiltroObjetivosAprendizagemPlanoDto filtro)
+        [ProducesResponseType(204)]
+        public async Task<IActionResult> ObterObjetivosPorDisciplina(int anoLetivo, int bimestre, long turmaId, long componenteId, long disciplinaId)
         {
-            return Ok(consultasObjetivoAprendizagem.ObterObjetivosPlanoDisciplina(filtro.Ano, filtro.Bimestre, filtro.TurmaId, filtro.ComponenteId, filtro.DisciplinaId));
+            var objetivos = await consultasObjetivoAprendizagem.ObterObjetivosPlanoDisciplina(anoLetivo, bimestre, turmaId, componenteId, disciplinaId);
+
+            if (objetivos.Any())
+                return Ok(objetivos);
+            else
+                return StatusCode(204);
         }
     }
 }
