@@ -47,7 +47,7 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(TipoCalendarioCompletoDto), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [Route("{id}")]
-        [Permissao(Permissao.TCE_C, Policy = "Bearer")]
+        [Permissao(Permissao.TCE_C, Permissao.E_C, Policy = "Bearer")]
         public IActionResult BuscarUm(long id)
         {
             return Ok(consultas.BuscarPorId(id));
