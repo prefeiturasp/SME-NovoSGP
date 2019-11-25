@@ -71,8 +71,20 @@ const ListaFrequencia = props => {
                   <th className="text-left">Lista de estudantes</th>
                   { dataSource[0].aulas.length > 1 ?
                     <>
-                      <th className="width-50 cursor-pointer" onClick={()=> marcarPresencaFaltaTodosAlunos(true)}>C</th>
-                      <th className="width-50 cursor-pointer" onClick={()=> marcarPresencaFaltaTodosAlunos(false)}>F</th>
+
+                      <th className="width-50 cursor-pointer" onClick={()=> marcarPresencaFaltaTodosAlunos(true)}>
+                        <div className="marcar-todas-frequencia">
+                          Marcar todas
+                        </div>
+                        <div className="margin-marcar-todos">
+                          C
+                        </div>
+                      </th>
+                      <th className="width-50 cursor-pointer" onClick={()=> marcarPresencaFaltaTodosAlunos(false)}>
+                       <div className="margin-marcar-todos">
+                          F
+                        </div>
+                      </th>
                     </>
                     : ''
                   }

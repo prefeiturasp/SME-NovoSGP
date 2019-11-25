@@ -127,6 +127,7 @@ export const Lista = styled.div`
   .scroll-tabela-frequencia-tbody {
     max-height: 500px;
     overflow-y: scroll;
+    border-bottom: solid 1px ${Base.CinzaDesabilitado};
 
     ::-webkit-scrollbar-track {
       background-color: #f4f4f4 !important;
@@ -143,4 +144,20 @@ export const Lista = styled.div`
       border-radius: 3px !important;
     }
   }
+
+  .marcar-todas-frequencia {
+    cursor: unset !important;
+    position: absolute;
+    margin-left: -13px;
+    margin-top: -17px;
+    font-size: 10px;
+    width: 100px;
+    height: 15px;
+    background-color: ${Base.CinzaDesabilitado};
+  }
+
+  .margin-marcar-todos {
+    margin-bottom: -6px;
+  }
+
 `;
