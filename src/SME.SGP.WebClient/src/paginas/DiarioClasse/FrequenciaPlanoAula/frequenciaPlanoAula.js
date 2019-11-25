@@ -14,9 +14,15 @@ import { confirmar, erros, sucesso } from '~/servicos/alertas';
 import api from '~/servicos/api';
 import history from '~/servicos/history';
 import Alert from '~/componentes/alert';
+import { verificaSomenteConsulta } from '~/servicos/servico-navegacao';
+import RotasDto from '~/dtos/rotasDto';
 
 const FrequenciaPlanoAula = () => {
   const usuario = useSelector(store => store.usuario);
+
+  const [somenteConsulta, setSomenteConsulta] = useState(false);
+  const permissoesTela = usuario.permissoes[RotasDto.FREQUENCIA_PLANO_AULA];
+
   const { turmaSelecionada } = usuario;
   const turmaId = turmaSelecionada ? turmaSelecionada.turma : 0;
   const anoLetivo = turmaSelecionada ? turmaSelecionada.anoLetivo : 0;
@@ -28,12 +34,14 @@ const FrequenciaPlanoAula = () => {
 
   const [frequencia, setFrequencia] = useState([]);
   const [aulaId, setAulaId] = useState(0);
+  const [frequenciaId, setFrequenciaId] = useState(0);
   const [exibirCardFrequencia, setExibirCardFrequencia] = useState(false);
   const [modoEdicaoFrequencia, setModoEdicaoFrequencia] = useState(false);
   const [desabilitarDisciplina, setDesabilitarDisciplina] = useState(false);
   const [diasParaHabilitar, setDiasParaHabilitar] = useState([]);
   const [auditoria, setAuditoria] = useState([]);
   const [exibirAuditoria, setExibirAuditoria] = useState(false);
+  const [desabilitarCampos, setDesabilitarCampos] = useState(false);
 
   useEffect(() => {
     const obterDisciplinas = async () => {
@@ -59,15 +67,23 @@ const FrequenciaPlanoAula = () => {
       setDesabilitarDisciplina(false);
       setDiasParaHabilitar([]);
     }
+    setSomenteConsulta(verificaSomenteConsulta(permissoesTela));
   }, [turmaSelecionada.turma]);
 
+  useEffect(() => {
+    const desabilitar = frequenciaId > 0
+    ? somenteConsulta || !permissoesTela.podeAlterar
+    :  somenteConsulta || !permissoesTela.podeIncluir;
+    setDesabilitarCampos(desabilitar);
+  },[frequenciaId]);
+
   const obterListaFrequencia = async aulaId => {
+    setAulaId(aulaId);
     const frequenciaAlunos = await api
       .get(`v1/calendarios/frequencias`, { params: { aulaId } })
       .catch(e => erros(e));
     if (frequenciaAlunos && frequenciaAlunos.data) {
-      setFrequencia(frequenciaAlunos.data.listaFrequencia);;
-      setAulaId(frequenciaAlunos.data.aulaId)
+      setFrequenciaId(frequenciaAlunos.data.id);
       setAuditoria({
         criadoPor: frequenciaAlunos.data.criadoPor,
         criadoRf: frequenciaAlunos.data.criadoRf,
@@ -77,11 +93,12 @@ const FrequenciaPlanoAula = () => {
         alteradoEm: frequenciaAlunos.data.alteradoEm,
       });
       setExibirAuditoria(true);
+      setFrequencia(frequenciaAlunos.data.listaFrequencia);
     }
   };
 
   const onClickVoltar = async () => {
-    if (modoEdicaoFrequencia) {
+    if (!desabilitarCampos && modoEdicaoFrequencia) {
       const confirmado = await pergutarParaSalvar();
       if (confirmado) {
         await onClickSalvar();
@@ -107,7 +124,7 @@ const FrequenciaPlanoAula = () => {
   }
 
   const onClickCancelar = async () => {
-    if (modoEdicaoFrequencia) {
+    if (!desabilitarCampos && modoEdicaoFrequencia) {
       const confirmou = await confirmar(
         'Atenção',
         'Você não salvou as informações preenchidas.',
@@ -152,7 +169,7 @@ const FrequenciaPlanoAula = () => {
   }
 
   const onClickFrequencia = () => {
-    if (!exibirCardFrequencia) {
+    if (!desabilitarCampos && !exibirCardFrequencia) {
       setModoEdicaoFrequencia(true);
     }
     setExibirCardFrequencia(!exibirCardFrequencia);
@@ -281,7 +298,7 @@ const FrequenciaPlanoAula = () => {
                 bold
                 className="mr-2"
                 onClick={() => onClickSalvar(true)}
-                disabled={!modoEdicaoFrequencia}
+                disabled={desabilitarCampos || !modoEdicaoFrequencia}
               />
             </div>
           </div>
@@ -329,7 +346,7 @@ const FrequenciaPlanoAula = () => {
                         ordenarColunaTexto="nomeAluno"
                         retornoOrdenado={retorno => setFrequencia(retorno)}
                       ></Ordenacao>
-                      <ListaFrequencia dados={frequencia} onChangeFrequencia={onChangeFrequencia}></ListaFrequencia>
+                      <ListaFrequencia dados={frequencia} frequenciaId={frequenciaId} onChangeFrequencia={onChangeFrequencia}  permissoesTela={permissoesTela} ></ListaFrequencia>
                       </div>
                       {exibirAuditoria ? (
                         <Auditoria
