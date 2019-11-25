@@ -1,23 +1,33 @@
 import { Switch } from 'antd';
 import PropTypes from 'prop-types';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 
 import { Lista } from './listaFrequencia.css';
+import { verificaSomenteConsulta } from '~/servicos/servico-navegacao';
 
 const ListaFrequencia = props => {
-  const { dados, onChangeFrequencia } = props;
+  const { dados, onChangeFrequencia, permissoesTela, frequenciaId} = props;
 
   const [dataSource, setDataSource] = useState(dados);
+  const [desabilitarCampos, setDesabilitarCampos] = useState(false);
+
+  useEffect(() => {
+    const somenteConsulta = verificaSomenteConsulta(permissoesTela);
+    const desabilitar = frequenciaId > 0
+    ? somenteConsulta || !permissoesTela.podeAlterar
+    :  somenteConsulta || !permissoesTela.podeIncluir;
+    setDesabilitarCampos(desabilitar);
+  });
 
   const renderSwitch = (i, aula, aluno) => {
     return (
       <div  id={`switch-${i}`} className={aula.compareceu ? 'presenca' : 'falta'} >
         <Switch
-          disabled={aluno.desabilitado}
+          disabled={desabilitarCampos || aluno.desabilitado}
           checkedChildren="C"
           unCheckedChildren="F"
           onChange={faltou => {
-            if (!aluno.desabilitado) {
+            if (!desabilitarCampos || !aluno.desabilitado) {
               aula.compareceu = !faltou;
               setDataSource([...dataSource]);
               onChangeFrequencia(true);
@@ -42,7 +52,7 @@ const ListaFrequencia = props => {
   }
 
   const marcaPresencaFaltaTodasAulas = (aluno, marcarPresenca) => {
-    if (!aluno.desabilitado) {
+    if (!desabilitarCampos && !aluno.desabilitado) {
       aluno.aulas.forEach(aula => aula.compareceu = marcarPresenca);
       setDataSource([...dataSource]);
       onChangeFrequencia(true);
@@ -50,13 +60,15 @@ const ListaFrequencia = props => {
   }
 
   const marcarPresencaFaltaTodosAlunos = marcarPresenca => {
-    dataSource.forEach(aluno => {
-      if (!aluno.desabilitado) {
-        aluno.aulas.forEach(aula => aula.compareceu = marcarPresenca);
-      }
-    });
-    setDataSource([...dataSource]);
-    onChangeFrequencia(true);
+    if (!desabilitarCampos) {
+      dataSource.forEach(aluno => {
+        if (!aluno.desabilitado) {
+          aluno.aulas.forEach(aula => aula.compareceu = marcarPresenca);
+        }
+      });
+      setDataSource([...dataSource]);
+      onChangeFrequencia(true);
+    }
   }
 
   return (
@@ -71,8 +83,20 @@ const ListaFrequencia = props => {
                   <th className="text-left">Lista de estudantes</th>
                   { dataSource[0].aulas.length > 1 ?
                     <>
-                      <th className="width-50 cursor-pointer" onClick={()=> marcarPresencaFaltaTodosAlunos(true)}>C</th>
-                      <th className="width-50 cursor-pointer" onClick={()=> marcarPresencaFaltaTodosAlunos(false)}>F</th>
+
+                      <th className="width-50 cursor-pointer"  onClick={()=> marcarPresencaFaltaTodosAlunos(true)}>
+                        <div className="marcar-todas-frequencia">
+                          Marcar todas
+                        </div>
+                        <div className="margin-marcar-todos">
+                          C
+                        </div>
+                      </th>
+                      <th className="width-50 cursor-pointer" onClick={()=> marcarPresencaFaltaTodosAlunos(false)}>
+                       <div className="margin-marcar-todos">
+                          F
+                        </div>
+                      </th>
                     </>
                     : ''
                   }
@@ -96,7 +120,7 @@ const ListaFrequencia = props => {
                   {
                     dataSource.map((aluno, i) => {
                       return (
-                      <tr key={i} className={aluno.desabilitado ? 'desabilitar-aluno' : ''} >
+                      <tr key={i} className={desabilitarCampos || aluno.desabilitado ? 'desabilitar-aluno' : ''} >
                         <td className="width-60 text-center font-weight-bold">{aluno.numeroAlunoChamada}</td>
                         <td className="text-left">{aluno.nomeAluno}</td>
                         {
@@ -106,7 +130,7 @@ const ListaFrequencia = props => {
                               <button type="button"
                                       onClick={()=> marcaPresencaFaltaTodasAulas(aluno, true)}
                                       className={`ant-btn ant-btn-circle ant-btn-sm btn-falta-presenca ${validaSeCompareceuTodasAulas(aluno) ? 'btn-compareceu' : ''} `}
-                                      disabled={aluno.desabilitado}>
+                                      disabled={desabilitarCampos || aluno.desabilitado}>
                                 <i className="fas fa-check fa-sm"></i>
                               </button>
                             </td>
@@ -114,7 +138,7 @@ const ListaFrequencia = props => {
                             <button type="button"
                                     onClick={()=> marcaPresencaFaltaTodasAulas(aluno, false)}
                                     className={`ant-btn ant-btn-circle ant-btn-sm btn-falta-presenca ${validaSeFaltouTodasAulas(aluno) ? 'btn-falta' : ''} `}
-                                    disabled={aluno.desabilitado}>
+                                    disabled={desabilitarCampos || aluno.desabilitado}>
                               <i className="fas fa-times fa-sm"></i>
                             </button>
                             </td>
