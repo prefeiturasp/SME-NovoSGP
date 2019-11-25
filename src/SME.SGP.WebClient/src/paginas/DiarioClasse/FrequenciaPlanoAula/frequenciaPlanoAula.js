@@ -8,6 +8,7 @@ import Button from '~/componentes/button';
 import Card from '~/componentes/card';
 import CardCollapse from '~/componentes/cardCollapse';
 import { Colors } from '~/componentes/colors';
+import PlanoAula from '../PlanoAula/plano-aula';
 import SelectComponent from '~/componentes/select';
 import { URL_HOME } from '~/constantes/url';
 import { confirmar, erros, sucesso } from '~/servicos/alertas';
@@ -370,6 +371,9 @@ const FrequenciaPlanoAula = () => {
               </div>
               : ''
           }
+        </div>
+        <div className="col-sm-12 col-md-12 col-lg-12">
+          <PlanoAula />
         </div>
       </Card>
     </>
