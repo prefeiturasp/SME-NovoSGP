@@ -22,14 +22,14 @@ namespace SME.SGP.Api.Controllers
             return Ok(await consultasFrequencia.ObterListaFrequenciaPorAula(aulaId));
         }
 
-        [HttpGet("{calendarioId}/frequencias/aulas/datas/turmas/{turmaId}/disciplinas/{disciplinaId}")]
+        [HttpGet("frequencias/aulas/datas/{anoLetivo}/turmas/{turmaId}/disciplinas/{disciplinaId}")]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [ProducesResponseType(typeof(RetornoBaseDto), 601)]
         [ProducesResponseType(typeof(RetornoBaseDto), 200)]
-        [Permissao(Permissao.PDA_I, Policy = "Bearer")]
-        public async Task<IActionResult> ObterDatasDeAulasPorCalendarioTurmaEDisciplina(long calendarioId, string turmaId, string disciplinaId, [FromServices] IConsultasAula consultasAula)
+        //[Permissao(Permissao.PDA_I, Policy = "Bearer")]
+        public async Task<IActionResult> ObterDatasDeAulasPorCalendarioTurmaEDisciplina(int anoLetivo, string turmaId, string disciplinaId, [FromServices] IConsultasAula consultasAula)
         {
-            return Ok(await consultasAula.ObterDatasDeAulasPorCalendarioTurmaEDisciplina(calendarioId, turmaId, disciplinaId));
+            return Ok(await consultasAula.ObterDatasDeAulasPorCalendarioTurmaEDisciplina(anoLetivo, turmaId, disciplinaId));
         }
 
         [HttpPost("frequencias")]

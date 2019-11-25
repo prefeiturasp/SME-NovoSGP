@@ -11,7 +11,6 @@ namespace SME.SGP.Aplicacao
     public class ComandosEvento : IComandosEvento
     {
         private readonly IRepositorioEvento repositorioEvento;
-        private readonly IServicoDiaLetivo servicoDiaLetivo;
         private readonly IServicoEvento servicoEvento;
 
         public ComandosEvento(IRepositorioEvento repositorioEvento,
@@ -20,29 +19,17 @@ namespace SME.SGP.Aplicacao
         {
             this.repositorioEvento = repositorioEvento ?? throw new ArgumentNullException(nameof(repositorioEvento));
             this.servicoEvento = servicoEvento ?? throw new ArgumentNullException(nameof(servicoEvento));
-            this.servicoDiaLetivo = servicoDiaLetivo ?? throw new ArgumentException(nameof(servicoDiaLetivo));
         }
 
         public async Task<IEnumerable<RetornoCopiarEventoDto>> Alterar(long id, EventoDto eventoDto)
         {
-            if (!servicoDiaLetivo.ValidarSeEhDiaLetivo(eventoDto.DataInicio, eventoDto.DataFim ?? eventoDto.DataInicio, eventoDto.TipoCalendarioId, eventoDto.Letivo == EventoLetivo.Sim, eventoDto.TipoEventoId))
-            {
-                throw new NegocioException("Não é possível alterar esse evento pois a data informada está fora do período letivo.");
-            }
-
             var evento = repositorioEvento.ObterPorId(id);
-
             evento = MapearParaEntidade(evento, eventoDto);
             return await SalvarEvento(eventoDto, evento);
         }
 
         public async Task<IEnumerable<RetornoCopiarEventoDto>> Criar(EventoDto eventoDto)
         {
-            if (!servicoDiaLetivo.ValidarSeEhDiaLetivo(eventoDto.DataInicio, eventoDto.DataFim ?? eventoDto.DataInicio, eventoDto.TipoCalendarioId, eventoDto.Letivo == EventoLetivo.Sim, eventoDto.TipoEventoId))
-            {
-                throw new NegocioException("Não é possível cadastrar esse evento pois a data informada está fora do período letivo.");
-            }
-
             var evento = MapearParaEntidade(new Evento(), eventoDto);
             return await SalvarEvento(eventoDto, evento);
         }
