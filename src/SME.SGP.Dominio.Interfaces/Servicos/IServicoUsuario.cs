@@ -1,6 +1,7 @@
 ﻿using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
+using System.Security.Claims;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Dominio.Interfaces
@@ -15,6 +16,8 @@ namespace SME.SGP.Dominio.Interfaces
 
         string ObterLoginAtual();
 
+        string ObterNomeLoginAtual();
+
         Guid ObterPerfilAtual();
 
         IEnumerable<Permissao> ObterPermissoes();
@@ -26,5 +29,7 @@ namespace SME.SGP.Dominio.Interfaces
         Usuario ObterUsuarioPorCodigoRfLoginOuAdiciona(string codigoRf, string login = "");
 
         Task PodeModificarPerfil(Guid perfilParaModificar, string login);
+
+        IEnumerable<Claim> DefinirPermissoesUsuarioLogado(string usuarioLogin, string usuarioNome, string codigoRf, Guid guidPerfil, IEnumerable<Permissao> permissionamentos);
     }
 }

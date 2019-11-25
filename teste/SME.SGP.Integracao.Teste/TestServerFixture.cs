@@ -6,11 +6,14 @@ using Npgsql;
 using Postgres2Go;
 using SME.SGP.Api;
 using SME.SGP.Aplicacao.Servicos;
+using SME.SGP.Dominio;
 using SME.SGP.Infra;
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net.Http;
+using System.Security.Claims;
 using System.Text.RegularExpressions;
 
 namespace SME.SGP.Integracao.Teste
@@ -20,6 +23,7 @@ namespace SME.SGP.Integracao.Teste
         private readonly TestServer _testServerCliente;
         private readonly PostgresRunner runner;
         private readonly ServicoTokenJwt servicoTokenJwt;
+        private readonly ServicoUsuario servicoUsuario;
 
         public TestServerFixture()
         {
@@ -66,12 +70,14 @@ namespace SME.SGP.Integracao.Teste
             runner.Dispose();
         }
 
-        public string GerarToken(Permissao[] permissoes, string login = "teste", string codigoRf = "123", string guidPerfil = "")
+        public string GerarToken(Permissao[] permissoes, string login = "teste", string nomeLogin = "teste", string codigoRf = "123", string guidPerfil = "")
         {
             if (string.IsNullOrEmpty(guidPerfil))
                 guidPerfil = Guid.NewGuid().ToString();
 
-            return servicoTokenJwt.GerarToken(login, codigoRf, Guid.Parse(guidPerfil), permissoes);
+            IEnumerable<Claim> claims = servicoUsuario.DefinirPermissoesUsuarioLogado(login, nomeLogin, codigoRf, Guid.Parse(guidPerfil), permissoes);
+
+            return servicoTokenJwt.GerarToken(claims);
         }
 
         public string ObterArquivoConfiguracao()

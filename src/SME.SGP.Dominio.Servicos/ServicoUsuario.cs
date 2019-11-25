@@ -6,6 +6,7 @@ using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Dominio
@@ -56,6 +57,25 @@ namespace SME.SGP.Dominio
             unitOfWork.PersistirTransacao();
         }
 
+        public IEnumerable<Claim> DefinirPermissoesUsuarioLogado(string usuarioLogin, string usuarioNome, string codigoRf, Guid guidPerfil, IEnumerable<Permissao> permissionamentos)
+        {
+            IList<Claim> claims = new List<Claim>();
+
+            claims.Add(new Claim("login", usuarioLogin));
+            claims.Add(new Claim("nome", usuarioNome ?? string.Empty));
+            claims.Add(new Claim("rf", codigoRf ?? string.Empty));
+            claims.Add(new Claim("perfil", guidPerfil.ToString()));
+
+            foreach (var permissao in permissionamentos)
+            {
+                claims.Add(new Claim("roles", permissao.ToString()));
+            }
+
+            httpContextAccessor.HttpContext.User = new ClaimsPrincipal(new ClaimsIdentity(claims));
+
+            return claims;
+        }
+
         public string ObterClaim(string nomeClaim)
         {
             var claim = httpContextAccessor.HttpContext.User.Claims.FirstOrDefault(a => a.Type == nomeClaim);
@@ -69,6 +89,15 @@ namespace SME.SGP.Dominio
                 throw new NegocioException("Não foi possível localizar o login no token");
 
             return loginAtual.Value;
+        }
+
+        public string ObterNomeLoginAtual()
+        {
+            var nomeLoginAtual = httpContextAccessor.HttpContext.User.Claims.FirstOrDefault(a => a.Type == "nome");
+            if (nomeLoginAtual == null)
+                throw new NegocioException("Não foi possível localizar o nome do login no token");
+
+            return nomeLoginAtual.Value;
         }
 
         public Guid ObterPerfilAtual()
