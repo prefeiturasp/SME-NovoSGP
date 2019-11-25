@@ -14,7 +14,22 @@ Para configurar o cliente é necessário registrar o Processor responsável por 
         public void ConfigureServices(IServiceCollection services)
         {
             // suas clausulas...
-            SME.Background.Core.Orquestrador.Registrar<SME.Background.Hangfire.Processor>(new Background.Hangfire.Processor(Configuration, ConnectionStringParameter));
+            SME.Background.Core.Orquestrador.Inicializar(services.BuildServiceProvider());
+            SME.Background.Core.Orquestrador.Registrar<SME.Background.Hangfire.Processor>(new Background.Hangfire.Processor(Configuration, "SGP-Postgres"));
+        }
+```
+
+É possível desativar o processamento em segundo plano, abaixo um exemplo de código de como pode ser feito
+```csharp
+        public void ConfigureServices(IServiceCollection services)
+        {
+            // suas clausulas...
+            SME.Background.Core.Orquestrador.Inicializar(services.BuildServiceProvider());
+
+            if (Configuration.GetValue<bool>("FF_BackgroundEnabled", false))
+                SME.Background.Core.Orquestrador.Registrar<SME.Background.Hangfire.Processor>(new Background.Hangfire.Processor(Configuration, "SGP-Postgres"));
+            else
+                SME.Background.Core.Orquestrador.Desativar();
         }
 ```
 Para solicitar um processamento simplesmente faça a chamada abaixo:
@@ -41,4 +56,3 @@ Para solicitar um processamento simplesmente faça a chamada abaixo:
  - Criar método no cliente para obter os status por correlationID
  - Talvez seja interessante direcionar a chamada do cliente para um método interno da biblioteca para possibilitar sinalização de erros para ferramentas externas. Hoje só é possivel acompanhar os erros no dashboard
  - Disponibilizar a passagem de parâmetros como Intervalo de Pooling no BD, Quantidade de tentativas no caso de falha, nome do schema
- - Criar formas de criar diferentes tipos de JobStorage, atualmente estamos usando o PostegreSQLStorage

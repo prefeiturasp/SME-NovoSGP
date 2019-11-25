@@ -63,6 +63,35 @@ namespace SME.SGP.Dados.Repositorios
                 }).SingleOrDefault();
         }
 
+        public PlanoAnualObjetivosDisciplinaDto ObterPlanoObjetivosEscolaTurmaDisciplina(int ano, string escolaId, long turmaId, int bimestre, long componenteCurricularEolId, long disciplinaId)
+        {
+            string query = @"select
+                    	pa.ano as AnoLetivo, pa.Bimestre,
+                    	string_agg(distinct cast(oap.objetivo_aprendizagem_jurema_id as text), ',') as ObjetivosAprendizagemPlano
+                    from plano_anual pa
+                    left join objetivo_aprendizagem_plano oap on
+                    	pa.id = oap.plano_id
+                    where pa.ano = @ano
+                    	and pa.bimestre = @bimestre
+                    	and pa.escola_id = @escolaId
+                    	and pa.turma_id = @turmaId
+                    	and pa.componente_curricular_eol_id = @componenteEolId
+                        and oap.componente_curricular_id = @disciplinaId
+                    group by pa.id";
+
+            var componenteEolId = componenteCurricularEolId.ToString();
+
+            return database.Conexao.Query<PlanoAnualObjetivosDisciplinaDto>(query.ToString(), new 
+            { 
+                ano, 
+                escolaId, 
+                turmaId, 
+                bimestre,
+                componenteEolId,
+                disciplinaId
+            }).SingleOrDefault();
+        }
+
         public bool ValidarPlanoExistentePorAnoEscolaTurmaEBimestre(int ano, string escolaId, long turmaId, int bimestre, long componenteCurricularEolId)
         {
             var query = @"select
