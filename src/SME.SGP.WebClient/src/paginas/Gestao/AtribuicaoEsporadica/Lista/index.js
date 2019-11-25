@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 
 // Redux
 import { useSelector } from 'react-redux';
@@ -6,6 +6,8 @@ import { useSelector } from 'react-redux';
 // Servicos
 import history from '~/servicos/history';
 import RotasDto from '~/dtos/rotasDto';
+import AtribuicaoEsporadicaServico from '~/servicos/Paginas/AtribuicaoEsporadica';
+import { verificaSomenteConsulta } from '~/servicos/servico-navegacao';
 import { confirmar, sucesso } from '~/servicos/alertas';
 
 // Componentes SGP
@@ -18,6 +20,8 @@ import Filtro from './componentes/Filtro';
 function AtribuicaoEsporadicaLista() {
   const [itensSelecionados, setItensSelecionados] = useState([]);
   const [filtro, setFiltro] = useState({});
+  const [refForm] = useState({});
+  const [somenteConsulta, setSomenteConsulta] = useState(false);
   const permissoesTela = useSelector(store => store.usuario.permissoes);
 
   const formatarCampoDataGrid = data => {
@@ -74,18 +78,23 @@ function AtribuicaoEsporadicaLista() {
         'Cancelar'
       );
       if (confirmado) {
-        // const idsDeletar = itensSelecionados.map(c => c.id);
-        // const excluir = await servicoEvento.deletar(idsDeletar);
-        // TODO: Integrar metodo deletar
-        const excluir = await Promise.resolve({ result: true, status: 200 });
-        if (excluir && excluir.status === 200) {
+        const excluir = await Promise.all(
+          itensSelecionados.map(x =>
+            AtribuicaoEsporadicaServico.deletarAtribuicaoEsporadica(x.id)
+          )
+        );
+        if (excluir) {
           const mensagemSucesso = `${
             itensSelecionados.length > 1
               ? 'Eventos excluídos'
               : 'Evento excluído'
           } com sucesso.`;
           sucesso(mensagemSucesso);
-          // validaFiltrar();
+          setFiltro({
+            ...filtro,
+            atualizar: !filtro.atualizar || true,
+          });
+          setItensSelecionados([]);
         }
       }
     }
@@ -99,11 +108,20 @@ function AtribuicaoEsporadicaLista() {
     setFiltro(valoresFiltro);
   };
 
+  useEffect(() => {
+    setSomenteConsulta(verificaSomenteConsulta(permissoesTela));
+  }, []);
+
+  useEffect(() => {
+    console.log(filtro);
+  }, [filtro]);
+
   return (
     <>
       <Cabecalho pagina="Atribuição esporádica" />
       <Card mx="mx-0">
         <ButtonGroup
+          somenteConsulta={somenteConsulta}
           permissoesTela={permissoesTela[RotasDto.ATRIBUICAO_ESPORADICA_LISTA]}
           temItemSelecionado={
             itensSelecionados && itensSelecionados.length >= 1
@@ -112,6 +130,9 @@ function AtribuicaoEsporadicaLista() {
           onClickExcluir={onClickExcluir}
           onClickBotaoPrincipal={onClickBotaoPrincipal}
           labelBotaoPrincipal="Novo"
+          desabilitarBotaoPrincipal={
+            !!filtro.dreId === false && !!filtro.ueId === false
+          }
         />
         <Filtro onFiltrar={onChangeFiltro} />
         <div className="col-md-12 pt-2 py-0 px-0">

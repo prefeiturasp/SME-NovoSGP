@@ -101,6 +101,8 @@ const CampoData = props => {
       !!desabilitarData === false
     ) {
       retorno = !ehParaHabilitar;
+    } else if (!!diasParaHabilitar === false && !!desabilitarData === false) {
+      retorno = false;
     }
 
     return retorno;

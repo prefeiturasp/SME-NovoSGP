@@ -5,9 +5,15 @@ import PropTypes from 'prop-types';
 import { Formik, Form } from 'formik';
 import * as Yup from 'yup';
 
+// Redux
+import { useSelector } from 'react-redux';
+
 // Serviços
-import { erros } from '~/servicos/alertas';
+import RotasDto from '~/dtos/rotasDto';
+import history from '~/servicos/history';
+import { erros, erro, sucesso } from '~/servicos/alertas';
 import { setBreadcrumbManual } from '~/servicos/breadcrumb-services';
+import AtribuicaoEsporadicaServico from '~/servicos/Paginas/AtribuicaoEsporadica';
 
 // Componentes SGP
 import { Cabecalho } from '~/componentes-sgp';
@@ -26,6 +32,10 @@ import {
 import { Row } from './styles';
 
 function AtribuicaoEsporadicaForm({ match }) {
+  const permissoesTela = useSelector(store => store.usuario.permissoes);
+  const filtroListagem = useSelector(
+    store => store.atribuicaoEsporadica.filtro
+  );
   const [novoRegistro, setNovoRegistro] = useState(true);
   const [auditoria, setAuditoria] = useState({});
   const [refForm, setRefForm] = useState({});
@@ -62,30 +72,41 @@ function AtribuicaoEsporadicaForm({ match }) {
     validaAntesDoSubmit(form);
   };
 
+  const onSubmitFormulario = async valores => {
+    try {
+      const cadastrado = await AtribuicaoEsporadicaServico.salvarAtribuicaoEsporadica(
+        {
+          ...filtroListagem,
+          ...valores,
+        }
+      );
+      if (cadastrado && cadastrado.status === 200) {
+        sucesso('Atribuição esporádica salva com sucesso.');
+        history.push('/gestao/atribuicao-esporadica');
+      }
+    } catch (err) {
+      if (err) {
+        erro(err.response.data.mensagens[0]);
+      }
+    }
+  };
+
+  const onClickVoltar = () => history.push('/gestao/atribuicao-esporadica');
+
   const buscarPorId = async id => {
     try {
-      // const registro = await Servico.get('xx/yy');
-      console.log(id);
-      const registro = await Promise.resolve({
-        status: 200,
-        data: {
-          anoLetivo: 2019,
-          dataFim: window.moment('2019-11-25T18:28:50.0331712+00:00'),
-          dataInicio: window.moment('2019-11-18T18:28:50.0331756+00:00'),
-          dreId: '1',
-          excluido: false,
-          id: 1,
-          migrado: false,
-          professorNome: 'Caíque Latorre 1',
-          professorRf: '7777710',
-          ueId: '1',
-        },
-      });
+      const registro = await AtribuicaoEsporadicaServico.buscarAtribuicaoEsporadica(
+        id
+      );
       if (registro && registro.data) {
-        setValoresIniciais(registro.data);
+        setValoresIniciais({
+          ...registro.data,
+          dataInicio: window.moment(registro.data.dataInicio),
+          dataFim: window.moment(registro.data.dataFim),
+        });
       }
-    } catch (error) {
-      erros(error);
+    } catch (err) {
+      erros(err);
     }
   };
 
@@ -101,12 +122,6 @@ function AtribuicaoEsporadicaForm({ match }) {
     }
   }, []);
 
-  useEffect(() => {
-    if (Object.keys(refForm).length !== 0) {
-      console.log(refForm);
-    }
-  }, [refForm]);
-
   return (
     <>
       <Cabecalho pagina="Atribuição" />
@@ -115,24 +130,35 @@ function AtribuicaoEsporadicaForm({ match }) {
           enableReinitialize
           initialValues={valoresIniciais}
           validationSchema={validacoes}
-          onSubmit={valores => console.log(valores)}
+          onSubmit={valores => onSubmitFormulario(valores)}
+          ref={formik => setRefForm(formik)}
           validateOnBlur
           validateOnChange
-          ref={formik => setRefForm(formik)}
         >
           {form => (
             <Form>
               <ButtonGroup
                 form={form}
+                permissoesTela={
+                  permissoesTela[RotasDto.ATRIBUICAO_ESPORADICA_LISTA]
+                }
+                novoRegistro={novoRegistro}
                 labelBotaoPrincipal="Cadastrar"
                 onClickBotaoPrincipal={() => onClickBotaoPrincipal(form)}
                 onClickCancelar={() => null}
+                onClickVoltar={() => onClickVoltar()}
                 modoEdicao
               />
               <Row className="row">
                 <Grid cols={8}>
                   <Row className="row">
-                    <Localizador showLabel form={form} onChange={() => null} />
+                    <Localizador
+                      dreId={filtroListagem.dreId}
+                      anoLetivo={filtroListagem.anoLetivo}
+                      showLabel
+                      form={form}
+                      onChange={valor => console.log(valor)}
+                    />
                   </Row>
                 </Grid>
                 <Grid cols={2}>

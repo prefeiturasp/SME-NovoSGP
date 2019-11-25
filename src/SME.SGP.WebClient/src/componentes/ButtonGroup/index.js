@@ -10,10 +10,12 @@ import { ButtonGroupEstilo } from './styles';
 function ButtonGroup({
   form,
   modoEdicao,
+  novoRegistro,
   somenteConsulta,
   permissoesTela,
   temItemSelecionado,
   labelBotaoPrincipal,
+  desabilitarBotaoPrincipal,
   onClickVoltar,
   onClickExcluir,
   onClickBotaoPrincipal,
@@ -36,7 +38,7 @@ function ButtonGroup({
           border
           className="mr-2"
           onClick={() => onClickCancelar(form)}
-          disabled={!modoEdicao}
+          disabled={!modoEdicao || novoRegistro === false}
         />
       )}
       <Button
@@ -44,7 +46,11 @@ function ButtonGroup({
         color={Colors.Vermelho}
         border
         className="mr-2"
-        disabled={!permissoesTela.podeExcluir && !temItemSelecionado}
+        disabled={
+          (!permissoesTela.podeExcluir && !temItemSelecionado) ||
+          novoRegistro === true ||
+          (typeof temItemSelecionado === 'boolean' && !temItemSelecionado)
+        }
         onClick={onClickExcluir}
       />
       <Button
@@ -54,7 +60,11 @@ function ButtonGroup({
         bold
         className="mr-0"
         onClick={onClickBotaoPrincipal}
-        disabled={somenteConsulta || !permissoesTela.podeIncluir}
+        disabled={
+          somenteConsulta ||
+          !permissoesTela.podeIncluir ||
+          desabilitarBotaoPrincipal
+        }
       />
     </ButtonGroupEstilo>
   );
@@ -63,7 +73,7 @@ function ButtonGroup({
 ButtonGroup.propTypes = {
   somenteConsulta: PropTypes.bool,
   permissoesTela: PropTypes.objectOf(PropTypes.object),
-  temItemSelecionado: PropTypes.bool,
+  temItemSelecionado: PropTypes.oneOfType([PropTypes.bool, PropTypes.any]),
   onClickVoltar: PropTypes.func,
   onClickExcluir: PropTypes.func,
   onClickBotaoPrincipal: PropTypes.func,
@@ -72,7 +82,7 @@ ButtonGroup.propTypes = {
 ButtonGroup.defaultProps = {
   somenteConsulta: false,
   permissoesTela: {},
-  temItemSelecionado: false,
+  temItemSelecionado: null,
   onClickVoltar: () => null,
   onClickExcluir: () => null,
   onClickBotaoPrincipal: () => null,

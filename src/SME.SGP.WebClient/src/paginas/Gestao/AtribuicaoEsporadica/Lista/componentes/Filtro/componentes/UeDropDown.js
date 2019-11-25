@@ -33,6 +33,7 @@ function UeDropDown({ form, onChange, dreId }) {
   useEffect(() => {
     if (listaUes.length === 1) {
       form.setFieldValue('ueId', listaUes[0].valor);
+      onChange(listaUes[0].valor);
     }
   }, [listaUes]);
 

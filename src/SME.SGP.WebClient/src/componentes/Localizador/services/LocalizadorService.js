@@ -5,7 +5,7 @@ import api from '~/servicos/api';
 import { dados } from '../__mocks__/autoComplete';
 
 class LocalizadorService {
-  urlBuscarPessoa = '/v1/atribuicao-esporadica';
+  urlProfessores = '/v1/professores';
   dados = dados || [];
 
   constructor() {
@@ -17,6 +17,21 @@ class LocalizadorService {
         },
       };
     });
+  }
+
+  buscarAutocomplete({ anoLetivo, dreId, nome }) {
+    return api.get(
+      `${this.urlProfessores}/${anoLetivo}/autocomplete/${dreId}/`,
+      {
+        params: {
+          nomeProfessor: nome,
+        },
+      }
+    );
+  }
+
+  buscarPorRf({ anoLetivo, rf }) {
+    return api.get(`${this.urlProfessores}/${rf}/resumo/${anoLetivo}`);
   }
 
   buscarPessoa({ rf, nome }) {

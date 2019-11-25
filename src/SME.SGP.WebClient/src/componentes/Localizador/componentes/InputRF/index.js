@@ -34,7 +34,6 @@ function InputRF({
   }, [pessoaSelecionada]);
 
   const onSubmitRF = rf => {
-    debugger;
     onSelect({ rf });
   };
 
@@ -81,7 +80,6 @@ function InputRF({
               form.setFieldValue(name, e.target.value);
               form.setFieldTouched(name, true, true);
               setValor(e.target.value);
-              onSelect(e);
             }}
             style={style}
             suffix={botao}
