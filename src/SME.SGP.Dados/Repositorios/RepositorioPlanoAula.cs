@@ -25,7 +25,7 @@ namespace SME.SGP.Dados.Repositorios
             var query = @"select pa.*
                  from plano_aula pa
                 inner join aula a on a.Id = pa.aula_id
-                where a.data_aula = @data
+                where DATE(a.data_aula) = @data
                   and a.turma_id = @turmaId
                   and a.disciplina_id = @disciplinaId";
 

@@ -84,9 +84,9 @@ namespace SME.SGP.Dados.Repositorios
             return database.Conexao.Query<PlanoAnualObjetivosDisciplinaDto>(query.ToString(), new 
             { 
                 ano, 
+                bimestre,
                 escolaId, 
                 turmaId, 
-                bimestre,
                 componenteEolId,
                 disciplinaId
             }).SingleOrDefault();
