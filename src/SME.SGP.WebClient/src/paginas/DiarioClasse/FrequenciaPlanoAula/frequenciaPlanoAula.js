@@ -339,26 +339,32 @@ const FrequenciaPlanoAula = () => {
                     show={exibirCardFrequencia}
                     alt="card-collapse-frequencia"
                   >
-                    <div className="col-sm-12 col-md-12 col-lg-12 col-xl-12 mb-2">
-                      <Ordenacao
-                        conteudoParaOrdenar={frequencia}
-                        ordenarColunaNumero="numeroAlunoChamada"
-                        ordenarColunaTexto="nomeAluno"
-                        retornoOrdenado={retorno => setFrequencia(retorno)}
-                      ></Ordenacao>
-                      <ListaFrequencia dados={frequencia} frequenciaId={frequenciaId} onChangeFrequencia={onChangeFrequencia}  permissoesTela={permissoesTela} ></ListaFrequencia>
-                      </div>
-                      {exibirAuditoria ? (
-                        <Auditoria
-                          className="mt-2"
-                          criadoEm={auditoria.criadoEm}
-                          criadoPor={auditoria.criadoPor}
-                          alteradoPor={auditoria.alteradoPor}
-                          alteradoEm={auditoria.alteradoEm}
-                        />
-                      ) : (
-                        ''
-                      )}
+                      {
+                        frequencia && frequencia.length > 0 ?
+                        <>
+                          <div className="col-sm-12 col-md-12 col-lg-12 col-xl-12 mb-2">
+                            <Ordenacao
+                              conteudoParaOrdenar={frequencia}
+                              ordenarColunaNumero="numeroAlunoChamada"
+                              ordenarColunaTexto="nomeAluno"
+                              retornoOrdenado={retorno => setFrequencia(retorno)}
+                            ></Ordenacao>
+                            <ListaFrequencia dados={frequencia} frequenciaId={frequenciaId} onChangeFrequencia={onChangeFrequencia}  permissoesTela={permissoesTela} ></ListaFrequencia>
+                          </div>
+                            {exibirAuditoria ? (
+                              <Auditoria
+                                className="mt-2"
+                                criadoEm={auditoria.criadoEm}
+                                criadoPor={auditoria.criadoPor}
+                                alteradoPor={auditoria.alteradoPor}
+                                alteradoEm={auditoria.alteradoEm}
+                              />
+                            ) : (
+                              ''
+                            )}
+                        </>
+                        : ''
+                      }
                   </CardCollapse>
                 </div>
               </div>
