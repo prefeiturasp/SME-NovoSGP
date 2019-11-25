@@ -160,6 +160,7 @@ const CampoData = props => {
           onChange(valorData);
         }}
         value={valor || null}
+        disabledDate={habilitarDatas}
       />
     );
   };
