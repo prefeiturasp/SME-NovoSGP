@@ -3,6 +3,8 @@ using Newtonsoft.Json;
 using SME.SGP.Aplicacao.Integracoes;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
+using SME.SGP.Infra.Contexto;
+using SME.SGP.Infra.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,7 +17,7 @@ namespace SME.SGP.Dominio
         private const string CLAIM_PERFIL_ATUAL = "perfil";
         private const string CLAIM_PERMISSAO = "http://schemas.microsoft.com/ws/2008/06/identity/claims/role";
         private const string CLAIM_RF = "rf";
-        private readonly IHttpContextAccessor httpContextAccessor;
+        private readonly IContextoAplicacao contextoAplicacao;
         private readonly IRepositorioCache repositorioCache;
         private readonly IRepositorioPrioridadePerfil repositorioPrioridadePerfil;
         private readonly IRepositorioUsuario repositorioUsuario;
@@ -26,14 +28,14 @@ namespace SME.SGP.Dominio
                               IServicoEOL servicoEOL,
                               IRepositorioPrioridadePerfil repositorioPrioridadePerfil,
                               IUnitOfWork unitOfWork,
-                              IHttpContextAccessor httpContextAccessor,
+                              IContextoAplicacao contextoAplicacao,
                               IRepositorioCache repositorioCache)
         {
             this.repositorioUsuario = repositorioUsuario ?? throw new ArgumentNullException(nameof(repositorioUsuario));
             this.servicoEOL = servicoEOL ?? throw new ArgumentNullException(nameof(servicoEOL));
             this.repositorioPrioridadePerfil = repositorioPrioridadePerfil;
             this.unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
-            this.httpContextAccessor = httpContextAccessor ?? throw new ArgumentNullException(nameof(httpContextAccessor));
+            this.contextoAplicacao = contextoAplicacao ?? throw new ArgumentNullException(nameof(contextoAplicacao));
             this.repositorioCache = repositorioCache ?? throw new ArgumentNullException(nameof(repositorioCache));
         }
 
@@ -58,17 +60,17 @@ namespace SME.SGP.Dominio
 
         public string ObterClaim(string nomeClaim)
         {
-            var claim = httpContextAccessor.HttpContext.User.Claims.FirstOrDefault(a => a.Type == nomeClaim);
+            var claim = contextoAplicacao.ObterVarivel<IEnumerable<InternalClaim>>("Claims").FirstOrDefault(a => a.Type == nomeClaim);
             return claim?.Value;
         }
 
         public string ObterLoginAtual()
         {
-            var loginAtual = httpContextAccessor.HttpContext.User.Claims.FirstOrDefault(a => a.Type == "login");
+            var loginAtual = contextoAplicacao.ObterVarivel<string>("login");
             if (loginAtual == null)
                 throw new NegocioException("Não foi possível localizar o login no token");
 
-            return loginAtual.Value;
+            return loginAtual;
         }
 
         public Guid ObterPerfilAtual()
@@ -78,7 +80,7 @@ namespace SME.SGP.Dominio
 
         public IEnumerable<Permissao> ObterPermissoes()
         {
-            var claims = httpContextAccessor.HttpContext.User.Claims.Where(a => a.Type == CLAIM_PERMISSAO);
+            var claims = contextoAplicacao.ObterVarivel<IEnumerable<InternalClaim>>("Claims").Where(a => a.Type == CLAIM_PERMISSAO);
             List<Permissao> retorno = new List<Permissao>();
 
             if (claims.Any())
@@ -127,6 +129,7 @@ namespace SME.SGP.Dominio
                 perfisDoUsuario = JsonConvert.DeserializeObject<IEnumerable<PrioridadePerfil>>(perfisUsuarioString);
             }
             usuario.DefinirPerfis(perfisDoUsuario);
+            usuario.DefinirPerfilAtual(ObterPerfilAtual());
 
             return usuario;
         }

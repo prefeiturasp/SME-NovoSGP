@@ -1,5 +1,4 @@
 ﻿using SME.SGP.Aplicacao.Integracoes;
-using SME.SGP.Aplicacao.Interfaces;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
@@ -36,22 +35,23 @@ namespace SME.SGP.Aplicacao
             {
                 throw new NegocioException("Não foram encontrados alunos para a aula/turma informada.");
             }
-
-            var registroFrequencia = new FrequenciaDto(aulaId);
+            FrequenciaDto registroFrequenciaDto = ObterRegistroFrequencia(aulaId, aula);
 
             var ausencias = servicoFrequencia.ObterListaAusenciasPorAula(aulaId);
             if (ausencias == null)
             {
                 ausencias = new List<RegistroAusenciaAluno>();
             }
-            foreach (var aluno in alunosDaTurma.OrderBy(c => c.NumeroAlunoChamada))
+            foreach (var aluno in alunosDaTurma)
             {
                 var registroFrequenciaAluno = new RegistroFrequenciaAlunoDto
                 {
                     CodigoAluno = aluno.CodigoAluno,
                     NomeAluno = aluno.NomeAluno,
                     NumeroAlunoChamada = aluno.NumeroAlunoChamada,
-                    CodigoSituacaoMatricula = aluno.CodigoSituacaoMatricula
+                    CodigoSituacaoMatricula = aluno.CodigoSituacaoMatricula,
+                    SituacaoMatricula = aluno.SituacaoMatricula,
+                    Desabilitado = aluno.EstaInativo()
                 };
 
                 var ausenciasAluno = ausencias.Where(c => c.CodigoAluno == aluno.CodigoAluno);
@@ -64,10 +64,30 @@ namespace SME.SGP.Aplicacao
                         Compareceu = !ausenciasAluno.Any(c => c.NumeroAula == numeroAula)
                     });
                 }
-                registroFrequencia.ListaFrequencia.Add(registroFrequenciaAluno);
+                registroFrequenciaDto.ListaFrequencia.Add(registroFrequenciaAluno);
             }
 
-            return registroFrequencia;
+            return registroFrequenciaDto;
+        }
+
+        private FrequenciaDto ObterRegistroFrequencia(long aulaId, Aula aula)
+        {
+            var registroFrequencia = servicoFrequencia.ObterRegistroFrequenciaPorAulaId(aulaId);
+            if (registroFrequencia == null)
+            {
+                registroFrequencia = new RegistroFrequencia(aula);
+            }
+            var registroFrequenciaDto = new FrequenciaDto(aulaId)
+            {
+                AlteradoEm = registroFrequencia.AlteradoEm,
+                AlteradoPor = registroFrequencia.AlteradoPor,
+                AlteradoRF = registroFrequencia.AlteradoRF,
+                CriadoEm = registroFrequencia.CriadoEm,
+                CriadoPor = registroFrequencia.CriadoPor,
+                CriadoRF = registroFrequencia.CriadoRF,
+                Id = registroFrequencia.Id
+            };
+            return registroFrequenciaDto;
         }
     }
 }

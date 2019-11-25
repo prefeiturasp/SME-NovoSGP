@@ -5,6 +5,7 @@ using SME.SGP.Dominio.Entidades;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Dto;
 using SME.SGP.Infra;
+using SME.SGP.Infra.Contexto;
 using System;
 using System.Threading.Tasks;
 using Xunit;
@@ -23,7 +24,7 @@ namespace SME.SGP.Aplicacao.Teste.Consultas
             repositorioEventoTipo = new Mock<IRepositorioEventoTipo>();
             httpContext = new Mock<IHttpContextAccessor>();
             repositorioEvento = new Mock<IRepositorioEvento>();
-            consultasEventoTipo = new ConsultasEventoTipo(repositorioEventoTipo.Object, httpContext.Object, repositorioEvento.Object);
+            consultasEventoTipo = new ConsultasEventoTipo(repositorioEventoTipo.Object, new ContextoHttp(httpContext.Object), repositorioEvento.Object);
         }
 
         [Fact(DisplayName = "Deve_Buscar_Evento_Tipo_Por_Id")]
@@ -38,7 +39,7 @@ namespace SME.SGP.Aplicacao.Teste.Consultas
         [Fact(DisplayName = "Deve_Disparar_Excecao_Ao_Instanciar_Sem_Dependencias")]
         public void Deve_Disparar_Excecao_Ao_Instanciar_Sem_Dependencias()
         {
-            Assert.Throws<ArgumentNullException>(() => consultasEventoTipo = new ConsultasEventoTipo(null, httpContext.Object, repositorioEvento.Object));
+            Assert.Throws<ArgumentNullException>(() => consultasEventoTipo = new ConsultasEventoTipo(null, new ContextoHttp(httpContext.Object), repositorioEvento.Object));
             Assert.Throws<ArgumentNullException>(() => consultasEventoTipo = new ConsultasEventoTipo(repositorioEventoTipo.Object, null, repositorioEvento.Object));
         }
 

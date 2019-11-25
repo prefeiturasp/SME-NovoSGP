@@ -38,17 +38,17 @@ namespace SME.SGP.Dominio.Servicos
             return pascoa;
         }
 
-        public async Task VerficaSeExisteFeriadosMoveisEInclui(int ano)
+        public void VerficaSeExisteFeriadosMoveisEInclui(int ano)
         {
-            var feriadosMoveis = await repositorioFeriadoCalendario.ObterFeriadosCalendario(new Infra.FiltroFeriadoCalendarioDto()
+            var feriadosMoveis = repositorioFeriadoCalendario.ObterFeriadosCalendario(new Infra.FiltroFeriadoCalendarioDto()
             {
                 Tipo = TipoFeriadoCalendario.Movel,
                 Ano = ano
-            });
+            }).Result;
 
             if (!feriadosMoveis.Any())
             {
-                await IncluirFeriadosMoveis(ano);
+                IncluirFeriadosMoveis(ano);
             }
         }
 
@@ -75,7 +75,7 @@ namespace SME.SGP.Dominio.Servicos
             return dataPascoa.Date;
         }
 
-        private async Task IncluiFeriadoMovel(DateTime dataFeriado, FeriadoEnum feriado)
+        private void IncluiFeriadoMovel(DateTime dataFeriado, FeriadoEnum feriado)
         {
             var feriadoMovel = new FeriadoCalendario()
             {
@@ -85,15 +85,15 @@ namespace SME.SGP.Dominio.Servicos
                 Tipo = TipoFeriadoCalendario.Movel
             };
 
-            await repositorioFeriadoCalendario.SalvarAsync(feriadoMovel);
+            repositorioFeriadoCalendario.Salvar(feriadoMovel);
         }
 
-        private async Task IncluirFeriadosMoveis(int ano)
+        private void IncluirFeriadosMoveis(int ano)
         {
-            await IncluiFeriadoMovel(CalcularFeriado(ano, FeriadoEnum.Carnaval), FeriadoEnum.Carnaval);
-            await IncluiFeriadoMovel(CalcularFeriado(ano, FeriadoEnum.SextaSanta), FeriadoEnum.SextaSanta);
-            await IncluiFeriadoMovel(CalcularFeriado(ano, FeriadoEnum.CorpusChristi), FeriadoEnum.CorpusChristi);
-            await IncluiFeriadoMovel(CalcularFeriado(ano, FeriadoEnum.Pascoa), FeriadoEnum.Pascoa);
+            IncluiFeriadoMovel(CalcularFeriado(ano, FeriadoEnum.Carnaval), FeriadoEnum.Carnaval);
+            IncluiFeriadoMovel(CalcularFeriado(ano, FeriadoEnum.SextaSanta), FeriadoEnum.SextaSanta);
+            IncluiFeriadoMovel(CalcularFeriado(ano, FeriadoEnum.CorpusChristi), FeriadoEnum.CorpusChristi);
+            IncluiFeriadoMovel(CalcularFeriado(ano, FeriadoEnum.Pascoa), FeriadoEnum.Pascoa);
         }
     }
 }

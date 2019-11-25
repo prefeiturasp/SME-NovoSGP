@@ -49,7 +49,9 @@ namespace SME.SGP.Api.Controllers
         [Permissao(Permissao.CP_I, Policy = "Bearer")]
         public async Task<IActionResult> Inserir([FromBody]AulaDto dto, [FromServices]IComandosAula comandos)
         {
-            return Ok(await comandos.Inserir(dto));
+            var retorno = new RetornoBaseDto();
+            retorno.Mensagens.Add(await comandos.Inserir(dto));
+            return Ok(retorno);
         }
     }
 }
