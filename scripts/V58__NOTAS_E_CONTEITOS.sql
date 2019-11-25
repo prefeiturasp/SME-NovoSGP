@@ -19,3 +19,12 @@ CREATE TABLE public.notas_parametros (
 	fim_vigencia timestamp NULL
 );
 
+CREATE TABLE public.conceito_valores (
+	id int8 NOT NULL GENERATED ALWAYS AS IDENTITY,
+	valor varchar(50) NOT NULL,
+	descricao varchar(200) NOT NULL,
+	aprovado bool NOT NULL DEFAULT true,
+	ativo bool NOT NULL DEFAULT true,
+	inicio_vigencia timestamp NOT NULL,
+	fim_vigencia timestamp NULL
+);
