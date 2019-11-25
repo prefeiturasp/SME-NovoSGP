@@ -9,6 +9,8 @@ namespace SME.SGP.Aplicacao
 
         Task<PlanoAnualCompletoDto> ObterPorEscolaTurmaAnoEBimestre(FiltroPlanoAnualDto filtroPlanoAnualDto);
 
+        Task<PlanoAnualObjetivosDisciplinaDto> ObterObjetivosEscolaTurmaDisciplina(FiltroPlanoAnualDisciplinaDto filtroPlanoDisciplinaDto);
+
         bool ValidarPlanoAnualExistente(FiltroPlanoAnualDto filtroPlanoAnualDto);
     }
 }
