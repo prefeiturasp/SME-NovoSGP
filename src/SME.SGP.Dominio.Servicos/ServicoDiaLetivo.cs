@@ -32,7 +32,7 @@ namespace SME.SGP.Dominio.Servicos
             var periodoEscolar = repositorioPeriodoEscolar.ObterPorTipoCalendarioData(tipoCalendarioId, dataInicial, dataFinal);
             if (periodoEscolar == null)
                 return false;
-            if (ehLetivo && tipoEventoId != (int)TipoEventoEnum.LiberacaoExcepcional)
+            if (ehLetivo && tipoEventoId != (int)TipoEvento.LiberacaoExcepcional)
                 return ValidaSeEhFinalSemana(dataInicio, dataFim);
             return true;
         }

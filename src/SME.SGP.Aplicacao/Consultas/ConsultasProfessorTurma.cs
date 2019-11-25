@@ -25,6 +25,14 @@ namespace SME.SGP.Aplicacao
             return MapearParaDto(servicoEOL.ObterListaTurmasPorProfessor(codigoRf));
         }
 
+        public async Task<IEnumerable<ProfessorResumoDto>> ObterResumoAutoComplete(int anoLetivo, string dreId, string nomeProfessor)
+        {
+            if (nomeProfessor.Length < 2)
+                return null;
+
+            return await servicoEOL.ObterProfessoresAutoComplete(anoLetivo, dreId, nomeProfessor);
+        }
+
         public async Task<ProfessorResumoDto> ObterResumoPorRFAnoLetivo(string codigoRF, int anoLetivo)
         {
             return await servicoEOL.ObterResumoProfessorPorRFAnoLetivo(codigoRF, anoLetivo);
