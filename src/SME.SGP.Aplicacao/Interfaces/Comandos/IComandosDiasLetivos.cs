@@ -9,9 +9,9 @@ namespace SME.SGP.Aplicacao
     public interface IComandosDiasLetivos
     {
         List<DateTime> BuscarDiasLetivos(long tipoCalendarioId);
-        DiasLetivosDto CalcularDiasLetivos(FiltroDiasLetivosDTO filtro);        
-        List<DateTime> BuscarDiasLetivos(IEnumerable<PeriodoEscolar> periodoEscolar);
+
         DiasLetivosDto CalcularDiasLetivos(FiltroDiasLetivosDTO filtro);
+
         List<DateTime> ObterDias(IEnumerable<Evento> eventos, List<DateTime> dias, EventoLetivo eventoTipo);
     }
 }
