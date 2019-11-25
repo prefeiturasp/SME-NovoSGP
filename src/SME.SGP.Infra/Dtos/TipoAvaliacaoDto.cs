@@ -2,7 +2,7 @@
 
 namespace SME.SGP.Infra
 {
-    public class TipoAtividadeAvaliativaDto
+    public class TipoAvaliacaoDto
     {
         [Required(ErrorMessage = "A descrição do tipo de avaliação deve ser informada.")]
         [MaxLength(200, ErrorMessage = "A descrição deve conter no máximo 200 caracteres.")]
