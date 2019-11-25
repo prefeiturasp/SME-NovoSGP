@@ -5,6 +5,7 @@ using SME.SGP.Dto;
 using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
+using System.Net;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
@@ -225,6 +226,20 @@ namespace SME.SGP.Aplicacao.Integracoes
             return null;
         }
 
+        public async Task<IEnumerable<ProfessorResumoDto>> ObterProfessoresAutoComplete(int anoLetivo, string dreId, string nomeProfessor)
+        {
+            var resposta = await httpClient.GetAsync($"professores/{anoLetivo}/AutoComplete/{dreId}?nome={nomeProfessor}");
+
+            if (!resposta.IsSuccessStatusCode)
+                return null;
+
+            if (resposta.StatusCode == HttpStatusCode.NoContent)
+                return null;
+
+            var json = await resposta.Content.ReadAsStringAsync();
+            return JsonConvert.DeserializeObject<IEnumerable<ProfessorResumoDto>>(json);
+        }
+
         public async Task<ProfessorResumoDto> ObterResumoProfessorPorRFAnoLetivo(string codigoRF, int anoLetivo)
         {
             var resposta = await httpClient.GetAsync($"professores/{codigoRF}/BuscarPorRf/{anoLetivo}");
@@ -232,7 +247,7 @@ namespace SME.SGP.Aplicacao.Integracoes
             if (!resposta.IsSuccessStatusCode)
                 return null;
 
-            if (resposta.StatusCode == System.Net.HttpStatusCode.NoContent)
+            if (resposta.StatusCode == HttpStatusCode.NoContent)
                 return null;
 
             var json = await resposta.Content.ReadAsStringAsync();

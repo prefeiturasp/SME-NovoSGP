@@ -2,6 +2,6 @@
 {
     public interface IRepositorioParametrosSistema : IRepositorioBase<ParametrosSistema>
     {
-        string ObterValorPorNomeAno(string nome, int? ano);
+        string ObterValorPorTipoEAno(TipoParametroSistema tipo, int? ano = null);
     }
 }
