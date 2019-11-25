@@ -165,5 +165,22 @@ namespace SME.SGP.Dados.Repositorios
             if (data.HasValue)
                 query.AppendLine("AND DATE(a.data_aula) = @data");
         }
+
+        public async Task<AulaConsultaDto> ObterAulaDataTurmaDisciplina(DateTime data, string turmaId, string disciplinaId)
+        {
+            var query = @"select *
+                 from aula
+                where not excluido
+                  and DATE(data_aula) = @data
+                  and turma_id = @turmaId
+                  and disciplina_id = @disciplinaId";
+
+            return await database.Conexao.QueryFirstOrDefaultAsync<AulaConsultaDto>(query, new
+            {
+                data,
+                turmaId,
+                disciplinaId
+            });
+        }
     }
 }
