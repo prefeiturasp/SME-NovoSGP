@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
-import { CampoData } from '~/componentes';
+import { CampoData, Auditoria } from '~/componentes';
 import Cabecalho from '~/componentes-sgp/cabecalho';
 import ListaFrequencia from '~/componentes-sgp/ListaFrequencia/listaFrequencia';
 import Ordenacao from '~/componentes-sgp/Ordenacao/ordenacao';
@@ -14,9 +14,15 @@ import { confirmar, erros, sucesso } from '~/servicos/alertas';
 import api from '~/servicos/api';
 import history from '~/servicos/history';
 import Alert from '~/componentes/alert';
+import { verificaSomenteConsulta } from '~/servicos/servico-navegacao';
+import RotasDto from '~/dtos/rotasDto';
 
 const FrequenciaPlanoAula = () => {
   const usuario = useSelector(store => store.usuario);
+
+  const [somenteConsulta, setSomenteConsulta] = useState(false);
+  const permissoesTela = usuario.permissoes[RotasDto.FREQUENCIA_PLANO_AULA];
+
   const { turmaSelecionada } = usuario;
   const turmaId = turmaSelecionada ? turmaSelecionada.turma : 0;
   const anoLetivo = turmaSelecionada ? turmaSelecionada.anoLetivo : 0;
@@ -28,10 +34,14 @@ const FrequenciaPlanoAula = () => {
 
   const [frequencia, setFrequencia] = useState([]);
   const [aulaId, setAulaId] = useState(0);
+  const [frequenciaId, setFrequenciaId] = useState(0);
   const [exibirCardFrequencia, setExibirCardFrequencia] = useState(false);
   const [modoEdicaoFrequencia, setModoEdicaoFrequencia] = useState(false);
   const [desabilitarDisciplina, setDesabilitarDisciplina] = useState(false);
   const [diasParaHabilitar, setDiasParaHabilitar] = useState([]);
+  const [auditoria, setAuditoria] = useState([]);
+  const [exibirAuditoria, setExibirAuditoria] = useState(false);
+  const [desabilitarCampos, setDesabilitarCampos] = useState(false);
 
   useEffect(() => {
     const obterDisciplinas = async () => {
@@ -50,27 +60,45 @@ const FrequenciaPlanoAula = () => {
       obterDatasDeAulasDisponiveis();
       obterDisciplinas();
     } else {
-      resetarTela();
+      resetarTelaFrequencia();
       setAulaId(0);
       setListaDisciplinas([]);
       setListaDatasAulas([]);
       setDesabilitarDisciplina(false);
       setDiasParaHabilitar([]);
     }
+    setSomenteConsulta(verificaSomenteConsulta(permissoesTela));
   }, [turmaSelecionada.turma]);
 
+  useEffect(() => {
+    const desabilitar = frequenciaId > 0
+    ? somenteConsulta || !permissoesTela.podeAlterar
+    :  somenteConsulta || !permissoesTela.podeIncluir;
+    setDesabilitarCampos(desabilitar);
+  },[frequenciaId]);
+
   const obterListaFrequencia = async aulaId => {
+    setAulaId(aulaId);
     const frequenciaAlunos = await api
       .get(`v1/calendarios/frequencias`, { params: { aulaId } })
       .catch(e => erros(e));
     if (frequenciaAlunos && frequenciaAlunos.data) {
+      setFrequenciaId(frequenciaAlunos.data.id);
+      setAuditoria({
+        criadoPor: frequenciaAlunos.data.criadoPor,
+        criadoRf: frequenciaAlunos.data.criadoRf,
+        criadoEm: frequenciaAlunos.data.criadoEm,
+        alteradoPor: frequenciaAlunos.data.alteradoPor,
+        alteradoRf: frequenciaAlunos.data.alteradoRf,
+        alteradoEm: frequenciaAlunos.data.alteradoEm,
+      });
+      setExibirAuditoria(true);
       setFrequencia(frequenciaAlunos.data.listaFrequencia);
-      setAulaId(frequenciaAlunos.data.aulaId)
     }
   };
 
   const onClickVoltar = async () => {
-    if (modoEdicaoFrequencia) {
+    if (!desabilitarCampos && modoEdicaoFrequencia) {
       const confirmado = await pergutarParaSalvar();
       if (confirmado) {
         await onClickSalvar();
@@ -96,7 +124,7 @@ const FrequenciaPlanoAula = () => {
   }
 
   const onClickCancelar = async () => {
-    if (modoEdicaoFrequencia) {
+    if (!desabilitarCampos && modoEdicaoFrequencia) {
       const confirmou = await confirmar(
         'Atenção',
         'Você não salvou as informações preenchidas.',
@@ -109,7 +137,7 @@ const FrequenciaPlanoAula = () => {
     }
   };
 
-  const onClickSalvar = () => {
+  const onClickSalvar = click => {
     return new Promise((resolve, reject) => {
       const valorParaSalvar = {
         aulaId,
@@ -119,6 +147,9 @@ const FrequenciaPlanoAula = () => {
         .post(`v1/calendarios/frequencias`, valorParaSalvar).then(salvouFrequencia => {
           if (salvouFrequencia && salvouFrequencia.status == 200) {
             sucesso('Frequência realizada com sucesso.');
+            if (click) {
+              aposSalvarFrequencia();
+            }
             resolve(true);
           } else {
             resolve(false);
@@ -131,8 +162,14 @@ const FrequenciaPlanoAula = () => {
     });
   };
 
+  const aposSalvarFrequencia = () => {
+    setExibirCardFrequencia(false);
+    setModoEdicaoFrequencia(false)
+    obterListaFrequencia(aulaId);
+  }
+
   const onClickFrequencia = () => {
-    if (!exibirCardFrequencia) {
+    if (!desabilitarCampos && !exibirCardFrequencia) {
       setModoEdicaoFrequencia(true);
     }
     setExibirCardFrequencia(!exibirCardFrequencia);
@@ -168,7 +205,7 @@ const FrequenciaPlanoAula = () => {
   };
 
   const setarDisciplina =  disciplinaId => {
-    resetarTela(true);
+    resetarTelaFrequencia(true);
     setDisciplinaSelecionada(disciplinaId);
     if (disciplinaId) {
       obterDatasDeAulasDisponiveis(disciplinaId);
@@ -194,7 +231,7 @@ const FrequenciaPlanoAula = () => {
 
   const validaSeTemIdAula = data => {
     setDataSelecionada(data);
-    resetarTela(true, true);
+    resetarTelaFrequencia(true, true);
     const aulaDataSelecionada = listaDatasAulas.find(item => window.moment(item.data).isSame(data, 'date'));
     if (aulaDataSelecionada && aulaDataSelecionada.idAula) {
       obterListaFrequencia(aulaDataSelecionada.idAula);
@@ -205,7 +242,7 @@ const FrequenciaPlanoAula = () => {
     setModoEdicaoFrequencia(true);
   }
 
-  const resetarTela = (naoDisciplina, naoData) => {
+  const resetarTelaFrequencia = (naoDisciplina, naoData) => {
     if (!naoDisciplina) {
       setDisciplinaSelecionada(undefined);
     }
@@ -215,6 +252,7 @@ const FrequenciaPlanoAula = () => {
     setFrequencia([]);
     setExibirCardFrequencia(false);
     setModoEdicaoFrequencia(false)
+    setExibirAuditoria(true);
   }
 
   return (
@@ -259,8 +297,8 @@ const FrequenciaPlanoAula = () => {
                 border
                 bold
                 className="mr-2"
-                onClick={onClickSalvar}
-                disabled={!modoEdicaoFrequencia}
+                onClick={() => onClickSalvar(true)}
+                disabled={desabilitarCampos || !modoEdicaoFrequencia}
               />
             </div>
           </div>
@@ -290,7 +328,7 @@ const FrequenciaPlanoAula = () => {
             </div>
           </div>
           {
-            frequencia && frequencia.length ?
+            dataSelecionada ?
               <div className="row">
                 <div className="col-sm-12 col-md-12 col-lg-12 col-xl-12 mb-2">
                   <CardCollapse
@@ -301,13 +339,32 @@ const FrequenciaPlanoAula = () => {
                     show={exibirCardFrequencia}
                     alt="card-collapse-frequencia"
                   >
-                    <Ordenacao
-                      conteudoParaOrdenar={frequencia}
-                      ordenarColunaNumero="numeroAlunoChamada"
-                      ordenarColunaTexto="nomeAluno"
-                      retornoOrdenado={retorno => setFrequencia(retorno)}
-                    ></Ordenacao>
-                    <ListaFrequencia dados={frequencia} onChangeFrequencia={onChangeFrequencia}></ListaFrequencia>
+                      {
+                        frequencia && frequencia.length > 0 ?
+                        <>
+                          <div className="col-sm-12 col-md-12 col-lg-12 col-xl-12 mb-2">
+                            <Ordenacao
+                              conteudoParaOrdenar={frequencia}
+                              ordenarColunaNumero="numeroAlunoChamada"
+                              ordenarColunaTexto="nomeAluno"
+                              retornoOrdenado={retorno => setFrequencia(retorno)}
+                            ></Ordenacao>
+                            <ListaFrequencia dados={frequencia} frequenciaId={frequenciaId} onChangeFrequencia={onChangeFrequencia}  permissoesTela={permissoesTela} ></ListaFrequencia>
+                          </div>
+                            {exibirAuditoria ? (
+                              <Auditoria
+                                className="mt-2"
+                                criadoEm={auditoria.criadoEm}
+                                criadoPor={auditoria.criadoPor}
+                                alteradoPor={auditoria.alteradoPor}
+                                alteradoEm={auditoria.alteradoEm}
+                              />
+                            ) : (
+                              ''
+                            )}
+                        </>
+                        : ''
+                      }
                   </CardCollapse>
                 </div>
               </div>
