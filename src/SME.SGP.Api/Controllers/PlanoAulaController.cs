@@ -8,18 +8,19 @@ using System.Threading.Tasks;
 namespace SME.SGP.Api.Controllers
 {
     [ApiController]
-    [Route("api/v1/planos/aula")]
+    [Route("api/v1/planos/aulas")]
     [ValidaDto]
     public class PlanoAulaController : ControllerBase
     {
-        [HttpGet("obter")]
+        [HttpGet("{turmaId}/disciplina/{disciplinaId}")]
         [ProducesResponseType(typeof(PlanoAulaRetornoDto), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [Permissao(Permissao.PDA_C, Policy = "Bearer")]
-        public async Task<IActionResult> ObterPlanoAula(FiltroPlanoAulaDto filtro, 
+        public async Task<IActionResult> ObterPlanoAula([FromQuery] DateTime data, int turmaId, string disciplinaId,
             [FromServices] IConsultasPlanoAula consultas)
         {
-            var planoDto = await consultas.ObterPlanoAulaPorTurmaDisciplina(filtro.Data, filtro.TurmaId, filtro.DisciplinaId);
+            // Data Escola Turma Dis
+            var planoDto = await consultas.ObterPlanoAulaPorTurmaDisciplina(data, turmaId, disciplinaId);
 
             if (planoDto != null)
                 return Ok(planoDto);
