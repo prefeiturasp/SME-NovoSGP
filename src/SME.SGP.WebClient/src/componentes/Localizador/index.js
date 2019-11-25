@@ -9,20 +9,27 @@ import { Grid, Label } from '~/componentes';
 // Services
 import service from './services/LocalizadorService';
 
-function Localizador({ onChange, showLabel, form }) {
+function Localizador({ onChange, showLabel, form, dreId, anoLetivo }) {
   const [dataSource, setDataSource] = useState([]);
   const [pessoaSelecionada, setPessoaSelecionada] = useState({});
 
   const onChangeInput = async valor => {
-    const { dados } = await service.buscarPessoasMock({ nome: valor });
+    if (valor.length < 2) return;
+    const { dados } = await service.buscarAutocomplete({
+      nome: valor,
+      dreId,
+      anoLetivo,
+    });
     setDataSource(dados);
   };
 
   const onBuscarPorRF = async ({ rf }) => {
-    const { dados } = await service.buscarPessoasMock({ rf });
-    debugger;
-    if (dados.length <= 0) return;
-    setPessoaSelecionada(dados[0]);
+    const { data: dados } = await service.buscarPorRf({ rf, anoLetivo });
+    if (!dados) return;
+    setPessoaSelecionada({
+      professorRf: dados.codigoRF,
+      professorNome: dados.nome,
+    });
   };
 
   const onSelectPessoa = objeto => {
@@ -74,13 +81,13 @@ function Localizador({ onChange, showLabel, form }) {
   );
 }
 
-Localizador.defaultValues = {
+Localizador.defaultProps = {
   onChange: () => {},
   form: PropTypes.objectOf(PropTypes.object),
 };
 
 Localizador.propTypes = {
-  onChange: PropTypes.func.isRequired,
+  onChange: PropTypes.func,
   form: {},
 };
 

@@ -14,7 +14,16 @@ import AnoLetivoDropDown from './componentes/AnoLetivoDropDown';
 // Styles
 import { Row } from './styles';
 
+// Redux
+import { useDispatch } from 'react-redux';
+import {
+  selecionarDre,
+  selecionarUe,
+  selecionarAnoLetivo,
+} from '~/redux/modulos/atribuicaoEsporadica/actions';
+
 function Filtro({ onFiltrar }) {
+  const dispatch = useDispatch();
   const [refForm, setRefForm] = useState({});
   const [valoresIniciais] = useState({
     anoLetivo: '',
@@ -37,6 +46,11 @@ function Filtro({ onFiltrar }) {
     }
   };
 
+  const onChangeDre = valor => {
+    setDreId(valor);
+    dispatch(selecionarDre(valor));
+  };
+
   return (
     <Formik
       enableReinitialize
@@ -55,14 +69,18 @@ function Filtro({ onFiltrar }) {
               <AnoLetivoDropDown
                 form={form}
                 name="anoLetivo"
-                onChange={() => null}
+                onChange={valor => dispatch(selecionarAnoLetivo(valor))}
               />
             </Grid>
             <Grid cols={5}>
-              <DreDropDown form={form} onChange={valor => setDreId(valor)} />
+              <DreDropDown form={form} onChange={valor => onChangeDre(valor)} />
             </Grid>
             <Grid cols={5}>
-              <UeDropDown dreId={dreId} form={form} onChange={() => null} />
+              <UeDropDown
+                dreId={dreId}
+                form={form}
+                onChange={valor => dispatch(selecionarUe(valor))}
+              />
             </Grid>
           </Row>
           <Row className="row">
