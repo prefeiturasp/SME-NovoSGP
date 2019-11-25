@@ -413,10 +413,10 @@ namespace SME.SGP.Dominio.Servicos
                 if (!await repositorioEvento.TemEventoNosDiasETipo(evento.DataInicio.Date, evento.DataFim.Date, TipoEvento.LiberacaoExcepcional, evento.TipoCalendarioId, evento.UeId, string.Empty))
                 {
                     var eventosSuspensaoAtividades = await repositorioEvento.EventosNosDiasETipo(evento.DataInicio.Date, evento.DataFim.Date, TipoEvento.SuspensaoAtividades, evento.TipoCalendarioId, evento.UeId, string.Empty);
-                    if (eventosSuspensaoAtividades != null && !eventosSuspensaoAtividades.Any(a => a.TipoPerfilCadastro == TipoPerfil.SME))
+                    if (eventosSuspensaoAtividades != null && eventosSuspensaoAtividades.Any(a => a.TipoPerfilCadastro == TipoPerfil.SME))
                         throw new NegocioException("Você está tentando criar um evento Letivo em dia Não Letivo. Se isso for realmente necessário contate a DRE para receber a autorização.");
 
-                    if (eventosSuspensaoAtividades != null && !eventosSuspensaoAtividades.Any(a => a.TipoPerfilCadastro == TipoPerfil.UE))
+                    if (eventosSuspensaoAtividades != null && eventosSuspensaoAtividades.Any(a => a.TipoPerfilCadastro == TipoPerfil.UE))
                         throw new NegocioException("A data do evento coincide com o evento de suspensão de atividades da UE. Ajuste a data do evento ou apague o evento de suspensão.");
                 }
             }
