@@ -38,17 +38,6 @@ namespace SME.SGP.Aplicacao.Consultas
 
             return planoDto;
         }
-        private int Bimestre(int mes)
-        {
-            var lista = new List<int>()
-            {
-                1, 1, 1,
-                2, 2, 2,
-                3, 3, 3,
-                4, 4, 4
-            };
-            return lista[mes];
-        }
 
         private PlanoAulaRetornoDto MapearParaDto(PlanoAula plano) =>
             plano == null ? null :
@@ -60,6 +49,5 @@ namespace SME.SGP.Aplicacao.Consultas
                 LicaoCasa = plano.LicaoCasa,
                 AulaId = plano.AulaId
             };
-
     }
 }
