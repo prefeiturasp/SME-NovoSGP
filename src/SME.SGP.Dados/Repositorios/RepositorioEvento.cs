@@ -549,6 +549,12 @@ namespace SME.SGP.Dados.Repositorios
 
         #endregion Eventos Por Dia
 
+        public IEnumerable<Evento> ObterEventosPorRecorrencia(long eventoId, long eventoPaiId, DateTime dataEvento)
+        {
+            var query = "select * from evento where id <> @eventoId and evento_pai_id = @eventoPaiId and data_inicio ::date >= @dataEvento ";
+            return database.Conexao.Query<Evento>(query, new { eventoId, eventoPaiId, dataEvento });
+        }
+
         public IEnumerable<Evento> ObterEventosPorTipoDeCalendarioDreUe(long tipoCalendarioId, string dreId, string ueId)
         {
             var query = ObterEventos(tipoCalendarioId, dreId, ueId);
@@ -914,12 +920,6 @@ namespace SME.SGP.Dados.Repositorios
 
         #region Quantidade De Eventos Por Dia
 
-        public IEnumerable<Evento> ObterEventosPorRecorrencia(long eventoId, long eventoPaiId, DateTime dataEvento)
-        {
-            var query = "select * from evento where id <> @eventoId and evento_pai_id = @eventoPaiId and data_inicio ::date >= @dataEvento ";
-            return database.Conexao.Query<Evento>(query, new { eventoId, eventoPaiId, dataEvento });
-        }
-
         public async Task<IEnumerable<EventosPorDiaRetornoQueryDto>> ObterQuantidadeDeEventosPorDia(CalendarioEventosFiltroDto calendarioEventosMesesFiltro, int mes,
               Usuario usuario, Guid usuarioPerfil, bool usuarioTemPerfilSupervisorOuDiretor)
         {
@@ -1103,12 +1103,8 @@ namespace SME.SGP.Dados.Repositorios
             if (calendarioEventosMesesFiltro.EhEventoSme)
                 query.AppendLine("and e.ue_id is null and e.dre_id is null");
         }
+
         #endregion Quantidade De Eventos Por Dia
-        public IEnumerable<Evento> ObterEventosPorRecorrencia(long eventoId, long eventoPaiId, DateTime dataEvento)
-        {
-            var query = "select * from evento where id <> @eventoId and evento_pai_id = @eventoPaiId and data_inicio ::date >= @dataEvento ";
-            return database.Conexao.Query<Evento>(query, new { eventoId, eventoPaiId, dataEvento });
-        }
 
         private string ObterEventos(long tipoCalendarioId, string dreId, string ueId, int? mes = null, DateTime? data = null)
         {
@@ -1173,7 +1169,5 @@ namespace SME.SGP.Dados.Repositorios
             }
             return query.ToString();
         }
-
-        
     }
 }
