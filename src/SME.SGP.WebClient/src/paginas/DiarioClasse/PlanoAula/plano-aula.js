@@ -1,25 +1,55 @@
-import React, { useState, useRef, useEffect } from 'react';
-import CardCollapse from '~/componentes/cardCollapse';
-import styled from 'styled-components';
-import TextEditor from '~/componentes/textEditor/component';
-import Grid from '~/componentes/grid';
-import { Base, Colors } from '~/componentes';
-import Button from '~/componentes/button';
-import { QuantidadeBotoes, ObjetivosList, ListItem, ListItemButton, Corpo, Descritivo, Badge, HabilitaObjetivos } from './plano-aula.css';
 import { Switch } from 'antd';
+import React, { useRef, useState, useEffect } from 'react';
+import { Colors } from '~/componentes';
+import Button from '~/componentes/button';
+import CardCollapse from '~/componentes/cardCollapse';
+import Grid from '~/componentes/grid';
+import TextEditor from '~/componentes/textEditor';
+import { useSelector } from 'react-redux';
+import { Badge, Corpo, Descritivo, HabilitaObjetivos, ListItem, ListItemButton, ObjetivosList, QuantidadeBotoes } from './plano-aula.css';
 
 const PlanoAula = (props) => {
+  const disciplinaSelecionada = useSelector(store => store.planoAula.disciplinaSelecionada);
   const [mostrarCardPrincipal, setMostrarCardPrincipal] = useState(true);
   const [quantidadeAulas, setQuantidadeAulas] = useState(0);
-  const [ehProfessorCj, setEhProfessorCJ] = useState(true);
+  const [ehProfessorCj, setEhProfessorCJ] = useState(false);
   const [informaObjetivos, setInformaObjetivos] = useState(true);
+  const [materias, setMaterias] = useState(
+    [
+      {
+        codigo: 1,
+        materia: 'Português',
+        selecionada: false,
+        objetivos: [{
+          codigoMateria: 1,
+          id: 3,
+          selected: false,
+          codigo: 'PT787878',
+          descricao: 'Teste de portugues'
+        },
+        {
+          codigoMateria: 1,
+          id: 5,
+          selected: false,
+          codigo: 'PT787879',
+          descricao: 'Teste de portugues 2'
+        }
+        ]
+      },
+      {
+        codigo: 2,
+        materia: 'Matemática',
+        selecionada: true
+      },
+    ]
+  )
   const [planoAula, setPlanoAula] = useState({
     temObjetivos: true,
     selecionaDisciplinas: true,
     objetivosEspecificos: 'teste',
     desenvolvimentoAula: 'teste',
     recuperacaoContinua: 'teste',
-    licaoCasa: 'teste'
+    licaoCasa: 'teste',
   })
   const configCabecalho = {
     altura: '44px',
@@ -44,6 +74,11 @@ const PlanoAula = (props) => {
   const textEditorRecContinuaRef = useRef(null);
   const textEditorLicaoCasaRef = useRef(null);
 
+  useEffect(() => {
+    console.log(disciplinaSelecionada);
+  }
+  , [disciplinaSelecionada]);
+
   const selecionarObjetivo = id => {
     const index = objetivosAprendizagem.findIndex(a => a.id == id);
     objetivosAprendizagem[index].selected = !objetivosAprendizagem[index].selected;
@@ -64,7 +99,29 @@ const PlanoAula = (props) => {
     setObjetivosAprendizagem([...objetivos]);
   }
 
-  const habilitarDesabilitarObjetivos = () =>{
+  const selecionarMateria = codigo => {
+    const index = materias.findIndex(a => a.codigo === codigo);
+    const materia = materias[index];
+    materia.selecionada = !materia.selecionada;
+    setMaterias([...materias]);
+    if (materia.objetivos && materia.objetivos.length > 0) {
+      materia.objetivos.forEach(objetivo => {
+        if (!materia.selecionada) {
+          const idx = objetivosAprendizagem.findIndex(obj => obj.codigo === objetivo.codigo);
+          if (!objetivosAprendizagem[idx].selected) {
+            objetivosAprendizagem.splice(idx, 1);
+          }
+        } else {
+          const objetivoExistente = objetivosAprendizagem.find(obj => obj.codigo === objetivo.codigo);
+          if (!objetivoExistente) {
+            objetivosAprendizagem.push(objetivo);
+          }
+        }
+      });
+    }
+  }
+
+  const habilitarDesabilitarObjetivos = () => {
     setInformaObjetivos(!informaObjetivos);
     planoAula.temObjetivos = !informaObjetivos;
   }
@@ -101,9 +158,25 @@ const PlanoAula = (props) => {
           <div className="row">
             {planoAula.temObjetivos ?
               <Grid cols={6}>
-                <h6 className="d-inline-block font-weight-bold my-0 fonte-14">
+                <h6 className="d-inline-block font-weight-bold my-0 fonte-14 w-100">
                   Objetivos de aprendizagem
-            </h6>
+                </h6>
+                {materias.map((materia) => {
+                  return (
+                    <Badge
+                      role="button"
+                      onClick={() => selecionarMateria(materia.codigo)}
+                      aria-pressed={materia.selecionada}
+                      id={materia.codigo}
+                      alt={materia.materia}
+                      key={materia.codigo}
+                      className={`badge badge-pill border text-dark bg-white font-weight-light px-2 py-1 mr-2
+                      ${materia.selecionada ? ' badge-selecionado' : ''}`}
+                    >
+                      {materia.materia}
+                    </Badge>
+                  );
+                })}
                 <ObjetivosList className="mt-4 overflow-auto">
                   {objetivosAprendizagem.map((objetivo, index) => {
                     return (
@@ -112,7 +185,7 @@ const PlanoAula = (props) => {
                         className="list-group list-group-horizontal mt-3"
                       >
                         <ListItemButton
-                          className={`${objetivo.selected ? 'selecionado ' : ''}
+                          className={`${objetivo.selected ? 'objetivo-selecionado ' : ''}
                         list-group-item d-flex align-items-center font-weight-bold fonte-14`}
                           role="button"
                           id={objetivo.id}

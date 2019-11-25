@@ -9,6 +9,7 @@ import calendarioEscolar from './calendarioEscolar/reducers';
 import calendarioProfessor from './calendarioProfessor/reducers';
 import bimestres from './planoAnual/reducers';
 import filtro from './filtro/reducers';
+import planoAula from './planoAula/reducers';
 
 export default combineReducers({
   navegacao,
@@ -20,4 +21,5 @@ export default combineReducers({
   bimestres,
   filtro,
   calendarioProfessor,
+  planoAula
 });

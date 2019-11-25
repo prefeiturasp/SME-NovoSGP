@@ -17,6 +17,8 @@ import history from '~/servicos/history';
 import Alert from '~/componentes/alert';
 import { verificaSomenteConsulta } from '~/servicos/servico-navegacao';
 import RotasDto from '~/dtos/rotasDto';
+import { store } from '~/redux';
+import { SelecionarDisciplina } from '~/redux/modulos/planoAula/actions';
 
 const FrequenciaPlanoAula = () => {
   const usuario = useSelector(store => store.usuario);
@@ -51,9 +53,11 @@ const FrequenciaPlanoAula = () => {
       );
       setListaDisciplinas(disciplinas.data);
       if (disciplinas.data && disciplinas.data.length == 1) {
-        setDisciplinaSelecionada(String(disciplinas.data[0].codigoComponenteCurricular));
+        const disciplinaId = disciplinas.data[0].codigoComponenteCurricular
+        setDisciplinaSelecionada(String(disciplinaId));
         setDesabilitarDisciplina(true);
-        obterDatasDeAulasDisponiveis(disciplinas.data[0].codigoComponenteCurricular);
+        obterDatasDeAulasDisponiveis(disciplinaId);
+        store.dispatch(SelecionarDisciplina(disciplinas.data[0]));
       }
     };
 
@@ -192,6 +196,10 @@ const FrequenciaPlanoAula = () => {
   };
 
   const onChangeDisciplinas = async disciplinaId => {
+    const discSelecionada = listaDisciplinas.find(disc => String(disc.codigoComponenteCurricular) === disciplinaId);
+    if(discSelecionada){
+      store.dispatch(SelecionarDisciplina(discSelecionada));
+    }
     if (modoEdicaoFrequencia) {
       const confirmar = await pergutarParaSalvar();
       if (confirmar) {
