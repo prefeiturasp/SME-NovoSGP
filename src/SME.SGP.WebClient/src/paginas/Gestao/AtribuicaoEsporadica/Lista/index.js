@@ -112,10 +112,6 @@ function AtribuicaoEsporadicaLista() {
     setSomenteConsulta(verificaSomenteConsulta(permissoesTela));
   }, []);
 
-  useEffect(() => {
-    console.log(filtro);
-  }, [filtro]);
-
   return (
     <>
       <Cabecalho pagina="Atribuição esporádica" />
