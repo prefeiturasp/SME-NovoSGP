@@ -16,7 +16,6 @@ function InputNome({ dataSource, onSelect, onChange, pessoaSelecionada }) {
   }, [dataSource]);
 
   useEffect(() => {
-    debugger;
     setValor(pessoaSelecionada && pessoaSelecionada.professorNome);
   }, [pessoaSelecionada]);
 

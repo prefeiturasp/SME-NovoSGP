@@ -157,7 +157,7 @@ function AtribuicaoEsporadicaForm({ match }) {
                       anoLetivo={filtroListagem.anoLetivo}
                       showLabel
                       form={form}
-                      onChange={valor => console.log(valor)}
+                      onChange={() => null}
                     />
                   </Row>
                 </Grid>
