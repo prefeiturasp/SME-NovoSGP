@@ -16,7 +16,6 @@ namespace SME.SGP.Infra
         [Required(ErrorMessage = "É necessário vincular o plano a uma aula.")]
         public long AulaId { get; set; }
 
-        [ListaTemElementos(ErrorMessage = "Os objetivos de aprendizagem da aula devem ser informados.")]
         public List<long> ObjetivosAprendizagemAula { get; set; }
     }
 }

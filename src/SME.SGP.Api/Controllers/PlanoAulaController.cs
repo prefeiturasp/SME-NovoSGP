@@ -15,7 +15,7 @@ namespace SME.SGP.Api.Controllers
         [HttpGet("obter")]
         [ProducesResponseType(typeof(PlanoAulaRetornoDto), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        //[Permissao(Permissao.PA_C, Policy = "Bearer")]
+        [Permissao(Permissao.PDA_C, Policy = "Bearer")]
         public async Task<IActionResult> ObterPlanoAula(FiltroPlanoAulaDto filtro, 
             [FromServices] IConsultasPlanoAula consultas)
         {
@@ -30,10 +30,10 @@ namespace SME.SGP.Api.Controllers
         [HttpPost]
         [ProducesResponseType(200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        //[Permissao(Permissao.PA_I, Permissao.PA_A, Policy = "Bearer")]
-        public IActionResult Post(PlanoAulaDto planoAulaDto, [FromServices]IComandosPlanoAula comandos)
+        [Permissao(Permissao.PDA_I, Permissao.PDA_A, Policy = "Bearer")]
+        public async Task<IActionResult> Post(PlanoAulaDto planoAulaDto, [FromServices]IComandosPlanoAula comandos)
         {
-            comandos.Salvar(planoAulaDto);
+            await comandos.Salvar(planoAulaDto);
             return Ok();
         }
     }
