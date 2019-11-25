@@ -2,6 +2,8 @@
 {
     public class ObjetivoAprendizagemAula : EntidadeBase
     {
+        public ObjetivoAprendizagemAula() : base() { }
+
         public ObjetivoAprendizagemAula(long planoAulaId, long objetivoAprendizagemPlanoId) : base()
         {
             PlanoAulaId = planoAulaId;
