@@ -5,8 +5,10 @@ using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
@@ -141,7 +143,9 @@ namespace SME.SGP.Aplicacao
                         .Select(a => (Permissao)a)
                         .ToList();
 
-                    retornoAutenticacaoEol.Item1.Token = servicoTokenJwt.GerarToken(login, usuario.CodigoRf, retornoAutenticacaoEol.Item1.PerfisUsuario.PerfilSelecionado, listaPermissoes);
+                    IEnumerable<Claim> claims = servicoUsuario.DefinirPermissoesUsuarioLogado(login, usuario.Nome, usuario.CodigoRf, retornoAutenticacaoEol.Item1.PerfisUsuario.PerfilSelecionado, listaPermissoes);
+
+                    retornoAutenticacaoEol.Item1.Token = servicoTokenJwt.GerarToken(claims);
 
                     usuario.AtualizaUltimoLogin();
                     repositorioUsuario.Salvar(usuario);
@@ -155,6 +159,7 @@ namespace SME.SGP.Aplicacao
         {
             string loginAtual = servicoUsuario.ObterLoginAtual();
             string codigoRfAtual = servicoUsuario.ObterRf();
+            string nomeLoginAtual = servicoUsuario.ObterNomeLoginAtual();
 
             await servicoUsuario.PodeModificarPerfil(perfil, loginAtual);
 
@@ -173,7 +178,9 @@ namespace SME.SGP.Aplicacao
 
                 await servicoAbrangencia.Salvar(loginAtual, perfil, false);
 
-                return servicoTokenJwt.GerarToken(loginAtual, codigoRfAtual, perfil, listaPermissoes);
+               IEnumerable<Claim> claims = servicoUsuario.DefinirPermissoesUsuarioLogado(loginAtual, nomeLoginAtual, codigoRfAtual, perfil, listaPermissoes);
+
+                return servicoTokenJwt.GerarToken(claims);
             }
         }
 

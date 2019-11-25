@@ -27,7 +27,7 @@ namespace SME.SGP.Dados.Contexto
         public ConnectionState State => Conexao.State;
 
         public string UsuarioLogado =>
-                                       httpContextAccessor.HttpContext?.User?.Identity?.Name ?? "Sistema";
+                                       httpContextAccessor.HttpContext?.User?.FindFirst("Login")?.Value ?? "Sistema";
 
         public string UsuarioLogadoNomeCompleto =>
                                           httpContextAccessor.HttpContext?.User?.FindFirst("Nome")?.Value ?? "Sistema";
