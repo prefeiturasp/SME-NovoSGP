@@ -76,25 +76,27 @@ namespace SME.SGP.Dominio.Servicos
 
         public async Task<string> Salvar(Evento evento, bool alterarRecorrenciaCompleta = false, bool dataConfirmada = false)
         {
-            var tipoEvento = repositorioEventoTipo.ObterPorId(evento.TipoEventoId);
+            ObterTipoEvento(evento);
 
-            if (tipoEvento == null)
-                throw new NegocioException("O tipo do evento deve ser informado.");
-
-            evento.AdicionarTipoEvento(tipoEvento);
-
-            var tipoCalendario = repositorioTipoCalendario.ObterPorId(evento.TipoCalendarioId);
-            if (tipoCalendario == null)
-                throw new NegocioException("Calendário não encontrado.");
-
-            evento.AdicionarTipoCalendario(tipoCalendario);
+            TipoCalendario tipoCalendario = ObterTipoCalendario(evento);
 
             evento.ValidaPeriodoEvento();
 
             var usuario = await servicoUsuario.ObterUsuarioLogado();
 
+            bool ehAlteracao = true;
+
             if (evento.Id == 0)
+            {
+                ehAlteracao = false;
                 evento.TipoPerfilCadastro = usuario.ObterTipoPerfilAtual();
+            }
+            else
+            {
+                var entidadeNaoModificada = repositorioEvento.ObterPorId(evento.Id);
+                ObterTipoEvento(entidadeNaoModificada);
+                usuario.PodeAlterarEvento(entidadeNaoModificada);
+            }
 
             usuario.PodeCriarEvento(evento);
 
@@ -118,8 +120,6 @@ namespace SME.SGP.Dominio.Servicos
             await VerificarParticularidadesUe(evento, usuario, periodos);
 
             AtribuirNullSeVazio(evento);
-
-            var ehAlteracao = evento.Id > 0;
 
             var devePassarPorWorkflow = await ValidaERetornaSeDevePassarPorWorkflowCadastroDatasLetivoOuLiberacaoExcepcional(evento, tipoCalendario);
 
@@ -302,6 +302,26 @@ namespace SME.SGP.Dominio.Servicos
             if (tipoEventoFeriado == null || tipoEventoFeriado.Id == 0)
                 throw new NegocioException("Nenhum tipo de evento de feriado foi encontrado");
             return tipoEventoFeriado;
+        }
+
+        private TipoCalendario ObterTipoCalendario(Evento evento)
+        {
+            var tipoCalendario = repositorioTipoCalendario.ObterPorId(evento.TipoCalendarioId);
+            if (tipoCalendario == null)
+                throw new NegocioException("Calendário não encontrado.");
+
+            evento.AdicionarTipoCalendario(tipoCalendario);
+            return tipoCalendario;
+        }
+
+        private void ObterTipoEvento(Evento evento)
+        {
+            var tipoEvento = repositorioEventoTipo.ObterPorId(evento.TipoEventoId);
+
+            if (tipoEvento == null)
+                throw new NegocioException("O tipo do evento deve ser informado.");
+
+            evento.AdicionarTipoEvento(tipoEvento);
         }
 
         private async Task PersistirWorkflowEvento(Evento evento)
