@@ -110,9 +110,7 @@ namespace SME.SGP.Dominio.Servicos
             var periodos = repositorioPeriodoEscolar.ObterPorTipoCalendario(evento.TipoCalendarioId);
 
             if (evento.DeveSerEmDiaLetivo())
-            {
                 evento.EstaNoPeriodoLetivo(periodos);
-            }
 
             usuario.PodeCriarEventoComDataPassada(evento);
             await VerificarParticularidadesSME(evento, usuario, periodos, dataConfirmada);
@@ -123,8 +121,6 @@ namespace SME.SGP.Dominio.Servicos
 
             var ehAlteracao = evento.Id > 0;
 
-            var mensagemRetornoSucesso = $"Evento cadastrado com sucesso.";
-
             var devePassarPorWorkflow = await ValidaERetornaSeDevePassarPorWorkflowCadastroDatasLetivoOuLiberacaoExcepcional(evento, tipoCalendario);
 
             unitOfWork.IniciarTransacao();
@@ -132,10 +128,8 @@ namespace SME.SGP.Dominio.Servicos
             repositorioEvento.Salvar(evento);
 
             if (devePassarPorWorkflow)
-            {
                 await PersistirWorkflowEvento(evento);
-                mensagemRetornoSucesso = "Evento cadastrado e será válido após aprovação.";
-            }
+
             unitOfWork.PersistirTransacao();
 
             if (evento.EventoPaiId.HasValue && evento.EventoPaiId > 0 && alterarRecorrenciaCompleta)
@@ -449,10 +443,11 @@ namespace SME.SGP.Dominio.Servicos
         {
             if (usuario.ObterTipoPerfilAtual() == TipoPerfil.UE)
             {
-                await VerificarSeUsuarioPodeCadastrarEventoParaUe(evento, usuario);
-
                 if (evento.TipoEvento.LocalOcorrencia == EventoLocalOcorrencia.UE)
+                {
                     evento.VerificaSeDataMenorQueHoje();
+                    await VerificarSeUsuarioPodeCadastrarEventoParaUe(evento, usuario);
+                }
 
                 await VerificaParticularidadeUeEventosNoRecesso(evento);
                 await VerificaParticularidadeUeEventosSuspensaoAtividades(evento);
@@ -468,7 +463,7 @@ namespace SME.SGP.Dominio.Servicos
 
         private async Task VerificarSeUsuarioPodeCadastrarEventoParaUe(Evento evento, Usuario usuario)
         {
-            var Ue = await repositorioAbrangencia.ObterDre(string.Empty, evento.UeId, usuario.Login, usuario.PerfilAtual);
+            var Ue = await repositorioAbrangencia.ObterUe(evento.UeId, usuario.Login, usuario.PerfilAtual);
             if (Ue is null)
                 throw new NegocioException("O usuário não tem permissão para cadastrar evento para esta Ue.");
         }
