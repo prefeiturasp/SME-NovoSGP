@@ -1,6 +1,6 @@
 ﻿namespace SME.SGP.Dominio
 {
-    public class TipoAtividadeAvaliativa : EntidadeBase
+    public class TipoAvaliacao : EntidadeBase
     {
         public string Descricao { get; set; }
         public bool Excluido { get; set; }
