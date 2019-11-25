@@ -19,6 +19,8 @@ namespace SME.Background.Hangfire
             this.connectionString = connectionString;
         }
 
+        public bool Registrado { get; private set; }
+
         public string Executar(Expression<Action> metodo)
         {
             return BackgroundJob.Enqueue(metodo);
@@ -45,6 +47,8 @@ namespace SME.Background.Hangfire
                     SchemaName = "hangfire"
                 });
             GlobalJobFilters.Filters.Add(new SGP.Hangfire.ContextFilterAttribute());
+
+            Registrado = true;
         }
     }
 }
