@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
 namespace SME.SGP.Infra
@@ -11,8 +12,22 @@ namespace SME.SGP.Infra
             ListaFrequencia = new List<RegistroFrequenciaAlunoDto>();
         }
 
+        public DateTime? AlteradoEm { get; set; }
+
+        public string AlteradoPor { get; set; }
+
+        public string AlteradoRF { get; set; }
+
         [Range(1, long.MaxValue, ErrorMessage = "A aula é obrigatória")]
         public long AulaId { get; set; }
+
+        public DateTime CriadoEm { get; set; }
+
+        public string CriadoPor { get; set; }
+
+        public string CriadoRF { get; set; }
+
+        public long Id { get; set; }
 
         [ListaTemElementos(ErrorMessage = "A lista de frequência é obrigatória")]
         public IList<RegistroFrequenciaAlunoDto> ListaFrequencia { get; set; }

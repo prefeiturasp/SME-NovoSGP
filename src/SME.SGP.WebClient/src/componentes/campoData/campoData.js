@@ -73,37 +73,34 @@ const CampoData = props => {
     onChange,
     valor,
     desabilitarData,
-    diasParaDesabilitar,
+    diasParaHabilitar,
     somenteHora,
   } = props;
 
-  const desabilitarDatas = current => {
-    let retorno = false;
-    const ehPraDesabilitar =
-      !!diasParaDesabilitar &&
-      !!diasParaDesabilitar.find(x => x === current.format('YYYY-MM-DD'));
-
-    if (!!diasParaDesabilitar === false && !!desabilitarData === false) {
-      return false;
-    }
+  const habilitarDatas = dataAtual => {
+    let retorno = true;
+    const ehParaHabilitar =
+      !!diasParaHabilitar &&
+      diasParaHabilitar.length >= 1 &&
+      !!diasParaHabilitar.find(x => x === dataAtual.format('YYYY-MM-DD'));
 
     if (
-      !!diasParaDesabilitar === false &&
+      !!diasParaHabilitar === false &&
       typeof desabilitarData === 'function'
     ) {
-      retorno = desabilitarData(current);
+      retorno = desabilitarData(dataAtual);
     } else if (
-      !!diasParaDesabilitar &&
-      diasParaDesabilitar.length >= 1 &&
+      !!diasParaHabilitar &&
+      diasParaHabilitar.length >= 1 &&
       typeof desabilitarData === 'function'
     ) {
-      retorno = ehPraDesabilitar || desabilitarData(current);
+      retorno = !ehParaHabilitar || desabilitarData(dataAtual);
     } else if (
-      !!diasParaDesabilitar &&
-      diasParaDesabilitar.length >= 1 &&
+      !!diasParaHabilitar &&
+      diasParaHabilitar.length >= 1 &&
       !!desabilitarData === false
     ) {
-      retorno = ehPraDesabilitar;
+      retorno = !ehParaHabilitar;
     }
 
     return retorno;
@@ -141,7 +138,7 @@ const CampoData = props => {
           form.setFieldTouched(name, true, true);
         }}
         value={form.values[name] || null}
-        disabledDate={desabilitarDatas}
+        disabledDate={habilitarDatas}
       />
     );
   };
@@ -163,6 +160,7 @@ const CampoData = props => {
           onChange(valorData);
         }}
         value={valor || null}
+        disabledDate={habilitarDatas}
       />
     );
   };
