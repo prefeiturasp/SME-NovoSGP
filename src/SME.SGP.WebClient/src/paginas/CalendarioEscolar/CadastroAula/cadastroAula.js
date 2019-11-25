@@ -39,6 +39,7 @@ const CadastroAula = ({ match }) => {
   const [exibirAuditoria, setExibirAuditoria] = useState(false);
   const [quantidadeMaximaAulas, setQuantidadeMaximaAulas] = useState(0);
   const [controlaQuantidadeAula, setControlaQuantidadeAula] = useState(true);
+  const [refForm, setRefForm] = useState({});
 
   const [valoresIniciais, setValoresIniciais] = useState({});
   const inicial = {
@@ -89,6 +90,12 @@ const CadastroAula = ({ match }) => {
         inicial.disciplinaId = String(
           disciplinas.data[0].codigoComponenteCurricular
         );
+        if (Object.keys(refForm).length > 0) {
+          onChangeDisciplinas(
+            disciplinas.data[0].codigoComponenteCurricular,
+            refForm
+          );
+        }
       }
       if (novoRegistro) {
         setValoresIniciais(inicial);
@@ -98,7 +105,7 @@ const CadastroAula = ({ match }) => {
       obterDisciplinas();
       validarConsultaModoEdicaoENovo();
     }
-  }, []);
+  }, [refForm]);
 
   useEffect(() => {
     montaValidacoes();
@@ -246,16 +253,23 @@ const CadastroAula = ({ match }) => {
   const onChangeDisciplinas = async (id, form) => {
     onChangeCampos();
     form.setFieldValue('quantidadeTexto', '');
-    const resultado = await api.get(`v1/grade/aulas/${turmaId}/${id}`);
+    const resultado = await api.get(
+      `v1/grades/aulas/turmas/${turmaId}/disciplinas/${id}`,
+      {
+        params: {
+          data: dataAula.format('YYYY-MM-DD'),
+        },
+      }
+    );
     if (resultado) {
-      if (resultado.status == 200) {
+      if (resultado.status === 200) {
         setControlaQuantidadeAula(true);
         const quantidade = resultado.data.quantidadeAulasRestante;
-        setQuantidadeMaximaAulas(5);
+        setQuantidadeMaximaAulas(quantidade);
         if (quantidade > 0) {
           form.setFieldValue('quantidadeRadio', 1);
         }
-      } else if (resultado.status == 204) {
+      } else if (resultado.status === 204) {
         setControlaQuantidadeAula(false);
       }
     }
@@ -273,6 +287,7 @@ const CadastroAula = ({ match }) => {
       valoresForm.tipoCalendarioId = match.params.tipoCalendarioId;
       valoresForm.ueId = ueId;
       valoresForm.turmaId = turmaId;
+      valoresForm.dataAula = dataAula;
     }
 
     const cadastrado = idAula
@@ -282,7 +297,7 @@ const CadastroAula = ({ match }) => {
           .catch(e => erros(e));
 
     if (cadastrado && cadastrado.status === 200) {
-      sucesso(cadastrado.data);
+      sucesso(cadastrado.data.mensagens[0]);
       // TODO - Voltar para o calendario quando ele existir!
       history.push('/calendario-escolar/calendario-professor');
     }
@@ -336,6 +351,7 @@ const CadastroAula = ({ match }) => {
           enableReinitialize
           initialValues={valoresIniciais}
           validationSchema={validacoes}
+          ref={refFormik => setRefForm(refFormik)}
           onSubmit={valores => onClickCadastrar(valores)}
           validateOnChange
           validateOnBlur

@@ -488,6 +488,17 @@ namespace SME.SGP.Dominio.Teste
             Assert.Throws<NegocioException>(() => evento.EstaNoAnoLetivoDoCalendario());
         }
 
+        [Fact]
+        public void VerificarSeEstaNoRangeDeDatas()
+        {
+            var evento = new Evento() { DataInicio = new DateTime(2019, 11, 5), DataFim = new DateTime(2019, 11, 7) };
+            List<(DateTime, DateTime)> listaDeDatas = new List<(DateTime, DateTime)> {
+                (new DateTime(2019, 11, 1), new DateTime(2019, 11, 5))
+            };
+
+            Assert.True(evento.EstaNoRangeDeDatas(listaDeDatas));
+        }
+
         private Evento ObterEvento()
         {
             return new Evento

@@ -2,7 +2,6 @@
 using SME.SGP.Dados.Contexto;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
-using System.Linq;
 using System.Text;
 
 namespace SME.SGP.Dados.Repositorios
@@ -13,16 +12,16 @@ namespace SME.SGP.Dados.Repositorios
         {
         }
 
-        public string ObterValorPorNomeAno(string nome, int? ano)
+        public string ObterValorPorTipoEAno(TipoParametroSistema tipo, int? ano = null)
         {
             StringBuilder query = new StringBuilder();
             query.AppendLine("select valor");
             query.AppendLine("from parametros_sistema");
-            query.AppendLine("where nome = @nome");
+            query.AppendLine("where ativo and tipo = @tipo");
             if (ano.HasValue)
                 query.AppendLine("and ano = @ano");
 
-            return database.Conexao.Query<string>(query.ToString(), new { nome, ano }).FirstOrDefault();
+            return database.Conexao.QueryFirstOrDefault<string>(query.ToString(), new { tipo, ano });
         }
     }
 }

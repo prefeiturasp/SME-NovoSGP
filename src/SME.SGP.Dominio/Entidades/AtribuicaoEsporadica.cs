@@ -14,6 +14,13 @@ namespace SME.SGP.Dominio
         public string ProfessorRf { get; set; }
         public string UeId { get; set; }
 
+        public void Excluir()
+        {
+            if (Excluido)
+                throw new NegocioException("Estra atribuição já está excluida.");
+            Excluido = true;
+        }
+
         public void Validar(bool ehSme, int anoLetivo, IEnumerable<PeriodoEscolar> periodosEscolares)
         {
             ValidarDataInicio(ehSme, anoLetivo, periodosEscolares);
