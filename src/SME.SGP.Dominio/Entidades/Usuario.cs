@@ -11,6 +11,7 @@ namespace SME.SGP.Dominio
         private readonly Guid PERFIL_DIRETOR = Guid.Parse("46E1E074-37D6-E911-ABD6-F81654FE895D");
         private readonly Guid PERFIL_PROFESSOR = Guid.Parse("40E1E074-37D6-E911-ABD6-F81654FE895D");
         private readonly Guid PERFIL_SUPERVISOR = Guid.Parse("4EE1E074-37D6-E911-ABD6-F81654FE895D");
+        private readonly Guid PERFIL_CJ = Guid.Parse("41e1e074-37d6-e911-abd6-f81654fe895d");
         public string CodigoRf { get; set; }
         public string Email { get; set; }
         public DateTime? ExpiracaoRecuperacaoSenha { get; set; }
@@ -179,6 +180,10 @@ namespace SME.SGP.Dominio
         {
             return Perfis != null && Perfis.Any(c => c.Tipo == TipoPerfil.UE);
         }
+
+        public bool PossuiPerfilCJ() 
+            => Perfis != null && 
+                Perfis.Any(c => c.CodigoPerfil == PERFIL_CJ);
 
         public bool TemPerfilSupervisorOuDiretor(Guid perfilAtual)
         {
