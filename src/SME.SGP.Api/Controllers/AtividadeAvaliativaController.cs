@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using SME.SGP.Api.Filtros;
 using SME.SGP.Aplicacao;
 using SME.SGP.Infra;
@@ -21,7 +22,8 @@ namespace SME.SGP.Api.Controllers
         [HttpPut("{id}")]
         [ProducesResponseType(200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        [Permissao(Permissao.TE_A, Policy = "Bearer")]
+        [Permissao(Permissao.CP_A, Policy = "Bearer")]
+        [AllowAnonymous]
         public IActionResult Alterar([FromBody]AtividadeAvaliativaDto atividadeAvaliativaDto, long id)
         {
             comandoAtividadeAvaliativa.Alterar(atividadeAvaliativaDto, id);
@@ -31,7 +33,8 @@ namespace SME.SGP.Api.Controllers
         [HttpPost]
         [ProducesResponseType(200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        //[Permissao(Permissao.AE_A, Permissao.AE_I, Policy = "Bearer")]
+        [Permissao(Permissao.CP_I, Permissao.AE_I, Policy = "Bearer")]
+        [AllowAnonymous]
         public async Task<IActionResult> PostAsync([FromBody]AtividadeAvaliativaDto atividadeAvaliativaDto)
         {
             await comandoAtividadeAvaliativa.Inserir(atividadeAvaliativaDto);

@@ -5,16 +5,16 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
-    public class ComandosTipoAtividadeAvaliativa : IComandosTipoAtividadeAvaliativa
+    public class ComandosTipoAavaliacao : IComandosTipoAvaliacao
     {
-        private readonly IRepositorioTipoAtividadeAvaliativa repositorioTipoAtividadeAvaliativa;
+        private readonly IRepositorioTipoAvaliacao repositorioTipoAtividadeAvaliativa;
 
-        public ComandosTipoAtividadeAvaliativa(IRepositorioTipoAtividadeAvaliativa repositorioTipoAtividadeAvaliativa)
+        public ComandosTipoAavaliacao(IRepositorioTipoAvaliacao repositorioTipoAtividadeAvaliativa)
         {
             this.repositorioTipoAtividadeAvaliativa = repositorioTipoAtividadeAvaliativa ?? throw new System.ArgumentNullException(nameof(repositorioTipoAtividadeAvaliativa));
         }
 
-        public async Task Alterar(TipoAtividadeAvaliativaDto dto, long idTipoAtividadeAvaliativa)
+        public async Task Alterar(TipoAvaliacaoDto dto, long idTipoAtividadeAvaliativa)
         {
             var atividadeAvaliativa = MapearDtoParaEntidade(dto, idTipoAtividadeAvaliativa);
             await repositorioTipoAtividadeAvaliativa.SalvarAsync(atividadeAvaliativa);
@@ -31,15 +31,15 @@ namespace SME.SGP.Aplicacao
             await repositorioTipoAtividadeAvaliativa.SalvarAsync(tipoAtividadeAvaliativa);
         }
 
-        public async Task Inserir(TipoAtividadeAvaliativaDto dto)
+        public async Task Inserir(TipoAvaliacaoDto dto)
         {
             var atividadeAvaliativa = MapearDtoParaEntidade(dto, 0L);
             await repositorioTipoAtividadeAvaliativa.SalvarAsync(atividadeAvaliativa);
         }
 
-        private TipoAtividadeAvaliativa MapearDtoParaEntidade(TipoAtividadeAvaliativaDto dto, long id)
+        private TipoAvaliacao MapearDtoParaEntidade(TipoAvaliacaoDto dto, long id)
         {
-            TipoAtividadeAvaliativa tipoAtividadeAvaliativa = new TipoAtividadeAvaliativa();
+            TipoAvaliacao tipoAtividadeAvaliativa = new TipoAvaliacao();
             if (id > 0L)
             {
                 tipoAtividadeAvaliativa = repositorioTipoAtividadeAvaliativa.ObterPorId(id);
