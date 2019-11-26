@@ -16,6 +16,23 @@ namespace SME.SGP.Dados.Repositorios
         {
         }
 
+        public async Task<AulaConsultaDto> ObterAulaDataTurmaDisciplina(DateTime data, string turmaId, string disciplinaId)
+        {
+            var query = @"select *
+                 from aula
+                where not excluido
+                  and DATE(data_aula) = @data
+                  and turma_id = @turmaId
+                  and disciplina_id = @disciplinaId";
+
+            return await database.Conexao.QueryFirstOrDefaultAsync<AulaConsultaDto>(query, new
+            {
+                data,
+                turmaId,
+                disciplinaId
+            });
+        }
+
         public async Task<IEnumerable<AulaDto>> ObterAulas(long tipoCalendarioId, string turmaId, string ueId)
         {
             StringBuilder query = new StringBuilder();
@@ -38,6 +55,8 @@ namespace SME.SGP.Dados.Repositorios
         {
             StringBuilder query = new StringBuilder();
             MontaCabecalho(query);
+            query.AppendLine(",ab.turma_nome,");
+            query.AppendLine("ab.ue_nome");
             query.AppendLine("FROM public.aula a");
             query.AppendLine("INNER JOIN v_abrangencia ab on a.turma_id = ab.turma_id and ab.usuario_perfil = @perfil");
             MontaWhere(query, turmaId, ueId, null, data.Date);
@@ -148,9 +167,7 @@ namespace SME.SGP.Dados.Repositorios
             query.AppendLine("a.criado_rf,");
             query.AppendLine("a.alterado_rf,");
             query.AppendLine("a.excluido,");
-            query.AppendLine("a.migrado,");
-            query.AppendLine("ab.turma_nome,");
-            query.AppendLine("ab.ue_nome");
+            query.AppendLine("a.migrado");
         }
 
         private static void MontaWhere(StringBuilder query, string turmaId, string ueId, int? mes = null, DateTime? data = null)
@@ -164,23 +181,6 @@ namespace SME.SGP.Dados.Repositorios
                 query.AppendLine("AND extract(month from a.data_aula) = @mes");
             if (data.HasValue)
                 query.AppendLine("AND DATE(a.data_aula) = @data");
-        }
-
-        public async Task<AulaConsultaDto> ObterAulaDataTurmaDisciplina(DateTime data, string turmaId, string disciplinaId)
-        {
-            var query = @"select *
-                 from aula
-                where not excluido
-                  and DATE(data_aula) = DATE(@data)
-                  and turma_id = @turmaId
-                  and disciplina_id = @disciplinaId";
-
-            return await database.Conexao.QueryFirstOrDefaultAsync<AulaConsultaDto>(query, new
-            {
-                data,
-                turmaId,
-                disciplinaId
-            });
         }
     }
 }

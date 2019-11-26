@@ -42,7 +42,7 @@ namespace SME.SGP.Aplicacao
             PlanoAula planoAula = await repositorio.ObterPlanoAulaPorAula(planoAulaDto.AulaId);
             planoAula = MapearParaDominio(planoAulaDto, planoAula);
 
-            if (planoAulaDto.ObjetivosAprendizagemAula.Count == 0)
+            if (planoAulaDto.ObjetivosAprendizagemAula == null || !planoAulaDto.ObjetivosAprendizagemAula.Any())
             {
                 var permitePlanoSemObjetivos = false;
 
@@ -72,14 +72,15 @@ namespace SME.SGP.Aplicacao
                 repositorio.Salvar(planoAula);
                 // Salvar Objetivos
                 await repositorioObjetivosAula.LimparObjetivosAula(planoAula.Id);
-                foreach (var objetivoAprendizagem in planoAulaDto.ObjetivosAprendizagemAula)
-                {
-                    planoAulaDto.ObjetivosAprendizagemAula.ForEach(objetivoId =>
+                if (planoAulaDto.ObjetivosAprendizagemAula != null)
+                    foreach (var objetivoAprendizagem in planoAulaDto.ObjetivosAprendizagemAula)
                     {
-                        repositorioObjetivosAula.Salvar(new ObjetivoAprendizagemAula(planoAula.Id, objetivoId));
-                    });
+                        planoAulaDto.ObjetivosAprendizagemAula.ForEach(objetivoId =>
+                        {
+                            repositorioObjetivosAula.Salvar(new ObjetivoAprendizagemAula(planoAula.Id, objetivoId));
+                        });
 
-                }
+                    }
 
                 unitOfWork.PersistirTransacao();
             }        
