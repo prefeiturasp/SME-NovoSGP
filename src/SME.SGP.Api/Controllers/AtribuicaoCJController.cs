@@ -40,5 +40,13 @@ namespace SME.SGP.Api.Controllers
 
             return Ok(retorno);
         }
+
+        [HttpGet("ues/{ueId}/professores/{professorId}")]
+        public IActionResult ObterAtribuicaoDeProfessores([FromQuery]AtribuicaoCJListaTitularesFiltroDto atribuicaoCJListaTitularesFiltroDto)
+        {
+            List<AtribuicaoCJListaTitularesRetornoDto> retorno = new List<AtribuicaoCJListaTitularesRetornoDto>();
+
+            return Ok(retorno);
+        }
     }
 }
