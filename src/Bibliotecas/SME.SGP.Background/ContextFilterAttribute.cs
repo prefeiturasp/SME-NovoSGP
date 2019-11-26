@@ -3,6 +3,7 @@ using Hangfire.Common;
 using Hangfire.Server;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
+using SME.Background.Core;
 using SME.SGP.Infra.Contexto;
 using SME.SGP.Infra.Interfaces;
 using System.Threading;
@@ -12,8 +13,6 @@ namespace SME.SGP.Hangfire
     public class ContextFilterAttribute : JobFilterAttribute,
     IClientFilter, IServerFilter 
     {
-        public static IServiceCollection RegistreredServices { get; set; }
-
         public void OnCreated(CreatedContext filterContext)
         {
             // Não preciso fazer nada aqui
@@ -44,7 +43,7 @@ namespace SME.SGP.Hangfire
 
         private IContextoAplicacao ObterContexto()
         {
-            var provider = RegistreredServices.BuildServiceProvider();
+            var provider = Orquestrador.Provider;
             return provider.GetService<IContextoAplicacao>();
         }
     }
