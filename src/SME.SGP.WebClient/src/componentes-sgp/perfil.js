@@ -102,10 +102,10 @@ const Perfil = props => {
         api
           .put(`v1/autenticacao/perfis/${perfilNovo[0].codigoPerfil}`)
           .then(resp => {
-            const token = resp.data;
+            const { token, ehProfessor } = resp.data;
             store.dispatch(
               salvarDadosLogin({
-                token: token,
+                token,
                 rf: usuarioStore.rf,
               })
             );

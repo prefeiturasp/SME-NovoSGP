@@ -3,6 +3,7 @@ using Moq;
 using SME.SGP.Aplicacao.Integracoes;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
+using SME.SGP.Infra.Contexto;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -26,11 +27,12 @@ namespace SME.SGP.Dominio.Servicos.Teste
             repositorioPrioridadePerfil = new Mock<IRepositorioPrioridadePerfil>();
             unitOfWork = new Mock<IUnitOfWork>();
             repositorioCache = new Mock<IRepositorioCache>();
-            var context = new DefaultHttpContext();
             var obj = new HttpContextAccessor();
-            obj.HttpContext = context;
+            obj.HttpContext = new DefaultHttpContext();
 
-            servicoUsuario = new ServicoUsuario(repositorioUsuario.Object, servicoEol.Object, repositorioPrioridadePerfil.Object, unitOfWork.Object, obj, repositorioCache.Object);
+            var context = new ContextoHttp(obj);
+
+            servicoUsuario = new ServicoUsuario(repositorioUsuario.Object, servicoEol.Object, repositorioPrioridadePerfil.Object, unitOfWork.Object, context, repositorioCache.Object);
         }
 
         [Fact]

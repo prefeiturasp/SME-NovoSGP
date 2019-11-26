@@ -19,7 +19,7 @@ namespace SME.SGP.Aplicacao
             this.consultasAula = consultasAula ?? throw new System.ArgumentNullException(nameof(consultasAula));
         }
 
-        public async Task<GradeComponenteTurmaAulasDto> ObterGradeAulasTurma(int turma, int disciplina)
+        public async Task<GradeComponenteTurmaAulasDto> ObterGradeAulasTurma(string turma, int disciplina, string semana)
         {
             // Busca abrangencia a partir da turma
             var abrangencia = await consultasAbrangencia.ObterAbrangenciaTurma(turma);
@@ -31,19 +31,25 @@ namespace SME.SGP.Aplicacao
             if (grade == null)
                 throw new NegocioException("Grade da turma não localizada.");
 
-            // Busca carga horaria na grade da disciplina para o ano da turma
-            var horasGrade = await ObterHorasGradeComponente(grade.Id, disciplina, abrangencia.Ano);
-            // Busca horas aula cadastradas para a disciplina na turma
-            var horascadastradas = await consultasAula.ObterQuantidadeAulasTurma(turma.ToString(), disciplina.ToString());
+            var horasGrade = 0;
+            // verifica se é regencia de classe
+            if (disciplina == 1105)
+                horasGrade = abrangencia.Modalidade == Modalidade.EJA ? 5 : 1;
+            else
+                // Busca carga horaria na grade da disciplina para o ano da turma
+                horasGrade = await ObterHorasGradeComponente(grade.Id, disciplina, abrangencia.Ano);
 
-            if (horasGrade > 0)
-                return new GradeComponenteTurmaAulasDto
+            if (horasGrade == 0)
+                return null;
+
+            // Busca horas aula cadastradas para a disciplina na turma
+            var horascadastradas = await consultasAula.ObterQuantidadeAulasTurmaSemana(turma.ToString(), disciplina.ToString(), semana);
+
+            return new GradeComponenteTurmaAulasDto
                 {
                     QuantidadeAulasGrade = horasGrade,
                     QuantidadeAulasRestante = horasGrade - horascadastradas
                 };
-            else
-                return null;
         }
 
         public async Task<GradeDto> ObterGradeTurma(TipoEscola tipoEscola, Modalidade modalidade, int duracao)

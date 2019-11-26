@@ -226,6 +226,7 @@ namespace SME.SGP.Dominio.Servicos
                 DreId = evento.DreId,
                 Titulo = "Criação de Eventos Excepcionais",
                 Tipo = NotificacaoTipo.Calendario,
+                Codigo = codigoDaNotificacao,
                 Mensagem = $"O evento {evento.Nome} - {evento.DataInicio.Day}/{evento.DataInicio.Month}/{evento.DataInicio.Year} do calendário {evento.TipoCalendario.Nome} da {nomeEscola} foi recusado. < br/> Motivo: {motivoRecusa}"
             });
         }
