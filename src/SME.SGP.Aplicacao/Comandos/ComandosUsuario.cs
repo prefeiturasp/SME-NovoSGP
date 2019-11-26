@@ -124,7 +124,9 @@ namespace SME.SGP.Aplicacao
 
             if (retornoAutenticacaoEol.Item1.Autenticado)
             {
-                var usuario = servicoUsuario.ObterUsuarioPorCodigoRfLoginOuAdiciona(retornoAutenticacaoEol.Item2, login);
+                var dadosUsuario = await servicoEOL.ObterMeusDados(login);
+
+                var usuario = servicoUsuario.ObterUsuarioPorCodigoRfLoginOuAdiciona(retornoAutenticacaoEol.Item2, login, dadosUsuario.Nome, dadosUsuario.Email);
 
                 retornoAutenticacaoEol.Item1.PerfisUsuario = servicoPerfil.DefinirPerfilPrioritario(retornoAutenticacaoEol.Item3, usuario);
 
