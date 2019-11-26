@@ -139,6 +139,34 @@ namespace SME.SGP.Aplicacao.Integracoes
             return null;
         }
 
+        public async Task AtribuirCJSeNecessario(Guid usuarioId)
+        {
+            var parametros = JsonConvert.SerializeObject(usuarioId);
+
+            var resposta = await httpClient.PostAsync("autenticacaoSgp/AtribuirPerfilCJ", new StringContent(parametros));
+
+            if (resposta.IsSuccessStatusCode)
+                return;
+            
+            var mensagem = await resposta.Content.ReadAsStringAsync();
+
+            throw new NegocioException(mensagem);
+        }
+
+        public async Task RemoverCJSeNecessario(Guid usuarioId)
+        {
+            var parametros = JsonConvert.SerializeObject(usuarioId);
+
+            var resposta = await httpClient.PostAsync("autenticacaoSgp/RemoverPerfilCJ", new StringContent(parametros));
+
+            if (resposta.IsSuccessStatusCode)
+                return;
+
+            var mensagem = await resposta.Content.ReadAsStringAsync();
+
+            throw new NegocioException(mensagem);
+        }
+
         public IEnumerable<EscolasRetornoDto> ObterEscolasPorDre(string dreId)
         {
             httpClient.DefaultRequestHeaders.Clear();
@@ -200,6 +228,21 @@ namespace SME.SGP.Aplicacao.Integracoes
             }
             var json = await resposta.Content.ReadAsStringAsync();
             return JsonConvert.DeserializeObject<MeusDadosDto>(json);
+        }
+
+        public async Task<UsuarioResumoCoreDto> ObterResumoCore(string login)
+        {
+            var resposta = await httpClient.GetAsync($"AutenticacaoSgp/{login}/obter/resumo");
+
+            if (!resposta.IsSuccessStatusCode)
+                throw new NegocioException("Não foi possivel obter os dados do usuário");
+
+            if (resposta.StatusCode == HttpStatusCode.NoContent)
+                throw new NegocioException("Usuário não encontrado no EOL");
+
+            var json = await resposta.Content.ReadAsStringAsync();
+
+            return JsonConvert.DeserializeObject<UsuarioResumoCoreDto>(json);
         }
 
         public async Task<UsuarioEolAutenticacaoRetornoDto> ObterPerfisPorLogin(string login)
