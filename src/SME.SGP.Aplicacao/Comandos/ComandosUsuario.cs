@@ -143,7 +143,7 @@ namespace SME.SGP.Aplicacao
                         .Select(a => (Permissao)a)
                         .ToList();
 
-                    retornoAutenticacaoEol.Item1.Token = servicoTokenJwt.GerarToken(login, usuario.Nome, usuario.CodigoRf, retornoAutenticacaoEol.Item1.PerfisUsuario.PerfilSelecionado, listaPermissoes);
+                    retornoAutenticacaoEol.Item1.Token = servicoTokenJwt.GerarToken(login, dadosUsuario.Nome, usuario.CodigoRf, retornoAutenticacaoEol.Item1.PerfisUsuario.PerfilSelecionado, listaPermissoes);
 
                     usuario.AtualizaUltimoLogin();
                     repositorioUsuario.Salvar(usuario);
