@@ -1,4 +1,4 @@
-CREATE TABLE public.notas_tipo_valor (
+CREATE TABLE IF NOT EXISTS public.notas_tipo_valor (
 	id int8 NOT NULL GENERATED ALWAYS AS IDENTITY,
 	tipo_nota int4 NOT NULL,
 	descricao varchar(200) NOT NULL,
@@ -8,7 +8,7 @@ CREATE TABLE public.notas_tipo_valor (
 	ativo bool NOT NULL DEFAULT false
 );
 
-CREATE TABLE public.notas_parametros (
+CREATE TABLE IF NOT EXISTS public.notas_parametros (
 	id int8 NOT NULL GENERATED ALWAYS AS IDENTITY,
 	valor_minimo float4 NULL,
 	valor_medio float4 NOT NULL,
@@ -19,7 +19,7 @@ CREATE TABLE public.notas_parametros (
 	fim_vigencia timestamp NULL
 );
 
-CREATE TABLE public.conceito_valores (
+CREATE TABLE IF NOT EXISTS public.conceito_valores (
 	id int8 NOT NULL GENERATED ALWAYS AS IDENTITY,
 	valor varchar(50) NOT NULL,
 	descricao varchar(200) NOT NULL,
