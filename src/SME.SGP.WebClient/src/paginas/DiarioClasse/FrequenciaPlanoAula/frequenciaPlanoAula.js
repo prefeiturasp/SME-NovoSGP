@@ -47,6 +47,15 @@ const FrequenciaPlanoAula = () => {
   const [exibirAuditoria, setExibirAuditoria] = useState(false);
   const [desabilitarCampos, setDesabilitarCampos] = useState(false);
   const [modoEdicaoPlanoAula, setModoEdicaoPlanoAula] = useState(false);
+  const [ehRegencia, setEhRegencia] = useState(false);
+  const [planoAula, setPlanoAula] = useState({
+    quantidadeAulas:0,
+    temObjetivos: false,
+    objetivosEspecificos: null,
+    desenvolvimentoAula: null,
+    recuperacaoContinua: null,
+    licaoCasa: null,
+  })
 
   useEffect(() => {
     const obterDisciplinas = async () => {
@@ -84,10 +93,10 @@ const FrequenciaPlanoAula = () => {
 
   useEffect(() => {
     const desabilitar = frequenciaId > 0
-    ? somenteConsulta || !permissoesTela.podeAlterar
-    :  somenteConsulta || !permissoesTela.podeIncluir;
+      ? somenteConsulta || !permissoesTela.podeAlterar
+      : somenteConsulta || !permissoesTela.podeIncluir;
     setDesabilitarCampos(desabilitar);
-  },[frequenciaId]);
+  }, [frequenciaId]);
 
   const obterListaFrequencia = async aulaId => {
     setAulaId(aulaId);
@@ -108,6 +117,17 @@ const FrequenciaPlanoAula = () => {
       setFrequencia(frequenciaAlunos.data.listaFrequencia);
     }
   };
+
+  const obterPlanoAula = async (data) => {
+    setEhRegencia(disciplinaSelecionada.regencia);
+    const plano = await
+      api.get(`v1/planos/aulas/${turmaId}/disciplina/${disciplinaSelecionada.codigoComponenteCurricular}?data=${data}`)
+    if (!plano && disciplinaSelecionada.regencia) {
+      const disciplinas = await
+        api.get(`v1/objetivos-aprendizagem/disciplinas/${anoLetivo}/4/turma/${turmaId}/componente/${disciplinaSelecionada.codigoComponenteCurricular}`)
+      console.log(disciplinas);
+    }
+  }
 
   const onClickVoltar = async () => {
     if (!desabilitarCampos && (modoEdicaoFrequencia || modoEdicaoPlanoAula)) {
@@ -210,14 +230,14 @@ const FrequenciaPlanoAula = () => {
       .get(`v1/calendarios/frequencias/aulas/datas/${anoLetivo}/turmas/${turmaId}/disciplinas/${disciplinaId}`)
       .catch(e => erros(e));
 
-      if (datasDeAulas && datasDeAulas.data) {
-        setListaDatasAulas(datasDeAulas.data);
-        const habilitar = datasDeAulas.data.map(item => window.moment(item.data).format('YYYY-MM-DD'));
-        setDiasParaHabilitar(habilitar);
-      } else {
-        setListaDatasAulas([]);
-        setDiasParaHabilitar([]);
-      }
+    if (datasDeAulas && datasDeAulas.data) {
+      setListaDatasAulas(datasDeAulas.data);
+      const habilitar = datasDeAulas.data.map(item => window.moment(item.data).format('YYYY-MM-DD'));
+      setDiasParaHabilitar(habilitar);
+    } else {
+      setListaDatasAulas([]);
+      setDiasParaHabilitar([]);
+    }
   };
 
   const onChangeDisciplinas = async disciplinaId => {
@@ -242,7 +262,7 @@ const FrequenciaPlanoAula = () => {
 
   };
 
-  const setarDisciplina =  disciplinaId => {
+  const setarDisciplina = disciplinaId => {
     resetarTelaFrequencia(true);
     const disciplina = listaDisciplinas.find(disc => String(disc.codigoComponenteCurricular) === disciplinaId);
     setDisciplinaSelecionada(disciplina);
@@ -277,19 +297,20 @@ const FrequenciaPlanoAula = () => {
   const validaSeTemIdAula = data => {
     setDataSelecionada(data);
     resetarTelaFrequencia(true, true);
+    resetarPlanoAula();
     const aulaDataSelecionada = listaDatasAulas.find(item => window.moment(item.data).isSame(data, 'date'));
     if (aulaDataSelecionada && aulaDataSelecionada.idAula) {
       obterListaFrequencia(aulaDataSelecionada.idAula);
-      // obterPlanoAula();
+      obterPlanoAula(aulaDataSelecionada.data);
     }
-  }
-
-  const obterPlanoAula = () => {
-
   }
 
   const onChangeFrequencia = () => {
     setModoEdicaoFrequencia(true);
+  }
+
+  const resetarPlanoAula = () => {
+    setEhRegencia(false);
   }
 
   const resetarTelaFrequencia = (naoDisciplina, naoData) => {
@@ -390,8 +411,8 @@ const FrequenciaPlanoAula = () => {
                     show={exibirCardFrequencia}
                     alt="card-collapse-frequencia"
                   >
-                      {
-                        frequencia && frequencia.length > 0 ?
+                    {
+                      frequencia && frequencia.length > 0 ?
                         <>
                           <div className="col-sm-12 col-md-12 col-lg-12 col-xl-12 mb-2">
                             <Ordenacao
@@ -401,33 +422,38 @@ const FrequenciaPlanoAula = () => {
                               retornoOrdenado={retorno => setFrequencia(retorno)}
                             ></Ordenacao>
                             <ListaFrequencia dados={frequencia}
-                                             frequenciaId={frequenciaId} 
-                                             onChangeFrequencia={onChangeFrequencia} 
-                                             permissoesTela={permissoesTela}
+                              frequenciaId={frequenciaId}
+                              onChangeFrequencia={onChangeFrequencia}
+                              permissoesTela={permissoesTela}
                             ></ListaFrequencia>
                           </div>
-                            {exibirAuditoria ? (
-                              <Auditoria
-                                className="mt-2"
-                                criadoEm={auditoria.criadoEm}
-                                criadoPor={auditoria.criadoPor}
-                                alteradoPor={auditoria.alteradoPor}
-                                alteradoEm={auditoria.alteradoEm}
-                              />
-                            ) : (
+                          {exibirAuditoria ? (
+                            <Auditoria
+                              className="mt-2"
+                              criadoEm={auditoria.criadoEm}
+                              criadoPor={auditoria.criadoPor}
+                              alteradoPor={auditoria.alteradoPor}
+                              alteradoEm={auditoria.alteradoEm}
+                            />
+                          ) : (
                               ''
                             )}
                         </>
                         : ''
-                      }
+                    }
                   </CardCollapse>
+                </div>
+                <div className="col-sm-12 col-md-12 col-lg-12">
+                  <PlanoAula
+                    disciplinaSelecionada={disciplinaSelecionada}
+                    dataSelecionada={dataSelecionada}
+                    planoAula={planoAula}
+                    ehRegencia={ehRegencia}
+                  />
                 </div>
               </div>
               : ''
           }
-        </div>
-        <div className="col-sm-12 col-md-12 col-lg-12">
-          <PlanoAula disciplinaSelecionada={disciplinaSelecionada} dataSelecionada={dataSelecionada}/>
         </div>
       </Card>
     </>
