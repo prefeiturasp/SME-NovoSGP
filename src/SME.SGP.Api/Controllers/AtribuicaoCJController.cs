@@ -43,14 +43,7 @@ namespace SME.SGP.Api.Controllers
             return Ok(retorno);
         }
 
-        [HttpPost]
-        [ValidaDto]
-        public IActionResult Post([FromBody]AtribuicaoCJPersistenciaDto[] atribuicaoCJPersistenciaDtos)
-        {
-            return Ok();
-        }
-
-        [HttpGet("ues/{ueId}/professores/{professorId}")]        
+        [HttpGet("ues/{ueId}/professores/{professorId}")]
         public IActionResult ObterAtribuicaoDeProfessores([FromQuery]AtribuicaoCJListaTitularesFiltroDto atribuicaoCJListaTitularesFiltroDto)
         {
             var retorno = new AtribuicaoCJTitularesRetornoDto()
@@ -91,6 +84,13 @@ namespace SME.SGP.Api.Controllers
             });
 
             return Ok(retorno);
+        }
+
+        [HttpPost]
+        [ValidaDto]
+        public IActionResult Post([FromBody]AtribuicaoCJPersistenciaDto[] atribuicaoCJPersistenciaDtos)
+        {
+            return Ok();
         }
     }
 }
