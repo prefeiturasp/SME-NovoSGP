@@ -44,17 +44,17 @@ const Dia = props => {
         if (filtros && Object.entries(filtros).length > 0) {
           const {
             tipoCalendarioSelecionado = '',
-            eventoSme = true,
+            // eventoSme = true,
             dreSelecionada = '',
             unidadeEscolarSelecionada = '',
             turmaSelecionada = '',
           } = filtros;
           if (tipoCalendarioSelecionado) {
             api
-              .post('http://www.mocky.io/v2/5dd43f4d2f0000f905d4fa31', {
+              .post(`v1/calendarios/meses/${mesAtual}/tipos/eventos-aulas`, {
                 Mes: mesAtual,
                 tipoCalendarioId: tipoCalendarioSelecionado,
-                EhEventoSME: eventoSme,
+                // EhEventoSME: eventoSme,
                 dreId: dreSelecionada,
                 ueId: unidadeEscolarSelecionada,
                 turmaId: turmaSelecionada,

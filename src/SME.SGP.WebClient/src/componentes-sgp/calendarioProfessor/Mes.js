@@ -46,16 +46,16 @@ const Mes = props => {
       if (filtros && Object.entries(filtros).length > 0) {
         const {
           tipoCalendarioSelecionado = '',
-          eventoSme = true,
+          // eventoSme = true,
           dreSelecionada = '',
           unidadeEscolarSelecionada = '',
           turmaSelecionada = '',
         } = filtros;
         if (tipoCalendarioSelecionado) {
           api
-            .post('http://www.mocky.io/v2/5dd435fd2f00006b00d4f9ec', {
+            .post('v1/calendarios/meses/eventos-aulas', {
               tipoCalendarioId: tipoCalendarioSelecionado,
-              EhEventoSME: eventoSme,
+              // EhEventoSME: eventoSme,
               dreId: dreSelecionada,
               ueId: unidadeEscolarSelecionada,
               turmaId: turmaSelecionada,
