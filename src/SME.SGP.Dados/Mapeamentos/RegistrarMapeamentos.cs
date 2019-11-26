@@ -43,6 +43,8 @@ namespace SME.SGP.Dados.Mapeamentos
                config.AddMap(new PlanoAulaMap());
                config.AddMap(new ObjetivoAprendizagemAulaMap());
                config.AddMap(new AtribuicaoEsporadicaMap());
+               config.AddMap(new AtividadeAvaliativaMap());
+               config.AddMap(new TipoAvaliacaoMap());
                config.ForDommel();
            });
         }
