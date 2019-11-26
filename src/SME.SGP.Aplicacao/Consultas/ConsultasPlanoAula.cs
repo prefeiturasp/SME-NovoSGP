@@ -27,11 +27,11 @@ namespace SME.SGP.Aplicacao.Consultas
             this.consultasAula = consultasAula;
         }
 
-        public async Task<PlanoAulaRetornoDto> ObterPlanoAulaPorTurmaDisciplina(DateTime data, long turmaId, string disciplinaId)
+        public async Task<PlanoAulaRetornoDto> ObterPlanoAulaPorTurmaDisciplina(long aulaId)
         {
             PlanoAulaRetornoDto planoAulaDto = new PlanoAulaRetornoDto();
             // Busca plano de aula por data e disciplina da aula
-            var plano = await repositorio.ObterPlanoAulaPorDataDisciplina(data, turmaId.ToString(), disciplinaId);
+            var plano = await repositorio.ObterPlanoAulaPorAula(aulaId);
 
             if (plano != null)
             {
@@ -42,7 +42,7 @@ namespace SME.SGP.Aplicacao.Consultas
             }
 
             // Carrega informações da aula para o retorno
-            var aulaDto = await consultasAula.ObterAulaDataTurmaDisciplina(data, turmaId.ToString(), disciplinaId);
+            var aulaDto = consultasAula.BuscarPorId(aulaId);
             planoAulaDto.AulaId = aulaDto.Id;
             planoAulaDto.QtdAulas = aulaDto.Quantidade;
 
@@ -53,6 +53,7 @@ namespace SME.SGP.Aplicacao.Consultas
             plano == null ? null :
             new PlanoAulaRetornoDto()
             {
+                Id = plano.Id,
                 Descricao = plano.Descricao,
                 DesenvolvimentoAula = plano.DesenvolvimentoAula,
                 RecuperacaoAula = plano.RecuperacaoAula,
