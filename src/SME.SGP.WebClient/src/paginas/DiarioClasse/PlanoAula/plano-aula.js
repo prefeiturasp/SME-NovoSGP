@@ -10,7 +10,7 @@ import api from '~/servicos/api';
 import { useSelector } from 'react-redux';
 
 const PlanoAula = (props) => {
-  const { planoAula, ehRegencia } = props;
+  const { planoAula, ehRegencia, listaMaterias } = props;
 
   const usuario = useSelector(store => store.usuario);
   const { turmaSelecionada } = usuario;
@@ -20,35 +20,7 @@ const PlanoAula = (props) => {
   const [quantidadeAulas, setQuantidadeAulas] = useState(0);
   const [ehProfessorCj, setEhProfessorCJ] = useState(false);
   const [informaObjetivos, setInformaObjetivos] = useState(true);
-  const [materias, setMaterias] = useState(
-    [
-      {
-        codigo: 1,
-        materia: 'Português',
-        selecionada: false,
-        objetivos: [{
-          codigoMateria: 1,
-          id: 3,
-          selected: false,
-          codigo: 'PT787878',
-          descricao: 'Teste de portugues'
-        },
-        {
-          codigoMateria: 1,
-          id: 5,
-          selected: false,
-          codigo: 'PT787879',
-          descricao: 'Teste de portugues 2'
-        }
-        ]
-      },
-      {
-        codigo: 2,
-        materia: 'Matemática',
-        selecionada: true
-      },
-    ]
-  )
+  const [materias, setMaterias] = useState(listaMaterias);
   const configCabecalho = {
     altura: '44px',
     corBorda: '#4072d6'
@@ -92,8 +64,8 @@ const PlanoAula = (props) => {
     setObjetivosAprendizagem([...objetivos]);
   }
 
-  const selecionarMateria = codigo => {
-    const index = materias.findIndex(a => a.codigo === codigo);
+  const selecionarMateria = id => {
+    const index = materias.findIndex(a => a.id === id);
     const materia = materias[index];
     materia.selecionada = !materia.selecionada;
     setMaterias([...materias]);
@@ -159,11 +131,10 @@ const PlanoAula = (props) => {
                     return (
                       <Badge
                         role="button"
-                        onClick={() => selecionarMateria(materia.codigo)}
-                        aria-pressed={materia.selecionada}
-                        id={materia.codigo}
-                        alt={materia.materia}
-                        key={materia.codigo}
+                        onClick={() => selecionarMateria(materia.id)}
+                        id={materia.id}
+                        alt={materia.descricao}
+                        key={materia.id}
                         className={`badge badge-pill border text-dark bg-white font-weight-light px-2 py-1 mr-2
                       ${materia.selecionada ? ' badge-selecionado' : ''}`}
                       >

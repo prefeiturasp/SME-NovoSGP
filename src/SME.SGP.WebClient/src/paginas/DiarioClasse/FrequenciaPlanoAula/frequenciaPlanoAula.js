@@ -49,13 +49,25 @@ const FrequenciaPlanoAula = () => {
   const [modoEdicaoPlanoAula, setModoEdicaoPlanoAula] = useState(false);
   const [ehRegencia, setEhRegencia] = useState(false);
   const [planoAula, setPlanoAula] = useState({
-    quantidadeAulas:0,
+    quantidadeAulas: 0,
     temObjetivos: false,
     objetivosEspecificos: null,
     desenvolvimentoAula: null,
     recuperacaoContinua: null,
     licaoCasa: null,
-  })
+  });
+  const [materias, setMaterias] = useState([
+    {
+      id: 1,
+      descricao: 'Português',
+      selecionada: false,
+    },
+    {
+      id: 2,
+      descricao: 'Matemática',
+      selecionada: true
+    },
+  ]);
 
   useEffect(() => {
     const obterDisciplinas = async () => {
@@ -118,14 +130,25 @@ const FrequenciaPlanoAula = () => {
     }
   };
 
-  const obterPlanoAula = async (data) => {
+  const obterPlanoAula = async (aula) => {
     setEhRegencia(disciplinaSelecionada.regencia);
     const plano = await
-      api.get(`v1/planos/aulas/${turmaId}/disciplina/${disciplinaSelecionada.codigoComponenteCurricular}?data=${data}`)
-    if (!plano && disciplinaSelecionada.regencia) {
-      const disciplinas = await
-        api.get(`v1/objetivos-aprendizagem/disciplinas/${anoLetivo}/4/turma/${turmaId}/componente/${disciplinaSelecionada.codigoComponenteCurricular}`)
-      console.log(disciplinas);
+      api.get(`v1/planos/aulas/${aula.idAula}`)
+    const dadosPlano = plano.data;
+    if (dadosPlano) {
+      planoAula.quantidadeAulas = dadosPlano.qtdAulas;
+    } else {
+    }
+    if (disciplinaSelecionada.regencia) {
+      planoAula.temObjetivos = true;
+      const disciplinas = await api.get(
+        `v1/objetivos-aprendizagem/disciplinas/turmas/${turmaId}/componentes/${disciplinaSelecionada.codigoComponenteCurricular}
+        ?dataAula=${aula.data}`
+      );
+      const dadosDisciplinas = disciplinas.data;
+      if (dadosDisciplinas) {
+        // setMaterias([...dadosDisciplinas]);
+      }
     }
   }
 
@@ -301,7 +324,7 @@ const FrequenciaPlanoAula = () => {
     const aulaDataSelecionada = listaDatasAulas.find(item => window.moment(item.data).isSame(data, 'date'));
     if (aulaDataSelecionada && aulaDataSelecionada.idAula) {
       obterListaFrequencia(aulaDataSelecionada.idAula);
-      obterPlanoAula(aulaDataSelecionada.data);
+      obterPlanoAula(aulaDataSelecionada);
     }
   }
 
@@ -449,6 +472,7 @@ const FrequenciaPlanoAula = () => {
                     dataSelecionada={dataSelecionada}
                     planoAula={planoAula}
                     ehRegencia={ehRegencia}
+                    listaMaterias={materias}
                   />
                 </div>
               </div>
