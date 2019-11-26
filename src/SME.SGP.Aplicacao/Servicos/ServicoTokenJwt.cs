@@ -23,7 +23,7 @@ namespace SME.SGP.Aplicacao.Servicos
 
             claims.Add(new Claim(ClaimTypes.Name, usuarioLogin));
             claims.Add(new Claim("login", usuarioLogin));
-            claims.Add(new Claim("nome", usuarioNome));
+            claims.Add(new Claim("nome", usuarioNome ?? string.Empty));
             claims.Add(new Claim("rf", codigoRf ?? string.Empty));
             claims.Add(new Claim("perfil", guidPerfil.ToString()));
 
