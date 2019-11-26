@@ -26,11 +26,11 @@ namespace SME.SGP.Dominio.Interfaces
 
         Task<Usuario> ObterUsuarioLogado();
 
-
         Usuario ObterUsuarioPorCodigoRfLoginOuAdiciona(string codigoRf, string login = "", string nome = "", string email = "");
 
         Task PodeModificarPerfil(Guid perfilParaModificar, string login);
 
         bool UsuarioLogadoPossuiPerfilSme();
+
     }
 }

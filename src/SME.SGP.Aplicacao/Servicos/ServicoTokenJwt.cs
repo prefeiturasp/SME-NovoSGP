@@ -17,8 +17,21 @@ namespace SME.SGP.Aplicacao.Servicos
             this.configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
         }
 
-        public string GerarToken(IEnumerable<Claim> claims)
+        public string GerarToken(string usuarioLogin, string usuarioNome, string codigoRf, Guid guidPerfil, IEnumerable<Permissao> permissionamentos)
         {
+            IList<Claim> claims = new List<Claim>();
+
+            claims.Add(new Claim(ClaimTypes.Name, usuarioLogin));
+            claims.Add(new Claim("login", usuarioLogin));
+            claims.Add(new Claim("nome", usuarioNome));
+            claims.Add(new Claim("rf", codigoRf ?? string.Empty));
+            claims.Add(new Claim("perfil", guidPerfil.ToString()));
+
+            foreach (var permissao in permissionamentos)
+            {
+                claims.Add(new Claim("roles", permissao.ToString()));
+            }
+
             var now = DateTime.Now;
             var token = new JwtSecurityToken(
                 issuer: configuration.GetSection("JwtTokenSettings:Issuer").Value,

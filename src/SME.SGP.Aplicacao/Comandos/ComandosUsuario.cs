@@ -126,7 +126,6 @@ namespace SME.SGP.Aplicacao
             {
                 var dadosUsuario = await servicoEOL.ObterMeusDados(login);
 
-
                 var usuario = servicoUsuario.ObterUsuarioPorCodigoRfLoginOuAdiciona(retornoAutenticacaoEol.Item2, login, dadosUsuario.Nome, dadosUsuario.Email);
 
                 retornoAutenticacaoEol.Item1.PerfisUsuario = servicoPerfil.DefinirPerfilPrioritario(retornoAutenticacaoEol.Item3, usuario);
@@ -146,9 +145,7 @@ namespace SME.SGP.Aplicacao
                         .Select(a => (Permissao)a)
                         .ToList();
 
-                    IEnumerable<Claim> claims = servicoUsuario.DefinirPermissoesUsuarioLogado(login, usuario.Nome, usuario.CodigoRf, retornoAutenticacaoEol.Item1.PerfisUsuario.PerfilSelecionado, listaPermissoes);
-
-                    retornoAutenticacaoEol.Item1.Token = servicoTokenJwt.GerarToken(claims);
+                    retornoAutenticacaoEol.Item1.Token = servicoTokenJwt.GerarToken(login, usuario.Nome, usuario.CodigoRf, retornoAutenticacaoEol.Item1.PerfisUsuario.PerfilSelecionado, listaPermissoes);
 
                     usuario.AtualizaUltimoLogin();
                     repositorioUsuario.Salvar(usuario);
@@ -184,7 +181,7 @@ namespace SME.SGP.Aplicacao
 
                 usuario.DefinirPerfilAtual(perfil);
 
-                return (servicoTokenJwt.GerarToken(loginAtual, codigoRfAtual, perfil, listaPermissoes), usuario.EhProfessor());
+                return (servicoTokenJwt.GerarToken(loginAtual, nomeLoginAtual, codigoRfAtual, perfil, listaPermissoes), usuario.EhProfessor());
             }
         }
 
