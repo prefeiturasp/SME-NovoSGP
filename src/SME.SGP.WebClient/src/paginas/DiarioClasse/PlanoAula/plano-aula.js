@@ -1,16 +1,21 @@
 import { Switch } from 'antd';
-import React, { useRef, useState, useEffect } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Colors } from '~/componentes';
 import Button from '~/componentes/button';
 import CardCollapse from '~/componentes/cardCollapse';
 import Grid from '~/componentes/grid';
 import TextEditor from '~/componentes/textEditor';
-import { useSelector } from 'react-redux';
 import { Badge, Corpo, Descritivo, HabilitaObjetivos, ListItem, ListItemButton, ObjetivosList, QuantidadeBotoes } from './plano-aula.css';
+import api from '~/servicos/api';
+import { useSelector } from 'react-redux';
 
 const PlanoAula = (props) => {
-  const { disciplina } = props;
-
+  const { disciplina: disciplinaSelecionada, data: dataSelecionada } = props;
+  
+  const usuario = useSelector(store => store.usuario);
+  const { turmaSelecionada } = usuario;
+  const turmaId = turmaSelecionada ? turmaSelecionada.turma : 0; 
+  const anoLetivo = turmaSelecionada ? turmaSelecionada.anoLetivo : 0; 
   const [mostrarCardPrincipal, setMostrarCardPrincipal] = useState(true);
   const [quantidadeAulas, setQuantidadeAulas] = useState(0);
   const [ehProfessorCj, setEhProfessorCJ] = useState(false);
@@ -77,13 +82,18 @@ const PlanoAula = (props) => {
   const textEditorLicaoCasaRef = useRef(null);
 
   useEffect(() => {
-    if (disciplina) {
-      if (disciplina.regencia) {
-
+    if (disciplinaSelecionada && dataSelecionada) {
+      if (disciplinaSelecionada.regencia) {
+        const obterDisciplinas = async () => {
+          const disciplinas = await api.get(
+            `v1/objetivos-aprendizagem/disciplinas/${anoLetivo}/${null}/turma/${turmaId}/componente/${disciplinaSelecionada.codigoComponenteCurricular}`
+          );
+          console.log(disciplinas);
+        }
       }
     }
   }
-    , [disciplina]);
+    , [disciplinaSelecionada, dataSelecionada]);
 
   const selecionarObjetivo = id => {
     const index = objetivosAprendizagem.findIndex(a => a.id == id);
