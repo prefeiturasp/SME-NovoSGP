@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using SME.SGP.Api.Filtros;
 using SME.SGP.Infra;
 using System.Collections.Generic;
 
@@ -39,6 +40,13 @@ namespace SME.SGP.Api.Controllers
             });
 
             return Ok(retorno);
+        }
+
+        [HttpPost]
+        [ValidaDto]
+        public IActionResult Post([FromBody]AtribuicaoCJPersistenciaDto[] atribuicaoCJPersistenciaDtos)
+        {
+            return Ok();
         }
     }
 }
