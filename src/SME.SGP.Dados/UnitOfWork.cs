@@ -18,6 +18,7 @@ namespace SME.SGP.Dados
         {
             if (transacao == null)
                 transacao = sgpContext.BeginTransaction();
+
             return transacao;
         }
 
