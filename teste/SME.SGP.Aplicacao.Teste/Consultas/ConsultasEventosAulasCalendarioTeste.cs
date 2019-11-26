@@ -119,7 +119,7 @@ namespace SME.SGP.Aplicacao.Teste.Consultas
             IEnumerable<Evento> eventos = new List<Evento> { evento, evento2 };
 
             repositorioAula.Setup(r => r.ObterAulas(It.IsAny<long>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<int>())).Returns(Task.FromResult(aulas));
-            repositorioEvento.Setup(r => r.ObterEventosPorTipoDeCalendarioDreUeMes(It.IsAny<long>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<int>())).Returns(Task.FromResult(eventos));
+            //repositorioEvento.Setup(r => r.ObterEventosPorTipoDeCalendarioDreUeMes(It.IsAny<long>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<int>())).Returns(Task.FromResult(eventos));
 
             var dias = comandosDiasLetivos.BuscarDiasLetivos(1);
 
