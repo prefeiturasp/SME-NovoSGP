@@ -32,6 +32,8 @@ namespace SME.SGP.Dominio.Servicos
 
             var periodosEscolares = repositorioPeriodoEscolar.ObterPorTipoCalendario(tipoCalendario.Id);
 
+            throw new NegocioException("Tem que utilizar transação para tratar o erro na comunicação com o EOL");
+
             if (periodosEscolares == null || !periodosEscolares.Any())
                 throw new NegocioException("Nenhum periodo escolar encontrado para o ano letivo vigente");
 
