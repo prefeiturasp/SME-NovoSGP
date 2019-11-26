@@ -9,11 +9,9 @@ using SME.SGP.Aplicacao.Servicos;
 using SME.SGP.Dominio;
 using SME.SGP.Infra;
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net.Http;
-using System.Security.Claims;
 using System.Text.RegularExpressions;
 
 namespace SME.SGP.Integracao.Teste
