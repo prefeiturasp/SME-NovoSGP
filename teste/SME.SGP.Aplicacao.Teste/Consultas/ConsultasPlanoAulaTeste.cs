@@ -48,7 +48,7 @@ namespace SME.SGP.Aplicacao.Teste.Consultas
                 Descricao = "Teste plano aula",
             };
 
-            repositorioPlanoAula.Setup(a => a.ObterPlanoAulaPorDataDisciplina(It.IsAny<DateTime>(), It.IsAny<string>(), It.IsAny<string>()))
+            repositorioPlanoAula.Setup(a => a.ObterPlanoAulaPorAula(It.IsAny<long>()))
                 .Returns(Task.FromResult(planoAula));
 
             // Objetivos Aula
@@ -69,15 +69,15 @@ namespace SME.SGP.Aplicacao.Teste.Consultas
                 Quantidade = 3
             };
 
-            consultasAula.Setup(a => a.ObterAulaDataTurmaDisciplina(It.IsAny<DateTime>(), It.IsAny<string>(), It.IsAny<string>()))
-                .Returns(Task.FromResult(aula));
+            consultasAula.Setup(a => a.BuscarPorId(It.IsAny<long>()))
+                .Returns(aula);
         }
 
         [Fact]
         public async void Deve_Obter_Por_Turma_Disciplina()
         {
             // ACT
-            var planoAula = await consultasPlanoAula.ObterPlanoAulaPorTurmaDisciplina(new DateTime(2019, 11, 1), 123, "7");
+            var planoAula = await consultasPlanoAula.ObterPlanoAulaPorTurmaDisciplina(1);
 
             // ASSERT
             Assert.False(planoAula == null);
