@@ -32,12 +32,15 @@ namespace SME.SGP.Api.Controllers
         }
 
         [HttpGet]
-        [Route("disciplinas/{anoLetivo}/{bimestre}/turma/{turmaId}/componente/{componenteId}")]
+        [Route("disciplinas/turmas/{turmaId}/componentes/{componenteId}")]
         [ProducesResponseType(typeof(IEnumerable<ComponenteCurricularSimplificadoDto>), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [ProducesResponseType(204)]
-        public async Task<IActionResult> ObterDisciplinasBimestrePlano(int anoLetivo, int bimestre, long turmaId, long componenteId)
+        public async Task<IActionResult> ObterDisciplinasBimestrePlano([FromQuery] DateTime dataAula, long turmaId, long componenteId)
         {
+            var anoLetivo = dataAula.Year;
+            int bimestre = (dataAula.Month + 2) / 3;
+
             var disciplinas = await consultasObjetivoAprendizagem.ObterDisciplinasDoBimestrePlanoAnual(anoLetivo, bimestre, turmaId, componenteId);
 
             if (disciplinas.Any())
@@ -47,12 +50,15 @@ namespace SME.SGP.Api.Controllers
         }
 
         [HttpGet]
-        [Route("objetivos/{anoLetivo}/{bimestre}/turma/{turmaId}/componente/{componenteId}/disciplina/{disciplinaId}")]
+        [Route("objetivos/turmas/{turmaId}/componentes/{componenteId}/disciplinas/{disciplinaId}")]
         [ProducesResponseType(typeof(IEnumerable<ComponenteCurricularSimplificadoDto>), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [ProducesResponseType(204)]
-        public async Task<IActionResult> ObterObjetivosPorDisciplina(int anoLetivo, int bimestre, long turmaId, long componenteId, long disciplinaId)
+        public async Task<IActionResult> ObterObjetivosPorDisciplina([FromQuery] DateTime dataAula, long turmaId, long componenteId, long disciplinaId)
         {
+            var anoLetivo = dataAula.Year;
+            int bimestre = (dataAula.Month + 2) / 3;
+
             var objetivos = await consultasObjetivoAprendizagem.ObterObjetivosPlanoDisciplina(anoLetivo, bimestre, turmaId, componenteId, disciplinaId);
 
             if (objetivos.Any())
