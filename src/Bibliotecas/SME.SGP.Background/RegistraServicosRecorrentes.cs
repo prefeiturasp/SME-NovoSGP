@@ -8,7 +8,8 @@ namespace SME.SGP.Background
     {
         public static void Registrar()
         {
-            Cliente.ExecutarPeriodicamente<IServicoCalculoFrequencia>(x => x.CalcularPercentualFrequenciaAlunosPorDisciplinaEPeriodo(DateTime.Now.Year), "0 6,12 * * *");
+            Cliente.Executar<IServicoCalculoFrequencia>(x => x.CalcularPercentualFrequenciaAlunosPorDisciplinaEPeriodo(DateTime.Now.Year));
+            //Cliente.ExecutarPeriodicamente<IServicoCalculoFrequencia>(x => x.CalcularPercentualFrequenciaAlunosPorDisciplinaEPeriodo(DateTime.Now.Year), "0 6,12 * * *");
         }
     }
 }

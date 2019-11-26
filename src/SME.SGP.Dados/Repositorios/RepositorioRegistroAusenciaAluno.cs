@@ -3,6 +3,7 @@ using SME.SGP.Dados.Contexto;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
+using System;
 using System.Collections.Generic;
 
 namespace SME.SGP.Dados.Repositorios
@@ -27,6 +28,7 @@ namespace SME.SGP.Dados.Repositorios
 
         public IEnumerable<AulasPorDisciplinaDto> ObterTotalAulasPorDisciplina(int anoLetivo)
         {
+            var dataAtual = DateTime.Now;
             var query = @"select
 	                        distinct a.disciplina_id as DisciplinaId,
 	                        p.periodo_inicio as PeriodoInicio,
@@ -39,8 +41,8 @@ namespace SME.SGP.Dados.Repositorios
                         inner join periodo_escolar p on
 	                        a.tipo_calendario_id = p.tipo_calendario_id
                         where
-	                        date_part('year', p.periodo_inicio) = @anoLetivo
-	                        and date_part('year', p.periodo_fim)= @anoLetivo
+	                        p.periodo_inicio <= @dataAtual
+                            and p.periodo_fim >= @dataAtual
 	                        and a.data_aula >= p.periodo_inicio
 	                        and a.data_aula <= p.periodo_fim
 	                        and not a.excluido
@@ -49,11 +51,12 @@ namespace SME.SGP.Dados.Repositorios
 	                        p.periodo_inicio,
 	                        p.periodo_fim;";
 
-            return database.Conexao.Query<AulasPorDisciplinaDto>(query, new { anoLetivo });
+            return database.Conexao.Query<AulasPorDisciplinaDto>(query, new { anoLetivo, dataAtual });
         }
 
         public IEnumerable<AusenciaPorDisciplinaDto> ObterTotalAusenciasPorAlunoEDisciplina(int anoLetivo)
         {
+            var dataAtual = DateTime.Now;
             var query = @"select
 	                        distinct a.disciplina_id as DisciplinaId,
 	                        ra.codigo_aluno as CodigoAluno,
@@ -71,8 +74,8 @@ namespace SME.SGP.Dados.Repositorios
                         inner join periodo_escolar p on
 	                        a.tipo_calendario_id = p.tipo_calendario_id
                         where
-	                        date_part('year', p.periodo_inicio) = @anoLetivo
-	                        and date_part('year', p.periodo_fim)= @anoLetivo
+	                        p.periodo_inicio <= @dataAtual
+                            and p.periodo_fim >= @dataAtual
 	                        and a.data_aula >= p.periodo_inicio
 	                        and a.data_aula <= p.periodo_fim
 	                        and not ra.excluido
@@ -84,7 +87,7 @@ namespace SME.SGP.Dados.Repositorios
 	                        a.turma_id,
 	                        p.periodo_fim;";
 
-            return database.Conexao.Query<AusenciaPorDisciplinaDto>(query, new { anoLetivo });
+            return database.Conexao.Query<AusenciaPorDisciplinaDto>(query, new { anoLetivo, dataAtual });
         }
     }
 }

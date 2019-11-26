@@ -52,13 +52,16 @@ namespace SME.SGP.Dominio.Servicos
                             repositorioFrequenciaAlunoDisciplinaPeriodo.Salvar(frequenciaAluno);
                     }
                 }
-                //var ausenciasPorAluno = ausenciasPorTurmaEAno.GroupBy(c => c.CodigoAluno);
-                //foreach (var ausenciaAluno in ausenciasPorAluno)
-                //{
-                //    var totalAulasGeral = aulasPorDisciplina.Sum(c => c.TotalAulas);
-                //    var ausenciasAlunoTotal = ausenciaAluno.Sum(c => c.TotalAusencias);
-                //    var frequenciaGeral = 100 - ((ausenciasAlunoTotal / totalAulasGeral) * 100);
-                //}
+                var ausenciasPorAluno = ausenciasPorTurmaEAno.GroupBy(c => c.CodigoAluno);
+                foreach (var ausenciaAluno in ausenciasPorAluno)
+                {
+                    foreach (var ausencia in ausenciaAluno)
+                    {
+                        var totalAulasGeral = aulasPorDisciplina.Where(c => c.DisciplinaId == ausencia.DisciplinaId).Sum(c => c.TotalAulas);
+                        var ausenciasAlunoTotal = ausenciaAluno.Sum(c => c.TotalAusencias);
+                        var frequenciaGeral = 100 - ((ausenciasAlunoTotal / totalAulasGeral) * 100);
+                    }
+                }
             }
         }
 
