@@ -7,6 +7,9 @@ namespace SME.SGP.Infra
         [Required(ErrorMessage = "O campo DreId é obrigatório")]
         public string DreId { get; set; }
 
+        [Required(ErrorMessage = "O campo Evento SME é obrigatório")]
+        public bool EhEventoSme { get; set; }
+
         [Required(ErrorMessage = "O campo TipoCalendarioId é obrigatório")]
         public long TipoCalendarioId { get; set; }
 
