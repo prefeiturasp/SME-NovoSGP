@@ -10,6 +10,7 @@ namespace SME.SGP.Infra
             ObjetivosAprendizagemAula = new List<long>();
         }
 
+        public long Id { get; set; }
         public string Descricao { get; set; }
         public string DesenvolvimentoAula { get; set; }
         public string RecuperacaoAula { get; set; }

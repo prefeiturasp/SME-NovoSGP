@@ -8,6 +8,6 @@ namespace SME.SGP.Aplicacao
 {
     public interface IConsultasPlanoAula
     {
-        Task<PlanoAulaRetornoDto> ObterPlanoAulaPorTurmaDisciplina(DateTime data, long turmaId, string disciplinaId);
+        Task<PlanoAulaRetornoDto> ObterPlanoAulaPorTurmaDisciplina(long aulaId);
     }
 }
