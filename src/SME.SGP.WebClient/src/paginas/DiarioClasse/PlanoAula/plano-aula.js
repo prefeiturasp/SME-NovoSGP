@@ -10,17 +10,16 @@ import api from '~/servicos/api';
 import { useSelector } from 'react-redux';
 
 const PlanoAula = (props) => {
-  const { disciplina: disciplinaSelecionada, data: dataSelecionada } = props;
-  
+  const { planoAula, ehRegencia } = props;
+
   const usuario = useSelector(store => store.usuario);
   const { turmaSelecionada } = usuario;
-  const turmaId = turmaSelecionada ? turmaSelecionada.turma : 0; 
-  const anoLetivo = turmaSelecionada ? turmaSelecionada.anoLetivo : 0; 
+  const turmaId = turmaSelecionada ? turmaSelecionada.turma : 0;
+  const anoLetivo = turmaSelecionada ? turmaSelecionada.anoLetivo : 0;
   const [mostrarCardPrincipal, setMostrarCardPrincipal] = useState(true);
   const [quantidadeAulas, setQuantidadeAulas] = useState(0);
   const [ehProfessorCj, setEhProfessorCJ] = useState(false);
   const [informaObjetivos, setInformaObjetivos] = useState(true);
-  const [ehRegencia, setEhRegencia] = useState(false);
   const [materias, setMaterias] = useState(
     [
       {
@@ -50,14 +49,6 @@ const PlanoAula = (props) => {
       },
     ]
   )
-  const [planoAula, setPlanoAula] = useState({
-    temObjetivos: true,
-    selecionaDisciplinas: true,
-    objetivosEspecificos: 'teste',
-    desenvolvimentoAula: 'teste',
-    recuperacaoContinua: 'teste',
-    licaoCasa: 'teste',
-  })
   const configCabecalho = {
     altura: '44px',
     corBorda: '#4072d6'
@@ -80,20 +71,6 @@ const PlanoAula = (props) => {
   const textEditorDesenvAulaRef = useRef(null);
   const textEditorRecContinuaRef = useRef(null);
   const textEditorLicaoCasaRef = useRef(null);
-
-  useEffect(() => {
-    if (disciplinaSelecionada && dataSelecionada) {
-      if (disciplinaSelecionada.regencia) {
-        const obterDisciplinas = async () => {
-          const disciplinas = await api.get(
-            `v1/objetivos-aprendizagem/disciplinas/${anoLetivo}/${null}/turma/${turmaId}/componente/${disciplinaSelecionada.codigoComponenteCurricular}`
-          );
-          console.log(disciplinas);
-        }
-      }
-    }
-  }
-    , [disciplinaSelecionada, dataSelecionada]);
 
   const selecionarObjetivo = id => {
     const index = objetivosAprendizagem.findIndex(a => a.id == id);
@@ -152,7 +129,7 @@ const PlanoAula = (props) => {
         show={mostrarCardPrincipal}
       >
         <QuantidadeBotoes className="col-md-12" hidden={ehProfessorCj}>
-          <span>Quantidade de aulas: {quantidadeAulas}</span>
+          <span>Quantidade de aulas: {planoAula.quantidadeAulas}</span>
         </QuantidadeBotoes>
         <HabilitaObjetivos className="row d-inline-block col-md-12" hidden={!ehProfessorCj}>
           <label>Objetivos de aprendizagem</label>

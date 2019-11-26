@@ -171,7 +171,7 @@ namespace SME.SGP.Dados.Repositorios
             var query = @"select *
                  from aula
                 where not excluido
-                  and DATE(data_aula) = @data
+                  and DATE(data_aula) = DATE(@data)
                   and turma_id = @turmaId
                   and disciplina_id = @disciplinaId";
 
