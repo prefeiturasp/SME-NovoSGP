@@ -42,7 +42,7 @@ namespace SME.SGP.Aplicacao.Teste.Comandos
         {
             //ARRANGE
             var codifoRfTeste = "codigoRfTeste";
-            servicoUsuario.Setup(a => a.ObterUsuarioPorCodigoRfLoginOuAdiciona(codifoRfTeste, string.Empty)).Returns(new Dominio.Usuario() { Email = "emaildeteste@teste.com" });
+            servicoUsuario.Setup(a => a.ObterUsuarioPorCodigoRfLoginOuAdiciona(codifoRfTeste, string.Empty, string.Empty, string.Empty)).Returns(new Dominio.Usuario() { Email = "emaildeteste@teste.com" });
             servicoEOL.Setup(a => a.ReiniciarSenha(codifoRfTeste));
 
             //ACT
@@ -88,7 +88,7 @@ namespace SME.SGP.Aplicacao.Teste.Comandos
         {
             //ARRANGE
             var codifoRfTeste = "codigoRfTeste";
-            servicoUsuario.Setup(a => a.ObterUsuarioPorCodigoRfLoginOuAdiciona(codifoRfTeste, string.Empty)).Returns(new Dominio.Usuario());
+            servicoUsuario.Setup(a => a.ObterUsuarioPorCodigoRfLoginOuAdiciona(codifoRfTeste, string.Empty, string.Empty, string.Empty)).Returns(new Dominio.Usuario());
             //ACT
             var retorno = await comandosUsuario.ReiniciarSenha(codifoRfTeste);
 
