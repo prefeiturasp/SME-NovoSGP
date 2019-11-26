@@ -9,11 +9,13 @@ import { useSelector } from 'react-redux';
 import { Badge, Corpo, Descritivo, HabilitaObjetivos, ListItem, ListItemButton, ObjetivosList, QuantidadeBotoes } from './plano-aula.css';
 
 const PlanoAula = (props) => {
-  const disciplinaSelecionada = useSelector(store => store.planoAula.disciplinaSelecionada);
+  const { disciplina } = props;
+
   const [mostrarCardPrincipal, setMostrarCardPrincipal] = useState(true);
   const [quantidadeAulas, setQuantidadeAulas] = useState(0);
   const [ehProfessorCj, setEhProfessorCJ] = useState(false);
   const [informaObjetivos, setInformaObjetivos] = useState(true);
+  const [ehRegencia, setEhRegencia] = useState(false);
   const [materias, setMaterias] = useState(
     [
       {
@@ -75,9 +77,13 @@ const PlanoAula = (props) => {
   const textEditorLicaoCasaRef = useRef(null);
 
   useEffect(() => {
-    console.log(disciplinaSelecionada);
+    if (disciplina) {
+      if (disciplina.regencia) {
+
+      }
+    }
   }
-  , [disciplinaSelecionada]);
+    , [disciplina]);
 
   const selecionarObjetivo = id => {
     const index = objetivosAprendizagem.findIndex(a => a.id == id);
@@ -161,22 +167,24 @@ const PlanoAula = (props) => {
                 <h6 className="d-inline-block font-weight-bold my-0 fonte-14 w-100">
                   Objetivos de aprendizagem
                 </h6>
-                {materias.map((materia) => {
-                  return (
-                    <Badge
-                      role="button"
-                      onClick={() => selecionarMateria(materia.codigo)}
-                      aria-pressed={materia.selecionada}
-                      id={materia.codigo}
-                      alt={materia.materia}
-                      key={materia.codigo}
-                      className={`badge badge-pill border text-dark bg-white font-weight-light px-2 py-1 mr-2
+                {ehRegencia ?
+                  materias.map((materia) => {
+                    return (
+                      <Badge
+                        role="button"
+                        onClick={() => selecionarMateria(materia.codigo)}
+                        aria-pressed={materia.selecionada}
+                        id={materia.codigo}
+                        alt={materia.materia}
+                        key={materia.codigo}
+                        className={`badge badge-pill border text-dark bg-white font-weight-light px-2 py-1 mr-2
                       ${materia.selecionada ? ' badge-selecionado' : ''}`}
-                    >
-                      {materia.materia}
-                    </Badge>
-                  );
-                })}
+                      >
+                        {materia.materia}
+                      </Badge>
+                    );
+                  })
+                  : null}
                 <ObjetivosList className="mt-4 overflow-auto">
                   {objetivosAprendizagem.map((objetivo, index) => {
                     return (
