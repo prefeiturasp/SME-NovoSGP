@@ -2,6 +2,7 @@
 using SME.SGP.Dominio.Interfaces;
 using System;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace SME.SGP.Dominio.Servicos
 {
@@ -10,17 +11,19 @@ namespace SME.SGP.Dominio.Servicos
         private readonly IRepositorioAtribuicaoEsporadica repositorioAtribuicaoEsporadica;
         private readonly IRepositorioPeriodoEscolar repositorioPeriodoEscolar;
         private readonly IRepositorioTipoCalendario repositorioTipoCalendario;
-        private readonly IServicoUsuario servicoUsuario;
         private readonly IServicoEOL servicoEOL;
+        private readonly IServicoUsuario servicoUsuario;
+        private readonly IUnitOfWork unitOfWork;
 
         public ServicoAtribuicaoEsporadica(IRepositorioPeriodoEscolar repositorioPeriodoEscolar, IRepositorioTipoCalendario repositorioTipoCalendario,
-            IRepositorioAtribuicaoEsporadica repositorioAtribuicaoEsporadica, IServicoUsuario servicoUsuario, IServicoEOL servicoEOL)
+            IRepositorioAtribuicaoEsporadica repositorioAtribuicaoEsporadica, IServicoUsuario servicoUsuario, IServicoEOL servicoEOL, IUnitOfWork unitOfWork)
         {
             this.repositorioPeriodoEscolar = repositorioPeriodoEscolar ?? throw new System.ArgumentNullException(nameof(repositorioPeriodoEscolar));
             this.repositorioTipoCalendario = repositorioTipoCalendario ?? throw new System.ArgumentNullException(nameof(repositorioTipoCalendario));
             this.repositorioAtribuicaoEsporadica = repositorioAtribuicaoEsporadica ?? throw new System.ArgumentNullException(nameof(repositorioAtribuicaoEsporadica));
             this.servicoUsuario = servicoUsuario ?? throw new System.ArgumentNullException(nameof(servicoUsuario));
             this.servicoEOL = servicoEOL ?? throw new System.ArgumentNullException(nameof(servicoEOL));
+            this.unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
         }
 
         public void Salvar(AtribuicaoEsporadica atribuicaoEsporadica, int anoLetivo)
@@ -32,8 +35,6 @@ namespace SME.SGP.Dominio.Servicos
 
             var periodosEscolares = repositorioPeriodoEscolar.ObterPorTipoCalendario(tipoCalendario.Id);
 
-            throw new NegocioException("Tem que utilizar transação para tratar o erro na comunicação com o EOL");
-
             if (periodosEscolares == null || !periodosEscolares.Any())
                 throw new NegocioException("Nenhum periodo escolar encontrado para o ano letivo vigente");
 
@@ -41,23 +42,28 @@ namespace SME.SGP.Dominio.Servicos
 
             atribuicaoEsporadica.Validar(ehPerfilSelecionadoSME, anoLetivo, periodosEscolares);
 
-            repositorioAtribuicaoEsporadica.Salvar(atribuicaoEsporadica);
+            using (var transacao = unitOfWork.IniciarTransacao())
+            {
+                repositorioAtribuicaoEsporadica.Salvar(atribuicaoEsporadica);
 
-            AdicionarAtribuicaoEOL(atribuicaoEsporadica.ProfessorRf);
+                AdicionarAtribuicaoEOL(atribuicaoEsporadica.ProfessorRf).Wait();
+
+                unitOfWork.PersistirTransacao();
+            }
         }
 
-        private void AdicionarAtribuicaoEOL(string codigoRF)
+        private async Task AdicionarAtribuicaoEOL(string codigoRF)
         {
             try
             {
-                var resumo = servicoEOL.ObterResumoCore(codigoRF).Result;
+                var resumo = await servicoEOL.ObterResumoCore(codigoRF);
 
-                servicoEOL.AtribuirCJSeNecessario(resumo.Id);
+                await servicoEOL.AtribuirCJSeNecessario(resumo.Id);
             }
             catch (Exception)
             {
                 throw new NegocioException("Não foi possivel realizar a atribuição esporadica, por favor contate o suporte");
-            }           
+            }
         }
     }
 }

@@ -39,6 +39,20 @@ namespace SME.SGP.Aplicacao.Integracoes
             };
         }
 
+        public async Task AtribuirCJSeNecessario(Guid usuarioId)
+        {
+            var parametros = JsonConvert.SerializeObject(usuarioId.ToString());
+
+            var resposta = await httpClient.PostAsync("autenticacaoSgp/AtribuirPerfilCJ", new StringContent(parametros, Encoding.UTF8, "application/json-patch+json"));
+
+            if (resposta.IsSuccessStatusCode)
+                return;
+
+            var mensagem = await resposta.Content.ReadAsStringAsync();
+
+            throw new NegocioException(mensagem);
+        }
+
         public async Task<UsuarioEolAutenticacaoRetornoDto> Autenticar(string login, string senha)
         {
             httpClient.DefaultRequestHeaders.Clear();
@@ -139,34 +153,6 @@ namespace SME.SGP.Aplicacao.Integracoes
             return null;
         }
 
-        public async Task AtribuirCJSeNecessario(Guid usuarioId)
-        {
-            var parametros = JsonConvert.SerializeObject(usuarioId);
-
-            var resposta = await httpClient.PostAsync("autenticacaoSgp/AtribuirPerfilCJ", new StringContent(parametros));
-
-            if (resposta.IsSuccessStatusCode)
-                return;
-            
-            var mensagem = await resposta.Content.ReadAsStringAsync();
-
-            throw new NegocioException(mensagem);
-        }
-
-        public async Task RemoverCJSeNecessario(Guid usuarioId)
-        {
-            var parametros = JsonConvert.SerializeObject(usuarioId);
-
-            var resposta = await httpClient.PostAsync("autenticacaoSgp/RemoverPerfilCJ", new StringContent(parametros));
-
-            if (resposta.IsSuccessStatusCode)
-                return;
-
-            var mensagem = await resposta.Content.ReadAsStringAsync();
-
-            throw new NegocioException(mensagem);
-        }
-
         public IEnumerable<EscolasRetornoDto> ObterEscolasPorDre(string dreId)
         {
             httpClient.DefaultRequestHeaders.Clear();
@@ -230,21 +216,6 @@ namespace SME.SGP.Aplicacao.Integracoes
             return JsonConvert.DeserializeObject<MeusDadosDto>(json);
         }
 
-        public async Task<UsuarioResumoCoreDto> ObterResumoCore(string login)
-        {
-            var resposta = await httpClient.GetAsync($"AutenticacaoSgp/{login}/obter/resumo");
-
-            if (!resposta.IsSuccessStatusCode)
-                throw new NegocioException("Não foi possivel obter os dados do usuário");
-
-            if (resposta.StatusCode == HttpStatusCode.NoContent)
-                throw new NegocioException("Usuário não encontrado no EOL");
-
-            var json = await resposta.Content.ReadAsStringAsync();
-
-            return JsonConvert.DeserializeObject<UsuarioResumoCoreDto>(json);
-        }
-
         public async Task<UsuarioEolAutenticacaoRetornoDto> ObterPerfisPorLogin(string login)
         {
             var resposta = await httpClient.GetAsync($"autenticacaoSgp/CarregarPerfisPorLogin/{login}");
@@ -281,6 +252,21 @@ namespace SME.SGP.Aplicacao.Integracoes
 
             var json = await resposta.Content.ReadAsStringAsync();
             return JsonConvert.DeserializeObject<IEnumerable<ProfessorResumoDto>>(json);
+        }
+
+        public async Task<UsuarioResumoCoreDto> ObterResumoCore(string login)
+        {
+            var resposta = await httpClient.GetAsync($"AutenticacaoSgp/{login}/obter/resumo");
+
+            if (!resposta.IsSuccessStatusCode)
+                throw new NegocioException("Não foi possivel obter os dados do usuário");
+
+            if (resposta.StatusCode == HttpStatusCode.NoContent)
+                throw new NegocioException("Usuário não encontrado no EOL");
+
+            var json = await resposta.Content.ReadAsStringAsync();
+
+            return JsonConvert.DeserializeObject<UsuarioResumoCoreDto>(json);
         }
 
         public async Task<ProfessorResumoDto> ObterResumoProfessorPorRFAnoLetivo(string codigoRF, int anoLetivo)
@@ -343,6 +329,20 @@ namespace SME.SGP.Aplicacao.Integracoes
 
             if (!resposta.IsSuccessStatusCode)
                 throw new NegocioException("Não foi possível reiniciar a senha deste usuário");
+        }
+
+        public async Task RemoverCJSeNecessario(Guid usuarioId)
+        {
+            var parametros = JsonConvert.SerializeObject(usuarioId.ToString());
+
+            var resposta = await httpClient.PostAsync("autenticacaoSgp/RemoverPerfilCJ", new StringContent(parametros));
+
+            if (resposta.IsSuccessStatusCode)
+                return;
+
+            var mensagem = await resposta.Content.ReadAsStringAsync();
+
+            throw new NegocioException(mensagem);
         }
 
         private async Task<IEnumerable<DisciplinaResposta>> ObterDisciplinas(string url)
