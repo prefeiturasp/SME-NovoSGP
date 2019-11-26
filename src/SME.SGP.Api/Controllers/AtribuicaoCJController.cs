@@ -43,6 +43,13 @@ namespace SME.SGP.Api.Controllers
             return Ok(retorno);
         }
 
+        [HttpPost]
+        [ValidaDto]
+        public IActionResult Post([FromBody]AtribuicaoCJPersistenciaDto[] atribuicaoCJPersistenciaDtos)
+        {
+            return Ok();
+        }
+
         [HttpGet("ues/{ueId}/professores/{professorId}")]        
         public IActionResult ObterAtribuicaoDeProfessores([FromQuery]AtribuicaoCJListaTitularesFiltroDto atribuicaoCJListaTitularesFiltroDto)
         {
