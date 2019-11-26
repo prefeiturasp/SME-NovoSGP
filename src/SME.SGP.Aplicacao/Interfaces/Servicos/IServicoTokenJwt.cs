@@ -1,13 +1,12 @@
 ﻿using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
-using System.Security.Claims;
 
 namespace SME.SGP.Aplicacao
 {
     public interface IServicoTokenJwt
     {
-        string GerarToken(IEnumerable<Claim> permissionamentos);
+        string GerarToken(string usuarioLogin, string usuarioNome, string codigoRf, Guid guidPerfil, IEnumerable<Permissao> permissionamentos);
 
         bool TemPerfilNoToken(string guid);
     }
