@@ -169,6 +169,7 @@ namespace SME.SGP.Dominio
             if (string.IsNullOrEmpty(login))
                 login = codigoRf;
 
+
             usuario = new Usuario() { CodigoRf = codigoRf, Login = login, Nome = nome, Email = email };
 
             repositorioUsuario.Salvar(usuario);
