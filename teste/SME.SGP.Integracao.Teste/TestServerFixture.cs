@@ -68,12 +68,12 @@ namespace SME.SGP.Integracao.Teste
             runner.Dispose();
         }
 
-        public string GerarToken(Permissao[] permissoes, string login = "teste", string nomeLogin = "teste", string codigoRf = "123", string guidPerfil = "")
+        public string GerarToken(Permissao[] permissoes, string login = "teste", string nome = "teste", string nomeLogin = "teste", string codigoRf = "123", string guidPerfil = "")
         {
             if (string.IsNullOrEmpty(guidPerfil))
                 guidPerfil = Guid.NewGuid().ToString();
 
-            string token = servicoTokenJwt.GerarToken(login, codigoRf, Guid.Parse(guidPerfil), permissoes);
+            string token = servicoTokenJwt.GerarToken(login, nome, codigoRf, Guid.Parse(guidPerfil), permissoes);
 
             return token;
         }
