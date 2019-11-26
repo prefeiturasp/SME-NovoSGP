@@ -89,7 +89,8 @@ const SelectComponent = React.forwardRef((props, ref) => {
 
   const opcoesLista = () => {
     return (
-      lista.length &&
+      lista &&
+      lista.length > 0 &&
       lista.map(item => {
         return (
           <Option key={shortid.generate()} value={`${item[valueOption]}`}>

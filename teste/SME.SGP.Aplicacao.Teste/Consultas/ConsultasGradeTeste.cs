@@ -1,4 +1,4 @@
-﻿using Moq;
+using Moq;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using System.Threading.Tasks;

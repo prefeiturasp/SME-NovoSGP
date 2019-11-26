@@ -5,6 +5,7 @@ using SME.SGP.Dto;
 using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
+using System.Net;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
@@ -36,6 +37,20 @@ namespace SME.SGP.Aplicacao.Integracoes
                 StatusRetorno = (int)resposta.StatusCode,
                 SenhaAlterada = resposta.IsSuccessStatusCode
             };
+        }
+
+        public async Task AtribuirCJSeNecessario(Guid usuarioId)
+        {
+            var parametros = JsonConvert.SerializeObject(usuarioId.ToString());
+
+            var resposta = await httpClient.PostAsync("autenticacaoSgp/AtribuirPerfilCJ", new StringContent(parametros, Encoding.UTF8, "application/json-patch+json"));
+
+            if (resposta.IsSuccessStatusCode)
+                return;
+
+            var mensagem = await resposta.Content.ReadAsStringAsync();
+
+            throw new NegocioException(mensagem);
         }
 
         public async Task<UsuarioEolAutenticacaoRetornoDto> Autenticar(string login, string senha)
@@ -225,6 +240,50 @@ namespace SME.SGP.Aplicacao.Integracoes
             return null;
         }
 
+        public async Task<IEnumerable<ProfessorResumoDto>> ObterProfessoresAutoComplete(int anoLetivo, string dreId, string nomeProfessor)
+        {
+            var resposta = await httpClient.GetAsync($"professores/{anoLetivo}/AutoComplete/{dreId}?nome={nomeProfessor}");
+
+            if (!resposta.IsSuccessStatusCode)
+                return null;
+
+            if (resposta.StatusCode == HttpStatusCode.NoContent)
+                return null;
+
+            var json = await resposta.Content.ReadAsStringAsync();
+            return JsonConvert.DeserializeObject<IEnumerable<ProfessorResumoDto>>(json);
+        }
+
+        public async Task<UsuarioResumoCoreDto> ObterResumoCore(string login)
+        {
+            var resposta = await httpClient.GetAsync($"AutenticacaoSgp/{login}/obter/resumo");
+
+            if (!resposta.IsSuccessStatusCode)
+                throw new NegocioException("Não foi possivel obter os dados do usuário");
+
+            if (resposta.StatusCode == HttpStatusCode.NoContent)
+                throw new NegocioException("Usuário não encontrado no EOL");
+
+            var json = await resposta.Content.ReadAsStringAsync();
+
+            return JsonConvert.DeserializeObject<UsuarioResumoCoreDto>(json);
+        }
+
+        public async Task<ProfessorResumoDto> ObterResumoProfessorPorRFAnoLetivo(string codigoRF, int anoLetivo)
+        {
+            var resposta = await httpClient.GetAsync($"professores/{codigoRF}/BuscarPorRf/{anoLetivo}");
+
+            if (!resposta.IsSuccessStatusCode)
+                return null;
+
+            if (resposta.StatusCode == HttpStatusCode.NoContent)
+                return null;
+
+            var json = await resposta.Content.ReadAsStringAsync();
+
+            return JsonConvert.DeserializeObject<ProfessorResumoDto>(json);
+        }
+
         public IEnumerable<SupervisoresRetornoDto> ObterSupervisoresPorCodigo(string[] codigoSupervisores)
         {
             var resposta = httpClient.PostAsync("funcionarios/supervisores", new StringContent(JsonConvert.SerializeObject(codigoSupervisores), Encoding.UTF8, "application/json-patch+json")).Result;
@@ -270,6 +329,20 @@ namespace SME.SGP.Aplicacao.Integracoes
 
             if (!resposta.IsSuccessStatusCode)
                 throw new NegocioException("Não foi possível reiniciar a senha deste usuário");
+        }
+
+        public async Task RemoverCJSeNecessario(Guid usuarioId)
+        {
+            var parametros = JsonConvert.SerializeObject(usuarioId.ToString());
+
+            var resposta = await httpClient.PostAsync("autenticacaoSgp/RemoverPerfilCJ", new StringContent(parametros));
+
+            if (resposta.IsSuccessStatusCode)
+                return;
+
+            var mensagem = await resposta.Content.ReadAsStringAsync();
+
+            throw new NegocioException(mensagem);
         }
 
         private async Task<IEnumerable<DisciplinaResposta>> ObterDisciplinas(string url)

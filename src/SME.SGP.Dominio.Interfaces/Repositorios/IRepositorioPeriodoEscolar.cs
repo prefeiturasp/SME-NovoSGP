@@ -8,5 +8,7 @@ namespace SME.SGP.Dominio.Interfaces
         IEnumerable<PeriodoEscolar> ObterPorTipoCalendario(long tipoCalendarioId);
 
         PeriodoEscolar ObterPorTipoCalendarioData(long tipoCalendarioId, DateTime data);
+
+        PeriodoEscolar ObterPorTipoCalendarioData(long tipoCalendarioId, DateTime dataInicio, DateTime dataFim);
     }
 }

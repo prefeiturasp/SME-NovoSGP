@@ -31,6 +31,6 @@ namespace SME.SGP.Dominio.Interfaces
 
         Task PodeModificarPerfil(Guid perfilParaModificar, string login);
 
-        IEnumerable<Claim> DefinirPermissoesUsuarioLogado(string usuarioLogin, string usuarioNome, string codigoRf, Guid guidPerfil, IEnumerable<Permissao> permissionamentos);
+        bool UsuarioLogadoPossuiPerfilSme();
     }
 }

@@ -89,6 +89,7 @@ const inicial = {
     },
   },
   diaSelecionado: undefined,
+  eventoAulaCalendarioEdicao: {},
 };
 
 export default function calendarioProfessor(state = inicial, action) {
@@ -127,6 +128,10 @@ export default function calendarioProfessor(state = inicial, action) {
           meses[indice].estaAberto = false;
         });
         draft.meses = meses;
+        break;
+      }
+      case '@calendarioProfessor/salvarEventoAulaCalendarioEdicao': {
+        draft.eventoAulaCalendarioEdicao = action.payload;
         break;
       }
       default:

@@ -3,6 +3,7 @@ using Moq;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
+using SME.SGP.Infra.Contexto;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -24,7 +25,7 @@ namespace SME.SGP.Aplicacao.Teste.Consultas
             httpContextAcessorObj.HttpContext = context;
             servicoUsuario = new Mock<IServicoUsuario>();
 
-            consultaEventos = new ConsultasEvento(repositorioEvento.Object, httpContextAcessorObj, servicoUsuario.Object);
+            consultaEventos = new ConsultasEvento(repositorioEvento.Object, new ContextoHttp(httpContextAcessorObj), servicoUsuario.Object);
         }
 
         [Fact]

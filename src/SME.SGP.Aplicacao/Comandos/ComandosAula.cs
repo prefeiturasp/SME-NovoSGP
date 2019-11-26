@@ -24,7 +24,7 @@ namespace SME.SGP.Aplicacao
         public async Task Alterar(AulaDto dto, long id)
         {
             var usuario = await servicoUsuario.ObterUsuarioLogado();
-            var aula = MapearDtoParaEntidade(dto, id, usuario.Id);
+            var aula = MapearDtoParaEntidade(dto, id, usuario.CodigoRf);
             await servicoAula.Salvar(aula, usuario);
         }
 
@@ -35,24 +35,24 @@ namespace SME.SGP.Aplicacao
             repositorioAula.Salvar(aula);
         }
 
-        public async Task Inserir(AulaDto dto)
+        public async Task<string> Inserir(AulaDto dto)
         {
             var usuario = await servicoUsuario.ObterUsuarioLogado();
-            var aula = MapearDtoParaEntidade(dto, 0L, usuario.Id);
+            var aula = MapearDtoParaEntidade(dto, 0L, usuario.CodigoRf);
 
-            await servicoAula.Salvar(aula, usuario);
+            return await servicoAula.Salvar(aula, usuario);
         }
 
-        private Aula MapearDtoParaEntidade(AulaDto dto, long id, long usuarioId)
+        private Aula MapearDtoParaEntidade(AulaDto dto, long id, string usuarioRf)
         {
             Aula aula = new Aula();
             if (id > 0L)
             {
                 aula = repositorioAula.ObterPorId(id);
             }
-            if (aula.ProfessorId <= 0L)
+            if (string.IsNullOrEmpty(aula.ProfessorRf))
             {
-                aula.ProfessorId = usuarioId;
+                aula.ProfessorRf = usuarioRf;
             }
             aula.UeId = dto.UeId;
             aula.DisciplinaId = dto.DisciplinaId;

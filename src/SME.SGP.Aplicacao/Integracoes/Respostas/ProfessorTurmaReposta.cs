@@ -2,7 +2,7 @@
 {
     public class ProfessorTurmaReposta
     {
-        public int Ano { get; set; }
+        public string Ano { get; set; }
         public int AnoLetivo { get; set; }
         public string CodDre { get; set; }
         public string CodEscola { get; set; }

@@ -12,6 +12,8 @@ using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Dominio.Servicos;
 using SME.SGP.Infra;
+using SME.SGP.Infra.Contexto;
+using SME.SGP.Infra.Interfaces;
 
 namespace SME.SGP.IoC
 {
@@ -43,6 +45,10 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IComandosAula, ComandosAula>();
             services.TryAddScoped<IComandosGrade, ComandosGrade>();
             services.TryAddScoped<IComandoFrequencia, ComandoFrequencia>();
+            services.TryAddScoped<IComandosAtribuicaoEsporadica, ComandosAtribuicaoEsporadica>();
+            services.TryAddScoped<IComandosAtividadeAvaliativa, ComandosAtividadeAvaliativa>();
+            services.TryAddScoped<IComandosTipoAvaliacao, ComandosTipoAavaliacao>();
+            services.TryAddScoped<IComandosPlanoAula, ComandosPlanoAula>();
         }
 
         private static void RegistrarConsultas(IServiceCollection services)
@@ -68,12 +74,17 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IConsultasEventoTipo, ConsultasEventoTipo>();
             services.TryAddScoped<IConsultasEvento, ConsultasEvento>();
             services.TryAddScoped<IConsultasAula, ConsultasAula>();
+            services.TryAddScoped<IConsultasEventosAulasCalendario, ConsultasEventosAulasCalendario>();
             services.TryAddScoped<IConsultasGrade, ConsultasGrade>();
             services.TryAddScoped<IConsultasFrequencia, ConsultasFrequencia>();
+            services.TryAddScoped<IConsultasPlanoAula, ConsultasPlanoAula>();
+            services.TryAddScoped<IConsultasObjetivoAprendizagemAula, ConsultasObjetivoAprendizagemAula>();
+            services.TryAddScoped<IConsultasAtribuicaoEsporadica, ConsultasAtribuicaoEsporadica>();
         }
 
         private static void RegistrarContextos(IServiceCollection services)
         {
+            services.TryAddScoped<IContextoAplicacao, ContextoHttp>();
             services.TryAddScoped<ISgpContext, SgpContext>();
             services.TryAddScoped<IUnitOfWork, UnitOfWork>();
         }
@@ -111,6 +122,12 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IRepositorioGradeFiltro, RepositorioGradeFiltro>();
             services.TryAddScoped<IRepositorioGradeDisciplina, RepositorioGradeDisciplina>();
             services.TryAddScoped<IRepositorioFrequencia, RepositorioFrequencia>();
+            services.TryAddScoped<IRepositorioRegistroAusenciaAluno, RepositorioRegistroAusenciaAluno>();
+            services.TryAddScoped<IRepositorioAtribuicaoEsporadica, RepositorioAtribuicaoEsporadica>();
+            services.TryAddScoped<IRepositorioAtividadeAvaliativa, RepositorioAtividadeAvaliativa>();
+            services.TryAddScoped<IRepositorioTipoAvaliacao, RepositorioTipoAvaliacao>();
+            services.TryAddScoped<IRepositorioPlanoAula, RepositorioPlanoAula>();
+            services.TryAddScoped<IRepositorioObjetivoAprendizagemAula, RepositorioObjetivoAprendizagemAula>();
         }
 
         private static void RegistrarServicos(IServiceCollection services)
@@ -131,6 +148,7 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IServicoLog, ServicoLog>();
             services.TryAddScoped<IServicoFrequencia, ServicoFrequencia>();
             services.TryAddScoped<IServicoAula, ServicoAula>();
+            services.TryAddScoped<IServicoAtribuicaoEsporadica, ServicoAtribuicaoEsporadica>();
         }
     }
 }

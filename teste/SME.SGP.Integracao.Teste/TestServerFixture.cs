@@ -75,9 +75,9 @@ namespace SME.SGP.Integracao.Teste
             if (string.IsNullOrEmpty(guidPerfil))
                 guidPerfil = Guid.NewGuid().ToString();
 
-            IEnumerable<Claim> claims = servicoUsuario.DefinirPermissoesUsuarioLogado(login, nomeLogin, codigoRf, Guid.Parse(guidPerfil), permissoes);
+            string token = servicoTokenJwt.GerarToken(login, codigoRf, Guid.Parse(guidPerfil), permissoes);
 
-            return servicoTokenJwt.GerarToken(claims);
+            return token;
         }
 
         public string ObterArquivoConfiguracao()
