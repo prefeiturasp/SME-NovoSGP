@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNetCore.Http;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 using SME.SGP.Aplicacao.Integracoes;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
@@ -73,6 +72,15 @@ namespace SME.SGP.Dominio
             return loginAtual;
         }
 
+        public string ObterNomeLoginAtual()
+        {
+            var nomeLoginAtual = contextoAplicacao.ObterVarivel<string>("nome");
+            if (nomeLoginAtual == null)
+                throw new NegocioException("Não foi possível localizar o nome do login no token");
+
+            return nomeLoginAtual;
+        }
+
         public Guid ObterPerfilAtual()
         {
             return Guid.Parse(ObterClaim(CLAIM_PERFIL_ATUAL));
@@ -134,7 +142,7 @@ namespace SME.SGP.Dominio
             return usuario;
         }
 
-        public Usuario ObterUsuarioPorCodigoRfLoginOuAdiciona(string codigoRf, string login = "")
+        public Usuario ObterUsuarioPorCodigoRfLoginOuAdiciona(string codigoRf, string login = "", string nome = "", string email = "")
         {
             var usuario = repositorioUsuario.ObterPorCodigoRfLogin(codigoRf, login);
             if (usuario != null)
@@ -143,7 +151,8 @@ namespace SME.SGP.Dominio
             if (string.IsNullOrEmpty(login))
                 login = codigoRf;
 
-            usuario = new Usuario() { CodigoRf = codigoRf, Login = login };
+
+            usuario = new Usuario() { CodigoRf = codigoRf, Login = login, Nome = nome, Email = email };
 
             repositorioUsuario.Salvar(usuario);
 

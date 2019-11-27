@@ -16,7 +16,7 @@ namespace SME.SGP.Dados.Repositorios
         {
         }
 
-        public async Task<PaginacaoResultadoDto<AtribuicaoEsporadica>> ListarPaginada(Paginacao paginacao,int anoLetivo, string dreId, string ueId, string codigoRF)
+        public async Task<PaginacaoResultadoDto<AtribuicaoEsporadica>> ListarPaginada(Paginacao paginacao, int anoLetivo, string dreId, string ueId, string codigoRF)
         {
             var retorno = new PaginacaoResultadoDto<AtribuicaoEsporadica>();
 
@@ -33,6 +33,15 @@ namespace SME.SGP.Dados.Repositorios
             retorno.TotalPaginas = (int)Math.Ceiling((double)retorno.TotalRegistros / paginacao.QuantidadeRegistros);
 
             return retorno;
+        }
+
+        public AtribuicaoEsporadica ObterUltimaPorRF(string codigoRF)
+        {
+            var sql = @"select * from atribuicao_esporadica
+                        where professor_rf = @professorRF
+                        order by data_fim desc";
+
+            return database.Conexao.QueryFirstOrDefault<AtribuicaoEsporadica>(sql, new { professorRF = codigoRF });
         }
 
         private static string MontaQueryCompleta(Paginacao paginacao, string codigoRF)
