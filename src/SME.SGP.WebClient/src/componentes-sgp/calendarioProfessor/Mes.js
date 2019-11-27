@@ -53,7 +53,7 @@ const Mes = props => {
         } = filtros;
         if (tipoCalendarioSelecionado) {
           api
-            .post('http://www.mocky.io/v2/5dd435fd2f00006b00d4f9ec', {
+            .post('v1/calendarios/meses/eventos-aulas', {
               tipoCalendarioId: tipoCalendarioSelecionado,
               EhEventoSME: eventoSme,
               dreId: dreSelecionada,
