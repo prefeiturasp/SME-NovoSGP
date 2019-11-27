@@ -17,7 +17,7 @@ const PlanoAula = (props) => {
   const { turmaSelecionada } = usuario;
   const turmaId = turmaSelecionada ? turmaSelecionada.turma : 0;
   const [mostrarCardPrincipal, setMostrarCardPrincipal] = useState(true);
-  const [ehProfessorCj, setEhProfessorCJ] = useState(false);
+  const [ehProfessorCj, setEhProfessorCJ] = useState(true);
   const [informaObjetivos, setInformaObjetivos] = useState(true);
   const [materias, setMaterias] = useState([...listaMaterias]);
   const configCabecalho = {
@@ -30,7 +30,7 @@ const PlanoAula = (props) => {
   const textEditorRecContinuaRef = useRef(null);
   const textEditorLicaoCasaRef = useRef(null);
   const ehEja =
-    turmaSelecionada && turmaSelecionada.codModalidade === modalidade.EJA
+    turmaSelecionada && turmaSelecionada.modalidade === String(modalidade.EJA)
       ? true
       : false;
 
@@ -101,10 +101,11 @@ const PlanoAula = (props) => {
         indice={'Plano de aula'}
         show={mostrarCardPrincipal}
       >
-        <QuantidadeBotoes className="col-md-12" hidden={ehProfessorCj}>
+        <QuantidadeBotoes className="col-md-12" hidden={ehProfessorCj || ehEja}>
           <span>Quantidade de aulas: {planoAula.quantidadeAulas}</span>
         </QuantidadeBotoes>
-        <HabilitaObjetivos className="row d-inline-block col-md-12" hidden={!ehProfessorCj}>
+        {ehEja?'eh eja':'não é eja'}
+        <HabilitaObjetivos className="row d-inline-block col-md-12" hidden={!ehProfessorCj || ehEja}>
           <label>Objetivos de aprendizagem</label>
           <Switch
             onChange={() => habilitarDesabilitarObjetivos()}
