@@ -8,6 +8,7 @@ namespace SME.SGP.Aplicacao
     public class ComandosAtividadeAvaliativa : IComandosAtividadeAvaliativa
     {
         private readonly IRepositorioAtividadeAvaliativa repositorioAtividadeAvaliativa;
+        private readonly IRepositorioAula repositorioAula;
         private readonly IServicoUsuario servicoUsuario;
 
         public ComandosAtividadeAvaliativa(
@@ -57,7 +58,7 @@ namespace SME.SGP.Aplicacao
             atividadeAvaliativa.DreId = dto.DreId;
             atividadeAvaliativa.TurmaId = dto.TurmaId;
             atividadeAvaliativa.CategoriaId = (int)dto.CategoriaId;
-            atividadeAvaliativa.ComponenteCurricularId = dto.ComponenteCurricularId;
+            atividadeAvaliativa.DisciplinaId = dto.DisciplinaId;
             atividadeAvaliativa.TipoAvaliacaoId = dto.TipoAvaliacaoId;
             atividadeAvaliativa.NomeAvaliacao = dto.Nome;
             atividadeAvaliativa.DescricaoAvaliacao = dto.Descricao;

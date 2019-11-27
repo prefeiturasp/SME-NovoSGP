@@ -23,9 +23,20 @@ namespace SME.SGP.Dados.Repositorios
 
         public async Task<IEnumerable<ObjetivoAprendizagemAula>> ObterObjetivosPlanoAula(long planoAulaId)
         {
-            var query = "select * from objetivo_aprendizagem_aula where plano_aula_id = @planoAulaId";
+            var query = @"select a.id, a.plano_aula_id, a.objetivo_aprendizagem_plano_id, 
+                            p.id as objetivoPlanoId, p.objetivo_aprendizagem_jurema_id, p.componente_curricular_id
+                          from objetivo_aprendizagem_aula a
+                         inner join objetivo_aprendizagem_plano p on p.id = a.objetivo_aprendizagem_plano_id
+                         where a.plano_aula_id = @planoAulaId";
 
-            return await database.Conexao.QueryAsync<ObjetivoAprendizagemAula>(query, new { planoAulaId });
+            return await database.Conexao.QueryAsync<ObjetivoAprendizagemAula, ObjetivoAprendizagemPlano, ObjetivoAprendizagemAula>(query, 
+                (objetivoAula, objetivoPlano) =>
+                {
+                    objetivoAula.ObjetivoAprendizagemPlano = objetivoPlano;
+                    return objetivoAula;
+                },
+                new { planoAulaId },
+                splitOn: "id, objetivoPlanoId");
         }
     }
 }
