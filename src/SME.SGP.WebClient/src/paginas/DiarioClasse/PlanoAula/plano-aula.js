@@ -8,41 +8,35 @@ import TextEditor from '~/componentes/textEditor';
 import { Badge, Corpo, Descritivo, HabilitaObjetivos, ListItem, ListItemButton, ObjetivosList, QuantidadeBotoes } from './plano-aula.css';
 import api from '~/servicos/api';
 import { useSelector } from 'react-redux';
+import modalidade from '~/dtos/modalidade';
 
 const PlanoAula = (props) => {
-  const { planoAula, ehRegencia, listaMaterias } = props;
+  const { planoAula, ehRegencia, listaMaterias, disciplinaIdSelecionada, dataAula } = props;
 
   const usuario = useSelector(store => store.usuario);
   const { turmaSelecionada } = usuario;
   const turmaId = turmaSelecionada ? turmaSelecionada.turma : 0;
-  const anoLetivo = turmaSelecionada ? turmaSelecionada.anoLetivo : 0;
   const [mostrarCardPrincipal, setMostrarCardPrincipal] = useState(true);
-  const [quantidadeAulas, setQuantidadeAulas] = useState(0);
   const [ehProfessorCj, setEhProfessorCJ] = useState(false);
   const [informaObjetivos, setInformaObjetivos] = useState(true);
-  const [materias, setMaterias] = useState(listaMaterias);
+  const [materias, setMaterias] = useState([...listaMaterias]);
   const configCabecalho = {
     altura: '44px',
     corBorda: '#4072d6'
   }
-  const [objetivosAprendizagem, setObjetivosAprendizagem] = useState([
-    {
-      id: 1,
-      selected: false,
-      codigo: 'EF45644',
-      descricao: 'Teste de descrição'
-    },
-    {
-      id: 2,
-      selected: true,
-      codigo: 'EF45645',
-      descricao: 'Teste de descrição, teste teste teste teste teste teste teste teste teste teste teste teste teste teste teste'
-    },
-  ]);
+  const [objetivosAprendizagem, setObjetivosAprendizagem] = useState([]);
   const textEditorObjetivosRef = useRef(null);
   const textEditorDesenvAulaRef = useRef(null);
   const textEditorRecContinuaRef = useRef(null);
   const textEditorLicaoCasaRef = useRef(null);
+  const ehEja =
+    turmaSelecionada && turmaSelecionada.codModalidade === modalidade.EJA
+      ? true
+      : false;
+
+  useEffect(() => {
+    setMaterias(listaMaterias)
+  }, [listaMaterias])
 
   const selecionarObjetivo = id => {
     const index = objetivosAprendizagem.findIndex(a => a.id == id);
@@ -64,26 +58,33 @@ const PlanoAula = (props) => {
     setObjetivosAprendizagem([...objetivos]);
   }
 
-  const selecionarMateria = id => {
+  const selecionarMateria = async id => {
     const index = materias.findIndex(a => a.id === id);
     const materia = materias[index];
     materia.selecionada = !materia.selecionada;
-    setMaterias([...materias]);
-    if (materia.objetivos && materia.objetivos.length > 0) {
-      materia.objetivos.forEach(objetivo => {
-        if (!materia.selecionada) {
+    if (materia.selecionada) {
+      const objetivos = await
+        api.get(`v1/objetivos-aprendizagem/objetivos/turmas/${turmaId}/componentes/${disciplinaIdSelecionada}/disciplinas/${id}?dataAula=${dataAula}`);
+      if (objetivos && objetivos.data && objetivos.data.length > 0) {
+        materia.objetivos = objetivos.data;
+        materia.objetivos.forEach(objetivo => {
+          const idx = objetivosAprendizagem.findIndex(obj => obj.id === objetivo.id);
+          if (idx < 0) {
+            objetivosAprendizagem.push(objetivo);
+          }
+        })
+      }
+    } else {
+      if (objetivosAprendizagem && objetivosAprendizagem.length > 0) {
+        materia.objetivos.forEach(objetivo => {
           const idx = objetivosAprendizagem.findIndex(obj => obj.codigo === objetivo.codigo);
           if (!objetivosAprendizagem[idx].selected) {
             objetivosAprendizagem.splice(idx, 1);
           }
-        } else {
-          const objetivoExistente = objetivosAprendizagem.find(obj => obj.codigo === objetivo.codigo);
-          if (!objetivoExistente) {
-            objetivosAprendizagem.push(objetivo);
-          }
-        }
-      });
+        });
+      }
     }
+    setMaterias([...materias]);
   }
 
   const habilitarDesabilitarObjetivos = () => {
@@ -121,7 +122,7 @@ const PlanoAula = (props) => {
           configCabecalho={configCabecalho}
         >
           <div className="row">
-            {planoAula.temObjetivos ?
+            {planoAula.temObjetivos && !ehEja ?
               <Grid cols={6}>
                 <h6 className="d-inline-block font-weight-bold my-0 fonte-14 w-100">
                   Objetivos de aprendizagem
@@ -138,7 +139,7 @@ const PlanoAula = (props) => {
                         className={`badge badge-pill border text-dark bg-white font-weight-light px-2 py-1 mr-2
                       ${materia.selecionada ? ' badge-selecionado' : ''}`}
                       >
-                        {materia.materia}
+                        {materia.descricao}
                       </Badge>
                     );
                   })
@@ -174,8 +175,8 @@ const PlanoAula = (props) => {
                 </ObjetivosList>
               </Grid>
               : null}
-            <Grid cols={planoAula.temObjetivos ? 6 : 12}>
-              {planoAula.temObjetivos ?
+            <Grid cols={planoAula.temObjetivos  && !ehEja ? 6 : 12}>
+              {planoAula.temObjetivos  && !ehEja?
                 <Grid cols={12}>
                   <h6 className="d-inline-block font-weight-bold my-0 fonte-14">
                     Objetivos trabalhados na aula
@@ -225,9 +226,9 @@ const PlanoAula = (props) => {
                 : null}
               <Grid cols={12} className="mt-4 d-inline-block">
                 <h6 className="font-weight-bold my-0 fonte-14">
-                  {planoAula.temObjetivos ? 'Meus objetivos específicos' : 'Objetivos trabalhados'}
+                  {planoAula.temObjetivos && !ehEja ? 'Meus objetivos específicos' : 'Objetivos trabalhados'}
                 </h6>
-                {!planoAula.temObjetivos ?
+                {!planoAula.temObjetivos  && !ehEja ?
                   <Descritivo className="d-inline-block my-0 fonte-14">
                     Para este componente curricular é necessário descrever os objetivos de aprendizagem.
                   </Descritivo>

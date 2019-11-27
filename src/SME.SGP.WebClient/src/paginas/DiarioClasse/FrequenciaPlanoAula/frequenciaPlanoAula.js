@@ -48,6 +48,7 @@ const FrequenciaPlanoAula = () => {
   const [desabilitarCampos, setDesabilitarCampos] = useState(false);
   const [modoEdicaoPlanoAula, setModoEdicaoPlanoAula] = useState(false);
   const [ehRegencia, setEhRegencia] = useState(false);
+  const [aula, setAula] = useState(undefined);
   const [planoAula, setPlanoAula] = useState({
     quantidadeAulas: 0,
     temObjetivos: false,
@@ -56,18 +57,7 @@ const FrequenciaPlanoAula = () => {
     recuperacaoContinua: null,
     licaoCasa: null,
   });
-  const [materias, setMaterias] = useState([
-    {
-      id: 1,
-      descricao: 'Português',
-      selecionada: false,
-    },
-    {
-      id: 2,
-      descricao: 'Matemática',
-      selecionada: true
-    },
-  ]);
+  const [materias, setMaterias] = useState([]);
 
   useEffect(() => {
     const obterDisciplinas = async () => {
@@ -147,7 +137,7 @@ const FrequenciaPlanoAula = () => {
       );
       const dadosDisciplinas = disciplinas.data;
       if (dadosDisciplinas) {
-        // setMaterias([...dadosDisciplinas]);
+        setMaterias([...dadosDisciplinas]);
       }
     }
   }
@@ -322,6 +312,7 @@ const FrequenciaPlanoAula = () => {
     resetarTelaFrequencia(true, true);
     resetarPlanoAula();
     const aulaDataSelecionada = listaDatasAulas.find(item => window.moment(item.data).isSame(data, 'date'));
+    setAula(aulaDataSelecionada);
     if (aulaDataSelecionada && aulaDataSelecionada.idAula) {
       obterListaFrequencia(aulaDataSelecionada.idAula);
       obterPlanoAula(aulaDataSelecionada);
@@ -468,11 +459,12 @@ const FrequenciaPlanoAula = () => {
                 </div>
                 <div className="col-sm-12 col-md-12 col-lg-12">
                   <PlanoAula
-                    disciplinaSelecionada={disciplinaSelecionada}
+                    disciplinaIdSelecionada={disciplinaIdSelecionada}
                     dataSelecionada={dataSelecionada}
                     planoAula={planoAula}
                     ehRegencia={ehRegencia}
                     listaMaterias={materias}
+                    dataAula={aula && aula.data ? aula.data : null}
                   />
                 </div>
               </div>
