@@ -1,5 +1,4 @@
-﻿using SME.SGP.Dominio.Entidades;
-using SME.SGP.Dominio.Interfaces;
+﻿using SME.SGP.Dominio.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -75,7 +74,7 @@ namespace SME.SGP.Dominio
         {
             var tipo = repositorioTipoCalendario.ObterPorId(tipoCalendario);
 
-            if (tipo == null || tipo.Id == 0) throw new NegocioException("O tipo de calendario informado não foi encontrado");
+            if (tipo == null || tipo.Id == 0) throw new NegocioException("O tipo de calendário informado não foi encontrado.");
             return tipo;
         }
 

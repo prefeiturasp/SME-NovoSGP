@@ -16,7 +16,7 @@ function InputNome({ dataSource, onSelect, onChange, pessoaSelecionada }) {
   }, [dataSource]);
 
   useEffect(() => {
-    setValor(pessoaSelecionada && pessoaSelecionada.nome);
+    setValor(pessoaSelecionada && pessoaSelecionada.professorNome);
   }, [pessoaSelecionada]);
 
   const onChangeValor = selecionado => {
@@ -26,8 +26,8 @@ function InputNome({ dataSource, onSelect, onChange, pessoaSelecionada }) {
   const options =
     sugestoes &&
     sugestoes.map(item => (
-      <AutoComplete.Option key={item.rf} value={item.nome}>
-        {item.nome}
+      <AutoComplete.Option key={item.professorRf} value={item.professorNome}>
+        {item.professorNome}
       </AutoComplete.Option>
     ));
 

@@ -51,7 +51,7 @@ namespace SME.SGP.Api.Controllers
         [HttpPost]
         [ProducesResponseType(typeof(EventosAulasTipoCalendarioDto), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        [Route("meses/{mes}/tipos/eventos-aulas")]
+        [Route("meses/tipos/eventos-aulas")]
         [Permissao(Permissao.CP_C, Policy = "Bearer")]
         public async Task<IActionResult> ObterTipoEventosAulas(FiltroEventosAulasCalendarioMesDto filtro)
         {
