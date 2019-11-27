@@ -46,7 +46,7 @@ const Mes = props => {
       if (filtros && Object.entries(filtros).length > 0) {
         const {
           tipoCalendarioSelecionado = '',
-          // eventoSme = true,
+          eventoSme = true,
           dreSelecionada = '',
           unidadeEscolarSelecionada = '',
           turmaSelecionada = '',
@@ -55,7 +55,7 @@ const Mes = props => {
           api
             .post('v1/calendarios/meses/eventos-aulas', {
               tipoCalendarioId: tipoCalendarioSelecionado,
-              // EhEventoSME: eventoSme,
+              EhEventoSME: eventoSme,
               dreId: dreSelecionada,
               ueId: unidadeEscolarSelecionada,
               turmaId: turmaSelecionada,

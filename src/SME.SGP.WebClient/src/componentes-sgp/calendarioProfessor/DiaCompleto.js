@@ -30,13 +30,13 @@ const Botao = styled(Button)`
     color: ${Base.Branco} !important;
   }
 `;
-const BotoesAuxiliaresEstilo = styled.div`
-  display: flex;
+const BotoesAuxiliaresEstilo = styled(Div)`
   align-items: right;
+  display: flex;
   justify-content: flex-end;
-  width: 100%;
   padding: 16px;
   padding-bottom: 0;
+  width: 100%;
 `;
 
 const SemEvento = () => {
@@ -74,7 +74,7 @@ const DiaCompleto = props => {
           setEventosDia([]);
           const {
             tipoCalendarioSelecionado = '',
-            // eventoSme = true,
+            eventoSme = true,
             dreSelecionada = '',
             unidadeEscolarSelecionada = '',
             turmaSelecionada = '',
@@ -84,7 +84,7 @@ const DiaCompleto = props => {
               .post('v1/calendarios/meses/dias/eventos-aulas', {
                 data: diaSelecionado,
                 tipoCalendarioId: tipoCalendarioSelecionado,
-                // EhEventoSME: eventoSme,
+                EhEventoSME: eventoSme,
                 dreId: dreSelecionada,
                 ueId: unidadeEscolarSelecionada,
                 turmaId: turmaSelecionada,
@@ -105,16 +105,40 @@ const DiaCompleto = props => {
     };
   }, [diaSelecionado]);
 
+  const aoClicarBotaoNovaAula = () => {
+    if (filtros && Object.entries(filtros).length > 0) {
+      const {
+        tipoCalendarioSelecionado = '',
+        eventoSme = true,
+        dreSelecionada = '',
+        unidadeEscolarSelecionada = '',
+        turmaSelecionada = '',
+      } = filtros;
+
+      store.dispatch(
+        salvarEventoAulaCalendarioEdicao(
+          tipoCalendarioSelecionado,
+          eventoSme,
+          dreSelecionada,
+          unidadeEscolarSelecionada,
+          turmaSelecionada,
+          mesAtual,
+          diaSelecionado
+        )
+      );
+
+      history.push(
+        `calendario-professor/cadastro-aula/novo/${tipoCalendarioSelecionado}`
+      );
+    }
+  };
+
   const BotoesAuxiliares = () => {
     return (
       <BotoesAuxiliaresEstilo>
         <Button
           key={shortid.generate()}
-          onClick={() =>
-            history.push(
-              `calendario-professor/cadastro-aula/novo/${props.filtros.tipoCalendarioSelecionado}`
-            )
-          }
+          onClick={aoClicarBotaoNovaAula}
           label="Nova Aula"
           color={Colors.Roxo}
           disabled={permissaoTela && !permissaoTela.podeIncluir}
@@ -222,13 +246,11 @@ const DiaCompleto = props => {
                 </Evento>
               );
             })}
-            <Div className="">
-              <BotoesAuxiliares />
-            </Div>
           </Div>
         ) : (
           <SemEvento />
         )}
+        <BotoesAuxiliares />
       </Div>
     )
   );
