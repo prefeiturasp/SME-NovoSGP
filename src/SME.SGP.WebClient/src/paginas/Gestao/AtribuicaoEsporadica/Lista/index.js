@@ -14,13 +14,12 @@ import { confirmar, sucesso } from '~/servicos/alertas';
 import { Cabecalho } from '~/componentes-sgp';
 
 // Componentes
-import { Card, ListaPaginada, ButtonGroup } from '~/componentes';
+import { Card, ListaPaginada, ButtonGroup, Loader } from '~/componentes';
 import Filtro from './componentes/Filtro';
 
 function AtribuicaoEsporadicaLista() {
   const [itensSelecionados, setItensSelecionados] = useState([]);
   const [filtro, setFiltro] = useState({});
-  const [refForm] = useState({});
   const [somenteConsulta, setSomenteConsulta] = useState(false);
   const permissoesTela = useSelector(store => store.usuario.permissoes);
 
@@ -108,6 +107,10 @@ function AtribuicaoEsporadicaLista() {
     setFiltro(valoresFiltro);
   };
 
+  const validarFiltro = () => {
+    return !!filtro.dreId && !!filtro.ueId && !!filtro.anoLetivo;
+  };
+
   useEffect(() => {
     setSomenteConsulta(verificaSomenteConsulta(permissoesTela));
   }, []);
@@ -115,35 +118,40 @@ function AtribuicaoEsporadicaLista() {
   return (
     <>
       <Cabecalho pagina="Atribuição esporádica" />
-      <Card mx="mx-0">
-        <ButtonGroup
-          somenteConsulta={somenteConsulta}
-          permissoesTela={permissoesTela[RotasDto.ATRIBUICAO_ESPORADICA_LISTA]}
-          temItemSelecionado={
-            itensSelecionados && itensSelecionados.length >= 1
-          }
-          onClickVoltar={onClickVoltar}
-          onClickExcluir={onClickExcluir}
-          onClickBotaoPrincipal={onClickBotaoPrincipal}
-          labelBotaoPrincipal="Novo"
-          desabilitarBotaoPrincipal={
-            !!filtro.dreId === false && !!filtro.ueId === false
-          }
-        />
-        <Filtro onFiltrar={onChangeFiltro} />
-        <div className="col-md-12 pt-2 py-0 px-0">
-          <ListaPaginada
-            url="v1/atribuicao/esporadica/listar"
-            id="lista-atribuicoes-esporadica"
-            colunaChave="id"
-            colunas={colunas}
-            filtro={filtro}
-            onClick={onClickEditar}
-            multiSelecao
-            selecionarItems={onSelecionarItems}
+      <Loader loading={false}>
+        <Card mx="mx-0">
+          <ButtonGroup
+            somenteConsulta={somenteConsulta}
+            permissoesTela={
+              permissoesTela[RotasDto.ATRIBUICAO_ESPORADICA_LISTA]
+            }
+            temItemSelecionado={
+              itensSelecionados && itensSelecionados.length >= 1
+            }
+            onClickVoltar={onClickVoltar}
+            onClickExcluir={onClickExcluir}
+            onClickBotaoPrincipal={onClickBotaoPrincipal}
+            labelBotaoPrincipal="Novo"
+            desabilitarBotaoPrincipal={
+              !!filtro.dreId === false && !!filtro.ueId === false
+            }
           />
-        </div>
-      </Card>
+          <Filtro onFiltrar={onChangeFiltro} />
+          <div className="col-md-12 pt-2 py-0 px-0">
+            <ListaPaginada
+              url="v1/atribuicao/esporadica/listar"
+              id="lista-atribuicoes-esporadica"
+              colunaChave="id"
+              colunas={colunas}
+              filtro={filtro}
+              onClick={onClickEditar}
+              multiSelecao
+              selecionarItems={onSelecionarItems}
+              filtroEhValido={validarFiltro()}
+            />
+          </div>
+        </Card>
+      </Loader>
     </>
   );
 }

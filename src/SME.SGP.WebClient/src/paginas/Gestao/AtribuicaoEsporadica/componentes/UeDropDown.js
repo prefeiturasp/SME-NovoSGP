@@ -7,7 +7,7 @@ import { SelectComponent } from '~/componentes';
 // Servicos
 import AtribuicaoEsporadicaServico from '~/servicos/Paginas/AtribuicaoEsporadica';
 
-function UeDropDown({ form, onChange, dreId }) {
+function UeDropDown({ form, onChange, dreId, label }) {
   const [listaUes, setListaUes] = useState([]);
 
   async function buscarUes() {
@@ -42,6 +42,7 @@ function UeDropDown({ form, onChange, dreId }) {
       form={form}
       name="ueId"
       className="fonte-14"
+      label={!label ? null : label}
       onChange={onChange}
       lista={listaUes}
       valueOption="valor"
@@ -59,12 +60,14 @@ UeDropDown.propTypes = {
   ]),
   onChange: PropTypes.func,
   dreId: PropTypes.string,
+  label: PropTypes.string,
 };
 
 UeDropDown.defaultProps = {
   form: {},
   onChange: () => {},
   dreId: '',
+  label: null,
 };
 
 export default UeDropDown;
