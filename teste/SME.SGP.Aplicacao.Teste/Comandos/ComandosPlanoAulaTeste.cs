@@ -107,7 +107,7 @@ namespace SME.SGP.Aplicacao.Teste.Comandos
         public async void Deve_Incluir_Plano_Aula_Com_Objetivos()
         {
             // ARRANGE
-            planoAulaDto.ObjetivosAprendizagemAula = new List<long>() { 5 };
+            planoAulaDto.ObjetivosAprendizagemJurema = new List<long>() { 5 };
 
             // ACT
             await comandosPlanoAula.Salvar(planoAulaDto);

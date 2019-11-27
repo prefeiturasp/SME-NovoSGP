@@ -14,4 +14,5 @@ export const Row = styled.div`
   }
 
   margin: 0;
+  margin-bottom: 16px;
 `;

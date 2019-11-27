@@ -74,7 +74,7 @@ namespace SME.SGP.Dominio
 
         public string ObterNomeLoginAtual()
         {
-            var nomeLoginAtual = contextoAplicacao.ObterVarivel<string>("nome");
+            var nomeLoginAtual = contextoAplicacao.ObterVarivel<string>("NomeUsuario");
             if (nomeLoginAtual == null)
                 throw new NegocioException("Não foi possível localizar o nome do login no token");
 
