@@ -11,13 +11,12 @@ import { useSelector } from 'react-redux';
 import modalidade from '~/dtos/modalidade';
 
 const PlanoAula = (props) => {
-  const { planoAula, ehRegencia, listaMaterias, disciplinaIdSelecionada, dataAula } = props;
+  const { planoAula, ehRegencia, listaMaterias, disciplinaIdSelecionada, dataAula, ehProfessorCj } = props;
 
   const usuario = useSelector(store => store.usuario);
   const { turmaSelecionada } = usuario;
   const turmaId = turmaSelecionada ? turmaSelecionada.turma : 0;
   const [mostrarCardPrincipal, setMostrarCardPrincipal] = useState(true);
-  const [ehProfessorCj, setEhProfessorCJ] = useState(true);
   const [informaObjetivos, setInformaObjetivos] = useState(true);
   const [materias, setMaterias] = useState([...listaMaterias]);
   const configCabecalho = {
@@ -102,9 +101,9 @@ const PlanoAula = (props) => {
         show={mostrarCardPrincipal}
       >
         <QuantidadeBotoes className="col-md-12" hidden={ehProfessorCj || ehEja}>
-          <span>Quantidade de aulas: {planoAula.quantidadeAulas}</span>
+          <span>Quantidade de aulas: {planoAula.qtdAulas}</span>
         </QuantidadeBotoes>
-        {ehEja?'eh eja':'não é eja'}
+        {ehEja ? 'eh eja' : 'não é eja'}
         <HabilitaObjetivos className="row d-inline-block col-md-12" hidden={!ehProfessorCj || ehEja}>
           <label>Objetivos de aprendizagem</label>
           <Switch
@@ -176,8 +175,8 @@ const PlanoAula = (props) => {
                 </ObjetivosList>
               </Grid>
               : null}
-            <Grid cols={planoAula.temObjetivos  && !ehEja ? 6 : 12}>
-              {planoAula.temObjetivos  && !ehEja?
+            <Grid cols={planoAula.temObjetivos && !ehEja ? 6 : 12}>
+              {planoAula.temObjetivos && !ehEja ?
                 <Grid cols={12}>
                   <h6 className="d-inline-block font-weight-bold my-0 fonte-14">
                     Objetivos trabalhados na aula
@@ -229,7 +228,7 @@ const PlanoAula = (props) => {
                 <h6 className="font-weight-bold my-0 fonte-14">
                   {planoAula.temObjetivos && !ehEja ? 'Meus objetivos específicos' : 'Objetivos trabalhados'}
                 </h6>
-                {!planoAula.temObjetivos  && !ehEja ?
+                {!planoAula.temObjetivos && !ehEja ?
                   <Descritivo className="d-inline-block my-0 fonte-14">
                     Para este componente curricular é necessário descrever os objetivos de aprendizagem.
                   </Descritivo>
@@ -242,7 +241,7 @@ const PlanoAula = (props) => {
                       id="textEditor-meus_objetivos"
                       height="135px"
                       alt="Meus objetivos específicos"
-                      value={planoAula.objetivosEspecificos}
+                      value={planoAula.descricao}
                     />
                   </form>
                 </fieldset>
@@ -289,7 +288,7 @@ const PlanoAula = (props) => {
                 ref={textEditorRecContinuaRef}
                 height="135px"
                 alt="Recuperação contínua"
-                value={planoAula.recuperacaoContinua}
+                value={planoAula.recuperacaoAula}
               />
             </form>
           </fieldset>

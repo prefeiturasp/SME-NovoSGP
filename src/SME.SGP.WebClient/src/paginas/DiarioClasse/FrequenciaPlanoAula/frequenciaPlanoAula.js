@@ -49,14 +49,18 @@ const FrequenciaPlanoAula = () => {
   const [modoEdicaoPlanoAula, setModoEdicaoPlanoAula] = useState(false);
   const [ehRegencia, setEhRegencia] = useState(false);
   const [aula, setAula] = useState(undefined);
+  const [ehProfessorCj, setEhProfessorCJ] = useState(false);
   const [planoAula, setPlanoAula] = useState({
-    quantidadeAulas: 0,
+    id: 0,
+    qtdAulas: 0,
     temObjetivos: false,
-    objetivosEspecificos: null,
+    descricao: null,
     desenvolvimentoAula: null,
-    recuperacaoContinua: null,
+    recuperacaoAula: null,
     licaoCasa: null,
+    objetivosAprendizagemAula: [],
   });
+  const [errosValidacaoPlano, setErrosValidacaoPlano] = useState([]);
   const [materias, setMaterias] = useState([]);
 
   useEffect(() => {
@@ -127,7 +131,11 @@ const FrequenciaPlanoAula = () => {
     const dadosPlano = plano.data;
     if (dadosPlano) {
       planoAula.quantidadeAulas = dadosPlano.qtdAulas;
-    } else {
+      if (dadosPlano.id > 0) {
+
+      } else {
+        setModoEdicaoPlanoAula(false);
+      }
     }
     if (disciplinaSelecionada.regencia) {
       planoAula.temObjetivos = true;
@@ -183,7 +191,6 @@ const FrequenciaPlanoAula = () => {
       if (confirmou) {
         obterListaFrequencia(aulaId);
         setModoEdicaoFrequencia(false);
-
         // obter plano aula
         // set modo edicao plano aula false
       }
@@ -191,13 +198,9 @@ const FrequenciaPlanoAula = () => {
   };
 
   const onClickSalvar = click => {
-
     onSalvarFrequencia(click);
-
-    // salvar plano aula
-
+    onSalvarPlanoAula();
   };
-
 
   const onSalvarFrequencia = (click) => {
     return new Promise((resolve, reject) => {
@@ -229,6 +232,16 @@ const FrequenciaPlanoAula = () => {
     setExibirCardFrequencia(false);
     setModoEdicaoFrequencia(false)
     obterListaFrequencia(aulaId);
+  }
+
+  const onSalvarPlanoAula = () => {
+
+  }
+
+  const validaPlanoAula = () => {
+    if (ehProfessorCj) {
+      // if(planoAula.)
+    }
   }
 
   const onClickFrequencia = () => {
@@ -463,6 +476,7 @@ const FrequenciaPlanoAula = () => {
                     dataSelecionada={dataSelecionada}
                     planoAula={planoAula}
                     ehRegencia={ehRegencia}
+                    ehProfessorCj={ehProfessorCj}
                     listaMaterias={materias}
                     dataAula={aula && aula.data ? aula.data : null}
                   />
