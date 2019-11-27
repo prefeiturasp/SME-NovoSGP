@@ -19,6 +19,8 @@ import { verificaSomenteConsulta } from '~/servicos/servico-navegacao';
 import RotasDto from '~/dtos/rotasDto';
 import { store } from '~/redux';
 import { SelecionarDisciplina } from '~/redux/modulos/planoAula/actions';
+import { stringNulaOuEmBranco } from '~/utils/funcoes/gerais';
+import ModalMultiLinhas from '~/componentes/modalMultiLinhas';
 
 const FrequenciaPlanoAula = () => {
   const usuario = useSelector(store => store.usuario);
@@ -49,7 +51,7 @@ const FrequenciaPlanoAula = () => {
   const [modoEdicaoPlanoAula, setModoEdicaoPlanoAula] = useState(false);
   const [ehRegencia, setEhRegencia] = useState(false);
   const [aula, setAula] = useState(undefined);
-  const [ehProfessorCj, setEhProfessorCJ] = useState(false);
+  const { ehProfessorCj } = usuario.ehProfessorCj ? usuario.ehProfessorCj : false;
   const [planoAula, setPlanoAula] = useState({
     id: 0,
     qtdAulas: 0,
@@ -62,6 +64,7 @@ const FrequenciaPlanoAula = () => {
   });
   const [errosValidacaoPlano, setErrosValidacaoPlano] = useState([]);
   const [materias, setMaterias] = useState([]);
+  const [mostrarErros, setMostarErros] = useState(false)
 
   useEffect(() => {
     const obterDisciplinas = async () => {
@@ -234,14 +237,29 @@ const FrequenciaPlanoAula = () => {
     obterListaFrequencia(aulaId);
   }
 
-  const onSalvarPlanoAula = () => {
-
+  const onSalvarPlanoAula = async () => {
+    await validaPlanoAula();
+    if (errosValidacaoPlano.length === 0) {
+    } else {
+      setMostarErros(true);
+    }
   }
 
   const validaPlanoAula = () => {
-    if (ehProfessorCj) {
-      // if(planoAula.)
+    if (!planoAula.temObjetivos && ehProfessorCj && stringNulaOuEmBranco(planoAula.descricao)) {
+      errosValidacaoPlano.push("Meus objetivos - O campo meus objetivos específicos é obrigatório");
     }
+    if (stringNulaOuEmBranco(planoAula.desenvolvimentoAula)) {
+      errosValidacaoPlano.push("Desenvolvimento da aula - A sessão de desenvolvimento da aula deve ser preenchida");
+    }
+    if (!ehProfessorCj && planoAula.temObjetivos && planoAula.objetivosAprendizagemAula.length === 0) {
+      errosValidacaoPlano.push("Objetivos de aprendizagem - É obrigatório selecionar ao menos um objetivo de aprendizagem");
+    }
+  }
+
+  const onCloseErros = () => {
+    setErrosValidacaoPlano([]);
+    setMostarErros(false);
   }
 
   const onClickFrequencia = () => {
@@ -485,6 +503,14 @@ const FrequenciaPlanoAula = () => {
               : ''
           }
         </div>
+        <ModalMultiLinhas
+          key="errosBimestre"
+          visivel={mostrarErros}
+          onClose={onCloseErros}
+          type={'error'}
+          conteudo={errosValidacaoPlano}
+          titulo={"Erros plano anual"}
+        />
       </Card>
     </>
   );
