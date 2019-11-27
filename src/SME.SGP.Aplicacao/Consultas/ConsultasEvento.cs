@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNetCore.Http;
-using SME.SGP.Dominio;
+﻿using SME.SGP.Dominio;
 using SME.SGP.Dominio.Entidades;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Dto;
@@ -26,7 +25,6 @@ namespace SME.SGP.Aplicacao
         public async Task<PaginacaoResultadoDto<EventoCompletoDto>> Listar(FiltroEventosDto filtroEventosDto)
         {
             var usuario = await servicoUsuario.ObterUsuarioLogado();
-            var perfilAtual = servicoUsuario.ObterPerfilAtual();
 
             return MapearParaDtoComPaginacao(await repositorioEvento
                 .Listar(filtroEventosDto.TipoCalendarioId,
@@ -38,16 +36,17 @@ namespace SME.SGP.Aplicacao
                         filtroEventosDto.DreId,
                         filtroEventosDto.UeId,
                         usuario,
-                        perfilAtual,
-                        usuario.TemPerfilSupervisorOuDiretor(perfilAtual)));
+                        usuario.PerfilAtual,
+                        usuario.TemPerfilSupervisorOuDiretor(),
+                        usuario.PodeVisualizarEventosOcorrenciaDre()));
         }
 
         public async Task<IEnumerable<CalendarioEventosNoDiaRetornoDto>> ObterEventosPorDia(CalendarioEventosFiltroDto calendarioEventosMesesFiltro, int mes, int dia)
         {
             var usuario = await servicoUsuario.ObterUsuarioLogado();
-            var perfilAtual = servicoUsuario.ObterPerfilAtual();
 
-            return await repositorioEvento.ObterEventosPorDia(calendarioEventosMesesFiltro, mes, dia, usuario, perfilAtual, usuario.TemPerfilSupervisorOuDiretor(perfilAtual));
+            return await repositorioEvento.ObterEventosPorDia(calendarioEventosMesesFiltro, mes, dia, usuario, usuario.PerfilAtual,
+                usuario.TemPerfilSupervisorOuDiretor(), usuario.PodeVisualizarEventosOcorrenciaDre());
         }
 
         public EventoCompletoDto ObterPorId(long id)
@@ -60,7 +59,7 @@ namespace SME.SGP.Aplicacao
             var usuario = await servicoUsuario.ObterUsuarioLogado();
             var perfilAtual = servicoUsuario.ObterPerfilAtual();
 
-            var listaQuery = await repositorioEvento.ObterQuantidadeDeEventosPorDia(calendarioEventosMesesFiltro, mes, usuario, perfilAtual, usuario.TemPerfilSupervisorOuDiretor(perfilAtual));
+            var listaQuery = await repositorioEvento.ObterQuantidadeDeEventosPorDia(calendarioEventosMesesFiltro, mes, usuario, perfilAtual, usuario.TemPerfilSupervisorOuDiretor(), usuario.PodeVisualizarEventosOcorrenciaDre());
             List<CalendarioTipoEventoPorDiaDto> listaRetorno = new List<CalendarioTipoEventoPorDiaDto>();
 
             if (listaQuery.Any())
@@ -86,7 +85,7 @@ namespace SME.SGP.Aplicacao
         {
             var usuario = await servicoUsuario.ObterUsuarioLogado();
 
-            return await repositorioEvento.ObterQuantidadeDeEventosPorMeses(calendarioEventosMesesFiltro, usuario, servicoUsuario.ObterPerfilAtual());
+            return await repositorioEvento.ObterQuantidadeDeEventosPorMeses(calendarioEventosMesesFiltro, usuario, usuario.PerfilAtual, usuario.PodeVisualizarEventosOcorrenciaDre());
         }
 
         private IEnumerable<EventoCompletoDto> MapearEventosParaDto(IEnumerable<Evento> items)
