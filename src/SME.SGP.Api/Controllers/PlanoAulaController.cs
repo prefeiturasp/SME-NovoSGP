@@ -12,6 +12,16 @@ namespace SME.SGP.Api.Controllers
     [ValidaDto]
     public class PlanoAulaController : ControllerBase
     {
+        [HttpPost("migrar")]
+        [ProducesResponseType(200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [Permissao(Permissao.PA_I, Permissao.PA_A, Policy = "Bearer")]
+        public async Task<IActionResult> Migrar(MigrarPlanoAulaDto migrarPlanoAulaDto, [FromServices]IComandosPlanoAula comandosPlanoAula)
+        {
+            await comandosPlanoAula.Migrar(migrarPlanoAulaDto);
+            return Ok();
+        }
+
         [HttpGet("{aulaId}")]
         [ProducesResponseType(typeof(PlanoAulaRetornoDto), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]

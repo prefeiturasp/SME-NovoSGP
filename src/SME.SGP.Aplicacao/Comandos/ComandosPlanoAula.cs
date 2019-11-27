@@ -13,13 +13,15 @@ namespace SME.SGP.Aplicacao
         private readonly IRepositorioObjetivoAprendizagemAula repositorioObjetivosAula;
         private readonly IRepositorioAula repositorioAula;
         private readonly IConsultasAbrangencia consultasAbrangencia;
+        private readonly IConsultasProfessor consultasProfessor;
         private readonly IServicoUsuario servicoUsuario;
         private readonly IUnitOfWork unitOfWork;
 
-        public ComandosPlanoAula(IRepositorioPlanoAula repositorioPlanoAula, 
+        public ComandosPlanoAula(IRepositorioPlanoAula repositorioPlanoAula,
                         IRepositorioObjetivoAprendizagemAula repositorioObjetivosAula,
                         IRepositorioAula repositorioAula,
                         IConsultasAbrangencia consultasAbrangencia,
+                         IConsultasProfessor consultasProfessor,
                         IServicoUsuario servicoUsuario,
                         IUnitOfWork unitOfWork)
         {
@@ -27,8 +29,43 @@ namespace SME.SGP.Aplicacao
             this.repositorioObjetivosAula = repositorioObjetivosAula;
             this.repositorioAula = repositorioAula;
             this.consultasAbrangencia = consultasAbrangencia;
+            this.consultasProfessor = consultasProfessor;
             this.unitOfWork = unitOfWork;
             this.servicoUsuario = servicoUsuario;
+        }
+
+        public async Task Migrar(MigrarPlanoAulaDto migrarPlanoAulaDto)
+        {
+            //var planoAulaDto = migrarPlanoAulaDto.PlanoAula;
+
+            //using (var transacao = unitOfWork.IniciarTransacao())
+            //{
+            //    await ValidaTurmasProfessor(migrarPlanoAulaDto, planoAulaDto);
+
+            //    foreach (var turmaId in migrarPlanoAulaDto.IdsTurmasDestino)
+            //    {
+            //        var planoCopia = new PlanoAulaDto(
+            //            planoAnualDto.AnoLetivo,
+            //            planoAnualDto.Bimestres,
+            //            planoAnualDto.EscolaId,
+            //            planoAnualDto.Id,
+            //            planoAnualDto.TurmaId,
+            //            planoAnualDto.ComponenteCurricularEolId);
+
+            //        planoCopia.TurmaId = turmaId;
+
+            //        var planoAnual = ObterPlanoAnualSimplificado(planoCopia, bimestrePlanoAnual.Bimestre.Value);
+
+            //        if (planoAnual == null)
+            //            planoAnual = MapearParaDominio(planoCopia, planoAnual);
+
+            //        planoAnual.Descricao = planoAulaOrigem.Descricao;
+            //        await Salvar(planoCopia);
+            //    }
+
+
+            //    unitOfWork.PersistirTransacao();
+            //}
         }
 
         public async Task Salvar(PlanoAulaDto planoAulaDto)
@@ -83,7 +120,7 @@ namespace SME.SGP.Aplicacao
                     }
 
                 unitOfWork.PersistirTransacao();
-            }        
+            }
         }
 
         private PlanoAula MapearParaDominio(PlanoAulaDto planoDto, PlanoAula planoAula = null)
