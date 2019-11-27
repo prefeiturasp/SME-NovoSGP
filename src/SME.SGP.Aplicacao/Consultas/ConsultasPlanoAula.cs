@@ -63,6 +63,11 @@ namespace SME.SGP.Aplicacao.Consultas
             return planoAulaDto;
         }
 
+        public bool ValidarPlanoAulaExistente(FiltroPlanoAulaDto filtroPlanoAulaDto)
+        {
+            return repositorio.ValidarPlanoExistentePorTurmaDataEDisciplina(filtroPlanoAulaDto.Data, filtroPlanoAulaDto.TurmaId.ToString(), filtroPlanoAulaDto.DisciplinaId  );
+        }
+
         private PlanoAulaRetornoDto MapearParaDto(PlanoAula plano) =>
             plano == null ? null :
             new PlanoAulaRetornoDto()
