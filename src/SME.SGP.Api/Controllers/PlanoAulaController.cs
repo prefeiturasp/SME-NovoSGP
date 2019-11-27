@@ -20,7 +20,7 @@ namespace SME.SGP.Api.Controllers
             [FromServices] IConsultasPlanoAula consultas)
         {
             // Data Escola Turma Dis
-            var planoDto = await consultas.ObterPlanoAulaPorTurmaDisciplina(aulaId);
+            var planoDto = await consultas.ObterPlanoAulaPorAula(aulaId);
 
             if (planoDto != null)
                 return Ok(planoDto);
