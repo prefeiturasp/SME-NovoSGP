@@ -5,9 +5,9 @@ namespace SME.SGP.Dominio
     public class AtividadeAvaliativa : EntidadeBase
     {
         public int CategoriaId { get; set; }
-        public int ComponenteCurricularId { get; set; }
         public DateTime DataAvaliacao { get; set; }
         public string DescricaoAvaliacao { get; set; }
+        public int DisciplinaId { get; set; }
         public string DreId { get; set; }
         public bool Excluido { get; set; }
         public string NomeAvaliacao { get; set; }
