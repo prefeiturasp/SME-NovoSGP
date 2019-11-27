@@ -44,8 +44,8 @@ namespace SME.SGP.Api.Controllers
         {
             if (guid == Guid.Empty)
                 throw new NegocioException("Informe um perfil");
-            var (token, ehProfessor) = await comandosUsuario.ModificarPerfil(guid);
-            return Ok(new { token, ehProfessor });
+            var (token, ehProfessor, ehProfessorCj) = await comandosUsuario.ModificarPerfil(guid);
+            return Ok(new { token, ehProfessor, ehProfessorCj });
         }
 
         [HttpPost]

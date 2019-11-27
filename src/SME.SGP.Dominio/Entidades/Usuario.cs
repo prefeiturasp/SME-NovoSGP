@@ -67,6 +67,11 @@ namespace SME.SGP.Dominio
             return PerfilAtual == PERFIL_PROFESSOR;
         }
 
+        public bool EhProfessorCj()
+        {
+            return PerfilAtual == PERFIL_CJ;
+        }
+
         public void FinalizarRecuperacaoSenha()
         {
             TokenRecuperacaoSenha = null;

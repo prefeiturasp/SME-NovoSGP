@@ -153,7 +153,7 @@ namespace SME.SGP.Aplicacao
             return retornoAutenticacaoEol.Item1;
         }
 
-        public async Task<(string, bool)> ModificarPerfil(Guid perfil)
+        public async Task<(string, bool, bool)> ModificarPerfil(Guid perfil)
         {
             string loginAtual = servicoUsuario.ObterLoginAtual();
             string codigoRfAtual = servicoUsuario.ObterRf();
@@ -179,7 +179,7 @@ namespace SME.SGP.Aplicacao
 
                 usuario.DefinirPerfilAtual(perfil);
 
-                return (servicoTokenJwt.GerarToken(loginAtual, nomeLoginAtual, codigoRfAtual, perfil, listaPermissoes), usuario.EhProfessor());
+                return (servicoTokenJwt.GerarToken(loginAtual, nomeLoginAtual, codigoRfAtual, perfil, listaPermissoes), usuario.EhProfessor(), usuario.EhProfessorCj());
             }
         }
 
