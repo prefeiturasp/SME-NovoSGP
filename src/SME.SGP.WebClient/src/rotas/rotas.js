@@ -36,6 +36,7 @@ import RotasDto from '~/dtos/rotasDto';
 import CadastroAula from '~/paginas/CalendarioEscolar/CadastroAula/cadastroAula';
 import CalendarioProfessor from '~/paginas/CalendarioProfessor/Calendario';
 import FrequenciaPlanoAula from '~/paginas/DiarioClasse/FrequenciaPlanoAula/frequenciaPlanoAula';
+import CadastroAvaliacao from '~/paginas/CalendarioEscolar/CadastroAvaliacao/cadastroAvaliacao';
 
 export default function Rotas() {
   const rotas = new Map();
@@ -367,7 +368,6 @@ export default function Rotas() {
     chavePermissao: RotasDto.EVENTOS,
   });
 
-  // TODO - Alterar quando tiver o calendário do professor
   rotas.set(RotasDto.CALENDARIO_PROFESSOR, {
     breadcrumbName: 'Calendário do Professor',
     menu: ['Calendário Escolar'],
@@ -406,6 +406,16 @@ export default function Rotas() {
     exact: true,
     tipo: RotasTipo.EstruturadaAutenticada,
     temPermissionamento: true,
+    chavePermissao: RotasDto.CALENDARIO_PROFESSOR,
+  });
+
+  rotas.set(RotasDto.CADASTRO_DE_AVALIACAO, {
+    breadcrumbName: 'Cadastro de Avaliação',
+    parent: '/calendario-escolar/calendario-professor',
+    component: CadastroAvaliacao,
+    exact: true,
+    tipo: RotasTipo.EstruturadaAutenticada,
+    temPermissionamento: false,
     chavePermissao: RotasDto.CALENDARIO_PROFESSOR,
   });
 
