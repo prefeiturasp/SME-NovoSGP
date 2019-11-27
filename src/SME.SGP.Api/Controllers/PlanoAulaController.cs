@@ -47,5 +47,14 @@ namespace SME.SGP.Api.Controllers
             await comandos.Salvar(planoAulaDto);
             return Ok();
         }
+
+        [HttpPost("validar-existente")]
+        [ProducesResponseType(typeof(bool), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [Permissao(Permissao.PA_C, Policy = "Bearer")]
+        public IActionResult ValidarPlanoAnualExistente(FiltroPlanoAulaDto filtroPlanoAulaDto, [FromServices]IConsultasPlanoAula consultasPlanoAula)
+        {
+            return Ok(consultasPlanoAula.ValidarPlanoAulaExistente(filtroPlanoAulaDto));
+        }
     }
 }

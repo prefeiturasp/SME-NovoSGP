@@ -4,6 +4,7 @@ using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -32,5 +33,18 @@ namespace SME.SGP.Dados.Repositorios
             return await database.Conexao.QueryFirstOrDefaultAsync<PlanoAula>(query, new { data, turmaId, disciplinaId });
         }
 
+        public bool ValidarPlanoExistentePorTurmaDataEDisciplina(DateTime data, string turmaId, string disciplinaId)
+        {
+            var query = @"select
+	                            1
+                            from
+	                            plano_aula pa
+                             inner join aula a on a.Id = pa.aula_id
+                             where DATE(a.data_aula) = @data
+                              and a.turma_id = @turmaId
+                              and a.disciplina_id = @disciplinaId";
+
+            return database.Conexao.Query<bool>(query, new { data, turmaId, disciplinaId }).SingleOrDefault();
+        }
     }
 }

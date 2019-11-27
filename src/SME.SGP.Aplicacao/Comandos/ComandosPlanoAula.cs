@@ -21,7 +21,7 @@ namespace SME.SGP.Aplicacao
                         IRepositorioObjetivoAprendizagemAula repositorioObjetivosAula,
                         IRepositorioAula repositorioAula,
                         IConsultasAbrangencia consultasAbrangencia,
-                         IConsultasProfessor consultasProfessor,
+                        IConsultasProfessor consultasProfessor,
                         IServicoUsuario servicoUsuario,
                         IUnitOfWork unitOfWork)
         {
@@ -36,36 +36,36 @@ namespace SME.SGP.Aplicacao
 
         public async Task Migrar(MigrarPlanoAulaDto migrarPlanoAulaDto)
         {
-            //var planoAulaDto = migrarPlanoAulaDto.PlanoAula;
+            var planoAulaDto = migrarPlanoAulaDto.PlanoAula;
 
-            //using (var transacao = unitOfWork.IniciarTransacao())
-            //{
-            //    await ValidaTurmasProfessor(migrarPlanoAulaDto, planoAulaDto);
+            using (var transacao = unitOfWork.IniciarTransacao())
+            {
+                ValidaTurmasProfessor(migrarPlanoAulaDto);
 
-            //    foreach (var turmaId in migrarPlanoAulaDto.IdsTurmasDestino)
-            //    {
-            //        var planoCopia = new PlanoAulaDto(
-            //            planoAnualDto.AnoLetivo,
-            //            planoAnualDto.Bimestres,
-            //            planoAnualDto.EscolaId,
-            //            planoAnualDto.Id,
-            //            planoAnualDto.TurmaId,
-            //            planoAnualDto.ComponenteCurricularEolId);
+                foreach (var planoTurma in migrarPlanoAulaDto.IdsPlanoTurmasDestino)
+                {
+                    AulaConsultaDto aulaConsultaDto = await
+                         repositorioAula.ObterAulaDataTurmaDisciplina(
+                             planoTurma.Data,
+                             planoTurma.TurmaId,
+                             migrarPlanoAulaDto.DisciplinaId
+                         );
 
-            //        planoCopia.TurmaId = turmaId;
+                    var planoCopia = new PlanoAulaDto()
+                    {
+                        AulaId = aulaConsultaDto.Id,
+                        Descricao = planoAulaDto.Descricao,
+                        DesenvolvimentoAula = planoAulaDto.DesenvolvimentoAula,
+                        LicaoCasa = migrarPlanoAulaDto.MigrarLicaoCasa ? planoAulaDto.LicaoCasa : string.Empty,
+                        ObjetivosAprendizagemAula = planoAulaDto.ObjetivosAprendizagemAula,
+                        RecuperacaoAula = migrarPlanoAulaDto.MigrarRecuperacaoAula ? planoAulaDto.RecuperacaoAula: string.Empty
+                    };
 
-            //        var planoAnual = ObterPlanoAnualSimplificado(planoCopia, bimestrePlanoAnual.Bimestre.Value);
+                    await Salvar(planoCopia);
+                }
 
-            //        if (planoAnual == null)
-            //            planoAnual = MapearParaDominio(planoCopia, planoAnual);
-
-            //        planoAnual.Descricao = planoAulaOrigem.Descricao;
-            //        await Salvar(planoCopia);
-            //    }
-
-
-            //    unitOfWork.PersistirTransacao();
-            //}
+                unitOfWork.PersistirTransacao();
+            }
         }
 
         public async Task Salvar(PlanoAulaDto planoAulaDto)
@@ -135,6 +135,17 @@ namespace SME.SGP.Aplicacao
             planoAula.LicaoCasa = planoDto.LicaoCasa;
 
             return planoAula;
+        }
+
+        private void ValidaTurmasProfessor(MigrarPlanoAulaDto migrarPlanoAulaDto)
+        {
+            var turmasAtribuidasAoProfessor = consultasProfessor.Listar(migrarPlanoAulaDto.RFProfessor);
+            var idsTurmasProfessor = turmasAtribuidasAoProfessor?.Select(c => c.CodTurma).ToList();
+
+            if (idsTurmasProfessor == null || migrarPlanoAulaDto.IdsPlanoTurmasDestino.Select(x => x.TurmaId).Any(c => !idsTurmasProfessor.Contains(Convert.ToInt32(c))))
+            {
+                throw new NegocioException("Somente é possível migrar o plano de aula para turmas atribuidas ao professor");
+            }
         }
     }
 }
