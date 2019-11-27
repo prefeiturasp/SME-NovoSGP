@@ -27,22 +27,36 @@ namespace SME.SGP.Aplicacao.Consultas
             this.consultasAula = consultasAula;
         }
 
-        public async Task<PlanoAulaRetornoDto> ObterPlanoAulaPorTurmaDisciplina(long aulaId)
+        public async Task<PlanoAulaRetornoDto> ObterPlanoAulaPorAula(long aulaId)
         {
             PlanoAulaRetornoDto planoAulaDto = new PlanoAulaRetornoDto();
             // Busca plano de aula por data e disciplina da aula
             var plano = await repositorio.ObterPlanoAulaPorAula(aulaId);
+            var aulaDto = consultasAula.BuscarPorId(aulaId);
 
             if (plano != null)
             {
                 planoAulaDto = MapearParaDto(plano) ?? new PlanoAulaRetornoDto();
+
+                // Carrega objetivos aprendizagem Jurema
+                var planoAnual = await consultasPlanoAnual.ObterPorEscolaTurmaAnoEBimestre(new FiltroPlanoAnualDto()
+                {
+                    AnoLetivo = aulaDto.DataAula.Year,
+                    Bimestre = (aulaDto.DataAula.Month + 2) / 3,
+                    ComponenteCurricularEolId = long.Parse(aulaDto.DisciplinaId),
+                    EscolaId = aulaDto.UeId,
+                    TurmaId = int.Parse(aulaDto.TurmaId)
+                });
+
                 // Carrega objetivos já cadastrados no plano de aula
                 var objetivosAula = await consultasObjetivosAula.ObterObjetivosPlanoAula(plano.Id);
-                planoAulaDto.ObjetivosAprendizagemAula = objetivosAula.Select(o => o.Id).ToList();
+                // Filtra objetivos anual com os objetivos da aula
+                planoAulaDto.ObjetivosAprendizagemAula = planoAnual.ObjetivosAprendizagem
+                                    .Where(c => objetivosAula.Any(a => a.ObjetivoAprendizagemPlanoId == c.Id))
+                                    .ToList();
             }
 
             // Carrega informações da aula para o retorno
-            var aulaDto = consultasAula.BuscarPorId(aulaId);
             planoAulaDto.AulaId = aulaDto.Id;
             planoAulaDto.QtdAulas = aulaDto.Quantidade;
 

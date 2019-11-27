@@ -77,7 +77,7 @@ namespace SME.SGP.Aplicacao.Teste.Consultas
         public async void Deve_Obter_Por_Turma_Disciplina()
         {
             // ACT
-            var planoAula = await consultasPlanoAula.ObterPlanoAulaPorTurmaDisciplina(1);
+            var planoAula = await consultasPlanoAula.ObterPlanoAulaPorAula(1);
 
             // ASSERT
             Assert.False(planoAula == null);
