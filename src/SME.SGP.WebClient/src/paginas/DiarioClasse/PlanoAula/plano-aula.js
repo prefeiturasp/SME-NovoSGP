@@ -39,13 +39,23 @@ const PlanoAula = (props) => {
 
   const selecionarObjetivo = id => {
     const index = objetivosAprendizagem.findIndex(a => a.id == id);
+    const idxObjSelec = planoAula.objetivosAprendizagemAula.findIndex(a => a.id == id)
     objetivosAprendizagem[index].selected = !objetivosAprendizagem[index].selected;
+    if(idxObjSelec < 0){
+      planoAula.objetivosAprendizagemAula.push(objetivosAprendizagem[index])
+    }else{
+      planoAula.objetivosAprendizagemAula.splice(idxObjSelec, 1);
+      planoAula.objetivosAprendizagemAula = [...planoAula.objetivosAprendizagemAula]
+    }
     setObjetivosAprendizagem([...objetivosAprendizagem]);
   }
 
   const removerObjetivo = id => {
     const index = objetivosAprendizagem.findIndex(a => a.id == id);
+    const idxObjSelec = planoAula.objetivosAprendizagemAula.findIndex(a => a.id == id)
     objetivosAprendizagem[index].selected = false;
+    planoAula.objetivosAprendizagemAula.splice(idxObjSelec, 1);
+    planoAula.objetivosAprendizagemAula = [...planoAula.objetivosAprendizagemAula]
     setObjetivosAprendizagem([...objetivosAprendizagem]);
   }
 
@@ -54,6 +64,8 @@ const PlanoAula = (props) => {
       objetivo.selected = false;
       return objetivo;
     })
+    planoAula.objetivosAprendizagemAula.splice(0, planoAula.objetivosAprendizagemAula.length);
+    planoAula.objetivosAprendizagemAula = [...planoAula.objetivosAprendizagemAula]
     setObjetivosAprendizagem([...objetivos]);
   }
 
@@ -91,6 +103,22 @@ const PlanoAula = (props) => {
     planoAula.temObjetivos = !informaObjetivos;
   }
 
+  const onBlurMeusObjetivos = value => {
+    planoAula.descricao = value;
+  }
+
+  const onBlurDesenvolvimentoAula = async value => {
+    planoAula.desenvolvimentoAula = await value;
+  }
+
+  const onBlurRecuperacaoContinua = value => {
+    planoAula.recuperacaoAula = value;
+  }
+
+  const onBlurLicaoCasa = value => {
+    planoAula.licaoCasa = value;
+  }
+
   return (
     <Corpo>
       <CardCollapse
@@ -103,7 +131,6 @@ const PlanoAula = (props) => {
         <QuantidadeBotoes className="col-md-12" hidden={ehProfessorCj || ehEja}>
           <span>Quantidade de aulas: {planoAula.qtdAulas}</span>
         </QuantidadeBotoes>
-        {ehEja ? 'eh eja' : 'não é eja'}
         <HabilitaObjetivos className="row d-inline-block col-md-12" hidden={!ehProfessorCj || ehEja}>
           <label>Objetivos de aprendizagem</label>
           <Switch
@@ -242,6 +269,7 @@ const PlanoAula = (props) => {
                       height="135px"
                       alt="Meus objetivos específicos"
                       value={planoAula.descricao}
+                      onBlur={onBlurMeusObjetivos}
                     />
                   </form>
                 </fieldset>
@@ -267,6 +295,7 @@ const PlanoAula = (props) => {
                 height="135px"
                 alt="Desenvolvimento da aula"
                 value={planoAula.desenvolvimentoAula}
+                onBlur={onBlurDesenvolvimentoAula}
               />
             </form>
           </fieldset>
@@ -289,6 +318,7 @@ const PlanoAula = (props) => {
                 height="135px"
                 alt="Recuperação contínua"
                 value={planoAula.recuperacaoAula}
+                onBlur={onBlurRecuperacaoContinua}
               />
             </form>
           </fieldset>
@@ -311,6 +341,7 @@ const PlanoAula = (props) => {
                 height="135px"
                 alt="Lição de casa"
                 value={planoAula.licaoCasa}
+                onBlur={onBlurLicaoCasa}
               />
             </form>
           </fieldset>
