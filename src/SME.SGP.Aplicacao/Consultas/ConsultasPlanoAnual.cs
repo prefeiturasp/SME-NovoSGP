@@ -51,6 +51,12 @@ namespace SME.SGP.Aplicacao
             return retorno;
         }
 
+        public async Task<long> ObterIdPlanoAnualPorAnoEscolaBimestreETurma(int ano, string escolaId, long turmaId, int bimestre, long disciplinaId)
+        {
+            var plano = repositorioPlanoAnual.ObterPlanoAnualSimplificadoPorAnoEscolaBimestreETurma(ano, escolaId, turmaId, bimestre, disciplinaId);
+            return plano.Id;
+        }
+
         public async Task<PlanoAnualObjetivosDisciplinaDto> ObterObjetivosEscolaTurmaDisciplina(FiltroPlanoAnualDisciplinaDto filtro)
         {
             var planoAnual = repositorioPlanoAnual.ObterPlanoObjetivosEscolaTurmaDisciplina(filtro.AnoLetivo, 
