@@ -5,17 +5,18 @@ import PropTypes from 'prop-types';
 import { Form, Formik } from 'formik';
 import * as Yup from 'yup';
 
+// Redux
+import { useDispatch } from 'react-redux';
+
 // Componentes
 import { Grid, Localizador } from '~/componentes';
-import DreDropDown from './componentes/DreDropDown';
-import UeDropDown from './componentes/UeDropDown';
-import AnoLetivoDropDown from './componentes/AnoLetivoDropDown';
+import DreDropDown from '../../../componentes/DreDropDown';
+import UeDropDown from '../../../componentes/UeDropDown';
+import AnoLetivoDropDown from '../../../componentes/AnoLetivoDropDown';
 
 // Styles
 import { Row } from './styles';
 
-// Redux
-import { useDispatch } from 'react-redux';
 import {
   selecionarDre,
   selecionarUe,
@@ -32,6 +33,7 @@ function Filtro({ onFiltrar }) {
     professorRf: '',
   });
   const [dreId, setDreId] = useState('');
+  const [anoLetivo, setAnoLetivo] = useState('');
 
   const validacoes = () => {
     return Yup.object({
@@ -49,6 +51,11 @@ function Filtro({ onFiltrar }) {
   const onChangeDre = valor => {
     setDreId(valor);
     dispatch(selecionarDre(valor));
+  };
+
+  const onChangeAnoLetivo = valor => {
+    setAnoLetivo(valor);
+    dispatch(selecionarAnoLetivo(valor));
   };
 
   return (
@@ -69,7 +76,7 @@ function Filtro({ onFiltrar }) {
               <AnoLetivoDropDown
                 form={form}
                 name="anoLetivo"
-                onChange={valor => dispatch(selecionarAnoLetivo(valor))}
+                onChange={valor => onChangeAnoLetivo(valor)}
               />
             </Grid>
             <Grid cols={5}>
@@ -84,7 +91,12 @@ function Filtro({ onFiltrar }) {
             </Grid>
           </Row>
           <Row className="row">
-            <Localizador form={form} onChange={valor => valor} />
+            <Localizador
+              dreId={dreId}
+              anoLetivo={anoLetivo}
+              form={form}
+              onChange={valor => valor}
+            />
           </Row>
         </Form>
       )}

@@ -9,18 +9,26 @@ import { Grid, Label } from '~/componentes';
 // Services
 import service from './services/LocalizadorService';
 
+// Funções
+import { valorNuloOuVazio } from '~/utils/funcoes/gerais';
+
 function Localizador({ onChange, showLabel, form, dreId, anoLetivo }) {
   const [dataSource, setDataSource] = useState([]);
   const [pessoaSelecionada, setPessoaSelecionada] = useState({});
 
   const onChangeInput = async valor => {
     if (valor.length < 2) return;
-    const { dados } = await service.buscarAutocomplete({
+    const { data: dados } = await service.buscarAutocomplete({
       nome: valor,
       dreId,
       anoLetivo,
     });
-    setDataSource(dados);
+
+    if (dados && dados.length > 0) {
+      setDataSource(
+        dados.map(x => ({ professorRf: x.codigoRF, professorNome: x.nome }))
+      );
+    }
   };
 
   const onBuscarPorRF = async ({ rf }) => {
@@ -66,7 +74,7 @@ function Localizador({ onChange, showLabel, form, dreId, anoLetivo }) {
           form={form}
         />
       </Grid>
-      <Grid cols={8}>
+      <Grid className="pr-0" cols={8}>
         {showLabel && <Label text="Nome" control="professorNome" />}
         <InputNome
           dataSource={dataSource}
@@ -81,14 +89,23 @@ function Localizador({ onChange, showLabel, form, dreId, anoLetivo }) {
   );
 }
 
-Localizador.defaultProps = {
+Localizador.propTypes = {
   onChange: () => {},
-  form: PropTypes.objectOf(PropTypes.object),
+  form: PropTypes.oneOfType([
+    PropTypes.objectOf(PropTypes.object),
+    PropTypes.any,
+  ]),
+  showLabel: PropTypes.bool,
+  dreId: PropTypes.string,
+  anoLetivo: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
 };
 
-Localizador.propTypes = {
+Localizador.defaultProps = {
   onChange: PropTypes.func,
   form: {},
+  showLabel: false,
+  dreId: null,
+  anoLetivo: null,
 };
 
 export default Localizador;

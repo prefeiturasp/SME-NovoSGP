@@ -7,7 +7,7 @@ import { useSelector } from 'react-redux';
 // Componentes
 import { SelectComponent } from '~/componentes';
 
-function AnoLetivoDropDown({ form, name, onChange }) {
+function AnoLetivoDropDown({ form, name, onChange, label }) {
   const anosLetivos = useSelector(store => store.filtro.anosLetivos);
 
   useEffect(() => {
@@ -19,6 +19,7 @@ function AnoLetivoDropDown({ form, name, onChange }) {
 
   return (
     <SelectComponent
+      label={!label ? null : label}
       valueOption="valor"
       valueText="desc"
       form={form}
@@ -38,12 +39,14 @@ AnoLetivoDropDown.propTypes = {
   ]),
   name: PropTypes.string,
   onChange: PropTypes.func,
+  label: PropTypes.string,
 };
 
 AnoLetivoDropDown.defaultProps = {
   form: {},
   name: '',
   onChange: () => null,
+  label: null,
 };
 
 export default AnoLetivoDropDown;

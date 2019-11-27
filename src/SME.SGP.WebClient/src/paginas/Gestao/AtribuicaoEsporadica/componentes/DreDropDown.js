@@ -7,7 +7,10 @@ import { SelectComponent } from '~/componentes';
 // Servicos
 import AtribuicaoEsporadicaServico from '~/servicos/Paginas/AtribuicaoEsporadica';
 
-function DreDropDown({ form, onChange }) {
+// Funções
+import { valorNuloOuVazio } from '~/utils/funcoes/gerais';
+
+function DreDropDown({ form, onChange, label }) {
   const [listaDres, setListaDres] = useState([]);
 
   useEffect(() => {
@@ -33,8 +36,16 @@ function DreDropDown({ form, onChange }) {
     }
   }, [listaDres]);
 
+  useEffect(() => {
+    onChange();
+    if (!valorNuloOuVazio(form.values.dreId)) {
+      onChange(form.values.dreId);
+    }
+  }, [form.values.dreId]);
+
   return (
     <SelectComponent
+      label={!label ? null : label}
       form={form}
       name="dreId"
       className="fonte-14"
@@ -55,11 +66,13 @@ DreDropDown.propTypes = {
     PropTypes.any,
   ]),
   onChange: PropTypes.func,
+  label: PropTypes.string,
 };
 
 DreDropDown.defaultProps = {
   form: {},
   onChange: () => {},
+  label: null,
 };
 
 export default DreDropDown;
