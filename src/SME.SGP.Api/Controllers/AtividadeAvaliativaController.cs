@@ -28,10 +28,21 @@ namespace SME.SGP.Api.Controllers
             return Ok();
         }
 
+        [HttpDelete]
+        [ProducesResponseType(200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 601)]
+        [Permissao(Permissao.CP_E, Policy = "Bearer")]
+        public async Task<IActionResult> ExcluirAsync(long id)
+        {
+            await comandoAtividadeAvaliativa.Excluir(id);
+            return Ok();
+        }
+
         [HttpPost]
         [ProducesResponseType(200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        [Permissao(Permissao.CP_I, Permissao.AE_I, Policy = "Bearer")]
+        [Permissao(Permissao.CP_I, Policy = "Bearer")]
         public async Task<IActionResult> PostAsync([FromBody]AtividadeAvaliativaDto atividadeAvaliativaDto)
         {
             await comandoAtividadeAvaliativa.Inserir(atividadeAvaliativaDto);
