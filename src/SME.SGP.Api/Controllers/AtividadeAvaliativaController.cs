@@ -12,10 +12,12 @@ namespace SME.SGP.Api.Controllers
     public class AtividadeAvaliativaController : ControllerBase
     {
         private readonly IComandosAtividadeAvaliativa comandoAtividadeAvaliativa;
+        private readonly IConsultaAtividadeAvaliativa consultaAtividadeAvaliativa;
 
-        public AtividadeAvaliativaController(IComandosAtividadeAvaliativa comandoAtividadeAvaliativa)
+        public AtividadeAvaliativaController(IComandosAtividadeAvaliativa comandoAtividadeAvaliativa, IConsultaAtividadeAvaliativa consultaAtividadeAvaliativa)
         {
             this.comandoAtividadeAvaliativa = comandoAtividadeAvaliativa ?? throw new System.ArgumentNullException(nameof(comandoAtividadeAvaliativa));
+            this.consultaAtividadeAvaliativa = consultaAtividadeAvaliativa ?? throw new System.ArgumentNullException(nameof(consultaAtividadeAvaliativa));
         }
 
         [HttpPut("{id}")]
@@ -37,6 +39,16 @@ namespace SME.SGP.Api.Controllers
         {
             await comandoAtividadeAvaliativa.Excluir(id);
             return Ok();
+        }
+
+        [HttpGet("{id}")]
+        [ProducesResponseType(typeof(AtividadeAvaliativaCompletaDto), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 601)]
+        [Permissao(Permissao.CP_C, Policy = "Bearer")]
+        public IActionResult ObterPorId(long id)
+        {
+            return Ok(consultaAtividadeAvaliativa.ObterPorId(id));
         }
 
         [HttpPost]
