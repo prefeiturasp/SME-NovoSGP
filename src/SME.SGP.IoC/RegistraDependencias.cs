@@ -80,6 +80,7 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IConsultasPlanoAula, ConsultasPlanoAula>();
             services.TryAddScoped<IConsultasObjetivoAprendizagemAula, ConsultasObjetivoAprendizagemAula>();
             services.TryAddScoped<IConsultasAtribuicaoEsporadica, ConsultasAtribuicaoEsporadica>();
+            services.TryAddScoped<IConsultaAtividadeAvaliativa, ConsultaAtividadeAvaliativa>();
         }
 
         private static void RegistrarContextos(IServiceCollection services)

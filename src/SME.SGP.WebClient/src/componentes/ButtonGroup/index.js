@@ -28,24 +28,24 @@ function ButtonGroup({
         icon="arrow-left"
         color={Colors.Azul}
         border
-        className="mr-2"
+        className="btnGroupItem"
         onClick={onClickVoltar}
       />
-      {modoEdicao && (
+      {typeof onClickCancelar === 'function' && (
         <Button
           label="Cancelar"
           color={Colors.Roxo}
           border
-          className="mr-2"
+          className="btnGroupItem"
           onClick={() => onClickCancelar(form)}
-          disabled={!modoEdicao || novoRegistro === false}
+          disabled={!modoEdicao || !novoRegistro}
         />
       )}
       <Button
         label="Excluir"
-        color={Colors.Vermelho}
+        color={Colors.Roxo}
         border
-        className="mr-2"
+        className="btnGroupItem"
         disabled={
           (!permissoesTela.podeExcluir && !temItemSelecionado) ||
           novoRegistro === true ||
@@ -58,7 +58,7 @@ function ButtonGroup({
         color={Colors.Roxo}
         border
         bold
-        className="mr-0"
+        className="btnGroupItem"
         onClick={onClickBotaoPrincipal}
         disabled={
           somenteConsulta ||
@@ -71,20 +71,32 @@ function ButtonGroup({
 }
 
 ButtonGroup.propTypes = {
+  form: PropTypes.oneOfType([PropTypes.object, PropTypes.func, PropTypes.any]),
+  modoEdicao: PropTypes.bool,
+  novoRegistro: PropTypes.bool,
   somenteConsulta: PropTypes.bool,
-  permissoesTela: PropTypes.objectOf(PropTypes.object),
+  desabilitarBotaoPrincipal: PropTypes.bool,
+  labelBotaoPrincipal: PropTypes.string,
+  permissoesTela: PropTypes.oneOfType([PropTypes.object, PropTypes.any]),
   temItemSelecionado: PropTypes.oneOfType([PropTypes.bool, PropTypes.any]),
   onClickVoltar: PropTypes.func,
   onClickExcluir: PropTypes.func,
+  onClickCancelar: PropTypes.func,
   onClickBotaoPrincipal: PropTypes.func,
 };
 
 ButtonGroup.defaultProps = {
+  form: {},
+  modoEdicao: false,
+  novoRegistro: true,
   somenteConsulta: false,
+  labelBotaoPrincipal: '',
+  desabilitarBotaoPrincipal: false,
   permissoesTela: {},
-  temItemSelecionado: null,
+  temItemSelecionado: false,
   onClickVoltar: () => null,
   onClickExcluir: () => null,
+  onClickCancelar: null,
   onClickBotaoPrincipal: () => null,
 };
 
