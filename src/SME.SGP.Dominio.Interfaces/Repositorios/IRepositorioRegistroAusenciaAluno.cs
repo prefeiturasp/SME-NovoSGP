@@ -1,4 +1,5 @@
 ﻿using SME.SGP.Infra;
+using System;
 using System.Collections.Generic;
 
 namespace SME.SGP.Dominio.Interfaces
@@ -9,6 +10,8 @@ namespace SME.SGP.Dominio.Interfaces
 
         IEnumerable<AulasPorDisciplinaDto> ObterTotalAulasPorDisciplina(int anoLetivo);
 
-        IEnumerable<AusenciaPorDisciplinaDto> ObterTotalAusenciasPorAlunoEDisciplina(int anoLetivo);
+        int ObterTotalAulasPorDisciplinaETurma(DateTime dataAtual, string disciplinaId, string turmaId);
+
+        AusenciaPorDisciplinaDto ObterTotalAusenciasPorAlunoEDisciplina(DateTime periodo, string codigoAluno, string disciplinaId, string turmaId);
     }
 }

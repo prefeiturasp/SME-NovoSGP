@@ -11,6 +11,7 @@ namespace SME.SGP.Dominio.Servicos
         private readonly IRepositorioAula repositorioAula;
         private readonly IRepositorioFrequencia repositorioFrequencia;
         private readonly IRepositorioRegistroAusenciaAluno repositorioRegistroAusenciaAluno;
+        private readonly IServicoCalculoFrequencia servicoCalculoFrequencia;
         private readonly IServicoEOL servicoEOL;
         private readonly IServicoUsuario servicoUsuario;
         private readonly IUnitOfWork unitOfWork;
@@ -20,7 +21,8 @@ namespace SME.SGP.Dominio.Servicos
                                  IRepositorioAula repositorioAula,
                                  IServicoUsuario servicoUsuario,
                                  IUnitOfWork unitOfWork,
-                                 IServicoEOL servicoEOL)
+                                 IServicoEOL servicoEOL,
+                                 IServicoCalculoFrequencia servicoCalculoFrequencia)
         {
             this.repositorioFrequencia = repositorioFrequencia ?? throw new System.ArgumentNullException(nameof(repositorioFrequencia));
             this.repositorioRegistroAusenciaAluno = repositorioRegistroAusenciaAluno ?? throw new System.ArgumentNullException(nameof(repositorioRegistroAusenciaAluno));
@@ -28,6 +30,7 @@ namespace SME.SGP.Dominio.Servicos
             this.servicoUsuario = servicoUsuario ?? throw new System.ArgumentNullException(nameof(servicoUsuario));
             this.unitOfWork = unitOfWork ?? throw new System.ArgumentNullException(nameof(unitOfWork));
             this.servicoEOL = servicoEOL ?? throw new System.ArgumentNullException(nameof(servicoEOL));
+            this.servicoCalculoFrequencia = servicoCalculoFrequencia ?? throw new System.ArgumentNullException(nameof(servicoCalculoFrequencia));
         }
 
         public IEnumerable<RegistroAusenciaAluno> ObterListaAusenciasPorAula(long aulaId)

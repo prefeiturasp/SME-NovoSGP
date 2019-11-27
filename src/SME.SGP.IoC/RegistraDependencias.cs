@@ -140,6 +140,7 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IServicoFrequencia, ServicoFrequencia>();
             services.TryAddScoped<IServicoAula, ServicoAula>();
             services.TryAddScoped<IServicoAtribuicaoEsporadica, ServicoAtribuicaoEsporadica>();
+            services.TryAddScoped<IServicoCalculoFrequencia, ServicoCalculoFrequencia>();
         }
     }
 }

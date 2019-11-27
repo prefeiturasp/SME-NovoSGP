@@ -1,6 +1,5 @@
 ﻿using SME.SGP.Aplicacao.Integracoes;
 using SME.SGP.Dominio.Interfaces;
-using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -31,65 +30,100 @@ namespace SME.SGP.Dominio.Servicos
             this.repositorioFrequenciaAlunoDisciplinaPeriodo = repositorioFrequenciaAlunoDisciplinaPeriodo ?? throw new ArgumentNullException(nameof(repositorioFrequenciaAlunoDisciplinaPeriodo));
         }
 
-        public void CalcularPercentualFrequenciaAlunosPorDisciplinaEPeriodo(int anoLetivo)
+        public void CalcularFrequenciaPorTurmaEDisciplina(IEnumerable<string> alunos, long aulaId)
         {
-            CalcularFrequenciaPorAluno(anoLetivo);
-        }
-
-        private void CalcularFrequenciaPorAluno(int anoLetivo)
-        {
-            var aulasPorDisciplina = repositorioRegistroAusenciaAluno.ObterTotalAulasPorDisciplina(anoLetivo);
-            if (aulasPorDisciplina != null && aulasPorDisciplina.Any())
+            var aula = repositorioAula.ObterPorId(aulaId);
+            if (aula == null)
             {
-                var ausenciasPorTurmaEAno = repositorioRegistroAusenciaAluno.ObterTotalAusenciasPorAlunoEDisciplina(anoLetivo);
-                if (ausenciasPorTurmaEAno != null && ausenciasPorTurmaEAno.Any())
+                throw new NegocioException("Aula não encontrada ao calcular percentual de frequência.");
+            }
+            if (alunos == null || !alunos.Any())
+            {
+                throw new NegocioException("A lista de alunos a turma e a disciplina devem ser informados para calcular a frequência.");
+            }
+
+            var dataAtual = DateTime.Now;
+            var totalAulas = repositorioRegistroAusenciaAluno.ObterTotalAulasPorDisciplinaETurma(dataAtual, aula.DisciplinaId, aula.TurmaId);
+
+            foreach (var codigoAluno in alunos)
+            {
+                var ausenciasAluno = repositorioRegistroAusenciaAluno.ObterTotalAusenciasPorAlunoEDisciplina(dataAtual, codigoAluno, aula.DisciplinaId, aula.TurmaId);
+                if (ausenciasAluno != null)
                 {
-                    foreach (var ausencia in ausenciasPorTurmaEAno)
-                    {
-                        int totalAulas = ObterTotalAulasPorDisciplina(aulasPorDisciplina, ausencia);
-                        var frequenciaAluno = MapearFrequenciaAluno(ausencia, totalAulas);
-                        if (frequenciaAluno.PercentualFrequencia < 100)
-                            repositorioFrequenciaAlunoDisciplinaPeriodo.Salvar(frequenciaAluno);
-                    }
-                }
-                var ausenciasPorAluno = ausenciasPorTurmaEAno.GroupBy(c => c.CodigoAluno);
-                foreach (var ausenciaAluno in ausenciasPorAluno)
-                {
-                    foreach (var ausencia in ausenciaAluno)
-                    {
-                        var totalAulasGeral = aulasPorDisciplina.Where(c => c.DisciplinaId == ausencia.DisciplinaId).Sum(c => c.TotalAulas);
-                        var ausenciasAlunoTotal = ausenciaAluno.Sum(c => c.TotalAusencias);
-                        var frequenciaGeral = 100 - ((ausenciasAlunoTotal / totalAulasGeral) * 100);
-                    }
+                    var frequenciaAluno = MapearFrequenciaAluno(codigoAluno,
+                                                                aula.DisciplinaId,
+                                                                ausenciasAluno.PeriodoInicio,
+                                                                ausenciasAluno.PeriodoFim,
+                                                                ausenciasAluno.Bimestre,
+                                                                ausenciasAluno.TotalAusencias,
+                                                                totalAulas);
+
+                    if (frequenciaAluno.PercentualFrequencia < 100)
+                        repositorioFrequenciaAlunoDisciplinaPeriodo.Salvar(frequenciaAluno);
                 }
             }
         }
 
-        private FrequenciaAlunoDisciplinaPeriodo MapearFrequenciaAluno(AusenciaPorDisciplinaDto ausencia, int totalAulas)
+        public void CalcularPercentualFrequenciaAlunosPorDisciplinaEPeriodo(int anoLetivo)
         {
-            var frequenciaAluno = repositorioFrequenciaAlunoDisciplinaPeriodo.Obter(ausencia.CodigoAluno, ausencia.DisciplinaId, ausencia.PeriodoInicio, ausencia.PeriodoFim);
+            //CalcularFrequenciaPorAluno(anoLetivo);
+        }
+
+        //private void CalcularFrequenciaPorAluno(int anoLetivo)
+        //{
+        //    var ausenciasPorTurmaEAno = repositorioRegistroAusenciaAluno.ObterTotalAusenciasPorAlunoEDisciplina(anoLetivo);
+        //    if (ausenciasPorTurmaEAno != null && ausenciasPorTurmaEAno.Any())
+        //    {
+        //        var aulasPorDisciplina = repositorioRegistroAusenciaAluno.ObterTotalAulasPorDisciplina(anoLetivo);
+        //        if (aulasPorDisciplina != null && aulasPorDisciplina.Any())
+        //        {
+        //            foreach (var ausencia in ausenciasPorTurmaEAno)
+        //            {
+        //                int totalAulas = ObterTotalAulasPorDisciplina(aulasPorDisciplina, ausencia);
+        //                var frequenciaAluno = MapearFrequenciaAluno(ausencia, totalAulas);
+        //                if (frequenciaAluno.PercentualFrequencia < 100)
+        //                    repositorioFrequenciaAlunoDisciplinaPeriodo.Salvar(frequenciaAluno);
+        //            }
+        //        }
+        //        var ausenciasPorAluno = ausenciasPorTurmaEAno.GroupBy(c => c.CodigoAluno);
+        //        foreach (var ausenciaAluno in ausenciasPorAluno)
+        //        {
+        //            foreach (var ausencia in ausenciaAluno)
+        //            {
+        //                int totalAulas = ObterTotalAulasPorDisciplina(aulasPorDisciplina, ausencia);
+        //                var totalAulasGeral = aulasPorDisciplina.Where(c => c.DisciplinaId == ausencia.DisciplinaId).Sum(c => c.TotalAulas);
+        //                var ausenciasAlunoTotal = ausenciaAluno.Sum(c => c.TotalAusencias);
+        //                var frequenciaGeral = 100 - ((ausenciasAlunoTotal / totalAulasGeral) * 100);
+        //            }
+        //        }
+        //    }
+        //}
+
+        private FrequenciaAlunoDisciplinaPeriodo MapearFrequenciaAluno(string codigoAluno, string disciplinaId, DateTime periodoInicio, DateTime periodoFim, int bimestre, int totalAusencias, int totalAulas)
+        {
+            var frequenciaAluno = repositorioFrequenciaAlunoDisciplinaPeriodo.Obter(codigoAluno, disciplinaId, periodoInicio, periodoFim);
             return frequenciaAluno == null ?
             new FrequenciaAlunoDisciplinaPeriodo
                          (
-                             ausencia.CodigoAluno,
-                             ausencia.DisciplinaId,
-                             ausencia.PeriodoInicio,
-                             ausencia.PeriodoFim,
-                             ausencia.Bimestre,
-                             ausencia.TotalAusencias,
+                             codigoAluno,
+                             disciplinaId,
+                             periodoInicio,
+                             periodoFim,
+                             bimestre,
+                             totalAusencias,
                              totalAulas
-                         ) : frequenciaAluno.DefinirFrequencia(ausencia.TotalAusencias, totalAulas);
+                         ) : frequenciaAluno.DefinirFrequencia(totalAusencias, totalAulas);
         }
 
-        private int ObterTotalAulasPorDisciplina(IEnumerable<AulasPorDisciplinaDto> aulasPorDisciplina, AusenciaPorDisciplinaDto ausencia)
-        {
-            var totalAulas = aulasPorDisciplina.FirstOrDefault(c => c.DisciplinaId == ausencia.DisciplinaId)?.TotalAulas;
-            if (totalAulas == null)
-            {
-                throw new NegocioException($"Ocorreu um erro ao localizar as aulas da disciplina com código: {ausencia.DisciplinaId}");
-            }
+        //private int ObterTotalAulasPorDisciplina(IEnumerable<AulasPorDisciplinaDto> aulasPorDisciplina, AusenciaPorDisciplinaDto ausencia)
+        //{
+        //    var totalAulas = aulasPorDisciplina.FirstOrDefault(c => c.DisciplinaId == ausencia.DisciplinaId)?.TotalAulas;
+        //    if (totalAulas == null)
+        //    {
+        //        throw new NegocioException($"Ocorreu um erro ao localizar as aulas da disciplina com código: {ausencia.DisciplinaId}");
+        //    }
 
-            return totalAulas.Value;
-        }
+        //    return totalAulas.Value;
+        //}
     }
 }
