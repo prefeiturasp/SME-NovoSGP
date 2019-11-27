@@ -9,14 +9,15 @@ namespace SME.SGP.Infra
         [EnumeradoRequirido(ErrorMessage = "A categoria é obrigatória.")]
         public CategoriaAtividadeAvaliativa CategoriaId { get; set; }
 
-        public int ComponenteCurricularId { get; set; }
-
         [DataRequerida(ErrorMessage = "É necessario informar a data da avaliação")]
         public DateTime DataAvaliacao { get; set; }
 
         [Required(ErrorMessage = "A descrição atividade avaliativa deve ser informada.")]
         [MaxLength(500, ErrorMessage = "A descrição deve conter no máximo 500 caracteres.")]
         public string Descricao { get; set; }
+
+        [Required(ErrorMessage = "A Disciplina da atividade avaliativa deve ser informada.")]
+        public int DisciplinaId { get; set; }
 
         [Required(ErrorMessage = "A Dre da atividade avaliativa deve ser informado.")]
         [MaxLength(15, ErrorMessage = "A Dre deve conter no máximo 15 caracteres.")]
