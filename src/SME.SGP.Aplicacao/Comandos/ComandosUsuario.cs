@@ -126,41 +126,38 @@ namespace SME.SGP.Aplicacao
             if (!retornoAutenticacaoEol.Item1.Autenticado)
                 return retornoAutenticacaoEol.Item1;
 
-
-                var dadosUsuario = await servicoEOL.ObterMeusDados(login);
-
             if (!retornoAutenticacaoEol.Item4 && retornoAutenticacaoEol.Item5)
                 retornoAutenticacaoEol.Item3 = ValidarPerfilCJ(retornoAutenticacaoEol.Item2, retornoAutenticacaoEol.Item1.UsuarioId, retornoAutenticacaoEol.Item3, login).Result;
-                var usuario = servicoUsuario.ObterUsuarioPorCodigoRfLoginOuAdiciona(retornoAutenticacaoEol.Item2, login, dadosUsuario.Nome, dadosUsuario.Email);
 
-                retornoAutenticacaoEol.Item1.PerfisUsuario = servicoPerfil.DefinirPerfilPrioritario(retornoAutenticacaoEol.Item3, usuario);
+            var dadosUsuario = await servicoEOL.ObterMeusDados(login);
 
-            var usuario = servicoUsuario.ObterUsuarioPorCodigoRfLoginOuAdiciona(retornoAutenticacaoEol.Item2, login);
+            var usuario = servicoUsuario.ObterUsuarioPorCodigoRfLoginOuAdiciona(retornoAutenticacaoEol.Item2, login, dadosUsuario.Nome, dadosUsuario.Email);
 
             retornoAutenticacaoEol.Item1.PerfisUsuario = servicoPerfil.DefinirPerfilPrioritario(retornoAutenticacaoEol.Item3, usuario);
 
             var perfilSelecionado = retornoAutenticacaoEol.Item1.PerfisUsuario.PerfilSelecionado;
 
-                    retornoAutenticacaoEol.Item1.Token = servicoTokenJwt.GerarToken(login, dadosUsuario.Nome, usuario.CodigoRf, retornoAutenticacaoEol.Item1.PerfisUsuario.PerfilSelecionado, listaPermissoes);
             var permissionamentos = await servicoEOL.ObterPermissoesPorPerfil(perfilSelecionado);
 
             if (permissionamentos == null || !permissionamentos.Any())
             {
                 retornoAutenticacaoEol.Item1.Autenticado = false;
+                return retornoAutenticacaoEol.Item1;
             }
-            else
-            {
-                var listaPermissoes = permissionamentos
-                    .Distinct()
-                    .Select(a => (Permissao)a)
-                    .ToList();
 
-                retornoAutenticacaoEol.Item1.Token = servicoTokenJwt.GerarToken(login, usuario.CodigoRf, retornoAutenticacaoEol.Item1.PerfisUsuario.PerfilSelecionado, listaPermissoes);
+            var listaPermissoes = permissionamentos
+                .Distinct()
+                .Select(a => (Permissao)a)
+                .ToList();
 
-                usuario.AtualizaUltimoLogin();
-                repositorioUsuario.Salvar(usuario);
-                await servicoAbrangencia.Salvar(login, perfilSelecionado, true);
-            }
+            retornoAutenticacaoEol.Item1.Token =
+                servicoTokenJwt.GerarToken(login, dadosUsuario.Nome, usuario.CodigoRf, retornoAutenticacaoEol.Item1.PerfisUsuario.PerfilSelecionado, listaPermissoes);
+
+            usuario.AtualizaUltimoLogin();
+
+            repositorioUsuario.Salvar(usuario);
+
+            await servicoAbrangencia.Salvar(login, perfilSelecionado, true);
 
             return retornoAutenticacaoEol.Item1;
         }
