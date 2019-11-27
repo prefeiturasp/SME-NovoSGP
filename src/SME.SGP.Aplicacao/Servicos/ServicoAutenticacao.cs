@@ -32,7 +32,7 @@ namespace SME.SGP.Aplicacao.Servicos
             }
         }
 
-        public async Task<(UsuarioAutenticacaoRetornoDto, string, IEnumerable<Guid>)> AutenticarNoEol(string login, string senha)
+        public async Task<(UsuarioAutenticacaoRetornoDto, string, IEnumerable<Guid>, bool, bool)> AutenticarNoEol(string login, string senha)
         {
             var retornoServicoEol = await servicoEOL.Autenticar(login, senha);
 
@@ -41,9 +41,13 @@ namespace SME.SGP.Aplicacao.Servicos
             {
                 retornoDto.Autenticado = retornoServicoEol.Status == AutenticacaoStatusEol.Ok || retornoServicoEol.Status == AutenticacaoStatusEol.SenhaPadrao;
                 retornoDto.ModificarSenha = retornoServicoEol.Status == AutenticacaoStatusEol.SenhaPadrao;
+                retornoDto.UsuarioId = retornoServicoEol.UsuarioId;
             }
 
-            return (retornoDto, retornoServicoEol?.CodigoRf, retornoServicoEol?.Perfis);
+            bool possuiCargoCJ = retornoServicoEol != null && retornoServicoEol.PossuiCargoCJ;
+            bool possuiPerfilCJ = retornoServicoEol != null && retornoServicoEol.PossuiPerfilCJ;
+
+            return (retornoDto, retornoServicoEol?.CodigoRf, retornoServicoEol?.Perfis, possuiCargoCJ, possuiPerfilCJ);
         }
 
         public bool TemPerfilNoToken(string guid)
