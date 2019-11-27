@@ -46,6 +46,9 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IComandosGrade, ComandosGrade>();
             services.TryAddScoped<IComandoFrequencia, ComandoFrequencia>();
             services.TryAddScoped<IComandosAtribuicaoEsporadica, ComandosAtribuicaoEsporadica>();
+            services.TryAddScoped<IComandosAtividadeAvaliativa, ComandosAtividadeAvaliativa>();
+            services.TryAddScoped<IComandosTipoAvaliacao, ComandosTipoAavaliacao>();
+            services.TryAddScoped<IComandosPlanoAula, ComandosPlanoAula>();
         }
 
         private static void RegistrarConsultas(IServiceCollection services)
@@ -71,9 +74,13 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IConsultasEventoTipo, ConsultasEventoTipo>();
             services.TryAddScoped<IConsultasEvento, ConsultasEvento>();
             services.TryAddScoped<IConsultasAula, ConsultasAula>();
+            services.TryAddScoped<IConsultasEventosAulasCalendario, ConsultasEventosAulasCalendario>();
             services.TryAddScoped<IConsultasGrade, ConsultasGrade>();
             services.TryAddScoped<IConsultasFrequencia, ConsultasFrequencia>();
+            services.TryAddScoped<IConsultasPlanoAula, ConsultasPlanoAula>();
+            services.TryAddScoped<IConsultasObjetivoAprendizagemAula, ConsultasObjetivoAprendizagemAula>();
             services.TryAddScoped<IConsultasAtribuicaoEsporadica, ConsultasAtribuicaoEsporadica>();
+            services.TryAddScoped<IConsultaAtividadeAvaliativa, ConsultaAtividadeAvaliativa>();
         }
 
         private static void RegistrarContextos(IServiceCollection services)
@@ -118,6 +125,10 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IRepositorioFrequencia, RepositorioFrequencia>();
             services.TryAddScoped<IRepositorioRegistroAusenciaAluno, RepositorioRegistroAusenciaAluno>();
             services.TryAddScoped<IRepositorioAtribuicaoEsporadica, RepositorioAtribuicaoEsporadica>();
+            services.TryAddScoped<IRepositorioAtividadeAvaliativa, RepositorioAtividadeAvaliativa>();
+            services.TryAddScoped<IRepositorioTipoAvaliacao, RepositorioTipoAvaliacao>();
+            services.TryAddScoped<IRepositorioPlanoAula, RepositorioPlanoAula>();
+            services.TryAddScoped<IRepositorioObjetivoAprendizagemAula, RepositorioObjetivoAprendizagemAula>();
         }
 
         private static void RegistrarServicos(IServiceCollection services)

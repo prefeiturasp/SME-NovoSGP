@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Configuration;
+﻿using Microsoft.Extensions.Configuration;
 using Npgsql;
 using SME.SGP.Infra.Interfaces;
 using System;
@@ -9,8 +8,8 @@ namespace SME.SGP.Dados.Contexto
 {
     public class SgpContext : ISgpContext
     {
-        private readonly IContextoAplicacao contextoAplicacao;
         private readonly NpgsqlConnection conexao;
+        private readonly IContextoAplicacao contextoAplicacao;
 
         public SgpContext(IConfiguration configuration, IContextoAplicacao contextoAplicacao)
         {
@@ -20,13 +19,14 @@ namespace SME.SGP.Dados.Contexto
 
         public NpgsqlConnection Conexao
         {
-            get 
+            get
             {
                 if (conexao.State != ConnectionState.Open)
                     Open();
                 return conexao;
             }
         }
+
         public string ConnectionString { get { return Conexao.ConnectionString; } set { Conexao.ConnectionString = value; } }
 
         public int ConnectionTimeout => Conexao.ConnectionTimeout;
