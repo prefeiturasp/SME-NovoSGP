@@ -52,7 +52,7 @@ namespace SME.SGP.Aplicacao.Consultas
                 var objetivosAula = await consultasObjetivosAula.ObterObjetivosPlanoAula(plano.Id);
                 // Filtra objetivos anual com os objetivos da aula
                 planoAulaDto.ObjetivosAprendizagemAula = planoAnual.ObjetivosAprendizagem
-                                    .Where(c => objetivosAula.Any(a => a.ObjetivoAprendizagemPlanoId == c.Id))
+                                    .Where(c => objetivosAula.Any(a => a.ObjetivoAprendizagemPlano.ObjetivoAprendizagemJuremaId == c.Id))
                                     .ToList();
             }
 
