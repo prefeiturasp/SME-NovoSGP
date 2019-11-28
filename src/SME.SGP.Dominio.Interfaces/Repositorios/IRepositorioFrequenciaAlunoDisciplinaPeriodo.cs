@@ -2,8 +2,8 @@
 
 namespace SME.SGP.Dominio.Interfaces
 {
-    public interface IRepositorioFrequenciaAlunoDisciplinaPeriodo : IRepositorioBase<FrequenciaAlunoDisciplinaPeriodo>
+    public interface IRepositorioFrequenciaAlunoDisciplinaPeriodo : IRepositorioBase<FrequenciaAluno>
     {
-        FrequenciaAlunoDisciplinaPeriodo Obter(string codigoAluno, string disciplinaId, DateTime periodoInicio, DateTime periodoFim);
+        FrequenciaAluno Obter(string codigoAluno, string disciplinaId, DateTime periodoInicio, DateTime periodoFim, TipoFrequenciaAluno tipoFrequencia);
     }
 }

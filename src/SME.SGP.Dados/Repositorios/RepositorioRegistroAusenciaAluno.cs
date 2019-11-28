@@ -5,6 +5,7 @@ using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
+using System.Text;
 
 namespace SME.SGP.Dados.Repositorios
 {
@@ -56,52 +57,56 @@ namespace SME.SGP.Dados.Repositorios
 
         public int ObterTotalAulasPorDisciplinaETurma(DateTime dataAtual, string disciplinaId, string turmaId)
         {
-            var query = @"select
-	                            count(distinct rf.id)
-                            from
-	                            aula a
-                            inner join registro_frequencia rf on
-	                            rf.aula_id = a.id
-                            inner join registro_ausencia_aluno ra on
-	                            rf.id = ra.registro_frequencia_id
-                            where
-	                            a.disciplina_id = @disciplinaId
-	                            and a.turma_id = @turmaId
-	                            and not ra.excluido
-	                            and not a.excluido";
+            StringBuilder query = new StringBuilder();
+            query.AppendLine("select ");
+            query.AppendLine("count(distinct rf.id) ");
+            query.AppendLine("from ");
+            query.AppendLine("aula a ");
+            query.AppendLine("inner join registro_frequencia rf on ");
+            query.AppendLine("rf.aula_id = a.id ");
+            query.AppendLine("where not a.excluido");
 
-            return database.Conexao.QueryFirstOrDefault<int>(query, new { dataAtual, disciplinaId, turmaId });
+            if (!string.IsNullOrWhiteSpace(disciplinaId))
+                query.AppendLine("and a.disciplina_id = @disciplinaId ");
+
+            query.AppendLine("and a.turma_id = @turmaId ");
+
+            return database.Conexao.QueryFirstOrDefault<int>(query.ToString(), new { dataAtual, disciplinaId, turmaId });
         }
 
-        public AusenciaPorDisciplinaDto ObterTotalAusenciasPorAlunoEDisciplina(DateTime periodo, string codigoAluno, string disciplinaId, string turmaId)
+        public AusenciaPorDisciplinaDto ObterTotalAusenciasPorAlunoETurma(DateTime periodo, string codigoAluno, string disciplinaId, string turmaId)
         {
-            var query = @"select
-	                            count(ra.id) as TotalAusencias,
-	                            p.periodo_inicio,
-	                            p.periodo_fim,
-                                p.bimestre
-                            from
-	                            registro_ausencia_aluno ra
-                            inner join registro_frequencia rf on
-	                            ra.registro_frequencia_id = rf.id
-                            inner join aula a on
-	                            rf.aula_id = a.id
-                            inner join periodo_escolar p on
-	                            a.tipo_calendario_id = p.tipo_calendario_id
-                            where
-	                            ra.codigo_aluno = @codigoAluno
-	                            and a.disciplina_id = @disciplinaId
-	                            and a.turma_id = @turmaId
-                                and p.periodo_inicio <= @periodo
-	                            and p.periodo_fim >= @periodo
-	                            and not ra.excluido
-	                            and not a.excluido
-                            group by
-	                            p.periodo_inicio,
-	                            p.periodo_fim,
-                                p.bimestre";
+            StringBuilder query = new StringBuilder();
+            query.AppendLine("select");
+            query.AppendLine("count(ra.id) as TotalAusencias, ");
+            query.AppendLine("p.periodo_inicio as PeriodoInicio, ");
+            query.AppendLine("p.periodo_fim as PeriodoFim, ");
+            query.AppendLine("p.bimestre ");
+            query.AppendLine("from ");
+            query.AppendLine("registro_ausencia_aluno ra ");
+            query.AppendLine("inner join registro_frequencia rf on ");
+            query.AppendLine("ra.registro_frequencia_id = rf.id ");
+            query.AppendLine("inner join aula a on ");
+            query.AppendLine("rf.aula_id = a.id ");
+            query.AppendLine("inner join periodo_escolar p on ");
+            query.AppendLine("a.tipo_calendario_id = p.tipo_calendario_id ");
+            query.AppendLine("where ");
+            query.AppendLine("ra.codigo_aluno = @codigoAluno ");
 
-            return database.Conexao.QueryFirstOrDefault<AusenciaPorDisciplinaDto>(query, new { periodo, codigoAluno, disciplinaId, turmaId });
+            if (!string.IsNullOrWhiteSpace(disciplinaId))
+                query.AppendLine("and a.disciplina_id = @disciplinaId ");
+
+            query.AppendLine("and a.turma_id = @turmaId ");
+            query.AppendLine("and p.periodo_inicio <= @periodo ");
+            query.AppendLine("and p.periodo_fim >= @periodo ");
+            query.AppendLine("and not ra.excluido");
+            query.AppendLine("and not a.excluido");
+            query.AppendLine("group by");
+            query.AppendLine("p.periodo_inicio,");
+            query.AppendLine("p.periodo_fim,");
+            query.AppendLine("p.bimestre");
+
+            return database.Conexao.QueryFirstOrDefault<AusenciaPorDisciplinaDto>(query.ToString(), new { periodo, codigoAluno, disciplinaId, turmaId });
         }
     }
 }

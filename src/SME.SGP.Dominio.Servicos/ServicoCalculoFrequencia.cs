@@ -1,5 +1,4 @@
-﻿using SME.SGP.Aplicacao.Integracoes;
-using SME.SGP.Dominio.Interfaces;
+﻿using SME.SGP.Dominio.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,28 +8,52 @@ namespace SME.SGP.Dominio.Servicos
     public class ServicoCalculoFrequencia : IServicoCalculoFrequencia
     {
         private readonly IRepositorioAula repositorioAula;
-        private readonly IRepositorioFrequencia repositorioFrequencia;
         private readonly IRepositorioFrequenciaAlunoDisciplinaPeriodo repositorioFrequenciaAlunoDisciplinaPeriodo;
-        private readonly IRepositorioPeriodoEscolar repositorioPeriodoEscolar;
         private readonly IRepositorioRegistroAusenciaAluno repositorioRegistroAusenciaAluno;
-        private readonly IServicoEOL servicoEOL;
 
-        public ServicoCalculoFrequencia(IServicoEOL servicoEOL,
-                                        IRepositorioFrequencia repositorioFrequencia,
-                                        IRepositorioAula repositorioAula,
+        public ServicoCalculoFrequencia(IRepositorioAula repositorioAula,
                                         IRepositorioRegistroAusenciaAluno repositorioRegistroAusenciaAluno,
-                                        IRepositorioPeriodoEscolar repositorioPeriodoEscolar,
                                         IRepositorioFrequenciaAlunoDisciplinaPeriodo repositorioFrequenciaAlunoDisciplinaPeriodo)
         {
-            this.servicoEOL = servicoEOL ?? throw new ArgumentNullException(nameof(servicoEOL));
-            this.repositorioFrequencia = repositorioFrequencia ?? throw new ArgumentNullException(nameof(repositorioFrequencia));
             this.repositorioAula = repositorioAula ?? throw new ArgumentNullException(nameof(repositorioAula));
             this.repositorioRegistroAusenciaAluno = repositorioRegistroAusenciaAluno ?? throw new ArgumentNullException(nameof(repositorioRegistroAusenciaAluno));
-            this.repositorioPeriodoEscolar = repositorioPeriodoEscolar ?? throw new ArgumentNullException(nameof(repositorioPeriodoEscolar));
             this.repositorioFrequenciaAlunoDisciplinaPeriodo = repositorioFrequenciaAlunoDisciplinaPeriodo ?? throw new ArgumentNullException(nameof(repositorioFrequenciaAlunoDisciplinaPeriodo));
         }
 
-        public void CalcularFrequenciaPorTurmaEDisciplina(IEnumerable<string> alunos, long aulaId)
+        public void CalcularFrequenciaPorTurma(IEnumerable<string> alunos, long aulaId)
+        {
+            Aula aula = ObterAula(alunos, aulaId);
+
+            var dataAtual = DateTime.Now;
+
+            var totalAulasNaDisciplina = repositorioRegistroAusenciaAluno.ObterTotalAulasPorDisciplinaETurma(dataAtual, aula.DisciplinaId, aula.TurmaId);
+            var totalAulasDaTurmaGeral = repositorioRegistroAusenciaAluno.ObterTotalAulasPorDisciplinaETurma(dataAtual, string.Empty, aula.TurmaId);
+
+            foreach (var codigoAluno in alunos)
+            {
+                RegistraFrequenciaPorDisciplina(aula, dataAtual, totalAulasNaDisciplina, codigoAluno);
+                RegistraFrequenciaGeral(aula, dataAtual, codigoAluno, totalAulasDaTurmaGeral);
+            }
+        }
+
+        private FrequenciaAluno MapearFrequenciaAluno(string codigoAluno, string disciplinaId, DateTime periodoInicio, DateTime periodoFim, int bimestre, int totalAusencias, int totalAulas, TipoFrequenciaAluno tipo)
+        {
+            var frequenciaAluno = repositorioFrequenciaAlunoDisciplinaPeriodo.Obter(codigoAluno, disciplinaId, periodoInicio, periodoFim, tipo);
+            return frequenciaAluno == null ?
+            new FrequenciaAluno
+                         (
+                             codigoAluno,
+                             disciplinaId,
+                             periodoInicio,
+                             periodoFim,
+                             bimestre,
+                             totalAusencias,
+                             totalAulas,
+                             tipo
+                         ) : frequenciaAluno.DefinirFrequencia(totalAusencias, totalAulas, tipo);
+        }
+
+        private Aula ObterAula(IEnumerable<string> alunos, long aulaId)
         {
             var aula = repositorioAula.ObterPorId(aulaId);
             if (aula == null)
@@ -42,88 +65,44 @@ namespace SME.SGP.Dominio.Servicos
                 throw new NegocioException("A lista de alunos a turma e a disciplina devem ser informados para calcular a frequência.");
             }
 
-            var dataAtual = DateTime.Now;
-            var totalAulas = repositorioRegistroAusenciaAluno.ObterTotalAulasPorDisciplinaETurma(dataAtual, aula.DisciplinaId, aula.TurmaId);
+            return aula;
+        }
 
-            foreach (var codigoAluno in alunos)
+        private void RegistraFrequenciaGeral(Aula aula, DateTime dataAtual, string codigoAluno, int totalAulasDaTurma)
+        {
+            var totalAusenciasGeralAluno = repositorioRegistroAusenciaAluno.ObterTotalAusenciasPorAlunoETurma(dataAtual, codigoAluno, string.Empty, aula.TurmaId);
+            if (totalAusenciasGeralAluno != null)
             {
-                var ausenciasAluno = repositorioRegistroAusenciaAluno.ObterTotalAusenciasPorAlunoEDisciplina(dataAtual, codigoAluno, aula.DisciplinaId, aula.TurmaId);
-                if (ausenciasAluno != null)
-                {
-                    var frequenciaAluno = MapearFrequenciaAluno(codigoAluno,
-                                                                aula.DisciplinaId,
-                                                                ausenciasAluno.PeriodoInicio,
-                                                                ausenciasAluno.PeriodoFim,
-                                                                ausenciasAluno.Bimestre,
-                                                                ausenciasAluno.TotalAusencias,
-                                                                totalAulas);
-
-                    if (frequenciaAluno.PercentualFrequencia < 100)
-                        repositorioFrequenciaAlunoDisciplinaPeriodo.Salvar(frequenciaAluno);
-                }
+                var frequenciaGeralAluno = MapearFrequenciaAluno(codigoAluno,
+                                                                    string.Empty,
+                                                                    totalAusenciasGeralAluno.PeriodoInicio,
+                                                                    totalAusenciasGeralAluno.PeriodoFim,
+                                                                    totalAusenciasGeralAluno.Bimestre,
+                                                                    totalAusenciasGeralAluno.TotalAusencias,
+                                                                    totalAulasDaTurma,
+                                                                    TipoFrequenciaAluno.Geral);
+                if (frequenciaGeralAluno.PercentualFrequencia < 100)
+                    repositorioFrequenciaAlunoDisciplinaPeriodo.Salvar(frequenciaGeralAluno);
             }
         }
 
-        public void CalcularPercentualFrequenciaAlunosPorDisciplinaEPeriodo(int anoLetivo)
+        private void RegistraFrequenciaPorDisciplina(Aula aula, DateTime dataAtual, int totalAulasNaDisciplina, string codigoAluno)
         {
-            //CalcularFrequenciaPorAluno(anoLetivo);
+            var ausenciasAlunoPorDisciplina = repositorioRegistroAusenciaAluno.ObterTotalAusenciasPorAlunoETurma(dataAtual, codigoAluno, aula.DisciplinaId, aula.TurmaId);
+            if (ausenciasAlunoPorDisciplina != null)
+            {
+                var frequenciaAluno = MapearFrequenciaAluno(codigoAluno,
+                                                            aula.DisciplinaId,
+                                                            ausenciasAlunoPorDisciplina.PeriodoInicio,
+                                                            ausenciasAlunoPorDisciplina.PeriodoFim,
+                                                            ausenciasAlunoPorDisciplina.Bimestre,
+                                                            ausenciasAlunoPorDisciplina.TotalAusencias,
+                                                            totalAulasNaDisciplina,
+                                                            TipoFrequenciaAluno.PorDisciplina);
+
+                if (frequenciaAluno.PercentualFrequencia < 100)
+                    repositorioFrequenciaAlunoDisciplinaPeriodo.Salvar(frequenciaAluno);
+            }
         }
-
-        //private void CalcularFrequenciaPorAluno(int anoLetivo)
-        //{
-        //    var ausenciasPorTurmaEAno = repositorioRegistroAusenciaAluno.ObterTotalAusenciasPorAlunoEDisciplina(anoLetivo);
-        //    if (ausenciasPorTurmaEAno != null && ausenciasPorTurmaEAno.Any())
-        //    {
-        //        var aulasPorDisciplina = repositorioRegistroAusenciaAluno.ObterTotalAulasPorDisciplina(anoLetivo);
-        //        if (aulasPorDisciplina != null && aulasPorDisciplina.Any())
-        //        {
-        //            foreach (var ausencia in ausenciasPorTurmaEAno)
-        //            {
-        //                int totalAulas = ObterTotalAulasPorDisciplina(aulasPorDisciplina, ausencia);
-        //                var frequenciaAluno = MapearFrequenciaAluno(ausencia, totalAulas);
-        //                if (frequenciaAluno.PercentualFrequencia < 100)
-        //                    repositorioFrequenciaAlunoDisciplinaPeriodo.Salvar(frequenciaAluno);
-        //            }
-        //        }
-        //        var ausenciasPorAluno = ausenciasPorTurmaEAno.GroupBy(c => c.CodigoAluno);
-        //        foreach (var ausenciaAluno in ausenciasPorAluno)
-        //        {
-        //            foreach (var ausencia in ausenciaAluno)
-        //            {
-        //                int totalAulas = ObterTotalAulasPorDisciplina(aulasPorDisciplina, ausencia);
-        //                var totalAulasGeral = aulasPorDisciplina.Where(c => c.DisciplinaId == ausencia.DisciplinaId).Sum(c => c.TotalAulas);
-        //                var ausenciasAlunoTotal = ausenciaAluno.Sum(c => c.TotalAusencias);
-        //                var frequenciaGeral = 100 - ((ausenciasAlunoTotal / totalAulasGeral) * 100);
-        //            }
-        //        }
-        //    }
-        //}
-
-        private FrequenciaAlunoDisciplinaPeriodo MapearFrequenciaAluno(string codigoAluno, string disciplinaId, DateTime periodoInicio, DateTime periodoFim, int bimestre, int totalAusencias, int totalAulas)
-        {
-            var frequenciaAluno = repositorioFrequenciaAlunoDisciplinaPeriodo.Obter(codigoAluno, disciplinaId, periodoInicio, periodoFim);
-            return frequenciaAluno == null ?
-            new FrequenciaAlunoDisciplinaPeriodo
-                         (
-                             codigoAluno,
-                             disciplinaId,
-                             periodoInicio,
-                             periodoFim,
-                             bimestre,
-                             totalAusencias,
-                             totalAulas
-                         ) : frequenciaAluno.DefinirFrequencia(totalAusencias, totalAulas);
-        }
-
-        //private int ObterTotalAulasPorDisciplina(IEnumerable<AulasPorDisciplinaDto> aulasPorDisciplina, AusenciaPorDisciplinaDto ausencia)
-        //{
-        //    var totalAulas = aulasPorDisciplina.FirstOrDefault(c => c.DisciplinaId == ausencia.DisciplinaId)?.TotalAulas;
-        //    if (totalAulas == null)
-        //    {
-        //        throw new NegocioException($"Ocorreu um erro ao localizar as aulas da disciplina com código: {ausencia.DisciplinaId}");
-        //    }
-
-        //    return totalAulas.Value;
-        //}
     }
 }

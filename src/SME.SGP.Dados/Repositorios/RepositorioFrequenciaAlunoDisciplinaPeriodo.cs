@@ -6,29 +6,31 @@ using System;
 
 namespace SME.SGP.Dados.Repositorios
 {
-    public class RepositorioFrequenciaAlunoDisciplinaPeriodo : RepositorioBase<FrequenciaAlunoDisciplinaPeriodo>, IRepositorioFrequenciaAlunoDisciplinaPeriodo
+    public class RepositorioFrequenciaAlunoDisciplinaPeriodo : RepositorioBase<FrequenciaAluno>, IRepositorioFrequenciaAlunoDisciplinaPeriodo
     {
         public RepositorioFrequenciaAlunoDisciplinaPeriodo(ISgpContext database) : base(database)
         {
         }
 
-        public FrequenciaAlunoDisciplinaPeriodo Obter(string codigoAluno, string disciplinaId, DateTime periodoInicio, DateTime periodoFim)
+        public FrequenciaAluno Obter(string codigoAluno, string disciplinaId, DateTime periodoInicio, DateTime periodoFim, TipoFrequenciaAluno tipoFrequencia)
         {
             var query = @"select
 	                        *
                         from
-	                        frequencia_aluno_disciplina
+	                        frequencia_aluno
                         where
 	                        codigo_aluno = @codigoAluno
 	                        and disciplina_id = @disciplinaId
+	                        and tipo = @tipoFrequencia
 	                        and periodo_inicio = @periodoInicio
 	                        and periodo_fim = @periodoFim";
-            return database.QueryFirstOrDefault<FrequenciaAlunoDisciplinaPeriodo>(query, new
+            return database.QueryFirstOrDefault<FrequenciaAluno>(query, new
             {
                 codigoAluno,
                 disciplinaId,
                 periodoInicio,
-                periodoFim
+                periodoFim,
+                tipoFrequencia
             });
         }
     }

@@ -12,6 +12,6 @@ namespace SME.SGP.Dominio.Interfaces
 
         int ObterTotalAulasPorDisciplinaETurma(DateTime dataAtual, string disciplinaId, string turmaId);
 
-        AusenciaPorDisciplinaDto ObterTotalAusenciasPorAlunoEDisciplina(DateTime periodo, string codigoAluno, string disciplinaId, string turmaId);
+        AusenciaPorDisciplinaDto ObterTotalAusenciasPorAlunoETurma(DateTime periodo, string codigoAluno, string disciplinaId, string turmaId);
     }
 }
