@@ -5,6 +5,7 @@ namespace SME.Background.Core.Interfaces
 {
     public interface IProcessor
     {
+        bool Registrado { get; }
         string Executar(Expression<Action> metodo);
 
         string Executar<T>(Expression<Action<T>> metodo);

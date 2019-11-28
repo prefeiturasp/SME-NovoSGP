@@ -54,5 +54,11 @@ namespace SME.SGP.Aplicacao.Integracoes
         Task<IEnumerable<TurmaPorUEResposta>> ObterTurmasPorUE(string ueId, string anoLetivo);
 
         Task ReiniciarSenha(string login);
+
+        Task AtribuirCJSeNecessario(Guid usuarioId);
+
+        Task RemoverCJSeNecessario(Guid usuarioId);
+
+        Task<UsuarioResumoCoreDto> ObterResumoCore(string login);
     }
 }

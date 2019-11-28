@@ -163,41 +163,37 @@ namespace SME.SGP.Dominio.Servicos
             if (periodos == null || !periodos.Any())
                 throw new NegocioException("Não foi possível obter os períodos deste tipo de calendário.");
 
-            var periodoAtual = periodos.Where(a => a.PeriodoFim >= aula.DataAula.Date)
-                .OrderBy(a => a.PeriodoInicio)
-                .FirstOrDefault();
-
-            List<PeriodoEscolar> periodosParaGerarRecorrencia = new List<PeriodoEscolar>();
-
+            var inicioRecorrencia = aula.DataAula.AddDays(7);
+            var fimRecorrencia = inicioRecorrencia;
             if (aula.RecorrenciaAula == RecorrenciaAula.RepetirBimestreAtual)
             {
-                periodosParaGerarRecorrencia.Add(periodoAtual);
+                // Busca ultimo dia do periodo atual
+                fimRecorrencia = periodos.Where(a => a.PeriodoFim >= aula.DataAula.Date)
+                    .OrderBy(a => a.PeriodoInicio)
+                    .FirstOrDefault().PeriodoFim;
             }
-            else if (aula.RecorrenciaAula == RecorrenciaAula.RepetirTodosBimestres)
+            else
+            if (aula.RecorrenciaAula == RecorrenciaAula.RepetirTodosBimestres)
             {
-                periodosParaGerarRecorrencia = periodos.Where(a => a.PeriodoInicio.Date >= aula.DataAula.Date)
-                    .ToList();
+                // Busca ultimo dia do ultimo periodo
+                fimRecorrencia = periodos.Max(a => a.PeriodoFim);
             }
 
-            GerarRecorrenciaParaPeriodos(aula, periodosParaGerarRecorrencia, usuario);
+            GerarRecorrenciaParaPeriodos(aula, inicioRecorrencia, fimRecorrencia, usuario);
         }
 
-        private async void GerarRecorrenciaParaPeriodos(Aula aula, IEnumerable<PeriodoEscolar> periodosParaGerarRecorrencia, Usuario usuario)
+        private async void GerarRecorrenciaParaPeriodos(Aula aula, DateTime inicioRecorrencia, DateTime fimRecorrencia, Usuario usuario)
         {
             List<DateTime> diasParaIncluirRecorrencia = new List<DateTime>();
 
-            foreach (var periodo in periodosParaGerarRecorrencia)
-            {
-                diasParaIncluirRecorrencia.AddRange(ObterDiaEntreDatas(periodo.PeriodoInicio, periodo.PeriodoFim)
-                    .Where(d => d.DayOfWeek == aula.DataAula.DayOfWeek && d.Date > aula.DataAula.Date));
-            }
+            diasParaIncluirRecorrencia.AddRange(ObterDiaEntreDatas(inicioRecorrencia, fimRecorrencia));
 
             await GerarAulaDeRecorrenciaParaDias(aula, diasParaIncluirRecorrencia, usuario);
         }
 
         private IEnumerable<DateTime> ObterDiaEntreDatas(DateTime inicio, DateTime fim)
         {
-            for (DateTime i = inicio; i < fim; i = i.AddDays(1))
+            for (DateTime i = inicio; i < fim; i = i.AddDays(7))
             {
                 yield return i;
             }

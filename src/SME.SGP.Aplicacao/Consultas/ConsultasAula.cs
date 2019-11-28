@@ -26,10 +26,16 @@ namespace SME.SGP.Aplicacao
             return MapearParaDto(aula);
         }
 
-        public async Task<IEnumerable<DataAulasProfessorDto>> ObterDatasDeAulasPorCalendarioTurmaEDisciplina(long calendarioId, string turma, string disciplina)
+        public async Task<AulaConsultaDto> ObterAulaDataTurmaDisciplina(DateTime data, string turmaId, string disciplinaId)
+        {
+            return await repositorio.ObterAulaDataTurmaDisciplina(data, turmaId, disciplinaId);
+        }
+
+        public async Task<IEnumerable<DataAulasProfessorDto>> ObterDatasDeAulasPorCalendarioTurmaEDisciplina(int anoLetivo, string turma, string disciplina)
         {
             var usuarioLogado = await servicoUsuario.ObterUsuarioLogado();
-            return repositorio.ObterDatasDeAulasPorCalendarioTurmaEDisciplina(calendarioId, turma, disciplina, usuarioLogado.Id, usuarioLogado.PerfilAtual)?.Select(a => new DataAulasProfessorDto
+            var usuarioRF = usuarioLogado.EhProfessor() ? usuarioLogado.CodigoRf : string.Empty;
+            return repositorio.ObterDatasDeAulasPorAnoTurmaEDisciplina(anoLetivo, turma, disciplina, usuarioLogado.Id, usuarioRF, usuarioLogado.PerfilAtual)?.Select(a => new DataAulasProfessorDto
             {
                 Data = a.DataAula,
                 IdAula = a.Id

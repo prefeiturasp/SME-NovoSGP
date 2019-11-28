@@ -42,7 +42,7 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(204)]
         [ProducesResponseType(typeof(EventoTipoDto), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        [Permissao(Permissao.TE_C, Policy = "Bearer")]
+        [Permissao(Permissao.TE_C, Permissao.E_C, Policy = "Bearer")]
         public IActionResult Get(long id, [FromServices]IConsultasEventoTipo consultasEventoTipo)
         {
             var eventoTipoDto = consultasEventoTipo.ObterPorId(id);
@@ -56,7 +56,7 @@ namespace SME.SGP.Api.Controllers
         [HttpGet("listar")]
         [ProducesResponseType(typeof(PaginacaoResultadoDto<EventoTipoDto>), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        [Permissao(Permissao.TE_C, Policy = "Bearer")]
+        [Permissao(Permissao.TE_C, Permissao.E_C, Policy = "Bearer")]
         public async Task<IActionResult> Listar([FromQuery]FiltroEventoTipoDto filtroEventoTipoDto, [FromServices]IConsultasEventoTipo consultasEventoTipo)
         {
             var listaEventoTipo = await consultasEventoTipo.Listar(filtroEventoTipoDto);

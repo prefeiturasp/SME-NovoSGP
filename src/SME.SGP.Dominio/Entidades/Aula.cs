@@ -37,7 +37,6 @@ namespace SME.SGP.Dominio
                 CriadoPor = CriadoPor,
                 CriadoRF = CriadoRF,
                 Excluido = Excluido,
-                Id = Id,
                 UeId = UeId,
                 AulaPai = AulaPai,
                 DisciplinaId = DisciplinaId,
