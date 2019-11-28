@@ -29,9 +29,11 @@ const CalendarioProfessor = () => {
   );
 
   const [diasLetivos, setDiasLetivos] = useState({});
-  const turmaSelecionadaStore = useSelector(
-    state => state.usuario.turmaSelecionada
-  );
+  const usuario = useSelector(state => state.usuario);
+  const { turmaSelecionada: turmaSelecionadaStore } = usuario;
+
+  console.log(usuario);
+
   const modalidadesAbrangencia = useSelector(state => state.filtro.modalidades);
   const anosLetivosAbrangencia = useSelector(state => state.filtro.anosLetivos);
 
@@ -123,6 +125,8 @@ const CalendarioProfessor = () => {
     return () => store.dispatch(zeraCalendario());
   }, []);
 
+  const [eventoSme, setEventoSme] = useState(false);
+
   useEffect(() => {
     if (
       tiposCalendario &&
@@ -176,8 +180,6 @@ const CalendarioProfessor = () => {
     history.push('/');
   };
 
-  const [eventoSme, setEventoSme] = useState(true);
-
   const aoTrocarEventoSme = () => {
     setEventoSme(!eventoSme);
   };
@@ -189,6 +191,7 @@ const CalendarioProfessor = () => {
   const dresStore = useSelector(state => state.filtro.dres);
   const [dres, setDres] = useState([]);
   const [dreSelecionada, setDreSelecionada] = useState(undefined);
+  const [dreDesabilitada, setDreDesabilitada] = useState(false);
 
   const obterDres = () => {
     api
@@ -214,7 +217,14 @@ const CalendarioProfessor = () => {
   };
 
   useEffect(() => {
-    if (dres && eventoAulaCalendarioEdicao && eventoAulaCalendarioEdicao.dre) {
+    if (dres.length === 1) {
+      setDreSelecionada(dres[0].valor);
+      setDreDesabilitada(true);
+    } else if (
+      dres &&
+      eventoAulaCalendarioEdicao &&
+      eventoAulaCalendarioEdicao.dre
+    ) {
       setDreSelecionada(eventoAulaCalendarioEdicao.dre);
     }
   }, [dres]);
@@ -225,6 +235,9 @@ const CalendarioProfessor = () => {
   const [unidadesEscolares, setUnidadesEscolares] = useState([]);
   const [unidadeEscolarSelecionada, setUnidadeEscolarSelecionada] = useState(
     undefined
+  );
+  const [unidadeEscolarDesabilitada, setUnidadeEscolarDesabilitada] = useState(
+    false
   );
 
   const obterUnidadesEscolares = () => {
@@ -250,7 +263,10 @@ const CalendarioProfessor = () => {
   };
 
   useEffect(() => {
-    if (
+    if (unidadesEscolares.length === 1) {
+      setUnidadeEscolarSelecionada(unidadesEscolares[0].valor);
+      setUnidadeEscolarDesabilitada(true);
+    } else if (
       unidadesEscolares &&
       eventoAulaCalendarioEdicao &&
       eventoAulaCalendarioEdicao.unidadeEscolar
@@ -274,43 +290,27 @@ const CalendarioProfessor = () => {
     setFiltros({ ...filtros, dreSelecionada });
   }, [dreSelecionada]);
 
-  const obterTurmas = () => {
-    api
-      .get(`v1/abrangencias/dres/ues/${unidadeEscolarSelecionada}/turmas`)
-      .then(resposta => {
-        if (resposta.data) {
-          const lista = [];
-          resposta.data.forEach(turma => {
-            lista.push({
-              desc: turma.nome,
-              valor: turma.codigo,
-              ano: turma.ano,
-            });
-          });
-          setTurmas(lista);
-        }
-      })
-      .catch(() => {
-        setTurmas([]);
-      });
-  };
+  const listaTurmas = [
+    { valor: 1, desc: 'Todas as turmas' },
+    { valor: 2, desc: 'Turma selecionada' },
+  ];
 
   const aoSelecionarUnidadeEscolar = unidade => {
     setUnidadeEscolarSelecionada(unidade);
   };
 
+  const [turmas, setTurmas] = useState([]);
+  const [turmaSelecionada, setTurmaSelecionada] = useState(undefined);
+
   useEffect(() => {
     if (unidadeEscolarSelecionada) {
       consultarDiasLetivos();
-      obterTurmas();
+      setTurmas(listaTurmas);
     } else {
       setTurmaSelecionada();
     }
     setFiltros({ ...filtros, unidadeEscolarSelecionada });
   }, [unidadeEscolarSelecionada]);
-
-  const [turmas, setTurmas] = useState([]);
-  const [turmaSelecionada, setTurmaSelecionada] = useState(undefined);
 
   useEffect(() => {
     if (
@@ -427,7 +427,7 @@ const CalendarioProfessor = () => {
                 valueText="desc"
                 valueSelect={dreSelecionada}
                 placeholder="Diretoria Regional de Educação (DRE)"
-                disabled={!tipoCalendarioSelecionado}
+                disabled={!tipoCalendarioSelecionado || dreDesabilitada}
               />
             </Grid>
             <Grid cols={4}>
@@ -439,7 +439,7 @@ const CalendarioProfessor = () => {
                 valueText="desc"
                 valueSelect={unidadeEscolarSelecionada}
                 placeholder="Unidade Escolar (UE)"
-                disabled={!dreSelecionada}
+                disabled={!dreSelecionada || unidadeEscolarDesabilitada}
               />
             </Grid>
             <Grid cols={2}>
