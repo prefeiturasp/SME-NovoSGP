@@ -28,6 +28,7 @@ import {
   CampoData,
   momentSchema,
   Loader,
+  Auditoria,
 } from '~/componentes';
 import DreDropDown from '../componentes/DreDropDown';
 import UeDropDown from '../componentes/UeDropDown';
@@ -49,6 +50,7 @@ function AtribuicaoEsporadicaForm({ match }) {
   const [dreId, setDreId] = useState('');
   const [novoRegistro, setNovoRegistro] = useState(true);
   const [modoEdicao, setModoEdicao] = useState(false);
+  const [auditoria, setAuditoria] = useState({});
   const [valoresIniciais, setValoresIniciais] = useState({
     professorRf: '',
     professorNome: '',
@@ -104,7 +106,20 @@ function AtribuicaoEsporadicaForm({ match }) {
     }
   };
 
-  const onClickVoltar = () => history.push('/gestao/atribuicao-esporadica');
+  const onClickVoltar = async () => {
+    if (modoEdicao) {
+      const confirmou = await confirmar(
+        'Atenção',
+        'Você não salvou as informações preenchidas.',
+        'Deseja realmente cancelar as alterações?'
+      );
+      if (confirmou) {
+        history.push('/gestao/atribuicao-esporadica');
+      }
+    } else {
+      history.push('/gestao/atribuicao-esporadica');
+    }
+  };
 
   const onClickCancelar = async form => {
     if (!modoEdicao) return;
@@ -119,6 +134,27 @@ function AtribuicaoEsporadicaForm({ match }) {
     }
   };
 
+  const onClickExcluir = async form => {
+    if (validaSeObjetoEhNuloOuVazio(form.values)) return;
+
+    const confirmado = await confirmar(
+      'Excluir atribuição',
+      form.values.professorNome,
+      `Deseja realmente excluir este item?`,
+      'Excluir',
+      'Cancelar'
+    );
+    if (confirmado) {
+      const excluir = await AtribuicaoEsporadicaServico.deletarAtribuicaoEsporadica(
+        form.values.id
+      );
+      if (excluir) {
+        sucesso(`Atribuição excluida com sucesso!`);
+        history.push('/gestao/atribuicao-esporadica');
+      }
+    }
+  };
+
   const buscarPorId = async id => {
     try {
       dispatch(setLoaderSecao(true));
@@ -130,6 +166,15 @@ function AtribuicaoEsporadicaForm({ match }) {
           ...registro.data,
           dataInicio: window.moment(registro.data.dataInicio),
           dataFim: window.moment(registro.data.dataFim),
+        });
+        setAuditoria({
+          criadoPor: registro.data.criadoPor,
+          criadoRf: registro.data.criadoRF > 0 ? registro.data.criadoRF : '',
+          criadoEm: registro.data.criadoEm,
+          alteradoPor: registro.data.alteradoPor,
+          alteradoRf:
+            registro.data.alteradoRF > 0 ? registro.data.alteradoRF : '',
+          alteradoEm: registro.data.alteradoEm,
         });
         dispatch(setLoaderSecao(false));
       }
@@ -184,6 +229,7 @@ function AtribuicaoEsporadicaForm({ match }) {
                   onClickBotaoPrincipal={() => onClickBotaoPrincipal(form)}
                   onClickCancelar={formulario => onClickCancelar(formulario)}
                   onClickVoltar={() => onClickVoltar()}
+                  onClickExcluir={() => onClickExcluir(form)}
                   modoEdicao={modoEdicao}
                 />
                 <Row className="row">
@@ -192,7 +238,7 @@ function AtribuicaoEsporadicaForm({ match }) {
                       label="Ano Letivo"
                       form={form}
                       name="anoLetivo"
-                      onChange={valor => null}
+                      onChange={() => null}
                     />
                   </Grid>
                   <Grid cols={5}>
@@ -207,7 +253,7 @@ function AtribuicaoEsporadicaForm({ match }) {
                       label="Unidade Escolar (UE)"
                       dreId={dreId}
                       form={form}
-                      onChange={valor => null}
+                      onChange={() => null}
                     />
                   </Grid>
                 </Row>
@@ -245,6 +291,16 @@ function AtribuicaoEsporadicaForm({ match }) {
               </Form>
             )}
           </Formik>
+          {auditoria && (
+            <Auditoria
+              criadoEm={auditoria.criadoEm}
+              criadoPor={auditoria.criadoPor}
+              criadoRf={auditoria.criadoRf}
+              alteradoPor={auditoria.alteradoPor}
+              alteradoEm={auditoria.alteradoEm}
+              alteradoRf={auditoria.alteradoRf}
+            />
+          )}
         </Card>
       </Loader>
     </>
