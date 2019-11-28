@@ -107,6 +107,7 @@ const Perfil = props => {
               salvarDadosLogin({
                 token,
                 rf: usuarioStore.rf,
+                ehProfessor,
               })
             );
             setMenusPermissoes();
