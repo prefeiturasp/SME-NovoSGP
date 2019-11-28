@@ -8,8 +8,12 @@ namespace SME.SGP.Dominio
     public class Usuario : EntidadeBase
     {
         private const string MENSAGEM_ERRO_USUARIO_SEM_ACESSO = "Usuário sem perfis de acesso.";
+        private readonly Guid PERFIL_AD = Guid.Parse("45E1E074-37D6-E911-ABD6-F81654FE895D");
+        private readonly Guid PERFIL_CJ = Guid.Parse("41e1e074-37d6-e911-abd6-f81654fe895d");
+        private readonly Guid PERFIL_CP = Guid.Parse("44E1E074-37D6-E911-ABD6-F81654FE895D");
         private readonly Guid PERFIL_DIRETOR = Guid.Parse("46E1E074-37D6-E911-ABD6-F81654FE895D");
         private readonly Guid PERFIL_PROFESSOR = Guid.Parse("40E1E074-37D6-E911-ABD6-F81654FE895D");
+        private readonly Guid PERFIL_SECRETARIO = Guid.Parse("43E1E074-37D6-E911-ABD6-F81654FE895D");
         private readonly Guid PERFIL_SUPERVISOR = Guid.Parse("4EE1E074-37D6-E911-ABD6-F81654FE895D");
         public string CodigoRf { get; set; }
         public string Email { get; set; }
@@ -17,6 +21,7 @@ namespace SME.SGP.Dominio
         public string Login { get; set; }
         public string Nome { get; set; }
         public IEnumerable<Notificacao> Notificacoes { get { return notificacoes; } }
+        public Guid PerfilAtual { get; private set; }
         public IEnumerable<PrioridadePerfil> Perfis { get; private set; }
         public Guid? TokenRecuperacaoSenha { get; set; }
         public DateTime UltimoLogin { get; set; }
@@ -48,9 +53,24 @@ namespace SME.SGP.Dominio
             Email = novoEmail;
         }
 
+        public void DefinirPerfilAtual(Guid perfilAtual)
+        {
+            this.PerfilAtual = perfilAtual;
+        }
+
         public void DefinirPerfis(IEnumerable<PrioridadePerfil> perfisUsuario)
         {
             Perfis = perfisUsuario;
+        }
+
+        public bool EhProfessor()
+        {
+            return PerfilAtual == PERFIL_PROFESSOR;
+        }
+
+        public bool EhProfessorCj()
+        {
+            return PerfilAtual == PERFIL_CJ;
         }
 
         public void FinalizarRecuperacaoSenha()
@@ -84,6 +104,20 @@ namespace SME.SGP.Dominio
             return Perfis.FirstOrDefault().CodigoPerfil;
         }
 
+        public TipoPerfil? ObterTipoPerfilAtual()
+        {
+            return Perfis.FirstOrDefault(a => a.CodigoPerfil == PerfilAtual).Tipo;
+        }
+
+        public void PodeAlterarEvento(Evento evento)
+        {
+            if (evento.TipoEvento.LocalOcorrencia == EventoLocalOcorrencia.DRE)
+            {
+                if (PerfilAtual != PERFIL_DIRETOR && PerfilAtual != PERFIL_AD && PerfilAtual != PERFIL_CP)
+                    throw new NegocioException("Você não tem permissão para alterar este evento.");
+            }
+        }
+
         public void PodeCriarEvento(Evento evento)
         {
             if (!PossuiPerfilSme() && string.IsNullOrWhiteSpace(evento.DreId))
@@ -96,14 +130,12 @@ namespace SME.SGP.Dominio
                 throw new NegocioException("É necessário informar a UE.");
             }
 
-            if ((evento.TipoEvento.LocalOcorrencia == EventoLocalOcorrencia.SME ||
-                 evento.TipoEvento.LocalOcorrencia == EventoLocalOcorrencia.SMEUE) &&
-                 !PossuiPerfilSme())
+            if (evento.TipoEvento.LocalOcorrencia == EventoLocalOcorrencia.SME && !PossuiPerfilSme())
             {
                 throw new NegocioException("Somente usuários da SME podem criar este tipo de evento.");
             }
 
-            if (evento.TipoEvento.LocalOcorrencia != EventoLocalOcorrencia.UE && !PossuiPerfilSmeOuDre())
+            if (evento.TipoEvento.LocalOcorrencia == EventoLocalOcorrencia.DRE && (!PossuiPerfilDre() || !PossuiPerfilSme()))
             {
                 throw new NegocioException("Somente usuários da SME ou da DRE podem criar este tipo de evento.");
             }
@@ -111,14 +143,37 @@ namespace SME.SGP.Dominio
 
         public void PodeCriarEventoComDataPassada(Evento evento)
         {
-            if ((evento.DataInicio < DateTime.Today) && !PossuiPerfilSme())
-                throw new NegocioException("Não é possível criar evento com datas passadas.");
+            if (evento.DataInicio < DateTime.Today)
+            {
+                if (ObterTipoPerfilAtual() != TipoPerfil.SME)
+                {
+                    if (ObterTipoPerfilAtual() != TipoPerfil.DRE || evento.TipoEvento.LocalOcorrencia != EventoLocalOcorrencia.DRE)
+                        throw new NegocioException("Não é possível criar evento com datas passadas.");
+                }
+            }
+        }
+
+        public bool PodeRegistrarFrequencia(Aula aula)
+        {
+            return aula.ProfessorRf == CodigoRf;
         }
 
         public bool PodeReiniciarSenha()
         {
             return !string.IsNullOrEmpty(Email);
         }
+
+        public bool PodeVisualizarEventosOcorrenciaDre()
+        {
+            var perfilAtual = Perfis.FirstOrDefault(a => a.CodigoPerfil == PerfilAtual);
+            if (perfilAtual.Tipo == TipoPerfil.UE)
+                return (PerfilAtual == PERFIL_DIRETOR || PerfilAtual == PERFIL_AD || PerfilAtual == PERFIL_CP || PerfilAtual == PERFIL_SECRETARIO);
+            else return true;
+        }
+
+        public bool PossuiPerfilCJ()
+            => Perfis != null &&
+                Perfis.Any(c => c.CodigoPerfil == PERFIL_CJ);
 
         public bool PossuiPerfilDre()
         {
@@ -153,9 +208,9 @@ namespace SME.SGP.Dominio
             return Perfis != null && Perfis.Any(c => c.Tipo == TipoPerfil.UE);
         }
 
-        public bool TemPerfilSupervisorOuDiretor(Guid perfilAtual)
+        public bool TemPerfilSupervisorOuDiretor()
         {
-            return (perfilAtual == PERFIL_DIRETOR || perfilAtual == PERFIL_SUPERVISOR);
+            return (PerfilAtual == PERFIL_DIRETOR || PerfilAtual == PERFIL_SUPERVISOR);
         }
 
         public bool TokenRecuperacaoSenhaEstaValido()

@@ -29,10 +29,10 @@ namespace SME.SGP.Aplicacao
             this.repositorioParametrosSistema = repositorioParametrosSistema ?? throw new ArgumentNullException(nameof(repositorioParametrosSistema));
         }
 
-        public List<DateTime> BuscarDiasLetivos(IEnumerable<PeriodoEscolar> periodoEscolar)
+        public List<DateTime> BuscarDiasLetivos(long tipoCalendarioId)
         {
             List<DateTime> dias = new List<DateTime>();
-
+            var periodoEscolar = repositorioPeriodoEscolar.ObterPorTipoCalendario(tipoCalendarioId);
             periodoEscolar
                 .ToList()
                 .ForEach(x => dias
@@ -52,6 +52,7 @@ namespace SME.SGP.Aplicacao
             //se for letivo em um fds que esteja no calendário somar
             bool estaAbaixo = false;
 
+            //buscar os dados
             var periodoEscolar = repositorioPeriodoEscolar.ObterPorTipoCalendario(filtro.TipoCalendarioId);
             var diasLetivosCalendario = BuscarDiasLetivos(periodoEscolar);
             var eventos = repositorioEvento.ObterEventosPorTipoDeCalendarioDreUe(filtro.TipoCalendarioId, filtro.DreId, filtro.UeId);
@@ -62,22 +63,30 @@ namespace SME.SGP.Aplicacao
             List<DateTime> diasEventosNaoLetivos = new List<DateTime>();
             List<DateTime> diasEventosLetivos = new List<DateTime>();
 
+            //transforma em dias
             diasEventosNaoLetivos = ObterDias(eventos, diasEventosNaoLetivos, EventoLetivo.Nao);
             diasEventosLetivos = ObterDias(eventos, diasEventosLetivos, EventoLetivo.Sim);
 
-            //finais de semana letivos
+            //adicionar os finais de semana letivos se houver
+            //se não houver dia letivo em fds não precisa adicionar
             foreach (var dia in diasEventosLetivos.Where(x => !EhDiaUtil(x)))
             {
                 if (periodoEscolar.Any(w => w.PeriodoInicio <= dia && dia <= w.PeriodoFim))
                     diasLetivosCalendario.Add(dia);
             }
 
+            //retirar eventos não letivos que não estão no calendário
+            diasEventosNaoLetivos = diasEventosNaoLetivos.Where(w => diasLetivosCalendario.Contains(w)).ToList();
+            //retirar eventos não letivos que não contenha letivo
             diasEventosNaoLetivos = diasEventosNaoLetivos.Where(w => !diasEventosLetivos.Contains(w)).ToList();
 
+            //subtrai os dias nao letivos
             var diasLetivos = diasLetivosCalendario.Distinct().Count() - diasEventosNaoLetivos.Distinct().Count();
+
+            //verificar se eh eja ou nao
             var diasLetivosPermitidos = Convert.ToInt32(tipoCalendario.Modalidade == ModalidadeTipoCalendario.EJA ?
-                repositorioParametrosSistema.ObterValorPorNomeAno(ChaveDiasLetivosEja, anoLetivo) :
-                repositorioParametrosSistema.ObterValorPorNomeAno(ChaveDiasLetivosFundMedio, anoLetivo));
+                repositorioParametrosSistema.ObterValorPorTipoEAno(TipoParametroSistema.EjaDiasLetivos, anoLetivo) :
+                repositorioParametrosSistema.ObterValorPorTipoEAno(TipoParametroSistema.FundamentalMedioDiasLetivos, anoLetivo));
 
             estaAbaixo = diasLetivos < diasLetivosPermitidos;
 
@@ -86,11 +95,6 @@ namespace SME.SGP.Aplicacao
                 Dias = diasLetivos,
                 EstaAbaixoPermitido = estaAbaixo
             };
-        }
-
-        public bool EhDiaUtil(DateTime data)
-        {
-            return data.DayOfWeek != DayOfWeek.Saturday && data.DayOfWeek != DayOfWeek.Sunday;
         }
 
         public List<DateTime> ObterDias(IEnumerable<Dominio.Evento> eventos, List<DateTime> dias, Dominio.EventoLetivo eventoTipo)
@@ -108,6 +112,28 @@ namespace SME.SGP.Aplicacao
                                             || eventoTipo == Dominio.EventoLetivo.Sim)
                             ));
             return dias.Distinct().ToList();
+        }
+
+        private List<DateTime> BuscarDiasLetivos(IEnumerable<PeriodoEscolar> periodoEscolar)
+        {
+            List<DateTime> dias = new List<DateTime>();
+            periodoEscolar
+                .ToList()
+                .ForEach(x => dias
+                    .AddRange(
+                        Enumerable
+                        .Range(0, 1 + (x.PeriodoFim - x.PeriodoInicio).Days)
+                        .Select(y => x.PeriodoInicio.AddDays(y))
+                        .Where(w => EhDiaUtil(w))
+                        .ToList())
+            );
+
+            return dias;
+        }
+
+        private bool EhDiaUtil(DateTime data)
+        {
+            return data.DayOfWeek != DayOfWeek.Saturday && data.DayOfWeek != DayOfWeek.Sunday;
         }
     }
 }

@@ -29,6 +29,7 @@ namespace SME.SGP.Dominio
         public long TipoCalendarioId { get; set; }
         public EventoTipo TipoEvento { get; set; }
         public long TipoEventoId { get; set; }
+        public TipoPerfil? TipoPerfilCadastro { get; set; }
         public string UeId { get; set; }
         public WorkflowAprovacao WorkflowAprovacao { get; set; }
         public long? WorkflowAprovacaoId { get; set; }
@@ -72,7 +73,6 @@ namespace SME.SGP.Dominio
                 Excluido = Excluido,
                 FeriadoCalendario = FeriadoCalendario,
                 FeriadoId = FeriadoId,
-                Id = Id,
                 Letivo = Letivo,
                 Nome = Nome,
                 TipoCalendario = TipoCalendario,
@@ -131,6 +131,13 @@ namespace SME.SGP.Dominio
             }
         }
 
+        public bool EstaNoRangeDeDatas(IEnumerable<(DateTime, DateTime)> datas)
+        {
+            return datas.Any(a => (DataInicio.Date <= a.Item1.Date && DataFim >= a.Item2.Date)
+            || (DataInicio.Date <= a.Item2.Date && DataFim >= a.Item2.Date)
+            || (DataInicio.Date >= a.Item1.Date && DataFim <= a.Item2.Date));
+        }
+
         public void Excluir()
         {
             if (Excluido)
@@ -168,7 +175,7 @@ namespace SME.SGP.Dominio
 
         public void PodeCriarEventoLiberacaoExcepcional(Usuario usuario, bool dataConfirmada, IEnumerable<PeriodoEscolar> periodos)
         {
-            if (this.TipoEvento.Codigo == (long)TipoEventoEnum.LiberacaoExcepcional)
+            if (this.TipoEvento.Codigo == (long)Dominio.TipoEvento.LiberacaoExcepcional)
             {
                 if (!usuario.PossuiPerfilSme())
                     throw new NegocioException("Somente usuário com perfil SME pode cadastrar esse tipo de evento.");
@@ -184,11 +191,11 @@ namespace SME.SGP.Dominio
             }
         }
 
-        public void PodeCriarEventoOrganizacaoEscolar(Usuario usuario)
+        public void PodeCriarEventoOrganizacaoEscolarComPerfilSme(Usuario usuario)
         {
-            if (this.TipoEvento.Codigo == (long)TipoEventoEnum.OrganizacaoEscolar)
+            if (this.TipoEvento.Codigo == (long)Dominio.TipoEvento.OrganizacaoEscolar)
             {
-                if (!usuario.PossuiPerfilSme())
+                if (usuario.ObterTipoPerfilAtual() != TipoPerfil.SME)
                     throw new NegocioException("Somente usuário com perfil SME pode cadastrar esse tipo de evento.");
             }
         }
@@ -221,6 +228,12 @@ namespace SME.SGP.Dominio
                     DataFim = DataInicio;
                 }
             }
+        }
+
+        public void VerificaSeDataMenorQueHoje()
+        {
+            if (DataInicio.Date < DateTime.Today)
+                throw new NegocioException("A data do evento não pode ser menor que a atual.");
         }
 
         public void VerificaSeEventoAconteceJuntoComOrganizacaoEscolar(IEnumerable<Evento> eventos, Usuario usuario)
