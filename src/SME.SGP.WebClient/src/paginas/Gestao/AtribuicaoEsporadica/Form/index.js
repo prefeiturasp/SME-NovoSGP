@@ -119,6 +119,27 @@ function AtribuicaoEsporadicaForm({ match }) {
     }
   };
 
+  const onClickExcluir = async form => {
+    if (validaSeObjetoEhNuloOuVazio(form.values)) return;
+
+    const confirmado = await confirmar(
+      'Excluir atribuição',
+      form.values.professorNome,
+      `Deseja realmente excluir este item?`,
+      'Excluir',
+      'Cancelar'
+    );
+    if (confirmado) {
+      const excluir = await AtribuicaoEsporadicaServico.deletarAtribuicaoEsporadica(
+        form.values.id
+      );
+      if (excluir) {
+        sucesso(`Atribuição excluida com sucesso!`);
+        history.push('/gestao/atribuicao-esporadica');
+      }
+    }
+  };
+
   const buscarPorId = async id => {
     try {
       dispatch(setLoaderSecao(true));
@@ -184,6 +205,7 @@ function AtribuicaoEsporadicaForm({ match }) {
                   onClickBotaoPrincipal={() => onClickBotaoPrincipal(form)}
                   onClickCancelar={formulario => onClickCancelar(formulario)}
                   onClickVoltar={() => onClickVoltar()}
+                  onClickExcluir={() => onClickExcluir(form)}
                   modoEdicao={modoEdicao}
                 />
                 <Row className="row">
@@ -192,7 +214,7 @@ function AtribuicaoEsporadicaForm({ match }) {
                       label="Ano Letivo"
                       form={form}
                       name="anoLetivo"
-                      onChange={valor => null}
+                      onChange={() => null}
                     />
                   </Grid>
                   <Grid cols={5}>
@@ -207,7 +229,7 @@ function AtribuicaoEsporadicaForm({ match }) {
                       label="Unidade Escolar (UE)"
                       dreId={dreId}
                       form={form}
-                      onChange={valor => null}
+                      onChange={() => null}
                     />
                   </Grid>
                 </Row>
