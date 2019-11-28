@@ -8,10 +8,9 @@ import TextEditor from '~/componentes/textEditor';
 import { Badge, Corpo, Descritivo, HabilitaObjetivos, ListItem, ListItemButton, ObjetivosList, QuantidadeBotoes } from './plano-aula.css';
 import api from '~/servicos/api';
 import { useSelector } from 'react-redux';
-import modalidade from '~/dtos/modalidade';
 
 const PlanoAula = (props) => {
-  const { planoAula, ehRegencia, listaMaterias, disciplinaIdSelecionada, dataAula, ehProfessorCj } = props;
+  const { planoAula, ehRegencia, listaMaterias, disciplinaIdSelecionada, dataAula, ehProfessorCj, ehEja, setModoEdicao } = props;
 
   const usuario = useSelector(store => store.usuario);
   const { turmaSelecionada } = usuario;
@@ -19,54 +18,53 @@ const PlanoAula = (props) => {
   const [mostrarCardPrincipal, setMostrarCardPrincipal] = useState(true);
   const [informaObjetivos, setInformaObjetivos] = useState(true);
   const [materias, setMaterias] = useState([...listaMaterias]);
+  const setModoEdicaoPlano = ehEdicao => {
+    setModoEdicao(ehEdicao)
+  }
   const configCabecalho = {
     altura: '44px',
     corBorda: '#4072d6'
   }
-  const [objetivosAprendizagem, setObjetivosAprendizagem] = useState([]);
+  const [objetivosAprendizagem, setObjetivosAprendizagem] = useState(planoAula.objetivosAprendizagemAula);
   const textEditorObjetivosRef = useRef(null);
   const textEditorDesenvAulaRef = useRef(null);
   const textEditorRecContinuaRef = useRef(null);
   const textEditorLicaoCasaRef = useRef(null);
-  const ehEja =
-    turmaSelecionada && turmaSelecionada.modalidade === String(modalidade.EJA)
-      ? true
-      : false;
+
+  useEffect(() => {
+    setObjetivosAprendizagem([...planoAula.objetivosAprendizagemAula])
+  }, [planoAula.objetivosAprendizagemAula])
 
   useEffect(() => {
     setMaterias(listaMaterias)
   }, [listaMaterias])
 
+  const setObjetivos = objetivos => {
+    planoAula.objetivosAprendizagemAula = [...objetivos];
+    setObjetivosAprendizagem([...objetivos])
+  }
+
   const selecionarObjetivo = id => {
+    setModoEdicaoPlano(true);
     const index = objetivosAprendizagem.findIndex(a => a.id == id);
-    const idxObjSelec = planoAula.objetivosAprendizagemAula.findIndex(a => a.id == id)
     objetivosAprendizagem[index].selected = !objetivosAprendizagem[index].selected;
-    if(idxObjSelec < 0){
-      planoAula.objetivosAprendizagemAula.push(objetivosAprendizagem[index])
-    }else{
-      planoAula.objetivosAprendizagemAula.splice(idxObjSelec, 1);
-      planoAula.objetivosAprendizagemAula = [...planoAula.objetivosAprendizagemAula]
-    }
-    setObjetivosAprendizagem([...objetivosAprendizagem]);
+    setObjetivos(objetivosAprendizagem);
   }
 
   const removerObjetivo = id => {
+    setModoEdicaoPlano(true);
     const index = objetivosAprendizagem.findIndex(a => a.id == id);
-    const idxObjSelec = planoAula.objetivosAprendizagemAula.findIndex(a => a.id == id)
     objetivosAprendizagem[index].selected = false;
-    planoAula.objetivosAprendizagemAula.splice(idxObjSelec, 1);
-    planoAula.objetivosAprendizagemAula = [...planoAula.objetivosAprendizagemAula]
-    setObjetivosAprendizagem([...objetivosAprendizagem]);
+    setObjetivos(objetivosAprendizagem);
   }
 
   const removerTodosObjetivos = () => {
+    setModoEdicaoPlano(true);
     const objetivos = objetivosAprendizagem.map(objetivo => {
       objetivo.selected = false;
       return objetivo;
     })
-    planoAula.objetivosAprendizagemAula.splice(0, planoAula.objetivosAprendizagemAula.length);
-    planoAula.objetivosAprendizagemAula = [...planoAula.objetivosAprendizagemAula]
-    setObjetivosAprendizagem([...objetivos]);
+    setObjetivos(objetivos);
   }
 
   const selecionarMateria = async id => {
@@ -104,18 +102,30 @@ const PlanoAula = (props) => {
   }
 
   const onBlurMeusObjetivos = value => {
+    if (value !== planoAula.descricao) {
+      setModoEdicaoPlano(true);
+    }
     planoAula.descricao = value;
   }
 
   const onBlurDesenvolvimentoAula = async value => {
+    if (value !== planoAula.desenvolvimentoAula) {
+      setModoEdicaoPlano(true);
+    }
     planoAula.desenvolvimentoAula = await value;
   }
 
   const onBlurRecuperacaoContinua = value => {
+    if (value !== planoAula.recuperacaoAula) {
+      setModoEdicaoPlano(true);
+    }
     planoAula.recuperacaoAula = value;
   }
 
   const onBlurLicaoCasa = value => {
+    if (value !== planoAula.licaoCasa) {
+      setModoEdicaoPlano(true);
+    }
     planoAula.licaoCasa = value;
   }
 

@@ -21,6 +21,7 @@ import { store } from '~/redux';
 import { SelecionarDisciplina } from '~/redux/modulos/planoAula/actions';
 import { stringNulaOuEmBranco } from '~/utils/funcoes/gerais';
 import ModalMultiLinhas from '~/componentes/modalMultiLinhas';
+import modalidade from '~/dtos/modalidade';
 
 const FrequenciaPlanoAula = () => {
   const usuario = useSelector(store => store.usuario);
@@ -28,7 +29,11 @@ const FrequenciaPlanoAula = () => {
   const [somenteConsulta, setSomenteConsulta] = useState(false);
   const permissoesTela = usuario.permissoes[RotasDto.FREQUENCIA_PLANO_AULA];
 
-  const { turmaSelecionada } = usuario;
+  const { turmaSelecionada, ehProfessor } = usuario;
+  const ehEja =
+    turmaSelecionada && turmaSelecionada.modalidade === String(modalidade.EJA)
+      ? true
+      : false;
   const turmaId = turmaSelecionada ? turmaSelecionada.turma : 0;
   const anoLetivo = turmaSelecionada ? turmaSelecionada.anoLetivo : 0;
 
@@ -53,9 +58,10 @@ const FrequenciaPlanoAula = () => {
   const [aula, setAula] = useState(undefined);
   const { ehProfessorCj } = usuario.ehProfessorCj ? usuario.ehProfessorCj : false;
   const [planoAula, setPlanoAula] = useState({
+    aulaId: 0,
     id: 0,
     qtdAulas: 0,
-    temObjetivos: false,
+    temObjetivos: ehProfessor && !ehEja,
     descricao: null,
     desenvolvimentoAula: null,
     recuperacaoAula: null,
@@ -135,7 +141,12 @@ const FrequenciaPlanoAula = () => {
     if (dadosPlano) {
       planoAula.quantidadeAulas = dadosPlano.qtdAulas;
       if (dadosPlano.id > 0) {
-
+        dadosPlano.objetivosAprendizagemAula.forEach(objetivo => {
+          objetivo.selected = true;
+        });
+        dadosPlano.objetivosAprendizagemAula = [...dadosPlano.objetivosAprendizagemAula];
+        dadosPlano.temObjetivos = (disciplinaSelecionada.regencia || ehProfessor) && !ehEja;
+        setPlanoAula(dadosPlano);
       } else {
         setModoEdicaoPlanoAula(false);
       }
@@ -161,7 +172,7 @@ const FrequenciaPlanoAula = () => {
           await onSalvarFrequencia();
         }
         if (modoEdicaoPlanoAula) {
-          // salvar plano aula
+          await onSalvarPlanoAula();
         }
         irParaHome();
       } else {
@@ -192,10 +203,11 @@ const FrequenciaPlanoAula = () => {
         'Deseja realmente cancelar as alterações?'
       );
       if (confirmou) {
+        const aulaDataSelecionada = listaDatasAulas.find(item => window.moment(item.data).isSame(dataSelecionada, 'date'));
         obterListaFrequencia(aulaId);
         setModoEdicaoFrequencia(false);
-        // obter plano aula
-        // set modo edicao plano aula false
+        obterPlanoAula(aulaDataSelecionada)
+        setModoEdicaoPlanoAula(false);
       }
     }
   };
@@ -238,8 +250,34 @@ const FrequenciaPlanoAula = () => {
   }
 
   const onSalvarPlanoAula = async () => {
+    const objetivosId = [];
+    planoAula.objetivosAprendizagemAula.forEach(obj => {
+      if (obj.selected) {
+        objetivosId.push(obj.id)
+      }
+    }
+    );
+    const plano = {
+      descricao: planoAula.descricao,
+      desenvolvimentoAula: planoAula.desenvolvimentoAula,
+      recuperacaoAula: planoAula.recuperacaoAula,
+      licaoCasa: planoAula.licaoCasa,
+      aulaId,
+      objetivosAprendizagemJurema: objetivosId,
+    }
+    planoAula.objetivosAprendizagemJurema = [...objetivosId];
+
     await validaPlanoAula();
     if (errosValidacaoPlano.length === 0) {
+      await api.post('v1/planos/aulas', plano).then(salvouPlano => {
+        if (salvouPlano && salvouPlano.status == 200) {
+          sucesso('Plano de aula salvo com sucesso.');
+        }
+      }
+      )
+        .catch(e => {
+          erros(e)
+        });
     } else {
       setMostarErros(true);
     }
@@ -252,7 +290,7 @@ const FrequenciaPlanoAula = () => {
     if (stringNulaOuEmBranco(planoAula.desenvolvimentoAula)) {
       errosValidacaoPlano.push("Desenvolvimento da aula - A sessão de desenvolvimento da aula deve ser preenchida");
     }
-    if (!ehProfessorCj && planoAula.temObjetivos && planoAula.objetivosAprendizagemAula.length === 0) {
+    if (!ehProfessorCj && planoAula.temObjetivos && planoAula.objetivosAprendizagemJurema.length === 0) {
       errosValidacaoPlano.push("Objetivos de aprendizagem - É obrigatório selecionar ao menos um objetivo de aprendizagem");
     }
   }
@@ -293,7 +331,8 @@ const FrequenciaPlanoAula = () => {
           setarDisciplina(disciplinaId);
         }
         if (modoEdicaoPlanoAula) {
-          // salvar plano
+          await onSalvarPlanoAula();
+          setarDisciplina(disciplinaId);
         }
       } else {
         setarDisciplina(disciplinaId);
@@ -406,7 +445,7 @@ const FrequenciaPlanoAula = () => {
                 border
                 className="mr-2"
                 onClick={onClickCancelar}
-                disabled={!modoEdicaoFrequencia}
+                disabled={!modoEdicaoFrequencia && !modoEdicaoPlanoAula}
               />
               <Button
                 label="Salvar"
@@ -415,7 +454,7 @@ const FrequenciaPlanoAula = () => {
                 bold
                 className="mr-2"
                 onClick={() => onClickSalvar(true)}
-                disabled={desabilitarCampos || !modoEdicaoFrequencia}
+                disabled={desabilitarCampos || (!modoEdicaoFrequencia && !modoEdicaoPlanoAula)}
               />
             </div>
           </div>
@@ -497,6 +536,8 @@ const FrequenciaPlanoAula = () => {
                     ehProfessorCj={ehProfessorCj}
                     listaMaterias={materias}
                     dataAula={aula && aula.data ? aula.data : null}
+                    ehEja={ehEja}
+                    setModoEdicao={(e) => setModoEdicaoPlanoAula(e)}
                   />
                 </div>
               </div>
