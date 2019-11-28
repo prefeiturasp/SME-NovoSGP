@@ -30,9 +30,11 @@ namespace SME.SGP.Api.Controllers
         public async Task<IActionResult> ObterEventoAulasDia(FiltroEventosAulasCalendarioDiaDto filtro)
         {
             var retorno = await consultasEventosAulasCalendario.ObterEventoAulasDia(filtro);
-            if (retorno.Any())
-                return Ok(retorno);
-            else return StatusCode(204);
+
+            if (!retorno.Any())
+                return StatusCode(204);
+
+            return Ok(retorno);
         }
 
         [HttpPost]
@@ -43,9 +45,11 @@ namespace SME.SGP.Api.Controllers
         public async Task<IActionResult> ObterEventosAulasMensais(FiltroEventosAulasCalendarioDto filtro)
         {
             var retorno = await consultasEventosAulasCalendario.ObterEventosAulasMensais(filtro);
-            if (retorno.Any())
-                return Ok(retorno);
-            else return StatusCode(204);
+
+            if (!retorno.Any())
+                return NoContent();
+
+            return Ok(retorno);
         }
 
         [HttpPost]
@@ -56,9 +60,11 @@ namespace SME.SGP.Api.Controllers
         public async Task<IActionResult> ObterTipoEventosAulas(FiltroEventosAulasCalendarioMesDto filtro)
         {
             var retorno = await consultasEventosAulasCalendario.ObterTipoEventosAulas(filtro);
-            if (retorno.Any())
-                return Ok(retorno);
-            else return StatusCode(204);
+
+            if (!retorno.Any())
+                return StatusCode(204);
+
+            return Ok(retorno);
         }
     }
 }
