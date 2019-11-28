@@ -32,7 +32,6 @@ namespace SME.SGP.Dominio.Servicos.Teste
         public ServicoAulaTeste()
         {
             repositorioPeriodoEscolar = new Mock<IRepositorioPeriodoEscolar>();
-
             servicoDiaLetivo = new Mock<IServicoDiaLetivo>();
             repositorioAula = new Mock<IRepositorioAula>();
             repositorioTipoCalendario = new Mock<IRepositorioTipoCalendario>();
@@ -41,12 +40,18 @@ namespace SME.SGP.Dominio.Servicos.Teste
             consultasGrade = new Mock<IConsultasGrade>();
             repositorioAbrangencia = new Mock<IRepositorioAbrangencia>();
             servicoNotificacao = new Mock<IServicoNotificacao>();
-            servicoAula = new ServicoAula(repositorioAula.Object, servicoEol.Object, repositorioTipoCalendario.Object, servicoDiaLetivo.Object, consultasGrade.Object, repositorioPeriodoEscolar.Object, servicoLog.Object, repositorioAbrangencia.Object, servicoNotificacao.Object);
-            servicoUsuario = new Mock<IServicoUsuario>();
             comandosWorkflowAprovacao = new Mock<IComandosWorkflowAprovacao>();
             consultaAbrangencia = new Mock<IConsultasAbrangencia>();
-            servicoAula = new ServicoAula(repositorioAula.Object, servicoEol.Object, repositorioTipoCalendario.Object, servicoDiaLetivo.Object, consultasGrade.Object, repositorioPeriodoEscolar.Object, servicoLog.Object, 
-            consultaAbrangencia.Object, servicoUsuario.Object, comandosWorkflowAprovacao.Object, configuration.Object);
+            servicoNotificacao = new Mock<IServicoNotificacao>();
+            servicoAula = new ServicoAula(repositorioAula.Object, servicoEol.Object,
+                                         repositorioTipoCalendario.Object, servicoDiaLetivo.Object, 
+                                         consultasGrade.Object, repositorioPeriodoEscolar.Object, 
+                                         servicoLog.Object, repositorioAbrangencia.Object,
+                                         servicoNotificacao.Object, consultaAbrangencia.Object , 
+                                         servicoUsuario.Object, comandosWorkflowAprovacao.Object, configuration.Object);
+
+   
+
         }
 
         [Fact]
