@@ -1,4 +1,5 @@
-﻿using SME.SGP.Dominio.Interfaces;
+﻿using SME.SGP.Dominio;
+using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
@@ -30,9 +31,14 @@ namespace SME.SGP.Aplicacao
         public async Task<IEnumerable<EventosAulasTipoDiaDto>> ObterEventoAulasDia(FiltroEventosAulasCalendarioDiaDto filtro)
         {
             List<EventosAulasTipoDiaDto> eventosAulas = new List<EventosAulasTipoDiaDto>();
+
+            if (!filtro.TodasTurmas && string.IsNullOrWhiteSpace(filtro.TurmaId))
+                throw new NegocioException("È necessario informar uma turma para pesquisa");
+
             var perfil = servicoUsuario.ObterPerfilAtual();
             var eventos = await repositorioEvento.ObterEventosPorTipoDeCalendarioDreUeDia(filtro.TipoCalendarioId, filtro.DreId, filtro.UeId, filtro.Data, filtro.EhEventoSme);
             var aulas = await repositorioAula.ObterAulasCompleto(filtro.TipoCalendarioId, filtro.TurmaId, filtro.UeId, filtro.Data, perfil);
+
             eventos
             .ToList()
             .ForEach(x => eventosAulas
@@ -70,12 +76,15 @@ namespace SME.SGP.Aplicacao
             List<DateTime> diasNaoLetivos = new List<DateTime>();
             List<DateTime> totalDias = new List<DateTime>();
 
+            if (!filtro.TodasTurmas && string.IsNullOrWhiteSpace(filtro.TurmaId))
+                throw new NegocioException("È necessario informar uma turma para pesquisa");
+
             var diasPeriodoEscolares = comandosDiasLetivos.BuscarDiasLetivos(filtro.TipoCalendarioId);
             var diasAulas = await repositorioAula.ObterAulas(filtro.TipoCalendarioId, filtro.TurmaId, filtro.UeId);
             var eventos = repositorioEvento.ObterEventosPorTipoDeCalendarioDreUe(filtro.TipoCalendarioId, filtro.DreId, filtro.UeId, filtro.EhEventoSme);
 
-            var diasEventosNaoLetivos = comandosDiasLetivos.ObterDias(eventos, diasNaoLetivos, Dominio.EventoLetivo.Nao);
-            var diasEventosLetivos = comandosDiasLetivos.ObterDias(eventos, diasLetivos, Dominio.EventoLetivo.Sim);
+            var diasEventosNaoLetivos = comandosDiasLetivos.ObterDias(eventos, diasNaoLetivos, EventoLetivo.Nao);
+            var diasEventosLetivos = comandosDiasLetivos.ObterDias(eventos, diasLetivos, EventoLetivo.Sim);
             var aulas = ObterDias(diasAulas);
 
             diasEventosNaoLetivos.RemoveAll(x => !diasPeriodoEscolares.Contains(x));
@@ -90,6 +99,9 @@ namespace SME.SGP.Aplicacao
 
         public async Task<IEnumerable<EventosAulasTipoCalendarioDto>> ObterTipoEventosAulas(FiltroEventosAulasCalendarioMesDto filtro)
         {
+            if (!filtro.TodasTurmas && string.IsNullOrWhiteSpace(filtro.TurmaId))
+                throw new NegocioException("È necessario informar uma turma para pesquisa");
+
             var eventosAulas = new List<EventosAulasTipoCalendarioDto>();
             var aulas = await repositorioAula.ObterAulas(filtro.TipoCalendarioId, filtro.TurmaId, filtro.UeId, filtro.Mes);
             var eventos = await repositorioEvento.ObterEventosPorTipoDeCalendarioDreUeMes(filtro.TipoCalendarioId, filtro.DreId, filtro.UeId, filtro.Mes, filtro.EhEventoSme);
