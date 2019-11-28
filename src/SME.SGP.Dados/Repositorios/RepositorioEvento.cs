@@ -573,19 +573,19 @@ namespace SME.SGP.Dados.Repositorios
 
         public IEnumerable<Evento> ObterEventosPorTipoDeCalendarioDreUe(long tipoCalendarioId, string dreId, string ueId, bool EhEventoSme = false)
         {
-            var query = ObterEventos(dreId, ueId, null, null, EhEventoSme);
+            var query = ObterEventos(dreId, ueId, null, null, EhEventoSme, !EhEventoSme);
             return database.Conexao.Query<Evento>(query.ToString(), new { tipoCalendarioId, dreId, ueId });
         }
 
         public async Task<IEnumerable<Evento>> ObterEventosPorTipoDeCalendarioDreUeDia(long tipoCalendarioId, string dreId, string ueId, DateTime data, bool EhEventoSme)
         {
-            var query = ObterEventos(dreId, ueId, null, data.Date, EhEventoSme);
+            var query = ObterEventos(dreId, ueId, null, data, EhEventoSme, !EhEventoSme);
             return await database.Conexao.QueryAsync<Evento>(query.ToString(), new { tipoCalendarioId, dreId, ueId, data });
         }
 
         public async Task<IEnumerable<Evento>> ObterEventosPorTipoDeCalendarioDreUeMes(long tipoCalendarioId, string dreId, string ueId, int mes, bool EhEventoSme)
         {
-            var query = ObterEventos(dreId, ueId, mes, null, EhEventoSme);
+            var query = ObterEventos(dreId, ueId, mes, null, EhEventoSme, !EhEventoSme);
             return await database.Conexao.QueryAsync<Evento>(query.ToString(), new { tipoCalendarioId, dreId, ueId, mes });
         }
 
@@ -1135,7 +1135,7 @@ namespace SME.SGP.Dados.Repositorios
 
         #endregion Quantidade De Eventos Por Dia
 
-        private string ObterEventos(string dreId, string ueId, int? mes = null, DateTime? data = null, bool EhEventoSme = false)
+        private string ObterEventos(string dreId, string ueId, int? mes = null, DateTime? data = null, bool EhEventoSme = false, bool naoTrazerSme = false)
         {
             StringBuilder query = new StringBuilder();
             MontaQueryCabecalho(query);
@@ -1193,7 +1193,7 @@ namespace SME.SGP.Dados.Repositorios
                     query.AppendLine("and e.data_fim >= @data");
                 }
 
-                if (!string.IsNullOrEmpty(dreId) || !string.IsNullOrEmpty(ueId))
+                if ((!string.IsNullOrEmpty(dreId) || !string.IsNullOrEmpty(ueId)) && !naoTrazerSme)
                 {
                     query.AppendLine("UNION");
                     MontaQueryCabecalho(query);

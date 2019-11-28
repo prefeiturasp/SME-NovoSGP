@@ -11,7 +11,7 @@ import { useSelector } from 'react-redux';
 
 const PlanoAula = (props) => {
   const { planoAula, ehRegencia, listaMaterias, disciplinaIdSelecionada, dataAula, ehProfessorCj,
-    ehEja, setModoEdicao, permissoesTela, somenteConsulta } = props;
+    ehEja, setModoEdicao, permissoesTela, somenteConsulta, ehProfessor } = props;
 
   const [desabilitarCampos, setDesabilitarCampos] = useState(false);
   const usuario = useSelector(store => store.usuario);
@@ -175,7 +175,7 @@ const PlanoAula = (props) => {
                 <h6 className="d-inline-block font-weight-bold my-0 fonte-14 w-100">
                   Objetivos de aprendizagem
                 </h6>
-                {ehRegencia ?
+                {ehRegencia || ehProfessor ?
                   materias.map((materia) => {
                     return (
                       <Badge
