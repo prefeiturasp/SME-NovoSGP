@@ -92,8 +92,8 @@ namespace SME.SGP.Aplicacao
             var diasEventosLetivos = comandosDiasLetivos.ObterDias(eventos, diasLetivos, EventoLetivo.Sim);
             var aulas = ObterDias(diasAulas);
 
-            diasEventosNaoLetivos.RemoveAll(x => !diasPeriodoEscolares.Contains(x));
-            aulas.RemoveAll(x => !diasPeriodoEscolares.Contains(x));
+            diasEventosNaoLetivos.RemoveAll(x => diasPeriodoEscolares.Contains(x));
+            aulas.RemoveAll(x => diasPeriodoEscolares.Contains(x));
 
             totalDias.AddRange(aulas);
             totalDias.AddRange(diasEventosLetivos);
