@@ -139,7 +139,7 @@ const FrequenciaPlanoAula = () => {
       api.get(`v1/planos/aulas/${aula.idAula}`)
     const dadosPlano = plano.data;
     if (dadosPlano) {
-      planoAula.quantidadeAulas = dadosPlano.qtdAulas;
+      planoAula.qtdAulas = dadosPlano.qtdAulas;
       if (dadosPlano.id > 0) {
         dadosPlano.objetivosAprendizagemAula.forEach(objetivo => {
           objetivo.selected = true;
