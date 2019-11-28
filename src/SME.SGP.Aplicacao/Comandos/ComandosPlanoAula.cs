@@ -13,6 +13,8 @@ namespace SME.SGP.Aplicacao
         private readonly IRepositorioObjetivoAprendizagemAula repositorioObjetivosAula;
         private readonly IRepositorioAula repositorioAula;
         private readonly IConsultasAbrangencia consultasAbrangencia;
+        private readonly IConsultasObjetivoAprendizagem consultasObjetivosPlanoAnual;
+        private readonly IConsultasPlanoAnual consultasPlanoAnual;
         private readonly IServicoUsuario servicoUsuario;
         private readonly IUnitOfWork unitOfWork;
 
@@ -20,6 +22,8 @@ namespace SME.SGP.Aplicacao
                         IRepositorioObjetivoAprendizagemAula repositorioObjetivosAula,
                         IRepositorioAula repositorioAula,
                         IConsultasAbrangencia consultasAbrangencia,
+                        IConsultasObjetivoAprendizagem consultasObjetivosPlanoAnual,
+                        IConsultasPlanoAnual consultasPlanoAnual,
                         IServicoUsuario servicoUsuario,
                         IUnitOfWork unitOfWork)
         {
@@ -27,6 +31,8 @@ namespace SME.SGP.Aplicacao
             this.repositorioObjetivosAula = repositorioObjetivosAula;
             this.repositorioAula = repositorioAula;
             this.consultasAbrangencia = consultasAbrangencia;
+            this.consultasObjetivosPlanoAnual = consultasObjetivosPlanoAnual;
+            this.consultasPlanoAnual = consultasPlanoAnual;
             this.unitOfWork = unitOfWork;
             this.servicoUsuario = servicoUsuario;
         }
@@ -42,7 +48,7 @@ namespace SME.SGP.Aplicacao
             PlanoAula planoAula = await repositorio.ObterPlanoAulaPorAula(planoAulaDto.AulaId);
             planoAula = MapearParaDominio(planoAulaDto, planoAula);
 
-            if (planoAulaDto.ObjetivosAprendizagemAula == null || !planoAulaDto.ObjetivosAprendizagemAula.Any())
+            if (planoAulaDto.ObjetivosAprendizagemJurema == null || !planoAulaDto.ObjetivosAprendizagemJurema.Any())
             {
                 var permitePlanoSemObjetivos = false;
 
@@ -60,26 +66,29 @@ namespace SME.SGP.Aplicacao
                 if (!permitePlanoSemObjetivos)
                 {
                     var usuario = await servicoUsuario.ObterUsuarioLogado();
-                    permitePlanoSemObjetivos = usuario.PossuiPerfilCJ();
+                    permitePlanoSemObjetivos = usuario.EhProfessorCj();
                 }
 
                 if (!permitePlanoSemObjetivos)
                     throw new NegocioException("A seleção de objetivos de aprendizagem é obrigatória para criação do plano de aula");
             }
 
+            var bimestre = (aula.DataAula.Month + 2) / 3;
+            var planoAnualId = await consultasPlanoAnual.ObterIdPlanoAnualPorAnoEscolaBimestreETurma(
+                        aula.DataAula.Year, aula.UeId, long.Parse(aula.TurmaId), bimestre, long.Parse(aula.DisciplinaId));
+
             using (var transacao = unitOfWork.IniciarTransacao())
             {
                 repositorio.Salvar(planoAula);
                 // Salvar Objetivos
                 await repositorioObjetivosAula.LimparObjetivosAula(planoAula.Id);
-                if (planoAulaDto.ObjetivosAprendizagemAula != null)
-                    foreach (var objetivoAprendizagem in planoAulaDto.ObjetivosAprendizagemAula)
+                if (planoAulaDto.ObjetivosAprendizagemJurema != null)
+                    foreach(var objetivoJuremaId in planoAulaDto.ObjetivosAprendizagemJurema)
                     {
-                        planoAulaDto.ObjetivosAprendizagemAula.ForEach(objetivoId =>
-                        {
-                            repositorioObjetivosAula.Salvar(new ObjetivoAprendizagemAula(planoAula.Id, objetivoId));
-                        });
+                        var objetivoPlanoAnualId = await consultasObjetivosPlanoAnual
+                                .ObterIdPorObjetivoAprendizagemJurema(planoAnualId, objetivoJuremaId);
 
+                        repositorioObjetivosAula.Salvar(new ObjetivoAprendizagemAula(planoAula.Id, objetivoPlanoAnualId));
                     }
 
                 unitOfWork.PersistirTransacao();

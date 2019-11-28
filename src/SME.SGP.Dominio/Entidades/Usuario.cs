@@ -13,6 +13,7 @@ namespace SME.SGP.Dominio
         private readonly Guid PERFIL_CP = Guid.Parse("44E1E074-37D6-E911-ABD6-F81654FE895D");
         private readonly Guid PERFIL_DIRETOR = Guid.Parse("46E1E074-37D6-E911-ABD6-F81654FE895D");
         private readonly Guid PERFIL_PROFESSOR = Guid.Parse("40E1E074-37D6-E911-ABD6-F81654FE895D");
+        private readonly Guid PERFIL_SECRETARIO = Guid.Parse("43E1E074-37D6-E911-ABD6-F81654FE895D");
         private readonly Guid PERFIL_SUPERVISOR = Guid.Parse("4EE1E074-37D6-E911-ABD6-F81654FE895D");
         public string CodigoRf { get; set; }
         public string Email { get; set; }
@@ -65,6 +66,11 @@ namespace SME.SGP.Dominio
         public bool EhProfessor()
         {
             return PerfilAtual == PERFIL_PROFESSOR;
+        }
+
+        public bool EhProfessorCj()
+        {
+            return PerfilAtual == PERFIL_CJ;
         }
 
         public void FinalizarRecuperacaoSenha()
@@ -124,14 +130,12 @@ namespace SME.SGP.Dominio
                 throw new NegocioException("É necessário informar a UE.");
             }
 
-            if ((evento.TipoEvento.LocalOcorrencia == EventoLocalOcorrencia.SME ||
-                 evento.TipoEvento.LocalOcorrencia == EventoLocalOcorrencia.SMEUE) &&
-                 !PossuiPerfilSme())
+            if (evento.TipoEvento.LocalOcorrencia == EventoLocalOcorrencia.SME && !PossuiPerfilSme())
             {
                 throw new NegocioException("Somente usuários da SME podem criar este tipo de evento.");
             }
 
-            if (evento.TipoEvento.LocalOcorrencia != EventoLocalOcorrencia.UE && !PossuiPerfilSmeOuDre())
+            if (evento.TipoEvento.LocalOcorrencia == EventoLocalOcorrencia.DRE && (!PossuiPerfilDre() || !PossuiPerfilSme()))
             {
                 throw new NegocioException("Somente usuários da SME ou da DRE podem criar este tipo de evento.");
             }
@@ -157,6 +161,14 @@ namespace SME.SGP.Dominio
         public bool PodeReiniciarSenha()
         {
             return !string.IsNullOrEmpty(Email);
+        }
+
+        public bool PodeVisualizarEventosOcorrenciaDre()
+        {
+            var perfilAtual = Perfis.FirstOrDefault(a => a.CodigoPerfil == PerfilAtual);
+            if (perfilAtual.Tipo == TipoPerfil.UE)
+                return (PerfilAtual == PERFIL_DIRETOR || PerfilAtual == PERFIL_AD || PerfilAtual == PERFIL_CP || PerfilAtual == PERFIL_SECRETARIO);
+            else return true;
         }
 
         public bool PossuiPerfilCJ()
@@ -196,9 +208,9 @@ namespace SME.SGP.Dominio
             return Perfis != null && Perfis.Any(c => c.Tipo == TipoPerfil.UE);
         }
 
-        public bool TemPerfilSupervisorOuDiretor(Guid perfilAtual)
+        public bool TemPerfilSupervisorOuDiretor()
         {
-            return (perfilAtual == PERFIL_DIRETOR || perfilAtual == PERFIL_SUPERVISOR);
+            return (PerfilAtual == PERFIL_DIRETOR || PerfilAtual == PERFIL_SUPERVISOR);
         }
 
         public bool TokenRecuperacaoSenhaEstaValido()

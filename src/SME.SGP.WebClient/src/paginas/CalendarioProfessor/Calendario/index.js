@@ -255,7 +255,7 @@ const CalendarioProfessor = () => {
       eventoAulaCalendarioEdicao &&
       eventoAulaCalendarioEdicao.unidadeEscolar
     ) {
-      setDreSelecionada(eventoAulaCalendarioEdicao.unidadeEscolar);
+      setUnidadeEscolarSelecionada(eventoAulaCalendarioEdicao.unidadeEscolar);
     }
   }, [unidadesEscolares]);
 
@@ -311,6 +311,16 @@ const CalendarioProfessor = () => {
 
   const [turmas, setTurmas] = useState([]);
   const [turmaSelecionada, setTurmaSelecionada] = useState(undefined);
+
+  useEffect(() => {
+    if (
+      turmas &&
+      eventoAulaCalendarioEdicao &&
+      eventoAulaCalendarioEdicao.turma
+    ) {
+      setTurmaSelecionada(eventoAulaCalendarioEdicao.turma);
+    }
+  }, [turmas]);
 
   const aoSelecionarTurma = turma => {
     setTurmaSelecionada(turma);

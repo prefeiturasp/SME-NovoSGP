@@ -53,7 +53,10 @@ function UeDropDown({ form, onChange, dreId }) {
 }
 
 UeDropDown.propTypes = {
-  form: PropTypes.objectOf(PropTypes.object),
+  form: PropTypes.oneOfType([
+    PropTypes.objectOf(PropTypes.object),
+    PropTypes.any,
+  ]),
   onChange: PropTypes.func,
   dreId: PropTypes.string,
 };

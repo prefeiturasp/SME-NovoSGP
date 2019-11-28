@@ -335,7 +335,7 @@ namespace SME.SGP.Aplicacao.Integracoes
         {
             var parametros = JsonConvert.SerializeObject(usuarioId.ToString());
 
-            var resposta = await httpClient.PostAsync("autenticacaoSgp/RemoverPerfilCJ", new StringContent(parametros));
+            var resposta = await httpClient.PostAsync("autenticacaoSgp/RemoverPerfilCJ", new StringContent(parametros, Encoding.UTF8, "application/json-patch+json"));
 
             if (resposta.IsSuccessStatusCode)
                 return;

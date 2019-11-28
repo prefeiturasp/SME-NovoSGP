@@ -11,6 +11,7 @@ namespace SME.SGP.Aplicacao.Teste.Comandos
     public class ComandosUsuarioTeste
     {
         private readonly ComandosUsuario comandosUsuario;
+        private readonly Mock<IRepositorioAtribuicaoEsporadica> repositorioAtribuicaoEsporadica;
         private readonly Mock<IRepositorioUsuario> repositorioUsuario;
         private readonly Mock<IServicoAbrangencia> servicoAbrangencia;
         private readonly Mock<IServicoAutenticacao> servicoAutenticacao;
@@ -32,9 +33,10 @@ namespace SME.SGP.Aplicacao.Teste.Comandos
             servicoEmail = new Mock<IServicoEmail>();
             var mockConfiguration = new Mock<IConfiguration>();
             servicoAbrangencia = new Mock<IServicoAbrangencia>();
+            repositorioAtribuicaoEsporadica = new Mock<IRepositorioAtribuicaoEsporadica>();
 
             comandosUsuario = new ComandosUsuario(repositorioUsuario.Object, servicoAutenticacao.Object, servicoUsuario.Object, servicoPerfil.Object, servicoEOL.Object, servicoTokenJwt.Object, servicoEmail.Object,
-                mockConfiguration.Object, repositorioCache.Object, servicoAbrangencia.Object);
+                mockConfiguration.Object, repositorioCache.Object, servicoAbrangencia.Object, repositorioAtribuicaoEsporadica.Object);
         }
 
         [Fact]
