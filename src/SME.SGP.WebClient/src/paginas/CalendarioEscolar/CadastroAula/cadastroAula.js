@@ -258,7 +258,7 @@ const CadastroAula = ({ match }) => {
       `v1/grades/aulas/turmas/${turmaId}/disciplinas/${id}`,
       {
         params: {
-          data: dataAula.format('YYYY-MM-DD'),
+          data: dataAula?dataAula.format('YYYY-MM-DD'):'',
         },
       }
     );
@@ -486,13 +486,12 @@ const CadastroAula = ({ match }) => {
                 </div>
                 <div className="col-sm-12 col-md-12 col-lg-12 col-xl-7 mb-2">
                   <RadioGroupButton
-                    desabilitado={!novoRegistro}
                     id="recorrencia"
                     label="Recorrência"
                     form={form}
                     opcoes={opcoesRecorrencia}
                     name="recorrenciaAula"
-                    desabilitado={ehReposicao}
+                    desabilitado={ehReposicao || !novoRegistro}
                     onChange={e => {
                       onChangeCampos();
                       montaValidacoes(0, e.target.value, form);
