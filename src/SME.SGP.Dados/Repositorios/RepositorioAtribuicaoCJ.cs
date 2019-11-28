@@ -14,16 +14,13 @@ namespace SME.SGP.Dados.Repositorios
         {
         }
 
-        public async Task<IEnumerable<AtribuicaoCJ>> ObterPorComponenteTurmaModalidadeUe(Modalidade? modalidade, string turmaId, string ueId, long componenteCurricularId)
+        public async Task<IEnumerable<AtribuicaoCJ>> ObterPorComponenteTurmaModalidadeUe(Modalidade? modalidade, string turmaId, string ueId, string disciplinaId)
         {
             var query = new StringBuilder();
 
             query.AppendLine("select *");
-
             query.AppendLine("from");
             query.AppendLine("atribuicao_cj a");
-            query.AppendLine("inner join componente_curricular cc");
-            query.AppendLine("on a.componente_curricular_id = cc.id");
             query.AppendLine("where");
 
             if (modalidade.HasValue)
@@ -35,20 +32,16 @@ namespace SME.SGP.Dados.Repositorios
             if (!string.IsNullOrEmpty(turmaId))
                 query.AppendLine("and a.turma_id = @turmaId");
 
-            if (componenteCurricularId > 0)
-                query.AppendLine("and a.componente_curricular_id = @componenteCurricularId");
+            if (!string.IsNullOrEmpty(disciplinaId))
+                query.AppendLine("and a.disciplina_id = @disciplinaId");
 
-            return (await database.Conexao.QueryAsync<AtribuicaoCJ, ComponenteCurricular, AtribuicaoCJ>(query.ToString(), (atribuicaoCJ, componenteCurricular) =>
-            {
-                atribuicaoCJ.ComponenteCurricular = componenteCurricular;
-                return atribuicaoCJ;
-            }, new
+            return (await database.Conexao.QueryAsync<AtribuicaoCJ>(query.ToString(), new
             {
                 modalidade = (int)modalidade,
                 ueId,
                 turmaId,
-                componenteCurricularId
-            }, splitOn: "Id, Id"));
+                disciplinaId
+            }));
         }
     }
 }

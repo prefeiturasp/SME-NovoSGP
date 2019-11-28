@@ -21,7 +21,7 @@ namespace SME.SGP.Api.Controllers
             retorno.Add(new AtribuicaoCJListaRetornoDto()
             {
                 Id = 1,
-                ComponentesCurriculares = new string[] { "Matemática" },
+                Disciplinas = new string[] { "Matemática" },
                 Modalidade = "Fundamental",
                 Turma = "1A"
             });
@@ -29,7 +29,7 @@ namespace SME.SGP.Api.Controllers
             retorno.Add(new AtribuicaoCJListaRetornoDto()
             {
                 Id = 2,
-                ComponentesCurriculares = new string[] { "Matemática", "Geografia", "História" },
+                Disciplinas = new string[] { "Matemática", "Geografia", "História" },
                 Modalidade = "EJA",
                 Turma = "4A"
             });
@@ -37,7 +37,7 @@ namespace SME.SGP.Api.Controllers
             retorno.Add(new AtribuicaoCJListaRetornoDto()
             {
                 Id = 3,
-                ComponentesCurriculares = new string[] { "Ciências" },
+                Disciplinas = new string[] { "Ciências" },
                 Modalidade = "Ensino Médio",
                 Turma = "3C"
             });
@@ -60,8 +60,8 @@ namespace SME.SGP.Api.Controllers
 
             retorno.Itens.Add(new AtribuicaoCJTitularesRetornoItemDto()
             {
-                ComponenteCurricular = "Matemática",
-                ComponenteCurricularId = "1",
+                Disciplina = "Matemática",
+                DisciplinaId = "1",
                 ProfessorTitular = "Sávio da Silveira Santos",
                 Substituir = true,
                 ProfessorTitularRf = "123"
@@ -69,8 +69,8 @@ namespace SME.SGP.Api.Controllers
 
             retorno.Itens.Add(new AtribuicaoCJTitularesRetornoItemDto()
             {
-                ComponenteCurricular = "Geografia",
-                ComponenteCurricularId = "2",
+                Disciplina = "Geografia",
+                DisciplinaId = "2",
                 ProfessorTitular = "João Paulo da La Penha",
                 Substituir = false,
                 ProfessorTitularRf = "12"
@@ -78,8 +78,8 @@ namespace SME.SGP.Api.Controllers
 
             retorno.Itens.Add(new AtribuicaoCJTitularesRetornoItemDto()
             {
-                ComponenteCurricular = "História",
-                ComponenteCurricularId = "3",
+                Disciplina = "História",
+                DisciplinaId = "3",
                 ProfessorTitular = "Iranilda Junqueira",
                 Substituir = false,
                 ProfessorTitularRf = "111"
@@ -89,9 +89,9 @@ namespace SME.SGP.Api.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Post([FromBody]AtribuicaoCJPersistenciaDto[] atribuicaoCJPersistenciaDtos, [FromServices] IComandosAtribuicaoCJ comandosAtribuicaoCJ)
+        public async Task<IActionResult> Post([FromBody]AtribuicaoCJPersistenciaDto atribuicaoCJPersistenciaDto, [FromServices] IComandosAtribuicaoCJ comandosAtribuicaoCJ)
         {
-            await comandosAtribuicaoCJ.Salvar(atribuicaoCJPersistenciaDtos);
+            await comandosAtribuicaoCJ.Salvar(atribuicaoCJPersistenciaDto);
             return Ok();
         }
     }
