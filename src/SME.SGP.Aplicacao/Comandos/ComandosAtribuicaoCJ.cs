@@ -2,6 +2,7 @@
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
@@ -19,9 +20,11 @@ namespace SME.SGP.Aplicacao
         {
             foreach (var atribuicaoDto in atribuicaoCJPersistenciaDtos)
             {
-                var atribuicao = await repositorioAtribuicaoCJ.ObterPorComponenteTurmaModalidadeUe(atribuicaoDto.Modalidade, atribuicaoDto.TurmaId, atribuicaoDto.UeId, atribuicaoDto.ComponenteCurricularId);
-                if (atribuicao != null)
+                var atribuicaoCJs = await repositorioAtribuicaoCJ.ObterPorComponenteTurmaModalidadeUe(atribuicaoDto.Modalidade, atribuicaoDto.TurmaId, atribuicaoDto.UeId, atribuicaoDto.ComponenteCurricularId);
+                if (atribuicaoCJs.Any())
                 {
+                    var atribuicao = atribuicaoCJs.FirstOrDefault();
+
                     if (atribuicao.Substituir != atribuicaoDto.Substituir)
                     {
                         atribuicao.Substituir = atribuicaoDto.Substituir;
