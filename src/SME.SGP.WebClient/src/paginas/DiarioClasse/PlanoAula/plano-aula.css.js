@@ -19,9 +19,14 @@ cursor: pointer;
 `;
 
 export const Corpo = styled.div`
-.selecionado{
+.objetivo-selecionado{
   background: ${Base.AzulAnakiwa} !important;
 }
+
+.badge-selecionado {
+    background: ${Base.CinzaBadge} !important;
+    border-color: ${Base.CinzaBadge} !important;
+  }
 `;
 
 export const Descritivo = styled.h6`
@@ -30,14 +35,12 @@ color: ${Base.CinzaBotao} !important;
 `;
 
 export const Badge = styled.button`
+  margin-top: 10px;
+
   &:last-child {
     margin-right: 10 !important;
   }
 
-  &[aria-pressed='true'] {
-    background: ${Base.CinzaBadge} !important;
-    border-color: ${Base.CinzaBadge} !important;
-  }
 `;
 
 export const HabilitaObjetivos = styled.div`
