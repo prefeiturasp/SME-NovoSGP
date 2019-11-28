@@ -2,6 +2,7 @@
 {
     public class AtribuicaoCJ : EntidadeBase
     {
+        public ComponenteCurricular ComponenteCurricular { get; set; }
         public long ComponenteCurricularId { get; set; }
         public string DreId { get; set; }
         public Modalidade Modalidade { get; set; }

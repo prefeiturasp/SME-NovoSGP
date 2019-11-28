@@ -13,6 +13,8 @@ namespace SME.SGP.Dados.Mapeamentos
             Map(c => c.UeId).ToColumn("ue_id");
             Map(c => c.ProfessorRf).ToColumn("professor_rf");
             Map(c => c.TurmaId).ToColumn("turma_id");
+
+            Map(c => c.ComponenteCurricular).Ignore();
         }
     }
 }
