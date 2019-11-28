@@ -51,6 +51,39 @@ namespace SME.SGP.Aplicacao
             return retorno;
         }
 
+        public async Task<long> ObterIdPlanoAnualPorAnoEscolaBimestreETurma(int ano, string escolaId, long turmaId, int bimestre, long disciplinaId)
+        {
+            var plano = repositorioPlanoAnual.ObterPlanoAnualSimplificadoPorAnoEscolaBimestreETurma(ano, escolaId, turmaId, bimestre, disciplinaId);
+            return plano.Id;
+        }
+
+        public async Task<PlanoAnualObjetivosDisciplinaDto> ObterObjetivosEscolaTurmaDisciplina(FiltroPlanoAnualDisciplinaDto filtro)
+        {
+            var planoAnual = repositorioPlanoAnual.ObterPlanoObjetivosEscolaTurmaDisciplina(filtro.AnoLetivo, 
+                                                            filtro.EscolaId, 
+                                                            filtro.TurmaId, 
+                                                            filtro.Bimestre, 
+                                                            filtro.ComponenteCurricularEolId,
+                                                            filtro.DisciplinaId);
+            if (planoAnual != null)
+            {
+                var objetivosAprendizagem = await consultasObjetivoAprendizagem.Listar();
+
+                if (planoAnual.IdsObjetivosAprendizagem == null)
+                    return planoAnual;
+
+                foreach (var idObjetivo in planoAnual.IdsObjetivosAprendizagem)
+                {
+                    var objetivo = objetivosAprendizagem.FirstOrDefault(c => c.Id == idObjetivo);
+                    if (objetivo != null)
+                    {
+                        planoAnual.ObjetivosAprendizagem.Add(objetivo);
+                    }
+                }
+            }
+            return planoAnual;
+        }
+
         public async Task<PlanoAnualCompletoDto> ObterPorEscolaTurmaAnoEBimestre(FiltroPlanoAnualDto filtroPlanoAnualDto)
         {
             var planoAnual = repositorioPlanoAnual.ObterPlanoAnualCompletoPorAnoEscolaBimestreETurma(filtroPlanoAnualDto.AnoLetivo, filtroPlanoAnualDto.EscolaId, filtroPlanoAnualDto.TurmaId, filtroPlanoAnualDto.Bimestre, filtroPlanoAnualDto.ComponenteCurricularEolId);

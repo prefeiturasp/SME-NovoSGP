@@ -7,6 +7,8 @@ import PlanoCiclo from '../paginas/Planejamento/PlanoCiclo/planoCiclo';
 import PlanoAnual from '../paginas/Planejamento/PlanoAnual/planoAnual';
 import AtribuicaoSupervisorLista from '../paginas/Gestao/AtribuicaoSupervisor/atribuicaoSupervisorLista';
 import AtribuicaoSupervisorCadastro from '../paginas/Gestao/AtribuicaoSupervisor/atribuicaoSupervisorCadastro';
+import AtribuicaoEsporadicaLista from '../paginas/Gestao/AtribuicaoEsporadica/Lista';
+import AtribuicaoEsporadicaForm from '../paginas/Gestao/AtribuicaoEsporadica/Form';
 import DetalheNotificacao from '~/paginas/Notificacoes/Detalhes/detalheNotificacao';
 import NotificacoesLista from '~/paginas/Notificacoes/Lista/listaNotificacoes';
 import RotaAutenticadaEstruturada from './rotaAutenticadaEstruturada';
@@ -38,15 +40,7 @@ import FrequenciaPlanoAula from '~/paginas/DiarioClasse/FrequenciaPlanoAula/freq
 export default function Rotas() {
   const rotas = new Map();
 
-  rotas.set('/calendario-professor', {
-    breadcrumbName: 'Calendário do Professor',
-    parent: '/',
-    component: CalendarioProfessor,
-    exact: true,
-    tipo: RotasTipo.EstruturadaAutenticada,
-  });
-
-  rotas.set('/calendario-escolar', {
+  rotas.set(RotasDto.CALENDARIO_ESCOLAR, {
     breadcrumbName: 'Calendário Escolar',
     parent: '/',
     component: CalendarioEscolar,
@@ -173,6 +167,37 @@ export default function Rotas() {
     tipo: RotasTipo.EstruturadaAutenticada,
     temPermissionamento: true,
     chavePermissao: RotasDto.ATRIBUICAO_SUPERVISOR_LISTA,
+  });
+
+  rotas.set('/gestao/atribuicao-esporadica', {
+    breadcrumbName: 'Atribuição Esporádica',
+    menu: ['Gestão'],
+    parent: '/',
+    component: AtribuicaoEsporadicaLista,
+    exact: true,
+    tipo: RotasTipo.EstruturadaAutenticada,
+    temPermissionamento: true,
+    chavePermissao: RotasDto.ATRIBUICAO_ESPORADICA_LISTA,
+  });
+
+  rotas.set('/gestao/atribuicao-esporadica/novo', {
+    breadcrumbName: 'Atribuição',
+    parent: '/gestao/atribuicao-esporadica',
+    component: AtribuicaoEsporadicaForm,
+    exact: true,
+    tipo: RotasTipo.EstruturadaAutenticada,
+    temPermissionamento: true,
+    chavePermissao: RotasDto.ATRIBUICAO_ESPORADICA_LISTA,
+  });
+
+  rotas.set('/gestao/atribuicao-esporadica/editar/:id', {
+    breadcrumbName: 'Atribuição',
+    parent: '/gestao/atribuicao-esporadica',
+    component: AtribuicaoEsporadicaForm,
+    exact: true,
+    tipo: RotasTipo.EstruturadaAutenticada,
+    temPermissionamento: true,
+    chavePermissao: RotasDto.ATRIBUICAO_ESPORADICA_LISTA,
   });
 
   rotas.set('/notificacoes/:id', {
@@ -347,10 +372,11 @@ export default function Rotas() {
     breadcrumbName: 'Calendário do Professor',
     menu: ['Calendário Escolar'],
     parent: '/',
-    component: Principal,
+    component: CalendarioProfessor,
     exact: true,
     tipo: RotasTipo.EstruturadaAutenticada,
-    temPermissionamento: false,
+    temPermissionamento: true,
+    chavePermissao: RotasDto.CALENDARIO_PROFESSOR,
   });
 
   rotas.set(RotasDto.CADASTRO_DE_AULA, {
@@ -359,7 +385,8 @@ export default function Rotas() {
     component: CadastroAula,
     exact: true,
     tipo: RotasTipo.EstruturadaAutenticada,
-    temPermissionamento: false,
+    temPermissionamento: true,
+    chavePermissao: RotasDto.CALENDARIO_PROFESSOR,
   });
 
   rotas.set(`${RotasDto.CADASTRO_DE_AULA}/novo/:tipoCalendarioId`, {
@@ -368,7 +395,8 @@ export default function Rotas() {
     component: CadastroAula,
     exact: true,
     tipo: RotasTipo.EstruturadaAutenticada,
-    temPermissionamento: false,
+    temPermissionamento: true,
+    chavePermissao: RotasDto.CALENDARIO_PROFESSOR,
   });
 
   rotas.set(`${RotasDto.CADASTRO_DE_AULA}/editar/:id`, {
@@ -377,7 +405,8 @@ export default function Rotas() {
     component: CadastroAula,
     exact: true,
     tipo: RotasTipo.EstruturadaAutenticada,
-    temPermissionamento: false,
+    temPermissionamento: true,
+    chavePermissao: RotasDto.CALENDARIO_PROFESSOR,
   });
 
   rotas.set(`${RotasDto.FREQUENCIA_PLANO_AULA}`, {

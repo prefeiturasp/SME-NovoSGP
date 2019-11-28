@@ -29,7 +29,7 @@ namespace SME.SGP.Dominio.Servicos.Teste
         }
 
         [Fact]
-        public async Task Deve_Inserir_Feriados_Moveis()
+        public void Deve_Inserir_Feriados_Moveis()
         {
             //ARRANGE
             var servicoferiado = new ServicoFeriadoCalendario(repositorioFeriadoCalendario.Object);
@@ -39,7 +39,7 @@ namespace SME.SGP.Dominio.Servicos.Teste
                 .Returns(Task.FromResult(retorno));
 
             //ACT
-            await servicoferiado.VerficaSeExisteFeriadosMoveisEInclui(2019);
+            servicoferiado.VerficaSeExisteFeriadosMoveisEInclui(2019);
 
             //ASSERT
             Assert.True(true);

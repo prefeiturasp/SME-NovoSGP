@@ -1,6 +1,13 @@
-import { Table } from 'antd';
-import PropTypes from 'prop-types';
 import React, { useState, useEffect } from 'react';
+import PropTypes from 'prop-types';
+
+// Componentes
+import { Table, Icon, Spin } from 'antd';
+
+// Redux
+import { useSelector, useDispatch } from 'react-redux';
+import { setLoaderTabela } from '~/redux/modulos/loader/actions';
+
 import { Container } from './listaPaginada.css';
 import api from '~/servicos/api';
 
@@ -14,7 +21,11 @@ const ListaPaginada = props => {
     multiSelecao,
     onSelecionarLinhas,
     selecionarItems,
+    filtroEhValido,
   } = props;
+
+  const dispatch = useDispatch();
+  const carregando = useSelector(store => store.loader.loaderTabela);
 
   const [total, setTotal] = useState(0);
   const [linhas, setLinhas] = useState([]);
@@ -76,10 +87,18 @@ const ListaPaginada = props => {
   };
 
   const filtrar = () => {
-    api.get(`${url}?${obterPaginacao()}`, { params: filtro }).then(resposta => {
-      setTotal(resposta.data.totalRegistros);
-      setLinhas(resposta.data.items);
-    });
+    if (!!filtroEhValido && !filtroEhValido) return;
+    dispatch(setLoaderTabela(true));
+    api
+      .get(`${url}?${obterPaginacao()}`, { params: filtro })
+      .then(resposta => {
+        setTotal(resposta.data.totalRegistros);
+        setLinhas(resposta.data.items);
+        dispatch(setLoaderTabela(false));
+      })
+      .catch(err => {
+        dispatch(setLoaderTabela(false));
+      });
   };
 
   useEffect(() => {
@@ -99,6 +118,16 @@ const ListaPaginada = props => {
     }
     setPaginaAtual(novaPagina);
   };
+
+  const IconeCarregando = <Icon type="loading" style={{ fontSize: 54 }} spin />;
+  const Loader = (
+    <Spin
+      tip="Carregando..."
+      size="large"
+      indicator={IconeCarregando}
+      spinning={carregando}
+    />
+  );
 
   return (
     <Container className="table-responsive">
@@ -153,6 +182,7 @@ const ListaPaginada = props => {
           };
         }}
         onChange={executaPaginacao}
+        loading={carregando}
       />
     </Container>
   );

@@ -6,6 +6,7 @@ const RotasDto = {
   PERIODOS_ESCOLARES: '/calendario-escolar/periodos-escolares',
   TIPO_EVENTOS: '/calendario-escolar/tipo-eventos',
   ATRIBUICAO_SUPERVISOR_LISTA: '/gestao/atribuicao-supervisor-lista',
+  ATRIBUICAO_ESPORADICA_LISTA: '/gestao/atribuicao-esporadica',
   MEUS_DADOS: '/meus-dados',
   NOTIFICACOES: '/notificacoes',
   REINICIAR_SENHA: '/usuarios/reiniciar-senha',

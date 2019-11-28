@@ -21,6 +21,7 @@ namespace SME.SGP.Dominio.Servicos.Teste
         private readonly Mock<IRepositorioFeriadoCalendario> repositorioFeriadoCalendario;
         private readonly Mock<IRepositorioPeriodoEscolar> repositorioPeriodoEscolar;
         private readonly Mock<IRepositorioTipoCalendario> repositorioTipoCalendario;
+        private readonly Mock<IServicoDiaLetivo> servicoDiaLetivo;
         private readonly ServicoEvento servicoEvento;
         private readonly Mock<IServicoLog> servicoLog;
         private readonly Mock<IServicoNotificacao> servicoNotificacao;
@@ -52,7 +53,8 @@ namespace SME.SGP.Dominio.Servicos.Teste
                                               mockConfiguration.Object,
                                               unitOfWork.Object,
                                               servicoNotificacao.Object,
-                                              servicoLog.Object);
+                                              servicoLog.Object,
+                                              servicoDiaLetivo.Object);
         }
 
         [Fact]
@@ -106,7 +108,7 @@ namespace SME.SGP.Dominio.Servicos.Teste
             var tipoEvento = new EventoTipo
             {
                 Id = 1,
-                Codigo = (int)TipoEventoEnum.LiberacaoExcepcional,
+                Codigo = (int)TipoEvento.LiberacaoExcepcional,
                 TipoData = EventoTipoData.InicioFim,
                 LocalOcorrencia = EventoLocalOcorrencia.UE
             };
@@ -175,7 +177,7 @@ namespace SME.SGP.Dominio.Servicos.Teste
             var tipoEvento = new EventoTipo
             {
                 Id = 1,
-                Codigo = (int)TipoEventoEnum.LiberacaoExcepcional,
+                Codigo = (int)TipoEvento.LiberacaoExcepcional,
                 TipoData = EventoTipoData.InicioFim,
                 LocalOcorrencia = EventoLocalOcorrencia.UE
             };
@@ -232,7 +234,7 @@ namespace SME.SGP.Dominio.Servicos.Teste
             var tipoEvento = new EventoTipo
             {
                 Id = 1,
-                Codigo = (int)TipoEventoEnum.LiberacaoExcepcional,
+                Codigo = (int)TipoEvento.LiberacaoExcepcional,
                 TipoData = EventoTipoData.InicioFim,
                 LocalOcorrencia = EventoLocalOcorrencia.UE
             };
@@ -357,7 +359,7 @@ namespace SME.SGP.Dominio.Servicos.Teste
                 new Evento() { DataInicio = DateTime.Now, DataFim = DateTime.Now.AddDays(1), Nome = "teste" },
                 new Evento() { DataInicio = DateTime.Now.AddDays(1), DataFim = DateTime.Now.AddDays(3), Nome = "teste" }};
 
-            repositorioEvento.Setup(a => a.ObterEventosPorTipoETipoCalendario((long)TipoEventoEnum.OrganizacaoEscolar, 8)).Returns(Task.FromResult(listaEventosParaValidarPeriodo));
+            repositorioEvento.Setup(a => a.ObterEventosPorTipoETipoCalendario((long)TipoEvento.OrganizacaoEscolar, 8)).Returns(Task.FromResult(listaEventosParaValidarPeriodo));
 
             var usuario = new Usuario();
             var perfilSme = new PrioridadePerfil

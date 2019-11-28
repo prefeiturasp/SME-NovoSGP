@@ -4,7 +4,6 @@ using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -14,13 +13,33 @@ namespace SME.SGP.Aplicacao.Teste.Consultas
     {
         private readonly ConsultasAula consultas;
         private readonly Mock<IRepositorioAula> repositorio;
+        private readonly Mock<IServicoUsuario> servicoUsuario;
 
         public ConsultasAulasTeste()
         {
             repositorio = new Mock<IRepositorioAula>();
-            consultas = new ConsultasAula(repositorio.Object);
+            servicoUsuario = new Mock<IServicoUsuario>();
+            consultas = new ConsultasAula(repositorio.Object, servicoUsuario.Object);
 
             Setup();
+        }
+
+        [Fact]
+        public void DeveObterAulaPorId()
+        {
+            var aulaDto = consultas.BuscarPorId(1);
+
+            Assert.NotNull(aulaDto);
+            Assert.True(aulaDto.Id == 1);
+            Assert.True(aulaDto.Quantidade == 3);
+        }
+
+        [Fact]
+        public async Task DeveObterQuantidadeAulas()
+        {
+            var qtd = await consultas.ObterQuantidadeAulasTurmaSemana("123", "7", "3");
+
+            Assert.True(qtd == 4);
         }
 
         private void Setup()
@@ -30,7 +49,7 @@ namespace SME.SGP.Aplicacao.Teste.Consultas
             {
                 Id = 1,
                 DataAula = new DateTime(2019, 11, 15),
-                ProfessorId = 123,
+                ProfessorRf = "123",
                 Quantidade = 3
             };
 
@@ -44,26 +63,8 @@ namespace SME.SGP.Aplicacao.Teste.Consultas
                 new AulasPorTurmaDisciplinaDto() { ProfessorId = 1, Quantidade = 3, DataAula = new System.DateTime(2019,11,15) },
             };
 
-            repositorio.Setup(c => c.ObterAulasTurmaDisciplina(It.IsAny<string>(), It.IsAny<string>()))
+            repositorio.Setup(c => c.ObterAulasTurmaDisciplinaSemana(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()))
                 .Returns(Task.FromResult(aulas));
-        }
-
-        [Fact]
-        public async Task DeveObterAulaPorId()
-        {
-            var aulaDto = consultas.BuscarPorId(1);
-
-            Assert.NotNull(aulaDto);
-            Assert.True(aulaDto.Id == 1);
-            Assert.True(aulaDto.Quantidade == 3);
-        }
-
-        [Fact]
-        public async Task DeveObterQuantidadeAulas()
-        {
-            var qtd = await consultas.ObterQuantidadeAulasTurma("123", "7");
-
-            Assert.True(qtd == 4);
         }
     }
 }
