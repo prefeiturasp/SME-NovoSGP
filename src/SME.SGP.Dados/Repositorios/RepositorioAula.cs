@@ -190,7 +190,7 @@ namespace SME.SGP.Dados.Repositorios
                                  a.disciplina_id,
                                  a.turma_id,
                                  a.tipo_calendario_id,
-                                 a.professor_id,
+                                 a.professor_rf,
                                  a.quantidade,
                                  a.data_aula,
                                  a.recorrencia_aula,

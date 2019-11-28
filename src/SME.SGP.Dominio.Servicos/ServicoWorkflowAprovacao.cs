@@ -115,10 +115,10 @@ namespace SME.SGP.Dominio.Servicos
             aula.AprovaWorkflow();
             repositorioAula.Salvar(aula);
 
-            NotificarCriadorDaAulaQueFoiAprovadaAsync(aula, codigoDaNotificacao);
+            NotificarCriadorDaAulaQueFoiAprovada(aula, codigoDaNotificacao);
         }
 
-        private async void NotificarCriadorDaAulaQueFoiAprovadaAsync(Aula aula, long codigoDaNotificacao)
+        private async void NotificarCriadorDaAulaQueFoiAprovada(Aula aula, long codigoDaNotificacao)
         {
             var loginAtual = servicoUsuario.ObterLoginAtual();
             var perfilAtual = servicoUsuario.ObterPerfilAtual();
@@ -128,6 +128,7 @@ namespace SME.SGP.Dominio.Servicos
                 throw new NegocioException("Abrangência da turma não localizada.");
 
             var usuario = servicoUsuario.ObterUsuarioPorCodigoRfLoginOuAdiciona(aula.CriadoRF);
+            
 
             repositorioNotificacao.Salvar(new Notificacao()
             {
@@ -136,10 +137,10 @@ namespace SME.SGP.Dominio.Servicos
                 Ano = aula.CriadoEm.Year,
                 DreId = abrangencia.CodigoDre,
                 Categoria = NotificacaoCategoria.Aviso,
-                Titulo = "Criação de Aula de Reposição na turma 4B",
+                Titulo = $"Criação de Aula de Reposição na turma {abrangencia.NomeTurma} ",
                 Tipo = NotificacaoTipo.Calendario,
                 Codigo = codigoDaNotificacao,
-                Mensagem = $" criação de {aula.Quantidade} aula(s) de reposição de {abrangencia.NomeModalidade} na turma {abrangencia.NomeTurma} da {abrangencia.NomeUe} ({abrangencia.NomeDre}) foi aceita."
+                Mensagem = $" Criação de {aula.Quantidade} aula(s) de reposição de {abrangencia.NomeModalidade} na turma {abrangencia.NomeTurma} da {abrangencia.NomeUe} ({abrangencia.NomeDre}) foi aceita."
             });
         }
 
