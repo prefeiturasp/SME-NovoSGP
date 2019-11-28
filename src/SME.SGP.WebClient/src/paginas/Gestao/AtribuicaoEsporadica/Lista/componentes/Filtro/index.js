@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 
 // Formulario
@@ -6,10 +6,10 @@ import { Form, Formik } from 'formik';
 import * as Yup from 'yup';
 
 // Redux
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 
 // Componentes
-import { Grid, Localizador } from '~/componentes';
+import { Grid, Localizador, Tag } from '~/componentes';
 import DreDropDown from '../../../componentes/DreDropDown';
 import UeDropDown from '../../../componentes/UeDropDown';
 import AnoLetivoDropDown from '../../../componentes/AnoLetivoDropDown';
@@ -33,29 +33,30 @@ function Filtro({ onFiltrar }) {
     professorRf: '',
   });
   const [dreId, setDreId] = useState('');
-  const [anoLetivo, setAnoLetivo] = useState('');
+  const anoLetivo = useSelector(
+    store => store.usuario.turmaSelecionada.anoLetivo
+  );
 
   const validacoes = () => {
     return Yup.object({
-      anoLetivo: Yup.string().required(),
+      dreId: Yup.string().required(),
+      ueId: Yup.string().required(),
     });
   };
 
   const validarFiltro = valores => {
     const formContext = refForm && refForm.getFormikContext();
     if (formContext.isValid && Object.keys(formContext.errors).length === 0) {
-      onFiltrar(valores);
+      onFiltrar({
+        ...valores,
+        anoLetivo,
+      });
     }
   };
 
   const onChangeDre = valor => {
     setDreId(valor);
     dispatch(selecionarDre(valor));
-  };
-
-  const onChangeAnoLetivo = valor => {
-    setAnoLetivo(valor);
-    dispatch(selecionarAnoLetivo(valor));
   };
 
   return (
@@ -73,11 +74,9 @@ function Filtro({ onFiltrar }) {
         <Form className="col-md-12 mb-4">
           <Row className="row mb-2">
             <Grid cols={2}>
-              <AnoLetivoDropDown
-                form={form}
-                name="anoLetivo"
-                onChange={valor => onChangeAnoLetivo(valor)}
-              />
+              <Tag tamanho="grande" fluido centralizado>
+                {anoLetivo}
+              </Tag>
             </Grid>
             <Grid cols={5}>
               <DreDropDown form={form} onChange={valor => onChangeDre(valor)} />

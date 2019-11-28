@@ -104,7 +104,12 @@ function AtribuicaoEsporadicaLista() {
   };
 
   const onChangeFiltro = valoresFiltro => {
-    setFiltro(valoresFiltro);
+    setFiltro({
+      AnoLetivo: valoresFiltro.anoLetivo,
+      DreId: valoresFiltro.dreId,
+      UeId: valoresFiltro.ueId,
+      ProfessorRF: valoresFiltro.professorRf,
+    });
   };
 
   const validarFiltro = () => {

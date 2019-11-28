@@ -9,9 +9,6 @@ import { Grid, Label } from '~/componentes';
 // Services
 import service from './services/LocalizadorService';
 
-// Funções
-import { valorNuloOuVazio } from '~/utils/funcoes/gerais';
-
 function Localizador({ onChange, showLabel, form, dreId, anoLetivo }) {
   const [dataSource, setDataSource] = useState([]);
   const [pessoaSelecionada, setPessoaSelecionada] = useState({});
