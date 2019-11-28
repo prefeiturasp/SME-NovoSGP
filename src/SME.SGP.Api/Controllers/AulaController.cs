@@ -19,8 +19,9 @@ namespace SME.SGP.Api.Controllers
         [Permissao(Permissao.CP_A, Policy = "Bearer")]
         public async Task<IActionResult> Alterar([FromBody]AulaDto dto, long id, [FromServices]IComandosAula comandos)
         {
-            await comandos.Alterar(dto, id);
-            return Ok();
+            var retorno = new RetornoBaseDto();
+            retorno.Mensagens.Add(await comandos.Alterar(dto, id));
+            return Ok(retorno);
         }
 
         [HttpGet("{id}")]

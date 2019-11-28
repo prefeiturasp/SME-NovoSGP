@@ -4,6 +4,6 @@ namespace SME.SGP.Dominio.Interfaces
 {
     public interface IServicoAula
     {
-        Task<string> Salvar(Aula aula, Usuario usuario);
+        Task<string> Salvar(Aula aula, Usuario usuario, RecorrenciaAula recorrencia);
     }
 }
