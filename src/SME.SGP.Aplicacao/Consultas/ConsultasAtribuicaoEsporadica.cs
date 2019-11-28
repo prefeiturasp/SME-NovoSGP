@@ -36,7 +36,7 @@ namespace SME.SGP.Aplicacao.Consultas
                !retornoConsultaPaginada.Items.Any() ||
                retornoConsultaPaginada.Items.ElementAt(0).Id == 0;
 
-            retorno.Items = !nenhumItemEncontrado ? ListaEntidadeParaListaDto(retornoConsultaPaginada.Items, filtro.AnoLetivo) : null;
+            retorno.Items = !nenhumItemEncontrado ? ListaEntidadeParaListaDto(retornoConsultaPaginada.Items) : null;
 
             return retorno;
         }
@@ -74,9 +74,9 @@ namespace SME.SGP.Aplicacao.Consultas
             };
         }
 
-        private IEnumerable<AtribuicaoEsporadicaDto> ListaEntidadeParaListaDto(IEnumerable<AtribuicaoEsporadica> entidades, int anoLetivo)
+        private IEnumerable<AtribuicaoEsporadicaDto> ListaEntidadeParaListaDto(IEnumerable<AtribuicaoEsporadica> entidades)
         {
-            var professores = servicoEOL.ObterListaResumosPorListaRF(entidades.Select(x => x.ProfessorRf), anoLetivo).Result;
+            var professores = servicoEOL.ObterListaNomePorListaRF(entidades.Select(x => x.ProfessorRf)).Result;
 
             return entidades.Select(x => EntidadeParaDto(x, false, ObterNomeProfessor(professores, x.ProfessorRf)));
         }
