@@ -85,8 +85,8 @@ function AtribuicaoEsporadicaLista() {
         if (excluir) {
           const mensagemSucesso = `${
             itensSelecionados.length > 1
-              ? 'Eventos excluídos'
-              : 'Evento excluído'
+              ? 'Atribuições excluídas'
+              : 'Atribuição excluída'
           } com sucesso.`;
           sucesso(mensagemSucesso);
           setFiltro({
