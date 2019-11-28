@@ -1,22 +1,45 @@
 ﻿using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
+using SME.SGP.Infra.Interfaces;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
-    public class ConsultaAtividadeAvaliativa : IConsultaAtividadeAvaliativa
+    public class ConsultaAtividadeAvaliativa : ConsultasBase, IConsultaAtividadeAvaliativa
     {
         private readonly IRepositorioAtividadeAvaliativa repositorioAtividadeAvaliativa;
 
-        public ConsultaAtividadeAvaliativa(IRepositorioAtividadeAvaliativa repositorioAtividadeAvaliativa)
+        public ConsultaAtividadeAvaliativa(IRepositorioAtividadeAvaliativa repositorioAtividadeAvaliativa
+            , IContextoAplicacao contextoAplicacao) : base(contextoAplicacao)
 
         {
             this.repositorioAtividadeAvaliativa = repositorioAtividadeAvaliativa ?? throw new System.ArgumentNullException(nameof(repositorioAtividadeAvaliativa));
         }
 
+        public async Task<PaginacaoResultadoDto<AtividadeAvaliativaCompletaDto>> ListarPaginado(FiltroAtividadeAvaliativaDto filtro)
+        {
+            return MapearParaDtoComPaginacao(await repositorioAtividadeAvaliativa
+                .Listar(filtro.DataAvaliacao.HasValue ? filtro.DataAvaliacao.Value.Date : filtro.DataAvaliacao,
+                        filtro.DreId,
+                        filtro.UeID,
+                        filtro.NomeAvaliacao,
+                        filtro.TipoAvaliacaoId,
+                        filtro.TurmaId,
+                        Paginacao
+                        ));
+        }
+
         public AtividadeAvaliativaCompletaDto ObterPorId(long id)
         {
             return MapearParaDto(repositorioAtividadeAvaliativa.ObterPorId(id));
+        }
+
+        private IEnumerable<AtividadeAvaliativaCompletaDto> MapearAtividadeAvaliativaParaDto(IEnumerable<AtividadeAvaliativa> items)
+        {
+            return items?.Select(c => MapearParaDto(c));
         }
 
         private AtividadeAvaliativaCompletaDto MapearParaDto(AtividadeAvaliativa atividadeAvaliativa)
@@ -37,7 +60,22 @@ namespace SME.SGP.Aplicacao
                 AlteradoRF = atividadeAvaliativa.AlteradoRF,
                 CriadoEm = atividadeAvaliativa.CriadoEm,
                 CriadoPor = atividadeAvaliativa.CriadoPor,
-                CriadoRF = atividadeAvaliativa.CriadoRF
+                CriadoRF = atividadeAvaliativa.CriadoRF,
+                Categoria = atividadeAvaliativa.TipoAvaliacao.Descricao
+            };
+        }
+
+        private PaginacaoResultadoDto<AtividadeAvaliativaCompletaDto> MapearParaDtoComPaginacao(PaginacaoResultadoDto<AtividadeAvaliativa> atividadeAvaliativaPaginado)
+        {
+            if (atividadeAvaliativaPaginado == null)
+            {
+                atividadeAvaliativaPaginado = new PaginacaoResultadoDto<AtividadeAvaliativa>();
+            }
+            return new PaginacaoResultadoDto<AtividadeAvaliativaCompletaDto>
+            {
+                Items = MapearAtividadeAvaliativaParaDto(atividadeAvaliativaPaginado.Items),
+                TotalPaginas = atividadeAvaliativaPaginado.TotalPaginas,
+                TotalRegistros = atividadeAvaliativaPaginado.TotalRegistros
             };
         }
     }

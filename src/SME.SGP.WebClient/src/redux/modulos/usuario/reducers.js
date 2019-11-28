@@ -18,8 +18,10 @@ const inicial = {
   possuiPerfilSmeOuDre: false,
   possuiPerfilDre: false,
   possuiPerfilSme: false,
+  ehProfessorCj: false,
+  ehProfessor:false,
   menu: [],
-  permissoes: []
+  permissoes: [],
 };
 
 export default function usuario(state = inicial, action) {
@@ -41,7 +43,10 @@ export default function usuario(state = inicial, action) {
         draft.possuiPerfilSmeOuDre = action.payload.possuiPerfilSmeOuDre;
         draft.possuiPerfilDre = action.payload.possuiPerfilDre;
         draft.possuiPerfilSme = action.payload.possuiPerfilSme;
+        draft.ehProfessorCj = action.payload.ehProfessorCj;
+        draft.ehProfessor = action.payload.ehProfessor;
         draft.menu = action.payload.menu;
+        draft.ehProfessor = action.payload.ehProfessor;
         break;
       case '@usuario/deslogar':
         draft.rf = '';
@@ -55,6 +60,7 @@ export default function usuario(state = inicial, action) {
         draft.dadosUsuario = [];
         draft.menu = [];
         draft.permissoes = [];
+        draft.ehProfessor = false;
         break;
       case '@usuario/selecionarTurma':
         draft.turmaSelecionada = action.payload;

@@ -12,6 +12,8 @@ namespace SME.SGP.Infra
         [Required(ErrorMessage = "É necessario informar o Id da DRE")]
         public string DreId { get; set; }
 
+        public string ProfessorRF { get; set; }
+
         [Required(ErrorMessage = "É necessario informar o Id da UE")]
         public string UeId { get; set; }
     }
