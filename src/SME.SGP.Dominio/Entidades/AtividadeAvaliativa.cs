@@ -12,9 +12,15 @@ namespace SME.SGP.Dominio
         public bool Excluido { get; set; }
         public string NomeAvaliacao { get; set; }
         public string ProfessorRf { get; set; }
+        public TipoAvaliacao TipoAvaliacao { get; set; }
         public int TipoAvaliacaoId { get; set; }
         public string TurmaId { get; set; }
         public string UeId { get; set; }
+
+        public void AdicionarTipoAvaliacao(TipoAvaliacao tipoAvaliacao)
+        {
+            TipoAvaliacao = tipoAvaliacao;
+        }
 
         public void Excluir()
         {
