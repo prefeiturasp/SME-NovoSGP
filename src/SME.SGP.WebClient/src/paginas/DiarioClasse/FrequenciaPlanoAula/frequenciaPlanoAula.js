@@ -168,8 +168,7 @@ const FrequenciaPlanoAula = () => {
         }
       } else {
         disciplinas = await api.get(
-          `v1/objetivos-aprendizagem/disciplinas/turmas/${turmaId}/componentes/${disciplinaSelecionada.codigoComponenteCurricular}
-        ?dataAula=${aula.data}`
+          `v1/objetivos-aprendizagem/disciplinas/turmas/${turmaId}/componentes/${disciplinaSelecionada.codigoComponenteCurricular}?dataAula=${aula.data}`
         );
         const dadosDisciplinas = disciplinas.data;
         if (dadosDisciplinas) {
