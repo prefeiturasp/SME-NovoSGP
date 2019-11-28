@@ -31,10 +31,11 @@ namespace SME.SGP.Aplicacao
         public async Task<IEnumerable<EventosAulasTipoDiaDto>> ObterEventoAulasDia(FiltroEventosAulasCalendarioDiaDto filtro)
         {
             List<EventosAulasTipoDiaDto> eventosAulas = new List<EventosAulasTipoDiaDto>();
-            var data = filtro.Data.Date;
 
             if (!filtro.TodasTurmas && string.IsNullOrWhiteSpace(filtro.TurmaId))
                 throw new NegocioException("È necessario informar uma turma para pesquisa");
+
+            var data = filtro.Data.Date;
 
             var perfil = servicoUsuario.ObterPerfilAtual();
             var rf = servicoUsuario.ObterRf();
@@ -78,10 +79,10 @@ namespace SME.SGP.Aplicacao
             List<DateTime> diasNaoLetivos = new List<DateTime>();
             List<DateTime> totalDias = new List<DateTime>();
 
-            var rf = servicoUsuario.ObterRf();
-
             if (!filtro.TodasTurmas && string.IsNullOrWhiteSpace(filtro.TurmaId))
                 throw new NegocioException("È necessario informar uma turma para pesquisa");
+
+            var rf = servicoUsuario.ObterRf();
 
             var diasPeriodoEscolares = comandosDiasLetivos.BuscarDiasLetivos(filtro.TipoCalendarioId);
             var diasAulas = await repositorioAula.ObterAulas(filtro.TipoCalendarioId, filtro.TurmaId, filtro.UeId, rf);
