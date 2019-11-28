@@ -32,24 +32,26 @@ namespace SME.SGP.Api.Controllers
         }
 
         [HttpGet("{id}")]
-        [ProducesResponseType(typeof(AtribuicaoEsporadicaDto), 200)]
+        [ProducesResponseType(typeof(AtribuicaoEsporadicaCompletaDto), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [Permissao(Permissao.AE_C, Policy = "Bearer")]
         public IActionResult Obter(long id, [FromServices]IConsultasAtribuicaoEsporadica consultasAtribuicaoEsporadica)
         {
             var atribuicaoEsporadica = consultasAtribuicaoEsporadica.ObterPorId(id);
+
             if (atribuicaoEsporadica is null)
-                return StatusCode(204);
-            else return Ok(atribuicaoEsporadica);
+                return NoContent();
+
+            return Ok(atribuicaoEsporadica);
         }
 
         [HttpPost]
         [ProducesResponseType(200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [Permissao(Permissao.AE_A, Permissao.AE_I, Policy = "Bearer")]
-        public IActionResult Post([FromBody]AtribuicaoEsporadicaCompletaDto atribuicaoEsporadicaCompletaDto, [FromServices]IComandosAtribuicaoEsporadica comandosAtribuicaoEsporadica)
+        public IActionResult Post([FromBody]AtribuicaoEsporadicaDto atribuicaoEsporadicaDto, [FromServices]IComandosAtribuicaoEsporadica comandosAtribuicaoEsporadica)
         {
-            comandosAtribuicaoEsporadica.Salvar(atribuicaoEsporadicaCompletaDto);
+            comandosAtribuicaoEsporadica.Salvar(atribuicaoEsporadicaDto);
 
             return Ok();
         }

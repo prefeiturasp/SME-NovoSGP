@@ -10,8 +10,10 @@ import api from '~/servicos/api';
 import { useSelector } from 'react-redux';
 
 const PlanoAula = (props) => {
-  const { planoAula, ehRegencia, listaMaterias, disciplinaIdSelecionada, dataAula, ehProfessorCj, ehEja, setModoEdicao } = props;
+  const { planoAula, ehRegencia, listaMaterias, disciplinaIdSelecionada, dataAula, ehProfessorCj,
+    ehEja, setModoEdicao, permissoesTela, somenteConsulta } = props;
 
+  const [desabilitarCampos, setDesabilitarCampos] = useState(false);
   const usuario = useSelector(store => store.usuario);
   const { turmaSelecionada } = usuario;
   const turmaId = turmaSelecionada ? turmaSelecionada.turma : 0;
@@ -30,6 +32,14 @@ const PlanoAula = (props) => {
   const textEditorDesenvAulaRef = useRef(null);
   const textEditorRecContinuaRef = useRef(null);
   const textEditorLicaoCasaRef = useRef(null);
+
+  useEffect(() => {
+    if (planoAula && planoAula.id > 0) {
+      setDesabilitarCampos(!permissoesTela.podeAlterar || somenteConsulta);
+    } else {
+      setDesabilitarCampos(!permissoesTela.podeIncluir || somenteConsulta);
+    }
+  }, [permissoesTela])
 
   useEffect(() => {
     setObjetivosAprendizagem([...planoAula.objetivosAprendizagemAula])
@@ -148,6 +158,7 @@ const PlanoAula = (props) => {
             checked={informaObjetivos}
             size="default"
             className="mr-2"
+            disabled={desabilitarCampos}
           />
         </HabilitaObjetivos>
         <CardCollapse
@@ -169,6 +180,7 @@ const PlanoAula = (props) => {
                     return (
                       <Badge
                         role="button"
+                        disabled={desabilitarCampos}
                         onClick={() => selecionarMateria(materia.id)}
                         id={materia.id}
                         alt={materia.descricao}
@@ -197,10 +209,12 @@ const PlanoAula = (props) => {
                           onClick={() => selecionarObjetivo(objetivo.id)}
                           onKeyUp={() => selecionarObjetivo(objetivo.id)}
                           alt={`Codigo do Objetivo : ${objetivo.codigo} `}
+                          disabled={desabilitarCampos}
                         >
                           {objetivo.codigo}
                         </ListItemButton>
                         <ListItem
+                          disabled={desabilitarCampos}
                           alt={objetivo.descricao}
                           className="list-group-item flex-fill p-2 fonte-12"
                         >
@@ -233,6 +247,7 @@ const PlanoAula = (props) => {
                             disabled={false}
                             steady
                             remove
+                            disabled={desabilitarCampos}
                             className="text-dark mt-3 mr-2 stretched-link"
                             onClick={() => removerObjetivo(selecionado.id)}
                           />
@@ -253,6 +268,7 @@ const PlanoAula = (props) => {
                           padding="0px 5px"
                           lineHeight="1.2"
                           steady
+                          disabled={desabilitarCampos}
                           border
                           className="text-dark mt-3 mr-2 stretched-link"
                           onClick={() => removerTodosObjetivos()}
@@ -273,6 +289,7 @@ const PlanoAula = (props) => {
                 <fieldset className="mt-3">
                   <form action="">
                     <TextEditor
+                      disabled={desabilitarCampos}
                       className="form-control"
                       ref={textEditorObjetivosRef}
                       id="textEditor-meus_objetivos"
@@ -299,6 +316,7 @@ const PlanoAula = (props) => {
           <fieldset className="mt-3">
             <form action="">
               <TextEditor
+                disabled={desabilitarCampos}
                 className="form-control"
                 id="textEditor-desenv-aula"
                 ref={textEditorDesenvAulaRef}
@@ -322,6 +340,7 @@ const PlanoAula = (props) => {
           <fieldset className="mt-3">
             <form action="">
               <TextEditor
+                disabled={desabilitarCampos}
                 className="form-control"
                 id="textEditor-rec-continua"
                 ref={textEditorRecContinuaRef}
@@ -345,6 +364,7 @@ const PlanoAula = (props) => {
           <fieldset className="mt-3">
             <form action="">
               <TextEditor
+                disabled={desabilitarCampos}
                 className="form-control"
                 id="textEditor-licao-casa"
                 ref={textEditorLicaoCasaRef}
