@@ -6,7 +6,7 @@ namespace SME.SGP.Infra
     public class AtribuicaoCJPersistenciaDto
     {
         [Required(ErrorMessage = "É necessário informar a disciplina.")]
-        public string ComponenteCurricularId { get; set; }
+        public long ComponenteCurricularId { get; set; }
 
         [Required(ErrorMessage = "É necessário informar a Dre.")]
         public string DreId { get; set; }
