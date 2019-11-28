@@ -74,5 +74,14 @@ namespace SME.SGP.Dominio
             WorkflowAprovacaoId = idWorkflow;
             Status = EntidadeStatus.AguardandoAprovacao;
         }
+
+        public void ReprovarWorkflow()
+        {
+            if (Status != EntidadeStatus.AguardandoAprovacao)
+                throw new NegocioException("Este Evento não pode ser recusado.");
+
+            Status = EntidadeStatus.Recusado;
+        }
+
     }
 }

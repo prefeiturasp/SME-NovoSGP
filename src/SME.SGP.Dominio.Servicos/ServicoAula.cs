@@ -1,4 +1,5 @@
-﻿using SME.SGP.Aplicacao;
+﻿using Microsoft.Extensions.Configuration;
+using SME.SGP.Aplicacao;
 using SME.SGP.Aplicacao.Integracoes;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
@@ -23,6 +24,7 @@ namespace SME.SGP.Dominio.Servicos
         private readonly IServicoUsuario servicoUsuario;
         private readonly IConsultasAbrangencia consultasAbrangencia;
         private readonly IComandosWorkflowAprovacao comandosWorkflowAprovacao;
+        private readonly IConfiguration configuration;
 
 
         public ServicoAula(IRepositorioAula repositorioAula,
@@ -33,8 +35,9 @@ namespace SME.SGP.Dominio.Servicos
                            IRepositorioPeriodoEscolar repositorioPeriodoEscolar,
                            IServicoLog servicoLog,
                            IConsultasAbrangencia consultasAbrangencia,
-                           IServicoUsuario servicoUsuario,
-                           IComandosWorkflowAprovacao comandosWorkflowAprovacao)
+                           IServicoUsuario servicoUsuario, 
+                           IComandosWorkflowAprovacao comandosWorkflowAprovacao,
+                           IConfiguration configuration)
         {
             this.repositorioAula = repositorioAula ?? throw new System.ArgumentNullException(nameof(repositorioAula));
             this.servicoEOL = servicoEOL ?? throw new System.ArgumentNullException(nameof(servicoEOL));
@@ -46,6 +49,7 @@ namespace SME.SGP.Dominio.Servicos
             this.servicoUsuario = servicoUsuario ?? throw new ArgumentNullException(nameof(servicoUsuario));
             this.consultasAbrangencia = consultasAbrangencia ?? throw new ArgumentNullException(nameof(consultasAbrangencia));
             this.comandosWorkflowAprovacao = comandosWorkflowAprovacao ?? throw new ArgumentNullException(nameof(comandosWorkflowAprovacao));
+            this.configuration = configuration;
         }
 
         public async Task<string> Salvar(Aula aula, Usuario usuario)
@@ -89,9 +93,9 @@ namespace SME.SGP.Dominio.Servicos
                          (abrangencia.Modalidade == Modalidade.Medio) && quantidadeAulasExistentesNoDia > 2))
                 {
                     repositorioAula.Salvar(aula);
-                    PersistirWorkflowReposicaoAula(aula, string.Empty);
+                    PersistirWorkflowReposicaoAula(aula, abrangencia.NomeDre, abrangencia.NomeUe, abrangencia.NomeModalidade,
+                                                 abrangencia.NomeTurma, abrangencia.CodigoDre);
                 }
-
             }
 
             else
@@ -189,32 +193,25 @@ namespace SME.SGP.Dominio.Servicos
             }
         }
 
-        private async Task PersistirWorkflowReposicaoAula(Aula aula, string turma)
+        private void PersistirWorkflowReposicaoAula(Aula aula, string nomeDre, string nomeEscola, string nomeDisciplina,
+                                                          string nomeTurma, string dreId)
         {
+
             var loginAtual = servicoUsuario.ObterLoginAtual();
             var perfilAtual = servicoUsuario.ObterPerfilAtual();
-            var dre = "111";
-            //Se esta aqui é porque existe escola 
-            //  var escola = await repositorioAbrangencia.ObterUe(aula.UeId, loginAtual, perfilAtual);
 
-            //if (escola == null)
-            //  throw new NegocioException($"Não foi possível localizar a escola da criação do evento.");
-
-            //       var linkParaEvento = $"{configuration["UrlFrontEnd"]}calendario-escolar/eventos/editar/:{evento.Id}/";
-          //  var dre = await repositorioAbrangencia.ObterDre(loginAtual, perfilAtual);
+            var linkParaReposicaoAula = $"{configuration["UrlFrontEnd"]}calendario-escolar/calendario-professor/cadastro-aula/editar/{aula.Id}/";
             var wfAprovacaoAula = new WorkflowAprovacaoDto()
             {
-                
                 Ano = aula.DataAula.Year,
                 NotificacaoCategoria = NotificacaoCategoria.Workflow_Aprovacao,
                 EntidadeParaAprovarId = aula.Id,
                 Tipo = WorkflowAprovacaoTipo.ReposicaoAula,
                 UeId = aula.UeId,
-                DreId = dre,
-                NotificacaoTitulo = "Criação de Aula Teste Caique 21/11",
+                DreId = dreId,
+                NotificacaoTitulo = $"Criação de Aula de Reposição na turma {nomeTurma}",
                 NotificacaoTipo = NotificacaoTipo.Calendario,
-                NotificacaoMensagem = $"Mensagem de Teste Reposicao aula caique 21/11 "
-
+                NotificacaoMensagem = $"Foram criadas {aula.Quantidade} aula(s) de reposição de {nomeDisciplina} na turma {nomeTurma} da {nomeEscola}({nomeDre}).Para que esta aula seja considerada válida você precisa aceitar esta notificação. Para visualizar a aula clique aqui({linkParaReposicaoAula})."
             };
 
             wfAprovacaoAula.Niveis.Add(new WorkflowAprovacaoNivelDto()
@@ -235,4 +232,4 @@ namespace SME.SGP.Dominio.Servicos
             repositorioAula.Salvar(aula);
         }
     }
-}
+    }   
