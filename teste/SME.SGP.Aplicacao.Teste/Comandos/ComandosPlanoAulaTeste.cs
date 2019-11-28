@@ -5,7 +5,6 @@ using SME.SGP.Dto;
 using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -14,20 +13,20 @@ namespace SME.SGP.Aplicacao.Teste.Comandos
     public class ComandosPlanoAulaTeste
     {
         private readonly ComandosPlanoAula comandosPlanoAula;
-        private readonly Mock<IRepositorioPlanoAula> repositorioPlanoAula;
-        private readonly Mock<IRepositorioObjetivoAprendizagemAula> repositorioObjetivosAula;
-        private readonly Mock<IRepositorioAula> repositorioAula;
+        private readonly IConsultasAbrangencia consultasAbrangencia;
+        private readonly Mock<IConsultasObjetivoAprendizagem> consultasObjetivosAprendizagem;
+        private readonly Mock<IConsultasPlanoAnual> consultasPlanoAnual;
         private readonly Mock<IRepositorioAbrangencia> repositorioAbrangencia;
+        private readonly Mock<IRepositorioAula> repositorioAula;
+        private readonly Mock<IRepositorioObjetivoAprendizagemAula> repositorioObjetivosAula;
+        private readonly Mock<IRepositorioPlanoAula> repositorioPlanoAula;
         private readonly Mock<IServicoUsuario> servicoUsuario;
         private readonly Mock<IUnitOfWork> unitOfWork;
-        private readonly IConsultasAbrangencia consultasAbrangencia;
-
-        private Aula aula;
-        private PlanoAulaDto planoAulaDto;
         private AbrangenciaFiltroRetorno abrangencia;
-
-        Guid PERFIL_PROFESSOR = Guid.Parse("40E1E074-37D6-E911-ABD6-F81654FE895D");
-        Guid PERFIL_CJ = Guid.Parse("41e1e074-37d6-e911-abd6-f81654fe895d");
+        private Aula aula;
+        private Guid PERFIL_CJ = Guid.Parse("41e1e074-37d6-e911-abd6-f81654fe895d");
+        private Guid PERFIL_PROFESSOR = Guid.Parse("40E1E074-37D6-E911-ABD6-F81654FE895D");
+        private PlanoAulaDto planoAulaDto;
         private Usuario usuario;
 
         public ComandosPlanoAulaTeste()
@@ -39,75 +38,32 @@ namespace SME.SGP.Aplicacao.Teste.Comandos
             repositorioAbrangencia = new Mock<IRepositorioAbrangencia>();
             unitOfWork = new Mock<IUnitOfWork>();
             consultasAbrangencia = new ConsultasAbrangencia(repositorioAbrangencia.Object, servicoUsuario.Object);
+            consultasPlanoAnual = new Mock<IConsultasPlanoAnual>();
+            consultasObjetivosAprendizagem = new Mock<IConsultasObjetivoAprendizagem>();
 
             comandosPlanoAula = new ComandosPlanoAula(repositorioPlanoAula.Object,
                                                     repositorioObjetivosAula.Object,
                                                     repositorioAula.Object,
                                                     consultasAbrangencia,
+                                                    consultasObjetivosAprendizagem.Object,
+                                                    consultasPlanoAnual.Object,
                                                     servicoUsuario.Object,
                                                     unitOfWork.Object);
             Setup();
         }
 
-        private void Setup()
+        [Fact]
+        public async void Deve_Consistir_Plano_Aula_Sem_Objetivos_Modalidade_Fundamental()
         {
-            // Aula
-            aula = new Aula()
-            {
-                DataAula = new DateTime(2019, 11, 18),
-                TurmaId = "123",
-                DisciplinaId = "7",
-                Quantidade = 3,
-                TipoAula = TipoAula.Normal
-            };
-
-            repositorioAula.Setup(a => a.ObterPorId(It.IsAny<long>()))
-                .Returns(aula);
-
-            // Plano Aula
-            planoAulaDto = new PlanoAulaDto()
-            {
-                AulaId = 1,
-                Descricao = "Teste de inclusão",
-                DesenvolvimentoAula = "Desenvolvimento da aula",
-            };
-
-            repositorioPlanoAula.Setup(a => a.ObterPlanoAulaPorAula(It.IsAny<long>()))
-                .Returns(Task.FromResult(new PlanoAula()));
-
-            // Usuario
-            usuario = new Usuario()
-            { 
-                CodigoRf = "ABC",
-            };
-            usuario.DefinirPerfis(new List<PrioridadePerfil>()
-                {
-                    new PrioridadePerfil() { CodigoPerfil = PERFIL_PROFESSOR }
-                });
-
-
-            servicoUsuario.Setup(a => a.ObterLoginAtual()).Returns("teste");
-            servicoUsuario.Setup(a => a.ObterPerfilAtual()).Returns(new Guid());
-            servicoUsuario.Setup(a => a.ObterUsuarioLogado()).Returns(Task.FromResult(usuario));
-            // Abrangencia
-            abrangencia = new AbrangenciaFiltroRetorno()
-            { 
-                Ano = 2019,
-                CodigoTurma = "123",
-                QtDuracaoAula = 3,
-                Modalidade = Modalidade.Fundamental
-            };
-
-            repositorioAbrangencia.Setup(a => a.ObterAbrangenciaTurma(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<Guid>()))
-                .Returns(Task.FromResult(abrangencia));
-
+            // ACT
+            await Assert.ThrowsAsync<NegocioException>(() => comandosPlanoAula.Salvar(planoAulaDto));
         }
 
         [Fact]
         public async void Deve_Incluir_Plano_Aula_Com_Objetivos()
         {
             // ARRANGE
-            planoAulaDto.ObjetivosAprendizagemAula = new List<long>() { 5 };
+            planoAulaDto.ObjetivosAprendizagemJurema = new List<long>() { 5 };
 
             // ACT
             await comandosPlanoAula.Salvar(planoAulaDto);
@@ -117,10 +73,15 @@ namespace SME.SGP.Aplicacao.Teste.Comandos
         }
 
         [Fact]
-        public async void Deve_Consistir_Plano_Aula_Sem_Objetivos_Modalidade_Fundamental()
+        public async void Deve_Incluir_Plano_Aula_Sem_Objetivos_Libras()
         {
+            //ARRANGE
+            aula.DisciplinaId = "218"; // Libras
+
             // ACT
-            await Assert.ThrowsAsync<NegocioException>(() => comandosPlanoAula.Salvar(planoAulaDto));
+            await comandosPlanoAula.Salvar(planoAulaDto);
+
+            Assert.True(true);
         }
 
         [Fact]
@@ -157,16 +118,56 @@ namespace SME.SGP.Aplicacao.Teste.Comandos
             Assert.True(true);
         }
 
-        [Fact]
-        public async void Deve_Incluir_Plano_Aula_Sem_Objetivos_Libras()
+        private void Setup()
         {
-            //ARRANGE
-            aula.DisciplinaId = "218"; // Libras
+            // Aula
+            aula = new Aula()
+            {
+                DataAula = new DateTime(2019, 11, 18),
+                TurmaId = "123",
+                DisciplinaId = "7",
+                Quantidade = 3,
+                TipoAula = TipoAula.Normal
+            };
 
-            // ACT
-            await comandosPlanoAula.Salvar(planoAulaDto);
+            repositorioAula.Setup(a => a.ObterPorId(It.IsAny<long>()))
+                .Returns(aula);
 
-            Assert.True(true);
+            // Plano Aula
+            planoAulaDto = new PlanoAulaDto()
+            {
+                AulaId = 1,
+                Descricao = "Teste de inclusão",
+                DesenvolvimentoAula = "Desenvolvimento da aula",
+            };
+
+            repositorioPlanoAula.Setup(a => a.ObterPlanoAulaPorAula(It.IsAny<long>()))
+                .Returns(Task.FromResult(new PlanoAula()));
+
+            // Usuario
+            usuario = new Usuario()
+            {
+                CodigoRf = "ABC",
+            };
+            usuario.DefinirPerfis(new List<PrioridadePerfil>()
+                {
+                    new PrioridadePerfil() { CodigoPerfil = PERFIL_PROFESSOR }
+                });
+
+            servicoUsuario.Setup(a => a.ObterLoginAtual()).Returns("teste");
+            servicoUsuario.Setup(a => a.ObterPerfilAtual()).Returns(new Guid());
+            servicoUsuario.Setup(a => a.ObterUsuarioLogado()).Returns(Task.FromResult(usuario));
+            // Abrangencia
+            abrangencia = new AbrangenciaFiltroRetorno()
+            {
+                Ano = 2019,
+                CodigoTurma = "123",
+                QtDuracaoAula = 3,
+                Modalidade = Modalidade.Fundamental
+            };
+
+            repositorioAbrangencia.Setup(a => a.ObterAbrangenciaTurma(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<Guid>()))
+                .Returns(Task.FromResult(abrangencia));
         }
     }
 }

@@ -51,7 +51,7 @@ const Dia = props => {
           } = filtros;
           if (tipoCalendarioSelecionado) {
             api
-              .post('http://www.mocky.io/v2/5dd43f4d2f0000f905d4fa31', {
+              .post(`v1/calendarios/meses/tipos/eventos-aulas`, {
                 Mes: mesAtual,
                 tipoCalendarioId: tipoCalendarioSelecionado,
                 EhEventoSME: eventoSme,
@@ -64,7 +64,7 @@ const Dia = props => {
                   const lista = resposta.data.filter(
                     evento => evento.dia === dia.getDate()
                   )[0];
-                  if (lista.tiposEvento.length > 2) lista.tiposEvento.pop();
+                  while (lista.tiposEvento.length > 2) lista.tiposEvento.pop();
                   setTipoEventosDiaLista(lista);
                 } else setTipoEventosDiaLista([]);
               })
