@@ -106,7 +106,20 @@ function AtribuicaoEsporadicaForm({ match }) {
     }
   };
 
-  const onClickVoltar = () => history.push('/gestao/atribuicao-esporadica');
+  const onClickVoltar = async () => {
+    if (modoEdicao) {
+      const confirmou = await confirmar(
+        'Atenção',
+        'Você não salvou as informações preenchidas.',
+        'Deseja realmente cancelar as alterações?'
+      );
+      if (confirmou) {
+        history.push('/gestao/atribuicao-esporadica');
+      }
+    } else {
+      history.push('/gestao/atribuicao-esporadica');
+    }
+  };
 
   const onClickCancelar = async form => {
     if (!modoEdicao) return;
