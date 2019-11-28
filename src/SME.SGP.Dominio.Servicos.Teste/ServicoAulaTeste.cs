@@ -1,4 +1,5 @@
-﻿using Moq;
+﻿using Microsoft.Extensions.Configuration;
+using Moq;
 using SME.SGP.Aplicacao;
 using SME.SGP.Aplicacao.Integracoes;
 using SME.SGP.Aplicacao.Integracoes.Respostas;
@@ -22,12 +23,15 @@ namespace SME.SGP.Dominio.Servicos.Teste
         private readonly Mock<IServicoDiaLetivo> servicoDiaLetivo;
         private readonly Mock<IServicoEOL> servicoEol;
         private readonly Mock<IServicoLog> servicoLog;
+        private readonly Mock<IServicoUsuario> servicoUsuario;
+        private readonly Mock<IComandosWorkflowAprovacao> comandosWorkflowAprovacao;
+        private readonly Mock<IConsultasAbrangencia> consultaAbrangencia;
+        private readonly Mock<IConfiguration> configuration;
         private readonly Mock<IServicoNotificacao> servicoNotificacao;
 
         public ServicoAulaTeste()
         {
             repositorioPeriodoEscolar = new Mock<IRepositorioPeriodoEscolar>();
-
             servicoDiaLetivo = new Mock<IServicoDiaLetivo>();
             repositorioAula = new Mock<IRepositorioAula>();
             repositorioTipoCalendario = new Mock<IRepositorioTipoCalendario>();
@@ -36,7 +40,18 @@ namespace SME.SGP.Dominio.Servicos.Teste
             consultasGrade = new Mock<IConsultasGrade>();
             repositorioAbrangencia = new Mock<IRepositorioAbrangencia>();
             servicoNotificacao = new Mock<IServicoNotificacao>();
-            servicoAula = new ServicoAula(repositorioAula.Object, servicoEol.Object, repositorioTipoCalendario.Object, servicoDiaLetivo.Object, consultasGrade.Object, repositorioPeriodoEscolar.Object, servicoLog.Object, repositorioAbrangencia.Object, servicoNotificacao.Object);
+            comandosWorkflowAprovacao = new Mock<IComandosWorkflowAprovacao>();
+            consultaAbrangencia = new Mock<IConsultasAbrangencia>();
+            servicoNotificacao = new Mock<IServicoNotificacao>();
+            servicoAula = new ServicoAula(repositorioAula.Object, servicoEol.Object,
+                                         repositorioTipoCalendario.Object, servicoDiaLetivo.Object, 
+                                         consultasGrade.Object, repositorioPeriodoEscolar.Object, 
+                                         servicoLog.Object, repositorioAbrangencia.Object,
+                                         servicoNotificacao.Object, consultaAbrangencia.Object , 
+                                         servicoUsuario.Object, comandosWorkflowAprovacao.Object, configuration.Object);
+
+   
+
         }
 
         [Fact]
@@ -95,4 +110,4 @@ namespace SME.SGP.Dominio.Servicos.Teste
             repositorioAula.Verify(c => c.Salvar(aula), Times.Exactly(1));
         }
     }
-}
+}  
