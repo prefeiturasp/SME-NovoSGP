@@ -1,18 +1,20 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SME.SGP.Api.Filtros;
+using SME.SGP.Aplicacao;
 using SME.SGP.Infra;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace SME.SGP.Api.Controllers
 {
     [ApiController]
     [Route("api/v1/atribuicoes/cjs")]
     [Authorize("Bearer")]
+    [ValidaDto]
     public class AtribuicaoCJController : ControllerBase
     {
         [HttpGet]
-        [ValidaDto]
         public IActionResult Get([FromQuery]AtribuicaoCJListaFiltroDto atribuicaoCJListaFiltroDto)
         {
             List<AtribuicaoCJListaRetornoDto> retorno = new List<AtribuicaoCJListaRetornoDto>();
@@ -87,9 +89,9 @@ namespace SME.SGP.Api.Controllers
         }
 
         [HttpPost]
-        [ValidaDto]
-        public IActionResult Post([FromBody]AtribuicaoCJPersistenciaDto[] atribuicaoCJPersistenciaDtos)
+        public async Task<IActionResult> Post([FromBody]AtribuicaoCJPersistenciaDto[] atribuicaoCJPersistenciaDtos, [FromServices] IComandosAtribuicaoCJ comandosAtribuicaoCJ)
         {
+            await comandosAtribuicaoCJ.Salvar(atribuicaoCJPersistenciaDtos);
             return Ok();
         }
     }
