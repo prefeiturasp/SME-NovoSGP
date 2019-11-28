@@ -73,7 +73,6 @@ namespace SME.SGP.Dominio
                 Excluido = Excluido,
                 FeriadoCalendario = FeriadoCalendario,
                 FeriadoId = FeriadoId,
-                Id = Id,
                 Letivo = Letivo,
                 Nome = Nome,
                 TipoCalendario = TipoCalendario,

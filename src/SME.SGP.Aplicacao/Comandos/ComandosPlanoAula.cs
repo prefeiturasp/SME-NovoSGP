@@ -106,7 +106,7 @@ namespace SME.SGP.Aplicacao
                 if (!permitePlanoSemObjetivos)
                 {
                     var usuario = await servicoUsuario.ObterUsuarioLogado();
-                    permitePlanoSemObjetivos = usuario.PossuiPerfilCJ();
+                    permitePlanoSemObjetivos = usuario.EhProfessorCj();
                 }
 
                 if (!permitePlanoSemObjetivos)
