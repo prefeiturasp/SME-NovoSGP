@@ -99,8 +99,8 @@ export const Lista = styled.div`
     width: 70px;
   }
 
-  .width-40 {
-    width: 40px;
+  .width-50 {
+    width: 50px;
   }
 
   .width-60 {
@@ -110,4 +110,54 @@ export const Lista = styled.div`
   .cursor-pointer {
     cursor: pointer;
   }
+
+  .desabilitar-aluno {
+    opacity: 0.4 !important;
+    cursor: unset !important;
+  }
+
+  .scroll-tabela-frequencia-thead {
+    overflow-y: scroll;
+    ::-webkit-scrollbar {
+      width: 9px !important;
+      background-color: rgba(229, 237, 244, 0.71) !important;
+    }
+  }
+
+  .scroll-tabela-frequencia-tbody {
+    max-height: 500px;
+    overflow-y: scroll;
+    border-bottom: solid 1px ${Base.CinzaDesabilitado};
+
+    ::-webkit-scrollbar-track {
+      background-color: #f4f4f4 !important;
+    }
+
+    ::-webkit-scrollbar {
+      width: 9px !important;
+      background-color: rgba(229, 237, 244, 0.71) !important;
+      border-radius: 2.5px !important;
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: #a8a8a8 !important;
+      border-radius: 3px !important;
+    }
+  }
+
+  .marcar-todas-frequencia {
+    cursor: unset !important;
+    position: absolute;
+    margin-left: -13px;
+    margin-top: -17px;
+    font-size: 10px;
+    width: 100px;
+    height: 15px;
+    background-color: ${Base.CinzaDesabilitado};
+  }
+
+  .margin-marcar-todos {
+    margin-bottom: -6px;
+  }
+
 `;

@@ -40,6 +40,7 @@ const CadastroAula = ({ match }) => {
   const [quantidadeMaximaAulas, setQuantidadeMaximaAulas] = useState(0);
   const [controlaQuantidadeAula, setControlaQuantidadeAula] = useState(true);
   const [refForm, setRefForm] = useState({});
+  const [ehReposicao, setEhReposicao] = useState(false);
 
   const [valoresIniciais, setValoresIniciais] = useState({});
   const inicial = {
@@ -406,8 +407,16 @@ const CadastroAula = ({ match }) => {
                     form={form}
                     opcoes={opcoesTipoAula}
                     name="tipoAula"
-                    valorInicial
-                    onChange={onChangeCampos}
+                    onChange={e => {
+                      setEhReposicao(e.target.value === 2);
+                      setValoresIniciais({
+                        ...valoresIniciais,
+                        tipoAula: e.target.value,
+                        recorrenciaAula: e.target.value === 2 ? 1 : '',
+                      });
+                      onChangeCampos();
+                      montaValidacoes(0, e.target.value, form);
+                    }}
                   />
                 </div>
                 <div className="col-sm-12 col-md-7 col-lg-9 col-xl-6 mb-2">
@@ -448,7 +457,6 @@ const CadastroAula = ({ match }) => {
                     form={form}
                     opcoes={opcoesQuantidadeAulas}
                     name="quantidadeRadio"
-                    valorInicial
                     onChange={e => {
                       onChangeCampos();
                       montaValidacoes(e.target.value, 0, form);
@@ -481,8 +489,11 @@ const CadastroAula = ({ match }) => {
                     form={form}
                     opcoes={opcoesRecorrencia}
                     name="recorrenciaAula"
-                    valorInicial
-                    onChange={onChangeCampos}
+                    desabilitado={ehReposicao}
+                    onChange={e => {
+                      onChangeCampos();
+                      montaValidacoes(0, e.target.value, form);
+                    }}
                   />
                 </div>
               </div>
