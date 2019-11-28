@@ -27,14 +27,14 @@ namespace SME.SGP.Aplicacao
             await repositorioAtribuicaoEsporadica.SalvarAsync(atribuicaoEsporadica);
         }
 
-        public void Salvar(AtribuicaoEsporadicaCompletaDto atruibuicaoEsporadicaCompletaDto)
+        public void Salvar(AtribuicaoEsporadicaDto atruibuicaoEsporadicaDto)
         {
-            var entidade = ObterEntidade(atruibuicaoEsporadicaCompletaDto);
+            var entidade = ObterEntidade(atruibuicaoEsporadicaDto);
 
-            servicoAtribuicaoEsporadica.Salvar(entidade, atruibuicaoEsporadicaCompletaDto.AnoLetivo);
+            servicoAtribuicaoEsporadica.Salvar(entidade, atruibuicaoEsporadicaDto.AnoLetivo);
         }
 
-        private AtribuicaoEsporadica DtoParaEntidade(AtribuicaoEsporadicaCompletaDto Dto)
+        private AtribuicaoEsporadica DtoParaEntidade(AtribuicaoEsporadicaDto Dto)
         {
             return new AtribuicaoEsporadica
             {
@@ -47,7 +47,7 @@ namespace SME.SGP.Aplicacao
             };
         }
 
-        private AtribuicaoEsporadica ObterEntidade(AtribuicaoEsporadicaCompletaDto atribuicaoEsporadicaDto)
+        private AtribuicaoEsporadica ObterEntidade(AtribuicaoEsporadicaDto atribuicaoEsporadicaDto)
         {
             if (atribuicaoEsporadicaDto.Id == 0)
                 return DtoParaEntidade(atribuicaoEsporadicaDto);
