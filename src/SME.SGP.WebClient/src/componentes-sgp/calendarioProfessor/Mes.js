@@ -44,6 +44,7 @@ const Mes = props => {
     dreSelecionada = '',
     unidadeEscolarSelecionada = '',
     turmaSelecionada = '',
+    todasTurmas,
   } = filtros;
   const [mesSelecionado, setMesSelecionado] = useState({});
 
@@ -54,7 +55,7 @@ const Mes = props => {
         tipoCalendarioSelecionado &&
         dreSelecionada &&
         unidadeEscolarSelecionada &&
-        turmaSelecionada
+        (turmaSelecionada || todasTurmas)
       ) {
         api
           .post('v1/calendarios/meses/eventos-aulas', {
@@ -63,6 +64,7 @@ const Mes = props => {
             dreId: dreSelecionada,
             ueId: unidadeEscolarSelecionada,
             turmaId: turmaSelecionada,
+            todasTurmas,
           })
           .then(resposta => {
             if (resposta.data) {
