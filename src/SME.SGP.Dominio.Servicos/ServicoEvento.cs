@@ -402,7 +402,16 @@ namespace SME.SGP.Dominio.Servicos
 
                     if (temEventoDeLiberacaoExcepcional)
                         return temEventoDeLiberacaoExcepcional;
-                    else throw new NegocioException("Não é possível persistir esse evento pois a data informada está fora do período letivo.");
+                    else
+                    {
+                        if (await repositorioEvento.TemEventoNosDiasETipo(evento.DataInicio.Date, evento.DataFim.Date, TipoEvento.Recesso, evento.TipoCalendarioId, string.Empty, string.Empty))
+                        {
+                            var eventosReposicaoNoRecesso = await repositorioEvento.EventosNosDiasETipo(evento.DataInicio.Date, evento.DataFim.Date, TipoEvento.ReposicaoNoRecesso, evento.TipoCalendarioId, string.Empty, string.Empty);
+                            if (eventosReposicaoNoRecesso != null && !eventosReposicaoNoRecesso.Any(a => a.TipoPerfilCadastro == TipoPerfil.SME))
+                                throw new NegocioException("Não é possível persistir esse evento pois a data informada está fora do período letivo.");
+                        }
+                        else throw new NegocioException("Não é possível persistir esse evento pois a data informada está fora do período letivo.");
+                    }
                 }
             }
             return false;
@@ -411,19 +420,6 @@ namespace SME.SGP.Dominio.Servicos
         private void ValidaLiberacaoExcepcional(Evento evento, Usuario usuario, IEnumerable<PeriodoEscolar> periodos, bool dataConfirmada)
         {
             evento.PodeCriarEventoLiberacaoExcepcional(usuario, dataConfirmada, periodos);
-        }
-
-        private async Task VerificaParticularidadeUeEventosNoRecesso(Evento evento)
-        {
-            if (await repositorioEvento.TemEventoNosDiasETipo(evento.DataInicio.Date, evento.DataFim.Date, TipoEvento.Recesso, evento.TipoCalendarioId, string.Empty, string.Empty))
-            {
-                if (!await repositorioEvento.TemEventoNosDiasETipo(evento.DataInicio.Date, evento.DataFim.Date, TipoEvento.LiberacaoExcepcional, evento.TipoCalendarioId, evento.UeId, string.Empty))
-                {
-                    var eventosReposicaoNoRecesso = await repositorioEvento.EventosNosDiasETipo(evento.DataInicio.Date, evento.DataFim.Date, TipoEvento.ReposicaoNoRecesso, evento.TipoCalendarioId, string.Empty, string.Empty);
-                    if (eventosReposicaoNoRecesso != null && !eventosReposicaoNoRecesso.Any(a => a.TipoPerfilCadastro == TipoPerfil.SME))
-                        throw new NegocioException("Data do evento fora do período escolar.");
-                }
-            }
         }
 
         private async Task VerificaParticularidadeUeEventosSuspensaoAtividades(Evento evento)
@@ -472,7 +468,6 @@ namespace SME.SGP.Dominio.Servicos
                     await VerificarSeUsuarioPodeCadastrarEventoParaUe(evento, usuario);
                 }
 
-                await VerificaParticularidadeUeEventosNoRecesso(evento);
                 await VerificaParticularidadeUeEventosSuspensaoAtividades(evento);
             }
         }
