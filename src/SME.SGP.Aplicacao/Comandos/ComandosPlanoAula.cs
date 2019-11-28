@@ -156,22 +156,19 @@ namespace SME.SGP.Aplicacao
 
             if (migrarPlanoAulaDto.EhProfessorCJ)
             {
-
+                //regras prof cj
             }
-            else
+            else if (idsTurmasProfessor == null || migrarPlanoAulaDto.IdsPlanoTurmasDestino.Select(x => x.TurmaId).Any(c => !idsTurmasProfessor.Contains(Convert.ToInt32(c))))
             {
-                if (idsTurmasProfessor == null || migrarPlanoAulaDto.IdsPlanoTurmasDestino.Select(x => x.TurmaId).Any(c => !idsTurmasProfessor.Contains(Convert.ToInt32(c))))
-                {
-                    throw new NegocioException("Somente é possível migrar o plano de aula para turmas atribuidas ao professor");
-                }
+                throw new NegocioException("Somente é possível migrar o plano de aula para turmas atribuidas ao professor");
             }
 
             if (!migrarPlanoAulaDto.EhProfessorCJ || migrarPlanoAulaDto.MigrarObjetivos)
             {
                 var turmasAtribuidasSelecionadas = turmasAtribuidasAoProfessor.Where(t => idsTurmasProfessor.Contains(t.CodTurma));
-                var anoTurma = turmasAtribuidasSelecionadas.First().AnoLetivo;
+                var anoTurma = turmasAtribuidasSelecionadas.First().Ano;
 
-                if (!turmasAtribuidasSelecionadas.All(x => x.AnoLetivo == anoTurma))
+                if (!turmasAtribuidasSelecionadas.All(x => x.Ano == anoTurma))
                 {
                     throw new NegocioException("Somente é possível migrar o plano de aula para turmas dentro do mesmo ano");
                 }
