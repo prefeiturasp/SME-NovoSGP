@@ -213,8 +213,12 @@ const FrequenciaPlanoAula = () => {
   };
 
   const onClickSalvar = click => {
-    onSalvarFrequencia(click);
-    onSalvarPlanoAula();
+    if (modoEdicaoFrequencia) {
+      onSalvarFrequencia(click);
+    }
+    if (modoEdicaoPlanoAula) {
+      onSalvarPlanoAula();
+    }
   };
 
   const onSalvarFrequencia = (click) => {
@@ -538,6 +542,8 @@ const FrequenciaPlanoAula = () => {
                     dataAula={aula && aula.data ? aula.data : null}
                     ehEja={ehEja}
                     setModoEdicao={(e) => setModoEdicaoPlanoAula(e)}
+                    permissoesTela={permissoesTela}
+                    somenteConsulta={somenteConsulta}
                   />
                 </div>
               </div>
