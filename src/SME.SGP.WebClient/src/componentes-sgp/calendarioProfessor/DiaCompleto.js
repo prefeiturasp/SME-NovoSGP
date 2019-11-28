@@ -58,6 +58,7 @@ const DiaCompleto = props => {
     dreSelecionada = '',
     unidadeEscolarSelecionada = '',
     turmaSelecionada = '',
+    todasTurmas,
   } = filtros;
   const [eventosDia, setEventosDia] = useState([]);
 
@@ -82,7 +83,7 @@ const DiaCompleto = props => {
           tipoCalendarioSelecionado &&
           dreSelecionada &&
           unidadeEscolarSelecionada &&
-          turmaSelecionada
+          (turmaSelecionada || todasTurmas)
         ) {
           api
             .post('v1/calendarios/meses/dias/eventos-aulas', {
@@ -92,6 +93,7 @@ const DiaCompleto = props => {
               dreId: dreSelecionada,
               ueId: unidadeEscolarSelecionada,
               turmaId: turmaSelecionada,
+              todasTurmas,
             })
             .then(resposta => {
               if (resposta.data) setEventosDia(resposta.data);
@@ -198,11 +200,11 @@ const DiaCompleto = props => {
                   </Grid>
                   {TiposEventoAulaDTO.Evento.indexOf(evento.tipoEvento) ===
                     -1 && (
-                    <Grid cols={1} className="pl-0">
+                    <Grid cols={1} className="px-0">
                       <Botao
                         label={evento.dadosAula.horario}
                         color={Colors.CinzaBotao}
-                        className="w-100"
+                        className="w-100 px-2"
                         border
                         steady
                       />
@@ -216,11 +218,13 @@ const DiaCompleto = props => {
                     }
                     className="align-self-center font-weight-bold pl-0"
                   >
-                    <Div>
+                    <Div
+                      className={`${TiposEventoAulaDTO.Evento.indexOf(
+                        evento.tipoEvento
+                      ) === -1 && 'pl-3'}`}
+                    >
                       {TiposEventoAulaDTO.Evento.indexOf(evento.tipoEvento) >
-                        -1 && evento.descricao
-                        ? evento.descricao
-                        : 'Evento'}
+                        -1 && (evento.descricao ? evento.descricao : 'Evento')}
                       {TiposEventoAulaDTO.Evento.indexOf(evento.tipoEvento) ===
                         -1 &&
                         `${evento.dadosAula.turma} - ${evento.dadosAula.modalidade} - ${evento.dadosAula.tipo} - ${evento.dadosAula.unidadeEscolar} - ${evento.dadosAula.disciplina}`}
