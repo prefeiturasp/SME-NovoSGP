@@ -151,7 +151,7 @@ const FrequenciaPlanoAula = () => {
         setModoEdicaoPlanoAula(false);
       }
     }
-    if (disciplinaSelecionada.regencia) {
+    if (disciplinaSelecionada.regencia || ehProfessor) {
       planoAula.temObjetivos = true;
       const disciplinas = await api.get(
         `v1/objetivos-aprendizagem/disciplinas/turmas/${turmaId}/componentes/${disciplinaSelecionada.codigoComponenteCurricular}
@@ -160,6 +160,13 @@ const FrequenciaPlanoAula = () => {
       const dadosDisciplinas = disciplinas.data;
       if (dadosDisciplinas) {
         setMaterias([...dadosDisciplinas]);
+      } else {
+        const materia = {
+          id: disciplinaSelecionada.codigoComponenteCurricular,
+          descricao: disciplinaSelecionada.nome
+        }
+        materias.push(materia);
+        setMaterias([...materias]);
       }
     }
   }
@@ -206,15 +213,20 @@ const FrequenciaPlanoAula = () => {
         const aulaDataSelecionada = listaDatasAulas.find(item => window.moment(item.data).isSame(dataSelecionada, 'date'));
         obterListaFrequencia(aulaId);
         setModoEdicaoFrequencia(false);
-        obterPlanoAula(aulaDataSelecionada)
+        obterPlanoAula(aulaDataSelecionada);
         setModoEdicaoPlanoAula(false);
+        resetarPlanoAula();
       }
     }
   };
 
   const onClickSalvar = click => {
-    onSalvarFrequencia(click);
-    onSalvarPlanoAula();
+    if (modoEdicaoFrequencia) {
+      onSalvarFrequencia(click);
+    }
+    if (modoEdicaoPlanoAula) {
+      onSalvarPlanoAula();
+    }
   };
 
   const onSalvarFrequencia = (click) => {
@@ -336,6 +348,7 @@ const FrequenciaPlanoAula = () => {
         }
       } else {
         setarDisciplina(disciplinaId);
+        resetarPlanoAula();
       }
     } else {
       setarDisciplina(disciplinaId);
@@ -366,7 +379,7 @@ const FrequenciaPlanoAula = () => {
           await onSalvarFrequencia();
         }
         if (modoEdicaoPlanoAula) {
-          // salvar planoi aula
+          await onSalvarPlanoAula();
         }
         validaSeTemIdAula(data);
       } else {
@@ -395,6 +408,15 @@ const FrequenciaPlanoAula = () => {
 
   const resetarPlanoAula = () => {
     setEhRegencia(false);
+    planoAula.descricao = null;
+    planoAula.temObjetivos = ehProfessor && !ehEja;
+    planoAula.qtdAulas = 0;
+    planoAula.desenvolvimentoAula = null;
+    planoAula.licaoCasa = null;
+    planoAula.recuperacaoAula = null;
+    planoAula.objetivosAprendizagemAula = [];
+    planoAula.objetivosAprendizagemAula = [...planoAula.objetivosAprendizagemAula];
+    setPlanoAula(planoAula);
   }
 
   const resetarTelaFrequencia = (naoDisciplina, naoData) => {
@@ -533,11 +555,14 @@ const FrequenciaPlanoAula = () => {
                     dataSelecionada={dataSelecionada}
                     planoAula={planoAula}
                     ehRegencia={ehRegencia}
+                    ehProfessor={ehProfessor}
                     ehProfessorCj={ehProfessorCj}
                     listaMaterias={materias}
                     dataAula={aula && aula.data ? aula.data : null}
                     ehEja={ehEja}
                     setModoEdicao={(e) => setModoEdicaoPlanoAula(e)}
+                    permissoesTela={permissoesTela}
+                    somenteConsulta={somenteConsulta}
                   />
                 </div>
               </div>
