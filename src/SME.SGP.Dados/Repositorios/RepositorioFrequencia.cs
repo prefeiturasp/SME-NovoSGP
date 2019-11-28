@@ -21,10 +21,19 @@ namespace SME.SGP.Dados.Repositorios
 	                        rf.id = ra.registro_frequencia_id
                         inner join aula a on
 	                        a.id = rf.aula_id
-                        where
+                        where ra.excluido = false and
 	                        a.id = @aulaId";
 
             return database.Conexao.Query<RegistroAusenciaAluno>(query, new { aulaId });
+        }
+
+        public RegistroFrequencia ObterRegistroFrequenciaPorAulaId(long aulaId)
+        {
+            var query = @"select *
+                            from registro_frequencia
+                          where aula_id = @aulaId";
+
+            return database.Conexao.QueryFirstOrDefault<RegistroFrequencia>(query, new { aulaId });
         }
     }
 }

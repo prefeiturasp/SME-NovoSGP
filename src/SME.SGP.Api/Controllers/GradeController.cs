@@ -4,25 +4,26 @@ using SME.SGP.Api.Filtros;
 using SME.SGP.Aplicacao;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Dtos;
+using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Api.Controllers
 {
     [ApiController]
-    [Route("api/v1/grade/")]
+    [Route("api/v1/grades/")]
     [ValidaDto]
     [Authorize("Bearer")]
     public class GradeController : ControllerBase
     {
-        [HttpGet("aulas/{turma}/{disciplina}")]
+        [HttpGet("aulas/turmas/{codigoTurma}/disciplinas/{codigoDisciplina}")]
         [ProducesResponseType(204)]
         [ProducesResponseType(typeof(IEnumerable<GradeComponenteTurmaAulasDto>), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        public async Task<IActionResult> ObterGradeAulasTurma(string turma, int disciplina, [FromServices] IConsultasGrade consultasGrade)
+        public async Task<IActionResult> ObterGradeAulasTurma([FromQuery] DateTime data, string codigoTurma, int codigoDisciplina, [FromServices] IConsultasGrade consultasGrade)
         {
-            var horasGrade = await consultasGrade.ObterGradeAulasTurma(turma, disciplina);
+            var semana = (data.DayOfYear / 7) + 1;
+            var horasGrade = await consultasGrade.ObterGradeAulasTurma(codigoTurma, codigoDisciplina, semana.ToString());
 
             if (horasGrade != null)
                 return Ok(horasGrade);
