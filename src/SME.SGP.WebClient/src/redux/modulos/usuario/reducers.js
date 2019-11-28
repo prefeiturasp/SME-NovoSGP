@@ -19,6 +19,7 @@ const inicial = {
   possuiPerfilDre: false,
   possuiPerfilSme: false,
   ehProfessorCj: false,
+  ehProfessor:false,
   menu: [],
   permissoes: []
 };
@@ -43,6 +44,7 @@ export default function usuario(state = inicial, action) {
         draft.possuiPerfilDre = action.payload.possuiPerfilDre;
         draft.possuiPerfilSme = action.payload.possuiPerfilSme;
         draft.ehProfessorCj = action.payload.ehProfessorCj;
+        draft.ehProfessor = action.payload.ehProfessor;
         draft.menu = action.payload.menu;
         break;
       case '@usuario/deslogar':

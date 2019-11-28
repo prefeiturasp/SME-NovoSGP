@@ -29,6 +29,7 @@ class LoginHelper {
         possuiPerfilDre: autenticacao.dados.perfisUsuario.possuiPerfilDre,
         possuiPerfilSme: autenticacao.dados.perfisUsuario.possuiPerfilSme,
         ehProfessorCj: autenticacao.dados.perfisUsuario.ehProfessorCj,
+        ehProfessor: autenticacao.dados.perfisUsuario.ehProfessor,
       })
     );
 
