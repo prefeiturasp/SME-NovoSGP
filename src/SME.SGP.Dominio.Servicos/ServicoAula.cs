@@ -136,37 +136,6 @@ namespace SME.SGP.Dominio.Servicos
 
         private static bool ReposicaoDeAulaPrecisaDeAprovacao(int quantidadeAulasExistentesNoDia, Dto.AbrangenciaFiltroRetorno abrangencia)
         {
-            //bool turmaEhFund1 = false;
-            //bool turmaEhFund2 = false; 
-            //bool turmaEhEjaAlfabetizacaoOuBasica = false;
-            //bool turmaEhEjaComplementarOuFinal = false;
-            //bool turmaEhMedio = false;
-            // if (abrangencia.Modalidade == Modalidade.Fundamental && abrangencia.Ano >= 1 && abrangencia.Ano <= 5)
-            //  {
-            //    turmaEhFund1 = true;
-            //  }
-            // else if(Modalidade.EJA == abrangencia.Modalidade && (abrangencia.Ano == 1 || abrangencia.Ano == 2))
-            // {
-            //    turmaEhEjaAlfabetizacaoOuBasica = true;
-            // }
-
-            // else if ((quantidadeAulasExistentesNoDia > 1) || (abrangencia.Modalidade == Modalidade.Fundamental && abrangencia.Ano >= 6 && abrangencia.Ano <= 9))
-            //{
-            //    turmaEhFund2 = true;
-            //}
-
-            //else if (abrangencia.Modalidade == Modalidade.Medio)
-            //{
-            //    turmaEhMedio = true;
-            //}
-
-
-            // if((turmaEhFund1 || turmaEhEjaAlfabetizacaoOuBasica) && quantidadeAulasExistentesNoDia > 1)
-            //{
-            //    return true;
-            //}
-
-            // else if( )
 
             return ((abrangencia.Modalidade == Modalidade.Fundamental && abrangencia.Ano >= 1 && abrangencia.Ano <= 5) ||  //Valida se é Fund 1 
                                (Modalidade.EJA == abrangencia.Modalidade && (abrangencia.Ano == 1 || abrangencia.Ano == 2)) // Valida se é Eja Alfabetizacao ou  Basica
