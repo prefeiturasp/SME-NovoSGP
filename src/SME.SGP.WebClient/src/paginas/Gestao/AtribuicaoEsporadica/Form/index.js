@@ -28,6 +28,7 @@ import {
   CampoData,
   momentSchema,
   Loader,
+  Auditoria,
 } from '~/componentes';
 import DreDropDown from '../componentes/DreDropDown';
 import UeDropDown from '../componentes/UeDropDown';
@@ -49,6 +50,7 @@ function AtribuicaoEsporadicaForm({ match }) {
   const [dreId, setDreId] = useState('');
   const [novoRegistro, setNovoRegistro] = useState(true);
   const [modoEdicao, setModoEdicao] = useState(false);
+  const [auditoria, setAuditoria] = useState({});
   const [valoresIniciais, setValoresIniciais] = useState({
     professorRf: '',
     professorNome: '',
@@ -151,6 +153,15 @@ function AtribuicaoEsporadicaForm({ match }) {
           ...registro.data,
           dataInicio: window.moment(registro.data.dataInicio),
           dataFim: window.moment(registro.data.dataFim),
+        });
+        setAuditoria({
+          criadoPor: registro.data.criadoPor,
+          criadoRf: registro.data.criadoRF > 0 ? registro.data.criadoRF : '',
+          criadoEm: registro.data.criadoEm,
+          alteradoPor: registro.data.alteradoPor,
+          alteradoRf:
+            registro.data.alteradoRF > 0 ? registro.data.alteradoRF : '',
+          alteradoEm: registro.data.alteradoEm,
         });
         dispatch(setLoaderSecao(false));
       }
@@ -267,6 +278,16 @@ function AtribuicaoEsporadicaForm({ match }) {
               </Form>
             )}
           </Formik>
+          {auditoria && (
+            <Auditoria
+              criadoEm={auditoria.criadoEm}
+              criadoPor={auditoria.criadoPor}
+              criadoRf={auditoria.criadoRf}
+              alteradoPor={auditoria.alteradoPor}
+              alteradoEm={auditoria.alteradoEm}
+              alteradoRf={auditoria.alteradoRf}
+            />
+          )}
         </Card>
       </Loader>
     </>
