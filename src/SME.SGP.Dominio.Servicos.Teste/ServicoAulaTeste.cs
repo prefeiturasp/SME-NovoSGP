@@ -27,6 +27,7 @@ namespace SME.SGP.Dominio.Servicos.Teste
         private readonly Mock<IComandosWorkflowAprovacao> comandosWorkflowAprovacao;
         private readonly Mock<IConsultasAbrangencia> consultaAbrangencia;
         private readonly Mock<IConfiguration> configuration;
+        private readonly Mock<IServicoNotificacao> servicoNotificacao;
 
         public ServicoAulaTeste()
         {
@@ -39,6 +40,8 @@ namespace SME.SGP.Dominio.Servicos.Teste
             servicoEol = new Mock<IServicoEOL>();
             consultasGrade = new Mock<IConsultasGrade>();
             repositorioAbrangencia = new Mock<IRepositorioAbrangencia>();
+            servicoNotificacao = new Mock<IServicoNotificacao>();
+            servicoAula = new ServicoAula(repositorioAula.Object, servicoEol.Object, repositorioTipoCalendario.Object, servicoDiaLetivo.Object, consultasGrade.Object, repositorioPeriodoEscolar.Object, servicoLog.Object, repositorioAbrangencia.Object, servicoNotificacao.Object);
             servicoUsuario = new Mock<IServicoUsuario>();
             comandosWorkflowAprovacao = new Mock<IComandosWorkflowAprovacao>();
             consultaAbrangencia = new Mock<IConsultasAbrangencia>();

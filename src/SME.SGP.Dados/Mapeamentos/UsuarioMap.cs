@@ -11,6 +11,7 @@ namespace SME.SGP.Dados.Mapeamentos
             Map(a => a.TokenRecuperacaoSenha).ToColumn("token_recuperacao_senha");
             Map(a => a.ExpiracaoRecuperacaoSenha).ToColumn("expiracao_recuperacao_senha");
             Map(a => a.UltimoLogin).ToColumn("ultimo_login");
+            Map(a => a.PerfilAtual).Ignore();
         }
     }
 }
