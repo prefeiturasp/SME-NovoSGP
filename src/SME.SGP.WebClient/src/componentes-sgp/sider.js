@@ -212,7 +212,7 @@ const Sider = () => {
               className="perfil-edit"
               style={{ paddingTop: NavegacaoStore.retraido ? '0' : '12px' }}
             >
-              <Link id="perfil-edit" to="/calendario-escolar/calendario-professor/cadastro-aula/editar/2">
+              <Link id="perfil-edit" to="/meus-dados">
                 <i className="fas fa-user-edit" />
                 <span>Meus Dados</span>
               </Link>
