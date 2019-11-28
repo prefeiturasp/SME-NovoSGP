@@ -52,6 +52,13 @@ const SemEvento = () => {
 
 const DiaCompleto = props => {
   const { dias, mesAtual, filtros } = props;
+  const {
+    tipoCalendarioSelecionado = '',
+    eventoSme = true,
+    dreSelecionada = '',
+    unidadeEscolarSelecionada = '',
+    turmaSelecionada = '',
+  } = filtros;
   const [eventosDia, setEventosDia] = useState([]);
 
   const permissaoTela = useSelector(
@@ -70,34 +77,30 @@ const DiaCompleto = props => {
     let estado = true;
     if (estado) {
       if (diaSelecionado && estaAberto) {
-        if (filtros && Object.entries(filtros).length > 0) {
-          setEventosDia([]);
-          const {
-            tipoCalendarioSelecionado = '',
-            eventoSme = true,
-            dreSelecionada = '',
-            unidadeEscolarSelecionada = '',
-            turmaSelecionada = '',
-          } = filtros;
-          if (tipoCalendarioSelecionado) {
-            api
-              .post('v1/calendarios/meses/dias/eventos-aulas', {
-                data: diaSelecionado,
-                tipoCalendarioId: tipoCalendarioSelecionado,
-                EhEventoSME: eventoSme,
-                dreId: dreSelecionada,
-                ueId: unidadeEscolarSelecionada,
-                turmaId: turmaSelecionada,
-              })
-              .then(resposta => {
-                if (resposta.data) setEventosDia(resposta.data);
-                else setEventosDia([]);
-              })
-              .catch(() => {
-                setEventosDia([]);
-              });
-          } else setEventosDia([]);
-        }
+        setEventosDia([]);
+        if (
+          tipoCalendarioSelecionado &&
+          dreSelecionada &&
+          unidadeEscolarSelecionada &&
+          turmaSelecionada
+        ) {
+          api
+            .post('v1/calendarios/meses/dias/eventos-aulas', {
+              data: diaSelecionado,
+              tipoCalendarioId: tipoCalendarioSelecionado,
+              EhEventoSME: eventoSme,
+              dreId: dreSelecionada,
+              ueId: unidadeEscolarSelecionada,
+              turmaId: turmaSelecionada,
+            })
+            .then(resposta => {
+              if (resposta.data) setEventosDia(resposta.data);
+              else setEventosDia([]);
+            })
+            .catch(() => {
+              setEventosDia([]);
+            });
+        } else setEventosDia([]);
       } else setEventosDia([]);
     }
     return () => {
@@ -106,31 +109,21 @@ const DiaCompleto = props => {
   }, [diaSelecionado]);
 
   const aoClicarBotaoNovaAula = () => {
-    if (filtros && Object.entries(filtros).length > 0) {
-      const {
-        tipoCalendarioSelecionado = '',
-        eventoSme = true,
-        dreSelecionada = '',
-        unidadeEscolarSelecionada = '',
-        turmaSelecionada = '',
-      } = filtros;
+    store.dispatch(
+      salvarEventoAulaCalendarioEdicao(
+        tipoCalendarioSelecionado,
+        eventoSme,
+        dreSelecionada,
+        unidadeEscolarSelecionada,
+        turmaSelecionada,
+        mesAtual,
+        diaSelecionado
+      )
+    );
 
-      store.dispatch(
-        salvarEventoAulaCalendarioEdicao(
-          tipoCalendarioSelecionado,
-          eventoSme,
-          dreSelecionada,
-          unidadeEscolarSelecionada,
-          turmaSelecionada,
-          mesAtual,
-          diaSelecionado
-        )
-      );
-
-      history.push(
-        `calendario-professor/cadastro-aula/novo/${tipoCalendarioSelecionado}`
-      );
-    }
+    history.push(
+      `calendario-professor/cadastro-aula/novo/${tipoCalendarioSelecionado}`
+    );
   };
 
   const BotoesAuxiliares = () => {
@@ -153,27 +146,17 @@ const DiaCompleto = props => {
   }, [filtros]);
 
   const aoClicarEvento = (id, tipo) => {
-    if (filtros && Object.entries(filtros).length > 0) {
-      const {
-        tipoCalendarioSelecionado = '',
-        eventoSme = true,
-        dreSelecionada = '',
-        unidadeEscolarSelecionada = '',
-        turmaSelecionada = '',
-      } = filtros;
-
-      store.dispatch(
-        salvarEventoAulaCalendarioEdicao(
-          tipoCalendarioSelecionado,
-          eventoSme,
-          dreSelecionada,
-          unidadeEscolarSelecionada,
-          turmaSelecionada,
-          mesAtual,
-          diaSelecionado
-        )
-      );
-    }
+    store.dispatch(
+      salvarEventoAulaCalendarioEdicao(
+        tipoCalendarioSelecionado,
+        eventoSme,
+        dreSelecionada,
+        unidadeEscolarSelecionada,
+        turmaSelecionada,
+        mesAtual,
+        diaSelecionado
+      )
+    );
 
     if (TiposEventoAulaDTO.Evento.indexOf(tipo) > -1)
       history.push(`calendario-escolar/eventos/editar/${id}`);
