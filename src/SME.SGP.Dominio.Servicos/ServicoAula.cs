@@ -82,7 +82,7 @@ namespace SME.SGP.Dominio.Servicos
 
             if (aula.RecorrenciaAula == RecorrenciaAula.AulaUnica && aula.TipoAula == TipoAula.Reposicao)
             {
-                var aulas = await repositorioAula.ObterAulas(aula.TipoCalendarioId, aula.TurmaId, aula.UeId);
+                var aulas = await repositorioAula.ObterAulas(aula.TipoCalendarioId, aula.TurmaId, aula.UeId, usuario.CodigoRf);
                 var quantidadeDeAulasSomadas = aulas.ToList().FindAll(x => x.DataAula.Date == aula.DataAula.Date).Sum(x => x.Quantidade) + aula.Quantidade;
 
                 var abrangencia = await consultasAbrangencia.ObterAbrangenciaTurma(aula.TurmaId);
