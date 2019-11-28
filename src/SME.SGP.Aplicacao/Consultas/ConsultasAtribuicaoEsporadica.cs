@@ -42,14 +42,39 @@ namespace SME.SGP.Aplicacao.Consultas
             return retorno;
         }
 
-        public AtribuicaoEsporadicaDto ObterPorId(long id)
+        public AtribuicaoEsporadicaCompletaDto ObterPorId(long id)
         {
             var atribuicaoEsporadica = repositorioAtribuicaoEsporadica.ObterPorId(id);
 
             if (atribuicaoEsporadica is null)
                 return null;
 
-            return EntidadeParaDto(atribuicaoEsporadica);
+            return EntidadeParaDtoCompleto(atribuicaoEsporadica);
+        }
+
+        private AtribuicaoEsporadicaCompletaDto EntidadeParaDtoCompleto(AtribuicaoEsporadica entidade)
+        {
+            var professorResumo = servicoEOL.ObterResumoProfessorPorRFAnoLetivo(entidade.ProfessorRf, entidade.DataInicio.Year).Result;
+
+            return new AtribuicaoEsporadicaCompletaDto
+            {
+                AnoLetivo = entidade.DataInicio.Year,
+                DataFim = entidade.DataFim,
+                DataInicio = entidade.DataInicio,
+                DreId = entidade.DreId,
+                Excluido = entidade.Excluido,
+                Id = entidade.Id,
+                Migrado = entidade.Migrado,
+                ProfessorNome = professorResumo != null ? professorResumo.Nome : "Professor não encontrado",
+                ProfessorRf = entidade.ProfessorRf,
+                UeId = entidade.UeId,
+                AlteradoEm = entidade.AlteradoEm,
+                AlteradoPor = entidade.AlteradoPor,
+                AlteradoRF = entidade.AlteradoRF,
+                CriadoEm = entidade.CriadoEm,
+                CriadoPor = entidade.CriadoPor,
+                CriadoRF = entidade.CriadoRF
+            };
         }
 
         private AtribuicaoEsporadicaDto EntidadeParaDto(AtribuicaoEsporadica entidade)
