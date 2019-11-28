@@ -402,6 +402,7 @@ const CadastroAula = ({ match }) => {
               <div className="row">
                 <div className="col-sm-12 col-md-5 col-lg-3 col-xl-3 mb-2">
                   <RadioGroupButton
+                    desabilitado={!novoRegistro}
                     id="tipo-aula"
                     label="Tipo de aula"
                     form={form}
@@ -421,6 +422,7 @@ const CadastroAula = ({ match }) => {
                 </div>
                 <div className="col-sm-12 col-md-7 col-lg-9 col-xl-6 mb-2">
                   <SelectComponent
+                    desabilitado={!novoRegistro}
                     id="disciplina"
                     form={form}
                     name="disciplinaId"
@@ -484,6 +486,7 @@ const CadastroAula = ({ match }) => {
                 </div>
                 <div className="col-sm-12 col-md-12 col-lg-12 col-xl-7 mb-2">
                   <RadioGroupButton
+                    desabilitado={!novoRegistro}
                     id="recorrencia"
                     label="Recorrência"
                     form={form}
