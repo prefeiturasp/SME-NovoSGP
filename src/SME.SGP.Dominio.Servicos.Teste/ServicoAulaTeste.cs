@@ -1,4 +1,5 @@
-﻿using Moq;
+﻿using Microsoft.Extensions.Configuration;
+using Moq;
 using SME.SGP.Aplicacao;
 using SME.SGP.Aplicacao.Integracoes;
 using SME.SGP.Aplicacao.Integracoes.Respostas;
@@ -25,6 +26,7 @@ namespace SME.SGP.Dominio.Servicos.Teste
         private readonly Mock<IServicoUsuario> servicoUsuario;
         private readonly Mock<IComandosWorkflowAprovacao> comandosWorkflowAprovacao;
         private readonly Mock<IConsultasAbrangencia> consultaAbrangencia;
+        private readonly Mock<IConfiguration> configuration;
 
         public ServicoAulaTeste()
         {
@@ -41,7 +43,7 @@ namespace SME.SGP.Dominio.Servicos.Teste
             comandosWorkflowAprovacao = new Mock<IComandosWorkflowAprovacao>();
             consultaAbrangencia = new Mock<IConsultasAbrangencia>();
             servicoAula = new ServicoAula(repositorioAula.Object, servicoEol.Object, repositorioTipoCalendario.Object, servicoDiaLetivo.Object, consultasGrade.Object, repositorioPeriodoEscolar.Object, servicoLog.Object, 
-                consultaAbrangencia.Object, servicoUsuario.Object, comandosWorkflowAprovacao.Object);
+            consultaAbrangencia.Object, servicoUsuario.Object, comandosWorkflowAprovacao.Object, configuration.Object);
         }
 
         [Fact]
@@ -100,4 +102,4 @@ namespace SME.SGP.Dominio.Servicos.Teste
             repositorioAula.Verify(c => c.Salvar(aula), Times.Exactly(1));
         }
     }
-}
+}  

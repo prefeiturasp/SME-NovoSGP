@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace SME.SGP.Dominio.Servicos
 {
@@ -108,42 +109,39 @@ namespace SME.SGP.Dominio.Servicos
         private void AprovarUltimoNivelDaReposicaoAula(long codigoDaNotificacao, long workflowId)
         {
             Aula aula = repositorioAula.ObterPorWorkflowId(workflowId);
-            // Evento evento = repositorioEvento.ObterPorWorkflowId(workflowId);
             if (aula == null)
                 throw new NegocioException("Não foi possível localizar a aula deste fluxo de aprovação.");
 
             aula.AprovaWorkflow();
             repositorioAula.Salvar(aula);
 
-            NotificarCriadorDoEventoQueFoiAprovado(aula, codigoDaNotificacao);
+            NotificarCriadorDaAulaQueFoiAprovadaAsync(aula, codigoDaNotificacao);
         }
 
-        private void NotificarCriadorDoEventoQueFoiAprovado(Aula aulaReposicao, long codigoDaNotificacao)
+        private async void NotificarCriadorDaAulaQueFoiAprovadaAsync(Aula aula, long codigoDaNotificacao)
         {
             var loginAtual = servicoUsuario.ObterLoginAtual();
             var perfilAtual = servicoUsuario.ObterPerfilAtual();
-            var escola = repositorioAbrangencia.ObterUe(aulaReposicao.UeId, loginAtual, perfilAtual).Result;
+        
+            var abrangencia = await repositorioAbrangencia.ObterAbrangenciaTurma(aula.TurmaId, loginAtual, perfilAtual);
+            if (abrangencia == null)
+                throw new NegocioException("Abrangência da turma não localizada.");
 
-            if (escola == null)
-                throw new NegocioException("Não foi possível localizar a Ue desta reposição de aula.");
-
-            //var linkParaEvento = $"{configuration["UrlFrontEnd"]}calendario-escolar/eventos/editar/:{aulaReposicao.Id}/";
-
-            var usuario = servicoUsuario.ObterUsuarioPorCodigoRfLoginOuAdiciona(aulaReposicao.CriadoRF);
+            var usuario = servicoUsuario.ObterUsuarioPorCodigoRfLoginOuAdiciona(aula.CriadoRF);
 
             repositorioNotificacao.Salvar(new Notificacao()
             {
-                UeId = aulaReposicao.UeId,
+                UeId = aula.UeId,
                 UsuarioId = usuario.Id,
-                Ano = aulaReposicao.CriadoEm.Year,
+                Ano = aula.CriadoEm.Year,
+                DreId = abrangencia.CodigoDre,
                 Categoria = NotificacaoCategoria.Aviso,
-                // DreId = aulaReposicao.DreId,
-                Titulo = "Criação de Eventos Excepcionais",
+                Titulo = "Criação de Aula de Reposição na turma 4B",
                 Tipo = NotificacaoTipo.Calendario,
                 Codigo = codigoDaNotificacao,
-                Mensagem = $"A criação de 3 aulas de reposição de matemática na turma 4B da EMEF Linneu Prestes (DRE Santo Amaro) foi aceita."
+                Mensagem = $" criação de {aula.Quantidade} aula(s) de reposição de {abrangencia.NomeModalidade} na turma {abrangencia.NomeTurma} da {abrangencia.NomeUe} ({abrangencia.NomeDre}) foi aceita."
             });
-         }
+        }
 
         private void AtualizaNiveis(IEnumerable<WorkflowAprovacaoNivel> niveis)
         {
@@ -277,6 +275,31 @@ namespace SME.SGP.Dominio.Servicos
             });
         }
 
+        private async Task NotificarAulaReposicaoQueFoiReprovada(Aula aula, long codigoDaNotificacao, string motivo)
+        {
+            var loginAtual = servicoUsuario.ObterLoginAtual();
+            var perfilAtual = servicoUsuario.ObterPerfilAtual();
+
+            var abrangencia = await repositorioAbrangencia.ObterAbrangenciaTurma(aula.TurmaId, loginAtual, perfilAtual);
+            if (abrangencia == null)
+                throw new NegocioException("Abrangência da turma não localizada.");
+
+            var usuario = servicoUsuario.ObterUsuarioPorCodigoRfLoginOuAdiciona(aula.CriadoRF);
+
+            repositorioNotificacao.Salvar(new Notificacao()
+            {
+                UeId = aula.UeId,
+                UsuarioId = usuario.Id,
+                Ano = aula.CriadoEm.Year,
+                Categoria = NotificacaoCategoria.Aviso,
+                DreId = abrangencia.CodigoDre,
+                Titulo = $"Criação de Aula de Reposição na turma {abrangencia.NomeTurma}",
+                Tipo = NotificacaoTipo.Calendario,
+                Codigo = codigoDaNotificacao,
+                Mensagem = $"A criação de {aula.Quantidade} aula(s) de reposição de {abrangencia.NomeModalidade} na turma {abrangencia.NomeTurma} da {abrangencia.NomeUe} ({abrangencia.NomeDre}) foi recusada. Motivo: {motivo} "
+            });
+        }
+
         private void ReprovarNivel(WorkflowAprovacao workflow, long codigoDaNotificacao, string motivo, Cargo? cargoDoNivelQueRecusou)
         {
             if (workflow.Tipo == WorkflowAprovacaoTipo.Evento)
@@ -299,30 +322,32 @@ namespace SME.SGP.Dominio.Servicos
                 {
                     var funcionariosRetornoEol = servicoEOL.ObterFuncionariosPorCargoUe(evento.UeId, (int)Cargo.Diretor);
                     if (funcionariosRetornoEol == null || funcionariosRetornoEol.Count() == 0)
-                        throw new NegocioException($"Não foram encontrados funcionários de cargo {Cargo.Diretor.GetAttribute<DisplayAttribute>().Name} para a escola de código {evento.UeId} para enviar a reprovação do evento.");
-
-                    foreach (var usuarioEol in funcionariosRetornoEol)
                     {
-                        var usuarioDiretor = servicoUsuario.ObterUsuarioPorCodigoRfLoginOuAdiciona(usuarioEol.CodigoRf);
+                        throw new NegocioException($"Não foram encontrados funcionários de cargo {Cargo.Diretor.GetAttribute<DisplayAttribute>().Name} para a escola de código {evento.UeId} para enviar a reprovação do evento.");
+                    }    
+                        foreach (var usuarioEol in funcionariosRetornoEol)
+                        {
+                                   var usuarioDiretor = servicoUsuario.ObterUsuarioPorCodigoRfLoginOuAdiciona(usuarioEol.CodigoRf);
 
-                        NotificarEventoQueFoiReprovado(evento, codigoDaNotificacao, usuarioDiretor, motivo, escola.Nome);
+                            NotificarEventoQueFoiReprovado(evento, codigoDaNotificacao, usuarioDiretor, motivo, escola.Nome);
+                        }
                     }
+                    var usuario = servicoUsuario.ObterUsuarioPorCodigoRfLoginOuAdiciona(evento.CriadoRF);
+                    NotificarEventoQueFoiReprovado(evento, codigoDaNotificacao, usuario, motivo, escola.Nome);
                 }
-                var usuario = servicoUsuario.ObterUsuarioPorCodigoRfLoginOuAdiciona(evento.CriadoRF);
-                NotificarEventoQueFoiReprovado(evento, codigoDaNotificacao, usuario, motivo, escola.Nome);
-            }
 
-            else if (workflow.Tipo == WorkflowAprovacaoTipo.ReposicaoAula)
-            {
+                else if (workflow.Tipo == WorkflowAprovacaoTipo.ReposicaoAula)
+                {
+                    Aula aula = repositorioAula.ObterPorWorkflowId(workflow.Id);
+                    if (aula == null)
+                        throw new NegocioException("Não foi possível localizar a aula deste fluxo de aprovação.");
 
-                // pegar a aula 
-                // Obter por workflow id
-                // pegar informações como escola e etc..
+                    aula.ReprovarWorkflow();
+                    repositorioAula.Salvar(aula);
 
-                // aula.ReprovaWorkflow = Mudar status
-                // aula.Salvar (com status de reprovado)
-                // Notificar que foi reprovado
+                     NotificarAulaReposicaoQueFoiReprovada(aula, codigoDaNotificacao, motivo);
+                }
             }
         }
     }
-}
+               
