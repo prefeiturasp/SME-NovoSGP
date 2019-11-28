@@ -4,8 +4,6 @@ namespace SME.SGP.Dominio.Interfaces
 {
     public interface IServicoCalculoFrequencia
     {
-        void CalcularFrequenciaPorTurmaEDisciplina(IEnumerable<string> alunos, long aulaId);
-
-        void CalcularPercentualFrequenciaAlunosPorDisciplinaEPeriodo(int anoLetivo);
+        void CalcularFrequenciaPorTurma(IEnumerable<string> alunos, long aulaId);
     }
 }

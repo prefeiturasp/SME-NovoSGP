@@ -7,12 +7,6 @@ namespace SME.Background.Core.Processors
 {
     public class DisabledProcessor : IProcessor
     {
-        private readonly IServiceProvider provider;
-
-        public DisabledProcessor(IServiceProvider provider)
-        {
-            this.provider = provider;
-        }
         public bool Registrado => true;
 
         public string Executar(Expression<Action> metodo)

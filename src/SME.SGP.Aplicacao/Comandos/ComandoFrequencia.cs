@@ -1,4 +1,5 @@
-﻿using SME.SGP.Dominio;
+﻿using SME.Background.Core;
+using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System.Collections.Generic;
@@ -9,21 +10,20 @@ namespace SME.SGP.Aplicacao
 {
     public class ComandoFrequencia : IComandoFrequencia
     {
-        private readonly IServicoCalculoFrequencia servicoCalculoFrequencia;
         private readonly IServicoFrequencia servicoFrequencia;
 
-        public ComandoFrequencia(IServicoFrequencia servicoFrequencia,
-                                IServicoCalculoFrequencia servicoCalculoFrequencia)
+        public ComandoFrequencia(IServicoFrequencia servicoFrequencia)
         {
             this.servicoFrequencia = servicoFrequencia ?? throw new System.ArgumentNullException(nameof(servicoFrequencia));
-            this.servicoCalculoFrequencia = servicoCalculoFrequencia ?? throw new System.ArgumentNullException(nameof(servicoCalculoFrequencia));
         }
 
         public async Task Registrar(FrequenciaDto frequenciaDto)
         {
             List<RegistroAusenciaAluno> registrosAusenciaAlunos = ObtemListaDeAusencias(frequenciaDto);
             await servicoFrequencia.Registrar(frequenciaDto.AulaId, registrosAusenciaAlunos);
-            servicoCalculoFrequencia.CalcularFrequenciaPorTurmaEDisciplina(frequenciaDto.ListaFrequencia.Select(c => c.CodigoAluno), frequenciaDto.AulaId);
+
+            var alunos = frequenciaDto.ListaFrequencia.Select(a => a.CodigoAluno).ToList();
+            Cliente.Executar<IServicoCalculoFrequencia>(c => c.CalcularFrequenciaPorTurma(alunos, frequenciaDto.AulaId));
         }
 
         private static List<RegistroAusenciaAluno> ObtemListaDeAusencias(FrequenciaDto frequenciaDto)
