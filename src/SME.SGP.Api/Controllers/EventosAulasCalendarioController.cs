@@ -31,9 +31,6 @@ namespace SME.SGP.Api.Controllers
         {
             var retorno = await consultasEventosAulasCalendario.ObterEventoAulasDia(filtro);
 
-            if (retorno.EventosAulas.Any())
-                return StatusCode(204);
-
             return Ok(retorno);
         }
 
