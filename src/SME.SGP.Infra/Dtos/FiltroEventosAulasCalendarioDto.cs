@@ -13,7 +13,8 @@ namespace SME.SGP.Infra
         [Required(ErrorMessage = "O campo TipoCalendarioId é obrigatório")]
         public long TipoCalendarioId { get; set; }
 
-        [Required(ErrorMessage = "O campo TurmaId é obrigatório")]
+        public bool TodasTurmas { get; set; }
+
         public string TurmaId { get; set; }
 
         [Required(ErrorMessage = "O campo UeId é obrigatório")]

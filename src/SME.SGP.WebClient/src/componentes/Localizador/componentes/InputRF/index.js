@@ -86,8 +86,10 @@ function InputRF({
             placeholder="Digite o RF"
             onKeyDown={onKeyDown}
             onChange={e => {
-              form.setFieldValue(name, e.target.value);
-              form.setFieldTouched(name, true, true);
+              if (valorNuloOuVazio(e.target.value)) {
+                form.setFieldValue(name, e.target.value, false);
+                form.setFieldTouched(name);
+              }
               setValor(e.target.value);
             }}
             style={style}
