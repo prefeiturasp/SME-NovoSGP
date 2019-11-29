@@ -19,16 +19,15 @@ namespace SME.Background.Core
             return Orquestrador.ObterProcessador(tipoProcessamento).Executar<T>(metodo);
         }
 
-        public static void ExecutarPeriodicamente(Expression<Action> metodo, string cron)
+        public static void ExecutarPeriodicamente<T>(Expression<Action<T>> metodo, string cron)
         {
             Orquestrador.ObterProcessador(TipoProcessamento.ExecucaoRecorrente).ExecutarPeriodicamente(metodo, cron);
         }
-        
-        static void GravarLog(string mensagem)
+
+        private static void GravarLog(string mensagem)
         {
             SentrySdk.AddBreadcrumb($"{mensagem} - {DateTime.Now.ToString("MM/dd/yyyy hh:mm:ss.fff tt")}", "Background Processing");
             Console.WriteLine($"{mensagem} - {DateTime.Now.ToString("MM/dd/yyyy hh:mm:ss.fff tt")}");
         }
-
     }
 }
