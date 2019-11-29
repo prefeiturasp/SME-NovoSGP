@@ -89,24 +89,24 @@ const Dia = props => {
     store.dispatch(selecionaDia(dia));
   };
 
-  const eventoCalendarioEdicao = useSelector(
-    state => state.calendarioProfessor.eventoCalendarioEdicao
+  const eventoAulaCalendarioEdicao = useSelector(
+    state => state.calendarioProfessor.eventoAulaCalendarioEdicao
   );
 
   useEffect(() => {
     const abrirDiaEventoCalendarioEdicao = setTimeout(() => {
       if (
-        eventoCalendarioEdicao &&
-        eventoCalendarioEdicao.dia &&
+        eventoAulaCalendarioEdicao &&
+        eventoAulaCalendarioEdicao.dia &&
         dia &&
-        dia.getTime() === eventoCalendarioEdicao.dia.getTime()
+        dia.getTime() === eventoAulaCalendarioEdicao.dia.getTime()
       ) {
         selecionaDiaAberto();
         store.dispatch(salvarEventoAulaCalendarioEdicao());
       }
     }, 3000);
     return () => clearTimeout(abrirDiaEventoCalendarioEdicao);
-  }, [eventoCalendarioEdicao]);
+  }, [eventoAulaCalendarioEdicao]);
 
   const style = {
     cursor: 'pointer',
