@@ -59,7 +59,7 @@ namespace SME.SGP.Dados.Repositorios
             var query = @"select
 	                            1
                             from
-	                            abrangencia_dres
+	                            abrangencia
                             where
 	                            usuario_id = (select id from usuario where login = @login)
 	                            and perfil = @perfil";
@@ -72,31 +72,29 @@ namespace SME.SGP.Dados.Repositorios
             texto = $"%{texto.ToUpper()}%";
 
             var query = @"select
-	                    ab_turmas.modalidade_codigo as modalidade,
-	                    ab_turmas.ano_letivo as anoLetivo,
-	                    ab_turmas.ano,
-	                    ab_dres.dre_id as codigoDre,
-	                    ab_turmas.turma_id as codigoTurma,
-	                    ab_ues.ue_id as codigoUe,
-                        ab_ues.tipo_escola as tipoEscola,
-	                    ab_dres.nome as nomeDre,
-	                    ab_turmas.nome as nomeTurma,
-	                    ab_ues.nome as nomeUe,
-	                    ab_turmas.semestre,
-	                    ab_turmas.qt_duracao_aula as qtDuracaoAula,
-	                    ab_turmas.tipo_turno as tipoTurno
-                    from
-	                    abrangencia_turmas ab_turmas
-                    inner join abrangencia_ues ab_ues on
-	                    ab_turmas.abrangencia_ues_id = ab_ues.id
-                    inner join abrangencia_dres ab_dres on
-	                    ab_ues.abrangencia_dres_id = ab_dres.id
-                    where
-                        ab_dres.usuario_id = (select id from usuario where login = @login)
-	                    and ab_dres.perfil = @perfil
-                        and (upper(ab_turmas.nome) like @texto OR upper(f_unaccent(ab_ues.nome)) LIKE @texto)
-                    order by nomeUe
-                    OFFSET 0 ROWS FETCH NEXT  10 ROWS ONLY";
+                            va.modalidade_codigo as modalidade,
+                            va.turma_ano_letivo as anoLetivo,
+                            va.turma_ano as  ano,
+                            va.dre_codigo as codigoDre,
+                            va.turma_id as codigoTurma,
+                            va.ue_codigo as codigoUe,
+                            u.tipo_escola as tipoEscola,
+                            va.dre_nome as nomeDre,
+                            va.turma_nome as nomeTurma,
+                            va.ue_nome as nomeUe,
+                            va.turma_semestre as semestre,
+                            va.qt_duracao_aula as qtDuracaoAula,
+                            va.tipo_turno as tipoTurno
+                        from
+                            v_abrangencia va
+                        inner join ue u
+	                        on u.ue_id = va.ue_codigo
+                        where
+                            va.usuario_id = (select id from usuario where login = @login)
+                            and va.usuario_perfil = @perfil
+                            and (upper(va.turma_nome) like @texto OR upper(f_unaccent(va.ue_nome)) LIKE @texto)
+                        order by va.ue_nome
+                        OFFSET 0 ROWS FETCH NEXT  10 ROWS ONLY";
 
             return (await database.Conexao.QueryAsync<AbrangenciaFiltroRetorno>(query, new { texto, login, perfil })).AsList();
         }
@@ -124,32 +122,28 @@ namespace SME.SGP.Dados.Repositorios
         public async Task<AbrangenciaFiltroRetorno> ObterAbrangenciaTurma(string turma, string login, Guid perfil)
         {
             var query = @"select
-	                    ab_turmas.modalidade_codigo as modalidade,
-	                    ab_turmas.ano_letivo as anoLetivo,
-	                    ab_turmas.ano,
-	                    ab_dres.dre_id as codigoDre,
-	                    ab_turmas.turma_id as codigoTurma,
-	                    ab_ues.ue_id as codigoUe,
-                        ab_ues.tipo_escola as tipoEscola,
-	                    ab_dres.nome as nomeDre,
-	                    ab_turmas.nome as nomeTurma,
-	                    ab_ues.nome as nomeUe,
-	                    ab_turmas.semestre,
-	                    ab_turmas.qt_duracao_aula as qtDuracaoAula,
-	                    ab_turmas.tipo_turno as tipoTurno
-                    from
-	                    abrangencia_turmas ab_turmas
-                    inner join abrangencia_ues ab_ues on
-	                    ab_turmas.abrangencia_ues_id = ab_ues.id
-                    inner join abrangencia_dres ab_dres on
-	                    ab_ues.abrangencia_dres_id = ab_dres.id
-                    inner join usuario u on
-                        u.id = ab_dres.usuario_id
-                    where
-                            u.login = @login
-	                    and ab_dres.perfil = @perfil
-                        and ab_turmas.turma_id = @turma
-                    order by nomeUe";
+                            va.modalidade_codigo as modalidade,
+                            va.turma_ano_letivo as anoLetivo,
+	                        va.turma_ano as  ano,
+                            va.dre_codigo as codigoDre,
+                            va.turma_id as codigoTurma,
+                            va.ue_codigo as codigoUe,
+	                        u.tipo_escola as tipoEscola,
+	                        va.dre_nome as nomeDre,
+	                        va.turma_nome as nomeTurma,
+	                        va.ue_nome as nomeUe,
+	                        va.turma_semestre as semestre,
+                            va.qt_duracao_aula as qtDuracaoAula,
+                            va.tipo_turno as tipoTurno
+                        from
+                            v_abrangencia va
+                        inner join ue u
+                            on u.ue_id = va.ue_codigo
+                        where
+	                        va.usuario_id = (select id from usuario where login = @login)
+                            and va.usuario_perfil = @perfil
+                            and va.turma_id = @turma
+                        order by va.ue_nome";
 
             return (await database.Conexao.QueryAsync<AbrangenciaFiltroRetorno>(query, new { turma, login, perfil }))
                 .FirstOrDefault();
@@ -160,25 +154,21 @@ namespace SME.SGP.Dados.Repositorios
             var query = new StringBuilder();
 
             query.AppendLine("select distinct");
-            query.AppendLine("ab_dres.dre_id as codigo,");
-            query.AppendLine("ab_dres.nome,");
-            query.AppendLine("ab_dres.abreviacao");
+            query.AppendLine("va.dre_codigo as codigo,");
+            query.AppendLine("va.dre_nome as nome,");
+            query.AppendLine("va.dre_abreviacao as abreviacao");
             query.AppendLine("from");
-            query.AppendLine("abrangencia_turmas ab_turmas");
-            query.AppendLine("inner join abrangencia_ues ab_ues on");
-            query.AppendLine("ab_turmas.abrangencia_ues_id = ab_ues.id");
-            query.AppendLine("inner join abrangencia_dres ab_dres on");
-            query.AppendLine("ab_ues.abrangencia_dres_id = ab_dres.id");
-            query.AppendLine("where");
+            query.AppendLine("v_abrangencia va");
+            query.AppendLine("where 1=1 ");
 
             if (!string.IsNullOrEmpty(dreCodigo))
-                query.AppendLine("ab_dres.dre_id = @dreCodigo");
+                query.AppendLine("and va.dre_codigo = @dreCodigo");
 
             if (!string.IsNullOrEmpty(ueCodigo))
-                query.AppendLine("ab_ues.ue_id = @ueCodigo");
+                query.AppendLine("and va.ue_codigo = @ueCodigo");
 
-            query.AppendLine("and ab_dres.usuario_id = (select id from usuario where login = @login)");
-            query.AppendLine("and ab_dres.perfil = @perfil");
+            query.AppendLine("and va.usuario_id = (select id from usuario where login = @login)");
+            query.AppendLine("and va.usuario_perfil = @perfil");
 
             return (await database.Conexao.QueryFirstOrDefaultAsync<AbrangenciaDreRetorno>(query.ToString(), new { dreCodigo, ueCodigo, login, perfil }));
         }
@@ -188,24 +178,20 @@ namespace SME.SGP.Dados.Repositorios
             var query = new StringBuilder();
 
             query.AppendLine("select distinct");
-            query.AppendLine("ab_dres.abreviacao,");
-            query.AppendLine("ab_dres.dre_id as codigo,");
-            query.AppendLine("ab_dres.nome");
+            query.AppendLine("va.dre_abreviacao as abreviacao,");
+            query.AppendLine("va.dre_codigo as codigo,");
+            query.AppendLine("va.dre_nome as nome");
             query.AppendLine("from");
-            query.AppendLine("abrangencia_dres ab_dres");
-            query.AppendLine("inner join abrangencia_ues ab_ues");
-            query.AppendLine("on ab_ues.abrangencia_dres_id = ab_dres.id");
-            query.AppendLine("inner join abrangencia_turmas ab_turmas");
-            query.AppendLine("on ab_turmas.abrangencia_ues_id = ab_ues.id");
+            query.AppendLine("v_abrangencia va");
             query.AppendLine("where");
-            query.AppendLine("ab_dres.usuario_id = (select id from usuario where login = @login)");
-            query.AppendLine("and ab_dres.perfil = @perfil");
+            query.AppendLine("va.usuario_id = (select id from usuario where login = @login)");
+            query.AppendLine("and va.usuario_perfil = @perfil");
 
             if (modalidade.HasValue)
-                query.AppendLine("and ab_turmas.modalidade_codigo = @modalidade");
+                query.AppendLine("and av.modalidade_codigo = @modalidade");
 
             if (periodo > 0)
-                query.AppendLine("and ab_turmas.semestre = @semestre");
+                query.AppendLine("and av.turma_semestre = @semestre");
 
             return (await database.Conexao.QueryAsync<AbrangenciaDreRetorno>(query.ToString(), new { login, perfil, modalidade = (modalidade.HasValue ? modalidade.Value : 0), semestre = periodo })).AsList();
         }
