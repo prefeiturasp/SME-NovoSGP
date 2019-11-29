@@ -11,6 +11,8 @@ namespace SME.SGP.Aplicacao.Integracoes
     {
         Task<AlterarSenhaRespostaDto> AlterarSenha(string login, string novaSenha);
 
+        Task AtribuirCJSeNecessario(Guid usuarioId);
+
         Task<UsuarioEolAutenticacaoRetornoDto> Autenticar(string login, string senha);
 
         Task<AbrangenciaRetornoEolDto> ObterAbrangencia(string login, Guid perfil);
@@ -33,6 +35,10 @@ namespace SME.SGP.Aplicacao.Integracoes
 
         Task<IEnumerable<UsuarioEolRetornoDto>> ObterFuncionariosPorUe(BuscaFuncionariosFiltroDto buscaFuncionariosFiltroDto);
 
+        Task<IEnumerable<ProfessorResumoDto>> ObterListaNomePorListaRF(IEnumerable<string> codigosRF);
+
+        Task<IEnumerable<ProfessorResumoDto>> ObterListaResumosPorListaRF(IEnumerable<string> codigosRF, int anoLetivo);
+
         IEnumerable<ProfessorTurmaReposta> ObterListaTurmasPorProfessor(string codigoRf);
 
         Task<MeusDadosDto> ObterMeusDados(string login);
@@ -43,6 +49,8 @@ namespace SME.SGP.Aplicacao.Integracoes
 
         Task<IEnumerable<ProfessorResumoDto>> ObterProfessoresAutoComplete(int anoLetivo, string dreId, string nomeProfessor);
 
+        Task<UsuarioResumoCoreDto> ObterResumoCore(string login);
+
         Task<ProfessorResumoDto> ObterResumoProfessorPorRFAnoLetivo(string codigoRF, int anoLetivo);
 
         IEnumerable<SupervisoresRetornoDto> ObterSupervisoresPorCodigo(string[] codigoSupervisores);
@@ -51,12 +59,10 @@ namespace SME.SGP.Aplicacao.Integracoes
 
         Task<IEnumerable<TurmaDto>> ObterTurmasAtribuidasAoProfessorPorEscolaEAnoLetivo(string rfProfessor, string codigoEscola, int anoLetivo);
 
+        Task<IEnumerable<TurmaPorUEResposta>> ObterTurmasPorUE(string ueId, string anoLetivo);
+
         Task ReiniciarSenha(string login);
 
-        Task AtribuirCJSeNecessario(Guid usuarioId);
-
         Task RemoverCJSeNecessario(Guid usuarioId);
-
-        Task<UsuarioResumoCoreDto> ObterResumoCore(string login);
     }
 }

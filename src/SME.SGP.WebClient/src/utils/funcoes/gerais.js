@@ -10,4 +10,8 @@ const valorNuloOuVazio = valor => {
   return valor === null || valor === '';
 };
 
-export { validaSeObjetoEhNuloOuVazio, valorNuloOuVazio };
+const stringNulaOuEmBranco = valor => {
+  return valor? valor.trim() === '': true;
+};
+
+export { validaSeObjetoEhNuloOuVazio, valorNuloOuVazio, stringNulaOuEmBranco };
