@@ -31,11 +31,11 @@ const FrequenciaPlanoAula = () => {
 
   const { turmaSelecionada, ehProfessor, ehProfessorCj } = usuario;
   const ehEja =
-    turmaSelecionada && turmaSelecionada.modalidade === String(modalidade.EJA)
+    turmaSelecionada && String(turmaSelecionada.modalidade) === String(modalidade.EJA)
       ? true
       : false;
   const ehMedio =
-    turmaSelecionada && turmaSelecionada.modalidade === String(modalidade.ENSINO_MEDIO)
+    turmaSelecionada && String(turmaSelecionada.modalidade) === String(modalidade.ENSINO_MEDIO)
       ? true
       : false;
   const turmaId = turmaSelecionada ? turmaSelecionada.turma : 0;
@@ -315,7 +315,7 @@ const FrequenciaPlanoAula = () => {
       recuperacaoAula: planoAula.recuperacaoAula,
       licaoCasa: planoAula.licaoCasa,
       aulaId,
-      objetivosAprendizagemJurema: objetivosId,
+      objetivosAprendizagemJurema: temObjetivos ? objetivosId : [],
     }
     planoAula.objetivosAprendizagemJurema = [...objetivosId];
 
@@ -324,6 +324,7 @@ const FrequenciaPlanoAula = () => {
       await api.post('v1/planos/aulas', plano).then(salvouPlano => {
         if (salvouPlano && salvouPlano.status == 200) {
           sucesso('Plano de aula salvo com sucesso.');
+          setModoEdicaoPlanoAula(false);
         }
       }
       )
@@ -342,7 +343,7 @@ const FrequenciaPlanoAula = () => {
     if (stringNulaOuEmBranco(planoAula.desenvolvimentoAula)) {
       errosValidacaoPlano.push("Desenvolvimento da aula - A sessão de desenvolvimento da aula deve ser preenchida");
     }
-    if (!ehProfessorCj && temObjetivos && planoAula.objetivosAprendizagemJurema.length === 0) {
+    if (!ehProfessorCj && temObjetivos && !ehEja && !ehMedio && planoAula.objetivosAprendizagemJurema.length === 0) {
       errosValidacaoPlano.push("Objetivos de aprendizagem - É obrigatório selecionar ao menos um objetivo de aprendizagem");
     }
   }
@@ -457,6 +458,7 @@ const FrequenciaPlanoAula = () => {
     planoAula.objetivosAprendizagemAula = [];
     planoAula.objetivosAprendizagemAula = [...planoAula.objetivosAprendizagemAula];
     const materiasVazia = [];
+    setModoEdicaoPlanoAula(false);
     setMaterias([...materiasVazia]);
     setPlanoAula(planoAula);
   }
