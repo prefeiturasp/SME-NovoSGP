@@ -22,5 +22,7 @@ namespace SME.SGP.Dominio.Interfaces
         IEnumerable<AulaConsultaDto> ObterDatasDeAulasPorAnoTurmaEDisciplina(int anoLetivo, string turmaId, string disciplinaId, long usuarioId, string usuarioRF, Guid perfil);
 
         bool UsuarioPodeCriarAulaNaUeTurmaEModalidade(Aula aula, ModalidadeTipoCalendario modalidade);
+        Aula ObterPorWorkflowId(long workflowId);
+
     }
 }
