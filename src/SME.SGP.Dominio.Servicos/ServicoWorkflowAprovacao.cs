@@ -118,12 +118,12 @@ namespace SME.SGP.Dominio.Servicos
             NotificarCriadorDaAulaQueFoiAprovada(aula, codigoDaNotificacao);
         }
 
-        private async void NotificarCriadorDaAulaQueFoiAprovada(Aula aula, long codigoDaNotificacao)
+        private  void NotificarCriadorDaAulaQueFoiAprovada(Aula aula, long codigoDaNotificacao)
         {
             var loginAtual = servicoUsuario.ObterLoginAtual();
             var perfilAtual = servicoUsuario.ObterPerfilAtual();
         
-            var abrangencia = await repositorioAbrangencia.ObterAbrangenciaTurma(aula.TurmaId, loginAtual, perfilAtual);
+            var abrangencia =  repositorioAbrangencia.ObterAbrangenciaTurma(aula.TurmaId, loginAtual, perfilAtual).Result;
             if (abrangencia == null)
                 throw new NegocioException("Abrangência da turma não localizada.");
 
@@ -276,12 +276,12 @@ namespace SME.SGP.Dominio.Servicos
             });
         }
 
-        private async Task NotificarAulaReposicaoQueFoiReprovada(Aula aula, long codigoDaNotificacao, string motivo)
+        private void NotificarAulaReposicaoQueFoiReprovada(Aula aula, long codigoDaNotificacao, string motivo)
         {
             var loginAtual = servicoUsuario.ObterLoginAtual();
             var perfilAtual = servicoUsuario.ObterPerfilAtual();
 
-            var abrangencia = await repositorioAbrangencia.ObterAbrangenciaTurma(aula.TurmaId, loginAtual, perfilAtual);
+            var abrangencia =  repositorioAbrangencia.ObterAbrangenciaTurma(aula.TurmaId, loginAtual, perfilAtual).Result;
             if (abrangencia == null)
                 throw new NegocioException("Abrangência da turma não localizada.");
 
