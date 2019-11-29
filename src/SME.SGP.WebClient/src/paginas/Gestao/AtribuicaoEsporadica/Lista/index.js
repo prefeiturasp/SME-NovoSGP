@@ -105,7 +105,7 @@ function AtribuicaoEsporadicaLista() {
 
   const onChangeFiltro = valoresFiltro => {
     setFiltro({
-      AnoLetivo: valoresFiltro.anoLetivo,
+      AnoLetivo: '2019',
       DreId: valoresFiltro.dreId,
       UeId: valoresFiltro.ueId,
       ProfessorRF: valoresFiltro.professorRf,
@@ -113,7 +113,7 @@ function AtribuicaoEsporadicaLista() {
   };
 
   const validarFiltro = () => {
-    return !!filtro.dreId && !!filtro.ueId && !!filtro.anoLetivo;
+    return !!filtro.DreId && !!filtro.UeId;
   };
 
   useEffect(() => {

@@ -87,7 +87,7 @@ const ListaPaginada = props => {
   };
 
   const filtrar = () => {
-    if (!!filtroEhValido && !filtroEhValido) return;
+    if (typeof filtroEhValido === 'boolean' && filtroEhValido === false) return;
     dispatch(setLoaderTabela(true));
     api
       .get(`${url}?${obterPaginacao()}`, { params: filtro })

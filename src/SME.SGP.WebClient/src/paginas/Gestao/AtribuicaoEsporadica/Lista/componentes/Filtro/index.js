@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 
 // Formulario
@@ -6,13 +6,13 @@ import { Form, Formik } from 'formik';
 import * as Yup from 'yup';
 
 // Redux
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 
 // Componentes
-import { Grid, Localizador, Tag } from '~/componentes';
+import { Grid, Localizador } from '~/componentes';
 import DreDropDown from '../../../componentes/DreDropDown';
 import UeDropDown from '../../../componentes/UeDropDown';
-import AnoLetivoDropDown from '../../../componentes/AnoLetivoDropDown';
+import AnoLetivoTag from '../../../componentes/AnoLetivoTag';
 
 // Styles
 import { Row } from './styles';
@@ -20,37 +20,27 @@ import { Row } from './styles';
 import {
   selecionarDre,
   selecionarUe,
-  selecionarAnoLetivo,
 } from '~/redux/modulos/atribuicaoEsporadica/actions';
 
 function Filtro({ onFiltrar }) {
   const dispatch = useDispatch();
   const [refForm, setRefForm] = useState({});
+  const [dreId, setDreId] = useState('');
   const [valoresIniciais] = useState({
     anoLetivo: '',
     dreId: '',
     ueId: '',
     professorRf: '',
   });
-  const [dreId, setDreId] = useState('');
-  const anoLetivo = useSelector(
-    store => store.usuario.turmaSelecionada.anoLetivo
-  );
 
   const validacoes = () => {
-    return Yup.object({
-      dreId: Yup.string().required(),
-      ueId: Yup.string().required(),
-    });
+    return Yup.object({});
   };
 
   const validarFiltro = valores => {
     const formContext = refForm && refForm.getFormikContext();
     if (formContext.isValid && Object.keys(formContext.errors).length === 0) {
-      onFiltrar({
-        ...valores,
-        anoLetivo,
-      });
+      onFiltrar(valores);
     }
   };
 
@@ -74,9 +64,7 @@ function Filtro({ onFiltrar }) {
         <Form className="col-md-12 mb-4">
           <Row className="row mb-2">
             <Grid cols={2}>
-              <Tag tamanho="grande" fluido centralizado>
-                {anoLetivo}
-              </Tag>
+              <AnoLetivoTag form={form} />
             </Grid>
             <Grid cols={5}>
               <DreDropDown form={form} onChange={valor => onChangeDre(valor)} />
@@ -92,7 +80,7 @@ function Filtro({ onFiltrar }) {
           <Row className="row">
             <Localizador
               dreId={dreId}
-              anoLetivo={anoLetivo}
+              anoLetivo="2019"
               form={form}
               onChange={valor => valor}
             />
