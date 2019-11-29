@@ -258,7 +258,7 @@ const CadastroAula = ({ match }) => {
       `v1/grades/aulas/turmas/${turmaId}/disciplinas/${id}`,
       {
         params: {
-          data: dataAula?dataAula.format('YYYY-MM-DD'):'',
+          data: dataAula ? dataAula.format('YYYY-MM-DD') : '',
         },
       }
     );
@@ -298,8 +298,7 @@ const CadastroAula = ({ match }) => {
           .catch(e => erros(e));
 
     if (cadastrado && cadastrado.status === 200) {
-      sucesso(cadastrado.data.mensagens[0]);
-      // TODO - Voltar para o calendario quando ele existir!
+      if (cadastrado.data) sucesso(cadastrado.data.mensagens[0]);
       history.push('/calendario-escolar/calendario-professor');
     }
   };
