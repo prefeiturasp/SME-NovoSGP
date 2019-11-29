@@ -139,7 +139,7 @@ const FrequenciaPlanoAula = () => {
       api.get(`v1/planos/aulas/${aula.idAula}`)
     const dadosPlano = plano.data;
     if (dadosPlano) {
-      planoAula.quantidadeAulas = dadosPlano.qtdAulas;
+      planoAula.qtdAulas = dadosPlano.qtdAulas;
       if (dadosPlano.id > 0) {
         dadosPlano.objetivosAprendizagemAula.forEach(objetivo => {
           objetivo.selected = true;
@@ -153,21 +153,36 @@ const FrequenciaPlanoAula = () => {
     }
     if (disciplinaSelecionada.regencia || ehProfessor) {
       planoAula.temObjetivos = true;
-      const disciplinas = await api.get(
-        `v1/objetivos-aprendizagem/disciplinas/turmas/${turmaId}/componentes/${disciplinaSelecionada.codigoComponenteCurricular}
-        ?dataAula=${aula.data}`
-      );
-      const dadosDisciplinas = disciplinas.data;
-      if (dadosDisciplinas) {
-        setMaterias([...dadosDisciplinas]);
-      } else {
-        const materia = {
-          id: disciplinaSelecionada.codigoComponenteCurricular,
-          descricao: disciplinaSelecionada.nome
+      let disciplinas = {};
+      if (disciplinaSelecionada.regencia) {
+        disciplinas = await api.get(`v1/professores/turmas/${turmaId}/disciplinas/planejamento?codigoDisciplina=${disciplinaSelecionada.codigoComponenteCurricular}&regencia=true`);
+        if (disciplinas.data && disciplinas.data.length > 0) {
+          const disciplinasRegencia = [];
+          disciplinas.data.forEach(disciplina => {
+            disciplinasRegencia.push({
+              id: disciplina.codigoComponenteCurricular,
+              descricao: disciplina.nome,
+            })
+          });
+          setMaterias([...disciplinasRegencia]);
         }
-        materias.push(materia);
-        setMaterias([...materias]);
+      } else {
+        disciplinas = await api.get(
+          `v1/objetivos-aprendizagem/disciplinas/turmas/${turmaId}/componentes/${disciplinaSelecionada.codigoComponenteCurricular}?dataAula=${aula.data}`
+        );
+        const dadosDisciplinas = disciplinas.data;
+        if (dadosDisciplinas) {
+          setMaterias([...dadosDisciplinas]);
+        } else {
+          const materia = {
+            id: disciplinaSelecionada.codigoComponenteCurricular,
+            descricao: disciplinaSelecionada.nome
+          }
+          materias.push(materia);
+          setMaterias([...materias]);
+        }
       }
+
     }
   }
 
