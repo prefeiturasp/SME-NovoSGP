@@ -11,7 +11,6 @@ function ButtonGroup({
   form,
   modoEdicao,
   novoRegistro,
-  somenteConsulta,
   permissoesTela,
   temItemSelecionado,
   labelBotaoPrincipal,
@@ -21,6 +20,17 @@ function ButtonGroup({
   onClickBotaoPrincipal,
   onClickCancelar,
 }) {
+  const desabilitarExcluir = () => {
+    const { podeExcluir } = permissoesTela;
+    return (
+      (!podeExcluir && !temItemSelecionado === false) ||
+      (!podeExcluir && temItemSelecionado) ||
+      (podeExcluir && temItemSelecionado === false) ||
+      (!podeExcluir && novoRegistro === false) ||
+      (podeExcluir && novoRegistro === true)
+    );
+  };
+
   return (
     <ButtonGroupEstilo className="col-md-12 d-flex justify-content-end p-0">
       <Button
@@ -38,7 +48,7 @@ function ButtonGroup({
           border
           className="btnGroupItem"
           onClick={() => onClickCancelar(form)}
-          disabled={!modoEdicao || !novoRegistro}
+          disabled={!modoEdicao}
         />
       )}
       <Button
@@ -46,11 +56,7 @@ function ButtonGroup({
         color={Colors.Roxo}
         border
         className="btnGroupItem"
-        disabled={
-          (!permissoesTela.podeExcluir && !temItemSelecionado) ||
-          novoRegistro === true ||
-          (typeof temItemSelecionado === 'boolean' && !temItemSelecionado)
-        }
+        disabled={desabilitarExcluir()}
         onClick={onClickExcluir}
       />
       <Button
@@ -60,11 +66,7 @@ function ButtonGroup({
         bold
         className="btnGroupItem"
         onClick={onClickBotaoPrincipal}
-        disabled={
-          somenteConsulta ||
-          !permissoesTela.podeIncluir ||
-          desabilitarBotaoPrincipal
-        }
+        disabled={!permissoesTela.podeIncluir || desabilitarBotaoPrincipal}
       />
     </ButtonGroupEstilo>
   );
@@ -74,7 +76,6 @@ ButtonGroup.propTypes = {
   form: PropTypes.oneOfType([PropTypes.object, PropTypes.func, PropTypes.any]),
   modoEdicao: PropTypes.bool,
   novoRegistro: PropTypes.bool,
-  somenteConsulta: PropTypes.bool,
   desabilitarBotaoPrincipal: PropTypes.bool,
   labelBotaoPrincipal: PropTypes.string,
   permissoesTela: PropTypes.oneOfType([PropTypes.object, PropTypes.any]),
@@ -87,17 +88,16 @@ ButtonGroup.propTypes = {
 
 ButtonGroup.defaultProps = {
   form: {},
-  modoEdicao: false,
-  novoRegistro: true,
-  somenteConsulta: false,
-  labelBotaoPrincipal: '',
-  desabilitarBotaoPrincipal: false,
   permissoesTela: {},
-  temItemSelecionado: false,
-  onClickVoltar: () => null,
-  onClickExcluir: () => null,
+  labelBotaoPrincipal: '',
+  modoEdicao: false,
+  desabilitarBotaoPrincipal: false,
+  novoRegistro: null,
+  temItemSelecionado: null,
+  onClickVoltar: null,
+  onClickExcluir: null,
   onClickCancelar: null,
-  onClickBotaoPrincipal: () => null,
+  onClickBotaoPrincipal: null,
 };
 
 export default ButtonGroup;
