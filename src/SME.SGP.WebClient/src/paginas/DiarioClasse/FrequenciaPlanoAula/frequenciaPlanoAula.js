@@ -610,7 +610,7 @@ const FrequenciaPlanoAula = () => {
           onClose={onCloseErros}
           type={'error'}
           conteudo={errosValidacaoPlano}
-          titulo={"Erros plano anual"}
+          titulo={"Erros plano de aula"}
         />
       </Card>
     </>
