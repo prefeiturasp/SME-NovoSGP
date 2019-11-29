@@ -45,20 +45,32 @@ namespace SME.SGP.Dados.Repositorios
                     resultado.Add(item);
                 }
 
-                foreach (var item in armazenados)
-                {
-                    var entidade = iteracao.First(x => x.CodigoUe == item.CodigoUe);
-                    entidade.Id = item.Id;
-                    entidade.Dre = item.Dre;
-                    entidade.DreId = item.DreId;
+                var modificados = from c in entidades
+                                  join l in armazenados on c.CodigoUe equals l.CodigoUe
+                                  where l.DataAtualizacao != DateTime.Today &&
+                                        (c.Nome != l.Nome ||
+                                        c.TipoEscola != l.TipoEscola)
+                                  select new Ue()
+                                  {
+                                      CodigoUe = c.CodigoUe,
+                                      DataAtualizacao = DateTime.Today,
+                                      Dre = l.Dre,
+                                      DreId = l.DreId,
+                                      Id = l.Id,
+                                      Nome = c.Nome,
+                                      TipoEscola = c.TipoEscola
+                                  };
 
-                    if (item.DataAtualizacao.Date != DateTime.Today)
-                    {
-                        contexto.Conexao.Execute(Update, new { nome = item.Nome, tipoEscola = item.TipoEscola, dataAtualizacao = DateTime.Today, id = item.Id });
-                    }
-                    resultado.Add(entidade);
+                foreach (var item in modificados)
+                {
+                    contexto.Conexao.Execute(Update, new { nome = item.Nome, tipoEscola = item.TipoEscola, dataAtualizacao = item.DataAtualizacao, id = item.Id });
+
+                    resultado.Add(item);
                 }
+
+                resultado.AddRange(armazenados.Where(x => !resultado.Select(y => y.CodigoUe).Contains(x.CodigoUe)));
             }
+
             return resultado;
 
         }

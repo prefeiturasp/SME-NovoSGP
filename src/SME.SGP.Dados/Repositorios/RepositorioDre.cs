@@ -39,18 +39,28 @@ namespace SME.SGP.Dados.Repositorios
                 resultado.Add(item);
             }
 
-            foreach (var item in armazenados)
+            var modificados = from c in entidades
+                              join l in armazenados on c.CodigoDre equals l.CodigoDre
+                              where l.DataAtualizacao != DateTime.Today &&
+                                    (c.Abreviacao != l.Abreviacao ||
+                                    c.Nome != l.Nome)
+                              select new Dre()
+                              {
+                                  Id = l.Id,
+                                  Nome = c.Nome,
+                                  Abreviacao = c.Abreviacao,
+                                  CodigoDre = c.CodigoDre,
+                                  DataAtualizacao = DateTime.Today
+                              };
+
+            foreach (var item in modificados)
             {
-                var entidade = entidades.First(x => x.CodigoDre == item.CodigoDre);
-                entidade.Id = item.Id;
+                contexto.Conexao.Execute(Update, new { abreviacao = item.Abreviacao, nome = item.Nome, dataAtualizacao = item.DataAtualizacao, id = item.Id });
 
-                if (item.DataAtualizacao.Date != DateTime.Today)
-                {
-                    contexto.Conexao.Execute(Update, new { abreviacao = item.Abreviacao, nome = item.Nome, dataAtualizacao = DateTime.Today, id = item.Id });
-                }
-
-                resultado.Add(entidade);
+                resultado.Add(item);
             }
+
+            resultado.AddRange(armazenados.Where(x => !resultado.Select(y => y.CodigoDre).Contains(x.CodigoDre)));
 
             return resultado;
 

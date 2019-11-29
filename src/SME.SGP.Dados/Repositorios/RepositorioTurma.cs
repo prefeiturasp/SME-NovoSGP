@@ -74,31 +74,51 @@ namespace SME.SGP.Dados.Repositorios
                     resultado.Add(item);
                 }
 
-                foreach (var item in armazenados)
+                var modificados = from c in entidades
+                                  join l in armazenados on c.CodigoTurma equals l.CodigoTurma
+                                  where l.DataAtualizacao != DateTime.Today &&
+                                        (c.Nome != l.Nome ||
+                                        c.Ano != l.Ano ||
+                                        c.AnoLetivo != l.AnoLetivo ||
+                                        c.ModalidadeCodigo != l.ModalidadeCodigo ||
+                                        c.Semestre != l.Semestre ||
+                                        c.QuantidadeDuracaoAula != l.QuantidadeDuracaoAula ||
+                                        c.TipoTurno != l.TipoTurno)
+                                  select new Turma()
+                                  {
+                                      Ano = c.Ano,
+                                      AnoLetivo = c.AnoLetivo,
+                                      CodigoTurma = c.CodigoTurma,
+                                      DataAtualizacao = DateTime.Today,
+                                      Id = l.Id,
+                                      ModalidadeCodigo = c.ModalidadeCodigo,
+                                      Nome = c.Nome,
+                                      QuantidadeDuracaoAula = c.QuantidadeDuracaoAula,
+                                      Semestre = c.Semestre,
+                                      TipoTurno = c.TipoTurno,
+                                      Ue = l.Ue,
+                                      UeId = l.UeId
+                                  };
+
+                foreach (var item in modificados)
                 {
-                    var entidade = iteracao.First(x => x.CodigoTurma == item.CodigoTurma);
-                    entidade.Id = item.Id;
-                    entidade.Ue = item.Ue;
-                    entidade.UeId = item.UeId;
-
-                    if (item.DataAtualizacao.Date != DateTime.Today)
+                    contexto.Conexao.Execute(Update, new
                     {
-                        contexto.Conexao.Execute(Update, new
-                        {
-                            nome = item.Nome,
-                            ano = item.Ano,
-                            anoLetivo = item.AnoLetivo,
-                            modalidadeCodigo = item.ModalidadeCodigo,
-                            semestre = item.Semestre,
-                            qtDuracaoAula = item.QuantidadeDuracaoAula,
-                            tipoTurno = item.TipoTurno,
-                            dataAtualizacao = DateTime.Today,
-                            id = item.Id
-                        });
-                    }
+                        nome = item.Nome,
+                        ano = item.Ano,
+                        anoLetivo = item.AnoLetivo,
+                        modalidadeCodigo = item.ModalidadeCodigo,
+                        semestre = item.Semestre,
+                        qtDuracaoAula = item.QuantidadeDuracaoAula,
+                        tipoTurno = item.TipoTurno,
+                        dataAtualizacao = item.DataAtualizacao,
+                        id = item.Id
+                    });
 
-                    resultado.Add(entidade);
+                    resultado.Add(item);
                 }
+
+                resultado.AddRange(armazenados.Where(x => !resultado.Select(y => y.CodigoTurma).Contains(x.CodigoTurma)));
             }
 
             return resultado;
