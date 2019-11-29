@@ -29,11 +29,10 @@ namespace SME.SGP.Aplicacao
             return await servicoAula.Salvar(aula, usuario, dto.RecorrenciaAula);
         }
 
-        public void Excluir(long id)
+        public void Excluir(long id, RecorrenciaAula recorrencia)
         {
             var aula = repositorioAula.ObterPorId(id);
-            aula.Excluido = true;
-            repositorioAula.Salvar(aula);
+            servicoAula.Excluir(aula, recorrencia);
         }
 
         public async Task<string> Inserir(AulaDto dto)

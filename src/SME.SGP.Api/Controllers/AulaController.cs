@@ -35,13 +35,13 @@ namespace SME.SGP.Api.Controllers
             return Ok(aula);
         }
 
-        [HttpDelete("{id}")]
+        [HttpDelete("{id}/recorrencia/{recorrencia}")]
         [ProducesResponseType(200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [Permissao(Permissao.CP_E, Policy = "Bearer")]
-        public IActionResult Excluir(long id, [FromServices]IComandosAula comandos)
+        public IActionResult Excluir(long id, RecorrenciaAula recorrencia, [FromServices]IComandosAula comandos)
         {
-            comandos.Excluir(id);
+            comandos.Excluir(id, recorrencia);
             return Ok();
         }
 
@@ -65,5 +65,16 @@ namespace SME.SGP.Api.Controllers
             return Ok(await consultas.ObterQuantidadeAulasRecorrentes(aulaId, recorrencia));
         }
 
+        [HttpGet("{aulaId}/recorrencias/serie")]
+        [ProducesResponseType(typeof(int), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 601)]
+        [Permissao(Permissao.CP_I, Policy = "Bearer")]
+        public async Task<IActionResult> ObterRecorrenciaDaSerie(long aulaId, [FromServices]IConsultasAula consultas)
+        {
+            var recorrencia = await consultas.ObterRecorrenciaDaSerie(aulaId);
+
+            return Ok(recorrencia);
+        }
     }
 }

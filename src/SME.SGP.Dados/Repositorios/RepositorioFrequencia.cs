@@ -12,6 +12,19 @@ namespace SME.SGP.Dados.Repositorios
         {
         }
 
+        public void ExcluirFrequenciaAula(long aulaId)
+        {
+            // Exclui registros de ausencia do aluno
+            var command = @"delete from registro_ausencia_aluno 
+                            where where registro_frequencia_id in (
+                                select id from registro_frequencia where aula_id = @aulaId)";
+            database.Execute(command, new { aulaId });
+
+            // Exclui registro de frequencia da aula
+            command = "delete from registro_frequencia where aula_id = @aulaId ";
+            database.Execute(command, new { aulaId });
+        }
+
         public IEnumerable<RegistroAusenciaAluno> ObterListaFrequenciaPorAula(long aulaId)
         {
             var query = @"select ra.*
