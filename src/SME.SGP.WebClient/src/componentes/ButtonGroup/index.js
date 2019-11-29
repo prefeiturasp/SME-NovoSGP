@@ -48,7 +48,7 @@ function ButtonGroup({
           border
           className="btnGroupItem"
           onClick={() => onClickCancelar(form)}
-          disabled={!modoEdicao || !novoRegistro}
+          disabled={!modoEdicao}
         />
       )}
       <Button

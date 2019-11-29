@@ -104,11 +104,16 @@ function AtribuicaoEsporadicaLista() {
   };
 
   const onChangeFiltro = valoresFiltro => {
-    setFiltro(valoresFiltro);
+    setFiltro({
+      AnoLetivo: '2019',
+      DreId: valoresFiltro.dreId,
+      UeId: valoresFiltro.ueId,
+      ProfessorRF: valoresFiltro.professorRf,
+    });
   };
 
   const validarFiltro = () => {
-    return !!filtro.dreId && !!filtro.ueId && !!filtro.anoLetivo;
+    return !!filtro.DreId && !!filtro.UeId;
   };
 
   useEffect(() => {
