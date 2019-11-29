@@ -29,9 +29,13 @@ const FrequenciaPlanoAula = () => {
   const [somenteConsulta, setSomenteConsulta] = useState(false);
   const permissoesTela = usuario.permissoes[RotasDto.FREQUENCIA_PLANO_AULA];
 
-  const { turmaSelecionada, ehProfessor } = usuario;
+  const { turmaSelecionada, ehProfessor, ehProfessorCj } = usuario;
   const ehEja =
-    turmaSelecionada && turmaSelecionada.modalidade === String(modalidade.EJA)
+    turmaSelecionada && String(turmaSelecionada.modalidade) === String(modalidade.EJA)
+      ? true
+      : false;
+  const ehMedio =
+    turmaSelecionada && String(turmaSelecionada.modalidade) === String(modalidade.ENSINO_MEDIO)
       ? true
       : false;
   const turmaId = turmaSelecionada ? turmaSelecionada.turma : 0;
@@ -56,7 +60,6 @@ const FrequenciaPlanoAula = () => {
   const [modoEdicaoPlanoAula, setModoEdicaoPlanoAula] = useState(false);
   const [ehRegencia, setEhRegencia] = useState(false);
   const [aula, setAula] = useState(undefined);
-  const { ehProfessorCj } = usuario.ehProfessorCj ? usuario.ehProfessorCj : false;
   const [planoAula, setPlanoAula] = useState({
     aulaId: 0,
     id: 0,
@@ -68,6 +71,7 @@ const FrequenciaPlanoAula = () => {
     licaoCasa: null,
     objetivosAprendizagemAula: [],
   });
+  const [temObjetivos, setTemObjetivos] = useState(false);
   const [errosValidacaoPlano, setErrosValidacaoPlano] = useState([]);
   const [materias, setMaterias] = useState([]);
   const [mostrarErros, setMostarErros] = useState(false)
@@ -151,11 +155,13 @@ const FrequenciaPlanoAula = () => {
         setModoEdicaoPlanoAula(false);
       }
     }
-    if (disciplinaSelecionada.regencia || ehProfessor) {
-      planoAula.temObjetivos = true;
+    if (disciplinaSelecionada.regencia || ehProfessor || ehProfessorCj) {
       let disciplinas = {};
       if (disciplinaSelecionada.regencia) {
-        disciplinas = await api.get(`v1/professores/turmas/${turmaId}/disciplinas/planejamento?codigoDisciplina=${disciplinaSelecionada.codigoComponenteCurricular}&regencia=true`);
+        setTemObjetivos(true);
+        disciplinas = await api.get(
+          `v1/professores/turmas/${turmaId}/disciplinas/planejamento?codigoDisciplina=${disciplinaSelecionada.codigoComponenteCurricular}&regencia=true`
+        );
         if (disciplinas.data && disciplinas.data.length > 0) {
           const disciplinasRegencia = [];
           disciplinas.data.forEach(disciplina => {
@@ -172,14 +178,25 @@ const FrequenciaPlanoAula = () => {
         );
         const dadosDisciplinas = disciplinas.data;
         if (dadosDisciplinas) {
+          setTemObjetivos(true);
           setMaterias([...dadosDisciplinas]);
         } else {
-          const materia = {
-            id: disciplinaSelecionada.codigoComponenteCurricular,
-            descricao: disciplinaSelecionada.nome
+          disciplinas = await api.get(
+            `v1/professores/turmas/${turmaId}/disciplinas/planejamento?codigoDisciplina=${disciplinaSelecionada.codigoComponenteCurricular}&regencia=false`
+          );
+          if (disciplinas.data && disciplinas.data.length > 0) {
+            const dados = disciplinas.data[0];
+            setTemObjetivos(dados.possuiObjetivos);
+            if (dados.possuiObjetivos) {
+              const materia = {
+                id: dados.codigoComponenteCurricular,
+                descricao: dados.nome
+              }
+              materias.push(materia);
+              setMaterias([...materias]);
+            }
           }
-          materias.push(materia);
-          setMaterias([...materias]);
+          setPlanoAula(planoAula);
         }
       }
 
@@ -290,7 +307,7 @@ const FrequenciaPlanoAula = () => {
       recuperacaoAula: planoAula.recuperacaoAula,
       licaoCasa: planoAula.licaoCasa,
       aulaId,
-      objetivosAprendizagemJurema: objetivosId,
+      objetivosAprendizagemJurema: temObjetivos ? objetivosId : [],
     }
     planoAula.objetivosAprendizagemJurema = [...objetivosId];
 
@@ -299,6 +316,7 @@ const FrequenciaPlanoAula = () => {
       await api.post('v1/planos/aulas', plano).then(salvouPlano => {
         if (salvouPlano && salvouPlano.status == 200) {
           sucesso('Plano de aula salvo com sucesso.');
+          setModoEdicaoPlanoAula(false);
         }
       }
       )
@@ -311,13 +329,13 @@ const FrequenciaPlanoAula = () => {
   }
 
   const validaPlanoAula = () => {
-    if (!planoAula.temObjetivos && ehProfessorCj && stringNulaOuEmBranco(planoAula.descricao)) {
+    if (!temObjetivos && ehProfessorCj && stringNulaOuEmBranco(planoAula.descricao)) {
       errosValidacaoPlano.push("Meus objetivos - O campo meus objetivos específicos é obrigatório");
     }
     if (stringNulaOuEmBranco(planoAula.desenvolvimentoAula)) {
       errosValidacaoPlano.push("Desenvolvimento da aula - A sessão de desenvolvimento da aula deve ser preenchida");
     }
-    if (!ehProfessorCj && planoAula.temObjetivos && planoAula.objetivosAprendizagemJurema.length === 0) {
+    if (!ehProfessorCj && temObjetivos && !ehEja && !ehMedio && planoAula.objetivosAprendizagemJurema.length === 0) {
       errosValidacaoPlano.push("Objetivos de aprendizagem - É obrigatório selecionar ao menos um objetivo de aprendizagem");
     }
   }
@@ -424,13 +442,16 @@ const FrequenciaPlanoAula = () => {
   const resetarPlanoAula = () => {
     setEhRegencia(false);
     planoAula.descricao = null;
-    planoAula.temObjetivos = ehProfessor && !ehEja;
+    setTemObjetivos(false);
     planoAula.qtdAulas = 0;
     planoAula.desenvolvimentoAula = null;
     planoAula.licaoCasa = null;
     planoAula.recuperacaoAula = null;
     planoAula.objetivosAprendizagemAula = [];
     planoAula.objetivosAprendizagemAula = [...planoAula.objetivosAprendizagemAula];
+    const materiasVazia = [];
+    setModoEdicaoPlanoAula(false);
+    setMaterias([...materiasVazia]);
     setPlanoAula(planoAula);
   }
 
@@ -569,15 +590,16 @@ const FrequenciaPlanoAula = () => {
                     disciplinaIdSelecionada={disciplinaIdSelecionada}
                     dataSelecionada={dataSelecionada}
                     planoAula={planoAula}
-                    ehRegencia={ehRegencia}
-                    ehProfessor={ehProfessor}
                     ehProfessorCj={ehProfessorCj}
                     listaMaterias={materias}
                     dataAula={aula && aula.data ? aula.data : null}
                     ehEja={ehEja}
+                    ehMedio={ehMedio}
                     setModoEdicao={(e) => setModoEdicaoPlanoAula(e)}
+                    setTemObjetivos={(e) => setTemObjetivos(e)}
                     permissoesTela={permissoesTela}
                     somenteConsulta={somenteConsulta}
+                    temObjetivos={temObjetivos}
                   />
                 </div>
               </div>
@@ -590,7 +612,7 @@ const FrequenciaPlanoAula = () => {
           onClose={onCloseErros}
           type={'error'}
           conteudo={errosValidacaoPlano}
-          titulo={"Erros plano anual"}
+          titulo={"Erros plano de aula"}
         />
       </Card>
     </>

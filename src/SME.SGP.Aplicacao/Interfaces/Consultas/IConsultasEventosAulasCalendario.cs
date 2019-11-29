@@ -6,7 +6,7 @@ namespace SME.SGP.Aplicacao
 {
     public interface IConsultasEventosAulasCalendario
     {
-        Task<IEnumerable<EventosAulasTipoDiaDto>> ObterEventoAulasDia(FiltroEventosAulasCalendarioDiaDto filtro);
+        Task<DiaEventoAula> ObterEventoAulasDia(FiltroEventosAulasCalendarioDiaDto filtro);
 
         Task<IEnumerable<EventosAulasCalendarioDto>> ObterEventosAulasMensais(FiltroEventosAulasCalendarioDto filtro);
 

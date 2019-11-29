@@ -63,6 +63,16 @@ namespace SME.SGP.Dominio
             Perfis = perfisUsuario;
         }
 
+        public bool EhPerfilSME()
+        {
+            return Perfis.Any(c => c.Tipo == TipoPerfil.SME && c.CodigoPerfil == PerfilAtual);
+        }
+
+        public bool EhPerfilUE()
+        {
+            return Perfis.Any(c => c.Tipo == TipoPerfil.UE && c.CodigoPerfil == PerfilAtual);
+        }
+
         public bool EhProfessor()
         {
             return PerfilAtual == PERFIL_PROFESSOR;
