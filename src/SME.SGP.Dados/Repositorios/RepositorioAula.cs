@@ -130,6 +130,41 @@ namespace SME.SGP.Dados.Repositorios
             });
         }
 
+        public Aula ObterPorWorkflowId(long workflowId)
+        {
+            var query = @"select a.id,
+                                 a.ue_id,
+                                 a.disciplina_id,
+                                 a.turma_id,
+                                 a.tipo_calendario_id,
+                                 a.professor_rf,
+                                 a.quantidade,
+                                 a.data_aula,
+                                 a.recorrencia_aula,
+                                 a.tipo_aula,
+                                 a.criado_em,
+                                 a.criado_por,
+                                 a.alterado_em,
+                                 a.alterado_por,
+                                 a.criado_rf,
+                                 a.alterado_rf,
+                                 a.excluido,
+                                 a.migrado,
+                                 a.aula_pai_id,
+                                 a.wf_aprovacao_id,
+                                 a.status
+                             from  aula a
+                            where a.excluido = false
+                              and a.migrado = false
+                              and tipo_aula = 2
+                              and a.wf_aprovacao_id = @workflowId";
+
+            return database.Conexao.QueryFirst<Aula>(query.ToString(), new
+            {
+                workflowId
+            });
+        }
+
         public bool UsuarioPodeCriarAulaNaUeTurmaEModalidade(Aula aula, ModalidadeTipoCalendario modalidade)
         {
             var query = new StringBuilder("select 1 from v_abrangencia where turma_id = @turmaId and ue_codigo = @ueId ");
@@ -169,6 +204,7 @@ namespace SME.SGP.Dados.Repositorios
             query.AppendLine("a.criado_rf,");
             query.AppendLine("a.alterado_rf,");
             query.AppendLine("a.excluido,");
+            query.AppendLine("a.status,");
             query.AppendLine("a.migrado");
         }
 
@@ -200,51 +236,22 @@ namespace SME.SGP.Dados.Repositorios
         private static void MontaWhere(StringBuilder query, string turmaId, string ueId, int? mes = null, DateTime? data = null, string rf = null)
         {
             query.AppendLine("WHERE a.tipo_calendario_id = @tipoCalendarioId");
+            query.AppendLine("and a.status <> '3'");
+
             if (!string.IsNullOrEmpty(turmaId))
                 query.AppendLine("AND a.turma_id = @turmaId");
+
             if (!string.IsNullOrEmpty(ueId))
                 query.AppendLine("AND a.ue_id = @ueId");
+
             if (mes.HasValue)
                 query.AppendLine("AND extract(month from a.data_aula) = @mes");
+
             if (data.HasValue)
                 query.AppendLine("AND DATE(a.data_aula) = @data");
+
             if (!string.IsNullOrEmpty(rf))
                 query.AppendLine("AND a.professor_rf = @rf");
-        }
-
-        public Aula ObterPorWorkflowId(long workflowId)
-        {
-            var query = @"select a.id,
-                                 a.ue_id,
-                                 a.disciplina_id,
-                                 a.turma_id,
-                                 a.tipo_calendario_id,
-                                 a.professor_rf,
-                                 a.quantidade,
-                                 a.data_aula,
-                                 a.recorrencia_aula,
-                                 a.tipo_aula,
-                                 a.criado_em,
-                                 a.criado_por,
-                                 a.alterado_em,
-                                 a.alterado_por,
-                                 a.criado_rf,
-                                 a.alterado_rf,
-                                 a.excluido,
-                                 a.migrado,
-                                 a.aula_pai_id,
-                                 a.wf_aprovacao_id,
-                                 a.status
-                             from  aula a
-                            where a.excluido = false
-                              and a.migrado = false
-                              and tipo_aula = 2
-                              and a.wf_aprovacao_id = @workflowId";
-
-            return database.Conexao.QueryFirst<Aula>(query.ToString(), new
-            {
-                workflowId
-            });
         }
     }
 }
