@@ -125,10 +125,10 @@ namespace SME.SGP.Dominio
                 throw new NegocioException("Não é permitido cadastrar esse evento pois não existe período escolar cadastrado para o calendário informado.");
             }
 
-            if (!periodos.Any(c => c.PeriodoInicio.Date <= DataInicio.Date && c.PeriodoFim.Date >= DataFim.Date))
-            {
-                throw new NegocioException("Não é permitido cadastrar um evento nesta data pois essa data não está dentro do 'Período Letivo'.");
-            }
+            //if (!periodos.Any(c => c.PeriodoInicio.Date <= DataInicio.Date && c.PeriodoFim.Date >= DataFim.Date))
+            //{
+            //    throw new NegocioException("Não é permitido cadastrar um evento nesta data pois essa data não está dentro do 'Período Letivo'.");
+            //}
         }
 
         public bool EstaNoRangeDeDatas(IEnumerable<(DateTime, DateTime)> datas)
