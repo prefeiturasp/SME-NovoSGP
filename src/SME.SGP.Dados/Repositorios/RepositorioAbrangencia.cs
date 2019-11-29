@@ -169,6 +169,7 @@ namespace SME.SGP.Dados.Repositorios
 
             query.AppendLine("and va.usuario_id = (select id from usuario where login = @login)");
             query.AppendLine("and va.usuario_perfil = @perfil");
+            query.AppendLine("and va.dre_codigo is not null");
 
             return (await database.Conexao.QueryFirstOrDefaultAsync<AbrangenciaDreRetorno>(query.ToString(), new { dreCodigo, ueCodigo, login, perfil }));
         }
@@ -186,12 +187,13 @@ namespace SME.SGP.Dados.Repositorios
             query.AppendLine("where");
             query.AppendLine("va.usuario_id = (select id from usuario where login = @login)");
             query.AppendLine("and va.usuario_perfil = @perfil");
+            query.AppendLine("and va.dre_codigo is not null");
 
             if (modalidade.HasValue)
-                query.AppendLine("and av.modalidade_codigo = @modalidade");
+                query.AppendLine("and va.modalidade_codigo = @modalidade");
 
             if (periodo > 0)
-                query.AppendLine("and av.turma_semestre = @semestre");
+                query.AppendLine("and va.turma_semestre = @semestre");
 
             return (await database.Conexao.QueryAsync<AbrangenciaDreRetorno>(query.ToString(), new { login, perfil, modalidade = (modalidade.HasValue ? modalidade.Value : 0), semestre = periodo })).AsList();
         }
@@ -199,12 +201,13 @@ namespace SME.SGP.Dados.Repositorios
         public async Task<IEnumerable<int>> ObterModalidades(string login, Guid perfil)
         {
             var query = @"select
-                        distinct av.modalidade_codigo
+                        distinct va.modalidade_codigo
                     from
                         v_abrangencia va
                     where
                         va.usuario_id = (select id from usuario where login = @login)
-                        and va.usuario_perfil = @perfil";
+                        and va.usuario_perfil = @perfil
+                        and va.modalidade_codigo is not null";
 
             return (await database.Conexao.QueryAsync<int>(query, new { login, perfil })).AsList();
         }
@@ -217,7 +220,8 @@ namespace SME.SGP.Dados.Repositorios
                         where
                             va.usuario_id = (select id from usuario where login = @login)
                             and va.usuario_perfil = @perfil
-                            and va.modalidade_codigo = @modalidade";
+                            and va.modalidade_codigo = @modalidade
+                            and va.turma_semestre is not null";
 
             return (await database.Conexao.QueryAsync<int>(query, new { login, perfil, modalidade })).AsList();
         }
@@ -239,8 +243,9 @@ namespace SME.SGP.Dados.Repositorios
                                 v_abrangencia va
                             where
                                 va.ue_codigo = @codigoUe
+                                and va.turma_id is not null
                                 and va.usuario_id = (select id from usuario where login = @login)
-                                and a.usuario_perfil = @perfil");
+                                and va.usuario_perfil = @perfil");
 
             if (modalidade > 0)
                 query.AppendLine("and va.modalidade_codigo = @modalidade");
