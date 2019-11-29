@@ -10,7 +10,8 @@ namespace SME.SGP.Infra
         [ListaTemElementos(ErrorMessage = "A lista de turmas deve ser preenchida")]
         public IEnumerable<DataPlanoAulaTurmaDto> IdsPlanoTurmasDestino { get; set; }
 
-        public PlanoAulaDto PlanoAula { get; set; }
+        [Required(ErrorMessage = "O id do plano de aula deve ser informado")]
+        public long PlanoAulaId { get; set; }
 
         [Required(ErrorMessage = "O RF do professor deve ser informado")]
         public string RFProfessor { get; set; }
