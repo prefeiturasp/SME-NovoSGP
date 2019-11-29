@@ -139,7 +139,7 @@ const FrequenciaPlanoAula = () => {
       api.get(`v1/planos/aulas/${aula.idAula}`)
     const dadosPlano = plano.data;
     if (dadosPlano) {
-      planoAula.quantidadeAulas = dadosPlano.qtdAulas;
+      planoAula.qtdAulas = dadosPlano.qtdAulas;
       if (dadosPlano.id > 0) {
         dadosPlano.objetivosAprendizagemAula.forEach(objetivo => {
           objetivo.selected = true;
@@ -151,16 +151,38 @@ const FrequenciaPlanoAula = () => {
         setModoEdicaoPlanoAula(false);
       }
     }
-    if (disciplinaSelecionada.regencia) {
+    if (disciplinaSelecionada.regencia || ehProfessor) {
       planoAula.temObjetivos = true;
-      const disciplinas = await api.get(
-        `v1/objetivos-aprendizagem/disciplinas/turmas/${turmaId}/componentes/${disciplinaSelecionada.codigoComponenteCurricular}
-        ?dataAula=${aula.data}`
-      );
-      const dadosDisciplinas = disciplinas.data;
-      if (dadosDisciplinas) {
-        setMaterias([...dadosDisciplinas]);
+      let disciplinas = {};
+      if (disciplinaSelecionada.regencia) {
+        disciplinas = await api.get(`v1/professores/turmas/${turmaId}/disciplinas/planejamento?codigoDisciplina=${disciplinaSelecionada.codigoComponenteCurricular}&regencia=true`);
+        if (disciplinas.data && disciplinas.data.length > 0) {
+          const disciplinasRegencia = [];
+          disciplinas.data.forEach(disciplina => {
+            disciplinasRegencia.push({
+              id: disciplina.codigoComponenteCurricular,
+              descricao: disciplina.nome,
+            })
+          });
+          setMaterias([...disciplinasRegencia]);
+        }
+      } else {
+        disciplinas = await api.get(
+          `v1/objetivos-aprendizagem/disciplinas/turmas/${turmaId}/componentes/${disciplinaSelecionada.codigoComponenteCurricular}?dataAula=${aula.data}`
+        );
+        const dadosDisciplinas = disciplinas.data;
+        if (dadosDisciplinas) {
+          setMaterias([...dadosDisciplinas]);
+        } else {
+          const materia = {
+            id: disciplinaSelecionada.codigoComponenteCurricular,
+            descricao: disciplinaSelecionada.nome
+          }
+          materias.push(materia);
+          setMaterias([...materias]);
+        }
       }
+
     }
   }
 
@@ -206,8 +228,9 @@ const FrequenciaPlanoAula = () => {
         const aulaDataSelecionada = listaDatasAulas.find(item => window.moment(item.data).isSame(dataSelecionada, 'date'));
         obterListaFrequencia(aulaId);
         setModoEdicaoFrequencia(false);
-        obterPlanoAula(aulaDataSelecionada)
+        obterPlanoAula(aulaDataSelecionada);
         setModoEdicaoPlanoAula(false);
+        resetarPlanoAula();
       }
     }
   };
@@ -340,6 +363,7 @@ const FrequenciaPlanoAula = () => {
         }
       } else {
         setarDisciplina(disciplinaId);
+        resetarPlanoAula();
       }
     } else {
       setarDisciplina(disciplinaId);
@@ -370,7 +394,7 @@ const FrequenciaPlanoAula = () => {
           await onSalvarFrequencia();
         }
         if (modoEdicaoPlanoAula) {
-          // salvar planoi aula
+          await onSalvarPlanoAula();
         }
         validaSeTemIdAula(data);
       } else {
@@ -399,6 +423,15 @@ const FrequenciaPlanoAula = () => {
 
   const resetarPlanoAula = () => {
     setEhRegencia(false);
+    planoAula.descricao = null;
+    planoAula.temObjetivos = ehProfessor && !ehEja;
+    planoAula.qtdAulas = 0;
+    planoAula.desenvolvimentoAula = null;
+    planoAula.licaoCasa = null;
+    planoAula.recuperacaoAula = null;
+    planoAula.objetivosAprendizagemAula = [];
+    planoAula.objetivosAprendizagemAula = [...planoAula.objetivosAprendizagemAula];
+    setPlanoAula(planoAula);
   }
 
   const resetarTelaFrequencia = (naoDisciplina, naoData) => {
@@ -537,6 +570,7 @@ const FrequenciaPlanoAula = () => {
                     dataSelecionada={dataSelecionada}
                     planoAula={planoAula}
                     ehRegencia={ehRegencia}
+                    ehProfessor={ehProfessor}
                     ehProfessorCj={ehProfessorCj}
                     listaMaterias={materias}
                     dataAula={aula && aula.data ? aula.data : null}
