@@ -7,6 +7,6 @@ namespace SME.SGP.Dominio.Interfaces
 {
     public interface IRepositorioTurma
     {
-        void Sincronizar(IEnumerable<Turma> entidades);
+        IEnumerable<Turma> Sincronizar(IEnumerable<Turma> entidades, IEnumerable<Ue> ues);
     }
 }

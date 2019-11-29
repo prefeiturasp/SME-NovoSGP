@@ -23,9 +23,11 @@ namespace SME.SGP.Dados.Repositorios
             this.contexto = contexto;
         }
 
-        public void Sincronizar(IEnumerable<Dre> entidades)
+        public IEnumerable<Dre> Sincronizar(IEnumerable<Dre> entidades)
         {
-            var armazenados = contexto.Conexao.Query<Dre>(QuerySincronizacao.Replace("#ids", string.Join(",", entidades.Select(x => x.CodigoDre))));
+            List<Dre> resultado = new List<Dre>();
+
+            var armazenados = contexto.Conexao.Query<Dre>(QuerySincronizacao.Replace("#ids", string.Join(",", entidades.Select(x => $"'{x.CodigoDre}'"))));
 
             var novos = entidades.Where(x => !armazenados.Select(y => y.CodigoDre).Contains(x.CodigoDre));
 
@@ -33,6 +35,8 @@ namespace SME.SGP.Dados.Repositorios
             {
                 item.DataAtualizacao = DateTime.Today;
                 item.Id = (long)contexto.Conexao.Insert(item);
+
+                resultado.Add(item);
             }
 
             foreach (var item in armazenados)
@@ -44,13 +48,17 @@ namespace SME.SGP.Dados.Repositorios
                 {
                     contexto.Conexao.Execute(Update, new { abreviacao = item.Abreviacao, nome = item.Nome, dataAtualizacao = DateTime.Today, id = item.Id });
                 }
+
+                resultado.Add(entidade);
             }
+
+            return resultado;
 
         }
 
         public IEnumerable<Dre> ObterPorCodigos(string[] codigos)
         {
-            return contexto.Conexao.Query<Dre>(QuerySincronizacao.Replace("#ids", string.Join(",", codigos.Concat(new[] { "0" }))));
+            return contexto.Conexao.Query<Dre>(QuerySincronizacao.Replace("#ids", string.Join(",", $"'{codigos.Concat(new[] { "0" })}'")));
         }
     }
 

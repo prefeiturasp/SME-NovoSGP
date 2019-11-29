@@ -1,6 +1,7 @@
 ﻿using Dapper;
 using SME.SGP.Dados.Contexto;
 using SME.SGP.Dominio;
+using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Dto;
 using System;
@@ -65,6 +66,26 @@ namespace SME.SGP.Dados.Repositorios
                     OFFSET 0 ROWS FETCH NEXT  10 ROWS ONLY";
 
             return (await database.Conexao.QueryAsync<AbrangenciaFiltroRetorno>(query, new { texto, login, perfil })).AsList();
+        }
+
+        public Task<IEnumerable<AbrangenciaSinteticaDto>> ObterAbrangenciaSintetica(string login, Guid perfil)
+        {
+            const string Query = @"
+                            select
+	                            id,
+	                            usuario_id,
+	                            login,
+	                            dre_id,
+	                            codigo_dre,
+	                            ue_id,
+	                            codigo_ue,
+	                            turma_id,
+	                            codigo_turma,
+	                            perfil
+                            from
+	                            public.v_abrangencia_sintetica where login = @login and perfil = @perfil;";
+
+            return database.Conexao.QueryAsync<AbrangenciaSinteticaDto>(Query, new { login, perfil });
         }
 
         public async Task<AbrangenciaFiltroRetorno> ObterAbrangenciaTurma(string turma, string login, Guid perfil)
@@ -278,6 +299,26 @@ namespace SME.SGP.Dados.Repositorios
             var query = "delete from abrangencia_dres where usuario_id = (select id from usuario where login = @login)";
 
             await database.ExecuteAsync(query, new { login });
+        }
+
+        public void RemoverAbrangenciasForaEscopo(string login, Guid perfil, TipoAbrangencia escopo)
+        {
+            var query = "delete from abrangencia where usuario_id = (select id from usuario where login = @login) and perfil = @perfil and #escopo";
+
+            switch (escopo)
+            {
+                case TipoAbrangencia.PorDre:
+                    query = query.Replace("#escopo", " ue_id is not null and turma_id is not null");
+                    break;
+                case TipoAbrangencia.PorUe:
+                    query = query.Replace("#escopo", " dre_id is not null and turma_id is not null");
+                    break;
+                case TipoAbrangencia.PorTurma:
+                    query = query.Replace("#escopo", " ue_id is not null and dre_id is not null");
+                    break;
+            }
+
+            database.Execute(query, new { login, perfil });
         }
 
         public async Task<long> SalvarDre(AbrangenciaDreRetornoEolDto abrangenciaDre, string login, Guid perfil)

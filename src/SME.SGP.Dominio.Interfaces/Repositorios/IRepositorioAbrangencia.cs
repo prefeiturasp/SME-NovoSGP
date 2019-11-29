@@ -1,4 +1,5 @@
-﻿using SME.SGP.Dto;
+﻿using SME.SGP.Dominio.Enumerados;
+using SME.SGP.Dto;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -34,5 +35,7 @@ namespace SME.SGP.Dominio.Interfaces
         Task<long> SalvarTurma(AbrangenciaTurmaRetornoEolDto abrangenciaTurma, long idAbragenciaUe);
 
         Task<long> SalvarUe(AbrangenciaUeRetornoEolDto abrangenciaUe, long idAbragenciaDre);
+        Task<IEnumerable<AbrangenciaSinteticaDto>> ObterAbrangenciaSintetica(string login, Guid perfil);
+        void RemoverAbrangenciasForaEscopo(string login, Guid perfil, TipoAbrangencia porTurma);
     }
 }

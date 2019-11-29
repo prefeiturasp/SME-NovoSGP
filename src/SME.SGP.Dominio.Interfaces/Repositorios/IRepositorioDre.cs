@@ -7,7 +7,7 @@ namespace SME.SGP.Dominio.Interfaces
 {
     public interface IRepositorioDre
     {
-        void Sincronizar(IEnumerable<Dre> entidades);
+        IEnumerable<Dre> Sincronizar(IEnumerable<Dre> entidades);
         IEnumerable<Dre> ObterPorCodigos(string[] codigo);
     }
 }
