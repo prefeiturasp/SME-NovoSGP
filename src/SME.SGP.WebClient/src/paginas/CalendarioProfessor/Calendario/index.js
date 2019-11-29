@@ -344,10 +344,16 @@ const CalendarioProfessor = () => {
 
   useEffect(() => {
     if (turmas.length > 0) {
-      if (eventoAulaCalendarioEdicao && eventoAulaCalendarioEdicao.turma) {
-        setOpcaoTurma(listaTurmas[1].valor.toString());
-        setTurmaSelecionada(eventoAulaCalendarioEdicao.turma);
-        setTodasTurmas(false);
+      if (Object.entries(eventoAulaCalendarioEdicao).length > 0) {
+        if (eventoAulaCalendarioEdicao.turma) {
+          setOpcaoTurma(listaTurmas[1].valor.toString());
+          setTurmaSelecionada(eventoAulaCalendarioEdicao.turma);
+          setTodasTurmas(false);
+        } else {
+          setOpcaoTurma(listaTurmas[0].valor.toString());
+          setTurmaSelecionada();
+          setTodasTurmas(true);
+        }
       } else if (!usuario.ehProfessor) {
         if (unidadeEscolarSelecionada) {
           if (Object.entries(turmaSelecionadaStore).length > 0)
