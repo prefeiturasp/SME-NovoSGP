@@ -258,7 +258,7 @@ const CadastroAula = ({ match }) => {
       `v1/grades/aulas/turmas/${turmaId}/disciplinas/${id}`,
       {
         params: {
-          data: dataAula.format('YYYY-MM-DD'),
+          data: dataAula ? dataAula.format('YYYY-MM-DD') : '',
         },
       }
     );
@@ -298,8 +298,7 @@ const CadastroAula = ({ match }) => {
           .catch(e => erros(e));
 
     if (cadastrado && cadastrado.status === 200) {
-      sucesso(cadastrado.data.mensagens[0]);
-      // TODO - Voltar para o calendario quando ele existir!
+      if (cadastrado.data) sucesso(cadastrado.data.mensagens[0]);
       history.push('/calendario-escolar/calendario-professor');
     }
   };
@@ -402,6 +401,7 @@ const CadastroAula = ({ match }) => {
               <div className="row">
                 <div className="col-sm-12 col-md-5 col-lg-3 col-xl-3 mb-2">
                   <RadioGroupButton
+                    desabilitado={!novoRegistro}
                     id="tipo-aula"
                     label="Tipo de aula"
                     form={form}
@@ -421,6 +421,7 @@ const CadastroAula = ({ match }) => {
                 </div>
                 <div className="col-sm-12 col-md-7 col-lg-9 col-xl-6 mb-2">
                   <SelectComponent
+                    desabilitado={!novoRegistro}
                     id="disciplina"
                     form={form}
                     name="disciplinaId"
@@ -489,7 +490,7 @@ const CadastroAula = ({ match }) => {
                     form={form}
                     opcoes={opcoesRecorrencia}
                     name="recorrenciaAula"
-                    desabilitado={ehReposicao}
+                    desabilitado={ehReposicao || !novoRegistro}
                     onChange={e => {
                       onChangeCampos();
                       montaValidacoes(0, e.target.value, form);

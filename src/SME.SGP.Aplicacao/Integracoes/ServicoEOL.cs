@@ -192,6 +192,23 @@ namespace SME.SGP.Aplicacao.Integracoes
             return null;
         }
 
+        public async Task<IEnumerable<ProfessorResumoDto>> ObterListaNomePorListaRF(IEnumerable<string> codigosRF)
+        {
+            var resposta = await httpClient.PostAsync($"funcionarios/BuscarPorListaRF",
+                new StringContent(JsonConvert.SerializeObject(codigosRF),
+                Encoding.UTF8, "application/json-patch+json"));
+
+            if (!resposta.IsSuccessStatusCode)
+                return null;
+
+            if (resposta.StatusCode == HttpStatusCode.NoContent)
+                return null;
+
+            var json = await resposta.Content.ReadAsStringAsync();
+
+            return JsonConvert.DeserializeObject<IEnumerable<ProfessorResumoDto>>(json);
+        }
+
         public async Task<IEnumerable<ProfessorResumoDto>> ObterListaResumosPorListaRF(IEnumerable<string> codigosRF, int anoLetivo)
         {
             var resposta = await httpClient.PostAsync($"professores/{anoLetivo}/BuscarPorListaRF",
@@ -333,6 +350,20 @@ namespace SME.SGP.Aplicacao.Integracoes
                 return JsonConvert.DeserializeObject<IEnumerable<TurmaDto>>(json);
             }
             return null;
+        }
+
+        public async Task<IEnumerable<TurmaPorUEResposta>> ObterTurmasPorUE(string ueId, string anoLetivo)
+        {
+            httpClient.DefaultRequestHeaders.Clear();
+
+            var resposta = await httpClient.GetAsync($"escolas/{ueId}/turmas/anos_letivos/{anoLetivo}");
+            var turmas = new List<TurmaPorUEResposta>();
+            if (resposta.IsSuccessStatusCode)
+            {
+                var json = resposta.Content.ReadAsStringAsync().Result;
+                turmas = JsonConvert.DeserializeObject<List<TurmaPorUEResposta>>(json);
+            }
+            return turmas;
         }
 
         public async Task ReiniciarSenha(string codigoRf)

@@ -25,7 +25,7 @@ namespace SME.SGP.Api.Controllers
         [HttpGet("{aulaId}")]
         [ProducesResponseType(typeof(PlanoAulaRetornoDto), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        //[Permissao(Permissao.PDA_C, Policy = "Bearer")]
+        [Permissao(Permissao.PDA_C, Policy = "Bearer")]
         public async Task<IActionResult> ObterPlanoAula(long aulaId,
             [FromServices] IConsultasPlanoAula consultas)
         {
