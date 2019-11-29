@@ -10,8 +10,8 @@ import api from '~/servicos/api';
 import { useSelector } from 'react-redux';
 
 const PlanoAula = (props) => {
-  const { planoAula, ehRegencia, listaMaterias, disciplinaIdSelecionada, dataAula, ehProfessorCj,
-    ehEja, setModoEdicao, permissoesTela, somenteConsulta } = props;
+  const { planoAula, listaMaterias, disciplinaIdSelecionada, dataAula, ehProfessorCj,
+    ehEja, setModoEdicao, permissoesTela, somenteConsulta, ehMedio, temObjetivos, setTemObjetivos } = props;
 
   const [desabilitarCampos, setDesabilitarCampos] = useState(false);
   const usuario = useSelector(store => store.usuario);
@@ -22,6 +22,9 @@ const PlanoAula = (props) => {
   const [materias, setMaterias] = useState([...listaMaterias]);
   const setModoEdicaoPlano = ehEdicao => {
     setModoEdicao(ehEdicao)
+  }
+  const habilitaDesabilitaObjetivos = temObj => {
+    setTemObjetivos(temObj)
   }
   const configCabecalho = {
     altura: '44px',
@@ -106,11 +109,6 @@ const PlanoAula = (props) => {
     setMaterias([...materias]);
   }
 
-  const habilitarDesabilitarObjetivos = () => {
-    setInformaObjetivos(!informaObjetivos);
-    planoAula.temObjetivos = !informaObjetivos;
-  }
-
   const onBlurMeusObjetivos = value => {
     if (value !== planoAula.descricao) {
       setModoEdicaoPlano(true);
@@ -139,6 +137,10 @@ const PlanoAula = (props) => {
     planoAula.licaoCasa = value;
   }
 
+  const layoutComObjetivos = () => {
+    return temObjetivos && (!ehEja || !ehMedio);
+  }
+
   return (
     <Corpo>
       <CardCollapse
@@ -148,14 +150,14 @@ const PlanoAula = (props) => {
         indice={'Plano de aula'}
         show={mostrarCardPrincipal}
       >
-        <QuantidadeBotoes className="col-md-12" hidden={ehProfessorCj || ehEja}>
+        <QuantidadeBotoes className="col-md-12">
           <span>Quantidade de aulas: {planoAula.qtdAulas}</span>
         </QuantidadeBotoes>
-        <HabilitaObjetivos className="row d-inline-block col-md-12" hidden={!ehProfessorCj || ehEja}>
+        <HabilitaObjetivos className="row d-inline-block col-md-12" hidden={!ehProfessorCj}>
           <label>Objetivos de aprendizagem</label>
           <Switch
-            onChange={() => habilitarDesabilitarObjetivos()}
-            checked={informaObjetivos}
+            onChange={() => habilitaDesabilitaObjetivos(!temObjetivos)}
+            checked={temObjetivos}
             size="default"
             className="mr-2"
             disabled={desabilitarCampos}
@@ -170,12 +172,12 @@ const PlanoAula = (props) => {
           configCabecalho={configCabecalho}
         >
           <div className="row">
-            {planoAula.temObjetivos && !ehEja ?
+            {layoutComObjetivos() ?
               <Grid cols={6}>
                 <h6 className="d-inline-block font-weight-bold my-0 fonte-14 w-100">
                   Objetivos de aprendizagem
                 </h6>
-                {ehRegencia ?
+                {temObjetivos ?
                   materias.map((materia) => {
                     return (
                       <Badge
@@ -226,8 +228,8 @@ const PlanoAula = (props) => {
                 </ObjetivosList>
               </Grid>
               : null}
-            <Grid cols={planoAula.temObjetivos && !ehEja ? 6 : 12}>
-              {planoAula.temObjetivos && !ehEja ?
+            <Grid cols={layoutComObjetivos() ? 6 : 12}>
+              {layoutComObjetivos() ?
                 <Grid cols={12}>
                   <h6 className="d-inline-block font-weight-bold my-0 fonte-14">
                     Objetivos trabalhados na aula
@@ -279,9 +281,9 @@ const PlanoAula = (props) => {
                 : null}
               <Grid cols={12} className="mt-4 d-inline-block">
                 <h6 className="font-weight-bold my-0 fonte-14">
-                  {planoAula.temObjetivos && !ehEja ? 'Meus objetivos específicos' : 'Objetivos trabalhados'}
+                  {layoutComObjetivos() ? 'Meus objetivos específicos' : 'Objetivos trabalhados'}
                 </h6>
-                {!planoAula.temObjetivos && !ehEja ?
+                {!layoutComObjetivos() ?
                   <Descritivo className="d-inline-block my-0 fonte-14">
                     Para este componente curricular é necessário descrever os objetivos de aprendizagem.
                   </Descritivo>
@@ -310,7 +312,7 @@ const PlanoAula = (props) => {
           onClick={() => { }}
           titulo={'Desenvolvimento da aula'}
           indice={'desenv-aula'}
-          show={false}
+          show={true}
           configCabecalho={configCabecalho}
         >
           <fieldset className="mt-3">

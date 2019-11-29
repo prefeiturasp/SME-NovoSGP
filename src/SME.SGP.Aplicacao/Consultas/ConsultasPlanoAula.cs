@@ -77,7 +77,14 @@ namespace SME.SGP.Aplicacao.Consultas
                 DesenvolvimentoAula = plano.DesenvolvimentoAula,
                 RecuperacaoAula = plano.RecuperacaoAula,
                 LicaoCasa = plano.LicaoCasa,
-                AulaId = plano.AulaId
+                AulaId = plano.AulaId,
+
+                CriadoEm = plano.CriadoEm,
+                CriadoPor = plano.CriadoPor,
+                CriadoRf = plano.CriadoRF,
+                AlteradoEm = plano.AlteradoEm,
+                AlteradoPor = plano.AlteradoPor,
+                AlteradoRf = plano.AlteradoRF
             };
     }
 }
