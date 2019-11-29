@@ -17,7 +17,7 @@ const PlanoAula = (props) => {
   const usuario = useSelector(store => store.usuario);
   const { turmaSelecionada } = usuario;
   const turmaId = turmaSelecionada ? turmaSelecionada.turma : 0;
-  const [mostrarCardPrincipal, setMostrarCardPrincipal] = useState(false);
+  const [mostrarCardPrincipal, setMostrarCardPrincipal] = useState(true);
   const [informaObjetivos, setInformaObjetivos] = useState(true);
   const [materias, setMaterias] = useState([...listaMaterias]);
   const setModoEdicaoPlano = ehEdicao => {
