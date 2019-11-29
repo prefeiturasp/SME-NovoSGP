@@ -133,7 +133,7 @@ namespace SME.SGP.Aplicacao
 
             var rf = servicoUsuario.ObterRf();
             var eventosAulas = new List<EventosAulasTipoCalendarioDto>();
-            var aulas = await repositorioAula.ObterAulas(filtro.TipoCalendarioId, filtro.TurmaId, filtro.UeId, filtro.Mes, rf);
+            var aulas = await repositorioAula.ObterAulas(filtro.TipoCalendarioId, filtro.TurmaId, filtro.UeId, rf, filtro.Mes);
             var eventos = await repositorioEvento.ObterEventosPorTipoDeCalendarioDreUeMes(filtro.TipoCalendarioId, filtro.DreId, filtro.UeId, filtro.Mes, filtro.EhEventoSme);
 
             var diasAulas = ObterDiasAulas(aulas);
