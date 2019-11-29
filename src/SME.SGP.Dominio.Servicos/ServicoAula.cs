@@ -15,7 +15,7 @@ namespace SME.SGP.Dominio.Servicos
         private readonly IConsultasGrade consultasGrade;
         private readonly IRepositorioAbrangencia repositorioAbrangencia;
         private readonly IRepositorioAula repositorioAula;
-        private readonly IRepositorioPeriodoEscolar repositorioPeriodoEscolar;
+        private readonly IConsultasPeriodoEscolar consultasPeriodoEscolar;
         private readonly IRepositorioTipoCalendario repositorioTipoCalendario;
         private readonly IServicoDiaLetivo servicoDiaLetivo;
         private readonly IServicoEOL servicoEOL;
@@ -27,7 +27,7 @@ namespace SME.SGP.Dominio.Servicos
                            IRepositorioTipoCalendario repositorioTipoCalendario,
                            IServicoDiaLetivo servicoDiaLetivo,
                            IConsultasGrade consultasGrade,
-                           IRepositorioPeriodoEscolar repositorioPeriodoEscolar,
+                           IConsultasPeriodoEscolar consultasPeriodoEscolar,
                            IServicoLog servicoLog,
                            IRepositorioAbrangencia repositorioAbrangencia,
                            IServicoNotificacao servicoNotificacao)
@@ -37,7 +37,7 @@ namespace SME.SGP.Dominio.Servicos
             this.repositorioTipoCalendario = repositorioTipoCalendario ?? throw new System.ArgumentNullException(nameof(repositorioTipoCalendario));
             this.servicoDiaLetivo = servicoDiaLetivo ?? throw new System.ArgumentNullException(nameof(servicoDiaLetivo));
             this.consultasGrade = consultasGrade ?? throw new System.ArgumentNullException(nameof(consultasGrade));
-            this.repositorioPeriodoEscolar = repositorioPeriodoEscolar ?? throw new ArgumentNullException(nameof(repositorioPeriodoEscolar));
+            this.consultasPeriodoEscolar = consultasPeriodoEscolar ?? throw new ArgumentNullException(nameof(consultasPeriodoEscolar));
             this.servicoLog = servicoLog ?? throw new ArgumentNullException(nameof(servicoLog));
             this.repositorioAbrangencia = repositorioAbrangencia ?? throw new ArgumentNullException(nameof(repositorioAbrangencia));
             this.servicoNotificacao = servicoNotificacao ?? throw new ArgumentNullException(nameof(servicoNotificacao));
@@ -86,7 +86,7 @@ namespace SME.SGP.Dominio.Servicos
             // Verifica recorrencia da gravação
             if (recorrencia != RecorrenciaAula.AulaUnica)
             {
-                GravarRecorrencia(ehInclusao, aula, usuario, recorrencia);
+                await GravarRecorrencia(ehInclusao, aula, usuario, recorrencia);
 
                 var mensagem = ehInclusao ? "cadastrada" : "alterada";
                 return $"Aula {mensagem} com sucesso. Serão {mensagem}s aulas recorrentes, em breve você receberá uma notificação com o resultado do processamento.";
@@ -94,38 +94,20 @@ namespace SME.SGP.Dominio.Servicos
             return "Aula cadastrada com sucesso.";
         }
 
-        private void GravarRecorrencia(bool inclusao, Aula aula, Usuario usuario, RecorrenciaAula recorrencia)
+        private async Task GravarRecorrencia(bool inclusao, Aula aula, Usuario usuario, RecorrenciaAula recorrencia)
         {
-            var periodos = repositorioPeriodoEscolar.ObterPorTipoCalendario(aula.TipoCalendarioId);
-            if (periodos == null || !periodos.Any())
-                throw new NegocioException("Não foi possível obter os períodos deste tipo de calendário.");
-
-            DateTime fimRecorrencia = DateTime.MinValue;
-            if (recorrencia == RecorrenciaAula.RepetirBimestreAtual)
-            {
-                // Busca ultimo dia do periodo atual
-                fimRecorrencia = periodos.Where(a => a.PeriodoFim >= aula.DataAula.Date)
-                    .OrderBy(a => a.PeriodoInicio)
-                    .FirstOrDefault().PeriodoFim;
-            }
-            else
-            if (recorrencia == RecorrenciaAula.RepetirTodosBimestres)
-            {
-                // Busca ultimo dia do ultimo periodo
-                fimRecorrencia = periodos.Max(a => a.PeriodoFim);
-            }
-
+            var fimRecorrencia = consultasPeriodoEscolar.ObterFimPeriodoRecorrencia(aula.TipoCalendarioId, aula.DataAula.Date, recorrencia);
             //TODO: ASSINCRONO
             if (inclusao)
                 GerarRecorrencia(aula, usuario, fimRecorrencia);
             else
-                AlterarRecorrencia(aula, usuario, fimRecorrencia);
+                await AlterarRecorrencia(aula, usuario, fimRecorrencia);
         }
 
-        private void AlterarRecorrencia(Aula aula, Usuario usuario, DateTime fimRecorrencia)
+        private async Task AlterarRecorrencia(Aula aula, Usuario usuario, DateTime fimRecorrencia)
         {
             var dataRecorrencia = aula.DataAula.AddDays(7);
-            var aulasRecorrencia = repositorioAula.ObterAulasRecorrencia(aula.AulaPaiId ?? aula.Id, dataRecorrencia, fimRecorrencia).Result;
+            var aulasRecorrencia = await repositorioAula.ObterAulasRecorrencia(aula.AulaPaiId ?? aula.Id, aula.Id, fimRecorrencia);
             List<(DateTime data, string erro)> aulasQueDeramErro = new List<(DateTime, string)>();
 
             foreach (var aulaRecorrente in aulasRecorrencia)
@@ -135,7 +117,7 @@ namespace SME.SGP.Dominio.Servicos
 
                 try
                 {
-                    Salvar(aulaRecorrente, usuario, aulaRecorrente.RecorrenciaAula).Wait();
+                    await Salvar(aulaRecorrente, usuario, aulaRecorrente.RecorrenciaAula);
                 }
                 catch (NegocioException nex)
                 {
@@ -150,7 +132,7 @@ namespace SME.SGP.Dominio.Servicos
                 dataRecorrencia = dataRecorrencia.AddDays(7);
             }
 
-            NotificarUsuario(usuario, aula, $"Foram alteradas {aulasRecorrencia.Count() - aulasQueDeramErro.Count} aulas", aulasQueDeramErro);
+            await NotificarUsuario(usuario, aula, $"Foram alteradas {aulasRecorrencia.Count() - aulasQueDeramErro.Count} aulas", aulasQueDeramErro);
         }
 
         private async Task GerarAulaDeRecorrenciaParaDias(Aula aula, List<DateTime> diasParaIncluirRecorrencia, Usuario usuario)
@@ -179,10 +161,10 @@ namespace SME.SGP.Dominio.Servicos
                 }
             }
 
-            NotificarUsuario(usuario, aula, $"Foram criadas {diasParaIncluirRecorrencia.Count - aulasQueDeramErro.Count} aulas", aulasQueDeramErro);
+            await NotificarUsuario(usuario, aula, $"Foram criadas {diasParaIncluirRecorrencia.Count - aulasQueDeramErro.Count} aulas", aulasQueDeramErro);
         }
 
-        private async void NotificarUsuario(Usuario usuario, Aula aula, string mensagem, List<(DateTime data, string erro)> aulasQueDeramErro)
+        private async Task NotificarUsuario(Usuario usuario, Aula aula, string mensagem, List<(DateTime data, string erro)> aulasQueDeramErro)
         {
             var perfilAtual = usuario.PerfilAtual;
 

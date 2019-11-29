@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using SME.SGP.Api.Filtros;
 using SME.SGP.Aplicacao;
+using SME.SGP.Dominio;
 using SME.SGP.Infra;
 using System.Threading.Tasks;
 
@@ -54,5 +55,15 @@ namespace SME.SGP.Api.Controllers
             retorno.Mensagens.Add(await comandos.Inserir(dto));
             return Ok(retorno);
         }
+
+        [HttpGet("{aulaId}/recorrencias/{recorrencia}/quantidade")]
+        [ProducesResponseType(typeof(string), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [Permissao(Permissao.CP_I, Policy = "Bearer")]
+        public async Task<IActionResult> ObterQuantidadeAulasRecorrencia(long aulaId, RecorrenciaAula recorrencia, [FromServices]IConsultasAula consultas)
+        {
+            return Ok(await consultas.ObterQuantidadeAulasRecorrentes(aulaId, recorrencia));
+        }
+
     }
 }
