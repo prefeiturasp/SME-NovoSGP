@@ -36,11 +36,11 @@ const TipoEvento = styled(Div)`
 const Dia = props => {
   const { dia, mesAtual, filtros, diaSelecionado } = props;
   const {
-    tipoCalendarioSelecionado = '',
-    eventoSme = true,
-    dreSelecionada = '',
-    unidadeEscolarSelecionada = '',
-    turmaSelecionada = '',
+    tipoCalendarioSelecionado,
+    eventoSme,
+    dreSelecionada,
+    unidadeEscolarSelecionada,
+    turmaSelecionada,
     todasTurmas,
   } = filtros;
   const [tipoEventosDiaLista, setTipoEventosDiaLista] = useState([]);

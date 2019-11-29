@@ -39,11 +39,11 @@ Seta.defaultProps = {
 const Mes = props => {
   const { numeroMes, filtros } = props;
   const {
-    tipoCalendarioSelecionado = '',
-    eventoSme = true,
-    dreSelecionada = '',
-    unidadeEscolarSelecionada = '',
-    turmaSelecionada = '',
+    tipoCalendarioSelecionado,
+    eventoSme,
+    dreSelecionada,
+    unidadeEscolarSelecionada,
+    turmaSelecionada,
     todasTurmas,
   } = filtros;
   const [mesSelecionado, setMesSelecionado] = useState({});

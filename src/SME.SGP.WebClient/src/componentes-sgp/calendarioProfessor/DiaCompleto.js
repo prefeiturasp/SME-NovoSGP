@@ -53,11 +53,11 @@ const SemEvento = () => {
 const DiaCompleto = props => {
   const { dias, mesAtual, filtros } = props;
   const {
-    tipoCalendarioSelecionado = '',
-    eventoSme = true,
-    dreSelecionada = '',
-    unidadeEscolarSelecionada = '',
-    turmaSelecionada = '',
+    tipoCalendarioSelecionado,
+    eventoSme,
+    dreSelecionada,
+    unidadeEscolarSelecionada,
+    turmaSelecionada,
     todasTurmas,
   } = filtros;
   const [eventosDia, setEventosDia] = useState([]);
@@ -171,7 +171,9 @@ const DiaCompleto = props => {
   return (
     estaAberto && (
       <Div className="border-bottom border-top-0 h-100 p-3">
-        {eventosDia && eventosDia.length > 0 ? (
+        {eventosDia &&
+        eventosDia.eventosAulas &&
+        eventosDia.eventosAulas.length > 0 ? (
           <Div className="list-group list-group-flush fade show">
             {eventosDia.map(evento => {
               return (
@@ -240,7 +242,7 @@ const DiaCompleto = props => {
         ) : (
           <SemEvento />
         )}
-        <BotoesAuxiliares />
+        {eventosDia && eventosDia.letivo && <BotoesAuxiliares />}
       </Div>
     )
   );
