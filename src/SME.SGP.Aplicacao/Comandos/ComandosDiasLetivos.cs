@@ -117,7 +117,9 @@ namespace SME.SGP.Aplicacao
         public bool VerificarSeDataLetiva(IEnumerable<Evento> eventos, DateTime data)
         {
             bool possuiEventoLetivo = eventos.Any(x => x.Letivo == EventoLetivo.Sim);
+
             bool possuiEventoNaoLetivo = eventos.Any(x => x.Letivo == EventoLetivo.Nao);
+
             bool ehDiaUtil = EhDiaUtil(data);
 
             if (possuiEventoLetivo) return true;
