@@ -2,11 +2,11 @@
 
 namespace SME.SGP.Dados.Mapeamentos
 {
-    public class TipoAtividadeAvaliativaMap : BaseMap<TipoAtividadeAvaliativa>
+    public class TipoAvaliacaoMap : BaseMap<TipoAvaliacao>
     {
-        public TipoAtividadeAvaliativaMap()
+        public TipoAvaliacaoMap()
         {
-            ToTable("tipo_atividade_avalativa");
+            ToTable("tipo_avaliacao");
             Map(t => t.Nome).ToColumn("nome");
             Map(t => t.Descricao).ToColumn("descricao");
             Map(t => t.Excluido).ToColumn("excluido");

@@ -50,7 +50,10 @@ function DreDropDown({ form, onChange }) {
 }
 
 DreDropDown.propTypes = {
-  form: PropTypes.objectOf(PropTypes.object),
+  form: PropTypes.oneOfType([
+    PropTypes.objectOf(PropTypes.object),
+    PropTypes.any,
+  ]),
   onChange: PropTypes.func,
 };
 

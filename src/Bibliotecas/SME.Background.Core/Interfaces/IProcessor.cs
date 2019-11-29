@@ -8,6 +8,7 @@ namespace SME.Background.Core.Interfaces
 {
     public interface IProcessor
     {
+        bool Registrado { get; }
         void Registrar();
         string Executar(System.Linq.Expressions.Expression<Action> metodo);
         string Executar<T>(Expression<Action<T>> metodo);

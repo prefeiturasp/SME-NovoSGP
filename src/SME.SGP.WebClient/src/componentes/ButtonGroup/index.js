@@ -11,7 +11,6 @@ function ButtonGroup({
   form,
   modoEdicao,
   novoRegistro,
-  somenteConsulta,
   permissoesTela,
   temItemSelecionado,
   labelBotaoPrincipal,
@@ -21,6 +20,17 @@ function ButtonGroup({
   onClickBotaoPrincipal,
   onClickCancelar,
 }) {
+  const desabilitarExcluir = () => {
+    const { podeExcluir } = permissoesTela;
+    return (
+      (!podeExcluir && !temItemSelecionado === false) ||
+      (!podeExcluir && temItemSelecionado) ||
+      (podeExcluir && temItemSelecionado === false) ||
+      (!podeExcluir && novoRegistro === false) ||
+      (podeExcluir && novoRegistro === true)
+    );
+  };
+
   return (
     <ButtonGroupEstilo className="col-md-12 d-flex justify-content-end p-0">
       <Button
@@ -28,29 +38,25 @@ function ButtonGroup({
         icon="arrow-left"
         color={Colors.Azul}
         border
-        className="mr-2"
+        className="btnGroupItem"
         onClick={onClickVoltar}
       />
-      {modoEdicao && (
+      {typeof onClickCancelar === 'function' && (
         <Button
           label="Cancelar"
           color={Colors.Roxo}
           border
-          className="mr-2"
+          className="btnGroupItem"
           onClick={() => onClickCancelar(form)}
-          disabled={!modoEdicao || novoRegistro === false}
+          disabled={!modoEdicao}
         />
       )}
       <Button
         label="Excluir"
-        color={Colors.Vermelho}
+        color={Colors.Roxo}
         border
-        className="mr-2"
-        disabled={
-          (!permissoesTela.podeExcluir && !temItemSelecionado) ||
-          novoRegistro === true ||
-          (typeof temItemSelecionado === 'boolean' && !temItemSelecionado)
-        }
+        className="btnGroupItem"
+        disabled={desabilitarExcluir()}
         onClick={onClickExcluir}
       />
       <Button
@@ -58,34 +64,40 @@ function ButtonGroup({
         color={Colors.Roxo}
         border
         bold
-        className="mr-0"
+        className="btnGroupItem"
         onClick={onClickBotaoPrincipal}
-        disabled={
-          somenteConsulta ||
-          !permissoesTela.podeIncluir ||
-          desabilitarBotaoPrincipal
-        }
+        disabled={!permissoesTela.podeIncluir || desabilitarBotaoPrincipal}
       />
     </ButtonGroupEstilo>
   );
 }
 
 ButtonGroup.propTypes = {
-  somenteConsulta: PropTypes.bool,
-  permissoesTela: PropTypes.objectOf(PropTypes.object),
+  form: PropTypes.oneOfType([PropTypes.object, PropTypes.func, PropTypes.any]),
+  modoEdicao: PropTypes.bool,
+  novoRegistro: PropTypes.bool,
+  desabilitarBotaoPrincipal: PropTypes.bool,
+  labelBotaoPrincipal: PropTypes.string,
+  permissoesTela: PropTypes.oneOfType([PropTypes.object, PropTypes.any]),
   temItemSelecionado: PropTypes.oneOfType([PropTypes.bool, PropTypes.any]),
   onClickVoltar: PropTypes.func,
   onClickExcluir: PropTypes.func,
+  onClickCancelar: PropTypes.func,
   onClickBotaoPrincipal: PropTypes.func,
 };
 
 ButtonGroup.defaultProps = {
-  somenteConsulta: false,
+  form: {},
   permissoesTela: {},
+  labelBotaoPrincipal: '',
+  modoEdicao: false,
+  desabilitarBotaoPrincipal: false,
+  novoRegistro: null,
   temItemSelecionado: null,
-  onClickVoltar: () => null,
-  onClickExcluir: () => null,
-  onClickBotaoPrincipal: () => null,
+  onClickVoltar: null,
+  onClickExcluir: null,
+  onClickCancelar: null,
+  onClickBotaoPrincipal: null,
 };
 
 export default ButtonGroup;

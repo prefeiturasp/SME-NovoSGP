@@ -6,12 +6,13 @@ import { Formik, Form } from 'formik';
 import * as Yup from 'yup';
 
 // Redux
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
+import { setLoaderSecao } from '~/redux/modulos/loader/actions';
 
 // Serviços
 import RotasDto from '~/dtos/rotasDto';
 import history from '~/servicos/history';
-import { erros, erro, sucesso } from '~/servicos/alertas';
+import { erros, erro, sucesso, confirmar } from '~/servicos/alertas';
 import { setBreadcrumbManual } from '~/servicos/breadcrumb-services';
 import AtribuicaoEsporadicaServico from '~/servicos/Paginas/AtribuicaoEsporadica';
 
@@ -26,19 +27,30 @@ import {
   Localizador,
   CampoData,
   momentSchema,
+  Loader,
+  Auditoria,
 } from '~/componentes';
+import DreDropDown from '../componentes/DreDropDown';
+import UeDropDown from '../componentes/UeDropDown';
+import AnoLetivoDropDown from '../componentes/AnoLetivoDropDown';
 
 // Styles
 import { Row } from './styles';
 
+// Funçoes
+import { validaSeObjetoEhNuloOuVazio } from '~/utils/funcoes/gerais';
+
 function AtribuicaoEsporadicaForm({ match }) {
+  const dispatch = useDispatch();
+  const carregando = useSelector(store => store.loader.loaderSecao);
   const permissoesTela = useSelector(store => store.usuario.permissoes);
   const filtroListagem = useSelector(
     store => store.atribuicaoEsporadica.filtro
   );
+  const [dreId, setDreId] = useState('');
   const [novoRegistro, setNovoRegistro] = useState(true);
+  const [modoEdicao, setModoEdicao] = useState(false);
   const [auditoria, setAuditoria] = useState({});
-  const [refForm, setRefForm] = useState({});
   const [valoresIniciais, setValoresIniciais] = useState({
     professorRf: '',
     professorNome: '',
@@ -74,6 +86,7 @@ function AtribuicaoEsporadicaForm({ match }) {
 
   const onSubmitFormulario = async valores => {
     try {
+      dispatch(setLoaderSecao(true));
       const cadastrado = await AtribuicaoEsporadicaServico.salvarAtribuicaoEsporadica(
         {
           ...filtroListagem,
@@ -81,20 +94,70 @@ function AtribuicaoEsporadicaForm({ match }) {
         }
       );
       if (cadastrado && cadastrado.status === 200) {
+        dispatch(setLoaderSecao(false));
         sucesso('Atribuição esporádica salva com sucesso.');
         history.push('/gestao/atribuicao-esporadica');
       }
     } catch (err) {
       if (err) {
+        dispatch(setLoaderSecao(false));
         erro(err.response.data.mensagens[0]);
       }
     }
   };
 
-  const onClickVoltar = () => history.push('/gestao/atribuicao-esporadica');
+  const onClickVoltar = async () => {
+    if (modoEdicao) {
+      const confirmou = await confirmar(
+        'Atenção',
+        'Você não salvou as informações preenchidas.',
+        'Deseja realmente cancelar as alterações?'
+      );
+      if (confirmou) {
+        history.push('/gestao/atribuicao-esporadica');
+      }
+    } else {
+      history.push('/gestao/atribuicao-esporadica');
+    }
+  };
+
+  const onClickCancelar = async form => {
+    if (!modoEdicao) return;
+    const confirmou = await confirmar(
+      'Atenção',
+      'Você não salvou as informações preenchidas.',
+      'Deseja realmente cancelar as alterações?'
+    );
+    if (confirmou) {
+      form.resetForm();
+      setModoEdicao(false);
+    }
+  };
+
+  const onClickExcluir = async form => {
+    if (validaSeObjetoEhNuloOuVazio(form.values)) return;
+
+    const confirmado = await confirmar(
+      'Excluir atribuição',
+      form.values.professorNome,
+      `Deseja realmente excluir este item?`,
+      'Excluir',
+      'Cancelar'
+    );
+    if (confirmado) {
+      const excluir = await AtribuicaoEsporadicaServico.deletarAtribuicaoEsporadica(
+        form.values.id
+      );
+      if (excluir) {
+        sucesso(`Atribuição excluida com sucesso!`);
+        history.push('/gestao/atribuicao-esporadica');
+      }
+    }
+  };
 
   const buscarPorId = async id => {
     try {
+      dispatch(setLoaderSecao(true));
       const registro = await AtribuicaoEsporadicaServico.buscarAtribuicaoEsporadica(
         id
       );
@@ -104,9 +167,27 @@ function AtribuicaoEsporadicaForm({ match }) {
           dataInicio: window.moment(registro.data.dataInicio),
           dataFim: window.moment(registro.data.dataFim),
         });
+        setAuditoria({
+          criadoPor: registro.data.criadoPor,
+          criadoRf: registro.data.criadoRF > 0 ? registro.data.criadoRF : '',
+          criadoEm: registro.data.criadoEm,
+          alteradoPor: registro.data.alteradoPor,
+          alteradoRf:
+            registro.data.alteradoRF > 0 ? registro.data.alteradoRF : '',
+          alteradoEm: registro.data.alteradoEm,
+        });
+        dispatch(setLoaderSecao(false));
       }
     } catch (err) {
+      dispatch(setLoaderSecao(false));
       erros(err);
+    }
+  };
+
+  const validaFormulario = valores => {
+    if (validaSeObjetoEhNuloOuVazio(valores)) return;
+    if (!modoEdicao) {
+      setModoEdicao(true);
     }
   };
 
@@ -125,71 +206,112 @@ function AtribuicaoEsporadicaForm({ match }) {
   return (
     <>
       <Cabecalho pagina="Atribuição" />
-      <Card>
-        <Formik
-          enableReinitialize
-          initialValues={valoresIniciais}
-          validationSchema={validacoes}
-          onSubmit={valores => onSubmitFormulario(valores)}
-          ref={formik => setRefForm(formik)}
-          validateOnBlur
-          validateOnChange
-        >
-          {form => (
-            <Form>
-              <ButtonGroup
-                form={form}
-                permissoesTela={
-                  permissoesTela[RotasDto.ATRIBUICAO_ESPORADICA_LISTA]
-                }
-                novoRegistro={novoRegistro}
-                labelBotaoPrincipal="Cadastrar"
-                onClickBotaoPrincipal={() => onClickBotaoPrincipal(form)}
-                onClickCancelar={() => null}
-                onClickVoltar={() => onClickVoltar()}
-                modoEdicao
-              />
-              <Row className="row">
-                <Grid cols={8}>
-                  <Row className="row">
-                    <Localizador
-                      dreId={filtroListagem.dreId}
-                      anoLetivo={filtroListagem.anoLetivo}
-                      showLabel
+      <Loader loading={carregando}>
+        <Card>
+          <Formik
+            enableReinitialize
+            initialValues={valoresIniciais}
+            validationSchema={validacoes}
+            onSubmit={valores => onSubmitFormulario(valores)}
+            validate={valores => validaFormulario(valores)}
+            validateOnBlur
+            validateOnChange
+          >
+            {form => (
+              <Form>
+                <ButtonGroup
+                  form={form}
+                  permissoesTela={
+                    permissoesTela[RotasDto.ATRIBUICAO_ESPORADICA_LISTA]
+                  }
+                  novoRegistro={novoRegistro}
+                  labelBotaoPrincipal="Cadastrar"
+                  onClickBotaoPrincipal={() => onClickBotaoPrincipal(form)}
+                  onClickCancelar={formulario => onClickCancelar(formulario)}
+                  onClickVoltar={() => onClickVoltar()}
+                  onClickExcluir={() => onClickExcluir(form)}
+                  modoEdicao={modoEdicao}
+                />
+                <Row className="row">
+                  <Grid cols={2}>
+                    <AnoLetivoDropDown
+                      label="Ano Letivo"
+                      form={form}
+                      name="anoLetivo"
+                      onChange={() => null}
+                    />
+                  </Grid>
+                  <Grid cols={5}>
+                    <DreDropDown
+                      label="Diretoria Regional de Educação (DRE)"
+                      form={form}
+                      onChange={valor => setDreId(valor)}
+                    />
+                  </Grid>
+                  <Grid cols={5}>
+                    <UeDropDown
+                      label="Unidade Escolar (UE)"
+                      dreId={dreId}
                       form={form}
                       onChange={() => null}
                     />
-                  </Row>
-                </Grid>
-                <Grid cols={2}>
-                  <CampoData
-                    placeholder="Selecione"
-                    label="Data Início"
-                    form={form}
-                    name="dataInicio"
-                    formatoData="DD/MM/YYYY"
-                  />
-                </Grid>
-                <Grid cols={2}>
-                  <CampoData
-                    placeholder="Selecione"
-                    label="Data Fim"
-                    form={form}
-                    name="dataFim"
-                    formatoData="DD/MM/YYYY"
-                  />
-                </Grid>
-              </Row>
-            </Form>
+                  </Grid>
+                </Row>
+                <Row className="row">
+                  <Grid cols={8}>
+                    <Row className="row">
+                      <Localizador
+                        dreId={form.values.dreId}
+                        anoLetivo={form.values.anoLetivo}
+                        showLabel
+                        form={form}
+                        onChange={() => null}
+                      />
+                    </Row>
+                  </Grid>
+                  <Grid cols={2}>
+                    <CampoData
+                      placeholder="Selecione"
+                      label="Data Início"
+                      form={form}
+                      name="dataInicio"
+                      formatoData="DD/MM/YYYY"
+                    />
+                  </Grid>
+                  <Grid cols={2}>
+                    <CampoData
+                      placeholder="Selecione"
+                      label="Data Fim"
+                      form={form}
+                      name="dataFim"
+                      formatoData="DD/MM/YYYY"
+                    />
+                  </Grid>
+                </Row>
+              </Form>
+            )}
+          </Formik>
+          {auditoria && (
+            <Auditoria
+              criadoEm={auditoria.criadoEm}
+              criadoPor={auditoria.criadoPor}
+              criadoRf={auditoria.criadoRf}
+              alteradoPor={auditoria.alteradoPor}
+              alteradoEm={auditoria.alteradoEm}
+              alteradoRf={auditoria.alteradoRf}
+            />
           )}
-        </Formik>
-      </Card>
+        </Card>
+      </Loader>
     </>
   );
 }
 
 AtribuicaoEsporadicaForm.propTypes = {
-  match: PropTypes.objectOf(PropTypes.object),
+  match: PropTypes.oneOfType([
+    PropTypes.objectOf(PropTypes.object),
+    PropTypes.any,
+  ]),
 };
 
 AtribuicaoEsporadicaForm.defaultProps = {
