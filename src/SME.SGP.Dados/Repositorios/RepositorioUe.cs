@@ -13,7 +13,7 @@ namespace SME.SGP.Dados.Repositorios
     public class RepositorioUe : IRepositorioUe
     {
         const string QuerySincronizacao = @"SELECT id, ue_id, dre_id, nome, tipo_escola, data_atualizacao FROM public.ue where ue_id in (#ids);";
-        const string Update = "UPDATE public.ue SET nome = @nome, tipo_escola = @tipoEscola, data_atualizacao = @data_atualizacao WHERE id = @id;";
+        const string Update = "UPDATE public.ue SET nome = @nome, tipo_escola = @tipoEscola, data_atualizacao = @dataAtualizacao WHERE id = @id;";
 
         private readonly ISgpContext contexto;
         private readonly IRepositorioDre respositorioDre;
@@ -21,44 +21,59 @@ namespace SME.SGP.Dados.Repositorios
         public RepositorioUe(ISgpContext contexto, IRepositorioDre respositorioDre)
         {
             this.contexto = contexto;
+            this.respositorioDre = respositorioDre;
         }
 
-        public void Sincronizar(IEnumerable<Ue> entidades)
+        public IEnumerable<Ue> Sincronizar(IEnumerable<Ue> entidades, IEnumerable<Dre> dres)
         {
-            var armazenados = contexto.Conexao.Query<Ue>(QuerySincronizacao.Replace("#ids", string.Join(",", entidades.Select(x => x.CodigoUe))));
+            List<Ue> resultado = new List<Ue>();
 
-            var novos = entidades.Where(x => !armazenados.Select(y => y.CodigoUe).Contains(x.CodigoUe));
-            IEnumerable<Dre> dres = Enumerable.Empty<Dre>();
-
-            if (novos.Any())
-                dres = respositorioDre.ObterPorCodigos(novos.Select(x => x.Dre.CodigoDre).ToArray());
-
-            foreach (var item in novos)
+            for (int i = 0; i < entidades.Count(); i = i + 900)
             {
-                item.DataAtualizacao = DateTime.Today;
-                item.Dre = dres.First(x => x.CodigoDre == item.Dre.CodigoDre);
-                item.DreId = item.Dre.Id;
-                item.Id = (long)contexto.Conexao.Insert(item);
-            }
+                var iteracao = entidades.Skip(i).Take(900);
 
-            foreach (var item in armazenados)
-            {
-                var entidade = entidades.First(x => x.CodigoUe == item.CodigoUe);
-                entidade.Id = item.Id;
-                entidade.Dre = item.Dre;
-                entidade.DreId = item.DreId;
+                var armazenados = contexto.Conexao.Query<Ue>(QuerySincronizacao.Replace("#ids", string.Join(",", iteracao.Select(x => $"'{x.CodigoUe}'"))));
 
-                if (item.DataAtualizacao.Date != DateTime.Today)
+                var novos = iteracao.Where(x => !armazenados.Select(y => y.CodigoUe).Contains(x.CodigoUe));
+
+                foreach (var item in novos)
                 {
-                    contexto.Conexao.Execute(Update, new { nome = item.Nome, tipoEscola = item.TipoEscola, dataAtualizacao = DateTime.Today, id = item.Id });
+                    item.DataAtualizacao = DateTime.Today;
+                    item.Dre = dres.First(x => x.CodigoDre == item.Dre.CodigoDre);
+                    item.DreId = item.Dre.Id;
+                    item.Id = (long)contexto.Conexao.Insert(item);
+                    resultado.Add(item);
+                }
+
+                foreach (var item in armazenados)
+                {
+                    var entidade = iteracao.First(x => x.CodigoUe == item.CodigoUe);
+                    entidade.Id = item.Id;
+                    entidade.Dre = item.Dre;
+                    entidade.DreId = item.DreId;
+
+                    if (item.DataAtualizacao.Date != DateTime.Today)
+                    {
+                        contexto.Conexao.Execute(Update, new { nome = item.Nome, tipoEscola = item.TipoEscola, dataAtualizacao = DateTime.Today, id = item.Id });
+                    }
+                    resultado.Add(entidade);
                 }
             }
+            return resultado;
 
         }
 
         public IEnumerable<Ue> ObterPorCodigos(string[] codigos)
         {
-            return contexto.Conexao.Query<Ue>(QuerySincronizacao.Replace("#ids", string.Join(",", codigos.Concat(new[] { "0" }))));
+            List<Ue> resultado = new List<Ue>();
+
+            for (int i = 0; i < codigos.Length; i = i + 900)
+            {
+                var iteracao = codigos.Skip(i).Take(900);
+                resultado.AddRange(contexto.Conexao.Query<Ue>(QuerySincronizacao.Replace("#ids", string.Join(",", $"'{iteracao.Concat(new[] { "0" })}'"))));
+            }
+
+            return resultado;
         }
     }
 

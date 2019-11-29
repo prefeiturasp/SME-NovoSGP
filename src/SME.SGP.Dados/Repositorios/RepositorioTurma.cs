@@ -50,21 +50,20 @@ namespace SME.SGP.Dados.Repositorios
         public RepositorioTurma(ISgpContext contexto, IRepositorioUe respositorioUe)
         {
             this.contexto = contexto;
+            this.respositorioUe = respositorioUe;
         }
 
-        public void Sincronizar(IEnumerable<Turma> entidades)
+        public IEnumerable<Turma> Sincronizar(IEnumerable<Turma> entidades, IEnumerable<Ue> ues)
         {
+            List<Turma> resultado = new List<Turma>();
+
             for (int i = 0; i < entidades.Count(); i = i + 900)
             {
                 var iteracao = entidades.Skip(i).Take(900);
 
-                var armazenados = contexto.Conexao.Query<Turma>(QuerySincronizacao.Replace("#ids", string.Join(",", iteracao.Select(x => x.CodigoTurma))));
+                var armazenados = contexto.Conexao.Query<Turma>(QuerySincronizacao.Replace("#ids", string.Join(",", iteracao.Select(x => $"'{x.CodigoTurma}'")))).ToList();
 
-                var novos = iteracao.Where(x => !armazenados.Select(y => y.CodigoTurma).Contains(x.CodigoTurma));
-                IEnumerable<Ue> ues = Enumerable.Empty<Ue>();
-
-                if (novos.Any())
-                    ues = respositorioUe.ObterPorCodigos(novos.Select(x => x.Ue.CodigoUe).ToArray());
+                var novos = iteracao.Where(x => !armazenados.Select(y => y.CodigoTurma).Contains(x.CodigoTurma)).ToList();
 
                 foreach (var item in novos)
                 {
@@ -72,6 +71,7 @@ namespace SME.SGP.Dados.Repositorios
                     item.Ue = ues.First(x => x.CodigoUe == item.Ue.CodigoUe);
                     item.UeId = item.Ue.Id;
                     item.Id = (long)contexto.Conexao.Insert(item);
+                    resultado.Add(item);
                 }
 
                 foreach (var item in armazenados)
@@ -96,8 +96,12 @@ namespace SME.SGP.Dados.Repositorios
                             id = item.Id
                         });
                     }
+
+                    resultado.Add(entidade);
                 }
             }
+
+            return resultado;
         }
 
     }
