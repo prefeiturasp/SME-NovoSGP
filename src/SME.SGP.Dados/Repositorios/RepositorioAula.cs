@@ -60,6 +60,8 @@ namespace SME.SGP.Dados.Repositorios
             query.AppendLine("FROM public.aula a");
             query.AppendLine("INNER JOIN v_abrangencia ab on a.turma_id = ab.turma_id");
             MontaWhere(query, turmaId, ueId, null, data, rf);
+            MontaGroupBy(query);
+            var sql = query.ToString();
             return (await database.Conexao.QueryAsync<AulaCompletaDto>(query.ToString(), new { tipoCalendarioId, turmaId, ueId, data, perfil, rf }));
         }
 
@@ -168,6 +170,31 @@ namespace SME.SGP.Dados.Repositorios
             query.AppendLine("a.alterado_rf,");
             query.AppendLine("a.excluido,");
             query.AppendLine("a.migrado");
+        }
+
+        private static void MontaGroupBy(StringBuilder query)
+        {
+            query.AppendLine("group by ab.turma_id,");
+            query.AppendLine("id,");
+            query.AppendLine("a.ue_id,");
+            query.AppendLine("a.disciplina_id,");
+            query.AppendLine("a.turma_id,");
+            query.AppendLine("ab.turma_nome,");
+            query.AppendLine("ab.ue_nome,");
+            query.AppendLine("a.tipo_calendario_id,");
+            query.AppendLine("a.professor_rf,");
+            query.AppendLine("a.quantidade,");
+            query.AppendLine("a.data_aula,");
+            query.AppendLine("a.recorrencia_aula,");
+            query.AppendLine("a.tipo_aula,");
+            query.AppendLine("a.criado_em,");
+            query.AppendLine("a.criado_por,");
+            query.AppendLine("a.alterado_em,");
+            query.AppendLine("a.alterado_por,");
+            query.AppendLine("a.criado_rf,");
+            query.AppendLine("a.alterado_rf,");
+            query.AppendLine("a.excluido,");
+            query.AppendLine("a.migrado;");
         }
 
         private static void MontaWhere(StringBuilder query, string turmaId, string ueId, int? mes = null, DateTime? data = null, string rf = null)
