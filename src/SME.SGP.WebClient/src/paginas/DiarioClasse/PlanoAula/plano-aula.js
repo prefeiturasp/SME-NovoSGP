@@ -153,7 +153,7 @@ const PlanoAula = (props) => {
         <QuantidadeBotoes className="col-md-12">
           <span>Quantidade de aulas: {planoAula.qtdAulas}</span>
         </QuantidadeBotoes>
-        <HabilitaObjetivos className="row d-inline-block col-md-12" hidden={!ehProfessorCj && !layoutComObjetivos()}>
+        <HabilitaObjetivos className="row d-inline-block col-md-12" hidden={!ehProfessorCj}>
           <label>Objetivos de aprendizagem</label>
           <Switch
             onChange={() => habilitaDesabilitaObjetivos(!temObjetivos)}
