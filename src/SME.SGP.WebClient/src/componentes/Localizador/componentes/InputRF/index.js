@@ -10,6 +10,9 @@ import { Input, Button } from 'antd';
 // Styles
 import { InputRFEstilo } from './styles';
 
+// Funções
+import { valorNuloOuVazio } from '~/utils/funcoes/gerais';
+
 function InputRF({
   pessoaSelecionada,
   onSelect,
@@ -20,18 +23,9 @@ function InputRF({
   desabilitado,
   maxlength,
   onKeyDown,
-  onChange,
   style,
 }) {
   const [valor, setValor] = useState('');
-
-  useEffect(() => {
-    setValor(pessoaSelecionada && pessoaSelecionada.professorRf);
-    form.setFieldValue(
-      name,
-      pessoaSelecionada && pessoaSelecionada.professorRf
-    );
-  }, [pessoaSelecionada]);
 
   const onSubmitRF = rf => {
     onSelect({ rf });
@@ -55,10 +49,25 @@ function InputRF({
   };
 
   useEffect(() => {
+    setValor(pessoaSelecionada && pessoaSelecionada.professorRf);
+    form.setFieldValue(
+      name,
+      pessoaSelecionada && pessoaSelecionada.professorRf
+    );
+  }, [pessoaSelecionada]);
+
+  useEffect(() => {
     if (form && form.initialValues) {
       setValor(form.initialValues.professorRf);
     }
   }, [form.initialValues]);
+
+  useEffect(() => {
+    const { values: valores } = form;
+    if (valores && valorNuloOuVazio(valores.professorRf)) {
+      setValor('');
+    }
+  }, [form.values]);
 
   return (
     <>
@@ -77,8 +86,10 @@ function InputRF({
             placeholder="Digite o RF"
             onKeyDown={onKeyDown}
             onChange={e => {
-              form.setFieldValue(name, e.target.value);
-              form.setFieldTouched(name, true, true);
+              if (valorNuloOuVazio(e.target.value)) {
+                form.setFieldValue(name, e.target.value, false);
+                form.setFieldTouched(name);
+              }
               setValor(e.target.value);
             }}
             style={style}
@@ -107,15 +118,35 @@ function InputRF({
 }
 
 InputRF.propTypes = {
-  pessoaSelecionada: PropTypes.objectOf(PropTypes.object),
+  pessoaSelecionada: PropTypes.oneOfType([
+    PropTypes.objectOf(PropTypes.object),
+    PropTypes.any,
+  ]),
   onSelect: PropTypes.func,
-  form: PropTypes.objectOf(PropTypes.object),
+  form: PropTypes.oneOfType([
+    PropTypes.objectOf(PropTypes.object),
+    PropTypes.any,
+  ]),
+  name: PropTypes.string,
+  id: PropTypes.string,
+  className: PropTypes.string,
+  desabilitado: PropTypes.bool,
+  maxlength: PropTypes.number,
+  onKeyDown: PropTypes.func,
+  style: PropTypes.objectOf(PropTypes.object),
 };
 
 InputRF.defaultProps = {
   pessoaSelecionada: {},
   onSelect: () => null,
   form: {},
+  name: '',
+  id: '',
+  className: '',
+  desabilitado: false,
+  maxlength: null,
+  onKeyDown: () => null,
+  style: {},
 };
 
 export default InputRF;

@@ -16,7 +16,7 @@ namespace SME.SGP.Dados.Repositorios
         {
         }
 
-        public async Task<PaginacaoResultadoDto<AtribuicaoEsporadica>> ListarPaginada(Paginacao paginacao,int anoLetivo, string dreId, string ueId, string codigoRF)
+        public async Task<PaginacaoResultadoDto<AtribuicaoEsporadica>> ListarPaginada(Paginacao paginacao, int anoLetivo, string dreId, string ueId, string codigoRF)
         {
             var retorno = new PaginacaoResultadoDto<AtribuicaoEsporadica>();
 
@@ -33,6 +33,15 @@ namespace SME.SGP.Dados.Repositorios
             retorno.TotalPaginas = (int)Math.Ceiling((double)retorno.TotalRegistros / paginacao.QuantidadeRegistros);
 
             return retorno;
+        }
+
+        public AtribuicaoEsporadica ObterUltimaPorRF(string codigoRF)
+        {
+            var sql = @"select * from atribuicao_esporadica
+                        where professor_rf = @professorRF
+                        order by data_fim desc";
+
+            return database.Conexao.QueryFirstOrDefault<AtribuicaoEsporadica>(sql, new { professorRF = codigoRF });
         }
 
         private static string MontaQueryCompleta(Paginacao paginacao, string codigoRF)
@@ -63,18 +72,18 @@ namespace SME.SGP.Dados.Repositorios
 
         private static void ObtenhaCabecalho(StringBuilder sql, bool contador)
         {
-            sql.AppendLine($"select {(contador ? "count(*)" : "*")} from atribuicao_esporadica where excluido = false");
+            sql.AppendLine($"select {(contador ? "count(*)" : "id,professor_rf,ue_id,dre_id,data_inicio, data_fim")} from atribuicao_esporadica where excluido = false");
         }
 
         private static void ObtenhaFiltro(StringBuilder sql, string codigoRF)
         {
-            sql.AppendLine("and data_inicio >= @inicioAno and data_inicio <= @fimAno");
-            sql.AppendLine("and data_fim >= @inicioAno and data_fim <= @fimAno");
-            sql.AppendLine("and dre_id = @dreId");
-            sql.AppendLine("and ue_id = @ueId");
-
             if (!string.IsNullOrWhiteSpace(codigoRF))
                 sql.AppendLine("and professor_rf = @codigoRF");
+
+            sql.AppendLine("and dre_id = @dreId");
+            sql.AppendLine("and ue_id = @ueId");
+            sql.AppendLine("and data_inicio >= @inicioAno and data_inicio <= @fimAno");
+            sql.AppendLine("and data_fim >= @inicioAno and data_fim <= @fimAno");
         }
     }
 }
