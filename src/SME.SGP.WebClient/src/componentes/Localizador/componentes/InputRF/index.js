@@ -85,11 +85,7 @@ function InputRF({
             value={valor}
             placeholder="Digite o RF"
             onKeyDown={onKeyDown}
-            onChange={e => {
-              form.setFieldValue(name, e.target.value);
-              form.setFieldTouched(name, true, true);
-              setValor(e.target.value);
-            }}
+            onChange={e => setValor(e.target.value)}
             style={style}
             suffix={botao}
             onPressEnter={e => onSubmitRF(e.target.value)}
