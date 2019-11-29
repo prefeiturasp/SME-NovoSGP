@@ -35,44 +35,49 @@ const TipoEvento = styled(Div)`
 
 const Dia = props => {
   const { dia, mesAtual, filtros, diaSelecionado } = props;
+  const {
+    tipoCalendarioSelecionado,
+    eventoSme,
+    dreSelecionada,
+    unidadeEscolarSelecionada,
+    turmaSelecionada,
+    todasTurmas,
+  } = filtros;
   const [tipoEventosDiaLista, setTipoEventosDiaLista] = useState([]);
 
   useEffect(() => {
     let estado = true;
     if (estado) {
       if (mesAtual && dia) {
-        if (filtros && Object.entries(filtros).length > 0) {
-          const {
-            tipoCalendarioSelecionado = '',
-            eventoSme = true,
-            dreSelecionada = '',
-            unidadeEscolarSelecionada = '',
-            turmaSelecionada = '',
-          } = filtros;
-          if (tipoCalendarioSelecionado) {
-            api
-              .post(`v1/calendarios/meses/tipos/eventos-aulas`, {
-                Mes: mesAtual,
-                tipoCalendarioId: tipoCalendarioSelecionado,
-                EhEventoSME: eventoSme,
-                dreId: dreSelecionada,
-                ueId: unidadeEscolarSelecionada,
-                turmaId: turmaSelecionada,
-              })
-              .then(resposta => {
-                if (resposta.data) {
-                  const lista = resposta.data.filter(
-                    evento => evento.dia === dia.getDate()
-                  )[0];
-                  while (lista.tiposEvento.length > 2) lista.tiposEvento.pop();
-                  setTipoEventosDiaLista(lista);
-                } else setTipoEventosDiaLista([]);
-              })
-              .catch(() => {
-                setTipoEventosDiaLista([]);
-              });
-          } else setTipoEventosDiaLista([]);
-        }
+        if (
+          tipoCalendarioSelecionado &&
+          dreSelecionada &&
+          unidadeEscolarSelecionada &&
+          (turmaSelecionada || todasTurmas)
+        ) {
+          api
+            .post(`v1/calendarios/meses/tipos/eventos-aulas`, {
+              Mes: mesAtual,
+              tipoCalendarioId: tipoCalendarioSelecionado,
+              EhEventoSME: eventoSme,
+              dreId: dreSelecionada,
+              ueId: unidadeEscolarSelecionada,
+              turmaId: turmaSelecionada,
+              todasTurmas,
+            })
+            .then(resposta => {
+              if (resposta.data) {
+                const lista = resposta.data.filter(
+                  evento => evento.dia === dia.getDate()
+                )[0];
+                while (lista.tiposEvento.length > 2) lista.tiposEvento.pop();
+                setTipoEventosDiaLista(lista);
+              } else setTipoEventosDiaLista([]);
+            })
+            .catch(() => {
+              setTipoEventosDiaLista([]);
+            });
+        } else setTipoEventosDiaLista([]);
       }
     }
     return () => {
