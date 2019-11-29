@@ -172,7 +172,14 @@ const CalendarioProfessor = () => {
       setUnidadeEscolarSelecionada();
       setOpcaoTurma();
     }
-    setFiltros({ ...filtros, tipoCalendarioSelecionado });
+    setFiltros({
+      tipoCalendarioSelecionado,
+      eventoSme,
+      dreSelecionada,
+      unidadeEscolarSelecionada,
+      turmaSelecionada,
+      todasTurmas,
+    });
   }, [tipoCalendarioSelecionado]);
 
   const aoClicarBotaoVoltar = () => {
@@ -184,7 +191,14 @@ const CalendarioProfessor = () => {
   };
 
   useEffect(() => {
-    setFiltros({ ...filtros, eventoSme });
+    setFiltros({
+      tipoCalendarioSelecionado,
+      eventoSme,
+      dreSelecionada,
+      unidadeEscolarSelecionada,
+      turmaSelecionada,
+      todasTurmas,
+    });
   }, [eventoSme]);
 
   const dresStore = useSelector(state => state.filtro.dres);
@@ -286,7 +300,14 @@ const CalendarioProfessor = () => {
       setUnidadeEscolarSelecionada();
       setOpcaoTurma();
     }
-    setFiltros({ ...filtros, dreSelecionada });
+    setFiltros({
+      tipoCalendarioSelecionado,
+      eventoSme,
+      dreSelecionada,
+      unidadeEscolarSelecionada,
+      turmaSelecionada,
+      todasTurmas,
+    });
   }, [dreSelecionada]);
 
   const listaTurmas = [
@@ -311,12 +332,23 @@ const CalendarioProfessor = () => {
     } else {
       setOpcaoTurma();
     }
-    setFiltros({ ...filtros, unidadeEscolarSelecionada });
+    setFiltros({
+      tipoCalendarioSelecionado,
+      eventoSme,
+      dreSelecionada,
+      unidadeEscolarSelecionada,
+      turmaSelecionada,
+      todasTurmas,
+    });
   }, [unidadeEscolarSelecionada]);
 
   useEffect(() => {
-    if (turmas) {
-      if (!usuario.ehProfessor) {
+    if (turmas.length > 0) {
+      if (eventoAulaCalendarioEdicao && eventoAulaCalendarioEdicao.turma) {
+        setOpcaoTurma(listaTurmas[1].valor.toString());
+        setTurmaSelecionada(eventoAulaCalendarioEdicao.turma);
+        setTodasTurmas(false);
+      } else if (!usuario.ehProfessor) {
         if (unidadeEscolarSelecionada) {
           if (Object.entries(turmaSelecionadaStore).length > 0)
             setOpcaoTurma(listaTurmas[1].valor.toString());
@@ -331,14 +363,6 @@ const CalendarioProfessor = () => {
         opcaoTurma
       ) {
         setOpcaoTurma();
-      }
-      if (
-        turmas &&
-        eventoAulaCalendarioEdicao &&
-        eventoAulaCalendarioEdicao.turma
-      ) {
-        setOpcaoTurma(listaTurmas[1].valor);
-        setTurmaSelecionada(eventoAulaCalendarioEdicao.turma);
       }
     }
   }, [turmas, turmaSelecionadaStore]);
@@ -373,12 +397,22 @@ const CalendarioProfessor = () => {
   }, [opcaoTurma]);
 
   useEffect(() => {
-    setFiltros({ ...filtros, todasTurmas });
+    setFiltros({
+      tipoCalendarioSelecionado,
+      eventoSme,
+      dreSelecionada,
+      unidadeEscolarSelecionada,
+      turmaSelecionada,
+      todasTurmas,
+    });
   }, [todasTurmas]);
 
   useEffect(() => {
     setFiltros({
-      ...filtros,
+      tipoCalendarioSelecionado,
+      eventoSme,
+      dreSelecionada,
+      unidadeEscolarSelecionada,
       turmaSelecionada,
       todasTurmas,
     });
