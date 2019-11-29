@@ -10,6 +10,6 @@ namespace SME.SGP.Aplicacao
     {
         Task<PlanoAulaRetornoDto> ObterPlanoAulaPorAula(long aulaId);
 
-        bool ValidarPlanoAulaExistente(FiltroPlanoAulaDto filtroPlanoAulaDto);
+        IEnumerable<PlanoAulaExistenteRetornoDto> ValidarPlanoAulaExistente(FiltroPlanoAulaExistenteDto filtroPlanoAulaExistenteDto);
     }
 }

@@ -52,9 +52,9 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(bool), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [Permissao(Permissao.PA_C, Policy = "Bearer")]
-        public IActionResult ValidarPlanoAnualExistente(FiltroPlanoAulaDto filtroPlanoAulaDto, [FromServices]IConsultasPlanoAula consultasPlanoAula)
+        public IActionResult ValidarPlanoAnualExistente(FiltroPlanoAulaExistenteDto filtroPlanoAulaExistenteDto, [FromServices]IConsultasPlanoAula consultasPlanoAula)
         {
-            return Ok(consultasPlanoAula.ValidarPlanoAulaExistente(filtroPlanoAulaDto));
+            return Ok(consultasPlanoAula.ValidarPlanoAulaExistente(filtroPlanoAulaExistenteDto));
         }
     }
 }

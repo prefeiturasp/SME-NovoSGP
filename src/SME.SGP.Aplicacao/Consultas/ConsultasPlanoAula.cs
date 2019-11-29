@@ -63,9 +63,24 @@ namespace SME.SGP.Aplicacao.Consultas
             return planoAulaDto;
         }
 
-        public bool ValidarPlanoAulaExistente(FiltroPlanoAulaDto filtroPlanoAulaDto)
+        public IEnumerable<PlanoAulaExistenteRetornoDto> ValidarPlanoAulaExistente(FiltroPlanoAulaExistenteDto filtroPlanoAulaExistenteDto)
         {
-            return repositorio.ValidarPlanoExistentePorTurmaDataEDisciplina(filtroPlanoAulaDto.Data, filtroPlanoAulaDto.TurmaId.ToString(), filtroPlanoAulaDto.DisciplinaId  );
+            IList<PlanoAulaExistenteRetornoDto> retorno = new List<PlanoAulaExistenteRetornoDto>();
+            var planoAulaTurmaDatasDto = filtroPlanoAulaExistenteDto.PlanoAulaTurmaDatas;
+            
+            for (int i = 0; i < planoAulaTurmaDatasDto.Count; i++)
+            {
+                retorno.Add(new PlanoAulaExistenteRetornoDto()
+                {
+                     TurmaId = filtroPlanoAulaExistenteDto.PlanoAulaTurmaDatas[i].TurmaId,
+                     Existe = repositorio.ValidarPlanoExistentePorTurmaDataEDisciplina(
+                                    planoAulaTurmaDatasDto[i].Data, 
+                                    planoAulaTurmaDatasDto[i].TurmaId.ToString(), 
+                                    planoAulaTurmaDatasDto[i].DisciplinaId)
+                });                    
+            }
+
+            return retorno;
         }
 
         private PlanoAulaRetornoDto MapearParaDto(PlanoAula plano) =>
