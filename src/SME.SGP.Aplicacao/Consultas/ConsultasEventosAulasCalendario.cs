@@ -80,7 +80,7 @@ namespace SME.SGP.Aplicacao
                     TipoEvento = "Aula",
                     DadosAula = new DadosAulaDto
                     {
-                        Disciplina = $"{(disciplina?.Nome ?? "Disciplina não encontrada")} {(x.TipoAula == TipoAula.Reposicao ? "(Reposição)" : "")} {(x.Status == WorkflowAprovacaoNivelStatus.AguardandoAprovacao ? "- Aguardando aprovação" : "")}",
+                        Disciplina = $"{(disciplina?.Nome ?? "Disciplina não encontrada")} {(x.TipoAula == TipoAula.Reposicao ? "(Reposição)" : "")} {(x.Status == EntidadeStatus.AguardandoAprovacao ? "- Aguardando aprovação" : "")}",
                         Horario = x.DataAula.ToString("hh:mm tt", CultureInfo.InvariantCulture),
                         Modalidade = turma?.Modalidade.GetAttribute<DisplayAttribute>().Name ?? "Modalidade",
                         Tipo = turma?.TipoEscola.GetAttribute<DisplayAttribute>().ShortName ?? "Escola",
