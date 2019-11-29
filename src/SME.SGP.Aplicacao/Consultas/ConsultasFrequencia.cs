@@ -24,6 +24,11 @@ namespace SME.SGP.Aplicacao
             this.repositorioAula = repositorioAula ?? throw new ArgumentNullException(nameof(repositorioAula));
         }
 
+        public async Task<IEnumerable<DisciplinaDto>> ObterDisciplinasLecionadasPeloProfessorPorTurma(string turmaId)
+        {
+            return await servicoFrequencia.ObterDisciplinasLecionadasPeloProfessorPorTurma(turmaId);
+        }
+
         public async Task<FrequenciaDto> ObterListaFrequenciaPorAula(long aulaId)
         {
             var aula = repositorioAula.ObterPorId(aulaId);

@@ -1,5 +1,7 @@
-﻿using SME.SGP.Aplicacao.Integracoes;
+﻿using SME.SGP.Aplicacao;
+using SME.SGP.Aplicacao.Integracoes;
 using SME.SGP.Dominio.Interfaces;
+using SME.SGP.Infra;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -8,9 +10,12 @@ namespace SME.SGP.Dominio.Servicos
 {
     public class ServicoFrequencia : IServicoFrequencia
     {
+        private readonly IConsultasDisciplina consultasDisciplina;
         private readonly IRepositorioAula repositorioAula;
         private readonly IRepositorioFrequencia repositorioFrequencia;
         private readonly IRepositorioRegistroAusenciaAluno repositorioRegistroAusenciaAluno;
+        private readonly IRepositorioTurma repositorioTurma;
+        private readonly IRepositorioUE repositorioUE;
         private readonly IServicoEOL servicoEOL;
         private readonly IServicoUsuario servicoUsuario;
         private readonly IUnitOfWork unitOfWork;
@@ -20,7 +25,10 @@ namespace SME.SGP.Dominio.Servicos
                                  IRepositorioAula repositorioAula,
                                  IServicoUsuario servicoUsuario,
                                  IUnitOfWork unitOfWork,
-                                 IServicoEOL servicoEOL)
+                                 IServicoEOL servicoEOL,
+                                 IRepositorioUE repositorioUE,
+                                 IRepositorioTurma repositorioTurma,
+                                 IConsultasDisciplina consultasDisciplina)
         {
             this.repositorioFrequencia = repositorioFrequencia ?? throw new System.ArgumentNullException(nameof(repositorioFrequencia));
             this.repositorioRegistroAusenciaAluno = repositorioRegistroAusenciaAluno ?? throw new System.ArgumentNullException(nameof(repositorioRegistroAusenciaAluno));
@@ -28,6 +36,26 @@ namespace SME.SGP.Dominio.Servicos
             this.servicoUsuario = servicoUsuario ?? throw new System.ArgumentNullException(nameof(servicoUsuario));
             this.unitOfWork = unitOfWork ?? throw new System.ArgumentNullException(nameof(unitOfWork));
             this.servicoEOL = servicoEOL ?? throw new System.ArgumentNullException(nameof(servicoEOL));
+            this.repositorioUE = repositorioUE ?? throw new System.ArgumentNullException(nameof(repositorioUE));
+            this.repositorioTurma = repositorioTurma ?? throw new System.ArgumentNullException(nameof(repositorioTurma));
+            this.consultasDisciplina = consultasDisciplina ?? throw new System.ArgumentNullException(nameof(consultasDisciplina));
+        }
+
+        public async Task<IEnumerable<DisciplinaDto>> ObterDisciplinasLecionadasPeloProfessorPorTurma(string turmaId)
+        {
+            if (string.IsNullOrWhiteSpace(turmaId))
+                throw new NegocioException("O id da turma é obrigatório.");
+
+            var turma = repositorioTurma.ObterPorId(turmaId);
+            if (turma == null)
+                throw new NegocioException("Não foi encontrada uma turma com o id informado. Verifique se você possui abrangência para essa turma.");
+
+            var deveAdicionarComponenteCurricularEMEBS = false;
+            deveAdicionarComponenteCurricularEMEBS = DeveAdicionarComponenteParaEMEBS(turmaId, turma, deveAdicionarComponenteCurricularEMEBS);
+
+            var disciplinas = await consultasDisciplina.ObterDisciplinasPorProfessorETurma(turmaId);
+            AdicionarComponenteParaEMEBS(deveAdicionarComponenteCurricularEMEBS, disciplinas);
+            return disciplinas;
         }
 
         public IEnumerable<RegistroAusenciaAluno> ObterListaAusenciasPorAula(long aulaId)
@@ -56,6 +84,49 @@ namespace SME.SGP.Dominio.Servicos
             RegistraAusenciaAlunos(registroAusenciaAlunos, alunos, registroFrequencia, aula.Quantidade);
 
             unitOfWork.PersistirTransacao();
+        }
+
+        private static void AdicionarComponenteParaEMEBS(bool deveAdicionarComponenteCurricularEMEBS, List<Infra.DisciplinaDto> disciplinas)
+        {
+            if (disciplinas != null && disciplinas.Any() && deveAdicionarComponenteCurricularEMEBS)
+            {
+                if (disciplinas.Any(c => c.CodigoComponenteCurricular == 218) && !disciplinas.Any(c => c.CodigoComponenteCurricular == 138))
+                {
+                    disciplinas.Add(new Infra.DisciplinaDto
+                    {
+                        CodigoComponenteCurricular = 138,
+                        Nome = "Português",
+                    });
+                }
+                else
+                {
+                    if (disciplinas.Any(c => c.CodigoComponenteCurricular == 138) && !disciplinas.Any(c => c.CodigoComponenteCurricular == 218))
+                    {
+                        disciplinas.Add(new Infra.DisciplinaDto
+                        {
+                            CodigoComponenteCurricular = 218,
+                            Nome = "Libras",
+                        });
+                    }
+                }
+            }
+        }
+
+        private bool DeveAdicionarComponenteParaEMEBS(string turmaId, Turma turma, bool deveAdicionarComponenteCurricularEMEBS)
+        {
+            if (turma.Modalidade == Modalidade.Fundamental || turma.Modalidade == Modalidade.Medio)
+            {
+                var ue = repositorioUE.ObterUEPorTurma(turmaId);
+                if (ue == null)
+                    throw new NegocioException("Não foi encontrada uma UE com a turma informada. Verifique se você possui abrangência para essa UE.");
+
+                if (ue.Tipo == TipoEscola.EMEBS)
+                {
+                    deveAdicionarComponenteCurricularEMEBS = true;
+                }
+            }
+
+            return deveAdicionarComponenteCurricularEMEBS;
         }
 
         private async Task<IEnumerable<Aplicacao.Integracoes.Respostas.AlunoPorTurmaResposta>> ObterAlunos(Aula aula)
