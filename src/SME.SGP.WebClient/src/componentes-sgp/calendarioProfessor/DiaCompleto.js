@@ -199,17 +199,20 @@ const DiaCompleto = props => {
                     />
                   </Grid>
                   {TiposEventoAulaDTO.Evento.indexOf(evento.tipoEvento) ===
-                    -1 && (
-                    <Grid cols={1} className="px-0">
-                      <Botao
-                        label={evento.dadosAula.horario}
-                        color={Colors.CinzaBotao}
-                        className="w-100 px-2"
-                        border
-                        steady
-                      />
-                    </Grid>
-                  )}
+                    -1 &&
+                    evento.dadosAula && (
+                      <Grid cols={1} className="px-0">
+                        <Botao
+                          label={window
+                            .moment(evento.dadosAula.horario, 'HH')
+                            .format('HH:mm')}
+                          color={Colors.CinzaBotao}
+                          className="w-100 px-2"
+                          border
+                          steady
+                        />
+                      </Grid>
+                    )}
                   <Grid
                     cols={
                       TiposEventoAulaDTO.Evento.indexOf(evento.tipoEvento) > -1
