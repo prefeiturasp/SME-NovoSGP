@@ -42,7 +42,8 @@ namespace SME.SGP.Aplicacao
 
         public async Task Migrar(MigrarPlanoAulaDto migrarPlanoAulaDto)
         {
-            var planoAulaDto = migrarPlanoAulaDto.PlanoAula;
+            var planoAulaDto = repositorio.ObterPorId(migrarPlanoAulaDto.PlanoAulaId);
+            var objetivosPlanoAulaDto = await repositorioObjetivosAula.ObterObjetivosPlanoAula(migrarPlanoAulaDto.PlanoAulaId);
 
             using (var transacao = unitOfWork.IniciarTransacao())
             {
@@ -65,7 +66,7 @@ namespace SME.SGP.Aplicacao
                         LicaoCasa = migrarPlanoAulaDto.MigrarLicaoCasa ? planoAulaDto.LicaoCasa : string.Empty,
                         ObjetivosAprendizagemJurema = !migrarPlanoAulaDto.EhProfessorCJ ||
                                                        migrarPlanoAulaDto.MigrarObjetivos ?
-                                                       planoAulaDto.ObjetivosAprendizagemJurema : null,
+                                                       objetivosPlanoAulaDto.Select(o => o.Id).ToList() : null,
                         RecuperacaoAula = migrarPlanoAulaDto.MigrarRecuperacaoAula ?
                                             planoAulaDto.RecuperacaoAula : string.Empty
                     };
