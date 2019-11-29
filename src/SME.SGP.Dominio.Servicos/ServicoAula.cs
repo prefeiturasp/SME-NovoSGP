@@ -26,9 +26,9 @@ namespace SME.SGP.Dominio.Servicos
         private readonly IConsultasAbrangencia consultasAbrangencia;
         private readonly IComandosWorkflowAprovacao comandosWorkflowAprovacao;
         private readonly IConfiguration configuration;
+        private readonly IComandosPlanoAula comandosPlanoAula;
+        private readonly IServicoFrequencia servicoFrequencia;
         private readonly IServicoNotificacao servicoNotificacao;
-
-
 
         public ServicoAula(IRepositorioAula repositorioAula,
                            IServicoEOL servicoEOL,
@@ -42,6 +42,8 @@ namespace SME.SGP.Dominio.Servicos
                            IConsultasAbrangencia consultasAbrangencia,
                            IServicoUsuario servicoUsuario,
                            IComandosWorkflowAprovacao comandosWorkflowAprovacao,
+                           IComandosPlanoAula comandosPlanoAula,
+                           IServicoFrequencia servicoFrequencia,
                            IConfiguration configuration)
         {
             this.repositorioAula = repositorioAula ?? throw new System.ArgumentNullException(nameof(repositorioAula));
@@ -57,6 +59,8 @@ namespace SME.SGP.Dominio.Servicos
             this.configuration = configuration;
             this.repositorioAbrangencia = repositorioAbrangencia ?? throw new ArgumentNullException(nameof(repositorioAbrangencia));
             this.servicoNotificacao = servicoNotificacao ?? throw new ArgumentNullException(nameof(servicoNotificacao));
+            this.comandosPlanoAula = comandosPlanoAula ?? throw new ArgumentNullException(nameof(comandosPlanoAula));
+            this.servicoFrequencia = servicoFrequencia ?? throw new ArgumentNullException(nameof(servicoFrequencia));
         }
 
         public async Task<string> Salvar(Aula aula, Usuario usuario, RecorrenciaAula recorrencia)
@@ -344,6 +348,31 @@ namespace SME.SGP.Dominio.Servicos
             aula.EnviarParaWorkflowDeAprovacao(idWorkflow);
 
             repositorioAula.Salvar(aula);
+        }
+
+        public async Task Excluir(Aula aula, RecorrenciaAula recorrencia)
+        {
+            if (recorrencia != RecorrenciaAula.AulaUnica)
+            {
+                var fimRecorrencia = consultasPeriodoEscolar.ObterFimPeriodoRecorrencia(aula.TipoCalendarioId, aula.DataAula.Date, recorrencia);
+                var aulasRecorrencia = await repositorioAula.ObterAulasRecorrencia(aula.AulaPaiId ?? aula.Id, aula.Id, fimRecorrencia);
+
+                foreach(var aulaRecorrente in aulasRecorrencia)
+                {
+                    await ExcluirAula(aulaRecorrente);
+                }
+            }
+
+            await ExcluirAula(aula);
+        }
+
+        private async Task ExcluirAula(Aula aula)
+        {
+            await servicoFrequencia.ExcluirFrequenciaAula(aula.Id);
+            await comandosPlanoAula.ExcluirPlanoDaAula(aula.Id);
+
+            aula.Excluido = true;
+            await repositorioAula.SalvarAsync(aula);
         }
     }
 }

@@ -7,5 +7,7 @@ namespace SME.SGP.Dominio.Interfaces
         IEnumerable<RegistroAusenciaAluno> ObterListaFrequenciaPorAula(long aulaId);
 
         RegistroFrequencia ObterRegistroFrequenciaPorAulaId(long aulaId);
+
+        void ExcluirFrequenciaAula(long aulaId);
     }
 }
