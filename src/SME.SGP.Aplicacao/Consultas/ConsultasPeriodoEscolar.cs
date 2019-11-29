@@ -26,6 +26,30 @@ namespace SME.SGP.Aplicacao.Consultas
             return EntidadeParaDto(lista);
         }
 
+        public DateTime ObterFimPeriodoRecorrencia(long tipoCalendarioId, DateTime inicioRecorrencia, RecorrenciaAula recorrencia)
+        {
+            var periodos = repositorio.ObterPorTipoCalendario(tipoCalendarioId);
+            if (periodos == null || !periodos.Any())
+                throw new NegocioException("Não foi possível obter os períodos deste tipo de calendário.");
+
+            DateTime fimRecorrencia = DateTime.MinValue;
+            if (recorrencia == RecorrenciaAula.RepetirBimestreAtual)
+            {
+                // Busca ultimo dia do periodo atual
+                fimRecorrencia = periodos.Where(a => a.PeriodoFim >= inicioRecorrencia)
+                    .OrderBy(a => a.PeriodoInicio)
+                    .FirstOrDefault().PeriodoFim;
+            }
+            else
+            if (recorrencia == RecorrenciaAula.RepetirTodosBimestres)
+            {
+                // Busca ultimo dia do ultimo periodo
+                fimRecorrencia = periodos.Max(a => a.PeriodoFim);
+            }
+
+            return fimRecorrencia;
+        }
+
         private static PeriodoEscolarListaDto EntidadeParaDto(IEnumerable<PeriodoEscolar> lista)
         {
             return new PeriodoEscolarListaDto

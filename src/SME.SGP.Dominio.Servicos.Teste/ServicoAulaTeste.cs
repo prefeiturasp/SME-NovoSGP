@@ -60,7 +60,7 @@ namespace SME.SGP.Dominio.Servicos.Teste
             servicoDiaLetivo.Setup(a => a.ValidarSeEhDiaLetivo(aula.DataAula, aula.TipoCalendarioId, null, aula.UeId)).Returns(true);
 
             //ACT
-            await servicoAula.Salvar(aula, usuario);
+            await servicoAula.Salvar(aula, usuario, aula.RecorrenciaAula);
 
             //ASSERT
             repositorioAula.Verify(c => c.Salvar(aula), Times.Once);
