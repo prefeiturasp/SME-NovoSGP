@@ -191,9 +191,7 @@ const DiaCompleto = props => {
                           Colors.Roxo) ||
                         (evento.tipoEvento === TiposEventoAulaDTO.CJ &&
                           Colors.Laranja) ||
-                        (TiposEventoAulaDTO.Evento.indexOf(evento.tipoEvento) >
-                          -1 &&
-                          Colors.CinzaBotao)
+                        Colors.CinzaBotao
                       }
                       className="w-100"
                       border
@@ -228,10 +226,12 @@ const DiaCompleto = props => {
                         evento.tipoEvento
                       ) === -1 && 'pl-3'}`}
                     >
-                      {TiposEventoAulaDTO.Evento.indexOf(evento.tipoEvento) >
-                        -1 && (evento.descricao ? evento.descricao : 'Evento')}
+                      {evento.tipoEvento !== TiposEventoAulaDTO.Aula &&
+                        evento.tipoEvento !== TiposEventoAulaDTO.CJ &&
+                        (evento.descricao ? evento.descricao : 'Evento')}
                       {TiposEventoAulaDTO.Evento.indexOf(evento.tipoEvento) ===
                         -1 &&
+                        evento.dadosAula &&
                         `${evento.dadosAula.turma} - ${evento.dadosAula.modalidade} - ${evento.dadosAula.tipo} - ${evento.dadosAula.unidadeEscolar} - ${evento.dadosAula.disciplina}`}
                     </Div>
                   </Grid>

@@ -150,9 +150,10 @@ const Dia = props => {
                       TiposEventoAulaDTO.Aula &&
                       'text-white badge-aula'} ${tipoEvento ===
                       TiposEventoAulaDTO.CJ &&
-                      'text-white badge-cj'} ${TiposEventoAulaDTO.Evento.indexOf(
-                      tipoEvento
-                    ) > -1 && 'badge-light'} ml-auto mr-0`}
+                      'text-white badge-cj'} ${tipoEvento !==
+                      TiposEventoAulaDTO.Aula &&
+                      (tipoEvento !== TiposEventoAulaDTO.CJ &&
+                        'badge-light')} ml-auto mr-0`}
                   >
                     {tipoEvento}
                   </TipoEvento>
