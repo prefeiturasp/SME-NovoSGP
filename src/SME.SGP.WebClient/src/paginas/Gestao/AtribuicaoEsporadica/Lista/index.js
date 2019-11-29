@@ -138,7 +138,7 @@ function AtribuicaoEsporadicaLista() {
             onClickBotaoPrincipal={onClickBotaoPrincipal}
             labelBotaoPrincipal="Novo"
             desabilitarBotaoPrincipal={
-              !!filtro.dreId === false && !!filtro.ueId === false
+              !!filtro.DreId === false && !!filtro.UeId === false
             }
           />
           <Filtro onFiltrar={onChangeFiltro} />
