@@ -62,7 +62,7 @@ namespace SME.SGP.Dominio.Servicos
         public async Task<string> Salvar(Aula aula, Usuario usuario)
         {
             var tipoCalendario = repositorioTipoCalendario.ObterPorId(aula.TipoCalendarioId);
-            
+
             if (tipoCalendario == null)
                 throw new NegocioException("O tipo de calendário não foi encontrado.");
 
@@ -70,7 +70,7 @@ namespace SME.SGP.Dominio.Servicos
 
             var usuarioPodeCriarAulaNaTurmaUeEModalidade = repositorioAula.UsuarioPodeCriarAulaNaUeTurmaEModalidade(aula, tipoCalendario.Modalidade);
 
-            if (!disciplinasProfessor.Any(c => c.CodigoComponenteCurricular.ToString() == aula.DisciplinaId) || !usuarioPodeCriarAulaNaTurmaUeEModalidade)
+            if (disciplinasProfessor == null || !disciplinasProfessor.Any(c => c.CodigoComponenteCurricular.ToString() == aula.DisciplinaId) || !usuarioPodeCriarAulaNaTurmaUeEModalidade)
             {
                 throw new NegocioException("Você não pode criar aulas para essa UE/Turma/Disciplina.");
             }
@@ -268,12 +268,9 @@ namespace SME.SGP.Dominio.Servicos
                                                           string nomeTurma, string dreId)
         {
 
-            var loginAtual = servicoUsuario.ObterLoginAtual();
-            var perfilAtual = servicoUsuario.ObterPerfilAtual();
-                                       
             var linkParaReposicaoAula = $"{configuration["UrlFrontEnd"]}calendario-escolar/calendario-professor/cadastro-aula/editar/:{aula.Id}/";
-                                 
-                                       
+
+
             var wfAprovacaoAula = new WorkflowAprovacaoDto()
             {
                 Ano = aula.DataAula.Year,
@@ -282,10 +279,10 @@ namespace SME.SGP.Dominio.Servicos
                 Tipo = WorkflowAprovacaoTipo.ReposicaoAula,
                 UeId = aula.UeId,
                 DreId = dreId,
-                NotificacaoTitulo = $"Criação de Aula de Reposição na turma {nomeTurma}",                                                                                    
-                NotificacaoTipo = NotificacaoTipo.Calendario,                                                                                         
-                NotificacaoMensagem = $"Foram criadas {aula.Quantidade} aula(s) de reposição de {nomeDisciplina} na turma {nomeTurma} da {nomeEscola} ({nomeDre}). Para que esta aula seja considerada válida você precisa aceitar esta notificação. Para visualizar a aula clique  <a href='{linkParaReposicaoAula}'>aqui</a>." 
-            };                       
+                NotificacaoTitulo = $"Criação de Aula de Reposição na turma {nomeTurma}",
+                NotificacaoTipo = NotificacaoTipo.Calendario,
+                NotificacaoMensagem = $"Foram criadas {aula.Quantidade} aula(s) de reposição de {nomeDisciplina} na turma {nomeTurma} da {nomeEscola} ({nomeDre}). Para que esta aula seja considerada válida você precisa aceitar esta notificação. Para visualizar a aula clique  <a href='{linkParaReposicaoAula}'>aqui</a>."
+            };
 
             wfAprovacaoAula.Niveis.Add(new WorkflowAprovacaoNivelDto()
             {

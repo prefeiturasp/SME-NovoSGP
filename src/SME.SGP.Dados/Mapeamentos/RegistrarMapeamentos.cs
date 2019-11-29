@@ -50,6 +50,7 @@ namespace SME.SGP.Dados.Mapeamentos
                config.AddMap(new UeMap());
                config.AddMap(new TurmaMap());
                config.AddMap(new AbrangenciaMap());
+               config.AddMap(new FrequenciaAlunoMap());
                config.ForDommel();
            });
         }

@@ -39,17 +39,17 @@ const MesCompleto = props => {
   const [diasDaSemana, setDiasDaSemana] = useState([]);
   const [estaAberto, setEstaAberto] = useState([]);
 
-  const eventoCalendarioEdicao = useSelector(
-    state => state.calendarioProfessor.eventoCalendarioEdicao
+  const eventoAulaCalendarioEdicao = useSelector(
+    state => state.calendarioProfessor.eventoAulaCalendarioEdicao
   );
 
   useEffect(() => {
     const abrirMesEventoCalendarioEdicao = setTimeout(() => {
-      if (eventoCalendarioEdicao && eventoCalendarioEdicao.mes)
-        store.dispatch(selecionaMes(eventoCalendarioEdicao.mes));
+      if (eventoAulaCalendarioEdicao && eventoAulaCalendarioEdicao.mes)
+        store.dispatch(selecionaMes(eventoAulaCalendarioEdicao.mes));
     }, 1000);
     return () => clearTimeout(abrirMesEventoCalendarioEdicao);
-  }, [eventoCalendarioEdicao]);
+  }, [eventoAulaCalendarioEdicao]);
 
   useEffect(() => {
     if (mesesCalendario) {
