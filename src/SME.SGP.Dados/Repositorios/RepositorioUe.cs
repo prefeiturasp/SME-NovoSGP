@@ -62,19 +62,6 @@ namespace SME.SGP.Dados.Repositorios
             return resultado;
 
         }
-
-        public IEnumerable<Ue> ObterPorCodigos(string[] codigos)
-        {
-            List<Ue> resultado = new List<Ue>();
-
-            for (int i = 0; i < codigos.Length; i = i + 900)
-            {
-                var iteracao = codigos.Skip(i).Take(900);
-                resultado.AddRange(contexto.Conexao.Query<Ue>(QuerySincronizacao.Replace("#ids", string.Join(",", $"'{iteracao.Concat(new[] { "0" })}'"))));
-            }
-
-            return resultado;
-        }
     }
 
 }

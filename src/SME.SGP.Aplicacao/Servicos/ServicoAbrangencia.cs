@@ -103,17 +103,37 @@ namespace SME.SGP.Aplicacao.Servicos
 
             var novas = turmas.Where(x => !abrangenciaSintetica.Select(y => y.TurmaId).Contains(x.Id));
 
-            //repositorioAbrangencia.InserirAbrangencia(novas.Select(x=> new Abrangencia))
+            repositorioAbrangencia.InserirAbrangencias(novas.Select(x => new Abrangencia() { Perfil = perfil, TurmaId = x.Id }), login);
+
+            var paraExcluir = abrangenciaSintetica.Where(x => !turmas.Select(y => y.Id).Contains(x.TurmaId)).Select(x => x.Id);
+
+            repositorioAbrangencia.ExcluirAbrangencias(paraExcluir);
         }
 
         private void SincronizarAbrangenciPorDres(IEnumerable<AbrangenciaSinteticaDto> abrangenciaSintetica, IEnumerable<Dre> dres, string login, Guid perfil)
         {
             repositorioAbrangencia.RemoverAbrangenciasForaEscopo(login, perfil, TipoAbrangencia.PorDre);
+
+            var novas = dres.Where(x => !abrangenciaSintetica.Select(y => y.DreId).Contains(x.Id));
+
+            repositorioAbrangencia.InserirAbrangencias(novas.Select(x => new Abrangencia() { Perfil = perfil, DreId = x.Id }), login);
+
+            var paraExcluir = abrangenciaSintetica.Where(x => !dres.Select(y => y.Id).Contains(x.DreId)).Select(x => x.Id);
+
+            repositorioAbrangencia.ExcluirAbrangencias(paraExcluir);
         }
 
         private void SincronizarAbrangenciaPorUes(IEnumerable<AbrangenciaSinteticaDto> abrangenciaSintetica, IEnumerable<Ue> ues, string login, Guid perfil)
         {
             repositorioAbrangencia.RemoverAbrangenciasForaEscopo(login, perfil, TipoAbrangencia.PorUe);
+
+            var novas = ues.Where(x => !abrangenciaSintetica.Select(y => y.UeId).Contains(x.Id));
+
+            repositorioAbrangencia.InserirAbrangencias(novas.Select(x => new Abrangencia() { Perfil = perfil, UeId = x.Id }), login);
+
+            var paraExcluir = abrangenciaSintetica.Where(x => !ues.Select(y => y.Id).Contains(x.UeId)).Select(x => x.Id);
+
+            repositorioAbrangencia.ExcluirAbrangencias(paraExcluir);
         }
 
         private Task<AbrangenciaRetornoEolDto> ObterAbrangenciaEolSupervisor(string login)
