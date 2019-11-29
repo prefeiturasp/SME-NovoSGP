@@ -395,25 +395,37 @@ namespace SME.SGP.Dominio.Servicos
         {
             if (evento.TipoEvento.Codigo != (long)TipoEvento.LiberacaoExcepcional)
             {
-                if (!servicoDiaLetivo.ValidarSeEhDiaLetivo(evento.DataInicio, evento.DataFim, evento.TipoCalendarioId, evento.Letivo == EventoLetivo.Sim, evento.TipoEventoId))
-                {
-                    var temEventoDeLiberacaoExcepcional = await repositorioEvento.TemEventoNosDiasETipo(evento.DataInicio, evento.DataFim, TipoEvento.LiberacaoExcepcional,
+                var temEventoDeLiberacaoExcepcional = await repositorioEvento.TemEventoNosDiasETipo(evento.DataInicio, evento.DataFim, TipoEvento.LiberacaoExcepcional,
                         tipoCalendario.Id, evento.UeId, evento.DreId);
 
-                    if (temEventoDeLiberacaoExcepcional)
-                        return temEventoDeLiberacaoExcepcional;
-                    else
+                var eventosReposicaoNoRecesso = await repositorioEvento.EventosNosDiasETipo(evento.DataInicio.Date, evento.DataFim.Date, TipoEvento.ReposicaoNoRecesso, evento.TipoCalendarioId, string.Empty, string.Empty);
+                var temReposicaoNoRecesso = (eventosReposicaoNoRecesso != null && eventosReposicaoNoRecesso.Any(a => a.TipoPerfilCadastro == TipoPerfil.SME));
+
+                if (!servicoDiaLetivo.ValidarSeEhDiaLetivo(evento.DataInicio, evento.DataFim, evento.TipoCalendarioId, evento.Letivo == EventoLetivo.Sim, evento.TipoEventoId))
+                {
+                    if (!temEventoDeLiberacaoExcepcional)
                     {
-                        if (await repositorioEvento.TemEventoNosDiasETipo(evento.DataInicio.Date, evento.DataFim.Date, TipoEvento.Recesso, evento.TipoCalendarioId, string.Empty, string.Empty))
-                        {
-                            var eventosReposicaoNoRecesso = await repositorioEvento.EventosNosDiasETipo(evento.DataInicio.Date, evento.DataFim.Date, TipoEvento.ReposicaoNoRecesso, evento.TipoCalendarioId, string.Empty, string.Empty);
-                            if (eventosReposicaoNoRecesso != null && !eventosReposicaoNoRecesso.Any(a => a.TipoPerfilCadastro == TipoPerfil.SME))
-                                throw new NegocioException("Não é possível persistir esse evento pois a data informada está fora do período letivo.");
-                        }
+                        if (!temReposicaoNoRecesso)
+                            throw new NegocioException("Não é possível persistir esse evento pois a data informada está fora do período letivo.");
+
+                        if (evento.TipoEvento.Codigo == (int)TipoEvento.ReposicaoNoRecesso)
+                            return false;
                         else throw new NegocioException("Não é possível persistir esse evento pois a data informada está fora do período letivo.");
                     }
+                    else return true;
                 }
+
+                if (await repositorioEvento.TemEventoNosDiasETipo(evento.DataInicio.Date, evento.DataFim.Date, TipoEvento.Recesso, evento.TipoCalendarioId, string.Empty, string.Empty))
+                {
+                    if (temEventoDeLiberacaoExcepcional)
+                        return true;
+                    else throw new NegocioException("Não é possivel cadastrar este evento pois existe um recesso cadastrado para o mesmo.");
+                }
+
+                if (evento.TipoEvento.Codigo != (int)TipoEvento.ReposicaoNoRecesso && temReposicaoNoRecesso)
+                    throw new NegocioException("Não é possível cadastrar este evento pois o mesmo esta em um período com reposição no recesso.");
             }
+
             return false;
         }
 
