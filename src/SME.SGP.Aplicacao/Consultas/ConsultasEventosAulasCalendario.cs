@@ -28,7 +28,7 @@ namespace SME.SGP.Aplicacao
             this.servicoUsuario = servicoUsuario ?? throw new ArgumentException(nameof(servicoUsuario));
         }
 
-        public async Task<IEnumerable<EventosAulasTipoDiaDto>> ObterEventoAulasDia(FiltroEventosAulasCalendarioDiaDto filtro)
+        public async Task<DiaEventoAula> ObterEventoAulasDia(FiltroEventosAulasCalendarioDiaDto filtro)
         {
             List<EventosAulasTipoDiaDto> eventosAulas = new List<EventosAulasTipoDiaDto>();
 
@@ -70,7 +70,11 @@ namespace SME.SGP.Aplicacao
                 }
             }));
 
-            return eventosAulas;
+            return new DiaEventoAula
+            {
+                EventosAulas = eventosAulas,
+                Letivo = comandosDiasLetivos.VerificarSeDataLetiva(eventos, data)
+            };
         }
 
         public async Task<IEnumerable<EventosAulasCalendarioDto>> ObterEventosAulasMensais(FiltroEventosAulasCalendarioDto filtro)

@@ -114,6 +114,19 @@ namespace SME.SGP.Aplicacao
             return dias.Distinct().ToList();
         }
 
+        public bool VerificarSeDataLetiva(IEnumerable<Evento> eventos, DateTime data)
+        {
+            bool possuiEventoLetivo = eventos.Any(x => x.Letivo == EventoLetivo.Sim);
+            bool possuiEventoNaoLetivo = eventos.Any(x => x.Letivo == EventoLetivo.Nao);
+            bool ehDiaUtil = EhDiaUtil(data);
+
+            if (possuiEventoLetivo) return true;
+
+            if (ehDiaUtil && !possuiEventoNaoLetivo) return true;
+
+            return false;
+        }
+
         private List<DateTime> BuscarDiasLetivos(IEnumerable<PeriodoEscolar> periodoEscolar)
         {
             List<DateTime> dias = new List<DateTime>();
