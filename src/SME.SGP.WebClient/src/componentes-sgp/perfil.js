@@ -82,8 +82,8 @@ const Perfil = props => {
     justify-content: center !important;
     i {
       background: ${perfilStore.perfis.length > 1
-        ? Base.Roxo
-        : Base.CinzaDesabilitado} !important;
+      ? Base.Roxo
+      : Base.CinzaDesabilitado} !important;
     }
   `;
 
@@ -102,12 +102,13 @@ const Perfil = props => {
         api
           .put(`v1/autenticacao/perfis/${perfilNovo[0].codigoPerfil}`)
           .then(resp => {
-            const { token, ehProfessor } = resp.data;
+            const { token, ehProfessor, ehProfessorCj } = resp.data;
             store.dispatch(
               salvarDadosLogin({
                 token,
                 rf: usuarioStore.rf,
                 ehProfessor,
+                ehProfessorCj
               })
             );
             setMenusPermissoes();
@@ -186,7 +187,7 @@ const Perfil = props => {
                     width: '100%',
                     fontWeight:
                       item.codigoPerfil ===
-                      perfilStore.perfilSelecionado.codigoPerfil
+                        perfilStore.perfilSelecionado.codigoPerfil
                         ? 'bold'
                         : 'initial',
                   }}
