@@ -16,17 +16,6 @@ namespace SME.SGP.Dados.Repositorios
         {
         }
 
-        public IEnumerable<Aula> ObterAulasPorTurmaEAnoLetivo(string turmaId, string anoLetivo)
-        {
-            var query = "select * from aula where turma_id= @turmaId and date_part('year',data_aula) = @anoLetivo and not excluido";
-
-            return database.Conexao.Query<Aula>(query, new
-            {
-                turmaId,
-                anoLetivo
-            });
-        }
-
         public async Task<AulaConsultaDto> ObterAulaDataTurmaDisciplina(DateTime data, string turmaId, string disciplinaId)
         {
             var query = @"select *
@@ -74,6 +63,17 @@ namespace SME.SGP.Dados.Repositorios
             MontaGroupBy(query);
             var sql = query.ToString();
             return (await database.Conexao.QueryAsync<AulaCompletaDto>(query.ToString(), new { tipoCalendarioId, turmaId, ueId, data, perfil, rf }));
+        }
+
+        public IEnumerable<Aula> ObterAulasPorTurmaEAnoLetivo(string turmaId, string anoLetivo)
+        {
+            var query = "select * from aula where turma_id= @turmaId and date_part('year',data_aula) = @anoLetivo and not excluido";
+
+            return database.Conexao.Query<Aula>(query, new
+            {
+                turmaId,
+                anoLetivo
+            });
         }
 
         public async Task<IEnumerable<AulasPorTurmaDisciplinaDto>> ObterAulasTurmaDisciplinaSemana(string turma, string disciplina, string semana)
