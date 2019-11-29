@@ -308,10 +308,10 @@ namespace SME.SGP.Aplicacao.Integracoes
             var resposta = await httpClient.GetAsync($"professores/{codigoRF}/BuscarPorRf/{anoLetivo}");
 
             if (!resposta.IsSuccessStatusCode)
-                return null;
+                throw new NegocioException("Ocorreu uma falha ao consultar o professor");
 
             if (resposta.StatusCode == HttpStatusCode.NoContent)
-                return null;
+                throw new NegocioException($"Não foi encontrado professor com RF {codigoRF}");
 
             var json = await resposta.Content.ReadAsStringAsync();
 
