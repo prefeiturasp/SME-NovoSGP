@@ -154,19 +154,20 @@ namespace SME.SGP.Aplicacao
         {
             var turmasAtribuidasAoProfessor = consultasProfessor.Listar(migrarPlanoAulaDto.RFProfessor);
             var idsTurmasProfessor = turmasAtribuidasAoProfessor?.Select(c => c.CodTurma).ToList();
+            var idsTurmasSelecionadas = migrarPlanoAulaDto.IdsPlanoTurmasDestino.Select(x => x.TurmaId).ToList();
 
             if (migrarPlanoAulaDto.EhProfessorCJ)
             {
                 //regras prof cj
             }
-            else if (idsTurmasProfessor == null || migrarPlanoAulaDto.IdsPlanoTurmasDestino.Select(x => x.TurmaId).Any(c => !idsTurmasProfessor.Contains(Convert.ToInt32(c))))
+            else if (idsTurmasProfessor == null || idsTurmasSelecionadas.Any(c => !idsTurmasProfessor.Contains(Convert.ToInt32(c))))
             {
                 throw new NegocioException("Somente é possível migrar o plano de aula para turmas atribuidas ao professor");
             }
 
             if (!migrarPlanoAulaDto.EhProfessorCJ || migrarPlanoAulaDto.MigrarObjetivos)
             {
-                var turmasAtribuidasSelecionadas = turmasAtribuidasAoProfessor.Where(t => idsTurmasProfessor.Contains(t.CodTurma));
+                var turmasAtribuidasSelecionadas = turmasAtribuidasAoProfessor.Where(t => idsTurmasSelecionadas.Contains(t.CodTurma.ToString()));
                 var anoTurma = turmasAtribuidasSelecionadas.First().Ano;
 
                 if (!turmasAtribuidasSelecionadas.All(x => x.Ano == anoTurma))
