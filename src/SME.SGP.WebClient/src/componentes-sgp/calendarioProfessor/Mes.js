@@ -38,44 +38,49 @@ Seta.defaultProps = {
 
 const Mes = props => {
   const { numeroMes, filtros } = props;
+  const {
+    tipoCalendarioSelecionado = '',
+    eventoSme = true,
+    dreSelecionada = '',
+    unidadeEscolarSelecionada = '',
+    turmaSelecionada = '',
+    todasTurmas,
+  } = filtros;
   const [mesSelecionado, setMesSelecionado] = useState({});
 
   useEffect(() => {
     let estado = true;
     if (estado) {
-      if (filtros && Object.entries(filtros).length > 0) {
-        const {
-          tipoCalendarioSelecionado = '',
-          eventoSme = true,
-          dreSelecionada = '',
-          unidadeEscolarSelecionada = '',
-          turmaSelecionada = '',
-        } = filtros;
-        if (tipoCalendarioSelecionado) {
-          api
-            .post('v1/calendarios/meses/eventos-aulas', {
-              tipoCalendarioId: tipoCalendarioSelecionado,
-              EhEventoSME: eventoSme,
-              dreId: dreSelecionada,
-              ueId: unidadeEscolarSelecionada,
-              turmaId: turmaSelecionada,
-            })
-            .then(resposta => {
-              if (resposta.data) {
-                resposta.data.forEach(item => {
-                  if (item && item.mes > 0) {
-                    store.dispatch(
-                      atribuiEventosMes(item.mes, item.eventosAulas)
-                    );
-                  }
-                });
-              } else store.dispatch(atribuiEventosMes(numeroMes, 0));
-            })
-            .catch(() => {
-              store.dispatch(atribuiEventosMes(numeroMes, 0));
-            });
-        } else store.dispatch(atribuiEventosMes(numeroMes, 0));
-      }
+      if (
+        tipoCalendarioSelecionado &&
+        dreSelecionada &&
+        unidadeEscolarSelecionada &&
+        (turmaSelecionada || todasTurmas)
+      ) {
+        api
+          .post('v1/calendarios/meses/eventos-aulas', {
+            tipoCalendarioId: tipoCalendarioSelecionado,
+            EhEventoSME: eventoSme,
+            dreId: dreSelecionada,
+            ueId: unidadeEscolarSelecionada,
+            turmaId: turmaSelecionada,
+            todasTurmas,
+          })
+          .then(resposta => {
+            if (resposta.data) {
+              resposta.data.forEach(item => {
+                if (item && item.mes > 0) {
+                  store.dispatch(
+                    atribuiEventosMes(item.mes, item.eventosAulas)
+                  );
+                }
+              });
+            } else store.dispatch(atribuiEventosMes(numeroMes, 0));
+          })
+          .catch(() => {
+            store.dispatch(atribuiEventosMes(numeroMes, 0));
+          });
+      } else store.dispatch(atribuiEventosMes(numeroMes, 0));
     }
     return () => {
       estado = false;
@@ -102,10 +107,7 @@ const Mes = props => {
   }, [meses]);
 
   const abrirMes = () => {
-    if (filtros && Object.entries(filtros).length > 0) {
-      const { tipoCalendarioSelecionado = '' } = filtros;
-      if (tipoCalendarioSelecionado) store.dispatch(selecionaMes(numeroMes));
-    }
+    if (tipoCalendarioSelecionado) store.dispatch(selecionaMes(numeroMes));
   };
 
   useEffect(() => {
