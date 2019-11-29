@@ -175,7 +175,7 @@ const DiaCompleto = props => {
         eventosDia.eventosAulas &&
         eventosDia.eventosAulas.length > 0 ? (
           <Div className="list-group list-group-flush fade show">
-            {eventosDia.map(evento => {
+            {eventosDia.eventosAulas.map(evento => {
               return (
                 <Evento
                   key={shortid.generate()}
