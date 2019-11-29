@@ -119,6 +119,9 @@ namespace SME.SGP.IoC
             services.TryAddTransient<IRepositorioFrequencia, RepositorioFrequencia>();
             services.TryAddTransient<IRepositorioRegistroAusenciaAluno, RepositorioRegistroAusenciaAluno>();
             services.TryAddTransient<IRepositorioAtribuicaoEsporadica, RepositorioAtribuicaoEsporadica>();
+            services.TryAddTransient<IRepositorioDre, RepositorioDre>();
+            services.TryAddTransient<IRepositorioUe, RepositorioUe>();
+            services.TryAddTransient<IRepositorioTurma, RepositorioTurma>();
         }
 
         private static void RegistrarServicos(IServiceCollection services)

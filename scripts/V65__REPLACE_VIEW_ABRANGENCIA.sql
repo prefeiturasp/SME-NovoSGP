@@ -19,35 +19,12 @@ select
     coalesce(turma.turma_codigo, ue.turma_codigo, dre.turma_codigo) AS turma_id
 from
 	abrangencia a
-left join public.abrangencia_cadeia_dres dre on
+left join public.v_abrangencia_cadeia_dres dre on
 	dre.dre_id = a.dre_id
-left join public.abrangencia_cadeia_ues ue on
+left join public.v_abrangencia_cadeia_ues ue on
 	ue.ue_id = a.ue_id
-left join public.abrangencia_cadeia_turmas turma on
+left join public.v_abrangencia_cadeia_turmas turma on
 	turma.turma_id = a.turma_id;
-create or replace view public.v_abrangencia_magra
-as
-select
-	a.id,
-	a.usuario_id,
-	u.login,
-	a.dre_id,
-	dre.dre_id as codigo_dre,
-	a.ue_id,
-	ue.ue_id codigo_ue,
-	a.turma_id,
-	turma.turma_id codigo_turma,
-	a.perfil
-from
-	abrangencia a
-inner join usuario u on
-	u.id = a.usuario_id
-inner join dre dre on
-	dre.id = a.dre_id
-inner join ue ue on
-	ue.id = a.ue_id
-inner join turma turma on
-	turma.id = a.turma_id;
 create or replace view public.v_abrangencia_magra
 as
 select
