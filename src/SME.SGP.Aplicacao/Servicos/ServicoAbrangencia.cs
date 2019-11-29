@@ -180,7 +180,6 @@ namespace SME.SGP.Aplicacao.Servicos
         private async Task TrataAbrangenciaLogin(string login, Guid perfil)
         {
             unitOfWork.IniciarTransacao();
-            await repositorioAbrangencia.RemoverAbrangencias(login);
             await BuscaAbrangenciaEPersiste(login, perfil);
             unitOfWork.PersistirTransacao();
         }

@@ -29,13 +29,6 @@ namespace SME.SGP.Dominio.Interfaces
 
         Task<IEnumerable<AbrangenciaUeRetorno>> ObterUes(string codigoDre, string login, Guid perfil, Modalidade? modalidade = null, int periodo = 0);
 
-        Task RemoverAbrangencias(string login);
-
-        Task<long> SalvarDre(AbrangenciaDreRetornoEolDto abrangenciaDre, string login, Guid perfil);
-
-        Task<long> SalvarTurma(AbrangenciaTurmaRetornoEolDto abrangenciaTurma, long idAbragenciaUe);
-
-        Task<long> SalvarUe(AbrangenciaUeRetornoEolDto abrangenciaUe, long idAbragenciaDre);
         Task<IEnumerable<AbrangenciaSinteticaDto>> ObterAbrangenciaSintetica(string login, Guid perfil);
         void RemoverAbrangenciasForaEscopo(string login, Guid perfil, TipoAbrangencia porTurma);
         void InserirAbrangencias(IEnumerable<Abrangencia> enumerable, string login);
