@@ -13,7 +13,9 @@ namespace SME.SGP.Dominio.Servicos
 {
     public class ServicoAula : IServicoAula
     {
-
+        private readonly IComandosWorkflowAprovacao comandosWorkflowAprovacao;
+        private readonly IConfiguration configuration;
+        private readonly IConsultasAbrangencia consultasAbrangencia;
         private readonly IConsultasGrade consultasGrade;
         private readonly IRepositorioAbrangencia repositorioAbrangencia;
         private readonly IRepositorioAula repositorioAula;
@@ -22,13 +24,8 @@ namespace SME.SGP.Dominio.Servicos
         private readonly IServicoDiaLetivo servicoDiaLetivo;
         private readonly IServicoEOL servicoEOL;
         private readonly IServicoLog servicoLog;
-        private readonly IServicoUsuario servicoUsuario;
-        private readonly IConsultasAbrangencia consultasAbrangencia;
-        private readonly IComandosWorkflowAprovacao comandosWorkflowAprovacao;
-        private readonly IConfiguration configuration;
         private readonly IServicoNotificacao servicoNotificacao;
-
-
+        private readonly IServicoUsuario servicoUsuario;
 
         public ServicoAula(IRepositorioAula repositorioAula,
                            IServicoEOL servicoEOL,
@@ -70,7 +67,7 @@ namespace SME.SGP.Dominio.Servicos
 
             var usuarioPodeCriarAulaNaTurmaUeEModalidade = repositorioAula.UsuarioPodeCriarAulaNaUeTurmaEModalidade(aula, tipoCalendario.Modalidade);
 
-            if (!disciplinasProfessor.Any(c => c.CodigoComponenteCurricular.ToString() == aula.DisciplinaId) || !usuarioPodeCriarAulaNaTurmaUeEModalidade)
+            if (disciplinasProfessor == null || !disciplinasProfessor.Any(c => c.CodigoComponenteCurricular.ToString() == aula.DisciplinaId) || !usuarioPodeCriarAulaNaTurmaUeEModalidade)
             {
                 throw new NegocioException("Você não pode criar aulas para essa UE/Turma/Disciplina.");
             }
@@ -99,7 +96,6 @@ namespace SME.SGP.Dominio.Servicos
                     return "Aula cadastrada com sucesso e enviada para aprovação.";
                 }
             }
-
             else
             {
                 var semana = (aula.DataAula.DayOfYear / 7) + 1;
@@ -119,28 +115,12 @@ namespace SME.SGP.Dominio.Servicos
             return "Aula cadastrada com sucesso.";
         }
 
-        private async Task<string> RetornaNomeDaDisciplina(Aula aula, Usuario usuario)
-        {
-            var disciplinasEol = await servicoEOL.ObterDisciplinasPorCodigoTurmaLoginEPerfil(aula.TurmaId, usuario.Login, usuario.PerfilAtual);
-
-            if (disciplinasEol is null && !disciplinasEol.Any())
-                throw new NegocioException($"Não foi possível localizar as disciplinas da turma {aula.TurmaId}");
-
-            var disciplina = disciplinasEol.FirstOrDefault(a => a.CodigoComponenteCurricular == int.Parse(aula.DisciplinaId));
-
-            if (disciplina == null)
-                throw new NegocioException($"Não foi possível localizar a disciplina de Id {aula.DisciplinaId}.");
-
-            return disciplina.Nome;
-        }
-
         private static bool ReposicaoDeAulaPrecisaDeAprovacao(int quantidadeAulasExistentesNoDia, Dto.AbrangenciaFiltroRetorno abrangencia)
         {
-
-            return ((abrangencia.Modalidade == Modalidade.Fundamental && abrangencia.Ano >= 1 && abrangencia.Ano <= 5) ||  //Valida se é Fund 1 
+            return ((abrangencia.Modalidade == Modalidade.Fundamental && abrangencia.Ano >= 1 && abrangencia.Ano <= 5) ||  //Valida se é Fund 1
                                (Modalidade.EJA == abrangencia.Modalidade && (abrangencia.Ano == 1 || abrangencia.Ano == 2)) // Valida se é Eja Alfabetizacao ou  Basica
                                && quantidadeAulasExistentesNoDia > 1) || ((abrangencia.Modalidade == Modalidade.Fundamental && abrangencia.Ano >= 6 && abrangencia.Ano <= 9) || //valida se é fund 2
-                                     (Modalidade.EJA == abrangencia.Modalidade && abrangencia.Ano == 3 || abrangencia.Ano == 4) ||  // Valida se é Eja Complementar ou Final 
+                                     (Modalidade.EJA == abrangencia.Modalidade && abrangencia.Ano == 3 || abrangencia.Ano == 4) ||  // Valida se é Eja Complementar ou Final
                                      (abrangencia.Modalidade == Modalidade.Medio) && quantidadeAulasExistentesNoDia > 2);
         }
 
@@ -267,9 +247,7 @@ namespace SME.SGP.Dominio.Servicos
         private void PersistirWorkflowReposicaoAula(Aula aula, string nomeDre, string nomeEscola, string nomeDisciplina,
                                                           string nomeTurma, string dreId)
         {
-
             var linkParaReposicaoAula = $"{configuration["UrlFrontEnd"]}calendario-escolar/calendario-professor/cadastro-aula/editar/:{aula.Id}/";
-
 
             var wfAprovacaoAula = new WorkflowAprovacaoDto()
             {
@@ -300,6 +278,21 @@ namespace SME.SGP.Dominio.Servicos
             aula.EnviarParaWorkflowDeAprovacao(idWorkflow);
 
             repositorioAula.Salvar(aula);
+        }
+
+        private async Task<string> RetornaNomeDaDisciplina(Aula aula, Usuario usuario)
+        {
+            var disciplinasEol = await servicoEOL.ObterDisciplinasPorCodigoTurmaLoginEPerfil(aula.TurmaId, usuario.Login, usuario.PerfilAtual);
+
+            if (disciplinasEol is null && !disciplinasEol.Any())
+                throw new NegocioException($"Não foi possível localizar as disciplinas da turma {aula.TurmaId}");
+
+            var disciplina = disciplinasEol.FirstOrDefault(a => a.CodigoComponenteCurricular == int.Parse(aula.DisciplinaId));
+
+            if (disciplina == null)
+                throw new NegocioException($"Não foi possível localizar a disciplina de Id {aula.DisciplinaId}.");
+
+            return disciplina.Nome;
         }
     }
 }
