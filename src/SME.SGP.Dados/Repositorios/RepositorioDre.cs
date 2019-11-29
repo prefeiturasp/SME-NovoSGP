@@ -55,11 +55,6 @@ namespace SME.SGP.Dados.Repositorios
             return resultado;
 
         }
-
-        public IEnumerable<Dre> ObterPorCodigos(string[] codigos)
-        {
-            return contexto.Conexao.Query<Dre>(QuerySincronizacao.Replace("#ids", string.Join(",", $"'{codigos.Concat(new[] { "0" })}'")));
-        }
     }
 
 }

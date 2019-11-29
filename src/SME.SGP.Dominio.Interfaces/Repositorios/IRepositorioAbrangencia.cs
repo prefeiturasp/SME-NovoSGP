@@ -1,4 +1,5 @@
-﻿using SME.SGP.Dominio.Enumerados;
+﻿using SME.SGP.Dominio.Entidades;
+using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Dto;
 using System;
 using System.Collections.Generic;
@@ -37,5 +38,7 @@ namespace SME.SGP.Dominio.Interfaces
         Task<long> SalvarUe(AbrangenciaUeRetornoEolDto abrangenciaUe, long idAbragenciaDre);
         Task<IEnumerable<AbrangenciaSinteticaDto>> ObterAbrangenciaSintetica(string login, Guid perfil);
         void RemoverAbrangenciasForaEscopo(string login, Guid perfil, TipoAbrangencia porTurma);
+        void InserirAbrangencias(IEnumerable<Abrangencia> enumerable, string login);
+        void ExcluirAbrangencias(IEnumerable<long> ids);
     }
 }

@@ -1,6 +1,7 @@
 ﻿using Dapper;
 using SME.SGP.Dados.Contexto;
 using SME.SGP.Dominio;
+using SME.SGP.Dominio.Entidades;
 using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Dto;
@@ -19,6 +20,38 @@ namespace SME.SGP.Dados.Repositorios
         public RepositorioAbrangencia(ISgpContext database)
         {
             this.database = database;
+        }
+
+        public void ExcluirAbrangencias(IEnumerable<long> ids)
+        {
+            const string comando = @"delete from public.abrangencia where id in (#ids)";
+
+            for (int i = 0; i < ids.Count(); i = i + 900)
+            {
+                var iteracao = ids.Skip(i).Take(900);
+
+                database.Conexao.Execute(comando.Replace("#ids", string.Join(",", iteracao.Concat(new long[] { 0 }))));
+            }
+        }
+
+        public void InserirAbrangencias(IEnumerable<Abrangencia> abrangencias, string login)
+        {
+            foreach (var item in abrangencias)
+            {
+                const string comando = @"insert into public.abrangencia (usuario_id, dre_id, ue_id, turma_id, perfil)
+                                        values ((select id from usuario where login = @login), @dreId, @ueId, @turmaId, @perfil)
+                                        RETURNING id";
+
+                database.Conexao.Execute(comando,
+                    new
+                    {
+                        login = login,
+                        dreId = item.DreId,
+                        ueId = item.UeId,
+                        turmaId = item.TurmaId,
+                        perfil = item.Perfil
+                    });
+            }
         }
 
         public async Task<bool> JaExisteAbrangencia(string login, Guid perfil)
