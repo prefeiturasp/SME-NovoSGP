@@ -23,7 +23,7 @@ namespace SME.SGP.Api.Controllers
         }
 
         [HttpPost]
-        [ProducesResponseType(typeof(EventosAulasTipoDiaDto), 200)]
+        [ProducesResponseType(typeof(DiaEventoAula), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [Route("meses/dias/eventos-aulas")]
         [Permissao(Permissao.CP_C, Policy = "Bearer")]
@@ -31,7 +31,7 @@ namespace SME.SGP.Api.Controllers
         {
             var retorno = await consultasEventosAulasCalendario.ObterEventoAulasDia(filtro);
 
-            if (!retorno.Any())
+            if (retorno.EventosAulas.Any())
                 return StatusCode(204);
 
             return Ok(retorno);
