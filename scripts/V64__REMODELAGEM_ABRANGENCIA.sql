@@ -76,7 +76,7 @@ ALTER TABLE public.abrangencia ADD CONSTRAINT abrangencia_dre_usario_fk FOREIGN 
 -- views de apoio
 
 
-create or replace view public.abrangencia_cadeia_turmas
+create or replace view public.v_abrangencia_cadeia_turmas
 as SELECT 
 	ab_dres.id dre_id,
 	ab_dres.dre_id AS dre_codigo,
@@ -98,8 +98,8 @@ as SELECT
      JOIN ue ab_ues ON ab_ues.dre_id = ab_dres.id
      JOIN turma ab_turma ON ab_turma.ue_id = ab_ues.id;
 
-create or replace view public.abrangencia_cadeia_ues
-as SELECT * from public.abrangencia_cadeia_turmas
+create or replace view public.v_abrangencia_cadeia_ues
+as SELECT * from public.v_abrangencia_cadeia_turmas
      union all 
 SELECT 
 	ab_dres.id dre_id,
@@ -121,8 +121,8 @@ SELECT
    FROM dre ab_dres
      JOIN ue ab_ues ON ab_ues.dre_id = ab_dres.id    ;
     
-create or replace view public.abrangencia_cadeia_dres
-as SELECT * from public.abrangencia_cadeia_turmas
+create or replace view public.v_abrangencia_cadeia_dres
+as SELECT * from public.v_abrangencia_cadeia_turmas
      union all 
 SELECT 
 	ab_dres.id dre_id,
