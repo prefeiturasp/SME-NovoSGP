@@ -10,6 +10,7 @@ namespace SME.SGP.Infra
         public int Id { get; set; }
         public int Quantidade { get; set; }
         public RecorrenciaAula RecorrenciaAula { get; set; }
+        public WorkflowAprovacaoNivelStatus Status { get; set; }
         public TipoAula TipoAula { get; set; }
         public long TipoCalendarioId { get; set; }
         public string TurmaId { get; set; }
