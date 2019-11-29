@@ -1,6 +1,6 @@
 import { Switch } from 'antd';
 import React, { useEffect, useRef, useState } from 'react';
-import { Colors } from '~/componentes';
+import { Colors, Auditoria } from '~/componentes';
 import Button from '~/componentes/button';
 import CardCollapse from '~/componentes/cardCollapse';
 import Grid from '~/componentes/grid';
@@ -10,8 +10,8 @@ import api from '~/servicos/api';
 import { useSelector } from 'react-redux';
 
 const PlanoAula = (props) => {
-  const { planoAula, listaMaterias, disciplinaIdSelecionada, dataAula, ehProfessorCj,
-    ehEja, setModoEdicao, permissoesTela, somenteConsulta, ehMedio, temObjetivos, setTemObjetivos } = props;
+  const { planoAula, listaMaterias, disciplinaIdSelecionada, dataAula, ehProfessorCj, ehEja,
+    setModoEdicao, permissoesTela, somenteConsulta, ehMedio, temObjetivos, setTemObjetivos, auditoria } = props;
 
   const [desabilitarCampos, setDesabilitarCampos] = useState(false);
   const usuario = useSelector(store => store.usuario);
@@ -378,6 +378,17 @@ const PlanoAula = (props) => {
             </form>
           </fieldset>
         </CardCollapse>
+        {planoAula.id > 0 && auditoria ? (
+          <Auditoria
+            className="mt-2"
+            criadoEm={auditoria.criadoEm}
+            criadoPor={auditoria.criadoPor}
+            alteradoPor={auditoria.alteradoPor}
+            alteradoEm={auditoria.alteradoEm}
+          />
+        ) : (
+            ''
+          )}
       </CardCollapse>
     </Corpo>
   )
