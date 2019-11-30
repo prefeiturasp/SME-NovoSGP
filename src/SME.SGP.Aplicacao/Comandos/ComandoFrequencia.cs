@@ -1,4 +1,4 @@
-﻿using SME.SGP.Aplicacao.Interfaces;
+﻿using SME.Background.Core;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
@@ -21,6 +21,9 @@ namespace SME.SGP.Aplicacao
         {
             List<RegistroAusenciaAluno> registrosAusenciaAlunos = ObtemListaDeAusencias(frequenciaDto);
             await servicoFrequencia.Registrar(frequenciaDto.AulaId, registrosAusenciaAlunos);
+
+            var alunos = frequenciaDto.ListaFrequencia.Select(a => a.CodigoAluno).ToList();
+            Cliente.Executar<IServicoCalculoFrequencia>(c => c.CalcularFrequenciaPorTurma(alunos, frequenciaDto.AulaId));
         }
 
         private static List<RegistroAusenciaAluno> ObtemListaDeAusencias(FrequenciaDto frequenciaDto)
