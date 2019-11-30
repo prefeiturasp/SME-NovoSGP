@@ -1,5 +1,6 @@
 ﻿using SME.SGP.Aplicacao.Integracoes;
 using SME.SGP.Dominio;
+using SME.SGP.Dominio.Entidades;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System;
@@ -12,16 +13,19 @@ namespace SME.SGP.Aplicacao
     public class ConsultasFrequencia : IConsultasFrequencia
     {
         private readonly IRepositorioAula repositorioAula;
+        private readonly IRepositorioTurma repositorioTurma;
         private readonly IServicoEOL servicoEOL;
         private readonly IServicoFrequencia servicoFrequencia;
 
         public ConsultasFrequencia(IServicoFrequencia servicoFrequencia,
                                    IServicoEOL servicoEOL,
-                                   IRepositorioAula repositorioAula)
+                                   IRepositorioAula repositorioAula,
+                                   IRepositorioTurma repositorioTurma)
         {
             this.servicoFrequencia = servicoFrequencia ?? throw new ArgumentNullException(nameof(servicoFrequencia));
             this.servicoEOL = servicoEOL ?? throw new ArgumentNullException(nameof(servicoEOL));
             this.repositorioAula = repositorioAula ?? throw new ArgumentNullException(nameof(repositorioAula));
+            this.repositorioTurma = repositorioTurma ?? throw new ArgumentNullException(nameof(repositorioTurma));
         }
 
         public async Task<IEnumerable<DisciplinaDto>> ObterDisciplinasLecionadasPeloProfessorPorTurma(string turmaId)
@@ -40,13 +44,17 @@ namespace SME.SGP.Aplicacao
             {
                 throw new NegocioException("Não foram encontrados alunos para a aula/turma informada.");
             }
-            FrequenciaDto registroFrequenciaDto = ObterRegistroFrequencia(aulaId, aula);
+            var turma = repositorioTurma.ObterPorId(aula.TurmaId);
+            if (turma == null)
+                throw new NegocioException("Não foi encontrada uma turma com o id informado. Verifique se você possui abrangência para essa turma.");
+            FrequenciaDto registroFrequenciaDto = ObterRegistroFrequencia(aulaId, aula, turma);
 
             var ausencias = servicoFrequencia.ObterListaAusenciasPorAula(aulaId);
             if (ausencias == null)
             {
                 ausencias = new List<RegistroAusenciaAluno>();
             }
+
             foreach (var aluno in alunosDaTurma)
             {
                 var registroFrequenciaAluno = new RegistroFrequenciaAlunoDto
@@ -59,15 +67,18 @@ namespace SME.SGP.Aplicacao
                     Desabilitado = aluno.EstaInativo()
                 };
 
-                var ausenciasAluno = ausencias.Where(c => c.CodigoAluno == aluno.CodigoAluno);
-
-                for (int numeroAula = 1; numeroAula <= aula.Quantidade; numeroAula++)
+                if (aula.PermiteRegistroFrequencia(turma))
                 {
-                    registroFrequenciaAluno.Aulas.Add(new FrequenciaAulaDto
+                    var ausenciasAluno = ausencias.Where(c => c.CodigoAluno == aluno.CodigoAluno);
+
+                    for (int numeroAula = 1; numeroAula <= aula.Quantidade; numeroAula++)
                     {
-                        NumeroAula = numeroAula,
-                        Compareceu = !ausenciasAluno.Any(c => c.NumeroAula == numeroAula)
-                    });
+                        registroFrequenciaAluno.Aulas.Add(new FrequenciaAulaDto
+                        {
+                            NumeroAula = numeroAula,
+                            Compareceu = !ausenciasAluno.Any(c => c.NumeroAula == numeroAula)
+                        });
+                    }
                 }
                 registroFrequenciaDto.ListaFrequencia.Add(registroFrequenciaAluno);
             }
@@ -75,7 +86,7 @@ namespace SME.SGP.Aplicacao
             return registroFrequenciaDto;
         }
 
-        private FrequenciaDto ObterRegistroFrequencia(long aulaId, Aula aula)
+        private FrequenciaDto ObterRegistroFrequencia(long aulaId, Aula aula, Turma turma)
         {
             var registroFrequencia = servicoFrequencia.ObterRegistroFrequenciaPorAulaId(aulaId);
             if (registroFrequencia == null)
@@ -90,7 +101,8 @@ namespace SME.SGP.Aplicacao
                 CriadoEm = registroFrequencia.CriadoEm,
                 CriadoPor = registroFrequencia.CriadoPor,
                 CriadoRF = registroFrequencia.CriadoRF,
-                Id = registroFrequencia.Id
+                Id = registroFrequencia.Id,
+                Desabilitado = !aula.PermiteRegistroFrequencia(turma)
             };
             return registroFrequenciaDto;
         }
