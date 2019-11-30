@@ -36,7 +36,7 @@ namespace SME.SGP.Aplicacao.Teste.Consultas
             repositorioParametrosSistema = new Mock<IRepositorioParametrosSistema>();
             repositorioTipoCalendatio = new Mock<IRepositorioTipoCalendario>();
 
-            consultasEventosAulasCalendario = new ConsultasEventosAulasCalendario(repositorioEvento.Object, comandosDiasLetivosMock.Object, repositorioAula.Object, servicoUsuario.Object);
+            //consultasEventosAulasCalendario = new ConsultasEventosAulasCalendario(repositorioEvento.Object, comandosDiasLetivosMock.Object, repositorioAula.Object, servicoUsuario.Object);
             comandosDiasLetivos = new ComandosDiasLetivos(repositorioPeriodoEscolar.Object, repositorioEvento.Object, repositorioTipoCalendatio.Object, repositorioParametrosSistema.Object);
         }
 
