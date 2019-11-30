@@ -5,7 +5,6 @@ using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Dto;
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -17,11 +16,11 @@ namespace SME.SGP.Aplicacao.Servicos
         private const string PERFIL_SUPERVISOR = "4EE1E074-37D6-E911-ABD6-F81654FE895D";
         private readonly IConsultasSupervisor consultasSupervisor;
         private readonly IRepositorioAbrangencia repositorioAbrangencia;
+        private readonly IRepositorioDre repositorioDre;
+        private readonly IRepositorioTurma repositorioTurma;
+        private readonly IRepositorioUe repositorioUe;
         private readonly IServicoEOL servicoEOL;
         private readonly IUnitOfWork unitOfWork;
-        private readonly IRepositorioDre repositorioDre;
-        private readonly IRepositorioUe repositorioUe;
-        private readonly IRepositorioTurma repositorioTurma;
 
         public ServicoAbrangencia(IRepositorioAbrangencia repositorioAbrangencia, IUnitOfWork unitOfWork, IServicoEOL servicoEOL, IConsultasSupervisor consultasSupervisor, IRepositorioDre repositorioDre, IRepositorioUe repositorioUe, IRepositorioTurma repositorioTurma)
         {
@@ -71,6 +70,35 @@ namespace SME.SGP.Aplicacao.Servicos
             SincronizarAbrangencia(abrangenciaSintetica, abrangenciaEol.Abrangencia.Abrangencia, ehSupervisor, dres, ues, turmas, login, perfil);
         }
 
+        private Task<AbrangenciaRetornoEolDto> ObterAbrangenciaEolSupervisor(string login)
+        {
+            Task<AbrangenciaRetornoEolDto> consultaEol;
+            var listaEscolasDresSupervior = consultasSupervisor.ObterPorDreESupervisor(login, string.Empty);
+
+            if (!listaEscolasDresSupervior.Any())
+                throw new NegocioException($"Não foi possível obter as escolas atribuidas ao supervisor {login}.");
+
+            var escolas = from a in listaEscolasDresSupervior
+                          from b in a.Escolas
+                          select b.Codigo;
+
+            consultaEol = servicoEOL.ObterAbrangenciaParaSupervisor(escolas.ToArray());
+            return consultaEol;
+        }
+
+        private void SincronizarAbragenciaPorTurmas(IEnumerable<AbrangenciaSinteticaDto> abrangenciaSintetica, IEnumerable<Turma> turmas, string login, Guid perfil)
+        {
+            repositorioAbrangencia.RemoverAbrangenciasForaEscopo(login, perfil, TipoAbrangencia.PorTurma);
+
+            var novas = turmas.Where(x => !abrangenciaSintetica.Select(y => y.TurmaId).Contains(x.Id));
+
+            repositorioAbrangencia.InserirAbrangencias(novas.Select(x => new Abrangencia() { Perfil = perfil, TurmaId = x.Id }), login);
+
+            var paraExcluir = abrangenciaSintetica.Where(x => !turmas.Select(y => y.Id).Contains(x.TurmaId)).Select(x => x.Id);
+
+            repositorioAbrangencia.ExcluirAbrangencias(paraExcluir);
+        }
+
         private void SincronizarAbrangencia(IEnumerable<AbrangenciaSinteticaDto> abrangenciaSintetica, Infra.Enumerados.Abrangencia abrangencia, bool ehSupervisor, IEnumerable<Dre> dres, IEnumerable<Ue> ues, IEnumerable<Turma> turmas, string login, Guid perfil)
         {
             if (ehSupervisor)
@@ -97,15 +125,15 @@ namespace SME.SGP.Aplicacao.Servicos
             }
         }
 
-        private void SincronizarAbragenciaPorTurmas(IEnumerable<AbrangenciaSinteticaDto> abrangenciaSintetica, IEnumerable<Turma> turmas, string login, Guid perfil)
+        private void SincronizarAbrangenciaPorUes(IEnumerable<AbrangenciaSinteticaDto> abrangenciaSintetica, IEnumerable<Ue> ues, string login, Guid perfil)
         {
-            repositorioAbrangencia.RemoverAbrangenciasForaEscopo(login, perfil, TipoAbrangencia.PorTurma);
+            repositorioAbrangencia.RemoverAbrangenciasForaEscopo(login, perfil, TipoAbrangencia.PorUe);
 
-            var novas = turmas.Where(x => !abrangenciaSintetica.Select(y => y.TurmaId).Contains(x.Id));
+            var novas = ues.Where(x => !abrangenciaSintetica.Select(y => y.UeId).Contains(x.Id));
 
-            repositorioAbrangencia.InserirAbrangencias(novas.Select(x => new Abrangencia() { Perfil = perfil, TurmaId = x.Id }), login);
+            repositorioAbrangencia.InserirAbrangencias(novas.Select(x => new Abrangencia() { Perfil = perfil, UeId = x.Id }), login);
 
-            var paraExcluir = abrangenciaSintetica.Where(x => !turmas.Select(y => y.Id).Contains(x.TurmaId)).Select(x => x.Id);
+            var paraExcluir = abrangenciaSintetica.Where(x => !ues.Select(y => y.Id).Contains(x.UeId)).Select(x => x.Id);
 
             repositorioAbrangencia.ExcluirAbrangencias(paraExcluir);
         }
@@ -123,35 +151,6 @@ namespace SME.SGP.Aplicacao.Servicos
             repositorioAbrangencia.ExcluirAbrangencias(paraExcluir);
         }
 
-        private void SincronizarAbrangenciaPorUes(IEnumerable<AbrangenciaSinteticaDto> abrangenciaSintetica, IEnumerable<Ue> ues, string login, Guid perfil)
-        {
-            repositorioAbrangencia.RemoverAbrangenciasForaEscopo(login, perfil, TipoAbrangencia.PorUe);
-
-            var novas = ues.Where(x => !abrangenciaSintetica.Select(y => y.UeId).Contains(x.Id));
-
-            repositorioAbrangencia.InserirAbrangencias(novas.Select(x => new Abrangencia() { Perfil = perfil, UeId = x.Id }), login);
-
-            var paraExcluir = abrangenciaSintetica.Where(x => !ues.Select(y => y.Id).Contains(x.UeId)).Select(x => x.Id);
-
-            repositorioAbrangencia.ExcluirAbrangencias(paraExcluir);
-        }
-
-        private Task<AbrangenciaRetornoEolDto> ObterAbrangenciaEolSupervisor(string login)
-        {
-            Task<AbrangenciaRetornoEolDto> consultaEol;
-            var listaEscolasDresSupervior = consultasSupervisor.ObterPorDreESupervisor(login, string.Empty);
-
-            if (!listaEscolasDresSupervior.Any())
-                throw new NegocioException($"Não foi possível obter as escolas atribuidas ao supervisor {login}.");
-
-            var escolas = from a in listaEscolasDresSupervior
-                          from b in a.Escolas
-                          select b.Codigo;
-
-            consultaEol = servicoEOL.ObterAbrangenciaParaSupervisor(escolas.ToArray());
-            return consultaEol;
-        }
-
         private void SincronizarEstruturaInstitucional(IEnumerable<AbrangenciaDreRetornoEolDto> estrutura, out IEnumerable<Dre> dres, out IEnumerable<Ue> ues, out IEnumerable<Turma> turmas)
         {
             IEnumerable<Dre> dresSync = estrutura.Select(x => new Dre() { Abreviacao = x.Abreviacao, CodigoDre = x.Codigo, Nome = x.Nome });
@@ -162,7 +161,7 @@ namespace SME.SGP.Aplicacao.Servicos
                 Ano = z.Ano,
                 AnoLetivo = z.AnoLetivo,
                 CodigoTurma = z.Codigo,
-                ModalidadeCodigo = Convert.ToInt32(z.CodigoModalidade),
+                ModalidadeCodigo = (Modalidade)Convert.ToInt32(z.CodigoModalidade),
                 QuantidadeDuracaoAula = z.DuracaoTurno,
                 Nome = z.NomeTurma,
                 Semestre = z.Semestre,
@@ -173,9 +172,7 @@ namespace SME.SGP.Aplicacao.Servicos
             dres = repositorioDre.Sincronizar(dresSync);
             ues = repositorioUe.Sincronizar(uesSync, dres);
             turmas = repositorioTurma.Sincronizar(turmasSync, ues);
-
         }
-
 
         private async Task TrataAbrangenciaLogin(string login, Guid perfil)
         {
