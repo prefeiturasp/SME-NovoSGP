@@ -128,12 +128,14 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IRepositorioFrequencia, RepositorioFrequencia>();
             services.TryAddScoped<IRepositorioRegistroAusenciaAluno, RepositorioRegistroAusenciaAluno>();
             services.TryAddScoped<IRepositorioAtribuicaoEsporadica, RepositorioAtribuicaoEsporadica>();
+            services.TryAddScoped<IRepositorioFrequenciaAlunoDisciplinaPeriodo, RepositorioFrequenciaAlunoDisciplinaPeriodo>();
             services.TryAddScoped<IRepositorioAtividadeAvaliativa, RepositorioAtividadeAvaliativa>();
             services.TryAddScoped<IRepositorioTipoAvaliacao, RepositorioTipoAvaliacao>();
             services.TryAddScoped<IRepositorioPlanoAula, RepositorioPlanoAula>();
             services.TryAddScoped<IRepositorioObjetivoAprendizagemAula, RepositorioObjetivoAprendizagemAula>();
             services.TryAddScoped<IRepositorioAtribuicaoCJ, RepositorioAtribuicaoCJ>();
-            services.TryAddScoped<IRepositorioUE, RepositorioUE>();
+            services.TryAddScoped<IRepositorioDre, RepositorioDre>();
+            services.TryAddScoped<IRepositorioUe, RepositorioUe>();
             services.TryAddScoped<IRepositorioTurma, RepositorioTurma>();
         }
 
@@ -156,6 +158,7 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IServicoFrequencia, ServicoFrequencia>();
             services.TryAddScoped<IServicoAula, ServicoAula>();
             services.TryAddScoped<IServicoAtribuicaoEsporadica, ServicoAtribuicaoEsporadica>();
+            services.TryAddScoped<IServicoCalculoFrequencia, ServicoCalculoFrequencia>();
         }
     }
 }

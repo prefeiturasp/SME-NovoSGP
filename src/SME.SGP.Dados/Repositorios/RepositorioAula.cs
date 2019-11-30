@@ -65,6 +65,17 @@ namespace SME.SGP.Dados.Repositorios
             return (await database.Conexao.QueryAsync<AulaCompletaDto>(query.ToString(), new { tipoCalendarioId, turmaId, ueId, data, perfil, rf }));
         }
 
+        public IEnumerable<Aula> ObterAulasPorTurmaEAnoLetivo(string turmaId, string anoLetivo)
+        {
+            var query = "select * from aula where turma_id= @turmaId and date_part('year',data_aula) = @anoLetivo and not excluido";
+
+            return database.Conexao.Query<Aula>(query, new
+            {
+                turmaId,
+                anoLetivo
+            });
+        }
+
         public async Task<IEnumerable<AulasPorTurmaDisciplinaDto>> ObterAulasTurmaDisciplinaSemana(string turma, string disciplina, string semana)
         {
             var query = @"select professor_rf, quantidade, data_aula

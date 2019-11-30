@@ -46,7 +46,11 @@ namespace SME.SGP.Dados.Mapeamentos
                config.AddMap(new AtividadeAvaliativaMap());
                config.AddMap(new TipoAvaliacaoMap());
                config.AddMap(new AtribuicaoCJMap());
-               config.AddMap(new UEMap());
+               config.AddMap(new DreMap());
+               config.AddMap(new UeMap());
+               config.AddMap(new TurmaMap());
+               config.AddMap(new AbrangenciaMap());
+               config.AddMap(new FrequenciaAlunoMap());
                config.ForDommel();
            });
         }
