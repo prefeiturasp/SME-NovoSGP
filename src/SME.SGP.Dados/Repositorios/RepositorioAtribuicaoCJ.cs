@@ -14,7 +14,7 @@ namespace SME.SGP.Dados.Repositorios
         {
         }
 
-        public async Task<IEnumerable<AtribuicaoCJ>> ObterPorComponenteTurmaModalidadeUe(Modalidade? modalidade, string turmaId, string ueId, string disciplinaId)
+        public async Task<IEnumerable<AtribuicaoCJ>> ObterPorFiltros(Modalidade? modalidade, string turmaId, string ueId, string disciplinaId, string[] usuariosRfs)
         {
             var query = new StringBuilder();
 
@@ -35,12 +35,16 @@ namespace SME.SGP.Dados.Repositorios
             if (!string.IsNullOrEmpty(disciplinaId))
                 query.AppendLine("and a.disciplina_id = @disciplinaId");
 
+            if (usuariosRfs.Length > 0)
+                query.AppendLine("and a.usuario_rf in @usuariosRfs");
+
             return (await database.Conexao.QueryAsync<AtribuicaoCJ>(query.ToString(), new
             {
                 modalidade = (int)modalidade,
                 ueId,
                 turmaId,
-                disciplinaId
+                disciplinaId,
+                usuariosRfs
             }));
         }
     }
