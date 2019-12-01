@@ -55,6 +55,7 @@ const FrequenciaPlanoAula = () => {
   const [desabilitarDisciplina, setDesabilitarDisciplina] = useState(false);
   const [diasParaHabilitar, setDiasParaHabilitar] = useState([]);
   const [auditoria, setAuditoria] = useState([]);
+  const [auditoriaPlano, setAuditoriaPlano] = useState([]);
   const [exibirAuditoria, setExibirAuditoria] = useState(false);
   const [desabilitarCampos, setDesabilitarCampos] = useState(false);
   const [modoEdicaoPlanoAula, setModoEdicaoPlanoAula] = useState(false);
@@ -151,6 +152,13 @@ const FrequenciaPlanoAula = () => {
         dadosPlano.objetivosAprendizagemAula = [...dadosPlano.objetivosAprendizagemAula];
         dadosPlano.temObjetivos = (disciplinaSelecionada.regencia || ehProfessor) && !ehEja;
         setPlanoAula(dadosPlano);
+        const audPlano = {
+          criadoEm: dadosPlano.criadoEm,
+          criadoPor: dadosPlano.criadoPor,
+          alteradoEm: dadosPlano.alteradoEm,
+          alteradoPor: dadosPlano.alteradoPor,
+        }
+        setAuditoriaPlano(audPlano)
       } else {
         setModoEdicaoPlanoAula(false);
       }
@@ -600,6 +608,7 @@ const FrequenciaPlanoAula = () => {
                     permissoesTela={permissoesTela}
                     somenteConsulta={somenteConsulta}
                     temObjetivos={temObjetivos}
+                    auditoria={auditoriaPlano}
                   />
                 </div>
               </div>
