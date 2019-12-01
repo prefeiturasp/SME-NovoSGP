@@ -1,6 +1,6 @@
 import { Switch } from 'antd';
 import React, { useEffect, useRef, useState } from 'react';
-import { Colors } from '~/componentes';
+import { Colors, Auditoria } from '~/componentes';
 import Button from '~/componentes/button';
 import CardCollapse from '~/componentes/cardCollapse';
 import Grid from '~/componentes/grid';
@@ -10,21 +10,24 @@ import api from '~/servicos/api';
 import { useSelector } from 'react-redux';
 
 const PlanoAula = (props) => {
-  const { planoAula, listaMaterias, disciplinaIdSelecionada, dataAula, ehProfessorCj,
-    ehEja, setModoEdicao, permissoesTela, somenteConsulta, ehMedio, temObjetivos, setTemObjetivos } = props;
+  const { planoAula, listaMaterias, disciplinaIdSelecionada, dataAula, ehProfessorCj, ehEja,
+    setModoEdicao, permissoesTela, somenteConsulta, ehMedio, temObjetivos, setTemObjetivos, auditoria } = props;
 
   const [desabilitarCampos, setDesabilitarCampos] = useState(false);
   const usuario = useSelector(store => store.usuario);
   const { turmaSelecionada } = usuario;
   const turmaId = turmaSelecionada ? turmaSelecionada.turma : 0;
   const [mostrarCardPrincipal, setMostrarCardPrincipal] = useState(true);
-  const [informaObjetivos, setInformaObjetivos] = useState(true);
   const [materias, setMaterias] = useState([...listaMaterias]);
   const setModoEdicaoPlano = ehEdicao => {
     setModoEdicao(ehEdicao)
   }
   const habilitaDesabilitaObjetivos = temObj => {
-    setTemObjetivos(temObj)
+    setTemObjetivos(temObj);
+    if (!temObj && objetivosAprendizagem.length > 0) {
+      setModoEdicaoPlano(true);
+    }
+    setEscolhaHabilitaObjetivos(temObj);
   }
   const configCabecalho = {
     altura: '44px',
@@ -35,6 +38,7 @@ const PlanoAula = (props) => {
   const textEditorDesenvAulaRef = useRef(null);
   const textEditorRecContinuaRef = useRef(null);
   const textEditorLicaoCasaRef = useRef(null);
+  const [habilitaEscolhaObjetivos, setEscolhaHabilitaObjetivos] = useState(false);
 
   useEffect(() => {
     if (planoAula && planoAula.id > 0) {
@@ -45,6 +49,7 @@ const PlanoAula = (props) => {
   }, [permissoesTela])
 
   useEffect(() => {
+    setEscolhaHabilitaObjetivos(planoAula.objetivosAprendizagemAula.length > 0)
     setObjetivosAprendizagem([...planoAula.objetivosAprendizagemAula])
   }, [planoAula.objetivosAprendizagemAula])
 
@@ -138,7 +143,10 @@ const PlanoAula = (props) => {
   }
 
   const layoutComObjetivos = () => {
-    return temObjetivos && (!ehEja || !ehMedio);
+    const naoEhEjaEMedio = !ehEja && !ehMedio;
+    const resultado = !ehProfessorCj ? (temObjetivos && naoEhEjaEMedio)
+      : (naoEhEjaEMedio && habilitaEscolhaObjetivos);
+    return resultado
   }
 
   return (
@@ -153,11 +161,11 @@ const PlanoAula = (props) => {
         <QuantidadeBotoes className="col-md-12">
           <span>Quantidade de aulas: {planoAula.qtdAulas}</span>
         </QuantidadeBotoes>
-        <HabilitaObjetivos className="row d-inline-block col-md-12" hidden={!ehProfessorCj}>
+        <HabilitaObjetivos className="row d-inline-block col-md-12" hidden={!ehProfessorCj || ehEja || ehMedio}>
           <label>Objetivos de aprendizagem</label>
           <Switch
             onChange={() => habilitaDesabilitaObjetivos(!temObjetivos)}
-            checked={temObjetivos}
+            checked={habilitaEscolhaObjetivos}
             size="default"
             className="mr-2"
             disabled={desabilitarCampos}
@@ -378,6 +386,17 @@ const PlanoAula = (props) => {
             </form>
           </fieldset>
         </CardCollapse>
+        {planoAula.id > 0 && auditoria ? (
+          <Auditoria
+            className="mt-2"
+            criadoEm={auditoria.criadoEm}
+            criadoPor={auditoria.criadoPor}
+            alteradoPor={auditoria.alteradoPor}
+            alteradoEm={auditoria.alteradoEm}
+          />
+        ) : (
+            ''
+          )}
       </CardCollapse>
     </Corpo>
   )
