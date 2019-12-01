@@ -5,7 +5,7 @@ namespace SME.SGP.Aplicacao
 {
     public interface IComandosAula
     {
-        Task Alterar(AulaDto dto, long id);
+        Task<string> Alterar(AulaDto dto, long id);
 
         void Excluir(long id);
 
