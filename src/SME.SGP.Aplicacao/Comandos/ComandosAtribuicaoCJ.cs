@@ -18,8 +18,8 @@ namespace SME.SGP.Aplicacao
 
         public async Task Salvar(AtribuicaoCJPersistenciaDto atribuicaoCJPersistenciaDto)
         {
-            var atribuicaoCJs = await repositorioAtribuicaoCJ.ObterPorComponenteTurmaModalidadeUe(atribuicaoCJPersistenciaDto.Modalidade, atribuicaoCJPersistenciaDto.TurmaId,
-                atribuicaoCJPersistenciaDto.UeId, string.Empty);
+            var atribuicaoCJs = await repositorioAtribuicaoCJ.ObterPorFiltros(atribuicaoCJPersistenciaDto.Modalidade, atribuicaoCJPersistenciaDto.TurmaId,
+                atribuicaoCJPersistenciaDto.UeId, string.Empty, null);
 
             foreach (var atribuicaoDto in atribuicaoCJPersistenciaDto.Disciplinas)
             {

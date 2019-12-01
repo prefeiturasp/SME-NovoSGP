@@ -1,19 +1,18 @@
-﻿using SME.SGP.Dados.Contexto;
-using SME.SGP.Dominio.Entidades;
+﻿using Dapper;
+using Dommel;
+using SME.SGP.Dados.Contexto;
+using SME.SGP.Dominio;
+using SME.SGP.Dominio.Interfaces;
 using System;
 using System.Collections.Generic;
-using System.Text;
-using Dapper;
-using Dommel;
 using System.Linq;
-using SME.SGP.Dominio.Interfaces;
 
 namespace SME.SGP.Dados.Repositorios
 {
     public class RepositorioUe : IRepositorioUe
     {
-        const string QuerySincronizacao = @"SELECT id, ue_id, dre_id, nome, tipo_escola, data_atualizacao FROM public.ue where ue_id in (#ids);";
-        const string Update = "UPDATE public.ue SET nome = @nome, tipo_escola = @tipoEscola, data_atualizacao = @dataAtualizacao WHERE id = @id;";
+        private const string QuerySincronizacao = @"SELECT id, ue_id, dre_id, nome, tipo_escola, data_atualizacao FROM public.ue where ue_id in (#ids);";
+        private const string Update = "UPDATE public.ue SET nome = @nome, tipo_escola = @tipoEscola, data_atualizacao = @dataAtualizacao WHERE id = @id;";
 
         private readonly ISgpContext contexto;
         private readonly IRepositorioDre respositorioDre;
@@ -72,8 +71,6 @@ namespace SME.SGP.Dados.Repositorios
             }
 
             return resultado;
-
         }
     }
-
 }

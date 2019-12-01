@@ -18,13 +18,15 @@ namespace SME.SGP.Dados.Repositorios
         {
             var query = new StringBuilder();
 
-            query.AppendLine("select *");
+            query.AppendLine("select a.*, t.*");
             query.AppendLine("from");
             query.AppendLine("atribuicao_cj a");
-            query.AppendLine("where");
+            query.AppendLine("inner join turma t");
+            query.AppendLine("on t.turma_id = a.turma_id");
+            query.AppendLine("where 1 = 1");
 
             if (modalidade.HasValue)
-                query.AppendLine("a.modalidade = @modalidade");
+                query.AppendLine("and a.modalidade = @modalidade");
 
             if (!string.IsNullOrEmpty(ueId))
                 query.AppendLine("and a.ue_id = @ueId");
@@ -38,14 +40,18 @@ namespace SME.SGP.Dados.Repositorios
             if (usuariosRfs.Length > 0)
                 query.AppendLine("and a.usuario_rf in @usuariosRfs");
 
-            return (await database.Conexao.QueryAsync<AtribuicaoCJ>(query.ToString(), new
+            return (await database.Conexao.QueryAsync<AtribuicaoCJ, Turma, AtribuicaoCJ>(query.ToString(), (atribuicaoCJ, turma) =>
             {
-                modalidade = (int)modalidade,
+                atribuicaoCJ.Turma = turma;
+                return atribuicaoCJ;
+            }, new
+            {
+                modalidade = modalidade.HasValue ? (int)modalidade : 0,
                 ueId,
                 turmaId,
                 disciplinaId,
                 usuariosRfs
-            }));
+            }, splitOn: "id,id"));
         }
     }
 }

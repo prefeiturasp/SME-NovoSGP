@@ -40,7 +40,6 @@ namespace SME.SGP.Dados.Repositorios
             query.AppendLine("FROM public.aula a");
             MontaWhere(query, turmaId, ueId, mes, null, rf, semanaAno);
             return (await database.Conexao.QueryAsync<AulaDto>(query.ToString(), new { tipoCalendarioId, turmaId, ueId, mes, semanaAno }));
-            return (await database.Conexao.QueryAsync<AulaDto>(query.ToString(), new { tipoCalendarioId, turmaId, ueId, rf }));
         }
 
         public async Task<IEnumerable<AulaCompletaDto>> ObterAulasCompleto(long tipoCalendarioId, string turmaId, string ueId, DateTime data, Guid perfil, string rf)
@@ -66,6 +65,24 @@ namespace SME.SGP.Dados.Repositorios
                 turmaId,
                 anoLetivo
             });
+        }
+
+        public async Task<IEnumerable<Aula>> ObterAulasRecorrencia(long aulaPaiId, long? aulaIdInicioRecorrencia = null, DateTime? dataFinal = null)
+        {
+            StringBuilder query = new StringBuilder();
+            MontaCabecalho(query);
+            query.AppendLine("FROM public.aula a");
+            query.AppendLine("where ((a.id = @aulaPaiId) or (a.aula_pai_id = @aulaPaiId))");
+
+            if (aulaIdInicioRecorrencia.HasValue)
+                query.AppendLine(" and a.id > @aulaIdInicioRecorrencia");
+
+            if (dataFinal.HasValue)
+                query.AppendLine(" and data_aula <= @dataFinal");
+
+            query.AppendLine(" order by data_aula");
+
+            return await database.Conexao.QueryAsync<Aula>(query.ToString(), new { aulaPaiId, aulaIdInicioRecorrencia, dataFinal });
         }
 
         public async Task<IEnumerable<AulasPorTurmaDisciplinaDto>> ObterAulasTurmaDisciplinaSemana(string turma, string disciplina, string semana)
@@ -256,27 +273,9 @@ namespace SME.SGP.Dados.Repositorios
 
             if (semanaAno.HasValue)
                 query.AppendLine("AND extract(week from a.data_aula) = @semanaAno");
-                
+
             if (!string.IsNullOrEmpty(rf))
                 query.AppendLine("AND a.professor_rf = @rf");
-        }
-
-        public async Task<IEnumerable<Aula>> ObterAulasRecorrencia(long aulaPaiId, long? aulaIdInicioRecorrencia = null, DateTime? dataFinal = null)
-        {
-            StringBuilder query = new StringBuilder();
-            MontaCabecalho(query);
-            query.AppendLine("FROM public.aula a");
-            query.AppendLine("where ((a.id = @aulaPaiId) or (a.aula_pai_id = @aulaPaiId))");
-
-            if (aulaIdInicioRecorrencia.HasValue)
-                query.AppendLine(" and a.id > @aulaIdInicioRecorrencia");
-
-            if (dataFinal.HasValue)
-                query.AppendLine(" and data_aula <= @dataFinal");
-
-            query.AppendLine(" order by data_aula");
-
-            return await database.Conexao.QueryAsync<Aula>(query.ToString(), new { aulaPaiId, aulaIdInicioRecorrencia, dataFinal });
         }
     }
 }
