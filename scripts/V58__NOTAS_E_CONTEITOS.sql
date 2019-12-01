@@ -28,3 +28,20 @@ CREATE TABLE IF NOT EXISTS public.conceito_valores (
 	inicio_vigencia timestamp NOT NULL,
 	fim_vigencia timestamp NULL
 );
+
+CREATE TABLE public.notas_conceitos_ciclos_parametos (
+	id int8 NOT NULL GENERATED ALWAYS AS IDENTITY,
+	ciclo int4 NOT NULL,
+	tipo_nota int8 NOT NULL,
+	qtd_minima_avaliacao int4 NOT NULL,
+	percentual_alerta int4 NOT NULL,
+	ativo bool NOT NULL DEFAULT true,
+	inicio_vigencia timestamp NOT NULL,
+	fim_vigencia timestamp NULL,
+	criado_por varchar(200) NOT NULL,
+	criado_rf varchar(200) NOT NULL,
+	criado_em timestamp NOT NULL,
+	alterado_por varchar(200) NULL,
+	alterado_rf varchar(200) NULL,
+	alterado_em timestamp NULL
+);
