@@ -13,13 +13,15 @@ namespace SME.SGP.Aplicacao.Teste.Consultas
     {
         private readonly ConsultasAula consultas;
         private readonly Mock<IRepositorioAula> repositorio;
+        private readonly Mock<IConsultasPeriodoEscolar> consultasPeriodoEscolar;
         private readonly Mock<IServicoUsuario> servicoUsuario;
 
         public ConsultasAulasTeste()
         {
             repositorio = new Mock<IRepositorioAula>();
             servicoUsuario = new Mock<IServicoUsuario>();
-            consultas = new ConsultasAula(repositorio.Object, servicoUsuario.Object);
+            consultasPeriodoEscolar = new Mock<IConsultasPeriodoEscolar>();
+            consultas = new ConsultasAula(repositorio.Object, consultasPeriodoEscolar.Object, servicoUsuario.Object);
 
             Setup();
         }
