@@ -73,11 +73,7 @@ namespace SME.SGP.Aplicacao
                 {
                     Modalidade = a.Key.Modalidade.GetAttribute<DisplayAttribute>().Name,
                     Turma = a.FirstOrDefault().Turma.Nome,
-                    Disciplinas = disciplinasDescricoes.Select(d => new AtribuicaoCJDisciplinaRetornoDto
-                    {
-                        Disciplina = d.Nome,
-                        IdAtribuicao = a.FirstOrDefault().Id
-                    }).ToList()
+                    Disciplinas = disciplinasDescricoes.Select(d => d.Nome).ToArray()
                 };
 
                 listRetorno.Add(atribuicaoDto);

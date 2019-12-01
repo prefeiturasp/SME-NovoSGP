@@ -4,6 +4,7 @@ using SME.SGP.Api.Filtros;
 using SME.SGP.Aplicacao;
 using SME.SGP.Dominio;
 using SME.SGP.Infra;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Api.Controllers
@@ -15,12 +16,18 @@ namespace SME.SGP.Api.Controllers
     public class AtribuicaoCJController : ControllerBase
     {
         [HttpGet]
+        [ProducesResponseType(typeof(IEnumerable<AtribuicaoCJListaRetornoDto>), 200)]
+        [ProducesResponseType(204)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         public async Task<IActionResult> Get([FromQuery]AtribuicaoCJListaFiltroDto atribuicaoCJListaFiltroDto, [FromServices]IConsultasAtribuicaoCJ consultasAtribuicaoCJ)
         {
             return Ok(await consultasAtribuicaoCJ.Listar(atribuicaoCJListaFiltroDto));
         }
 
         [HttpGet("ues/{ueId}/modalidades/{modalidadeId}/turmas/{turmaId}/professores/{professorId}/")]
+        [ProducesResponseType(typeof(AtribuicaoCJTitularesRetornoDto), 200)]
+        [ProducesResponseType(204)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         public IActionResult ObterAtribuicaoDeProfessores(string ueId, string turmaId,
             string professorId, Modalidade modalidadeId)
         {
@@ -65,6 +72,8 @@ namespace SME.SGP.Api.Controllers
         }
 
         [HttpPost]
+        [ProducesResponseType(200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         public async Task<IActionResult> Post([FromBody]AtribuicaoCJPersistenciaDto atribuicaoCJPersistenciaDto, [FromServices] IComandosAtribuicaoCJ comandosAtribuicaoCJ)
         {
             await comandosAtribuicaoCJ.Salvar(atribuicaoCJPersistenciaDto);
