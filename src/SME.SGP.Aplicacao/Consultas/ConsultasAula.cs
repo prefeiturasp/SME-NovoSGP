@@ -12,18 +12,26 @@ namespace SME.SGP.Aplicacao
     {
         private readonly IRepositorioAula repositorio;
         private readonly IServicoUsuario servicoUsuario;
+        private readonly IConsultasPeriodoEscolar consultasPeriodoEscolar;
 
         public ConsultasAula(IRepositorioAula repositorio,
+                             IConsultasPeriodoEscolar consultasPeriodoEscolar,
                              IServicoUsuario servicoUsuario)
         {
             this.repositorio = repositorio ?? throw new ArgumentNullException(nameof(repositorio));
             this.servicoUsuario = servicoUsuario ?? throw new ArgumentNullException(nameof(servicoUsuario));
+            this.consultasPeriodoEscolar = consultasPeriodoEscolar ?? throw new ArgumentNullException(nameof(consultasPeriodoEscolar));
         }
 
         public AulaConsultaDto BuscarPorId(long id)
         {
             var aula = repositorio.ObterPorId(id);
             return MapearParaDto(aula);
+        }
+
+        public async Task<AulaConsultaDto> ObterAulaDataTurmaDisciplina(DateTime data, string turmaId, string disciplinaId)
+        {
+            return await repositorio.ObterAulaDataTurmaDisciplina(data, turmaId, disciplinaId);
         }
 
         public async Task<IEnumerable<DataAulasProfessorDto>> ObterDatasDeAulasPorCalendarioTurmaEDisciplina(int anoLetivo, string turma, string disciplina)
@@ -35,6 +43,15 @@ namespace SME.SGP.Aplicacao
                 Data = a.DataAula,
                 IdAula = a.Id
             });
+        }
+
+        public async Task<int> ObterQuantidadeAulasRecorrentes(long aulaInicialId, RecorrenciaAula recorrencia)
+        {
+            var aulaInicioRecorrencia = repositorio.ObterPorId(aulaInicialId);
+            var fimRecorrencia = consultasPeriodoEscolar.ObterFimPeriodoRecorrencia(aulaInicioRecorrencia.TipoCalendarioId, aulaInicioRecorrencia.DataAula, recorrencia);
+
+            var aulasRecorrentes = await repositorio.ObterAulasRecorrencia(aulaInicioRecorrencia.AulaPaiId.Value, aulaInicioRecorrencia.Id, fimRecorrencia);
+            return aulasRecorrentes.Count() + 1;
         }
 
         public async Task<int> ObterQuantidadeAulasTurmaSemana(string turma, string disciplina, string semana)

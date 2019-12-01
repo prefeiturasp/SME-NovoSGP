@@ -4,6 +4,12 @@ namespace SME.SGP.Dominio
 {
     public class Aula : EntidadeBase, ICloneable
     {
+        public Aula()
+        {
+            Status = EntidadeStatus.Aprovado;
+
+        }
+
         public Aula AulaPai { get; set; }
         public long? AulaPaiId { get; set; }
         public DateTime DataAula { get; set; }
@@ -19,7 +25,9 @@ namespace SME.SGP.Dominio
         public long TipoCalendarioId { get; set; }
         public string TurmaId { get; set; }
         public string UeId { get; set; }
+        public long WorkflowAprovacaoId { get; set; }
 
+        public EntidadeStatus Status { get; set; }
         public void AdicionarAulaPai(Aula aula)
         {
             AulaPai = aula ?? throw new NegocioException("É necessário informar uma aula.");
@@ -37,7 +45,6 @@ namespace SME.SGP.Dominio
                 CriadoPor = CriadoPor,
                 CriadoRF = CriadoRF,
                 Excluido = Excluido,
-                Id = Id,
                 UeId = UeId,
                 AulaPai = AulaPai,
                 DisciplinaId = DisciplinaId,
@@ -53,5 +60,28 @@ namespace SME.SGP.Dominio
                 TurmaId = TurmaId
             };
         }
+
+        public void AprovaWorkflow()
+        {
+            if (Status != EntidadeStatus.AguardandoAprovacao)
+                throw new NegocioException("Esta aula não pode ser aprovada.");
+
+            Status = EntidadeStatus.Aprovado;
+        }
+
+        public void EnviarParaWorkflowDeAprovacao(long idWorkflow)
+        {
+            WorkflowAprovacaoId = idWorkflow;
+            Status = EntidadeStatus.AguardandoAprovacao;
+        }
+
+        public void ReprovarWorkflow()
+        {
+            if (Status != EntidadeStatus.AguardandoAprovacao)
+                throw new NegocioException("Este Evento não pode ser recusado.");
+
+            Status = EntidadeStatus.Recusado;
+        }
+
     }
 }

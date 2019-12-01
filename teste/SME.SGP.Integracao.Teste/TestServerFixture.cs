@@ -6,6 +6,7 @@ using Npgsql;
 using Postgres2Go;
 using SME.SGP.Api;
 using SME.SGP.Aplicacao.Servicos;
+using SME.SGP.Dominio;
 using SME.SGP.Infra;
 using System;
 using System.IO;
@@ -20,6 +21,7 @@ namespace SME.SGP.Integracao.Teste
         private readonly TestServer _testServerCliente;
         private readonly PostgresRunner runner;
         private readonly ServicoTokenJwt servicoTokenJwt;
+        private readonly ServicoUsuario servicoUsuario;
 
         public TestServerFixture()
         {
@@ -66,12 +68,12 @@ namespace SME.SGP.Integracao.Teste
             runner.Dispose();
         }
 
-        public string GerarToken(Permissao[] permissoes, string login = "teste", string codigoRf = "123", string guidPerfil = "")
+        public string GerarToken(Permissao[] permissoes, string login = "teste", string nomeLogin = "teste", string codigoRf = "123", string guidPerfil = "")
         {
             if (string.IsNullOrEmpty(guidPerfil))
                 guidPerfil = Guid.NewGuid().ToString();
 
-            string token = servicoTokenJwt.GerarToken(login, codigoRf, Guid.Parse(guidPerfil), permissoes);
+            string token = servicoTokenJwt.GerarToken(login, nomeLogin, codigoRf, Guid.Parse(guidPerfil), permissoes);
 
             return token;
         }

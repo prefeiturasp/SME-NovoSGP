@@ -1,40 +1,32 @@
 ﻿using SME.Background.Core.Enumerados;
 using SME.Background.Core.Interfaces;
+using SME.Background.Core.Processors;
 using System;
-using System.Collections.Generic;
-using System.Text;
+using System.Collections.Concurrent;
 
 namespace SME.Background.Core
 {
     public static class Orquestrador
     {
-        static Dictionary<TipoProcessamento, IProcessor> processadores;
+        private static ConcurrentDictionary<TipoProcessamento, IProcessor> processadores;
 
         static Orquestrador()
         {
-            processadores = new Dictionary<TipoProcessamento, IProcessor>();
+            processadores = new ConcurrentDictionary<TipoProcessamento, IProcessor>();
         }
 
-        public static void Desativar(IServiceProvider provider)
+        public static IServiceProvider Provider { get; private set; }
+
+        public static void Desativar()
         {
             processadores.Clear();
-            Registrar<DisabledProcessor>(new DisabledProcessor(provider));
+            Registrar(new DisabledProcessor());
         }
 
-        public static void Registrar<T>(T processador)
-            where T: IProcessor
+        public static void Inicializar(IServiceProvider provider)
         {
-            processador.Registrar();
-            processadores.Add(TipoProcessamento.ExecucaoLonga, processador);
-            processadores.Add(TipoProcessamento.ExecucaoImediata, processador);
-            processadores.Add(TipoProcessamento.ExecucaoRecorrente, processador);
-        }
-
-        public static void Registrar<T>(T processador, TipoProcessamento tipoProcessamento)
-            where T : IProcessor
-        {
-            processador.Registrar();
-            processadores.Add(tipoProcessamento, processador);
+            if (Provider == null)
+                Provider = provider;
         }
 
         public static IProcessor ObterProcessador(TipoProcessamento tipoProcessamento)
@@ -47,5 +39,22 @@ namespace SME.Background.Core
                 throw new Exception($"Não foi possível obter um processador do tipo {tipoProcessamento.ToString()} pois não foi registrado");
         }
 
+        public static void Registrar<T>(T processador)
+                    where T : IProcessor
+        {
+            Registrar<T>(processador, TipoProcessamento.ExecucaoImediata);
+            Registrar<T>(processador, TipoProcessamento.ExecucaoLonga);
+            Registrar<T>(processador, TipoProcessamento.ExecucaoRecorrente);
+        }
+
+        public static void Registrar<T>(T processador, TipoProcessamento tipoProcessamento)
+            where T : IProcessor
+        {
+            if (processadores.TryAdd(tipoProcessamento, processador) && !processador.Registrado)
+            {
+                processador.Registrar();
+                Console.WriteLine($"O processador {processador.GetType().Name} foi registrado para o tipo de processamento {tipoProcessamento.ToString()}");
+            }
+        }
     }
 }

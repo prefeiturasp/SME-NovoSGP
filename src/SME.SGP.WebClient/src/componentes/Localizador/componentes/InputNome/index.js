@@ -11,23 +11,23 @@ function InputNome({ dataSource, onSelect, onChange, pessoaSelecionada }) {
   const [sugestoes, setSugestoes] = useState([]);
   const [valor, setValor] = useState('');
 
+  const onChangeValor = selecionado => {
+    setValor(selecionado);
+  };
+
   useEffect(() => {
     setSugestoes(dataSource);
   }, [dataSource]);
 
   useEffect(() => {
-    setValor(pessoaSelecionada && pessoaSelecionada.nome);
+    setValor(pessoaSelecionada && pessoaSelecionada.professorNome);
   }, [pessoaSelecionada]);
-
-  const onChangeValor = selecionado => {
-    setValor(selecionado);
-  };
 
   const options =
     sugestoes &&
     sugestoes.map(item => (
-      <AutoComplete.Option key={item.rf} value={item.nome}>
-        {item.nome}
+      <AutoComplete.Option key={item.professorRf} value={item.professorNome}>
+        {item.professorNome}
       </AutoComplete.Option>
     ));
 
@@ -51,7 +51,10 @@ function InputNome({ dataSource, onSelect, onChange, pessoaSelecionada }) {
 
 InputNome.propTypes = {
   dataSource: PropTypes.oneOfType([PropTypes.array]),
-  pessoaSelecionada: PropTypes.objectOf(PropTypes.object),
+  pessoaSelecionada: PropTypes.oneOfType([
+    PropTypes.objectOf(PropTypes.object),
+    PropTypes.any,
+  ]),
   onSelect: PropTypes.func,
   onChange: PropTypes.func,
 };

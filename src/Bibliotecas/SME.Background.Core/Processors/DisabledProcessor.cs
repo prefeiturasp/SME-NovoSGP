@@ -1,19 +1,13 @@
-﻿using SME.Background.Core.Interfaces;
+﻿using SME.Background.Core.Exceptions;
+using SME.Background.Core.Interfaces;
 using System;
-using System.Collections.Generic;
 using System.Linq.Expressions;
-using System.Text;
 
-namespace SME.Background.Core
+namespace SME.Background.Core.Processors
 {
     public class DisabledProcessor : IProcessor
     {
-        readonly IServiceProvider provider;
-
-        public DisabledProcessor(IServiceProvider provider)
-        {
-            this.provider = provider;
-        }
+        public bool Registrado => true;
 
         public string Executar(Expression<Action> metodo)
         {
@@ -25,7 +19,7 @@ namespace SME.Background.Core
 
         public string Executar<T>(Expression<Action<T>> metodo)
         {
-            var classe = (T)provider.GetService(typeof(T));
+            var classe = (T)Orquestrador.Provider.GetService(typeof(T));
             var acao = metodo.Compile();
             acao(classe);
 
@@ -33,6 +27,11 @@ namespace SME.Background.Core
         }
 
         public void ExecutarPeriodicamente(Expression<Action> metodo, string cron)
+        {
+            throw new ExcecaoServicoDesativado("Não é possível realizar novos processamentos periódicos pois o serviço de processamento em segundo plano está desativado");
+        }
+
+        public void ExecutarPeriodicamente<T>(Expression<Action<T>> metodo, string cron)
         {
             throw new Exception("O serviço de processamento em segundo plano está desativado");
         }

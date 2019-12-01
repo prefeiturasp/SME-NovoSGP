@@ -1,7 +1,6 @@
 ﻿using Hangfire;
 using Hangfire.PostgreSql;
 using Microsoft.Extensions.Configuration;
-using SME.Background.Core.Enumerados;
 using SME.Background.Core.Interfaces;
 using System;
 using System.Linq.Expressions;
@@ -10,14 +9,16 @@ namespace SME.Background.Hangfire
 {
     public class Processor : IProcessor
     {
-        readonly IConfiguration configuration;
-        readonly string connectionString;
+        private readonly IConfiguration configuration;
+        private readonly string connectionString;
 
         public Processor(IConfiguration configuration, string connectionString)
         {
             this.configuration = configuration;
             this.connectionString = connectionString;
         }
+
+        public bool Registrado { get; private set; }
 
         public string Executar(Expression<Action> metodo)
         {
@@ -34,6 +35,11 @@ namespace SME.Background.Hangfire
             RecurringJob.AddOrUpdate(metodo, cron);
         }
 
+        public void ExecutarPeriodicamente<T>(Expression<Action<T>> metodo, string cron)
+        {
+            RecurringJob.AddOrUpdate(metodo, cron);
+        }
+
         public void Registrar()
         {
             GlobalConfiguration.Configuration
@@ -41,10 +47,12 @@ namespace SME.Background.Hangfire
                 .UseSimpleAssemblyNameTypeSerializer()
                 .UseRecommendedSerializerSettings()
                 .UsePostgreSqlStorage(configuration.GetConnectionString(connectionString), new PostgreSqlStorageOptions()
-                { 
+                {
                     SchemaName = "hangfire"
                 });
             GlobalJobFilters.Filters.Add(new SGP.Hangfire.ContextFilterAttribute());
+
+            Registrado = true;
         }
     }
 }
