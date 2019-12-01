@@ -1,15 +1,13 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 
-namespace SME.SGP.Dominio.Entidades
+namespace SME.SGP.Dominio
 {
     public class Dre
     {
-        public long Id { get; set; }
-        public string  CodigoDre { get; set; }
         public string Abreviacao { get; set; }
-        public string Nome { get; set; }
+        public string CodigoDre { get; set; }
         public DateTime DataAtualizacao { get; set; }
+        public long Id { get; set; }
+        public string Nome { get; set; }
     }
 }

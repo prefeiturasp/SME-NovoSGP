@@ -1,4 +1,5 @@
-﻿using SME.SGP.Dominio;
+﻿using SME.SGP.Aplicacao.Integracoes;
+using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System;
@@ -13,9 +14,12 @@ namespace SME.SGP.Aplicacao
     {
         private readonly IRepositorioAtribuicaoCJ repositorioAtribuicaoCJ;
 
-        public ConsultasAtribuicaoCJ(IRepositorioAtribuicaoCJ repositorioAtribuicaoCJ)
+        private readonly IServicoEOL servicoEOL;
+
+        public ConsultasAtribuicaoCJ(IRepositorioAtribuicaoCJ repositorioAtribuicaoCJ, IServicoEOL servicoEOL)
         {
             this.repositorioAtribuicaoCJ = repositorioAtribuicaoCJ ?? throw new ArgumentNullException(nameof(repositorioAtribuicaoCJ));
+            this.servicoEOL = servicoEOL ?? throw new ArgumentNullException(nameof(servicoEOL));
         }
 
         public async Task<IEnumerable<AtribuicaoCJListaRetornoDto>> Listar(AtribuicaoCJListaFiltroDto filtroDto)
@@ -35,42 +39,51 @@ namespace SME.SGP.Aplicacao
 
             listaRetorno = await repositorioAtribuicaoCJ.ObterPorFiltros(null, null, filtroDto.UeId, string.Empty, listaRfs);
 
-            return TransformaEntidadesEmDtosListaRetorno(listaRetorno);
+            if (listaRetorno.Any())
+                return TransformaEntidadesEmDtosListaRetorno(listaRetorno);
+            else return null;
         }
 
-        private AtribuicaoCJListaRetornoDto TransformaEntidadeEmDto(AtribuicaoCJ dto)
+        private IEnumerable<AtribuicaoCJListaRetornoDto> TransformaEntidadesEmDtosListaRetorno(IEnumerable<AtribuicaoCJ> listaDto)
         {
-            var disciplinas = new List<AtribuicaoCJDisciplinaRetornoDto>();
-            //var nomeDisciplinas = servicoEol.
-            //dto.DisciplinaId
+            var idsDisciplinas = listaDto
+                .Select(a => (int.Parse(a.DisciplinaId)))
+                .Distinct<int>()
+                .ToArray();
 
-            return new AtribuicaoCJListaRetornoDto()
+            var disciplinasEol = servicoEOL.ObterDisciplinasPorIds(idsDisciplinas);
+
+            if (!disciplinasEol.Any())
+                throw new NegocioException("Não foi possível obter as descrições das disciplinas no Eol.");
+
+            var professoresDisciplinas = listaDto
+                .GroupBy(a => new { a.ProfessorRf, a.Modalidade, a.TurmaId, a.UeId }).ToList();
+
+            var listRetorno = new List<AtribuicaoCJListaRetornoDto>();
+
+            professoresDisciplinas.ForEach(a =>
             {
-                Modalidade = dto.Modalidade.GetAttribute<DisplayAttribute>().Name,
-                Turma = dto.TurmaId,
-                Disciplinas = disciplinas
-            };
-        }
+                var disciplinasIds = a.Select(b => b.DisciplinaId);
 
-        private IEnumerable<AtribuicaoCJListaRetornoDto> TransformaEntidadesEmDtosListaRetorno(IEnumerable<AtribuicaoCJ> listaRetorno)
-        {
-            var professoresDisciplinas = listaRetorno.GroupBy(a => new { a.ProfessorRf, a.Modalidade, a.TurmaId, a.UeId }).ToList();
+                var disciplinasDescricoes = disciplinasEol
+                            .Where(c => disciplinasIds.Contains(c.CodigoComponenteCurricular.ToString()))
+                            .ToList();
 
-            //var turmas =
+                var atribuicaoDto = new AtribuicaoCJListaRetornoDto()
+                {
+                    Modalidade = a.Key.Modalidade.GetAttribute<DisplayAttribute>().Name,
+                    Turma = a.FirstOrDefault().Turma.Nome,
+                    Disciplinas = disciplinasDescricoes.Select(d => new AtribuicaoCJDisciplinaRetornoDto
+                    {
+                        Disciplina = d.Nome,
+                        IdAtribuicao = a.FirstOrDefault().Id
+                    }).ToList()
+                };
 
-            //professoresDisciplinas.ForEach(a =>
-            //{
-            //    var atribuicao = new AtribuicaoCJListaRetornoDto()
-            //    {
-            //        Modalidade = a.Key.Modalidade.GetAttribute<DisplayAttribute>().Name,
-            //        Turma = a.Key.tu
-            //    }
-            //});
+                listRetorno.Add(atribuicaoDto);
+            });
 
-            foreach (var dto in listaRetorno)
-            {
-                yield return TransformaEntidadeEmDto(dto);
-            }
+            return listRetorno;
         }
     }
 }
