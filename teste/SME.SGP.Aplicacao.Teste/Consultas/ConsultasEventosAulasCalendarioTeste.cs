@@ -26,7 +26,7 @@ namespace SME.SGP.Aplicacao.Teste.Consultas
         private readonly Mock<IRepositorioTipoCalendario> repositorioTipoCalendatio;
         private readonly Mock<IServicoUsuario> servicoUsuario;
         private readonly Mock<IServicoEOL> servicoEOL;
-        private readonly Mock<IConsultasAbrangencia> consultaAbrangencia;
+        private readonly Mock<IConsultasAbrangencia> consultasAbrangencia;
 
         public ConsultasEventosAulasCalendarioTeste()
         {
@@ -39,9 +39,9 @@ namespace SME.SGP.Aplicacao.Teste.Consultas
             repositorioParametrosSistema = new Mock<IRepositorioParametrosSistema>();
             repositorioTipoCalendatio = new Mock<IRepositorioTipoCalendario>();
             servicoEOL = new Mock<IServicoEOL>();
-            consultaAbrangencia = new Mock<IConsultasAbrangencia>();
+            consultasAbrangencia = new Mock<IConsultasAbrangencia>();
 
-            consultasEventosAulasCalendario = new ConsultasEventosAulasCalendario(repositorioEvento.Object, comandosDiasLetivosMock.Object, repositorioAula.Object, servicoUsuario.Object, servicoEOL.Object, consultaAbrangencia.Object);
+            consultasEventosAulasCalendario = new ConsultasEventosAulasCalendario(repositorioEvento.Object, comandosDiasLetivosMock.Object, repositorioAula.Object, servicoUsuario.Object, servicoEOL.Object, consultasAbrangencia.Object);
             comandosDiasLetivos = new ComandosDiasLetivos(repositorioPeriodoEscolar.Object, repositorioEvento.Object, repositorioTipoCalendatio.Object, repositorioParametrosSistema.Object);
         }
 
