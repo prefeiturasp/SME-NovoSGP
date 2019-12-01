@@ -123,9 +123,9 @@ const CadastroAula = ({ match }) => {
       recorrenciaAula: Yup.string().required('Recorrência obrigatória'),
       quantidadeTexto: controlaQuantidadeAula
         ? validacaoQuantidade.lessThan(
-            quantidadeMaximaAulas + 1,
-            `Valor não pode ser maior que ${quantidadeMaximaAulas}`
-          )
+          quantidadeMaximaAulas + 1,
+          `Valor não pode ser maior que ${quantidadeMaximaAulas}`
+        )
         : validacaoQuantidade,
     };
 
@@ -274,7 +274,7 @@ const CadastroAula = ({ match }) => {
         setControlaQuantidadeAula(false);
       }
     }
-    montaValidacoes(0, 1, form);
+    quantidadeMaximaAulas > 2 ? montaValidacoes(0, 1, form) : montaValidacoes(quantidadeMaximaAulas, 0, form);
   };
 
   const onClickCadastrar = async valoresForm => {
@@ -294,8 +294,8 @@ const CadastroAula = ({ match }) => {
     const cadastrado = idAula
       ? await api.put(`v1/calendarios/professores/aulas/${idAula}`, valoresForm)
       : await api
-          .post('v1/calendarios/professores/aulas', valoresForm)
-          .catch(e => erros(e));
+        .post('v1/calendarios/professores/aulas', valoresForm)
+        .catch(e => erros(e));
 
     if (cadastrado && cadastrado.status === 200) {
       if (cadastrado.data) sucesso(cadastrado.data.mensagens[0]);
@@ -344,7 +344,7 @@ const CadastroAula = ({ match }) => {
       <Cabecalho
         pagina={`Cadastro de Aula - ${
           dataAula ? dataAula.format('dddd') : ''
-        }, ${dataAula ? dataAula.format('DD/MM/YYYY') : ''} `}
+          }, ${dataAula ? dataAula.format('DD/MM/YYYY') : ''} `}
       />
       <Card>
         <Formik
@@ -511,8 +511,8 @@ const CadastroAula = ({ match }) => {
             alteradoRf={auditoria.alteradoRf}
           />
         ) : (
-          ''
-        )}
+            ''
+          )}
       </Card>
     </>
   );
