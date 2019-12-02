@@ -30,6 +30,11 @@ namespace SME.SGP.Dominio.Servicos
             this.servicoEOL = servicoEOL ?? throw new System.ArgumentNullException(nameof(servicoEOL));
         }
 
+        public async Task ExcluirFrequenciaAula(long aulaId)
+        {
+            await repositorioFrequencia.ExcluirFrequenciaAula(aulaId);
+        }
+
         public IEnumerable<RegistroAusenciaAluno> ObterListaAusenciasPorAula(long aulaId)
         {
             return repositorioFrequencia.ObterListaFrequenciaPorAula(aulaId);

@@ -3,6 +3,7 @@ using SME.SGP.Dados.Contexto;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace SME.SGP.Dados.Repositorios
 {
@@ -10,6 +11,19 @@ namespace SME.SGP.Dados.Repositorios
     {
         public RepositorioFrequencia(ISgpContext database) : base(database)
         {
+        }
+
+        public async Task ExcluirFrequenciaAula(long aulaId)
+        {
+            // Exclui registros de ausencia do aluno
+            var command = @"delete from registro_ausencia_aluno 
+                            where registro_frequencia_id in (
+                                select id from registro_frequencia where aula_id = @aulaId)";
+            await database.ExecuteAsync(command, new { aulaId });
+
+            // Exclui registro de frequencia da aula
+            command = "delete from registro_frequencia where aula_id = @aulaId ";
+            await database.ExecuteAsync(command, new { aulaId });
         }
 
         public IEnumerable<RegistroAusenciaAluno> ObterListaFrequenciaPorAula(long aulaId)
