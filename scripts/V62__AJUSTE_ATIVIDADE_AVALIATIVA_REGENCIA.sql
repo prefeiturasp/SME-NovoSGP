@@ -1,0 +1,1 @@
+﻿ALTER TABLE public.atividade_avaliativa ADD COLUMN eh_regencia boolean not null default false;
