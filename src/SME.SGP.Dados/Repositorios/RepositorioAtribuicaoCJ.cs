@@ -14,7 +14,8 @@ namespace SME.SGP.Dados.Repositorios
         {
         }
 
-        public async Task<IEnumerable<AtribuicaoCJ>> ObterPorFiltros(Modalidade? modalidade, string turmaId, string ueId, string disciplinaId, string[] usuariosRfs)
+        public async Task<IEnumerable<AtribuicaoCJ>> ObterPorFiltros(Modalidade? modalidade, string turmaId, string ueId, string disciplinaId,
+            string usuarioRf, string usuarioNome)
         {
             var query = new StringBuilder();
 
@@ -23,6 +24,8 @@ namespace SME.SGP.Dados.Repositorios
             query.AppendLine("atribuicao_cj a");
             query.AppendLine("inner join turma t");
             query.AppendLine("on t.turma_id = a.turma_id");
+            query.AppendLine("inner join usuario u");
+            query.AppendLine("on u.rf_codigo = a.professor_rf");
             query.AppendLine("where 1 = 1");
 
             if (modalidade.HasValue)
@@ -37,8 +40,14 @@ namespace SME.SGP.Dados.Repositorios
             if (!string.IsNullOrEmpty(disciplinaId))
                 query.AppendLine("and a.disciplina_id = @disciplinaId");
 
-            if (usuariosRfs.Length > 0)
-                query.AppendLine("and a.usuario_rf in @usuariosRfs");
+            if (!string.IsNullOrEmpty(usuarioRf))
+                query.AppendLine("and a.usuario_rf = @usuarioRf");
+
+            if (!string.IsNullOrEmpty(usuarioNome))
+            {
+                usuarioNome = $"%{usuarioNome.ToUpper()}%";
+                query.AppendLine("and upper(f_unaccent(u.nome)) LIKE @usuarioNome");
+            }
 
             return (await database.Conexao.QueryAsync<AtribuicaoCJ, Turma, AtribuicaoCJ>(query.ToString(), (atribuicaoCJ, turma) =>
             {
@@ -50,7 +59,8 @@ namespace SME.SGP.Dados.Repositorios
                 ueId,
                 turmaId,
                 disciplinaId,
-                usuariosRfs
+                usuarioRf,
+                usuarioNome
             }, splitOn: "id,id"));
         }
     }

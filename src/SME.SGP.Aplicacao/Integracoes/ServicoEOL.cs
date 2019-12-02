@@ -303,6 +303,11 @@ namespace SME.SGP.Aplicacao.Integracoes
             return JsonConvert.DeserializeObject<IEnumerable<ProfessorResumoDto>>(json);
         }
 
+        public IEnumerable<ProfessorTitularDisciplinaEol> ObterProfessoresTitularesDisciplinas(string turmaId, Modalidade modalidadeId, string ueId)
+        {
+            return new List<ProfessorTitularDisciplinaEol>();
+        }
+
         public async Task<UsuarioResumoCoreDto> ObterResumoCore(string login)
         {
             var resposta = await httpClient.GetAsync($"AutenticacaoSgp/{login}/obter/resumo");

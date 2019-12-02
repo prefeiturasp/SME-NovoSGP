@@ -24,12 +24,12 @@ namespace SME.SGP.Api.Controllers
             return Ok(await consultasAtribuicaoCJ.Listar(atribuicaoCJListaFiltroDto));
         }
 
-        [HttpGet("ues/{ueId}/modalidades/{modalidadeId}/turmas/{turmaId}/professores/{professorId}/")]
+        [HttpGet("ues/{ueId}/modalidades/{modalidadeId}/turmas/{turmaId}/professores/{professorRf}/")]
         [ProducesResponseType(typeof(AtribuicaoCJTitularesRetornoDto), 200)]
         [ProducesResponseType(204)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         public IActionResult ObterAtribuicaoDeProfessores(string ueId, string turmaId,
-            string professorId, Modalidade modalidadeId)
+            string professorRf, Modalidade modalidadeId)
         {
             var retorno = new AtribuicaoCJTitularesRetornoDto()
             {
