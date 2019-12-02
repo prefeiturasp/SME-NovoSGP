@@ -17,6 +17,7 @@ namespace SME.SGP.Dados.Mapeamentos
             Map(t => t.NomeAvaliacao).ToColumn("nome_avaliacao");
             Map(t => t.DescricaoAvaliacao).ToColumn("descricao_avaliacao");
             Map(t => t.DataAvaliacao).ToColumn("data_avaliacao");
+            Map(t => t.EhRegencia).ToColumn("eh_regencia");
         }
     }
 }
