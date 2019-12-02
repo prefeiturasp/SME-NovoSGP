@@ -5,6 +5,6 @@ namespace SME.SGP.Aplicacao
 {
     public interface IComandosAtribuicaoCJ
     {
-        Task Salvar(AtribuicaoCJPersistenciaDto[] atribuicaoCJPersistenciaDtos);
+        Task Salvar(AtribuicaoCJPersistenciaDto atribuicaoCJPersistenciaDto);
     }
 }

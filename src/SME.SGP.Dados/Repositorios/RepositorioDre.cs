@@ -1,20 +1,18 @@
-﻿using SME.SGP.Dados.Contexto;
-using SME.SGP.Dominio.Entidades;
+﻿using Dapper;
+using Dommel;
+using SME.SGP.Dados.Contexto;
+using SME.SGP.Dominio;
+using SME.SGP.Dominio.Interfaces;
 using System;
 using System.Collections.Generic;
-using System.Text;
-using Dapper;
-using Dommel;
 using System.Linq;
-using SME.SGP.Dominio.Interfaces;
 
 namespace SME.SGP.Dados.Repositorios
 {
     public class RepositorioDre : IRepositorioDre
     {
-        const string QuerySincronizacao = @"SELECT id, dre_id, abreviacao, nome, data_atualizacao FROM public.dre where dre_id in (#ids);";
-        const string Update = "UPDATE public.dre SET abreviacao = @abreviacao, nome = @nome, data_atualizacao = @dataAtualizacao WHERE id = @id;";
-
+        private const string QuerySincronizacao = @"SELECT id, dre_id, abreviacao, nome, data_atualizacao FROM public.dre where dre_id in (#ids);";
+        private const string Update = "UPDATE public.dre SET abreviacao = @abreviacao, nome = @nome, data_atualizacao = @dataAtualizacao WHERE id = @id;";
 
         private readonly ISgpContext contexto;
 
@@ -63,8 +61,6 @@ namespace SME.SGP.Dados.Repositorios
             resultado.AddRange(armazenados.Where(x => !resultado.Select(y => y.CodigoDre).Contains(x.CodigoDre)));
 
             return resultado;
-
         }
     }
-
 }
