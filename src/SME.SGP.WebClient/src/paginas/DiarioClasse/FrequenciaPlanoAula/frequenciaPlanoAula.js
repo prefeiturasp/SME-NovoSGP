@@ -63,6 +63,7 @@ const FrequenciaPlanoAula = () => {
   const [desabilitarDisciplina, setDesabilitarDisciplina] = useState(false);
   const [diasParaHabilitar, setDiasParaHabilitar] = useState([]);
   const [auditoria, setAuditoria] = useState([]);
+  const [auditoriaPlano, setAuditoriaPlano] = useState([]);
   const [exibirAuditoria, setExibirAuditoria] = useState(false);
   const [desabilitarCampos, setDesabilitarCampos] = useState(false);
   const [modoEdicaoPlanoAula, setModoEdicaoPlanoAula] = useState(false);
@@ -165,6 +166,13 @@ const FrequenciaPlanoAula = () => {
         dadosPlano.temObjetivos =
           (disciplinaSelecionada.regencia || ehProfessor) && !ehEja;
         setPlanoAula(dadosPlano);
+        const audPlano = {
+          criadoEm: dadosPlano.criadoEm,
+          criadoPor: dadosPlano.criadoPor,
+          alteradoEm: dadosPlano.alteradoEm,
+          alteradoPor: dadosPlano.alteradoPor,
+        }
+        setAuditoriaPlano(audPlano)
       } else {
         setModoEdicaoPlanoAula(false);
       }
@@ -587,71 +595,71 @@ const FrequenciaPlanoAula = () => {
               />
             </div>
           </div>
-          {dataSelecionada ? (
-            <div className="row">
-              <div className="col-sm-12 col-md-12 col-lg-12 col-xl-12 mb-2">
-                <CardCollapse
-                  key="frequencia-collapse"
-                  onClick={onClickFrequencia}
-                  titulo="Frequência"
-                  indice="frequencia-collapse"
-                  show={exibirCardFrequencia}
-                  alt="card-collapse-frequencia"
-                >
-                  {frequencia && frequencia.length > 0 ? (
-                    <>
-                      <div className="col-sm-12 col-md-12 col-lg-12 col-xl-12 mb-2">
-                        <Ordenacao
-                          conteudoParaOrdenar={frequencia}
-                          ordenarColunaNumero="numeroAlunoChamada"
-                          ordenarColunaTexto="nomeAluno"
-                          retornoOrdenado={retorno => setFrequencia(retorno)}
-                        ></Ordenacao>
-                        <ListaFrequencia
-                          dados={frequencia}
-                          frequenciaId={frequenciaId}
-                          onChangeFrequencia={onChangeFrequencia}
-                          permissoesTela={permissoesTela}
-                        ></ListaFrequencia>
-                      </div>
-                      {exibirAuditoria ? (
-                        <Auditoria
-                          className="mt-2"
-                          criadoEm={auditoria.criadoEm}
-                          criadoPor={auditoria.criadoPor}
-                          alteradoPor={auditoria.alteradoPor}
-                          alteradoEm={auditoria.alteradoEm}
-                        />
-                      ) : (
-                        ''
-                      )}
-                    </>
-                  ) : (
-                    ''
-                  )}
-                </CardCollapse>
+          {
+            dataSelecionada ?
+              <div className="row">
+                <div className="col-sm-12 col-md-12 col-lg-12 col-xl-12 mb-2">
+                  <CardCollapse
+                    key="frequencia-collapse"
+                    onClick={onClickFrequencia}
+                    titulo="Frequência"
+                    indice="frequencia-collapse"
+                    show={exibirCardFrequencia}
+                    alt="card-collapse-frequencia"
+                  >
+                    {
+                      frequencia && frequencia.length > 0 ?
+                        <>
+                          <div className="col-sm-12 col-md-12 col-lg-12 col-xl-12 mb-2">
+                            <Ordenacao
+                              conteudoParaOrdenar={frequencia}
+                              ordenarColunaNumero="numeroAlunoChamada"
+                              ordenarColunaTexto="nomeAluno"
+                              retornoOrdenado={retorno => setFrequencia(retorno)}
+                            ></Ordenacao>
+                            <ListaFrequencia dados={frequencia}
+                              frequenciaId={frequenciaId}
+                              onChangeFrequencia={onChangeFrequencia}
+                              permissoesTela={permissoesTela}
+                            ></ListaFrequencia>
+                          </div>
+                          {exibirAuditoria ? (
+                            <Auditoria
+                              className="mt-2"
+                              criadoEm={auditoria.criadoEm}
+                              criadoPor={auditoria.criadoPor}
+                              alteradoPor={auditoria.alteradoPor}
+                              alteradoEm={auditoria.alteradoEm}
+                            />
+                          ) : (
+                              ''
+                            )}
+                        </>
+                        : ''
+                    }
+                  </CardCollapse>
+                </div>
+                <div className="col-sm-12 col-md-12 col-lg-12">
+                  <PlanoAula
+                    disciplinaIdSelecionada={disciplinaIdSelecionada}
+                    dataSelecionada={dataSelecionada}
+                    planoAula={planoAula}
+                    ehProfessorCj={ehProfessorCj}
+                    listaMaterias={materias}
+                    dataAula={aula && aula.data ? aula.data : null}
+                    ehEja={ehEja}
+                    ehMedio={ehMedio}
+                    setModoEdicao={(e) => setModoEdicaoPlanoAula(e)}
+                    setTemObjetivos={(e) => setTemObjetivos(e)}
+                    permissoesTela={permissoesTela}
+                    somenteConsulta={somenteConsulta}
+                    temObjetivos={temObjetivos}
+                    auditoria={auditoriaPlano}
+                  />
+                </div>
               </div>
-              <div className="col-sm-12 col-md-12 col-lg-12">
-                <PlanoAula
-                  disciplinaIdSelecionada={disciplinaIdSelecionada}
-                  dataSelecionada={dataSelecionada}
-                  planoAula={planoAula}
-                  ehProfessorCj={ehProfessorCj}
-                  listaMaterias={materias}
-                  dataAula={aula && aula.data ? aula.data : null}
-                  ehEja={ehEja}
-                  ehMedio={ehMedio}
-                  setModoEdicao={e => setModoEdicaoPlanoAula(e)}
-                  setTemObjetivos={e => setTemObjetivos(e)}
-                  permissoesTela={permissoesTela}
-                  somenteConsulta={somenteConsulta}
-                  temObjetivos={temObjetivos}
-                />
-              </div>
-            </div>
-          ) : (
-            ''
-          )}
+              : ''
+          }
         </div>
         <ModalMultiLinhas
           key="errosBimestre"

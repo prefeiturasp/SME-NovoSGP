@@ -3,6 +3,8 @@ using Dommel;
 using SME.SGP.Dados.Contexto;
 using SME.SGP.Dominio.Entidades;
 using SME.SGP.Dominio.Interfaces;
+using SME.SGP.Dominio;
+using SME.SGP.Dominio.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -44,12 +46,10 @@ namespace SME.SGP.Dados.Repositorios
 	                    id = @id;";
 
         private readonly ISgpContext contexto;
-        private readonly IRepositorioUe respositorioUe;
 
-        public RepositorioTurma(ISgpContext contexto, IRepositorioUe respositorioUe)
+        public RepositorioTurma(ISgpContext contexto)
         {
             this.contexto = contexto;
-            this.respositorioUe = respositorioUe;
         }
 
         public Turma ObterPorId(string turmaId)
