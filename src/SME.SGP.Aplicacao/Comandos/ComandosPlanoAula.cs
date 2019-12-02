@@ -82,6 +82,9 @@ namespace SME.SGP.Aplicacao
             var planoAnualId = await consultasPlanoAnual.ObterIdPlanoAnualPorAnoEscolaBimestreETurma(
                         aula.DataAula.Year, aula.UeId, long.Parse(aula.TurmaId), bimestre, long.Parse(aula.DisciplinaId));
 
+            if (planoAnualId <= 0)
+                throw new NegocioException("Não foi possível concluir o cadasatro, pois não existe plano anual cadastrado");
+
             using (var transacao = unitOfWork.IniciarTransacao())
             {
                 repositorio.Salvar(planoAula);
