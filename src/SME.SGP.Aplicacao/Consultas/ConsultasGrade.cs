@@ -1,7 +1,6 @@
 ﻿using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
-using SME.SGP.Infra.Dtos;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
@@ -31,7 +30,7 @@ namespace SME.SGP.Aplicacao
             if (grade == null)
                 throw new NegocioException("Grade da turma não localizada.");
 
-            var horasGrade = 0;
+            int horasGrade;
             // verifica se é regencia de classe
             if (disciplina == 1105)
                 horasGrade = abrangencia.Modalidade == Modalidade.EJA ? 5 : 1;
