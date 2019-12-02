@@ -112,6 +112,8 @@ namespace SME.SGP.Aplicacao.Teste.Comandos
                 new PrioridadePerfil() { CodigoPerfil = PERFIL_CJ }
             });
 
+            usuario.DefinirPerfilAtual(PERFIL_CJ);
+
             // ACT
             await comandosPlanoAula.Salvar(planoAulaDto);
 
