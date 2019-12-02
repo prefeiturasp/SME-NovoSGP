@@ -38,7 +38,7 @@ namespace SME.SGP.Api.Controllers
         [HttpDelete("{id}/recorrencias/{recorrencia}")]
         [ProducesResponseType(typeof(string), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        //[Permissao(Permissao.CP_E, Policy = "Bearer")]
+        [Permissao(Permissao.CP_E, Policy = "Bearer")]
         public async Task<IActionResult> Excluir(long id, RecorrenciaAula recorrencia, [FromServices]IComandosAula comandos)
         {
             var retorno = new RetornoBaseDto();
