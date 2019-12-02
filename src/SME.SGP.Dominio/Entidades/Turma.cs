@@ -12,8 +12,6 @@ namespace SME.SGP.Dominio
         public Modalidade ModalidadeCodigo { get; set; }
         public string Nome { get; set; }
         public int QuantidadeDuracaoAula { get; set; }
-        public string Nome { get; set; }
-        public int QuantidadeDuracaoAula { get; set; }
         public int Semestre { get; set; }
         public int TipoTurno { get; set; }
 
