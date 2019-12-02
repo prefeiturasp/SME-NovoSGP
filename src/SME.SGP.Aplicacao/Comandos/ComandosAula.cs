@@ -21,11 +21,12 @@ namespace SME.SGP.Aplicacao
             this.servicoAula = servicoAula ?? throw new ArgumentNullException(nameof(servicoAula));
         }
 
-        public async Task Alterar(AulaDto dto, long id)
+        public async Task<string> Alterar(AulaDto dto, long id)
         {
             var usuario = await servicoUsuario.ObterUsuarioLogado();
             var aula = MapearDtoParaEntidade(dto, id, usuario.CodigoRf);
-            await servicoAula.Salvar(aula, usuario);
+
+            return await servicoAula.Salvar(aula, usuario, dto.RecorrenciaAula);
         }
 
         public void Excluir(long id)
@@ -40,7 +41,7 @@ namespace SME.SGP.Aplicacao
             var usuario = await servicoUsuario.ObterUsuarioLogado();
             var aula = MapearDtoParaEntidade(dto, 0L, usuario.CodigoRf);
 
-            return await servicoAula.Salvar(aula, usuario);
+            return await servicoAula.Salvar(aula, usuario, aula.RecorrenciaAula);
         }
 
         private Aula MapearDtoParaEntidade(AulaDto dto, long id, string usuarioRf)
@@ -53,6 +54,8 @@ namespace SME.SGP.Aplicacao
             if (string.IsNullOrEmpty(aula.ProfessorRf))
             {
                 aula.ProfessorRf = usuarioRf;
+                // Alteração não muda recorrencia da aula
+                aula.RecorrenciaAula = dto.RecorrenciaAula;
             }
             aula.UeId = dto.UeId;
             aula.DisciplinaId = dto.DisciplinaId;
@@ -60,7 +63,6 @@ namespace SME.SGP.Aplicacao
             aula.TipoCalendarioId = dto.TipoCalendarioId;
             aula.DataAula = dto.DataAula;
             aula.Quantidade = dto.Quantidade;
-            aula.RecorrenciaAula = dto.RecorrenciaAula;
             aula.TipoAula = dto.TipoAula;
             return aula;
         }

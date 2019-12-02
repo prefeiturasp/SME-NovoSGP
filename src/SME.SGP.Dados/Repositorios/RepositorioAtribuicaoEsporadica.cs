@@ -4,6 +4,7 @@ using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -33,6 +34,32 @@ namespace SME.SGP.Dados.Repositorios
             retorno.TotalPaginas = (int)Math.Ceiling((double)retorno.TotalRegistros / paginacao.QuantidadeRegistros);
 
             return retorno;
+        }
+
+        public IEnumerable<AtribuicaoEsporadica> ObterAtribuicoesDatasConflitantes(DateTime dataInicio, DateTime dataFim, string professorRF, long id = 0)
+        {
+            var sql = ObterSqlConflitante(id > 0);
+
+            var parametros = new { professorRF, dataInicio, dataFim, id };
+
+            return database.Conexao.Query<AtribuicaoEsporadica>(sql, parametros);
+        }
+
+        private string ObterSqlConflitante(bool temId)
+        {
+            var sql = new StringBuilder();
+
+            sql.AppendLine(@"select * from atribuicao_esporadica
+                    where professor_rf = @professorRF and
+                    ((@dataInicio >= data_inicio and @dataInicio <= data_fim) or
+                    (@dataFim  >= data_inicio and @dataFim <= data_fim) or
+                    (data_inicio >= @dataInicio and data_inicio <= @dataFim) or
+                    (data_fim  >= @dataInicio and data_fim <= @dataFim))");
+
+            if (temId)
+                sql.AppendLine("and id <> @id");
+
+            return sql.ToString();
         }
 
         public AtribuicaoEsporadica ObterUltimaPorRF(string codigoRF)
