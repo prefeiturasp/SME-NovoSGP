@@ -41,7 +41,7 @@ namespace SME.SGP.Dados.Repositorios
                 query.AppendLine("and a.disciplina_id = @disciplinaId");
 
             if (!string.IsNullOrEmpty(usuarioRf))
-                query.AppendLine("and a.usuario_rf = @usuarioRf");
+                query.AppendLine("and a.professor_rf = @usuarioRf");
 
             if (!string.IsNullOrEmpty(usuarioNome))
             {

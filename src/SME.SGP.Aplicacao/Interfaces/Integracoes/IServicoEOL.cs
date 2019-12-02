@@ -39,7 +39,7 @@ namespace SME.SGP.Aplicacao.Integracoes
         Task<IEnumerable<UsuarioEolRetornoDto>> ObterFuncionariosPorUe(BuscaFuncionariosFiltroDto buscaFuncionariosFiltroDto);
 
         Task<IEnumerable<ProfessorResumoDto>> ObterListaNomePorListaRF(IEnumerable<string> codigosRF);
-        IEnumerable<ProfessorTitularDisciplinaEol> ObterProfessoresTitularesDisciplinas(string turmaId, Modalidade modalidadeId, string ueId);
+
         Task<IEnumerable<ProfessorResumoDto>> ObterListaResumosPorListaRF(IEnumerable<string> codigosRF, int anoLetivo);
 
         IEnumerable<ProfessorTurmaReposta> ObterListaTurmasPorProfessor(string codigoRf);
@@ -51,6 +51,8 @@ namespace SME.SGP.Aplicacao.Integracoes
         Task<int[]> ObterPermissoesPorPerfil(Guid perfilGuid);
 
         Task<IEnumerable<ProfessorResumoDto>> ObterProfessoresAutoComplete(int anoLetivo, string dreId, string nomeProfessor);
+
+        Task<IEnumerable<ProfessorTitularDisciplinaEol>> ObterProfessoresTitularesDisciplinas(string turmaId, Modalidade modalidadeId, string ueId);
 
         Task<UsuarioResumoCoreDto> ObterResumoCore(string login);
 

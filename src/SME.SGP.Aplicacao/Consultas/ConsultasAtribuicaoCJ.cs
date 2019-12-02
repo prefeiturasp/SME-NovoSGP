@@ -35,9 +35,9 @@ namespace SME.SGP.Aplicacao
         public async Task<AtribuicaoCJTitularesRetornoDto> ObterProfessoresTitularesECjs(string ueId, string turmaId,
             string professorRf, Modalidade modalidadeId)
         {
-            IEnumerable<ProfessorTitularDisciplinaEol> professoresTitularesDisciplinasEol = servicoEOL.ObterProfessoresTitularesDisciplinas(turmaId, modalidadeId, ueId);
+            IEnumerable<ProfessorTitularDisciplinaEol> professoresTitularesDisciplinasEol = await servicoEOL.ObterProfessoresTitularesDisciplinas(turmaId, modalidadeId, ueId);
 
-            var listaAtribuicoes = await repositorioAtribuicaoCJ.ObterPorFiltros(null, null, ueId, string.Empty,
+            var listaAtribuicoes = await repositorioAtribuicaoCJ.ObterPorFiltros(modalidadeId, turmaId, ueId, string.Empty,
                 professorRf, string.Empty);
 
             if (professoresTitularesDisciplinasEol.Any())
@@ -51,11 +51,28 @@ namespace SME.SGP.Aplicacao
 
             foreach (var disciplinaProfessorTitular in professoresTitularesDisciplinasEol)
             {
+                var atribuicao = listaAtribuicoes.FirstOrDefault(b => b.DisciplinaId == disciplinaProfessorTitular.DisciplinaId.ToString());
+
                 listaRetorno.Itens.Add(new AtribuicaoCJTitularesRetornoItemDto()
                 {
                     Disciplina = disciplinaProfessorTitular.DisciplinaNome,
-                    //DisciplinaId = disciplinaProfessorTitular.DisciplinaId.ToString(),
+                    DisciplinaId = disciplinaProfessorTitular.DisciplinaId,
+                    ProfessorTitular = disciplinaProfessorTitular.ProfessorNome,
+                    ProfessorTitularRf = disciplinaProfessorTitular.ProfessorRf,
+                    Substituir = atribuicao == null ? false : atribuicao.Substituir
                 });
+            }
+
+            if (listaAtribuicoes.Any())
+            {
+                var ultimoRegistroAlterado = listaAtribuicoes
+                    .OrderBy(b => b.AlteradoEm)
+                    .ThenBy(b => b.CriadoEm).FirstOrDefault();
+
+                listaRetorno.CriadoEm = ultimoRegistroAlterado.CriadoEm;
+                listaRetorno.CriadoPor = ultimoRegistroAlterado.CriadoPor;
+                listaRetorno.AlteradoEm = ultimoRegistroAlterado.AlteradoEm;
+                listaRetorno.AlteradoPor = ultimoRegistroAlterado.AlteradoPor;
             }
 
             return listaRetorno;
