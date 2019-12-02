@@ -2,6 +2,7 @@
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
@@ -15,12 +16,20 @@ namespace SME.SGP.Aplicacao
             this.repositorioAtribuicaoCJ = repositorioAtribuicaoCJ ?? throw new ArgumentNullException(nameof(repositorioAtribuicaoCJ));
         }
 
-        public async Task Salvar(AtribuicaoCJPersistenciaDto[] atribuicaoCJPersistenciaDtos)
+        public async Task Salvar(AtribuicaoCJPersistenciaDto atribuicaoCJPersistenciaDto)
         {
-            foreach (var atribuicaoDto in atribuicaoCJPersistenciaDtos)
+            var atribuicaoCJs = await repositorioAtribuicaoCJ.ObterPorFiltros(atribuicaoCJPersistenciaDto.Modalidade, atribuicaoCJPersistenciaDto.TurmaId,
+                atribuicaoCJPersistenciaDto.UeId, string.Empty, null);
+
+            foreach (var atribuicaoDto in atribuicaoCJPersistenciaDto.Disciplinas)
             {
-                var atribuicao = await repositorioAtribuicaoCJ.ObterPorComponenteTurmaModalidadeUe(atribuicaoDto.Modalidade, atribuicaoDto.TurmaId, atribuicaoDto.UeId, atribuicaoDto.ComponenteCurricularId);
-                if (atribuicao != null)
+                var atribuicao = atribuicaoCJs.FirstOrDefault(a => a.DisciplinaId == atribuicaoDto.DisciplinaId);
+                if (atribuicao == null)
+                {
+                    var novaAtribuicao = TransformaDtoEmEntidade(atribuicaoCJPersistenciaDto, atribuicaoDto);
+                    await repositorioAtribuicaoCJ.SalvarAsync(novaAtribuicao);
+                }
+                else
                 {
                     if (atribuicao.Substituir != atribuicaoDto.Substituir)
                     {
@@ -28,25 +37,20 @@ namespace SME.SGP.Aplicacao
                         await repositorioAtribuicaoCJ.SalvarAsync(atribuicao);
                     }
                 }
-                else
-                {
-                    var novaAtribuicao = TransaformaDtoEmEntidade(atribuicaoDto);
-                    await repositorioAtribuicaoCJ.SalvarAsync(novaAtribuicao);
-                }
             }
         }
 
-        private AtribuicaoCJ TransaformaDtoEmEntidade(AtribuicaoCJPersistenciaDto dto)
+        private AtribuicaoCJ TransformaDtoEmEntidade(AtribuicaoCJPersistenciaDto dto, AtribuicaoCJPersistenciaItemDto itemDto)
         {
             return new AtribuicaoCJ()
             {
                 DreId = dto.DreId,
                 Modalidade = dto.Modalidade,
                 ProfessorRf = dto.UsuarioRf,
-                Substituir = dto.Substituir,
+                Substituir = itemDto.Substituir,
                 TurmaId = dto.TurmaId,
                 UeId = dto.UeId,
-                ComponenteCurricularId = dto.ComponenteCurricularId
+                DisciplinaId = itemDto.DisciplinaId
             };
         }
     }
