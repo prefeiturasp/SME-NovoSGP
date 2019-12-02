@@ -18,6 +18,7 @@ namespace SME.SGP.Infra
         public string LicaoCasa { get; set; }
         public long AulaId { get; set; }
         public int QtdAulas { get; set; }
+        public bool Migrado { get; set; }
 
         public string CriadoPor { get; set; }
         public DateTime CriadoEm { get; set; }
