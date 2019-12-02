@@ -42,13 +42,13 @@ namespace SME.SGP.Aplicacao
 
         public async Task Migrar(MigrarPlanoAulaDto migrarPlanoAulaDto)
         {
+            ValidaTurmasProfessor(migrarPlanoAulaDto);
+
             var planoAulaDto = repositorio.ObterPorId(migrarPlanoAulaDto.PlanoAulaId);
             var objetivosPlanoAulaDto = await repositorioObjetivosAula.ObterObjetivosPlanoAula(migrarPlanoAulaDto.PlanoAulaId);
 
             using (var transacao = unitOfWork.IniciarTransacao())
             {
-                ValidaTurmasProfessor(migrarPlanoAulaDto);
-
                 foreach (var planoTurma in migrarPlanoAulaDto.IdsPlanoTurmasDestino)
                 {
                     AulaConsultaDto aulaConsultaDto = await
@@ -58,15 +58,19 @@ namespace SME.SGP.Aplicacao
                              migrarPlanoAulaDto.DisciplinaId
                          );
 
+                    if(aulaConsultaDto == null)
+                        throw new NegocioException($"Não há aula cadastrada para a turma {planoTurma.TurmaId} para a data {planoTurma.Data.ToShortDateString()} nesta disciplina!");
+
                     var planoCopia = new PlanoAulaDto()
                     {
+                        Id = planoTurma.Sobreescrever ? migrarPlanoAulaDto.PlanoAulaId : 0,
                         AulaId = aulaConsultaDto.Id,
                         Descricao = planoAulaDto.Descricao,
                         DesenvolvimentoAula = planoAulaDto.DesenvolvimentoAula,
                         LicaoCasa = migrarPlanoAulaDto.MigrarLicaoCasa ? planoAulaDto.LicaoCasa : string.Empty,
                         ObjetivosAprendizagemJurema = !migrarPlanoAulaDto.EhProfessorCJ ||
                                                        migrarPlanoAulaDto.MigrarObjetivos ?
-                                                       objetivosPlanoAulaDto.Select(o => o.Id).ToList() : null,
+                                                       objetivosPlanoAulaDto.Select(o => o.ObjetivoAprendizagemPlano.ObjetivoAprendizagemJuremaId).ToList() : null,
                         RecuperacaoAula = migrarPlanoAulaDto.MigrarRecuperacaoAula ?
                                             planoAulaDto.RecuperacaoAula : string.Empty
                     };
