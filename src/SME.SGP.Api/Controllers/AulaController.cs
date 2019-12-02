@@ -56,25 +56,22 @@ namespace SME.SGP.Api.Controllers
             return Ok(retorno);
         }
 
-        [HttpGet("{aulaId}/recorrencias/{recorrencia}/quantidade")]
-        [ProducesResponseType(typeof(string), 200)]
-        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        [Permissao(Permissao.CP_I, Policy = "Bearer")]
-        public async Task<IActionResult> ObterQuantidadeAulasRecorrencia(long aulaId, RecorrenciaAula recorrencia, [FromServices]IConsultasAula consultas)
-        {
-            return Ok(await consultas.ObterQuantidadeAulasRecorrentes(aulaId, recorrencia));
-        }
-
         [HttpGet("{aulaId}/recorrencias/serie")]
-        [ProducesResponseType(typeof(int), 200)]
+        [ProducesResponseType(typeof(AulaRecorrenciaDto), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [ProducesResponseType(typeof(RetornoBaseDto), 601)]
         [Permissao(Permissao.CP_I, Policy = "Bearer")]
         public async Task<IActionResult> ObterRecorrenciaDaSerie(long aulaId, [FromServices]IConsultasAula consultas)
         {
             var recorrencia = await consultas.ObterRecorrenciaDaSerie(aulaId);
+            var quantidadeAulas = await consultas.ObterQuantidadeAulasRecorrentes(aulaId, RecorrenciaAula.RepetirTodosBimestres);
 
-            return Ok(recorrencia);
+            return Ok(new AulaRecorrenciaDto() 
+            { 
+                AulaId = aulaId,
+                RecorrenciaAula = recorrencia,
+                QuantidadeAulasRecorrentes = quantidadeAulas
+            });
         }
     }
 }
