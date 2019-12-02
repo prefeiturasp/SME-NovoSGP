@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace SME.SGP.Dominio.Interfaces
 {
@@ -8,6 +9,6 @@ namespace SME.SGP.Dominio.Interfaces
 
         RegistroFrequencia ObterRegistroFrequenciaPorAulaId(long aulaId);
 
-        void ExcluirFrequenciaAula(long aulaId);
+        Task ExcluirFrequenciaAula(long aulaId);
     }
 }
