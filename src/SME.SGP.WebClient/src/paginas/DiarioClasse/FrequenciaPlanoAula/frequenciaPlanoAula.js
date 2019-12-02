@@ -71,6 +71,7 @@ const FrequenciaPlanoAula = () => {
     recuperacaoAula: null,
     licaoCasa: null,
     objetivosAprendizagemAula: [],
+    migrado: false,
   });
   const [temObjetivos, setTemObjetivos] = useState(false);
   const [errosValidacaoPlano, setErrosValidacaoPlano] = useState([]);
