@@ -110,7 +110,6 @@ namespace SME.SGP.Dominio.Servicos
                     return "Aula cadastrada com sucesso e enviada para aprovação.";
                 }
             }
-
             else
             {
                 // Busca quantidade de aulas semanais da grade de aula
@@ -351,20 +350,40 @@ namespace SME.SGP.Dominio.Servicos
             repositorioAula.Salvar(aula);
         }
 
-        public async Task Excluir(Aula aula, RecorrenciaAula recorrencia)
+        public async Task<string> Excluir(Aula aula, RecorrenciaAula recorrencia, Usuario usuario)
         {
-            if (recorrencia != RecorrenciaAula.AulaUnica)
-            {
-                var fimRecorrencia = consultasPeriodoEscolar.ObterFimPeriodoRecorrencia(aula.TipoCalendarioId, aula.DataAula.Date, recorrencia);
-                var aulasRecorrencia = await repositorioAula.ObterAulasRecorrencia(aula.AulaPaiId ?? aula.Id, aula.Id, fimRecorrencia);
+            await ExcluirAula(aula);
 
-                foreach(var aulaRecorrente in aulasRecorrencia)
+            if (recorrencia != RecorrenciaAula.AulaUnica)
+                await ExcluirRecorrencia(aula, recorrencia, usuario);
+
+            return "Aula e suas dependencias excluídas com sucesso!";
+        }
+
+        private async Task ExcluirRecorrencia(Aula aula, RecorrenciaAula recorrencia, Usuario usuario)
+        {
+            var fimRecorrencia = consultasPeriodoEscolar.ObterFimPeriodoRecorrencia(aula.TipoCalendarioId, aula.DataAula.Date, recorrencia);
+            var aulasRecorrencia = await repositorioAula.ObterAulasRecorrencia(aula.AulaPaiId ?? aula.Id, aula.Id, fimRecorrencia);
+            List<(DateTime data, string erro)> aulasQueDeramErro = new List<(DateTime, string)>();
+
+            foreach (var aulaRecorrente in aulasRecorrencia)
+            {
+                try
                 {
                     await ExcluirAula(aulaRecorrente);
                 }
+                catch (NegocioException nex)
+                {
+                    aulasQueDeramErro.Add((aulaRecorrente.DataAula, nex.Message));
+                }
+                catch (Exception ex)
+                {
+                    servicoLog.Registrar(ex);
+                    aulasQueDeramErro.Add((aulaRecorrente.DataAula, $"Erro Interno: {ex.Message}"));
+                }
             }
 
-            await ExcluirAula(aula);
+            await NotificarUsuario(usuario, aula, Operacao.Exclusao, aulasRecorrencia.Count() - aulasQueDeramErro.Count, aulasQueDeramErro);
         }
 
         private async Task ExcluirAula(Aula aula)

@@ -141,5 +141,32 @@ namespace SME.SGP.Dominio.Servicos.Teste
             //ASSERT
             repositorioAula.Verify(c => c.Salvar(aula), Times.Exactly(1));
         }
+
+        [Fact]
+        public async void Deve_Consistir_Dia_Letivo()
+        {
+            servicoDiaLetivo.Setup(a => a.ValidarSeEhDiaLetivo(It.IsAny<DateTime>(), It.IsAny<long>(), It.IsAny<string>(), It.IsAny<string>())).Returns(false);
+
+            await Assert.ThrowsAsync<NegocioException>(() => servicoAula.Salvar(aula, usuario, aula.RecorrenciaAula));
+        }
+
+        [Fact]
+        public async void Deve_Consistir_Disciplina()
+        {
+            aula.DisciplinaId = "2";
+
+            await Assert.ThrowsAsync<NegocioException>(() => servicoAula.Salvar(aula, usuario, aula.RecorrenciaAula));
+        }
+
+        [Fact]
+        public async void Deve_Consistir_Recorrencia_Reposicao()
+        {
+            aula.TipoAula = TipoAula.Reposicao;
+            aula.RecorrenciaAula = RecorrenciaAula.RepetirBimestreAtual;
+
+            await Assert.ThrowsAsync<NegocioException>(() => servicoAula.Salvar(aula, usuario, aula.RecorrenciaAula));
+        }
+
+
     }
 }
