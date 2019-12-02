@@ -10,5 +10,6 @@ namespace SME.SGP.Infra
         public DateTime CriadoEm { get; set; }
         public string CriadoPor { get; set; }
         public string CriadoRF { get; set; }
+        public string Categoria { get; set; }
     }
 }

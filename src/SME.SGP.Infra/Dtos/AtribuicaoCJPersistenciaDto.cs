@@ -1,20 +1,23 @@
 ﻿using SME.SGP.Dominio;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
 namespace SME.SGP.Infra
 {
     public class AtribuicaoCJPersistenciaDto
     {
-        [Required(ErrorMessage = "É necessário informar a disciplina.")]
-        public string ComponenteCurricularId { get; set; }
+        public AtribuicaoCJPersistenciaDto()
+        {
+            Disciplinas = new List<AtribuicaoCJPersistenciaItemDto>();
+        }
+
+        public List<AtribuicaoCJPersistenciaItemDto> Disciplinas { get; set; }
 
         [Required(ErrorMessage = "É necessário informar a Dre.")]
         public string DreId { get; set; }
 
         [EnumeradoRequirido(ErrorMessage = "É necessário informar a modalidade.")]
         public Modalidade Modalidade { get; set; }
-
-        public bool Substituir { get; set; }
 
         [Required(ErrorMessage = "É necessário informar a turma.")]
         public string TurmaId { get; set; }

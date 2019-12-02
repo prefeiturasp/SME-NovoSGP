@@ -2,14 +2,12 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Sentry;
+using SME.Background.Core;
 using SME.SGP.Api;
 using SME.SGP.Dados.Mapeamentos;
 using SME.SGP.IoC;
-using System;
-using System.Collections.Generic;
 using System.Net;
 using System.Net.Sockets;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -17,9 +15,8 @@ namespace SME.SGP.Worker.Service
 {
     public class WorkerService : IHostedService
     {
-
-        string ipLocal;
-        static SME.Background.Core.Servidor<SME.Background.Hangfire.Worker> HangfireWorkerService;
+        private static SME.Background.Core.Servidor<SME.Background.Hangfire.Worker> HangfireWorkerService;
+        private string ipLocal;
 
         protected string IPLocal
         {
@@ -69,7 +66,7 @@ namespace SME.SGP.Worker.Service
             RegistraDependenciasWorkerServices.Registrar(services);
             RegistrarMapeamentos.Registrar();
             RegistraClientesHttp.Registrar(services, configuration);
-            Background.Core.Orquestrador.Inicializar(services.BuildServiceProvider());
+            Orquestrador.Inicializar(services.BuildServiceProvider());
         }
     }
 }

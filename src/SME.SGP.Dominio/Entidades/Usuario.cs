@@ -63,9 +63,24 @@ namespace SME.SGP.Dominio
             Perfis = perfisUsuario;
         }
 
+        public bool EhPerfilSME()
+        {
+            return Perfis.Any(c => c.Tipo == TipoPerfil.SME && c.CodigoPerfil == PerfilAtual);
+        }
+
+        public bool EhPerfilUE()
+        {
+            return Perfis.Any(c => c.Tipo == TipoPerfil.UE && c.CodigoPerfil == PerfilAtual);
+        }
+
         public bool EhProfessor()
         {
             return PerfilAtual == PERFIL_PROFESSOR;
+        }
+
+        public bool EhProfessorCj()
+        {
+            return PerfilAtual == PERFIL_CJ;
         }
 
         public void FinalizarRecuperacaoSenha()
@@ -125,14 +140,12 @@ namespace SME.SGP.Dominio
                 throw new NegocioException("É necessário informar a UE.");
             }
 
-            if ((evento.TipoEvento.LocalOcorrencia == EventoLocalOcorrencia.SME ||
-                 evento.TipoEvento.LocalOcorrencia == EventoLocalOcorrencia.SMEUE) &&
-                 !PossuiPerfilSme())
+            if (evento.TipoEvento.LocalOcorrencia == EventoLocalOcorrencia.SME && !PossuiPerfilSme())
             {
                 throw new NegocioException("Somente usuários da SME podem criar este tipo de evento.");
             }
 
-            if (evento.TipoEvento.LocalOcorrencia != EventoLocalOcorrencia.UE && !PossuiPerfilSmeOuDre())
+            if (evento.TipoEvento.LocalOcorrencia == EventoLocalOcorrencia.DRE && (!PossuiPerfilDre() && !PossuiPerfilSme()))
             {
                 throw new NegocioException("Somente usuários da SME ou da DRE podem criar este tipo de evento.");
             }

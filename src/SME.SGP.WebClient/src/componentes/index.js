@@ -15,3 +15,4 @@ export { default as Loader } from './loader';
 export { default as Localizador } from './Localizador';
 export { default as ButtonGroup } from './ButtonGroup';
 export { default as ListaPaginada } from './listaPaginada/listaPaginada';
+export { default as Tag } from './Tag';
