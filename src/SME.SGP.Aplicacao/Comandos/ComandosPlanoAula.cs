@@ -48,6 +48,9 @@ namespace SME.SGP.Aplicacao
             PlanoAula planoAula = await repositorio.ObterPlanoAulaPorAula(planoAulaDto.AulaId);
             planoAula = MapearParaDominio(planoAulaDto, planoAula);
 
+            if(planoAula.Id <= 0)
+                throw new NegocioException("Não foi possível concluir o cadasatro, pois não existe plano anual cadastrado");
+
             if (planoAulaDto.ObjetivosAprendizagemJurema == null || !planoAulaDto.ObjetivosAprendizagemJurema.Any())
             {
                 var permitePlanoSemObjetivos = false;
