@@ -13,6 +13,12 @@ namespace SME.SGP.Dominio.Servicos
 {
     public class ServicoAula : IServicoAula
     {
+        enum Operacao
+        {
+            Inclusao,
+            Alteracao,
+            Exclusao
+        }
 
         private readonly IConsultasGrade consultasGrade;
         private readonly IRepositorioAbrangencia repositorioAbrangencia;
@@ -176,7 +182,7 @@ namespace SME.SGP.Dominio.Servicos
                 dataRecorrencia = dataRecorrencia.AddDays(7);
             }
 
-            await NotificarUsuario(usuario, aula, $"Foram alteradas {aulasRecorrencia.Count() - aulasQueDeramErro.Count} aulas", aulasQueDeramErro);
+            await NotificarUsuario(usuario, aula, Operacao.Alteracao,  aulasRecorrencia.Count() - aulasQueDeramErro.Count, aulasQueDeramErro);
         }
         
         private async Task<string> RetornaNomeDaDisciplina(Aula aula, Usuario usuario)
@@ -230,10 +236,10 @@ namespace SME.SGP.Dominio.Servicos
                 }
             }
 
-            await NotificarUsuario(usuario, aula, $"Foram criadas {diasParaIncluirRecorrencia.Count - aulasQueDeramErro.Count} aulas", aulasQueDeramErro);
+            await NotificarUsuario(usuario, aula, Operacao.Inclusao, diasParaIncluirRecorrencia.Count - aulasQueDeramErro.Count, aulasQueDeramErro);
         }
 
-        private async Task NotificarUsuario(Usuario usuario, Aula aula, string mensagem, List<(DateTime data, string erro)> aulasQueDeramErro)
+        private async Task NotificarUsuario(Usuario usuario, Aula aula, Operacao operacao, int quantidade, List<(DateTime data, string erro)> aulasQueDeramErro)
         {
             var perfilAtual = usuario.PerfilAtual;
 
@@ -252,22 +258,17 @@ namespace SME.SGP.Dominio.Servicos
             if (disciplina == null)
                 throw new NegocioException($"Não foi possível localizar a disciplina de Id {aula.DisciplinaId}.");
 
-            var ue = await repositorioAbrangencia.ObterUe(aula.UeId, usuario.Login, perfilAtual);
-            if (ue == null)
-                throw new NegocioException($"Não foi possível localizar a Ue de Id {aula.UeId}.");
-
-            var dre = await repositorioAbrangencia.ObterDre(string.Empty, aula.UeId, usuario.Login, perfilAtual);
-            if (dre == null)
-                throw new NegocioException($"Não foi possível localizar a Dre da Ue de Id {aula.UeId}.");
-
-            var tituloMensagem = $"Criação de Aulas de {disciplina.Nome} na turma {turmaAbrangencia.NomeTurma}";
+            var operacaoStr = operacao == Operacao.Inclusao ? "Criação" : operacao == Operacao.Alteracao ? "Alteração" : "Exclusão";
+            var tituloMensagem = $"{operacaoStr} de Aulas de {disciplina.Nome} na turma {turmaAbrangencia.NomeTurma}";
             StringBuilder mensagemUsuario = new StringBuilder();
 
-            mensagemUsuario.Append($"{mensagem} da disciplina {disciplina.Nome} para a turma {turmaAbrangencia.NomeTurma} da {ue.Nome} ({dre.Nome}).");
+            operacaoStr = operacao == Operacao.Inclusao ? "criadas" : operacao == Operacao.Alteracao ? "alteradas" : "excluídas";
+            mensagemUsuario.Append($"Foram {operacaoStr} {quantidade} aulas da disciplina {disciplina.Nome} para a turma {turmaAbrangencia.NomeTurma} da {turmaAbrangencia.NomeUe} ({turmaAbrangencia.NomeDre}).");
 
             if (aulasQueDeramErro.Any())
             {
-                mensagemUsuario.Append("Não foi possível criar aulas nas seguintes datas:");
+                operacaoStr = operacao == Operacao.Inclusao ? "criar" : operacao == Operacao.Alteracao ? "alterar" : "excluir";
+                mensagemUsuario.Append($"Não foi possível {operacaoStr} aulas nas seguintes datas:");
                 foreach (var aulaComErro in aulasQueDeramErro)
                 {
                     mensagemUsuario.AppendFormat("<br /> {0} - {1}", $"{aulaComErro.data.Day}/{aulaComErro.data.Month}/{aulaComErro.data.Year}", aulaComErro.erro);
@@ -278,13 +279,13 @@ namespace SME.SGP.Dominio.Servicos
             {
                 Ano = aula.CriadoEm.Year,
                 Categoria = NotificacaoCategoria.Aviso,
-                DreId = dre.Codigo,
+                DreId = turmaAbrangencia.CodigoDre,
                 Mensagem = mensagemUsuario.ToString(),
                 UsuarioId = usuario.Id,
                 Tipo = NotificacaoTipo.Calendario,
                 Titulo = tituloMensagem,
                 TurmaId = aula.TurmaId,
-                UeId = ue.Codigo
+                UeId = turmaAbrangencia.CodigoUe,
             });
         }
 
