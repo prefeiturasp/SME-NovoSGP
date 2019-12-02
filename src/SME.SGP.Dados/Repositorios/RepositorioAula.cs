@@ -245,7 +245,7 @@ namespace SME.SGP.Dados.Repositorios
 
             if (semanaAno.HasValue)
                 query.AppendLine("AND extract(week from a.data_aula) = @semanaAno");
-                
+
             if (!string.IsNullOrEmpty(rf))
                 query.AppendLine("AND a.professor_rf = @rf");
         }

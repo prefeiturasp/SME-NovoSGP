@@ -2,6 +2,8 @@
 using SME.SGP.Dados.Contexto;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
+using System.Collections.Generic;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Dados.Repositorios
@@ -12,26 +14,44 @@ namespace SME.SGP.Dados.Repositorios
         {
         }
 
-        public async Task<AtribuicaoCJ> ObterPorComponenteTurmaModalidadeUe(Modalidade modalidade, string turmaId, string ueId, long componenteCurricularId)
+        public async Task<IEnumerable<AtribuicaoCJ>> ObterPorFiltros(Modalidade? modalidade, string turmaId, string ueId, string disciplinaId, string[] usuariosRfs)
         {
-            var query = @"
-                        select
-	                        *
-                        from
-	                        atribuicao_cj a
-                        where
-	                        a.modalidade = @modalidade
-	                        and a.ue_id = @ueId
-	                        and a.turma_id = @turmaId
-	                        and a.componente_curricular_id = @componenteCurricularId";
+            var query = new StringBuilder();
 
-            return (await database.Conexao.QueryFirstOrDefaultAsync<AtribuicaoCJ>(query, new
+            query.AppendLine("select a.*, t.*");
+            query.AppendLine("from");
+            query.AppendLine("atribuicao_cj a");
+            query.AppendLine("inner join turma t");
+            query.AppendLine("on t.turma_id = a.turma_id");
+            query.AppendLine("where 1 = 1");
+
+            if (modalidade.HasValue)
+                query.AppendLine("and a.modalidade = @modalidade");
+
+            if (!string.IsNullOrEmpty(ueId))
+                query.AppendLine("and a.ue_id = @ueId");
+
+            if (!string.IsNullOrEmpty(turmaId))
+                query.AppendLine("and a.turma_id = @turmaId");
+
+            if (!string.IsNullOrEmpty(disciplinaId))
+                query.AppendLine("and a.disciplina_id = @disciplinaId");
+
+            if (usuariosRfs.Length > 0)
+                query.AppendLine("and a.usuario_rf in @usuariosRfs");
+
+            return (await database.Conexao.QueryAsync<AtribuicaoCJ, Turma, AtribuicaoCJ>(query.ToString(), (atribuicaoCJ, turma) =>
             {
-                modalidade = (int)modalidade,
+                atribuicaoCJ.Turma = turma;
+                return atribuicaoCJ;
+            }, new
+            {
+                modalidade = modalidade.HasValue ? (int)modalidade : 0,
                 ueId,
                 turmaId,
-                componenteCurricularId
-            }));
+                disciplinaId,
+                usuariosRfs
+            }, splitOn: "id,id"));
         }
     }
 }
