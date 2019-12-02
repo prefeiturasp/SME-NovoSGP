@@ -1,4 +1,5 @@
 ﻿using Moq;
+using SME.SGP.Aplicacao;
 using SME.SGP.Aplicacao.Integracoes;
 using SME.SGP.Aplicacao.Integracoes.Respostas;
 using SME.SGP.Dominio.Interfaces;
@@ -10,9 +11,12 @@ namespace SME.SGP.Dominio.Servicos.Teste
 {
     public class ServicoFrequenciaTeste
     {
+        private readonly Mock<IConsultasDisciplina> consultaDisciplina;
         private readonly Mock<IRepositorioAula> repositorioAula;
         private readonly Mock<IRepositorioFrequencia> repositorioFrequencia;
         private readonly Mock<IRepositorioRegistroAusenciaAluno> repositorioRegistroAusenciaAluno;
+        private readonly Mock<IRepositorioTurma> repositorioTurma;
+        private readonly Mock<IRepositorioUe> repositorioUe;
         private readonly Mock<IServicoEOL> servicoEOL;
         private readonly ServicoFrequencia servicoFrequencia;
         private readonly Mock<IServicoUsuario> servicoUsuario;
@@ -26,13 +30,19 @@ namespace SME.SGP.Dominio.Servicos.Teste
             servicoUsuario = new Mock<IServicoUsuario>();
             unitOfWork = new Mock<IUnitOfWork>();
             servicoEOL = new Mock<IServicoEOL>();
+            consultaDisciplina = new Mock<IConsultasDisciplina>();
+            repositorioUe = new Mock<IRepositorioUe>();
+            repositorioTurma = new Mock<IRepositorioTurma>();
 
             servicoFrequencia = new ServicoFrequencia(repositorioFrequencia.Object,
                                                       repositorioRegistroAusenciaAluno.Object,
                                                       repositorioAula.Object,
                                                       servicoUsuario.Object,
                                                       unitOfWork.Object,
-                                                      servicoEOL.Object);
+                                                      servicoEOL.Object,
+                                                      repositorioUe.Object,
+                                                      repositorioTurma.Object,
+                                                      consultaDisciplina.Object);
         }
 
         [Fact]
