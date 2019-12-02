@@ -24,51 +24,14 @@ namespace SME.SGP.Api.Controllers
             return Ok(await consultasAtribuicaoCJ.Listar(atribuicaoCJListaFiltroDto));
         }
 
-        [HttpGet("ues/{ueId}/modalidades/{modalidadeId}/turmas/{turmaId}/professores/{professorId}/")]
+        [HttpGet("ues/{ueId}/modalidades/{modalidadeId}/turmas/{turmaId}/professores/{professorRf}/")]
         [ProducesResponseType(typeof(AtribuicaoCJTitularesRetornoDto), 200)]
         [ProducesResponseType(204)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        public IActionResult ObterAtribuicaoDeProfessores(string ueId, string turmaId,
-            string professorId, Modalidade modalidadeId)
+        public async Task<IActionResult> ObterAtribuicaoDeProfessores(string ueId, string turmaId,
+            string professorRf, Modalidade modalidadeId, [FromServices] IConsultasAtribuicaoCJ consultasAtribuicaoCJ)
         {
-            var retorno = new AtribuicaoCJTitularesRetornoDto()
-            {
-                AlteradoEm = new System.DateTime(2019, 12, 1),
-                AlteradoPor = "Marcos Lobo",
-                AlteradoRF = "123",
-                CriadoEm = new System.DateTime(2019, 11, 1),
-                CriadoPor = "Marcos Lobo",
-                CriadoRF = "123"
-            };
-
-            retorno.Itens.Add(new AtribuicaoCJTitularesRetornoItemDto()
-            {
-                Disciplina = "Matemática",
-                DisciplinaId = "1",
-                ProfessorTitular = "Sávio da Silveira Santos",
-                Substituir = true,
-                ProfessorTitularRf = "123"
-            });
-
-            retorno.Itens.Add(new AtribuicaoCJTitularesRetornoItemDto()
-            {
-                Disciplina = "Geografia",
-                DisciplinaId = "2",
-                ProfessorTitular = "João Paulo da La Penha",
-                Substituir = false,
-                ProfessorTitularRf = "12"
-            });
-
-            retorno.Itens.Add(new AtribuicaoCJTitularesRetornoItemDto()
-            {
-                Disciplina = "História",
-                DisciplinaId = "3",
-                ProfessorTitular = "Iranilda Junqueira",
-                Substituir = false,
-                ProfessorTitularRf = "111"
-            });
-
-            return Ok(retorno);
+            return Ok(await consultasAtribuicaoCJ.ObterProfessoresTitularesECjs(ueId, turmaId, professorRf, modalidadeId));
         }
 
         [HttpPost]
