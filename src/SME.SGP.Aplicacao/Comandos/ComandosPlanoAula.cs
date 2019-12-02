@@ -37,6 +37,11 @@ namespace SME.SGP.Aplicacao
             this.servicoUsuario = servicoUsuario;
         }
 
+        public async Task ExcluirPlanoDaAula(long aulaId)
+        {
+            await repositorio.ExcluirPlanoDaAula(aulaId);
+        }
+
         public async Task Salvar(PlanoAulaDto planoAulaDto)
         {
             var aula = repositorioAula.ObterPorId(planoAulaDto.AulaId);

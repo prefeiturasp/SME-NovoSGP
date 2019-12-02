@@ -13,6 +13,12 @@ namespace SME.SGP.Dominio.Servicos
 {
     public class ServicoAula : IServicoAula
     {
+        enum Operacao
+        {
+            Inclusao,
+            Alteracao,
+            Exclusao
+        }
 
         private readonly IConsultasGrade consultasGrade;
         private readonly IRepositorioAbrangencia repositorioAbrangencia;
@@ -26,9 +32,9 @@ namespace SME.SGP.Dominio.Servicos
         private readonly IConsultasAbrangencia consultasAbrangencia;
         private readonly IComandosWorkflowAprovacao comandosWorkflowAprovacao;
         private readonly IConfiguration configuration;
+        private readonly IComandosPlanoAula comandosPlanoAula;
+        private readonly IServicoFrequencia servicoFrequencia;
         private readonly IServicoNotificacao servicoNotificacao;
-
-
 
         public ServicoAula(IRepositorioAula repositorioAula,
                            IServicoEOL servicoEOL,
@@ -42,6 +48,8 @@ namespace SME.SGP.Dominio.Servicos
                            IConsultasAbrangencia consultasAbrangencia,
                            IServicoUsuario servicoUsuario,
                            IComandosWorkflowAprovacao comandosWorkflowAprovacao,
+                           IComandosPlanoAula comandosPlanoAula,
+                           IServicoFrequencia servicoFrequencia,
                            IConfiguration configuration)
         {
             this.repositorioAula = repositorioAula ?? throw new System.ArgumentNullException(nameof(repositorioAula));
@@ -57,6 +65,8 @@ namespace SME.SGP.Dominio.Servicos
             this.configuration = configuration;
             this.repositorioAbrangencia = repositorioAbrangencia ?? throw new ArgumentNullException(nameof(repositorioAbrangencia));
             this.servicoNotificacao = servicoNotificacao ?? throw new ArgumentNullException(nameof(servicoNotificacao));
+            this.comandosPlanoAula = comandosPlanoAula ?? throw new ArgumentNullException(nameof(comandosPlanoAula));
+            this.servicoFrequencia = servicoFrequencia ?? throw new ArgumentNullException(nameof(servicoFrequencia));
         }
 
         public async Task<string> Salvar(Aula aula, Usuario usuario, RecorrenciaAula recorrencia)
@@ -100,7 +110,6 @@ namespace SME.SGP.Dominio.Servicos
                     return "Aula cadastrada com sucesso e enviada para aprovação.";
                 }
             }
-
             else
             {
                 // Busca quantidade de aulas semanais da grade de aula
@@ -118,7 +127,6 @@ namespace SME.SGP.Dominio.Servicos
                 }
                 if ((gradeAulas != null) && (quantidadeAulasRestantes < aula.Quantidade))
                     throw new NegocioException("Quantidade de aulas superior ao limíte de aulas da grade.");
-                    
             }
 
             repositorioAula.Salvar(aula);
@@ -172,7 +180,7 @@ namespace SME.SGP.Dominio.Servicos
                 dataRecorrencia = dataRecorrencia.AddDays(7);
             }
 
-            await NotificarUsuario(usuario, aula, $"Foram alteradas {aulasRecorrencia.Count() - aulasQueDeramErro.Count} aulas", aulasQueDeramErro);
+            await NotificarUsuario(usuario, aula, Operacao.Alteracao,  aulasRecorrencia.Count() - aulasQueDeramErro.Count, aulasQueDeramErro);
         }
         
         private async Task<string> RetornaNomeDaDisciplina(Aula aula, Usuario usuario)
@@ -226,10 +234,10 @@ namespace SME.SGP.Dominio.Servicos
                 }
             }
 
-            await NotificarUsuario(usuario, aula, $"Foram criadas {diasParaIncluirRecorrencia.Count - aulasQueDeramErro.Count} aulas", aulasQueDeramErro);
+            await NotificarUsuario(usuario, aula, Operacao.Inclusao, diasParaIncluirRecorrencia.Count - aulasQueDeramErro.Count, aulasQueDeramErro);
         }
 
-        private async Task NotificarUsuario(Usuario usuario, Aula aula, string mensagem, List<(DateTime data, string erro)> aulasQueDeramErro)
+        private async Task NotificarUsuario(Usuario usuario, Aula aula, Operacao operacao, int quantidade, List<(DateTime data, string erro)> aulasQueDeramErro)
         {
             var perfilAtual = usuario.PerfilAtual;
 
@@ -248,22 +256,17 @@ namespace SME.SGP.Dominio.Servicos
             if (disciplina == null)
                 throw new NegocioException($"Não foi possível localizar a disciplina de Id {aula.DisciplinaId}.");
 
-            var ue = await repositorioAbrangencia.ObterUe(aula.UeId, usuario.Login, perfilAtual);
-            if (ue == null)
-                throw new NegocioException($"Não foi possível localizar a Ue de Id {aula.UeId}.");
-
-            var dre = await repositorioAbrangencia.ObterDre(string.Empty, aula.UeId, usuario.Login, perfilAtual);
-            if (dre == null)
-                throw new NegocioException($"Não foi possível localizar a Dre da Ue de Id {aula.UeId}.");
-
-            var tituloMensagem = $"Criação de Aulas de {disciplina.Nome} na turma {turmaAbrangencia.NomeTurma}";
+            var operacaoStr = operacao == Operacao.Inclusao ? "Criação" : operacao == Operacao.Alteracao ? "Alteração" : "Exclusão";
+            var tituloMensagem = $"{operacaoStr} de Aulas de {disciplina.Nome} na turma {turmaAbrangencia.NomeTurma}";
             StringBuilder mensagemUsuario = new StringBuilder();
 
-            mensagemUsuario.Append($"{mensagem} da disciplina {disciplina.Nome} para a turma {turmaAbrangencia.NomeTurma} da {ue.Nome} ({dre.Nome}).");
+            operacaoStr = operacao == Operacao.Inclusao ? "criadas" : operacao == Operacao.Alteracao ? "alteradas" : "excluídas";
+            mensagemUsuario.Append($"Foram {operacaoStr} {quantidade} aulas da disciplina {disciplina.Nome} para a turma {turmaAbrangencia.NomeTurma} da {turmaAbrangencia.NomeUe} ({turmaAbrangencia.NomeDre}).");
 
             if (aulasQueDeramErro.Any())
             {
-                mensagemUsuario.Append("Não foi possível criar aulas nas seguintes datas:");
+                operacaoStr = operacao == Operacao.Inclusao ? "criar" : operacao == Operacao.Alteracao ? "alterar" : "excluir";
+                mensagemUsuario.Append($"Não foi possível {operacaoStr} aulas nas seguintes datas:");
                 foreach (var aulaComErro in aulasQueDeramErro)
                 {
                     mensagemUsuario.AppendFormat("<br /> {0} - {1}", $"{aulaComErro.data.Day}/{aulaComErro.data.Month}/{aulaComErro.data.Year}", aulaComErro.erro);
@@ -274,13 +277,13 @@ namespace SME.SGP.Dominio.Servicos
             {
                 Ano = aula.CriadoEm.Year,
                 Categoria = NotificacaoCategoria.Aviso,
-                DreId = dre.Codigo,
+                DreId = turmaAbrangencia.CodigoDre,
                 Mensagem = mensagemUsuario.ToString(),
                 UsuarioId = usuario.Id,
                 Tipo = NotificacaoTipo.Calendario,
                 Titulo = tituloMensagem,
                 TurmaId = aula.TurmaId,
-                UeId = ue.Codigo
+                UeId = turmaAbrangencia.CodigoUe,
             });
         }
 
@@ -344,6 +347,51 @@ namespace SME.SGP.Dominio.Servicos
             aula.EnviarParaWorkflowDeAprovacao(idWorkflow);
 
             repositorioAula.Salvar(aula);
+        }
+
+        public async Task<string> Excluir(Aula aula, RecorrenciaAula recorrencia, Usuario usuario)
+        {
+            await ExcluirAula(aula);
+
+            if (recorrencia != RecorrenciaAula.AulaUnica)
+                await ExcluirRecorrencia(aula, recorrencia, usuario);
+
+            return "Aula e suas dependencias excluídas com sucesso!";
+        }
+
+        private async Task ExcluirRecorrencia(Aula aula, RecorrenciaAula recorrencia, Usuario usuario)
+        {
+            var fimRecorrencia = consultasPeriodoEscolar.ObterFimPeriodoRecorrencia(aula.TipoCalendarioId, aula.DataAula.Date, recorrencia);
+            var aulasRecorrencia = await repositorioAula.ObterAulasRecorrencia(aula.AulaPaiId ?? aula.Id, aula.Id, fimRecorrencia);
+            List<(DateTime data, string erro)> aulasQueDeramErro = new List<(DateTime, string)>();
+
+            foreach (var aulaRecorrente in aulasRecorrencia)
+            {
+                try
+                {
+                    await ExcluirAula(aulaRecorrente);
+                }
+                catch (NegocioException nex)
+                {
+                    aulasQueDeramErro.Add((aulaRecorrente.DataAula, nex.Message));
+                }
+                catch (Exception ex)
+                {
+                    servicoLog.Registrar(ex);
+                    aulasQueDeramErro.Add((aulaRecorrente.DataAula, $"Erro Interno: {ex.Message}"));
+                }
+            }
+
+            await NotificarUsuario(usuario, aula, Operacao.Exclusao, aulasRecorrencia.Count() - aulasQueDeramErro.Count, aulasQueDeramErro);
+        }
+
+        private async Task ExcluirAula(Aula aula)
+        {
+            await servicoFrequencia.ExcluirFrequenciaAula(aula.Id);
+            await comandosPlanoAula.ExcluirPlanoDaAula(aula.Id);
+
+            aula.Excluido = true;
+            await repositorioAula.SalvarAsync(aula);
         }
     }
 }

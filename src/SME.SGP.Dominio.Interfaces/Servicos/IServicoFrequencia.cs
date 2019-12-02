@@ -10,5 +10,6 @@ namespace SME.SGP.Dominio.Interfaces
         RegistroFrequencia ObterRegistroFrequenciaPorAulaId(long aulaId);
 
         Task Registrar(long aulaId, IEnumerable<RegistroAusenciaAluno> registroAusenciaAlunos);
+        Task ExcluirFrequenciaAula(long aulaId);
     }
 }

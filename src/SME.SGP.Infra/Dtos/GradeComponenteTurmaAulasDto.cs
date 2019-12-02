@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace SME.SGP.Infra.Dtos
+namespace SME.SGP.Infra
 {
     public class GradeComponenteTurmaAulasDto
     {
