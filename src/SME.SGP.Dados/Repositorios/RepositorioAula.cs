@@ -228,8 +228,8 @@ namespace SME.SGP.Dados.Repositorios
         private static void MontaWhere(StringBuilder query, string turmaId, string ueId, int? mes = null, DateTime? data = null, string rf = null, int? semanaAno = null)
         {
             query.AppendLine("WHERE not excluido");
-            query.AppendLine(" and a.tipo_calendario_id = @tipoCalendarioId");
-            query.AppendLine(" and a.status <> '3'");
+            query.AppendLine("and a.tipo_calendario_id = @tipoCalendarioId");
+            query.AppendLine("and a.status <> 3");
 
             if (!string.IsNullOrEmpty(turmaId))
                 query.AppendLine("AND a.turma_id = @turmaId");

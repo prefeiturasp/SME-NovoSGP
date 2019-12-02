@@ -35,7 +35,7 @@ namespace SME.SGP.Api.Controllers
             return Ok(aula);
         }
 
-        [HttpDelete("{id}/recorrencia/{recorrencia}")]
+        [HttpDelete("{id}/recorrencias/{recorrencia}")]
         [ProducesResponseType(200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [Permissao(Permissao.CP_E, Policy = "Bearer")]
