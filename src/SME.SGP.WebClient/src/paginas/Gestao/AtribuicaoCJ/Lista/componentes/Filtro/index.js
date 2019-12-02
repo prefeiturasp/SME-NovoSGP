@@ -12,8 +12,8 @@ import { useDispatch } from 'react-redux';
 import { Grid, Localizador, Tag } from '~/componentes';
 
 // Componentes SGP
-import DreDropDown from '~/componentes-sgp/DreDropDown/index';
-import UeDropDown from '~/componentes-sgp/UeDropDown/index';
+import DreDropDown from '~/componentes-sgp/DreDropDown/';
+import UeDropDown from '~/componentes-sgp/UeDropDown/';
 
 // Styles
 import { Row } from './styles';
@@ -33,11 +33,11 @@ function Filtro({ onFiltrar }) {
     professorRf: '',
   });
   const [dreId, setDreId] = useState('');
-  const [anoLetivo, setAnoLetivo] = useState('');
+  const [anoLetivo, setAnoLetivo] = useState('2019');
 
   const validacoes = () => {
     return Yup.object({
-      anoLetivo: Yup.string().required(),
+      // anoLetivo: Yup.string().required(),
     });
   };
 
@@ -60,47 +60,13 @@ function Filtro({ onFiltrar }) {
       validationSchema={validacoes()}
       onSubmit={valores => onFiltrar(valores)}
       ref={refFormik => setRefForm(refFormik)}
-      // validate={valores => validarFiltro(valores)}
+      validate={valores => validarFiltro(valores)}
       validateOnChange
       validateOnBlur
     >
       {form => (
         <Form className="col-md-12 mb-4">
-          <Grid cols={2}>
-            <Tag>2019</Tag>
-            <Tag tipo="informativo1">2019</Tag>
-            <Tag tipo="informativo2">2019</Tag>
-            <Tag tipo="alerta">2019</Tag>
-            <Tag tipo="erro">2019</Tag>
-            <Tag tipo="atencao">2019</Tag>
-            <Tag tipo="sucesso">2019</Tag>
-            <Tag tipo="cancelar">2019</Tag>
-          </Grid>
-          <Grid cols={2}>
-            <Tag inverted>2019</Tag>
-            <Tag inverted tipo="informativo1">
-              2019
-            </Tag>
-            <Tag inverted tipo="informativo2">
-              2019
-            </Tag>
-            <Tag inverted tipo="alerta">
-              2019
-            </Tag>
-            <Tag inverted tipo="erro">
-              2019
-            </Tag>
-            <Tag inverted tipo="atencao">
-              2019
-            </Tag>
-            <Tag inverted tipo="sucesso">
-              2019
-            </Tag>
-            <Tag inverted tipo="cancelar">
-              2019
-            </Tag>
-          </Grid>
-          {/* <Row className="row mb-2">
+          <Row className="row mb-2">
             <Grid cols={6}>
               <DreDropDown form={form} onChange={valor => onChangeDre(valor)} />
             </Grid>
@@ -119,7 +85,7 @@ function Filtro({ onFiltrar }) {
               form={form}
               onChange={valor => valor}
             />
-          </Row> */}
+          </Row>
         </Form>
       )}
     </Formik>

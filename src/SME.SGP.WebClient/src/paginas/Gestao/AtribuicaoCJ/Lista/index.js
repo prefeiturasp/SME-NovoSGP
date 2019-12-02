@@ -23,32 +23,18 @@ function AtribuicaoCJLista() {
   const [somenteConsulta, setSomenteConsulta] = useState(false);
   const permissoesTela = useSelector(store => store.usuario.permissoes);
 
-  const formatarCampoDataGrid = data => {
-    let dataFormatada = '';
-    if (data) {
-      dataFormatada = window.moment(data).format('DD/MM/YYYY');
-    }
-    return <span>{dataFormatada}</span>;
-  };
-
   const colunas = [
     {
-      title: 'Nome',
-      dataIndex: 'professorNome',
+      title: 'Modalidade',
+      dataIndex: 'modalidade',
     },
     {
-      title: 'RF',
-      dataIndex: 'professorRf',
+      title: 'Turma',
+      dataIndex: 'turma',
     },
     {
-      title: 'Início',
-      dataIndex: 'dataInicio',
-      render: data => formatarCampoDataGrid(data),
-    },
-    {
-      title: 'Fim',
-      dataIndex: 'dataFim',
-      render: data => formatarCampoDataGrid(data),
+      title: 'Disciplina',
+      dataIndex: 'disciplina',
     },
   ];
 
@@ -104,11 +90,17 @@ function AtribuicaoCJLista() {
   };
 
   const onChangeFiltro = valoresFiltro => {
-    setFiltro(valoresFiltro);
+    setFiltro({
+      AnoLetivo: '2019',
+      DreId: valoresFiltro.dreId,
+      UeId: valoresFiltro.ueId,
+      ProfessorRF: valoresFiltro.professorRf,
+    });
   };
 
   const validarFiltro = () => {
-    return !!filtro.dreId && !!filtro.ueId && !!filtro.anoLetivo;
+    debugger;
+    return !!filtro.DreId && !!filtro.UeId;
   };
 
   useEffect(() => {
@@ -139,7 +131,7 @@ function AtribuicaoCJLista() {
           <Filtro onFiltrar={onChangeFiltro} />
           <div className="col-md-12 pt-2 py-0 px-0">
             <ListaPaginada
-              url="v1/atribuicao/cjs/listar"
+              url="v1/atribuicoes/cjs"
               id="lista-atribuicoes-esporadica"
               colunaChave="id"
               colunas={colunas}
