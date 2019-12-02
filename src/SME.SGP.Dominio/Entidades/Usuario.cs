@@ -145,7 +145,7 @@ namespace SME.SGP.Dominio
                 throw new NegocioException("Somente usuários da SME podem criar este tipo de evento.");
             }
 
-            if (evento.TipoEvento.LocalOcorrencia == EventoLocalOcorrencia.DRE && (!PossuiPerfilDre() || !PossuiPerfilSme()))
+            if (evento.TipoEvento.LocalOcorrencia == EventoLocalOcorrencia.DRE && (!PossuiPerfilDre() && !PossuiPerfilSme()))
             {
                 throw new NegocioException("Somente usuários da SME ou da DRE podem criar este tipo de evento.");
             }
