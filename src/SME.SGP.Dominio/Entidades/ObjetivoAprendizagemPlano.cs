@@ -5,5 +5,7 @@
         public long ComponenteCurricularId { get; set; }
         public long ObjetivoAprendizagemJuremaId { get; set; }
         public long PlanoId { get; set; }
+
+        public bool Excluido { get; set; }
     }
 }
