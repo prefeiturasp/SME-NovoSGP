@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using SME.SGP.Api.Filtros;
 using SME.SGP.Aplicacao;
+using SME.SGP.Dominio;
 using SME.SGP.Infra;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -15,38 +16,20 @@ namespace SME.SGP.Api.Controllers
     public class AtribuicaoCJController : ControllerBase
     {
         [HttpGet]
-        public IActionResult Get([FromQuery]AtribuicaoCJListaFiltroDto atribuicaoCJListaFiltroDto)
+        [ProducesResponseType(typeof(IEnumerable<AtribuicaoCJListaRetornoDto>), 200)]
+        [ProducesResponseType(204)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        public async Task<IActionResult> Get([FromQuery]AtribuicaoCJListaFiltroDto atribuicaoCJListaFiltroDto, [FromServices]IConsultasAtribuicaoCJ consultasAtribuicaoCJ)
         {
-            List<AtribuicaoCJListaRetornoDto> retorno = new List<AtribuicaoCJListaRetornoDto>();
-            retorno.Add(new AtribuicaoCJListaRetornoDto()
-            {
-                Id = 1,
-                ComponentesCurriculares = new string[] { "Matemática" },
-                Modalidade = "Fundamental",
-                Turma = "1A"
-            });
-
-            retorno.Add(new AtribuicaoCJListaRetornoDto()
-            {
-                Id = 2,
-                ComponentesCurriculares = new string[] { "Matemática", "Geografia", "História" },
-                Modalidade = "EJA",
-                Turma = "4A"
-            });
-
-            retorno.Add(new AtribuicaoCJListaRetornoDto()
-            {
-                Id = 3,
-                ComponentesCurriculares = new string[] { "Ciências" },
-                Modalidade = "Ensino Médio",
-                Turma = "3C"
-            });
-
-            return Ok(retorno);
+            return Ok(await consultasAtribuicaoCJ.Listar(atribuicaoCJListaFiltroDto));
         }
 
-        [HttpGet("ues/{ueId}/professores/{professorId}")]
-        public IActionResult ObterAtribuicaoDeProfessores([FromQuery]AtribuicaoCJListaTitularesFiltroDto atribuicaoCJListaTitularesFiltroDto)
+        [HttpGet("ues/{ueId}/modalidades/{modalidadeId}/turmas/{turmaId}/professores/{professorId}/")]
+        [ProducesResponseType(typeof(AtribuicaoCJTitularesRetornoDto), 200)]
+        [ProducesResponseType(204)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        public IActionResult ObterAtribuicaoDeProfessores(string ueId, string turmaId,
+            string professorId, Modalidade modalidadeId)
         {
             var retorno = new AtribuicaoCJTitularesRetornoDto()
             {
@@ -60,8 +43,8 @@ namespace SME.SGP.Api.Controllers
 
             retorno.Itens.Add(new AtribuicaoCJTitularesRetornoItemDto()
             {
-                ComponenteCurricular = "Matemática",
-                ComponenteCurricularId = "1",
+                Disciplina = "Matemática",
+                DisciplinaId = "1",
                 ProfessorTitular = "Sávio da Silveira Santos",
                 Substituir = true,
                 ProfessorTitularRf = "123"
@@ -69,8 +52,8 @@ namespace SME.SGP.Api.Controllers
 
             retorno.Itens.Add(new AtribuicaoCJTitularesRetornoItemDto()
             {
-                ComponenteCurricular = "Geografia",
-                ComponenteCurricularId = "2",
+                Disciplina = "Geografia",
+                DisciplinaId = "2",
                 ProfessorTitular = "João Paulo da La Penha",
                 Substituir = false,
                 ProfessorTitularRf = "12"
@@ -78,8 +61,8 @@ namespace SME.SGP.Api.Controllers
 
             retorno.Itens.Add(new AtribuicaoCJTitularesRetornoItemDto()
             {
-                ComponenteCurricular = "História",
-                ComponenteCurricularId = "3",
+                Disciplina = "História",
+                DisciplinaId = "3",
                 ProfessorTitular = "Iranilda Junqueira",
                 Substituir = false,
                 ProfessorTitularRf = "111"
@@ -89,9 +72,11 @@ namespace SME.SGP.Api.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Post([FromBody]AtribuicaoCJPersistenciaDto[] atribuicaoCJPersistenciaDtos, [FromServices] IComandosAtribuicaoCJ comandosAtribuicaoCJ)
+        [ProducesResponseType(200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        public async Task<IActionResult> Post([FromBody]AtribuicaoCJPersistenciaDto atribuicaoCJPersistenciaDto, [FromServices] IComandosAtribuicaoCJ comandosAtribuicaoCJ)
         {
-            await comandosAtribuicaoCJ.Salvar(atribuicaoCJPersistenciaDtos);
+            await comandosAtribuicaoCJ.Salvar(atribuicaoCJPersistenciaDto);
             return Ok();
         }
     }

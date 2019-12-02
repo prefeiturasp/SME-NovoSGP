@@ -16,7 +16,11 @@ namespace SME.SGP.Dominio.Servicos.Teste
     public class ServicoAulaTeste
     {
         #region Mocks
+        private readonly Mock<IComandosWorkflowAprovacao> comandosWorkflowAprovacao;
+        private readonly Mock<IConfiguration> configuration;
+        private readonly Mock<IConsultasAbrangencia> consultaAbrangencia;
         private readonly Mock<IConsultasGrade> consultasGrade;
+        private readonly Mock<IConsultasPeriodoEscolar> consultasPeriodosEscolar;
         private readonly Mock<IRepositorioAbrangencia> repositorioAbrangencia;
         private readonly Mock<IRepositorioAula> repositorioAula;
         private readonly Mock<IConsultasPeriodoEscolar> consultasPeriodoEscolar;
@@ -25,13 +29,10 @@ namespace SME.SGP.Dominio.Servicos.Teste
         private readonly Mock<IServicoDiaLetivo> servicoDiaLetivo;
         private readonly Mock<IServicoEOL> servicoEol;
         private readonly Mock<IServicoLog> servicoLog;
-        private readonly Mock<IServicoUsuario> servicoUsuario;
-        private readonly Mock<IComandosWorkflowAprovacao> comandosWorkflowAprovacao;
-        private readonly Mock<IConsultasAbrangencia> consultaAbrangencia;
-        private readonly Mock<IConfiguration> configuration;
         private readonly Mock<IServicoNotificacao> servicoNotificacao;
         private readonly Mock<IComandosPlanoAula> comandosPlanoAula;
         private readonly Mock<IServicoFrequencia> servicoFrequencia;
+        private readonly Mock<IServicoUsuario> servicoUsuario;
 
         #endregion
         Usuario usuario;
@@ -51,6 +52,7 @@ namespace SME.SGP.Dominio.Servicos.Teste
             comandosWorkflowAprovacao = new Mock<IComandosWorkflowAprovacao>();
             consultaAbrangencia = new Mock<IConsultasAbrangencia>();
             servicoNotificacao = new Mock<IServicoNotificacao>();
+            consultasPeriodosEscolar = new Mock<IConsultasPeriodoEscolar>();
             comandosPlanoAula = new Mock<IComandosPlanoAula>();
             servicoFrequencia = new Mock<IServicoFrequencia>();
             servicoUsuario = new Mock<IServicoUsuario>();
@@ -140,4 +142,4 @@ namespace SME.SGP.Dominio.Servicos.Teste
             repositorioAula.Verify(c => c.Salvar(aula), Times.Exactly(1));
         }
     }
-}  
+}
