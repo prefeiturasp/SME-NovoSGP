@@ -32,7 +32,7 @@ namespace SME.SGP.Dominio.Servicos
 
         public async Task ExcluirFrequenciaAula(long aulaId)
         {
-            repositorioFrequencia.ExcluirFrequenciaAula(aulaId);
+            await repositorioFrequencia.ExcluirFrequenciaAula(aulaId);
         }
 
         public IEnumerable<RegistroAusenciaAluno> ObterListaAusenciasPorAula(long aulaId)
