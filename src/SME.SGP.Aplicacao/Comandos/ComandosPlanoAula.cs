@@ -48,9 +48,6 @@ namespace SME.SGP.Aplicacao
             PlanoAula planoAula = await repositorio.ObterPlanoAulaPorAula(planoAulaDto.AulaId);
             planoAula = MapearParaDominio(planoAulaDto, planoAula);
 
-            if(planoAula.Id <= 0)
-                throw new NegocioException("Não foi possível concluir o cadasatro, pois não existe plano anual cadastrado");
-
             if (planoAulaDto.ObjetivosAprendizagemJurema == null || !planoAulaDto.ObjetivosAprendizagemJurema.Any())
             {
                 var permitePlanoSemObjetivos = false;
@@ -79,6 +76,9 @@ namespace SME.SGP.Aplicacao
             var bimestre = (aula.DataAula.Month + 2) / 3;
             var planoAnualId = await consultasPlanoAnual.ObterIdPlanoAnualPorAnoEscolaBimestreETurma(
                         aula.DataAula.Year, aula.UeId, long.Parse(aula.TurmaId), bimestre, long.Parse(aula.DisciplinaId));
+
+            if (planoAnualId <= 0)
+                throw new NegocioException("Não foi possível concluir o cadasatro, pois não existe plano anual cadastrado");
 
             using (var transacao = unitOfWork.IniciarTransacao())
             {
