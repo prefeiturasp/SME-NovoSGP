@@ -13,5 +13,7 @@ namespace SME.SGP.Aplicacao
         DiasLetivosDto CalcularDiasLetivos(FiltroDiasLetivosDTO filtro);
 
         List<DateTime> ObterDias(IEnumerable<Evento> eventos, List<DateTime> dias, EventoLetivo eventoTipo);
+
+        bool VerificarSeDataLetiva(IEnumerable<Evento> eventos, DateTime data);
     }
 }

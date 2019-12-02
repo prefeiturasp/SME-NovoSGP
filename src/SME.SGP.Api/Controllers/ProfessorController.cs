@@ -63,10 +63,7 @@ namespace SME.SGP.Api.Controllers
         public async Task<IActionResult> Resumo(string codigoRF, int anoLetivo)
         {
             var retorno = await consultasProfessor.ObterResumoPorRFAnoLetivo(codigoRF, anoLetivo);
-
-            if (retorno == null)
-                return NoContent();
-
+            
             return Ok(retorno);
         }
 
