@@ -17,6 +17,7 @@ namespace SME.SGP.Aplicacao.Teste.Consultas
         private readonly IComandosDiasLetivos comandosDiasLetivos;
         private readonly Mock<IComandosDiasLetivos> comandosDiasLetivosMock;
 
+        private readonly Mock<IConsultasAbrangencia> consultasAbrangencia;
         private readonly ConsultasEventosAulasCalendario consultasEventosAulasCalendario;
         private readonly Mock<IHttpContextAccessor> httpContext;
         private readonly Mock<IRepositorioAula> repositorioAula;
@@ -24,9 +25,8 @@ namespace SME.SGP.Aplicacao.Teste.Consultas
         private readonly Mock<IRepositorioParametrosSistema> repositorioParametrosSistema;
         private readonly Mock<IRepositorioPeriodoEscolar> repositorioPeriodoEscolar;
         private readonly Mock<IRepositorioTipoCalendario> repositorioTipoCalendatio;
-        private readonly Mock<IServicoUsuario> servicoUsuario;
         private readonly Mock<IServicoEOL> servicoEOL;
-        private readonly Mock<IConsultasAbrangencia> consultaAbrangencia;
+        private readonly Mock<IServicoUsuario> servicoUsuario;
 
         public ConsultasEventosAulasCalendarioTeste()
         {
@@ -39,9 +39,9 @@ namespace SME.SGP.Aplicacao.Teste.Consultas
             repositorioParametrosSistema = new Mock<IRepositorioParametrosSistema>();
             repositorioTipoCalendatio = new Mock<IRepositorioTipoCalendario>();
             servicoEOL = new Mock<IServicoEOL>();
-            consultaAbrangencia = new Mock<IConsultasAbrangencia>();
+            consultasAbrangencia = new Mock<IConsultasAbrangencia>();
 
-            consultasEventosAulasCalendario = new ConsultasEventosAulasCalendario(repositorioEvento.Object, comandosDiasLetivosMock.Object, repositorioAula.Object, servicoUsuario.Object, servicoEOL.Object, consultaAbrangencia.Object);
+            consultasEventosAulasCalendario = new ConsultasEventosAulasCalendario(repositorioEvento.Object, comandosDiasLetivosMock.Object, repositorioAula.Object, servicoUsuario.Object, servicoEOL.Object, consultasAbrangencia.Object);
             comandosDiasLetivos = new ComandosDiasLetivos(repositorioPeriodoEscolar.Object, repositorioEvento.Object, repositorioTipoCalendatio.Object, repositorioParametrosSistema.Object);
         }
 
@@ -83,7 +83,7 @@ namespace SME.SGP.Aplicacao.Teste.Consultas
             IEnumerable<Evento> eventos = new List<Evento> { evento, evento2 };
 
             repositorioPeriodoEscolar.Setup(r => r.ObterPorTipoCalendario(It.IsAny<long>())).Returns(periodos);
-            repositorioAula.Setup(r => r.ObterAulas(It.IsAny<long>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>())).Returns(Task.FromResult(aulas));
+            repositorioAula.Setup(r => r.ObterAulas(It.IsAny<long>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), null, null)).Returns(Task.FromResult(aulas));
             repositorioEvento.Setup(r => r.ObterEventosPorTipoDeCalendarioDreUe(It.IsAny<long>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<bool>())).Returns(eventos);
 
             var dias = comandosDiasLetivos.BuscarDiasLetivos(1);
@@ -123,7 +123,7 @@ namespace SME.SGP.Aplicacao.Teste.Consultas
             IEnumerable<AulaDto> aulas = new List<AulaDto> { aula, aula2 };
             IEnumerable<Evento> eventos = new List<Evento> { evento, evento2 };
 
-            repositorioAula.Setup(r => r.ObterAulas(It.IsAny<long>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<int>(), It.IsAny<string>())).Returns(Task.FromResult(aulas));
+            repositorioAula.Setup(r => r.ObterAulas(It.IsAny<long>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), null, null)).Returns(Task.FromResult(aulas));
             repositorioEvento.Setup(r => r.ObterEventosPorTipoDeCalendarioDreUeMes(It.IsAny<long>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<int>(), It.IsAny<bool>())).Returns(Task.FromResult(eventos));
 
             var dias = comandosDiasLetivos.BuscarDiasLetivos(1);

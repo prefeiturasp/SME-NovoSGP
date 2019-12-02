@@ -12,12 +12,15 @@ namespace SME.SGP.Aplicacao
     {
         private readonly IRepositorioAula repositorio;
         private readonly IServicoUsuario servicoUsuario;
+        private readonly IConsultasPeriodoEscolar consultasPeriodoEscolar;
 
         public ConsultasAula(IRepositorioAula repositorio,
+                             IConsultasPeriodoEscolar consultasPeriodoEscolar,
                              IServicoUsuario servicoUsuario)
         {
             this.repositorio = repositorio ?? throw new ArgumentNullException(nameof(repositorio));
             this.servicoUsuario = servicoUsuario ?? throw new ArgumentNullException(nameof(servicoUsuario));
+            this.consultasPeriodoEscolar = consultasPeriodoEscolar ?? throw new ArgumentNullException(nameof(consultasPeriodoEscolar));
         }
 
         public AulaConsultaDto BuscarPorId(long id)
@@ -42,6 +45,15 @@ namespace SME.SGP.Aplicacao
             });
         }
 
+        public async Task<int> ObterQuantidadeAulasRecorrentes(long aulaInicialId, RecorrenciaAula recorrencia)
+        {
+            var aulaInicioRecorrencia = repositorio.ObterPorId(aulaInicialId);
+            var fimRecorrencia = consultasPeriodoEscolar.ObterFimPeriodoRecorrencia(aulaInicioRecorrencia.TipoCalendarioId, aulaInicioRecorrencia.DataAula, recorrencia);
+
+            var aulasRecorrentes = await repositorio.ObterAulasRecorrencia(aulaInicioRecorrencia.AulaPaiId.Value, aulaInicioRecorrencia.Id, fimRecorrencia);
+            return aulasRecorrentes.Count() + 1;
+        }
+
         public async Task<int> ObterQuantidadeAulasTurmaSemana(string turma, string disciplina, string semana)
         {
             IEnumerable<AulasPorTurmaDisciplinaDto> aulas;
@@ -52,6 +64,24 @@ namespace SME.SGP.Aplicacao
                 aulas = await repositorio.ObterAulasTurmaDisciplinaSemana(turma, disciplina, semana);
 
             return aulas.Sum(a => a.Quantidade);
+        }
+
+        public async Task<int> ObterRecorrenciaDaSerie(long aulaId)
+        {
+            var aula = repositorio.ObterPorId(aulaId);
+
+            if (aula == null)
+                throw new NegocioException("Aula não encontrada");
+
+            // se não possui aula pai é a propria origem da recorrencia
+            if (!aula.AulaPaiId.HasValue)
+                return (int)RecorrenciaAula.AulaUnica;
+
+            // Busca aula origem da recorrencia
+            var aulaOrigemRecorrencia = repositorio.ObterPorId(aula.AulaPaiId.Value);
+
+            // retorna o tipo de recorrencia da aula origem
+            return (int)aulaOrigemRecorrencia.RecorrenciaAula;
         }
 
         private bool ExperienciaPedagogica(string disciplina) 

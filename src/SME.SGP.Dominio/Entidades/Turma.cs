@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace SME.SGP.Dominio.Entidades
+namespace SME.SGP.Dominio
 {
     public class Turma
     {
@@ -10,6 +10,8 @@ namespace SME.SGP.Dominio.Entidades
         public DateTime DataAtualizacao { get; set; }
         public long Id { get; set; }
         public Modalidade ModalidadeCodigo { get; set; }
+        public string Nome { get; set; }
+        public int QuantidadeDuracaoAula { get; set; }
         public string Nome { get; set; }
         public int QuantidadeDuracaoAula { get; set; }
         public int Semestre { get; set; }
