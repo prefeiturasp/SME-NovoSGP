@@ -82,13 +82,21 @@ namespace SME.SGP.Dominio.Servicos.Teste
                 RecorrenciaAula = RecorrenciaAula.AulaUnica
             };
 
+            IEnumerable<Aula> aulasRecorrentes = new List<Aula>()
+            {
+                new Aula() { Id = 2, DataAula = DateTime.Parse("2019-12-09"), UeId = "1", TurmaId = "1", Quantidade = 1, DisciplinaId = "1", RecorrenciaAula = RecorrenciaAula.AulaUnica },
+                new Aula() { Id = 2, DataAula = DateTime.Parse("2019-12-16"), UeId = "1", TurmaId = "1", Quantidade = 1, DisciplinaId = "1", RecorrenciaAula = RecorrenciaAula.AulaUnica },
+            };
+
+            repositorioAula.Setup(a => a.UsuarioPodeCriarAulaNaUeTurmaEModalidade(It.IsAny<Aula>(), It.IsAny<ModalidadeTipoCalendario>())).Returns(true);
+            repositorioAula.Setup(a => a.ObterAulasRecorrencia(It.IsAny<long>(), It.IsAny<long?>(), It.IsAny<DateTime?>())).Returns(Task.FromResult(aulasRecorrentes));
+
             usuario = new Usuario();
             usuario.DefinirPerfis(new List<PrioridadePerfil>() { new PrioridadePerfil() { CodigoPerfil = Guid.Parse("40E1E074-37D6-E911-ABD6-F81654FE895D") } });
 
             var tipoCalendario = new TipoCalendario();
             IEnumerable<DisciplinaResposta> disciplinaRespotas = new List<DisciplinaResposta>() { new DisciplinaResposta() { CodigoComponenteCurricular = 1 } };
 
-            repositorioAula.Setup(a => a.UsuarioPodeCriarAulaNaUeTurmaEModalidade(It.IsAny<Aula>(), It.IsAny<ModalidadeTipoCalendario>())).Returns(true);
 
             repositorioTipoCalendario.Setup(a => a.ObterPorId(It.IsAny<long>())).Returns(tipoCalendario);
 
@@ -107,6 +115,7 @@ namespace SME.SGP.Dominio.Servicos.Teste
             //repositorioPeriodoEscolar.Setup(a => a.ObterPorTipoCalendario(aula.TipoCalendarioId)).Returns(new List<PeriodoEscolar>() { periodoEscolar });
             repositorioAbrangencia.Setup(a => a.ObterAbrangenciaTurma(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<Guid>()))
                 .Returns(Task.FromResult(new AbrangenciaFiltroRetorno() { NomeDre = "Dre 1", NomeUe = "Ue 1", NomeTurma = "Turma 1A" }));
+
         }
 
         [Fact]
@@ -143,6 +152,33 @@ namespace SME.SGP.Dominio.Servicos.Teste
         }
 
         [Fact]
+        public async void Deve_Alterar_Aula_Com_Recorrencia()
+        {
+            aula.Id = 1;
+            aula.DataAula = aula.DataAula.AddDays(2);
+
+            var msg = await servicoAula.Salvar(aula, usuario, RecorrenciaAula.RepetirBimestreAtual);
+
+            // ASSERT
+            Assert.False(msg == "");
+            repositorioAula.Verify(c => c.Salvar(It.IsAny<Aula>()), Times.Exactly(3));
+            servicoNotificacao.Verify(c => c.Salvar(It.IsAny<Notificacao>()), Times.Once());
+        }
+
+        [Fact]
+        public async void Deve_Excluir_Aula_Com_Recorrencia()
+        {
+            aula.Id = 1;
+
+            var msg = await servicoAula.Excluir(aula, RecorrenciaAula.RepetirBimestreAtual, usuario);
+
+            // ASSERT
+            Assert.False(msg == "");
+            repositorioAula.Verify(c => c.SalvarAsync(It.IsAny<Aula>()), Times.Exactly(3));
+            servicoNotificacao.Verify(c => c.Salvar(It.IsAny<Notificacao>()), Times.Once());
+        }
+
+        [Fact]
         public async void Deve_Consistir_Dia_Letivo()
         {
             servicoDiaLetivo.Setup(a => a.ValidarSeEhDiaLetivo(It.IsAny<DateTime>(), It.IsAny<long>(), It.IsAny<string>(), It.IsAny<string>())).Returns(false);
@@ -159,6 +195,14 @@ namespace SME.SGP.Dominio.Servicos.Teste
         }
 
         [Fact]
+        public async void Deve_Consistir_Grade()
+        {
+            aula.Quantidade = 2;
+
+            await Assert.ThrowsAsync<NegocioException>(() => servicoAula.Salvar(aula, usuario, aula.RecorrenciaAula));
+        }
+
+        [Fact]
         public async void Deve_Consistir_Recorrencia_Reposicao()
         {
             aula.TipoAula = TipoAula.Reposicao;
@@ -166,7 +210,5 @@ namespace SME.SGP.Dominio.Servicos.Teste
 
             await Assert.ThrowsAsync<NegocioException>(() => servicoAula.Salvar(aula, usuario, aula.RecorrenciaAula));
         }
-
-
     }
 }

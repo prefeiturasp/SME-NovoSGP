@@ -127,7 +127,6 @@ namespace SME.SGP.Dominio.Servicos
                 }
                 if ((gradeAulas != null) && (quantidadeAulasRestantes < aula.Quantidade))
                     throw new NegocioException("Quantidade de aulas superior ao limíte de aulas da grade.");
-                    
             }
 
             repositorioAula.Salvar(aula);
