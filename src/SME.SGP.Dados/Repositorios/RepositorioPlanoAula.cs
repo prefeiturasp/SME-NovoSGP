@@ -13,6 +13,19 @@ namespace SME.SGP.Dados.Repositorios
     {
         public RepositorioPlanoAula(ISgpContext conexao) : base(conexao) { }
 
+        public async Task ExcluirPlanoDaAula(long aulaId)
+        {
+            // Excluir objetivos de aprendizagem do plano
+            var command = @"delete from objetivo_aprendizagem_aula 
+                            where plano_aula_id in (
+                                select id from plano_aula where aula_id = @aulaId) ";
+            await database.ExecuteAsync(command, new { aulaId });
+
+            // Excluir plano de aula
+            command = "delete from plano_aula where aula_id = @aulaId";
+            await database.ExecuteAsync(command, new { aulaId });
+        }
+
         public async Task<PlanoAula> ObterPlanoAulaPorAula(long aulaId)
         {
             var query = "select * from plano_aula where aula_id = @aulaId";
