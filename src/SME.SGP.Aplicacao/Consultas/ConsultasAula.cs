@@ -66,6 +66,24 @@ namespace SME.SGP.Aplicacao
             return aulas.Sum(a => a.Quantidade);
         }
 
+        public async Task<int> ObterRecorrenciaDaSerie(long aulaId)
+        {
+            var aula = repositorio.ObterPorId(aulaId);
+
+            if (aula == null)
+                throw new NegocioException("Aula não encontrada");
+
+            // se não possui aula pai é a propria origem da recorrencia
+            if (!aula.AulaPaiId.HasValue)
+                return (int)RecorrenciaAula.AulaUnica;
+
+            // Busca aula origem da recorrencia
+            var aulaOrigemRecorrencia = repositorio.ObterPorId(aula.AulaPaiId.Value);
+
+            // retorna o tipo de recorrencia da aula origem
+            return (int)aulaOrigemRecorrencia.RecorrenciaAula;
+        }
+
         private bool ExperienciaPedagogica(string disciplina) 
             => new string[] { "1214", "1215", "1216", "1217", "1218", "1219", "1220", "1221", "1222", "1223" }
                 .Contains(disciplina);
