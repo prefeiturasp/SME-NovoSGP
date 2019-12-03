@@ -130,7 +130,7 @@ namespace SME.SGP.Aplicacao.Integracoes
             return await ObterDisciplinas(url);
         }
 
-        public IEnumerable<DisciplinaDto> ObterDisciplinasPorIds(int[] ids)
+        public IEnumerable<DisciplinaDto> ObterDisciplinasPorIds(long[] ids)
         {
             httpClient.DefaultRequestHeaders.Clear();
 

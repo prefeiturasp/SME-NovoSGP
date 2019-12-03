@@ -1,0 +1,1 @@
+alter table atribuicao_cj RENAME componente_curricular_id TO disciplina_id; 
