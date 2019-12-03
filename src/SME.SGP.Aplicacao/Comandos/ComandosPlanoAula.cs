@@ -217,7 +217,7 @@ namespace SME.SGP.Aplicacao
 
             if (ehProfessorCJ)
             {
-                //regras prof cj
+                //validar se o professor CJ possui atribuição de disciplina no ano
             }
             else if (idsTurmasProfessor == null || idsTurmasSelecionadas.Any(c => !idsTurmasProfessor.Contains(Convert.ToInt32(c))))
             {
