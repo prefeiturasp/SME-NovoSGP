@@ -13,7 +13,6 @@ namespace SME.SGP.Aplicacao.Servicos
 {
     public class ServicoAbrangencia : IServicoAbrangencia
     {
-        private const string PERFIL_SUPERVISOR = "4EE1E074-37D6-E911-ABD6-F81654FE895D";
         private readonly IConsultasSupervisor consultasSupervisor;
         private readonly IRepositorioAbrangencia repositorioAbrangencia;
         private readonly IRepositorioDre repositorioDre;
@@ -22,7 +21,8 @@ namespace SME.SGP.Aplicacao.Servicos
         private readonly IServicoEOL servicoEOL;
         private readonly IUnitOfWork unitOfWork;
 
-        public ServicoAbrangencia(IRepositorioAbrangencia repositorioAbrangencia, IUnitOfWork unitOfWork, IServicoEOL servicoEOL, IConsultasSupervisor consultasSupervisor, IRepositorioDre repositorioDre, IRepositorioUe repositorioUe, IRepositorioTurma repositorioTurma)
+        public ServicoAbrangencia(IRepositorioAbrangencia repositorioAbrangencia, IUnitOfWork unitOfWork, IServicoEOL servicoEOL, IConsultasSupervisor consultasSupervisor,
+            IRepositorioDre repositorioDre, IRepositorioUe repositorioUe, IRepositorioTurma repositorioTurma)
         {
             this.repositorioAbrangencia = repositorioAbrangencia ?? throw new ArgumentNullException(nameof(repositorioAbrangencia));
             this.unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
@@ -43,10 +43,14 @@ namespace SME.SGP.Aplicacao.Servicos
         private async Task BuscaAbrangenciaEPersiste(string login, Guid perfil)
         {
             Task<AbrangenciaRetornoEolDto> consultaEol = null;
-            var ehSupervisor = perfil == Guid.Parse(PERFIL_SUPERVISOR);
+
+            var ehSupervisor = perfil == Perfis.PERFIL_SUPERVISOR;
+            var ehProfessorCJ = perfil == Perfis.PERFIL_CJ;
 
             if (ehSupervisor)
                 consultaEol = ObterAbrangenciaEolSupervisor(login);
+            else if (ehProfessorCJ)
+                return;
             else
                 consultaEol = servicoEOL.ObterAbrangencia(login, perfil);
 
