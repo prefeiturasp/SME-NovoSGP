@@ -3,7 +3,6 @@ using Microsoft.AspNetCore.Mvc;
 using SME.SGP.Api.Filtros;
 using SME.SGP.Aplicacao;
 using SME.SGP.Infra;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Api.Controllers
@@ -17,27 +16,17 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [ProducesResponseType(typeof(RetornoBaseDto), 601)]
         [ProducesResponseType(typeof(RetornoBaseDto), 200)]
-        [Permissao(Permissao.PDA_I, Policy = "Bearer")]
+        [Permissao(Permissao.PDA_C, Policy = "Bearer")]
         public async Task<IActionResult> Listar(long aulaId, [FromServices] IConsultasFrequencia consultasFrequencia)
         {
             return Ok(await consultasFrequencia.ObterListaFrequenciaPorAula(aulaId));
-        }
-
-        [HttpGet("frequencias/turmas/{turmaId}/disciplinas")]
-        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        [ProducesResponseType(typeof(RetornoBaseDto), 601)]
-        [ProducesResponseType(typeof(IEnumerable<DisciplinaDto>), 200)]
-        [Permissao(Permissao.PDA_I, Policy = "Bearer")]
-        public async Task<IActionResult> ListarDisciplinasDaTurma(string turmaId, [FromServices] IConsultasFrequencia consultasFrequencia)
-        {
-            return Ok(await consultasFrequencia.ObterDisciplinasLecionadasPeloProfessorPorTurma(turmaId));
         }
 
         [HttpGet("frequencias/aulas/datas/{anoLetivo}/turmas/{turmaId}/disciplinas/{disciplinaId}")]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [ProducesResponseType(typeof(RetornoBaseDto), 601)]
         [ProducesResponseType(typeof(RetornoBaseDto), 200)]
-        //[Permissao(Permissao.PDA_I, Policy = "Bearer")]
+        [Permissao(Permissao.PDA_C, Policy = "Bearer")]
         public async Task<IActionResult> ObterDatasDeAulasPorCalendarioTurmaEDisciplina(int anoLetivo, string turmaId, string disciplinaId, [FromServices] IConsultasAula consultasAula)
         {
             return Ok(await consultasAula.ObterDatasDeAulasPorCalendarioTurmaEDisciplina(anoLetivo, turmaId, disciplinaId));
