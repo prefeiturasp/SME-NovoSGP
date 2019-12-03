@@ -5,7 +5,7 @@ import PropTypes from 'prop-types';
 import { SelectComponent } from '~/componentes';
 
 // Servicos
-import AtribuicaoEsporadicaServico from '~/servicos/Paginas/AtribuicaoEsporadica';
+import AbrangenciaServico from '~/servicos/Abrangencia';
 
 // Funções
 import { valorNuloOuVazio } from '~/utils/funcoes/gerais';
@@ -15,7 +15,7 @@ function DreDropDown({ form, onChange, label }) {
 
   useEffect(() => {
     async function buscarDres() {
-      const { data } = await AtribuicaoEsporadicaServico.buscarDres();
+      const { data } = await AbrangenciaServico.buscarDres();
       if (data) {
         setListaDres(
           data.map(item => ({
@@ -52,7 +52,6 @@ function DreDropDown({ form, onChange, label }) {
       onChange={onChange}
       lista={listaDres}
       valueOption="valor"
-      containerVinculoId="containerFiltro"
       valueText="desc"
       placeholder="Diretoria Regional De Educação (DRE)"
       disabled={listaDres.length === 1}

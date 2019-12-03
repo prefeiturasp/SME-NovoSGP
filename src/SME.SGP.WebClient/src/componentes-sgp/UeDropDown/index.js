@@ -5,13 +5,13 @@ import PropTypes from 'prop-types';
 import { SelectComponent } from '~/componentes';
 
 // Servicos
-import AtribuicaoEsporadicaServico from '~/servicos/Paginas/AtribuicaoEsporadica';
+import AbrangenciaServico from '~/servicos/Abrangencia';
 
 function UeDropDown({ form, onChange, dreId, label }) {
   const [listaUes, setListaUes] = useState([]);
 
   async function buscarUes() {
-    const { data } = await AtribuicaoEsporadicaServico.buscarUes(dreId);
+    const { data } = await AbrangenciaServico.buscarUes(dreId);
     if (data) {
       setListaUes(
         data.map(item => ({

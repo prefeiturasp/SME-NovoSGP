@@ -1,6 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 
+// Redux
+import { useSelector } from 'react-redux';
+
 // Componentes
 import InputRF from './componentes/InputRF';
 import InputNome from './componentes/InputNome';
@@ -12,6 +15,7 @@ import service from './services/LocalizadorService';
 function Localizador({ onChange, showLabel, form, dreId, anoLetivo }) {
   const [dataSource, setDataSource] = useState([]);
   const [pessoaSelecionada, setPessoaSelecionada] = useState({});
+  const usuario = useSelector(store => store.usuario);
 
   const onChangeInput = async valor => {
     if (valor.length < 2) return;
@@ -57,6 +61,12 @@ function Localizador({ onChange, showLabel, form, dreId, anoLetivo }) {
       setPessoaSelecionada(form.initialValues);
     }
   }, [form.initialValues]);
+
+  useEffect(() => {
+    if (usuario.ehProfessor) {
+      onBuscarPorRF({ rf: usuario.rf });
+    }
+  }, []);
 
   return (
     <>
