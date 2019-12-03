@@ -1,5 +1,4 @@
-﻿using SME.SGP.Dominio.Entidades;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
 namespace SME.SGP.Dominio.Interfaces
 {
