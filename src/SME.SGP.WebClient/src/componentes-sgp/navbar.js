@@ -1,8 +1,7 @@
 import React, { useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import styled from 'styled-components';
-import { store } from '../redux';
 import Filtro from './filtro';
 import LogoDoSgp from '../recursos/LogoDoSgp.svg';
 import { Base } from '../componentes/colors';
@@ -15,6 +14,7 @@ import { limparDadosFiltro } from '~/redux/modulos/filtro/actions';
 
 const Navbar = () => {
   const retraido = useSelector(state => state.navegacao.retraido);
+  const dispatch = useDispatch();
 
   const Nav = styled.nav`
     height: 70px !important;
@@ -67,11 +67,10 @@ const Navbar = () => {
   `;
 
   const onClickSair = () => {
-    store.dispatch(limparDadosFiltro());
-    store.dispatch(Deslogar());
+    dispatch(limparDadosFiltro());
+    dispatch(Deslogar());
     history.push(URL_LOGIN);
   };
-
   return (
     <Nav className="navbar navbar-expand-md navbar-light bg-white shadow-sm sticky-top py-0">
       <div className="container-fluid h-100">
@@ -119,6 +118,7 @@ const Navbar = () => {
               </ul>
             </Botoes>
           </div>
+
           <Div className="d-flex align-self-xl-center align-self-lg-center align-self-md-end align-self-sm-end w-100 position-absolute mb-sm-2 mb-md-2">
             <Filtro />
           </Div>
