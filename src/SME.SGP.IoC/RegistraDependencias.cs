@@ -159,6 +159,7 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IServicoAula, ServicoAula>();
             services.TryAddScoped<IServicoAtribuicaoEsporadica, ServicoAtribuicaoEsporadica>();
             services.TryAddScoped<IServicoCalculoFrequencia, ServicoCalculoFrequencia>();
+            services.TryAddScoped<IServicoNotificacaoFrequencia, ServicoNotificacaoFrequencia>();
         }
     }
 }

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using SME.SGP.Infra;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Dominio.Interfaces
@@ -8,6 +9,8 @@ namespace SME.SGP.Dominio.Interfaces
         IEnumerable<RegistroAusenciaAluno> ObterListaFrequenciaPorAula(long aulaId);
 
         RegistroFrequencia ObterRegistroFrequenciaPorAulaId(long aulaId);
+
+        IEnumerable<RegistroFrequenciaFaltanteDto> ObterTurmasSemRegistroDeFrequencia();
 
         Task ExcluirFrequenciaAula(long aulaId);
     }
