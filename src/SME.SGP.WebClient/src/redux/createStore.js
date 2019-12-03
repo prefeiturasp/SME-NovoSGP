@@ -14,4 +14,5 @@ export default (reducers, middlewares) => {
   /* eslint-enable */
 
   return createStore(reducers, enhancer);
+  //
 };

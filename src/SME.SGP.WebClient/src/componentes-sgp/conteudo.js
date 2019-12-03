@@ -1,4 +1,6 @@
 import React, { useEffect, useState } from 'react';
+import { Switch, Route } from 'react-router-dom';
+
 import { useSelector, useDispatch } from 'react-redux';
 import { Modal, Row } from 'antd';
 import styled from 'styled-components';
@@ -11,6 +13,7 @@ import Alert from '~/componentes/alert';
 import Grid from '~/componentes/grid';
 import Navbar from './navbar';
 import Sider from './sider';
+import CalendarioEscolar from '~/redux/modulos/calendarioEscolar/reducers';
 
 const ContainerModal = styled.div`
   .ant-modal-footer {
@@ -22,27 +25,13 @@ const ContainerBotoes = styled.div`
   display: flex;
   justify-content: flex-end;
 `;
-
-const Pagina = props => {
-  const { children } = props;
-
-  return (
-    <>
-      <Navbar />
-      <div className="container-fluid h-100">
-        <Sider />
-        <Conteudo>{children}</Conteudo>
-      </div>
-    </>
-  );
-};
-
 const Conteudo = props => {
-  const { children } = props;
+  const { children, match } = props;
 
   const NavegacaoStore = useSelector(store => store.navegacao);
   const [retraido, setRetraido] = useState(false);
   const dispatch = useDispatch();
+
   useEffect(() => {
     setRetraido(NavegacaoStore.retraido);
   }, [NavegacaoStore.retraido]);
@@ -58,10 +47,11 @@ const Conteudo = props => {
     dispatch(alertaFechar());
   };
   const alertas = useSelector(state => state.alertas);
+
   return (
     <div style={{ marginLeft: retraido ? '115px' : '250px' }}>
-      <BreadcrumbSgp />
-      <div className="row h-100">
+      {/* <BreadcrumbSgp /> */}
+      {/* <div className="row h-100">
         <main role="main" className="col-md-12 col-lg-12 col-sm-12 col-xl-12">
           <ContainerModal>
             <Modal
@@ -73,7 +63,7 @@ const Conteudo = props => {
                 <ContainerBotoes key={shortid.generate()}>
                   <Button
                     key={shortid.generate()}
-                    onClick={() => fecharConfirmacao(true)}
+                    onClick={() => fecharConfirmacao(true)}S
                     label={confirmacao.textoOk}
                     color={Colors.Azul}
                     border
@@ -88,15 +78,11 @@ const Conteudo = props => {
                 </ContainerBotoes>,
               ]}
             >
-              {
-                confirmacao.texto && Array.isArray(confirmacao.texto) ?
-                  confirmacao.texto.map((item, i) => (
-                    <div key={item + '-' + i}>
-                      {item}
-                    </div>
+              {confirmacao.texto && Array.isArray(confirmacao.texto)
+                ? confirmacao.texto.map((item, i) => (
+                    <div key={item + '-' + i}>{item}</div>
                   ))
-                  : confirmacao.texto
-              }
+                : confirmacao.texto}
               {confirmacao.texto ? <br /> : ''}
               <b>{confirmacao.textoNegrito}</b>
             </Modal>
@@ -109,23 +95,40 @@ const Conteudo = props => {
                 </Grid>
               </Row>
             ))}
-            <Row key={shortid.generate()} hidden={!NavegacaoStore.somenteConsulta}>
+            <Row
+              key={shortid.generate()}
+              hidden={!NavegacaoStore.somenteConsulta}
+            >
               <Grid cols={12}>
                 <Alert
                   alerta={{
                     tipo: 'warning',
                     id: 'AlertaPrincipal',
-                    mensagem: 'Você tem apenas permissão de consulta nesta tela.',
+                    mensagem:
+                      'Você tem apenas permissão de consulta nesta tela.',
                     estiloTitulo: { fontSize: '18px' },
                   }}
                 />
               </Grid>
             </Row>
-            {children}
           </div>
         </main>
-      </div>
+      </div> */}
+      <Route path="/calendario-escolar" component={CalendarioEscolar} />
     </div>
+  );
+};
+const Pagina = props => {
+  const { children } = props;
+
+  return (
+    <>
+      <Navbar />
+      <div className="container-fluid h-100">
+        <Sider />
+        <Conteudo />
+      </div>
+    </>
   );
 };
 
