@@ -130,7 +130,7 @@ namespace SME.SGP.Aplicacao.Integracoes
             return await ObterDisciplinas(url);
         }
 
-        public IEnumerable<DisciplinaDto> ObterDisciplinasPorIds(int[] ids)
+        public IEnumerable<DisciplinaDto> ObterDisciplinasPorIds(long[] ids)
         {
             httpClient.DefaultRequestHeaders.Clear();
 
@@ -301,6 +301,14 @@ namespace SME.SGP.Aplicacao.Integracoes
 
             var json = await resposta.Content.ReadAsStringAsync();
             return JsonConvert.DeserializeObject<IEnumerable<ProfessorResumoDto>>(json);
+        }
+
+        public async Task<IEnumerable<ProfessorTitularDisciplinaEol>> ObterProfessoresTitularesDisciplinas(string turmaId, Modalidade modalidadeId, string ueId)
+        {
+            return new List<ProfessorTitularDisciplinaEol>() {
+                new ProfessorTitularDisciplinaEol() { DisciplinaId = 1060, DisciplinaNome = "Informática - OIE", ProfessorNome = "Josefino Alves", ProfessorRf = "53715782" } ,
+                new ProfessorTitularDisciplinaEol() { DisciplinaId = 1288, DisciplinaNome = "Educação Física Integral Manhã", ProfessorNome = "Arlindo Cruz", ProfessorRf = "876524789" } ,
+            };
         }
 
         public async Task<UsuarioResumoCoreDto> ObterResumoCore(string login)

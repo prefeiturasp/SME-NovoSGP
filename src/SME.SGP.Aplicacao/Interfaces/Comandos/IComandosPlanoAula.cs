@@ -8,5 +8,6 @@ namespace SME.SGP.Aplicacao
         Task Salvar(PlanoAulaDto planoAulaDto);
 
         Task Migrar(MigrarPlanoAulaDto migrarPlanoAulaDto);
+        Task ExcluirPlanoDaAula(long aulaId);
     }
 }

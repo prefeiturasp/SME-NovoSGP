@@ -5,6 +5,6 @@ namespace SME.SGP.Dominio.Interfaces
 {
     public interface IRepositorioAtribuicaoCJ : IRepositorioBase<AtribuicaoCJ>
     {
-        Task<IEnumerable<AtribuicaoCJ>> ObterPorFiltros(Modalidade? modalidade, string turmaId, string ueId, string componenteCurricularId, string[] usuariosRfs);
+        Task<IEnumerable<AtribuicaoCJ>> ObterPorFiltros(Modalidade? modalidade, string turmaId, string ueId, string componenteCurricularId, string usuarioRf, string usuarioNome);
     }
 }
