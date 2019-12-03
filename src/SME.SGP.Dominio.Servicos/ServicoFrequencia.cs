@@ -1,8 +1,6 @@
 ﻿using SME.SGP.Aplicacao;
 using SME.SGP.Aplicacao.Integracoes;
-using SME.SGP.Dominio.Entidades;
 using SME.SGP.Dominio.Interfaces;
-using SME.SGP.Infra;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -42,17 +40,6 @@ namespace SME.SGP.Dominio.Servicos
             this.consultasDisciplina = consultasDisciplina ?? throw new System.ArgumentNullException(nameof(consultasDisciplina));
         }
 
-        public async Task<IEnumerable<DisciplinaDto>> ObterDisciplinasLecionadasPeloProfessorPorTurma(string turmaId)
-        {
-            if (string.IsNullOrWhiteSpace(turmaId))
-                throw new NegocioException("O id da turma é obrigatório.");
-            ObterTurma(turmaId);
-
-            var disciplinas = await consultasDisciplina.ObterDisciplinasPorProfessorETurma(turmaId);
-            AdicionarComponenteParaEMEBS(disciplinas, turmaId);
-            return disciplinas;
-        }
-
         public async Task ExcluirFrequenciaAula(long aulaId)
         {
             await repositorioFrequencia.ExcluirFrequenciaAula(aulaId);
@@ -90,43 +77,6 @@ namespace SME.SGP.Dominio.Servicos
             RegistraAusenciaAlunos(registroAusenciaAlunos, alunos, registroFrequencia, aula.Quantidade);
 
             unitOfWork.PersistirTransacao();
-        }
-
-        private void AdicionarComponenteParaEMEBS(List<DisciplinaDto> disciplinas, string turmaId)
-        {
-            var deveAdicionarComponenteCurricularEMEBS = DeveAdicionarComponenteParaEMEBS(turmaId);
-
-            if (disciplinas != null && disciplinas.Any() && deveAdicionarComponenteCurricularEMEBS)
-            {
-                if (disciplinas.Any(c => c.CodigoComponenteCurricular == 218) && !disciplinas.Any(c => c.CodigoComponenteCurricular == 138))
-                {
-                    disciplinas.Add(new DisciplinaDto
-                    {
-                        CodigoComponenteCurricular = 138,
-                        Nome = "LINGUA PORTUGUESA",
-                    });
-                }
-                else
-                {
-                    if (disciplinas.Any(c => c.CodigoComponenteCurricular == 138) && !disciplinas.Any(c => c.CodigoComponenteCurricular == 218))
-                    {
-                        disciplinas.Add(new DisciplinaDto
-                        {
-                            CodigoComponenteCurricular = 218,
-                            Nome = "LIBRAS",
-                        });
-                    }
-                }
-            }
-        }
-
-        private bool DeveAdicionarComponenteParaEMEBS(string turmaId)
-        {
-            var ue = repositorioUE.ObterUEPorTurma(turmaId);
-            if (ue == null)
-                throw new NegocioException("Não foi encontrada uma UE com a turma informada. Verifique se você possui abrangência para essa UE.");
-
-            return ue.TipoEscola == TipoEscola.EMEBS;
         }
 
         private async Task<IEnumerable<Aplicacao.Integracoes.Respostas.AlunoPorTurmaResposta>> ObterAlunos(Aula aula)

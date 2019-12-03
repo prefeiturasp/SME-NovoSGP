@@ -22,7 +22,7 @@ import { SelecionarDisciplina } from '~/redux/modulos/planoAula/actions';
 import { stringNulaOuEmBranco } from '~/utils/funcoes/gerais';
 import ModalMultiLinhas from '~/componentes/modalMultiLinhas';
 import modalidade from '~/dtos/modalidade';
-import ServicoFrequencia from '~/servicos/Paginas/DiarioClasse/ServicoFrequencia';
+import ServicoDisciplina from '~/servicos/Paginas/ServicoDisciplina';
 
 const FrequenciaPlanoAula = () => {
   const usuario = useSelector(store => store.usuario);
@@ -86,7 +86,9 @@ const FrequenciaPlanoAula = () => {
 
   useEffect(() => {
     const obterDisciplinas = async () => {
-      const disciplinas = await ServicoFrequencia.obterDisciplinas(turmaId);
+      const disciplinas = await ServicoDisciplina.obterDisciplinasPorTurma(
+        turmaId
+      );
       setListaDisciplinas(disciplinas.data);
       if (disciplinas.data && disciplinas.data.length == 1) {
         const disciplina = disciplinas.data[0];
@@ -104,7 +106,7 @@ const FrequenciaPlanoAula = () => {
       obterDatasDeAulasDisponiveis();
       setDisciplinaSelecionada(undefined);
       setDisciplinaIdSelecionada(undefined);
-      obterDisciplinas();
+      obterDisciplinas(turmaId);
     } else {
       resetarTelaFrequencia();
       setAulaId(0);
@@ -576,7 +578,7 @@ const FrequenciaPlanoAula = () => {
                 disabled={desabilitarDisciplina}
               />
             </div>
-            <div className="col-sm-12 col-md-4 col-lg-3 col-xl-2 mb-2">
+            <div className="col-sm-12 col-md-4 col-lg-3 col-xl-3 mb-3">
               <CampoData
                 valor={dataSelecionada}
                 onChange={onChangeData}
