@@ -103,10 +103,14 @@ namespace SME.SGP.Aplicacao
                             .Where(c => disciplinasIds.Contains(c.CodigoComponenteCurricular))
                             .ToList();
 
+                var professorDisciplina = a.FirstOrDefault();
+
                 var atribuicaoDto = new AtribuicaoCJListaRetornoDto()
                 {
                     Modalidade = a.Key.Modalidade.GetAttribute<DisplayAttribute>().Name,
-                    Turma = a.FirstOrDefault().Turma.Nome,
+                    ModalidadeId = (int)a.Key.Modalidade,
+                    Turma = professorDisciplina.Turma.Nome,
+                    TurmaId = professorDisciplina.TurmaId,
                     Disciplinas = disciplinasDescricoes.Select(d => d.Nome).ToArray()
                 };
 
