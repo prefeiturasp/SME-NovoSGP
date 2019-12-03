@@ -2,6 +2,7 @@
 using SME.SGP.Dados.Contexto;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
+using SME.SGP.Infra;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -56,6 +57,27 @@ namespace SME.SGP.Dados.Repositorios
                             and aula_id = @aulaId";
 
             return database.Conexao.QueryFirstOrDefault<RegistroFrequencia>(query, new { aulaId });
+        }
+
+        public IEnumerable<RegistroFrequenciaFaltanteDto> ObterTurmasSemRegistroDeFrequencia()
+        {
+            var query = @"select a.turma_id as CodigoTurma, t.nome as NomeTurma, a.disciplina_id as DisciplinaId
+	                        , ue.ue_id as CodigoUe, ue.nome as NomeUe
+	                        , dre.dre_id as CodigoDre, dre.nome as NomeDre
+	                        , count(a.id) as QuantidadeAulasSemFrequencia
+	                        , string_agg(cast(a.id as varchar), ',') as aulas
+                          from aula a
+                          inner join turma t on t.turma_id = a.turma_id
+                          inner join ue on ue.id = t.ue_id
+                          inner join dre on dre.id = ue.dre_id
+                          left join registro_frequencia r on r.aula_id = a.id
+                         where not a.excluido
+                           and r.id is null
+                           and a.data_aula < DATE(now())
+                        group by a.turma_id, t.Nome, a.disciplina_id, ue.ue_id, ue.nome, dre.dre_id, dre.nome
+                        order by dre.dre_id, ue.ue_id, a.turma_id";
+
+            return database.Conexao.Query<RegistroFrequenciaFaltanteDto>(query);
         }
     }
 }

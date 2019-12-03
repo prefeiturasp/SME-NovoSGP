@@ -145,6 +145,7 @@ namespace SME.SGP.IoC
             services.TryAddTransient<IServicoAula, ServicoAula>();
             services.TryAddTransient<IServicoAtribuicaoEsporadica, ServicoAtribuicaoEsporadica>();
             services.TryAddTransient<IServicoCalculoFrequencia, ServicoCalculoFrequencia>();
+            services.TryAddTransient<IServicoNotificacaoFrequencia, ServicoNotificacaoFrequencia>();
         }
 
         private static void ResgistraDependenciaHttp(IServiceCollection services)
