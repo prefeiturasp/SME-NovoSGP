@@ -13,7 +13,8 @@ import Alert from '~/componentes/alert';
 import Grid from '~/componentes/grid';
 import Navbar from './navbar';
 import Sider from './sider';
-import CalendarioEscolar from '~/redux/modulos/calendarioEscolar/reducers';
+import CalendarioEscolar from '~/paginas/CalendarioEscolar/Calendario';
+import rotasArray from '~/rotas/rotas';
 
 const ContainerModal = styled.div`
   .ant-modal-footer {
@@ -50,8 +51,8 @@ const Conteudo = props => {
 
   return (
     <div style={{ marginLeft: retraido ? '115px' : '250px' }}>
-      {/* <BreadcrumbSgp /> */}
-      {/* <div className="row h-100">
+      <BreadcrumbSgp />
+      <div className="row h-100">
         <main role="main" className="col-md-12 col-lg-12 col-sm-12 col-xl-12">
           <ContainerModal>
             <Modal
@@ -63,7 +64,8 @@ const Conteudo = props => {
                 <ContainerBotoes key={shortid.generate()}>
                   <Button
                     key={shortid.generate()}
-                    onClick={() => fecharConfirmacao(true)}S
+                    onClick={() => fecharConfirmacao(true)}
+                    S
                     label={confirmacao.textoOk}
                     color={Colors.Azul}
                     border
@@ -113,14 +115,20 @@ const Conteudo = props => {
             </Row>
           </div>
         </main>
-      </div> */}
-      <Route path="/calendario-escolar" component={CalendarioEscolar} />
+      </div>
+      <Switch>
+        {rotasArray.map(rota => (
+          <Route
+            path={rota.path}
+            component={rota.component}
+            exact={rota.exact}
+          />
+        ))}
+      </Switch>
     </div>
   );
 };
-const Pagina = props => {
-  const { children } = props;
-
+const Pagina = () => {
   return (
     <>
       <Navbar />

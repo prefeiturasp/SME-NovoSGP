@@ -31,6 +31,7 @@ import {
 import FiltroHelper from './helper';
 import { erro } from '~/servicos/alertas';
 import modalidade from '~/dtos/modalidade';
+import ServicoFiltro from '~/servicos/Componentes/ServicoFiltro';
 
 const Filtro = () => {
   const [alternarFocoCampo, setAlternarFocoCampo] = useState(false);
@@ -123,16 +124,6 @@ const Filtro = () => {
     [modalidadeSelecionada]
   );
 
-  const ObtenhaAnosLetivos = async estado => {
-    const anosLetivo = await FiltroHelper.ObtenhaAnosLetivos();
-
-    if (estado) {
-      store.dispatch(salvarAnosLetivos(anosLetivo));
-      setAnosLetivos(anosLetivo);
-      setCampoAnoLetivoDesabilitado(anosLetivo.length === 1);
-    }
-  };
-
   const ObtenhaModalidades = async estado => {
     const modalidadesLista = await FiltroHelper.ObtenhaModalidades();
 
@@ -208,13 +199,37 @@ const Filtro = () => {
     setCampoUnidadeEscolarDesabilitado(false);
   };
 
+  const ObterAnosLetivos = useCallback(
+    async deveSalvarAnosLetivos => {
+      const anosLetivo = await ServicoFiltro.listarAnosLetivos()
+        .then(resposta => {
+          if (resposta.data) {
+            resposta.data.forEach(ano => {
+              anosLetivos.push({ desc: ano, valor: ano });
+            });
+          }
+
+          return anosLetivos;
+        })
+        .catch(() => anosLetivos);
+
+      if (deveSalvarAnosLetivos) {
+        store.dispatch(salvarAnosLetivos(anosLetivo));
+        setAnosLetivos(anosLetivo);
+        setCampoAnoLetivoDesabilitado(anosLetivo.length === 1);
+      }
+    },
+    [anosLetivos]
+  );
+
   useEffect(() => {
     let estado = true;
-
-    ObtenhaAnosLetivos(estado);
-
-    return () => (estado = false);
-  }, []);
+    ObterAnosLetivos(estado);
+    return () => {
+      estado = false;
+      return estado;
+    };
+  }, [ObterAnosLetivos]);
 
   useEffect(() => {
     let estado = true;
@@ -227,7 +242,10 @@ const Filtro = () => {
     setTurmaSelecionada(turmaUsuarioSelecionada.turma);
     setTextoAutocomplete(turmaUsuarioSelecionada.desc);
 
-    return () => (estado = false);
+    return () => {
+      estado = false;
+      return estado;
+    };
   }, [turmaUsuarioSelecionada]);
 
   useEffect(() => {
