@@ -1,5 +1,6 @@
 import React from 'react';
-import { Switch } from 'react-router-dom';
+import { Switch, Route } from 'react-router-dom';
+
 import { setRotas } from '../redux/modulos/navegacao/actions';
 import { store } from '../redux';
 import Principal from '../paginas/Principal/principal';
@@ -439,64 +440,21 @@ export default function Rotas() {
   }
 
   return (
-    <div className="h-100">
-      <Switch>
-        {rotasArray.map(rota => {
-          switch (rota.tipo) {
-            case RotasTipo.EstruturadaAutenticada:
-              return (
-                <RotaAutenticadaEstruturada
-                  path={rota.path}
-                  key={rota.path}
-                  exact={rota.exact}
-                  component={rota.component}
-                  temPermissionamento={rota.temPermissionamento}
-                  chavePermissao={rota.chavePermissao}
-                />
-              );
-
-            case RotasTipo.DesestruturadaNaoAutenticada:
-              return (
-                <RotaNaoAutenticadaDesestruturada
-                  path={rota.path}
-                  key={rota.path}
-                  exact={rota.exact}
-                  component={rota.component}
-                />
-              );
-
-            case RotasTipo.DesestruturadaAutenticada:
-              return (
-                <RotaAutenticadaDesestruturada
-                  path={rota.path}
-                  key={rota.path}
-                  exact={rota.exact}
-                  component={rota.component}
-                />
-              );
-
-            case RotasTipo.Mista:
-              return (
-                <RotaMista
-                  path={rota.path}
-                  key={rota.path}
-                  exact={rota.exact}
-                  component={rota.component}
-                />
-              );
-
-            default:
-              return (
-                <RotaAutenticadaEstruturada
-                  path={rota.path}
-                  key={rota.path}
-                  exact={rota.exact}
-                  component={rota.component}
-                />
-              );
-          }
+    <>
+      {rotasArray
+        .filter(c => c.tipo === RotasTipo.EstruturadaAutenticada)
+        .map(rota => {
+          return (
+            <RotaAutenticadaEstruturada
+              path={rota.path}
+              key={rota.path}
+              exact={rota.exact}
+              component={rota.component}
+              temPermissionamento={rota.temPermissionamento}
+              chavePermissao={rota.chavePermissao}
+            />
+          );
         })}
-      </Switch>
-    </div>
+    </>
   );
 }

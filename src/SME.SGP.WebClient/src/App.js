@@ -1,26 +1,33 @@
 import React from 'react';
 import { Provider } from 'react-redux';
-import { Router } from 'react-router-dom';
+import { Router, Switch, Route } from 'react-router-dom';
+
 import './configuracao/ReactotronConfig';
+import { PersistGate } from 'redux-persist/integration/react';
 import history from './servicos/history';
 import GlobalStyle from './estilos/global';
 import { store, persistor } from './redux';
-import { rotaAtiva } from './redux/modulos/navegacao/actions';
-import { PersistGate } from 'redux-persist/integration/react';
+// import { rotaAtiva } from './redux/modulos/navegacao/actions';
+import Pagina from '~/componentes-sgp/conteudo';
+
 import Rotas from './rotas/rotas';
 
 function App() {
-  history.listen(location => {
-    localStorage.setItem('rota-atual', location.pathname);
-    store.dispatch(rotaAtiva(location.pathname));
-  });
+  // history.listen(location => {
+  //   localStorage.setItem('rota-atual', location.pathname);
+  //   store.dispatch(rotaAtiva(location.pathname));
+  // });
 
   return (
     <Provider store={store}>
       <PersistGate loading={null} persistor={persistor}>
         <Router history={history}>
           <GlobalStyle />
-          <Rotas />
+          <div className="h-100">
+            <Switch>
+              <Route component={Pagina} path="/" />
+            </Switch>
+          </div>
         </Router>
       </PersistGate>
     </Provider>
