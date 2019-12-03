@@ -1,8 +1,8 @@
-import { Switch } from 'antd';
+import { Switch, Icon } from 'antd';
 import PropTypes from 'prop-types';
 import React, { useState, useEffect } from 'react';
 
-import { Lista } from './listaFrequencia.css';
+import { Lista, CaixaMarcadores, IconePlusMarcadores } from './listaFrequencia.css';
 import { verificaSomenteConsulta } from '~/servicos/servico-navegacao';
 
 const ListaFrequencia = props => {
@@ -10,6 +10,7 @@ const ListaFrequencia = props => {
 
   const [dataSource, setDataSource] = useState(dados);
   const [desabilitarCampos, setDesabilitarCampos] = useState(false);
+  const [expandirLinha, setExpandirLinha] = useState([]);
 
   useEffect(() => {
     const somenteConsulta = verificaSomenteConsulta(permissoesTela);
@@ -71,6 +72,11 @@ const ListaFrequencia = props => {
     }
   }
 
+  const onClickExpandir = index => {
+    expandirLinha[index] = !expandirLinha[index];
+    setExpandirLinha([...expandirLinha]);
+  }
+
   return (
     <>
     { dataSource && dataSource.length > 0 ?
@@ -107,9 +113,9 @@ const ListaFrequencia = props => {
                       )
                     })
                   }
-                  {/* <th className="width-70">
+                  <th className="width-70">
                     <i className="fas fa-exclamation-triangle"></i>
-                  </th> */}
+                  </th>
                 </tr>
               </thead>
               </table>
@@ -120,41 +126,65 @@ const ListaFrequencia = props => {
                   {
                     dataSource.map((aluno, i) => {
                       return (
-                      <tr key={i} className={desabilitarCampos || aluno.desabilitado ? 'desabilitar-aluno' : ''} >
-                        <td className="width-60 text-center font-weight-bold">{aluno.numeroAlunoChamada}</td>
-                        <td className="text-left">{aluno.nomeAluno}</td>
-                        {
-                          dataSource[0].aulas.length > 1 ?
-                          <>
-                            <td className="width-50">
+                      <>
+                        <tr key={i} className={desabilitarCampos || aluno.desabilitado ? 'desabilitar-aluno' : ''} >
+                          <td className="width-60 text-center font-weight-bold">{aluno.numeroAlunoChamada}</td>
+                          <td className="text-left">
+                            {aluno.nomeAluno}
+                            <CaixaMarcadores>Novo</CaixaMarcadores>
+                            <IconePlusMarcadores onClick={() => onClickExpandir(i)}
+                                                 className={expandirLinha[i] ? 'fas fa-minus fa-minus-linha-expandida ' : 'fas fa-plus-circle'}>
+                            </IconePlusMarcadores>
+                          </td>
+                          {
+                            dataSource[0].aulas.length > 1 ?
+                            <>
+                              <td className="width-50">
+                                <button type="button"
+                                        onClick={()=> marcaPresencaFaltaTodasAulas(aluno, true)}
+                                        className={`ant-btn ant-btn-circle ant-btn-sm btn-falta-presenca ${validaSeCompareceuTodasAulas(aluno) ? 'btn-compareceu' : ''} `}
+                                        disabled={desabilitarCampos || aluno.desabilitado}>
+                                  <i className="fas fa-check fa-sm"></i>
+                                </button>
+                              </td>
+                              <td className="width-50">
                               <button type="button"
-                                      onClick={()=> marcaPresencaFaltaTodasAulas(aluno, true)}
-                                      className={`ant-btn ant-btn-circle ant-btn-sm btn-falta-presenca ${validaSeCompareceuTodasAulas(aluno) ? 'btn-compareceu' : ''} `}
+                                      onClick={()=> marcaPresencaFaltaTodasAulas(aluno, false)}
+                                      className={`ant-btn ant-btn-circle ant-btn-sm btn-falta-presenca ${validaSeFaltouTodasAulas(aluno) ? 'btn-falta' : ''} `}
                                       disabled={desabilitarCampos || aluno.desabilitado}>
-                                <i className="fas fa-check fa-sm"></i>
+                                <i className="fas fa-times fa-sm"></i>
                               </button>
-                            </td>
-                            <td className="width-50">
-                            <button type="button"
-                                    onClick={()=> marcaPresencaFaltaTodasAulas(aluno, false)}
-                                    className={`ant-btn ant-btn-circle ant-btn-sm btn-falta-presenca ${validaSeFaltouTodasAulas(aluno) ? 'btn-falta' : ''} `}
-                                    disabled={desabilitarCampos || aluno.desabilitado}>
-                              <i className="fas fa-times fa-sm"></i>
-                            </button>
-                            </td>
+                              </td>
+                            </>
+                            : ''
+                          }
+
+                          {
+                            aluno.aulas.map((aula, i) => {
+                              return (
+                                <td key={i} className={dataSource[0].aulas.length -1 == i ? 'width-70' : 'border-right-none width-70'}>{renderSwitch(i, aula, aluno)}</td>
+                              )
+                            })
+                          }
+                          <td className="width-70" >80%</td>
+                        </tr>
+                        {
+                          expandirLinha[i]  ?
+                          <>
+                            <tr className="linha-expandida">
+                              <td colspan="1" className="text-center">
+                                <Icon type="double-right" />
+                              </td>
+                              <td colspan={dataSource[0].aulas.length + 4}>
+                                {/* TODO - ADD Descrição da transferencia */}
+                                {/* Estudante Transferido: para outras redes em DD/MM/AAAA */}
+                                Estudante Novo: Data da matrícula: DD/MM/AAAA
+                              </td>
+                            </tr>
                           </>
                           : ''
                         }
-
-                        {
-                          aluno.aulas.map((aula, i) => {
-                            return (
-                              <td key={i} className={dataSource[0].aulas.length -1 == i ? 'width-70' : 'border-right-none width-70'}>{renderSwitch(i, aula, aluno)}</td>
-                            )
-                          })
-                        }
-                        {/* <td>80%</td> */}
-                      </tr>
+                      </>
                       )
                     })
                   }
