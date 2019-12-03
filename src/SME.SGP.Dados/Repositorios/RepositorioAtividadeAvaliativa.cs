@@ -4,6 +4,8 @@ using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -14,6 +16,33 @@ namespace SME.SGP.Dados.Repositorios
     {
         public RepositorioAtividadeAvaliativa(ISgpContext conexao) : base(conexao)
         {
+        }
+
+        public IEnumerable<AtividadeAvaliativa> ListarPorTurmaDisciplinaPeriodo(string turmaId, string disciplinaId, DateTime inicioPeriodo, DateTime fimPeriodo)
+        {
+            var sql = new StringBuilder();
+
+            MontaQueryCabecalho(sql, false);
+
+            sql.AppendLine("turma_id = @turmaId where data_avaliacao >= @inicioPeriodo and data_avaliacao <= @fimPeriodo");
+            sql.AppendLine("and disciplina_id = @disciplinaId");
+
+            var parametros = new { turmaId, inicioPeriodo, fimPeriodo, disciplinaId };
+
+            return database.Query<AtividadeAvaliativa>(sql.ToString(), parametros);
+        }
+
+        public IEnumerable<AtividadeAvaliativa> ListarPorIds(IEnumerable<long> ids)
+        {
+            var sql = new StringBuilder();
+
+            MontaQueryCabecalho(sql, false);
+
+            sql.AppendLine("where id in (@ids)");
+
+            var parametros = new { ids };
+
+            return database.Query<AtividadeAvaliativa>(sql.ToString(), parametros);
         }
 
         public async Task<PaginacaoResultadoDto<AtividadeAvaliativa>> Listar(DateTime? dataAvaliacao, string dreId, string ueId, string nomeAvaliacao, int? tipoAvaliacaoId, string turmaId, Paginacao paginacao)
@@ -70,10 +99,13 @@ namespace SME.SGP.Dados.Repositorios
             return retornoPaginado;
         }
 
-        private static void MontaQueryCabecalho(StringBuilder query)
+        private static void MontaQueryCabecalho(StringBuilder query, bool listagem = true)
         {
             query.AppendLine("select");
-            query.AppendLine("a.id as AtividadeAvaliativaId,");
+            
+            if(listagem)
+                query.AppendLine("a.id as AtividadeAvaliativaId,");
+
             query.AppendLine("a.id,");
             query.AppendLine("a.dre_id,");
             query.AppendLine("a.ue_id,");
