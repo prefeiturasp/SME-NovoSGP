@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using SME.SGP.Dominio;
@@ -11,9 +12,10 @@ namespace SME.SGP.Aplicacao
     {
         private readonly IRepositorioPlanoAula repositorio;
         private readonly IRepositorioObjetivoAprendizagemAula repositorioObjetivosAula;
+        private readonly IRepositorioObjetivoAprendizagemPlano repositorioObjetivoAprendizagemPlano;
         private readonly IRepositorioAula repositorioAula;
         private readonly IConsultasAbrangencia consultasAbrangencia;
-        private readonly IConsultasObjetivoAprendizagem consultasObjetivosPlanoAnual;
+        private readonly IConsultasObjetivoAprendizagem consultasObjetivoAprendizagem;
         private readonly IConsultasPlanoAnual consultasPlanoAnual;
         private readonly IConsultasProfessor consultasProfessor;
         private readonly IServicoUsuario servicoUsuario;
@@ -21,9 +23,10 @@ namespace SME.SGP.Aplicacao
 
         public ComandosPlanoAula(IRepositorioPlanoAula repositorioPlanoAula,
                         IRepositorioObjetivoAprendizagemAula repositorioObjetivosAula,
+                        IRepositorioObjetivoAprendizagemPlano repositorioObjetivoAprendizagemPlano,
                         IRepositorioAula repositorioAula,
                         IConsultasAbrangencia consultasAbrangencia,
-                        IConsultasObjetivoAprendizagem consultasObjetivosPlanoAnual,
+                        IConsultasObjetivoAprendizagem consultasObjetivoAprendizagem,
                         IConsultasPlanoAnual consultasPlanoAnual,
                         IConsultasProfessor consultasProfessor,
                         IServicoUsuario servicoUsuario,
@@ -31,10 +34,11 @@ namespace SME.SGP.Aplicacao
         {
             this.repositorio = repositorioPlanoAula;
             this.repositorioObjetivosAula = repositorioObjetivosAula;
+            this.repositorioObjetivoAprendizagemPlano = repositorioObjetivoAprendizagemPlano;
             this.repositorioAula = repositorioAula;
             this.consultasAbrangencia = consultasAbrangencia;
             this.consultasProfessor = consultasProfessor;
-            this.consultasObjetivosPlanoAnual = consultasObjetivosPlanoAnual;
+            this.consultasObjetivoAprendizagem = consultasObjetivoAprendizagem;
             this.consultasPlanoAnual = consultasPlanoAnual;
             this.unitOfWork = unitOfWork;
             this.servicoUsuario = servicoUsuario;
@@ -58,7 +62,7 @@ namespace SME.SGP.Aplicacao
                              migrarPlanoAulaDto.DisciplinaId
                          );
 
-                    if(aulaConsultaDto == null)
+                    if (aulaConsultaDto == null)
                         throw new NegocioException($"Não há aula cadastrada para a turma {planoTurma.TurmaId} para a data {planoTurma.Data.ToShortDateString()} nesta disciplina!");
 
                     var planoCopia = new PlanoAulaDto()
@@ -122,6 +126,9 @@ namespace SME.SGP.Aplicacao
             var planoAnualId = await consultasPlanoAnual.ObterIdPlanoAnualPorAnoEscolaBimestreETurma(
                         aula.DataAula.Year, aula.UeId, long.Parse(aula.TurmaId), bimestre, long.Parse(aula.DisciplinaId));
 
+            if (planoAnualId <= 0)
+                throw new NegocioException($"Não há plano anual cadastrado para a turma {aula.TurmaId}");
+
             using (var transacao = unitOfWork.IniciarTransacao())
             {
                 repositorio.Salvar(planoAula);
@@ -130,14 +137,32 @@ namespace SME.SGP.Aplicacao
                 if (planoAulaDto.ObjetivosAprendizagemJurema != null)
                     foreach (var objetivoJuremaId in planoAulaDto.ObjetivosAprendizagemJurema)
                     {
-                        var objetivoPlanoAnualId = await consultasObjetivosPlanoAnual
-                                .ObterIdPorObjetivoAprendizagemJurema(planoAnualId, objetivoJuremaId);
+                        var objetivoPlanoAnualId = await consultasObjetivoAprendizagem
+                            .ObterIdPorObjetivoAprendizagemJurema(planoAnualId, objetivoJuremaId);
+
+                        if (objetivoPlanoAnualId <= 0)
+                        {
+                            objetivoPlanoAnualId = await InserirObjetivoPlanoAnual(objetivoJuremaId, planoAnualId);
+                        }
 
                         repositorioObjetivosAula.Salvar(new ObjetivoAprendizagemAula(planoAula.Id, objetivoPlanoAnualId));
                     }
 
                 unitOfWork.PersistirTransacao();
             }
+        }
+
+        private async Task<long> InserirObjetivoPlanoAnual(long objetivoJuremaId, long planoAnualId)
+        {
+            var objAprendizagem = await consultasObjetivoAprendizagem.
+                                                            ObterAprendizagemSimplificadaPorId(objetivoJuremaId);
+
+            return repositorioObjetivoAprendizagemPlano.Salvar(new ObjetivoAprendizagemPlano()
+            {
+                ObjetivoAprendizagemJuremaId = objetivoJuremaId,
+                ComponenteCurricularId = objAprendizagem.IdComponenteCurricular,
+                PlanoId = planoAnualId
+            });
         }
 
         private PlanoAula MapearParaDominio(PlanoAulaDto planoDto, PlanoAula planoAula = null)

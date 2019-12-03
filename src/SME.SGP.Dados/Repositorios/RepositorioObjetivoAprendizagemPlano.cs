@@ -38,7 +38,7 @@ namespace SME.SGP.Dados.Repositorios
         {
             var query = "select id from objetivo_aprendizagem_plano where plano_id = @planoId and objetivo_aprendizagem_jurema_id = @objetivoAprendizagemJuremaId";
 
-            return database.Conexao.QueryFirst<long>(query, new { planoId, objetivoAprendizagemJuremaId });
+            return database.Conexao.QueryFirstOrDefault<long>(query, new { planoId, objetivoAprendizagemJuremaId });
         }
 
         public IEnumerable<ObjetivoAprendizagemPlano> ObterObjetivosAprendizagemPorIdPlano(long idPlano)
