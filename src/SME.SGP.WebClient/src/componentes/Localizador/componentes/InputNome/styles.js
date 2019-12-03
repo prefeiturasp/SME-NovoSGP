@@ -8,6 +8,9 @@ export const InputNomeEstilo = styled.div`
     height: 38px !important;
     padding-left: 40px !important;
   }
+  .ant-select-selection__rendered {
+    line-height: 38px !important;
+  }
   .ant-input-prefix {
     i {
       color: ${Base.CinzaMenu};
