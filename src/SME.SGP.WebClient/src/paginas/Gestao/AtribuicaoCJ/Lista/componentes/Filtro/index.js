@@ -33,12 +33,10 @@ function Filtro({ onFiltrar }) {
     professorRf: '',
   });
   const [dreId, setDreId] = useState('');
-  const [anoLetivo, setAnoLetivo] = useState('2019');
+  const [anoLetivo] = useState('2019');
 
   const validacoes = () => {
-    return Yup.object({
-      // anoLetivo: Yup.string().required(),
-    });
+    return Yup.object({});
   };
 
   const validarFiltro = valores => {
