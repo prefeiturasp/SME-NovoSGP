@@ -46,7 +46,7 @@ namespace SME.SGP.Aplicacao
 
         public async Task Migrar(MigrarPlanoAulaDto migrarPlanoAulaDto)
         {
-            ValidaTurmasProfessor(migrarPlanoAulaDto);
+            ValidarMigracao(migrarPlanoAulaDto);
 
             var planoAulaDto = repositorio.ObterPorId(migrarPlanoAulaDto.PlanoAulaId);
             var objetivosPlanoAulaDto = await repositorioObjetivosAula.ObterObjetivosPlanoAula(migrarPlanoAulaDto.PlanoAulaId);
@@ -184,13 +184,26 @@ namespace SME.SGP.Aplicacao
             return planoAula;
         }
 
-        private void ValidaTurmasProfessor(MigrarPlanoAulaDto migrarPlanoAulaDto)
+        private void ValidarMigracao(MigrarPlanoAulaDto migrarPlanoAulaDto)
         {
             var turmasAtribuidasAoProfessor = consultasProfessor.Listar(migrarPlanoAulaDto.RFProfessor);
-            var idsTurmasProfessor = turmasAtribuidasAoProfessor?.Select(c => c.CodTurma).ToList();
             var idsTurmasSelecionadas = migrarPlanoAulaDto.IdsPlanoTurmasDestino.Select(x => x.TurmaId).ToList();
 
-            if (migrarPlanoAulaDto.EhProfessorCJ)
+            ValidaTurmasProfessor(migrarPlanoAulaDto.EhProfessorCJ, 
+                                  turmasAtribuidasAoProfessor,
+                                  idsTurmasSelecionadas);
+
+            ValidaTurmasAno(migrarPlanoAulaDto.EhProfessorCJ, migrarPlanoAulaDto.MigrarObjetivos,
+                            turmasAtribuidasAoProfessor, idsTurmasSelecionadas);
+        }
+
+        private void ValidaTurmasProfessor(bool ehProfessorCJ, 
+                                           IEnumerable<ProfessorTurmaDto> turmasAtribuidasAoProfessor,
+                                           IEnumerable<string> idsTurmasSelecionadas )
+        {
+            var idsTurmasProfessor = turmasAtribuidasAoProfessor?.Select(c => c.CodTurma).ToList();
+
+            if (ehProfessorCJ)
             {
                 //regras prof cj
             }
@@ -198,8 +211,13 @@ namespace SME.SGP.Aplicacao
             {
                 throw new NegocioException("Somente é possível migrar o plano de aula para turmas atribuidas ao professor");
             }
+        }
 
-            if (!migrarPlanoAulaDto.EhProfessorCJ || migrarPlanoAulaDto.MigrarObjetivos)
+        private void ValidaTurmasAno(bool ehProfessorCJ, bool migrarObjetivos, 
+                                     IEnumerable<ProfessorTurmaDto> turmasAtribuidasAoProfessor,
+                                     IEnumerable<string> idsTurmasSelecionadas)
+        {
+            if (!ehProfessorCJ || migrarObjetivos)
             {
                 var turmasAtribuidasSelecionadas = turmasAtribuidasAoProfessor.Where(t => idsTurmasSelecionadas.Contains(t.CodTurma.ToString()));
                 var anoTurma = turmasAtribuidasSelecionadas.First().Ano;
