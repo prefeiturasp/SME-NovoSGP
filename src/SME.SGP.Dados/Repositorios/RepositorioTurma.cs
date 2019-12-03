@@ -1,6 +1,8 @@
 ﻿using Dapper;
 using Dommel;
 using SME.SGP.Dados.Contexto;
+using SME.SGP.Dominio.Entidades;
+using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using System;
@@ -48,6 +50,11 @@ namespace SME.SGP.Dados.Repositorios
         public RepositorioTurma(ISgpContext contexto)
         {
             this.contexto = contexto;
+        }
+
+        public Turma ObterPorId(string turmaId)
+        {
+            return contexto.QueryFirstOrDefault<Turma>("select * from turma where turma_id = @turmaId", new { turmaId });
         }
 
         public IEnumerable<Turma> Sincronizar(IEnumerable<Turma> entidades, IEnumerable<Ue> ues)

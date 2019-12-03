@@ -4,7 +4,6 @@ using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Dados.Repositorios
@@ -27,7 +26,8 @@ namespace SME.SGP.Dados.Repositorios
                             p.id as objetivoPlanoId, p.objetivo_aprendizagem_jurema_id, p.componente_curricular_id
                           from objetivo_aprendizagem_aula a
                          inner join objetivo_aprendizagem_plano p on p.id = a.objetivo_aprendizagem_plano_id
-                         where a.plano_aula_id = @planoAulaId";
+                         where not a.excluido 
+                           and a.plano_aula_id = @planoAulaId";
 
             return await database.Conexao.QueryAsync<ObjetivoAprendizagemAula, ObjetivoAprendizagemPlano, ObjetivoAprendizagemAula>(query, 
                 (objetivoAula, objetivoPlano) =>

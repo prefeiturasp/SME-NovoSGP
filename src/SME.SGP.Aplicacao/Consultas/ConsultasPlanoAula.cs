@@ -74,6 +74,7 @@ namespace SME.SGP.Aplicacao.Consultas
                 LicaoCasa = plano.LicaoCasa,
                 AulaId = plano.AulaId,
 
+                Migrado = plano.Migrado,
                 CriadoEm = plano.CriadoEm,
                 CriadoPor = plano.CriadoPor,
                 CriadoRf = plano.CriadoRF,
