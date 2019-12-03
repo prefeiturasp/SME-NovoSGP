@@ -16,13 +16,20 @@ namespace SME.SGP.Dados.Repositorios
         public async Task ExcluirFrequenciaAula(long aulaId)
         {
             // Exclui registros de ausencia do aluno
-            var command = @"delete from registro_ausencia_aluno 
-                            where registro_frequencia_id in (
-                                select id from registro_frequencia where aula_id = @aulaId)";
+            var command = @"update registro_ausencia_aluno 
+                                set excluido = true
+                            where not excluido 
+                              and registro_frequencia_id in (
+                                select id from registro_frequencia 
+                                 where not excluido 
+                                   and aula_id = @aulaId)";
             await database.ExecuteAsync(command, new { aulaId });
 
             // Exclui registro de frequencia da aula
-            command = "delete from registro_frequencia where aula_id = @aulaId ";
+            command = @"update registro_frequencia 
+                            set excluido = true 
+                        where not excluido 
+                          and aula_id = @aulaId ";
             await database.ExecuteAsync(command, new { aulaId });
         }
 
@@ -45,7 +52,8 @@ namespace SME.SGP.Dados.Repositorios
         {
             var query = @"select *
                             from registro_frequencia
-                          where aula_id = @aulaId";
+                          where not excluido 
+                            and aula_id = @aulaId";
 
             return database.Conexao.QueryFirstOrDefault<RegistroFrequencia>(query, new { aulaId });
         }

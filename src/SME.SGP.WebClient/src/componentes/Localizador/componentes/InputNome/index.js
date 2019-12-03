@@ -7,7 +7,13 @@ import { AutoComplete, Input } from 'antd';
 // Styles
 import { InputNomeEstilo } from './styles';
 
-function InputNome({ dataSource, onSelect, onChange, pessoaSelecionada }) {
+function InputNome({
+  dataSource,
+  onSelect,
+  onChange,
+  pessoaSelecionada,
+  desabilitado,
+}) {
   const [sugestoes, setSugestoes] = useState([]);
   const [valor, setValor] = useState('');
 
@@ -39,10 +45,12 @@ function InputNome({ dataSource, onSelect, onChange, pessoaSelecionada }) {
         onSelect={(value, option) => onSelect(option)}
         dataSource={options}
         value={valor || ''}
+        disabled={desabilitado}
       >
         <Input
           placeholder="Digite o nome da pessoa"
           prefix={<i className="fa fa-search fa-lg" />}
+          disabled={desabilitado}
         />
       </AutoComplete>
     </InputNomeEstilo>
@@ -57,13 +65,15 @@ InputNome.propTypes = {
   ]),
   onSelect: PropTypes.func,
   onChange: PropTypes.func,
+  desabilitado: PropTypes.bool,
 };
 
 InputNome.defaultProps = {
   dataSource: [],
   pessoaSelecionada: {},
-  onSelect: () => null,
-  onChange: () => null,
+  onSelect: null,
+  onChange: null,
+  desabilitado: false,
 };
 
 export default InputNome;

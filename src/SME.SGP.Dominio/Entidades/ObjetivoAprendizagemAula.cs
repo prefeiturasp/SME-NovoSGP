@@ -14,5 +14,7 @@
         public PlanoAula PlanoAula { get; set; }
         public long ObjetivoAprendizagemPlanoId { get; set; }
         public ObjetivoAprendizagemPlano ObjetivoAprendizagemPlano { get; set; }
+
+        public bool Excluido { get; set; }
     }
 }
