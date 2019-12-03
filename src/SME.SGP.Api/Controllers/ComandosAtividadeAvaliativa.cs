@@ -125,7 +125,7 @@ namespace SME.SGP.Aplicacao
 
         private DisciplinaDto ObterDisciplina(int idDisciplina)
         {
-            int[] disciplinaId = { idDisciplina };
+            long[] disciplinaId = { idDisciplina };
             var disciplina = servicoEOL.ObterDisciplinasPorIds(disciplinaId);
             if (!disciplina.Any())
                 throw new NegocioException("Disciplina não encontrada no EOL.");

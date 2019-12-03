@@ -1,4 +1,4 @@
-﻿//using Microsoft.Extensions.Configuration;
+//using Microsoft.Extensions.Configuration;
 //using Moq;
 //using SME.SGP.Aplicacao;
 //using SME.SGP.Aplicacao.Integracoes;
