@@ -12,7 +12,14 @@ import { Grid, Label } from '~/componentes';
 // Services
 import service from './services/LocalizadorService';
 
-function Localizador({ onChange, showLabel, form, dreId, anoLetivo }) {
+function Localizador({
+  onChange,
+  showLabel,
+  form,
+  dreId,
+  anoLetivo,
+  desabilitado,
+}) {
   const [dataSource, setDataSource] = useState([]);
   const [pessoaSelecionada, setPessoaSelecionada] = useState({});
   const usuario = useSelector(store => store.usuario);
@@ -79,6 +86,7 @@ function Localizador({ onChange, showLabel, form, dreId, anoLetivo }) {
           onSelect={onBuscarPorRF}
           name="professorRf"
           form={form}
+          desabilitado={desabilitado}
         />
       </Grid>
       <Grid className="pr-0" cols={8}>
@@ -90,6 +98,7 @@ function Localizador({ onChange, showLabel, form, dreId, anoLetivo }) {
           pessoaSelecionada={pessoaSelecionada}
           form={form}
           name="professorNome"
+          desabilitado={desabilitado}
         />
       </Grid>
     </>
@@ -105,6 +114,7 @@ Localizador.propTypes = {
   showLabel: PropTypes.bool,
   dreId: PropTypes.string,
   anoLetivo: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
+  desabilitado: PropTypes.bool,
 };
 
 Localizador.defaultProps = {
@@ -113,6 +123,7 @@ Localizador.defaultProps = {
   showLabel: false,
   dreId: null,
   anoLetivo: null,
+  desabilitado: false,
 };
 
 export default Localizador;
