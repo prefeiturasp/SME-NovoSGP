@@ -55,7 +55,6 @@ namespace SME.SGP.Dominio.Servicos
                            IRepositorioAbrangencia repositorioAbrangencia,
                            IServicoNotificacao servicoNotificacao,
                            IConsultasAbrangencia consultasAbrangencia,
-                           IServicoUsuario servicoUsuario,
                            IComandosWorkflowAprovacao comandosWorkflowAprovacao,
                            IComandosPlanoAula comandosPlanoAula,
                            IServicoFrequencia servicoFrequencia,
@@ -69,7 +68,6 @@ namespace SME.SGP.Dominio.Servicos
             this.consultasGrade = consultasGrade ?? throw new System.ArgumentNullException(nameof(consultasGrade));
             this.consultasPeriodoEscolar = consultasPeriodoEscolar ?? throw new ArgumentNullException(nameof(consultasPeriodoEscolar));
             this.servicoLog = servicoLog ?? throw new ArgumentNullException(nameof(servicoLog));
-            this.servicoUsuario = servicoUsuario ?? throw new ArgumentNullException(nameof(servicoUsuario));
             this.consultasAbrangencia = consultasAbrangencia ?? throw new ArgumentNullException(nameof(consultasAbrangencia));
             this.comandosWorkflowAprovacao = comandosWorkflowAprovacao ?? throw new ArgumentNullException(nameof(comandosWorkflowAprovacao));
             this.configuration = configuration;
@@ -216,7 +214,6 @@ namespace SME.SGP.Dominio.Servicos
                 throw new NegocioException("Aula com avaliação vinculada. Para excluir esta aula primeiro deverá ser excluída a avaliação.");
             await servicoFrequencia.ExcluirFrequenciaAula(aula.Id);
             await comandosPlanoAula.ExcluirPlanoDaAula(aula.Id);
-
             aula.Excluido = true;
             await repositorioAula.SalvarAsync(aula);
         }
