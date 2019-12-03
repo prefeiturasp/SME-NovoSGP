@@ -51,7 +51,7 @@ namespace SME.SGP.Aplicacao
 
             foreach (var disciplinaProfessorTitular in professoresTitularesDisciplinasEol)
             {
-                var atribuicao = listaAtribuicoes.FirstOrDefault(b => b.DisciplinaId == disciplinaProfessorTitular.DisciplinaId.ToString());
+                var atribuicao = listaAtribuicoes.FirstOrDefault(b => b.DisciplinaId == disciplinaProfessorTitular.DisciplinaId);
 
                 listaRetorno.Itens.Add(new AtribuicaoCJTitularesRetornoItemDto()
                 {
@@ -81,8 +81,8 @@ namespace SME.SGP.Aplicacao
         private IEnumerable<AtribuicaoCJListaRetornoDto> TransformaEntidadesEmDtosListaRetorno(IEnumerable<AtribuicaoCJ> listaDto)
         {
             var idsDisciplinas = listaDto
-                .Select(a => (int.Parse(a.DisciplinaId)))
-                .Distinct<int>()
+                .Select(a => a.DisciplinaId)
+                .Distinct<long>()
                 .ToArray();
 
             var disciplinasEol = servicoEOL.ObterDisciplinasPorIds(idsDisciplinas);
@@ -100,7 +100,7 @@ namespace SME.SGP.Aplicacao
                 var disciplinasIds = a.Select(b => b.DisciplinaId);
 
                 var disciplinasDescricoes = disciplinasEol
-                            .Where(c => disciplinasIds.Contains(c.CodigoComponenteCurricular.ToString()))
+                            .Where(c => disciplinasIds.Contains(c.CodigoComponenteCurricular))
                             .ToList();
 
                 var atribuicaoDto = new AtribuicaoCJListaRetornoDto()

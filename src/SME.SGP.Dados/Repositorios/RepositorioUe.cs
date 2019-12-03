@@ -23,6 +23,20 @@ namespace SME.SGP.Dados.Repositorios
             this.respositorioDre = respositorioDre;
         }
 
+        public Ue ObterUEPorTurma(string turmaId)
+        {
+            var query = @"select
+                            escola.*
+                        from
+                            ue escola
+                        inner
+                        join turma t on
+                        t.ue_id = escola.id
+                        where
+                            t.turma_id = @turmaId";
+            return contexto.QueryFirstOrDefault<Ue>(query, new { turmaId });
+        }
+
         public IEnumerable<Ue> Sincronizar(IEnumerable<Ue> entidades, IEnumerable<Dre> dres)
         {
             List<Ue> resultado = new List<Ue>();

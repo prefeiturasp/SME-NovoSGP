@@ -70,5 +70,15 @@ namespace SME.SGP.Api.Controllers
             await comandoAtividadeAvaliativa.Inserir(atividadeAvaliativaDto);
             return Ok();
         }
+
+        [HttpPost("validar")]
+        [ProducesResponseType(200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [Permissao(Permissao.CP_I, Policy = "Bearer")]
+        public async Task<IActionResult> Validar([FromBody]FiltroAtividadeAvaliativaDto filtro)
+        {
+            await comandoAtividadeAvaliativa.Validar(filtro);
+            return Ok();
+        }
     }
 }
