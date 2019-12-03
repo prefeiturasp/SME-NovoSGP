@@ -1,6 +1,5 @@
 ﻿using SME.SGP.Aplicacao.Integracoes;
 using SME.SGP.Dominio;
-using SME.SGP.Dominio.Entidades;
 using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Dto;
@@ -28,9 +27,14 @@ namespace SME.SGP.Aplicacao.Servicos
             this.unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
             this.servicoEOL = servicoEOL ?? throw new ArgumentNullException(nameof(servicoEOL));
             this.consultasSupervisor = consultasSupervisor ?? throw new ArgumentNullException(nameof(consultasSupervisor));
-            this.repositorioDre = repositorioDre;
-            this.repositorioUe = repositorioUe;
-            this.repositorioTurma = repositorioTurma;
+            this.repositorioDre = repositorioDre ?? throw new ArgumentNullException(nameof(repositorioDre));
+            this.repositorioUe = repositorioUe ?? throw new ArgumentNullException(nameof(repositorioUe));
+            this.repositorioTurma = repositorioTurma ?? throw new ArgumentNullException(nameof(repositorioTurma));
+        }
+
+        public void RemoverAbrangencias(long[] ids)
+        {
+            repositorioAbrangencia.ExcluirAbrangencias(ids);
         }
 
         public async Task Salvar(string login, Guid perfil, bool ehLogin)
@@ -38,6 +42,11 @@ namespace SME.SGP.Aplicacao.Servicos
             if (ehLogin)
                 await TrataAbrangenciaLogin(login, perfil);
             else await TrataAbrangenciaModificaoPerfil(login, perfil);
+        }
+
+        public void SalvarAbrangencias(IEnumerable<Abrangencia> abrangencias, string login)
+        {
+            repositorioAbrangencia.InserirAbrangencias(abrangencias, login);
         }
 
         private async Task BuscaAbrangenciaEPersiste(string login, Guid perfil)
