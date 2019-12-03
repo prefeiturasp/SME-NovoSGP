@@ -165,7 +165,10 @@ namespace SME.SGP.Dominio
 
         public bool PodeRegistrarFrequencia(Aula aula)
         {
-            return aula.ProfessorRf == CodigoRf;
+            if (aula.PermiteSubstituicaoFrequencia)
+                return true;
+            else
+                return aula.CriadoRF == CodigoRf;
         }
 
         public bool PodeReiniciarSenha()

@@ -1,4 +1,5 @@
-﻿using SME.SGP.Aplicacao.Integracoes;
+﻿using SME.SGP.Aplicacao;
+using SME.SGP.Aplicacao.Integracoes;
 using SME.SGP.Dominio.Interfaces;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,9 +9,12 @@ namespace SME.SGP.Dominio.Servicos
 {
     public class ServicoFrequencia : IServicoFrequencia
     {
+        private readonly IConsultasDisciplina consultasDisciplina;
         private readonly IRepositorioAula repositorioAula;
         private readonly IRepositorioFrequencia repositorioFrequencia;
         private readonly IRepositorioRegistroAusenciaAluno repositorioRegistroAusenciaAluno;
+        private readonly IRepositorioTurma repositorioTurma;
+        private readonly IRepositorioUe repositorioUE;
         private readonly IServicoEOL servicoEOL;
         private readonly IServicoUsuario servicoUsuario;
         private readonly IUnitOfWork unitOfWork;
@@ -20,7 +24,10 @@ namespace SME.SGP.Dominio.Servicos
                                  IRepositorioAula repositorioAula,
                                  IServicoUsuario servicoUsuario,
                                  IUnitOfWork unitOfWork,
-                                 IServicoEOL servicoEOL)
+                                 IServicoEOL servicoEOL,
+                                 IRepositorioUe repositorioUE,
+                                 IRepositorioTurma repositorioTurma,
+                                 IConsultasDisciplina consultasDisciplina)
         {
             this.repositorioFrequencia = repositorioFrequencia ?? throw new System.ArgumentNullException(nameof(repositorioFrequencia));
             this.repositorioRegistroAusenciaAluno = repositorioRegistroAusenciaAluno ?? throw new System.ArgumentNullException(nameof(repositorioRegistroAusenciaAluno));
@@ -28,6 +35,9 @@ namespace SME.SGP.Dominio.Servicos
             this.servicoUsuario = servicoUsuario ?? throw new System.ArgumentNullException(nameof(servicoUsuario));
             this.unitOfWork = unitOfWork ?? throw new System.ArgumentNullException(nameof(unitOfWork));
             this.servicoEOL = servicoEOL ?? throw new System.ArgumentNullException(nameof(servicoEOL));
+            this.repositorioUE = repositorioUE ?? throw new System.ArgumentNullException(nameof(repositorioUE));
+            this.repositorioTurma = repositorioTurma ?? throw new System.ArgumentNullException(nameof(repositorioTurma));
+            this.consultasDisciplina = consultasDisciplina ?? throw new System.ArgumentNullException(nameof(consultasDisciplina));
         }
 
         public async Task ExcluirFrequenciaAula(long aulaId)
@@ -48,6 +58,12 @@ namespace SME.SGP.Dominio.Servicos
         public async Task Registrar(long aulaId, IEnumerable<RegistroAusenciaAluno> registroAusenciaAlunos)
         {
             var aula = ObterAula(aulaId);
+            var turma = ObterTurma(aula.TurmaId);
+
+            if (!aula.PermiteRegistroFrequencia(turma))
+            {
+                throw new NegocioException("Não é permitido registro de frequência para este componente curricular.");
+            }
 
             await ValidaSeUsuarioPodeCriarAula(aula);
             var alunos = await ObterAlunos(aula);
@@ -83,6 +99,14 @@ namespace SME.SGP.Dominio.Servicos
             }
 
             return aula;
+        }
+
+        private Turma ObterTurma(string turmaId)
+        {
+            var turma = repositorioTurma.ObterPorId(turmaId);
+            if (turma == null)
+                throw new NegocioException("Não foi encontrada uma turma com o id informado. Verifique se você possui abrangência para essa turma.");
+            return turma;
         }
 
         private void RegistraAusenciaAlunos(IEnumerable<RegistroAusenciaAluno> registroAusenciaAlunos, IEnumerable<Aplicacao.Integracoes.Respostas.AlunoPorTurmaResposta> alunos, RegistroFrequencia registroFrequencia, int quantidadeAulas)
@@ -124,7 +148,7 @@ namespace SME.SGP.Dominio.Servicos
             var usuario = await servicoUsuario.ObterUsuarioLogado();
             if (!usuario.PodeRegistrarFrequencia(aula))
             {
-                throw new NegocioException("Você não pode registrar frequência para a aula/turma informada.");
+                throw new NegocioException("Não é possível registrar a frequência pois esse componente curricular não permite substituição.");
             }
         }
     }
