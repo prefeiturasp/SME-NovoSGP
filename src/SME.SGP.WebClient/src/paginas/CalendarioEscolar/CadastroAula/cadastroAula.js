@@ -185,6 +185,8 @@ const CadastroAula = ({ match }) => {
     setNovoRegistro(false);
     if (aula && aula.data) {
       setDataAula(window.moment(aula.data.dataAula));
+      const serieRecorrencia = await api.get(`v1/calendarios/professores/aulas/${id}/recorrencias/serie`);
+      console.log(serieRecorrencia);
       opcoesRecorrencia.forEach(item => {
         if (item.value === aula.data.recorrenciaAula || item.value === recorrencia.AULA_UNICA) {
           item.disabled = false;
@@ -268,7 +270,6 @@ const CadastroAula = ({ match }) => {
 
   const onChangeDisciplinas = async (id, form) => {
     onChangeCampos();
-    let quantidade = 0;
     form.setFieldValue('quantidadeTexto', '');
     const resultado = await api.get(
       `v1/grades/aulas/turmas/${turmaId}/disciplinas/${id}`,
@@ -281,19 +282,16 @@ const CadastroAula = ({ match }) => {
     if (resultado) {
       if (resultado.status === 200) {
         setControlaQuantidadeAula(true);
-        quantidade = resultado.data.quantidadeAulasRestante;
-        await setQuantidadeMaximaAulas(quantidade);
+        const quantidade = resultado.data.quantidadeAulasRestante;
+        setQuantidadeMaximaAulas(quantidade);
         if (quantidade > 0) {
           form.setFieldValue('quantidadeRadio', 1);
-        } else {
-          form.setFieldValue('quantidadeRadio', '');
-          form.setFieldValue('quantidadeTexto', '');
         }
       } else if (resultado.status === 204) {
         setControlaQuantidadeAula(false);
       }
     }
-    quantidade > 0 ? montaValidacoes(1, 0, form) : montaValidacoes(0, 1, form);
+    quantidadeMaximaAulas > 2 ? montaValidacoes(0, 1, form) : montaValidacoes(quantidadeMaximaAulas, 0, form);
   };
 
   const onClickCadastrar = async valoresForm => {
@@ -306,15 +304,15 @@ const CadastroAula = ({ match }) => {
         'Não'
       );
       if (confirmado) {
-        salvar(valoresForm);
+        await salvar(valoresForm);
         history.push('/calendario-escolar/calendario-professor');
       }
     } else {
-      salvar(valoresForm);
+      await salvar(valoresForm);
     }
   };
 
-  const salvar = valoresForm => {
+  const salvar = async valoresForm => {
     if (valoresForm.quantidadeRadio && valoresForm.quantidadeRadio > 0) {
       valoresForm.quantidade = valoresForm.quantidadeRadio;
     } else if (valoresForm.quantidadeTexto && valoresForm.quantidadeTexto > 0) {
@@ -529,7 +527,7 @@ const CadastroAula = ({ match }) => {
                     desabilitado={ehReposicao}
                     onChange={e => {
                       onChangeCampos();
-                      montaValidacoes(form.values.quantidadeRadio, form.values.quantidadeTexto, form)
+                      montaValidacoes(0, e.target.value, form);
                     }}
                   />
                 </div>
