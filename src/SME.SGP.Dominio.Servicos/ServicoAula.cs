@@ -95,23 +95,6 @@ namespace SME.SGP.Dominio.Servicos
             return "Aula e suas dependencias excluídas com sucesso!";
         }
 
-        private enum Operacao
-        {
-            Inclusao,
-            Alteracao,
-            Exclusao
-        }
-
-        public async Task<string> Excluir(Aula aula, RecorrenciaAula recorrencia, Usuario usuario)
-        {
-            await ExcluirAula(aula);
-
-            if (recorrencia != RecorrenciaAula.AulaUnica)
-                await ExcluirRecorrencia(aula, recorrencia, usuario);
-
-            return "Aula e suas dependencias excluídas com sucesso!";
-        }
-
         public async Task<string> Salvar(Aula aula, Usuario usuario, RecorrenciaAula recorrencia)
         {
             var tipoCalendario = repositorioTipoCalendario.ObterPorId(aula.TipoCalendarioId);
