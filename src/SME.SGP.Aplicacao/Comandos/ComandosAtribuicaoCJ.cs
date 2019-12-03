@@ -10,10 +10,12 @@ namespace SME.SGP.Aplicacao
     public class ComandosAtribuicaoCJ : IComandosAtribuicaoCJ
     {
         private readonly IRepositorioAtribuicaoCJ repositorioAtribuicaoCJ;
+        private readonly IServicoAtribuicaoCJ servicoAtribuicaoCJ;
 
-        public ComandosAtribuicaoCJ(IRepositorioAtribuicaoCJ repositorioAtribuicaoCJ)
+        public ComandosAtribuicaoCJ(IRepositorioAtribuicaoCJ repositorioAtribuicaoCJ, IServicoAtribuicaoCJ servicoAtribuicaoCJ)
         {
             this.repositorioAtribuicaoCJ = repositorioAtribuicaoCJ ?? throw new ArgumentNullException(nameof(repositorioAtribuicaoCJ));
+            this.servicoAtribuicaoCJ = servicoAtribuicaoCJ ?? throw new ArgumentNullException(nameof(servicoAtribuicaoCJ));
         }
 
         public async Task Salvar(AtribuicaoCJPersistenciaDto atribuicaoCJPersistenciaDto)
@@ -24,19 +26,15 @@ namespace SME.SGP.Aplicacao
             foreach (var atribuicaoDto in atribuicaoCJPersistenciaDto.Disciplinas)
             {
                 var atribuicao = atribuicaoCJs.FirstOrDefault(a => a.DisciplinaId == atribuicaoDto.DisciplinaId);
+
                 if (atribuicao == null)
-                {
-                    var novaAtribuicao = TransformaDtoEmEntidade(atribuicaoCJPersistenciaDto, atribuicaoDto);
-                    await repositorioAtribuicaoCJ.SalvarAsync(novaAtribuicao);
-                }
+                    atribuicao = TransformaDtoEmEntidade(atribuicaoCJPersistenciaDto, atribuicaoDto);
                 else
                 {
                     if (atribuicao.Substituir != atribuicaoDto.Substituir)
-                    {
                         atribuicao.Substituir = atribuicaoDto.Substituir;
-                        await repositorioAtribuicaoCJ.SalvarAsync(atribuicao);
-                    }
                 }
+                await servicoAtribuicaoCJ.Salvar(atribuicao);
             }
         }
 
