@@ -2,12 +2,23 @@ import styled from 'styled-components';
 
 import { Base } from '../../componentes/colors';
 
-export const Rectangle = styled.div`
-  width: 66px;
-  height: 16px;
-  border-radius: 4px;
-  background-color: var(--white);
-`;
+export const CaixaMarcadores = styled.span`
+  border: 1.6px solid ${Base.Roxo};
+  border-radius: 9px;
+  padding-left: 10px;
+  padding-right: 10px;
+  margin-left: 8px;
+  font-weight: bold;
+  color: ${Base.Roxo};
+`
+
+export const IconePlusMarcadores = styled.i`
+  color: ${Base.Roxo};
+  font-size: 17px;
+  margin-left: 5px;
+  cursor: pointer;
+`
+
 export const Lista = styled.div`
   .presenca {
     .ant-switch::after {
@@ -158,6 +169,21 @@ export const Lista = styled.div`
 
   .margin-marcar-todos {
     margin-bottom: -6px;
+  }
+
+  .linha-expandida {
+    color: ${Base.Roxo};
+    background: ${Base.CinzaFundo};
+    text-align: left;
+    i {
+      transform: rotate(-90deg);
+    }
+  }
+
+  .fa-minus-linha-expandida {
+    border: 1.6px solid #6933FF !important;
+    border-radius: 20px !important;
+    display: inline;
   }
 
 `;
