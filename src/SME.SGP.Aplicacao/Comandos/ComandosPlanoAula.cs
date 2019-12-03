@@ -79,7 +79,7 @@ namespace SME.SGP.Aplicacao
                                             planoAulaDto.RecuperacaoAula : string.Empty
                     };
 
-                    await Salvar(planoCopia);
+                    await Salvar(planoCopia, false);
                 }
 
                 unitOfWork.PersistirTransacao();
@@ -91,7 +91,7 @@ namespace SME.SGP.Aplicacao
             await repositorio.ExcluirPlanoDaAula(aulaId);
         }
 
-        public async Task Salvar(PlanoAulaDto planoAulaDto)
+        public async Task Salvar(PlanoAulaDto planoAulaDto, bool controlarTransacao = true)
         {
             var aula = repositorioAula.ObterPorId(planoAulaDto.AulaId);
             var abrangenciaTurma = await consultasAbrangencia.ObterAbrangenciaTurma(aula.TurmaId);
@@ -132,32 +132,44 @@ namespace SME.SGP.Aplicacao
                         aula.DataAula.Year, aula.UeId, long.Parse(aula.TurmaId), bimestre, long.Parse(aula.DisciplinaId));
 
             if (planoAnualId <= 0)
-                throw new NegocioException("Não foi possível concluir o cadasatro, pois não existe plano anual cadastrado");
+                throw new NegocioException("Não foi possível concluir o cadastro, pois não existe plano anual cadastrado");
 
-            using (var transacao = unitOfWork.IniciarTransacao())
+            if (controlarTransacao)
             {
-                repositorio.Salvar(planoAula);
-                // Salvar Objetivos
-                await repositorioObjetivosAula.LimparObjetivosAula(planoAula.Id);
-                if (planoAulaDto.ObjetivosAprendizagemJurema != null)
-                    foreach (var objetivoJuremaId in planoAulaDto.ObjetivosAprendizagemJurema)
-                    {
-                        var objetivoPlanoAnualId = await consultasObjetivoAprendizagem
-                            .ObterIdPorObjetivoAprendizagemJurema(planoAnualId, objetivoJuremaId);
+                using (var transacao = unitOfWork.IniciarTransacao())
+                {
+                    await SalvarPlanoAula(planoAula, planoAulaDto, planoAnualId);
 
-                        if (objetivoPlanoAnualId <= 0)
-                        {
-                            objetivoPlanoAnualId = await InserirObjetivoPlanoAnual(objetivoJuremaId, planoAnualId);
-                        }
-
-                        repositorioObjetivosAula.Salvar(new ObjetivoAprendizagemAula(planoAula.Id, objetivoPlanoAnualId));
-                    }
-
-                unitOfWork.PersistirTransacao();
+                    unitOfWork.PersistirTransacao();
+                }
+            }
+            else
+            {
+                await SalvarPlanoAula(planoAula, planoAulaDto, planoAnualId);
             }
         }
 
-        private async Task<long> InserirObjetivoPlanoAnual(long objetivoJuremaId, long planoAnualId)
+        private async Task SalvarPlanoAula(PlanoAula planoAula, PlanoAulaDto planoAulaDto, long planoAnualId)
+        {
+            repositorio.Salvar(planoAula);
+            // Salvar Objetivos
+            await repositorioObjetivosAula.LimparObjetivosAula(planoAula.Id);
+            if (planoAulaDto.ObjetivosAprendizagemJurema != null)
+                foreach (var objetivoJuremaId in planoAulaDto.ObjetivosAprendizagemJurema)
+                {
+                    var objetivoPlanoAnualId = await consultasObjetivoAprendizagem
+                        .ObterIdPorObjetivoAprendizagemJurema(planoAnualId, objetivoJuremaId);
+
+                    if (objetivoPlanoAnualId <= 0)
+                    {
+                        objetivoPlanoAnualId = await SalvarObjetivoPlanoAnual(objetivoJuremaId, planoAnualId);
+                    }
+
+                    repositorioObjetivosAula.Salvar(new ObjetivoAprendizagemAula(planoAula.Id, objetivoPlanoAnualId));
+                }
+        }
+
+        private async Task<long> SalvarObjetivoPlanoAnual(long objetivoJuremaId, long planoAnualId)
         {
             var objAprendizagem = await consultasObjetivoAprendizagem.
                                                             ObterAprendizagemSimplificadaPorId(objetivoJuremaId);
@@ -189,7 +201,7 @@ namespace SME.SGP.Aplicacao
             var turmasAtribuidasAoProfessor = consultasProfessor.Listar(migrarPlanoAulaDto.RFProfessor);
             var idsTurmasSelecionadas = migrarPlanoAulaDto.IdsPlanoTurmasDestino.Select(x => x.TurmaId).ToList();
 
-            ValidaTurmasProfessor(migrarPlanoAulaDto.EhProfessorCJ, 
+            ValidaTurmasProfessor(migrarPlanoAulaDto.EhProfessorCJ,
                                   turmasAtribuidasAoProfessor,
                                   idsTurmasSelecionadas);
 
@@ -197,9 +209,9 @@ namespace SME.SGP.Aplicacao
                             turmasAtribuidasAoProfessor, idsTurmasSelecionadas);
         }
 
-        private void ValidaTurmasProfessor(bool ehProfessorCJ, 
+        private void ValidaTurmasProfessor(bool ehProfessorCJ,
                                            IEnumerable<ProfessorTurmaDto> turmasAtribuidasAoProfessor,
-                                           IEnumerable<string> idsTurmasSelecionadas )
+                                           IEnumerable<string> idsTurmasSelecionadas)
         {
             var idsTurmasProfessor = turmasAtribuidasAoProfessor?.Select(c => c.CodTurma).ToList();
 
@@ -213,7 +225,7 @@ namespace SME.SGP.Aplicacao
             }
         }
 
-        private void ValidaTurmasAno(bool ehProfessorCJ, bool migrarObjetivos, 
+        private void ValidaTurmasAno(bool ehProfessorCJ, bool migrarObjetivos,
                                      IEnumerable<ProfessorTurmaDto> turmasAtribuidasAoProfessor,
                                      IEnumerable<string> idsTurmasSelecionadas)
         {

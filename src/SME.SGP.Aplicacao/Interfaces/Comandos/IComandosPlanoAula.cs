@@ -5,9 +5,10 @@ namespace SME.SGP.Aplicacao
 {
     public interface IComandosPlanoAula
     {
-        Task Salvar(PlanoAulaDto planoAulaDto);
+        Task Salvar(PlanoAulaDto planoAulaDto, bool controlarTransacao = true);
 
         Task Migrar(MigrarPlanoAulaDto migrarPlanoAulaDto);
+
         Task ExcluirPlanoDaAula(long aulaId);
     }
 }
