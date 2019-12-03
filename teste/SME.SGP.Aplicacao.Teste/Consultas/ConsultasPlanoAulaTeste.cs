@@ -54,7 +54,17 @@ namespace SME.SGP.Aplicacao.Teste.Consultas
             // Objetivos Aula
             objetivos = new List<ObjetivoAprendizagemAula>()
             {
-                new ObjetivoAprendizagemAula() { PlanoAulaId = 1, ObjetivoAprendizagemPlanoId = 1 }
+                new ObjetivoAprendizagemAula() 
+                { 
+                    PlanoAulaId = 1, 
+                    ObjetivoAprendizagemPlanoId = 1, 
+                    ObjetivoAprendizagemPlano = new ObjetivoAprendizagemPlano()
+                    {
+                        ComponenteCurricularId = 1,
+                        ObjetivoAprendizagemJuremaId = 1,
+                        PlanoId = 1
+                    }
+                }
             };
 
             consultasObjetivosAprendizagemAula.Setup(a => a.ObterObjetivosPlanoAula(It.IsAny<long>()))
@@ -66,11 +76,25 @@ namespace SME.SGP.Aplicacao.Teste.Consultas
                 Id = 1,
                 DataAula = new DateTime(2019, 11, 1),
                 DisciplinaId = "7",
-                Quantidade = 3
+                Quantidade = 3,
+                UeId = "1",
+                TurmaId = "1"
             };
 
             consultasAula.Setup(a => a.BuscarPorId(It.IsAny<long>()))
                 .Returns(aula);
+
+            // Plano anual
+            var planoAnual = new PlanoAnualCompletoDto()
+            {
+                ObjetivosAprendizagem = new List<ObjetivoAprendizagemDto>()
+                {
+                    new ObjetivoAprendizagemDto() { Id = 1, Ano = 2019, Codigo = "1", Descricao = "Objetivo 1", IdComponenteCurricular = 1 }
+                }
+            };
+
+            consultasPlanoAnual.Setup(a => a.ObterPorEscolaTurmaAnoEBimestre(It.IsAny<FiltroPlanoAnualDto>()))
+                .Returns(Task.FromResult(planoAnual));
         }
 
         [Fact]

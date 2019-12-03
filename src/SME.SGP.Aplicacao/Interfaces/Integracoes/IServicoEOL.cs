@@ -1,4 +1,5 @@
 ﻿using SME.SGP.Aplicacao.Integracoes.Respostas;
+using SME.SGP.Dominio;
 using SME.SGP.Dto;
 using SME.SGP.Infra;
 using System;
@@ -25,7 +26,7 @@ namespace SME.SGP.Aplicacao.Integracoes
 
         Task<IEnumerable<DisciplinaResposta>> ObterDisciplinasPorCodigoTurmaLoginEPerfil(string codigoTurma, string login, Guid perfil);
 
-        IEnumerable<DisciplinaDto> ObterDisciplinasPorIds(int[] ids);
+        IEnumerable<DisciplinaDto> ObterDisciplinasPorIds(long[] ids);
 
         IEnumerable<DreRespostaEolDto> ObterDres();
 
@@ -50,6 +51,8 @@ namespace SME.SGP.Aplicacao.Integracoes
         Task<int[]> ObterPermissoesPorPerfil(Guid perfilGuid);
 
         Task<IEnumerable<ProfessorResumoDto>> ObterProfessoresAutoComplete(int anoLetivo, string dreId, string nomeProfessor);
+
+        Task<IEnumerable<ProfessorTitularDisciplinaEol>> ObterProfessoresTitularesDisciplinas(string turmaId, Modalidade modalidadeId, string ueId);
 
         Task<UsuarioResumoCoreDto> ObterResumoCore(string login);
 

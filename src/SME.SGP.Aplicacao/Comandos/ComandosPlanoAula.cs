@@ -86,6 +86,11 @@ namespace SME.SGP.Aplicacao
             }
         }
 
+        public async Task ExcluirPlanoDaAula(long aulaId)
+        {
+            await repositorio.ExcluirPlanoDaAula(aulaId);
+        }
+
         public async Task Salvar(PlanoAulaDto planoAulaDto)
         {
             var aula = repositorioAula.ObterPorId(planoAulaDto.AulaId);
@@ -127,7 +132,7 @@ namespace SME.SGP.Aplicacao
                         aula.DataAula.Year, aula.UeId, long.Parse(aula.TurmaId), bimestre, long.Parse(aula.DisciplinaId));
 
             if (planoAnualId <= 0)
-                throw new NegocioException($"Não há plano anual cadastrado para a turma {aula.TurmaId}");
+                throw new NegocioException("Não foi possível concluir o cadasatro, pois não existe plano anual cadastrado");
 
             using (var transacao = unitOfWork.IniciarTransacao())
             {
