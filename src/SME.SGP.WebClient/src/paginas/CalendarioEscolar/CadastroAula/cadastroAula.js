@@ -41,6 +41,7 @@ const CadastroAula = ({ match }) => {
   const [controlaQuantidadeAula, setControlaQuantidadeAula] = useState(true);
   const [refForm, setRefForm] = useState({});
   const [ehReposicao, setEhReposicao] = useState(false);
+  const [quantidadeRecorrencia, setQuantidadeRecorrencia] = useState(0);
 
   const [valoresIniciais, setValoresIniciais] = useState({});
   const inicial = {
@@ -74,11 +75,17 @@ const CadastroAula = ({ match }) => {
     },
   ];
 
-  const opcoesRecorrencia = [
-    { label: 'Aula única', value: 1 },
-    { label: 'Repetir no Bimestre atual', value: 2 },
-    { label: 'Repetir em todos os Bimestres', value: 3 },
-  ];
+  const recorrencia = {
+    AULA_UNICA: 1,
+    REPETIR_BIMESTRE_ATUAL: 2,
+    REPETIR_TODOS_BIMESTRES: 3
+  }
+
+  const [opcoesRecorrencia, setOpcoesRecorrencia] = useState([
+    { label: 'Aula única', value: recorrencia.AULA_UNICA },
+    { label: 'Repetir no Bimestre atual', value: recorrencia.REPETIR_BIMESTRE_ATUAL },
+    { label: 'Repetir em todos os Bimestres', value: recorrencia.REPETIR_TODOS_BIMESTRES },
+  ]);
 
   useEffect(() => {
     const obterDisciplinas = async () => {
@@ -178,11 +185,19 @@ const CadastroAula = ({ match }) => {
     setNovoRegistro(false);
     if (aula && aula.data) {
       setDataAula(window.moment(aula.data.dataAula));
+      opcoesRecorrencia.forEach(item => {
+        if (item.value === aula.data.recorrenciaAula || item.value === recorrencia.AULA_UNICA) {
+          item.disabled = false;
+        } else {
+          item.disabled = true;
+        }
+      });
+      setOpcoesRecorrencia([...opcoesRecorrencia]);
       const val = {
         tipoAula: aula.data.tipoAula,
         disciplinaId: String(aula.data.disciplinaId),
         dataAula: aula.data.dataAula ? window.moment(aula.data.dataAula) : '',
-        recorrenciaAula: aula.data.recorrenciaAula,
+        recorrenciaAula: recorrencia.AULA_UNICA,
         id: aula.data.id,
         tipoCalendarioId: aula.data.tipoCalendarioId,
         ueId: aula.data.ueId,
@@ -278,6 +293,24 @@ const CadastroAula = ({ match }) => {
   };
 
   const onClickCadastrar = async valoresForm => {
+    if (valoresForm.recorrenciaAula !== recorrencia.AULA_UNICA) {
+      const confirmado = await confirmar(
+        'Atenção',
+        '',
+        'Você tem certeza que deseja alterar 20 ocorrências desta aula a partir desta data?',
+        'Sim',
+        'Não'
+      );
+      if (confirmado) {
+        salvar(valoresForm);
+        history.push('/calendario-escolar/calendario-professor');
+      }
+    } else {
+      salvar(valoresForm);
+    }
+  };
+
+  const salvar = valoresForm => {
     if (valoresForm.quantidadeRadio && valoresForm.quantidadeRadio > 0) {
       valoresForm.quantidade = valoresForm.quantidadeRadio;
     } else if (valoresForm.quantidadeTexto && valoresForm.quantidadeTexto > 0) {
@@ -301,7 +334,7 @@ const CadastroAula = ({ match }) => {
       if (cadastrado.data) sucesso(cadastrado.data.mensagens[0]);
       history.push('/calendario-escolar/calendario-professor');
     }
-  };
+  }
 
   const onClickExcluir = async () => {
     if (!novoRegistro) {
@@ -421,7 +454,6 @@ const CadastroAula = ({ match }) => {
                 </div>
                 <div className="col-sm-12 col-md-7 col-lg-9 col-xl-6 mb-2">
                   <SelectComponent
-                    desabilitado={!novoRegistro}
                     id="disciplina"
                     form={form}
                     name="disciplinaId"
@@ -436,7 +468,7 @@ const CadastroAula = ({ match }) => {
                         listaDisciplinas &&
                         listaDisciplinas.length &&
                         listaDisciplinas.length == 1
-                      )
+                      ) || !novoRegistro
                     }
                   />
                 </div>
@@ -490,7 +522,7 @@ const CadastroAula = ({ match }) => {
                     form={form}
                     opcoes={opcoesRecorrencia}
                     name="recorrenciaAula"
-                    desabilitado={ehReposicao || !novoRegistro}
+                    desabilitado={ehReposicao}
                     onChange={e => {
                       onChangeCampos();
                       montaValidacoes(0, e.target.value, form);
