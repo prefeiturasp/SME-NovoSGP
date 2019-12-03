@@ -268,6 +268,7 @@ const CadastroAula = ({ match }) => {
 
   const onChangeDisciplinas = async (id, form) => {
     onChangeCampos();
+    let quantidade = 0;
     form.setFieldValue('quantidadeTexto', '');
     const resultado = await api.get(
       `v1/grades/aulas/turmas/${turmaId}/disciplinas/${id}`,
@@ -280,16 +281,19 @@ const CadastroAula = ({ match }) => {
     if (resultado) {
       if (resultado.status === 200) {
         setControlaQuantidadeAula(true);
-        const quantidade = resultado.data.quantidadeAulasRestante;
-        setQuantidadeMaximaAulas(quantidade);
+        quantidade = resultado.data.quantidadeAulasRestante;
+        await setQuantidadeMaximaAulas(quantidade);
         if (quantidade > 0) {
           form.setFieldValue('quantidadeRadio', 1);
+        } else {
+          form.setFieldValue('quantidadeRadio', '');
+          form.setFieldValue('quantidadeTexto', '');
         }
       } else if (resultado.status === 204) {
         setControlaQuantidadeAula(false);
       }
     }
-    quantidadeMaximaAulas > 2 ? montaValidacoes(0, 1, form) : montaValidacoes(quantidadeMaximaAulas, 0, form);
+    quantidade > 0 ? montaValidacoes(1, 0, form) : montaValidacoes(0, 1, form);
   };
 
   const onClickCadastrar = async valoresForm => {
@@ -525,7 +529,7 @@ const CadastroAula = ({ match }) => {
                     desabilitado={ehReposicao}
                     onChange={e => {
                       onChangeCampos();
-                      montaValidacoes(0, e.target.value, form);
+                      montaValidacoes(form.values.quantidadeRadio, form.values.quantidadeTexto, form)
                     }}
                   />
                 </div>
