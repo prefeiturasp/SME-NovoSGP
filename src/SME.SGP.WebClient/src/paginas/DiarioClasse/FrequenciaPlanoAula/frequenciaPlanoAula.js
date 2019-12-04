@@ -180,6 +180,7 @@ const FrequenciaPlanoAula = () => {
         setModoEdicaoPlanoAula(false);
       }
     }
+
     if (disciplinaSelecionada.regencia || ehProfessor || ehProfessorCj) {
       let disciplinas = {};
       if (disciplinaSelecionada.regencia) {
