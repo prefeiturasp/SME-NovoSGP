@@ -195,12 +195,12 @@ const CadastroAula = ({ match }) => {
     if (aula && aula.data) {
       setDataAula(window.moment(aula.data.dataAula));
       const respRecorrencia = await api.get(`v1/calendarios/professores/aulas/${id}/recorrencias/serie`);
-      if (respRecorrencia && respRecorrencia.data && respRecorrencia.data.recorrenciaAula !== recorrencia.AULA_UNICA) {
-        const dataRecorrencia = respRecorrencia.data;
-        setQuantidadeRecorrencia(dataRecorrencia.recorrenciaAula);
+      const dadosRecorrencia = respRecorrencia.data;
+      if (respRecorrencia && dadosRecorrencia && dadosRecorrencia.recorrenciaAula !== recorrencia.AULA_UNICA) {
+        setQuantidadeRecorrencia(dadosRecorrencia.recorrenciaAula);
       }
       opcoesRecorrencia.forEach(item => {
-        if (item.value === aula.data.recorrenciaAula || item.value === recorrencia.AULA_UNICA) {
+        if (item.value === dadosRecorrencia.recorrenciaAula || item.value === recorrencia.AULA_UNICA) {
           item.disabled = false;
         } else {
           item.disabled = true;
@@ -307,7 +307,7 @@ const CadastroAula = ({ match }) => {
   };
 
   const onClickCadastrar = async valoresForm => {
-    if (quantidadeRecorrencia > 0) {
+    if (quantidadeRecorrencia > 0 && valoresForm.recorrenciaAula !== recorrencia.AULA_UNICA) {
       const confirmado = await confirmar(
         'Atenção',
         '',
