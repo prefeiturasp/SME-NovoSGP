@@ -26,7 +26,7 @@ function App() {
           <GlobalStyle />
           <div className="h-100">
             <Switch>
-              <Route component={Login} path="/login/:redirect/" />
+              <Route component={Login} path="/login/:redirect?/" />
               <Route component={Pagina} path="/" />
             </Switch>
           </div>
