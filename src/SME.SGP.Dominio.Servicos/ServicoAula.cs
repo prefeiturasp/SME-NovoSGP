@@ -120,16 +120,7 @@ namespace SME.SGP.Dominio.Servicos
             if (aula.RecorrenciaAula == RecorrenciaAula.AulaUnica && aula.TipoAula == TipoAula.Reposicao)
             {
                 var aulas = await repositorioAula.ObterAulas(aula.TipoCalendarioId, aula.TurmaId, aula.UeId, usuario.CodigoRf);
-                var aulasDia = aulas.ToList().FindAll(x => x.DataAula.Date == aula.DataAula.Date);
-                var quantidadeDeAulasSomadas = aulasDia.Sum(x => x.Quantidade) + aula.Quantidade;
-
-                if (usuario.EhProfessorCj())
-                {
-                    var contagemAulasDisciplina = aulasDia.Count(a => a.DisciplinaId == aula.DisciplinaId);
-
-                    if((contagemAulasDisciplina + aula.Quantidade) > 2)
-                        throw new NegocioException("Quantidade de aulas por dia/disciplina excedido.");
-                }
+                var quantidadeDeAulasSomadas = aulas.ToList().FindAll(x => x.DataAula.Date == aula.DataAula.Date).Sum(x => x.Quantidade) + aula.Quantidade;
 
                 var abrangencia = await consultasAbrangencia.ObterAbrangenciaTurma(aula.TurmaId);
                 if (abrangencia == null)
@@ -143,13 +134,16 @@ namespace SME.SGP.Dominio.Servicos
                     PersistirWorkflowReposicaoAula(aula, abrangencia.NomeDre, abrangencia.NomeUe, nomeDisciplina,
                                                  abrangencia.NomeTurma, abrangencia.CodigoDre);
                     return "Aula cadastrada com sucesso e enviada para aprovação.";
-                }                
+                }
             }
             else
             {
+                if (usuario.EhProfessorCj() && aula.Quantidade > 2)
+                    throw new NegocioException("Quantidade de aulas por dia/disciplina excedido.");
+
                 // Busca quantidade de aulas semanais da grade de aula
                 var semana = (aula.DataAula.DayOfYear / 7) + 1;
-                var gradeAulas = await consultasGrade.ObterGradeAulasTurma(aula.TurmaId, int.Parse(aula.DisciplinaId), semana.ToString());
+                var gradeAulas = await consultasGrade.ObterGradeAulasTurmaProfessor(aula.TurmaId, int.Parse(aula.DisciplinaId), semana.ToString(), usuario.CodigoRf);
                 var quantidadeAulasRestantes = gradeAulas.QuantidadeAulasRestante;
 
                 if (!ehInclusao)

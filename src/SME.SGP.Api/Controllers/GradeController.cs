@@ -22,7 +22,7 @@ namespace SME.SGP.Api.Controllers
         public async Task<IActionResult> ObterGradeAulasTurma([FromQuery] DateTime data, string codigoTurma, int codigoDisciplina, [FromServices] IConsultasGrade consultasGrade)
         {
             var semana = (data.DayOfYear / 7) + 1;
-            var horasGrade = await consultasGrade.ObterGradeAulasTurma(codigoTurma, codigoDisciplina, semana.ToString());
+            var horasGrade = await consultasGrade.ObterGradeAulasTurmaProfessor(codigoTurma, codigoDisciplina, semana.ToString(), null);
 
             if (horasGrade != null)
                 return Ok(horasGrade);
