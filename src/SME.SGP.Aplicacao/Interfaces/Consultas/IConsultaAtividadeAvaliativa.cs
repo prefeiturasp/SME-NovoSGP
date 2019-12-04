@@ -9,8 +9,8 @@ namespace SME.SGP.Aplicacao
     {
         Task<PaginacaoResultadoDto<AtividadeAvaliativaCompletaDto>> ListarPaginado(FiltroAtividadeAvaliativaDto filtro);
 
-        AtividadeAvaliativaCompletaDto ObterPorId(long id);
+        IEnumerable<AtividadeAvaliativa> ObterAvaliacoesDoBimestre(string turmaId, string disciplinaId, int anoLetivo, int bimestre, ModalidadeTipoCalendario modalidade);
 
-        IEnumerable<AtividadeAvaliativa> ObterAvaliacoesDoBimestre(string turmaId, int anoLetivo, int bimestre, ModalidadeTipoCalendario modalidade);
+        AtividadeAvaliativaCompletaDto ObterPorId(long id);
     }
 }

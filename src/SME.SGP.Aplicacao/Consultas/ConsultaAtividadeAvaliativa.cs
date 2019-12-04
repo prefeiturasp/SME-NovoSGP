@@ -11,8 +11,8 @@ namespace SME.SGP.Aplicacao
     public class ConsultaAtividadeAvaliativa : ConsultasBase, IConsultaAtividadeAvaliativa
     {
         private readonly IRepositorioAtividadeAvaliativa repositorioAtividadeAvaliativa;
-        private readonly IRepositorioTipoCalendario repositorioTipoCalendario;
         private readonly IRepositorioPeriodoEscolar repositorioPeriodoEscolar;
+        private readonly IRepositorioTipoCalendario repositorioTipoCalendario;
 
         public ConsultaAtividadeAvaliativa(IRepositorioAtividadeAvaliativa repositorioAtividadeAvaliativa
             , IContextoAplicacao contextoAplicacao, IRepositorioTipoCalendario repositorioTipoCalendario, IRepositorioPeriodoEscolar repositorioPeriodoEscolar) : base(contextoAplicacao)
@@ -36,12 +36,7 @@ namespace SME.SGP.Aplicacao
                         ));
         }
 
-        public AtividadeAvaliativaCompletaDto ObterPorId(long id)
-        {
-            return MapearParaDto(repositorioAtividadeAvaliativa.ObterPorId(id));
-        }
-
-        public IEnumerable<AtividadeAvaliativa> ObterAvaliacoesDoBimestre(string turmaId, int anoLetivo, int bimestre, ModalidadeTipoCalendario modalidade)
+        public IEnumerable<AtividadeAvaliativa> ObterAvaliacoesDoBimestre(string turmaId, string disciplinaId, int anoLetivo, int bimestre, ModalidadeTipoCalendario modalidade)
         {
             var tipoCalendario = repositorioTipoCalendario.BuscarPorAnoLetivoEModalidade(anoLetivo, modalidade);
 
@@ -64,6 +59,11 @@ namespace SME.SGP.Aplicacao
                 throw new NegocioException("Não foi encontrada nenhuma avaliação para o bimestre informado");
 
             return avaliacoes;
+        }
+
+        public AtividadeAvaliativaCompletaDto ObterPorId(long id)
+        {
+            return MapearParaDto(repositorioAtividadeAvaliativa.ObterPorId(id));
         }
 
         private IEnumerable<AtividadeAvaliativaCompletaDto> MapearAtividadeAvaliativaParaDto(IEnumerable<AtividadeAvaliativa> items)
