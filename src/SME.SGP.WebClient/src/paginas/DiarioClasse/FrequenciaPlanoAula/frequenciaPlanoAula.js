@@ -267,17 +267,21 @@ const FrequenciaPlanoAula = () => {
         'Deseja realmente cancelar as alterações?'
       );
       if (confirmou) {
-        const aulaDataSelecionada = listaDatasAulas.find(item =>
-          window.moment(item.data).isSame(dataSelecionada, 'date')
-        );
         obterListaFrequencia(aulaId);
         setModoEdicaoFrequencia(false);
-        obterPlanoAula(aulaDataSelecionada);
+        obterPlanoAula(obterAulaSelecionada(dataSelecionada));
         setModoEdicaoPlanoAula(false);
         resetarPlanoAula();
       }
     }
   };
+
+  const obterAulaSelecionada = (data) => {
+    const aulaDataSelecionada = listaDatasAulas.find(item =>
+      window.moment(item.data).isSame(data, 'date')
+    );
+    return aulaDataSelecionada;
+  }
 
   const onClickSalvar = click => {
     if (modoEdicaoFrequencia && permiteRegistroFrequencia) {
@@ -346,6 +350,7 @@ const FrequenciaPlanoAula = () => {
           if (salvouPlano && salvouPlano.status == 200) {
             sucesso('Plano de aula salvo com sucesso.');
             setModoEdicaoPlanoAula(false);
+            obterPlanoAula(obterAulaSelecionada(dataSelecionada))
           }
         })
         .catch(e => {
@@ -478,9 +483,7 @@ const FrequenciaPlanoAula = () => {
     setDataSelecionada(data);
     resetarTelaFrequencia(true, true);
     resetarPlanoAula();
-    const aulaDataSelecionada = listaDatasAulas.find(item =>
-      window.moment(item.data).isSame(data, 'date')
-    );
+    const aulaDataSelecionada = obterAulaSelecionada(data);
     setAula(aulaDataSelecionada);
     if (aulaDataSelecionada && aulaDataSelecionada.idAula) {
       obterListaFrequencia(aulaDataSelecionada.idAula);
