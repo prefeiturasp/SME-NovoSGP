@@ -27,7 +27,7 @@ const TipoEventosLista = styled(Div)`
 const TipoEvento = styled(Div)`
   font-size: 10px;
   margin-bottom: 2px;
-  width: 60px;
+  min-width: 60px;
   &:last-child {
     margin-bottom: 0;
   }
@@ -35,44 +35,49 @@ const TipoEvento = styled(Div)`
 
 const Dia = props => {
   const { dia, mesAtual, filtros, diaSelecionado } = props;
+  const {
+    tipoCalendarioSelecionado,
+    eventoSme,
+    dreSelecionada,
+    unidadeEscolarSelecionada,
+    turmaSelecionada,
+    todasTurmas,
+  } = filtros;
   const [tipoEventosDiaLista, setTipoEventosDiaLista] = useState([]);
 
   useEffect(() => {
     let estado = true;
     if (estado) {
       if (mesAtual && dia) {
-        if (filtros && Object.entries(filtros).length > 0) {
-          const {
-            tipoCalendarioSelecionado = '',
-            eventoSme = true,
-            dreSelecionada = '',
-            unidadeEscolarSelecionada = '',
-            turmaSelecionada = '',
-          } = filtros;
-          if (tipoCalendarioSelecionado) {
-            api
-              .post(`v1/calendarios/meses/tipos/eventos-aulas`, {
-                Mes: mesAtual,
-                tipoCalendarioId: tipoCalendarioSelecionado,
-                EhEventoSME: eventoSme,
-                dreId: dreSelecionada,
-                ueId: unidadeEscolarSelecionada,
-                turmaId: turmaSelecionada,
-              })
-              .then(resposta => {
-                if (resposta.data) {
-                  const lista = resposta.data.filter(
-                    evento => evento.dia === dia.getDate()
-                  )[0];
-                  while (lista.tiposEvento.length > 2) lista.tiposEvento.pop();
-                  setTipoEventosDiaLista(lista);
-                } else setTipoEventosDiaLista([]);
-              })
-              .catch(() => {
-                setTipoEventosDiaLista([]);
-              });
-          } else setTipoEventosDiaLista([]);
-        }
+        if (
+          tipoCalendarioSelecionado &&
+          dreSelecionada &&
+          unidadeEscolarSelecionada &&
+          (turmaSelecionada || todasTurmas)
+        ) {
+          api
+            .post(`v1/calendarios/meses/tipos/eventos-aulas`, {
+              Mes: mesAtual,
+              tipoCalendarioId: tipoCalendarioSelecionado,
+              EhEventoSME: eventoSme,
+              dreId: dreSelecionada,
+              ueId: unidadeEscolarSelecionada,
+              turmaId: turmaSelecionada,
+              todasTurmas,
+            })
+            .then(resposta => {
+              if (resposta.data) {
+                const lista = resposta.data.filter(
+                  evento => evento.dia === dia.getDate()
+                )[0];
+                while (lista.tiposEvento.length > 2) lista.tiposEvento.pop();
+                setTipoEventosDiaLista(lista);
+              } else setTipoEventosDiaLista([]);
+            })
+            .catch(() => {
+              setTipoEventosDiaLista([]);
+            });
+        } else setTipoEventosDiaLista([]);
       }
     }
     return () => {
@@ -84,24 +89,24 @@ const Dia = props => {
     store.dispatch(selecionaDia(dia));
   };
 
-  const eventoCalendarioEdicao = useSelector(
-    state => state.calendarioProfessor.eventoCalendarioEdicao
+  const eventoAulaCalendarioEdicao = useSelector(
+    state => state.calendarioProfessor.eventoAulaCalendarioEdicao
   );
 
   useEffect(() => {
     const abrirDiaEventoCalendarioEdicao = setTimeout(() => {
       if (
-        eventoCalendarioEdicao &&
-        eventoCalendarioEdicao.dia &&
+        eventoAulaCalendarioEdicao &&
+        eventoAulaCalendarioEdicao.dia &&
         dia &&
-        dia.getTime() === eventoCalendarioEdicao.dia.getTime()
+        dia.getTime() === eventoAulaCalendarioEdicao.dia.getTime()
       ) {
         selecionaDiaAberto();
         store.dispatch(salvarEventoAulaCalendarioEdicao());
       }
     }, 3000);
     return () => clearTimeout(abrirDiaEventoCalendarioEdicao);
-  }, [eventoCalendarioEdicao]);
+  }, [eventoAulaCalendarioEdicao]);
 
   const style = {
     cursor: 'pointer',
@@ -145,15 +150,16 @@ const Dia = props => {
                       TiposEventoAulaDTO.Aula &&
                       'text-white badge-aula'} ${tipoEvento ===
                       TiposEventoAulaDTO.CJ &&
-                      'text-white badge-cj'} ${TiposEventoAulaDTO.Evento.indexOf(
-                      tipoEvento
-                    ) > -1 && 'badge-light'} ml-auto mr-0`}
+                      'text-white badge-cj'} ${tipoEvento !==
+                      TiposEventoAulaDTO.Aula &&
+                      (tipoEvento !== TiposEventoAulaDTO.CJ &&
+                        'badge-light')} ml-auto mr-0`}
                   >
                     {tipoEvento}
                   </TipoEvento>
                 );
               })}
-              {tipoEventosDiaLista.quantidadeDeEventosAulas > 3 && (
+              {tipoEventosDiaLista.quantidadeDeEventosAulas > 2 && (
                 <Div style={{ fontSize: 10 }}>
                   Mais {tipoEventosDiaLista.quantidadeDeEventosAulas} eventos
                 </Div>

@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
+import _ from 'lodash';
 
 // Form
 import { Formik, Form } from 'formik';
@@ -12,9 +13,10 @@ import { setLoaderSecao } from '~/redux/modulos/loader/actions';
 // Serviços
 import RotasDto from '~/dtos/rotasDto';
 import history from '~/servicos/history';
+import AtribuicaoEsporadicaServico from '~/servicos/Paginas/AtribuicaoEsporadica';
 import { erros, erro, sucesso, confirmar } from '~/servicos/alertas';
 import { setBreadcrumbManual } from '~/servicos/breadcrumb-services';
-import AtribuicaoEsporadicaServico from '~/servicos/Paginas/AtribuicaoEsporadica';
+import { verificaSomenteConsulta } from '~/servicos/servico-navegacao';
 
 // Componentes SGP
 import { Cabecalho } from '~/componentes-sgp';
@@ -28,10 +30,11 @@ import {
   CampoData,
   momentSchema,
   Loader,
+  Auditoria,
 } from '~/componentes';
 import DreDropDown from '../componentes/DreDropDown';
 import UeDropDown from '../componentes/UeDropDown';
-import AnoLetivoDropDown from '../componentes/AnoLetivoDropDown';
+import AnoLetivoTag from '../componentes/AnoLetivoTag';
 
 // Styles
 import { Row } from './styles';
@@ -43,17 +46,26 @@ function AtribuicaoEsporadicaForm({ match }) {
   const dispatch = useDispatch();
   const carregando = useSelector(store => store.loader.loaderSecao);
   const permissoesTela = useSelector(store => store.usuario.permissoes);
+  const somenteConsulta = verificaSomenteConsulta(
+    permissoesTela[RotasDto.ATRIBUICAO_ESPORADICA_LISTA]
+  );
   const filtroListagem = useSelector(
     store => store.atribuicaoEsporadica.filtro
   );
   const [dreId, setDreId] = useState('');
   const [novoRegistro, setNovoRegistro] = useState(true);
   const [modoEdicao, setModoEdicao] = useState(false);
+  const [auditoria, setAuditoria] = useState({});
+  const [valoresCarregados, setValoresCarregados] = useState(null);
+  const [refForm, setRefForm] = useState({});
   const [valoresIniciais, setValoresIniciais] = useState({
     professorRf: '',
     professorNome: '',
-    dataInicio: '',
+    dataInicio: window.moment(),
     dataFim: '',
+    ueId: '',
+    dreId: '',
+    anoLetivo: '2019',
   });
 
   const validacoes = () => {
@@ -104,7 +116,20 @@ function AtribuicaoEsporadicaForm({ match }) {
     }
   };
 
-  const onClickVoltar = () => history.push('/gestao/atribuicao-esporadica');
+  const onClickVoltar = async () => {
+    if (modoEdicao) {
+      const confirmou = await confirmar(
+        'Atenção',
+        'Você não salvou as informações preenchidas.',
+        'Deseja realmente cancelar as alterações?'
+      );
+      if (confirmou) {
+        history.push('/gestao/atribuicao-esporadica');
+      }
+    } else {
+      history.push('/gestao/atribuicao-esporadica');
+    }
+  };
 
   const onClickCancelar = async form => {
     if (!modoEdicao) return;
@@ -116,6 +141,27 @@ function AtribuicaoEsporadicaForm({ match }) {
     if (confirmou) {
       form.resetForm();
       setModoEdicao(false);
+    }
+  };
+
+  const onClickExcluir = async form => {
+    if (validaSeObjetoEhNuloOuVazio(form.values)) return;
+
+    const confirmado = await confirmar(
+      'Excluir atribuição',
+      form.values.professorNome,
+      `Deseja realmente excluir este item?`,
+      'Excluir',
+      'Cancelar'
+    );
+    if (confirmado) {
+      const excluir = await AtribuicaoEsporadicaServico.deletarAtribuicaoEsporadica(
+        form.values.id
+      );
+      if (excluir) {
+        sucesso(`Atribuição excluida com sucesso!`);
+        history.push('/gestao/atribuicao-esporadica');
+      }
     }
   };
 
@@ -131,6 +177,16 @@ function AtribuicaoEsporadicaForm({ match }) {
           dataInicio: window.moment(registro.data.dataInicio),
           dataFim: window.moment(registro.data.dataFim),
         });
+        setAuditoria({
+          criadoPor: registro.data.criadoPor,
+          criadoRf: registro.data.criadoRF > 0 ? registro.data.criadoRF : '',
+          criadoEm: registro.data.criadoEm,
+          alteradoPor: registro.data.alteradoPor,
+          alteradoRf:
+            registro.data.alteradoRF > 0 ? registro.data.alteradoRF : '',
+          alteradoEm: registro.data.alteradoEm,
+        });
+        setValoresCarregados(true);
         dispatch(setLoaderSecao(false));
       }
     } catch (err) {
@@ -141,7 +197,20 @@ function AtribuicaoEsporadicaForm({ match }) {
 
   const validaFormulario = valores => {
     if (validaSeObjetoEhNuloOuVazio(valores)) return;
-    if (!modoEdicao) {
+    if (
+      (!modoEdicao &&
+        valoresCarregados &&
+        !_.isEqual(
+          refForm.getFormikContext().initialValues,
+          refForm.getFormikContext().values
+        )) ||
+      (!modoEdicao &&
+        novoRegistro &&
+        !_.isEqual(
+          refForm.getFormikContext().initialValues,
+          refForm.getFormikContext().values
+        ))
+    ) {
       setModoEdicao(true);
     }
   };
@@ -169,6 +238,7 @@ function AtribuicaoEsporadicaForm({ match }) {
             validationSchema={validacoes}
             onSubmit={valores => onSubmitFormulario(valores)}
             validate={valores => validaFormulario(valores)}
+            ref={refFormik => setRefForm(refFormik)}
             validateOnBlur
             validateOnChange
           >
@@ -184,22 +254,19 @@ function AtribuicaoEsporadicaForm({ match }) {
                   onClickBotaoPrincipal={() => onClickBotaoPrincipal(form)}
                   onClickCancelar={formulario => onClickCancelar(formulario)}
                   onClickVoltar={() => onClickVoltar()}
+                  onClickExcluir={() => onClickExcluir(form)}
                   modoEdicao={modoEdicao}
                 />
                 <Row className="row">
                   <Grid cols={2}>
-                    <AnoLetivoDropDown
-                      label="Ano Letivo"
-                      form={form}
-                      name="anoLetivo"
-                      onChange={valor => null}
-                    />
+                    <AnoLetivoTag label="Ano Letivo" />
                   </Grid>
                   <Grid cols={5}>
                     <DreDropDown
                       label="Diretoria Regional de Educação (DRE)"
                       form={form}
                       onChange={valor => setDreId(valor)}
+                      desabilitado={somenteConsulta}
                     />
                   </Grid>
                   <Grid cols={5}>
@@ -207,7 +274,8 @@ function AtribuicaoEsporadicaForm({ match }) {
                       label="Unidade Escolar (UE)"
                       dreId={dreId}
                       form={form}
-                      onChange={valor => null}
+                      onChange={() => null}
+                      desabilitado={somenteConsulta}
                     />
                   </Grid>
                 </Row>
@@ -220,6 +288,7 @@ function AtribuicaoEsporadicaForm({ match }) {
                         showLabel
                         form={form}
                         onChange={() => null}
+                        desabilitado={somenteConsulta || valoresIniciais.id}
                       />
                     </Row>
                   </Grid>
@@ -230,6 +299,7 @@ function AtribuicaoEsporadicaForm({ match }) {
                       form={form}
                       name="dataInicio"
                       formatoData="DD/MM/YYYY"
+                      desabilitado={somenteConsulta}
                     />
                   </Grid>
                   <Grid cols={2}>
@@ -239,12 +309,23 @@ function AtribuicaoEsporadicaForm({ match }) {
                       form={form}
                       name="dataFim"
                       formatoData="DD/MM/YYYY"
+                      desabilitado={somenteConsulta}
                     />
                   </Grid>
                 </Row>
               </Form>
             )}
           </Formik>
+          {auditoria && (
+            <Auditoria
+              criadoEm={auditoria.criadoEm}
+              criadoPor={auditoria.criadoPor}
+              criadoRf={auditoria.criadoRf}
+              alteradoPor={auditoria.alteradoPor}
+              alteradoEm={auditoria.alteradoEm}
+              alteradoRf={auditoria.alteradoRf}
+            />
+          )}
         </Card>
       </Loader>
     </>

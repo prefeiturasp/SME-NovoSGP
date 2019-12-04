@@ -32,7 +32,11 @@ function InputRF({
   };
 
   const botao = (
-    <Button onClick={() => onSubmitRF(valor)} disabled={!valor} type="link">
+    <Button
+      onClick={() => onSubmitRF(valor)}
+      disabled={!valor || desabilitado}
+      type="link"
+    >
       <i className="fa fa-search fa-lg" />
     </Button>
   );
@@ -86,13 +90,16 @@ function InputRF({
             placeholder="Digite o RF"
             onKeyDown={onKeyDown}
             onChange={e => {
-              form.setFieldValue(name, e.target.value);
-              form.setFieldTouched(name, true, true);
+              if (valorNuloOuVazio(e.target.value)) {
+                form.setFieldValue(name, e.target.value, false);
+                form.setFieldTouched(name);
+              }
               setValor(e.target.value);
             }}
             style={style}
             suffix={botao}
             onPressEnter={e => onSubmitRF(e.target.value)}
+            disabled={desabilitado}
           />
           {form && form.touched[name] ? (
             <span className="mensagemErro">{form.errors[name]}</span>
@@ -108,6 +115,7 @@ function InputRF({
             onChange={e => setValor(e.target.value)}
             onPressEnter={e => onSubmitRF(e.target.value)}
             suffix={botao}
+            disabled={desabilitado}
           />
         </InputRFEstilo>
       )}
@@ -143,7 +151,7 @@ InputRF.defaultProps = {
   className: '',
   desabilitado: false,
   maxlength: null,
-  onKeyDown: () => null,
+  onKeyDown: null,
   style: {},
 };
 

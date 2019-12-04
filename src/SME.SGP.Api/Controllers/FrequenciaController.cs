@@ -16,7 +16,7 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [ProducesResponseType(typeof(RetornoBaseDto), 601)]
         [ProducesResponseType(typeof(RetornoBaseDto), 200)]
-        [Permissao(Permissao.PDA_I, Policy = "Bearer")]
+        [Permissao(Permissao.PDA_C, Policy = "Bearer")]
         public async Task<IActionResult> Listar(long aulaId, [FromServices] IConsultasFrequencia consultasFrequencia)
         {
             return Ok(await consultasFrequencia.ObterListaFrequenciaPorAula(aulaId));
@@ -26,7 +26,7 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [ProducesResponseType(typeof(RetornoBaseDto), 601)]
         [ProducesResponseType(typeof(RetornoBaseDto), 200)]
-        //[Permissao(Permissao.PDA_I, Policy = "Bearer")]
+        [Permissao(Permissao.PDA_C, Policy = "Bearer")]
         public async Task<IActionResult> ObterDatasDeAulasPorCalendarioTurmaEDisciplina(int anoLetivo, string turmaId, string disciplinaId, [FromServices] IConsultasAula consultasAula)
         {
             return Ok(await consultasAula.ObterDatasDeAulasPorCalendarioTurmaEDisciplina(anoLetivo, turmaId, disciplinaId));
