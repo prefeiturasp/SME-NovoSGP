@@ -44,23 +44,28 @@ namespace SME.SGP.Dominio.Servicos
 
         private async void TratarAbrangencia(AtribuicaoCJ atribuicaoCJ)
         {
+            var abrangenciasAtuais = await repositorioAbrangencia.ObterAbrangenciaSintetica(atribuicaoCJ.ProfessorRf, Perfis.PERFIL_CJ, atribuicaoCJ.TurmaId);
+
             if (atribuicaoCJ.Substituir)
             {
-                var turma = repositorioTurma.ObterPorId(atribuicaoCJ.TurmaId);
-                if (turma == null)
-                    throw new NegocioException($"Não foi possível localizar a turma {atribuicaoCJ.TurmaId} da abrangência.");
+                if (abrangenciasAtuais != null && !abrangenciasAtuais.Any())
+                {
+                    var turma = repositorioTurma.ObterPorId(atribuicaoCJ.TurmaId);
+                    if (turma == null)
+                        throw new NegocioException($"Não foi possível localizar a turma {atribuicaoCJ.TurmaId} da abrangência.");
 
-                var abrangencias = new Abrangencia[] { new Abrangencia() { Perfil = Perfis.PERFIL_CJ, TurmaId = turma.Id } };
+                    var abrangencias = new Abrangencia[] { new Abrangencia() { Perfil = Perfis.PERFIL_CJ, TurmaId = turma.Id } };
 
-                servicoAbrangencia.SalvarAbrangencias(abrangencias, atribuicaoCJ.ProfessorRf);
+                    servicoAbrangencia.SalvarAbrangencias(abrangencias, atribuicaoCJ.ProfessorRf);
+                }
             }
             else
             {
-                var abrangencias = await repositorioAbrangencia.ObterAbrangenciaSintetica(atribuicaoCJ.ProfessorRf, Perfis.PERFIL_CJ, atribuicaoCJ.TurmaId);
-
-                if (abrangencias != null && abrangencias.Any())
+                if (abrangenciasAtuais != null && abrangenciasAtuais.Any())
                 {
-                    servicoAbrangencia.RemoverAbrangencias(abrangencias.Select(a => a.Id).ToArray());
+                    var atribuicoesAtuais = await repositorioAtribuicaoCJ.ObterPorFiltros(atribuicaoCJ.Modalidade, atribuicaoCJ.TurmaId, atribuicaoCJ.UeId, atribuicaoCJ.DisciplinaId, atribuicaoCJ.ProfessorRf, string.Empty);
+
+                    servicoAbrangencia.RemoverAbrangencias(abrangenciasAtuais.Select(a => a.Id).ToArray());
                 }
             }
         }
