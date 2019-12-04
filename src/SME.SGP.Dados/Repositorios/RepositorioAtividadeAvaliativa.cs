@@ -71,6 +71,25 @@ namespace SME.SGP.Dados.Repositorios
             return retornoPaginado;
         }
 
+        public async Task<bool> VerificarSeExisteAvaliacao(DateTime dataAvaliacao, string ueId, string turmaId, string professorRf, string disciplinaId)
+        {
+            StringBuilder query = new StringBuilder();
+            MontaQueryCabecalho(query);
+            query.AppendLine(fromCompleto);
+            MontaWhere(query, dataAvaliacao, null, ueId, null, null, turmaId, professorRf, null, null, false, disciplinaId);
+
+            var resultado = (await database.Conexao.QueryAsync<AtividadeAvaliativa>(query.ToString(), new
+            {
+                dataAvaliacao,
+                disciplinaId,
+                ueId,
+                turmaId,
+                professorRf
+            }));
+
+            return resultado.Any();
+        }
+
         public async Task<bool> VerificarSeJaExisteAvaliacao(DateTime dataAvaliacao, string dreId, string ueId, string turmaId, string professorRf)
         {
             StringBuilder query = new StringBuilder();
@@ -117,7 +136,7 @@ namespace SME.SGP.Dados.Repositorios
             StringBuilder query = new StringBuilder();
             MontaQueryCabecalho(query);
             query.AppendLine(fromCompleto);
-            MontaWhere(query, dataAvaliacao, dreId, ueId, null, null, turmaId, professorRf, null, null, false, disciplinaId);
+            MontaWhere(query, dataAvaliacao, dreId, ueId, null, null, turmaId, professorRf, null, null, false, disciplinaId, true);
 
             var resultado = (await database.Conexao.QueryAsync<AtividadeAvaliativa>(query.ToString(), new
             {
@@ -153,6 +172,8 @@ namespace SME.SGP.Dados.Repositorios
             query.AppendLine("a.criado_rf,");
             query.AppendLine("a.alterado_rf,");
             query.AppendLine("a.excluido,");
+            query.AppendLine("a.disciplina_id,");
+            query.AppendLine("a.disciplina_contida_regencia_id,");
             query.AppendLine("ta.id as TipoAvaliacaoId,");
             query.AppendLine("ta.id,");
             query.AppendLine("ta.nome,");
@@ -199,7 +220,12 @@ namespace SME.SGP.Dados.Repositorios
             if (periodoFim.HasValue)
                 query.AppendLine("and date(a.data_avaliacao) <= @periodoFim");
             if (!string.IsNullOrEmpty(disciplinaId))
-                query.AppendLine("and a.disciplina_id = @disciplinaId");
+            {
+                if (ehRegencia)
+                    query.AppendLine("and a.disciplina_contida_regencia_id = @disciplinaId");
+                else
+                    query.AppendLine("and a.disciplina_id = @disciplinaId");
+            }
             if (ehRegencia)
                 query.AppendLine("and a.eh_regencia = true");
         }
