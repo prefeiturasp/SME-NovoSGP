@@ -63,10 +63,10 @@ namespace SME.SGP.Dominio.Servicos
             }
             await ValidaSePerfilPodeIncluir();
             await repositorioAtribuicaoCJ.SalvarAsync(atribuicaoCJ);
-            TratarAbrangencia(atribuicaoCJ, atribuicoesAtuais);
+            await TratarAbrangencia(atribuicaoCJ, atribuicoesAtuais);
         }
 
-        private async void TratarAbrangencia(AtribuicaoCJ atribuicaoCJ, IEnumerable<AtribuicaoCJ> atribuicoesAtuais)
+        private async Task TratarAbrangencia(AtribuicaoCJ atribuicaoCJ, IEnumerable<AtribuicaoCJ> atribuicoesAtuais)
         {
             var abrangenciasAtuais = await repositorioAbrangencia.ObterAbrangenciaSintetica(atribuicaoCJ.ProfessorRf, Perfis.PERFIL_CJ, atribuicaoCJ.TurmaId);
 
