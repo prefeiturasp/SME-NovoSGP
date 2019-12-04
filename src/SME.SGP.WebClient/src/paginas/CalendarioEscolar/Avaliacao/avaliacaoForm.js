@@ -109,7 +109,10 @@ const AvaliacaoForm = ({ match }) => {
   };
 
   const clicouBotaoCancelar = () => {
-    setDadosAvaliacao(inicial);
+    if (!idAvaliacao) {
+      setDadosAvaliacao(inicial);
+      setDescricao('');
+    }
   };
 
   const { turmaSelecionada } = usuario;
@@ -204,11 +207,11 @@ const AvaliacaoForm = ({ match }) => {
                 color={Colors.Vermelho}
                 border
                 className="mr-3"
-                disabled
+                disabled={!idAvaliacao}
                 onClick={clicouBotaoExcluir}
               />
               <Button
-                label="Cadastrar"
+                label={idAvaliacao ? 'Alterar' : 'Cadastrar'}
                 color={Colors.Roxo}
                 onClick={e => clicouBotaoCadastrar(form, e)}
                 ref={botaoCadastrarRef}
