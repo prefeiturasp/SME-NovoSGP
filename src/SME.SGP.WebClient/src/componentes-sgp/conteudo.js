@@ -11,9 +11,6 @@ import { Colors } from '../componentes/colors';
 import BreadcrumbSgp from './breadcrumb-sgp';
 import Alert from '~/componentes/alert';
 import Grid from '~/componentes/grid';
-import Navbar from './navbar';
-import Sider from './sider';
-import CalendarioEscolar from '~/paginas/CalendarioEscolar/Calendario';
 import rotasArray from '~/rotas/rotas';
 
 const ContainerModal = styled.div`
@@ -27,8 +24,6 @@ const ContainerBotoes = styled.div`
   justify-content: flex-end;
 `;
 const Conteudo = props => {
-  const { children, match } = props;
-
   const NavegacaoStore = useSelector(store => store.navegacao);
   const [retraido, setRetraido] = useState(false);
   const dispatch = useDispatch();
@@ -128,16 +123,4 @@ const Conteudo = props => {
     </div>
   );
 };
-const Pagina = () => {
-  return (
-    <>
-      <Navbar />
-      <div className="container-fluid h-100">
-        <Sider />
-        <Conteudo />
-      </div>
-    </>
-  );
-};
-
-export default Pagina;
+export default Conteudo;

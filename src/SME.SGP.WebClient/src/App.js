@@ -8,7 +8,7 @@ import history from './servicos/history';
 import GlobalStyle from './estilos/global';
 import { store, persistor } from './redux';
 // import { rotaAtiva } from './redux/modulos/navegacao/actions';
-import Pagina from '~/componentes-sgp/conteudo';
+import Pagina from '~/componentes-sgp/pagina';
 import Login from '~/paginas/Login';
 
 import Rotas from './rotas/rotas';
