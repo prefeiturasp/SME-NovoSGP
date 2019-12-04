@@ -24,7 +24,7 @@ namespace SME.SGP.Aplicacao
 
         public async Task<IEnumerable<AtribuicaoCJListaRetornoDto>> Listar(AtribuicaoCJListaFiltroDto filtroDto)
         {
-            var listaRetorno = await repositorioAtribuicaoCJ.ObterPorFiltros(null, null, filtroDto.UeId, string.Empty,
+            var listaRetorno = await repositorioAtribuicaoCJ.ObterPorFiltros(null, null, filtroDto.UeId, 0,
                 filtroDto.UsuarioRf, filtroDto.UsuarioNome);
 
             if (listaRetorno.Any())
@@ -37,7 +37,7 @@ namespace SME.SGP.Aplicacao
         {
             IEnumerable<ProfessorTitularDisciplinaEol> professoresTitularesDisciplinasEol = await servicoEOL.ObterProfessoresTitularesDisciplinas(turmaId, modalidadeId, ueId);
 
-            var listaAtribuicoes = await repositorioAtribuicaoCJ.ObterPorFiltros(modalidadeId, turmaId, ueId, string.Empty,
+            var listaAtribuicoes = await repositorioAtribuicaoCJ.ObterPorFiltros(modalidadeId, turmaId, ueId, 0,
                 professorRf, string.Empty);
 
             if (professoresTitularesDisciplinasEol.Any())
