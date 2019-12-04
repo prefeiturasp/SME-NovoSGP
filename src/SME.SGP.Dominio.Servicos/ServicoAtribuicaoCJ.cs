@@ -17,9 +17,10 @@ namespace SME.SGP.Dominio.Servicos
         private readonly IRepositorioTurma repositorioTurma;
         private readonly IServicoAbrangencia servicoAbrangencia;
         private readonly IServicoEOL servicoEOL;
+        private readonly IServicoUsuario servicoUsuario;
 
         public ServicoAtribuicaoCJ(IRepositorioAtribuicaoCJ repositorioAtribuicaoCJ, IServicoAbrangencia servicoAbrangencia, IRepositorioTurma repositorioTurma,
-            IRepositorioAbrangencia repositorioAbrangencia, IServicoEOL servicoEOL, IRepositorioAula repositorioAula)
+            IRepositorioAbrangencia repositorioAbrangencia, IServicoEOL servicoEOL, IRepositorioAula repositorioAula, IServicoUsuario servicoUsuario)
         {
             this.repositorioAtribuicaoCJ = repositorioAtribuicaoCJ ?? throw new ArgumentNullException(nameof(repositorioAtribuicaoCJ));
             this.servicoAbrangencia = servicoAbrangencia ?? throw new ArgumentNullException(nameof(servicoAbrangencia));
@@ -27,6 +28,7 @@ namespace SME.SGP.Dominio.Servicos
             this.repositorioAbrangencia = repositorioAbrangencia ?? throw new ArgumentNullException(nameof(repositorioAbrangencia));
             this.servicoEOL = servicoEOL ?? throw new ArgumentNullException(nameof(servicoEOL));
             this.repositorioAula = repositorioAula ?? throw new ArgumentNullException(nameof(repositorioAula));
+            this.servicoUsuario = servicoUsuario ?? throw new ArgumentNullException(nameof(servicoUsuario));
         }
 
         public async Task Salvar(AtribuicaoCJ atribuicaoCJ, IEnumerable<AtribuicaoCJ> atribuicoesAtuais = null)
@@ -59,7 +61,7 @@ namespace SME.SGP.Dominio.Servicos
                 if (!atribuicaoCJ.Substituir)
                     await ValidaSeTemAulaCriada(atribuicaoCJ);
             }
-            //ValidaSePerfilPodeIncluir(atribuicaoCJ);
+            await ValidaSePerfilPodeIncluir();
             await repositorioAtribuicaoCJ.SalvarAsync(atribuicaoCJ);
             TratarAbrangencia(atribuicaoCJ, atribuicoesAtuais);
         }
@@ -104,14 +106,16 @@ namespace SME.SGP.Dominio.Servicos
             }
         }
 
-        //private async Task ValidaSePerfilPodeIncluir(AtribuicaoCJ atribuicaoCJ)
-        //{
-        //    var perfisEol = await servicoEOL.ObterPerfisPorLogin(atribuicaoCJ.ProfessorRf);
-        //    if (perfisEol == null)
-        //        throw new NegocioException($"Não foi possível obter os perfis do professor {atribuicaoCJ.ProfessorRf}");
+        private async Task ValidaSePerfilPodeIncluir()
+        {
+            var usuarioAtual = await servicoUsuario.ObterUsuarioLogado();
 
-        //    if (perfisEol.Perfis.Any(a => a == Perfis.PERFIL_DIRETOR || a == Perfis.PERFIL_DIRETOR)) ;
-        //}
+            if (usuarioAtual == null)
+                throw new NegocioException("Não foi possível obter o usuário logado.");
+
+            if (usuarioAtual.PerfilAtual == Perfis.PERFIL_CP || usuarioAtual.PerfilAtual == Perfis.PERFIL_DIRETOR)
+                throw new NegocioException("Este perfil não pode fazer substituição.");
+        }
 
         private async Task ValidaSeTemAulaCriada(AtribuicaoCJ atribuicaoCJ)
         {
