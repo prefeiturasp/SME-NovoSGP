@@ -5,31 +5,35 @@ using SME.SGP.Dominio.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
-namespace SME.SGP.Dominio.Servicos
+namespace SME.SGP.Dominio
 {
-    public class ServicoDeNotasConceitos
+    public class ServicoDeNotasConceitos : IServicoDeNotasConceitos
     {
-        private readonly IRepositorioAtividadeAvaliativa repositorioAtividadeAvaliativa;
-        private readonly IServicoEOL servicoEOL;
         private readonly IConsultasAbrangencia consultasAbrangencia;
-        private readonly IRepositorioNotaTipoValor repositorioNotaTipoValor;
+        private readonly IRepositorioAtividadeAvaliativa repositorioAtividadeAvaliativa;
         private readonly IRepositorioCiclo repositorioCiclo;
+        private readonly IRepositorioConceito repositorioConceito;
+        private readonly IRepositorioNotaParametro repositorioNotaParametro;
+        private readonly IRepositorioNotaTipoValor repositorioNotaTipoValor;
+        private readonly IServicoEOL servicoEOL;
 
         public ServicoDeNotasConceitos(IRepositorioAtividadeAvaliativa repositorioAtividadeAvaliativa,
             IServicoEOL servicoEOL, IConsultasAbrangencia consultasAbrangencia,
-            IRepositorioNotaTipoValor repositorioNotaTipoValor, IRepositorioCiclo repositorioCiclo)
+            IRepositorioNotaTipoValor repositorioNotaTipoValor, IRepositorioCiclo repositorioCiclo,
+            IRepositorioConceito repositorioConceito, IRepositorioNotaParametro repositorioNotaParametro)
         {
             this.repositorioAtividadeAvaliativa = repositorioAtividadeAvaliativa ?? throw new ArgumentNullException(nameof(repositorioAtividadeAvaliativa));
             this.servicoEOL = servicoEOL ?? throw new ArgumentNullException(nameof(servicoEOL));
             this.consultasAbrangencia = consultasAbrangencia ?? throw new ArgumentNullException(nameof(consultasAbrangencia));
             this.repositorioNotaTipoValor = repositorioNotaTipoValor ?? throw new ArgumentNullException(nameof(repositorioNotaTipoValor));
             this.repositorioCiclo = repositorioCiclo ?? throw new ArgumentNullException(nameof(repositorioCiclo));
+            this.repositorioConceito = repositorioConceito ?? throw new ArgumentNullException(nameof(repositorioConceito));
+            this.repositorioNotaParametro = repositorioNotaParametro ?? throw new ArgumentNullException(nameof(repositorioNotaParametro));
         }
 
-        public async void Salvar(IEnumerable<NotasConceitos> notasConceitos, string professorRf, string turmaId)
+        public async Task Salvar(IEnumerable<NotaConceito> notasConceitos, string professorRf, string turmaId)
         {
             var idsAtividadesAvaliativas = notasConceitos.Select(x => x.AtividadeAvaliativaID);
 
@@ -40,41 +44,18 @@ namespace SME.SGP.Dominio.Servicos
             if (alunos == null || !alunos.Any())
                 throw new NegocioException("Não foi encontrado nenhum aluno para a turma informada");
 
-            var tiposPorAvaliacoes = TipoNotaAvaliacoes(atividadesAvaliativas);
-
             ValidarAvaliacoes(idsAtividadesAvaliativas, atividadesAvaliativas, professorRf);
 
-            ValidarEntidade(notasConceitos, alunos, tiposPorAvaliacoes, null, professorRf, null);
-        }
+            var EntidadesSalvar = new List<NotaConceito>();
 
-        private void ValidarEntidade(IEnumerable<NotasConceitos> notasConceitos, IEnumerable<AlunoPorTurmaResposta> alunos, Dictionary<long, TipoNota> tipoNota, IEnumerable<Conceito> conceitos, string professorRf, NotaParametro notaParametro)
-        {
-            notasConceitos.ToList().ForEach(notaConceito =>
+            var notasPorAvaliacoes = notasConceitos.GroupBy(x => x.AtividadeAvaliativaID);
+
+            foreach (var notasPorAvaliacao in notasPorAvaliacoes)
             {
-                notaConceito.Validar(professorRf);
+                var avaliacao = atividadesAvaliativas.FirstOrDefault(x => x.Id == notasPorAvaliacao.Key);
 
-                var aluno = alunos.FirstOrDefault(a => a.CodigoAluno.Equals(notaConceito.AlunoId));
-
-                if (aluno == null)
-                    throw new NegocioException($"Não foi encontrado aluno com o codigo {notaConceito.AlunoId}");
-
-                var notaTipo = tipoNota.FirstOrDefault(x => x.Key == notaConceito.TipoNota);
-
-                if (notaTipo.Value == TipoNota.Nota)
-                    notaConceito.ValidarNota(notaParametro, aluno.NomeAluno);
-                else
-                    notaConceito.ValidarConceitos(conceitos, aluno.NomeAluno);
-            });
-        }
-
-        private void ValidarAvaliacoes(IEnumerable<long> avaliacoesAlteradasIds, IEnumerable<AtividadeAvaliativa> atividadesAvaliativas, string professorRf)
-        {
-            if (atividadesAvaliativas == null || !atividadesAvaliativas.Any())
-                throw new NegocioException("Não foi encontrada nenhuma das avaliações informadas");
-
-            ValidarSeAtividadesAvaliativasExistem(avaliacoesAlteradasIds, atividadesAvaliativas);
-
-            atividadesAvaliativas.ToList().ForEach(atividadeAvaliativa => ValidarDataAvaliacaoECriador(atividadeAvaliativa, professorRf));
+                EntidadesSalvar.AddRange(ValidarEObter(notasPorAvaliacao.ToList(), avaliacao, alunos, professorRf));
+            }
         }
 
         private static void ValidarSeAtividadesAvaliativasExistem(IEnumerable<long> avaliacoesAlteradasIds, IEnumerable<AtividadeAvaliativa> avaliacoes)
@@ -86,39 +67,6 @@ namespace SME.SGP.Dominio.Servicos
                 if (atividadeavaliativa == null)
                     throw new NegocioException($"Não foi encontrada atividade avaliativa com o codigo {avalicaoAlteradaId}");
             });
-        }
-
-        private void ValidarDataAvaliacaoECriador(AtividadeAvaliativa atividadeAvaliativa, string professorRf)
-        {
-            if (atividadeAvaliativa.DataAvaliacao > DateTime.Today)
-                throw new NegocioException("Não é possivel atribuir notas para atividades avaliativas futuras");
-
-            if (!atividadeAvaliativa.ProfessorRf.Equals(professorRf))
-                throw new NegocioException("Somente o professor que criou a atividade avaliativa, pode atribir e ou editar notas");
-        }
-
-        private Dictionary<long, TipoNota> TipoNotaAvaliacoes(IEnumerable<AtividadeAvaliativa> atividadesAvaliativas)
-        {
-            var retorno = new Dictionary<long, TipoNota>();
-
-            atividadesAvaliativas.ToList().ForEach(atividadeAvaliativa =>
-            {
-                var tipoValor = TipoNotaPorAvaliacao(atividadeAvaliativa);
-
-                retorno.Add(atividadeAvaliativa.Id, tipoValor);
-            });
-
-            return retorno;
-        }
-
-        private TipoNota TipoNotaPorAvaliacao(AtividadeAvaliativa atividadeAvaliativa)
-        {
-            var notaTipo = ObterNotaTipo(atividadeAvaliativa.TurmaId, atividadeAvaliativa.DataAvaliacao).Result;
-
-            if (notaTipo == null)
-                throw new NegocioException("Não foi encontrado tipo de nota para a avaliação especificada");
-
-            return notaTipo.TipoNota;
         }
 
         private async Task<NotaTipoValor> ObterNotaTipo(string turmaId, DateTime dataAvaliacao)
@@ -134,6 +82,67 @@ namespace SME.SGP.Dominio.Servicos
                 throw new NegocioException("Não foi encontrado o ciclo da turma informada");
 
             return repositorioNotaTipoValor.ObterPorCicloIdDataAvalicacao(ciclo.Id, dataAvaliacao);
+        }
+
+        private NotaTipoValor TipoNotaPorAvaliacao(AtividadeAvaliativa atividadeAvaliativa)
+        {
+            var notaTipo = ObterNotaTipo(atividadeAvaliativa.TurmaId, atividadeAvaliativa.DataAvaliacao).Result;
+
+            if (notaTipo == null)
+                throw new NegocioException("Não foi encontrado tipo de nota para a avaliação especificada");
+
+            return notaTipo;
+        }
+
+        private void ValidarAvaliacoes(IEnumerable<long> avaliacoesAlteradasIds, IEnumerable<AtividadeAvaliativa> atividadesAvaliativas, string professorRf)
+        {
+            if (atividadesAvaliativas == null || !atividadesAvaliativas.Any())
+                throw new NegocioException("Não foi encontrada nenhuma das avaliações informadas");
+
+            ValidarSeAtividadesAvaliativasExistem(avaliacoesAlteradasIds, atividadesAvaliativas);
+
+            atividadesAvaliativas.ToList().ForEach(atividadeAvaliativa => ValidarDataAvaliacaoECriador(atividadeAvaliativa, professorRf));
+        }
+
+        private void ValidarDataAvaliacaoECriador(AtividadeAvaliativa atividadeAvaliativa, string professorRf)
+        {
+            if (atividadeAvaliativa.DataAvaliacao > DateTime.Today)
+                throw new NegocioException("Não é possivel atribuir notas para atividades avaliativas futuras");
+
+            if (!atividadeAvaliativa.ProfessorRf.Equals(professorRf))
+                throw new NegocioException("Somente o professor que criou a atividade avaliativa, pode atribir e ou editar notas");
+        }
+
+        private IEnumerable<NotaConceito> ValidarEObter(IEnumerable<NotaConceito> notasConceitos, AtividadeAvaliativa atividadeAvaliativa, IEnumerable<AlunoPorTurmaResposta> alunos, string professorRf)
+        {
+            notasConceitos.ToList().ForEach(notaConceito =>
+            {
+                var tipoNota = TipoNotaPorAvaliacao(atividadeAvaliativa);
+
+                notaConceito.Validar(professorRf);
+
+                var aluno = alunos.FirstOrDefault(a => a.CodigoAluno.Equals(notaConceito.AlunoId));
+
+                if (aluno == null)
+                    throw new NegocioException($"Não foi encontrado aluno com o codigo {notaConceito.AlunoId}");
+
+                var notaTipo = notaConceito.TipoNota == tipoNota.Id;
+
+                if (notaTipo)
+                {
+                    var notaParametro = repositorioNotaParametro.ObterPorDataAvaliacao(atividadeAvaliativa.DataAvaliacao);
+                    notaConceito.ValidarNota(notaParametro, aluno.NomeAluno);
+                }
+                else
+                {
+                    var conceitos = repositorioConceito.ObterPorDataAvaliacao(atividadeAvaliativa.DataAvaliacao);
+                    notaConceito.ValidarConceitos(conceitos, aluno.NomeAluno);
+                }
+
+                notaConceito.TipoNota = tipoNota.Id;
+            });
+
+            return notasConceitos;
         }
     }
 }

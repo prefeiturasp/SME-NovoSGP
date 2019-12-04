@@ -1,23 +1,28 @@
-﻿
-using SME.SGP.Dominio.Entidades;
-using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 
 namespace SME.SGP.Dominio
 {
-    public class NotasConceitos : EntidadeBase
+    public class NotaConceito : EntidadeBase
     {
-        public long AtividadeAvaliativaID { get; set; }
         public string AlunoId { get; set; }
-        public int Nota { get; set; }
+        public long AtividadeAvaliativaID { get; set; }
         public long Conceito { get; set; }
+        public double Nota { get; set; }
         public long TipoNota { get; set; }
-        
-        public void Validar(string alteradorRf)
+
+        public void Validar(string professorRf)
         {
-            if (!CriadoRF.Equals(alteradorRf))
+            if (!CriadoRF.Equals(professorRf))
                 throw new NegocioException("Não e possivel alterar a nota atribuida por outro professor");
+        }
+
+        public void ValidarConceitos(IEnumerable<Conceito> conceitos, string nomeAluno)
+        {
+            var conceito = conceitos.FirstOrDefault(c => c.Id == Conceito);
+
+            if (conceito == null || (!conceito.Ativo && Id == 0))
+                throw new NegocioException($"O conceito informado para o aluno {nomeAluno} não existe");
         }
 
         public void ValidarNota(NotaParametro notaParametro, string nomeAluno)
@@ -33,14 +38,5 @@ namespace SME.SGP.Dominio
             if (resto > 0)
                 throw new NegocioException($"A nota informada para o aluno {nomeAluno} não possui um valor valido");
         }
-
-        public void ValidarConceitos(IEnumerable<Conceito> conceitos, string nomeAluno)
-        {
-            var conceito = conceitos.FirstOrDefault(c => c.Id == Conceito);
-
-            if (conceito == null || (!conceito.Ativo && Id == 0))
-                throw new NegocioException($"O conceito informado para o aluno {nomeAluno} não existe");            
-        }
-
     }
 }
