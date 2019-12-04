@@ -41,12 +41,12 @@ const PlanoAula = (props) => {
   const [habilitaEscolhaObjetivos, setEscolhaHabilitaObjetivos] = useState(false);
 
   useEffect(() => {
-    if (planoAula && planoAula.id > 0) {
-      setDesabilitarCampos(!permissoesTela.podeAlterar || somenteConsulta);
-    } else {
-      setDesabilitarCampos(!permissoesTela.podeIncluir || somenteConsulta);
-    }
+    verificaHabilitarDesabilitarCampos();
   }, [permissoesTela])
+
+  useEffect(() => {
+    verificaHabilitarDesabilitarCampos();
+  }, [planoAula.migrado])
 
   useEffect(() => {
     setEscolhaHabilitaObjetivos(planoAula.objetivosAprendizagemAula.length > 0)
@@ -56,6 +56,14 @@ const PlanoAula = (props) => {
   useEffect(() => {
     setMaterias(listaMaterias)
   }, [listaMaterias])
+
+  const verificaHabilitarDesabilitarCampos = () => {
+    if (planoAula && planoAula.id > 0) {
+      setDesabilitarCampos(!permissoesTela.podeAlterar || somenteConsulta || planoAula.migrado);
+    } else {
+      setDesabilitarCampos(!permissoesTela.podeIncluir || somenteConsulta || planoAula.migrado);
+    }
+  }
 
   const setObjetivos = objetivos => {
     planoAula.objetivosAprendizagemAula = [...objetivos];

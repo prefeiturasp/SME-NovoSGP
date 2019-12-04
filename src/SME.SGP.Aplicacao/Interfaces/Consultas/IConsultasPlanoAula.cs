@@ -9,5 +9,7 @@ namespace SME.SGP.Aplicacao
     public interface IConsultasPlanoAula
     {
         Task<PlanoAulaRetornoDto> ObterPlanoAulaPorAula(long aulaId);
+
+        IEnumerable<PlanoAulaExistenteRetornoDto> ValidarPlanoAulaExistente(FiltroPlanoAulaExistenteDto filtroPlanoAulaExistenteDto);
     }
 }

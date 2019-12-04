@@ -1,4 +1,4 @@
-﻿using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Configuration;
 using Moq;
 using SME.SGP.Aplicacao;
 using SME.SGP.Aplicacao.Integracoes;
@@ -25,6 +25,7 @@ namespace SME.SGP.Dominio.Servicos.Teste
         private readonly Mock<IConsultasPeriodoEscolar> consultasPeriodoEscolar;
         private readonly Mock<IConsultasPeriodoEscolar> consultasPeriodosEscolar;
         private readonly Mock<IRepositorioAbrangencia> repositorioAbrangencia;
+        private readonly Mock<IRepositorioAtividadeAvaliativa> repositorioAtividadeAvaliativa;
         private readonly Mock<IRepositorioAula> repositorioAula;
         private readonly Mock<IRepositorioTipoCalendario> repositorioTipoCalendario;
         private readonly IServicoAula servicoAula;
@@ -59,7 +60,7 @@ namespace SME.SGP.Dominio.Servicos.Teste
             servicoFrequencia = new Mock<IServicoFrequencia>();
             servicoUsuario = new Mock<IServicoUsuario>();
             configuration = new Mock<IConfiguration>();
-
+            repositorioAtividadeAvaliativa = new Mock<IRepositorioAtividadeAvaliativa>();
             servicoAula = new ServicoAula(repositorioAula.Object, servicoEol.Object,
                                          repositorioTipoCalendario.Object, servicoDiaLetivo.Object,
                                          consultasGrade.Object, consultasPeriodoEscolar.Object,
@@ -67,7 +68,7 @@ namespace SME.SGP.Dominio.Servicos.Teste
                                          servicoNotificacao.Object, consultaAbrangencia.Object,
                                          comandosWorkflowAprovacao.Object,
                                          comandosPlanoAula.Object, servicoFrequencia.Object,
-                                         configuration.Object);
+                                         configuration.Object, repositorioAtividadeAvaliativa.Object);
 
             Setup();
         }
