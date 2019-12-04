@@ -19,20 +19,21 @@ namespace SME.SGP.Aplicacao
             this.repositorioTipoAvaliacao = repositorioTipoAvaliacao ?? throw new System.ArgumentNullException(nameof(repositorioTipoAvaliacao));
         }
 
-        public async Task<PaginacaoResultadoDto<TipoAvaliacaoDto>> ListarPaginado(string nome)
+        public async Task<PaginacaoResultadoDto<TipoAvaliacaoCompletaDto>> ListarPaginado(string nome)
         {
             return MapearParaDtoComPaginacao(await repositorioTipoAvaliacao.ListarPaginado(nome, Paginacao));
         }
 
-        public TipoAtividadeAvaliativaCompletaDto ObterPorId(long id)
+        public TipoAvaliacaoCompletaDto ObterPorId(long id)
         {
             return MapearParaDto(repositorioTipoAvaliacao.ObterPorId(id));
         }
 
-        private TipoAtividadeAvaliativaCompletaDto MapearParaDto(TipoAvaliacao tipoAvaliacao)
+        private TipoAvaliacaoCompletaDto MapearParaDto(TipoAvaliacao tipoAvaliacao)
         {
-            return tipoAvaliacao == null ? null : new TipoAtividadeAvaliativaCompletaDto
+            return tipoAvaliacao == null ? null : new TipoAvaliacaoCompletaDto
             {
+                Id = tipoAvaliacao.Id,
                 Nome = tipoAvaliacao.Nome,
                 Descricao = tipoAvaliacao.Descricao,
                 Situacao = tipoAvaliacao.Situacao,
@@ -45,13 +46,13 @@ namespace SME.SGP.Aplicacao
             };
         }
 
-        private PaginacaoResultadoDto<TipoAvaliacaoDto> MapearParaDtoComPaginacao(PaginacaoResultadoDto<TipoAvaliacao> tipoAvaliacaoPaginado)
+        private PaginacaoResultadoDto<TipoAvaliacaoCompletaDto> MapearParaDtoComPaginacao(PaginacaoResultadoDto<TipoAvaliacao> tipoAvaliacaoPaginado)
         {
             if (tipoAvaliacaoPaginado == null)
             {
                 tipoAvaliacaoPaginado = new PaginacaoResultadoDto<TipoAvaliacao>();
             }
-            return new PaginacaoResultadoDto<TipoAvaliacaoDto>
+            return new PaginacaoResultadoDto<TipoAvaliacaoCompletaDto>
             {
                 Items = MapearTipoAvaliacaoDtoaParaDto(tipoAvaliacaoPaginado.Items),
                 TotalPaginas = tipoAvaliacaoPaginado.TotalPaginas,
@@ -59,7 +60,7 @@ namespace SME.SGP.Aplicacao
             };
         }
 
-        private IEnumerable<TipoAvaliacaoDto> MapearTipoAvaliacaoDtoaParaDto(IEnumerable<TipoAvaliacao> items)
+        private IEnumerable<TipoAvaliacaoCompletaDto> MapearTipoAvaliacaoDtoaParaDto(IEnumerable<TipoAvaliacao> items)
         {
             return items?.Select(c => MapearParaDto(c));
         }
