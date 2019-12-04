@@ -36,12 +36,12 @@ const FrequenciaPlanoAula = () => {
   const { turmaSelecionada, ehProfessor, ehProfessorCj } = usuario;
   const ehEja =
     turmaSelecionada &&
-    String(turmaSelecionada.modalidade) === String(modalidade.EJA)
+      String(turmaSelecionada.modalidade) === String(modalidade.EJA)
       ? true
       : false;
   const ehMedio =
     turmaSelecionada &&
-    String(turmaSelecionada.modalidade) === String(modalidade.ENSINO_MEDIO)
+      String(turmaSelecionada.modalidade) === String(modalidade.ENSINO_MEDIO)
       ? true
       : false;
   const turmaId = turmaSelecionada ? turmaSelecionada.turma : 0;
@@ -68,6 +68,7 @@ const FrequenciaPlanoAula = () => {
   const [modoEdicaoPlanoAula, setModoEdicaoPlanoAula] = useState(false);
   const [ehRegencia, setEhRegencia] = useState(false);
   const [aula, setAula] = useState(undefined);
+  const [auditoriaPlano, setAuditoriaPlano] = useState([]);
   const [planoAula, setPlanoAula] = useState({
     aulaId: 0,
     id: 0,
@@ -168,10 +169,18 @@ const FrequenciaPlanoAula = () => {
         dadosPlano.temObjetivos =
           (disciplinaSelecionada.regencia || ehProfessor) && !ehEja;
         setPlanoAula(dadosPlano);
+        const audPlano = {
+          criadoEm: dadosPlano.criadoEm,
+          criadoPor: dadosPlano.criadoPor,
+          alteradoEm: dadosPlano.alteradoEm,
+          alteradoPor: dadosPlano.alteradoPor,
+        }
+        setAuditoriaPlano(audPlano)
       } else {
         setModoEdicaoPlanoAula(false);
       }
     }
+
     if (disciplinaSelecionada.regencia || ehProfessor || ehProfessorCj) {
       let disciplinas = {};
       if (disciplinaSelecionada.regencia) {
@@ -520,16 +529,16 @@ const FrequenciaPlanoAula = () => {
       {usuario && turmaSelecionada.turma ? (
         ''
       ) : (
-        <Alert
-          alerta={{
-            tipo: 'warning',
-            id: 'frequencia-selecione-turma',
-            mensagem: 'Você precisa escolher uma turma.',
-            estiloTitulo: { fontSize: '18px' },
-          }}
-          className="mb-2"
-        />
-      )}
+          <Alert
+            alerta={{
+              tipo: 'warning',
+              id: 'frequencia-selecione-turma',
+              mensagem: 'Você precisa escolher uma turma.',
+              estiloTitulo: { fontSize: '18px' },
+            }}
+            className="mb-2"
+          />
+        )}
       <Cabecalho pagina="Frequência/Plano de aula" />
       <Card>
         <div className="col-md-12">
@@ -626,12 +635,12 @@ const FrequenciaPlanoAula = () => {
                           alteradoEm={auditoria.alteradoEm}
                         />
                       ) : (
-                        ''
-                      )}
+                          ''
+                        )}
                     </>
                   ) : (
-                    ''
-                  )}
+                      ''
+                    )}
                 </CardCollapse>
               </div>
               <div className="col-sm-12 col-md-12 col-lg-12">
@@ -649,12 +658,13 @@ const FrequenciaPlanoAula = () => {
                   permissoesTela={permissoesTela}
                   somenteConsulta={somenteConsulta}
                   temObjetivos={temObjetivos}
+                  auditoria={auditoriaPlano}
                 />
               </div>
             </div>
           ) : (
-            ''
-          )}
+              ''
+            )}
         </div>
         <ModalMultiLinhas
           key="errosBimestre"
