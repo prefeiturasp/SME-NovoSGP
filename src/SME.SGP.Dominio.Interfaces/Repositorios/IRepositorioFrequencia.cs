@@ -10,8 +10,8 @@ namespace SME.SGP.Dominio.Interfaces
 
         RegistroFrequencia ObterRegistroFrequenciaPorAulaId(long aulaId);
 
-        IEnumerable<RegistroFrequenciaFaltanteDto> ObterTurmasSemRegistroDeFrequencia();
-
         Task ExcluirFrequenciaAula(long aulaId);
+
+        IEnumerable<AulasPorTurmaDisciplinaDto> ObterAulasSemRegistroFrequencia(string turmaId, string disciplinaId);
     }
 }

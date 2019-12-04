@@ -1,4 +1,5 @@
-﻿using SME.SGP.Dominio.Interfaces;
+﻿using Microsoft.Extensions.Configuration;
+using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
@@ -11,71 +12,82 @@ namespace SME.SGP.Dominio.Servicos
     {
         private readonly IRepositorioParametrosSistema repositorioParametrosSistema;
         private readonly IRepositorioAula repositorioAula;
-        private readonly IRepositorioFrequencia repositorioFrequencia;
         private readonly IServicoNotificacao servicoNotificacao;
         private readonly IRepositorioNotificacaoFrequencia repositorioNotificacaoFrequencia;
+        private readonly IRepositorioFrequencia repositorioFrequencia;
+        private readonly IConfiguration configuration;
 
         public ServicoNotificacaoFrequencia(IRepositorioNotificacaoFrequencia repositorioNotificacaoFrequencia,
                                             IRepositorioParametrosSistema repositorioParametrosSistema,
-                                            IRepositorioAula repositorioAula,
                                             IRepositorioFrequencia repositorioFrequencia,
-                                            IServicoNotificacao servicoNotificacao)
+                                            IRepositorioAula repositorioAula,
+                                            IServicoNotificacao servicoNotificacao,
+                                            IConfiguration configuration)
         {
             this.repositorioNotificacaoFrequencia = repositorioNotificacaoFrequencia ?? throw new ArgumentNullException(nameof(repositorioNotificacaoFrequencia));
             this.repositorioParametrosSistema = repositorioParametrosSistema ?? throw new ArgumentNullException(nameof(repositorioParametrosSistema));
             this.repositorioAula = repositorioAula ?? throw new ArgumentNullException(nameof(repositorioAula));
-            this.repositorioFrequencia = repositorioFrequencia ?? throw new ArgumentNullException(nameof(repositorioFrequencia));
             this.servicoNotificacao = servicoNotificacao ?? throw new ArgumentNullException(nameof(servicoNotificacao));
+            this.repositorioFrequencia = repositorioFrequencia ?? throw new ArgumentNullException(nameof(repositorioFrequencia));
+            this.configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
         }
 
         public void ExecutaNotificacaoFrequencia()
         {
-            var turmasSemRegistro = repositorioFrequencia.ObterTurmasSemRegistroDeFrequencia();
-
-            NotificarAusenciaFrequencia(turmasSemRegistro, TipoNotificacaoFrequencia.Professor);
-            NotificarAusenciaFrequencia(turmasSemRegistro, TipoNotificacaoFrequencia.GestorUe);
-            NotificarAusenciaFrequencia(turmasSemRegistro, TipoNotificacaoFrequencia.SupervisorUe);
+            NotificarAusenciaFrequencia(TipoNotificacaoFrequencia.Professor);
+            NotificarAusenciaFrequencia(TipoNotificacaoFrequencia.GestorUe);
+            NotificarAusenciaFrequencia(TipoNotificacaoFrequencia.SupervisorUe);
         }
 
-        private void NotificarAusenciaFrequencia(IEnumerable<RegistroFrequenciaFaltanteDto> turmasSemRegistro, TipoNotificacaoFrequencia tipo)
+        private void NotificarAusenciaFrequencia(TipoNotificacaoFrequencia tipo)
         {
+            // Busca registro de aula sem frequencia e sem notificação do tipo
+            var turmasSemRegistro = repositorioNotificacaoFrequencia.ObterTurmasSemRegistroDeFrequencia(tipo);
+
             // Busca parametro do sistema de quantidade de aulas sem frequencia para notificação
             var qtdAulasNotificacao = QuantidadeAulasParaNotificacao(tipo);
 
-            // Filtra turmas que atendem a regra de numero de aulas sem registro de frequencia
-            var turmasNotificacao = turmasSemRegistro.Where(c => c.QuantidadeAulasSemFrequencia >= qtdAulasNotificacao);
-
-            foreach(var turmaSemRegistro in turmasNotificacao)
+            foreach (var turma in turmasSemRegistro)
             {
-                // Busca Professor/Gestor/Supervisor da Turma ou Ue
-                var usuarioId = tipo == TipoNotificacaoFrequencia.Professor ? BuscaProfessorAula(turmaSemRegistro.CodigoTurma, turmaSemRegistro.DisciplinaId) 
-                                : tipo == TipoNotificacaoFrequencia.GestorUe ? BuscaGestorUe(turmaSemRegistro.CodigoUe)
-                                : BuscaSupervisorUe(turmaSemRegistro.CodigoUe);
+                turma.Aulas = repositorioFrequencia.ObterAulasSemRegistroFrequencia(turma.CodigoTurma, turma.DisciplinaId);
 
-
-                if (!repositorioNotificacaoFrequencia.UsuarioNotificado(usuarioId, tipo))
+                if (turma.Aulas.Count() >= qtdAulasNotificacao)
                 {
-                    NotificaUsuario(usuarioId, turmaSemRegistro, tipo);
+                    // Busca Professor/Gestor/Supervisor da Turma ou Ue
+                    var usuarios = BuscaUsuarioNotificacao(turma, tipo);
+
+                    foreach(var usuarioId in usuarios)
+                    {
+                        NotificaUsuario(usuarioId, turma, tipo);
+                    }
                 }
             }
+
         }
 
-        private long BuscaSupervisorUe(string codigoUe)
+        private IEnumerable<long> BuscaUsuarioNotificacao(RegistroFrequenciaFaltanteDto turma, TipoNotificacaoFrequencia tipo)
+        {
+            return tipo == TipoNotificacaoFrequencia.Professor ? BuscaProfessorAula(turma.CodigoTurma, turma.DisciplinaId)
+                        : tipo == TipoNotificacaoFrequencia.GestorUe ? BuscaGestorUe(turma.CodigoUe)
+                        : BuscaSupervisorUe(turma.CodigoUe);
+        }
+
+        private IEnumerable<long> BuscaSupervisorUe(string codigoUe)
         {
             // TODO Buscar supervisor da Ue
-            return 0;
+            return null;
         }
 
-        private long BuscaGestorUe(string codigoUe)
+        private IEnumerable<long> BuscaGestorUe(string codigoUe)
         {
             // TODO Buscar gestor da Ue
-            return 0;
+            return null;
         }
 
-        private long BuscaProfessorAula(string codigoTurma, string disciplinaId)
+        private IEnumerable<long> BuscaProfessorAula(string codigoTurma, string disciplinaId)
         {
             // TODO Buscar professor por turma e disciplina
-            return 0;
+            return null;
         }
 
         private int QuantidadeAulasParaNotificacao(TipoNotificacaoFrequencia tipo)
@@ -87,9 +99,21 @@ namespace SME.SGP.Dominio.Servicos
 
         private void NotificaUsuario(long usuarioId, RegistroFrequenciaFaltanteDto turmaSemRegistro, TipoNotificacaoFrequencia tipo)
         {
-            var tituloMensagem = "Notificação de Frequência não regitrada";
+            var tituloMensagem = $"Frequência da turma {turmaSemRegistro.NomeTurma} - {turmaSemRegistro.DisciplinaId} ({turmaSemRegistro.NomeUe})";
             StringBuilder mensagemUsuario = new StringBuilder();
-            mensagemUsuario.Append($"A turma a seguir esta a <b>{turmaSemRegistro.QuantidadeAulasSemFrequencia} aulas</b> sem registro de frequência");
+            mensagemUsuario.Append($"A turma a seguir esta a <b>{turmaSemRegistro.Aulas.Count} aulas</b> sem registro de frequência da turma");
+            mensagemUsuario.Append("<br />");
+            mensagemUsuario.Append($"<br />Escola: <b>{turmaSemRegistro.NomeUe}</b>");
+            mensagemUsuario.Append($"<br />Turma: <b>{turmaSemRegistro.NomeTurma}</b>");
+            mensagemUsuario.Append($"<br />Disciplina: <b>{turmaSemRegistro.DisciplinaId}</b>");
+            mensagemUsuario.Append($"<br />Aulas:");
+
+            foreach(var aula in turmaSemRegistro.Aulas)
+            {
+                mensagemUsuario.Append($"<br />   Datas da aula: {aula.DataAula}");
+            }
+            var hostAplicacao = configuration["UrlFrontEnd"];
+            mensagemUsuario.Append($"<a href='{hostAplicacao}/diario-classe/frequencia-plano-aula'>Clique aqui para regularizar.</a>");
 
             var notificacao = new Notificacao()
             {

@@ -137,6 +137,7 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IRepositorioDre, RepositorioDre>();
             services.TryAddScoped<IRepositorioUe, RepositorioUe>();
             services.TryAddScoped<IRepositorioTurma, RepositorioTurma>();
+            services.TryAddScoped<IRepositorioNotificacaoFrequencia, RepositorioNotificacaoFrequencia>();
         }
 
         private static void RegistrarServicos(IServiceCollection services)
