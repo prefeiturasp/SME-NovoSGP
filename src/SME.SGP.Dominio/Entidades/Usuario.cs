@@ -8,13 +8,7 @@ namespace SME.SGP.Dominio
     public class Usuario : EntidadeBase
     {
         private const string MENSAGEM_ERRO_USUARIO_SEM_ACESSO = "Usuário sem perfis de acesso.";
-        private readonly Guid PERFIL_AD = Guid.Parse("45E1E074-37D6-E911-ABD6-F81654FE895D");
-        private readonly Guid PERFIL_CJ = Guid.Parse("41e1e074-37d6-e911-abd6-f81654fe895d");
-        private readonly Guid PERFIL_CP = Guid.Parse("44E1E074-37D6-E911-ABD6-F81654FE895D");
-        private readonly Guid PERFIL_DIRETOR = Guid.Parse("46E1E074-37D6-E911-ABD6-F81654FE895D");
-        private readonly Guid PERFIL_PROFESSOR = Guid.Parse("40E1E074-37D6-E911-ABD6-F81654FE895D");
-        private readonly Guid PERFIL_SECRETARIO = Guid.Parse("43E1E074-37D6-E911-ABD6-F81654FE895D");
-        private readonly Guid PERFIL_SUPERVISOR = Guid.Parse("4EE1E074-37D6-E911-ABD6-F81654FE895D");
+
         public string CodigoRf { get; set; }
         public string Email { get; set; }
         public DateTime? ExpiracaoRecuperacaoSenha { get; set; }
@@ -75,12 +69,12 @@ namespace SME.SGP.Dominio
 
         public bool EhProfessor()
         {
-            return PerfilAtual == PERFIL_PROFESSOR;
+            return PerfilAtual == Dominio.Perfis.PERFIL_PROFESSOR;
         }
 
         public bool EhProfessorCj()
         {
-            return PerfilAtual == PERFIL_CJ;
+            return PerfilAtual == Dominio.Perfis.PERFIL_CJ;
         }
 
         public void FinalizarRecuperacaoSenha()
@@ -120,10 +114,10 @@ namespace SME.SGP.Dominio
             {
                 throw new NegocioException(MENSAGEM_ERRO_USUARIO_SEM_ACESSO);
             }
-            var possuiPerfilPrioritario = Perfis.Any(c => c.CodigoPerfil == PERFIL_PROFESSOR);
+            var possuiPerfilPrioritario = Perfis.Any(c => c.CodigoPerfil == Dominio.Perfis.PERFIL_PROFESSOR);
             if (possuiPerfilPrioritario)
             {
-                return PERFIL_PROFESSOR;
+                return Dominio.Perfis.PERFIL_PROFESSOR;
             }
             return Perfis.FirstOrDefault().CodigoPerfil;
         }
@@ -137,7 +131,7 @@ namespace SME.SGP.Dominio
         {
             if (evento.TipoEvento.LocalOcorrencia == EventoLocalOcorrencia.DRE)
             {
-                if (PerfilAtual != PERFIL_DIRETOR && PerfilAtual != PERFIL_AD && PerfilAtual != PERFIL_CP)
+                if (PerfilAtual != Dominio.Perfis.PERFIL_DIRETOR && PerfilAtual != Dominio.Perfis.PERFIL_AD && PerfilAtual != Dominio.Perfis.PERFIL_CP)
                     throw new NegocioException("Você não tem permissão para alterar este evento.");
             }
         }
@@ -194,13 +188,13 @@ namespace SME.SGP.Dominio
         {
             var perfilAtual = Perfis.FirstOrDefault(a => a.CodigoPerfil == PerfilAtual);
             if (perfilAtual.Tipo == TipoPerfil.UE)
-                return (PerfilAtual == PERFIL_DIRETOR || PerfilAtual == PERFIL_AD || PerfilAtual == PERFIL_CP || PerfilAtual == PERFIL_SECRETARIO);
+                return (PerfilAtual == Dominio.Perfis.PERFIL_DIRETOR || PerfilAtual == Dominio.Perfis.PERFIL_AD || PerfilAtual == Dominio.Perfis.PERFIL_CP || PerfilAtual == Dominio.Perfis.PERFIL_SECRETARIO);
             else return true;
         }
 
         public bool PossuiPerfilCJ()
             => Perfis != null &&
-                Perfis.Any(c => c.CodigoPerfil == PERFIL_CJ);
+                Perfis.Any(c => c.CodigoPerfil == Dominio.Perfis.PERFIL_CJ);
 
         public bool PossuiPerfilDre()
         {
@@ -237,7 +231,7 @@ namespace SME.SGP.Dominio
 
         public bool TemPerfilSupervisorOuDiretor()
         {
-            return (PerfilAtual == PERFIL_DIRETOR || PerfilAtual == PERFIL_SUPERVISOR);
+            return (PerfilAtual == Dominio.Perfis.PERFIL_DIRETOR || PerfilAtual == Dominio.Perfis.PERFIL_SUPERVISOR);
         }
 
         public bool TokenRecuperacaoSenhaEstaValido()
