@@ -100,10 +100,10 @@ namespace SME.SGP.Dominio
             {
                 throw new NegocioException(MENSAGEM_ERRO_USUARIO_SEM_ACESSO);
             }
-            var possuiPerfilCJ = Perfis.Any(c => c.CodigoPerfil == PERFIL_CJ);
+            var possuiPerfilCJ = Perfis.Any(c => c.CodigoPerfil == Dominio.Perfis.PERFIL_CJ);
             if (possuiPerfilCJ)
             {
-                return PERFIL_CJ;
+                return Dominio.Perfis.PERFIL_CJ;
             }
             return Perfis.FirstOrDefault().CodigoPerfil;
         }
