@@ -122,7 +122,7 @@ namespace SME.SGP.Dominio.Servicos
                     var contagemAulasDisciplina = aulasDia.Count(a => a.DisciplinaId == aula.DisciplinaId);
 
                     if((contagemAulasDisciplina + aula.Quantidade) > 2)
-                        throw new NegocioException("Abrangência da turma não localizada.");
+                        throw new NegocioException("Quantidade de aulas por dia/disciplina excedido.");
                 }
 
                 var abrangencia = await consultasAbrangencia.ObterAbrangenciaTurma(aula.TurmaId);
