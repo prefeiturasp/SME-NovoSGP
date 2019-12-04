@@ -2,6 +2,7 @@
 using SME.SGP.Aplicacao.Servicos;
 using SME.SGP.Dominio.Interfaces;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -28,21 +29,42 @@ namespace SME.SGP.Dominio.Servicos
             this.repositorioAula = repositorioAula ?? throw new ArgumentNullException(nameof(repositorioAula));
         }
 
-        public async Task Salvar(AtribuicaoCJ atribuicaoCJ)
+        public async Task Salvar(AtribuicaoCJ atribuicaoCJ, IEnumerable<AtribuicaoCJ> atribuicoesAtuais = null)
         {
             var professorValidoNoEol = servicoEOL.ValidarProfessor(atribuicaoCJ.ProfessorRf);
-
             if (!professorValidoNoEol)
                 throw new NegocioException("Este professor não é válido para ser CJ.");
 
             ValidaComponentesCurricularesQueNaoPodemSerSubstituidos(atribuicaoCJ);
-            ValidaSeTemAulaCriada(atribuicaoCJ);
 
+            if (atribuicoesAtuais == null)
+                atribuicoesAtuais = await repositorioAtribuicaoCJ.ObterPorFiltros(atribuicaoCJ.Modalidade, atribuicaoCJ.TurmaId,
+                    atribuicaoCJ.UeId, 0, atribuicaoCJ.ProfessorRf, string.Empty);
+
+            var atribuicaoJaCadastrada = atribuicoesAtuais.FirstOrDefault(a => a.DisciplinaId == atribuicaoCJ.DisciplinaId);
+
+            if (atribuicaoJaCadastrada == null)
+            {
+                if (!atribuicaoCJ.Substituir)
+                    return;
+            }
+            else
+            {
+                if (atribuicaoCJ.Substituir == atribuicaoJaCadastrada.Substituir)
+                    return;
+
+                atribuicaoJaCadastrada.Substituir = atribuicaoCJ.Substituir;
+                atribuicaoCJ = atribuicaoJaCadastrada;
+
+                if (!atribuicaoCJ.Substituir)
+                    await ValidaSeTemAulaCriada(atribuicaoCJ);
+            }
+            //ValidaSePerfilPodeIncluir(atribuicaoCJ);
             await repositorioAtribuicaoCJ.SalvarAsync(atribuicaoCJ);
-            TratarAbrangencia(atribuicaoCJ);
+            TratarAbrangencia(atribuicaoCJ, atribuicoesAtuais);
         }
 
-        private async void TratarAbrangencia(AtribuicaoCJ atribuicaoCJ)
+        private async void TratarAbrangencia(AtribuicaoCJ atribuicaoCJ, IEnumerable<AtribuicaoCJ> atribuicoesAtuais)
         {
             var abrangenciasAtuais = await repositorioAbrangencia.ObterAbrangenciaSintetica(atribuicaoCJ.ProfessorRf, Perfis.PERFIL_CJ, atribuicaoCJ.TurmaId);
 
@@ -63,9 +85,8 @@ namespace SME.SGP.Dominio.Servicos
             {
                 if (abrangenciasAtuais != null && abrangenciasAtuais.Any())
                 {
-                    var atribuicoesAtuais = await repositorioAtribuicaoCJ.ObterPorFiltros(atribuicaoCJ.Modalidade, atribuicaoCJ.TurmaId, atribuicaoCJ.UeId, atribuicaoCJ.DisciplinaId, atribuicaoCJ.ProfessorRf, string.Empty);
-
-                    servicoAbrangencia.RemoverAbrangencias(abrangenciasAtuais.Select(a => a.Id).ToArray());
+                    if (!atribuicoesAtuais.Any(a => a.Id != atribuicaoCJ.Id && a.Substituir == true))
+                        servicoAbrangencia.RemoverAbrangencias(abrangenciasAtuais.Select(a => a.Id).ToArray());
                 }
             }
         }
@@ -83,7 +104,16 @@ namespace SME.SGP.Dominio.Servicos
             }
         }
 
-        private async void ValidaSeTemAulaCriada(AtribuicaoCJ atribuicaoCJ)
+        //private async Task ValidaSePerfilPodeIncluir(AtribuicaoCJ atribuicaoCJ)
+        //{
+        //    var perfisEol = await servicoEOL.ObterPerfisPorLogin(atribuicaoCJ.ProfessorRf);
+        //    if (perfisEol == null)
+        //        throw new NegocioException($"Não foi possível obter os perfis do professor {atribuicaoCJ.ProfessorRf}");
+
+        //    if (perfisEol.Perfis.Any(a => a == Perfis.PERFIL_DIRETOR || a == Perfis.PERFIL_DIRETOR)) ;
+        //}
+
+        private async Task ValidaSeTemAulaCriada(AtribuicaoCJ atribuicaoCJ)
         {
             if (atribuicaoCJ.Id > 0 && !atribuicaoCJ.Substituir)
             {
