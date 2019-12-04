@@ -1,95 +1,45 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SME.SGP.Api.Filtros;
+using SME.SGP.Aplicacao;
+using SME.SGP.Dominio;
 using SME.SGP.Infra;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace SME.SGP.Api.Controllers
 {
     [ApiController]
     [Route("api/v1/atribuicoes/cjs")]
     [Authorize("Bearer")]
+    [ValidaDto]
     public class AtribuicaoCJController : ControllerBase
     {
         [HttpGet]
-        [ValidaDto]
-        public IActionResult Get([FromQuery]AtribuicaoCJListaFiltroDto atribuicaoCJListaFiltroDto)
+        [ProducesResponseType(typeof(IEnumerable<AtribuicaoCJListaRetornoDto>), 200)]
+        [ProducesResponseType(204)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        public async Task<IActionResult> Get([FromQuery]AtribuicaoCJListaFiltroDto atribuicaoCJListaFiltroDto, [FromServices]IConsultasAtribuicaoCJ consultasAtribuicaoCJ)
         {
-            List<AtribuicaoCJListaRetornoDto> retorno = new List<AtribuicaoCJListaRetornoDto>();
-            retorno.Add(new AtribuicaoCJListaRetornoDto()
-            {
-                Id = 1,
-                ComponentesCurriculares = new string[] { "Matemática" },
-                Modalidade = "Fundamental",
-                Turma = "1A"
-            });
-
-            retorno.Add(new AtribuicaoCJListaRetornoDto()
-            {
-                Id = 2,
-                ComponentesCurriculares = new string[] { "Matemática", "Geografia", "História" },
-                Modalidade = "EJA",
-                Turma = "4A"
-            });
-
-            retorno.Add(new AtribuicaoCJListaRetornoDto()
-            {
-                Id = 3,
-                ComponentesCurriculares = new string[] { "Ciências" },
-                Modalidade = "Ensino Médio",
-                Turma = "3C"
-            });
-
-            return Ok(retorno);
+            return Ok(await consultasAtribuicaoCJ.Listar(atribuicaoCJListaFiltroDto));
         }
 
-        [HttpGet("ues/{ueId}/professores/{professorId}")]
-        public IActionResult ObterAtribuicaoDeProfessores([FromQuery]AtribuicaoCJListaTitularesFiltroDto atribuicaoCJListaTitularesFiltroDto)
+        [HttpGet("ues/{ueId}/modalidades/{modalidadeId}/turmas/{turmaId}/professores/{professorRf}/")]
+        [ProducesResponseType(typeof(AtribuicaoCJTitularesRetornoDto), 200)]
+        [ProducesResponseType(204)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        public async Task<IActionResult> ObterAtribuicaoDeProfessores(string ueId, string turmaId,
+            string professorRf, Modalidade modalidadeId, [FromServices] IConsultasAtribuicaoCJ consultasAtribuicaoCJ)
         {
-            var retorno = new AtribuicaoCJTitularesRetornoDto()
-            {
-                AlteradoEm = new System.DateTime(2019, 12, 1),
-                AlteradoPor = "Marcos Lobo",
-                AlteradoRF = "123",
-                CriadoEm = new System.DateTime(2019, 11, 1),
-                CriadoPor = "Marcos Lobo",
-                CriadoRF = "123"
-            };
-
-            retorno.Itens.Add(new AtribuicaoCJTitularesRetornoItemDto()
-            {
-                ComponenteCurricular = "Matemática",
-                ComponenteCurricularId = "1",
-                ProfessorTitular = "Sávio da Silveira Santos",
-                Substituir = true,
-                ProfessorTitularRf = "123"
-            });
-
-            retorno.Itens.Add(new AtribuicaoCJTitularesRetornoItemDto()
-            {
-                ComponenteCurricular = "Geografia",
-                ComponenteCurricularId = "2",
-                ProfessorTitular = "João Paulo da La Penha",
-                Substituir = false,
-                ProfessorTitularRf = "12"
-            });
-
-            retorno.Itens.Add(new AtribuicaoCJTitularesRetornoItemDto()
-            {
-                ComponenteCurricular = "História",
-                ComponenteCurricularId = "3",
-                ProfessorTitular = "Iranilda Junqueira",
-                Substituir = false,
-                ProfessorTitularRf = "111"
-            });
-
-            return Ok(retorno);
+            return Ok(await consultasAtribuicaoCJ.ObterProfessoresTitularesECjs(ueId, turmaId, professorRf, modalidadeId));
         }
 
         [HttpPost]
-        [ValidaDto]
-        public IActionResult Post([FromBody]AtribuicaoCJPersistenciaDto[] atribuicaoCJPersistenciaDtos)
+        [ProducesResponseType(200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        public async Task<IActionResult> Post([FromBody]AtribuicaoCJPersistenciaDto atribuicaoCJPersistenciaDto, [FromServices] IComandosAtribuicaoCJ comandosAtribuicaoCJ)
         {
+            await comandosAtribuicaoCJ.Salvar(atribuicaoCJPersistenciaDto);
             return Ok();
         }
     }

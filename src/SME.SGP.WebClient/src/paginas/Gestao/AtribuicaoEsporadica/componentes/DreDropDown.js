@@ -10,7 +10,7 @@ import AtribuicaoEsporadicaServico from '~/servicos/Paginas/AtribuicaoEsporadica
 // Funções
 import { valorNuloOuVazio } from '~/utils/funcoes/gerais';
 
-function DreDropDown({ form, onChange, label }) {
+function DreDropDown({ form, onChange, label, desabilitado }) {
   const [listaDres, setListaDres] = useState([]);
 
   useEffect(() => {
@@ -55,7 +55,10 @@ function DreDropDown({ form, onChange, label }) {
       containerVinculoId="containerFiltro"
       valueText="desc"
       placeholder="Diretoria Regional De Educação (DRE)"
-      disabled={listaDres.length === 1}
+      disabled={
+        listaDres.length === 1 ||
+        (typeof desabilitado === 'boolean' && desabilitado === true)
+      }
     />
   );
 }
@@ -67,12 +70,14 @@ DreDropDown.propTypes = {
   ]),
   onChange: PropTypes.func,
   label: PropTypes.string,
+  desabilitado: PropTypes.bool,
 };
 
 DreDropDown.defaultProps = {
   form: {},
   onChange: () => {},
   label: null,
+  desabilitado: null,
 };
 
 export default DreDropDown;

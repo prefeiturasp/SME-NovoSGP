@@ -3,21 +3,25 @@ using Microsoft.AspNetCore.Mvc;
 using SME.SGP.Api.Filtros;
 using SME.SGP.Aplicacao;
 using SME.SGP.Infra;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Api.Controllers
 {
     [ApiController]
-    [Route("api/v1/atividade-avaliativa/tipos")]
+    [Route("api/v1/atividade-avaliativa/tipos/")]
     [ValidaDto]
     [Authorize("Bearer")]
     public class TipoAvaliacao : ControllerBase
     {
         private readonly IComandosTipoAvaliacao comandoTipoAvaliacao;
+        private readonly IConsultaTipoAvaliacao consultaTipoAvaliacao;
 
-        public TipoAvaliacao(IComandosTipoAvaliacao comandoTipoAtividadeAvaliativa)
+        public TipoAvaliacao(IComandosTipoAvaliacao comandoTipoAvaliacao,
+            IConsultaTipoAvaliacao consultaTipoAvaliacao)
         {
-            this.comandoTipoAvaliacao = comandoTipoAtividadeAvaliativa ?? throw new System.ArgumentNullException(nameof(comandoTipoAtividadeAvaliativa));
+            this.comandoTipoAvaliacao = comandoTipoAvaliacao ?? throw new System.ArgumentNullException(nameof(comandoTipoAvaliacao));
+            this.consultaTipoAvaliacao = consultaTipoAvaliacao ?? throw new System.ArgumentNullException(nameof(consultaTipoAvaliacao));
         }
 
         [HttpPut("{id}")]
@@ -30,6 +34,15 @@ namespace SME.SGP.Api.Controllers
             return Ok();
         }
 
+        [HttpGet("listar")]
+        [ProducesResponseType(typeof(IEnumerable<TipoAvaliacaoDto>), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [AllowAnonymous] //ainda nao existe perfil pra essa função
+        public async Task<IActionResult> BuscarTodosAsync([FromQuery]string nome)
+        {
+            return Ok(await consultaTipoAvaliacao.ListarPaginado(nome));
+        }
+
         [HttpPost]
         [ProducesResponseType(200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
@@ -38,6 +51,16 @@ namespace SME.SGP.Api.Controllers
         {
             await comandoTipoAvaliacao.Inserir(dto);
             return Ok();
+        }
+
+        [HttpGet("{id}")]
+        [ProducesResponseType(typeof(AtividadeAvaliativaCompletaDto), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 601)]
+        [AllowAnonymous] //ainda nao existe perfil pra essa função
+        public IActionResult ObterPorId(long id)
+        {
+            return Ok(consultaTipoAvaliacao.ObterPorId(id));
         }
     }
 }

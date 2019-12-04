@@ -52,6 +52,14 @@ const SemEvento = () => {
 
 const DiaCompleto = props => {
   const { dias, mesAtual, filtros } = props;
+  const {
+    tipoCalendarioSelecionado,
+    eventoSme,
+    dreSelecionada,
+    unidadeEscolarSelecionada,
+    turmaSelecionada,
+    todasTurmas,
+  } = filtros;
   const [eventosDia, setEventosDia] = useState([]);
 
   const permissaoTela = useSelector(
@@ -70,34 +78,31 @@ const DiaCompleto = props => {
     let estado = true;
     if (estado) {
       if (diaSelecionado && estaAberto) {
-        if (filtros && Object.entries(filtros).length > 0) {
-          setEventosDia([]);
-          const {
-            tipoCalendarioSelecionado = '',
-            eventoSme = true,
-            dreSelecionada = '',
-            unidadeEscolarSelecionada = '',
-            turmaSelecionada = '',
-          } = filtros;
-          if (tipoCalendarioSelecionado) {
-            api
-              .post('v1/calendarios/meses/dias/eventos-aulas', {
-                data: diaSelecionado,
-                tipoCalendarioId: tipoCalendarioSelecionado,
-                EhEventoSME: eventoSme,
-                dreId: dreSelecionada,
-                ueId: unidadeEscolarSelecionada,
-                turmaId: turmaSelecionada,
-              })
-              .then(resposta => {
-                if (resposta.data) setEventosDia(resposta.data);
-                else setEventosDia([]);
-              })
-              .catch(() => {
-                setEventosDia([]);
-              });
-          } else setEventosDia([]);
-        }
+        setEventosDia([]);
+        if (
+          tipoCalendarioSelecionado &&
+          dreSelecionada &&
+          unidadeEscolarSelecionada &&
+          (turmaSelecionada || todasTurmas)
+        ) {
+          api
+            .post('v1/calendarios/meses/dias/eventos-aulas', {
+              data: diaSelecionado,
+              tipoCalendarioId: tipoCalendarioSelecionado,
+              EhEventoSME: eventoSme,
+              dreId: dreSelecionada,
+              ueId: unidadeEscolarSelecionada,
+              turmaId: turmaSelecionada,
+              todasTurmas,
+            })
+            .then(resposta => {
+              if (resposta.data) setEventosDia(resposta.data);
+              else setEventosDia([]);
+            })
+            .catch(() => {
+              setEventosDia([]);
+            });
+        } else setEventosDia([]);
       } else setEventosDia([]);
     }
     return () => {
@@ -106,31 +111,21 @@ const DiaCompleto = props => {
   }, [diaSelecionado]);
 
   const aoClicarBotaoNovaAula = () => {
-    if (filtros && Object.entries(filtros).length > 0) {
-      const {
-        tipoCalendarioSelecionado = '',
-        eventoSme = true,
-        dreSelecionada = '',
-        unidadeEscolarSelecionada = '',
-        turmaSelecionada = '',
-      } = filtros;
+    store.dispatch(
+      salvarEventoAulaCalendarioEdicao(
+        tipoCalendarioSelecionado,
+        eventoSme,
+        dreSelecionada,
+        unidadeEscolarSelecionada,
+        turmaSelecionada,
+        mesAtual,
+        diaSelecionado
+      )
+    );
 
-      store.dispatch(
-        salvarEventoAulaCalendarioEdicao(
-          tipoCalendarioSelecionado,
-          eventoSme,
-          dreSelecionada,
-          unidadeEscolarSelecionada,
-          turmaSelecionada,
-          mesAtual,
-          diaSelecionado
-        )
-      );
-
-      history.push(
-        `calendario-professor/cadastro-aula/novo/${tipoCalendarioSelecionado}`
-      );
-    }
+    history.push(
+      `/calendario-professor/cadastro-aula/novo/${tipoCalendarioSelecionado}`
+    );
   };
 
   const BotoesAuxiliares = () => {
@@ -153,42 +148,35 @@ const DiaCompleto = props => {
   }, [filtros]);
 
   const aoClicarEvento = (id, tipo) => {
-    if (filtros && Object.entries(filtros).length > 0) {
-      const {
-        tipoCalendarioSelecionado = '',
-        eventoSme = true,
-        dreSelecionada = '',
-        unidadeEscolarSelecionada = '',
-        turmaSelecionada = '',
-      } = filtros;
+    store.dispatch(
+      salvarEventoAulaCalendarioEdicao(
+        tipoCalendarioSelecionado,
+        eventoSme,
+        dreSelecionada,
+        unidadeEscolarSelecionada,
+        turmaSelecionada,
+        mesAtual,
+        diaSelecionado
+      )
+    );
 
-      store.dispatch(
-        salvarEventoAulaCalendarioEdicao(
-          tipoCalendarioSelecionado,
-          eventoSme,
-          dreSelecionada,
-          unidadeEscolarSelecionada,
-          turmaSelecionada,
-          mesAtual,
-          diaSelecionado
-        )
-      );
-    }
-
-    if (TiposEventoAulaDTO.Evento.indexOf(tipo) > -1)
-      history.push(`calendario-escolar/eventos/editar/${id}`);
-    else
+    if (tipo === TiposEventoAulaDTO.Aula || tipo === TiposEventoAulaDTO.CJ) {
       history.push(
         `/calendario-escolar/calendario-professor/cadastro-aula/editar/${id}`
       );
+    } else {
+      history.push(`/calendario-escolar/eventos/editar/${id}`);
+    }
   };
 
   return (
     estaAberto && (
       <Div className="border-bottom border-top-0 h-100 p-3">
-        {eventosDia && eventosDia.length > 0 ? (
+        {eventosDia &&
+        eventosDia.eventosAulas &&
+        eventosDia.eventosAulas.length > 0 ? (
           <Div className="list-group list-group-flush fade show">
-            {eventosDia.map(evento => {
+            {eventosDia.eventosAulas.map(evento => {
               return (
                 <Evento
                   key={shortid.generate()}
@@ -196,7 +184,14 @@ const DiaCompleto = props => {
                   onClick={() => aoClicarEvento(evento.id, evento.tipoEvento)}
                   style={{ cursor: 'pointer' }}
                 >
-                  <Grid cols={1} className="pl-0">
+                  <Grid
+                    cols={
+                      (evento.tipoEvento === TiposEventoAulaDTO.Aula && 1) ||
+                      (evento.tipoEvento === TiposEventoAulaDTO.CJ && 1) ||
+                      2
+                    }
+                    className="pl-0"
+                  >
                     <Botao
                       label={evento.tipoEvento}
                       color={
@@ -204,42 +199,55 @@ const DiaCompleto = props => {
                           Colors.Roxo) ||
                         (evento.tipoEvento === TiposEventoAulaDTO.CJ &&
                           Colors.Laranja) ||
-                        (TiposEventoAulaDTO.Evento.indexOf(evento.tipoEvento) >
-                          -1 &&
-                          Colors.CinzaBotao)
+                        Colors.CinzaBotao
                       }
                       className="w-100"
+                      height={
+                        evento.tipoEvento === TiposEventoAulaDTO.Aula ||
+                        evento.tipoEvento === TiposEventoAulaDTO.CJ
+                          ? '38px'
+                          : 'auto'
+                      }
                       border
                       steady
                     />
                   </Grid>
-                  {TiposEventoAulaDTO.Evento.indexOf(evento.tipoEvento) ===
-                    -1 && (
-                    <Grid cols={1} className="pl-0">
-                      <Botao
-                        label={evento.dadosAula.horario}
-                        color={Colors.CinzaBotao}
-                        className="w-100"
-                        border
-                        steady
-                      />
-                    </Grid>
-                  )}
+                  {(evento.tipoEvento === TiposEventoAulaDTO.Aula ||
+                    evento.tipoEvento === TiposEventoAulaDTO.CJ) &&
+                    evento.dadosAula && (
+                      <Grid cols={1} className="px-0">
+                        <Botao
+                          label={window
+                            .moment(evento.dadosAula.horario, 'HH')
+                            .format('HH:mm')}
+                          color={Colors.CinzaBotao}
+                          className="w-100 px-2"
+                          border
+                          steady
+                        />
+                      </Grid>
+                    )}
                   <Grid
                     cols={
-                      TiposEventoAulaDTO.Evento.indexOf(evento.tipoEvento) > -1
-                        ? 11
-                        : 10
+                      evento.tipoEvento === TiposEventoAulaDTO.Aula ||
+                      evento.tipoEvento === TiposEventoAulaDTO.CJ
+                        ? 10
+                        : 11
                     }
                     className="align-self-center font-weight-bold pl-0"
                   >
-                    <Div>
-                      {TiposEventoAulaDTO.Evento.indexOf(evento.tipoEvento) >
-                        -1 && evento.descricao
-                        ? evento.descricao
-                        : 'Evento'}
-                      {TiposEventoAulaDTO.Evento.indexOf(evento.tipoEvento) ===
-                        -1 &&
+                    <Div
+                      className={`${(evento.tipoEvento ===
+                        TiposEventoAulaDTO.Aula ||
+                        evento.tipoEvento === TiposEventoAulaDTO.CJ) &&
+                        'pl-3'}`}
+                    >
+                      {evento.tipoEvento !== TiposEventoAulaDTO.Aula &&
+                        evento.tipoEvento !== TiposEventoAulaDTO.CJ &&
+                        (evento.descricao ? evento.descricao : 'Evento')}
+                      {(evento.tipoEvento === TiposEventoAulaDTO.Aula ||
+                        evento.tipoEvento === TiposEventoAulaDTO.CJ) &&
+                        evento.dadosAula &&
                         `${evento.dadosAula.turma} - ${evento.dadosAula.modalidade} - ${evento.dadosAula.tipo} - ${evento.dadosAula.unidadeEscolar} - ${evento.dadosAula.disciplina}`}
                     </Div>
                   </Grid>
@@ -250,7 +258,7 @@ const DiaCompleto = props => {
         ) : (
           <SemEvento />
         )}
-        <BotoesAuxiliares />
+        {eventosDia && eventosDia.letivo && <BotoesAuxiliares />}
       </Div>
     )
   );

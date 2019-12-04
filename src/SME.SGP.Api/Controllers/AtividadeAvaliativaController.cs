@@ -41,6 +41,16 @@ namespace SME.SGP.Api.Controllers
             return Ok();
         }
 
+        [HttpGet("listar")]
+        [ProducesResponseType(typeof(PaginacaoResultadoDto<AtividadeAvaliativaCompletaDto>), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [Permissao(Permissao.TE_C, Permissao.E_C, Policy = "Bearer")]
+        public async Task<IActionResult> Listar([FromQuery]FiltroAtividadeAvaliativaDto filtro)
+        {
+            var listaAtividadeAvaliativa = await consultaAtividadeAvaliativa.ListarPaginado(filtro);
+            return Ok(listaAtividadeAvaliativa);
+        }
+
         [HttpGet("{id}")]
         [ProducesResponseType(typeof(AtividadeAvaliativaCompletaDto), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
@@ -58,6 +68,16 @@ namespace SME.SGP.Api.Controllers
         public async Task<IActionResult> PostAsync([FromBody]AtividadeAvaliativaDto atividadeAvaliativaDto)
         {
             await comandoAtividadeAvaliativa.Inserir(atividadeAvaliativaDto);
+            return Ok();
+        }
+
+        [HttpPost("validar")]
+        [ProducesResponseType(200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [Permissao(Permissao.CP_I, Policy = "Bearer")]
+        public async Task<IActionResult> Validar([FromBody]FiltroAtividadeAvaliativaDto filtro)
+        {
+            await comandoAtividadeAvaliativa.Validar(filtro);
             return Ok();
         }
     }
