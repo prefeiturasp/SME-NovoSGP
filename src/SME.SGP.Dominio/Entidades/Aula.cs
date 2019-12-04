@@ -79,6 +79,8 @@ namespace SME.SGP.Dominio
 
         public long WorkflowAprovacaoId { get; set; }
 
+        public bool AulaCJ { get; set; }
+
         public void AdicionarAulaPai(Aula aula)
         {
             AulaPai = aula ?? throw new NegocioException("É necessário informar uma aula.");
@@ -116,7 +118,8 @@ namespace SME.SGP.Dominio
                 RecorrenciaAula = RecorrenciaAula,
                 TipoAula = TipoAula,
                 TipoCalendarioId = TipoCalendarioId,
-                TurmaId = TurmaId
+                TurmaId = TurmaId,
+                AulaCJ = AulaCJ
             };
         }
 
