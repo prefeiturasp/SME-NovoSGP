@@ -1,54 +1,90 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useSelector } from 'react-redux';
+import PropTypes from 'prop-types';
 import * as Yup from 'yup';
 import { Formik, Form } from 'formik';
-import styled from 'styled-components';
 import Card from '~/componentes/card';
 import Grid from '~/componentes/grid';
 import Button from '~/componentes/button';
 import RadioGroupButton from '~/componentes/radioGroupButton';
 import CampoTexto from '~/componentes/campoTexto';
 import SelectComponent from '~/componentes/select';
-import { Base, Colors, Label } from '~/componentes';
+import { Colors, Label } from '~/componentes';
 import history from '~/servicos/history';
 import api from '~/servicos/api';
 import TextEditor from '~/componentes/textEditor';
+import { Div, Titulo } from './avaliacaoStyled';
+import RotasDTO from '~/dtos/rotasDto';
+import ServicoAvaliacao from '~/servicos/Paginas/Calendario/ServicoAvaliacao';
+import { erro, sucesso, confirmar } from '~/servicos/alertas';
 
-const Div = styled.div``;
-const Titulo = styled(Div)`
-  color: ${Base.CinzaMako};
-  font-size: 24px;
-`;
+const AvaliacaoForm = ({ match }) => {
+  const botaoCadastrarRef = useRef(null);
 
-const clicouBotaoVoltar = () => {
-  history.push('/calendario-escolar/calendario-professor');
-};
+  const clicouBotaoVoltar = async () => {
+    const confirmado = await confirmar(
+      'Atenção',
+      'Suas alterações não foram salvas, deseja salvar agora?'
+    );
+    if (confirmado) {
+      botaoCadastrarRef.current.click();
+    } else {
+      history.push(RotasDTO.CALENDARIO_PROFESSOR);
+    }
+  };
 
-const clicouBotaoCancelar = () => {};
+  const clicouBotaoExcluir = async () => {};
 
-const clicouBotaoExcluir = async () => {};
+  const clicouBotaoCadastrar = (form, e) => {
+    e.persist();
+    form.validateForm().then(() => form.handleSubmit(e));
+  };
 
-const clicouBotaoCadastrar = (e, form) => {
-  e.persist();
-  form.validateForm().then(() => form.handleSubmit(e));
-};
+  const [idAvaliacao, setIdAvaliacao] = useState('');
 
-const cadastrarAvaliacao = async dados => {
-  return dados;
-};
+  const eventoAulaCalendarioEdicao = useSelector(
+    store => store.calendarioProfessor.eventoAulaCalendarioEdicao
+  );
 
-const CadastroAvaliacao = () => {
+  const diaAvaliacao = useSelector(
+    store => store.calendarioProfessor.diaSelecionado
+  );
+
+  const [descricao, setDescricao] = useState('');
+
+  const cadastrarAvaliacao = async dados => {
+    const avaliacao = {};
+    avaliacao.dreId = eventoAulaCalendarioEdicao.dre;
+    avaliacao.turmaId = eventoAulaCalendarioEdicao.turma;
+    avaliacao.ueId = eventoAulaCalendarioEdicao.unidadeEscolar;
+    avaliacao.dataAvaliacao = window.moment(diaAvaliacao).format();
+    avaliacao.descricao = descricao;
+
+    ServicoAvaliacao.salvar(idAvaliacao, { ...dados, ...avaliacao })
+      .then(() => {
+        sucesso(
+          `Avaliação ${idAvaliacao ? 'atualizada' : 'cadastrada'} com sucesso!`
+        );
+        history.push(RotasDTO.CALENDARIO_PROFESSOR);
+      })
+      .catch(() => {
+        erro(`Erro ao ${idAvaliacao ? 'atualizar' : 'cadastrar'} a avaliação!`);
+      });
+  };
+
   const [validacoes] = useState(
     Yup.object({
-      categoria: Yup.string().required('Selecione a categoria'),
+      categoriaId: Yup.string().required('Selecione a categoriaId'),
+      disciplinaId: Yup.string().required('Selecione o componente curricular'),
+      tipoAvaliacaoId: Yup.string().required(
+        'Selecione o tipo de atividade avaliativa'
+      ),
+      nome: Yup.string().required('Preencha o nome da atividade avaliativa'),
     })
   );
 
   const usuario = useSelector(store => store.usuario);
 
-  const diaAvaliacao = useSelector(
-    store => store.calendarioProfessor.diaSelecionado
-  );
   const [dataAvaliacao, setdataAvaliacao] = useState();
 
   const [listaCategorias] = useState([
@@ -57,9 +93,23 @@ const CadastroAvaliacao = () => {
   ]);
   const [listaDisciplinas, setListaDisciplinas] = useState([]);
 
+  const campoNomeRef = useRef(null);
+  const textEditorRef = useRef(null);
+
+  const aoTrocarTextEditor = valor => {
+    setDescricao(valor);
+  };
+
   const [dadosAvaliacao, setDadosAvaliacao] = useState();
   const inicial = {
-    categoria: 1,
+    categoriaId: 1,
+    disciplinaId: undefined,
+    nome: '',
+    tipoAvaliacaoId: undefined,
+  };
+
+  const clicouBotaoCancelar = () => {
+    setDadosAvaliacao(inicial);
   };
 
   const { turmaSelecionada } = usuario;
@@ -72,18 +122,46 @@ const CadastroAvaliacao = () => {
     if (disciplinas.data) setListaDisciplinas(disciplinas.data);
   };
 
+  const [disciplinaDesabilitada, setDisciplinaDesabilitada] = useState(false);
+
+  useEffect(() => {
+    if (listaDisciplinas.length === 1) {
+      setDadosAvaliacao({
+        ...dadosAvaliacao,
+        disciplinaId: listaDisciplinas[0].codigoComponenteCurricular.toString(),
+      });
+      setDisciplinaDesabilitada(true);
+    }
+  }, [listaDisciplinas]);
+
+  const [listaTiposAvaliacao, setListaTiposAvaliacao] = useState([]);
+
+  const obterlistaTiposAvaliacao = async () => {
+    const tipos = await api.get('v1/atividade-avaliativa/tipos/listar');
+    if (tipos.data && tipos.data.items) {
+      const lista = [];
+      tipos.data.items.forEach(tipo => {
+        lista.push({ nome: tipo.nome, id: tipo.id });
+      });
+      setListaTiposAvaliacao(lista);
+    }
+  };
+
   useEffect(() => {
     setdataAvaliacao(window.moment(diaAvaliacao));
     setDadosAvaliacao(inicial);
     obterDisciplinas();
+    obterlistaTiposAvaliacao();
+
+    if (match && match.params && match.params.id)
+      setIdAvaliacao(match.params.id);
   }, []);
 
-  const [descricaoAvaliacao, setDescricaoAvaliacao] = useState('');
-  const textEditorRef = useRef(null);
-
-  const aoTrocarTextEditor = valor => {
-    setDescricaoAvaliacao(valor);
-  };
+  useEffect(() => {
+    let avaliacao;
+    if (idAvaliacao) avaliacao = ServicoAvaliacao.buscar(idAvaliacao);
+    if (avaliacao && avaliacao.data) setDadosAvaliacao(avaliacao.data);
+  }, [idAvaliacao]);
 
   return (
     <Div className="col-12">
@@ -132,7 +210,8 @@ const CadastroAvaliacao = () => {
               <Button
                 label="Cadastrar"
                 color={Colors.Roxo}
-                onClick={clicouBotaoCadastrar}
+                onClick={e => clicouBotaoCadastrar(form, e)}
+                ref={botaoCadastrarRef}
                 border
                 bold
               />
@@ -141,8 +220,8 @@ const CadastroAvaliacao = () => {
               <Div className="row">
                 <Grid cols={12} className="mb-4">
                   <RadioGroupButton
-                    id="categoria"
-                    name="categoria"
+                    id="categoriaId"
+                    name="categoriaId"
                     label="Categoria"
                     opcoes={listaCategorias}
                     form={form}
@@ -152,24 +231,25 @@ const CadastroAvaliacao = () => {
               <Div className="row">
                 <Grid cols="4" className="mb-4">
                   <SelectComponent
-                    id="componente-curricular"
-                    name="componente-curricular"
+                    id="disciplinaId"
+                    name="disciplinaId"
                     label="Componente curricular"
                     lista={listaDisciplinas}
                     valueOption="codigoComponenteCurricular"
                     valueText="nome"
+                    disabled={disciplinaDesabilitada}
                     placeholder="Disciplina"
                     form={form}
                   />
                 </Grid>
                 <Grid cols="4" className="mb-4">
                   <SelectComponent
-                    id="componente-curricular"
-                    name="componente-curricular"
+                    id="tipoAvaliacaoId"
+                    name="tipoAvaliacaoId"
                     label="Tipo de Atividade Avaliativa"
-                    lista={[]}
-                    valueOption=""
-                    valueText=""
+                    lista={listaTiposAvaliacao}
+                    valueOption="id"
+                    valueText="nome"
                     placeholder="Atividade Avaliativa"
                     form={form}
                   />
@@ -177,12 +257,13 @@ const CadastroAvaliacao = () => {
                 <Grid cols="4" className="mb-4">
                   <Label text="Nome da Atividade Avaliativa" />
                   <CampoTexto
-                    name="nome-atividade"
-                    id="nome-atividade"
-                    maxlength={100}
+                    name="nome"
+                    id="nome"
+                    maxlength={50}
                     placeholder="Nome"
                     type="input"
                     form={form}
+                    ref={campoNomeRef}
                     icon
                   />
                 </Grid>
@@ -192,9 +273,10 @@ const CadastroAvaliacao = () => {
                   <Label text="Descrição" />
                   <TextEditor
                     ref={textEditorRef}
-                    id="textEditor"
+                    id="descricao"
                     onBlur={aoTrocarTextEditor}
-                    value={descricaoAvaliacao}
+                    value={descricao}
+                    maxlength={500}
                   />
                 </Grid>
               </Div>
@@ -206,4 +288,12 @@ const CadastroAvaliacao = () => {
   );
 };
 
-export default CadastroAvaliacao;
+AvaliacaoForm.propTypes = {
+  match: PropTypes.oneOfType([PropTypes.array, PropTypes.object]),
+};
+
+AvaliacaoForm.defaultProps = {
+  match: {},
+};
+
+export default AvaliacaoForm;
