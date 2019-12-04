@@ -41,12 +41,12 @@ const BotoesAuxiliaresEstilo = styled(Div)`
 
 const SemEvento = () => {
   return (
-    <div
+    <Div
       className="d-flex w-100 h-100 justify-content-center d-flex align-items-center fade show"
       style={{ fontSize: 25, color: Base.CinzaBotao }}
     >
       Sem eventos neste dia
-    </div>
+    </Div>
   );
 };
 
@@ -110,7 +110,7 @@ const DiaCompleto = props => {
     };
   }, [diaSelecionado]);
 
-  const aoClicarBotaoNovaAula = () => {
+  const salvarDadosEventoAula = () => {
     store.dispatch(
       salvarEventoAulaCalendarioEdicao(
         tipoCalendarioSelecionado,
@@ -122,15 +122,31 @@ const DiaCompleto = props => {
         diaSelecionado
       )
     );
+  };
 
+  const aoClicarBotaoNovaAvaliacao = () => {
+    salvarDadosEventoAula();
+    history.push(`${RotasDTO.CADASTRO_DE_AVALIACAO}/novo`);
+  };
+
+  const aoClicarBotaoNovaAula = () => {
+    salvarDadosEventoAula();
     history.push(
-      `/calendario-professor/cadastro-aula/novo/${tipoCalendarioSelecionado}`
+      `${RotasDTO.CADASTRO_DE_AULA}/novo/${tipoCalendarioSelecionado}`
     );
   };
 
   const BotoesAuxiliares = () => {
     return (
       <BotoesAuxiliaresEstilo>
+        <Button
+          key={shortid.generate()}
+          onClick={aoClicarBotaoNovaAvaliacao}
+          label="Nova Avaliação"
+          color={Colors.Roxo}
+          disabled={permissaoTela && !permissaoTela.podeIncluir}
+          className="mr-3"
+        />
         <Button
           key={shortid.generate()}
           onClick={aoClicarBotaoNovaAula}
@@ -161,9 +177,7 @@ const DiaCompleto = props => {
     );
 
     if (tipo === TiposEventoAulaDTO.Aula || tipo === TiposEventoAulaDTO.CJ) {
-      history.push(
-        `/calendario-escolar/calendario-professor/cadastro-aula/editar/${id}`
-      );
+      history.push(`${RotasDTO.CADASTRO_DE_AULA}/editar/${id}`);
     } else {
       history.push(`/calendario-escolar/eventos/editar/${id}`);
     }
@@ -258,7 +272,9 @@ const DiaCompleto = props => {
         ) : (
           <SemEvento />
         )}
-        {eventosDia && eventosDia.letivo && <BotoesAuxiliares />}
+        {eventosDia && eventosDia.letivo && turmaSelecionada && (
+          <BotoesAuxiliares />
+        )}
       </Div>
     )
   );
