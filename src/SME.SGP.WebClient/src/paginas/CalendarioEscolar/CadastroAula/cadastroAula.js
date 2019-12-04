@@ -41,9 +41,10 @@ const CadastroAula = ({ match }) => {
   const [quantidadeMaximaAulas, setQuantidadeMaximaAulas] = useState(0);
   const [controlaQuantidadeAula, setControlaQuantidadeAula] = useState(true);
   const [refForm, setRefForm] = useState({});
+  const [refFormRecorrencia, setRefFormRecorrencia] = useState({});
   const [ehReposicao, setEhReposicao] = useState(false);
   const [quantidadeRecorrencia, setQuantidadeRecorrencia] = useState(0);
-  const [visualizarFormExcRecorrencia, setVisualizarFormExcRecorrencia] = useState(true);
+  const [visualizarFormExcRecorrencia, setVisualizarFormExcRecorrencia] = useState(false);
 
   const [valoresIniciais, setValoresIniciais] = useState({});
   const inicial = {
@@ -62,6 +63,12 @@ const CadastroAula = ({ match }) => {
   const opcoesTipoAula = [
     { label: 'Normal', value: 1 },
     { label: 'Reposição', value: 2 },
+  ];
+
+  const opcoesExcluirRecorrena = [
+    { label: 'Somente o dia', value: 1 },
+    { label: 'Bimestre atual', value: 2 },
+    { label: 'Todos os bimestres', value: 3 },
   ];
 
   const opcoesQuantidadeAulas = [
@@ -188,7 +195,7 @@ const CadastroAula = ({ match }) => {
     if (aula && aula.data) {
       setDataAula(window.moment(aula.data.dataAula));
       const respRecorrencia = await api.get(`v1/calendarios/professores/aulas/${id}/recorrencias/serie`);
-      if (respRecorrencia && respRecorrencia.data) {
+      if (respRecorrencia && respRecorrencia.data && respRecorrencia.data.recorrenciaAula !== recorrencia.AULA_UNICA) {
         const dataRecorrencia = respRecorrencia.data;
         setQuantidadeRecorrencia(dataRecorrencia.recorrenciaAula);
       }
@@ -391,38 +398,39 @@ const CadastroAula = ({ match }) => {
         pagina={`Cadastro de Aula - ${getDataFormatada()}`}
       />
       <Card>
-        {/* <ModalConteudoHtml
+        <ModalConteudoHtml
           key="reiniciarSenha"
           visivel={visualizarFormExcRecorrencia}
           onConfirmacaoPrincipal={() => { }}
-          onConfirmacaoSecundaria={() => { }}
+          onConfirmacaoSecundaria={() => setVisualizarFormExcRecorrencia(false)}
           onClose={() => { }}
           labelBotaoPrincipal="Confirmar"
           labelBotaoSecundario="Cancelar"
           titulo={`Excluir aula - ${getDataFormatada()}`}
           closable={false}
-        ><Formik
-          enableReinitialize
-          initialValues={valoresIniciais}
-          validationSchema={null}
-          ref={refFormik => setRefForm(refFormik)}
-          onSubmit={valores => onClickCadastrar(valores)}
-          validateOnChange
-          validateOnBlur
         >
+          <Formik
+            enableReinitialize
+            initialValues={valoresIniciais}
+            validationSchema={validacoes}
+            ref={refFormik => setRefFormRecorrencia(refFormik)}
+            onSubmit={() => { }}
+            validateOnChange
+            validateOnBlur
+          >
             {form => (
               <Form className="col-md-12 mb-4">
                 <div className="row justify-content-start">
                   <div className="col-sm-12 col-md-12">
-                    <p>{`Essa aula se repete por ${quantidadeRecorrencia}${quantidadeRecorrencia > 1 ? 'vezes' : 'vez'} em seu planejamento.`}</p>
+                    <p>{`Essa aula se repete por ${quantidadeRecorrencia}${quantidadeRecorrencia > 1 ? ' vezes' : ' vez'} em seu planejamento.`}</p>
                     <p>Qual opção de exclusão você deseja realizar?</p>
                   </div>
                   <div className="col-sm-12 col-md-12">
                     <RadioGroupButton
-                      id="tipo-recorrencia-exclusao"
                       form={form}
+                      id="tipo-recorrencia-exclusao"
                       label="Realizar exclusão"
-                      opcoes={opcoesTipoAula}
+                      opcoes={opcoesExcluirRecorrena}
                       name="tipoRecorrenciaExclusao"
                       onChange={() => { }}
                     />
@@ -431,7 +439,7 @@ const CadastroAula = ({ match }) => {
               </Form>
             )}
           </Formik>
-        </ModalConteudoHtml> */}
+        </ModalConteudoHtml>
         <Formik
           enableReinitialize
           initialValues={valoresIniciais}
