@@ -60,7 +60,7 @@ namespace SME.SGP.Dados.Repositorios
             return (await database.Conexao.QueryAsync<AulaDto>(query.ToString(), new { tipoCalendarioId, turmaId, ueId, mes, CodigoRf }));
         }
 
-        public async Task<IEnumerable<AulaDto>> ObterAulas(string turmaId, string ueId, string CodigoRf, DateTime data, string disciplinaId)
+        public async Task<IEnumerable<AulaDto>> ObterAulas(string turmaId, string ueId, string CodigoRf, DateTime? data, string disciplinaId)
         {
             StringBuilder query = new StringBuilder();
             MontaCabecalho(query);
@@ -294,7 +294,7 @@ namespace SME.SGP.Dados.Repositorios
         private static void MontaWhere(StringBuilder query, long? tipoCalendarioId, string turmaId, string ueId, int? mes = null, DateTime? data = null, string codigoRf = null, string disciplinaId = null, int? semanaAno = null)
         {
             query.AppendLine("WHERE a.excluido = false");
-            query.AppendLine("AND a.status <> '3'");
+            query.AppendLine("AND a.status <> 3");
 
             if (tipoCalendarioId.HasValue)
                 query.AppendLine("AND a.tipo_calendario_id = @tipoCalendarioId");

@@ -14,7 +14,7 @@ namespace SME.SGP.Dados.Repositorios
         {
         }
 
-        public async Task<IEnumerable<AtribuicaoCJ>> ObterPorFiltros(Modalidade? modalidade, string turmaId, string ueId, string disciplinaId,
+        public async Task<IEnumerable<AtribuicaoCJ>> ObterPorFiltros(Modalidade? modalidade, string turmaId, string ueId, long disciplinaId,
             string usuarioRf, string usuarioNome)
         {
             var query = new StringBuilder();
@@ -37,7 +37,7 @@ namespace SME.SGP.Dados.Repositorios
             if (!string.IsNullOrEmpty(turmaId))
                 query.AppendLine("and a.turma_id = @turmaId");
 
-            if (!string.IsNullOrEmpty(disciplinaId))
+            if (disciplinaId > 0)
                 query.AppendLine("and a.disciplina_id = @disciplinaId");
 
             if (!string.IsNullOrEmpty(usuarioRf))
