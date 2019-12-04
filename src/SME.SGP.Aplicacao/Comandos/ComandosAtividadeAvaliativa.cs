@@ -93,7 +93,7 @@ namespace SME.SGP.Aplicacao
             }
             else
             {
-                if (await repositorioAtividadeAvaliativa.VerificarSeJaExisteAvaliacao(dataAvaliacao, filtro.DreId, filtro.UeID, filtro.TurmaId, usuario.CodigoRf))
+                if (await repositorioAtividadeAvaliativa.VerificarSeJaExisteAvaliacaoNaoRegencia(dataAvaliacao, filtro.DreId, filtro.UeID, filtro.TurmaId, usuario.CodigoRf))
                 {
                     throw new NegocioException("Já existe atividade avaliativa cadastrada para esse data.");
                 }
