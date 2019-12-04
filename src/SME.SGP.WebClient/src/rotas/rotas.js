@@ -36,6 +36,7 @@ import RotasDto from '~/dtos/rotasDto';
 import CadastroAula from '~/paginas/CalendarioEscolar/CadastroAula/cadastroAula';
 import CalendarioProfessor from '~/paginas/CalendarioProfessor/Calendario';
 import FrequenciaPlanoAula from '~/paginas/DiarioClasse/FrequenciaPlanoAula/frequenciaPlanoAula';
+import Notas from '~/paginas/DiarioClasse/Notas/notas';
 
 export default function Rotas() {
   const rotas = new Map();
@@ -414,6 +415,16 @@ export default function Rotas() {
     menu: ['Diário de Classe'],
     parent: '/',
     component: FrequenciaPlanoAula,
+    exact: true,
+    tipo: RotasTipo.EstruturadaAutenticada,
+    temPermissionamento: false,
+  });
+
+  rotas.set(`${RotasDto.NOTAS}`, {
+    breadcrumbName: 'Notas',
+    menu: ['Diário de Classe'],
+    parent: '/',
+    component: Notas,
     exact: true,
     tipo: RotasTipo.EstruturadaAutenticada,
     temPermissionamento: false,
