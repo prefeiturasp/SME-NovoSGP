@@ -7,6 +7,7 @@ namespace SME.SGP.Infra
     {
         public PlanoAulaDto() { }
 
+        public long Id { get; set; }
         public string Descricao { get; set; }
         [Required(ErrorMessage = "Desenvolvimento da aula é obrigatório para o registro do plano.")]
         public string DesenvolvimentoAula { get; set; }

@@ -12,6 +12,16 @@ namespace SME.SGP.Api.Controllers
     [ValidaDto]
     public class PlanoAulaController : ControllerBase
     {
+        [HttpPost("migrar")]
+        [ProducesResponseType(200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [Permissao(Permissao.PA_I, Permissao.PA_A, Policy = "Bearer")]
+        public async Task<IActionResult> Migrar(MigrarPlanoAulaDto migrarPlanoAulaDto, [FromServices]IComandosPlanoAula comandosPlanoAula)
+        {
+            await comandosPlanoAula.Migrar(migrarPlanoAulaDto);
+            return Ok();
+        }
+
         [HttpGet("{aulaId}")]
         [ProducesResponseType(typeof(PlanoAulaRetornoDto), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
@@ -36,6 +46,15 @@ namespace SME.SGP.Api.Controllers
         {
             await comandos.Salvar(planoAulaDto);
             return Ok();
+        }
+
+        [HttpPost("validar-existente")]
+        [ProducesResponseType(typeof(bool), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [Permissao(Permissao.PA_C, Policy = "Bearer")]
+        public IActionResult ValidarPlanoAnualExistente(FiltroPlanoAulaExistenteDto filtroPlanoAulaExistenteDto, [FromServices]IConsultasPlanoAula consultasPlanoAula)
+        {
+            return Ok(consultasPlanoAula.ValidarPlanoAulaExistente(filtroPlanoAulaExistenteDto));
         }
     }
 }
