@@ -21,7 +21,7 @@ namespace SME.SGP.Dados.Repositorios
             if (!string.IsNullOrEmpty(nome)) nome = $"%{nome.ToLowerInvariant()}%";
             StringBuilder query = new StringBuilder();
             MontaCabecalho(query, false);
-            MontaFromWhere(query, nome);
+            MontaFromWhere(query, nome, 0);
 
             if (paginacao == null)
                 paginacao = new Paginacao(1, 10);
@@ -30,7 +30,7 @@ namespace SME.SGP.Dados.Repositorios
             query.Append(";");
 
             MontaCabecalho(query, true);
-            MontaFromWhere(query, nome);
+            MontaFromWhere(query, nome, 0);
             query.Append(";");
             var retornoPaginado = new PaginacaoResultadoDto<TipoAvaliacao>();
 
@@ -45,6 +45,15 @@ namespace SME.SGP.Dados.Repositorios
 
             retornoPaginado.TotalPaginas = (int)Math.Ceiling((double)retornoPaginado.TotalRegistros / paginacao.QuantidadeRegistros);
             return retornoPaginado;
+        }
+
+        public async Task<bool> VerificarSeJaExistePorNome(string nome, long id)
+        {
+            var query = new StringBuilder();
+            MontaCabecalho(query, false);
+            MontaFromWhere(query, nome, id);
+            var resultado = (await database.Conexao.QueryAsync<TipoAvaliacao>(query.ToString(), new { nome, id }));
+            return resultado.Any();
         }
 
         private static void MontaCabecalho(StringBuilder query, bool ehCount)
@@ -68,7 +77,7 @@ namespace SME.SGP.Dados.Repositorios
             }
         }
 
-        private static void MontaFromWhere(StringBuilder query, string nome)
+        private static void MontaFromWhere(StringBuilder query, string nome, long id)
         {
             query.AppendLine("from tipo_avaliacao");
             query.AppendLine("where situacao = true");
@@ -76,6 +85,8 @@ namespace SME.SGP.Dados.Repositorios
             if (!string.IsNullOrEmpty(nome))
             {
                 query.AppendLine("and lower(f_unaccent(nome)) LIKE f_unaccent(@nome) ");
+                if (id > 0)
+                    query.AppendLine("and id <> @id");
             }
         }
     }
