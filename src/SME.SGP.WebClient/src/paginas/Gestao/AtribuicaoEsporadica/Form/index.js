@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
+import _ from 'lodash';
 
 // Form
 import { Formik, Form } from 'formik';
@@ -12,9 +13,10 @@ import { setLoaderSecao } from '~/redux/modulos/loader/actions';
 // Serviços
 import RotasDto from '~/dtos/rotasDto';
 import history from '~/servicos/history';
+import AtribuicaoEsporadicaServico from '~/servicos/Paginas/AtribuicaoEsporadica';
 import { erros, erro, sucesso, confirmar } from '~/servicos/alertas';
 import { setBreadcrumbManual } from '~/servicos/breadcrumb-services';
-import AtribuicaoEsporadicaServico from '~/servicos/Paginas/AtribuicaoEsporadica';
+import { verificaSomenteConsulta } from '~/servicos/servico-navegacao';
 
 // Componentes SGP
 import { Cabecalho } from '~/componentes-sgp';
@@ -32,7 +34,7 @@ import {
 } from '~/componentes';
 import DreDropDown from '../componentes/DreDropDown';
 import UeDropDown from '../componentes/UeDropDown';
-import AnoLetivoDropDown from '../componentes/AnoLetivoDropDown';
+import AnoLetivoTag from '../componentes/AnoLetivoTag';
 
 // Styles
 import { Row } from './styles';
@@ -44,6 +46,9 @@ function AtribuicaoEsporadicaForm({ match }) {
   const dispatch = useDispatch();
   const carregando = useSelector(store => store.loader.loaderSecao);
   const permissoesTela = useSelector(store => store.usuario.permissoes);
+  const somenteConsulta = verificaSomenteConsulta(
+    permissoesTela[RotasDto.ATRIBUICAO_ESPORADICA_LISTA]
+  );
   const filtroListagem = useSelector(
     store => store.atribuicaoEsporadica.filtro
   );
@@ -51,11 +56,16 @@ function AtribuicaoEsporadicaForm({ match }) {
   const [novoRegistro, setNovoRegistro] = useState(true);
   const [modoEdicao, setModoEdicao] = useState(false);
   const [auditoria, setAuditoria] = useState({});
+  const [valoresCarregados, setValoresCarregados] = useState(null);
+  const [refForm, setRefForm] = useState({});
   const [valoresIniciais, setValoresIniciais] = useState({
     professorRf: '',
     professorNome: '',
-    dataInicio: '',
+    dataInicio: window.moment(),
     dataFim: '',
+    ueId: '',
+    dreId: '',
+    anoLetivo: '2019',
   });
 
   const validacoes = () => {
@@ -176,6 +186,7 @@ function AtribuicaoEsporadicaForm({ match }) {
             registro.data.alteradoRF > 0 ? registro.data.alteradoRF : '',
           alteradoEm: registro.data.alteradoEm,
         });
+        setValoresCarregados(true);
         dispatch(setLoaderSecao(false));
       }
     } catch (err) {
@@ -186,7 +197,20 @@ function AtribuicaoEsporadicaForm({ match }) {
 
   const validaFormulario = valores => {
     if (validaSeObjetoEhNuloOuVazio(valores)) return;
-    if (!modoEdicao) {
+    if (
+      (!modoEdicao &&
+        valoresCarregados &&
+        !_.isEqual(
+          refForm.getFormikContext().initialValues,
+          refForm.getFormikContext().values
+        )) ||
+      (!modoEdicao &&
+        novoRegistro &&
+        !_.isEqual(
+          refForm.getFormikContext().initialValues,
+          refForm.getFormikContext().values
+        ))
+    ) {
       setModoEdicao(true);
     }
   };
@@ -214,6 +238,7 @@ function AtribuicaoEsporadicaForm({ match }) {
             validationSchema={validacoes}
             onSubmit={valores => onSubmitFormulario(valores)}
             validate={valores => validaFormulario(valores)}
+            ref={refFormik => setRefForm(refFormik)}
             validateOnBlur
             validateOnChange
           >
@@ -234,18 +259,14 @@ function AtribuicaoEsporadicaForm({ match }) {
                 />
                 <Row className="row">
                   <Grid cols={2}>
-                    <AnoLetivoDropDown
-                      label="Ano Letivo"
-                      form={form}
-                      name="anoLetivo"
-                      onChange={() => null}
-                    />
+                    <AnoLetivoTag label="Ano Letivo" />
                   </Grid>
                   <Grid cols={5}>
                     <DreDropDown
                       label="Diretoria Regional de Educação (DRE)"
                       form={form}
                       onChange={valor => setDreId(valor)}
+                      desabilitado={somenteConsulta}
                     />
                   </Grid>
                   <Grid cols={5}>
@@ -254,6 +275,7 @@ function AtribuicaoEsporadicaForm({ match }) {
                       dreId={dreId}
                       form={form}
                       onChange={() => null}
+                      desabilitado={somenteConsulta}
                     />
                   </Grid>
                 </Row>
@@ -266,6 +288,7 @@ function AtribuicaoEsporadicaForm({ match }) {
                         showLabel
                         form={form}
                         onChange={() => null}
+                        desabilitado={somenteConsulta || valoresIniciais.id}
                       />
                     </Row>
                   </Grid>
@@ -276,6 +299,7 @@ function AtribuicaoEsporadicaForm({ match }) {
                       form={form}
                       name="dataInicio"
                       formatoData="DD/MM/YYYY"
+                      desabilitado={somenteConsulta}
                     />
                   </Grid>
                   <Grid cols={2}>
@@ -285,6 +309,7 @@ function AtribuicaoEsporadicaForm({ match }) {
                       form={form}
                       name="dataFim"
                       formatoData="DD/MM/YYYY"
+                      desabilitado={somenteConsulta}
                     />
                   </Grid>
                 </Row>

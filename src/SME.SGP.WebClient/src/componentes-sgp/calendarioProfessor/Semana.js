@@ -27,7 +27,7 @@ const TipoEventosLista = styled(Div)`
 const TipoEvento = styled(Div)`
   font-size: 10px;
   margin-bottom: 2px;
-  width: 60px;
+  min-width: 60px;
   &:last-child {
     margin-bottom: 0;
   }
@@ -159,7 +159,7 @@ const Dia = props => {
                   </TipoEvento>
                 );
               })}
-              {tipoEventosDiaLista.quantidadeDeEventosAulas > 3 && (
+              {tipoEventosDiaLista.quantidadeDeEventosAulas > 2 && (
                 <Div style={{ fontSize: 10 }}>
                   Mais {tipoEventosDiaLista.quantidadeDeEventosAulas} eventos
                 </Div>

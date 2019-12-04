@@ -124,7 +124,7 @@ const DiaCompleto = props => {
     );
 
     history.push(
-      `calendario-professor/cadastro-aula/novo/${tipoCalendarioSelecionado}`
+      `/calendario-professor/cadastro-aula/novo/${tipoCalendarioSelecionado}`
     );
   };
 
@@ -160,12 +160,13 @@ const DiaCompleto = props => {
       )
     );
 
-    if (TiposEventoAulaDTO.Evento.indexOf(tipo) > -1)
-      history.push(`calendario-escolar/eventos/editar/${id}`);
-    else
+    if (tipo === TiposEventoAulaDTO.Aula || tipo === TiposEventoAulaDTO.CJ) {
       history.push(
         `/calendario-escolar/calendario-professor/cadastro-aula/editar/${id}`
       );
+    } else {
+      history.push(`/calendario-escolar/eventos/editar/${id}`);
+    }
   };
 
   return (
@@ -183,7 +184,14 @@ const DiaCompleto = props => {
                   onClick={() => aoClicarEvento(evento.id, evento.tipoEvento)}
                   style={{ cursor: 'pointer' }}
                 >
-                  <Grid cols={1} className="pl-0">
+                  <Grid
+                    cols={
+                      (evento.tipoEvento === TiposEventoAulaDTO.Aula && 1) ||
+                      (evento.tipoEvento === TiposEventoAulaDTO.CJ && 1) ||
+                      2
+                    }
+                    className="pl-0"
+                  >
                     <Botao
                       label={evento.tipoEvento}
                       color={
@@ -194,12 +202,18 @@ const DiaCompleto = props => {
                         Colors.CinzaBotao
                       }
                       className="w-100"
+                      height={
+                        evento.tipoEvento === TiposEventoAulaDTO.Aula ||
+                        evento.tipoEvento === TiposEventoAulaDTO.CJ
+                          ? '38px'
+                          : 'auto'
+                      }
                       border
                       steady
                     />
                   </Grid>
-                  {TiposEventoAulaDTO.Evento.indexOf(evento.tipoEvento) ===
-                    -1 &&
+                  {(evento.tipoEvento === TiposEventoAulaDTO.Aula ||
+                    evento.tipoEvento === TiposEventoAulaDTO.CJ) &&
                     evento.dadosAula && (
                       <Grid cols={1} className="px-0">
                         <Botao
@@ -215,22 +229,24 @@ const DiaCompleto = props => {
                     )}
                   <Grid
                     cols={
-                      TiposEventoAulaDTO.Evento.indexOf(evento.tipoEvento) > -1
-                        ? 11
-                        : 10
+                      evento.tipoEvento === TiposEventoAulaDTO.Aula ||
+                      evento.tipoEvento === TiposEventoAulaDTO.CJ
+                        ? 10
+                        : 11
                     }
                     className="align-self-center font-weight-bold pl-0"
                   >
                     <Div
-                      className={`${TiposEventoAulaDTO.Evento.indexOf(
-                        evento.tipoEvento
-                      ) === -1 && 'pl-3'}`}
+                      className={`${(evento.tipoEvento ===
+                        TiposEventoAulaDTO.Aula ||
+                        evento.tipoEvento === TiposEventoAulaDTO.CJ) &&
+                        'pl-3'}`}
                     >
                       {evento.tipoEvento !== TiposEventoAulaDTO.Aula &&
                         evento.tipoEvento !== TiposEventoAulaDTO.CJ &&
                         (evento.descricao ? evento.descricao : 'Evento')}
-                      {TiposEventoAulaDTO.Evento.indexOf(evento.tipoEvento) ===
-                        -1 &&
+                      {(evento.tipoEvento === TiposEventoAulaDTO.Aula ||
+                        evento.tipoEvento === TiposEventoAulaDTO.CJ) &&
                         evento.dadosAula &&
                         `${evento.dadosAula.turma} - ${evento.dadosAula.modalidade} - ${evento.dadosAula.tipo} - ${evento.dadosAula.unidadeEscolar} - ${evento.dadosAula.disciplina}`}
                     </Div>

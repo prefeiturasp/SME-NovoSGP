@@ -8,6 +8,8 @@ namespace SME.SGP.Dominio.Interfaces
     {
         Task<PaginacaoResultadoDto<AtividadeAvaliativa>> Listar(DateTime? dataAvaliacao, string dreId, string ueID, string nomeAvaliacao, int? tipoAvaliacaoId, string turmaId, Paginacao paginacao);
 
+        Task<bool> VerificarSeExisteAvaliacao(DateTime dataAvaliacao, string ueId, string turmaId, string professorRf, string disciplinaId);
+
         Task<bool> VerificarSeJaExisteAvaliacao(DateTime dataAvaliacao, string dreId, string ueId, string turmaId, string professorRf);
 
         Task<bool> VerificarSeJaExisteAvaliacaoComMesmoNome(string nomeAvaliacao, string dreId, string ueID, string turmaId, string professorRf, DateTime periodoInicio, DateTime periodoFim);
