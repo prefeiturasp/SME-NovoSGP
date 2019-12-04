@@ -69,5 +69,7 @@ namespace SME.SGP.Aplicacao.Integracoes
         Task ReiniciarSenha(string login);
 
         Task RemoverCJSeNecessario(Guid usuarioId);
+
+        bool ValidarProfessor(string professorRf);
     }
 }
