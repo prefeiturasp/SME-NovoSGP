@@ -96,7 +96,7 @@ namespace SME.SGP.Dominio.Servicos
             if (tipoCalendario == null)
                 throw new NegocioException("O tipo de calendário não foi encontrado.");
 
-            var disciplinasProfessor = await servicoEOL.ObterDisciplinasPorCodigoTurmaLoginEPerfil(aula.TurmaId, usuario.Login, usuario.ObterPerfilPrioritario());
+            var disciplinasProfessor = await servicoEOL.ObterDisciplinasPorCodigoTurmaLoginEPerfil(aula.TurmaId, usuario.Login, usuario.EhProfessorCj() ? usuario.ObterPerfilCJ() : usuario.ObterPerfilPrioritario());
 
             var usuarioPodeCriarAulaNaTurmaUeEModalidade = repositorioAula.UsuarioPodeCriarAulaNaUeTurmaEModalidade(aula, tipoCalendario.Modalidade);
 
@@ -114,7 +114,16 @@ namespace SME.SGP.Dominio.Servicos
             if (aula.RecorrenciaAula == RecorrenciaAula.AulaUnica && aula.TipoAula == TipoAula.Reposicao)
             {
                 var aulas = await repositorioAula.ObterAulas(aula.TipoCalendarioId, aula.TurmaId, aula.UeId, usuario.CodigoRf);
-                var quantidadeDeAulasSomadas = aulas.ToList().FindAll(x => x.DataAula.Date == aula.DataAula.Date).Sum(x => x.Quantidade) + aula.Quantidade;
+                var aulasDia = aulas.ToList().FindAll(x => x.DataAula.Date == aula.DataAula.Date);
+                var quantidadeDeAulasSomadas = aulasDia.Sum(x => x.Quantidade) + aula.Quantidade;
+
+                if (usuario.EhProfessorCj())
+                {
+                    var contagemAulasDisciplina = aulasDia.Count(a => a.DisciplinaId == aula.DisciplinaId);
+
+                    if((contagemAulasDisciplina + aula.Quantidade) > 2)
+                        throw new NegocioException("Abrangência da turma não localizada.");
+                }
 
                 var abrangencia = await consultasAbrangencia.ObterAbrangenciaTurma(aula.TurmaId);
                 if (abrangencia == null)
@@ -128,7 +137,7 @@ namespace SME.SGP.Dominio.Servicos
                     PersistirWorkflowReposicaoAula(aula, abrangencia.NomeDre, abrangencia.NomeUe, nomeDisciplina,
                                                  abrangencia.NomeTurma, abrangencia.CodigoDre);
                     return "Aula cadastrada com sucesso e enviada para aprovação.";
-                }
+                }                
             }
             else
             {

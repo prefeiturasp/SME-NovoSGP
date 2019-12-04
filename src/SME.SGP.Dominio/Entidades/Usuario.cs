@@ -100,6 +100,20 @@ namespace SME.SGP.Dominio
             ExpiracaoRecuperacaoSenha = DateTime.Now.AddHours(6);
         }
 
+        public Guid ObterPerfilCJ()
+        {
+            if (Perfis == null || !Perfis.Any())
+            {
+                throw new NegocioException(MENSAGEM_ERRO_USUARIO_SEM_ACESSO);
+            }
+            var possuiPerfilCJ = Perfis.Any(c => c.CodigoPerfil == PERFIL_CJ);
+            if (possuiPerfilCJ)
+            {
+                return PERFIL_CJ;
+            }
+            return Perfis.FirstOrDefault().CodigoPerfil;
+        }
+
         public Guid ObterPerfilPrioritario()
         {
             if (Perfis == null || !Perfis.Any())
