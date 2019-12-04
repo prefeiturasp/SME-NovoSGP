@@ -16,6 +16,7 @@ import api from '~/servicos/api';
 import { setBreadcrumbManual } from '~/servicos/breadcrumb-services';
 import history from '~/servicos/history';
 import RotasDTO from '~/dtos/rotasDto';
+import { ModalConteudoHtml } from '~/componentes';
 
 const CadastroAula = ({ match }) => {
   const usuario = useSelector(store => store.usuario);
@@ -42,6 +43,7 @@ const CadastroAula = ({ match }) => {
   const [refForm, setRefForm] = useState({});
   const [ehReposicao, setEhReposicao] = useState(false);
   const [quantidadeRecorrencia, setQuantidadeRecorrencia] = useState(0);
+  const [visualizarFormExcRecorrencia, setVisualizarFormExcRecorrencia] = useState(true);
 
   const [valoresIniciais, setValoresIniciais] = useState({});
   const inicial = {
@@ -185,8 +187,11 @@ const CadastroAula = ({ match }) => {
     setNovoRegistro(false);
     if (aula && aula.data) {
       setDataAula(window.moment(aula.data.dataAula));
-      const serieRecorrencia = await api.get(`v1/calendarios/professores/aulas/${id}/recorrencias/serie`);
-      console.log(serieRecorrencia);
+      const respRecorrencia = await api.get(`v1/calendarios/professores/aulas/${id}/recorrencias/serie`);
+      if (respRecorrencia && respRecorrencia.data) {
+        const dataRecorrencia = respRecorrencia.data;
+        setQuantidadeRecorrencia(dataRecorrencia.recorrenciaAula);
+      }
       opcoesRecorrencia.forEach(item => {
         if (item.value === aula.data.recorrenciaAula || item.value === recorrencia.AULA_UNICA) {
           item.disabled = false;
@@ -295,11 +300,11 @@ const CadastroAula = ({ match }) => {
   };
 
   const onClickCadastrar = async valoresForm => {
-    if (valoresForm.recorrenciaAula !== recorrencia.AULA_UNICA) {
+    if (quantidadeRecorrencia > 0) {
       const confirmado = await confirmar(
         'Atenção',
         '',
-        'Você tem certeza que deseja alterar 20 ocorrências desta aula a partir desta data?',
+        `Você tem certeza que deseja alterar ${quantidadeRecorrencia} ocorrências desta aula a partir desta data?`,
         'Sim',
         'Não'
       );
@@ -374,14 +379,59 @@ const CadastroAula = ({ match }) => {
     });
   };
 
+  const getDataFormatada = () => {
+    const titulo = `${dataAula ? dataAula.format('dddd') : ''
+      }, ${dataAula ? dataAula.format('DD/MM/YYYY') : ''} `
+    return titulo;
+  }
+
   return (
     <>
       <Cabecalho
-        pagina={`Cadastro de Aula - ${
-          dataAula ? dataAula.format('dddd') : ''
-          }, ${dataAula ? dataAula.format('DD/MM/YYYY') : ''} `}
+        pagina={`Cadastro de Aula - ${getDataFormatada()}`}
       />
       <Card>
+        {/* <ModalConteudoHtml
+          key="reiniciarSenha"
+          visivel={visualizarFormExcRecorrencia}
+          onConfirmacaoPrincipal={() => { }}
+          onConfirmacaoSecundaria={() => { }}
+          onClose={() => { }}
+          labelBotaoPrincipal="Confirmar"
+          labelBotaoSecundario="Cancelar"
+          titulo={`Excluir aula - ${getDataFormatada()}`}
+          closable={false}
+        ><Formik
+          enableReinitialize
+          initialValues={valoresIniciais}
+          validationSchema={null}
+          ref={refFormik => setRefForm(refFormik)}
+          onSubmit={valores => onClickCadastrar(valores)}
+          validateOnChange
+          validateOnBlur
+        >
+            {form => (
+              <Form className="col-md-12 mb-4">
+                <div className="row justify-content-start">
+                  <div className="col-sm-12 col-md-12">
+                    <p>{`Essa aula se repete por ${quantidadeRecorrencia}${quantidadeRecorrencia > 1 ? 'vezes' : 'vez'} em seu planejamento.`}</p>
+                    <p>Qual opção de exclusão você deseja realizar?</p>
+                  </div>
+                  <div className="col-sm-12 col-md-12">
+                    <RadioGroupButton
+                      id="tipo-recorrencia-exclusao"
+                      form={form}
+                      label="Realizar exclusão"
+                      opcoes={opcoesTipoAula}
+                      name="tipoRecorrenciaExclusao"
+                      onChange={() => { }}
+                    />
+                  </div>
+                </div>
+              </Form>
+            )}
+          </Formik>
+        </ModalConteudoHtml> */}
         <Formik
           enableReinitialize
           initialValues={valoresIniciais}
