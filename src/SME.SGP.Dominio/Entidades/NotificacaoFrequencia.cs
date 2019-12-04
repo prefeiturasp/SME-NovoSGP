@@ -6,6 +6,9 @@ namespace SME.SGP.Dominio
     {
         public TipoNotificacaoFrequencia Tipo { get; set; }
         public long NotificacaoCodigo { get; set; }
+        public string DisciplinaId { get; set; }
+        public long AulaId { get; set; }
+        public Aula Aula { get; set; }
         public bool Excluido { get; set; }
     }
 }
