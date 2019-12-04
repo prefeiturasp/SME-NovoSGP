@@ -2,7 +2,6 @@
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
@@ -20,21 +19,14 @@ namespace SME.SGP.Aplicacao
 
         public async Task Salvar(AtribuicaoCJPersistenciaDto atribuicaoCJPersistenciaDto)
         {
-            var atribuicaoCJs = await repositorioAtribuicaoCJ.ObterPorFiltros(atribuicaoCJPersistenciaDto.Modalidade, atribuicaoCJPersistenciaDto.TurmaId,
-                atribuicaoCJPersistenciaDto.UeId, string.Empty, string.Empty, string.Empty);
+            var atribuicoesAtuais = await repositorioAtribuicaoCJ.ObterPorFiltros(atribuicaoCJPersistenciaDto.Modalidade, atribuicaoCJPersistenciaDto.TurmaId,
+               atribuicaoCJPersistenciaDto.UeId, 0, atribuicaoCJPersistenciaDto.UsuarioRf, string.Empty);
 
             foreach (var atribuicaoDto in atribuicaoCJPersistenciaDto.Disciplinas)
             {
-                var atribuicao = atribuicaoCJs.FirstOrDefault(a => a.DisciplinaId == atribuicaoDto.DisciplinaId);
+                var atribuicao = TransformaDtoEmEntidade(atribuicaoCJPersistenciaDto, atribuicaoDto);
 
-                if (atribuicao == null)
-                    atribuicao = TransformaDtoEmEntidade(atribuicaoCJPersistenciaDto, atribuicaoDto);
-                else
-                {
-                    if (atribuicao.Substituir != atribuicaoDto.Substituir)
-                        atribuicao.Substituir = atribuicaoDto.Substituir;
-                }
-                await servicoAtribuicaoCJ.Salvar(atribuicao);
+                await servicoAtribuicaoCJ.Salvar(atribuicao, atribuicoesAtuais);
             }
         }
 
