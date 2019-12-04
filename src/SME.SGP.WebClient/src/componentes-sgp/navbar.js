@@ -1,7 +1,8 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { Link } from 'react-router-dom';
-import { useSelector, useDispatch } from 'react-redux';
+import { useSelector } from 'react-redux';
 import styled from 'styled-components';
+import { store } from '../redux';
 import Filtro from './filtro';
 import LogoDoSgp from '../recursos/LogoDoSgp.svg';
 import { Base } from '../componentes/colors';
@@ -12,65 +13,66 @@ import history from '~/servicos/history';
 import { URL_LOGIN, URL_HOME } from '~/constantes/url';
 import { limparDadosFiltro } from '~/redux/modulos/filtro/actions';
 
+const Nav = styled.nav`
+  height: 70px !important;
+  padding-left: 15px !important;
+  padding-right: 15px !important;
+  @media (max-width: 767.98px) {
+    height: 140px !important;
+  }
+`;
+
+const Logo = styled.img`
+  height: 65px !important;
+  width: 75px !important;
+`;
+
+const Botoes = styled.div`
+  height: 45px !important;
+  z-index: 101;
+`;
+
+const Botao = styled.a`
+  display: block !important;
+  text-align: center !important;
+  cursor: pointer;
+`;
+
+const Icone = styled.i`
+  align-items: center !important;
+  background: ${Base.Roxo} !important;
+  border-radius: 50% !important;
+  color: ${Base.Branco} !important;
+  display: flex !important;
+  justify-content: center !important;
+  font-size: 15px !important;
+  height: 28px !important;
+  width: 28px !important;
+`;
+
+const Texto = styled.span`
+  font-size: 10px !important;
+`;
+
+const Div = styled.div`
+  margin-left: ${props =>
+    props.retraido ? '120px !important' : '260px !important'};
+  @media (max-width: 767.98px) {
+    left: 50%;
+    margin-left: 0 !important;
+    transform: translateX(-50%) translateY(-0.5rem);
+  }
+`;
+
 const Navbar = () => {
   const retraido = useSelector(state => state.navegacao.retraido);
-  const dispatch = useDispatch();
-
-  const Nav = styled.nav`
-    height: 70px !important;
-    padding-left: 15px !important;
-    padding-right: 15px !important;
-    @media (max-width: 767.98px) {
-      height: 140px !important;
-    }
-  `;
-
-  const Logo = styled.img`
-    height: 65px !important;
-    width: 75px !important;
-  `;
-
-  const Botoes = styled.div`
-    height: 45px !important;
-    z-index: 101;
-  `;
-
-  const Botao = styled.a`
-    display: block !important;
-    text-align: center !important;
-    cursor: pointer;
-  `;
-
-  const Icone = styled.i`
-    align-items: center !important;
-    background: ${Base.Roxo} !important;
-    border-radius: 50% !important;
-    color: ${Base.Branco} !important;
-    display: flex !important;
-    justify-content: center !important;
-    font-size: 15px !important;
-    height: 28px !important;
-    width: 28px !important;
-  `;
-
-  const Texto = styled.span`
-    font-size: 10px !important;
-  `;
-
-  const Div = styled.div`
-    margin-left: ${retraido ? '120px' : '260px'} !important;
-    @media (max-width: 767.98px) {
-      left: 50%;
-      margin-left: 0 !important;
-      transform: translateX(-50%) translateY(-0.5rem);
-    }
-  `;
 
   const onClickSair = () => {
-    dispatch(limparDadosFiltro());
-    dispatch(Deslogar());
+    store.dispatch(limparDadosFiltro());
+    store.dispatch(Deslogar());
     history.push(URL_LOGIN);
   };
+
   return (
     <Nav className="navbar navbar-expand-md navbar-light bg-white shadow-sm sticky-top py-0">
       <div className="container-fluid h-100">
@@ -118,7 +120,10 @@ const Navbar = () => {
               </ul>
             </Botoes>
           </div>
-          <Div className="d-flex align-self-xl-center align-self-lg-center align-self-md-end align-self-sm-end w-100 position-absolute mb-sm-2 mb-md-2">
+          <Div
+            retraido={retraido}
+            className="d-flex align-self-xl-center align-self-lg-center align-self-md-end align-self-sm-end w-100 position-absolute mb-sm-2 mb-md-2"
+          >
             <Filtro />
           </Div>
         </div>
