@@ -6,6 +6,8 @@ namespace SME.SGP.Aplicacao
 {
     public interface IConsultasUe
     {
-        Task<IEnumerable<ModalidadeRetornoDto>> ObterModalidadesPorUe(string ueCodigo);
+        Task<IEnumerable<ModalidadeRetornoDto>> ObterModalidadesPorUe(string ueCodigo, int ano);
+
+        Task<IEnumerable<TurmaRetornoDto>> ObterTurmas(string ueCodigo, int modalidadeId, int ano);
     }
 }
