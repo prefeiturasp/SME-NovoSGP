@@ -72,6 +72,22 @@ namespace SME.SGP.Dados.Repositorios
             return retornoPaginado;
         }
 
+        public async Task<AtividadeAvaliativa> ObterAtividadeAvaliativa(DateTime dataAvaliacao, string disciplinaId, string turmaId, string ueId)
+        {
+            StringBuilder query = new StringBuilder();
+            MontaQueryCabecalhoSimples(query);
+            query.AppendLine(fromCompleto);
+            MontaWhere(query, dataAvaliacao, null, ueId, null, null, turmaId);
+
+            return (await database.Conexao.QueryFirstOrDefaultAsync<AtividadeAvaliativa>(query.ToString(), new
+            {
+                dataAvaliacao,
+                disciplinaId,
+                turmaId,
+                ueId
+            }));
+        }
+
         public async Task<IEnumerable<AtividadeAvaliativa>> ObterAtividadesPorDia(string dreId, string ueId, DateTime dataAvaliacao, string professorRf, string turmaId)
         {
             StringBuilder query = new StringBuilder();
@@ -114,14 +130,14 @@ namespace SME.SGP.Dados.Repositorios
             query.AppendLine(fromCompleto);
             MontaWhere(query, dataAvaliacao, null, ueId, null, null, turmaId, professorRf, null, null, false, disciplinaId);
 
-            var resultado = (await database.Conexao.QueryAsync<AtividadeAvaliativa>(query.ToString(), new
+            var resultado = await database.Conexao.QueryAsync<AtividadeAvaliativa>(query.ToString(), new
             {
                 dataAvaliacao,
                 disciplinaId,
                 ueId,
                 turmaId,
                 professorRf
-            }));
+            });
 
             return resultado.Any();
         }
@@ -232,6 +248,21 @@ namespace SME.SGP.Dados.Repositorios
             query.AppendLine("ta.situacao");
         }
 
+        private static void MontaQueryCabecalhoSimples(StringBuilder query)
+        {
+            query.AppendLine("select");
+            query.AppendLine("a.id,");
+            query.AppendLine("a.dre_id,");
+            query.AppendLine("a.ue_id,");
+            query.AppendLine("a.professor_rf,");
+            query.AppendLine("a.turma_id,");
+            query.AppendLine("a.categoria_id,");
+            query.AppendLine("a.tipo_avaliacao_id,");
+            query.AppendLine("a.nome_avaliacao,");
+            query.AppendLine("a.descricao_avaliacao,");
+            query.AppendLine("a.data_avaliacao");
+        }
+
         private void MontaWhere(StringBuilder query,
             DateTime? dataAvaliacao = null,
             string dreId = null,
@@ -246,7 +277,8 @@ namespace SME.SGP.Dados.Repositorios
             string disciplinaId = null,
             bool? ehRegencia = null,
             int? mes = null,
-            int? ano = null)
+            int? ano = null,
+            long? id = null)
         {
             query.AppendLine("where");
             query.AppendLine("a.excluido = false");
@@ -290,6 +322,8 @@ namespace SME.SGP.Dados.Repositorios
                 query.AppendLine("AND extract(month from a.data_avaliacao) = @mes");
             if (ano.HasValue)
                 query.AppendLine("AND extract(year from a.data_avaliacao) = @ano");
+            if (id.HasValue)
+                query.AppendLine("AND a.id = @id");
         }
     }
 }

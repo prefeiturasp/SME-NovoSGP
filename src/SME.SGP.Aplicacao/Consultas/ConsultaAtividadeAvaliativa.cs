@@ -46,6 +46,7 @@ namespace SME.SGP.Aplicacao
         {
             return atividadeAvaliativa == null ? null : new AtividadeAvaliativaCompletaDto
             {
+                Id = atividadeAvaliativa.Id,
                 CategoriaId = (CategoriaAtividadeAvaliativa)atividadeAvaliativa.CategoriaId,
                 DataAvaliacao = atividadeAvaliativa.DataAvaliacao,
                 Descricao = atividadeAvaliativa.DescricaoAvaliacao,
@@ -61,7 +62,7 @@ namespace SME.SGP.Aplicacao
                 CriadoEm = atividadeAvaliativa.CriadoEm,
                 CriadoPor = atividadeAvaliativa.CriadoPor,
                 CriadoRF = atividadeAvaliativa.CriadoRF,
-                Categoria = atividadeAvaliativa.TipoAvaliacao.Descricao,
+                Categoria = atividadeAvaliativa.TipoAvaliacao?.Descricao,
                 EhRegencia = atividadeAvaliativa.EhRegencia,
                 DisciplinaContidaRegenciaId = atividadeAvaliativa.DisciplinaContidaRegenciaId
             };
