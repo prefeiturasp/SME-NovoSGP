@@ -1,13 +1,12 @@
 ﻿import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
-import styled from 'styled-components';
 import { useSelector } from 'react-redux';
 import shortid from 'shortid';
 import { Base, Colors } from '~/componentes/colors';
 import api from '~/servicos/api';
 import history from '~/servicos/history';
 import Grid from '~/componentes/grid';
-import Button from '~/componentes/button';
+import { Div, Evento, Botao, BotoesAuxiliaresEstilo } from './DiaCompleto.css';
 import { store } from '~/redux';
 import {
   selecionaDia,
@@ -15,29 +14,6 @@ import {
 } from '~/redux/modulos/calendarioProfessor/actions';
 import TiposEventoAulaDTO from '~/dtos/tiposEventoAula';
 import RotasDTO from '~/dtos/rotasDto';
-
-const Div = styled.div``;
-const Evento = styled(Div)`
-  &:hover {
-    background: ${Base.Roxo};
-    color: ${Base.Branco};
-  }
-`;
-const Botao = styled(Button)`
-  ${Evento}:hover & {
-    background: transparent !important;
-    border-color: ${Base.Branco} !important;
-    color: ${Base.Branco} !important;
-  }
-`;
-const BotoesAuxiliaresEstilo = styled(Div)`
-  align-items: right;
-  display: flex;
-  justify-content: flex-end;
-  padding: 16px;
-  padding-bottom: 0;
-  width: 100%;
-`;
 
 const SemEvento = () => {
   return (
@@ -139,7 +115,7 @@ const DiaCompleto = props => {
   const BotoesAuxiliares = () => {
     return (
       <BotoesAuxiliaresEstilo>
-        <Button
+        <Botao
           key={shortid.generate()}
           onClick={aoClicarBotaoNovaAvaliacao}
           label="Nova Avaliação"
@@ -147,7 +123,7 @@ const DiaCompleto = props => {
           disabled={permissaoTela && !permissaoTela.podeIncluir}
           className="mr-3"
         />
-        <Button
+        <Botao
           key={shortid.generate()}
           onClick={aoClicarBotaoNovaAula}
           label="Nova Aula"
@@ -179,7 +155,7 @@ const DiaCompleto = props => {
     if (tipo === TiposEventoAulaDTO.Aula || tipo === TiposEventoAulaDTO.CJ) {
       history.push(`${RotasDTO.CADASTRO_DE_AULA}/editar/${id}`);
     } else {
-      history.push(`/calendario-escolar/eventos/editar/${id}`);
+      history.push(`${RotasDTO.EVENTOS}/editar/${id}`);
     }
   };
 

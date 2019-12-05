@@ -11,9 +11,8 @@ import CampoTexto from '~/componentes/campoTexto';
 import SelectComponent from '~/componentes/select';
 import { Colors, Label } from '~/componentes';
 import history from '~/servicos/history';
-import api from '~/servicos/api';
 import TextEditor from '~/componentes/textEditor';
-import { Div, Titulo } from './avaliacaoStyled';
+import { Div, Titulo } from './avaliacao.css';
 import RotasDTO from '~/dtos/rotasDto';
 import ServicoAvaliacao from '~/servicos/Paginas/Calendario/ServicoAvaliacao';
 import { erro, sucesso, confirmar } from '~/servicos/alertas';
@@ -33,14 +32,27 @@ const AvaliacaoForm = ({ match }) => {
     }
   };
 
-  const clicouBotaoExcluir = async () => {};
+  const [idAvaliacao, setIdAvaliacao] = useState('');
+
+  const clicouBotaoExcluir = async () => {
+    const confirmado = await confirmar(
+      'Atenção',
+      'Você tem certeza que deseja excluir este registro?'
+    );
+    if (confirmado) {
+      const exclusao = await ServicoAvaliacao.excluir(idAvaliacao);
+      if (exclusao && exclusao.status === 200) {
+        history.push(RotasDTO.CALENDARIO_PROFESSOR);
+      } else {
+        erro(exclusao);
+      }
+    }
+  };
 
   const clicouBotaoCadastrar = (form, e) => {
     e.persist();
     form.validateForm().then(() => form.handleSubmit(e));
   };
-
-  const [idAvaliacao, setIdAvaliacao] = useState('');
 
   const eventoAulaCalendarioEdicao = useSelector(
     store => store.calendarioProfessor.eventoAulaCalendarioEdicao
@@ -54,22 +66,39 @@ const AvaliacaoForm = ({ match }) => {
 
   const cadastrarAvaliacao = async dados => {
     const avaliacao = {};
-    avaliacao.dreId = eventoAulaCalendarioEdicao.dre;
-    avaliacao.turmaId = eventoAulaCalendarioEdicao.turma;
-    avaliacao.ueId = eventoAulaCalendarioEdicao.unidadeEscolar;
+
+    if (eventoAulaCalendarioEdicao) {
+      avaliacao.dreId = eventoAulaCalendarioEdicao.dre;
+      avaliacao.turmaId = eventoAulaCalendarioEdicao.turma;
+      avaliacao.ueId = eventoAulaCalendarioEdicao.unidadeEscolar;
+    }
+
     avaliacao.dataAvaliacao = window.moment(diaAvaliacao).format();
     avaliacao.descricao = descricao;
 
-    ServicoAvaliacao.salvar(idAvaliacao, { ...dados, ...avaliacao })
-      .then(() => {
-        sucesso(
-          `Avaliação ${idAvaliacao ? 'atualizada' : 'cadastrada'} com sucesso!`
-        );
-        history.push(RotasDTO.CALENDARIO_PROFESSOR);
-      })
-      .catch(() => {
-        erro(`Erro ao ${idAvaliacao ? 'atualizar' : 'cadastrar'} a avaliação!`);
-      });
+    const validacao = await ServicoAvaliacao.validar({
+      ...dados,
+      ...avaliacao,
+    });
+
+    if (validacao && validacao.status === 200) {
+      ServicoAvaliacao.salvar(idAvaliacao, { ...dados, ...avaliacao })
+        .then(() => {
+          sucesso(
+            `Avaliação ${
+              idAvaliacao ? 'atualizada' : 'cadastrada'
+            } com sucesso.`
+          );
+          history.push(RotasDTO.CALENDARIO_PROFESSOR);
+        })
+        .catch(() => {
+          erro(
+            `Erro ao ${idAvaliacao ? 'atualizar' : 'cadastrar'} a avaliação.`
+          );
+        });
+    } else {
+      erro(validacao);
+    }
   };
 
   const [validacoes] = useState(
@@ -92,6 +121,7 @@ const AvaliacaoForm = ({ match }) => {
     { label: 'Interdisciplinar', value: 2 },
   ]);
   const [listaDisciplinas, setListaDisciplinas] = useState([]);
+  const [temRegencia, setTemRegencia] = useState(false);
 
   const campoNomeRef = useRef(null);
   const textEditorRef = useRef(null);
@@ -119,8 +149,9 @@ const AvaliacaoForm = ({ match }) => {
   const turmaId = turmaSelecionada ? turmaSelecionada.turma : 0;
 
   const obterDisciplinas = async () => {
-    const disciplinas = await api.get(
-      `v1/professores/${usuario.rf}/turmas/${turmaId}/disciplinas`
+    const disciplinas = await ServicoAvaliacao.listarDisciplinas(
+      usuario.rf,
+      turmaId
     );
     if (disciplinas.data) setListaDisciplinas(disciplinas.data);
   };
@@ -140,7 +171,7 @@ const AvaliacaoForm = ({ match }) => {
   const [listaTiposAvaliacao, setListaTiposAvaliacao] = useState([]);
 
   const obterlistaTiposAvaliacao = async () => {
-    const tipos = await api.get('v1/atividade-avaliativa/tipos/listar');
+    const tipos = await ServicoAvaliacao.listarTipos();
     if (tipos.data && tipos.data.items) {
       const lista = [];
       tipos.data.items.forEach(tipo => {
@@ -152,9 +183,10 @@ const AvaliacaoForm = ({ match }) => {
 
   useEffect(() => {
     setdataAvaliacao(window.moment(diaAvaliacao));
-    setDadosAvaliacao(inicial);
     obterDisciplinas();
     obterlistaTiposAvaliacao();
+
+    if (!idAvaliacao) setDadosAvaliacao(inicial);
 
     if (match && match.params && match.params.id)
       setIdAvaliacao(match.params.id);
@@ -267,7 +299,6 @@ const AvaliacaoForm = ({ match }) => {
                     type="input"
                     form={form}
                     ref={campoNomeRef}
-                    icon
                   />
                 </Grid>
               </Div>
