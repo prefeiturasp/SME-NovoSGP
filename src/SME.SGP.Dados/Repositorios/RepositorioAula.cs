@@ -130,7 +130,7 @@ namespace SME.SGP.Dados.Repositorios
             query.AppendLine("from aula ");
             query.AppendLine("where not excluido ");
 
-            if (string.IsNullOrEmpty(codigoRf))
+            if (!string.IsNullOrEmpty(codigoRf))
                 query.AppendLine("and professor_rf = @codigoRf");
 
             query.AppendLine("and turma_id = @turma ");
