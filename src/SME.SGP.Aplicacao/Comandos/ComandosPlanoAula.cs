@@ -207,8 +207,8 @@ namespace SME.SGP.Aplicacao
             var turmasAtribuidasAoProfessor = consultasProfessor.Listar(codigoRf);
             var idsTurmasSelecionadas = migrarPlanoAulaDto.IdsPlanoTurmasDestino.Select(x => x.TurmaId).ToList();
 
-            await ValidaTurmasProfessor(ehProfessorCj, ueId, 
-                                  migrarPlanoAulaDto.DisciplinaId, 
+            await ValidaTurmasProfessor(ehProfessorCj, ueId,
+                                  migrarPlanoAulaDto.DisciplinaId,
                                   codigoRf,
                                   turmasAtribuidasAoProfessor,
                                   idsTurmasSelecionadas);
@@ -223,21 +223,24 @@ namespace SME.SGP.Aplicacao
         {
             var idsTurmasProfessor = turmasAtribuidasAoProfessor?.Select(c => c.CodTurma).ToList();
 
-            if (ehProfessorCJ)
-            {
-                foreach (var idTurma in idsTurmasSelecionadas)
-                {
-                    IEnumerable<AtribuicaoCJ> lstTurmasCJ = await
-                         repositorioAtribuicaoCJ.ObterPorFiltros(null, idTurma, ueId, Convert.ToInt64(disciplinaId), codigoRf, null, null);
+            IEnumerable<AtribuicaoCJ> lstTurmasCJ = await
+                         repositorioAtribuicaoCJ.ObterPorFiltros(null, null, ueId, Convert.ToInt64(disciplinaId), codigoRf, null, null);
 
-                    if (lstTurmasCJ == null || !lstTurmasCJ.Any())
-                        throw new NegocioException("Somente é possível migrar o plano de aula para turmas atribuidas ao professor CJ");
-                }
-            }
-            else if (idsTurmasProfessor == null || idsTurmasSelecionadas.Any(c => !idsTurmasProfessor.Contains(Convert.ToInt32(c))))
-            {
+            if (
+                    (
+                        ehProfessorCJ &&
+                        (
+                            lstTurmasCJ == null || 
+                            idsTurmasSelecionadas.Any(c => !lstTurmasCJ.Select(tcj => tcj.TurmaId).Contains(c))
+                        )
+                    ) ||
+                    (
+                        idsTurmasProfessor == null || 
+                        idsTurmasSelecionadas.Any(c => !idsTurmasProfessor.Contains(Convert.ToInt32(c)))
+                    )
+
+               )
                 throw new NegocioException("Somente é possível migrar o plano de aula para turmas atribuidas ao professor");
-            }
         }
 
         private void ValidaTurmasAno(bool ehProfessorCJ, bool migrarObjetivos,
