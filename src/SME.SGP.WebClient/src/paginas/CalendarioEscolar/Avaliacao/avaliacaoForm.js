@@ -290,8 +290,7 @@ const AvaliacaoForm = ({ match }) => {
                         // data-index={indice}
                         // alt={materia.materia}
                         // key={materia.codigo}
-
-                        className={`badge badge-pill border text-dark bg-white font-weight-light px-2 py-1 mr-2`}
+                        className="badge badge-pill border text-dark bg-white font-weight-light px-2 py-1 mr-2"
                       >
                         {disciplina}
                       </Badge>
