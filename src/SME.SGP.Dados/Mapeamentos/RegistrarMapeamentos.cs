@@ -51,6 +51,12 @@ namespace SME.SGP.Dados.Mapeamentos
                config.AddMap(new TurmaMap());
                config.AddMap(new AbrangenciaMap());
                config.AddMap(new FrequenciaAlunoMap());
+               config.AddMap(new NotaConceitoMap());
+               config.AddMap(new NotaTipoValorMap());
+               config.AddMap(new NotaParametroMap());
+               config.AddMap(new ConceitoValorMap());
+               config.AddMap(new NotaConceitoCicloParametroMap());
+
                config.ForDommel();
            });
         }

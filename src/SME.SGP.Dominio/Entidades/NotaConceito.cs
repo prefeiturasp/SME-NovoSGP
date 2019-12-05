@@ -14,7 +14,7 @@ namespace SME.SGP.Dominio
         public void Validar(string professorRf)
         {
             if (!CriadoRF.Equals(professorRf))
-                throw new NegocioException("Não e possivel alterar a nota atribuida por outro professor");
+                throw new NegocioException("Não é possivel alterar a nota atribuida por outro professor");
         }
 
         public void ValidarConceitos(IEnumerable<Conceito> conceitos, string nomeAluno)
@@ -31,12 +31,12 @@ namespace SME.SGP.Dominio
                 throw new NegocioException($"A nota informada para o aluno {nomeAluno} é menor que o minimo permitido");
 
             if (Nota > notaParametro.Maxima)
-                throw new NegocioException($"A nota informada para o aluno {nomeAluno} é maior que o maximo permitido");
+                throw new NegocioException($"A nota informada para o aluno {nomeAluno} é maior que o máximo permitido");
 
             var resto = Nota % notaParametro.Incremento;
 
             if (resto > 0)
-                throw new NegocioException($"A nota informada para o aluno {nomeAluno} não possui um valor valido");
+                throw new NegocioException($"A nota informada para o aluno {nomeAluno} não possui um valor válido");
         }
     }
 }
