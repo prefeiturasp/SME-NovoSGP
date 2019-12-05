@@ -37,7 +37,7 @@ namespace SME.SGP.Dados.Repositorios
 
         public IEnumerable<AulasPorTurmaDisciplinaDto> ObterAulasSemRegistroFrequencia(string turmaId, string disciplinaId)
         {
-            var query = @"select id, professor_rf as professorId, a.data_aula as dataAula, a.quantidade 
+            var query = @"select a.id, a.professor_rf as professorId, a.data_aula as dataAula, a.quantidade 
                           from aula a
                           left join registro_frequencia r on r.aula_id = a.id
                          where not a.excluido
