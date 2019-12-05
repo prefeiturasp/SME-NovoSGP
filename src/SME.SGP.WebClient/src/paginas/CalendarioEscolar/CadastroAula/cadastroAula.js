@@ -58,6 +58,7 @@ const CadastroAula = ({ match }) => {
     tipoCalendarioId: '',
     ueId: '',
     turmaId: '',
+    dataAulaCompleta: window.moment(diaAula),
   };
 
   const opcoesTipoAula = [
@@ -138,6 +139,7 @@ const CadastroAula = ({ match }) => {
       tipoAula: Yup.string().required('Tipo obrigatório'),
       disciplinaId: Yup.string().required('Disciplina obrigatório'),
       dataAula: momentSchema.required('Hora obrigatória'),
+      dataAulaCompleta: momentSchema.required('Data obrigatória'),
       recorrenciaAula: Yup.string().required('Recorrência obrigatória'),
       quantidadeTexto: controlaQuantidadeAula
         ? validacaoQuantidade.lessThan(
@@ -212,7 +214,7 @@ const CadastroAula = ({ match }) => {
         tipoCalendarioId: aula.data.tipoCalendarioId,
         ueId: aula.data.ueId,
         turmaId: aula.data.turmaId,
-        dataAulaCompleta: dataAula,
+        dataAulaCompleta: window.moment(aula.data.dataAula),
       };
       if (aula.data.quantidade > 0 && aula.data.quantidade < 3) {
         val.quantidadeRadio = aula.data.quantidade;
@@ -337,6 +339,10 @@ const CadastroAula = ({ match }) => {
   };
 
   const salvar = async valoresForm => {
+    const data = valoresForm.dataAulaCompleta.format('YYYY-MM-DD');
+    const hora = valoresForm.dataAula.format('HH:mm:SS');
+    valoresForm.dataAula = window.moment(`${data}T${hora}`);
+
     if (valoresForm.quantidadeRadio && valoresForm.quantidadeRadio > 0) {
       valoresForm.quantidade = valoresForm.quantidadeRadio;
     } else if (valoresForm.quantidadeTexto && valoresForm.quantidadeTexto > 0) {
@@ -444,7 +450,7 @@ const CadastroAula = ({ match }) => {
             {form => (
               <Form className="col-md-12 mb-4">
                 <div className="row justify-content-start">
-                  <div className="col-sm-12 col-md-12">
+                  <div className="col-sm-12 col-md-12" style={{ paddingTop: '10px' }}>
                     <p>{`Essa aula se repete por ${quantidadeRecorrencia}${quantidadeRecorrencia > 1 ? ' vezes' : ' vez'} em seu planejamento.`}</p>
                     <p>Qual opção de exclusão você deseja realizar?</p>
                   </div>
@@ -482,7 +488,7 @@ const CadastroAula = ({ match }) => {
                     formatoData="DD/MM/YYYY"
                     label=""
                     name="dataAulaCompleta"
-                    onChange={() => { }}
+                    onChange={onChangeCampos}
                   />
                 </div>
                 <div className="col-md-10 pb-2 d-flex justify-content-end">
