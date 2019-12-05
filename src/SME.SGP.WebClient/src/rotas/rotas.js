@@ -39,6 +39,7 @@ import CadastroAula from '~/paginas/CalendarioEscolar/CadastroAula/cadastroAula'
 import CalendarioProfessor from '~/paginas/CalendarioProfessor/Calendario';
 import FrequenciaPlanoAula from '~/paginas/DiarioClasse/FrequenciaPlanoAula/frequenciaPlanoAula';
 import Notas from '~/paginas/DiarioClasse/Notas/notas';
+import AulaDadaAulaPrevista from '~/paginas/DiarioClasse/AulaDadaAulaPrevista/aulaDadaAulaPrevista';
 
 export default function Rotas() {
   const rotas = new Map();
@@ -458,6 +459,16 @@ export default function Rotas() {
     menu: ['Diário de Classe'],
     parent: '/',
     component: Notas,
+    exact: true,
+    tipo: RotasTipo.EstruturadaAutenticada,
+    temPermissionamento: false,
+  });
+
+  rotas.set(`${RotasDto.AULA_DADA_AULA_PREVISTA}`, {
+    breadcrumbName: 'Aula dada X Aula prevista',
+    menu: ['Diário de Classe'],
+    parent: '/',
+    component: AulaDadaAulaPrevista,
     exact: true,
     tipo: RotasTipo.EstruturadaAutenticada,
     temPermissionamento: false,
