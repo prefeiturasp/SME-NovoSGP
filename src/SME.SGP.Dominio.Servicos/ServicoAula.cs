@@ -111,14 +111,14 @@ namespace SME.SGP.Dominio.Servicos
             {
                 IEnumerable<AtribuicaoCJ> lstDisciplinasProfCJ = await repositorioAtribuicaoCJ.ObterPorFiltros(null, aula.TurmaId, aula.UeId, 0, usuario.CodigoRf, usuario.Nome, null);
 
-                if (lstDisciplinasProfCJ == null || lstDisciplinasProfCJ.Any())
+                if (lstDisciplinasProfCJ != null && lstDisciplinasProfCJ.Any())
                     disciplinasProfessor = lstDisciplinasProfCJ.Select(d => d.DisciplinaId);
             }
             else
             {
                 IEnumerable<DisciplinaResposta> lstDisciplinasProf = await servicoEOL.ObterDisciplinasPorCodigoTurmaLoginEPerfil(aula.TurmaId, usuario.Login, usuario.PerfilAtual);
 
-                if(lstDisciplinasProf == null || lstDisciplinasProf.Any())
+                if(lstDisciplinasProf != null && lstDisciplinasProf.Any())
                     disciplinasProfessor = lstDisciplinasProf.Select(d => Convert.ToInt64(d.CodigoComponenteCurricular));
             }
 
