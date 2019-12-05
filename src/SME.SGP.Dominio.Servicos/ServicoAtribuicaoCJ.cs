@@ -41,7 +41,7 @@ namespace SME.SGP.Dominio.Servicos
 
             if (atribuicoesAtuais == null)
                 atribuicoesAtuais = await repositorioAtribuicaoCJ.ObterPorFiltros(atribuicaoCJ.Modalidade, atribuicaoCJ.TurmaId,
-                    atribuicaoCJ.UeId, 0, atribuicaoCJ.ProfessorRf, string.Empty);
+                    atribuicaoCJ.UeId, 0, atribuicaoCJ.ProfessorRf, string.Empty, null);
 
             var atribuicaoJaCadastrada = atribuicoesAtuais.FirstOrDefault(a => a.DisciplinaId == atribuicaoCJ.DisciplinaId);
 
