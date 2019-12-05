@@ -152,15 +152,15 @@ const Dia = props => {
                       TiposEventoAulaDTO.CJ &&
                       'text-white badge-cj'} ${tipoEvento !==
                       TiposEventoAulaDTO.Aula &&
-                      (tipoEvento !== TiposEventoAulaDTO.CJ &&
-                        'badge-light')} ml-auto mr-0`}
+                      tipoEvento !== TiposEventoAulaDTO.CJ &&
+                      'badge-light'} ml-auto mr-0`}
                   >
                     {tipoEvento}
                   </TipoEvento>
                 );
               })}
               {tipoEventosDiaLista.quantidadeDeEventosAulas > 2 && (
-                <Div style={{ fontSize: 10 }}>
+                <Div style={{ fontSize: 10, textAlign: 'right' }}>
                   Mais {tipoEventosDiaLista.quantidadeDeEventosAulas} eventos
                 </Div>
               )}
