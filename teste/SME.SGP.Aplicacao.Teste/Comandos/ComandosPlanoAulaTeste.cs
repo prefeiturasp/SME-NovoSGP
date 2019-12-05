@@ -19,6 +19,7 @@ namespace SME.SGP.Aplicacao.Teste.Comandos
         private readonly Mock<IConsultasProfessor> consultasProfessor;
         private readonly Mock<IRepositorioAbrangencia> repositorioAbrangencia;
         private readonly Mock<IRepositorioAula> repositorioAula;
+        private readonly Mock<IRepositorioObjetivoAprendizagemPlano> repositorioObjetivoAprendizagemPlano;
         private readonly Mock<IRepositorioObjetivoAprendizagemAula> repositorioObjetivosAula;
         private readonly Mock<IRepositorioPlanoAula> repositorioPlanoAula;
         private readonly Mock<IServicoUsuario> servicoUsuario;
@@ -37,6 +38,7 @@ namespace SME.SGP.Aplicacao.Teste.Comandos
             repositorioAula = new Mock<IRepositorioAula>();
             servicoUsuario = new Mock<IServicoUsuario>();
             repositorioAbrangencia = new Mock<IRepositorioAbrangencia>();
+            repositorioObjetivoAprendizagemPlano = new Mock<IRepositorioObjetivoAprendizagemPlano>();
             unitOfWork = new Mock<IUnitOfWork>();
             consultasAbrangencia = new ConsultasAbrangencia(repositorioAbrangencia.Object, servicoUsuario.Object);
             consultasPlanoAnual = new Mock<IConsultasPlanoAnual>();
@@ -45,6 +47,7 @@ namespace SME.SGP.Aplicacao.Teste.Comandos
 
             comandosPlanoAula = new ComandosPlanoAula(repositorioPlanoAula.Object,
                                                     repositorioObjetivosAula.Object,
+                                                    repositorioObjetivoAprendizagemPlano.Object,
                                                     repositorioAula.Object,
                                                     consultasAbrangencia,
                                                     consultasObjetivosAprendizagem.Object,
