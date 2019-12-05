@@ -416,6 +416,11 @@ namespace SME.SGP.Aplicacao.Integracoes
             throw new NegocioException(mensagem);
         }
 
+        public bool ValidarProfessor(string professorRf)
+        {
+            return true;
+        }
+
         private IEnumerable<DisciplinaDto> MapearParaDtoDisciplinas(IEnumerable<RetornoDisciplinaDto> disciplinas)
         {
             return disciplinas.Select(x => new DisciplinaDto
