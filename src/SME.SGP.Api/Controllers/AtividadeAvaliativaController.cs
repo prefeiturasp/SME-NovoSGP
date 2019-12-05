@@ -35,7 +35,7 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [ProducesResponseType(typeof(RetornoBaseDto), 601)]
         [Permissao(Permissao.CP_E, Policy = "Bearer")]
-        public async Task<IActionResult> ExcluirAsync(long id)
+        public async Task<IActionResult> Excluir(long id)
         {
             await comandoAtividadeAvaliativa.Excluir(id);
             return Ok();

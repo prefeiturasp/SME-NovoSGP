@@ -103,6 +103,19 @@ namespace SME.SGP.Aplicacao
                 Where(c => objetivosPlano.Any(o => o.ObjetivoAprendizagemJuremaId == c.Id));
         }
 
+        public async Task<ObjetivoAprendizagemSimplificadoDto> ObterAprendizagemSimplificadaPorId(long id)
+        {
+            IEnumerable<ObjetivoAprendizagemDto> lstObjAprendizagemDtos = await Listar();
+
+            ObjetivoAprendizagemDto objetivoDto = lstObjAprendizagemDtos.Where(obj => obj.Id == id).FirstOrDefault();
+
+            return new ObjetivoAprendizagemSimplificadoDto()
+            {
+                Id = objetivoDto.Id,
+                IdComponenteCurricular = objetivoDto.IdComponenteCurricular
+            };
+        }
+
         private IEnumerable<ObjetivoAprendizagemDto> MapearParaDto(IEnumerable<ObjetivoAprendizagemResposta> objetivos)
         {
             foreach (var objetivoDto in objetivos)
@@ -122,6 +135,15 @@ namespace SME.SGP.Aplicacao
                     };
                 }
             }
+        }
+
+        private ObjetivoAprendizagemSimplificadoDto MapearParaDto(ObjetivoAprendizagemPlano objetivo)
+        {
+            return new ObjetivoAprendizagemSimplificadoDto()
+            {
+                Id = objetivo.Id,
+                IdComponenteCurricular = objetivo.ComponenteCurricularId
+            };
         }
 
         private IEnumerable<ComponenteCurricular> ObterComponentesCurriculares()
