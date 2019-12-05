@@ -124,7 +124,7 @@ const DiaCompleto = props => {
     );
 
     history.push(
-      `/calendario-professor/cadastro-aula/novo/${tipoCalendarioSelecionado}`
+      `calendario-professor/cadastro-aula/novo/${tipoCalendarioSelecionado}`
     );
   };
 
@@ -173,91 +173,91 @@ const DiaCompleto = props => {
     estaAberto && (
       <Div className="border-bottom border-top-0 h-100 p-3">
         {eventosDia &&
-        eventosDia.eventosAulas &&
-        eventosDia.eventosAulas.length > 0 ? (
-          <Div className="list-group list-group-flush fade show">
-            {eventosDia.eventosAulas.map(evento => {
-              return (
-                <Evento
-                  key={shortid.generate()}
-                  className="list-group-item list-group-item-action d-flex rounded"
-                  onClick={() => aoClicarEvento(evento.id, evento.tipoEvento)}
-                  style={{ cursor: 'pointer' }}
-                >
-                  <Grid
-                    cols={
-                      (evento.tipoEvento === TiposEventoAulaDTO.Aula && 1) ||
-                      (evento.tipoEvento === TiposEventoAulaDTO.CJ && 1) ||
-                      2
-                    }
-                    className="pl-0"
+          eventosDia.eventosAulas &&
+          eventosDia.eventosAulas.length > 0 ? (
+            <Div className="list-group list-group-flush fade show">
+              {eventosDia.eventosAulas.map(evento => {
+                return (
+                  <Evento
+                    key={shortid.generate()}
+                    className="list-group-item list-group-item-action d-flex rounded"
+                    onClick={() => aoClicarEvento(evento.id, evento.tipoEvento)}
+                    style={{ cursor: 'pointer' }}
                   >
-                    <Botao
-                      label={evento.tipoEvento}
-                      color={
-                        (evento.tipoEvento === TiposEventoAulaDTO.Aula &&
-                          Colors.Roxo) ||
-                        (evento.tipoEvento === TiposEventoAulaDTO.CJ &&
-                          Colors.Laranja) ||
-                        Colors.CinzaBotao
+                    <Grid
+                      cols={
+                        (evento.tipoEvento === TiposEventoAulaDTO.Aula && 1) ||
+                        (evento.tipoEvento === TiposEventoAulaDTO.CJ && 1) ||
+                        2
                       }
-                      className="w-100"
-                      height={
-                        evento.tipoEvento === TiposEventoAulaDTO.Aula ||
-                        evento.tipoEvento === TiposEventoAulaDTO.CJ
-                          ? '38px'
-                          : 'auto'
-                      }
-                      border
-                      steady
-                    />
-                  </Grid>
-                  {(evento.tipoEvento === TiposEventoAulaDTO.Aula ||
-                    evento.tipoEvento === TiposEventoAulaDTO.CJ) &&
-                    evento.dadosAula && (
-                      <Grid cols={1} className="px-0">
-                        <Botao
-                          label={window
-                            .moment(evento.dadosAula.horario, 'HH')
-                            .format('HH:mm')}
-                          color={Colors.CinzaBotao}
-                          className="w-100 px-2"
-                          border
-                          steady
-                        />
-                      </Grid>
-                    )}
-                  <Grid
-                    cols={
-                      evento.tipoEvento === TiposEventoAulaDTO.Aula ||
-                      evento.tipoEvento === TiposEventoAulaDTO.CJ
-                        ? 10
-                        : 11
-                    }
-                    className="align-self-center font-weight-bold pl-0"
-                  >
-                    <Div
-                      className={`${(evento.tipoEvento ===
-                        TiposEventoAulaDTO.Aula ||
-                        evento.tipoEvento === TiposEventoAulaDTO.CJ) &&
-                        'pl-3'}`}
+                      className="pl-0"
                     >
-                      {evento.tipoEvento !== TiposEventoAulaDTO.Aula &&
-                        evento.tipoEvento !== TiposEventoAulaDTO.CJ &&
-                        (evento.descricao ? evento.descricao : 'Evento')}
-                      {(evento.tipoEvento === TiposEventoAulaDTO.Aula ||
-                        evento.tipoEvento === TiposEventoAulaDTO.CJ) &&
-                        evento.dadosAula &&
-                        `${evento.dadosAula.turma} - ${evento.dadosAula.modalidade} - ${evento.dadosAula.tipo} - ${evento.dadosAula.unidadeEscolar} - ${evento.dadosAula.disciplina}`}
-                    </Div>
-                  </Grid>
-                </Evento>
-              );
-            })}
-          </Div>
-        ) : (
-          <SemEvento />
-        )}
+                      <Botao
+                        label={evento.tipoEvento}
+                        color={
+                          (evento.tipoEvento === TiposEventoAulaDTO.Aula &&
+                            Colors.Roxo) ||
+                          (evento.tipoEvento === TiposEventoAulaDTO.CJ &&
+                            Colors.Laranja) ||
+                          Colors.CinzaBotao
+                        }
+                        className="w-100"
+                        height={
+                          evento.tipoEvento === TiposEventoAulaDTO.Aula ||
+                            evento.tipoEvento === TiposEventoAulaDTO.CJ
+                            ? '38px'
+                            : 'auto'
+                        }
+                        border
+                        steady
+                      />
+                    </Grid>
+                    {(evento.tipoEvento === TiposEventoAulaDTO.Aula ||
+                      evento.tipoEvento === TiposEventoAulaDTO.CJ) &&
+                      evento.dadosAula && (
+                        <Grid cols={1} className="px-0">
+                          <Botao
+                            label={window
+                              .moment(evento.dadosAula.horario, 'HH')
+                              .format('HH:mm')}
+                            color={Colors.CinzaBotao}
+                            className="w-100 px-2"
+                            border
+                            steady
+                          />
+                        </Grid>
+                      )}
+                    <Grid
+                      cols={
+                        evento.tipoEvento === TiposEventoAulaDTO.Aula ||
+                          evento.tipoEvento === TiposEventoAulaDTO.CJ
+                          ? 10
+                          : 11
+                      }
+                      className="align-self-center font-weight-bold pl-0"
+                    >
+                      <Div
+                        className={`${(evento.tipoEvento ===
+                          TiposEventoAulaDTO.Aula ||
+                          evento.tipoEvento === TiposEventoAulaDTO.CJ) &&
+                          'pl-3'}`}
+                      >
+                        {evento.tipoEvento !== TiposEventoAulaDTO.Aula &&
+                          evento.tipoEvento !== TiposEventoAulaDTO.CJ &&
+                          (evento.descricao ? evento.descricao : 'Evento')}
+                        {(evento.tipoEvento === TiposEventoAulaDTO.Aula ||
+                          evento.tipoEvento === TiposEventoAulaDTO.CJ) &&
+                          evento.dadosAula &&
+                          `${evento.dadosAula.turma} - ${evento.dadosAula.modalidade} - ${evento.dadosAula.tipo} - ${evento.dadosAula.unidadeEscolar} - ${evento.dadosAula.disciplina}`}
+                      </Div>
+                    </Grid>
+                  </Evento>
+                );
+              })}
+            </Div>
+          ) : (
+            <SemEvento />
+          )}
         {eventosDia && eventosDia.letivo && <BotoesAuxiliares />}
       </Div>
     )
