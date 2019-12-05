@@ -1,4 +1,5 @@
 import React from 'react';
+import t from 'prop-types';
 
 // Ant
 import { Switch } from 'antd';
@@ -6,44 +7,57 @@ import { Switch } from 'antd';
 // Componentes
 import { DataTable } from '~/componentes';
 
-function Tabela() {
+function Tabela({ carregando, lista, onChangeSubstituir }) {
   const colunas = [
     {
       title: 'Disciplina',
       dataIndex: 'disciplina',
+      key: 'disciplina',
     },
     {
       title: 'Professor Titular',
       dataIndex: 'professorTitular',
+      key: 'professorTitular',
     },
     {
       title: 'Substituir',
       dataIndex: 'substituir',
+      key: 'substituir',
       width: '10%',
       align: 'center',
-      render: (texto, linha) => {
-        return <Switch />;
+      render: (valor, registro) => {
+        return (
+          <Switch
+            checked={registro.substituir}
+            onChange={() => onChangeSubstituir(registro)}
+          />
+        );
       },
     },
   ];
+
   return (
     <DataTable
       id="lista-disciplinas"
-      // selectedRowKeys={idTiposSelecionados}
-      // onSelectRow={onSelectRow}
-      // onClickRow={onClickRow}
+      rowKey="disciplina"
       columns={colunas}
-      dataSource={[
-        {
-          disciplina: 'Matematica',
-          professorTitular: 'Italo Maio',
-          substituir: 'teste',
-        },
-      ]}
-      selectMultipleRows
+      dataSource={lista}
       pagination={false}
+      loading={carregando}
     />
   );
 }
+
+Tabela.propTypes = {
+  carregando: t.bool,
+  lista: t.oneOfType([t.array]),
+  onChangeSubstituir: t.func,
+};
+
+Tabela.defaultProps = {
+  carregando: false,
+  lista: [],
+  onChangeSubstituir: null,
+};
 
 export default Tabela;

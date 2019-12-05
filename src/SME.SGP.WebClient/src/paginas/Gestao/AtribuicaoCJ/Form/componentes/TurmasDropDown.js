@@ -5,7 +5,7 @@ import PropTypes from 'prop-types';
 import { SelectComponent } from '~/componentes';
 
 // Servicos
-import AbrangenciaServico from '~/servicos/Abrangencia';
+import AtribuicaoCJServico from '~/servicos/Paginas/AtribuicaoCJ';
 
 function TurmasDropDown({ form, onChange, label }) {
   const [listaTurmas, setListaTurmas] = useState([]);
@@ -13,7 +13,7 @@ function TurmasDropDown({ form, onChange, label }) {
   const { ueId, modalidadeId } = form.values;
   useEffect(() => {
     async function buscaTurmas() {
-      const { data } = await AbrangenciaServico.buscarTurmas(
+      const { data } = await AtribuicaoCJServico.buscarTurmas(
         ueId,
         modalidadeId
       );

@@ -223,10 +223,10 @@ export default function Rotas() {
     // chavePermissao: RotasDto.ATRIBUICAO_ESPORADICA_LISTA,
   });
 
-  rotas.set('/gestao/atribuicao-cjs/editar/:id', {
+  rotas.set('/gestao/atribuicao-cjs/editar', {
     breadcrumbName: 'Atribuição',
     parent: '/gestao/atribuicao-cjs',
-    component: AtribuicaoEsporadicaForm,
+    component: AtribuicaoCJForm,
     exact: true,
     tipo: RotasTipo.EstruturadaAutenticada,
     // temPermissionamento: true,

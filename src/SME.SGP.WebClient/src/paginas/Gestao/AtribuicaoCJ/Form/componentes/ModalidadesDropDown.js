@@ -5,7 +5,7 @@ import t from 'prop-types';
 import { SelectComponent } from '~/componentes';
 
 // Servicos
-import AbrangenciaServico from '~/servicos/Abrangencia';
+import AtribuicaoCJServico from '~/servicos/Paginas/AtribuicaoCJ';
 
 // Funções
 import { valorNuloOuVazio } from '~/utils/funcoes/gerais';
@@ -15,18 +15,21 @@ function ModalidadesDropDown({ label, form, onChange }) {
 
   useEffect(() => {
     async function buscarModalidades() {
-      const { data } = await AbrangenciaServico.buscarModalidades();
+      const { data } = await AtribuicaoCJServico.buscarModalidades(
+        form.values.ueId
+      );
       if (data) {
         setListaModalidades(
           data.map(item => ({
-            desc: item.descricao,
+            desc: item.nome,
             valor: String(item.id),
           }))
         );
       }
     }
+    if (!form.values.ueId) return;
     buscarModalidades();
-  }, []);
+  }, [form.values.ueId]);
 
   useEffect(() => {
     if (listaModalidades.length === 1) {

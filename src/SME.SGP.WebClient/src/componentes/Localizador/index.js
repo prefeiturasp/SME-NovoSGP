@@ -86,7 +86,7 @@ function Localizador({
           onSelect={onBuscarPorRF}
           name="professorRf"
           form={form}
-          desabilitado={desabilitado}
+          desabilitado={desabilitado || usuario.ehProfessor}
         />
       </Grid>
       <Grid className="pr-0" cols={8}>
@@ -98,7 +98,7 @@ function Localizador({
           pessoaSelecionada={pessoaSelecionada}
           form={form}
           name="professorNome"
-          desabilitado={desabilitado}
+          desabilitado={desabilitado || usuario.ehProfessor}
         />
       </Grid>
     </>

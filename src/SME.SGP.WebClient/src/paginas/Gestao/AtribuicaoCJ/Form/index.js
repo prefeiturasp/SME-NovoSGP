@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
+import { isEqual } from 'lodash';
+import queryString from 'query-string';
 
 // Form
 import { Formik, Form } from 'formik';
@@ -7,14 +9,17 @@ import * as Yup from 'yup';
 
 // Redux
 import { useSelector, useDispatch } from 'react-redux';
-import { setLoaderSecao } from '~/redux/modulos/loader/actions';
+import {
+  setLoaderSecao,
+  setLoaderTabela,
+} from '~/redux/modulos/loader/actions';
 
 // Serviços
 import RotasDto from '~/dtos/rotasDto';
 import history from '~/servicos/history';
-import { erros, erro, sucesso, confirmar } from '~/servicos/alertas';
+import { erro, sucesso, confirmar } from '~/servicos/alertas';
 import { setBreadcrumbManual } from '~/servicos/breadcrumb-services';
-import AtribuicaoEsporadicaServico from '~/servicos/Paginas/AtribuicaoEsporadica';
+import AtribuicaoCJServico from '~/servicos/Paginas/AtribuicaoCJ';
 
 // Componentes SGP
 import { Cabecalho, DreDropDown, UeDropDown } from '~/componentes-sgp';
@@ -36,28 +41,41 @@ import Tabela from './componentes/Tabela';
 import { Row } from './styles';
 
 // Funçoes
-import { validaSeObjetoEhNuloOuVazio } from '~/utils/funcoes/gerais';
+import {
+  validaSeObjetoEhNuloOuVazio,
+  valorNuloOuVazio,
+  objetoEstaTodoPreenchido,
+} from '~/utils/funcoes/gerais';
 
-function AtribuicaoCJForm({ match }) {
+function AtribuicaoCJForm({ match, location }) {
   const dispatch = useDispatch();
   const carregando = useSelector(store => store.loader.loaderSecao);
+  const carregandoTabela = useSelector(store => store.loader.loaderTabela);
   const permissoesTela = useSelector(store => store.usuario.permissoes);
-  const filtroListagem = useSelector(
-    store => store.atribuicaoEsporadica.filtro
-  );
   const [dreId, setDreId] = useState('');
   const [novoRegistro, setNovoRegistro] = useState(true);
-  const [modoEdicao, setModoEdicao] = useState(false);
+  const [modoEdicao] = useState(false);
   const [auditoria, setAuditoria] = useState({});
+  const [refForm, setRefForm] = useState(null);
+  const [listaProfessores, setListaProfessores] = useState([]);
+  const [valoresForm, setValoresForm] = useState({});
   const [valoresIniciais, setValoresIniciais] = useState({
     professorRf: '',
     professorNome: '',
-    dataInicio: '',
-    dataFim: '',
+    dreId: '',
+    ueId: '',
+    modalidadeId: '',
+    turmaId: '',
   });
 
   const validacoes = () => {
-    return Yup.object({});
+    return Yup.object({
+      dreId: Yup.string().required('Campo obrigatório'),
+      ueId: Yup.string().required('Campo obrigatório'),
+      professorRf: Yup.string().required('Campo obrigatório'),
+      modalidadeId: Yup.string().required('Campo obrigatório'),
+      turmaId: Yup.string().required('Campo obrigatório'),
+    });
   };
 
   const validaAntesDoSubmit = form => {
@@ -79,16 +97,16 @@ function AtribuicaoCJForm({ match }) {
   const onSubmitFormulario = async valores => {
     try {
       dispatch(setLoaderSecao(true));
-      const cadastrado = await AtribuicaoEsporadicaServico.salvarAtribuicaoEsporadica(
-        {
-          ...filtroListagem,
-          ...valores,
-        }
-      );
-      if (cadastrado && cadastrado.status === 200) {
+      const { data, status } = await AtribuicaoCJServico.salvarAtribuicoes({
+        ...valores,
+        usuarioRf: valores.professorRf,
+        modalidade: valores.modalidadeId,
+        disciplinas: [...listaProfessores],
+      });
+      if (data || status === 200) {
         dispatch(setLoaderSecao(false));
-        sucesso('Atribuição esporádica salva com sucesso.');
-        history.push('/gestao/atribuicao-esporadica');
+        sucesso('Atribuição de CJ salva com sucesso.');
+        history.push('/gestao/atribuicao-cjs');
       }
     } catch (err) {
       if (err) {
@@ -106,90 +124,89 @@ function AtribuicaoCJForm({ match }) {
         'Deseja realmente cancelar as alterações?'
       );
       if (confirmou) {
-        history.push('/gestao/atribuicao-esporadica');
+        history.push('/gestao/atribuicao-cjs');
       }
     } else {
-      history.push('/gestao/atribuicao-esporadica');
+      history.push('/gestao/atribuicao-cjs');
     }
   };
 
-  const onClickCancelar = async form => {
-    if (!modoEdicao) return;
-    const confirmou = await confirmar(
-      'Atenção',
-      'Você não salvou as informações preenchidas.',
-      'Deseja realmente cancelar as alterações?'
-    );
-    if (confirmou) {
-      form.resetForm();
-      setModoEdicao(false);
-    }
-  };
-
-  const onClickExcluir = async form => {
-    if (validaSeObjetoEhNuloOuVazio(form.values)) return;
-
-    const confirmado = await confirmar(
-      'Excluir atribuição',
-      form.values.professorNome,
-      `Deseja realmente excluir este item?`,
-      'Excluir',
-      'Cancelar'
-    );
-    if (confirmado) {
-      const excluir = await AtribuicaoEsporadicaServico.deletarAtribuicaoEsporadica(
-        form.values.id
-      );
-      if (excluir) {
-        sucesso(`Atribuição excluida com sucesso!`);
-        history.push('/gestao/atribuicao-esporadica');
-      }
-    }
-  };
-
-  const buscarPorId = async id => {
-    try {
-      dispatch(setLoaderSecao(true));
-      const registro = await AtribuicaoEsporadicaServico.buscarAtribuicaoEsporadica(
-        id
-      );
-      if (registro && registro.data) {
-        setValoresIniciais({
-          ...registro.data,
-          dataInicio: window.moment(registro.data.dataInicio),
-          dataFim: window.moment(registro.data.dataFim),
-        });
-        setAuditoria({
-          criadoPor: registro.data.criadoPor,
-          criadoRf: registro.data.criadoRF > 0 ? registro.data.criadoRF : '',
-          criadoEm: registro.data.criadoEm,
-          alteradoPor: registro.data.alteradoPor,
-          alteradoRf:
-            registro.data.alteradoRF > 0 ? registro.data.alteradoRF : '',
-          alteradoEm: registro.data.alteradoEm,
-        });
-        dispatch(setLoaderSecao(false));
-      }
-    } catch (err) {
-      dispatch(setLoaderSecao(false));
-      erros(err);
-    }
-  };
-
-  const validaFormulario = valores => {
+  const validaFormulario = async valores => {
     if (validaSeObjetoEhNuloOuVazio(valores)) return;
-    if (!modoEdicao) {
-      setModoEdicao(true);
+    if (isEqual(valoresForm, valores)) return;
+
+    if (objetoEstaTodoPreenchido(valores)) {
+      setValoresForm(valores);
     }
+  };
+
+  const onChangeSubstituir = item => {
+    setListaProfessores(
+      listaProfessores.map(x => {
+        if (item.disciplinaId === x.disciplinaId) {
+          return {
+            ...item,
+            substituir: !x.substituir,
+          };
+        }
+        return x;
+      })
+    );
   };
 
   useEffect(() => {
-    if (match && match.params && match.params.id) {
+    if (location && location.search) {
+      const query = queryString.parse(location.search);
       setNovoRegistro(false);
       setBreadcrumbManual(match.url, 'Atribuição', '/gestao/atribuicao-cjs');
-      buscarPorId(match.params.id);
+      setValoresIniciais({
+        ...valoresIniciais,
+        modalidadeId: query.modalidadeId,
+        turmaId: query.turmaId,
+      });
     }
   }, []);
+
+  useEffect(() => {
+    async function buscaAtribs(valores) {
+      const { ueId, modalidadeId, turmaId, professorRf } = valores;
+
+      if (
+        valorNuloOuVazio(ueId) ||
+        valorNuloOuVazio(modalidadeId) ||
+        valorNuloOuVazio(turmaId) ||
+        valorNuloOuVazio(professorRf)
+      ) {
+        return;
+      }
+
+      try {
+        setLoaderTabela(true);
+        const { data, status } = await AtribuicaoCJServico.buscarAtribuicoes(
+          ueId,
+          modalidadeId,
+          turmaId,
+          professorRf
+        );
+        if (data && status === 200) {
+          setListaProfessores(data.itens);
+          setAuditoria(data);
+          setLoaderTabela(false);
+        }
+      } catch (error) {
+        setLoaderTabela(false);
+        erro(error);
+      }
+    }
+
+    if (
+      refForm &&
+      refForm.getFormikContext &&
+      typeof refForm.getFormikContext === 'function'
+    ) {
+      buscaAtribs(valoresForm);
+    }
+  }, [valoresForm]);
 
   return (
     <>
@@ -200,6 +217,7 @@ function AtribuicaoCJForm({ match }) {
             enableReinitialize
             initialValues={valoresIniciais}
             validationSchema={validacoes}
+            ref={refFormik => setRefForm(refFormik)}
             onSubmit={valores => onSubmitFormulario(valores)}
             validate={valores => validaFormulario(valores)}
             validateOnBlur
@@ -209,15 +227,11 @@ function AtribuicaoCJForm({ match }) {
               <Form>
                 <ButtonGroup
                   form={form}
-                  permissoesTela={
-                    permissoesTela[RotasDto.ATRIBUICAO_ESPORADICA_LISTA]
-                  }
+                  permissoesTela={permissoesTela[RotasDto.ATRIBUICAO_CJ_FORM]}
                   novoRegistro={novoRegistro}
-                  labelBotaoPrincipal="Cadastrar"
+                  labelBotaoPrincipal="Salvar"
                   onClickBotaoPrincipal={() => onClickBotaoPrincipal(form)}
-                  onClickCancelar={formulario => onClickCancelar(formulario)}
                   onClickVoltar={() => onClickVoltar()}
-                  onClickExcluir={() => onClickExcluir(form)}
                   modoEdicao={modoEdicao}
                 />
                 <Row className="row">
@@ -253,7 +267,7 @@ function AtribuicaoCJForm({ match }) {
                     <ModalidadesDropDown
                       label="Modalidade"
                       form={form}
-                      onChange={value => value}
+                      onChange={() => null}
                     />
                   </Grid>
                   <Grid cols={2}>
@@ -267,7 +281,11 @@ function AtribuicaoCJForm({ match }) {
               </Form>
             )}
           </Formik>
-          <Tabela />
+          <Tabela
+            carregando={carregandoTabela}
+            lista={listaProfessores}
+            onChangeSubstituir={onChangeSubstituir}
+          />
           {auditoria && (
             <Auditoria
               criadoEm={auditoria.criadoEm}
@@ -289,10 +307,15 @@ AtribuicaoCJForm.propTypes = {
     PropTypes.objectOf(PropTypes.object),
     PropTypes.any,
   ]),
+  location: PropTypes.oneOfType([
+    PropTypes.objectOf(PropTypes.object),
+    PropTypes.any,
+  ]),
 };
 
 AtribuicaoCJForm.defaultProps = {
-  match: {},
+  match: null,
+  location: null,
 };
 
 export default AtribuicaoCJForm;
