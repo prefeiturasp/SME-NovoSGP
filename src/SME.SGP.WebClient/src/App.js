@@ -7,12 +7,10 @@ import { PersistGate } from 'redux-persist/integration/react';
 import history from './servicos/history';
 import GlobalStyle from './estilos/global';
 import { store, persistor } from './redux';
-// import { rotaAtiva } from './redux/modulos/navegacao/actions';
 import Pagina from '~/componentes-sgp/pagina';
 import Login from '~/paginas/Login';
-
-import Rotas from './rotas/rotas';
-import Navbar from './componentes-sgp/navbar';
+import RecuperarSenha from './paginas/RecuperarSenha';
+import RedefinirSenha from './paginas/RedefinirSenha';
 
 function App() {
   // history.listen(location => {
@@ -26,6 +24,11 @@ function App() {
           <GlobalStyle />
           <div className="h-100">
             <Switch>
+              <Route
+                component={RedefinirSenha}
+                path="/redefinir-senha/:token"
+              />
+              <Route component={RecuperarSenha} path="/recuperar-senha" />
               <Route component={Login} path="/login/:redirect?/" />
               <Route component={Pagina} path="/" />
             </Switch>

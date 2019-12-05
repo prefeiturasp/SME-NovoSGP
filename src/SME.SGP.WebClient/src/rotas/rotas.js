@@ -110,16 +110,16 @@ rotas.set(RotasDto.PLANO_ANUAL, {
 //   tipo: RotasTipo.DesestruturadaNaoAutenticada,
 // });
 
-rotas.set('/recuperar-senha', {
-  breadcrumbName: '',
-  menu: '',
-  parent: '/',
-  component: RecuperarSenha,
-  exact: true,
-  tipo: RotasTipo.DesestruturadaNaoAutenticada,
-});
+// rotas.set('/recuperar-senha', {
+//   breadcrumbName: '',
+//   menu: '',
+//   parent: '/',
+//   component: RecuperarSenha,
+//   exact: true,
+//   tipo: RotasTipo.DesestruturadaNaoAutenticada,
+// });
 
-rotas.set('/redefinir-senha/:token?/', {
+rotas.set('/redefinir-senha/', {
   breadcrumbName: '',
   menu: '',
   parent: '/',
