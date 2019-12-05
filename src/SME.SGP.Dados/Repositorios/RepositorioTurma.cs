@@ -1,18 +1,19 @@
-﻿using SME.SGP.Dados.Contexto;
+﻿using Dapper;
+using Dommel;
+using SME.SGP.Dados.Contexto;
 using SME.SGP.Dominio.Entidades;
+using SME.SGP.Dominio.Interfaces;
+using SME.SGP.Dominio;
+using SME.SGP.Dominio.Interfaces;
 using System;
 using System.Collections.Generic;
-using System.Text;
-using Dapper;
-using Dommel;
 using System.Linq;
-using SME.SGP.Dominio.Interfaces;
 
 namespace SME.SGP.Dados.Repositorios
 {
     public class RepositorioTurma : IRepositorioTurma
     {
-        const string QuerySincronizacao = @"
+        private const string QuerySincronizacao = @"
                     select
 	                    id,
 	                    turma_id,
@@ -26,9 +27,10 @@ namespace SME.SGP.Dados.Repositorios
 	                    tipo_turno,
 	                    data_atualizacao
                     from
-	                    public.turma 
+	                    public.turma
                     where turma_id in (#ids);";
-        const string Update = @"
+
+        private const string Update = @"
                     update
 	                    public.turma
                     set
@@ -43,14 +45,16 @@ namespace SME.SGP.Dados.Repositorios
                     where
 	                    id = @id;";
 
-
         private readonly ISgpContext contexto;
-        private readonly IRepositorioUe respositorioUe;
 
-        public RepositorioTurma(ISgpContext contexto, IRepositorioUe respositorioUe)
+        public RepositorioTurma(ISgpContext contexto)
         {
             this.contexto = contexto;
-            this.respositorioUe = respositorioUe;
+        }
+
+        public Turma ObterPorId(string turmaId)
+        {
+            return contexto.QueryFirstOrDefault<Turma>("select * from turma where turma_id = @turmaId", new { turmaId });
         }
 
         public IEnumerable<Turma> Sincronizar(IEnumerable<Turma> entidades, IEnumerable<Ue> ues)
@@ -123,7 +127,5 @@ namespace SME.SGP.Dados.Repositorios
 
             return resultado;
         }
-
     }
-
 }

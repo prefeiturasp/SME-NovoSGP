@@ -1,16 +1,15 @@
-﻿using System.Threading.Tasks;
-using SME.SGP.Dominio;
+﻿using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
-using SME.SGP.Infra.Dtos;
+using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
     public class ConsultasGrade : IConsultasGrade
     {
-        private readonly IRepositorioGrade repositorioGrade;
         private readonly IConsultasAbrangencia consultasAbrangencia;
         private readonly IConsultasAula consultasAula;
+        private readonly IRepositorioGrade repositorioGrade;
 
         public ConsultasGrade(IRepositorioGrade repositorioGrade, IConsultasAbrangencia consultasAbrangencia, IConsultasAula consultasAula)
         {
@@ -31,10 +30,12 @@ namespace SME.SGP.Aplicacao
             if (grade == null)
                 throw new NegocioException("Grade da turma não localizada.");
 
-            var horasGrade = 0;
+            int horasGrade;
             // verifica se é regencia de classe
             if (disciplina == 1105)
                 horasGrade = abrangencia.Modalidade == Modalidade.EJA ? 5 : 1;
+            else if (disciplina == 1030)
+                horasGrade = 4;
             else
                 // Busca carga horaria na grade da disciplina para o ano da turma
                 horasGrade = await ObterHorasGradeComponente(grade.Id, disciplina, abrangencia.Ano);
@@ -46,10 +47,10 @@ namespace SME.SGP.Aplicacao
             var horascadastradas = await consultasAula.ObterQuantidadeAulasTurmaSemana(turma.ToString(), disciplina.ToString(), semana);
 
             return new GradeComponenteTurmaAulasDto
-                {
-                    QuantidadeAulasGrade = horasGrade,
-                    QuantidadeAulasRestante = horasGrade - horascadastradas
-                };
+            {
+                QuantidadeAulasGrade = horasGrade,
+                QuantidadeAulasRestante = horasGrade - horascadastradas
+            };
         }
 
         public async Task<GradeDto> ObterGradeTurma(TipoEscola tipoEscola, Modalidade modalidade, int duracao)
