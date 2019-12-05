@@ -1,6 +1,7 @@
 // Form
 import * as Yup from 'yup';
 import { Form, Formik } from 'formik';
+import { useSelector } from 'react-redux';
 import React, { useState, useRef, useEffect } from 'react';
 import Cabecalho from '~/componentes-sgp/cabecalho';
 import TextEditor from '~/componentes/textEditor';
@@ -14,10 +15,10 @@ import {
   Grid,
   momentSchema,
 } from '~/componentes';
+import RotasDto from '~/dtos/rotasDto';
 import history from '~/servicos/history';
-import { sucesso, confirmar } from '~/servicos/alertas';
+import { sucesso, confirmar, erro } from '~/servicos/alertas';
 import servicoTipoAvaliaco from '~/servicos/Paginas/TipoAvaliacao'; // Redux
-import { useSelector } from 'react-redux';
 
 // Funçoes
 import { validaSeObjetoEhNuloOuVazio } from '~/utils/funcoes/gerais';
@@ -128,21 +129,15 @@ const TipoAvaliacaoForm = ({ match }) => {
 
   const onSubmitFormulario = async valores => {
     try {
-
-      const cadastrado = await  .salvarAtribuicaoEsporadica(
-        {
-          ...filtroListagem,
-          ...valores,
-        }
-      );
+      const cadastrado = await servicoTipoAvaliaco.salvarTipoAvaliacao({
+        ...valores,
+      });
       if (cadastrado && cadastrado.status === 200) {
-        dispatch(setLoaderSecao(false));
         sucesso('Tipo de avaliação salvo com sucesso.');
         history.push('/configuracao/tipo-avaliacao');
       }
     } catch (err) {
       if (err) {
-        dispatch(setLoaderSecao(false));
         erro(err.response.data.mensagens[0]);
       }
     }
