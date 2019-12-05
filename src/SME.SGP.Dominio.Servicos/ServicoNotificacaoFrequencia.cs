@@ -70,7 +70,7 @@ namespace SME.SGP.Dominio.Servicos
                     if (usuarios != null)
                         foreach(var usuario in usuarios)
                         {
-                            NotificaUsuario(usuario, turma, tipo);
+                            NotificaRegistroFrequencia(usuario, turma, tipo);
                         }
                 }
             }
@@ -79,11 +79,11 @@ namespace SME.SGP.Dominio.Servicos
         private IEnumerable<Usuario> BuscaUsuarioNotificacao(RegistroFrequenciaFaltanteDto turma, TipoNotificacaoFrequencia tipo)
         {
             return tipo == TipoNotificacaoFrequencia.Professor ? BuscaProfessorAula(turma)
-                        : tipo == TipoNotificacaoFrequencia.GestorUe ? BuscaGestorUe(turma.CodigoUe)
-                        : BuscaSupervisorUe(turma.CodigoUe);
+                        : tipo == TipoNotificacaoFrequencia.GestorUe ? BuscaGestoresUe(turma.CodigoUe)
+                        : BuscaSupervisoresUe(turma.CodigoUe);
         }
 
-        private IEnumerable<Usuario> BuscaSupervisorUe(string codigoUe)
+        private IEnumerable<Usuario> BuscaSupervisoresUe(string codigoUe)
         {
             // Buscar supervisor da Ue
             var supervisoresEscola = repositorioSupervisorEscolaDre.ObtemSupervisoresPorUe(codigoUe);
@@ -97,7 +97,7 @@ namespace SME.SGP.Dominio.Servicos
             return usuarios;
         }
 
-        private IEnumerable<Usuario> BuscaGestorUe(string codigoUe)
+        private IEnumerable<Usuario> BuscaGestoresUe(string codigoUe)
         {
             // Buscar gestor da Ue
             List<UsuarioEolRetornoDto> funcionariosRetornoEol = new List<UsuarioEolRetornoDto>();
@@ -136,7 +136,7 @@ namespace SME.SGP.Dominio.Servicos
                                             : TipoParametroSistema.QuantidadeAulasNotificarSupervisorUE,
                                         DateTime.Now.Year));
 
-        private void NotificaUsuario(Usuario usuario, RegistroFrequenciaFaltanteDto turmaSemRegistro, TipoNotificacaoFrequencia tipo)
+        private void NotificaRegistroFrequencia(Usuario usuario, RegistroFrequenciaFaltanteDto turmaSemRegistro, TipoNotificacaoFrequencia tipo)
         {
             var tituloMensagem = $"Frequência da turma {turmaSemRegistro.NomeTurma} - {turmaSemRegistro.DisciplinaId} ({turmaSemRegistro.NomeUe})";
             StringBuilder mensagemUsuario = new StringBuilder();
@@ -183,5 +183,64 @@ namespace SME.SGP.Dominio.Servicos
 
             }   
         }
+
+        public void VerificaRegraAlteracaoFrequencia(long registroFrequenciaId, DateTime criadoEm, DateTime alteradoEm, long usuarioAlteracaoId)
+        {
+            // Parametro do sistema de dias para notificacao
+            var qtdDiasParametro = int.Parse(repositorioParametrosSistema.ObterValorPorTipoEAno(
+                                                    TipoParametroSistema.QuantidadeDiasNotificarAlteracaoChamadaEfetivada, 
+                                                    DateTime.Now.Year));
+
+            var qtdDiasAlteracao = (alteradoEm.Date - criadoEm.Date).TotalDays;
+
+            // Verifica se ultrapassou o limite de dias para alteração
+            if (qtdDiasAlteracao >= qtdDiasParametro)
+            {
+                var usuariosNotificacao = new List<Usuario>();
+
+                // Dados da Ue
+                var registroFrequencia = repositorioFrequencia.ObterPorId(registroFrequenciaId);
+                var aula = repositorioAula.ObterPorId(registroFrequencia.AulaId);
+                registroFrequencia.Aula = aula;
+
+                usuariosNotificacao.AddRange(BuscaGestoresUe(aula.UeId));
+                usuariosNotificacao.AddRange(BuscaSupervisoresUe(aula.UeId));
+
+                foreach(var usuario in usuariosNotificacao)
+                {
+                    NotificaAlteracaoFrequencia(usuario, registroFrequencia, alteradoEm, usuarioAlteracaoId);
+                }
+            }
+        }
+
+        private void NotificaAlteracaoFrequencia(Usuario usuario, RegistroFrequencia registroFrequencia, DateTime alteradoEm, long usuarioAlteracaoId)
+        {
+            // TODO carregar nomes da turma, escola, disciplina e professor para notificacao
+            var turmaNome = "";
+            var escolaNome = "";
+            var disciplina = "";
+
+            var tituloMensagem = $"Título: Alteração extemporânea de frequência  da turma {turmaNome} na disciplina {disciplina}.";
+            
+            StringBuilder mensagemUsuario = new StringBuilder();
+            mensagemUsuario.Append($"O Professor {usuarioAlteracaoId} realizou alterações no registro de frequência do dia {alteradoEm} da turma {turmaNome} ({escolaNome}) na disciplina {disciplina}.");
+
+            var hostAplicacao = configuration["UrlFrontEnd"];
+            mensagemUsuario.Append($"<a href='{hostAplicacao}/diario-classe/frequencia-plano-aula'>Clique aqui para acessar esse registro.</a>");
+
+            var notificacao = new Notificacao()
+            {
+                Ano = DateTime.Now.Year,
+                Categoria = NotificacaoCategoria.Alerta,
+                Tipo = NotificacaoTipo.Frequencia,
+                Titulo = tituloMensagem,
+                Mensagem = mensagemUsuario.ToString(),
+                UsuarioId = usuario.Id,
+                //TurmaId = turmaSemRegistro.CodigoTurma,
+                //UeId = turmaSemRegistro.CodigoUe,
+                //DreId = turmaSemRegistro.CodigoDre,
+            };
+            servicoNotificacao.Salvar(notificacao);
+        }
+        }
     }
-}
