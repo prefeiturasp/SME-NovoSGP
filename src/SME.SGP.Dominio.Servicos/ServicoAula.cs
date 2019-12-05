@@ -44,7 +44,7 @@ namespace SME.SGP.Dominio.Servicos
 
         private readonly IServicoNotificacao servicoNotificacao;
 
-        private readonly IServicoUsuario servicoUsuario;
+        private readonly IRepositorioAtribuicaoCJ repositorioAtribuicaoCJ;
 
         public ServicoAula(IRepositorioAula repositorioAula,
                            IServicoEOL servicoEOL,
@@ -60,7 +60,8 @@ namespace SME.SGP.Dominio.Servicos
                            IComandosPlanoAula comandosPlanoAula,
                            IServicoFrequencia servicoFrequencia,
                            IConfiguration configuration,
-                           IRepositorioAtividadeAvaliativa repositorioAtividadeAvaliativa)
+                           IRepositorioAtividadeAvaliativa repositorioAtividadeAvaliativa,
+                           IRepositorioAtribuicaoCJ repositorioAtribuicaoCJ)
         {
             this.repositorioAula = repositorioAula ?? throw new System.ArgumentNullException(nameof(repositorioAula));
             this.servicoEOL = servicoEOL ?? throw new System.ArgumentNullException(nameof(servicoEOL));
@@ -77,6 +78,7 @@ namespace SME.SGP.Dominio.Servicos
             this.comandosPlanoAula = comandosPlanoAula ?? throw new ArgumentNullException(nameof(comandosPlanoAula));
             this.servicoFrequencia = servicoFrequencia ?? throw new ArgumentNullException(nameof(servicoFrequencia));
             this.repositorioAtividadeAvaliativa = repositorioAtividadeAvaliativa ?? throw new ArgumentNullException(nameof(repositorioAtividadeAvaliativa));
+            this.repositorioAtribuicaoCJ = repositorioAtribuicaoCJ ?? throw new ArgumentNullException(nameof(repositorioAtribuicaoCJ));
         }
 
         private enum Operacao
@@ -103,20 +105,26 @@ namespace SME.SGP.Dominio.Servicos
             if (tipoCalendario == null)
                 throw new NegocioException("O tipo de calendário não foi encontrado.");
 
-            IEnumerable<DisciplinaResposta> disciplinasProfessor = null;
+            IEnumerable<long> disciplinasProfessor = null;
 
             if (usuario.EhProfessorCj())
             {
-                //Buscar do repositorio de Atribuicao de CJ
-            } 
+                IEnumerable<AtribuicaoCJ> lstDisciplinasProfCJ = await repositorioAtribuicaoCJ.ObterPorFiltros(null, aula.TurmaId, aula.UeId, 0, usuario.CodigoRf, usuario.Nome, null);
+
+                if (lstDisciplinasProfCJ.Any())
+                    disciplinasProfessor = lstDisciplinasProfCJ.Select(d => d.DisciplinaId);
+            }
             else
             {
-                disciplinasProfessor = await servicoEOL.ObterDisciplinasPorCodigoTurmaLoginEPerfil(aula.TurmaId, usuario.Login, usuario.PerfilAtual);
+                IEnumerable<DisciplinaResposta> lstDisciplinasProf = await servicoEOL.ObterDisciplinasPorCodigoTurmaLoginEPerfil(aula.TurmaId, usuario.Login, usuario.PerfilAtual);
+
+                if(lstDisciplinasProf.Any())
+                    disciplinasProfessor = lstDisciplinasProf.Select(d => Convert.ToInt64(d.CodigoComponenteCurricular));
             }
 
             var usuarioPodeCriarAulaNaTurmaUeEModalidade = repositorioAula.UsuarioPodeCriarAulaNaUeTurmaEModalidade(aula, tipoCalendario.Modalidade);
 
-            if (disciplinasProfessor == null || !disciplinasProfessor.Any(c => c.CodigoComponenteCurricular.ToString() == aula.DisciplinaId) || !usuarioPodeCriarAulaNaTurmaUeEModalidade)
+            if (disciplinasProfessor == null || !disciplinasProfessor.Any(c => c.ToString() == aula.DisciplinaId) || !usuarioPodeCriarAulaNaTurmaUeEModalidade)
                 throw new NegocioException("Você não pode criar aulas para essa UE/Turma/Disciplina.");
 
             if (!servicoDiaLetivo.ValidarSeEhDiaLetivo(aula.DataAula, aula.TipoCalendarioId, null, aula.UeId))
