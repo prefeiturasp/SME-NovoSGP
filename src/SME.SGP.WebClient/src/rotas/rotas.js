@@ -9,6 +9,8 @@ import AtribuicaoSupervisorLista from '../paginas/Gestao/AtribuicaoSupervisor/at
 import AtribuicaoSupervisorCadastro from '../paginas/Gestao/AtribuicaoSupervisor/atribuicaoSupervisorCadastro';
 import AtribuicaoEsporadicaLista from '../paginas/Gestao/AtribuicaoEsporadica/Lista';
 import AtribuicaoEsporadicaForm from '../paginas/Gestao/AtribuicaoEsporadica/Form';
+import AtribuicaoCJLista from '../paginas/Gestao/AtribuicaoCJ/Lista';
+import AtribuicaoCJForm from '../paginas/Gestao/AtribuicaoCJ/Form';
 import DetalheNotificacao from '~/paginas/Notificacoes/Detalhes/detalheNotificacao';
 import NotificacoesLista from '~/paginas/Notificacoes/Lista/listaNotificacoes';
 import RotaAutenticadaEstruturada from './rotaAutenticadaEstruturada';
@@ -36,6 +38,7 @@ import RotasDto from '~/dtos/rotasDto';
 import CadastroAula from '~/paginas/CalendarioEscolar/CadastroAula/cadastroAula';
 import CalendarioProfessor from '~/paginas/CalendarioProfessor/Calendario';
 import FrequenciaPlanoAula from '~/paginas/DiarioClasse/FrequenciaPlanoAula/frequenciaPlanoAula';
+import Notas from '~/paginas/DiarioClasse/Notas/notas';
 
 export default function Rotas() {
   const rotas = new Map();
@@ -198,6 +201,37 @@ export default function Rotas() {
     tipo: RotasTipo.EstruturadaAutenticada,
     temPermissionamento: true,
     chavePermissao: RotasDto.ATRIBUICAO_ESPORADICA_LISTA,
+  });
+
+  rotas.set('/gestao/atribuicao-cjs', {
+    breadcrumbName: 'Atribuição de CJ',
+    menu: ['Gestão'],
+    parent: '/',
+    component: AtribuicaoCJLista,
+    exact: true,
+    tipo: RotasTipo.EstruturadaAutenticada,
+    // temPermissionamento: true,
+    // chavePermissao: RotasDto.ATRIBUICAO_ESPORADICA_LISTA,
+  });
+
+  rotas.set('/gestao/atribuicao-cjs/novo', {
+    breadcrumbName: 'Atribuição',
+    parent: '/gestao/atribuicao-cjs',
+    component: AtribuicaoCJForm,
+    exact: true,
+    tipo: RotasTipo.EstruturadaAutenticada,
+    // temPermissionamento: true,
+    // chavePermissao: RotasDto.ATRIBUICAO_ESPORADICA_LISTA,
+  });
+
+  rotas.set('/gestao/atribuicao-cjs/editar', {
+    breadcrumbName: 'Atribuição',
+    parent: '/gestao/atribuicao-cjs',
+    component: AtribuicaoCJForm,
+    exact: true,
+    tipo: RotasTipo.EstruturadaAutenticada,
+    // temPermissionamento: true,
+    // chavePermissao: RotasDto.ATRIBUICAO_ESPORADICA_LISTA,
   });
 
   rotas.set('/notificacoes/:id', {
@@ -414,6 +448,16 @@ export default function Rotas() {
     menu: ['Diário de Classe'],
     parent: '/',
     component: FrequenciaPlanoAula,
+    exact: true,
+    tipo: RotasTipo.EstruturadaAutenticada,
+    temPermissionamento: false,
+  });
+
+  rotas.set(`${RotasDto.NOTAS}`, {
+    breadcrumbName: 'Notas',
+    menu: ['Diário de Classe'],
+    parent: '/',
+    component: Notas,
     exact: true,
     tipo: RotasTipo.EstruturadaAutenticada,
     temPermissionamento: false,

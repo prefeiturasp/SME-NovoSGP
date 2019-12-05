@@ -10,5 +10,7 @@ namespace SME.SGP.Aplicacao
         Task Excluir(long idAtividadeAvaliativa);
 
         Task Inserir(AtividadeAvaliativaDto dto);
+
+        Task Validar(FiltroAtividadeAvaliativaDto dto);
     }
 }

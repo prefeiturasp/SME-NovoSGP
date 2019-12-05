@@ -7,8 +7,16 @@ const Container = styled.div`
   font-size: 9px;
   font-weight: bold;
   color: #42474a;
+  margin-top: 16px;
 `;
-const Auditoria = ({ criadoPor, criadoEm, alteradoPor, alteradoEm, criadoRf, alteradoRf }) => {
+const Auditoria = ({
+  criadoPor,
+  criadoEm,
+  alteradoPor,
+  alteradoEm,
+  criadoRf,
+  alteradoRf,
+}) => {
   const [criado] = useState(
     criadoEm ? window.moment(criadoEm) : window.moment()
   );
@@ -20,20 +28,20 @@ const Auditoria = ({ criadoPor, criadoEm, alteradoPor, alteradoEm, criadoRf, alt
     <Container>
       {criadoPor ? (
         <div className="col-xs-12 col-md-6 col-lg-12 d-flex justify-content-start mt-2">
-          INSERIDO por {criadoPor} {criadoRf && (`(rf: ${criadoRf})`)}  em{' '}
+          INSERIDO por {criadoPor} {criadoRf && `(rf: ${criadoRf})`} em{' '}
           {`${criado.format('DD/MM/YYYY')} às ${criado.format('HH:mm')}`}
         </div>
       ) : (
-          ''
-        )}
+        ''
+      )}
       {alteradoPor ? (
         <div className="col-xs-12 col-md-6 col-lg-12 d-flex justify-content-start mt-2">
-          ALTERADO por {alteradoPor} {alteradoRf && (`(rf: ${alteradoRf})`)} em{' '}
+          ALTERADO por {alteradoPor} {alteradoRf && `(rf: ${alteradoRf})`} em{' '}
           {`${alterado.format('DD/MM/YYYY')}  às ${alterado.format('HH:mm')}`}
         </div>
       ) : (
-          ''
-        )}
+        ''
+      )}
     </Container>
   );
 };

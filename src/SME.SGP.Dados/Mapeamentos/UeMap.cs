@@ -1,8 +1,5 @@
 ﻿using Dapper.FluentMap.Dommel.Mapping;
-using SME.SGP.Dominio.Entidades;
-using System;
-using System.Collections.Generic;
-using System.Text;
+using SME.SGP.Dominio;
 
 namespace SME.SGP.Dados.Mapeamentos
 {
@@ -15,8 +12,8 @@ namespace SME.SGP.Dados.Mapeamentos
             Map(c => c.DataAtualizacao).ToColumn("data_atualizacao");
             Map(c => c.DreId).ToColumn("dre_id");
             Map(c => c.Id).ToColumn("id");
-            Map(c => c.Nome).ToColumn("nome");
             Map(c => c.TipoEscola).ToColumn("tipo_escola");
+            Map(c => c.Nome).ToColumn("nome");
         }
     }
 }

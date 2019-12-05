@@ -1,37 +1,96 @@
-﻿using System;
+﻿using SME.SGP.Dominio.Entidades;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace SME.SGP.Dominio
 {
     public class Aula : EntidadeBase, ICloneable
     {
+        private readonly IReadOnlyList<string> ComponentesDeAEEColaborativo;
+        private readonly IReadOnlyList<string> ComponentesDeAEEContraturno;
+        private readonly IReadOnlyList<string> ComponentesDeAulaCompartilhada;
+        private readonly IReadOnlyList<string> ComponentesDeRecuperacaoParalela;
+        private readonly IReadOnlyList<string> ComponentesDeTecnologiaAprendizagem;
+
         public Aula()
         {
             Status = EntidadeStatus.Aprovado;
+            ComponentesDeAulaCompartilhada = new List<string> {
+                "1116",
+                "1151",
+                "1150",
+                "1106",
+                "1122",
+                "1123"
+            };
+            ComponentesDeRecuperacaoParalela = new List<string> {
+                "1033",
+                "1051",
+                "1052",
+                "1053",
+                "1054"
+            };
+            ComponentesDeTecnologiaAprendizagem = new List<string> {
+                "1060",
+                "1061"
+            };
 
+            ComponentesDeAEEColaborativo = new List<string> {
+                "1103",
+            };
+            ComponentesDeAEEContraturno = new List<string> {
+                "1030",
+            };
         }
 
         public Aula AulaPai { get; set; }
         public long? AulaPaiId { get; set; }
         public DateTime DataAula { get; set; }
         public string DisciplinaId { get; set; }
-        
+
+        public bool EhAEE => ComponentesDeAEEColaborativo.Any(c => c == DisciplinaId);
+        public bool EhAEEContraturno => ComponentesDeAEEContraturno.Any(c => c == DisciplinaId);
+        public bool EhAulaCompartilhada => ComponentesDeAulaCompartilhada.Any(c => c == DisciplinaId);
+        public bool EhRecuperacaoParalela => ComponentesDeRecuperacaoParalela.Any(c => c == DisciplinaId);
+        public bool EhTecnologiaAprendizagem => ComponentesDeTecnologiaAprendizagem.Any(c => c == DisciplinaId);
+
         public bool Excluido { get; set; }
         public bool Migrado { get; set; }
+        public bool PermiteSubstituicaoFrequencia => !(EhAEE || EhAEEContraturno || EhRecuperacaoParalela);
+
         public string ProfessorRf { get; set; }
+
         public int Quantidade { get; set; }
+
         public RecorrenciaAula RecorrenciaAula { get; set; }
-        public TipoAula TipoAula { get; set; }
-        public TipoCalendario TipoCalendario { get; set; }
-        public long TipoCalendarioId { get; set; }
-        public string TurmaId { get; set; }
-        public string UeId { get; set; }
-        public long WorkflowAprovacaoId { get; set; }
 
         public EntidadeStatus Status { get; set; }
+
+        public TipoAula TipoAula { get; set; }
+
+        public TipoCalendario TipoCalendario { get; set; }
+
+        public long TipoCalendarioId { get; set; }
+
+        public string TurmaId { get; set; }
+
+        public string UeId { get; set; }
+
+        public long WorkflowAprovacaoId { get; set; }
+
         public void AdicionarAulaPai(Aula aula)
         {
             AulaPai = aula ?? throw new NegocioException("É necessário informar uma aula.");
             AulaPaiId = aula.Id;
+        }
+
+        public void AprovaWorkflow()
+        {
+            if (Status != EntidadeStatus.AguardandoAprovacao)
+                throw new NegocioException("Esta aula não pode ser aprovada.");
+
+            Status = EntidadeStatus.Aprovado;
         }
 
         public object Clone()
@@ -61,18 +120,18 @@ namespace SME.SGP.Dominio
             };
         }
 
-        public void AprovaWorkflow()
-        {
-            if (Status != EntidadeStatus.AguardandoAprovacao)
-                throw new NegocioException("Esta aula não pode ser aprovada.");
-
-            Status = EntidadeStatus.Aprovado;
-        }
-
         public void EnviarParaWorkflowDeAprovacao(long idWorkflow)
         {
             WorkflowAprovacaoId = idWorkflow;
             Status = EntidadeStatus.AguardandoAprovacao;
+        }
+
+        public bool PermiteRegistroFrequencia(Turma turma)
+        {
+            if (turma == null)
+                throw new NegocioException("A turma deve ser informada.");
+
+            return !(EhAulaCompartilhada || EhRecuperacaoParalela || (EhTecnologiaAprendizagem && turma.ModalidadeCodigo == Modalidade.EJA));
         }
 
         public void ReprovarWorkflow()
@@ -82,6 +141,5 @@ namespace SME.SGP.Dominio
 
             Status = EntidadeStatus.Recusado;
         }
-
     }
 }
