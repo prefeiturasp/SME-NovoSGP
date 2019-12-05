@@ -25,7 +25,7 @@ namespace SME.SGP.Aplicacao
                 return from b in listaModalidades
                        select new ModalidadeRetornoDto()
                        {
-                           Codigo = (int)b,
+                           Id = (int)b,
                            Nome = b.GetAttribute<DisplayAttribute>().Name
                        };
             }
