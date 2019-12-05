@@ -6,6 +6,8 @@ const RotasDto = {
   PLANO_ANUAL: '/planejamento/plano-anual',
   ATRIBUICAO_SUPERVISOR_LISTA: '/gestao/atribuicao-supervisor-lista',
   ATRIBUICAO_ESPORADICA_LISTA: '/gestao/atribuicao-esporadica',
+  ATRIBUICAO_CJ_LISTA: '/gestao/atribuicao-cjs',
+  ATRIBUICAO_CJ_FORM: '/gestao/atribuicao-cjs/editar',
   REINICIAR_SENHA: '/usuarios/reiniciar-senha',
   TIPO_EVENTOS: '/calendario-escolar/tipo-eventos',
   PERIODOS_ESCOLARES: '/calendario-escolar/periodos-escolares',
