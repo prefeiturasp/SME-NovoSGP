@@ -6,6 +6,7 @@ using SME.SGP.Dominio.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace SME.SGP.Dados.Repositorios
 {
@@ -15,12 +16,20 @@ namespace SME.SGP.Dados.Repositorios
         private const string Update = "UPDATE public.ue SET nome = @nome, tipo_escola = @tipoEscola, data_atualizacao = @dataAtualizacao WHERE id = @id;";
 
         private readonly ISgpContext contexto;
-        private readonly IRepositorioDre respositorioDre;
 
-        public RepositorioUe(ISgpContext contexto, IRepositorioDre respositorioDre)
+        public RepositorioUe(ISgpContext contexto)
         {
             this.contexto = contexto;
-            this.respositorioDre = respositorioDre;
+        }
+
+        public async Task<IEnumerable<Modalidade>> ObterModalidadesPorUe(string ueCodigo)
+        {
+            var query = @"select distinct t.modalidade_codigo from turma t
+                                inner join ue u
+                                on t.ue_id = u.id
+                                    where u.ue_id = @ueCodigo";
+
+            return await contexto.QueryAsync<Modalidade>(query, new { ueCodigo });
         }
 
         public Ue ObterUEPorTurma(string turmaId)
