@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.Configuration;
+using SME.SGP.Aplicacao.Integracoes;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System;
@@ -17,6 +18,7 @@ namespace SME.SGP.Dominio.Servicos
         private readonly IRepositorioSupervisorEscolaDre repositorioSupervisorEscolaDre;
         private readonly IServicoNotificacao servicoNotificacao;
         private readonly IServicoUsuario servicoUsuario;
+        private readonly IServicoEOL servicoEOL;
         private readonly IConfiguration configuration;
 
         public ServicoNotificacaoFrequencia(IRepositorioNotificacaoFrequencia repositorioNotificacaoFrequencia,
@@ -26,6 +28,7 @@ namespace SME.SGP.Dominio.Servicos
                                             IRepositorioSupervisorEscolaDre repositorioSupervisorEscolaDre,
                                             IServicoNotificacao servicoNotificacao,
                                             IServicoUsuario servicoUsuario,
+                                            IServicoEOL servicoEOL,
                                             IConfiguration configuration)
         {
             this.repositorioNotificacaoFrequencia = repositorioNotificacaoFrequencia ?? throw new ArgumentNullException(nameof(repositorioNotificacaoFrequencia));
@@ -35,6 +38,7 @@ namespace SME.SGP.Dominio.Servicos
             this.repositorioFrequencia = repositorioFrequencia ?? throw new ArgumentNullException(nameof(repositorioFrequencia));
             this.servicoUsuario = servicoUsuario ?? throw new ArgumentNullException(nameof(servicoUsuario));
             this.repositorioSupervisorEscolaDre = repositorioSupervisorEscolaDre ?? throw new ArgumentNullException(nameof(repositorioSupervisorEscolaDre));
+            this.servicoEOL = servicoEOL ?? throw new ArgumentNullException(nameof(servicoEOL));
             this.configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
         }
 
@@ -88,18 +92,27 @@ namespace SME.SGP.Dominio.Servicos
 
             var usuarios = new List<Usuario>();
             foreach (var supervisorEscola in supervisoresEscola)
-            {
                 usuarios.Add(servicoUsuario.ObterUsuarioPorCodigoRfLoginOuAdiciona(supervisorEscola.SupervisorId));
-            }
 
             return usuarios;
         }
 
         private IEnumerable<Usuario> BuscaGestorUe(string codigoUe)
         {
-            // TODO Buscar gestor da Ue
+            // Buscar gestor da Ue
+            List<UsuarioEolRetornoDto> funcionariosRetornoEol = new List<UsuarioEolRetornoDto>();
 
-            return null;
+            funcionariosRetornoEol.AddRange(servicoEOL.ObterFuncionariosPorCargoUe(codigoUe, (int)Cargo.CP));
+            funcionariosRetornoEol.AddRange(servicoEOL.ObterFuncionariosPorCargoUe(codigoUe, (int)Cargo.Diretor));
+
+            if (funcionariosRetornoEol == null)
+                return null;
+
+            var usuarios = new List<Usuario>();
+            foreach (var usuarioEol in funcionariosRetornoEol)
+                usuarios.Add(servicoUsuario.ObterUsuarioPorCodigoRfLoginOuAdiciona(usuarioEol.CodigoRf));
+
+            return usuarios;
         }
 
         private IEnumerable<Usuario> BuscaProfessorAula(RegistroFrequenciaFaltanteDto turma)
