@@ -5,8 +5,8 @@ namespace SME.SGP.Aplicacao
 {
     public interface IConsultaTipoAvaliacao
     {
-        Task<PaginacaoResultadoDto<TipoAvaliacaoDto>> ListarPaginado(string nome);
+        Task<PaginacaoResultadoDto<TipoAvaliacaoCompletaDto>> ListarPaginado(string nome);
 
-        TipoAtividadeAvaliativaCompletaDto ObterPorId(long id);
+        TipoAvaliacaoCompletaDto ObterPorId(long id);
     }
 }

@@ -27,6 +27,8 @@ namespace SME.SGP.Dominio.Servicos
 
         private readonly IRepositorioAbrangencia repositorioAbrangencia;
 
+        private readonly IRepositorioAtividadeAvaliativa repositorioAtividadeAvaliativa;
+
         private readonly IRepositorioAula repositorioAula;
 
         private readonly IRepositorioTipoCalendario repositorioTipoCalendario;
@@ -41,6 +43,8 @@ namespace SME.SGP.Dominio.Servicos
 
         private readonly IServicoNotificacao servicoNotificacao;
 
+        private readonly IServicoUsuario servicoUsuario;
+
         public ServicoAula(IRepositorioAula repositorioAula,
                            IServicoEOL servicoEOL,
                            IRepositorioTipoCalendario repositorioTipoCalendario,
@@ -54,7 +58,8 @@ namespace SME.SGP.Dominio.Servicos
                            IComandosWorkflowAprovacao comandosWorkflowAprovacao,
                            IComandosPlanoAula comandosPlanoAula,
                            IServicoFrequencia servicoFrequencia,
-                           IConfiguration configuration)
+                           IConfiguration configuration,
+                           IRepositorioAtividadeAvaliativa repositorioAtividadeAvaliativa)
         {
             this.repositorioAula = repositorioAula ?? throw new System.ArgumentNullException(nameof(repositorioAula));
             this.servicoEOL = servicoEOL ?? throw new System.ArgumentNullException(nameof(servicoEOL));
@@ -70,6 +75,7 @@ namespace SME.SGP.Dominio.Servicos
             this.servicoNotificacao = servicoNotificacao ?? throw new ArgumentNullException(nameof(servicoNotificacao));
             this.comandosPlanoAula = comandosPlanoAula ?? throw new ArgumentNullException(nameof(comandosPlanoAula));
             this.servicoFrequencia = servicoFrequencia ?? throw new ArgumentNullException(nameof(servicoFrequencia));
+            this.repositorioAtividadeAvaliativa = repositorioAtividadeAvaliativa ?? throw new ArgumentNullException(nameof(repositorioAtividadeAvaliativa));
         }
 
         private enum Operacao
@@ -81,7 +87,7 @@ namespace SME.SGP.Dominio.Servicos
 
         public async Task<string> Excluir(Aula aula, RecorrenciaAula recorrencia, Usuario usuario)
         {
-            await ExcluirAula(aula);
+            await ExcluirAula(aula, usuario.CodigoRf);
 
             if (recorrencia != RecorrenciaAula.AulaUnica)
                 await ExcluirRecorrencia(aula, recorrencia, usuario);
@@ -202,11 +208,12 @@ namespace SME.SGP.Dominio.Servicos
             await NotificarUsuario(usuario, aula, Operacao.Alteracao, aulasRecorrencia.Count() - aulasQueDeramErro.Count, aulasQueDeramErro);
         }
 
-        private async Task ExcluirAula(Aula aula)
+        private async Task ExcluirAula(Aula aula, string CodigoRf)
         {
+            if (await repositorioAtividadeAvaliativa.VerificarSeExisteAvaliacao(aula.DataAula.Date, aula.UeId, aula.TurmaId, CodigoRf, aula.DisciplinaId))
+                throw new NegocioException("Aula com avaliação vinculada. Para excluir esta aula primeiro deverá ser excluída a avaliação.");
             await servicoFrequencia.ExcluirFrequenciaAula(aula.Id);
             await comandosPlanoAula.ExcluirPlanoDaAula(aula.Id);
-
             aula.Excluido = true;
             await repositorioAula.SalvarAsync(aula);
         }
@@ -221,7 +228,7 @@ namespace SME.SGP.Dominio.Servicos
             {
                 try
                 {
-                    await ExcluirAula(aulaRecorrente);
+                    await ExcluirAula(aulaRecorrente, usuario.CodigoRf);
                 }
                 catch (NegocioException nex)
                 {
