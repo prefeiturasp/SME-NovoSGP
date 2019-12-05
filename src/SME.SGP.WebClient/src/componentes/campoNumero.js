@@ -39,6 +39,7 @@ const CampoNumero = React.forwardRef((props, ref) => {
     semMensagem,
     max,
     min,
+    step
   } = props;
 
   const possuiErro = () => {
@@ -90,6 +91,7 @@ const CampoNumero = React.forwardRef((props, ref) => {
             value={value}
             max={max}
             min={min}
+            step={step}
           />
         )}
       </Campo>
@@ -100,18 +102,13 @@ const CampoNumero = React.forwardRef((props, ref) => {
 CampoNumero.propTypes = {
   onChange: PropTypes.func,
   semMensagem: PropTypes.bool,
-  form: () => {},
+  form: undefined,
 };
 
 CampoNumero.defaultProps = {
   onChange: () => {},
   semMensagem: false,
-  form: PropTypes.oneOfType([
-    PropTypes.symbol,
-    PropTypes.any,
-    PropTypes.func,
-    PropTypes.object,
-  ]),
+  form: undefined,
 };
 
 export default CampoNumero;

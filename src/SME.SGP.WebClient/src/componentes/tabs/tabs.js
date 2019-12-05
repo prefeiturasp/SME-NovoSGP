@@ -36,6 +36,7 @@ const TabsComponent = props => {
     .ant-tabs-tab {
       width: 100% !important;
       margin-right: 0px !important;
+      border: 1px solid ${Base.CinzaDesabilitado} !important;
     }
 
     .ant-tabs-nav .ant-tabs-tab:hover {
@@ -47,12 +48,14 @@ const TabsComponent = props => {
     }
     .ant-tabs-tab-active {
       color: ${Base.Roxo} !important;
+      border-bottom: 1px solid #fff !important;
     }
 
     .ant-tabs-nav-container-scrolling {
       padding-right: 0px;
       padding-left: 0px;
     }
+
   `;
 
   const montarTabs = () => {
