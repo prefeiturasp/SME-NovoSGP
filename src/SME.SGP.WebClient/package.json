@@ -37,6 +37,7 @@
     "polished": "^3.4.2",
     "popper.js": "^1.15.0",
     "prop-types": "^15.7.2",
+    "query-string": "^6.9.0",
     "react": "^16.8.6",
     "react-dom": "^16.8.6",
     "react-icons": "^3.7.0",

@@ -98,6 +98,16 @@ namespace SME.SGP.Dominio.Servicos
             return "Aula e suas dependencias excluídas com sucesso!";
         }
 
+        public async Task GravarRecorrencia(bool inclusao, Aula aula, Usuario usuario, RecorrenciaAula recorrencia)
+        {
+            var fimRecorrencia = consultasPeriodoEscolar.ObterFimPeriodoRecorrencia(aula.TipoCalendarioId, aula.DataAula.Date, recorrencia);
+
+            if (inclusao)
+                GerarRecorrencia(aula, usuario, fimRecorrencia);
+            else
+                await AlterarRecorrencia(aula, usuario, fimRecorrencia);
+        }
+
         public async Task<string> Salvar(Aula aula, Usuario usuario, RecorrenciaAula recorrencia)
         {
             var tipoCalendario = repositorioTipoCalendario.ObterPorId(aula.TipoCalendarioId);
@@ -181,7 +191,7 @@ namespace SME.SGP.Dominio.Servicos
             // Verifica recorrencia da gravação
             if (recorrencia != RecorrenciaAula.AulaUnica)
             {
-                await GravarRecorrencia(ehInclusao, aula, usuario, recorrencia);
+                Background.Core.Cliente.Executar<IServicoAula>(x => x.GravarRecorrencia(ehInclusao, aula, usuario, recorrencia));
 
                 var mensagem = ehInclusao ? "cadastrada" : "alterada";
                 return $"Aula {mensagem} com sucesso. Serão {mensagem}s aulas recorrentes, em breve você receberá uma notificação com o resultado do processamento.";
@@ -308,16 +318,6 @@ namespace SME.SGP.Dominio.Servicos
             diasParaIncluirRecorrencia.AddRange(ObterDiaEntreDatas(inicioRecorrencia, fimRecorrencia));
 
             await GerarAulaDeRecorrenciaParaDias(aula, diasParaIncluirRecorrencia, usuario);
-        }
-
-        private async Task GravarRecorrencia(bool inclusao, Aula aula, Usuario usuario, RecorrenciaAula recorrencia)
-        {
-            var fimRecorrencia = consultasPeriodoEscolar.ObterFimPeriodoRecorrencia(aula.TipoCalendarioId, aula.DataAula.Date, recorrencia);
-            //TODO: ASSINCRONO
-            if (inclusao)
-                GerarRecorrencia(aula, usuario, fimRecorrencia);
-            else
-                await AlterarRecorrencia(aula, usuario, fimRecorrencia);
         }
 
         private async Task NotificarUsuario(Usuario usuario, Aula aula, Operacao operacao, int quantidade, List<(DateTime data, string erro)> aulasQueDeramErro)
