@@ -1,4 +1,5 @@
-﻿using SME.SGP.Dominio.Interfaces;
+﻿using SME.SGP.Dominio;
+using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -16,9 +17,9 @@ namespace SME.SGP.Aplicacao
             this.repositorioUe = repositorioUe ?? throw new System.ArgumentNullException(nameof(repositorioUe));
         }
 
-        public async Task<IEnumerable<ModalidadeRetornoDto>> ObterModalidadesPorUe(string ueCodigo)
+        public async Task<IEnumerable<ModalidadeRetornoDto>> ObterModalidadesPorUe(string ueCodigo, int ano)
         {
-            var listaModalidades = await repositorioUe.ObterModalidadesPorUe(ueCodigo);
+            var listaModalidades = await repositorioUe.ObterModalidades(ueCodigo, ano);
 
             if (listaModalidades != null && listaModalidades.Any())
             {
@@ -27,6 +28,22 @@ namespace SME.SGP.Aplicacao
                        {
                            Id = (int)b,
                            Nome = b.GetAttribute<DisplayAttribute>().Name
+                       };
+            }
+            else return null;
+        }
+
+        public async Task<IEnumerable<TurmaRetornoDto>> ObterTurmas(string ueCodigo, int modalidadeId, int ano)
+        {
+            var listaTurmas = await repositorioUe.ObterTurmas(ueCodigo, (Modalidade)modalidadeId, ano);
+
+            if (listaTurmas != null && listaTurmas.Any())
+            {
+                return from b in listaTurmas
+                       select new TurmaRetornoDto()
+                       {
+                           Codigo = b.CodigoTurma,
+                           Nome = b.Nome
                        };
             }
             else return null;
