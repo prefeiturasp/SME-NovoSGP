@@ -119,16 +119,6 @@ const ListaPaginada = props => {
     setPaginaAtual(novaPagina);
   };
 
-  const IconeCarregando = <Icon type="loading" style={{ fontSize: 54 }} spin />;
-  const Loader = (
-    <Spin
-      tip="Carregando..."
-      size="large"
-      indicator={IconeCarregando}
-      spinning={carregando}
-    />
-  );
-
   return (
     <Container className="table-responsive">
       <Table
