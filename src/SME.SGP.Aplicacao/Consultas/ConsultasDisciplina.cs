@@ -52,9 +52,9 @@ namespace SME.SGP.Aplicacao
             return TratarRetornoDisciplinasPlanejamento(disciplinasDto, filtroDisciplinaPlanejamentoDto);
         }
 
-        public async Task<IEnumerable<DisciplinaDto>> ObterDisciplinasPorProfessorETurma(string codigoTurma)
+        public async Task<List<DisciplinaDto>> ObterDisciplinasPorProfessorETurma(string codigoTurma)
         {
-            IEnumerable<DisciplinaDto> disciplinasDto = null;
+            var disciplinasDto = new List<DisciplinaDto>();
 
             var login = servicoUsuario.ObterLoginAtual();
             var perfilAtual = servicoUsuario.ObterPerfilAtual();
@@ -64,7 +64,7 @@ namespace SME.SGP.Aplicacao
 
             if (!string.IsNullOrWhiteSpace(disciplinasCacheString))
             {
-                disciplinasDto = JsonConvert.DeserializeObject<IEnumerable<DisciplinaDto>>(disciplinasCacheString);
+                disciplinasDto = JsonConvert.DeserializeObject<List<DisciplinaDto>>(disciplinasCacheString);
             }
             else
             {
@@ -79,7 +79,7 @@ namespace SME.SGP.Aplicacao
             return disciplinasDto;
         }
 
-        private async Task<IEnumerable<DisciplinaDto>> MapearParaDto(IEnumerable<DisciplinaResposta> disciplinas)
+        private async Task<List<DisciplinaDto>> MapearParaDto(IEnumerable<DisciplinaResposta> disciplinas)
         {
             var retorno = new List<DisciplinaDto>();
 

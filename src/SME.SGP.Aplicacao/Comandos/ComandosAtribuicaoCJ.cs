@@ -2,7 +2,6 @@
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
@@ -10,33 +9,24 @@ namespace SME.SGP.Aplicacao
     public class ComandosAtribuicaoCJ : IComandosAtribuicaoCJ
     {
         private readonly IRepositorioAtribuicaoCJ repositorioAtribuicaoCJ;
+        private readonly IServicoAtribuicaoCJ servicoAtribuicaoCJ;
 
-        public ComandosAtribuicaoCJ(IRepositorioAtribuicaoCJ repositorioAtribuicaoCJ)
+        public ComandosAtribuicaoCJ(IRepositorioAtribuicaoCJ repositorioAtribuicaoCJ, IServicoAtribuicaoCJ servicoAtribuicaoCJ)
         {
             this.repositorioAtribuicaoCJ = repositorioAtribuicaoCJ ?? throw new ArgumentNullException(nameof(repositorioAtribuicaoCJ));
+            this.servicoAtribuicaoCJ = servicoAtribuicaoCJ ?? throw new ArgumentNullException(nameof(servicoAtribuicaoCJ));
         }
 
         public async Task Salvar(AtribuicaoCJPersistenciaDto atribuicaoCJPersistenciaDto)
         {
-            var atribuicaoCJs = await repositorioAtribuicaoCJ.ObterPorFiltros(atribuicaoCJPersistenciaDto.Modalidade, atribuicaoCJPersistenciaDto.TurmaId,
-                atribuicaoCJPersistenciaDto.UeId, string.Empty, string.Empty, string.Empty);
+            var atribuicoesAtuais = await repositorioAtribuicaoCJ.ObterPorFiltros(atribuicaoCJPersistenciaDto.Modalidade, atribuicaoCJPersistenciaDto.TurmaId,
+               atribuicaoCJPersistenciaDto.UeId, 0, atribuicaoCJPersistenciaDto.UsuarioRf, string.Empty, null);
 
             foreach (var atribuicaoDto in atribuicaoCJPersistenciaDto.Disciplinas)
             {
-                var atribuicao = atribuicaoCJs.FirstOrDefault(a => a.DisciplinaId == atribuicaoDto.DisciplinaId);
-                if (atribuicao == null)
-                {
-                    var novaAtribuicao = TransformaDtoEmEntidade(atribuicaoCJPersistenciaDto, atribuicaoDto);
-                    await repositorioAtribuicaoCJ.SalvarAsync(novaAtribuicao);
-                }
-                else
-                {
-                    if (atribuicao.Substituir != atribuicaoDto.Substituir)
-                    {
-                        atribuicao.Substituir = atribuicaoDto.Substituir;
-                        await repositorioAtribuicaoCJ.SalvarAsync(atribuicao);
-                    }
-                }
+                var atribuicao = TransformaDtoEmEntidade(atribuicaoCJPersistenciaDto, atribuicaoDto);
+
+                await servicoAtribuicaoCJ.Salvar(atribuicao, atribuicoesAtuais);
             }
         }
 

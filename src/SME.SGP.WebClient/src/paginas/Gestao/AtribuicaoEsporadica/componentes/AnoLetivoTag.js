@@ -5,9 +5,9 @@ import t from 'prop-types';
 import { useSelector } from 'react-redux';
 
 // Componentes
-import { Tag } from '~/componentes';
+import { Tag, Label } from '~/componentes';
 
-function AnoLetivoTag({ form }) {
+function AnoLetivoTag({ form, label }) {
   const anoLetivo = useSelector(store => {
     if (store.filtro.anosLetivos.length > 1) {
       return store.filtro.anosLetivos[0].valor;
@@ -22,18 +22,23 @@ function AnoLetivoTag({ form }) {
   }, []);
 
   return (
-    <Tag tamanho="grande" fluido centralizado>
-      2019
-    </Tag>
+    <>
+      {label && <Label text={label} />}
+      <Tag tamanho="grande" fluido centralizado>
+        2019
+      </Tag>
+    </>
   );
 }
 
 AnoLetivoTag.propTypes = {
   form: t.oneOfType([t.object, t.func]),
+  label: t.string,
 };
 
 AnoLetivoTag.defaultProps = {
-  form: {},
+  form: null,
+  label: null,
 };
 
 export default AnoLetivoTag;

@@ -1,5 +1,4 @@
-﻿using SME.SGP.Dominio.Entidades;
-using SME.SGP.Dominio.Enumerados;
+﻿using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Dto;
 using System;
 using System.Collections.Generic;
@@ -9,9 +8,15 @@ namespace SME.SGP.Dominio.Interfaces
 {
     public interface IRepositorioAbrangencia
     {
+        void ExcluirAbrangencias(IEnumerable<long> ids);
+
+        void InserirAbrangencias(IEnumerable<Abrangencia> enumerable, string login);
+
         Task<bool> JaExisteAbrangencia(string login, Guid perfil);
 
         Task<IEnumerable<AbrangenciaFiltroRetorno>> ObterAbrangenciaPorFiltro(string texto, string login, Guid perfil);
+
+        Task<IEnumerable<AbrangenciaSinteticaDto>> ObterAbrangenciaSintetica(string login, Guid perfil, string turmaId = "");
 
         Task<AbrangenciaFiltroRetorno> ObterAbrangenciaTurma(string turma, string login, Guid perfil);
 
@@ -29,9 +34,6 @@ namespace SME.SGP.Dominio.Interfaces
 
         Task<IEnumerable<AbrangenciaUeRetorno>> ObterUes(string codigoDre, string login, Guid perfil, Modalidade? modalidade = null, int periodo = 0);
 
-        Task<IEnumerable<AbrangenciaSinteticaDto>> ObterAbrangenciaSintetica(string login, Guid perfil);
         void RemoverAbrangenciasForaEscopo(string login, Guid perfil, TipoAbrangencia porTurma);
-        void InserirAbrangencias(IEnumerable<Abrangencia> enumerable, string login);
-        void ExcluirAbrangencias(IEnumerable<long> ids);
     }
 }
