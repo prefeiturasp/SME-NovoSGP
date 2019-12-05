@@ -24,8 +24,8 @@ namespace SME.SGP.Aplicacao
 
         public async Task<IEnumerable<AtribuicaoCJListaRetornoDto>> Listar(AtribuicaoCJListaFiltroDto filtroDto)
         {
-            var listaRetorno = await repositorioAtribuicaoCJ.ObterPorFiltros(null, null, filtroDto.UeId, string.Empty,
-                filtroDto.UsuarioRf, filtroDto.UsuarioNome);
+            var listaRetorno = await repositorioAtribuicaoCJ.ObterPorFiltros(null, null, filtroDto.UeId, 0,
+                filtroDto.UsuarioRf, filtroDto.UsuarioNome, true);
 
             if (listaRetorno.Any())
                 return TransformaEntidadesEmDtosListaRetorno(listaRetorno);
@@ -37,8 +37,8 @@ namespace SME.SGP.Aplicacao
         {
             IEnumerable<ProfessorTitularDisciplinaEol> professoresTitularesDisciplinasEol = await servicoEOL.ObterProfessoresTitularesDisciplinas(turmaId, modalidadeId, ueId);
 
-            var listaAtribuicoes = await repositorioAtribuicaoCJ.ObterPorFiltros(modalidadeId, turmaId, ueId, string.Empty,
-                professorRf, string.Empty);
+            var listaAtribuicoes = await repositorioAtribuicaoCJ.ObterPorFiltros(modalidadeId, turmaId, ueId, 0,
+                professorRf, string.Empty, null);
 
             if (professoresTitularesDisciplinasEol.Any())
                 return TransformaEntidadesEmDtosAtribuicoesProfessoresRetorno(listaAtribuicoes, professoresTitularesDisciplinasEol);
@@ -103,10 +103,14 @@ namespace SME.SGP.Aplicacao
                             .Where(c => disciplinasIds.Contains(c.CodigoComponenteCurricular))
                             .ToList();
 
+                var professorDisciplina = a.FirstOrDefault();
+
                 var atribuicaoDto = new AtribuicaoCJListaRetornoDto()
                 {
                     Modalidade = a.Key.Modalidade.GetAttribute<DisplayAttribute>().Name,
-                    Turma = a.FirstOrDefault().Turma.Nome,
+                    ModalidadeId = (int)a.Key.Modalidade,
+                    Turma = professorDisciplina.Turma.Nome,
+                    TurmaId = professorDisciplina.TurmaId,
                     Disciplinas = disciplinasDescricoes.Select(d => d.Nome).ToArray()
                 };
 

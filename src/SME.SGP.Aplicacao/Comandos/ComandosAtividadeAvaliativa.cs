@@ -86,14 +86,14 @@ namespace SME.SGP.Aplicacao
 
             if (disciplina.Regencia)
             {
-                if (await repositorioAtividadeAvaliativa.VerificarSeJaExisteAvaliacaoRegencia(dataAvaliacao, filtro.DreId, filtro.UeID, filtro.TurmaId, filtro.DisciplinaId, usuario.CodigoRf))
+                if (await repositorioAtividadeAvaliativa.VerificarSeJaExisteAvaliacaoRegencia(dataAvaliacao, filtro.DreId, filtro.UeID, filtro.TurmaId, filtro.DisciplinaContidaRegenciaId, usuario.CodigoRf))
                 {
                     throw new NegocioException("Já existe atividade avaliativa cadastrada para esse data e disciplina.");
                 }
             }
             else
             {
-                if (await repositorioAtividadeAvaliativa.VerificarSeJaExisteAvaliacao(dataAvaliacao, filtro.DreId, filtro.UeID, filtro.TurmaId, usuario.CodigoRf))
+                if (await repositorioAtividadeAvaliativa.VerificarSeJaExisteAvaliacaoNaoRegencia(dataAvaliacao, filtro.DreId, filtro.UeID, filtro.TurmaId, usuario.CodigoRf))
                 {
                     throw new NegocioException("Já existe atividade avaliativa cadastrada para esse data.");
                 }
@@ -120,6 +120,8 @@ namespace SME.SGP.Aplicacao
             atividadeAvaliativa.NomeAvaliacao = dto.Nome;
             atividadeAvaliativa.DescricaoAvaliacao = dto.Descricao;
             atividadeAvaliativa.DataAvaliacao = dto.DataAvaliacao;
+            atividadeAvaliativa.DisciplinaContidaRegenciaId = dto.DisciplinaContidaRegenciaId;
+            atividadeAvaliativa.EhRegencia = dto.EhRegencia;
             return atividadeAvaliativa;
         }
 

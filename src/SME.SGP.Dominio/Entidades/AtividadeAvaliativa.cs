@@ -7,6 +7,7 @@ namespace SME.SGP.Dominio
         public int CategoriaId { get; set; }
         public DateTime DataAvaliacao { get; set; }
         public string DescricaoAvaliacao { get; set; }
+        public string DisciplinaContidaRegenciaId { get; set; }
         public int DisciplinaId { get; set; }
         public string DreId { get; set; }
         public bool EhRegencia { get; set; }
