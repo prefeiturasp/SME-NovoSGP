@@ -227,7 +227,7 @@ function AtribuicaoCJForm({ match, location }) {
               <Form>
                 <ButtonGroup
                   form={form}
-                  permissoesTela={permissoesTela[RotasDto.ATRIBUICAO_CJ_FORM]}
+                  permissoesTela={permissoesTela[RotasDto.ATRIBUICAO_CJ_LISTA]}
                   novoRegistro={novoRegistro}
                   labelBotaoPrincipal="Salvar"
                   onClickBotaoPrincipal={() => onClickBotaoPrincipal(form)}
