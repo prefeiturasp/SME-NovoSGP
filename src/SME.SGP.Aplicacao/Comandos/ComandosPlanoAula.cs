@@ -230,7 +230,7 @@ namespace SME.SGP.Aplicacao
                     IEnumerable<AtribuicaoCJ> lstTurmasCJ = await
                          repositorioAtribuicaoCJ.ObterPorFiltros(null, idTurma, ueId, Convert.ToInt64(disciplinaId), codigoRf, null, null);
 
-                    if (!lstTurmasCJ.Any())
+                    if (lstTurmasCJ == null || !lstTurmasCJ.Any())
                         throw new NegocioException("Somente é possível migrar o plano de aula para turmas atribuidas ao professor CJ");
                 }
             }
