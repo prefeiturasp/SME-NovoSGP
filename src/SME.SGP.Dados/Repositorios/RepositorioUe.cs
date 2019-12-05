@@ -22,14 +22,27 @@ namespace SME.SGP.Dados.Repositorios
             this.contexto = contexto;
         }
 
-        public async Task<IEnumerable<Modalidade>> ObterModalidadesPorUe(string ueCodigo)
+        public async Task<IEnumerable<Modalidade>> ObterModalidades(string ueCodigo, int ano)
         {
             var query = @"select distinct t.modalidade_codigo from turma t
                                 inner join ue u
                                 on t.ue_id = u.id
-                                    where u.ue_id = @ueCodigo";
+                                    where u.ue_id = @ueCodigo
+                                and t.ano_letivo = @ano";
 
-            return await contexto.QueryAsync<Modalidade>(query, new { ueCodigo });
+            return await contexto.QueryAsync<Modalidade>(query, new { ueCodigo, ano });
+        }
+
+        public async Task<IEnumerable<Turma>> ObterTurmas(string ueCodigo, Modalidade modalidade, int ano)
+        {
+            var query = @"select t.* from turma t
+                            inner join ue u
+                            on t.ue_id = u.id
+                            where u.ue_id = @ueCodigo
+                            and t.modalidade_codigo = @modalidade
+                            and t.ano_letivo = @ano";
+
+            return await contexto.QueryAsync<Turma>(query, new { ueCodigo, modalidade, ano });
         }
 
         public Ue ObterUEPorTurma(string turmaId)
