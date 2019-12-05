@@ -205,7 +205,7 @@ const Filtro = () => {
 
           return anos;
         })
-        .catch(() => anosLetivos);
+        .catch(() => []);
 
       if (deveSalvarAnosLetivos) {
         dispatch(salvarAnosLetivos(anosLetivo));

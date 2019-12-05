@@ -1,6 +1,6 @@
 import React from 'react';
 import { Provider } from 'react-redux';
-import { Router, Switch, Route } from 'react-router-dom';
+import { Router, Switch } from 'react-router-dom';
 
 import './configuracao/ReactotronConfig';
 import { PersistGate } from 'redux-persist/integration/react';
@@ -11,12 +11,15 @@ import Pagina from '~/componentes-sgp/pagina';
 import Login from '~/paginas/Login';
 import RecuperarSenha from './paginas/RecuperarSenha';
 import RedefinirSenha from './paginas/RedefinirSenha';
+import RotaAutenticadaEstruturada from './rotas/rotaAutenticadaDesestruturada';
+import RotaNaoAutenticadaDesestruturada from './rotas/rotaNaoAutenticadaDesestruturada';
+import { rotaAtiva } from './redux/modulos/navegacao/actions';
 
 function App() {
-  // history.listen(location => {
-  //   localStorage.setItem('rota-atual', location.pathname);
-  //   store.dispatch(rotaAtiva(location.pathname));
-  // });
+  history.listen(location => {
+    localStorage.setItem('rota-atual', location.pathname);
+    store.dispatch(rotaAtiva(location.pathname));
+  });
   return (
     <Provider store={store}>
       <PersistGate loading={null} persistor={persistor}>
@@ -24,13 +27,19 @@ function App() {
           <GlobalStyle />
           <div className="h-100">
             <Switch>
-              <Route
+              <RotaNaoAutenticadaDesestruturada
                 component={RedefinirSenha}
-                path="/redefinir-senha/:token"
+                path="/redefinir-senha/:token?"
               />
-              <Route component={RecuperarSenha} path="/recuperar-senha" />
-              <Route component={Login} path="/login/:redirect?/" />
-              <Route component={Pagina} path="/" />
+              <RotaNaoAutenticadaDesestruturada
+                component={RecuperarSenha}
+                path="/recuperar-senha"
+              />
+              <RotaNaoAutenticadaDesestruturada
+                component={Login}
+                path="/login/:redirect?/"
+              />
+              <RotaAutenticadaEstruturada component={Pagina} path="/" />
             </Switch>
           </div>
         </Router>
