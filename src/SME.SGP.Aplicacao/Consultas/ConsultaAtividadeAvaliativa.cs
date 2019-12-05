@@ -61,7 +61,9 @@ namespace SME.SGP.Aplicacao
                 CriadoEm = atividadeAvaliativa.CriadoEm,
                 CriadoPor = atividadeAvaliativa.CriadoPor,
                 CriadoRF = atividadeAvaliativa.CriadoRF,
-                Categoria = atividadeAvaliativa.TipoAvaliacao.Descricao
+                Categoria = atividadeAvaliativa.TipoAvaliacao.Descricao,
+                EhRegencia = atividadeAvaliativa.EhRegencia,
+                DisciplinaContidaRegenciaId = atividadeAvaliativa.DisciplinaContidaRegenciaId
             };
         }
 

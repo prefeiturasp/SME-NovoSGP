@@ -5,11 +5,12 @@ namespace SME.SGP.Dominio.Interfaces
 {
     public interface IServicoFrequencia
     {
+        Task ExcluirFrequenciaAula(long aulaId);
+
         IEnumerable<RegistroAusenciaAluno> ObterListaAusenciasPorAula(long aulaId);
 
         RegistroFrequencia ObterRegistroFrequenciaPorAulaId(long aulaId);
 
         Task Registrar(long aulaId, IEnumerable<RegistroAusenciaAluno> registroAusenciaAlunos);
-        Task ExcluirFrequenciaAula(long aulaId);
     }
 }

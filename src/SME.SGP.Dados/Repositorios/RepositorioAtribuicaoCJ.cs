@@ -14,8 +14,8 @@ namespace SME.SGP.Dados.Repositorios
         {
         }
 
-        public async Task<IEnumerable<AtribuicaoCJ>> ObterPorFiltros(Modalidade? modalidade, string turmaId, string ueId, string disciplinaId,
-            string usuarioRf, string usuarioNome)
+        public async Task<IEnumerable<AtribuicaoCJ>> ObterPorFiltros(Modalidade? modalidade, string turmaId, string ueId, long disciplinaId,
+            string usuarioRf, string usuarioNome, bool? substituir)
         {
             var query = new StringBuilder();
 
@@ -37,7 +37,7 @@ namespace SME.SGP.Dados.Repositorios
             if (!string.IsNullOrEmpty(turmaId))
                 query.AppendLine("and a.turma_id = @turmaId");
 
-            if (!string.IsNullOrEmpty(disciplinaId))
+            if (disciplinaId > 0)
                 query.AppendLine("and a.disciplina_id = @disciplinaId");
 
             if (!string.IsNullOrEmpty(usuarioRf))
@@ -47,6 +47,11 @@ namespace SME.SGP.Dados.Repositorios
             {
                 usuarioNome = $"%{usuarioNome.ToUpper()}%";
                 query.AppendLine("and upper(f_unaccent(u.nome)) LIKE @usuarioNome");
+            }
+
+            if (substituir.HasValue)
+            {
+                query.AppendLine("and a.substituir = @substituir");
             }
 
             return (await database.Conexao.QueryAsync<AtribuicaoCJ, Turma, AtribuicaoCJ>(query.ToString(), (atribuicaoCJ, turma) =>
@@ -60,7 +65,8 @@ namespace SME.SGP.Dados.Repositorios
                 turmaId,
                 disciplinaId,
                 usuarioRf,
-                usuarioNome
+                usuarioNome,
+                substituir
             }, splitOn: "id,id"));
         }
     }
