@@ -46,6 +46,7 @@ const ContainerMenu = styled(Menu)`
 
 const Ordenacao = props => {
   const {
+    className,
     conteudoParaOrdenar,
     ordenarColunaNumero,
     ordenarColunaTexto,
@@ -107,7 +108,7 @@ const Ordenacao = props => {
 
   return (
     <Container overlay={menu} placement="bottomLeft">
-      <Button className="botao-ordenar">
+      <Button className={`botao-ordenar ${className}`}>
         <i className="fas fa-exchange-alt mr-1"></i>
         Ordenar
       </Button>
@@ -116,6 +117,7 @@ const Ordenacao = props => {
 };
 
 Ordenacao.defaultProps = {
+  className: '',
   conteudoParaOrdenar: [],
   ordenarColunaNumero: 'id',
   ordenarColunaTexto: 'nome',
@@ -123,6 +125,7 @@ Ordenacao.defaultProps = {
 };
 
 Ordenacao.propTypes = {
+  className: PropTypes.string,
   conteudoParaOrdenar: PropTypes.array,
   ordenarColunaNumero: PropTypes.string,
   ordenarColunaTexto: PropTypes.string,

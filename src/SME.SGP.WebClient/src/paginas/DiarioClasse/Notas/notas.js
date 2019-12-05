@@ -6,6 +6,8 @@ import Card from '~/componentes/card';
 import { Colors } from '~/componentes/colors';
 import SelectComponent from '~/componentes/select';
 import api from '~/servicos/api';
+import TabsComponent from '~/componentes/tabs/tabs';
+import Avaliacao from '~/componentes-sgp/avaliacao/avaliacao';
 
 const Notas = () => {
 
@@ -16,10 +18,11 @@ const Notas = () => {
   const [listaDisciplinas, setListaDisciplinas] = useState([]);
   const [disciplinaSelecionada, setDisciplinaSelecionada] = useState(undefined);
   const [desabilitarDisciplina, setDesabilitarDisciplina] = useState(false);
+  const [listaTabs, setListaTabs] = useState([]);
 
   useEffect(() => {
     const obterDisciplinas = async () => {
-      const url = `v1/calendarios/frequencias/turmas/${turmaId}/disciplinas`;
+      const url = `v1/professores/123/turmas/${turmaId}/disciplinas`;
       const disciplinas = await api.get(url);
 
       setListaDisciplinas(disciplinas.data);
@@ -27,12 +30,14 @@ const Notas = () => {
         const disciplina = disciplinas.data[0];
         setDisciplinaSelecionada(String(disciplina.codigoComponenteCurricular));
         setDesabilitarDisciplina(true);
+        montaListaTabs();
       }
     };
 
     if (turmaId) {
       setDisciplinaSelecionada(undefined);
       obterDisciplinas();
+      // TODO - TESTE
     } else {
       // TODO - Resetar tela
       setListaDisciplinas([]);
@@ -56,6 +61,254 @@ const Notas = () => {
   const onChangeDisciplinas =  disciplinaId => {
     setDisciplinaSelecionada(disciplinaId);
   };
+
+  const onChangeTab = (item) => {
+    console.log(item);
+  }
+
+  const dadosBimentreUm =
+  {
+      avaliacoes: [
+        {codigo: 1, nome: 'Avaliação 01', podeEditar: true, tipoDescricao: 'Pesquisa', data: '07/10/2019'},
+        {codigo: 2, nome: 'Avaliação 02', podeEditar: true, tipoDescricao: 'Seminário', data: '28/10/2019'},
+        {codigo: 3, nome: 'Avaliação 03', podeEditar: true, tipoDescricao: 'Trabalho em grupo', data: '01/11/2019'},
+        {codigo: 4, nome: 'Avaliação 04', podeEditar: true, tipoDescricao: 'Teste', data: '09/11/2019'},
+      ],
+      alunos: [
+        {
+          codigo: 1,
+          nome: 'Alvaro Ramos Grassi',
+          notas: [
+            { nota: 10 },
+            { nota: 10 },
+            { nota: 10 },
+            { nota: 10 },
+          ]
+        },
+        {
+          codigo: 2,
+          nome: 'Aline Grassi',
+          notas: [
+            { nota: 10 },
+            { nota: 10 },
+            { nota: 10 },
+            { nota: 10 },
+          ]
+        },
+        {
+          codigo: 3,
+          nome: 'Bianca Grassi',
+          notas: [
+            { nota: 10 },
+            { nota: 10 },
+            { nota: 10 },
+            { nota: 10 },
+          ]
+        },
+        {
+          codigo: 4,
+          nome: 'José Ramos Grassi',
+          notas: [
+            { nota: 10 },
+            { nota: 10 },
+            { nota: 10 },
+            { nota: 10 },
+          ]
+        },
+        {
+          codigo: 5,
+          nome: 'Valentina Grassi',
+          notas: [
+            { nota: 10 },
+            { nota: 10 },
+            { nota: 10 },
+            { nota: 10 },
+          ]
+        },
+        {
+          codigo: 6,
+          nome: 'Laura Ramos Grassi',
+          notas: [
+            { nota: 10 },
+            { nota: 10 },
+            { nota: 10 },
+            { nota: 10 },
+          ]
+        },
+        {
+          codigo: 7,
+          nome: 'Angela Ramos Grassi',
+          notas: [
+            { nota: 10 },
+            { nota: 10 },
+            { nota: 10 },
+            { nota: 10 },
+          ]
+        },
+        {
+          codigo: 8,
+          nome: 'Marcos Ramos Grassi',
+          notas: [
+            { nota: 10 },
+            { nota: 10 },
+            { nota: 10 },
+            { nota: 10 },
+          ]
+        },
+        {
+          codigo: 9,
+          nome: 'Jefferson Ramos Grassi',
+          notas: [
+            { nota: 10 },
+            { nota: 10 },
+            { nota: 10 },
+            { nota: 10 },
+          ]
+        },
+        {
+          codigo: 10,
+          nome: 'Júlio Ramos Grassi',
+          notas: [
+            { nota: 10 },
+            { nota: 10 },
+            { nota: 10 },
+            { nota: 10 },
+          ]
+        },
+      ]
+    }
+
+  const dadosBimentreDois =
+  {
+      avaliacoes: [
+        {codigo: 1, nome: 'Avaliação 01', podeEditar: true, tipoDescricao: 'Pesquisa', data: '07/10/2019'},
+        {codigo: 2, nome: 'Avaliação 02', podeEditar: true, tipoDescricao: 'Seminário', data: '28/10/2019'},
+        {codigo: 3, nome: 'Avaliação 03', podeEditar: true, tipoDescricao: 'Trabalho em grupo', data: '01/11/2019'},
+        {codigo: 4, nome: 'Avaliação 04', podeEditar: true, tipoDescricao: 'Teste', data: '09/11/2019'},
+      ],
+      alunos: [
+        {
+          codigo: 1,
+          nome: 'Alvaro Ramos Grassi',
+          notas: [
+            { nota: 10 },
+            { nota: 10 },
+            { nota: 10 },
+            { nota: 10 },
+          ]
+        },
+        {
+          codigo: 2,
+          nome: 'Aline Grassi',
+          notas: [
+            { nota: 10 },
+            { nota: 10 },
+            { nota: 10 },
+            { nota: 10 },
+          ]
+        },
+        {
+          codigo: 3,
+          nome: 'Bianca Grassi',
+          notas: [
+            { nota: 10 },
+            { nota: 10 },
+            { nota: 10 },
+            { nota: 10 },
+          ]
+        },
+        {
+          codigo: 4,
+          nome: 'José Ramos Grassi',
+          notas: [
+            { nota: 10 },
+            { nota: 10 },
+            { nota: 10 },
+            { nota: 10 },
+          ]
+        },
+        {
+          codigo: 5,
+          nome: 'Valentina Grassi',
+          notas: [
+            { nota: 10 },
+            { nota: 10 },
+            { nota: 10 },
+            { nota: 10 },
+          ]
+        },
+        {
+          codigo: 6,
+          nome: 'Laura Ramos Grassi',
+          notas: [
+            { nota: 10 },
+            { nota: 10 },
+            { nota: 10 },
+            { nota: 10 },
+          ]
+        },
+        {
+          codigo: 7,
+          nome: 'Angela Ramos Grassi',
+          notas: [
+            { nota: 10 },
+            { nota: 10 },
+            { nota: 10 },
+            { nota: 10 },
+          ]
+        },
+        {
+          codigo: 8,
+          nome: 'Marcos Ramos Grassi',
+          notas: [
+            { nota: 10 },
+            { nota: 10 },
+            { nota: 10 },
+            { nota: 10 },
+          ]
+        },
+        {
+          codigo: 9,
+          nome: 'Jefferson Ramos Grassi',
+          notas: [
+            { nota: 10 },
+            { nota: 10 },
+            { nota: 10 },
+            { nota: 10 },
+          ]
+        },
+        {
+          codigo: 10,
+          nome: 'Júlio Ramos Grassi',
+          notas: [
+            { nota: 10 },
+            { nota: 10 },
+            { nota: 10 },
+            { nota: 10 },
+          ]
+        },
+      ]
+    }
+
+  const montaListaTabs = ()=> {
+
+    const teste = [
+      {
+        nome: '1° Bimestre',
+        conteudo: (
+          <Avaliacao dados={dadosBimentreUm}></Avaliacao>
+        )
+      },
+      {
+        nome: '2° Bimestre',
+        conteudo: (
+          <Avaliacao dados={dadosBimentreDois}></Avaliacao>
+        )
+      },
+    ]
+
+    setListaTabs(teste);
+  }
 
   return (
     <>
@@ -102,6 +355,13 @@ const Notas = () => {
                 placeholder="Disciplina"
                 disabled={desabilitarDisciplina}
               />
+            </div>
+          </div>
+          <div className="row">
+            <div className="col-sm-12 col-md-12 col-lg-12 col-xl-12 mb-2">
+              <TabsComponent onChangeTab={onChangeTab} listaTabs={listaTabs}>
+
+              </TabsComponent>
             </div>
           </div>
         </div>
