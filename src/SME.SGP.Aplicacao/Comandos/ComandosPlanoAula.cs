@@ -14,6 +14,7 @@ namespace SME.SGP.Aplicacao
         private readonly IRepositorioObjetivoAprendizagemAula repositorioObjetivosAula;
         private readonly IRepositorioObjetivoAprendizagemPlano repositorioObjetivoAprendizagemPlano;
         private readonly IRepositorioAula repositorioAula;
+        private readonly IRepositorioAtribuicaoCJ repositorioAtribuicaoCJ;
         private readonly IConsultasAbrangencia consultasAbrangencia;
         private readonly IConsultasObjetivoAprendizagem consultasObjetivoAprendizagem;
         private readonly IConsultasPlanoAnual consultasPlanoAnual;
@@ -25,6 +26,7 @@ namespace SME.SGP.Aplicacao
                         IRepositorioObjetivoAprendizagemAula repositorioObjetivosAula,
                         IRepositorioObjetivoAprendizagemPlano repositorioObjetivoAprendizagemPlano,
                         IRepositorioAula repositorioAula,
+                        IRepositorioAtribuicaoCJ repositorioAtribuicaoCJ,
                         IConsultasAbrangencia consultasAbrangencia,
                         IConsultasObjetivoAprendizagem consultasObjetivoAprendizagem,
                         IConsultasPlanoAnual consultasPlanoAnual,
@@ -36,6 +38,7 @@ namespace SME.SGP.Aplicacao
             this.repositorioObjetivosAula = repositorioObjetivosAula;
             this.repositorioObjetivoAprendizagemPlano = repositorioObjetivoAprendizagemPlano;
             this.repositorioAula = repositorioAula;
+            this.repositorioAtribuicaoCJ = repositorioAtribuicaoCJ;
             this.consultasAbrangencia = consultasAbrangencia;
             this.consultasProfessor = consultasProfessor;
             this.consultasObjetivoAprendizagem = consultasObjetivoAprendizagem;
@@ -46,9 +49,12 @@ namespace SME.SGP.Aplicacao
 
         public async Task Migrar(MigrarPlanoAulaDto migrarPlanoAulaDto)
         {
-            ValidarMigracao(migrarPlanoAulaDto);
-
+            var usuario = await servicoUsuario.ObterUsuarioLogado();
             var planoAulaDto = repositorio.ObterPorId(migrarPlanoAulaDto.PlanoAulaId);
+            var aula = repositorioAula.ObterPorId(planoAulaDto.AulaId);
+
+            await ValidarMigracao(migrarPlanoAulaDto, usuario.CodigoRf, usuario.EhProfessorCj(), aula.UeId);
+
             var objetivosPlanoAulaDto = await repositorioObjetivosAula.ObterObjetivosPlanoAula(migrarPlanoAulaDto.PlanoAulaId);
 
             using (var transacao = unitOfWork.IniciarTransacao())
@@ -72,7 +78,7 @@ namespace SME.SGP.Aplicacao
                         Descricao = planoAulaDto.Descricao,
                         DesenvolvimentoAula = planoAulaDto.DesenvolvimentoAula,
                         LicaoCasa = migrarPlanoAulaDto.MigrarLicaoCasa ? planoAulaDto.LicaoCasa : string.Empty,
-                        ObjetivosAprendizagemJurema = !migrarPlanoAulaDto.EhProfessorCJ ||
+                        ObjetivosAprendizagemJurema = !usuario.EhProfessorCj() ||
                                                        migrarPlanoAulaDto.MigrarObjetivos ?
                                                        objetivosPlanoAulaDto.Select(o => o.ObjetivoAprendizagemPlano.ObjetivoAprendizagemJuremaId).ToList() : null,
                         RecuperacaoAula = migrarPlanoAulaDto.MigrarRecuperacaoAula ?
@@ -196,20 +202,22 @@ namespace SME.SGP.Aplicacao
             return planoAula;
         }
 
-        private void ValidarMigracao(MigrarPlanoAulaDto migrarPlanoAulaDto)
+        private async Task ValidarMigracao(MigrarPlanoAulaDto migrarPlanoAulaDto, string codigoRf, bool ehProfessorCj, string ueId)
         {
-            var turmasAtribuidasAoProfessor = consultasProfessor.Listar(migrarPlanoAulaDto.RFProfessor);
+            var turmasAtribuidasAoProfessor = consultasProfessor.Listar(codigoRf);
             var idsTurmasSelecionadas = migrarPlanoAulaDto.IdsPlanoTurmasDestino.Select(x => x.TurmaId).ToList();
 
-            ValidaTurmasProfessor(migrarPlanoAulaDto.EhProfessorCJ,
+            await ValidaTurmasProfessor(ehProfessorCj, ueId, 
+                                  migrarPlanoAulaDto.DisciplinaId, 
+                                  codigoRf,
                                   turmasAtribuidasAoProfessor,
                                   idsTurmasSelecionadas);
 
-            ValidaTurmasAno(migrarPlanoAulaDto.EhProfessorCJ, migrarPlanoAulaDto.MigrarObjetivos,
+            ValidaTurmasAno(ehProfessorCj, migrarPlanoAulaDto.MigrarObjetivos,
                             turmasAtribuidasAoProfessor, idsTurmasSelecionadas);
         }
 
-        private void ValidaTurmasProfessor(bool ehProfessorCJ,
+        private async Task ValidaTurmasProfessor(bool ehProfessorCJ, string ueId, string disciplinaId, string codigoRf,
                                            IEnumerable<ProfessorTurmaDto> turmasAtribuidasAoProfessor,
                                            IEnumerable<string> idsTurmasSelecionadas)
         {
@@ -217,7 +225,14 @@ namespace SME.SGP.Aplicacao
 
             if (ehProfessorCJ)
             {
-                //validar se o professor CJ possui atribuição de disciplina no ano
+                foreach (var idTurma in idsTurmasSelecionadas)
+                {
+                    IEnumerable<AtribuicaoCJ> lstTurmasCJ = await
+                         repositorioAtribuicaoCJ.ObterPorFiltros(null, idTurma, ueId, disciplinaId, codigoRf, null);
+
+                    if (!lstTurmasCJ.Any())
+                        throw new NegocioException("Somente é possível migrar o plano de aula para turmas atribuidas ao professor CJ");
+                }
             }
             else if (idsTurmasProfessor == null || idsTurmasSelecionadas.Any(c => !idsTurmasProfessor.Contains(Convert.ToInt32(c))))
             {
