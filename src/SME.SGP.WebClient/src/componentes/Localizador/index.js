@@ -1,6 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 
+// Redux
+import { useSelector } from 'react-redux';
+
 // Componentes
 import InputRF from './componentes/InputRF';
 import InputNome from './componentes/InputNome';
@@ -19,6 +22,7 @@ function Localizador({
 }) {
   const [dataSource, setDataSource] = useState([]);
   const [pessoaSelecionada, setPessoaSelecionada] = useState({});
+  const usuario = useSelector(store => store.usuario);
 
   const onChangeInput = async valor => {
     if (valor.length < 2) return;
@@ -65,6 +69,12 @@ function Localizador({
     }
   }, [form.initialValues]);
 
+  useEffect(() => {
+    if (usuario.ehProfessor) {
+      onBuscarPorRF({ rf: usuario.rf });
+    }
+  }, []);
+
   return (
     <>
       <Grid cols={4}>
@@ -76,7 +86,7 @@ function Localizador({
           onSelect={onBuscarPorRF}
           name="professorRf"
           form={form}
-          desabilitado={desabilitado}
+          desabilitado={desabilitado || usuario.ehProfessor}
         />
       </Grid>
       <Grid className="pr-0" cols={8}>
@@ -88,7 +98,7 @@ function Localizador({
           pessoaSelecionada={pessoaSelecionada}
           form={form}
           name="professorNome"
-          desabilitado={desabilitado}
+          desabilitado={desabilitado || usuario.ehProfessor}
         />
       </Grid>
     </>

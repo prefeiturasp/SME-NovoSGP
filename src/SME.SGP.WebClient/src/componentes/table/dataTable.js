@@ -15,6 +15,7 @@ const DataTable = props => {
     pagination,
     locale,
     idLinha,
+    loading,
   } = props;
 
   const rowSelection = {
@@ -88,6 +89,7 @@ const DataTable = props => {
             },
           };
         }}
+        loading={loading}
       />
     </Container>
   );
