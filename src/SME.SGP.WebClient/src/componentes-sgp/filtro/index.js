@@ -196,13 +196,14 @@ const Filtro = () => {
     const ObterAnosLetivos = async deveSalvarAnosLetivos => {
       const anosLetivo = await ServicoFiltro.listarAnosLetivos()
         .then(resposta => {
+          const anos = [];
           if (resposta.data) {
             resposta.data.forEach(ano => {
-              anosLetivos.push({ desc: ano, valor: ano });
+              anos.push({ desc: ano, valor: ano });
             });
           }
 
-          return anosLetivos;
+          return anos;
         })
         .catch(() => anosLetivos);
 
@@ -217,7 +218,7 @@ const Filtro = () => {
       estado = false;
       return estado;
     };
-  }, [anosLetivos, dispatch]);
+  }, [dispatch]);
 
   useEffect(() => {
     let estado = true;
@@ -465,10 +466,6 @@ const Filtro = () => {
       document.addEventListener('click', controlaClickFora);
     return () => document.removeEventListener('click', controlaClickFora);
   }, [alternarFocoBusca, alternarFocoCampo, turmaUsuarioSelecionada]);
-
-  useEffect(() => {
-    debugger;
-  }, []);
 
   useEffect(() => {
     if (!turmaUsuarioSelecionada) campoBuscaRef.current.focus();
