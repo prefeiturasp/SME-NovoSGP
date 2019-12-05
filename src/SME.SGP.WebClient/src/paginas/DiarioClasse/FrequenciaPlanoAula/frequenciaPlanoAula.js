@@ -22,7 +22,7 @@ import { SelecionarDisciplina } from '~/redux/modulos/planoAula/actions';
 import { stringNulaOuEmBranco } from '~/utils/funcoes/gerais';
 import ModalMultiLinhas from '~/componentes/modalMultiLinhas';
 import modalidade from '~/dtos/modalidade';
-import ServicoFrequencia from '~/servicos/Paginas/DiarioClasse/ServicoFrequencia';
+import ServicoDisciplina from '~/servicos/Paginas/ServicoDisciplina';
 
 const FrequenciaPlanoAula = () => {
   const usuario = useSelector(store => store.usuario);
@@ -36,12 +36,12 @@ const FrequenciaPlanoAula = () => {
   const { turmaSelecionada, ehProfessor, ehProfessorCj } = usuario;
   const ehEja =
     turmaSelecionada &&
-    String(turmaSelecionada.modalidade) === String(modalidade.EJA)
+      String(turmaSelecionada.modalidade) === String(modalidade.EJA)
       ? true
       : false;
   const ehMedio =
     turmaSelecionada &&
-    String(turmaSelecionada.modalidade) === String(modalidade.ENSINO_MEDIO)
+      String(turmaSelecionada.modalidade) === String(modalidade.ENSINO_MEDIO)
       ? true
       : false;
   const turmaId = turmaSelecionada ? turmaSelecionada.turma : 0;
@@ -68,6 +68,7 @@ const FrequenciaPlanoAula = () => {
   const [modoEdicaoPlanoAula, setModoEdicaoPlanoAula] = useState(false);
   const [ehRegencia, setEhRegencia] = useState(false);
   const [aula, setAula] = useState(undefined);
+  const [auditoriaPlano, setAuditoriaPlano] = useState([]);
   const [planoAula, setPlanoAula] = useState({
     aulaId: 0,
     id: 0,
@@ -78,6 +79,7 @@ const FrequenciaPlanoAula = () => {
     recuperacaoAula: null,
     licaoCasa: null,
     objetivosAprendizagemAula: [],
+    migrado: false,
   });
   const [temObjetivos, setTemObjetivos] = useState(false);
   const [errosValidacaoPlano, setErrosValidacaoPlano] = useState([]);
@@ -86,7 +88,9 @@ const FrequenciaPlanoAula = () => {
 
   useEffect(() => {
     const obterDisciplinas = async () => {
-      const disciplinas = await ServicoFrequencia.obterDisciplinas(turmaId);
+      const disciplinas = await ServicoDisciplina.obterDisciplinasPorTurma(
+        turmaId
+      );
       setListaDisciplinas(disciplinas.data);
       if (disciplinas.data && disciplinas.data.length == 1) {
         const disciplina = disciplinas.data[0];
@@ -104,7 +108,7 @@ const FrequenciaPlanoAula = () => {
       obterDatasDeAulasDisponiveis();
       setDisciplinaSelecionada(undefined);
       setDisciplinaIdSelecionada(undefined);
-      obterDisciplinas();
+      obterDisciplinas(turmaId);
     } else {
       resetarTelaFrequencia();
       setAulaId(0);
@@ -165,10 +169,18 @@ const FrequenciaPlanoAula = () => {
         dadosPlano.temObjetivos =
           (disciplinaSelecionada.regencia || ehProfessor) && !ehEja;
         setPlanoAula(dadosPlano);
+        const audPlano = {
+          criadoEm: dadosPlano.criadoEm,
+          criadoPor: dadosPlano.criadoPor,
+          alteradoEm: dadosPlano.alteradoEm,
+          alteradoPor: dadosPlano.alteradoPor,
+        }
+        setAuditoriaPlano(audPlano)
       } else {
         setModoEdicaoPlanoAula(false);
       }
     }
+
     if (disciplinaSelecionada.regencia || ehProfessor || ehProfessorCj) {
       let disciplinas = {};
       if (disciplinaSelecionada.regencia) {
@@ -255,17 +267,21 @@ const FrequenciaPlanoAula = () => {
         'Deseja realmente cancelar as alterações?'
       );
       if (confirmou) {
-        const aulaDataSelecionada = listaDatasAulas.find(item =>
-          window.moment(item.data).isSame(dataSelecionada, 'date')
-        );
         obterListaFrequencia(aulaId);
         setModoEdicaoFrequencia(false);
-        obterPlanoAula(aulaDataSelecionada);
+        obterPlanoAula(obterAulaSelecionada(dataSelecionada));
         setModoEdicaoPlanoAula(false);
         resetarPlanoAula();
       }
     }
   };
+
+  const obterAulaSelecionada = (data) => {
+    const aulaDataSelecionada = listaDatasAulas.find(item =>
+      window.moment(item.data).isSame(data, 'date')
+    );
+    return aulaDataSelecionada;
+  }
 
   const onClickSalvar = click => {
     if (modoEdicaoFrequencia && permiteRegistroFrequencia) {
@@ -334,6 +350,7 @@ const FrequenciaPlanoAula = () => {
           if (salvouPlano && salvouPlano.status == 200) {
             sucesso('Plano de aula salvo com sucesso.');
             setModoEdicaoPlanoAula(false);
+            obterPlanoAula(obterAulaSelecionada(dataSelecionada))
           }
         })
         .catch(e => {
@@ -466,9 +483,7 @@ const FrequenciaPlanoAula = () => {
     setDataSelecionada(data);
     resetarTelaFrequencia(true, true);
     resetarPlanoAula();
-    const aulaDataSelecionada = listaDatasAulas.find(item =>
-      window.moment(item.data).isSame(data, 'date')
-    );
+    const aulaDataSelecionada = obterAulaSelecionada(data);
     setAula(aulaDataSelecionada);
     if (aulaDataSelecionada && aulaDataSelecionada.idAula) {
       obterListaFrequencia(aulaDataSelecionada.idAula);
@@ -517,16 +532,16 @@ const FrequenciaPlanoAula = () => {
       {usuario && turmaSelecionada.turma ? (
         ''
       ) : (
-        <Alert
-          alerta={{
-            tipo: 'warning',
-            id: 'frequencia-selecione-turma',
-            mensagem: 'Você precisa escolher uma turma.',
-            estiloTitulo: { fontSize: '18px' },
-          }}
-          className="mb-2"
-        />
-      )}
+          <Alert
+            alerta={{
+              tipo: 'warning',
+              id: 'frequencia-selecione-turma',
+              mensagem: 'Você precisa escolher uma turma.',
+              estiloTitulo: { fontSize: '18px' },
+            }}
+            className="mb-2"
+          />
+        )}
       <Cabecalho pagina="Frequência/Plano de aula" />
       <Card>
         <div className="col-md-12">
@@ -576,7 +591,7 @@ const FrequenciaPlanoAula = () => {
                 disabled={desabilitarDisciplina}
               />
             </div>
-            <div className="col-sm-12 col-md-4 col-lg-3 col-xl-2 mb-2">
+            <div className="col-sm-12 col-md-4 col-lg-3 col-xl-3 mb-3">
               <CampoData
                 valor={dataSelecionada}
                 onChange={onChangeData}
@@ -623,12 +638,12 @@ const FrequenciaPlanoAula = () => {
                           alteradoEm={auditoria.alteradoEm}
                         />
                       ) : (
-                        ''
-                      )}
+                          ''
+                        )}
                     </>
                   ) : (
-                    ''
-                  )}
+                      ''
+                    )}
                 </CardCollapse>
               </div>
               <div className="col-sm-12 col-md-12 col-lg-12">
@@ -646,12 +661,13 @@ const FrequenciaPlanoAula = () => {
                   permissoesTela={permissoesTela}
                   somenteConsulta={somenteConsulta}
                   temObjetivos={temObjetivos}
+                  auditoria={auditoriaPlano}
                 />
               </div>
             </div>
           ) : (
-            ''
-          )}
+              ''
+            )}
         </div>
         <ModalMultiLinhas
           key="errosBimestre"

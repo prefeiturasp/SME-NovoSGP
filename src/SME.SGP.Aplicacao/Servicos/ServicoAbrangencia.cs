@@ -1,6 +1,5 @@
 ﻿using SME.SGP.Aplicacao.Integracoes;
 using SME.SGP.Dominio;
-using SME.SGP.Dominio.Entidades;
 using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Dto;
@@ -13,7 +12,6 @@ namespace SME.SGP.Aplicacao.Servicos
 {
     public class ServicoAbrangencia : IServicoAbrangencia
     {
-        private const string PERFIL_SUPERVISOR = "4EE1E074-37D6-E911-ABD6-F81654FE895D";
         private readonly IConsultasSupervisor consultasSupervisor;
         private readonly IRepositorioAbrangencia repositorioAbrangencia;
         private readonly IRepositorioDre repositorioDre;
@@ -22,15 +20,21 @@ namespace SME.SGP.Aplicacao.Servicos
         private readonly IServicoEOL servicoEOL;
         private readonly IUnitOfWork unitOfWork;
 
-        public ServicoAbrangencia(IRepositorioAbrangencia repositorioAbrangencia, IUnitOfWork unitOfWork, IServicoEOL servicoEOL, IConsultasSupervisor consultasSupervisor, IRepositorioDre repositorioDre, IRepositorioUe repositorioUe, IRepositorioTurma repositorioTurma)
+        public ServicoAbrangencia(IRepositorioAbrangencia repositorioAbrangencia, IUnitOfWork unitOfWork, IServicoEOL servicoEOL, IConsultasSupervisor consultasSupervisor,
+            IRepositorioDre repositorioDre, IRepositorioUe repositorioUe, IRepositorioTurma repositorioTurma)
         {
             this.repositorioAbrangencia = repositorioAbrangencia ?? throw new ArgumentNullException(nameof(repositorioAbrangencia));
             this.unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
             this.servicoEOL = servicoEOL ?? throw new ArgumentNullException(nameof(servicoEOL));
             this.consultasSupervisor = consultasSupervisor ?? throw new ArgumentNullException(nameof(consultasSupervisor));
-            this.repositorioDre = repositorioDre;
-            this.repositorioUe = repositorioUe;
-            this.repositorioTurma = repositorioTurma;
+            this.repositorioDre = repositorioDre ?? throw new ArgumentNullException(nameof(repositorioDre));
+            this.repositorioUe = repositorioUe ?? throw new ArgumentNullException(nameof(repositorioUe));
+            this.repositorioTurma = repositorioTurma ?? throw new ArgumentNullException(nameof(repositorioTurma));
+        }
+
+        public void RemoverAbrangencias(long[] ids)
+        {
+            repositorioAbrangencia.ExcluirAbrangencias(ids);
         }
 
         public async Task Salvar(string login, Guid perfil, bool ehLogin)
@@ -40,13 +44,22 @@ namespace SME.SGP.Aplicacao.Servicos
             else await TrataAbrangenciaModificaoPerfil(login, perfil);
         }
 
+        public void SalvarAbrangencias(IEnumerable<Abrangencia> abrangencias, string login)
+        {
+            repositorioAbrangencia.InserirAbrangencias(abrangencias, login);
+        }
+
         private async Task BuscaAbrangenciaEPersiste(string login, Guid perfil)
         {
             Task<AbrangenciaRetornoEolDto> consultaEol = null;
-            var ehSupervisor = perfil == Guid.Parse(PERFIL_SUPERVISOR);
+
+            var ehSupervisor = perfil == Perfis.PERFIL_SUPERVISOR;
+            var ehProfessorCJ = perfil == Perfis.PERFIL_CJ;
 
             if (ehSupervisor)
                 consultaEol = ObterAbrangenciaEolSupervisor(login);
+            else if (ehProfessorCJ)
+                return;
             else
                 consultaEol = servicoEOL.ObterAbrangencia(login, perfil);
 
