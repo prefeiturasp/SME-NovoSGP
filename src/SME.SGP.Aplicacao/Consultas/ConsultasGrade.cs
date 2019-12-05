@@ -18,7 +18,7 @@ namespace SME.SGP.Aplicacao
             this.consultasAula = consultasAula ?? throw new System.ArgumentNullException(nameof(consultasAula));
         }
 
-        public async Task<GradeComponenteTurmaAulasDto> ObterGradeAulasTurmaProfessor(string turma, int disciplina, string semana, string codigoRf)
+        public async Task<GradeComponenteTurmaAulasDto> ObterGradeAulasTurmaProfessor(string turma, int disciplina, string semana, string codigoRf = null)
         {
             // Busca abrangencia a partir da turma
             var abrangencia = await consultasAbrangencia.ObterAbrangenciaTurma(turma);
