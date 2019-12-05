@@ -57,39 +57,39 @@ namespace SME.SGP.Aplicacao
 
             var objetivosPlanoAulaDto = await repositorioObjetivosAula.ObterObjetivosPlanoAula(migrarPlanoAulaDto.PlanoAulaId);
 
-            using (var transacao = unitOfWork.IniciarTransacao())
+            unitOfWork.IniciarTransacao();
+
+            foreach (var planoTurma in migrarPlanoAulaDto.IdsPlanoTurmasDestino)
             {
-                foreach (var planoTurma in migrarPlanoAulaDto.IdsPlanoTurmasDestino)
+                AulaConsultaDto aulaConsultaDto = await
+                     repositorioAula.ObterAulaDataTurmaDisciplina(
+                         planoTurma.Data,
+                         planoTurma.TurmaId,
+                         migrarPlanoAulaDto.DisciplinaId
+                     );
+
+                if (aulaConsultaDto == null)
+                    throw new NegocioException($"Não há aula cadastrada para a turma {planoTurma.TurmaId} para a data {planoTurma.Data.ToShortDateString()} nesta disciplina!");
+
+                var planoCopia = new PlanoAulaDto()
                 {
-                    AulaConsultaDto aulaConsultaDto = await
-                         repositorioAula.ObterAulaDataTurmaDisciplina(
-                             planoTurma.Data,
-                             planoTurma.TurmaId,
-                             migrarPlanoAulaDto.DisciplinaId
-                         );
+                    Id = planoTurma.Sobreescrever ? migrarPlanoAulaDto.PlanoAulaId : 0,
+                    AulaId = aulaConsultaDto.Id,
+                    Descricao = planoAulaDto.Descricao,
+                    DesenvolvimentoAula = planoAulaDto.DesenvolvimentoAula,
+                    LicaoCasa = migrarPlanoAulaDto.MigrarLicaoCasa ? planoAulaDto.LicaoCasa : string.Empty,
+                    ObjetivosAprendizagemJurema = !usuario.EhProfessorCj() ||
+                                                   migrarPlanoAulaDto.MigrarObjetivos ?
+                                                   objetivosPlanoAulaDto.Select(o => o.ObjetivoAprendizagemPlano.ObjetivoAprendizagemJuremaId).ToList() : null,
+                    RecuperacaoAula = migrarPlanoAulaDto.MigrarRecuperacaoAula ?
+                                        planoAulaDto.RecuperacaoAula : string.Empty
+                };
 
-                    if (aulaConsultaDto == null)
-                        throw new NegocioException($"Não há aula cadastrada para a turma {planoTurma.TurmaId} para a data {planoTurma.Data.ToShortDateString()} nesta disciplina!");
-
-                    var planoCopia = new PlanoAulaDto()
-                    {
-                        Id = planoTurma.Sobreescrever ? migrarPlanoAulaDto.PlanoAulaId : 0,
-                        AulaId = aulaConsultaDto.Id,
-                        Descricao = planoAulaDto.Descricao,
-                        DesenvolvimentoAula = planoAulaDto.DesenvolvimentoAula,
-                        LicaoCasa = migrarPlanoAulaDto.MigrarLicaoCasa ? planoAulaDto.LicaoCasa : string.Empty,
-                        ObjetivosAprendizagemJurema = !usuario.EhProfessorCj() ||
-                                                       migrarPlanoAulaDto.MigrarObjetivos ?
-                                                       objetivosPlanoAulaDto.Select(o => o.ObjetivoAprendizagemPlano.ObjetivoAprendizagemJuremaId).ToList() : null,
-                        RecuperacaoAula = migrarPlanoAulaDto.MigrarRecuperacaoAula ?
-                                            planoAulaDto.RecuperacaoAula : string.Empty
-                    };
-
-                    await Salvar(planoCopia, false);
-                }
-
-                unitOfWork.PersistirTransacao();
+                await Salvar(planoCopia, false);
             }
+
+            unitOfWork.PersistirTransacao();
+
         }
 
         public async Task ExcluirPlanoDaAula(long aulaId)
@@ -230,12 +230,12 @@ namespace SME.SGP.Aplicacao
                     (
                         ehProfessorCJ &&
                         (
-                            lstTurmasCJ == null || 
+                            lstTurmasCJ == null ||
                             idsTurmasSelecionadas.Any(c => !lstTurmasCJ.Select(tcj => tcj.TurmaId).Contains(c))
                         )
                     ) ||
                     (
-                        idsTurmasProfessor == null || 
+                        idsTurmasProfessor == null ||
                         idsTurmasSelecionadas.Any(c => !idsTurmasProfessor.Contains(Convert.ToInt32(c)))
                     )
 
