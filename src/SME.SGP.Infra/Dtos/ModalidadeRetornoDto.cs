@@ -2,7 +2,7 @@
 {
     public class ModalidadeRetornoDto
     {
-        public int Codigo { get; set; }
+        public int Id { get; set; }
         public string Nome { get; set; }
     }
 }
