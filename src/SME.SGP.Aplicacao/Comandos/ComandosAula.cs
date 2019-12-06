@@ -24,7 +24,7 @@ namespace SME.SGP.Aplicacao
         public async Task<string> Alterar(AulaDto dto, long id)
         {
             var usuario = await servicoUsuario.ObterUsuarioLogado();
-            var aula = MapearDtoParaEntidade(dto, id, usuario.CodigoRf);
+            var aula = MapearDtoParaEntidade(dto, id, usuario.CodigoRf, usuario.EhProfessorCj());
 
             return await servicoAula.Salvar(aula, usuario, dto.RecorrenciaAula);
         }
@@ -40,12 +40,12 @@ namespace SME.SGP.Aplicacao
         public async Task<string> Inserir(AulaDto dto)
         {
             var usuario = await servicoUsuario.ObterUsuarioLogado();
-            var aula = MapearDtoParaEntidade(dto, 0L, usuario.CodigoRf);
+            var aula = MapearDtoParaEntidade(dto, 0L, usuario.CodigoRf, usuario.EhProfessorCj());
 
             return await servicoAula.Salvar(aula, usuario, aula.RecorrenciaAula);
         }
 
-        private Aula MapearDtoParaEntidade(AulaDto dto, long id, string usuarioRf)
+        private Aula MapearDtoParaEntidade(AulaDto dto, long id, string usuarioRf, bool usuarioEhCJ)
         {
             Aula aula = new Aula();
             if (id > 0L)
@@ -65,6 +65,7 @@ namespace SME.SGP.Aplicacao
             aula.DataAula = dto.DataAula;
             aula.Quantidade = dto.Quantidade;
             aula.TipoAula = dto.TipoAula;
+            aula.AulaCJ = usuarioEhCJ;
             return aula;
         }
     }
