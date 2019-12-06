@@ -42,9 +42,7 @@ namespace SME.SGP.Dados.Repositorios
                         inner join periodo_escolar p on
 	                        a.tipo_calendario_id = p.tipo_calendario_id
                         where
-	                        p.periodo_inicio <= @dataAtual
-                            and p.periodo_fim >= @dataAtual
-	                        and a.data_aula >= p.periodo_inicio
+	                        a.data_aula >= p.periodo_inicio
 	                        and a.data_aula <= p.periodo_fim
 	                        and not a.excluido
                         group by
@@ -97,8 +95,8 @@ namespace SME.SGP.Dados.Repositorios
                 query.AppendLine("and a.disciplina_id = @disciplinaId ");
 
             query.AppendLine("and a.turma_id = @turmaId ");
-            query.AppendLine("and p.periodo_inicio <= @periodo ");
-            query.AppendLine("and p.periodo_fim >= @periodo ");
+            query.AppendLine("and p.periodo_inicio <= a.data_aula ");
+            query.AppendLine("and p.periodo_fim >= a.data_aula ");
             query.AppendLine("and not ra.excluido");
             query.AppendLine("and not a.excluido");
             query.AppendLine("group by");
