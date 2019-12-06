@@ -423,7 +423,7 @@ const Filtro = () => {
   useEffect(() => {
     if (turmas && turmas.length === 1) {
       setTurmaSelecionada(turmas[0].valor);
-      aplicarFiltro();
+      // aplicarFiltro();
     }
   }, [aplicarFiltro, turmas]);
 
@@ -650,7 +650,7 @@ const Filtro = () => {
           />
         </div>
         {resultadosFiltro.length > 0 && (
-          <div className="container position-absolute bg-white shadow rounded mt-1 p-0">
+          <div className="container d-block position-absolute bg-white shadow rounded mt-1 p-0">
             <div className="list-group">
               {resultadosFiltro.map((resultado, indice) => {
                 return (
@@ -670,7 +670,7 @@ const Filtro = () => {
         {alternarFocoBusca && (
           <div
             ref={divBuscaRef}
-            className="container position-absolute bg-white shadow rounded mt-1 px-3 pt-5 pb-1"
+            className="container d-block position-absolute bg-white shadow rounded mt-1 px-3 pt-5 pb-1"
           >
             <div className="form-row">
               <Grid cols={3} className="form-group">
@@ -770,6 +770,7 @@ const Filtro = () => {
                 <Button
                   label="Aplicar filtro"
                   color={Colors.Roxo}
+                  className="ml-auto"
                   bold
                   onClick={aplicarFiltro}
                 />

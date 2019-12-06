@@ -1,30 +1,32 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using SME.SGP.Dominio;
+﻿using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao.Consultas
 {
     public class ConsultasPlanoAula : IConsultasPlanoAula
     {
-        private readonly IRepositorioPlanoAula repositorio;
+        private readonly IConsultasAula consultasAula;
         private readonly IConsultasObjetivoAprendizagemAula consultasObjetivosAula;
         private readonly IConsultasPlanoAnual consultasPlanoAnual;
-        private readonly IConsultasAula consultasAula;
+        private readonly IRepositorioPlanoAula repositorio;
+        private readonly IRepositorioAtividadeAvaliativa repositorioAtividadeAvaliativa;
 
-        public ConsultasPlanoAula(IRepositorioPlanoAula repositorioPlanoAula, 
+        public ConsultasPlanoAula(IRepositorioPlanoAula repositorioPlanoAula,
                                 IConsultasPlanoAnual consultasPlanoAnual,
                                 IConsultasObjetivoAprendizagemAula consultasObjetivosAprendizagemAula,
-                                IConsultasAula consultasAula)
+                                IConsultasAula consultasAula,
+                                IRepositorioAtividadeAvaliativa repositorioAtividadeAvaliativa)
         {
             this.repositorio = repositorioPlanoAula;
             this.consultasObjetivosAula = consultasObjetivosAprendizagemAula;
             this.consultasPlanoAnual = consultasPlanoAnual;
             this.consultasAula = consultasAula;
+            this.repositorioAtividadeAvaliativa = repositorioAtividadeAvaliativa;
         }
 
         public async Task<PlanoAulaRetornoDto> ObterPlanoAulaPorAula(long aulaId)
@@ -33,7 +35,7 @@ namespace SME.SGP.Aplicacao.Consultas
             // Busca plano de aula por data e disciplina da aula
             var plano = await repositorio.ObterPlanoAulaPorAula(aulaId);
             var aulaDto = consultasAula.BuscarPorId(aulaId);
-
+            var atividadeAvaliativa = await repositorioAtividadeAvaliativa.ObterAtividadeAvaliativa(aulaDto.DataAula.Date, aulaDto.DisciplinaId, aulaDto.TurmaId, aulaDto.UeId);
             if (plano != null)
             {
                 planoAulaDto = MapearParaDto(plano) ?? new PlanoAulaRetornoDto();
@@ -59,8 +61,29 @@ namespace SME.SGP.Aplicacao.Consultas
             // Carrega informações da aula para o retorno
             planoAulaDto.AulaId = aulaDto.Id;
             planoAulaDto.QtdAulas = aulaDto.Quantidade;
-
+            planoAulaDto.IdAtividadeAvaliativa = atividadeAvaliativa?.Id;
+            planoAulaDto.PodeLancarNota = planoAulaDto.IdAtividadeAvaliativa.HasValue && aulaDto.DataAula.Date <= DateTime.Now.Date;
             return planoAulaDto;
+        }
+
+        public IEnumerable<PlanoAulaExistenteRetornoDto> ValidarPlanoAulaExistente(FiltroPlanoAulaExistenteDto filtroPlanoAulaExistenteDto)
+        {
+            IList<PlanoAulaExistenteRetornoDto> retorno = new List<PlanoAulaExistenteRetornoDto>();
+            var planoAulaTurmaDatasDto = filtroPlanoAulaExistenteDto.PlanoAulaTurmaDatas;
+
+            for (int i = 0; i < planoAulaTurmaDatasDto.Count; i++)
+            {
+                retorno.Add(new PlanoAulaExistenteRetornoDto()
+                {
+                    TurmaId = filtroPlanoAulaExistenteDto.PlanoAulaTurmaDatas[i].TurmaId,
+                    Existe = repositorio.ValidarPlanoExistentePorTurmaDataEDisciplina(
+                                    planoAulaTurmaDatasDto[i].Data,
+                                    planoAulaTurmaDatasDto[i].TurmaId.ToString(),
+                                    planoAulaTurmaDatasDto[i].DisciplinaId)
+                });
+            }
+
+            return retorno;
         }
 
         private PlanoAulaRetornoDto MapearParaDto(PlanoAula plano) =>

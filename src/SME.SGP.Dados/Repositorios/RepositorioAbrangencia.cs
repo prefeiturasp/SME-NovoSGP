@@ -1,7 +1,6 @@
 ﻿using Dapper;
 using SME.SGP.Dados.Contexto;
 using SME.SGP.Dominio;
-using SME.SGP.Dominio.Entidades;
 using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Dto;
@@ -45,7 +44,7 @@ namespace SME.SGP.Dados.Repositorios
                 database.Conexao.Execute(comando,
                     new
                     {
-                        login = login,
+                        login,
                         dreId = item.DreId,
                         ueId = item.UeId,
                         turmaId = item.TurmaId,
@@ -99,24 +98,28 @@ namespace SME.SGP.Dados.Repositorios
             return (await database.Conexao.QueryAsync<AbrangenciaFiltroRetorno>(query, new { texto, login, perfil })).AsList();
         }
 
-        public Task<IEnumerable<AbrangenciaSinteticaDto>> ObterAbrangenciaSintetica(string login, Guid perfil)
+        public Task<IEnumerable<AbrangenciaSinteticaDto>> ObterAbrangenciaSintetica(string login, Guid perfil, string turmaId = "")
         {
-            const string Query = @"
-                            select
-	                            id,
-	                            usuario_id,
-	                            login,
-	                            dre_id,
-	                            codigo_dre,
-	                            ue_id,
-	                            codigo_ue,
-	                            turma_id,
-	                            codigo_turma,
-	                            perfil
-                            from
-	                            public.v_abrangencia_sintetica where login = @login and perfil = @perfil;";
+            var query = new StringBuilder();
 
-            return database.Conexao.QueryAsync<AbrangenciaSinteticaDto>(Query, new { login, perfil });
+            query.AppendLine("select");
+            query.AppendLine("id,");
+            query.AppendLine("usuario_id,");
+            query.AppendLine("login,");
+            query.AppendLine("dre_id,");
+            query.AppendLine("codigo_dre,");
+            query.AppendLine("ue_id,");
+            query.AppendLine("codigo_ue,");
+            query.AppendLine("turma_id,");
+            query.AppendLine("codigo_turma,");
+            query.AppendLine("perfil");
+            query.AppendLine("from");
+            query.AppendLine("public.v_abrangencia_sintetica where login = @login and perfil = @perfil");
+
+            if (!string.IsNullOrEmpty(turmaId))
+                query.AppendLine("and codigo_turma = @turmaId");
+
+            return database.Conexao.QueryAsync<AbrangenciaSinteticaDto>(query.ToString(), new { login, perfil, turmaId });
         }
 
         public async Task<AbrangenciaFiltroRetorno> ObterAbrangenciaTurma(string turma, string login, Guid perfil)
@@ -311,9 +314,11 @@ namespace SME.SGP.Dados.Repositorios
                 case TipoAbrangencia.PorDre:
                     query = query.Replace("#escopo", " ue_id is not null and turma_id is not null");
                     break;
+
                 case TipoAbrangencia.PorUe:
                     query = query.Replace("#escopo", " dre_id is not null and turma_id is not null");
                     break;
+
                 case TipoAbrangencia.PorTurma:
                     query = query.Replace("#escopo", " ue_id is not null and dre_id is not null");
                     break;
