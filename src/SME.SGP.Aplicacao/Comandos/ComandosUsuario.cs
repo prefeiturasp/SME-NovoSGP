@@ -15,6 +15,7 @@ namespace SME.SGP.Aplicacao
     public class ComandosUsuario : IComandosUsuario
     {
         private readonly IConfiguration configuration;
+        private readonly IRepositorioAtribuicaoCJ repositorioAtribuicaoCJ;
         private readonly IRepositorioAtribuicaoEsporadica repositorioAtribuicaoEsporadica;
         private readonly IRepositorioCache repositorioCache;
         private readonly IRepositorioUsuario repositorioUsuario;
@@ -36,23 +37,18 @@ namespace SME.SGP.Aplicacao
             IConfiguration configuration,
             IRepositorioCache repositorioCache,
             IServicoAbrangencia servicoAbrangencia,
-            IRepositorioAtribuicaoEsporadica repositorioAtribuicaoEsporadica)
+            IRepositorioAtribuicaoEsporadica repositorioAtribuicaoEsporadica,
+            IRepositorioAtribuicaoCJ repositorioAtribuicaoCJ)
         {
-            this.repositorioUsuario = repositorioUsuario ??
-                throw new System.ArgumentNullException(nameof(repositorioUsuario));
-            this.servicoAutenticacao = servicoAutenticacao ??
-                throw new System.ArgumentNullException(nameof(servicoAutenticacao));
-            this.servicoUsuario = servicoUsuario ??
-                throw new System.ArgumentNullException(nameof(servicoUsuario));
-            this.servicoPerfil = servicoPerfil ??
-                throw new System.ArgumentNullException(nameof(servicoPerfil));
-            this.servicoEOL = servicoEOL ??
-                throw new System.ArgumentNullException(nameof(servicoEOL));
-            this.servicoTokenJwt = servicoTokenJwt ??
-                throw new System.ArgumentNullException(nameof(servicoTokenJwt));
-            this.servicoAbrangencia = servicoAbrangencia ??
-                throw new System.ArgumentNullException(nameof(servicoAbrangencia));
+            this.repositorioUsuario = repositorioUsuario ?? throw new ArgumentNullException(nameof(repositorioUsuario));
+            this.servicoAutenticacao = servicoAutenticacao ?? throw new ArgumentNullException(nameof(servicoAutenticacao));
+            this.servicoUsuario = servicoUsuario ?? throw new ArgumentNullException(nameof(servicoUsuario));
+            this.servicoPerfil = servicoPerfil ?? throw new ArgumentNullException(nameof(servicoPerfil));
+            this.servicoEOL = servicoEOL ?? throw new ArgumentNullException(nameof(servicoEOL));
+            this.servicoTokenJwt = servicoTokenJwt ?? throw new ArgumentNullException(nameof(servicoTokenJwt));
+            this.servicoAbrangencia = servicoAbrangencia ?? throw new ArgumentNullException(nameof(servicoAbrangencia));
             this.repositorioAtribuicaoEsporadica = repositorioAtribuicaoEsporadica ?? throw new ArgumentNullException(nameof(repositorioAtribuicaoEsporadica));
+            this.repositorioAtribuicaoCJ = repositorioAtribuicaoCJ ?? throw new ArgumentNullException(nameof(repositorioAtribuicaoCJ));
             this.servicoEmail = servicoEmail ?? throw new ArgumentNullException(nameof(servicoEmail));
             this.configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
             this.repositorioCache = repositorioCache ?? throw new ArgumentNullException(nameof(repositorioCache));
@@ -250,12 +246,14 @@ namespace SME.SGP.Aplicacao
 
         private async Task<IEnumerable<Guid>> ValidarPerfilCJ(string codigoRF, Guid codigoUsuarioCore, IEnumerable<Guid> perfilsAtual, string login)
         {
-            var atribuicaoEsporadica = repositorioAtribuicaoEsporadica.ObterUltimaPorRF(codigoRF);
+            var atribuicaoCJ = repositorioAtribuicaoCJ.ObterAtribuicaoAtiva(codigoRF);
 
-            if (atribuicaoEsporadica == null || string.IsNullOrWhiteSpace(atribuicaoEsporadica.ProfessorRf))
+            if (atribuicaoCJ != null && atribuicaoCJ.Any())
                 return perfilsAtual;
 
-            if (atribuicaoEsporadica.DataFim > DateTime.Today)
+            var atribuicaoEsporadica = repositorioAtribuicaoEsporadica.ObterUltimaPorRF(codigoRF);
+
+            if (atribuicaoEsporadica != null && !string.IsNullOrWhiteSpace(atribuicaoEsporadica.ProfessorRf) && atribuicaoEsporadica.DataFim > DateTime.Today)
                 return perfilsAtual;
 
             await servicoEOL.RemoverCJSeNecessario(codigoUsuarioCore);
