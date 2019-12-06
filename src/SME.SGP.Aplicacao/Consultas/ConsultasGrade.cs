@@ -18,7 +18,7 @@ namespace SME.SGP.Aplicacao
             this.consultasAula = consultasAula ?? throw new System.ArgumentNullException(nameof(consultasAula));
         }
 
-        public async Task<GradeComponenteTurmaAulasDto> ObterGradeAulasTurma(string turma, int disciplina, string semana)
+        public async Task<GradeComponenteTurmaAulasDto> ObterGradeAulasTurmaProfessor(string turma, int disciplina, string semana, string codigoRf = null)
         {
             // Busca abrangencia a partir da turma
             var abrangencia = await consultasAbrangencia.ObterAbrangenciaTurma(turma);
@@ -44,7 +44,7 @@ namespace SME.SGP.Aplicacao
                 return null;
 
             // Busca horas aula cadastradas para a disciplina na turma
-            var horascadastradas = await consultasAula.ObterQuantidadeAulasTurmaSemana(turma.ToString(), disciplina.ToString(), semana);
+            var horascadastradas = await consultasAula.ObterQuantidadeAulasTurmaSemanaProfessor(turma.ToString(), disciplina.ToString(), semana, codigoRf);
 
             return new GradeComponenteTurmaAulasDto
             {
