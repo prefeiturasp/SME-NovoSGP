@@ -26,6 +26,7 @@ namespace SME.SGP.Dominio.Servicos.Teste
         private readonly Mock<IConsultasPeriodoEscolar> consultasPeriodosEscolar;
         private readonly Mock<IRepositorioAbrangencia> repositorioAbrangencia;
         private readonly Mock<IRepositorioAtividadeAvaliativa> repositorioAtividadeAvaliativa;
+        private readonly Mock<IRepositorioAtribuicaoCJ> repositorioAtribuicaoCJ;
         private readonly Mock<IRepositorioAula> repositorioAula;
         private readonly Mock<IRepositorioTipoCalendario> repositorioTipoCalendario;
         private readonly IServicoAula servicoAula;
@@ -61,14 +62,18 @@ namespace SME.SGP.Dominio.Servicos.Teste
             servicoUsuario = new Mock<IServicoUsuario>();
             configuration = new Mock<IConfiguration>();
             repositorioAtividadeAvaliativa = new Mock<IRepositorioAtividadeAvaliativa>();
-            servicoAula = new ServicoAula(repositorioAula.Object, servicoEol.Object,
+            repositorioAtribuicaoCJ = new Mock<IRepositorioAtribuicaoCJ>();
+
+            servicoAula = new ServicoAula(
+                repositorioAula.Object, servicoEol.Object,
                                          repositorioTipoCalendario.Object, servicoDiaLetivo.Object,
                                          consultasGrade.Object, consultasPeriodoEscolar.Object,
                                          servicoLog.Object, repositorioAbrangencia.Object,
                                          servicoNotificacao.Object, consultaAbrangencia.Object,
                                          comandosWorkflowAprovacao.Object,
                                          comandosPlanoAula.Object, servicoFrequencia.Object,
-                                         configuration.Object, repositorioAtividadeAvaliativa.Object);
+                                         configuration.Object, repositorioAtividadeAvaliativa.Object,
+                                         repositorioAtribuicaoCJ.Object);
 
             Setup();
         }
