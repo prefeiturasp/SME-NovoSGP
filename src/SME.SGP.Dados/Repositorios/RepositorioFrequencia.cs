@@ -49,11 +49,11 @@ namespace SME.SGP.Dados.Repositorios
             return database.Conexao.Query<AulasPorTurmaDisciplinaDto>(query, new { turmaId, disciplinaId });
         }
 
-        public RegistroFrequenciaAulaDto ObterFrequenciaAula(long registroFrequenciaId)
+        public RegistroFrequenciaAulaDto ObterAulaDaFrequencia(long registroFrequenciaId)
         {
             var query = @"select a.ue_id as codigoUe, a.turma_id as codigoTurma
-                            , a. a.disciplina_id as codigoDisciplina, a.data_aula as DataAula
-	                        , a.professor_rf as pofessorRf, t.nome as nomeTurma, ue.nome as nomeUe
+                            , a.disciplina_id as codigoDisciplina, a.data_aula as DataAula
+	                        , a.professor_rf as professorRf, t.nome as nomeTurma, ue.nome as nomeUe
                             , ue.dre_id as codigoDre
                          from registro_frequencia rf 
                         inner join aula a on a.id = rf.aula_id
