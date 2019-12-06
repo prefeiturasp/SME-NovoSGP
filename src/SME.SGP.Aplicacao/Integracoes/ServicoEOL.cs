@@ -130,7 +130,7 @@ namespace SME.SGP.Aplicacao.Integracoes
             return await ObterDisciplinas(url);
         }
 
-        public IEnumerable<DisciplinaDto> ObterDisciplinasPorIds(int[] ids)
+        public IEnumerable<DisciplinaDto> ObterDisciplinasPorIds(long[] ids)
         {
             httpClient.DefaultRequestHeaders.Clear();
 
@@ -414,6 +414,11 @@ namespace SME.SGP.Aplicacao.Integracoes
             var mensagem = await resposta.Content.ReadAsStringAsync();
 
             throw new NegocioException(mensagem);
+        }
+
+        public bool ValidarProfessor(string professorRf)
+        {
+            return true;
         }
 
         private IEnumerable<DisciplinaDto> MapearParaDtoDisciplinas(IEnumerable<RetornoDisciplinaDto> disciplinas)

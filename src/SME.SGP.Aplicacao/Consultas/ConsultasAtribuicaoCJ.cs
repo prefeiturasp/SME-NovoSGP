@@ -24,8 +24,8 @@ namespace SME.SGP.Aplicacao
 
         public async Task<IEnumerable<AtribuicaoCJListaRetornoDto>> Listar(AtribuicaoCJListaFiltroDto filtroDto)
         {
-            var listaRetorno = await repositorioAtribuicaoCJ.ObterPorFiltros(null, null, filtroDto.UeId, string.Empty,
-                filtroDto.UsuarioRf, filtroDto.UsuarioNome);
+            var listaRetorno = await repositorioAtribuicaoCJ.ObterPorFiltros(null, null, filtroDto.UeId, 0,
+                filtroDto.UsuarioRf, filtroDto.UsuarioNome, true);
 
             if (listaRetorno.Any())
                 return TransformaEntidadesEmDtosListaRetorno(listaRetorno);
@@ -37,8 +37,8 @@ namespace SME.SGP.Aplicacao
         {
             IEnumerable<ProfessorTitularDisciplinaEol> professoresTitularesDisciplinasEol = await servicoEOL.ObterProfessoresTitularesDisciplinas(turmaId, modalidadeId, ueId);
 
-            var listaAtribuicoes = await repositorioAtribuicaoCJ.ObterPorFiltros(modalidadeId, turmaId, ueId, string.Empty,
-                professorRf, string.Empty);
+            var listaAtribuicoes = await repositorioAtribuicaoCJ.ObterPorFiltros(modalidadeId, turmaId, ueId, 0,
+                professorRf, string.Empty, null);
 
             if (professoresTitularesDisciplinasEol.Any())
                 return TransformaEntidadesEmDtosAtribuicoesProfessoresRetorno(listaAtribuicoes, professoresTitularesDisciplinasEol);
@@ -51,7 +51,7 @@ namespace SME.SGP.Aplicacao
 
             foreach (var disciplinaProfessorTitular in professoresTitularesDisciplinasEol)
             {
-                var atribuicao = listaAtribuicoes.FirstOrDefault(b => b.DisciplinaId == disciplinaProfessorTitular.DisciplinaId.ToString());
+                var atribuicao = listaAtribuicoes.FirstOrDefault(b => b.DisciplinaId == disciplinaProfessorTitular.DisciplinaId);
 
                 listaRetorno.Itens.Add(new AtribuicaoCJTitularesRetornoItemDto()
                 {
@@ -81,8 +81,8 @@ namespace SME.SGP.Aplicacao
         private IEnumerable<AtribuicaoCJListaRetornoDto> TransformaEntidadesEmDtosListaRetorno(IEnumerable<AtribuicaoCJ> listaDto)
         {
             var idsDisciplinas = listaDto
-                .Select(a => (int.Parse(a.DisciplinaId)))
-                .Distinct<int>()
+                .Select(a => a.DisciplinaId)
+                .Distinct<long>()
                 .ToArray();
 
             var disciplinasEol = servicoEOL.ObterDisciplinasPorIds(idsDisciplinas);
@@ -100,13 +100,17 @@ namespace SME.SGP.Aplicacao
                 var disciplinasIds = a.Select(b => b.DisciplinaId);
 
                 var disciplinasDescricoes = disciplinasEol
-                            .Where(c => disciplinasIds.Contains(c.CodigoComponenteCurricular.ToString()))
+                            .Where(c => disciplinasIds.Contains(c.CodigoComponenteCurricular))
                             .ToList();
+
+                var professorDisciplina = a.FirstOrDefault();
 
                 var atribuicaoDto = new AtribuicaoCJListaRetornoDto()
                 {
                     Modalidade = a.Key.Modalidade.GetAttribute<DisplayAttribute>().Name,
-                    Turma = a.FirstOrDefault().Turma.Nome,
+                    ModalidadeId = (int)a.Key.Modalidade,
+                    Turma = professorDisciplina.Turma.Nome,
+                    TurmaId = professorDisciplina.TurmaId,
                     Disciplinas = disciplinasDescricoes.Select(d => d.Nome).ToArray()
                 };
 
