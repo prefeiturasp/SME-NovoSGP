@@ -17,6 +17,7 @@ namespace SME.SGP.Dominio.Servicos.Teste
     {
         #region Mocks
 
+        private readonly Mock<IRepositorioAtribuicaoCJ> atribuicaoCj;
         private readonly Mock<IComandosPlanoAula> comandosPlanoAula;
         private readonly Mock<IComandosWorkflowAprovacao> comandosWorkflowAprovacao;
         private readonly Mock<IConfiguration> configuration;
@@ -43,6 +44,7 @@ namespace SME.SGP.Dominio.Servicos.Teste
 
         public ServicoAulaTeste()
         {
+            atribuicaoCj = new Mock<IRepositorioAtribuicaoCJ>();
             consultasPeriodoEscolar = new Mock<IConsultasPeriodoEscolar>();
             servicoDiaLetivo = new Mock<IServicoDiaLetivo>();
             repositorioAula = new Mock<IRepositorioAula>();
@@ -68,7 +70,8 @@ namespace SME.SGP.Dominio.Servicos.Teste
                                          servicoNotificacao.Object, consultaAbrangencia.Object,
                                          comandosWorkflowAprovacao.Object,
                                          comandosPlanoAula.Object, servicoFrequencia.Object,
-                                         configuration.Object, repositorioAtividadeAvaliativa.Object);
+                                         configuration.Object, repositorioAtividadeAvaliativa.Object,
+                                         atribuicaoCj.Object);
 
             Setup();
         }

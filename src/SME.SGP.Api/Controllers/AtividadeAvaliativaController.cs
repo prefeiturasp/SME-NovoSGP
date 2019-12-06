@@ -56,9 +56,9 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [ProducesResponseType(typeof(RetornoBaseDto), 601)]
         [Permissao(Permissao.CP_C, Policy = "Bearer")]
-        public IActionResult ObterPorId(long id)
+        public async Task<IActionResult> ObterPorIdAsync(long id)
         {
-            return Ok(consultaAtividadeAvaliativa.ObterPorId(id));
+            return Ok(await consultaAtividadeAvaliativa.ObterPorIdAsync(id));
         }
 
         [HttpPost]
