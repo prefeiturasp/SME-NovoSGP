@@ -15,7 +15,7 @@ namespace SME.SGP.Infra
 
         public string Descricao { get; set; }
 
-        public string DisciplinaContidaRegenciaId { get; set; }
+        public string[] DisciplinaContidaRegenciaId { get; set; }
 
         [Required(ErrorMessage = "A Disciplina da atividade avaliativa deve ser informada.")]
         public int DisciplinaId { get; set; }

@@ -1,6 +1,7 @@
 ﻿using SME.SGP.Aplicacao;
 using SME.SGP.Aplicacao.Integracoes;
 using SME.SGP.Dominio.Interfaces;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -65,10 +66,12 @@ namespace SME.SGP.Dominio.Servicos
                 throw new NegocioException("Não é permitido registro de frequência para este componente curricular.");
             }
 
-            await ValidaSeUsuarioPodeCriarAula(aula);
+            var usuario = await servicoUsuario.ObterUsuarioLogado();
+            await ValidaSeUsuarioPodeCriarAula(aula, usuario);
             var alunos = await ObterAlunos(aula);
 
             var registroFrequencia = repositorioFrequencia.ObterRegistroFrequenciaPorAulaId(aulaId);
+            var alteracaoRegistro = registroFrequencia != null;
 
             unitOfWork.IniciarTransacao();
 
@@ -77,6 +80,10 @@ namespace SME.SGP.Dominio.Servicos
             RegistraAusenciaAlunos(registroAusenciaAlunos, alunos, registroFrequencia, aula.Quantidade);
 
             unitOfWork.PersistirTransacao();
+
+            // Quando for alteração de registro de frequencia chama o servico para verificar se atingiu o limite de dias para alteração e notificar
+            if (alteracaoRegistro)
+                Background.Core.Cliente.Executar<IServicoNotificacaoFrequencia>(e => e.VerificaRegraAlteracaoFrequencia(registroFrequencia.Id, registroFrequencia.CriadoEm, DateTime.Now, usuario.Id));
         }
 
         private async Task<IEnumerable<Aplicacao.Integracoes.Respostas.AlunoPorTurmaResposta>> ObterAlunos(Aula aula)
@@ -143,9 +150,8 @@ namespace SME.SGP.Dominio.Servicos
             return registroFrequencia;
         }
 
-        private async Task ValidaSeUsuarioPodeCriarAula(Aula aula)
+        private async Task ValidaSeUsuarioPodeCriarAula(Aula aula, Usuario usuario)
         {
-            var usuario = await servicoUsuario.ObterUsuarioLogado();
             if (!usuario.PodeRegistrarFrequencia(aula))
             {
                 throw new NegocioException("Não é possível registrar a frequência pois esse componente curricular não permite substituição.");
