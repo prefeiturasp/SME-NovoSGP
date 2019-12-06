@@ -1,10 +1,6 @@
 import styled from 'styled-components';
 import { Base } from '~/componentes';
 
-export const Corpo = styled.div`
-
-`;
-
 export const Titulo = styled.div`
   object-fit: contain;
   font-family: Roboto;
