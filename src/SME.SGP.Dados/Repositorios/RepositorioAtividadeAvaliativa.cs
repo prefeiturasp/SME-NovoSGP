@@ -72,6 +72,31 @@ namespace SME.SGP.Dados.Repositorios
             return retornoPaginado;
         }
 
+        public IEnumerable<AtividadeAvaliativa> ListarPorIds(IEnumerable<long> ids)
+        {
+            var sql = new StringBuilder();
+
+            MontaQueryCabecalho(sql, false);
+
+            sql.AppendLine($"where id in ({string.Join(",", ids)})");
+
+            return database.Query<AtividadeAvaliativa>(sql.ToString());
+        }
+
+        public IEnumerable<AtividadeAvaliativa> ListarPorTurmaDisciplinaPeriodo(string turmaId, string disciplinaId, DateTime inicioPeriodo, DateTime fimPeriodo)
+        {
+            var sql = new StringBuilder();
+
+            MontaQueryCabecalho(sql, false);
+
+            sql.AppendLine("turma_id = @turmaId where data_avaliacao >= @inicioPeriodo and data_avaliacao <= @fimPeriodo");
+            sql.AppendLine("and disciplina_id = @disciplinaId");
+
+            var parametros = new { turmaId, inicioPeriodo, fimPeriodo, disciplinaId };
+
+            return database.Query<AtividadeAvaliativa>(sql.ToString(), parametros);
+        }
+
         public async Task<IEnumerable<AtividadeAvaliativa>> ObterAtividadesPorDia(string dreId, string ueId, DateTime dataAvaliacao, string professorRf, string turmaId)
         {
             StringBuilder query = new StringBuilder();
@@ -202,10 +227,13 @@ namespace SME.SGP.Dados.Repositorios
             return resultado.Any();
         }
 
-        private static void MontaQueryCabecalho(StringBuilder query)
+        private static void MontaQueryCabecalho(StringBuilder query, bool listagem = true)
         {
             query.AppendLine("select");
-            query.AppendLine("a.id as AtividadeAvaliativaId,");
+
+            if (listagem)
+                query.AppendLine("a.id as AtividadeAvaliativaId,");
+
             query.AppendLine("a.id,");
             query.AppendLine("a.dre_id,");
             query.AppendLine("a.ue_id,");
@@ -224,12 +252,20 @@ namespace SME.SGP.Dados.Repositorios
             query.AppendLine("a.alterado_rf,");
             query.AppendLine("a.excluido,");
             query.AppendLine("a.disciplina_id,");
-            query.AppendLine("a.disciplina_contida_regencia_id,");
-            query.AppendLine("ta.id as TipoAvaliacaoId,");
-            query.AppendLine("ta.id,");
-            query.AppendLine("ta.nome,");
-            query.AppendLine("ta.descricao,");
-            query.AppendLine("ta.situacao");
+            query.AppendLine("a.disciplina_contida_regencia_id");
+
+            if (listagem)
+            {
+                query.AppendLine(",");
+                query.AppendLine("ta.id as TipoAvaliacaoId,");
+                query.AppendLine("ta.id,");
+                query.AppendLine("ta.nome,");
+                query.AppendLine("ta.descricao,");
+                query.AppendLine("ta.situacao");
+            }
+
+            if (!listagem)
+                query.AppendLine("from atividade_avaliativa a");
         }
 
         private void MontaWhere(StringBuilder query,
