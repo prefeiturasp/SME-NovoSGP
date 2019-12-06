@@ -14,6 +14,6 @@ namespace SME.SGP.Dominio.Interfaces
 
         IEnumerable<AulasPorTurmaDisciplinaDto> ObterAulasSemRegistroFrequencia(string turmaId, string disciplinaId);
 
-        RegistroFrequenciaAulaDto ObterFrequenciaAula(long registroFrequenciaId);
+        RegistroFrequenciaAulaDto ObterAulaDaFrequencia(long registroFrequenciaId);
     }
 }

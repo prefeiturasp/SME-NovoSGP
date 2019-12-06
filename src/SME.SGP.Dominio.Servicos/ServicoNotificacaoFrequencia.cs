@@ -199,11 +199,18 @@ namespace SME.SGP.Dominio.Servicos
                 var usuariosNotificacao = new List<Usuario>();
 
                 // Dados da Aula
-                var registroFrequencia = repositorioFrequencia.ObterFrequenciaAula(registroFrequenciaId);
+                var registroFrequencia = repositorioFrequencia.ObterAulaDaFrequencia(registroFrequenciaId);
                 MeusDadosDto professor = servicoEOL.ObterMeusDados(registroFrequencia.ProfessorRf).Result;
 
-                usuariosNotificacao.AddRange(BuscaGestoresUe(registroFrequencia.CodigoUe));
-                usuariosNotificacao.AddRange(BuscaSupervisoresUe(registroFrequencia.CodigoUe));
+                // Gestores
+                var usuarios = BuscaGestoresUe(registroFrequencia.CodigoUe);
+                if (usuarios != null)
+                    usuariosNotificacao.AddRange(usuarios);
+
+                // Supervisores
+                usuarios = BuscaSupervisoresUe(registroFrequencia.CodigoUe);
+                if (usuarios != null)
+                    usuariosNotificacao.AddRange(usuarios);
 
                 foreach(var usuario in usuariosNotificacao)
                 {
