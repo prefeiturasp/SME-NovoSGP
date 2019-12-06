@@ -79,6 +79,7 @@ const SelectComponent = React.forwardRef((props, ref) => {
     containerVinculoId,
     disabled,
     form,
+    showSearch
   } = props;
 
   const { Option } = Select;
@@ -161,6 +162,7 @@ const SelectComponent = React.forwardRef((props, ref) => {
       allowClear
       disabled={disabled}
       ref={ref}
+      showSearch={showSearch}
     >
       {opcoesLista()}
     </Select>
@@ -186,6 +188,7 @@ SelectComponent.propTypes = {
   lista: PropTypes.array,
   placeholder: PropTypes.string,
   disabled: PropTypes.bool,
+  showSearch: PropTypes.bool,
 };
 
 export default SelectComponent;

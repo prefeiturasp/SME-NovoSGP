@@ -12,17 +12,21 @@ namespace SME.SGP.Aplicacao
     {
         private readonly IRepositorioAtividadeAvaliativa repositorioAtividadeAvaliativa;
         private readonly IRepositorioAtividadeAvaliativaRegencia repositorioAtividadeAvaliativaRegencia;
-
+        private readonly IRepositorioPeriodoEscolar repositorioPeriodoEscolar;
+        private readonly IRepositorioTipoCalendario repositorioTipoCalendario;
         public ConsultaAtividadeAvaliativa(
             IRepositorioAtividadeAvaliativa repositorioAtividadeAvaliativa,
             IRepositorioAtividadeAvaliativaRegencia repositorioAtividadeAvaliativaRegencia,
+            IRepositorioPeriodoEscolar repositorioPeriodoEscolar,
+            IRepositorioTipoCalendario repositorioTipoCalendario,
             IContextoAplicacao contextoAplicacao) : base(contextoAplicacao)
-
         {
             this.repositorioAtividadeAvaliativa = repositorioAtividadeAvaliativa ?? throw new System.ArgumentNullException(nameof(repositorioAtividadeAvaliativa));
             this.repositorioAtividadeAvaliativaRegencia = repositorioAtividadeAvaliativaRegencia ?? throw new System.ArgumentNullException(nameof(repositorioAtividadeAvaliativaRegencia));
+            this.repositorioPeriodoEscolar = repositorioPeriodoEscolar ?? throw new System.ArgumentNullException(nameof(repositorioPeriodoEscolar));
+            this.repositorioTipoCalendario = repositorioTipoCalendario;
         }
-
+        
         public async Task<PaginacaoResultadoDto<AtividadeAvaliativaCompletaDto>> ListarPaginado(FiltroAtividadeAvaliativaDto filtro)
         {
             return MapearParaDtoComPaginacao(await repositorioAtividadeAvaliativa
@@ -37,7 +41,7 @@ namespace SME.SGP.Aplicacao
         }
 
         public async Task<AtividadeAvaliativaCompletaDto> ObterPorIdAsync(long id)
-        {
+         {
             IEnumerable<AtividadeAvaliativaRegencia> atividadeRegencias = null;
             var atividade = await repositorioAtividadeAvaliativa.ObterPorIdAsync(id);
             if (atividade is null)
@@ -45,6 +49,31 @@ namespace SME.SGP.Aplicacao
             if (atividade.EhRegencia)
                 atividadeRegencias = await repositorioAtividadeAvaliativaRegencia.Listar(id);
             return MapearParaDto(atividade, atividadeRegencias);
+        }
+        
+        public IEnumerable<AtividadeAvaliativa> ObterAvaliacoesDoBimestre(string turmaId, string disciplinaId, int anoLetivo, int bimestre, ModalidadeTipoCalendario modalidade)
+        {
+            var tipoCalendario = repositorioTipoCalendario.BuscarPorAnoLetivoEModalidade(anoLetivo, modalidade);
+
+            if (tipoCalendario == null)
+                throw new NegocioException("Não foi encontrado tipo de calendario escolar, para a modalidade informada");
+
+            var periodosEscolares = repositorioPeriodoEscolar.ObterPorTipoCalendario(tipoCalendario.Id);
+
+            if (periodosEscolares == null || !periodosEscolares.Any())
+                throw new NegocioException("Não foi encontrado periodo Escolar para a modalidade informada");
+
+            var periodoEscolar = periodosEscolares.FirstOrDefault(x => x.Bimestre == bimestre);
+
+            if (periodoEscolar == null)
+                throw new NegocioException("Não foi encontrado periodo escolar para o bimestre solicitado");
+
+            var avaliacoes = repositorioAtividadeAvaliativa.ListarPorTurmaDisciplinaPeriodo(turmaId, disciplinaId, periodoEscolar.PeriodoInicio, periodoEscolar.PeriodoFim);
+
+            if (avaliacoes == null || !avaliacoes.Any())
+                throw new NegocioException("Não foi encontrada nenhuma avaliação para o bimestre informado");
+
+            return avaliacoes;
         }
 
         private IEnumerable<AtividadeAvaliativaCompletaDto> MapearAtividadeAvaliativaParaDto(IEnumerable<AtividadeAvaliativa> items)

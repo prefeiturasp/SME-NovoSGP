@@ -1,5 +1,5 @@
 import styled from 'styled-components';
-import { Base, Colors } from '~/componentes/colors';
+import { Base } from '~/componentes/colors';
 
 export const Container = styled.div`
   width: 568px !important;

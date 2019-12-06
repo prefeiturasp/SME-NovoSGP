@@ -1,6 +1,8 @@
-﻿using SME.SGP.Aplicacao.Servicos;
+﻿using SME.SGP.Aplicacao.Integracoes;
+using SME.SGP.Aplicacao.Servicos;
 using SME.SGP.Dominio.Interfaces;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -8,46 +10,120 @@ namespace SME.SGP.Dominio.Servicos
 {
     public class ServicoAtribuicaoCJ : IServicoAtribuicaoCJ
     {
+        private static readonly long[] componentesQueNaoPodemSerSubstituidos = { 1033, 1051, 1052, 1053, 1054, 1030 };
         private readonly IRepositorioAbrangencia repositorioAbrangencia;
         private readonly IRepositorioAtribuicaoCJ repositorioAtribuicaoCJ;
+        private readonly IRepositorioAula repositorioAula;
         private readonly IRepositorioTurma repositorioTurma;
         private readonly IServicoAbrangencia servicoAbrangencia;
+        private readonly IServicoEOL servicoEOL;
+        private readonly IServicoUsuario servicoUsuario;
 
         public ServicoAtribuicaoCJ(IRepositorioAtribuicaoCJ repositorioAtribuicaoCJ, IServicoAbrangencia servicoAbrangencia, IRepositorioTurma repositorioTurma,
-            IRepositorioAbrangencia repositorioAbrangencia)
+            IRepositorioAbrangencia repositorioAbrangencia, IServicoEOL servicoEOL, IRepositorioAula repositorioAula, IServicoUsuario servicoUsuario)
         {
             this.repositorioAtribuicaoCJ = repositorioAtribuicaoCJ ?? throw new ArgumentNullException(nameof(repositorioAtribuicaoCJ));
             this.servicoAbrangencia = servicoAbrangencia ?? throw new ArgumentNullException(nameof(servicoAbrangencia));
             this.repositorioTurma = repositorioTurma ?? throw new ArgumentNullException(nameof(repositorioTurma));
             this.repositorioAbrangencia = repositorioAbrangencia ?? throw new ArgumentNullException(nameof(repositorioAbrangencia));
+            this.servicoEOL = servicoEOL ?? throw new ArgumentNullException(nameof(servicoEOL));
+            this.repositorioAula = repositorioAula ?? throw new ArgumentNullException(nameof(repositorioAula));
+            this.servicoUsuario = servicoUsuario ?? throw new ArgumentNullException(nameof(servicoUsuario));
         }
 
-        public async Task Salvar(AtribuicaoCJ atribuicaoCJ)
+        public async Task Salvar(AtribuicaoCJ atribuicaoCJ, IEnumerable<AtribuicaoCJ> atribuicoesAtuais = null)
         {
-            await repositorioAtribuicaoCJ.SalvarAsync(atribuicaoCJ);
-            TratarAbrangencia(atribuicaoCJ);
-        }
+            var professorValidoNoEol = servicoEOL.ValidarProfessor(atribuicaoCJ.ProfessorRf);
+            if (!professorValidoNoEol)
+                throw new NegocioException("Este professor não é válido para ser CJ.");
 
-        private async void TratarAbrangencia(AtribuicaoCJ atribuicaoCJ)
-        {
-            if (atribuicaoCJ.Substituir)
+            ValidaComponentesCurricularesQueNaoPodemSerSubstituidos(atribuicaoCJ);
+
+            if (atribuicoesAtuais == null)
+                atribuicoesAtuais = await repositorioAtribuicaoCJ.ObterPorFiltros(atribuicaoCJ.Modalidade, atribuicaoCJ.TurmaId,
+                    atribuicaoCJ.UeId, 0, atribuicaoCJ.ProfessorRf, string.Empty, null);
+
+            var atribuicaoJaCadastrada = atribuicoesAtuais.FirstOrDefault(a => a.DisciplinaId == atribuicaoCJ.DisciplinaId);
+
+            if (atribuicaoJaCadastrada == null)
             {
-                var turma = repositorioTurma.ObterPorId(atribuicaoCJ.TurmaId);
-                if (turma == null)
-                    throw new NegocioException($"Não foi possível localizar a turma {atribuicaoCJ.TurmaId} da abrangência.");
-
-                var abrangencias = new Abrangencia[] { new Abrangencia() { Perfil = Perfis.PERFIL_CJ, TurmaId = turma.Id } };
-
-                servicoAbrangencia.SalvarAbrangencias(abrangencias, atribuicaoCJ.ProfessorRf);
+                if (!atribuicaoCJ.Substituir)
+                    return;
             }
             else
             {
-                var abrangencias = await repositorioAbrangencia.ObterAbrangenciaSintetica(atribuicaoCJ.ProfessorRf, Perfis.PERFIL_CJ, atribuicaoCJ.TurmaId);
+                if (atribuicaoCJ.Substituir == atribuicaoJaCadastrada.Substituir)
+                    return;
 
-                if (abrangencias != null && abrangencias.Any())
+                atribuicaoJaCadastrada.Substituir = atribuicaoCJ.Substituir;
+                atribuicaoCJ = atribuicaoJaCadastrada;
+
+                if (!atribuicaoCJ.Substituir)
+                    await ValidaSeTemAulaCriada(atribuicaoCJ);
+            }
+            await ValidaSePerfilPodeIncluir();
+            await repositorioAtribuicaoCJ.SalvarAsync(atribuicaoCJ);
+            await TratarAbrangencia(atribuicaoCJ, atribuicoesAtuais);
+        }
+
+        private async Task TratarAbrangencia(AtribuicaoCJ atribuicaoCJ, IEnumerable<AtribuicaoCJ> atribuicoesAtuais)
+        {
+            var abrangenciasAtuais = await repositorioAbrangencia.ObterAbrangenciaSintetica(atribuicaoCJ.ProfessorRf, Perfis.PERFIL_CJ, atribuicaoCJ.TurmaId);
+
+            if (atribuicaoCJ.Substituir)
+            {
+                if (abrangenciasAtuais != null && !abrangenciasAtuais.Any())
                 {
-                    servicoAbrangencia.RemoverAbrangencias(abrangencias.Select(a => a.Id).ToArray());
+                    var turma = repositorioTurma.ObterPorId(atribuicaoCJ.TurmaId);
+                    if (turma == null)
+                        throw new NegocioException($"Não foi possível localizar a turma {atribuicaoCJ.TurmaId} da abrangência.");
+
+                    var abrangencias = new Abrangencia[] { new Abrangencia() { Perfil = Perfis.PERFIL_CJ, TurmaId = turma.Id } };
+
+                    servicoAbrangencia.SalvarAbrangencias(abrangencias, atribuicaoCJ.ProfessorRf);
                 }
+            }
+            else
+            {
+                if (abrangenciasAtuais != null && abrangenciasAtuais.Any())
+                {
+                    if (!atribuicoesAtuais.Any(a => a.Id != atribuicaoCJ.Id && a.Substituir == true))
+                        servicoAbrangencia.RemoverAbrangencias(abrangenciasAtuais.Select(a => a.Id).ToArray());
+                }
+            }
+        }
+
+        private void ValidaComponentesCurricularesQueNaoPodemSerSubstituidos(AtribuicaoCJ atribuicaoCJ)
+        {
+            if (componentesQueNaoPodemSerSubstituidos.Any(a => a == atribuicaoCJ.DisciplinaId))
+            {
+                var nomeComponenteCurricular = servicoEOL.ObterDisciplinasPorIds(new long[] { atribuicaoCJ.DisciplinaId });
+                if (nomeComponenteCurricular != null && nomeComponenteCurricular.Any())
+                {
+                    throw new NegocioException($"O componente curricular {nomeComponenteCurricular.FirstOrDefault().Nome} não pode ser substituido.");
+                }
+                else throw new NegocioException($"Não foi possível localizar o nome do componente curricular de identificador {atribuicaoCJ.DisciplinaId} no EOL.");
+            }
+        }
+
+        private async Task ValidaSePerfilPodeIncluir()
+        {
+            var usuarioAtual = await servicoUsuario.ObterUsuarioLogado();
+
+            if (usuarioAtual == null)
+                throw new NegocioException("Não foi possível obter o usuário logado.");
+
+            if (usuarioAtual.PerfilAtual == Perfis.PERFIL_CP || usuarioAtual.PerfilAtual == Perfis.PERFIL_DIRETOR)
+                throw new NegocioException("Este perfil não pode fazer substituição.");
+        }
+
+        private async Task ValidaSeTemAulaCriada(AtribuicaoCJ atribuicaoCJ)
+        {
+            if (atribuicaoCJ.Id > 0 && !atribuicaoCJ.Substituir)
+            {
+                var aulas = await repositorioAula.ObterAulas(atribuicaoCJ.TurmaId, atribuicaoCJ.UeId, atribuicaoCJ.ProfessorRf, null, atribuicaoCJ.DisciplinaId.ToString());
+                if (aulas != null && aulas.Any())
+                    throw new NegocioException($"Não é possível tirar a substituição da turma {atribuicaoCJ.TurmaId} para o componente curricular {atribuicaoCJ.DisciplinaId}");
             }
         }
     }
