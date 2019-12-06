@@ -121,6 +121,8 @@ namespace SME.SGP.Aplicacao
 
         public async Task Validar(FiltroAtividadeAvaliativaDto filtro)
         {
+            if (string.IsNullOrEmpty(filtro.DisciplinaId))
+                throw new NegocioException("É necessário informar a disciplina");
             var disciplina = ObterDisciplina(Convert.ToInt32(filtro.DisciplinaId));
             var usuario = await servicoUsuario.ObterUsuarioLogado();
             DateTime dataAvaliacao = filtro.DataAvaliacao.Value.Date;
@@ -136,7 +138,7 @@ namespace SME.SGP.Aplicacao
                 throw new NegocioException("Não foi encontrado nenhum período escolar para essa data.");
 
             //verificar se já existe atividade com o mesmo nome no mesmo bimestre
-            if (await repositorioAtividadeAvaliativa.VerificarSeJaExisteAvaliacaoComMesmoNome(filtro.NomeAvaliacao, filtro.DreId, filtro.UeID, filtro.TurmaId, usuario.CodigoRf, perioEscolar.PeriodoInicio, perioEscolar.PeriodoFim))
+            if (await repositorioAtividadeAvaliativa.VerificarSeJaExisteAvaliacaoComMesmoNome(filtro.Nome, filtro.DreId, filtro.UeID, filtro.TurmaId, usuario.CodigoRf, perioEscolar.PeriodoInicio, perioEscolar.PeriodoFim))
             {
                 throw new NegocioException("Já existe atividade avaliativa cadastrada com esse nome para esse bimestre.");
             }

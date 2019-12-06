@@ -14,6 +14,7 @@ namespace SME.SGP.Aplicacao
         private readonly IRepositorioAtividadeAvaliativaRegencia repositorioAtividadeAvaliativaRegencia;
         private readonly IRepositorioPeriodoEscolar repositorioPeriodoEscolar;
         private readonly IRepositorioTipoCalendario repositorioTipoCalendario;
+
         public ConsultaAtividadeAvaliativa(
             IRepositorioAtividadeAvaliativa repositorioAtividadeAvaliativa,
             IRepositorioAtividadeAvaliativaRegencia repositorioAtividadeAvaliativaRegencia,
@@ -26,31 +27,20 @@ namespace SME.SGP.Aplicacao
             this.repositorioPeriodoEscolar = repositorioPeriodoEscolar ?? throw new System.ArgumentNullException(nameof(repositorioPeriodoEscolar));
             this.repositorioTipoCalendario = repositorioTipoCalendario;
         }
-        
+
         public async Task<PaginacaoResultadoDto<AtividadeAvaliativaCompletaDto>> ListarPaginado(FiltroAtividadeAvaliativaDto filtro)
         {
             return MapearParaDtoComPaginacao(await repositorioAtividadeAvaliativa
                 .Listar(filtro.DataAvaliacao.HasValue ? filtro.DataAvaliacao.Value.Date : filtro.DataAvaliacao,
                         filtro.DreId,
                         filtro.UeID,
-                        filtro.NomeAvaliacao,
+                        filtro.Nome,
                         filtro.TipoAvaliacaoId,
                         filtro.TurmaId,
                         Paginacao
                         ));
         }
 
-        public async Task<AtividadeAvaliativaCompletaDto> ObterPorIdAsync(long id)
-         {
-            IEnumerable<AtividadeAvaliativaRegencia> atividadeRegencias = null;
-            var atividade = await repositorioAtividadeAvaliativa.ObterPorIdAsync(id);
-            if (atividade is null)
-                throw new NegocioException("Atividade avaliativa não encontrada");
-            if (atividade.EhRegencia)
-                atividadeRegencias = await repositorioAtividadeAvaliativaRegencia.Listar(id);
-            return MapearParaDto(atividade, atividadeRegencias);
-        }
-        
         public IEnumerable<AtividadeAvaliativa> ObterAvaliacoesDoBimestre(string turmaId, string disciplinaId, int anoLetivo, int bimestre, ModalidadeTipoCalendario modalidade)
         {
             var tipoCalendario = repositorioTipoCalendario.BuscarPorAnoLetivoEModalidade(anoLetivo, modalidade);
@@ -74,6 +64,17 @@ namespace SME.SGP.Aplicacao
                 throw new NegocioException("Não foi encontrada nenhuma avaliação para o bimestre informado");
 
             return avaliacoes;
+        }
+
+        public async Task<AtividadeAvaliativaCompletaDto> ObterPorIdAsync(long id)
+        {
+            IEnumerable<AtividadeAvaliativaRegencia> atividadeRegencias = null;
+            var atividade = await repositorioAtividadeAvaliativa.ObterPorIdAsync(id);
+            if (atividade is null)
+                throw new NegocioException("Atividade avaliativa não encontrada");
+            if (atividade.EhRegencia)
+                atividadeRegencias = await repositorioAtividadeAvaliativaRegencia.Listar(id);
+            return MapearParaDto(atividade, atividadeRegencias);
         }
 
         private IEnumerable<AtividadeAvaliativaCompletaDto> MapearAtividadeAvaliativaParaDto(IEnumerable<AtividadeAvaliativa> items)
