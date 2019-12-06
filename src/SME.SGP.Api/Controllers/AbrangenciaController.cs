@@ -11,16 +11,34 @@ using System.Threading.Tasks;
 namespace SME.SGP.Api.Controllers
 {
     [ApiController]
-    [Route("api/v1/abrangencias")]
+    [Route("api/v1/abrangencias/{consideraHistorico}")]
     [Authorize("Bearer")]
     public class AbrangenciaController : ControllerBase
     {
         private readonly IConsultasAbrangencia consultasAbrangencia;
+        private bool ConsideraHistorico
+        {
+            get
+            {
+                if (this.RouteData != null && this.RouteData.Values != null)
+                {
+                    var consideraHistoricoParam = (string)this.RouteData.Values["consideraHistorico"];
+
+                    if (!string.IsNullOrWhiteSpace(consideraHistoricoParam))
+                        return bool.Parse(consideraHistoricoParam);
+                }
+
+                return false;
+
+            }
+        }
 
         public AbrangenciaController(IConsultasAbrangencia consultasAbrangencia)
         {
             this.consultasAbrangencia = consultasAbrangencia ??
                throw new System.ArgumentNullException(nameof(consultasAbrangencia));
+
+
         }
 
         [HttpGet("{filtro}")]
