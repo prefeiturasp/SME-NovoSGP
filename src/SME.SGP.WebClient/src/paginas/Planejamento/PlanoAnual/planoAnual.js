@@ -364,9 +364,7 @@ export default function PlanoAnual() {
       ? `As turmas ${turmasReportar.join(
           ', '
         )} já possuem plano anual que serão sobrescritos ao realizar a cópia. Deseja continuar?`
-      : `A turma ${
-          turmasReportar[0]
-        } já possui plano anual que será sobrescrito ao realizar a cópia. Deseja continuar?`;
+      : `A turma ${turmasReportar[0]} já possui plano anual que será sobrescrito ao realizar a cópia. Deseja continuar?`;
   };
 
   const onChangeCopiarConteudo = selecionadas => {
@@ -606,7 +604,6 @@ export default function PlanoAnual() {
           {' '}
           {bimestres && disciplinaSelecionada
             ? bimestres.map(bim => {
-                console.log(bim.focado);
                 return (
                   <Bimestre
                     ref={bim.focado ? refFocado : null}

@@ -16,9 +16,13 @@ namespace SME.SGP.Aplicacao.Teste.Comandos
         private readonly IConsultasAbrangencia consultasAbrangencia;
         private readonly Mock<IConsultasObjetivoAprendizagem> consultasObjetivosAprendizagem;
         private readonly Mock<IConsultasPlanoAnual> consultasPlanoAnual;
+        private readonly Mock<IConsultasProfessor> consultasProfessor;
         private readonly Mock<IRepositorioAbrangencia> repositorioAbrangencia;
+        private readonly Mock<IRepositorioAtribuicaoCJ> repositorioAtribuicaoCJ;
         private readonly Mock<IRepositorioAula> repositorioAula;
+        private readonly Mock<IRepositorioObjetivoAprendizagemPlano> repositorioObjetivoAprendizagemPlano;
         private readonly Mock<IRepositorioObjetivoAprendizagemAula> repositorioObjetivosAula;
+        private readonly Mock<IRepositorioObjetivoAprendizagemPlano> repositorioObjetivosPlano;
         private readonly Mock<IRepositorioPlanoAula> repositorioPlanoAula;
         private readonly Mock<IServicoUsuario> servicoUsuario;
         private readonly Mock<IUnitOfWork> unitOfWork;
@@ -33,20 +37,27 @@ namespace SME.SGP.Aplicacao.Teste.Comandos
         {
             repositorioPlanoAula = new Mock<IRepositorioPlanoAula>();
             repositorioObjetivosAula = new Mock<IRepositorioObjetivoAprendizagemAula>();
+            repositorioObjetivosPlano = new Mock<IRepositorioObjetivoAprendizagemPlano>();
             repositorioAula = new Mock<IRepositorioAula>();
             servicoUsuario = new Mock<IServicoUsuario>();
             repositorioAbrangencia = new Mock<IRepositorioAbrangencia>();
+            repositorioObjetivoAprendizagemPlano = new Mock<IRepositorioObjetivoAprendizagemPlano>();
+            repositorioAtribuicaoCJ = new Mock<IRepositorioAtribuicaoCJ>();
             unitOfWork = new Mock<IUnitOfWork>();
             consultasAbrangencia = new ConsultasAbrangencia(repositorioAbrangencia.Object, servicoUsuario.Object);
             consultasPlanoAnual = new Mock<IConsultasPlanoAnual>();
+            consultasProfessor = new Mock<IConsultasProfessor>();
             consultasObjetivosAprendizagem = new Mock<IConsultasObjetivoAprendizagem>();
 
             comandosPlanoAula = new ComandosPlanoAula(repositorioPlanoAula.Object,
                                                     repositorioObjetivosAula.Object,
+                                                    repositorioObjetivoAprendizagemPlano.Object,
                                                     repositorioAula.Object,
+                                                    repositorioAtribuicaoCJ.Object,
                                                     consultasAbrangencia,
                                                     consultasObjetivosAprendizagem.Object,
                                                     consultasPlanoAnual.Object,
+                                                    consultasProfessor.Object,
                                                     servicoUsuario.Object,
                                                     unitOfWork.Object);
             Setup();
@@ -111,6 +122,8 @@ namespace SME.SGP.Aplicacao.Teste.Comandos
                 new PrioridadePerfil() { CodigoPerfil = PERFIL_PROFESSOR },
                 new PrioridadePerfil() { CodigoPerfil = PERFIL_CJ }
             });
+
+            usuario.DefinirPerfilAtual(PERFIL_CJ);
 
             // ACT
             await comandosPlanoAula.Salvar(planoAulaDto);

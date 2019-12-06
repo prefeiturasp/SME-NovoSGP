@@ -29,7 +29,7 @@ const CalendarioProfessor = () => {
     undefined
   );
 
-  const [diasLetivos, setDiasLetivos] = useState({});
+  const [diasLetivos, setDiasLetivos] = useState();
   const usuario = useSelector(state => state.usuario);
   const { turmaSelecionada: turmaSelecionadaStore } = usuario;
 
@@ -153,7 +153,7 @@ const CalendarioProfessor = () => {
         if (resposta.data) setDiasLetivos(resposta.data);
       })
       .catch(() => {
-        setDiasLetivos({});
+        setDiasLetivos();
       });
   };
 
@@ -167,7 +167,7 @@ const CalendarioProfessor = () => {
       consultarDiasLetivos();
       obterDres();
     } else {
-      setDiasLetivos({});
+      setDiasLetivos();
       setDreSelecionada();
       setUnidadeEscolarSelecionada();
       setOpcaoTurma();

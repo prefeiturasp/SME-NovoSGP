@@ -9,6 +9,9 @@ namespace SME.SGP.Dominio
         public string RecuperacaoAula { get; set; }
         public string LicaoCasa { get; set; }
 
+        public bool Migrado { get; set; }
+        public bool Excluido { get; set; }
+
         public long AulaId { get; set; }
         public Aula Aula { get; set; }
     }
