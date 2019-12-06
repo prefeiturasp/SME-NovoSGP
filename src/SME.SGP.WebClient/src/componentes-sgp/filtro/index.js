@@ -237,7 +237,7 @@ const Filtro = () => {
   useEffect(() => {
     if (turmas && turmas.length === 1) {
       setTurmaSelecionada(turmas[0].valor);
-      aplicarFiltro();
+      // aplicarFiltro();
     }
   }, [turmas]);
 

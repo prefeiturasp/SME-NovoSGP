@@ -54,14 +54,16 @@ function ButtonGroup({
           }
         />
       )}
-      <Button
-        label="Excluir"
-        color={Colors.Roxo}
-        border
-        className="btnGroupItem"
-        disabled={desabilitarExcluir()}
-        onClick={onClickExcluir}
-      />
+      {typeof onClickExcluir === 'function' && (
+        <Button
+          label="Excluir"
+          color={Colors.Roxo}
+          border
+          className="btnGroupItem"
+          disabled={desabilitarExcluir()}
+          onClick={onClickExcluir}
+        />
+      )}
       <Button
         label={labelBotaoPrincipal}
         color={Colors.Roxo}
