@@ -79,217 +79,104 @@ const Notas = () => {
           codigo: 1,
           nome: 'Alvaro Ramos Grassi',
           notas: [
-            { nota: 10 },
-            { nota: 10 },
-            { nota: 10 },
-            { nota: 10 },
+            { nota: 10, conceito: 'P', tipoNota: 2 },
+            { nota: 10, conceito: 'S', tipoNota: 2, ausencia: true},
+            { nota: 10, conceito: 'NS', tipoNota: 2 },
+            { nota: 10, conceito: undefined },
           ]
         },
         {
           codigo: 2,
           nome: 'Aline Grassi',
           notas: [
-            { nota: 10 },
-            { nota: 10 },
-            { nota: 10 },
-            { nota: 10 },
+            { nota: 10, conceito: 'P', tipoNota: 2 },
+            { nota: 10, conceito: 'S', tipoNota: 2},
+            { nota: 10, conceito: 'NS', tipoNota: 2 },
+            { nota: 10, conceito: undefined },
           ]
         },
         {
           codigo: 3,
           nome: 'Bianca Grassi',
           notas: [
-            { nota: 10 },
-            { nota: 10 },
-            { nota: 10 },
-            { nota: 10 },
+            { nota: 10, conceito: 'P', tipoNota: 2 },
+            { nota: 10, conceito: 'S', tipoNota: 2},
+            { nota: 10, conceito: 'NS', tipoNota: 2 },
+            { nota: 10, conceito: undefined },
           ]
         },
         {
           codigo: 4,
           nome: 'José Ramos Grassi',
           notas: [
-            { nota: 10 },
-            { nota: 10 },
-            { nota: 10 },
-            { nota: 10 },
+            { nota: 10, conceito: 'P', tipoNota: 2 },
+            { nota: 10, conceito: 'S', tipoNota: 2},
+            { nota: 10, conceito: 'NS', tipoNota: 2 },
+            { nota: 10, conceito: undefined },
           ]
         },
         {
           codigo: 5,
           nome: 'Valentina Grassi',
           notas: [
-            { nota: 10 },
-            { nota: 10 },
-            { nota: 10 },
-            { nota: 10 },
+            { nota: 10, conceito: 'P', tipoNota: 2 },
+            { nota: 10, conceito: 'S', tipoNota: 2},
+            { nota: 10, conceito: 'NS', tipoNota: 2 },
+            { nota: 10, conceito: undefined },
           ]
         },
         {
           codigo: 6,
           nome: 'Laura Ramos Grassi',
           notas: [
-            { nota: 10 },
-            { nota: 10 },
-            { nota: 10 },
-            { nota: 10 },
+            { nota: 10, conceito: 'P', tipoNota: 2 },
+            { nota: 10, conceito: 'S', tipoNota: 2},
+            { nota: 10, conceito: 'NS', tipoNota: 2 },
+            { nota: 10, conceito: undefined },
           ]
         },
         {
           codigo: 7,
           nome: 'Angela Ramos Grassi',
           notas: [
-            { nota: 10 },
-            { nota: 10 },
-            { nota: 10 },
-            { nota: 10 },
+            { nota: 10, conceito: 'P', tipoNota: 1 },
+            { nota: 10, conceito: 'S', tipoNota: 1, ausencia: true },
+            { nota: 10, conceito: 'NS', tipoNota: 1 },
+            { nota: 10, conceito: undefined },
           ]
         },
         {
           codigo: 8,
           nome: 'Marcos Ramos Grassi',
           notas: [
-            { nota: 10 },
-            { nota: 10 },
-            { nota: 10 },
-            { nota: 10 },
+            { nota: 10, conceito: 'P', tipoNota: 1 },
+            { nota: 10, conceito: 'S', tipoNota: 1},
+            { nota: 10, conceito: 'NS', tipoNota: 1 },
+            { nota: 10, conceito: undefined },
           ]
         },
         {
           codigo: 9,
           nome: 'Jefferson Ramos Grassi',
           notas: [
-            { nota: 10 },
-            { nota: 10 },
-            { nota: 10 },
-            { nota: 10 },
+            { nota: 10, conceito: 'P', tipoNota: 1 },
+            { nota: 10, conceito: 'S', tipoNota: 1},
+            { nota: 10, conceito: 'NS', tipoNota: 1 },
+            { nota: 10, conceito: undefined },
           ]
         },
         {
           codigo: 10,
           nome: 'Júlio Ramos Grassi',
           notas: [
-            { nota: 10 },
-            { nota: 10 },
-            { nota: 10 },
-            { nota: 10 },
+            { nota: 10, conceito: 'P', tipoNota: 1 },
+            { nota: 10, conceito: 'S', tipoNota: 1},
+            { nota: 10, conceito: 'NS', tipoNota: 1 },
+            { nota: 10, conceito: undefined },
           ]
         },
       ]
     }
-
-  const dadosBimentreDois =
-  {
-      avaliacoes: [
-        {codigo: 1, nome: 'Avaliação 01', podeEditar: true, tipoDescricao: 'Pesquisa', data: '07/10/2019'},
-        {codigo: 2, nome: 'Avaliação 02', podeEditar: true, tipoDescricao: 'Seminário', data: '28/10/2019'},
-        {codigo: 3, nome: 'Avaliação 03', podeEditar: true, tipoDescricao: 'Trabalho em grupo', data: '01/11/2019'},
-        {codigo: 4, nome: 'Avaliação 04', podeEditar: true, tipoDescricao: 'Teste', data: '09/11/2019'},
-      ],
-      alunos: [
-        {
-          codigo: 1,
-          nome: 'Alvaro Ramos Grassi',
-          notas: [
-            { nota: 10 },
-            { nota: 10 },
-            { nota: 10 },
-            { nota: 10 },
-          ]
-        },
-        {
-          codigo: 2,
-          nome: 'Aline Grassi',
-          notas: [
-            { nota: 10 },
-            { nota: 10 },
-            { nota: 10 },
-            { nota: 10 },
-          ]
-        },
-        {
-          codigo: 3,
-          nome: 'Bianca Grassi',
-          notas: [
-            { nota: 10 },
-            { nota: 10 },
-            { nota: 10 },
-            { nota: 10 },
-          ]
-        },
-        {
-          codigo: 4,
-          nome: 'José Ramos Grassi',
-          notas: [
-            { nota: 10 },
-            { nota: 10 },
-            { nota: 10 },
-            { nota: 10 },
-          ]
-        },
-        {
-          codigo: 5,
-          nome: 'Valentina Grassi',
-          notas: [
-            { nota: 10 },
-            { nota: 10 },
-            { nota: 10 },
-            { nota: 10 },
-          ]
-        },
-        {
-          codigo: 6,
-          nome: 'Laura Ramos Grassi',
-          notas: [
-            { nota: 10 },
-            { nota: 10 },
-            { nota: 10 },
-            { nota: 10 },
-          ]
-        },
-        {
-          codigo: 7,
-          nome: 'Angela Ramos Grassi',
-          notas: [
-            { nota: 10 },
-            { nota: 10 },
-            { nota: 10 },
-            { nota: 10 },
-          ]
-        },
-        {
-          codigo: 8,
-          nome: 'Marcos Ramos Grassi',
-          notas: [
-            { nota: 10 },
-            { nota: 10 },
-            { nota: 10 },
-            { nota: 10 },
-          ]
-        },
-        {
-          codigo: 9,
-          nome: 'Jefferson Ramos Grassi',
-          notas: [
-            { nota: 10 },
-            { nota: 10 },
-            { nota: 10 },
-            { nota: 10 },
-          ]
-        },
-        {
-          codigo: 10,
-          nome: 'Júlio Ramos Grassi',
-          notas: [
-            { nota: 10 },
-            { nota: 10 },
-            { nota: 10 },
-            { nota: 10 },
-          ]
-        },
-      ]
-    }
-
   const montaListaTabs = ()=> {
 
     const teste = [
@@ -302,7 +189,7 @@ const Notas = () => {
       {
         nome: '2° Bimestre',
         conteudo: (
-          <Avaliacao dados={dadosBimentreDois}></Avaliacao>
+          <Avaliacao dados={dadosBimentreUm}></Avaliacao>
         )
       },
     ]

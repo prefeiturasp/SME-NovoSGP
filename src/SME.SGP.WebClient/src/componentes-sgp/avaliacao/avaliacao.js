@@ -1,11 +1,12 @@
-import { Switch } from 'antd';
+import { Tooltip } from 'antd';
 import PropTypes from 'prop-types';
-import React, { useState, useEffect } from 'react';
-
-import { Lista } from './avaliacao.css';
-import Ordenacao from '../Ordenacao/ordenacao';
+import React, { useState } from 'react';
 import CampoNumero from '~/componentes/campoNumero';
+import SelectComponent from '~/componentes/select';
+import notasConceitos from '~/dtos/notasConceitos';
 
+import Ordenacao from '../Ordenacao/ordenacao';
+import { Lista } from './avaliacao.css';
 
 const Avaliacao = props => {
   const { dados, onChangeAvaliacao} = props;
@@ -13,8 +14,19 @@ const Avaliacao = props => {
   const [dataSource, setDataSource] = useState(dados);
   const [alunos, setAlunos] = useState(dados.alunos);
 
+  const listaConceitos = [
+    { valor: 'P', descricao: 'P'},
+    { valor: 'S', descricao: 'S'},
+    { valor: 'NS', descricao: 'NS'},
+  ];
+
   const onChangeNota = (aluno, nota, index) => {
     aluno.notas[index].nota = nota;
+    setAlunos([...alunos])
+  }
+
+  const onChangeConceito = (aluno, conceito, index) => {
+    aluno.notas[index].conceito = conceito;
     setAlunos([...alunos])
   }
 
@@ -26,7 +38,7 @@ const Avaliacao = props => {
             <table className="table mb-0 ">
               <thead className="tabela-avaliacao-thead">
                 <tr className="coluna-ordenacao-tr">
-                  <th colspan="2" className="coluna-ordenacao-th">
+                  <th colSpan="2" className="coluna-ordenacao-th">
                     <Ordenacao
                       className="botao-ordenacao-avaliacao"
                       conteudoParaOrdenar={dataSource.alunos}
@@ -40,8 +52,18 @@ const Avaliacao = props => {
                   { dataSource.avaliacoes && dataSource.avaliacoes.length > 0 ?
                       dataSource.avaliacoes.map((avaliacao, i) => {
                         return (
-                        <th key={i} className="width-170">
-                          {avaliacao.nome}
+                        <th key={i} className="width-150">
+                          <div className="texto-header-avaliacao">
+                            {avaliacao.nome}
+                          </div>
+                          <div className="texto-header-avaliacao">
+                          <Tooltip title={avaliacao.tipoDescricao}>
+                            {avaliacao.tipoDescricao}
+                          </Tooltip>
+                          </div>
+                          <div className="texto-header-avaliacao">
+                            {avaliacao.data}
+                          </div>
                         </th>
                         )
                       })
@@ -49,11 +71,11 @@ const Avaliacao = props => {
                   }
                 </tr>
                 <tr>
-                <th colspan="2"></th>
+                <th colSpan="2"></th>
                  { dataSource.avaliacoes && dataSource.avaliacoes.length > 0 ?
-                      dataSource.avaliacoes.map(() => {
+                      dataSource.avaliacoes.map((item, i) => {
                         return (
-                        <th className="width-170">
+                        <th key={i} className="width-150">
                           {/* TODO - INTERDISCIPLINAR */}
                         </th>
                         )
@@ -77,17 +99,36 @@ const Avaliacao = props => {
                           aluno.notas.length ?
                             aluno.notas.map((nota, i) => {
                               return (
-                                <td key={i}  className="width-170">
-                                  {/* {nota.nota} */}
-                                  <CampoNumero
-                                    onChange={(valorNovo)=> onChangeNota(aluno, valorNovo, i)}
-                                    value={nota.nota}
-                                    min={0}
-                                    max={10}
-                                    step={0.1}
-                                    placeholder="Nota"
-                                    >
-                                  </CampoNumero>
+                                <td key={i}  className="width-150" style={{padding: "3px"}}>
+                                  {
+                                    notasConceitos.Notas == nota.tipoNota ?
+                                    <CampoNumero
+                                      onChange={(valorNovo)=> onChangeNota(aluno, valorNovo, i)}
+                                      value={nota.nota}
+                                      min={0}
+                                      max={10}
+                                      step={0.1}
+                                      placeholder="Nota"
+                                      classNameCampo={`${nota.ausencia ? 'aluno-ausente-notas' : 'aluno-notas'}`}
+                                    />
+                                    :
+                                    <SelectComponent
+                                      valueOption="valor"
+                                      valueText="descricao"
+                                      lista={listaConceitos}
+                                      valueSelect={nota.conceito}
+                                      onChange={valorNovo => onChangeConceito(aluno, valorNovo, i)}
+                                      showSearch
+                                      placeholder="Conceito"
+                                      className="select-conceitos"
+                                      classNameContainer={nota.ausencia ? 'aluno-ausente-conceitos' : 'aluno-conceitos'}
+                                    />
+                                  }
+                                  {
+                                    nota.ausencia ?
+                                    <i className="fas fa-user-times icon-aluno-ausente"></i>
+                                    : ''
+                                  }
                                 </td>
                                 )
                               })
@@ -108,7 +149,7 @@ const Avaliacao = props => {
 };
 
 Avaliacao.propTypes = {
-  dados: PropTypes.array,
+  dados: PropTypes.object,
   onChangeAvaliacao: PropTypes.func
 };
 
