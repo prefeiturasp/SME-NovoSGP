@@ -83,8 +83,6 @@ export default function PlanoCiclo() {
   }, [turmaSelecionada]);
 
   const carregarCiclos = async () => {
-    console.log('carregarCiclos');
-
     if (usuario && turmaSelecionada.turma) {
       let anoSelecionado = '';
       let codModalidade = null;
@@ -428,13 +426,13 @@ export default function PlanoCiclo() {
   }
 
   const desabilitaCamposEdicao = () => {
-    if (podeAlterar()) return !modoEdicao
-    else return true
-  }
+    if (podeAlterar()) return !modoEdicao;
+    else return true;
+  };
 
   const podeAlterar = () => {
-    return (permissoesTela[tipoPermissao.podeAlterar]);
-  }
+    return permissoesTela[tipoPermissao.podeAlterar];
+  };
 
   return (
     <>
@@ -442,16 +440,16 @@ export default function PlanoCiclo() {
         {usuario && turmaSelecionada.turma ? (
           ''
         ) : (
-            <Alert
-              alerta={{
-                tipo: 'warning',
-                id: 'plano-ciclo-selecione-turma',
-                mensagem: 'Você precisa escolher uma turma.',
-                estiloTitulo: { fontSize: '18px' },
-              }}
-              className="mb-0"
-            />
-          )}
+          <Alert
+            alerta={{
+              tipo: 'warning',
+              id: 'plano-ciclo-selecione-turma',
+              mensagem: 'Você precisa escolher uma turma.',
+              estiloTitulo: { fontSize: '18px' },
+            }}
+            className="mb-0"
+          />
+        )}
       </div>
       <div className="col-md-12 mt-1">
         <Titulo>
@@ -465,8 +463,8 @@ export default function PlanoCiclo() {
               Registro Migrado
             </RegistroMigrado>
           ) : (
-              ''
-            )}
+            ''
+          )}
         </Titulo>
       </div>
       <Card>
@@ -481,7 +479,11 @@ export default function PlanoCiclo() {
                     id="tipo-ciclo"
                     placeHolder="Selecione um tipo de ciclo"
                     lista={listaCiclos}
-                    disabled={somenteConsulta || !podeAlterar()? true:listaCiclos.length === 1}
+                    disabled={
+                      somenteConsulta || !podeAlterar()
+                        ? true
+                        : listaCiclos.length === 1
+                    }
                     valueOption="id"
                     valueText="descricao"
                     onChange={validaTrocaCiclo}
@@ -552,8 +554,8 @@ export default function PlanoCiclo() {
                     {inseridoAlterado.criadoEm}
                   </p>
                 ) : (
-                    ''
-                  )}
+                  ''
+                )}
 
                 {inseridoAlterado.alteradoPor && inseridoAlterado.alteradoEm ? (
                   <p>
@@ -561,8 +563,8 @@ export default function PlanoCiclo() {
                     {inseridoAlterado.alteradoEm}
                   </p>
                 ) : (
-                    ''
-                  )}
+                  ''
+                )}
               </InseridoAlterado>
             </div>
             <div className="col-md-6 btn-link-plano-ciclo">
@@ -576,7 +578,11 @@ export default function PlanoCiclo() {
 
                 <div className="row">
                   <ListaItens
-                    className={registroMigrado || somenteConsulta ? 'desabilitar-elemento' : ''}
+                    className={
+                      registroMigrado || somenteConsulta
+                        ? 'desabilitar-elemento'
+                        : ''
+                    }
                   >
                     <ul>
                       {listaMatriz.map(item => {
@@ -617,7 +623,11 @@ export default function PlanoCiclo() {
                 </div>
                 <div className="row">
                   <ListaItens
-                    className={registroMigrado || somenteConsulta ? 'desabilitar-elemento' : ''}
+                    className={
+                      registroMigrado || somenteConsulta
+                        ? 'desabilitar-elemento'
+                        : ''
+                    }
                   >
                     <ul>
                       {listaODS.map(item => {
