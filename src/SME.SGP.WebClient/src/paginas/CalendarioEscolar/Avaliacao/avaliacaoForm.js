@@ -12,7 +12,7 @@ import SelectComponent from '~/componentes/select';
 import { Colors, Label } from '~/componentes';
 import history from '~/servicos/history';
 import TextEditor from '~/componentes/textEditor';
-import { Div, Titulo } from './avaliacao.css';
+import { Div, Titulo, Badge } from './avaliacao.css';
 import RotasDTO from '~/dtos/rotasDto';
 import ServicoAvaliacao from '~/servicos/Paginas/Calendario/ServicoAvaliacao';
 import { erro, sucesso, confirmar } from '~/servicos/alertas';
@@ -121,7 +121,6 @@ const AvaliacaoForm = ({ match }) => {
     { label: 'Interdisciplinar', value: 2 },
   ]);
   const [listaDisciplinas, setListaDisciplinas] = useState([]);
-  const [temRegencia, setTemRegencia] = useState(false);
 
   const campoNomeRef = useRef(null);
   const textEditorRef = useRef(null);
@@ -158,13 +157,29 @@ const AvaliacaoForm = ({ match }) => {
 
   const [disciplinaDesabilitada, setDisciplinaDesabilitada] = useState(false);
 
+  const [listaDisciplinasRegencia, setListaDisciplinasRegencia] = useState([]);
+  const [temRegencia, setTemRegencia] = useState(false);
+
+  const obterDisciplinasRegencia = async () => {
+    const disciplinasRegencia = await ServicoAvaliacao.listarDisciplinasRegencia(
+      turmaId
+    );
+    if (disciplinasRegencia.data)
+      setListaDisciplinasRegencia(disciplinasRegencia.data);
+  };
+
   useEffect(() => {
     if (listaDisciplinas.length === 1) {
-      setDadosAvaliacao({
-        ...dadosAvaliacao,
-        disciplinaId: listaDisciplinas[0].codigoComponenteCurricular.toString(),
-      });
-      setDisciplinaDesabilitada(true);
+      if (listaDisciplinas[0].regencia) {
+        setTemRegencia(true);
+        obterDisciplinasRegencia();
+      } else {
+        setDadosAvaliacao({
+          ...dadosAvaliacao,
+          disciplinaId: listaDisciplinas[0].codigoComponenteCurricular.toString(),
+        });
+        setDisciplinaDesabilitada(true);
+      }
     }
   }, [listaDisciplinas]);
 
@@ -263,21 +278,43 @@ const AvaliacaoForm = ({ match }) => {
                   />
                 </Grid>
               </Div>
+              {temRegencia && listaDisciplinasRegencia && (
+                <Div className="row">
+                  {listaDisciplinasRegencia.map(disciplina => {
+                    return (
+                      <Badge
+                        role="button"
+                        // onClick={selecionaMateria}
+                        // aria-pressed={materia.selecionada && true}
+                        // id={materia.codigo}
+                        // data-index={indice}
+                        // alt={materia.materia}
+                        // key={materia.codigo}
+                        className="badge badge-pill border text-dark bg-white font-weight-light px-2 py-1 mr-2"
+                      >
+                        {disciplina}
+                      </Badge>
+                    );
+                  })}
+                </Div>
+              )}
               <Div className="row">
-                <Grid cols="4" className="mb-4">
-                  <SelectComponent
-                    id="disciplinaId"
-                    name="disciplinaId"
-                    label="Componente curricular"
-                    lista={listaDisciplinas}
-                    valueOption="codigoComponenteCurricular"
-                    valueText="nome"
-                    disabled={disciplinaDesabilitada}
-                    placeholder="Disciplina"
-                    form={form}
-                  />
-                </Grid>
-                <Grid cols="4" className="mb-4">
+                {!temRegencia && (
+                  <Grid cols={4} className="mb-4">
+                    <SelectComponent
+                      id="disciplinaId"
+                      name="disciplinaId"
+                      label="Componente curricular"
+                      lista={listaDisciplinas}
+                      valueOption="codigoComponenteCurricular"
+                      valueText="nome"
+                      disabled={disciplinaDesabilitada}
+                      placeholder="Disciplina"
+                      form={form}
+                    />
+                  </Grid>
+                )}
+                <Grid cols={!temRegencia ? 4 : 6} className="mb-4">
                   <SelectComponent
                     id="tipoAvaliacaoId"
                     name="tipoAvaliacaoId"
@@ -289,7 +326,7 @@ const AvaliacaoForm = ({ match }) => {
                     form={form}
                   />
                 </Grid>
-                <Grid cols="4" className="mb-4">
+                <Grid cols={!temRegencia ? 4 : 6} className="mb-4">
                   <Label text="Nome da Atividade Avaliativa" />
                   <CampoTexto
                     name="nome"
