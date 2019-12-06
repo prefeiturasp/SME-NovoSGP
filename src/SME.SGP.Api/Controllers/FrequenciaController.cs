@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using SME.SGP.Api.Filtros;
 using SME.SGP.Aplicacao;
+using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System.Threading.Tasks;
 
@@ -42,5 +43,13 @@ namespace SME.SGP.Api.Controllers
             await comandoFrequencia.Registrar(frequenciaDto);
             return Ok();
         }
+
+        //[HttpPost("frequencias/notificar")]
+        //public async Task<IActionResult> Notificar([FromServices] IServicoNotificacaoFrequencia servicoNotificacaoFrequencia)
+        //{
+        //    servicoNotificacaoFrequencia.ExecutaNotificacaoFrequencia();
+        //    return Ok();
+        //}
+
     }
 }
