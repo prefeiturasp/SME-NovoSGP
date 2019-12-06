@@ -11,12 +11,16 @@ namespace SME.SGP.Aplicacao
     public class ConsultaAtividadeAvaliativa : ConsultasBase, IConsultaAtividadeAvaliativa
     {
         private readonly IRepositorioAtividadeAvaliativa repositorioAtividadeAvaliativa;
+        private readonly IRepositorioAtividadeAvaliativaRegencia repositorioAtividadeAvaliativaRegencia;
 
-        public ConsultaAtividadeAvaliativa(IRepositorioAtividadeAvaliativa repositorioAtividadeAvaliativa
-            , IContextoAplicacao contextoAplicacao) : base(contextoAplicacao)
+        public ConsultaAtividadeAvaliativa(
+            IRepositorioAtividadeAvaliativa repositorioAtividadeAvaliativa,
+            IRepositorioAtividadeAvaliativaRegencia repositorioAtividadeAvaliativaRegencia,
+            IContextoAplicacao contextoAplicacao) : base(contextoAplicacao)
 
         {
             this.repositorioAtividadeAvaliativa = repositorioAtividadeAvaliativa ?? throw new System.ArgumentNullException(nameof(repositorioAtividadeAvaliativa));
+            this.repositorioAtividadeAvaliativaRegencia = repositorioAtividadeAvaliativaRegencia ?? throw new System.ArgumentNullException(nameof(repositorioAtividadeAvaliativaRegencia));
         }
 
         public async Task<PaginacaoResultadoDto<AtividadeAvaliativaCompletaDto>> ListarPaginado(FiltroAtividadeAvaliativaDto filtro)
@@ -32,9 +36,15 @@ namespace SME.SGP.Aplicacao
                         ));
         }
 
-        public AtividadeAvaliativaCompletaDto ObterPorId(long id)
+        public async Task<AtividadeAvaliativaCompletaDto> ObterPorIdAsync(long id)
         {
-            return MapearParaDto(repositorioAtividadeAvaliativa.ObterPorId(id));
+            IEnumerable<AtividadeAvaliativaRegencia> atividadeRegencias = null;
+            var atividade = await repositorioAtividadeAvaliativa.ObterPorIdAsync(id);
+            if (atividade is null)
+                throw new NegocioException("Atividade avaliativa não encontrada");
+            if (atividade.EhRegencia)
+                atividadeRegencias = await repositorioAtividadeAvaliativaRegencia.Listar(id);
+            return MapearParaDto(atividade, atividadeRegencias);
         }
 
         private IEnumerable<AtividadeAvaliativaCompletaDto> MapearAtividadeAvaliativaParaDto(IEnumerable<AtividadeAvaliativa> items)
@@ -42,7 +52,7 @@ namespace SME.SGP.Aplicacao
             return items?.Select(c => MapearParaDto(c));
         }
 
-        private AtividadeAvaliativaCompletaDto MapearParaDto(AtividadeAvaliativa atividadeAvaliativa)
+        private AtividadeAvaliativaCompletaDto MapearParaDto(AtividadeAvaliativa atividadeAvaliativa, IEnumerable<AtividadeAvaliativaRegencia> regencias = null)
         {
             return atividadeAvaliativa == null ? null : new AtividadeAvaliativaCompletaDto
             {
@@ -64,7 +74,12 @@ namespace SME.SGP.Aplicacao
                 CriadoRF = atividadeAvaliativa.CriadoRF,
                 Categoria = atividadeAvaliativa.TipoAvaliacao?.Descricao,
                 EhRegencia = atividadeAvaliativa.EhRegencia,
-                DisciplinaContidaRegenciaId = atividadeAvaliativa.DisciplinaContidaRegenciaId
+                AtividadesRegencia = regencias?.Select(x => new AtividadeAvaliativaRegenciaDto
+                {
+                    AtividadeAvaliativaId = x.AtividadeAvaliativaId,
+                    DisciplinaContidaRegenciaId = x.DisciplinaContidaRegenciaId,
+                    Id = x.Id
+                }).ToList()
             };
         }
 
