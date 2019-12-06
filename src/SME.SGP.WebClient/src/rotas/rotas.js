@@ -38,6 +38,8 @@ import RotasDto from '~/dtos/rotasDto';
 import CadastroAula from '~/paginas/CalendarioEscolar/CadastroAula/cadastroAula';
 import CalendarioProfessor from '~/paginas/CalendarioProfessor/Calendario';
 import FrequenciaPlanoAula from '~/paginas/DiarioClasse/FrequenciaPlanoAula/frequenciaPlanoAula';
+import AvaliacaoLista from '~/paginas/CalendarioEscolar/Avaliacao/avaliacaoLista';
+import AvaliacaoForm from '~/paginas/CalendarioEscolar/Avaliacao/avaliacaoForm';
 import Notas from '~/paginas/DiarioClasse/Notas/notas';
 
 export default function Rotas() {
@@ -261,7 +263,6 @@ export default function Rotas() {
     exact: true,
     tipo: RotasTipo.EstruturadaAutenticada,
     temPermissionamento: false,
-    temPermissionamento: true,
     chavePermissao: RotasDto.MEUS_DADOS,
   });
 
@@ -401,7 +402,6 @@ export default function Rotas() {
     chavePermissao: RotasDto.EVENTOS,
   });
 
-  // TODO - Alterar quando tiver o calendário do professor
   rotas.set(RotasDto.CALENDARIO_PROFESSOR, {
     breadcrumbName: 'Calendário do Professor',
     menu: ['Calendário Escolar'],
@@ -440,6 +440,36 @@ export default function Rotas() {
     exact: true,
     tipo: RotasTipo.EstruturadaAutenticada,
     temPermissionamento: true,
+    chavePermissao: RotasDto.CALENDARIO_PROFESSOR,
+  });
+
+  rotas.set(`${RotasDto.CADASTRO_DE_AVALIACAO}`, {
+    breadcrumbName: 'Cadastro de Avaliação',
+    parent: RotasDto.CALENDARIO_PROFESSOR,
+    component: AvaliacaoLista,
+    exact: true,
+    tipo: RotasTipo.EstruturadaAutenticada,
+    temPermissionamento: false,
+    chavePermissao: RotasDto.CALENDARIO_PROFESSOR,
+  });
+
+  rotas.set(`${RotasDto.CADASTRO_DE_AVALIACAO}/novo`, {
+    breadcrumbName: 'Cadastro de Avaliação',
+    parent: RotasDto.CALENDARIO_PROFESSOR,
+    component: AvaliacaoForm,
+    exact: true,
+    tipo: RotasTipo.EstruturadaAutenticada,
+    temPermissionamento: false,
+    chavePermissao: RotasDto.CALENDARIO_PROFESSOR,
+  });
+
+  rotas.set(`${RotasDto.CADASTRO_DE_AVALIACAO}/editar/:id`, {
+    breadcrumbName: 'Cadastro de Avaliação',
+    parent: RotasDto.CALENDARIO_PROFESSOR,
+    component: AvaliacaoForm,
+    exact: true,
+    tipo: RotasTipo.EstruturadaAutenticada,
+    temPermissionamento: false,
     chavePermissao: RotasDto.CALENDARIO_PROFESSOR,
   });
 
