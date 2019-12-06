@@ -1,8 +1,9 @@
-import { Button, Dropdown, Menu } from 'antd';
+import { Dropdown, Menu } from 'antd';
 import PropTypes from 'prop-types';
 import React from 'react';
 import styled from 'styled-components';
-import { Base } from '~/componentes/colors';
+import Button from '~/componentes/button';
+import { Base, Colors } from '~/componentes/colors';
 
 const Container = styled(Dropdown)`
   background-color: #064f79 !important;
@@ -46,6 +47,7 @@ const ContainerMenu = styled(Menu)`
 
 const Ordenacao = props => {
   const {
+    className,
     conteudoParaOrdenar,
     ordenarColunaNumero,
     ordenarColunaTexto,
@@ -106,16 +108,21 @@ const Ordenacao = props => {
   );
 
   return (
-    <Container overlay={menu} placement="bottomLeft">
-      <Button className="botao-ordenar">
-        <i className="fas fa-exchange-alt mr-1"></i>
-        Ordenar
-      </Button>
+    <Container trigger={['click']} overlay={menu} placement="bottomLeft">
+      <Button
+        label="Ordenar"
+        icon="exchange-alt"
+        color={Colors.Azul}
+        border
+        className={`mr-2 ${className}`}
+      >
+           </Button>
     </Container>
   );
 };
 
 Ordenacao.defaultProps = {
+  className: '',
   conteudoParaOrdenar: [],
   ordenarColunaNumero: 'id',
   ordenarColunaTexto: 'nome',
@@ -123,6 +130,7 @@ Ordenacao.defaultProps = {
 };
 
 Ordenacao.propTypes = {
+  className: PropTypes.string,
   conteudoParaOrdenar: PropTypes.array,
   ordenarColunaNumero: PropTypes.string,
   ordenarColunaTexto: PropTypes.string,
