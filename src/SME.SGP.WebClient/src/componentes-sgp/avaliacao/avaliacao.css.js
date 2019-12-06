@@ -46,8 +46,8 @@ export const Lista = styled.div`
     }
   }
 
-  .width-170 {
-    width: 170px;
+  .width-150 {
+    width: 150px;
   }
 
   .width-70 {
@@ -68,7 +68,64 @@ export const Lista = styled.div`
 
   .botao-ordenacao-avaliacao  {
     float: left;
-    margin-left: -12px;
+    margin-left: -12px !important;
+  }
+
+  .texto-header-avaliacao {
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
+    max-width: 140px;
+  }
+
+  .select-conceitos {
+    border-radius: 4px;
+    margin-bottom: -3px;
+  }
+
+  .aluno-conceitos {
+    border-top: solid 2px white;
+    background-color: white;
+    border-radius: 7px;
+    border-right: solid 22px white;
+    padding-left: 2px;
+    margin-left: 13px;
+  }
+
+  .aluno-ausente-conceitos {
+    border-top: solid 2px #d06d12 !important;
+    background-color: #d06d12 !important;
+    border-radius: 7px !important;
+    border-right: solid 22px #D06D12 !important;
+    padding-left: 2px !important;
+    margin-left: 13px !important;
+  }
+
+  .aluno-notas {
+    border-top: solid 3px white !important;
+    background-color: white !important;
+    border-radius: 7px !important;
+    border-right: solid 20px white !important;
+    padding-left: 3px !important;
+    margin-left: 23px !important;
+  }
+
+  .aluno-ausente-notas {
+    border-top: solid 3px #d06d12 !important;
+    background-color: #d06d12 !important;
+    border-radius: 7px !important;
+    border-right: solid 20px #D06D12 !important;
+    padding-left: 3px !important;
+    margin-left: 23px !important;
+  }
+
+  .icon-aluno-ausente {
+    color: white;
+    float: right;
+    margin-top: -27px;
+    font-size: 10px;
+    margin-right: 5px;
+}
   }
 
   .scroll-tabela-avaliacao-thead {

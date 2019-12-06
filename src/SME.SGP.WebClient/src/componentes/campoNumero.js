@@ -92,6 +92,7 @@ const CampoNumero = React.forwardRef((props, ref) => {
             max={max}
             min={min}
             step={step}
+            className={className}
           />
         )}
       </Campo>
@@ -102,13 +103,11 @@ const CampoNumero = React.forwardRef((props, ref) => {
 CampoNumero.propTypes = {
   onChange: PropTypes.func,
   semMensagem: PropTypes.bool,
-  form: undefined,
 };
 
 CampoNumero.defaultProps = {
   onChange: () => {},
-  semMensagem: false,
-  form: undefined,
+  semMensagem: false
 };
 
 export default CampoNumero;
