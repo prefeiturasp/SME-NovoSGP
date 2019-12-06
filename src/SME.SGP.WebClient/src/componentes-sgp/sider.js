@@ -10,22 +10,27 @@ import {
   menuRetraido,
   menuSelecionado,
 } from '../redux/modulos/navegacao/actions';
-import modalidade from '~/dtos/modalidade';
 
 const Sider = () => {
   const { Sider, Footer } = Layout;
   const { SubMenu } = Menu;
-  const NavegacaoStore = useSelector(store => store.navegacao);
+  const NavegacaoStore = useSelector(state => state.navegacao);
   const [openKeys, setOpenKeys] = useState([]);
-  const [modalidadeEja, setModalidadeEja] = useState(false);
 
-  const usuario = useSelector(store => store.usuario);
+  const usuario = useSelector(state => state.usuario);
 
   const [subMenusPrincipais, setSubMenusPrincipais] = useState([]);
 
   useEffect(() => {
+    const verificaSelecaoMenu = rotaAtiva => {
+      const rota = NavegacaoStore.rotas.get(rotaAtiva);
+      setOpenKeys([]);
+      if (rota && rota.limpaSelecaoMenu) {
+        store.dispatch(menuSelecionado([]));
+      }
+    };
     verificaSelecaoMenu(NavegacaoStore.rotaAtiva);
-  }, [NavegacaoStore.rotaAtiva]);
+  }, [NavegacaoStore.rotaAtiva, NavegacaoStore.rotas]);
 
   useEffect(() => {
     if (usuario.menu)
@@ -37,27 +42,6 @@ const Sider = () => {
           .map(x => 'menu-' + x.codigo)
       );
   }, [usuario.menu]);
-
-  useEffect(() => {
-    if (
-      usuario &&
-      usuario.turmaSelecionada &&
-      usuario.turmaSelecionada.length &&
-      usuario.turmaSelecionada[0].codModalidade == modalidade.EJA
-    ) {
-      setModalidadeEja(true);
-    } else {
-      setModalidadeEja(false);
-    }
-  }, [usuario.turmaSelecionada]);
-
-  const verificaSelecaoMenu = rotaAtiva => {
-    const rota = NavegacaoStore.rotas.get(rotaAtiva);
-    setOpenKeys([]);
-    if (rota && rota.limpaSelecaoMenu) {
-      store.dispatch(menuSelecionado([]));
-    }
-  };
 
   const alterarPosicaoJanelaPopup = (idElementoHtml, quantidadeItens) => {
     const itemMenu = window.document.getElementById(idElementoHtml);

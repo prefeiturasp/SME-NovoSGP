@@ -50,6 +50,7 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IComandosTipoAvaliacao, ComandosTipoAavaliacao>();
             services.TryAddScoped<IComandosPlanoAula, ComandosPlanoAula>();
             services.TryAddScoped<IComandosAtribuicaoCJ, ComandosAtribuicaoCJ>();
+            services.TryAddScoped<IComandosNotasConceitos, ComandosNotasConceitos>();
         }
 
         private static void RegistrarConsultas(IServiceCollection services)
@@ -138,6 +139,13 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IRepositorioDre, RepositorioDre>();
             services.TryAddScoped<IRepositorioUe, RepositorioUe>();
             services.TryAddScoped<IRepositorioTurma, RepositorioTurma>();
+            services.TryAddScoped<IRepositorioAtividadeAvaliativaRegencia, RepositorioAtividadeAvaliativaRegencia>();
+            services.TryAddScoped<IRepositorioNotasConceitos, RepositorioNotasConceitos>();
+            services.TryAddScoped<IRepositorioAtividadeAvaliativa, RepositorioAtividadeAvaliativa>();
+            services.TryAddScoped<IRepositorioConceito, RepositorioConceito>();
+            services.TryAddScoped<IRepositorioNotaParametro, RepositorioNotaParametro>();
+            services.TryAddScoped<IRepositorioNotaTipoValor, RepositorioNotaTipoValor>();
+            services.TryAddScoped<IRepositorioNotificacaoFrequencia, RepositorioNotificacaoFrequencia>();
         }
 
         private static void RegistrarServicos(IServiceCollection services)
@@ -160,6 +168,8 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IServicoAula, ServicoAula>();
             services.TryAddScoped<IServicoAtribuicaoEsporadica, ServicoAtribuicaoEsporadica>();
             services.TryAddScoped<IServicoCalculoFrequencia, ServicoCalculoFrequencia>();
+            services.TryAddScoped<IServicoDeNotasConceitos, ServicoDeNotasConceitos>();
+            services.TryAddScoped<IServicoNotificacaoFrequencia, ServicoNotificacaoFrequencia>();
             services.TryAddScoped<IServicoAtribuicaoCJ, ServicoAtribuicaoCJ>();
         }
     }

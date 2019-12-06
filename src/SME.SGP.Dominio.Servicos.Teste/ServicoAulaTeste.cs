@@ -17,6 +17,7 @@ namespace SME.SGP.Dominio.Servicos.Teste
     {
         #region Mocks
 
+        private readonly Mock<IRepositorioAtribuicaoCJ> atribuicaoCj;
         private readonly Mock<IComandosPlanoAula> comandosPlanoAula;
         private readonly Mock<IComandosWorkflowAprovacao> comandosWorkflowAprovacao;
         private readonly Mock<IConfiguration> configuration;
@@ -43,6 +44,7 @@ namespace SME.SGP.Dominio.Servicos.Teste
 
         public ServicoAulaTeste()
         {
+            atribuicaoCj = new Mock<IRepositorioAtribuicaoCJ>();
             consultasPeriodoEscolar = new Mock<IConsultasPeriodoEscolar>();
             servicoDiaLetivo = new Mock<IServicoDiaLetivo>();
             repositorioAula = new Mock<IRepositorioAula>();
@@ -68,7 +70,8 @@ namespace SME.SGP.Dominio.Servicos.Teste
                                          servicoNotificacao.Object, consultaAbrangencia.Object,
                                          comandosWorkflowAprovacao.Object,
                                          comandosPlanoAula.Object, servicoFrequencia.Object,
-                                         configuration.Object, repositorioAtividadeAvaliativa.Object);
+                                         configuration.Object, repositorioAtividadeAvaliativa.Object,
+                                         atribuicaoCj.Object);
 
             Setup();
         }
@@ -198,7 +201,7 @@ namespace SME.SGP.Dominio.Servicos.Teste
             servicoEol.Setup(a => a.ObterDisciplinasPorCodigoTurmaLoginEPerfil(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<Guid>())).Returns(Task.FromResult(disciplinaRespotas));
 
             //repositorioPeriodoEscolar.Setup(a => a.ObterPorTipoCalendarioData(aula.TipoCalendarioId, aula.DataAula)).Returns(new PeriodoEscolar());
-            consultasGrade.Setup(a => a.ObterGradeAulasTurma(It.IsAny<string>(), It.IsAny<int>(), It.IsAny<string>()))
+            consultasGrade.Setup(a => a.ObterGradeAulasTurmaProfessor(It.IsAny<string>(), It.IsAny<int>(), It.IsAny<string>(), null))
                 .Returns(Task.FromResult(new GradeComponenteTurmaAulasDto() { QuantidadeAulasGrade = 1, QuantidadeAulasRestante = 1 }));
 
             servicoDiaLetivo.Setup(a => a.ValidarSeEhDiaLetivo(It.IsAny<DateTime>(), It.IsAny<long>(), It.IsAny<string>(), It.IsAny<string>())).Returns(true);
