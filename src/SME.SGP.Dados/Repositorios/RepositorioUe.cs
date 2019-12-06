@@ -6,6 +6,7 @@ using SME.SGP.Dominio.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace SME.SGP.Dados.Repositorios
 {
@@ -15,12 +16,47 @@ namespace SME.SGP.Dados.Repositorios
         private const string Update = "UPDATE public.ue SET nome = @nome, tipo_escola = @tipoEscola, data_atualizacao = @dataAtualizacao WHERE id = @id;";
 
         private readonly ISgpContext contexto;
-        private readonly IRepositorioDre respositorioDre;
 
-        public RepositorioUe(ISgpContext contexto, IRepositorioDre respositorioDre)
+        public RepositorioUe(ISgpContext contexto)
         {
             this.contexto = contexto;
-            this.respositorioDre = respositorioDre;
+        }
+
+        public async Task<IEnumerable<Modalidade>> ObterModalidades(string ueCodigo, int ano)
+        {
+            var query = @"select distinct t.modalidade_codigo from turma t
+                                inner join ue u
+                                on t.ue_id = u.id
+                                    where u.ue_id = @ueCodigo
+                                and t.ano_letivo = @ano";
+
+            return await contexto.QueryAsync<Modalidade>(query, new { ueCodigo, ano });
+        }
+
+        public async Task<IEnumerable<Turma>> ObterTurmas(string ueCodigo, Modalidade modalidade, int ano)
+        {
+            var query = @"select t.* from turma t
+                            inner join ue u
+                            on t.ue_id = u.id
+                            where u.ue_id = @ueCodigo
+                            and t.modalidade_codigo = @modalidade
+                            and t.ano_letivo = @ano";
+
+            return await contexto.QueryAsync<Turma>(query, new { ueCodigo, modalidade, ano });
+        }
+
+        public Ue ObterUEPorTurma(string turmaId)
+        {
+            var query = @"select
+                            escola.*
+                        from
+                            ue escola
+                        inner
+                        join turma t on
+                        t.ue_id = escola.id
+                        where
+                            t.turma_id = @turmaId";
+            return contexto.QueryFirstOrDefault<Ue>(query, new { turmaId });
         }
 
         public IEnumerable<Ue> Sincronizar(IEnumerable<Ue> entidades, IEnumerable<Dre> dres)

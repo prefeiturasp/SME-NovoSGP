@@ -35,12 +35,23 @@ namespace SME.SGP.Api.Controllers
         }
 
         [HttpGet("listar")]
-        [ProducesResponseType(typeof(IEnumerable<TipoAvaliacaoDto>), 200)]
+        [ProducesResponseType(typeof(IEnumerable<TipoAvaliacaoCompletaDto>), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [AllowAnonymous] //ainda nao existe perfil pra essa função
         public async Task<IActionResult> BuscarTodosAsync([FromQuery]string nome)
         {
             return Ok(await consultaTipoAvaliacao.ListarPaginado(nome));
+        }
+
+        [HttpDelete]
+        [ProducesResponseType(200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 601)]
+        [AllowAnonymous] //ainda nao existe perfil pra essa função
+        public async Task<IActionResult> Excluir(long id)
+        {
+            await comandoTipoAvaliacao.Excluir(id);
+            return Ok();
         }
 
         [HttpPost]

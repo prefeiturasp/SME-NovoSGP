@@ -27,7 +27,7 @@ const TipoEventosLista = styled(Div)`
 const TipoEvento = styled(Div)`
   font-size: 10px;
   margin-bottom: 2px;
-  width: 60px;
+  min-width: 60px;
   &:last-child {
     margin-bottom: 0;
   }
@@ -152,15 +152,15 @@ const Dia = props => {
                       TiposEventoAulaDTO.CJ &&
                       'text-white badge-cj'} ${tipoEvento !==
                       TiposEventoAulaDTO.Aula &&
-                      (tipoEvento !== TiposEventoAulaDTO.CJ &&
-                        'badge-light')} ml-auto mr-0`}
+                      tipoEvento !== TiposEventoAulaDTO.CJ &&
+                      'badge-light'} ml-auto mr-0`}
                   >
                     {tipoEvento}
                   </TipoEvento>
                 );
               })}
-              {tipoEventosDiaLista.quantidadeDeEventosAulas > 3 && (
-                <Div style={{ fontSize: 10 }}>
+              {tipoEventosDiaLista.quantidadeDeEventosAulas > 2 && (
+                <Div style={{ fontSize: 10, textAlign: 'right' }}>
                   Mais {tipoEventosDiaLista.quantidadeDeEventosAulas} eventos
                 </Div>
               )}

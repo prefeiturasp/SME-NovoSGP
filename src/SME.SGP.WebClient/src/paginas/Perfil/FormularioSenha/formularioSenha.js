@@ -23,9 +23,9 @@ const FormularioSenha = () => {
   const permissoesTela = usuarioStore.permissoes[RotasDto.MEUS_DADOS];
   const [somenteConsulta, setSomenteConsulta] = useState(false);
 
-  useEffect(() =>{
+  useEffect(() => {
     setSomenteConsulta(verificaSomenteConsulta(permissoesTela));
-  }, [])
+  }, []);
 
   const fecharModal = form => {
     form.handleReset();
@@ -253,7 +253,9 @@ const FormularioSenha = () => {
         <Button
           label="Editar"
           color={Colors.Roxo}
-          disabled={somenteConsulta || !permissoesTela.podeAlterar}
+          disabled={
+            somenteConsulta || !permissoesTela || !permissoesTela.podeAlterar
+          }
           border
           bold
           onClick={() => setExibirModal(true)}
