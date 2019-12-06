@@ -15,31 +15,34 @@ import styled from 'styled-components';
 import FormularioSenha from './FormularioSenha/formularioSenha';
 import RotasDto from '~/dtos/rotasDto';
 import { verificaSomenteConsulta } from '~/servicos/servico-navegacao';
+import { Redirect } from 'react-router-dom';
+
+const Campos = styled.div`
+  margin-right: 10px;
+  margin-left: 40px;
+  .campo {
+    margin-top: 50px;
+  }
+
+  .botao {
+    margin-top: 25px;
+  }
+`;
+
 const DadosEmail = () => {
-  const usuarioStore = useSelector(store => store.usuario);
+  const usuarioStore = useSelector(state => state.usuario);
   const [email, setEmail] = useState(usuarioStore.meusDados.email);
   const [emailEdicao, setEmailEdicao] = useState(usuarioStore.meusDados.email);
   const [visualizarFormEmail, setVisualizarFormEmail] = useState(false);
   const [erroEmail, setErroEmail] = useState('');
 
-  const permissoesTela = usuarioStore.permissoes[RotasDto.MEUS_DADOS];
   const [somenteConsulta, setSomenteConsulta] = useState(false);
 
-  useEffect(() =>{
+  const permissoesTela = usuarioStore.permissoes[RotasDto.MEUS_DADOS];
+
+  useEffect(() => {
     setSomenteConsulta(verificaSomenteConsulta(permissoesTela));
-  }, [])
-
-  const Campos = styled.div`
-    margin-right: 10px;
-    margin-left: 40px;
-    .campo {
-      margin-top: 50px;
-    }
-
-    .botao {
-      margin-top: 25px;
-    }
-  `;
+  }, [permissoesTela]);
 
   const [validacoes] = useState(
     Yup.object({
@@ -192,7 +195,9 @@ const DadosEmail = () => {
           <Button
             label="Editar"
             color={Colors.Roxo}
-            disabled={somenteConsulta || !permissoesTela.podeAlterar}
+            disabled={
+              !permissoesTela || somenteConsulta || !permissoesTela.podeAlterar
+            }
             border
             bold
             onClick={() => setVisualizarFormEmail(true)}

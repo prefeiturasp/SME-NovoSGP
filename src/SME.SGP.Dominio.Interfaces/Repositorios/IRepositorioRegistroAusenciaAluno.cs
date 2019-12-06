@@ -1,6 +1,5 @@
 ﻿using SME.SGP.Infra;
 using System;
-using System.Collections.Generic;
 
 namespace SME.SGP.Dominio.Interfaces
 {
@@ -8,10 +7,8 @@ namespace SME.SGP.Dominio.Interfaces
     {
         bool MarcarRegistrosAusenciaAlunoComoExcluidoPorRegistroFrequenciaId(long registroFrequenciaId);
 
-        IEnumerable<AulasPorDisciplinaDto> ObterTotalAulasPorDisciplina(int anoLetivo);
+        int ObterTotalAulasPorDisciplinaETurma(DateTime dataAula, string disciplinaId, string turmaId);
 
-        int ObterTotalAulasPorDisciplinaETurma(DateTime dataAtual, string disciplinaId, string turmaId);
-
-        AusenciaPorDisciplinaDto ObterTotalAusenciasPorAlunoETurma(DateTime periodo, string codigoAluno, string disciplinaId, string turmaId);
+        AusenciaPorDisciplinaDto ObterTotalAusenciasPorAlunoETurma(DateTime dataAula, string codigoAluno, string disciplinaId, string turmaId);
     }
 }
