@@ -198,32 +198,40 @@ namespace SME.SGP.Dominio.Servicos
             {
                 var usuariosNotificacao = new List<Usuario>();
 
-                // Dados da Ue
-                var registroFrequencia = repositorioFrequencia.ObterPorId(registroFrequenciaId);
-                var aula = repositorioAula.ObterPorId(registroFrequencia.AulaId);
-                registroFrequencia.Aula = aula;
+                // Dados da Aula
+                var registroFrequencia = repositorioFrequencia.ObterFrequenciaAula(registroFrequenciaId);
+                MeusDadosDto professor = servicoEOL.ObterMeusDados(registroFrequencia.ProfessorRf).Result;
 
-                usuariosNotificacao.AddRange(BuscaGestoresUe(aula.UeId));
-                usuariosNotificacao.AddRange(BuscaSupervisoresUe(aula.UeId));
+                usuariosNotificacao.AddRange(BuscaGestoresUe(registroFrequencia.CodigoUe));
+                usuariosNotificacao.AddRange(BuscaSupervisoresUe(registroFrequencia.CodigoUe));
 
                 foreach(var usuario in usuariosNotificacao)
                 {
-                    NotificaAlteracaoFrequencia(usuario, registroFrequencia, alteradoEm, usuarioAlteracaoId);
+                    NotificaAlteracaoFrequencia(usuario, registroFrequencia, professor.Nome);
                 }
             }
         }
 
-        private void NotificaAlteracaoFrequencia(Usuario usuario, RegistroFrequencia registroFrequencia, DateTime alteradoEm, long usuarioAlteracaoId)
+        private string ObterNomeDisciplina(string codigoDisciplina)
+        {
+            long[] disciplinaId = { long.Parse(codigoDisciplina) };
+            var disciplina = servicoEOL.ObterDisciplinasPorIds(disciplinaId);
+
+            if (!disciplina.Any())
+                throw new NegocioException("Disciplina não encontrada no EOL.");
+
+            return disciplina.FirstOrDefault().Nome;
+        }
+
+        private void NotificaAlteracaoFrequencia(Usuario usuario, RegistroFrequenciaAulaDto registroFrequencia, string usuarioAlteracao)
         {
             // TODO carregar nomes da turma, escola, disciplina e professor para notificacao
-            var turmaNome = "";
-            var escolaNome = "";
-            var disciplina = "";
+            var disciplina = ObterNomeDisciplina(registroFrequencia.CodigoDisciplina);
 
-            var tituloMensagem = $"Título: Alteração extemporânea de frequência  da turma {turmaNome} na disciplina {disciplina}.";
+            var tituloMensagem = $"Título: Alteração extemporânea de frequência  da turma {registroFrequencia.NomeTurma} na disciplina {disciplina}.";
             
             StringBuilder mensagemUsuario = new StringBuilder();
-            mensagemUsuario.Append($"O Professor {usuarioAlteracaoId} realizou alterações no registro de frequência do dia {alteradoEm} da turma {turmaNome} ({escolaNome}) na disciplina {disciplina}.");
+            mensagemUsuario.Append($"O Professor {usuarioAlteracao} realizou alterações no registro de frequência do dia {registroFrequencia.DataAula} da turma {registroFrequencia.NomeTurma} ({registroFrequencia.NomeUe}) na disciplina {disciplina}.");
 
             var hostAplicacao = configuration["UrlFrontEnd"];
             mensagemUsuario.Append($"<a href='{hostAplicacao}/diario-classe/frequencia-plano-aula'>Clique aqui para acessar esse registro.</a>");
@@ -236,11 +244,11 @@ namespace SME.SGP.Dominio.Servicos
                 Titulo = tituloMensagem,
                 Mensagem = mensagemUsuario.ToString(),
                 UsuarioId = usuario.Id,
-                //TurmaId = turmaSemRegistro.CodigoTurma,
-                //UeId = turmaSemRegistro.CodigoUe,
-                //DreId = turmaSemRegistro.CodigoDre,
+                TurmaId = registroFrequencia.CodigoTurma,
+                UeId = registroFrequencia.CodigoUe,
+                DreId = registroFrequencia.CodigoDre,
             };
             servicoNotificacao.Salvar(notificacao);
         }
-        }
     }
+}
