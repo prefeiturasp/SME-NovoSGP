@@ -10,71 +10,71 @@ import Button from '~/componentes/button';
 import history from '~/servicos/history';
 import servicoNotificacao from '~/servicos/Paginas/ServicoNotificacao';
 
-const NavbarNotificacoes = props => {
-  const { Botao, Icone, Texto } = props;
-
-  const Count = styled(Badge)`
-    color: ${Base.Branco} !important;
-    ${props =>
-      !props.count &&
-      `
+const Count = styled(Badge)`
+  color: ${Base.Branco} !important;
+  ${props =>
+    !props.count &&
+    `
       i {
         background: ${Base.CinzaDesabilitado} !important;
         cursor: default !important;
       }
     `}
-    sup {
-      background: ${Base.VermelhoNotificacao} !important;
-      display: flex !important;
-      font-size: 9px !important;
-      height: 18px !important;
-      justify-content: center !important;
-      min-width: 18px !important;
-      width: 18px !important;
-    }
-  `;
-
-  const Lista = styled.div`
+  sup {
+    background: ${Base.VermelhoNotificacao} !important;
+    display: flex !important;
     font-size: 9px !important;
-    margin-top: 5px !important;
-    min-width: 360px !important;
-    right: 0 !important;
-    z-index: 1 !important;
-  `;
+    height: 18px !important;
+    justify-content: center !important;
+    min-width: 18px !important;
+    width: 18px !important;
+  }
+`;
 
-  const Tr = styled.tr`
-    cursor: pointer !important;
-    &:first-child {
-      th,
-      td {
-        border-top: 0 none !important;
-      }
-    }
-    td:first-child {
-      color: ${Base.CinzaIconeNotificacao} !important;
-    }
+const Lista = styled.div`
+  font-size: 9px !important;
+  margin-top: 5px !important;
+  min-width: 360px !important;
+  right: 0 !important;
+  z-index: 1 !important;
+`;
+
+const Tr = styled.tr`
+  cursor: pointer !important;
+  &:first-child {
     th,
     td {
-      border-color: ${Base.CinzaDesabilitado} !important;
-      padding-bottom: 0.5rem !important;
-      padding-bottom: 0.5rem !important;
-      ${props =>
-        props.status === 1 &&
-        `
+      border-top: 0 none !important;
+    }
+  }
+  td:first-child {
+    color: ${Base.CinzaIconeNotificacao} !important;
+  }
+  th,
+  td {
+    border-color: ${Base.CinzaDesabilitado} !important;
+    padding-bottom: 0.5rem !important;
+    padding-bottom: 0.5rem !important;
+    ${props =>
+      props.status === 1 &&
+      `
         background: ${Base.RoxoNotificacao} !important;
         font-weight: bold !important;
         &.status {
             color: ${Base.VermelhoNotificacao} !important;
             text-transform: uppercase !important;
         }`}
-      &.w-75 {
-        width: 160px !important;
-      }
-      &.w-25 {
-        width: 50px !important;
-      }
+    &.w-75 {
+      width: 160px !important;
     }
-  `;
+    &.w-25 {
+      width: 50px !important;
+    }
+  }
+`;
+
+const NavbarNotificacoes = props => {
+  const { Botao, Icone, Texto } = props;
 
   const listaRef = useRef();
 
@@ -84,19 +84,18 @@ const NavbarNotificacoes = props => {
   const usuario = useSelector(state => state.usuario);
   const notificacoes = useSelector(state => state.notificacoes);
 
-  const handleClickFora = event => {
-    if (listaRef.current && !listaRef.current.contains(event.target)) {
-      setMostraNotificacoes(!mostraNotificacoes);
-    }
-  };
-
   useEffect(() => {
     if (usuario.rf.length > 0)
       if (notificacoes.notificacoes.length === 0)
         servicoNotificacao.buscaNotificacoesPorAnoRf(2019, usuario.rf);
-  }, [usuario.rf]);
+  }, [notificacoes.notificacoes.length, usuario.rf]);
 
   useLayoutEffect(() => {
+    const handleClickFora = event => {
+      if (listaRef.current && !listaRef.current.contains(event.target)) {
+        setMostraNotificacoes(!mostraNotificacoes);
+      }
+    };
     if (mostraNotificacoes) document.addEventListener('click', handleClickFora);
     else document.removeEventListener('click', handleClickFora);
   }, [mostraNotificacoes]);
