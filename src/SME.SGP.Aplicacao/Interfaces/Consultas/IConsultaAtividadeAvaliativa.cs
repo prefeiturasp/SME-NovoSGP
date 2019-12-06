@@ -7,6 +7,6 @@ namespace SME.SGP.Aplicacao
     {
         Task<PaginacaoResultadoDto<AtividadeAvaliativaCompletaDto>> ListarPaginado(FiltroAtividadeAvaliativaDto filtro);
 
-        AtividadeAvaliativaCompletaDto ObterPorId(long id);
+        Task<AtividadeAvaliativaCompletaDto> ObterPorIdAsync(long id);
     }
 }
