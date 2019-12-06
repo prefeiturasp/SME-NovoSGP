@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Corpo, Titulo, TituloAno } from './aulaDadaAulaPrevista.css';
+import { Titulo, TituloAno } from './aulaDadaAulaPrevista.css';
 import Grid from '~/componentes/grid';
 import Card from '~/componentes/card';
 import Button from '~/componentes/button';
@@ -7,6 +7,8 @@ import SelectComponent from '~/componentes/select';
 import { useSelector } from 'react-redux';
 import ServicoDisciplina from '~/servicos/Paginas/ServicoDisciplina';
 import { Colors } from '~/componentes';
+import ListaAulasPorBimestre from './ListaAulasPorBimestre/ListaAulasPorBimestre';
+import { getMock } from './ListaAulasPorBimestre/ListaMock';
 
 const AulaDadaAulaPrevista = () => {
   const usuario = useSelector(store => store.usuario);
@@ -19,6 +21,7 @@ const AulaDadaAulaPrevista = () => {
   const [disciplinaIdSelecionada, setDisciplinaIdSelecionada] = useState(
     undefined
   );
+  const [dadoslista, setDadosLista] = useState([]);
 
   useEffect(() => {
     const obterDisciplinas = async () => {
@@ -37,6 +40,7 @@ const AulaDadaAulaPrevista = () => {
     };
     if (turmaId) {
       obterDisciplinas(turmaId);
+      setDadosLista(getMock());
     }
   }, [turmaSelecionada.turma]);
 
@@ -107,6 +111,9 @@ const AulaDadaAulaPrevista = () => {
                 className="mr-2"
                 onClick={onClickSalvar}
               />
+            </div>
+            <div className="col-md-12">
+              <ListaAulasPorBimestre dados={dadoslista} />
             </div>
           </div>
         </div>
