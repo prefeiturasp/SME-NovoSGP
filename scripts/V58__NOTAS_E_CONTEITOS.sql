@@ -10,7 +10,8 @@ CREATE TABLE IF NOT EXISTS public.notas_tipo_valor (
 	criado_em timestamp NOT NULL,
 	alterado_por varchar(200) NULL,
 	alterado_rf varchar(200) NULL,
-	alterado_em timestamp NULL
+	alterado_em timestamp NULL,
+	CONSTRAINT notas_tipo_valor_pk PRIMARY KEY (id)
 );
 
 CREATE TABLE IF NOT EXISTS public.notas_parametros (
@@ -27,7 +28,8 @@ CREATE TABLE IF NOT EXISTS public.notas_parametros (
 	criado_em timestamp NOT NULL,
 	alterado_por varchar(200) NULL,
 	alterado_rf varchar(200) NULL,
-	alterado_em timestamp NULL
+	alterado_em timestamp NULL,
+	CONSTRAINT notas_parametros_pk PRIMARY KEY (id)
 );
 
 CREATE TABLE IF NOT EXISTS public.conceito_valores (
@@ -43,10 +45,11 @@ CREATE TABLE IF NOT EXISTS public.conceito_valores (
 	criado_em timestamp NOT NULL,
 	alterado_por varchar(200) NULL,
 	alterado_rf varchar(200) NULL,
-	alterado_em timestamp NULL
+	alterado_em timestamp NULL,
+	CONSTRAINT conceito_valores_pk PRIMARY KEY (id)
 );
 
-CREATE TABLE public.notas_conceitos_ciclos_parametos (
+CREATE TABLE IF NOT EXISTS public.notas_conceitos_ciclos_parametos (
 	id int8 NOT NULL GENERATED ALWAYS AS IDENTITY,
 	ciclo int4 NOT NULL,
 	tipo_nota int8 NOT NULL,
@@ -60,13 +63,16 @@ CREATE TABLE public.notas_conceitos_ciclos_parametos (
 	criado_em timestamp NOT NULL,
 	alterado_por varchar(200) NULL,
 	alterado_rf varchar(200) NULL,
-	alterado_em timestamp NULL
+	alterado_em timestamp NULL,
+	CONSTRAINT notas_conceitos_ciclos_parametos_pk PRIMARY KEY (id),
+	CONSTRAINT notas_conceitos_ciclos_parametos_tipo_nota_id_fk FOREIGN KEY (tipo_nota) REFERENCES notas_tipo_valor(id) ON DELETE CASCADE,
+	CONSTRAINT notas_conceitos_ciclos_parametos_ciclo_id_fk FOREIGN KEY (ciclo) REFERENCES tipo_ciclo(id) ON DELETE CASCADE
 );
 
-CREATE TABLE public.notas_conceito (
+CREATE TABLE IF NOT EXISTS public.notas_conceito (
 	id int8 NOT NULL GENERATED ALWAYS AS IDENTITY,
 	atividade_avaliativa int8 NOT NULL,
-	aluno_id varchar(200) NOT NULL,
+	aluno_id varchar(20) NOT NULL,
 	nota int4 NULL,
 	conceito int8 NULL,
 	tipo_nota int8 NOT NULL,
@@ -75,8 +81,18 @@ CREATE TABLE public.notas_conceito (
 	criado_em timestamp NOT NULL,
 	alterado_por varchar(200) NULL,
 	alterado_rf varchar(200) NULL,
-	alterado_em timestamp NULL
+	alterado_em timestamp NULL,
+	CONSTRAINT notas_conceito_pk PRIMARY KEY (id),
+	CONSTRAINT notas_conceito_tipo_nota_id_fk FOREIGN KEY (tipo_nota) REFERENCES notas_tipo_valor(id) ON DELETE CASCADE	
 );
+
+
+CREATE INDEX notas_tipo_valor_tipo_nota_idx ON public.notas_tipo_valor USING btree (tipo_nota);
+CREATE INDEX conceito_valores_valor_idx ON public.conceito_valores USING btree (valor);
+CREATE INDEX notas_conceitos_ciclos_parametos_ciclo_idx ON public.notas_conceitos_ciclos_parametos USING btree (ciclo);
+CREATE INDEX notas_conceito_avaliacao_idx ON public.notas_conceito USING btree (atividade_avaliativa);
+CREATE INDEX notas_conceito_aluno_idx ON public.notas_conceito USING btree (aluno_id);
+CREATE INDEX notas_conceito_tipo_nota_idx ON public.notas_conceito USING btree (tipo_nota);
 
 insert
 	into
