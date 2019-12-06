@@ -11,6 +11,15 @@ namespace SME.SGP.Api.Controllers
     [ValidaDto]
     public class NotasConceitosController : ControllerBase
     {
+        [HttpGet]
+        [ProducesResponseType(200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [Permissao(Permissao.NC_A, Permissao.NC_I, Policy = "Bearer")]
+        public async Task<IActionResult> Get([FromQuery]ListaNotasConceitosConsultaDto consultaListaNotasConceitosDto)
+        {
+            return Ok();
+        }
+
         [HttpPost]
         [ProducesResponseType(200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
