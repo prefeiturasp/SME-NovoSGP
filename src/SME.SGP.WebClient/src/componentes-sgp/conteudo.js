@@ -12,7 +12,7 @@ import BreadcrumbSgp from './breadcrumb-sgp';
 import Alert from '~/componentes/alert';
 import Grid from '~/componentes/grid';
 import rotasArray from '~/rotas/rotas';
-import RotaAutenticadaEstruturada from '../rotas/rotaAutenticadaDesestruturada';
+import RotaAutenticadaEstruturada from '../rotas/rotaAutenticadaEstruturada';
 
 const ContainerModal = styled.div`
   .ant-modal-footer {
