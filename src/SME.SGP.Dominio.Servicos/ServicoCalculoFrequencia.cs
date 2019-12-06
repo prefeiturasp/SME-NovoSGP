@@ -24,15 +24,13 @@ namespace SME.SGP.Dominio.Servicos
         {
             Aula aula = ObterAula(alunos, aulaId);
 
-            var dataAtual = DateTime.Now;
-
-            var totalAulasNaDisciplina = repositorioRegistroAusenciaAluno.ObterTotalAulasPorDisciplinaETurma(dataAtual, aula.DisciplinaId, aula.TurmaId);
-            var totalAulasDaTurmaGeral = repositorioRegistroAusenciaAluno.ObterTotalAulasPorDisciplinaETurma(dataAtual, string.Empty, aula.TurmaId);
+            var totalAulasNaDisciplina = repositorioRegistroAusenciaAluno.ObterTotalAulasPorDisciplinaETurma(aula.DataAula, aula.DisciplinaId, aula.TurmaId);
+            var totalAulasDaTurmaGeral = repositorioRegistroAusenciaAluno.ObterTotalAulasPorDisciplinaETurma(aula.DataAula, string.Empty, aula.TurmaId);
 
             foreach (var codigoAluno in alunos)
             {
-                RegistraFrequenciaPorDisciplina(aula, dataAtual, totalAulasNaDisciplina, codigoAluno);
-                RegistraFrequenciaGeral(aula, dataAtual, codigoAluno, totalAulasDaTurmaGeral);
+                RegistraFrequenciaPorDisciplina(aula, aula.DataAula, totalAulasNaDisciplina, codigoAluno);
+                RegistraFrequenciaGeral(aula, aula.DataAula, codigoAluno, totalAulasDaTurmaGeral);
             }
         }
 
