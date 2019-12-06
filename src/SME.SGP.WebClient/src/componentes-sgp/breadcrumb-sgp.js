@@ -8,26 +8,23 @@ import styled from 'styled-components';
 import { rotaAtiva } from '../redux/modulos/navegacao/actions';
 import modalidade from '~/dtos/modalidade';
 
+const BreadcrumbBody = styled.div`
+  padding: 10px 0 5px 15px !important;
+  font-size: 12px;
+  a,
+  a:hover {
+    color: ${Base.Roxo};
+  }
+  a:hover {
+    text-decoration: underline;
+  }
+  .icone-seta {
+    margin-right: 10px;
+    margin-left: 10px;
+    color: ${Base.Roxo};
+  }
+`;
 const BreadcrumbSgp = () => {
-  const BreadcrumbBody = styled.div`
-    padding: 10px 0 5px 15px !important;
-    font-size: 12px;
-    a,
-    a:hover {
-      color: ${Base.Roxo};
-    }
-
-    a:hover {
-      text-decoration: underline;
-    }
-
-    .icone-seta {
-      margin-right: 10px;
-      margin-left: 10px;
-      color: ${Base.Roxo};
-    }
-  `;
-
   const NavegacaoStore = useSelector(store => store.navegacao);
 
   const UsuarioStrore = useSelector(store => store.usuario);

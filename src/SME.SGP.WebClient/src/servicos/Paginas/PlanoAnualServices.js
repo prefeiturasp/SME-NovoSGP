@@ -258,8 +258,6 @@ const Service = {
   },
 
   obterBimestreExpandido: filtroPlanoAnualExpandidoDto => {
-    console.log(filtroPlanoAnualExpandidoDto);
-
     return API.post(
       Service.urlObterBimestreExpandido(),
       filtroPlanoAnualExpandidoDto
