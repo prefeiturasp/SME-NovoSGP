@@ -9,50 +9,50 @@ import Erro from './erro';
 import Orientacoes from './orientacoes';
 import api from '~/servicos/api';
 
-const RecuperarSenha = props => {
-  const Nav = styled.nav`
-    height: 70px;
-  `;
+const Nav = styled.nav`
+  height: 70px;
+`;
 
-  const Logo = styled.img`
-    max-height: 65px;
-    max-width: 75px;
-  `;
+const Logo = styled.img`
+  max-height: 65px;
+  max-width: 75px;
+`;
 
-  const Div = styled.div`
-    button {
-      margin-right: 1rem;
-    }
-    button:last-child {
-      margin-right: 0;
-    }
-  `;
+const Div = styled.div`
+  button {
+    margin-right: 1rem;
+  }
+  button:last-child {
+    margin-right: 0;
+  }
+`;
 
-  const Container = styled(Div)`
-    background: ${Base.Branco};
-    height: 100%;
-  `;
+const Container = styled(Div)`
+  background: ${Base.Branco};
+  height: 100%;
+`;
 
-  const Titulo = styled.h1`
-    font-size: 24px;
-    font-weight: bold;
-  `;
+const Titulo = styled.h1`
+  font-size: 24px;
+  font-weight: bold;
+`;
 
-  const Texto = styled(Div)`
-    font-size: 14px;
-    letter-spacing: normal;
-    line-height: normal;
-  `;
+const Texto = styled(Div)`
+  font-size: 14px;
+  letter-spacing: normal;
+  line-height: normal;
+`;
 
-  const Input = styled.input`
-    border: 1px solid ${Base.CinzaDesabilitado};
+const Input = styled.input`
+  border: 1px solid ${Base.CinzaDesabilitado};
+  color: ${Base.CinzaBotao};
+  font-size: 14px;
+  &[placeholder] {
     color: ${Base.CinzaBotao};
-    font-size: 14px;
-    &[placeholder] {
-      color: ${Base.CinzaBotao};
-    }
-  `;
+  }
+`;
 
+const RecuperarSenha = props => {
   const [rf, setRf] = useState();
   const [retorno, setRetorno] = useState(false);
   const [mensagem, setMensagem] = useState('');
