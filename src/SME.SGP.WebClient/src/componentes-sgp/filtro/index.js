@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import shortid from 'shortid';
-import { store } from '~/redux';
 import {
   selecionarTurma,
   turmasUsuario,

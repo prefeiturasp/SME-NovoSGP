@@ -25,19 +25,15 @@ const ContainerBotoes = styled.div`
   justify-content: flex-end;
 `;
 const Conteudo = props => {
-  const NavegacaoStore = useSelector(store => store.navegacao);
-  const [retraido, setRetraido] = useState(false);
+  const menuRetraido = useSelector(store => store.navegacao.retraido);
+  const [retraido, setRetraido] = useState(menuRetraido.retraido);
   const dispatch = useDispatch();
 
   useEffect(() => {
-    setRetraido(NavegacaoStore.retraido);
-  }, [NavegacaoStore.retraido]);
+    setRetraido(menuRetraido);
+  }, [menuRetraido]);
 
   const confirmacao = useSelector(state => state.alertas.confirmacao);
-
-  useEffect(() => {
-    setRetraido(NavegacaoStore.retraido);
-  }, [NavegacaoStore.retraido]);
 
   const fecharConfirmacao = resultado => {
     confirmacao.resolve(resultado);
@@ -95,7 +91,7 @@ const Conteudo = props => {
             ))}
             <Row
               key={shortid.generate()}
-              hidden={!NavegacaoStore.somenteConsulta}
+              hidden={!menuRetraido.somenteConsulta}
             >
               <Grid cols={12}>
                 <Alert
