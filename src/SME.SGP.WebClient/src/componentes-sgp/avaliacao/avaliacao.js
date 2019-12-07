@@ -6,7 +6,7 @@ import SelectComponent from '~/componentes/select';
 import notasConceitos from '~/dtos/notasConceitos';
 
 import Ordenacao from '../Ordenacao/ordenacao';
-import { Lista } from './avaliacao.css';
+import { Lista, Container } from './avaliacao.css';
 
 const Avaliacao = props => {
   const { dados, onChangeAvaliacao} = props;
@@ -31,8 +31,9 @@ const Avaliacao = props => {
   }
 
   return (
-    <>
+    <Container>
     { dataSource ?
+      <>
         <Lista className="mt-4 table-responsive">
           <div className="scroll-tabela-avaliacao-thead">
             <table className="table mb-0 ">
@@ -142,9 +143,20 @@ const Avaliacao = props => {
               </table>
            </div>
         </Lista>
+        <div className="row mt-2 mb-2">
+        <div className="col-md-12">
+           <span style={{float: "right", marginTop: '1px'}}>
+            Aluno ausente na data da avaliação
+           </span>
+           <span className="icon-legenda-aluno-ausente">
+            <i className="fas fa-user-times icon-legenda-aluno-ausente"/>
+           </span>
+        </div>
+        </div>
+        </>
         : ''
-    }
-    </>
+      }
+    </Container>
   );
 };
 
