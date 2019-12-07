@@ -12,7 +12,7 @@ function ListaCheckbox({ onChange, valores }) {
         label="Objetivos de aprendizagem e meus objetivos (Currículo da Cidade)"
         name="objetivosAprendizagem"
         onChangeCheckbox={target => onChange(target, 'objetivosAprendizagem')}
-        disabled={false}
+        disabled
         checked={valores.objetivosAprendizagem}
       />
       <CheckboxComponent
@@ -20,7 +20,7 @@ function ListaCheckbox({ onChange, valores }) {
         label="Desenvolvimento da aula"
         name="desenvolvimentoAula"
         onChangeCheckbox={target => onChange(target, 'desenvolvimentoAula')}
-        disabled={false}
+        disabled
         checked={valores.desenvolvimentoAula}
       />
       <CheckboxComponent
