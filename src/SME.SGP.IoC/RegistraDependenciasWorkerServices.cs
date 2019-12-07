@@ -47,6 +47,7 @@ namespace SME.SGP.IoC
             services.TryAddTransient<IComandosGrade, ComandosGrade>();
             services.TryAddTransient<IComandoFrequencia, ComandoFrequencia>();
             services.TryAddTransient<IComandosAtribuicaoEsporadica, ComandosAtribuicaoEsporadica>();
+            services.TryAddTransient<IComandosPlanoAula, ComandosPlanoAula>();
         }
 
         private static void RegistrarConsultas(IServiceCollection services)
@@ -124,6 +125,10 @@ namespace SME.SGP.IoC
             services.TryAddTransient<IRepositorioTurma, RepositorioTurma>();
             services.TryAddTransient<IRepositorioFrequenciaAlunoDisciplinaPeriodo, RepositorioFrequenciaAlunoDisciplinaPeriodo>();
             services.TryAddTransient<IRepositorioNotificacaoFrequencia, RepositorioNotificacaoFrequencia>();
+            services.TryAddTransient<IRepositorioPlanoAula, RepositorioPlanoAula>();
+            services.TryAddTransient<IRepositorioObjetivoAprendizagemAula, RepositorioObjetivoAprendizagemAula>();
+            services.TryAddTransient<IRepositorioAtribuicaoCJ, RepositorioAtribuicaoCJ>();
+            services.TryAddTransient<IRepositorioAtividadeAvaliativa, RepositorioAtividadeAvaliativa>();
         }
 
         private static void RegistrarServicos(IServiceCollection services)
