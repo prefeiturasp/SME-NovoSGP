@@ -1,24 +1,24 @@
-﻿using System;
+﻿using SME.SGP.Dominio;
+using SME.SGP.Dominio.Interfaces;
+using SME.SGP.Infra;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using SME.SGP.Dominio;
-using SME.SGP.Dominio.Interfaces;
-using SME.SGP.Infra;
 
 namespace SME.SGP.Aplicacao
 {
     public class ComandosPlanoAula : IComandosPlanoAula
     {
-        private readonly IRepositorioPlanoAula repositorio;
-        private readonly IRepositorioObjetivoAprendizagemAula repositorioObjetivosAula;
-        private readonly IRepositorioObjetivoAprendizagemPlano repositorioObjetivoAprendizagemPlano;
-        private readonly IRepositorioAula repositorioAula;
-        private readonly IRepositorioAtribuicaoCJ repositorioAtribuicaoCJ;
         private readonly IConsultasAbrangencia consultasAbrangencia;
         private readonly IConsultasObjetivoAprendizagem consultasObjetivoAprendizagem;
         private readonly IConsultasPlanoAnual consultasPlanoAnual;
         private readonly IConsultasProfessor consultasProfessor;
+        private readonly IRepositorioPlanoAula repositorio;
+        private readonly IRepositorioAtribuicaoCJ repositorioAtribuicaoCJ;
+        private readonly IRepositorioAula repositorioAula;
+        private readonly IRepositorioObjetivoAprendizagemPlano repositorioObjetivoAprendizagemPlano;
+        private readonly IRepositorioObjetivoAprendizagemAula repositorioObjetivosAula;
         private readonly IServicoUsuario servicoUsuario;
         private readonly IUnitOfWork unitOfWork;
 
@@ -47,6 +47,11 @@ namespace SME.SGP.Aplicacao
             this.servicoUsuario = servicoUsuario;
         }
 
+        public async Task ExcluirPlanoDaAula(long aulaId)
+        {
+            await repositorio.ExcluirPlanoDaAula(aulaId);
+        }
+
         public async Task Migrar(MigrarPlanoAulaDto migrarPlanoAulaDto)
         {
             var usuario = await servicoUsuario.ObterUsuarioLogado();
@@ -69,7 +74,7 @@ namespace SME.SGP.Aplicacao
                      );
 
                 if (aulaConsultaDto == null)
-                    throw new NegocioException($"Não há aula cadastrada para a turma {planoTurma.TurmaId} para a data {planoTurma.Data.ToShortDateString()} nesta disciplina!");
+                    throw new NegocioException($"Não há aula cadastrada para a turma {planoTurma.TurmaId} para a data {planoTurma.Data.ToString("dd/MM/yyyy")} nesta disciplina!");
 
                 var planoCopia = new PlanoAulaDto()
                 {
@@ -89,12 +94,6 @@ namespace SME.SGP.Aplicacao
             }
 
             unitOfWork.PersistirTransacao();
-
-        }
-
-        public async Task ExcluirPlanoDaAula(long aulaId)
-        {
-            await repositorio.ExcluirPlanoDaAula(aulaId);
         }
 
         public async Task Salvar(PlanoAulaDto planoAulaDto, bool controlarTransacao = true)
@@ -108,7 +107,7 @@ namespace SME.SGP.Aplicacao
             PlanoAula planoAula = await repositorio.ObterPlanoAulaPorAula(planoAulaDto.AulaId);
             planoAula = MapearParaDominio(planoAulaDto, planoAula);
 
-            if (planoAulaDto.ObjetivosAprendizagemJurema == null || !planoAulaDto.ObjetivosAprendizagemJurema.Any())
+            if (planoAulaDto.ObjetivosAprendizagemJurema == null || !planoAulaDto.ObjetivosAprendizagemJurema.Any() && !planoAula.Migrado)
             {
                 var permitePlanoSemObjetivos = false;
 
@@ -155,6 +154,33 @@ namespace SME.SGP.Aplicacao
             }
         }
 
+        private PlanoAula MapearParaDominio(PlanoAulaDto planoDto, PlanoAula planoAula = null)
+        {
+            if (planoAula == null)
+                planoAula = new PlanoAula();
+
+            planoAula.AulaId = planoDto.AulaId;
+            planoAula.Descricao = planoDto.Descricao;
+            planoAula.DesenvolvimentoAula = planoDto.DesenvolvimentoAula;
+            planoAula.RecuperacaoAula = planoDto.RecuperacaoAula;
+            planoAula.LicaoCasa = planoDto.LicaoCasa;
+
+            return planoAula;
+        }
+
+        private async Task<long> SalvarObjetivoPlanoAnual(long objetivoJuremaId, long planoAnualId)
+        {
+            var objAprendizagem = await consultasObjetivoAprendizagem.
+                                                            ObterAprendizagemSimplificadaPorId(objetivoJuremaId);
+
+            return repositorioObjetivoAprendizagemPlano.Salvar(new ObjetivoAprendizagemPlano()
+            {
+                ObjetivoAprendizagemJuremaId = objetivoJuremaId,
+                ComponenteCurricularId = objAprendizagem.IdComponenteCurricular,
+                PlanoId = planoAnualId
+            });
+        }
+
         private async Task SalvarPlanoAula(PlanoAula planoAula, PlanoAulaDto planoAulaDto, long planoAnualId)
         {
             repositorio.Salvar(planoAula);
@@ -175,33 +201,6 @@ namespace SME.SGP.Aplicacao
                 }
         }
 
-        private async Task<long> SalvarObjetivoPlanoAnual(long objetivoJuremaId, long planoAnualId)
-        {
-            var objAprendizagem = await consultasObjetivoAprendizagem.
-                                                            ObterAprendizagemSimplificadaPorId(objetivoJuremaId);
-
-            return repositorioObjetivoAprendizagemPlano.Salvar(new ObjetivoAprendizagemPlano()
-            {
-                ObjetivoAprendizagemJuremaId = objetivoJuremaId,
-                ComponenteCurricularId = objAprendizagem.IdComponenteCurricular,
-                PlanoId = planoAnualId
-            });
-        }
-
-        private PlanoAula MapearParaDominio(PlanoAulaDto planoDto, PlanoAula planoAula = null)
-        {
-            if (planoAula == null)
-                planoAula = new PlanoAula();
-
-            planoAula.AulaId = planoDto.AulaId;
-            planoAula.Descricao = planoDto.Descricao;
-            planoAula.DesenvolvimentoAula = planoDto.DesenvolvimentoAula;
-            planoAula.RecuperacaoAula = planoDto.RecuperacaoAula;
-            planoAula.LicaoCasa = planoDto.LicaoCasa;
-
-            return planoAula;
-        }
-
         private async Task ValidarMigracao(MigrarPlanoAulaDto migrarPlanoAulaDto, string codigoRf, bool ehProfessorCj, string ueId)
         {
             var turmasAtribuidasAoProfessor = consultasProfessor.Listar(codigoRf);
@@ -217,8 +216,24 @@ namespace SME.SGP.Aplicacao
                             turmasAtribuidasAoProfessor, idsTurmasSelecionadas);
         }
 
+        private void ValidaTurmasAno(bool ehProfessorCJ, bool migrarObjetivos,
+                                     IEnumerable<ProfessorTurmaDto> turmasAtribuidasAoProfessor,
+                                     IEnumerable<string> idsTurmasSelecionadas)
+        {
+            if (!ehProfessorCJ || migrarObjetivos)
+            {
+                var turmasAtribuidasSelecionadas = turmasAtribuidasAoProfessor.Where(t => idsTurmasSelecionadas.Contains(t.CodTurma.ToString()));
+                var anoTurma = turmasAtribuidasSelecionadas.First().Ano;
+
+                if (!turmasAtribuidasSelecionadas.All(x => x.Ano == anoTurma))
+                {
+                    throw new NegocioException("Somente é possível migrar o plano de aula para turmas dentro do mesmo ano");
+                }
+            }
+        }
+
         private async Task ValidaTurmasProfessor(bool ehProfessorCJ, string ueId, string disciplinaId, string codigoRf,
-                                           IEnumerable<ProfessorTurmaDto> turmasAtribuidasAoProfessor,
+                                                   IEnumerable<ProfessorTurmaDto> turmasAtribuidasAoProfessor,
                                            IEnumerable<string> idsTurmasSelecionadas)
         {
             var idsTurmasProfessor = turmasAtribuidasAoProfessor?.Select(c => c.CodTurma).ToList();
@@ -241,22 +256,6 @@ namespace SME.SGP.Aplicacao
 
                )
                 throw new NegocioException("Somente é possível migrar o plano de aula para turmas atribuidas ao professor");
-        }
-
-        private void ValidaTurmasAno(bool ehProfessorCJ, bool migrarObjetivos,
-                                     IEnumerable<ProfessorTurmaDto> turmasAtribuidasAoProfessor,
-                                     IEnumerable<string> idsTurmasSelecionadas)
-        {
-            if (!ehProfessorCJ || migrarObjetivos)
-            {
-                var turmasAtribuidasSelecionadas = turmasAtribuidasAoProfessor.Where(t => idsTurmasSelecionadas.Contains(t.CodTurma.ToString()));
-                var anoTurma = turmasAtribuidasSelecionadas.First().Ano;
-
-                if (!turmasAtribuidasSelecionadas.All(x => x.Ano == anoTurma))
-                {
-                    throw new NegocioException("Somente é possível migrar o plano de aula para turmas dentro do mesmo ano");
-                }
-            }
         }
     }
 }

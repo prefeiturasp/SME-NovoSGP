@@ -1,5 +1,6 @@
 ﻿using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -18,7 +19,7 @@ namespace SME.SGP.Aplicacao
         {
             var permissoes = servicoUsuario.ObterPermissoes();
 
-            var agrupamentos = permissoes.GroupBy(item => new
+            var agrupamentos = permissoes.Where(c => Enum.IsDefined(typeof(Permissao), c)).GroupBy(item => new
             {
                 Descricao = item.GetAttribute<PermissaoMenuAttribute>().Agrupamento,
                 Ordem = (int)item.GetAttribute<PermissaoMenuAttribute>().OrdemAgrupamento

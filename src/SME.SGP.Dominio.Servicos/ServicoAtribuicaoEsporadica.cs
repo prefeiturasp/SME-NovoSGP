@@ -61,9 +61,7 @@ namespace SME.SGP.Dominio.Servicos
         {
             try
             {
-                var resumo = await servicoEOL.ObterResumoCore(codigoRF);
-
-                await servicoEOL.AtribuirCJSeNecessario(resumo.Id);
+                await servicoEOL.AtribuirCJSeNecessario(codigoRF);
             }
             catch (Exception)
             {

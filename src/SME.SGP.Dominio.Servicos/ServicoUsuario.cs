@@ -146,11 +146,17 @@ namespace SME.SGP.Dominio
         {
             var usuario = repositorioUsuario.ObterPorCodigoRfLogin(codigoRf, login);
             if (usuario != null)
+            {
+                if (string.IsNullOrEmpty(usuario.Nome) && !string.IsNullOrEmpty(nome))
+                {
+                    usuario.Nome = nome;
+                    repositorioUsuario.Salvar(usuario);
+                }
                 return usuario;
+            }
 
             if (string.IsNullOrEmpty(login))
                 login = codigoRf;
-
 
             usuario = new Usuario() { CodigoRf = codigoRf, Login = login, Nome = nome, Email = email };
 
