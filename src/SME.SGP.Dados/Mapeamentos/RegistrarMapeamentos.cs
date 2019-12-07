@@ -53,6 +53,7 @@ namespace SME.SGP.Dados.Mapeamentos
                config.AddMap(new FrequenciaAlunoMap());
                config.AddMap(new AtividadeAvaliativaRegenciaMap());
                config.AddMap(new NotificacaoFrequenciaMap());
+               config.AddMap(new EventoMatriculaMap());
                config.AddMap(new NotaConceitoMap());
                config.AddMap(new NotaTipoValorMap());
                config.AddMap(new NotaParametroMap());
