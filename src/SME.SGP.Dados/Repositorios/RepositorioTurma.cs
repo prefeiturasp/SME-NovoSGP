@@ -1,8 +1,6 @@
 ﻿using Dapper;
 using Dommel;
 using SME.SGP.Dados.Contexto;
-using SME.SGP.Dominio.Entidades;
-using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using System;
