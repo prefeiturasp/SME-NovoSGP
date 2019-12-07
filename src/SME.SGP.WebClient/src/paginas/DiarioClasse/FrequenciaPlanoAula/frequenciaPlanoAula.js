@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
-import { CampoData, Auditoria } from '~/componentes';
+import styled from 'styled-components';
+import { CampoData, Auditoria, Grid } from '~/componentes';
 import Cabecalho from '~/componentes-sgp/cabecalho';
 import ListaFrequencia from '~/componentes-sgp/ListaFrequencia/listaFrequencia';
 import Ordenacao from '~/componentes-sgp/Ordenacao/ordenacao';
@@ -36,12 +37,12 @@ const FrequenciaPlanoAula = () => {
   const { turmaSelecionada, ehProfessor, ehProfessorCj } = usuario;
   const ehEja =
     turmaSelecionada &&
-      String(turmaSelecionada.modalidade) === String(modalidade.EJA)
+    String(turmaSelecionada.modalidade) === String(modalidade.EJA)
       ? true
       : false;
   const ehMedio =
     turmaSelecionada &&
-      String(turmaSelecionada.modalidade) === String(modalidade.ENSINO_MEDIO)
+    String(turmaSelecionada.modalidade) === String(modalidade.ENSINO_MEDIO)
       ? true
       : false;
   const turmaId = turmaSelecionada ? turmaSelecionada.turma : 0;
@@ -174,8 +175,8 @@ const FrequenciaPlanoAula = () => {
           criadoPor: dadosPlano.criadoPor,
           alteradoEm: dadosPlano.alteradoEm,
           alteradoPor: dadosPlano.alteradoPor,
-        }
-        setAuditoriaPlano(audPlano)
+        };
+        setAuditoriaPlano(audPlano);
       } else {
         setModoEdicaoPlanoAula(false);
       }
@@ -276,12 +277,12 @@ const FrequenciaPlanoAula = () => {
     }
   };
 
-  const obterAulaSelecionada = (data) => {
+  const obterAulaSelecionada = data => {
     const aulaDataSelecionada = listaDatasAulas.find(item =>
       window.moment(item.data).isSame(data, 'date')
     );
     return aulaDataSelecionada;
-  }
+  };
 
   const onClickSalvar = click => {
     if (modoEdicaoFrequencia && permiteRegistroFrequencia) {
@@ -350,7 +351,7 @@ const FrequenciaPlanoAula = () => {
           if (salvouPlano && salvouPlano.status == 200) {
             sucesso('Plano de aula salvo com sucesso.');
             setModoEdicaoPlanoAula(false);
-            obterPlanoAula(obterAulaSelecionada(dataSelecionada))
+            obterPlanoAula(obterAulaSelecionada(dataSelecionada));
           }
         })
         .catch(e => {
@@ -479,6 +480,25 @@ const FrequenciaPlanoAula = () => {
     }
   };
 
+  const [temAvaliacao, setTemAvaliacao] = useState(false);
+  const [dataVigente, setDataVigente] = useState(false);
+
+  const obterAvaliacao = async (idAula, data) => {
+    const avaliacao = api.get(`v1/planos/aulas/${idAula}`);
+    avaliacao.then(resposta => {
+      if (resposta && resposta.data) {
+        if (resposta.data.idAtividadeAvaliativa) {
+          setDataVigente(
+            window.moment(data).isSameOrAfter(window.moment(), 'day')
+          );
+          setTemAvaliacao(true);
+        } else {
+          setTemAvaliacao(false);
+        }
+      }
+    });
+  };
+
   const validaSeTemIdAula = data => {
     setDataSelecionada(data);
     resetarTelaFrequencia(true, true);
@@ -488,6 +508,7 @@ const FrequenciaPlanoAula = () => {
     if (aulaDataSelecionada && aulaDataSelecionada.idAula) {
       obterListaFrequencia(aulaDataSelecionada.idAula);
       obterPlanoAula(aulaDataSelecionada);
+      obterAvaliacao(aulaDataSelecionada.idAula, data);
     }
   };
 
@@ -527,21 +548,57 @@ const FrequenciaPlanoAula = () => {
     setExibirAuditoria(true);
   };
 
+  const LinkAcao = styled.span``;
+
+  const acessarEditarAvaliacao = () => {
+    history.push('/');
+  };
+
+  const acessarNotasConceitos = () => {
+    history.push('/');
+  };
+
   return (
     <>
       {usuario && turmaSelecionada.turma ? (
         ''
       ) : (
-          <Alert
-            alerta={{
-              tipo: 'warning',
-              id: 'frequencia-selecione-turma',
-              mensagem: 'Você precisa escolher uma turma.',
-              estiloTitulo: { fontSize: '18px' },
-            }}
-            className="mb-2"
-          />
-        )}
+        <Alert
+          alerta={{
+            tipo: 'warning',
+            id: 'frequencia-selecione-turma',
+            mensagem: 'Você precisa escolher uma turma.',
+            estiloTitulo: { fontSize: '18px' },
+          }}
+          className="mb-2"
+        />
+      )}
+      {temAvaliacao ? (
+        <div className="row">
+          <Grid cols={12} className="px-4">
+            <Alert
+              alerta={{
+                tipo: 'info',
+                id: 'AlertaPrincipal',
+                mensagem: `Atenção, existe <em>olar</em> uma avaliação neste dia: ${(
+                  <LinkAcao onClick={acessarEditarAvaliacao}>
+                    Editar Avaliação
+                  </LinkAcao>
+                )} ${
+                  dataVigente
+                    ? `ou ${(
+                        <LinkAcao onClick={acessarNotasConceitos}>
+                          Acessar Notas e Conceitos
+                        </LinkAcao>
+                      )}`
+                    : ''
+                }`,
+              }}
+              className="fonte-14"
+            />
+          </Grid>
+        </div>
+      ) : null}
       <Cabecalho pagina="Frequência/Plano de aula" />
       <Card>
         <div className="col-md-12">
@@ -638,12 +695,12 @@ const FrequenciaPlanoAula = () => {
                           alteradoEm={auditoria.alteradoEm}
                         />
                       ) : (
-                          ''
-                        )}
+                        ''
+                      )}
                     </>
                   ) : (
-                      ''
-                    )}
+                    ''
+                  )}
                 </CardCollapse>
               </div>
               <div className="col-sm-12 col-md-12 col-lg-12">
@@ -666,8 +723,8 @@ const FrequenciaPlanoAula = () => {
               </div>
             </div>
           ) : (
-              ''
-            )}
+            ''
+          )}
         </div>
         <ModalMultiLinhas
           key="errosBimestre"
