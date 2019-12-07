@@ -30,19 +30,14 @@ import { erro, sucesso, confirmar } from '../../../servicos/alertas';
 import ModalConteudoHtml from '../../../componentes/modalConteudoHtml';
 import PlanoAnualHelper from './planoAnualHelper';
 import FiltroPlanoAnualDto from '~/dtos/filtroPlanoAnualDto';
-import {
-  Titulo,
-  TituloAno,
-  Planejamento,
-  RegistroMigrado,
-  Select,
-} from './planoAnual.css.js';
+import { Titulo, TituloAno, Planejamento, Select } from './planoAnual.css.js';
 import modalidade from '~/dtos/modalidade';
 import SelectComponent from '~/componentes/select';
 import { store } from '~/redux';
 import FiltroPlanoAnualExpandidoDto from '~/dtos/filtroPlanoAnualExpandidoDto';
 import RotasDto from '~/dtos/rotasDto';
 import { verificaSomenteConsulta } from '~/servicos/servico-navegacao';
+import { RegistroMigrado } from '~/componentes-sgp/registro-migrado';
 
 export default function PlanoAnual() {
   const bimestres = useSelector(state => state.bimestres.bimestres);
@@ -364,9 +359,7 @@ export default function PlanoAnual() {
       ? `As turmas ${turmasReportar.join(
           ', '
         )} já possuem plano anual que serão sobrescritos ao realizar a cópia. Deseja continuar?`
-      : `A turma ${
-          turmasReportar[0]
-        } já possui plano anual que será sobrescrito ao realizar a cópia. Deseja continuar?`;
+      : `A turma ${turmasReportar[0]} já possui plano anual que será sobrescrito ao realizar a cópia. Deseja continuar?`;
   };
 
   const onChangeCopiarConteudo = selecionadas => {
@@ -606,7 +599,6 @@ export default function PlanoAnual() {
           {' '}
           {bimestres && disciplinaSelecionada
             ? bimestres.map(bim => {
-                console.log(bim.focado);
                 return (
                   <Bimestre
                     ref={bim.focado ? refFocado : null}
