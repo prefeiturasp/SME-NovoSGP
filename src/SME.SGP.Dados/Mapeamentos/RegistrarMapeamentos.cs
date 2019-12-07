@@ -52,6 +52,7 @@ namespace SME.SGP.Dados.Mapeamentos
                config.AddMap(new AbrangenciaMap());
                config.AddMap(new FrequenciaAlunoMap());
                config.AddMap(new NotificacaoFrequenciaMap());
+               config.AddMap(new EventoMatriculaMap());
                config.ForDommel();
            });
         }
