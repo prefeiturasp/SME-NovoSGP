@@ -1,4 +1,6 @@
 import React, { useEffect, useState } from 'react';
+import { Switch, Route } from 'react-router-dom';
+
 import { useSelector, useDispatch } from 'react-redux';
 import { Modal, Row } from 'antd';
 import styled from 'styled-components';
@@ -9,8 +11,8 @@ import { Colors } from '../componentes/colors';
 import BreadcrumbSgp from './breadcrumb-sgp';
 import Alert from '~/componentes/alert';
 import Grid from '~/componentes/grid';
-import Navbar from './navbar';
-import Sider from './sider';
+import rotasArray from '~/rotas/rotas';
+import RotaAutenticadaEstruturada from '../rotas/rotaAutenticadaEstruturada';
 
 const ContainerModal = styled.div`
   .ant-modal-footer {
@@ -22,42 +24,23 @@ const ContainerBotoes = styled.div`
   display: flex;
   justify-content: flex-end;
 `;
-
-const Pagina = props => {
-  const { children } = props;
-
-  return (
-    <>
-      <Navbar />
-      <div className="container-fluid h-100">
-        <Sider />
-        <Conteudo>{children}</Conteudo>
-      </div>
-    </>
-  );
-};
-
 const Conteudo = props => {
-  const { children } = props;
-
-  const NavegacaoStore = useSelector(store => store.navegacao);
-  const [retraido, setRetraido] = useState(false);
+  const menuRetraido = useSelector(store => store.navegacao.retraido);
+  const [retraido, setRetraido] = useState(menuRetraido.retraido);
   const dispatch = useDispatch();
+
   useEffect(() => {
-    setRetraido(NavegacaoStore.retraido);
-  }, [NavegacaoStore.retraido]);
+    setRetraido(menuRetraido);
+  }, [menuRetraido]);
 
   const confirmacao = useSelector(state => state.alertas.confirmacao);
-
-  useEffect(() => {
-    setRetraido(NavegacaoStore.retraido);
-  }, [NavegacaoStore.retraido]);
 
   const fecharConfirmacao = resultado => {
     confirmacao.resolve(resultado);
     dispatch(alertaFechar());
   };
   const alertas = useSelector(state => state.alertas);
+
   return (
     <div style={{ marginLeft: retraido ? '115px' : '250px' }}>
       <BreadcrumbSgp />
@@ -74,6 +57,7 @@ const Conteudo = props => {
                   <Button
                     key={shortid.generate()}
                     onClick={() => fecharConfirmacao(true)}
+                    S
                     label={confirmacao.textoOk}
                     color={Colors.Azul}
                     border
@@ -88,15 +72,11 @@ const Conteudo = props => {
                 </ContainerBotoes>,
               ]}
             >
-              {
-                confirmacao.texto && Array.isArray(confirmacao.texto) ?
-                  confirmacao.texto.map((item, i) => (
-                    <div key={item + '-' + i}>
-                      {item}
-                    </div>
+              {confirmacao.texto && Array.isArray(confirmacao.texto)
+                ? confirmacao.texto.map((item, i) => (
+                    <div key={item + '-' + i}>{item}</div>
                   ))
-                  : confirmacao.texto
-              }
+                : confirmacao.texto}
               {confirmacao.texto ? <br /> : ''}
               <b>{confirmacao.textoNegrito}</b>
             </Modal>
@@ -109,24 +89,35 @@ const Conteudo = props => {
                 </Grid>
               </Row>
             ))}
-            <Row key={shortid.generate()} hidden={!NavegacaoStore.somenteConsulta}>
+            <Row
+              key={shortid.generate()}
+              hidden={!menuRetraido.somenteConsulta}
+            >
               <Grid cols={12}>
                 <Alert
                   alerta={{
                     tipo: 'warning',
                     id: 'AlertaPrincipal',
-                    mensagem: 'Você tem apenas permissão de consulta nesta tela.',
+                    mensagem:
+                      'Você tem apenas permissão de consulta nesta tela.',
                     estiloTitulo: { fontSize: '18px' },
                   }}
                 />
               </Grid>
             </Row>
-            {children}
           </div>
         </main>
       </div>
+      <Switch>
+        {rotasArray.map(rota => (
+          <RotaAutenticadaEstruturada
+            path={rota.path}
+            component={rota.component}
+            exact={rota.exact}
+          />
+        ))}
+      </Switch>
     </div>
   );
 };
-
-export default Pagina;
+export default Conteudo;
