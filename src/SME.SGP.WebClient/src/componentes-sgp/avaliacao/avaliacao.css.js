@@ -2,6 +2,20 @@ import styled from 'styled-components';
 
 import { Base } from '../../componentes/colors';
 
+export const Container = styled.div`
+
+  .icon-legenda-aluno-ausente {
+    float: right !important;
+    background-color: #d06d12 !important;
+    color: white !important;
+    font-size: 9px !important;
+    border: solid 4px #d06d12 !important;
+    border-radius: 5px !important;
+  }
+
+`
+
+
 export const Lista = styled.div`
   width: 100%;
 
@@ -125,7 +139,6 @@ export const Lista = styled.div`
     margin-top: -27px;
     font-size: 10px;
     margin-right: 5px;
-}
   }
 
   .scroll-tabela-avaliacao-thead {
