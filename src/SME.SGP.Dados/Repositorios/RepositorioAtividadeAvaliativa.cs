@@ -76,6 +76,31 @@ namespace SME.SGP.Dados.Repositorios
             return retornoPaginado;
         }
 
+        public IEnumerable<AtividadeAvaliativa> ListarPorIds(IEnumerable<long> ids)
+        {
+            var sql = new StringBuilder();
+
+            MontaQueryCabecalho(sql, false);
+
+            sql.AppendLine($"where id in ({string.Join(",", ids)})");
+
+            return database.Query<AtividadeAvaliativa>(sql.ToString());
+        }
+
+        public async Task<IEnumerable<AtividadeAvaliativa>> ListarPorTurmaDisciplinaPeriodo(string turmaCodigo, string disciplinaId, DateTime inicioPeriodo, DateTime fimPeriodo)
+        {
+            var sql = new StringBuilder();
+
+            MontaQueryCabecalho(sql, false);
+
+            sql.AppendLine("where 1=1");
+            sql.AppendLine(" and turma_id = @turmaId");
+            sql.AppendLine("and data_avaliacao >= @inicioPeriodo and data_avaliacao <= @fimPeriodo");
+            sql.AppendLine("and disciplina_id = @disciplinaId");
+
+            return await database.QueryAsync<AtividadeAvaliativa>(sql.ToString(), new { turmaCodigo, inicioPeriodo, fimPeriodo, disciplinaId });
+        }
+
         public async Task<AtividadeAvaliativa> ObterAtividadeAvaliativa(DateTime dataAvaliacao, string disciplinaId, string turmaId, string ueId)
         {
             StringBuilder query = new StringBuilder();
@@ -90,30 +115,6 @@ namespace SME.SGP.Dados.Repositorios
                 turmaId,
                 ueId
             }));
-        }
-        public IEnumerable<AtividadeAvaliativa> ListarPorIds(IEnumerable<long> ids)
-        {
-            var sql = new StringBuilder();
-
-            MontaQueryCabecalho(sql, false);
-
-            sql.AppendLine($"where id in ({string.Join(",", ids)})");
-
-            return database.Query<AtividadeAvaliativa>(sql.ToString());
-        }
-
-        public IEnumerable<AtividadeAvaliativa> ListarPorTurmaDisciplinaPeriodo(string turmaId, string disciplinaId, DateTime inicioPeriodo, DateTime fimPeriodo)
-        {
-            var sql = new StringBuilder();
-
-            MontaQueryCabecalho(sql, false);
-
-            sql.AppendLine("turma_id = @turmaId where data_avaliacao >= @inicioPeriodo and data_avaliacao <= @fimPeriodo");
-            sql.AppendLine("and disciplina_id = @disciplinaId");
-
-            var parametros = new { turmaId, inicioPeriodo, fimPeriodo, disciplinaId };
-
-            return database.Query<AtividadeAvaliativa>(sql.ToString(), parametros);
         }
 
         public async Task<IEnumerable<AtividadeAvaliativa>> ObterAtividadesPorDia(string dreId, string ueId, DateTime dataAvaliacao, string professorRf, string turmaId)
