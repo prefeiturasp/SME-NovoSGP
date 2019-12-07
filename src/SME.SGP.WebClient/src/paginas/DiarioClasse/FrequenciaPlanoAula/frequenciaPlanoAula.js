@@ -580,11 +580,13 @@ const FrequenciaPlanoAula = () => {
               alerta={{
                 tipo: 'info',
                 id: 'AlertaPrincipal',
-                mensagem: `Atenção, existe <em>olar</em> uma avaliação neste dia: ${(
-                  <LinkAcao onClick={acessarEditarAvaliacao}>
-                    Editar Avaliação
-                  </LinkAcao>
-                )} ${
+                mensagem: `Atenção, existe <em>olar</em> uma avaliação neste dia: ${
+                  (
+                    <LinkAcao onClick={acessarEditarAvaliacao}>
+                      Editar Avaliação
+                    </LinkAcao>
+                  ).props.children
+                } ${
                   dataVigente
                     ? `ou ${(
                         <LinkAcao onClick={acessarNotasConceitos}>
