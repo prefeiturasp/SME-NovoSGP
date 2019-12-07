@@ -87,7 +87,7 @@ namespace SME.SGP.Aplicacao
             return atividadeAvaliativa == null ? null : new AtividadeAvaliativaCompletaDto
             {
                 Id = atividadeAvaliativa.Id,
-                CategoriaId = (CategoriaAtividadeAvaliativa)atividadeAvaliativa.CategoriaId,
+                CategoriaId = (CategoriaAtividadeAvaliativa)atividadeAvaliativa.Categoria,
                 DataAvaliacao = atividadeAvaliativa.DataAvaliacao,
                 Descricao = atividadeAvaliativa.DescricaoAvaliacao,
                 DisciplinaId = atividadeAvaliativa.DisciplinaId,

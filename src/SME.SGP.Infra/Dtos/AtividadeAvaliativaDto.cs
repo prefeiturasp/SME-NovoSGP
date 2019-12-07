@@ -18,7 +18,7 @@ namespace SME.SGP.Infra
         public string[] DisciplinaContidaRegenciaId { get; set; }
 
         [Required(ErrorMessage = "A Disciplina da atividade avaliativa deve ser informada.")]
-        public int DisciplinaId { get; set; }
+        public long DisciplinaId { get; set; }
 
         [Required(ErrorMessage = "A Dre da atividade avaliativa deve ser informado.")]
         [MaxLength(15, ErrorMessage = "A Dre deve conter no máximo 15 caracteres.")]
@@ -31,7 +31,7 @@ namespace SME.SGP.Infra
         [MaxLength(100, ErrorMessage = "O nome deve conter no máximo 100 caracteres.")]
         public string Nome { get; set; }
 
-        public int TipoAvaliacaoId { get; set; }
+        public long TipoAvaliacaoId { get; set; }
 
         [Required(ErrorMessage = "A turma deve ser informada")]
         public string TurmaId { get; set; }

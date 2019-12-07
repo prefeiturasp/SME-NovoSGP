@@ -173,7 +173,7 @@ namespace SME.SGP.Aplicacao
             atividadeAvaliativa.UeId = dto.UeId;
             atividadeAvaliativa.DreId = dto.DreId;
             atividadeAvaliativa.TurmaId = dto.TurmaId;
-            atividadeAvaliativa.CategoriaId = (int)dto.CategoriaId;
+            atividadeAvaliativa.Categoria = dto.CategoriaId;
             atividadeAvaliativa.DisciplinaId = dto.DisciplinaId;
             atividadeAvaliativa.TipoAvaliacaoId = dto.TipoAvaliacaoId;
             atividadeAvaliativa.NomeAvaliacao = dto.Nome;
@@ -183,7 +183,7 @@ namespace SME.SGP.Aplicacao
             return atividadeAvaliativa;
         }
 
-        private DisciplinaDto ObterDisciplina(int idDisciplina)
+        private DisciplinaDto ObterDisciplina(long idDisciplina)
         {
             long[] disciplinaId = { idDisciplina };
             var disciplina = servicoEOL.ObterDisciplinasPorIds(disciplinaId);
