@@ -16,7 +16,7 @@ namespace SME.SGP.Dados
 
         public IDbTransaction IniciarTransacao()
         {
-            if (transacao == null)
+            if (transacao == null || transacao?.Connection?.State == null)
                 transacao = sgpContext.BeginTransaction();
 
             return transacao;
