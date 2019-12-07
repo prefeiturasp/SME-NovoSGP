@@ -17,6 +17,7 @@ import {
 } from './plano-aula.css';
 import api from '~/servicos/api';
 import { useSelector } from 'react-redux';
+import { RegistroMigrado } from '~/paginas/Planejamento/PlanoCiclo/planoCiclo.css';
 
 // Componentes
 import ModalCopiarConteudo from './componentes/ModalCopiarConteudo';
@@ -77,8 +78,15 @@ const PlanoAula = props => {
   }, [permissoesTela]);
 
   useEffect(() => {
+    const verificaHabilitarDesabilitarCampos = () => {
+      if (planoAula && planoAula.id > 0) {
+        setDesabilitarCampos(!permissoesTela.podeAlterar || somenteConsulta);
+      } else {
+        setDesabilitarCampos(!permissoesTela.podeIncluir || somenteConsulta);
+      }
+    };
     verificaHabilitarDesabilitarCampos();
-  }, [planoAula.migrado]);
+  }, [permissoesTela, planoAula, somenteConsulta]);
 
   useEffect(() => {
     setEscolhaHabilitaObjetivos(planoAula.objetivosAprendizagemAula.length > 0);
@@ -88,18 +96,6 @@ const PlanoAula = props => {
   useEffect(() => {
     setMaterias(listaMaterias);
   }, [listaMaterias]);
-
-  const verificaHabilitarDesabilitarCampos = () => {
-    if (planoAula && planoAula.id > 0) {
-      setDesabilitarCampos(
-        !permissoesTela.podeAlterar || somenteConsulta || planoAula.migrado
-      );
-    } else {
-      setDesabilitarCampos(
-        !permissoesTela.podeIncluir || somenteConsulta || planoAula.migrado
-      );
-    }
-  };
 
   const setObjetivos = objetivos => {
     planoAula.objetivosAprendizagemAula = [...objetivos];
@@ -197,7 +193,7 @@ const PlanoAula = props => {
     const resultado = !ehProfessorCj
       ? temObjetivos && naoEhEjaEMedio
       : naoEhEjaEMedio && habilitaEscolhaObjetivos;
-    return resultado;
+    return resultado && !planoAula.migrado;
   };
 
   return (
@@ -222,6 +218,11 @@ const PlanoAula = props => {
             onClick={() => setMostrarModalCopiarConteudo(true)}
             disabled={!planoAula.id}
           />
+          {planoAula.migrado && (
+            <RegistroMigrado className="float-right">
+              Registro Migrado{' '}
+            </RegistroMigrado>
+          )}
         </QuantidadeBotoes>
         <HabilitaObjetivos
           className="row d-inline-block col-md-12"
