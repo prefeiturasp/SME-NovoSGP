@@ -40,6 +40,13 @@ namespace SME.SGP.Aplicacao.Integracoes
             };
         }
 
+        public async Task AtribuirCJSeNecessario(string codigoRf)
+        {
+            var resumo = await ObterResumoCore(codigoRf);
+
+            await AtribuirCJSeNecessario(resumo.Id);
+        }
+
         public async Task AtribuirCJSeNecessario(Guid usuarioId)
         {
             var parametros = JsonConvert.SerializeObject(usuarioId.ToString());
