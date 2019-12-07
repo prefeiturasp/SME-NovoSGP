@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useCallback, useState } from 'react';
 import t from 'prop-types';
 
 // Componentes
@@ -7,7 +7,15 @@ import { SelectComponent } from '~/componentes';
 // Serviços
 import AbrangenciaServico from '~/servicos/Abrangencia';
 
-function TurmasDropDown({ form, onChange, label, ueId, modalidadeId, valor }) {
+function TurmasDropDown({
+  form,
+  onChange,
+  label,
+  ueId,
+  modalidadeId,
+  valor,
+  dados,
+}) {
   const [listaTurmas, setListaTurmas] = useState([]);
 
   useEffect(() => {
@@ -25,20 +33,22 @@ function TurmasDropDown({ form, onChange, label, ueId, modalidadeId, valor }) {
         );
       }
     }
-    debugger;
-    if (ueId && modalidadeId) {
+
+    if (ueId && modalidadeId && !dados) {
       buscaTurmas();
+    } else if (dados) {
+      setListaTurmas(dados);
     } else {
       setListaTurmas([]);
     }
-  }, [ueId, modalidadeId]);
+  }, [dados, modalidadeId, ueId]);
 
   useEffect(() => {
     if (listaTurmas.length === 1 && form) {
       form.setFieldValue('turmaId', listaTurmas[0].valor);
       onChange(listaTurmas[0].valor);
     }
-  }, [listaTurmas]);
+  }, [form, listaTurmas, onChange]);
 
   return (
     <SelectComponent
@@ -52,7 +62,7 @@ function TurmasDropDown({ form, onChange, label, ueId, modalidadeId, valor }) {
       valueText="desc"
       placeholder="Turma"
       valueSelect={valor}
-      // disabled={listaTurmas.length === 0 || listaTurmas.length === 1}
+      disabled={listaTurmas.length === 0 || listaTurmas.length === 1}
     />
   );
 }
@@ -63,6 +73,8 @@ TurmasDropDown.propTypes = {
   label: t.string,
   ueId: t.string,
   modalidadeId: t.string,
+  valor: t.string,
+  dados: t.oneOfType([t.object]),
 };
 
 TurmasDropDown.defaultProps = {
@@ -71,6 +83,8 @@ TurmasDropDown.defaultProps = {
   label: null,
   ueId: null,
   modalidadeId: null,
+  valor: '',
+  dados: null,
 };
 
 export default TurmasDropDown;
