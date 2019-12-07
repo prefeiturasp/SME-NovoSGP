@@ -27,7 +27,7 @@ namespace SME.SGP.Dados.Repositorios
 
             return await database.Conexao.QueryFirstOrDefaultAsync<AulaConsultaDto>(query, new
             {
-                data.Date,
+                data = data.Date,
                 turmaId,
                 disciplinaId
             });
