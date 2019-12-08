@@ -8,6 +8,6 @@ namespace SME.SGP.Aplicacao.Interfaces
 {
     public interface IConsultasAulaPrevista
     {
-        Task<IEnumerable<AulasPrevistasDadasDto>> ObterAulaPrevistaDada(string turmaId, string disciplinaId);
+        Task<IEnumerable<AulasPrevistasDadasDto>> ObterAulaPrevistaDada(long tipoCalendarioId, string turmaId, string disciplinaId);
     }
 }

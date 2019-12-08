@@ -18,9 +18,9 @@ namespace SME.SGP.Aplicacao
             this.repositorio = repositorio ?? throw new ArgumentNullException(nameof(repositorio));
         }
 
-        public async Task<IEnumerable<AulasPrevistasDadasDto>> ObterAulaPrevistaDada(string turmaId, string disciplinaId)
+        public async Task<IEnumerable<AulasPrevistasDadasDto>> ObterAulaPrevistaDada(long tipoCalendarioId, string turmaId, string disciplinaId)
         {
-            return await repositorio.ObterAulaPrevistaDada(turmaId, disciplinaId);
+            return await repositorio.ObterAulaPrevistaDada(tipoCalendarioId, turmaId, disciplinaId);
         }
     }
 }

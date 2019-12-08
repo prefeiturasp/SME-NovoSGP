@@ -18,5 +18,5 @@ CREATE TABLE public.aula_prevista (
     CONSTRAINT aula_prevista_pk PRIMARY KEY (id)
 );
 
-ALTER TABLE public.aula_prevista ADD CONSTRAINT aula_prevista_tipo_calendario_fk FOREIGN KEY (id) REFERENCES tipo_calendario(id);
+ALTER TABLE public.aula_prevista ADD CONSTRAINT aula_prevista_tipo_calendario_fk FOREIGN KEY (tipo_calendario_id) REFERENCES tipo_calendario(id);
 

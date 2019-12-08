@@ -9,8 +9,8 @@ namespace SME.SGP.Dominio
 {
     public interface IRepositorioAulaPrevista : IRepositorioBase<AulaPrevista>
     {
-        Task<IEnumerable<AulasPrevistasDadasDto>> ObterAulaPrevistaDada(string turmaId, string disciplinaId);
+        Task<IEnumerable<AulasPrevistasDadasDto>> ObterAulaPrevistaDada(long tipoCalendarioId, string turmaId, string disciplinaId);
 
-        Task<AulaPrevista> ObterAulaPrevistaPorFiltro(int bimestre, long tipoCalendarioId, string turmaId, string disciplinaId);
+        Task<IEnumerable<AulaPrevista>> ObterAulasPrevistasPorFiltro(int bimestre, long tipoCalendarioId, string turmaId, string disciplinaId);
     }
 }
