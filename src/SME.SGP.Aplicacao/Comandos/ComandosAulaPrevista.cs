@@ -5,6 +5,7 @@ using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -22,34 +23,43 @@ namespace SME.SGP.Aplicacao
             this.unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
         }
 
-        public async Task Inserir(IEnumerable<AulaPrevistaDto> dtos)
+        public async Task Inserir(AulaPrevistaDto dto)
         {
-            using (var transacao = unitOfWork.IniciarTransacao())
+            try
             {
-                foreach (var aulaPrevista in dtos)
+                var aulaPrevista = await ObterAulaPrevistaPorFiltro(0, dto.TipoCalendarioId, dto.TurmaId, dto.DisciplinaId);
+
+                unitOfWork.IniciarTransacao();
+
+                foreach (var bimestre in dto.BimestresQuantidade)
                 {
-                    AulaPrevista aula = await ObterAulaPrevistaPorFiltro(aulaPrevista.Bimestre, aulaPrevista.TipoCalendarioId, aulaPrevista.TurmaId, aulaPrevista.DisciplinaId);
-                    aula = MapearParaDominio(aulaPrevista, aula);
+                    AulaPrevista aula = aulaPrevista.Where(ap => ap.Bimestre == bimestre.Bimestre).FirstOrDefault();
+                    aula = MapearParaDominio(dto, bimestre, aula);
                     repositorio.Salvar(aula);
                 }
+
                 unitOfWork.PersistirTransacao();
+            }
+            catch (Exception e)
+            {
+                throw e;
             }
         }
 
-        private async Task<AulaPrevista> ObterAulaPrevistaPorFiltro(int bimestre, long tipoCalendarioId, string turmaId, string disciplinaId)
+        private async Task<IEnumerable<AulaPrevista>> ObterAulaPrevistaPorFiltro(int bimestre, long tipoCalendarioId, string turmaId, string disciplinaId)
         {
-            return await repositorio.ObterAulaPrevistaPorFiltro(bimestre, tipoCalendarioId, turmaId, disciplinaId);
+            return await repositorio.ObterAulasPrevistasPorFiltro(bimestre, tipoCalendarioId, turmaId, disciplinaId);
         }
 
-        private AulaPrevista MapearParaDominio(AulaPrevistaDto aulaPrevistaDto, AulaPrevista aulaPrevista)
+        private AulaPrevista MapearParaDominio(AulaPrevistaDto aulaPrevistaDto, AulaPrevistaBimestreQuantidadeDto aulaPrevistaBimestreQuantidadeDto, AulaPrevista aulaPrevista)
         {
             if (aulaPrevista == null)
             {
                 aulaPrevista = new AulaPrevista();
             }
-            aulaPrevista.Bimestre = aulaPrevistaDto.Bimestre;
+            aulaPrevista.Bimestre = aulaPrevistaBimestreQuantidadeDto.Bimestre;
             aulaPrevista.DisciplinaId = aulaPrevistaDto.DisciplinaId;
-            aulaPrevista.Quantidade = aulaPrevistaDto.Quantidade;
+            aulaPrevista.Quantidade = aulaPrevistaBimestreQuantidadeDto.Quantidade;
             aulaPrevista.TipoCalendarioId = aulaPrevistaDto.TipoCalendarioId;
             aulaPrevista.TurmaId = aulaPrevistaDto.TurmaId;
             return aulaPrevista;

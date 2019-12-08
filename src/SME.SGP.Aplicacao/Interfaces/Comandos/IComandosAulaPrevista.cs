@@ -8,6 +8,6 @@ namespace SME.SGP.Aplicacao
 {
    public interface IComandosAulaPrevista
     {
-        Task Inserir(IEnumerable<AulaPrevistaDto> dtos);
+        Task Inserir(AulaPrevistaDto dto);
     }
 }
