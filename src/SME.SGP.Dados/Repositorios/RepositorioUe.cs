@@ -33,6 +33,11 @@ namespace SME.SGP.Dados.Repositorios
             return await contexto.QueryAsync<Modalidade>(query, new { ueCodigo, ano });
         }
 
+        public Ue ObterPorId(string ueId)
+        {
+            return contexto.QueryFirstOrDefault<Ue>("select * from ue where ue_id = @ueId", new { ueId });
+        }
+
         public async Task<IEnumerable<Turma>> ObterTurmas(string ueCodigo, Modalidade modalidade, int ano)
         {
             var query = @"select t.* from turma t
