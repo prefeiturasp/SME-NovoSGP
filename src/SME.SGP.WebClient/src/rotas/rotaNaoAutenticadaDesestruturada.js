@@ -6,14 +6,10 @@ const RotaNaoAutenticadaDesestruturada = props => {
   const { component: Componente, ...propriedades } = props;
   const logado = useSelector(state => state.usuario.logado);
 
-  return (
-    <Route
-      {...propriedades}
-      render={propriedade =>
-        !logado ? <Componente {...propriedade} /> : <Redirect to="/" />
-      }
-    />
-  );
+  if (!logado) {
+    return <Componente {...propriedades} />;
+  }
+  return <Redirect to="/" />;
 };
 
 export default RotaNaoAutenticadaDesestruturada;
