@@ -259,7 +259,7 @@ namespace SME.SGP.Dominio.Servicos
 
         private void NotificarCriadorDoEventoQueFoiAprovado(Evento evento, long codigoDaNotificacao)
         {
-            var escola = repositorioUe.ObterPorId(evento.UeId);
+            var escola = repositorioUe.ObterPorCodigo(evento.UeId);
 
             if (escola == null)
                 throw new NegocioException("Não foi possível localizar a Ue deste evento.");
@@ -309,7 +309,7 @@ namespace SME.SGP.Dominio.Servicos
                 evento.ReprovarWorkflow();
                 repositorioEvento.Salvar(evento);
 
-                var escola = repositorioUe.ObterPorId(evento.UeId);
+                var escola = repositorioUe.ObterPorCodigo(evento.UeId);
 
                 if (escola == null)
                     throw new NegocioException("Não foi possível localizar a Ue deste evento.");
