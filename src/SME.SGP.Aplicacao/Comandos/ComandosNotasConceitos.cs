@@ -26,7 +26,7 @@ namespace SME.SGP.Aplicacao
             var notasConceitosDto = notaConceitoLista.NotasConceitos;
 
             var alunos = notasConceitosDto.Select(x => x.AlunoId).ToList();
-            var avaliacoes = notasConceitosDto.Select(x => x.AtividadeAvaliativaID).ToList();
+            var avaliacoes = notasConceitosDto.Select(x => x.AtividadeAvaliativaId).ToList();
 
             var notasBanco = repositorioNotasConceitos.ObterNotasPorAlunosAtividadesAvaliativas(avaliacoes, alunos);
 
@@ -58,7 +58,7 @@ namespace SME.SGP.Aplicacao
         {
             return new NotaConceito
             {
-                AtividadeAvaliativaID = Dto.AtividadeAvaliativaID,
+                AtividadeAvaliativaID = Dto.AtividadeAvaliativaId,
                 AlunoId = Dto.AlunoId,
                 Nota = Dto.Nota,
                 Conceito = Dto.Conceito,
@@ -67,10 +67,10 @@ namespace SME.SGP.Aplicacao
 
         private async Task TratarInclusaoEdicaoNotas(IEnumerable<NotaConceitoDto> notasConceitosDto, IEnumerable<NotaConceito> notasBanco, List<NotaConceito> notasSalvar, string professorRf, string turmaId)
         {
-            var notasEdicao = notasConceitosDto.Where(dto => notasBanco.Any(banco => banco.AlunoId == dto.AlunoId && banco.AtividadeAvaliativaID == dto.AtividadeAvaliativaID))
-                .Select(dto => ObterEntidadeEdicao(dto, notasBanco.FirstOrDefault(banco => banco.AtividadeAvaliativaID == dto.AtividadeAvaliativaID && banco.AlunoId == dto.AlunoId)));
+            var notasEdicao = notasConceitosDto.Where(dto => notasBanco.Any(banco => banco.AlunoId == dto.AlunoId && banco.AtividadeAvaliativaID == dto.AtividadeAvaliativaId))
+                .Select(dto => ObterEntidadeEdicao(dto, notasBanco.FirstOrDefault(banco => banco.AtividadeAvaliativaID == dto.AtividadeAvaliativaId && banco.AlunoId == dto.AlunoId)));
 
-            var notasInclusao = notasConceitosDto.Where(dto => !notasBanco.Any(banco => banco.AlunoId == dto.AlunoId && banco.AtividadeAvaliativaID == dto.AtividadeAvaliativaID)).Select(dto => ObterEntidadeInclusao(dto));
+            var notasInclusao = notasConceitosDto.Where(dto => !notasBanco.Any(banco => banco.AlunoId == dto.AlunoId && banco.AtividadeAvaliativaID == dto.AtividadeAvaliativaId)).Select(dto => ObterEntidadeInclusao(dto));
 
             notasSalvar.AddRange(notasEdicao);
             notasSalvar.AddRange(notasInclusao);

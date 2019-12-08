@@ -14,6 +14,7 @@ import RedefinirSenha from './paginas/RedefinirSenha';
 import RotaAutenticadaEstruturada from './rotas/rotaAutenticadaDesestruturada';
 import RotaNaoAutenticadaDesestruturada from './rotas/rotaNaoAutenticadaDesestruturada';
 import { rotaAtiva } from './redux/modulos/navegacao/actions';
+import RotaAutenticadaDesestruturada from './rotas/rotaAutenticadaDesestruturada';
 
 function App() {
   history.listen(location => {
@@ -27,9 +28,13 @@ function App() {
           <GlobalStyle />
           <div className="h-100">
             <Switch>
+              <RotaAutenticadaDesestruturada
+                component={RedefinirSenha}
+                path="/redefinir-senha"
+              />
               <RotaNaoAutenticadaDesestruturada
                 component={RedefinirSenha}
-                path="/redefinir-senha/:token?"
+                path="/redefinir-senha/:token"
               />
               <RotaNaoAutenticadaDesestruturada
                 component={RecuperarSenha}
