@@ -76,15 +76,5 @@ namespace SME.SGP.Api.Controllers
                 QuantidadeAulasRecorrentes = quantidadeAulas
             });
         }
-
-        [HttpGet("{turmaId}/disciplina/{disciplinaId}")]
-        [ProducesResponseType(typeof(IEnumerable<AulasPrevistasDadasDto>), 200)]
-        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        [ProducesResponseType(typeof(RetornoBaseDto), 601)]
-        [Permissao(Permissao.CP_I, Policy = "Bearer")]
-        public async Task<IActionResult> ObterAulaPrevistaDada(string turmaId, string disciplinaId, [FromServices]IConsultasAula consultas)
-        {
-            return Ok(await consultas.ObterAulaPrevistaDada(turmaId, disciplinaId));
-        }
     }
 }

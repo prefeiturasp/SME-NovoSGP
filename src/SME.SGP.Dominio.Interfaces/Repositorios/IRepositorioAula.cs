@@ -30,7 +30,5 @@ namespace SME.SGP.Dominio.Interfaces
         Aula ObterPorWorkflowId(long workflowId);
 
         bool UsuarioPodeCriarAulaNaUeTurmaEModalidade(Aula aula, ModalidadeTipoCalendario modalidade);
-
-        Task<IEnumerable<AulasPrevistasDadasDto>> ObterAulaPrevistaDada(string turmaId, string disciplinaId);
     }
 }
