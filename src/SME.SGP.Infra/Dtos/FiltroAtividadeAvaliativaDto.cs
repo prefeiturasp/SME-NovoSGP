@@ -8,7 +8,8 @@ namespace SME.SGP.Infra
         public string[] DisciplinaContidaRegenciaId { get; set; }
         public string DisciplinaId { get; set; }
         public string DreId { get; set; }
-        public string NomeAvaliacao { get; set; }
+        public long? Id { get; set; }
+        public string Nome { get; set; }
         public int? TipoAvaliacaoId { get; set; }
         public string TurmaId { get; set; }
         public string UeID { get; set; }
