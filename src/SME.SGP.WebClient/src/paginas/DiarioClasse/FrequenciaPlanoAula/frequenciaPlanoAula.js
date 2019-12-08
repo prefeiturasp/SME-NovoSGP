@@ -495,7 +495,7 @@ const FrequenciaPlanoAula = () => {
     }
   };
 
-  const [temAvaliacao, setTemAvaliacao] = useState(false);
+  const [temAvaliacao, setTemAvaliacao] = useState(undefined);
   const [dataVigente, setDataVigente] = useState(false);
 
   const obterAvaliacao = async (idAula, data) => {
@@ -506,9 +506,9 @@ const FrequenciaPlanoAula = () => {
           setDataVigente(
             window.moment(data).isSameOrAfter(window.moment(), 'day')
           );
-          setTemAvaliacao(true);
+          setTemAvaliacao(resposta.data.idAtividadeAvaliativa);
         } else {
-          setTemAvaliacao(false);
+          setTemAvaliacao(undefined);
         }
       }
     });
@@ -563,14 +563,17 @@ const FrequenciaPlanoAula = () => {
     setExibirAuditoria(true);
   };
 
-  const LinkAcao = styled.span``;
+  const LinkAcao = styled.span`
+    cursor: pointer;
+    font-weight: bold;
+  `;
 
   const acessarEditarAvaliacao = () => {
-    history.push('/');
+    history.push(`${RotasDto.CADASTRO_DE_AVALIACAO}/editar/${temAvaliacao}`);
   };
 
   const acessarNotasConceitos = () => {
-    history.push('/');
+    history.push(RotasDto.NOTAS);
   };
 
   return (
@@ -595,37 +598,19 @@ const FrequenciaPlanoAula = () => {
               className="alert alert-info alert-dismissible fade show text-center"
               role="alert"
             >
-              Atenção, existe uma avaliação neste dia:
+              Atenção, existe uma avaliação neste dia:{' '}
               <LinkAcao onClick={acessarEditarAvaliacao}>
                 Editar Avaliação
-              </LinkAcao>
-              ou
-              <LinkAcao onClick={acessarNotasConceitos}>
-                Acessar Notas e Conceitos
-              </LinkAcao>
+              </LinkAcao>{' '}
+              {dataVigente && (
+                <>
+                  ou{' '}
+                  <LinkAcao onClick={acessarNotasConceitos}>
+                    Acessar Notas e Conceitos
+                  </LinkAcao>
+                </>
+              )}
             </div>
-            <Alert
-              alerta={{
-                tipo: 'info',
-                id: 'AlertaPrincipal',
-                mensagem: `Atenção, existe <em>olar</em> uma avaliação neste dia: ${
-                  (
-                    <LinkAcao onClick={acessarEditarAvaliacao}>
-                      Editar Avaliação
-                    </LinkAcao>
-                  ).props.children
-                } ${
-                  dataVigente
-                    ? `ou ${(
-                        <LinkAcao onClick={acessarNotasConceitos}>
-                          Acessar Notas e Conceitos
-                        </LinkAcao>
-                      )}`
-                    : ''
-                }`,
-              }}
-              className="fonte-14"
-            />
           </Grid>
         </div>
       ) : null}
