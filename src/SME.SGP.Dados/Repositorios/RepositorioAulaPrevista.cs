@@ -26,7 +26,7 @@ namespace SME.SGP.Dados.Repositorios
                          COUNT(a.id) filter (where a.tipo_aula = 1 and rf.id is not null and a.aula_cj = true) as QuantidadeCJ, 
                          COUNT(a.id) filter (where a.tipo_aula = 2 and rf.id is not null) as Reposicoes 
                          from aula_prevista ap
-                         right join periodo_escolar p on ap.tipo_calendario_id = p.tipo_calendario_id
+                         right join periodo_escolar p on ap.tipo_calendario_id = p.tipo_calendario_id and ap.bimestre = p.bimestre
                          left join aula a on p.tipo_calendario_id = a.tipo_calendario_id and 
 				                        a.data_aula BETWEEN p.periodo_inicio AND p.periodo_fim
                          left join registro_frequencia rf on a.id = rf.aula_id
@@ -69,7 +69,6 @@ namespace SME.SGP.Dados.Repositorios
                 var query = new StringBuilder();
 
                 query.AppendLine("select * from aula_prevista where 1=1");
-
 
                 if (tipoCalendarioId > 0)
                     query.AppendLine("and tipo_calendario_id = @tipoCalendarioId");
