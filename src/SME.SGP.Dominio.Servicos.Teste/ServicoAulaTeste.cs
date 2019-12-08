@@ -62,6 +62,7 @@ namespace SME.SGP.Dominio.Servicos.Teste
             comandosPlanoAula = new Mock<IComandosPlanoAula>();
             servicoFrequencia = new Mock<IServicoFrequencia>();
             servicoUsuario = new Mock<IServicoUsuario>();
+            repositorioTurma = new Mock<IRepositorioTurma>();
             configuration = new Mock<IConfiguration>();
             repositorioAtividadeAvaliativa = new Mock<IRepositorioAtividadeAvaliativa>();
             repositorioTurma = new Mock<IRepositorioTurma>();
