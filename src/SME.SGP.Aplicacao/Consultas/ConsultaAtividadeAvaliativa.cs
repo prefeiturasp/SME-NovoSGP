@@ -47,25 +47,25 @@ namespace SME.SGP.Aplicacao
             var tipoCalendario = repositorioTipoCalendario.BuscarPorAnoLetivoEModalidade(anoLetivo, modalidadeTipoCalendario);
 
             if (tipoCalendario == null)
-                throw new NegocioException("Não foi encontrado tipo de calendário escolar, para a modalidade informada");
+                throw new NegocioException("Não foi encontrado tipo de calendário escolar, para a modalidade informada.");
 
             var periodosEscolares = repositorioPeriodoEscolar.ObterPorTipoCalendario(tipoCalendario.Id);
 
             if (periodosEscolares == null || !periodosEscolares.Any())
-                throw new NegocioException("Não foi encontrado periodo Escolar para a modalidade informada");
+                throw new NegocioException("Não foi encontrado período Escolar para a modalidade informada.");
 
             if (!bimestre.HasValue || bimestre.Value == 0)
-                bimestre = ObterBimestreAtual(modalidadeTipoCalendario, tipoCalendario, periodosEscolares);
+                bimestre = ObterBimestreAtual(periodosEscolares);
 
             var periodoEscolar = periodosEscolares.FirstOrDefault(x => x.Bimestre == bimestre);
 
             if (periodoEscolar == null)
-                throw new NegocioException("Não foi encontrado periodo escolar para o bimestre solicitado");
+                throw new NegocioException("Não foi encontrado período escolar para o bimestre solicitado.");
 
             var avaliacoes = await repositorioAtividadeAvaliativa.ListarPorTurmaDisciplinaPeriodo(turmaCodigo, disciplinaId, periodoEscolar.PeriodoInicio, periodoEscolar.PeriodoFim);
 
             if (avaliacoes == null || !avaliacoes.Any())
-                throw new NegocioException("Não foi encontrada nenhuma avaliação para o bimestre informado");
+                throw new NegocioException("Não foi encontrada nenhuma avaliação para o bimestre informado.");
 
             return (avaliacoes, periodosEscolares.Count(), bimestre.Value, periodoEscolar);
         }
@@ -131,16 +131,15 @@ namespace SME.SGP.Aplicacao
             };
         }
 
-        private int? ObterBimestreAtual(ModalidadeTipoCalendario modalidadeTipoCalendario, TipoCalendario tipoCalendario, IEnumerable<PeriodoEscolar> periodosEscolares)
+        private int? ObterBimestreAtual(IEnumerable<PeriodoEscolar> periodosEscolares)
         {
             var dataPesquisa = DateTime.Now;
 
             var periodoEscolar = periodosEscolares.FirstOrDefault(x => x.PeriodoInicio.Date <= dataPesquisa.Date && x.PeriodoFim.Date >= dataPesquisa.Date);
 
             if (periodoEscolar == null)
-                throw new NegocioException("Não foi possível obter o bimestre atual");
-
-            return periodoEscolar.Bimestre;
+                return 1;
+            else return periodoEscolar.Bimestre;
         }
     }
 }
