@@ -174,6 +174,7 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IServicoDeNotasConceitos, ServicoDeNotasConceitos>();
             services.TryAddScoped<IServicoNotificacaoFrequencia, ServicoNotificacaoFrequencia>();
             services.TryAddScoped<IServicoAtribuicaoCJ, ServicoAtribuicaoCJ>();
+            services.TryAddScoped<IServicoEventoMatricula, ServicoEventoMatricula>();
         }
     }
 }

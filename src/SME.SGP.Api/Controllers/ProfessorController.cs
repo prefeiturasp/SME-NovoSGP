@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using SME.SGP.Api.Filtros;
 using SME.SGP.Aplicacao;
+using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -79,5 +80,12 @@ namespace SME.SGP.Api.Controllers
 
             return Ok(retorno);
         }
+
+        //[HttpGet("eventos/matriculas")]
+        //public async Task<IActionResult> EventosMatricula([FromServices] IServicoEventoMatricula eventos)
+        //{
+        //    eventos.ExecutaCargaEventos();
+        //    return Ok();
+        //}
     }
 }
