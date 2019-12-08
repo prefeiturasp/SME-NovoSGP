@@ -64,30 +64,23 @@ namespace SME.SGP.Dados.Repositorios
 
         public async Task<IEnumerable<AulaPrevista>> ObterAulasPrevistasPorFiltro(int bimestre, long tipoCalendarioId, string turmaId, string disciplinaId)
         {
-            try
-            {
-                var query = new StringBuilder();
+            var query = new StringBuilder();
 
-                query.AppendLine("select * from aula_prevista where 1=1");
+            query.AppendLine("select * from aula_prevista where 1=1");
 
-                if (tipoCalendarioId > 0)
-                    query.AppendLine("and tipo_calendario_id = @tipoCalendarioId");
+            if (tipoCalendarioId > 0)
+                query.AppendLine("and tipo_calendario_id = @tipoCalendarioId");
 
-                if (bimestre > 0)
-                    query.AppendLine("and bimestre = @bimestre");
+            if (bimestre > 0)
+                query.AppendLine("and bimestre = @bimestre");
 
-                if (!string.IsNullOrEmpty(turmaId))
-                    query.AppendLine("and turma_id = @turmaId");
+            if (!string.IsNullOrEmpty(turmaId))
+                query.AppendLine("and turma_id = @turmaId");
 
-                if (!string.IsNullOrEmpty(disciplinaId))
-                    query.AppendLine("and disciplina_id = @disciplinaId");
+            if (!string.IsNullOrEmpty(disciplinaId))
+                query.AppendLine("and disciplina_id = @disciplinaId");
 
-                return await database.Conexao.QueryAsync<AulaPrevista>(query.ToString(), new { bimestre, tipoCalendarioId, turmaId, disciplinaId });
-            }
-            catch (Exception e)
-            {
-                throw e;
-            }
+            return await database.Conexao.QueryAsync<AulaPrevista>(query.ToString(), new { bimestre, tipoCalendarioId, turmaId, disciplinaId });
         }
 
         public async Task<string> ObterProfessorTurmaDisciplinaAulasPrevistasDivergente(int bimestre, string turmaId, string disciplinaId, int limiteDias)

@@ -20,9 +20,7 @@ namespace SME.SGP.Dados.Repositorios
 
         public async Task<IEnumerable<RegistroAulaPrevistaDivergenteDto>> ObterTurmasAulasPrevistasDivergentes(int limiteDias)
         {
-            try
-            {
-                var query = @"select distinct a.turma_id as CodigoTurma, t.nome as NomeTurma
+            var query = @"select distinct a.turma_id as CodigoTurma, t.nome as NomeTurma
 	                        , ue.ue_id as CodigoUe, ue.nome as NomeUe
 	                        , dre.dre_id as CodigoDre, dre.nome as NomeDre
                             , a.disciplina_id as DisciplinaId, pe.bimestre
@@ -40,12 +38,7 @@ namespace SME.SGP.Dados.Repositorios
                          having  COUNT(a.*) filter (where a.tipo_aula = 1) <> coalesce(ap.aulas_previstas, 0)
                         order by dre.dre_id, ue.ue_id, a.turma_id";
 
-                return await database.Conexao.QueryAsync<RegistroAulaPrevistaDivergenteDto>(query, new { limiteDias });
-            }
-            catch (Exception e)
-            {
-                throw e;
-            }
+            return await database.Conexao.QueryAsync<RegistroAulaPrevistaDivergenteDto>(query, new { limiteDias });
         }
     }
 }
