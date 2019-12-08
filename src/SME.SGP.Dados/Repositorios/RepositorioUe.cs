@@ -33,7 +33,7 @@ namespace SME.SGP.Dados.Repositorios
             return await contexto.QueryAsync<Modalidade>(query, new { ueCodigo, ano });
         }
 
-        public Ue ObterPorId(string ueId)
+        public Ue ObterPorCodigo(string ueId)
         {
             return contexto.QueryFirstOrDefault<Ue>("select * from ue where ue_id = @ueId", new { ueId });
         }
