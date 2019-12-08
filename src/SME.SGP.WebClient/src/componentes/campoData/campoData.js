@@ -75,6 +75,8 @@ const CampoData = props => {
     desabilitarData,
     diasParaHabilitar,
     somenteHora,
+    temErro,
+    mensagemErro,
   } = props;
 
   const habilitarDatas = dataAtual => {
@@ -109,7 +111,7 @@ const CampoData = props => {
   };
 
   const possuiErro = () => {
-    return form && form.errors[name] && form.touched[name];
+    return (form && form.errors[name] && form.touched[name]) || temErro;
   };
 
   const executaOnBlur = event => {
@@ -155,8 +157,8 @@ const CampoData = props => {
         suffixIcon={<i className="fas fa-calendar-alt" />}
         name={name}
         id={id || name}
+        className={`${possuiErro() ? 'is-invalid' : ''} ${className || ''}`}
         onBlur={executaOnBlur}
-        className={className || ''}
         onChange={valorData => {
           valorData = valorData || '';
           onChange(valorData);
@@ -200,8 +202,8 @@ const CampoData = props => {
   };
 
   const obterErros = () => {
-    return form && form.touched[name] && form.errors[name] ? (
-      <span>{form.errors[name]}</span>
+    return (form && form.touched[name] && form.errors[name]) || temErro ? (
+      <span>{(form && form.errors[name]) || mensagemErro}</span>
     ) : (
       ''
     );
