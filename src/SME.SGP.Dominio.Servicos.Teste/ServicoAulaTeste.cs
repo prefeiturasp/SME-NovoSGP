@@ -29,6 +29,7 @@ namespace SME.SGP.Dominio.Servicos.Teste
         private readonly Mock<IRepositorioAtividadeAvaliativa> repositorioAtividadeAvaliativa;
         private readonly Mock<IRepositorioAula> repositorioAula;
         private readonly Mock<IRepositorioTipoCalendario> repositorioTipoCalendario;
+        private readonly Mock<IRepositorioTurma> repositorioTurma;
         private readonly IServicoAula servicoAula;
         private readonly Mock<IServicoDiaLetivo> servicoDiaLetivo;
         private readonly Mock<IServicoEOL> servicoEol;
@@ -61,6 +62,7 @@ namespace SME.SGP.Dominio.Servicos.Teste
             comandosPlanoAula = new Mock<IComandosPlanoAula>();
             servicoFrequencia = new Mock<IServicoFrequencia>();
             servicoUsuario = new Mock<IServicoUsuario>();
+            repositorioTurma = new Mock<IRepositorioTurma>();
             configuration = new Mock<IConfiguration>();
             repositorioAtividadeAvaliativa = new Mock<IRepositorioAtividadeAvaliativa>();
             servicoAula = new ServicoAula(repositorioAula.Object, servicoEol.Object,
@@ -71,7 +73,7 @@ namespace SME.SGP.Dominio.Servicos.Teste
                                          comandosWorkflowAprovacao.Object,
                                          comandosPlanoAula.Object, servicoFrequencia.Object,
                                          configuration.Object, repositorioAtividadeAvaliativa.Object,
-                                         atribuicaoCj.Object);
+                                         atribuicaoCj.Object, repositorioTurma.Object);
 
             Setup();
         }
