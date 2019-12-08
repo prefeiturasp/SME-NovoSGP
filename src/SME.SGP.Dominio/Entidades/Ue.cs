@@ -11,5 +11,10 @@ namespace SME.SGP.Dominio
         public long Id { get; set; }
         public string Nome { get; set; }
         public TipoEscola TipoEscola { get; set; }
+
+        public void AdicionarDre(Dre dre)
+        {
+            Dre = dre;
+        }
     }
 }

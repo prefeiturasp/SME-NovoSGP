@@ -17,5 +17,10 @@ namespace SME.SGP.Dominio
 
         public Ue Ue { get; set; }
         public long UeId { get; set; }
+
+        public void AdicionarUe(Ue ue)
+        {
+            Ue = ue;
+        }
     }
 }

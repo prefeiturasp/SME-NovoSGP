@@ -112,17 +112,19 @@ const DiaCompleto = props => {
     );
   };
 
-  const BotoesAuxiliares = () => {
+  const BotoesAuxiliares = ({ temAula }) => {
     return (
       <BotoesAuxiliaresEstilo>
-        <Botao
-          key={shortid.generate()}
-          onClick={aoClicarBotaoNovaAvaliacao}
-          label="Nova Avaliação"
-          color={Colors.Roxo}
-          disabled={permissaoTela && !permissaoTela.podeIncluir}
-          className="mr-3"
-        />
+        {temAula ? (
+          <Botao
+            key={shortid.generate()}
+            onClick={aoClicarBotaoNovaAvaliacao}
+            label="Nova Avaliação"
+            color={Colors.Roxo}
+            disabled={permissaoTela && !permissaoTela.podeIncluir}
+            className="mr-3"
+          />
+        ) : null}
         <Botao
           key={shortid.generate()}
           onClick={aoClicarBotaoNovaAula}
@@ -132,6 +134,10 @@ const DiaCompleto = props => {
         />
       </BotoesAuxiliaresEstilo>
     );
+  };
+
+  BotoesAuxiliares.propTypes = {
+    temAula: PropTypes.number.isRequired,
   };
 
   useEffect(() => {
@@ -249,7 +255,15 @@ const DiaCompleto = props => {
           <SemEvento />
         )}
         {eventosDia && eventosDia.letivo && turmaSelecionada && (
-          <BotoesAuxiliares />
+          <BotoesAuxiliares
+            temAula={
+              eventosDia.eventosAulas.filter(
+                aula =>
+                  aula.tipoEvento === TiposEventoAulaDTO.Aula ||
+                  aula.tipoEvento === TiposEventoAulaDTO.CJ
+              ).length
+            }
+          />
         )}
       </Div>
     )
