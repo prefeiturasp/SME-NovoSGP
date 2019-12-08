@@ -18,11 +18,12 @@ namespace SME.SGP.Aplicacao.Teste.Comandos
         private readonly Mock<IConsultasPlanoAnual> consultasPlanoAnual;
         private readonly Mock<IConsultasProfessor> consultasProfessor;
         private readonly Mock<IRepositorioAbrangencia> repositorioAbrangencia;
+        private readonly Mock<IRepositorioAtribuicaoCJ> repositorioAtribuicaoCJ;
         private readonly Mock<IRepositorioAula> repositorioAula;
+        private readonly Mock<IRepositorioObjetivoAprendizagemPlano> repositorioObjetivoAprendizagemPlano;
         private readonly Mock<IRepositorioObjetivoAprendizagemAula> repositorioObjetivosAula;
         private readonly Mock<IRepositorioObjetivoAprendizagemPlano> repositorioObjetivosPlano;
         private readonly Mock<IRepositorioPlanoAula> repositorioPlanoAula;
-        private readonly Mock<IRepositorioAtribuicaoCJ> repositorioAtribuicaoCJ;
         private readonly Mock<IServicoUsuario> servicoUsuario;
         private readonly Mock<IUnitOfWork> unitOfWork;
         private AbrangenciaFiltroRetorno abrangencia;
@@ -40,6 +41,7 @@ namespace SME.SGP.Aplicacao.Teste.Comandos
             repositorioAula = new Mock<IRepositorioAula>();
             servicoUsuario = new Mock<IServicoUsuario>();
             repositorioAbrangencia = new Mock<IRepositorioAbrangencia>();
+            repositorioObjetivoAprendizagemPlano = new Mock<IRepositorioObjetivoAprendizagemPlano>();
             repositorioAtribuicaoCJ = new Mock<IRepositorioAtribuicaoCJ>();
             unitOfWork = new Mock<IUnitOfWork>();
             consultasAbrangencia = new ConsultasAbrangencia(repositorioAbrangencia.Object, servicoUsuario.Object);
@@ -49,7 +51,7 @@ namespace SME.SGP.Aplicacao.Teste.Comandos
 
             comandosPlanoAula = new ComandosPlanoAula(repositorioPlanoAula.Object,
                                                     repositorioObjetivosAula.Object,
-                                                    repositorioObjetivosPlano.Object,
+                                                    repositorioObjetivoAprendizagemPlano.Object,
                                                     repositorioAula.Object,
                                                     repositorioAtribuicaoCJ.Object,
                                                     consultasAbrangencia,

@@ -39,6 +39,8 @@ const Container = styled(Modal)`
   p {
     margin-bottom: 0;
   }
+
+  max-height: 75%;
 `;
 
 const TituloAlerta = styled.h2`
