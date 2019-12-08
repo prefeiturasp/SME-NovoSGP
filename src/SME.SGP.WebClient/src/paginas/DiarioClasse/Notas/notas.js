@@ -8,6 +8,7 @@ import SelectComponent from '~/componentes/select';
 import api from '~/servicos/api';
 import TabsComponent from '~/componentes/tabs/tabs';
 import Avaliacao from '~/componentes-sgp/avaliacao/avaliacao';
+import { Container, ContainerAuditoria } from './notas.css';
 
 const Notas = () => {
 
@@ -19,6 +20,10 @@ const Notas = () => {
   const [disciplinaSelecionada, setDisciplinaSelecionada] = useState(undefined);
   const [desabilitarDisciplina, setDesabilitarDisciplina] = useState(false);
   const [listaTabs, setListaTabs] = useState([]);
+  const [auditoriaInfo, setAuditoriaInfo] = useState({
+    auditoriaAlterado: '',
+    auditoriaInserido: ''
+  });
 
   useEffect(() => {
     const obterDisciplinas = async () => {
@@ -30,14 +35,13 @@ const Notas = () => {
         const disciplina = disciplinas.data[0];
         setDisciplinaSelecionada(String(disciplina.codigoComponenteCurricular));
         setDesabilitarDisciplina(true);
-        montaListaTabs();
+        obterDadosBimestres(disciplina.codigoComponenteCurricular);
       }
     };
 
     if (turmaId) {
       setDisciplinaSelecionada(undefined);
       obterDisciplinas();
-      // TODO - TESTE
     } else {
       // TODO - Resetar tela
       setListaDisciplinas([]);
@@ -58,147 +62,46 @@ const Notas = () => {
     console.log('onClickSalvar');
   }
 
-  const onChangeDisciplinas =  disciplinaId => {
+  const onChangeDisciplinas = disciplinaId => {
     setDisciplinaSelecionada(disciplinaId);
+    obterDadosBimestres(disciplinaId, 0)
   };
 
   const onChangeTab = (item) => {
     console.log(item);
   }
 
-  const dadosBimentreUm =
-  {
-      avaliacoes: [
-        {codigo: 1, nome: 'Avaliação 01', podeEditar: true, tipoDescricao: 'Pesquisa', data: '07/10/2019'},
-        {codigo: 2, nome: 'Avaliação 02', podeEditar: true, tipoDescricao: 'Seminário', data: '28/10/2019'},
-        {codigo: 3, nome: 'Avaliação 03', podeEditar: true, tipoDescricao: 'Trabalho em grupo', data: '01/11/2019'},
-        {codigo: 4, nome: 'Avaliação 04', podeEditar: true, tipoDescricao: 'Teste', data: '09/11/2019'},
-      ],
-      alunos: [
-        {
-          codigo: 1,
-          nome: 'Alvaro Ramos Grassi',
-          notas: [
-            { nota: 10, conceito: 'P', tipoNota: 2 },
-            { nota: 10, conceito: 'S', tipoNota: 2, ausencia: true},
-            { nota: 10, conceito: 'NS', tipoNota: 2 },
-            { nota: 10, conceito: undefined },
-          ]
-        },
-        {
-          codigo: 2,
-          nome: 'Aline Grassi',
-          notas: [
-            { nota: 10, conceito: 'P', tipoNota: 2 },
-            { nota: 10, conceito: 'S', tipoNota: 2},
-            { nota: 10, conceito: 'NS', tipoNota: 2 },
-            { nota: 10, conceito: undefined },
-          ]
-        },
-        {
-          codigo: 3,
-          nome: 'Bianca Grassi',
-          notas: [
-            { nota: 10, conceito: 'P', tipoNota: 2 },
-            { nota: 10, conceito: 'S', tipoNota: 2},
-            { nota: 10, conceito: 'NS', tipoNota: 2 },
-            { nota: 10, conceito: undefined },
-          ]
-        },
-        {
-          codigo: 4,
-          nome: 'José Ramos Grassi',
-          notas: [
-            { nota: 10, conceito: 'P', tipoNota: 2 },
-            { nota: 10, conceito: 'S', tipoNota: 2},
-            { nota: 10, conceito: 'NS', tipoNota: 2 },
-            { nota: 10, conceito: undefined },
-          ]
-        },
-        {
-          codigo: 5,
-          nome: 'Valentina Grassi',
-          notas: [
-            { nota: 10, conceito: 'P', tipoNota: 2 },
-            { nota: 10, conceito: 'S', tipoNota: 2},
-            { nota: 10, conceito: 'NS', tipoNota: 2 },
-            { nota: 10, conceito: undefined },
-          ]
-        },
-        {
-          codigo: 6,
-          nome: 'Laura Ramos Grassi',
-          notas: [
-            { nota: 10, conceito: 'P', tipoNota: 2 },
-            { nota: 10, conceito: 'S', tipoNota: 2},
-            { nota: 10, conceito: 'NS', tipoNota: 2 },
-            { nota: 10, conceito: undefined },
-          ]
-        },
-        {
-          codigo: 7,
-          nome: 'Angela Ramos Grassi',
-          notas: [
-            { nota: 10, conceito: 'P', tipoNota: 1 },
-            { nota: 10, conceito: 'S', tipoNota: 1, ausencia: true },
-            { nota: 10, conceito: 'NS', tipoNota: 1 },
-            { nota: 10, conceito: undefined },
-          ]
-        },
-        {
-          codigo: 8,
-          nome: 'Marcos Ramos Grassi',
-          notas: [
-            { nota: 10, conceito: 'P', tipoNota: 1 },
-            { nota: 10, conceito: 'S', tipoNota: 1},
-            { nota: 10, conceito: 'NS', tipoNota: 1 },
-            { nota: 10, conceito: undefined },
-          ]
-        },
-        {
-          codigo: 9,
-          nome: 'Jefferson Ramos Grassi',
-          notas: [
-            { nota: 10, conceito: 'P', tipoNota: 1 },
-            { nota: 10, conceito: 'S', tipoNota: 1},
-            { nota: 10, conceito: 'NS', tipoNota: 1 },
-            { nota: 10, conceito: undefined },
-          ]
-        },
-        {
-          codigo: 10,
-          nome: 'Júlio Ramos Grassi',
-          notas: [
-            { nota: 10, conceito: 'P', tipoNota: 1 },
-            { nota: 10, conceito: 'S', tipoNota: 1},
-            { nota: 10, conceito: 'NS', tipoNota: 1 },
-            { nota: 10, conceito: undefined },
-          ]
-        },
-      ]
+  const obterDadosBimestres = async (disciplinaId, numeroBimestre) => {
+    const params = {
+      bimestre: numeroBimestre,
+      disciplinaCodigo: disciplinaId,
+      professorRf: usuario.rf
     }
-  const montaListaTabs = ()=> {
+    const dados = await api.get('v1/avaliacoes/notas', params);
+    debugger
+    if (dados && dados.data) {
+      montaListaTabs(dados.data)
+      setAuditoriaInfo({
+        auditoriaAlterado: dados.data.auditoriaAlterado,
+        auditoriaInserido: dados.data.auditoriaInserido
+      });
+    }
+  }
 
-    const teste = [
-      {
-        nome: '1° Bimestre',
+  const montaListaTabs = dados => {
+    const bimestres = dados.bimestres.map((item, i) => {
+      return {
+        nome: item.descricao,
         conteudo: (
-          <Avaliacao dados={dadosBimentreUm}></Avaliacao>
+          <Avaliacao key={i} dados={item} notaTipo={dados.notaTipo} ></Avaliacao>
         )
-      },
-      {
-        nome: '2° Bimestre',
-        conteudo: (
-          <Avaliacao dados={dadosBimentreUm}></Avaliacao>
-        )
-      },
-    ]
-
-    setListaTabs(teste);
+      }
+    });
+    setListaTabs(bimestres);
   }
 
   return (
-    <>
+    <Container>
       <Cabecalho pagina="Lançamento de notas" />
       <Card>
         <div className="col-md-12">
@@ -244,16 +147,36 @@ const Notas = () => {
               />
             </div>
           </div>
-          <div className="row">
-            <div className="col-sm-12 col-md-12 col-lg-12 col-xl-12 mb-2">
-              <TabsComponent onChangeTab={onChangeTab} listaTabs={listaTabs}>
-
-              </TabsComponent>
-            </div>
-          </div>
+          {
+            listaTabs && listaTabs.length > 0 ?
+            <>
+              <div className="row">
+                <div className="col-sm-12 col-md-12 col-lg-12 col-xl-12 mb-2">
+                  <TabsComponent onChangeTab={onChangeTab} listaTabs={listaTabs}/>
+                </div>
+              </div>
+              <div className="row mt-2 mb-2 mt-2">
+               <div className="col-md-12">
+                <ContainerAuditoria style={{float: "left"}}>
+                  <span>
+                    <p>{auditoriaInfo.auditoriaInserido || ''}</p>
+                    <p>{auditoriaInfo.auditoriaAlterado || ''}</p>
+                  </span>
+                </ContainerAuditoria>
+                <span style={{float: "right"}} className="mt-1 ml-1">
+                  Aluno ausente na data da avaliação
+                </span>
+                <span className="icon-legenda-aluno-ausente">
+                  <i className="fas fa-user-times"/>
+                </span>
+                </div>
+              </div>
+            </>
+          :''
+          }
         </div>
       </Card>
-    </>
+    </Container>
   );
 };
 
