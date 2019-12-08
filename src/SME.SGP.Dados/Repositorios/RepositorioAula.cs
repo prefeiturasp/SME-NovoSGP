@@ -127,7 +127,7 @@ namespace SME.SGP.Dados.Repositorios
 
             query.AppendLine("select professor_rf, quantidade, data_aula");
             query.AppendLine("from aula ");
-            query.AppendLine("where not excluido ");
+            query.AppendLine("where not excluido and tipo_aula = @aulaNomal ");
 
             if (!string.IsNullOrEmpty(codigoRf))
                 query.AppendLine("and professor_rf = @codigoRf");
@@ -141,7 +141,8 @@ namespace SME.SGP.Dados.Repositorios
                 codigoRf,
                 turma,
                 disciplina,
-                semana
+                semana,
+                aulaNomal = TipoAula.Normal
             });
         }
 
