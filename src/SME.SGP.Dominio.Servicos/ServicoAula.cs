@@ -30,10 +30,12 @@ namespace SME.SGP.Dominio.Servicos
 
         private readonly IRepositorioAtividadeAvaliativa repositorioAtividadeAvaliativa;
 
+        private readonly IRepositorioAtribuicaoCJ repositorioAtribuicaoCJ;
         private readonly IRepositorioAula repositorioAula;
 
         private readonly IRepositorioTipoCalendario repositorioTipoCalendario;
 
+        private readonly IRepositorioTurma repositorioTurma;
         private readonly IServicoDiaLetivo servicoDiaLetivo;
 
         private readonly IServicoEOL servicoEOL;
@@ -43,8 +45,6 @@ namespace SME.SGP.Dominio.Servicos
         private readonly IServicoLog servicoLog;
 
         private readonly IServicoNotificacao servicoNotificacao;
-
-        private readonly IRepositorioAtribuicaoCJ repositorioAtribuicaoCJ;
 
         public ServicoAula(IRepositorioAula repositorioAula,
                            IServicoEOL servicoEOL,
@@ -61,7 +61,8 @@ namespace SME.SGP.Dominio.Servicos
                            IServicoFrequencia servicoFrequencia,
                            IConfiguration configuration,
                            IRepositorioAtividadeAvaliativa repositorioAtividadeAvaliativa,
-                           IRepositorioAtribuicaoCJ repositorioAtribuicaoCJ)
+                           IRepositorioAtribuicaoCJ repositorioAtribuicaoCJ,
+                           IRepositorioTurma repositorioTurma)
         {
             this.repositorioAula = repositorioAula ?? throw new System.ArgumentNullException(nameof(repositorioAula));
             this.servicoEOL = servicoEOL ?? throw new System.ArgumentNullException(nameof(servicoEOL));
@@ -79,6 +80,7 @@ namespace SME.SGP.Dominio.Servicos
             this.servicoFrequencia = servicoFrequencia ?? throw new ArgumentNullException(nameof(servicoFrequencia));
             this.repositorioAtividadeAvaliativa = repositorioAtividadeAvaliativa ?? throw new ArgumentNullException(nameof(repositorioAtividadeAvaliativa));
             this.repositorioAtribuicaoCJ = repositorioAtribuicaoCJ ?? throw new ArgumentNullException(nameof(repositorioAtribuicaoCJ));
+            this.repositorioTurma = repositorioTurma ?? throw new ArgumentNullException(nameof(repositorioTurma));
         }
 
         private enum Operacao
@@ -128,7 +130,7 @@ namespace SME.SGP.Dominio.Servicos
             {
                 IEnumerable<DisciplinaResposta> lstDisciplinasProf = await servicoEOL.ObterDisciplinasPorCodigoTurmaLoginEPerfil(aula.TurmaId, usuario.Login, usuario.PerfilAtual);
 
-                if(lstDisciplinasProf != null && lstDisciplinasProf.Any())
+                if (lstDisciplinasProf != null && lstDisciplinasProf.Any())
                     disciplinasProfessor = lstDisciplinasProf.Select(d => Convert.ToInt64(d.CodigoComponenteCurricular));
             }
 
@@ -323,15 +325,17 @@ namespace SME.SGP.Dominio.Servicos
         private async Task NotificarUsuario(Usuario usuario, Aula aula, Operacao operacao, int quantidade, List<(DateTime data, string erro)> aulasQueDeramErro)
         {
             var perfilAtual = usuario.PerfilAtual;
+            if (perfilAtual == Guid.Empty)
+                throw new NegocioException($"Não foi encontrado o perfil do usuário informado.");
 
-            var turmaAbrangencia = await repositorioAbrangencia.ObterAbrangenciaTurma(aula.TurmaId, usuario.Login, perfilAtual);
+            var turma = repositorioTurma.ObterTurmaComUeEDrePorId(aula.TurmaId);
 
-            if (turmaAbrangencia is null)
+            if (turma is null)
                 throw new NegocioException($"Não foi possível localizar a turma de Id {aula.TurmaId} na abrangência ");
 
             var disciplinasEol = await servicoEOL.ObterDisciplinasPorCodigoTurmaLoginEPerfil(aula.TurmaId, usuario.Login, perfilAtual);
 
-            if (disciplinasEol is null && !disciplinasEol.Any())
+            if (disciplinasEol is null || !disciplinasEol.Any())
                 throw new NegocioException($"Não foi possível localizar as disciplinas da turma {aula.TurmaId}");
 
             var disciplina = disciplinasEol.FirstOrDefault(a => a.CodigoComponenteCurricular == int.Parse(aula.DisciplinaId));
@@ -340,11 +344,11 @@ namespace SME.SGP.Dominio.Servicos
                 throw new NegocioException($"Não foi possível localizar a disciplina de Id {aula.DisciplinaId}.");
 
             var operacaoStr = operacao == Operacao.Inclusao ? "Criação" : operacao == Operacao.Alteracao ? "Alteração" : "Exclusão";
-            var tituloMensagem = $"{operacaoStr} de Aulas de {disciplina.Nome} na turma {turmaAbrangencia.NomeTurma}";
+            var tituloMensagem = $"{operacaoStr} de Aulas de {disciplina.Nome} na turma {turma.Nome}";
             StringBuilder mensagemUsuario = new StringBuilder();
 
             operacaoStr = operacao == Operacao.Inclusao ? "criadas" : operacao == Operacao.Alteracao ? "alteradas" : "excluídas";
-            mensagemUsuario.Append($"Foram {operacaoStr} {quantidade} aulas da disciplina {disciplina.Nome} para a turma {turmaAbrangencia.NomeTurma} da {turmaAbrangencia.NomeUe} ({turmaAbrangencia.NomeDre}).");
+            mensagemUsuario.Append($"Foram {operacaoStr} {quantidade} aulas da disciplina {disciplina.Nome} para a turma {turma.Nome} da {turma.Ue?.Nome} ({turma.Ue?.Dre?.Nome}).");
 
             if (aulasQueDeramErro.Any())
             {
@@ -360,13 +364,13 @@ namespace SME.SGP.Dominio.Servicos
             {
                 Ano = aula.CriadoEm.Year,
                 Categoria = NotificacaoCategoria.Aviso,
-                DreId = turmaAbrangencia.CodigoDre,
+                DreId = turma.Ue.Dre.CodigoDre,
                 Mensagem = mensagemUsuario.ToString(),
                 UsuarioId = usuario.Id,
                 Tipo = NotificacaoTipo.Calendario,
                 Titulo = tituloMensagem,
                 TurmaId = aula.TurmaId,
-                UeId = turmaAbrangencia.CodigoUe,
+                UeId = turma.Ue.CodigoUe,
             });
         }
 
