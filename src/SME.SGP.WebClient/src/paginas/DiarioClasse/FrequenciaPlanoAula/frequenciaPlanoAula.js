@@ -1,7 +1,7 @@
-import React, { useEffect, useState } from 'react';
-import { useSelector } from 'react-redux';
+import React, { useEffect, useState, useCallback } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
 import styled from 'styled-components';
-import { CampoData, Auditoria, Grid } from '~/componentes';
+import { CampoData, Auditoria } from '~/componentes';
 import Cabecalho from '~/componentes-sgp/cabecalho';
 import ListaFrequencia from '~/componentes-sgp/ListaFrequencia/listaFrequencia';
 import Ordenacao from '~/componentes-sgp/Ordenacao/ordenacao';
@@ -18,15 +18,16 @@ import history from '~/servicos/history';
 import Alert from '~/componentes/alert';
 import { verificaSomenteConsulta } from '~/servicos/servico-navegacao';
 import RotasDto from '~/dtos/rotasDto';
-import { store } from '~/redux';
 import { SelecionarDisciplina } from '~/redux/modulos/planoAula/actions';
 import { stringNulaOuEmBranco } from '~/utils/funcoes/gerais';
 import ModalMultiLinhas from '~/componentes/modalMultiLinhas';
 import modalidade from '~/dtos/modalidade';
 import ServicoDisciplina from '~/servicos/Paginas/ServicoDisciplina';
+import Grid from '~/componentes/grid';
 
 const FrequenciaPlanoAula = () => {
   const usuario = useSelector(store => store.usuario);
+  const dispatch = useDispatch();
 
   const [somenteConsulta, setSomenteConsulta] = useState(false);
   const [permiteRegistroFrequencia, setPermiteRegistroFrequencia] = useState(
@@ -87,6 +88,28 @@ const FrequenciaPlanoAula = () => {
   const [materias, setMaterias] = useState([]);
   const [mostrarErros, setMostarErros] = useState(false);
 
+  const obterDatasDeAulasDisponiveis = useCallback(
+    async disciplinaId => {
+      const datasDeAulas = await api
+        .get(
+          `v1/calendarios/frequencias/aulas/datas/${anoLetivo}/turmas/${turmaId}/disciplinas/${disciplinaId}`
+        )
+        .catch(e => erros(e));
+
+      if (datasDeAulas && datasDeAulas.data) {
+        setListaDatasAulas(datasDeAulas.data);
+        const habilitar = datasDeAulas.data.map(item =>
+          window.moment(item.data).format('YYYY-MM-DD')
+        );
+        setDiasParaHabilitar(habilitar);
+      } else {
+        setListaDatasAulas([]);
+        setDiasParaHabilitar([]);
+      }
+    },
+    [anoLetivo, turmaId]
+  );
+
   useEffect(() => {
     const obterDisciplinas = async () => {
       const disciplinas = await ServicoDisciplina.obterDisciplinasPorTurma(
@@ -101,7 +124,7 @@ const FrequenciaPlanoAula = () => {
         );
         setDesabilitarDisciplina(true);
         obterDatasDeAulasDisponiveis(disciplina.codigoComponenteCurricular);
-        store.dispatch(SelecionarDisciplina(disciplinas.data[0]));
+        dispatch(SelecionarDisciplina(disciplinas.data[0]));
       }
     };
 
@@ -123,7 +146,13 @@ const FrequenciaPlanoAula = () => {
 
     const somenteConsultarFrequencia = verificaSomenteConsulta(permissoesTela);
     setSomenteConsulta(somenteConsultarFrequencia);
-  }, [turmaSelecionada.turma]);
+  }, [
+    dispatch,
+    obterDatasDeAulasDisponiveis,
+    permissoesTela,
+    turmaId,
+    turmaSelecionada.turma,
+  ]);
 
   useEffect(() => {
     const desabilitar =
@@ -131,7 +160,12 @@ const FrequenciaPlanoAula = () => {
         ? somenteConsulta || !permissoesTela.podeAlterar
         : somenteConsulta || !permissoesTela.podeIncluir;
     setDesabilitarCampos(desabilitar);
-  }, [frequenciaId]);
+  }, [
+    frequenciaId,
+    permissoesTela.podeAlterar,
+    permissoesTela.podeIncluir,
+    somenteConsulta,
+  ]);
 
   const obterListaFrequencia = async aulaId => {
     setAulaId(aulaId);
@@ -223,7 +257,6 @@ const FrequenciaPlanoAula = () => {
               setMaterias([...materias]);
             }
           }
-          setPlanoAula(planoAula);
         }
       }
     }
@@ -382,6 +415,7 @@ const FrequenciaPlanoAula = () => {
       temObjetivos &&
       !ehEja &&
       !ehMedio &&
+      !planoAula.migrado &&
       planoAula.objetivosAprendizagemJurema.length === 0
     ) {
       errosValidacaoPlano.push(
@@ -404,25 +438,6 @@ const FrequenciaPlanoAula = () => {
       setModoEdicaoFrequencia(true);
     }
     setExibirCardFrequencia(!exibirCardFrequencia);
-  };
-
-  const obterDatasDeAulasDisponiveis = async disciplinaId => {
-    const datasDeAulas = await api
-      .get(
-        `v1/calendarios/frequencias/aulas/datas/${anoLetivo}/turmas/${turmaId}/disciplinas/${disciplinaId}`
-      )
-      .catch(e => erros(e));
-
-    if (datasDeAulas && datasDeAulas.data) {
-      setListaDatasAulas(datasDeAulas.data);
-      const habilitar = datasDeAulas.data.map(item =>
-        window.moment(item.data).format('YYYY-MM-DD')
-      );
-      setDiasParaHabilitar(habilitar);
-    } else {
-      setListaDatasAulas([]);
-      setDiasParaHabilitar([]);
-    }
   };
 
   const onChangeDisciplinas = async disciplinaId => {
@@ -576,6 +591,19 @@ const FrequenciaPlanoAula = () => {
       {temAvaliacao ? (
         <div className="row">
           <Grid cols={12} className="px-4">
+            <div
+              className="alert alert-info alert-dismissible fade show text-center"
+              role="alert"
+            >
+              Atenção, existe uma avaliação neste dia:
+              <LinkAcao onClick={acessarEditarAvaliacao}>
+                Editar Avaliação
+              </LinkAcao>
+              ou
+              <LinkAcao onClick={acessarNotasConceitos}>
+                Acessar Notas e Conceitos
+              </LinkAcao>
+            </div>
             <Alert
               alerta={{
                 tipo: 'info',
