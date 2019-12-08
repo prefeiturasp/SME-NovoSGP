@@ -22,8 +22,6 @@ export default class PlanoAnualHelper {
   }
 
   static async ObterBimestreExpandido(filtroPlanoAnualExpandidoDto) {
-    console.log(filtroPlanoAnualExpandidoDto);
-
     return await Service.obterBimestreExpandido(filtroPlanoAnualExpandidoDto)
       .then(res => {
         return {

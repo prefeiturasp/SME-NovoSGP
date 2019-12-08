@@ -27,7 +27,7 @@ namespace SME.SGP.Dados.Repositorios
 
             return await database.Conexao.QueryFirstOrDefaultAsync<AulaConsultaDto>(query, new
             {
-                data,
+                data = data.Date,
                 turmaId,
                 disciplinaId
             });
@@ -88,7 +88,6 @@ namespace SME.SGP.Dados.Repositorios
             query.AppendLine("INNER JOIN v_abrangencia ab on a.turma_id = ab.turma_id");
             MontaWhere(query, tipoCalendarioId, turmaId, ueId, null, data, CodigoRf);
             MontaGroupBy(query);
-            var sql = query.ToString();
             return (await database.Conexao.QueryAsync<AulaCompletaDto>(query.ToString(), new { tipoCalendarioId, turmaId, ueId, data, perfil, CodigoRf }));
         }
 
