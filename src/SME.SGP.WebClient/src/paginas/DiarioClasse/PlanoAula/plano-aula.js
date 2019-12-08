@@ -1,5 +1,6 @@
 import { Switch } from 'antd';
 import React, { useEffect, useRef, useState } from 'react';
+import { useSelector } from 'react-redux';
 import { Colors, Auditoria } from '~/componentes';
 import Button from '~/componentes/button';
 import CardCollapse from '~/componentes/cardCollapse';
@@ -16,8 +17,10 @@ import {
   QuantidadeBotoes,
 } from './plano-aula.css';
 import api from '~/servicos/api';
-import { useSelector } from 'react-redux';
 import { RegistroMigrado } from '~/paginas/Planejamento/PlanoCiclo/planoCiclo.css';
+
+// Componentes
+import ModalCopiarConteudo from './componentes/ModalCopiarConteudo';
 
 const PlanoAula = props => {
   const {
@@ -41,6 +44,9 @@ const PlanoAula = props => {
   const { turmaSelecionada } = usuario;
   const turmaId = turmaSelecionada ? turmaSelecionada.turma : 0;
   const [mostrarCardPrincipal, setMostrarCardPrincipal] = useState(true);
+  const [mostrarModalCopiarConteudo, setMostrarModalCopiarConteudo] = useState(
+    false
+  );
   const [materias, setMaterias] = useState([...listaMaterias]);
   const setModoEdicaoPlano = ehEdicao => {
     setModoEdicao(ehEdicao);
@@ -199,6 +205,15 @@ const PlanoAula = props => {
       >
         <QuantidadeBotoes className="col-md-12">
           <span>Quantidade de aulas: {planoAula.qtdAulas}</span>
+          <Button
+            label="Copiar Conteúdo"
+            icon="clipboard"
+            color={Colors.Azul}
+            border
+            className="btnGroupItem"
+            onClick={() => setMostrarModalCopiarConteudo(true)}
+            disabled={!planoAula.id}
+          />
           {planoAula.migrado && (
             <RegistroMigrado className="float-right">
               Registro Migrado{' '}
@@ -452,6 +467,12 @@ const PlanoAula = props => {
           ''
         )}
       </CardCollapse>
+      <ModalCopiarConteudo
+        show={mostrarModalCopiarConteudo}
+        onClose={() => setMostrarModalCopiarConteudo(false)}
+        disciplina={disciplinaIdSelecionada}
+        planoAula={planoAula}
+      />
     </Corpo>
   );
 };
