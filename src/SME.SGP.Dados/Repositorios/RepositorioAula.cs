@@ -325,11 +325,11 @@ namespace SME.SGP.Dados.Repositorios
         {
             try
             {
-                var query = @"select p.bimestre, p.periodo_inicio as inicio, p.periodo_fim as fim,
-                         COUNT(a.id) filter (where a.tipo_aula = 1 and a.aula_cj = false) as AulasCriadasProfTitular,
-                         COUNT(a.id) filter (where a.tipo_aula = 1 and a.aula_cj = true) as AulasCriadasProfSubstituto,
-                         COUNT(a.id) filter (where a.tipo_aula = 1 and rf.id is not null and a.aula_cj = false) as AulasCumpridasProfTitular,
-                         COUNT(a.id) filter (where a.tipo_aula = 1 and rf.id is not null and a.aula_cj = true) as AulasCumpridasProfSubstituto, 
+                var query = @"select p.bimestre, p.periodo_inicio as inicio, p.periodo_fim as fim, ap.aulas_previstas as Quantidade,
+                         COUNT(a.id) filter (where a.tipo_aula = 1 and a.aula_cj = false) as QuantidadeTitular,
+                         COUNT(a.id) filter (where a.tipo_aula = 1 and a.aula_cj = true) as QuantidadeCJ,
+                         COUNT(a.id) filter (where a.tipo_aula = 1 and rf.id is not null and a.aula_cj = false) as QuantidadeTitular,
+                         COUNT(a.id) filter (where a.tipo_aula = 1 and rf.id is not null and a.aula_cj = true) as QuantidadeCJ, 
                          COUNT(a.id) filter (where a.tipo_aula = 2 and rf.id is not null) as Reposicoes 
                          from aula_prevista ap
                          right join periodo_escolar p on ap.tipo_calendario_id = p.tipo_calendario_id
@@ -338,16 +338,31 @@ namespace SME.SGP.Dados.Repositorios
                          left join registro_frequencia rf on a.id = rf.aula_id
                          where p.periodo_inicio < now() and a.turma_id = @turmaId and
                                a.disciplina_id = @disciplinaId
-                         group by p.bimestre, p.periodo_inicio, p.periodo_fim
+                         group by p.bimestre, p.periodo_inicio, p.periodo_fim, ap.aulas_previstas
                          order by p.periodo_inicio;";
 
-                return await database.Conexao.QueryAsync<AulasPrevistasDadasDto>(query.ToString(), new { turmaId, disciplinaId });
+                var aulasDadasPrevistas = new List<AulasPrevistasDadasDto>();
+
+                return await database.Conexao.QueryAsync<AulasPrevistasDadasDto, AulasPrevistasDto, AulasQuantidadePorProfessorDto, AulasQuantidadePorProfessorDto, AulasPrevistasDadasDto>(query,
+                (pd, p, a, c) =>
+                {
+                    if (pd != null)
+                    {
+                        pd.Criadas = a;
+                        pd.Cumpridas = c;
+                        pd.Previstas = p;
+                    }
+
+                    aulasDadasPrevistas.Add(pd);
+
+                    return pd;
+                }, new { turmaId, disciplinaId }, splitOn: "bimestre,Quantidade,QuantidadeTitular,QuantidadeTitular");
             }
             catch (Exception e)
             {
                 throw e;
             }
-           
+
         }
     }
 }
