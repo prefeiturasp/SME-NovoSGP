@@ -50,7 +50,9 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IComandosTipoAvaliacao, ComandosTipoAavaliacao>();
             services.TryAddScoped<IComandosPlanoAula, ComandosPlanoAula>();
             services.TryAddScoped<IComandosAtribuicaoCJ, ComandosAtribuicaoCJ>();
+            services.TryAddScoped<IComandosEventoMatricula, ComandosEventoMatricula>();
             services.TryAddScoped<IComandosNotasConceitos, ComandosNotasConceitos>();
+            services.TryAddScoped<IComandosAulaPrevista, ComandosAulaPrevista>();
         }
 
         private static void RegistrarConsultas(IServiceCollection services)
@@ -86,6 +88,8 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IConsultaTipoAvaliacao, ConsultaTipoAvaliacao>();
             services.TryAddScoped<IConsultasAtribuicaoCJ, ConsultasAtribuicaoCJ>();
             services.TryAddScoped<IConsultasUe, ConsultasUe>();
+            services.TryAddScoped<IConsultasEventoMatricula, ConsultasEventoMatricula>();
+            services.TryAddScoped<IConsultasAulaPrevista, ConsultasAulaPrevista>();
         }
 
         private static void RegistrarContextos(IServiceCollection services)
@@ -146,6 +150,8 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IRepositorioNotaParametro, RepositorioNotaParametro>();
             services.TryAddScoped<IRepositorioNotaTipoValor, RepositorioNotaTipoValor>();
             services.TryAddScoped<IRepositorioNotificacaoFrequencia, RepositorioNotificacaoFrequencia>();
+            services.TryAddScoped<IRepositorioEventoMatricula, RepositorioEventoMatricula>();
+            services.TryAddScoped<IRepositorioAulaPrevista, RepositorioAulaPrevista>();
         }
 
         private static void RegistrarServicos(IServiceCollection services)

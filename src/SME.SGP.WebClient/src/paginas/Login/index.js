@@ -64,7 +64,6 @@ const Login = props => {
       senha: dados.senha,
     });
     setErroGeral('');
-
     const { sucesso, ...retorno } = await helper.acessar(dados);
     if (!sucesso) setErroGeral(retorno.erroGeral);
   };
