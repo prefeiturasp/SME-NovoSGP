@@ -12,7 +12,7 @@ import SelectComponent from '~/componentes/select';
 import { Colors, Label } from '~/componentes';
 import history from '~/servicos/history';
 import TextEditor from '~/componentes/textEditor';
-import { Div, Titulo } from './avaliacao.css';
+import { Div, Titulo, Badge } from './avaliacao.css';
 import RotasDTO from '~/dtos/rotasDto';
 import ServicoAvaliacao from '~/servicos/Paginas/Calendario/ServicoAvaliacao';
 import { erro, sucesso, confirmar } from '~/servicos/alertas';
@@ -63,6 +63,7 @@ const AvaliacaoForm = ({ match }) => {
   );
 
   const [descricao, setDescricao] = useState('');
+  const [listaDisciplinasRegencia, setListaDisciplinasRegencia] = useState([]);
 
   const cadastrarAvaliacao = async dados => {
     const avaliacao = {};
@@ -73,13 +74,28 @@ const AvaliacaoForm = ({ match }) => {
       avaliacao.ueId = eventoAulaCalendarioEdicao.unidadeEscolar;
     }
 
+    const disciplinas = [];
+    listaDisciplinasRegencia.forEach(disciplina => {
+      if (
+        !disciplinas.includes(disciplina.codigoComponenteCurricular) &&
+        disciplina.selecionada
+      )
+        disciplinas.push(`${disciplina.codigoComponenteCurricular}`);
+    });
+    avaliacao.disciplinaContidaRegenciaId = disciplinas;
+
     avaliacao.dataAvaliacao = window.moment(diaAvaliacao).format();
     avaliacao.descricao = descricao;
 
-    const validacao = await ServicoAvaliacao.validar({
+    const dadosValidacao = {
       ...dados,
       ...avaliacao,
-    });
+    };
+
+    delete dadosValidacao.categoriaId;
+    delete dadosValidacao.descricao;
+
+    const validacao = await ServicoAvaliacao.validar(dadosValidacao);
 
     if (validacao && validacao.status === 200) {
       ServicoAvaliacao.salvar(idAvaliacao, { ...dados, ...avaliacao })
@@ -121,7 +137,6 @@ const AvaliacaoForm = ({ match }) => {
     { label: 'Interdisciplinar', value: 2 },
   ]);
   const [listaDisciplinas, setListaDisciplinas] = useState([]);
-  const [temRegencia, setTemRegencia] = useState(false);
 
   const campoNomeRef = useRef(null);
   const textEditorRef = useRef(null);
@@ -134,6 +149,7 @@ const AvaliacaoForm = ({ match }) => {
   const inicial = {
     categoriaId: 1,
     disciplinaId: undefined,
+    disciplinaContidaRegenciaId: [],
     nome: '',
     tipoAvaliacaoId: undefined,
   };
@@ -157,9 +173,24 @@ const AvaliacaoForm = ({ match }) => {
   };
 
   const [disciplinaDesabilitada, setDisciplinaDesabilitada] = useState(false);
+  const [temRegencia, setTemRegencia] = useState(false);
+
+  const obterDisciplinasRegencia = async () => {
+    const disciplinasRegencia = await ServicoAvaliacao.listarDisciplinasRegencia(
+      turmaId
+    );
+    if (disciplinasRegencia.data) {
+      setListaDisciplinasRegencia(disciplinasRegencia.data);
+      setTemRegencia(true);
+    }
+  };
 
   useEffect(() => {
-    if (listaDisciplinas.length === 1) {
+    if (!idAvaliacao && listaDisciplinas.length === 1) {
+      if (listaDisciplinas[0].regencia) {
+        setTemRegencia(true);
+        obterDisciplinasRegencia();
+      }
       setDadosAvaliacao({
         ...dadosAvaliacao,
         disciplinaId: listaDisciplinas[0].codigoComponenteCurricular.toString(),
@@ -192,11 +223,57 @@ const AvaliacaoForm = ({ match }) => {
       setIdAvaliacao(match.params.id);
   }, []);
 
+  const obterAvaliacao = async () => {
+    const avaliacao = await ServicoAvaliacao.buscar(idAvaliacao);
+    if (avaliacao && avaliacao.data) {
+      const disciplinaId = avaliacao.data.disciplinaId.toString();
+      const tipoAvaliacaoId = avaliacao.data.tipoAvaliacaoId.toString();
+      setDadosAvaliacao({ ...avaliacao.data, disciplinaId, tipoAvaliacaoId });
+      setDescricao(avaliacao.data.descricao);
+      if (
+        avaliacao.data.atividadesRegencia &&
+        avaliacao.data.atividadesRegencia.length > 0
+      ) {
+        obterDisciplinasRegencia();
+      }
+    }
+  };
+
   useEffect(() => {
-    let avaliacao;
-    if (idAvaliacao) avaliacao = ServicoAvaliacao.buscar(idAvaliacao);
-    if (avaliacao && avaliacao.data) setDadosAvaliacao(avaliacao.data);
+    if (idAvaliacao) obterAvaliacao();
   }, [idAvaliacao]);
+
+  const selecionarDisciplina = indice => {
+    const disciplinas = [...listaDisciplinasRegencia];
+    disciplinas[indice].selecionada = !disciplinas[indice].selecionada;
+    setListaDisciplinasRegencia(disciplinas);
+  };
+
+  useEffect(() => {
+    if (
+      temRegencia &&
+      listaDisciplinasRegencia &&
+      listaDisciplinasRegencia.length > 0 &&
+      dadosAvaliacao &&
+      dadosAvaliacao.atividadesRegencia &&
+      dadosAvaliacao.atividadesRegencia.length > 0
+    ) {
+      const disciplinas = [...listaDisciplinasRegencia];
+      listaDisciplinasRegencia.forEach((item, indice) => {
+        const disciplina = dadosAvaliacao.atividadesRegencia.filter(
+          atividade => {
+            return (
+              atividade.disciplinaContidaRegenciaId ===
+              item.codigoComponenteCurricular.toString()
+            );
+          }
+        );
+        if (disciplina && disciplina.length)
+          disciplinas[indice].selecionada = true;
+      });
+      setListaDisciplinasRegencia(disciplinas);
+    }
+  }, [temRegencia]);
 
   return (
     <Div className="col-12">
@@ -263,21 +340,47 @@ const AvaliacaoForm = ({ match }) => {
                   />
                 </Grid>
               </Div>
+              {temRegencia && listaDisciplinasRegencia && (
+                <Div className="row">
+                  <Grid cols={12} className="mb-4">
+                    <Label text="Componente curricular" />
+                    {listaDisciplinasRegencia.map((disciplina, indice) => {
+                      return (
+                        <Badge
+                          key={disciplina.codigoComponenteCurricular}
+                          role="button"
+                          onClick={e => {
+                            e.preventDefault();
+                            selecionarDisciplina(indice);
+                          }}
+                          aria-pressed={disciplina.selecionada && true}
+                          alt={disciplina.nome}
+                          className="badge badge-pill border text-dark bg-white font-weight-light px-2 py-1 mr-2"
+                        >
+                          {disciplina.nome}
+                        </Badge>
+                      );
+                    })}
+                  </Grid>
+                </Div>
+              )}
               <Div className="row">
-                <Grid cols="4" className="mb-4">
-                  <SelectComponent
-                    id="disciplinaId"
-                    name="disciplinaId"
-                    label="Componente curricular"
-                    lista={listaDisciplinas}
-                    valueOption="codigoComponenteCurricular"
-                    valueText="nome"
-                    disabled={disciplinaDesabilitada}
-                    placeholder="Disciplina"
-                    form={form}
-                  />
-                </Grid>
-                <Grid cols="4" className="mb-4">
+                {!temRegencia && (
+                  <Grid cols={4} className="mb-4">
+                    <SelectComponent
+                      id="disciplinaId"
+                      name="disciplinaId"
+                      label="Componente curricular"
+                      lista={listaDisciplinas}
+                      valueOption="codigoComponenteCurricular"
+                      valueText="nome"
+                      disabled={disciplinaDesabilitada}
+                      placeholder="Disciplina"
+                      form={form}
+                    />
+                  </Grid>
+                )}
+                <Grid cols={!temRegencia ? 4 : 6} className="mb-4">
                   <SelectComponent
                     id="tipoAvaliacaoId"
                     name="tipoAvaliacaoId"
@@ -289,7 +392,7 @@ const AvaliacaoForm = ({ match }) => {
                     form={form}
                   />
                 </Grid>
-                <Grid cols="4" className="mb-4">
+                <Grid cols={!temRegencia ? 4 : 6} className="mb-4">
                   <Label text="Nome da Atividade Avaliativa" />
                   <CampoTexto
                     name="nome"

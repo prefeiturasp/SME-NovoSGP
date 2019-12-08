@@ -116,8 +116,8 @@ export default function bimestres(state = INICIAL, action) {
         break;
 
       case '@bimestres/SetarDescricaoFunction':
-        draft.bimestres[action.payload.indice].setarObjetivo =
-          action.payload.setarObjetivo;
+        const bimestre = draft.bimestres[action.payload.indice];
+        if (bimestre) bimestre.setarObjetivo = action.payload.setarObjetivo;
         draft.bimestresErro = state.bimestresErro;
 
         break;

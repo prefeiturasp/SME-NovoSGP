@@ -53,6 +53,7 @@ namespace SME.SGP.Dados.Repositorios
             return retorno == 1 || retorno == null;
         }
 
+
         public async Task<IEnumerable<Evento>> EventosNosDiasETipo(DateTime dataInicio, DateTime dataFim, TipoEvento tipoEventoCodigo, long tipoCalendarioId, string UeId, string DreId)
         {
             var query = new StringBuilder();

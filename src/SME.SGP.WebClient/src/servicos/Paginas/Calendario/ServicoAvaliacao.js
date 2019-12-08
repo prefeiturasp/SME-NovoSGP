@@ -5,6 +5,10 @@ class ServicoAvaliacao {
     return api.get(`v1/professores/${rf}/turmas/${turma}/disciplinas`);
   };
 
+  listarDisciplinasRegencia = async turma => {
+    return api.get(`v1/professores/turmas/${turma}/disciplinas/planejamento`);
+  };
+
   listarTipos = async () => {
     return api.get('v1/atividade-avaliativa/tipos/listar');
   };
