@@ -16,13 +16,52 @@ export const Corpo = styled.div`
 `;
 
 export const CampoDesabilitado = styled.div`
-  border-radius: 4px;
-  border: 1px solid ${Base.CinzaDesabilitado};
-  color: ${Base.CinzaDesabilitado} !important;
-  width: 65px;
-  height: 32px;
-  text-align: center;
+  justify-content:center;
+  align-items: center;
+  display:flex;
+  
   span{
-    margin-top: 10px;
+    justify-content:center;
+    align-items: center;
+    display:flex;
+    border-radius: 4px;
+    border: 1px solid ${Base.CinzaDesabilitado};
+    color: ${Base.CinzaDesabilitado} !important;
+    width: 65px;
+    height: 32px;
   }
 `;
+
+export const CampoEditavel = styled.div`
+  justify-content:center;
+  align-items: center;
+  display:flex;
+  padding-left: 1px;
+  div{
+    height: 32px !important;
+  }
+  input{
+    justify-content:center;
+    align-items: center;
+    display:flex;
+    width: 65px;
+    height: 32px !important;
+  }
+`;
+
+export const CampoAlerta = styled.div`
+  justify-content: left;
+  align-items: center;
+  display:flex;
+  background-color: ${Base.LaranjaAlerta};
+  border-radius: 4px;
+  width: 105px;
+  height: 34px;
+  .icone{
+    align-items: center;
+    i{
+      font-size: 12px;
+      color: ${Base.Branco};
+    }
+  }
+`

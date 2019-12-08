@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { Corpo, CampoDesabilitado } from './ListaAulasPorBimestre.css';
+import { Corpo, CampoDesabilitado, CampoEditavel, CampoAlerta } from './ListaAulasPorBimestre.css';
+import { CampoTexto } from '~/componentes';
+import CampoNumero from '~/componentes/campoNumero';
 
 const ListaAulasPorBimestre = props => {
   const { dados } = props;
@@ -29,16 +31,34 @@ const ListaAulasPorBimestre = props => {
                 <span>{` - ${formatarData(item.inicio)} à ${formatarData(item.fim)}`}</span>
               </td>
               <td>
-                {item.previstas.quantidade}
+                <CampoAlerta>
+                  <CampoEditavel>
+                    <CampoNumero
+                      value={item.previstas.quantidade}
+                      onChange={() => { }}
+                      onKeyDown={() => { }}
+                      min={0}
+                    />
+                  </CampoEditavel>
+                  <div className="icone">
+                    <i className="fas fa-exclamation-triangle"></i>
+                  </div>
+                </CampoAlerta>
               </td>
               <td>
-                {item.criadas.professorTitular}
+                <CampoDesabilitado>
+                  <span>{item.criadas.professorTitular}</span>
+                </CampoDesabilitado>
               </td>
               <td>
-                {item.dadas}
+                <CampoDesabilitado>
+                  <span>{item.dadas}</span>
+                </CampoDesabilitado>
               </td>
               <td>
-                {item.respostas}
+                <CampoDesabilitado>
+                  <span>{item.respostas}</span>
+                </CampoDesabilitado>
               </td>
             </tr>
           );
