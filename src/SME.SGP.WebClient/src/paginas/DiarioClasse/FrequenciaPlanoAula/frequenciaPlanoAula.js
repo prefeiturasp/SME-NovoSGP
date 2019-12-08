@@ -733,6 +733,7 @@ const FrequenciaPlanoAula = () => {
                   permissoesTela={permissoesTela}
                   somenteConsulta={somenteConsulta}
                   temObjetivos={temObjetivos}
+                  temAvaliacao={temAvaliacao}
                   auditoria={auditoriaPlano}
                 />
               </div>
