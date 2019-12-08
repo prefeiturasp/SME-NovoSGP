@@ -7,6 +7,8 @@ namespace SME.SGP.Dominio.Interfaces
     {
         Task<IEnumerable<Modalidade>> ObterModalidades(string ueCodigo, int ano);
 
+        Ue ObterPorId(string ueId);
+
         Task<IEnumerable<Turma>> ObterTurmas(string ueCodigo, Modalidade modalidade, int ano);
 
         Ue ObterUEPorTurma(string turmaId);
