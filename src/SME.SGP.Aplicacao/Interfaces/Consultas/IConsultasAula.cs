@@ -18,9 +18,5 @@ namespace SME.SGP.Aplicacao
 
         Task<int> ObterRecorrenciaDaSerie(long aulaId);
 
-        Task<AulaConsultaDto> ObterAulaDataTurmaDisciplina(DateTime data, string turmaId, string disciplinaId);
-
-        Task<IEnumerable<AulasPrevistasDadasDto>> ObterAulaPrevistaDada(string turmaId, string disciplinaId);
-
     }
 }
