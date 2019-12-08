@@ -9,7 +9,7 @@ import Ordenacao from '../Ordenacao/ordenacao';
 import { Lista, Container } from './avaliacao.css';
 
 const Avaliacao = props => {
-  const { dados, onChangeAvaliacao} = props;
+  const { dados, onChangeAvaliacao, notaTipo} = props;
 
   const [dataSource, setDataSource] = useState(dados);
   const [alunos, setAlunos] = useState(dados.alunos);
@@ -20,15 +20,12 @@ const Avaliacao = props => {
     { valor: 'NS', descricao: 'NS'},
   ];
 
-  const onChangeNota = (aluno, nota, index) => {
-    aluno.notas[index].nota = nota;
+  const onChangeNotaConceito = (aluno, notaConceito, index) => {
+    aluno.notasAvaliacoes[index].notaConceito = notaConceito;
     setAlunos([...alunos])
   }
 
-  const onChangeConceito = (aluno, conceito, index) => {
-    aluno.notas[index].conceito = conceito;
-    setAlunos([...alunos])
-  }
+  const descricaoAlunoAusente = 'Aluno ausente na data da avaliação';
 
   return (
     <Container>
@@ -43,7 +40,7 @@ const Avaliacao = props => {
                     <Ordenacao
                       className="botao-ordenacao-avaliacao"
                       conteudoParaOrdenar={dataSource.alunos}
-                      ordenarColunaNumero="codigo"
+                      ordenarColunaNumero="numeroChamada"
                       ordenarColunaTexto="nome"
                       retornoOrdenado={retorno =>  {
                         setAlunos([...retorno])
@@ -58,12 +55,12 @@ const Avaliacao = props => {
                             {avaliacao.nome}
                           </div>
                           <div className="texto-header-avaliacao">
-                          <Tooltip title={avaliacao.tipoDescricao}>
-                            {avaliacao.tipoDescricao}
+                          <Tooltip title={avaliacao.descricao}>
+                            {avaliacao.descricao}
                           </Tooltip>
                           </div>
                           <div className="texto-header-avaliacao">
-                            {avaliacao.data}
+                            {window.moment(avaliacao.data).format('DD/MM/YYYY')}
                           </div>
                         </th>
                         )
@@ -91,45 +88,47 @@ const Avaliacao = props => {
               <table className="table mb-0">
                 <tbody className="tabela-avaliacao-tbody">
                   {
-                    dataSource.alunos.map((aluno, i) => {
+                    alunos.map((aluno, i) => {
                       return (
-                      <tr key={i} >
-                        <td className="width-60 text-center font-weight-bold">{aluno.codigo}</td>
+                      <tr key={i}>
+                        <td className="width-60 text-center font-weight-bold">{aluno.numeroChamada}</td>
                         <td className="text-left">{aluno.nome}</td>
                         {
-                          aluno.notas.length ?
-                            aluno.notas.map((nota, i) => {
+                          aluno.notasAvaliacoes.length ?
+                            aluno.notasAvaliacoes.map((nota, i) => {
                               return (
                                 <td key={i}  className="width-150" style={{padding: "3px"}}>
-                                  {
-                                    notasConceitos.Notas == nota.tipoNota ?
-                                    <CampoNumero
-                                      onChange={(valorNovo)=> onChangeNota(aluno, valorNovo, i)}
-                                      value={nota.nota}
-                                      min={0}
-                                      max={10}
-                                      step={0.1}
-                                      placeholder="Nota"
-                                      classNameCampo={`${nota.ausencia ? 'aluno-ausente-notas' : 'aluno-notas'}`}
-                                    />
-                                    :
-                                    <SelectComponent
-                                      valueOption="valor"
-                                      valueText="descricao"
-                                      lista={listaConceitos}
-                                      valueSelect={nota.conceito}
-                                      onChange={valorNovo => onChangeConceito(aluno, valorNovo, i)}
-                                      showSearch
-                                      placeholder="Conceito"
-                                      className="select-conceitos"
-                                      classNameContainer={nota.ausencia ? 'aluno-ausente-conceitos' : 'aluno-conceitos'}
-                                    />
-                                  }
-                                  {
-                                    nota.ausencia ?
-                                    <i className="fas fa-user-times icon-aluno-ausente"></i>
-                                    : ''
-                                  }
+                                    {
+                                      notasConceitos.Notas == notaTipo ?
+                                      <CampoNumero
+                                        onChange={valorNovo=> onChangeNotaConceito(aluno, valorNovo, i)}
+                                        value={nota.notaConceito}
+                                        min={0}
+                                        max={10}
+                                        step={0.1}
+                                        placeholder="Nota"
+                                        classNameCampo={`${nota.ausente ? 'aluno-ausente-notas' : 'aluno-notas'}`}
+                                      />
+                                      :
+                                      <SelectComponent
+                                        valueOption="valor"
+                                        valueText="descricao"
+                                        lista={listaConceitos}
+                                        valueSelect={nota.notaConceito}
+                                        onChange={valorNovo => onChangeNotaConceito(aluno, valorNovo, i)}
+                                        showSearch
+                                        placeholder="Conceito"
+                                        className="select-conceitos"
+                                        classNameContainer={nota.ausente ? 'aluno-ausente-conceitos' : 'aluno-conceitos'}
+                                      />
+                                    }
+                                    {
+                                      nota.ausente ?
+                                      <Tooltip title={descricaoAlunoAusente}>
+                                        <i className="fas fa-user-times icon-aluno-ausente"></i>
+                                      </Tooltip>
+                                      : ''
+                                    }
                                 </td>
                                 )
                               })
@@ -143,16 +142,6 @@ const Avaliacao = props => {
               </table>
            </div>
         </Lista>
-        <div className="row mt-2 mb-2">
-        <div className="col-md-12">
-           <span style={{float: "right", marginTop: '1px'}}>
-            Aluno ausente na data da avaliação
-           </span>
-           <span className="icon-legenda-aluno-ausente">
-            <i className="fas fa-user-times icon-legenda-aluno-ausente"/>
-           </span>
-        </div>
-        </div>
         </>
         : ''
       }
