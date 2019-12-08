@@ -1,5 +1,6 @@
 import { Switch } from 'antd';
 import React, { useEffect, useRef, useState } from 'react';
+import { useSelector } from 'react-redux';
 import { Colors, Auditoria } from '~/componentes';
 import Button from '~/componentes/button';
 import CardCollapse from '~/componentes/cardCollapse';
@@ -16,7 +17,6 @@ import {
   QuantidadeBotoes,
 } from './plano-aula.css';
 import api from '~/servicos/api';
-import { useSelector } from 'react-redux';
 import { RegistroMigrado } from '~/paginas/Planejamento/PlanoCiclo/planoCiclo.css';
 
 // Componentes
@@ -72,10 +72,6 @@ const PlanoAula = props => {
   const [habilitaEscolhaObjetivos, setEscolhaHabilitaObjetivos] = useState(
     false
   );
-
-  useEffect(() => {
-    verificaHabilitarDesabilitarCampos();
-  }, [permissoesTela]);
 
   useEffect(() => {
     const verificaHabilitarDesabilitarCampos = () => {
