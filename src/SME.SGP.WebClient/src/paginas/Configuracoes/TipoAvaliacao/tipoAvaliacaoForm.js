@@ -1,5 +1,6 @@
 // Form
 import * as Yup from 'yup';
+import PropTypes from 'prop-types';
 import { Form, Formik } from 'formik';
 import { useSelector } from 'react-redux';
 import React, { useState, useRef, useEffect } from 'react';
@@ -7,6 +8,7 @@ import Cabecalho from '~/componentes-sgp/cabecalho';
 import TextEditor from '~/componentes/textEditor';
 import RadioGroupButton from '~/componentes/radioGroupButton';
 import { Row } from './styles';
+
 import {
   CampoTexto,
   Label,
@@ -17,16 +19,14 @@ import {
 } from '~/componentes';
 import RotasDto from '~/dtos/rotasDto';
 import history from '~/servicos/history';
-import { sucesso, confirmar, erro } from '~/servicos/alertas';
+import { erros, sucesso, confirmar, erro } from '~/servicos/alertas';
 import servicoTipoAvaliaco from '~/servicos/Paginas/TipoAvaliacao'; // Redux
+import { setBreadcrumbManual } from '~/servicos/breadcrumb-services';
 
 // Funçoes
 import { validaSeObjetoEhNuloOuVazio } from '~/utils/funcoes/gerais';
 
 const TipoAvaliacaoForm = ({ match }) => {
-  // const clicouBotaoVoltar = () => {
-  //   history.push('/configuracoes/tipo-avaliacao');
-  // };
   const listaSituacao = [
     {
       label: 'Ativo',
@@ -37,14 +37,23 @@ const TipoAvaliacaoForm = ({ match }) => {
       value: false,
     },
   ];
+  const [descricao, setDescricao] = useState('');
   const [novoRegistro, setNovoRegistro] = useState(true);
   const [modoEdicao, setModoEdicao] = useState(false);
   const [auditoria, setAuditoria] = useState({});
+  const [valoresCarregados, setValoresCarregados] = useState(null);
   const [valoresIniciais, setValoresIniciais] = useState({
     nome: '',
     descricao: '',
     situacao: true,
   });
+
+  const textEditorRef = useRef(null);
+
+  const aoTrocarTextEditor = valor => {
+    setDescricao(valor);
+    debugger;
+  };
 
   const permissoesTela = useSelector(store => store.usuario.permissoes);
 
@@ -88,7 +97,6 @@ const TipoAvaliacaoForm = ({ match }) => {
     }
   };
   const onClickVoltar = async () => {
-    history.push('/configuracoes/tipo-avaliacao');
     if (modoEdicao) {
       const confirmou = await confirmar(
         'Atenção',
@@ -96,13 +104,14 @@ const TipoAvaliacaoForm = ({ match }) => {
         'Deseja realmente cancelar as alterações?'
       );
       if (confirmou) {
-        history.push('/gestao/atribuicao-esporadica');
+        history.push('/configuracoes/tipo-avaliacao');
       }
     } else {
-      history.push('/gestao/atribuicao-esporadica');
+      history.push('/configuracoes/tipo-avaliacao');
     }
   };
   const validaAntesDoSubmit = form => {
+    debugger;
     const arrayCampos = Object.keys(valoresIniciais);
     arrayCampos.forEach(campo => {
       form.setFieldTouched(campo, true, true);
@@ -115,31 +124,74 @@ const TipoAvaliacaoForm = ({ match }) => {
   };
 
   const onClickBotaoPrincipal = form => {
+    form.descricao = descricao;
     validaAntesDoSubmit(form);
   };
   const validacoes = () => {
     return Yup.object({
       nome: momentSchema.required('Campo obrigatório'),
       descricao: momentSchema.required('Campo obrigatório'),
-      situacao: Yup.number()
-        .typeError('Informar um número inteiro')
+      situacao: Yup.bool()
+        .typeError('Informar um booleano')
         .required('Campo obrigatório'),
     });
   };
 
   const onSubmitFormulario = async valores => {
     try {
+      debugger;
       const cadastrado = await servicoTipoAvaliaco.salvarTipoAvaliacao({
         ...valores,
       });
       if (cadastrado && cadastrado.status === 200) {
         sucesso('Tipo de avaliação salvo com sucesso.');
-        history.push('/configuracao/tipo-avaliacao');
+        history.push('/configuracoes/tipo-avaliacao');
       }
     } catch (err) {
       if (err) {
         erro(err.response.data.mensagens[0]);
       }
+    }
+  };
+
+  useEffect(() => {
+    if (match && match.params && match.params.id) {
+      setNovoRegistro(false);
+      setBreadcrumbManual(
+        match.url,
+        'Atribuição',
+        '/configuracoes/tipo-avaliacao'
+      );
+      buscarPorId(match.params.id);
+    }
+  }, []);
+
+  const buscarPorId = async id => {
+    try {
+      // dispatch(setLoaderSecao(true));
+      const registro = await servicoTipoAvaliaco.buscarTipoAvaliacaoPorId(id);
+      if (registro && registro.data) {
+        setValoresIniciais({
+          ...registro.data,
+        });
+
+        setDescricao(registro.data.descricao);
+
+        // setAuditoria({
+        //   criadoPor: registro.data.criadoPor,
+        //   criadoRf: registro.data.criadoRF > 0 ? registro.data.criadoRF : '',
+        //   criadoEm: registro.data.criadoEm,
+        //   alteradoPor: registro.data.alteradoPor,
+        //   alteradoRf:
+        //     registro.data.alteradoRF > 0 ? registro.data.alteradoRF : '',
+        //   alteradoEm: registro.data.alteradoEm,
+        // });
+        setValoresCarregados(true);
+        //  dispatch(setLoaderSecao(false));
+      }
+    } catch (err) {
+      //  dispatch(setLoaderSecao(false));
+      erros(err);
     }
   };
 
@@ -156,12 +208,11 @@ const TipoAvaliacaoForm = ({ match }) => {
           validateOnBlur
           validateOnChange
         >
-          >
           {form => (
             <Form className="col-md-12 mb-4">
               <ButtonGroup
                 form={form}
-                permissoesTela={permissoesTela[RotasDto.TipoAvaliacaoForm]}
+                permissoesTela={permissoesTela[RotasDto.TIPO_AVALIACAO]}
                 novoRegistro={novoRegistro}
                 labelBotaoPrincipal="Cadastrar"
                 onClickBotaoPrincipal={() => onClickBotaoPrincipal(form)}
@@ -175,7 +226,6 @@ const TipoAvaliacaoForm = ({ match }) => {
                   <CampoTexto
                     form={form}
                     label="Nome da Atividade"
-                    placeholder="Digite o nome da atividade"
                     name="nome"
                     maxlength={100}
                     placeholder="Digite a descrição da avaliação"
@@ -209,14 +259,12 @@ const TipoAvaliacaoForm = ({ match }) => {
               <Label text="Descrição" />
               <TextEditor
                 className="form-control"
-                //  ref={textEditorRef}
-                id="textEditor"
+                ref={textEditorRef}
+                id="descricao"
                 alt="Descrição"
-                //  disabled={disabled}
-                //   estadoAdicional={estadoAdicionalEditorTexto}
-                // /  onClick={onClickTextEditor}
-                //  value={bimestre.objetivo}
-                //   onBlur={onBlurTextEditor}
+                onBlur={aoTrocarTextEditor}
+                value={descricao}
+                maxlength={500}
               />
             </Form>
           )}
@@ -224,5 +272,16 @@ const TipoAvaliacaoForm = ({ match }) => {
       </Card>
     </>
   );
+};
+
+TipoAvaliacaoForm.propTypes = {
+  match: PropTypes.oneOfType([
+    PropTypes.objectOf(PropTypes.object),
+    PropTypes.any,
+  ]),
+};
+
+TipoAvaliacaoForm.defaultProps = {
+  match: {},
 };
 export default TipoAvaliacaoForm;

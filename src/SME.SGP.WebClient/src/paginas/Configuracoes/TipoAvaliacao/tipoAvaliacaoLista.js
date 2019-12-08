@@ -33,14 +33,10 @@ const TipoAvaliacaoLista = () => {
     },
   ];
 
-  const cliclouBotaoNovo = () => {
-    history.push('/configuracoes/tipo-avaliacao/novo');
-  };
-
   const onClickVoltar = () => history.push('/');
 
   const onClickBotaoPrincipal = () => {
-    history.push(`atribuicao-esporadica/novo`);
+    history.push(`tipo-avaliacao/novo`);
   };
 
   const onSelecionarItems = items => {
@@ -50,7 +46,7 @@ const TipoAvaliacaoLista = () => {
   const onClickExcluir = async () => {};
 
   const onClickEditar = item => {
-    history.push(`/gestao/atribuicao-esporadica/editar/${item.id}`);
+    history.push(`/configuracoes/tipo-avaliacao/editar/${item.id}`);
   };
   const onChangeFiltro = valoresFiltro => {
     setFiltro(valoresFiltro);
