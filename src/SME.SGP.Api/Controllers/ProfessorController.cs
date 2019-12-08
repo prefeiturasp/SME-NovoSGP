@@ -81,11 +81,11 @@ namespace SME.SGP.Api.Controllers
             return Ok(retorno);
         }
 
-        //[HttpGet("eventos/matriculas")]
-        //public async Task<IActionResult> EventosMatricula([FromServices] IServicoEventoMatricula eventos)
-        //{
-        //    eventos.ExecutaCargaEventos();
-        //    return Ok();
-        //}
+        [HttpGet("eventos/matriculas")]
+        public async Task<IActionResult> EventosMatricula([FromServices] IServicoEventoMatricula eventos)
+        {
+            eventos.ExecutaCargaEventos();
+            return Ok();
+        }
     }
 }
