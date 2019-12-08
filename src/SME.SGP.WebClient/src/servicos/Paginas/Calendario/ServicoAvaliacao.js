@@ -27,7 +27,9 @@ class ServicoAvaliacao {
   salvar = async (id, dados) => {
     const url = `v1/atividade-avaliativa/${id}`;
     const metodo = id ? 'put' : 'post';
-    return api[metodo](url, dados);
+    return api[metodo](url, dados)
+      .then(resposta => resposta)
+      .catch(err => err.response.data.mensagens[0]);
   };
 
   excluir = async id => {
