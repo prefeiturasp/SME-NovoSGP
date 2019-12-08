@@ -26,8 +26,6 @@ namespace SME.SGP.Dominio.Servicos
 
         private readonly IConsultasPeriodoEscolar consultasPeriodoEscolar;
 
-        private readonly IRepositorioAbrangencia repositorioAbrangencia;
-
         private readonly IRepositorioAtividadeAvaliativa repositorioAtividadeAvaliativa;
 
         private readonly IRepositorioAtribuicaoCJ repositorioAtribuicaoCJ;
@@ -53,7 +51,6 @@ namespace SME.SGP.Dominio.Servicos
                            IConsultasGrade consultasGrade,
                            IConsultasPeriodoEscolar consultasPeriodoEscolar,
                            IServicoLog servicoLog,
-                           IRepositorioAbrangencia repositorioAbrangencia,
                            IServicoNotificacao servicoNotificacao,
                            IConsultasAbrangencia consultasAbrangencia,
                            IComandosWorkflowAprovacao comandosWorkflowAprovacao,
@@ -74,7 +71,6 @@ namespace SME.SGP.Dominio.Servicos
             this.consultasAbrangencia = consultasAbrangencia ?? throw new ArgumentNullException(nameof(consultasAbrangencia));
             this.comandosWorkflowAprovacao = comandosWorkflowAprovacao ?? throw new ArgumentNullException(nameof(comandosWorkflowAprovacao));
             this.configuration = configuration;
-            this.repositorioAbrangencia = repositorioAbrangencia ?? throw new ArgumentNullException(nameof(repositorioAbrangencia));
             this.servicoNotificacao = servicoNotificacao ?? throw new ArgumentNullException(nameof(servicoNotificacao));
             this.comandosPlanoAula = comandosPlanoAula ?? throw new ArgumentNullException(nameof(comandosPlanoAula));
             this.servicoFrequencia = servicoFrequencia ?? throw new ArgumentNullException(nameof(servicoFrequencia));
@@ -152,17 +148,18 @@ namespace SME.SGP.Dominio.Servicos
                 var aulas = await repositorioAula.ObterAulas(aula.TipoCalendarioId, aula.TurmaId, aula.UeId, usuario.CodigoRf);
                 var quantidadeDeAulasSomadas = aulas.ToList().FindAll(x => x.DataAula.Date == aula.DataAula.Date).Sum(x => x.Quantidade) + aula.Quantidade;
 
-                var abrangencia = await consultasAbrangencia.ObterAbrangenciaTurma(aula.TurmaId);
-                if (abrangencia == null)
-                    throw new NegocioException("Abrangência da turma não localizada.");
+                var turma = repositorioTurma.ObterTurmaComUeEDrePorId(aula.TurmaId);
 
-                if (ReposicaoDeAulaPrecisaDeAprovacao(quantidadeDeAulasSomadas, abrangencia))
+                if (turma == null)
+                    throw new NegocioException("Turma não localizada.");
+
+                if (ReposicaoDeAulaPrecisaDeAprovacao(quantidadeDeAulasSomadas, turma))
                 {
                     var nomeDisciplina = await RetornaNomeDaDisciplina(aula, usuario);
 
                     repositorioAula.Salvar(aula);
-                    PersistirWorkflowReposicaoAula(aula, abrangencia.NomeDre, abrangencia.NomeUe, nomeDisciplina,
-                                                 abrangencia.NomeTurma, abrangencia.CodigoDre);
+                    PersistirWorkflowReposicaoAula(aula, turma.Ue.Dre.Nome, turma.Ue.Nome, nomeDisciplina,
+                                                 turma.Nome, turma.Ue.Dre.CodigoDre);
                     return "Aula cadastrada com sucesso e enviada para aprovação.";
                 }
             }
@@ -201,13 +198,14 @@ namespace SME.SGP.Dominio.Servicos
             return "Aula cadastrada com sucesso.";
         }
 
-        private static bool ReposicaoDeAulaPrecisaDeAprovacao(int quantidadeAulasExistentesNoDia, Dto.AbrangenciaFiltroRetorno abrangencia)
+        private static bool ReposicaoDeAulaPrecisaDeAprovacao(int quantidadeAulasExistentesNoDia, Turma turma)
         {
-            return ((abrangencia.Modalidade == Modalidade.Fundamental && abrangencia.Ano >= 1 && abrangencia.Ano <= 5) ||  //Valida se é Fund 1
-                               (Modalidade.EJA == abrangencia.Modalidade && (abrangencia.Ano == 1 || abrangencia.Ano == 2)) // Valida se é Eja Alfabetizacao ou  Basica
-                               && quantidadeAulasExistentesNoDia > 1) || ((abrangencia.Modalidade == Modalidade.Fundamental && abrangencia.Ano >= 6 && abrangencia.Ano <= 9) || //valida se é fund 2
-                                     (Modalidade.EJA == abrangencia.Modalidade && abrangencia.Ano == 3 || abrangencia.Ano == 4) ||  // Valida se é Eja Complementar ou Final
-                                     (abrangencia.Modalidade == Modalidade.Medio) && quantidadeAulasExistentesNoDia > 2);
+            int.TryParse(turma.Ano, out int anoTurma);
+            return ((turma.ModalidadeCodigo == Modalidade.Fundamental && anoTurma >= 1 && anoTurma <= 5) ||  //Valida se é Fund 1
+                               (Modalidade.EJA == turma.ModalidadeCodigo && (anoTurma == 1 || anoTurma == 2)) // Valida se é Eja Alfabetizacao ou  Basica
+                               && quantidadeAulasExistentesNoDia > 1) || ((turma.ModalidadeCodigo == Modalidade.Fundamental && anoTurma >= 6 && anoTurma <= 9) || //valida se é fund 2
+                                     (Modalidade.EJA == turma.ModalidadeCodigo && anoTurma == 3 || anoTurma == 4) ||  // Valida se é Eja Complementar ou Final
+                                     (turma.ModalidadeCodigo == Modalidade.Medio) && quantidadeAulasExistentesNoDia > 2);
         }
 
         private async Task AlterarRecorrencia(Aula aula, Usuario usuario, DateTime fimRecorrencia)
