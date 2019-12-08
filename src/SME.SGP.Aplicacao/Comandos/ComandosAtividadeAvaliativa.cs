@@ -121,6 +121,8 @@ namespace SME.SGP.Aplicacao
 
         public async Task Validar(FiltroAtividadeAvaliativaDto filtro)
         {
+            if (string.IsNullOrEmpty(filtro.DisciplinaId))
+                throw new NegocioException("É necessário informar a disciplina");
             var disciplina = ObterDisciplina(Convert.ToInt32(filtro.DisciplinaId));
             var usuario = await servicoUsuario.ObterUsuarioLogado();
             DateTime dataAvaliacao = filtro.DataAvaliacao.Value.Date;
@@ -171,7 +173,7 @@ namespace SME.SGP.Aplicacao
             atividadeAvaliativa.UeId = dto.UeId;
             atividadeAvaliativa.DreId = dto.DreId;
             atividadeAvaliativa.TurmaId = dto.TurmaId;
-            atividadeAvaliativa.CategoriaId = (int)dto.CategoriaId;
+            atividadeAvaliativa.Categoria = dto.CategoriaId;
             atividadeAvaliativa.DisciplinaId = dto.DisciplinaId;
             atividadeAvaliativa.TipoAvaliacaoId = dto.TipoAvaliacaoId;
             atividadeAvaliativa.NomeAvaliacao = dto.Nome;
@@ -181,7 +183,7 @@ namespace SME.SGP.Aplicacao
             return atividadeAvaliativa;
         }
 
-        private DisciplinaDto ObterDisciplina(int idDisciplina)
+        private DisciplinaDto ObterDisciplina(long idDisciplina)
         {
             long[] disciplinaId = { idDisciplina };
             var disciplina = servicoEOL.ObterDisciplinasPorIds(disciplinaId);
