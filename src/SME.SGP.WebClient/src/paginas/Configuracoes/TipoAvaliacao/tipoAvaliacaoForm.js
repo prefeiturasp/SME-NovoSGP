@@ -50,7 +50,6 @@ const TipoAvaliacaoForm = ({ match }) => {
 
   const aoTrocarTextEditor = valor => {
     setDescricao(valor);
-    debugger;
   };
 
   const permissoesTela = useSelector(store => store.usuario.permissoes);
@@ -109,7 +108,6 @@ const TipoAvaliacaoForm = ({ match }) => {
     }
   };
   const validaAntesDoSubmit = form => {
-    debugger;
     const arrayCampos = Object.keys(valoresIniciais);
     arrayCampos.forEach(campo => {
       form.setFieldTouched(campo, true, true);
@@ -122,13 +120,13 @@ const TipoAvaliacaoForm = ({ match }) => {
   };
 
   const onClickBotaoPrincipal = form => {
-    form.descricao = descricao;
+    form.values.descricao = textEditorRef.current.state.value;
     validaAntesDoSubmit(form);
   };
   const validacoes = () => {
     return Yup.object({
-      nome: momentSchema.required('Campo obrigatório'),
-      descricao: momentSchema.required('Campo obrigatório'),
+      nome: momentSchema.required('Nome obrigatório'),
+      // descricao: momentSchema.required('Descrição obrigatório'),
       situacao: Yup.bool()
         .typeError('Informar um booleano')
         .required('Campo obrigatório'),
@@ -219,7 +217,7 @@ const TipoAvaliacaoForm = ({ match }) => {
                 onClickExcluir={() => onClickExcluir(form)}
                 modoEdicao={modoEdicao}
               />
-              <Row>
+              <Row className="row">
                 <Grid cols={8}>
                   <CampoTexto
                     form={form}
@@ -228,12 +226,10 @@ const TipoAvaliacaoForm = ({ match }) => {
                     maxlength={100}
                     placeholder="Digite a descrição da avaliação"
                     type="input"
-                    // ref={campoNomeTipoEventoRef}
-                    // onChange={aoDigitarDescricao}
                     desabilitado={false}
                   />
                 </Grid>
-                <Grid cols={2}>
+                <Grid cols={4}>
                   <RadioGroupButton
                     desabilitado={false}
                     id="situacao"
@@ -254,16 +250,20 @@ const TipoAvaliacaoForm = ({ match }) => {
                   />
                 </Grid>
               </Row>
-              <Label text="Descrição" />
-              <TextEditor
-                className="form-control"
-                ref={textEditorRef}
-                id="descricao"
-                alt="Descrição"
-                onBlur={aoTrocarTextEditor}
-                value={descricao}
-                maxlength={500}
-              />
+              <Row className="row">
+                <Grid cols={12}>
+                  <Label text="Descrição" />
+                  <TextEditor
+                    className="form-control w-100"
+                    ref={textEditorRef}
+                    id="descricao"
+                    alt="Descrição"
+                    onBlur={aoTrocarTextEditor}
+                    value={descricao}
+                    maxlength={500}
+                  />
+                </Grid>
+              </Row>
             </Form>
           )}
         </Formik>
