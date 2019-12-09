@@ -35,7 +35,7 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [ProducesResponseType(typeof(RetornoBaseDto), 601)]
         [Permissao(Permissao.CP_E, Policy = "Bearer")]
-        public async Task<IActionResult> ExcluirAsync(long id)
+        public async Task<IActionResult> Excluir(long id)
         {
             await comandoAtividadeAvaliativa.Excluir(id);
             return Ok();
@@ -56,9 +56,9 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [ProducesResponseType(typeof(RetornoBaseDto), 601)]
         [Permissao(Permissao.CP_C, Policy = "Bearer")]
-        public IActionResult ObterPorId(long id)
+        public async Task<IActionResult> ObterPorIdAsync(long id)
         {
-            return Ok(consultaAtividadeAvaliativa.ObterPorId(id));
+            return Ok(await consultaAtividadeAvaliativa.ObterPorIdAsync(id));
         }
 
         [HttpPost]
@@ -68,6 +68,16 @@ namespace SME.SGP.Api.Controllers
         public async Task<IActionResult> PostAsync([FromBody]AtividadeAvaliativaDto atividadeAvaliativaDto)
         {
             await comandoAtividadeAvaliativa.Inserir(atividadeAvaliativaDto);
+            return Ok();
+        }
+
+        [HttpPost("validar")]
+        [ProducesResponseType(200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [Permissao(Permissao.CP_I, Policy = "Bearer")]
+        public async Task<IActionResult> Validar([FromBody]FiltroAtividadeAvaliativaDto filtro)
+        {
+            await comandoAtividadeAvaliativa.Validar(filtro);
             return Ok();
         }
     }

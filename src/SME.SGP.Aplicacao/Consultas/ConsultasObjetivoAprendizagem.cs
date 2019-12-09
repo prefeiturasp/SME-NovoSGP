@@ -17,9 +17,8 @@ namespace SME.SGP.Aplicacao
         private readonly IConfiguration configuration;
         private readonly IRepositorioCache repositorioCache;
         private readonly IRepositorioComponenteCurricular repositorioComponenteCurricular;
-        private readonly IServicoJurema servicoJurema;
         private readonly IRepositorioObjetivoAprendizagemPlano repositorioObjetivosPlano;
-        private readonly IRepositorioPlanoAnual repositorioPlanoAnual;
+        private readonly IServicoJurema servicoJurema;
 
         public ConsultasObjetivoAprendizagem(IServicoJurema servicoJurema,
                                              IRepositorioCache repositorioCache,
@@ -82,6 +81,19 @@ namespace SME.SGP.Aplicacao
             return objetivos;
         }
 
+        public async Task<ObjetivoAprendizagemSimplificadoDto> ObterAprendizagemSimplificadaPorId(long id)
+        {
+            IEnumerable<ObjetivoAprendizagemDto> lstObjAprendizagemDtos = await Listar();
+
+            ObjetivoAprendizagemDto objetivoDto = lstObjAprendizagemDtos.Where(obj => obj.Id == id).FirstOrDefault();
+
+            return new ObjetivoAprendizagemSimplificadoDto()
+            {
+                Id = objetivoDto.Id,
+                IdComponenteCurricular = objetivoDto.IdComponenteCurricular
+            };
+        }
+
         public async Task<IEnumerable<ComponenteCurricularSimplificadoDto>> ObterDisciplinasDoBimestrePlanoAnual(int ano, int bimestre, long turmaId, long componenteCurricularId)
         {
             return repositorioObjetivosPlano.ObterDisciplinasDoBimestrePlanoAula(ano, bimestre, turmaId, componenteCurricularId);
@@ -122,6 +134,15 @@ namespace SME.SGP.Aplicacao
                     };
                 }
             }
+        }
+
+        private ObjetivoAprendizagemSimplificadoDto MapearParaDto(ObjetivoAprendizagemPlano objetivo)
+        {
+            return new ObjetivoAprendizagemSimplificadoDto()
+            {
+                Id = objetivo.Id,
+                IdComponenteCurricular = objetivo.ComponenteCurricularId
+            };
         }
 
         private IEnumerable<ComponenteCurricular> ObterComponentesCurriculares()

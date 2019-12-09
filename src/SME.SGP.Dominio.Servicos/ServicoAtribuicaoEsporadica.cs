@@ -28,6 +28,11 @@ namespace SME.SGP.Dominio.Servicos
 
         public void Salvar(AtribuicaoEsporadica atribuicaoEsporadica, int anoLetivo)
         {
+            var atribuicoesConflitantes = repositorioAtribuicaoEsporadica.ObterAtribuicoesDatasConflitantes(atribuicaoEsporadica.DataInicio, atribuicaoEsporadica.DataFim, atribuicaoEsporadica.ProfessorRf, atribuicaoEsporadica.Id);
+
+            if (atribuicoesConflitantes != null && atribuicoesConflitantes.Any())
+                throw new NegocioException("Já existem outras atribuições, para este professor, no periodo especificado");
+
             var tipoCalendario = repositorioTipoCalendario.BuscarPorAnoLetivoEModalidade(anoLetivo, ModalidadeTipoCalendario.FundamentalMedio);
 
             if (tipoCalendario == null)
@@ -56,9 +61,7 @@ namespace SME.SGP.Dominio.Servicos
         {
             try
             {
-                var resumo = await servicoEOL.ObterResumoCore(codigoRF);
-
-                await servicoEOL.AtribuirCJSeNecessario(resumo.Id);
+                await servicoEOL.AtribuirCJSeNecessario(codigoRF);
             }
             catch (Exception)
             {
