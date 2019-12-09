@@ -124,6 +124,17 @@ function ModalCopiarConteudo({ show, disciplina, onClose, planoAula }) {
     });
   };
 
+  const onCloseModal = () => {
+    setValoresCheckbox({
+      objetivosAprendizagem: true,
+      desenvolvimentoAula: true,
+      recuperacaoContinua: false,
+      licaoCasa: false,
+    });
+    setTurmas([]);
+    onClose();
+  };
+
   const onClickSalvar = async () => {
     try {
       if (!confirmado) {
@@ -178,7 +189,7 @@ function ModalCopiarConteudo({ show, disciplina, onClose, planoAula }) {
         if (dados || resposta === 200) {
           sucesso('Plano de aula copiado com sucesso!');
           dispatch(setLoaderModal(false));
-          onClose();
+          onCloseModal();
         }
       }
     } catch (error) {
@@ -187,24 +198,13 @@ function ModalCopiarConteudo({ show, disciplina, onClose, planoAula }) {
     }
   };
 
-  const onCloseModal = () => {
-    setValoresCheckbox({
-      objetivosAprendizagem: true,
-      desenvolvimentoAula: true,
-      recuperacaoContinua: false,
-      licaoCasa: false,
-    });
-    setTurmas([]);
-    onClose();
-  };
-
   return (
     <ModalConteudoHtml
       titulo="Copiar conteúdo"
       visivel={show}
       closable
       onClose={() => onCloseModal()}
-      onConfirmacaoSecundaria={() => null}
+      onConfirmacaoSecundaria={() => onCloseModal()}
       onConfirmacaoPrincipal={() => onClickSalvar()}
       labelBotaoPrincipal="Confirmar"
       labelBotaoSecundario="Descartar"

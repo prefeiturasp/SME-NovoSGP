@@ -74,10 +74,6 @@ const PlanoAula = props => {
   );
 
   useEffect(() => {
-    verificaHabilitarDesabilitarCampos();
-  }, [permissoesTela]);
-
-  useEffect(() => {
     const verificaHabilitarDesabilitarCampos = () => {
       if (planoAula && planoAula.id > 0) {
         setDesabilitarCampos(!permissoesTela.podeAlterar || somenteConsulta);
