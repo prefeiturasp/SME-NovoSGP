@@ -12,17 +12,22 @@ namespace SME.SGP.Aplicacao
     public class ConsultasNotasConceitos : IConsultasNotasConceitos
     {
         private readonly IConsultaAtividadeAvaliativa consultasAtividadeAvaliativa;
+        private readonly IRepositorioFrequencia repositorioFrequencia;
         private readonly IRepositorioNotasConceitos repositorioNotasConceitos;
         private readonly IServicoDeNotasConceitos servicoDeNotasConceitos;
         private readonly IServicoEOL servicoEOL;
+        private readonly IServicoUsuario servicoUsuario;
 
         public ConsultasNotasConceitos(IServicoEOL servicoEOL, IConsultaAtividadeAvaliativa consultasAtividadeAvaliativa,
-            IServicoDeNotasConceitos servicoDeNotasConceitos, IRepositorioNotasConceitos repositorioNotasConceitos)
+            IServicoDeNotasConceitos servicoDeNotasConceitos, IRepositorioNotasConceitos repositorioNotasConceitos,
+            IRepositorioFrequencia repositorioFrequencia, IServicoUsuario servicoUsuario)
         {
             this.servicoEOL = servicoEOL ?? throw new ArgumentNullException(nameof(servicoEOL));
             this.consultasAtividadeAvaliativa = consultasAtividadeAvaliativa ?? throw new ArgumentNullException(nameof(consultasAtividadeAvaliativa));
             this.servicoDeNotasConceitos = servicoDeNotasConceitos ?? throw new ArgumentNullException(nameof(servicoDeNotasConceitos));
             this.repositorioNotasConceitos = repositorioNotasConceitos ?? throw new ArgumentNullException(nameof(repositorioNotasConceitos));
+            this.repositorioFrequencia = repositorioFrequencia ?? throw new ArgumentNullException(nameof(repositorioFrequencia));
+            this.servicoUsuario = servicoUsuario ?? throw new ArgumentNullException(nameof(servicoUsuario));
         }
 
         public async Task<NotasConceitosRetornoDto> ListarNotasConceitos(string turmaCodigo, int? bimestre, int anoLetivo, string disciplinaCodigo, Modalidade modalidade)
@@ -40,6 +45,7 @@ namespace SME.SGP.Aplicacao
                 throw new NegocioException("Não foi encontrado alunos para a turma informada");
 
             var retorno = new NotasConceitosRetornoDto();
+            var usuarioLogado = await servicoUsuario.ObterUsuarioLogado();
 
             for (int i = 0; i < atividadesAvaliativaEBimestres.quantidadeBimestres; i++)
             {
@@ -55,8 +61,13 @@ namespace SME.SGP.Aplicacao
                         && atividadesAvaliativaEBimestres.periodoAtual.PeriodoFim.Date >= a.DataAvaliacao.Date)
                         .OrderBy(a => a.DataAvaliacao)
                         .ToList();
+                    var alunosIds = alunos.Select(a => a.CodigoAluno).Distinct();
+                    var notas = repositorioNotasConceitos.ObterNotasPorAlunosAtividadesAvaliativas(atividadesAvaliativasdoBimestre.Select(a => a.Id).Distinct(), alunosIds);
+                    var ausenciasAtividadesAvaliativas = await repositorioFrequencia.ObterAusencias(turmaCodigo, disciplinaCodigo, atividadesAvaliativasdoBimestre.Select(a => a.DataAvaliacao).Distinct().ToArray(), alunosIds.ToArray());
 
-                    var notas = repositorioNotasConceitos.ObterNotasPorAlunosAtividadesAvaliativas(atividadesAvaliativasdoBimestre.Select(a => a.Id).Distinct(), alunos.Select(a => a.CodigoAluno).Distinct());
+                    var professorRfTitularTurmaDisciplina = string.Empty;
+
+                    professorRfTitularTurmaDisciplina = await ObterRfProfessorTitularDisciplina(turmaCodigo, disciplinaCodigo, atividadesAvaliativasdoBimestre);
 
                     foreach (var aluno in alunos.OrderBy(a => a.NumeroAlunoChamada).ThenBy(a => a.NomeValido()))
                     {
@@ -69,10 +80,12 @@ namespace SME.SGP.Aplicacao
                             string notaParaMostrar = ObterNotaParaVisualizacao(notas, aluno, atividadeAvaliativa);
 
                             //TODO: Buscar se houve ausencia
+                            var ausente = ausenciasAtividadesAvaliativas.Any(a => a.AlunoCodigo == aluno.CodigoAluno && a.AulaData.Date == atividadeAvaliativa.DataAvaliacao.Date);
 
                             //TODO: Buscar se pode editar
+                            bool podeEditar = PodeEditarNotaOuConceito(usuarioLogado, professorRfTitularTurmaDisciplina, atividadeAvaliativa);
 
-                            var notaAvaliacao = new NotasConceitosNotaAvaliacaoRetornoDto() { AtividadeAvaliativaId = atividadeAvaliativa.Id, NotaConceito = notaParaMostrar };
+                            var notaAvaliacao = new NotasConceitosNotaAvaliacaoRetornoDto() { AtividadeAvaliativaId = atividadeAvaliativa.Id, NotaConceito = notaParaMostrar, Ausente = ausente, PodeEditar = podeEditar };
 
                             notasAvaliacoes.Add(notaAvaliacao);
                         }
@@ -114,6 +127,38 @@ namespace SME.SGP.Aplicacao
             if (notaDoAluno != null)
                 notaParaMostrar = notaDoAluno.ObterNota();
             return notaParaMostrar;
+        }
+
+        private static bool PodeEditarNotaOuConceito(Usuario usuarioLogado, string professorTitularDaTurmaDisciplinaRf, AtividadeAvaliativa atividadeAvaliativa)
+        {
+            var podeEditar = true;
+            if (atividadeAvaliativa.DataAvaliacao.Date > DateTime.Today)
+                podeEditar = false;
+
+            if (usuarioLogado.PerfilAtual == Perfis.PERFIL_CJ)
+            {
+                if (atividadeAvaliativa.CriadoRF != usuarioLogado.CodigoRf)
+                    podeEditar = false;
+            }
+            else
+            {
+                if (usuarioLogado.CodigoRf != professorTitularDaTurmaDisciplinaRf)
+                    podeEditar = false;
+            }
+
+            return podeEditar;
+        }
+
+        private async Task<string> ObterRfProfessorTitularDisciplina(string turmaCodigo, string disciplinaCodigo, List<AtividadeAvaliativa> atividadesAvaliativasdoBimestre)
+        {
+            if (atividadesAvaliativasdoBimestre.Any())
+            {
+                var professoresTitularesDaTurma = await servicoEOL.ObterProfessoresTitularesDisciplinas(turmaCodigo);
+                var professorTitularDaDisciplina = professoresTitularesDaTurma.FirstOrDefault(a => a.DisciplinaId == int.Parse(disciplinaCodigo) && a.ProfessorRf != string.Empty);
+                return professorTitularDaDisciplina == null ? string.Empty : professorTitularDaDisciplina.ProfessorRf;
+            }
+
+            return string.Empty;
         }
     }
 }
