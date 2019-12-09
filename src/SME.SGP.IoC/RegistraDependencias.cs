@@ -180,6 +180,7 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IServicoNotificacaoFrequencia, ServicoNotificacaoFrequencia>();
             services.TryAddScoped<IServicoNotificacaoAulaPrevista, ServicoNotificacaoAulaPrevista>();
             services.TryAddScoped<IServicoAtribuicaoCJ, ServicoAtribuicaoCJ>();
+            services.TryAddScoped<IServicoEventoMatricula, ServicoEventoMatricula>();
         }
     }
 }
