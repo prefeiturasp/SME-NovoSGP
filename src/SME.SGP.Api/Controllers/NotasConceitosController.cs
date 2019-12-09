@@ -34,7 +34,7 @@ namespace SME.SGP.Api.Controllers
             return Ok();
         }
 
-        [HttpGet("turma/{turmaId}")]
+        [HttpGet("turmas/{turmaId}")]
         [ProducesResponseType(typeof(TipoNota), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [Permissao(Permissao.NC_A, Permissao.NC_I, Policy = "Bearer")]
