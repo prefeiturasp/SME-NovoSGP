@@ -1,5 +1,4 @@
 ﻿using Dapper;
-using SME.SGP.Dados.Contexto;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
@@ -30,7 +29,7 @@ namespace SME.SGP.Dados.Repositorios
         {
             StringBuilder query = new StringBuilder();
             query.AppendLine("select ");
-            query.AppendLine("sum(distinct a.quantidade) ");
+            query.AppendLine("sum(a.quantidade) ");
             query.AppendLine("from ");
             query.AppendLine("aula a ");
             query.AppendLine("inner join registro_frequencia rf on ");
