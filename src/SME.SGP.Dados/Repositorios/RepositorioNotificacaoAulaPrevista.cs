@@ -44,7 +44,7 @@ namespace SME.SGP.Dados.Repositorios
         {
             var query = @"select 0 
                           from notificacao_aula_prevista a
-                         inner join notificacao n on n.codigo = a.notificacao_codigo
+                         inner join notificacao n on n.codigo = a.notificacao_id
                          where n.usuario_id = @usuarioId
                            and a.bimestre = @bimestre
                            and a.disciplina_id = @disciplinaId
