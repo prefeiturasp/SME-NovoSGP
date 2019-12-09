@@ -1,24 +1,23 @@
 ﻿using Dapper;
 using SME.SGP.Dados.Contexto;
+using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Dados.Repositorios
 {
-    public class RepositorioNotificacaoAulaPrevista : IRepositorioNotificacaoAulaPrevista
+    public class RepositorioNotificacaoAulaPrevista : RepositorioBase<NotificacaoAulaPrevista>, IRepositorioNotificacaoAulaPrevista
     {
-        private readonly ISgpContext database;
-
-        public RepositorioNotificacaoAulaPrevista(ISgpContext database)
+        public RepositorioNotificacaoAulaPrevista(ISgpContext database) : base(database)
         {
-            this.database = database;
         }
 
-        public async Task<IEnumerable<RegistroAulaPrevistaDivergenteDto>> ObterTurmasAulasPrevistasDivergentes(int limiteDias)
+        public IEnumerable<RegistroAulaPrevistaDivergenteDto> ObterTurmasAulasPrevistasDivergentes(int limiteDias)
         {
             var query = @"select distinct a.turma_id as CodigoTurma, t.nome as NomeTurma
 	                        , ue.ue_id as CodigoUe, ue.nome as NomeUe
@@ -38,7 +37,20 @@ namespace SME.SGP.Dados.Repositorios
                          having  COUNT(a.*) filter (where a.tipo_aula = 1) <> coalesce(ap.aulas_previstas, 0)
                         order by dre.dre_id, ue.ue_id, a.turma_id";
 
-            return await database.Conexao.QueryAsync<RegistroAulaPrevistaDivergenteDto>(query, new { limiteDias });
+            return database.Conexao.Query<RegistroAulaPrevistaDivergenteDto>(query, new { limiteDias });
+        }
+
+        public bool UsuarioNotificado(long usuarioId, int bimestre, string turmaId, string disciplinaId)
+        {
+            var query = @"select 0 
+                          from notificacao_aula_prevista a
+                         inner join notificacao n on n.codigo = a.notificacao_codigo
+                         where n.usuario_id = @usuarioId
+                           and a.bimestre = @bimestre
+                           and a.disciplina_id = @disciplinaId
+                           and a.turma_id = @turmaId";
+
+            return database.Conexao.Query<int>(query, new { usuarioId, bimestre, disciplinaId, turmaId }).Any();
         }
     }
 }

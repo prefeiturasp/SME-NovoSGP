@@ -132,6 +132,7 @@ namespace SME.SGP.IoC
             services.TryAddTransient<IRepositorioAtribuicaoCJ, RepositorioAtribuicaoCJ>();
             services.TryAddTransient<IRepositorioAtividadeAvaliativa, RepositorioAtividadeAvaliativa>();
             services.TryAddTransient<IRepositorioEventoMatricula, RepositorioEventoMatricula>();
+            services.TryAddTransient<IRepositorioNotificacaoAulaPrevista, RepositorioNotificacaoAulaPrevista>();
         }
 
         private static void RegistrarServicos(IServiceCollection services)
