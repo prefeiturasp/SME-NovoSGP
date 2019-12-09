@@ -95,26 +95,29 @@ const AvaliacaoForm = ({ match }) => {
     delete dadosValidacao.categoriaId;
     delete dadosValidacao.descricao;
 
-    const validacao = await ServicoAvaliacao.validar(dadosValidacao);
+    if (descricao.length <= 500) {
+      const validacao = await ServicoAvaliacao.validar(dadosValidacao);
 
-    if (validacao && validacao.status === 200) {
-      ServicoAvaliacao.salvar(idAvaliacao, { ...dados, ...avaliacao })
-        .then(() => {
+      if (validacao && validacao.status === 200) {
+        const salvar = await ServicoAvaliacao.salvar(idAvaliacao, {
+          ...dados,
+          ...avaliacao,
+        });
+
+        if (salvar && salvar.status === 200) {
           sucesso(
             `Avaliação ${
               idAvaliacao ? 'atualizada' : 'cadastrada'
             } com sucesso.`
           );
           history.push(RotasDTO.CALENDARIO_PROFESSOR);
-        })
-        .catch(() => {
-          erro(
-            `Erro ao ${idAvaliacao ? 'atualizar' : 'cadastrar'} a avaliação.`
-          );
-        });
-    } else {
-      erro(validacao);
-    }
+        } else {
+          erro(salvar);
+        }
+      } else {
+        erro(validacao);
+      }
+    } else erro('A descrição não deve ter mais de 500 caracteres');
   };
 
   const [validacoes] = useState(
@@ -125,6 +128,10 @@ const AvaliacaoForm = ({ match }) => {
         'Selecione o tipo de atividade avaliativa'
       ),
       nome: Yup.string().required('Preencha o nome da atividade avaliativa'),
+      descricao: Yup.string().max(
+        500,
+        'A descrição não deve ter mais de 500 caracteres'
+      ),
     })
   );
 
@@ -154,10 +161,11 @@ const AvaliacaoForm = ({ match }) => {
     tipoAvaliacaoId: undefined,
   };
 
-  const clicouBotaoCancelar = () => {
+  const clicouBotaoCancelar = form => {
     if (!idAvaliacao) {
+      form.resetForm();
       setDadosAvaliacao(inicial);
-      setDescricao('');
+      aoTrocarTextEditor('');
     }
   };
 
@@ -306,7 +314,7 @@ const AvaliacaoForm = ({ match }) => {
               <Button
                 label="Cancelar"
                 color={Colors.Roxo}
-                onClick={clicouBotaoCancelar}
+                onClick={() => clicouBotaoCancelar(form)}
                 border
                 bold
                 className="mr-3"
@@ -410,6 +418,7 @@ const AvaliacaoForm = ({ match }) => {
                   <Label text="Descrição" />
                   <TextEditor
                     ref={textEditorRef}
+                    name="descricao"
                     id="descricao"
                     onBlur={aoTrocarTextEditor}
                     value={descricao}
