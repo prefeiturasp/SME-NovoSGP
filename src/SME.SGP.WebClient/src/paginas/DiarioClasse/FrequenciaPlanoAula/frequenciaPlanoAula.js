@@ -1,5 +1,6 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
+import styled from 'styled-components';
 import { CampoData, Auditoria } from '~/componentes';
 import Cabecalho from '~/componentes-sgp/cabecalho';
 import ListaFrequencia from '~/componentes-sgp/ListaFrequencia/listaFrequencia';
@@ -22,6 +23,7 @@ import { stringNulaOuEmBranco } from '~/utils/funcoes/gerais';
 import ModalMultiLinhas from '~/componentes/modalMultiLinhas';
 import modalidade from '~/dtos/modalidade';
 import ServicoDisciplina from '~/servicos/Paginas/ServicoDisciplina';
+import Grid from '~/componentes/grid';
 
 const FrequenciaPlanoAula = () => {
   const usuario = useSelector(store => store.usuario);
@@ -493,6 +495,25 @@ const FrequenciaPlanoAula = () => {
     }
   };
 
+  const [temAvaliacao, setTemAvaliacao] = useState(undefined);
+  const [dataVigente, setDataVigente] = useState(false);
+
+  const obterAvaliacao = async (idAula, data) => {
+    const avaliacao = api.get(`v1/planos/aulas/${idAula}`);
+    avaliacao.then(resposta => {
+      if (resposta && resposta.data) {
+        if (resposta.data.idAtividadeAvaliativa) {
+          setDataVigente(
+            window.moment(data).isSameOrAfter(window.moment(), 'day')
+          );
+          setTemAvaliacao(resposta.data.idAtividadeAvaliativa);
+        } else {
+          setTemAvaliacao(undefined);
+        }
+      }
+    });
+  };
+
   const validaSeTemIdAula = data => {
     setDataSelecionada(data);
     resetarTelaFrequencia(true, true);
@@ -502,6 +523,7 @@ const FrequenciaPlanoAula = () => {
     if (aulaDataSelecionada && aulaDataSelecionada.idAula) {
       obterListaFrequencia(aulaDataSelecionada.idAula);
       obterPlanoAula(aulaDataSelecionada);
+      obterAvaliacao(aulaDataSelecionada.idAula, data);
     }
   };
 
@@ -541,6 +563,19 @@ const FrequenciaPlanoAula = () => {
     setExibirAuditoria(true);
   };
 
+  const LinkAcao = styled.span`
+    cursor: pointer;
+    font-weight: bold;
+  `;
+
+  const acessarEditarAvaliacao = () => {
+    history.push(`${RotasDto.CADASTRO_DE_AVALIACAO}/editar/${temAvaliacao}`);
+  };
+
+  const acessarNotasConceitos = () => {
+    history.push(RotasDto.NOTAS);
+  };
+
   return (
     <>
       {usuario && turmaSelecionada.turma ? (
@@ -556,6 +591,29 @@ const FrequenciaPlanoAula = () => {
           className="mb-2"
         />
       )}
+      {temAvaliacao ? (
+        <div className="row">
+          <Grid cols={12} className="px-4">
+            <div
+              className="alert alert-info alert-dismissible fade show text-center"
+              role="alert"
+            >
+              Atenção, existe uma avaliação neste dia:{' '}
+              <LinkAcao onClick={acessarEditarAvaliacao}>
+                Editar Avaliação
+              </LinkAcao>{' '}
+              {dataVigente && (
+                <>
+                  ou{' '}
+                  <LinkAcao onClick={acessarNotasConceitos}>
+                    Acessar Notas e Conceitos
+                  </LinkAcao>
+                </>
+              )}
+            </div>
+          </Grid>
+        </div>
+      ) : null}
       <Cabecalho pagina="Frequência/Plano de aula" />
       <Card>
         <div className="col-md-12">
@@ -675,6 +733,7 @@ const FrequenciaPlanoAula = () => {
                   permissoesTela={permissoesTela}
                   somenteConsulta={somenteConsulta}
                   temObjetivos={temObjetivos}
+                  temAvaliacao={temAvaliacao}
                   auditoria={auditoriaPlano}
                 />
               </div>

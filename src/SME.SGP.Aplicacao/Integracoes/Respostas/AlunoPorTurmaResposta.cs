@@ -26,5 +26,10 @@ namespace SME.SGP.Aplicacao.Integracoes.Respostas
                         SituacaoMatriculaAluno.PendenteRematricula,
                         SituacaoMatriculaAluno.SemContinuidade
             }).Contains(CodigoSituacaoMatricula);
+
+        public string NomeValido()
+        {
+            return string.IsNullOrEmpty(NomeSocialAluno) ? NomeAluno : NomeSocialAluno;
+        }
     }
 }

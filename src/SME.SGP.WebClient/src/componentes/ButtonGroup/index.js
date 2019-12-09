@@ -70,8 +70,8 @@ function ButtonGroup({
         border
         bold
         className="btnGroupItem"
-        //onClick={onClickBotaoPrincipal}
-        //disabled={!permissoesTela.podeIncluir || desabilitarBotaoPrincipal}
+        onClick={onClickBotaoPrincipal}
+        disabled={!permissoesTela.podeIncluir || desabilitarBotaoPrincipal}
       />
     </ButtonGroupEstilo>
   );

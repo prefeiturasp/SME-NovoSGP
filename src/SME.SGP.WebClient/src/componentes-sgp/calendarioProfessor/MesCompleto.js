@@ -1,4 +1,4 @@
-﻿import React, { useEffect, useState } from 'react';
+﻿import React, { useEffect, useState, useCallback } from 'react';
 import PropTypes from 'prop-types';
 import { useSelector } from 'react-redux';
 import styled from 'styled-components';
@@ -6,6 +6,7 @@ import Semana from './Semana';
 import DiaCompleto from './DiaCompleto';
 import { store } from '~/redux';
 import { selecionaMes } from '~/redux/modulos/calendarioProfessor/actions';
+import api from '~/servicos/api';
 
 const Div = styled.div``;
 
@@ -29,6 +30,14 @@ DiaDaSemana.defaultProps = {
 
 const MesCompleto = props => {
   const { meses, filtros } = props;
+  const {
+    tipoCalendarioSelecionado,
+    eventoSme,
+    dreSelecionada,
+    unidadeEscolarSelecionada,
+    turmaSelecionada,
+    todasTurmas,
+  } = filtros;
 
   const mesesLista = meses.split(',');
   const mesesCalendario = useSelector(state => state.calendarioProfessor.meses);
@@ -53,18 +62,57 @@ const MesCompleto = props => {
 
   useEffect(() => {
     if (mesesCalendario) {
-      if (filtros && Object.entries(filtros).length > 0) {
-        const { tipoCalendarioSelecionado = '' } = filtros;
-        if (tipoCalendarioSelecionado) {
-          mesesLista.forEach(mes => {
-            if (mesesCalendario[mes].estaAberto) {
-              setMesSelecionado(parseInt(mes, 10));
-            }
-          });
-        }
+      if (tipoCalendarioSelecionado) {
+        mesesLista.forEach(mes => {
+          if (mesesCalendario[mes].estaAberto) {
+            setMesSelecionado(parseInt(mes, 10));
+          }
+        });
       }
     }
-  }, [mesesCalendario]);
+  }, [mesesCalendario, mesesLista, tipoCalendarioSelecionado]);
+
+  const [tipoEventosDiaLista, setTipoEventosDiaLista] = useState([]);
+
+  const obterTipoEventosDia = useCallback(
+    async mes => {
+      if (mes) {
+        if (
+          tipoCalendarioSelecionado &&
+          dreSelecionada &&
+          unidadeEscolarSelecionada &&
+          (turmaSelecionada || todasTurmas)
+        ) {
+          await api
+            .post(`v1/calendarios/meses/tipos/eventos-aulas`, {
+              Mes: mes,
+              tipoCalendarioId: tipoCalendarioSelecionado,
+              EhEventoSME: eventoSme,
+              dreId: dreSelecionada,
+              ueId: unidadeEscolarSelecionada,
+              turmaId: turmaSelecionada,
+              todasTurmas,
+            })
+            .then(resposta => {
+              if (resposta.data) {
+                setTipoEventosDiaLista(resposta.data);
+              } else setTipoEventosDiaLista([]);
+            })
+            .catch(() => {
+              setTipoEventosDiaLista([]);
+            });
+        } else setTipoEventosDiaLista([]);
+      }
+    },
+    [
+      dreSelecionada,
+      eventoSme,
+      tipoCalendarioSelecionado,
+      todasTurmas,
+      turmaSelecionada,
+      unidadeEscolarSelecionada,
+    ]
+  );
 
   useEffect(() => {
     if (mesSelecionado > 0) {
@@ -85,6 +133,7 @@ const MesCompleto = props => {
       setDiasDaSemana(diasDaSemanaLista);
       setUltimoUsado(mesSelecionado);
       setEstaAberto({ ...estaAberto, [mesSelecionado]: true });
+      obterTipoEventosDia(mesSelecionado);
     }
     return () => setEstaAberto({ ...estaAberto, [mesSelecionado]: false });
   }, [mesSelecionado]);
@@ -107,37 +156,63 @@ const MesCompleto = props => {
         dias={diasDaSemana[0]}
         mesAtual={ultimoUsado}
         filtros={filtros}
+        tipoEventosDiaLista={tipoEventosDiaLista}
       />
       <DiaCompleto
         dias={diasDaSemana[0]}
         mesAtual={ultimoUsado}
         filtros={filtros}
       />
-      <Semana dias={diasDaSemana[1]} mesAtual={ultimoUsado} filtros={filtros} />
+      <Semana
+        dias={diasDaSemana[1]}
+        mesAtual={ultimoUsado}
+        filtros={filtros}
+        tipoEventosDiaLista={tipoEventosDiaLista}
+      />
       <DiaCompleto
         dias={diasDaSemana[1]}
         mesAtual={ultimoUsado}
         filtros={filtros}
       />
-      <Semana dias={diasDaSemana[2]} mesAtual={ultimoUsado} filtros={filtros} />
+      <Semana
+        dias={diasDaSemana[2]}
+        mesAtual={ultimoUsado}
+        filtros={filtros}
+        tipoEventosDiaLista={tipoEventosDiaLista}
+      />
       <DiaCompleto
         dias={diasDaSemana[2]}
         mesAtual={ultimoUsado}
         filtros={filtros}
       />
-      <Semana dias={diasDaSemana[3]} mesAtual={ultimoUsado} filtros={filtros} />
+      <Semana
+        dias={diasDaSemana[3]}
+        mesAtual={ultimoUsado}
+        filtros={filtros}
+        tipoEventosDiaLista={tipoEventosDiaLista}
+      />
       <DiaCompleto
         dias={diasDaSemana[3]}
         mesAtual={ultimoUsado}
         filtros={filtros}
       />
-      <Semana dias={diasDaSemana[4]} mesAtual={ultimoUsado} filtros={filtros} />
+      <Semana
+        dias={diasDaSemana[4]}
+        mesAtual={ultimoUsado}
+        filtros={filtros}
+        tipoEventosDiaLista={tipoEventosDiaLista}
+      />
       <DiaCompleto
         dias={diasDaSemana[4]}
         mesAtual={ultimoUsado}
         filtros={filtros}
       />
-      <Semana dias={diasDaSemana[5]} mesAtual={ultimoUsado} filtros={filtros} />
+      <Semana
+        dias={diasDaSemana[5]}
+        mesAtual={ultimoUsado}
+        filtros={filtros}
+        tipoEventosDiaLista={tipoEventosDiaLista}
+      />
       <DiaCompleto
         dias={diasDaSemana[5]}
         mesAtual={ultimoUsado}

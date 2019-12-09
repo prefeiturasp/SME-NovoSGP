@@ -26,6 +26,8 @@ import ServicoPrimeiroAcesso from '~/servicos/Paginas/ServicoPrimeiroAcesso';
 import { salvarDadosLogin, Deslogar } from '~/redux/modulos/usuario/actions';
 import { store } from '~/redux';
 import Erro from '../RecuperarSenha/erro';
+import { setMenusPermissoes } from '~/servicos/servico-navegacao';
+import { obterMeusDados } from '~/servicos/Paginas/ServicoUsuario';
 
 const Item = styled.li`
   ${props => props.status === true && `color: ${Base.Verde}`};
@@ -172,6 +174,9 @@ const RedefinirSenha = props => {
         confirmarSenha: senha,
       });
       if (requisicao.sucesso) {
+        obterMeusDados();
+        setMenusPermissoes();
+
         const rf = Number.isInteger(usuario * 1) ? usuario : '';
         store.dispatch(
           salvarDadosLogin({
