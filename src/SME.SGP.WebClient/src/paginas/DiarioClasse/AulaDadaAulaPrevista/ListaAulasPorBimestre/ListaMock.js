@@ -12,6 +12,7 @@ export const getMock = () => {
         },
         criadas: {
           professorTitular: 1,
+          professorCj: 1,
         },
         dadas: 1,
         respostas: 1,
@@ -62,8 +63,8 @@ export const getMock = () => {
     totalPrevistas: 4,
     totalCriadasProfTitular: 4,
     totalCriadasProfCj: 4,
-    totalDadas:4,
-    totalRespostas:4,
+    totalDadas: 4,
+    totalRespostas: 4,
   }
   return dados;
 }
