@@ -64,9 +64,9 @@ namespace SME.SGP.Dados.Repositorios
             return database.Conexao.Query<AulasPorTurmaDisciplinaDto>(query, new { turmaId, disciplinaId });
         }
 
-        public IEnumerable<RegistroAusenciaAluno> ObterAusencias(string turmaCodigo, long disciplinaCodigo, DateTime[] datas, string[] alunoCodigos)
+        public async Task<IEnumerable<AusenciaAlunoDto>> ObterAusencias(string turmaCodigo, string disciplinaCodigo, DateTime[] datas, string[] alunoCodigos)
         {
-            var query = @"select a.codigo_aluno, a.data_aula from (select raa.codigo_aluno, a.quantidade, a.data_aula, count(raa.id) as faltas  from registro_frequencia rf
+            var query = @"select a.codigo_aluno as AlunoCodigo, a.data_aula as AulaData from (select raa.codigo_aluno, a.quantidade, a.data_aula, count(raa.id) as faltas  from registro_frequencia rf
                             inner join aula a
                             on rf.aula_id = a.id
                             inner join registro_ausencia_aluno raa
@@ -78,7 +78,7 @@ namespace SME.SGP.Dados.Repositorios
                             group by raa.codigo_aluno, a.quantidade, a.data_aula) a
                             where a.quantidade = a.faltas";
 
-            return database.Conexao.Query<RegistroAusenciaAluno>(query, new { turmaCodigo, disciplinaCodigo, datas, alunoCodigos });
+            return await database.Conexao.QueryAsync<AusenciaAlunoDto>(query, new { turmaCodigo, disciplinaCodigo, datas, alunoCodigos });
         }
 
         public IEnumerable<RegistroAusenciaAluno> ObterListaFrequenciaPorAula(long aulaId)
