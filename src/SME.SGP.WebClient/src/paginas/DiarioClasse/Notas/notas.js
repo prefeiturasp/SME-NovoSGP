@@ -12,6 +12,7 @@ import { URL_HOME } from '~/constantes/url';
 import { confirmar, erros, sucesso } from '~/servicos/alertas';
 import api from '~/servicos/api';
 import history from '~/servicos/history';
+import notasConceitos from '~/dtos/notasConceitos';
 
 import { Container, ContainerAuditoria } from './notas.css';
 
@@ -22,6 +23,8 @@ const Notas = () => {
   const usuario = useSelector(store => store.usuario);
   const { turmaSelecionada } = usuario;
   const turmaId = turmaSelecionada ? turmaSelecionada.turma : 0;
+  const modalidade = turmaSelecionada ? turmaSelecionada.modalidade : 0;
+  const anoLetivo = turmaSelecionada.anoLetivo;
 
   const [listaDisciplinas, setListaDisciplinas] = useState([]);
   const [disciplinaSelecionada, setDisciplinaSelecionada] = useState(undefined);
@@ -49,16 +52,28 @@ const Notas = () => {
       }
     };
 
-    if (turmaId) {
+    if (turmaId && modalidade) {
       setDisciplinaSelecionada(undefined);
       obterDisciplinas();
     } else {
       // TODO - Resetar tela
       setListaDisciplinas([]);
       setDesabilitarDisciplina(false);
-      setDisciplinaSelecionada(undefined);
+      resetarTela();
     }
   }, [turmaSelecionada.turma]);
+
+  const resetarTela = ()=> {
+    setDisciplinaSelecionada(undefined);
+    setBimestres([]);
+    setNotaTipo(0);
+    setDesabilitarCampos(false);
+    setModoEdicao(false);
+    setAuditoriaInfo({
+      auditoriaAlterado: '',
+      auditoriaInserido: ''
+    });
+  }
 
 
   const onClickVoltar = async () => {
@@ -90,31 +105,58 @@ const Notas = () => {
   const onClickSalvar = ()=> {
     console.log('onClickSalvar');
     console.log(bimestres);
+    onSalvarNotas();
   }
 
   const onChangeDisciplinas = disciplinaId => {
-    setDisciplinaSelecionada(disciplinaId);
-    obterDadosBimestres(disciplinaId, 0)
+    if (disciplinaId) {
+      obterDadosBimestres(disciplinaId, 0)
+      setDisciplinaSelecionada(disciplinaId);
+    } else {
+      resetarTela();
+    }
   };
 
-  const onChangeTab = (item) => {
-    console.log(item);
+  const onChangeTab = numeroBimestre => {
+    obterDadosBimestres(disciplinaSelecionada, numeroBimestre, true);
   }
 
-  const obterDadosBimestres = async (disciplinaId, numeroBimestre) => {
-    const params = {
-      bimestre: numeroBimestre,
-      disciplinaCodigo: disciplinaId,
-      professorRf: usuario.rf
+  const obterDadosBimestres = async (disciplinaId, numeroBimestre, selecionouTabManual) => {
+
+    let realizarConsulta = true;
+
+
+    if (selecionouTabManual) {
+      const bimestre = bimestres.find(item => item.numero == numeroBimestre);
+      if (bimestre.modoEdicao) {
+        realizarConsulta = false;
+      }
     }
-    const dados = await api.get('v1/avaliacoes/notas', params);
-    if (dados && dados.data) {
-      setBimestres([...dados.data.bimestres]);
-      setNotaTipo(dados.data.notaTipo);
-      setAuditoriaInfo({
-        auditoriaAlterado: dados.data.auditoriaAlterado,
-        auditoriaInserido: dados.data.auditoriaInserido
-      });
+
+    if (realizarConsulta) {
+      const params = {
+        anoLetivo,
+        bimestre: numeroBimestre,
+        disciplinaCodigo: disciplinaId,
+        modalidade,
+        turmaCodigo: turmaId
+      }
+      const dados = await api.get('v1/avaliacoes/notas/', {params});
+      if (dados && dados.data) {
+        if (selecionouTabManual) {
+          const bimestrePesquisado = dados.data.bimestres.find(item => item.numero == numeroBimestre);
+          const indexBimestre = dados.data.bimestres.indexOf(bimestrePesquisado);
+          bimestres[indexBimestre] = bimestrePesquisado;
+          setBimestres([...bimestres]);
+        } else {
+          setBimestres([...dados.data.bimestres]);
+        }
+        setNotaTipo(dados.data.notaTipo);
+        setAuditoriaInfo({
+          auditoriaAlterado: dados.data.auditoriaAlterado,
+          auditoriaInserido: dados.data.auditoriaInserido
+        });
+      }
     }
   }
 
@@ -124,9 +166,28 @@ const Notas = () => {
 
   const onSalvarNotas = click => {
     return new Promise((resolve, reject) => {
-      const valorParaSalvar = { };
+      const valorParaSalvar = [];
+      const bimestresEmEdicao = bimestres.filter(item => item.modoEdicao);
+
+      bimestresEmEdicao.forEach(b => {
+        b.alunos.forEach(aluno => {
+          aluno.notasAvaliacoes.forEach(nota => {
+            if (nota.notaConceito) {
+              valorParaSalvar.push(
+                {
+                  alunoId: aluno.id,
+                  atividadeAvaliativaId: nota.atividadeAvaliativaId,
+                  conceito: notaTipo === notasConceitos.Conceitos ? nota.notaConceito : 0,
+                  nota: notaTipo === notasConceitos.Notas ? nota.notaConceito : 0
+                }
+              )
+            }
+          })
+        });
+      })
+
       return api
-        .post(`v1/avaliacoes/notas`, valorParaSalvar)
+        .post(`v1/avaliacoes/notas`, {turmaId, notasConceitos: valorParaSalvar})
         .then(salvouNotas => {
           if (salvouNotas && salvouNotas.status == 200) {
             sucesso('Suas informações foram salvas com sucesso.');
@@ -188,6 +249,7 @@ const Notas = () => {
                 border
                 className="mr-2"
                 onClick={onClickCancelar}
+                disabled={!modoEdicao}
               />
               <Button
                 label="Salvar"
@@ -196,6 +258,9 @@ const Notas = () => {
                 bold
                 className="mr-2"
                 onClick={onClickSalvar}
+                disabled={
+                  desabilitarCampos || !modoEdicao
+                }
               />
             </div>
           </div>
@@ -219,10 +284,10 @@ const Notas = () => {
             <>
               <div className="row">
                 <div className="col-sm-12 col-md-12 col-lg-12 col-xl-12 mb-2">
-                  <ContainerTabsCard type="card" onChangeTab={onChangeTab}>
+                  <ContainerTabsCard type="card" onChange={onChangeTab}>
                     {bimestres.map((item, i) => {
                         return (
-                          <TabPane tab={item.descricao} key={i}>
+                          <TabPane tab={item.descricao} key={item.numero} >
                             <Avaliacao
                               dados={item}
                               notaTipo={notaTipo}
