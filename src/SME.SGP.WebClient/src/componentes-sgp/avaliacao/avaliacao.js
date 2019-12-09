@@ -27,6 +27,7 @@ const Avaliacao = props => {
 
   const onChangeNotaConceito = (aluno, notaConceito, index) => {
     aluno.notasAvaliacoes[index].notaConceito = notaConceito;
+    dataSource.modoEdicao = true;
     setAlunos([...alunos]);
     onChangeAvaliacao(true);
   }
