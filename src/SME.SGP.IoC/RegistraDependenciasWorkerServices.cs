@@ -159,6 +159,7 @@ namespace SME.SGP.IoC
             services.TryAddScopedWorkerService<IServicoCalculoFrequencia, ServicoCalculoFrequencia>();
             services.TryAddScopedWorkerService<IServicoNotificacaoFrequencia, ServicoNotificacaoFrequencia>();
             services.TryAddScopedWorkerService<IServicoNotificacaoAulaPrevista, ServicoNotificacaoAulaPrevista>();
+            services.TryAddScopedWorkerService<IServicoEventoMatricula, ServicoEventoMatricula>();
         }
 
         private static void ResgistraDependenciaHttp(IServiceCollection services)
