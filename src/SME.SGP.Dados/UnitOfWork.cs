@@ -1,6 +1,7 @@
 ﻿using SME.SGP.Dados.Contexto;
 using SME.SGP.Dominio;
 using System.Data;
+using SME.SGP.Infra;
 
 namespace SME.SGP.Dados
 {

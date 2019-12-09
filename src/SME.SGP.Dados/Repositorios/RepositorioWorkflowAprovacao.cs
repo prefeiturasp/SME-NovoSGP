@@ -5,6 +5,7 @@ using SME.SGP.Dominio.Interfaces;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using SME.SGP.Infra;
 
 namespace SME.SGP.Dados.Repositorios
 {

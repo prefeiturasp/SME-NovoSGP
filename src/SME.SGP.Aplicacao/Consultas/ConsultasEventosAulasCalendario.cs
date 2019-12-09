@@ -81,19 +81,24 @@ namespace SME.SGP.Aplicacao
             .ForEach(async x =>
             {
                 bool podeCriarAtividade = true;
-                var atividade = atividades.Where(w => w.DataAvaliacao == x.DataAula.Date && w.TurmaId == x.TurmaId).FirstOrDefault();
+                var listaAtividades = atividades.Where(w => w.DataAvaliacao.Date == x.DataAula.Date && w.TurmaId == x.TurmaId && w.DisciplinaId.ToString() == x.DisciplinaId).ToList();
                 var disciplina = disciplinasProfessor?.FirstOrDefault(d => d.CodigoComponenteCurricular.ToString().Equals(x.DisciplinaId));
-                if (atividade != null && disciplina != null)
+                if (atividades != null && disciplina != null)
                 {
-                    if (disciplina.Regencia)
+                    foreach (var item in listaAtividades)
                     {
-                        var disciplinasRegenciasComAtividades = await repositorioAtividadeAvaliativaRegencia.Listar(atividade.Id);
-                        podeCriarAtividade = disciplinasRegencia.Count() > disciplinasRegenciasComAtividades.Count();
-                        atividade.AtividadeAvaliativaRegencia = new List<AtividadeAvaliativaRegencia>();
-                        atividade.AtividadeAvaliativaRegencia.AddRange(disciplinasRegenciasComAtividades);
+
+
+                        if (disciplina.Regencia)
+                        {
+                            var disciplinasRegenciasComAtividades = await repositorioAtividadeAvaliativaRegencia.Listar(item.Id);
+                            podeCriarAtividade = disciplinasRegencia.Count() > disciplinasRegenciasComAtividades.Count();
+                            item.AtividadeAvaliativaRegencia = new List<AtividadeAvaliativaRegencia>();
+                            item.AtividadeAvaliativaRegencia.AddRange(disciplinasRegenciasComAtividades);
+                        }
+                        else
+                            podeCriarAtividade = false;
                     }
-                    else
-                        podeCriarAtividade = false;
                 }
 
                 var turma = turmasAbrangencia.FirstOrDefault(t => t.CodigoTurma.Equals(x.TurmaId));
@@ -112,7 +117,7 @@ namespace SME.SGP.Aplicacao
                         Tipo = turma?.TipoEscola.GetAttribute<DisplayAttribute>().ShortName ?? "Escola",
                         Turma = x.TurmaNome,
                         UnidadeEscolar = x.UeNome,
-                        Atividade = atividade
+                        Atividade = listaAtividades
                     }
                 });
             });
