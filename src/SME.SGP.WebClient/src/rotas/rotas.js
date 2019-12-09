@@ -32,6 +32,8 @@ import FrequenciaPlanoAula from '~/paginas/DiarioClasse/FrequenciaPlanoAula/freq
 import AvaliacaoLista from '~/paginas/CalendarioEscolar/Avaliacao/avaliacaoLista';
 import AvaliacaoForm from '~/paginas/CalendarioEscolar/Avaliacao/avaliacaoForm';
 import Notas from '~/paginas/DiarioClasse/Notas/notas';
+import TipoAvaliacaoLista from '~paginas/Configuracoes/TipoAvaliacao/tipoAvaliacaoLista';
+import TipoAvaliacaoForm from '~paginas/Configuracoes/TipoAvaliacao/tipoAvaliacaoForm';
 
 const rotas = new Map();
 
@@ -451,6 +453,34 @@ rotas.set(`${RotasDto.NOTAS}`, {
   menu: ['Diário de Classe'],
   parent: '/',
   component: Notas,
+  exact: true,
+  tipo: RotasTipo.EstruturadaAutenticada,
+  temPermissionamento: false,
+});
+
+rotas.set(`${RotasDto.TIPO_AVALIACAO}`, {
+  breadcrumbName: 'Configurações/Tipo Avalição',
+  menu: ['Configurações', 'Tipo Avaliação'],
+  parent: '/',
+  component: TipoAvaliacaoLista,
+  exact: true,
+  tipo: RotasTipo.EstruturadaAutenticada,
+  temPermissionamento: false,
+});
+rotas.set(`${RotasDto.TIPO_AVALIACAO}/novo`, {
+  breadcrumbName: 'Configurações/Tipo Avalição Novo',
+  menu: ['Configurações', 'Tipo Avaliação'],
+  parent: '/',
+  component: TipoAvaliacaoForm,
+  exact: true,
+  tipo: RotasTipo.EstruturadaAutenticada,
+  temPermissionamento: false,
+});
+rotas.set(`${RotasDto.TIPO_AVALIACAO}/editar/:id`, {
+  breadcrumbName: 'Configurações/Tipo Avalição Novo',
+  menu: ['Configurações', 'Tipo Avaliação'],
+  parent: '/',
+  component: TipoAvaliacaoForm,
   exact: true,
   tipo: RotasTipo.EstruturadaAutenticada,
   temPermissionamento: false,
