@@ -416,9 +416,16 @@ namespace SME.SGP.Aplicacao.Integracoes
             throw new NegocioException(mensagem);
         }
 
-        public bool ValidarProfessor(string professorRf)
+        public async Task<bool> ValidarProfessor(string professorRf)
         {
-            return true;
+            var resposta = await httpClient.GetAsync($"professores/{professorRf}/validade");
+
+            if (resposta.IsSuccessStatusCode)
+            {
+                var json = await resposta.Content.ReadAsStringAsync();
+                return JsonConvert.DeserializeObject<bool>(json);
+            }
+            return false;
         }
 
         private IEnumerable<DisciplinaDto> MapearParaDtoDisciplinas(IEnumerable<RetornoDisciplinaDto> disciplinas)
