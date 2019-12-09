@@ -19,5 +19,10 @@ namespace SME.SGP.Aplicacao.Integracoes.Respostas
         {
             return CodigoSituacaoMatricula != SituacaoMatriculaAluno.Ativo && CodigoSituacaoMatricula != SituacaoMatriculaAluno.Rematriculado;
         }
+
+        public string NomeValido()
+        {
+            return string.IsNullOrEmpty(NomeSocialAluno) ? NomeAluno : NomeSocialAluno;
+        }
     }
 }
