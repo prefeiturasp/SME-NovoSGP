@@ -6,8 +6,10 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Dominio.Interfaces
 {
-   public interface IRepositorioNotificacaoAulaPrevista
+    public interface IRepositorioNotificacaoAulaPrevista : IRepositorioBase<NotificacaoAulaPrevista>
     {
-       Task<IEnumerable<RegistroAulaPrevistaDivergenteDto>> ObterTurmasAulasPrevistasDivergentes(int limiteDias);
+        bool UsuarioNotificado(long usuarioId, int bimestre, string turmaId, string disciplinaId);
+
+        IEnumerable<RegistroAulaPrevistaDivergenteDto> ObterTurmasAulasPrevistasDivergentes(int limiteDias);
     }
 }

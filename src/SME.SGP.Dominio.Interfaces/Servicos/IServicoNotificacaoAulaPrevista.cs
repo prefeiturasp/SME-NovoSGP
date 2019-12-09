@@ -7,6 +7,6 @@ namespace SME.SGP.Dominio.Interfaces
 {
     public interface IServicoNotificacaoAulaPrevista
     {
-       Task ExecutaNotificacaoAulaPrevista();
+       void ExecutaNotificacaoAulaPrevista();
     }
 }

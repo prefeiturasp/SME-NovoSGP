@@ -39,7 +39,7 @@ namespace SME.SGP.Api.Controllers
         [HttpPost("notificar")]
         public async Task<IActionResult> Notificar([FromServices] IServicoNotificacaoAulaPrevista servicoNotificacaoAulaPrevista)
         {
-            await servicoNotificacaoAulaPrevista.ExecutaNotificacaoAulaPrevista();
+            servicoNotificacaoAulaPrevista.ExecutaNotificacaoAulaPrevista();
             return Ok();
         }
     }

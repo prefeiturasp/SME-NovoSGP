@@ -83,7 +83,7 @@ namespace SME.SGP.Dados.Repositorios
             return await database.Conexao.QueryAsync<AulaPrevista>(query.ToString(), new { bimestre, tipoCalendarioId, turmaId, disciplinaId });
         }
 
-        public async Task<string> ObterProfessorTurmaDisciplinaAulasPrevistasDivergente(int bimestre, string turmaId, string disciplinaId, int limiteDias)
+        public string ObterProfessorTurmaDisciplinaAulasPrevistasDivergente(int bimestre, string turmaId, string disciplinaId, int limiteDias)
         {
             var query = @"select a.professor_rf
                           from aula a
@@ -96,7 +96,7 @@ namespace SME.SGP.Dados.Repositorios
                            and a.disciplina_id = @disciplinaId
                           ORDER BY a.data_aula DESC NULLS LAST LIMIT 1";
 
-            return await database.Conexao.QuerySingleOrDefaultAsync<string>(query, new { bimestre, turmaId, disciplinaId, limiteDias });
+            return database.Conexao.QuerySingleOrDefault<string>(query, new { bimestre, turmaId, disciplinaId, limiteDias });
         }
     }
 }

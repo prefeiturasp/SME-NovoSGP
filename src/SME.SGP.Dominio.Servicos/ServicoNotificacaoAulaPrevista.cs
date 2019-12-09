@@ -35,19 +35,19 @@ namespace SME.SGP.Dominio.Servicos
             this.configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
         }
 
-        public async Task ExecutaNotificacaoAulaPrevista()
+        public void ExecutaNotificacaoAulaPrevista()
         {
             var qtdDiasBimestreNotificacao = QuantidadeDiasFimBimestreParaNotificacao();
 
             // Busca registro de aula sem frequencia e sem notificação do tipo
-            var turmasAulasPrevistasDivergentes = await repositorioNotificacaoAulaPrevista.ObterTurmasAulasPrevistasDivergentes(qtdDiasBimestreNotificacao);
+            var turmasAulasPrevistasDivergentes = repositorioNotificacaoAulaPrevista.ObterTurmasAulasPrevistasDivergentes(qtdDiasBimestreNotificacao);
 
             foreach (var turma in turmasAulasPrevistasDivergentes)
             {
                 // Carrega todas as aulas das turmas com aulas previstas divergentes por disciplina para notificação
-                turma.ProfessorRf = 
-                    await repositorioAulaPrevista.ObterProfessorTurmaDisciplinaAulasPrevistasDivergente(turma.Bimestre, turma.CodigoTurma, 
-                                                                                                        turma.DisciplinaId, qtdDiasBimestreNotificacao);
+                turma.ProfessorRf =
+                    repositorioAulaPrevista.ObterProfessorTurmaDisciplinaAulasPrevistasDivergente(turma.Bimestre, turma.CodigoTurma,
+                                                                                                  turma.DisciplinaId, qtdDiasBimestreNotificacao);
 
                 // Busca Professor/Gestor/Supervisor da Turma ou Ue
                 var usuarios = BuscaProfessorAula(turma);
@@ -55,7 +55,8 @@ namespace SME.SGP.Dominio.Servicos
                 if (usuarios != null)
                     foreach (var usuario in usuarios)
                     {
-                        NotificaRegistroDivergencia(usuario, turma);
+                        if(!repositorioNotificacaoAulaPrevista.UsuarioNotificado(usuario.Id, turma.Bimestre, turma.CodigoTurma, turma.DisciplinaId))
+                            NotificaRegistroDivergencia(usuario, turma);
                     }
             }
         }
@@ -97,6 +98,14 @@ namespace SME.SGP.Dominio.Servicos
                 DreId = registroAulaPrevistaDivergente.CodigoDre,
             };
             servicoNotificacao.Salvar(notificacao);
+
+            repositorioNotificacaoAulaPrevista.Salvar(new NotificacaoAulaPrevista()
+            {
+                Bimestre = registroAulaPrevistaDivergente.Bimestre,
+                NotificacaoCodigo = notificacao.Codigo,
+                TurmaId = registroAulaPrevistaDivergente.CodigoTurma,
+                DisciplinaId = registroAulaPrevistaDivergente.DisciplinaId,
+            });
         }
     }
 }
