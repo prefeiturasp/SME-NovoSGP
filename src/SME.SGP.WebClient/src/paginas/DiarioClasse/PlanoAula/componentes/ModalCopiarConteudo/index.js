@@ -132,6 +132,7 @@ function ModalCopiarConteudo({ show, disciplina, onClose, planoAula }) {
       licaoCasa: false,
     });
     setTurmas([]);
+    setAlerta(false);
     onClose();
   };
 
