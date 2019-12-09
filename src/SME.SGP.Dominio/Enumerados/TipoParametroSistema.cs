@@ -16,6 +16,9 @@
         QuantidadeAulasNotificarSupervisorUE = 7,
         QuantidadeDiasNotificarAlteracaoChamadaEfetivada = 8,
 
+        //Aula Prevista
+        QuantidadeDiasNotificarProfessor = 9,
+
         //Sistema
         HabilitarServicosEmBackground = 100
     }

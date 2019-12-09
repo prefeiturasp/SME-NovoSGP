@@ -64,10 +64,21 @@ export default function PlanoAnual() {
 
   const turmaSelecionada = usuario.turmaSelecionada;
   const emEdicao = bimestres.filter(x => x.ehEdicao).length > 0;
-  const ehDisabled =
-    somenteConsulta || !permissoesTela.podeAlterar
+
+  const [ehDisabled, setDisabled] = useState(
+    somenteConsulta || !permissoesTela || !permissoesTela.podeAlterar
       ? true
-      : !usuario.turmaSelecionada.turma;
+      : !usuario.turmaSelecionada.turma
+  );
+
+  useEffect(() => {
+    setDisabled(
+      somenteConsulta || !permissoesTela || !permissoesTela.podeAlterar
+        ? true
+        : !usuario.turmaSelecionada.turma
+    );
+  }, [permissoesTela, somenteConsulta, usuario.turmaSelecionada.turma]);
+
   const ehDisabledComPermissao = !usuario.turmaSelecionada.turma;
   const dispatch = useDispatch();
   const [modalConfirmacaoVisivel, setModalConfirmacaoVisivel] = useState({
@@ -76,9 +87,8 @@ export default function PlanoAnual() {
   });
 
   const refFocado = useRef(null);
-
   const ehEja =
-    turmaSelecionada && turmaSelecionada.codModalidade === modalidade.EJA
+    turmaSelecionada && Number(turmaSelecionada.modalidade) === modalidade.EJA
       ? true
       : false;
 
