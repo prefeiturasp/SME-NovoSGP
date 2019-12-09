@@ -310,12 +310,18 @@ namespace SME.SGP.Aplicacao.Integracoes
             return JsonConvert.DeserializeObject<IEnumerable<ProfessorResumoDto>>(json);
         }
 
-        public async Task<IEnumerable<ProfessorTitularDisciplinaEol>> ObterProfessoresTitularesDisciplinas(string turmaId, Modalidade modalidadeId, string ueId)
+        public async Task<IEnumerable<ProfessorTitularDisciplinaEol>> ObterProfessoresTitularesDisciplinas(string turmaCodigo)
         {
-            return new List<ProfessorTitularDisciplinaEol>() {
-                new ProfessorTitularDisciplinaEol() { DisciplinaId = 1060, DisciplinaNome = "Informática - OIE", ProfessorNome = "Josefino Alves", ProfessorRf = "53715782" } ,
-                new ProfessorTitularDisciplinaEol() { DisciplinaId = 1288, DisciplinaNome = "Educação Física Integral Manhã", ProfessorNome = "Arlindo Cruz", ProfessorRf = "876524789" } ,
-            };
+            var resposta = await httpClient.GetAsync($"professores/{turmaCodigo}/titulares");
+
+            if (!resposta.IsSuccessStatusCode)
+                return null;
+
+            if (resposta.StatusCode == HttpStatusCode.NoContent)
+                return null;
+
+            var json = await resposta.Content.ReadAsStringAsync();
+            return JsonConvert.DeserializeObject<IEnumerable<ProfessorTitularDisciplinaEol>>(json);
         }
 
         public async Task<UsuarioResumoCoreDto> ObterResumoCore(string login)
