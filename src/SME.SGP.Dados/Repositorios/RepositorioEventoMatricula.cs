@@ -17,9 +17,15 @@ namespace SME.SGP.Dados.Repositorios
         {
         }
 
-        public Task<EventoMatricula> ObterUltimoEventoAluno(string codigoAluno, DateTime dataLimite)
+        public async Task<EventoMatricula> ObterUltimoEventoAluno(string codigoAluno, DateTime dataLimite)
         {
-            var query = @"";
+            var query = @"select * 
+                          from evento_matricula 
+                         where codigo_aluno = @codigoAluno
+                           and data_evento <= @dataLimite
+                        order by data_evento desc";
+
+            return database.Conexao.QueryFirstOrDefault<EventoMatricula>(query, new { codigoAluno, dataLimite });
         }
 
         public bool CheckarEventoExistente(SituacaoMatriculaAluno tipo, DateTime dataEvento, string codigoAluno)
