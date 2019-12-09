@@ -25,25 +25,18 @@ namespace SME.SGP.Aplicacao
 
         public async Task Inserir(AulaPrevistaDto dto)
         {
-            try
+            var aulaPrevista = await ObterAulaPrevistaPorFiltro(0, dto.TipoCalendarioId, dto.TurmaId, dto.DisciplinaId);
+
+            unitOfWork.IniciarTransacao();
+
+            foreach (var bimestre in dto.BimestresQuantidade)
             {
-                var aulaPrevista = await ObterAulaPrevistaPorFiltro(0, dto.TipoCalendarioId, dto.TurmaId, dto.DisciplinaId);
-
-                unitOfWork.IniciarTransacao();
-
-                foreach (var bimestre in dto.BimestresQuantidade)
-                {
-                    AulaPrevista aula = aulaPrevista.Where(ap => ap.Bimestre == bimestre.Bimestre).FirstOrDefault();
-                    aula = MapearParaDominio(dto, bimestre, aula);
-                    repositorio.Salvar(aula);
-                }
-
-                unitOfWork.PersistirTransacao();
+                AulaPrevista aula = aulaPrevista.Where(ap => ap.Bimestre == bimestre.Bimestre).FirstOrDefault();
+                aula = MapearParaDominio(dto, bimestre, aula);
+                repositorio.Salvar(aula);
             }
-            catch (Exception e)
-            {
-                throw e;
-            }
+
+            unitOfWork.PersistirTransacao();
         }
 
         private async Task<IEnumerable<AulaPrevista>> ObterAulaPrevistaPorFiltro(int bimestre, long tipoCalendarioId, string turmaId, string disciplinaId)

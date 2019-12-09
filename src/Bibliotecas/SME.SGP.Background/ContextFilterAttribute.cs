@@ -31,13 +31,15 @@ namespace SME.SGP.Hangfire
 
         public void OnPerformed(PerformedContext filterContext)
         {
-            WorkerContext.TransientContexts.Remove(Thread.CurrentThread.Name);
+            WorkerContext removed = null;
+            if (WorkerContext.TransientContexts.TryRemove(Thread.CurrentThread.Name, out removed))
+                removed.Dispose();
         }
 
         public void OnPerforming(PerformingContext filterContext)
         {
             var contextoTransiente = filterContext.GetJobParameter<WorkerContext>("contextoAplicacao");
-            WorkerContext.TransientContexts.Add(Thread.CurrentThread.Name, contextoTransiente);
+            WorkerContext.TransientContexts.TryAdd(Thread.CurrentThread.Name, contextoTransiente);
 
         }
 
