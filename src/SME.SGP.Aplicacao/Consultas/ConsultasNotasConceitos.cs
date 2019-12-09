@@ -160,5 +160,16 @@ namespace SME.SGP.Aplicacao
 
             return string.Empty;
         }
+
+        public TipoNota ObterNotaTipo(DateTime dataAvaliacao, long turmaId)
+        {
+            var notaTipo = servicoDeNotasConceitos.TipoNotaPorAvaliacao(new AtividadeAvaliativa()
+            {
+                TurmaId = turmaId.ToString(),
+                DataAvaliacao = dataAvaliacao
+            });
+
+            return notaTipo.TipoNota;
+        }
     }
 }
