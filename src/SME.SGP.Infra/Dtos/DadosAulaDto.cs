@@ -1,4 +1,5 @@
 ﻿using SME.SGP.Dominio;
+using System.Collections.Generic;
 
 namespace SME.SGP.Infra
 {
@@ -6,7 +7,7 @@ namespace SME.SGP.Infra
     {
         public bool podeCadastrarAvaliacao;
 
-        public AtividadeAvaliativa Atividade { get; set; }
+        public List<AtividadeAvaliativa> Atividade { get; set; }
         public string Disciplina { get; set; }
         public bool EhRegencia { get; set; }
         public string Horario { get; set; }

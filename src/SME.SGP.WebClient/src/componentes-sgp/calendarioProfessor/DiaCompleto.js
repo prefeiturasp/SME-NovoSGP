@@ -72,8 +72,9 @@ const DiaCompleto = props => {
               todasTurmas,
             })
             .then(resposta => {
-              if (resposta.data) setEventosDia(resposta.data);
-              else setEventosDia([]);
+              if (resposta.data) {
+                setEventosDia(resposta.data);
+              } else setEventosDia([]);
             })
             .catch(() => {
               setEventosDia([]);
@@ -112,10 +113,10 @@ const DiaCompleto = props => {
     );
   };
 
-  const BotoesAuxiliares = ({ temAula }) => {
+  const BotoesAuxiliares = ({ temAula, podeCadastrarAvaliacao }) => {
     return (
       <BotoesAuxiliaresEstilo>
-        {temAula ? (
+        {temAula && podeCadastrarAvaliacao ? (
           <Botao
             key={shortid.generate()}
             onClick={aoClicarBotaoNovaAvaliacao}
@@ -138,6 +139,10 @@ const DiaCompleto = props => {
 
   BotoesAuxiliares.propTypes = {
     temAula: PropTypes.number.isRequired,
+    podeCadastrarAvaliacao: PropTypes.oneOfType([
+      PropTypes.bool,
+      PropTypes.number,
+    ]).isRequired,
   };
 
   useEffect(() => {
@@ -165,6 +170,11 @@ const DiaCompleto = props => {
     }
   };
 
+  const aoClicarEditarAvaliacao = id => {
+    salvarDadosEventoAula();
+    history.push(`${RotasDTO.CADASTRO_DE_AVALIACAO}/editar/${id}`);
+  };
+
   return (
     estaAberto && (
       <Div className="border-bottom border-top-0 h-100 p-3">
@@ -176,9 +186,8 @@ const DiaCompleto = props => {
               return (
                 <Evento
                   key={shortid.generate()}
-                  className="list-group-item list-group-item-action d-flex rounded"
-                  onClick={() => aoClicarEvento(evento.id, evento.tipoEvento)}
-                  style={{ cursor: 'pointer' }}
+                  className="list-group-item list-group-item-action d-flex rounded position-relative"
+                  style={{ cursor: 'pointer', zIndex: 0 }}
                 >
                   <Grid
                     cols={
@@ -186,6 +195,7 @@ const DiaCompleto = props => {
                       (evento.tipoEvento === TiposEventoAulaDTO.CJ && 1) ||
                       2
                     }
+                    onClick={() => aoClicarEvento(evento.id, evento.tipoEvento)}
                     className="pl-0"
                   >
                     <Botao
@@ -196,6 +206,9 @@ const DiaCompleto = props => {
                         (evento.tipoEvento === TiposEventoAulaDTO.CJ &&
                           Colors.Laranja) ||
                         Colors.CinzaBotao
+                      }
+                      onClick={() =>
+                        aoClicarEvento(evento.id, evento.tipoEvento)
                       }
                       className="w-100"
                       height={
@@ -213,6 +226,9 @@ const DiaCompleto = props => {
                     evento.dadosAula && (
                       <Grid cols={1} className="px-0">
                         <Botao
+                          onClick={() =>
+                            aoClicarEvento(evento.id, evento.tipoEvento)
+                          }
                           label={window
                             .moment(evento.dadosAula.horario, 'HH')
                             .format('HH:mm')}
@@ -227,7 +243,9 @@ const DiaCompleto = props => {
                     cols={
                       evento.tipoEvento === TiposEventoAulaDTO.Aula ||
                       evento.tipoEvento === TiposEventoAulaDTO.CJ
-                        ? 10
+                        ? evento.dadosAula && evento.dadosAula.atividade.length
+                          ? 10 - evento.dadosAula.atividade.length * 2
+                          : 10
                         : 11
                     }
                     className="align-self-center font-weight-bold pl-0"
@@ -237,6 +255,9 @@ const DiaCompleto = props => {
                         TiposEventoAulaDTO.Aula ||
                         evento.tipoEvento === TiposEventoAulaDTO.CJ) &&
                         'pl-3'}`}
+                      onClick={() =>
+                        aoClicarEvento(evento.id, evento.tipoEvento)
+                      }
                     >
                       {evento.tipoEvento !== TiposEventoAulaDTO.Aula &&
                         evento.tipoEvento !== TiposEventoAulaDTO.CJ &&
@@ -247,6 +268,24 @@ const DiaCompleto = props => {
                         `${evento.dadosAula.turma} - ${evento.dadosAula.modalidade} - ${evento.dadosAula.tipo} - ${evento.dadosAula.unidadeEscolar} - ${evento.dadosAula.disciplina}`}
                     </Div>
                   </Grid>
+                  {evento.dadosAula && evento.dadosAula.atividade.length
+                    ? evento.dadosAula.atividade.map(atividade => {
+                        return (
+                          <Grid key={atividade.id} cols={2} className="pr-0">
+                            <Botao
+                              label="Avaliação"
+                              color={Colors.Roxo}
+                              className="w-100 position-relative zIndex"
+                              onClick={() =>
+                                aoClicarEditarAvaliacao(atividade.id)
+                              }
+                              border
+                              steady
+                            />
+                          </Grid>
+                        );
+                      })
+                    : null}
                 </Evento>
               );
             })}
@@ -261,6 +300,15 @@ const DiaCompleto = props => {
                 aula =>
                   aula.tipoEvento === TiposEventoAulaDTO.Aula ||
                   aula.tipoEvento === TiposEventoAulaDTO.CJ
+              ).length
+            }
+            podeCadastrarAvaliacao={
+              eventosDia.eventosAulas.filter(
+                aula =>
+                  (aula.tipoEvento === TiposEventoAulaDTO.Aula ||
+                    aula.tipoEvento === TiposEventoAulaDTO.CJ) &&
+                  aula.dadosAula &&
+                  aula.dadosAula.podeCadastrarAvaliacao
               ).length
             }
           />
