@@ -6,6 +6,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using SME.SGP.Infra;
+using System.Threading.Tasks;
 
 namespace SME.SGP.Dados.Repositorios
 {
@@ -13,6 +15,11 @@ namespace SME.SGP.Dados.Repositorios
     {
         public RepositorioEventoMatricula(ISgpContext conexao) : base(conexao)
         {
+        }
+
+        public Task<EventoMatricula> ObterUltimoEventoAluno(string codigoAluno, DateTime dataLimite)
+        {
+            var query = @"";
         }
 
         public bool CheckarEventoExistente(SituacaoMatriculaAluno tipo, DateTime dataEvento, string codigoAluno)
