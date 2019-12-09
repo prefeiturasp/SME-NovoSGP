@@ -46,6 +46,8 @@ const TipoAvaliacaoForm = ({ match }) => {
     situacao: true,
   });
 
+  const [idTipoAvaliacao, setIdTipoAvaliacao] = useState('');
+
   const textEditorRef = useRef(null);
 
   const aoTrocarTextEditor = valor => {
@@ -62,21 +64,20 @@ const TipoAvaliacaoForm = ({ match }) => {
   };
   const onClickExcluir = async form => {
     if (validaSeObjetoEhNuloOuVazio(form.values)) return;
-
+    debugger;
     const confirmado = await confirmar(
-      'Excluir atribuição',
-      form.values.professorNome,
-      `Deseja realmente excluir este item?`,
-      'Excluir',
-      'Cancelar'
+      'Atenção',
+      'Você tem certeza que deseja excluir este registro?'
     );
     if (confirmado) {
       const excluir = await servicoTipoAvaliaco.deletarTipoAvaliacao(
         form.values.id
       );
-      if (excluir) {
+      if (excluir && excluir.status === 200) {
         sucesso(`Tipo Avaliação excluido com sucesso!`);
         history.push('/configuracoes/tipo-avaliacao');
+      } else {
+        erro(excluir);
       }
     }
   };
@@ -136,9 +137,23 @@ const TipoAvaliacaoForm = ({ match }) => {
   const onSubmitFormulario = async valores => {
     try {
       debugger;
-      const cadastrado = await servicoTipoAvaliaco.salvarTipoAvaliacao({
-        ...valores,
-      });
+      let cadastrado;
+      if (!idTipoAvaliacao) {
+        cadastrado = await servicoTipoAvaliaco.salvarTipoAvaliacao({
+          ...valores,
+        });
+      } else {
+        const tipoAvalicao = {
+          nome: valores.nome,
+          descricao: valores.descricao,
+          situacao: valores.situacao,
+        };
+        cadastrado = await servicoTipoAvaliaco.atualizaTipoAvaliacao(
+          idTipoAvaliacao,
+          tipoAvalicao
+        );
+      }
+
       if (cadastrado && cadastrado.status === 200) {
         sucesso('Tipo de avaliação salvo com sucesso.');
         history.push('/configuracoes/tipo-avaliacao');
@@ -172,7 +187,7 @@ const TipoAvaliacaoForm = ({ match }) => {
         });
 
         setDescricao(registro.data.descricao);
-
+        setIdTipoAvaliacao(match.params.id);
         // setAuditoria({
         //   criadoPor: registro.data.criadoPor,
         //   criadoRf: registro.data.criadoRF > 0 ? registro.data.criadoRF : '',
@@ -186,7 +201,6 @@ const TipoAvaliacaoForm = ({ match }) => {
         //  dispatch(setLoaderSecao(false));
       }
     } catch (err) {
-      //  dispatch(setLoaderSecao(false));
       erros(err);
     }
   };
@@ -210,7 +224,7 @@ const TipoAvaliacaoForm = ({ match }) => {
                 form={form}
                 permissoesTela={permissoesTela[RotasDto.TIPO_AVALIACAO]}
                 novoRegistro={novoRegistro}
-                labelBotaoPrincipal="Cadastrar"
+                labelBotaoPrincipal={idTipoAvaliacao ? 'Alterar' : 'Cadastrar'}
                 onClickBotaoPrincipal={() => onClickBotaoPrincipal(form)}
                 onClickCancelar={formulario => onClickCancelar(formulario)}
                 onClickVoltar={() => onClickVoltar()}
