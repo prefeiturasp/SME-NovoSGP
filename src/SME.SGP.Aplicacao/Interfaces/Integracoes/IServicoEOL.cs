@@ -70,6 +70,6 @@ namespace SME.SGP.Aplicacao.Integracoes
 
         Task RemoverCJSeNecessario(Guid usuarioId);
 
-        bool ValidarProfessor(string professorRf);
+        Task<bool> ValidarProfessor(string professorRf);
     }
 }
