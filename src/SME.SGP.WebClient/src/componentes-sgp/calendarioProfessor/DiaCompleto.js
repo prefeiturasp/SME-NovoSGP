@@ -263,6 +263,15 @@ const DiaCompleto = props => {
                   aula.tipoEvento === TiposEventoAulaDTO.CJ
               ).length
             }
+            podeCadastrarAvaliacao={
+              eventosDia.eventosAulas.filter(
+                aula =>
+                  (aula.tipoEvento === TiposEventoAulaDTO.Aula ||
+                    aula.tipoEvento === TiposEventoAulaDTO.CJ) &&
+                  aula.dadosAula &&
+                  aula.dadosAula.podeCadastrarAvaliacao
+              ).length
+            }
           />
         )}
       </Div>
