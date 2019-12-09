@@ -8,6 +8,11 @@ export const Container = styled.div`
 export const Lista = styled.div`
   width: 100%;
 
+  .desabilitar-nota {
+    opacity: 0.4 !important;
+    cursor: unset !important;
+  }
+
   .tabela-avaliacao-thead {
     background: ${Base.CinzaFundo} !important;
     text-align: center;

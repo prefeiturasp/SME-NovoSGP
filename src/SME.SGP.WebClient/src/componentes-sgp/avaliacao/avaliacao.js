@@ -25,11 +25,13 @@ const Avaliacao = props => {
   }, [dados]);
 
 
-  const onChangeNotaConceito = (aluno, notaConceito, index) => {
-    aluno.notasAvaliacoes[index].notaConceito = notaConceito;
-    dataSource.modoEdicao = true;
-    setAlunos([...alunos]);
-    onChangeAvaliacao(true);
+  const onChangeNotaConceito = (aluno, notaConceito, index, podeEditar) => {
+    if (podeEditar) {
+      aluno.notasAvaliacoes[index].notaConceito = notaConceito;
+      dataSource.modoEdicao = true;
+      setAlunos([...alunos]);
+      onChangeAvaliacao(true);
+    }
   }
 
   const descricaoAlunoAusente = 'Aluno ausente na data da avaliação';
@@ -104,29 +106,31 @@ const Avaliacao = props => {
                           aluno.notasAvaliacoes.length ?
                             aluno.notasAvaliacoes.map((nota, indexAvaliacao) => {
                               return (
-                                <td key={indexAvaliacao}  className="width-150" style={{padding: "3px"}}>
+                                <td key={indexAvaliacao} className={`width-150 ${nota.podeEditar ? '' : 'desabilitar-nota'}`} style={{padding: "3px"}}>
                                     {
-                                      notasConceitos.Notas == notaTipo ?
+                                      notasConceitos.Notas !== notaTipo ?
                                       <CampoNumero
-                                        onChange={valorNovo=> onChangeNotaConceito(aluno, valorNovo, indexAvaliacao)}
+                                        onChange={valorNovo=> onChangeNotaConceito(aluno, valorNovo, indexAvaliacao, nota.podeEditar)}
                                         value={nota.notaConceito}
                                         min={0}
                                         max={10}
-                                        step={0.1}
+                                        step={0.5}
                                         placeholder="Nota"
                                         classNameCampo={`${nota.ausente ? 'aluno-ausente-notas' : 'aluno-notas'}`}
+                                        desabilitado={!nota.podeEditar}
                                       />
                                       :
                                       <SelectComponent
                                         valueOption="valor"
                                         valueText="descricao"
                                         lista={listaConceitos}
-                                        valueSelect={nota.notaConceito}
-                                        onChange={valorNovo => onChangeNotaConceito(aluno, valorNovo, indexAvaliacao)}
+                                        valueSelect={nota.notaConceito || undefined}
+                                        onChange={valorNovo => onChangeNotaConceito(aluno, valorNovo, indexAvaliacao, nota.podeEditar)}
                                         showSearch
                                         placeholder="Conceito"
                                         className="select-conceitos"
                                         classNameContainer={nota.ausente ? 'aluno-ausente-conceitos' : 'aluno-conceitos'}
+                                        disabled={!nota.podeEditar}
                                       />
                                     }
                                     {
