@@ -9,6 +9,6 @@ namespace SME.SGP.Aplicacao
     {
         Task<NotasConceitosRetornoDto> ListarNotasConceitos(string turmaId, int? bimestre, int anoLetivo, string disciplinaCodigo, Modalidade modalidade);
 
-        TipoNota ObterNotaTipo(DateTime dataAvaliacao, long turmaId);
+        TipoNota ObterNotaTipo(long turmaId, int anoLetivo);
     }
 }
