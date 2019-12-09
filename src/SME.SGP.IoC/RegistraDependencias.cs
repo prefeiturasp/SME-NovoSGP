@@ -52,6 +52,7 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IComandosAtribuicaoCJ, ComandosAtribuicaoCJ>();
             services.TryAddScoped<IComandosEventoMatricula, ComandosEventoMatricula>();
             services.TryAddScoped<IComandosNotasConceitos, ComandosNotasConceitos>();
+            services.TryAddScoped<IComandosAulaPrevista, ComandosAulaPrevista>();
         }
 
         private static void RegistrarConsultas(IServiceCollection services)
@@ -88,6 +89,8 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IConsultasAtribuicaoCJ, ConsultasAtribuicaoCJ>();
             services.TryAddScoped<IConsultasUe, ConsultasUe>();
             services.TryAddScoped<IConsultasEventoMatricula, ConsultasEventoMatricula>();
+            services.TryAddScoped<IConsultasAulaPrevista, ConsultasAulaPrevista>();
+            services.TryAddScoped<IConsultasNotasConceitos, ConsultasNotasConceitos>();
         }
 
         private static void RegistrarContextos(IServiceCollection services)
@@ -149,6 +152,8 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IRepositorioNotaTipoValor, RepositorioNotaTipoValor>();
             services.TryAddScoped<IRepositorioNotificacaoFrequencia, RepositorioNotificacaoFrequencia>();
             services.TryAddScoped<IRepositorioEventoMatricula, RepositorioEventoMatricula>();
+            services.TryAddScoped<IRepositorioAulaPrevista, RepositorioAulaPrevista>();
+            services.TryAddScoped<IRepositorioNotificacaoAulaPrevista, RepositorioNotificacaoAulaPrevista>();
         }
 
         private static void RegistrarServicos(IServiceCollection services)
@@ -173,7 +178,9 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IServicoCalculoFrequencia, ServicoCalculoFrequencia>();
             services.TryAddScoped<IServicoDeNotasConceitos, ServicoDeNotasConceitos>();
             services.TryAddScoped<IServicoNotificacaoFrequencia, ServicoNotificacaoFrequencia>();
+            services.TryAddScoped<IServicoNotificacaoAulaPrevista, ServicoNotificacaoAulaPrevista>();
             services.TryAddScoped<IServicoAtribuicaoCJ, ServicoAtribuicaoCJ>();
+            services.TryAddScoped<IServicoEventoMatricula, ServicoEventoMatricula>();
         }
     }
 }

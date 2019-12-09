@@ -88,7 +88,7 @@ export default function PlanoAnual() {
 
   const refFocado = useRef(null);
   const ehEja =
-    turmaSelecionada && turmaSelecionada.modalidade === modalidade.EJA
+    turmaSelecionada && Number(turmaSelecionada.modalidade) === modalidade.EJA
       ? true
       : false;
 

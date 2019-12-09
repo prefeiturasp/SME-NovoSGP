@@ -1,10 +1,9 @@
 import React, { useEffect, useState } from 'react';
-import { Switch, Route } from 'react-router-dom';
-
+import { Switch } from 'react-router-dom';
+import shortid from 'shortid';
 import { useSelector, useDispatch } from 'react-redux';
 import { Modal, Row } from 'antd';
 import styled from 'styled-components';
-import shortid from 'shortid';
 import { alertaFechar } from '../redux/modulos/alertas/actions';
 import Button from '../componentes/button';
 import { Colors } from '../componentes/colors';
@@ -24,7 +23,8 @@ const ContainerBotoes = styled.div`
   display: flex;
   justify-content: flex-end;
 `;
-const Conteudo = props => {
+
+const Conteudo = () => {
   const menuRetraido = useSelector(store => store.navegacao.retraido);
   const [retraido, setRetraido] = useState(menuRetraido.retraido);
   const dispatch = useDispatch();
@@ -39,6 +39,7 @@ const Conteudo = props => {
     confirmacao.resolve(resultado);
     dispatch(alertaFechar());
   };
+
   const alertas = useSelector(state => state.alertas);
 
   return (
@@ -73,8 +74,8 @@ const Conteudo = props => {
               ]}
             >
               {confirmacao.texto && Array.isArray(confirmacao.texto)
-                ? confirmacao.texto.map((item, i) => (
-                    <div key={item + '-' + i}>{item}</div>
+                ? confirmacao.texto.map(item => (
+                    <div key={shortid.generate()}>{item}</div>
                   ))
                 : confirmacao.texto}
               {confirmacao.texto ? <br /> : ''}
@@ -111,6 +112,7 @@ const Conteudo = props => {
       <Switch>
         {rotasArray.map(rota => (
           <RotaAutenticadaEstruturada
+            key={shortid.generate()}
             path={rota.path}
             component={rota.component}
             exact={rota.exact}
@@ -120,4 +122,5 @@ const Conteudo = props => {
     </div>
   );
 };
+
 export default Conteudo;

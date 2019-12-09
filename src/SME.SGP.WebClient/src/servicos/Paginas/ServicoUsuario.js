@@ -1,6 +1,8 @@
 import { store } from '~/redux';
 import { meusDados } from '~/redux/modulos/usuario/actions';
 import api from '~/servicos/api';
+import { setarPerfis } from '~/redux/modulos/perfil/actions';
+import { erro, sucesso } from '../alertas';
 
 const obterMeusDados = () => {
   api.get('v1/usuarios/meus-dados').then(resp => {
@@ -19,4 +21,18 @@ const obterMeusDados = () => {
   });
 };
 
-export { obterMeusDados };
+const obterPerfis = login => {
+  api
+    .get(`v1/autenticacao/${login}/perfis/listar`)
+    .then(resp => {
+      if (resp && resp.data) {
+        store.dispatch(setarPerfis(resp.data));
+        sucesso('Perfis atualizados');
+      }
+    })
+    .catch(err => {
+      erro('Não foi possivel obter os perfis do ususario');
+    });
+};
+
+export { obterMeusDados, obterPerfis };

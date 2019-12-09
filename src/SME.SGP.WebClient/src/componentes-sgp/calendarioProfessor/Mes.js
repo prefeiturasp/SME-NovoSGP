@@ -5,11 +5,9 @@ import styled from 'styled-components';
 import { store } from '~/redux';
 import {
   selecionaMes,
-  atribuiEventosMes,
   selecionaDia,
 } from '~/redux/modulos/calendarioProfessor/actions';
 import { Base } from '~/componentes/colors';
-import api from '~/servicos/api';
 
 const Div = styled.div``;
 const Icone = styled.i`
@@ -38,54 +36,8 @@ Seta.defaultProps = {
 
 const Mes = props => {
   const { numeroMes, filtros } = props;
-  const {
-    tipoCalendarioSelecionado,
-    eventoSme,
-    dreSelecionada,
-    unidadeEscolarSelecionada,
-    turmaSelecionada,
-    todasTurmas,
-  } = filtros;
+  const { tipoCalendarioSelecionado } = filtros;
   const [mesSelecionado, setMesSelecionado] = useState({});
-
-  useEffect(() => {
-    let estado = true;
-    if (estado) {
-      if (
-        tipoCalendarioSelecionado &&
-        dreSelecionada &&
-        unidadeEscolarSelecionada &&
-        (turmaSelecionada || todasTurmas)
-      ) {
-        api
-          .post('v1/calendarios/meses/eventos-aulas', {
-            tipoCalendarioId: tipoCalendarioSelecionado,
-            EhEventoSME: eventoSme,
-            dreId: dreSelecionada,
-            ueId: unidadeEscolarSelecionada,
-            turmaId: turmaSelecionada,
-            todasTurmas,
-          })
-          .then(resposta => {
-            if (resposta.data) {
-              resposta.data.forEach(item => {
-                if (item && item.mes > 0) {
-                  store.dispatch(
-                    atribuiEventosMes(item.mes, item.eventosAulas)
-                  );
-                }
-              });
-            } else store.dispatch(atribuiEventosMes(numeroMes, 0));
-          })
-          .catch(() => {
-            store.dispatch(atribuiEventosMes(numeroMes, 0));
-          });
-      } else store.dispatch(atribuiEventosMes(numeroMes, 0));
-    }
-    return () => {
-      estado = false;
-    };
-  }, [filtros]);
 
   const meses = useSelector(state => state.calendarioProfessor.meses);
 
@@ -104,7 +56,7 @@ const Mes = props => {
     else if (mes.estaAberto) mes.chevronColor = Base.Branco;
 
     setMesSelecionado(mes);
-  }, [meses]);
+  }, [meses, numeroMes]);
 
   const abrirMes = () => {
     if (tipoCalendarioSelecionado) store.dispatch(selecionaMes(numeroMes));
@@ -125,7 +77,7 @@ const Mes = props => {
       }
     }, 500);
     return () => clearTimeout(encontrarMes);
-  }, [meses[numeroMes].estaAberto]);
+  }, [meses, numeroMes]);
 
   return (
     <Div className="col-3 w-100 px-0">

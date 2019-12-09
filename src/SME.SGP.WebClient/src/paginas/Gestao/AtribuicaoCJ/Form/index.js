@@ -46,6 +46,8 @@ import {
   valorNuloOuVazio,
   objetoEstaTodoPreenchido,
 } from '~/utils/funcoes/gerais';
+import { obterPerfis } from '~/servicos/Paginas/ServicoUsuario';
+import { store } from '~/redux';
 
 function AtribuicaoCJForm({ match, location }) {
   const dispatch = useDispatch();
@@ -107,6 +109,7 @@ function AtribuicaoCJForm({ match, location }) {
         dispatch(setLoaderSecao(false));
         sucesso('Atribuição de CJ salva com sucesso.');
         history.push('/gestao/atribuicao-cjs');
+        obterPerfis(store.getState().usuario.usuario);
       }
     } catch (err) {
       if (err) {
