@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Corpo, CampoDesabilitado, CampoEditavel, CampoAlerta } from './ListaAulasPorBimestre.css';
+import { Corpo, CampoDesabilitado, CampoEditavel, CampoAlerta, CampoCentralizado } from './ListaAulasPorBimestre.css';
 import { CampoTexto } from '~/componentes';
 import CampoNumero from '~/componentes/campoNumero';
 
@@ -11,17 +11,37 @@ const ListaAulasPorBimestre = props => {
     return window.moment(data).format('DD/MM');
   }
 
+  const temProfessorCj = dados.bimestres && dados.bimestres[0].criadas.professorCj;
+
   return (
     <Corpo>
-      <table className="table mb-0 ">
+      <table className="table mb-0">
         <thead className="tabela-frequencia-thead">
           <tr>
-            <th className="width-60"></th>
-            <th className="text-left fundo-cinza">Previstas</th>
-            <th className="text-left fundo-cinza">Criadas</th>
-            <th className="text-left fundo-cinza">Dadas</th>
-            <th className="text-left fundo-cinza">Respostas</th>
+            <th rowSpan="2" className="width-60 bc-w-i" scope="col"></th>
+            <th rowSpan="2" className="text-center fundo-cinza">
+              Previstas
+            </th>
+            <th colSpan={temProfessorCj ? 2 : 1} className="text-center fundo-cinza">
+              Criadas
+            </th>
+            <th rowSpan="2" className="text-center fundo-cinza">
+              Dadas
+            </th>
+            <th rowSpan="2" className="text-center fundo-cinza">
+              Respostas
+            </th>
           </tr>
+          {temProfessorCj ?
+            <tr>
+              <th className="text-center fundo-cinza">
+                Prof. Títular
+            </th>
+              <th className="text-center fundo-cinza">
+                Prof. Substituto
+            </th>
+            </tr>
+            : null}
         </thead>
         {dados && dados.bimestres ? dados.bimestres.map(item => {
           return (
@@ -31,25 +51,41 @@ const ListaAulasPorBimestre = props => {
                 <span>{` - ${formatarData(item.inicio)} à ${formatarData(item.fim)}`}</span>
               </td>
               <td>
-                <CampoAlerta>
-                  <CampoEditavel>
+                {item.previstas.temDivergencia ?
+                  <CampoCentralizado className="p-l-16">
+                    <CampoAlerta>
+                      <CampoNumero
+                        value={item.previstas.quantidade}
+                        onChange={() => { }}
+                        onKeyDown={() => { }}
+                        min={0}
+                      />
+                      <div className="icone">
+                        <i className="fas fa-exclamation-triangle"></i>
+                      </div>
+                    </CampoAlerta>
+                  </CampoCentralizado>
+                  : <CampoEditavel>
                     <CampoNumero
                       value={item.previstas.quantidade}
                       onChange={() => { }}
                       onKeyDown={() => { }}
                       min={0}
                     />
-                  </CampoEditavel>
-                  <div className="icone">
-                    <i className="fas fa-exclamation-triangle"></i>
-                  </div>
-                </CampoAlerta>
+                  </CampoEditavel>}
               </td>
               <td>
                 <CampoDesabilitado>
                   <span>{item.criadas.professorTitular}</span>
                 </CampoDesabilitado>
               </td>
+              {temProfessorCj ?
+                <td>
+                  <CampoDesabilitado>
+                    <span>{item.criadas.professorCj}</span>
+                  </CampoDesabilitado>
+                </td>
+                : null}
               <td>
                 <CampoDesabilitado>
                   <span>{item.dadas}</span>
@@ -64,10 +100,10 @@ const ListaAulasPorBimestre = props => {
           );
         })
           : null}
-        <tr className="fundo-cinza">
-          <td>
+        <tr className="fundo-cinza-i">
+          <th className="fundo-cinza">
             <span className="negrito">Total</span>
-          </td>
+          </th>
           <td>
             <CampoDesabilitado>
               <span>{totalPrevistas}</span>
@@ -78,6 +114,13 @@ const ListaAulasPorBimestre = props => {
               <span>{totalCriadasProfTitular}</span>
             </CampoDesabilitado>
           </td>
+          {temProfessorCj ?
+            <td>
+              <CampoDesabilitado>
+                <span>{totalCriadasProfCj}</span>
+              </CampoDesabilitado>
+            </td>
+            : null}
           <td>
             <CampoDesabilitado>
               <span>{totalDadas}</span>

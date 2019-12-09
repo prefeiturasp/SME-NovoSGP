@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { Titulo, TituloAno } from './aulaDadaAulaPrevista.css';
+import { Titulo, TituloAno, Divergencia, SpanDivergencia } from './aulaDadaAulaPrevista.css';
 import Grid from '~/componentes/grid';
 import Card from '~/componentes/card';
 import Button from '~/componentes/button';
 import SelectComponent from '~/componentes/select';
 import { useSelector } from 'react-redux';
 import ServicoDisciplina from '~/servicos/Paginas/ServicoDisciplina';
-import { Colors } from '~/componentes';
+import { Colors, Auditoria } from '~/componentes';
 import ListaAulasPorBimestre from './ListaAulasPorBimestre/ListaAulasPorBimestre';
 import { getMock } from './ListaAulasPorBimestre/ListaMock';
 
@@ -22,6 +22,8 @@ const AulaDadaAulaPrevista = () => {
     undefined
   );
   const [dadoslista, setDadosLista] = useState([]);
+  const [auditoria, setAuditoria] = useState(undefined);
+  const [temDivergencia, setTemDivergencia] = useState(false);
 
   useEffect(() => {
     const obterDisciplinas = async () => {
@@ -114,6 +116,26 @@ const AulaDadaAulaPrevista = () => {
             </div>
             <div className="col-md-12">
               <ListaAulasPorBimestre dados={dadoslista} />
+            </div>
+            <div className="col-md-6 d-flex justify-content-start">
+              {auditoria ? (
+                <Auditoria
+                  criadoEm={auditoria.criadoEm}
+                  criadoPor={auditoria.criadoPor}
+                  criadoRf={auditoria.criadoRf}
+                  alteradoPor={auditoria.alteradoPor}
+                  alteradoEm={auditoria.alteradoEm}
+                  alteradoRf={auditoria.alteradoRf}
+                />
+              ) : (
+                  ''
+                )}
+            </div>
+            <div className="col-md-6 d-flex justify-content-end p-t-20" hidden={!temDivergencia}>
+              <Divergencia>
+                <i className="fas fa-exclamation-triangle"></i>
+              </Divergencia>
+              <SpanDivergencia>Quantidade de aulas previstas diverge do somatório de aulas</SpanDivergencia>
             </div>
           </div>
         </div>
