@@ -83,7 +83,8 @@ namespace SME.SGP.IoC
         private static void RegistrarContextos(IServiceCollection services)
         {
             services.TryAddTransient<IContextoAplicacao, WorkerContext>();
-            services.TryAddTransient<ISgpContext, SgpContext>();
+            services.TryAddTransient<SgpContext>();
+            services.TryAddTransient(typeof(ISgpContext), x => WorkerContext.AddTransienteDatabaseContext((ISgpContext)x.GetService(typeof(SgpContext))));
             services.TryAddTransient<IUnitOfWork, UnitOfWork>();
         }
 
