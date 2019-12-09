@@ -19,6 +19,8 @@ namespace SME.SGP.Dominio.Interfaces
 
         Guid ObterPerfilAtual();
 
+        Task<IEnumerable<PrioridadePerfil>> ObterPerfisUsuario(string login);
+
         IEnumerable<Permissao> ObterPermissoes();
 
         string ObterRf();
@@ -29,7 +31,10 @@ namespace SME.SGP.Dominio.Interfaces
 
         Task PodeModificarPerfil(Guid perfilParaModificar, string login);
 
-        bool UsuarioLogadoPossuiPerfilSme();
+        void RemoverPerfisUsuarioAtual();
 
+        void RemoverPerfisUsuarioCache(string login);
+
+        bool UsuarioLogadoPossuiPerfilSme();
     }
 }
