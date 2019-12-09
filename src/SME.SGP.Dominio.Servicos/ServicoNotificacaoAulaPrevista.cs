@@ -61,9 +61,7 @@ namespace SME.SGP.Dominio.Servicos
         }
 
         private int QuantidadeDiasFimBimestreParaNotificacao()
-            => int.Parse(repositorioParametrosSistema.ObterValorPorTipoEAno(
-                                        TipoParametroSistema.QuantidadeDiasNotificarProfessor,
-                                        DateTime.Now.Year));
+            => int.Parse(repositorioParametrosSistema.ObterValorPorTipoEAno(TipoParametroSistema.QuantidadeDiasNotificarProfessor));
 
         private IEnumerable<Usuario> BuscaProfessorAula(RegistroAulaPrevistaDivergenteDto turma)
         {
