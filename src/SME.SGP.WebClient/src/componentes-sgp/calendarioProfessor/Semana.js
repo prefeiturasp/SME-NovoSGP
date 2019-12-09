@@ -1,6 +1,5 @@
 ﻿import React, { useState, useEffect, useCallback } from 'react';
 import PropTypes from 'prop-types';
-import styled from 'styled-components';
 import { useSelector } from 'react-redux';
 import shortid from 'shortid';
 import { Base } from '~/componentes/colors';
@@ -10,27 +9,7 @@ import {
   salvarEventoAulaCalendarioEdicao,
 } from '~/redux/modulos/calendarioProfessor/actions';
 import TiposEventoAulaDTO from '~/dtos/tiposEventoAula';
-
-const Div = styled.div`
-  .badge-aula {
-    background: ${Base.Roxo};
-  }
-  .badge-cj {
-    background: ${Base.Laranja};
-  }
-`;
-const TipoEventosLista = styled(Div)`
-  bottom: 5px;
-  right: 10px;
-`;
-const TipoEvento = styled(Div)`
-  font-size: 10px;
-  margin-bottom: 2px;
-  min-width: 60px;
-  &:last-child {
-    margin-bottom: 0;
-  }
-`;
+import { Div, TipoEventosLista, TipoEvento } from './Semana.css';
 
 const Dia = props => {
   const {
