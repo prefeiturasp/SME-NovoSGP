@@ -1,9 +1,13 @@
-﻿namespace SME.SGP.Infra
+﻿using SME.SGP.Dominio;
+
+namespace SME.SGP.Infra
 {
     public class ListaNotasConceitosConsultaDto
     {
+        public int AnoLetivo { get; set; }
         public int? Bimestre { get; set; }
-        public long DisciplinaCodigo { get; set; }
-        public string ProfessorRf { get; set; }
+        public string DisciplinaCodigo { get; set; }
+        public Modalidade Modalidade { get; set; }
+        public string TurmaCodigo { get; set; }
     }
 }

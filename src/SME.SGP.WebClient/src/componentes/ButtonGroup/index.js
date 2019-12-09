@@ -50,7 +50,8 @@ function ButtonGroup({
           onClick={() => onClickCancelar(form)}
           disabled={
             !modoEdicao ||
-            (!permissoesTela.podeIncluir || !permissoesTela.podeAlterar)
+            !permissoesTela.podeIncluir ||
+            !permissoesTela.podeAlterar
           }
         />
       )}
@@ -70,8 +71,8 @@ function ButtonGroup({
         border
         bold
         className="btnGroupItem"
-        //onClick={onClickBotaoPrincipal}
-        //disabled={!permissoesTela.podeIncluir || desabilitarBotaoPrincipal}
+        onClick={onClickBotaoPrincipal}
+        disabled={!permissoesTela.podeIncluir || desabilitarBotaoPrincipal}
       />
     </ButtonGroupEstilo>
   );

@@ -6,5 +6,7 @@ namespace SME.SGP.Dominio.Interfaces
     public interface IServicoDeNotasConceitos
     {
         Task Salvar(IEnumerable<NotaConceito> notasConceitos, string professorRf, string turmaId);
+
+        NotaTipoValor TipoNotaPorAvaliacao(AtividadeAvaliativa atividadeAvaliativa);
     }
 }
