@@ -20,6 +20,7 @@ module.exports = {
   rules: {
     'prettier/prettier': 'error',
     'react/jsx-filename-extension': ['warn', { extensions: ['.jsx', '.js'] }],
+    'no-nested-ternary': 'off',
     'import/prefer-default-export': 'off',
     'import/no-extraneous-dependencies': [
       'error',
