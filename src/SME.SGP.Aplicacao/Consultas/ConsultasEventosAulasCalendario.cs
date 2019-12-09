@@ -81,7 +81,7 @@ namespace SME.SGP.Aplicacao
             .ForEach(async x =>
             {
                 bool podeCriarAtividade = true;
-                var listaAtividades = atividades.Where(w => w.DataAvaliacao.Date == x.DataAula.Date && w.TurmaId == x.TurmaId).ToList();
+                var listaAtividades = atividades.Where(w => w.DataAvaliacao.Date == x.DataAula.Date && w.TurmaId == x.TurmaId && w.DisciplinaId.ToString() == x.DisciplinaId).ToList();
                 var disciplina = disciplinasProfessor?.FirstOrDefault(d => d.CodigoComponenteCurricular.ToString().Equals(x.DisciplinaId));
                 if (atividades != null && disciplina != null)
                 {
