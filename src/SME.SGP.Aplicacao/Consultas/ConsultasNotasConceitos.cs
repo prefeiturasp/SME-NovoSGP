@@ -47,6 +47,8 @@ namespace SME.SGP.Aplicacao
             var retorno = new NotasConceitosRetornoDto();
             var usuarioLogado = await servicoUsuario.ObterUsuarioLogado();
 
+            retorno.BimestreAtual = atividadesAvaliativaEBimestres.bimestreAtual;
+
             for (int i = 0; i < atividadesAvaliativaEBimestres.quantidadeBimestres; i++)
             {
                 AtividadeAvaliativa atividadeAvaliativaParaObterTipoNota = null;
@@ -76,13 +78,10 @@ namespace SME.SGP.Aplicacao
 
                         foreach (var atividadeAvaliativa in atividadesAvaliativasdoBimestre)
                         {
-                            //TODO: Buscar a Nota se já foi lançada
                             string notaParaMostrar = ObterNotaParaVisualizacao(notas, aluno, atividadeAvaliativa);
 
-                            //TODO: Buscar se houve ausencia
                             var ausente = ausenciasAtividadesAvaliativas.Any(a => a.AlunoCodigo == aluno.CodigoAluno && a.AulaData.Date == atividadeAvaliativa.DataAvaliacao.Date);
 
-                            //TODO: Buscar se pode editar
                             bool podeEditar = PodeEditarNotaOuConceito(usuarioLogado, professorRfTitularTurmaDisciplina, atividadeAvaliativa);
 
                             var notaAvaliacao = new NotasConceitosNotaAvaliacaoRetornoDto() { AtividadeAvaliativaId = atividadeAvaliativa.Id, NotaConceito = notaParaMostrar, Ausente = ausente, PodeEditar = podeEditar };
