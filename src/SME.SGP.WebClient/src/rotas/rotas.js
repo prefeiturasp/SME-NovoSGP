@@ -168,46 +168,46 @@ rotas.set('/gestao/atribuicao-esporadica/editar/:id', {
   chavePermissao: RotasDto.ATRIBUICAO_ESPORADICA_LISTA,
 });
 
-  rotas.set('/gestao/atribuicao-cjs', {
-    breadcrumbName: 'Atribuição de CJ',
-    menu: ['Gestão'],
-    parent: '/',
-    component: AtribuicaoCJLista,
-    exact: true,
-    tipo: RotasTipo.EstruturadaAutenticada,
-    // temPermissionamento: true,
-    // chavePermissao: RotasDto.ATRIBUICAO_ESPORADICA_LISTA,
-  });
+rotas.set('/gestao/atribuicao-cjs', {
+  breadcrumbName: 'Atribuição de CJ',
+  menu: ['Gestão'],
+  parent: '/',
+  component: AtribuicaoCJLista,
+  exact: true,
+  tipo: RotasTipo.EstruturadaAutenticada,
+  temPermissionamento: true,
+  chavePermissao: RotasDto.ATRIBUICAO_CJ_LISTA,
+});
 
-  rotas.set('/gestao/atribuicao-cjs/novo', {
-    breadcrumbName: 'Atribuição',
-    parent: '/gestao/atribuicao-cjs',
-    component: AtribuicaoCJForm,
-    exact: true,
-    tipo: RotasTipo.EstruturadaAutenticada,
-    // temPermissionamento: true,
-    // chavePermissao: RotasDto.ATRIBUICAO_ESPORADICA_LISTA,
-  });
+rotas.set('/gestao/atribuicao-cjs/novo', {
+  breadcrumbName: 'Atribuição',
+  parent: '/gestao/atribuicao-cjs',
+  component: AtribuicaoCJForm,
+  exact: true,
+  tipo: RotasTipo.EstruturadaAutenticada,
+  temPermissionamento: true,
+  chavePermissao: RotasDto.ATRIBUICAO_CJ_LISTA,
+});
 
-  rotas.set('/gestao/atribuicao-cjs/editar', {
-    breadcrumbName: 'Atribuição',
-    parent: '/gestao/atribuicao-cjs',
-    component: AtribuicaoCJForm,
-    exact: true,
-    tipo: RotasTipo.EstruturadaAutenticada,
-    // temPermissionamento: true,
-    // chavePermissao: RotasDto.ATRIBUICAO_ESPORADICA_LISTA,
-  });
+rotas.set('/gestao/atribuicao-cjs/editar', {
+  breadcrumbName: 'Atribuição',
+  parent: '/gestao/atribuicao-cjs',
+  component: AtribuicaoCJForm,
+  exact: true,
+  tipo: RotasTipo.EstruturadaAutenticada,
+  temPermissionamento: true,
+  chavePermissao: RotasDto.ATRIBUICAO_CJ_LISTA,
+});
 
-  rotas.set('/notificacoes/:id', {
-    breadcrumbName: ['Notificações'],
-    parent: '/',
-    component: DetalheNotificacao,
-    exact: true,
-    tipo: RotasTipo.EstruturadaAutenticada,
-    temPermissionamento: true,
-    chavePermissao: RotasDto.NOTIFICACOES,
-  });
+rotas.set('/notificacoes/:id', {
+  breadcrumbName: ['Notificações'],
+  parent: '/',
+  component: DetalheNotificacao,
+  exact: true,
+  tipo: RotasTipo.EstruturadaAutenticada,
+  temPermissionamento: true,
+  chavePermissao: RotasDto.NOTIFICACOES,
+});
 
 rotas.set(RotasDto.NOTIFICACOES, {
   breadcrumbName: ['Notificações'],
@@ -406,61 +406,61 @@ rotas.set(`${RotasDto.CADASTRO_DE_AULA}/editar/:id`, {
   chavePermissao: RotasDto.CALENDARIO_PROFESSOR,
 });
 
-  rotas.set(`${RotasDto.CADASTRO_DE_AVALIACAO}`, {
-    breadcrumbName: 'Cadastro de Avaliação',
-    parent: RotasDto.CALENDARIO_PROFESSOR,
-    component: AvaliacaoLista,
-    exact: true,
-    tipo: RotasTipo.EstruturadaAutenticada,
-    temPermissionamento: false,
-    chavePermissao: RotasDto.CALENDARIO_PROFESSOR,
-  });
+rotas.set(`${RotasDto.CADASTRO_DE_AVALIACAO}`, {
+  breadcrumbName: 'Cadastro de Avaliação',
+  parent: RotasDto.CALENDARIO_PROFESSOR,
+  component: AvaliacaoLista,
+  exact: true,
+  tipo: RotasTipo.EstruturadaAutenticada,
+  temPermissionamento: false,
+  chavePermissao: RotasDto.CALENDARIO_PROFESSOR,
+});
 
-  rotas.set(`${RotasDto.CADASTRO_DE_AVALIACAO}/novo`, {
-    breadcrumbName: 'Cadastro de Avaliação',
-    parent: RotasDto.CALENDARIO_PROFESSOR,
-    component: AvaliacaoForm,
-    exact: true,
-    tipo: RotasTipo.EstruturadaAutenticada,
-    temPermissionamento: false,
-    chavePermissao: RotasDto.CALENDARIO_PROFESSOR,
-  });
+rotas.set(`${RotasDto.CADASTRO_DE_AVALIACAO}/novo`, {
+  breadcrumbName: 'Cadastro de Avaliação',
+  parent: RotasDto.CALENDARIO_PROFESSOR,
+  component: AvaliacaoForm,
+  exact: true,
+  tipo: RotasTipo.EstruturadaAutenticada,
+  temPermissionamento: false,
+  chavePermissao: RotasDto.CALENDARIO_PROFESSOR,
+});
 
-  rotas.set(`${RotasDto.CADASTRO_DE_AVALIACAO}/editar/:id`, {
-    breadcrumbName: 'Cadastro de Avaliação',
-    parent: RotasDto.CALENDARIO_PROFESSOR,
-    component: AvaliacaoForm,
-    exact: true,
-    tipo: RotasTipo.EstruturadaAutenticada,
-    temPermissionamento: false,
-    chavePermissao: RotasDto.CALENDARIO_PROFESSOR,
-  });
+rotas.set(`${RotasDto.CADASTRO_DE_AVALIACAO}/editar/:id`, {
+  breadcrumbName: 'Cadastro de Avaliação',
+  parent: RotasDto.CALENDARIO_PROFESSOR,
+  component: AvaliacaoForm,
+  exact: true,
+  tipo: RotasTipo.EstruturadaAutenticada,
+  temPermissionamento: false,
+  chavePermissao: RotasDto.CALENDARIO_PROFESSOR,
+});
 
-  rotas.set(`${RotasDto.FREQUENCIA_PLANO_AULA}`, {
-    breadcrumbName: 'Frequência/Plano de aula',
-    menu: ['Diário de Classe'],
-    parent: '/',
-    component: FrequenciaPlanoAula,
-    exact: true,
-    tipo: RotasTipo.EstruturadaAutenticada,
-    temPermissionamento: false,
-  });
+rotas.set(`${RotasDto.FREQUENCIA_PLANO_AULA}`, {
+  breadcrumbName: 'Frequência/Plano de aula',
+  menu: ['Diário de Classe'],
+  parent: '/',
+  component: FrequenciaPlanoAula,
+  exact: true,
+  tipo: RotasTipo.EstruturadaAutenticada,
+  temPermissionamento: false,
+});
 
-  rotas.set(`${RotasDto.NOTAS}`, {
-    breadcrumbName: 'Notas',
-    menu: ['Diário de Classe'],
-    parent: '/',
-    component: Notas,
-    exact: true,
-    tipo: RotasTipo.EstruturadaAutenticada,
-    temPermissionamento: false,
-  });
+rotas.set(`${RotasDto.NOTAS}`, {
+  breadcrumbName: 'Notas',
+  menu: ['Diário de Classe'],
+  parent: '/',
+  component: Notas,
+  exact: true,
+  tipo: RotasTipo.EstruturadaAutenticada,
+  temPermissionamento: false,
+});
 
-  const rotasArray = [];
-  for (var [key, value] of rotas) {
-    const rota = value;
-    rota.path = key;
-    rotasArray.push(rota);
+const rotasArray = [];
+for (var [key, value] of rotas) {
+  const rota = value;
+  rota.path = key;
+  rotasArray.push(rota);
 
   const rotaRedux = {
     path: value.paginaInicial ? '/' : key,
