@@ -1,6 +1,6 @@
 import { Tooltip } from 'antd';
 import PropTypes from 'prop-types';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import CampoNumero from '~/componentes/campoNumero';
 import SelectComponent from '~/componentes/select';
 import notasConceitos from '~/dtos/notasConceitos';
@@ -11,7 +11,7 @@ import { Lista, Container } from './avaliacao.css';
 const Avaliacao = props => {
   const { dados, onChangeAvaliacao, notaTipo} = props;
 
-  const [dataSource, setDataSource] = useState(dados);
+  const [dataSource, setDataSource] = useState({});
   const [alunos, setAlunos] = useState(dados.alunos);
 
   const listaConceitos = [
@@ -20,16 +20,22 @@ const Avaliacao = props => {
     { valor: 'NS', descricao: 'NS'},
   ];
 
+  useEffect(() => {
+    setDataSource(dados);
+  }, [dados]);
+
+
   const onChangeNotaConceito = (aluno, notaConceito, index) => {
     aluno.notasAvaliacoes[index].notaConceito = notaConceito;
-    setAlunos([...alunos])
+    setAlunos([...alunos]);
+    onChangeAvaliacao(true);
   }
 
   const descricaoAlunoAusente = 'Aluno ausente na data da avaliação';
 
   return (
     <Container>
-    { dataSource ?
+    { dataSource  && dataSource.alunos?
       <>
         <Lista className="mt-4 table-responsive">
           <div className="scroll-tabela-avaliacao-thead">
@@ -88,20 +94,20 @@ const Avaliacao = props => {
               <table className="table mb-0">
                 <tbody className="tabela-avaliacao-tbody">
                   {
-                    alunos.map((aluno, i) => {
+                   dataSource.alunos.map((aluno, idexAluno) => {
                       return (
-                      <tr key={i}>
+                      <tr key={idexAluno}>
                         <td className="width-60 text-center font-weight-bold">{aluno.numeroChamada}</td>
                         <td className="text-left">{aluno.nome}</td>
                         {
                           aluno.notasAvaliacoes.length ?
-                            aluno.notasAvaliacoes.map((nota, i) => {
+                            aluno.notasAvaliacoes.map((nota, indexAvaliacao) => {
                               return (
-                                <td key={i}  className="width-150" style={{padding: "3px"}}>
+                                <td key={indexAvaliacao}  className="width-150" style={{padding: "3px"}}>
                                     {
                                       notasConceitos.Notas == notaTipo ?
                                       <CampoNumero
-                                        onChange={valorNovo=> onChangeNotaConceito(aluno, valorNovo, i)}
+                                        onChange={valorNovo=> onChangeNotaConceito(aluno, valorNovo, indexAvaliacao)}
                                         value={nota.notaConceito}
                                         min={0}
                                         max={10}
@@ -115,7 +121,7 @@ const Avaliacao = props => {
                                         valueText="descricao"
                                         lista={listaConceitos}
                                         valueSelect={nota.notaConceito}
-                                        onChange={valorNovo => onChangeNotaConceito(aluno, valorNovo, i)}
+                                        onChange={valorNovo => onChangeNotaConceito(aluno, valorNovo, indexAvaliacao)}
                                         showSearch
                                         placeholder="Conceito"
                                         className="select-conceitos"

@@ -1,14 +1,21 @@
+import { Tabs } from 'antd';
 import React, { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
+import Avaliacao from '~/componentes-sgp/avaliacao/avaliacao';
 import Cabecalho from '~/componentes-sgp/cabecalho';
 import Button from '~/componentes/button';
 import Card from '~/componentes/card';
 import { Colors } from '~/componentes/colors';
 import SelectComponent from '~/componentes/select';
+import { ContainerTabsCard } from '~/componentes/tabs/tabs.css';
+import { URL_HOME } from '~/constantes/url';
+import { confirmar, erros, sucesso } from '~/servicos/alertas';
 import api from '~/servicos/api';
-import TabsComponent from '~/componentes/tabs/tabs';
-import Avaliacao from '~/componentes-sgp/avaliacao/avaliacao';
+import history from '~/servicos/history';
+
 import { Container, ContainerAuditoria } from './notas.css';
+
+const { TabPane } = Tabs;
 
 const Notas = () => {
 
@@ -19,7 +26,10 @@ const Notas = () => {
   const [listaDisciplinas, setListaDisciplinas] = useState([]);
   const [disciplinaSelecionada, setDisciplinaSelecionada] = useState(undefined);
   const [desabilitarDisciplina, setDesabilitarDisciplina] = useState(false);
-  const [listaTabs, setListaTabs] = useState([]);
+  const [bimestres, setBimestres] = useState();
+  const [notaTipo, setNotaTipo] = useState();
+  const [desabilitarCampos, setDesabilitarCampos] = useState(false);
+  const [modoEdicao, setModoEdicao] = useState(false);
   const [auditoriaInfo, setAuditoriaInfo] = useState({
     auditoriaAlterado: '',
     auditoriaInserido: ''
@@ -50,16 +60,36 @@ const Notas = () => {
     }
   }, [turmaSelecionada.turma]);
 
-  const onClickVoltar = ()=> {
-    console.log('onClickVoltar');
-  }
 
-  const onClickCancelar = ()=> {
-    console.log('onClickCancelar');
-  }
+  const onClickVoltar = async () => {
+    if (!desabilitarCampos && modoEdicao) {
+      const confirmado = await pergutarParaSalvar();
+      if (confirmado) {
+        await onSalvarNotas();
+        irParaHome();
+      } else {
+        irParaHome();
+      }
+    } else {
+      irParaHome();
+    }
+  };
+
+  const pergutarParaSalvar = () => {
+    return confirmar(
+      'Atenção',
+      '',
+      'Suas alterações não foram salvas, deseja salvar agora?'
+    );
+  };
+
+  const irParaHome = () => {
+    history.push(URL_HOME);
+  };
 
   const onClickSalvar = ()=> {
     console.log('onClickSalvar');
+    console.log(bimestres);
   }
 
   const onChangeDisciplinas = disciplinaId => {
@@ -78,9 +108,9 @@ const Notas = () => {
       professorRf: usuario.rf
     }
     const dados = await api.get('v1/avaliacoes/notas', params);
-    debugger
     if (dados && dados.data) {
-      montaListaTabs(dados.data)
+      setBimestres([...dados.data.bimestres]);
+      setNotaTipo(dados.data.notaTipo);
       setAuditoriaInfo({
         auditoriaAlterado: dados.data.auditoriaAlterado,
         auditoriaInserido: dados.data.auditoriaInserido
@@ -88,17 +118,54 @@ const Notas = () => {
     }
   }
 
-  const montaListaTabs = dados => {
-    const bimestres = dados.bimestres.map((item, i) => {
-      return {
-        nome: item.descricao,
-        conteudo: (
-          <Avaliacao key={i} dados={item} notaTipo={dados.notaTipo} ></Avaliacao>
-        )
-      }
-    });
-    setListaTabs(bimestres);
+  const onChangeAvaliacao = ()=> {
+    setModoEdicao(true);
   }
+
+  const onSalvarNotas = click => {
+    return new Promise((resolve, reject) => {
+      const valorParaSalvar = { };
+      return api
+        .post(`v1/avaliacoes/notas`, valorParaSalvar)
+        .then(salvouNotas => {
+          if (salvouNotas && salvouNotas.status == 200) {
+            sucesso('Suas informações foram salvas com sucesso.');
+            if (click) {
+              aposSalvarNotas();
+            }
+            resolve(true);
+            return true;
+          } else {
+            resolve(false);
+            return false;
+          }
+        })
+        .catch(e => {
+          erros(e);
+          reject(e);
+        });
+    });
+  };
+
+  const aposSalvarNotas = () => {
+    setModoEdicao(false);
+    // TODO - Obter nota por id - atualizar data alteracao e inserção
+  };
+
+  const onClickCancelar = async () => {
+    if (!desabilitarCampos && modoEdicao) {
+      const confirmou = await confirmar(
+        'Atenção',
+        'Você não salvou as informações preenchidas.',
+        'Deseja realmente cancelar as alterações?'
+      );
+      if (confirmou) {
+        setModoEdicao(false);
+        // TODO - Obter nota por id - atualizar data alteracao e inserção
+        obterDadosBimestres(disciplinaSelecionada)
+      }
+    }
+  };
 
   return (
     <Container>
@@ -148,11 +215,23 @@ const Notas = () => {
             </div>
           </div>
           {
-            listaTabs && listaTabs.length > 0 ?
+            bimestres && bimestres.length  ?
             <>
               <div className="row">
                 <div className="col-sm-12 col-md-12 col-lg-12 col-xl-12 mb-2">
-                  <TabsComponent onChangeTab={onChangeTab} listaTabs={listaTabs}/>
+                  <ContainerTabsCard type="card" onChangeTab={onChangeTab}>
+                    {bimestres.map((item, i) => {
+                        return (
+                          <TabPane tab={item.descricao} key={i}>
+                            <Avaliacao
+                              dados={item}
+                              notaTipo={notaTipo}
+                              onChangeAvaliacao={onChangeAvaliacao}
+                            ></Avaliacao>
+                          </TabPane>
+                        );
+                   })}
+                  </ContainerTabsCard>
                 </div>
               </div>
               <div className="row mt-2 mb-2 mt-2">
