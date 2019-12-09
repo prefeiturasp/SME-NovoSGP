@@ -165,6 +165,10 @@ const DiaCompleto = props => {
     }
   };
 
+  const aoClicarEditarAvaliacao = id => {
+    history.push(`${RotasDTO.CADASTRO_DE_AVALIACAO}/editar/${id}`);
+  };
+
   return (
     estaAberto && (
       <Div className="border-bottom border-top-0 h-100 p-3">
@@ -176,9 +180,9 @@ const DiaCompleto = props => {
               return (
                 <Evento
                   key={shortid.generate()}
-                  className="list-group-item list-group-item-action d-flex rounded"
+                  className="list-group-item list-group-item-action d-flex rounded position-relative"
                   onClick={() => aoClicarEvento(evento.id, evento.tipoEvento)}
-                  style={{ cursor: 'pointer' }}
+                  style={{ cursor: 'pointer', zIndex: 0 }}
                 >
                   <Grid
                     cols={
@@ -227,7 +231,9 @@ const DiaCompleto = props => {
                     cols={
                       evento.tipoEvento === TiposEventoAulaDTO.Aula ||
                       evento.tipoEvento === TiposEventoAulaDTO.CJ
-                        ? 10
+                        ? evento.dadosAula && evento.dadosAula.atividade.length
+                          ? 10 - evento.dadosAula.atividade.length
+                          : 10
                         : 11
                     }
                     className="align-self-center font-weight-bold pl-0"
@@ -247,6 +253,24 @@ const DiaCompleto = props => {
                         `${evento.dadosAula.turma} - ${evento.dadosAula.modalidade} - ${evento.dadosAula.tipo} - ${evento.dadosAula.unidadeEscolar} - ${evento.dadosAula.disciplina}`}
                     </Div>
                   </Grid>
+                  {evento.dadosAula && evento.dadosAula.atividade.length
+                    ? evento.dadosAula.atividade.map(atividade => {
+                        return (
+                          <Grid key={atividade.id} cols={1} className="pr-0">
+                            <Botao
+                              label="Avaliação"
+                              color={Colors.Roxo}
+                              className="w-100 position-relative zIndex"
+                              onClick={() =>
+                                aoClicarEditarAvaliacao(atividade.id)
+                              }
+                              border
+                              steady
+                            />
+                          </Grid>
+                        );
+                      })
+                    : null}
                 </Evento>
               );
             })}
@@ -261,6 +285,15 @@ const DiaCompleto = props => {
                 aula =>
                   aula.tipoEvento === TiposEventoAulaDTO.Aula ||
                   aula.tipoEvento === TiposEventoAulaDTO.CJ
+              ).length
+            }
+            podeCadastrarAvaliacao={
+              eventosDia.eventosAulas.filter(
+                aula =>
+                  (aula.tipoEvento === TiposEventoAulaDTO.Aula ||
+                    aula.tipoEvento === TiposEventoAulaDTO.CJ) &&
+                  aula.dadosAula &&
+                  aula.dadosAula.podeCadastrarAvaliacao
               ).length
             }
           />
