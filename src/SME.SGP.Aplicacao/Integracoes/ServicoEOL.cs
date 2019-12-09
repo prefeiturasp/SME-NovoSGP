@@ -5,6 +5,7 @@ using SME.SGP.Dto;
 using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Text;
@@ -37,6 +38,13 @@ namespace SME.SGP.Aplicacao.Integracoes
                 StatusRetorno = (int)resposta.StatusCode,
                 SenhaAlterada = resposta.IsSuccessStatusCode
             };
+        }
+
+        public async Task AtribuirCJSeNecessario(string codigoRf)
+        {
+            var resumo = await ObterResumoCore(codigoRf);
+
+            await AtribuirCJSeNecessario(resumo.Id);
         }
 
         public async Task AtribuirCJSeNecessario(Guid usuarioId)
@@ -127,6 +135,20 @@ namespace SME.SGP.Aplicacao.Integracoes
             var url = $"funcionarios/{login}/perfis/{perfil}/turmas/{codigoTurma}/disciplinas";
 
             return await ObterDisciplinas(url);
+        }
+
+        public IEnumerable<DisciplinaDto> ObterDisciplinasPorIds(long[] ids)
+        {
+            httpClient.DefaultRequestHeaders.Clear();
+
+            var resposta = httpClient.PostAsync("disciplinas", new StringContent(JsonConvert.SerializeObject(ids), Encoding.UTF8, "application/json-patch+json")).Result;
+            if (resposta.IsSuccessStatusCode)
+            {
+                var json = resposta.Content.ReadAsStringAsync().Result;
+                var retorno = JsonConvert.DeserializeObject<IEnumerable<RetornoDisciplinaDto>>(json);
+                return MapearParaDtoDisciplinas(retorno);
+            }
+            return null;
         }
 
         public IEnumerable<DreRespostaEolDto> ObterDres()
@@ -288,6 +310,14 @@ namespace SME.SGP.Aplicacao.Integracoes
             return JsonConvert.DeserializeObject<IEnumerable<ProfessorResumoDto>>(json);
         }
 
+        public async Task<IEnumerable<ProfessorTitularDisciplinaEol>> ObterProfessoresTitularesDisciplinas(string turmaId, Modalidade modalidadeId, string ueId)
+        {
+            return new List<ProfessorTitularDisciplinaEol>() {
+                new ProfessorTitularDisciplinaEol() { DisciplinaId = 1060, DisciplinaNome = "Informática - OIE", ProfessorNome = "Josefino Alves", ProfessorRf = "53715782" } ,
+                new ProfessorTitularDisciplinaEol() { DisciplinaId = 1288, DisciplinaNome = "Educação Física Integral Manhã", ProfessorNome = "Arlindo Cruz", ProfessorRf = "876524789" } ,
+            };
+        }
+
         public async Task<UsuarioResumoCoreDto> ObterResumoCore(string login)
         {
             var resposta = await httpClient.GetAsync($"AutenticacaoSgp/{login}/obter/resumo");
@@ -308,10 +338,10 @@ namespace SME.SGP.Aplicacao.Integracoes
             var resposta = await httpClient.GetAsync($"professores/{codigoRF}/BuscarPorRf/{anoLetivo}");
 
             if (!resposta.IsSuccessStatusCode)
-                return null;
+                throw new NegocioException("Ocorreu uma falha ao consultar o professor");
 
             if (resposta.StatusCode == HttpStatusCode.NoContent)
-                return null;
+                throw new NegocioException($"Não foi encontrado professor com RF {codigoRF}");
 
             var json = await resposta.Content.ReadAsStringAsync();
 
@@ -352,6 +382,20 @@ namespace SME.SGP.Aplicacao.Integracoes
             return null;
         }
 
+        public async Task<IEnumerable<TurmaPorUEResposta>> ObterTurmasPorUE(string ueId, string anoLetivo)
+        {
+            httpClient.DefaultRequestHeaders.Clear();
+
+            var resposta = await httpClient.GetAsync($"escolas/{ueId}/turmas/anos_letivos/{anoLetivo}");
+            var turmas = new List<TurmaPorUEResposta>();
+            if (resposta.IsSuccessStatusCode)
+            {
+                var json = resposta.Content.ReadAsStringAsync().Result;
+                turmas = JsonConvert.DeserializeObject<List<TurmaPorUEResposta>>(json);
+            }
+            return turmas;
+        }
+
         public async Task ReiniciarSenha(string codigoRf)
         {
             httpClient.DefaultRequestHeaders.Clear();
@@ -377,6 +421,21 @@ namespace SME.SGP.Aplicacao.Integracoes
             var mensagem = await resposta.Content.ReadAsStringAsync();
 
             throw new NegocioException(mensagem);
+        }
+
+        public bool ValidarProfessor(string professorRf)
+        {
+            return true;
+        }
+
+        private IEnumerable<DisciplinaDto> MapearParaDtoDisciplinas(IEnumerable<RetornoDisciplinaDto> disciplinas)
+        {
+            return disciplinas.Select(x => new DisciplinaDto
+            {
+                CodigoComponenteCurricular = x.CdComponenteCurricular,
+                Nome = x.Descricao,
+                Regencia = x.EhRegencia
+            });
         }
 
         private async Task<IEnumerable<DisciplinaResposta>> ObterDisciplinas(string url)

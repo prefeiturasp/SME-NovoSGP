@@ -2,6 +2,9 @@
 using SME.SGP.Dados.Contexto;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
+using SME.SGP.Infra;
+using System.Collections.Generic;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Dados.Repositorios
@@ -12,26 +15,71 @@ namespace SME.SGP.Dados.Repositorios
         {
         }
 
-        public async Task<AtribuicaoCJ> ObterPorComponenteTurmaModalidadeUe(Modalidade modalidade, string turmaId, string ueId, long componenteCurricularId)
+        public IEnumerable<AtribuicaoCJ> ObterAtribuicaoAtiva(string professorRf)
         {
-            var query = @"
-                        select
-	                        *
-                        from
-	                        atribuicao_cj a
-                        where
-	                        a.modalidade = @modalidade
-	                        and a.ue_id = @ueId
-	                        and a.turma_id = @turmaId
-	                        and a.componente_curricular_id = @componenteCurricularId";
+            var query = @"select id, disciplina_id, dre_id, ue_id, professor_rf, turma_id, modalidade, substituir,
+                            criado_em, criado_por, alterado_em, alterado_por, criado_rf, alterado_rf, migrado
+                            from atribuicao_cj where professor_rf = @professorRf and substituir = true";
 
-            return (await database.Conexao.QueryFirstOrDefaultAsync<AtribuicaoCJ>(query, new
+            var parametros = new { professorRf };
+
+            return database.Query<AtribuicaoCJ>(query, parametros);
+        }
+
+        public async Task<IEnumerable<AtribuicaoCJ>> ObterPorFiltros(Modalidade? modalidade, string turmaId, string ueId, long disciplinaId,
+            string usuarioRf, string usuarioNome, bool? substituir)
+        {
+            var query = new StringBuilder();
+
+            query.AppendLine("select a.*, t.*");
+            query.AppendLine("from");
+            query.AppendLine("atribuicao_cj a");
+            query.AppendLine("inner join turma t");
+            query.AppendLine("on t.turma_id = a.turma_id");
+            query.AppendLine("inner join usuario u");
+            query.AppendLine("on u.rf_codigo = a.professor_rf");
+            query.AppendLine("where 1 = 1");
+
+            if (modalidade.HasValue)
+                query.AppendLine("and a.modalidade = @modalidade");
+
+            if (!string.IsNullOrEmpty(ueId))
+                query.AppendLine("and a.ue_id = @ueId");
+
+            if (!string.IsNullOrEmpty(turmaId))
+                query.AppendLine("and a.turma_id = @turmaId");
+
+            if (disciplinaId > 0)
+                query.AppendLine("and a.disciplina_id = @disciplinaId");
+
+            if (!string.IsNullOrEmpty(usuarioRf))
+                query.AppendLine("and a.professor_rf = @usuarioRf");
+
+            if (!string.IsNullOrEmpty(usuarioNome))
             {
-                modalidade = (int)modalidade,
+                usuarioNome = $"%{usuarioNome.ToUpper()}%";
+                query.AppendLine("and upper(f_unaccent(u.nome)) LIKE @usuarioNome");
+            }
+
+            if (substituir.HasValue)
+            {
+                query.AppendLine("and a.substituir = @substituir");
+            }
+
+            return (await database.Conexao.QueryAsync<AtribuicaoCJ, Turma, AtribuicaoCJ>(query.ToString(), (atribuicaoCJ, turma) =>
+            {
+                atribuicaoCJ.Turma = turma;
+                return atribuicaoCJ;
+            }, new
+            {
+                modalidade = modalidade.HasValue ? (int)modalidade : 0,
                 ueId,
                 turmaId,
-                componenteCurricularId
-            }));
+                disciplinaId,
+                usuarioRf,
+                usuarioNome,
+                substituir
+            }, splitOn: "id,id"));
         }
     }
 }

@@ -27,6 +27,7 @@ namespace SME.SGP.Infra
 
         public string CriadoRF { get; set; }
 
+        public bool Desabilitado { get; set; }
         public long Id { get; set; }
 
         [ListaTemElementos(ErrorMessage = "A lista de frequência é obrigatória")]

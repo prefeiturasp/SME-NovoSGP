@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Moq;
+using SME.SGP.Aplicacao.Integracoes;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
@@ -16,13 +17,17 @@ namespace SME.SGP.Aplicacao.Teste.Consultas
         private readonly IComandosDiasLetivos comandosDiasLetivos;
         private readonly Mock<IComandosDiasLetivos> comandosDiasLetivosMock;
 
+        private readonly Mock<IConsultasAbrangencia> consultasAbrangencia;
         private readonly ConsultasEventosAulasCalendario consultasEventosAulasCalendario;
         private readonly Mock<IHttpContextAccessor> httpContext;
+        private readonly Mock<IRepositorioAtividadeAvaliativa> repositorioAtividadeAvaliativa;
+        private readonly Mock<IRepositorioAtividadeAvaliativaRegencia> repositorioAtividadeAvaliativaRegencia;
         private readonly Mock<IRepositorioAula> repositorioAula;
         private readonly Mock<IRepositorioEvento> repositorioEvento;
         private readonly Mock<IRepositorioParametrosSistema> repositorioParametrosSistema;
         private readonly Mock<IRepositorioPeriodoEscolar> repositorioPeriodoEscolar;
         private readonly Mock<IRepositorioTipoCalendario> repositorioTipoCalendatio;
+        private readonly Mock<IServicoEOL> servicoEOL;
         private readonly Mock<IServicoUsuario> servicoUsuario;
 
         public ConsultasEventosAulasCalendarioTeste()
@@ -35,8 +40,12 @@ namespace SME.SGP.Aplicacao.Teste.Consultas
             repositorioPeriodoEscolar = new Mock<IRepositorioPeriodoEscolar>();
             repositorioParametrosSistema = new Mock<IRepositorioParametrosSistema>();
             repositorioTipoCalendatio = new Mock<IRepositorioTipoCalendario>();
+            servicoEOL = new Mock<IServicoEOL>();
+            repositorioAtividadeAvaliativa = new Mock<IRepositorioAtividadeAvaliativa>();
+            consultasAbrangencia = new Mock<IConsultasAbrangencia>();
+            repositorioAtividadeAvaliativaRegencia = new Mock<IRepositorioAtividadeAvaliativaRegencia>();
 
-            consultasEventosAulasCalendario = new ConsultasEventosAulasCalendario(repositorioEvento.Object, comandosDiasLetivosMock.Object, repositorioAula.Object, servicoUsuario.Object);
+            consultasEventosAulasCalendario = new ConsultasEventosAulasCalendario(repositorioEvento.Object, comandosDiasLetivosMock.Object, repositorioAula.Object, servicoUsuario.Object, servicoEOL.Object, consultasAbrangencia.Object, repositorioAtividadeAvaliativa.Object, repositorioPeriodoEscolar.Object, repositorioAtividadeAvaliativaRegencia.Object);
             comandosDiasLetivos = new ComandosDiasLetivos(repositorioPeriodoEscolar.Object, repositorioEvento.Object, repositorioTipoCalendatio.Object, repositorioParametrosSistema.Object);
         }
 
@@ -105,6 +114,10 @@ namespace SME.SGP.Aplicacao.Teste.Consultas
                 Mes = 11
             };
 
+            PeriodoEscolar periodoEscolar = new PeriodoEscolar();
+            PeriodoEscolar periodoEscolar2 = new PeriodoEscolar();
+            PeriodoEscolar periodoEscolar3 = new PeriodoEscolar();
+            PeriodoEscolar periodoEscolar4 = new PeriodoEscolar();
             AulaDto aula = new AulaDto();
             AulaDto aula2 = new AulaDto();
             Evento evento = new Evento();
@@ -115,18 +128,25 @@ namespace SME.SGP.Aplicacao.Teste.Consultas
             NovoEvento(evento, "Teste 1", new DateTime(2019, 11, 21), new DateTime(2019, 12, 1));
             NovoEvento(evento2, "Teste 2", new DateTime(2019, 11, 1), new DateTime(2019, 11, 1));
 
+            NovoPerioEscolar(periodoEscolar, 1, new DateTime(2019, 02, 01), new DateTime(2019, 03, 30));
+            NovoPerioEscolar(periodoEscolar2, 2, new DateTime(2019, 04, 01), new DateTime(2019, 06, 30));
+            NovoPerioEscolar(periodoEscolar3, 3, new DateTime(2019, 07, 01), new DateTime(2019, 09, 30));
+            NovoPerioEscolar(periodoEscolar4, 4, new DateTime(2019, 10, 01), new DateTime(2019, 11, 30));
+
+            IEnumerable<PeriodoEscolar> periodos = new List<PeriodoEscolar> { periodoEscolar, periodoEscolar2, periodoEscolar3, periodoEscolar4 };
             IEnumerable<AulaDto> aulas = new List<AulaDto> { aula, aula2 };
             IEnumerable<Evento> eventos = new List<Evento> { evento, evento2 };
 
-            repositorioAula.Setup(r => r.ObterAulas(It.IsAny<long>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<int>(), It.IsAny<string>())).Returns(Task.FromResult(aulas));
+            repositorioAula.Setup(r => r.ObterAulas(It.IsAny<long>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), null, null, null)).Returns(Task.FromResult(aulas));
             repositorioEvento.Setup(r => r.ObterEventosPorTipoDeCalendarioDreUeMes(It.IsAny<long>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<int>(), It.IsAny<bool>())).Returns(Task.FromResult(eventos));
+            repositorioPeriodoEscolar.Setup(r => r.ObterPorTipoCalendario(It.IsAny<long>())).Returns(periodos);
 
             var dias = comandosDiasLetivos.BuscarDiasLetivos(1);
 
             comandosDiasLetivosMock.Setup(r => r.BuscarDiasLetivos(It.IsAny<long>())).Returns(dias);
 
             var eventosAulas = await consultasEventosAulasCalendario.ObterTipoEventosAulas(filtro);
-            Assert.True(eventosAulas.Count() == 12);
+            Assert.True(eventosAulas.Count() == 11);
         }
 
         private static void NovaAula(AulaDto aula, DateTime dataAula)

@@ -1,9 +1,12 @@
-﻿using System.Threading.Tasks;
+﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace SME.SGP.Dominio.Interfaces
 {
     public interface IRepositorioAtribuicaoCJ : IRepositorioBase<AtribuicaoCJ>
     {
-        Task<AtribuicaoCJ> ObterPorComponenteTurmaModalidadeUe(Modalidade modalidade, string turmaId, string ueId, long componenteCurricularId);
+        IEnumerable<AtribuicaoCJ> ObterAtribuicaoAtiva(string professorRf);
+
+        Task<IEnumerable<AtribuicaoCJ>> ObterPorFiltros(Modalidade? modalidade, string turmaId, string ueId, long componenteCurricularId, string usuarioRf, string usuarioNome, bool? substituir);
     }
 }
