@@ -5,6 +5,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
 using SME.Background.Core;
 using SME.SGP.Infra.Contexto;
+using SME.SGP.Infra.Escopo;
 using SME.SGP.Infra.Interfaces;
 using System.Threading;
 
@@ -31,15 +32,13 @@ namespace SME.SGP.Hangfire
 
         public void OnPerformed(PerformedContext filterContext)
         {
-            WorkerContext removed = null;
-            if (WorkerContext.TransientContexts.TryRemove(Thread.CurrentThread.Name, out removed))
-                removed.Dispose();
+            WorkerServiceScope.DestroyScope();
         }
 
         public void OnPerforming(PerformingContext filterContext)
         {
             var contextoTransiente = filterContext.GetJobParameter<WorkerContext>("contextoAplicacao");
-            WorkerContext.TransientContexts.TryAdd(Thread.CurrentThread.Name, contextoTransiente);
+            WorkerServiceScope.TransientContexts.TryAdd(Thread.CurrentThread.Name, contextoTransiente);
 
         }
 
