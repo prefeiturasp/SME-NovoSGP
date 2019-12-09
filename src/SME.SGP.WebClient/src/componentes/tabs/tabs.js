@@ -16,7 +16,7 @@ const TabsComponent = props => {
   const montarTabs = () => {
     return listaTabs.map((tab, index) => {
       return (
-        <TabPane tab={tab.nome} key={index}>
+        <TabPane tab={tab.nome} key={`tab-${index}`}>
           {tab.conteudo}
         </TabPane>
       );
