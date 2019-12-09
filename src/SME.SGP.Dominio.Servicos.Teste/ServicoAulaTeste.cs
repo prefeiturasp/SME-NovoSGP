@@ -69,7 +69,7 @@ namespace SME.SGP.Dominio.Servicos.Teste
             servicoAula = new ServicoAula(repositorioAula.Object, servicoEol.Object,
                                          repositorioTipoCalendario.Object, servicoDiaLetivo.Object,
                                          consultasGrade.Object, consultasPeriodoEscolar.Object,
-                                         servicoLog.Object, repositorioAbrangencia.Object,
+                                         servicoLog.Object,
                                          servicoNotificacao.Object, consultaAbrangencia.Object,
                                          comandosWorkflowAprovacao.Object,
                                          comandosPlanoAula.Object, servicoFrequencia.Object,
