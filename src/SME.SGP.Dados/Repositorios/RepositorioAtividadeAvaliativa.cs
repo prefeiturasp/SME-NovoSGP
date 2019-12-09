@@ -1,5 +1,4 @@
 ﻿using Dapper;
-using SME.SGP.Dados.Contexto;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
@@ -15,9 +14,9 @@ namespace SME.SGP.Dados.Repositorios
     {
         private readonly string fromCompleto = "from atividade_avaliativa a inner join tipo_avaliacao ta on a.tipo_avaliacao_id = ta.id ";
 
-        private readonly string fromCompletoRegencia = "from atividade_avaliativa a " +
-                                                        "inner join tipo_avaliacao ta on a.tipo_avaliacao_id = ta.id " +
-                                                        "inner join atividade_avaliativa_regencia aar on a.id = aar.atividade_avaliativa_id ";
+        private readonly string fromCompletoRegencia = @"from atividade_avaliativa a
+                                                        inner join tipo_avaliacao ta on a.tipo_avaliacao_id = ta.id
+                                                        inner join atividade_avaliativa_regencia aar on a.id = aar.atividade_avaliativa_id ";
 
         public RepositorioAtividadeAvaliativa(ISgpContext conexao) : base(conexao)
         {
@@ -81,24 +80,24 @@ namespace SME.SGP.Dados.Repositorios
             var sql = new StringBuilder();
 
             MontaQueryCabecalho(sql, false);
+            sql.AppendLine(fromCompleto);
+            sql.AppendLine($"where a.id = ANY(@ids)");
 
-            sql.AppendLine($"where id in ({string.Join(",", ids)})");
-
-            return database.Query<AtividadeAvaliativa>(sql.ToString());
+            return database.Query<AtividadeAvaliativa>(sql.ToString(), new { ids = ids.ToArray() });
         }
 
-        public IEnumerable<AtividadeAvaliativa> ListarPorTurmaDisciplinaPeriodo(string turmaId, string disciplinaId, DateTime inicioPeriodo, DateTime fimPeriodo)
+        public async Task<IEnumerable<AtividadeAvaliativa>> ListarPorTurmaDisciplinaPeriodo(string turmaCodigo, string disciplinaId, DateTime inicioPeriodo, DateTime fimPeriodo)
         {
             var sql = new StringBuilder();
 
             MontaQueryCabecalho(sql, false);
+            sql.AppendLine(fromCompleto);
+            sql.AppendLine("where 1=1");
+            sql.AppendLine("and a.turma_id = @turmaCodigo");
+            sql.AppendLine("and a.data_avaliacao >= @inicioPeriodo and a.data_avaliacao <= @fimPeriodo");
+            sql.AppendLine("and a.disciplina_id = @disciplinaId");
 
-            sql.AppendLine("turma_id = @turmaId where data_avaliacao >= @inicioPeriodo and data_avaliacao <= @fimPeriodo");
-            sql.AppendLine("and disciplina_id = @disciplinaId");
-
-            var parametros = new { turmaId, inicioPeriodo, fimPeriodo, disciplinaId };
-
-            return database.Query<AtividadeAvaliativa>(sql.ToString(), parametros);
+            return await database.QueryAsync<AtividadeAvaliativa>(sql.ToString(), new { turmaCodigo, inicioPeriodo, fimPeriodo, disciplinaId });
         }
 
         public async Task<AtividadeAvaliativa> ObterAtividadeAvaliativa(DateTime dataAvaliacao, string disciplinaId, string turmaId, string ueId)
@@ -305,9 +304,6 @@ namespace SME.SGP.Dados.Repositorios
                 query.AppendLine("ta.descricao,");
                 query.AppendLine("ta.situacao");
             }
-
-            if (!listagem)
-                query.AppendLine("from atividade_avaliativa a");
         }
 
         private static void MontaQueryCabecalhoSimples(StringBuilder query)
