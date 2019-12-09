@@ -1,4 +1,5 @@
 ﻿using SME.SGP.Aplicacao.Integracoes;
+using SME.SGP.Aplicacao.Interfaces;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
@@ -15,14 +16,20 @@ namespace SME.SGP.Aplicacao
         private readonly IRepositorioTurma repositorioTurma;
         private readonly IServicoEOL servicoEOL;
         private readonly IServicoFrequencia servicoFrequencia;
+        private readonly IConsultasEventoMatricula consultasEventoMatricula;
+        private readonly IConsultasPeriodoEscolar consultasPeriodoEscolar;
 
         public ConsultasFrequencia(IServicoFrequencia servicoFrequencia,
                                    IServicoEOL servicoEOL,
+                                   IConsultasEventoMatricula consultasEventoMatricula,
+                                   IConsultasPeriodoEscolar consultasPeriodoEscolar,
                                    IRepositorioAula repositorioAula,
                                    IRepositorioTurma repositorioTurma)
         {
             this.servicoFrequencia = servicoFrequencia ?? throw new ArgumentNullException(nameof(servicoFrequencia));
             this.servicoEOL = servicoEOL ?? throw new ArgumentNullException(nameof(servicoEOL));
+            this.consultasEventoMatricula = consultasEventoMatricula ?? throw new ArgumentNullException(nameof(consultasEventoMatricula));
+            this.consultasPeriodoEscolar = consultasPeriodoEscolar ?? throw new ArgumentNullException(nameof(consultasPeriodoEscolar));
             this.repositorioAula = repositorioAula ?? throw new ArgumentNullException(nameof(repositorioAula));
             this.repositorioTurma = repositorioTurma ?? throw new ArgumentNullException(nameof(repositorioTurma));
         }
@@ -60,6 +67,9 @@ namespace SME.SGP.Aplicacao
                     SituacaoMatricula = aluno.SituacaoMatricula,
                     Desabilitado = aluno.EstaInativo()
                 };
+
+                var eventoMatricula = await consultasEventoMatricula.ObterUltimoEventoAluno(aluno.CodigoAluno, aula.DataAula);
+                //registroFrequenciaAluno.Marcador = CarregarMarcadorFrequenciaAluno(aula, eventoMatricula);
 
                 if (aula.PermiteRegistroFrequencia(turma))
                 {
