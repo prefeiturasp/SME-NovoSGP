@@ -64,30 +64,39 @@ namespace SME.SGP.Dados.Repositorios
 
         public async Task<IEnumerable<AulaPrevista>> ObterAulasPrevistasPorFiltro(int bimestre, long tipoCalendarioId, string turmaId, string disciplinaId)
         {
-            try
-            {
-                var query = new StringBuilder();
+            var query = new StringBuilder();
 
-                query.AppendLine("select * from aula_prevista where 1=1");
+            query.AppendLine("select * from aula_prevista where 1=1");
 
-                if (tipoCalendarioId > 0)
-                    query.AppendLine("and tipo_calendario_id = @tipoCalendarioId");
+            if (tipoCalendarioId > 0)
+                query.AppendLine("and tipo_calendario_id = @tipoCalendarioId");
 
-                if (bimestre > 0)
-                    query.AppendLine("and bimestre = @bimestre");
+            if (bimestre > 0)
+                query.AppendLine("and bimestre = @bimestre");
 
-                if (!string.IsNullOrEmpty(turmaId))
-                    query.AppendLine("and turma_id = @turmaId");
+            if (!string.IsNullOrEmpty(turmaId))
+                query.AppendLine("and turma_id = @turmaId");
 
-                if (!string.IsNullOrEmpty(disciplinaId))
-                    query.AppendLine("and disciplina_id = @disciplinaId");
+            if (!string.IsNullOrEmpty(disciplinaId))
+                query.AppendLine("and disciplina_id = @disciplinaId");
 
-                return await database.Conexao.QueryAsync<AulaPrevista>(query.ToString(), new { bimestre, tipoCalendarioId, turmaId, disciplinaId });
-            }
-            catch (Exception e)
-            {
-                throw e;
-            }
+            return await database.Conexao.QueryAsync<AulaPrevista>(query.ToString(), new { bimestre, tipoCalendarioId, turmaId, disciplinaId });
+        }
+
+        public string ObterProfessorTurmaDisciplinaAulasPrevistasDivergente(int bimestre, string turmaId, string disciplinaId, int limiteDias)
+        {
+            var query = @"select a.professor_rf
+                          from aula a
+                         inner join periodo_escolar p on a.tipo_calendario_id = p.tipo_calendario_id and  a.data_aula BETWEEN p.periodo_inicio AND p.periodo_fim
+                         where not a.excluido
+                           and now() between p.periodo_inicio and p.periodo_fim
+                           and DATE_PART('day', age(p.periodo_fim, date(now()))) <= @limiteDias
+                           and p.bimestre = @bimestre
+                           and a.turma_id = @turmaId
+                           and a.disciplina_id = @disciplinaId
+                          ORDER BY a.data_aula DESC NULLS LAST LIMIT 1";
+
+            return database.Conexao.QuerySingleOrDefault<string>(query, new { bimestre, turmaId, disciplinaId, limiteDias });
         }
     }
 }
