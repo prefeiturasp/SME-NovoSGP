@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Http;
+using SME.SGP.Infra.Escopo;
 using SME.SGP.Infra.Interfaces;
 using System;
 using System.Collections.Concurrent;
@@ -19,7 +20,7 @@ namespace SME.SGP.Infra.Contexto
 
             if (!string.IsNullOrWhiteSpace(Thread.CurrentThread.Name))
             {
-                if (TransientContexts.TryGetValue(Thread.CurrentThread.Name, out contextoTransiente))
+                if (WorkerServiceScope.TransientContexts.TryGetValue(Thread.CurrentThread.Name, out contextoTransiente))
                     AtribuirContexto(contextoTransiente);
             }
         }
@@ -29,45 +30,10 @@ namespace SME.SGP.Infra.Contexto
             Variaveis = contexto.Variaveis;
             return this;
         }
+
         public void Dispose()
         {
-            List<ISgpContext> contexts = null;
-
-            if (TransientDatabaseContexts.TryRemove(Thread.CurrentThread.Name, out contexts))
-            {
-                foreach (var item in contexts)
-                    if (item != null)
-                        item.Dispose();
-
-            }
-        }
-
-        public static ConcurrentDictionary<string, WorkerContext> TransientContexts { get; set; }
-        public static ConcurrentDictionary<string, List<ISgpContext>> TransientDatabaseContexts { get; set; }
-
-        static WorkerContext()
-        {
-            TransientContexts = new ConcurrentDictionary<string, WorkerContext>();
-            TransientDatabaseContexts = new ConcurrentDictionary<string, List<ISgpContext>>();
-        }
-
-        public static ISgpContext AddTransienteDatabaseContext(ISgpContext context)
-        {
-            if (context != null)
-                if (TransientDatabaseContexts.ContainsKey(Thread.CurrentThread.Name))
-                {
-                    List<ISgpContext> contexts = null;
-
-                    if (TransientDatabaseContexts.TryGetValue(Thread.CurrentThread.Name, out contexts))
-                    {
-                        contexts.Add(context);
-                        TransientDatabaseContexts[Thread.CurrentThread.Name] = contexts;
-                    }
-                }
-                else
-                    TransientDatabaseContexts.TryAdd(Thread.CurrentThread.Name, new List<ISgpContext>(new[] { context }));
-
-            return context;
+            Variaveis.Clear();
         }
     }
 
