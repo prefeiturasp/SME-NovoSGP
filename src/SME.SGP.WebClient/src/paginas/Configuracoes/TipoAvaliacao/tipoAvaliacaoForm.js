@@ -1,4 +1,3 @@
-// Form
 import * as Yup from 'yup';
 import PropTypes from 'prop-types';
 import { Form, Formik } from 'formik';
@@ -23,7 +22,6 @@ import { erros, sucesso, confirmar, erro } from '~/servicos/alertas';
 import servicoTipoAvaliaco from '~/servicos/Paginas/TipoAvaliacao'; // Redux
 import { setBreadcrumbManual } from '~/servicos/breadcrumb-services';
 
-// Funçoes
 import { validaSeObjetoEhNuloOuVazio } from '~/utils/funcoes/gerais';
 
 const TipoAvaliacaoForm = ({ match }) => {

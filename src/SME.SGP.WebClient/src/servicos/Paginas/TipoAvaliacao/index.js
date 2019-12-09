@@ -4,8 +4,8 @@ const TipoAvaliacaoServico = {
   buscarTipoAvaliacao() {
     return api.get('/v1/atividade-avaliativa/tipos/listar');
   },
-  deletarTipoAvaliacao(id) {
-    return api.delete(`/v1/verdepois/${id}`);
+  deletarTipoAvaliacao(ids) {
+    return api.delete(`/v1/atividade-avaliativa`, ids);
   },
   salvarTipoAvaliacao(tipoAvaliacao) {
     return api.post('/v1/atividade-avaliativa/tipos', tipoAvaliacao);
