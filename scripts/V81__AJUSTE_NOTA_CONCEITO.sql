@@ -1,0 +1,1 @@
+﻿ALTER TABLE IF EXISTS notas_conceito ALTER COLUMN NOTA type NUMERIC(5,2);
