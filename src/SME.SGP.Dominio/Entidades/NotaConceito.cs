@@ -9,7 +9,14 @@ namespace SME.SGP.Dominio
         public long AtividadeAvaliativaID { get; set; }
         public long Conceito { get; set; }
         public double Nota { get; set; }
-        public long TipoNota { get; set; }
+        public TipoNota TipoNota { get; set; }
+
+        public string ObterNota()
+        {
+            if (TipoNota == TipoNota.Conceito)
+                return Conceito.ToString();
+            else return Nota.ToString();
+        }
 
         public void Validar(string professorRf)
         {
