@@ -117,6 +117,22 @@ namespace SME.SGP.Dados.Repositorios
             }));
         }
 
+        public async Task<AtividadeAvaliativa> ObterAtividadeAvaliativa(DateTime dataAvaliacao, string disciplinaId, string turmaId, string ueId)
+        {
+            StringBuilder query = new StringBuilder();
+            MontaQueryCabecalhoSimples(query);
+            query.AppendLine(fromCompleto);
+            MontaWhere(query, dataAvaliacao, null, ueId, null, null, turmaId);
+
+            return (await database.Conexao.QueryFirstOrDefaultAsync<AtividadeAvaliativa>(query.ToString(), new
+            {
+                dataAvaliacao,
+                disciplinaId,
+                turmaId,
+                ueId
+            }));
+        }
+
         public async Task<IEnumerable<AtividadeAvaliativa>> ObterAtividadesPorDia(string dreId, string ueId, DateTime dataAvaliacao, string professorRf, string turmaId)
         {
             StringBuilder query = new StringBuilder();
@@ -184,20 +200,22 @@ namespace SME.SGP.Dados.Repositorios
             return resultado.Any();
         }
 
-        public async Task<bool> VerificarSeJaExisteAvaliacaoComMesmoNome(string nomeAvaliacao, string dreId, string ueId, string turmaId, string professorRf, DateTime periodoInicio, DateTime periodoFim)
+        public async Task<bool> VerificarSeJaExisteAvaliacaoComMesmoNome(string nomeAvaliacao, string dreId, string ueId, string turmaId, string disciplinaId, string professorRf, DateTime periodoInicio, DateTime periodoFim, long? id)
         {
             nomeAvaliacao = nomeAvaliacao.ToLowerInvariant();
             StringBuilder query = new StringBuilder();
             MontaQueryCabecalho(query);
             query.AppendLine(fromCompleto);
-            MontaWhere(query, null, dreId, ueId, nomeAvaliacao, null, turmaId, professorRf, periodoInicio, periodoFim, true);
+            MontaWhere(query, null, dreId, ueId, nomeAvaliacao, null, turmaId, professorRf, periodoInicio, periodoFim, true, disciplinaId, null, null, null, id, id.HasValue);
 
             var resultado = (await database.Conexao.QueryAsync<AtividadeAvaliativa>(query.ToString(), new
             {
+                id,
                 dreId,
                 ueId,
                 nomeAvaliacao,
                 turmaId,
+                disciplinaId,
                 professorRf,
                 periodoInicio,
                 periodoFim
@@ -206,34 +224,37 @@ namespace SME.SGP.Dados.Repositorios
             return resultado.Any();
         }
 
-        public async Task<bool> VerificarSeJaExisteAvaliacaoNaoRegencia(DateTime dataAvaliacao, string dreId, string ueId, string turmaId, string professorRf)
+        public async Task<bool> VerificarSeJaExisteAvaliacaoNaoRegencia(DateTime dataAvaliacao, string dreId, string ueId, string turmaId, string disciplinaId, string professorRf, long? id)
         {
             StringBuilder query = new StringBuilder();
             MontaQueryCabecalho(query);
             query.AppendLine(fromCompleto);
-            MontaWhere(query, dataAvaliacao, dreId, ueId, null, null, turmaId, professorRf, null, null, false, null, false); ;
+            MontaWhere(query, dataAvaliacao, dreId, ueId, null, null, turmaId, professorRf, null, null, false, disciplinaId, false, null, null, id, id.HasValue); ;
 
             var resultado = (await database.Conexao.QueryAsync<AtividadeAvaliativa>(query.ToString(), new
             {
+                id,
                 dataAvaliacao,
                 dreId,
                 ueId,
                 turmaId,
+                disciplinaId,
                 professorRf
             }));
 
             return resultado.Any();
         }
 
-        public async Task<bool> VerificarSeJaExisteAvaliacaoRegencia(DateTime dataAvaliacao, string dreId, string ueId, string turmaId, string disciplinaId, string[] disciplinasContidaId, string professorRf)
+        public async Task<bool> VerificarSeJaExisteAvaliacaoRegencia(DateTime dataAvaliacao, string dreId, string ueId, string turmaId, string disciplinaId, string[] disciplinasContidaId, string professorRf, long? id)
         {
             StringBuilder query = new StringBuilder();
             MontaQueryCabecalho(query);
             query.AppendLine(fromCompletoRegencia);
-            MontaWhere(query, dataAvaliacao, dreId, ueId, null, null, turmaId, professorRf, null, null, false, disciplinaId, true);
+            MontaWhere(query, dataAvaliacao, dreId, ueId, null, null, turmaId, professorRf, null, null, false, disciplinaId, true, null, null, id, id.HasValue);
             MontaWhereRegencia(query);
             var resultado = (await database.Conexao.QueryAsync<AtividadeAvaliativa>(query.ToString(), new
             {
+                id,
                 dataAvaliacao,
                 dreId,
                 ueId,
@@ -296,7 +317,6 @@ namespace SME.SGP.Dados.Repositorios
             {
                 query.AppendLine(",");
                 query.AppendLine("ta.id as TipoAvaliacaoId,");
-                query.AppendLine("ta.id,");
                 query.AppendLine("ta.nome,");
                 query.AppendLine("ta.descricao,");
                 query.AppendLine("ta.situacao");
@@ -333,7 +353,8 @@ namespace SME.SGP.Dados.Repositorios
             bool? ehRegencia = null,
             int? mes = null,
             int? ano = null,
-            long? id = null)
+            long? id = null,
+            bool ehAlteracao = false)
         {
             query.AppendLine("where");
             query.AppendLine("a.excluido = false");
@@ -375,7 +396,10 @@ namespace SME.SGP.Dados.Repositorios
             if (ano.HasValue)
                 query.AppendLine("AND extract(year from a.data_avaliacao) = @ano");
             if (id.HasValue)
-                query.AppendLine("AND a.id = @id");
+                if (ehAlteracao)
+                    query.AppendLine("AND a.id <> @id");
+                else
+                    query.AppendLine("AND a.id = @id");
         }
 
         private void MontaWhereRegencia(StringBuilder query)

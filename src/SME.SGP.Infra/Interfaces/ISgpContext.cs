@@ -1,11 +1,12 @@
-﻿using Npgsql;
+﻿
 using System.Data;
+using System.Data.Common;
 
-namespace SME.SGP.Dados.Contexto
+namespace SME.SGP.Infra
 {
     public interface ISgpContext : IDbConnection
     {
-        NpgsqlConnection Conexao { get; }
+        IDbConnection Conexao { get; }
         string UsuarioLogado { get; }
         string UsuarioLogadoNomeCompleto { get; }
         string UsuarioLogadoRF { get; }

@@ -26,14 +26,14 @@ namespace SME.SGP.Dominio.Servicos
 
         private readonly IConsultasPeriodoEscolar consultasPeriodoEscolar;
 
-        private readonly IRepositorioAbrangencia repositorioAbrangencia;
-
         private readonly IRepositorioAtividadeAvaliativa repositorioAtividadeAvaliativa;
 
+        private readonly IRepositorioAtribuicaoCJ repositorioAtribuicaoCJ;
         private readonly IRepositorioAula repositorioAula;
 
         private readonly IRepositorioTipoCalendario repositorioTipoCalendario;
 
+        private readonly IRepositorioTurma repositorioTurma;
         private readonly IServicoDiaLetivo servicoDiaLetivo;
 
         private readonly IServicoEOL servicoEOL;
@@ -44,8 +44,6 @@ namespace SME.SGP.Dominio.Servicos
 
         private readonly IServicoNotificacao servicoNotificacao;
 
-        private readonly IRepositorioAtribuicaoCJ repositorioAtribuicaoCJ;
-
         public ServicoAula(IRepositorioAula repositorioAula,
                            IServicoEOL servicoEOL,
                            IRepositorioTipoCalendario repositorioTipoCalendario,
@@ -53,7 +51,6 @@ namespace SME.SGP.Dominio.Servicos
                            IConsultasGrade consultasGrade,
                            IConsultasPeriodoEscolar consultasPeriodoEscolar,
                            IServicoLog servicoLog,
-                           IRepositorioAbrangencia repositorioAbrangencia,
                            IServicoNotificacao servicoNotificacao,
                            IConsultasAbrangencia consultasAbrangencia,
                            IComandosWorkflowAprovacao comandosWorkflowAprovacao,
@@ -61,7 +58,8 @@ namespace SME.SGP.Dominio.Servicos
                            IServicoFrequencia servicoFrequencia,
                            IConfiguration configuration,
                            IRepositorioAtividadeAvaliativa repositorioAtividadeAvaliativa,
-                           IRepositorioAtribuicaoCJ repositorioAtribuicaoCJ)
+                           IRepositorioAtribuicaoCJ repositorioAtribuicaoCJ,
+                           IRepositorioTurma repositorioTurma)
         {
             this.repositorioAula = repositorioAula ?? throw new System.ArgumentNullException(nameof(repositorioAula));
             this.servicoEOL = servicoEOL ?? throw new System.ArgumentNullException(nameof(servicoEOL));
@@ -73,12 +71,12 @@ namespace SME.SGP.Dominio.Servicos
             this.consultasAbrangencia = consultasAbrangencia ?? throw new ArgumentNullException(nameof(consultasAbrangencia));
             this.comandosWorkflowAprovacao = comandosWorkflowAprovacao ?? throw new ArgumentNullException(nameof(comandosWorkflowAprovacao));
             this.configuration = configuration;
-            this.repositorioAbrangencia = repositorioAbrangencia ?? throw new ArgumentNullException(nameof(repositorioAbrangencia));
             this.servicoNotificacao = servicoNotificacao ?? throw new ArgumentNullException(nameof(servicoNotificacao));
             this.comandosPlanoAula = comandosPlanoAula ?? throw new ArgumentNullException(nameof(comandosPlanoAula));
             this.servicoFrequencia = servicoFrequencia ?? throw new ArgumentNullException(nameof(servicoFrequencia));
             this.repositorioAtividadeAvaliativa = repositorioAtividadeAvaliativa ?? throw new ArgumentNullException(nameof(repositorioAtividadeAvaliativa));
             this.repositorioAtribuicaoCJ = repositorioAtribuicaoCJ ?? throw new ArgumentNullException(nameof(repositorioAtribuicaoCJ));
+            this.repositorioTurma = repositorioTurma ?? throw new ArgumentNullException(nameof(repositorioTurma));
         }
 
         private enum Operacao
@@ -128,7 +126,7 @@ namespace SME.SGP.Dominio.Servicos
             {
                 IEnumerable<DisciplinaResposta> lstDisciplinasProf = await servicoEOL.ObterDisciplinasPorCodigoTurmaLoginEPerfil(aula.TurmaId, usuario.Login, usuario.PerfilAtual);
 
-                if(lstDisciplinasProf != null && lstDisciplinasProf.Any())
+                if (lstDisciplinasProf != null && lstDisciplinasProf.Any())
                     disciplinasProfessor = lstDisciplinasProf.Select(d => Convert.ToInt64(d.CodigoComponenteCurricular));
             }
 
@@ -150,17 +148,18 @@ namespace SME.SGP.Dominio.Servicos
                 var aulas = await repositorioAula.ObterAulas(aula.TipoCalendarioId, aula.TurmaId, aula.UeId, usuario.CodigoRf);
                 var quantidadeDeAulasSomadas = aulas.ToList().FindAll(x => x.DataAula.Date == aula.DataAula.Date).Sum(x => x.Quantidade) + aula.Quantidade;
 
-                var abrangencia = await consultasAbrangencia.ObterAbrangenciaTurma(aula.TurmaId);
-                if (abrangencia == null)
-                    throw new NegocioException("Abrangência da turma não localizada.");
+                var turma = repositorioTurma.ObterTurmaComUeEDrePorId(aula.TurmaId);
 
-                if (ReposicaoDeAulaPrecisaDeAprovacao(quantidadeDeAulasSomadas, abrangencia))
+                if (turma == null)
+                    throw new NegocioException("Turma não localizada.");
+
+                if (ReposicaoDeAulaPrecisaDeAprovacao(quantidadeDeAulasSomadas, turma))
                 {
                     var nomeDisciplina = await RetornaNomeDaDisciplina(aula, usuario);
 
                     repositorioAula.Salvar(aula);
-                    PersistirWorkflowReposicaoAula(aula, abrangencia.NomeDre, abrangencia.NomeUe, nomeDisciplina,
-                                                 abrangencia.NomeTurma, abrangencia.CodigoDre);
+                    PersistirWorkflowReposicaoAula(aula, turma.Ue.Dre.Nome, turma.Ue.Nome, nomeDisciplina,
+                                                 turma.Nome, turma.Ue.Dre.CodigoDre);
                     return "Aula cadastrada com sucesso e enviada para aprovação.";
                 }
             }
@@ -177,7 +176,7 @@ namespace SME.SGP.Dominio.Servicos
                 if (!ehInclusao)
                 {
                     // Na alteração tem que considerar que uma aula possa estar mudando de dia na mesma semana, então não soma as aulas do proprio registro
-                    var aulasSemana = await repositorioAula.ObterAulas(aula.TipoCalendarioId, aula.TurmaId, aula.UeId, null, semana);
+                    var aulasSemana = await repositorioAula.ObterAulas(aula.TipoCalendarioId, aula.TurmaId, aula.UeId, usuario.CodigoRf, null, semana, aula.DisciplinaId);
                     var quantidadeAulasSemana = aulasSemana.Where(a => a.Id != aula.Id).Sum(a => a.Quantidade);
 
                     quantidadeAulasRestantes = gradeAulas.QuantidadeAulasGrade - quantidadeAulasSemana;
@@ -199,13 +198,14 @@ namespace SME.SGP.Dominio.Servicos
             return "Aula cadastrada com sucesso.";
         }
 
-        private static bool ReposicaoDeAulaPrecisaDeAprovacao(int quantidadeAulasExistentesNoDia, Dto.AbrangenciaFiltroRetorno abrangencia)
+        private static bool ReposicaoDeAulaPrecisaDeAprovacao(int quantidadeAulasExistentesNoDia, Turma turma)
         {
-            return ((abrangencia.Modalidade == Modalidade.Fundamental && abrangencia.Ano >= 1 && abrangencia.Ano <= 5) ||  //Valida se é Fund 1
-                               (Modalidade.EJA == abrangencia.Modalidade && (abrangencia.Ano == 1 || abrangencia.Ano == 2)) // Valida se é Eja Alfabetizacao ou  Basica
-                               && quantidadeAulasExistentesNoDia > 1) || ((abrangencia.Modalidade == Modalidade.Fundamental && abrangencia.Ano >= 6 && abrangencia.Ano <= 9) || //valida se é fund 2
-                                     (Modalidade.EJA == abrangencia.Modalidade && abrangencia.Ano == 3 || abrangencia.Ano == 4) ||  // Valida se é Eja Complementar ou Final
-                                     (abrangencia.Modalidade == Modalidade.Medio) && quantidadeAulasExistentesNoDia > 2);
+            int.TryParse(turma.Ano, out int anoTurma);
+            return ((turma.ModalidadeCodigo == Modalidade.Fundamental && anoTurma >= 1 && anoTurma <= 5) ||  //Valida se é Fund 1
+                               (Modalidade.EJA == turma.ModalidadeCodigo && (anoTurma == 1 || anoTurma == 2)) // Valida se é Eja Alfabetizacao ou  Basica
+                               && quantidadeAulasExistentesNoDia > 1) || ((turma.ModalidadeCodigo == Modalidade.Fundamental && anoTurma >= 6 && anoTurma <= 9) || //valida se é fund 2
+                                     (Modalidade.EJA == turma.ModalidadeCodigo && anoTurma == 3 || anoTurma == 4) ||  // Valida se é Eja Complementar ou Final
+                                     (turma.ModalidadeCodigo == Modalidade.Medio) && quantidadeAulasExistentesNoDia > 2);
         }
 
         private async Task AlterarRecorrencia(Aula aula, Usuario usuario, DateTime fimRecorrencia)
@@ -323,15 +323,17 @@ namespace SME.SGP.Dominio.Servicos
         private async Task NotificarUsuario(Usuario usuario, Aula aula, Operacao operacao, int quantidade, List<(DateTime data, string erro)> aulasQueDeramErro)
         {
             var perfilAtual = usuario.PerfilAtual;
+            if (perfilAtual == Guid.Empty)
+                throw new NegocioException($"Não foi encontrado o perfil do usuário informado.");
 
-            var turmaAbrangencia = await repositorioAbrangencia.ObterAbrangenciaTurma(aula.TurmaId, usuario.Login, perfilAtual);
+            var turma = repositorioTurma.ObterTurmaComUeEDrePorId(aula.TurmaId);
 
-            if (turmaAbrangencia is null)
+            if (turma is null)
                 throw new NegocioException($"Não foi possível localizar a turma de Id {aula.TurmaId} na abrangência ");
 
             var disciplinasEol = await servicoEOL.ObterDisciplinasPorCodigoTurmaLoginEPerfil(aula.TurmaId, usuario.Login, perfilAtual);
 
-            if (disciplinasEol is null && !disciplinasEol.Any())
+            if (disciplinasEol is null || !disciplinasEol.Any())
                 throw new NegocioException($"Não foi possível localizar as disciplinas da turma {aula.TurmaId}");
 
             var disciplina = disciplinasEol.FirstOrDefault(a => a.CodigoComponenteCurricular == int.Parse(aula.DisciplinaId));
@@ -340,11 +342,11 @@ namespace SME.SGP.Dominio.Servicos
                 throw new NegocioException($"Não foi possível localizar a disciplina de Id {aula.DisciplinaId}.");
 
             var operacaoStr = operacao == Operacao.Inclusao ? "Criação" : operacao == Operacao.Alteracao ? "Alteração" : "Exclusão";
-            var tituloMensagem = $"{operacaoStr} de Aulas de {disciplina.Nome} na turma {turmaAbrangencia.NomeTurma}";
+            var tituloMensagem = $"{operacaoStr} de Aulas de {disciplina.Nome} na turma {turma.Nome}";
             StringBuilder mensagemUsuario = new StringBuilder();
 
             operacaoStr = operacao == Operacao.Inclusao ? "criadas" : operacao == Operacao.Alteracao ? "alteradas" : "excluídas";
-            mensagemUsuario.Append($"Foram {operacaoStr} {quantidade} aulas da disciplina {disciplina.Nome} para a turma {turmaAbrangencia.NomeTurma} da {turmaAbrangencia.NomeUe} ({turmaAbrangencia.NomeDre}).");
+            mensagemUsuario.Append($"Foram {operacaoStr} {quantidade} aulas da disciplina {disciplina.Nome} para a turma {turma.Nome} da {turma.Ue?.Nome} ({turma.Ue?.Dre?.Nome}).");
 
             if (aulasQueDeramErro.Any())
             {
@@ -360,13 +362,13 @@ namespace SME.SGP.Dominio.Servicos
             {
                 Ano = aula.CriadoEm.Year,
                 Categoria = NotificacaoCategoria.Aviso,
-                DreId = turmaAbrangencia.CodigoDre,
+                DreId = turma.Ue.Dre.CodigoDre,
                 Mensagem = mensagemUsuario.ToString(),
                 UsuarioId = usuario.Id,
                 Tipo = NotificacaoTipo.Calendario,
                 Titulo = tituloMensagem,
                 TurmaId = aula.TurmaId,
-                UeId = turmaAbrangencia.CodigoUe,
+                UeId = turma.Ue.CodigoUe,
             });
         }
 

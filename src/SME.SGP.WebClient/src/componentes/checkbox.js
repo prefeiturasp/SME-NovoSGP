@@ -18,11 +18,23 @@ const Container = styled.div`
 `;
 
 const CheckboxComponent = props => {
-  const { label, onChangeCheckbox, defaultChecked, className, disabled, checked } = props;
+  const {
+    label,
+    onChangeCheckbox,
+    defaultChecked,
+    className,
+    disabled,
+    checked,
+  } = props;
 
   return (
     <Container className={className}>
-      <Checkbox onChange={onChangeCheckbox} defaultChecked={defaultChecked} disabled={disabled} checked={checked}>
+      <Checkbox
+        onChange={onChangeCheckbox}
+        defaultChecked={defaultChecked}
+        disabled={disabled}
+        checked={checked}
+      >
         {label}
       </Checkbox>
     </Container>
@@ -42,7 +54,7 @@ CheckboxComponent.defaultProps = {
   defaultChecked: false,
   className: '',
   disabled: false,
-  checked: false
+  checked: false,
 };
 
 export default CheckboxComponent;

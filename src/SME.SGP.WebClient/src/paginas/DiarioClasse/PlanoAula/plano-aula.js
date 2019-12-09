@@ -1,5 +1,6 @@
 import { Switch } from 'antd';
 import React, { useEffect, useRef, useState } from 'react';
+import { useSelector } from 'react-redux';
 import { Colors, Auditoria } from '~/componentes';
 import Button from '~/componentes/button';
 import CardCollapse from '~/componentes/cardCollapse';
@@ -16,8 +17,12 @@ import {
   QuantidadeBotoes,
 } from './plano-aula.css';
 import api from '~/servicos/api';
-import { useSelector } from 'react-redux';
 import { RegistroMigrado } from '~/paginas/Planejamento/PlanoCiclo/planoCiclo.css';
+
+// Componentes
+import ModalCopiarConteudo from './componentes/ModalCopiarConteudo';
+import RotasDto from '~/dtos/rotasDto';
+import history from '~/servicos/history';
 
 const PlanoAula = props => {
   const {
@@ -34,6 +39,7 @@ const PlanoAula = props => {
     temObjetivos,
     setTemObjetivos,
     auditoria,
+    temAvaliacao,
   } = props;
 
   const [desabilitarCampos, setDesabilitarCampos] = useState(false);
@@ -41,6 +47,9 @@ const PlanoAula = props => {
   const { turmaSelecionada } = usuario;
   const turmaId = turmaSelecionada ? turmaSelecionada.turma : 0;
   const [mostrarCardPrincipal, setMostrarCardPrincipal] = useState(true);
+  const [mostrarModalCopiarConteudo, setMostrarModalCopiarConteudo] = useState(
+    false
+  );
   const [materias, setMaterias] = useState([...listaMaterias]);
   const setModoEdicaoPlano = ehEdicao => {
     setModoEdicao(ehEdicao);
@@ -186,6 +195,10 @@ const PlanoAula = props => {
     return resultado && !planoAula.migrado;
   };
 
+  const aoClicarBotaoNovaAvaliacao = () => {
+    history.push(`${RotasDto.CADASTRO_DE_AVALIACAO}/novo`);
+  };
+
   return (
     <Corpo>
       <CardCollapse
@@ -193,12 +206,29 @@ const PlanoAula = props => {
         onClick={() => {
           setMostrarCardPrincipal(!mostrarCardPrincipal);
         }}
-        titulo={'Plano de aula'}
-        indice={'Plano de aula'}
+        titulo="Plano de aula"
+        indice="Plano de aula"
         show={mostrarCardPrincipal}
       >
         <QuantidadeBotoes className="col-md-12">
           <span>Quantidade de aulas: {planoAula.qtdAulas}</span>
+          {!temAvaliacao ? (
+            <Button
+              label="Nova Avaliação"
+              color={Colors.Roxo}
+              className="ml-auto mr-3"
+              onClick={aoClicarBotaoNovaAvaliacao}
+            />
+          ) : null}
+          <Button
+            label="Copiar Conteúdo"
+            icon="clipboard"
+            color={Colors.Azul}
+            border
+            className="btnGroupItem"
+            onClick={() => setMostrarModalCopiarConteudo(true)}
+            disabled={!planoAula.id}
+          />
           {planoAula.migrado && (
             <RegistroMigrado className="float-right">
               Registro Migrado{' '}
@@ -221,10 +251,8 @@ const PlanoAula = props => {
         <CardCollapse
           key="objetivos-aprendizagem"
           onClick={() => {}}
-          titulo={
-            'Objetivos de aprendizagem e meus objetivos (Currículo da Cidade)'
-          }
-          indice={'objetivos-aprendizagem'}
+          titulo="Objetivos de aprendizagem e meus objetivos (Currículo da Cidade)"
+          indice="objetivos-aprendizagem"
           show={true}
           configCabecalho={configCabecalho}
         >
@@ -317,12 +345,12 @@ const PlanoAula = props => {
                     {objetivosAprendizagem.filter(x => x.selected).length >
                     1 ? (
                       <Button
-                        key={`removerTodos`}
-                        label={`Remover Todos`}
+                        key="removerTodos"
+                        label="Remover Todos"
                         color={Colors.CinzaBotao}
                         bold
                         alt="Remover todos os objetivos selecionados"
-                        id={`removerTodos`}
+                        id="removerTodos"
                         height="38px"
                         width="92px"
                         fontSize="12px"
@@ -372,8 +400,8 @@ const PlanoAula = props => {
         <CardCollapse
           key="desenv-aula"
           onClick={() => {}}
-          titulo={'Desenvolvimento da aula'}
-          indice={'desenv-aula'}
+          titulo="Desenvolvimento da aula"
+          indice="desenv-aula"
           show={true}
           configCabecalho={configCabecalho}
         >
@@ -396,8 +424,8 @@ const PlanoAula = props => {
         <CardCollapse
           key="rec-continua"
           onClick={() => {}}
-          titulo={'Recuperação contínua'}
-          indice={'rec-continua'}
+          titulo="Recuperação contínua"
+          indice="rec-continua"
           show={false}
           configCabecalho={configCabecalho}
         >
@@ -420,8 +448,8 @@ const PlanoAula = props => {
         <CardCollapse
           key="licao-casa"
           onClick={() => {}}
-          titulo={'Lição de casa'}
-          indice={'licao-casa'}
+          titulo="Lição de casa"
+          indice="licao-casa"
           show={false}
           configCabecalho={configCabecalho}
         >
@@ -452,6 +480,12 @@ const PlanoAula = props => {
           ''
         )}
       </CardCollapse>
+      <ModalCopiarConteudo
+        show={mostrarModalCopiarConteudo}
+        onClose={() => setMostrarModalCopiarConteudo(false)}
+        disciplina={disciplinaIdSelecionada}
+        planoAula={planoAula}
+      />
     </Corpo>
   );
 };

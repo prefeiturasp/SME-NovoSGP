@@ -7,6 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using SME.SGP.Infra;
 
 namespace SME.SGP.Dados.Repositorios
 {
@@ -31,6 +32,11 @@ namespace SME.SGP.Dados.Repositorios
                                 and t.ano_letivo = @ano";
 
             return await contexto.QueryAsync<Modalidade>(query, new { ueCodigo, ano });
+        }
+
+        public Ue ObterPorCodigo(string ueId)
+        {
+            return contexto.QueryFirstOrDefault<Ue>("select * from ue where ue_id = @ueId", new { ueId });
         }
 
         public async Task<IEnumerable<Turma>> ObterTurmas(string ueCodigo, Modalidade modalidade, int ano)
