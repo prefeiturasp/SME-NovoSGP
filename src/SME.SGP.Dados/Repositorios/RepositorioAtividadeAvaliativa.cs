@@ -1,5 +1,4 @@
 ﻿using Dapper;
-using SME.SGP.Dados.Contexto;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
@@ -99,22 +98,6 @@ namespace SME.SGP.Dados.Repositorios
             sql.AppendLine("and a.disciplina_id = @disciplinaId");
 
             return await database.QueryAsync<AtividadeAvaliativa>(sql.ToString(), new { turmaCodigo, inicioPeriodo, fimPeriodo, disciplinaId });
-        }
-
-        public async Task<AtividadeAvaliativa> ObterAtividadeAvaliativa(DateTime dataAvaliacao, string disciplinaId, string turmaId, string ueId)
-        {
-            StringBuilder query = new StringBuilder();
-            MontaQueryCabecalhoSimples(query);
-            query.AppendLine(fromCompleto);
-            MontaWhere(query, dataAvaliacao, null, ueId, null, null, turmaId);
-
-            return (await database.Conexao.QueryFirstOrDefaultAsync<AtividadeAvaliativa>(query.ToString(), new
-            {
-                dataAvaliacao,
-                disciplinaId,
-                turmaId,
-                ueId
-            }));
         }
 
         public async Task<AtividadeAvaliativa> ObterAtividadeAvaliativa(DateTime dataAvaliacao, string disciplinaId, string turmaId, string ueId)
