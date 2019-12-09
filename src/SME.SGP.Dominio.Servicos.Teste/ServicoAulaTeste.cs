@@ -65,15 +65,17 @@ namespace SME.SGP.Dominio.Servicos.Teste
             repositorioTurma = new Mock<IRepositorioTurma>();
             configuration = new Mock<IConfiguration>();
             repositorioAtividadeAvaliativa = new Mock<IRepositorioAtividadeAvaliativa>();
+            repositorioTurma = new Mock<IRepositorioTurma>();
             servicoAula = new ServicoAula(repositorioAula.Object, servicoEol.Object,
                                          repositorioTipoCalendario.Object, servicoDiaLetivo.Object,
                                          consultasGrade.Object, consultasPeriodoEscolar.Object,
-                                         servicoLog.Object, repositorioAbrangencia.Object,
+                                         servicoLog.Object,
                                          servicoNotificacao.Object, consultaAbrangencia.Object,
                                          comandosWorkflowAprovacao.Object,
                                          comandosPlanoAula.Object, servicoFrequencia.Object,
                                          configuration.Object, repositorioAtividadeAvaliativa.Object,
-                                         atribuicaoCj.Object, repositorioTurma.Object);
+                                         atribuicaoCj.Object,
+                                         repositorioTurma.Object);
 
             Setup();
         }
