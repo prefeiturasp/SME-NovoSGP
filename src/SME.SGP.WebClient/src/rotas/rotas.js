@@ -177,8 +177,8 @@ rotas.set('/gestao/atribuicao-cjs', {
   component: AtribuicaoCJLista,
   exact: true,
   tipo: RotasTipo.EstruturadaAutenticada,
-  // temPermissionamento: true,
-  // chavePermissao: RotasDto.ATRIBUICAO_ESPORADICA_LISTA,
+  temPermissionamento: true,
+  chavePermissao: RotasDto.ATRIBUICAO_CJ_LISTA,
 });
 
 rotas.set('/gestao/atribuicao-cjs/novo', {
@@ -187,8 +187,8 @@ rotas.set('/gestao/atribuicao-cjs/novo', {
   component: AtribuicaoCJForm,
   exact: true,
   tipo: RotasTipo.EstruturadaAutenticada,
-  // temPermissionamento: true,
-  // chavePermissao: RotasDto.ATRIBUICAO_ESPORADICA_LISTA,
+  temPermissionamento: true,
+  chavePermissao: RotasDto.ATRIBUICAO_CJ_LISTA,
 });
 
 rotas.set('/gestao/atribuicao-cjs/editar', {
@@ -197,8 +197,8 @@ rotas.set('/gestao/atribuicao-cjs/editar', {
   component: AtribuicaoCJForm,
   exact: true,
   tipo: RotasTipo.EstruturadaAutenticada,
-  // temPermissionamento: true,
-  // chavePermissao: RotasDto.ATRIBUICAO_ESPORADICA_LISTA,
+  temPermissionamento: true,
+  chavePermissao: RotasDto.ATRIBUICAO_CJ_LISTA,
 });
 
 rotas.set('/notificacoes/:id', {
