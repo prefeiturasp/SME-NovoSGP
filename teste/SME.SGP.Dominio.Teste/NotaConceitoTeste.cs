@@ -82,7 +82,7 @@ namespace SME.SGP.Dominio.Teste
                 AtividadeAvaliativaID = 1,
                 Conceito = 'P',
                 Nota = 10,
-                TipoNota = 1,
+                TipoNota = TipoNota.Nota,
                 Id = 1,
                 AlteradoEm = DateTime.Now,
                 AlteradoPor = "Teste",
