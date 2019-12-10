@@ -1,6 +1,9 @@
 ﻿using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
@@ -24,16 +27,31 @@ namespace SME.SGP.Aplicacao
             await repositorioTipoAvaliacao.SalvarAsync(atividadeAvaliativa);
         }
 
-        public async Task Excluir(long idTipoAtividadeAvaliativa)
+        public async Task Excluir(long[] ids)
         {
-            var tipoAtividadeAvaliativa = repositorioTipoAvaliacao.ObterPorId(idTipoAtividadeAvaliativa);
-            if (tipoAtividadeAvaliativa is null)
-                throw new NegocioException("Não foi possível localizar esta avaliação.");
-            if (await VerificarSeExisteAtividadeVinculada(idTipoAtividadeAvaliativa))
-                throw new NegocioException("Já existe atividade avaliativa vinculada a esse tipo de avaliação");
-            tipoAtividadeAvaliativa.Excluir();
+            List<long> idsComErroAoExcluir = new List<long>();
 
-            await repositorioTipoAvaliacao.SalvarAsync(tipoAtividadeAvaliativa);
+            foreach (var idTipoAtividadeAvaliativa in ids)
+            {
+                try
+                {
+                    var tipoAtividadeAvaliativa = repositorioTipoAvaliacao.ObterPorId(idTipoAtividadeAvaliativa);
+                    if (tipoAtividadeAvaliativa is null)
+                        throw new NegocioException("Não foi possível localizar esta avaliação.");
+                    if (await VerificarSeExisteAtividadeVinculada(idTipoAtividadeAvaliativa))
+                        throw new NegocioException("Já existe atividade avaliativa vinculada ao tipo de avaliação " + tipoAtividadeAvaliativa.Nome);
+                    tipoAtividadeAvaliativa.Excluir();
+
+                    await repositorioTipoAvaliacao.SalvarAsync(tipoAtividadeAvaliativa);
+                }
+                catch (Exception)
+                {
+                    idsComErroAoExcluir.Add(idTipoAtividadeAvaliativa);
+                }
+            }
+
+            if (idsComErroAoExcluir.Any())
+                throw new NegocioException($"Não foi possível excluir os tipos de avaliação de ids {string.Join(",", idsComErroAoExcluir)}");
         }
 
         public async Task Inserir(TipoAvaliacaoDto dto)
