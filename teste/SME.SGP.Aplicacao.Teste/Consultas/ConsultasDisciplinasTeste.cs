@@ -15,6 +15,7 @@ namespace SME.SGP.Aplicacao.Teste.Consultas
     {
         private readonly ConsultasDisciplina consultasDisciplinas;
         private readonly Mock<IConsultasObjetivoAprendizagem> consultasObjetivoAprendizagem;
+        private readonly Mock<IRepositorioAtribuicaoCJ> repositorioAtribuicaoCJ;
         private readonly Mock<IRepositorioCache> repositorioCache;
         private readonly Mock<IServicoEOL> servicoEol;
         private readonly Mock<IServicoUsuario> servicoUsuario;
@@ -25,7 +26,7 @@ namespace SME.SGP.Aplicacao.Teste.Consultas
             repositorioCache = new Mock<IRepositorioCache>();
             consultasObjetivoAprendizagem = new Mock<IConsultasObjetivoAprendizagem>();
             servicoUsuario = new Mock<IServicoUsuario>();
-            consultasDisciplinas = new ConsultasDisciplina(servicoEol.Object, repositorioCache.Object, consultasObjetivoAprendizagem.Object, servicoUsuario.Object);
+            consultasDisciplinas = new ConsultasDisciplina(servicoEol.Object, repositorioCache.Object, consultasObjetivoAprendizagem.Object, servicoUsuario.Object, repositorioAtribuicaoCJ.Object);
         }
 
         [Fact(DisplayName = "DeveObterDisciplinasParaPlanejamento")]
