@@ -136,8 +136,8 @@ namespace SME.SGP.Aplicacao
         public async Task<MarcadorFrequenciaDto> ObterMarcadorAluno(AlunoPorTurmaResposta aluno, PeriodoEscolarDto bimestre)
         {
             MarcadorFrequenciaDto marcador = null;
-
-            string dataSituacao = aluno.DataSituacao.ToShortDateString();
+                        
+            string dataSituacao = $"{aluno.DataSituacao.Day}/{aluno.DataSituacao.Month}/{aluno.DataSituacao.Year}";
             switch (aluno.CodigoSituacaoMatricula)
             {
                 case SituacaoMatriculaAluno.Ativo:
