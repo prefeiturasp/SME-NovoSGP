@@ -184,11 +184,13 @@ const DiaCompleto = props => {
           <Div className="list-group list-group-flush fade show px-0">
             {eventosDia.eventosAulas.map(evento => {
               return (
-                <Div className="list-group-item list-group-item-action d-flex p-3">
+                <Div
+                  key={shortid.generate()}
+                  className="list-group-item list-group-item-action d-flex p-0"
+                >
                   <Evento
-                    key={shortid.generate()}
-                    className="d-flex rounded w-100"
-                    style={{ cursor: 'pointer', zIndex: 0 }}
+                    className="d-flex rounded w-100 py-2 px-3"
+                    style={{ cursor: 'pointer' }}
                   >
                     <Grid
                       cols={
@@ -252,7 +254,7 @@ const DiaCompleto = props => {
                             : 10
                           : 11
                       }
-                      className="align-self-center font-weight-bold pl-0"
+                      className="align-self-center font-weight-bold"
                     >
                       <Div
                         className={`${(evento.tipoEvento ===
@@ -276,7 +278,11 @@ const DiaCompleto = props => {
                   {evento.dadosAula && evento.dadosAula.atividade.length
                     ? evento.dadosAula.atividade.map(atividade => {
                         return (
-                          <Grid key={atividade.id} cols={2} className="pr-0">
+                          <Grid
+                            key={atividade.id}
+                            cols={2}
+                            className="pr-0 d-flex align-items-center"
+                          >
                             <Botao
                               label="Avaliação"
                               color={Colors.Roxo}
