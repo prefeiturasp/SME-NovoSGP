@@ -1,7 +1,7 @@
 import api from '~/servicos/api';
 
 class ServicoCalendarios {
-  static obterTiposCalendario = async () => {
+  obterTiposCalendario = async () => {
     return api
       .get('v1/calendarios/tipos')
       .then(resposta => resposta)
@@ -9,4 +9,4 @@ class ServicoCalendarios {
   };
 }
 
-export default ServicoCalendarios;
+export default new ServicoCalendarios();
