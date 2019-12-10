@@ -120,7 +120,7 @@ function AtribuicaoCJForm({ match, location }) {
   };
 
   const onClickVoltar = async () => {
-    if (modoEdicao) {
+    if (!novoRegistro && listaProfessores.some(x => x.substituir === true)) {
       const confirmou = await confirmar(
         'Atenção',
         'Você não salvou as informações preenchidas.',
