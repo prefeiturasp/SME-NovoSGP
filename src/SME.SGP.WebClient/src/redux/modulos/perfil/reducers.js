@@ -2,7 +2,7 @@ import produce from 'immer';
 
 const inicial = {
   perfilSelecionado: {},
-  perfis: []
+  perfis: [],
 };
 
 export default function perfil(state = inicial, action) {

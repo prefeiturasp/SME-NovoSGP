@@ -1,4 +1,6 @@
-﻿using SME.SGP.Infra;
+﻿using SME.SGP.Dominio;
+using SME.SGP.Infra;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
@@ -7,6 +9,8 @@ namespace SME.SGP.Aplicacao
     {
         Task<PaginacaoResultadoDto<AtividadeAvaliativaCompletaDto>> ListarPaginado(FiltroAtividadeAvaliativaDto filtro);
 
-        AtividadeAvaliativaCompletaDto ObterPorId(long id);
+        Task<(IEnumerable<AtividadeAvaliativa>, int quantidadeBimestres, int bimestreAtual, PeriodoEscolar periodoAtual)> ObterAvaliacoesEBimestres(string turmaId, string disciplinaId, int anoLetivo, int? bimestre, ModalidadeTipoCalendario modalidadeTipoCalendario);
+
+        Task<AtividadeAvaliativaCompletaDto> ObterPorIdAsync(long id);
     }
 }
