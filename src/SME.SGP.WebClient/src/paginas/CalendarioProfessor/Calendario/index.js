@@ -14,6 +14,7 @@ import { store } from '~/redux';
 import { zeraCalendario } from '~/redux/modulos/calendarioProfessor/actions';
 import ModalidadeDTO from '~/dtos/modalidade';
 import { erro } from '~/servicos/alertas';
+import ServicoCalendarios from '~/servicos/Paginas/Calendario/ServicoCalendarios';
 
 const Div = styled.div``;
 const Titulo = styled(Div)`
@@ -37,34 +38,31 @@ const CalendarioProfessor = () => {
   const anosLetivosAbrangencia = useSelector(state => state.filtro.anosLetivos);
 
   const obterTiposCalendario = async modalidades => {
-    return api
-      .get('v1/calendarios/tipos')
-      .then(resposta => {
-        const tiposCalendarioLista = [];
-        if (resposta.data) {
-          const anos = [];
-          anosLetivosAbrangencia.forEach(ano => {
-            if (!anos.includes(ano.valor)) anos.push(ano.valor);
+    const lista = await ServicoCalendarios.obterTiposCalendario();
+    if (lista && lista.data) {
+      const tiposCalendarioLista = [];
+      if (lista.data) {
+        const anos = [];
+        anosLetivosAbrangencia.forEach(ano => {
+          if (!anos.includes(ano.valor)) anos.push(ano.valor);
+        });
+        const tipos = lista.data.filter(tipo => {
+          return (
+            modalidades.indexOf(tipo.modalidade) > -1 &&
+            anos.indexOf(tipo.anoLetivo) > -1
+          );
+        });
+        tipos.forEach(tipo => {
+          tiposCalendarioLista.push({
+            desc: tipo.nome,
+            valor: tipo.id,
+            modalidade: tipo.modalidade,
           });
-          const tipos = resposta.data.filter(tipo => {
-            return (
-              modalidades.indexOf(tipo.modalidade) > -1 &&
-              anos.indexOf(tipo.anoLetivo) > -1
-            );
-          });
-          tipos.forEach(tipo => {
-            tiposCalendarioLista.push({
-              desc: tipo.nome,
-              valor: tipo.id,
-              modalidade: tipo.modalidade,
-            });
-          });
-        }
-        return tiposCalendarioLista;
-      })
-      .catch(() => {
-        return [];
-      });
+        });
+      }
+      return tiposCalendarioLista;
+    }
+    return lista;
   };
 
   const listarModalidadesPorAbrangencia = () => {
@@ -85,27 +83,29 @@ const CalendarioProfessor = () => {
   };
 
   const listarTiposCalendarioPorTurmaSelecionada = async tiposLista => {
-    if (Object.entries(turmaSelecionadaStore).length > 0) {
+    if (Object.entries(turmaSelecionadaStore).length) {
       const modalidadeSelecionada =
         turmaSelecionadaStore.modalidade === ModalidadeDTO.EJA.toString()
           ? 2
           : 1;
 
-      if (tiposLista) {
+      if (tiposLista && tiposLista.length) {
         setTiposCalendario(
-          tiposLista.filter(tipo => tipo.modalidade === modalidadeSelecionada)
+          tiposLista.filter(tipo => {
+            return tipo.modalidade === modalidadeSelecionada;
+          })
         );
-      } else if (tiposCalendario) {
+      } else if (tiposCalendario && tiposCalendario.length) {
         setTiposCalendario(
-          tiposCalendario.filter(
-            tipo => tipo.modalidade === modalidadeSelecionada
-          )
+          tiposCalendario.filter(tipo => {
+            return tipo.modalidade === modalidadeSelecionada;
+          })
+        );
+      } else {
+        setTiposCalendario(
+          await obterTiposCalendario(listarModalidadesPorAbrangencia())
         );
       }
-    } else {
-      setTiposCalendario(
-        await obterTiposCalendario(listarModalidadesPorAbrangencia())
-      );
     }
   };
 
@@ -140,7 +140,7 @@ const CalendarioProfessor = () => {
 
   useEffect(() => {
     listarTiposCalendarioPorTurmaSelecionada();
-  }, [turmaSelecionadaStore]);
+  }, [turmaSelecionadaStore, anosLetivosAbrangencia]);
 
   const consultarDiasLetivos = () => {
     api
