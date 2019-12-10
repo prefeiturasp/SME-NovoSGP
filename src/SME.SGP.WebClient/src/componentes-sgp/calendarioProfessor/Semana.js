@@ -98,7 +98,10 @@ const Dia = props => {
                       tipoEvento !== TiposEventoAulaDTO.CJ &&
                       'badge-light'} ml-auto mr-0`}
                   >
-                    {tipoEvento}
+                    {tipoEvento !== TiposEventoAulaDTO.CJ &&
+                    tipoEvento !== TiposEventoAulaDTO.Aula
+                      ? 'Evento'
+                      : tipoEvento}
                   </TipoEvento>
                 );
               })}
