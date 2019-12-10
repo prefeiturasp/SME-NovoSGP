@@ -18,7 +18,7 @@ namespace SME.SGP.Api.Controllers
     public class AulaPrevistaController : ControllerBase
     {
         [HttpGet("modalidades/{modalidade}/turmas/{turmaId}/disciplinas/{disciplinaId}")]
-        [ProducesResponseType(typeof(IEnumerable<AulasPrevistasDadasDto>), 200)]
+        [ProducesResponseType(typeof(AulasPrevistasDadasAuditoriaDto), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [ProducesResponseType(typeof(RetornoBaseDto), 601)]
         [Permissao(Permissao.CP_C, Policy = "Bearer")]
