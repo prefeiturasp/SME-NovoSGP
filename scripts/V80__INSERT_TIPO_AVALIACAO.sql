@@ -84,7 +84,7 @@ where
 
 insert into public.tipo_avaliacao (nome,descricao,situacao,criado_em,criado_por, criado_rf,excluido)
 select
-	'Produção de texto','Produção de texto',true,now(),'Carga Inicial','Carga Inicial',false
+	'Produção de texto','Produção de textoquisa',true,now(),'Carga Inicial','Carga Inicial',false
 where
 	not exists(
 		select
