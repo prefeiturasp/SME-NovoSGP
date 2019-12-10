@@ -48,9 +48,9 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [ProducesResponseType(typeof(RetornoBaseDto), 601)]
         [AllowAnonymous] //ainda nao existe perfil pra essa função
-        public async Task<IActionResult> Excluir(long id)
+        public async Task<IActionResult> Excluir([FromBody]long[] tiposAvaliacaoId)
         {
-            await comandoTipoAvaliacao.Excluir(id);
+            await comandoTipoAvaliacao.Excluir(tiposAvaliacaoId);
             return Ok();
         }
 
