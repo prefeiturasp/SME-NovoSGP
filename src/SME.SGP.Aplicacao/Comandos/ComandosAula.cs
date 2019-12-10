@@ -26,7 +26,7 @@ namespace SME.SGP.Aplicacao
             var usuario = await servicoUsuario.ObterUsuarioLogado();
             var aula = MapearDtoParaEntidade(dto, id, usuario.CodigoRf, usuario.EhProfessorCj());
 
-            return await servicoAula.Salvar(aula, usuario, dto.RecorrenciaAula);
+            return servicoAula.Salvar(aula, usuario, dto.RecorrenciaAula);
         }
 
         public async Task<string> Excluir(long id, RecorrenciaAula recorrencia)
@@ -42,7 +42,7 @@ namespace SME.SGP.Aplicacao
             var usuario = await servicoUsuario.ObterUsuarioLogado();
             var aula = MapearDtoParaEntidade(dto, 0L, usuario.CodigoRf, usuario.EhProfessorCj());
 
-            return await servicoAula.Salvar(aula, usuario, aula.RecorrenciaAula);
+            return servicoAula.Salvar(aula, usuario, aula.RecorrenciaAula);
         }
 
         private Aula MapearDtoParaEntidade(AulaDto dto, long id, string usuarioRf, bool usuarioEhCJ)
