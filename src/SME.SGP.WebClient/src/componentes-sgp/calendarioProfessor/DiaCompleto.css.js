@@ -2,7 +2,11 @@ import styled from 'styled-components';
 import { Base } from '~/componentes/colors';
 import Button from '~/componentes/button';
 
-export const Div = styled.div``;
+export const Div = styled.div`
+  &.list-group-item-action:hover {
+    background: transparent !important;
+  }
+`;
 
 export const Evento = styled(Div)`
   &:hover {
@@ -16,9 +20,6 @@ export const Botao = styled(Button)`
     background: transparent !important;
     border-color: ${Base.Branco} !important;
     color: ${Base.Branco} !important;
-  }
-  &.zIndex {
-    z-index: 2;
   }
 `;
 
