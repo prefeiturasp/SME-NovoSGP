@@ -1,6 +1,7 @@
 ﻿using Newtonsoft.Json;
 using SME.SGP.Aplicacao.Integracoes;
 using SME.SGP.Aplicacao.Integracoes.Respostas;
+using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System.Collections.Generic;
@@ -13,6 +14,7 @@ namespace SME.SGP.Aplicacao
     {
         private readonly int[] codigosDisciplinasRegencia = { 138, 2, 89, 7, 8 };
         private readonly IConsultasObjetivoAprendizagem consultasObjetivoAprendizagem;
+        private readonly IRepositorioAtribuicaoCJ repositorioAtribuicaoCJ;
         private readonly IRepositorioCache repositorioCache;
         private readonly IServicoEOL servicoEOL;
         private readonly IServicoUsuario servicoUsuario;
@@ -20,12 +22,14 @@ namespace SME.SGP.Aplicacao
         public ConsultasDisciplina(IServicoEOL servicoEOL,
                                    IRepositorioCache repositorioCache,
                                    IConsultasObjetivoAprendizagem consultasObjetivoAprendizagem,
-                                   IServicoUsuario servicoUsuario)
+                                   IServicoUsuario servicoUsuario,
+                                   IRepositorioAtribuicaoCJ repositorioAtribuicaoCJ)
         {
             this.servicoEOL = servicoEOL ?? throw new System.ArgumentNullException(nameof(servicoEOL));
             this.repositorioCache = repositorioCache ?? throw new System.ArgumentNullException(nameof(repositorioCache));
             this.consultasObjetivoAprendizagem = consultasObjetivoAprendizagem ?? throw new System.ArgumentNullException(nameof(consultasObjetivoAprendizagem));
             this.servicoUsuario = servicoUsuario ?? throw new System.ArgumentNullException(nameof(servicoUsuario));
+            this.repositorioAtribuicaoCJ = repositorioAtribuicaoCJ ?? throw new System.ArgumentNullException(nameof(repositorioAtribuicaoCJ));
         }
 
         public async Task<IEnumerable<DisciplinaDto>> ObterDisciplinasParaPlanejamento(FiltroDisciplinaPlanejamentoDto filtroDisciplinaPlanejamentoDto)
@@ -68,7 +72,22 @@ namespace SME.SGP.Aplicacao
             }
             else
             {
-                var disciplinas = await servicoEOL.ObterDisciplinasPorCodigoTurmaLoginEPerfil(codigoTurma, login, perfilAtual);
+                IEnumerable<DisciplinaResposta> disciplinas;
+
+                if (perfilAtual == Perfis.PERFIL_CJ)
+                {
+                    var atribuicoes = await repositorioAtribuicaoCJ.ObterPorFiltros(null, codigoTurma, string.Empty, 0, login, string.Empty, true);
+                    if (atribuicoes != null && atribuicoes.Any())
+                    {
+                        var disciplinasEol = servicoEOL.ObterDisciplinasPorIds(atribuicoes.Select(a => a.DisciplinaId).Distinct().ToArray());
+
+                        disciplinas = TransformarListaDisciplinaEolParaRetornoDto(disciplinasEol);
+                    }
+                    else disciplinas = null;
+                }
+                else
+                    disciplinas = await servicoEOL.ObterDisciplinasPorCodigoTurmaLoginEPerfil(codigoTurma, login, perfilAtual);
+
                 if (disciplinas != null && disciplinas.Any())
                 {
                     disciplinasDto = await MapearParaDto(disciplinas);
@@ -97,6 +116,19 @@ namespace SME.SGP.Aplicacao
                 }
             }
             return retorno;
+        }
+
+        private IEnumerable<DisciplinaResposta> TransformarListaDisciplinaEolParaRetornoDto(IEnumerable<DisciplinaDto> disciplinasEol)
+        {
+            foreach (var disciplinaEol in disciplinasEol)
+            {
+                yield return new DisciplinaResposta()
+                {
+                    CodigoComponenteCurricular = disciplinaEol.CodigoComponenteCurricular,
+                    Nome = disciplinaEol.Nome,
+                    Regencia = disciplinaEol.Regencia
+                };
+            }
         }
 
         private IEnumerable<DisciplinaDto> TratarRetornoDisciplinasPlanejamento(IEnumerable<DisciplinaDto> disciplinas, FiltroDisciplinaPlanejamentoDto filtroDisciplinaPlanejamentoDto)

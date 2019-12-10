@@ -7,7 +7,7 @@ import history from '~/servicos/history';
 import RotasDto from '~/dtos/rotasDto';
 import Filtro from './componentes/Filtro';
 import servicoTipoAvaliaco from '~/servicos/Paginas/TipoAvaliacao';
-import { sucesso, confirmar, erro } from '~/servicos/alertas';
+import { sucesso, confirmar, erro, erros } from '~/servicos/alertas';
 
 const TipoAvaliacaoLista = () => {
   const [itensSelecionados, setItensSelecionados] = useState([]);
@@ -46,19 +46,52 @@ const TipoAvaliacaoLista = () => {
     setItensSelecionados(items);
   };
 
+  const onClickExcluir = async () => {
+    if (itensSelecionados && itensSelecionados.length > 0) {
+      const confirmado = await confirmar(
+        '',
+        'Deseja realmente excluir estes itens?'
+      );
+      if (confirmado) {
+        const idsDeletar = itensSelecionados.map(c => c.id);
+        const excluir = await servicoTipoAvaliaco
+          .deletarTipoAvaliacao(idsDeletar)
+          .catch(e => erros(e));
+        if (excluir && excluir.status == 200) {
+          sucesso('Tipos de avaliação excluídos com sucesso.');
+        } else {
+          erro('Erro ao excluir tipos de avaliação.');
+        }
+      }
+    }
+  };
+
   // const onClickExcluir = async () => {
-  //   const confirmado = await confirmar(
-  //     '',
-  //     'Deseja realmente excluir estes itens?'
-  //   );
-  //   if (confirmado) {
-  //     const excluir = await servicoTipoAvaliaco.deletarTipoAvaliacao(
-  //       itensSelecionados
+  //   if (eventosSelecionados && eventosSelecionados.length > 0) {
+  //     const listaNomeExcluir = eventosSelecionados.map(item => item.nome);
+  //     const confirmado = await confirmar(
+  //       'Excluir evento',
+  //       listaNomeExcluir,
+  //       `Deseja realmente excluir ${
+  //         eventosSelecionados.length > 1 ? 'estes eventos' : 'este evento'
+  //       }?`,
+  //       'Excluir',
+  //       'Cancelar'
   //     );
-  //     if (excluir) {
-  //       sucesso('Tipos de avaliação excluídos com sucesso.');
-  //     } else {
-  //       erro('Erro ao excluir tipos de avaliação.');
+  //     if (confirmado) {
+  //       const idsDeletar = eventosSelecionados.map(c => c.id);
+  //       const excluir = await servicoEvento
+  //         .deletar(idsDeletar)
+  //         .catch(e => erros(e));
+  //       if (excluir && excluir.status == 200) {
+  //         const mensagemSucesso = `${
+  //           eventosSelecionados.length > 1
+  //             ? 'Eventos excluídos'
+  //             : 'Evento excluído'
+  //         } com sucesso.`;
+  //         sucesso(mensagemSucesso);
+  //         validaFiltrar();
+  //       }
   //     }
   //   }
   // };
@@ -90,7 +123,7 @@ const TipoAvaliacaoLista = () => {
           permissoesTela={permissoesTela[RotasDto.TIPO_AVALIACAO]}
           temItemSelecionado={itensSelecionados && itensSelecionados.length}
           onClickVoltar={onClickVoltar}
-          onClickExcluir={false}
+          onClickExcluir={onClickExcluir}
           onClickBotaoPrincipal={onClickBotaoPrincipal}
           labelBotaoPrincipal="Novo"
           desabilitarBotaoPrincipal={false}
@@ -103,8 +136,9 @@ const TipoAvaliacaoLista = () => {
           colunas={colunas}
           filtro={filtro}
           onClick={onClickEditar}
-          //selecionarItems={onSelecionarItems}
-          // filtroEhValido
+          selecionarItems={onSelecionarItems}
+          filtroEhValido
+          multiSelecao
         />
       </Card>
     </>
