@@ -10,14 +10,14 @@ export const CaixaMarcadores = styled.span`
   margin-left: 8px;
   font-weight: bold;
   color: ${Base.Roxo};
-`
+`;
 
 export const IconePlusMarcadores = styled.i`
   color: ${Base.Roxo};
-  font-size: 17px;
+  font-size: 16px;
   margin-left: 5px;
   cursor: pointer;
-`
+`;
 
 export const Lista = styled.div`
   .presenca {
@@ -181,9 +181,25 @@ export const Lista = styled.div`
   }
 
   .fa-minus-linha-expandida {
-    border: 1.6px solid #6933FF !important;
+    border: 1.6px solid #6933ff !important;
     border-radius: 20px !important;
     display: inline;
+    font-size: 13px;
   }
 
+  .indicativo-alerta {
+    background-color: #ffff30;
+    color: black;
+    border-radius: 8px;
+    border-right: solid 5px #ffff30;
+    border-left: solid 5px #ffff30;
+  }
+
+  .indicativo-critico {
+    background-color: #b40c02;
+    color: white;
+    border-radius: 8px;
+    border-right: solid 5px #b40c02;
+    border-left: solid 5px #b40c02;
+  }
 `;
