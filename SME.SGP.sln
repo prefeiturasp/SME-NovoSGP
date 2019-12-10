@@ -119,7 +119,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "scripts", "scripts", "{883E
 		scripts\V79__NOTIFICACAO_AULA_PREVISTA_CREATE.sql = scripts\V79__NOTIFICACAO_AULA_PREVISTA_CREATE.sql
 		scripts\V7__FUNCTION_UNACCENT.sql = scripts\V7__FUNCTION_UNACCENT.sql
 		scripts\V80__INSERT_TIPO_AVALIACAO.sql = scripts\V80__INSERT_TIPO_AVALIACAO.sql
-		scripts\V82__AJUSTE_INSERT_TIPO_AVALIACAO.sql = scripts\V82__AJUSTE_INSERT_TIPO_AVALIACAO.sql
 		scripts\V8__NOTIFICACAO.sql = scripts\V8__NOTIFICACAO.sql
 		scripts\V9__WF_APROVACAO.sql = scripts\V9__WF_APROVACAO.sql
 	EndProjectSection
