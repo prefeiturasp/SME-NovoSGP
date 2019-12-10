@@ -1,10 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace SME.SGP.Infra
 {
-    public class AulasPrevistasDadasDto : AuditoriaDto
+    public class AulasPrevistasDadasDto
     {
         public int Bimestre { get; set; }
 
