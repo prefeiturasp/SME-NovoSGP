@@ -4,6 +4,7 @@ using SME.SGP.Api.Filtros;
 using SME.SGP.Aplicacao;
 using SME.SGP.Dominio;
 using SME.SGP.Infra;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Api.Controllers
@@ -35,14 +36,15 @@ namespace SME.SGP.Api.Controllers
             return Ok(aula);
         }
 
-        [HttpDelete("{id}")]
-        [ProducesResponseType(200)]
+        [HttpDelete("{id}/recorrencias/{recorrencia}")]
+        [ProducesResponseType(typeof(string), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [Permissao(Permissao.CP_E, Policy = "Bearer")]
-        public IActionResult Excluir(long id, [FromServices]IComandosAula comandos)
+        public async Task<IActionResult> Excluir(long id, RecorrenciaAula recorrencia, [FromServices]IComandosAula comandos)
         {
-            comandos.Excluir(id);
-            return Ok();
+            var retorno = new RetornoBaseDto();
+            retorno.Mensagens.Add(await comandos.Excluir(id, recorrencia));
+            return Ok(retorno);
         }
 
         [HttpPost]
@@ -56,14 +58,23 @@ namespace SME.SGP.Api.Controllers
             return Ok(retorno);
         }
 
-        [HttpGet("{aulaId}/recorrencias/{recorrencia}/quantidade")]
-        [ProducesResponseType(typeof(string), 200)]
+        [HttpGet("{aulaId}/recorrencias/serie")]
+        [ProducesResponseType(typeof(AulaRecorrenciaDto), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 601)]
         [Permissao(Permissao.CP_I, Policy = "Bearer")]
-        public async Task<IActionResult> ObterQuantidadeAulasRecorrencia(long aulaId, RecorrenciaAula recorrencia, [FromServices]IConsultasAula consultas)
+        public async Task<IActionResult> ObterRecorrenciaDaSerie(long aulaId, [FromServices]IConsultasAula consultas)
         {
-            return Ok(await consultas.ObterQuantidadeAulasRecorrentes(aulaId, recorrencia));
-        }
+            var recorrencia = await consultas.ObterRecorrenciaDaSerie(aulaId);
+            var quantidadeAulas = recorrencia == (int)RecorrenciaAula.AulaUnica ? 1 
+                : await consultas.ObterQuantidadeAulasRecorrentes(aulaId, RecorrenciaAula.RepetirTodosBimestres);
 
+            return Ok(new AulaRecorrenciaDto() 
+            { 
+                AulaId = aulaId,
+                RecorrenciaAula = recorrencia,
+                QuantidadeAulasRecorrentes = quantidadeAulas
+            });
+        }
     }
 }

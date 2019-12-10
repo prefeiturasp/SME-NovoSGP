@@ -12,11 +12,11 @@ namespace SME.SGP.Aplicacao
 
         Task<IEnumerable<DataAulasProfessorDto>> ObterDatasDeAulasPorCalendarioTurmaEDisciplina(int anoLetivo, string turma, string disciplina);
 
-        Task<int> ObterQuantidadeAulasTurmaSemana(string turma, string disciplina, string semana);
+        Task<int> ObterQuantidadeAulasTurmaSemanaProfessor(string turma, string disciplina, string semana, string codigoRf);
 
         Task<int> ObterQuantidadeAulasRecorrentes(long aulaInicialId, RecorrenciaAula recorrencia);
 
-        Task<AulaConsultaDto> ObterAulaDataTurmaDisciplina(DateTime data, string turmaId, string disciplinaId);
+        Task<int> ObterRecorrenciaDaSerie(long aulaId);
 
     }
 }

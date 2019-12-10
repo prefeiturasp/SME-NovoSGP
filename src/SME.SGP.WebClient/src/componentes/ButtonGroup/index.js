@@ -23,8 +23,8 @@ function ButtonGroup({
   const desabilitarExcluir = () => {
     const { podeExcluir } = permissoesTela;
     return (
-      (!podeExcluir && !temItemSelecionado === false) ||
-      (!podeExcluir && temItemSelecionado) ||
+      (!podeExcluir && temItemSelecionado === false) ||
+      (!podeExcluir && temItemSelecionado === true) ||
       (podeExcluir && temItemSelecionado === false) ||
       (!podeExcluir && novoRegistro === false) ||
       (podeExcluir && novoRegistro === true)
@@ -48,17 +48,23 @@ function ButtonGroup({
           border
           className="btnGroupItem"
           onClick={() => onClickCancelar(form)}
-          disabled={!modoEdicao}
+          disabled={
+            !modoEdicao ||
+            !permissoesTela.podeIncluir ||
+            !permissoesTela.podeAlterar
+          }
         />
       )}
-      <Button
-        label="Excluir"
-        color={Colors.Roxo}
-        border
-        className="btnGroupItem"
-        disabled={desabilitarExcluir()}
-        onClick={onClickExcluir}
-      />
+      {typeof onClickExcluir === 'function' && (
+        <Button
+          label="Excluir"
+          color={Colors.Roxo}
+          border
+          className="btnGroupItem"
+          disabled={desabilitarExcluir()}
+          onClick={onClickExcluir}
+        />
+      )}
       <Button
         label={labelBotaoPrincipal}
         color={Colors.Roxo}

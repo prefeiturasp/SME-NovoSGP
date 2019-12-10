@@ -1,93 +1,36 @@
-﻿import React, { useState, useEffect } from 'react';
+﻿import React, { useState, useEffect, useCallback } from 'react';
 import PropTypes from 'prop-types';
-import styled from 'styled-components';
 import { useSelector } from 'react-redux';
 import shortid from 'shortid';
 import { Base } from '~/componentes/colors';
-import api from '~/servicos/api';
 import { store } from '~/redux';
 import {
   selecionaDia,
   salvarEventoAulaCalendarioEdicao,
 } from '~/redux/modulos/calendarioProfessor/actions';
 import TiposEventoAulaDTO from '~/dtos/tiposEventoAula';
-
-const Div = styled.div`
-  .badge-aula {
-    background: ${Base.Roxo};
-  }
-  .badge-cj {
-    background: ${Base.Laranja};
-  }
-`;
-const TipoEventosLista = styled(Div)`
-  bottom: 5px;
-  right: 10px;
-`;
-const TipoEvento = styled(Div)`
-  font-size: 10px;
-  margin-bottom: 2px;
-  width: 60px;
-  &:last-child {
-    margin-bottom: 0;
-  }
-`;
+import { Div, TipoEventosLista, TipoEvento } from './Semana.css';
 
 const Dia = props => {
-  const { dia, mesAtual, filtros, diaSelecionado } = props;
   const {
-    tipoCalendarioSelecionado,
-    eventoSme,
-    dreSelecionada,
-    unidadeEscolarSelecionada,
-    turmaSelecionada,
-    todasTurmas,
-  } = filtros;
+    dia,
+    mesAtual,
+    diaSelecionado,
+    tipoEventosDiaLista: tipoLista,
+  } = props;
   const [tipoEventosDiaLista, setTipoEventosDiaLista] = useState([]);
 
   useEffect(() => {
-    let estado = true;
-    if (estado) {
-      if (mesAtual && dia) {
-        if (
-          tipoCalendarioSelecionado &&
-          dreSelecionada &&
-          unidadeEscolarSelecionada &&
-          (turmaSelecionada || todasTurmas)
-        ) {
-          api
-            .post(`v1/calendarios/meses/tipos/eventos-aulas`, {
-              Mes: mesAtual,
-              tipoCalendarioId: tipoCalendarioSelecionado,
-              EhEventoSME: eventoSme,
-              dreId: dreSelecionada,
-              ueId: unidadeEscolarSelecionada,
-              turmaId: turmaSelecionada,
-              todasTurmas,
-            })
-            .then(resposta => {
-              if (resposta.data) {
-                const lista = resposta.data.filter(
-                  evento => evento.dia === dia.getDate()
-                )[0];
-                while (lista.tiposEvento.length > 2) lista.tiposEvento.pop();
-                setTipoEventosDiaLista(lista);
-              } else setTipoEventosDiaLista([]);
-            })
-            .catch(() => {
-              setTipoEventosDiaLista([]);
-            });
-        } else setTipoEventosDiaLista([]);
-      }
+    if (dia && mesAtual && tipoLista.length) {
+      const lista = tipoLista.filter(evento => evento.dia === dia.getDate())[0];
+      if (lista) while (lista.tiposEvento.length > 2) lista.tiposEvento.pop();
+      setTipoEventosDiaLista(lista);
     }
-    return () => {
-      estado = false;
-    };
-  }, [filtros, mesAtual]);
+  }, [dia, mesAtual, tipoLista]);
 
-  const selecionaDiaAberto = () => {
+  const selecionaDiaAberto = useCallback(() => {
     store.dispatch(selecionaDia(dia));
-  };
+  }, [dia]);
 
   const eventoAulaCalendarioEdicao = useSelector(
     state => state.calendarioProfessor.eventoAulaCalendarioEdicao
@@ -106,7 +49,7 @@ const Dia = props => {
       }
     }, 3000);
     return () => clearTimeout(abrirDiaEventoCalendarioEdicao);
-  }, [eventoAulaCalendarioEdicao]);
+  }, [dia, eventoAulaCalendarioEdicao, selecionaDiaAberto]);
 
   const style = {
     cursor: 'pointer',
@@ -152,15 +95,18 @@ const Dia = props => {
                       TiposEventoAulaDTO.CJ &&
                       'text-white badge-cj'} ${tipoEvento !==
                       TiposEventoAulaDTO.Aula &&
-                      (tipoEvento !== TiposEventoAulaDTO.CJ &&
-                        'badge-light')} ml-auto mr-0`}
+                      tipoEvento !== TiposEventoAulaDTO.CJ &&
+                      'badge-light'} ml-auto mr-0`}
                   >
-                    {tipoEvento}
+                    {tipoEvento !== TiposEventoAulaDTO.CJ &&
+                    tipoEvento !== TiposEventoAulaDTO.Aula
+                      ? 'Evento'
+                      : tipoEvento}
                   </TipoEvento>
                 );
               })}
-              {tipoEventosDiaLista.quantidadeDeEventosAulas > 3 && (
-                <Div style={{ fontSize: 10 }}>
+              {tipoEventosDiaLista.quantidadeDeEventosAulas > 2 && (
+                <Div style={{ fontSize: 10, textAlign: 'right' }}>
                   Mais {tipoEventosDiaLista.quantidadeDeEventosAulas} eventos
                 </Div>
               )}
@@ -174,25 +120,25 @@ const Dia = props => {
 Dia.propTypes = {
   dia: PropTypes.oneOfType([PropTypes.array, PropTypes.object]),
   mesAtual: PropTypes.number,
-  filtros: PropTypes.oneOfType([PropTypes.array, PropTypes.object]),
   diaSelecionado: PropTypes.oneOfType([
     PropTypes.instanceOf(Date),
     PropTypes.string,
   ]),
+  tipoEventosDiaLista: PropTypes.oneOfType([PropTypes.array]),
 };
 
 Dia.defaultProps = {
   dia: {},
   mesAtual: 0,
-  filtros: {},
   diaSelecionado: '',
+  tipoEventosDiaLista: PropTypes.oneOfType([PropTypes.array]),
 };
 
 const Semana = props => {
   const diaSelecionado = useSelector(
     state => state.calendarioProfessor.diaSelecionado
   );
-  const { inicial, dias, mesAtual, filtros } = props;
+  const { inicial, dias, mesAtual, filtros, tipoEventosDiaLista } = props;
 
   return (
     <Div>
@@ -203,6 +149,7 @@ const Semana = props => {
           mesAtual={mesAtual}
           filtros={filtros}
           diaSelecionado={diaSelecionado}
+          tipoEventosDiaLista={tipoEventosDiaLista}
         />
         <Dia
           className={`${inicial ? '' : 'border-top-0'}`}
@@ -210,6 +157,7 @@ const Semana = props => {
           mesAtual={mesAtual}
           filtros={filtros}
           diaSelecionado={diaSelecionado}
+          tipoEventosDiaLista={tipoEventosDiaLista}
         />
         <Dia
           className={`${inicial ? '' : 'border-top-0'}`}
@@ -217,6 +165,7 @@ const Semana = props => {
           mesAtual={mesAtual}
           filtros={filtros}
           diaSelecionado={diaSelecionado}
+          tipoEventosDiaLista={tipoEventosDiaLista}
         />
         <Dia
           className={`${inicial ? '' : 'border-top-0'}`}
@@ -224,6 +173,7 @@ const Semana = props => {
           mesAtual={mesAtual}
           filtros={filtros}
           diaSelecionado={diaSelecionado}
+          tipoEventosDiaLista={tipoEventosDiaLista}
         />
         <Dia
           className={`${inicial ? '' : 'border-top-0'}`}
@@ -231,6 +181,7 @@ const Semana = props => {
           mesAtual={mesAtual}
           filtros={filtros}
           diaSelecionado={diaSelecionado}
+          tipoEventosDiaLista={tipoEventosDiaLista}
         />
         <Dia
           className={`${inicial ? '' : 'border-top-0'}`}
@@ -238,6 +189,7 @@ const Semana = props => {
           mesAtual={mesAtual}
           filtros={filtros}
           diaSelecionado={diaSelecionado}
+          tipoEventosDiaLista={tipoEventosDiaLista}
         />
         <Dia
           className={`${
@@ -247,6 +199,7 @@ const Semana = props => {
           mesAtual={mesAtual}
           filtros={filtros}
           diaSelecionado={diaSelecionado}
+          tipoEventosDiaLista={tipoEventosDiaLista}
         />
       </Div>
     </Div>
@@ -258,6 +211,7 @@ Semana.propTypes = {
   dias: PropTypes.oneOfType([PropTypes.array, PropTypes.object]),
   mesAtual: PropTypes.number,
   filtros: PropTypes.oneOfType([PropTypes.array, PropTypes.object]),
+  tipoEventosDiaLista: PropTypes.oneOfType([PropTypes.array]),
 };
 
 Semana.defaultProps = {
@@ -265,6 +219,7 @@ Semana.defaultProps = {
   dias: [],
   mesAtual: 0,
   filtros: {},
+  tipoEventosDiaLista: [],
 };
 
 export default Semana;

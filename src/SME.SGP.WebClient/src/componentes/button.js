@@ -41,7 +41,7 @@ const Button = React.forwardRef((props, ref) => {
   `;
 
   const Btn = styled.button`
-  display: flex;
+    display: flex;
     position: relative;
     background: ${border ? 'transparent' : Active[color]} !important;
     text-align: center;
@@ -58,7 +58,7 @@ const Button = React.forwardRef((props, ref) => {
     height: ${height} !important;
     ${lineHeight && `line-height: ${lineHeight}`}
     &:hover {
-      background: ${Hover[color]} !important;
+      background: ${border ? Active[color] : Hover[color]} !important;
       color: ${!steady ? Base.Branco : 'initial'} !important;
     }
     &[disabled] {
@@ -110,6 +110,7 @@ Button.propTypes = {
   lineHeight: PropTypes.string,
   width: PropTypes.string,
   fontSize: PropTypes.string,
+  indice: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
   label: PropTypes.string,
   hidden: PropTypes.bool,
   id: PropTypes.string,
@@ -132,6 +133,7 @@ Button.defaultProps = {
   lineHeight: 'inherit',
   width: '',
   fontSize: '',
+  indice: '',
   label: '',
   hidden: false,
   id: '',

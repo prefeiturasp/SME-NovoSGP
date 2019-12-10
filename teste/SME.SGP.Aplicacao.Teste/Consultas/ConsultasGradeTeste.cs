@@ -1,6 +1,7 @@
 using Moq;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
+using System;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -40,6 +41,15 @@ namespace SME.SGP.Aplicacao.Teste.Consultas
             Assert.True(horasGrade == 5);
         }
 
+        [Fact]
+        public async Task DeveRetornarQuatroAulasGradeParaSRMEAEE()
+        {
+            var semana = (DateTime.Now.DayOfYear / 7) + 1;
+            var aulasGrade = await consultasGrade.ObterGradeAulasTurmaProfessor("123", 1030, semana.ToString());
+
+            Assert.True(aulasGrade.QuantidadeAulasGrade == 4);
+        }
+
         private void Setup()
         {
             var grade = new Grade()
@@ -53,6 +63,9 @@ namespace SME.SGP.Aplicacao.Teste.Consultas
 
             repositorioGrade.Setup(c => c.ObterHorasComponente(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<int>()))
                 .Returns(Task.FromResult(5));
+
+            consultasAbrangencia.Setup(c => c.ObterAbrangenciaTurma(It.IsAny<string>()))
+                .Returns(Task.FromResult(new Dto.AbrangenciaFiltroRetorno()));
         }
     }
 }

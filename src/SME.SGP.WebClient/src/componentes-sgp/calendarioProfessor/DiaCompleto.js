@@ -1,13 +1,12 @@
 ﻿import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
-import styled from 'styled-components';
 import { useSelector } from 'react-redux';
 import shortid from 'shortid';
 import { Base, Colors } from '~/componentes/colors';
 import api from '~/servicos/api';
 import history from '~/servicos/history';
 import Grid from '~/componentes/grid';
-import Button from '~/componentes/button';
+import { Div, Evento, Botao, BotoesAuxiliaresEstilo } from './DiaCompleto.css';
 import { store } from '~/redux';
 import {
   selecionaDia,
@@ -16,37 +15,14 @@ import {
 import TiposEventoAulaDTO from '~/dtos/tiposEventoAula';
 import RotasDTO from '~/dtos/rotasDto';
 
-const Div = styled.div``;
-const Evento = styled(Div)`
-  &:hover {
-    background: ${Base.Roxo};
-    color: ${Base.Branco};
-  }
-`;
-const Botao = styled(Button)`
-  ${Evento}:hover & {
-    background: transparent !important;
-    border-color: ${Base.Branco} !important;
-    color: ${Base.Branco} !important;
-  }
-`;
-const BotoesAuxiliaresEstilo = styled(Div)`
-  align-items: right;
-  display: flex;
-  justify-content: flex-end;
-  padding: 16px;
-  padding-bottom: 0;
-  width: 100%;
-`;
-
 const SemEvento = () => {
   return (
-    <div
+    <Div
       className="d-flex w-100 h-100 justify-content-center d-flex align-items-center fade show"
       style={{ fontSize: 25, color: Base.CinzaBotao }}
     >
       Sem eventos neste dia
-    </div>
+    </Div>
   );
 };
 
@@ -96,8 +72,9 @@ const DiaCompleto = props => {
               todasTurmas,
             })
             .then(resposta => {
-              if (resposta.data) setEventosDia(resposta.data);
-              else setEventosDia([]);
+              if (resposta.data) {
+                setEventosDia(resposta.data);
+              } else setEventosDia([]);
             })
             .catch(() => {
               setEventosDia([]);
@@ -110,7 +87,7 @@ const DiaCompleto = props => {
     };
   }, [diaSelecionado]);
 
-  const aoClicarBotaoNovaAula = () => {
+  const salvarDadosEventoAula = () => {
     store.dispatch(
       salvarEventoAulaCalendarioEdicao(
         tipoCalendarioSelecionado,
@@ -122,16 +99,34 @@ const DiaCompleto = props => {
         diaSelecionado
       )
     );
+  };
 
+  const aoClicarBotaoNovaAvaliacao = () => {
+    salvarDadosEventoAula();
+    history.push(`${RotasDTO.CADASTRO_DE_AVALIACAO}/novo`);
+  };
+
+  const aoClicarBotaoNovaAula = () => {
+    salvarDadosEventoAula();
     history.push(
-      `calendario-professor/cadastro-aula/novo/${tipoCalendarioSelecionado}`
+      `${RotasDTO.CADASTRO_DE_AULA}/novo/${tipoCalendarioSelecionado}`
     );
   };
 
-  const BotoesAuxiliares = () => {
+  const BotoesAuxiliares = ({ temAula, podeCadastrarAvaliacao }) => {
     return (
       <BotoesAuxiliaresEstilo>
-        <Button
+        {temAula && podeCadastrarAvaliacao ? (
+          <Botao
+            key={shortid.generate()}
+            onClick={aoClicarBotaoNovaAvaliacao}
+            label="Nova Avaliação"
+            color={Colors.Roxo}
+            disabled={permissaoTela && !permissaoTela.podeIncluir}
+            className="mr-3"
+          />
+        ) : null}
+        <Botao
           key={shortid.generate()}
           onClick={aoClicarBotaoNovaAula}
           label="Nova Aula"
@@ -140,6 +135,14 @@ const DiaCompleto = props => {
         />
       </BotoesAuxiliaresEstilo>
     );
+  };
+
+  BotoesAuxiliares.propTypes = {
+    temAula: PropTypes.number.isRequired,
+    podeCadastrarAvaliacao: PropTypes.oneOfType([
+      PropTypes.bool,
+      PropTypes.number,
+    ]).isRequired,
   };
 
   useEffect(() => {
@@ -160,12 +163,16 @@ const DiaCompleto = props => {
       )
     );
 
-    if (TiposEventoAulaDTO.Evento.indexOf(tipo) > -1)
-      history.push(`calendario-escolar/eventos/editar/${id}`);
-    else
-      history.push(
-        `/calendario-escolar/calendario-professor/cadastro-aula/editar/${id}`
-      );
+    if (tipo === TiposEventoAulaDTO.Aula || tipo === TiposEventoAulaDTO.CJ) {
+      history.push(`${RotasDTO.CADASTRO_DE_AULA}/editar/${id}`);
+    } else {
+      history.push(`${RotasDTO.EVENTOS}/editar/${id}`);
+    }
+  };
+
+  const aoClicarEditarAvaliacao = id => {
+    salvarDadosEventoAula();
+    history.push(`${RotasDTO.CADASTRO_DE_AVALIACAO}/editar/${id}`);
   };
 
   return (
@@ -174,75 +181,148 @@ const DiaCompleto = props => {
         {eventosDia &&
         eventosDia.eventosAulas &&
         eventosDia.eventosAulas.length > 0 ? (
-          <Div className="list-group list-group-flush fade show">
+          <Div className="list-group list-group-flush fade show px-0">
             {eventosDia.eventosAulas.map(evento => {
               return (
-                <Evento
+                <Div
                   key={shortid.generate()}
-                  className="list-group-item list-group-item-action d-flex rounded"
-                  onClick={() => aoClicarEvento(evento.id, evento.tipoEvento)}
-                  style={{ cursor: 'pointer' }}
+                  className="list-group-item list-group-item-action d-flex p-0"
                 >
-                  <Grid cols={1} className="pl-0">
-                    <Botao
-                      label={evento.tipoEvento}
-                      color={
-                        (evento.tipoEvento === TiposEventoAulaDTO.Aula &&
-                          Colors.Roxo) ||
-                        (evento.tipoEvento === TiposEventoAulaDTO.CJ &&
-                          Colors.Laranja) ||
-                        Colors.CinzaBotao
-                      }
-                      className="w-100"
-                      border
-                      steady
-                    />
-                  </Grid>
-                  {TiposEventoAulaDTO.Evento.indexOf(evento.tipoEvento) ===
-                    -1 &&
-                    evento.dadosAula && (
-                      <Grid cols={1} className="px-0">
-                        <Botao
-                          label={window
-                            .moment(evento.dadosAula.horario, 'HH')
-                            .format('HH:mm')}
-                          color={Colors.CinzaBotao}
-                          className="w-100 px-2"
-                          border
-                          steady
-                        />
-                      </Grid>
-                    )}
-                  <Grid
-                    cols={
-                      TiposEventoAulaDTO.Evento.indexOf(evento.tipoEvento) > -1
-                        ? 11
-                        : 10
-                    }
-                    className="align-self-center font-weight-bold pl-0"
+                  <Evento
+                    className="d-flex rounded w-100 py-2 px-3"
+                    style={{ cursor: 'pointer' }}
                   >
-                    <Div
-                      className={`${TiposEventoAulaDTO.Evento.indexOf(
-                        evento.tipoEvento
-                      ) === -1 && 'pl-3'}`}
+                    <Grid
+                      cols={
+                        (evento.tipoEvento === TiposEventoAulaDTO.Aula && 1) ||
+                        (evento.tipoEvento === TiposEventoAulaDTO.CJ && 1) ||
+                        2
+                      }
+                      onClick={() =>
+                        aoClicarEvento(evento.id, evento.tipoEvento)
+                      }
+                      className="pl-0"
                     >
-                      {evento.tipoEvento !== TiposEventoAulaDTO.Aula &&
-                        evento.tipoEvento !== TiposEventoAulaDTO.CJ &&
-                        (evento.descricao ? evento.descricao : 'Evento')}
-                      {TiposEventoAulaDTO.Evento.indexOf(evento.tipoEvento) ===
-                        -1 &&
-                        evento.dadosAula &&
-                        `${evento.dadosAula.turma} - ${evento.dadosAula.modalidade} - ${evento.dadosAula.tipo} - ${evento.dadosAula.unidadeEscolar} - ${evento.dadosAula.disciplina}`}
-                    </Div>
-                  </Grid>
-                </Evento>
+                      <Botao
+                        label={evento.tipoEvento}
+                        color={
+                          (evento.tipoEvento === TiposEventoAulaDTO.Aula &&
+                            Colors.Roxo) ||
+                          (evento.tipoEvento === TiposEventoAulaDTO.CJ &&
+                            Colors.Laranja) ||
+                          Colors.CinzaBotao
+                        }
+                        onClick={() =>
+                          aoClicarEvento(evento.id, evento.tipoEvento)
+                        }
+                        className="w-100"
+                        height={
+                          evento.tipoEvento === TiposEventoAulaDTO.Aula ||
+                          evento.tipoEvento === TiposEventoAulaDTO.CJ
+                            ? '38px'
+                            : 'auto'
+                        }
+                        border
+                        steady
+                      />
+                    </Grid>
+                    {(evento.tipoEvento === TiposEventoAulaDTO.Aula ||
+                      evento.tipoEvento === TiposEventoAulaDTO.CJ) &&
+                      evento.dadosAula && (
+                        <Grid cols={1} className="px-0">
+                          <Botao
+                            onClick={() =>
+                              aoClicarEvento(evento.id, evento.tipoEvento)
+                            }
+                            label={window
+                              .moment(evento.dadosAula.horario, 'HH')
+                              .format('HH:mm')}
+                            color={Colors.CinzaBotao}
+                            className="w-100 px-2"
+                            border
+                            steady
+                          />
+                        </Grid>
+                      )}
+                    <Grid
+                      cols={
+                        evento.tipoEvento === TiposEventoAulaDTO.Aula ||
+                        evento.tipoEvento === TiposEventoAulaDTO.CJ
+                          ? evento.dadosAula &&
+                            evento.dadosAula.atividade.length
+                            ? 10 - evento.dadosAula.atividade.length * 2
+                            : 10
+                          : 11
+                      }
+                      className="align-self-center font-weight-bold"
+                    >
+                      <Div
+                        className={`${(evento.tipoEvento ===
+                          TiposEventoAulaDTO.Aula ||
+                          evento.tipoEvento === TiposEventoAulaDTO.CJ) &&
+                          'pl-3'}`}
+                        onClick={() =>
+                          aoClicarEvento(evento.id, evento.tipoEvento)
+                        }
+                      >
+                        {evento.tipoEvento !== TiposEventoAulaDTO.Aula &&
+                          evento.tipoEvento !== TiposEventoAulaDTO.CJ &&
+                          (evento.descricao ? evento.descricao : 'Evento')}
+                        {(evento.tipoEvento === TiposEventoAulaDTO.Aula ||
+                          evento.tipoEvento === TiposEventoAulaDTO.CJ) &&
+                          evento.dadosAula &&
+                          `${evento.dadosAula.turma} - ${evento.dadosAula.modalidade} - ${evento.dadosAula.tipo} - ${evento.dadosAula.unidadeEscolar} - ${evento.dadosAula.disciplina}`}
+                      </Div>
+                    </Grid>
+                  </Evento>
+                  {evento.dadosAula && evento.dadosAula.atividade.length
+                    ? evento.dadosAula.atividade.map(atividade => {
+                        return (
+                          <Grid
+                            key={atividade.id}
+                            cols={2}
+                            className="pr-0 d-flex align-items-center"
+                          >
+                            <Botao
+                              label="Avaliação"
+                              color={Colors.Roxo}
+                              className="w-100 position-relative zIndex"
+                              onClick={() =>
+                                aoClicarEditarAvaliacao(atividade.id)
+                              }
+                              border
+                            />
+                          </Grid>
+                        );
+                      })
+                    : null}
+                </Div>
               );
             })}
           </Div>
         ) : (
           <SemEvento />
         )}
-        {eventosDia && eventosDia.letivo && <BotoesAuxiliares />}
+        {eventosDia && eventosDia.letivo && turmaSelecionada && (
+          <BotoesAuxiliares
+            temAula={
+              eventosDia.eventosAulas.filter(
+                aula =>
+                  aula.tipoEvento === TiposEventoAulaDTO.Aula ||
+                  aula.tipoEvento === TiposEventoAulaDTO.CJ
+              ).length
+            }
+            podeCadastrarAvaliacao={
+              eventosDia.eventosAulas.filter(
+                aula =>
+                  (aula.tipoEvento === TiposEventoAulaDTO.Aula ||
+                    aula.tipoEvento === TiposEventoAulaDTO.CJ) &&
+                  aula.dadosAula &&
+                  aula.dadosAula.podeCadastrarAvaliacao
+              ).length
+            }
+          />
+        )}
       </Div>
     )
   );
