@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import Cabecalho from '~/componentes-sgp/cabecalho';
 import Card from '~/componentes/card';
@@ -23,6 +23,9 @@ const TipoAvaliacaoLista = () => {
     {
       title: 'Descrição',
       dataIndex: 'descricao',
+      render: item => {
+        return item.replace(/<[^>]*>?/gm, '');
+      },
     },
     {
       title: 'Situação',
@@ -43,28 +46,38 @@ const TipoAvaliacaoLista = () => {
     setItensSelecionados(items);
   };
 
-  const onClickExcluir = async () => {
-    const confirmado = await confirmar(
-      '',
-      'Deseja realmente excluir estes itens?'
-    );
-    if (confirmado) {
-      const excluir = await servicoTipoAvaliaco.deletarTipoAvaliacao(
-        itensSelecionados
-      );
-      if (excluir) {
-        sucesso('Tipos de avaliação excluídos com sucesso.');
-      } else {
-        erro('Erro ao excluir tipos de avaliação.');
-      }
-    }
-  };
+  // const onClickExcluir = async () => {
+  //   const confirmado = await confirmar(
+  //     '',
+  //     'Deseja realmente excluir estes itens?'
+  //   );
+  //   if (confirmado) {
+  //     const excluir = await servicoTipoAvaliaco.deletarTipoAvaliacao(
+  //       itensSelecionados
+  //     );
+  //     if (excluir) {
+  //       sucesso('Tipos de avaliação excluídos com sucesso.');
+  //     } else {
+  //       erro('Erro ao excluir tipos de avaliação.');
+  //     }
+  //   }
+  // };
 
   const onClickEditar = item => {
     history.push(`/configuracoes/tipo-avaliacao/editar/${item.id}`);
   };
 
   const onChangeFiltro = valoresFiltro => {
+    if (valoresFiltro.nome === '') {
+      delete valoresFiltro.nome;
+    }
+    if (valoresFiltro.descricao === '') {
+      delete valoresFiltro.descricao;
+    }
+    if (valoresFiltro.situacao === '') {
+      delete valoresFiltro.situacao;
+    }
+
     setFiltro(valoresFiltro);
   };
 
@@ -77,7 +90,7 @@ const TipoAvaliacaoLista = () => {
           permissoesTela={permissoesTela[RotasDto.TIPO_AVALIACAO]}
           temItemSelecionado={itensSelecionados && itensSelecionados.length}
           onClickVoltar={onClickVoltar}
-          onClickExcluir={onClickExcluir}
+          onClickExcluir={false}
           onClickBotaoPrincipal={onClickBotaoPrincipal}
           labelBotaoPrincipal="Novo"
           desabilitarBotaoPrincipal={false}
@@ -90,8 +103,8 @@ const TipoAvaliacaoLista = () => {
           colunas={colunas}
           filtro={filtro}
           onClick={onClickEditar}
-          multiSelecao
-          selecionarItems={onSelecionarItems}
+          //selecionarItems={onSelecionarItems}
+          // filtroEhValido
         />
       </Card>
     </>
