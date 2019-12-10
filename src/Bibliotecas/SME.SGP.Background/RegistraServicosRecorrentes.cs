@@ -12,6 +12,8 @@ namespace SME.SGP.Background
 
             Cliente.ExecutarPeriodicamente<IServicoEventoMatricula>(c => c.ExecutaCargaEventos(), Cron.Daily(6));
             Cliente.ExecutarPeriodicamente<IServicoEventoMatricula>(c => c.ExecutaCargaEventos(), Cron.Daily(12));
+
+            Cliente.ExecutarPeriodicamente<IServicoNotificacaoAulaPrevista>(c => c.ExecutaNotificacaoAulaPrevista(), Cron.Daily(2));
         }
     }
 }

@@ -12,12 +12,16 @@ import SelectComponent from '~/componentes/select';
 import { Colors, Label } from '~/componentes';
 import history from '~/servicos/history';
 import TextEditor from '~/componentes/textEditor';
-import { Div, Titulo, Badge } from './avaliacao.css';
+import { Div, Titulo, Badge, InseridoAlterado } from './avaliacao.css';
 import RotasDTO from '~/dtos/rotasDto';
 import ServicoAvaliacao from '~/servicos/Paginas/Calendario/ServicoAvaliacao';
 import { erro, sucesso, confirmar } from '~/servicos/alertas';
 
 const AvaliacaoForm = ({ match }) => {
+  const permissaoTela = useSelector(
+    state => state.usuario.permissoes[RotasDTO.CADASTRO_DE_AVALIACAO]
+  );
+
   const botaoCadastrarRef = useRef(null);
 
   const clicouBotaoVoltar = async () => {
@@ -33,6 +37,12 @@ const AvaliacaoForm = ({ match }) => {
   };
 
   const [idAvaliacao, setIdAvaliacao] = useState('');
+  const [inseridoAlterado, setInseridoAlterado] = useState({
+    alteradoEm: '',
+    alteradoPor: '',
+    criadoEm: '',
+    criadoPor: '',
+  });
 
   const clicouBotaoExcluir = async () => {
     const confirmado = await confirmar(
@@ -95,26 +105,29 @@ const AvaliacaoForm = ({ match }) => {
     delete dadosValidacao.categoriaId;
     delete dadosValidacao.descricao;
 
-    const validacao = await ServicoAvaliacao.validar(dadosValidacao);
+    if (descricao.length <= 500) {
+      const validacao = await ServicoAvaliacao.validar(dadosValidacao);
 
-    if (validacao && validacao.status === 200) {
-      ServicoAvaliacao.salvar(idAvaliacao, { ...dados, ...avaliacao })
-        .then(() => {
+      if (validacao && validacao.status === 200) {
+        const salvar = await ServicoAvaliacao.salvar(idAvaliacao, {
+          ...dados,
+          ...avaliacao,
+        });
+
+        if (salvar && salvar.status === 200) {
           sucesso(
             `Avaliação ${
               idAvaliacao ? 'atualizada' : 'cadastrada'
             } com sucesso.`
           );
           history.push(RotasDTO.CALENDARIO_PROFESSOR);
-        })
-        .catch(() => {
-          erro(
-            `Erro ao ${idAvaliacao ? 'atualizar' : 'cadastrar'} a avaliação.`
-          );
-        });
-    } else {
-      erro(validacao);
-    }
+        } else {
+          erro(salvar);
+        }
+      } else {
+        erro(validacao);
+      }
+    } else erro('A descrição não deve ter mais de 500 caracteres');
   };
 
   const [validacoes] = useState(
@@ -125,6 +138,10 @@ const AvaliacaoForm = ({ match }) => {
         'Selecione o tipo de atividade avaliativa'
       ),
       nome: Yup.string().required('Preencha o nome da atividade avaliativa'),
+      descricao: Yup.string().max(
+        500,
+        'A descrição não deve ter mais de 500 caracteres'
+      ),
     })
   );
 
@@ -154,10 +171,11 @@ const AvaliacaoForm = ({ match }) => {
     tipoAvaliacaoId: undefined,
   };
 
-  const clicouBotaoCancelar = () => {
+  const clicouBotaoCancelar = form => {
     if (!idAvaliacao) {
+      form.resetForm();
       setDadosAvaliacao(inicial);
-      setDescricao('');
+      aoTrocarTextEditor('');
     }
   };
 
@@ -230,6 +248,12 @@ const AvaliacaoForm = ({ match }) => {
       const tipoAvaliacaoId = avaliacao.data.tipoAvaliacaoId.toString();
       setDadosAvaliacao({ ...avaliacao.data, disciplinaId, tipoAvaliacaoId });
       setDescricao(avaliacao.data.descricao);
+      setInseridoAlterado({
+        alteradoEm: avaliacao.data.alteradoEm,
+        alteradoPor: `${avaliacao.data.alteradoPor} (${avaliacao.data.alteradoRF})`,
+        criadoEm: avaliacao.data.alteradoEm,
+        criadoPor: `${avaliacao.data.criadoPor} (${avaliacao.data.criadoRF})`,
+      });
       if (
         avaliacao.data.atividadesRegencia &&
         avaliacao.data.atividadesRegencia.length > 0
@@ -306,7 +330,7 @@ const AvaliacaoForm = ({ match }) => {
               <Button
                 label="Cancelar"
                 color={Colors.Roxo}
-                onClick={clicouBotaoCancelar}
+                onClick={() => clicouBotaoCancelar(form)}
                 border
                 bold
                 className="mr-3"
@@ -316,7 +340,9 @@ const AvaliacaoForm = ({ match }) => {
                 color={Colors.Vermelho}
                 border
                 className="mr-3"
-                disabled={!idAvaliacao}
+                disabled={
+                  !idAvaliacao || (permissaoTela && !permissaoTela.podeAlterar)
+                }
                 onClick={clicouBotaoExcluir}
               />
               <Button
@@ -324,6 +350,10 @@ const AvaliacaoForm = ({ match }) => {
                 color={Colors.Roxo}
                 onClick={e => clicouBotaoCadastrar(form, e)}
                 ref={botaoCadastrarRef}
+                disabled={
+                  permissaoTela &&
+                  (!permissaoTela.podeIncluir || !permissaoTela.podeAlterar)
+                }
                 border
                 bold
               />
@@ -410,6 +440,7 @@ const AvaliacaoForm = ({ match }) => {
                   <Label text="Descrição" />
                   <TextEditor
                     ref={textEditorRef}
+                    name="descricao"
                     id="descricao"
                     onBlur={aoTrocarTextEditor}
                     value={descricao}
@@ -418,6 +449,30 @@ const AvaliacaoForm = ({ match }) => {
                 </Grid>
               </Div>
             </Form>
+            <Div className="row">
+              <Grid cols={12}>
+                <InseridoAlterado className="mt-4">
+                  {inseridoAlterado.criadoPor && inseridoAlterado.criadoEm ? (
+                    <p className="pt-2">
+                      INSERIDO por {inseridoAlterado.criadoPor} em{' '}
+                      {inseridoAlterado.criadoEm}
+                    </p>
+                  ) : (
+                    ''
+                  )}
+
+                  {inseridoAlterado.alteradoPor &&
+                  inseridoAlterado.alteradoEm ? (
+                    <p>
+                      ALTERADO por {inseridoAlterado.alteradoPor} em{' '}
+                      {inseridoAlterado.alteradoEm}
+                    </p>
+                  ) : (
+                    ''
+                  )}
+                </InseridoAlterado>
+              </Grid>
+            </Div>
           </Card>
         )}
       </Formik>

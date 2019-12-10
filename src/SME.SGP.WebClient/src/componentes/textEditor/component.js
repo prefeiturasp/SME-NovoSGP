@@ -1,10 +1,35 @@
 import 'react-quill/dist/quill.snow.css';
 import PropTypes from 'prop-types';
-import React, { useState, useEffect } from 'react';
+import React, { useEffect } from 'react';
 import ReactQuill from 'react-quill';
 
 const TextEditor = React.forwardRef((props, ref) => {
-  const { value, onBlur, disabled, onClick, alt, estadoAdicional } = props;
+  const {
+    onBlur,
+    value,
+    disabled,
+    onClick,
+    alt,
+    estadoAdicional,
+    maxlength,
+    id,
+    name,
+    toolbar,
+  } = props;
+
+  const toolbarOptions = [
+    ['bold', 'italic', 'underline'],
+    [{ list: 'bullet' }, { list: 'ordered' }],
+  ];
+
+  const modules = {
+    toolbar: toolbar ? toolbarOptions : [],
+    keyboard: {
+      bindings: {
+        tab: false,
+      },
+    },
+  };
 
   useEffect(() => {
     if (estadoAdicional && estadoAdicional.focado) ref.current.focus();
@@ -22,7 +47,7 @@ const TextEditor = React.forwardRef((props, ref) => {
     };
   }, []);
 
-  const onBlurQuill = (posicaoAnterior, origem, editor) => {
+  const onBlurQuill = (posicaoAnterior, origem) => {
     if (onBlur && origem === 'user') onBlur(ref.current.state.value);
   };
 
@@ -40,33 +65,37 @@ const TextEditor = React.forwardRef((props, ref) => {
       onFocus={onClickQuill}
       readOnly={disabled}
       disabled={disabled}
+      maxlength={maxlength}
+      id={id}
+      name={name}
     />
   );
 });
 
 TextEditor.propTypes = {
-  onBlur: PropTypes.func,
-  height: PropTypes.string,
-  value: PropTypes.string,
+  onBlur: PropTypes.oneOfType([PropTypes.func]),
+  value: PropTypes.oneOfType([PropTypes.string]),
+  disabled: PropTypes.oneOfType([PropTypes.bool]),
+  onClick: PropTypes.oneOfType([PropTypes.func]),
+  alt: PropTypes.oneOfType([PropTypes.string]),
+  estadoAdicional: PropTypes.oneOfType([PropTypes.object]),
+  maxlength: PropTypes.oneOfType([PropTypes.number]),
+  id: PropTypes.oneOfType([PropTypes.string]),
+  name: PropTypes.oneOfType([PropTypes.string]),
+  toolbar: PropTypes.oneOfType([PropTypes.bool]),
 };
 
 TextEditor.defaultProps = {
   onBlur: () => {},
   value: '',
+  disabled: false,
+  onClick: () => {},
+  alt: '',
+  estadoAdicional: {},
+  maxlength: 500,
+  id: '',
+  name: '',
+  toolbar: true,
 };
 
 export default TextEditor;
-
-const toolbarOptions = [
-  ['bold', 'italic', 'underline'],
-  [{ list: 'bullet' }, { list: 'ordered' }],
-];
-
-const modules = {
-  toolbar: toolbarOptions,
-  keyboard: {
-    bindings: {
-      tab: false,
-    },
-  },
-};

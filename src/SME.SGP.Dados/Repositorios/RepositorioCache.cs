@@ -27,6 +27,18 @@ namespace SME.SGP.Dados.Repositorios
             }
         }
 
+        public async Task RemoverAsync(string nomeChave)
+        {
+            try
+            {
+                await distributedCache.RemoveAsync(nomeChave);
+            }
+            catch (Exception)
+            {
+                //Caso o cache esteja indisponível a aplicação precisa continuar funcionando mesmo sem o cache
+            }
+        }
+
         public async Task SalvarAsync(string nomeChave, string valor, int minutosParaExpirar = 720)
         {
             try
