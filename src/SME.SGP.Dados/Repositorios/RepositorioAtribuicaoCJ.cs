@@ -2,6 +2,7 @@
 using SME.SGP.Dados.Contexto;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
+using SME.SGP.Infra;
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
@@ -12,6 +13,17 @@ namespace SME.SGP.Dados.Repositorios
     {
         public RepositorioAtribuicaoCJ(ISgpContext conexao) : base(conexao)
         {
+        }
+
+        public IEnumerable<AtribuicaoCJ> ObterAtribuicaoAtiva(string professorRf)
+        {
+            var query = @"select id, disciplina_id, dre_id, ue_id, professor_rf, turma_id, modalidade, substituir,
+                            criado_em, criado_por, alterado_em, alterado_por, criado_rf, alterado_rf, migrado
+                            from atribuicao_cj where professor_rf = @professorRf and substituir = true";
+
+            var parametros = new { professorRf };
+
+            return database.Query<AtribuicaoCJ>(query, parametros);
         }
 
         public async Task<IEnumerable<AtribuicaoCJ>> ObterPorFiltros(Modalidade? modalidade, string turmaId, string ueId, long disciplinaId,

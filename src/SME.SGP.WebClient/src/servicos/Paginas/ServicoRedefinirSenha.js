@@ -6,7 +6,7 @@ class ServicoRedefinirSenha {
     formData.set('token', redefinirSenhaDto.token);
     formData.set('novaSenha', redefinirSenhaDto.novaSenha);
 
-    return await Api.post(this._obtenhaUrlSolicitarRecuperacao(), formData)
+    return Api.post(this._obtenhaUrlSolicitarRecuperacao(), formData)
       .then(res => {
         return { sucesso: true };
       })

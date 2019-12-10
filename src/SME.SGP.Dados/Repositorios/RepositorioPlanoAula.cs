@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using SME.SGP.Infra;
 
 namespace SME.SGP.Dados.Repositorios
 {
@@ -61,7 +62,7 @@ namespace SME.SGP.Dados.Repositorios
                               and a.turma_id = @turmaId
                               and a.disciplina_id = @disciplinaId";
 
-            return database.Conexao.Query<bool>(query, new { data, turmaId, disciplinaId }).SingleOrDefault();
+            return database.Conexao.Query<bool>(query, new { data = data.Date, turmaId, disciplinaId }).SingleOrDefault();
         }
     }
 }

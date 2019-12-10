@@ -18,7 +18,7 @@ namespace SME.SGP.Aplicacao
 
         public async Task Alterar(TipoAvaliacaoDto dto, long idTipoAtividadeAvaliativa)
         {
-            if (await VerificarSeExisteTipoAvaliacaoPorNome(dto.Nome, idTipoAtividadeAvaliativa))
+            if (await VerificarSeExisteTipoAvaliacaoPorNome(dto.Nome, dto.Descricao, dto.Situacao, idTipoAtividadeAvaliativa))
                 throw new NegocioException("Já existe tipo de avaliação com esse nome");
             var atividadeAvaliativa = MapearDtoParaEntidade(dto, idTipoAtividadeAvaliativa);
             await repositorioTipoAvaliacao.SalvarAsync(atividadeAvaliativa);
@@ -38,7 +38,7 @@ namespace SME.SGP.Aplicacao
 
         public async Task Inserir(TipoAvaliacaoDto dto)
         {
-            if (await VerificarSeExisteTipoAvaliacaoPorNome(dto.Nome, 0L))
+            if (await VerificarSeExisteTipoAvaliacaoPorNome(dto.Nome, dto.Descricao, dto.Situacao, 0L))
                 throw new NegocioException("Já existe tipo de avaliação com esse nome");
             var atividadeAvaliativa = MapearDtoParaEntidade(dto, 0L);
             await repositorioTipoAvaliacao.SalvarAsync(atividadeAvaliativa);
@@ -59,6 +59,6 @@ namespace SME.SGP.Aplicacao
 
         private async Task<bool> VerificarSeExisteAtividadeVinculada(long tipoAvaliacaoId) => await repositorioAtividadeAvaliativa.VerificarSeJaExistePorTipoAvaliacao(tipoAvaliacaoId);
 
-        private async Task<bool> VerificarSeExisteTipoAvaliacaoPorNome(string nome, long id) => await repositorioTipoAvaliacao.VerificarSeJaExistePorNome(nome, id);
+        private async Task<bool> VerificarSeExisteTipoAvaliacaoPorNome(string nome, string descricao, bool situacao, long id) => await repositorioTipoAvaliacao.VerificarSeJaExistePorNome(nome, descricao, situacao, id);
     }
 }

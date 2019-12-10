@@ -44,7 +44,10 @@ const CadastroAula = ({ match }) => {
   const [refFormRecorrencia, setRefFormRecorrencia] = useState({});
   const [ehReposicao, setEhReposicao] = useState(false);
   const [quantidadeRecorrencia, setQuantidadeRecorrencia] = useState(0);
-  const [visualizarFormExcRecorrencia, setVisualizarFormExcRecorrencia] = useState(false);
+  const [
+    visualizarFormExcRecorrencia,
+    setVisualizarFormExcRecorrencia,
+  ] = useState(false);
 
   const [valoresIniciais, setValoresIniciais] = useState({});
   const inicial = {
@@ -82,13 +85,19 @@ const CadastroAula = ({ match }) => {
   const recorrencia = {
     AULA_UNICA: 1,
     REPETIR_BIMESTRE_ATUAL: 2,
-    REPETIR_TODOS_BIMESTRES: 3
-  }
+    REPETIR_TODOS_BIMESTRES: 3,
+  };
 
   const [opcoesRecorrencia, setOpcoesRecorrencia] = useState([
     { label: 'Aula única', value: recorrencia.AULA_UNICA },
-    { label: 'Repetir no Bimestre atual', value: recorrencia.REPETIR_BIMESTRE_ATUAL },
-    { label: 'Repetir em todos os Bimestres', value: recorrencia.REPETIR_TODOS_BIMESTRES },
+    {
+      label: 'Repetir no Bimestre atual',
+      value: recorrencia.REPETIR_BIMESTRE_ATUAL,
+    },
+    {
+      label: 'Repetir em todos os Bimestres',
+      value: recorrencia.REPETIR_TODOS_BIMESTRES,
+    },
   ]);
 
   const [opcoesExcluirRecorrencia, setOpcoesExcluirRecorrencia] = useState([
@@ -97,7 +106,9 @@ const CadastroAula = ({ match }) => {
     { label: 'Todos os bimestres', value: 3 },
   ]);
 
-  const valoresIniciaisExclusao = { tipoRecorrenciaExclusao: recorrencia.AULA_UNICA }
+  const valoresIniciaisExclusao = {
+    tipoRecorrenciaExclusao: recorrencia.AULA_UNICA,
+  };
 
   useEffect(() => {
     const obterDisciplinas = async () => {
@@ -143,9 +154,9 @@ const CadastroAula = ({ match }) => {
       recorrenciaAula: Yup.string().required('Recorrência obrigatória'),
       quantidadeTexto: controlaQuantidadeAula
         ? validacaoQuantidade.lessThan(
-          quantidadeMaximaAulas + 1,
-          `Valor não pode ser maior que ${quantidadeMaximaAulas}`
-        )
+            quantidadeMaximaAulas + 1,
+            `Valor não pode ser maior que ${quantidadeMaximaAulas}`
+          )
         : validacaoQuantidade,
     };
 
@@ -198,12 +209,25 @@ const CadastroAula = ({ match }) => {
     setNovoRegistro(false);
     if (aula && aula.data) {
       setDataAula(window.moment(aula.data.dataAula));
-      const respRecorrencia = await api.get(`v1/calendarios/professores/aulas/${id}/recorrencias/serie`);
+      const respRecorrencia = await api.get(
+        `v1/calendarios/professores/aulas/${id}/recorrencias/serie`
+      );
       const dadosRecorrencia = respRecorrencia.data;
-      if (respRecorrencia && dadosRecorrencia && dadosRecorrencia.recorrenciaAula !== recorrencia.AULA_UNICA) {
+      if (
+        respRecorrencia &&
+        dadosRecorrencia &&
+        dadosRecorrencia.recorrenciaAula !== recorrencia.AULA_UNICA
+      ) {
         setQuantidadeRecorrencia(dadosRecorrencia.quantidadeAulasRecorrentes);
-        setOpcoesRecorrencia([...getRecorrenciasHabilitadas(opcoesRecorrencia, dadosRecorrencia)]);
-        setOpcoesExcluirRecorrencia([...getRecorrenciasHabilitadas(opcoesExcluirRecorrencia, dadosRecorrencia)]);
+        setOpcoesRecorrencia([
+          ...getRecorrenciasHabilitadas(opcoesRecorrencia, dadosRecorrencia),
+        ]);
+        setOpcoesExcluirRecorrencia([
+          ...getRecorrenciasHabilitadas(
+            opcoesExcluirRecorrencia,
+            dadosRecorrencia
+          ),
+        ]);
       }
       const val = {
         tipoAula: aula.data.tipoAula,
@@ -237,14 +261,17 @@ const CadastroAula = ({ match }) => {
 
   const getRecorrenciasHabilitadas = (opcoesRecorrencia, dadosRecorrencia) => {
     opcoesRecorrencia.forEach(item => {
-      if (item.value === dadosRecorrencia.recorrenciaAula || item.value === recorrencia.AULA_UNICA) {
+      if (
+        item.value === dadosRecorrencia.recorrenciaAula ||
+        item.value === recorrencia.AULA_UNICA
+      ) {
         item.disabled = false;
       } else {
         item.disabled = true;
       }
     });
     return opcoesRecorrencia;
-  }
+  };
 
   const onClickCancelar = async form => {
     if (modoEdicao) {
@@ -321,7 +348,10 @@ const CadastroAula = ({ match }) => {
   };
 
   const onClickCadastrar = async valoresForm => {
-    if (quantidadeRecorrencia > 1 && valoresForm.recorrenciaAula !== recorrencia.AULA_UNICA) {
+    if (
+      quantidadeRecorrencia > 1 &&
+      valoresForm.recorrenciaAula !== recorrencia.AULA_UNICA
+    ) {
       const confirmado = await confirmar(
         'Atenção',
         '',
@@ -359,14 +389,14 @@ const CadastroAula = ({ match }) => {
     const cadastrado = idAula
       ? await api.put(`v1/calendarios/professores/aulas/${idAula}`, valoresForm)
       : await api
-        .post('v1/calendarios/professores/aulas', valoresForm)
-        .catch(e => erros(e));
+          .post('v1/calendarios/professores/aulas', valoresForm)
+          .catch(e => erros(e));
 
     if (cadastrado && cadastrado.status === 200) {
       if (cadastrado.data) sucesso(cadastrado.data.mensagens[0]);
       history.push('/calendario-escolar/calendario-professor');
     }
-  }
+  };
 
   const onClickExcluir = async () => {
     if (!novoRegistro) {
@@ -383,7 +413,7 @@ const CadastroAula = ({ match }) => {
           'Cancelar'
         );
         if (confirmado) {
-          excluir(recorrencia.AULA_UNICA)
+          excluir(recorrencia.AULA_UNICA);
         }
       }
     }
@@ -391,7 +421,9 @@ const CadastroAula = ({ match }) => {
 
   const excluir = async tipoRecorrencia => {
     const excluir = await api
-      .delete(`v1/calendarios/professores/aulas/${idAula}/recorrencias/${tipoRecorrencia}`)
+      .delete(
+        `v1/calendarios/professores/aulas/${idAula}/recorrencias/${tipoRecorrencia}`
+      )
       .catch(e => erros(e));
     if (excluir) {
       if (tipoRecorrencia === recorrencia.AULA_UNICA) {
@@ -401,7 +433,7 @@ const CadastroAula = ({ match }) => {
       }
       history.push('/calendario-escolar/calendario-professor');
     }
-  }
+  };
 
   const validaAntesDoSubmit = form => {
     const arrayCampos = Object.keys(inicial);
@@ -416,23 +448,24 @@ const CadastroAula = ({ match }) => {
   };
 
   const getDataFormatada = () => {
-    const titulo = `${dataAula ? dataAula.format('dddd') : ''
-      }, ${dataAula ? dataAula.format('DD/MM/YYYY') : ''} `
+    const titulo = `${dataAula ? dataAula.format('dddd') : ''}, ${
+      dataAula ? dataAula.format('DD/MM/YYYY') : ''
+    } `;
     return titulo;
-  }
+  };
 
   return (
     <>
-      <Cabecalho
-        pagina={`Cadastro de Aula - ${getDataFormatada()}`}
-      />
+      <Cabecalho pagina={`Cadastro de Aula - ${getDataFormatada()}`} />
       <Card>
         <ModalConteudoHtml
           key="reiniciarSenha"
           visivel={visualizarFormExcRecorrencia}
-          onConfirmacaoPrincipal={() => excluir(refFormRecorrencia.state.values.tipoRecorrenciaExclusao)}
+          onConfirmacaoPrincipal={() =>
+            excluir(refFormRecorrencia.state.values.tipoRecorrenciaExclusao)
+          }
           onConfirmacaoSecundaria={() => setVisualizarFormExcRecorrencia(false)}
-          onClose={() => { }}
+          onClose={() => {}}
           labelBotaoPrincipal="Confirmar"
           labelBotaoSecundario="Cancelar"
           titulo={`Excluir aula - ${getDataFormatada()}`}
@@ -443,15 +476,20 @@ const CadastroAula = ({ match }) => {
             initialValues={valoresIniciaisExclusao}
             validationSchema={validacoes}
             ref={refFormik => setRefFormRecorrencia(refFormik)}
-            onSubmit={() => { }}
+            onSubmit={() => {}}
             validateOnChange
             validateOnBlur
           >
             {form => (
               <Form className="col-md-12 mb-4">
                 <div className="row justify-content-start">
-                  <div className="col-sm-12 col-md-12" style={{ paddingTop: '10px' }}>
-                    <p>{`Essa aula se repete por ${quantidadeRecorrencia}${quantidadeRecorrencia > 1 ? ' vezes' : ' vez'} em seu planejamento.`}</p>
+                  <div
+                    className="col-sm-12 col-md-12"
+                    style={{ paddingTop: '10px' }}
+                  >
+                    <p>{`Essa aula se repete por ${quantidadeRecorrencia}${
+                      quantidadeRecorrencia > 1 ? ' vezes' : ' vez'
+                    } em seu planejamento.`}</p>
                     <p>Qual opção de exclusão você deseja realizar?</p>
                   </div>
                   <div className="col-sm-12 col-md-12 d-block">
@@ -461,7 +499,7 @@ const CadastroAula = ({ match }) => {
                       label="Realizar exclusão"
                       opcoes={opcoesExcluirRecorrencia}
                       name="tipoRecorrenciaExclusao"
-                      onChange={() => { }}
+                      onChange={() => {}}
                     />
                   </div>
                 </div>
@@ -548,6 +586,7 @@ const CadastroAula = ({ match }) => {
                       });
                       onChangeCampos();
                       montaValidacoes(0, e.target.value, form);
+                      setControlaQuantidadeAula(ehReposicao);
                     }}
                   />
                 </div>
@@ -624,7 +663,11 @@ const CadastroAula = ({ match }) => {
                     desabilitado={ehReposicao}
                     onChange={e => {
                       onChangeCampos();
-                      montaValidacoes(form.values.quantidadeRadio, form.values.quantidadeTexto, form)
+                      montaValidacoes(
+                        form.values.quantidadeRadio,
+                        form.values.quantidadeTexto,
+                        form
+                      );
                     }}
                   />
                 </div>
@@ -642,8 +685,8 @@ const CadastroAula = ({ match }) => {
             alteradoRf={auditoria.alteradoRf}
           />
         ) : (
-            ''
-          )}
+          ''
+        )}
       </Card>
     </>
   );

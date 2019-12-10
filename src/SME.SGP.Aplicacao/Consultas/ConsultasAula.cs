@@ -34,11 +34,6 @@ namespace SME.SGP.Aplicacao
             return await repositorio.ObterAulaDataTurmaDisciplina(data, turmaId, disciplinaId);
         }
 
-        public async Task<IEnumerable<AulasPrevistasDadasDto>> ObterAulaPrevistaDada(string turmaId, string disciplinaId)
-        {
-            return await repositorio.ObterAulaPrevistaDada(turmaId, disciplinaId);
-        }
-
         public async Task<IEnumerable<DataAulasProfessorDto>> ObterDatasDeAulasPorCalendarioTurmaEDisciplina(int anoLetivo, string turma, string disciplina)
         {
             var usuarioLogado = await servicoUsuario.ObterUsuarioLogado();
