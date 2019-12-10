@@ -1,4 +1,5 @@
 using Moq;
+using SME.SGP.Aplicacao.Integracoes;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using System;
@@ -13,13 +14,15 @@ namespace SME.SGP.Aplicacao.Teste.Consultas
         private readonly Mock<IConsultasAula> consultasAula;
         private readonly ConsultasGrade consultasGrade;
         private readonly Mock<IRepositorioGrade> repositorioGrade;
+        private readonly Mock<IServicoEOL> servicoEOL;
 
         public ConsultasGradeTeste()
         {
             repositorioGrade = new Mock<IRepositorioGrade>();
             consultasAbrangencia = new Mock<IConsultasAbrangencia>();
             consultasAula = new Mock<IConsultasAula>();
-            consultasGrade = new ConsultasGrade(repositorioGrade.Object, consultasAbrangencia.Object, consultasAula.Object);
+            servicoEOL = new Mock<IServicoEOL>();
+            consultasGrade = new ConsultasGrade(repositorioGrade.Object, consultasAbrangencia.Object, consultasAula.Object, servicoEOL.Object);
 
             Setup();
         }
