@@ -19,12 +19,14 @@ namespace SME.SGP.Dados.Repositorios
 
         public async Task<IEnumerable<AulasPrevistasDadasDto>> ObterAulaPrevistaDada(long tipoCalendarioId, string turmaId, string disciplinaId)
         {
-            var query = @"select p.bimestre, p.periodo_inicio as inicio, p.periodo_fim as fim, ap.Id as PD, ap.aulas_previstas as Quantidade,
+            var query = @"select p.bimestre, p.periodo_inicio as inicio, p.periodo_fim as fim, 
+                        ap.criado_em as CriadoEm, ap.criado_por as CriadoPor, ap.alterado_em as AlteradoEm, ap.alterado_por as AlteradoPor,
+                        ap.Id as PD, ap.aulas_previstas as Quantidade,
                          COUNT(a.id) filter (where a.tipo_aula = 1 and a.aula_cj = false) as QuantidadeTitular,
                          COUNT(a.id) filter (where a.tipo_aula = 1 and a.aula_cj = true) as QuantidadeCJ,
                          COUNT(a.id) filter (where a.tipo_aula = 1 and rf.id is not null and a.aula_cj = false) as QuantidadeTitular,
                          COUNT(a.id) filter (where a.tipo_aula = 1 and rf.id is not null and a.aula_cj = true) as QuantidadeCJ, 
-                         COUNT(a.id) filter (where a.tipo_aula = 2 and rf.id is not null) as Reposicoes 
+                         COUNT(a.id) filter (where a.tipo_aula = 2 and rf.id is not null) as Reposicoes                         
                          from aula_prevista ap
                          right join periodo_escolar p on ap.tipo_calendario_id = p.tipo_calendario_id and ap.bimestre = p.bimestre
                          left join aula a on p.tipo_calendario_id = a.tipo_calendario_id and 
@@ -36,6 +38,7 @@ namespace SME.SGP.Dados.Repositorios
                          order by p.periodo_inicio;";
 
             var aulasDadasPrevistas = new List<AulasPrevistasDadasDto>();
+            List<string> mensagens = null;
 
             return await database.Conexao.QueryAsync<AulasPrevistasDadasDto, AulasPrevistasDto, AulasQuantidadePorProfessorDto, AulasQuantidadePorProfessorDto, AulasPrevistasDadasDto>(query,
             (pd, previstas, criadas, cumpridas) =>
@@ -46,8 +49,16 @@ namespace SME.SGP.Dados.Repositorios
                     pd.Cumpridas = cumpridas;
                     pd.Previstas = previstas;
 
-                    pd.Previstas.TemDivergencia = previstas.Quantidade != (criadas.QuantidadeCJ + criadas.QuantidadeTitular) ||
-                                                  previstas.Quantidade != (cumpridas.QuantidadeCJ + cumpridas.QuantidadeTitular + pd.Reposicoes);
+                    mensagens = new List<string>();
+
+                    if (previstas.Quantidade != (criadas.QuantidadeCJ + criadas.QuantidadeTitular))
+                        mensagens.Add("Quantidade de aulas previstas diferente da quantidade de aulas criadas.");
+
+                    if (previstas.Quantidade != (cumpridas.QuantidadeCJ + cumpridas.QuantidadeTitular + pd.Reposicoes))
+                        mensagens.Add("Quantidade de aulas previstas diferente do somatório de aulas dadas + aulas repostas, após o final do bimestre.");
+
+                    pd.Previstas.Mensagens = mensagens.ToArray();
+                    
                 }
 
                 aulasDadasPrevistas.Add(pd);

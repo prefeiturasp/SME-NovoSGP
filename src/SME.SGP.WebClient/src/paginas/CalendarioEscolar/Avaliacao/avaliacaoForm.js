@@ -30,7 +30,7 @@ const AvaliacaoForm = ({ match }) => {
       'Suas alterações não foram salvas, deseja salvar agora?'
     );
     if (confirmado) {
-      botaoCadastrarRef.current.click();
+      if (botaoCadastrarRef.current) botaoCadastrarRef.current.click();
     } else {
       history.push(RotasDTO.CALENDARIO_PROFESSOR);
     }
@@ -455,7 +455,7 @@ const AvaliacaoForm = ({ match }) => {
                   {inseridoAlterado.criadoPor && inseridoAlterado.criadoEm ? (
                     <p className="pt-2">
                       INSERIDO por {inseridoAlterado.criadoPor} em{' '}
-                      {inseridoAlterado.criadoEm}
+                      {window.moment(inseridoAlterado.criadoEm).format()}
                     </p>
                   ) : (
                     ''
@@ -465,7 +465,7 @@ const AvaliacaoForm = ({ match }) => {
                   inseridoAlterado.alteradoEm ? (
                     <p>
                       ALTERADO por {inseridoAlterado.alteradoPor} em{' '}
-                      {inseridoAlterado.alteradoEm}
+                      {window.moment(inseridoAlterado.alteradoEm).format()}
                     </p>
                   ) : (
                     ''
