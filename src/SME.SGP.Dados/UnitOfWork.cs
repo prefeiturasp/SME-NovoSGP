@@ -1,6 +1,7 @@
 ﻿using SME.SGP.Dados.Contexto;
 using SME.SGP.Dominio;
 using System.Data;
+using SME.SGP.Infra;
 
 namespace SME.SGP.Dados
 {
@@ -16,7 +17,7 @@ namespace SME.SGP.Dados
 
         public IDbTransaction IniciarTransacao()
         {
-            if (transacao == null)
+            if (transacao == null || transacao?.Connection?.State == null)
                 transacao = sgpContext.BeginTransaction();
 
             return transacao;

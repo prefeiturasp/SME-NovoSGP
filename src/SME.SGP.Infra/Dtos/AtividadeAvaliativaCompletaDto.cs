@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace SME.SGP.Infra
 {
@@ -7,9 +8,11 @@ namespace SME.SGP.Infra
         public DateTime? AlteradoEm { get; set; }
         public string AlteradoPor { get; set; }
         public string AlteradoRF { get; set; }
+        public List<AtividadeAvaliativaRegenciaDto> AtividadesRegencia { get; set; }
+        public string Categoria { get; set; }
         public DateTime CriadoEm { get; set; }
         public string CriadoPor { get; set; }
         public string CriadoRF { get; set; }
-        public string Categoria { get; set; }
+        public long Id { get; set; }
     }
 }

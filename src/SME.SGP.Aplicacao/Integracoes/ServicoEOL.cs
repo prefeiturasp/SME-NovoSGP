@@ -40,6 +40,13 @@ namespace SME.SGP.Aplicacao.Integracoes
             };
         }
 
+        public async Task AtribuirCJSeNecessario(string codigoRf)
+        {
+            var resumo = await ObterResumoCore(codigoRf);
+
+            await AtribuirCJSeNecessario(resumo.Id);
+        }
+
         public async Task AtribuirCJSeNecessario(Guid usuarioId)
         {
             var parametros = JsonConvert.SerializeObject(usuarioId.ToString());
@@ -114,6 +121,7 @@ namespace SME.SGP.Aplicacao.Integracoes
                 var json = await resposta.Content.ReadAsStringAsync();
                 alunos = JsonConvert.DeserializeObject<List<AlunoPorTurmaResposta>>(json);
             }
+
             return alunos;
         }
 
@@ -130,7 +138,7 @@ namespace SME.SGP.Aplicacao.Integracoes
             return await ObterDisciplinas(url);
         }
 
-        public IEnumerable<DisciplinaDto> ObterDisciplinasPorIds(int[] ids)
+        public IEnumerable<DisciplinaDto> ObterDisciplinasPorIds(long[] ids)
         {
             httpClient.DefaultRequestHeaders.Clear();
 
@@ -303,6 +311,30 @@ namespace SME.SGP.Aplicacao.Integracoes
             return JsonConvert.DeserializeObject<IEnumerable<ProfessorResumoDto>>(json);
         }
 
+       
+        public async Task<IEnumerable<ProfessorTitularDisciplinaEol>> ObterProfessoresTitularesDisciplinas(string turmaCodigo, string professorRf = null)
+        {
+            StringBuilder url = new StringBuilder();
+
+            url.Append($"professores/{turmaCodigo}/titulares");
+
+            //Ao passar o RF do professor, o endpoint retorna todas as disciplinas que o professor não é titular para evitar
+            //que o professor se atribua como CJ da própria da turma que ele é titular da disciplina
+            if (!string.IsNullOrEmpty(professorRf))
+                url.Append($"?codigoRf={professorRf}");
+
+            var resposta = await httpClient.GetAsync(url.ToString());
+
+            if (!resposta.IsSuccessStatusCode)
+                return null;
+
+            if (resposta.StatusCode == HttpStatusCode.NoContent)
+                return null;
+
+            var json = await resposta.Content.ReadAsStringAsync();
+            return JsonConvert.DeserializeObject<IEnumerable<ProfessorTitularDisciplinaEol>>(json);
+        }
+
         public async Task<UsuarioResumoCoreDto> ObterResumoCore(string login)
         {
             var resposta = await httpClient.GetAsync($"AutenticacaoSgp/{login}/obter/resumo");
@@ -406,6 +438,18 @@ namespace SME.SGP.Aplicacao.Integracoes
             var mensagem = await resposta.Content.ReadAsStringAsync();
 
             throw new NegocioException(mensagem);
+        }
+
+        public async Task<bool> ValidarProfessor(string professorRf)
+        {
+            var resposta = await httpClient.GetAsync($"professores/{professorRf}/validade");
+
+            if (resposta.IsSuccessStatusCode)
+            {
+                var json = await resposta.Content.ReadAsStringAsync();
+                return JsonConvert.DeserializeObject<bool>(json);
+            }
+            return false;
         }
 
         private IEnumerable<DisciplinaDto> MapearParaDtoDisciplinas(IEnumerable<RetornoDisciplinaDto> disciplinas)

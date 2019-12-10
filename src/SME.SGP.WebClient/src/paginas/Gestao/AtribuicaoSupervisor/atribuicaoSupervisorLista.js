@@ -44,10 +44,6 @@ export default function AtribuicaoSupervisorLista() {
   }, [usuario.turmaSelecionada]);
 
   useEffect(() => {
-    console.log(permissoesTela);
-  }, [permissoesTela]);
-
-  useEffect(() => {
     async function carregarDres() {
       const dres = await api.get('v1/abrangencias/dres');
       setListaDres(dres.data);

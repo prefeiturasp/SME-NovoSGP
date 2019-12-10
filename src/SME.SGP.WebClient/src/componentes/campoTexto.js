@@ -72,6 +72,7 @@ const CampoTexto = React.forwardRef((props, ref) => {
               maxLength={maxlength || ''}
               innerRef={ref}
               onKeyDown={onKeyDown}
+              placeholder={placeholder}
               onChange={e => {
                 form.setFieldValue(name, e.target.value);
                 form.setFieldTouched(name, true, true);

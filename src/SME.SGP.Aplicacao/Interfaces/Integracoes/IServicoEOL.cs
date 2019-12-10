@@ -13,6 +13,8 @@ namespace SME.SGP.Aplicacao.Integracoes
 
         Task AtribuirCJSeNecessario(Guid usuarioId);
 
+        Task AtribuirCJSeNecessario(string codigoRf);
+
         Task<UsuarioEolAutenticacaoRetornoDto> Autenticar(string login, string senha);
 
         Task<AbrangenciaRetornoEolDto> ObterAbrangencia(string login, Guid perfil);
@@ -25,7 +27,7 @@ namespace SME.SGP.Aplicacao.Integracoes
 
         Task<IEnumerable<DisciplinaResposta>> ObterDisciplinasPorCodigoTurmaLoginEPerfil(string codigoTurma, string login, Guid perfil);
 
-        IEnumerable<DisciplinaDto> ObterDisciplinasPorIds(int[] ids);
+        IEnumerable<DisciplinaDto> ObterDisciplinasPorIds(long[] ids);
 
         IEnumerable<DreRespostaEolDto> ObterDres();
 
@@ -51,6 +53,8 @@ namespace SME.SGP.Aplicacao.Integracoes
 
         Task<IEnumerable<ProfessorResumoDto>> ObterProfessoresAutoComplete(int anoLetivo, string dreId, string nomeProfessor);
 
+        Task<IEnumerable<ProfessorTitularDisciplinaEol>> ObterProfessoresTitularesDisciplinas(string turmaCodigo, string professorRf = null);
+
         Task<UsuarioResumoCoreDto> ObterResumoCore(string login);
 
         Task<ProfessorResumoDto> ObterResumoProfessorPorRFAnoLetivo(string codigoRF, int anoLetivo);
@@ -66,5 +70,7 @@ namespace SME.SGP.Aplicacao.Integracoes
         Task ReiniciarSenha(string login);
 
         Task RemoverCJSeNecessario(Guid usuarioId);
+
+        Task<bool> ValidarProfessor(string professorRf);
     }
 }

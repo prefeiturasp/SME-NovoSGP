@@ -7,7 +7,7 @@ import { SelectComponent } from '~/componentes';
 // Servicos
 import AtribuicaoEsporadicaServico from '~/servicos/Paginas/AtribuicaoEsporadica';
 
-function UeDropDown({ form, onChange, dreId, label }) {
+function UeDropDown({ form, onChange, dreId, label, desabilitado }) {
   const [listaUes, setListaUes] = useState([]);
 
   async function buscarUes() {
@@ -48,7 +48,7 @@ function UeDropDown({ form, onChange, dreId, label }) {
       valueOption="valor"
       valueText="desc"
       placeholder="Unidade Escolar (UE)"
-      disabled={listaUes.length === 0 || listaUes.length === 1}
+      disabled={listaUes.length === 1 || desabilitado}
     />
   );
 }
@@ -61,6 +61,7 @@ UeDropDown.propTypes = {
   onChange: PropTypes.func,
   dreId: PropTypes.string,
   label: PropTypes.string,
+  desabilitado: PropTypes.bool,
 };
 
 UeDropDown.defaultProps = {
@@ -68,6 +69,7 @@ UeDropDown.defaultProps = {
   onChange: () => {},
   dreId: '',
   label: null,
+  desabilitado: null,
 };
 
 export default UeDropDown;

@@ -3,8 +3,11 @@ using Microsoft.AspNetCore.Mvc;
 using SME.SGP.Api.Filtros;
 using SME.SGP.Aplicacao;
 using SME.SGP.Dominio;
+using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Api.Controllers
@@ -61,6 +64,19 @@ namespace SME.SGP.Api.Controllers
                 return StatusCode(401);
 
             return Ok(retornoAutenticacao);
+        }
+
+        [HttpGet("{login}/perfis/listar")]
+        [ProducesResponseType(200)]
+        [ProducesResponseType(typeof(IEnumerable<PrioridadePerfil>), 500)]
+        public async Task<IActionResult> ListarPerfisUsuario(string login, [FromServices]IServicoUsuario servicoUsuario)
+        {
+            var retorno = await servicoUsuario.ObterPerfisUsuario(login);
+
+            if (retorno == null || !retorno.Any())
+                return NoContent();
+
+            return Ok(retorno);
         }
 
         [HttpPost("primeiro-acesso")]
