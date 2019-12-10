@@ -1,18 +1,17 @@
+import { Modal } from 'antd';
 import React, { useEffect, useState } from 'react';
-import { Switch, Route } from 'react-router-dom';
-
-import { useSelector, useDispatch } from 'react-redux';
-import { Modal, Row } from 'antd';
-import styled from 'styled-components';
+import { useDispatch, useSelector } from 'react-redux';
+import { Switch } from 'react-router-dom';
 import shortid from 'shortid';
-import { alertaFechar } from '../redux/modulos/alertas/actions';
+import styled from 'styled-components';
+import rotasArray from '~/rotas/rotas';
+
 import Button from '../componentes/button';
 import { Colors } from '../componentes/colors';
-import BreadcrumbSgp from './breadcrumb-sgp';
-import Alert from '~/componentes/alert';
-import Grid from '~/componentes/grid';
-import rotasArray from '~/rotas/rotas';
+import { alertaFechar } from '../redux/modulos/alertas/actions';
 import RotaAutenticadaEstruturada from '../rotas/rotaAutenticadaEstruturada';
+import BreadcrumbSgp from './breadcrumb-sgp';
+import Mensagens from './mensagens/mensagens';
 
 const ContainerModal = styled.div`
   .ant-modal-footer {
@@ -24,7 +23,8 @@ const ContainerBotoes = styled.div`
   display: flex;
   justify-content: flex-end;
 `;
-const Conteudo = props => {
+
+const Conteudo = () => {
   const menuRetraido = useSelector(store => store.navegacao.retraido);
   const [retraido, setRetraido] = useState(menuRetraido.retraido);
   const dispatch = useDispatch();
@@ -36,10 +36,9 @@ const Conteudo = props => {
   const confirmacao = useSelector(state => state.alertas.confirmacao);
 
   const fecharConfirmacao = resultado => {
-    confirmacao.resolve(resultado);
+    if (confirmacao) confirmacao.resolve(resultado);
     dispatch(alertaFechar());
   };
-  const alertas = useSelector(state => state.alertas);
 
   return (
     <div style={{ marginLeft: retraido ? '115px' : '250px' }}>
@@ -73,44 +72,21 @@ const Conteudo = props => {
               ]}
             >
               {confirmacao.texto && Array.isArray(confirmacao.texto)
-                ? confirmacao.texto.map((item, i) => (
-                    <div key={item + '-' + i}>{item}</div>
+                ? confirmacao.texto.map(item => (
+                    <div key={shortid.generate()}>{item}</div>
                   ))
                 : confirmacao.texto}
               {confirmacao.texto ? <br /> : ''}
               <b>{confirmacao.textoNegrito}</b>
             </Modal>
           </ContainerModal>
-          <div className="card-body m-r-0 m-l-0 p-l-0 p-r-0 m-t-0">
-            {alertas.alertas.map(alerta => (
-              <Row key={shortid.generate()}>
-                <Grid cols={12}>
-                  <Alert alerta={alerta} key={alerta.id} closable />
-                </Grid>
-              </Row>
-            ))}
-            <Row
-              key={shortid.generate()}
-              hidden={!menuRetraido.somenteConsulta}
-            >
-              <Grid cols={12}>
-                <Alert
-                  alerta={{
-                    tipo: 'warning',
-                    id: 'AlertaPrincipal',
-                    mensagem:
-                      'Você tem apenas permissão de consulta nesta tela.',
-                    estiloTitulo: { fontSize: '18px' },
-                  }}
-                />
-              </Grid>
-            </Row>
-          </div>
+          <Mensagens somenteConsulta={menuRetraido.somenteConsulta} />
         </main>
       </div>
       <Switch>
         {rotasArray.map(rota => (
           <RotaAutenticadaEstruturada
+            key={shortid.generate()}
             path={rota.path}
             component={rota.component}
             exact={rota.exact}
@@ -120,4 +96,5 @@ const Conteudo = props => {
     </div>
   );
 };
+
 export default Conteudo;

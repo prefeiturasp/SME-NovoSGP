@@ -3,7 +3,8 @@ import { Tabs } from 'antd';
 
 import { Base } from '../colors';
 
-export const Container = styled(Tabs)`
+export const ContainerTabsCard = styled(Tabs)`
+
   width: 100% !important;
 
   .ant-tabs-tab-next {

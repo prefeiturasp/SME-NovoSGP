@@ -8,6 +8,6 @@ namespace SME.SGP.Infra
     {
         public int Quantidade { get; set; }
 
-        public bool TemDivergencia { get; set; }
+        public string[] Mensagens { get; set; }
     }
 }

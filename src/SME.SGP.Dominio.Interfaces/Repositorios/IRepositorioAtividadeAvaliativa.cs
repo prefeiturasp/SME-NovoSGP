@@ -11,7 +11,7 @@ namespace SME.SGP.Dominio.Interfaces
 
         IEnumerable<AtividadeAvaliativa> ListarPorIds(IEnumerable<long> ids);
 
-        IEnumerable<AtividadeAvaliativa> ListarPorTurmaDisciplinaPeriodo(string turmaId, string disciplinaId, DateTime inicioPeriodo, DateTime fimPeriodo);
+        Task<IEnumerable<AtividadeAvaliativa>> ListarPorTurmaDisciplinaPeriodo(string turmaId, string disciplinaId, DateTime inicioPeriodo, DateTime fimPeriodo);
 
         Task<AtividadeAvaliativa> ObterAtividadeAvaliativa(DateTime date, string disciplinaId, string turmaId, string ueId);
 

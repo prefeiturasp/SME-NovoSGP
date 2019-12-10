@@ -222,19 +222,21 @@ const Filtro = () => {
   useEffect(() => {
     let estado = true;
 
-    setAnoLetivoSelecionado(turmaUsuarioSelecionada.anoLetivo);
-    setModalidadeSelecionada(turmaUsuarioSelecionada.modalidade);
-    setPeriodoSelecionado(turmaUsuarioSelecionada.periodo);
-    setDreSelecionada(turmaUsuarioSelecionada.dre);
-    setUnidadeEscolarSelecionada(turmaUsuarioSelecionada.unidadeEscolar);
-    setTurmaSelecionada(turmaUsuarioSelecionada.turma);
-    setTextoAutocomplete(turmaUsuarioSelecionada.desc);
+    setAnoLetivoSelecionado(turmaUsuarioSelecionada.anoLetivo || '');
+    setModalidadeSelecionada(turmaUsuarioSelecionada.modalidade || '');
+    setPeriodoSelecionado(turmaUsuarioSelecionada.periodo || '');
+    setDreSelecionada(turmaUsuarioSelecionada.dre || '');
+    setUnidadeEscolarSelecionada(turmaUsuarioSelecionada.unidadeEscolar || '');
+    setTurmaSelecionada(turmaUsuarioSelecionada.turma || '');
+    setTextoAutocomplete(turmaUsuarioSelecionada.desc || '');
+
+    if (!turmaUsuarioSelecionada.length) setCampoAnoLetivoDesabilitado(false);
 
     return () => {
       estado = false;
       return estado;
     };
-  }, [turmaUsuarioSelecionada]);
+  }, [anosLetivos, turmaUsuarioSelecionada]);
 
   useEffect(() => {
     if (anosLetivos && anosLetivos.length === 1) {
@@ -421,11 +423,8 @@ const Filtro = () => {
   ]);
 
   useEffect(() => {
-    if (turmas && turmas.length === 1) {
-      setTurmaSelecionada(turmas[0].valor);
-      // aplicarFiltro();
-    }
-  }, [aplicarFiltro, turmas]);
+    if (turmas && turmas.length === 1) setTurmaSelecionada(turmas[0].valor);
+  }, [turmas]);
 
   const mostrarEsconderBusca = () => {
     setAlternarFocoBusca(!alternarFocoBusca);

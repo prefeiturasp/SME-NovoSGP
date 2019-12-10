@@ -58,9 +58,9 @@ namespace SME.SGP.Aplicacao
 
             var perfil = servicoUsuario.ObterPerfilAtual();
             var rf = servicoUsuario.ObterRf();
-            var eventos = await repositorioEvento.ObterEventosPorTipoDeCalendarioDreUeDia(filtro.TipoCalendarioId, filtro.DreId, filtro.UeId, data, filtro.EhEventoSme);
-            var aulas = await repositorioAula.ObterAulasCompleto(filtro.TipoCalendarioId, filtro.TurmaId, filtro.UeId, data, perfil, rf);
-            var atividades = await repositorioAtividadeAvaliativa.ObterAtividadesPorDia(filtro.DreId, filtro.UeId, data, rf, filtro.TurmaId);
+            var eventos =  repositorioEvento.ObterEventosPorTipoDeCalendarioDreUeDia(filtro.TipoCalendarioId, filtro.DreId, filtro.UeId, data, filtro.EhEventoSme).Result;
+            var aulas =  repositorioAula.ObterAulasCompleto(filtro.TipoCalendarioId, filtro.TurmaId, filtro.UeId, data, perfil, rf).Result;
+            var atividades =  repositorioAtividadeAvaliativa.ObterAtividadesPorDia(filtro.DreId, filtro.UeId, data, rf, filtro.TurmaId).Result;
             eventos
             .ToList()
             .ForEach(x => eventosAulas
@@ -73,12 +73,12 @@ namespace SME.SGP.Aplicacao
 
             var turmasAulas = aulas.GroupBy(x => x.TurmaId).Select(x => x.Key);
 
-            var turmasAbrangencia = await ObterTurmasAbrangencia(turmasAulas);
-            var disciplinasProfessor = await ObterDisciplinasAulas(turmasAulas);
-            var disciplinasRegencia = await servicoEOL.ObterDisciplinasParaPlanejamento(Convert.ToInt64(filtro.TurmaId), rf, perfil);
+            var turmasAbrangencia =  ObterTurmasAbrangencia(turmasAulas).Result;
+            var disciplinasProfessor =  ObterDisciplinasAulas(turmasAulas).Result;
+            var disciplinasRegencia =  servicoEOL.ObterDisciplinasParaPlanejamento(Convert.ToInt64(filtro.TurmaId), rf, perfil).Result;
             aulas
             .ToList()
-            .ForEach(async x =>
+            .ForEach( x =>
             {
                 bool podeCriarAtividade = true;
                 var listaAtividades = atividades.Where(w => w.DataAvaliacao.Date == x.DataAula.Date && w.TurmaId == x.TurmaId && w.DisciplinaId.ToString() == x.DisciplinaId).ToList();
@@ -91,7 +91,7 @@ namespace SME.SGP.Aplicacao
 
                         if (disciplina.Regencia)
                         {
-                            var disciplinasRegenciasComAtividades = await repositorioAtividadeAvaliativaRegencia.Listar(item.Id);
+                            var disciplinasRegenciasComAtividades =  repositorioAtividadeAvaliativaRegencia.Listar(item.Id).Result;
                             podeCriarAtividade = disciplinasRegencia.Count() > disciplinasRegenciasComAtividades.Count();
                             item.AtividadeAvaliativaRegencia = new List<AtividadeAvaliativaRegencia>();
                             item.AtividadeAvaliativaRegencia.AddRange(disciplinasRegenciasComAtividades);
