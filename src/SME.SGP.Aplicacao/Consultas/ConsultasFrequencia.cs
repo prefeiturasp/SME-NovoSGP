@@ -1,4 +1,5 @@
 ﻿using SME.SGP.Aplicacao.Integracoes;
+using SME.SGP.Aplicacao.Integracoes.Respostas;
 using SME.SGP.Aplicacao.Interfaces;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
@@ -16,22 +17,26 @@ namespace SME.SGP.Aplicacao
         private readonly IRepositorioTurma repositorioTurma;
         private readonly IServicoEOL servicoEOL;
         private readonly IServicoFrequencia servicoFrequencia;
-        private readonly IConsultasEventoMatricula consultasEventoMatricula;
         private readonly IConsultasPeriodoEscolar consultasPeriodoEscolar;
+        private readonly IRepositorioFrequenciaAlunoDisciplinaPeriodo repositorioFrequenciaAlunoDisciplinaPeriodo;
+        private readonly IRepositorioParametrosSistema repositorioParametrosSistema;
+
 
         public ConsultasFrequencia(IServicoFrequencia servicoFrequencia,
                                    IServicoEOL servicoEOL,
-                                   IConsultasEventoMatricula consultasEventoMatricula,
                                    IConsultasPeriodoEscolar consultasPeriodoEscolar,
                                    IRepositorioAula repositorioAula,
-                                   IRepositorioTurma repositorioTurma)
+                                   IRepositorioTurma repositorioTurma,
+                                   IRepositorioFrequenciaAlunoDisciplinaPeriodo repositorioFrequenciaAlunoDisciplinaPeriodo,
+                                   IRepositorioParametrosSistema repositorioParametrosSistema)
         {
             this.servicoFrequencia = servicoFrequencia ?? throw new ArgumentNullException(nameof(servicoFrequencia));
             this.servicoEOL = servicoEOL ?? throw new ArgumentNullException(nameof(servicoEOL));
-            this.consultasEventoMatricula = consultasEventoMatricula ?? throw new ArgumentNullException(nameof(consultasEventoMatricula));
             this.consultasPeriodoEscolar = consultasPeriodoEscolar ?? throw new ArgumentNullException(nameof(consultasPeriodoEscolar));
             this.repositorioAula = repositorioAula ?? throw new ArgumentNullException(nameof(repositorioAula));
             this.repositorioTurma = repositorioTurma ?? throw new ArgumentNullException(nameof(repositorioTurma));
+            this.repositorioFrequenciaAlunoDisciplinaPeriodo = repositorioFrequenciaAlunoDisciplinaPeriodo ?? throw new ArgumentNullException(nameof(repositorioFrequenciaAlunoDisciplinaPeriodo));
+            this.repositorioParametrosSistema = repositorioParametrosSistema ?? throw new ArgumentNullException(nameof(repositorioParametrosSistema));
         }
 
         public async Task<FrequenciaDto> ObterListaFrequenciaPorAula(long aulaId)
@@ -56,8 +61,20 @@ namespace SME.SGP.Aplicacao
                 ausencias = new List<RegistroAusenciaAluno>();
             }
 
+            var bimestre = consultasPeriodoEscolar.ObterPeriodoEscolarPorData(aula.TipoCalendarioId, aula.DataAula);
+            var percentualCritico = int.Parse(repositorioParametrosSistema.ObterValorPorTipoEAno(
+                                                    TipoParametroSistema.PercentualFrequenciaCritico,
+                                                    bimestre.PeriodoInicio.Year));
+            var percentualAlerta = int.Parse(repositorioParametrosSistema.ObterValorPorTipoEAno(
+                                                    TipoParametroSistema.PercentualFrequenciaAlerta,
+                                                    bimestre.PeriodoInicio.Year));
+
             foreach (var aluno in alunosDaTurma)
             {
+                // Apos o bimestre da inatividade o aluno não aparece mais na lista de frequencia
+                if (aluno.EstaInativo() && (aluno.DataSituacao < bimestre.PeriodoInicio))
+                    continue;
+
                 var registroFrequenciaAluno = new RegistroFrequenciaAlunoDto
                 {
                     CodigoAluno = aluno.CodigoAluno,
@@ -65,11 +82,14 @@ namespace SME.SGP.Aplicacao
                     NumeroAlunoChamada = aluno.NumeroAlunoChamada,
                     CodigoSituacaoMatricula = aluno.CodigoSituacaoMatricula,
                     SituacaoMatricula = aluno.SituacaoMatricula,
-                    Desabilitado = aluno.EstaInativo()
+                    Desabilitado = aluno.EstaInativo() && (aula.DataAula.Date >= aluno.DataSituacao.Date)
                 };
 
-                var eventoMatricula = await consultasEventoMatricula.ObterUltimoEventoAluno(aluno.CodigoAluno, aula.DataAula);
-                //registroFrequenciaAluno.Marcador = CarregarMarcadorFrequenciaAluno(aula, eventoMatricula);
+                // Marcador visual da situação
+                registroFrequenciaAluno.Marcador = await ObterMarcadorAluno(aluno, bimestre);
+
+                // Indicativo de frequencia do aluno
+                registroFrequenciaAluno.IndicativoFrequencia = ObterIndicativoFrequencia(aluno, aula.DisciplinaId, bimestre, percentualAlerta, percentualCritico);
 
                 if (aula.PermiteRegistroFrequencia(turma))
                 {
@@ -91,6 +111,83 @@ namespace SME.SGP.Aplicacao
                 registroFrequenciaDto.Desabilitado = true;
             }
             return registroFrequenciaDto;
+        }
+
+        private IndicativoFrequenciaDto ObterIndicativoFrequencia(AlunoPorTurmaResposta aluno, string disciplinaId, PeriodoEscolarDto bimestre, int percentualAlerta, int percentualCritico)
+        {
+            var frequenciaAluno = repositorioFrequenciaAlunoDisciplinaPeriodo.Obter(aluno.CodigoAluno, disciplinaId, bimestre.PeriodoInicio, bimestre.PeriodoFim, TipoFrequenciaAluno.PorDisciplina);
+            // Frequencia não calculada
+            if (frequenciaAluno == null)
+                return null;
+
+            var percentualFrequencia = (int)(frequenciaAluno.TotalAusencias / frequenciaAluno.TotalAulas * 100);
+
+            // Critico
+            if (percentualFrequencia <= percentualCritico)
+                return new IndicativoFrequenciaDto() { Tipo = TipoIndicativoFrequencia.Critico, Percentual = percentualFrequencia };
+
+            // Alerta
+            if (percentualFrequencia <= percentualAlerta)
+                return new IndicativoFrequenciaDto() { Tipo = TipoIndicativoFrequencia.Alerta, Percentual = percentualFrequencia };
+
+            return null;
+        }
+
+        public async Task<MarcadorFrequenciaDto> ObterMarcadorAluno(AlunoPorTurmaResposta aluno, PeriodoEscolarDto bimestre)
+        {
+            MarcadorFrequenciaDto marcador = null;
+
+            string dataSituacao = aluno.DataSituacao.ToShortDateString();
+            switch (aluno.CodigoSituacaoMatricula)
+            {
+                case SituacaoMatriculaAluno.Ativo:
+                    // Macador "Novo" durante 15 dias se iniciou depois do inicio do bimestre
+                    if ((aluno.DataSituacao > bimestre.PeriodoInicio) && (aluno.DataSituacao.AddDays(15) <= DateTime.Now.Date))
+                        marcador = new MarcadorFrequenciaDto()
+                        {
+                            Tipo = TipoMarcadorFrequencia.Novo,
+                            Descricao = $"Estudante Novo: Data da Matricula {dataSituacao}"
+                        };
+                    break;
+                case SituacaoMatriculaAluno.Transferido:
+                    var detalheEscola = aluno.Transferencia_Interna ? 
+                                        $"para escola {aluno.EscolaTransferencia} e turma {aluno.TurmaTransferencia}" :
+                                        "para outras redes";
+
+                    marcador = new MarcadorFrequenciaDto()
+                    {
+                        Tipo = TipoMarcadorFrequencia.Transferido,
+                        Descricao = $"Estudante transferido: {detalheEscola} em {dataSituacao}"
+                    };
+
+                    break;
+                case SituacaoMatriculaAluno.RemanejadoSaida:
+                    marcador = new MarcadorFrequenciaDto()
+                    {
+                        Tipo = TipoMarcadorFrequencia.Remanejado,
+                        Descricao = $"Estudante remanejado: turma {aluno.TurmaRemanejamento} em {dataSituacao}"
+                    };
+
+                    break;
+                case SituacaoMatriculaAluno.Desistente:
+                case SituacaoMatriculaAluno.VinculoIndevido:
+                case SituacaoMatriculaAluno.Falecido:
+                case SituacaoMatriculaAluno.NaoCompareceu:
+                case SituacaoMatriculaAluno.Deslocamento:
+                case SituacaoMatriculaAluno.Cessado:
+                case SituacaoMatriculaAluno.ReclassificadoSaida:
+                    marcador = new MarcadorFrequenciaDto()
+                    {
+                        Tipo = TipoMarcadorFrequencia.Inativo,
+                        Descricao = $"Aluno inativo em {dataSituacao}"
+                    };
+
+                    break;
+                default:
+                    break;
+            }
+
+            return marcador;
         }
 
         private FrequenciaDto ObterRegistroFrequencia(long aulaId, Aula aula, Turma turma)

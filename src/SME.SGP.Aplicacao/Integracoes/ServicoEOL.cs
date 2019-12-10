@@ -121,6 +121,7 @@ namespace SME.SGP.Aplicacao.Integracoes
                 var json = await resposta.Content.ReadAsStringAsync();
                 alunos = JsonConvert.DeserializeObject<List<AlunoPorTurmaResposta>>(json);
             }
+
             return alunos;
         }
 
