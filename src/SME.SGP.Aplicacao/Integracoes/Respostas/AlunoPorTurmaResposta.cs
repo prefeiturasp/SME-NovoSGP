@@ -1,5 +1,6 @@
 ﻿using SME.SGP.Dominio;
 using System;
+using System.Linq;
 
 namespace SME.SGP.Aplicacao.Integracoes.Respostas
 {
@@ -14,11 +15,17 @@ namespace SME.SGP.Aplicacao.Integracoes.Respostas
         public int NumeroAlunoChamada { get; set; }
         public bool PossuiDeficiencia { get; set; }
         public string SituacaoMatricula { get; set; }
+        public string EscolaTransferencia { get; set; }
+        public string TurmaTransferencia { get; set; }
+        public string TurmaRemanejamento { get; set; }
+        public bool Transferencia_Interna { get; set; }
 
         public bool EstaInativo()
-        {
-            return CodigoSituacaoMatricula != SituacaoMatriculaAluno.Ativo && CodigoSituacaoMatricula != SituacaoMatriculaAluno.Rematriculado;
-        }
+            => !(new[] { SituacaoMatriculaAluno.Ativo,  
+                        SituacaoMatriculaAluno.Rematriculado,
+                        SituacaoMatriculaAluno.PendenteRematricula,
+                        SituacaoMatriculaAluno.SemContinuidade
+            }).Contains(CodigoSituacaoMatricula);
 
         public string NomeValido()
         {

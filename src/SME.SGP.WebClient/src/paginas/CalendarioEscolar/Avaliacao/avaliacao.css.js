@@ -18,3 +18,12 @@ export const Badge = styled.button`
     border-color: ${Base.CinzaBadge} !important;
   }
 `;
+
+export const InseridoAlterado = styled(Div)`
+  color: ${Base.CinzaMako};
+  font-size: 10px;
+  font-weight: bold;
+  p {
+    margin: 0;
+  }
+`;
