@@ -5,8 +5,6 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Prometheus;
 using SME.Background.Core;
-using SME.Background.Hangfire;
-using SME.SGP.Background;
 using SME.SGP.Dados.Mapeamentos;
 using SME.SGP.IoC;
 using Swashbuckle.AspNetCore.Swagger;
@@ -94,13 +92,13 @@ namespace SME.SGP.Api
 
             Orquestrador.Inicializar(services.BuildServiceProvider());
 
-            if (Configuration.GetValue<bool>("FF_BackgroundEnabled", false))
-            {
-                Orquestrador.Registrar(new Processor(Configuration, "SGP-Postgres"));
-                RegistraServicosRecorrentes.Registrar();
-            }
-            else
-                Orquestrador.Desativar();
+            //if (Configuration.GetValue<bool>("FF_BackgroundEnabled", false))
+            //{
+            //    Orquestrador.Registrar(new Processor(Configuration, "SGP-Postgres"));
+            //    RegistraServicosRecorrentes.Registrar();
+            //}
+            //else
+            Orquestrador.Desativar();
         }
     }
 }
