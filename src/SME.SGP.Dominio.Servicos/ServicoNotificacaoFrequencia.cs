@@ -155,7 +155,8 @@ namespace SME.SGP.Dominio.Servicos
             mensagemUsuario.Append("</ul>");
 
             var hostAplicacao = configuration["UrlFrontEnd"];
-            mensagemUsuario.Append($"<a href='{hostAplicacao}/diario-classe/frequencia-plano-aula'>Clique aqui para regularizar.</a>");
+            var parametros = $"turma={turmaSemRegistro.CodigoTurma}&DataAula={turmaSemRegistro.Aulas.FirstOrDefault().DataAula.ToShortDateString()}&disciplina={turmaSemRegistro.DisciplinaId}";
+            mensagemUsuario.Append($"<a href='{hostAplicacao}diario-classe/frequencia-plano-aula?{parametros}'>Clique aqui para regularizar.</a>");
 
             var notificacao = new Notificacao()
             {
