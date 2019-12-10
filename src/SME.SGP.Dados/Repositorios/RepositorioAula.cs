@@ -341,7 +341,7 @@ namespace SME.SGP.Dados.Repositorios
                 codigoRf,
                 turma,
                 disciplina,
-                dataAula.Date,
+                dataAula = dataAula.Date,
                 aulaNomal = TipoAula.Normal
             });
         }
@@ -358,7 +358,7 @@ namespace SME.SGP.Dados.Repositorios
             return await database.Conexao.QueryAsync<AulasPorTurmaDisciplinaDto>(query, new
             {
                 turma,
-                dataAula.Date
+                dataAula = dataAula.Date
             });
         }
     }

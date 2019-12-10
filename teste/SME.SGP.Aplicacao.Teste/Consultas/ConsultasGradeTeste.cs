@@ -48,9 +48,9 @@ namespace SME.SGP.Aplicacao.Teste.Consultas
         public async Task DeveRetornarQuatroAulasGradeParaSRMEAEE()
         {
             var semana = (DateTime.Now.DayOfYear / 7) + 1;
-            var aulasGrade = await consultasGrade.ObterGradeAulasTurmaProfessor("123", 1030, semana.ToString());
+            var aulasGrade = await consultasGrade.ObterGradeAulasTurmaProfessor("123", 1213, semana.ToString(), DateTime.Now);
 
-            Assert.True(aulasGrade.QuantidadeAulasGrade == 4);
+            Assert.True(aulasGrade.QuantidadeAulasGrade == 5);
         }
 
         private void Setup()
