@@ -17,10 +17,11 @@ namespace SME.SGP.Dados.Repositorios
         {
         }
 
-        public async Task<AulasPrevistasDadasAuditoriaDto> ObterAulaPrevistaDada(long tipoCalendarioId, string turmaId, string disciplinaId)
+        public async Task<IEnumerable<AulasPrevistasDadasDto>> ObterAulaPrevistaDada(long tipoCalendarioId, string turmaId, string disciplinaId)
         {
-            var query = @"select ap.criado_em as CriadoEm, ap.criado_por as CriadoPor, ap.alterado_em as AlteradoEm, ap.alterado_por as AlteradoPor,
-                        p.bimestre, p.periodo_inicio as inicio, p.periodo_fim as fim, ap.Id as PD, ap.aulas_previstas as Quantidade,
+            var query = @"select p.bimestre, p.periodo_inicio as inicio, p.periodo_fim as fim, 
+                        ap.criado_em as CriadoEm, ap.criado_por as CriadoPor, ap.alterado_em as AlteradoEm, ap.alterado_por as AlteradoPor,
+                        ap.Id as PD, ap.aulas_previstas as Quantidade,
                          COUNT(a.id) filter (where a.tipo_aula = 1 and a.aula_cj = false) as QuantidadeTitular,
                          COUNT(a.id) filter (where a.tipo_aula = 1 and a.aula_cj = true) as QuantidadeCJ,
                          COUNT(a.id) filter (where a.tipo_aula = 1 and rf.id is not null and a.aula_cj = false) as QuantidadeTitular,
@@ -36,13 +37,13 @@ namespace SME.SGP.Dados.Repositorios
                          group by p.bimestre, p.periodo_inicio, p.periodo_fim, ap.aulas_previstas, ap.Id
                          order by p.periodo_inicio;";
 
-            AulasPrevistasDadasAuditoriaDto aulasDadasPrevistasAuditoria = null;
+            var aulasDadasPrevistas = new List<AulasPrevistasDadasDto>();
             List<string> mensagens = null;
 
-            var list = await database.Conexao.QueryAsync<AulasPrevistasDadasAuditoriaDto, AulasPrevistasDadasDto, AulasPrevistasDto, AulasQuantidadePorProfessorDto, AulasQuantidadePorProfessorDto, AulasPrevistasDadasAuditoriaDto>(query,
-            (pda, pd, previstas, criadas, cumpridas) =>
+            return await database.Conexao.QueryAsync<AulasPrevistasDadasDto, AulasPrevistasDto, AulasQuantidadePorProfessorDto, AulasQuantidadePorProfessorDto, AulasPrevistasDadasDto>(query,
+            (pd, previstas, criadas, cumpridas) =>
             {
-                if (pda != null)
+                if (pd != null)
                 {
                     pd.Criadas = criadas;
                     pd.Cumpridas = cumpridas;
@@ -57,27 +58,19 @@ namespace SME.SGP.Dados.Repositorios
                         mensagens.Add("Quantidade de aulas previstas diferente do somatório de aulas dadas + aulas repostas, após o final do bimestre.");
 
                     pd.Previstas.Mensagens = mensagens.ToArray();
-
+                    
                 }
 
-                if (aulasDadasPrevistasAuditoria == null)
-                    aulasDadasPrevistasAuditoria = pda;
+                aulasDadasPrevistas.Add(pd);
 
-                if (aulasDadasPrevistasAuditoria.AulasPrevistasDadas == null)
-                    aulasDadasPrevistasAuditoria.AulasPrevistasDadas = new List<AulasPrevistasDadasDto>();
-
-                aulasDadasPrevistasAuditoria.AulasPrevistasDadas.AsList().Add(pd);
-
-                return pda;
+                return pd;
 
             }, new
             {
                 tipoCalendarioId,
                 turmaId,
                 disciplinaId
-            }, splitOn: "CriadoEm,bimestre,PD,QuantidadeTitular,QuantidadeTitular");
-
-            return aulasDadasPrevistasAuditoria;
+            }, splitOn: "bimestre,PD,QuantidadeTitular,QuantidadeTitular");
         }
 
         public async Task<IEnumerable<AulaPrevista>> ObterAulasPrevistasPorFiltro(int bimestre, long tipoCalendarioId, string turmaId, string disciplinaId)
