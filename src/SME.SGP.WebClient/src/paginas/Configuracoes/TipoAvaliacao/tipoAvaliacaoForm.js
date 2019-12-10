@@ -68,15 +68,14 @@ const TipoAvaliacaoForm = ({ match }) => {
   };
   const onClickExcluir = async form => {
     if (validaSeObjetoEhNuloOuVazio(form.values)) return;
-    debugger;
     const confirmado = await confirmar(
       'Atenção',
       'Você tem certeza que deseja excluir este registro?'
     );
     if (confirmado) {
-      const excluir = await servicoTipoAvaliaco.deletarTipoAvaliacao(
-        form.values.id
-      );
+      const excluir = await servicoTipoAvaliaco.deletarTipoAvaliacao([
+        form.values.id,
+      ]);
       if (excluir && excluir.status === 200) {
         sucesso(`Tipo Avaliação excluido com sucesso!`);
         history.push('/configuracoes/tipo-avaliacao');
