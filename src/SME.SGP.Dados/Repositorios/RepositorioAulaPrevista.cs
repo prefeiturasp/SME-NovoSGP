@@ -23,8 +23,7 @@ namespace SME.SGP.Dados.Repositorios
                         p.bimestre, p.periodo_inicio as inicio, p.periodo_fim as fim, ap.Id as PD, ap.aulas_previstas as Quantidade,
                          COUNT(a.id) filter (where a.tipo_aula = 1 and a.aula_cj = false) as QuantidadeTitular,
                          COUNT(a.id) filter (where a.tipo_aula = 1 and a.aula_cj = true) as QuantidadeCJ,
-                         COUNT(a.id) filter (where a.tipo_aula = 1 and rf.id is not null and a.aula_cj = false) as QuantidadeTitular,
-                         COUNT(a.id) filter (where a.tipo_aula = 1 and rf.id is not null and a.aula_cj = true) as QuantidadeCJ, 
+                         COUNT(a.id) filter (where a.tipo_aula = 1 and rf.id is not null) as Cumpridas,
                          COUNT(a.id) filter (where a.tipo_aula = 2 and rf.id is not null) as Reposicoes                         
                          from aula_prevista ap
                          right join periodo_escolar p on ap.tipo_calendario_id = p.tipo_calendario_id and ap.bimestre = p.bimestre
@@ -39,13 +38,12 @@ namespace SME.SGP.Dados.Repositorios
             AulasPrevistasDadasAuditoriaDto aulasDadasPrevistasAuditoria = null;
             List<string> mensagens = null;
 
-            var list = await database.Conexao.QueryAsync<AulasPrevistasDadasAuditoriaDto, AulasPrevistasDadasDto, AulasPrevistasDto, AulasQuantidadePorProfessorDto, AulasQuantidadePorProfessorDto, AulasPrevistasDadasAuditoriaDto>(query,
-            (pda, pd, previstas, criadas, cumpridas) =>
+            var list = await database.Conexao.QueryAsync<AulasPrevistasDadasAuditoriaDto, AulasPrevistasDadasDto, AulasPrevistasDto, AulasQuantidadePorProfessorDto, AulasPrevistasDadasAuditoriaDto>(query,
+            (pda, pd, previstas, criadas) =>
             {
                 if (pda != null)
                 {
                     pd.Criadas = criadas;
-                    pd.Cumpridas = cumpridas;
                     pd.Previstas = previstas;
 
                     mensagens = new List<string>();
@@ -53,20 +51,19 @@ namespace SME.SGP.Dados.Repositorios
                     if (previstas.Quantidade != (criadas.QuantidadeCJ + criadas.QuantidadeTitular))
                         mensagens.Add("Quantidade de aulas previstas diferente da quantidade de aulas criadas.");
 
-                    if (previstas.Quantidade != (cumpridas.QuantidadeCJ + cumpridas.QuantidadeTitular + pd.Reposicoes))
+                    if (previstas.Quantidade != (pd.Cumpridas + pd.Reposicoes))
                         mensagens.Add("Quantidade de aulas previstas diferente do somatório de aulas dadas + aulas repostas, após o final do bimestre.");
 
                     pd.Previstas.Mensagens = mensagens.ToArray();
-
                 }
 
                 if (aulasDadasPrevistasAuditoria == null)
                     aulasDadasPrevistasAuditoria = pda;
 
-                if (aulasDadasPrevistasAuditoria.AulasPrevistasDadas == null)
-                    aulasDadasPrevistasAuditoria.AulasPrevistasDadas = new List<AulasPrevistasDadasDto>();
+                if (aulasDadasPrevistasAuditoria.AulasPrevistasPorBimestre == null)
+                    aulasDadasPrevistasAuditoria.AulasPrevistasPorBimestre = new List<AulasPrevistasDadasDto>();
 
-                aulasDadasPrevistasAuditoria.AulasPrevistasDadas.AsList().Add(pd);
+                aulasDadasPrevistasAuditoria.AulasPrevistasPorBimestre.AsList().Add(pd);
 
                 return pda;
 
@@ -75,7 +72,7 @@ namespace SME.SGP.Dados.Repositorios
                 tipoCalendarioId,
                 turmaId,
                 disciplinaId
-            }, splitOn: "CriadoEm,bimestre,PD,QuantidadeTitular,QuantidadeTitular");
+            }, splitOn: "CriadoEm,bimestre,PD,QuantidadeTitular");
 
             return aulasDadasPrevistasAuditoria;
         }
