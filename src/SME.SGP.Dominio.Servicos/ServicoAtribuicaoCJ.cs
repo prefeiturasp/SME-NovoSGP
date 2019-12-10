@@ -33,7 +33,7 @@ namespace SME.SGP.Dominio.Servicos
 
         public async Task Salvar(AtribuicaoCJ atribuicaoCJ, IEnumerable<AtribuicaoCJ> atribuicoesAtuais = null)
         {
-            var professorValidoNoEol = servicoEOL.ValidarProfessor(atribuicaoCJ.ProfessorRf);
+            var professorValidoNoEol = await servicoEOL.ValidarProfessor(atribuicaoCJ.ProfessorRf);
             if (!professorValidoNoEol)
                 throw new NegocioException("Este professor não é válido para ser CJ.");
 

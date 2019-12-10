@@ -72,8 +72,9 @@ const DiaCompleto = props => {
               todasTurmas,
             })
             .then(resposta => {
-              if (resposta.data) setEventosDia(resposta.data);
-              else setEventosDia([]);
+              if (resposta.data) {
+                setEventosDia(resposta.data);
+              } else setEventosDia([]);
             })
             .catch(() => {
               setEventosDia([]);
@@ -112,10 +113,10 @@ const DiaCompleto = props => {
     );
   };
 
-  const BotoesAuxiliares = ({ temAula }) => {
+  const BotoesAuxiliares = ({ temAula, podeCadastrarAvaliacao }) => {
     return (
       <BotoesAuxiliaresEstilo>
-        {temAula ? (
+        {temAula && podeCadastrarAvaliacao ? (
           <Botao
             key={shortid.generate()}
             onClick={aoClicarBotaoNovaAvaliacao}
@@ -138,6 +139,10 @@ const DiaCompleto = props => {
 
   BotoesAuxiliares.propTypes = {
     temAula: PropTypes.number.isRequired,
+    podeCadastrarAvaliacao: PropTypes.oneOfType([
+      PropTypes.bool,
+      PropTypes.number,
+    ]).isRequired,
   };
 
   useEffect(() => {
@@ -166,6 +171,7 @@ const DiaCompleto = props => {
   };
 
   const aoClicarEditarAvaliacao = id => {
+    salvarDadosEventoAula();
     history.push(`${RotasDTO.CADASTRO_DE_AVALIACAO}/editar/${id}`);
   };
 
@@ -175,88 +181,102 @@ const DiaCompleto = props => {
         {eventosDia &&
         eventosDia.eventosAulas &&
         eventosDia.eventosAulas.length > 0 ? (
-          <Div className="list-group list-group-flush fade show">
+          <Div className="list-group list-group-flush fade show px-0">
             {eventosDia.eventosAulas.map(evento => {
               return (
-                <Evento
-                  key={shortid.generate()}
-                  className="list-group-item list-group-item-action d-flex rounded position-relative"
-                  onClick={() => aoClicarEvento(evento.id, evento.tipoEvento)}
-                  style={{ cursor: 'pointer', zIndex: 0 }}
-                >
-                  <Grid
-                    cols={
-                      (evento.tipoEvento === TiposEventoAulaDTO.Aula && 1) ||
-                      (evento.tipoEvento === TiposEventoAulaDTO.CJ && 1) ||
-                      2
-                    }
-                    className="pl-0"
+                <Div className="list-group-item list-group-item-action d-flex p-3">
+                  <Evento
+                    key={shortid.generate()}
+                    className="d-flex rounded w-100"
+                    style={{ cursor: 'pointer', zIndex: 0 }}
                   >
-                    <Botao
-                      label={evento.tipoEvento}
-                      color={
-                        (evento.tipoEvento === TiposEventoAulaDTO.Aula &&
-                          Colors.Roxo) ||
-                        (evento.tipoEvento === TiposEventoAulaDTO.CJ &&
-                          Colors.Laranja) ||
-                        Colors.CinzaBotao
+                    <Grid
+                      cols={
+                        (evento.tipoEvento === TiposEventoAulaDTO.Aula && 1) ||
+                        (evento.tipoEvento === TiposEventoAulaDTO.CJ && 1) ||
+                        2
                       }
-                      className="w-100"
-                      height={
+                      onClick={() =>
+                        aoClicarEvento(evento.id, evento.tipoEvento)
+                      }
+                      className="pl-0"
+                    >
+                      <Botao
+                        label={evento.tipoEvento}
+                        color={
+                          (evento.tipoEvento === TiposEventoAulaDTO.Aula &&
+                            Colors.Roxo) ||
+                          (evento.tipoEvento === TiposEventoAulaDTO.CJ &&
+                            Colors.Laranja) ||
+                          Colors.CinzaBotao
+                        }
+                        onClick={() =>
+                          aoClicarEvento(evento.id, evento.tipoEvento)
+                        }
+                        className="w-100"
+                        height={
+                          evento.tipoEvento === TiposEventoAulaDTO.Aula ||
+                          evento.tipoEvento === TiposEventoAulaDTO.CJ
+                            ? '38px'
+                            : 'auto'
+                        }
+                        border
+                        steady
+                      />
+                    </Grid>
+                    {(evento.tipoEvento === TiposEventoAulaDTO.Aula ||
+                      evento.tipoEvento === TiposEventoAulaDTO.CJ) &&
+                      evento.dadosAula && (
+                        <Grid cols={1} className="px-0">
+                          <Botao
+                            onClick={() =>
+                              aoClicarEvento(evento.id, evento.tipoEvento)
+                            }
+                            label={window
+                              .moment(evento.dadosAula.horario, 'HH')
+                              .format('HH:mm')}
+                            color={Colors.CinzaBotao}
+                            className="w-100 px-2"
+                            border
+                            steady
+                          />
+                        </Grid>
+                      )}
+                    <Grid
+                      cols={
                         evento.tipoEvento === TiposEventoAulaDTO.Aula ||
                         evento.tipoEvento === TiposEventoAulaDTO.CJ
-                          ? '38px'
-                          : 'auto'
+                          ? evento.dadosAula &&
+                            evento.dadosAula.atividade.length
+                            ? 10 - evento.dadosAula.atividade.length * 2
+                            : 10
+                          : 11
                       }
-                      border
-                      steady
-                    />
-                  </Grid>
-                  {(evento.tipoEvento === TiposEventoAulaDTO.Aula ||
-                    evento.tipoEvento === TiposEventoAulaDTO.CJ) &&
-                    evento.dadosAula && (
-                      <Grid cols={1} className="px-0">
-                        <Botao
-                          label={window
-                            .moment(evento.dadosAula.horario, 'HH')
-                            .format('HH:mm')}
-                          color={Colors.CinzaBotao}
-                          className="w-100 px-2"
-                          border
-                          steady
-                        />
-                      </Grid>
-                    )}
-                  <Grid
-                    cols={
-                      evento.tipoEvento === TiposEventoAulaDTO.Aula ||
-                      evento.tipoEvento === TiposEventoAulaDTO.CJ
-                        ? evento.dadosAula && evento.dadosAula.atividade.length
-                          ? 10 - evento.dadosAula.atividade.length
-                          : 10
-                        : 11
-                    }
-                    className="align-self-center font-weight-bold pl-0"
-                  >
-                    <Div
-                      className={`${(evento.tipoEvento ===
-                        TiposEventoAulaDTO.Aula ||
-                        evento.tipoEvento === TiposEventoAulaDTO.CJ) &&
-                        'pl-3'}`}
+                      className="align-self-center font-weight-bold pl-0"
                     >
-                      {evento.tipoEvento !== TiposEventoAulaDTO.Aula &&
-                        evento.tipoEvento !== TiposEventoAulaDTO.CJ &&
-                        (evento.descricao ? evento.descricao : 'Evento')}
-                      {(evento.tipoEvento === TiposEventoAulaDTO.Aula ||
-                        evento.tipoEvento === TiposEventoAulaDTO.CJ) &&
-                        evento.dadosAula &&
-                        `${evento.dadosAula.turma} - ${evento.dadosAula.modalidade} - ${evento.dadosAula.tipo} - ${evento.dadosAula.unidadeEscolar} - ${evento.dadosAula.disciplina}`}
-                    </Div>
-                  </Grid>
+                      <Div
+                        className={`${(evento.tipoEvento ===
+                          TiposEventoAulaDTO.Aula ||
+                          evento.tipoEvento === TiposEventoAulaDTO.CJ) &&
+                          'pl-3'}`}
+                        onClick={() =>
+                          aoClicarEvento(evento.id, evento.tipoEvento)
+                        }
+                      >
+                        {evento.tipoEvento !== TiposEventoAulaDTO.Aula &&
+                          evento.tipoEvento !== TiposEventoAulaDTO.CJ &&
+                          (evento.descricao ? evento.descricao : 'Evento')}
+                        {(evento.tipoEvento === TiposEventoAulaDTO.Aula ||
+                          evento.tipoEvento === TiposEventoAulaDTO.CJ) &&
+                          evento.dadosAula &&
+                          `${evento.dadosAula.turma} - ${evento.dadosAula.modalidade} - ${evento.dadosAula.tipo} - ${evento.dadosAula.unidadeEscolar} - ${evento.dadosAula.disciplina}`}
+                      </Div>
+                    </Grid>
+                  </Evento>
                   {evento.dadosAula && evento.dadosAula.atividade.length
                     ? evento.dadosAula.atividade.map(atividade => {
                         return (
-                          <Grid key={atividade.id} cols={1} className="pr-0">
+                          <Grid key={atividade.id} cols={2} className="pr-0">
                             <Botao
                               label="Avaliação"
                               color={Colors.Roxo}
@@ -265,13 +285,12 @@ const DiaCompleto = props => {
                                 aoClicarEditarAvaliacao(atividade.id)
                               }
                               border
-                              steady
                             />
                           </Grid>
                         );
                       })
                     : null}
-                </Evento>
+                </Div>
               );
             })}
           </Div>
