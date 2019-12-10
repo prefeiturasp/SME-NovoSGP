@@ -68,7 +68,6 @@ const TipoAvaliacaoForm = ({ match }) => {
   };
   const onClickExcluir = async form => {
     if (validaSeObjetoEhNuloOuVazio(form.values)) return;
-    debugger;
     const confirmado = await confirmar(
       'Atenção',
       'Você tem certeza que deseja excluir este registro?'
