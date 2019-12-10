@@ -17,11 +17,11 @@ namespace SME.SGP.Api.Controllers
     [ValidaDto]
     public class AulaPrevistaController : ControllerBase
     {
-        [HttpGet("tipoCalendario/{tipoCalendarioId}/turma/{turmaId}/disciplina/{disciplinaId}")]
+        [HttpGet("tipoCalendario/{modalidade}/turma/{turmaId}/disciplina/{disciplinaId}")]
         [ProducesResponseType(typeof(IEnumerable<AulasPrevistasDadasDto>), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [ProducesResponseType(typeof(RetornoBaseDto), 601)]
-        [Permissao(Permissao.CP_C, Policy = "Bearer")]
+        //[Permissao(Permissao.CP_C, Policy = "Bearer")]
         public async Task<IActionResult> ObterAulaPrevistaDada(Modalidade modalidade, string turmaId, string disciplinaId, [FromServices]IConsultasAulaPrevista consultas)
         {
             return Ok(await consultas.ObterAulaPrevistaDada(modalidade, turmaId, disciplinaId));
@@ -30,7 +30,7 @@ namespace SME.SGP.Api.Controllers
         [HttpPost]
         [ProducesResponseType(typeof(string), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        [Permissao(Permissao.CP_I, Policy = "Bearer")]
+        //[Permissao(Permissao.CP_I, Policy = "Bearer")]
         public async Task<IActionResult> Inserir([FromBody]AulaPrevistaDto dto, [FromServices]IComandosAulaPrevista comandos)
         {
             await comandos.Inserir(dto);

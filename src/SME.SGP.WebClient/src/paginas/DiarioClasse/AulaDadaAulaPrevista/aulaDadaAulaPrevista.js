@@ -15,6 +15,7 @@ const AulaDadaAulaPrevista = () => {
   const usuario = useSelector(store => store.usuario);
   const turmaSelecionada = usuario.turmaSelecionada;
   const turmaId = turmaSelecionada ? turmaSelecionada.turma : 0;
+  const modalidade = turmaSelecionada.modalidade;
   const anoLetivo = turmaSelecionada ? turmaSelecionada.anoLetivo : 0;
   const [desabilitarDisciplina, setDesabilitarDisciplina] = useState(false);
   const [listaDisciplinas, setListaDisciplinas] = useState([]);
@@ -38,6 +39,7 @@ const AulaDadaAulaPrevista = () => {
         setDisciplinaIdSelecionada(
           String(disciplina.codigoComponenteCurricular)
         );
+        onChangeDisciplinas(disciplina.codigoComponenteCurricular)
         setDesabilitarDisciplina(true);
       }
     };
@@ -49,7 +51,7 @@ const AulaDadaAulaPrevista = () => {
   }, [turmaSelecionada.turma]);
 
   const onChangeDisciplinas = async disciplinaId => {
-    const dadosAula = await api.get(`v1/aula-prevista/tipoCalendario/1/turma/${turmaId}/disciplina/${disciplinaId}`);
+    const dadosAula = await api.get(`v1/aula-prevista/tipoCalendario/${modalidade}/turma/${turmaId}/disciplina/${disciplinaId}`);
     console.log(dadosAula);
   }
 
