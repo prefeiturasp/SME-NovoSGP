@@ -69,6 +69,19 @@ const Notas = () => {
             const indexBimestre = dados.data.bimestres.indexOf(
               bimestrePesquisado
             );
+
+            // bimestrePesquisado.forEach(bimestre => {
+            //   return bimestre.alunos.forEach(aluno => {
+            //     return aluno.notasAvaliacoes.forEach(nota => {
+            //       const notaOriginal = nota.notaConceito;
+            //       /* eslint-disable */
+            //       nota.notaOriginal = notaOriginal;
+            //       /* eslint-enable */
+            //       return nota;
+            //     });
+            //   });
+            // });
+
             bimestres[indexBimestre] = bimestrePesquisado;
             setBimestres([...bimestres]);
           } else {
@@ -85,9 +98,14 @@ const Notas = () => {
     [anoLetivo, bimestres, modalidade, turmaId]
   );
 
-  const resetarTela = () => {
-    setDisciplinaSelecionada(undefined);
-    setBimestres([]);
+  const resetarTela = useCallback(() => {
+    if (disciplinaSelecionada) {
+      setDisciplinaSelecionada(undefined);
+    }
+    if (bimestres && bimestres.length > 0) {
+      setBimestres([]);
+    }
+
     setNotaTipo(0);
     setDesabilitarCampos(false);
     setModoEdicao(false);
@@ -95,7 +113,7 @@ const Notas = () => {
       auditoriaAlterado: '',
       auditoriaInserido: '',
     });
-  };
+  }, [bimestres, disciplinaSelecionada]);
 
   useEffect(() => {
     const obterDisciplinas = async () => {
@@ -110,7 +128,6 @@ const Notas = () => {
         obterDadosBimestres(disciplina.codigoComponenteCurricular);
       }
     };
-
     if (turmaId) {
       obterDisciplinas();
     } else {
@@ -119,7 +136,7 @@ const Notas = () => {
       setDesabilitarDisciplina(false);
       resetarTela();
     }
-  }, [obterDadosBimestres, turmaId]);
+  }, [obterDadosBimestres, turmaId, resetarTela]);
 
   const pergutarParaSalvar = () => {
     return confirmar(
