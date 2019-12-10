@@ -18,9 +18,22 @@ namespace SME.SGP.Aplicacao
             this.repositorio = repositorio ?? throw new ArgumentNullException(nameof(repositorio));
         }
 
-        public async Task<IEnumerable<AulasPrevistasDadasDto>> ObterAulaPrevistaDada(long tipoCalendarioId, string turmaId, string disciplinaId)
+        public async Task<IEnumerable<AulasPrevistasDadasDto>> ObterAulaPrevistaDada(Modalidade modalidade, string turmaId, string disciplinaId)
         {
+            int tipoCalendarioId = (int)ModalidadeParaModalidadeTipoCalendario(modalidade);
             return await repositorio.ObterAulaPrevistaDada(tipoCalendarioId, turmaId, disciplinaId);
+        }
+
+        private ModalidadeTipoCalendario ModalidadeParaModalidadeTipoCalendario(Modalidade modalidade)
+        {
+            switch (modalidade)
+            {
+                case Modalidade.EJA:
+                    return ModalidadeTipoCalendario.EJA;
+
+                default:
+                    return ModalidadeTipoCalendario.FundamentalMedio;
+            }
         }
     }
 }
