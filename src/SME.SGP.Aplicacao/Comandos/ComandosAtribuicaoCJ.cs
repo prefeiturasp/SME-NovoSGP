@@ -10,17 +10,19 @@ namespace SME.SGP.Aplicacao
     public class ComandosAtribuicaoCJ : IComandosAtribuicaoCJ
     {
         private readonly IRepositorioAtribuicaoCJ repositorioAtribuicaoCJ;
+        private readonly IRepositorioCache repositorioCache;
         private readonly IServicoAtribuicaoCJ servicoAtribuicaoCJ;
         private readonly IServicoEOL servicoEOL;
         private readonly IServicoUsuario servicoUsuario;
 
         public ComandosAtribuicaoCJ(IRepositorioAtribuicaoCJ repositorioAtribuicaoCJ, IServicoAtribuicaoCJ servicoAtribuicaoCJ,
-            IServicoEOL servicoEOL, IServicoUsuario servicoUsuario)
+            IServicoEOL servicoEOL, IServicoUsuario servicoUsuario, IRepositorioCache repositorioCache)
         {
             this.repositorioAtribuicaoCJ = repositorioAtribuicaoCJ ?? throw new ArgumentNullException(nameof(repositorioAtribuicaoCJ));
             this.servicoAtribuicaoCJ = servicoAtribuicaoCJ ?? throw new ArgumentNullException(nameof(servicoAtribuicaoCJ));
             this.servicoEOL = servicoEOL ?? throw new ArgumentNullException(nameof(servicoEOL));
             this.servicoUsuario = servicoUsuario ?? throw new ArgumentNullException(nameof(servicoUsuario));
+            this.repositorioCache = repositorioCache ?? throw new ArgumentNullException(nameof(repositorioCache));
         }
 
         public async Task Salvar(AtribuicaoCJPersistenciaDto atribuicaoCJPersistenciaDto)
@@ -29,6 +31,8 @@ namespace SME.SGP.Aplicacao
                atribuicaoCJPersistenciaDto.UeId, 0, atribuicaoCJPersistenciaDto.UsuarioRf, string.Empty, null);
 
             bool atribuiuCj = false;
+
+            await RemoverDisciplinasCache(atribuicaoCJPersistenciaDto);
 
             foreach (var atribuicaoDto in atribuicaoCJPersistenciaDto.Disciplinas)
             {
@@ -50,6 +54,12 @@ namespace SME.SGP.Aplicacao
             servicoUsuario.RemoverPerfisUsuarioAtual();
 
             return true;
+        }
+
+        private async Task RemoverDisciplinasCache(AtribuicaoCJPersistenciaDto atribuicaoCJPersistenciaDto)
+        {
+            var chaveCache = $"Disciplinas-{atribuicaoCJPersistenciaDto.TurmaId}-{atribuicaoCJPersistenciaDto.UsuarioRf}--{Perfis.PERFIL_CJ}";
+            await repositorioCache.RemoverAsync(chaveCache);
         }
 
         private AtribuicaoCJ TransformaDtoEmEntidade(AtribuicaoCJPersistenciaDto dto, AtribuicaoCJPersistenciaItemDto itemDto)
