@@ -5,13 +5,22 @@ import CampoNumero from '~/componentes/campoNumero';
 
 const ListaAulasPorBimestre = props => {
   const { dados } = props;
-  const { totalPrevistas, totalCriadasProfTitular, totalCriadasProfCj, totalDadas, totalRespostas } = dados;
+  const { totalPrevistas, totalCriadasTitular, totalCriadasCj, totalDadas, totalRepostas } = dados;
+  const [bimestres, setBimestres] = useState(dados.bimestres);
 
   const formatarData = data => {
     return window.moment(data).format('DD/MM');
   }
 
-  const temProfessorCj = dados.bimestres && dados.bimestres[0].criadas.professorCj;
+  const temProfessorCj = totalCriadasCj > 0;
+
+  const alterarValorPrevisto = (index, valor) => {
+    console.log('aa')
+    if (valor >= 0) {
+      bimestres[index].previstas.quantidade = valor;
+      setBimestres([...bimestres]);
+    }
+  }
 
   return (
     <Corpo>
@@ -43,7 +52,7 @@ const ListaAulasPorBimestre = props => {
             </tr>
             : null}
         </thead>
-        {dados && dados.bimestres ? dados.bimestres.map(item => {
+        {bimestres ? bimestres.map((item, index) => {
           return (
             <tbody key={`lista-${item.bimestre}`}>
               <tr>
@@ -57,9 +66,11 @@ const ListaAulasPorBimestre = props => {
                       <CampoAlerta>
                         <CampoNumero
                           value={item.previstas.quantidade}
-                          onChange={() => { }}
-                          onKeyDown={() => { }}
+                          onChange={e => { alterarValorPrevisto(index, e) }}
+                          onKeyDown={e => { alterarValorPrevisto(index, e) }}
+                          step={1}
                           min={0}
+                          max={999}
                         />
                         <div className="icone">
                           <i className="fas fa-exclamation-triangle"></i>
@@ -69,21 +80,23 @@ const ListaAulasPorBimestre = props => {
                     : <CampoEditavel>
                       <CampoNumero
                         value={item.previstas.quantidade}
-                        onChange={() => { }}
-                        onKeyDown={() => { }}
+                        onChange={e => { alterarValorPrevisto(index, e) }}
+                        onKeyDown={e => { alterarValorPrevisto(index, e) }}
+                        step={1}
                         min={0}
+                        max={999}
                       />
                     </CampoEditavel>}
                 </td>
                 <td>
                   <CampoDesabilitado>
-                    <span>{item.criadas.professorTitular}</span>
+                    <span>{item.criadas.quantidadeTitular}</span>
                   </CampoDesabilitado>
                 </td>
                 {temProfessorCj ?
                   <td>
                     <CampoDesabilitado>
-                      <span>{item.criadas.professorCj}</span>
+                      <span>{item.criadas.quantidadeCj}</span>
                     </CampoDesabilitado>
                   </td>
                   : null}
@@ -94,7 +107,7 @@ const ListaAulasPorBimestre = props => {
                 </td>
                 <td>
                   <CampoDesabilitado>
-                    <span>{item.respostas}</span>
+                    <span>{item.reposicoes}</span>
                   </CampoDesabilitado>
                 </td>
               </tr>
@@ -114,13 +127,13 @@ const ListaAulasPorBimestre = props => {
             </td>
             <td>
               <CampoDesabilitado>
-                <span>{totalCriadasProfTitular}</span>
+                <span>{totalCriadasTitular}</span>
               </CampoDesabilitado>
             </td>
             {temProfessorCj ?
               <td>
                 <CampoDesabilitado>
-                  <span>{totalCriadasProfCj}</span>
+                  <span>{totalCriadasCj}</span>
                 </CampoDesabilitado>
               </td>
               : null}
@@ -131,7 +144,7 @@ const ListaAulasPorBimestre = props => {
             </td>
             <td>
               <CampoDesabilitado>
-                <span>{totalRespostas}</span>
+                <span>{totalRepostas}</span>
               </CampoDesabilitado>
             </td>
           </tr>

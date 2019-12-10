@@ -26,6 +26,7 @@ const AulaDadaAulaPrevista = () => {
   const [dadoslista, setDadosLista] = useState([]);
   const [auditoria, setAuditoria] = useState(undefined);
   const [temDivergencia, setTemDivergencia] = useState(false);
+  const mensagensAlerta = [];
 
   useEffect(() => {
     const obterDisciplinas = async () => {
@@ -45,25 +46,41 @@ const AulaDadaAulaPrevista = () => {
     };
     if (turmaId) {
       obterDisciplinas(turmaId);
-      const dados = getMock();
-      setDadosLista(dados);
     }
   }, [turmaSelecionada.turma]);
 
   const onChangeDisciplinas = async disciplinaId => {
     const resposta = await
-      api.get(`v1/aula-prevista/tipoCalendario/${modalidade}/turma/${turmaId}/disciplina/${disciplinaId}`);
+      api.get(`v1/aula-prevista/modalidades/${modalidade}/turmas/${turmaId}/disciplinas/${disciplinaId}`);
     const dadosAula = resposta.data;
-    if (dadosAula && dadosAula.length > 0) {
-      const totalPrevistas = 0;
-      const totalCriadasTitular = 0;
-      const totalCriadasCj = 0;
-      const totalCumpridas = 0;
-      const totalRepostas = 0;
-      dadosAula.forEach(item => {
+    console.log(dadosAula);
+    if (dadosAula && dadosAula.aulasPrevistasPorBimestre) {
+      const dadosBimestre = dadosAula.aulasPrevistasPorBimestre;
+      let totalPrevistas = 0;
+      let totalCriadasTitular = 0;
+      let totalCriadasCj = 0;
+      let totalDadas = 0;
+      let totalRepostas = 0;
+      dadosBimestre.forEach(item => {
+        item.dadas = (item.cumpridas.quantidadeTitular + item.cumpridas.quantidadeCJ);
+        totalPrevistas += item.previstas.quantidade;
         totalCriadasTitular += item.criadas.quantidadeTitular;
+        totalCriadasCj += item.criadas.quantidadeCJ;
+        totalDadas += item.dadas;
+        totalRepostas += item.reposicoes;
+        if (item.previstas.mensagens && item.previstas.mensagens.length > 0) {
+          item.previstas.temDivergencia = true;
+        }
       });
-      //setDadosLista(dadosAula);
+      const dados = {
+        bimestres: dadosBimestre,
+        totalPrevistas,
+        totalCriadasTitular,
+        totalCriadasCj,
+        totalDadas,
+        totalRepostas,
+      }
+      setDadosLista(dados);
     }
   }
 
@@ -91,7 +108,6 @@ const AulaDadaAulaPrevista = () => {
         </Titulo>{' '}
       </Grid>{' '}
       <Card>
-
         <div className="col-md-12">
           <div className="row">
             <div className="col-sm-12 col-md-4 col-lg-4 col-xl-4 mb-2">
