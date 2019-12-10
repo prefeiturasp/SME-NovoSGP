@@ -11,7 +11,7 @@ import Card from '~/componentes/card';
 import { Colors } from '~/componentes/colors';
 import RadioGroupButton from '~/componentes/radioGroupButton';
 import SelectComponent from '~/componentes/select';
-import { confirmar, erros, sucesso } from '~/servicos/alertas';
+import { confirmar, erros, sucesso, erro } from '~/servicos/alertas';
 import api from '~/servicos/api';
 import { setBreadcrumbManual } from '~/servicos/breadcrumb-services';
 import history from '~/servicos/history';
@@ -295,8 +295,10 @@ const CadastroAula = ({ match }) => {
         'Sim',
         'Não'
       );
+
       if (confirmado) {
-        // TODO Salvar
+        onClickCadastrar(refForm.state.values);
+      } else {
         history.push('/calendario-escolar/calendario-professor');
       }
     } else {
@@ -387,14 +389,26 @@ const CadastroAula = ({ match }) => {
     }
 
     const cadastrado = idAula
-      ? await api.put(`v1/calendarios/professores/aulas/${idAula}`, valoresForm)
+      ? await api
+          .put(`v1/calendarios/professores/aulas/${idAula}`, valoresForm)
+          .then(resp => resp)
+          .catch(err => err)
       : await api
           .post('v1/calendarios/professores/aulas', valoresForm)
-          .catch(e => erros(e));
+          .then(resp => resp)
+          .catch(err => err);
 
     if (cadastrado && cadastrado.status === 200) {
       if (cadastrado.data) sucesso(cadastrado.data.mensagens[0]);
       history.push('/calendario-escolar/calendario-professor');
+    }
+
+    if (cadastrado && cadastrado.response) {
+      erro(
+        cadastrado.response.status === 601
+          ? cadastrado.response.data.mensagens
+          : 'Houve uma falha ao salvar a aula, por favor contate o suporte'
+      );
     }
   };
 
