@@ -16,12 +16,14 @@ namespace SME.SGP.Dados.Repositorios
         {
         }
 
-        public async Task<PaginacaoResultadoDto<TipoAvaliacao>> ListarPaginado(string nome, Paginacao paginacao)
+        public async Task<PaginacaoResultadoDto<TipoAvaliacao>> ListarPaginado(string nome, string descricao, bool? situacao, Paginacao paginacao)
         {
             if (!string.IsNullOrEmpty(nome)) nome = $"%{nome.ToLowerInvariant()}%";
+            if (!string.IsNullOrEmpty(descricao)) descricao = $"%{descricao.ToLowerInvariant()}%";
+
             StringBuilder query = new StringBuilder();
             MontaCabecalho(query, false);
-            MontaFromWhere(query, nome, 0);
+            MontaFromWhere(query, nome, descricao, situacao, 0);
 
             if (paginacao == null)
                 paginacao = new Paginacao(1, 10);
@@ -30,13 +32,13 @@ namespace SME.SGP.Dados.Repositorios
             query.Append(";");
 
             MontaCabecalho(query, true);
-            MontaFromWhere(query, nome, 0);
+            MontaFromWhere(query, nome, descricao, situacao, 0);
             query.Append(";");
             var retornoPaginado = new PaginacaoResultadoDto<TipoAvaliacao>();
 
             using (var multi = await database.Conexao.QueryMultipleAsync(query.ToString(), new
             {
-                nome
+                nome, descricao, situacao
             }))
             {
                 retornoPaginado.Items = multi.Read<TipoAvaliacao>().ToList();
@@ -47,12 +49,12 @@ namespace SME.SGP.Dados.Repositorios
             return retornoPaginado;
         }
 
-        public async Task<bool> VerificarSeJaExistePorNome(string nome, long id)
+        public async Task<bool> VerificarSeJaExistePorNome(string nome,string descricao, bool situacao, long id)
         {
             var query = new StringBuilder();
             MontaCabecalho(query, false);
-            MontaFromWhere(query, nome, id);
-            var resultado = (await database.Conexao.QueryAsync<TipoAvaliacao>(query.ToString(), new { nome, id }));
+            MontaFromWhere(query, nome, descricao, situacao, id);
+            var resultado = (await database.Conexao.QueryAsync<TipoAvaliacao>(query.ToString(), new { nome, descricao, situacao, id }));
             return resultado.Any();
         }
 
@@ -77,17 +79,27 @@ namespace SME.SGP.Dados.Repositorios
             }
         }
 
-        private static void MontaFromWhere(StringBuilder query, string nome, long id)
+        private static void MontaFromWhere(StringBuilder query, string nome, string descricao, bool? situacao, long id)
         {
             query.AppendLine("from tipo_avaliacao");
-            query.AppendLine("where situacao = true");
-            query.AppendLine("and excluido = false");
+        
+            query.AppendLine("where excluido = false");
+            if (situacao.HasValue)
+            {
+                query.AppendLine("and situacao = @situacao");
+            }
             if (!string.IsNullOrEmpty(nome))
             {
                 query.AppendLine("and lower(f_unaccent(nome)) LIKE f_unaccent(@nome) ");
                 if (id > 0)
                     query.AppendLine("and id <> @id");
             }
+            if (!string.IsNullOrEmpty(descricao))
+            {
+                query.AppendLine("and lower(f_unaccent(descricao)) LIKE f_unaccent(@descricao) ");
+            }
+
+
         }
     }
 }

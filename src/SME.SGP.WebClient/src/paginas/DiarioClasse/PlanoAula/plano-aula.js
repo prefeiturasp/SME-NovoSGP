@@ -18,11 +18,13 @@ import {
 } from './plano-aula.css';
 import api from '~/servicos/api';
 import { RegistroMigrado } from '~/paginas/Planejamento/PlanoCiclo/planoCiclo.css';
+import { store } from '~/redux';
 
 // Componentes
 import ModalCopiarConteudo from './componentes/ModalCopiarConteudo';
 import RotasDto from '~/dtos/rotasDto';
 import history from '~/servicos/history';
+import { selecionaDia } from '~/redux/modulos/calendarioProfessor/actions';
 
 const PlanoAula = props => {
   const {
@@ -196,6 +198,7 @@ const PlanoAula = props => {
   };
 
   const aoClicarBotaoNovaAvaliacao = () => {
+    store.dispatch(selecionaDia(dataAula));
     history.push(`${RotasDto.CADASTRO_DE_AVALIACAO}/novo`);
   };
 

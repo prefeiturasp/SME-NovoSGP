@@ -36,7 +36,7 @@ const Conteudo = () => {
   const confirmacao = useSelector(state => state.alertas.confirmacao);
 
   const fecharConfirmacao = resultado => {
-    confirmacao.resolve(resultado);
+    if (confirmacao) confirmacao.resolve(resultado);
     dispatch(alertaFechar());
   };
 
