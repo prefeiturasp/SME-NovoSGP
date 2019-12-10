@@ -10,10 +10,10 @@ import servicoNotificacao from '~/servicos/Paginas/ServicoNotificacao';
 
 const ListaNotificacoes = () => {
   const usuario = useSelector(state => state.usuario);
-  
-  useEffect(()=>{
+
+  useEffect(() => {
     servicoNotificacao.buscaNotificacoesPorAnoRf(2019, usuario.rf);
-  },[]);
+  }, [usuario.rf]);
   const notificacoes = useSelector(state => state.notificacoes);
 
   const categoriaLista = ['', 'Alerta', 'Ação', 'Aviso'];
