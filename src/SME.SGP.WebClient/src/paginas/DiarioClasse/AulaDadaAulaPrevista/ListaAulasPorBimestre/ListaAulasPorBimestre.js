@@ -29,7 +29,7 @@ const ListaAulasPorBimestre = props => {
               Dadas
             </th>
             <th rowSpan="2" className="text-center fundo-cinza">
-              Respostas
+              Repostas
             </th>
           </tr>
           {temProfessorCj ?
