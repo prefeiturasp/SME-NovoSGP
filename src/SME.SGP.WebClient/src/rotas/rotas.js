@@ -33,6 +33,7 @@ import AvaliacaoForm from '~/paginas/CalendarioEscolar/Avaliacao/avaliacaoForm';
 import Notas from '~/paginas/DiarioClasse/Notas/notas';
 import TipoAvaliacaoLista from '~paginas/Configuracoes/TipoAvaliacao/tipoAvaliacaoLista';
 import TipoAvaliacaoForm from '~paginas/Configuracoes/TipoAvaliacao/tipoAvaliacaoForm';
+import AulaDadaAulaPrevista from '~/paginas/DiarioClasse/AulaDadaAulaPrevista/aulaDadaAulaPrevista';
 
 const rotas = new Map();
 
@@ -470,6 +471,16 @@ rotas.set(`${RotasDto.TIPO_AVALIACAO}/editar/:id`, {
   menu: ['Configurações', 'Tipo Avaliação'],
   parent: '/',
   component: TipoAvaliacaoForm,
+  exact: true,
+  tipo: RotasTipo.EstruturadaAutenticada,
+  temPermissionamento: false,
+});
+
+rotas.set(`${RotasDto.AULA_DADA_AULA_PREVISTA}`, {
+  breadcrumbName: 'Aula dada X Aula prevista',
+  menu: ['Diário de Classe'],
+  parent: '/',
+  component: AulaDadaAulaPrevista,
   exact: true,
   tipo: RotasTipo.EstruturadaAutenticada,
   temPermissionamento: false,
