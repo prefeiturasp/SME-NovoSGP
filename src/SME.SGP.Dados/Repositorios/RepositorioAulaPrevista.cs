@@ -38,6 +38,7 @@ namespace SME.SGP.Dados.Repositorios
                          order by p.periodo_inicio;";
 
             var aulasDadasPrevistas = new List<AulasPrevistasDadasDto>();
+            List<string> mensagens = null;
 
             return await database.Conexao.QueryAsync<AulasPrevistasDadasDto, AulasPrevistasDto, AulasQuantidadePorProfessorDto, AulasQuantidadePorProfessorDto, AulasPrevistasDadasDto>(query,
             (pd, previstas, criadas, cumpridas) =>
@@ -48,8 +49,16 @@ namespace SME.SGP.Dados.Repositorios
                     pd.Cumpridas = cumpridas;
                     pd.Previstas = previstas;
 
-                    pd.Previstas.TemDivergencia = previstas.Quantidade != (criadas.QuantidadeCJ + criadas.QuantidadeTitular) ||
-                                                  previstas.Quantidade != (cumpridas.QuantidadeCJ + cumpridas.QuantidadeTitular + pd.Reposicoes);
+                    mensagens = new List<string>();
+
+                    if (previstas.Quantidade != (criadas.QuantidadeCJ + criadas.QuantidadeTitular))
+                        mensagens.Add("Quantidade de aulas previstas diferente da quantidade de aulas criadas.");
+
+                    if (previstas.Quantidade != (cumpridas.QuantidadeCJ + cumpridas.QuantidadeTitular + pd.Reposicoes))
+                        mensagens.Add("Quantidade de aulas previstas diferente do somatório de aulas dadas + aulas repostas, após o final do bimestre.");
+
+                    pd.Previstas.Mensagens = mensagens.ToArray();
+                    
                 }
 
                 aulasDadasPrevistas.Add(pd);

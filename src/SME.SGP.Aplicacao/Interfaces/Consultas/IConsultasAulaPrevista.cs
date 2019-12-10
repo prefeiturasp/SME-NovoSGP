@@ -1,4 +1,5 @@
-﻿using SME.SGP.Infra;
+﻿using SME.SGP.Dominio;
+using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -8,6 +9,6 @@ namespace SME.SGP.Aplicacao.Interfaces
 {
     public interface IConsultasAulaPrevista
     {
-        Task<IEnumerable<AulasPrevistasDadasDto>> ObterAulaPrevistaDada(long tipoCalendarioId, string turmaId, string disciplinaId);
+        Task<IEnumerable<AulasPrevistasDadasDto>> ObterAulaPrevistaDada(Modalidade modalidade, string turmaId, string disciplinaId);
     }
 }
