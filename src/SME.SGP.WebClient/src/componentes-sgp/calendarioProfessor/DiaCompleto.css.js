@@ -21,9 +21,6 @@ export const Botao = styled(Button)`
     border-color: ${Base.Branco} !important;
     color: ${Base.Branco} !important;
   }
-  &.zIndex {
-    z-index: 2;
-  }
 `;
 
 export const BotoesAuxiliaresEstilo = styled(Div)`

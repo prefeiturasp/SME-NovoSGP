@@ -7,17 +7,16 @@ using SME.Background.Core.Interfaces;
 using SME.Background.Hangfire.Logging;
 using System;
 using System.IO;
-using System.Linq;
 
 namespace SME.Background.Hangfire
 {
     public class Worker : IWorker
     {
-        readonly IConfiguration configuration;
-        readonly IServiceCollection serviceCollection;
-        readonly string connectionString;
-        IWebHost host;
-        BackgroundJobServer hangFireServer;
+        private readonly IConfiguration configuration;
+        private readonly string connectionString;
+        private readonly IServiceCollection serviceCollection;
+        private BackgroundJobServer hangFireServer;
+        private IWebHost host;
 
         public Worker(IConfiguration configuration, IServiceCollection serviceCollection, string connectionString)
         {
@@ -33,8 +32,8 @@ namespace SME.Background.Hangfire
 
         public void Registrar()
         {
-            RegistrarHangfireServer();
-            RegistrarDashboard();
+            //RegistrarHangfireServer();
+            //RegistrarDashboard();
         }
 
         private void RegistrarDashboard()
@@ -76,4 +75,5 @@ namespace SME.Background.Hangfire
         }
     }
 }
+
 //

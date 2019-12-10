@@ -62,7 +62,7 @@ const Filtro = () => {
   const [campoTurmaDesabilitado, setCampoTurmaDesabilitado] = useState(true);
 
   const anosLetivoStore = useSelector(state => state.filtro.anosLetivos);
-  const [anosLetivos, setAnosLetivos] = useState([...anosLetivoStore]);
+  const [anosLetivos, setAnosLetivos] = useState(anosLetivoStore);
   const [anoLetivoSelecionado, setAnoLetivoSelecionado] = useState(
     turmaUsuarioSelecionada ? turmaUsuarioSelecionada.anoLetivo : ''
   );
@@ -133,7 +133,7 @@ const Filtro = () => {
       turmaSelecionada
     ) {
       const modalidadeDesc = modalidades.find(
-        modalidade => modalidade.valor.toString() === `${modalidadeSelecionada}`
+        item => item.valor.toString() === `${modalidadeSelecionada}`
       );
 
       const turmaDesc = turmas.find(turma => turma.valor === turmaSelecionada);
@@ -149,7 +149,7 @@ const Filtro = () => {
       setAlternarFocoBusca(false);
 
       const turmaSelecionadaCompleta = turmas.find(
-        t => t.valor == turmaSelecionada
+        item => item.valor.toString() === turmaSelecionada
       );
 
       const turma = {
@@ -190,12 +190,16 @@ const Filtro = () => {
     setCampoUnidadeEscolarDesabilitado(false);
   };
 
+  const filtro = useSelector(state => state.filtro);
+
   useEffect(() => {
     let estado = true;
-    const ObterAnosLetivos = async deveSalvarAnosLetivos => {
+
+    const obterAnosLetivos = async deveSalvarAnosLetivos => {
       const anosLetivo = await ServicoFiltro.listarAnosLetivos()
         .then(resposta => {
           const anos = [];
+
           if (resposta.data) {
             resposta.data.forEach(ano => {
               anos.push({ desc: ano, valor: ano });
@@ -209,15 +213,16 @@ const Filtro = () => {
       if (deveSalvarAnosLetivos) {
         dispatch(salvarAnosLetivos(anosLetivo));
         setAnosLetivos(anosLetivo);
-        setCampoAnoLetivoDesabilitado(anosLetivo.length === 1);
       }
     };
-    ObterAnosLetivos(estado);
+
+    obterAnosLetivos(estado && !filtro.anosLetivos.length);
+
     return () => {
       estado = false;
       return estado;
     };
-  }, [dispatch]);
+  }, [dispatch, filtro]);
 
   useEffect(() => {
     let estado = true;
@@ -241,6 +246,7 @@ const Filtro = () => {
   useEffect(() => {
     if (anosLetivos && anosLetivos.length === 1) {
       setAnoLetivoSelecionado(anosLetivos[0].valor);
+      setCampoAnoLetivoDesabilitado(true);
     }
   }, [anosLetivos]);
 
@@ -250,20 +256,22 @@ const Filtro = () => {
     if (!anoLetivoSelecionado) {
       setModalidadeSelecionada();
       setCampoModalidadeDesabilitado(true);
-      return;
+    } else {
+      const obterModalidades = async deveSalvarModalidade => {
+        const modalidadesLista = await FiltroHelper.ObtenhaModalidades();
+
+        if (deveSalvarModalidade) {
+          setModalidades(modalidadesLista);
+          dispatch(salvarModalidades(modalidadesLista));
+          setCampoModalidadeDesabilitado(modalidadesLista.length === 1);
+        }
+      };
+      obterModalidades(estado);
     }
-    const ObtenhaModalidades = async deveSalvarModalidade => {
-      const modalidadesLista = await FiltroHelper.ObtenhaModalidades();
-
-      if (deveSalvarModalidade) {
-        setModalidades([...modalidadesLista]);
-        dispatch(salvarModalidades(modalidadesLista));
-        setCampoModalidadeDesabilitado(modalidadesLista.length === 1);
-      }
+    return () => {
+      estado = false;
+      return estado;
     };
-    ObtenhaModalidades(estado);
-
-    return () => (estado = false);
   }, [anoLetivoSelecionado, dispatch]);
 
   useEffect(() => {
@@ -271,10 +279,10 @@ const Filtro = () => {
       setModalidadeSelecionada(modalidades[0].valor);
   }, [modalidades]);
 
-  // lista dres
   useEffect(() => {
     let estado = true;
-    const ObtenhaPeriodos = async deveSalvarPeriodos => {
+
+    const obterPeriodos = async deveSalvarPeriodos => {
       const periodo = await FiltroHelper.ObtenhaPeriodos(modalidadeSelecionada);
 
       if (!modalidade) return;
@@ -285,22 +293,23 @@ const Filtro = () => {
         setCampoPeriodoDesabilitado(periodo.length === 1);
       }
     };
+
     if (!modalidadeSelecionada) {
       setPeriodoSelecionado();
       setDreSelecionada();
       setCampoPeriodoDesabilitado(true);
       setCampoDreDesabilitado(true);
-      return;
-    }
-
-    if (modalidadeSelecionada === modalidade.EJA.toString()) {
-      ObtenhaPeriodos(estado);
+    } else if (modalidadeSelecionada === modalidade.EJA.toString()) {
+      obterPeriodos(estado);
       setCampoDreDesabilitado(true);
     } else {
       ObtenhaDres(estado);
     }
 
-    return () => (estado = false);
+    return () => {
+      estado = false;
+      return estado;
+    };
   }, [ObtenhaDres, dispatch, modalidadeSelecionada]);
 
   useEffect(() => {
@@ -308,7 +317,6 @@ const Filtro = () => {
       setPeriodoSelecionado(periodos[0].valor);
   }, [periodos]);
 
-  // lista dres 2
   useEffect(() => {
     const estado = true;
 
@@ -351,6 +359,7 @@ const Filtro = () => {
         setCampoUnidadeEscolarDesabilitado(ues.length === 1);
       }
     };
+
     if (!dreSelecionada) {
       setUnidadeEscolarSelecionada();
       setCampoUnidadeEscolarDesabilitado(true);
@@ -364,7 +373,10 @@ const Filtro = () => {
 
     ObtenhaUnidadesEscolares(estado, periodo);
 
-    return () => (estado = false);
+    return () => {
+      estado = false;
+      return estado;
+    };
   }, [dispatch, dreSelecionada, modalidadeSelecionada, periodoSelecionado]);
 
   useEffect(() => {
@@ -372,7 +384,6 @@ const Filtro = () => {
       setUnidadeEscolarSelecionada(unidadesEscolares[0].valor);
   }, [unidadesEscolares]);
 
-  // Hook listagem de turmas
   useEffect(() => {
     const ObtenhaTurmas = async deveSalvarTurmas => {
       const periodo =
@@ -577,13 +588,13 @@ const Filtro = () => {
     setAnoLetivoSelecionado(ano);
   };
 
-  const aoTrocarModalidade = modalidade => {
-    if (modalidade !== modalidadeSelecionada) {
+  const aoTrocarModalidade = valor => {
+    if (valor !== modalidadeSelecionada) {
       setDreSelecionada();
       setPeriodoSelecionado();
     }
 
-    setModalidadeSelecionada(modalidade);
+    setModalidadeSelecionada(valor);
   };
 
   const aoTrocarPeriodo = periodo => {
