@@ -20,6 +20,7 @@ import history from '~/servicos/history';
 import { erro, sucesso, confirmar } from '~/servicos/alertas';
 import { setBreadcrumbManual } from '~/servicos/breadcrumb-services';
 import AtribuicaoCJServico from '~/servicos/Paginas/AtribuicaoCJ';
+import { obterPerfis } from '~/servicos/Paginas/ServicoUsuario';
 
 // Componentes SGP
 import { Cabecalho, DreDropDown, UeDropDown } from '~/componentes-sgp';
@@ -46,14 +47,13 @@ import {
   valorNuloOuVazio,
   objetoEstaTodoPreenchido,
 } from '~/utils/funcoes/gerais';
-import { obterPerfis } from '~/servicos/Paginas/ServicoUsuario';
-import { store } from '~/redux';
 
 function AtribuicaoCJForm({ match, location }) {
   const dispatch = useDispatch();
   const carregando = useSelector(store => store.loader.loaderSecao);
   const carregandoTabela = useSelector(store => store.loader.loaderTabela);
   const permissoesTela = useSelector(store => store.usuario.permissoes);
+  const usuario = useSelector(store => store.usuario);
   const [dreId, setDreId] = useState('');
   const [novoRegistro, setNovoRegistro] = useState(true);
   const [modoEdicao] = useState(false);
@@ -109,7 +109,7 @@ function AtribuicaoCJForm({ match, location }) {
         dispatch(setLoaderSecao(false));
         sucesso('Atribuição de CJ salva com sucesso.');
         history.push('/gestao/atribuicao-cjs');
-        obterPerfis(store.getState().usuario.usuario);
+        obterPerfis(usuario.rf);
       }
     } catch (err) {
       if (err) {
@@ -120,7 +120,7 @@ function AtribuicaoCJForm({ match, location }) {
   };
 
   const onClickVoltar = async () => {
-    if (modoEdicao) {
+    if (!novoRegistro && listaProfessores.some(x => x.substituir === true)) {
       const confirmou = await confirmar(
         'Atenção',
         'Você não salvou as informações preenchidas.',
@@ -157,15 +157,19 @@ function AtribuicaoCJForm({ match, location }) {
     );
   };
 
+  const desabilitarBotaoPrincipal = () =>
+    novoRegistro && !listaProfessores.some(x => x.substituir === true);
+
   useEffect(() => {
     if (location && location.search) {
       const query = queryString.parse(location.search);
-      setNovoRegistro(false);
       setBreadcrumbManual(match.url, 'Atribuição', '/gestao/atribuicao-cjs');
       setValoresIniciais({
         ...valoresIniciais,
         modalidadeId: query.modalidadeId,
         turmaId: query.turmaId,
+        ueId: query.ueId,
+        dreId: query.dreId,
       });
     }
   }, []);
@@ -195,6 +199,9 @@ function AtribuicaoCJForm({ match, location }) {
           setListaProfessores(data.itens);
           setAuditoria(data);
           setLoaderTabela(false);
+          if (data.itens.some(x => x.substituir === true)) {
+            setNovoRegistro(false);
+          }
         }
       } catch (error) {
         setLoaderTabela(false);
@@ -209,7 +216,7 @@ function AtribuicaoCJForm({ match, location }) {
     ) {
       buscaAtribs(valoresForm);
     }
-  }, [valoresForm]);
+  }, [refForm, valoresForm]);
 
   return (
     <>
@@ -235,6 +242,7 @@ function AtribuicaoCJForm({ match, location }) {
                   labelBotaoPrincipal="Salvar"
                   onClickBotaoPrincipal={() => onClickBotaoPrincipal(form)}
                   onClickVoltar={() => onClickVoltar()}
+                  desabilitarBotaoPrincipal={desabilitarBotaoPrincipal()}
                   modoEdicao={modoEdicao}
                 />
                 <Row className="row">

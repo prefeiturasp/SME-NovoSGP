@@ -7,7 +7,7 @@ namespace SME.SGP.Aplicacao
     {
         Task Alterar(TipoAvaliacaoDto dto, long id);
 
-        Task Excluir(long idTipoAtividadeAvaliativa);
+        Task Excluir(long[] idTipoAtividadeAvaliativa);
 
         Task Inserir(TipoAvaliacaoDto dto);
     }

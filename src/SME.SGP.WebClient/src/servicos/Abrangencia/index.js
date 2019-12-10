@@ -22,7 +22,7 @@ const AbrangenciaServico = {
     }
 
     return api.get(`v1/abrangencias/dres/ues/${ue}/turmas`, {
-      ...params,
+      params,
     });
   },
 };

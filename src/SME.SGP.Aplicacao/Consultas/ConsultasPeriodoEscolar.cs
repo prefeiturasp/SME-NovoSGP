@@ -50,6 +50,21 @@ namespace SME.SGP.Aplicacao.Consultas
             return fimRecorrencia;
         }
 
+        public PeriodoEscolarDto ObterPeriodoEscolarPorData(long tipoCalendarioId, DateTime dataPeriodo)
+        {
+            return MapearParaDto(repositorio.ObterPorTipoCalendarioData(tipoCalendarioId, dataPeriodo));
+        }
+
+        private PeriodoEscolarDto MapearParaDto(PeriodoEscolar periodo)
+            => periodo == null ? null : new PeriodoEscolarDto()
+            {
+                Id = periodo.Id,
+                Bimestre = periodo.Bimestre,
+                Migrado = periodo.Migrado,
+                PeriodoInicio = periodo.PeriodoInicio,
+                PeriodoFim = periodo.PeriodoFim
+            };
+
         private static PeriodoEscolarListaDto EntidadeParaDto(IEnumerable<PeriodoEscolar> lista)
         {
             return new PeriodoEscolarListaDto

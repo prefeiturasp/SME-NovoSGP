@@ -2,7 +2,7 @@ import api from '~/servicos/api';
 
 const AtribuicaoCJServico = {
   buscarLista(params) {
-    return api.get(`/v1/atribuicoes/cjs`, params);
+    return api.get(`/v1/atribuicoes/cjs`, { params });
   },
   buscarAtribuicoes(ue, modalidade, turma, professorRf) {
     return api.get(

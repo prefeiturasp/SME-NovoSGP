@@ -51,15 +51,17 @@ function ModalCopiarConteudo({ show, disciplina, onClose, planoAula }) {
 
       if (data) {
         setListaTurmas(
-          data.map(item => ({
-            desc: item.nome,
-            valor: item.codigo,
-          }))
+          data
+            .filter(x => x.ano === filtro.ano)
+            .map(item => ({
+              desc: item.nome,
+              valor: item.codigo,
+            }))
         );
       }
     }
     buscaTurmas();
-  }, [filtro.unidadeEscolar, filtro.modalidade]);
+  }, [filtro.unidadeEscolar, filtro.modalidade, filtro.ano]);
 
   const adicionarTurma = () => {
     setTurmas([

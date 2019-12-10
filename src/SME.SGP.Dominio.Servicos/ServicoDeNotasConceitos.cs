@@ -51,7 +51,7 @@ namespace SME.SGP.Dominio
 
             ValidarAvaliacoes(idsAtividadesAvaliativas, atividadesAvaliativas, professorRf);
 
-            var EntidadesSalvar = new List<NotaConceito>();
+            var entidadesSalvar = new List<NotaConceito>();
 
             var notasPorAvaliacoes = notasConceitos.GroupBy(x => x.AtividadeAvaliativaID);
 
@@ -59,10 +59,20 @@ namespace SME.SGP.Dominio
             {
                 var avaliacao = atividadesAvaliativas.FirstOrDefault(x => x.Id == notasPorAvaliacao.Key);
 
-                EntidadesSalvar.AddRange(ValidarEObter(notasPorAvaliacao.ToList(), avaliacao, alunos, professorRf));
+                entidadesSalvar.AddRange(ValidarEObter(notasPorAvaliacao.ToList(), avaliacao, alunos, professorRf));
             }
 
-            SalvarNoBanco(EntidadesSalvar);
+            SalvarNoBanco(entidadesSalvar);
+        }
+
+        public NotaTipoValor TipoNotaPorAvaliacao(AtividadeAvaliativa atividadeAvaliativa)
+        {
+            var notaTipo = ObterNotaTipo(atividadeAvaliativa.TurmaId, atividadeAvaliativa.DataAvaliacao).Result;
+
+            if (notaTipo == null)
+                throw new NegocioException("Não foi encontrado tipo de nota para a avaliação informada");
+
+            return notaTipo;
         }
 
         private static void ValidarSeAtividadesAvaliativasExistem(IEnumerable<long> avaliacoesAlteradasIds, IEnumerable<AtividadeAvaliativa> avaliacoes)
@@ -102,16 +112,6 @@ namespace SME.SGP.Dominio
 
                 unitOfWork.PersistirTransacao();
             }
-        }
-
-        private NotaTipoValor TipoNotaPorAvaliacao(AtividadeAvaliativa atividadeAvaliativa)
-        {
-            var notaTipo = ObterNotaTipo(atividadeAvaliativa.TurmaId, atividadeAvaliativa.DataAvaliacao).Result;
-
-            if (notaTipo == null)
-                throw new NegocioException("Não foi encontrado tipo de nota para a avaliação informada");
-
-            return notaTipo;
         }
 
         private void ValidarAvaliacoes(IEnumerable<long> avaliacoesAlteradasIds, IEnumerable<AtividadeAvaliativa> atividadesAvaliativas, string professorRf)
@@ -158,7 +158,7 @@ namespace SME.SGP.Dominio
                     notaConceito.ValidarConceitos(conceitos, aluno.NomeAluno);
                 }
 
-                notaConceito.TipoNota = tipoNota.Id;
+                notaConceito.TipoNota = (TipoNota)tipoNota.Id;
             });
 
             return notasConceitos;

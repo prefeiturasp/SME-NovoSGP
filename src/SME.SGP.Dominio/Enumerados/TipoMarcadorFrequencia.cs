@@ -4,11 +4,11 @@ using System.Text;
 
 namespace SME.SGP.Dominio
 {
-    public enum TipoEventoMatricula
+    public enum TipoMarcadorFrequencia
     {
         Novo = 1,
-        Transferido = 2,
-        Inativo = 3,
+        Inativo = 2,
+        Transferido = 3,
         Remanejado = 4
     }
 }
