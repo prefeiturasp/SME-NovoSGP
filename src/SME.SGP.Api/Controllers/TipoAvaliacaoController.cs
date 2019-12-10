@@ -38,9 +38,9 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(IEnumerable<TipoAvaliacaoCompletaDto>), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [AllowAnonymous] //ainda nao existe perfil pra essa função
-        public async Task<IActionResult> BuscarTodosAsync([FromQuery]string nome)
+        public async Task<IActionResult> BuscarTodosAsync([FromQuery]string nome, string descricao, bool? situacao)
         {
-            return Ok(await consultaTipoAvaliacao.ListarPaginado(nome));
+            return Ok(await consultaTipoAvaliacao.ListarPaginado(nome, descricao, situacao));
         }
 
         [HttpDelete]
