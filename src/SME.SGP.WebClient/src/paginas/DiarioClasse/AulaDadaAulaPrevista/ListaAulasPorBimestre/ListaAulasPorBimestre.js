@@ -16,7 +16,7 @@ const ListaAulasPorBimestre = props => {
   return (
     <Corpo>
       <table className="table mb-0">
-        <thead className="tabela-frequencia-thead">
+        <thead className="tabela-frequencia-thead" key="thead">
           <tr>
             <th rowSpan="2" className="width-60 bc-w-i" scope="col"></th>
             <th rowSpan="2" className="text-center fundo-cinza">
@@ -45,93 +45,97 @@ const ListaAulasPorBimestre = props => {
         </thead>
         {dados && dados.bimestres ? dados.bimestres.map(item => {
           return (
-            <tr>
-              <td className="fundo-cinza">
-                <span className="negrito">{`${item.bimestre}º Bimestre`}</span>
-                <span>{` - ${formatarData(item.inicio)} à ${formatarData(item.fim)}`}</span>
-              </td>
-              <td>
-                {item.previstas.temDivergencia ?
-                  <CampoCentralizado className="p-l-16">
-                    <CampoAlerta>
+            <tbody key={`lista-${item.bimestre}`}>
+              <tr>
+                <td className="fundo-cinza">
+                  <span className="negrito">{`${item.bimestre}º Bimestre`}</span>
+                  <span>{` - ${formatarData(item.inicio)} à ${formatarData(item.fim)}`}</span>
+                </td>
+                <td>
+                  {item.previstas.temDivergencia ?
+                    <CampoCentralizado className="p-l-16">
+                      <CampoAlerta>
+                        <CampoNumero
+                          value={item.previstas.quantidade}
+                          onChange={() => { }}
+                          onKeyDown={() => { }}
+                          min={0}
+                        />
+                        <div className="icone">
+                          <i className="fas fa-exclamation-triangle"></i>
+                        </div>
+                      </CampoAlerta>
+                    </CampoCentralizado>
+                    : <CampoEditavel>
                       <CampoNumero
                         value={item.previstas.quantidade}
                         onChange={() => { }}
                         onKeyDown={() => { }}
                         min={0}
                       />
-                      <div className="icone">
-                        <i className="fas fa-exclamation-triangle"></i>
-                      </div>
-                    </CampoAlerta>
-                  </CampoCentralizado>
-                  : <CampoEditavel>
-                    <CampoNumero
-                      value={item.previstas.quantidade}
-                      onChange={() => { }}
-                      onKeyDown={() => { }}
-                      min={0}
-                    />
-                  </CampoEditavel>}
-              </td>
-              <td>
-                <CampoDesabilitado>
-                  <span>{item.criadas.professorTitular}</span>
-                </CampoDesabilitado>
-              </td>
-              {temProfessorCj ?
+                    </CampoEditavel>}
+                </td>
                 <td>
                   <CampoDesabilitado>
-                    <span>{item.criadas.professorCj}</span>
+                    <span>{item.criadas.professorTitular}</span>
                   </CampoDesabilitado>
                 </td>
-                : null}
-              <td>
-                <CampoDesabilitado>
-                  <span>{item.dadas}</span>
-                </CampoDesabilitado>
-              </td>
-              <td>
-                <CampoDesabilitado>
-                  <span>{item.respostas}</span>
-                </CampoDesabilitado>
-              </td>
-            </tr>
+                {temProfessorCj ?
+                  <td>
+                    <CampoDesabilitado>
+                      <span>{item.criadas.professorCj}</span>
+                    </CampoDesabilitado>
+                  </td>
+                  : null}
+                <td>
+                  <CampoDesabilitado>
+                    <span>{item.dadas}</span>
+                  </CampoDesabilitado>
+                </td>
+                <td>
+                  <CampoDesabilitado>
+                    <span>{item.respostas}</span>
+                  </CampoDesabilitado>
+                </td>
+              </tr>
+            </tbody>
           );
         })
           : null}
-        <tr className="fundo-cinza-i">
-          <th className="fundo-cinza">
-            <span className="negrito">Total</span>
-          </th>
-          <td>
-            <CampoDesabilitado>
-              <span>{totalPrevistas}</span>
-            </CampoDesabilitado>
-          </td>
-          <td>
-            <CampoDesabilitado>
-              <span>{totalCriadasProfTitular}</span>
-            </CampoDesabilitado>
-          </td>
-          {temProfessorCj ?
+        <tbody key="coluna-lateral">
+          <tr className="fundo-cinza-i">
+            <th className="fundo-cinza">
+              <span className="negrito">Total</span>
+            </th>
             <td>
               <CampoDesabilitado>
-                <span>{totalCriadasProfCj}</span>
+                <span>{totalPrevistas}</span>
               </CampoDesabilitado>
             </td>
-            : null}
-          <td>
-            <CampoDesabilitado>
-              <span>{totalDadas}</span>
-            </CampoDesabilitado>
-          </td>
-          <td>
-            <CampoDesabilitado>
-              <span>{totalRespostas}</span>
-            </CampoDesabilitado>
-          </td>
-        </tr>
+            <td>
+              <CampoDesabilitado>
+                <span>{totalCriadasProfTitular}</span>
+              </CampoDesabilitado>
+            </td>
+            {temProfessorCj ?
+              <td>
+                <CampoDesabilitado>
+                  <span>{totalCriadasProfCj}</span>
+                </CampoDesabilitado>
+              </td>
+              : null}
+            <td>
+              <CampoDesabilitado>
+                <span>{totalDadas}</span>
+              </CampoDesabilitado>
+            </td>
+            <td>
+              <CampoDesabilitado>
+                <span>{totalRespostas}</span>
+              </CampoDesabilitado>
+            </td>
+          </tr>
+        </tbody>
       </table>
     </Corpo>
   )

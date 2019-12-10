@@ -9,6 +9,7 @@ import ServicoDisciplina from '~/servicos/Paginas/ServicoDisciplina';
 import { Colors, Auditoria } from '~/componentes';
 import ListaAulasPorBimestre from './ListaAulasPorBimestre/ListaAulasPorBimestre';
 import { getMock } from './ListaAulasPorBimestre/ListaMock';
+import api from '~/servicos/api';
 
 const AulaDadaAulaPrevista = () => {
   const usuario = useSelector(store => store.usuario);
@@ -42,11 +43,14 @@ const AulaDadaAulaPrevista = () => {
     };
     if (turmaId) {
       obterDisciplinas(turmaId);
-      setDadosLista(getMock());
+      const dados = getMock();
+      setDadosLista(dados);
     }
   }, [turmaSelecionada.turma]);
 
-  const onChangeDisciplinas = disciplinaId => {
+  const onChangeDisciplinas = async disciplinaId => {
+    const dadosAula = await api.get(`v1/aula-prevista/tipoCalendario/1/turma/${turmaId}/disciplina/${disciplinaId}`);
+    console.log(dadosAula);
   }
 
   const onClickVoltar = () => {
@@ -115,7 +119,9 @@ const AulaDadaAulaPrevista = () => {
               />
             </div>
             <div className="col-md-12">
-              <ListaAulasPorBimestre dados={dadoslista} />
+              {dadoslista && dadoslista.bimestres ?
+                <ListaAulasPorBimestre dados={dadoslista} />
+                : null}
             </div>
             <div className="col-md-6 d-flex justify-content-start">
               {auditoria ? (
