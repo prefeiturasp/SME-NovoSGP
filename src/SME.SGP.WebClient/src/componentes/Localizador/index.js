@@ -70,7 +70,7 @@ function Localizador({
   }, [form.initialValues]);
 
   useEffect(() => {
-    if (usuario.ehProfessor) {
+    if (usuario.ehProfessor || usuario.ehProfessorCj) {
       onBuscarPorRF({ rf: usuario.rf });
     }
   }, []);
@@ -86,7 +86,9 @@ function Localizador({
           onSelect={onBuscarPorRF}
           name="professorRf"
           form={form}
-          desabilitado={desabilitado || usuario.ehProfessor}
+          desabilitado={
+            desabilitado || (usuario.ehProfessor || usuario.ehProfessorCj)
+          }
         />
       </Grid>
       <Grid className="pr-0" cols={8}>
@@ -98,7 +100,9 @@ function Localizador({
           pessoaSelecionada={pessoaSelecionada}
           form={form}
           name="professorNome"
-          desabilitado={desabilitado || usuario.ehProfessor}
+          desabilitado={
+            desabilitado || (usuario.ehProfessor || usuario.ehProfessorCj)
+          }
         />
       </Grid>
     </>
