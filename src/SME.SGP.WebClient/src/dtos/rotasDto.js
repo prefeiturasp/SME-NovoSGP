@@ -22,6 +22,7 @@ const RotasDto = {
   FREQUENCIA_PLANO_AULA: '/diario-classe/frequencia-plano-aula',
   TIPO_AVALIACAO: '/configuracoes/tipo-avaliacao',
   NOTAS: '/diario-classe/notas',
+  AULA_DADA_AULA_PREVISTA: '/diario-classe/aula-dada-aula-prevista',
 };
 
 export default RotasDto;
