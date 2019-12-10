@@ -63,10 +63,10 @@ namespace SME.SGP.Dados.Repositorios
                 if (aulasDadasPrevistasAuditoria == null)
                     aulasDadasPrevistasAuditoria = pda;
 
-                if (aulasDadasPrevistasAuditoria.AulasPrevistasDadas == null)
-                    aulasDadasPrevistasAuditoria.AulasPrevistasDadas = new List<AulasPrevistasDadasDto>();
+                if (aulasDadasPrevistasAuditoria.AulasPrevistasPorBimestre == null)
+                    aulasDadasPrevistasAuditoria.AulasPrevistasPorBimestre = new List<AulasPrevistasDadasDto>();
 
-                aulasDadasPrevistasAuditoria.AulasPrevistasDadas.AsList().Add(pd);
+                aulasDadasPrevistasAuditoria.AulasPrevistasPorBimestre.AsList().Add(pd);
 
                 return pda;
 
