@@ -37,6 +37,7 @@ const Base = {
   VermelhoAlerta: '#B40C02',
   VermelhoNotificacao: '#B40C02',
   Vermelho: '#B40C02',
+  LaranjaAlerta: "#D06D12",
 };
 
 const Active = {

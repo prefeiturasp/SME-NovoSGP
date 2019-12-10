@@ -31,14 +31,17 @@ function AtribuicaoCJLista() {
     {
       title: 'Modalidade',
       dataIndex: 'modalidade',
+      key: 'modalidade',
     },
     {
       title: 'Turma',
       dataIndex: 'turma',
+      key: 'turma',
     },
     {
       title: 'Disciplinas',
       dataIndex: 'disciplinas',
+      key: 'disciplinas',
       width: '80%',
       render: linha => {
         return linha.map(item => <PilulaEstilo>{item}</PilulaEstilo>);
@@ -48,9 +51,8 @@ function AtribuicaoCJLista() {
 
   const onClickVoltar = () => history.push('/');
 
-  const onClickBotaoPrincipal = () => {
-    history.push(`atribuicao-cjs/novo`);
-  };
+  const onClickBotaoPrincipal = () =>
+    history.push(`/gestao/atribuicao-cjs/novo`);
 
   const onSelecionarItems = items => {
     setItensSelecionados(items);
@@ -117,6 +119,7 @@ function AtribuicaoCJLista() {
           <div className="col-md-12 pt-2 py-0 px-0">
             <DataTable
               id="lista-atribuicoes-cj"
+              idLinha="modalidadeId"
               colunaChave="id"
               columns={colunas}
               dataSource={itens}

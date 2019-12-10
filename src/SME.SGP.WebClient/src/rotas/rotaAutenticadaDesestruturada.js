@@ -7,24 +7,18 @@ const RotaAutenticadaDesestruturada = props => {
   const logado = useSelector(state => state.usuario.logado);
   const primeiroAcesso = useSelector(state => state.usuario.modificarSenha);
 
+  if (!logado) {
+    return (
+      <Redirect
+        to={`/login/${btoa(props.location.pathname + props.location.search)}`}
+      />
+    );
+  }
+
   return (
     <Route
       {...propriedades}
-      render={propriedade =>
-        logado ? (
-          primeiroAcesso ? (
-            <Redirect to="/redefinir-senha" />
-          ) : (
-            <Componente {...propriedade} />
-          )
-        ) : (
-          <Redirect
-            to={`/login/${btoa(
-              props.location.pathname + props.location.search
-            )}`}
-          />
-        )
-      }
+      render={propriedade => <Componente {...propriedade} />}
     />
   );
 };

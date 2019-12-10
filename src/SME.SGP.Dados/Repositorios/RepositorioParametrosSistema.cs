@@ -3,6 +3,7 @@ using SME.SGP.Dados.Contexto;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using System.Text;
+using SME.SGP.Infra;
 
 namespace SME.SGP.Dados.Repositorios
 {

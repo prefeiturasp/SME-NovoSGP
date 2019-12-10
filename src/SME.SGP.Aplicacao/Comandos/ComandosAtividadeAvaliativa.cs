@@ -43,8 +43,9 @@ namespace SME.SGP.Aplicacao
         public async Task Alterar(AtividadeAvaliativaDto dto, long id)
         {
             var usuario = await servicoUsuario.ObterUsuarioLogado();
-            var atividadeAvaliativa = MapearDtoParaEntidade(dto, id, usuario.CodigoRf);
-            var disciplina = ObterDisciplina(atividadeAvaliativa.DisciplinaId);
+            var disciplina = ObterDisciplina(dto.DisciplinaId);
+            var atividadeAvaliativa = MapearDtoParaEntidade(dto, id, usuario.CodigoRf, disciplina.Regencia);
+
             using (var transacao = unitOfWork.IniciarTransacao())
             {
                 if (disciplina.Regencia)
@@ -95,12 +96,11 @@ namespace SME.SGP.Aplicacao
         {
             var usuario = await servicoUsuario.ObterUsuarioLogado();
             var disciplina = ObterDisciplina(dto.DisciplinaId);
-            dto.EhRegencia = disciplina.Regencia;
-            var atividadeAvaliativa = MapearDtoParaEntidade(dto, 0L, usuario.CodigoRf);
+            var atividadeAvaliativa = MapearDtoParaEntidade(dto, 0L, usuario.CodigoRf, disciplina.Regencia);
             using (var transacao = unitOfWork.IniciarTransacao())
             {
                 await repositorioAtividadeAvaliativa.SalvarAsync(atividadeAvaliativa);
-                if (dto.EhRegencia)
+                if (atividadeAvaliativa.EhRegencia)
                 {
                     if (dto.DisciplinaContidaRegenciaId.Length == 0)
                         throw new NegocioException("É necessário informar as disciplinas da regência");
@@ -138,28 +138,28 @@ namespace SME.SGP.Aplicacao
                 throw new NegocioException("Não foi encontrado nenhum período escolar para essa data.");
 
             //verificar se já existe atividade com o mesmo nome no mesmo bimestre
-            if (await repositorioAtividadeAvaliativa.VerificarSeJaExisteAvaliacaoComMesmoNome(filtro.Nome, filtro.DreId, filtro.UeID, filtro.TurmaId, usuario.CodigoRf, perioEscolar.PeriodoInicio, perioEscolar.PeriodoFim))
+            if (await repositorioAtividadeAvaliativa.VerificarSeJaExisteAvaliacaoComMesmoNome(filtro.Nome, filtro.DreId, filtro.UeID, filtro.TurmaId, filtro.DisciplinaId, usuario.CodigoRf, perioEscolar.PeriodoInicio, perioEscolar.PeriodoFim, filtro.Id))
             {
                 throw new NegocioException("Já existe atividade avaliativa cadastrada com esse nome para esse bimestre.");
             }
 
             if (disciplina.Regencia)
             {
-                if (await repositorioAtividadeAvaliativa.VerificarSeJaExisteAvaliacaoRegencia(dataAvaliacao, filtro.DreId, filtro.UeID, filtro.TurmaId, filtro.DisciplinaId, filtro.DisciplinaContidaRegenciaId, usuario.CodigoRf))
+                if (await repositorioAtividadeAvaliativa.VerificarSeJaExisteAvaliacaoRegencia(dataAvaliacao, filtro.DreId, filtro.UeID, filtro.TurmaId, filtro.DisciplinaId, filtro.DisciplinaContidaRegenciaId, usuario.CodigoRf, filtro.Id))
                 {
-                    throw new NegocioException("Já existe atividade avaliativa cadastrada para esse data e disciplina.");
+                    throw new NegocioException("Já existe atividade avaliativa cadastrada para essa data e disciplina.");
                 }
             }
             else
             {
-                if (await repositorioAtividadeAvaliativa.VerificarSeJaExisteAvaliacaoNaoRegencia(dataAvaliacao, filtro.DreId, filtro.UeID, filtro.TurmaId, usuario.CodigoRf))
+                if (await repositorioAtividadeAvaliativa.VerificarSeJaExisteAvaliacaoNaoRegencia(dataAvaliacao, filtro.DreId, filtro.UeID, filtro.TurmaId, filtro.DisciplinaId, usuario.CodigoRf, filtro.Id))
                 {
-                    throw new NegocioException("Já existe atividade avaliativa cadastrada para esse data.");
+                    throw new NegocioException("Já existe atividade avaliativa cadastrada para essa data e disciplina.");
                 }
             }
         }
 
-        private AtividadeAvaliativa MapearDtoParaEntidade(AtividadeAvaliativaDto dto, long id, string usuarioRf)
+        private AtividadeAvaliativa MapearDtoParaEntidade(AtividadeAvaliativaDto dto, long id, string usuarioRf, bool ehRegencia)
         {
             AtividadeAvaliativa atividadeAvaliativa = new AtividadeAvaliativa();
             if (id > 0L)
@@ -179,7 +179,7 @@ namespace SME.SGP.Aplicacao
             atividadeAvaliativa.NomeAvaliacao = dto.Nome;
             atividadeAvaliativa.DescricaoAvaliacao = dto.Descricao;
             atividadeAvaliativa.DataAvaliacao = dto.DataAvaliacao;
-            atividadeAvaliativa.EhRegencia = dto.EhRegencia;
+            atividadeAvaliativa.EhRegencia = ehRegencia;
             return atividadeAvaliativa;
         }
 
