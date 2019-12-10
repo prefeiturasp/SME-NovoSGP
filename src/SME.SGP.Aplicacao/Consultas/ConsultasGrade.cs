@@ -48,6 +48,8 @@ namespace SME.SGP.Aplicacao
             // verifica se é regencia de classe
             if (ehRegencia)
                 horasGrade = abrangencia.Modalidade == Modalidade.EJA ? 5 : 1;
+            else if (disciplina == 1030)
+                horasGrade = 4;
             else
                 // Busca carga horaria na grade da disciplina para o ano da turma
                 horasGrade = await ObterHorasGradeComponente(grade.Id, disciplina, abrangencia.Ano);
