@@ -14,6 +14,7 @@ const TextEditor = React.forwardRef((props, ref) => {
     maxlength,
     id,
     name,
+    toolbar,
   } = props;
 
   const toolbarOptions = [
@@ -22,7 +23,7 @@ const TextEditor = React.forwardRef((props, ref) => {
   ];
 
   const modules = {
-    toolbar: toolbarOptions,
+    toolbar: toolbar ? toolbarOptions : [],
     keyboard: {
       bindings: {
         tab: false,
@@ -81,6 +82,7 @@ TextEditor.propTypes = {
   maxlength: PropTypes.oneOfType([PropTypes.number]),
   id: PropTypes.oneOfType([PropTypes.string]),
   name: PropTypes.oneOfType([PropTypes.string]),
+  toolbar: PropTypes.oneOfType([PropTypes.bool]),
 };
 
 TextEditor.defaultProps = {
@@ -93,6 +95,7 @@ TextEditor.defaultProps = {
   maxlength: 500,
   id: '',
   name: '',
+  toolbar: true,
 };
 
 export default TextEditor;
