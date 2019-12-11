@@ -25,9 +25,9 @@ namespace SME.SGP.Aplicacao
 
         public async Task<string> Alterar(AulaPrevistaDto aulaPrevistaDto, long id)
         {
-            unitOfWork.IniciarTransacao();
-
             IEnumerable<AulaPrevistaBimestre> aulasPrevistasBimestre = await repositorioBimestre.ObterBimestresAulasPrevistasPorId(id);
+
+            unitOfWork.IniciarTransacao();
 
             foreach (var bimestre in aulaPrevistaDto.BimestresQuantidade)
             {
@@ -45,10 +45,11 @@ namespace SME.SGP.Aplicacao
         {
             long id;
 
-            unitOfWork.IniciarTransacao();
-
             AulaPrevista aulaPrevista = null;
             aulaPrevista = MapearParaDominio(aulaPrevistaDto, aulaPrevista);
+
+            unitOfWork.IniciarTransacao();
+
             id = await Inserir(aulaPrevistaDto, aulaPrevista);
 
             unitOfWork.PersistirTransacao();
