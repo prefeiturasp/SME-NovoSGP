@@ -2,7 +2,6 @@
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Dto;
-using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,48 +11,68 @@ namespace SME.SGP.Aplicacao
 {
     public class ConsultasAtribuicoes : IConsultasAtribuicoes
     {
+        private readonly IConsultasAbrangencia consultasAbrangencia;
         private readonly IRepositorioAtribuicaoCJ repositorioAtribuicaoCJ;
         private readonly IRepositorioAtribuicaoEsporadica repositorioAtribuicaoEsporadica;
         private readonly IRepositorioDre repositorioDre;
         private readonly IRepositorioUe repositorioUe;
         private readonly IServicoEOL servicoEOL;
+        private readonly IServicoUsuario servicoUsuario;
 
         public ConsultasAtribuicoes(IRepositorioAtribuicaoCJ repositorioAtribuicaoCJ, IRepositorioDre repositorioDre, IRepositorioAtribuicaoEsporadica repositorioAtribuicaoEsporadica,
-            IServicoEOL servicoEol, IRepositorioUe repositorioUe)
+            IServicoEOL servicoEol, IRepositorioUe repositorioUe, IServicoUsuario servicoUsuario, IConsultasAbrangencia consultasAbrangencia)
         {
             this.repositorioAtribuicaoCJ = repositorioAtribuicaoCJ ?? throw new ArgumentNullException(nameof(repositorioAtribuicaoCJ));
             this.repositorioDre = repositorioDre ?? throw new ArgumentNullException(nameof(repositorioDre));
             this.repositorioAtribuicaoEsporadica = repositorioAtribuicaoEsporadica ?? throw new ArgumentNullException(nameof(repositorioAtribuicaoEsporadica));
             this.servicoEOL = servicoEol ?? throw new ArgumentNullException(nameof(servicoEol));
             this.repositorioUe = repositorioUe ?? throw new ArgumentNullException(nameof(repositorioUe));
+            this.servicoUsuario = servicoUsuario ?? throw new ArgumentNullException(nameof(servicoUsuario));
+            this.consultasAbrangencia = consultasAbrangencia ?? throw new ArgumentNullException(nameof(consultasAbrangencia));
         }
 
-        public async Task<IEnumerable<AbrangenciaDreRetorno>> ObterDres(string professorRf)
+        public async Task<IEnumerable<AbrangenciaDreRetorno>> ObterDres()
         {
-            var codigosDres = new List<string>();
-            ObterAtribuicoesCjDre(professorRf, codigosDres);
-            ObterAtribuicoesEsporadicasDre(professorRf, codigosDres);
-            await ObterAtribuicoesEolDre(professorRf, codigosDres);
+            var loginAtual = servicoUsuario.ObterLoginAtual();
+            var perfilAtual = servicoUsuario.ObterPerfilAtual();
 
-            var dres = repositorioDre.ListarPorCodigos(codigosDres.Distinct().ToArray());
+            if (perfilAtual == Perfis.PERFIL_CJ)
+            {
+                var codigosDres = new List<string>();
 
-            if (dres != null && dres.Any())
-                return TransformarDresEmDresDto(dres);
-            else return null;
+                ObterAtribuicoesCjDre(loginAtual, codigosDres);
+                ObterAtribuicoesEsporadicasDre(loginAtual, codigosDres);
+                await ObterAtribuicoesEolDre(loginAtual, codigosDres);
+
+                var dres = repositorioDre.ListarPorCodigos(codigosDres.Distinct().ToArray());
+
+                if (dres != null && dres.Any())
+                    return TransformarDresEmDresDto(dres);
+                else return null;
+            }
+            else
+                return await consultasAbrangencia.ObterDres(null, 0);
         }
 
-        public async Task<IEnumerable<TurmaRetornoDto>> ObterUes(string professorRf, string codigoDre)
+        public async Task<IEnumerable<AbrangenciaUeRetorno>> ObterUes(string codigoDre)
         {
-            var codigosUes = new List<string>();
-            await ObterAtribuicoesCjUe(professorRf, codigosUes, codigoDre);
-            ObterAtribuicoesEsporadicasUe(professorRf, codigosUes, codigoDre);
-            await ObterAtribuicoesEolUe(professorRf, codigosUes, codigoDre);
+            var loginAtual = servicoUsuario.ObterLoginAtual();
+            var perfilAtual = servicoUsuario.ObterPerfilAtual();
 
-            IEnumerable<Ue> ues = repositorioUe.ListarPorCodigos(codigosUes.Distinct().ToArray());
+            if (perfilAtual == Perfis.PERFIL_CJ)
+            {
+                var codigosUes = new List<string>();
+                await ObterAtribuicoesCjUe(loginAtual, codigosUes, codigoDre);
+                ObterAtribuicoesEsporadicasUe(loginAtual, codigosUes, codigoDre);
+                await ObterAtribuicoesEolUe(loginAtual, codigosUes, codigoDre);
 
-            if (ues != null && ues.Any())
-                return TransformarUesEmUesDto(ues);
-            else return null;
+                IEnumerable<Ue> ues = repositorioUe.ListarPorCodigos(codigosUes.Distinct().ToArray());
+
+                if (ues != null && ues.Any())
+                    return TransformarUesEmUesDto(ues);
+                else return null;
+            }
+            else return await consultasAbrangencia.ObterUes(codigoDre, null, 0);
         }
 
         private void ObterAtribuicoesCjDre(string professorRf, List<string> codigosDres)
@@ -132,14 +151,15 @@ namespace SME.SGP.Aplicacao
             }
         }
 
-        private IEnumerable<TurmaRetornoDto> TransformarUesEmUesDto(IEnumerable<Ue> ues)
+        private IEnumerable<AbrangenciaUeRetorno> TransformarUesEmUesDto(IEnumerable<Ue> ues)
         {
             foreach (var ue in ues)
             {
-                yield return new TurmaRetornoDto()
+                yield return new AbrangenciaUeRetorno()
                 {
                     Codigo = ue.CodigoUe,
-                    Nome = ue.Nome
+                    Nome = ue.Nome,
+                    TipoEscola = ue.TipoEscola
                 };
             }
         }

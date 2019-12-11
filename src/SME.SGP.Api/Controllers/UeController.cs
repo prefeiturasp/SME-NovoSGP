@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SME.SGP.Aplicacao;
+using SME.SGP.Dto;
 using SME.SGP.Infra;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -30,16 +31,14 @@ namespace SME.SGP.Api.Controllers
             return Ok(await consultasUe.ObterTurmas(codigoUe, idModalidade, ano));
         }
 
-        [HttpGet("/api/v1/dres/{codigoDre}/ues/professores/{professorRf}/atribuicoes")]
-        [ProducesResponseType(typeof(IEnumerable<TurmaRetornoDto>), 200)]
+        [HttpGet("/api/v1/dres/{codigoDre}/ues/atribuicoes")]
+        [ProducesResponseType(typeof(IEnumerable<AbrangenciaUeRetorno>), 200)]
         [ProducesResponseType(401)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [ProducesResponseType(typeof(RetornoBaseDto), 601)]
-        public async Task<IActionResult> ObterUesAtribuicoes(string professorRf, string codigoDre, [FromServices] IConsultasAtribuicoes consultasAtribuicoes)
+        public async Task<IActionResult> ObterUesAtribuicoes(string codigoDre, [FromServices] IConsultasAtribuicoes consultasAtribuicoes)
         {
-            IEnumerable<TurmaRetornoDto> ues = await consultasAtribuicoes.ObterUes(professorRf, codigoDre);
-
-            return Ok(ues);
+            return Ok(await consultasAtribuicoes.ObterUes(codigoDre));
         }
     }
 }
