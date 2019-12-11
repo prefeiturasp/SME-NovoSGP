@@ -14,6 +14,8 @@ namespace SME.SGP.Aplicacao
 
         Task<int> ObterQuantidadeAulasTurmaSemanaProfessor(string turma, string disciplina, string semana, string codigoRf);
 
+        Task<int> ObterQuantidadeAulasTurmaDiaProfessor(string turma, string disciplina, DateTime dataAula, string codigoRf);
+
         Task<int> ObterQuantidadeAulasRecorrentes(long aulaInicialId, RecorrenciaAula recorrencia);
 
         Task<int> ObterRecorrenciaDaSerie(long aulaId);
