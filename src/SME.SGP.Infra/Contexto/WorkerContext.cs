@@ -18,9 +18,9 @@ namespace SME.SGP.Infra.Contexto
 
             WorkerContext contextoTransiente;
 
-            if (!string.IsNullOrWhiteSpace(Thread.CurrentThread.Name))
+            if (!string.IsNullOrWhiteSpace(WorkerContext.ContextIdentifier))
             {
-                if (WorkerServiceScope.TransientContexts.TryGetValue(Thread.CurrentThread.Name, out contextoTransiente))
+                if (WorkerServiceScope.TransientContexts.TryGetValue(WorkerContext.ContextIdentifier, out contextoTransiente))
                     AtribuirContexto(contextoTransiente);
             }
         }
@@ -34,6 +34,14 @@ namespace SME.SGP.Infra.Contexto
         public void Dispose()
         {
             Variaveis.Clear();
+        }
+
+        public static string ContextIdentifier
+        {
+            get
+            {
+                return Thread.CurrentThread.ManagedThreadId.ToString();
+            }
         }
     }
 

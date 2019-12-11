@@ -1,4 +1,5 @@
-﻿using SME.SGP.Aplicacao.Integracoes;
+﻿using Sentry;
+using SME.SGP.Aplicacao.Integracoes;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Dominio.Interfaces;
@@ -51,36 +52,50 @@ namespace SME.SGP.Aplicacao.Servicos
 
         private async Task BuscaAbrangenciaEPersiste(string login, Guid perfil)
         {
-            Task<AbrangenciaRetornoEolDto> consultaEol = null;
+            try
+            {
+                const string breadcrumb = "SGP API - Tratamento de Abrangência";
+                
+                Task<AbrangenciaRetornoEolDto> consultaEol = null;
 
-            var ehSupervisor = perfil == Perfis.PERFIL_SUPERVISOR;
-            var ehProfessorCJ = perfil == Perfis.PERFIL_CJ;
+                var ehSupervisor = perfil == Perfis.PERFIL_SUPERVISOR;
+                var ehProfessorCJ = perfil == Perfis.PERFIL_CJ;
 
-            if (ehSupervisor)
-                consultaEol = ObterAbrangenciaEolSupervisor(login);
-            else if (ehProfessorCJ)
-                return;
-            else
-                consultaEol = servicoEOL.ObterAbrangencia(login, perfil);
+                SentrySdk.AddBreadcrumb($"{breadcrumb} - Chamada BuscaAbrangenciaEPersiste - Login: {login}, perfil {perfil} - EhSupervisor: {ehSupervisor}, EhProfessorCJ: {ehProfessorCJ}", "SGP Api - Negócio");
 
-            // Enquanto o EOl consulta, tentamos ganhar tempo obtendo a consulta sintetica
-            var consultaAbrangenciaSintetica = repositorioAbrangencia.ObterAbrangenciaSintetica(login, perfil);
+                if (ehSupervisor)
+                    consultaEol = ObterAbrangenciaEolSupervisor(login);
+                else if (ehProfessorCJ)
+                    return;
+                else
+                    consultaEol = servicoEOL.ObterAbrangencia(login, perfil);
 
-            var abrangenciaEol = await consultaEol;
-            var abrangenciaSintetica = await consultaAbrangenciaSintetica;
+                // Enquanto o EOl consulta, tentamos ganhar tempo obtendo a consulta sintetica
+                var consultaAbrangenciaSintetica = repositorioAbrangencia.ObterAbrangenciaSintetica(login, perfil);
 
-            if (abrangenciaEol == null)
-                throw new NegocioException("Não foi possível localizar registros de abrangência para este usuário.");
+                var abrangenciaEol = await consultaEol;
+                SentrySdk.AddBreadcrumb($"{breadcrumb} - Chamada EOL - resultado {abrangenciaEol?.Dres?.Count ?? 0}", "SGP Api - Negócio");
+                var abrangenciaSintetica = await consultaAbrangenciaSintetica;
+                SentrySdk.AddBreadcrumb($"{breadcrumb} - Abrangencia Sintética - resultado {abrangenciaSintetica?.Count() ?? 0}", "SGP Api - Negócio");
 
-            IEnumerable<Dre> dres = Enumerable.Empty<Dre>();
-            IEnumerable<Ue> ues = Enumerable.Empty<Ue>();
-            IEnumerable<Turma> turmas = Enumerable.Empty<Turma>();
+                if (abrangenciaEol == null)
+                    throw new NegocioException("Não foi possível localizar registros de abrangência para este usuário.");
 
-            // sincronizamos as dres, ues e turmas
-            SincronizarEstruturaInstitucional(abrangenciaEol.Dres, out dres, out ues, out turmas);
+                IEnumerable<Dre> dres = Enumerable.Empty<Dre>();
+                IEnumerable<Ue> ues = Enumerable.Empty<Ue>();
+                IEnumerable<Turma> turmas = Enumerable.Empty<Turma>();
 
-            // sincronizamos a abrangencia do login + perfil
-            SincronizarAbrangencia(abrangenciaSintetica, abrangenciaEol.Abrangencia.Abrangencia, ehSupervisor, dres, ues, turmas, login, perfil);
+                // sincronizamos as dres, ues e turmas
+                SincronizarEstruturaInstitucional(abrangenciaEol.Dres, out dres, out ues, out turmas);
+
+                // sincronizamos a abrangencia do login + perfil
+                SincronizarAbrangencia(abrangenciaSintetica, abrangenciaEol.Abrangencia.Abrangencia, ehSupervisor, dres, ues, turmas, login, perfil);
+            }
+            catch(Exception ex)
+            {
+                SentrySdk.CaptureException(ex);
+                throw ex;
+            }
         }
 
         private Task<AbrangenciaRetornoEolDto> ObterAbrangenciaEolSupervisor(string login)
