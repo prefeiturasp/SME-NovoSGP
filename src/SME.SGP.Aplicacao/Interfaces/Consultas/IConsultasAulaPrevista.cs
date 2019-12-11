@@ -1,4 +1,5 @@
-﻿using SME.SGP.Infra;
+﻿using SME.SGP.Dominio;
+using SME.SGP.Infra;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
@@ -6,5 +7,7 @@ namespace SME.SGP.Aplicacao
     public interface IConsultasAulaPrevista
     {
         Task<AulasPrevistasDadasAuditoriaDto> BuscarPorId(long id);
+
+        Task<AulasPrevistasDadasAuditoriaDto> ObterAulaPrevistaDada(Modalidade modalidade, string turmaId, string disciplinaId);
     }
 }

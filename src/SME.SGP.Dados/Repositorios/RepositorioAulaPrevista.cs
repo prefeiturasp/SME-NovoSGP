@@ -2,6 +2,7 @@
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
+using System.Threading.Tasks;
 
 namespace SME.SGP.Dados.Repositorios
 {
@@ -10,6 +11,16 @@ namespace SME.SGP.Dados.Repositorios
         public RepositorioAulaPrevista(ISgpContext conexao) : base(conexao)
         {
         }
+
+        public async Task<AulaPrevista> ObterAulaPrevistaFiltro(long tipoCalendarioId, string turmaId, string disciplinaId)
+        {
+            var query = @"select * from aula_prevista ap
+                         where ap.tipo_calendario_id = @tipoCalendarioId and ap.turma_id = @turmaId and
+                               ap.disciplina_id = @disciplinaId;";
+
+            return await database.Conexao.QueryFirstOrDefaultAsync<AulaPrevista>(query, new { tipoCalendarioId, turmaId, disciplinaId });
+        }
+
 
         public string ObterProfessorTurmaDisciplinaAulasPrevistasDivergente(int bimestre, string turmaId, string disciplinaId, int limiteDias)
         {

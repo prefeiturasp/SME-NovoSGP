@@ -23,10 +23,40 @@ namespace SME.SGP.Aplicacao
         public async Task<AulasPrevistasDadasAuditoriaDto> BuscarPorId(long id)
         {
             var aulaPrevista = repositorio.ObterPorId(id);
-            var aulasPrevistasBimestre = await repositorioBimestre.ObterBimestresAulasPrevistasPorId(id);
 
+            var aulaPrevistaBimestres = await ObterBimestres(aulaPrevista);
+            var aulaPrevistaDto =  MapearDtoRetorno(aulaPrevista, aulaPrevistaBimestres);
+
+            return aulaPrevistaDto;
+        }
+
+        private async Task <IEnumerable<AulaPrevistaBimestreQuantidade>> ObterBimestres(AulaPrevista aulaPrevista)
+        {
+            return await repositorioBimestre.ObterBimestresAulasPrevistasPorId(aulaPrevista.Id);
+        }
+
+        private AulasPrevistasDadasAuditoriaDto MapearDtoRetorno(AulaPrevista aulaPrevista, IEnumerable<AulaPrevistaBimestreQuantidade> aulasPrevistasBimestre)
+        {
             AulasPrevistasDadasAuditoriaDto aulaPrevistaDto = MapearParaDto(aulaPrevista, aulasPrevistasBimestre) ?? new AulasPrevistasDadasAuditoriaDto();
+            aulaPrevistaDto = MapearMensagens(aulaPrevistaDto);
 
+            return aulaPrevistaDto;
+        }
+
+        public async Task<AulasPrevistasDadasAuditoriaDto> ObterAulaPrevistaDada(Modalidade modalidade, string turmaId, string disciplinaId)
+        {
+            int tipoCalendarioId = (int)ModalidadeParaModalidadeTipoCalendario(modalidade);
+
+            var aulaPrevista = await repositorio.ObterAulaPrevistaFiltro(tipoCalendarioId, turmaId, disciplinaId);
+
+            var aulaPrevistaBimestres = await ObterBimestres(aulaPrevista);
+            var aulaPrevistaDto = MapearDtoRetorno(aulaPrevista, aulaPrevistaBimestres);
+
+            return aulaPrevistaDto;
+        }
+
+        private AulasPrevistasDadasAuditoriaDto MapearMensagens(AulasPrevistasDadasAuditoriaDto aulaPrevistaDto)
+        {
             foreach (var aula in aulaPrevistaDto.AulasPrevistasPorBimestre)
             {
                 List<string> mensagens = new List<string>();
@@ -42,6 +72,18 @@ namespace SME.SGP.Aplicacao
             }
 
             return aulaPrevistaDto;
+        }
+
+        private ModalidadeTipoCalendario ModalidadeParaModalidadeTipoCalendario(Modalidade modalidade)
+        {
+            switch (modalidade)
+            {
+                case Modalidade.EJA:
+                    return ModalidadeTipoCalendario.EJA;
+
+                default:
+                    return ModalidadeTipoCalendario.FundamentalMedio;
+            }
         }
 
         private AulasPrevistasDadasAuditoriaDto MapearParaDto(AulaPrevista aulaPrevista, IEnumerable<AulaPrevistaBimestreQuantidade> bimestres = null)
