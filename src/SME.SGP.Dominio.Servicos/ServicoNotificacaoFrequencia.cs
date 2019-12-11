@@ -138,13 +138,15 @@ namespace SME.SGP.Dominio.Servicos
 
         private void NotificaRegistroFrequencia(Usuario usuario, RegistroFrequenciaFaltanteDto turmaSemRegistro, TipoNotificacaoFrequencia tipo)
         {
+            var disciplina = servicoEOL.ObterDisciplinasPorIds(new long[] { long.Parse(turmaSemRegistro.DisciplinaId) }).FirstOrDefault();
+
             var tituloMensagem = $"Frequência da turma {turmaSemRegistro.NomeTurma} - {turmaSemRegistro.DisciplinaId} ({turmaSemRegistro.NomeUe})";
             StringBuilder mensagemUsuario = new StringBuilder();
             mensagemUsuario.Append($"A turma a seguir esta a <b>{turmaSemRegistro.Aulas.Count()} aulas</b> sem registro de frequência da turma");
             mensagemUsuario.Append("<br />");
             mensagemUsuario.Append($"<br />Escola: <b>{turmaSemRegistro.NomeUe}</b>");
             mensagemUsuario.Append($"<br />Turma: <b>{turmaSemRegistro.NomeTurma}</b>");
-            mensagemUsuario.Append($"<br />Disciplina: <b>{turmaSemRegistro.DisciplinaId}</b>");
+            mensagemUsuario.Append($"<br />Disciplina: <b>{disciplina.Nome}</b>");
             mensagemUsuario.Append($"<br />Aulas:");
 
             mensagemUsuario.Append("<ul>");
@@ -155,7 +157,8 @@ namespace SME.SGP.Dominio.Servicos
             mensagemUsuario.Append("</ul>");
 
             var hostAplicacao = configuration["UrlFrontEnd"];
-            mensagemUsuario.Append($"<a href='{hostAplicacao}/diario-classe/frequencia-plano-aula'>Clique aqui para regularizar.</a>");
+            var parametros = $"turma={turmaSemRegistro.CodigoTurma}&DataAula={turmaSemRegistro.Aulas.FirstOrDefault().DataAula.ToShortDateString()}&disciplina={turmaSemRegistro.DisciplinaId}";
+            mensagemUsuario.Append($"<a href='{hostAplicacao}diario-classe/frequencia-plano-aula?{parametros}'>Clique aqui para regularizar.</a>");
 
             var notificacao = new Notificacao()
             {
