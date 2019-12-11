@@ -7,6 +7,9 @@ import { SelectComponent } from '~/componentes';
 // Servicos
 import AbrangenciaServico from '~/servicos/Abrangencia';
 
+import FiltroHelper from '~/componentes-sgp/filtro/helper';
+import tipoEscolaDTO from '~/dtos/tipoEscolaDto';
+
 function UeDropDown({ form, onChange, dreId, label }) {
   const [listaUes, setListaUes] = useState([]);
 
@@ -14,10 +17,12 @@ function UeDropDown({ form, onChange, dreId, label }) {
     const { data } = await AbrangenciaServico.buscarUes(dreId);
     if (data) {
       setListaUes(
-        data.map(item => ({
-          desc: item.nome,
-          valor: item.codigo,
-        }))
+        data
+          .map(item => ({
+            desc: `${tipoEscolaDTO[item.tipoEscola]} ${item.nome}`,
+            valor: item.codigo,
+          }))
+          .sort(FiltroHelper.ordenarLista('desc'))
       );
     }
   }
