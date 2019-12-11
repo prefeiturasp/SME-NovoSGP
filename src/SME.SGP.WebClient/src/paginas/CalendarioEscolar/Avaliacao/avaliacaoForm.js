@@ -24,13 +24,19 @@ const AvaliacaoForm = ({ match }) => {
 
   const botaoCadastrarRef = useRef(null);
 
+  const [modoEdicao, setModoEdicao] = useState(false);
+
   const clicouBotaoVoltar = async () => {
-    const confirmado = await confirmar(
-      'Atenção',
-      'Suas alterações não foram salvas, deseja salvar agora?'
-    );
-    if (confirmado) {
-      if (botaoCadastrarRef.current) botaoCadastrarRef.current.click();
+    if (modoEdicao) {
+      const confirmado = await confirmar(
+        'Atenção',
+        'Suas alterações não foram salvas, deseja salvar agora?'
+      );
+      if (confirmado) {
+        if (botaoCadastrarRef.current) botaoCadastrarRef.current.click();
+      } else {
+        history.push(RotasDTO.CALENDARIO_PROFESSOR);
+      }
     } else {
       history.push(RotasDTO.CALENDARIO_PROFESSOR);
     }
@@ -43,6 +49,12 @@ const AvaliacaoForm = ({ match }) => {
     criadoEm: '',
     criadoPor: '',
   });
+
+  const aoTrocarCampos = () => {
+    if (!modoEdicao) {
+      setModoEdicao(true);
+    }
+  };
 
   const clicouBotaoExcluir = async () => {
     const confirmado = await confirmar(
@@ -160,6 +172,7 @@ const AvaliacaoForm = ({ match }) => {
 
   const aoTrocarTextEditor = valor => {
     setDescricao(valor);
+    aoTrocarCampos();
   };
 
   const [dadosAvaliacao, setDadosAvaliacao] = useState();
@@ -251,7 +264,7 @@ const AvaliacaoForm = ({ match }) => {
       setInseridoAlterado({
         alteradoEm: avaliacao.data.alteradoEm,
         alteradoPor: `${avaliacao.data.alteradoPor} (${avaliacao.data.alteradoRF})`,
-        criadoEm: avaliacao.data.alteradoEm,
+        criadoEm: avaliacao.data.criadoEm,
         criadoPor: `${avaliacao.data.criadoPor} (${avaliacao.data.criadoRF})`,
       });
       if (
@@ -271,6 +284,7 @@ const AvaliacaoForm = ({ match }) => {
     const disciplinas = [...listaDisciplinasRegencia];
     disciplinas[indice].selecionada = !disciplinas[indice].selecionada;
     setListaDisciplinasRegencia(disciplinas);
+    aoTrocarCampos();
   };
 
   useEffect(() => {
@@ -334,6 +348,7 @@ const AvaliacaoForm = ({ match }) => {
                 border
                 bold
                 className="mr-3"
+                disabled={!modoEdicao}
               />
               <Button
                 label="Excluir"
@@ -351,8 +366,10 @@ const AvaliacaoForm = ({ match }) => {
                 onClick={e => clicouBotaoCadastrar(form, e)}
                 ref={botaoCadastrarRef}
                 disabled={
-                  permissaoTela &&
-                  (!permissaoTela.podeIncluir || !permissaoTela.podeAlterar)
+                  (permissaoTela &&
+                    (!permissaoTela.podeIncluir ||
+                      !permissaoTela.podeAlterar)) ||
+                  !modoEdicao
                 }
                 border
                 bold
@@ -367,6 +384,7 @@ const AvaliacaoForm = ({ match }) => {
                     label="Categoria"
                     opcoes={listaCategorias}
                     form={form}
+                    onChange={aoTrocarCampos}
                   />
                 </Grid>
               </Div>
@@ -407,6 +425,7 @@ const AvaliacaoForm = ({ match }) => {
                       disabled={disciplinaDesabilitada}
                       placeholder="Disciplina"
                       form={form}
+                      onChange={aoTrocarCampos}
                     />
                   </Grid>
                 )}
@@ -420,6 +439,7 @@ const AvaliacaoForm = ({ match }) => {
                     valueText="nome"
                     placeholder="Atividade Avaliativa"
                     form={form}
+                    onChange={aoTrocarCampos}
                   />
                 </Grid>
                 <Grid cols={!temRegencia ? 4 : 6} className="mb-4">
@@ -432,6 +452,13 @@ const AvaliacaoForm = ({ match }) => {
                     type="input"
                     form={form}
                     ref={campoNomeRef}
+                    onChange={e => {
+                      setDadosAvaliacao({
+                        ...dadosAvaliacao,
+                        nome: e.target.value,
+                      });
+                      aoTrocarCampos();
+                    }}
                   />
                 </Grid>
               </Div>
