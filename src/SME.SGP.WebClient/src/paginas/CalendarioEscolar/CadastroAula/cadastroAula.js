@@ -371,7 +371,7 @@ const CadastroAula = ({ match }) => {
   const salvar = async valoresForm => {
     const data = valoresForm.dataAulaCompleta.format('YYYY-MM-DD');
     const hora = valoresForm.dataAula.format('HH:mm:SS');
-    valoresForm.dataAula = window.moment(`${data}T${hora}`);
+    valoresForm.dataAula = window.moment(`${data}T${hora}`).format();
 
     if (valoresForm.quantidadeRadio && valoresForm.quantidadeRadio > 0) {
       valoresForm.quantidade = valoresForm.quantidadeRadio;
