@@ -10,12 +10,12 @@ import AbrangenciaServico from '~/servicos/Abrangencia';
 // Funções
 import { valorNuloOuVazio } from '~/utils/funcoes/gerais';
 
-function DreDropDown({ form, onChange, label }) {
+function DreDropDown({ form, onChange, label, url }) {
   const [listaDres, setListaDres] = useState([]);
 
   useEffect(() => {
     async function buscarDres() {
-      const { data } = await AbrangenciaServico.buscarDres();
+      const { data } = await AbrangenciaServico.buscarDres(url);
       if (data) {
         setListaDres(
           data.map(item => ({
@@ -27,7 +27,7 @@ function DreDropDown({ form, onChange, label }) {
       }
     }
     buscarDres();
-  }, []);
+  }, [url]);
 
   useEffect(() => {
     if (listaDres.length === 1) {
@@ -66,12 +66,14 @@ DreDropDown.propTypes = {
   ]),
   onChange: PropTypes.func,
   label: PropTypes.string,
+  url: PropTypes.string,
 };
 
 DreDropDown.defaultProps = {
   form: {},
   onChange: () => {},
   label: null,
+  url: null,
 };
 
 export default DreDropDown;
