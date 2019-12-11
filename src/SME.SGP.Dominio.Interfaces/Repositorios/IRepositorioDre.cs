@@ -1,12 +1,11 @@
-﻿using SME.SGP.Dominio.Entidades;
-using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using System.Collections.Generic;
 
 namespace SME.SGP.Dominio.Interfaces
 {
     public interface IRepositorioDre
     {
+        IEnumerable<Dre> ListarPorCodigos(string[] dresCodigos);
+
         IEnumerable<Dre> Sincronizar(IEnumerable<Dre> entidades);
     }
 }
