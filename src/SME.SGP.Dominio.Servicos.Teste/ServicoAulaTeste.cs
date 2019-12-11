@@ -86,7 +86,7 @@ namespace SME.SGP.Dominio.Servicos.Teste
             aula.Id = 1;
             aula.DataAula = aula.DataAula.AddDays(2);
 
-            var msg = await servicoAula.Salvar(aula, usuario, RecorrenciaAula.RepetirBimestreAtual);
+            var msg = servicoAula.Salvar(aula, usuario, RecorrenciaAula.RepetirBimestreAtual);
 
             // ASSERT
             Assert.False(msg == "");
@@ -99,7 +99,7 @@ namespace SME.SGP.Dominio.Servicos.Teste
         {
             servicoDiaLetivo.Setup(a => a.ValidarSeEhDiaLetivo(It.IsAny<DateTime>(), It.IsAny<long>(), It.IsAny<string>(), It.IsAny<string>())).Returns(false);
 
-            await Assert.ThrowsAsync<NegocioException>(() => servicoAula.Salvar(aula, usuario, aula.RecorrenciaAula));
+            Assert.Throws<NegocioException>(() => servicoAula.Salvar(aula, usuario, aula.RecorrenciaAula));
         }
 
         [Fact]
@@ -107,7 +107,7 @@ namespace SME.SGP.Dominio.Servicos.Teste
         {
             aula.DisciplinaId = "2";
 
-            await Assert.ThrowsAsync<NegocioException>(() => servicoAula.Salvar(aula, usuario, aula.RecorrenciaAula));
+            Assert.Throws<NegocioException>(() => servicoAula.Salvar(aula, usuario, aula.RecorrenciaAula));
         }
 
         [Fact]
@@ -115,7 +115,7 @@ namespace SME.SGP.Dominio.Servicos.Teste
         {
             aula.Quantidade = 2;
 
-            await Assert.ThrowsAsync<NegocioException>(() => servicoAula.Salvar(aula, usuario, aula.RecorrenciaAula));
+            Assert.Throws<NegocioException>(() => servicoAula.Salvar(aula, usuario, aula.RecorrenciaAula));
         }
 
         [Fact]
@@ -124,7 +124,7 @@ namespace SME.SGP.Dominio.Servicos.Teste
             aula.TipoAula = TipoAula.Reposicao;
             aula.RecorrenciaAula = RecorrenciaAula.RepetirBimestreAtual;
 
-            await Assert.ThrowsAsync<NegocioException>(() => servicoAula.Salvar(aula, usuario, aula.RecorrenciaAula));
+            Assert.Throws<NegocioException>(() => servicoAula.Salvar(aula, usuario, aula.RecorrenciaAula));
         }
 
         [Fact]
@@ -144,7 +144,7 @@ namespace SME.SGP.Dominio.Servicos.Teste
         public async void Deve_Incluir_Aula()
         {
             //ACT
-            await servicoAula.Salvar(aula, usuario, RecorrenciaAula.AulaUnica);
+            servicoAula.Salvar(aula, usuario, RecorrenciaAula.AulaUnica);
 
             //ASSERT
             repositorioAula.Verify(c => c.Salvar(aula), Times.Once);
@@ -167,7 +167,7 @@ namespace SME.SGP.Dominio.Servicos.Teste
             consultasPeriodoEscolar.Setup(a => a.ObterFimPeriodoRecorrencia(It.IsAny<long>(), It.IsAny<DateTime>(), It.IsAny<RecorrenciaAula>())).Returns(new DateTime(2019, 3, 31));
 
             //ACT
-            await servicoAula.Salvar(aula, usuario, aula.RecorrenciaAula);
+            servicoAula.Salvar(aula, usuario, aula.RecorrenciaAula);
 
             //ASSERT
             repositorioAula.Verify(c => c.Salvar(aula), Times.Exactly(1));
