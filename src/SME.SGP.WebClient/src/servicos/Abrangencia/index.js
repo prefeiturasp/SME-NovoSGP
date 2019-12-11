@@ -1,8 +1,8 @@
 import api from '~/servicos/api';
 
 const AbrangenciaServico = {
-  buscarDres() {
-    return api.get('/v1/abrangencias/dres');
+  buscarDres(url = '/v1/abrangencias/dres') {
+    return api.get(url);
   },
   buscarUes(dreId) {
     return api.get(`/v1/abrangencias/dres/${dreId}/ues`);
