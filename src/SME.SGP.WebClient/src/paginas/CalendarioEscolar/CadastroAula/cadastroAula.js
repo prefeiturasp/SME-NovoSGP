@@ -371,8 +371,12 @@ const CadastroAula = ({ match }) => {
   };
 
   const salvar = async valoresForm => {
-    const data = valoresForm.dataAulaCompleta.format('YYYY-MM-DD');
-    const hora = valoresForm.dataAula.format('HH:mm:SS');
+    const data =
+      valoresForm.dataAulaCompleta &&
+      valoresForm.dataAulaCompleta.format('YYYY-MM-DD');
+    const hora =
+      valoresForm.dataAula && valoresForm.dataAula.format('HH:mm:SS');
+
     valoresForm.dataAula = window.moment(`${data}T${hora}`);
 
     if (valoresForm.quantidadeRadio && valoresForm.quantidadeRadio > 0) {
@@ -390,7 +394,10 @@ const CadastroAula = ({ match }) => {
 
     const cadastrado = idAula
       ? await api
-          .put(`v1/calendarios/professores/aulas/${idAula}`, valoresForm)
+          .put(`v1/calendarios/professores/aulas/${idAula}`, {
+            ...valoresForm,
+            dataAula: valoresForm.dataAula.format(),
+          })
           .then(resp => resp)
           .catch(err => err)
       : await api

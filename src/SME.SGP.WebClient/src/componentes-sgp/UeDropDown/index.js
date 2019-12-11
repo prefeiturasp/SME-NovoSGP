@@ -10,11 +10,11 @@ import AbrangenciaServico from '~/servicos/Abrangencia';
 import FiltroHelper from '~/componentes-sgp/filtro/helper';
 import tipoEscolaDTO from '~/dtos/tipoEscolaDto';
 
-function UeDropDown({ form, onChange, dreId, label }) {
+function UeDropDown({ form, onChange, dreId, label, url }) {
   const [listaUes, setListaUes] = useState([]);
 
   async function buscarUes() {
-    const { data } = await AbrangenciaServico.buscarUes(dreId);
+    const { data } = await AbrangenciaServico.buscarUes(dreId, url);
     if (data) {
       setListaUes(
         data
@@ -66,6 +66,7 @@ UeDropDown.propTypes = {
   onChange: PropTypes.func,
   dreId: PropTypes.string,
   label: PropTypes.string,
+  url: PropTypes.string,
 };
 
 UeDropDown.defaultProps = {
@@ -73,6 +74,7 @@ UeDropDown.defaultProps = {
   onChange: () => {},
   dreId: '',
   label: null,
+  url: '',
 };
 
 export default UeDropDown;
