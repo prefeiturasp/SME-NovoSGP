@@ -7,11 +7,11 @@ import { SelectComponent } from '~/componentes';
 // Servicos
 import AbrangenciaServico from '~/servicos/Abrangencia';
 
-function UeDropDown({ form, onChange, dreId, label }) {
+function UeDropDown({ form, onChange, dreId, label, url }) {
   const [listaUes, setListaUes] = useState([]);
 
   async function buscarUes() {
-    const { data } = await AbrangenciaServico.buscarUes(dreId);
+    const { data } = await AbrangenciaServico.buscarUes(dreId, url);
     if (data) {
       setListaUes(
         data.map(item => ({
@@ -61,13 +61,15 @@ UeDropDown.propTypes = {
   onChange: PropTypes.func,
   dreId: PropTypes.string,
   label: PropTypes.string,
+  url: PropTypes.string,
 };
 
 UeDropDown.defaultProps = {
   form: {},
-  onChange: () => {},
+  onChange: () => { },
   dreId: '',
   label: null,
+  url: ''
 };
 
 export default UeDropDown;
