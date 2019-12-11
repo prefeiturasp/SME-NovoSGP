@@ -10,6 +10,6 @@ namespace SME.SGP.Aplicacao
         Task<IEnumerable<AtribuicaoCJListaRetornoDto>> Listar(AtribuicaoCJListaFiltroDto filtroDto);
 
         Task<AtribuicaoCJTitularesRetornoDto> ObterProfessoresTitularesECjs(string ueId, string turmaId,
-            string professorRf, Modalidade modalidadeId);
+                    string professorRf, Modalidade modalidadeId);
     }
 }

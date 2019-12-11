@@ -7,17 +7,22 @@ import { SelectComponent } from '~/componentes';
 // Servicos
 import AbrangenciaServico from '~/servicos/Abrangencia';
 
-function UeDropDown({ form, onChange, dreId, label }) {
+import FiltroHelper from '~/componentes-sgp/filtro/helper';
+import tipoEscolaDTO from '~/dtos/tipoEscolaDto';
+
+function UeDropDown({ form, onChange, dreId, label, url }) {
   const [listaUes, setListaUes] = useState([]);
 
   async function buscarUes() {
-    const { data } = await AbrangenciaServico.buscarUes(dreId);
+    const { data } = await AbrangenciaServico.buscarUes(dreId, url);
     if (data) {
       setListaUes(
-        data.map(item => ({
-          desc: item.nome,
-          valor: item.codigo,
-        }))
+        data
+          .map(item => ({
+            desc: `${tipoEscolaDTO[item.tipoEscola]} ${item.nome}`,
+            valor: item.codigo,
+          }))
+          .sort(FiltroHelper.ordenarLista('desc'))
       );
     }
   }
@@ -61,6 +66,7 @@ UeDropDown.propTypes = {
   onChange: PropTypes.func,
   dreId: PropTypes.string,
   label: PropTypes.string,
+  url: PropTypes.string,
 };
 
 UeDropDown.defaultProps = {
@@ -68,6 +74,7 @@ UeDropDown.defaultProps = {
   onChange: () => {},
   dreId: '',
   label: null,
+  url: '',
 };
 
 export default UeDropDown;

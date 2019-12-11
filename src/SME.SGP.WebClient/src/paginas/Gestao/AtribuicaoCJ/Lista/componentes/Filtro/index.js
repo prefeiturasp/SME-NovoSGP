@@ -51,10 +51,11 @@ function Filtro({ onFiltrar }) {
         <Form className="col-md-12 mb-4">
           <Row className="row mb-2">
             <Grid cols={6}>
-              <DreDropDown form={form} onChange={() => null} />
+              <DreDropDown url='v1/dres/atribuicoes' form={form} onChange={() => null} />
             </Grid>
             <Grid cols={6}>
               <UeDropDown
+                url='v1/dres'
                 dreId={form.values.dreId}
                 form={form}
                 onChange={() => null}
