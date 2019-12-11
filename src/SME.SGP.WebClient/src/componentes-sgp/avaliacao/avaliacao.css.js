@@ -6,7 +6,8 @@ export const Container = styled.div`
 `
 
 export const Lista = styled.div`
-  width: 100%;
+  max-width: 100%;
+  min-width: 100%;
 
   .desabilitar-nota {
     opacity: 0.4 !important;
@@ -57,21 +58,37 @@ export const Lista = styled.div`
   .width-150 {
     width: 150px;
     max-width: 150px;
+    min-width: 150px;
   }
 
   .width-70 {
     width: 70px;
     max-width: 70px;
+    min-width: 70px;
   }
 
   .width-50 {
     width: 50px;
     max-width: 50px;
+    min-width: 50px;
   }
 
   .width-60 {
     width: 60px;
     max-width: 60px;
+    min-width: 60px;
+  }
+
+  .width-460 {
+    width: 460px;
+    max-width: 460px;
+    min-width: 460px;
+  }
+
+  .width-400 {
+    width: 400px;
+    max-width: 400px;
+    min-width: 400px;
   }
 
   .cursor-pointer {
@@ -88,6 +105,7 @@ export const Lista = styled.div`
     overflow: hidden;
     white-space: nowrap;
     max-width: 140px;
+    width: 140px;
   }
 
   .select-conceitos {
@@ -141,6 +159,7 @@ export const Lista = styled.div`
 
   .scroll-tabela-avaliacao-thead {
     overflow-y: scroll;
+    overflow-x: hidden;
     ::-webkit-scrollbar {
       width: 9px !important;
       background-color: rgba(229, 237, 244, 0.71) !important;
