@@ -9,7 +9,7 @@ namespace SME.SGP.Infra
         [Required(ErrorMessage = "A disciplina deve ser informada")]
         public string DisciplinaId { get; set; }
 
-        [Required(ErrorMessage = "A modalidade deve ser informada")]
+        [EnumeradoRequirido(ErrorMessage = "A modalidade deve ser informada")]
         public Modalidade Modalidade { get; set; }
 
         [Required(ErrorMessage = "A turma deve ser informada")]
