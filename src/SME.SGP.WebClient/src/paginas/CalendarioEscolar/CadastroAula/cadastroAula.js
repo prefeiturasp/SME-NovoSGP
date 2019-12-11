@@ -17,6 +17,7 @@ import { setBreadcrumbManual } from '~/servicos/breadcrumb-services';
 import history from '~/servicos/history';
 import RotasDTO from '~/dtos/rotasDto';
 import { ModalConteudoHtml } from '~/componentes';
+import Alert from '~/componentes/alert';
 
 const CadastroAula = ({ match }) => {
   const usuario = useSelector(store => store.usuario);
@@ -38,7 +39,7 @@ const CadastroAula = ({ match }) => {
   const [listaDisciplinas, setListaDisciplinas] = useState([]);
   const [validacoes, setValidacoes] = useState({});
   const [exibirAuditoria, setExibirAuditoria] = useState(false);
-  const [quantidadeMaximaAulas, setQuantidadeMaximaAulas] = useState(0);
+  const [quantidadeMaximaAulas, setQuantidadeMaximaAulas] = useState(undefined);
   const [controlaQuantidadeAula, setControlaQuantidadeAula] = useState(true);
   const [refForm, setRefForm] = useState({});
   const [refFormRecorrencia, setRefFormRecorrencia] = useState({});
@@ -477,6 +478,20 @@ const CadastroAula = ({ match }) => {
 
   return (
     <>
+      <div className="col-md-12">
+        {quantidadeMaximaAulas <= 0 ? (
+          <Alert
+            alerta={{
+              tipo: 'warning',
+              id: 'cadastro-aula-quantidade-maxima',
+              mensagem:
+                'Não é possível criar aula normal porque o limite da grade curricular foi atingido',
+              estiloTitulo: { fontSize: '18px' },
+            }}
+            className="mb-2"
+          />
+        ) : null}
+      </div>
       <Cabecalho pagina={`Cadastro de Aula - ${getDataFormatada()}`} />
       <Card>
         <ModalConteudoHtml
