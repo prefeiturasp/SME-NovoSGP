@@ -15,20 +15,20 @@ import api from '~/servicos/api';
 import history from '~/servicos/history';
 
 import { Container, ContainerAuditoria } from './notas.css';
+import modalidade from '~/dtos/modalidade';
 
 const { TabPane } = Tabs;
 
 const Notas = () => {
   const usuario = useSelector(store => store.usuario);
-  const { turmaSelecionada } = usuario;
-  const turmaId = turmaSelecionada ? turmaSelecionada.turma : 0;
-  const modalidade = turmaSelecionada ? turmaSelecionada.modalidade : 0;
-  const anoLetivo = turmaSelecionada.anoLetivo ? turmaSelecionada.anoLetivo : 0;
+  // const { turmaSelecionada } = usuario;
+  // const turmaId = turmaSelecionada ? turmaSelecionada.turma : 0;
+  // const modalidade = turmaSelecionada ? turmaSelecionada.modalidade : 0;
+  // const anoLetivo = turmaSelecionada.anoLetivo ? turmaSelecionada.anoLetivo : 0;
 
   const [listaDisciplinas, setListaDisciplinas] = useState([]);
   const [disciplinaSelecionada, setDisciplinaSelecionada] = useState(undefined);
   const [desabilitarDisciplina, setDesabilitarDisciplina] = useState(false);
-  const [bimestres, setBimestres] = useState();
   const [notaTipo, setNotaTipo] = useState();
   const [desabilitarCampos, setDesabilitarCampos] = useState(false);
   const [modoEdicao, setModoEdicao] = useState(false);
@@ -37,106 +37,94 @@ const Notas = () => {
     auditoriaInserido: '',
   });
 
-  const obterDadosBimestres = useCallback(
-    async (disciplinaId, numeroBimestre, selecionouTabManual) => {
-      let realizarConsulta = true;
+  const [bimestres, setBimestres] = useState([]);
 
-      if (selecionouTabManual) {
-        const bimestre = bimestres.find(item => item.numero === numeroBimestre);
-        if (bimestre.modoEdicao) {
-          realizarConsulta = false;
-        }
-      }
+  const obterBimestres = useCallback(
+    async (disciplinaId, numeroBimestre) => {
+      const params = {
+        anoLetivo: usuario.turmaSelecionada.anoLetivo,
+        bimestre: numeroBimestre,
+        disciplinaCodigo: disciplinaId,
+        modalidade: usuario.turmaSelecionada.modalidade,
+        turmaCodigo: usuario.turmaSelecionada.turma,
+      };
+      const dados = await api
+        .get('v1/avaliacoes/notas/', { params })
+        .catch(e => erros(e));
 
-      if (realizarConsulta) {
-        const params = {
-          anoLetivo,
-          bimestre: numeroBimestre,
-          disciplinaCodigo: disciplinaId,
-          modalidade,
-          turmaCodigo: turmaId,
-        };
-        const dados = await api
-          .get('v1/avaliacoes/notas/', { params })
-          .catch(e => {
-            erros(e);
-          });
-        if (dados && dados.data) {
-          if (selecionouTabManual) {
-            const bimestrePesquisado = dados.data.bimestres.find(
-              item => item.numero === numeroBimestre
-            );
-            const indexBimestre = dados.data.bimestres.indexOf(
-              bimestrePesquisado
-            );
-
-            // bimestrePesquisado.forEach(bimestre => {
-            //   return bimestre.alunos.forEach(aluno => {
-            //     return aluno.notasAvaliacoes.forEach(nota => {
-            //       const notaOriginal = nota.notaConceito;
-            //       /* eslint-disable */
-            //       nota.notaOriginal = notaOriginal;
-            //       /* eslint-enable */
-            //       return nota;
-            //     });
-            //   });
-            // });
-
-            bimestres[indexBimestre] = bimestrePesquisado;
-            setBimestres([...bimestres]);
-          } else {
-            setBimestres([...dados.data.bimestres]);
-          }
-          setNotaTipo(dados.data.notaTipo);
-          setAuditoriaInfo({
-            auditoriaAlterado: dados.data.auditoriaAlterado,
-            auditoriaInserido: dados.data.auditoriaInserido,
-          });
-        }
-      }
+      return dados ? dados.data : [];
     },
-    [anoLetivo, bimestres, modalidade, turmaId]
+    [
+      usuario.turmaSelecionada.anoLetivo,
+      usuario.turmaSelecionada.modalidade,
+      usuario.turmaSelecionada.turma,
+    ]
   );
 
-  const resetarTela = useCallback(() => {
-    if (disciplinaSelecionada) {
-      setDisciplinaSelecionada(undefined);
-    }
-    if (bimestres && bimestres.length > 0) {
-      setBimestres([]);
-    }
+  const obterDadosBimestres = useCallback(
+    async (disciplinaId, numeroBimestre) => {
+      const dados = await obterBimestres(disciplinaId, numeroBimestre);
+      if (dados) {
+        setBimestres([...dados.bimestres]);
+        setNotaTipo(dados.notaTipo);
+        setAuditoriaInfo({
+          auditoriaAlterado: dados.auditoriaAlterado,
+          auditoriaInserido: dados.auditoriaInserido,
+        });
+      }
+    },
+    [obterBimestres]
+  );
 
-    setNotaTipo(0);
-    setDesabilitarCampos(false);
-    setModoEdicao(false);
-    setAuditoriaInfo({
-      auditoriaAlterado: '',
-      auditoriaInserido: '',
-    });
-  }, [bimestres, disciplinaSelecionada]);
+  // const resetarTela = useCallback(() => {
+  //   if (disciplinaSelecionada) {
+  //     setDisciplinaSelecionada(undefined);
+  //   }
+  //   // if (bimestres && bimestres.length > 0) {
+  //   //   setBimestres([]);
+  //   // }
+
+  //   setNotaTipo(0);
+  //   setDesabilitarCampos(false);
+  //   setModoEdicao(false);
+  //   setAuditoriaInfo({
+  //     auditoriaAlterado: '',
+  //     auditoriaInserido: '',
+  //   });
+  // }, [disciplinaSelecionada]);
+
+  const obterDisciplinas = useCallback(async () => {
+    const url = `v1/professores/123/turmas/${usuario.turmaSelecionada.turma}/disciplinas`;
+    const disciplinas = await api.get(url);
+
+    setListaDisciplinas(disciplinas.data);
+    if (disciplinas.data && disciplinas.data.length === 1) {
+      const disciplina = disciplinas.data[0];
+      setDisciplinaSelecionada(String(disciplina.codigoComponenteCurricular));
+      setDesabilitarDisciplina(true);
+      obterDadosBimestres(disciplina.codigoComponenteCurricular);
+    }
+  }, [obterDadosBimestres, usuario.turmaSelecionada.turma]);
 
   useEffect(() => {
-    const obterDisciplinas = async () => {
-      const url = `v1/professores/123/turmas/${turmaId}/disciplinas`;
-      const disciplinas = await api.get(url);
-
-      setListaDisciplinas(disciplinas.data);
-      if (disciplinas.data && disciplinas.data.length === 1) {
-        const disciplina = disciplinas.data[0];
-        setDisciplinaSelecionada(String(disciplina.codigoComponenteCurricular));
-        setDesabilitarDisciplina(true);
-        obterDadosBimestres(disciplina.codigoComponenteCurricular);
+    debugger;
+    bimestres.forEach(item => {
+      if (item.modoEdicao) {
+        setModoEdicao(true);
       }
-    };
-    if (turmaId) {
+    });
+  }, [bimestres]);
+
+  useEffect(() => {
+    if (usuario.turmaSelecionada.turma) {
       obterDisciplinas();
     } else {
       // TODO - Resetar tela
       setListaDisciplinas([]);
       setDesabilitarDisciplina(false);
-      resetarTela();
+      // resetarTela();
     }
-  }, [obterDadosBimestres, turmaId, resetarTela]);
+  }, [obterDisciplinas, usuario.turmaSelecionada.turma]);
 
   const pergutarParaSalvar = () => {
     return confirmar(
@@ -178,7 +166,7 @@ const Notas = () => {
 
       return api
         .post(`v1/avaliacoes/notas`, {
-          turmaId,
+          turmaId: usuario.turmaSelecionada.turma,
           notasConceitos: valorParaSalvar,
         })
         .then(salvouNotas => {
@@ -223,12 +211,26 @@ const Notas = () => {
       obterDadosBimestres(disciplinaId, 0);
       setDisciplinaSelecionada(disciplinaId);
     } else {
-      resetarTela();
+      // resetarTela();
     }
   };
 
-  const onChangeTab = numeroBimestre => {
-    obterDadosBimestres(disciplinaSelecionada, numeroBimestre, true);
+  const onChangeTab = async numeroBimestre => {
+    const bimestre = bimestres.find(
+      item => Number(item.numero) === Number(numeroBimestre)
+    );
+    if (bimestre && !bimestre.modoEdicao) {
+      const dados = await obterBimestres(disciplinaSelecionada, numeroBimestre);
+      if (dados && dados.length) {
+        const bimestrePesquisado = dados.bimestres.find(
+          item => Number(item.numero) === Number(numeroBimestre)
+        );
+        const indexBimestre = dados.bimestres.indexOf(bimestrePesquisado);
+        bimestres[indexBimestre] = bimestrePesquisado;
+        setBimestres([...bimestres]);
+        // setBimestreSelecionado(indexBimestre);
+      }
+    }
   };
 
   const onChangeAvaliacao = () => {
@@ -237,15 +239,24 @@ const Notas = () => {
 
   const onClickCancelar = async () => {
     if (!desabilitarCampos && modoEdicao) {
-      const confirmou = await confirmar(
-        'Atenção',
-        'Você não salvou as informações preenchidas.',
-        'Deseja realmente cancelar as alterações?'
-      );
-      if (confirmou) {
+      if (
+        window.confirm(
+          `Você não salvou as informações preenchidas. Deseja realmente cancelar as alterações?`
+        )
+      ) {
+        setBimestres([]);
         setModoEdicao(false);
-        obterDadosBimestres(disciplinaSelecionada);
+        obterDadosBimestres(disciplinaSelecionada, 0);
       }
+      // const confirmou = await confirmar(
+      //   'Atenção',
+      //   'Você não salvou as informações preenchidas.',
+      //   'Deseja realmente cancelar as alterações?'
+      // );
+      // if (confirmou) {
+      //   setModoEdicao(false);
+      //   obterDadosBimestres(disciplinaSelecionada, 0);
+      // }
     }
   };
 
@@ -309,7 +320,8 @@ const Notas = () => {
                           <Avaliacao
                             dados={item}
                             notaTipo={notaTipo}
-                            onChangeAvaliacao={onChangeAvaliacao}
+                            listaAvaliacoes={item.avaliacoes}
+                            listaAlunos={item.alunos}
                           />
                         </TabPane>
                       );
