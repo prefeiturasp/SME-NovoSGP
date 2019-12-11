@@ -22,18 +22,18 @@ namespace SME.SGP.Infra.Escopo
         public static IDisposable AddTransientDisposableServices(IDisposable service)
         {
             if (service != null)
-                if (TransientServices.ContainsKey(Thread.CurrentThread.Name))
+                if (TransientServices.ContainsKey(WorkerContext.ContextIdentifier))
                 {
                     List<IDisposable> services = null;
 
-                    if (TransientServices.TryGetValue(Thread.CurrentThread.Name, out services))
+                    if (TransientServices.TryGetValue(WorkerContext.ContextIdentifier, out services))
                     {
                         services.Add(service);
-                        TransientServices[Thread.CurrentThread.Name] = services;
+                        TransientServices[WorkerContext.ContextIdentifier] = services;
                     }
                 }
                 else
-                    TransientServices.TryAdd(Thread.CurrentThread.Name, new List<IDisposable>(new[] { service }));
+                    TransientServices.TryAdd(WorkerContext.ContextIdentifier, new List<IDisposable>(new[] { service }));
 
             return service;
         }
@@ -43,14 +43,14 @@ namespace SME.SGP.Infra.Escopo
             List<IDisposable> services = null;
             WorkerContext context = null;
 
-            if (TransientServices.TryRemove(Thread.CurrentThread.Name, out services))
+            if (TransientServices.TryRemove(WorkerContext.ContextIdentifier, out services))
             {
                 foreach (var item in services)
                     if (item != null)
                         item.Dispose();
 
             }
-            if (TransientContexts.TryRemove(Thread.CurrentThread.Name, out context))
+            if (TransientContexts.TryRemove(WorkerContext.ContextIdentifier, out context))
                 context.Dispose();
         }
     }
