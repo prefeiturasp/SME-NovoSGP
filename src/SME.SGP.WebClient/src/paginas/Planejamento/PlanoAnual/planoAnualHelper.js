@@ -176,9 +176,8 @@ export default class PlanoAnualHelper {
   ) {
     const turmasIrmas = usuario.turmasUsuario.filter(
       turma =>
-        turma.ano === turmaSelecionada[0].ano &&
-        turma.codEscola === turmaSelecionada[0].codEscola &&
-        turma.codigo !== turmaSelecionada[0].codTurma
+        turma.ano === turmaSelecionada.ano &&
+        turma.valor !== turmaSelecionada.codTurma
     );
 
     const promissesTurmas = [];
@@ -188,7 +187,7 @@ export default class PlanoAnualHelper {
         anoLetivo,
         1,
         escolaId,
-        turma.codigo,
+        turma.valor,
         disciplinaSelecionada.codigo
       );
 
@@ -222,7 +221,7 @@ export default class PlanoAnualHelper {
       promissesTurmas.push(
         Service.getDisciplinasProfessor(
           usuario.rf,
-          turmasCopiarConteudo[i].codigo
+          turmasCopiarConteudo[i].valor
         )
       );
     }
