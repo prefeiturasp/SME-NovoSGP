@@ -13,6 +13,8 @@ import history from '~/servicos/history';
 import { store } from '~/redux';
 import { zeraCalendario } from '~/redux/modulos/calendarioEscolar/actions';
 import ModalidadeDTO from '~/dtos/modalidade';
+import FiltroHelper from '~/componentes-sgp/filtro/helper';
+import tipoEscolaDTO from '~/dtos/tipoEscolaDto';
 
 const Div = styled.div``;
 const Titulo = styled(Div)`
@@ -84,7 +86,7 @@ const CalendarioEscolar = () => {
   };
 
   const listarTiposCalendarioPorTurmaSelecionada = async tiposLista => {
-    if (Object.entries(turmaSelecionadaStore).length > 0) {
+    if (Object.entries(turmaSelecionadaStore).length) {
       const modalidadeSelecionada =
         turmaSelecionadaStore.modalidade === ModalidadeDTO.EJA.toString()
           ? 2
@@ -204,7 +206,7 @@ const CalendarioEscolar = () => {
                 abrev: dre.abreviacao,
               });
             });
-            setDres(lista);
+            setDres(lista.sort(FiltroHelper.ordenarLista('desc')));
           }
         }
       })
@@ -236,11 +238,11 @@ const CalendarioEscolar = () => {
           if (resposta.data) {
             resposta.data.forEach(unidade => {
               lista.push({
-                desc: unidade.nome,
+                desc: `${tipoEscolaDTO[unidade.tipoEscola]} ${unidade.nome}`,
                 valor: unidade.codigo,
               });
             });
-            setUnidadesEscolares(lista);
+            setUnidadesEscolares(lista.sort(FiltroHelper.ordenarLista('desc')));
           }
         }
       })
