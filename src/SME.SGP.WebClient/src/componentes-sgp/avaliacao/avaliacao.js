@@ -1,8 +1,10 @@
 import { Tooltip } from 'antd';
 import PropTypes from 'prop-types';
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
+import { useDispatch } from 'react-redux';
 import shortid from 'shortid';
 import notasConceitos from '~/dtos/notasConceitos';
+import { setModoEdicaoGeral } from '~/redux/modulos/notasConceitos/actions';
 
 import Ordenacao from '../Ordenacao/ordenacao';
 import { Lista } from './avaliacao.css';
@@ -10,6 +12,8 @@ import CampoConceito from './campoConceito';
 import CampoNota from './campoNota';
 
 const Avaliacao = props => {
+  const dispatch = useDispatch();
+
   const { dados, notaTipo, listaAvaliacoes, listaAlunos } = props;
 
   const [alunos, setAlunos] = useState(listaAlunos);
@@ -19,6 +23,7 @@ const Avaliacao = props => {
     if (nota.podeEditar) {
       nota.notaConceito = valorNovo;
       dados.modoEdicao = true;
+      dispatch(setModoEdicaoGeral(true));
     }
   };
 

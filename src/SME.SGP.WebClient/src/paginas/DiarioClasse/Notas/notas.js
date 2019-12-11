@@ -3,9 +3,7 @@ import React, { useCallback, useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import Avaliacao from '~/componentes-sgp/avaliacao/avaliacao';
 import Cabecalho from '~/componentes-sgp/cabecalho';
-import Button from '~/componentes/button';
 import Card from '~/componentes/card';
-import { Colors } from '~/componentes/colors';
 import SelectComponent from '~/componentes/select';
 import { ContainerTabsCard } from '~/componentes/tabs/tabs.css';
 import { URL_HOME } from '~/constantes/url';
@@ -14,17 +12,15 @@ import { confirmar, erros, sucesso } from '~/servicos/alertas';
 import api from '~/servicos/api';
 import history from '~/servicos/history';
 
+import BotoesAcoessNotasConceitos from './botoesAcoes';
 import { Container, ContainerAuditoria } from './notas.css';
-import modalidade from '~/dtos/modalidade';
+
 
 const { TabPane } = Tabs;
 
 const Notas = () => {
   const usuario = useSelector(store => store.usuario);
-  // const { turmaSelecionada } = usuario;
-  // const turmaId = turmaSelecionada ? turmaSelecionada.turma : 0;
-  // const modalidade = turmaSelecionada ? turmaSelecionada.modalidade : 0;
-  // const anoLetivo = turmaSelecionada.anoLetivo ? turmaSelecionada.anoLetivo : 0;
+
 
   const [listaDisciplinas, setListaDisciplinas] = useState([]);
   const [disciplinaSelecionada, setDisciplinaSelecionada] = useState(undefined);
@@ -106,14 +102,6 @@ const Notas = () => {
     }
   }, [obterDadosBimestres, usuario.turmaSelecionada.turma]);
 
-  useEffect(() => {
-    debugger;
-    bimestres.forEach(item => {
-      if (item.modoEdicao) {
-        setModoEdicao(true);
-      }
-    });
-  }, [bimestres]);
 
   useEffect(() => {
     if (usuario.turmaSelecionada.turma) {
@@ -228,7 +216,6 @@ const Notas = () => {
         const indexBimestre = dados.bimestres.indexOf(bimestrePesquisado);
         bimestres[indexBimestre] = bimestrePesquisado;
         setBimestres([...bimestres]);
-        // setBimestreSelecionado(indexBimestre);
       }
     }
   };
@@ -237,26 +224,11 @@ const Notas = () => {
     setModoEdicao(true);
   };
 
-  const onClickCancelar = async () => {
-    if (!desabilitarCampos && modoEdicao) {
-      if (
-        window.confirm(
-          `Você não salvou as informações preenchidas. Deseja realmente cancelar as alterações?`
-        )
-      ) {
-        setBimestres([]);
-        setModoEdicao(false);
-        obterDadosBimestres(disciplinaSelecionada, 0);
-      }
-      // const confirmou = await confirmar(
-      //   'Atenção',
-      //   'Você não salvou as informações preenchidas.',
-      //   'Deseja realmente cancelar as alterações?'
-      // );
-      // if (confirmou) {
-      //   setModoEdicao(false);
-      //   obterDadosBimestres(disciplinaSelecionada, 0);
-      // }
+  const onClickCancelar = async cancelar => {
+    if (cancelar) {
+      setBimestres([]);
+      setModoEdicao(false);
+      obterDadosBimestres(disciplinaSelecionada, 0);
     }
   };
 
@@ -267,30 +239,11 @@ const Notas = () => {
         <div className="col-md-12">
           <div className="row">
             <div className="col-md-12 d-flex justify-content-end pb-4">
-              <Button
-                label="Voltar"
-                icon="arrow-left"
-                color={Colors.Azul}
-                border
-                className="mr-2"
-                onClick={onClickVoltar}
-              />
-              <Button
-                label="Cancelar"
-                color={Colors.Roxo}
-                border
-                className="mr-2"
-                onClick={onClickCancelar}
-                disabled={!modoEdicao}
-              />
-              <Button
-                label="Salvar"
-                color={Colors.Roxo}
-                border
-                bold
-                className="mr-2"
-                onClick={onClickSalvar}
-                disabled={desabilitarCampos || !modoEdicao}
+              <BotoesAcoessNotasConceitos
+                onClickVoltar={onClickVoltar}
+                onClickCancelar={onClickCancelar}
+                onClickSalvar={onClickSalvar}
+                desabilitarCampos={desabilitarCampos}
               />
             </div>
           </div>
