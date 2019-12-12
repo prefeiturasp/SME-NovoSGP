@@ -1,13 +1,12 @@
 ﻿using Dapper;
 using Dommel;
-using SME.SGP.Dados.Contexto;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
+using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using SME.SGP.Infra;
 
 namespace SME.SGP.Dados.Repositorios
 {
@@ -21,6 +20,13 @@ namespace SME.SGP.Dados.Repositorios
         public RepositorioUe(ISgpContext contexto)
         {
             this.contexto = contexto;
+        }
+
+        public IEnumerable<Ue> ListarPorCodigos(string[] codigos)
+        {
+            var query = "select id, ue_id, dre_id, nome, tipo_escola FROM public.ue where ue_id = ANY(@codigos)";
+
+            return contexto.Conexao.Query<Ue>(query, new { codigos });
         }
 
         public async Task<IEnumerable<Modalidade>> ObterModalidades(string ueCodigo, int ano)
