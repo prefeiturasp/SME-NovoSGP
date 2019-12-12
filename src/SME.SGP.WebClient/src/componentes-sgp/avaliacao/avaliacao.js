@@ -1,6 +1,6 @@
 import { Tooltip } from 'antd';
 import PropTypes from 'prop-types';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useDispatch } from 'react-redux';
 import shortid from 'shortid';
 import notasConceitos from '~/dtos/notasConceitos';
@@ -14,10 +14,7 @@ import CampoNota from './campoNota';
 const Avaliacao = props => {
   const dispatch = useDispatch();
 
-  const { dados, notaTipo, listaAvaliacoes, listaAlunos } = props;
-
-  const [alunos, setAlunos] = useState(listaAlunos);
-  const [avaliacoes] = useState(listaAvaliacoes);
+  const { dados, notaTipo, onChangeOrdenacao } = props;
 
   const onChangeNotaConceito = (nota, valorNovo) => {
     if (nota.podeEditar) {
@@ -30,8 +27,8 @@ const Avaliacao = props => {
   const descricaoAlunoAusente = 'Aluno ausente na data da avaliação';
 
   const montarCabecalhoAvaliacoes = () => {
-    return avaliacoes && avaliacoes.length > 0
-      ? avaliacoes.map(avaliacao => {
+    return dados.avaliacoes && dados.avaliacoes.length > 0
+      ? dados.avaliacoes.map(avaliacao => {
           const descricaoSemHtml = avaliacao.descricao.replace(
             /<[^>]*>?/gm,
             ''
@@ -52,8 +49,8 @@ const Avaliacao = props => {
   };
 
   const montarCabecalhoInterdisciplinar = () => {
-    return avaliacoes && avaliacoes.length > 0
-      ? avaliacoes.map(() => {
+    return dados.avaliacoes && dados.avaliacoes.length > 0
+      ? dados.avaliacoes.map(() => {
           return (
             <th key={shortid.generate()} className="width-150">
               {/* TODO - INTERDISCIPLINAR */}
@@ -85,34 +82,39 @@ const Avaliacao = props => {
     <>
       {dados ? (
         <Lista className="mt-4 table-responsive">
-          <table className="table mb-0 ">
-            <thead className="tabela-avaliacao-thead">
-              <div className="scroll-tabela-avaliacao-thead">
-                <tr className="coluna-ordenacao-tr">
-                  <th colSpan="2" className="width-460 coluna-ordenacao-th">
-                    <Ordenacao
-                      className="botao-ordenacao-avaliacao"
-                      conteudoParaOrdenar={alunos}
-                      ordenarColunaNumero="numeroChamada"
-                      ordenarColunaTexto="nome"
-                      retornoOrdenado={retorno => {
-                        setAlunos([...retorno]);
-                      }}
-                    />
-                  </th>
-                  {montarCabecalhoAvaliacoes()}
-                </tr>
-                <tr>
-                  <th colSpan="2" className="width-460 " />
-                  {montarCabecalhoInterdisciplinar()}
-                </tr>
-              </div>
-            </thead>
-          </table>
+          {dados.avaliacoes && dados.avaliacoes.length ? (
+            <table className="table mb-0 ">
+              <thead className="tabela-avaliacao-thead">
+                <div className="scroll-tabela-avaliacao-thead">
+                  <tr className="coluna-ordenacao-tr">
+                    <th colSpan="2" className="width-460 coluna-ordenacao-th">
+                      <Ordenacao
+                        className="botao-ordenacao-avaliacao"
+                        conteudoParaOrdenar={dados.alunos}
+                        ordenarColunaNumero="numeroChamada"
+                        ordenarColunaTexto="nome"
+                        retornoOrdenado={retorno => {
+                          dados.alunos = retorno;
+                          onChangeOrdenacao(dados);
+                        }}
+                      />
+                    </th>
+                    {montarCabecalhoAvaliacoes()}
+                  </tr>
+                  <tr>
+                    <th colSpan="2" className="width-460 " />
+                    {montarCabecalhoInterdisciplinar()}
+                  </tr>
+                </div>
+              </thead>
+            </table>
+          ) : (
+            ''
+          )}
           <table className="table mb-0">
             <tbody className="tabela-avaliacao-tbody">
               <div className="scroll-tabela-avaliacao-tbody">
-                {alunos.map(aluno => {
+                {dados.alunos.map(aluno => {
                   return (
                     <tr key={shortid.generate()}>
                       <td className="width-60 text-center font-weight-bold">
@@ -158,15 +160,11 @@ const Avaliacao = props => {
 Avaliacao.propTypes = {
   dados: {},
   notaTipo: PropTypes.number,
-  listaAvaliacoes: [],
-  listaAlunos: [],
 };
 
 Avaliacao.defaultProps = {
   dados: [],
   notaTipo: 0,
-  listaAvaliacoes: [],
-  listaAlunos: [],
 };
 
 export default Avaliacao;
