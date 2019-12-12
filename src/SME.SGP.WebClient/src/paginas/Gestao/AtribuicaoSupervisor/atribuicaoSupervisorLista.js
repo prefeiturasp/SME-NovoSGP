@@ -13,6 +13,9 @@ import Cabecalho from '~/componentes-sgp/cabecalho';
 import RotasDto from '~/dtos/rotasDto';
 import { verificaSomenteConsulta } from '~/servicos/servico-navegacao';
 
+import FiltroHelper from '~/componentes-sgp/filtro/helper';
+import tipoEscolaDTO from '~/dtos/tipoEscolaDto';
+
 export default function AtribuicaoSupervisorLista() {
   const [uesSemSupervisorCheck, setUesSemSupervisorCheck] = useState(false);
   const [assumirFiltroPrincCheck, setAssumirFiltroPrincCheck] = useState(false);
@@ -46,7 +49,7 @@ export default function AtribuicaoSupervisorLista() {
   useEffect(() => {
     async function carregarDres() {
       const dres = await api.get('v1/abrangencias/dres');
-      setListaDres(dres.data);
+      setListaDres(dres.data.sort(FiltroHelper.ordenarLista('nome')));
     }
 
     carregarDres();
@@ -226,13 +229,17 @@ export default function AtribuicaoSupervisorLista() {
   }
 
   async function carregarSupervisores(dre) {
-    const sups = await api.get(`/v1/supervisores/dres/${dre}`);
+    const sups = await api.get(`/v1/supervisores/dre/${dre}`);
     setListaSupervisores(sups.data || []);
   }
 
   async function carregarUes(dre) {
     const ues = await api.get(`/v1/abrangencias/dres/${dre}/ues`);
-    setListaUes(ues.data || []);
+    if (ues.data)
+      ues.data.forEach(
+        ue => (ue.nome = `${tipoEscolaDTO[ue.tipoEscola]} ${ue.nome}`)
+      );
+    setListaUes(ues.data.sort(FiltroHelper.ordenarLista('nome')) || []);
   }
 
   async function onChangeSupervisores(sup) {

@@ -14,6 +14,9 @@ import { store } from '~/redux';
 import { zeraCalendario } from '~/redux/modulos/calendarioProfessor/actions';
 import ModalidadeDTO from '~/dtos/modalidade';
 import { erro } from '~/servicos/alertas';
+import ServicoCalendarios from '~/servicos/Paginas/Calendario/ServicoCalendarios';
+import FiltroHelper from '~/componentes-sgp/filtro/helper';
+import tipoEscolaDTO from '~/dtos/tipoEscolaDto';
 
 const Div = styled.div``;
 const Titulo = styled(Div)`
@@ -37,34 +40,31 @@ const CalendarioProfessor = () => {
   const anosLetivosAbrangencia = useSelector(state => state.filtro.anosLetivos);
 
   const obterTiposCalendario = async modalidades => {
-    return api
-      .get('v1/calendarios/tipos')
-      .then(resposta => {
-        const tiposCalendarioLista = [];
-        if (resposta.data) {
-          const anos = [];
-          anosLetivosAbrangencia.forEach(ano => {
-            if (!anos.includes(ano.valor)) anos.push(ano.valor);
+    const lista = await ServicoCalendarios.obterTiposCalendario();
+    if (lista && lista.data) {
+      const tiposCalendarioLista = [];
+      if (lista.data) {
+        const anos = [];
+        anosLetivosAbrangencia.forEach(ano => {
+          if (!anos.includes(ano.valor)) anos.push(ano.valor);
+        });
+        const tipos = lista.data.filter(tipo => {
+          return (
+            modalidades.indexOf(tipo.modalidade) > -1 &&
+            anos.indexOf(tipo.anoLetivo) > -1
+          );
+        });
+        tipos.forEach(tipo => {
+          tiposCalendarioLista.push({
+            desc: tipo.nome,
+            valor: tipo.id,
+            modalidade: tipo.modalidade,
           });
-          const tipos = resposta.data.filter(tipo => {
-            return (
-              modalidades.indexOf(tipo.modalidade) > -1 &&
-              anos.indexOf(tipo.anoLetivo) > -1
-            );
-          });
-          tipos.forEach(tipo => {
-            tiposCalendarioLista.push({
-              desc: tipo.nome,
-              valor: tipo.id,
-              modalidade: tipo.modalidade,
-            });
-          });
-        }
-        return tiposCalendarioLista;
-      })
-      .catch(() => {
-        return [];
-      });
+        });
+      }
+      return tiposCalendarioLista;
+    }
+    return lista;
   };
 
   const listarModalidadesPorAbrangencia = () => {
@@ -85,27 +85,29 @@ const CalendarioProfessor = () => {
   };
 
   const listarTiposCalendarioPorTurmaSelecionada = async tiposLista => {
-    if (Object.entries(turmaSelecionadaStore).length > 0) {
+    if (Object.entries(turmaSelecionadaStore).length) {
       const modalidadeSelecionada =
         turmaSelecionadaStore.modalidade === ModalidadeDTO.EJA.toString()
           ? 2
           : 1;
 
-      if (tiposLista) {
+      if (tiposLista && tiposLista.length) {
         setTiposCalendario(
-          tiposLista.filter(tipo => tipo.modalidade === modalidadeSelecionada)
+          tiposLista.filter(tipo => {
+            return tipo.modalidade === modalidadeSelecionada;
+          })
         );
-      } else if (tiposCalendario) {
+      } else if (tiposCalendario && tiposCalendario.length) {
         setTiposCalendario(
-          tiposCalendario.filter(
-            tipo => tipo.modalidade === modalidadeSelecionada
-          )
+          tiposCalendario.filter(tipo => {
+            return tipo.modalidade === modalidadeSelecionada;
+          })
+        );
+      } else {
+        setTiposCalendario(
+          await obterTiposCalendario(listarModalidadesPorAbrangencia())
         );
       }
-    } else {
-      setTiposCalendario(
-        await obterTiposCalendario(listarModalidadesPorAbrangencia())
-      );
     }
   };
 
@@ -140,7 +142,7 @@ const CalendarioProfessor = () => {
 
   useEffect(() => {
     listarTiposCalendarioPorTurmaSelecionada();
-  }, [turmaSelecionadaStore]);
+  }, [turmaSelecionadaStore, anosLetivosAbrangencia]);
 
   const consultarDiasLetivos = () => {
     api
@@ -220,7 +222,7 @@ const CalendarioProfessor = () => {
                 abrev: dre.abreviacao,
               });
             });
-            setDres(lista);
+            setDres(lista.sort(FiltroHelper.ordenarLista('desc')));
           }
         }
       })
@@ -262,11 +264,11 @@ const CalendarioProfessor = () => {
           if (resposta.data) {
             resposta.data.forEach(unidade => {
               lista.push({
-                desc: unidade.nome,
+                desc: `${tipoEscolaDTO[unidade.tipoEscola]} ${unidade.nome}`,
                 valor: unidade.codigo,
               });
             });
-            setUnidadesEscolares(lista);
+            setUnidadesEscolares(lista.sort(FiltroHelper.ordenarLista('desc')));
           }
         }
       })
@@ -343,8 +345,8 @@ const CalendarioProfessor = () => {
   }, [unidadeEscolarSelecionada]);
 
   useEffect(() => {
-    if (turmas.length > 0) {
-      if (Object.entries(eventoAulaCalendarioEdicao).length > 0) {
+    if (turmas.length) {
+      if (Object.entries(eventoAulaCalendarioEdicao).length) {
         if (eventoAulaCalendarioEdicao.turma) {
           setOpcaoTurma(listaTurmas[1].valor.toString());
           setTurmaSelecionada(eventoAulaCalendarioEdicao.turma);
@@ -356,7 +358,7 @@ const CalendarioProfessor = () => {
         }
       } else if (!usuario.ehProfessor) {
         if (unidadeEscolarSelecionada) {
-          if (Object.entries(turmaSelecionadaStore).length > 0)
+          if (Object.entries(turmaSelecionadaStore).length)
             setOpcaoTurma(listaTurmas[1].valor.toString());
           else {
             setOpcaoTurma();
@@ -391,7 +393,7 @@ const CalendarioProfessor = () => {
       setTodasTurmas(true);
       setTurmaSelecionada();
     } else if (opcaoTurma === '2') {
-      if (Object.entries(turmaSelecionadaStore).length > 0) {
+      if (Object.entries(turmaSelecionadaStore).length) {
         setTurmaSelecionada(turmaSelecionadaStore.turma);
       } else {
         setOpcaoTurma();

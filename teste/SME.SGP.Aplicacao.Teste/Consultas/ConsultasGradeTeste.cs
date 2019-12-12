@@ -1,4 +1,5 @@
 using Moq;
+using SME.SGP.Aplicacao.Integracoes;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using System;
@@ -13,13 +14,19 @@ namespace SME.SGP.Aplicacao.Teste.Consultas
         private readonly Mock<IConsultasAula> consultasAula;
         private readonly ConsultasGrade consultasGrade;
         private readonly Mock<IRepositorioGrade> repositorioGrade;
+        private readonly Mock<IRepositorioTurma> repositorioTurma;
+        private readonly Mock<IRepositorioUe> repositorioUe;
+        private readonly Mock<IServicoEOL> servicoEOL;
 
         public ConsultasGradeTeste()
         {
             repositorioGrade = new Mock<IRepositorioGrade>();
             consultasAbrangencia = new Mock<IConsultasAbrangencia>();
             consultasAula = new Mock<IConsultasAula>();
-            consultasGrade = new ConsultasGrade(repositorioGrade.Object, consultasAbrangencia.Object, consultasAula.Object);
+            servicoEOL = new Mock<IServicoEOL>();
+            repositorioUe = new Mock<IRepositorioUe>();
+            repositorioTurma = new Mock<IRepositorioTurma>();
+            consultasGrade = new ConsultasGrade(repositorioGrade.Object, consultasAbrangencia.Object, consultasAula.Object, servicoEOL.Object, repositorioUe.Object, repositorioTurma.Object);
 
             Setup();
         }
@@ -45,7 +52,7 @@ namespace SME.SGP.Aplicacao.Teste.Consultas
         public async Task DeveRetornarQuatroAulasGradeParaSRMEAEE()
         {
             var semana = (DateTime.Now.DayOfYear / 7) + 1;
-            var aulasGrade = await consultasGrade.ObterGradeAulasTurmaProfessor("123", 1030, semana.ToString());
+            var aulasGrade = await consultasGrade.ObterGradeAulasTurmaProfessor("123", 1030, semana.ToString(), DateTime.Now);
 
             Assert.True(aulasGrade.QuantidadeAulasGrade == 4);
         }

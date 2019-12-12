@@ -60,6 +60,10 @@ const FrequenciaPlanoAula = () => {
   const [frequencia, setFrequencia] = useState([]);
   const [aulaId, setAulaId] = useState(0);
   const [frequenciaId, setFrequenciaId] = useState(0);
+  const [
+    carregandoDiasParaHabilitar,
+    setCarregandoDiasParaHabilitar,
+  ] = useState(false);
   const [exibirCardFrequencia, setExibirCardFrequencia] = useState(false);
   const [modoEdicaoFrequencia, setModoEdicaoFrequencia] = useState(false);
   const [desabilitarDisciplina, setDesabilitarDisciplina] = useState(false);
@@ -90,12 +94,17 @@ const FrequenciaPlanoAula = () => {
 
   const obterDatasDeAulasDisponiveis = useCallback(
     async disciplinaId => {
+      setCarregandoDiasParaHabilitar(true);
       const datasDeAulas = await api
         .get(
           `v1/calendarios/frequencias/aulas/datas/${anoLetivo}/turmas/${turmaId}/disciplinas/${disciplinaId}`
         )
-        .catch(e => erros(e));
+        .catch(e => {
+          setCarregandoDiasParaHabilitar(false);
+          erros(e);
+        });
 
+      setCarregandoDiasParaHabilitar(false);
       if (datasDeAulas && datasDeAulas.data) {
         setListaDatasAulas(datasDeAulas.data);
         const habilitar = datasDeAulas.data.map(item =>
@@ -669,7 +678,10 @@ const FrequenciaPlanoAula = () => {
                 onChange={onChangeData}
                 placeholder="DD/MM/AAAA"
                 formatoData="DD/MM/YYYY"
-                desabilitado={!disciplinaIdSelecionada}
+                desabilitado={
+                  !disciplinaIdSelecionada || carregandoDiasParaHabilitar
+                }
+                carregando={carregandoDiasParaHabilitar}
                 diasParaHabilitar={diasParaHabilitar}
               />
             </div>
@@ -693,13 +705,13 @@ const FrequenciaPlanoAula = () => {
                           ordenarColunaNumero="numeroAlunoChamada"
                           ordenarColunaTexto="nomeAluno"
                           retornoOrdenado={retorno => setFrequencia(retorno)}
-                        ></Ordenacao>
+                        />
                         <ListaFrequencia
                           dados={frequencia}
                           frequenciaId={frequenciaId}
                           onChangeFrequencia={onChangeFrequencia}
                           permissoesTela={permissoesTela}
-                        ></ListaFrequencia>
+                        />
                       </div>
                       {exibirAuditoria ? (
                         <Auditoria
@@ -746,9 +758,9 @@ const FrequenciaPlanoAula = () => {
           key="errosBimestre"
           visivel={mostrarErros}
           onClose={onCloseErros}
-          type={'error'}
+          type="error"
           conteudo={errosValidacaoPlano}
-          titulo={'Erros plano de aula'}
+          titulo="Erros plano de aula"
         />
       </Card>
     </>
