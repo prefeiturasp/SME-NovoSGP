@@ -42,7 +42,7 @@ namespace SME.SGP.Aplicacao
                         ));
         }
 
-        public async Task<(IEnumerable<AtividadeAvaliativa>, int quantidadeBimestres, int bimestreAtual, PeriodoEscolar periodoAtual)> ObterAvaliacoesEBimestres(string turmaCodigo, string disciplinaId, int anoLetivo, int? bimestre, ModalidadeTipoCalendario modalidadeTipoCalendario)
+        public async Task<(IEnumerable<AtividadeAvaliativa>, int quantidadeBimestres, PeriodoEscolar periodoAtual)> ObterAvaliacoesEBimestres(string turmaCodigo, string disciplinaId, int anoLetivo, int? bimestre, ModalidadeTipoCalendario modalidadeTipoCalendario)
         {
             var tipoCalendario = repositorioTipoCalendario.BuscarPorAnoLetivoEModalidade(anoLetivo, modalidadeTipoCalendario);
 
@@ -67,7 +67,7 @@ namespace SME.SGP.Aplicacao
             if (avaliacoes == null || !avaliacoes.Any())
                 throw new NegocioException("Não foi encontrada nenhuma avaliação para o bimestre informado.");
 
-            return (avaliacoes, periodosEscolares.Count(), bimestre.Value, periodoEscolar);
+            return (avaliacoes, periodosEscolares.Count(), periodoEscolar);
         }
 
         public async Task<AtividadeAvaliativaCompletaDto> ObterPorIdAsync(long id)
