@@ -59,7 +59,7 @@ namespace SME.SGP.Aplicacao
                 horasGrade = 4;
             else
                 // Busca carga horaria na grade da disciplina para o ano da turma
-                horasGrade = await ObterHorasGradeComponente(grade.Id, disciplina, turma.AnoLetivo);
+                horasGrade = await ObterHorasGradeComponente(grade.Id, disciplina, int.Parse(turma.Ano));
 
             if (horasGrade == 0)
                 return null;
