@@ -106,11 +106,11 @@ const Filtro = () => {
   );
   const [resultadosFiltro, setResultadosFiltro] = useState([]);
 
-  const ObtenhaDres = useCallback(
+  const obterDres = useCallback(
     async (estado, periodo) => {
       if (!modalidadeSelecionada) return;
 
-      const listaDres = await FiltroHelper.ObtenhaDres(
+      const listaDres = await FiltroHelper.obterDres(
         modalidadeSelecionada,
         periodo
       );
@@ -258,7 +258,7 @@ const Filtro = () => {
       setCampoModalidadeDesabilitado(true);
     } else {
       const obterModalidades = async deveSalvarModalidade => {
-        const modalidadesLista = await FiltroHelper.ObtenhaModalidades();
+        const modalidadesLista = await FiltroHelper.obterModalidades();
 
         if (deveSalvarModalidade) {
           setModalidades(modalidadesLista);
@@ -283,7 +283,7 @@ const Filtro = () => {
     let estado = true;
 
     const obterPeriodos = async deveSalvarPeriodos => {
-      const periodo = await FiltroHelper.ObtenhaPeriodos(modalidadeSelecionada);
+      const periodo = await FiltroHelper.obterPeriodos(modalidadeSelecionada);
 
       if (!modalidade) return;
 
@@ -303,14 +303,14 @@ const Filtro = () => {
       obterPeriodos(estado);
       setCampoDreDesabilitado(true);
     } else {
-      ObtenhaDres(estado);
+      obterDres(estado);
     }
 
     return () => {
       estado = false;
       return estado;
     };
-  }, [ObtenhaDres, dispatch, modalidadeSelecionada]);
+  }, [obterDres, dispatch, modalidadeSelecionada]);
 
   useEffect(() => {
     if (periodos && periodos.length === 1)
@@ -328,8 +328,8 @@ const Filtro = () => {
       return;
     }
 
-    ObtenhaDres(estado, periodoSelecionado);
-  }, [ObtenhaDres, modalidadeSelecionada, periodoSelecionado]);
+    obterDres(estado, periodoSelecionado);
+  }, [obterDres, modalidadeSelecionada, periodoSelecionado]);
 
   useEffect(() => {
     if (dres && dres.length === 1) setDreSelecionada(dres[0].valor);
@@ -337,10 +337,10 @@ const Filtro = () => {
 
   useEffect(() => {
     let estado = true;
-    const ObtenhaUnidadesEscolares = async (deveSalvarUes, periodo) => {
+    const obterUnidadesEscolares = async (deveSalvarUes, periodo) => {
       if (!modalidadeSelecionada) return;
 
-      const ues = await FiltroHelper.ObtenhaUnidadesEscolares(
+      const ues = await FiltroHelper.obterUnidadesEscolares(
         modalidadeSelecionada,
         dreSelecionada,
         periodo
@@ -371,7 +371,7 @@ const Filtro = () => {
         ? periodoSelecionado
         : null;
 
-    ObtenhaUnidadesEscolares(estado, periodo);
+    obterUnidadesEscolares(estado, periodo);
 
     return () => {
       estado = false;
@@ -385,7 +385,7 @@ const Filtro = () => {
   }, [unidadesEscolares]);
 
   useEffect(() => {
-    const ObtenhaTurmas = async deveSalvarTurmas => {
+    const obterTurmas = async deveSalvarTurmas => {
       const periodo =
         modalidadeSelecionada === modalidade.EJA.toString()
           ? periodoSelecionado
@@ -393,7 +393,7 @@ const Filtro = () => {
 
       if (!modalidadeSelecionada) return;
 
-      const listaTurmas = await FiltroHelper.ObtenhaTurmas(
+      const listaTurmas = await FiltroHelper.obterTurmas(
         modalidadeSelecionada,
         unidadeEscolarSelecionada,
         periodo
@@ -420,7 +420,7 @@ const Filtro = () => {
       return;
     }
 
-    ObtenhaTurmas(estado);
+    obterTurmas(estado);
 
     return () => {
       estado = false;

@@ -9,6 +9,7 @@ import AbrangenciaServico from '~/servicos/Abrangencia';
 
 // Funções
 import { valorNuloOuVazio } from '~/utils/funcoes/gerais';
+import FiltroHelper from '~/componentes-sgp/filtro/helper';
 
 function DreDropDown({ form, onChange, label, url }) {
   const [listaDres, setListaDres] = useState([]);
@@ -18,11 +19,13 @@ function DreDropDown({ form, onChange, label, url }) {
       const { data } = await AbrangenciaServico.buscarDres(url);
       if (data) {
         setListaDres(
-          data.map(item => ({
-            desc: item.nome,
-            valor: item.codigo,
-            abrev: item.abreviacao,
-          }))
+          data
+            .map(item => ({
+              desc: item.nome,
+              valor: item.codigo,
+              abrev: item.abreviacao,
+            }))
+            .sort(FiltroHelper.ordenarLista('desc'))
         );
       }
     }
