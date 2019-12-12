@@ -183,6 +183,7 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IServicoNotificacaoAulaPrevista, ServicoNotificacaoAulaPrevista>();
             services.TryAddScoped<IServicoAtribuicaoCJ, ServicoAtribuicaoCJ>();
             services.TryAddScoped<IServicoEventoMatricula, ServicoEventoMatricula>();
+            services.TryAddScoped<IServicoAluno, ServicoAluno>();
         }
     }
 }
