@@ -47,6 +47,8 @@ import {
 
 // Utils
 import { parseScreenObject } from '~/utils/parsers/eventRecurrence';
+import FiltroHelper from '~/componentes-sgp/filtro/helper';
+import tipoEscolaDTO from '~/dtos/tipoEscolaDto';
 
 const EventosForm = ({ match }) => {
   const usuarioStore = useSelector(store => store.usuario);
@@ -104,7 +106,10 @@ const EventosForm = ({ match }) => {
   };
   const [valoresIniciais, setValoresIniciais] = useState(inicial);
 
-  const opcoesLetivo = [{ label: 'Sim', value: 1 }, { label: 'Não', value: 2 }];
+  const opcoesLetivo = [
+    { label: 'Sim', value: 1 },
+    { label: 'Não', value: 2 },
+  ];
 
   const [validacoes, setValidacoes] = useState({});
 
@@ -118,7 +123,11 @@ const EventosForm = ({ match }) => {
   useEffect(() => {
     const montarConsultas = async () => {
       const dres = await api.get('v1/abrangencias/dres');
-      setListaDres(dres.data || []);
+      if (dres.data) {
+        setListaDres(dres.data.sort(FiltroHelper.ordenarLista('nome')));
+      } else {
+        setListaDres([]);
+      }
 
       const tiposEvento = await api.get('v1/calendarios/eventos/tipos/listar');
       if (tiposEvento && tiposEvento.data && tiposEvento.data.items) {
@@ -163,8 +172,15 @@ const EventosForm = ({ match }) => {
       if (listaDres && listaDres.length == 1) {
         inicial.dreId = String(listaDres[0].codigo);
         const ues = await obterUesPorDre(inicial.dreId);
-        setListaUes(ues.data || []);
-        if (ues.data.length == 1) {
+        if (ues.data) {
+          ues.data.forEach(
+            ue => (ue.nome = `${tipoEscolaDTO[ue.tipoEscola]} ${ue.nome}`)
+          );
+          setListaUes(ues.data.sort(FiltroHelper.ordenarLista('nome')));
+        } else {
+          setListaUes([]);
+        }
+        if (ues.data.length === 1) {
           inicial.ueId = String(ues.data[0].codigo);
         }
       }
@@ -464,7 +480,14 @@ const EventosForm = ({ match }) => {
 
   const carregarUes = async dre => {
     const ues = await obterUesPorDre(dre);
-    setListaUes(ues.data || []);
+    if (ues.data) {
+      ues.data.forEach(
+        ue => (ue.nome = `${tipoEscolaDTO[ue.tipoEscola]} ${ue.nome}`)
+      );
+      setListaUes(ues.data.sort(FiltroHelper.ordenarLista('nome')));
+    } else {
+      setListaUes([]);
+    }
   };
 
   const obterUesPorDre = dre => {
