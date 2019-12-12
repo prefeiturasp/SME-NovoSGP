@@ -8,6 +8,7 @@ namespace SME.SGP.Aplicacao
     public interface IConsultasFrequencia
     {
         Task<FrequenciaDto> ObterListaFrequenciaPorAula(long aulaId);
+        Task<bool> FrequenciaAulaRegistrada(long aulaId);
         Task<MarcadorFrequenciaDto> ObterMarcadorAluno(AlunoPorTurmaResposta aluno, PeriodoEscolarDto bimestre);
     }
 }
