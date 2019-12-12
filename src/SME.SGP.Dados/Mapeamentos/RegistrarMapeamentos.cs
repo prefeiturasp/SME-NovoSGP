@@ -61,6 +61,7 @@ namespace SME.SGP.Dados.Mapeamentos
                config.AddMap(new NotaConceitoCicloParametroMap());
                config.AddMap(new AulaPrevistaMap());
                config.AddMap(new NotificacaoAulaPrevistaMap());
+               config.AddMap(new AulaPrevistaBimestreMap());
                config.ForDommel();
            });
         }
