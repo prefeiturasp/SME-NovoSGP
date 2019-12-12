@@ -10,6 +10,7 @@ namespace SME.SGP.Infra
         }
 
         public string Id { get; set; }
+        public MarcadorFrequenciaDto Marcador { get; set; }
         public string Nome { get; set; }
         public List<NotasConceitosNotaAvaliacaoRetornoDto> NotasAvaliacoes { get; set; }
         public int NumeroChamada { get; set; }

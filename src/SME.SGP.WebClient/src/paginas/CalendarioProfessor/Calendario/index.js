@@ -15,6 +15,8 @@ import { zeraCalendario } from '~/redux/modulos/calendarioProfessor/actions';
 import ModalidadeDTO from '~/dtos/modalidade';
 import { erro } from '~/servicos/alertas';
 import ServicoCalendarios from '~/servicos/Paginas/Calendario/ServicoCalendarios';
+import FiltroHelper from '~/componentes-sgp/filtro/helper';
+import tipoEscolaDTO from '~/dtos/tipoEscolaDto';
 
 const Div = styled.div``;
 const Titulo = styled(Div)`
@@ -220,7 +222,7 @@ const CalendarioProfessor = () => {
                 abrev: dre.abreviacao,
               });
             });
-            setDres(lista);
+            setDres(lista.sort(FiltroHelper.ordenarLista('desc')));
           }
         }
       })
@@ -262,11 +264,11 @@ const CalendarioProfessor = () => {
           if (resposta.data) {
             resposta.data.forEach(unidade => {
               lista.push({
-                desc: unidade.nome,
+                desc: `${tipoEscolaDTO[unidade.tipoEscola]} ${unidade.nome}`,
                 valor: unidade.codigo,
               });
             });
-            setUnidadesEscolares(lista);
+            setUnidadesEscolares(lista.sort(FiltroHelper.ordenarLista('desc')));
           }
         }
       })
@@ -343,8 +345,8 @@ const CalendarioProfessor = () => {
   }, [unidadeEscolarSelecionada]);
 
   useEffect(() => {
-    if (turmas.length > 0) {
-      if (Object.entries(eventoAulaCalendarioEdicao).length > 0) {
+    if (turmas.length) {
+      if (Object.entries(eventoAulaCalendarioEdicao).length) {
         if (eventoAulaCalendarioEdicao.turma) {
           setOpcaoTurma(listaTurmas[1].valor.toString());
           setTurmaSelecionada(eventoAulaCalendarioEdicao.turma);
@@ -356,7 +358,7 @@ const CalendarioProfessor = () => {
         }
       } else if (!usuario.ehProfessor) {
         if (unidadeEscolarSelecionada) {
-          if (Object.entries(turmaSelecionadaStore).length > 0)
+          if (Object.entries(turmaSelecionadaStore).length)
             setOpcaoTurma(listaTurmas[1].valor.toString());
           else {
             setOpcaoTurma();
@@ -391,7 +393,7 @@ const CalendarioProfessor = () => {
       setTodasTurmas(true);
       setTurmaSelecionada();
     } else if (opcaoTurma === '2') {
-      if (Object.entries(turmaSelecionadaStore).length > 0) {
+      if (Object.entries(turmaSelecionadaStore).length) {
         setTurmaSelecionada(turmaSelecionadaStore.turma);
       } else {
         setOpcaoTurma();
