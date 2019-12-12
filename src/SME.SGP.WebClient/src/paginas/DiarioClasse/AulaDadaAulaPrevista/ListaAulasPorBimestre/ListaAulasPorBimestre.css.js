@@ -37,6 +37,10 @@ export const Corpo = styled.div`
   .ant-input-number-disabled {
     background-color: ${Base.Branco};
   }
+
+  .ant-input-number-input{
+    text-align: center !important;
+  }
 `;
 
 export const CampoDesabilitado = styled.div`
@@ -74,7 +78,6 @@ export const CampoEditavel = styled.div`
     display: flex;
     width: 65px;
     height: 32px !important;
-    text-align: center !important;
   }
 `;
 
@@ -103,7 +106,8 @@ export const CampoAlerta = styled.div`
     display: flex;
     justify-content: center;
     align-items: center;
-    width: 20px i {
+    width: 20px ;
+    i {
       font-size: 8px;
       color: ${Base.Branco};
     }
