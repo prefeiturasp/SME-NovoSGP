@@ -20,8 +20,8 @@ namespace SME.SGP.Dados.Repositorios
 
             query.Append(MontarSelect());
             query.Append(@" where p.tipo_calendario_id = @tipoCalendarioId and
-                        (a.turma_id is null or a.turma_id = @turmaId) and
-                        (a.disciplina_id is null or a.disciplina_id = @disciplinaId) ");
+                        ap.turma_id = @turmaId and
+                        ap.disciplina_id = @disciplinaId ");
             query.Append(MontarGroupOrderBy());
 
             return (await database.Conexao.QueryAsync<AulaPrevistaBimestreQuantidade>(query.ToString(), new { tipoCalendarioId, turmaId, disciplinaId }));
