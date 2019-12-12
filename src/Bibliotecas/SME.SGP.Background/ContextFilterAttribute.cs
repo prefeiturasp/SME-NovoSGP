@@ -38,7 +38,7 @@ namespace SME.SGP.Hangfire
         public void OnPerforming(PerformingContext filterContext)
         {
             var contextoTransiente = filterContext.GetJobParameter<WorkerContext>("contextoAplicacao");
-            WorkerServiceScope.TransientContexts.TryAdd(Thread.CurrentThread.Name, contextoTransiente);
+            WorkerServiceScope.TransientContexts.TryAdd(WorkerContext.ContextIdentifier, contextoTransiente);
 
         }
 

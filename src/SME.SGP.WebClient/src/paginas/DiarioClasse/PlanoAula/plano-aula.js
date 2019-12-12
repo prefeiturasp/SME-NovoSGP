@@ -18,11 +18,13 @@ import {
 } from './plano-aula.css';
 import api from '~/servicos/api';
 import { RegistroMigrado } from '~/paginas/Planejamento/PlanoCiclo/planoCiclo.css';
+import { store } from '~/redux';
 
 // Componentes
 import ModalCopiarConteudo from './componentes/ModalCopiarConteudo';
 import RotasDto from '~/dtos/rotasDto';
 import history from '~/servicos/history';
+import { selecionaDia } from '~/redux/modulos/calendarioProfessor/actions';
 
 const PlanoAula = props => {
   const {
@@ -196,6 +198,7 @@ const PlanoAula = props => {
   };
 
   const aoClicarBotaoNovaAvaliacao = () => {
+    store.dispatch(selecionaDia(dataAula));
     history.push(`${RotasDto.CADASTRO_DE_AVALIACAO}/novo`);
   };
 
@@ -239,7 +242,7 @@ const PlanoAula = props => {
           className="row d-inline-block col-md-12"
           hidden={!ehProfessorCj || ehEja || ehMedio}
         >
-          <label>Objetivos de aprendizagem</label>
+          <label>Objetivos de Aprendizagem e Desenvolvimento</label>
           <Switch
             onChange={() => habilitaDesabilitaObjetivos(!temObjetivos)}
             checked={habilitaEscolhaObjetivos}
@@ -251,16 +254,16 @@ const PlanoAula = props => {
         <CardCollapse
           key="objetivos-aprendizagem"
           onClick={() => {}}
-          titulo="Objetivos de aprendizagem e meus objetivos (Currículo da Cidade)"
+          titulo="Objetivos de Aprendizagem e Desenvolvimento e meus objetivos (Currículo da Cidade)"
           indice="objetivos-aprendizagem"
-          show={true}
+          show
           configCabecalho={configCabecalho}
         >
           <div className="row">
             {layoutComObjetivos() ? (
               <Grid cols={6}>
-                <h6 className="d-inline-block font-weight-bold my-0 fonte-14 w-100">
-                  Objetivos de aprendizagem
+                <h6 className="d-inline-block font-weight-bold my-0 fonte-13 w-100">
+                  Objetivos de Aprendizagem e Desenvolvimento
                 </h6>
                 {temObjetivos
                   ? materias.map(materia => {
@@ -281,7 +284,7 @@ const PlanoAula = props => {
                     })
                   : null}
                 <ObjetivosList className="mt-4 overflow-auto">
-                  {objetivosAprendizagem.map((objetivo, index) => {
+                  {objetivosAprendizagem.map(objetivo => {
                     return (
                       <ul
                         key={`${objetivo.id}-objetivo`}
@@ -318,8 +321,9 @@ const PlanoAula = props => {
             <Grid cols={layoutComObjetivos() ? 6 : 12}>
               {layoutComObjetivos() ? (
                 <Grid cols={12}>
-                  <h6 className="d-inline-block font-weight-bold my-0 fonte-14">
-                    Objetivos trabalhados na aula
+                  <h6 className="d-inline-block font-weight-bold my-0 fonte-13">
+                    Objetivos de Aprendizagem e Desenvolvimento trabalhados na
+                    aula
                   </h6>
                   <div className="row col-md-12 d-flex">
                     {objetivosAprendizagem
@@ -333,7 +337,6 @@ const PlanoAula = props => {
                             bold
                             id={`Objetivo${selecionado.id}`}
                             indice={selecionado.id}
-                            disabled={false}
                             steady
                             remove
                             disabled={desabilitarCampos}
@@ -367,9 +370,9 @@ const PlanoAula = props => {
                 </Grid>
               ) : null}
               <Grid cols={12} className="mt-4 d-inline-block">
-                <h6 className="font-weight-bold my-0 fonte-14">
+                <h6 className="font-weight-bold my-0 fonte-13">
                   {layoutComObjetivos()
-                    ? 'Meus objetivos específicos'
+                    ? 'Objetivos específicos para a aula'
                     : 'Objetivos trabalhados'}
                 </h6>
                 {!layoutComObjetivos() ? (

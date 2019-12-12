@@ -52,7 +52,9 @@ function AtribuicaoCJLista() {
   const onClickVoltar = () => history.push('/');
 
   const onClickBotaoPrincipal = () =>
-    history.push(`/gestao/atribuicao-cjs/novo`);
+    history.push(
+      `/gestao/atribuicao-cjs/novo?dreId=${filtro.DreId}&ueId=${filtro.UeId}`
+    );
 
   const onSelecionarItems = items => {
     setItensSelecionados(items);
@@ -60,7 +62,7 @@ function AtribuicaoCJLista() {
 
   const onClickEditar = item => {
     history.push(
-      `/gestao/atribuicao-cjs/editar?modalidadeId=${item.modalidadeId}&turmaId=${item.turmaId}`
+      `/gestao/atribuicao-cjs/editar?modalidadeId=${item.modalidadeId}&turmaId=${item.turmaId}&dreId=${filtro.DreId}&ueId=${filtro.UeId}`
     );
   };
 
@@ -73,13 +75,13 @@ function AtribuicaoCJLista() {
     });
   };
 
-  const validarFiltro = () => {
-    return !!filtro.DreId && !!filtro.UeId;
-  };
+  const validarFiltro = React.useCallback(() => {
+    return !!filtro.DreId && !!filtro.UeId && !!filtro.UsuarioRF;
+  }, [filtro]);
 
   useEffect(() => {
     setSomenteConsulta(verificaSomenteConsulta(permissoesTela));
-  }, []);
+  }, [permissoesTela]);
 
   useEffect(() => {
     async function buscaItens() {
@@ -93,6 +95,7 @@ function AtribuicaoCJLista() {
       }
     }
     if (validarFiltro()) {
+      setItens([]);
       buscaItens();
     }
   }, [filtro]);

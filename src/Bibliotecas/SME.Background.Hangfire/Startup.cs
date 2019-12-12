@@ -11,11 +11,14 @@ namespace SME.Background.Hangfire
 {
     public class Startup
     {
-        IConfiguration configuration;
+        private readonly IConfiguration configuration;
+        private readonly string connectionString;
 
         public Startup(IConfiguration configuration)
         {
             this.configuration = configuration;
+            var paramConnectionString = this.configuration.GetConnectionString("SGP-Postgres");
+            this.connectionString = (!paramConnectionString.EndsWith(';') ? paramConnectionString + ";" : paramConnectionString) + "Application Name=SGP Worker Service Dashboard";
         }
 
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
@@ -23,7 +26,8 @@ namespace SME.Background.Hangfire
             app.UseHangfireDashboard("/worker", new DashboardOptions()
             {
                 IsReadOnlyFunc = (DashboardContext context) => !env.IsDevelopment(),
-                Authorization = new[] { new DashboardAuthorizationFilter() }
+                Authorization = new[] { new DashboardAuthorizationFilter() },
+                StatsPollingInterval = 10000 // atualiza a cada 10s
             });
         }
 
@@ -34,12 +38,10 @@ namespace SME.Background.Hangfire
                 .UseSimpleAssemblyNameTypeSerializer()
                 .UseRecommendedSerializerSettings()
                 .UseFilter<AutomaticRetryAttribute>(new AutomaticRetryAttribute() { Attempts = 0 })
-                .UsePostgreSqlStorage(this.configuration.GetConnectionString("SGP-Postgres"), new PostgreSqlStorageOptions()
+                .UsePostgreSqlStorage(connectionString, new PostgreSqlStorageOptions()
                 {
-                    QueuePollInterval = TimeSpan.FromSeconds(10),
                     SchemaName = "hangfire"
                 }));
         }
-
     }
 }

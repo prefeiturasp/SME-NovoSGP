@@ -1,11 +1,15 @@
 import api from '~/servicos/api';
 
 const AbrangenciaServico = {
-  buscarDres() {
-    return api.get('/v1/abrangencias/dres');
+  buscarDres(url = '') {
+    if (url)
+      return api.get(url);
+    else return api.get(`/v1/abrangencias/dres`)
   },
-  buscarUes(dreId) {
-    return api.get(`/v1/abrangencias/dres/${dreId}/ues`);
+  buscarUes(dreId, url = '') {
+    if (url)
+      return api.get(url + `/${dreId}/ues/atribuicoes`)
+    else return api.get(`/v1/abrangencias/dres/${dreId}/ues`);
   },
   buscarModalidades() {
     return api.get(`v1/abrangencias/modalidades`);
@@ -22,7 +26,7 @@ const AbrangenciaServico = {
     }
 
     return api.get(`v1/abrangencias/dres/ues/${ue}/turmas`, {
-      ...params,
+      params,
     });
   },
 };
