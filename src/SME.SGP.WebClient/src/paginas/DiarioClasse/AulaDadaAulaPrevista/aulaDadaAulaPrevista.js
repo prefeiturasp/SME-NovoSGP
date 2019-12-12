@@ -118,8 +118,8 @@ const AulaDadaAulaPrevista = () => {
   const ehBimestreAtual = (dataInicio, dataFim) => {
     const dataAtual = window.moment(new Date());
     return (
-      window.moment(dataInicio) >= dataAtual &&
-      window.moment(dataFim) <= dataAtual
+      window.moment(dataInicio) <= dataAtual &&
+      window.moment(dataFim) >= dataAtual
     );
   };
 
@@ -166,7 +166,7 @@ const AulaDadaAulaPrevista = () => {
       const dados = {
         bimestre: item.bimestre,
         quantidade: item.previstas.quantidade,
-      }
+      };
       bimestresQuantidade.push(dados);
     });
     const dados = {
@@ -176,24 +176,28 @@ const AulaDadaAulaPrevista = () => {
       turmaId,
     };
     if (dadoslista.id) {
-      await api.put(`v1/aula-prevista/${dadoslista.id}`, dados)
+      await api
+        .put(`v1/aula-prevista/${dadoslista.id}`, dados)
         .then(res => {
           if (res.status === 200)
-            sucesso("Suas informações foram salvas com sucesso")
+            sucesso('Suas informações foram salvas com sucesso');
         })
         .catch(e => erros(e));
     } else {
-      await api.post(`v1/aula-prevista`, dados)
+      await api
+        .post(`v1/aula-prevista`, dados)
         .then(res => {
           if (res.status === 200)
-            sucesso("Suas informações foram salvas com sucesso")
-        }).catch(e => erros(e));
+            sucesso('Suas informações foram salvas com sucesso');
+          buscarDados();
+          resetarTela();
+        })
+        .catch(e => erros(e));
     }
   };
 
   const onClickSalvar = async () => {
     await salvar();
-    await buscarDados(disciplinaIdSelecionada);
   };
 
   return (
@@ -284,8 +288,8 @@ const AulaDadaAulaPrevista = () => {
                   alteradoRf={auditoria.alteradoRf}
                 />
               ) : (
-                  ''
-                )}
+                ''
+              )}
             </div>
           </div>
         </div>

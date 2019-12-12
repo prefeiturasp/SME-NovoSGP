@@ -90,7 +90,7 @@ const ListaAulasPorBimestre = props => {
                       item.ehBimestreAtual ? 'bimestre-selecionado' : ''
                     }
                   >
-                    <td className="fundo-cinza">
+                    <td className="fundo-cinza-i">
                       <span className="negrito">{`${item.bimestre}º Bimestre`}</span>
                       <span>{` - ${formatarData(item.inicio)} à ${formatarData(
                         item.fim
