@@ -15,12 +15,10 @@ import history from '~/servicos/history';
 import BotoesAcoessNotasConceitos from './botoesAcoes';
 import { Container, ContainerAuditoria } from './notas.css';
 
-
 const { TabPane } = Tabs;
 
 const Notas = () => {
   const usuario = useSelector(store => store.usuario);
-
 
   const [listaDisciplinas, setListaDisciplinas] = useState([]);
   const [disciplinaSelecionada, setDisciplinaSelecionada] = useState(undefined);
@@ -32,6 +30,11 @@ const Notas = () => {
     auditoriaAlterado: '',
     auditoriaInserido: '',
   });
+
+  const [primeiroBimestre, setPrimeiroBimestre] = useState([]);
+  const [segundoBimestre, setSegundoBimestre] = useState([]);
+  const [terceiroBimestre, setTerceiroBimestre] = useState([]);
+  const [quartoBimestre, setQuartoBimestre] = useState([]);
 
   const [bimestres, setBimestres] = useState([]);
 
@@ -61,7 +64,28 @@ const Notas = () => {
     async (disciplinaId, numeroBimestre) => {
       const dados = await obterBimestres(disciplinaId, numeroBimestre);
       if (dados) {
-        setBimestres([...dados.bimestres]);
+        dados.bimestres.forEach(item => {
+          switch (Number(item.numero)) {
+            case 1:
+              setPrimeiroBimestre(item);
+              break;
+            case 2:
+              setSegundoBimestre(item);
+              break;
+            case 3:
+              setTerceiroBimestre(item);
+              break;
+            case 4:
+              setQuartoBimestre(item);
+              break;
+
+            default:
+              break;
+          }
+        });
+
+        // setBimestres([...dados.bimestres]);
+
         setNotaTipo(dados.notaTipo);
         setAuditoriaInfo({
           auditoriaAlterado: dados.auditoriaAlterado,
@@ -101,7 +125,6 @@ const Notas = () => {
       obterDadosBimestres(disciplina.codigoComponenteCurricular);
     }
   }, [obterDadosBimestres, usuario.turmaSelecionada.turma]);
-
 
   useEffect(() => {
     if (usuario.turmaSelecionada.turma) {
@@ -204,24 +227,49 @@ const Notas = () => {
   };
 
   const onChangeTab = async numeroBimestre => {
-    const bimestre = bimestres.find(
-      item => Number(item.numero) === Number(numeroBimestre)
-    );
+    let bimestre = {};
+    switch (Number(numeroBimestre)) {
+      case 1:
+        bimestre = primeiroBimestre;
+        break;
+      case 2:
+        bimestre = segundoBimestre;
+        break;
+      case 3:
+        bimestre = terceiroBimestre;
+        break;
+      case 4:
+        bimestre = quartoBimestre;
+        break;
+      default:
+        break;
+    }
+
     if (bimestre && !bimestre.modoEdicao) {
       const dados = await obterBimestres(disciplinaSelecionada, numeroBimestre);
-      if (dados && dados.length) {
+      if (dados && dados.bimestres && dados.bimestres.length) {
         const bimestrePesquisado = dados.bimestres.find(
           item => Number(item.numero) === Number(numeroBimestre)
         );
-        const indexBimestre = dados.bimestres.indexOf(bimestrePesquisado);
-        bimestres[indexBimestre] = bimestrePesquisado;
-        setBimestres([...bimestres]);
+
+        switch (Number(numeroBimestre)) {
+          case 1:
+            setPrimeiroBimestre(bimestrePesquisado);
+            break;
+          case 2:
+            setSegundoBimestre(bimestrePesquisado);
+            break;
+          case 3:
+            setTerceiroBimestre(bimestrePesquisado);
+            break;
+          case 4:
+            setQuartoBimestre(bimestrePesquisado);
+            break;
+          default:
+            break;
+        }
       }
     }
-  };
-
-  const onChangeAvaliacao = () => {
-    setModoEdicao(true);
   };
 
   const onClickCancelar = async cancelar => {
@@ -229,6 +277,31 @@ const Notas = () => {
       setBimestres([]);
       setModoEdicao(false);
       obterDadosBimestres(disciplinaSelecionada, 0);
+    }
+  };
+
+  const onChangeOrdenacao = bimestreOrdenado => {
+    const bimestreAtualizado = {
+      descricao: bimestreOrdenado.descricao,
+      numero: bimestreOrdenado.numero,
+      alunos: [...bimestreOrdenado.alunos],
+      avaliacoes: [...bimestreOrdenado.avaliacoes],
+    };
+    switch (Number(bimestreOrdenado.numero)) {
+      case 1:
+        setPrimeiroBimestre(bimestreAtualizado);
+        break;
+      case 2:
+        setSegundoBimestre(bimestreAtualizado);
+        break;
+      case 3:
+        setTerceiroBimestre(bimestreAtualizado);
+        break;
+      case 4:
+        setQuartoBimestre(bimestreAtualizado);
+        break;
+      default:
+        break;
     }
   };
 
@@ -262,23 +335,66 @@ const Notas = () => {
               />
             </div>
           </div>
-          {bimestres && bimestres.length ? (
+          {true ? (
             <>
               <div className="row">
                 <div className="col-sm-12 col-md-12 col-lg-12 col-xl-12 mb-2">
                   <ContainerTabsCard type="card" onChange={onChangeTab}>
-                    {bimestres.map(item => {
+                    {/* {bimestres.map(item => {
                       return (
                         <TabPane tab={item.descricao} key={item.numero}>
                           <Avaliacao
                             dados={item}
                             notaTipo={notaTipo}
-                            listaAvaliacoes={item.avaliacoes}
-                            listaAlunos={item.alunos}
+                            onChangeOrdenacao={onChangeOrdenacao}
                           />
                         </TabPane>
                       );
-                    })}
+                    })} */}
+                    {primeiroBimestre.numero ? (
+                      <TabPane tab="Primeiro" key={1}>
+                        <Avaliacao
+                          dados={primeiroBimestre}
+                          notaTipo={notaTipo}
+                          onChangeOrdenacao={onChangeOrdenacao}
+                        />
+                      </TabPane>
+                    ) : (
+                      ''
+                    )}
+                    {segundoBimestre.numero ? (
+                      <TabPane tab="Segundo" key={2}>
+                        <Avaliacao
+                          dados={segundoBimestre}
+                          notaTipo={notaTipo}
+                          onChangeOrdenacao={onChangeOrdenacao}
+                        />
+                      </TabPane>
+                    ) : (
+                      ''
+                    )}
+                    {terceiroBimestre.numero ? (
+                      <TabPane tab="Terceiro" key={3}>
+                        <Avaliacao
+                          dados={terceiroBimestre}
+                          notaTipo={notaTipo}
+                          onChangeOrdenacao={onChangeOrdenacao}
+                        />
+                      </TabPane>
+                    ) : (
+                      ''
+                    )}
+                    {quartoBimestre.numero ? (
+                      <TabPane tab="Quarto" key={4}>
+                        <Avaliacao
+                          dados={quartoBimestre}
+                          notaTipo={notaTipo}
+                          onChangeOrdenacao={onChangeOrdenacao}
+                        />
+                      </TabPane>
+                    ) : (
+                      ''
+                    )}
                   </ContainerTabsCard>
                 </div>
               </div>

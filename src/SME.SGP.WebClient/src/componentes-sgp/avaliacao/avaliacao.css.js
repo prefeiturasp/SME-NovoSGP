@@ -80,15 +80,17 @@ export const Lista = styled.div`
   }
 
   .width-460 {
-    width: 460px;
-    max-width: 460px;
+     /* width: 460px;
+    max-width: 460px; */
     min-width: 460px;
+    width: 100%;
   }
 
   .width-400 {
-    width: 400px;
-    max-width: 400px;
+    /* width: 400px;
+    max-width: 400px; */
     min-width: 400px;
+    width: 100%;
   }
 
   .cursor-pointer {
