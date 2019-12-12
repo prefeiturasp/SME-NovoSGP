@@ -176,7 +176,7 @@ namespace SME.SGP.Dominio.Servicos
                 if (!ehInclusao)
                 {
                     // Na alteração tem que considerar que uma aula possa estar mudando de dia na mesma semana, então não soma as aulas do proprio registro
-                    var aulasSemana = repositorioAula.ObterAulas(aula.TipoCalendarioId, aula.TurmaId, aula.UeId, usuario.CodigoRf, mes: null, semanaAno: semana).Result;
+                    var aulasSemana = repositorioAula.ObterAulas(aula.TipoCalendarioId, aula.TurmaId, aula.UeId, usuario.CodigoRf, mes: null, semanaAno: semana, disciplinaId: aula.DisciplinaId).Result;
                     var quantidadeAulasSemana = aulasSemana.Where(a => a.Id != aula.Id).Sum(a => a.Quantidade);
 
                     quantidadeAulasRestantes = gradeAulas.QuantidadeAulasGrade - quantidadeAulasSemana;
