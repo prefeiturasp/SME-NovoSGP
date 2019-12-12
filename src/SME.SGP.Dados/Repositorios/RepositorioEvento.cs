@@ -1,5 +1,4 @@
 ﻿using Dapper;
-using SME.SGP.Dados.Contexto;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Entidades;
 using SME.SGP.Dominio.Interfaces;
@@ -52,7 +51,6 @@ namespace SME.SGP.Dados.Repositorios
             var retorno = database.Conexao.QueryFirstOrDefault<int?>(query.ToString(), new { tipoCalendarioId, dreId, ueId, data });
             return retorno == 1 || retorno == null;
         }
-
 
         public async Task<IEnumerable<Evento>> EventosNosDiasETipo(DateTime dataInicio, DateTime dataFim, TipoEvento tipoEventoCodigo, long tipoCalendarioId, string UeId, string DreId)
         {
@@ -1035,23 +1033,24 @@ namespace SME.SGP.Dados.Repositorios
             query.AppendLine("and e.ue_id is null))");
             query.AppendLine("-- caso seja um evento Global, sem vinculo com UE e DRE");
             query.AppendLine("or(a.usuario_id is not null))");
-            query.AppendLine("and ue_id is null and dre_id is null");
+            //query.AppendLine("and ue_id is null and dre_id is null");
 
             if (ehDataInicio)
                 query.AppendLine("and extract(month from e.data_inicio) = @mes");
             else query.AppendLine("and extract(month from e.data_fim) = @mes");
 
-            if (!string.IsNullOrEmpty(calendarioEventosMesesFiltro.DreId))
-                query.AppendLine("and dre_id = @DreId");
-
             if (calendarioEventosMesesFiltro.IdTipoCalendario > 0)
                 query.AppendLine("and tipo_calendario_id = @IdTipoCalendario");
 
-            if (!string.IsNullOrEmpty(calendarioEventosMesesFiltro.UeId))
-                query.AppendLine("and ue_id = @UeId");
-
             if (calendarioEventosMesesFiltro.EhEventoSme)
-                query.AppendLine("and ue_id is null and dre_id is null");
+                query.AppendLine("and e.ue_id is null and e.dre_id is null");
+            else if (!string.IsNullOrEmpty(calendarioEventosMesesFiltro.DreId) || !string.IsNullOrEmpty(calendarioEventosMesesFiltro.UeId))
+            {
+                if (!string.IsNullOrEmpty(calendarioEventosMesesFiltro.DreId))
+                    query.AppendLine("and e.dre_id = @DreId");
+                if (!string.IsNullOrEmpty(calendarioEventosMesesFiltro.UeId))
+                    query.AppendLine("and e.ue_id = @UeId");
+            }
 
             if (!podeVisualizarEventosLocalOcorrenciaDre)
                 query.AppendLine("and et.local_ocorrencia != 2");
@@ -1081,17 +1080,18 @@ namespace SME.SGP.Dados.Repositorios
                 query.AppendLine("and extract(month from e.data_inicio) = @mes");
             else query.AppendLine("and extract(month from e.data_fim) = @mes");
 
-            if (!string.IsNullOrEmpty(calendarioEventosMesesFiltro.DreId))
-                query.AppendLine("and e.dre_id = @DreId");
-
             if (calendarioEventosMesesFiltro.IdTipoCalendario > 0)
                 query.AppendLine("and e.tipo_calendario_id = @IdTipoCalendario");
 
-            if (!string.IsNullOrEmpty(calendarioEventosMesesFiltro.UeId))
-                query.AppendLine("and e.ue_id = @UeId");
-
             if (calendarioEventosMesesFiltro.EhEventoSme)
                 query.AppendLine("and e.ue_id is null and e.dre_id is null");
+            else if (!string.IsNullOrEmpty(calendarioEventosMesesFiltro.DreId) || !string.IsNullOrEmpty(calendarioEventosMesesFiltro.UeId))
+            {
+                if (!string.IsNullOrEmpty(calendarioEventosMesesFiltro.DreId))
+                    query.AppendLine("and e.dre_id = @DreId");
+                if (!string.IsNullOrEmpty(calendarioEventosMesesFiltro.UeId))
+                    query.AppendLine("and e.ue_id = @UeId");
+            }
 
             if (!podeVisualizarEventosLocalOcorrenciaDre)
                 query.AppendLine("and et.local_ocorrencia != 2");
@@ -1121,17 +1121,18 @@ namespace SME.SGP.Dados.Repositorios
                 query.AppendLine("and extract(month from e.data_inicio) = @mes");
             else query.AppendLine("and extract(month from e.data_fim) = @mes");
 
-            if (!string.IsNullOrEmpty(calendarioEventosMesesFiltro.DreId))
-                query.AppendLine("and e.dre_id = @DreId");
-
             if (calendarioEventosMesesFiltro.IdTipoCalendario > 0)
                 query.AppendLine("and e.tipo_calendario_id = @IdTipoCalendario");
 
-            if (!string.IsNullOrEmpty(calendarioEventosMesesFiltro.UeId))
-                query.AppendLine("and e.ue_id = @UeId");
-
             if (calendarioEventosMesesFiltro.EhEventoSme)
                 query.AppendLine("and e.ue_id is null and e.dre_id is null");
+            else if (!string.IsNullOrEmpty(calendarioEventosMesesFiltro.DreId) || !string.IsNullOrEmpty(calendarioEventosMesesFiltro.UeId))
+            {
+                if (!string.IsNullOrEmpty(calendarioEventosMesesFiltro.DreId))
+                    query.AppendLine("and e.dre_id = @DreId");
+                if (!string.IsNullOrEmpty(calendarioEventosMesesFiltro.UeId))
+                    query.AppendLine("and e.ue_id = @UeId");
+            }
         }
 
         #endregion Quantidade De Eventos Por Dia
