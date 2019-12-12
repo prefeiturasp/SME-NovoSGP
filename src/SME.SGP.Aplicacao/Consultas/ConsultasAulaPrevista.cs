@@ -22,17 +22,26 @@ namespace SME.SGP.Aplicacao
 
         public async Task<AulasPrevistasDadasAuditoriaDto> BuscarPorId(long id)
         {
+            AulasPrevistasDadasAuditoriaDto aulaPrevistaDto = null;
             var aulaPrevista = repositorio.ObterPorId(id);
 
-            var aulaPrevistaBimestres = await ObterBimestres(aulaPrevista);
-            var aulaPrevistaDto =  MapearDtoRetorno(aulaPrevista, aulaPrevistaBimestres);
+            if (aulaPrevista != null)
+            {
+                var aulaPrevistaBimestres = await ObterBimestres(aulaPrevista.Id);
+                aulaPrevistaDto = MapearDtoRetorno(aulaPrevista, aulaPrevistaBimestres);
+            }
 
             return aulaPrevistaDto;
         }
 
-        private async Task <IEnumerable<AulaPrevistaBimestreQuantidade>> ObterBimestres(AulaPrevista aulaPrevista)
+        private async Task<IEnumerable<AulaPrevistaBimestreQuantidade>> ObterBimestres(long? aulaPrevistaId)
         {
-            return await repositorioBimestre.ObterBimestresAulasPrevistasPorId(aulaPrevista.Id);
+            return await repositorioBimestre.ObterBimestresAulasPrevistasPorId(aulaPrevistaId);
+        }
+
+        private async Task<IEnumerable<AulaPrevistaBimestreQuantidade>> ObterBimestres(long tipoCalendarioId, string turmaId, string disciplinaId)
+        {
+            return await repositorioBimestre.ObterBimestresAulasPrevistasPorFiltro(tipoCalendarioId, turmaId, disciplinaId);
         }
 
         private AulasPrevistasDadasAuditoriaDto MapearDtoRetorno(AulaPrevista aulaPrevista, IEnumerable<AulaPrevistaBimestreQuantidade> aulasPrevistasBimestre)
@@ -45,12 +54,23 @@ namespace SME.SGP.Aplicacao
 
         public async Task<AulasPrevistasDadasAuditoriaDto> ObterAulaPrevistaDada(Modalidade modalidade, string turmaId, string disciplinaId)
         {
+            AulasPrevistasDadasAuditoriaDto aulaPrevistaDto;
+
             int tipoCalendarioId = (int)ModalidadeParaModalidadeTipoCalendario(modalidade);
 
             var aulaPrevista = await repositorio.ObterAulaPrevistaFiltro(tipoCalendarioId, turmaId, disciplinaId);
 
-            var aulaPrevistaBimestres = await ObterBimestres(aulaPrevista);
-            var aulaPrevistaDto = MapearDtoRetorno(aulaPrevista, aulaPrevistaBimestres);
+            IEnumerable<AulaPrevistaBimestreQuantidade> aulaPrevistaBimestres;
+
+            if (aulaPrevista != null)
+                aulaPrevistaBimestres = await ObterBimestres(aulaPrevista.Id);
+            else
+            {
+                aulaPrevista = new AulaPrevista();
+                aulaPrevistaBimestres = await ObterBimestres(tipoCalendarioId, turmaId, disciplinaId);
+            }
+
+            aulaPrevistaDto = MapearDtoRetorno(aulaPrevista, aulaPrevistaBimestres);
 
             return aulaPrevistaDto;
         }
