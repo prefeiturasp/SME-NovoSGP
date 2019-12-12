@@ -56,6 +56,18 @@ namespace SME.SGP.Aplicacao
             return aulasRecorrentes.Count() + 1;
         }
 
+        public async Task<int> ObterQuantidadeAulasTurmaDiaProfessor(string turma, string disciplina, DateTime dataAula, string codigoRf)
+        {
+            IEnumerable<AulasPorTurmaDisciplinaDto> aulas;
+
+            if (ExperienciaPedagogica(disciplina))
+                aulas = await repositorio.ObterAulasTurmaExperienciasPedagogicasDia(turma, dataAula);
+            else
+                aulas = await repositorio.ObterAulasTurmaDisciplinaDiaProfessor(turma, disciplina, dataAula, codigoRf);
+
+            return aulas.Sum(a => a.Quantidade);
+        }
+
         public async Task<int> ObterQuantidadeAulasTurmaSemanaProfessor(string turma, string disciplina, string semana, string codigoRf)
         {
             IEnumerable<AulasPorTurmaDisciplinaDto> aulas;

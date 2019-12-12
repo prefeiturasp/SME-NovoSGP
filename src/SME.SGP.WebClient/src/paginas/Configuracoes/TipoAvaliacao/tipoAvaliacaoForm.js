@@ -15,6 +15,7 @@ import {
   Card,
   Grid,
   momentSchema,
+  Auditoria,
 } from '~/componentes';
 import RotasDto from '~/dtos/rotasDto';
 import history from '~/servicos/history';
@@ -36,6 +37,7 @@ const TipoAvaliacaoForm = ({ match }) => {
     },
   ];
   const [descricao, setDescricao] = useState('');
+  const [podeCancelar, setPodeCancelar] = useState(false);
   const [novoRegistro, setNovoRegistro] = useState(true);
   const [modoEdicao, setModoEdicao] = useState(false);
   const [auditoria, setAuditoria] = useState({});
@@ -44,6 +46,7 @@ const TipoAvaliacaoForm = ({ match }) => {
     nome: '',
     descricao: '',
     situacao: true,
+    possuiAvaliacao: false,
   });
 
   const [idTipoAvaliacao, setIdTipoAvaliacao] = useState('');
@@ -52,6 +55,7 @@ const TipoAvaliacaoForm = ({ match }) => {
 
   const aoTrocarTextEditor = valor => {
     setDescricao(valor);
+    setPodeCancelar(true);
   };
 
   const permissoesTela = useSelector(store => store.usuario.permissoes);
@@ -64,15 +68,14 @@ const TipoAvaliacaoForm = ({ match }) => {
   };
   const onClickExcluir = async form => {
     if (validaSeObjetoEhNuloOuVazio(form.values)) return;
-    debugger;
     const confirmado = await confirmar(
       'Atenção',
       'Você tem certeza que deseja excluir este registro?'
     );
     if (confirmado) {
-      const excluir = await servicoTipoAvaliaco.deletarTipoAvaliacao(
-        form.values.id
-      );
+      const excluir = await servicoTipoAvaliaco.deletarTipoAvaliacao([
+        form.values.id,
+      ]);
       if (excluir && excluir.status === 200) {
         sucesso(`Tipo Avaliação excluido com sucesso!`);
         history.push('/configuracoes/tipo-avaliacao');
@@ -83,7 +86,8 @@ const TipoAvaliacaoForm = ({ match }) => {
   };
 
   const onClickCancelar = async form => {
-    if (!modoEdicao) return;
+    // debugger;
+    // if (!modoEdicao) return;
     const confirmou = await confirmar(
       'Atenção',
       'Você não salvou as informações preenchidas.',
@@ -91,6 +95,7 @@ const TipoAvaliacaoForm = ({ match }) => {
     );
     if (confirmou) {
       form.resetForm();
+      setDescricao(form.values.descricao);
       setModoEdicao(false);
     }
   };
@@ -179,7 +184,6 @@ const TipoAvaliacaoForm = ({ match }) => {
 
   const buscarPorId = async id => {
     try {
-      // dispatch(setLoaderSecao(true));
       const registro = await servicoTipoAvaliaco.buscarTipoAvaliacaoPorId(id);
       if (registro && registro.data) {
         setValoresIniciais({
@@ -188,16 +192,17 @@ const TipoAvaliacaoForm = ({ match }) => {
 
         setDescricao(registro.data.descricao);
         setIdTipoAvaliacao(match.params.id);
-        // setAuditoria({
-        //   criadoPor: registro.data.criadoPor,
-        //   criadoRf: registro.data.criadoRF > 0 ? registro.data.criadoRF : '',
-        //   criadoEm: registro.data.criadoEm,
-        //   alteradoPor: registro.data.alteradoPor,
-        //   alteradoRf:
-        //     registro.data.alteradoRF > 0 ? registro.data.alteradoRF : '',
-        //   alteradoEm: registro.data.alteradoEm,
-        // });
+        setAuditoria({
+          criadoPor: registro.data.criadoPor,
+          criadoRf: registro.data.criadoRF > 0 ? registro.data.criadoRF : '',
+          criadoEm: registro.data.criadoEm,
+          alteradoPor: registro.data.alteradoPor,
+          alteradoRf:
+            registro.data.alteradoRF > 0 ? registro.data.alteradoRF : '',
+          alteradoEm: registro.data.alteradoEm,
+        });
         setValoresCarregados(true);
+        setPodeCancelar(false);
         //  dispatch(setLoaderSecao(false));
       }
     } catch (err) {
@@ -229,7 +234,7 @@ const TipoAvaliacaoForm = ({ match }) => {
                 onClickCancelar={formulario => onClickCancelar(formulario)}
                 onClickVoltar={() => onClickVoltar()}
                 onClickExcluir={() => onClickExcluir(form)}
-                modoEdicao={modoEdicao}
+                modoEdicao={modoEdicao || podeCancelar}
               />
               <Row className="row">
                 <Grid cols={8}>
@@ -240,7 +245,7 @@ const TipoAvaliacaoForm = ({ match }) => {
                     maxlength={100}
                     placeholder="Digite a descrição da avaliação"
                     type="input"
-                    desabilitado={false}
+                    desabilitado={valoresIniciais.possuiAvaliacao}
                   />
                 </Grid>
                 <Grid cols={4}>
@@ -275,12 +280,24 @@ const TipoAvaliacaoForm = ({ match }) => {
                     onBlur={aoTrocarTextEditor}
                     value={descricao}
                     maxlength={500}
+                    toolbar={false}
+                    disabled={valoresIniciais.possuiAvaliacao}
                   />
                 </Grid>
               </Row>
             </Form>
           )}
         </Formik>
+        {auditoria && (
+          <Auditoria
+            criadoEm={auditoria.criadoEm}
+            criadoPor={auditoria.criadoPor}
+            criadoRf={auditoria.criadoRf}
+            alteradoPor={auditoria.alteradoPor}
+            alteradoEm={auditoria.alteradoEm}
+            alteradoRf={auditoria.alteradoRf}
+          />
+        )}
       </Card>
     </>
   );

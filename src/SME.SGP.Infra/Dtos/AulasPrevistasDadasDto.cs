@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace SME.SGP.Infra
 {
@@ -12,9 +10,9 @@ namespace SME.SGP.Infra
 
         public DateTime Fim { get; set; }
 
-        public AulasPrevistasDto Previstas { get; set; }
+        public int Cumpridas { get; set; }
 
-        public AulasQuantidadePorProfessorDto Cumpridas { get; set; }
+        public AulasPrevistasDto Previstas { get; set; }
 
         public AulasQuantidadePorProfessorDto Criadas { get; set; }
 

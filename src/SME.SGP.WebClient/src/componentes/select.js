@@ -79,7 +79,7 @@ const SelectComponent = React.forwardRef((props, ref) => {
     containerVinculoId,
     disabled,
     form,
-    showSearch
+    showSearch,
   } = props;
 
   const { Option } = Select;
@@ -132,9 +132,9 @@ const SelectComponent = React.forwardRef((props, ref) => {
       component={Select}
       type="input"
       onChange={e => {
-        form.setFieldValue(name, e);
-        onChange && onChange(e);
+        form.setFieldValue(name, e || '');
         form.setFieldTouched(name, true, true);
+        onChange && onChange(e || '');
       }}
       innerRef={ref}
     >

@@ -1,6 +1,9 @@
 ﻿using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
@@ -18,27 +21,42 @@ namespace SME.SGP.Aplicacao
 
         public async Task Alterar(TipoAvaliacaoDto dto, long idTipoAtividadeAvaliativa)
         {
-            if (await VerificarSeExisteTipoAvaliacaoPorNome(dto.Nome, idTipoAtividadeAvaliativa))
+            if (await VerificarSeExisteTipoAvaliacaoPorNome(dto.Nome, dto.Descricao, dto.Situacao, idTipoAtividadeAvaliativa))
                 throw new NegocioException("Já existe tipo de avaliação com esse nome");
             var atividadeAvaliativa = MapearDtoParaEntidade(dto, idTipoAtividadeAvaliativa);
             await repositorioTipoAvaliacao.SalvarAsync(atividadeAvaliativa);
         }
 
-        public async Task Excluir(long idTipoAtividadeAvaliativa)
+        public async Task Excluir(long[] ids)
         {
-            var tipoAtividadeAvaliativa = repositorioTipoAvaliacao.ObterPorId(idTipoAtividadeAvaliativa);
-            if (tipoAtividadeAvaliativa is null)
-                throw new NegocioException("Não foi possível localizar esta avaliação.");
-            if (await VerificarSeExisteAtividadeVinculada(idTipoAtividadeAvaliativa))
-                throw new NegocioException("Já existe atividade avaliativa vinculada a esse tipo de avaliação");
-            tipoAtividadeAvaliativa.Excluir();
+            List<long> idsComErroAoExcluir = new List<long>();
 
-            await repositorioTipoAvaliacao.SalvarAsync(tipoAtividadeAvaliativa);
+            foreach (var idTipoAtividadeAvaliativa in ids)
+            {
+                try
+                {
+                    var tipoAtividadeAvaliativa = repositorioTipoAvaliacao.ObterPorId(idTipoAtividadeAvaliativa);
+                    if (tipoAtividadeAvaliativa is null)
+                        throw new NegocioException("Não foi possível localizar esta avaliação.");
+                    if (await VerificarSeExisteAtividadeVinculada(idTipoAtividadeAvaliativa))
+                        throw new NegocioException("Já existe atividade avaliativa vinculada ao tipo de avaliação " + tipoAtividadeAvaliativa.Nome);
+                    tipoAtividadeAvaliativa.Excluir();
+
+                    await repositorioTipoAvaliacao.SalvarAsync(tipoAtividadeAvaliativa);
+                }
+                catch (Exception)
+                {
+                    idsComErroAoExcluir.Add(idTipoAtividadeAvaliativa);
+                }
+            }
+
+            if (idsComErroAoExcluir.Any())
+                throw new NegocioException($"Não foi possível excluir os tipos de avaliação de ids {string.Join(",", idsComErroAoExcluir)}");
         }
 
         public async Task Inserir(TipoAvaliacaoDto dto)
         {
-            if (await VerificarSeExisteTipoAvaliacaoPorNome(dto.Nome, 0L))
+            if (await VerificarSeExisteTipoAvaliacaoPorNome(dto.Nome, dto.Descricao, dto.Situacao, 0L))
                 throw new NegocioException("Já existe tipo de avaliação com esse nome");
             var atividadeAvaliativa = MapearDtoParaEntidade(dto, 0L);
             await repositorioTipoAvaliacao.SalvarAsync(atividadeAvaliativa);
@@ -59,6 +77,6 @@ namespace SME.SGP.Aplicacao
 
         private async Task<bool> VerificarSeExisteAtividadeVinculada(long tipoAvaliacaoId) => await repositorioAtividadeAvaliativa.VerificarSeJaExistePorTipoAvaliacao(tipoAvaliacaoId);
 
-        private async Task<bool> VerificarSeExisteTipoAvaliacaoPorNome(string nome, long id) => await repositorioTipoAvaliacao.VerificarSeJaExistePorNome(nome, id);
+        private async Task<bool> VerificarSeExisteTipoAvaliacaoPorNome(string nome, string descricao, bool situacao, long id) => await repositorioTipoAvaliacao.VerificarSeJaExistePorNome(nome, descricao, situacao, id);
     }
 }

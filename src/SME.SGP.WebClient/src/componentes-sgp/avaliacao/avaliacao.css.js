@@ -2,8 +2,16 @@ import styled from 'styled-components';
 
 import { Base } from '../../componentes/colors';
 
+export const Container = styled.div`
+`
+
 export const Lista = styled.div`
   width: 100%;
+
+  .desabilitar-nota {
+    opacity: 0.4 !important;
+    cursor: unset !important;
+  }
 
   .tabela-avaliacao-thead {
     background: ${Base.CinzaFundo} !important;
@@ -48,18 +56,22 @@ export const Lista = styled.div`
 
   .width-150 {
     width: 150px;
+    max-width: 150px;
   }
 
   .width-70 {
     width: 70px;
+    max-width: 70px;
   }
 
   .width-50 {
     width: 50px;
+    max-width: 50px;
   }
 
   .width-60 {
     width: 60px;
+    max-width: 60px;
   }
 
   .cursor-pointer {
@@ -125,7 +137,6 @@ export const Lista = styled.div`
     margin-top: -27px;
     font-size: 10px;
     margin-right: 5px;
-}
   }
 
   .scroll-tabela-avaliacao-thead {

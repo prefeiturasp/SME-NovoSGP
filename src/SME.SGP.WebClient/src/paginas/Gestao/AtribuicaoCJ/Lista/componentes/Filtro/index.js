@@ -5,11 +5,8 @@ import PropTypes from 'prop-types';
 import { Form, Formik } from 'formik';
 import * as Yup from 'yup';
 
-// Redux
-import { useDispatch } from 'react-redux';
-
 // Componentes
-import { Grid, Localizador, Tag } from '~/componentes';
+import { Grid, Localizador } from '~/componentes';
 
 // Componentes SGP
 import DreDropDown from '~/componentes-sgp/DreDropDown/';
@@ -18,22 +15,15 @@ import UeDropDown from '~/componentes-sgp/UeDropDown/';
 // Styles
 import { Row } from './styles';
 
-import {
-  selecionarDre,
-  selecionarUe,
-} from '~/redux/modulos/atribuicaoEsporadica/actions';
-
 function Filtro({ onFiltrar }) {
-  const dispatch = useDispatch();
   const [refForm, setRefForm] = useState({});
+  const [anoLetivo] = useState('2019');
   const [valoresIniciais] = useState({
     anoLetivo: '',
     dreId: '',
     ueId: '',
     professorRf: '',
   });
-  const [dreId, setDreId] = useState('');
-  const [anoLetivo] = useState('2019');
 
   const validacoes = () => {
     return Yup.object({});
@@ -44,11 +34,6 @@ function Filtro({ onFiltrar }) {
     if (formContext.isValid && Object.keys(formContext.errors).length === 0) {
       onFiltrar(valores);
     }
-  };
-
-  const onChangeDre = valor => {
-    setDreId(valor);
-    dispatch(selecionarDre(valor));
   };
 
   return (
@@ -66,22 +51,23 @@ function Filtro({ onFiltrar }) {
         <Form className="col-md-12 mb-4">
           <Row className="row mb-2">
             <Grid cols={6}>
-              <DreDropDown form={form} onChange={valor => onChangeDre(valor)} />
+              <DreDropDown url='v1/dres/atribuicoes' form={form} onChange={() => null} />
             </Grid>
             <Grid cols={6}>
               <UeDropDown
-                dreId={dreId}
+                url='v1/dres'
+                dreId={form.values.dreId}
                 form={form}
-                onChange={valor => dispatch(selecionarUe(valor))}
+                onChange={() => null}
               />
             </Grid>
           </Row>
           <Row className="row">
             <Localizador
-              dreId={dreId}
+              dreId={form.values.dreId}
               anoLetivo={anoLetivo}
               form={form}
-              onChange={valor => valor}
+              onChange={() => null}
             />
           </Row>
         </Form>

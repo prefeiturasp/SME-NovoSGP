@@ -11,12 +11,13 @@ import Card from '~/componentes/card';
 import { Colors } from '~/componentes/colors';
 import RadioGroupButton from '~/componentes/radioGroupButton';
 import SelectComponent from '~/componentes/select';
-import { confirmar, erros, sucesso } from '~/servicos/alertas';
+import { confirmar, erros, sucesso, erro } from '~/servicos/alertas';
 import api from '~/servicos/api';
 import { setBreadcrumbManual } from '~/servicos/breadcrumb-services';
 import history from '~/servicos/history';
 import RotasDTO from '~/dtos/rotasDto';
 import { ModalConteudoHtml } from '~/componentes';
+import Alert from '~/componentes/alert';
 
 const CadastroAula = ({ match }) => {
   const usuario = useSelector(store => store.usuario);
@@ -38,7 +39,7 @@ const CadastroAula = ({ match }) => {
   const [listaDisciplinas, setListaDisciplinas] = useState([]);
   const [validacoes, setValidacoes] = useState({});
   const [exibirAuditoria, setExibirAuditoria] = useState(false);
-  const [quantidadeMaximaAulas, setQuantidadeMaximaAulas] = useState(0);
+  const [quantidadeMaximaAulas, setQuantidadeMaximaAulas] = useState(undefined);
   const [controlaQuantidadeAula, setControlaQuantidadeAula] = useState(true);
   const [refForm, setRefForm] = useState({});
   const [refFormRecorrencia, setRefFormRecorrencia] = useState({});
@@ -295,8 +296,10 @@ const CadastroAula = ({ match }) => {
         'Sim',
         'Não'
       );
+
       if (confirmado) {
-        // TODO Salvar
+        onClickCadastrar(refForm.state.values);
+      } else {
         history.push('/calendario-escolar/calendario-professor');
       }
     } else {
@@ -369,8 +372,12 @@ const CadastroAula = ({ match }) => {
   };
 
   const salvar = async valoresForm => {
-    const data = valoresForm.dataAulaCompleta.format('YYYY-MM-DD');
-    const hora = valoresForm.dataAula.format('HH:mm:SS');
+    const data =
+      valoresForm.dataAulaCompleta &&
+      valoresForm.dataAulaCompleta.format('YYYY-MM-DD');
+    const hora =
+      valoresForm.dataAula && valoresForm.dataAula.format('HH:mm:SS');
+
     valoresForm.dataAula = window.moment(`${data}T${hora}`);
 
     if (valoresForm.quantidadeRadio && valoresForm.quantidadeRadio > 0) {
@@ -387,14 +394,29 @@ const CadastroAula = ({ match }) => {
     }
 
     const cadastrado = idAula
-      ? await api.put(`v1/calendarios/professores/aulas/${idAula}`, valoresForm)
+      ? await api
+          .put(`v1/calendarios/professores/aulas/${idAula}`, {
+            ...valoresForm,
+            dataAula: valoresForm.dataAula.format(),
+          })
+          .then(resp => resp)
+          .catch(err => err)
       : await api
           .post('v1/calendarios/professores/aulas', valoresForm)
-          .catch(e => erros(e));
+          .then(resp => resp)
+          .catch(err => err);
 
     if (cadastrado && cadastrado.status === 200) {
       if (cadastrado.data) sucesso(cadastrado.data.mensagens[0]);
       history.push('/calendario-escolar/calendario-professor');
+    }
+
+    if (cadastrado && cadastrado.response) {
+      erro(
+        cadastrado.response.status === 601
+          ? cadastrado.response.data.mensagens
+          : 'Houve uma falha ao salvar a aula, por favor contate o suporte'
+      );
     }
   };
 
@@ -456,6 +478,20 @@ const CadastroAula = ({ match }) => {
 
   return (
     <>
+      <div className="col-md-12">
+        {quantidadeMaximaAulas <= 0 ? (
+          <Alert
+            alerta={{
+              tipo: 'warning',
+              id: 'cadastro-aula-quantidade-maxima',
+              mensagem:
+                'Não é possível criar aula normal porque o limite da grade curricular foi atingido',
+              estiloTitulo: { fontSize: '18px' },
+            }}
+            className="mb-2"
+          />
+        ) : null}
+      </div>
       <Cabecalho pagina={`Cadastro de Aula - ${getDataFormatada()}`} />
       <Card>
         <ModalConteudoHtml

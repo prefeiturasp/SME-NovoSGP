@@ -7,28 +7,28 @@ using SME.Background.Core.Interfaces;
 using SME.Background.Hangfire.Logging;
 using System;
 using System.IO;
-using System.Linq;
 
 namespace SME.Background.Hangfire
 {
     public class Worker : IWorker
     {
-        readonly IConfiguration configuration;
-        readonly IServiceCollection serviceCollection;
-        readonly string connectionString;
-        IWebHost host;
-        BackgroundJobServer hangFireServer;
+        private readonly IConfiguration configuration;
+        private readonly string connectionString;
+        private readonly IServiceCollection serviceCollection;
+        private BackgroundJobServer hangFireServer;
+        private IWebHost host;
 
         public Worker(IConfiguration configuration, IServiceCollection serviceCollection, string connectionString)
         {
             this.configuration = configuration;
             this.serviceCollection = serviceCollection;
-            this.connectionString = connectionString;
+            this.connectionString = (!connectionString.EndsWith(';') ? connectionString + ";" : connectionString) + "Application Name=SGP Worker Service";
         }
 
         public void Dispose()
         {
             host?.Dispose();
+            hangFireServer.Dispose();
         }
 
         public void Registrar()
@@ -57,6 +57,9 @@ namespace SME.Background.Hangfire
 
         private void RegistrarHangfireServer()
         {
+            var pollInterval = configuration.GetValue<int>("BackgroundWorkerQueuePollInterval", 5);
+            Console.WriteLine($"SGP Worker Service - BackgroundWorkerQueuePollInterval parameter = {pollInterval}");
+
             GlobalConfiguration.Configuration
                 .SetDataCompatibilityLevel(CompatibilityLevel.Version_170)
                 .UseSimpleAssemblyNameTypeSerializer()
@@ -64,16 +67,23 @@ namespace SME.Background.Hangfire
                 .UseRecommendedSerializerSettings()
                 .UseActivator<HangfireActivator>(new HangfireActivator(serviceCollection.BuildServiceProvider()))
                 .UseFilter<AutomaticRetryAttribute>(new AutomaticRetryAttribute() { Attempts = 0 })
-                .UsePostgreSqlStorage(configuration.GetConnectionString(connectionString), new PostgreSqlStorageOptions()
+                .UsePostgreSqlStorage(connectionString, new PostgreSqlStorageOptions()
                 {
-                    QueuePollInterval = TimeSpan.FromSeconds(1),
+                    QueuePollInterval = TimeSpan.FromSeconds(pollInterval),
                     SchemaName = "hangfire"
                 });
 
             GlobalJobFilters.Filters.Add(new SGP.Hangfire.ContextFilterAttribute());
 
-            hangFireServer = new BackgroundJobServer();
+            var workerCount = configuration.GetValue<int>("BackgroundWorkerParallelDegree", 1);
+            Console.WriteLine($"SGP Worker Service - BackgroundWorkerParallelDegree parameter = {workerCount}");
+
+            hangFireServer = new BackgroundJobServer(new BackgroundJobServerOptions()
+            {
+                WorkerCount = workerCount
+            });
         }
     }
 }
+
 //
