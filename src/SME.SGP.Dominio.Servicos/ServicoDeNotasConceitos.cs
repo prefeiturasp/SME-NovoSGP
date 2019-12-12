@@ -1,7 +1,7 @@
 ﻿using SME.SGP.Aplicacao;
 using SME.SGP.Aplicacao.Integracoes;
-using SME.SGP.Aplicacao.Integracoes.Respostas;
 using SME.SGP.Dominio.Interfaces;
+using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -150,11 +150,15 @@ namespace SME.SGP.Dominio
                 if (tipoNota.TipoNota == TipoNota.Nota)
                 {
                     var notaParametro = repositorioNotaParametro.ObterPorDataAvaliacao(atividadeAvaliativa.DataAvaliacao);
+                    if (notaParametro == null)
+                        throw new NegocioException("Não foi possível localizar o parâmetro de nota.");
                     notaConceito.ValidarNota(notaParametro, aluno.NomeAluno);
                 }
                 else
                 {
                     var conceitos = repositorioConceito.ObterPorDataAvaliacao(atividadeAvaliativa.DataAvaliacao);
+                    if (conceitos == null)
+                        throw new NegocioException("Não foi possível localizar o parâmetro de conceito.");
                     notaConceito.ValidarConceitos(conceitos, aluno.NomeAluno);
                 }
 
