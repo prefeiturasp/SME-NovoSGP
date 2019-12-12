@@ -164,6 +164,7 @@ namespace SME.SGP.Aplicacao
             if (supervisoresEscolasDres.Any())
             {
                 var supervisores = servicoEOL.ObterSupervisoresPorCodigo(supervisoresEscolasDres.Select(a => a.SupervisorId).ToArray());
+
                 if (supervisores == null)
                     throw new System.Exception("Não foi possível localizar o nome dos supervisores na API Eol");
 

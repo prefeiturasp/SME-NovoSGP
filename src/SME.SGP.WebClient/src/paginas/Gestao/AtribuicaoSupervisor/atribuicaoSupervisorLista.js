@@ -229,7 +229,7 @@ export default function AtribuicaoSupervisorLista() {
   }
 
   async function carregarSupervisores(dre) {
-    const sups = await api.get(`/v1/supervisores/dres/${dre}`);
+    const sups = await api.get(`/v1/supervisores/dre/${dre}`);
     setListaSupervisores(sups.data || []);
   }
 
