@@ -2,45 +2,56 @@ import styled from 'styled-components';
 import { Base } from '~/componentes';
 
 export const Corpo = styled.div`
-  .negrito{
+  .negrito {
     font-weight: bold;
   }
 
-  th, td {
+  th,
+  td {
     border: solid 1px ${Base.CinzaDesabilitado};
   }
 
-  tr:hover{
-    background-color: ${Base.Roxo};
+  .bimestre-selecionado {
+    tr {
+      background-color: ${Base.Roxo};
+    }
   }
 
-  .fundo-cinza{
+  .fundo-cinza {
     background-color: ${Base.CinzaFundo};
     vertical-align: middle !important;
   }
 
-  .fundo-cinza-i{
+  .fundo-cinza-i {
     background-color: ${Base.CinzaFundo} !important;
   }
 
-  .p-l-16{
+  .p-l-16 {
     padding-left: 16px !important;
   }
 
-  .bc-w-i{
+  .bc-w-i {
     background-color: ${Base.Branco} !important;
+  }
+
+  .ant-input-number-disabled {
+    background-color: ${Base.Branco};
+  }
+
+  .ant-input-number-input{
+    text-align: center !important;
   }
 `;
 
 export const CampoDesabilitado = styled.div`
-  justify-content:center;
+  justify-content: center;
   align-items: center;
-  display:flex;
+  display: flex;
 
-  span{
-    justify-content:center;
+  span {
+    justify-content: center;
     align-items: center;
-    display:flex;
+    display: flex;
     background-color: ${Base.Branco} !important;
     border-radius: 4px;
     border: 1px solid ${Base.CinzaDesabilitado};
@@ -51,33 +62,33 @@ export const CampoDesabilitado = styled.div`
 `;
 
 export const CampoEditavel = styled.div`
-  justify-content:center;
+  justify-content: center;
   align-items: center;
-  display:flex;
+  display: flex;
   padding-left: 1px;
-  .ant-input-number{
+  .ant-input-number {
     width: 67px !important;
   }
-  div{
+  div {
     height: 32px !important;
   }
-  input{
-    justify-content:center;
+  input {
+    justify-content: center;
     align-items: center;
-    display:flex;
+    display: flex;
     width: 65px;
     height: 32px !important;
   }
 `;
 
 export const CampoCentralizado = styled.div`
-  justify-content:center;
+  justify-content: center;
   align-items: center;
-  display:flex;
+  display: flex;
 `;
 
 export const CampoAlerta = styled.div`
-  display:flex;
+  display: flex;
   justify-content: center;
   align-items: center;
   background-color: ${Base.LaranjaAlerta};
@@ -85,20 +96,20 @@ export const CampoAlerta = styled.div`
   width: 87px;
   height: 34px;
   padding-left: 1px;
-  .ant-input-number{
+  .ant-input-number {
     width: 67px !important;
   }
-  div{
+  div {
     height: 32px !important;
   }
-  .icone{
-    display:flex;
+  .icone {
+    display: flex;
     justify-content: center;
     align-items: center;
-    width:20px
-    i{
+    width: 20px ;
+    i {
       font-size: 8px;
       color: ${Base.Branco};
     }
   }
-`
+`;
