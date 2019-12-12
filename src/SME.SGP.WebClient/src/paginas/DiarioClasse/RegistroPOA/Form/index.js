@@ -58,23 +58,13 @@ function RegistroPOAForm({ match }) {
   const [valoresCarregados, setValoresCarregados] = useState(null);
   const [refForm, setRefForm] = useState({});
   const [valoresIniciais, setValoresIniciais] = useState({
-    professorRf: '',
-    professorNome: '',
-    dataInicio: window.moment(),
-    dataFim: '',
-    ueId: '',
-    dreId: '',
-    anoLetivo: '2019',
+    mes: '',
+    titulo: '',
+    descricao: '',
   });
 
   const validacoes = () => {
-    return Yup.object({
-      dataInicio: momentSchema.required('Campo obrigatório'),
-      dataFim: momentSchema.required('Campo obrigatório'),
-      professorRf: Yup.number()
-        .typeError('Informar um número inteiro')
-        .required('Campo obrigatório'),
-    });
+    return Yup.object({});
   };
 
   const validaAntesDoSubmit = form => {
@@ -104,8 +94,8 @@ function RegistroPOAForm({ match }) {
       );
       if (cadastrado && cadastrado.status === 200) {
         dispatch(setLoaderSecao(false));
-        sucesso('Atribuição esporádica salva com sucesso.');
-        history.push('/gestao/atribuicao-esporadica');
+        sucesso('Registro salvo com sucesso.');
+        history.push('/diario-classe/registro-poa');
       }
     } catch (err) {
       if (err) {
@@ -123,10 +113,10 @@ function RegistroPOAForm({ match }) {
         'Deseja realmente cancelar as alterações?'
       );
       if (confirmou) {
-        history.push('/gestao/atribuicao-esporadica');
+        history.push('/diario-classe/registro-poa');
       }
     } else {
-      history.push('/gestao/atribuicao-esporadica');
+      history.push('/diario-classe/registro-poa');
     }
   };
 
@@ -147,8 +137,8 @@ function RegistroPOAForm({ match }) {
     if (validaSeObjetoEhNuloOuVazio(form.values)) return;
 
     const confirmado = await confirmar(
-      'Excluir atribuição',
-      form.values.professorNome,
+      'Excluir registro',
+      form.values.titulo,
       `Deseja realmente excluir este item?`,
       'Excluir',
       'Cancelar'
@@ -158,8 +148,8 @@ function RegistroPOAForm({ match }) {
         form.values.id
       );
       if (excluir) {
-        sucesso(`Atribuição excluida com sucesso!`);
-        history.push('/gestao/atribuicao-esporadica');
+        sucesso(`Registro excluido com sucesso!`);
+        history.push('/diario-classe/registro-poa');
       }
     }
   };
@@ -217,11 +207,7 @@ function RegistroPOAForm({ match }) {
   useEffect(() => {
     if (match && match.params && match.params.id) {
       setNovoRegistro(false);
-      setBreadcrumbManual(
-        match.url,
-        'Atribuição',
-        '/gestao/atribuicao-esporadica'
-      );
+      setBreadcrumbManual(match.url, 'Registro', '/diario-classe/registro-poa');
       buscarPorId(match.params.id);
     }
   }, []);

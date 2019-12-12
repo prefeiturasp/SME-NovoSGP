@@ -37,18 +37,14 @@ function RegistroPOALista() {
   const onClickVoltar = () => history.push('/');
 
   const onClickBotaoPrincipal = () =>
-    history.push(
-      `/gestao/atribuicao-cjs/novo?dreId=${filtro.DreId}&ueId=${filtro.UeId}`
-    );
+    history.push(`/diario-classe/registro-poa/novo`);
 
   const onSelecionarItems = lista => {
     setItensSelecionados(lista);
   };
 
   const onClickEditar = item => {
-    history.push(
-      `/gestao/atribuicao-cjs/editar?modalidadeId=${item.modalidadeId}&turmaId=${item.turmaId}&dreId=${filtro.DreId}&ueId=${filtro.UeId}`
-    );
+    history.push(`/diario-classe/registro-poa/editar/${item.id}`);
   };
 
   const onClickExcluir = itens => {
@@ -56,12 +52,7 @@ function RegistroPOALista() {
   };
 
   const onChangeFiltro = valoresFiltro => {
-    setFiltro({
-      AnoLetivo: '2019',
-      DreId: valoresFiltro.dreId,
-      UeId: valoresFiltro.ueId,
-      UsuarioRF: valoresFiltro.professorRf,
-    });
+    setFiltro({});
   };
 
   useEffect(() => {
