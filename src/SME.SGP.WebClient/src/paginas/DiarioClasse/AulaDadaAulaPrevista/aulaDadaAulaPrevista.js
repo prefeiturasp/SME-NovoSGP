@@ -12,7 +12,7 @@ import api from '~/servicos/api';
 import Alert from '~/componentes/alert';
 import RotasDto from '~/dtos/rotasDto';
 import { verificaSomenteConsulta } from '~/servicos/servico-navegacao';
-import { confirmar, erros } from '~/servicos/alertas';
+import { confirmar, erros, sucesso } from '~/servicos/alertas';
 import { URL_HOME } from '~/constantes/url';
 import history from '~/servicos/history';
 
@@ -94,6 +94,7 @@ const AulaDadaAulaPrevista = () => {
         }
       });
       const dados = {
+        id: dadosAula.id,
         bimestres: dadosBimestre,
         totalPrevistas,
         totalCriadasTitular,
@@ -160,23 +161,39 @@ const AulaDadaAulaPrevista = () => {
   };
 
   const salvar = async () => {
+    let bimestresQuantidade = [];
+    dadoslista.bimestres.forEach(item => {
+      const dados = {
+        bimestre: item.bimestre,
+        quantidade: item.previstas.quantidade,
+      }
+      bimestresQuantidade.push(dados);
+    });
     const dados = {
-      bimestresQuantidade: dadoslista.bimestres,
+      bimestresQuantidade,
       disciplinaId: disciplinaIdSelecionada,
       modalidade,
       turmaId,
     };
     if (dadoslista.id) {
-      await api
-        .put(`v1/aula-prevista/${dadoslista.id}`, dados)
+      await api.put(`v1/aula-prevista/${dadoslista.id}`, dados)
+        .then(res => {
+          if (res.status === 200)
+            sucesso("Suas informações foram salvas com sucesso")
+        })
         .catch(e => erros(e));
     } else {
-      await api.post(`v1/aula-prevista`, dados).catch(e => erros(e));
+      await api.post(`v1/aula-prevista`, dados)
+        .then(res => {
+          if (res.status === 200)
+            sucesso("Suas informações foram salvas com sucesso")
+        }).catch(e => erros(e));
     }
   };
 
   const onClickSalvar = async () => {
     await salvar();
+    await buscarDados(disciplinaIdSelecionada);
   };
 
   return (
@@ -267,8 +284,8 @@ const AulaDadaAulaPrevista = () => {
                   alteradoRf={auditoria.alteradoRf}
                 />
               ) : (
-                ''
-              )}
+                  ''
+                )}
             </div>
           </div>
         </div>
