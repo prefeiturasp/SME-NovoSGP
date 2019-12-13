@@ -41,7 +41,7 @@ namespace SME.SGP.Aplicacao
             // Busca grade a partir dos dados da abrangencia da turma
             var grade = await ObterGradeTurma(ue.TipoEscola, turma.ModalidadeCodigo, turma.QuantidadeDuracaoAula);
             if (grade == null)
-                throw new NegocioException("Grade da turma não localizada.");
+                return null;
 
             // Busca disciplina no EOL para validar se é regente
             var disciplinaEOL = servicoEOL.ObterDisciplinasPorIds(new long[] { disciplina });
