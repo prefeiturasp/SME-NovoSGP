@@ -16,6 +16,7 @@ namespace SME.SGP.Aplicacao
         private readonly IRepositorioFrequenciaAlunoDisciplinaPeriodo repositorioFrequenciaAlunoDisciplinaPeriodo;
         private readonly IRepositorioParametrosSistema repositorioParametrosSistema;
         private readonly IRepositorioTurma repositorioTurma;
+        private readonly IRepositorioFrequencia repositorioFrequencia;
         private readonly IServicoAluno servicoAluno;
         private readonly IServicoEOL servicoEOL;
         private readonly IServicoFrequencia servicoFrequencia;
@@ -24,6 +25,7 @@ namespace SME.SGP.Aplicacao
                                    IServicoEOL servicoEOL,
                                    IConsultasPeriodoEscolar consultasPeriodoEscolar,
                                    IRepositorioAula repositorioAula,
+                                   IRepositorioFrequencia repositorioFrequencia,
                                    IRepositorioTurma repositorioTurma,
                                    IRepositorioFrequenciaAlunoDisciplinaPeriodo repositorioFrequenciaAlunoDisciplinaPeriodo,
                                    IRepositorioParametrosSistema repositorioParametrosSistema, IServicoAluno servicoAluno)
@@ -33,6 +35,7 @@ namespace SME.SGP.Aplicacao
             this.consultasPeriodoEscolar = consultasPeriodoEscolar ?? throw new ArgumentNullException(nameof(consultasPeriodoEscolar));
             this.repositorioAula = repositorioAula ?? throw new ArgumentNullException(nameof(repositorioAula));
             this.repositorioTurma = repositorioTurma ?? throw new ArgumentNullException(nameof(repositorioTurma));
+            this.repositorioFrequencia = repositorioFrequencia ?? throw new ArgumentNullException(nameof(repositorioFrequencia));
             this.repositorioFrequenciaAlunoDisciplinaPeriodo = repositorioFrequenciaAlunoDisciplinaPeriodo ?? throw new ArgumentNullException(nameof(repositorioFrequenciaAlunoDisciplinaPeriodo));
             this.repositorioParametrosSistema = repositorioParametrosSistema ?? throw new ArgumentNullException(nameof(repositorioParametrosSistema));
             this.servicoAluno = servicoAluno ?? throw new ArgumentNullException(nameof(servicoAluno));
@@ -152,5 +155,8 @@ namespace SME.SGP.Aplicacao
             };
             return registroFrequenciaDto;
         }
+
+        public async Task<bool> FrequenciaAulaRegistrada(long aulaId)
+            => await repositorioFrequencia.FrequenciaAulaRegistrada(aulaId);
     }
 }
