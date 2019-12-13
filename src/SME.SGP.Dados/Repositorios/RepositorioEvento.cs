@@ -923,7 +923,6 @@ namespace SME.SGP.Dados.Repositorios
             query.AppendLine("e.criado_rf,");
             query.AppendLine("e.alterado_rf,");
             query.AppendLine("et.id as TipoEventoId,");
-            query.AppendLine("et.id,");
             query.AppendLine("et.ativo,");
             query.AppendLine("et.tipo_data,");
             query.AppendLine("et.descricao,");
