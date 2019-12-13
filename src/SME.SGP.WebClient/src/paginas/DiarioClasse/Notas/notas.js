@@ -31,12 +31,11 @@ const Notas = () => {
     auditoriaInserido: '',
   });
 
+  const [bimestreCorrente, setBimestreCorrente] = useState(0);
   const [primeiroBimestre, setPrimeiroBimestre] = useState([]);
   const [segundoBimestre, setSegundoBimestre] = useState([]);
   const [terceiroBimestre, setTerceiroBimestre] = useState([]);
   const [quartoBimestre, setQuartoBimestre] = useState([]);
-
-  const [bimestres, setBimestres] = useState([]);
 
   const obterBimestres = useCallback(
     async (disciplinaId, numeroBimestre) => {
@@ -59,32 +58,39 @@ const Notas = () => {
       usuario.turmaSelecionada.turma,
     ]
   );
-
+  // Só é chamado quando: Seta, remove ou troca a disciplina e quando cancelar a edição;
   const obterDadosBimestres = useCallback(
     async (disciplinaId, numeroBimestre) => {
       const dados = await obterBimestres(disciplinaId, numeroBimestre);
       if (dados) {
         dados.bimestres.forEach(item => {
+          const bimestreAtualizado = {
+            descricao: item.descricao,
+            numero: item.numero,
+            alunos: [...item.alunos],
+            avaliacoes: [...item.avaliacoes],
+          };
           switch (Number(item.numero)) {
             case 1:
-              setPrimeiroBimestre(item);
+              setPrimeiroBimestre(bimestreAtualizado);
               break;
             case 2:
-              setSegundoBimestre(item);
+              setSegundoBimestre(bimestreAtualizado);
               break;
             case 3:
-              setTerceiroBimestre(item);
+              setTerceiroBimestre(bimestreAtualizado);
               break;
             case 4:
-              setQuartoBimestre(item);
+              setQuartoBimestre(bimestreAtualizado);
               break;
 
             default:
               break;
           }
+          if (bimestreAtualizado.alunos.length > 0) {
+            setBimestreCorrente(bimestreAtualizado.numero);
+          }
         });
-
-        // setBimestres([...dados.bimestres]);
 
         setNotaTipo(dados.notaTipo);
         setAuditoriaInfo({
@@ -149,36 +155,72 @@ const Notas = () => {
     history.push(URL_HOME);
   };
 
+  const resetarBimestres = () => {
+    // const bimestreVazio = {
+    //   descricao: '',
+    //   numero: undefined,
+    //   alunos: [],
+    //   avaliacoes: [],
+    // };
+    // setPrimeiroBimestre(bimestreVazio);
+    // setSegundoBimestre(bimestreVazio);
+    // setTerceiroBimestre(bimestreVazio);
+    // setQuartoBimestre(bimestreVazio);
+  };
+
   const aposSalvarNotas = () => {
-    setModoEdicao(false);
-    // TODO - Obter nota por id - atualizar data alteracao e inserção
+    // setModoEdicao(false);
+    resetarBimestres();
+    obterDadosBimestres(disciplinaSelecionada, bimestreCorrente);
+  };
+
+  const montarBimestreParaSalvar = bimestreParaMontar => {
+    const valorParaSalvar = [];
+    bimestreParaMontar.alunos.forEach(aluno => {
+      aluno.notasAvaliacoes.forEach(nota => {
+        if (nota.modoEdicao) {
+          valorParaSalvar.push({
+            alunoId: aluno.id,
+            atividadeAvaliativaId: nota.atividadeAvaliativaId,
+            conceito:
+              notaTipo === notasConceitos.Conceitos ? nota.notaConceito : 0,
+            nota: notaTipo === notasConceitos.Notas ? nota.notaConceito : 0,
+          });
+        }
+      });
+    });
+    return valorParaSalvar;
   };
 
   const onSalvarNotas = click => {
     return new Promise((resolve, reject) => {
-      const valorParaSalvar = [];
-      const bimestresEmEdicao = bimestres.filter(item => item.modoEdicao);
+      const valoresBimestresSalvar = [];
 
-      bimestresEmEdicao.forEach(b => {
-        b.alunos.forEach(aluno => {
-          aluno.notasAvaliacoes.forEach(nota => {
-            if (nota.notaConceito) {
-              valorParaSalvar.push({
-                alunoId: aluno.id,
-                atividadeAvaliativaId: nota.atividadeAvaliativaId,
-                conceito:
-                  notaTipo === notasConceitos.Conceitos ? nota.notaConceito : 0,
-                nota: notaTipo === notasConceitos.Notas ? nota.notaConceito : 0,
-              });
-            }
-          });
-        });
-      });
+      if (primeiroBimestre.modoEdicao) {
+        valoresBimestresSalvar.push(
+          ...montarBimestreParaSalvar(primeiroBimestre)
+        );
+      }
+      if (segundoBimestre.modoEdicao) {
+        valoresBimestresSalvar.push(
+          ...montarBimestreParaSalvar(segundoBimestre)
+        );
+      }
+      if (terceiroBimestre.modoEdicao) {
+        valoresBimestresSalvar.push(
+          ...montarBimestreParaSalvar(terceiroBimestre)
+        );
+      }
+      if (quartoBimestre.modoEdicao) {
+        valoresBimestresSalvar.push(
+          ...montarBimestreParaSalvar(quartoBimestre)
+        );
+      }
 
       return api
         .post(`v1/avaliacoes/notas`, {
           turmaId: usuario.turmaSelecionada.turma,
-          notasConceitos: valorParaSalvar,
+          notasConceitos: valoresBimestresSalvar,
         })
         .then(salvouNotas => {
           if (salvouNotas && salvouNotas.status === 200) {
@@ -214,7 +256,7 @@ const Notas = () => {
   };
 
   const onClickSalvar = () => {
-    onSalvarNotas();
+    onSalvarNotas(true);
   };
 
   const onChangeDisciplinas = disciplinaId => {
@@ -227,6 +269,7 @@ const Notas = () => {
   };
 
   const onChangeTab = async numeroBimestre => {
+    setBimestreCorrente(numeroBimestre);
     let bimestre = {};
     switch (Number(numeroBimestre)) {
       case 1:
@@ -252,18 +295,25 @@ const Notas = () => {
           item => Number(item.numero) === Number(numeroBimestre)
         );
 
+        const bimestreAtualizado = {
+          descricao: bimestrePesquisado.descricao,
+          numero: bimestrePesquisado.numero,
+          alunos: [...bimestrePesquisado.alunos],
+          avaliacoes: [...bimestrePesquisado.avaliacoes],
+        };
+
         switch (Number(numeroBimestre)) {
           case 1:
-            setPrimeiroBimestre(bimestrePesquisado);
+            setPrimeiroBimestre(bimestreAtualizado);
             break;
           case 2:
-            setSegundoBimestre(bimestrePesquisado);
+            setSegundoBimestre(bimestreAtualizado);
             break;
           case 3:
-            setTerceiroBimestre(bimestrePesquisado);
+            setTerceiroBimestre(bimestreAtualizado);
             break;
           case 4:
-            setQuartoBimestre(bimestrePesquisado);
+            setQuartoBimestre(bimestreAtualizado);
             break;
           default:
             break;
@@ -274,8 +324,7 @@ const Notas = () => {
 
   const onClickCancelar = async cancelar => {
     if (cancelar) {
-      setBimestres([]);
-      setModoEdicao(false);
+      // setModoEdicao(false);
       obterDadosBimestres(disciplinaSelecionada, 0);
     }
   };
@@ -335,24 +384,20 @@ const Notas = () => {
               />
             </div>
           </div>
-          {true ? (
+          {bimestreCorrente > 0 ? (
             <>
               <div className="row">
                 <div className="col-sm-12 col-md-12 col-lg-12 col-xl-12 mb-2">
-                  <ContainerTabsCard type="card" onChange={onChangeTab}>
-                    {/* {bimestres.map(item => {
-                      return (
-                        <TabPane tab={item.descricao} key={item.numero}>
-                          <Avaliacao
-                            dados={item}
-                            notaTipo={notaTipo}
-                            onChangeOrdenacao={onChangeOrdenacao}
-                          />
-                        </TabPane>
-                      );
-                    })} */}
+                  <ContainerTabsCard
+                    type="card"
+                    onChange={onChangeTab}
+                    activeKey={String(bimestreCorrente)}
+                  >
                     {primeiroBimestre.numero ? (
-                      <TabPane tab="Primeiro" key={1}>
+                      <TabPane
+                        tab={primeiroBimestre.descricao}
+                        key={primeiroBimestre.numero}
+                      >
                         <Avaliacao
                           dados={primeiroBimestre}
                           notaTipo={notaTipo}
@@ -363,7 +408,10 @@ const Notas = () => {
                       ''
                     )}
                     {segundoBimestre.numero ? (
-                      <TabPane tab="Segundo" key={2}>
+                      <TabPane
+                        tab={segundoBimestre.descricao}
+                        key={segundoBimestre.numero}
+                      >
                         <Avaliacao
                           dados={segundoBimestre}
                           notaTipo={notaTipo}
@@ -374,7 +422,10 @@ const Notas = () => {
                       ''
                     )}
                     {terceiroBimestre.numero ? (
-                      <TabPane tab="Terceiro" key={3}>
+                      <TabPane
+                        tab={terceiroBimestre.descricao}
+                        key={terceiroBimestre.numero}
+                      >
                         <Avaliacao
                           dados={terceiroBimestre}
                           notaTipo={notaTipo}
@@ -385,7 +436,10 @@ const Notas = () => {
                       ''
                     )}
                     {quartoBimestre.numero ? (
-                      <TabPane tab="Quarto" key={4}>
+                      <TabPane
+                        tab={quartoBimestre.descricao}
+                        key={quartoBimestre.numero}
+                      >
                         <Avaliacao
                           dados={quartoBimestre}
                           notaTipo={notaTipo}

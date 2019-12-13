@@ -31,12 +31,10 @@ const CampoNota = props => {
 };
 
 CampoNota.defaultProps = {
-  nota: {},
   onChangeNotaConceito: PropTypes.func,
 };
 
 CampoNota.propTypes = {
-  nota: {},
   onChangeNotaConceito: () => {},
 };
 

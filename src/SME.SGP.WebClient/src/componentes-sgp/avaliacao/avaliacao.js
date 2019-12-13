@@ -19,6 +19,7 @@ const Avaliacao = props => {
   const onChangeNotaConceito = (nota, valorNovo) => {
     if (nota.podeEditar) {
       nota.notaConceito = valorNovo;
+      nota.modoEdicao = true;
       dados.modoEdicao = true;
       dispatch(setModoEdicaoGeral(true));
     }
@@ -158,13 +159,13 @@ const Avaliacao = props => {
 };
 
 Avaliacao.propTypes = {
-  dados: {},
   notaTipo: PropTypes.number,
+  onChangeOrdenacao: () => {},
 };
 
 Avaliacao.defaultProps = {
-  dados: [],
   notaTipo: 0,
+  onChangeOrdenacao: () => {},
 };
 
 export default Avaliacao;
