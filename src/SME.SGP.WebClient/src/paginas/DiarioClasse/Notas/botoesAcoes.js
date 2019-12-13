@@ -77,14 +77,12 @@ BotoesAcoessNotasConceitos.defaultProps = {
   onClickVoltar: PropTypes.func,
   onClickCancelar: PropTypes.func,
   onClickSalvar: PropTypes.func,
-  desabilitarCampos: PropTypes.bool,
 };
 
 BotoesAcoessNotasConceitos.propTypes = {
   onClickVoltar: () => {},
   onClickCancelar: () => {},
   onClickSalvar: () => {},
-  desabilitarCampos: false,
 };
 
 export default BotoesAcoessNotasConceitos;
