@@ -1,5 +1,6 @@
 ﻿using SME.SGP.Dominio.Interfaces;
 using System;
+using System.Collections.Generic;
 
 namespace SME.SGP.Dominio.Servicos
 {
@@ -43,6 +44,17 @@ namespace SME.SGP.Dominio.Servicos
                 if (data.DayOfWeek == DayOfWeek.Saturday || data.DayOfWeek == DayOfWeek.Sunday)
                     return false;
             return true;
+        }
+
+        public bool ValidaSeEhLiberacaoExcepcional(DateTime data, long tipoCalendarioId, string ueId )
+        {
+            // Trocar esse nome 
+
+            List<Evento> eventos = repositorioEvento.EhEventoLetivoPorLiberacaoExcepcional(tipoCalendarioId, data, ueId);
+           // EventoLetivo
+       
+            return false;
+
         }
     }
 }
