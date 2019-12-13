@@ -47,6 +47,9 @@ const FrequenciaPlanoAula = () => {
   const turmaId = turmaSelecionada ? turmaSelecionada.turma : 0;
   const anoLetivo = turmaSelecionada ? turmaSelecionada.anoLetivo : 0;
 
+  const [carregandoFrequencia, setCarregandoFrequencia] = useState(true);
+  const [carregandoDisciplinas, setCarregandoDisciplinas] = useState(true);
+
   const [listaDisciplinas, setListaDisciplinas] = useState([]);
   const [disciplinaSelecionada, setDisciplinaSelecionada] = useState(undefined);
   const [disciplinaIdSelecionada, setDisciplinaIdSelecionada] = useState(
@@ -119,13 +122,32 @@ const FrequenciaPlanoAula = () => {
     [anoLetivo, turmaId]
   );
 
+  const setarDisciplina = disciplinaId => {
+    resetarTelaFrequencia(true);
+    const disciplina = listaDisciplinas.find(
+      disc => String(disc.codigoComponenteCurricular) === disciplinaId
+    );
+    setDisciplinaSelecionada(disciplina);
+    setDisciplinaIdSelecionada(disciplinaId);
+    if (disciplinaId) {
+      obterDatasDeAulasDisponiveis(disciplinaId);
+    } else {
+      setListaDatasAulas([]);
+      setDiasParaHabilitar([]);
+    }
+  };
+
   useEffect(() => {
     const obterDisciplinas = async () => {
       const disciplinas = await ServicoDisciplina.obterDisciplinasPorTurma(
         turmaId
       );
-      setListaDisciplinas(disciplinas.data);
-      if (disciplinas.data && disciplinas.data.length == 1) {
+      if (disciplinas.data) {
+        setListaDisciplinas(disciplinas.data);
+      } else {
+        setListaDisciplinas([]);
+      }
+      if (disciplinas.data && disciplinas.data.length === 1) {
         const disciplina = disciplinas.data[0];
         setDisciplinaSelecionada(disciplina);
         setDisciplinaIdSelecionada(
@@ -135,10 +157,10 @@ const FrequenciaPlanoAula = () => {
         obterDatasDeAulasDisponiveis(disciplina.codigoComponenteCurricular);
         dispatch(SelecionarDisciplina(disciplinas.data[0]));
       }
+      setCarregandoDisciplinas(false);
     };
 
     if (turmaId) {
-      obterDatasDeAulasDisponiveis();
       setDisciplinaSelecionada(undefined);
       setDisciplinaIdSelecionada(undefined);
       obterDisciplinas(turmaId);
@@ -193,7 +215,10 @@ const FrequenciaPlanoAula = () => {
       setFrequencia(frequenciaAlunos.data.listaFrequencia);
       setPermiteRegistroFrequencia(!frequenciaAlunos.data.desabilitado);
     }
+    setCarregandoFrequencia(false);
   };
+
+  const [carregandoMaterias, setCarregandoMaterias] = useState(true);
 
   const obterPlanoAula = async aula => {
     setEhRegencia(disciplinaSelecionada.regencia);
@@ -266,6 +291,9 @@ const FrequenciaPlanoAula = () => {
           }
         }
       }
+      setCarregandoMaterias(false);
+    } else {
+      setCarregandoMaterias(false);
     }
   };
 
@@ -471,21 +499,6 @@ const FrequenciaPlanoAula = () => {
     }
   };
 
-  const setarDisciplina = disciplinaId => {
-    resetarTelaFrequencia(true);
-    const disciplina = listaDisciplinas.find(
-      disc => String(disc.codigoComponenteCurricular) === disciplinaId
-    );
-    setDisciplinaSelecionada(disciplina);
-    setDisciplinaIdSelecionada(disciplinaId);
-    if (disciplinaId) {
-      obterDatasDeAulasDisponiveis(disciplinaId);
-    } else {
-      setListaDatasAulas([]);
-      setDiasParaHabilitar([]);
-    }
-  };
-
   const onChangeData = async data => {
     if (modoEdicaoFrequencia || modoEdicaoPlanoAula) {
       const confirmar = await pergutarParaSalvar();
@@ -663,17 +676,19 @@ const FrequenciaPlanoAula = () => {
           </div>
           <div className="row">
             <div className="col-sm-12 col-md-4 col-lg-4 col-xl-4 mb-2">
-              <SelectComponent
-                id="disciplina"
-                name="disciplinaId"
-                lista={listaDisciplinas}
-                valueOption="codigoComponenteCurricular"
-                valueText="nome"
-                valueSelect={disciplinaIdSelecionada}
-                onChange={onChangeDisciplinas}
-                placeholder="Disciplina"
-                disabled={desabilitarDisciplina}
-              />
+              <Loader loading={carregandoDisciplinas} tip="">
+                <SelectComponent
+                  id="disciplina"
+                  name="disciplinaId"
+                  lista={listaDisciplinas}
+                  valueOption="codigoComponenteCurricular"
+                  valueText="nome"
+                  valueSelect={disciplinaIdSelecionada}
+                  onChange={onChangeDisciplinas}
+                  placeholder="Disciplina"
+                  disabled={desabilitarDisciplina}
+                />
+              </Loader>
             </div>
             <div className="col-sm-12 col-md-4 col-lg-3 col-xl-3 mb-3">
               <CampoData
@@ -700,7 +715,10 @@ const FrequenciaPlanoAula = () => {
                   show={exibirCardFrequencia}
                   alt="card-collapse-frequencia"
                 >
-                  <Loader loading={!frequencia.length}>
+                  <Loader
+                    loading={carregandoFrequencia}
+                    className="w-100 text-center"
+                  >
                     {frequencia && frequencia.length > 0 ? (
                       <>
                         <div className="col-sm-12 col-md-12 col-lg-12 col-xl-12 mb-2">
@@ -741,6 +759,7 @@ const FrequenciaPlanoAula = () => {
                   dataSelecionada={dataSelecionada}
                   planoAula={planoAula}
                   ehProfessorCj={ehProfessorCj}
+                  carregandoMaterias={carregandoMaterias}
                   listaMaterias={materias}
                   dataAula={aula && aula.data ? aula.data : null}
                   ehEja={ehEja}
