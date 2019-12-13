@@ -182,14 +182,7 @@ namespace SME.SGP.Aplicacao
             if (notaParametro == null)
                 throw new NegocioException("Não foi possível localizar o parâmetro da nota.");
 
-            var parteDecimal = nota - Math.Truncate(nota);
-            var parteInteira = Math.Truncate(nota);
-
-            if (parteInteira == nota || parteDecimal == notaParametro.Incremento)
-                return nota;
-            else if (parteDecimal > notaParametro.Incremento)
-                return parteInteira + 1;
-            else return parteInteira + notaParametro.Incremento;
+            return notaParametro.Arredondar(nota);
         }
 
         private static NotaConceito ObterNotaParaVisualizacao(IEnumerable<NotaConceito> notas, AlunoPorTurmaResposta aluno, AtividadeAvaliativa atividadeAvaliativa)
