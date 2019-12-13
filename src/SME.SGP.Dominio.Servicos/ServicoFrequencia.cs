@@ -1,6 +1,7 @@
 ﻿using SME.SGP.Aplicacao;
 using SME.SGP.Aplicacao.Integracoes;
 using SME.SGP.Dominio.Interfaces;
+using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -86,7 +87,7 @@ namespace SME.SGP.Dominio.Servicos
                 Background.Core.Cliente.Executar<IServicoNotificacaoFrequencia>(e => e.VerificaRegraAlteracaoFrequencia(registroFrequencia.Id, registroFrequencia.CriadoEm, DateTime.Now, usuario.Id));
         }
 
-        private async Task<IEnumerable<Aplicacao.Integracoes.Respostas.AlunoPorTurmaResposta>> ObterAlunos(Aula aula)
+        private async Task<IEnumerable<AlunoPorTurmaResposta>> ObterAlunos(Aula aula)
         {
             var alunos = await servicoEOL.ObterAlunosPorTurma(aula.TurmaId);
             if (alunos == null || !alunos.Any())
@@ -116,7 +117,7 @@ namespace SME.SGP.Dominio.Servicos
             return turma;
         }
 
-        private void RegistraAusenciaAlunos(IEnumerable<RegistroAusenciaAluno> registroAusenciaAlunos, IEnumerable<Aplicacao.Integracoes.Respostas.AlunoPorTurmaResposta> alunos, RegistroFrequencia registroFrequencia, int quantidadeAulas)
+        private void RegistraAusenciaAlunos(IEnumerable<RegistroAusenciaAluno> registroAusenciaAlunos, IEnumerable<AlunoPorTurmaResposta> alunos, RegistroFrequencia registroFrequencia, int quantidadeAulas)
         {
             foreach (var ausencia in registroAusenciaAlunos)
             {

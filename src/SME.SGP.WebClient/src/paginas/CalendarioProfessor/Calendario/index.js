@@ -15,6 +15,8 @@ import { zeraCalendario } from '~/redux/modulos/calendarioProfessor/actions';
 import ModalidadeDTO from '~/dtos/modalidade';
 import { erro } from '~/servicos/alertas';
 import ServicoCalendarios from '~/servicos/Paginas/Calendario/ServicoCalendarios';
+import FiltroHelper from '~/componentes-sgp/filtro/helper';
+import tipoEscolaDTO from '~/dtos/tipoEscolaDto';
 
 const Div = styled.div``;
 const Titulo = styled(Div)`
@@ -142,6 +144,11 @@ const CalendarioProfessor = () => {
     listarTiposCalendarioPorTurmaSelecionada();
   }, [turmaSelecionadaStore, anosLetivosAbrangencia]);
 
+  const [dreSelecionada, setDreSelecionada] = useState(undefined);
+  const [unidadeEscolarSelecionada, setUnidadeEscolarSelecionada] = useState(
+    undefined
+  );
+
   const consultarDiasLetivos = () => {
     api
       .post('v1/calendarios/dias-letivos', {
@@ -160,6 +167,45 @@ const CalendarioProfessor = () => {
   const aoSelecionarTipoCalendario = tipo => {
     store.dispatch(zeraCalendario());
     setTipoCalendarioSelecionado(tipo);
+  };
+
+  const [turmaSelecionada, setTurmaSelecionada] = useState(undefined);
+  const [todasTurmas, setTodasTurmas] = useState(false);
+
+  const [filtros, setFiltros] = useState({
+    tipoCalendarioSelecionado,
+    eventoSme,
+    dreSelecionada,
+    unidadeEscolarSelecionada,
+    turmaSelecionada,
+    todasTurmas,
+  });
+
+  const [opcaoTurma, setOpcaoTurma] = useState(undefined);
+  const dresStore = useSelector(state => state.filtro.dres);
+  const [dres, setDres] = useState([]);
+
+  const obterDres = () => {
+    api
+      .get('v1/abrangencias/dres')
+      .then(resposta => {
+        if (resposta.data) {
+          const lista = [];
+          if (resposta.data) {
+            resposta.data.forEach(dre => {
+              lista.push({
+                desc: dre.nome,
+                valor: dre.codigo,
+                abrev: dre.abreviacao,
+              });
+            });
+            setDres(lista.sort(FiltroHelper.ordenarLista('desc')));
+          }
+        }
+      })
+      .catch(() => {
+        setDres(dresStore);
+      });
   };
 
   useEffect(() => {
@@ -201,33 +247,7 @@ const CalendarioProfessor = () => {
     });
   }, [eventoSme]);
 
-  const dresStore = useSelector(state => state.filtro.dres);
-  const [dres, setDres] = useState([]);
-  const [dreSelecionada, setDreSelecionada] = useState(undefined);
   const [dreDesabilitada, setDreDesabilitada] = useState(false);
-
-  const obterDres = () => {
-    api
-      .get('v1/abrangencias/dres')
-      .then(resposta => {
-        if (resposta.data) {
-          const lista = [];
-          if (resposta.data) {
-            resposta.data.forEach(dre => {
-              lista.push({
-                desc: dre.nome,
-                valor: dre.codigo,
-                abrev: dre.abreviacao,
-              });
-            });
-            setDres(lista);
-          }
-        }
-      })
-      .catch(() => {
-        setDres(dresStore);
-      });
-  };
 
   useEffect(() => {
     if (dres.length === 1) {
@@ -246,9 +266,6 @@ const CalendarioProfessor = () => {
     state => state.filtro.unidadesEscolares
   );
   const [unidadesEscolares, setUnidadesEscolares] = useState([]);
-  const [unidadeEscolarSelecionada, setUnidadeEscolarSelecionada] = useState(
-    undefined
-  );
   const [unidadeEscolarDesabilitada, setUnidadeEscolarDesabilitada] = useState(
     false
   );
@@ -262,11 +279,11 @@ const CalendarioProfessor = () => {
           if (resposta.data) {
             resposta.data.forEach(unidade => {
               lista.push({
-                desc: unidade.nome,
+                desc: `${tipoEscolaDTO[unidade.tipoEscola]} ${unidade.nome}`,
                 valor: unidade.codigo,
               });
             });
-            setUnidadesEscolares(lista);
+            setUnidadesEscolares(lista.sort(FiltroHelper.ordenarLista('desc')));
           }
         }
       })
@@ -320,9 +337,6 @@ const CalendarioProfessor = () => {
   };
 
   const [turmas, setTurmas] = useState([]);
-  const [opcaoTurma, setOpcaoTurma] = useState(undefined);
-  const [turmaSelecionada, setTurmaSelecionada] = useState(undefined);
-  const [todasTurmas, setTodasTurmas] = useState(false);
   const [turmaDesabilitada, setTurmaDesabilitada] = useState(false);
 
   useEffect(() => {
@@ -343,8 +357,8 @@ const CalendarioProfessor = () => {
   }, [unidadeEscolarSelecionada]);
 
   useEffect(() => {
-    if (turmas.length > 0) {
-      if (Object.entries(eventoAulaCalendarioEdicao).length > 0) {
+    if (turmas.length) {
+      if (Object.entries(eventoAulaCalendarioEdicao).length) {
         if (eventoAulaCalendarioEdicao.turma) {
           setOpcaoTurma(listaTurmas[1].valor.toString());
           setTurmaSelecionada(eventoAulaCalendarioEdicao.turma);
@@ -356,7 +370,7 @@ const CalendarioProfessor = () => {
         }
       } else if (!usuario.ehProfessor) {
         if (unidadeEscolarSelecionada) {
-          if (Object.entries(turmaSelecionadaStore).length > 0)
+          if (Object.entries(turmaSelecionadaStore).length)
             setOpcaoTurma(listaTurmas[1].valor.toString());
           else {
             setOpcaoTurma();
@@ -369,29 +383,30 @@ const CalendarioProfessor = () => {
         opcaoTurma
       ) {
         setOpcaoTurma();
+      } else if (Object.entries(turmaSelecionadaStore).length) {
+        setOpcaoTurma(listaTurmas[1].valor.toString());
       }
     }
-  }, [turmas, turmaSelecionadaStore]);
+  }, [
+    turmas,
+    turmaSelecionadaStore,
+    eventoAulaCalendarioEdicao,
+    usuario.ehProfessor,
+    opcaoTurma,
+    listaTurmas,
+    unidadeEscolarSelecionada,
+  ]);
 
   const aoSelecionarTurma = turma => {
     setOpcaoTurma(turma);
   };
-
-  const [filtros, setFiltros] = useState({
-    tipoCalendarioSelecionado,
-    eventoSme,
-    dreSelecionada,
-    unidadeEscolarSelecionada,
-    turmaSelecionada,
-    todasTurmas,
-  });
 
   useEffect(() => {
     if (opcaoTurma === '1') {
       setTodasTurmas(true);
       setTurmaSelecionada();
     } else if (opcaoTurma === '2') {
-      if (Object.entries(turmaSelecionadaStore).length > 0) {
+      if (Object.entries(turmaSelecionadaStore).length) {
         setTurmaSelecionada(turmaSelecionadaStore.turma);
       } else {
         setOpcaoTurma();

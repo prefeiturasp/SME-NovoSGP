@@ -8,12 +8,12 @@ import CardBody from '~/componentes/cardBody';
 
 export const Fundo = styled(Row)`
   background: url(${FundoLogin});
-  height: -moz-available;
-  height: -webkit-fill-available;
-  height: fill-available;
   background-position: center;
   background-repeat: no-repeat;
   background-size: cover;
+  height: -moz-available;
+  height: -webkit-fill-available;
+  height: fill-available;
 `;
 
 export const Logo = styled.img`
@@ -22,10 +22,9 @@ export const Logo = styled.img`
 `;
 
 export const Formulario = styled.div`
-  padding: 0px;
-
   align-self: center;
   justify-self: center;
+  padding: 0px;
 `;
 
 export const LogoSGP = styled.div`
