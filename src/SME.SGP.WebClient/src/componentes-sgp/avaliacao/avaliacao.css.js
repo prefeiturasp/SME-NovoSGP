@@ -2,8 +2,7 @@ import styled from 'styled-components';
 
 import { Base } from '../../componentes/colors';
 
-export const Container = styled.div`
-`
+export const Container = styled.div``;
 
 export const Lista = styled.div`
   max-width: 100%;
@@ -80,7 +79,7 @@ export const Lista = styled.div`
   }
 
   .width-460 {
-     /* width: 460px;
+    /* width: 460px;
     max-width: 460px; */
     min-width: 460px;
     width: 100%;
@@ -97,7 +96,7 @@ export const Lista = styled.div`
     cursor: pointer;
   }
 
-  .botao-ordenacao-avaliacao  {
+  .botao-ordenacao-avaliacao {
     float: left;
     margin-left: -12px !important;
   }
@@ -128,7 +127,7 @@ export const Lista = styled.div`
     border-top: solid 2px #d06d12 !important;
     background-color: #d06d12 !important;
     border-radius: 7px !important;
-    border-right: solid 22px #D06D12 !important;
+    border-right: solid 22px #d06d12 !important;
     padding-left: 2px !important;
     margin-left: 13px !important;
   }
@@ -146,7 +145,7 @@ export const Lista = styled.div`
     border-top: solid 3px #d06d12 !important;
     background-color: #d06d12 !important;
     border-radius: 7px !important;
-    border-right: solid 20px #D06D12 !important;
+    border-right: solid 20px #d06d12 !important;
     padding-left: 3px !important;
     margin-left: 23px !important;
   }
@@ -188,4 +187,37 @@ export const Lista = styled.div`
       border-radius: 3px !important;
     }
   }
+
+  .linha-expandida {
+    color: ${Base.Roxo};
+    background: ${Base.CinzaFundo};
+    text-align: left;
+    i {
+      transform: rotate(-90deg);
+    }
+  }
+
+  .fa-minus-linha-expandida {
+    border: 1.6px solid #6933ff !important;
+    border-radius: 20px !important;
+    display: inline;
+    font-size: 13px;
+  }
+`;
+
+export const CaixaMarcadores = styled.span`
+  border: 1.6px solid ${Base.Roxo};
+  border-radius: 9px;
+  padding-left: 10px;
+  padding-right: 10px;
+  margin-left: 8px;
+  font-weight: bold;
+  color: ${Base.Roxo};
+`;
+
+export const IconePlusMarcadores = styled.i`
+  color: ${Base.Roxo};
+  font-size: 16px;
+  margin-left: 5px;
+  cursor: pointer;
 `;
