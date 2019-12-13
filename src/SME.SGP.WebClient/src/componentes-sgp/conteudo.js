@@ -26,13 +26,7 @@ const ContainerBotoes = styled.div`
 
 const Conteudo = () => {
   const menuRetraido = useSelector(store => store.navegacao.retraido);
-  const [retraido, setRetraido] = useState(menuRetraido.retraido);
   const dispatch = useDispatch();
-
-  useEffect(() => {
-    setRetraido(menuRetraido);
-  }, [menuRetraido]);
-
   const confirmacao = useSelector(state => state.alertas.confirmacao);
 
   const fecharConfirmacao = resultado => {
@@ -41,7 +35,7 @@ const Conteudo = () => {
   };
 
   return (
-    <div style={{ marginLeft: retraido ? '115px' : '250px' }}>
+    <div style={{ marginLeft: menuRetraido ? '115px' : '250px' }}>
       <BreadcrumbSgp />
       <div className="row h-100">
         <main role="main" className="col-md-12 col-lg-12 col-sm-12 col-xl-12">
