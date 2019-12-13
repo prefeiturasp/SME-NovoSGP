@@ -142,8 +142,14 @@ namespace SME.SGP.Dominio.Servicos
             if (disciplinasProfessor == null || !disciplinasProfessor.Any(c => c.ToString() == aula.DisciplinaId) || !usuarioPodeCriarAulaNaTurmaUeEModalidade)
                 throw new NegocioException("Você não pode criar aulas para essa UE/Turma/Disciplina.");
 
-            if (!servicoDiaLetivo.ValidarSeEhDiaLetivo(aula.DataAula, aula.TipoCalendarioId, null, aula.UeId))
-                throw new NegocioException("Não é possível cadastrar essa aula pois a data informada está fora do período letivo.");
+            var temLiberacaoExcepcionalNessaData = servicoDiaLetivo.ValidaSeEhLiberacaoExcepcional(aula.DataAula, aula.TipoCalendarioId, aula.UeId);
+           
+              if (!temLiberacaoExcepcionalNessaData)
+            {
+                if (!servicoDiaLetivo.ValidarSeEhDiaLetivo(aula.DataAula, aula.TipoCalendarioId, null, aula.UeId))
+                    throw new NegocioException("Não é possível cadastrar essa aula pois a data informada está fora do período letivo.");
+            }
+
 
             if (aula.RecorrenciaAula != RecorrenciaAula.AulaUnica && aula.TipoAula == TipoAula.Reposicao)
                 throw new NegocioException("Uma aula do tipo Reposição não pode ser recorrente.");
