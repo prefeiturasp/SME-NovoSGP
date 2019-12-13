@@ -100,9 +100,20 @@ namespace SME.SGP.Dados.Repositorios
                  and e.data_inicio <= @dataAula
                  AND e.data_fim >= @dataAula ";
 
-            return  database.Conexao.Query<Evento>(query.ToString(), new { tipoCalendarioId, dataAula, ueId }).ToList();
-           
+        return database.Conexao.Query<Evento, EventoTipo, TipoCalendario, Evento>(query.ToString(), (evento, tipoEvento, tipoCalendario) =>
+           {
+               evento.AdicionarTipoEvento(tipoEvento);
+             
+               return evento;
+           }, new
+           {
+               tipoCalendarioId,
+               dataAula,
+               ueId
+           },
+            splitOn: "EventoId,TipoEventoId,TipoCalendarioId").ToList();
         }
+
 
 
         public async Task<IEnumerable<Evento>> EventosNosDiasETipo(DateTime dataInicio, DateTime dataFim, TipoEvento tipoEventoCodigo, long tipoCalendarioId, string UeId, string DreId)

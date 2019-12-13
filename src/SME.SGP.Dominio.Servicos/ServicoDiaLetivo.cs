@@ -46,14 +46,26 @@ namespace SME.SGP.Dominio.Servicos
             return true;
         }
 
-        public bool ValidaSeEhLiberacaoExcepcional(DateTime data, long tipoCalendarioId, string ueId )
+        public bool ValidaSeEhLiberacaoExcepcional(DateTime data, long tipoCalendarioId, string ueId)
         {
-            // Trocar esse nome 
+            try
+            {
+                 
+                List<Evento> eventos = repositorioEvento.EhEventoLetivoPorLiberacaoExcepcional(tipoCalendarioId, data, ueId);
+                // EventoLetivo
+                if (eventos.Exists(x => x.TipoEvento.Codigo == Convert.ToInt32(TipoEvento.LiberacaoExcepcional)))
+                {
+                    if (eventos.Exists(x => (x.TipoEvento.Codigo != 6) && (x.Letivo == EventoLetivo.Sim)))
+                        return true;
+                }
+                return false;
+            }
+            catch (Exception ex)
+            {
 
-            List<Evento> eventos = repositorioEvento.EhEventoLetivoPorLiberacaoExcepcional(tipoCalendarioId, data, ueId);
-           // EventoLetivo
-       
-            return false;
+                throw ex;
+            }
+          
 
         }
     }
