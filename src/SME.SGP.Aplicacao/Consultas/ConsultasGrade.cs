@@ -2,9 +2,9 @@
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
-using System.Threading.Tasks;
-using System.Linq;
 using System;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
@@ -34,7 +34,7 @@ namespace SME.SGP.Aplicacao
             // Busca grade a partir dos dados da abrangencia da turma
             var grade = await ObterGradeTurma(abrangencia.TipoEscola, abrangencia.Modalidade, abrangencia.QtDuracaoAula);
             if (grade == null)
-                throw new NegocioException("Grade da turma não localizada.");
+                return null;
 
             // Busca disciplina no EOL para validar se é regente
             var disciplinaEOL = servicoEOL.ObterDisciplinasPorIds(new long[] { disciplina });

@@ -229,10 +229,15 @@ const CadastroAula = ({ match }) => {
           ),
         ]);
       }
+
+      console.log(aula);
+
       const val = {
         tipoAula: aula.data.tipoAula,
         disciplinaId: String(aula.data.disciplinaId),
-        dataAula: aula.data.dataAula ? window.moment(aula.data.dataAula) : '',
+        dataAula: aula.data.dataAula
+          ? window.moment(aula.data.dataAula)
+          : window.moment(),
         recorrenciaAula: recorrencia.AULA_UNICA,
         id: aula.data.id,
         tipoCalendarioId: aula.data.tipoCalendarioId,
@@ -240,6 +245,7 @@ const CadastroAula = ({ match }) => {
         turmaId: aula.data.turmaId,
         dataAulaCompleta: window.moment(aula.data.dataAula),
       };
+
       if (aula.data.quantidade > 0 && aula.data.quantidade < 3) {
         val.quantidadeRadio = aula.data.quantidade;
         val.quantidadeTexto = '';
@@ -321,16 +327,34 @@ const CadastroAula = ({ match }) => {
 
   const onChangeDisciplinas = async (id, form) => {
     onChangeCampos();
+
     let quantidade = 0;
     form.setFieldValue('quantidadeTexto', '');
-    const resultado = await api.get(
-      `v1/grades/aulas/turmas/${turmaId}/disciplinas/${id}`,
-      {
+
+    const resultado = await api
+      .get(`v1/grades/aulas/turmas/${turmaId}/disciplinas/${id}`, {
         params: {
-          data: dataAula ? dataAula.format('YYYY-MM-DD') : '',
+          data: dataAula ? dataAula.format('YYYY-MM-DD') : null,
         },
-      }
-    );
+      })
+      .then(res => res)
+      .catch(err => {
+        const mensagemErro =
+          err &&
+          err.response &&
+          err.response.data &&
+          err.response.data.mensagens;
+
+        if (mensagemErro) {
+          erro(mensagemErro.join(','));
+          return null;
+        }
+
+        erro('Ocorreu um erro, por favor contate o suporte');
+
+        return null;
+      });
+
     if (resultado) {
       if (resultado.status === 200) {
         setControlaQuantidadeAula(true);
@@ -626,7 +650,7 @@ const CadastroAula = ({ match }) => {
                       !!(
                         listaDisciplinas &&
                         listaDisciplinas.length &&
-                        listaDisciplinas.length == 1
+                        listaDisciplinas.length === 1
                       ) || !novoRegistro
                     }
                   />
