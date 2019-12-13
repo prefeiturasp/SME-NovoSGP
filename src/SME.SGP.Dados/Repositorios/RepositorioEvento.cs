@@ -16,48 +16,14 @@ namespace SME.SGP.Dados.Repositorios
     {
         public RepositorioEvento(ISgpContext conexao) : base(conexao)
         {
+
         }
-
-        public bool EhEventoLetivoPorTipoDeCalendarioDataDreUe(long tipoCalendarioId, DateTime data, string dreId, string ueId)
-        {
-            string cabecalho = "select min(letivo) from evento e where e.excluido = false";
-            string whereTipoCalendario = "and e.tipo_calendario_id = @tipoCalendarioId";
-            StringBuilder query = new StringBuilder();
-            query.AppendLine(cabecalho);
-            query.AppendLine(whereTipoCalendario);
-            if (!string.IsNullOrEmpty(dreId))
-                query.AppendLine("and e.dre_id = @dreId and e.ue_id is null");
-            else if (string.IsNullOrEmpty(ueId))
-                query.AppendLine("and e.dre_id is null and e.ue_id is null");
-            query.AppendLine("and e.data_inicio <= @data and e.data_fim >= @data");
-            if (!string.IsNullOrEmpty(ueId))
-            {
-                query.AppendLine("UNION");
-                query.AppendLine(cabecalho);
-                query.AppendLine(whereTipoCalendario);
-                query.AppendLine("and e.dre_id = @dreId and e.ue_id = @ueId");
-                query.AppendLine("and e.data_inicio <= @data and e.data_fim >= @data");
-            }
-
-            if (!string.IsNullOrEmpty(dreId) || !string.IsNullOrEmpty(ueId))
-            {
-                query.AppendLine("UNION");
-                query.AppendLine(cabecalho);
-                query.AppendLine(whereTipoCalendario);
-                query.AppendLine("and e.dre_id is null and e.ue_id is null");
-                query.AppendLine("and e.data_inicio <= @data and e.data_fim >= @data");
-            }
-
-            var retorno = database.Conexao.QueryFirstOrDefault<int?>(query.ToString(), new { tipoCalendarioId, dreId, ueId, data });
-            return retorno == 1 || retorno == null;
-        }
-
 
         public List<Evento> EhEventoLetivoPorLiberacaoExcepcional(long tipoCalendarioId, DateTime dataAula, string ueId)
         {
-               dataAula = dataAula.Date;
+            dataAula = dataAula.Date;
 
-                var query = @"select
+            var query = @"select
                     e.id,
 	                e.nome,
 	                e.descricao,
@@ -99,21 +65,53 @@ namespace SME.SGP.Dados.Repositorios
                  and e.data_inicio <= @dataAula
                  AND e.data_fim >= @dataAula ";
 
-        return database.Conexao.Query<Evento, EventoTipo, TipoCalendario, Evento>(query.ToString(), (evento, tipoEvento, tipoCalendario) =>
-           {
-               evento.AdicionarTipoEvento(tipoEvento);
-             
-               return evento;
-           }, new
-           {
-               tipoCalendarioId,
-               dataAula,
-               ueId
-           },
-            splitOn: "EventoId,TipoEventoId,TipoCalendarioId").ToList();
+            return database.Conexao.Query<Evento, EventoTipo, TipoCalendario, Evento>(query.ToString(), (evento, tipoEvento, tipoCalendario) =>
+            {
+                evento.AdicionarTipoEvento(tipoEvento);
+
+                return evento;
+            }, new
+            {
+                tipoCalendarioId,
+                dataAula,
+                ueId
+            },
+                splitOn: "EventoId,TipoEventoId,TipoCalendarioId").ToList();
         }
 
+        public bool EhEventoLetivoPorTipoDeCalendarioDataDreUe(long tipoCalendarioId, DateTime data, string dreId, string ueId)
+        {
+            string cabecalho = "select min(letivo) from evento e where e.excluido = false";
+            string whereTipoCalendario = "and e.tipo_calendario_id = @tipoCalendarioId";
+            StringBuilder query = new StringBuilder();
+            query.AppendLine(cabecalho);
+            query.AppendLine(whereTipoCalendario);
+            if (!string.IsNullOrEmpty(dreId))
+                query.AppendLine("and e.dre_id = @dreId and e.ue_id is null");
+            else if (string.IsNullOrEmpty(ueId))
+                query.AppendLine("and e.dre_id is null and e.ue_id is null");
+            query.AppendLine("and e.data_inicio <= @data and e.data_fim >= @data");
+            if (!string.IsNullOrEmpty(ueId))
+            {
+                query.AppendLine("UNION");
+                query.AppendLine(cabecalho);
+                query.AppendLine(whereTipoCalendario);
+                query.AppendLine("and e.dre_id = @dreId and e.ue_id = @ueId");
+                query.AppendLine("and e.data_inicio <= @data and e.data_fim >= @data");
+            }
 
+            if (!string.IsNullOrEmpty(dreId) || !string.IsNullOrEmpty(ueId))
+            {
+                query.AppendLine("UNION");
+                query.AppendLine(cabecalho);
+                query.AppendLine(whereTipoCalendario);
+                query.AppendLine("and e.dre_id is null and e.ue_id is null");
+                query.AppendLine("and e.data_inicio <= @data and e.data_fim >= @data");
+            }
+
+            var retorno = database.Conexao.QueryFirstOrDefault<int?>(query.ToString(), new { tipoCalendarioId, dreId, ueId, data });
+            return retorno == 1 || retorno == null;
+        }
 
         public async Task<IEnumerable<Evento>> EventosNosDiasETipo(DateTime dataInicio, DateTime dataFim, TipoEvento tipoEventoCodigo, long tipoCalendarioId, string UeId, string DreId)
         {
