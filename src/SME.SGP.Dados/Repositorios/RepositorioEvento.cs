@@ -248,6 +248,9 @@ namespace SME.SGP.Dados.Repositorios
             query.AppendLine("and e.status in (2, 3)");
             query.AppendLine("and e.criado_rf = @usuarioRf");
 
+            if (string.IsNullOrEmpty(dreId) && string.IsNullOrEmpty(ueId))
+                query.AppendLine($"and e.dre_id is null and e.ue_id is null");
+
             if (!string.IsNullOrEmpty(dreId))
                 query.AppendLine($"and e.dre_id = @dreId");
 
@@ -289,6 +292,9 @@ namespace SME.SGP.Dados.Repositorios
             query.AppendLine("and et.excluido = false");
             query.AppendLine("and e.excluido = false");
             query.AppendLine("and e.status = 2");
+
+            if (string.IsNullOrEmpty(dreId) && string.IsNullOrEmpty(ueId))
+                query.AppendLine($"and e.dre_id is null and e.ue_id is null");
 
             if (!string.IsNullOrEmpty(dreId))
                 query.AppendLine($"and e.dre_id = @dreId");
@@ -340,6 +346,9 @@ namespace SME.SGP.Dados.Repositorios
             query.AppendLine("and e.ue_id is null))");
 
             query.AppendLine("or(a.usuario_id is not null))");
+
+            if (string.IsNullOrEmpty(dreId) && string.IsNullOrEmpty(ueId))
+                query.AppendLine($"and e.dre_id is null and e.ue_id is null");
 
             if (!string.IsNullOrEmpty(dreId))
                 query.AppendLine($"and e.dre_id = @dreId");
@@ -470,8 +479,8 @@ namespace SME.SGP.Dados.Repositorios
             if (!string.IsNullOrEmpty(calendarioEventosMesesFiltro.UeId))
                 query.AppendLine("and e.ue_id = @UeId");
 
-            if (calendarioEventosMesesFiltro.EhEventoSme)
-                query.AppendLine("and e.ue_id is null and e.dre_id is null");
+            if (!calendarioEventosMesesFiltro.EhEventoSme)
+                query.AppendLine("and e.ue_id is not null or e.dre_id is not null");
 
             if (!podeVisualizarEventosLocalOcorrenciaDre)
                 query.AppendLine("and et.local_ocorrencia != 2");
@@ -846,8 +855,10 @@ namespace SME.SGP.Dados.Repositorios
             if (!string.IsNullOrEmpty(calendarioEventosMesesFiltro.UeId))
                 query.AppendLine("and e.ue_id = @UeId");
 
-            if (calendarioEventosMesesFiltro.EhEventoSme)
-                query.AppendLine("and e.ue_id is null and e.dre_id is null");
+            if (!calendarioEventosMesesFiltro.EhEventoSme)
+                query.AppendLine("and e.ue_id is not null or e.dre_id is not null");
+            else
+                query.AppendLine("and e.ue_id is null or e.dre_id is null");
 
             if (!podeVisualizarEventosLocalOcorrenciaDre)
                 query.AppendLine("and et.local_ocorrencia != 2");
@@ -1043,14 +1054,14 @@ namespace SME.SGP.Dados.Repositorios
                 query.AppendLine("and tipo_calendario_id = @IdTipoCalendario");
 
             if (calendarioEventosMesesFiltro.EhEventoSme)
-                query.AppendLine("and e.ue_id is null and e.dre_id is null");
-            else if (!string.IsNullOrEmpty(calendarioEventosMesesFiltro.DreId) || !string.IsNullOrEmpty(calendarioEventosMesesFiltro.UeId))
-            {
-                if (!string.IsNullOrEmpty(calendarioEventosMesesFiltro.DreId))
-                    query.AppendLine("and e.dre_id = @DreId");
-                if (!string.IsNullOrEmpty(calendarioEventosMesesFiltro.UeId))
-                    query.AppendLine("and e.ue_id = @UeId");
-            }
+                query.AppendLine("and e.ue_id is null or e.dre_id is null");
+            else
+                query.AppendLine("and e.ue_id is not null or e.dre_id is not null");
+
+            if (!string.IsNullOrEmpty(calendarioEventosMesesFiltro.DreId))
+                query.AppendLine("and e.dre_id = @DreId");
+            if (!string.IsNullOrEmpty(calendarioEventosMesesFiltro.UeId))
+                query.AppendLine("and e.ue_id = @UeId");
 
             if (!podeVisualizarEventosLocalOcorrenciaDre)
                 query.AppendLine("and et.local_ocorrencia != 2");
@@ -1143,9 +1154,40 @@ namespace SME.SGP.Dados.Repositorios
             MontaQueryCabecalho(query);
             MontaQueryFrom(query);
             MontaFiltroTipoCalendario(query);
-            if (EhEventoSme)
+
+            if (!string.IsNullOrEmpty(dreId))
+                query.AppendLine("and e.dre_id = @dreId and e.ue_id is null");
+
+            if (mes.HasValue)
             {
+                query.AppendLine("and (extract(month from e.data_inicio) = @mes");
+                query.AppendLine("  or extract(month from e.data_fim) = @mes)");
+            }
+            if (data.HasValue)
+            {
+                query.AppendLine("and e.data_inicio <= @data");
+                query.AppendLine("and e.data_fim >= @data");
+            }
+
+            if (!string.IsNullOrEmpty(ueId))
+            {
+                query.AppendLine("UNION");
+                MontaQueryCabecalho(query);
+                MontaQueryFrom(query);
+                MontaFiltroTipoCalendario(query);
+                query.AppendLine("and e.dre_id = @dreId and e.ue_id = @ueId");
+            }
+            else if (!string.IsNullOrEmpty(dreId))
+                query.AppendLine("and e.ue_id is null");
+
+            if ((!string.IsNullOrEmpty(dreId) || !string.IsNullOrEmpty(ueId)) && !naoTrazerSme)
+            {
+                query.AppendLine("UNION");
+                MontaQueryCabecalho(query);
+                MontaQueryFrom(query);
+                MontaFiltroTipoCalendario(query);
                 query.AppendLine("and e.dre_id is null and e.ue_id is null");
+
                 if (mes.HasValue)
                 {
                     query.AppendLine("and (extract(month from e.data_inicio) = @mes");
@@ -1157,63 +1199,7 @@ namespace SME.SGP.Dados.Repositorios
                     query.AppendLine("and e.data_fim >= @data");
                 }
             }
-            else
-            {
-                if (!string.IsNullOrEmpty(dreId))
-                    query.AppendLine("and e.dre_id = @dreId and e.ue_id is null");
-                else if (string.IsNullOrEmpty(ueId))
-                    query.AppendLine("and e.dre_id is null and e.ue_id is null");
-                if (mes.HasValue)
-                {
-                    query.AppendLine("and (extract(month from e.data_inicio) = @mes");
-                    query.AppendLine("  or extract(month from e.data_fim) = @mes)");
-                }
-                if (data.HasValue)
-                {
-                    query.AppendLine("and e.data_inicio <= @data");
-                    query.AppendLine("and e.data_fim >= @data");
-                }
 
-                if (!string.IsNullOrEmpty(ueId))
-                {
-                    query.AppendLine("UNION");
-                    MontaQueryCabecalho(query);
-                    MontaQueryFrom(query);
-                    MontaFiltroTipoCalendario(query);
-                    query.AppendLine("and e.dre_id = @dreId and e.ue_id = @ueId");
-                }
-                else if (!string.IsNullOrEmpty(dreId))
-                    query.AppendLine("and e.ue_id is null");
-                if (mes.HasValue)
-                {
-                    query.AppendLine("and (extract(month from e.data_inicio) = @mes");
-                    query.AppendLine("  or extract(month from e.data_fim) = @mes)");
-                }
-                if (data.HasValue)
-                {
-                    query.AppendLine("and e.data_inicio <= @data");
-                    query.AppendLine("and e.data_fim >= @data");
-                }
-
-                if ((!string.IsNullOrEmpty(dreId) || !string.IsNullOrEmpty(ueId)) && !naoTrazerSme)
-                {
-                    query.AppendLine("UNION");
-                    MontaQueryCabecalho(query);
-                    MontaQueryFrom(query);
-                    MontaFiltroTipoCalendario(query);
-                    query.AppendLine("and e.dre_id is null and e.ue_id is null");
-                    if (mes.HasValue)
-                    {
-                        query.AppendLine("and (extract(month from e.data_inicio) = @mes");
-                        query.AppendLine("  or extract(month from e.data_fim) = @mes)");
-                    }
-                    if (data.HasValue)
-                    {
-                        query.AppendLine("and e.data_inicio <= @data");
-                        query.AppendLine("and e.data_fim >= @data");
-                    }
-                }
-            }
             return query.ToString();
         }
     }

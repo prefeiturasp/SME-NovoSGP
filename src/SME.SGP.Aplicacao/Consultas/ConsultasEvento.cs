@@ -68,12 +68,11 @@ namespace SME.SGP.Aplicacao
 
                 listaDiasEventos.ForEach(a =>
                 {
-                    var tipoEventos = a.Take(3).Select(b => b.TipoEvento).ToList();
+                    var tipoEventos = a.GroupBy(b => b.TipoEvento).Select(b => b.Key).ToList();
                     listaRetorno.Add(new CalendarioTipoEventoPorDiaDto()
                     {
                         Dia = a.Key,
                         TiposEvento = tipoEventos.ToArray(),
-                        QuantidadeDeEventos = a.Count()
                     });
                 });
             }
