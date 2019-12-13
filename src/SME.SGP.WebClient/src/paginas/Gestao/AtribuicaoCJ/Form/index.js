@@ -248,6 +248,7 @@ function AtribuicaoCJForm({ match, location }) {
                 <Row className="row">
                   <Grid cols={6}>
                     <DreDropDown
+                      url='v1/dres/atribuicoes'
                       label="Diretoria Regional de Educação (DRE)"
                       form={form}
                       onChange={valor => setDreId(valor)}
@@ -258,6 +259,7 @@ function AtribuicaoCJForm({ match, location }) {
                       label="Unidade Escolar (UE)"
                       dreId={dreId}
                       form={form}
+                      url='v1/dres'
                       onChange={() => null}
                     />
                   </Grid>

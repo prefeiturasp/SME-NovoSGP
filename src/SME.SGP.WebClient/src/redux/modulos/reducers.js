@@ -11,6 +11,7 @@ import bimestres from './planoAnual/reducers';
 import filtro from './filtro/reducers';
 import atribuicaoEsporadica from './atribuicaoEsporadica/reducers';
 import loader from './loader/reducer';
+import notasConceitos from './notasConceitos/reducer';
 
 export default combineReducers({
   navegacao,
@@ -24,4 +25,5 @@ export default combineReducers({
   calendarioProfessor,
   atribuicaoEsporadica,
   loader,
+  notasConceitos,
 });

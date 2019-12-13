@@ -178,9 +178,12 @@ export default function PlanoAnual() {
   };
 
   const obterDisciplinasPlanoAnual = async () => {
+    const turmaPrograma = turmaSelecionada.ano === '0';
+
     const disciplinas = await PlanoAnualHelper.ObterDisciplinasPlano(
       usuario.rf || usuario.usuario,
-      turmaId
+      turmaId,
+      turmaPrograma
     );
 
     dispatch(SalvarDisciplinasPlanoAnual(disciplinas));
@@ -206,9 +209,12 @@ export default function PlanoAnual() {
 
     const ehEdicao = await PlanoAnualHelper.verificarSeExiste(filtro, ehEja);
 
+    const turmaPrograma = turmaSelecionada.ano === '0';
+
     const disciplinas = await PlanoAnualHelper.ObterDiscplinasObjetivos(
       turmaId,
-      disciplinaSelecionada
+      disciplinaSelecionada,
+      turmaPrograma
     );
 
     const semObjetivos =
@@ -341,14 +347,16 @@ export default function PlanoAnual() {
     modalCopiarConteudo.visivel = true;
     modalCopiarConteudo.turmasComPlanoAnual = turmasCopiarConteudo
       .filter(x => x.temPlano)
-      .map(x => x.codigo);
+      .map(x => x.valor);
 
     setModalCopiarConteudo({ ...modalCopiarConteudo });
   };
 
   const modalCopiarConteudoAlertaVisivel = () => {
+    console.log(modalCopiarConteudo.turmasComPlanoAnual);
+
     return modalCopiarConteudo.turmasSelecionadas.some(selecionada =>
-      modalCopiarConteudo.turmasComPlanoAnual.includes(selecionada * 1)
+      modalCopiarConteudo.turmasComPlanoAnual.includes(selecionada)
     );
   };
 
@@ -358,11 +366,10 @@ export default function PlanoAnual() {
           .filter(
             turma =>
               modalCopiarConteudo.turmasSelecionadas.includes(
-                `${turma.codigo}`
-              ) &&
-              modalCopiarConteudo.turmasComPlanoAnual.includes(turma.codigo)
+                `${turma.valor}`
+              ) && modalCopiarConteudo.turmasComPlanoAnual.includes(turma.valor)
           )
-          .map(turma => turma.turma)
+          .map(turma => turma.desc)
       : [];
 
     return turmasReportar.length > 1
@@ -517,8 +524,8 @@ export default function PlanoAnual() {
         <SelectComponent
           id="SelecaoTurma"
           lista={modalCopiarConteudo.listSelect}
-          valueOption="codigo"
-          valueText="turma"
+          valueOption="valor"
+          valueText="desc"
           onChange={onChangeCopiarConteudo}
           valueSelect={modalCopiarConteudo.turmasSelecionadas}
           multiple
