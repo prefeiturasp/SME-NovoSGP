@@ -49,14 +49,14 @@ namespace SME.SGP.Aplicacao
             if (disciplinas == null || !disciplinas.Any())
                 return disciplinasDto;
 
-            disciplinasDto = await MapearParaDto(disciplinas);
+            disciplinasDto = await MapearParaDto(disciplinas, filtroDisciplinaPlanejamentoDto.TurmaPrograma);
 
             await repositorioCache.SalvarAsync(chaveCache, JsonConvert.SerializeObject(disciplinasDto));
 
             return TratarRetornoDisciplinasPlanejamento(disciplinasDto, filtroDisciplinaPlanejamentoDto);
         }
 
-        public async Task<List<DisciplinaDto>> ObterDisciplinasPorProfessorETurma(string codigoTurma)
+        public async Task<List<DisciplinaDto>> ObterDisciplinasPorProfessorETurma(string codigoTurma, bool turmaPrograma)
         {
             var disciplinasDto = new List<DisciplinaDto>();
 
@@ -90,7 +90,7 @@ namespace SME.SGP.Aplicacao
 
                 if (disciplinas != null && disciplinas.Any())
                 {
-                    disciplinasDto = await MapearParaDto(disciplinas);
+                    disciplinasDto = await MapearParaDto(disciplinas, turmaPrograma);
 
                     await repositorioCache.SalvarAsync(chaveCache, JsonConvert.SerializeObject(disciplinasDto));
                 }
@@ -98,7 +98,7 @@ namespace SME.SGP.Aplicacao
             return disciplinasDto;
         }
 
-        private async Task<List<DisciplinaDto>> MapearParaDto(IEnumerable<DisciplinaResposta> disciplinas)
+        private async Task<List<DisciplinaDto>> MapearParaDto(IEnumerable<DisciplinaResposta> disciplinas, bool turmaPrograma = false)
         {
             var retorno = new List<DisciplinaDto>();
 
@@ -111,7 +111,8 @@ namespace SME.SGP.Aplicacao
                         CodigoComponenteCurricular = disciplina.CodigoComponenteCurricular,
                         Nome = disciplina.Nome,
                         Regencia = disciplina.Regencia,
-                        PossuiObjetivos = await consultasObjetivoAprendizagem.DisciplinaPossuiObjetivosDeAprendizagem(disciplina.CodigoComponenteCurricular)
+                        PossuiObjetivos = !turmaPrograma && await consultasObjetivoAprendizagem
+                        .DisciplinaPossuiObjetivosDeAprendizagem(disciplina.CodigoComponenteCurricular)
                     });
                 }
             }

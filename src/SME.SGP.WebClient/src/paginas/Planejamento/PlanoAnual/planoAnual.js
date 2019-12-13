@@ -178,9 +178,12 @@ export default function PlanoAnual() {
   };
 
   const obterDisciplinasPlanoAnual = async () => {
+    const turmaPrograma = turmaSelecionada.ano === '0';
+
     const disciplinas = await PlanoAnualHelper.ObterDisciplinasPlano(
       usuario.rf || usuario.usuario,
-      turmaId
+      turmaId,
+      turmaPrograma
     );
 
     dispatch(SalvarDisciplinasPlanoAnual(disciplinas));
@@ -206,9 +209,12 @@ export default function PlanoAnual() {
 
     const ehEdicao = await PlanoAnualHelper.verificarSeExiste(filtro, ehEja);
 
+    const turmaPrograma = turmaSelecionada.ano === '0';
+
     const disciplinas = await PlanoAnualHelper.ObterDiscplinasObjetivos(
       turmaId,
-      disciplinaSelecionada
+      disciplinaSelecionada,
+      turmaPrograma
     );
 
     const semObjetivos =
