@@ -230,8 +230,6 @@ const CadastroAula = ({ match }) => {
         ]);
       }
 
-      console.log(aula);
-
       const val = {
         tipoAula: aula.data.tipoAula,
         disciplinaId: String(aula.data.disciplinaId),
@@ -286,6 +284,7 @@ const CadastroAula = ({ match }) => {
         'Você não salvou as informações preenchidas.',
         'Deseja realmente cancelar as alterações?'
       );
+
       if (confirmou) {
         resetarTela(form);
       }
@@ -366,11 +365,15 @@ const CadastroAula = ({ match }) => {
           form.setFieldValue('quantidadeRadio', '');
           form.setFieldValue('quantidadeTexto', '');
         }
+
+        if (quantidade > 0) montaValidacoes(1, 0, form);
+        else montaValidacoes(0, 1, form);
       } else if (resultado.status === 204) {
         setControlaQuantidadeAula(false);
       }
+    } else {
+      montaValidacoes(1, 0, form);
     }
-    quantidade > 0 ? montaValidacoes(1, 0, form) : montaValidacoes(0, 1, form);
   };
 
   const onClickCadastrar = async valoresForm => {
@@ -668,7 +671,7 @@ const CadastroAula = ({ match }) => {
                 </div>
                 <div className="col-sm-12 col-md-8 col-lg-8 col-xl-5 mb-2 d-flex justify-content-start">
                   <RadioGroupButton
-                    id="quantidade-aulas"
+                    id="quantidadeRadio"
                     label="Quantidade de Aulas"
                     form={form}
                     opcoes={opcoesQuantidadeAulas}
