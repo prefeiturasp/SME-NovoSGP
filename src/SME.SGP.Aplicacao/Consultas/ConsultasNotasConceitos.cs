@@ -195,28 +195,25 @@ namespace SME.SGP.Aplicacao
         private static bool PodeEditarNotaOuConceito(Usuario usuarioLogado, string professorTitularDaTurmaDisciplinaRf,
             AtividadeAvaliativa atividadeAvaliativa, AlunoPorTurmaResposta aluno)
         {
-            var podeEditar = true;
-
-            if (aluno.CodigoSituacaoMatricula != SituacaoMatriculaAluno.Ativo) // Inserir outros
-            {
-                podeEditar = false;
-            }
+            if (aluno.CodigoSituacaoMatricula != SituacaoMatriculaAluno.Ativo && aluno.CodigoSituacaoMatricula != SituacaoMatriculaAluno.PendenteRematricula &&
+                aluno.CodigoSituacaoMatricula != SituacaoMatriculaAluno.Rematriculado && aluno.CodigoSituacaoMatricula != SituacaoMatriculaAluno.SemContinuidade)
+                return false;
 
             if (atividadeAvaliativa.DataAvaliacao.Date > DateTime.Today)
-                podeEditar = false;
+                return false;
 
             if (usuarioLogado.PerfilAtual == Perfis.PERFIL_CJ)
             {
                 if (atividadeAvaliativa.CriadoRF != usuarioLogado.CodigoRf)
-                    podeEditar = false;
+                    return false;
             }
             else
             {
                 if (usuarioLogado.CodigoRf != professorTitularDaTurmaDisciplinaRf)
-                    podeEditar = false;
+                    return false;
             }
 
-            return podeEditar;
+            return true;
         }
 
         private async Task<string> ObterRfProfessorTitularDisciplina(string turmaCodigo, string disciplinaCodigo, List<AtividadeAvaliativa> atividadesAvaliativasdoBimestre)
