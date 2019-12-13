@@ -1,17 +1,14 @@
 ﻿using SME.SGP.Aplicacao.Integracoes;
-using SME.SGP.Aplicacao.Integracoes.Respostas;
 using SME.SGP.Dominio.Interfaces;
+using SME.SGP.Infra;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
 namespace SME.SGP.Dominio.Servicos
 {
     public class ServicoEventoMatricula : IServicoEventoMatricula
     {
-        private readonly IServicoEOL servicoEOL;
         private readonly IRepositorioEventoMatricula repositorioEventoMatricula;
+        private readonly IServicoEOL servicoEOL;
 
         public ServicoEventoMatricula(IServicoEOL servicoEOL,
                                       IRepositorioEventoMatricula repositorioEventoMatricula)
@@ -23,57 +20,6 @@ namespace SME.SGP.Dominio.Servicos
         public void ExecutaCargaEventos()
         {
             CargaDres();
-        }
-
-        private void CargaDres()
-        {
-            var dres = servicoEOL.ObterDres();
-            if (dres != null)
-                foreach (var dre in dres)
-                {
-                    try
-                    {
-                        CargaUes(dre.CodigoDRE);
-                    }
-                    catch (Exception ex)
-                    {
-                        throw new Exception($"DRE [{dre.CodigoDRE}]: {ex.Message}");
-                    }
-                }
-        }
-
-        private void CargaUes(string codigoDRE)
-        {
-            var ues = servicoEOL.ObterEscolasPorDre(codigoDRE);
-            if (ues != null)
-                foreach (var ue in ues)
-                {
-                    try
-                    {
-                        CargaTurmas(ue.CodigoEscola);
-                    }
-                    catch (Exception ex)
-                    {
-                        throw new Exception($"Escola [{ue.CodigoEscola}]: {ex.Message}");
-                    }
-                }
-        }
-
-        private void CargaTurmas(string codigoEscola)
-        {
-            var turmas = servicoEOL.ObterTurmasPorUE(codigoEscola, DateTime.Now.Year.ToString()).Result;
-            if (turmas != null)
-                foreach (var turma in turmas)
-                {
-                    try
-                    {
-                        CargaAlunos(turma.CodigoTurma);
-                    }
-                    catch (Exception ex)
-                    {
-                        throw new Exception($"Turma [{turma.CodigoTurma}]: {ex.Message}");
-                    }            
-                }
         }
 
         private void CargaAlunos(string codigoTurma)
@@ -99,6 +45,57 @@ namespace SME.SGP.Dominio.Servicos
                 }
         }
 
+        private void CargaDres()
+        {
+            var dres = servicoEOL.ObterDres();
+            if (dres != null)
+                foreach (var dre in dres)
+                {
+                    try
+                    {
+                        CargaUes(dre.CodigoDRE);
+                    }
+                    catch (Exception ex)
+                    {
+                        throw new Exception($"DRE [{dre.CodigoDRE}]: {ex.Message}");
+                    }
+                }
+        }
+
+        private void CargaTurmas(string codigoEscola)
+        {
+            var turmas = servicoEOL.ObterTurmasPorUE(codigoEscola, DateTime.Now.Year.ToString()).Result;
+            if (turmas != null)
+                foreach (var turma in turmas)
+                {
+                    try
+                    {
+                        CargaAlunos(turma.CodigoTurma);
+                    }
+                    catch (Exception ex)
+                    {
+                        throw new Exception($"Turma [{turma.CodigoTurma}]: {ex.Message}");
+                    }
+                }
+        }
+
+        private void CargaUes(string codigoDRE)
+        {
+            var ues = servicoEOL.ObterEscolasPorDre(codigoDRE);
+            if (ues != null)
+                foreach (var ue in ues)
+                {
+                    try
+                    {
+                        CargaTurmas(ue.CodigoEscola);
+                    }
+                    catch (Exception ex)
+                    {
+                        throw new Exception($"Escola [{ue.CodigoEscola}]: {ex.Message}");
+                    }
+                }
+        }
+
         private void IncluirEventoMatricula(AlunoPorTurmaResposta aluno)
         {
             repositorioEventoMatricula.Salvar(new EventoMatricula()
@@ -108,7 +105,7 @@ namespace SME.SGP.Dominio.Servicos
                 Tipo = aluno.CodigoSituacaoMatricula,
                 // Tranferencia interna e Remanejamento detalham escola e turma
                 NomeEscola = aluno.EscolaTransferencia,
-                NomeTurma = !string.IsNullOrEmpty(aluno.TurmaTransferencia) ? 
+                NomeTurma = !string.IsNullOrEmpty(aluno.TurmaTransferencia) ?
                             aluno.TurmaTransferencia : aluno.TurmaRemanejamento
             });
         }

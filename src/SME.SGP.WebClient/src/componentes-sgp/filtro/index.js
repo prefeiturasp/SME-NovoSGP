@@ -106,11 +106,11 @@ const Filtro = () => {
   );
   const [resultadosFiltro, setResultadosFiltro] = useState([]);
 
-  const ObtenhaDres = useCallback(
+  const obterDres = useCallback(
     async (estado, periodo) => {
       if (!modalidadeSelecionada) return;
 
-      const listaDres = await FiltroHelper.ObtenhaDres(
+      const listaDres = await FiltroHelper.obterDres(
         modalidadeSelecionada,
         periodo
       );
@@ -181,6 +181,38 @@ const Filtro = () => {
     unidadesEscolares,
   ]);
 
+  const [podeRemoverTurma, setPodeRemoverTurma] = useState(true);
+
+  useEffect(() => {
+    if (
+      anosLetivos.length === 1 &&
+      anoLetivoSelecionado &&
+      modalidades.length === 1 &&
+      modalidadeSelecionada &&
+      dres.length === 1 &&
+      dreSelecionada &&
+      unidadesEscolares.length === 1 &&
+      unidadeEscolarSelecionada &&
+      turmas.length === 1 &&
+      turmaSelecionada
+    ) {
+      aplicarFiltro();
+      setPodeRemoverTurma(false);
+    }
+  }, [
+    anoLetivoSelecionado,
+    anosLetivos.length,
+    aplicarFiltro,
+    dreSelecionada,
+    dres.length,
+    modalidadeSelecionada,
+    modalidades.length,
+    turmaSelecionada,
+    turmas.length,
+    unidadeEscolarSelecionada,
+    unidadesEscolares.length,
+  ]);
+
   const reabilitarCampos = () => {
     setCampoDreDesabilitado(false);
     setCampoAnoLetivoDesabilitado(false);
@@ -196,21 +228,21 @@ const Filtro = () => {
     let estado = true;
 
     const obterAnosLetivos = async deveSalvarAnosLetivos => {
-      const anosLetivo = await ServicoFiltro.listarAnosLetivos()
-        .then(resposta => {
-          const anos = [];
-
-          if (resposta.data) {
-            resposta.data.forEach(ano => {
-              anos.push({ desc: ano, valor: ano });
-            });
-          }
-
-          return anos;
-        })
-        .catch(() => []);
-
       if (deveSalvarAnosLetivos) {
+        const anosLetivo = await ServicoFiltro.listarAnosLetivos()
+          .then(resposta => {
+            const anos = [];
+
+            if (resposta.data) {
+              resposta.data.forEach(ano => {
+                anos.push({ desc: ano, valor: ano });
+              });
+            }
+
+            return anos;
+          })
+          .catch(() => []);
+
         dispatch(salvarAnosLetivos(anosLetivo));
         setAnosLetivos(anosLetivo);
       }
@@ -258,7 +290,7 @@ const Filtro = () => {
       setCampoModalidadeDesabilitado(true);
     } else {
       const obterModalidades = async deveSalvarModalidade => {
-        const modalidadesLista = await FiltroHelper.ObtenhaModalidades();
+        const modalidadesLista = await FiltroHelper.obterModalidades();
 
         if (deveSalvarModalidade) {
           setModalidades(modalidadesLista);
@@ -283,7 +315,7 @@ const Filtro = () => {
     let estado = true;
 
     const obterPeriodos = async deveSalvarPeriodos => {
-      const periodo = await FiltroHelper.ObtenhaPeriodos(modalidadeSelecionada);
+      const periodo = await FiltroHelper.obterPeriodos(modalidadeSelecionada);
 
       if (!modalidade) return;
 
@@ -299,18 +331,21 @@ const Filtro = () => {
       setDreSelecionada();
       setCampoPeriodoDesabilitado(true);
       setCampoDreDesabilitado(true);
-    } else if (modalidadeSelecionada === modalidade.EJA.toString()) {
+    } else if (
+      modalidadeSelecionada &&
+      modalidadeSelecionada.toString() === modalidade.EJA.toString()
+    ) {
       obterPeriodos(estado);
       setCampoDreDesabilitado(true);
     } else {
-      ObtenhaDres(estado);
+      obterDres(estado);
     }
 
     return () => {
       estado = false;
       return estado;
     };
-  }, [ObtenhaDres, dispatch, modalidadeSelecionada]);
+  }, [obterDres, dispatch, modalidadeSelecionada]);
 
   useEffect(() => {
     if (periodos && periodos.length === 1)
@@ -320,7 +355,11 @@ const Filtro = () => {
   useEffect(() => {
     const estado = true;
 
-    if (modalidadeSelecionada !== modalidade.EJA.toString()) return;
+    if (
+      modalidadeSelecionada &&
+      modalidadeSelecionada.toString() !== modalidade.EJA.toString()
+    )
+      return;
 
     if (!periodoSelecionado) {
       setDreSelecionada();
@@ -328,8 +367,8 @@ const Filtro = () => {
       return;
     }
 
-    ObtenhaDres(estado, periodoSelecionado);
-  }, [ObtenhaDres, modalidadeSelecionada, periodoSelecionado]);
+    obterDres(estado, periodoSelecionado);
+  }, [obterDres, modalidadeSelecionada, periodoSelecionado]);
 
   useEffect(() => {
     if (dres && dres.length === 1) setDreSelecionada(dres[0].valor);
@@ -337,10 +376,10 @@ const Filtro = () => {
 
   useEffect(() => {
     let estado = true;
-    const ObtenhaUnidadesEscolares = async (deveSalvarUes, periodo) => {
+    const obterUnidadesEscolares = async (deveSalvarUes, periodo) => {
       if (!modalidadeSelecionada) return;
 
-      const ues = await FiltroHelper.ObtenhaUnidadesEscolares(
+      const ues = await FiltroHelper.obterUnidadesEscolares(
         modalidadeSelecionada,
         dreSelecionada,
         periodo
@@ -363,15 +402,15 @@ const Filtro = () => {
     if (!dreSelecionada) {
       setUnidadeEscolarSelecionada();
       setCampoUnidadeEscolarDesabilitado(true);
-      return;
+    } else {
+      const periodo =
+        modalidadeSelecionada &&
+        modalidadeSelecionada.toString() === modalidade.EJA.toString()
+          ? periodoSelecionado
+          : null;
+
+      obterUnidadesEscolares(estado, periodo);
     }
-
-    const periodo =
-      modalidadeSelecionada === modalidade.EJA.toString()
-        ? periodoSelecionado
-        : null;
-
-    ObtenhaUnidadesEscolares(estado, periodo);
 
     return () => {
       estado = false;
@@ -385,15 +424,16 @@ const Filtro = () => {
   }, [unidadesEscolares]);
 
   useEffect(() => {
-    const ObtenhaTurmas = async deveSalvarTurmas => {
+    const obterTurmas = async deveSalvarTurmas => {
       const periodo =
-        modalidadeSelecionada === modalidade.EJA.toString()
+        modalidadeSelecionada &&
+        modalidadeSelecionada.toString() === modalidade.EJA.toString()
           ? periodoSelecionado
           : null;
 
       if (!modalidadeSelecionada) return;
 
-      const listaTurmas = await FiltroHelper.ObtenhaTurmas(
+      const listaTurmas = await FiltroHelper.obterTurmas(
         modalidadeSelecionada,
         unidadeEscolarSelecionada,
         periodo
@@ -412,15 +452,15 @@ const Filtro = () => {
         setCampoTurmaDesabilitado(listaTurmas.length === 1);
       }
     };
+
     let estado = true;
 
     if (!unidadeEscolarSelecionada) {
       setTurmaSelecionada();
       setCampoTurmaDesabilitado(true);
-      return;
+    } else {
+      obterTurmas(estado);
     }
-
-    ObtenhaTurmas(estado);
 
     return () => {
       estado = false;
@@ -463,9 +503,9 @@ const Filtro = () => {
         ) &&
         divBuscaRef.current &&
         !divBuscaRef.current.contains(evento.target)
-      )
-        // mostrarEsconderBusca
+      ) {
         setAlternarFocoBusca(!alternarFocoBusca);
+      }
       setAlternarFocoCampo(false);
     };
 
@@ -648,7 +688,7 @@ const Filtro = () => {
             readOnly={!!turmaUsuarioSelecionada.turma}
             value={textoAutocomplete}
           />
-          {!!turmaUsuarioSelecionada.turma && (
+          {!!turmaUsuarioSelecionada.turma && podeRemoverTurma && (
             <Fechar
               className="fa fa-times position-absolute"
               onClick={removerTurmaSelecionada}
@@ -700,7 +740,10 @@ const Filtro = () => {
               </Grid>
               <Grid
                 cols={
-                  modalidadeSelecionada === modalidade.EJA.toString() ? 5 : 9
+                  modalidadeSelecionada &&
+                  modalidadeSelecionada.toString() === modalidade.EJA.toString()
+                    ? 5
+                    : 9
                 }
                 className="form-group"
               >
@@ -718,21 +761,25 @@ const Filtro = () => {
                   disabled={campoModalidadeDesabilitado}
                 />
               </Grid>
-              {modalidadeSelecionada === modalidade.EJA.toString() && (
-                <Grid cols={4} className="form-group">
-                  <SelectComponent
-                    className="fonte-14"
-                    onChange={aoTrocarPeriodo}
-                    lista={periodos}
-                    valueOption="valor"
-                    containerVinculoId="containerFiltro"
-                    valueText="desc"
-                    valueSelect={periodoSelecionado && `${periodoSelecionado}`}
-                    placeholder="Período"
-                    disabled={campoPeriodoDesabilitado}
-                  />
-                </Grid>
-              )}
+              {modalidadeSelecionada &&
+                modalidadeSelecionada.toString() ===
+                  modalidade.EJA.toString() && (
+                  <Grid cols={4} className="form-group">
+                    <SelectComponent
+                      className="fonte-14"
+                      onChange={aoTrocarPeriodo}
+                      lista={periodos}
+                      valueOption="valor"
+                      containerVinculoId="containerFiltro"
+                      valueText="desc"
+                      valueSelect={
+                        periodoSelecionado && `${periodoSelecionado}`
+                      }
+                      placeholder="Período"
+                      disabled={campoPeriodoDesabilitado}
+                    />
+                  </Grid>
+                )}
             </div>
             <div className="form-group">
               <SelectComponent
