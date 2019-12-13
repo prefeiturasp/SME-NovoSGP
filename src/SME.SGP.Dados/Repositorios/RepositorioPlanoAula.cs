@@ -51,6 +51,12 @@ namespace SME.SGP.Dados.Repositorios
             return await database.Conexao.QueryFirstOrDefaultAsync<PlanoAula>(query, new { data, turmaId, disciplinaId });
         }
 
+        public async Task<bool> PlanoAulaRegistrado(long aulaId)
+        {
+            var query = "select 1 from plano_aula where aula_id = @aulaId";
+            return await database.Conexao.QueryFirstOrDefaultAsync<bool>(query, new { aulaId });
+        }
+
         public bool ValidarPlanoExistentePorTurmaDataEDisciplina(DateTime data, string turmaId, string disciplinaId)
         {
             var query = @"select
