@@ -58,9 +58,9 @@ namespace SME.SGP.Aplicacao
 
             var perfil = servicoUsuario.ObterPerfilAtual();
             var rf = servicoUsuario.ObterRf();
-            var eventos =  repositorioEvento.ObterEventosPorTipoDeCalendarioDreUeDia(filtro.TipoCalendarioId, filtro.DreId, filtro.UeId, data, filtro.EhEventoSme).Result;
-            var aulas =  repositorioAula.ObterAulasCompleto(filtro.TipoCalendarioId, filtro.TurmaId, filtro.UeId, data, perfil, rf).Result;
-            var atividades =  repositorioAtividadeAvaliativa.ObterAtividadesPorDia(filtro.DreId, filtro.UeId, data, rf, filtro.TurmaId).Result;
+            var eventos = repositorioEvento.ObterEventosPorTipoDeCalendarioDreUeDia(filtro.TipoCalendarioId, filtro.DreId, filtro.UeId, data, filtro.EhEventoSme).Result;
+            var aulas = repositorioAula.ObterAulasCompleto(filtro.TipoCalendarioId, filtro.TurmaId, filtro.UeId, data, perfil, rf).Result;
+            var atividades = repositorioAtividadeAvaliativa.ObterAtividadesPorDia(filtro.DreId, filtro.UeId, data, rf, filtro.TurmaId).Result;
             eventos
             .ToList()
             .ForEach(x => eventosAulas
@@ -73,54 +73,54 @@ namespace SME.SGP.Aplicacao
 
             var turmasAulas = aulas.GroupBy(x => x.TurmaId).Select(x => x.Key);
 
-            var turmasAbrangencia =  ObterTurmasAbrangencia(turmasAulas).Result;
-            var disciplinasProfessor =  ObterDisciplinasAulas(turmasAulas).Result;
-            var disciplinasRegencia =  servicoEOL.ObterDisciplinasParaPlanejamento(Convert.ToInt64(filtro.TurmaId), rf, perfil).Result;
+            var turmasAbrangencia = ObterTurmasAbrangencia(turmasAulas).Result;
+            var disciplinasProfessor = ObterDisciplinasAulas(turmasAulas).Result;
+            var disciplinasRegencia = servicoEOL.ObterDisciplinasParaPlanejamento(Convert.ToInt64(filtro.TurmaId), rf, perfil).Result;
             aulas
             .ToList()
-            .ForEach( x =>
-            {
-                bool podeCriarAtividade = true;
-                var listaAtividades = atividades.Where(w => w.DataAvaliacao.Date == x.DataAula.Date && w.TurmaId == x.TurmaId && w.DisciplinaId.ToString() == x.DisciplinaId).ToList();
-                var disciplina = disciplinasProfessor?.FirstOrDefault(d => d.CodigoComponenteCurricular.ToString().Equals(x.DisciplinaId));
-                if (atividades != null && disciplina != null)
-                {
-                    foreach (var item in listaAtividades)
-                    {
+            .ForEach(x =>
+           {
+               bool podeCriarAtividade = true;
+               var listaAtividades = atividades.Where(w => w.DataAvaliacao.Date == x.DataAula.Date && w.TurmaId == x.TurmaId && w.DisciplinaId.ToString() == x.DisciplinaId).ToList();
+               var disciplina = disciplinasProfessor?.FirstOrDefault(d => d.CodigoComponenteCurricular.ToString().Equals(x.DisciplinaId));
+               if (atividades != null && disciplina != null)
+               {
+                   foreach (var item in listaAtividades)
+                   {
 
 
-                        if (disciplina.Regencia)
-                        {
-                            var disciplinasRegenciasComAtividades =  repositorioAtividadeAvaliativaRegencia.Listar(item.Id).Result;
-                            podeCriarAtividade = disciplinasRegencia.Count() > disciplinasRegenciasComAtividades.Count();
-                            item.AtividadeAvaliativaRegencia = new List<AtividadeAvaliativaRegencia>();
-                            item.AtividadeAvaliativaRegencia.AddRange(disciplinasRegenciasComAtividades);
-                        }
-                        else
-                            podeCriarAtividade = false;
-                    }
-                }
+                       if (disciplina.Regencia)
+                       {
+                           var disciplinasRegenciasComAtividades = repositorioAtividadeAvaliativaRegencia.Listar(item.Id).Result;
+                           podeCriarAtividade = disciplinasRegencia.Count() > disciplinasRegenciasComAtividades.Count();
+                           item.AtividadeAvaliativaRegencia = new List<AtividadeAvaliativaRegencia>();
+                           item.AtividadeAvaliativaRegencia.AddRange(disciplinasRegenciasComAtividades);
+                       }
+                       else
+                           podeCriarAtividade = false;
+                   }
+               }
 
-                var turma = turmasAbrangencia.FirstOrDefault(t => t.CodigoTurma.Equals(x.TurmaId));
+               var turma = turmasAbrangencia.FirstOrDefault(t => t.CodigoTurma.Equals(x.TurmaId));
 
-                eventosAulas.Add(new EventosAulasTipoDiaDto
-                {
-                    Id = x.Id,
-                    TipoEvento = "Aula",
-                    DadosAula = new DadosAulaDto
-                    {
-                        Disciplina = $"{(disciplina?.Nome ?? "Disciplina não encontrada")} {(x.TipoAula == TipoAula.Reposicao ? "(Reposição)" : "")} {(x.Status == EntidadeStatus.AguardandoAprovacao ? "- Aguardando aprovação" : "")}",
-                        EhRegencia = disciplina.Regencia,
-                        podeCadastrarAvaliacao = podeCriarAtividade,
-                        Horario = x.DataAula.ToString("hh:mm tt", CultureInfo.InvariantCulture),
-                        Modalidade = turma?.Modalidade.GetAttribute<DisplayAttribute>().Name ?? "Modalidade",
-                        Tipo = turma?.TipoEscola.GetAttribute<DisplayAttribute>().ShortName ?? "Escola",
-                        Turma = x.TurmaNome,
-                        UnidadeEscolar = x.UeNome,
-                        Atividade = listaAtividades
-                    }
-                });
-            });
+               eventosAulas.Add(new EventosAulasTipoDiaDto
+               {
+                   Id = x.Id,
+                   TipoEvento = "Aula",
+                   DadosAula = new DadosAulaDto
+                   {
+                       Disciplina = $"{(disciplina?.Nome ?? "Disciplina não encontrada")} {(x.TipoAula == TipoAula.Reposicao ? "(Reposição)" : "")} {(x.Status == EntidadeStatus.AguardandoAprovacao ? "- Aguardando aprovação" : "")}",
+                       EhRegencia = disciplina.Regencia,
+                       podeCadastrarAvaliacao = podeCriarAtividade,
+                       Horario = x.DataAula.ToString("hh:mm tt", CultureInfo.InvariantCulture),
+                       Modalidade = turma?.Modalidade.GetAttribute<DisplayAttribute>().Name ?? "Modalidade",
+                       Tipo = turma?.TipoEscola.GetAttribute<DisplayAttribute>().ShortName ?? "Escola",
+                       Turma = x.TurmaNome,
+                       UnidadeEscolar = x.UeNome,
+                       Atividade = listaAtividades
+                   }
+               });
+           });
 
             return new DiaEventoAula
             {
@@ -187,7 +187,10 @@ namespace SME.SGP.Aplicacao
                 {
                     Dia = dia,
                     QuantidadeDeEventosAulas = qtdEventosAulas,
-                    TiposEvento = diasAulas.Where(x => x.Key == dia).Select(w => w.Value).ToList()
+                    TemAtividadeAvaliativa = diasAulas.Where(x => x.Key == dia && x.Value == "Atividade avaliativa").Any(),
+                    TemAula = diasAulas.Where(x => x.Key == dia && x.Value == "Aula").Any(),
+                    TemAulaCJ = diasAulas.Where(x => x.Key == dia && x.Value == "CJ").Any(),
+                    TemEvento = diasAulas.Where(x => x.Key == dia && x.Value == "Evento").Any()
                 });
             }
 
@@ -233,7 +236,7 @@ namespace SME.SGP.Aplicacao
             List<KeyValuePair<int, string>> dias = new List<KeyValuePair<int, string>>();
             foreach (var aula in aulas)
             {
-                dias.Add(new KeyValuePair<int, string>(aula.DataAula.Day, "Aula"));
+                dias.Add(new KeyValuePair<int, string>(aula.DataAula.Day, aula.AulaCJ ? "CJ" : "Aula"));
             }
             return dias;
         }
@@ -247,7 +250,7 @@ namespace SME.SGP.Aplicacao
                 for (DateTime dia = evento.DataInicio; dia <= evento.DataFim; dia = dia.AddDays(1))
                 {
                     if (dia.Month != mes) break;
-                    dias.Add(new KeyValuePair<int, string>(dia.Day, evento.Descricao));
+                    dias.Add(new KeyValuePair<int, string>(dia.Day, "Evento"));
                 }
             }
             return dias;
