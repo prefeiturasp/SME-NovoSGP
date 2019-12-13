@@ -9,5 +9,6 @@ namespace SME.SGP.Infra
         public long AulaId { get; set; }
         public int RecorrenciaAula { get; set; }
         public int QuantidadeAulasRecorrentes { get; set; }
+        public bool ExisteFrequenciaOuPlanoAula { get; set; }
     }
 }
