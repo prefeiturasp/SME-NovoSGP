@@ -64,7 +64,7 @@ const Avaliacao = props => {
   };
 
   const montarCampoNotaConceito = nota => {
-    return Number(notasConceitos.Notas) !== Number(notaTipo) ? (
+    return Number(notasConceitos.Notas) === Number(notaTipo) ? (
       <CampoNota
         nota={nota}
         onChangeNotaConceito={valorNovo =>

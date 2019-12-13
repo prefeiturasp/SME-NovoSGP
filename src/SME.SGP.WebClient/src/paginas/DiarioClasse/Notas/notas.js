@@ -1,6 +1,7 @@
 import { Tabs } from 'antd';
 import React, { useCallback, useEffect, useState } from 'react';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
+import { Loader } from '~/componentes';
 import Avaliacao from '~/componentes-sgp/avaliacao/avaliacao';
 import Cabecalho from '~/componentes-sgp/cabecalho';
 import Card from '~/componentes/card';
@@ -8,7 +9,8 @@ import SelectComponent from '~/componentes/select';
 import { ContainerTabsCard } from '~/componentes/tabs/tabs.css';
 import { URL_HOME } from '~/constantes/url';
 import notasConceitos from '~/dtos/notasConceitos';
-import { confirmar, erros, sucesso } from '~/servicos/alertas';
+import { setModoEdicaoGeral } from '~/redux/modulos/notasConceitos/actions';
+import { erros, sucesso } from '~/servicos/alertas';
 import api from '~/servicos/api';
 import history from '~/servicos/history';
 
@@ -19,23 +21,40 @@ const { TabPane } = Tabs;
 
 const Notas = () => {
   const usuario = useSelector(store => store.usuario);
+  const dispatch = useDispatch();
+  const modoEdicaoGeral = useSelector(
+    store => store.notasConceitos.modoEdicaoGeral
+  );
 
   const [listaDisciplinas, setListaDisciplinas] = useState([]);
   const [disciplinaSelecionada, setDisciplinaSelecionada] = useState(undefined);
   const [desabilitarDisciplina, setDesabilitarDisciplina] = useState(false);
   const [notaTipo, setNotaTipo] = useState();
   const [desabilitarCampos, setDesabilitarCampos] = useState(false);
-  const [modoEdicao, setModoEdicao] = useState(false);
+  const [carregandoListaBimestres, setCarregandoListaBimestres] = useState(
+    false
+  );
   const [auditoriaInfo, setAuditoriaInfo] = useState({
     auditoriaAlterado: '',
     auditoriaInserido: '',
   });
-
   const [bimestreCorrente, setBimestreCorrente] = useState(0);
   const [primeiroBimestre, setPrimeiroBimestre] = useState([]);
   const [segundoBimestre, setSegundoBimestre] = useState([]);
   const [terceiroBimestre, setTerceiroBimestre] = useState([]);
   const [quartoBimestre, setQuartoBimestre] = useState([]);
+
+  const resetarTela = useCallback(() => {
+    setDisciplinaSelecionada(undefined);
+    setBimestreCorrente(0);
+    setNotaTipo(0);
+    setDesabilitarCampos(false);
+    setAuditoriaInfo({
+      auditoriaAlterado: '',
+      auditoriaInserido: '',
+    });
+    dispatch(setModoEdicaoGeral(false));
+  }, [dispatch]);
 
   const obterBimestres = useCallback(
     async (disciplinaId, numeroBimestre) => {
@@ -61,63 +80,52 @@ const Notas = () => {
   // Só é chamado quando: Seta, remove ou troca a disciplina e quando cancelar a edição;
   const obterDadosBimestres = useCallback(
     async (disciplinaId, numeroBimestre) => {
-      const dados = await obterBimestres(disciplinaId, numeroBimestre);
-      if (dados) {
-        dados.bimestres.forEach(item => {
-          const bimestreAtualizado = {
-            descricao: item.descricao,
-            numero: item.numero,
-            alunos: [...item.alunos],
-            avaliacoes: [...item.avaliacoes],
-          };
-          switch (Number(item.numero)) {
-            case 1:
-              setPrimeiroBimestre(bimestreAtualizado);
-              break;
-            case 2:
-              setSegundoBimestre(bimestreAtualizado);
-              break;
-            case 3:
-              setTerceiroBimestre(bimestreAtualizado);
-              break;
-            case 4:
-              setQuartoBimestre(bimestreAtualizado);
-              break;
+      if (disciplinaId > 0) {
+        setCarregandoListaBimestres(true);
+        const dados = await obterBimestres(disciplinaId, numeroBimestre);
+        if (dados && dados.bimestres && dados.bimestres.length) {
+          dados.bimestres.forEach(item => {
+            const bimestreAtualizado = {
+              descricao: item.descricao,
+              numero: item.numero,
+              alunos: [...item.alunos],
+              avaliacoes: [...item.avaliacoes],
+            };
+            switch (Number(item.numero)) {
+              case 1:
+                setPrimeiroBimestre(bimestreAtualizado);
+                break;
+              case 2:
+                setSegundoBimestre(bimestreAtualizado);
+                break;
+              case 3:
+                setTerceiroBimestre(bimestreAtualizado);
+                break;
+              case 4:
+                setQuartoBimestre(bimestreAtualizado);
+                break;
 
-            default:
-              break;
-          }
-          if (bimestreAtualizado.alunos.length > 0) {
-            setBimestreCorrente(bimestreAtualizado.numero);
-          }
-        });
+              default:
+                break;
+            }
+            if (bimestreAtualizado.alunos.length > 0) {
+              setBimestreCorrente(bimestreAtualizado.numero);
+            }
+          });
 
-        setNotaTipo(dados.notaTipo);
-        setAuditoriaInfo({
-          auditoriaAlterado: dados.auditoriaAlterado,
-          auditoriaInserido: dados.auditoriaInserido,
-        });
+          setNotaTipo(dados.notaTipo);
+          setAuditoriaInfo({
+            auditoriaAlterado: dados.auditoriaAlterado,
+            auditoriaInserido: dados.auditoriaInserido,
+          });
+        }
+        setCarregandoListaBimestres(false);
+      } else {
+        resetarTela();
       }
     },
-    [obterBimestres]
+    [obterBimestres, resetarTela]
   );
-
-  // const resetarTela = useCallback(() => {
-  //   if (disciplinaSelecionada) {
-  //     setDisciplinaSelecionada(undefined);
-  //   }
-  //   // if (bimestres && bimestres.length > 0) {
-  //   //   setBimestres([]);
-  //   // }
-
-  //   setNotaTipo(0);
-  //   setDesabilitarCampos(false);
-  //   setModoEdicao(false);
-  //   setAuditoriaInfo({
-  //     auditoriaAlterado: '',
-  //     auditoriaInserido: '',
-  //   });
-  // }, [disciplinaSelecionada]);
 
   const obterDisciplinas = useCallback(async () => {
     const url = `v1/professores/123/turmas/${usuario.turmaSelecionada.turma}/disciplinas`;
@@ -127,7 +135,7 @@ const Notas = () => {
     if (disciplinas.data && disciplinas.data.length === 1) {
       const disciplina = disciplinas.data[0];
       setDisciplinaSelecionada(String(disciplina.codigoComponenteCurricular));
-      setDesabilitarDisciplina(true);
+      // setDesabilitarDisciplina(true);
       obterDadosBimestres(disciplina.codigoComponenteCurricular);
     }
   }, [obterDadosBimestres, usuario.turmaSelecionada.turma]);
@@ -136,25 +144,32 @@ const Notas = () => {
     if (usuario.turmaSelecionada.turma) {
       obterDisciplinas();
     } else {
-      // TODO - Resetar tela
       setListaDisciplinas([]);
       setDesabilitarDisciplina(false);
-      // resetarTela();
+      resetarTela();
     }
-  }, [obterDisciplinas, usuario.turmaSelecionada.turma]);
+  }, [obterDisciplinas, usuario.turmaSelecionada.turma, resetarTela]);
 
   const pergutarParaSalvar = () => {
-    return confirmar(
-      'Atenção',
-      '',
-      'Suas alterações não foram salvas, deseja salvar agora?'
-    );
+    if (
+      window.confirm(`Suas alterações não foram salvas, deseja salvar agora?`)
+    ) {
+      return true;
+    }
+    return false;
+    // TODO - Voltar esse fonte apois ajuste de modal de confirmação
+    // return confirmar(
+    //   'Atenção',
+    //   '',
+    //   'Suas alterações não foram salvas, deseja salvar agora?'
+    // );
   };
 
   const irParaHome = () => {
     history.push(URL_HOME);
   };
 
+  // TODO - Verificar se realmente é necessário usar o resetarBimestres!
   const resetarBimestres = () => {
     // const bimestreVazio = {
     //   descricao: '',
@@ -169,8 +184,7 @@ const Notas = () => {
   };
 
   const aposSalvarNotas = () => {
-    // setModoEdicao(false);
-    resetarBimestres();
+    // resetarBimestres();
     obterDadosBimestres(disciplinaSelecionada, bimestreCorrente);
   };
 
@@ -225,6 +239,7 @@ const Notas = () => {
         .then(salvouNotas => {
           if (salvouNotas && salvouNotas.status === 200) {
             sucesso('Suas informações foram salvas com sucesso.');
+            dispatch(setModoEdicaoGeral(false));
             if (click) {
               aposSalvarNotas();
             }
@@ -242,10 +257,10 @@ const Notas = () => {
   };
 
   const onClickVoltar = async () => {
-    if (!desabilitarCampos && modoEdicao) {
+    if (!desabilitarCampos && modoEdicaoGeral) {
       const confirmado = await pergutarParaSalvar();
       if (confirmado) {
-        await onSalvarNotas();
+        await onSalvarNotas(false);
         irParaHome();
       } else {
         irParaHome();
@@ -259,12 +274,23 @@ const Notas = () => {
     onSalvarNotas(true);
   };
 
-  const onChangeDisciplinas = disciplinaId => {
-    if (disciplinaId) {
+  const onChangeDisciplinas = async disciplinaId => {
+    if (modoEdicaoGeral) {
+      const confirmaSalvar = await pergutarParaSalvar();
+      if (confirmaSalvar) {
+        await onSalvarNotas(false);
+        setDisciplinaSelecionada(disciplinaId);
+        obterDadosBimestres(disciplinaId, 0);
+      } else {
+        setDisciplinaSelecionada(disciplinaId);
+        resetarTela();
+        if (disciplinaId) {
+          obterDadosBimestres(disciplinaId, 0);
+        }
+      }
+    } else {
       obterDadosBimestres(disciplinaId, 0);
       setDisciplinaSelecionada(disciplinaId);
-    } else {
-      // resetarTela();
     }
   };
 
@@ -288,7 +314,8 @@ const Notas = () => {
         break;
     }
 
-    if (bimestre && !bimestre.modoEdicao) {
+    if (bimestre && !bimestre.modoEdicao && disciplinaSelecionada) {
+      setCarregandoListaBimestres(true);
       const dados = await obterBimestres(disciplinaSelecionada, numeroBimestre);
       if (dados && dados.bimestres && dados.bimestres.length) {
         const bimestrePesquisado = dados.bimestres.find(
@@ -319,13 +346,14 @@ const Notas = () => {
             break;
         }
       }
+      setCarregandoListaBimestres(false);
     }
   };
 
   const onClickCancelar = async cancelar => {
     if (cancelar) {
-      // setModoEdicao(false);
-      obterDadosBimestres(disciplinaSelecionada, 0);
+      dispatch(setModoEdicaoGeral(false));
+      obterDadosBimestres(disciplinaSelecionada, bimestreCorrente);
     }
   };
 
@@ -357,123 +385,125 @@ const Notas = () => {
   return (
     <Container>
       <Cabecalho pagina="Lançamento de notas" />
-      <Card>
-        <div className="col-md-12">
-          <div className="row">
-            <div className="col-md-12 d-flex justify-content-end pb-4">
-              <BotoesAcoessNotasConceitos
-                onClickVoltar={onClickVoltar}
-                onClickCancelar={onClickCancelar}
-                onClickSalvar={onClickSalvar}
-                desabilitarCampos={desabilitarCampos}
-              />
-            </div>
-          </div>
-          <div className="row">
-            <div className="col-sm-12 col-md-4 col-lg-4 col-xl-4 mb-2">
-              <SelectComponent
-                id="disciplina"
-                name="disciplinaId"
-                lista={listaDisciplinas}
-                valueOption="codigoComponenteCurricular"
-                valueText="nome"
-                valueSelect={disciplinaSelecionada}
-                onChange={onChangeDisciplinas}
-                placeholder="Disciplina"
-                disabled={desabilitarDisciplina}
-              />
-            </div>
-          </div>
-          {bimestreCorrente > 0 ? (
-            <>
-              <div className="row">
-                <div className="col-sm-12 col-md-12 col-lg-12 col-xl-12 mb-2">
-                  <ContainerTabsCard
-                    type="card"
-                    onChange={onChangeTab}
-                    activeKey={String(bimestreCorrente)}
-                  >
-                    {primeiroBimestre.numero ? (
-                      <TabPane
-                        tab={primeiroBimestre.descricao}
-                        key={primeiroBimestre.numero}
-                      >
-                        <Avaliacao
-                          dados={primeiroBimestre}
-                          notaTipo={notaTipo}
-                          onChangeOrdenacao={onChangeOrdenacao}
-                        />
-                      </TabPane>
-                    ) : (
-                      ''
-                    )}
-                    {segundoBimestre.numero ? (
-                      <TabPane
-                        tab={segundoBimestre.descricao}
-                        key={segundoBimestre.numero}
-                      >
-                        <Avaliacao
-                          dados={segundoBimestre}
-                          notaTipo={notaTipo}
-                          onChangeOrdenacao={onChangeOrdenacao}
-                        />
-                      </TabPane>
-                    ) : (
-                      ''
-                    )}
-                    {terceiroBimestre.numero ? (
-                      <TabPane
-                        tab={terceiroBimestre.descricao}
-                        key={terceiroBimestre.numero}
-                      >
-                        <Avaliacao
-                          dados={terceiroBimestre}
-                          notaTipo={notaTipo}
-                          onChangeOrdenacao={onChangeOrdenacao}
-                        />
-                      </TabPane>
-                    ) : (
-                      ''
-                    )}
-                    {quartoBimestre.numero ? (
-                      <TabPane
-                        tab={quartoBimestre.descricao}
-                        key={quartoBimestre.numero}
-                      >
-                        <Avaliacao
-                          dados={quartoBimestre}
-                          notaTipo={notaTipo}
-                          onChangeOrdenacao={onChangeOrdenacao}
-                        />
-                      </TabPane>
-                    ) : (
-                      ''
-                    )}
-                  </ContainerTabsCard>
-                </div>
+      <Loader loading={carregandoListaBimestres}>
+        <Card>
+          <div className="col-md-12">
+            <div className="row">
+              <div className="col-md-12 d-flex justify-content-end pb-4">
+                <BotoesAcoessNotasConceitos
+                  onClickVoltar={onClickVoltar}
+                  onClickCancelar={onClickCancelar}
+                  onClickSalvar={onClickSalvar}
+                  desabilitarCampos={desabilitarCampos}
+                />
               </div>
-              <div className="row mt-2 mb-2 mt-2">
-                <div className="col-md-12">
-                  <ContainerAuditoria style={{ float: 'left' }}>
-                    <span>
-                      <p>{auditoriaInfo.auditoriaInserido || ''}</p>
-                      <p>{auditoriaInfo.auditoriaAlterado || ''}</p>
+            </div>
+            <div className="row">
+              <div className="col-sm-12 col-md-4 col-lg-4 col-xl-4 mb-2">
+                <SelectComponent
+                  id="disciplina"
+                  name="disciplinaId"
+                  lista={listaDisciplinas}
+                  valueOption="codigoComponenteCurricular"
+                  valueText="nome"
+                  valueSelect={disciplinaSelecionada}
+                  onChange={onChangeDisciplinas}
+                  placeholder="Disciplina"
+                  disabled={desabilitarDisciplina}
+                />
+              </div>
+            </div>
+            {bimestreCorrente > 0 ? (
+              <>
+                <div className="row">
+                  <div className="col-sm-12 col-md-12 col-lg-12 col-xl-12 mb-2">
+                    <ContainerTabsCard
+                      type="card"
+                      onChange={onChangeTab}
+                      activeKey={String(bimestreCorrente)}
+                    >
+                      {primeiroBimestre.numero ? (
+                        <TabPane
+                          tab={primeiroBimestre.descricao}
+                          key={primeiroBimestre.numero}
+                        >
+                          <Avaliacao
+                            dados={primeiroBimestre}
+                            notaTipo={notaTipo}
+                            onChangeOrdenacao={onChangeOrdenacao}
+                          />
+                        </TabPane>
+                      ) : (
+                        ''
+                      )}
+                      {segundoBimestre.numero ? (
+                        <TabPane
+                          tab={segundoBimestre.descricao}
+                          key={segundoBimestre.numero}
+                        >
+                          <Avaliacao
+                            dados={segundoBimestre}
+                            notaTipo={notaTipo}
+                            onChangeOrdenacao={onChangeOrdenacao}
+                          />
+                        </TabPane>
+                      ) : (
+                        ''
+                      )}
+                      {terceiroBimestre.numero ? (
+                        <TabPane
+                          tab={terceiroBimestre.descricao}
+                          key={terceiroBimestre.numero}
+                        >
+                          <Avaliacao
+                            dados={terceiroBimestre}
+                            notaTipo={notaTipo}
+                            onChangeOrdenacao={onChangeOrdenacao}
+                          />
+                        </TabPane>
+                      ) : (
+                        ''
+                      )}
+                      {quartoBimestre.numero ? (
+                        <TabPane
+                          tab={quartoBimestre.descricao}
+                          key={quartoBimestre.numero}
+                        >
+                          <Avaliacao
+                            dados={quartoBimestre}
+                            notaTipo={notaTipo}
+                            onChangeOrdenacao={onChangeOrdenacao}
+                          />
+                        </TabPane>
+                      ) : (
+                        ''
+                      )}
+                    </ContainerTabsCard>
+                  </div>
+                </div>
+                <div className="row mt-2 mb-2 mt-2">
+                  <div className="col-md-12">
+                    <ContainerAuditoria style={{ float: 'left' }}>
+                      <span>
+                        <p>{auditoriaInfo.auditoriaInserido || ''}</p>
+                        <p>{auditoriaInfo.auditoriaAlterado || ''}</p>
+                      </span>
+                    </ContainerAuditoria>
+                    <span style={{ float: 'right' }} className="mt-1 ml-1">
+                      Aluno ausente na data da avaliação
                     </span>
-                  </ContainerAuditoria>
-                  <span style={{ float: 'right' }} className="mt-1 ml-1">
-                    Aluno ausente na data da avaliação
-                  </span>
-                  <span className="icon-legenda-aluno-ausente">
-                    <i className="fas fa-user-times" />
-                  </span>
+                    <span className="icon-legenda-aluno-ausente">
+                      <i className="fas fa-user-times" />
+                    </span>
+                  </div>
                 </div>
-              </div>
-            </>
-          ) : (
-            ''
-          )}
-        </div>
-      </Card>
+              </>
+            ) : (
+              ''
+            )}
+          </div>
+        </Card>
+      </Loader>
     </Container>
   );
 };
