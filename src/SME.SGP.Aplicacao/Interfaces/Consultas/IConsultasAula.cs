@@ -20,5 +20,8 @@ namespace SME.SGP.Aplicacao
 
         Task<int> ObterRecorrenciaDaSerie(long aulaId);
 
+        Task<bool> ChecarFrequenciaPlanoNaRecorrencia(long aulaId);
+
+        Task<bool> ChecarFrequenciaPlanoAula(long aulaId);
     }
 }

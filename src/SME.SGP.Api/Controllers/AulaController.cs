@@ -68,12 +68,14 @@ namespace SME.SGP.Api.Controllers
             var recorrencia = await consultas.ObterRecorrenciaDaSerie(aulaId);
             var quantidadeAulas = recorrencia == (int)RecorrenciaAula.AulaUnica ? 1 
                 : await consultas.ObterQuantidadeAulasRecorrentes(aulaId, RecorrenciaAula.RepetirTodosBimestres);
+            var existeFrequenciaPlanoAula = await consultas.ChecarFrequenciaPlanoNaRecorrencia(aulaId);
 
             return Ok(new AulaRecorrenciaDto() 
             { 
                 AulaId = aulaId,
                 RecorrenciaAula = recorrencia,
-                QuantidadeAulasRecorrentes = quantidadeAulas
+                QuantidadeAulasRecorrentes = quantidadeAulas,
+                ExisteFrequenciaOuPlanoAula = existeFrequenciaPlanoAula
             });
         }
     }
