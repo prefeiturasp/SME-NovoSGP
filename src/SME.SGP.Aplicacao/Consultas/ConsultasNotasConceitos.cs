@@ -117,7 +117,7 @@ namespace SME.SGP.Aplicacao
 
                             var ausente = ausenciasAtividadesAvaliativas.Any(a => a.AlunoCodigo == aluno.CodigoAluno && a.AulaData.Date == atividadeAvaliativa.DataAvaliacao.Date);
 
-                            bool podeEditar = PodeEditarNotaOuConceito(usuarioLogado, professorRfTitularTurmaDisciplina, atividadeAvaliativa);
+                            bool podeEditar = PodeEditarNotaOuConceito(usuarioLogado, professorRfTitularTurmaDisciplina, atividadeAvaliativa, aluno);
 
                             var notaAvaliacao = new NotasConceitosNotaAvaliacaoRetornoDto() { AtividadeAvaliativaId = atividadeAvaliativa.Id, NotaConceito = notaParaVisualizar, Ausente = ausente, PodeEditar = podeEditar };
                             notasAvaliacoes.Add(notaAvaliacao);
@@ -192,9 +192,16 @@ namespace SME.SGP.Aplicacao
             return notaDoAluno;
         }
 
-        private static bool PodeEditarNotaOuConceito(Usuario usuarioLogado, string professorTitularDaTurmaDisciplinaRf, AtividadeAvaliativa atividadeAvaliativa)
+        private static bool PodeEditarNotaOuConceito(Usuario usuarioLogado, string professorTitularDaTurmaDisciplinaRf,
+            AtividadeAvaliativa atividadeAvaliativa, AlunoPorTurmaResposta aluno)
         {
             var podeEditar = true;
+
+            if (aluno.CodigoSituacaoMatricula != SituacaoMatriculaAluno.Ativo) // Inserir outros
+            {
+                podeEditar = false;
+            }
+
             if (atividadeAvaliativa.DataAvaliacao.Date > DateTime.Today)
                 podeEditar = false;
 
