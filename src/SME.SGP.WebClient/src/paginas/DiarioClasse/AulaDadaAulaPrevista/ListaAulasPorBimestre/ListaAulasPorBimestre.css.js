@@ -12,7 +12,7 @@ export const Corpo = styled.div`
   }
 
   .bimestre-selecionado {
-    tr {
+    td {
       background-color: ${Base.Roxo};
     }
   }
@@ -38,7 +38,7 @@ export const Corpo = styled.div`
     background-color: ${Base.Branco};
   }
 
-  .ant-input-number-input{
+  .ant-input-number-input {
     text-align: center !important;
   }
 `;
@@ -106,7 +106,7 @@ export const CampoAlerta = styled.div`
     display: flex;
     justify-content: center;
     align-items: center;
-    width: 20px ;
+    width: 20px;
     i {
       font-size: 8px;
       color: ${Base.Branco};
