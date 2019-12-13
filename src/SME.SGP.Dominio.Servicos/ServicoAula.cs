@@ -44,12 +44,17 @@ namespace SME.SGP.Dominio.Servicos
 
         private readonly IServicoNotificacao servicoNotificacao;
 
+        private readonly IConsultasFrequencia consultasFrequencia;
+        private readonly IConsultasPlanoAula consultasPlanoAula;
+
         public ServicoAula(IRepositorioAula repositorioAula,
                            IServicoEOL servicoEOL,
                            IRepositorioTipoCalendario repositorioTipoCalendario,
                            IServicoDiaLetivo servicoDiaLetivo,
                            IConsultasGrade consultasGrade,
                            IConsultasPeriodoEscolar consultasPeriodoEscolar,
+                           IConsultasFrequencia consultasFrequencia,
+                           IConsultasPlanoAula consultasPlanoAula,
                            IServicoLog servicoLog,
                            IServicoNotificacao servicoNotificacao,
                            IConsultasAbrangencia consultasAbrangencia,
@@ -67,6 +72,8 @@ namespace SME.SGP.Dominio.Servicos
             this.servicoDiaLetivo = servicoDiaLetivo ?? throw new System.ArgumentNullException(nameof(servicoDiaLetivo));
             this.consultasGrade = consultasGrade ?? throw new System.ArgumentNullException(nameof(consultasGrade));
             this.consultasPeriodoEscolar = consultasPeriodoEscolar ?? throw new ArgumentNullException(nameof(consultasPeriodoEscolar));
+            this.consultasFrequencia = consultasFrequencia ?? throw new ArgumentNullException(nameof(consultasFrequencia));
+            this.consultasPlanoAula = consultasPlanoAula ?? throw new ArgumentNullException(nameof(consultasPlanoAula));
             this.servicoLog = servicoLog ?? throw new ArgumentNullException(nameof(servicoLog));
             this.consultasAbrangencia = consultasAbrangencia ?? throw new ArgumentNullException(nameof(consultasAbrangencia));
             this.comandosWorkflowAprovacao = comandosWorkflowAprovacao ?? throw new ArgumentNullException(nameof(comandosWorkflowAprovacao));
@@ -254,11 +261,18 @@ namespace SME.SGP.Dominio.Servicos
             var fimRecorrencia = consultasPeriodoEscolar.ObterFimPeriodoRecorrencia(aula.TipoCalendarioId, aula.DataAula.Date, recorrencia);
             var aulasRecorrencia = await repositorioAula.ObterAulasRecorrencia(aula.AulaPaiId ?? aula.Id, aula.Id, fimRecorrencia);
             List<(DateTime data, string erro)> aulasQueDeramErro = new List<(DateTime, string)>();
+            List<(DateTime data, bool existeFrequencia, bool existePlanoAula)> aulasComFrenciaOuPlano = new List<(DateTime data, bool existeFrequencia, bool existePlanoAula)>();
 
             foreach (var aulaRecorrente in aulasRecorrencia)
             {
                 try
                 {
+                    var existeFrequencia = await consultasFrequencia.FrequenciaAulaRegistrada(aulaRecorrente.Id);
+                    var existePlanoAula = await consultasPlanoAula.PlanoAulaRegistrado(aulaRecorrente.Id);
+
+                    if (existeFrequencia || existePlanoAula)
+                        aulasComFrenciaOuPlano.Add((aulaRecorrente.DataAula, existeFrequencia, existePlanoAula));
+
                     await ExcluirAula(aulaRecorrente, usuario.CodigoRf);
                 }
                 catch (NegocioException nex)
@@ -272,7 +286,7 @@ namespace SME.SGP.Dominio.Servicos
                 }
             }
 
-            NotificarUsuario(usuario, aula, Operacao.Exclusao, aulasRecorrencia.Count() - aulasQueDeramErro.Count, aulasQueDeramErro);
+            NotificarUsuario(usuario, aula, Operacao.Exclusao, aulasRecorrencia.Count() - aulasQueDeramErro.Count, aulasQueDeramErro, aulasComFrenciaOuPlano);
         }
 
         private void GerarAulaDeRecorrenciaParaDias(Aula aula, List<DateTime> diasParaIncluirRecorrencia, Usuario usuario)
@@ -320,7 +334,7 @@ namespace SME.SGP.Dominio.Servicos
             GerarAulaDeRecorrenciaParaDias(aula, diasParaIncluirRecorrencia, usuario);
         }
 
-        private void NotificarUsuario(Usuario usuario, Aula aula, Operacao operacao, int quantidade, List<(DateTime data, string erro)> aulasQueDeramErro)
+        private void NotificarUsuario(Usuario usuario, Aula aula, Operacao operacao, int quantidade, List<(DateTime data, string erro)> aulasQueDeramErro, List<(DateTime data, bool existeFrequencia, bool existePlanoAula)> aulasComFrenciaOuPlano = null)
         {
             var perfilAtual = usuario.PerfilAtual;
             if (perfilAtual == Guid.Empty)
@@ -347,6 +361,19 @@ namespace SME.SGP.Dominio.Servicos
 
             operacaoStr = operacao == Operacao.Inclusao ? "criadas" : operacao == Operacao.Alteracao ? "alteradas" : "excluídas";
             mensagemUsuario.Append($"Foram {operacaoStr} {quantidade} aulas da disciplina {disciplina.Nome} para a turma {turma.Nome} da {turma.Ue?.Nome} ({turma.Ue?.Dre?.Nome}).");
+
+            if (aulasComFrenciaOuPlano != null && aulasComFrenciaOuPlano.Any())
+            {
+                mensagemUsuario.Append($"<br><br>Nas seguintes datas haviam registros de plano de aula e frequência:<br>");
+
+                foreach (var aulaFrequenciaOuPlano in aulasComFrenciaOuPlano)
+                {
+                    var frequenciaPlano = aulaFrequenciaOuPlano.existeFrequencia ?
+                                            "Frequência" + (aulaFrequenciaOuPlano.existePlanoAula ? " e " : "")
+                                            : "Plano de Aula";
+                    mensagemUsuario.Append($"<br /> {aulaFrequenciaOuPlano.data.ToShortDateString()} - {frequenciaPlano}");
+                }
+            }
 
             if (aulasQueDeramErro.Any())
             {
