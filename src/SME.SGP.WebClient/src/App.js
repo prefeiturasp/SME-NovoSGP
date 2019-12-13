@@ -11,10 +11,10 @@ import Pagina from '~/componentes-sgp/pagina';
 import Login from '~/paginas/Login';
 import RecuperarSenha from './paginas/RecuperarSenha';
 import RedefinirSenha from './paginas/RedefinirSenha';
-import RotaAutenticadaEstruturada from './rotas/rotaAutenticadaDesestruturada';
+import RotaAutenticadaEstruturada from './rotas/rotaAutenticadaEstruturada';
 import RotaNaoAutenticadaDesestruturada from './rotas/rotaNaoAutenticadaDesestruturada';
-import { rotaAtiva } from './redux/modulos/navegacao/actions';
 import RotaAutenticadaDesestruturada from './rotas/rotaAutenticadaDesestruturada';
+import { rotaAtiva } from './redux/modulos/navegacao/actions';
 
 function App() {
   history.listen(location => {

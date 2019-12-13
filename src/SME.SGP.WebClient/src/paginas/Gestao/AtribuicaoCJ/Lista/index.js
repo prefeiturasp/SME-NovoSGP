@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import shortid from 'shortid';
 
 // Redux
 import { useSelector } from 'react-redux';
@@ -44,7 +45,9 @@ function AtribuicaoCJLista() {
       key: 'disciplinas',
       width: '80%',
       render: linha => {
-        return linha.map(item => <PilulaEstilo>{item}</PilulaEstilo>);
+        return linha.map(item => (
+          <PilulaEstilo key={shortid.generate()}>{item}</PilulaEstilo>
+        ));
       },
     },
   ];
@@ -88,7 +91,7 @@ function AtribuicaoCJLista() {
       try {
         const { data, status } = await AtribuicaoCJServico.buscarLista(filtro);
         if (status === 200 && data) {
-          setItens(data);
+          setItens(data.map(item => ({ ...item, key: shortid.generate() })));
         }
       } catch (error) {
         erros(error);
@@ -98,7 +101,7 @@ function AtribuicaoCJLista() {
       setItens([]);
       buscaItens();
     }
-  }, [filtro]);
+  }, [filtro, validarFiltro]);
 
   return (
     <>
@@ -122,8 +125,8 @@ function AtribuicaoCJLista() {
           <div className="col-md-12 pt-2 py-0 px-0">
             <DataTable
               id="lista-atribuicoes-cj"
-              idLinha="modalidadeId"
-              colunaChave="id"
+              idLinha="key"
+              colunaChave="key"
               columns={colunas}
               dataSource={itens}
               onClickRow={onClickEditar}
