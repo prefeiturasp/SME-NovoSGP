@@ -27,11 +27,26 @@ namespace SME.SGP.Aplicacao
             repositorioRegistroPoa.Salvar(MapearParaEntidade(registroPoaDto));
         }
 
+        public void Excluir(long id)
+        {
+            if (id <= 0)
+                throw new NegocioException("O id informado para edição tem que ser maior que 0");
+
+            var entidadeBanco = repositorioRegistroPoa.ObterPorId(id);
+
+            if (entidadeBanco == null || entidadeBanco.Excluido)
+                throw new NegocioException($"Não foi encontrado o registro de codigo {id}");
+
+            entidadeBanco.Excluido = true;
+
+            repositorioRegistroPoa.Salvar(entidadeBanco);
+        }
+
         private RegistroPoa MapearParaAtualizacao(RegistroPoaDto registroPoaDto)
         {
             var entidade = repositorioRegistroPoa.ObterPorId(registroPoaDto.Id);
 
-            if (entidade == null)
+            if (entidade == null || entidade.Excluido)
                 throw new NegocioException("Registro para atualização não encontrado na base de dados");
 
             entidade.Titulo = registroPoaDto.Titulo;
