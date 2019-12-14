@@ -1,173 +1,214 @@
-import { Tooltip } from 'antd';
+import { Tooltip, Icon } from 'antd';
 import PropTypes from 'prop-types';
-import React, { useEffect, useState } from 'react';
-import CampoNumero from '~/componentes/campoNumero';
-import SelectComponent from '~/componentes/select';
+import React, { useState } from 'react';
+import { useDispatch } from 'react-redux';
+import shortid from 'shortid';
 import notasConceitos from '~/dtos/notasConceitos';
+import { setModoEdicaoGeral } from '~/redux/modulos/notasConceitos/actions';
 
 import Ordenacao from '../Ordenacao/ordenacao';
-import { Lista, Container } from './avaliacao.css';
+import { Lista, CaixaMarcadores, IconePlusMarcadores } from './avaliacao.css';
+import CampoConceito from './campoConceito';
+import CampoNota from './campoNota';
 
 const Avaliacao = props => {
-  const { dados, onChangeAvaliacao, notaTipo} = props;
+  const dispatch = useDispatch();
 
-  const [dataSource, setDataSource] = useState({});
-  const [alunos, setAlunos] = useState(dados.alunos);
+  const { dados, notaTipo, onChangeOrdenacao } = props;
 
-  const listaConceitos = [
-    { valor: 'P', descricao: 'P'},
-    { valor: 'S', descricao: 'S'},
-    { valor: 'NS', descricao: 'NS'},
-  ];
+  const [expandirLinha, setExpandirLinha] = useState([]);
 
-  useEffect(() => {
-    setDataSource(dados);
-  }, [dados]);
-
-
-  const onChangeNotaConceito = (aluno, notaConceito, index, podeEditar) => {
-    if (podeEditar) {
-      aluno.notasAvaliacoes[index].notaConceito = notaConceito;
-      dataSource.modoEdicao = true;
-      setAlunos([...alunos]);
-      onChangeAvaliacao(true);
+  const onChangeNotaConceito = (nota, valorNovo) => {
+    if (nota.podeEditar) {
+      nota.notaConceito = valorNovo;
+      nota.modoEdicao = true;
+      dados.modoEdicao = true;
+      dispatch(setModoEdicaoGeral(true));
     }
-  }
+  };
 
   const descricaoAlunoAusente = 'Aluno ausente na data da avaliação';
 
+  const montarCabecalhoAvaliacoes = () => {
+    return dados.avaliacoes && dados.avaliacoes.length > 0
+      ? dados.avaliacoes.map(avaliacao => {
+          const descricaoSemHtml = avaliacao.descricao.replace(
+            /<[^>]*>?/gm,
+            ''
+          );
+          return (
+            <th key={shortid.generate()} className="width-150">
+              <div className="texto-header-avaliacao">{avaliacao.nome}</div>
+              <div className="texto-header-avaliacao">
+                <Tooltip title={descricaoSemHtml}>{descricaoSemHtml}</Tooltip>
+              </div>
+              <div className="texto-header-avaliacao">
+                {window.moment(avaliacao.data).format('DD/MM/YYYY')}
+              </div>
+            </th>
+          );
+        })
+      : '';
+  };
+
+  const montarCabecalhoInterdisciplinar = () => {
+    return dados.avaliacoes && dados.avaliacoes.length > 0
+      ? dados.avaliacoes.map(() => {
+          return (
+            <th key={shortid.generate()} className="width-150">
+              {/* TODO - INTERDISCIPLINAR */}
+            </th>
+          );
+        })
+      : '';
+  };
+
+  const montarCampoNotaConceito = nota => {
+    return Number(notasConceitos.Notas) !== Number(notaTipo) ? (
+      <CampoNota
+        nota={nota}
+        onChangeNotaConceito={valorNovo =>
+          onChangeNotaConceito(nota, valorNovo)
+        }
+      />
+    ) : (
+      <CampoConceito
+        nota={nota}
+        onChangeNotaConceito={valorNovo =>
+          onChangeNotaConceito(nota, valorNovo)
+        }
+      />
+    );
+  };
+
+  const onClickExpandir = index => {
+    expandirLinha[index] = !expandirLinha[index];
+    setExpandirLinha([...expandirLinha]);
+  };
+
   return (
-    <Container>
-    { dataSource  && dataSource.alunos?
-      <>
+    <>
+      {dados ? (
         <Lista className="mt-4 table-responsive">
-          <div className="scroll-tabela-avaliacao-thead">
+          {dados.avaliacoes && dados.avaliacoes.length ? (
             <table className="table mb-0 ">
               <thead className="tabela-avaliacao-thead">
-                <tr className="coluna-ordenacao-tr">
-                  <th colSpan="2" className="coluna-ordenacao-th">
-                    <Ordenacao
-                      className="botao-ordenacao-avaliacao"
-                      conteudoParaOrdenar={dataSource.alunos}
-                      ordenarColunaNumero="numeroChamada"
-                      ordenarColunaTexto="nome"
-                      retornoOrdenado={retorno =>  {
-                        setAlunos([...retorno])
-                      }}
-                    ></Ordenacao>
-                  </th>
-                  { dataSource.avaliacoes && dataSource.avaliacoes.length > 0 ?
-                      dataSource.avaliacoes.map((avaliacao, i) => {
-                        return (
-                        <th key={i} className="width-150">
-                          <div className="texto-header-avaliacao">
-                            {avaliacao.nome}
-                          </div>
-                          <div className="texto-header-avaliacao">
-                          <Tooltip title={avaliacao.descricao}>
-                            {avaliacao.descricao}
-                          </Tooltip>
-                          </div>
-                          <div className="texto-header-avaliacao">
-                            {window.moment(avaliacao.data).format('DD/MM/YYYY')}
-                          </div>
-                        </th>
-                        )
-                      })
-                    : ''
-                  }
-                </tr>
-                <tr>
-                <th colSpan="2"></th>
-                 { dataSource.avaliacoes && dataSource.avaliacoes.length > 0 ?
-                      dataSource.avaliacoes.map((item, i) => {
-                        return (
-                        <th key={i} className="width-150">
-                          {/* TODO - INTERDISCIPLINAR */}
-                        </th>
-                        )
-                      })
-                    : ''
-                  }
-                </tr>
+                <div className="scroll-tabela-avaliacao-thead">
+                  <tr className="coluna-ordenacao-tr">
+                    <th colSpan="2" className="width-460 coluna-ordenacao-th">
+                      <Ordenacao
+                        className="botao-ordenacao-avaliacao"
+                        conteudoParaOrdenar={dados.alunos}
+                        ordenarColunaNumero="numeroChamada"
+                        ordenarColunaTexto="nome"
+                        retornoOrdenado={retorno => {
+                          setExpandirLinha([]);
+                          dados.alunos = retorno;
+                          onChangeOrdenacao(dados);
+                        }}
+                      />
+                    </th>
+                    {montarCabecalhoAvaliacoes()}
+                  </tr>
+                  <tr>
+                    <th colSpan="2" className="width-460 " />
+                    {montarCabecalhoInterdisciplinar()}
+                  </tr>
+                </div>
               </thead>
-              </table>
-            </div>
-            <div className="scroll-tabela-avaliacao-tbody">
-              <table className="table mb-0">
-                <tbody className="tabela-avaliacao-tbody">
-                  {
-                   dataSource.alunos.map((aluno, idexAluno) => {
-                      return (
-                      <tr key={idexAluno}>
-                        <td className="width-60 text-center font-weight-bold">{aluno.numeroChamada}</td>
-                        <td className="text-left">{aluno.nome}</td>
-                        {
-                          aluno.notasAvaliacoes.length ?
-                            aluno.notasAvaliacoes.map((nota, indexAvaliacao) => {
+            </table>
+          ) : (
+            ''
+          )}
+          <table className="table mb-0">
+            <tbody className="tabela-avaliacao-tbody">
+              <div className="scroll-tabela-avaliacao-tbody">
+                {dados.alunos.map((aluno, i) => {
+                  return (
+                    <>
+                      <tr key={shortid.generate()}>
+                        <td className="width-60 text-center font-weight-bold">
+                          {aluno.numeroChamada}
+                        </td>
+                        <td className="width-400 text-left">
+                          {aluno.nome}
+                          {aluno.marcador ? (
+                            <>
+                              <CaixaMarcadores>
+                                {aluno.marcador.nome}
+                              </CaixaMarcadores>
+                              <IconePlusMarcadores
+                                onClick={() => onClickExpandir(i)}
+                                className={
+                                  expandirLinha[i]
+                                    ? 'fas fa-minus fa-minus-linha-expandida '
+                                    : 'fas fa-plus-circle'
+                                }
+                              />
+                            </>
+                          ) : (
+                            ''
+                          )}
+                        </td>
+                        {aluno.notasAvaliacoes.length
+                          ? aluno.notasAvaliacoes.map(nota => {
                               return (
-                                <td key={indexAvaliacao} className={`width-150 ${nota.podeEditar ? '' : 'desabilitar-nota'}`} style={{padding: "3px"}}>
-                                    {
-                                      notasConceitos.Notas !== notaTipo ?
-                                      <CampoNumero
-                                        onChange={valorNovo=> onChangeNotaConceito(aluno, valorNovo, indexAvaliacao, nota.podeEditar)}
-                                        value={nota.notaConceito}
-                                        min={0}
-                                        max={10}
-                                        step={0.5}
-                                        placeholder="Nota"
-                                        classNameCampo={`${nota.ausente ? 'aluno-ausente-notas' : 'aluno-notas'}`}
-                                        desabilitado={!nota.podeEditar}
-                                      />
-                                      :
-                                      <SelectComponent
-                                        valueOption="valor"
-                                        valueText="descricao"
-                                        lista={listaConceitos}
-                                        valueSelect={nota.notaConceito || undefined}
-                                        onChange={valorNovo => onChangeNotaConceito(aluno, valorNovo, indexAvaliacao, nota.podeEditar)}
-                                        showSearch
-                                        placeholder="Conceito"
-                                        className="select-conceitos"
-                                        classNameContainer={nota.ausente ? 'aluno-ausente-conceitos' : 'aluno-conceitos'}
-                                        disabled={!nota.podeEditar}
-                                      />
-                                    }
-                                    {
-                                      nota.ausente ?
-                                      <Tooltip title={descricaoAlunoAusente}>
-                                        <i className="fas fa-user-times icon-aluno-ausente"></i>
-                                      </Tooltip>
-                                      : ''
-                                    }
+                                <td
+                                  key={shortid.generate()}
+                                  className={`width-150 ${
+                                    nota.podeEditar ? '' : 'desabilitar-nota'
+                                  }`}
+                                  style={{ padding: '3px' }}
+                                >
+                                  {montarCampoNotaConceito(nota)}
+                                  {nota.ausente ? (
+                                    <Tooltip title={descricaoAlunoAusente}>
+                                      <i className="fas fa-user-times icon-aluno-ausente" />
+                                    </Tooltip>
+                                  ) : (
+                                    ''
+                                  )}
                                 </td>
-                                )
-                              })
-                          : ''
-                        }
+                              );
+                            })
+                          : ''}
                       </tr>
-                      )
-                    })
-                  }
-                </tbody>
-              </table>
-           </div>
+                      {expandirLinha[i] ? (
+                        <>
+                          <tr className="linha-expandida">
+                            <td colSpan="1" className="text-center">
+                              <Icon type="double-right" />
+                            </td>
+                            <td colSpan={dados.avaliacoes.length + 2}>
+                              {aluno.marcador.descricao}
+                            </td>
+                          </tr>
+                        </>
+                      ) : (
+                        ''
+                      )}
+                    </>
+                  );
+                })}
+              </div>
+            </tbody>
+          </table>
         </Lista>
-        </>
-        : ''
-      }
-    </Container>
+      ) : (
+        ''
+      )}
+    </>
   );
 };
 
 Avaliacao.propTypes = {
-  dados: PropTypes.object,
-  onChangeAvaliacao: PropTypes.func
+  notaTipo: PropTypes.number,
+  onChangeOrdenacao: () => {},
 };
 
 Avaliacao.defaultProps = {
-  dados: [],
-  onChangeAvaliacao: ()=>{}
+  notaTipo: 0,
+  onChangeOrdenacao: () => {},
 };
 
 export default Avaliacao;

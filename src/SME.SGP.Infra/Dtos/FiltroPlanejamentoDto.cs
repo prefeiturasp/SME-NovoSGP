@@ -10,5 +10,6 @@ namespace SME.SGP.Infra
         public long CodigoTurma { get; set; }
 
         public bool Regencia { get; set; }
+        public bool TurmaPrograma { get; set; }
     }
 }

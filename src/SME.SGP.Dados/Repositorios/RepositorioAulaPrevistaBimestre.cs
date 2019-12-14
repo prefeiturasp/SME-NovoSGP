@@ -20,8 +20,8 @@ namespace SME.SGP.Dados.Repositorios
 
             query.Append(MontarSelect());
             query.Append(@" where p.tipo_calendario_id = @tipoCalendarioId and
-                        (a.turma_id is null or a.turma_id = @turmaId) and
-                        (a.disciplina_id is null or a.disciplina_id = @disciplinaId) ");
+                        ap.turma_id = @turmaId and
+                        ap.disciplina_id = @disciplinaId ");
             query.Append(MontarGroupOrderBy());
 
             return (await database.Conexao.QueryAsync<AulaPrevistaBimestreQuantidade>(query.ToString(), new { tipoCalendarioId, turmaId, disciplinaId }));
@@ -41,8 +41,9 @@ namespace SME.SGP.Dados.Repositorios
 
         private string MontarSelect()
         {
-            return @"select ap.id, ap.criado_em as CriadoEm, ap.criado_por as CriadoPor, ap.alterado_em as AlteradoEm, ap.alterado_por as AlteradoPor,
-                        p.bimestre, p.periodo_inicio as inicio, p.periodo_fim as fim, ap.Id as PD, apb.aulas_previstas as Previstas,
+            return @"select apb.id, ap.criado_em as CriadoEm, ap.criado_por as CriadoPor, ap.alterado_em as AlteradoEm, ap.alterado_por as AlteradoPor,
+                         ap.alterado_rf as AlteradoRF, ap.criado_rf as CriadoRF, p.bimestre, p.periodo_inicio as inicio, p.periodo_fim as fim, 
+                         apb.aulas_previstas as Previstas,
                          COUNT(a.id) filter (where a.tipo_aula = 1 and a.aula_cj = false) as CriadasTitular,
                          COUNT(a.id) filter (where a.tipo_aula = 1 and a.aula_cj = true) as CriadasCJ,
                          COUNT(a.id) filter (where a.tipo_aula = 1 and rf.id is not null) as Cumpridas,
@@ -60,8 +61,9 @@ namespace SME.SGP.Dados.Repositorios
        
         private string MontarGroupOrderBy()
         {
-            return @" group by p.bimestre, p.periodo_inicio, p.periodo_fim, apb.aulas_previstas, ap.Id
-                        order by p.periodo_inicio; ";
+            return @" group by p.bimestre, p.periodo_inicio, p.periodo_fim, apb.aulas_previstas, apb.Id,
+                         	   ap.criado_em, ap.criado_por, ap.alterado_em , ap.alterado_por,
+                               ap.alterado_rf, ap.criado_rf; ";
         }
     }
 }

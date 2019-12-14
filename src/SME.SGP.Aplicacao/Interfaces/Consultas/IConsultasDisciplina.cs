@@ -8,6 +8,6 @@ namespace SME.SGP.Aplicacao
     {
         Task<IEnumerable<DisciplinaDto>> ObterDisciplinasParaPlanejamento(FiltroDisciplinaPlanejamentoDto filtroDisciplinaPlanejamentoDto);
 
-        Task<List<DisciplinaDto>> ObterDisciplinasPorProfessorETurma(string codigoTurma);
+        Task<List<DisciplinaDto>> ObterDisciplinasPorProfessorETurma(string codigoTurma, bool turmaPrograma);
     }
 }
