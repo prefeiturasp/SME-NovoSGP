@@ -533,18 +533,23 @@ namespace SME.SGP.Dados.Repositorios
                 query.AppendLine("and extract(month from e.data_fim) = @mes");
                 query.AppendLine("and extract(day from e.data_fim) = @dia");
             }
+
             if (!string.IsNullOrEmpty(calendarioEventosMesesFiltro.DreId))
                 query.AppendLine("and e.dre_id = @DreId");
+
             if (calendarioEventosMesesFiltro.IdTipoCalendario > 0)
                 query.AppendLine("and e.tipo_calendario_id = @IdTipoCalendario");
+
             if (!string.IsNullOrEmpty(calendarioEventosMesesFiltro.UeId))
                 query.AppendLine("and e.ue_id = @UeId");
 
-            if (!calendarioEventosMesesFiltro.EhEventoSme)
-                query.AppendLine("and e.ue_id is not null or e.dre_id is not null");
-
             if (!podeVisualizarEventosLocalOcorrenciaDre)
                 query.AppendLine("and et.local_ocorrencia != 2");
+
+            if (!calendarioEventosMesesFiltro.EhEventoSme)
+                query.AppendLine("and e.ue_id is not null or e.dre_id is not null");
+            else
+                query.AppendLine("or (e.ue_id is null and e.dre_id is null)");
         }
 
         private void MontaQueryEventosPorDiaVisualizacaoCriador(CalendarioEventosFiltroDto calendarioEventosMesesFiltro, StringBuilder query, bool EhDataInicial)
@@ -577,15 +582,20 @@ namespace SME.SGP.Dados.Repositorios
                 query.AppendLine("and extract(month from e.data_fim) = @mes");
                 query.AppendLine("and extract(day from e.data_fim) = @dia");
             }
+
             if (!string.IsNullOrEmpty(calendarioEventosMesesFiltro.DreId))
                 query.AppendLine("and e.dre_id = @DreId");
+
             if (calendarioEventosMesesFiltro.IdTipoCalendario > 0)
                 query.AppendLine("and e.tipo_calendario_id = @IdTipoCalendario");
+
             if (!string.IsNullOrEmpty(calendarioEventosMesesFiltro.UeId))
                 query.AppendLine("and e.ue_id = @UeId");
 
-            if (calendarioEventosMesesFiltro.EhEventoSme)
-                query.AppendLine("and e.ue_id is null and e.dre_id is null");
+            if (!calendarioEventosMesesFiltro.EhEventoSme)
+                query.AppendLine("and e.ue_id is not null or e.dre_id is not null");
+            else
+                query.AppendLine("or (e.ue_id is null and e.dre_id is null)");
         }
 
         private void MontaQueryEventosPorDiaVisualizacaoSupervisorDiretor(CalendarioEventosFiltroDto calendarioEventosMesesFiltro,
@@ -618,18 +628,23 @@ namespace SME.SGP.Dados.Repositorios
                 query.AppendLine("and extract(month from e.data_fim) = @mes");
                 query.AppendLine("and extract(day from e.data_fim) = @dia");
             }
+
             if (!string.IsNullOrEmpty(calendarioEventosMesesFiltro.DreId))
                 query.AppendLine("and e.dre_id = @DreId");
+
             if (calendarioEventosMesesFiltro.IdTipoCalendario > 0)
                 query.AppendLine("and e.tipo_calendario_id = @IdTipoCalendario");
+
             if (!string.IsNullOrEmpty(calendarioEventosMesesFiltro.UeId))
                 query.AppendLine("and e.ue_id = @UeId");
 
-            if (calendarioEventosMesesFiltro.EhEventoSme)
-                query.AppendLine("and e.ue_id is null and e.dre_id is null");
-
             if (!podeVisualizarEventosLocalOcorrenciaDre)
                 query.AppendLine("and et.local_ocorrencia != 2");
+
+            if (!calendarioEventosMesesFiltro.EhEventoSme)
+                query.AppendLine("and e.ue_id is not null or e.dre_id is not null");
+            else
+                query.AppendLine("or (e.ue_id is null and e.dre_id is null)");
         }
 
         #endregion Eventos Por Dia
@@ -848,8 +863,10 @@ namespace SME.SGP.Dados.Repositorios
             if (!string.IsNullOrEmpty(calendarioEventosMesesFiltro.UeId))
                 query.AppendLine("and e.ue_id = @UeId");
 
-            if (calendarioEventosMesesFiltro.EhEventoSme)
-                query.AppendLine("and e.ue_id is null and e.dre_id is null");
+            if (!calendarioEventosMesesFiltro.EhEventoSme)
+                query.AppendLine("and e.ue_id is not null or e.dre_id is not null");
+            else
+                query.AppendLine("or (e.ue_id is null and e.dre_id is null)");
         }
 
         private static void MontaQueryEventosPorMesesVisualizacaoDiretorSupervisor(CalendarioEventosFiltroDto calendarioEventosMesesFiltro, StringBuilder query)
@@ -878,8 +895,10 @@ namespace SME.SGP.Dados.Repositorios
             if (!string.IsNullOrEmpty(calendarioEventosMesesFiltro.UeId))
                 query.AppendLine("and e.ue_id = @UeId");
 
-            if (calendarioEventosMesesFiltro.EhEventoSme)
-                query.AppendLine("and e.ue_id is null and e.dre_id is null");
+            if (!calendarioEventosMesesFiltro.EhEventoSme)
+                query.AppendLine("and e.ue_id is not null or e.dre_id is not null");
+            else
+                query.AppendLine("or (e.ue_id is null and e.dre_id is null)");
         }
 
         private static void MontaQueryQuantidadeEventosPorMesesVisualizacaoGeral(CalendarioEventosFiltroDto calendarioEventosMesesFiltro, StringBuilder query,
@@ -915,13 +934,13 @@ namespace SME.SGP.Dados.Repositorios
             if (!string.IsNullOrEmpty(calendarioEventosMesesFiltro.UeId))
                 query.AppendLine("and e.ue_id = @UeId");
 
+            if (!podeVisualizarEventosLocalOcorrenciaDre)
+                query.AppendLine("and et.local_ocorrencia != 2");
+
             if (!calendarioEventosMesesFiltro.EhEventoSme)
                 query.AppendLine("and e.ue_id is not null or e.dre_id is not null");
             else
-                query.AppendLine("and e.ue_id is null or e.dre_id is null");
-
-            if (!podeVisualizarEventosLocalOcorrenciaDre)
-                query.AppendLine("and et.local_ocorrencia != 2");
+                query.AppendLine("or (e.ue_id is null and e.dre_id is null)");
         }
 
         #endregion Quantidade Eventos Por Meses
@@ -1112,18 +1131,19 @@ namespace SME.SGP.Dados.Repositorios
             if (calendarioEventosMesesFiltro.IdTipoCalendario > 0)
                 query.AppendLine("and tipo_calendario_id = @IdTipoCalendario");
 
-            if (calendarioEventosMesesFiltro.EhEventoSme)
-                query.AppendLine("and e.ue_id is null or e.dre_id is null");
-            else
-                query.AppendLine("and e.ue_id is not null or e.dre_id is not null");
-
             if (!string.IsNullOrEmpty(calendarioEventosMesesFiltro.DreId))
                 query.AppendLine("and e.dre_id = @DreId");
+
             if (!string.IsNullOrEmpty(calendarioEventosMesesFiltro.UeId))
                 query.AppendLine("and e.ue_id = @UeId");
 
             if (!podeVisualizarEventosLocalOcorrenciaDre)
                 query.AppendLine("and et.local_ocorrencia != 2");
+
+            if (!calendarioEventosMesesFiltro.EhEventoSme)
+                query.AppendLine("and e.ue_id is not null or e.dre_id is not null");
+            else
+                query.AppendLine("or (e.ue_id is null and e.dre_id is null)");
         }
 
         private void MontaQueryQuantidadeDeEventosPorDiaWhereFromParaSupervisorEDiretor(CalendarioEventosFiltroDto calendarioEventosMesesFiltro, StringBuilder query,
@@ -1153,18 +1173,19 @@ namespace SME.SGP.Dados.Repositorios
             if (calendarioEventosMesesFiltro.IdTipoCalendario > 0)
                 query.AppendLine("and e.tipo_calendario_id = @IdTipoCalendario");
 
-            if (calendarioEventosMesesFiltro.EhEventoSme)
-                query.AppendLine("and e.ue_id is null and e.dre_id is null");
-            else if (!string.IsNullOrEmpty(calendarioEventosMesesFiltro.DreId) || !string.IsNullOrEmpty(calendarioEventosMesesFiltro.UeId))
-            {
-                if (!string.IsNullOrEmpty(calendarioEventosMesesFiltro.DreId))
-                    query.AppendLine("and e.dre_id = @DreId");
-                if (!string.IsNullOrEmpty(calendarioEventosMesesFiltro.UeId))
-                    query.AppendLine("and e.ue_id = @UeId");
-            }
+            if (!string.IsNullOrEmpty(calendarioEventosMesesFiltro.DreId))
+                query.AppendLine("and e.dre_id = @DreId");
+
+            if (!string.IsNullOrEmpty(calendarioEventosMesesFiltro.UeId))
+                query.AppendLine("and e.ue_id = @UeId");
 
             if (!podeVisualizarEventosLocalOcorrenciaDre)
                 query.AppendLine("and et.local_ocorrencia != 2");
+
+            if (!calendarioEventosMesesFiltro.EhEventoSme)
+                query.AppendLine("and e.ue_id is not null or e.dre_id is not null");
+            else
+                query.AppendLine("or (e.ue_id is null and e.dre_id is null)");
         }
 
         private void MontaQueryQuantidadeDeEventosPorDiaWhereFromParaVisualizacaoParaCriador(CalendarioEventosFiltroDto calendarioEventosMesesFiltro, StringBuilder query, bool ehDataInicio)
@@ -1194,15 +1215,15 @@ namespace SME.SGP.Dados.Repositorios
             if (calendarioEventosMesesFiltro.IdTipoCalendario > 0)
                 query.AppendLine("and e.tipo_calendario_id = @IdTipoCalendario");
 
-            if (calendarioEventosMesesFiltro.EhEventoSme)
-                query.AppendLine("and e.ue_id is null and e.dre_id is null");
-            else if (!string.IsNullOrEmpty(calendarioEventosMesesFiltro.DreId) || !string.IsNullOrEmpty(calendarioEventosMesesFiltro.UeId))
-            {
-                if (!string.IsNullOrEmpty(calendarioEventosMesesFiltro.DreId))
-                    query.AppendLine("and e.dre_id = @DreId");
-                if (!string.IsNullOrEmpty(calendarioEventosMesesFiltro.UeId))
-                    query.AppendLine("and e.ue_id = @UeId");
-            }
+            if (!string.IsNullOrEmpty(calendarioEventosMesesFiltro.DreId))
+                query.AppendLine("and e.dre_id = @DreId");
+            if (!string.IsNullOrEmpty(calendarioEventosMesesFiltro.UeId))
+                query.AppendLine("and e.ue_id = @UeId");
+
+            if (!calendarioEventosMesesFiltro.EhEventoSme)
+                query.AppendLine("and e.ue_id is not null or e.dre_id is not null");
+            else
+                query.AppendLine("or (e.ue_id is null and e.dre_id is null)");
         }
 
         #endregion Quantidade De Eventos Por Dia
@@ -1239,7 +1260,7 @@ namespace SME.SGP.Dados.Repositorios
             else if (!string.IsNullOrEmpty(dreId))
                 query.AppendLine("and e.ue_id is null");
 
-            if ((!string.IsNullOrEmpty(dreId) || !string.IsNullOrEmpty(ueId)) && !naoTrazerSme)
+            if (EhEventoSme && !naoTrazerSme)
             {
                 query.AppendLine("UNION");
                 MontaQueryCabecalho(query);
