@@ -25,14 +25,23 @@ Com este comando, a base de dados estará disponível, com todos os scripts já 
 **Modificar o arquivo /configuracoes/criar-variaveis-ambiente.ps1 com a chave do Sentry obtida pelos canais de comunicação do projeto, substituindo pelo xxx.
 
 1- Procurar por poweshell no inciar. 
+
 2- Clicar com botão direito e executar como administrador
+
 3- Executar o comando: Set-ExecutionPolicy Unrestricted 
+
 4- digitar s ou y (dependendo do idioma do sistema operacional)
+
 	** O comando acima é para habilitar scripts não criados na maquina local e sem certificado a serem executados;
+	
 5- Navegar até a pasta do projeto /configuracoes pelo powershell
+
 6- Executar o comando & .\criar-variaveis-ambiente.ps1 
+
 7- Executar o comando: Set-ExecutionPolicy Restricted 
+
 8- digitar s ou y (dependendo do idioma do sistema operacional)
+
 	** O comando acima é para desabilitar scripts de serem executados;
 
 
