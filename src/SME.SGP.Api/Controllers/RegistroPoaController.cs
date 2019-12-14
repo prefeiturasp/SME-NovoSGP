@@ -37,5 +37,20 @@ namespace SME.SGP.Api.Controllers
 
             return Ok();
         }
+
+        [HttpGet("{id}")]
+        [ProducesResponseType(204)]
+        [ProducesResponseType(typeof(RegistroPoaCompletoDto), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 601)]
+        public IActionResult Get(long id, [FromServices]IConsultasRegistroPoa consultasRegistroPoa)
+        {
+            var retorno = consultasRegistroPoa.ObterPorId(id);
+
+            if (retorno != null)
+                return Ok(retorno);
+
+            return NoContent();
+        }
     }
 }
