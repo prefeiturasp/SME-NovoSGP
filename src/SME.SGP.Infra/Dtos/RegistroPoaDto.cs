@@ -13,6 +13,8 @@ namespace SME.SGP.Infra
         [Required(ErrorMessage = "Deve ser informado o Id da Dre")]
         public string DreId { get; set; }
 
+        public string Nome => "Nome teste";
+
         public bool Excluido { get; set; }
         public long Id { get; set; }
 
