@@ -7,5 +7,7 @@ namespace SME.SGP.Dominio.Interfaces
         bool ValidarSeEhDiaLetivo(DateTime data, long tipoCalendarioId, string dreId, string ueId);
 
         bool ValidarSeEhDiaLetivo(DateTime dataInicio, DateTime dataFim, long tipoCalendarioId, bool ehLetivo = false, long TipoEventoId = 0);
+
+        bool ValidaSeEhLiberacaoExcepcional(DateTime data, long tipoCalendarioId, string ueId);
     }
 }

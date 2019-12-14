@@ -39,7 +39,8 @@ const CampoNumero = React.forwardRef((props, ref) => {
     semMensagem,
     max,
     min,
-    step
+    step,
+    disabled,
   } = props;
 
   const possuiErro = () => {
@@ -78,6 +79,7 @@ const CampoNumero = React.forwardRef((props, ref) => {
                 form.setFieldTouched(name, true);
                 onChange(value);
               }}
+              disabled
             />
             {!semMensagem ? <span>{form.errors[name]}</span> : ''}
           </>
@@ -93,6 +95,7 @@ const CampoNumero = React.forwardRef((props, ref) => {
             min={min}
             step={step}
             className={className}
+            disabled={disabled}
           />
         )}
       </Campo>
@@ -107,7 +110,7 @@ CampoNumero.propTypes = {
 
 CampoNumero.defaultProps = {
   onChange: () => {},
-  semMensagem: false
+  semMensagem: false,
 };
 
 export default CampoNumero;
