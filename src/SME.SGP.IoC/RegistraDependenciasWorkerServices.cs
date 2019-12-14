@@ -79,6 +79,7 @@ namespace SME.SGP.IoC
             services.TryAddScopedWorkerService<IConsultasFrequencia, ConsultasFrequencia>();
             services.TryAddScopedWorkerService<IConsultasAtribuicaoEsporadica, ConsultasAtribuicaoEsporadica>();
             services.TryAddScopedWorkerService<IConsultasEventoMatricula, ConsultasEventoMatricula>();
+            services.TryAddScopedWorkerService<IConsultasRegistroPoa, ConsultasRegistroPoa>();
         }
 
         private static void RegistrarContextos(IServiceCollection services)

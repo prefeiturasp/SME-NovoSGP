@@ -11,7 +11,7 @@ namespace SME.SGP.Aplicacao
 
         public ComandosRegistroPoa(IRepositorioRegistroPoa repositorioRegistroPoa)
         {
-            this.repositorioRegistroPoa = repositorioRegistroPoa;
+            this.repositorioRegistroPoa = repositorioRegistroPoa ?? throw new System.ArgumentNullException(nameof(repositorioRegistroPoa));
         }
 
         public void Atualizar(RegistroPoaDto registroPoaDto)
@@ -27,7 +27,7 @@ namespace SME.SGP.Aplicacao
             repositorioRegistroPoa.Salvar(MapearParaEntidade(registroPoaDto));
         }
 
-        public RegistroPoa MapearParaAtualizacao(RegistroPoaDto registroPoaDto)
+        private RegistroPoa MapearParaAtualizacao(RegistroPoaDto registroPoaDto)
         {
             var entidade = repositorioRegistroPoa.ObterPorId(registroPoaDto.Id);
 
@@ -41,7 +41,7 @@ namespace SME.SGP.Aplicacao
             return entidade;
         }
 
-        public RegistroPoa MapearParaEntidade(RegistroPoaDto registroPoaDto)
+        private RegistroPoa MapearParaEntidade(RegistroPoaDto registroPoaDto)
         {
             return new RegistroPoa
             {
