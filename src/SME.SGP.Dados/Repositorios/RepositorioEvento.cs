@@ -306,7 +306,7 @@ namespace SME.SGP.Dados.Repositorios
             query.AppendLine("et.ativo = true");
             query.AppendLine("and et.excluido = false");
             query.AppendLine("and e.excluido = false");
-            query.AppendLine("and e.status in (2, 3)");
+            query.AppendLine("and e.status = 2");
             query.AppendLine("and e.criado_rf = @usuarioRf");
 
             if (string.IsNullOrEmpty(dreId) && string.IsNullOrEmpty(ueId))
@@ -569,7 +569,7 @@ namespace SME.SGP.Dados.Repositorios
             query.AppendLine("et.ativo = true");
             query.AppendLine("and et.excluido = false");
             query.AppendLine("and e.excluido = false");
-            query.AppendLine("and e.status in (2, 3)");
+            query.AppendLine("and e.status = 2");
             query.AppendLine("and e.criado_rf = @usuarioRf");
 
             if (EhDataInicial)
@@ -616,7 +616,7 @@ namespace SME.SGP.Dados.Repositorios
             query.AppendLine("et.ativo = true");
             query.AppendLine("and et.excluido = false");
             query.AppendLine("and e.excluido = false");
-            query.AppendLine("and e.status in (2, 3)");
+            query.AppendLine("and e.status = 2");
 
             if (EhDataInicial)
             {
@@ -851,7 +851,7 @@ namespace SME.SGP.Dados.Repositorios
             query.AppendLine("et.ativo = true");
             query.AppendLine("and et.excluido = false");
             query.AppendLine("and e.excluido = false");
-            query.AppendLine("and e.status in (2,3)");
+            query.AppendLine("and e.status = 2");
             query.AppendLine("and e.criado_rf = @usuarioRf");
 
             if (!string.IsNullOrEmpty(calendarioEventosMesesFiltro.DreId))
@@ -884,7 +884,7 @@ namespace SME.SGP.Dados.Repositorios
             query.AppendLine("et.ativo = true");
             query.AppendLine("and et.excluido = false");
             query.AppendLine("and e.excluido = false");
-            query.AppendLine("and e.status in (2, 3)");
+            query.AppendLine("and e.status = 2");
 
             if (!string.IsNullOrEmpty(calendarioEventosMesesFiltro.DreId))
                 query.AppendLine("and e.dre_id = @DreId");
@@ -986,6 +986,7 @@ namespace SME.SGP.Dados.Repositorios
         {
             query.AppendLine("where");
             query.AppendLine("e.excluido = false");
+            query.AppendLine("and e.status = 1");
             query.AppendLine("and et.ativo = true");
             query.AppendLine("and et.excluido = false");
             query.AppendLine("and e.tipo_calendario_id = @tipoCalendarioId");
@@ -1164,7 +1165,7 @@ namespace SME.SGP.Dados.Repositorios
             query.AppendLine("et.ativo = true");
             query.AppendLine("and et.excluido = false");
             query.AppendLine("and e.excluido = false");
-            query.AppendLine("and e.status in (2, 3)");
+            query.AppendLine("and e.status in 2");
 
             if (ehDataInicio)
                 query.AppendLine("and extract(month from e.data_inicio) = @mes");
@@ -1205,7 +1206,7 @@ namespace SME.SGP.Dados.Repositorios
             query.AppendLine("et.ativo = true");
             query.AppendLine("and et.excluido = false");
             query.AppendLine("and e.excluido = false");
-            query.AppendLine("and e.status in (2, 3)");
+            query.AppendLine("and e.status = 2");
             query.AppendLine("and e.criado_rf = @usuarioRf");
 
             if (ehDataInicio)
