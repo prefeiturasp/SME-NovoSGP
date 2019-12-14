@@ -48,7 +48,7 @@ const FrequenciaPlanoAula = () => {
   const anoLetivo = turmaSelecionada ? turmaSelecionada.anoLetivo : 0;
 
   const [carregandoFrequencia, setCarregandoFrequencia] = useState(true);
-  const [carregandoDisciplinas, setCarregandoDisciplinas] = useState(true);
+  const [carregandoDisciplinas, setCarregandoDisciplinas] = useState(false);
 
   const [listaDisciplinas, setListaDisciplinas] = useState([]);
   const [disciplinaSelecionada, setDisciplinaSelecionada] = useState(undefined);
@@ -122,6 +122,20 @@ const FrequenciaPlanoAula = () => {
     [anoLetivo, turmaId]
   );
 
+  const resetarTelaFrequencia = (naoDisciplina, naoData) => {
+    if (!naoDisciplina) {
+      setDisciplinaSelecionada(undefined);
+      setDisciplinaIdSelecionada(undefined);
+    }
+    if (!naoData) {
+      setDataSelecionada('');
+    }
+    setFrequencia([]);
+    setExibirCardFrequencia(false);
+    setModoEdicaoFrequencia(false);
+    setExibirAuditoria(true);
+  };
+
   const setarDisciplina = disciplinaId => {
     resetarTelaFrequencia(true);
     const disciplina = listaDisciplinas.find(
@@ -138,6 +152,8 @@ const FrequenciaPlanoAula = () => {
   };
 
   useEffect(() => {
+    if (turmaId || turmaSelecionada.turma) setCarregandoDisciplinas(true);
+
     const obterDisciplinas = async () => {
       const disciplinas = await ServicoDisciplina.obterDisciplinasPorTurma(
         turmaId
@@ -160,10 +176,10 @@ const FrequenciaPlanoAula = () => {
       setCarregandoDisciplinas(false);
     };
 
-    if (turmaId) {
+    if (turmaId || turmaSelecionada.turma) {
       setDisciplinaSelecionada(undefined);
       setDisciplinaIdSelecionada(undefined);
-      obterDisciplinas(turmaId);
+      obterDisciplinas(turmaId || turmaSelecionada.turma);
     } else {
       resetarTelaFrequencia();
       setAulaId(0);
@@ -570,20 +586,6 @@ const FrequenciaPlanoAula = () => {
     setModoEdicaoPlanoAula(false);
     setMaterias([...materiasVazia]);
     setPlanoAula(planoAula);
-  };
-
-  const resetarTelaFrequencia = (naoDisciplina, naoData) => {
-    if (!naoDisciplina) {
-      setDisciplinaSelecionada(undefined);
-      setDisciplinaIdSelecionada(undefined);
-    }
-    if (!naoData) {
-      setDataSelecionada('');
-    }
-    setFrequencia([]);
-    setExibirCardFrequencia(false);
-    setModoEdicaoFrequencia(false);
-    setExibirAuditoria(true);
   };
 
   const LinkAcao = styled.span`
