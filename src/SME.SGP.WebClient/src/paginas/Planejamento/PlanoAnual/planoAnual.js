@@ -29,7 +29,13 @@ import { erro, sucesso, confirmar } from '../../../servicos/alertas';
 import ModalConteudoHtml from '../../../componentes/modalConteudoHtml';
 import PlanoAnualHelper from './planoAnualHelper';
 import FiltroPlanoAnualDto from '~/dtos/filtroPlanoAnualDto';
-import { Titulo, TituloAno, Planejamento, Select } from './planoAnual.css';
+import {
+  Titulo,
+  TituloAno,
+  Planejamento,
+  Select,
+  Label,
+} from './planoAnual.css';
 import modalidade from '~/dtos/modalidade';
 import SelectComponent from '~/componentes/select';
 import { store } from '~/redux';
@@ -37,8 +43,10 @@ import FiltroPlanoAnualExpandidoDto from '~/dtos/filtroPlanoAnualExpandidoDto';
 import RotasDto from '~/dtos/rotasDto';
 import { verificaSomenteConsulta } from '~/servicos/servico-navegacao';
 import { RegistroMigrado } from '~/componentes-sgp/registro-migrado';
+import { Loader } from '~/componentes';
 
 export default function PlanoAnual() {
+  const [carregandoBimestres, setCarregandoBimestres] = useState(false);
   const bimestres = useSelector(state => state.bimestres.bimestres);
 
   const bimestreFocado = useSelector(state =>
@@ -140,7 +148,7 @@ export default function PlanoAnual() {
   }, [turmaSelecionada]);
 
   function onF5Click(e) {
-    const { bimestres } = store.getState().bimestres;
+    const bimestres = store.getState().bimestres.bimestres;
     const emEdicao = bimestres.filter(x => x.ehEdicao).length > 0;
 
     if (e.code === 'F5') {
@@ -157,6 +165,7 @@ export default function PlanoAnual() {
   useEffect(() => {
     if (bimestreFocado && refFocado.current) {
       refFocado.current.scrollIntoViewIfNeeded(refFocado.current);
+
       dispatch(RemoverFocado());
     }
   }, [bimestreFocado]);
@@ -228,6 +237,7 @@ export default function PlanoAnual() {
     );
 
     dispatch(SalvarBimestres(bimestres));
+    setCarregandoBimestres(false);
 
     if (ehEdicao) {
       const filtro = new FiltroPlanoAnualExpandidoDto(
@@ -291,21 +301,20 @@ export default function PlanoAnual() {
   };
 
   const AoMudarDisciplinaPlanoAnual = async e => {
+    setCarregandoBimestres(true);
     const valor = e.target && e.target.value * 1;
 
-    if (!emEdicao) {
-      alterarValorDisciplina(valor);
-    } else {
-      const confirmarPerderDados = await confirmar(
-        'Atenção',
-        'Você não salvou as informações preenchidas',
-        'Deseja realmente cancelar as alterações?',
-        'Sim',
-        'Não'
-      );
+    if (!emEdicao) return alterarValorDisciplina(valor);
 
-      if (confirmarPerderDados) alterarValorDisciplina(valor);
-    }
+    const confirmarPerderDados = await confirmar(
+      'Atenção',
+      'Você não salvou as informações preenchidas',
+      'Deseja realmente cancelar as alterações?',
+      'Sim',
+      'Não'
+    );
+
+    if (confirmarPerderDados) alterarValorDisciplina(valor);
   };
 
   const alterarValorDisciplina = valor => {
@@ -351,6 +360,8 @@ export default function PlanoAnual() {
   };
 
   const modalCopiarConteudoAlertaVisivel = () => {
+    console.log(modalCopiarConteudo.turmasComPlanoAnual);
+
     return modalCopiarConteudo.turmasSelecionadas.some(selecionada =>
       modalCopiarConteudo.turmasComPlanoAnual.includes(selecionada)
     );
@@ -510,12 +521,12 @@ export default function PlanoAnual() {
           modalCopiarConteudo.turmasSelecionadas.length < 1
         }
       >
-        <label
+        <Label
           htmlFor="SelecaoTurma"
           alt="Selecione uma ou mais turmas de destino"
         >
           Copiar para a(s) turma(s)
-        </label>
+        </Label>
         <SelectComponent
           id="SelecaoTurma"
           lista={modalCopiarConteudo.listSelect}
@@ -530,9 +541,7 @@ export default function PlanoAnual() {
         <Planejamento> PLANEJAMENTO </Planejamento>
         <Titulo>
           {ehEja ? 'Plano Semestral' : 'Plano Anual'}
-          <TituloAno>
-            {` / ${anoLetivo ? anoLetivo : new Date().getFullYear()}`}
-          </TituloAno>
+          <TituloAno>{` / ${anoLetivo || new Date().getFullYear()}`}</TituloAno>
           {bimestres.filter(bimestre => bimestre.migrado).length > 0 && (
             <RegistroMigrado className="float-right">
               Registro Migrado
@@ -572,9 +581,7 @@ export default function PlanoAnual() {
             color={Colors.Azul}
             onClick={onCopiarConteudoClick}
             border
-            disabled={
-              ehDisabled || (turmaSelecionada && !emEdicao ? false : true)
-            }
+            disabled={ehDisabled || !(turmaSelecionada && !emEdicao)}
           />
         </Grid>
         <Grid cols={4} className="d-flex justify-content-end mb-3">
@@ -605,23 +612,28 @@ export default function PlanoAnual() {
           />
         </Grid>
         <Grid cols={12}>
-          {bimestres && disciplinaSelecionada
-            ? bimestres.map(bim => {
-                return (
-                  <Bimestre
-                    ref={bim.focado ? refFocado : null}
-                    disabled={ehDisabled}
-                    key={bim.indice}
-                    indice={bim.indice}
-                    focado={bim.focado}
-                    modalidadeEja={ehEja}
-                    disciplinaSelecionada={
-                      disciplinaSelecionada && disciplinaSelecionada.codigo
-                    }
-                  />
-                );
-              })
-            : null}
+          <Loader
+            loading={carregandoBimestres}
+            className={`d-block w-100 h-100 ${carregandoBimestres && 'p-5'}`}
+          >
+            {bimestres && disciplinaSelecionada
+              ? bimestres.map(bim => {
+                  return (
+                    <Bimestre
+                      ref={bim.focado ? refFocado : null}
+                      disabled={ehDisabled}
+                      key={bim.indice}
+                      indice={bim.indice}
+                      focado={bim.focado}
+                      modalidadeEja={ehEja}
+                      disciplinaSelecionada={
+                        disciplinaSelecionada && disciplinaSelecionada.codigo
+                      }
+                    />
+                  );
+                })
+              : null}
+          </Loader>
         </Grid>
       </Card>
     </>

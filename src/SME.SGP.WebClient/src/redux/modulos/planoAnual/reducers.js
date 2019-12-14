@@ -14,7 +14,6 @@ const INICIAL = {
 
 export default function bimestres(state = INICIAL, action) {
   return produce(state, draft => {
-    console.log(action.type);
     switch (action.type) {
       case '@bimestres/SalvarBimestre':
         draft.bimestres[action.payload.indice] = action.payload.bimestre;
@@ -37,7 +36,6 @@ export default function bimestres(state = INICIAL, action) {
           disciplina =>
             disciplina.codigo.toString() === action.payload.codigo.toString()
         ).selecionada = true;
-        console.log(state.disciplinasPlanoAnual);
         break;
       case '@bimestres/LimparDisciplinaPlanoAnual':
         if (
@@ -99,8 +97,6 @@ export default function bimestres(state = INICIAL, action) {
 
         break;
       case '@bimestres/SalvarObjetivos':
-        // console.log(action.payload.indice);
-        // console.log(state.bimestres);
         if (bimestres[action.payload.indice])
           draft.bimestres[action.payload.indice].objetivosAprendizagem =
             action.payload.objetivos;
