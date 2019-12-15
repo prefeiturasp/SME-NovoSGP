@@ -203,6 +203,10 @@ export const Lista = styled.div`
     display: inline;
     font-size: 13px;
   }
+
+  .ant-input-number-handler-wrap {
+    display: none !important;
+  }
 `;
 
 export const CaixaMarcadores = styled.span`
