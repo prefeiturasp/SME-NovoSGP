@@ -1,6 +1,8 @@
 import PropTypes from 'prop-types';
 import React, { useState, useEffect } from 'react';
 import CampoNumero from '~/componentes/campoNumero';
+import api from '~/servicos/api';
+import { erros } from '~/servicos/alertas';
 
 const CampoNota = props => {
   const { nota, onChangeNotaConceito } = props;
@@ -11,14 +13,22 @@ const CampoNota = props => {
     setNotaValorAtual(nota.notaConceito);
   }, [nota.notaConceito]);
 
-  const setarValorNovo = valorNovo => {
+  const setarValorNovo = async valorNovo => {
     setNotaValorAtual(valorNovo);
-    onChangeNotaConceito(valorNovo);
+    const notaArredondada = await api
+      .get(
+        `v1/avaliacoes/${nota.atividadeAvaliativaId}/notas/${Number(
+          valorNovo
+        )}/arredondamento`
+      )
+      .catch(e => erros(e));
+    setNotaValorAtual(notaArredondada.data || 0.0);
+    onChangeNotaConceito(notaArredondada.data || 0.0);
   };
 
   return (
     <CampoNumero
-      onChange={valorNovo => setarValorNovo(valorNovo)}
+      onBlur={valorNovo => setarValorNovo(valorNovo.target.value)}
       value={notaValorAtual}
       min={0}
       max={10}
