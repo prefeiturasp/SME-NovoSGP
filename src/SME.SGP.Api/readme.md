@@ -12,7 +12,7 @@ Configuração inicial de ambiente de desenvolvimento
 ##### BASE DE DADOS
 
 Para ter a base de dados disponível para desenvolvimento, executar o comando docker na **raiz da solução**
-Obs.: Lembrar de atualizar a solução via git para receber as últimas atualizações
+Obs.: Lembrar de atualizar a solução via git, branch development, para receber as últimas atualizações
 ```
 docker-compose -f .\docker-compose.database.yml up
 ```
@@ -20,24 +20,28 @@ docker-compose -f .\docker-compose.database.yml up
 Com este comando, a base de dados estará disponível, com todos os scripts já aplicados.
 
 ###### Variáveis de ambiente
-> Informações sensíveis como string de conexão deverão ser mantidas em variáveis de ambiente. 
+> Todas as variáveis de configuração são mantidas como variáveis de ambiente. 
 
--  Adicionar nas variáveis de ambiente
+**Modificar o arquivo /configuracoes/criar-variaveis-ambiente.ps1 com a chave do Sentry obtida pelos canais de comunicação do projeto, substituindo pelo xxx.
 
-	Caso o acesso ao banco sejá por debbug de codigo (VS)	
-		- *Nome da variável:* ConnectionStrings__SGP-Postgres
-		- *Valor da variável:*  User ID=postgres;Password=postgres;Host=localhost;Port=5432;Database=sgp_db;Pooling=true;
-		
-	Caso o acesso ao banco seja pelo Docker do backend	
-		- *Nome da variável:* ConnectionStrings__SGP-Postgres
-		- *Valor da variável:*  User ID=postgres;Password=postgres;Host=sme-db;Port=5432;Database=sgp_db;Pooling=true;
-	     
-   - *Nome da variável:* Sentry__DSN
-   - *Valor da variável:*  {Obter através dos canais de comunicação};
+1- Procurar por poweshell no inciar. 
 
-   - *Nome da variável:* ConnectionStrings__SGP-Redis
-   - *Valor da variável:*  localhost
+2- Clicar com botão direito e executar como administrador
 
-   - *Nome da variável:* JwtTokenSettings__IssuerSigningKey
-   - *Valor da variável:*  2A3B40C8D2215897C5EF1CC6D7D8469C687D17FDF85E675B6EBD9FBA26615B93805556652B9DDFD96CA9565C8D42EA83EF44CAC3B79AF64B343461B52FBB62EA
+3- Executar o comando: Set-ExecutionPolicy Unrestricted 
+
+4- digitar s ou y (dependendo do idioma do sistema operacional)
+
+	** O comando acima é para habilitar scripts não criados na maquina local e sem certificado a serem executados;
+	
+5- Navegar até a pasta do projeto /configuracoes pelo powershell
+
+6- Executar o comando & .\criar-variaveis-ambiente.ps1 
+
+7- Executar o comando: Set-ExecutionPolicy Restricted 
+
+8- digitar s ou y (dependendo do idioma do sistema operacional)
+
+	** O comando acima é para desabilitar scripts de serem executados;
+
 
