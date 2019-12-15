@@ -35,7 +35,7 @@ namespace SME.SGP.Aplicacao
             var entidadeBanco = repositorioRegistroPoa.ObterPorId(id);
 
             if (entidadeBanco == null || entidadeBanco.Excluido)
-                throw new NegocioException($"Não foi encontrado o registro de codigo {id}");
+                throw new NegocioException($"Não foi encontrado o registro de código {id}");
 
             entidadeBanco.Excluido = true;
 
