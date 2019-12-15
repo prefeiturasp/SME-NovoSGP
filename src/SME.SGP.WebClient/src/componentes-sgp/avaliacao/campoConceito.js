@@ -6,6 +6,7 @@ const CampoConceito = props => {
   const { nota, onChangeNotaConceito } = props;
 
   const [conceitoValorAtual, setConceitoValorAtual] = useState();
+  const [conceitoAlterado, setConceitoAlterado] = useState(false);
 
   const listaConceitos = [
     { valor: 1, descricao: 'P' },
@@ -13,13 +14,21 @@ const CampoConceito = props => {
     { valor: 3, descricao: 'NS' },
   ];
 
+  const validaSeTeveAlteracao = (valorNovo, notaOriginal) => {
+    if (notaOriginal) {
+      setConceitoAlterado(valorNovo != notaOriginal);
+    }
+  };
+
   useEffect(() => {
     setConceitoValorAtual(nota.notaConceito);
-  }, [nota.notaConceito]);
+    validaSeTeveAlteracao(nota.notaConceito, nota.notaOriginal);
+  }, [nota.notaConceito, nota.notaOriginal]);
 
   const setarValorNovo = valorNovo => {
     setConceitoValorAtual(valorNovo);
     onChangeNotaConceito(valorNovo);
+    validaSeTeveAlteracao(nota.notaConceito, nota.notaOriginal);
   };
 
   return (
@@ -31,7 +40,9 @@ const CampoConceito = props => {
       valueSelect={conceitoValorAtual || undefined}
       showSearch
       placeholder="Conceito"
-      className="select-conceitos"
+      className={`select-conceitos ${
+        conceitoAlterado ? 'border-registro-alterado' : ''
+      }`}
       classNameContainer={
         nota.ausente ? 'aluno-ausente-conceitos' : 'aluno-conceitos'
       }
@@ -43,13 +54,11 @@ const CampoConceito = props => {
 CampoConceito.defaultProps = {
   nota: {},
   onChangeNotaConceito: PropTypes.func,
-  listaConceitos: [],
 };
 
 CampoConceito.propTypes = {
   nota: {},
   onChangeNotaConceito: () => {},
-  listaConceitos: [],
 };
 
 export default CampoConceito;
