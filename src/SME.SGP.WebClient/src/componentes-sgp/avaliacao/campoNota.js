@@ -1,17 +1,31 @@
 import PropTypes from 'prop-types';
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import CampoNumero from '~/componentes/campoNumero';
-import api from '~/servicos/api';
 import { erros } from '~/servicos/alertas';
+import api from '~/servicos/api';
 
 const CampoNota = props => {
   const { nota, onChangeNotaConceito } = props;
 
   const [notaValorAtual, setNotaValorAtual] = useState();
+  const [notaAlterada, setNotaAlterada] = useState(false);
+
+  const validaSeTeveAlteracao = useCallback((notaOriginal, notaNova) => {
+    if (
+      notaOriginal != undefined &&
+      notaOriginal != null &&
+      notaOriginal.trim() !== ''
+    ) {
+      setNotaAlterada(
+        Number(notaNova).toFixed(1) !== Number(notaOriginal).toFixed(1)
+      );
+    }
+  }, []);
 
   useEffect(() => {
     setNotaValorAtual(nota.notaConceito);
-  }, [nota.notaConceito]);
+    validaSeTeveAlteracao(nota.notaOriginal, nota.notaConceito);
+  }, [nota.notaConceito, nota.notaOriginal, validaSeTeveAlteracao]);
 
   const setarValorNovo = async valorNovo => {
     setNotaValorAtual(valorNovo);
@@ -22,8 +36,9 @@ const CampoNota = props => {
         )}/arredondamento`
       )
       .catch(e => erros(e));
-    setNotaValorAtual(notaArredondada.data || 0.0);
-    onChangeNotaConceito(notaArredondada.data || 0.0);
+    setNotaValorAtual(notaArredondada.data);
+    onChangeNotaConceito(notaArredondada.data);
+    validaSeTeveAlteracao(nota.notaOriginal, notaArredondada.data);
   };
 
   return (
@@ -36,6 +51,7 @@ const CampoNota = props => {
       placeholder="Nota"
       classNameCampo={`${nota.ausente ? 'aluno-ausente-notas' : 'aluno-notas'}`}
       desabilitado={!nota.podeEditar}
+      className={`${notaAlterada ? 'border-registro-alterado' : ''}`}
     />
   );
 };

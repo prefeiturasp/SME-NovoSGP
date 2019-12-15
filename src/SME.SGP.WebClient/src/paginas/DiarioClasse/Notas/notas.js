@@ -26,6 +26,7 @@ const Notas = () => {
     store => store.notasConceitos.modoEdicaoGeral
   );
 
+  const [tituloNotasConceitos, setTituloNotasConceitos] = useState('');
   const [listaDisciplinas, setListaDisciplinas] = useState([]);
   const [disciplinaSelecionada, setDisciplinaSelecionada] = useState(undefined);
   const [desabilitarDisciplina, setDesabilitarDisciplina] = useState(false);
@@ -85,12 +86,23 @@ const Notas = () => {
         const dados = await obterBimestres(disciplinaId, numeroBimestre);
         if (dados && dados.bimestres && dados.bimestres.length) {
           dados.bimestres.forEach(item => {
+            item.alunos.forEach(aluno => {
+              return aluno.notasAvaliacoes.forEach(nota => {
+                const notaOriginal = nota.notaConceito;
+                /* eslint-disable */
+                nota.notaOriginal = notaOriginal;
+                /* eslint-enable */
+                return nota;
+              });
+            });
+
             const bimestreAtualizado = {
               descricao: item.descricao,
               numero: item.numero,
               alunos: [...item.alunos],
               avaliacoes: [...item.avaliacoes],
             };
+
             switch (Number(item.numero)) {
               case 1:
                 setPrimeiroBimestre(bimestreAtualizado);
@@ -135,10 +147,27 @@ const Notas = () => {
     if (disciplinas.data && disciplinas.data.length === 1) {
       const disciplina = disciplinas.data[0];
       setDisciplinaSelecionada(String(disciplina.codigoComponenteCurricular));
-      // setDesabilitarDisciplina(true);
+      setDesabilitarDisciplina(true);
       obterDadosBimestres(disciplina.codigoComponenteCurricular);
     }
   }, [obterDadosBimestres, usuario.turmaSelecionada.turma]);
+
+  const obterTituloTela = useCallback(async () => {
+    const url = `v1/avaliacoes/notas/turmas/${usuario.turmaSelecionada.turma}/anos-letivos/${usuario.turmaSelecionada.anoLetivo}/tipos`;
+    const tipoNotaTurmaSelecionada = await api.get(url);
+    if (
+      Number(notasConceitos.Conceitos) === Number(tipoNotaTurmaSelecionada.data)
+    ) {
+      return 'Lançamento de Conceitos';
+    }
+    return 'Lançamento de Notas';
+  }, [usuario.turmaSelecionada.anoLetivo, usuario.turmaSelecionada.turma]);
+
+  useEffect(() => {
+    obterTituloTela().then(titulo => {
+      setTituloNotasConceitos(titulo);
+    });
+  }, [obterTituloTela]);
 
   useEffect(() => {
     if (usuario.turmaSelecionada.turma) {
@@ -384,7 +413,7 @@ const Notas = () => {
 
   return (
     <Container>
-      <Cabecalho pagina="Lançamento de notas" />
+      <Cabecalho pagina={tituloNotasConceitos} />
       <Loader loading={carregandoListaBimestres}>
         <Card>
           <div className="col-md-12">
