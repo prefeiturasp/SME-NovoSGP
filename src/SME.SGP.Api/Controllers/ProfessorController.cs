@@ -22,6 +22,13 @@ namespace SME.SGP.Api.Controllers
             this.consultasProfessor = consultasProfessor;
         }
 
+        [HttpGet("eventos/matriculas")]
+        public async Task<IActionResult> EventosMatricula([FromServices] IServicoEventoMatricula eventos)
+        {
+            eventos.ExecutaCargaEventos();
+            return Ok();
+        }
+
         [HttpGet]
         [Route("{codigoRf}/turmas")]
         [ProducesResponseType(typeof(IEnumerable<ProfessorTurmaDto>), 200)]
@@ -34,9 +41,9 @@ namespace SME.SGP.Api.Controllers
         [HttpGet("{codigoRF}/turmas/{codigoTurma}/disciplinas/")]
         [ProducesResponseType(typeof(IEnumerable<DisciplinaDto>), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        public async Task<IActionResult> Get(string codigoTurma, string codigoRF, [FromServices]IConsultasDisciplina consultasDisciplina)
+        public async Task<IActionResult> Get(string codigoTurma, string codigoRF, [FromQuery] bool turmaPrograma, [FromServices]IConsultasDisciplina consultasDisciplina)
         {
-            return Ok(await consultasDisciplina.ObterDisciplinasPorProfessorETurma(codigoTurma));
+            return Ok(await consultasDisciplina.ObterDisciplinasPorProfessorETurma(codigoTurma, turmaPrograma));
         }
 
         [HttpGet("{codigoRF}/escolas/{codigoEscola}/turmas/anos-letivos/{anoLetivo}")]
@@ -64,7 +71,7 @@ namespace SME.SGP.Api.Controllers
         public async Task<IActionResult> Resumo(string codigoRF, int anoLetivo)
         {
             var retorno = await consultasProfessor.ObterResumoPorRFAnoLetivo(codigoRF, anoLetivo);
-            
+
             return Ok(retorno);
         }
 
@@ -79,13 +86,6 @@ namespace SME.SGP.Api.Controllers
                 return NoContent();
 
             return Ok(retorno);
-        }
-
-        [HttpGet("eventos/matriculas")]
-        public async Task<IActionResult> EventosMatricula([FromServices] IServicoEventoMatricula eventos)
-        {
-            eventos.ExecutaCargaEventos();
-            return Ok();
         }
     }
 }

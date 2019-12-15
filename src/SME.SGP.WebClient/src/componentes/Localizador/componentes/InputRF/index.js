@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import PropTypes from 'prop-types';
+import t from 'prop-types';
 
 // Form
 import { Field } from 'formik';
@@ -16,6 +16,7 @@ import { valorNuloOuVazio } from '~/utils/funcoes/gerais';
 function InputRF({
   pessoaSelecionada,
   onSelect,
+  onChange,
   form,
   name,
   id,
@@ -52,6 +53,15 @@ function InputRF({
     }
   };
 
+  const onChangeRf = e => {
+    if (valorNuloOuVazio(e.target.value)) {
+      form.setFieldValue(name, e.target.value, false);
+      form.setFieldTouched(name);
+    }
+    setValor(e.target.value);
+    onChange(e.target.value);
+  };
+
   useEffect(() => {
     setValor(pessoaSelecionada && pessoaSelecionada.professorRf);
     form.setFieldValue(
@@ -71,7 +81,7 @@ function InputRF({
     if (valores && valorNuloOuVazio(valores.professorRf)) {
       setValor('');
     }
-  }, [form.values]);
+  }, [form, form.values]);
 
   return (
     <>
@@ -89,22 +99,15 @@ function InputRF({
             value={valor}
             placeholder="Digite o RF"
             onKeyDown={onKeyDown}
-            onChange={e => {
-              if (valorNuloOuVazio(e.target.value)) {
-                form.setFieldValue(name, e.target.value, false);
-                form.setFieldTouched(name);
-              }
-              setValor(e.target.value);
-            }}
+            onChange={onChangeRf}
             style={style}
             suffix={botao}
             onPressEnter={e => onSubmitRF(e.target.value)}
             disabled={desabilitado}
+            allowClear
           />
-          {form && form.touched[name] ? (
+          {form && form.touched[name] && (
             <span className="mensagemErro">{form.errors[name]}</span>
-          ) : (
-            ''
           )}
         </InputRFEstilo>
       ) : (
@@ -112,10 +115,11 @@ function InputRF({
           <Input
             value={valor}
             placeholder="Digite o RF"
-            onChange={e => setValor(e.target.value)}
+            onChange={e => onChangeRf(e.target.value)}
             onPressEnter={e => onSubmitRF(e.target.value)}
             suffix={botao}
             disabled={desabilitado}
+            allowClear
           />
         </InputRFEstilo>
       )}
@@ -124,22 +128,16 @@ function InputRF({
 }
 
 InputRF.propTypes = {
-  pessoaSelecionada: PropTypes.oneOfType([
-    PropTypes.objectOf(PropTypes.object),
-    PropTypes.any,
-  ]),
-  onSelect: PropTypes.func,
-  form: PropTypes.oneOfType([
-    PropTypes.objectOf(PropTypes.object),
-    PropTypes.any,
-  ]),
-  name: PropTypes.string,
-  id: PropTypes.string,
-  className: PropTypes.string,
-  desabilitado: PropTypes.bool,
-  maxlength: PropTypes.number,
-  onKeyDown: PropTypes.func,
-  style: PropTypes.objectOf(PropTypes.object),
+  pessoaSelecionada: t.oneOfType([t.objectOf(t.object), t.any]),
+  onSelect: t.func,
+  form: t.oneOfType([t.objectOf(t.object), t.any]),
+  name: t.string,
+  id: t.string,
+  className: t.string,
+  desabilitado: t.bool,
+  maxlength: t.number,
+  onKeyDown: t.func,
+  style: t.objectOf(t.object),
 };
 
 InputRF.defaultProps = {

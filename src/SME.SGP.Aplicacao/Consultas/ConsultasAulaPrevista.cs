@@ -12,12 +12,21 @@ namespace SME.SGP.Aplicacao
     {
         private readonly IRepositorioAulaPrevista repositorio;
         private readonly IRepositorioAulaPrevistaBimestre repositorioBimestre;
+        private readonly IRepositorioPeriodoEscolar repositorioPeriodoEscolar;
+        private readonly IRepositorioTurma repositorioTurma;
+        private readonly IRepositorioTipoCalendario repositorioTipoCalendario;
 
         public ConsultasAulaPrevista(IRepositorioAulaPrevista repositorio,
-                                     IRepositorioAulaPrevistaBimestre repositorioBimestre)
+                                     IRepositorioAulaPrevistaBimestre repositorioBimestre,
+                                     IRepositorioPeriodoEscolar repositorioPeriodoEscolar,
+                                     IRepositorioTurma repositorioTurma,
+                                     IRepositorioTipoCalendario repositorioTipoCalendario)
         {
             this.repositorio = repositorio ?? throw new ArgumentNullException(nameof(repositorio));
             this.repositorioBimestre = repositorioBimestre ?? throw new ArgumentNullException(nameof(repositorioBimestre));
+            this.repositorioPeriodoEscolar = repositorioPeriodoEscolar ?? throw new ArgumentNullException(nameof(repositorioPeriodoEscolar));
+            this.repositorioTurma = repositorioTurma ?? throw new ArgumentNullException(nameof(repositorioTurma));
+            this.repositorioTipoCalendario = repositorioTipoCalendario ?? throw new ArgumentNullException(nameof(repositorioTipoCalendario));
         }
 
         public async Task<AulasPrevistasDadasAuditoriaDto> BuscarPorId(long id)
@@ -39,9 +48,9 @@ namespace SME.SGP.Aplicacao
             return await repositorioBimestre.ObterBimestresAulasPrevistasPorId(aulaPrevistaId);
         }
 
-        private async Task<IEnumerable<AulaPrevistaBimestreQuantidade>> ObterBimestres(long tipoCalendarioId, string turmaId, string disciplinaId)
+        private IEnumerable<PeriodoEscolar> ObterPeriodosEscolares(long tipoCalendarioId)
         {
-            return await repositorioBimestre.ObterBimestresAulasPrevistasPorFiltro(tipoCalendarioId, turmaId, disciplinaId);
+            return repositorioPeriodoEscolar.ObterPorTipoCalendario(tipoCalendarioId);
         }
 
         private AulasPrevistasDadasAuditoriaDto MapearDtoRetorno(AulaPrevista aulaPrevista, IEnumerable<AulaPrevistaBimestreQuantidade> aulasPrevistasBimestre)
@@ -54,11 +63,13 @@ namespace SME.SGP.Aplicacao
 
         public async Task<AulasPrevistasDadasAuditoriaDto> ObterAulaPrevistaDada(Modalidade modalidade, string turmaId, string disciplinaId)
         {
+            var turma = ObterTurma(turmaId);
+
+            var tipoCalendario = ObterTipoCalendarioPorTurma(turma.AnoLetivo, turma.ModalidadeCodigo);
+
             AulasPrevistasDadasAuditoriaDto aulaPrevistaDto;
 
-            int tipoCalendarioId = (int)ModalidadeParaModalidadeTipoCalendario(modalidade);
-
-            var aulaPrevista = await repositorio.ObterAulaPrevistaFiltro(tipoCalendarioId, turmaId, disciplinaId);
+            var aulaPrevista = await repositorio.ObterAulaPrevistaFiltro(tipoCalendario.Id, turmaId, disciplinaId);
 
             IEnumerable<AulaPrevistaBimestreQuantidade> aulaPrevistaBimestres;
 
@@ -67,12 +78,34 @@ namespace SME.SGP.Aplicacao
             else
             {
                 aulaPrevista = new AulaPrevista();
-                aulaPrevistaBimestres = await ObterBimestres(tipoCalendarioId, turmaId, disciplinaId);
+
+                var periodosBimestre = ObterPeriodosEscolares(tipoCalendario.Id);
+                aulaPrevistaBimestres = MapearPeriodoParaBimestreDto(periodosBimestre);
             }
 
             aulaPrevistaDto = MapearDtoRetorno(aulaPrevista, aulaPrevistaBimestres);
 
             return aulaPrevistaDto;
+        }
+
+        private Turma ObterTurma(string turmaId)
+        {
+            var turma = repositorioTurma.ObterPorId(turmaId);
+
+            if (turma == null)
+                throw new NegocioException("Turma não encontrada!");
+
+            return turma;
+        }
+
+        private TipoCalendario ObterTipoCalendarioPorTurma(int anoLetivo, Modalidade turmaModalidade)
+        {
+            var tipoCalendario = repositorioTipoCalendario.BuscarPorAnoLetivoEModalidade(anoLetivo, ModalidadeParaModalidadeTipoCalendario(turmaModalidade));
+
+            if (tipoCalendario == null)
+                throw new NegocioException("Tipo calendário não encontrado!");
+
+            return tipoCalendario;
         }
 
         private AulasPrevistasDadasAuditoriaDto MapearMensagens(AulasPrevistasDadasAuditoriaDto aulaPrevistaDto)
@@ -132,6 +165,18 @@ namespace SME.SGP.Aplicacao
                     Reposicoes = x.Reposicoes
                 }).ToList()
             };
+        }
+
+        private IEnumerable<AulaPrevistaBimestreQuantidade> MapearPeriodoParaBimestreDto(IEnumerable<PeriodoEscolar> periodoEscolares)
+        {
+            IEnumerable<AulaPrevistaBimestreQuantidade> bimestreQuantidades = new List<AulaPrevistaBimestreQuantidade>();
+
+            return periodoEscolares?.Select(x => new AulaPrevistaBimestreQuantidade
+            {
+                Bimestre = x.Bimestre,
+                Inicio = x.PeriodoInicio,
+                Fim = x.PeriodoFim
+            }).ToList();
         }
     }
 }

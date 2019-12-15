@@ -16,6 +16,67 @@ namespace SME.SGP.Dados.Repositorios
     {
         public RepositorioEvento(ISgpContext conexao) : base(conexao)
         {
+
+        }
+
+        public List<Evento> EhEventoLetivoPorLiberacaoExcepcional(long tipoCalendarioId, DateTime dataAula, string ueId)
+        {
+            dataAula = dataAula.Date;
+
+            var query = @"select
+                    e.id,
+	                e.nome,
+	                e.descricao,
+	                e.data_inicio,
+	                e.data_fim,
+	                e.dre_id,
+	                e.ue_id,
+	                e.letivo,
+	                e.feriado_id,
+	                e.tipo_calendario_id,
+	                e.tipo_evento_id,
+	                e.criado_em,
+	                e.criado_por,
+	                e.alterado_em,
+	                e.alterado_por,
+	                e.criado_rf,
+	                e.alterado_rf,
+	                e.status,
+                    e.wf_aprovacao_id as WorkflowAprovacaoId,
+	                et.id as TipoEventoId,
+	                et.codigo,
+	                et.ativo,
+	                et.tipo_data,
+	                et.descricao,
+	                et.excluido,
+                    tc.id as TipoCalendarioId,
+                    tc.Nome,
+                    tc.Ano_Letivo,
+                    tc.Situacao
+                from
+                   evento e
+                inner join evento_tipo et on
+                e.tipo_evento_id = et.id
+                inner join tipo_calendario tc
+                on e.tipo_calendario_id = tc.id
+               WHERE e.excluido = false 
+                 AND e.tipo_calendario_id = @tipoCalendarioId
+                 and e.ue_id = @ueId 
+                 and e.data_inicio <= @dataAula
+                 AND e.data_fim >= @dataAula ";
+
+            return database.Conexao.Query<Evento, EventoTipo, TipoCalendario, Evento>(query.ToString(), (evento, tipoEvento, tipoCalendario) =>
+            {
+                evento.AdicionarTipoEvento(tipoEvento);
+
+                return evento;
+            }, new
+            {
+                tipoCalendarioId,
+                dataAula,
+                ueId
+            },
+                splitOn: "EventoId,TipoEventoId,TipoCalendarioId").ToList();
         }
 
         public bool EhEventoLetivoPorTipoDeCalendarioDataDreUe(long tipoCalendarioId, DateTime data, string dreId, string ueId)
@@ -627,7 +688,6 @@ namespace SME.SGP.Dados.Repositorios
 	                e.status,
                     e.wf_aprovacao_id as WorkflowAprovacaoId,
 	                et.id as TipoEventoId,
-	                et.id,
 	                et.codigo,
 	                et.ativo,
 	                et.tipo_data,
@@ -923,7 +983,6 @@ namespace SME.SGP.Dados.Repositorios
             query.AppendLine("e.criado_rf,");
             query.AppendLine("e.alterado_rf,");
             query.AppendLine("et.id as TipoEventoId,");
-            query.AppendLine("et.id,");
             query.AppendLine("et.ativo,");
             query.AppendLine("et.tipo_data,");
             query.AppendLine("et.descricao,");
