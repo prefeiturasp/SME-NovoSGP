@@ -16,6 +16,8 @@ import history from '~/servicos/history';
 
 import BotoesAcoessNotasConceitos from './botoesAcoes';
 import { Container, ContainerAuditoria } from './notas.css';
+import RotasDto from '~/dtos/rotasDto';
+import { verificaSomenteConsulta } from '~/servicos/servico-navegacao';
 
 const { TabPane } = Tabs;
 
@@ -26,12 +28,13 @@ const Notas = () => {
     store => store.notasConceitos.modoEdicaoGeral
   );
 
+  const permissoesTela = usuario.permissoes[RotasDto.FREQUENCIA_PLANO_AULA];
+
   const [tituloNotasConceitos, setTituloNotasConceitos] = useState('');
   const [listaDisciplinas, setListaDisciplinas] = useState([]);
   const [disciplinaSelecionada, setDisciplinaSelecionada] = useState(undefined);
   const [desabilitarDisciplina, setDesabilitarDisciplina] = useState(false);
   const [notaTipo, setNotaTipo] = useState();
-  const [desabilitarCampos, setDesabilitarCampos] = useState(false);
   const [carregandoListaBimestres, setCarregandoListaBimestres] = useState(
     false
   );
@@ -45,11 +48,21 @@ const Notas = () => {
   const [terceiroBimestre, setTerceiroBimestre] = useState([]);
   const [quartoBimestre, setQuartoBimestre] = useState([]);
 
+  const [desabilitarCampos, setDesabilitarCampos] = useState(false);
+
+  useEffect(() => {
+    const somenteConsulta = verificaSomenteConsulta(permissoesTela);
+    const desabilitar =
+      somenteConsulta ||
+      !permissoesTela.podeAlterar ||
+      !permissoesTela.podeIncluir;
+    setDesabilitarCampos(desabilitar);
+  }, [permissoesTela]);
+
   const resetarTela = useCallback(() => {
     setDisciplinaSelecionada(undefined);
     setBimestreCorrente(0);
     setNotaTipo(0);
-    setDesabilitarCampos(false);
     setAuditoriaInfo({
       auditoriaAlterado: '',
       auditoriaInserido: '',
@@ -286,7 +299,7 @@ const Notas = () => {
   };
 
   const onClickVoltar = async () => {
-    if (!desabilitarCampos && modoEdicaoGeral) {
+    if (modoEdicaoGeral) {
       const confirmado = await pergutarParaSalvar();
       if (confirmado) {
         await onSalvarNotas(false);
@@ -433,7 +446,7 @@ const Notas = () => {
                   onClickVoltar={onClickVoltar}
                   onClickCancelar={onClickCancelar}
                   onClickSalvar={onClickSalvar}
-                  desabilitarCampos={desabilitarCampos}
+                  desabilitarBotao={desabilitarCampos}
                 />
               </div>
             </div>
@@ -470,6 +483,7 @@ const Notas = () => {
                             dados={primeiroBimestre}
                             notaTipo={notaTipo}
                             onChangeOrdenacao={onChangeOrdenacao}
+                            desabilitarCampos={desabilitarCampos}
                           />
                         </TabPane>
                       ) : (
@@ -484,6 +498,7 @@ const Notas = () => {
                             dados={segundoBimestre}
                             notaTipo={notaTipo}
                             onChangeOrdenacao={onChangeOrdenacao}
+                            desabilitarCampos={desabilitarCampos}
                           />
                         </TabPane>
                       ) : (
@@ -498,6 +513,7 @@ const Notas = () => {
                             dados={terceiroBimestre}
                             notaTipo={notaTipo}
                             onChangeOrdenacao={onChangeOrdenacao}
+                            desabilitarCampos={desabilitarCampos}
                           />
                         </TabPane>
                       ) : (
@@ -512,6 +528,7 @@ const Notas = () => {
                             dados={quartoBimestre}
                             notaTipo={notaTipo}
                             onChangeOrdenacao={onChangeOrdenacao}
+                            desabilitarCampos={desabilitarCampos}
                           />
                         </TabPane>
                       ) : (

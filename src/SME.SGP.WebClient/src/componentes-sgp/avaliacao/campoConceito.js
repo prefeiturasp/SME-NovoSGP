@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react';
 import SelectComponent from '~/componentes/select';
 
 const CampoConceito = props => {
-  const { nota, onChangeNotaConceito } = props;
+  const { nota, onChangeNotaConceito, desabilitarCampo } = props;
 
   const [conceitoValorAtual, setConceitoValorAtual] = useState();
   const [conceitoAlterado, setConceitoAlterado] = useState(false);
@@ -46,7 +46,7 @@ const CampoConceito = props => {
       classNameContainer={
         nota.ausente ? 'aluno-ausente-conceitos' : 'aluno-conceitos'
       }
-      disabled={!nota.podeEditar}
+      disabled={desabilitarCampo || !nota.podeEditar}
     />
   );
 };
