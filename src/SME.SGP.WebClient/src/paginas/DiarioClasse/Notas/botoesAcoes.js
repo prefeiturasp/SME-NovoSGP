@@ -4,22 +4,24 @@ import { useDispatch, useSelector } from 'react-redux';
 import Button from '~/componentes/button';
 import { Colors } from '~/componentes/colors';
 import { setModoEdicaoGeral } from '~/redux/modulos/notasConceitos/actions';
+import RotasDto from '~/dtos/rotasDto';
+import { verificaSomenteConsulta } from '~/servicos/servico-navegacao';
 
 const BotoesAcoessNotasConceitos = props => {
+  const {
+    onClickVoltar,
+    onClickCancelar,
+    onClickSalvar,
+    desabilitarBotao,
+  } = props;
+
   const dispatch = useDispatch();
   const modoEdicaoGeral = useSelector(
     store => store.notasConceitos.modoEdicaoGeral
   );
 
-  const {
-    onClickVoltar,
-    onClickCancelar,
-    onClickSalvar,
-    desabilitarCampos,
-  } = props;
-
   const onCancelar = async () => {
-    if (!desabilitarCampos && modoEdicaoGeral) {
+    if (modoEdicaoGeral) {
       if (
         window.confirm(
           `Você não salvou as informações preenchidas. Deseja realmente cancelar as alterações?`
@@ -68,7 +70,7 @@ const BotoesAcoessNotasConceitos = props => {
         bold
         className="mr-2"
         onClick={onClickSalvar}
-        disabled={desabilitarCampos || !modoEdicaoGeral}
+        disabled={desabilitarBotao || !modoEdicaoGeral}
       />
     </>
   );

@@ -5,7 +5,7 @@ import { erros } from '~/servicos/alertas';
 import api from '~/servicos/api';
 
 const CampoNota = props => {
-  const { nota, onChangeNotaConceito } = props;
+  const { nota, onChangeNotaConceito, desabilitarCampo } = props;
 
   const [notaValorAtual, setNotaValorAtual] = useState();
   const [notaAlterada, setNotaAlterada] = useState(false);
@@ -50,7 +50,7 @@ const CampoNota = props => {
       step={0.5}
       placeholder="Nota"
       classNameCampo={`${nota.ausente ? 'aluno-ausente-notas' : 'aluno-notas'}`}
-      desabilitado={!nota.podeEditar}
+      desabilitado={desabilitarCampo || !nota.podeEditar}
       className={`${notaAlterada ? 'border-registro-alterado' : ''}`}
     />
   );

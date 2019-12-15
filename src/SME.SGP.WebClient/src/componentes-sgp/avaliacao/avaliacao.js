@@ -14,12 +14,12 @@ import CampoNota from './campoNota';
 const Avaliacao = props => {
   const dispatch = useDispatch();
 
-  const { dados, notaTipo, onChangeOrdenacao } = props;
+  const { dados, notaTipo, onChangeOrdenacao, desabilitarCampos } = props;
 
   const [expandirLinha, setExpandirLinha] = useState([]);
 
   const onChangeNotaConceito = (nota, valorNovo) => {
-    if (nota.podeEditar) {
+    if (!desabilitarCampos && nota.podeEditar) {
       nota.notaConceito = valorNovo;
       nota.modoEdicao = true;
       dados.modoEdicao = true;
@@ -70,6 +70,7 @@ const Avaliacao = props => {
         onChangeNotaConceito={valorNovo =>
           onChangeNotaConceito(nota, valorNovo)
         }
+        desabilitarCampo={desabilitarCampos}
       />
     ) : (
       <CampoConceito
@@ -77,6 +78,7 @@ const Avaliacao = props => {
         onChangeNotaConceito={valorNovo =>
           onChangeNotaConceito(nota, valorNovo)
         }
+        desabilitarCampo={desabilitarCampos}
       />
     );
   };
