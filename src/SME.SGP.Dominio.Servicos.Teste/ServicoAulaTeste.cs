@@ -17,16 +17,18 @@ namespace SME.SGP.Dominio.Servicos.Teste
     {
         #region Mocks
 
-        private readonly Mock<IRepositorioAtribuicaoCJ> atribuicaoCj;
         private readonly Mock<IComandosPlanoAula> comandosPlanoAula;
         private readonly Mock<IComandosWorkflowAprovacao> comandosWorkflowAprovacao;
         private readonly Mock<IConfiguration> configuration;
         private readonly Mock<IConsultasAbrangencia> consultaAbrangencia;
+        private readonly Mock<IConsultasFrequencia> consultasFrequencia;
         private readonly Mock<IConsultasGrade> consultasGrade;
         private readonly Mock<IConsultasPeriodoEscolar> consultasPeriodoEscolar;
         private readonly Mock<IConsultasPeriodoEscolar> consultasPeriodosEscolar;
+        private readonly Mock<IConsultasPlanoAula> consultasPlanoAula;
         private readonly Mock<IRepositorioAbrangencia> repositorioAbrangencia;
         private readonly Mock<IRepositorioAtividadeAvaliativa> repositorioAtividadeAvaliativa;
+        private readonly Mock<IRepositorioAtribuicaoCJ> repositorioAtribuicaoCJ;
         private readonly Mock<IRepositorioAula> repositorioAula;
         private readonly Mock<IRepositorioTipoCalendario> repositorioTipoCalendario;
         private readonly Mock<IRepositorioTurma> repositorioTurma;
@@ -45,7 +47,6 @@ namespace SME.SGP.Dominio.Servicos.Teste
 
         public ServicoAulaTeste()
         {
-            atribuicaoCj = new Mock<IRepositorioAtribuicaoCJ>();
             consultasPeriodoEscolar = new Mock<IConsultasPeriodoEscolar>();
             servicoDiaLetivo = new Mock<IServicoDiaLetivo>();
             repositorioAula = new Mock<IRepositorioAula>();
@@ -66,15 +67,25 @@ namespace SME.SGP.Dominio.Servicos.Teste
             configuration = new Mock<IConfiguration>();
             repositorioAtividadeAvaliativa = new Mock<IRepositorioAtividadeAvaliativa>();
             repositorioTurma = new Mock<IRepositorioTurma>();
+            repositorioAtribuicaoCJ = new Mock<IRepositorioAtribuicaoCJ>();
+            consultasFrequencia = new Mock<IConsultasFrequencia>();
+            consultasPlanoAula = new Mock<IConsultasPlanoAula>();
+
             servicoAula = new ServicoAula(repositorioAula.Object, servicoEol.Object,
-                                         repositorioTipoCalendario.Object, servicoDiaLetivo.Object,
-                                         consultasGrade.Object, consultasPeriodoEscolar.Object,
+                                         repositorioTipoCalendario.Object,
+                                         servicoDiaLetivo.Object,
+                                          consultasGrade.Object,
+                                          consultasPeriodoEscolar.Object,
+                                          consultasFrequencia.Object,
+                                          consultasPlanoAula.Object,
                                          servicoLog.Object,
                                          servicoNotificacao.Object, consultaAbrangencia.Object,
                                          comandosWorkflowAprovacao.Object,
-                                         comandosPlanoAula.Object, servicoFrequencia.Object,
-                                         configuration.Object, repositorioAtividadeAvaliativa.Object,
-                                         atribuicaoCj.Object,
+                                         comandosPlanoAula.Object,
+                                         servicoFrequencia.Object,
+                                         configuration.Object,
+                                         repositorioAtividadeAvaliativa.Object,
+                                         repositorioAtribuicaoCJ.Object,
                                          repositorioTurma.Object);
 
             Setup();
