@@ -40,11 +40,10 @@ function DreDropDown({ form, onChange, label, url }) {
   }, [listaDres]);
 
   useEffect(() => {
-    onChange();
     if (!valorNuloOuVazio(form.values.dreId)) {
       onChange(form.values.dreId);
     }
-  }, [form.values.dreId]);
+  }, [form.values.dreId, onChange]);
 
   return (
     <SelectComponent
