@@ -41,6 +41,7 @@ const CampoNumero = React.forwardRef((props, ref) => {
     min,
     step,
     disabled,
+    onBlur
   } = props;
 
   const possuiErro = () => {
@@ -96,6 +97,7 @@ const CampoNumero = React.forwardRef((props, ref) => {
             step={step}
             className={className}
             disabled={disabled}
+            onBlur={onBlur}
           />
         )}
       </Campo>
@@ -105,11 +107,13 @@ const CampoNumero = React.forwardRef((props, ref) => {
 
 CampoNumero.propTypes = {
   onChange: PropTypes.func,
+  onBlur: PropTypes.func,
   semMensagem: PropTypes.bool,
 };
 
 CampoNumero.defaultProps = {
   onChange: () => {},
+  onBlur: () => {},
   semMensagem: false,
 };
 
