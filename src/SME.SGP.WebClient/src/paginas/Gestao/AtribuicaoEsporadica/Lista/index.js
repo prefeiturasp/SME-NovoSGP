@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 
 // Redux
 import { useSelector } from 'react-redux';
@@ -103,14 +103,14 @@ function AtribuicaoEsporadicaLista() {
     history.push(`/gestao/atribuicao-esporadica/editar/${item.id}`);
   };
 
-  const onChangeFiltro = valoresFiltro => {
+  const onChangeFiltro = useCallback(valoresFiltro => {
     setFiltro({
       AnoLetivo: '2019',
       DreId: valoresFiltro.dreId,
       UeId: valoresFiltro.ueId,
       ProfessorRF: valoresFiltro.professorRf,
     });
-  };
+  }, []);
 
   const validarFiltro = () => {
     return !!filtro.DreId && !!filtro.UeId;
@@ -118,7 +118,7 @@ function AtribuicaoEsporadicaLista() {
 
   useEffect(() => {
     setSomenteConsulta(verificaSomenteConsulta(permissoesTela));
-  }, []);
+  }, [permissoesTela]);
 
   return (
     <>

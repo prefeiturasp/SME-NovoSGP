@@ -1,36 +1,56 @@
-import React from 'react';
+import React, { useEffect, memo } from 'react';
+import t from 'prop-types';
 import { Route, Redirect } from 'react-router-dom';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import { setSomenteConsulta } from '~/redux/modulos/navegacao/actions';
 import { store } from '~/redux';
 
-const RotaAutenticadaEstruturada = props => {
-  const {
+const RotaAutenticadaEstruturada = memo(
+  ({
     component: Component,
     temPermissionamento,
     chavePermissao,
+    location,
     ...propriedades
-  } = props;
-  const logado = useSelector(state => state.usuario.logado);
-  const permissoes = useSelector(state => state.usuario.permissoes);
-  const primeiroAcesso = useSelector(state => state.usuario.modificarSenha);
-  store.dispatch(setSomenteConsulta(false));
+  }) => {
+    const dispatch = useDispatch();
+    const logado = useSelector(state => state.usuario.logado);
+    const permissoes = useSelector(state => state.usuario.permissoes);
+    const primeiroAcesso = useSelector(state => state.usuario.modificarSenha);
+    dispatch(setSomenteConsulta(false));
 
-  if (!logado) {
-    return (
-      <Redirect
-        to={`/login/${btoa(props.location.pathname + props.location.search)}`}
-      />
-    );
-  }
-  if (primeiroAcesso) {
-    return <Redirect to="/redefinir-senha" />;
-  }
-  if (temPermissionamento && !permissoes[chavePermissao]) {
-    return <Redirect to="/sem-permissao" />;
-  }
+    if (!logado) {
+      return (
+        <Redirect
+          to={`/login/${btoa(`${location.pathname}${location.search}`)}`}
+        />
+      );
+    }
 
-  return <Route {...propriedades} component={Component} />;
+    if (primeiroAcesso) {
+      return <Redirect to="/redefinir-senha" />;
+    }
+
+    if (temPermissionamento && !permissoes[chavePermissao]) {
+      return <Redirect to="/sem-permissao" />;
+    }
+
+    return <Route {...propriedades} component={Component} />;
+  }
+);
+
+RotaAutenticadaEstruturada.propTypes = {
+  component: t.oneOfType([t.any]),
+  temPermissionamento: t.bool,
+  chavePermissao: t.string,
+  location: t.oneOfType([t.any]),
+};
+
+RotaAutenticadaEstruturada.defaultProps = {
+  component: null,
+  temPermissionamento: null,
+  chavePermissao: null,
+  location: null,
 };
 
 export default RotaAutenticadaEstruturada;

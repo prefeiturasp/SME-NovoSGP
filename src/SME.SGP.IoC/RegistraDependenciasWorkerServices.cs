@@ -49,6 +49,7 @@ namespace SME.SGP.IoC
             services.TryAddScopedWorkerService<IComandosAtribuicaoEsporadica, ComandosAtribuicaoEsporadica>();
             services.TryAddScopedWorkerService<IComandosPlanoAula, ComandosPlanoAula>();
             services.TryAddScopedWorkerService<IComandosEventoMatricula, ComandosEventoMatricula>();
+            services.TryAddScopedWorkerService<IComandosRegistroPoa, ComandosRegistroPoa>();
         }
 
         private static void RegistrarConsultas(IServiceCollection services)
@@ -78,6 +79,7 @@ namespace SME.SGP.IoC
             services.TryAddScopedWorkerService<IConsultasFrequencia, ConsultasFrequencia>();
             services.TryAddScopedWorkerService<IConsultasAtribuicaoEsporadica, ConsultasAtribuicaoEsporadica>();
             services.TryAddScopedWorkerService<IConsultasEventoMatricula, ConsultasEventoMatricula>();
+            services.TryAddScopedWorkerService<IConsultasRegistroPoa, ConsultasRegistroPoa>();
         }
 
         private static void RegistrarContextos(IServiceCollection services)
@@ -134,6 +136,7 @@ namespace SME.SGP.IoC
             services.TryAddScopedWorkerService<IRepositorioEventoMatricula, RepositorioEventoMatricula>();
             services.TryAddScopedWorkerService<IRepositorioNotificacaoAulaPrevista, RepositorioNotificacaoAulaPrevista>();
             services.TryAddScopedWorkerService<IRepositorioAulaPrevista, RepositorioAulaPrevista>();
+            services.TryAddScopedWorkerService<IRepositorioRegistroPoa, RepositorioRegistroPoa>();
         }
 
         private static void RegistrarServicos(IServiceCollection services)

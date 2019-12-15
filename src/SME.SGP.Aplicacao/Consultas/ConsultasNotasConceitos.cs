@@ -12,7 +12,9 @@ namespace SME.SGP.Aplicacao
     public class ConsultasNotasConceitos : IConsultasNotasConceitos
     {
         private readonly IConsultaAtividadeAvaliativa consultasAtividadeAvaliativa;
+        private readonly IRepositorioAtividadeAvaliativa repositorioAtividadeAvaliativa;
         private readonly IRepositorioFrequencia repositorioFrequencia;
+        private readonly IRepositorioNotaParametro repositorioNotaParametro;
         private readonly IRepositorioNotasConceitos repositorioNotasConceitos;
         private readonly IServicoAluno servicoAluno;
         private readonly IServicoDeNotasConceitos servicoDeNotasConceitos;
@@ -21,7 +23,7 @@ namespace SME.SGP.Aplicacao
 
         public ConsultasNotasConceitos(IServicoEOL servicoEOL, IConsultaAtividadeAvaliativa consultasAtividadeAvaliativa,
             IServicoDeNotasConceitos servicoDeNotasConceitos, IRepositorioNotasConceitos repositorioNotasConceitos,
-            IRepositorioFrequencia repositorioFrequencia, IServicoUsuario servicoUsuario, IServicoAluno servicoAluno)
+            IRepositorioFrequencia repositorioFrequencia, IServicoUsuario servicoUsuario, IServicoAluno servicoAluno, IRepositorioNotaParametro repositorioNotaParametro, IRepositorioAtividadeAvaliativa repositorioAtividadeAvaliativa)
         {
             this.servicoEOL = servicoEOL ?? throw new ArgumentNullException(nameof(servicoEOL));
             this.consultasAtividadeAvaliativa = consultasAtividadeAvaliativa ?? throw new ArgumentNullException(nameof(consultasAtividadeAvaliativa));
@@ -30,6 +32,8 @@ namespace SME.SGP.Aplicacao
             this.repositorioFrequencia = repositorioFrequencia ?? throw new ArgumentNullException(nameof(repositorioFrequencia));
             this.servicoUsuario = servicoUsuario ?? throw new ArgumentNullException(nameof(servicoUsuario));
             this.servicoAluno = servicoAluno ?? throw new ArgumentNullException(nameof(servicoAluno));
+            this.repositorioNotaParametro = repositorioNotaParametro ?? throw new ArgumentNullException(nameof(repositorioNotaParametro));
+            this.repositorioAtividadeAvaliativa = repositorioAtividadeAvaliativa ?? throw new ArgumentNullException(nameof(repositorioAtividadeAvaliativa));
         }
 
         public async Task<NotasConceitosRetornoDto> ListarNotasConceitos(string turmaCodigo, int? bimestre, int anoLetivo, string disciplinaCodigo, Modalidade modalidade)
@@ -113,7 +117,7 @@ namespace SME.SGP.Aplicacao
 
                             var ausente = ausenciasAtividadesAvaliativas.Any(a => a.AlunoCodigo == aluno.CodigoAluno && a.AulaData.Date == atividadeAvaliativa.DataAvaliacao.Date);
 
-                            bool podeEditar = PodeEditarNotaOuConceito(usuarioLogado, professorRfTitularTurmaDisciplina, atividadeAvaliativa);
+                            bool podeEditar = PodeEditarNotaOuConceito(usuarioLogado, professorRfTitularTurmaDisciplina, atividadeAvaliativa, aluno);
 
                             var notaAvaliacao = new NotasConceitosNotaAvaliacaoRetornoDto() { AtividadeAvaliativaId = atividadeAvaliativa.Id, NotaConceito = notaParaVisualizar, Ausente = ausente, PodeEditar = podeEditar };
                             notasAvaliacoes.Add(notaAvaliacao);
@@ -168,6 +172,19 @@ namespace SME.SGP.Aplicacao
             return notaTipo.TipoNota;
         }
 
+        public double ObterValorArredondado(long atividadeAvaliativaId, double nota)
+        {
+            var atividadeAvaliativa = repositorioAtividadeAvaliativa.ObterPorId(atividadeAvaliativaId);
+            if (atividadeAvaliativa == null)
+                throw new NegocioException("Não foi possível localizar a atividade avaliativa.");
+
+            var notaParametro = repositorioNotaParametro.ObterPorDataAvaliacao(atividadeAvaliativa.DataAvaliacao);
+            if (notaParametro == null)
+                throw new NegocioException("Não foi possível localizar o parâmetro da nota.");
+
+            return notaParametro.Arredondar(nota);
+        }
+
         private static NotaConceito ObterNotaParaVisualizacao(IEnumerable<NotaConceito> notas, AlunoPorTurmaResposta aluno, AtividadeAvaliativa atividadeAvaliativa)
         {
             var notaDoAluno = notas.FirstOrDefault(a => a.AlunoId == aluno.CodigoAluno && a.AtividadeAvaliativaID == atividadeAvaliativa.Id);
@@ -175,24 +192,28 @@ namespace SME.SGP.Aplicacao
             return notaDoAluno;
         }
 
-        private static bool PodeEditarNotaOuConceito(Usuario usuarioLogado, string professorTitularDaTurmaDisciplinaRf, AtividadeAvaliativa atividadeAvaliativa)
+        private static bool PodeEditarNotaOuConceito(Usuario usuarioLogado, string professorTitularDaTurmaDisciplinaRf,
+            AtividadeAvaliativa atividadeAvaliativa, AlunoPorTurmaResposta aluno)
         {
-            var podeEditar = true;
+            if (aluno.CodigoSituacaoMatricula != SituacaoMatriculaAluno.Ativo && aluno.CodigoSituacaoMatricula != SituacaoMatriculaAluno.PendenteRematricula &&
+                aluno.CodigoSituacaoMatricula != SituacaoMatriculaAluno.Rematriculado && aluno.CodigoSituacaoMatricula != SituacaoMatriculaAluno.SemContinuidade)
+                return false;
+
             if (atividadeAvaliativa.DataAvaliacao.Date > DateTime.Today)
-                podeEditar = false;
+                return false;
 
             if (usuarioLogado.PerfilAtual == Perfis.PERFIL_CJ)
             {
                 if (atividadeAvaliativa.CriadoRF != usuarioLogado.CodigoRf)
-                    podeEditar = false;
+                    return false;
             }
             else
             {
                 if (usuarioLogado.CodigoRf != professorTitularDaTurmaDisciplinaRf)
-                    podeEditar = false;
+                    return false;
             }
 
-            return podeEditar;
+            return true;
         }
 
         private async Task<string> ObterRfProfessorTitularDisciplina(string turmaCodigo, string disciplinaCodigo, List<AtividadeAvaliativa> atividadesAvaliativasdoBimestre)
