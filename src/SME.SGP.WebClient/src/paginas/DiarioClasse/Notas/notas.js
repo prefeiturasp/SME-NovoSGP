@@ -351,6 +351,16 @@ const Notas = () => {
           item => Number(item.numero) === Number(numeroBimestre)
         );
 
+        bimestrePesquisado.alunos.forEach(aluno => {
+          return aluno.notasAvaliacoes.forEach(nota => {
+            const notaOriginal = nota.notaConceito;
+            /* eslint-disable */
+            nota.notaOriginal = notaOriginal;
+            /* eslint-enable */
+            return nota;
+          });
+        });
+
         const bimestreAtualizado = {
           descricao: bimestrePesquisado.descricao,
           numero: bimestrePesquisado.numero,
