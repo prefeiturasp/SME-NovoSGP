@@ -36,18 +36,17 @@ namespace SME.SGP.Dados.Repositorios
             var lista = new List<RegistroFrequenciaFaltanteDto>();
             try
             {
+                Console.WriteLine($"Obtem turmas: {tipoNotificacao} - {ueId}");
                 lista = database.Conexao.Query<RegistroFrequenciaFaltanteDto>(query, new { tipoNotificacao, ueId }).ToList();
             }
             catch (Exception ex)
             {
-                using (SentrySdk.Init("https://09eed44e9e8e4f2387b5e24b35aabc5b@sentry.sme.prefeitura.sp.gov.br/2"))
-                {
-                    SentrySdk.CaptureException(ex);
-                    var evento = new SentryEvent(ex);
-                    evento.Message = $"{query} - parametros :{tipoNotificacao} - {ueId}";
-                    SentrySdk.CaptureEvent(evento);
-                    SentrySdk.CaptureMessage($"{query} - parametros :{tipoNotificacao} - {ueId}");
-                }
+                Console.WriteLine($"Erro ao obter turmas: {ex.Message} - __________________________________________________________________________");
+                SentrySdk.CaptureException(ex);
+                var evento = new SentryEvent(ex);
+                evento.Message = $"{query} - parametros :{tipoNotificacao} - {ueId}";
+                SentrySdk.CaptureEvent(evento);
+                SentrySdk.CaptureMessage($"{query} - parametros :{tipoNotificacao} - {ueId}");
             }
             return lista;
         }
