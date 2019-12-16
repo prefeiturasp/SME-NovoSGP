@@ -1,5 +1,7 @@
-import { Base } from '../../../componentes/colors';
 import styled from 'styled-components';
+import { Base } from '../../../componentes/colors';
+
+export const Label = styled.label``;
 
 export const Titulo = styled.div`
   object-fit: contain;

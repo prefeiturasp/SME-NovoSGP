@@ -42,6 +42,37 @@ namespace SME.SGP.Dominio.Servicos
             this.consultasDisciplina = consultasDisciplina ?? throw new System.ArgumentNullException(nameof(consultasDisciplina));
         }
 
+        public async Task AtualizarQuantidadeFrequencia(long aulaId, int quantidadeOriginal, int quantidadeAtual)
+        {
+            //var frequencia = repositorioFrequencia.ObterRegistroFrequenciaPorAulaId(aulaId);
+            var ausencias = repositorioRegistroAusenciaAluno.ObterRegistrosAusenciaPorAula(aulaId);
+
+            if (quantidadeAtual > quantidadeOriginal)
+            {
+                // Replicar o ultimo registro de frequencia
+                ausencias.Where(a => a.NumeroAula == quantidadeOriginal).ToList()
+                    .ForEach(ausencia =>
+                    {
+                        for (var n=quantidadeOriginal+1; n <= quantidadeAtual; n++)
+                        {
+                            var clone = (RegistroAusenciaAluno)ausencia.Clone();
+                            clone.NumeroAula = n;
+
+                            repositorioRegistroAusenciaAluno.Salvar(clone);
+                        }
+                    });
+            }
+            else
+            {
+                // Excluir os registros de aula maior que o atual
+                ausencias.Where(a => a.NumeroAula > quantidadeAtual).ToList()
+                    .ForEach(ausencia =>
+                    {
+                        repositorioRegistroAusenciaAluno.Remover(ausencia);
+                    });
+            }
+        }
+
         public async Task ExcluirFrequenciaAula(long aulaId)
         {
             await repositorioFrequencia.ExcluirFrequenciaAula(aulaId);
