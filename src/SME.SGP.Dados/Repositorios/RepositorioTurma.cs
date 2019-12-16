@@ -51,6 +51,26 @@ namespace SME.SGP.Dados.Repositorios
             this.contexto = contexto;
         }
 
+        public IEnumerable<Turma> MaterializarCodigosTurma(string[] idTurmas, out string[] codigosNaoEncontrados)
+        {
+            List<Turma> resultado = new List<Turma>();
+            List<string> naoEncontrados = new List<string>();
+
+            for (int i = 0; i < idTurmas.Count(); i = i + 900)
+            {
+                var iteracao = idTurmas.Skip(i).Take(900);
+
+                var armazenados = contexto.Conexao.Query<Turma>(QuerySincronizacao.Replace("#ids", string.Join(",", idTurmas.Select(x => $"'{x}'"))));
+
+                naoEncontrados.AddRange(iteracao.Where(x => !armazenados.Select(y => y.CodigoTurma).Contains(x)));
+
+                resultado.AddRange(armazenados);
+            }
+            codigosNaoEncontrados = naoEncontrados.ToArray();
+
+            return resultado;
+        }
+
         public Turma ObterPorId(string turmaId)
         {
             return contexto.QueryFirstOrDefault<Turma>("select * from turma where turma_id = @turmaId", new { turmaId });

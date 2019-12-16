@@ -1,4 +1,5 @@
 ﻿using Newtonsoft.Json;
+using Sentry;
 using SME.SGP.Aplicacao.Integracoes.Respostas;
 using SME.SGP.Dominio;
 using SME.SGP.Dto;
@@ -87,6 +88,18 @@ namespace SME.SGP.Aplicacao.Integracoes
             {
                 var json = await resposta.Content.ReadAsStringAsync();
                 return JsonConvert.DeserializeObject<AbrangenciaRetornoEolDto>(json);
+            }
+            return null;
+        }
+
+        public async Task<AbrangenciaCompactaVigenteRetornoEOLDTO> ObterAbrangenciaCompactaVigente(string login, Guid perfil)
+        {
+            var resposta = await httpClient.GetAsync($"abrangencia/compacta-vigente/{login}/perfil/{perfil.ToString()}");
+
+            if (resposta.IsSuccessStatusCode)
+            {
+                var json = await resposta.Content.ReadAsStringAsync();
+                return JsonConvert.DeserializeObject<AbrangenciaCompactaVigenteRetornoEOLDTO>(json);
             }
             return null;
         }
@@ -188,6 +201,96 @@ namespace SME.SGP.Aplicacao.Integracoes
             }
             return null;
         }
+
+        public EstruturaInstitucionalRetornoEolDTO ObterEstruturaInstuticionalVigente(DateTime? dataUltimAtualizacaoTurma = null, string[] codigosTurma = null)
+        {
+            var codigoRequisitante = Guid.NewGuid();
+            const int quantidadePagina = 2;
+            var dadosRetornados = quantidadePagina;
+            List<EstruturaInstitucionalRetornoEolDTO> retornosParciais = new List<EstruturaInstitucionalRetornoEolDTO>();
+
+            var filtroTurmas = new StringContent(JsonConvert.SerializeObject(codigosTurma ?? new string[] { }), UnicodeEncoding.UTF8, "application/json");
+
+            httpClient.Timeout = System.Threading.Timeout.InfiniteTimeSpan;
+
+            for (int i = 1; dadosRetornados == quantidadePagina; i++)
+            {
+                string url = $"abrangencia/estrutura-vigente/{codigoRequisitante.ToString()}/pagina/{i}/quantidade/{quantidadePagina}";
+
+                if (dataUltimAtualizacaoTurma.HasValue)
+                    url += $"?dataUltimaAtualizacao={dataUltimAtualizacaoTurma.Value.ToString("yyyy-MM-dd")}";
+
+                httpClient.DefaultRequestHeaders.Clear();
+
+                var resposta = httpClient.PostAsync(url, filtroTurmas).Result;
+
+                if (resposta.IsSuccessStatusCode)
+                {
+                    var json = resposta.Content.ReadAsStringAsync().Result;
+                    var resultadoRetornado = JsonConvert.DeserializeObject<EstruturaInstitucionalRetornoEolDTO>(json);
+
+                    if (resultadoRetornado != null)
+                    {
+                        retornosParciais.Add(resultadoRetornado);
+                        dadosRetornados = resultadoRetornado.Dres.SelectMany(x => x.Ues.Select(y => y.Turmas.Count())).Sum();
+                    }
+                    else
+                        break;
+                }
+                else
+                {
+                    SentrySdk.AddBreadcrumb($"Ocorreu um erro na tentativa de buscar os dados de Estrutura Institucional Vigente - HttpCode {resposta.StatusCode} - Body {resposta.Content?.ReadAsStringAsync()?.Result ?? string.Empty}");
+                    break;
+                }
+            }
+
+            return ConsolidarEstruturaInstitucionalRetornoEOL(retornosParciais);
+        }
+
+        private EstruturaInstitucionalRetornoEolDTO ConsolidarEstruturaInstitucionalRetornoEOL(List<EstruturaInstitucionalRetornoEolDTO> retornosParciais)
+        {
+            List<AbrangenciaDreRetornoEolDto> dres = new List<AbrangenciaDreRetornoEolDto>();
+
+            // Implementado com foreach para facilitar o entendimento do código, um linq mais elaborado pode confundir o entendimento
+            foreach (var item in retornosParciais)
+            {
+                foreach (var dre in item.Dres)
+                {
+                    foreach (var ue in dre.Ues)
+                    {
+                        foreach (var turma in ue.Turmas)
+                        {
+                            var dreRetorno = dres.FirstOrDefault(x => x.Codigo == dre.Codigo);
+
+                            if (dreRetorno == null)
+                            {
+                                dreRetorno = dre;
+                                dres.Add(dreRetorno);
+                            }
+                            else
+                            {
+                                var ueRetorno = dres.SelectMany(x => x.Ues.Where(y => y.Codigo == ue.Codigo)).FirstOrDefault();
+
+                                if (ueRetorno == null)
+                                {
+                                    ueRetorno = ue;
+                                    dreRetorno.Ues.Add(ueRetorno);
+                                }
+                                else
+                                    if (!dres.Any(x => x.Ues.Any(y => y.Turmas.Any(z => z.Codigo == turma.Codigo))))
+                                    ueRetorno.Turmas.Add(turma);
+                            }
+                        }
+                    }
+                }
+            }
+
+            return new EstruturaInstitucionalRetornoEolDTO()
+            {
+                Dres = dres
+            };
+        }
+
 
         public IEnumerable<UsuarioEolRetornoDto> ObterFuncionariosPorCargoUe(string ueId, long cargoId)
         {
@@ -311,7 +414,7 @@ namespace SME.SGP.Aplicacao.Integracoes
             return JsonConvert.DeserializeObject<IEnumerable<ProfessorResumoDto>>(json);
         }
 
-       
+
         public async Task<IEnumerable<ProfessorTitularDisciplinaEol>> ObterProfessoresTitularesDisciplinas(string turmaCodigo, string professorRf = null)
         {
             StringBuilder url = new StringBuilder();
@@ -473,5 +576,6 @@ namespace SME.SGP.Aplicacao.Integracoes
             }
             return null;
         }
+
     }
 }

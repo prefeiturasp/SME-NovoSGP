@@ -29,6 +29,26 @@ namespace SME.SGP.Dados.Repositorios
             return contexto.Conexao.Query<Ue>(query, new { codigos });
         }
 
+        public IEnumerable<Ue> MaterializarCodigosUe(string[] idUes, out string[] codigosNaoEncontrados)
+        {
+            List<Ue> resultado = new List<Ue>();
+            List<string> naoEncontrados = new List<string>();
+
+            for (int i = 0; i < idUes.Count(); i = i + 900)
+            {
+                var iteracao = idUes.Skip(i).Take(900);
+
+                var armazenados = contexto.Conexao.Query<Ue>(QuerySincronizacao.Replace("#ids", string.Join(",", idUes.Select(x => $"'{x}'"))));
+
+                naoEncontrados.AddRange(iteracao.Where(x => !armazenados.Select(y => y.CodigoUe).Contains(x)));
+
+                resultado.AddRange(armazenados);
+            }
+            codigosNaoEncontrados = naoEncontrados.ToArray();
+
+            return resultado;
+        }
+
         public async Task<IEnumerable<Modalidade>> ObterModalidades(string ueCodigo, int ano)
         {
             var query = @"select distinct t.modalidade_codigo from turma t

@@ -16,5 +16,6 @@ namespace SME.SGP.Dominio.Interfaces
         Ue ObterUEPorTurma(string turmaId);
 
         IEnumerable<Ue> Sincronizar(IEnumerable<Ue> entidades, IEnumerable<Dre> dres);
+        IEnumerable<Ue> MaterializarCodigosUe(string[] idUes, out string[] codigosNaoEncontrados);
     }
 }
