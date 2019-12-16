@@ -1,4 +1,5 @@
 ﻿using SME.SGP.Aplicacao.Integracoes;
+using SME.SGP.Aplicacao.Integracoes.Respostas;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Dto;
@@ -53,6 +54,7 @@ namespace SME.SGP.Aplicacao
             if (!filtro.TodasTurmas && string.IsNullOrWhiteSpace(filtro.TurmaId))
                 throw new NegocioException("É necessario informar uma turma para pesquisa");
 
+            var temTurmaInformada = !string.IsNullOrEmpty(filtro.TurmaId);
             var data = filtro.Data.Date;
 
             var perfil = servicoUsuario.ObterPerfilAtual();
@@ -68,7 +70,10 @@ namespace SME.SGP.Aplicacao
 
             var turmasAbrangencia = await ObterTurmasAbrangencia(turmasAulas);
 
-            var disciplinasRegencia = await servicoEOL.ObterDisciplinasParaPlanejamento(Convert.ToInt64(filtro.TurmaId), rf, perfil);
+            IEnumerable<DisciplinaResposta> disciplinasRegencia = Enumerable.Empty<DisciplinaResposta>();
+
+            if (temTurmaInformada)
+                disciplinasRegencia = await servicoEOL.ObterDisciplinasParaPlanejamento(Convert.ToInt64(filtro.TurmaId), rf, perfil);
 
             var idsDisciplinasAulas = aulas.Select(a => long.Parse(a.DisciplinaId)).Distinct();
             var disciplinasEol = servicoEOL.ObterDisciplinasPorIds(idsDisciplinasAulas.ToArray());
@@ -87,9 +92,12 @@ namespace SME.SGP.Aplicacao
                         if (disciplina.Regencia)
                         {
                             var disciplinasRegenciasComAtividades = repositorioAtividadeAvaliativaRegencia.Listar(item.Id).Result;
-                            podeCriarAtividade = disciplinasRegencia.Count() > disciplinasRegenciasComAtividades.Count();
+
                             item.AtividadeAvaliativaRegencia = new List<AtividadeAvaliativaRegencia>();
                             item.AtividadeAvaliativaRegencia.AddRange(disciplinasRegenciasComAtividades);
+                            if (temTurmaInformada)
+                                podeCriarAtividade = disciplinasRegencia.Count() > disciplinasRegenciasComAtividades.Count();
+                            else podeCriarAtividade = false;
                         }
                         else
                             podeCriarAtividade = false;
