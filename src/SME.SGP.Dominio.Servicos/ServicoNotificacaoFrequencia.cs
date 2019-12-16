@@ -21,6 +21,7 @@ namespace SME.SGP.Dominio.Servicos
         private readonly IRepositorioParametrosSistema repositorioParametrosSistema;
         private readonly IRepositorioSupervisorEscolaDre repositorioSupervisorEscolaDre;
         private readonly IRepositorioUe repositorioUe;
+        private readonly string sentryDSN;
         private readonly IServicoEOL servicoEOL;
         private readonly IServicoNotificacao servicoNotificacao;
         private readonly IServicoUsuario servicoUsuario;
@@ -48,11 +49,12 @@ namespace SME.SGP.Dominio.Servicos
             this.configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
             this.repositorioDre = repositorioDre ?? throw new ArgumentNullException(nameof(repositorioDre));
             this.repositorioUe = repositorioUe ?? throw new ArgumentNullException(nameof(repositorioUe));
+            sentryDSN = configuration.GetValue<string>("Sentry:DSN");
         }
 
         public void ExecutaNotificacaoFrequencia()
         {
-            using (SentrySdk.Init("https://09eed44e9e8e4f2387b5e24b35aabc5b@sentry.sme.prefeitura.sp.gov.br/2"))
+            using (SentrySdk.Init(sentryDSN))
             {
                 try
                 {
