@@ -122,7 +122,7 @@ namespace SME.SGP.Aplicacao
             if (frequenciaAluno == null)
                 return null;
 
-            var percentualFrequencia = (int)(frequenciaAluno.TotalAusencias / frequenciaAluno.TotalAulas * 100);
+            var percentualFrequencia = (int)(100 - (frequenciaAluno.TotalAusencias / frequenciaAluno.TotalAulas * 100));
 
             // Critico
             if (percentualFrequencia <= percentualCritico)

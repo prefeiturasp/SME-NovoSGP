@@ -17,7 +17,6 @@ import {
   QuantidadeBotoes,
 } from './plano-aula.css';
 import api from '~/servicos/api';
-import { RegistroMigrado } from '~/paginas/Planejamento/PlanoCiclo/planoCiclo.css';
 import { store } from '~/redux';
 
 // Componentes
@@ -25,11 +24,13 @@ import ModalCopiarConteudo from './componentes/ModalCopiarConteudo';
 import RotasDto from '~/dtos/rotasDto';
 import history from '~/servicos/history';
 import { selecionaDia } from '~/redux/modulos/calendarioProfessor/actions';
+import { RegistroMigrado } from '~/componentes-sgp/registro-migrado';
 
 const PlanoAula = props => {
   const {
     planoAula,
     listaMaterias,
+    carregandoMaterias,
     disciplinaIdSelecionada,
     dataAula,
     ehProfessorCj,
@@ -45,7 +46,7 @@ const PlanoAula = props => {
   } = props;
 
   const [desabilitarCampos, setDesabilitarCampos] = useState(false);
-  const usuario = useSelector(store => store.usuario);
+  const usuario = useSelector(state => state.usuario);
   const { turmaSelecionada } = usuario;
   const turmaId = turmaSelecionada ? turmaSelecionada.turma : 0;
   const [mostrarCardPrincipal, setMostrarCardPrincipal] = useState(true);
@@ -105,7 +106,9 @@ const PlanoAula = props => {
 
   const selecionarObjetivo = id => {
     setModoEdicaoPlano(true);
-    const index = objetivosAprendizagem.findIndex(a => a.id == id);
+    const index = objetivosAprendizagem.findIndex(
+      a => a.id.toString() === id.toString()
+    );
     objetivosAprendizagem[index].selected = !objetivosAprendizagem[index]
       .selected;
     setObjetivos(objetivosAprendizagem);
@@ -113,7 +116,9 @@ const PlanoAula = props => {
 
   const removerObjetivo = id => {
     setModoEdicaoPlano(true);
-    const index = objetivosAprendizagem.findIndex(a => a.id == id);
+    const index = objetivosAprendizagem.findIndex(
+      a => a.id.toString() === id.toString()
+    );
     objetivosAprendizagem[index].selected = false;
     setObjetivos(objetivosAprendizagem);
   };
@@ -146,17 +151,15 @@ const PlanoAula = props => {
           }
         });
       }
-    } else {
-      if (objetivosAprendizagem && objetivosAprendizagem.length > 0) {
-        materia.objetivos.forEach(objetivo => {
-          const idx = objetivosAprendizagem.findIndex(
-            obj => obj.codigo === objetivo.codigo
-          );
-          if (!objetivosAprendizagem[idx].selected) {
-            objetivosAprendizagem.splice(idx, 1);
-          }
-        });
-      }
+    } else if (objetivosAprendizagem && objetivosAprendizagem.length > 0) {
+      materia.objetivos.forEach(objetivo => {
+        const idx = objetivosAprendizagem.findIndex(
+          obj => obj.codigo === objetivo.codigo
+        );
+        if (!objetivosAprendizagem[idx].selected) {
+          objetivosAprendizagem.splice(idx, 1);
+        }
+      });
     }
     setMaterias([...materias]);
   };
@@ -213,7 +216,7 @@ const PlanoAula = props => {
         indice="Plano de aula"
         show={mostrarCardPrincipal}
       >
-        <Loader loading={mostrarCardPrincipal && !materias.length}>
+        <Loader loading={mostrarCardPrincipal && carregandoMaterias}>
           <QuantidadeBotoes className="col-md-12">
             <span>Quantidade de aulas: {planoAula.qtdAulas}</span>
             {!temAvaliacao ? (
@@ -234,8 +237,8 @@ const PlanoAula = props => {
               disabled={!planoAula.id}
             />
             {planoAula.migrado && (
-              <RegistroMigrado className="float-right">
-                Registro Migrado{' '}
+              <RegistroMigrado className="ml-3 align-self-center float-right">
+                Registro Migrado
               </RegistroMigrado>
             )}
           </QuantidadeBotoes>
@@ -294,11 +297,10 @@ const PlanoAula = props => {
                           <ListItemButton
                             className={`${
                               objetivo.selected ? 'objetivo-selecionado ' : ''
-                            }
-                        list-group-item d-flex align-items-center font-weight-bold fonte-14`}
+                            } list-group-item d-flex align-items-center font-weight-bold fonte-14`}
                             role="button"
                             id={objetivo.id}
-                            aria-pressed={objetivo.selected ? true : false}
+                            aria-pressed={!!objetivo.selected}
                             onClick={() => selecionarObjetivo(objetivo.id)}
                             onKeyUp={() => selecionarObjetivo(objetivo.id)}
                             alt={`Codigo do Objetivo : ${objetivo.codigo} `}
@@ -406,7 +408,7 @@ const PlanoAula = props => {
             onClick={() => {}}
             titulo="Desenvolvimento da aula"
             indice="desenv-aula"
-            show={true}
+            show
             configCabecalho={configCabecalho}
           >
             <fieldset className="mt-3">

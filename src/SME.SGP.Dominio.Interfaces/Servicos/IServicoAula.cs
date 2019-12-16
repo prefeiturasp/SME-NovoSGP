@@ -8,6 +8,6 @@ namespace SME.SGP.Dominio.Interfaces
 
         void GravarRecorrencia(bool inclusao, Aula aula, Usuario usuario, RecorrenciaAula recorrencia);
 
-        string Salvar(Aula aula, Usuario usuario, RecorrenciaAula recorrencia);
+        string Salvar(Aula aula, Usuario usuario, RecorrenciaAula recorrencia, int quantidadeOriginal = 0);
     }
 }

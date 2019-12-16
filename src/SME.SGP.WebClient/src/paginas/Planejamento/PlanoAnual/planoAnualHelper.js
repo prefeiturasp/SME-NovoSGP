@@ -37,8 +37,12 @@ export default class PlanoAnualHelper {
       });
   }
 
-  static async ObterDisciplinasPlano(codigoRf, turmaId) {
-    const disciplinas = await Service.getDisciplinasProfessor(codigoRf, turmaId)
+  static async ObterDisciplinasPlano(codigoRf, turmaId, turmaPrograma) {
+    const disciplinas = await Service.getDisciplinasProfessor(
+      codigoRf,
+      turmaId,
+      turmaPrograma
+    )
       .then(res => res)
       .catch(() => {
         erro(`Não foi possivel obter as disciplinas do professor`);
@@ -48,10 +52,15 @@ export default class PlanoAnualHelper {
     return disciplinas;
   }
 
-  static async ObterDiscplinasObjetivos(turmaId, disciplinaSelecionada) {
+  static async ObterDiscplinasObjetivos(
+    turmaId,
+    disciplinaSelecionada,
+    turmaPrograma
+  ) {
     const disciplinas = await Service.getDisciplinasProfessorObjetivos(
       turmaId,
-      disciplinaSelecionada
+      disciplinaSelecionada,
+      turmaPrograma
     )
       .then(res => res)
       .catch(() => {

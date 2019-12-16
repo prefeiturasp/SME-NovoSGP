@@ -232,10 +232,13 @@ const CadastroAula = ({ match }) => {
           ),
         ]);
       }
+
       const val = {
         tipoAula: aula.data.tipoAula,
         disciplinaId: String(aula.data.disciplinaId),
-        dataAula: aula.data.dataAula ? window.moment(aula.data.dataAula) : '',
+        dataAula: aula.data.dataAula
+          ? window.moment(aula.data.dataAula)
+          : window.moment(),
         recorrenciaAula: recorrencia.AULA_UNICA,
         id: aula.data.id,
         tipoCalendarioId: aula.data.tipoCalendarioId,
@@ -243,6 +246,7 @@ const CadastroAula = ({ match }) => {
         turmaId: aula.data.turmaId,
         dataAulaCompleta: window.moment(aula.data.dataAula),
       };
+
       if (aula.data.quantidade > 0 && aula.data.quantidade < 3) {
         val.quantidadeRadio = aula.data.quantidade;
         val.quantidadeTexto = '';
@@ -283,6 +287,7 @@ const CadastroAula = ({ match }) => {
         'Você não salvou as informações preenchidas.',
         'Deseja realmente cancelar as alterações?'
       );
+
       if (confirmou) {
         resetarTela(form);
       }
@@ -324,16 +329,34 @@ const CadastroAula = ({ match }) => {
 
   const onChangeDisciplinas = async (id, form) => {
     onChangeCampos();
+
     let quantidade = 0;
     form.setFieldValue('quantidadeTexto', '');
-    const resultado = await api.get(
-      `v1/grades/aulas/turmas/${turmaId}/disciplinas/${id}`,
-      {
+
+    const resultado = await api
+      .get(`v1/grades/aulas/turmas/${turmaId}/disciplinas/${id}`, {
         params: {
-          data: dataAula ? dataAula.format('YYYY-MM-DD') : '',
+          data: dataAula ? dataAula.format('YYYY-MM-DD') : null,
         },
-      }
-    );
+      })
+      .then(res => res)
+      .catch(err => {
+        const mensagemErro =
+          err &&
+          err.response &&
+          err.response.data &&
+          err.response.data.mensagens;
+
+        if (mensagemErro) {
+          erro(mensagemErro.join(','));
+          return null;
+        }
+
+        erro('Ocorreu um erro, por favor contate o suporte');
+
+        return null;
+      });
+
     if (resultado) {
       if (resultado.status === 200) {
         setControlaQuantidadeAula(true);
@@ -345,21 +368,26 @@ const CadastroAula = ({ match }) => {
           form.setFieldValue('quantidadeRadio', '');
           form.setFieldValue('quantidadeTexto', '');
         }
+
+        if (quantidade > 0) montaValidacoes(1, 0, form);
+        else montaValidacoes(0, 1, form);
       } else if (resultado.status === 204) {
         setControlaQuantidadeAula(false);
       }
+    } else {
+      montaValidacoes(1, 0, form);
     }
-    quantidade > 0 ? montaValidacoes(1, 0, form) : montaValidacoes(0, 1, form);
   };
 
   const onClickCadastrar = async valoresForm => {
+    var observacao = existeFrequenciaPlanoAula ? 'Esta aula, ou sua recorrencia, já possui frequência registrada, após a alteração você deverá acessar a aula e revisar a frequência' : '';
     if (
       quantidadeRecorrencia > 1 &&
       valoresForm.recorrenciaAula !== recorrencia.AULA_UNICA
     ) {
       const confirmado = await confirmar(
         'Atenção',
-        '',
+        observacao,
         `Você tem certeza que deseja alterar ${quantidadeRecorrencia} ocorrências desta aula a partir desta data?`,
         'Sim',
         'Não'
@@ -369,6 +397,19 @@ const CadastroAula = ({ match }) => {
         history.push('/calendario-escolar/calendario-professor');
       }
     } else {
+      if (existeFrequenciaPlanoAula) {
+        const confirmado = await confirmar(
+          'Atenção',
+          observacao,
+          'Você tem certeza que deseja alterar ?',
+          'Sim',
+          'Não'
+        );
+
+        if (!confirmado)
+          return;
+      }
+
       await salvar(valoresForm);
     }
   };
@@ -646,7 +687,7 @@ const CadastroAula = ({ match }) => {
                       !!(
                         listaDisciplinas &&
                         listaDisciplinas.length &&
-                        listaDisciplinas.length == 1
+                        listaDisciplinas.length === 1
                       ) || !novoRegistro
                     }
                   />
@@ -664,7 +705,7 @@ const CadastroAula = ({ match }) => {
                 </div>
                 <div className="col-sm-12 col-md-8 col-lg-8 col-xl-5 mb-2 d-flex justify-content-start">
                   <RadioGroupButton
-                    id="quantidade-aulas"
+                    id="quantidadeRadio"
                     label="Quantidade de Aulas"
                     form={form}
                     opcoes={opcoesQuantidadeAulas}
