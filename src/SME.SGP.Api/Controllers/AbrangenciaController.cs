@@ -37,8 +37,6 @@ namespace SME.SGP.Api.Controllers
         {
             this.consultasAbrangencia = consultasAbrangencia ??
                throw new System.ArgumentNullException(nameof(consultasAbrangencia));
-
-
         }
 
         [HttpGet("{filtro}")]
@@ -83,9 +81,9 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(IEnumerable<EnumeradoRetornoDto>), 200)]
         [ProducesResponseType(401)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        public async Task<IActionResult> ObterModalidades()
+        public async Task<IActionResult> ObterModalidades(int anoLetivo)
         {
-            return Ok(await consultasAbrangencia.ObterModalidades());
+            return Ok(await consultasAbrangencia.ObterModalidades(anoLetivo));
         }
 
         [HttpGet("semestres")]
