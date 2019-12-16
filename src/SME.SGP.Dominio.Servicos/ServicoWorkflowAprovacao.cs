@@ -89,9 +89,9 @@ namespace SME.SGP.Dominio.Servicos
                 EnviaNotificacaoParaNiveis(niveis.ToList(), codigoDaNotificacao);
             else
             {
-                if (workflow.Tipo == WorkflowAprovacaoTipo.Evento)
+                if (workflow.Tipo == WorkflowAprovacaoTipo.Evento_Liberacao_Excepcional)
                 {
-                    AprovarUltimoNivelDoEvento(codigoDaNotificacao, workflow.Id);
+                    AprovarUltimoNivelDeEventoLiberacaoExcepcional(codigoDaNotificacao, workflow.Id);
                 }
                 else if (workflow.Tipo == WorkflowAprovacaoTipo.ReposicaoAula)
                 {
@@ -112,7 +112,19 @@ namespace SME.SGP.Dominio.Servicos
             NotificarCriadorDaAulaQueFoiAprovada(aula, codigoDaNotificacao);
         }
 
-        private void AprovarUltimoNivelDoEvento(long codigoDaNotificacao, long workflowId)
+        private void AprovarUltimoNivelDeEventoDataPassada(long codigoDaNotificacao, long workflowId)
+        {
+            Evento evento = repositorioEvento.ObterPorWorkflowId(workflowId);
+            if (evento == null)
+                throw new NegocioException("Não foi possível localizar o evento deste fluxo de aprovação.");
+
+            evento.AprovarWorkflow();
+            repositorioEvento.Salvar(evento);
+
+            NotificarCriadorDoEventoQueFoiAprovado(evento, codigoDaNotificacao);
+        }
+
+        private void AprovarUltimoNivelDeEventoLiberacaoExcepcional(long codigoDaNotificacao, long workflowId)
         {
             Evento evento = repositorioEvento.ObterPorWorkflowId(workflowId);
             if (evento == null)
@@ -300,7 +312,7 @@ namespace SME.SGP.Dominio.Servicos
 
         private void ReprovarNivel(WorkflowAprovacao workflow, long codigoDaNotificacao, string motivo, Cargo? cargoDoNivelQueRecusou)
         {
-            if (workflow.Tipo == WorkflowAprovacaoTipo.Evento)
+            if (workflow.Tipo == WorkflowAprovacaoTipo.Evento_Liberacao_Excepcional)
             {
                 Evento evento = repositorioEvento.ObterPorWorkflowId(workflow.Id);
                 if (evento == null)
