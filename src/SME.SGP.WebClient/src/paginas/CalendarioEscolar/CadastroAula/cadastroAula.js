@@ -18,6 +18,7 @@ import history from '~/servicos/history';
 import RotasDTO from '~/dtos/rotasDto';
 import { ModalConteudoHtml } from '~/componentes';
 import Alert from '~/componentes/alert';
+import { existsTypeAnnotation } from '~/../../../../Users/Pichau/AppData/Local/Microsoft/TypeScript/3.6/node_modules/@babel/types/lib';
 
 const CadastroAula = ({ match }) => {
   const usuario = useSelector(store => store.usuario);
@@ -380,13 +381,14 @@ const CadastroAula = ({ match }) => {
   };
 
   const onClickCadastrar = async valoresForm => {
+    var observacao = existeFrequenciaPlanoAula ? 'Esta aula, ou sua recorrencia, já possui frequência registrada, após a alteração você deverá acessar a aula e revisar a frequência' : '';
     if (
       quantidadeRecorrencia > 1 &&
       valoresForm.recorrenciaAula !== recorrencia.AULA_UNICA
     ) {
       const confirmado = await confirmar(
         'Atenção',
-        '',
+        observacao,
         `Você tem certeza que deseja alterar ${quantidadeRecorrencia} ocorrências desta aula a partir desta data?`,
         'Sim',
         'Não'
@@ -396,6 +398,19 @@ const CadastroAula = ({ match }) => {
         history.push('/calendario-escolar/calendario-professor');
       }
     } else {
+      if (existeFrequenciaPlanoAula) {
+        const confirmado = await confirmar(
+          'Atenção',
+          observacao,
+          'Você tem certeza que deseja alterar ?',
+          'Sim',
+          'Não'
+        );
+
+        if (!confirmado)
+          return;
+      }
+
       await salvar(valoresForm);
     }
   };

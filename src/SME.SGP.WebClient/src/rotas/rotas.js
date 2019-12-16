@@ -445,7 +445,8 @@ rotas.set(`${RotasDto.NOTAS}`, {
   component: Notas,
   exact: true,
   tipo: RotasTipo.EstruturadaAutenticada,
-  temPermissionamento: false,
+  temPermissionamento: true,
+  chavePermissao: RotasDto.NOTAS,
 });
 
 rotas.set(`${RotasDto.TIPO_AVALIACAO}`, {
