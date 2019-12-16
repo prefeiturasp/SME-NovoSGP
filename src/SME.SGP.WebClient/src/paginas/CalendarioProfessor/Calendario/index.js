@@ -126,7 +126,7 @@ const CalendarioProfessor = () => {
     return () => store.dispatch(zeraCalendario());
   }, []);
 
-  const [eventoSme, setEventoSme] = useState(false);
+  const [eventoSme, setEventoSme] = useState(true);
 
   useEffect(() => {
     if (
