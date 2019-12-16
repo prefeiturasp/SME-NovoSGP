@@ -20,25 +20,3 @@ export const TituloAno = styled.span`
   font-size: 16px;
   color: ${Base.Roxo};
 `;
-
-export const Divergencia = styled.div`
-  display:flex;
-  justify-content: center;
-  align-items: center;
-  vertical-align: middle;
-  background-color: ${Base.LaranjaAlerta};
-  border-radius: 4px;
-  width: 24px;
-  height: 24px;
-  padding-left: 1px;
-  i{
-    font-size: 8px;
-    color: ${Base.Branco};
-  }
-  `
-export const SpanDivergencia = styled.span`
-  font-size: 10px;
-  width: 150px;
-  word-wrap: break-word;
-  padding-left: 10px;
-`

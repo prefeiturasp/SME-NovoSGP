@@ -1,61 +1,144 @@
-﻿using SME.SGP.Aplicacao.Interfaces;
-using SME.SGP.Dominio;
-using SME.SGP.Dominio.Entidades;
+﻿using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
+using System.Linq;
 
 namespace SME.SGP.Aplicacao
 {
     public class ComandosAulaPrevista : IComandosAulaPrevista
     {
         private readonly IRepositorioAulaPrevista repositorio;
+        private readonly IRepositorioAulaPrevistaBimestre repositorioBimestre;
+        private readonly IRepositorioTurma repositorioTurma;
+        private readonly IRepositorioTipoCalendario repositorioTipoCalendario;
         private readonly IUnitOfWork unitOfWork;
 
         public ComandosAulaPrevista(IRepositorioAulaPrevista repositorio,
+                                    IRepositorioAulaPrevistaBimestre repositorioBimestre,
+                                    IRepositorioTurma repositorioTurma,
+                                     IRepositorioTipoCalendario repositorioTipoCalendario,
                                     IUnitOfWork unitOfWork)
         {
             this.repositorio = repositorio ?? throw new ArgumentNullException(nameof(repositorio));
+            this.repositorioBimestre = repositorioBimestre ?? throw new ArgumentNullException(nameof(repositorioBimestre));
+            this.repositorioTurma = repositorioTurma ?? throw new ArgumentNullException(nameof(repositorioTurma));
+            this.repositorioTipoCalendario = repositorioTipoCalendario ?? throw new ArgumentNullException(nameof(repositorioTipoCalendario));
             this.unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
         }
 
-        public async Task Inserir(AulaPrevistaDto dto)
+        public async Task<string> Alterar(AulaPrevistaDto aulaPrevistaDto, long id)
         {
-            var aulaPrevista = await ObterAulaPrevistaPorFiltro(0, dto.TipoCalendarioId, dto.TurmaId, dto.DisciplinaId);
+            IEnumerable<AulaPrevistaBimestre> aulasPrevistasBimestre = await repositorioBimestre.ObterBimestresAulasPrevistasPorId(id);
 
             unitOfWork.IniciarTransacao();
 
-            foreach (var bimestre in dto.BimestresQuantidade)
+            foreach (var bimestre in aulaPrevistaDto.BimestresQuantidade)
             {
-                AulaPrevista aula = aulaPrevista.Where(ap => ap.Bimestre == bimestre.Bimestre).FirstOrDefault();
-                aula = MapearParaDominio(dto, bimestre, aula);
-                repositorio.Salvar(aula);
+                AulaPrevistaBimestre aulaPrevistaBimestre = aulasPrevistasBimestre.Where(b => b.Bimestre == bimestre.Bimestre).FirstOrDefault();
+                aulaPrevistaBimestre = MapearParaDominio(id, bimestre, aulaPrevistaBimestre);
+                repositorioBimestre.Salvar(aulaPrevistaBimestre);
             }
 
             unitOfWork.PersistirTransacao();
+
+            return "Alteração realizada com sucesso";
         }
 
-        private async Task<IEnumerable<AulaPrevista>> ObterAulaPrevistaPorFiltro(int bimestre, long tipoCalendarioId, string turmaId, string disciplinaId)
+        public async Task<long> Inserir(AulaPrevistaDto aulaPrevistaDto)
         {
-            return await repositorio.ObterAulasPrevistasPorFiltro(bimestre, tipoCalendarioId, turmaId, disciplinaId);
+            var turma = ObterTurma(aulaPrevistaDto.TurmaId);
+
+            var tipoCalendario = ObterTipoCalendarioPorTurmaAnoLetivo(turma.AnoLetivo, turma.ModalidadeCodigo);
+
+            long id;
+
+            AulaPrevista aulaPrevista = null;
+            aulaPrevista = MapearParaDominio(aulaPrevistaDto, aulaPrevista, tipoCalendario.Id);
+
+            unitOfWork.IniciarTransacao();
+
+            id = await Inserir(aulaPrevistaDto, aulaPrevista);
+
+            unitOfWork.PersistirTransacao();
+
+            return id;
         }
 
-        private AulaPrevista MapearParaDominio(AulaPrevistaDto aulaPrevistaDto, AulaPrevistaBimestreQuantidadeDto aulaPrevistaBimestreQuantidadeDto, AulaPrevista aulaPrevista)
+        private async Task<long> Inserir(AulaPrevistaDto aulaPrevistaDto, AulaPrevista aulaPrevista)
+        {
+            aulaPrevistaDto.Id = repositorio.Salvar(aulaPrevista);
+
+            if (aulaPrevistaDto.BimestresQuantidade != null)
+                foreach (var bimestreQuantidadeDto in aulaPrevistaDto.BimestresQuantidade)
+                    await repositorioBimestre.SalvarAsync(new AulaPrevistaBimestre()
+                    {
+                        AulaPrevistaId = aulaPrevistaDto.Id,
+                        Bimestre = bimestreQuantidadeDto.Bimestre,
+                        Previstas = bimestreQuantidadeDto.Quantidade
+                    });
+
+            return aulaPrevistaDto.Id;
+        }
+
+        private Turma ObterTurma(string turmaId)
+        {
+            var turma = repositorioTurma.ObterPorId(turmaId);
+
+            if (turma == null)
+                throw new NegocioException("Turma não encontrada!");
+
+            return turma;
+        }
+
+        private TipoCalendario ObterTipoCalendarioPorTurmaAnoLetivo(int anoLetivo, Modalidade turmaModalidade)
+        {
+            var tipoCalendario = repositorioTipoCalendario.BuscarPorAnoLetivoEModalidade(anoLetivo, ModalidadeParaModalidadeTipoCalendario(turmaModalidade));
+
+            if (tipoCalendario == null)
+                throw new NegocioException("Tipo calendário não encontrado!");
+
+            return tipoCalendario;
+        }
+
+        private AulaPrevista MapearParaDominio(AulaPrevistaDto aulaPrevistaDto, AulaPrevista aulaPrevista, long tipoCalendarioId)
         {
             if (aulaPrevista == null)
             {
                 aulaPrevista = new AulaPrevista();
             }
-            aulaPrevista.Bimestre = aulaPrevistaBimestreQuantidadeDto.Bimestre;
             aulaPrevista.DisciplinaId = aulaPrevistaDto.DisciplinaId;
-            aulaPrevista.Quantidade = aulaPrevistaBimestreQuantidadeDto.Quantidade;
-            aulaPrevista.TipoCalendarioId = aulaPrevistaDto.TipoCalendarioId;
+            aulaPrevista.TipoCalendarioId = tipoCalendarioId;
             aulaPrevista.TurmaId = aulaPrevistaDto.TurmaId;
             return aulaPrevista;
+        }
+
+        private AulaPrevistaBimestre MapearParaDominio(long aulaPrevistaId,
+                                               AulaPrevistaBimestreQuantidadeDto bimestreQuantidadeDto,
+                                               AulaPrevistaBimestre aulaPrevistaBimestre)
+        {
+            if (aulaPrevistaBimestre == null)
+            {
+                aulaPrevistaBimestre = new AulaPrevistaBimestre();
+            }
+            aulaPrevistaBimestre.AulaPrevistaId = aulaPrevistaId;
+            aulaPrevistaBimestre.Bimestre = bimestreQuantidadeDto.Bimestre;
+            aulaPrevistaBimestre.Previstas = bimestreQuantidadeDto.Quantidade;
+            return aulaPrevistaBimestre;
+        }
+
+        private ModalidadeTipoCalendario ModalidadeParaModalidadeTipoCalendario(Modalidade modalidade)
+        {
+            switch (modalidade)
+            {
+                case Modalidade.EJA:
+                    return ModalidadeTipoCalendario.EJA;
+
+                default:
+                    return ModalidadeTipoCalendario.FundamentalMedio;
+            }
         }
     }
 }
