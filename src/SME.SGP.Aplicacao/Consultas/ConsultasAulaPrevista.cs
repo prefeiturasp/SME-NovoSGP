@@ -65,7 +65,7 @@ namespace SME.SGP.Aplicacao
         {
             var turma = ObterTurma(turmaId);
 
-            var tipoCalendario = ObterTipoCalendarioPorTurma(turma.AnoLetivo, turma.ModalidadeCodigo);
+            var tipoCalendario = ObterTipoCalendarioPorTurmaAnoLetivo(turma.AnoLetivo, turma.ModalidadeCodigo);
 
             AulasPrevistasDadasAuditoriaDto aulaPrevistaDto;
 
@@ -98,7 +98,7 @@ namespace SME.SGP.Aplicacao
             return turma;
         }
 
-        private TipoCalendario ObterTipoCalendarioPorTurma(int anoLetivo, Modalidade turmaModalidade)
+        private TipoCalendario ObterTipoCalendarioPorTurmaAnoLetivo(int anoLetivo, Modalidade turmaModalidade)
         {
             var tipoCalendario = repositorioTipoCalendario.BuscarPorAnoLetivoEModalidade(anoLetivo, ModalidadeParaModalidadeTipoCalendario(turmaModalidade));
 
