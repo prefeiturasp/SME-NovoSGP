@@ -284,8 +284,8 @@ namespace SME.SGP.Dominio.Servicos
             var feriadosMoveis = await repositorioFeriadoCalendario.ObterFeriadosCalendario(new FiltroFeriadoCalendarioDto { Ano = DateTime.Now.Year, Tipo = TipoFeriadoCalendario.Movel });
             var feriadosFixos = await repositorioFeriadoCalendario.ObterFeriadosCalendario(new FiltroFeriadoCalendarioDto { Tipo = TipoFeriadoCalendario.Fixo });
 
-            var feriados = feriadosFixos.ToList();
-            feriados.AddRange(feriadosMoveis);
+            var feriados = feriadosFixos?.ToList();
+            feriados?.AddRange(feriadosMoveis);
 
             if (feriados == null || !feriados.Any())
                 throw new NegocioException("Nenhum feriado foi encontrado");
