@@ -2,7 +2,6 @@
 using System;
 using System.Collections.Generic;
 using System.Net;
-using System.Text;
 using Xunit;
 using Xunit.Extensions.Ordering;
 
@@ -12,11 +11,10 @@ namespace SME.SGP.Integracao.Teste
     public class RegistroPoaTeste
     {
         private TestServerFixture fixture;
+        private Func<int, string> obterUrlDelete = (id) => $"api/v1/atribuicao/poa/{id}";
+        private Func<int, string> obterUrlGet = (id) => $"api/v1/atribuicao/poa/{id}";
         private Func<string> obterUrlPost = () => "api/v1/atribuicao/poa";
         private Func<int, string> obterUrlPut = (id) => $"api/v1/atribuicao/poa/{id}";
-        private Func<int, string> obterUrlGet = (id) => $"api/v1/atribuicao/poa/{id}";
-        private Func<int, string> obterUrlDelete = (id) => $"api/v1/atribuicao/poa/{id}";
-
 
         public RegistroPoaTeste(TestServerFixture fixture)
         {
@@ -68,7 +66,7 @@ namespace SME.SGP.Integracao.Teste
         {
             var permissoes = ObterPermissionamentos(inclusao, alteracao, consulta, exclusao);
 
-            fixture = TesteBase.ObtenhaCabecalhoAuthentication(fixture, permissoes, "7777710", "7777710", "40e1e074-37d6-e911-abd6-f81654fe895d");
+            fixture = TesteBase.ObtenhaCabecalhoAuthentication(fixture, permissoes, "8246432", "8246432", "3fe1e074-37d6-e911-abd6-f81654fe895d");
 
             return fixture;
         }
