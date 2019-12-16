@@ -15,13 +15,13 @@ namespace SME.SGP.Dados.Repositorios
         {
         }
 
-        public async Task<PaginacaoResultadoDto<RegistroPoa>> ListarPaginado(string codigoRf, string dreId, int mes,string ueId, string titulo, Paginacao paginacao)
+        public async Task<PaginacaoResultadoDto<RegistroPoa>> ListarPaginado(string codigoRf, string dreId, int mes, string ueId, string titulo, int anoLetivo, Paginacao paginacao)
         {
             var retorno = new PaginacaoResultadoDto<RegistroPoa>();
 
             var sql = MontaQueryCompleta(paginacao, titulo);
 
-            var parametros = new { codigoRf, mes, ueId, dreId, titulo = $"%{titulo}%"};
+            var parametros = new { codigoRf, mes, ueId, dreId, titulo = $"%{titulo?.ToLower()}%", anoLetivo };
 
             using (var multi = await database.Conexao.QueryMultipleAsync(sql, parametros))
             {
@@ -60,26 +60,27 @@ namespace SME.SGP.Dados.Repositorios
                 sql.AppendFormat(" OFFSET {0} ROWS FETCH NEXT {1} ROWS ONLY", paginacao.QuantidadeRegistrosIgnorados, paginacao.QuantidadeRegistros);
         }
 
-        private void ObtenhaCabecalho(StringBuilder sql,bool contador)
+        private void ObtenhaCabecalho(StringBuilder sql, bool contador)
         {
             sql.AppendLine($"select {ObtenhaCampos(contador)} from registro_poa");
         }
 
         private void ObtenhaFiltros(StringBuilder sql, string titulo)
         {
-            sql.AppendLine("where");
-            sql.AppendLine("codigo_rf = @codigoRf");
+            sql.AppendLine("where excluido = false");
+            sql.AppendLine("and ano_letivo = @anoLetivo");
+            sql.AppendLine("and codigo_rf = @codigoRf");
             sql.AppendLine("and mes = @mes");
             sql.AppendLine("and ue_id = @ueId");
             sql.AppendLine("and dre_id = @dreId");
 
             if (!string.IsNullOrWhiteSpace(titulo))
-                sql.AppendLine("and titulo like @titulo");
+                sql.AppendLine("and lower(titulo) like @titulo");
         }
 
         private string ObtenhaCampos(bool contador)
         {
-            return contador ? "count(*)" : "id, codigo_rf, mes, titulo, descricao, dre_id, ue_id ";
+            return contador ? "count(*)" : "id, codigo_rf, mes, titulo, ano_letivo, descricao, dre_id, ue_id ";
         }
     }
 }

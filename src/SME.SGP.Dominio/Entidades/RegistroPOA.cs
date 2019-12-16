@@ -6,6 +6,7 @@
         public string Descricao { get; set; }
         public string DreId { get; set; }
         public bool Excluido { get; set; }
+        public int AnoLetivo { get; set; }
         public int Mes { get; set; }
         public string Titulo { get; set; }
         public string UeId { get; set; }
