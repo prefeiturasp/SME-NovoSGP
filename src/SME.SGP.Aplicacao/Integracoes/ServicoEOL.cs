@@ -297,6 +297,20 @@ namespace SME.SGP.Aplicacao.Integracoes
             return null;
         }
 
+        public async Task<IEnumerable<ProfessorResumoDto>> ObterProfessoresAutoComplete(int anoLetivo, string dreId, string nomeProfessor, bool incluirEmei)
+        {
+            var resposta = await httpClient.GetAsync($"professores/{anoLetivo}/AutoComplete/{dreId}/{incluirEmei}?nome={nomeProfessor}");
+
+            if (!resposta.IsSuccessStatusCode)
+                return null;
+
+            if (resposta.StatusCode == HttpStatusCode.NoContent)
+                return null;
+
+            var json = await resposta.Content.ReadAsStringAsync();
+            return JsonConvert.DeserializeObject<IEnumerable<ProfessorResumoDto>>(json);
+        }
+
         public async Task<IEnumerable<ProfessorResumoDto>> ObterProfessoresAutoComplete(int anoLetivo, string dreId, string nomeProfessor)
         {
             var resposta = await httpClient.GetAsync($"professores/{anoLetivo}/AutoComplete/{dreId}?nome={nomeProfessor}");
@@ -311,7 +325,6 @@ namespace SME.SGP.Aplicacao.Integracoes
             return JsonConvert.DeserializeObject<IEnumerable<ProfessorResumoDto>>(json);
         }
 
-       
         public async Task<IEnumerable<ProfessorTitularDisciplinaEol>> ObterProfessoresTitularesDisciplinas(string turmaCodigo, string professorRf = null)
         {
             StringBuilder url = new StringBuilder();
@@ -348,6 +361,21 @@ namespace SME.SGP.Aplicacao.Integracoes
             var json = await resposta.Content.ReadAsStringAsync();
 
             return JsonConvert.DeserializeObject<UsuarioResumoCoreDto>(json);
+        }
+
+        public async Task<ProfessorResumoDto> ObterResumoProfessorPorRFAnoLetivo(string codigoRF, int anoLetivo, bool incluirEmei)
+        {
+            var resposta = await httpClient.GetAsync($"professores/{codigoRF}/BuscarPorRf/{anoLetivo}/{incluirEmei}");
+
+            if (!resposta.IsSuccessStatusCode)
+                throw new NegocioException("Ocorreu uma falha ao consultar o professor");
+
+            if (resposta.StatusCode == HttpStatusCode.NoContent)
+                throw new NegocioException($"Não foi encontrado professor com RF {codigoRF}");
+
+            var json = await resposta.Content.ReadAsStringAsync();
+
+            return JsonConvert.DeserializeObject<ProfessorResumoDto>(json);
         }
 
         public async Task<ProfessorResumoDto> ObterResumoProfessorPorRFAnoLetivo(string codigoRF, int anoLetivo)

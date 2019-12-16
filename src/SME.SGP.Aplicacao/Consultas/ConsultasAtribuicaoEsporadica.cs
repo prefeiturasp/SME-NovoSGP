@@ -51,6 +51,29 @@ namespace SME.SGP.Aplicacao.Consultas
             return EntidadeParaDtoCompleto(atribuicaoEsporadica);
         }
 
+        private AtribuicaoEsporadicaDto EntidadeParaDto(AtribuicaoEsporadica entidade, bool buscarNome = true, string nomeProfessor = "")
+        {
+            if (buscarNome)
+            {
+                var professorResumo = servicoEOL.ObterResumoProfessorPorRFAnoLetivo(entidade.ProfessorRf, entidade.DataInicio.Year, true).Result;
+                nomeProfessor = professorResumo != null ? professorResumo.Nome : "Professor não encontrado";
+            }
+
+            return new AtribuicaoEsporadicaDto
+            {
+                AnoLetivo = entidade.DataInicio.Year,
+                DataFim = entidade.DataFim,
+                DataInicio = entidade.DataInicio,
+                DreId = entidade.DreId,
+                Excluido = entidade.Excluido,
+                Id = entidade.Id,
+                Migrado = entidade.Migrado,
+                ProfessorNome = nomeProfessor,
+                ProfessorRf = entidade.ProfessorRf,
+                UeId = entidade.UeId
+            };
+        }
+
         private AtribuicaoEsporadicaCompletaDto EntidadeParaDtoCompleto(AtribuicaoEsporadica entidade)
         {
             var professorResumo = servicoEOL.ObterResumoProfessorPorRFAnoLetivo(entidade.ProfessorRf, entidade.DataInicio.Year).Result;
@@ -73,29 +96,6 @@ namespace SME.SGP.Aplicacao.Consultas
                 CriadoEm = entidade.CriadoEm,
                 CriadoPor = entidade.CriadoPor,
                 CriadoRF = entidade.CriadoRF
-            };
-        }
-
-        private AtribuicaoEsporadicaDto EntidadeParaDto(AtribuicaoEsporadica entidade, bool buscarNome = true, string nomeProfessor = "")
-        {
-            if (buscarNome)
-            {
-                var professorResumo = servicoEOL.ObterResumoProfessorPorRFAnoLetivo(entidade.ProfessorRf, entidade.DataInicio.Year).Result;
-                nomeProfessor = professorResumo != null ? professorResumo.Nome : "Professor não encontrado";
-            }
-
-            return new AtribuicaoEsporadicaDto
-            {
-                AnoLetivo = entidade.DataInicio.Year,
-                DataFim = entidade.DataFim,
-                DataInicio = entidade.DataInicio,
-                DreId = entidade.DreId,
-                Excluido = entidade.Excluido,
-                Id = entidade.Id,
-                Migrado = entidade.Migrado,
-                ProfessorNome = nomeProfessor,
-                ProfessorRf = entidade.ProfessorRf,
-                UeId = entidade.UeId
             };
         }
 
