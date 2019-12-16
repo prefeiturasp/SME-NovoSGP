@@ -7,5 +7,7 @@ namespace SME.SGP.Aplicacao.Interfaces
         void Atualizar(RegistroPoaDto registroPoaDto);
 
         void Cadastrar(RegistroPoaDto registroPoaDto);
+
+        void Excluir(long id);
     }
 }
