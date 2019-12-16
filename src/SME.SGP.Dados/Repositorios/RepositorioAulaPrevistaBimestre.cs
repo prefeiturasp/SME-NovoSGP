@@ -19,7 +19,7 @@ namespace SME.SGP.Dados.Repositorios
             StringBuilder query = new StringBuilder();
 
             query.Append(MontarSelect());
-            query.Append(@" where not a.excluido and
+            query.Append(@" where (a.id is null or not a.excluido) and
                         tp.situacao and not tp.excluido and
                         p.tipo_calendario_id = @tipoCalendarioId and
                         ap.turma_id = @turmaId and
@@ -34,7 +34,7 @@ namespace SME.SGP.Dados.Repositorios
             StringBuilder query = new StringBuilder();
 
             query.Append(MontarSelect());
-            query.Append(@" where not a.excluido and
+            query.Append(@" where (a.id is null or not a.excluido) and
                         tp.situacao and not tp.excluido and
                         ap.id = @aulaPrevistaId ");
             query.Append(MontarGroupOrderBy());
