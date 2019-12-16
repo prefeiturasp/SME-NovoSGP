@@ -53,6 +53,17 @@ namespace SME.SGP.Api.Controllers
             return NoContent();
         }
 
+        [HttpGet("listar")]
+        [ProducesResponseType(204)]
+        [ProducesResponseType(typeof(PaginacaoResultadoDto<RegistroPoaDto>), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 601)]
+        public async Task<IActionResult> Listar([FromQuery]RegistroPoaFiltroDto registroPoaFiltroDto, [FromServices]IConsultasRegistroPoa consultasRegistroPoa)
+        {
+            return Ok(await consultasRegistroPoa.ListarPaginado(registroPoaFiltroDto));
+        }
+
+
         [HttpDelete("{id}")]
         [ProducesResponseType(200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]

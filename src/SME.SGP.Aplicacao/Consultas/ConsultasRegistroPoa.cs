@@ -2,16 +2,38 @@
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
+using SME.SGP.Infra.Interfaces;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao.Consultas
 {
-    public class ConsultasRegistroPoa : IConsultasRegistroPoa
+    public class ConsultasRegistroPoa : ConsultasBase, IConsultasRegistroPoa
     {
         private readonly IRepositorioRegistroPoa repositorioRegistroPoa;
 
-        public ConsultasRegistroPoa(IRepositorioRegistroPoa repositorioRegistroPoa)
+        public ConsultasRegistroPoa(IRepositorioRegistroPoa repositorioRegistroPoa, IContextoAplicacao contextoAplicacao) : base(contextoAplicacao)
         {
             this.repositorioRegistroPoa = repositorioRegistroPoa ?? throw new System.ArgumentNullException(nameof(repositorioRegistroPoa));
+        }
+
+        public async Task<PaginacaoResultadoDto<RegistroPoaDto>> ListarPaginado(RegistroPoaFiltroDto registroPoaFiltroDto)
+        {
+            PaginacaoResultadoDto<RegistroPoa> retornoquery = await repositorioRegistroPoa.ListarPaginado(registroPoaFiltroDto.CodigoRf, registroPoaFiltroDto.DreId, registroPoaFiltroDto.Mes, registroPoaFiltroDto.UeId, registroPoaFiltroDto.Titulo, Paginacao);
+
+            var retornoPaginado = new PaginacaoResultadoDto<RegistroPoaDto>()
+            {
+                TotalPaginas = retornoquery.TotalPaginas,
+                TotalRegistros = retornoquery.TotalRegistros
+            };
+
+            bool nenhumItemEncontrado = retornoquery.Items == null ||
+                !retornoquery.Items.Any() ||
+                retornoquery.Items.ElementAt(0).Id == 0;
+
+            retornoPaginado.Items = nenhumItemEncontrado ? null : retornoquery.Items.Select(x => MapearParaDto(x));
+
+            return retornoPaginado;
         }
 
         public RegistroPoaCompletoDto ObterPorId(long id)
@@ -24,7 +46,22 @@ namespace SME.SGP.Aplicacao.Consultas
             return MapearParaDto(retorno);
         }
 
-        private RegistroPoaCompletoDto MapearParaDto(RegistroPoa registroPoa)
+        private RegistroPoaDto MapearParaDto(RegistroPoa registroPoa)
+        {
+            return new RegistroPoaDto
+            {
+                CodigoRf = registroPoa.CodigoRf,
+                Descricao = registroPoa.Descricao,
+                DreId = registroPoa.DreId,
+                Excluido = registroPoa.Excluido,
+                Id = registroPoa.Id,
+                Mes = registroPoa.Mes,
+                Titulo = registroPoa.Titulo,
+                UeId = registroPoa.UeId
+            };
+        }
+
+        private RegistroPoaCompletoDto MapearParaDtoCompleto(RegistroPoa registroPoa)
         {
             return new RegistroPoaCompletoDto
             {
