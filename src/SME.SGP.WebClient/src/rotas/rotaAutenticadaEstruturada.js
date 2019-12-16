@@ -1,9 +1,9 @@
-import React, { useEffect, memo } from 'react';
+import React, { memo } from 'react';
 import t from 'prop-types';
 import { Route, Redirect } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import { setSomenteConsulta } from '~/redux/modulos/navegacao/actions';
-import { store } from '~/redux';
+import { Loader } from '~/componentes';
 
 const RotaAutenticadaEstruturada = memo(
   ({
@@ -17,6 +17,8 @@ const RotaAutenticadaEstruturada = memo(
     const logado = useSelector(state => state.usuario.logado);
     const permissoes = useSelector(state => state.usuario.permissoes);
     const primeiroAcesso = useSelector(state => state.usuario.modificarSenha);
+    const carregandoPerfil = useSelector(state => state.usuario.menu);
+
     dispatch(setSomenteConsulta(false));
 
     if (!logado) {
@@ -35,7 +37,11 @@ const RotaAutenticadaEstruturada = memo(
       return <Redirect to="/sem-permissao" />;
     }
 
-    return <Route {...propriedades} component={Component} />;
+    return (
+      <Loader loading={!carregandoPerfil}>
+        <Route {...propriedades} component={Component} />
+      </Loader>
+    );
   }
 );
 

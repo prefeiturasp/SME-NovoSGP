@@ -22,6 +22,7 @@ namespace SME.SGP.Aplicacao.Teste.Consultas
         private readonly Mock<IHttpContextAccessor> httpContext;
         private readonly Mock<IRepositorioAtividadeAvaliativa> repositorioAtividadeAvaliativa;
         private readonly Mock<IRepositorioAtividadeAvaliativaRegencia> repositorioAtividadeAvaliativaRegencia;
+        private readonly Mock<IRepositorioAtribuicaoCJ> repositorioAtribuicaoCj;
         private readonly Mock<IRepositorioAula> repositorioAula;
         private readonly Mock<IRepositorioEvento> repositorioEvento;
         private readonly Mock<IRepositorioParametrosSistema> repositorioParametrosSistema;
@@ -44,7 +45,7 @@ namespace SME.SGP.Aplicacao.Teste.Consultas
             repositorioAtividadeAvaliativa = new Mock<IRepositorioAtividadeAvaliativa>();
             consultasAbrangencia = new Mock<IConsultasAbrangencia>();
             repositorioAtividadeAvaliativaRegencia = new Mock<IRepositorioAtividadeAvaliativaRegencia>();
-
+            repositorioAtribuicaoCj = new Mock<IRepositorioAtribuicaoCJ>();
             consultasEventosAulasCalendario = new ConsultasEventosAulasCalendario(repositorioEvento.Object, comandosDiasLetivosMock.Object, repositorioAula.Object, servicoUsuario.Object, servicoEOL.Object, consultasAbrangencia.Object, repositorioAtividadeAvaliativa.Object, repositorioPeriodoEscolar.Object, repositorioAtividadeAvaliativaRegencia.Object);
             comandosDiasLetivos = new ComandosDiasLetivos(repositorioPeriodoEscolar.Object, repositorioEvento.Object, repositorioTipoCalendatio.Object, repositorioParametrosSistema.Object);
         }

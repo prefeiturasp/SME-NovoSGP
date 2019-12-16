@@ -67,5 +67,16 @@ namespace SME.SGP.Api.Controllers
             return Ok(await consultasRegistroPoa.ListarPaginado(registroPoaFiltroDto));
         }
 
+
+        [HttpDelete("{id}")]
+        [ProducesResponseType(200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 601)]
+        public IActionResult Delete(long id, [FromServices]IComandosRegistroPoa comandosRegistroPoa)
+        {
+            comandosRegistroPoa.Excluir(id);
+
+            return Ok();
+        }
     }
 }
