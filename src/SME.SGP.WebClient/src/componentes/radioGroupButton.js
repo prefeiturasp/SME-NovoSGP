@@ -64,7 +64,6 @@ const RadioGroupButton = ({
               name={name}
               id={id || name}
               component={Radio.Group}
-              name={name}
               options={opcoes}
               onChange={e => {
                 form.setFieldValue(name, e.target.value);

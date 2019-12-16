@@ -88,6 +88,14 @@ namespace SME.SGP.Integracao.Teste
             return _fixture._clientApi.PostAsync(Url, jsonParaPost).Result;
         }
 
+        public static HttpResponseMessage ExecutePutAsync(TestServerFixture _fixture, string Url, object ObjetoEnviar)
+        {
+            var jsonParaPost = new StringContent(JsonConvert.SerializeObject(ObjetoEnviar), Encoding.UTF8, "application/json");
+
+            return _fixture._clientApi.PutAsync(Url, jsonParaPost).Result;
+        }
+
+
         public static TestServerFixture ObtenhaCabecalhoAuthentication(TestServerFixture _fixture, Permissao[] permissoes, string usuario = "teste", string codigoRf = "123", string perfil = "")
         {
             _fixture._clientApi.DefaultRequestHeaders.Clear();
