@@ -3,6 +3,7 @@ using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -11,10 +12,12 @@ namespace SME.SGP.Aplicacao
     public class ComandosAtividadeAvaliativa : IComandosAtividadeAvaliativa
     {
         private readonly IConsultasDisciplina consultasDisciplina;
+        private readonly IConsultasProfessor consultasProfessor;
         private readonly IRepositorioAtividadeAvaliativa repositorioAtividadeAvaliativa;
         private readonly IRepositorioAtividadeAvaliativaRegencia repositorioAtividadeAvaliativaRegencia;
         private readonly IRepositorioAula repositorioAula;
         private readonly IRepositorioPeriodoEscolar repositorioPeriodoEscolar;
+        private readonly IRepositorioAtribuicaoCJ repositorioAtribuicaoCJ;
         private readonly IServicoEOL servicoEOL;
         private readonly IServicoUsuario servicoUsuario;
         private readonly IUnitOfWork unitOfWork;
@@ -22,26 +25,32 @@ namespace SME.SGP.Aplicacao
         public ComandosAtividadeAvaliativa(
             IRepositorioAtividadeAvaliativa repositorioAtividadeAvaliativa,
             IConsultasDisciplina consultasDisciplina,
+            IConsultasProfessor  consultasProfessor,
             IRepositorioAula repositorioAula,
             IServicoUsuario servicoUsuario,
             IServicoEOL servicoEOL,
             IRepositorioPeriodoEscolar repositorioPeriodoEscolar,
+            IRepositorioAtribuicaoCJ repositorioAtribuicaoCJ,
             IUnitOfWork unitOfWork,
             IRepositorioAtividadeAvaliativaRegencia repositorioAtividadeAvaliativaRegencia)
 
         {
             this.repositorioAtividadeAvaliativa = repositorioAtividadeAvaliativa ?? throw new ArgumentNullException(nameof(repositorioAtividadeAvaliativa));
             this.consultasDisciplina = consultasDisciplina ?? throw new ArgumentException(nameof(consultasDisciplina));
+            this.consultasProfessor = consultasProfessor ?? throw new ArgumentException(nameof(consultasProfessor));
             this.servicoUsuario = servicoUsuario ?? throw new ArgumentException(nameof(servicoUsuario));
             this.servicoEOL = servicoEOL ?? throw new ArgumentException(nameof(servicoEOL));
             this.unitOfWork = unitOfWork ?? throw new ArgumentException(nameof(unitOfWork));
             this.repositorioAula = repositorioAula ?? throw new ArgumentException(nameof(repositorioAula));
             this.repositorioPeriodoEscolar = repositorioPeriodoEscolar ?? throw new ArgumentException(nameof(repositorioPeriodoEscolar));
             this.repositorioAtividadeAvaliativaRegencia = repositorioAtividadeAvaliativaRegencia ?? throw new ArgumentException(nameof(repositorioAtividadeAvaliativaRegencia));
+            this.repositorioAtribuicaoCJ = repositorioAtribuicaoCJ ?? throw new ArgumentException(nameof(repositorioAtribuicaoCJ));
         }
 
-        public async Task Alterar(AtividadeAvaliativaDto dto, long id)
+        public async Task<IEnumerable<RetornoCopiarAtividadeAvaliativaDto>> Alterar(AtividadeAvaliativaDto dto, long id)
         {
+            var mensagens = new List<RetornoCopiarAtividadeAvaliativaDto>();
+
             var usuario = await servicoUsuario.ObterUsuarioLogado();
             var disciplina = ObterDisciplina(dto.DisciplinaId);
             var atividadeAvaliativa = MapearDtoParaEntidade(dto, id, usuario.CodigoRf, disciplina.Regencia);
@@ -66,6 +75,11 @@ namespace SME.SGP.Aplicacao
                 await repositorioAtividadeAvaliativa.SalvarAsync(atividadeAvaliativa);
                 unitOfWork.PersistirTransacao();
             }
+
+            mensagens.Add(new RetornoCopiarAtividadeAvaliativaDto("Atividade Avaliativa alterada com sucesso", true));
+            mensagens.AddRange(await CopiarAtividadeAvaliativa(dto, atividadeAvaliativa.ProfessorRf, usuario.EhProfessorCj()));
+
+            return mensagens;
         }
 
         public async Task Excluir(long idAtividadeAvaliativa)
@@ -92,31 +106,92 @@ namespace SME.SGP.Aplicacao
             }
         }
 
-        public async Task Inserir(AtividadeAvaliativaDto dto)
+        public async Task<IEnumerable<RetornoCopiarAtividadeAvaliativaDto>> Inserir(AtividadeAvaliativaDto dto)
         {
+            var mensagens = new List<RetornoCopiarAtividadeAvaliativaDto>();
             var usuario = await servicoUsuario.ObterUsuarioLogado();
             var disciplina = ObterDisciplina(dto.DisciplinaId);
             var atividadeAvaliativa = MapearDtoParaEntidade(dto, 0L, usuario.CodigoRf, disciplina.Regencia);
-            using (var transacao = unitOfWork.IniciarTransacao())
-            {
-                await repositorioAtividadeAvaliativa.SalvarAsync(atividadeAvaliativa);
-                if (atividadeAvaliativa.EhRegencia)
-                {
-                    if (dto.DisciplinaContidaRegenciaId.Length == 0)
-                        throw new NegocioException("É necessário informar as disciplinas da regência");
+            mensagens.AddRange(await Salvar(atividadeAvaliativa, dto));
+            mensagens.AddRange(await CopiarAtividadeAvaliativa(dto, atividadeAvaliativa.ProfessorRf, usuario.EhProfessorCj()));
 
-                    foreach (string id in dto.DisciplinaContidaRegenciaId)
+            return mensagens;
+        }
+
+        private async Task<IEnumerable<RetornoCopiarAtividadeAvaliativaDto>> Salvar(AtividadeAvaliativa atividadeAvaliativa, AtividadeAvaliativaDto dto, bool ehCopia = false)
+        {
+            var mensagens = new List<RetornoCopiarAtividadeAvaliativaDto>();
+
+            unitOfWork.IniciarTransacao();
+
+            await repositorioAtividadeAvaliativa.SalvarAsync(atividadeAvaliativa);
+            if (atividadeAvaliativa.EhRegencia)
+            {
+                if (dto.DisciplinaContidaRegenciaId.Length == 0)
+                    throw new NegocioException("É necessário informar as disciplinas da regência");
+
+                foreach (string id in dto.DisciplinaContidaRegenciaId)
+                {
+                    var ativRegencia = new AtividadeAvaliativaRegencia
                     {
-                        var ativRegencia = new AtividadeAvaliativaRegencia
-                        {
-                            AtividadeAvaliativaId = atividadeAvaliativa.Id,
-                            DisciplinaContidaRegenciaId = id
-                        };
-                        await repositorioAtividadeAvaliativaRegencia.SalvarAsync(ativRegencia);
+                        AtividadeAvaliativaId = atividadeAvaliativa.Id,
+                        DisciplinaContidaRegenciaId = id
+                    };
+                    await repositorioAtividadeAvaliativaRegencia.SalvarAsync(ativRegencia);
+                }
+            }
+
+            unitOfWork.PersistirTransacao();
+
+            if (!ehCopia)
+                mensagens.Add(new RetornoCopiarAtividadeAvaliativaDto("Atividade Avaliativa criada com sucesso", true));
+
+            return mensagens;
+        }
+
+        private async Task<IEnumerable<RetornoCopiarAtividadeAvaliativaDto>> CopiarAtividadeAvaliativa(AtividadeAvaliativaDto atividadeAvaliativaDto, string usuarioRf, bool ehCJ)
+        {
+            var mensagens = new List<RetornoCopiarAtividadeAvaliativaDto>();
+
+            await ValidarCopias(atividadeAvaliativaDto, usuarioRf, ehCJ);
+
+            if (atividadeAvaliativaDto.TurmasParaCopiar != null && atividadeAvaliativaDto.TurmasParaCopiar.Any())
+            {
+                foreach (var turma in atividadeAvaliativaDto.TurmasParaCopiar)
+                {
+                    atividadeAvaliativaDto.TurmaId = turma.TurmaId;
+                    atividadeAvaliativaDto.DataAvaliacao = turma.DataAtividadeAvaliativa;
+
+                    try
+                    {
+                        await Validar(MapearDtoParaFiltroValidacao(atividadeAvaliativaDto));
+                        var atividadeParaCopiar = MapearDtoParaEntidade(new AtividadeAvaliativa(), atividadeAvaliativaDto, usuarioRf);
+                        await Salvar(atividadeParaCopiar, atividadeAvaliativaDto, true);
+
+                        mensagens.Add(new RetornoCopiarAtividadeAvaliativaDto($"Atividade copiada para a turma: '{turma.TurmaId}' na data '{turma.DataAtividadeAvaliativa.ToString("dd/MM/yyyy")}'.", true));
+                    }
+                    catch (NegocioException nex)
+                    {
+                        mensagens.Add(new RetornoCopiarAtividadeAvaliativaDto($"Erro ao copiar para a turma: '{turma.TurmaId}' na data '{turma.DataAtividadeAvaliativa.ToString("dd/MM/yyyy")}'. {nex.Message}"));
                     }
                 }
-                unitOfWork.PersistirTransacao();
             }
+            return mensagens;
+        }
+
+        private FiltroAtividadeAvaliativaDto MapearDtoParaFiltroValidacao(AtividadeAvaliativaDto atividadeAvaliativaDto)
+        {
+            return new FiltroAtividadeAvaliativaDto()
+            {
+                DataAvaliacao = atividadeAvaliativaDto.DataAvaliacao,
+                DisciplinaContidaRegenciaId = atividadeAvaliativaDto.DisciplinaContidaRegenciaId,
+                DisciplinaId = atividadeAvaliativaDto.DisciplinaId.ToString(),
+                DreId = atividadeAvaliativaDto.DreId,
+                Nome = atividadeAvaliativaDto.Nome,
+                TipoAvaliacaoId = (int)atividadeAvaliativaDto.TipoAvaliacaoId,
+                TurmaId = atividadeAvaliativaDto.TurmaId,
+                UeID = atividadeAvaliativaDto.UeId
+            };
         }
 
         public async Task Validar(FiltroAtividadeAvaliativaDto filtro)
@@ -183,6 +258,22 @@ namespace SME.SGP.Aplicacao
             return atividadeAvaliativa;
         }
 
+        private AtividadeAvaliativa MapearDtoParaEntidade(AtividadeAvaliativa atividadeAvaliativa, AtividadeAvaliativaDto dto, string usuarioRf)
+        {
+            atividadeAvaliativa.ProfessorRf = usuarioRf;
+            atividadeAvaliativa.UeId = dto.UeId;
+            atividadeAvaliativa.DreId = dto.DreId;
+            atividadeAvaliativa.TurmaId = dto.TurmaId;
+            atividadeAvaliativa.Categoria = dto.CategoriaId;
+            atividadeAvaliativa.DisciplinaId = dto.DisciplinaId;
+            atividadeAvaliativa.TipoAvaliacaoId = dto.TipoAvaliacaoId;
+            atividadeAvaliativa.NomeAvaliacao = dto.Nome;
+            atividadeAvaliativa.DescricaoAvaliacao = dto.Descricao;
+            atividadeAvaliativa.DataAvaliacao = dto.DataAvaliacao;
+            atividadeAvaliativa.EhRegencia = dto.EhRegencia;
+            return atividadeAvaliativa;
+        }
+
         private DisciplinaDto ObterDisciplina(long idDisciplina)
         {
             long[] disciplinaId = { idDisciplina };
@@ -190,6 +281,61 @@ namespace SME.SGP.Aplicacao
             if (!disciplina.Any())
                 throw new NegocioException("Disciplina não encontrada no EOL.");
             return disciplina.FirstOrDefault();
+        }
+
+        private async Task ValidarCopias(AtividadeAvaliativaDto atividadeAvaliativaDto, string codigoRf, bool ehProfessorCj)
+        {
+            var turmasAtribuidasAoProfessor = consultasProfessor.Listar(codigoRf);
+            var idsTurmasSelecionadas = atividadeAvaliativaDto.TurmasParaCopiar.Select(x => x.TurmaId).ToList();
+
+            await ValidaTurmasProfessor(ehProfessorCj, atividadeAvaliativaDto.UeId,
+                                  atividadeAvaliativaDto.DisciplinaId.ToString(),
+                                  codigoRf,
+                                  turmasAtribuidasAoProfessor,
+                                  idsTurmasSelecionadas);
+
+            ValidaTurmasAno(ehProfessorCj, turmasAtribuidasAoProfessor, idsTurmasSelecionadas);
+        }
+
+        private void ValidaTurmasAno(bool ehProfessorCJ, IEnumerable<ProfessorTurmaDto> turmasAtribuidasAoProfessor,
+                                     IEnumerable<string> idsTurmasSelecionadas)
+        {
+            if (!ehProfessorCJ)
+            {
+                var turmasAtribuidasSelecionadas = turmasAtribuidasAoProfessor.Where(t => idsTurmasSelecionadas.Contains(t.CodTurma.ToString()));
+                var anoTurma = turmasAtribuidasSelecionadas.First().Ano;
+
+                if (!turmasAtribuidasSelecionadas.All(x => x.Ano == anoTurma))
+                {
+                    throw new NegocioException("Somente é possível migrar o plano de aula para turmas dentro do mesmo ano");
+                }
+            }
+        }
+
+        private async Task ValidaTurmasProfessor(bool ehProfessorCJ, string ueId, string disciplinaId, string codigoRf,
+                                                   IEnumerable<ProfessorTurmaDto> turmasAtribuidasAoProfessor,
+                                           IEnumerable<string> idsTurmasSelecionadas)
+        {
+            var idsTurmasProfessor = turmasAtribuidasAoProfessor?.Select(c => c.CodTurma).ToList();
+
+            IEnumerable<AtribuicaoCJ> lstTurmasCJ = await
+                         repositorioAtribuicaoCJ.ObterPorFiltros(null, null, ueId, Convert.ToInt64(disciplinaId), codigoRf, null, null);
+
+            if (
+                    (
+                        ehProfessorCJ &&
+                        (
+                            lstTurmasCJ == null ||
+                            idsTurmasSelecionadas.Any(c => !lstTurmasCJ.Select(tcj => tcj.TurmaId).Contains(c))
+                        )
+                    ) ||
+                    (
+                        idsTurmasProfessor == null ||
+                        idsTurmasSelecionadas.Any(c => !idsTurmasProfessor.Contains(Convert.ToInt32(c)))
+                    )
+
+               )
+                throw new NegocioException("Somente é possível migrar o plano de aula para turmas atribuidas ao professor");
         }
     }
 }
