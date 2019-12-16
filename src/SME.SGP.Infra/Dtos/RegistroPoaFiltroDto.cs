@@ -16,6 +16,7 @@ namespace SME.SGP.Infra
         public int Mes { get; set; }
         [Required(ErrorMessage = "E necessário informar o id da unidade escolar")]
         public string UeId { get; set; }
+        public int AnoLetivo { get; set; }
         public string Titulo { get; set; }
     }
 }

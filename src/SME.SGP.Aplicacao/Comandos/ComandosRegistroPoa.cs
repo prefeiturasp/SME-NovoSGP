@@ -62,6 +62,7 @@ namespace SME.SGP.Aplicacao
             {
                 Descricao = registroPoaDto.Descricao,
                 DreId = registroPoaDto.DreId,
+                AnoLetivo = registroPoaDto.AnoLetivo,
                 UeId = registroPoaDto.UeId,
                 CodigoRf = registroPoaDto.CodigoRf,
                 Mes = registroPoaDto.Mes,
