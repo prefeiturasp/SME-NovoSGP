@@ -38,7 +38,12 @@ namespace SME.SGP.Aplicacao.Consultas
 
         public RegistroPoaCompletoDto ObterPorId(long id)
         {
-            return MapearParaDtoCompleto(repositorioRegistroPoa.ObterPorId(id));
+            var retorno = repositorioRegistroPoa.ObterPorId(id);
+
+            if (retorno == null || retorno.Excluido)
+                return null;
+
+            return MapearParaDto(retorno);
         }
 
         private RegistroPoaDto MapearParaDto(RegistroPoa registroPoa)

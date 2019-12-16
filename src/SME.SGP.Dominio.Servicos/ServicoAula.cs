@@ -15,35 +15,20 @@ namespace SME.SGP.Dominio.Servicos
     public class ServicoAula : IServicoAula
     {
         private readonly IComandosPlanoAula comandosPlanoAula;
-
         private readonly IComandosWorkflowAprovacao comandosWorkflowAprovacao;
-
         private readonly IConfiguration configuration;
-
-        private readonly IConsultasAbrangencia consultasAbrangencia;
-
         private readonly IConsultasGrade consultasGrade;
-
         private readonly IConsultasPeriodoEscolar consultasPeriodoEscolar;
-
         private readonly IRepositorioAtividadeAvaliativa repositorioAtividadeAvaliativa;
-
         private readonly IRepositorioAtribuicaoCJ repositorioAtribuicaoCJ;
         private readonly IRepositorioAula repositorioAula;
-
         private readonly IRepositorioTipoCalendario repositorioTipoCalendario;
-
         private readonly IRepositorioTurma repositorioTurma;
         private readonly IServicoDiaLetivo servicoDiaLetivo;
-
         private readonly IServicoEOL servicoEOL;
-
         private readonly IServicoFrequencia servicoFrequencia;
-
         private readonly IServicoLog servicoLog;
-
         private readonly IServicoNotificacao servicoNotificacao;
-
         private readonly IConsultasFrequencia consultasFrequencia;
         private readonly IConsultasPlanoAula consultasPlanoAula;
 
@@ -57,7 +42,6 @@ namespace SME.SGP.Dominio.Servicos
                            IConsultasPlanoAula consultasPlanoAula,
                            IServicoLog servicoLog,
                            IServicoNotificacao servicoNotificacao,
-                           IConsultasAbrangencia consultasAbrangencia,
                            IComandosWorkflowAprovacao comandosWorkflowAprovacao,
                            IComandosPlanoAula comandosPlanoAula,
                            IServicoFrequencia servicoFrequencia,
@@ -75,7 +59,6 @@ namespace SME.SGP.Dominio.Servicos
             this.consultasFrequencia = consultasFrequencia ?? throw new ArgumentNullException(nameof(consultasFrequencia));
             this.consultasPlanoAula = consultasPlanoAula ?? throw new ArgumentNullException(nameof(consultasPlanoAula));
             this.servicoLog = servicoLog ?? throw new ArgumentNullException(nameof(servicoLog));
-            this.consultasAbrangencia = consultasAbrangencia ?? throw new ArgumentNullException(nameof(consultasAbrangencia));
             this.comandosWorkflowAprovacao = comandosWorkflowAprovacao ?? throw new ArgumentNullException(nameof(comandosWorkflowAprovacao));
             this.configuration = configuration;
             this.servicoNotificacao = servicoNotificacao ?? throw new ArgumentNullException(nameof(servicoNotificacao));
@@ -113,7 +96,7 @@ namespace SME.SGP.Dominio.Servicos
                 AlterarRecorrencia(aula, usuario, fimRecorrencia);
         }
 
-        public string Salvar(Aula aula, Usuario usuario, RecorrenciaAula recorrencia)
+        public string Salvar(Aula aula, Usuario usuario, RecorrenciaAula recorrencia, int quantidadeOriginal = 0)
         {
             var tipoCalendario = repositorioTipoCalendario.ObterPorId(aula.TipoCalendarioId);
 
@@ -202,6 +185,11 @@ namespace SME.SGP.Dominio.Servicos
 
             repositorioAula.Salvar(aula);
 
+            // Na alteração de quantidade de aulas deve 0r a frequencia se registrada
+            if (!ehInclusao && quantidadeOriginal != 0 && quantidadeOriginal != aula.Quantidade)
+                if (consultasFrequencia.FrequenciaAulaRegistrada(aula.Id).Result)
+                    servicoFrequencia.AtualizarQuantidadeFrequencia(aula.Id, quantidadeOriginal, aula.Quantidade);
+
             // Verifica recorrencia da gravação
             if (recorrencia != RecorrenciaAula.AulaUnica)
             {
@@ -210,6 +198,7 @@ namespace SME.SGP.Dominio.Servicos
                 var mensagem = ehInclusao ? "cadastrada" : "alterada";
                 return $"Aula {mensagem} com sucesso. Serão {mensagem}s aulas recorrentes, em breve você receberá uma notificação com o resultado do processamento.";
             }
+
             return "Aula cadastrada com sucesso.";
         }
 
@@ -231,12 +220,14 @@ namespace SME.SGP.Dominio.Servicos
 
             foreach (var aulaRecorrente in aulasRecorrencia)
             {
+                var quantidadeOriginal = aulaRecorrente.Quantidade;
+
                 aulaRecorrente.DataAula = dataRecorrencia;
                 aulaRecorrente.Quantidade = aula.Quantidade;
 
                 try
                 {
-                    Salvar(aulaRecorrente, usuario, aulaRecorrente.RecorrenciaAula);
+                    Salvar(aulaRecorrente, usuario, aulaRecorrente.RecorrenciaAula, quantidadeOriginal);
                 }
                 catch (NegocioException nex)
                 {
