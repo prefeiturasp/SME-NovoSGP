@@ -30,6 +30,8 @@ namespace SME.SGP.Integracao.Teste
         //    Assert.True(postResult.IsSuccessStatusCode, postResult.Content.ReadAsStringAsync().Result);
         //}
 
+
+
         private TestServerFixture ObtenhaCabecalho(bool inclusao = false, bool alteracao = false, bool consulta = false, bool exclusao = false)
         {
             var permissoes = ObterPermissionamentos(inclusao, alteracao, consulta, exclusao);
@@ -61,9 +63,9 @@ namespace SME.SGP.Integracao.Teste
             var permissoes = new List<Permissao>();
 
             if (inclusao) permissoes.Add(Permissao.AE_I);
-            if (alteracao) permissoes.Add(Permissao.AE_I);
-            if (consulta) permissoes.Add(Permissao.AE_I);
-            if (exclusao) permissoes.Add(Permissao.AE_I);
+            if (alteracao) permissoes.Add(Permissao.AE_A);
+            if (consulta) permissoes.Add(Permissao.AE_C);
+            if (exclusao) permissoes.Add(Permissao.AE_E);
 
             return permissoes.ToArray();
         }
