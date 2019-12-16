@@ -86,6 +86,22 @@ namespace SME.SGP.Dominio
             return Guid.Parse(ObterClaim(CLAIM_PERFIL_ATUAL));
         }
 
+        public async Task<IEnumerable<PrioridadePerfil>> ObterPerfisUsuario(string login)
+        {
+            var chaveRedis = $"perfis-usuario-{login}";
+
+            var perfisPorLogin = await servicoEOL.ObterPerfisPorLogin(login);
+
+            if (perfisPorLogin == null)
+                throw new NegocioException($"Não foi possível obter os perfis do usuário {login}");
+
+            var perfisDoUsuario = repositorioPrioridadePerfil.ObterPerfisPorIds(perfisPorLogin.Perfis);
+
+            _ = repositorioCache.SalvarAsync(chaveRedis, JsonConvert.SerializeObject(perfisDoUsuario));
+
+            return perfisDoUsuario;
+        }
+
         public IEnumerable<Permissao> ObterPermissoes()
         {
             var claims = contextoAplicacao.ObterVarivel<IEnumerable<InternalClaim>>("Claims").Where(a => a.Type == CLAIM_PERMISSAO);
@@ -123,19 +139,10 @@ namespace SME.SGP.Dominio
 
             IEnumerable<PrioridadePerfil> perfisDoUsuario = null;
 
-            if (string.IsNullOrWhiteSpace(perfisUsuarioString))
-            {
-                var perfisPorLogin = await servicoEOL.ObterPerfisPorLogin(login);
-                if (perfisPorLogin == null)
-                    throw new NegocioException($"Não foi possível obter os perfis do usuário {login}");
+            perfisDoUsuario = string.IsNullOrWhiteSpace(perfisUsuarioString)
+                ? await ObterPerfisUsuario(login)
+                : JsonConvert.DeserializeObject<IEnumerable<PrioridadePerfil>>(perfisUsuarioString);
 
-                perfisDoUsuario = repositorioPrioridadePerfil.ObterPerfisPorIds(perfisPorLogin.Perfis);
-                _ = repositorioCache.SalvarAsync(chaveRedis, JsonConvert.SerializeObject(perfisDoUsuario));
-            }
-            else
-            {
-                perfisDoUsuario = JsonConvert.DeserializeObject<IEnumerable<PrioridadePerfil>>(perfisUsuarioString);
-            }
             usuario.DefinirPerfis(perfisDoUsuario);
             usuario.DefinirPerfilAtual(ObterPerfilAtual());
 
@@ -146,11 +153,17 @@ namespace SME.SGP.Dominio
         {
             var usuario = repositorioUsuario.ObterPorCodigoRfLogin(codigoRf, login);
             if (usuario != null)
+            {
+                if (string.IsNullOrEmpty(usuario.Nome) && !string.IsNullOrEmpty(nome))
+                {
+                    usuario.Nome = nome;
+                    repositorioUsuario.Salvar(usuario);
+                }
                 return usuario;
+            }
 
             if (string.IsNullOrEmpty(login))
                 login = codigoRf;
-
 
             usuario = new Usuario() { CodigoRf = codigoRf, Login = login, Nome = nome, Email = email };
 
@@ -167,6 +180,20 @@ namespace SME.SGP.Dominio
 
             if (!perfisDoUsuario.Perfis.Contains(perfilParaModificar))
                 throw new NegocioException($"O usuário {login} não possui acesso ao perfil {perfilParaModificar}");
+        }
+
+        public void RemoverPerfisUsuarioAtual()
+        {
+            var login = ObterLoginAtual();
+
+            RemoverPerfisUsuarioCache(login);
+        }
+
+        public void RemoverPerfisUsuarioCache(string login)
+        {
+            var chaveRedis = $"perfis-usuario-{login}";
+
+            _ = repositorioCache.RemoverAsync(chaveRedis);
         }
 
         public bool UsuarioLogadoPossuiPerfilSme()

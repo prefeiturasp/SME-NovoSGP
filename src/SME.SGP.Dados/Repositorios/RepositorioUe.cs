@@ -1,8 +1,8 @@
 ﻿using Dapper;
 using Dommel;
-using SME.SGP.Dados.Contexto;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
+using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -22,6 +22,13 @@ namespace SME.SGP.Dados.Repositorios
             this.contexto = contexto;
         }
 
+        public IEnumerable<Ue> ListarPorCodigos(string[] codigos)
+        {
+            var query = "select id, ue_id, dre_id, nome, tipo_escola FROM public.ue where ue_id = ANY(@codigos)";
+
+            return contexto.Conexao.Query<Ue>(query, new { codigos });
+        }
+
         public async Task<IEnumerable<Modalidade>> ObterModalidades(string ueCodigo, int ano)
         {
             var query = @"select distinct t.modalidade_codigo from turma t
@@ -31,6 +38,11 @@ namespace SME.SGP.Dados.Repositorios
                                 and t.ano_letivo = @ano";
 
             return await contexto.QueryAsync<Modalidade>(query, new { ueCodigo, ano });
+        }
+
+        public Ue ObterPorCodigo(string ueId)
+        {
+            return contexto.QueryFirstOrDefault<Ue>("select * from ue where ue_id = @ueId", new { ueId });
         }
 
         public async Task<IEnumerable<Turma>> ObterTurmas(string ueCodigo, Modalidade modalidade, int ano)

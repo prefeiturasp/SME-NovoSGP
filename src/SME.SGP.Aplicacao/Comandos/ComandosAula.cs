@@ -24,9 +24,10 @@ namespace SME.SGP.Aplicacao
         public async Task<string> Alterar(AulaDto dto, long id)
         {
             var usuario = await servicoUsuario.ObterUsuarioLogado();
-            var aula = MapearDtoParaEntidade(dto, id, usuario.CodigoRf, usuario.EhProfessorCj());
+            var aulaOrigem = repositorioAula.ObterPorId(id);
+            var aula = MapearDtoParaEntidade(dto, usuario.CodigoRf, usuario.EhProfessorCj(), aulaOrigem);
 
-            return await servicoAula.Salvar(aula, usuario, dto.RecorrenciaAula);
+            return servicoAula.Salvar(aula, usuario, dto.RecorrenciaAula, aulaOrigem.Quantidade);
         }
 
         public async Task<string> Excluir(long id, RecorrenciaAula recorrencia)
@@ -40,33 +41,29 @@ namespace SME.SGP.Aplicacao
         public async Task<string> Inserir(AulaDto dto)
         {
             var usuario = await servicoUsuario.ObterUsuarioLogado();
-            var aula = MapearDtoParaEntidade(dto, 0L, usuario.CodigoRf, usuario.EhProfessorCj());
+            var aula = MapearDtoParaEntidade(dto, usuario.CodigoRf, usuario.EhProfessorCj());
 
-            return await servicoAula.Salvar(aula, usuario, aula.RecorrenciaAula);
+            return servicoAula.Salvar(aula, usuario, aula.RecorrenciaAula);
         }
 
-        private Aula MapearDtoParaEntidade(AulaDto dto, long id, string usuarioRf, bool usuarioEhCJ)
+        private Aula MapearDtoParaEntidade(AulaDto dto, string usuarioRf, bool usuarioEhCJ, Aula aula = null)
         {
-            Aula aula = new Aula();
-            if (id > 0L)
+            Aula aulaEntity = aula ?? new Aula();
+            if (string.IsNullOrEmpty(aulaEntity.ProfessorRf))
             {
-                aula = repositorioAula.ObterPorId(id);
-            }
-            if (string.IsNullOrEmpty(aula.ProfessorRf))
-            {
-                aula.ProfessorRf = usuarioRf;
+                aulaEntity.ProfessorRf = usuarioRf;
                 // Alteração não muda recorrencia da aula
-                aula.RecorrenciaAula = dto.RecorrenciaAula;
+                aulaEntity.RecorrenciaAula = dto.RecorrenciaAula;
             }
-            aula.UeId = dto.UeId;
-            aula.DisciplinaId = dto.DisciplinaId;
-            aula.TurmaId = dto.TurmaId;
-            aula.TipoCalendarioId = dto.TipoCalendarioId;
-            aula.DataAula = dto.DataAula;
-            aula.Quantidade = dto.Quantidade;
-            aula.TipoAula = dto.TipoAula;
-            aula.AulaCJ = usuarioEhCJ;
-            return aula;
+            aulaEntity.UeId = dto.UeId;
+            aulaEntity.DisciplinaId = dto.DisciplinaId;
+            aulaEntity.TurmaId = dto.TurmaId;
+            aulaEntity.TipoCalendarioId = dto.TipoCalendarioId;
+            aulaEntity.DataAula = dto.DataAula;
+            aulaEntity.Quantidade = dto.Quantidade;
+            aulaEntity.TipoAula = dto.TipoAula;
+            aulaEntity.AulaCJ = usuarioEhCJ;
+            return aulaEntity;
         }
     }
 }

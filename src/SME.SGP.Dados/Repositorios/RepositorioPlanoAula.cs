@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using SME.SGP.Infra;
 
 namespace SME.SGP.Dados.Repositorios
 {
@@ -50,6 +51,12 @@ namespace SME.SGP.Dados.Repositorios
             return await database.Conexao.QueryFirstOrDefaultAsync<PlanoAula>(query, new { data, turmaId, disciplinaId });
         }
 
+        public async Task<bool> PlanoAulaRegistrado(long aulaId)
+        {
+            var query = "select 1 from plano_aula where aula_id = @aulaId";
+            return await database.Conexao.QueryFirstOrDefaultAsync<bool>(query, new { aulaId });
+        }
+
         public bool ValidarPlanoExistentePorTurmaDataEDisciplina(DateTime data, string turmaId, string disciplinaId)
         {
             var query = @"select
@@ -61,7 +68,7 @@ namespace SME.SGP.Dados.Repositorios
                               and a.turma_id = @turmaId
                               and a.disciplina_id = @disciplinaId";
 
-            return database.Conexao.Query<bool>(query, new { data, turmaId, disciplinaId }).SingleOrDefault();
+            return database.Conexao.Query<bool>(query, new { data = data.Date, turmaId, disciplinaId }).SingleOrDefault();
         }
     }
 }

@@ -1,44 +1,62 @@
-import React from 'react';
+import React, { memo } from 'react';
+import t from 'prop-types';
 import { Route, Redirect } from 'react-router-dom';
-import { useSelector } from 'react-redux';
-import Pagina from '~/componentes-sgp/conteudo';
+import { useSelector, useDispatch } from 'react-redux';
 import { setSomenteConsulta } from '~/redux/modulos/navegacao/actions';
-import { store } from '~/redux';
+import { Loader } from '~/componentes';
 
-const RotaAutenticadaEstruturada = props => {
-  const { component: Componente, ...propriedades } = props;
-  const logado = useSelector(state => state.usuario.logado);
-  const permissoes = useSelector(state => state.usuario.permissoes);
-  const primeiroAcesso = useSelector(state => state.usuario.modificarSenha);
-  store.dispatch(setSomenteConsulta(false));
+const RotaAutenticadaEstruturada = memo(
+  ({
+    component: Component,
+    temPermissionamento,
+    chavePermissao,
+    location,
+    ...propriedades
+  }) => {
+    const dispatch = useDispatch();
+    const logado = useSelector(state => state.usuario.logado);
+    const permissoes = useSelector(state => state.usuario.permissoes);
+    const primeiroAcesso = useSelector(state => state.usuario.modificarSenha);
+    const carregandoPerfil = useSelector(state => state.usuario.menu);
 
-  return (
-    <Route
-      {...propriedades}
-      render={propriedade =>
-        logado ? (
-          primeiroAcesso ? (
-            <Redirect to="/redefinir-senha" />
-          ) : (
-              !props.temPermissionamento || (props.temPermissionamento && permissoes[props.chavePermissao]) ?
-                <Pagina>
-                  <Componente {...propriedade} />
-                </Pagina>
-                :
-                <Redirect
-                  to={'/sem-permissao'}
-                />
-            )
-        ) : (
-            <Redirect
-              to={`/login/${btoa(
-                props.location.pathname + props.location.search
-              )}`}
-            />
-          )
-      }
-    />
-  );
+    dispatch(setSomenteConsulta(false));
+
+    if (!logado) {
+      return (
+        <Redirect
+          to={`/login/${btoa(`${location.pathname}${location.search}`)}`}
+        />
+      );
+    }
+
+    if (primeiroAcesso) {
+      return <Redirect to="/redefinir-senha" />;
+    }
+
+    if (temPermissionamento && !permissoes[chavePermissao]) {
+      return <Redirect to="/sem-permissao" />;
+    }
+
+    return (
+      <Loader loading={!carregandoPerfil}>
+        <Route {...propriedades} component={Component} />
+      </Loader>
+    );
+  }
+);
+
+RotaAutenticadaEstruturada.propTypes = {
+  component: t.oneOfType([t.any]),
+  temPermissionamento: t.bool,
+  chavePermissao: t.string,
+  location: t.oneOfType([t.any]),
+};
+
+RotaAutenticadaEstruturada.defaultProps = {
+  component: null,
+  temPermissionamento: null,
+  chavePermissao: null,
+  location: null,
 };
 
 export default RotaAutenticadaEstruturada;

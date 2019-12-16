@@ -1,6 +1,8 @@
 ﻿using Microsoft.AspNetCore.Http;
+using SME.SGP.Infra.Escopo;
 using SME.SGP.Infra.Interfaces;
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -8,7 +10,7 @@ using System.Threading;
 
 namespace SME.SGP.Infra.Contexto
 {
-    public class WorkerContext : ContextoBase
+    public class WorkerContext : ContextoBase, IDisposable
     {
         public WorkerContext()
         {
@@ -16,9 +18,9 @@ namespace SME.SGP.Infra.Contexto
 
             WorkerContext contextoTransiente;
 
-            if (!string.IsNullOrWhiteSpace(Thread.CurrentThread.Name))
+            if (!string.IsNullOrWhiteSpace(WorkerContext.ContextIdentifier))
             {
-                if (TransientContexts.TryGetValue(Thread.CurrentThread.Name, out contextoTransiente))
+                if (WorkerServiceScope.TransientContexts.TryGetValue(WorkerContext.ContextIdentifier, out contextoTransiente))
                     AtribuirContexto(contextoTransiente);
             }
         }
@@ -29,10 +31,18 @@ namespace SME.SGP.Infra.Contexto
             return this;
         }
 
-        public static IDictionary<string, WorkerContext> TransientContexts { get; set; }
-        static WorkerContext()
-        { TransientContexts = new Dictionary<string, WorkerContext>(); }
+        public void Dispose()
+        {
+            Variaveis.Clear();
+        }
 
+        public static string ContextIdentifier
+        {
+            get
+            {
+                return Thread.CurrentThread.ManagedThreadId.ToString();
+            }
+        }
     }
 
     public class NoHttpContext : IHttpContextAccessor

@@ -2,8 +2,16 @@ import styled from 'styled-components';
 
 import { Base } from '../../componentes/colors';
 
+export const Container = styled.div``;
+
 export const Lista = styled.div`
-  width: 100%;
+  max-width: 100%;
+  min-width: 100%;
+
+  .desabilitar-nota {
+    opacity: 0.4 !important;
+    cursor: unset !important;
+  }
 
   .tabela-avaliacao-thead {
     background: ${Base.CinzaFundo} !important;
@@ -48,25 +56,47 @@ export const Lista = styled.div`
 
   .width-150 {
     width: 150px;
+    max-width: 150px;
+    min-width: 150px;
   }
 
   .width-70 {
     width: 70px;
+    max-width: 70px;
+    min-width: 70px;
   }
 
   .width-50 {
     width: 50px;
+    max-width: 50px;
+    min-width: 50px;
   }
 
   .width-60 {
     width: 60px;
+    max-width: 60px;
+    min-width: 60px;
+  }
+
+  .width-460 {
+    /* width: 460px;
+    max-width: 460px; */
+    min-width: 460px;
+    width: 100%;
+  }
+
+  .width-400 {
+    /* width: 400px;
+    max-width: 400px; */
+    min-width: 400px;
+    width: 100%;
   }
 
   .cursor-pointer {
     cursor: pointer;
   }
 
-  .botao-ordenacao-avaliacao  {
+  .botao-ordenacao-avaliacao {
     float: left;
     margin-left: -12px !important;
   }
@@ -76,6 +106,7 @@ export const Lista = styled.div`
     overflow: hidden;
     white-space: nowrap;
     max-width: 140px;
+    width: 140px;
   }
 
   .select-conceitos {
@@ -96,7 +127,7 @@ export const Lista = styled.div`
     border-top: solid 2px #d06d12 !important;
     background-color: #d06d12 !important;
     border-radius: 7px !important;
-    border-right: solid 22px #D06D12 !important;
+    border-right: solid 22px #d06d12 !important;
     padding-left: 2px !important;
     margin-left: 13px !important;
   }
@@ -114,7 +145,7 @@ export const Lista = styled.div`
     border-top: solid 3px #d06d12 !important;
     background-color: #d06d12 !important;
     border-radius: 7px !important;
-    border-right: solid 20px #D06D12 !important;
+    border-right: solid 28px #d06d12 !important;
     padding-left: 3px !important;
     margin-left: 23px !important;
   }
@@ -125,11 +156,11 @@ export const Lista = styled.div`
     margin-top: -27px;
     font-size: 10px;
     margin-right: 5px;
-}
   }
 
   .scroll-tabela-avaliacao-thead {
     overflow-y: scroll;
+    overflow-x: hidden;
     ::-webkit-scrollbar {
       width: 9px !important;
       background-color: rgba(229, 237, 244, 0.71) !important;
@@ -156,4 +187,45 @@ export const Lista = styled.div`
       border-radius: 3px !important;
     }
   }
+
+  .linha-expandida {
+    color: ${Base.Roxo};
+    background: ${Base.CinzaFundo};
+    text-align: left;
+    i {
+      transform: rotate(-90deg);
+    }
+  }
+
+  .fa-minus-linha-expandida {
+    border: 1.6px solid #6933ff !important;
+    border-radius: 20px !important;
+    display: inline;
+    font-size: 13px;
+  }
+
+  .ant-input-number-handler-wrap {
+    display: none !important;
+  }
+
+  .border-registro-alterado {
+    border: solid 2px ${Base.Roxo} !important;
+  }
+`;
+
+export const CaixaMarcadores = styled.span`
+  border: 1.6px solid ${Base.Roxo};
+  border-radius: 9px;
+  padding-left: 10px;
+  padding-right: 10px;
+  margin-left: 8px;
+  font-weight: bold;
+  color: ${Base.Roxo};
+`;
+
+export const IconePlusMarcadores = styled.i`
+  color: ${Base.Roxo};
+  font-size: 16px;
+  margin-left: 5px;
+  cursor: pointer;
 `;

@@ -18,6 +18,7 @@ namespace SME.SGP.Aplicacao
         private readonly IComandosDiasLetivos comandosDiasLetivos;
         private readonly IConsultasAbrangencia consultasAbrangencia;
         private readonly IRepositorioAtividadeAvaliativa repositorioAtividadeAvaliativa;
+        private readonly IRepositorioAtividadeAvaliativaRegencia repositorioAtividadeAvaliativaRegencia;
         private readonly IRepositorioAula repositorioAula;
         private readonly IRepositorioEvento repositorioEvento;
         private readonly IRepositorioPeriodoEscolar repositorioPeriodoEscolar;
@@ -32,7 +33,8 @@ namespace SME.SGP.Aplicacao
             IServicoEOL servicoEOL,
             IConsultasAbrangencia consultasAbrangencia,
             IRepositorioAtividadeAvaliativa repositorioAtividadeAvaliativa,
-            IRepositorioPeriodoEscolar repositorioPeriodoEscolar)
+            IRepositorioPeriodoEscolar repositorioPeriodoEscolar,
+            IRepositorioAtividadeAvaliativaRegencia repositorioAtividadeAvaliativaRegencia)
         {
             this.repositorioEvento = repositorioEvento ?? throw new ArgumentNullException(nameof(repositorioEvento));
             this.comandosDiasLetivos = comandosDiasLetivos ?? throw new ArgumentNullException(nameof(comandosDiasLetivos));
@@ -42,6 +44,7 @@ namespace SME.SGP.Aplicacao
             this.consultasAbrangencia = consultasAbrangencia ?? throw new ArgumentNullException(nameof(consultasAbrangencia));
             this.repositorioAtividadeAvaliativa = repositorioAtividadeAvaliativa ?? throw new ArgumentException(nameof(repositorioAtividadeAvaliativa));
             this.repositorioPeriodoEscolar = repositorioPeriodoEscolar ?? throw new ArgumentException(nameof(repositorioPeriodoEscolar));
+            this.repositorioAtividadeAvaliativaRegencia = repositorioAtividadeAvaliativaRegencia ?? throw new ArgumentException(nameof(repositorioAtividadeAvaliativaRegencia));
         }
 
         public async Task<DiaEventoAula> ObterEventoAulasDia(FiltroEventosAulasCalendarioDiaDto filtro)
@@ -51,43 +54,56 @@ namespace SME.SGP.Aplicacao
             if (!filtro.TodasTurmas && string.IsNullOrWhiteSpace(filtro.TurmaId))
                 throw new NegocioException("É necessario informar uma turma para pesquisa");
 
+            var temTurmaInformada = !string.IsNullOrEmpty(filtro.TurmaId);
             var data = filtro.Data.Date;
 
             var perfil = servicoUsuario.ObterPerfilAtual();
             var rf = servicoUsuario.ObterRf();
+
             var eventos = await repositorioEvento.ObterEventosPorTipoDeCalendarioDreUeDia(filtro.TipoCalendarioId, filtro.DreId, filtro.UeId, data, filtro.EhEventoSme);
             var aulas = await repositorioAula.ObterAulasCompleto(filtro.TipoCalendarioId, filtro.TurmaId, filtro.UeId, data, perfil, rf);
             var atividades = await repositorioAtividadeAvaliativa.ObterAtividadesPorDia(filtro.DreId, filtro.UeId, data, rf, filtro.TurmaId);
-            eventos
-            .ToList()
-            .ForEach(x => eventosAulas
-            .Add(new EventosAulasTipoDiaDto
-            {
-                Descricao = x.Nome,
-                Id = x.Id,
-                TipoEvento = x.Descricao
-            }));
 
-            atividades
-            .ToList()
-            .ForEach(x => eventosAulas
-            .Add(new EventosAulasTipoDiaDto
-            {
-                Descricao = x.NomeAvaliacao,
-                Id = x.Id,
-                TipoEvento = "Atividade avaliativa"
-            }));
+            ObterEventosParaEventosAulasDia(eventosAulas, eventos);
 
             var turmasAulas = aulas.GroupBy(x => x.TurmaId).Select(x => x.Key);
 
             var turmasAbrangencia = await ObterTurmasAbrangencia(turmasAulas);
-            var disciplinasProfessor = await ObterDisciplinasAulas(turmasAulas);
+
+            IEnumerable<DisciplinaResposta> disciplinasRegencia = Enumerable.Empty<DisciplinaResposta>();
+
+            if (temTurmaInformada)
+                disciplinasRegencia = await servicoEOL.ObterDisciplinasParaPlanejamento(Convert.ToInt64(filtro.TurmaId), rf, perfil);
+
+            var idsDisciplinasAulas = aulas.Select(a => long.Parse(a.DisciplinaId)).Distinct();
+            var disciplinasEol = servicoEOL.ObterDisciplinasPorIds(idsDisciplinasAulas.ToArray());
 
             aulas
             .ToList()
             .ForEach(x =>
             {
-                var disciplina = disciplinasProfessor?.FirstOrDefault(d => d.CodigoComponenteCurricular.ToString().Equals(x.DisciplinaId));
+                bool podeCriarAtividade = true;
+                var listaAtividades = atividades.Where(w => w.DataAvaliacao.Date == x.DataAula.Date && w.TurmaId == x.TurmaId && w.DisciplinaId.ToString() == x.DisciplinaId).ToList();
+                var disciplina = disciplinasEol?.FirstOrDefault(d => d.CodigoComponenteCurricular.ToString().Equals(x.DisciplinaId));
+                if (atividades != null && disciplina != null)
+                {
+                    foreach (var item in listaAtividades)
+                    {
+                        if (disciplina.Regencia)
+                        {
+                            var disciplinasRegenciasComAtividades = repositorioAtividadeAvaliativaRegencia.Listar(item.Id).Result;
+
+                            item.AtividadeAvaliativaRegencia = new List<AtividadeAvaliativaRegencia>();
+                            item.AtividadeAvaliativaRegencia.AddRange(disciplinasRegenciasComAtividades);
+                            if (temTurmaInformada)
+                                podeCriarAtividade = disciplinasRegencia.Count() > disciplinasRegenciasComAtividades.Count();
+                            else podeCriarAtividade = false;
+                        }
+                        else
+                            podeCriarAtividade = false;
+                    }
+                }
+
                 var turma = turmasAbrangencia.FirstOrDefault(t => t.CodigoTurma.Equals(x.TurmaId));
 
                 eventosAulas.Add(new EventosAulasTipoDiaDto
@@ -97,11 +113,14 @@ namespace SME.SGP.Aplicacao
                     DadosAula = new DadosAulaDto
                     {
                         Disciplina = $"{(disciplina?.Nome ?? "Disciplina não encontrada")} {(x.TipoAula == TipoAula.Reposicao ? "(Reposição)" : "")} {(x.Status == EntidadeStatus.AguardandoAprovacao ? "- Aguardando aprovação" : "")}",
+                        EhRegencia = disciplina.Regencia,
+                        podeCadastrarAvaliacao = podeCriarAtividade,
                         Horario = x.DataAula.ToString("hh:mm tt", CultureInfo.InvariantCulture),
                         Modalidade = turma?.Modalidade.GetAttribute<DisplayAttribute>().Name ?? "Modalidade",
                         Tipo = turma?.TipoEscola.GetAttribute<DisplayAttribute>().ShortName ?? "Escola",
                         Turma = x.TurmaNome,
-                        UnidadeEscolar = x.UeNome
+                        UnidadeEscolar = x.UeNome,
+                        Atividade = listaAtividades
                     }
                 });
             });
@@ -120,7 +139,7 @@ namespace SME.SGP.Aplicacao
             List<DateTime> totalDias = new List<DateTime>();
 
             if (!filtro.TodasTurmas && string.IsNullOrWhiteSpace(filtro.TurmaId))
-                throw new NegocioException("È necessario informar uma turma para pesquisa");
+                throw new NegocioException("É necessario informar uma turma para pesquisa");
 
             var rf = servicoUsuario.ObterRf();
 
@@ -145,7 +164,7 @@ namespace SME.SGP.Aplicacao
         public async Task<IEnumerable<EventosAulasTipoCalendarioDto>> ObterTipoEventosAulas(FiltroEventosAulasCalendarioMesDto filtro)
         {
             if (!filtro.TodasTurmas && string.IsNullOrWhiteSpace(filtro.TurmaId))
-                throw new NegocioException("È necessario informar uma turma para pesquisa");
+                throw new NegocioException("É necessario informar uma turma para pesquisa");
 
             var rf = servicoUsuario.ObterRf();
             var eventosAulas = new List<EventosAulasTipoCalendarioDto>();
@@ -176,6 +195,19 @@ namespace SME.SGP.Aplicacao
             }
 
             return eventosAulas.OrderBy(x => x.Dia);
+        }
+
+        private static void ObterEventosParaEventosAulasDia(List<EventosAulasTipoDiaDto> eventosAulas, IEnumerable<Evento> eventos)
+        {
+            eventos
+                .ToList()
+                .ForEach(x => eventosAulas
+                .Add(new EventosAulasTipoDiaDto
+                {
+                    Descricao = x.Nome,
+                    Id = x.Id,
+                    TipoEvento = x.Descricao
+                }));
         }
 
         private List<EventosAulasCalendarioDto> MapearParaDto(List<DateTime> dias)
@@ -235,21 +267,6 @@ namespace SME.SGP.Aplicacao
                 }
             }
             return dias;
-        }
-
-        private async Task<IEnumerable<DisciplinaResposta>> ObterDisciplinasAulas(IEnumerable<string> turmasAulas)
-        {
-            var disciplinasResposta = new List<DisciplinaResposta>();
-
-            foreach (var turma in turmasAulas)
-            {
-                var retornoEOL = await servicoEOL.ObterDisciplinasPorCodigoTurmaLoginEPerfil(turma, servicoUsuario.ObterLoginAtual(), servicoUsuario.ObterPerfilAtual());
-
-                if (retornoEOL != null)
-                    disciplinasResposta.AddRange(retornoEOL);
-            }
-
-            return disciplinasResposta;
         }
 
         private async Task<IEnumerable<AbrangenciaFiltroRetorno>> ObterTurmasAbrangencia(IEnumerable<string> turmasAulas)

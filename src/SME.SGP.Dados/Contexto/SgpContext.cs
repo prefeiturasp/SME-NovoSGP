@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Npgsql;
+using SME.SGP.Infra;
 using SME.SGP.Infra.Interfaces;
 using System;
 using System.Data;
@@ -17,7 +18,7 @@ namespace SME.SGP.Dados.Contexto
             this.contextoAplicacao = contextoAplicacao ?? throw new ArgumentNullException(nameof(contextoAplicacao));
         }
 
-        public NpgsqlConnection Conexao
+        public IDbConnection Conexao
         {
             get
             {
@@ -42,7 +43,8 @@ namespace SME.SGP.Dados.Contexto
                                           contextoAplicacao.NomeUsuario;
 
         public string UsuarioLogadoRF =>
-                                          contextoAplicacao.ObterVarivel<string>("RF");
+                                          contextoAplicacao.ObterVarivel<string>("RF") ?? "0";
+
 
         public IDbTransaction BeginTransaction()
         {

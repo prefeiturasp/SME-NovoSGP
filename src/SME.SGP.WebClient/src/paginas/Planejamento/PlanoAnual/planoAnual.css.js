@@ -1,5 +1,7 @@
-import { Base } from '../../../componentes/colors';
 import styled from 'styled-components';
+import { Base } from '../../../componentes/colors';
+
+export const Label = styled.label``;
 
 export const Titulo = styled.div`
   object-fit: contain;
@@ -18,18 +20,6 @@ export const TituloAno = styled.span`
   font-weight: bold;
   font-size: 16px;
   color: ${Base.Roxo};
-`;
-
-export const RegistroMigrado = styled.div`
-  text-align: center;
-  font-size: 11px;
-  color: ${Base.Branco};
-  object-fit: contain;
-  font-weight: bold;
-  border-radius: 3px;
-  border: solid 0.5px ${Base.Roxo};
-  background-color: ${Base.Roxo};
-  padding: 5px 10px 5px 10px;
 `;
 
 export const Planejamento = styled.div`
