@@ -18,7 +18,6 @@ import history from '~/servicos/history';
 import RotasDTO from '~/dtos/rotasDto';
 import { ModalConteudoHtml } from '~/componentes';
 import Alert from '~/componentes/alert';
-import { existsTypeAnnotation } from '~/../../../../Users/Pichau/AppData/Local/Microsoft/TypeScript/3.6/node_modules/@babel/types/lib';
 
 const CadastroAula = ({ match }) => {
   const usuario = useSelector(store => store.usuario);
