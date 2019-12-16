@@ -35,6 +35,12 @@ namespace SME.SGP.Dados.Repositorios
             await database.ExecuteAsync(command, new { aulaId });
         }
 
+        public async Task<bool> FrequenciaAulaRegistrada(long aulaId)
+        {
+            var query = @"select 1 from registro_frequencia where aula_id = @aulaId";
+            return await database.Conexao.QueryFirstOrDefaultAsync<bool>(query, new { aulaId });
+        }
+
         public RegistroFrequenciaAulaDto ObterAulaDaFrequencia(long registroFrequenciaId)
         {
             var query = @"select a.ue_id as codigoUe, a.turma_id as codigoTurma

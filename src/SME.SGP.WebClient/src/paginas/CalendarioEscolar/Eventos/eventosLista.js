@@ -16,14 +16,12 @@ import RotasDto from '~/dtos/rotasDto';
 import { confirmar, erros, sucesso, erro } from '~/servicos/alertas';
 import api from '~/servicos/api';
 import history from '~/servicos/history';
-import servicoEvento from '~/servicos/Paginas/Calendario/ServicoEvento';
 import { verificaSomenteConsulta } from '~/servicos/servico-navegacao';
-import Row from '~/componentes/row';
 import Grid from '~/componentes/grid';
 import Alert from '~/componentes/alert';
 import ServicoEvento from '~/servicos/Paginas/Calendario/ServicoEvento';
-
-import { Localizador } from '~/componentes';
+import FiltroHelper from '~/componentes-sgp/filtro/helper';
+import tipoEscolaDTO from '~/dtos/tipoEscolaDto';
 
 const EventosLista = () => {
   const usuario = useSelector(store => store.usuario);
@@ -35,7 +33,7 @@ const EventosLista = () => {
   const [listaDre, setlistaDre] = useState([]);
   const [campoUeDesabilitado, setCampoUeDesabilitado] = useState(true);
   const [dreSelecionada, setDreSelecionada] = useState();
-  const [listaUe, setlistaUe] = useState([]);
+  const [listaUe, setListaUe] = useState([]);
   const [nomeEvento, setNomeEvento] = useState('');
   const [listaTipoEvento, setListaTipoEvento] = useState([]);
   const [tipoEvento, setTipoEvento] = useState(undefined);
@@ -59,7 +57,7 @@ const EventosLista = () => {
       dataInicio: momentSchema.test(
         'validaInicio',
         'Data obrigatória',
-        function() {
+        function validar() {
           const { dataInicio } = this.parent;
           const { dataFim } = this.parent;
           if (!dataInicio && dataFim) {
@@ -68,16 +66,28 @@ const EventosLista = () => {
           return true;
         }
       ),
-      dataFim: momentSchema.test('validaFim', 'Data obrigatória', function() {
-        const { dataInicio } = this.parent;
-        const { dataFim } = this.parent;
-        if (dataInicio && !dataFim) {
-          return false;
+      dataFim: momentSchema.test(
+        'validaFim',
+        'Data obrigatória',
+        function validar() {
+          const { dataInicio } = this.parent;
+          const { dataFim } = this.parent;
+          if (dataInicio && !dataFim) {
+            return false;
+          }
+          return true;
         }
-        return true;
-      }),
+      ),
     })
   );
+
+  const formatarCampoDataGrid = data => {
+    let dataFormatada = '';
+    if (data) {
+      dataFormatada = moment(data).format('DD/MM/YYYY');
+    }
+    return <span> {dataFormatada}</span>;
+  };
 
   const colunas = [
     {
@@ -105,6 +115,18 @@ const EventosLista = () => {
     },
   ];
 
+  const listarDres = async () => {
+    const dres = await ServicoEvento.listarDres();
+
+    if (dres.sucesso) {
+      setlistaDre(dres.conteudo.sort(FiltroHelper.ordenarLista('nome')));
+      return;
+    }
+
+    erro(dres.erro);
+    setlistaDre([]);
+  };
+
   useEffect(() => {
     const obterListaEventos = async () => {
       const tiposEvento = await api.get('v1/calendarios/eventos/tipos/listar');
@@ -124,9 +146,9 @@ const EventosLista = () => {
         tiposCalendario.data &&
         tiposCalendario.data.length
       ) {
-        tiposCalendario.data.map(item => {
-          item.id = String(item.id);
-          item.descricaoTipoCalendario = `${item.anoLetivo} - ${item.nome} - ${item.descricaoPeriodo}`;
+        tiposCalendario.data.forEach(tipo => {
+          tipo.id = String(tipo.id);
+          tipo.descricaoTipoCalendario = `${tipo.anoLetivo} - ${tipo.nome} - ${tipo.descricaoPeriodo}`;
         });
 
         setListaCalendarioEscolar(tiposCalendario.data);
@@ -136,16 +158,19 @@ const EventosLista = () => {
     };
 
     setSomenteConsulta(verificaSomenteConsulta(permissoesTela));
-
     obterListaEventos();
-
     consultaTipoCalendario();
-
-    listarDre();
+    listarDres();
   }, []);
 
+  const validarFiltrar = () => {
+    if (refForm) {
+      refForm.validateForm().then(() => refForm.handleSubmit(e => e));
+    }
+  };
+
   useEffect(() => {
-    validaFiltrar();
+    validarFiltrar();
   }, [nomeEvento, tipoEvento]);
 
   useEffect(() => {
@@ -155,54 +180,6 @@ const EventosLista = () => {
     setMesangemAlerta(semTipoSelecionado);
   }, [filtro]);
 
-  useEffect(() => {
-    if (dreSelecionada) listarUes();
-
-    if (selecionouCalendario) validaFiltrar();
-  }, [dreSelecionada]);
-
-  const listarDre = async () => {
-    const dres = await ServicoEvento.listarDres();
-
-    if (dres.sucesso) {
-      setlistaDre(dres.conteudo);
-      return;
-    }
-
-    erro(dres.erro);
-    setlistaDre([]);
-  };
-
-  const formatarCampoDataGrid = data => {
-    let dataFormatada = '';
-    if (data) {
-      dataFormatada = moment(data).format('DD/MM/YYYY');
-    }
-    return <span> {dataFormatada}</span>;
-  };
-
-  const onClickVoltar = () => {
-    history.push(URL_HOME);
-  };
-
-  const onChangeUe = () => {
-    if (selecionouCalendario) validaFiltrar();
-  };
-
-  const onChangeDreId = async dreId => {
-    refForm.setFieldValue('ueId', undefined);
-
-    if (dreId) {
-      setDreSelecionada(dreId);
-      setCampoUeDesabilitado(false);
-      return;
-    }
-
-    setCampoUeDesabilitado(true);
-    setlistaUe([]);
-    setDreSelecionada([]);
-  };
-
   const listarUes = async () => {
     if (
       !dreSelecionada ||
@@ -211,10 +188,10 @@ const EventosLista = () => {
     )
       return;
 
-    const ues = await servicoEvento.listarUes(dreSelecionada);
+    const ues = await ServicoEvento.listarUes(dreSelecionada);
 
     if (!sucesso) {
-      setlistaUe([]);
+      setListaUe([]);
       erro(ues.erro);
       setlistaDre([]);
       return;
@@ -227,7 +204,39 @@ const EventosLista = () => {
     )
       setCampoUeDesabilitado(true);
 
-    setlistaUe(ues.conteudo);
+    ues.conteudo.forEach(
+      ue => (ue.nome = `${tipoEscolaDTO[ue.tipoEscola]} ${ue.nome}`)
+    );
+
+    setListaUe(ues.conteudo.sort(FiltroHelper.ordenarLista('nome')));
+  };
+
+  useEffect(() => {
+    if (dreSelecionada) listarUes();
+
+    if (selecionouCalendario) validarFiltrar();
+  }, [dreSelecionada]);
+
+  const onClickVoltar = () => {
+    history.push(URL_HOME);
+  };
+
+  const onChangeUe = () => {
+    if (selecionouCalendario) validarFiltrar();
+  };
+
+  const onChangeDreId = async dreId => {
+    refForm.setFieldValue('ueId', undefined);
+
+    if (dreId) {
+      setDreSelecionada(dreId);
+      setCampoUeDesabilitado(false);
+      return;
+    }
+
+    setCampoUeDesabilitado(true);
+    setListaUe([]);
+    setDreSelecionada([]);
   };
 
   const onClickExcluir = async () => {
@@ -244,17 +253,17 @@ const EventosLista = () => {
       );
       if (confirmado) {
         const idsDeletar = eventosSelecionados.map(c => c.id);
-        const excluir = await servicoEvento
-          .deletar(idsDeletar)
-          .catch(e => erros(e));
-        if (excluir && excluir.status == 200) {
+        const excluir = await ServicoEvento.deletar(idsDeletar).catch(e =>
+          erros(e)
+        );
+        if (excluir && excluir.status === 200) {
           const mensagemSucesso = `${
             eventosSelecionados.length > 1
               ? 'Eventos excluídos'
               : 'Evento excluído'
           } com sucesso.`;
           sucesso(mensagemSucesso);
-          validaFiltrar();
+          validarFiltrar();
         }
       }
     }
@@ -269,8 +278,8 @@ const EventosLista = () => {
     setNomeEvento(e.target.value);
   };
 
-  const onChangeTipoEvento = tipoEvento => {
-    setTipoEvento(tipoEvento);
+  const onChangeTipoEvento = tipo => {
+    setTipoEvento(tipo);
   };
 
   const onFiltrar = valoresForm => {
@@ -293,19 +302,13 @@ const EventosLista = () => {
     } else {
       setSelecionouCalendario(false);
       setDreSelecionada([]);
-      setlistaUe([]);
+      setListaUe([]);
       setCampoUeDesabilitado(true);
       setTipoEvento('');
       setNomeEvento('');
       refForm.resetForm();
     }
-    validaFiltrar();
-  };
-
-  const validaFiltrar = () => {
-    if (refForm) {
-      refForm.validateForm().then(() => refForm.handleSubmit(e => e));
-    }
+    validarFiltrar();
   };
 
   const onClickEditar = evento => {
@@ -441,7 +444,7 @@ const EventosLista = () => {
                   <CampoData
                     formatoData="DD/MM/YYYY"
                     name="dataInicio"
-                    onChange={validaFiltrar}
+                    onChange={validarFiltrar}
                     placeholder="Data início"
                     form={form}
                     desabilitado={!selecionouCalendario}
@@ -451,7 +454,7 @@ const EventosLista = () => {
                   <CampoData
                     formatoData="DD/MM/YYYY"
                     name="dataFim"
-                    onChange={validaFiltrar}
+                    onChange={validarFiltrar}
                     placeholder="Data fim"
                     form={form}
                     desabilitado={!selecionouCalendario}

@@ -17,16 +17,16 @@ namespace SME.SGP.Dominio.Servicos.Teste
     {
         #region Mocks
 
-        private readonly Mock<IRepositorioAtribuicaoCJ> atribuicaoCj;
         private readonly Mock<IComandosPlanoAula> comandosPlanoAula;
         private readonly Mock<IComandosWorkflowAprovacao> comandosWorkflowAprovacao;
         private readonly Mock<IConfiguration> configuration;
-        private readonly Mock<IConsultasAbrangencia> consultaAbrangencia;
         private readonly Mock<IConsultasGrade> consultasGrade;
         private readonly Mock<IConsultasPeriodoEscolar> consultasPeriodoEscolar;
-        private readonly Mock<IConsultasPeriodoEscolar> consultasPeriodosEscolar;
+        private readonly Mock<IConsultasPlanoAula> consultasPlanoAula;
+        private readonly Mock<IConsultasFrequencia> consultasFrequencia;
         private readonly Mock<IRepositorioAbrangencia> repositorioAbrangencia;
         private readonly Mock<IRepositorioAtividadeAvaliativa> repositorioAtividadeAvaliativa;
+        private readonly Mock<IRepositorioAtribuicaoCJ> repositorioAtribuicaoCJ;
         private readonly Mock<IRepositorioAula> repositorioAula;
         private readonly Mock<IRepositorioTipoCalendario> repositorioTipoCalendario;
         private readonly Mock<IRepositorioTurma> repositorioTurma;
@@ -37,7 +37,6 @@ namespace SME.SGP.Dominio.Servicos.Teste
         private readonly Mock<IServicoLog> servicoLog;
         private readonly Mock<IServicoNotificacao> servicoNotificacao;
         private readonly Mock<IServicoUsuario> servicoUsuario;
-
         #endregion Mocks
 
         private Aula aula;
@@ -45,7 +44,6 @@ namespace SME.SGP.Dominio.Servicos.Teste
 
         public ServicoAulaTeste()
         {
-            atribuicaoCj = new Mock<IRepositorioAtribuicaoCJ>();
             consultasPeriodoEscolar = new Mock<IConsultasPeriodoEscolar>();
             servicoDiaLetivo = new Mock<IServicoDiaLetivo>();
             repositorioAula = new Mock<IRepositorioAula>();
@@ -56,26 +54,38 @@ namespace SME.SGP.Dominio.Servicos.Teste
             repositorioAbrangencia = new Mock<IRepositorioAbrangencia>();
             servicoNotificacao = new Mock<IServicoNotificacao>();
             comandosWorkflowAprovacao = new Mock<IComandosWorkflowAprovacao>();
-            consultaAbrangencia = new Mock<IConsultasAbrangencia>();
             servicoNotificacao = new Mock<IServicoNotificacao>();
-            consultasPeriodosEscolar = new Mock<IConsultasPeriodoEscolar>();
             comandosPlanoAula = new Mock<IComandosPlanoAula>();
+            consultasPeriodoEscolar = new Mock<IConsultasPeriodoEscolar>();
+            consultasFrequencia = new Mock<IConsultasFrequencia>();
+            consultasPlanoAula = new Mock<IConsultasPlanoAula>();
             servicoFrequencia = new Mock<IServicoFrequencia>();
             servicoUsuario = new Mock<IServicoUsuario>();
             repositorioTurma = new Mock<IRepositorioTurma>();
             configuration = new Mock<IConfiguration>();
             repositorioAtividadeAvaliativa = new Mock<IRepositorioAtividadeAvaliativa>();
             repositorioTurma = new Mock<IRepositorioTurma>();
-            servicoAula = new ServicoAula(repositorioAula.Object, servicoEol.Object,
-                                         repositorioTipoCalendario.Object, servicoDiaLetivo.Object,
-                                         consultasGrade.Object, consultasPeriodoEscolar.Object,
-                                         servicoLog.Object,
-                                         servicoNotificacao.Object, consultaAbrangencia.Object,
-                                         comandosWorkflowAprovacao.Object,
-                                         comandosPlanoAula.Object, servicoFrequencia.Object,
-                                         configuration.Object, repositorioAtividadeAvaliativa.Object,
-                                         atribuicaoCj.Object,
-                                         repositorioTurma.Object);
+            repositorioAtribuicaoCJ = new Mock<IRepositorioAtribuicaoCJ>();
+            consultasFrequencia = new Mock<IConsultasFrequencia>();
+            consultasPlanoAula = new Mock<IConsultasPlanoAula>();
+
+            servicoAula = new ServicoAula(repositorioAula.Object, 
+                                          servicoEol.Object,
+                                          repositorioTipoCalendario.Object, 
+                                          servicoDiaLetivo.Object,
+                                          consultasGrade.Object,
+                                          consultasPeriodoEscolar.Object,
+                                          consultasFrequencia.Object, 
+                                          consultasPlanoAula.Object,
+                                          servicoLog.Object, 
+                                          servicoNotificacao.Object,
+                                          comandosWorkflowAprovacao.Object, 
+                                          comandosPlanoAula.Object, 
+                                          servicoFrequencia.Object,
+                                          configuration.Object,
+                                          repositorioAtividadeAvaliativa.Object,
+                                          repositorioAtribuicaoCJ.Object,
+                                          repositorioTurma.Object);
 
             Setup();
         }
@@ -86,7 +96,7 @@ namespace SME.SGP.Dominio.Servicos.Teste
             aula.Id = 1;
             aula.DataAula = aula.DataAula.AddDays(2);
 
-            var msg = servicoAula.Salvar(aula, usuario, RecorrenciaAula.RepetirBimestreAtual);
+            var msg = servicoAula.Salvar(aula, usuario, RecorrenciaAula.RepetirBimestreAtual, aula.Quantidade);
 
             // ASSERT
             Assert.False(msg == "");
@@ -205,7 +215,7 @@ namespace SME.SGP.Dominio.Servicos.Teste
             servicoEol.Setup(a => a.ObterDisciplinasPorCodigoTurmaLoginEPerfil(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<Guid>())).Returns(Task.FromResult(disciplinaRespotas));
 
             //repositorioPeriodoEscolar.Setup(a => a.ObterPorTipoCalendarioData(aula.TipoCalendarioId, aula.DataAula)).Returns(new PeriodoEscolar());
-            consultasGrade.Setup(a => a.ObterGradeAulasTurmaProfessor(It.IsAny<string>(), It.IsAny<int>(), It.IsAny<string>(), null))
+            consultasGrade.Setup(a => a.ObterGradeAulasTurmaProfessor(It.IsAny<string>(), It.IsAny<int>(), It.IsAny<string>(), It.IsAny<DateTime>(), It.IsAny<string>()))
                 .Returns(Task.FromResult(new GradeComponenteTurmaAulasDto() { QuantidadeAulasGrade = 1, QuantidadeAulasRestante = 1 }));
 
             servicoDiaLetivo.Setup(a => a.ValidarSeEhDiaLetivo(It.IsAny<DateTime>(), It.IsAny<long>(), It.IsAny<string>(), It.IsAny<string>())).Returns(true);
@@ -217,6 +227,10 @@ namespace SME.SGP.Dominio.Servicos.Teste
             //repositorioPeriodoEscolar.Setup(a => a.ObterPorTipoCalendario(aula.TipoCalendarioId)).Returns(new List<PeriodoEscolar>() { periodoEscolar });
             repositorioAbrangencia.Setup(a => a.ObterAbrangenciaTurma(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<Guid>()))
                 .Returns(Task.FromResult(new AbrangenciaFiltroRetorno() { NomeDre = "Dre 1", NomeUe = "Ue 1", NomeTurma = "Turma 1A" }));
+
+
+            consultasFrequencia.Setup(a => a.FrequenciaAulaRegistrada(It.IsAny<long>()))
+                .Returns(Task.FromResult(false));
         }
     }
 }

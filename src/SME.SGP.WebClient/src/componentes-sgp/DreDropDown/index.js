@@ -9,25 +9,28 @@ import AbrangenciaServico from '~/servicos/Abrangencia';
 
 // Funções
 import { valorNuloOuVazio } from '~/utils/funcoes/gerais';
+import FiltroHelper from '~/componentes-sgp/filtro/helper';
 
-function DreDropDown({ form, onChange, label }) {
+function DreDropDown({ form, onChange, label, url }) {
   const [listaDres, setListaDres] = useState([]);
 
   useEffect(() => {
     async function buscarDres() {
-      const { data } = await AbrangenciaServico.buscarDres();
+      const { data } = await AbrangenciaServico.buscarDres(url);
       if (data) {
         setListaDres(
-          data.map(item => ({
-            desc: item.nome,
-            valor: item.codigo,
-            abrev: item.abreviacao,
-          }))
+          data
+            .map(item => ({
+              desc: item.nome,
+              valor: item.codigo,
+              abrev: item.abreviacao,
+            }))
+            .sort(FiltroHelper.ordenarLista('desc'))
         );
       }
     }
     buscarDres();
-  }, []);
+  }, [url]);
 
   useEffect(() => {
     if (listaDres.length === 1) {
@@ -37,11 +40,10 @@ function DreDropDown({ form, onChange, label }) {
   }, [listaDres]);
 
   useEffect(() => {
-    onChange();
     if (!valorNuloOuVazio(form.values.dreId)) {
       onChange(form.values.dreId);
     }
-  }, [form.values.dreId]);
+  }, [form.values.dreId, onChange]);
 
   return (
     <SelectComponent
@@ -66,12 +68,14 @@ DreDropDown.propTypes = {
   ]),
   onChange: PropTypes.func,
   label: PropTypes.string,
+  url: PropTypes.string,
 };
 
 DreDropDown.defaultProps = {
   form: {},
   onChange: () => {},
   label: null,
+  url: null,
 };
 
 export default DreDropDown;

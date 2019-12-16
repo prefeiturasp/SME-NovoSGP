@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useCallback, useEffect, memo } from 'react';
 import PropTypes from 'prop-types';
 
 // Formulario
@@ -10,24 +10,27 @@ import { useDispatch } from 'react-redux';
 
 // Componentes
 import { Grid, Localizador } from '~/componentes';
-import DreDropDown from '../../../componentes/DreDropDown';
-import UeDropDown from '../../../componentes/UeDropDown';
+import DreDropDown from '~/componentes-sgp/DreDropDown';
+import UeDropDown from '~/componentes-sgp/UeDropDown';
 import AnoLetivoTag from '../../../componentes/AnoLetivoTag';
 
 // Styles
 import { Row } from './styles';
+
+// Utils
+import { validaSeObjetoEhNuloOuVazio } from '~/utils/funcoes/gerais';
 
 import {
   selecionarDre,
   selecionarUe,
 } from '~/redux/modulos/atribuicaoEsporadica/actions';
 
-function Filtro({ onFiltrar }) {
+const Filtro = memo(({ onFiltrar }) => {
   const dispatch = useDispatch();
   const [refForm, setRefForm] = useState({});
   const [dreId, setDreId] = useState('');
   const [valoresIniciais] = useState({
-    anoLetivo: '',
+    anoLetivo: '2019',
     dreId: '',
     ueId: '',
     professorRf: '',
@@ -38,16 +41,16 @@ function Filtro({ onFiltrar }) {
   };
 
   const validarFiltro = valores => {
+    if (validaSeObjetoEhNuloOuVazio(valores)) return;
     const formContext = refForm && refForm.getFormikContext();
     if (formContext.isValid && Object.keys(formContext.errors).length === 0) {
       onFiltrar(valores);
     }
   };
 
-  const onChangeDre = valor => {
+  const onChangeDre = useCallback(valor => {
     setDreId(valor);
-    dispatch(selecionarDre(valor));
-  };
+  }, []);
 
   return (
     <Formik
@@ -58,7 +61,7 @@ function Filtro({ onFiltrar }) {
       ref={refFormik => setRefForm(refFormik)}
       validate={valores => validarFiltro(valores)}
       validateOnChange
-      validateOnBlur
+      // validateOnBlur
     >
       {form => (
         <Form className="col-md-12 mb-4">
@@ -89,7 +92,7 @@ function Filtro({ onFiltrar }) {
       )}
     </Formik>
   );
-}
+});
 
 Filtro.propTypes = {
   onFiltrar: PropTypes.func,

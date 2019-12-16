@@ -1,15 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace SME.SGP.Dominio
+﻿namespace SME.SGP.Dominio
 {
     public class AulaPrevista : EntidadeBase
     {
-        public int Quantidade { get; set; }
-
-        public int Bimestre { get; set; }
-
         public long TipoCalendarioId { get; set; }
 
         public string DisciplinaId { get; set; }
