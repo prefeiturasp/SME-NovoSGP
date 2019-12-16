@@ -76,7 +76,7 @@ namespace SME.SGP.Dominio.Servicos
                                             }
                                             catch (Exception ex)
                                             {
-                                                SentrySdk.AddBreadcrumb($"{breadcrumb} - {TipoNotificacaoFrequencia.Professor} - {ue.CodigoUe}", "SGP Api - Negócio");
+                                                SentrySdk.CaptureEvent(new SentryEvent(new NegocioException($"{breadcrumb} - {TipoNotificacaoFrequencia.Professor} - {ue.CodigoUe}")));
                                             }
                                             try
                                             {
@@ -84,7 +84,7 @@ namespace SME.SGP.Dominio.Servicos
                                             }
                                             catch (Exception ex)
                                             {
-                                                SentrySdk.AddBreadcrumb($"{breadcrumb} - {TipoNotificacaoFrequencia.GestorUe} - {ue.CodigoUe}", "SGP Api - Negócio");
+                                                SentrySdk.CaptureEvent(new SentryEvent(new NegocioException($"{breadcrumb} - {TipoNotificacaoFrequencia.GestorUe} - {ue.CodigoUe}")));
                                             }
                                             try
                                             {
@@ -92,34 +92,34 @@ namespace SME.SGP.Dominio.Servicos
                                             }
                                             catch (Exception ex)
                                             {
-                                                SentrySdk.AddBreadcrumb($"{breadcrumb} - {TipoNotificacaoFrequencia.SupervisorUe} - {ue.CodigoUe}", "SGP Api - Negócio");
+                                                SentrySdk.CaptureEvent(new SentryEvent(new NegocioException($"{breadcrumb} - {TipoNotificacaoFrequencia.SupervisorUe} - {ue.CodigoUe}")));
                                             }
                                         }
                                     }
                                     else
                                     {
-                                        SentrySdk.AddBreadcrumb($"{breadcrumb} - Nenhuma UE encontrada no banco de dados", "SGP Api - Negócio");
+                                        SentrySdk.CaptureEvent(new SentryEvent(new NegocioException($"{breadcrumb} - Nenhuma UE encontrada no banco de dados")));
                                     }
                                 }
                                 catch (Exception ex)
                                 {
-                                    SentrySdk.AddBreadcrumb($"{breadcrumb} - Nenhuma UE encontrada no banco de dados", "SGP Api - Negócio");
+                                    SentrySdk.CaptureEvent(new SentryEvent(new NegocioException($"{breadcrumb} - Nenhuma UE encontrada no banco de dados")));
                                 }
                             }
                         }
                         else
                         {
-                            SentrySdk.AddBreadcrumb($"{breadcrumb} - Nenhuma DRE encontrada no banco de dados", "SGP Api - Negócio");
+                            SentrySdk.CaptureEvent(new SentryEvent(new NegocioException($"{breadcrumb} - Nenhuma DRE encontrada no banco de dados")));
                         }
                     }
                     catch (Exception ex)
                     {
-                        SentrySdk.AddBreadcrumb($"{breadcrumb} - Nenhuma DRE encontrada no banco de dados", "SGP Api - Negócio");
+                        SentrySdk.CaptureEvent(new SentryEvent(new NegocioException($"{breadcrumb} - Nenhuma DRE encontrada no banco de dados")));
                     }
                 }
                 catch (Exception ex)
                 {
-                    SentrySdk.AddBreadcrumb($"{breadcrumb} - {ex.Message}", "SGP Api - Negócio");
+                    SentrySdk.CaptureEvent(new SentryEvent(new NegocioException($"{breadcrumb} - {ex.Message}")));
                 }
             }
         }
