@@ -145,7 +145,7 @@ export const Lista = styled.div`
     border-top: solid 3px #d06d12 !important;
     background-color: #d06d12 !important;
     border-radius: 7px !important;
-    border-right: solid 20px #d06d12 !important;
+    border-right: solid 28px #d06d12 !important;
     padding-left: 3px !important;
     margin-left: 23px !important;
   }
@@ -202,6 +202,14 @@ export const Lista = styled.div`
     border-radius: 20px !important;
     display: inline;
     font-size: 13px;
+  }
+
+  .ant-input-number-handler-wrap {
+    display: none !important;
+  }
+
+  .border-registro-alterado {
+    border: solid 2px ${Base.Roxo} !important;
   }
 `;
 

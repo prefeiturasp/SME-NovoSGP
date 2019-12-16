@@ -54,47 +54,50 @@ namespace SME.SGP.Aplicacao
             if (!filtro.TodasTurmas && string.IsNullOrWhiteSpace(filtro.TurmaId))
                 throw new NegocioException("É necessario informar uma turma para pesquisa");
 
+            var temTurmaInformada = !string.IsNullOrEmpty(filtro.TurmaId);
             var data = filtro.Data.Date;
 
             var perfil = servicoUsuario.ObterPerfilAtual();
             var rf = servicoUsuario.ObterRf();
+
             var eventos = await repositorioEvento.ObterEventosPorTipoDeCalendarioDreUeDia(filtro.TipoCalendarioId, filtro.DreId, filtro.UeId, data, filtro.EhEventoSme);
-            var aulas = await  repositorioAula.ObterAulasCompleto(filtro.TipoCalendarioId, filtro.TurmaId, filtro.UeId, data, perfil, rf);
-            var atividades =  await repositorioAtividadeAvaliativa.ObterAtividadesPorDia(filtro.DreId, filtro.UeId, data, rf, filtro.TurmaId);
-            eventos
-            .ToList()
-            .ForEach(x => eventosAulas
-            .Add(new EventosAulasTipoDiaDto
-            {
-                Descricao = x.Nome,
-                Id = x.Id,
-                TipoEvento = x.Descricao
-            }));
+            var aulas = await repositorioAula.ObterAulasCompleto(filtro.TipoCalendarioId, filtro.TurmaId, filtro.UeId, data, perfil, rf);
+            var atividades = await repositorioAtividadeAvaliativa.ObterAtividadesPorDia(filtro.DreId, filtro.UeId, data, rf, filtro.TurmaId);
+
+            ObterEventosParaEventosAulasDia(eventosAulas, eventos);
 
             var turmasAulas = aulas.GroupBy(x => x.TurmaId).Select(x => x.Key);
 
-            var turmasAbrangencia =  ObterTurmasAbrangencia(turmasAulas).Result;
-            var disciplinasProfessor =  ObterDisciplinasAulas(turmasAulas).Result;
-            var disciplinasRegencia =  servicoEOL.ObterDisciplinasParaPlanejamento(Convert.ToInt64(filtro.TurmaId), rf, perfil).Result;
+            var turmasAbrangencia = await ObterTurmasAbrangencia(turmasAulas);
+
+            IEnumerable<DisciplinaResposta> disciplinasRegencia = Enumerable.Empty<DisciplinaResposta>();
+
+            if (temTurmaInformada)
+                disciplinasRegencia = await servicoEOL.ObterDisciplinasParaPlanejamento(Convert.ToInt64(filtro.TurmaId), rf, perfil);
+
+            var idsDisciplinasAulas = aulas.Select(a => long.Parse(a.DisciplinaId)).Distinct();
+            var disciplinasEol = servicoEOL.ObterDisciplinasPorIds(idsDisciplinasAulas.ToArray());
+
             aulas
             .ToList()
-            .ForEach( x =>
+            .ForEach(x =>
             {
                 bool podeCriarAtividade = true;
                 var listaAtividades = atividades.Where(w => w.DataAvaliacao.Date == x.DataAula.Date && w.TurmaId == x.TurmaId && w.DisciplinaId.ToString() == x.DisciplinaId).ToList();
-                var disciplina = disciplinasProfessor?.FirstOrDefault(d => d.CodigoComponenteCurricular.ToString().Equals(x.DisciplinaId));
+                var disciplina = disciplinasEol?.FirstOrDefault(d => d.CodigoComponenteCurricular.ToString().Equals(x.DisciplinaId));
                 if (atividades != null && disciplina != null)
                 {
                     foreach (var item in listaAtividades)
                     {
-
-
                         if (disciplina.Regencia)
                         {
-                            var disciplinasRegenciasComAtividades =  repositorioAtividadeAvaliativaRegencia.Listar(item.Id).Result;
-                            podeCriarAtividade = disciplinasRegencia.Count() > disciplinasRegenciasComAtividades.Count();
+                            var disciplinasRegenciasComAtividades = repositorioAtividadeAvaliativaRegencia.Listar(item.Id).Result;
+
                             item.AtividadeAvaliativaRegencia = new List<AtividadeAvaliativaRegencia>();
                             item.AtividadeAvaliativaRegencia.AddRange(disciplinasRegenciasComAtividades);
+                            if (temTurmaInformada)
+                                podeCriarAtividade = disciplinasRegencia.Count() > disciplinasRegenciasComAtividades.Count();
+                            else podeCriarAtividade = false;
                         }
                         else
                             podeCriarAtividade = false;
@@ -194,6 +197,19 @@ namespace SME.SGP.Aplicacao
             return eventosAulas.OrderBy(x => x.Dia);
         }
 
+        private static void ObterEventosParaEventosAulasDia(List<EventosAulasTipoDiaDto> eventosAulas, IEnumerable<Evento> eventos)
+        {
+            eventos
+                .ToList()
+                .ForEach(x => eventosAulas
+                .Add(new EventosAulasTipoDiaDto
+                {
+                    Descricao = x.Nome,
+                    Id = x.Id,
+                    TipoEvento = x.Descricao
+                }));
+        }
+
         private List<EventosAulasCalendarioDto> MapearParaDto(List<DateTime> dias)
         {
             List<EventosAulasCalendarioDto> eventosAulas = new List<EventosAulasCalendarioDto>();
@@ -251,21 +267,6 @@ namespace SME.SGP.Aplicacao
                 }
             }
             return dias;
-        }
-
-        private async Task<IEnumerable<DisciplinaResposta>> ObterDisciplinasAulas(IEnumerable<string> turmasAulas)
-        {
-            var disciplinasResposta = new List<DisciplinaResposta>();
-
-            foreach (var turma in turmasAulas)
-            {
-                var retornoEOL = await servicoEOL.ObterDisciplinasPorCodigoTurmaLoginEPerfil(turma, servicoUsuario.ObterLoginAtual(), servicoUsuario.ObterPerfilAtual());
-
-                if (retornoEOL != null)
-                    disciplinasResposta.AddRange(retornoEOL);
-            }
-
-            return disciplinasResposta;
         }
 
         private async Task<IEnumerable<AbrangenciaFiltroRetorno>> ObterTurmasAbrangencia(IEnumerable<string> turmasAulas)
