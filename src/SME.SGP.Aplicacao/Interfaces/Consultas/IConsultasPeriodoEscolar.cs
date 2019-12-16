@@ -6,6 +6,7 @@ namespace SME.SGP.Aplicacao
 {
     public interface IConsultasPeriodoEscolar
     {
+        PeriodoEscolarDto ObterPeriodoEscolarPorData(long tipoCalendarioId, DateTime dataPeriodo);
         PeriodoEscolarListaDto ObterPorTipoCalendario(long tipoCalendarioId);
         DateTime ObterFimPeriodoRecorrencia(long tipoCalendarioId, DateTime inicioRecorrencia, RecorrenciaAula recorrencia);
     }

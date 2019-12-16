@@ -5,7 +5,11 @@ namespace SME.SGP.Dominio.Interfaces
 {
     public interface IRepositorioUe
     {
+        IEnumerable<Ue> ListarPorCodigos(string[] codigos);
+
         Task<IEnumerable<Modalidade>> ObterModalidades(string ueCodigo, int ano);
+
+        Ue ObterPorCodigo(string ueId);
 
         Task<IEnumerable<Turma>> ObterTurmas(string ueCodigo, Modalidade modalidade, int ano);
 

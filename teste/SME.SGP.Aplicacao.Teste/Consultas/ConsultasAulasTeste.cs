@@ -12,16 +12,20 @@ namespace SME.SGP.Aplicacao.Teste.Consultas
     public class ConsultasAulasTeste
     {
         private readonly ConsultasAula consultas;
-        private readonly Mock<IRepositorioAula> repositorio;
+        private readonly Mock<IConsultasFrequencia> consultasFrequencia;
         private readonly Mock<IConsultasPeriodoEscolar> consultasPeriodoEscolar;
+        private readonly Mock<IRepositorioAula> repositorioAula;
+        private readonly Mock<IRepositorioPlanoAula> repositorioPlanoAula;
         private readonly Mock<IServicoUsuario> servicoUsuario;
 
         public ConsultasAulasTeste()
         {
-            repositorio = new Mock<IRepositorioAula>();
+            repositorioAula = new Mock<IRepositorioAula>();
             servicoUsuario = new Mock<IServicoUsuario>();
             consultasPeriodoEscolar = new Mock<IConsultasPeriodoEscolar>();
-            consultas = new ConsultasAula(repositorio.Object, consultasPeriodoEscolar.Object, servicoUsuario.Object);
+            repositorioPlanoAula = new Mock<IRepositorioPlanoAula>();
+            consultasFrequencia = new Mock<IConsultasFrequencia>();
+            consultas = new ConsultasAula(repositorioAula.Object, consultasPeriodoEscolar.Object, consultasFrequencia.Object, repositorioPlanoAula.Object, servicoUsuario.Object);
 
             Setup();
         }
@@ -55,7 +59,7 @@ namespace SME.SGP.Aplicacao.Teste.Consultas
                 Quantidade = 3
             };
 
-            repositorio.Setup(c => c.ObterPorId(It.IsAny<long>()))
+            repositorioAula.Setup(c => c.ObterPorId(It.IsAny<long>()))
                 .Returns(aula);
 
             // Mock das aulas por turma e disciplina
@@ -65,7 +69,7 @@ namespace SME.SGP.Aplicacao.Teste.Consultas
                 new AulasPorTurmaDisciplinaDto() { ProfessorId = 1, Quantidade = 3, DataAula = new System.DateTime(2019,11,15) },
             };
 
-            repositorio.Setup(c => c.ObterAulasTurmaDisciplinaSemanaProfessor(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), null))
+            repositorioAula.Setup(c => c.ObterAulasTurmaDisciplinaSemanaProfessor(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), null))
                 .Returns(Task.FromResult(aulas));
         }
     }

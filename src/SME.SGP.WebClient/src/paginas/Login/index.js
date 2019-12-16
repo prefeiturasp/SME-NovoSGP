@@ -28,11 +28,14 @@ import {
 import CampoTexto from '~/componentes/campoTexto';
 import { URL_RECUPERARSENHA } from '~/constantes/url';
 import history from '~/servicos/history';
+import { Loader } from '~/componentes';
 
 const Login = props => {
   const dispatch = useDispatch();
   const inputUsuarioRf = useRef();
   const btnAcessar = useRef();
+
+  const [carregando, setCarregando] = useState(false);
 
   const [erroGeral, setErroGeral] = useState('');
   const [login, setLogin] = useState({
@@ -59,14 +62,17 @@ const Login = props => {
   );
 
   const realizarLogin = async dados => {
+    setCarregando(true);
     setLogin({
       usuario: dados.usuario,
       senha: dados.senha,
     });
     setErroGeral('');
-
     const { sucesso, ...retorno } = await helper.acessar(dados);
-    if (!sucesso) setErroGeral(retorno.erroGeral);
+    if (!sucesso) {
+      setErroGeral(retorno.erroGeral);
+      setCarregando(false);
+    }
   };
 
   const aoPressionarTecla = e => {
@@ -159,13 +165,15 @@ const Login = props => {
                           icon
                         />
                         <FormGroup>
-                          <Button
-                            className="btn-block d-block"
-                            label="Acessar"
-                            color={Colors.Roxo}
-                            ref={btnAcessar}
-                            onClick={e => aoClicarBotaoAutenticar(form, e)}
-                          />
+                          <Loader loading={carregando} tip="">
+                            <Button
+                              className="btn-block d-block"
+                              label="Acessar"
+                              color={Colors.Roxo}
+                              ref={btnAcessar}
+                              onClick={e => aoClicarBotaoAutenticar(form, e)}
+                            />
+                          </Loader>
                           <Centralizar className="mt-1">
                             <LabelLink onClick={navegarParaRecuperarSenha}>
                               Esqueci minha senha

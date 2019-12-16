@@ -299,5 +299,40 @@
 
         [PermissaoMenu(Menu = "Atribuição Supervisor", Icone = "fas fa-user-cog", Agrupamento = "Gestão", OrdemAgrupamento = 6, OrdemMenu = 5, EhAlteracao = true, Url = "/gestao/atribuicao-supervisor-lista")]
         ASP_A = 99,
+
+
+        [PermissaoMenu(Menu = "Tipo de Avaliação", Icone = "fas fa-book-reader", Agrupamento = "Configurações", OrdemAgrupamento = 7, OrdemMenu = 2, EhConsulta = true, Url = "/configuracoes/tipo-avaliacao")]
+        TA_C = 100,
+
+        [PermissaoMenu(Menu = "Tipo de Avaliação", Icone = "fas fa-book-reader", Agrupamento = "Configurações", OrdemAgrupamento = 7, OrdemMenu = 2, EhInclusao = true, Url = "/configuracoes/tipo-avaliacao")]
+        TA_I = 101,
+
+        [PermissaoMenu(Menu = "Tipo de Avaliação", Icone = "fas fa-book-reader", Agrupamento = "Configurações", OrdemAgrupamento = 7, OrdemMenu = 2, EhExclusao = true, Url = "/configuracoes/tipo-avaliacao")]
+        TA_E = 102,
+
+        [PermissaoMenu(Menu = "Tipo de Avaliação", Icone = "fas fa-book-reader", Agrupamento = "Configurações", OrdemAgrupamento = 7, OrdemMenu = 2, EhAlteracao = true, Url = "/configuracoes/tipo-avaliacao")]
+        TA_A = 103,
+
+        [PermissaoMenu(Menu = "Aulas Dadas x Aulas Previstas", Icone = "", Agrupamento = "Diário de Classe", OrdemAgrupamento = 1, OrdemMenu = 4, EhInclusao = true, Url = "/diario-classe/aula-dada-aula-prevista")]
+        ADAP_I = 104,
+
+        [PermissaoMenu(Menu = "Aulas Dadas x Aulas Previstas", Icone = "", Agrupamento = "Diário de Classe", OrdemAgrupamento = 1, OrdemMenu = 4, EhAlteracao = true, Url = "/diario-classe/aula-dada-aula-prevista")]
+        ADAP_A = 105,
+
+        [PermissaoMenu(Menu = "Aulas Dadas x Aulas Previstas", Icone = "", Agrupamento = "Diário de Classe", OrdemAgrupamento = 1, OrdemMenu = 4, EhConsulta = true, Url = "/diario-classe/aula-dada-aula-prevista")]
+        ADAP_C = 106,
+
+        [PermissaoMenu(Menu = "Aulas Dadas x Aulas Previstas", Icone = "", Agrupamento = "Diário de Classe", OrdemAgrupamento = 1, OrdemMenu = 4, EhExclusao = true, Url = "/diario-classe/aula-dada-aula-prevista")]
+        ADAP_E = 107,
+
+        [PermissaoMenu(Menu = "Registro POA", Icone = "", Agrupamento = "Diário de Classe", OrdemAgrupamento = 1, OrdemMenu = 5, EhInclusao = true, Url = "/diario-classe/registro-poa")]
+        RPOA_I = 108,
+        [PermissaoMenu(Menu = "Registro POA", Icone = "", Agrupamento = "Diário de Classe", OrdemAgrupamento = 1, OrdemMenu = 5, EhAlteracao = true, Url = "/diario-classe/registro-poa")]
+        RPOA_A = 109,
+        [PermissaoMenu(Menu = "Registro POA", Icone = "", Agrupamento = "Diário de Classe", OrdemAgrupamento = 1, OrdemMenu = 5, EhConsulta = true, Url = "/diario-classe/registro-poa")]
+        RPOA_C = 110,
+        [PermissaoMenu(Menu = "Registro POA", Icone = "", Agrupamento = "Diário de Classe", OrdemAgrupamento = 1, OrdemMenu = 5, EhExclusao = true, Url = "/diario-classe/registro-poa")]
+        RPOA_E = 111,
+
     }
 }

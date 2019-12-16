@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import shortid from 'shortid';
 
 // Redux
 import { useSelector } from 'react-redux';
@@ -31,26 +32,32 @@ function AtribuicaoCJLista() {
     {
       title: 'Modalidade',
       dataIndex: 'modalidade',
+      key: 'modalidade',
     },
     {
       title: 'Turma',
       dataIndex: 'turma',
+      key: 'turma',
     },
     {
       title: 'Disciplinas',
       dataIndex: 'disciplinas',
+      key: 'disciplinas',
       width: '80%',
       render: linha => {
-        return linha.map(item => <PilulaEstilo>{item}</PilulaEstilo>);
+        return linha.map(item => (
+          <PilulaEstilo key={shortid.generate()}>{item}</PilulaEstilo>
+        ));
       },
     },
   ];
 
   const onClickVoltar = () => history.push('/');
 
-  const onClickBotaoPrincipal = () => {
-    history.push(`atribuicao-cjs/novo`);
-  };
+  const onClickBotaoPrincipal = () =>
+    history.push(
+      `/gestao/atribuicao-cjs/novo?dreId=${filtro.DreId}&ueId=${filtro.UeId}`
+    );
 
   const onSelecionarItems = items => {
     setItensSelecionados(items);
@@ -58,7 +65,7 @@ function AtribuicaoCJLista() {
 
   const onClickEditar = item => {
     history.push(
-      `/gestao/atribuicao-cjs/editar?modalidadeId=${item.modalidadeId}&turmaId=${item.turmaId}`
+      `/gestao/atribuicao-cjs/editar?modalidadeId=${item.modalidadeId}&turmaId=${item.turmaId}&dreId=${filtro.DreId}&ueId=${filtro.UeId}`
     );
   };
 
@@ -71,29 +78,30 @@ function AtribuicaoCJLista() {
     });
   };
 
-  const validarFiltro = () => {
-    return !!filtro.DreId && !!filtro.UeId;
-  };
+  const validarFiltro = React.useCallback(() => {
+    return !!filtro.DreId && !!filtro.UeId && !!filtro.UsuarioRF;
+  }, [filtro]);
 
   useEffect(() => {
     setSomenteConsulta(verificaSomenteConsulta(permissoesTela));
-  }, []);
+  }, [permissoesTela]);
 
   useEffect(() => {
     async function buscaItens() {
       try {
         const { data, status } = await AtribuicaoCJServico.buscarLista(filtro);
         if (status === 200 && data) {
-          setItens(data);
+          setItens(data.map(item => ({ ...item, key: shortid.generate() })));
         }
       } catch (error) {
         erros(error);
       }
     }
     if (validarFiltro()) {
+      setItens([]);
       buscaItens();
     }
-  }, [filtro]);
+  }, [filtro, validarFiltro]);
 
   return (
     <>
@@ -117,7 +125,8 @@ function AtribuicaoCJLista() {
           <div className="col-md-12 pt-2 py-0 px-0">
             <DataTable
               id="lista-atribuicoes-cj"
-              colunaChave="id"
+              idLinha="key"
+              colunaChave="key"
               columns={colunas}
               dataSource={itens}
               onClickRow={onClickEditar}

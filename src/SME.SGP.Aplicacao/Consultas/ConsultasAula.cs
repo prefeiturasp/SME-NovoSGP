@@ -12,21 +12,61 @@ namespace SME.SGP.Aplicacao
     {
         private readonly IRepositorioAula repositorio;
         private readonly IServicoUsuario servicoUsuario;
+        private readonly IConsultasFrequencia consultasFrequencia;
+        private readonly IRepositorioPlanoAula repositorioPlanoAula;
         private readonly IConsultasPeriodoEscolar consultasPeriodoEscolar;
 
         public ConsultasAula(IRepositorioAula repositorio,
                              IConsultasPeriodoEscolar consultasPeriodoEscolar,
+                             IConsultasFrequencia consultasFrequencia,
+                             IRepositorioPlanoAula repositorioPlanoAula,
                              IServicoUsuario servicoUsuario)
         {
             this.repositorio = repositorio ?? throw new ArgumentNullException(nameof(repositorio));
             this.servicoUsuario = servicoUsuario ?? throw new ArgumentNullException(nameof(servicoUsuario));
             this.consultasPeriodoEscolar = consultasPeriodoEscolar ?? throw new ArgumentNullException(nameof(consultasPeriodoEscolar));
+            this.consultasFrequencia = consultasFrequencia ?? throw new ArgumentNullException(nameof(consultasFrequencia));
+            this.repositorioPlanoAula = repositorioPlanoAula ?? throw new ArgumentNullException(nameof(repositorioPlanoAula));
         }
 
         public AulaConsultaDto BuscarPorId(long id)
         {
             var aula = repositorio.ObterPorId(id);
             return MapearParaDto(aula);
+        }
+
+        public async Task<bool> ChecarFrequenciaPlanoNaRecorrencia(long aulaId)
+        {
+            var existeRegistro = await ChecarFrequenciaPlanoAula(aulaId);
+
+            if (!existeRegistro)
+            {
+                var aulaAtual = repositorio.ObterPorId(aulaId);
+
+                var aulasRecorrentes = await repositorio.ObterAulasRecorrencia(aulaAtual.AulaPaiId ?? aulaAtual.Id, aulaId);
+
+                if (aulasRecorrentes != null)
+                {
+                    foreach (var aula in aulasRecorrentes)
+                    {
+                        existeRegistro = await ChecarFrequenciaPlanoAula(aula.Id);
+
+                        if (existeRegistro)
+                            break;
+                    } 
+                }
+            }
+
+            return existeRegistro;
+        }
+
+        public async Task<bool> ChecarFrequenciaPlanoAula(long aulaId)
+        {
+            var existeRegistro = await consultasFrequencia.FrequenciaAulaRegistrada(aulaId);
+            if (!existeRegistro)
+                existeRegistro = await repositorioPlanoAula.PlanoAulaRegistrado(aulaId);
+
+            return existeRegistro;
         }
 
         public async Task<AulaConsultaDto> ObterAulaDataTurmaDisciplina(DateTime data, string turmaId, string disciplinaId)
@@ -54,6 +94,18 @@ namespace SME.SGP.Aplicacao
                                             : aulaInicialId;
             var aulasRecorrentes = await repositorio.ObterAulasRecorrencia(aulaIdOrigemRecorrencia, aulaInicioRecorrencia.Id, fimRecorrencia);
             return aulasRecorrentes.Count() + 1;
+        }
+
+        public async Task<int> ObterQuantidadeAulasTurmaDiaProfessor(string turma, string disciplina, DateTime dataAula, string codigoRf)
+        {
+            IEnumerable<AulasPorTurmaDisciplinaDto> aulas;
+
+            if (ExperienciaPedagogica(disciplina))
+                aulas = await repositorio.ObterAulasTurmaExperienciasPedagogicasDia(turma, dataAula);
+            else
+                aulas = await repositorio.ObterAulasTurmaDisciplinaDiaProfessor(turma, disciplina, dataAula, codigoRf);
+
+            return aulas.Sum(a => a.Quantidade);
         }
 
         public async Task<int> ObterQuantidadeAulasTurmaSemanaProfessor(string turma, string disciplina, string semana, string codigoRf)

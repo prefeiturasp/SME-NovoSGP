@@ -1,8 +1,8 @@
 ﻿using Dapper;
 using Dommel;
-using SME.SGP.Dados.Contexto;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
+using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -19,6 +19,13 @@ namespace SME.SGP.Dados.Repositorios
         public RepositorioDre(ISgpContext contexto)
         {
             this.contexto = contexto;
+        }
+
+        public IEnumerable<Dre> ListarPorCodigos(string[] dresCodigos)
+        {
+            var query = "select id, dre_id, abreviacao, nome from dre d where d.dre_id = ANY(@dresCodigos)";
+
+            return contexto.Conexao.Query<Dre>(query, new { dresCodigos });
         }
 
         public IEnumerable<Dre> Sincronizar(IEnumerable<Dre> entidades)

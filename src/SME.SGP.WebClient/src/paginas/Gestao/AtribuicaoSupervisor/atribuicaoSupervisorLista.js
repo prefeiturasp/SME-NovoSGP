@@ -13,6 +13,9 @@ import Cabecalho from '~/componentes-sgp/cabecalho';
 import RotasDto from '~/dtos/rotasDto';
 import { verificaSomenteConsulta } from '~/servicos/servico-navegacao';
 
+import FiltroHelper from '~/componentes-sgp/filtro/helper';
+import tipoEscolaDTO from '~/dtos/tipoEscolaDto';
+
 export default function AtribuicaoSupervisorLista() {
   const [uesSemSupervisorCheck, setUesSemSupervisorCheck] = useState(false);
   const [assumirFiltroPrincCheck, setAssumirFiltroPrincCheck] = useState(false);
@@ -44,13 +47,9 @@ export default function AtribuicaoSupervisorLista() {
   }, [usuario.turmaSelecionada]);
 
   useEffect(() => {
-    console.log(permissoesTela);
-  }, [permissoesTela]);
-
-  useEffect(() => {
     async function carregarDres() {
       const dres = await api.get('v1/abrangencias/dres');
-      setListaDres(dres.data);
+      setListaDres(dres.data.sort(FiltroHelper.ordenarLista('nome')));
     }
 
     carregarDres();
@@ -230,13 +229,24 @@ export default function AtribuicaoSupervisorLista() {
   }
 
   async function carregarSupervisores(dre) {
-    const sups = await api.get(`/v1/supervisores/dres/${dre}`);
-    setListaSupervisores(sups.data || []);
+    const sups = await api.get(`/v1/supervisores/dre/${dre}`);
+    if (sups.data) {
+      setListaSupervisores(sups.data);
+    } else {
+      setListaSupervisores([]);
+    }
   }
 
   async function carregarUes(dre) {
     const ues = await api.get(`/v1/abrangencias/dres/${dre}/ues`);
-    setListaUes(ues.data || []);
+    if (ues.data) {
+      ues.data.forEach(
+        ue => (ue.nome = `${tipoEscolaDTO[ue.tipoEscola]} ${ue.nome}`)
+      );
+      setListaUes(ues.data.sort(FiltroHelper.ordenarLista('nome')));
+    } else {
+      setListaUes([]);
+    }
   }
 
   async function onChangeSupervisores(sup) {

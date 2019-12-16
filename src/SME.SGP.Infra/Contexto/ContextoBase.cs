@@ -1,20 +1,18 @@
 ﻿using SME.SGP.Infra.Interfaces;
-using System;
 using System.Collections.Generic;
-using System.Text;
 
 namespace SME.SGP.Infra.Contexto
 {
     public abstract class ContextoBase : IContextoAplicacao
     {
-        public ContextoBase()
+        protected ContextoBase()
         {
             Variaveis = new Dictionary<string, object>();
         }
 
+        public string NomeUsuario => ObterVarivel<string>("NomeUsuario") ?? "Sistema";
+        public string UsuarioLogado => ObterVarivel<string>("UsuarioLogado") ?? "Sistema";
         public IDictionary<string, object> Variaveis { get; set; }
-        public string UsuarioLogado => ObterVarivel<string>("UsuarioLogado");
-        public string NomeUsuario => ObterVarivel<string>("NomeUsuario");
 
         public abstract IContextoAplicacao AtribuirContexto(IContextoAplicacao contexto);
 

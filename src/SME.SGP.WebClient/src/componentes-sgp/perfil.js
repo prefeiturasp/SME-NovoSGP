@@ -1,4 +1,4 @@
-import React, { useState, useLayoutEffect, useRef, useEffect } from 'react';
+import React, { useState, useLayoutEffect, useRef } from 'react';
 import styled from 'styled-components';
 import { useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
@@ -82,8 +82,8 @@ const Perfil = props => {
     justify-content: center !important;
     i {
       background: ${perfilStore.perfis.length > 1
-      ? Base.Roxo
-      : Base.CinzaDesabilitado} !important;
+        ? Base.Roxo
+        : Base.CinzaDesabilitado} !important;
     }
   `;
 
@@ -108,12 +108,12 @@ const Perfil = props => {
                 token,
                 rf: usuarioStore.rf,
                 ehProfessor,
-                ehProfessorCj
+                ehProfessorCj,
               })
             );
             setMenusPermissoes();
           })
-          .catch(err => {
+          .catch(() => {
             erro('Sua sessão expirou');
             setTimeout(() => {
               store.dispatch(Deslogar());
@@ -128,6 +128,7 @@ const Perfil = props => {
     store.dispatch(limparDadosFiltro());
     store.dispatch(removerTurma());
   };
+
   const onClickBotao = () => {
     if (perfilStore.perfis.length > 1) {
       setarOcultaPerfis(!ocultaPerfis);
@@ -187,7 +188,7 @@ const Perfil = props => {
                     width: '100%',
                     fontWeight:
                       item.codigoPerfil ===
-                        perfilStore.perfilSelecionado.codigoPerfil
+                      perfilStore.perfilSelecionado.codigoPerfil
                         ? 'bold'
                         : 'initial',
                   }}

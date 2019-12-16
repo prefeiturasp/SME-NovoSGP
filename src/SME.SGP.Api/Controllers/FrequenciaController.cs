@@ -44,12 +44,12 @@ namespace SME.SGP.Api.Controllers
             return Ok();
         }
 
-        //[HttpPost("frequencias/notificar")]
-        //public async Task<IActionResult> Notificar([FromServices] IServicoNotificacaoFrequencia servicoNotificacaoFrequencia)
-        //{
-        //    servicoNotificacaoFrequencia.ExecutaNotificacaoFrequencia();
-        //    return Ok();
-        //}
+        [HttpPost("frequencias/notificar")]
+        public async Task<IActionResult> Notificar([FromServices] IServicoNotificacaoFrequencia servicoNotificacaoFrequencia)
+        {
+            servicoNotificacaoFrequencia.ExecutaNotificacaoFrequencia();
+            return Ok();
+        }
 
     }
 }

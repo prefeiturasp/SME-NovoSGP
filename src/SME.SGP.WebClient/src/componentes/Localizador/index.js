@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import PropTypes from 'prop-types';
+import React, { useState, useEffect, useCallback } from 'react';
+import t from 'prop-types';
 
 // Redux
 import { useSelector } from 'react-redux';
@@ -11,6 +11,13 @@ import { Grid, Label } from '~/componentes';
 
 // Services
 import service from './services/LocalizadorService';
+import { erro } from '~/servicos/alertas';
+
+// Funções
+import { validaSeObjetoEhNuloOuVazio } from '~/utils/funcoes/gerais';
+
+// Utils
+import RFNaoEncontradoExcecao from '~/utils/excecoes/RFNãoEncontradoExcecao';
 
 function Localizador({
   onChange,
@@ -20,11 +27,28 @@ function Localizador({
   anoLetivo,
   desabilitado,
 }) {
+  const usuario = useSelector(store => store.usuario);
   const [dataSource, setDataSource] = useState([]);
   const [pessoaSelecionada, setPessoaSelecionada] = useState({});
-  const usuario = useSelector(store => store.usuario);
+  const [desabilitarCampo, setDesabilitarCampo] = useState({
+    rf: false,
+    nome: false,
+  });
 
   const onChangeInput = async valor => {
+    if (valor.length === 0) {
+      setPessoaSelecionada({
+        professorRf: '',
+        professorNome: '',
+      });
+      setTimeout(() => {
+        setDesabilitarCampo(() => ({
+          rf: false,
+          nome: false,
+        }));
+      }, 200);
+    }
+
     if (valor.length < 2) return;
     const { data: dados } = await service.buscarAutocomplete({
       nome: valor,
@@ -39,13 +63,39 @@ function Localizador({
     }
   };
 
-  const onBuscarPorRF = async ({ rf }) => {
-    const { data: dados } = await service.buscarPorRf({ rf, anoLetivo });
-    if (!dados) return;
-    setPessoaSelecionada({
-      professorRf: dados.codigoRF,
-      professorNome: dados.nome,
-    });
+  const onBuscarPorRF = useCallback(
+    async ({ rf }) => {
+      try {
+        const { data: dados } = await service.buscarPorRf({ rf, anoLetivo });
+        if (!dados) throw new RFNaoEncontradoExcecao();
+
+        setPessoaSelecionada({
+          professorRf: dados.codigoRF,
+          professorNome: dados.nome,
+        });
+
+        setDesabilitarCampo(estado => ({
+          ...estado,
+          nome: true,
+        }));
+      } catch (error) {
+        erro(error.response.data.mensagens[0]);
+      }
+    },
+    [anoLetivo]
+  );
+
+  const onChangeRF = valor => {
+    if (valor.length === 0) {
+      setPessoaSelecionada({
+        professorRf: '',
+        professorNome: '',
+      });
+      setDesabilitarCampo(estado => ({
+        ...estado,
+        nome: false,
+      }));
+    }
   };
 
   const onSelectPessoa = objeto => {
@@ -53,6 +103,10 @@ function Localizador({
       professorRf: parseInt(objeto.key, 10),
       professorNome: objeto.props.value,
     });
+    setDesabilitarCampo(estado => ({
+      ...estado,
+      rf: true,
+    }));
   };
 
   useEffect(() => {
@@ -64,16 +118,18 @@ function Localizador({
   }, [pessoaSelecionada]);
 
   useEffect(() => {
+    if (validaSeObjetoEhNuloOuVazio(form.initialValues)) return;
     if (form.initialValues) {
       setPessoaSelecionada(form.initialValues);
     }
   }, [form.initialValues]);
 
   useEffect(() => {
-    if (usuario.ehProfessor) {
-      onBuscarPorRF({ rf: usuario.rf });
+    const { ehProfessor, ehProfessorCj, rf } = usuario;
+    if (ehProfessor || ehProfessorCj) {
+      onBuscarPorRF({ rf });
     }
-  }, []);
+  }, [onBuscarPorRF, usuario]);
 
   return (
     <>
@@ -84,9 +140,14 @@ function Localizador({
         <InputRF
           pessoaSelecionada={pessoaSelecionada}
           onSelect={onBuscarPorRF}
+          onChange={onChangeRF}
           name="professorRf"
           form={form}
-          desabilitado={desabilitado || usuario.ehProfessor}
+          desabilitado={
+            desabilitado ||
+            (usuario.ehProfessor || usuario.ehProfessorCj) ||
+            desabilitarCampo.rf
+          }
         />
       </Grid>
       <Grid className="pr-0" cols={8}>
@@ -98,7 +159,11 @@ function Localizador({
           pessoaSelecionada={pessoaSelecionada}
           form={form}
           name="professorNome"
-          desabilitado={desabilitado || usuario.ehProfessor}
+          desabilitado={
+            desabilitado ||
+            (usuario.ehProfessor || usuario.ehProfessorCj) ||
+            desabilitarCampo.nome
+          }
         />
       </Grid>
     </>
@@ -107,18 +172,15 @@ function Localizador({
 
 Localizador.propTypes = {
   onChange: () => {},
-  form: PropTypes.oneOfType([
-    PropTypes.objectOf(PropTypes.object),
-    PropTypes.any,
-  ]),
-  showLabel: PropTypes.bool,
-  dreId: PropTypes.string,
-  anoLetivo: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
-  desabilitado: PropTypes.bool,
+  form: t.oneOfType([t.objectOf(t.object), t.any]),
+  showLabel: t.bool,
+  dreId: t.string,
+  anoLetivo: t.oneOfType([t.number, t.string]),
+  desabilitado: t.bool,
 };
 
 Localizador.defaultProps = {
-  onChange: PropTypes.func,
+  onChange: t.func,
   form: {},
   showLabel: false,
   dreId: null,
