@@ -1,6 +1,7 @@
 import { Switch, Icon } from 'antd';
 import PropTypes from 'prop-types';
 import React, { useState, useEffect } from 'react';
+import shortid from 'shortid';
 
 import {
   Lista,
@@ -124,7 +125,7 @@ const ListaFrequencia = props => {
                   {dataSource[0].aulas.map((aula, i) => {
                     return (
                       <th
-                        key={i}
+                        key={shortid.generate()}
                         className={
                           dataSource[0].aulas.length - 1 === i
                             ? 'width-70'
@@ -149,7 +150,7 @@ const ListaFrequencia = props => {
                   return (
                     <>
                       <tr
-                        key={i}
+                        key={shortid.generate()}
                         className={
                           desabilitarCampos || aluno.desabilitado
                             ? 'desabilitar-aluno'
@@ -225,7 +226,7 @@ const ListaFrequencia = props => {
                         {aluno.aulas.map((aula, i) => {
                           return (
                             <td
-                              key={i}
+                              key={shortid.generate()}
                               className={
                                 dataSource[0].aulas.length - 1 === i
                                   ? 'width-70'
@@ -287,7 +288,7 @@ const ListaFrequencia = props => {
 };
 
 ListaFrequencia.propTypes = {
-  dados: PropTypes.array,
+  dados: PropTypes.oneOfType([PropTypes.array]),
   onChangeFrequencia: PropTypes.func,
 };
 
