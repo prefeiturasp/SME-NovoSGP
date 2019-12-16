@@ -76,6 +76,7 @@ namespace SME.SGP.Dominio.Servicos
                                             }
                                             catch (Exception ex)
                                             {
+                                                SentrySdk.CaptureException(ex);
                                                 SentrySdk.CaptureEvent(new SentryEvent(new NegocioException($"{breadcrumb} - {TipoNotificacaoFrequencia.Professor} - {ue.CodigoUe}")));
                                             }
                                             try
@@ -84,6 +85,7 @@ namespace SME.SGP.Dominio.Servicos
                                             }
                                             catch (Exception ex)
                                             {
+                                                SentrySdk.CaptureException(ex);
                                                 SentrySdk.CaptureEvent(new SentryEvent(new NegocioException($"{breadcrumb} - {TipoNotificacaoFrequencia.GestorUe} - {ue.CodigoUe}")));
                                             }
                                             try
@@ -92,6 +94,7 @@ namespace SME.SGP.Dominio.Servicos
                                             }
                                             catch (Exception ex)
                                             {
+                                                SentrySdk.CaptureException(ex);
                                                 SentrySdk.CaptureEvent(new SentryEvent(new NegocioException($"{breadcrumb} - {TipoNotificacaoFrequencia.SupervisorUe} - {ue.CodigoUe}")));
                                             }
                                         }
@@ -103,6 +106,7 @@ namespace SME.SGP.Dominio.Servicos
                                 }
                                 catch (Exception ex)
                                 {
+                                    SentrySdk.CaptureException(ex);
                                     SentrySdk.CaptureEvent(new SentryEvent(new NegocioException($"{breadcrumb} - Nenhuma UE encontrada no banco de dados")));
                                 }
                             }
@@ -114,11 +118,13 @@ namespace SME.SGP.Dominio.Servicos
                     }
                     catch (Exception ex)
                     {
+                        SentrySdk.CaptureEvent(new SentryEvent(ex));
                         SentrySdk.CaptureEvent(new SentryEvent(new NegocioException($"{breadcrumb} - Nenhuma DRE encontrada no banco de dados")));
                     }
                 }
                 catch (Exception ex)
                 {
+                    SentrySdk.CaptureEvent(new SentryEvent(ex));
                     SentrySdk.CaptureEvent(new SentryEvent(new NegocioException($"{breadcrumb} - {ex.Message}")));
                 }
             }
@@ -164,11 +170,12 @@ namespace SME.SGP.Dominio.Servicos
             // Buscar gestor da Ue
             List<UsuarioEolRetornoDto> funcionariosRetornoEol = new List<UsuarioEolRetornoDto>();
 
-            funcionariosRetornoEol.AddRange(servicoEOL.ObterFuncionariosPorCargoUe(codigoUe, (int)Cargo.CP));
-            funcionariosRetornoEol.AddRange(servicoEOL.ObterFuncionariosPorCargoUe(codigoUe, (int)Cargo.Diretor));
-
-            if (funcionariosRetornoEol == null)
-                return null;
+            var cps = servicoEOL.ObterFuncionariosPorCargoUe(codigoUe, (int)Cargo.CP);
+            if (cps != null && cps.Any())
+                funcionariosRetornoEol.AddRange(cps);
+            var diretores = servicoEOL.ObterFuncionariosPorCargoUe(codigoUe, (int)Cargo.Diretor);
+            if (diretores != null && diretores.Any())
+                funcionariosRetornoEol.AddRange(diretores);
 
             var usuarios = new List<Usuario>();
             foreach (var usuarioEol in funcionariosRetornoEol)
@@ -207,9 +214,26 @@ namespace SME.SGP.Dominio.Servicos
 
         private IEnumerable<Usuario> BuscaUsuarioNotificacao(RegistroFrequenciaFaltanteDto turma, TipoNotificacaoFrequencia tipo)
         {
-            return tipo == TipoNotificacaoFrequencia.Professor ? BuscaProfessorAula(turma)
-                        : tipo == TipoNotificacaoFrequencia.GestorUe ? BuscaGestoresUe(turma.CodigoUe)
-                        : BuscaSupervisoresUe(turma.CodigoUe);
+            IEnumerable<Usuario> usuarios = Enumerable.Empty<Usuario>();
+            switch (tipo)
+            {
+                case TipoNotificacaoFrequencia.Professor:
+                    usuarios = BuscaProfessorAula(turma);
+                    break;
+
+                case TipoNotificacaoFrequencia.GestorUe:
+                    usuarios = BuscaGestoresUe(turma.CodigoUe);
+                    break;
+
+                case TipoNotificacaoFrequencia.SupervisorUe:
+                    usuarios = BuscaSupervisoresUe(turma.CodigoUe);
+                    break;
+
+                default:
+                    usuarios = BuscaProfessorAula(turma);
+                    break;
+            }
+            return usuarios;
         }
 
         private void NotificaAlteracaoFrequencia(Usuario usuario, RegistroFrequenciaAulaDto registroFrequencia, string usuarioAlteracao)
@@ -243,18 +267,32 @@ namespace SME.SGP.Dominio.Servicos
         private void NotificarAusenciaFrequencia(TipoNotificacaoFrequencia tipo, string ueId)
         {
             // Busca registro de aula sem frequencia e sem notificação do tipo
-            var turmasSemRegistro = repositorioNotificacaoFrequencia.ObterTurmasSemRegistroDeFrequencia(tipo, ueId);
+            IEnumerable<RegistroFrequenciaFaltanteDto> turmasSemRegistro = null;
+            try
+            {
+                Console.WriteLine($"Buscando turmas: {tipo} - {ueId}");
+
+                turmasSemRegistro = repositorioNotificacaoFrequencia.ObterTurmasSemRegistroDeFrequencia(tipo, ueId);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
 
             if (turmasSemRegistro != null)
             {
+                Console.WriteLine(turmasSemRegistro.Count());
+                Console.WriteLine($"Buscando quantidade de aulas: {tipo} ");
                 // Busca parametro do sistema de quantidade de aulas sem frequencia para notificação
                 var qtdAulasNotificacao = QuantidadeAulasParaNotificacao(tipo);
                 foreach (var turma in turmasSemRegistro)
                 {
+                    Console.WriteLine($"Buscando aulas: {turma.CodigoTurma} - {turma.DisciplinaId} ");
                     // Carrega todas as aulas sem registro de frequencia da turma e disciplina para notificação
                     turma.Aulas = repositorioFrequencia.ObterAulasSemRegistroFrequencia(turma.CodigoTurma, turma.DisciplinaId);
                     if (turma.Aulas != null && turma.Aulas.Count() >= qtdAulasNotificacao)
                     {
+                        Console.WriteLine($"Busca Professor/Gestor/Supervisor: {tipo} ");
                         // Busca Professor/Gestor/Supervisor da Turma ou Ue
                         var usuarios = BuscaUsuarioNotificacao(turma, tipo);
 
@@ -270,6 +308,7 @@ namespace SME.SGP.Dominio.Servicos
 
         private void NotificaRegistroFrequencia(Usuario usuario, RegistroFrequenciaFaltanteDto turmaSemRegistro, TipoNotificacaoFrequencia tipo)
         {
+            Console.WriteLine($"Busca disciplina Eol: {turmaSemRegistro.DisciplinaId} ");
             var disciplina = servicoEOL.ObterDisciplinasPorIds(new long[] { long.Parse(turmaSemRegistro.DisciplinaId) }).FirstOrDefault();
 
             var tituloMensagem = $"Frequência da turma {turmaSemRegistro.NomeTurma} - {turmaSemRegistro.DisciplinaId} ({turmaSemRegistro.NomeUe})";
@@ -304,17 +343,36 @@ namespace SME.SGP.Dominio.Servicos
                 UeId = turmaSemRegistro.CodigoUe,
                 DreId = turmaSemRegistro.CodigoDre,
             };
-            servicoNotificacao.Salvar(notificacao);
-
-            foreach (var aula in turmaSemRegistro.Aulas)
+            Console.WriteLine($"Salva notificação");
+            try
             {
-                repositorioNotificacaoFrequencia.Salvar(new NotificacaoFrequencia()
+                servicoNotificacao.Salvar(notificacao);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Erro notificação: {ex.Message} - __________________________________________________________________________");
+                SentrySdk.CaptureEvent(new SentryEvent(ex));
+                SentrySdk.CaptureEvent(new SentryEvent(new NegocioException($"servicoNotificacao.Salvar")));
+            }
+            try
+            {
+                foreach (var aula in turmaSemRegistro.Aulas)
                 {
-                    Tipo = tipo,
-                    NotificacaoCodigo = notificacao.Codigo,
-                    AulaId = aula.Id,
-                    DisciplinaCodigo = turmaSemRegistro.DisciplinaId
-                });
+                    Console.WriteLine($"Salva notificação frequencia");
+                    repositorioNotificacaoFrequencia.Salvar(new NotificacaoFrequencia()
+                    {
+                        Tipo = tipo,
+                        NotificacaoCodigo = notificacao.Codigo,
+                        AulaId = aula.Id,
+                        DisciplinaCodigo = turmaSemRegistro.DisciplinaId
+                    });
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Erro notificação frequencia: {ex.Message} - __________________________________________________________________________");
+                SentrySdk.CaptureEvent(new SentryEvent(ex));
+                SentrySdk.CaptureEvent(new SentryEvent(new NegocioException($"repositorioNotificacaoFrequencia.Salvar")));
             }
         }
 
