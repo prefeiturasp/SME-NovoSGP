@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from 'react';
+import { useSelector } from 'react-redux';
 import { Titulo, TituloAno } from './aulaDadaAulaPrevista.css';
 import Grid from '~/componentes/grid';
 import Card from '~/componentes/card';
 import Button from '~/componentes/button';
 import SelectComponent from '~/componentes/select';
-import { useSelector } from 'react-redux';
 import ServicoDisciplina from '~/servicos/Paginas/ServicoDisciplina';
-import { Colors, Auditoria } from '~/componentes';
+import { Colors, Auditoria, Loader } from '~/componentes';
 import ListaAulasPorBimestre from './ListaAulasPorBimestre/ListaAulasPorBimestre';
 import api from '~/servicos/api';
 import Alert from '~/componentes/alert';
@@ -18,9 +18,9 @@ import history from '~/servicos/history';
 
 const AulaDadaAulaPrevista = () => {
   const usuario = useSelector(store => store.usuario);
-  const turmaSelecionada = usuario.turmaSelecionada;
+  const { turmaSelecionada } = usuario;
   const turmaId = turmaSelecionada ? turmaSelecionada.turma : 0;
-  const modalidade = turmaSelecionada.modalidade;
+  const { modalidade } = turmaSelecionada;
   const anoLetivo = turmaSelecionada ? turmaSelecionada.anoLetivo : 0;
   const [desabilitarDisciplina, setDesabilitarDisciplina] = useState(false);
   const [listaDisciplinas, setListaDisciplinas] = useState([]);
@@ -42,7 +42,7 @@ const AulaDadaAulaPrevista = () => {
         turmaId
       );
       setListaDisciplinas(disciplinas.data);
-      if (disciplinas.data && disciplinas.data.length == 1) {
+      if (disciplinas.data && disciplinas.data.length === 1) {
         const disciplina = disciplinas.data[0];
         setDisciplinaSelecionada(disciplina);
         onChangeDisciplinas(disciplina.codigoComponenteCurricular);
@@ -58,18 +58,26 @@ const AulaDadaAulaPrevista = () => {
     }
   }, [turmaSelecionada.turma]);
 
-  const onChangeDisciplinas = async disciplinaId => {
-    if (modoEdicao) {
-      const confirmar = await perguntaAoSalvar();
-      if (confirmar) {
-        await salvar();
-      }
-    }
-    setDisciplinaIdSelecionada(String(disciplinaId));
-    await buscarDados(disciplinaId);
+  const perguntaAoSalvar = async () => {
+    return confirmar(
+      'Atenção',
+      '',
+      'Suas alterações não foram salvas, deseja salvar agora?'
+    );
+  };
+
+  const [carregandoDados, setCarregandoDados] = useState(false);
+
+  const verificarBimestreAtual = (dataInicio, dataFim) => {
+    const dataAtual = window.moment(new Date());
+    return (
+      window.moment(dataInicio) <= dataAtual &&
+      window.moment(dataFim) >= dataAtual
+    );
   };
 
   const buscarDados = async disciplinaId => {
+    setCarregandoDados(true);
     const resposta = await api.get(
       `v1/aula-prevista/modalidades/${modalidade}/turmas/${turmaId}/disciplinas/${disciplinaId}`
     );
@@ -82,7 +90,7 @@ const AulaDadaAulaPrevista = () => {
       let totalDadas = 0;
       let totalRepostas = 0;
       dadosBimestre.forEach(item => {
-        item.ehBimestreAtual = ehBimestreAtual(item.inicio, item.fim);
+        item.ehBimestreAtual = verificarBimestreAtual(item.inicio, item.fim);
         item.dadas = item.cumpridas;
         totalPrevistas += item.previstas.quantidade;
         totalCriadasTitular += item.criadas.quantidadeTitular;
@@ -113,14 +121,7 @@ const AulaDadaAulaPrevista = () => {
       };
       setAuditoria(aud);
     }
-  };
-
-  const ehBimestreAtual = (dataInicio, dataFim) => {
-    const dataAtual = window.moment(new Date());
-    return (
-      window.moment(dataInicio) <= dataAtual &&
-      window.moment(dataFim) >= dataAtual
-    );
+    setCarregandoDados(false);
   };
 
   const resetarTela = () => {
@@ -128,40 +129,8 @@ const AulaDadaAulaPrevista = () => {
     buscarDados(disciplinaIdSelecionada);
   };
 
-  const perguntaAoSalvar = async () => {
-    return await confirmar(
-      'Atenção',
-      '',
-      'Suas alterações não foram salvas, deseja salvar agora?'
-    );
-  };
-
-  const onClickVoltar = async () => {
-    if (modoEdicao) {
-      const confirmado = perguntaAoSalvar();
-      if (confirmado) {
-        await salvar();
-      }
-    } else {
-      history.push(URL_HOME);
-    }
-  };
-
-  const onClickCancelar = async () => {
-    if (modoEdicao) {
-      const confirmado = await confirmar(
-        'Atenção',
-        'Você não salvou as informações preenchidas.',
-        'Deseja realmente cancelar as alterações?'
-      );
-      if (confirmado) {
-        resetarTela();
-      }
-    }
-  };
-
   const salvar = async () => {
-    let bimestresQuantidade = [];
+    const bimestresQuantidade = [];
     dadoslista.bimestres.forEach(item => {
       const dados = {
         bimestre: item.bimestre,
@@ -196,6 +165,41 @@ const AulaDadaAulaPrevista = () => {
     }
   };
 
+  const onChangeDisciplinas = async disciplinaId => {
+    if (modoEdicao) {
+      const confirmarSalvar = await perguntaAoSalvar();
+      if (confirmarSalvar) {
+        await salvar();
+      }
+    }
+    setDisciplinaIdSelecionada(String(disciplinaId));
+    await buscarDados(disciplinaId);
+  };
+
+  const onClickVoltar = async () => {
+    if (modoEdicao) {
+      const confirmado = perguntaAoSalvar();
+      if (confirmado) {
+        await salvar();
+      }
+    } else {
+      history.push(URL_HOME);
+    }
+  };
+
+  const onClickCancelar = async () => {
+    if (modoEdicao) {
+      const confirmado = await confirmar(
+        'Atenção',
+        'Você não salvou as informações preenchidas.',
+        'Deseja realmente cancelar as alterações?'
+      );
+      if (confirmado) {
+        resetarTela();
+      }
+    }
+  };
+
   const onClickSalvar = async () => {
     await salvar();
   };
@@ -220,7 +224,7 @@ const AulaDadaAulaPrevista = () => {
           Aula prevista X Aula dada
           <TituloAno>
             {' '}
-            {` / ${anoLetivo ? anoLetivo : new Date().getFullYear()}`}{' '}
+            {` / ${anoLetivo || new Date().getFullYear()}`}{' '}
           </TituloAno>{' '}
         </Titulo>{' '}
       </Grid>{' '}
@@ -268,14 +272,21 @@ const AulaDadaAulaPrevista = () => {
               />
             </div>
             <div className="col-md-12">
-              {dadoslista && dadoslista.bimestres ? (
-                <ListaAulasPorBimestre
-                  dados={dadoslista}
-                  setModoEdicao={e => setModoEdicao(e)}
-                  permissoesTela={permissoesTela}
-                  somenteConsulta={somenteConsulta}
-                />
-              ) : null}
+              <Loader
+                loading={disciplinaIdSelecionada && carregandoDados}
+                className={`w-100 ${disciplinaIdSelecionada &&
+                  carregandoDados &&
+                  'p-3 text-center'}`}
+              >
+                {dadoslista && dadoslista.bimestres ? (
+                  <ListaAulasPorBimestre
+                    dados={dadoslista}
+                    setModoEdicao={e => setModoEdicao(e)}
+                    permissoesTela={permissoesTela}
+                    somenteConsulta={somenteConsulta}
+                  />
+                ) : null}
+              </Loader>
             </div>
             <div className="col-md-6 d-flex justify-content-start">
               {auditoria ? (
