@@ -2,7 +2,6 @@
 ALTER TABLE public.aula_prevista DROP COLUMN IF EXISTS bimestre;
 
 DROP TABLE if exists public.aula_prevista_bimestre;
-
 CREATE TABLE public.aula_prevista_bimestre (
 	id int8 NOT NULL GENERATED ALWAYS AS identity,
 	aula_prevista_id int8 NOT NULL,
