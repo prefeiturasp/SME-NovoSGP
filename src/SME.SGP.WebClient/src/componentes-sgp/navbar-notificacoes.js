@@ -9,6 +9,7 @@ import { Base, Colors } from '~/componentes/colors';
 import Button from '~/componentes/button';
 import history from '~/servicos/history';
 import servicoNotificacao from '~/servicos/Paginas/ServicoNotificacao';
+import { erros } from '~/servicos/alertas';
 
 const Count = styled(Badge)`
   color: ${Base.Branco} !important;
@@ -85,6 +86,25 @@ const NavbarNotificacoes = props => {
   const notificacoes = useSelector(state => state.notificacoes);
 
   useEffect(() => {
+    let consultaJaRetornou = true;
+    const interval = setInterval(() => {
+      if (consultaJaRetornou && usuario.rf.length > 0) {
+        consultaJaRetornou = false;
+        servicoNotificacao
+          .buscaNotificacoesPorAnoRf(2019, usuario.rf)
+          .then(() => {
+            consultaJaRetornou = true;
+          })
+          .catch(e => {
+            erros(e);
+            consultaJaRetornou = true;
+          });
+      }
+    }, 60000);
+    return () => clearInterval(interval);
+  }, [usuario.rf]);
+
+  useEffect(() => {
     if (usuario.rf.length > 0)
       if (notificacoes.notificacoes.length === 0)
         servicoNotificacao.buscaNotificacoesPorAnoRf(2019, usuario.rf);
@@ -121,7 +141,6 @@ const NavbarNotificacoes = props => {
       <Botao
         className="text-center stretched-link"
         onClick={onClickBotao}
-        disabled={notificacoes.quantidade === 0}
       >
         <Count count={notificacoes.quantidade} overflowCount={99}>
           <Icone className="fa fa-bell fa-lg" />
@@ -134,54 +153,52 @@ const NavbarNotificacoes = props => {
           Notificações
         </Texto>
       </Botao>
-      {mostraNotificacoes &&
-        notificacoes.quantidade > 0 &&
-        notificacoes.notificacoes.length > 0 && (
-          <Lista className="container position-absolute rounded border bg-white shadow p-0">
-            <table className="table mb-0">
-              <tbody>
-                {notificacoes.notificacoes.map(notificacao => {
-                  return (
-                    <Tr
-                      key={shortid.generate()}
-                      status={notificacao.status}
-                      onClick={() => onClickNotificacao(notificacao.id)}
+      {mostraNotificacoes && notificacoes.notificacoes.length > 0 && (
+        <Lista className="container position-absolute rounded border bg-white shadow p-0">
+          <table className="table mb-0">
+            <tbody>
+              {notificacoes.notificacoes.map(notificacao => {
+                return (
+                  <Tr
+                    key={shortid.generate()}
+                    status={notificacao.status}
+                    onClick={() => onClickNotificacao(notificacao.id)}
+                  >
+                    <td className="py-1 pl-2 pr-1 text-center align-middle">
+                      <i className="fa fa-info-circle" />
+                    </td>
+                    <th
+                      className="py-1 px-1 text-center align-middle"
+                      scope="row"
                     >
-                      <td className="py-1 pl-2 pr-1 text-center align-middle">
-                        <i className="fa fa-info-circle" />
-                      </td>
-                      <th
-                        className="py-1 px-1 text-center align-middle"
-                        scope="row"
-                      >
-                        {notificacao.codigo}
-                      </th>
-                      <td className="py-1 px-1 align-middle w-75">
-                        {notificacao.titulo}
-                      </td>
-                      <td className="py-1 px-1 text-center align-middle status">
-                        {statusLista[notificacao.status]}
-                      </td>
-                      <td className="py-1 px-2 align-middle w-25 text-right">
-                        {moment(notificacao.data).format('DD/MM/YYYY HH:mm:ss')}
-                      </td>
-                    </Tr>
-                  );
-                })}
-              </tbody>
-            </table>
-            <Button
-              label="Ver tudo"
-              className="btn-block"
-              color={Colors.Roxo}
-              fontSize="12px"
-              customRadius="border-top-right-radius: 0 !important; border-top-left-radius: 0 !important;"
-              border
-              bold
-              onClick={onClickVerTudo}
-            />
-          </Lista>
-        )}
+                      {notificacao.codigo}
+                    </th>
+                    <td className="py-1 px-1 align-middle w-75">
+                      {notificacao.titulo}
+                    </td>
+                    <td className="py-1 px-1 text-center align-middle status">
+                      {statusLista[notificacao.status]}
+                    </td>
+                    <td className="py-1 px-2 align-middle w-25 text-right">
+                      {moment(notificacao.data).format('DD/MM/YYYY HH:mm:ss')}
+                    </td>
+                  </Tr>
+                );
+              })}
+            </tbody>
+          </table>
+          <Button
+            label="Ver tudo"
+            className="btn-block"
+            color={Colors.Roxo}
+            fontSize="12px"
+            customRadius="border-top-right-radius: 0 !important; border-top-left-radius: 0 !important;"
+            border
+            bold
+            onClick={onClickVerTudo}
+          />
+        </Lista>
+      )}
     </div>
   );
 };
