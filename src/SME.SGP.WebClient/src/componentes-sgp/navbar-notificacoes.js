@@ -100,7 +100,7 @@ const NavbarNotificacoes = props => {
             consultaJaRetornou = true;
           });
       }
-    }, 5000);
+    }, 60000);
     return () => clearInterval(interval);
   }, [usuario.rf]);
 
