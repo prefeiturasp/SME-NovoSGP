@@ -1,6 +1,8 @@
-﻿namespace SME.SGP.Dominio
+﻿using System;
+
+namespace SME.SGP.Dominio
 {
-    public class RegistroAusenciaAluno : EntidadeBase
+    public class RegistroAusenciaAluno : EntidadeBase, ICloneable
     {
         public RegistroAusenciaAluno(string codigoAluno, int numeroAula)
         {
@@ -17,5 +19,19 @@
         public int NumeroAula { get; set; }
         public RegistroFrequencia RegistroFrequencia { get; set; }
         public long RegistroFrequenciaId { get; set; }
+
+        public object Clone()
+         => new RegistroAusenciaAluno()
+         {
+             AlteradoEm = AlteradoEm,
+             AlteradoPor = AlteradoPor,
+             AlteradoRF = AlteradoRF,
+             CriadoEm = CriadoEm,
+             CriadoPor = CriadoPor,
+             CriadoRF = CriadoRF,
+             CodigoAluno = CodigoAluno,
+             NumeroAula = NumeroAula,
+             RegistroFrequenciaId = RegistroFrequenciaId
+         };
     }
 }

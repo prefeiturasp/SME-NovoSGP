@@ -230,16 +230,23 @@ export default function AtribuicaoSupervisorLista() {
 
   async function carregarSupervisores(dre) {
     const sups = await api.get(`/v1/supervisores/dre/${dre}`);
-    setListaSupervisores(sups.data || []);
+    if (sups.data) {
+      setListaSupervisores(sups.data);
+    } else {
+      setListaSupervisores([]);
+    }
   }
 
   async function carregarUes(dre) {
     const ues = await api.get(`/v1/abrangencias/dres/${dre}/ues`);
-    if (ues.data)
+    if (ues.data) {
       ues.data.forEach(
         ue => (ue.nome = `${tipoEscolaDTO[ue.tipoEscola]} ${ue.nome}`)
       );
-    setListaUes(ues.data.sort(FiltroHelper.ordenarLista('nome')) || []);
+      setListaUes(ues.data.sort(FiltroHelper.ordenarLista('nome')));
+    } else {
+      setListaUes([]);
+    }
   }
 
   async function onChangeSupervisores(sup) {

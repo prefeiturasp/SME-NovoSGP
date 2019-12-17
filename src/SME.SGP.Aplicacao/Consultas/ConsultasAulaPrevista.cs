@@ -12,27 +12,45 @@ namespace SME.SGP.Aplicacao
     {
         private readonly IRepositorioAulaPrevista repositorio;
         private readonly IRepositorioAulaPrevistaBimestre repositorioBimestre;
+        private readonly IRepositorioPeriodoEscolar repositorioPeriodoEscolar;
+        private readonly IRepositorioTurma repositorioTurma;
+        private readonly IRepositorioTipoCalendario repositorioTipoCalendario;
 
         public ConsultasAulaPrevista(IRepositorioAulaPrevista repositorio,
-                                     IRepositorioAulaPrevistaBimestre repositorioBimestre)
+                                     IRepositorioAulaPrevistaBimestre repositorioBimestre,
+                                     IRepositorioPeriodoEscolar repositorioPeriodoEscolar,
+                                     IRepositorioTurma repositorioTurma,
+                                     IRepositorioTipoCalendario repositorioTipoCalendario)
         {
             this.repositorio = repositorio ?? throw new ArgumentNullException(nameof(repositorio));
             this.repositorioBimestre = repositorioBimestre ?? throw new ArgumentNullException(nameof(repositorioBimestre));
+            this.repositorioPeriodoEscolar = repositorioPeriodoEscolar ?? throw new ArgumentNullException(nameof(repositorioPeriodoEscolar));
+            this.repositorioTurma = repositorioTurma ?? throw new ArgumentNullException(nameof(repositorioTurma));
+            this.repositorioTipoCalendario = repositorioTipoCalendario ?? throw new ArgumentNullException(nameof(repositorioTipoCalendario));
         }
 
         public async Task<AulasPrevistasDadasAuditoriaDto> BuscarPorId(long id)
         {
+            AulasPrevistasDadasAuditoriaDto aulaPrevistaDto = null;
             var aulaPrevista = repositorio.ObterPorId(id);
 
-            var aulaPrevistaBimestres = await ObterBimestres(aulaPrevista);
-            var aulaPrevistaDto =  MapearDtoRetorno(aulaPrevista, aulaPrevistaBimestres);
+            if (aulaPrevista != null)
+            {
+                var aulaPrevistaBimestres = await ObterBimestres(aulaPrevista.Id);
+                aulaPrevistaDto = MapearDtoRetorno(aulaPrevista, aulaPrevistaBimestres);
+            }
 
             return aulaPrevistaDto;
         }
 
-        private async Task <IEnumerable<AulaPrevistaBimestreQuantidade>> ObterBimestres(AulaPrevista aulaPrevista)
+        private async Task<IEnumerable<AulaPrevistaBimestreQuantidade>> ObterBimestres(long? aulaPrevistaId)
         {
-            return await repositorioBimestre.ObterBimestresAulasPrevistasPorId(aulaPrevista.Id);
+            return await repositorioBimestre.ObterBimestresAulasPrevistasPorId(aulaPrevistaId);
+        }
+
+        private IEnumerable<PeriodoEscolar> ObterPeriodosEscolares(long tipoCalendarioId)
+        {
+            return repositorioPeriodoEscolar.ObterPorTipoCalendario(tipoCalendarioId);
         }
 
         private AulasPrevistasDadasAuditoriaDto MapearDtoRetorno(AulaPrevista aulaPrevista, IEnumerable<AulaPrevistaBimestreQuantidade> aulasPrevistasBimestre)
@@ -45,14 +63,49 @@ namespace SME.SGP.Aplicacao
 
         public async Task<AulasPrevistasDadasAuditoriaDto> ObterAulaPrevistaDada(Modalidade modalidade, string turmaId, string disciplinaId)
         {
-            int tipoCalendarioId = (int)ModalidadeParaModalidadeTipoCalendario(modalidade);
+            var turma = ObterTurma(turmaId);
 
-            var aulaPrevista = await repositorio.ObterAulaPrevistaFiltro(tipoCalendarioId, turmaId, disciplinaId);
+            var tipoCalendario = ObterTipoCalendarioPorTurmaAnoLetivo(turma.AnoLetivo, turma.ModalidadeCodigo);
 
-            var aulaPrevistaBimestres = await ObterBimestres(aulaPrevista);
-            var aulaPrevistaDto = MapearDtoRetorno(aulaPrevista, aulaPrevistaBimestres);
+            AulasPrevistasDadasAuditoriaDto aulaPrevistaDto;
+
+            var aulaPrevista = await repositorio.ObterAulaPrevistaFiltro(tipoCalendario.Id, turmaId, disciplinaId);
+
+            IEnumerable<AulaPrevistaBimestreQuantidade> aulaPrevistaBimestres;
+
+            if (aulaPrevista != null)
+                aulaPrevistaBimestres = await ObterBimestres(aulaPrevista.Id);
+            else
+            {
+                aulaPrevista = new AulaPrevista();
+
+                var periodosBimestre = ObterPeriodosEscolares(tipoCalendario.Id);
+                aulaPrevistaBimestres = MapearPeriodoParaBimestreDto(periodosBimestre);
+            }
+
+            aulaPrevistaDto = MapearDtoRetorno(aulaPrevista, aulaPrevistaBimestres);
 
             return aulaPrevistaDto;
+        }
+
+        private Turma ObterTurma(string turmaId)
+        {
+            var turma = repositorioTurma.ObterPorId(turmaId);
+
+            if (turma == null)
+                throw new NegocioException("Turma não encontrada!");
+
+            return turma;
+        }
+
+        private TipoCalendario ObterTipoCalendarioPorTurmaAnoLetivo(int anoLetivo, Modalidade turmaModalidade)
+        {
+            var tipoCalendario = repositorioTipoCalendario.BuscarPorAnoLetivoEModalidade(anoLetivo, ModalidadeParaModalidadeTipoCalendario(turmaModalidade));
+
+            if (tipoCalendario == null)
+                throw new NegocioException("Tipo calendário não encontrado!");
+
+            return tipoCalendario;
         }
 
         private AulasPrevistasDadasAuditoriaDto MapearMensagens(AulasPrevistasDadasAuditoriaDto aulaPrevistaDto)
@@ -112,6 +165,18 @@ namespace SME.SGP.Aplicacao
                     Reposicoes = x.Reposicoes
                 }).ToList()
             };
+        }
+
+        private IEnumerable<AulaPrevistaBimestreQuantidade> MapearPeriodoParaBimestreDto(IEnumerable<PeriodoEscolar> periodoEscolares)
+        {
+            IEnumerable<AulaPrevistaBimestreQuantidade> bimestreQuantidades = new List<AulaPrevistaBimestreQuantidade>();
+
+            return periodoEscolares?.Select(x => new AulaPrevistaBimestreQuantidade
+            {
+                Bimestre = x.Bimestre,
+                Inicio = x.PeriodoInicio,
+                Fim = x.PeriodoFim
+            }).ToList();
         }
     }
 }
