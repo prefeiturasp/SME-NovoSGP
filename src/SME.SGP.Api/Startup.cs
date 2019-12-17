@@ -6,7 +6,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Prometheus;
 using SME.Background.Core;
 using SME.Background.Hangfire;
-using SME.SGP.Aplicacao.Servicos;
+using SME.SGP.Api.Middlewares;
 using SME.SGP.Background;
 using SME.SGP.Dados.Mapeamentos;
 using SME.SGP.IoC;
@@ -90,7 +90,7 @@ namespace SME.SGP.Api
                             });
             });
 
-            services.AddTransient<TokenServiceMiddleware>();
+            services.AddScoped<TokenServiceMiddleware>();
 
             services.AddDistributedRedisCache(options =>
             {
