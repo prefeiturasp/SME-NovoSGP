@@ -22,6 +22,7 @@ const ListaPaginada = props => {
     onSelecionarLinhas,
     selecionarItems,
     filtroEhValido,
+    onErro,
   } = props;
 
   const dispatch = useDispatch();
@@ -98,6 +99,7 @@ const ListaPaginada = props => {
       })
       .catch(err => {
         dispatch(setLoaderTabela(false));
+        onErro(err);
       });
   };
 

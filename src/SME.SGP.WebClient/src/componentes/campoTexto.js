@@ -47,6 +47,7 @@ const CampoTexto = React.forwardRef((props, ref) => {
     semMensagem,
     style,
     iconeBusca,
+    allowClear,
   } = props;
 
   const possuiErro = () => {
@@ -89,6 +90,7 @@ const CampoTexto = React.forwardRef((props, ref) => {
             onChange={onChangeCampo}
             style={style}
             prefix={iconeBusca && <i className="fa fa-search fa-lg" />}
+            allowClear
           />
           {!semMensagem && form && form.touched[name] ? (
             <span>{form.errors[name]}</span>
@@ -105,6 +107,7 @@ const CampoTexto = React.forwardRef((props, ref) => {
           onKeyDown={onKeyDown}
           value={value}
           prefix={iconeBusca && <i className="fa fa-search fa-lg" />}
+          allowClear
         />
       )}
     </Campo>
