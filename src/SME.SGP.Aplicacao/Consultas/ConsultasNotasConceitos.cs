@@ -12,15 +12,18 @@ namespace SME.SGP.Aplicacao
     public class ConsultasNotasConceitos : IConsultasNotasConceitos
     {
         private readonly IConsultaAtividadeAvaliativa consultasAtividadeAvaliativa;
+        private readonly IRepositorioAtividadeAvaliativa repositorioAtividadeAvaliativa;
         private readonly IRepositorioFrequencia repositorioFrequencia;
+        private readonly IRepositorioNotaParametro repositorioNotaParametro;
         private readonly IRepositorioNotasConceitos repositorioNotasConceitos;
+        private readonly IServicoAluno servicoAluno;
         private readonly IServicoDeNotasConceitos servicoDeNotasConceitos;
         private readonly IServicoEOL servicoEOL;
         private readonly IServicoUsuario servicoUsuario;
 
         public ConsultasNotasConceitos(IServicoEOL servicoEOL, IConsultaAtividadeAvaliativa consultasAtividadeAvaliativa,
             IServicoDeNotasConceitos servicoDeNotasConceitos, IRepositorioNotasConceitos repositorioNotasConceitos,
-            IRepositorioFrequencia repositorioFrequencia, IServicoUsuario servicoUsuario)
+            IRepositorioFrequencia repositorioFrequencia, IServicoUsuario servicoUsuario, IServicoAluno servicoAluno, IRepositorioNotaParametro repositorioNotaParametro, IRepositorioAtividadeAvaliativa repositorioAtividadeAvaliativa)
         {
             this.servicoEOL = servicoEOL ?? throw new ArgumentNullException(nameof(servicoEOL));
             this.consultasAtividadeAvaliativa = consultasAtividadeAvaliativa ?? throw new ArgumentNullException(nameof(consultasAtividadeAvaliativa));
@@ -28,6 +31,9 @@ namespace SME.SGP.Aplicacao
             this.repositorioNotasConceitos = repositorioNotasConceitos ?? throw new ArgumentNullException(nameof(repositorioNotasConceitos));
             this.repositorioFrequencia = repositorioFrequencia ?? throw new ArgumentNullException(nameof(repositorioFrequencia));
             this.servicoUsuario = servicoUsuario ?? throw new ArgumentNullException(nameof(servicoUsuario));
+            this.servicoAluno = servicoAluno ?? throw new ArgumentNullException(nameof(servicoAluno));
+            this.repositorioNotaParametro = repositorioNotaParametro ?? throw new ArgumentNullException(nameof(repositorioNotaParametro));
+            this.repositorioAtividadeAvaliativa = repositorioAtividadeAvaliativa ?? throw new ArgumentNullException(nameof(repositorioAtividadeAvaliativa));
         }
 
         public async Task<NotasConceitosRetornoDto> ListarNotasConceitos(string turmaCodigo, int? bimestre, int anoLetivo, string disciplinaCodigo, Modalidade modalidade)
@@ -47,13 +53,22 @@ namespace SME.SGP.Aplicacao
             var retorno = new NotasConceitosRetornoDto();
             var usuarioLogado = await servicoUsuario.ObterUsuarioLogado();
 
+            retorno.BimestreAtual = atividadesAvaliativaEBimestres.periodoAtual.Bimestre;
+
+            DateTime? dataUltimaNotaConceitoInserida = null;
+            DateTime? dataUltimaNotaConceitoAlterada = null;
+            var usuarioRfUltimaNotaConceitoInserida = string.Empty;
+            var usuarioRfUltimaNotaConceitoAlterada = string.Empty;
+            var nomeAvaliacaoAuditoriaInclusao = string.Empty;
+            var nomeAvaliacaoAuditoriaAlteracao = string.Empty;
+
             for (int i = 0; i < atividadesAvaliativaEBimestres.quantidadeBimestres; i++)
             {
                 AtividadeAvaliativa atividadeAvaliativaParaObterTipoNota = null;
                 var valorBimestreAtual = i + 1;
                 var bimestreParaAdicionar = new NotasConceitosBimestreRetornoDto() { Descricao = $"{valorBimestreAtual}º Bimestre", Numero = valorBimestreAtual };
 
-                if (valorBimestreAtual == atividadesAvaliativaEBimestres.bimestreAtual)
+                if (valorBimestreAtual == atividadesAvaliativaEBimestres.periodoAtual.Bimestre)
                 {
                     var listaAlunosDoBimestre = new List<NotasConceitosAlunoRetornoDto>();
 
@@ -76,19 +91,44 @@ namespace SME.SGP.Aplicacao
 
                         foreach (var atividadeAvaliativa in atividadesAvaliativasdoBimestre)
                         {
-                            //TODO: Buscar a Nota se já foi lançada
-                            string notaParaMostrar = ObterNotaParaVisualizacao(notas, aluno, atividadeAvaliativa);
+                            var notaDoAluno = ObterNotaParaVisualizacao(notas, aluno, atividadeAvaliativa);
+                            var notaParaVisualizar = string.Empty;
 
-                            //TODO: Buscar se houve ausencia
+                            if (notaDoAluno != null)
+                            {
+                                notaParaVisualizar = notaDoAluno.ObterNota();
+
+                                if (!dataUltimaNotaConceitoInserida.HasValue || notaDoAluno.CriadoEm > dataUltimaNotaConceitoInserida.Value)
+                                {
+                                    usuarioRfUltimaNotaConceitoInserida = $"{notaDoAluno.CriadoPor}({notaDoAluno.CriadoRF})";
+                                    dataUltimaNotaConceitoInserida = notaDoAluno.CriadoEm;
+                                    nomeAvaliacaoAuditoriaInclusao = atividadeAvaliativa.NomeAvaliacao;
+                                }
+                                if (notaDoAluno.AlteradoEm.HasValue)
+                                {
+                                    if (!dataUltimaNotaConceitoAlterada.HasValue || notaDoAluno.AlteradoEm.Value > dataUltimaNotaConceitoAlterada.Value)
+                                    {
+                                        usuarioRfUltimaNotaConceitoAlterada = $"{notaDoAluno.AlteradoPor}({notaDoAluno.AlteradoRF})";
+                                        dataUltimaNotaConceitoAlterada = notaDoAluno.AlteradoEm;
+                                        nomeAvaliacaoAuditoriaAlteracao = atividadeAvaliativa.NomeAvaliacao;
+                                    }
+                                }
+                            }
+
                             var ausente = ausenciasAtividadesAvaliativas.Any(a => a.AlunoCodigo == aluno.CodigoAluno && a.AulaData.Date == atividadeAvaliativa.DataAvaliacao.Date);
 
-                            //TODO: Buscar se pode editar
-                            bool podeEditar = PodeEditarNotaOuConceito(usuarioLogado, professorRfTitularTurmaDisciplina, atividadeAvaliativa);
+                            bool podeEditar = PodeEditarNotaOuConceito(usuarioLogado, professorRfTitularTurmaDisciplina, atividadeAvaliativa, aluno);
 
-                            var notaAvaliacao = new NotasConceitosNotaAvaliacaoRetornoDto() { AtividadeAvaliativaId = atividadeAvaliativa.Id, NotaConceito = notaParaMostrar, Ausente = ausente, PodeEditar = podeEditar };
-
+                            var notaAvaliacao = new NotasConceitosNotaAvaliacaoRetornoDto() { AtividadeAvaliativaId = atividadeAvaliativa.Id, NotaConceito = notaParaVisualizar, Ausente = ausente, PodeEditar = podeEditar };
                             notasAvaliacoes.Add(notaAvaliacao);
                         }
+
+                        notaConceitoAluno.Marcador = servicoAluno.ObterMarcadorAluno(aluno, new PeriodoEscolarDto()
+                        {
+                            Bimestre = valorBimestreAtual,
+                            PeriodoInicio = atividadesAvaliativaEBimestres.periodoAtual.PeriodoInicio,
+                            PeriodoFim = atividadesAvaliativaEBimestres.periodoAtual.PeriodoFim
+                        });
 
                         notaConceitoAluno.NotasAvaliacoes = notasAvaliacoes;
                         listaAlunosDoBimestre.Add(notaConceitoAluno);
@@ -103,15 +143,16 @@ namespace SME.SGP.Aplicacao
                             atividadeAvaliativaParaObterTipoNota = avaliacao;
                     }
                     bimestreParaAdicionar.Alunos = listaAlunosDoBimestre;
-                }
 
-                if (atividadeAvaliativaParaObterTipoNota != null)
-                {
-                    var notaTipo = servicoDeNotasConceitos.TipoNotaPorAvaliacao(atividadeAvaliativaParaObterTipoNota);
-                    if (notaTipo == null)
-                        throw new NegocioException("Não foi possível obter o tipo de nota desta avaliação.");
+                    if (atividadeAvaliativaParaObterTipoNota != null)
+                    {
+                        var notaTipo = servicoDeNotasConceitos.TipoNotaPorAvaliacao(atividadeAvaliativaParaObterTipoNota);
+                        if (notaTipo == null)
+                            throw new NegocioException("Não foi possível obter o tipo de nota desta avaliação.");
 
-                    retorno.NotaTipo = notaTipo.TipoNota;
+                        retorno.NotaTipo = notaTipo.TipoNota;
+                        ObterValoresDeAuditoria(dataUltimaNotaConceitoInserida, dataUltimaNotaConceitoAlterada, usuarioRfUltimaNotaConceitoInserida, usuarioRfUltimaNotaConceitoAlterada, notaTipo.TipoNota, retorno, nomeAvaliacaoAuditoriaInclusao, nomeAvaliacaoAuditoriaAlteracao);
+                    }
                 }
 
                 retorno.Bimestres.Add(bimestreParaAdicionar);
@@ -120,33 +161,59 @@ namespace SME.SGP.Aplicacao
             return retorno;
         }
 
-        private static string ObterNotaParaVisualizacao(IEnumerable<NotaConceito> notas, Integracoes.Respostas.AlunoPorTurmaResposta aluno, AtividadeAvaliativa atividadeAvaliativa)
+        public TipoNota ObterNotaTipo(long turmaId, int anoLetivo)
         {
-            var notaDoAluno = notas.FirstOrDefault(a => a.AlunoId == aluno.CodigoAluno && a.AtividadeAvaliativaID == atividadeAvaliativa.Id);
-            var notaParaMostrar = string.Empty;
-            if (notaDoAluno != null)
-                notaParaMostrar = notaDoAluno.ObterNota();
-            return notaParaMostrar;
+            var notaTipo = servicoDeNotasConceitos.TipoNotaPorAvaliacao(new AtividadeAvaliativa()
+            {
+                TurmaId = turmaId.ToString(),
+                DataAvaliacao = new DateTime(anoLetivo, 3, 1)
+            });
+
+            return notaTipo.TipoNota;
         }
 
-        private static bool PodeEditarNotaOuConceito(Usuario usuarioLogado, string professorTitularDaTurmaDisciplinaRf, AtividadeAvaliativa atividadeAvaliativa)
+        public double ObterValorArredondado(long atividadeAvaliativaId, double nota)
         {
-            var podeEditar = true;
+            var atividadeAvaliativa = repositorioAtividadeAvaliativa.ObterPorId(atividadeAvaliativaId);
+            if (atividadeAvaliativa == null)
+                throw new NegocioException("Não foi possível localizar a atividade avaliativa.");
+
+            var notaParametro = repositorioNotaParametro.ObterPorDataAvaliacao(atividadeAvaliativa.DataAvaliacao);
+            if (notaParametro == null)
+                throw new NegocioException("Não foi possível localizar o parâmetro da nota.");
+
+            return notaParametro.Arredondar(nota);
+        }
+
+        private static NotaConceito ObterNotaParaVisualizacao(IEnumerable<NotaConceito> notas, AlunoPorTurmaResposta aluno, AtividadeAvaliativa atividadeAvaliativa)
+        {
+            var notaDoAluno = notas.FirstOrDefault(a => a.AlunoId == aluno.CodigoAluno && a.AtividadeAvaliativaID == atividadeAvaliativa.Id);
+
+            return notaDoAluno;
+        }
+
+        private static bool PodeEditarNotaOuConceito(Usuario usuarioLogado, string professorTitularDaTurmaDisciplinaRf,
+            AtividadeAvaliativa atividadeAvaliativa, AlunoPorTurmaResposta aluno)
+        {
+            if (aluno.CodigoSituacaoMatricula != SituacaoMatriculaAluno.Ativo && aluno.CodigoSituacaoMatricula != SituacaoMatriculaAluno.PendenteRematricula &&
+                aluno.CodigoSituacaoMatricula != SituacaoMatriculaAluno.Rematriculado && aluno.CodigoSituacaoMatricula != SituacaoMatriculaAluno.SemContinuidade)
+                return false;
+
             if (atividadeAvaliativa.DataAvaliacao.Date > DateTime.Today)
-                podeEditar = false;
+                return false;
 
             if (usuarioLogado.PerfilAtual == Perfis.PERFIL_CJ)
             {
                 if (atividadeAvaliativa.CriadoRF != usuarioLogado.CodigoRf)
-                    podeEditar = false;
+                    return false;
             }
             else
             {
                 if (usuarioLogado.CodigoRf != professorTitularDaTurmaDisciplinaRf)
-                    podeEditar = false;
+                    return false;
             }
 
-            return podeEditar;
+            return true;
         }
 
         private async Task<string> ObterRfProfessorTitularDisciplina(string turmaCodigo, string disciplinaCodigo, List<AtividadeAvaliativa> atividadesAvaliativasdoBimestre)
@@ -161,15 +228,14 @@ namespace SME.SGP.Aplicacao
             return string.Empty;
         }
 
-        public TipoNota ObterNotaTipo(long turmaId, int anoLetivo)
+        private void ObterValoresDeAuditoria(DateTime? dataUltimaNotaConceitoInserida, DateTime? dataUltimaNotaConceitoAlterada, string usuarioInseriu, string usuarioAlterou, TipoNota tipoNota, NotasConceitosRetornoDto notasConceitosRetornoDto, string nomeAvaliacaoInclusao, string nomeAvaliacaoAlteracao)
         {
-            var notaTipo = servicoDeNotasConceitos.TipoNotaPorAvaliacao(new AtividadeAvaliativa()
-            {
-                TurmaId = turmaId.ToString(),
-                DataAvaliacao = new DateTime(anoLetivo, 3, 1)
-            });
+            var tituloNotasOuConceitos = tipoNota == TipoNota.Conceito ? "Conceitos" : "Notas";
 
-            return notaTipo.TipoNota;
+            if (dataUltimaNotaConceitoInserida.HasValue)
+                notasConceitosRetornoDto.AuditoriaInserido = $"{tituloNotasOuConceitos} da avaliação {nomeAvaliacaoInclusao} inseridos por Nome {usuarioInseriu} em {dataUltimaNotaConceitoInserida.Value.Day}/{dataUltimaNotaConceitoInserida.Value.Month}/{dataUltimaNotaConceitoInserida.Value.Year}, às {dataUltimaNotaConceitoInserida.Value.TimeOfDay.Hours}:{dataUltimaNotaConceitoInserida.Value.TimeOfDay.Minutes}.";
+            if (dataUltimaNotaConceitoAlterada.HasValue)
+                notasConceitosRetornoDto.AuditoriaAlterado = $"{tituloNotasOuConceitos} da avaliação {nomeAvaliacaoAlteracao} alterados por Nome {usuarioAlterou} em {dataUltimaNotaConceitoAlterada.Value.Day}/{dataUltimaNotaConceitoAlterada.Value.Month}/{dataUltimaNotaConceitoAlterada.Value.Year}, às {dataUltimaNotaConceitoAlterada.Value.TimeOfDay.Hours}:{dataUltimaNotaConceitoAlterada.Value.TimeOfDay.Minutes}.";
         }
     }
 }

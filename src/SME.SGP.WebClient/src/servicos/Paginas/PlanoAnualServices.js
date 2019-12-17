@@ -2,9 +2,9 @@ import API from '../api';
 import DisciplinaDTO from '~/dtos/disciplinaDto';
 
 const Service = {
-  getDisciplinasProfessor: async (RF, CodigoTurma) => {
+  getDisciplinasProfessor: async (RF, CodigoTurma, turmaPrograma) => {
     const requisicao = await API.get(
-      Service._getBaseUrlDisciplinasProfessor(RF, CodigoTurma)
+      Service._getBaseUrlDisciplinasProfessor(RF, CodigoTurma, turmaPrograma)
     );
 
     return requisicao.data.map(
@@ -20,12 +20,14 @@ const Service = {
 
   getDisciplinasProfessorObjetivos: async (
     codigoTurma,
-    disciplinaSelecionada
+    disciplinaSelecionada,
+    turmaPrograma
   ) => {
     const requisicao = await API.get(
       Service._getBaseUrlDisciplinasProfessorObjetivo(
         codigoTurma,
-        disciplinaSelecionada
+        disciplinaSelecionada,
+        turmaPrograma
       )
     );
 
@@ -109,15 +111,20 @@ const Service = {
       });
   },
 
-  _getBaseUrlDisciplinasProfessor: (RF, CodigoTurma) => {
-    return `v1/professores/${RF}/turmas/${CodigoTurma}/disciplinas/`;
+  _getBaseUrlDisciplinasProfessor: (RF, CodigoTurma, turmaPrograma) => {
+    return `v1/professores/${RF}/turmas/${CodigoTurma}/disciplinas?turmaPrograma=${!!turmaPrograma}`;
   },
 
   _getBaseUrlDisciplinasProfessorObjetivo: (
     codigoTurma,
-    disciplinaSelecionada
+    disciplinaSelecionada,
+    turmaPrograma
   ) => {
-    return `v1/professores/turmas/${codigoTurma}/disciplinas/planejamento?codigoDisciplina=${disciplinaSelecionada.codigo}&regencia=${disciplinaSelecionada.regencia}`;
+    return `v1/professores/turmas/${codigoTurma}/disciplinas/planejamento?codigoDisciplina=${
+      disciplinaSelecionada.codigo
+    }&regencia=${
+      disciplinaSelecionada.regencia
+    }&turmaPrograma=${turmaPrograma && turmaPrograma}`;
   },
 
   _getBaseUrlObjetivosFiltro: () => {

@@ -1,13 +1,12 @@
 ﻿using Dapper;
 using Dommel;
-using SME.SGP.Dados.Contexto;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
+using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using SME.SGP.Infra;
 
 namespace SME.SGP.Dados.Repositorios
 {
@@ -21,6 +20,13 @@ namespace SME.SGP.Dados.Repositorios
         public RepositorioUe(ISgpContext contexto)
         {
             this.contexto = contexto;
+        }
+
+        public IEnumerable<Ue> ListarPorCodigos(string[] codigos)
+        {
+            var query = "select id, ue_id, dre_id, nome, tipo_escola FROM public.ue where ue_id = ANY(@codigos)";
+
+            return contexto.Conexao.Query<Ue>(query, new { codigos });
         }
 
         public async Task<IEnumerable<Modalidade>> ObterModalidades(string ueCodigo, int ano)
@@ -37,6 +43,23 @@ namespace SME.SGP.Dados.Repositorios
         public Ue ObterPorCodigo(string ueId)
         {
             return contexto.QueryFirstOrDefault<Ue>("select * from ue where ue_id = @ueId", new { ueId });
+        }
+
+        public IEnumerable<Ue> ObterPorDre(long dreId)
+        {
+            var query = @"select
+	                        id,
+	                        ue_id,
+	                        dre_id,
+	                        nome,
+	                        tipo_escola,
+	                        data_atualizacao
+                        from
+	                        ue
+                        where
+	                        dre_id = @dreId";
+
+            return contexto.Query<Ue>(query, new { dreId });
         }
 
         public async Task<IEnumerable<Turma>> ObterTurmas(string ueCodigo, Modalidade modalidade, int ano)

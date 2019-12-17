@@ -1,5 +1,6 @@
 ﻿using Hangfire;
 using SME.Background.Core;
+using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 
 namespace SME.SGP.Background

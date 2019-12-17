@@ -44,13 +44,15 @@ function InputNome({
         onSearch={busca => onChange(busca)}
         onSelect={(value, option) => onSelect(option)}
         dataSource={options}
-        value={valor || ''}
+        value={valor}
         disabled={desabilitado}
+        allowClear
       >
         <Input
           placeholder="Digite o nome da pessoa"
           prefix={<i className="fa fa-search fa-lg" />}
           disabled={desabilitado}
+          allowClear
         />
       </AutoComplete>
     </InputNomeEstilo>

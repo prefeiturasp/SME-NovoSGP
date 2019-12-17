@@ -1,5 +1,5 @@
 ﻿using Dapper;
-using SME.SGP.Dados.Contexto;
+using Sentry;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
@@ -35,6 +35,12 @@ namespace SME.SGP.Dados.Repositorios
             await database.ExecuteAsync(command, new { aulaId });
         }
 
+        public async Task<bool> FrequenciaAulaRegistrada(long aulaId)
+        {
+            var query = @"select 1 from registro_frequencia where aula_id = @aulaId";
+            return await database.Conexao.QueryFirstOrDefaultAsync<bool>(query, new { aulaId });
+        }
+
         public RegistroFrequenciaAulaDto ObterAulaDaFrequencia(long registroFrequenciaId)
         {
             var query = @"select a.ue_id as codigoUe, a.turma_id as codigoTurma
@@ -60,8 +66,17 @@ namespace SME.SGP.Dados.Repositorios
                            and a.data_aula < DATE(now())
                            and a.turma_id = @turmaId
                            and a.disciplina_id = @disciplinaId";
-
-            return database.Conexao.Query<AulasPorTurmaDisciplinaDto>(query, new { turmaId, disciplinaId });
+            IEnumerable<AulasPorTurmaDisciplinaDto> lista = new List<AulasPorTurmaDisciplinaDto>();
+            try
+            {
+                lista = database.Conexao.Query<AulasPorTurmaDisciplinaDto>(query, new { turmaId, disciplinaId });
+            }
+            catch (Exception ex)
+            {
+                SentrySdk.CaptureEvent(new SentryEvent(ex));
+                SentrySdk.CaptureEvent(new SentryEvent(new NegocioException($"ObterAulasSemRegistroFrequencia - {turmaId} - {disciplinaId}")));
+            }
+            return lista;
         }
 
         public async Task<IEnumerable<AusenciaAlunoDto>> ObterAusencias(string turmaCodigo, string disciplinaCodigo, DateTime[] datas, string[] alunoCodigos)

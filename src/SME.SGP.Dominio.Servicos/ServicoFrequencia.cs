@@ -1,6 +1,7 @@
 ﻿using SME.SGP.Aplicacao;
 using SME.SGP.Aplicacao.Integracoes;
 using SME.SGP.Dominio.Interfaces;
+using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -39,6 +40,37 @@ namespace SME.SGP.Dominio.Servicos
             this.repositorioUE = repositorioUE ?? throw new System.ArgumentNullException(nameof(repositorioUE));
             this.repositorioTurma = repositorioTurma ?? throw new System.ArgumentNullException(nameof(repositorioTurma));
             this.consultasDisciplina = consultasDisciplina ?? throw new System.ArgumentNullException(nameof(consultasDisciplina));
+        }
+
+        public async Task AtualizarQuantidadeFrequencia(long aulaId, int quantidadeOriginal, int quantidadeAtual)
+        {
+            //var frequencia = repositorioFrequencia.ObterRegistroFrequenciaPorAulaId(aulaId);
+            var ausencias = repositorioRegistroAusenciaAluno.ObterRegistrosAusenciaPorAula(aulaId);
+
+            if (quantidadeAtual > quantidadeOriginal)
+            {
+                // Replicar o ultimo registro de frequencia
+                ausencias.Where(a => a.NumeroAula == quantidadeOriginal).ToList()
+                    .ForEach(ausencia =>
+                    {
+                        for (var n=quantidadeOriginal+1; n <= quantidadeAtual; n++)
+                        {
+                            var clone = (RegistroAusenciaAluno)ausencia.Clone();
+                            clone.NumeroAula = n;
+
+                            repositorioRegistroAusenciaAluno.Salvar(clone);
+                        }
+                    });
+            }
+            else
+            {
+                // Excluir os registros de aula maior que o atual
+                ausencias.Where(a => a.NumeroAula > quantidadeAtual).ToList()
+                    .ForEach(ausencia =>
+                    {
+                        repositorioRegistroAusenciaAluno.Remover(ausencia);
+                    });
+            }
         }
 
         public async Task ExcluirFrequenciaAula(long aulaId)
@@ -86,7 +118,7 @@ namespace SME.SGP.Dominio.Servicos
                 Background.Core.Cliente.Executar<IServicoNotificacaoFrequencia>(e => e.VerificaRegraAlteracaoFrequencia(registroFrequencia.Id, registroFrequencia.CriadoEm, DateTime.Now, usuario.Id));
         }
 
-        private async Task<IEnumerable<Aplicacao.Integracoes.Respostas.AlunoPorTurmaResposta>> ObterAlunos(Aula aula)
+        private async Task<IEnumerable<AlunoPorTurmaResposta>> ObterAlunos(Aula aula)
         {
             var alunos = await servicoEOL.ObterAlunosPorTurma(aula.TurmaId);
             if (alunos == null || !alunos.Any())
@@ -116,7 +148,7 @@ namespace SME.SGP.Dominio.Servicos
             return turma;
         }
 
-        private void RegistraAusenciaAlunos(IEnumerable<RegistroAusenciaAluno> registroAusenciaAlunos, IEnumerable<Aplicacao.Integracoes.Respostas.AlunoPorTurmaResposta> alunos, RegistroFrequencia registroFrequencia, int quantidadeAulas)
+        private void RegistraAusenciaAlunos(IEnumerable<RegistroAusenciaAluno> registroAusenciaAlunos, IEnumerable<AlunoPorTurmaResposta> alunos, RegistroFrequencia registroFrequencia, int quantidadeAulas)
         {
             foreach (var ausencia in registroAusenciaAlunos)
             {

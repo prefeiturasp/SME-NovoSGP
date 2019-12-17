@@ -22,7 +22,7 @@ export default class PlanoAnualHelper {
   }
 
   static async ObterBimestreExpandido(filtroPlanoAnualExpandidoDto) {
-    return await Service.obterBimestreExpandido(filtroPlanoAnualExpandidoDto)
+    return Service.obterBimestreExpandido(filtroPlanoAnualExpandidoDto)
       .then(res => {
         return {
           sucesso: true,
@@ -37,8 +37,12 @@ export default class PlanoAnualHelper {
       });
   }
 
-  static async ObterDisciplinasPlano(codigoRf, turmaId) {
-    const disciplinas = await Service.getDisciplinasProfessor(codigoRf, turmaId)
+  static async ObterDisciplinasPlano(codigoRf, turmaId, turmaPrograma) {
+    const disciplinas = await Service.getDisciplinasProfessor(
+      codigoRf,
+      turmaId,
+      !!turmaPrograma
+    )
       .then(res => res)
       .catch(() => {
         erro(`Não foi possivel obter as disciplinas do professor`);
@@ -48,10 +52,15 @@ export default class PlanoAnualHelper {
     return disciplinas;
   }
 
-  static async ObterDiscplinasObjetivos(turmaId, disciplinaSelecionada) {
+  static async ObterDiscplinasObjetivos(
+    turmaId,
+    disciplinaSelecionada,
+    turmaPrograma
+  ) {
     const disciplinas = await Service.getDisciplinasProfessorObjetivos(
       turmaId,
-      disciplinaSelecionada
+      disciplinaSelecionada,
+      turmaPrograma
     )
       .then(res => res)
       .catch(() => {
@@ -176,9 +185,8 @@ export default class PlanoAnualHelper {
   ) {
     const turmasIrmas = usuario.turmasUsuario.filter(
       turma =>
-        turma.ano === turmaSelecionada[0].ano &&
-        turma.codEscola === turmaSelecionada[0].codEscola &&
-        turma.codigo !== turmaSelecionada[0].codTurma
+        turma.ano === turmaSelecionada.ano &&
+        turma.valor !== turmaSelecionada.codTurma
     );
 
     const promissesTurmas = [];
@@ -188,7 +196,7 @@ export default class PlanoAnualHelper {
         anoLetivo,
         1,
         escolaId,
-        turma.codigo,
+        turma.valor,
         disciplinaSelecionada.codigo
       );
 
@@ -222,7 +230,7 @@ export default class PlanoAnualHelper {
       promissesTurmas.push(
         Service.getDisciplinasProfessor(
           usuario.rf,
-          turmasCopiarConteudo[i].codigo
+          turmasCopiarConteudo[i].valor
         )
       );
     }
