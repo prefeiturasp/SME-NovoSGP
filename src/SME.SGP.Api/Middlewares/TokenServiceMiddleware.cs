@@ -27,6 +27,7 @@ namespace SME.SGP.Api.Middlewares
                 return;
             }
 
+            context.Response.Headers.Add("Token-Expired", new[] { "true" });
             context.Response.StatusCode = (int)HttpStatusCode.Unauthorized;
         }
     }
