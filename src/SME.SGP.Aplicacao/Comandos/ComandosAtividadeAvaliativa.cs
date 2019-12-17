@@ -76,12 +76,22 @@ namespace SME.SGP.Aplicacao
                     if(existeDisciplina)
                     {
                         atividadeDisciplina.Excluido = false;
+                        await repositorioAtividadeAvaliativaDisciplina.SalvarAsync(atividadeDisciplina);
                     }
                 }
 
-                foreach(var idDisciplina in dto.DisciplinasId)
+                foreach(var disciplinaId in dto.DisciplinasId)
                 {
-
+                    var existeDisciplina = atividadeDisciplinas.Select(a => a.DisciplinaId == disciplinaId).FirstOrDefault();
+                    if (!existeDisciplina)
+                    {
+                        var novaDisciplina = new AtividadeAvaliativaDisciplina
+                        {
+                            AtividadeAvaliativaId = atividadeAvaliativa.Id,
+                            DisciplinaId = disciplinaId
+                        };
+                        await repositorioAtividadeAvaliativaDisciplina.SalvarAsync(novaDisciplina);
+                    }
                 }
 
                 await repositorioAtividadeAvaliativa.SalvarAsync(atividadeAvaliativa);

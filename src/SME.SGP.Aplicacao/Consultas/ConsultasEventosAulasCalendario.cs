@@ -19,6 +19,7 @@ namespace SME.SGP.Aplicacao
         private readonly IConsultasAbrangencia consultasAbrangencia;
         private readonly IRepositorioAtividadeAvaliativa repositorioAtividadeAvaliativa;
         private readonly IRepositorioAtividadeAvaliativaRegencia repositorioAtividadeAvaliativaRegencia;
+        private readonly IRepositorioAtividadeAvaliativaDisciplina repositorioAtividadeAvaliativaDisciplina;
         private readonly IRepositorioAula repositorioAula;
         private readonly IRepositorioEvento repositorioEvento;
         private readonly IRepositorioPeriodoEscolar repositorioPeriodoEscolar;
@@ -34,7 +35,8 @@ namespace SME.SGP.Aplicacao
             IConsultasAbrangencia consultasAbrangencia,
             IRepositorioAtividadeAvaliativa repositorioAtividadeAvaliativa,
             IRepositorioPeriodoEscolar repositorioPeriodoEscolar,
-            IRepositorioAtividadeAvaliativaRegencia repositorioAtividadeAvaliativaRegencia)
+            IRepositorioAtividadeAvaliativaRegencia repositorioAtividadeAvaliativaRegencia,
+            IRepositorioAtividadeAvaliativaDisciplina repositorioAtividadeAvaliativaDisciplina)
         {
             this.repositorioEvento = repositorioEvento ?? throw new ArgumentNullException(nameof(repositorioEvento));
             this.comandosDiasLetivos = comandosDiasLetivos ?? throw new ArgumentNullException(nameof(comandosDiasLetivos));
@@ -45,6 +47,7 @@ namespace SME.SGP.Aplicacao
             this.repositorioAtividadeAvaliativa = repositorioAtividadeAvaliativa ?? throw new ArgumentException(nameof(repositorioAtividadeAvaliativa));
             this.repositorioPeriodoEscolar = repositorioPeriodoEscolar ?? throw new ArgumentException(nameof(repositorioPeriodoEscolar));
             this.repositorioAtividadeAvaliativaRegencia = repositorioAtividadeAvaliativaRegencia ?? throw new ArgumentException(nameof(repositorioAtividadeAvaliativaRegencia));
+            this.repositorioAtividadeAvaliativaDisciplina = repositorioAtividadeAvaliativaDisciplina ?? throw new ArgumentException(nameof(repositorioAtividadeAvaliativaDisciplina));
         }
 
         public async Task<DiaEventoAula> ObterEventoAulasDia(FiltroEventosAulasCalendarioDiaDto filtro)
@@ -83,7 +86,8 @@ namespace SME.SGP.Aplicacao
             .ForEach(x =>
             {
                 bool podeCriarAtividade = true;
-                var listaAtividades = atividades.Where(w => w.DataAvaliacao.Date == x.DataAula.Date && w.TurmaId == x.TurmaId && w.DisciplinaId.ToString() == x.DisciplinaId).ToList();
+                var listaAtividades = atividades.Where(w => w.DataAvaliacao.Date == x.DataAula.Date && w.TurmaId == x.TurmaId 
+                && PossuiDisciplinas(w.Id, int.Parse(x.DisciplinaId))).ToList();
                 var disciplina = disciplinasEol?.FirstOrDefault(d => d.CodigoComponenteCurricular.ToString().Equals(x.DisciplinaId));
                 if (atividades != null && disciplina != null)
                 {
@@ -282,6 +286,11 @@ namespace SME.SGP.Aplicacao
             }
 
             return turmasRetorno;
+        }
+
+        private bool PossuiDisciplinas(long atividadeId, long disciplinaId)
+        {
+            return repositorioAtividadeAvaliativaDisciplina.PossuiDisciplinas(atividadeId, disciplinaId);
         }
     }
 }
