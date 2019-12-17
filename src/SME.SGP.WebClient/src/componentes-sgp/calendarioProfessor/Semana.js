@@ -89,11 +89,6 @@ const Dia = props => {
             {tipoEventosDiaLista.temEvento && (
               <TipoEvento cor={Base.RoxoEventoCalendario}>Evento</TipoEvento>
             )}
-            {tipoEventosDiaLista.quantidadeDeEventosAulas > 2 && (
-              <Div style={{ fontSize: 10, textAlign: 'right' }}>
-                Mais {tipoEventosDiaLista.quantidadeDeEventosAulas} eventos
-              </Div>
-            )}
           </TipoEventosLista>
         )}
       </Div>
