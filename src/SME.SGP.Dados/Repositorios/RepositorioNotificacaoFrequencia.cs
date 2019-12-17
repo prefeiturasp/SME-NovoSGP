@@ -31,13 +31,12 @@ namespace SME.SGP.Dados.Repositorios
                            and r.id is null
                            and n.id is null
                            and a.data_aula < DATE(now())
-                           and ue.ue_id = @ueId
                         order by dre.dre_id, ue.ue_id, a.turma_id";
             var lista = new List<RegistroFrequenciaFaltanteDto>();
             try
             {
                 Console.WriteLine($"Obtem turmas: {tipoNotificacao} - {ueId}");
-                lista = database.Conexao.Query<RegistroFrequenciaFaltanteDto>(query, new { tipoNotificacao, ueId }).ToList();
+                lista = database.Conexao.Query<RegistroFrequenciaFaltanteDto>(query, new { tipoNotificacao, ueId }, commandTimeout: 120).ToList();
             }
             catch (Exception ex)
             {
