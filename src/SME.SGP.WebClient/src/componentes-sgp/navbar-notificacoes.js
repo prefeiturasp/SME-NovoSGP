@@ -100,7 +100,7 @@ const NavbarNotificacoes = props => {
             consultaJaRetornou = true;
           });
       }
-    }, 60000);
+    }, 5000);
     return () => clearInterval(interval);
   }, [usuario.rf]);
 
@@ -141,7 +141,6 @@ const NavbarNotificacoes = props => {
       <Botao
         className="text-center stretched-link"
         onClick={onClickBotao}
-        // disabled={notificacoes.quantidade === 0}
       >
         <Count count={notificacoes.quantidade} overflowCount={99}>
           <Icone className="fa fa-bell fa-lg" />
