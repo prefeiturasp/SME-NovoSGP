@@ -101,7 +101,11 @@ namespace SME.SGP.Aplicacao.Servicos
 
         #region Private Methods
         private bool TokenAtivo(string token)
-            => cache.Obter(ObterChaveToken(token)) == token;
+        {
+            var tokenCache = cache.Obter(ObterChaveToken(token));
+            
+            return tokenCache == null || tokenCache == token;
+        }
 
         private void SalvarToken(string usuarioLogin, string tokenStr)
             => cache.SalvarAsync(ObterChaveLogin(usuarioLogin), tokenStr).Wait();
