@@ -51,31 +51,6 @@ namespace SME.SGP.Aplicacao.Consultas
             return EntidadeParaDtoCompleto(atribuicaoEsporadica);
         }
 
-        private AtribuicaoEsporadicaCompletaDto EntidadeParaDtoCompleto(AtribuicaoEsporadica entidade)
-        {
-            var professorResumo = servicoEOL.ObterResumoProfessorPorRFAnoLetivo(entidade.ProfessorRf, entidade.DataInicio.Year).Result;
-
-            return new AtribuicaoEsporadicaCompletaDto
-            {
-                AnoLetivo = entidade.DataInicio.Year,
-                DataFim = entidade.DataFim,
-                DataInicio = entidade.DataInicio,
-                DreId = entidade.DreId,
-                Excluido = entidade.Excluido,
-                Id = entidade.Id,
-                Migrado = entidade.Migrado,
-                ProfessorNome = professorResumo != null ? professorResumo.Nome : "Professor não encontrado",
-                ProfessorRf = entidade.ProfessorRf,
-                UeId = entidade.UeId,
-                AlteradoEm = entidade.AlteradoEm,
-                AlteradoPor = entidade.AlteradoPor,
-                AlteradoRF = entidade.AlteradoRF,
-                CriadoEm = entidade.CriadoEm,
-                CriadoPor = entidade.CriadoPor,
-                CriadoRF = entidade.CriadoRF
-            };
-        }
-
         private AtribuicaoEsporadicaDto EntidadeParaDto(AtribuicaoEsporadica entidade, bool buscarNome = true, string nomeProfessor = "")
         {
             if (buscarNome)
@@ -96,6 +71,31 @@ namespace SME.SGP.Aplicacao.Consultas
                 ProfessorNome = nomeProfessor,
                 ProfessorRf = entidade.ProfessorRf,
                 UeId = entidade.UeId
+            };
+        }
+
+        private AtribuicaoEsporadicaCompletaDto EntidadeParaDtoCompleto(AtribuicaoEsporadica entidade)
+        {
+            var professorResumo = servicoEOL.ObterResumoProfessorPorRFAnoLetivo(entidade.ProfessorRf, entidade.DataInicio.Year, true).Result;
+
+            return new AtribuicaoEsporadicaCompletaDto
+            {
+                AnoLetivo = entidade.DataInicio.Year,
+                DataFim = entidade.DataFim,
+                DataInicio = entidade.DataInicio,
+                DreId = entidade.DreId,
+                Excluido = entidade.Excluido,
+                Id = entidade.Id,
+                Migrado = entidade.Migrado,
+                ProfessorNome = professorResumo != null ? professorResumo.Nome : "Professor não encontrado",
+                ProfessorRf = entidade.ProfessorRf,
+                UeId = entidade.UeId,
+                AlteradoEm = entidade.AlteradoEm,
+                AlteradoPor = entidade.AlteradoPor,
+                AlteradoRF = entidade.AlteradoRF,
+                CriadoEm = entidade.CriadoEm,
+                CriadoPor = entidade.CriadoPor,
+                CriadoRF = entidade.CriadoRF
             };
         }
 
