@@ -3,6 +3,7 @@ using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System;
+using System.Collections.Generic;
 using System.Text;
 
 namespace SME.SGP.Dados.Repositorios
@@ -23,6 +24,16 @@ namespace SME.SGP.Dados.Repositorios
                             registro_frequencia_id = @registroFrequenciaId";
 
             return database.Conexao.Execute(query, new { registroFrequenciaId }) > 0;
+        }
+
+        public IEnumerable<RegistroAusenciaAluno> ObterRegistrosAusenciaPorAula(long aulaId)
+        {
+            var query = @"select a.* 
+                      from registro_ausencia_aluno a
+                      inner join registro_frequencia f on f.id = a.registro_frequencia_id
+                      where f.aula_id = @aulaId ";
+
+            return database.Conexao.Query<RegistroAusenciaAluno>(query, new { aulaId });
         }
 
         public int ObterTotalAulasPorDisciplinaETurma(DateTime dataAula, string disciplinaId, string turmaId)

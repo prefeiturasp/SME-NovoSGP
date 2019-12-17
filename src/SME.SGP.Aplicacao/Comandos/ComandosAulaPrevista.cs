@@ -12,14 +12,20 @@ namespace SME.SGP.Aplicacao
     {
         private readonly IRepositorioAulaPrevista repositorio;
         private readonly IRepositorioAulaPrevistaBimestre repositorioBimestre;
+        private readonly IRepositorioTurma repositorioTurma;
+        private readonly IRepositorioTipoCalendario repositorioTipoCalendario;
         private readonly IUnitOfWork unitOfWork;
 
         public ComandosAulaPrevista(IRepositorioAulaPrevista repositorio,
                                     IRepositorioAulaPrevistaBimestre repositorioBimestre,
+                                    IRepositorioTurma repositorioTurma,
+                                     IRepositorioTipoCalendario repositorioTipoCalendario,
                                     IUnitOfWork unitOfWork)
         {
             this.repositorio = repositorio ?? throw new ArgumentNullException(nameof(repositorio));
             this.repositorioBimestre = repositorioBimestre ?? throw new ArgumentNullException(nameof(repositorioBimestre));
+            this.repositorioTurma = repositorioTurma ?? throw new ArgumentNullException(nameof(repositorioTurma));
+            this.repositorioTipoCalendario = repositorioTipoCalendario ?? throw new ArgumentNullException(nameof(repositorioTipoCalendario));
             this.unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
         }
 
@@ -43,10 +49,14 @@ namespace SME.SGP.Aplicacao
 
         public async Task<long> Inserir(AulaPrevistaDto aulaPrevistaDto)
         {
+            var turma = ObterTurma(aulaPrevistaDto.TurmaId);
+
+            var tipoCalendario = ObterTipoCalendarioPorTurmaAnoLetivo(turma.AnoLetivo, turma.ModalidadeCodigo);
+
             long id;
 
             AulaPrevista aulaPrevista = null;
-            aulaPrevista = MapearParaDominio(aulaPrevistaDto, aulaPrevista);
+            aulaPrevista = MapearParaDominio(aulaPrevistaDto, aulaPrevista, tipoCalendario.Id);
 
             unitOfWork.IniciarTransacao();
 
@@ -73,14 +83,34 @@ namespace SME.SGP.Aplicacao
             return aulaPrevistaDto.Id;
         }
 
-        private AulaPrevista MapearParaDominio(AulaPrevistaDto aulaPrevistaDto, AulaPrevista aulaPrevista)
+        private Turma ObterTurma(string turmaId)
+        {
+            var turma = repositorioTurma.ObterPorId(turmaId);
+
+            if (turma == null)
+                throw new NegocioException("Turma não encontrada!");
+
+            return turma;
+        }
+
+        private TipoCalendario ObterTipoCalendarioPorTurmaAnoLetivo(int anoLetivo, Modalidade turmaModalidade)
+        {
+            var tipoCalendario = repositorioTipoCalendario.BuscarPorAnoLetivoEModalidade(anoLetivo, ModalidadeParaModalidadeTipoCalendario(turmaModalidade));
+
+            if (tipoCalendario == null)
+                throw new NegocioException("Tipo calendário não encontrado!");
+
+            return tipoCalendario;
+        }
+
+        private AulaPrevista MapearParaDominio(AulaPrevistaDto aulaPrevistaDto, AulaPrevista aulaPrevista, long tipoCalendarioId)
         {
             if (aulaPrevista == null)
             {
                 aulaPrevista = new AulaPrevista();
             }
             aulaPrevista.DisciplinaId = aulaPrevistaDto.DisciplinaId;
-            aulaPrevista.TipoCalendarioId = (long)ModalidadeParaModalidadeTipoCalendario(aulaPrevistaDto.Modalidade);
+            aulaPrevista.TipoCalendarioId = tipoCalendarioId;
             aulaPrevista.TurmaId = aulaPrevistaDto.TurmaId;
             return aulaPrevista;
         }

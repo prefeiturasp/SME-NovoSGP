@@ -1,25 +1,96 @@
-﻿using SME.SGP.Aplicacao.Interfaces;
+﻿using SME.SGP.Aplicacao.Integracoes;
+using SME.SGP.Aplicacao.Interfaces;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
+using SME.SGP.Infra.Interfaces;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao.Consultas
 {
-    public class ConsultasRegistroPoa : IConsultasRegistroPoa
+    public class ConsultasRegistroPoa : ConsultasBase, IConsultasRegistroPoa
     {
         private readonly IRepositorioRegistroPoa repositorioRegistroPoa;
+        private readonly IServicoEOL servicoEOL;
 
-        public ConsultasRegistroPoa(IRepositorioRegistroPoa repositorioRegistroPoa)
+        public ConsultasRegistroPoa(IRepositorioRegistroPoa repositorioRegistroPoa, IContextoAplicacao contextoAplicacao, IServicoEOL servicoEOL) : base(contextoAplicacao)
         {
             this.repositorioRegistroPoa = repositorioRegistroPoa ?? throw new System.ArgumentNullException(nameof(repositorioRegistroPoa));
+            this.servicoEOL = servicoEOL ?? throw new System.ArgumentNullException(nameof(servicoEOL));
+        }
+
+        public async Task<PaginacaoResultadoDto<RegistroPoaDto>> ListarPaginado(RegistroPoaFiltroDto registroPoaFiltroDto)
+        {
+            PaginacaoResultadoDto<RegistroPoa> retornoquery =
+                await repositorioRegistroPoa.ListarPaginado(registroPoaFiltroDto.CodigoRf,
+                    registroPoaFiltroDto.DreId,
+                    registroPoaFiltroDto.Mes,
+                    registroPoaFiltroDto.UeId,
+                    registroPoaFiltroDto.Titulo,
+                    registroPoaFiltroDto.AnoLetivo,
+                    Paginacao);
+
+            var retornoPaginado = new PaginacaoResultadoDto<RegistroPoaDto>()
+            {
+                TotalPaginas = retornoquery.TotalPaginas,
+                TotalRegistros = retornoquery.TotalRegistros
+            };
+
+            bool nenhumItemEncontrado = retornoquery.Items == null ||
+                !retornoquery.Items.Any() ||
+                retornoquery.Items.ElementAt(0).Id == 0;
+
+            var listaRf = retornoquery.Items.Select(x => x.CodigoRf);
+
+            var nomes = await servicoEOL.ObterListaNomePorListaRF(listaRf);
+
+            return MapearListagem(retornoquery, retornoPaginado, nenhumItemEncontrado, nomes);
+        }
+
+        private PaginacaoResultadoDto<RegistroPoaDto> MapearListagem(PaginacaoResultadoDto<RegistroPoa> retornoquery, PaginacaoResultadoDto<RegistroPoaDto> retornoPaginado, bool nenhumItemEncontrado, IEnumerable<ProfessorResumoDto> nomes)
+        {
+            retornoPaginado.Items = nenhumItemEncontrado ? null : retornoquery.Items.Select(registro =>
+            {
+                var professor = nomes.FirstOrDefault(resumo => resumo.CodigoRF.Equals(registro.CodigoRf));
+
+                return MapearParaDto(registro, professor == null ? "Professor não encontrado" : professor.Nome);
+            });
+
+            return retornoPaginado;
         }
 
         public RegistroPoaCompletoDto ObterPorId(long id)
         {
-            return MapearParaDto(repositorioRegistroPoa.ObterPorId(id));
+            var registro = repositorioRegistroPoa.ObterPorId(id);
+
+            if (registro == null)
+                return null;
+
+            var professor = servicoEOL.ObterResumoProfessorPorRFAnoLetivo(registro.CodigoRf, registro.AnoLetivo).Result;
+
+            return MapearParaDtoCompleto(registro, professor == null ? "Professor não encontrado" : professor.Nome);
         }
 
-        private RegistroPoaCompletoDto MapearParaDto(RegistroPoa registroPoa)
+        private RegistroPoaDto MapearParaDto(RegistroPoa registroPoa, string nome)
+        {
+            return new RegistroPoaDto
+            {
+                CodigoRf = registroPoa.CodigoRf,
+                Descricao = registroPoa.Descricao,
+                DreId = registroPoa.DreId,
+                Nome = nome,
+                Excluido = registroPoa.Excluido,
+                Id = registroPoa.Id,
+                AnoLetivo = registroPoa.AnoLetivo,
+                Mes = registroPoa.Mes,
+                Titulo = registroPoa.Titulo,
+                UeId = registroPoa.UeId
+            };
+        }
+
+        private RegistroPoaCompletoDto MapearParaDtoCompleto(RegistroPoa registroPoa, string nome)
         {
             return new RegistroPoaCompletoDto
             {
@@ -30,6 +101,7 @@ namespace SME.SGP.Aplicacao.Consultas
                 CriadoEm = registroPoa.CriadoEm,
                 CriadoPor = registroPoa.CriadoPor,
                 CriadoRF = registroPoa.CriadoRF,
+                Nome = nome,
                 Descricao = registroPoa.Descricao,
                 DreId = registroPoa.DreId,
                 Excluido = registroPoa.Excluido,
