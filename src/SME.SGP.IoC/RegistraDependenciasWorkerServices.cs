@@ -80,6 +80,8 @@ namespace SME.SGP.IoC
             services.TryAddScopedWorkerService<IConsultasAtribuicaoEsporadica, ConsultasAtribuicaoEsporadica>();
             services.TryAddScopedWorkerService<IConsultasEventoMatricula, ConsultasEventoMatricula>();
             services.TryAddScopedWorkerService<IConsultasRegistroPoa, ConsultasRegistroPoa>();
+            services.TryAddScopedWorkerService<IConsultasPlanoAula, ConsultasPlanoAula>();
+            services.TryAddScopedWorkerService<IConsultasObjetivoAprendizagemAula, ConsultasObjetivoAprendizagemAula>();
         }
 
         private static void RegistrarContextos(IServiceCollection services)
@@ -162,6 +164,7 @@ namespace SME.SGP.IoC
             services.TryAddScopedWorkerService<IServicoNotificacaoFrequencia, ServicoNotificacaoFrequencia>();
             services.TryAddScopedWorkerService<IServicoNotificacaoAulaPrevista, ServicoNotificacaoAulaPrevista>();
             services.TryAddScopedWorkerService<IServicoEventoMatricula, ServicoEventoMatricula>();
+            services.TryAddScopedWorkerService<IServicoAluno, ServicoAluno>();
         }
 
         private static void ResgistraDependenciaHttp(IServiceCollection services)
