@@ -22,7 +22,7 @@ export default class PlanoAnualHelper {
   }
 
   static async ObterBimestreExpandido(filtroPlanoAnualExpandidoDto) {
-    return await Service.obterBimestreExpandido(filtroPlanoAnualExpandidoDto)
+    return Service.obterBimestreExpandido(filtroPlanoAnualExpandidoDto)
       .then(res => {
         return {
           sucesso: true,
@@ -41,7 +41,7 @@ export default class PlanoAnualHelper {
     const disciplinas = await Service.getDisciplinasProfessor(
       codigoRf,
       turmaId,
-      turmaPrograma
+      !!turmaPrograma
     )
       .then(res => res)
       .catch(() => {
