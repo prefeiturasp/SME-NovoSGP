@@ -12,6 +12,7 @@ import { alertaFechar } from '../redux/modulos/alertas/actions';
 import RotaAutenticadaEstruturada from '../rotas/rotaAutenticadaEstruturada';
 import BreadcrumbSgp from './breadcrumb-sgp';
 import Mensagens from './mensagens/mensagens';
+import TempoExpiracaoSessao from './tempoExpiracaoSessao/tempoExpiracaoSessao';
 
 const ContainerModal = styled.div`
   .ant-modal-footer {
@@ -37,6 +38,7 @@ const Conteudo = () => {
   return (
     <div style={{ marginLeft: menuRetraido ? '115px' : '250px' }}>
       <BreadcrumbSgp />
+      <TempoExpiracaoSessao />
       <div className="row h-100">
         <main role="main" className="col-md-12 col-lg-12 col-sm-12 col-xl-12">
           <ContainerModal>
