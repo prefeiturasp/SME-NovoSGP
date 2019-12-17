@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Dapper;
@@ -14,7 +15,7 @@ namespace SME.SGP.Dados.Repositorios
         {
         }
 
-        public async Task<IEnumerable<AtividadeAvaliativaDisciplina>> ListarPorIdAtividade(long idAtividadeAvaliativa)
+        public async Task<IEnumerable<AtividadeAvaliativaDisciplina>> ListarPorIdAtividade(long atividadeAvaliativaId)
         {
             StringBuilder query = new StringBuilder();
             query.AppendLine("SELECT id,");
@@ -28,13 +29,23 @@ namespace SME.SGP.Dados.Repositorios
             query.AppendLine("alterado_rf,");
             query.AppendLine("excluido");
             query.AppendLine("FROM atividade_avaliativa_disciplina");
-            query.AppendLine("WHERE atividade_avaliativa_id = @idAtividadeAvaliativa");
+            query.AppendLine("WHERE atividade_avaliativa_id = @atividadeAvaliativaId");
             query.AppendLine("AND excluido = false");
 
             return await database.Conexao.QueryAsync<AtividadeAvaliativaDisciplina>(query.ToString(), new
             {
-                idAtividadeAvaliativa
+                atividadeAvaliativaId
             });
+        }
+
+        public bool PossuiDisciplinas(long atividadeAvaliativaId, long disciplinaId)
+        {
+            var query = new StringBuilder();
+            query.AppendLine("SELECT 1 FROM atividade_avaliativa_disciplina");
+            query.AppendLine("WHERE atividade_avaliativa_id = @atividadeAvaliativaId");
+            query.AppendLine("AND disciplina_id = @disciplinaId");
+
+            return database.Query<bool>(query.ToString(), new { atividadeAvaliativaId, disciplinaId }).SingleOrDefault();
         }
     }
 }
