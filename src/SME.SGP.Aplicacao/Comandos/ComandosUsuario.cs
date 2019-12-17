@@ -217,6 +217,7 @@ namespace SME.SGP.Aplicacao
             var dadosUsuario = await servicoEOL.ObterMeusDados(login);
             var usuario = servicoUsuario.ObterUsuarioPorCodigoRfLoginOuAdiciona(dadosUsuario.CodigoRf, login, dadosUsuario.Nome, dadosUsuario.Email);
 
+            // TODO usuario não tem Perfil Atual, deve carregar do EOL, porém o unico endpoint que traz o perfil precisa de usuario e senha
             var permissionamentos = await servicoEOL.ObterPermissoesPorPerfil(usuario.PerfilAtual);
             if (permissionamentos == null || !permissionamentos.Any())
                 return string.Empty;
