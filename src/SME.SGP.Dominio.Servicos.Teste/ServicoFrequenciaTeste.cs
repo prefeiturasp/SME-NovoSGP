@@ -43,15 +43,23 @@ namespace SME.SGP.Dominio.Servicos.Teste
                                                       repositorioUe.Object,
                                                       repositorioTurma.Object,
                                                       consultaDisciplina.Object);
+            Setup();
         }
 
-        [Fact]
-        public async Task DeveRegistrarFrequencia()
+        private void Setup()
         {
+            repositorioTurma.Setup(c => c.ObterPorId(It.IsAny<string>()))
+                .Returns(new Turma()
+                {
+                    AnoLetivo = 2019,
+                    Ano = "9",
+                    ModalidadeCodigo = Modalidade.Medio
+                });
             repositorioAula.Setup(c => c.ObterPorId(It.IsAny<long>()))
                 .Returns(new Aula()
                 {
-                    ProfessorRf = "1"
+                    ProfessorRf = "1",
+                    Quantidade = 2
                 });
             servicoUsuario.Setup(c => c.ObterUsuarioLogado())
                 .Returns(Task.FromResult(new Usuario
@@ -75,7 +83,11 @@ namespace SME.SGP.Dominio.Servicos.Teste
 
             servicoEOL.Setup(c => c.ObterAlunosPorTurma(It.IsAny<string>()))
                 .Returns(Task.FromResult<IEnumerable<AlunoPorTurmaResposta>>(alunos));
+        }
 
+        [Fact]
+        public async Task Deve_Registrar_Frequencia()
+        {
             await servicoFrequencia.Registrar(1, new List<RegistroAusenciaAluno> {
                 new RegistroAusenciaAluno("123",1),
                 new RegistroAusenciaAluno("456",1)
@@ -89,6 +101,39 @@ namespace SME.SGP.Dominio.Servicos.Teste
             repositorioRegistroAusenciaAluno.Verify(c => c.Salvar(It.IsAny<RegistroAusenciaAluno>()), Times.Exactly(2));
             unitOfWork.Verify(c => c.IniciarTransacao(), Times.Once);
             unitOfWork.Verify(c => c.PersistirTransacao(), Times.Once);
+        }
+
+        [Fact]
+        public async Task Deve_Atualizar_Quantidade_Para_Mais()
+        {
+            repositorioRegistroAusenciaAluno.Setup(a => a.ObterRegistrosAusenciaPorAula(It.IsAny<long>()))
+                .Returns(new List<RegistroAusenciaAluno>()
+                {
+                    new RegistroAusenciaAluno("123", 1),
+                    new RegistroAusenciaAluno("321", 1)
+                });
+
+            await servicoFrequencia.AtualizarQuantidadeFrequencia(0, 1, 3);
+
+            // Deve gerar ausencia das aulas 2 e 3 para os dois alunos com ausencia na primeira aula
+            repositorioRegistroAusenciaAluno.Verify(c => c.Salvar(It.IsAny<RegistroAusenciaAluno>()), Times.Exactly(4));
+        }
+
+        [Fact]
+        public async Task Deve_Atualizar_Quantidade_Para_Menos()
+        {
+            repositorioRegistroAusenciaAluno.Setup(a => a.ObterRegistrosAusenciaPorAula(It.IsAny<long>()))
+                .Returns(new List<RegistroAusenciaAluno>()
+                {
+                    new RegistroAusenciaAluno("123", 1),
+                    new RegistroAusenciaAluno("321", 3),
+                    new RegistroAusenciaAluno("456", 2)
+                });
+
+            servicoFrequencia.AtualizarQuantidadeFrequencia(0, 3, 1);
+
+            // Deve remover os registros de ausencia das aulas 2 e 3
+            repositorioRegistroAusenciaAluno.Verify(c => c.Remover(It.IsAny<RegistroAusenciaAluno>()), Times.Exactly(2));
         }
     }
 }

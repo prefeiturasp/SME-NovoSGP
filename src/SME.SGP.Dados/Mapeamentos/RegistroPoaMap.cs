@@ -10,6 +10,7 @@ namespace SME.SGP.Dados.Mapeamentos
             Map(r => r.CodigoRf).ToColumn("codigo_rf");
             Map(r => r.DreId).ToColumn("dre_id");
             Map(r => r.UeId).ToColumn("ue_id");
+            Map(r => r.AnoLetivo).ToColumn("ano_letivo");
         }
     }
 }
