@@ -11,6 +11,8 @@ namespace SME.SGP.Dominio.Interfaces
 
         Ue ObterPorCodigo(string ueId);
 
+        IEnumerable<Ue> ObterPorDre(long dreId);
+
         Task<IEnumerable<Turma>> ObterTurmas(string ueCodigo, Modalidade modalidade, int ano);
 
         Ue ObterUEPorTurma(string turmaId);

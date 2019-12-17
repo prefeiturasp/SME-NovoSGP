@@ -144,6 +144,11 @@ const CalendarioProfessor = () => {
     listarTiposCalendarioPorTurmaSelecionada();
   }, [turmaSelecionadaStore, anosLetivosAbrangencia]);
 
+  const [dreSelecionada, setDreSelecionada] = useState(undefined);
+  const [unidadeEscolarSelecionada, setUnidadeEscolarSelecionada] = useState(
+    undefined
+  );
+
   const consultarDiasLetivos = () => {
     api
       .post('v1/calendarios/dias-letivos', {
@@ -162,6 +167,45 @@ const CalendarioProfessor = () => {
   const aoSelecionarTipoCalendario = tipo => {
     store.dispatch(zeraCalendario());
     setTipoCalendarioSelecionado(tipo);
+  };
+
+  const [turmaSelecionada, setTurmaSelecionada] = useState(undefined);
+  const [todasTurmas, setTodasTurmas] = useState(false);
+
+  const [filtros, setFiltros] = useState({
+    tipoCalendarioSelecionado,
+    eventoSme,
+    dreSelecionada,
+    unidadeEscolarSelecionada,
+    turmaSelecionada,
+    todasTurmas,
+  });
+
+  const [opcaoTurma, setOpcaoTurma] = useState(undefined);
+  const dresStore = useSelector(state => state.filtro.dres);
+  const [dres, setDres] = useState([]);
+
+  const obterDres = () => {
+    api
+      .get('v1/abrangencias/dres')
+      .then(resposta => {
+        if (resposta.data) {
+          const lista = [];
+          if (resposta.data) {
+            resposta.data.forEach(dre => {
+              lista.push({
+                desc: dre.nome,
+                valor: dre.codigo,
+                abrev: dre.abreviacao,
+              });
+            });
+            setDres(lista.sort(FiltroHelper.ordenarLista('desc')));
+          }
+        }
+      })
+      .catch(() => {
+        setDres(dresStore);
+      });
   };
 
   useEffect(() => {
@@ -203,33 +247,7 @@ const CalendarioProfessor = () => {
     });
   }, [eventoSme]);
 
-  const dresStore = useSelector(state => state.filtro.dres);
-  const [dres, setDres] = useState([]);
-  const [dreSelecionada, setDreSelecionada] = useState(undefined);
   const [dreDesabilitada, setDreDesabilitada] = useState(false);
-
-  const obterDres = () => {
-    api
-      .get('v1/abrangencias/dres')
-      .then(resposta => {
-        if (resposta.data) {
-          const lista = [];
-          if (resposta.data) {
-            resposta.data.forEach(dre => {
-              lista.push({
-                desc: dre.nome,
-                valor: dre.codigo,
-                abrev: dre.abreviacao,
-              });
-            });
-            setDres(lista.sort(FiltroHelper.ordenarLista('desc')));
-          }
-        }
-      })
-      .catch(() => {
-        setDres(dresStore);
-      });
-  };
 
   useEffect(() => {
     if (dres.length === 1) {
@@ -248,9 +266,6 @@ const CalendarioProfessor = () => {
     state => state.filtro.unidadesEscolares
   );
   const [unidadesEscolares, setUnidadesEscolares] = useState([]);
-  const [unidadeEscolarSelecionada, setUnidadeEscolarSelecionada] = useState(
-    undefined
-  );
   const [unidadeEscolarDesabilitada, setUnidadeEscolarDesabilitada] = useState(
     false
   );
@@ -322,9 +337,6 @@ const CalendarioProfessor = () => {
   };
 
   const [turmas, setTurmas] = useState([]);
-  const [opcaoTurma, setOpcaoTurma] = useState(undefined);
-  const [turmaSelecionada, setTurmaSelecionada] = useState(undefined);
-  const [todasTurmas, setTodasTurmas] = useState(false);
   const [turmaDesabilitada, setTurmaDesabilitada] = useState(false);
 
   useEffect(() => {
@@ -371,22 +383,23 @@ const CalendarioProfessor = () => {
         opcaoTurma
       ) {
         setOpcaoTurma();
+      } else if (Object.entries(turmaSelecionadaStore).length) {
+        setOpcaoTurma(listaTurmas[1].valor.toString());
       }
     }
-  }, [turmas, turmaSelecionadaStore]);
+  }, [
+    turmas,
+    turmaSelecionadaStore,
+    eventoAulaCalendarioEdicao,
+    usuario.ehProfessor,
+    opcaoTurma,
+    listaTurmas,
+    unidadeEscolarSelecionada,
+  ]);
 
   const aoSelecionarTurma = turma => {
     setOpcaoTurma(turma);
   };
-
-  const [filtros, setFiltros] = useState({
-    tipoCalendarioSelecionado,
-    eventoSme,
-    dreSelecionada,
-    unidadeEscolarSelecionada,
-    turmaSelecionada,
-    todasTurmas,
-  });
 
   useEffect(() => {
     if (opcaoTurma === '1') {
