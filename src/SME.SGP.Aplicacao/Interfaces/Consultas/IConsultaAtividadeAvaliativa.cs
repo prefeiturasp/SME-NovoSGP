@@ -14,5 +14,7 @@ namespace SME.SGP.Aplicacao
         Task<AtividadeAvaliativaCompletaDto> ObterPorIdAsync(long id);
 
         Task<IEnumerable<AtividadeAvaliativaExistenteRetornoDto>> ValidarAtividadeAvaliativaExistente(FiltroAtividadeAvaliativaExistenteDto filtroAtividadeAvaliativaExistenteDto);
+
+        Task<IEnumerable<TurmaRetornoDto>> ObterTurmasCopia(string turmaId, string disciplinaId);
     }
 }
