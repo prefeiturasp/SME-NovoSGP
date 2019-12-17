@@ -6,6 +6,9 @@ namespace SME.SGP.Infra
     {
         public int Dia { get; set; }
         public int QuantidadeDeEventosAulas { get; set; }
-        public List<string> TiposEvento { get; set; }
+        public bool TemEvento { get; set; }
+        public bool TemAula { get; set; }
+        public bool TemAulaCJ { get; set; }
+        public bool TemAtividadeAvaliativa { get; set; }
     }
 }
