@@ -19,7 +19,7 @@ const ListaNotificacoes = () => {
   const notificacoes = useSelector(state => state.notificacoes);
 
   useEffect(() => {
-    if (notificacoes.notificacoes.length) setCarregando(false);
+    setCarregando(false);
   }, [notificacoes]);
 
   const categoriaLista = ['', 'Alerta', 'Ação', 'Aviso'];

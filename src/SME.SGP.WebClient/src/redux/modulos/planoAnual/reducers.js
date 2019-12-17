@@ -32,9 +32,9 @@ export default function bimestres(state = INICIAL, action) {
         draft.disciplinasPlanoAnual.forEach(disciplina => {
           disciplina.selecionada = false;
         });
-
         draft.disciplinasPlanoAnual.find(
-          disciplina => disciplina.codigo == action.payload.codigo
+          disciplina =>
+            disciplina.codigo.toString() === action.payload.codigo.toString()
         ).selecionada = true;
         break;
       case '@bimestres/LimparDisciplinaPlanoAnual':
@@ -97,8 +97,9 @@ export default function bimestres(state = INICIAL, action) {
 
         break;
       case '@bimestres/SalvarObjetivos':
-        draft.bimestres[action.payload.indice].objetivosAprendizagem =
-          action.payload.objetivos;
+        if (bimestres[action.payload.indice])
+          draft.bimestres[action.payload.indice].objetivosAprendizagem =
+            action.payload.objetivos;
         draft.bimestresErro = state.bimestresErro;
 
         break;

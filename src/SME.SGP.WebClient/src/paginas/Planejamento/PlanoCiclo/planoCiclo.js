@@ -18,13 +18,13 @@ import {
   ListaItens,
   Titulo,
   TituloAno,
-  RegistroMigrado,
 } from './planoCiclo.css';
 import modalidade from '~/dtos/modalidade';
 import RotasDto from '~/dtos/rotasDto';
 import { verificaSomenteConsulta } from '~/servicos/servico-navegacao';
 import tipoPermissao from '~/dtos/tipoPermissao';
 import { Loader } from '~/componentes';
+import { RegistroMigrado } from '~/componentes-sgp/registro-migrado';
 
 export default function PlanoCiclo() {
   const urlPrefeitura = 'https://curriculo.sme.prefeitura.sp.gov.br';
@@ -34,6 +34,7 @@ export default function PlanoCiclo() {
 
   const [listaMatriz, setListaMatriz] = useState([]);
   const [listaODS, setListaODS] = useState([]);
+  const [carregandoCiclos, setCarregandoCiclos] = useState(true);
   const [listaCiclos, setListaCiclos] = useState([]);
   const [cicloSelecionado, setCicloSelecionado] = useState('');
   const [descricaoCiclo, setDescricaoCiclo] = useState('');
@@ -133,6 +134,8 @@ export default function PlanoCiclo() {
         setCicloSelecionado(String(listaCiclosAtual[0]));
       }
 
+      setCarregandoCiclos(false);
+
       const anoLetivo = String(turmaSelecionada.anoLetivo);
       const codEscola = String(turmaSelecionada.unidadeEscolar);
 
@@ -149,6 +152,29 @@ export default function PlanoCiclo() {
     }
     setCarregando(false);
   };
+
+  function resetListas() {
+    listaMatriz.forEach(item => {
+      const target = document.getElementById(`matriz-${item.id}`);
+      const estaSelecionado =
+        target.getAttribute('opcao-selecionada') === 'true';
+      if (estaSelecionado) {
+        target.setAttribute('opcao-selecionada', 'false');
+      }
+    });
+    listaODS.forEach(item => {
+      const target = document.getElementById(`ods-${item.id}`);
+      const estaSelecionado =
+        target.getAttribute('opcao-selecionada') === 'true';
+      if (estaSelecionado) {
+        target.setAttribute('opcao-selecionada', 'false');
+      }
+    });
+    setListaMatrizSelecionda([]);
+    setListaODSSelecionado([]);
+    setDescricaoCiclo('');
+    setPronto(false);
+  }
 
   async function obterCicloExistente(ano, escolaId, cicloId) {
     resetListas();
@@ -292,6 +318,19 @@ export default function PlanoCiclo() {
     });
   }
 
+  function confirmarCancelamento() {
+    resetListas();
+    setModoEdicao(false);
+    let ciclo = '';
+    if (eventoTrocarCiclo) {
+      ciclo = cicloParaTrocar;
+      setCicloSelecionado(ciclo);
+    }
+    const anoLetivo = String(turmaSelecionada.anoLetivo);
+    const codEscola = String(turmaSelecionada.unidadeEscolar);
+    obterCicloExistente(anoLetivo, codEscola, ciclo || cicloSelecionado);
+  }
+
   function salvarPlanoCiclo(navegarParaPlanejamento) {
     let idsMatrizesSaber = [];
     let idsObjetivosDesenvolvimento = [];
@@ -353,40 +392,6 @@ export default function PlanoCiclo() {
     );
   }
 
-  function resetListas() {
-    listaMatriz.forEach(item => {
-      const target = document.getElementById(`matriz-${item.id}`);
-      const estaSelecionado =
-        target.getAttribute('opcao-selecionada') === 'true';
-      if (estaSelecionado) {
-        target.setAttribute('opcao-selecionada', 'false');
-      }
-    });
-    listaODS.forEach(item => {
-      const target = document.getElementById(`ods-${item.id}`);
-      const estaSelecionado =
-        target.getAttribute('opcao-selecionada') === 'true';
-      if (estaSelecionado) {
-        target.setAttribute('opcao-selecionada', 'false');
-      }
-    });
-    setListaMatrizSelecionda([]);
-    setListaODSSelecionado([]);
-    setDescricaoCiclo('');
-    setPronto(false);
-  }
-  function confirmarCancelamento() {
-    resetListas();
-    setModoEdicao(false);
-    let ciclo = '';
-    if (eventoTrocarCiclo) {
-      ciclo = cicloParaTrocar;
-      setCicloSelecionado(ciclo);
-    }
-    const anoLetivo = String(turmaSelecionada.anoLetivo);
-    const codEscola = String(turmaSelecionada.unidadeEscolar);
-    obterCicloExistente(anoLetivo, codEscola, ciclo || cicloSelecionado);
-  }
   const onClickVoltar = async () => {
     if (modoEdicao) {
       const confirmado = await confirmar(
@@ -483,22 +488,24 @@ export default function PlanoCiclo() {
             <div className="col-md-6">
               <div className="row">
                 <div className="col-md-6">
-                  <SelectComponent
-                    className="col-md-12"
-                    name="tipo-ciclo"
-                    id="tipo-ciclo"
-                    placeHolder="Selecione um tipo de ciclo"
-                    lista={listaCiclos}
-                    disabled={
-                      somenteConsulta || !podeAlterar()
-                        ? true
-                        : listaCiclos.length === 1
-                    }
-                    valueOption="id"
-                    valueText="descricao"
-                    onChange={validaTrocaCiclo}
-                    valueSelect={cicloSelecionado}
-                  />
+                  <Loader loading={carregandoCiclos} tip="">
+                    <SelectComponent
+                      className="col-md-12"
+                      name="tipo-ciclo"
+                      id="tipo-ciclo"
+                      placeHolder="Selecione um tipo de ciclo"
+                      lista={listaCiclos}
+                      disabled={
+                        somenteConsulta || !podeAlterar()
+                          ? true
+                          : listaCiclos.length === 1
+                      }
+                      valueOption="id"
+                      valueText="descricao"
+                      onChange={validaTrocaCiclo}
+                      valueSelect={cicloSelecionado}
+                    />
+                  </Loader>
                 </div>
               </div>
             </div>
