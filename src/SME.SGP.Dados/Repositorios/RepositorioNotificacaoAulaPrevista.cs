@@ -1,13 +1,9 @@
 ﻿using Dapper;
-using SME.SGP.Dados.Contexto;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace SME.SGP.Dados.Repositorios
 {
@@ -29,7 +25,7 @@ namespace SME.SGP.Dados.Repositorios
                           inner join dre on dre.id = ue.dre_id
                           inner join periodo_escolar pe on a.tipo_calendario_id = pe.tipo_calendario_id and a.data_aula between pe.periodo_inicio and pe.periodo_fim  
                           left join aula_prevista ap on pe.tipo_calendario_id = ap.tipo_calendario_id and pe.bimestre = ap.bimestre
-                         where not a.excluido 
+                         where (a.id is null or not a.excluido)
                            and now() between pe.periodo_inicio and pe.periodo_fim
                            and DATE_PART('day', age(pe.periodo_fim, date(now()))) <= @limiteDias
                          group by

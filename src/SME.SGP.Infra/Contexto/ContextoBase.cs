@@ -10,8 +10,8 @@ namespace SME.SGP.Infra.Contexto
             Variaveis = new Dictionary<string, object>();
         }
 
-        public string NomeUsuario => ObterVarivel<string>("NomeUsuario");
-        public string UsuarioLogado => ObterVarivel<string>("UsuarioLogado");
+        public string NomeUsuario => ObterVarivel<string>("NomeUsuario") ?? "Sistema";
+        public string UsuarioLogado => ObterVarivel<string>("UsuarioLogado") ?? "Sistema";
         public IDictionary<string, object> Variaveis { get; set; }
 
         public abstract IContextoAplicacao AtribuirContexto(IContextoAplicacao contexto);

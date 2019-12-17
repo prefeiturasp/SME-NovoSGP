@@ -11,9 +11,7 @@ class ServicoFiltro {
 
   static listarPeriodos = async modalidade => {
     return api
-      .get(
-        `v1/abrangencias/semestres?modalidade=${modalidade ? modalidade : 0}`
-      )
+      .get(`v1/abrangencias/semestres?modalidade=${modalidade || 0}`)
       .then(resposta => resposta);
   };
 
@@ -21,11 +19,7 @@ class ServicoFiltro {
     const periodoQuery = periodo ? `&periodo=${periodo}` : '';
 
     return api
-      .get(
-        `v1/abrangencias/dres?modalidade=${
-          modalidade ? modalidade : 0
-        }${periodoQuery}`
-      )
+      .get(`v1/abrangencias/dres?modalidade=${modalidade || 0}${periodoQuery}`)
       .then(resposta => resposta);
   };
 
@@ -34,9 +28,8 @@ class ServicoFiltro {
 
     return api
       .get(
-        `v1/abrangencias/dres/${dre}/ues?modalidade=${
-          modalidade ? modalidade : 0
-        }${periodoQuery}`
+        `v1/abrangencias/dres/${dre}/ues?modalidade=${modalidade ||
+          0}${periodoQuery}`
       )
       .then(resposta => resposta);
   };
@@ -46,9 +39,8 @@ class ServicoFiltro {
 
     return api
       .get(
-        `v1/abrangencias/dres/ues/${ue}/turmas?modalidade=${
-          modalidade ? modalidade : 0
-        }${periodoQuery}`
+        `v1/abrangencias/dres/ues/${ue}/turmas?modalidade=${modalidade ||
+          0}${periodoQuery}`
       )
       .then(resposta => resposta);
   };
