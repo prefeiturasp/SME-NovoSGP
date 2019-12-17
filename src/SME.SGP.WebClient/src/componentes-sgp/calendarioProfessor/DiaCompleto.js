@@ -235,8 +235,8 @@ const DiaCompleto = props => {
                               aoClicarEvento(evento.id, evento.tipoEvento)
                             }
                             label={window
-                              .moment(evento.dadosAula.horario, 'HH')
-                              .format('HH:mm')}
+                              .moment(evento.dadosAula.horario, 'LT')
+                              .format('LT')}
                             color={Colors.CinzaBotao}
                             className="w-100 px-2"
                             border

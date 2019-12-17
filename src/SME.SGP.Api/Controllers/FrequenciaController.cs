@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using SME.Background.Core;
 using SME.SGP.Api.Filtros;
 using SME.SGP.Aplicacao;
 using SME.SGP.Dominio.Interfaces;
@@ -23,6 +24,13 @@ namespace SME.SGP.Api.Controllers
             return Ok(await consultasFrequencia.ObterListaFrequenciaPorAula(aulaId));
         }
 
+        [HttpPost("frequencias/notificar")]
+        public IActionResult Notificar()
+        {
+            Cliente.Executar<IServicoNotificacaoFrequencia>(c => c.ExecutaNotificacaoFrequencia());
+            return Ok();
+        }
+
         [HttpGet("frequencias/aulas/datas/{anoLetivo}/turmas/{turmaId}/disciplinas/{disciplinaId}")]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [ProducesResponseType(typeof(RetornoBaseDto), 601)]
@@ -43,13 +51,5 @@ namespace SME.SGP.Api.Controllers
             await comandoFrequencia.Registrar(frequenciaDto);
             return Ok();
         }
-
-        [HttpPost("frequencias/notificar")]
-        public async Task<IActionResult> Notificar([FromServices] IServicoNotificacaoFrequencia servicoNotificacaoFrequencia)
-        {
-            servicoNotificacaoFrequencia.ExecutaNotificacaoFrequencia();
-            return Ok();
-        }
-
     }
 }
