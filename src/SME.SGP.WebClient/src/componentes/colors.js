@@ -32,6 +32,7 @@ const Base = {
   Roxo: '#6933FF',
   RoxoFundo: '#6331EA',
   RoxoClaro: '#B99FFF',
+  RoxoEventoCalendario: '#9670FF',
   RoxoNotificacao: '#E7E6F8',
   Verde: '#297805',
   VermelhoAlerta: '#B40C02',
