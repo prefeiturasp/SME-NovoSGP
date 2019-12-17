@@ -88,5 +88,14 @@ namespace SME.SGP.Api.Controllers
         {
             return Ok(await consultaAtividadeAvaliativa.ValidarAtividadeAvaliativaExistente(filtro));
         }
+
+        [HttpGet("turmas/{codigoTurma}/disciplinas/{disciplinaId}")]
+        [ProducesResponseType(typeof(IEnumerable<TurmaRetornoDto>), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [Permissao(Permissao.CP_I, Policy = "Bearer")]
+        public async Task<IActionResult> ObterTurmasCopia(string codigoTurma, string disciplinaId)
+        {
+            return Ok(await consultaAtividadeAvaliativa.ObterTurmasCopia(codigoTurma, disciplinaId));
+        }
     }
 }

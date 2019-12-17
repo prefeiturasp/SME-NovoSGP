@@ -338,7 +338,7 @@ namespace SME.SGP.Aplicacao
             var idsTurmasProfessor = turmasAtribuidasAoProfessor?.Select(c => c.CodTurma).ToList();
 
             IEnumerable<AtribuicaoCJ> lstTurmasCJ = await
-                         repositorioAtribuicaoCJ.ObterPorFiltros(null, null, ueId, Convert.ToInt64(disciplinaId), codigoRf, null, null);
+                         repositorioAtribuicaoCJ.ObterPorFiltros(null, null, ueId, Convert.ToInt64(disciplinaId), codigoRf, null, true);
 
             if (
                     (
