@@ -45,6 +45,23 @@ namespace SME.SGP.Dados.Repositorios
             return contexto.QueryFirstOrDefault<Ue>("select * from ue where ue_id = @ueId", new { ueId });
         }
 
+        public IEnumerable<Ue> ObterPorDre(long dreId)
+        {
+            var query = @"select
+	                        id,
+	                        ue_id,
+	                        dre_id,
+	                        nome,
+	                        tipo_escola,
+	                        data_atualizacao
+                        from
+	                        ue
+                        where
+	                        dre_id = @dreId";
+
+            return contexto.Query<Ue>(query, new { dreId });
+        }
+
         public async Task<IEnumerable<Turma>> ObterTurmas(string ueCodigo, Modalidade modalidade, int ano)
         {
             var query = @"select t.* from turma t

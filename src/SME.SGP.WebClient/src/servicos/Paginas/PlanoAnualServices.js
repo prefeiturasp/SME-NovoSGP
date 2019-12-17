@@ -112,8 +112,7 @@ const Service = {
   },
 
   _getBaseUrlDisciplinasProfessor: (RF, CodigoTurma, turmaPrograma) => {
-    return `v1/professores/${RF}/turmas/${CodigoTurma}/disciplinas?turmaPrograma=${turmaPrograma &&
-      turmaPrograma}`;
+    return `v1/professores/${RF}/turmas/${CodigoTurma}/disciplinas?turmaPrograma=${!!turmaPrograma}`;
   },
 
   _getBaseUrlDisciplinasProfessorObjetivo: (
