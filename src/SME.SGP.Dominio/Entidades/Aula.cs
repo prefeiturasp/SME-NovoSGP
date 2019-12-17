@@ -134,7 +134,7 @@ namespace SME.SGP.Dominio
             if (turma == null)
                 throw new NegocioException("A turma deve ser informada.");
 
-            return !(EhAulaCompartilhada || EhRecuperacaoParalela || (EhTecnologiaAprendizagem && turma.ModalidadeCodigo == Modalidade.EJA));
+            return !(EhAulaCompartilhada || (EhTecnologiaAprendizagem && turma.ModalidadeCodigo == Modalidade.EJA));
         }
 
         public void ReprovarWorkflow()
