@@ -146,6 +146,10 @@ namespace SME.SGP.Aplicacao
                 .Select(a => (Permissao)a)
                 .ToList();
 
+            // Revoga token atual para geração de um novo
+            servicoTokenJwt.RevogarToken(login);
+
+            // Gera novo token e guarda em cache
             retornoAutenticacaoEol.Item1.Token =
                 servicoTokenJwt.GerarToken(login, dadosUsuario.Nome, usuario.CodigoRf, retornoAutenticacaoEol.Item1.PerfisUsuario.PerfilSelecionado, listaPermissoes);
 
@@ -203,6 +207,28 @@ namespace SME.SGP.Aplicacao
             }
 
             return retorno;
+        }
+
+        public async Task<string> RevalidarLogin()
+        {
+            // Obter Login do token atual
+            var login = servicoTokenJwt.ObterLogin();
+
+            var dadosUsuario = await servicoEOL.ObterMeusDados(login);
+            var usuario = servicoUsuario.ObterUsuarioPorCodigoRfLoginOuAdiciona(dadosUsuario.CodigoRf, login, dadosUsuario.Nome, dadosUsuario.Email);
+
+            var permissionamentos = await servicoEOL.ObterPermissoesPorPerfil(usuario.PerfilAtual);
+            if (permissionamentos == null || !permissionamentos.Any())
+                return string.Empty;
+
+            var listaPermissoes = permissionamentos
+                .Distinct()
+                .Select(a => (Permissao)a)
+                .ToList();
+
+            servicoTokenJwt.RevogarToken(login);
+            
+            return servicoTokenJwt.GerarToken(login, dadosUsuario.Nome, usuario.CodigoRf, usuario.PerfilAtual, listaPermissoes);
         }
 
         public void Sair()

@@ -62,8 +62,21 @@ namespace SME.SGP.Api.Controllers
 
             if (!retornoAutenticacao.Autenticado)
                 return StatusCode(401);
-
+             
             return Ok(retornoAutenticacao);
+        }
+
+        [HttpPost("revalidar")]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [ProducesResponseType(typeof(string), 200)]
+        public async Task<IActionResult> Revalidar()
+        {
+            var tokenRetorno = await comandosUsuario.RevalidarLogin();
+
+            if (tokenRetorno == string.Empty)
+                return StatusCode(401);
+
+            return Ok(tokenRetorno);
         }
 
         [HttpGet("{login}/perfis/listar")]
