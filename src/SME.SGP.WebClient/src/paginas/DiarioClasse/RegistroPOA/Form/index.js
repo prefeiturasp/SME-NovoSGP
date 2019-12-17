@@ -13,13 +13,13 @@ import { setLoaderSecao } from '~/redux/modulos/loader/actions';
 // Serviços
 import RotasDto from '~/dtos/rotasDto';
 import history from '~/servicos/history';
-import AtribuicaoEsporadicaServico from '~/servicos/Paginas/AtribuicaoEsporadica';
+import RegistroPOAServico from '~/servicos/Paginas/DiarioClasse/RegistroPOA';
 import { erros, erro, sucesso, confirmar } from '~/servicos/alertas';
 import { setBreadcrumbManual } from '~/servicos/breadcrumb-services';
 import { verificaSomenteConsulta } from '~/servicos/servico-navegacao';
 
 // Componentes SGP
-import { Cabecalho } from '~/componentes-sgp';
+import { Cabecalho, DreDropDown, UeDropDown } from '~/componentes-sgp';
 
 // Componentes
 import {
@@ -30,6 +30,7 @@ import {
   Label,
   CampoTexto,
   momentSchema,
+  Localizador,
   Loader,
   Auditoria,
 } from '~/componentes';
@@ -49,14 +50,12 @@ function RegistroPOAForm({ match }) {
   const somenteConsulta = verificaSomenteConsulta(
     permissoesTela[RotasDto.REGISTRO_POA]
   );
-  const filtroListagem = useSelector(
-    store => store.atribuicaoEsporadica.filtro
-  );
   const [novoRegistro, setNovoRegistro] = useState(true);
   const [modoEdicao, setModoEdicao] = useState(false);
   const [auditoria, setAuditoria] = useState({});
   const [valoresCarregados, setValoresCarregados] = useState(null);
   const [refForm, setRefForm] = useState({});
+  const [descricao, setDescricao] = useState('');
   const [valoresIniciais, setValoresIniciais] = useState({
     mes: '',
     titulo: '',
@@ -64,7 +63,11 @@ function RegistroPOAForm({ match }) {
   });
 
   const validacoes = () => {
-    return Yup.object({});
+    return Yup.object({
+      // descricao: Yup.string().required('O campo "Descrição" é obrigatório!'),
+      mes: Yup.number().required('Campo obrigatório!'),
+      titulo: Yup.string().required('O campo "Título" é obrigatório!'),
+    });
   };
 
   const validaAntesDoSubmit = form => {
@@ -80,18 +83,25 @@ function RegistroPOAForm({ match }) {
   };
 
   const onClickBotaoPrincipal = form => {
-    validaAntesDoSubmit(form);
+    const formComEditor = {
+      ...form,
+      values: {
+        ...form.values,
+        descricao: textEditorRef.current.state.value,
+      },
+    };
+    validaAntesDoSubmit(formComEditor);
   };
 
   const onSubmitFormulario = async valores => {
     try {
       dispatch(setLoaderSecao(true));
-      const cadastrado = await AtribuicaoEsporadicaServico.salvarAtribuicaoEsporadica(
-        {
-          ...filtroListagem,
-          ...valores,
-        }
-      );
+      const cadastrado = await RegistroPOAServico.salvarRegistroPOA({
+        ...valores,
+        codigoRf: valores.professorRf,
+        nome: valores.professorNome,
+        descricao,
+      });
       if (cadastrado && cadastrado.status === 200) {
         dispatch(setLoaderSecao(false));
         sucesso('Registro salvo com sucesso.');
@@ -144,7 +154,7 @@ function RegistroPOAForm({ match }) {
       'Cancelar'
     );
     if (confirmado) {
-      const excluir = await AtribuicaoEsporadicaServico.deletarAtribuicaoEsporadica(
+      const excluir = await RegistroPOAServico.deletarAtribuicaoEsporadica(
         form.values.id
       );
       if (excluir) {
@@ -157,15 +167,14 @@ function RegistroPOAForm({ match }) {
   const buscarPorId = async id => {
     try {
       dispatch(setLoaderSecao(true));
-      const registro = await AtribuicaoEsporadicaServico.buscarAtribuicaoEsporadica(
-        id
-      );
+      const registro = await RegistroPOAServico.buscarRegistroPOA(id);
       if (registro && registro.data) {
         setValoresIniciais({
           ...registro.data,
           dataInicio: window.moment(registro.data.dataInicio),
           dataFim: window.moment(registro.data.dataFim),
         });
+        setDescricao(registro.data.descricao);
         setAuditoria({
           criadoPor: registro.data.criadoPor,
           criadoRf: registro.data.criadoRF > 0 ? registro.data.criadoRF : '',
@@ -231,9 +240,12 @@ function RegistroPOAForm({ match }) {
               <Form>
                 <ButtonGroup
                   form={form}
-                  permissoesTela={
-                    permissoesTela[RotasDto.ATRIBUICAO_ESPORADICA_LISTA]
-                  }
+                  permissoesTela={{
+                    podeAlterar: true,
+                    podeConsultar: true,
+                    podeIncluir: true,
+                    podeExcluir: true,
+                  }}
                   novoRegistro={novoRegistro}
                   labelBotaoPrincipal="Cadastrar"
                   onClickBotaoPrincipal={() => onClickBotaoPrincipal(form)}
@@ -242,6 +254,34 @@ function RegistroPOAForm({ match }) {
                   onClickExcluir={() => onClickExcluir(form)}
                   modoEdicao={modoEdicao}
                 />
+                <Row className="row mb-2">
+                  <Grid cols={6}>
+                    <DreDropDown
+                      url="v1/dres/atribuicoes"
+                      label="Diretoria Regional de Educação (DRE)"
+                      form={form}
+                      onChange={valor => null}
+                    />
+                  </Grid>
+                  <Grid cols={6}>
+                    <UeDropDown
+                      dreId={form.values.dreId}
+                      label="Unidade Escolar (UE)"
+                      form={form}
+                      url="v1/dres"
+                      onChange={() => null}
+                    />
+                  </Grid>
+                </Row>
+                <Row className="row mb-2">
+                  <Localizador
+                    dreId={form.values.dreId}
+                    anoLetivo="2019"
+                    form={form}
+                    onChange={() => null}
+                    showLabel
+                  />
+                </Row>
                 <Row className="row">
                   <Grid cols={2}>
                     <MesesDropDown label="Mês" form={form} />
@@ -265,14 +305,16 @@ function RegistroPOAForm({ match }) {
                       ref={textEditorRef}
                       id="descricao"
                       alt="Descrição"
-                      onBlur={() => null}
-                      // value={descricao}
+                      name="descricao"
+                      onBlur={valor => setDescricao(valor)}
+                      value={descricao}
                       maxlength={500}
                       toolbar
                       disabled={valoresIniciais.possuiAvaliacao}
                     />
                   </Grid>
                 </Row>
+                {JSON.stringify(form)}
               </Form>
             )}
           </Formik>

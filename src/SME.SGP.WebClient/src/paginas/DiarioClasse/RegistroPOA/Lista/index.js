@@ -6,6 +6,7 @@ import { useSelector } from 'react-redux';
 // Servicos
 import history from '~/servicos/history';
 import RotasDto from '~/dtos/rotasDto';
+import { erro } from '~/servicos/alertas';
 import { verificaSomenteConsulta } from '~/servicos/servico-navegacao';
 
 // Componentes SGP
@@ -14,6 +15,9 @@ import { Cabecalho } from '~/componentes-sgp';
 // Componentes
 import { Loader, Card, ButtonGroup, ListaPaginada } from '~/componentes';
 import Filtro from './componentes/Filtro';
+
+// Funções
+import { renderizarMes } from '~/utils/funcoes/dataMes';
 
 function RegistroPOALista() {
   const [itensSelecionados, setItensSelecionados] = useState([]);
@@ -25,12 +29,14 @@ function RegistroPOALista() {
     {
       title: 'Mês',
       dataIndex: 'mes',
-      key: 'mes',
+      width: '20%',
+      render: valor => {
+        return renderizarMes(valor);
+      },
     },
     {
       title: 'Título',
       dataIndex: 'titulo',
-      key: 'titulo',
     },
   ];
 
@@ -39,20 +45,18 @@ function RegistroPOALista() {
   const onClickBotaoPrincipal = () =>
     history.push(`/diario-classe/registro-poa/novo`);
 
-  const onSelecionarItems = lista => {
-    setItensSelecionados(lista);
-  };
-
-  const onClickEditar = item => {
+  const onClickEditar = item =>
     history.push(`/diario-classe/registro-poa/editar/${item.id}`);
-  };
 
-  const onClickExcluir = itens => {
-    console.log(itens);
-  };
+  const onSelecionarItems = lista => setItensSelecionados(lista);
+
+  const onClickExcluir = itens => console.log(itens);
 
   const onChangeFiltro = valoresFiltro => {
-    setFiltro({});
+    setFiltro({
+      ...valoresFiltro,
+      CodigoRf: valoresFiltro.professorRf,
+    });
   };
 
   useEffect(() => {
@@ -82,12 +86,15 @@ function RegistroPOALista() {
           <div className="col-md-12 pt-2 py-0 px-0">
             <ListaPaginada
               id="lista-atribuicoes-cj"
-              idLinha="modalidadeId"
+              url="v1/atribuicao/poa/listar"
+              idLinha="id"
               colunaChave="id"
-              columns={colunas}
-              onClickRow={onClickEditar}
+              colunas={colunas}
+              onClick={onClickEditar}
               multiSelecao
-              selecionarItems={onSelecionarItems}
+              filtro={filtro}
+              onSelecionarLinhas={onSelecionarItems}
+              onErro={err => erro(JSON.stringify(err))}
             />
           </div>
         </Card>
