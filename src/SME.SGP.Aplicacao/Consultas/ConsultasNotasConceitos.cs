@@ -230,8 +230,6 @@ namespace SME.SGP.Aplicacao
 
         private void ObterValoresDeAuditoria(DateTime? dataUltimaNotaConceitoInserida, DateTime? dataUltimaNotaConceitoAlterada, string usuarioInseriu, string usuarioAlterou, TipoNota tipoNota, NotasConceitosRetornoDto notasConceitosRetornoDto, string nomeAvaliacaoInclusao, string nomeAvaliacaoAlteracao)
         {
-            //retornoMock.AuditoriaAlterado = "Notas (ou conceitos) da avaliação XYZ alterados por por Nome Usuário(9999999) em 10/01/2019, às 15:00.";
-            //retornoMock.AuditoriaInserido = "Notas (ou conceitos) da avaliação XYZ inseridos por por Nome Usuário(9999999) em 10/01/2019, às 15:00.";
             var tituloNotasOuConceitos = tipoNota == TipoNota.Conceito ? "Conceitos" : "Notas";
 
             if (dataUltimaNotaConceitoInserida.HasValue)
