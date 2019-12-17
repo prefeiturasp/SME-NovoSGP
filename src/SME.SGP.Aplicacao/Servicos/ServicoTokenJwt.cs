@@ -96,6 +96,9 @@ namespace SME.SGP.Aplicacao.Servicos
         public string ObterLogin()
             => ObterLoginDoToken(ObterTokenAtual());
 
+        public Guid ObterPerfil()
+            => ObterPerfilDoToken(ObterTokenAtual());
+
         #region Private Methods
         private bool TokenAtivo(string token)
             => cache.Obter(ObterChaveToken(token)) == token;
@@ -123,6 +126,11 @@ namespace SME.SGP.Aplicacao.Servicos
         private string ObterLoginDoToken(string token)
             => ObterClaims(token)
                 .FirstOrDefault(claim => claim.Type == "login")?.Value ?? string.Empty;
+
+        private Guid ObterPerfilDoToken(string token)
+            => Guid.Parse(ObterClaims(token)
+                .FirstOrDefault(claim => claim.Type == "perfil")?.Value 
+                ?? string.Empty);
         #endregion
     }
 }
