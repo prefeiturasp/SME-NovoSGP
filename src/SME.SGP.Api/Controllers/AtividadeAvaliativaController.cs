@@ -25,10 +25,9 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [Permissao(Permissao.CP_A, Policy = "Bearer")]
-        public IActionResult Alterar([FromBody]AtividadeAvaliativaDto atividadeAvaliativaDto, long id)
+        public async Task<IActionResult> Alterar([FromBody]AtividadeAvaliativaDto atividadeAvaliativaDto, long id)
         {
-            comandoAtividadeAvaliativa.Alterar(atividadeAvaliativaDto, id);
-            return Ok();
+            return Ok(await comandoAtividadeAvaliativa.Alterar(atividadeAvaliativaDto, id));
         }
 
         [HttpDelete]
@@ -68,8 +67,7 @@ namespace SME.SGP.Api.Controllers
         [Permissao(Permissao.CP_I, Policy = "Bearer")]
         public async Task<IActionResult> PostAsync([FromBody]AtividadeAvaliativaDto atividadeAvaliativaDto)
         {
-            await comandoAtividadeAvaliativa.Inserir(atividadeAvaliativaDto);
-            return Ok();
+            return Ok(await comandoAtividadeAvaliativa.Inserir(atividadeAvaliativaDto));
         }
 
         [HttpPost("validar")]

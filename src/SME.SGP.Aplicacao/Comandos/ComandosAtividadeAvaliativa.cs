@@ -77,7 +77,7 @@ namespace SME.SGP.Aplicacao
             }
 
             mensagens.Add(new RetornoCopiarAtividadeAvaliativaDto("Atividade Avaliativa alterada com sucesso", true));
-            await CopiarAtividadeAvaliativa(dto, atividadeAvaliativa.ProfessorRf, usuario.EhProfessorCj(), mensagens);
+            mensagens.AddRange(await CopiarAtividadeAvaliativa(dto, atividadeAvaliativa.ProfessorRf, usuario.EhProfessorCj()));
 
             return mensagens;
         }
@@ -112,15 +112,16 @@ namespace SME.SGP.Aplicacao
             var usuario = await servicoUsuario.ObterUsuarioLogado();
             var disciplina = ObterDisciplina(dto.DisciplinaId);
             var atividadeAvaliativa = MapearDtoParaEntidade(dto, 0L, usuario.CodigoRf, disciplina.Regencia);
-            await Salvar(atividadeAvaliativa, dto, mensagens);
-            await CopiarAtividadeAvaliativa(dto, atividadeAvaliativa.ProfessorRf, usuario.EhProfessorCj(), mensagens);
+            mensagens.AddRange(await Salvar(atividadeAvaliativa, dto));
+            mensagens.AddRange(await CopiarAtividadeAvaliativa(dto, atividadeAvaliativa.ProfessorRf, usuario.EhProfessorCj()));
 
             return mensagens;
         }
 
-        private async Task Salvar(AtividadeAvaliativa atividadeAvaliativa,  AtividadeAvaliativaDto dto, 
-                                  IEnumerable<RetornoCopiarAtividadeAvaliativaDto> mensagens, bool ehCopia = false)
+        private async Task<IEnumerable<RetornoCopiarAtividadeAvaliativaDto>> Salvar(AtividadeAvaliativa atividadeAvaliativa, AtividadeAvaliativaDto dto, bool ehCopia = false)
         {
+            var mensagens = new List<RetornoCopiarAtividadeAvaliativaDto>();
+
             unitOfWork.IniciarTransacao();
 
             await repositorioAtividadeAvaliativa.SalvarAsync(atividadeAvaliativa);
@@ -143,16 +144,19 @@ namespace SME.SGP.Aplicacao
             unitOfWork.PersistirTransacao();
 
             if (!ehCopia)
-                mensagens.ToList().Add(new RetornoCopiarAtividadeAvaliativaDto("Atividade Avaliativa criada com sucesso", true));
+                mensagens.Add(new RetornoCopiarAtividadeAvaliativaDto("Atividade Avaliativa criada com sucesso", true));
+
+            return mensagens;
         }
 
-        private async Task CopiarAtividadeAvaliativa(AtividadeAvaliativaDto atividadeAvaliativaDto, string usuarioRf, bool ehCJ,
-                                                     IEnumerable<RetornoCopiarAtividadeAvaliativaDto> mensagens)
+        private async Task<IEnumerable<RetornoCopiarAtividadeAvaliativaDto>> CopiarAtividadeAvaliativa(AtividadeAvaliativaDto atividadeAvaliativaDto, string usuarioRf, bool ehCJ)
         {
-            await ValidarCopias(atividadeAvaliativaDto, usuarioRf, ehCJ, mensagens);
+            var mensagens = new List<RetornoCopiarAtividadeAvaliativaDto>();
 
-            if (mensagens.Count() > 1)
-                return;
+            mensagens.AddRange(await ValidarCopias(atividadeAvaliativaDto, usuarioRf, ehCJ));
+
+            if (mensagens.Any())
+                return mensagens;
 
             if (atividadeAvaliativaDto.TurmasParaCopiar != null && atividadeAvaliativaDto.TurmasParaCopiar.Any())
             {
@@ -165,16 +169,18 @@ namespace SME.SGP.Aplicacao
                     {
                         await Validar(MapearDtoParaFiltroValidacao(atividadeAvaliativaDto));
                         var atividadeParaCopiar = MapearDtoParaEntidade(new AtividadeAvaliativa(), atividadeAvaliativaDto, usuarioRf);
-                        await Salvar(atividadeParaCopiar, atividadeAvaliativaDto, mensagens, true);
+                        await Salvar(atividadeParaCopiar, atividadeAvaliativaDto, true);
 
-                        mensagens.ToList().Add(new RetornoCopiarAtividadeAvaliativaDto($"Atividade copiada para a turma: '{turma.TurmaId}' na data '{turma.DataAtividadeAvaliativa.ToString("dd/MM/yyyy")}'.", true));
+                        mensagens.Add(new RetornoCopiarAtividadeAvaliativaDto($"Atividade copiada para a turma: '{turma.TurmaId}' na data '{turma.DataAtividadeAvaliativa.ToString("dd/MM/yyyy")}'.", true));
                     }
                     catch (NegocioException nex)
                     {
-                        mensagens.ToList().Add(new RetornoCopiarAtividadeAvaliativaDto($"Erro ao copiar para a turma: '{turma.TurmaId}' na data '{turma.DataAtividadeAvaliativa.ToString("dd/MM/yyyy")}'. {nex.Message}"));
+                        mensagens.Add(new RetornoCopiarAtividadeAvaliativaDto($"Erro ao copiar para a turma: '{turma.TurmaId}' na data '{turma.DataAtividadeAvaliativa.ToString("dd/MM/yyyy")}'. {nex.Message}"));
                     }
                 }
             }
+
+            return mensagens;
         }
 
         private FiltroAtividadeAvaliativaDto MapearDtoParaFiltroValidacao(AtividadeAvaliativaDto atividadeAvaliativaDto)
@@ -281,24 +287,33 @@ namespace SME.SGP.Aplicacao
             return disciplina.FirstOrDefault();
         }
 
-        private async Task ValidarCopias(AtividadeAvaliativaDto atividadeAvaliativaDto, string codigoRf, bool ehProfessorCj,
-                                         IEnumerable<RetornoCopiarAtividadeAvaliativaDto> mensagens)
+        private async Task<IEnumerable<RetornoCopiarAtividadeAvaliativaDto>> ValidarCopias(AtividadeAvaliativaDto atividadeAvaliativaDto, string codigoRf, bool ehProfessorCj)
         {
+            var mensagens = new List<RetornoCopiarAtividadeAvaliativaDto>();
+
             var turmasAtribuidasAoProfessor = consultasProfessor.Listar(codigoRf);
             var idsTurmasSelecionadas = atividadeAvaliativaDto.TurmasParaCopiar.Select(x => x.TurmaId).ToList();
+            idsTurmasSelecionadas.Add(atividadeAvaliativaDto.TurmaId);
 
-           await ValidaTurmasProfessor(ehProfessorCj, atividadeAvaliativaDto.UeId,
-                                  atividadeAvaliativaDto.DisciplinaId.ToString(),
-                                  codigoRf,
-                                  turmasAtribuidasAoProfessor,
-                                  idsTurmasSelecionadas, mensagens);
+            mensagens.AddRange(await ValidaTurmasProfessor(ehProfessorCj, atividadeAvaliativaDto.UeId,
+                                    atividadeAvaliativaDto.DisciplinaId.ToString(),
+                                    codigoRf,
+                                    turmasAtribuidasAoProfessor,
+                                    idsTurmasSelecionadas));
 
-            ValidaTurmasAno(ehProfessorCj, turmasAtribuidasAoProfessor, idsTurmasSelecionadas, mensagens);
+            if (mensagens.Any())
+                return mensagens;
+
+            mensagens.AddRange(ValidaTurmasAno(ehProfessorCj, turmasAtribuidasAoProfessor, idsTurmasSelecionadas));
+
+            return mensagens;
         }
 
-        private void ValidaTurmasAno(bool ehProfessorCJ, IEnumerable<ProfessorTurmaDto> turmasAtribuidasAoProfessor,
-                                     IEnumerable<string> idsTurmasSelecionadas, IEnumerable<RetornoCopiarAtividadeAvaliativaDto> mensagens)
+        private IEnumerable<RetornoCopiarAtividadeAvaliativaDto> ValidaTurmasAno(bool ehProfessorCJ, IEnumerable<ProfessorTurmaDto> turmasAtribuidasAoProfessor,
+                                     IEnumerable<string> idsTurmasSelecionadas)
         {
+            var mensagens = new List<RetornoCopiarAtividadeAvaliativaDto>();
+
             if (!ehProfessorCJ)
             {
                 var turmasAtribuidasSelecionadas = turmasAtribuidasAoProfessor.Where(t => idsTurmasSelecionadas.Contains(t.CodTurma.ToString()));
@@ -306,17 +321,19 @@ namespace SME.SGP.Aplicacao
 
                 if (!turmasAtribuidasSelecionadas.All(x => x.Ano == anoTurma))
                 {
-                    mensagens.ToList().Add(new RetornoCopiarAtividadeAvaliativaDto(
-                        "Somente é possível migrar o plano de aula para turmas dentro do mesmo ano"));
+                    mensagens.Add(new RetornoCopiarAtividadeAvaliativaDto(
+                        "Somente é possível copiar a atividade avaliativa para turmas dentro do mesmo ano"));
                 }
             }
+
+            return mensagens;
         }
 
-        private async Task ValidaTurmasProfessor(bool ehProfessorCJ, string ueId, string disciplinaId, string codigoRf,
+        private async Task<IEnumerable<RetornoCopiarAtividadeAvaliativaDto>> ValidaTurmasProfessor(bool ehProfessorCJ, string ueId, string disciplinaId, string codigoRf,
                                                    IEnumerable<ProfessorTurmaDto> turmasAtribuidasAoProfessor,
-                                                   IEnumerable<string> idsTurmasSelecionadas,
-                                                   IEnumerable<RetornoCopiarAtividadeAvaliativaDto> mensagens)
+                                                   IEnumerable<string> idsTurmasSelecionadas)
         {
+            var mensagens = new List<RetornoCopiarAtividadeAvaliativaDto>();
 
             var idsTurmasProfessor = turmasAtribuidasAoProfessor?.Select(c => c.CodTurma).ToList();
 
@@ -337,7 +354,9 @@ namespace SME.SGP.Aplicacao
                     )
 
                )
-                mensagens.ToList().Add(new RetornoCopiarAtividadeAvaliativaDto("Somente é possível migrar o plano de aula para turmas atribuidas ao professor"));
+                mensagens.Add(new RetornoCopiarAtividadeAvaliativaDto("Somente é possível copiar a atividade avaliativa para turmas atribuidas ao professor"));
+
+            return mensagens;
 
         }
     }
