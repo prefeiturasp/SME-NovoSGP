@@ -77,7 +77,7 @@ namespace SME.SGP.Aplicacao
             }
 
             mensagens.Add(new RetornoCopiarAtividadeAvaliativaDto("Atividade Avaliativa alterada com sucesso", true));
-            mensagens.AddRange(await CopiarAtividadeAvaliativa(dto, atividadeAvaliativa.ProfessorRf, usuario.EhProfessorCj()));
+            mensagens.AddRange(await CopiarAtividadeAvaliativa(dto, atividadeAvaliativa.ProfessorRf));
 
             return mensagens;
         }
@@ -113,7 +113,7 @@ namespace SME.SGP.Aplicacao
             var disciplina = ObterDisciplina(dto.DisciplinaId);
             var atividadeAvaliativa = MapearDtoParaEntidade(dto, 0L, usuario.CodigoRf, disciplina.Regencia);
             mensagens.AddRange(await Salvar(atividadeAvaliativa, dto));
-            mensagens.AddRange(await CopiarAtividadeAvaliativa(dto, atividadeAvaliativa.ProfessorRf, usuario.EhProfessorCj()));
+            mensagens.AddRange(await CopiarAtividadeAvaliativa(dto, atividadeAvaliativa.ProfessorRf));
 
             return mensagens;
         }
@@ -149,11 +149,11 @@ namespace SME.SGP.Aplicacao
             return mensagens;
         }
 
-        private async Task<IEnumerable<RetornoCopiarAtividadeAvaliativaDto>> CopiarAtividadeAvaliativa(AtividadeAvaliativaDto atividadeAvaliativaDto, string usuarioRf, bool ehCJ)
+        private async Task<IEnumerable<RetornoCopiarAtividadeAvaliativaDto>> CopiarAtividadeAvaliativa(AtividadeAvaliativaDto atividadeAvaliativaDto, string usuarioRf)
         {
             var mensagens = new List<RetornoCopiarAtividadeAvaliativaDto>();
 
-            mensagens.AddRange(await ValidarCopias(atividadeAvaliativaDto, usuarioRf, ehCJ));
+            mensagens.AddRange(await ValidarCopias(atividadeAvaliativaDto, usuarioRf));
 
             if (mensagens.Any())
                 return mensagens;
@@ -287,77 +287,77 @@ namespace SME.SGP.Aplicacao
             return disciplina.FirstOrDefault();
         }
 
-        private async Task<IEnumerable<RetornoCopiarAtividadeAvaliativaDto>> ValidarCopias(AtividadeAvaliativaDto atividadeAvaliativaDto, string codigoRf, bool ehProfessorCj)
+        private async Task<IEnumerable<RetornoCopiarAtividadeAvaliativaDto>> ValidarCopias(AtividadeAvaliativaDto atividadeAvaliativaDto, string codigoRf)
         {
             var mensagens = new List<RetornoCopiarAtividadeAvaliativaDto>();
 
-            var turmasAtribuidasAoProfessor = consultasProfessor.Listar(codigoRf);
+            var turmasAtribuidasAoProfessor = await ObterTurmasAtribuidasAoProfessor(codigoRf, atividadeAvaliativaDto.DisciplinaId);
+
             var idsTurmasSelecionadas = atividadeAvaliativaDto.TurmasParaCopiar.Select(x => x.TurmaId).ToList();
             idsTurmasSelecionadas.Add(atividadeAvaliativaDto.TurmaId);
 
-            mensagens.AddRange(await ValidaTurmasProfessor(ehProfessorCj, atividadeAvaliativaDto.UeId,
-                                    atividadeAvaliativaDto.DisciplinaId.ToString(),
-                                    codigoRf,
-                                    turmasAtribuidasAoProfessor,
-                                    idsTurmasSelecionadas));
+            mensagens.AddRange(ValidaTurmasProfessor(turmasAtribuidasAoProfessor, idsTurmasSelecionadas));
 
             if (mensagens.Any())
                 return mensagens;
 
-            mensagens.AddRange(ValidaTurmasAno(ehProfessorCj, turmasAtribuidasAoProfessor, idsTurmasSelecionadas));
+            mensagens.AddRange(ValidaTurmasAno(turmasAtribuidasAoProfessor, idsTurmasSelecionadas));
 
             return mensagens;
         }
 
-        private IEnumerable<RetornoCopiarAtividadeAvaliativaDto> ValidaTurmasAno(bool ehProfessorCJ, IEnumerable<ProfessorTurmaDto> turmasAtribuidasAoProfessor,
+        private async Task<IEnumerable<TurmaDto>> ObterTurmasAtribuidasAoProfessor(string codigoRf, long disciplinaId)
+        {
+            var turmasAtribuidasAoProfessorTitular = consultasProfessor.Listar(codigoRf);
+            var turmasAtribuidasAoProfessorCJ = await repositorioAtribuicaoCJ.ObterPorFiltros(null, null, null, disciplinaId, codigoRf, null, true);
+
+            var turmasAtribuidasAoProfessor = new List<TurmaDto>();
+
+            if (turmasAtribuidasAoProfessorTitular != null && turmasAtribuidasAoProfessorTitular.Any())
+                turmasAtribuidasAoProfessor.AddRange(turmasAtribuidasAoProfessorTitular
+                          .Select(x => new TurmaDto() { CodigoTurma = x.CodTurma, NomeTurma = x.NomeTurma, Ano = x.Ano })
+                          .ToList());
+
+            if (turmasAtribuidasAoProfessorCJ != null && turmasAtribuidasAoProfessorCJ.Any())
+                turmasAtribuidasAoProfessor.AddRange(turmasAtribuidasAoProfessorCJ
+                      .Select(x => new TurmaDto()
+                      {
+                          CodigoTurma = Convert.ToInt32(x.TurmaId),
+                          NomeTurma = x.Turma.Nome,
+                          Ano = x.Turma.Ano
+                      })
+                      .ToList());
+
+            return turmasAtribuidasAoProfessor;
+        }
+
+        private IEnumerable<RetornoCopiarAtividadeAvaliativaDto> ValidaTurmasAno(
+                                     IEnumerable<TurmaDto> turmasAtribuidasAoProfessor,
                                      IEnumerable<string> idsTurmasSelecionadas)
         {
             var mensagens = new List<RetornoCopiarAtividadeAvaliativaDto>();
 
-            if (!ehProfessorCJ)
-            {
-                var turmasAtribuidasSelecionadas = turmasAtribuidasAoProfessor.Where(t => idsTurmasSelecionadas.Contains(t.CodTurma.ToString()));
-                var anoTurma = turmasAtribuidasSelecionadas.First().Ano;
+            var turmasAtribuidasSelecionadas = turmasAtribuidasAoProfessor.Where(t => idsTurmasSelecionadas.Contains(t.CodigoTurma.ToString()));
+            var anoTurma = turmasAtribuidasSelecionadas.First().Ano;
 
-                if (!turmasAtribuidasSelecionadas.All(x => x.Ano == anoTurma))
-                {
-                    mensagens.Add(new RetornoCopiarAtividadeAvaliativaDto(
-                        "Somente é possível copiar a atividade avaliativa para turmas dentro do mesmo ano"));
-                }
+            if (!turmasAtribuidasSelecionadas.All(x => x.Ano == anoTurma))
+            {
+                mensagens.Add(new RetornoCopiarAtividadeAvaliativaDto(
+                    "Somente é possível copiar a atividade avaliativa para turmas dentro do mesmo ano"));
             }
 
             return mensagens;
         }
 
-        private async Task<IEnumerable<RetornoCopiarAtividadeAvaliativaDto>> ValidaTurmasProfessor(bool ehProfessorCJ, string ueId, string disciplinaId, string codigoRf,
-                                                   IEnumerable<ProfessorTurmaDto> turmasAtribuidasAoProfessor,
-                                                   IEnumerable<string> idsTurmasSelecionadas)
+        private IEnumerable<RetornoCopiarAtividadeAvaliativaDto> ValidaTurmasProfessor(IEnumerable<TurmaDto> turmasAtribuidasAoProfessor,
+                                                                                       IEnumerable<string> idsTurmasSelecionadas)
         {
             var mensagens = new List<RetornoCopiarAtividadeAvaliativaDto>();
 
-            var idsTurmasProfessor = turmasAtribuidasAoProfessor?.Select(c => c.CodTurma).ToList();
-
-            IEnumerable<AtribuicaoCJ> lstTurmasCJ = await
-                         repositorioAtribuicaoCJ.ObterPorFiltros(null, null, ueId, Convert.ToInt64(disciplinaId), codigoRf, null, true);
-
-            if (
-                    (
-                        ehProfessorCJ &&
-                        (
-                            lstTurmasCJ == null ||
-                            idsTurmasSelecionadas.Any(c => !lstTurmasCJ.Select(tcj => tcj.TurmaId).Contains(c))
-                        )
-                    ) ||
-                    (
-                        idsTurmasProfessor == null ||
-                        idsTurmasSelecionadas.Any(c => !idsTurmasProfessor.Contains(Convert.ToInt32(c)))
-                    )
-
-               )
+            if (turmasAtribuidasAoProfessor != null && idsTurmasSelecionadas.Any(c => !turmasAtribuidasAoProfessor.Select(t => t.CodigoTurma.ToString()).Contains(c)))
                 mensagens.Add(new RetornoCopiarAtividadeAvaliativaDto("Somente é possível copiar a atividade avaliativa para turmas atribuidas ao professor"));
 
             return mensagens;
-
         }
     }
 }
