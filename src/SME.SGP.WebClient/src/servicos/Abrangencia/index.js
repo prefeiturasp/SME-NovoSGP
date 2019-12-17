@@ -2,14 +2,12 @@ import api from '~/servicos/api';
 
 const AbrangenciaServico = {
   buscarDres(url = '') {
-    if (url)
-      return api.get(url);
-    else return api.get(`/v1/abrangencias/dres`)
+    if (url) return api.get(url);
+    return api.get(`/v1/abrangencias/dres`);
   },
   buscarUes(dreId, url = '') {
-    if (url)
-      return api.get(url + `/${dreId}/ues/atribuicoes`)
-    else return api.get(`/v1/abrangencias/dres/${dreId}/ues`);
+    if (url) return api.get(`${url}/${dreId}/ues/atribuicoes`);
+    return api.get(`/v1/abrangencias/dres/${dreId}/ues`);
   },
   buscarModalidades() {
     return api.get(`v1/abrangencias/modalidades`);

@@ -9,6 +9,8 @@ namespace SME.SGP.Dominio.Interfaces
     {
         Task ExcluirFrequenciaAula(long aulaId);
 
+        Task<bool> FrequenciaAulaRegistrada(long aulaId);
+
         RegistroFrequenciaAulaDto ObterAulaDaFrequencia(long registroFrequenciaId);
 
         IEnumerable<AulasPorTurmaDisciplinaDto> ObterAulasSemRegistroFrequencia(string turmaId, string disciplinaId);
