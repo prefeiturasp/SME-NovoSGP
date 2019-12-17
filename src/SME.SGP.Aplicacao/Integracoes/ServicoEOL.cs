@@ -125,6 +125,19 @@ namespace SME.SGP.Aplicacao.Integracoes
             return alunos;
         }
 
+        public async Task<IEnumerable<AlunoPorTurmaResposta>> ObterAlunosPorTurma(string turmaId, int anoLetivo)
+        {
+            var alunos = new List<AlunoPorTurmaResposta>();
+            var resposta = await httpClient.GetAsync($"turmas/{turmaId}/alunos/anosLetivos/{anoLetivo}");
+            if (resposta.IsSuccessStatusCode)
+            {
+                var json = await resposta.Content.ReadAsStringAsync();
+                alunos = JsonConvert.DeserializeObject<List<AlunoPorTurmaResposta>>(json);
+            }
+
+            return alunos;
+        }
+
         public async Task<IEnumerable<DisciplinaResposta>> ObterDisciplinasParaPlanejamento(long codigoTurma, string login, Guid perfil)
         {
             var url = $"funcionarios/{login}/perfis/{perfil}/turmas/{codigoTurma}/disciplinas/planejamento";
