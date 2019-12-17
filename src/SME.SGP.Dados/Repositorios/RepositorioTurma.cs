@@ -1,12 +1,11 @@
 ﻿using Dapper;
 using Dommel;
-using SME.SGP.Dados.Contexto;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
+using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using SME.SGP.Infra;
 
 namespace SME.SGP.Dados.Repositorios
 {
@@ -129,7 +128,8 @@ namespace SME.SGP.Dados.Repositorios
 
                 var armazenados = contexto.Conexao.Query<Turma>(QuerySincronizacao.Replace("#ids", string.Join(",", iteracao.Select(x => $"'{x.CodigoTurma}'")))).ToList();
 
-                var novos = iteracao.Where(x => !armazenados.Select(y => y.CodigoTurma).Contains(x.CodigoTurma)).ToList();
+                var idsArmazenados = armazenados.Select(y => y.CodigoTurma);
+                var novos = iteracao.Where(x => !idsArmazenados.Contains(x.CodigoTurma)).ToList();
 
                 foreach (var item in novos)
                 {
