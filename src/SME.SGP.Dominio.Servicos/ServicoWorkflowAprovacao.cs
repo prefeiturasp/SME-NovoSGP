@@ -97,6 +97,10 @@ namespace SME.SGP.Dominio.Servicos
                 {
                     AprovarUltimoNivelDaReposicaoAula(codigoDaNotificacao, workflow.Id);
                 }
+                else if (workflow.Tipo == WorkflowAprovacaoTipo.Evento_Data_Passada)
+                {
+                    AprovarUltimoNivelDeEventoDataPassada(codigoDaNotificacao, workflow.Id);
+                }
             }
         }
 
@@ -122,6 +126,7 @@ namespace SME.SGP.Dominio.Servicos
             repositorioEvento.Salvar(evento);
 
             NotificarCriadorDoEventoQueFoiAprovado(evento, codigoDaNotificacao);
+            NotificarDiretorDaUeDoEventoQueFoiAprovado(evento, codigoDaNotificacao);
         }
 
         private void AprovarUltimoNivelDeEventoLiberacaoExcepcional(long codigoDaNotificacao, long workflowId)
@@ -292,6 +297,39 @@ namespace SME.SGP.Dominio.Servicos
                 Codigo = codigoDaNotificacao,
                 Mensagem = $"O evento {evento.Nome} - {evento.DataInicio.Day}/{evento.DataInicio.Month}/{evento.DataInicio.Year} do calendário {evento.TipoCalendario.Nome} da {escola.Nome} foi aceito. Agora este evento está visível para todos os usuários. Para visualizá-lo clique <a href='{linkParaEvento}'>aqui</a>."
             });
+        }
+
+        private void NotificarDiretorDaUeDoEventoQueFoiAprovado(Evento evento, long codigoDaNotificacao)
+        {
+            var escola = repositorioUe.ObterPorCodigo(evento.UeId);
+
+            if (escola == null)
+                throw new NegocioException("Não foi possível localizar a Ue deste evento.");
+
+            var diretoresDaEscola = servicoEOL.ObterFuncionariosPorCargoUe(escola.CodigoUe, (long)Cargo.Diretor);
+
+            if (diretoresDaEscola == null && !diretoresDaEscola.Any())
+                throw new NegocioException("Não foi possível localizar o diretor da Ue deste evento.");
+
+            var linkParaEvento = $"{configuration["UrlFrontEnd"]}calendario-escolar/eventos/editar/{evento.Id}/";
+
+            foreach (var diretor in diretoresDaEscola)
+            {
+                var usuario = servicoUsuario.ObterUsuarioPorCodigoRfLoginOuAdiciona(diretor.CodigoRf);
+
+                repositorioNotificacao.Salvar(new Notificacao()
+                {
+                    UeId = evento.UeId,
+                    UsuarioId = usuario.Id,
+                    Ano = evento.CriadoEm.Year,
+                    Categoria = NotificacaoCategoria.Aviso,
+                    DreId = evento.DreId,
+                    Titulo = "Criação de Eventos Excepcionais",
+                    Tipo = NotificacaoTipo.Calendario,
+                    Codigo = codigoDaNotificacao,
+                    Mensagem = $"O evento {evento.Nome} - {evento.DataInicio.Day}/{evento.DataInicio.Month}/{evento.DataInicio.Year} do calendário {evento.TipoCalendario.Nome} da {escola.Nome} foi aceito. Agora este evento está visível para todos os usuários. Para visualizá-lo clique <a href='{linkParaEvento}'>aqui</a>."
+                });
+            }
         }
 
         private void NotificarEventoQueFoiReprovado(Evento evento, long codigoDaNotificacao, Usuario usuario, string motivoRecusa, string nomeEscola)
