@@ -38,7 +38,7 @@ namespace SME.SGP.Dados.Repositorios
             });
         }
 
-        public bool PossuiDisciplinas(long atividadeAvaliativaId, long disciplinaId)
+        public bool PossuiDisciplinas(long atividadeAvaliativaId, string disciplinaId)
         {
             var query = new StringBuilder();
             query.AppendLine("SELECT 1 FROM atividade_avaliativa_disciplina");
