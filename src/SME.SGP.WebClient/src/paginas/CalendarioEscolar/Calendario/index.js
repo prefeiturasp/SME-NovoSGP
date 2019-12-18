@@ -40,6 +40,8 @@ const CalendarioEscolar = () => {
   const anosLetivosAbrangencia = useSelector(state => state.filtro.anosLetivos);
 
   const [carregandoTipos, setCarregandoTipos] = useState(false);
+  const [carregandoDres, setCarregandoDres] = useState(false);
+  const [carregandoUes, setCarregandoUes] = useState(false);
 
   const obterTiposCalendario = async modalidades => {
     setCarregandoTipos(true);
@@ -179,6 +181,7 @@ const CalendarioEscolar = () => {
   const [dres, setDres] = useState([]);
 
   const obterDres = () => {
+    setCarregandoDres(true);
     api
       .get('v1/abrangencias/dres')
       .then(resposta => {
@@ -193,14 +196,16 @@ const CalendarioEscolar = () => {
               });
             });
             lista.sort(FiltroHelper.ordenarLista('desc'));
-            lista.push({ desc: 'Todas', valor: 0, abrev: '' });
+            lista.unshift({ desc: 'Todas', valor: 0, abrev: '' });
             setDres(lista);
+            setCarregandoDres(false);
           }
         }
       })
       .catch(() => {
-        dresStore.push({ desc: 'Todas', valor: 0, abrev: '' });
+        dresStore.unshift({ desc: 'Todas', valor: 0, abrev: '' });
         setDres(dresStore);
+        setCarregandoDres(false);
       });
   };
 
@@ -252,6 +257,7 @@ const CalendarioEscolar = () => {
   const [unidadesEscolares, setUnidadesEscolares] = useState([]);
 
   const obterUnidadesEscolares = () => {
+    setCarregandoUes(true);
     api
       .get(`v1/abrangencias/dres/${dreSelecionada}/ues`)
       .then(resposta => {
@@ -265,11 +271,13 @@ const CalendarioEscolar = () => {
               });
             });
             setUnidadesEscolares(lista.sort(FiltroHelper.ordenarLista('desc')));
+            setCarregandoUes(false);
           }
         }
       })
       .catch(() => {
         setUnidadesEscolares(unidadesEscolaresStore);
+        setCarregandoUes(false);
       });
   };
 
@@ -391,28 +399,32 @@ const CalendarioEscolar = () => {
               </Div>
             </Grid>
             <Grid cols={6}>
-              <SelectComponent
-                className="fonte-14"
-                onChange={aoSelecionarDre}
-                lista={dres}
-                valueOption="valor"
-                valueText="desc"
-                valueSelect={dreSelecionada}
-                placeholder="Diretoria Regional de Educação (DRE)"
-                disabled={!tipoCalendarioSelecionado}
-              />
+              <Loader loading={carregandoDres} tip="">
+                <SelectComponent
+                  className="fonte-14"
+                  onChange={aoSelecionarDre}
+                  lista={dres}
+                  valueOption="valor"
+                  valueText="desc"
+                  valueSelect={dreSelecionada}
+                  placeholder="Diretoria Regional de Educação (DRE)"
+                  disabled={!tipoCalendarioSelecionado}
+                />
+              </Loader>
             </Grid>
             <Grid cols={5}>
-              <SelectComponent
-                className="fonte-14"
-                onChange={aoSelecionarUnidadeEscolar}
-                lista={unidadesEscolares}
-                valueOption="valor"
-                valueText="desc"
-                valueSelect={unidadeEscolarSelecionada}
-                placeholder="Unidade Escolar (UE)"
-                disabled={!dreSelecionada}
-              />
+              <Loader loading={carregandoUes} tip="">
+                <SelectComponent
+                  className="fonte-14"
+                  onChange={aoSelecionarUnidadeEscolar}
+                  lista={unidadesEscolares}
+                  valueOption="valor"
+                  valueText="desc"
+                  valueSelect={unidadeEscolarSelecionada}
+                  placeholder="Unidade Escolar (UE)"
+                  disabled={!dreSelecionada}
+                />
+              </Loader>
             </Grid>
           </Div>
         </Grid>
