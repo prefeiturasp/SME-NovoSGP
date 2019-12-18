@@ -1,6 +1,5 @@
 ﻿using Microsoft.Extensions.Configuration;
 using SME.SGP.Aplicacao.Integracoes;
-using SME.SGP.Aplicacao.Servicos;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
@@ -162,7 +161,7 @@ namespace SME.SGP.Aplicacao
             return retornoAutenticacaoEol.Item1;
         }
 
-        public async Task<(string, bool, bool)> ModificarPerfil(Guid perfil)
+        public async Task<TrocaPerfilDto> ModificarPerfil(Guid perfil)
         {
             string loginAtual = servicoUsuario.ObterLoginAtual();
             string codigoRfAtual = servicoUsuario.ObterRf();
@@ -190,7 +189,13 @@ namespace SME.SGP.Aplicacao
 
                 servicoTokenJwt.RevogarToken(loginAtual);
 
-                return (servicoTokenJwt.GerarToken(loginAtual, nomeLoginAtual, codigoRfAtual, perfil, listaPermissoes), usuario.EhProfessor(), usuario.EhProfessorCj());
+                return new TrocaPerfilDto
+                {
+                    Token = servicoTokenJwt.GerarToken(loginAtual, nomeLoginAtual, codigoRfAtual, perfil, listaPermissoes),
+                    EhProfessor = usuario.EhProfessor(),
+                    EhProfessorCj = usuario.EhProfessorCj(),
+                    EhProfessorPoa = usuario.EhProfessorPoa()
+                };
             }
         }
 
@@ -233,7 +238,7 @@ namespace SME.SGP.Aplicacao
                 .ToList();
 
             servicoTokenJwt.RevogarToken(login);
-            
+
             return servicoTokenJwt.GerarToken(login, dadosUsuario.Nome, usuario.CodigoRf, usuario.PerfilAtual, listaPermissoes);
         }
 

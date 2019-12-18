@@ -2,7 +2,7 @@
 {
     public class CalendarioEventosNoDiaRetornoDto
     {
-        public string Descricao { get; set; }
+        public string Nome { get; set; }
         public long Id { get; set; }
         public string TipoEvento { get; set; }
     }
