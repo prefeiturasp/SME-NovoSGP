@@ -1,9 +1,12 @@
-﻿import React from 'react';
+﻿import React, { useEffect } from 'react';
 import PropTypes from 'prop-types';
 import styled from 'styled-components';
 import Mes from './Mes';
 import MesCompleto from './MesCompleto';
 import { Base } from '~/componentes/colors';
+import api from '~/servicos/api';
+import { store } from '~/redux';
+import { atribuiEventosMes } from '~/redux/modulos/calendarioEscolar/actions';
 
 const Div = styled.div`
   .border {
@@ -16,6 +19,44 @@ const Div = styled.div`
 
 const Calendario = props => {
   const { filtros } = props;
+  const {
+    tipoCalendarioSelecionado,
+    eventoSme,
+    dreSelecionada,
+    unidadeEscolarSelecionada,
+  } = filtros;
+
+  useEffect(() => {
+    let estado = true;
+    if (estado) {
+      if (tipoCalendarioSelecionado) {
+        api
+          .get(
+            `v1/calendarios/eventos/meses?EhEventoSme=${eventoSme}&${dreSelecionada &&
+              `DreId=${dreSelecionada}&`}${tipoCalendarioSelecionado &&
+              `IdTipoCalendario=${tipoCalendarioSelecionado}&`}${unidadeEscolarSelecionada &&
+              `UeId=${unidadeEscolarSelecionada}`}`
+          )
+          .then(resposta => {
+            if (resposta.data) {
+              resposta.data.forEach(item => {
+                if (item && item.mes > 0) {
+                  store.dispatch(atribuiEventosMes(item.mes, item.eventos));
+                }
+              });
+            }
+          });
+      }
+    }
+    return () => {
+      estado = false;
+    };
+  }, [
+    tipoCalendarioSelecionado,
+    eventoSme,
+    dreSelecionada,
+    unidadeEscolarSelecionada,
+  ]);
 
   return (
     <Div>

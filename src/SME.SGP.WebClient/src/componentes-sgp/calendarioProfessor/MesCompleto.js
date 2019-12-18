@@ -105,12 +105,12 @@ const MesCompleto = props => {
       }
     },
     [
-      dreSelecionada,
-      eventoSme,
       tipoCalendarioSelecionado,
-      todasTurmas,
-      turmaSelecionada,
+      eventoSme,
+      dreSelecionada,
       unidadeEscolarSelecionada,
+      turmaSelecionada,
+      todasTurmas,
     ]
   );
 

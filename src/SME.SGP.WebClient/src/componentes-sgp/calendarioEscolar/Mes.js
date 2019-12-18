@@ -5,38 +5,19 @@ import styled from 'styled-components';
 import { store } from '~/redux';
 import {
   selecionaMes,
-  atribuiEventosMes,
   selecionaDia,
 } from '~/redux/modulos/calendarioEscolar/actions';
 import { Base } from '~/componentes/colors';
-import api from '~/servicos/api';
 
-const Div = styled.div`
-  ${props =>
-    props.disabled &&
-    `
-    background: ${Base.CinzaBarras};
-    opacity: 0.5;
-    pointer-events: none;
-  `}
-`;
-const Icone = styled.i`
-  cursor: pointer;
-  ${props =>
-    props.disabled &&
-    `
-    cursor: not-allowed;
-    pointer-events: none;
-  `}
-`;
+const Div = styled.div``;
+const Icone = styled.i``;
 
 const Seta = props => {
-  const { estaAberto, disabled } = props;
+  const { estaAberto } = props;
 
   return (
     <Icone
-      disabled={disabled}
-      className={`stretched-link fas ${
+      className={`fas ${
         estaAberto ? 'fa-chevron-down' : 'fa-chevron-right text-white'
       } `}
     />
@@ -45,55 +26,16 @@ const Seta = props => {
 
 Seta.propTypes = {
   estaAberto: PropTypes.bool,
-  disabled: PropTypes.bool,
 };
 
 Seta.defaultProps = {
   estaAberto: false,
-  disabled: true,
 };
 
 const Mes = props => {
   const { numeroMes, filtros } = props;
+  const { tipoCalendarioSelecionado } = filtros;
   const [mesSelecionado, setMesSelecionado] = useState({});
-
-  useEffect(() => {
-    let estado = true;
-    if (estado) {
-      if (filtros && Object.entries(filtros).length > 0) {
-        const {
-          tipoCalendarioSelecionado = '',
-          eventoSme = true,
-          dreSelecionada = '',
-          unidadeEscolarSelecionada = '',
-        } = filtros;
-        if (tipoCalendarioSelecionado) {
-          api
-            .get(
-              `v1/calendarios/eventos/meses?EhEventoSme=${eventoSme}&${dreSelecionada &&
-                `DreId=${dreSelecionada}&`}${tipoCalendarioSelecionado &&
-                `IdTipoCalendario=${tipoCalendarioSelecionado}&`}${unidadeEscolarSelecionada &&
-                `UeId=${unidadeEscolarSelecionada}`}`
-            )
-            .then(resposta => {
-              if (resposta.data) {
-                resposta.data.forEach(item => {
-                  if (item && item.mes > 0) {
-                    store.dispatch(atribuiEventosMes(item.mes, item.eventos));
-                  }
-                });
-              } else store.dispatch(atribuiEventosMes(numeroMes, 0));
-            })
-            .catch(() => {
-              store.dispatch(atribuiEventosMes(numeroMes, 0));
-            });
-        } else store.dispatch(atribuiEventosMes(numeroMes, 0));
-      }
-    }
-    return () => {
-      estado = false;
-    };
-  }, [filtros]);
 
   const meses = useSelector(state => state.calendarioEscolar.meses);
 
@@ -112,7 +54,7 @@ const Mes = props => {
     else if (mes.estaAberto) mes.chevronColor = Base.Branco;
 
     setMesSelecionado(mes);
-  }, [meses]);
+  }, [meses, numeroMes]);
 
   const abrirMes = () => {
     if (
@@ -140,29 +82,26 @@ const Mes = props => {
       }
     }, 500);
     return () => clearTimeout(encontrarMes);
-  }, [meses[numeroMes].estaAberto]);
+  }, [meses, numeroMes]);
 
   return (
-    <Div
-      className="col-3 w-100 px-0"
-      disabled={!mesSelecionado.estaAberto && mesSelecionado.eventos === 0}
-    >
-      <Div className={mesSelecionado.className}>
+    <Div className="col-3 w-100 px-0">
+      <Div
+        className={mesSelecionado.className}
+        onClick={abrirMes}
+        style={{
+          cursor: tipoCalendarioSelecionado ? 'pointer' : 'not-allowed',
+        }}
+      >
         <Div
           className="d-flex align-items-center justify-content-center position-relative"
-          onClick={abrirMes}
           style={{
             backgroundColor: mesSelecionado.chevronColor,
             height: 75,
             width: 35,
           }}
         >
-          <Seta
-            estaAberto={mesSelecionado.estaAberto}
-            disabled={
-              !mesSelecionado.estaAberto && mesSelecionado.eventos === 0
-            }
-          />
+          <Seta estaAberto={mesSelecionado.estaAberto} />
         </Div>
         <Div
           className="d-flex align-items-center w-100"
