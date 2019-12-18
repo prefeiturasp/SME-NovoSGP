@@ -3,6 +3,8 @@ import styled from 'styled-components';
 import Button from '~/componentes/button';
 import { Base, Colors } from '~/componentes/colors';
 
+import ContadorExpiracao from './contadorExpiracao';
+
 const Container = styled.div`
   margin-right: 10px;
   display: flex;
@@ -23,6 +25,7 @@ const Container = styled.div`
 `;
 
 const CaixaTempoExpiracao = styled.div`
+  z-index: 2000;
   display: grid;
   grid-template-columns: 30px 60px 40px;
   width: 138px;
@@ -56,12 +59,12 @@ const CaixaTempoExpiracao = styled.div`
 const TempoExpiracaoSessao = () => {
   const [mostraTempoExpiracao, setMostraTempoExpiracao] = useState(true);
 
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setMostraTempoExpiracao(!mostraTempoExpiracao);
-    }, 5000);
-    return () => clearInterval(interval);
-  }, [mostraTempoExpiracao]);
+  // useEffect(() => {
+  //   const interval = setInterval(() => {
+  //     setMostraTempoExpiracao(!mostraTempoExpiracao);
+  //   }, 5000);
+  //   return () => clearInterval(interval);
+  // }, [mostraTempoExpiracao]);
 
   return (
     <>
@@ -72,8 +75,10 @@ const TempoExpiracaoSessao = () => {
             não perder nenhum dado imputado.
           </div>
           <CaixaTempoExpiracao>
-            <i class="far fa-clock icone-tempo"></i>
-            <span className="tempo-restante">15:00</span>
+            <i className="far fa-clock icone-tempo"></i>
+            <span className="tempo-restante">
+              <ContadorExpiracao></ContadorExpiracao>
+            </span>
             <Button
               icon="sync-alt"
               color={Colors.Azul}
