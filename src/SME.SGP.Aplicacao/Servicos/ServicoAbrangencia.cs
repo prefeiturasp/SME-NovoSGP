@@ -52,7 +52,7 @@ namespace SME.SGP.Aplicacao.Servicos
 
         public void SincronizarEstruturaInstitucionalVigenteCompleta()
         {
-            var estruturaInstitucionalVigente = servicoEOL.ObterEstruturaInstuticionalVigente();
+            var estruturaInstitucionalVigente = servicoEOL.ObterEstruturaInstuticionalVigentePorDre();
 
             if (estruturaInstitucionalVigente != null && estruturaInstitucionalVigente.Dres != null && estruturaInstitucionalVigente.Dres.Count > 0)
                 SincronizarEstruturaInstitucional(estruturaInstitucionalVigente);
@@ -134,7 +134,7 @@ namespace SME.SGP.Aplicacao.Servicos
 
             if (codigosNaoEncontrados != null && codigosNaoEncontrados.Length > 0)
             {
-                var turmasEol = servicoEOL.ObterEstruturaInstuticionalVigente(codigosTurma: codigosNaoEncontrados);
+                var turmasEol = servicoEOL.ObterEstruturaInstuticionalVigentePorTurma(codigosTurma: codigosNaoEncontrados);
             }
 
             return resultado;
