@@ -13,10 +13,10 @@ namespace SME.SGP.Aplicacao
     {
         private readonly IConsultasPeriodoEscolar consultasPeriodoEscolar;
         private readonly IRepositorioAula repositorioAula;
+        private readonly IRepositorioFrequencia repositorioFrequencia;
         private readonly IRepositorioFrequenciaAlunoDisciplinaPeriodo repositorioFrequenciaAlunoDisciplinaPeriodo;
         private readonly IRepositorioParametrosSistema repositorioParametrosSistema;
         private readonly IRepositorioTurma repositorioTurma;
-        private readonly IRepositorioFrequencia repositorioFrequencia;
         private readonly IServicoAluno servicoAluno;
         private readonly IServicoEOL servicoEOL;
         private readonly IServicoFrequencia servicoFrequencia;
@@ -41,13 +41,16 @@ namespace SME.SGP.Aplicacao
             this.servicoAluno = servicoAluno ?? throw new ArgumentNullException(nameof(servicoAluno));
         }
 
+        public async Task<bool> FrequenciaAulaRegistrada(long aulaId)
+            => await repositorioFrequencia.FrequenciaAulaRegistrada(aulaId);
+
         public async Task<FrequenciaDto> ObterListaFrequenciaPorAula(long aulaId)
         {
             var aula = repositorioAula.ObterPorId(aulaId);
             if (aula == null)
                 throw new NegocioException("Aula não encontrada.");
 
-            var alunosDaTurma = await servicoEOL.ObterAlunosPorTurma(aula.TurmaId);
+            var alunosDaTurma = await servicoEOL.ObterAlunosPorTurma(aula.TurmaId, aula.DataAula.Year);
             if (alunosDaTurma == null || !alunosDaTurma.Any())
             {
                 throw new NegocioException("Não foram encontrados alunos para a aula/turma informada.");
@@ -155,8 +158,5 @@ namespace SME.SGP.Aplicacao
             };
             return registroFrequenciaDto;
         }
-
-        public async Task<bool> FrequenciaAulaRegistrada(long aulaId)
-            => await repositorioFrequencia.FrequenciaAulaRegistrada(aulaId);
     }
 }

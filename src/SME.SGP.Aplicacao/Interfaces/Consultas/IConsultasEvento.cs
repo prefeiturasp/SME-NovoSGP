@@ -10,7 +10,7 @@ namespace SME.SGP.Aplicacao
 
         Task<IEnumerable<CalendarioEventosNoDiaRetornoDto>> ObterEventosPorDia(CalendarioEventosFiltroDto calendarioEventosMesesFiltro, int mes, int dia);
 
-        EventoCompletoDto ObterPorId(long id);
+        Task<EventoCompletoDto> ObterPorId(long id);
 
         Task<IEnumerable<CalendarioTipoEventoPorDiaDto>> ObterQuantidadeDeEventosPorDia(CalendarioEventosFiltroDto calendarioEventosMesesFiltro, int mes);
 

@@ -85,9 +85,9 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [ProducesResponseType(typeof(RetornoBaseDto), 601)]
         [Permissao(Permissao.E_C, Policy = "Bearer")]
-        public IActionResult ObterPorId(long id, [FromServices] IConsultasEvento consultasEvento)
+        public async Task<IActionResult> ObterPorId(long id, [FromServices] IConsultasEvento consultasEvento)
         {
-            return Ok(consultasEvento.ObterPorId(id));
+            return Ok(await consultasEvento.ObterPorId(id));
         }
 
         [HttpGet("meses/{mes}/tipos")]

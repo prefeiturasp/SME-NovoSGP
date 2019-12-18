@@ -270,6 +270,7 @@ namespace SME.SGP.Dados.Repositorios
             query.AppendLine("a.alterado_rf,");
             query.AppendLine("a.excluido,");
             query.AppendLine("a.status,");
+            query.AppendLine("a.aula_cj,");
             query.AppendLine("a.migrado");
         }
 

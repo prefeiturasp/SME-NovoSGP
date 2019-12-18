@@ -32,5 +32,7 @@ namespace SME.SGP.Infra
 
         [Required(ErrorMessage = "A UE deve ser informada")]
         public string UeId { get; set; }
+
+        public bool AulaCJ { get; set; }
     }
 }
