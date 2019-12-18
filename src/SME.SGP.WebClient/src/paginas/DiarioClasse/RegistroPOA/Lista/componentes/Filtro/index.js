@@ -18,7 +18,7 @@ import { Row } from './styles';
 function Filtro({ onFiltrar }) {
   const [refForm, setRefForm] = useState({});
   const [valoresIniciais] = useState({
-    mes: '',
+    // mes: '',
     titulo: '',
   });
 
