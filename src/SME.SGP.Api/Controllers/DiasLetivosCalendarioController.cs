@@ -26,7 +26,7 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(DiasLetivosDto), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [Route("dias-letivos")]
-        [Permissao(Permissao.C_C, Policy = "Bearer")]
+        [Permissao(Permissao.C_C, Permissao.CP_C, Policy = "Bearer")]
         public IActionResult CalcularDiasLetivos(FiltroDiasLetivosDTO filtro)
         {
             return Ok(comandosDiasLetivos.CalcularDiasLetivos(filtro));
