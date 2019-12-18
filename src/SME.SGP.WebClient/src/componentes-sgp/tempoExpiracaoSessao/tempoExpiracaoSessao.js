@@ -4,8 +4,11 @@ import Button from '~/componentes/button';
 import { Base, Colors } from '~/componentes/colors';
 
 const Container = styled.div`
-  margin-top: -22px !important;
   margin-right: 10px;
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: -49px !important;
+  padding-top: 6px;
 
   .desc-tempo-expiracao-sessao {
     width: 295px;
@@ -15,8 +18,6 @@ const Container = styled.div`
     font-weight: bold;
     letter-spacing: 0.1px;
     color: #b40c02;
-    position: relative;
-    float: right;
     margin-top: 6px;
   }
 `;
@@ -24,8 +25,6 @@ const Container = styled.div`
 const CaixaTempoExpiracao = styled.div`
   display: grid;
   grid-template-columns: 30px 60px 40px;
-  position: relative;
-  float: right;
   width: 138px;
   height: 47px;
   border-radius: 3px;
@@ -55,7 +54,7 @@ const CaixaTempoExpiracao = styled.div`
 `;
 
 const TempoExpiracaoSessao = () => {
-  const [mostraTempoExpiracao, setMostraTempoExpiracao] = useState(false);
+  const [mostraTempoExpiracao, setMostraTempoExpiracao] = useState(true);
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -68,6 +67,10 @@ const TempoExpiracaoSessao = () => {
     <>
       {mostraTempoExpiracao ? (
         <Container>
+          <div className="desc-tempo-expiracao-sessao">
+            Sua sessão irá expirar em 15 minutos. Renove sua sessão aqui para
+            não perder nenhum dado imputado.
+          </div>
           <CaixaTempoExpiracao>
             <i class="far fa-clock icone-tempo"></i>
             <span className="tempo-restante">15:00</span>
@@ -78,10 +81,6 @@ const TempoExpiracaoSessao = () => {
               className="botao-refresh"
             />
           </CaixaTempoExpiracao>
-          <div className="desc-tempo-expiracao-sessao">
-            Sua sessão irá expirar em 15 minutos. Renove sua sessão aqui para
-            não perder nenhum dado imputado.
-          </div>
         </Container>
       ) : (
         ''
