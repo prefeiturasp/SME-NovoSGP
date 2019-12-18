@@ -1,14 +1,15 @@
 import api from '~/servicos/api';
 
 const RegitroPOAServico = {
-  salvarRegistroPOA(registro) {
-    return api.post(`/v1/atribuicao/poa`, registro);
+  salvarRegistroPOA(registro, id) {
+    const metodo = id ? 'put' : 'post';
+    return api[metodo](`/v1/atribuicao/poa/${id || ''}`, registro);
   },
   buscarRegistroPOA(id) {
     return api.get(`/v1/atribuicao/poa/${id}`);
   },
-  deletarAtribuicaoEsporadica(id) {
-    return api.delete(`/v1/atribuicao/esporadica/${id}`);
+  deletarRegistroPOA(id) {
+    return api.delete(`/v1/atribuicao/poa/${id}`);
   },
 };
 

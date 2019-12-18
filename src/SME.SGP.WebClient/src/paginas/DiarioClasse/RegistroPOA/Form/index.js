@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import PropTypes from 'prop-types';
 import _ from 'lodash';
 
@@ -47,6 +47,9 @@ function RegistroPOAForm({ match }) {
   const textEditorRef = useRef(null);
   const carregando = useSelector(store => store.loader.loaderSecao);
   const permissoesTela = useSelector(store => store.usuario.permissoes);
+  const anoLetivo = useSelector(
+    store => store.usuario.turmaSelecionada.anoLetivo
+  );
   const somenteConsulta = verificaSomenteConsulta(
     permissoesTela[RotasDto.REGISTRO_POA]
   );
@@ -60,13 +63,19 @@ function RegistroPOAForm({ match }) {
     mes: '',
     titulo: '',
     descricao: '',
+    professorRf: '',
+    professorNome: '',
+    dreId: '',
+    ueId: '',
   });
 
   const validacoes = () => {
     return Yup.object({
-      // descricao: Yup.string().required('O campo "Descrição" é obrigatório!'),
       mes: Yup.number().required('Campo obrigatório!'),
       titulo: Yup.string().required('O campo "Título" é obrigatório!'),
+      professorRf: Yup.number()
+        .typeError('Informar um número inteiro')
+        .required('Campo obrigatório'),
     });
   };
 
@@ -88,6 +97,7 @@ function RegistroPOAForm({ match }) {
       values: {
         ...form.values,
         descricao: textEditorRef.current.state.value,
+        anoLetivo,
       },
     };
     validaAntesDoSubmit(formComEditor);
@@ -96,12 +106,16 @@ function RegistroPOAForm({ match }) {
   const onSubmitFormulario = async valores => {
     try {
       dispatch(setLoaderSecao(true));
-      const cadastrado = await RegistroPOAServico.salvarRegistroPOA({
-        ...valores,
-        codigoRf: valores.professorRf,
-        nome: valores.professorNome,
-        descricao,
-      });
+      const cadastrado = await RegistroPOAServico.salvarRegistroPOA(
+        {
+          ...valores,
+          codigoRf: valores.professorRf,
+          nome: valores.professorNome,
+          descricao,
+          anoLetivo,
+        },
+        valores.id || null
+      );
       if (cadastrado && cadastrado.status === 200) {
         dispatch(setLoaderSecao(false));
         sucesso('Registro salvo com sucesso.');
@@ -154,7 +168,7 @@ function RegistroPOAForm({ match }) {
       'Cancelar'
     );
     if (confirmado) {
-      const excluir = await RegistroPOAServico.deletarAtribuicaoEsporadica(
+      const excluir = await RegistroPOAServico.deletarRegistroPOA(
         form.values.id
       );
       if (excluir) {
@@ -164,34 +178,39 @@ function RegistroPOAForm({ match }) {
     }
   };
 
-  const buscarPorId = async id => {
-    try {
-      dispatch(setLoaderSecao(true));
-      const registro = await RegistroPOAServico.buscarRegistroPOA(id);
-      if (registro && registro.data) {
-        setValoresIniciais({
-          ...registro.data,
-          dataInicio: window.moment(registro.data.dataInicio),
-          dataFim: window.moment(registro.data.dataFim),
-        });
-        setDescricao(registro.data.descricao);
-        setAuditoria({
-          criadoPor: registro.data.criadoPor,
-          criadoRf: registro.data.criadoRF > 0 ? registro.data.criadoRF : '',
-          criadoEm: registro.data.criadoEm,
-          alteradoPor: registro.data.alteradoPor,
-          alteradoRf:
-            registro.data.alteradoRF > 0 ? registro.data.alteradoRF : '',
-          alteradoEm: registro.data.alteradoEm,
-        });
-        setValoresCarregados(true);
+  const buscarPorId = useCallback(
+    async id => {
+      try {
+        dispatch(setLoaderSecao(true));
+        const registro = await RegistroPOAServico.buscarRegistroPOA(id);
+        if (registro && registro.data) {
+          setValoresIniciais({
+            ...registro.data,
+            mes: String(registro.data.mes),
+            professorRf: registro.data.codigoRf,
+            professorNome: registro.data.nome,
+            titulo: registro.data.titulo,
+          });
+          setDescricao(registro.data.descricao);
+          setAuditoria({
+            criadoPor: registro.data.criadoPor,
+            criadoRf: registro.data.criadoRF > 0 ? registro.data.criadoRF : '',
+            criadoEm: registro.data.criadoEm,
+            alteradoPor: registro.data.alteradoPor,
+            alteradoRf:
+              registro.data.alteradoRF > 0 ? registro.data.alteradoRF : '',
+            alteradoEm: registro.data.alteradoEm,
+          });
+          setValoresCarregados(true);
+          dispatch(setLoaderSecao(false));
+        }
+      } catch (err) {
         dispatch(setLoaderSecao(false));
+        erros(err);
       }
-    } catch (err) {
-      dispatch(setLoaderSecao(false));
-      erros(err);
-    }
-  };
+    },
+    [dispatch]
+  );
 
   const validaFormulario = valores => {
     if (validaSeObjetoEhNuloOuVazio(valores)) return;
@@ -219,7 +238,7 @@ function RegistroPOAForm({ match }) {
       setBreadcrumbManual(match.url, 'Registro', '/diario-classe/registro-poa');
       buscarPorId(match.params.id);
     }
-  }, []);
+  }, [buscarPorId, match]);
 
   return (
     <>
@@ -238,14 +257,10 @@ function RegistroPOAForm({ match }) {
           >
             {form => (
               <Form>
+                {console.log(permissoesTela)}
                 <ButtonGroup
                   form={form}
-                  permissoesTela={{
-                    podeAlterar: true,
-                    podeConsultar: true,
-                    podeIncluir: true,
-                    podeExcluir: true,
-                  }}
+                  permissoesTela={permissoesTela[RotasDto.REGISTRO_POA]}
                   novoRegistro={novoRegistro}
                   labelBotaoPrincipal="Cadastrar"
                   onClickBotaoPrincipal={() => onClickBotaoPrincipal(form)}
@@ -276,7 +291,7 @@ function RegistroPOAForm({ match }) {
                 <Row className="row mb-2">
                   <Localizador
                     dreId={form.values.dreId}
-                    anoLetivo="2019"
+                    anoLetivo={anoLetivo}
                     form={form}
                     onChange={() => null}
                     showLabel
@@ -314,7 +329,6 @@ function RegistroPOAForm({ match }) {
                     />
                   </Grid>
                 </Row>
-                {JSON.stringify(form)}
               </Form>
             )}
           </Formik>

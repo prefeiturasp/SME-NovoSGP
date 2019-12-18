@@ -1,13 +1,15 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 
 // Redux
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
+import { setLoaderSecao } from '~/redux/modulos/loader/actions';
 
 // Servicos
 import history from '~/servicos/history';
 import RotasDto from '~/dtos/rotasDto';
-import { erro } from '~/servicos/alertas';
+import { erro, confirmar, sucesso } from '~/servicos/alertas';
 import { verificaSomenteConsulta } from '~/servicos/servico-navegacao';
+import RegistroPOAServico from '~/servicos/Paginas/DiarioClasse/RegistroPOA';
 
 // Componentes SGP
 import { Cabecalho } from '~/componentes-sgp';
@@ -23,7 +25,11 @@ function RegistroPOALista() {
   const [itensSelecionados, setItensSelecionados] = useState([]);
   const [filtro, setFiltro] = useState({});
   const [somenteConsulta, setSomenteConsulta] = useState(false);
-  const permissoesTela = useSelector(store => store.usuario.permissoes);
+  const dispatch = useDispatch();
+  const { loaderSecao } = useSelector(store => store.loader);
+  const usuarioLogado = useSelector(store => store.usuario);
+  const permissoesTela = usuarioLogado.permissoes;
+  const { anoLetivo } = usuarioLogado.turmaSelecionada;
 
   const colunas = [
     {
@@ -50,14 +56,56 @@ function RegistroPOALista() {
 
   const onSelecionarItems = lista => setItensSelecionados(lista);
 
-  const onClickExcluir = itens => console.log(itens);
-
-  const onChangeFiltro = valoresFiltro => {
-    setFiltro({
-      ...valoresFiltro,
-      CodigoRf: valoresFiltro.professorRf,
-    });
+  const onClickExcluir = async () => {
+    if (itensSelecionados && itensSelecionados.length > 0) {
+      const listaNomeExcluir = itensSelecionados.map(item => item.titulo);
+      const confirmado = await confirmar(
+        'Excluir registro',
+        listaNomeExcluir,
+        `Deseja realmente excluir ${
+          itensSelecionados.length > 1 ? 'estes itens' : 'este item'
+        }?`,
+        'Excluir',
+        'Cancelar'
+      );
+      if (confirmado) {
+        dispatch(setLoaderSecao(true));
+        const excluir = await Promise.all(
+          itensSelecionados.map(x =>
+            RegistroPOAServico.deletarRegistroPOA(x.id)
+          )
+        );
+        if (excluir) {
+          const mensagemSucesso = `${
+            itensSelecionados.length > 1
+              ? 'Atribuições excluídas'
+              : 'Atribuição excluída'
+          } com sucesso.`;
+          sucesso(mensagemSucesso);
+          setFiltro({
+            ...filtro,
+            atualizar: !filtro.atualizar || true,
+          });
+          dispatch(setLoaderSecao(false));
+          setItensSelecionados([]);
+        }
+      }
+    }
   };
+
+  const onChangeFiltro = useCallback(
+    valoresFiltro => {
+      setFiltro({
+        ...valoresFiltro,
+        CodigoRf: valoresFiltro.professorRf,
+        anoLetivo,
+      });
+    },
+    [anoLetivo]
+  );
+
+  const filtroValido = () =>
+    !!filtro.dreId && !!filtro.ueId && !!filtro.professorRf;
 
   useEffect(() => {
     setSomenteConsulta(verificaSomenteConsulta(permissoesTela));
@@ -66,7 +114,7 @@ function RegistroPOALista() {
   return (
     <>
       <Cabecalho pagina="Registro do professor orientador da área" />
-      <Loader loading={false}>
+      <Loader loading={loaderSecao}>
         <Card mx="mx-0">
           <ButtonGroup
             somenteConsulta={somenteConsulta}
@@ -79,7 +127,7 @@ function RegistroPOALista() {
             onClickBotaoPrincipal={onClickBotaoPrincipal}
             labelBotaoPrincipal="Novo"
             desabilitarBotaoPrincipal={
-              !!filtro.DreId === false && !!filtro.UeId === false
+              !!filtro.dreId === false && !!filtro.ueId === false
             }
           />
           <Filtro onFiltrar={onChangeFiltro} />
@@ -93,7 +141,8 @@ function RegistroPOALista() {
               onClick={onClickEditar}
               multiSelecao
               filtro={filtro}
-              onSelecionarLinhas={onSelecionarItems}
+              selecionarItems={onSelecionarItems}
+              filtroEhValido={filtroValido()}
               onErro={err => erro(JSON.stringify(err))}
             />
           </div>

@@ -90,6 +90,7 @@ const CampoTexto = React.forwardRef((props, ref) => {
             onChange={onChangeCampo}
             style={style}
             prefix={iconeBusca && <i className="fa fa-search fa-lg" />}
+            value={value || form.values[name]}
             allowClear
           />
           {!semMensagem && form && form.touched[name] ? (
