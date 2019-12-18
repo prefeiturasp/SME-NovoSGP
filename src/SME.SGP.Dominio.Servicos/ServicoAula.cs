@@ -368,9 +368,9 @@ namespace SME.SGP.Dominio.Servicos
                 foreach (var aulaFrequenciaOuPlano in aulasComFrenciaOuPlano)
                 {
                     var frequenciaPlano = aulaFrequenciaOuPlano.existeFrequencia ?
-                                            "Frequência" + (aulaFrequenciaOuPlano.existePlanoAula ? " e " : "")
-                                            : "Plano de Aula";
-                    mensagemUsuario.Append($"<br /> {aulaFrequenciaOuPlano.data.ToShortDateString()} - {frequenciaPlano}");
+                                            $"Frequência{(aulaFrequenciaOuPlano.existePlanoAula ? " e Plano de Aula" : "")}"
+                                            :  "Plano de Aula";
+                    mensagemUsuario.Append($"<br /> {aulaFrequenciaOuPlano.data.ToString("dd/MM/yyyy")} - {frequenciaPlano}");
                 }
             }
 
