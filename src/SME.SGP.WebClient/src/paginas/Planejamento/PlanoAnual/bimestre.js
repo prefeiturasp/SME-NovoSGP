@@ -34,9 +34,13 @@ import { erro } from '~/servicos/alertas';
 const BimestreComponent = React.forwardRef((props, ref) => {
   const dispatch = useDispatch();
 
-  const { indice, disabled, modalidadeEja, disciplinaSelecionada } = props;
-
-  const bimestre = useSelector(store => store.bimestres.bimestres[indice]);
+  const {
+    indice,
+    disabled,
+    modalidadeEja,
+    disciplinaSelecionada,
+    bimestre,
+  } = props;
 
   const { LayoutEspecial } = bimestre;
 
