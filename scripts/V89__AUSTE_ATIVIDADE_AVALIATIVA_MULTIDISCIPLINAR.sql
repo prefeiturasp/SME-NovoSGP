@@ -1,7 +1,7 @@
 ﻿CREATE TABLE if NOT EXISTS public.atividade_avaliativa_disciplina (
 	id int8 NOT NULL GENERATED ALWAYS AS identity,
-	id_atividade_avaliativa int8 NOT NULL,
-	id_disciplina int8 NOT NULL,
+	atividade_avaliativa_id int8 NOT NULL,
+	disciplina_id varchar(15) NOT NULL,
 	criado_em timestamp  NOT NULL,
     criado_por varchar(200) NOT NULL,
     alterado_em timestamp ,

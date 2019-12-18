@@ -83,7 +83,7 @@ namespace SME.SGP.Aplicacao
                 foreach(var atividadeDisciplina in atividadeDisciplinas)
                 {
                     atividadeDisciplina.Excluir();
-                    var existeDisciplina = dto.DisciplinasId.Select(a => a == atividadeDisciplina.Id).FirstOrDefault();
+                    var existeDisciplina = dto.DisciplinasId.Select(a => a == atividadeDisciplina.DisciplinaId).FirstOrDefault();
                     if(existeDisciplina)
                     {
                         atividadeDisciplina.Excluido = false;
@@ -180,7 +180,7 @@ namespace SME.SGP.Aplicacao
             }
 
 
-            foreach (long id in dto.DisciplinasId)
+            foreach (var id in dto.DisciplinasId)
             {
                 var ativDisciplina = new AtividadeAvaliativaDisciplina
                 {
@@ -251,7 +251,7 @@ namespace SME.SGP.Aplicacao
         {
             if (string.IsNullOrEmpty(filtro.DisciplinaId))
                 throw new NegocioException("É necessário informar a disciplina");
-            var disciplina = ObterDisciplina(Convert.ToInt32(filtro.DisciplinaId));
+            var disciplina = ObterDisciplina(filtro.DisciplinaId);
             var usuario = await servicoUsuario.ObterUsuarioLogado();
             DateTime dataAvaliacao = filtro.DataAvaliacao.Value.Date;
             var aula = await repositorioAula.ObterAulas(filtro.TurmaId, filtro.UeID, usuario.CodigoRf, dataAvaliacao, filtro.DisciplinaId);
@@ -325,9 +325,9 @@ namespace SME.SGP.Aplicacao
             return atividadeAvaliativa;
         }
 
-        private DisciplinaDto ObterDisciplina(long idDisciplina)
+        private DisciplinaDto ObterDisciplina(string idDisciplina)
         {
-            long[] disciplinaId = { idDisciplina };
+            long[] disciplinaId = { long.Parse(idDisciplina) };
             var disciplina = servicoEOL.ObterDisciplinasPorIds(disciplinaId);
             if (!disciplina.Any())
                 throw new NegocioException("Disciplina não encontrada no EOL.");
@@ -338,17 +338,20 @@ namespace SME.SGP.Aplicacao
         {
             var mensagens = new List<RetornoCopiarAtividadeAvaliativaDto>();
 
-            var turmasAtribuidasAoProfessor = await ObterTurmasAtribuidasAoProfessor(codigoRf, atividadeAvaliativaDto.DisciplinasId[0]);
+            var turmasAtribuidasAoProfessor = await ObterTurmasAtribuidasAoProfessor(codigoRf, long.Parse(atividadeAvaliativaDto.DisciplinasId[0]));
 
-            var idsTurmasSelecionadas = atividadeAvaliativaDto.TurmasParaCopiar.Select(x => x.TurmaId).ToList();
-            idsTurmasSelecionadas.Add(atividadeAvaliativaDto.TurmaId);
+            if (atividadeAvaliativaDto.TurmasParaCopiar != null && atividadeAvaliativaDto.TurmasParaCopiar.Any())
+            {
+                var idsTurmasSelecionadas = atividadeAvaliativaDto.TurmasParaCopiar.Select(x => x.TurmaId).ToList();
+                idsTurmasSelecionadas.Add(atividadeAvaliativaDto.TurmaId);
 
-            mensagens.AddRange(ValidaTurmasProfessor(turmasAtribuidasAoProfessor, idsTurmasSelecionadas));
+                mensagens.AddRange(ValidaTurmasProfessor(turmasAtribuidasAoProfessor, idsTurmasSelecionadas));
 
-            if (mensagens.Any())
-                return mensagens;
+                if (mensagens.Any())
+                    return mensagens;
 
-            mensagens.AddRange(ValidaTurmasAno(turmasAtribuidasAoProfessor, idsTurmasSelecionadas));
+                mensagens.AddRange(ValidaTurmasAno(turmasAtribuidasAoProfessor, idsTurmasSelecionadas));
+            }
 
             return mensagens;
         }
