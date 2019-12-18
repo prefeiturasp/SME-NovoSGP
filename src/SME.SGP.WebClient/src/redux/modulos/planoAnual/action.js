@@ -131,7 +131,6 @@ export function ObterObjetivosCall(bimestre) {
       dispatch(SalvarObjetivos(bimestre.indice, []));
       return;
     }
-
     const objetivosSelecionados = bimestre.objetivosAprendizagem
       ? bimestre.objetivosAprendizagem.filter(obj => obj.selected)
       : [];
