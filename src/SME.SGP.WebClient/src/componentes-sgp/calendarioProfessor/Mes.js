@@ -10,16 +10,14 @@ import {
 import { Base } from '~/componentes/colors';
 
 const Div = styled.div``;
-const Icone = styled.i`
-  cursor: pointer;
-`;
+const Icone = styled.i``;
 
 const Seta = props => {
   const { estaAberto } = props;
 
   return (
     <Icone
-      className={`stretched-link fas ${
+      className={`fas ${
         estaAberto ? 'fa-chevron-down' : 'fa-chevron-right text-white'
       } `}
     />
@@ -81,10 +79,15 @@ const Mes = props => {
 
   return (
     <Div className="col-3 w-100 px-0">
-      <Div className={mesSelecionado.className}>
+      <Div
+        className={`${mesSelecionado.className} stretched-link`}
+        onClick={abrirMes}
+        style={{
+          cursor: tipoCalendarioSelecionado ? 'pointer' : 'not-allowed',
+        }}
+      >
         <Div
           className="d-flex align-items-center justify-content-center position-relative"
-          onClick={abrirMes}
           style={{
             backgroundColor: mesSelecionado.chevronColor,
             height: 75,

@@ -150,7 +150,7 @@ const ListaAulasPorBimestre = props => {
                     {temProfessorCj ? (
                       <td>
                         <CampoDesabilitado>
-                          <span>{item.criadas.quantidadeCj}</span>
+                          <span>{item.criadas.quantidadeCJ}</span>
                         </CampoDesabilitado>
                       </td>
                     ) : null}

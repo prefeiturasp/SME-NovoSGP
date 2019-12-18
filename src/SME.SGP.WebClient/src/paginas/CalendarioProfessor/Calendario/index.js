@@ -17,6 +17,7 @@ import { erro } from '~/servicos/alertas';
 import ServicoCalendarios from '~/servicos/Paginas/Calendario/ServicoCalendarios';
 import FiltroHelper from '~/componentes-sgp/filtro/helper';
 import tipoEscolaDTO from '~/dtos/tipoEscolaDto';
+import { Loader } from '~/componentes';
 
 const Div = styled.div``;
 const Titulo = styled(Div)`
@@ -39,7 +40,10 @@ const CalendarioProfessor = () => {
   const modalidadesAbrangencia = useSelector(state => state.filtro.modalidades);
   const anosLetivosAbrangencia = useSelector(state => state.filtro.anosLetivos);
 
+  const [carregandoTipos, setCarregandoTipos] = useState(false);
+
   const obterTiposCalendario = async modalidades => {
+    setCarregandoTipos(true);
     const lista = await ServicoCalendarios.obterTiposCalendario();
     if (lista && lista.data) {
       const tiposCalendarioLista = [];
@@ -62,8 +66,10 @@ const CalendarioProfessor = () => {
           });
         });
       }
+      setCarregandoTipos(false);
       return tiposCalendarioLista;
     }
+    setCarregandoTipos(false);
     return lista;
   };
 
@@ -126,7 +132,7 @@ const CalendarioProfessor = () => {
     return () => store.dispatch(zeraCalendario());
   }, []);
 
-  const [eventoSme, setEventoSme] = useState(false);
+  const [eventoSme, setEventoSme] = useState(true);
 
   useEffect(() => {
     if (
@@ -138,7 +144,7 @@ const CalendarioProfessor = () => {
       if (eventoAulaCalendarioEdicao.eventoSme)
         setEventoSme(eventoAulaCalendarioEdicao.eventoSme);
     }
-  }, [tiposCalendario]);
+  }, [eventoAulaCalendarioEdicao, tiposCalendario]);
 
   useEffect(() => {
     listarTiposCalendarioPorTurmaSelecionada();
@@ -358,33 +364,30 @@ const CalendarioProfessor = () => {
 
   useEffect(() => {
     if (turmas.length) {
-      if (Object.entries(eventoAulaCalendarioEdicao).length) {
-        if (eventoAulaCalendarioEdicao.turma) {
+      if (usuario.ehProfessor || usuario.ehProfessorCj) {
+        if (Object.entries(turmaSelecionadaStore).length) {
           setOpcaoTurma(listaTurmas[1].valor.toString());
-          setTurmaSelecionada(eventoAulaCalendarioEdicao.turma);
+          setTurmaSelecionada(turmaSelecionadaStore.turma);
           setTodasTurmas(false);
         } else {
-          setOpcaoTurma(listaTurmas[0].valor.toString());
+          setTipoCalendarioSelecionado();
+          setDreSelecionada();
+          setUnidadeEscolarSelecionada();
+          setOpcaoTurma();
           setTurmaSelecionada();
-          setTodasTurmas(true);
+          setTodasTurmas(false);
         }
-      } else if (!usuario.ehProfessor) {
-        if (unidadeEscolarSelecionada) {
-          if (Object.entries(turmaSelecionadaStore).length)
-            setOpcaoTurma(listaTurmas[1].valor.toString());
-          else {
-            setOpcaoTurma();
-            erro('Você precisa escolher uma turma!');
-          }
-          setTurmaDesabilitada(true);
-        }
-      } else if (
-        Object.entries(turmaSelecionadaStore).length === 0 &&
-        opcaoTurma
-      ) {
-        setOpcaoTurma();
+        setTurmaDesabilitada(true);
+      } else if (Object.entries(eventoAulaCalendarioEdicao).length) {
+        setOpcaoTurma(
+          listaTurmas[eventoAulaCalendarioEdicao.turma ? 1 : 0].valor.toString()
+        );
+        setTurmaSelecionada(eventoAulaCalendarioEdicao.turma || '');
+        setTodasTurmas(!eventoAulaCalendarioEdicao.turma);
       } else if (Object.entries(turmaSelecionadaStore).length) {
         setOpcaoTurma(listaTurmas[1].valor.toString());
+        setTurmaSelecionada(turmaSelecionadaStore.turma);
+        setTodasTurmas(false);
       }
     }
   }, [
@@ -392,6 +395,7 @@ const CalendarioProfessor = () => {
     turmaSelecionadaStore,
     eventoAulaCalendarioEdicao,
     usuario.ehProfessor,
+    usuario.ehProfessorCj,
     opcaoTurma,
     listaTurmas,
     unidadeEscolarSelecionada,
@@ -448,15 +452,17 @@ const CalendarioProfessor = () => {
         <Grid cols={12} className="mb-4">
           <Div className="row">
             <Grid cols={4}>
-              <SelectComponent
-                className="fonte-14"
-                onChange={aoSelecionarTipoCalendario}
-                lista={tiposCalendario}
-                valueOption="valor"
-                valueText="desc"
-                valueSelect={tipoCalendarioSelecionado}
-                placeholder="Tipo de Calendário"
-              />
+              <Loader loading={carregandoTipos} tip="">
+                <SelectComponent
+                  className="fonte-14"
+                  onChange={aoSelecionarTipoCalendario}
+                  lista={tiposCalendario}
+                  valueOption="valor"
+                  valueText="desc"
+                  valueSelect={tipoCalendarioSelecionado}
+                  placeholder="Tipo de Calendário"
+                />
+              </Loader>
             </Grid>
             <Grid cols={4}>
               {diasLetivos && diasLetivos.dias ? (
