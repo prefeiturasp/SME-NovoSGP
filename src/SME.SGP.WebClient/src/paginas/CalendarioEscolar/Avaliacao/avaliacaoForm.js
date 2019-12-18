@@ -86,6 +86,7 @@ const AvaliacaoForm = ({ match }) => {
 
   const [descricao, setDescricao] = useState('');
   const [listaDisciplinasRegencia, setListaDisciplinasRegencia] = useState([]);
+  const [listaDisciplinasSelecionadas, setListaDisciplinasSelecionadas] = useState([]);
 
   const cadastrarAvaliacao = async dados => {
     const avaliacao = {};
@@ -109,6 +110,8 @@ const AvaliacaoForm = ({ match }) => {
     avaliacao.dataAvaliacao = window.moment(diaAvaliacao).format();
     avaliacao.descricao = descricao;
 
+    dados.disciplinasId = [...dados.disciplinasId];
+
     const dadosValidacao = {
       ...dados,
       ...avaliacao,
@@ -116,9 +119,6 @@ const AvaliacaoForm = ({ match }) => {
 
     delete dadosValidacao.categoriaId;
     delete dadosValidacao.descricao;
-
-    dados.disciplinasId = [];
-    dados.disciplinasId.push(dados.disciplinaId);
 
     if (descricao.length <= 500) {
       const validacao = await ServicoAvaliacao.validar(dadosValidacao);
@@ -132,7 +132,7 @@ const AvaliacaoForm = ({ match }) => {
         if (salvar && salvar.status === 200) {
           sucesso(
             `Avaliação ${
-              idAvaliacao ? 'atualizada' : 'cadastrada'
+            idAvaliacao ? 'atualizada' : 'cadastrada'
             } com sucesso.`
           );
           history.push(RotasDTO.CALENDARIO_PROFESSOR);
@@ -147,8 +147,8 @@ const AvaliacaoForm = ({ match }) => {
 
   const [validacoes] = useState(
     Yup.object({
-      categoriaId: Yup.string().required('Selecione a categoriaId'),
-      disciplinaId: Yup.string().required('Selecione o componente curricular'),
+      categoriaId: Yup.string().required('Selecione a categoria'),
+      disciplinasId: Yup.string().required('Selecione o componente curricular'),
       tipoAvaliacaoId: Yup.string().required(
         'Selecione o tipo de atividade avaliativa'
       ),
@@ -164,11 +164,13 @@ const AvaliacaoForm = ({ match }) => {
 
   const [dataAvaliacao, setdataAvaliacao] = useState();
 
-  const [listaCategorias] = useState([
-    { label: 'Normal', value: 1 },
-    { label: 'Interdisciplinar', value: 2 },
-  ]);
+  const categorias = { NORMAL: 1, INTERDISCIPLINAR: 2 }
   const [listaDisciplinas, setListaDisciplinas] = useState([]);
+
+  const [listaCategorias, setListaCategorias] = useState([
+    { label: 'Normal', value: categorias.NORMAL },
+    { label: 'Interdisciplinar', value: categorias.INTERDISCIPLINAR, disabled: true },
+  ]);
 
   const campoNomeRef = useRef(null);
   const textEditorRef = useRef(null);
@@ -203,7 +205,18 @@ const AvaliacaoForm = ({ match }) => {
       usuario.rf,
       turmaId
     );
-    if (disciplinas.data) setListaDisciplinas(disciplinas.data);
+    if (disciplinas.data) {
+      const dadosDsiciplina = disciplinas.data;
+      setListaDisciplinas(dadosDsiciplina);
+      if (dadosDsiciplina.length > 1) {
+        listaCategorias.map(categoria => {
+          if (categoria.value === categorias.INTERDISCIPLINAR) {
+            categoria.disabled = false;
+          }
+        });
+        setListaCategorias([...listaCategorias]);
+      }
+    }
   };
 
   const [disciplinaDesabilitada, setDisciplinaDesabilitada] = useState(false);
@@ -316,13 +329,18 @@ const AvaliacaoForm = ({ match }) => {
     }
   }, [temRegencia]);
 
+  const resetDisciplinasSelecionadas = form => {
+    setListaDisciplinasSelecionadas([]);
+    form.values.disciplinasId = [];
+  }
+
   return (
     <Div className="col-12">
       <Grid cols={12} className="mb-1 p-0">
         <Titulo className="font-weight-bold">
           {`Cadastro de avaliação - ${
             dataAvaliacao ? dataAvaliacao.format('dddd') : ''
-          }, ${dataAvaliacao ? dataAvaliacao.format('DD/MM/YYYY') : ''} `}
+            }, ${dataAvaliacao ? dataAvaliacao.format('DD/MM/YYYY') : ''} `}
         </Titulo>
       </Grid>
       <Formik
@@ -387,7 +405,11 @@ const AvaliacaoForm = ({ match }) => {
                     label="Categoria"
                     opcoes={listaCategorias}
                     form={form}
-                    onChange={aoTrocarCampos}
+                    onChange={() => {
+                      aoTrocarCampos();
+                      resetDisciplinasSelecionadas(form)
+                    }
+                    }
                   />
                 </Grid>
               </Div>
@@ -418,18 +440,34 @@ const AvaliacaoForm = ({ match }) => {
               <Div className="row">
                 {!temRegencia && (
                   <Grid cols={4} className="mb-4">
-                    <SelectComponent
-                      id="disciplinaId"
-                      name="disciplinaId"
-                      label="Componente curricular"
-                      lista={listaDisciplinas}
-                      valueOption="codigoComponenteCurricular"
-                      valueText="nome"
-                      disabled={disciplinaDesabilitada}
-                      placeholder="Disciplina"
-                      form={form}
-                      onChange={aoTrocarCampos}
-                    />
+                    {listaDisciplinas.length > 1 && form.values.categoriaId === categorias.INTERDISCIPLINAR ?
+                      <SelectComponent
+                        id="disciplinasId"
+                        name="disciplinasId"
+                        label="Componente curricular"
+                        lista={listaDisciplinas}
+                        valueOption="codigoComponenteCurricular"
+                        valueText="nome"
+                        disabled={disciplinaDesabilitada}
+                        placeholder="Disciplina"
+                        valueSelect={listaDisciplinasSelecionadas}
+                        form={form}
+                        multiple
+                        onChange={aoTrocarCampos}
+                      />
+                      :
+                      <SelectComponent
+                        id="disciplinasId"
+                        name="disciplinasId"
+                        label="Componente curricular"
+                        lista={listaDisciplinas}
+                        valueOption="codigoComponenteCurricular"
+                        valueText="nome"
+                        disabled={disciplinaDesabilitada}
+                        placeholder="Disciplina"
+                        form={form}
+                        onChange={aoTrocarCampos}
+                      />}
                   </Grid>
                 )}
                 <Grid cols={!temRegencia ? 4 : 6} className="mb-4">
@@ -488,18 +526,18 @@ const AvaliacaoForm = ({ match }) => {
                       {window.moment(inseridoAlterado.criadoEm).format()}
                     </p>
                   ) : (
-                    ''
-                  )}
+                      ''
+                    )}
 
                   {inseridoAlterado.alteradoPor &&
-                  inseridoAlterado.alteradoEm ? (
-                    <p>
-                      ALTERADO por {inseridoAlterado.alteradoPor} em{' '}
-                      {window.moment(inseridoAlterado.alteradoEm).format()}
-                    </p>
-                  ) : (
-                    ''
-                  )}
+                    inseridoAlterado.alteradoEm ? (
+                      <p>
+                        ALTERADO por {inseridoAlterado.alteradoPor} em{' '}
+                        {window.moment(inseridoAlterado.alteradoEm).format()}
+                      </p>
+                    ) : (
+                      ''
+                    )}
                 </InseridoAlterado>
               </Grid>
             </Div>
