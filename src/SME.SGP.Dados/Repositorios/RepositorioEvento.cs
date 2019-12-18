@@ -1261,6 +1261,17 @@ namespace SME.SGP.Dados.Repositorios
             else if (!string.IsNullOrEmpty(dreId))
                 query.AppendLine("and e.ue_id is null");
 
+            if (mes.HasValue)
+            {
+                query.AppendLine("and (extract(month from e.data_inicio) = @mes");
+                query.AppendLine("  or extract(month from e.data_fim) = @mes)");
+            }
+            if (data.HasValue)
+            {
+                query.AppendLine("and e.data_inicio <= @data");
+                query.AppendLine("and e.data_fim >= @data");
+            }
+
             if (EhEventoSme && !naoTrazerSme)
             {
                 query.AppendLine("UNION");
