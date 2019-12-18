@@ -11,5 +11,7 @@ namespace SME.SGP.Infra
         public long? TipoCalendarioId { get; set; }
         public long? TipoEventoId { get; set; }
         public string UeId { get; set; }
+        public bool EhTodasUes { get; set; }
+        public bool EhTodasDres { get; set; }
     }
 }
