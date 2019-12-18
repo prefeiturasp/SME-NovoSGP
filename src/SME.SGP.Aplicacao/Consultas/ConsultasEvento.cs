@@ -35,6 +35,8 @@ namespace SME.SGP.Aplicacao
                         Paginacao,
                         filtroEventosDto.DreId,
                         filtroEventosDto.UeId,
+                        filtroEventosDto.EhTodasDres,
+                        filtroEventosDto.EhTodasUes,
                         usuario,
                         usuario.PerfilAtual,
                         usuario.TemPerfilSupervisorOuDiretor(),
