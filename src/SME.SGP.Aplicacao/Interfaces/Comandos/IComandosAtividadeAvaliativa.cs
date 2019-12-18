@@ -1,15 +1,16 @@
 ﻿using SME.SGP.Infra;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
     public interface IComandosAtividadeAvaliativa
     {
-        Task Alterar(AtividadeAvaliativaDto dto, long id);
+        Task<IEnumerable<RetornoCopiarAtividadeAvaliativaDto>> Alterar(AtividadeAvaliativaDto dto, long id);
 
         Task Excluir(long idAtividadeAvaliativa);
 
-        Task Inserir(AtividadeAvaliativaDto dto);
+        Task<IEnumerable<RetornoCopiarAtividadeAvaliativaDto>> Inserir(AtividadeAvaliativaDto dto);
 
         Task Validar(FiltroAtividadeAvaliativaDto dto);
     }
