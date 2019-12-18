@@ -1,14 +1,12 @@
 ﻿import React, { useState, useEffect, useCallback } from 'react';
 import PropTypes from 'prop-types';
 import { useSelector } from 'react-redux';
-import shortid from 'shortid';
 import { Base } from '~/componentes/colors';
 import { store } from '~/redux';
 import {
   selecionaDia,
   salvarEventoAulaCalendarioEdicao,
 } from '~/redux/modulos/calendarioProfessor/actions';
-import TiposEventoAulaDTO from '~/dtos/tiposEventoAula';
 import { Div, TipoEventosLista, TipoEvento } from './Semana.css';
 
 const Dia = props => {
@@ -23,8 +21,7 @@ const Dia = props => {
   useEffect(() => {
     if (dia && mesAtual && tipoLista.length) {
       const lista = tipoLista.filter(evento => evento.dia === dia.getDate())[0];
-      if (lista) while (lista.tiposEvento.length > 2) lista.tiposEvento.pop();
-      setTipoEventosDiaLista(lista);
+      if (lista) setTipoEventosDiaLista(lista);
     }
   }, [dia, mesAtual, tipoLista]);
 
@@ -81,37 +78,19 @@ const Dia = props => {
         <Div className="position-relative" style={diaStyle}>
           {diaFormatado}
         </Div>
-        {mesAtual === dia.getMonth() + 1 &&
-          tipoEventosDiaLista &&
-          tipoEventosDiaLista.tiposEvento && (
-            <TipoEventosLista className="position-absolute">
-              {tipoEventosDiaLista.tiposEvento.map(tipoEvento => {
-                return (
-                  <TipoEvento
-                    key={shortid.generate()}
-                    className={`d-block badge badge-pill ${tipoEvento ===
-                      TiposEventoAulaDTO.Aula &&
-                      'text-white badge-aula'} ${tipoEvento ===
-                      TiposEventoAulaDTO.CJ &&
-                      'text-white badge-cj'} ${tipoEvento !==
-                      TiposEventoAulaDTO.Aula &&
-                      tipoEvento !== TiposEventoAulaDTO.CJ &&
-                      'badge-light'} ml-auto mr-0`}
-                  >
-                    {tipoEvento !== TiposEventoAulaDTO.CJ &&
-                    tipoEvento !== TiposEventoAulaDTO.Aula
-                      ? 'Evento'
-                      : tipoEvento}
-                  </TipoEvento>
-                );
-              })}
-              {tipoEventosDiaLista.quantidadeDeEventosAulas > 2 && (
-                <Div style={{ fontSize: 10, textAlign: 'right' }}>
-                  Mais {tipoEventosDiaLista.quantidadeDeEventosAulas} eventos
-                </Div>
-              )}
-            </TipoEventosLista>
-          )}
+        {mesAtual === dia.getMonth() + 1 && tipoEventosDiaLista && (
+          <TipoEventosLista className="position-absolute">
+            {tipoEventosDiaLista.temAula && (
+              <TipoEvento cor={Base.Roxo}>Aula</TipoEvento>
+            )}
+            {tipoEventosDiaLista.temAulaCJ && (
+              <TipoEvento cor={Base.Laranja}>CJ</TipoEvento>
+            )}
+            {tipoEventosDiaLista.temEvento && (
+              <TipoEvento cor={Base.RoxoEventoCalendario}>Evento</TipoEvento>
+            )}
+          </TipoEventosLista>
+        )}
       </Div>
     </Div>
   );

@@ -13,5 +13,6 @@ namespace SME.SGP.Infra
         public string CriadoRF { get; set; }
         public long Id { get; set; }
         public EventoTipoDto TipoEvento { get; set; }
+        public bool? PodeAlterar { get; set; }
     }
 }
