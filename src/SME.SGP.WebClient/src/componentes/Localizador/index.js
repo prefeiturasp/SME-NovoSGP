@@ -26,6 +26,7 @@ function Localizador({
   dreId,
   anoLetivo,
   desabilitado,
+  incluirEmei,
 }) {
   const usuario = useSelector(store => store.usuario);
   const [dataSource, setDataSource] = useState([]);
@@ -54,6 +55,7 @@ function Localizador({
       nome: valor,
       dreId,
       anoLetivo,
+      incluirEmei,
     });
 
     if (dados && dados.length > 0) {
@@ -66,7 +68,11 @@ function Localizador({
   const onBuscarPorRF = useCallback(
     async ({ rf }) => {
       try {
-        const { data: dados } = await service.buscarPorRf({ rf, anoLetivo });
+        const { data: dados } = await service.buscarPorRf({
+          rf,
+          anoLetivo,
+          incluirEmei,
+        });
         if (!dados) throw new RFNaoEncontradoExcecao();
 
         setPessoaSelecionada({
@@ -145,7 +151,8 @@ function Localizador({
           form={form}
           desabilitado={
             desabilitado ||
-            (usuario.ehProfessor || usuario.ehProfessorCj) ||
+            usuario.ehProfessor ||
+            usuario.ehProfessorCj ||
             desabilitarCampo.rf
           }
         />
@@ -161,7 +168,8 @@ function Localizador({
           name="professorNome"
           desabilitado={
             desabilitado ||
-            (usuario.ehProfessor || usuario.ehProfessorCj) ||
+            usuario.ehProfessor ||
+            usuario.ehProfessorCj ||
             desabilitarCampo.nome
           }
         />

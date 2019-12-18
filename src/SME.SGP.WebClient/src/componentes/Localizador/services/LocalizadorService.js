@@ -19,9 +19,11 @@ class LocalizadorService {
     });
   }
 
-  buscarAutocomplete({ anoLetivo, dreId, nome }) {
+  buscarAutocomplete({ anoLetivo, dreId, nome, incluirEmei }) {
     return api.get(
-      `${this.urlProfessores}/${anoLetivo}/autocomplete/${dreId}/`,
+      `${
+        this.urlProfessores
+      }/${anoLetivo}/autocomplete/${dreId}/${!!incluirEmei}`,
       {
         params: {
           nomeProfessor: nome,
@@ -30,8 +32,10 @@ class LocalizadorService {
     );
   }
 
-  buscarPorRf({ anoLetivo, rf }) {
-    return api.get(`${this.urlProfessores}/${rf}/resumo/${anoLetivo}`);
+  buscarPorRf({ anoLetivo, rf, incluirEmei }) {
+    return api.get(
+      `${this.urlProfessores}/${rf}/resumo/${anoLetivo}/${!!incluirEmei}`
+    );
   }
 
   buscarPessoa({ rf, nome }) {
