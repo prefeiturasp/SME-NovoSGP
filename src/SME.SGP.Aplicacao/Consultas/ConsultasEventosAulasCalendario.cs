@@ -87,7 +87,7 @@ namespace SME.SGP.Aplicacao
             {
                 bool podeCriarAtividade = true;
                 var listaAtividades = atividades.Where(w => w.DataAvaliacao.Date == x.DataAula.Date && w.TurmaId == x.TurmaId 
-                && PossuiDisciplinas(w.Id, int.Parse(x.DisciplinaId))).ToList();
+                && PossuiDisciplinas(w.Id, x.DisciplinaId)).ToList();
                 var disciplina = disciplinasEol?.FirstOrDefault(d => d.CodigoComponenteCurricular.ToString().Equals(x.DisciplinaId));
                 if (atividades != null && disciplina != null)
                 {
@@ -291,7 +291,7 @@ namespace SME.SGP.Aplicacao
             return turmasRetorno;
         }
 
-        private bool PossuiDisciplinas(long atividadeId, long disciplinaId)
+        private bool PossuiDisciplinas(long atividadeId, string disciplinaId)
         {
             return repositorioAtividadeAvaliativaDisciplina.PossuiDisciplinas(atividadeId, disciplinaId);
         }
