@@ -1,5 +1,6 @@
 ﻿using SME.SGP.Dominio;
 using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Runtime.Serialization;
 
@@ -39,5 +40,7 @@ namespace SME.SGP.Infra
         [Required(ErrorMessage = "A UE da atividade avaliativa deve ser informado.")]
         [MaxLength(15, ErrorMessage = "A UE deve conter no máximo 15 caracteres.")]
         public string UeId { get; set; }
+
+        public IEnumerable<CopiarAtividadeAvaliativaDto> TurmasParaCopiar { get; set; }
     }
 }

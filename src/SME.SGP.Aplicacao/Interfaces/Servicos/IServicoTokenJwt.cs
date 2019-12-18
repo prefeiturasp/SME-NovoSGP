@@ -8,6 +8,15 @@ namespace SME.SGP.Aplicacao
     {
         string GerarToken(string usuarioLogin, string usuarioNome, string codigoRf, Guid guidPerfil, IEnumerable<Permissao> permissionamentos);
 
+        void RevogarToken(string login);
+
+        bool TokenAtivo();
+
+        bool TokenPresente();
+
         bool TemPerfilNoToken(string guid);
+        string ObterLogin();
+
+        Guid ObterPerfil();
     }
 }
