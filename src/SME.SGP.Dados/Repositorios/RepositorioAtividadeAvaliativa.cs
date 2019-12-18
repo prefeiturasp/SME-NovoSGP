@@ -12,11 +12,14 @@ namespace SME.SGP.Dados.Repositorios
 {
     public class RepositorioAtividadeAvaliativa : RepositorioBase<AtividadeAvaliativa>, IRepositorioAtividadeAvaliativa
     {
-        private readonly string fromCompleto = "from atividade_avaliativa a inner join tipo_avaliacao ta on a.tipo_avaliacao_id = ta.id ";
+        private readonly string fromCompleto = @"from atividade_avaliativa a
+                                                inner join tipo_avaliacao ta on a.tipo_avaliacao_id = ta.id 
+                                                inner join atividade_avaliativa_disciplina aad on aad.atividade_avaliativa_id = a.id";
 
         private readonly string fromCompletoRegencia = @"from atividade_avaliativa a
                                                         inner join tipo_avaliacao ta on a.tipo_avaliacao_id = ta.id
-                                                        inner join atividade_avaliativa_regencia aar on a.id = aar.atividade_avaliativa_id ";
+                                                        inner join atividade_avaliativa_regencia aar on a.id = aar.atividade_avaliativa_id 
+                                                        inner join atividade_avaliativa_disciplina aad on aad.atividade_avaliativa_id = a.id";
 
         public RepositorioAtividadeAvaliativa(ISgpContext conexao) : base(conexao)
         {
@@ -95,7 +98,7 @@ namespace SME.SGP.Dados.Repositorios
             sql.AppendLine("where 1=1");
             sql.AppendLine("and a.turma_id = @turmaCodigo");
             sql.AppendLine("and a.data_avaliacao >= @inicioPeriodo and a.data_avaliacao <= @fimPeriodo");
-            sql.AppendLine("and a.disciplina_id = @disciplinaId");
+            sql.AppendLine("and aad.disciplina_id = @disciplinaId");
 
             return await database.QueryAsync<AtividadeAvaliativa>(sql.ToString(), new { turmaCodigo, inicioPeriodo, fimPeriodo, disciplinaId });
         }
@@ -289,7 +292,6 @@ namespace SME.SGP.Dados.Repositorios
             query.AppendLine("a.criado_rf,");
             query.AppendLine("a.alterado_rf,");
             query.AppendLine("a.excluido,");
-            query.AppendLine("a.disciplina_id,");
             query.AppendLine("a.eh_regencia,");
             query.AppendLine("ta.id as TipoAvaliacaoId,");
             query.AppendLine("ta.nome,");
@@ -365,7 +367,7 @@ namespace SME.SGP.Dados.Repositorios
                 query.AppendLine("and date(a.data_avaliacao) <= @periodoFim");
             if (!string.IsNullOrEmpty(disciplinaId))
             {
-                query.AppendLine("and a.disciplina_id = @disciplinaId");
+                query.AppendLine("and aad.disciplina_id = @disciplinaId");
             }
             if (ehRegencia.HasValue)
             {
