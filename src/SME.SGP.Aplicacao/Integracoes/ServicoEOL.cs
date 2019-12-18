@@ -202,95 +202,81 @@ namespace SME.SGP.Aplicacao.Integracoes
             return null;
         }
 
-        public EstruturaInstitucionalRetornoEolDTO ObterEstruturaInstuticionalVigente(DateTime? dataUltimAtualizacaoTurma = null, string[] codigosTurma = null)
+        public EstruturaInstitucionalRetornoEolDTO ObterEstruturaInstuticionalVigentePorTurma(string[] codigosTurma = null)
         {
-            var codigoRequisitante = Guid.NewGuid();
-            const int quantidadePagina = 2;
-            var dadosRetornados = quantidadePagina;
-            List<EstruturaInstitucionalRetornoEolDTO> retornosParciais = new List<EstruturaInstitucionalRetornoEolDTO>();
-
             var filtroTurmas = new StringContent(JsonConvert.SerializeObject(codigosTurma ?? new string[] { }), UnicodeEncoding.UTF8, "application/json");
 
-            httpClient.Timeout = System.Threading.Timeout.InfiniteTimeSpan;
+            string url = $"abrangencia/estrutura-vigente";
 
-            for (int i = 1; dadosRetornados == quantidadePagina; i++)
+            httpClient.DefaultRequestHeaders.Clear();
+
+            var resposta = httpClient.PostAsync(url, filtroTurmas).Result;
+
+            if (resposta.IsSuccessStatusCode)
             {
-                string url = $"abrangencia/estrutura-vigente/{codigoRequisitante.ToString()}/pagina/{i}/quantidade/{quantidadePagina}";
+                var json = resposta.Content.ReadAsStringAsync().Result;
+                return JsonConvert.DeserializeObject<EstruturaInstitucionalRetornoEolDTO>(json);
+            }
+            else
+            {
+                SentrySdk.AddBreadcrumb($"Ocorreu um erro na tentativa de buscar os dados de Estrutura Institucional Vigente - HttpCode {resposta.StatusCode} - Body {resposta.Content?.ReadAsStringAsync()?.Result ?? string.Empty}");
+                return null;
+            }
+        }
 
-                if (dataUltimAtualizacaoTurma.HasValue)
-                    url += $"?dataUltimaAtualizacao={dataUltimAtualizacaoTurma.Value.ToString("yyyy-MM-dd")}";
+        public EstruturaInstitucionalRetornoEolDTO ObterEstruturaInstuticionalVigentePorDre()
+        {
+            EstruturaInstitucionalRetornoEolDTO resultado = null;
+            var codigosDres = ObterCodigosDres();
+            string url = $"abrangencia/estrutura-vigente";
 
-                httpClient.DefaultRequestHeaders.Clear();
-
-                var resposta = httpClient.PostAsync(url, filtroTurmas).Result;
-
-                if (resposta.IsSuccessStatusCode)
+            if (codigosDres != null && codigosDres.Length > 0)
+            {
+                resultado = new EstruturaInstitucionalRetornoEolDTO();
+                foreach (var item in codigosDres)
                 {
-                    var json = resposta.Content.ReadAsStringAsync().Result;
-                    var resultadoRetornado = JsonConvert.DeserializeObject<EstruturaInstitucionalRetornoEolDTO>(json);
+                    httpClient.DefaultRequestHeaders.Clear();
 
-                    if (resultadoRetornado != null)
+                    var resposta = httpClient.GetAsync($"{url}/{item}").Result;
+
+                    if (resposta.IsSuccessStatusCode)
                     {
-                        retornosParciais.Add(resultadoRetornado);
-                        dadosRetornados = resultadoRetornado.Dres.SelectMany(x => x.Ues.Select(y => y.Turmas.Count())).Sum();
+                        var json = resposta.Content.ReadAsStringAsync().Result;
+                        var parcial = JsonConvert.DeserializeObject<EstruturaInstitucionalRetornoEolDTO>(json);
+
+                        if (parcial != null)
+                            resultado.Dres.AddRange(parcial.Dres);
                     }
                     else
-                        break;
-                }
-                else
-                {
-                    SentrySdk.AddBreadcrumb($"Ocorreu um erro na tentativa de buscar os dados de Estrutura Institucional Vigente - HttpCode {resposta.StatusCode} - Body {resposta.Content?.ReadAsStringAsync()?.Result ?? string.Empty}");
-                    break;
-                }
-            }
-
-            return ConsolidarEstruturaInstitucionalRetornoEOL(retornosParciais);
-        }
-
-        private EstruturaInstitucionalRetornoEolDTO ConsolidarEstruturaInstitucionalRetornoEOL(List<EstruturaInstitucionalRetornoEolDTO> retornosParciais)
-        {
-            List<AbrangenciaDreRetornoEolDto> dres = new List<AbrangenciaDreRetornoEolDto>();
-
-            // Implementado com foreach para facilitar o entendimento do código, um linq mais elaborado pode confundir o entendimento
-            foreach (var item in retornosParciais)
-            {
-                foreach (var dre in item.Dres)
-                {
-                    foreach (var ue in dre.Ues)
                     {
-                        foreach (var turma in ue.Turmas)
-                        {
-                            var dreRetorno = dres.FirstOrDefault(x => x.Codigo == dre.Codigo);
-
-                            if (dreRetorno == null)
-                            {
-                                dreRetorno = dre;
-                                dres.Add(dreRetorno);
-                            }
-                            else
-                            {
-                                var ueRetorno = dres.SelectMany(x => x.Ues.Where(y => y.Codigo == ue.Codigo)).FirstOrDefault();
-
-                                if (ueRetorno == null)
-                                {
-                                    ueRetorno = ue;
-                                    dreRetorno.Ues.Add(ueRetorno);
-                                }
-                                else
-                                    if (!dres.Any(x => x.Ues.Any(y => y.Turmas.Any(z => z.Codigo == turma.Codigo))))
-                                    ueRetorno.Turmas.Add(turma);
-                            }
-                        }
+                        SentrySdk.AddBreadcrumb($"Ocorreu um erro na tentativa de buscar os dados de Estrutura Institucional Vigente por Dre: {item} - HttpCode {resposta.StatusCode} - Body {resposta.Content?.ReadAsStringAsync()?.Result ?? string.Empty}");
+                        return null;
                     }
                 }
             }
 
-            return new EstruturaInstitucionalRetornoEolDTO()
-            {
-                Dres = dres
-            };
+            return resultado;
         }
 
+        private string[] ObterCodigosDres()
+        {
+            string url = $"abrangencia/codigos-dres";
+
+            httpClient.DefaultRequestHeaders.Clear();
+
+            var resposta = httpClient.GetAsync(url).Result;
+
+            if (resposta.IsSuccessStatusCode)
+            {
+                var json = resposta.Content.ReadAsStringAsync().Result;
+                return JsonConvert.DeserializeObject<string[]>(json);
+            }
+            else
+            {
+                SentrySdk.AddBreadcrumb($"Ocorreu um erro na tentativa de buscar os codigos das Dres no EOL - HttpCode {resposta.StatusCode} - Body {resposta.Content?.ReadAsStringAsync()?.Result ?? string.Empty}");
+                return null;
+            }
+        }
 
         public IEnumerable<UsuarioEolRetornoDto> ObterFuncionariosPorCargoUe(string ueId, long cargoId)
         {

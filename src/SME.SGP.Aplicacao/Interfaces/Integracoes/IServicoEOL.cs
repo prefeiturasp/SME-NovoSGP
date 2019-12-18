@@ -59,7 +59,7 @@ namespace SME.SGP.Aplicacao.Integracoes
         Task<UsuarioResumoCoreDto> ObterResumoCore(string login);
 
         Task<ProfessorResumoDto> ObterResumoProfessorPorRFAnoLetivo(string codigoRF, int anoLetivo);
-
+        
         IEnumerable<SupervisoresRetornoDto> ObterSupervisoresPorCodigo(string[] codigoSupervisores);
 
         IEnumerable<SupervisoresRetornoDto> ObterSupervisoresPorDre(string dreId);
@@ -74,6 +74,7 @@ namespace SME.SGP.Aplicacao.Integracoes
 
         Task<bool> ValidarProfessor(string professorRf);
 
-        EstruturaInstitucionalRetornoEolDTO ObterEstruturaInstuticionalVigente(DateTime? dataUltimAtualizacaoTurma = null, string[] codigosTurma = null);
+        EstruturaInstitucionalRetornoEolDTO ObterEstruturaInstuticionalVigentePorTurma(string[] codigosTurma = null);
+        EstruturaInstitucionalRetornoEolDTO ObterEstruturaInstuticionalVigentePorDre();
     }
 }
