@@ -40,15 +40,17 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(200)]
         [ProducesResponseType(401)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        [ProducesResponseType(typeof(UsuarioAutenticacaoRetornoDto), 200)]
+        [ProducesResponseType(typeof(TrocaPerfilDto), 200)]
         [Route("perfis/{guid}")]
         [Authorize("Bearer")]
         public async Task<IActionResult> AtualizarPerfil(Guid guid)
         {
             if (guid == Guid.Empty)
                 throw new NegocioException("Informe um perfil");
-            var (token, ehProfessor, ehProfessorCj) = await comandosUsuario.ModificarPerfil(guid);
-            return Ok(new { token, ehProfessor, ehProfessorCj });
+
+            var retorno = await comandosUsuario.ModificarPerfil(guid);
+
+            return Ok(retorno);
         }
 
         [HttpPost]
@@ -62,21 +64,8 @@ namespace SME.SGP.Api.Controllers
 
             if (!retornoAutenticacao.Autenticado)
                 return StatusCode(401);
-             
+
             return Ok(retornoAutenticacao);
-        }
-
-        [HttpPost("revalidar")]
-        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        [ProducesResponseType(typeof(string), 200)]
-        public async Task<IActionResult> Revalidar()
-        {
-            var tokenRetorno = await comandosUsuario.RevalidarLogin();
-
-            if (tokenRetorno == string.Empty)
-                return StatusCode(401);
-
-            return Ok(tokenRetorno);
         }
 
         [HttpGet("{login}/perfis/listar")]
@@ -134,6 +123,19 @@ namespace SME.SGP.Api.Controllers
             if (retorno.DeveAtualizarEmail)
                 return StatusCode(601, retorno);
             else return Ok(retorno);
+        }
+
+        [HttpPost("revalidar")]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [ProducesResponseType(typeof(string), 200)]
+        public async Task<IActionResult> Revalidar()
+        {
+            var tokenRetorno = await comandosUsuario.RevalidarLogin();
+
+            if (tokenRetorno == string.Empty)
+                return StatusCode(401);
+
+            return Ok(tokenRetorno);
         }
 
         [HttpGet("sair")]

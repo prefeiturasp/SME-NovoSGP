@@ -12,16 +12,11 @@ namespace SME.SGP.Dominio.Servicos
 {
     public class ServicoNotificacaoFrequencia : IServicoNotificacaoFrequencia
     {
-        private const string breadcrumb = "SGP API - Notificação de Frequência";
         private readonly IConfiguration configuration;
-        private readonly IRepositorioAula repositorioAula;
-        private readonly IRepositorioDre repositorioDre;
         private readonly IRepositorioFrequencia repositorioFrequencia;
         private readonly IRepositorioNotificacaoFrequencia repositorioNotificacaoFrequencia;
         private readonly IRepositorioParametrosSistema repositorioParametrosSistema;
         private readonly IRepositorioSupervisorEscolaDre repositorioSupervisorEscolaDre;
-        private readonly IRepositorioUe repositorioUe;
-        private readonly string sentryDSN;
         private readonly IServicoEOL servicoEOL;
         private readonly IServicoNotificacao servicoNotificacao;
         private readonly IServicoUsuario servicoUsuario;
@@ -29,107 +24,29 @@ namespace SME.SGP.Dominio.Servicos
         public ServicoNotificacaoFrequencia(IRepositorioNotificacaoFrequencia repositorioNotificacaoFrequencia,
                                             IRepositorioParametrosSistema repositorioParametrosSistema,
                                             IRepositorioFrequencia repositorioFrequencia,
-                                            IRepositorioAula repositorioAula,
                                             IRepositorioSupervisorEscolaDre repositorioSupervisorEscolaDre,
                                             IServicoNotificacao servicoNotificacao,
                                             IServicoUsuario servicoUsuario,
                                             IServicoEOL servicoEOL,
-                                            IConfiguration configuration,
-                                            IRepositorioDre repositorioDre,
-                                            IRepositorioUe repositorioUe)
+                                            IConfiguration configuration)
         {
             this.repositorioNotificacaoFrequencia = repositorioNotificacaoFrequencia ?? throw new ArgumentNullException(nameof(repositorioNotificacaoFrequencia));
             this.repositorioParametrosSistema = repositorioParametrosSistema ?? throw new ArgumentNullException(nameof(repositorioParametrosSistema));
-            this.repositorioAula = repositorioAula ?? throw new ArgumentNullException(nameof(repositorioAula));
             this.servicoNotificacao = servicoNotificacao ?? throw new ArgumentNullException(nameof(servicoNotificacao));
             this.repositorioFrequencia = repositorioFrequencia ?? throw new ArgumentNullException(nameof(repositorioFrequencia));
             this.servicoUsuario = servicoUsuario ?? throw new ArgumentNullException(nameof(servicoUsuario));
             this.repositorioSupervisorEscolaDre = repositorioSupervisorEscolaDre ?? throw new ArgumentNullException(nameof(repositorioSupervisorEscolaDre));
             this.servicoEOL = servicoEOL ?? throw new ArgumentNullException(nameof(servicoEOL));
             this.configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
-            this.repositorioDre = repositorioDre ?? throw new ArgumentNullException(nameof(repositorioDre));
-            this.repositorioUe = repositorioUe ?? throw new ArgumentNullException(nameof(repositorioUe));
-            sentryDSN = configuration.GetValue<string>("Sentry:DSN");
         }
 
         public void ExecutaNotificacaoFrequencia()
         {
-            using (SentrySdk.Init(sentryDSN))
-            {
-                try
-                {
-                    try
-                    {
-                        var dres = repositorioDre.ObterTodas();
-                        if (dres != null)
-                        {
-                            foreach (var dre in dres)
-                            {
-                                try
-                                {
-                                    var ues = repositorioUe.ObterPorDre(dre.Id);
-                                    if (ues != null)
-                                    {
-                                        foreach (var ue in ues)
-                                        {
-                                            try
-                                            {
-                                                NotificarAusenciaFrequencia(TipoNotificacaoFrequencia.Professor, ue.CodigoUe);
-                                            }
-                                            catch (Exception ex)
-                                            {
-                                                SentrySdk.CaptureException(ex);
-                                                SentrySdk.CaptureEvent(new SentryEvent(new NegocioException($"{breadcrumb} - {TipoNotificacaoFrequencia.Professor} - {ue.CodigoUe}")));
-                                            }
-                                            try
-                                            {
-                                                NotificarAusenciaFrequencia(TipoNotificacaoFrequencia.GestorUe, ue.CodigoUe);
-                                            }
-                                            catch (Exception ex)
-                                            {
-                                                SentrySdk.CaptureException(ex);
-                                                SentrySdk.CaptureEvent(new SentryEvent(new NegocioException($"{breadcrumb} - {TipoNotificacaoFrequencia.GestorUe} - {ue.CodigoUe}")));
-                                            }
-                                            try
-                                            {
-                                                NotificarAusenciaFrequencia(TipoNotificacaoFrequencia.SupervisorUe, ue.CodigoUe);
-                                            }
-                                            catch (Exception ex)
-                                            {
-                                                SentrySdk.CaptureException(ex);
-                                                SentrySdk.CaptureEvent(new SentryEvent(new NegocioException($"{breadcrumb} - {TipoNotificacaoFrequencia.SupervisorUe} - {ue.CodigoUe}")));
-                                            }
-                                        }
-                                    }
-                                    else
-                                    {
-                                        SentrySdk.CaptureEvent(new SentryEvent(new NegocioException($"{breadcrumb} - Nenhuma UE encontrada no banco de dados")));
-                                    }
-                                }
-                                catch (Exception ex)
-                                {
-                                    SentrySdk.CaptureException(ex);
-                                    SentrySdk.CaptureEvent(new SentryEvent(new NegocioException($"{breadcrumb} - Nenhuma UE encontrada no banco de dados")));
-                                }
-                            }
-                        }
-                        else
-                        {
-                            SentrySdk.CaptureEvent(new SentryEvent(new NegocioException($"{breadcrumb} - Nenhuma DRE encontrada no banco de dados")));
-                        }
-                    }
-                    catch (Exception ex)
-                    {
-                        SentrySdk.CaptureEvent(new SentryEvent(ex));
-                        SentrySdk.CaptureEvent(new SentryEvent(new NegocioException($"{breadcrumb} - Nenhuma DRE encontrada no banco de dados")));
-                    }
-                }
-                catch (Exception ex)
-                {
-                    SentrySdk.CaptureEvent(new SentryEvent(ex));
-                    SentrySdk.CaptureEvent(new SentryEvent(new NegocioException($"{breadcrumb} - {ex.Message}")));
-                }
-            }
+            Console.WriteLine($"Notificando usuários de aulas sem frequência.");
+            NotificarAusenciaFrequencia(TipoNotificacaoFrequencia.Professor);
+            NotificarAusenciaFrequencia(TipoNotificacaoFrequencia.GestorUe);
+            NotificarAusenciaFrequencia(TipoNotificacaoFrequencia.SupervisorUe);
+            Console.WriteLine($"Rotina finalizada.");
         }
 
         public void VerificaRegraAlteracaoFrequencia(long registroFrequenciaId, DateTime criadoEm, DateTime alteradoEm, long usuarioAlteracaoId)
@@ -266,35 +183,22 @@ namespace SME.SGP.Dominio.Servicos
             servicoNotificacao.Salvar(notificacao);
         }
 
-        private void NotificarAusenciaFrequencia(TipoNotificacaoFrequencia tipo, string ueId)
+        private void NotificarAusenciaFrequencia(TipoNotificacaoFrequencia tipo)
         {
             // Busca registro de aula sem frequencia e sem notificação do tipo
             IEnumerable<RegistroFrequenciaFaltanteDto> turmasSemRegistro = null;
-            try
-            {
-                Console.WriteLine($"Buscando turmas: {tipo} - {ueId}");
-
-                turmasSemRegistro = repositorioNotificacaoFrequencia.ObterTurmasSemRegistroDeFrequencia(tipo, ueId);
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine(ex.Message);
-            }
+            turmasSemRegistro = repositorioNotificacaoFrequencia.ObterTurmasSemRegistroDeFrequencia(tipo);
 
             if (turmasSemRegistro != null)
             {
-                Console.WriteLine(turmasSemRegistro.Count());
-                Console.WriteLine($"Buscando quantidade de aulas: {tipo} ");
                 // Busca parametro do sistema de quantidade de aulas sem frequencia para notificação
                 var qtdAulasNotificacao = QuantidadeAulasParaNotificacao(tipo);
                 foreach (var turma in turmasSemRegistro)
                 {
-                    Console.WriteLine($"Buscando aulas: {turma.CodigoTurma} - {turma.DisciplinaId} ");
                     // Carrega todas as aulas sem registro de frequencia da turma e disciplina para notificação
-                    turma.Aulas = repositorioFrequencia.ObterAulasSemRegistroFrequencia(turma.CodigoTurma, turma.DisciplinaId);
+                    turma.Aulas = repositorioFrequencia.ObterAulasSemRegistroFrequencia(turma.CodigoTurma, turma.DisciplinaId, tipo);
                     if (turma.Aulas != null && turma.Aulas.Count() >= qtdAulasNotificacao)
                     {
-                        Console.WriteLine($"Busca Professor/Gestor/Supervisor: {tipo} ");
                         // Busca Professor/Gestor/Supervisor da Turma ou Ue
                         var usuarios = BuscaUsuarioNotificacao(turma, tipo);
 
@@ -304,63 +208,54 @@ namespace SME.SGP.Dominio.Servicos
                                 NotificaRegistroFrequencia(usuario, turma, tipo);
                             }
                     }
+                    else
+                        Console.WriteLine($"Notificação não necessária pois quantidade de aulas sem frequência: {turma.Aulas?.Count() ?? 0 } está dentro do limite: {qtdAulasNotificacao}.");
                 }
             }
         }
 
         private void NotificaRegistroFrequencia(Usuario usuario, RegistroFrequenciaFaltanteDto turmaSemRegistro, TipoNotificacaoFrequencia tipo)
         {
-            Console.WriteLine($"Busca disciplina Eol: {turmaSemRegistro.DisciplinaId} ");
-            var disciplina = servicoEOL.ObterDisciplinasPorIds(new long[] { long.Parse(turmaSemRegistro.DisciplinaId) }).FirstOrDefault();
+            var disciplinas = servicoEOL.ObterDisciplinasPorIds(new long[] { long.Parse(turmaSemRegistro.DisciplinaId) });
+            if (disciplinas != null && disciplinas.Any())
+            {
+                var disciplina = disciplinas.FirstOrDefault();
 
-            var tituloMensagem = $"Frequência da turma {turmaSemRegistro.NomeTurma} - {turmaSemRegistro.DisciplinaId} ({turmaSemRegistro.NomeUe})";
-            StringBuilder mensagemUsuario = new StringBuilder();
-            mensagemUsuario.Append($"A turma a seguir esta a <b>{turmaSemRegistro.Aulas.Count()} aulas</b> sem registro de frequência da turma");
-            mensagemUsuario.Append("<br />");
-            mensagemUsuario.Append($"<br />Escola: <b>{turmaSemRegistro.NomeUe}</b>");
-            mensagemUsuario.Append($"<br />Turma: <b>{turmaSemRegistro.NomeTurma}</b>");
-            mensagemUsuario.Append($"<br />Disciplina: <b>{disciplina.Nome}</b>");
-            mensagemUsuario.Append($"<br />Aulas:");
+                var tituloMensagem = $"Frequência da turma {turmaSemRegistro.NomeTurma} - {turmaSemRegistro.DisciplinaId} ({turmaSemRegistro.NomeUe})";
+                StringBuilder mensagemUsuario = new StringBuilder();
+                mensagemUsuario.Append($"A turma a seguir esta a <b>{turmaSemRegistro.Aulas.Count()} aulas</b> sem registro de frequência da turma");
+                mensagemUsuario.Append("<br />");
+                mensagemUsuario.Append($"<br />Escola: <b>{turmaSemRegistro.NomeUe}</b>");
+                mensagemUsuario.Append($"<br />Turma: <b>{turmaSemRegistro.NomeTurma}</b>");
+                mensagemUsuario.Append($"<br />Disciplina: <b>{disciplina.Nome}</b>");
+                mensagemUsuario.Append($"<br />Aulas:");
 
-            mensagemUsuario.Append("<ul>");
-            foreach (var aula in turmaSemRegistro.Aulas)
-            {
-                mensagemUsuario.Append($"<li>Data: {aula.DataAula}</li>");
-            }
-            mensagemUsuario.Append("</ul>");
-
-            var hostAplicacao = configuration["UrlFrontEnd"];
-            var parametros = $"turma={turmaSemRegistro.CodigoTurma}&DataAula={turmaSemRegistro.Aulas.FirstOrDefault().DataAula.ToShortDateString()}&disciplina={turmaSemRegistro.DisciplinaId}";
-            mensagemUsuario.Append($"<a href='{hostAplicacao}diario-classe/frequencia-plano-aula?{parametros}'>Clique aqui para regularizar.</a>");
-
-            var notificacao = new Notificacao()
-            {
-                Ano = DateTime.Now.Year,
-                Categoria = NotificacaoCategoria.Alerta,
-                Tipo = NotificacaoTipo.Frequencia,
-                Titulo = tituloMensagem,
-                Mensagem = mensagemUsuario.ToString(),
-                UsuarioId = usuario.Id,
-                TurmaId = turmaSemRegistro.CodigoTurma,
-                UeId = turmaSemRegistro.CodigoUe,
-                DreId = turmaSemRegistro.CodigoDre,
-            };
-            Console.WriteLine($"Salva notificação");
-            try
-            {
-                servicoNotificacao.Salvar(notificacao);
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Erro notificação: {ex.Message} - __________________________________________________________________________");
-                SentrySdk.CaptureEvent(new SentryEvent(ex));
-                SentrySdk.CaptureEvent(new SentryEvent(new NegocioException($"servicoNotificacao.Salvar")));
-            }
-            try
-            {
+                mensagemUsuario.Append("<ul>");
                 foreach (var aula in turmaSemRegistro.Aulas)
                 {
-                    Console.WriteLine($"Salva notificação frequencia");
+                    mensagemUsuario.Append($"<li>Data: {aula.DataAula}</li>");
+                }
+                mensagemUsuario.Append("</ul>");
+
+                var hostAplicacao = configuration["UrlFrontEnd"];
+                var parametros = $"turma={turmaSemRegistro.CodigoTurma}&DataAula={turmaSemRegistro.Aulas.FirstOrDefault().DataAula.ToShortDateString()}&disciplina={turmaSemRegistro.DisciplinaId}";
+                mensagemUsuario.Append($"<a href='{hostAplicacao}diario-classe/frequencia-plano-aula?{parametros}'>Clique aqui para regularizar.</a>");
+
+                var notificacao = new Notificacao()
+                {
+                    Ano = DateTime.Now.Year,
+                    Categoria = NotificacaoCategoria.Alerta,
+                    Tipo = NotificacaoTipo.Frequencia,
+                    Titulo = tituloMensagem,
+                    Mensagem = mensagemUsuario.ToString(),
+                    UsuarioId = usuario.Id,
+                    TurmaId = turmaSemRegistro.CodigoTurma,
+                    UeId = turmaSemRegistro.CodigoUe,
+                    DreId = turmaSemRegistro.CodigoDre,
+                };
+                servicoNotificacao.Salvar(notificacao);
+                foreach (var aula in turmaSemRegistro.Aulas)
+                {
                     repositorioNotificacaoFrequencia.Salvar(new NotificacaoFrequencia()
                     {
                         Tipo = tipo,
@@ -370,11 +265,10 @@ namespace SME.SGP.Dominio.Servicos
                     });
                 }
             }
-            catch (Exception ex)
+            else
             {
-                Console.WriteLine($"Erro notificação frequencia: {ex.Message} - __________________________________________________________________________");
-                SentrySdk.CaptureEvent(new SentryEvent(ex));
-                SentrySdk.CaptureEvent(new SentryEvent(new NegocioException($"repositorioNotificacaoFrequencia.Salvar")));
+                Console.WriteLine("Não foi possível obter a disciplina pois o EOL não respondeu");
+                SentrySdk.CaptureEvent(new SentryEvent(new NegocioException("Não foi possível obter a disciplina pois o EOL não respondeu")));
             }
         }
 
