@@ -50,13 +50,27 @@ namespace SME.SGP.Aplicacao.Servicos
             repositorioAbrangencia.InserirAbrangencias(abrangencias, login);
         }
 
+        public void SincronizarEstruturaInstitucionalVigenteCompleta()
+        {
+            var estruturaInstitucionalVigente = servicoEOL.ObterEstruturaInstuticionalVigentePorDre();
+
+            if (estruturaInstitucionalVigente != null && estruturaInstitucionalVigente.Dres != null && estruturaInstitucionalVigente.Dres.Count > 0)
+                SincronizarEstruturaInstitucional(estruturaInstitucionalVigente);
+            else
+            {
+                var erro = new NegocioException("Não foi possível obter dados de estrutura institucional do EOL");
+                SentrySdk.CaptureException(erro);
+                throw erro;
+            }
+        }
+
         private async Task BuscaAbrangenciaEPersiste(string login, Guid perfil)
         {
             try
             {
                 const string breadcrumb = "SGP API - Tratamento de Abrangência";
-                
-                Task<AbrangenciaRetornoEolDto> consultaEol = null;
+
+                Task<AbrangenciaCompactaVigenteRetornoEOLDTO> consultaEol = null;
 
                 var ehSupervisor = perfil == Perfis.PERFIL_SUPERVISOR;
                 var ehProfessorCJ = perfil == Perfis.PERFIL_CJ;
@@ -64,19 +78,17 @@ namespace SME.SGP.Aplicacao.Servicos
                 SentrySdk.AddBreadcrumb($"{breadcrumb} - Chamada BuscaAbrangenciaEPersiste - Login: {login}, perfil {perfil} - EhSupervisor: {ehSupervisor}, EhProfessorCJ: {ehProfessorCJ}", "SGP Api - Negócio");
 
                 if (ehSupervisor)
-                    consultaEol = ObterAbrangenciaEolSupervisor(login);
+                    consultaEol = TratarRetornoSupervisor(ObterAbrangenciaEolSupervisor(login));
                 else if (ehProfessorCJ)
                     return;
                 else
-                    consultaEol = servicoEOL.ObterAbrangencia(login, perfil);
+                    consultaEol = servicoEOL.ObterAbrangenciaCompactaVigente(login, perfil);
 
                 // Enquanto o EOl consulta, tentamos ganhar tempo obtendo a consulta sintetica
                 var consultaAbrangenciaSintetica = repositorioAbrangencia.ObterAbrangenciaSintetica(login, perfil);
 
                 var abrangenciaEol = await consultaEol;
-                SentrySdk.AddBreadcrumb($"{breadcrumb} - Chamada EOL - resultado {abrangenciaEol?.Dres?.Count ?? 0}", "SGP Api - Negócio");
                 var abrangenciaSintetica = await consultaAbrangenciaSintetica;
-                SentrySdk.AddBreadcrumb($"{breadcrumb} - Abrangencia Sintética - resultado {abrangenciaSintetica?.Count() ?? 0}", "SGP Api - Negócio");
 
                 if (abrangenciaEol == null)
                     throw new NegocioException("Não foi possível localizar registros de abrangência para este usuário.");
@@ -86,15 +98,46 @@ namespace SME.SGP.Aplicacao.Servicos
                 IEnumerable<Turma> turmas = Enumerable.Empty<Turma>();
 
                 // sincronizamos as dres, ues e turmas
-                SincronizarEstruturaInstitucional(abrangenciaEol.Dres, out dres, out ues, out turmas);
+                MaterializarEstruturaInstitucional(abrangenciaEol, ref dres, ref ues, ref turmas);
 
                 // sincronizamos a abrangencia do login + perfil
                 SincronizarAbrangencia(abrangenciaSintetica, abrangenciaEol.Abrangencia.Abrangencia, ehSupervisor, dres, ues, turmas, login, perfil);
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 SentrySdk.CaptureException(ex);
                 throw ex;
+            }
+        }
+
+        private IEnumerable<Turma> ImportarTurmasNaoEncontradas(string[] codigosNaoEncontrados)
+        {
+            IEnumerable<Turma> resultado = Enumerable.Empty<Turma>();
+
+            if (codigosNaoEncontrados != null && codigosNaoEncontrados.Length > 0)
+            {
+                var turmasEol = servicoEOL.ObterEstruturaInstuticionalVigentePorTurma(codigosTurma: codigosNaoEncontrados);
+                if (turmasEol != null)
+                    SincronizarEstruturaInstitucional(turmasEol);
+            }
+
+            return repositorioTurma.MaterializarCodigosTurma(codigosNaoEncontrados, out codigosNaoEncontrados);
+        }
+
+        private void MaterializarEstruturaInstitucional(AbrangenciaCompactaVigenteRetornoEOLDTO abrangenciaEol, ref IEnumerable<Dre> dres, ref IEnumerable<Ue> ues, ref IEnumerable<Turma> turmas)
+        {
+            string[] codigosNaoEncontrados;
+
+            if (abrangenciaEol.IdDres != null && abrangenciaEol.IdDres.Length > 0)
+                dres = repositorioDre.MaterializarCodigosDre(abrangenciaEol.IdDres, out codigosNaoEncontrados);
+
+            if (abrangenciaEol.IdUes != null && abrangenciaEol.IdUes.Length > 0)
+                ues = repositorioUe.MaterializarCodigosUe(abrangenciaEol.IdUes, out codigosNaoEncontrados);
+
+            if (abrangenciaEol.IdTurmas != null && abrangenciaEol.IdTurmas.Length > 0)
+            {
+                turmas = repositorioTurma.MaterializarCodigosTurma(abrangenciaEol.IdTurmas, out codigosNaoEncontrados)
+                    .Union(ImportarTurmasNaoEncontradas(codigosNaoEncontrados));
             }
         }
 
@@ -179,11 +222,15 @@ namespace SME.SGP.Aplicacao.Servicos
             repositorioAbrangencia.ExcluirAbrangencias(paraExcluir);
         }
 
-        private void SincronizarEstruturaInstitucional(IEnumerable<AbrangenciaDreRetornoEolDto> estrutura, out IEnumerable<Dre> dres, out IEnumerable<Ue> ues, out IEnumerable<Turma> turmas)
+        private void SincronizarEstruturaInstitucional(EstruturaInstitucionalRetornoEolDTO estrutura)
         {
-            IEnumerable<Dre> dresSync = estrutura.Select(x => new Dre() { Abreviacao = x.Abreviacao, CodigoDre = x.Codigo, Nome = x.Nome });
-            IEnumerable<Ue> uesSync = estrutura.SelectMany(x => x.Ues.Select(y => new Ue { CodigoUe = y.Codigo, TipoEscola = y.CodTipoEscola, Nome = y.Nome, Dre = new Dre() { CodigoDre = x.Codigo } }));
-            IEnumerable<Turma> turmasSync = estrutura.SelectMany(x => x.Ues.SelectMany(y => y.Turmas.Select(z =>
+            IEnumerable<Dre> dres = Enumerable.Empty<Dre>();
+            IEnumerable<Ue> ues = Enumerable.Empty<Ue>();
+            IEnumerable<Turma> turmas = Enumerable.Empty<Turma>();
+
+            dres = estrutura.Dres.Select(x => new Dre() { Abreviacao = x.Abreviacao, CodigoDre = x.Codigo, Nome = x.Nome });
+            ues = estrutura.Dres.SelectMany(x => x.Ues.Select(y => new Ue { CodigoUe = y.Codigo, TipoEscola = y.CodTipoEscola, Nome = y.Nome, Dre = new Dre() { CodigoDre = x.Codigo } }));
+            turmas = estrutura.Dres.SelectMany(x => x.Ues.SelectMany(y => y.Turmas.Select(z =>
             new Turma
             {
                 Ano = z.Ano,
@@ -197,9 +244,9 @@ namespace SME.SGP.Aplicacao.Servicos
                 Ue = new Ue() { CodigoUe = y.Codigo }
             })));
 
-            dres = repositorioDre.Sincronizar(dresSync);
-            ues = repositorioUe.Sincronizar(uesSync, dres);
-            turmas = repositorioTurma.Sincronizar(turmasSync, ues);
+            dres = repositorioDre.Sincronizar(dres);
+            ues = repositorioUe.Sincronizar(ues, dres);
+            repositorioTurma.Sincronizar(turmas, ues);
         }
 
         private async Task TrataAbrangenciaLogin(string login, Guid perfil)
@@ -217,6 +264,23 @@ namespace SME.SGP.Aplicacao.Servicos
                 await BuscaAbrangenciaEPersiste(login, perfil);
                 unitOfWork.PersistirTransacao();
             }
+        }
+
+        private Task<AbrangenciaCompactaVigenteRetornoEOLDTO> TratarRetornoSupervisor(Task<AbrangenciaRetornoEolDto> consultaEol)
+        {
+            if (consultaEol != null)
+            {
+                return new Task<AbrangenciaCompactaVigenteRetornoEOLDTO>(() =>
+                {
+                    var resultado = consultaEol.Result;
+                    return new AbrangenciaCompactaVigenteRetornoEOLDTO()
+                    {
+                        Abrangencia = resultado.Abrangencia,
+                        IdUes = resultado.Dres.SelectMany(x => x.Ues.Select(y => y.Codigo)).ToArray()
+                    };
+                });
+            }
+            return null;
         }
     }
 }
