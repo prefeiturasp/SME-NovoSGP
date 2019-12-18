@@ -621,6 +621,7 @@ export default function PlanoAnual() {
                       ref={bim.focado ? refFocado : null}
                       disabled={ehDisabled}
                       key={bim.indice}
+                      bimestre={bim}
                       indice={bim.indice}
                       focado={bim.focado}
                       modalidadeEja={ehEja}

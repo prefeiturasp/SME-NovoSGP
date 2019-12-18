@@ -63,13 +63,12 @@ const Calendario = props => {
       estado = false;
     };
   }, [
-    dreSelecionada,
-    eventoSme,
-    filtros,
     tipoCalendarioSelecionado,
-    todasTurmas,
-    turmaSelecionada,
+    eventoSme,
+    dreSelecionada,
     unidadeEscolarSelecionada,
+    turmaSelecionada,
+    todasTurmas,
   ]);
 
   return (

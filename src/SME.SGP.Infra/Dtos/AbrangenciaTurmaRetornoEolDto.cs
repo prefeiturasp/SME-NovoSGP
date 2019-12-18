@@ -1,4 +1,6 @@
-﻿namespace SME.SGP.Dto
+﻿using System;
+
+namespace SME.SGP.Dto
 {
     public class AbrangenciaTurmaRetornoEolDto
     {
@@ -10,5 +12,7 @@
         public int Semestre { get; set; }
         public int DuracaoTurno { get; set; }
         public int TipoTurno { get; set; }
+        public DateTime? DataFIm { get; set; }
+        public bool EHistorico { get; set; }
     }
 }

@@ -2,6 +2,7 @@
 using SME.SGP.Api.Filtros;
 using SME.SGP.Aplicacao;
 using SME.SGP.Infra;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Api.Controllers
@@ -24,10 +25,9 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [Permissao(Permissao.CP_A, Policy = "Bearer")]
-        public IActionResult Alterar([FromBody]AtividadeAvaliativaDto atividadeAvaliativaDto, long id)
+        public async Task<IActionResult> Alterar([FromBody]AtividadeAvaliativaDto atividadeAvaliativaDto, long id)
         {
-            comandoAtividadeAvaliativa.Alterar(atividadeAvaliativaDto, id);
-            return Ok();
+            return Ok(await comandoAtividadeAvaliativa.Alterar(atividadeAvaliativaDto, id));
         }
 
         [HttpDelete]
@@ -67,8 +67,7 @@ namespace SME.SGP.Api.Controllers
         [Permissao(Permissao.CP_I, Policy = "Bearer")]
         public async Task<IActionResult> PostAsync([FromBody]AtividadeAvaliativaDto atividadeAvaliativaDto)
         {
-            await comandoAtividadeAvaliativa.Inserir(atividadeAvaliativaDto);
-            return Ok();
+            return Ok(await comandoAtividadeAvaliativa.Inserir(atividadeAvaliativaDto));
         }
 
         [HttpPost("validar")]
@@ -79,6 +78,24 @@ namespace SME.SGP.Api.Controllers
         {
             await comandoAtividadeAvaliativa.Validar(filtro);
             return Ok();
+        }
+
+        [HttpGet("validar-existente")]
+        [ProducesResponseType(typeof(IEnumerable<AtividadeAvaliativaExistenteRetornoDto>), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [Permissao(Permissao.CP_I, Policy = "Bearer")]
+        public async Task<IActionResult> ValidarAtividadeAvaliativaExistente([FromBody]FiltroAtividadeAvaliativaExistenteDto filtro)
+        {
+            return Ok(await consultaAtividadeAvaliativa.ValidarAtividadeAvaliativaExistente(filtro));
+        }
+
+        [HttpGet("turmas/{codigoTurma}/disciplinas/{disciplinaId}")]
+        [ProducesResponseType(typeof(IEnumerable<TurmaRetornoDto>), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [Permissao(Permissao.CP_I, Policy = "Bearer")]
+        public async Task<IActionResult> ObterTurmasCopia(string codigoTurma, string disciplinaId)
+        {
+            return Ok(await consultaAtividadeAvaliativa.ObterTurmasCopia(codigoTurma, disciplinaId));
         }
     }
 }
