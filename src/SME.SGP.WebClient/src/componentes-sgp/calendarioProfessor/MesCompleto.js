@@ -7,6 +7,7 @@ import DiaCompleto from './DiaCompleto';
 import { store } from '~/redux';
 import { selecionaMes } from '~/redux/modulos/calendarioProfessor/actions';
 import api from '~/servicos/api';
+import Loader from '~/componentes/loader';
 
 const Div = styled.div``;
 
@@ -73,6 +74,7 @@ const MesCompleto = props => {
   }, [mesesCalendario, mesesLista, tipoCalendarioSelecionado]);
 
   const [tipoEventosDiaLista, setTipoEventosDiaLista] = useState([]);
+  const [carregandoTipos, setCarregandoTipos] = useState(false);
 
   const obterTipoEventosDia = useCallback(
     async mes => {
@@ -83,6 +85,7 @@ const MesCompleto = props => {
           unidadeEscolarSelecionada &&
           (turmaSelecionada || todasTurmas)
         ) {
+          setCarregandoTipos(true);
           await api
             .post(`v1/calendarios/meses/tipos/eventos-aulas`, {
               Mes: mes,
@@ -97,9 +100,11 @@ const MesCompleto = props => {
               if (resposta.data) {
                 setTipoEventosDiaLista(resposta.data);
               } else setTipoEventosDiaLista([]);
+              setCarregandoTipos(false);
             })
             .catch(() => {
               setTipoEventosDiaLista([]);
+              setCarregandoTipos(false);
             });
         } else setTipoEventosDiaLista([]);
       }
@@ -142,82 +147,84 @@ const MesCompleto = props => {
     <Div
       className={`${mesesCalendario[mesSelecionado].nome} d-none border border-top-0 border-bottom-0 h-100 w-100 fade`}
     >
-      <Div className="w-100 d-flex pt-4 pb-3 border-bottom">
-        <DiaDaSemana nomeDia="Domingo" />
-        <DiaDaSemana nomeDia="Segunda" />
-        <DiaDaSemana nomeDia="Terça" />
-        <DiaDaSemana nomeDia="Quarta" />
-        <DiaDaSemana nomeDia="Quinta" />
-        <DiaDaSemana nomeDia="Sexta" />
-        <DiaDaSemana nomeDia="Sábado" />
-      </Div>
-      <Semana
-        inicial
-        dias={diasDaSemana[0]}
-        mesAtual={ultimoUsado}
-        filtros={filtros}
-        tipoEventosDiaLista={tipoEventosDiaLista}
-      />
-      <DiaCompleto
-        dias={diasDaSemana[0]}
-        mesAtual={ultimoUsado}
-        filtros={filtros}
-      />
-      <Semana
-        dias={diasDaSemana[1]}
-        mesAtual={ultimoUsado}
-        filtros={filtros}
-        tipoEventosDiaLista={tipoEventosDiaLista}
-      />
-      <DiaCompleto
-        dias={diasDaSemana[1]}
-        mesAtual={ultimoUsado}
-        filtros={filtros}
-      />
-      <Semana
-        dias={diasDaSemana[2]}
-        mesAtual={ultimoUsado}
-        filtros={filtros}
-        tipoEventosDiaLista={tipoEventosDiaLista}
-      />
-      <DiaCompleto
-        dias={diasDaSemana[2]}
-        mesAtual={ultimoUsado}
-        filtros={filtros}
-      />
-      <Semana
-        dias={diasDaSemana[3]}
-        mesAtual={ultimoUsado}
-        filtros={filtros}
-        tipoEventosDiaLista={tipoEventosDiaLista}
-      />
-      <DiaCompleto
-        dias={diasDaSemana[3]}
-        mesAtual={ultimoUsado}
-        filtros={filtros}
-      />
-      <Semana
-        dias={diasDaSemana[4]}
-        mesAtual={ultimoUsado}
-        filtros={filtros}
-        tipoEventosDiaLista={tipoEventosDiaLista}
-      />
-      <DiaCompleto
-        dias={diasDaSemana[4]}
-        mesAtual={ultimoUsado}
-        filtros={filtros}
-      />
-      <Semana
-        dias={diasDaSemana[5]}
-        mesAtual={ultimoUsado}
-        filtros={filtros}
-        tipoEventosDiaLista={tipoEventosDiaLista}
-      />
-      <DiaCompleto
-        dias={diasDaSemana[5]}
-        mesAtual={ultimoUsado}
-        filtros={filtros}
-      />
+      <Loader loading={carregandoTipos}>
+        <Div className="w-100 d-flex pt-4 pb-3 border-bottom">
+          <DiaDaSemana nomeDia="Domingo" />
+          <DiaDaSemana nomeDia="Segunda" />
+          <DiaDaSemana nomeDia="Terça" />
+          <DiaDaSemana nomeDia="Quarta" />
+          <DiaDaSemana nomeDia="Quinta" />
+          <DiaDaSemana nomeDia="Sexta" />
+          <DiaDaSemana nomeDia="Sábado" />
+        </Div>
+        <Semana
+          inicial
+          dias={diasDaSemana[0]}
+          mesAtual={ultimoUsado}
+          filtros={filtros}
+          tipoEventosDiaLista={tipoEventosDiaLista}
+        />
+        <DiaCompleto
+          dias={diasDaSemana[0]}
+          mesAtual={ultimoUsado}
+          filtros={filtros}
+        />
+        <Semana
+          dias={diasDaSemana[1]}
+          mesAtual={ultimoUsado}
+          filtros={filtros}
+          tipoEventosDiaLista={tipoEventosDiaLista}
+        />
+        <DiaCompleto
+          dias={diasDaSemana[1]}
+          mesAtual={ultimoUsado}
+          filtros={filtros}
+        />
+        <Semana
+          dias={diasDaSemana[2]}
+          mesAtual={ultimoUsado}
+          filtros={filtros}
+          tipoEventosDiaLista={tipoEventosDiaLista}
+        />
+        <DiaCompleto
+          dias={diasDaSemana[2]}
+          mesAtual={ultimoUsado}
+          filtros={filtros}
+        />
+        <Semana
+          dias={diasDaSemana[3]}
+          mesAtual={ultimoUsado}
+          filtros={filtros}
+          tipoEventosDiaLista={tipoEventosDiaLista}
+        />
+        <DiaCompleto
+          dias={diasDaSemana[3]}
+          mesAtual={ultimoUsado}
+          filtros={filtros}
+        />
+        <Semana
+          dias={diasDaSemana[4]}
+          mesAtual={ultimoUsado}
+          filtros={filtros}
+          tipoEventosDiaLista={tipoEventosDiaLista}
+        />
+        <DiaCompleto
+          dias={diasDaSemana[4]}
+          mesAtual={ultimoUsado}
+          filtros={filtros}
+        />
+        <Semana
+          dias={diasDaSemana[5]}
+          mesAtual={ultimoUsado}
+          filtros={filtros}
+          tipoEventosDiaLista={tipoEventosDiaLista}
+        />
+        <DiaCompleto
+          dias={diasDaSemana[5]}
+          mesAtual={ultimoUsado}
+          filtros={filtros}
+        />
+      </Loader>
     </Div>
   ) : (
     <Div />

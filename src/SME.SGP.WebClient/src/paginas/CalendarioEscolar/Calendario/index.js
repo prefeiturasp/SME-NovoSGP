@@ -195,15 +195,12 @@ const CalendarioEscolar = () => {
                 abrev: dre.abreviacao,
               });
             });
-            lista.sort(FiltroHelper.ordenarLista('desc'));
-            lista.unshift({ desc: 'Todas', valor: 0, abrev: '' });
-            setDres(lista);
+            setDres(lista.sort(FiltroHelper.ordenarLista('desc')));
             setCarregandoDres(false);
           }
         }
       })
       .catch(() => {
-        dresStore.unshift({ desc: 'Todas', valor: 0, abrev: '' });
         setDres(dresStore);
         setCarregandoDres(false);
       });
@@ -242,7 +239,12 @@ const CalendarioEscolar = () => {
   };
 
   useEffect(() => {
-    setFiltros({ ...filtros, eventoSme });
+    setFiltros({
+      tipoCalendarioSelecionado,
+      eventoSme,
+      dreSelecionada,
+      unidadeEscolarSelecionada,
+    });
   }, [eventoSme]);
 
   useEffect(() => {
@@ -302,7 +304,12 @@ const CalendarioEscolar = () => {
     } else {
       setUnidadeEscolarSelecionada();
     }
-    setFiltros({ ...filtros, dreSelecionada });
+    setFiltros({
+      tipoCalendarioSelecionado,
+      eventoSme,
+      dreSelecionada,
+      unidadeEscolarSelecionada,
+    });
   }, [dreSelecionada]);
 
   const aoSelecionarUnidadeEscolar = unidade => {
@@ -311,15 +318,18 @@ const CalendarioEscolar = () => {
 
   useEffect(() => {
     if (unidadeEscolarSelecionada) consultarDiasLetivos();
-    setFiltros({ ...filtros, unidadeEscolarSelecionada });
+    setFiltros({
+      tipoCalendarioSelecionado,
+      eventoSme,
+      dreSelecionada,
+      unidadeEscolarSelecionada,
+    });
   }, [unidadeEscolarSelecionada]);
 
   return (
     <Div className="col-12">
       <Grid cols={12} className="mb-1 p-0">
-        <Titulo className="font-weight-bold">
-          Consulta de calendário escolar
-        </Titulo>
+        <Titulo className="font-weight-bold">Calendário escolar</Titulo>
       </Grid>
       <Card className="rounded mb-4 mx-auto">
         <Grid cols={12} className="mb-4">

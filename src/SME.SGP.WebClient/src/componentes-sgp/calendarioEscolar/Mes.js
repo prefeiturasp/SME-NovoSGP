@@ -57,14 +57,7 @@ const Mes = props => {
   }, [meses, numeroMes]);
 
   const abrirMes = () => {
-    if (
-      filtros &&
-      Object.entries(filtros).length > 0 &&
-      meses[numeroMes].eventos > 0
-    ) {
-      const { tipoCalendarioSelecionado = '' } = filtros;
-      if (tipoCalendarioSelecionado) store.dispatch(selecionaMes(numeroMes));
-    }
+    if (tipoCalendarioSelecionado) store.dispatch(selecionaMes(numeroMes));
   };
 
   useEffect(() => {
