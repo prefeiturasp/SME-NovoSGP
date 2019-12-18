@@ -261,10 +261,7 @@ namespace SME.SGP.Aplicacao.Integracoes
                             resultado.Dres.AddRange(parcial.Dres);
                     }
                     else
-                    {
                         SentrySdk.AddBreadcrumb($"Ocorreu um erro na tentativa de buscar os dados de Estrutura Institucional Vigente por Dre: {item} - HttpCode {resposta.StatusCode} - Body {resposta.Content?.ReadAsStringAsync()?.Result ?? string.Empty}");
-                        return null;
-                    }
                 }
             }
 

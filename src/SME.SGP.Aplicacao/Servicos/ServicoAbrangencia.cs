@@ -135,9 +135,10 @@ namespace SME.SGP.Aplicacao.Servicos
             if (codigosNaoEncontrados != null && codigosNaoEncontrados.Length > 0)
             {
                 var turmasEol = servicoEOL.ObterEstruturaInstuticionalVigentePorTurma(codigosTurma: codigosNaoEncontrados);
+                SincronizarEstruturaInstitucional(turmasEol);
             }
 
-            return resultado;
+            return repositorioTurma.MaterializarCodigosTurma(codigosNaoEncontrados, out codigosNaoEncontrados);
         }
 
         private Task<AbrangenciaCompactaVigenteRetornoEOLDTO> TratarRetornoSupervisor(Task<AbrangenciaRetornoEolDto> consultaEol)
@@ -244,31 +245,25 @@ namespace SME.SGP.Aplicacao.Servicos
             IEnumerable<Ue> ues = Enumerable.Empty<Ue>();
             IEnumerable<Turma> turmas = Enumerable.Empty<Turma>();
 
-            try
+            dres = estrutura.Dres.Select(x => new Dre() { Abreviacao = x.Abreviacao, CodigoDre = x.Codigo, Nome = x.Nome });
+            ues = estrutura.Dres.SelectMany(x => x.Ues.Select(y => new Ue { CodigoUe = y.Codigo, TipoEscola = y.CodTipoEscola, Nome = y.Nome, Dre = new Dre() { CodigoDre = x.Codigo } }));
+            turmas = estrutura.Dres.SelectMany(x => x.Ues.SelectMany(y => y.Turmas.Select(z =>
+            new Turma
             {
-                dres = estrutura.Dres.Select(x => new Dre() { Abreviacao = x.Abreviacao, CodigoDre = x.Codigo, Nome = x.Nome });
-                ues = estrutura.Dres.SelectMany(x => x.Ues.Select(y => new Ue { CodigoUe = y.Codigo, TipoEscola = y.CodTipoEscola, Nome = y.Nome, Dre = new Dre() { CodigoDre = x.Codigo } }));
-                turmas = estrutura.Dres.SelectMany(x => x.Ues.SelectMany(y => y.Turmas.Select(z =>
-                new Turma
-                {
-                    Ano = z.Ano,
-                    AnoLetivo = z.AnoLetivo,
-                    CodigoTurma = z.Codigo,
-                    ModalidadeCodigo = (Modalidade)Convert.ToInt32(z.CodigoModalidade),
-                    QuantidadeDuracaoAula = z.DuracaoTurno,
-                    Nome = z.NomeTurma,
-                    Semestre = z.Semestre,
-                    TipoTurno = z.TipoTurno,
-                    Ue = new Ue() { CodigoUe = y.Codigo }
-                })));
+                Ano = z.Ano,
+                AnoLetivo = z.AnoLetivo,
+                CodigoTurma = z.Codigo,
+                ModalidadeCodigo = (Modalidade)Convert.ToInt32(z.CodigoModalidade),
+                QuantidadeDuracaoAula = z.DuracaoTurno,
+                Nome = z.NomeTurma,
+                Semestre = z.Semestre,
+                TipoTurno = z.TipoTurno,
+                Ue = new Ue() { CodigoUe = y.Codigo }
+            })));
 
-                dres = repositorioDre.Sincronizar(dres);
-                ues = repositorioUe.Sincronizar(ues, dres);
-                turmas = repositorioTurma.Sincronizar(turmas, ues);
-            }
-            finally
-            {
-            }
+            dres = repositorioDre.Sincronizar(dres);
+            ues = repositorioUe.Sincronizar(ues, dres);
+            repositorioTurma.Sincronizar(turmas, ues);
         }
 
         private async Task TrataAbrangenciaLogin(string login, Guid perfil)
