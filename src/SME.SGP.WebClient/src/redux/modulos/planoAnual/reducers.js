@@ -97,9 +97,10 @@ export default function bimestres(state = INICIAL, action) {
 
         break;
       case '@bimestres/SalvarObjetivos':
-        if (bimestres[action.payload.indice])
+        if (state.bimestres[action.payload.indice])
           draft.bimestres[action.payload.indice].objetivosAprendizagem =
             action.payload.objetivos;
+
         draft.bimestresErro = state.bimestresErro;
 
         break;
