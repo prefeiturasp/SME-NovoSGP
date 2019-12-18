@@ -117,6 +117,9 @@ const AvaliacaoForm = ({ match }) => {
     delete dadosValidacao.categoriaId;
     delete dadosValidacao.descricao;
 
+    dados.disciplinasId = [];
+    dados.disciplinasId.push(dados.disciplinaId);
+
     if (descricao.length <= 500) {
       const validacao = await ServicoAvaliacao.validar(dadosValidacao);
 
