@@ -1,4 +1,5 @@
 import api from '~/servicos/api';
+
 const urlPadrao = `v1/calendarios/eventos`;
 
 class ServicoEvento {
@@ -22,11 +23,11 @@ class ServicoEvento {
 
   listarDres = async () => {
     return api
-      .get('v1/abrangencias/dres')
+      .get('v1/abrangencias/false/dres')
       .then(res => {
         return { sucesso: true, conteudo: res.data };
       })
-      .catch(err => {
+      .catch(() => {
         return {
           sucesso: false,
           erro: 'ocorreu uma falha ao consultar as dres',
@@ -36,11 +37,11 @@ class ServicoEvento {
 
   listarUes = async dre => {
     return api
-      .get(`v1/abrangencias/dres/${dre}/ues`)
+      .get(`v1/abrangencias/false/dres/${dre}/ues`)
       .then(res => {
         return { sucesso: true, conteudo: res.data };
       })
-      .catch(err => {
+      .catch(() => {
         return {
           sucesso: false,
           erro: 'ocorreu uma falha ao consultar as unidades escolares',
