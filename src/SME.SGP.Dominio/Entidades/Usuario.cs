@@ -122,7 +122,12 @@ namespace SME.SGP.Dominio
         {
             if (evento.TipoEvento.LocalOcorrencia == EventoLocalOcorrencia.DRE)
             {
-                if (PerfilAtual != Dominio.Perfis.PERFIL_DIRETOR && PerfilAtual != Dominio.Perfis.PERFIL_AD && PerfilAtual != Dominio.Perfis.PERFIL_CP)
+                if (evento.TipoPerfilCadastro == TipoPerfil.SME)
+                {
+                    if (evento.TipoPerfilCadastro != ObterTipoPerfilAtual())
+                        throw new NegocioException("Você não tem permissão para alterar este evento.");
+                }
+                else if (PerfilAtual != Dominio.Perfis.PERFIL_DIRETOR && PerfilAtual != Dominio.Perfis.PERFIL_AD && PerfilAtual != Dominio.Perfis.PERFIL_CP)
                     throw new NegocioException("Você não tem permissão para alterar este evento.");
             }
         }
