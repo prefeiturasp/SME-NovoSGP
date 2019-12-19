@@ -10,11 +10,11 @@ namespace SME.SGP.Aplicacao
 {
     public class ConsultasAula : IConsultasAula
     {
-        private readonly IRepositorioAula repositorio;
-        private readonly IServicoUsuario servicoUsuario;
         private readonly IConsultasFrequencia consultasFrequencia;
-        private readonly IRepositorioPlanoAula repositorioPlanoAula;
         private readonly IConsultasPeriodoEscolar consultasPeriodoEscolar;
+        private readonly IRepositorioAula repositorio;
+        private readonly IRepositorioPlanoAula repositorioPlanoAula;
+        private readonly IServicoUsuario servicoUsuario;
 
         public ConsultasAula(IRepositorioAula repositorio,
                              IConsultasPeriodoEscolar consultasPeriodoEscolar,
@@ -35,6 +35,15 @@ namespace SME.SGP.Aplicacao
             return MapearParaDto(aula);
         }
 
+        public async Task<bool> ChecarFrequenciaPlanoAula(long aulaId)
+        {
+            var existeRegistro = await consultasFrequencia.FrequenciaAulaRegistrada(aulaId);
+            if (!existeRegistro)
+                existeRegistro = await repositorioPlanoAula.PlanoAulaRegistrado(aulaId);
+
+            return existeRegistro;
+        }
+
         public async Task<bool> ChecarFrequenciaPlanoNaRecorrencia(long aulaId)
         {
             var existeRegistro = await ChecarFrequenciaPlanoAula(aulaId);
@@ -53,18 +62,9 @@ namespace SME.SGP.Aplicacao
 
                         if (existeRegistro)
                             break;
-                    } 
+                    }
                 }
             }
-
-            return existeRegistro;
-        }
-
-        public async Task<bool> ChecarFrequenciaPlanoAula(long aulaId)
-        {
-            var existeRegistro = await consultasFrequencia.FrequenciaAulaRegistrada(aulaId);
-            if (!existeRegistro)
-                existeRegistro = await repositorioPlanoAula.PlanoAulaRegistrado(aulaId);
 
             return existeRegistro;
         }
@@ -78,7 +78,7 @@ namespace SME.SGP.Aplicacao
         {
             var usuarioLogado = await servicoUsuario.ObterUsuarioLogado();
             var usuarioRF = usuarioLogado.EhProfessor() ? usuarioLogado.CodigoRf : string.Empty;
-            return repositorio.ObterDatasDeAulasPorAnoTurmaEDisciplina(anoLetivo, turma, disciplina, usuarioLogado.Id, usuarioRF, usuarioLogado.PerfilAtual)?.Select(a => new DataAulasProfessorDto
+            return repositorio.ObterDatasDeAulasPorAnoTurmaEDisciplina(anoLetivo, turma, disciplina, usuarioLogado.Id, usuarioRF)?.Select(a => new DataAulasProfessorDto
             {
                 Data = a.DataAula,
                 IdAula = a.Id
@@ -90,7 +90,7 @@ namespace SME.SGP.Aplicacao
             var aulaInicioRecorrencia = repositorio.ObterPorId(aulaInicialId);
             var fimRecorrencia = consultasPeriodoEscolar.ObterFimPeriodoRecorrencia(aulaInicioRecorrencia.TipoCalendarioId, aulaInicioRecorrencia.DataAula, recorrencia);
 
-            var aulaIdOrigemRecorrencia = aulaInicioRecorrencia.AulaPaiId != null ? aulaInicioRecorrencia.AulaPaiId.Value 
+            var aulaIdOrigemRecorrencia = aulaInicioRecorrencia.AulaPaiId != null ? aulaInicioRecorrencia.AulaPaiId.Value
                                             : aulaInicialId;
             var aulasRecorrentes = await repositorio.ObterAulasRecorrencia(aulaIdOrigemRecorrencia, aulaInicioRecorrencia.Id, fimRecorrencia);
             return aulasRecorrentes.Count() + 1;
@@ -138,7 +138,7 @@ namespace SME.SGP.Aplicacao
             return (int)aulaOrigemRecorrencia.RecorrenciaAula;
         }
 
-        private bool ExperienciaPedagogica(string disciplina) 
+        private bool ExperienciaPedagogica(string disciplina)
             => new string[] { "1214", "1215", "1216", "1217", "1218", "1219", "1220", "1221", "1222", "1223" }
                 .Contains(disciplina);
 
