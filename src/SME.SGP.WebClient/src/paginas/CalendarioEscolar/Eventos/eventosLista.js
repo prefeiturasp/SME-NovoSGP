@@ -138,7 +138,11 @@ const EventosLista = () => {
   const [ueDesabilitada, setUeDesabilitada] = useState(false);
 
   useEffect(() => {
-    if (listaDre.length === 1 && usuario.possuiPerfilDre) {
+    if (
+      listaDre.length === 1 &&
+      (usuario.possuiPerfilDre || !usuario.possuiPerfilSmeOuDre)
+    ) {
+      refForm.setFieldValue('dreId', listaDre[0].codigo.toString());
       setDreSelecionada(listaDre[0].codigo.toString());
       setDreDesabilitada(true);
     }
@@ -234,7 +238,9 @@ const EventosLista = () => {
         ue => (ue.nome = `${tipoEscolaDTO[ue.tipoEscola]} ${ue.nome}`)
       );
       ues.conteudo.sort(FiltroHelper.ordenarLista('nome'));
-      ues.conteudo.unshift({ codigo: 0, nome: 'Todas' });
+      if (ues.conteudo.length > 1) {
+        ues.conteudo.unshift({ codigo: 0, nome: 'Todas' });
+      }
       setListaUe(ues.conteudo);
     }
   };
