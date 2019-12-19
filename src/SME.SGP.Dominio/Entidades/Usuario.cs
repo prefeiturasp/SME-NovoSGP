@@ -77,6 +77,11 @@ namespace SME.SGP.Dominio
             return PerfilAtual == Dominio.Perfis.PERFIL_CJ;
         }
 
+        public bool EhProfessorPoa()
+        {
+            return PerfilAtual == Dominio.Perfis.PERFIL_POA;
+        }
+
         public void FinalizarRecuperacaoSenha()
         {
             TokenRecuperacaoSenha = null;
@@ -147,13 +152,10 @@ namespace SME.SGP.Dominio
 
         public void PodeCriarEventoComDataPassada(Evento evento)
         {
-            if (evento.DataInicio < DateTime.Today)
+            if (evento.DataInicio.Date < DateTime.Today)
             {
-                if (ObterTipoPerfilAtual() != TipoPerfil.SME)
-                {
-                    if (ObterTipoPerfilAtual() != TipoPerfil.DRE || evento.TipoEvento.LocalOcorrencia != EventoLocalOcorrencia.DRE)
-                        throw new NegocioException("Não é possível criar evento com datas passadas.");
-                }
+                if (ObterTipoPerfilAtual() != TipoPerfil.SME && ObterTipoPerfilAtual() != TipoPerfil.DRE)
+                    throw new NegocioException("Não é possível criar evento com data passada.");
             }
         }
 

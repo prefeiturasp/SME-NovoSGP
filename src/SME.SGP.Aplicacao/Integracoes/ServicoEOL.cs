@@ -1,4 +1,5 @@
 ﻿using Newtonsoft.Json;
+using Sentry;
 using SME.SGP.Aplicacao.Integracoes.Respostas;
 using SME.SGP.Dominio;
 using SME.SGP.Dto;
@@ -91,6 +92,18 @@ namespace SME.SGP.Aplicacao.Integracoes
             return null;
         }
 
+        public async Task<AbrangenciaCompactaVigenteRetornoEOLDTO> ObterAbrangenciaCompactaVigente(string login, Guid perfil)
+        {
+            var resposta = await httpClient.GetAsync($"abrangencia/compacta-vigente/{login}/perfil/{perfil.ToString()}");
+
+            if (resposta.IsSuccessStatusCode)
+            {
+                var json = await resposta.Content.ReadAsStringAsync();
+                return JsonConvert.DeserializeObject<AbrangenciaCompactaVigenteRetornoEOLDTO>(json);
+            }
+            return null;
+        }
+
         public async Task<AbrangenciaRetornoEolDto> ObterAbrangenciaParaSupervisor(string[] uesIds)
         {
             var json = new StringContent(JsonConvert.SerializeObject(uesIds), Encoding.UTF8, "application/json");
@@ -116,6 +129,19 @@ namespace SME.SGP.Aplicacao.Integracoes
         {
             var alunos = new List<AlunoPorTurmaResposta>();
             var resposta = await httpClient.GetAsync($"turmas/{turmaId}");
+            if (resposta.IsSuccessStatusCode)
+            {
+                var json = await resposta.Content.ReadAsStringAsync();
+                alunos = JsonConvert.DeserializeObject<List<AlunoPorTurmaResposta>>(json);
+            }
+
+            return alunos;
+        }
+
+        public async Task<IEnumerable<AlunoPorTurmaResposta>> ObterAlunosPorTurma(string turmaId, int anoLetivo)
+        {
+            var alunos = new List<AlunoPorTurmaResposta>();
+            var resposta = await httpClient.GetAsync($"turmas/{turmaId}/alunos/anosLetivos/{anoLetivo}");
             if (resposta.IsSuccessStatusCode)
             {
                 var json = await resposta.Content.ReadAsStringAsync();
@@ -187,6 +213,79 @@ namespace SME.SGP.Aplicacao.Integracoes
                 return JsonConvert.DeserializeObject<IEnumerable<EscolasRetornoDto>>(json);
             }
             return null;
+        }
+
+        public EstruturaInstitucionalRetornoEolDTO ObterEstruturaInstuticionalVigentePorTurma(string[] codigosTurma = null)
+        {
+            var filtroTurmas = new StringContent(JsonConvert.SerializeObject(codigosTurma ?? new string[] { }), UnicodeEncoding.UTF8, "application/json");
+
+            string url = $"abrangencia/estrutura-vigente";
+
+            httpClient.DefaultRequestHeaders.Clear();
+
+            var resposta = httpClient.PostAsync(url, filtroTurmas).Result;
+
+            if (resposta.IsSuccessStatusCode)
+            {
+                var json = resposta.Content.ReadAsStringAsync().Result;
+                return JsonConvert.DeserializeObject<EstruturaInstitucionalRetornoEolDTO>(json);
+            }
+            else
+            {
+                SentrySdk.AddBreadcrumb($"Ocorreu um erro na tentativa de buscar os dados de Estrutura Institucional Vigente - HttpCode {resposta.StatusCode} - Body {resposta.Content?.ReadAsStringAsync()?.Result ?? string.Empty}");
+                return null;
+            }
+        }
+
+        public EstruturaInstitucionalRetornoEolDTO ObterEstruturaInstuticionalVigentePorDre()
+        {
+            EstruturaInstitucionalRetornoEolDTO resultado = null;
+            var codigosDres = ObterCodigosDres();
+            string url = $"abrangencia/estrutura-vigente";
+
+            if (codigosDres != null && codigosDres.Length > 0)
+            {
+                resultado = new EstruturaInstitucionalRetornoEolDTO();
+                foreach (var item in codigosDres)
+                {
+                    httpClient.DefaultRequestHeaders.Clear();
+
+                    var resposta = httpClient.GetAsync($"{url}/{item}").Result;
+
+                    if (resposta.IsSuccessStatusCode)
+                    {
+                        var json = resposta.Content.ReadAsStringAsync().Result;
+                        var parcial = JsonConvert.DeserializeObject<EstruturaInstitucionalRetornoEolDTO>(json);
+
+                        if (parcial != null)
+                            resultado.Dres.AddRange(parcial.Dres);
+                    }
+                    else
+                        SentrySdk.AddBreadcrumb($"Ocorreu um erro na tentativa de buscar os dados de Estrutura Institucional Vigente por Dre: {item} - HttpCode {resposta.StatusCode} - Body {resposta.Content?.ReadAsStringAsync()?.Result ?? string.Empty}");
+                }
+            }
+
+            return resultado;
+        }
+
+        private string[] ObterCodigosDres()
+        {
+            string url = $"abrangencia/codigos-dres";
+
+            httpClient.DefaultRequestHeaders.Clear();
+
+            var resposta = httpClient.GetAsync(url).Result;
+
+            if (resposta.IsSuccessStatusCode)
+            {
+                var json = resposta.Content.ReadAsStringAsync().Result;
+                return JsonConvert.DeserializeObject<string[]>(json);
+            }
+            else
+            {
+                SentrySdk.AddBreadcrumb($"Ocorreu um erro na tentativa de buscar os codigos das Dres no EOL - HttpCode {resposta.StatusCode} - Body {resposta.Content?.ReadAsStringAsync()?.Result ?? string.Empty}");
+                return null;
+            }
         }
 
         public IEnumerable<UsuarioEolRetornoDto> ObterFuncionariosPorCargoUe(string ueId, long cargoId)
@@ -311,7 +410,20 @@ namespace SME.SGP.Aplicacao.Integracoes
             return JsonConvert.DeserializeObject<IEnumerable<ProfessorResumoDto>>(json);
         }
 
-       
+        public async Task<IEnumerable<ProfessorResumoDto>> ObterProfessoresAutoComplete(int anoLetivo, string dreId, string nomeProfessor, bool incluirEmei)
+        {
+            var resposta = await httpClient.GetAsync($"professores/{anoLetivo}/AutoComplete/{dreId}/{incluirEmei}?nome={nomeProfessor}");
+
+            if (!resposta.IsSuccessStatusCode)
+                return null;
+
+            if (resposta.StatusCode == HttpStatusCode.NoContent)
+                return null;
+
+            var json = await resposta.Content.ReadAsStringAsync();
+            return JsonConvert.DeserializeObject<IEnumerable<ProfessorResumoDto>>(json);
+        }
+
         public async Task<IEnumerable<ProfessorTitularDisciplinaEol>> ObterProfessoresTitularesDisciplinas(string turmaCodigo, string professorRf = null)
         {
             StringBuilder url = new StringBuilder();
@@ -353,6 +465,21 @@ namespace SME.SGP.Aplicacao.Integracoes
         public async Task<ProfessorResumoDto> ObterResumoProfessorPorRFAnoLetivo(string codigoRF, int anoLetivo)
         {
             var resposta = await httpClient.GetAsync($"professores/{codigoRF}/BuscarPorRf/{anoLetivo}");
+
+            if (!resposta.IsSuccessStatusCode)
+                throw new NegocioException("Ocorreu uma falha ao consultar o professor");
+
+            if (resposta.StatusCode == HttpStatusCode.NoContent)
+                throw new NegocioException($"Não foi encontrado professor com RF {codigoRF}");
+
+            var json = await resposta.Content.ReadAsStringAsync();
+
+            return JsonConvert.DeserializeObject<ProfessorResumoDto>(json);
+        }
+
+        public async Task<ProfessorResumoDto> ObterResumoProfessorPorRFAnoLetivo(string codigoRF, int anoLetivo, bool incluirEmei)
+        {
+            var resposta = await httpClient.GetAsync($"professores/{codigoRF}/BuscarPorRf/{anoLetivo}/{incluirEmei}");
 
             if (!resposta.IsSuccessStatusCode)
                 throw new NegocioException("Ocorreu uma falha ao consultar o professor");
@@ -473,5 +600,6 @@ namespace SME.SGP.Aplicacao.Integracoes
             }
             return null;
         }
+
     }
 }

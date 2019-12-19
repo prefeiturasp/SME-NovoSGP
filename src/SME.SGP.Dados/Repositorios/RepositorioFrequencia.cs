@@ -1,5 +1,5 @@
 ﻿using Dapper;
-using SME.SGP.Dados.Contexto;
+using Sentry;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
@@ -56,18 +56,48 @@ namespace SME.SGP.Dados.Repositorios
             return database.Conexao.QueryFirstOrDefault<RegistroFrequenciaAulaDto>(query, new { registroFrequenciaId });
         }
 
-        public IEnumerable<AulasPorTurmaDisciplinaDto> ObterAulasSemRegistroFrequencia(string turmaId, string disciplinaId)
+        public IEnumerable<AulasPorTurmaDisciplinaDto> ObterAulasSemRegistroFrequencia(string turmaId, string disciplinaId, TipoNotificacaoFrequencia tipoNotificacao)
         {
-            var query = @"select a.id, a.professor_rf as professorId, a.data_aula as dataAula, a.quantidade
-                          from aula a
-                          left join registro_frequencia r on r.aula_id = a.id
-                         where not a.excluido
-                           and r.id is null
-                           and a.data_aula < DATE(now())
-                           and a.turma_id = @turmaId
-                           and a.disciplina_id = @disciplinaId";
+            var query = @"select
+	                        a.id,
+	                        a.professor_rf as professorId,
+	                        a.data_aula as dataAula,
+	                        a.quantidade
+                        from
+	                        aula a
+                        where
+	                        not a.excluido
+	                        and not a.migrado
+	                        and not exists (
+	                        select
+		                        1
+	                        from
+		                        notificacao_frequencia n
+	                        where
+		                        n.aula_id = a.id
+		                        and n.tipo = @tipoNotificacao)
+	                        and not exists (
+	                        select
+		                        1
+	                        from
+		                        registro_frequencia r
+	                        where
+		                        r.aula_id = a.id)
+	                        and a.data_aula < date(now())
+	                        and a.turma_id = @turmaId
+	                        and a.disciplina_id = @disciplinaId";
 
-            return database.Conexao.Query<AulasPorTurmaDisciplinaDto>(query, new { turmaId, disciplinaId });
+            IEnumerable<AulasPorTurmaDisciplinaDto> lista = new List<AulasPorTurmaDisciplinaDto>();
+            try
+            {
+                lista = database.Conexao.Query<AulasPorTurmaDisciplinaDto>(query, new { turmaId, disciplinaId, tipoNotificacao });
+            }
+            catch (Exception ex)
+            {
+                SentrySdk.CaptureEvent(new SentryEvent(ex));
+                SentrySdk.CaptureEvent(new SentryEvent(new NegocioException($"ObterAulasSemRegistroFrequencia - {turmaId} - {disciplinaId}")));
+            }
+            return lista;
         }
 
         public async Task<IEnumerable<AusenciaAlunoDto>> ObterAusencias(string turmaCodigo, string disciplinaCodigo, DateTime[] datas, string[] alunoCodigos)

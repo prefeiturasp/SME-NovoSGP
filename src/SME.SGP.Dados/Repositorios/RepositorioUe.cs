@@ -29,6 +29,26 @@ namespace SME.SGP.Dados.Repositorios
             return contexto.Conexao.Query<Ue>(query, new { codigos });
         }
 
+        public IEnumerable<Ue> MaterializarCodigosUe(string[] idUes, out string[] codigosNaoEncontrados)
+        {
+            List<Ue> resultado = new List<Ue>();
+            List<string> naoEncontrados = new List<string>();
+
+            for (int i = 0; i < idUes.Count(); i = i + 900)
+            {
+                var iteracao = idUes.Skip(i).Take(900);
+
+                var armazenados = contexto.Conexao.Query<Ue>(QuerySincronizacao.Replace("#ids", string.Join(",", idUes.Select(x => $"'{x}'"))));
+
+                naoEncontrados.AddRange(iteracao.Where(x => !armazenados.Select(y => y.CodigoUe).Contains(x)));
+
+                resultado.AddRange(armazenados);
+            }
+            codigosNaoEncontrados = naoEncontrados.ToArray();
+
+            return resultado;
+        }
+
         public async Task<IEnumerable<Modalidade>> ObterModalidades(string ueCodigo, int ano)
         {
             var query = @"select distinct t.modalidade_codigo from turma t
@@ -43,6 +63,23 @@ namespace SME.SGP.Dados.Repositorios
         public Ue ObterPorCodigo(string ueId)
         {
             return contexto.QueryFirstOrDefault<Ue>("select * from ue where ue_id = @ueId", new { ueId });
+        }
+
+        public IEnumerable<Ue> ObterPorDre(long dreId)
+        {
+            var query = @"select
+	                        id,
+	                        ue_id,
+	                        dre_id,
+	                        nome,
+	                        tipo_escola,
+	                        data_atualizacao
+                        from
+	                        ue
+                        where
+	                        dre_id = @dreId";
+
+            return contexto.Query<Ue>(query, new { dreId });
         }
 
         public async Task<IEnumerable<Turma>> ObterTurmas(string ueCodigo, Modalidade modalidade, int ano)

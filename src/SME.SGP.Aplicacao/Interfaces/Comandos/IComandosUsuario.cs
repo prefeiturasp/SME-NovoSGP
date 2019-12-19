@@ -18,9 +18,11 @@ namespace SME.SGP.Aplicacao
 
         Task<UsuarioAutenticacaoRetornoDto> Autenticar(string login, string senha);
 
-        Task<(string, bool, bool)> ModificarPerfil(Guid guid);
+        Task<TrocaPerfilDto> ModificarPerfil(Guid guid);
 
         Task<UsuarioReinicioSenhaDto> ReiniciarSenha(string codigoRf);
+
+        Task<string> RevalidarLogin();
 
         void Sair();
 

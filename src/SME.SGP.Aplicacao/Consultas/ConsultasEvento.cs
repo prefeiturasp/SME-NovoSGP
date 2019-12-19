@@ -35,6 +35,8 @@ namespace SME.SGP.Aplicacao
                         Paginacao,
                         filtroEventosDto.DreId,
                         filtroEventosDto.UeId,
+                        filtroEventosDto.EhTodasDres,
+                        filtroEventosDto.EhTodasUes,
                         usuario,
                         usuario.PerfilAtual,
                         usuario.TemPerfilSupervisorOuDiretor(),
@@ -49,9 +51,20 @@ namespace SME.SGP.Aplicacao
                 usuario.TemPerfilSupervisorOuDiretor(), usuario.PodeVisualizarEventosOcorrenciaDre());
         }
 
-        public EventoCompletoDto ObterPorId(long id)
+        public async Task<EventoCompletoDto> ObterPorId(long id)
         {
-            return MapearParaDto(repositorioEvento.ObterPorId(id));
+            var evento = repositorioEvento.ObterPorId(id);
+            var usuario = await servicoUsuario.ObterUsuarioLogado();
+
+            //verificar se o evento e o perfil do usuário é SME para possibilitar alteração
+            bool podeAlterarSME = EhEventoSME(evento) || EhEventoSME(evento) && usuario.EhPerfilSME();
+
+            return MapearParaDto(evento, podeAlterarSME);
+        }
+
+        private bool EhEventoSME(Evento evento)
+        {
+            return evento.UeId == null && evento.DreId == null;
         }
 
         public async Task<IEnumerable<CalendarioTipoEventoPorDiaDto>> ObterQuantidadeDeEventosPorDia(CalendarioEventosFiltroDto calendarioEventosMesesFiltro, int mes)
@@ -68,12 +81,11 @@ namespace SME.SGP.Aplicacao
 
                 listaDiasEventos.ForEach(a =>
                 {
-                    var tipoEventos = a.Take(3).Select(b => b.TipoEvento).ToList();
+                    var tipoEventos = a.GroupBy(b => b.TipoEvento).Select(b => b.Key).ToList();
                     listaRetorno.Add(new CalendarioTipoEventoPorDiaDto()
                     {
                         Dia = a.Key,
                         TiposEvento = tipoEventos.ToArray(),
-                        QuantidadeDeEventos = a.Count()
                     });
                 });
             }
@@ -93,7 +105,7 @@ namespace SME.SGP.Aplicacao
             return items?.Select(c => MapearParaDto(c));
         }
 
-        private EventoCompletoDto MapearParaDto(Evento evento)
+        private EventoCompletoDto MapearParaDto(Evento evento, bool? podeAlterar = null)
         {
             return evento == null ? null : new EventoCompletoDto
             {
@@ -115,7 +127,8 @@ namespace SME.SGP.Aplicacao
                 CriadoPor = evento.CriadoPor,
                 CriadoRF = evento.CriadoRF,
                 TipoEvento = MapearTipoEvento(evento.TipoEvento),
-                Migrado = evento.Migrado
+                Migrado = evento.Migrado,
+                PodeAlterar = podeAlterar
             };
         }
 
@@ -131,6 +144,12 @@ namespace SME.SGP.Aplicacao
                 TotalPaginas = eventosPaginados.TotalPaginas,
                 TotalRegistros = eventosPaginados.TotalRegistros
             };
+        }
+
+        private async Task<bool> MapearPodeAlterarEventoSMEAsync(Evento evento)
+        {
+            var usuario = await servicoUsuario.ObterUsuarioLogado();
+            return !EhEventoSME(evento) || (EhEventoSME(evento) && usuario.EhPerfilSME());
         }
 
         private EventoTipoDto MapearTipoEvento(EventoTipo tipoEvento)
