@@ -202,18 +202,19 @@ namespace SME.SGP.Dados.Repositorios
             return (await database.Conexao.QueryAsync<AbrangenciaDreRetorno>(query.ToString(), new { login, perfil, modalidade = (modalidade.HasValue ? modalidade.Value : 0), semestre = periodo })).AsList();
         }
 
-        public async Task<IEnumerable<int>> ObterModalidades(string login, Guid perfil)
+        public async Task<IEnumerable<int>> ObterModalidades(string login, Guid perfil, int anoLetivo)
         {
             var query = @"select
-                        distinct va.modalidade_codigo
-                    from
-                        v_abrangencia va
-                    where
-                        va.usuario_id = (select id from usuario where login = @login)
-                        and va.usuario_perfil = @perfil
-                        and va.modalidade_codigo is not null";
+                            distinct va.modalidade_codigo
+                        from
+                            v_abrangencia va
+                        where
+                            va.usuario_id = (select id from usuario where login = @login)
+                            and va.usuario_perfil = @perfil
+                            and va.modalidade_codigo is not null
+                            and va.turma_ano_letivo = @anoLetivo";
 
-            return (await database.Conexao.QueryAsync<int>(query, new { login, perfil })).AsList();
+            return (await database.Conexao.QueryAsync<int>(query, new { login, perfil, anoLetivo })).AsList();
         }
 
         public async Task<IEnumerable<int>> ObterSemestres(string login, Guid perfil, Modalidade modalidade)

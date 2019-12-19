@@ -13,7 +13,7 @@ namespace SME.SGP.Aplicacao
 
         Task<IEnumerable<AbrangenciaDreRetorno>> ObterDres(Modalidade? modalidade, int periodo = 0);
 
-        Task<IEnumerable<EnumeradoRetornoDto>> ObterModalidades();
+        Task<IEnumerable<EnumeradoRetornoDto>> ObterModalidades(int anoLetivo);
 
         Task<IEnumerable<int>> ObterSemestres(Modalidade modalidade);
 

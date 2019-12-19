@@ -5,7 +5,7 @@ namespace SME.SGP.Dominio.Interfaces
 {
     public interface IRepositorioNotificacaoFrequencia : IRepositorioBase<NotificacaoFrequencia>
     {
-        IEnumerable<RegistroFrequenciaFaltanteDto> ObterTurmasSemRegistroDeFrequencia(TipoNotificacaoFrequencia tipoNotificacao, string ueId);
+        IEnumerable<RegistroFrequenciaFaltanteDto> ObterTurmasSemRegistroDeFrequencia(TipoNotificacaoFrequencia tipoNotificacao);
 
         bool UsuarioNotificado(long usuarioId, TipoNotificacaoFrequencia tipo);
     }

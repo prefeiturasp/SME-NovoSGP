@@ -86,6 +86,7 @@ const Filtro = memo(({ onFiltrar }) => {
               anoLetivo="2019"
               form={form}
               onChange={valor => valor}
+              incluirEmei
             />
           </Row>
         </Form>
