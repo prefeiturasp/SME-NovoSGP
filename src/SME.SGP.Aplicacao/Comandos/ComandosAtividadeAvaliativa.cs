@@ -127,6 +127,7 @@ namespace SME.SGP.Aplicacao
                 foreach (var atividadeDisciplina in atividadeDisciplinas)
                 {
                     var disciplina = ObterDisciplina(atividadeDisciplina.DisciplinaId);
+                    atividadeDisciplina.Excluir();
                     atividadeAvaliativa.Excluir();
                     await repositorioAtividadeAvaliativa.SalvarAsync(atividadeAvaliativa);
                     if (disciplina.Regencia)
@@ -138,6 +139,7 @@ namespace SME.SGP.Aplicacao
                             await repositorioAtividadeAvaliativaRegencia.SalvarAsync(regencia);
                         }
                     }
+                    await repositorioAtividadeAvaliativaDisciplina.SalvarAsync(atividadeDisciplina);
                 }
                 unitOfWork.PersistirTransacao();
             }

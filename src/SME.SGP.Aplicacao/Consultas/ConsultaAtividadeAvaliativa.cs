@@ -15,6 +15,7 @@ namespace SME.SGP.Aplicacao
         private readonly IConsultasProfessor consultasProfessor;
         private readonly IRepositorioAtividadeAvaliativa repositorioAtividadeAvaliativa;
         private readonly IRepositorioAtividadeAvaliativaRegencia repositorioAtividadeAvaliativaRegencia;
+        private readonly IRepositorioAtividadeAvaliativaDisciplina repositorioAtividadeAvaliativaDisciplina;
         private readonly IRepositorioPeriodoEscolar repositorioPeriodoEscolar;
         private readonly IRepositorioTipoCalendario repositorioTipoCalendario;
         private readonly IRepositorioTurma repositorioTurma;
@@ -27,6 +28,7 @@ namespace SME.SGP.Aplicacao
             IConsultasProfessor consultasProfessor,
             IRepositorioAtividadeAvaliativa repositorioAtividadeAvaliativa,
             IRepositorioAtividadeAvaliativaRegencia repositorioAtividadeAvaliativaRegencia,
+            IRepositorioAtividadeAvaliativaDisciplina repositorioAtividadeAvaliativaDisciplina,
             IRepositorioPeriodoEscolar repositorioPeriodoEscolar,
             IRepositorioTipoCalendario repositorioTipoCalendario,
             IRepositorioTurma repositorioTurma,
@@ -39,6 +41,7 @@ namespace SME.SGP.Aplicacao
             this.consultasProfessor = consultasProfessor ?? throw new System.ArgumentNullException(nameof(consultasProfessor));
             this.repositorioAtividadeAvaliativa = repositorioAtividadeAvaliativa ?? throw new System.ArgumentNullException(nameof(repositorioAtividadeAvaliativa));
             this.repositorioAtividadeAvaliativaRegencia = repositorioAtividadeAvaliativaRegencia ?? throw new System.ArgumentNullException(nameof(repositorioAtividadeAvaliativaRegencia));
+            this.repositorioAtividadeAvaliativaDisciplina = repositorioAtividadeAvaliativaDisciplina ?? throw new System.ArgumentNullException(nameof(repositorioAtividadeAvaliativaDisciplina));
             this.repositorioPeriodoEscolar = repositorioPeriodoEscolar ?? throw new System.ArgumentNullException(nameof(repositorioPeriodoEscolar));
             this.repositorioTurma = repositorioTurma ?? throw new System.ArgumentNullException(nameof(repositorioTurma));
             this.repositorioAula = repositorioAula ?? throw new System.ArgumentNullException(nameof(repositorioAula));
@@ -92,12 +95,13 @@ namespace SME.SGP.Aplicacao
         public async Task<AtividadeAvaliativaCompletaDto> ObterPorIdAsync(long id)
         {
             IEnumerable<AtividadeAvaliativaRegencia> atividadeRegencias = null;
+            IEnumerable<AtividadeAvaliativaDisciplina> atividadeDisciplinas = await repositorioAtividadeAvaliativaDisciplina.ListarPorIdAtividade(id);
             var atividade = await repositorioAtividadeAvaliativa.ObterPorIdAsync(id);
             if (atividade is null)
                 throw new NegocioException("Atividade avaliativa não encontrada");
             if (atividade.EhRegencia)
                 atividadeRegencias = await repositorioAtividadeAvaliativaRegencia.Listar(id);
-            return MapearParaDto(atividade, atividadeRegencias);
+            return MapearParaDto(atividade, atividadeRegencias, atividadeDisciplinas);
         }
 
         public async Task<IEnumerable<TurmaRetornoDto>> ObterTurmasCopia(string turmaId, string disciplinaId)
@@ -213,7 +217,7 @@ namespace SME.SGP.Aplicacao
             return items?.Select(c => MapearParaDto(c));
         }
 
-        private AtividadeAvaliativaCompletaDto MapearParaDto(AtividadeAvaliativa atividadeAvaliativa, IEnumerable<AtividadeAvaliativaRegencia> regencias = null)
+        private AtividadeAvaliativaCompletaDto MapearParaDto(AtividadeAvaliativa atividadeAvaliativa, IEnumerable<AtividadeAvaliativaRegencia> regencias = null, IEnumerable<AtividadeAvaliativaDisciplina> disciplinas = null)
         {
             return atividadeAvaliativa == null ? null : new AtividadeAvaliativaCompletaDto
             {
@@ -239,7 +243,8 @@ namespace SME.SGP.Aplicacao
                     AtividadeAvaliativaId = x.AtividadeAvaliativaId,
                     DisciplinaContidaRegenciaId = x.DisciplinaContidaRegenciaId,
                     Id = x.Id
-                }).ToList()
+                }).ToList(),
+                DisciplinasId = disciplinas?.Select(x => x.DisciplinaId).ToArray()
             };
         }
 
