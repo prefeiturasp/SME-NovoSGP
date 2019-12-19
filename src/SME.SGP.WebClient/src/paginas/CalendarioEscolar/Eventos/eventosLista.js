@@ -31,7 +31,7 @@ const EventosLista = () => {
   const [somenteConsulta, setSomenteConsulta] = useState(false);
 
   const [listaCalendarioEscolar, setListaCalendarioEscolar] = useState([]);
-  const [listaDre, setlistaDre] = useState([]);
+  const [listaDre, setListaDre] = useState([]);
   const [campoUeDesabilitado, setCampoUeDesabilitado] = useState(true);
   const [dreSelecionada, setDreSelecionada] = useState();
   const [listaUe, setListaUe] = useState([]);
@@ -123,14 +123,26 @@ const EventosLista = () => {
 
     if (dres.sucesso) {
       dres.conteudo.sort(FiltroHelper.ordenarLista('nome'));
-      dres.conteudo.unshift({ codigo: 0, nome: 'Todas' });
-      setlistaDre(dres.conteudo);
+      if (dres.conteudo.length > 1) {
+        dres.conteudo.unshift({ codigo: 0, nome: 'Todas' });
+      }
+      setListaDre(dres.conteudo);
       return;
     }
 
     erro(dres.erro);
-    setlistaDre([]);
+    setListaDre([]);
   };
+
+  const [dreDesabilitada, setDreDesabilitada] = useState(false);
+  const [ueDesabilitada, setUeDesabilitada] = useState(false);
+
+  useEffect(() => {
+    if (listaDre.length === 1 && usuario.possuiPerfilDre) {
+      setDreSelecionada(listaDre[0].codigo.toString());
+      setDreDesabilitada(true);
+    }
+  }, [listaDre]);
 
   useEffect(() => {
     const obterListaEventos = async () => {
@@ -206,7 +218,7 @@ const EventosLista = () => {
     if (!sucesso) {
       setListaUe([]);
       erro(ues.erro);
-      setlistaDre([]);
+      setListaDre([]);
       return;
     }
 
@@ -228,6 +240,13 @@ const EventosLista = () => {
   };
 
   useEffect(() => {
+    if (listaUe.length === 1 && !usuario.possuiPerfilSmeOuDre) {
+      refForm.setFieldValue('ueId', listaUe[0].codigo.toString());
+      setUeDesabilitada(true);
+    }
+  }, [listaUe]);
+
+  useEffect(() => {
     if (dreSelecionada) listarUes();
 
     if (selecionouCalendario) validarFiltrar();
@@ -237,7 +256,7 @@ const EventosLista = () => {
     history.push(URL_HOME);
   };
 
-  const onChangeUe = () => {
+  const onChangeUe = async ueId => {
     if (selecionouCalendario) validarFiltrar();
   };
 
@@ -303,8 +322,14 @@ const EventosLista = () => {
       tipoCalendarioId: valoresForm.tipoCalendarioId,
       nomeEvento,
       tipoEventoId: tipoEvento,
-      ueId: valoresForm.ueId === 0 ? '' : valoresForm.ueId,
-      dreId: valoresForm.dreId === 0 ? '' : valoresForm.dreId,
+      ueId:
+        valoresForm.ueId && valoresForm.ueId.toString() === '0'
+          ? ''
+          : valoresForm.ueId,
+      dreId:
+        valoresForm.dreId && valoresForm.dreId.toString() === '0'
+          ? ''
+          : valoresForm.dreId,
       dataInicio: valoresForm.dataInicio && valoresForm.dataInicio.toDate(),
       dataFim: valoresForm.dataInicio && valoresForm.dataFim.toDate(),
       EhTodasDres: valoresForm.dreId && valoresForm.dreId.toString() === '0',
@@ -421,6 +446,7 @@ const EventosLista = () => {
                     valueOption="codigo"
                     valueText="nome"
                     onChange={onChangeDreId}
+                    disabled={dreDesabilitada}
                     placeholder="Selecione uma DRE (Opcional)"
                     form={form}
                   />
@@ -433,7 +459,7 @@ const EventosLista = () => {
                     valueOption="codigo"
                     valueText="nome"
                     onChange={onChangeUe}
-                    disabled={campoUeDesabilitado}
+                    disabled={campoUeDesabilitado || ueDesabilitada}
                     placeholder="Selecione uma UE (Opcional)"
                     form={form}
                   />

@@ -149,6 +149,23 @@ const CalendarioProfessor = () => {
   }, [eventoAulaCalendarioEdicao, tiposCalendario]);
 
   useEffect(() => {
+    if (tiposCalendario.length && tiposCalendario.length === 1) {
+      if (Object.entries(turmaSelecionadaStore).length) {
+        const modalidadeSelecionada =
+          turmaSelecionadaStore.modalidade === ModalidadeDTO.EJA.toString()
+            ? 2
+            : 1;
+        const tipoCalendario = tiposCalendario.filter(tipo => {
+          return tipo.modalidade === modalidadeSelecionada;
+        })[0];
+        if (tipoCalendario) {
+          setTipoCalendarioSelecionado(tipoCalendario.valor.toString());
+        }
+      }
+    }
+  }, [tiposCalendario, turmaSelecionadaStore]);
+
+  useEffect(() => {
     listarTiposCalendarioPorTurmaSelecionada();
   }, [turmaSelecionadaStore, anosLetivosAbrangencia]);
 
@@ -196,7 +213,7 @@ const CalendarioProfessor = () => {
   const obterDres = () => {
     setCarregandoDres(true);
     api
-      .get('v1/abrangencias/dres')
+      .get('v1/abrangencias/false/dres')
       .then(resposta => {
         if (resposta.data) {
           const lista = [];
@@ -284,7 +301,7 @@ const CalendarioProfessor = () => {
   const obterUnidadesEscolares = () => {
     setCarregandoUes(true);
     api
-      .get(`v1/abrangencias/dres/${dreSelecionada}/ues`)
+      .get(`v1/abrangencias/false/dres/${dreSelecionada}/ues`)
       .then(resposta => {
         if (resposta.data) {
           const lista = [];
@@ -385,7 +402,6 @@ const CalendarioProfessor = () => {
           setTurmaSelecionada();
           setTodasTurmas(false);
         }
-        setTurmaDesabilitada(true);
       } else if (Object.entries(eventoAulaCalendarioEdicao).length) {
         setOpcaoTurma(
           listaTurmas[eventoAulaCalendarioEdicao.turma ? 1 : 0].valor.toString()
@@ -396,6 +412,7 @@ const CalendarioProfessor = () => {
         setOpcaoTurma(listaTurmas[1].valor.toString());
         setTurmaSelecionada(turmaSelecionadaStore.turma);
         setTodasTurmas(false);
+        setTurmaDesabilitada(true);
       }
     }
   }, [
