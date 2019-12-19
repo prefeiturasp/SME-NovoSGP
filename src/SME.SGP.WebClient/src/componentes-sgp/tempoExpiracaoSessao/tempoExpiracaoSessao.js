@@ -1,7 +1,11 @@
 import React, { useEffect, useState } from 'react';
+import { useDispatch } from 'react-redux';
 import styled from 'styled-components';
 import Button from '~/componentes/button';
 import { Base, Colors } from '~/componentes/colors';
+import { salvarLoginRevalidado } from '~/redux/modulos/usuario/actions';
+import { erros } from '~/servicos/alertas';
+import api from '~/servicos/api';
 
 import ContadorExpiracao from './contadorExpiracao';
 
@@ -57,6 +61,8 @@ const CaixaTempoExpiracao = styled.div`
 `;
 
 const TempoExpiracaoSessao = () => {
+  const dispatch = useDispatch();
+
   const [mostraTempoExpiracao, setMostraTempoExpiracao] = useState(true);
 
   // useEffect(() => {
@@ -65,6 +71,17 @@ const TempoExpiracaoSessao = () => {
   //   }, 5000);
   //   return () => clearInterval(interval);
   // }, [mostraTempoExpiracao]);
+
+  const revalidarAutenticacao = async () => {
+    const autenticado = await api
+      .post('v1/autenticacao/revalidar')
+      .catch(e => erros(e));
+    dispatch(
+      salvarLoginRevalidado({
+        token: autenticado.data,
+      })
+    );
+  };
 
   return (
     <>
@@ -75,15 +92,16 @@ const TempoExpiracaoSessao = () => {
             não perder nenhum dado imputado.
           </div>
           <CaixaTempoExpiracao>
-            <i className="far fa-clock icone-tempo"></i>
+            <i className="far fa-clock icone-tempo" />
             <span className="tempo-restante">
-              <ContadorExpiracao></ContadorExpiracao>
+              <ContadorExpiracao />
             </span>
             <Button
               icon="sync-alt"
               color={Colors.Azul}
               border
               className="botao-refresh"
+              onClick={revalidarAutenticacao}
             />
           </CaixaTempoExpiracao>
         </Container>
