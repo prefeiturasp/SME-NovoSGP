@@ -23,8 +23,8 @@ const Campo = styled.div`
     padding-left: 40px;
   }
   .form-control {
-    border: 0;
-    height: auto !important;
+    // border: 0;
+    // height: auto !important;
   }
 `;
 
@@ -92,7 +92,7 @@ const CampoTexto = React.forwardRef((props, ref) => {
             style={style}
             prefix={iconeBusca && <i className="fa fa-search fa-lg" />}
             value={value || form.values[name]}
-            allowClear
+            allowClear={allowClear}
           />
           {!semMensagem && form && form.touched[name] ? (
             <span>{form.errors[name]}</span>

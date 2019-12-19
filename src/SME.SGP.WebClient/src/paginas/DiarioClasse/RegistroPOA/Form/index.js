@@ -46,9 +46,9 @@ function RegistroPOAForm({ match }) {
   const textEditorRef = useRef(null);
   const carregando = useSelector(store => store.loader.loaderSecao);
   const permissoesTela = useSelector(store => store.usuario.permissoes);
-  const anoLetivo = useSelector(
-    store => store.usuario.turmaSelecionada.anoLetivo
-  );
+  const anoLetivo =
+    useSelector(store => store.usuario.turmaSelecionada.anoLetivo) ||
+    window.moment().format('YYYY');
   const somenteConsulta = verificaSomenteConsulta(
     permissoesTela[RotasDto.REGISTRO_POA]
   );

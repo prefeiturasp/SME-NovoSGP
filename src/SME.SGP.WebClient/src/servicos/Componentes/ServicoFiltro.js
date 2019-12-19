@@ -1,45 +1,87 @@
 import api from '~/servicos/api';
 
 class ServicoFiltro {
-  static listarAnosLetivos = async () => {
-    return api.get('v1/abrangencias/anos-letivos').then(resposta => resposta);
-  };
-
-  static listarModalidades = async () => {
-    return api.get('v1/abrangencias/modalidades').then(resposta => resposta);
-  };
-
-  static listarPeriodos = async modalidade => {
+  static listarAnosLetivos = async ({ consideraHistorico }) => {
     return api
-      .get(`v1/abrangencias/semestres?modalidade=${modalidade || 0}`)
+      .get(`v1/abrangencias/${consideraHistorico}/anos-letivos`)
       .then(resposta => resposta);
   };
 
-  static listarDres = async (modalidade, periodo) => {
-    const periodoQuery = periodo ? `&periodo=${periodo}` : '';
-
+  static listarModalidades = async ({
+    consideraHistorico,
+    anoLetivoSelecionado,
+  }) => {
     return api
-      .get(`v1/abrangencias/dres?modalidade=${modalidade || 0}${periodoQuery}`)
+      .get(
+        `v1/abrangencias/${consideraHistorico}/modalidades/?anoLetivo=${anoLetivoSelecionado}`
+      )
       .then(resposta => resposta);
   };
 
-  static listarUnidadesEscolares = async (dre, modalidade, periodo) => {
-    const periodoQuery = periodo ? `&periodo=${periodo}` : '';
+  static listarPeriodos = async ({
+    consideraHistorico,
+    modalidadeSelecionada,
+    anoLetivoSelecionado,
+  }) => {
+    return api
+      .get(
+        `v1/abrangencias/${consideraHistorico}/semestres?anoLetivo=${anoLetivoSelecionado}&modalidade=${modalidadeSelecionada ||
+          0}`
+      )
+      .then(resposta => resposta);
+  };
+
+  static listarDres = async ({
+    consideraHistorico,
+    modalidadeSelecionada,
+    periodoSelecionado,
+    anoLetivoSelecionado,
+  }) => {
+    const periodoQuery = periodoSelecionado
+      ? `&periodo=${periodoSelecionado}`
+      : '';
 
     return api
       .get(
-        `v1/abrangencias/dres/${dre}/ues?modalidade=${modalidade ||
+        `v1/abrangencias/${consideraHistorico}/dres?anoLetivo=${anoLetivoSelecionado}&modalidade=${modalidadeSelecionada ||
           0}${periodoQuery}`
       )
       .then(resposta => resposta);
   };
 
-  static listarTurmas = async (ue, modalidade, periodo) => {
-    const periodoQuery = periodo ? `&periodo=${periodo}` : '';
+  static listarUnidadesEscolares = async ({
+    consideraHistorico,
+    modalidadeSelecionada,
+    dreSelecionada,
+    periodoSelecionado,
+    anoLetivoSelecionado,
+  }) => {
+    const periodoQuery = periodoSelecionado
+      ? `&periodo=${periodoSelecionado}`
+      : '';
 
     return api
       .get(
-        `v1/abrangencias/dres/ues/${ue}/turmas?modalidade=${modalidade ||
+        `v1/abrangencias/${consideraHistorico}/dres/${dreSelecionada}/ues?anoLetivo=${anoLetivoSelecionado}&modalidade=${modalidadeSelecionada ||
+          0}${periodoQuery}`
+      )
+      .then(resposta => resposta);
+  };
+
+  static listarTurmas = async ({
+    consideraHistorico,
+    modalidadeSelecionada,
+    unidadeEscolarSelecionada,
+    periodoSelecionado,
+    anoLetivoSelecionado,
+  }) => {
+    const periodoQuery = periodoSelecionado
+      ? `&periodo=${periodoSelecionado}`
+      : '';
+
+    return api
+      .get(
+        `v1/abrangencias/${consideraHistorico}/dres/ues/${unidadeEscolarSelecionada}/turmas?anoLetivo=${anoLetivoSelecionado}&modalidade=${modalidadeSelecionada ||
           0}${periodoQuery}`
       )
       .then(resposta => resposta);

@@ -127,12 +127,12 @@ namespace SME.SGP.Api.Controllers
 
         [HttpPost("revalidar")]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        [ProducesResponseType(typeof(string), 200)]
+        [ProducesResponseType(typeof(UsuarioReinicioSenhaDto), 200)]
         public async Task<IActionResult> Revalidar()
         {
             var tokenRetorno = await comandosUsuario.RevalidarLogin();
 
-            if (tokenRetorno == string.Empty)
+            if (tokenRetorno == null)
                 return StatusCode(401);
 
             return Ok(tokenRetorno);

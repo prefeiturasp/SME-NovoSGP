@@ -19,7 +19,7 @@ namespace SME.SGP.Dados.Repositorios
         {
             var retorno = new PaginacaoResultadoDto<RegistroPoa>();
 
-            var sql = MontaQueryCompleta(paginacao, titulo);
+            var sql = MontaQueryCompleta(paginacao, titulo, mes);
 
             var parametros = new { codigoRf, mes, ueId, dreId, titulo = $"%{titulo?.ToLower()}%", anoLetivo };
 
@@ -34,24 +34,24 @@ namespace SME.SGP.Dados.Repositorios
             return retorno;
         }
 
-        private string MontaQueryCompleta(Paginacao paginacao, string titulo)
+        private string MontaQueryCompleta(Paginacao paginacao, string titulo, int mes)
         {
             var sql = new StringBuilder();
 
-            MontaQueryConsulta(sql, paginacao, titulo, contador: false);
+            MontaQueryConsulta(sql, paginacao, titulo, mes, contador: false);
 
             sql.AppendLine(";");
 
-            MontaQueryConsulta(sql, paginacao, titulo, contador: true);
+            MontaQueryConsulta(sql, paginacao, titulo, mes, contador: true);
 
             return sql.ToString();
         }
 
-        private void MontaQueryConsulta(StringBuilder sql, Paginacao paginacao, string titulo, bool contador)
+        private void MontaQueryConsulta(StringBuilder sql, Paginacao paginacao, string titulo, int mes, bool contador)
         {
             ObtenhaCabecalho(sql, contador);
 
-            ObtenhaFiltros(sql, titulo);
+            ObtenhaFiltros(sql, titulo, mes);
 
             if (!contador)
                 sql.AppendLine("order by id desc");
@@ -65,22 +65,24 @@ namespace SME.SGP.Dados.Repositorios
             sql.AppendLine($"select {ObtenhaCampos(contador)} from registro_poa");
         }
 
-        private void ObtenhaFiltros(StringBuilder sql, string titulo)
+        private string ObtenhaCampos(bool contador)
+        {
+            return contador ? "count(*)" : "id, codigo_rf, mes, titulo, ano_letivo, descricao, dre_id, ue_id ";
+        }
+
+        private void ObtenhaFiltros(StringBuilder sql, string titulo, int mes)
         {
             sql.AppendLine("where excluido = false");
             sql.AppendLine("and ano_letivo = @anoLetivo");
             sql.AppendLine("and codigo_rf = @codigoRf");
-            sql.AppendLine("and mes = @mes");
             sql.AppendLine("and ue_id = @ueId");
             sql.AppendLine("and dre_id = @dreId");
 
+            if (mes > 0)
+                sql.AppendLine("and mes = @mes");
+
             if (!string.IsNullOrWhiteSpace(titulo))
                 sql.AppendLine("and lower(titulo) like @titulo");
-        }
-
-        private string ObtenhaCampos(bool contador)
-        {
-            return contador ? "count(*)" : "id, codigo_rf, mes, titulo, ano_letivo, descricao, dre_id, ue_id ";
         }
     }
 }
