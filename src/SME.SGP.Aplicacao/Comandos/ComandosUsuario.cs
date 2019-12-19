@@ -152,6 +152,9 @@ namespace SME.SGP.Aplicacao
             retornoAutenticacaoEol.Item1.Token =
                 servicoTokenJwt.GerarToken(login, dadosUsuario.Nome, usuario.CodigoRf, retornoAutenticacaoEol.Item1.PerfisUsuario.PerfilSelecionado, listaPermissoes);
 
+            retornoAutenticacaoEol.Item1.DataHoraExpiracao = servicoTokenJwt.ObterDataHoraExpiracao();
+            var fromDate = servicoTokenJwt.ObterDataHoraCriacao();
+
             usuario.AtualizaUltimoLogin();
 
             repositorioUsuario.Salvar(usuario);
@@ -188,10 +191,12 @@ namespace SME.SGP.Aplicacao
                 usuario.DefinirPerfilAtual(perfil);
 
                 servicoTokenJwt.RevogarToken(loginAtual);
+                var tokenStr = servicoTokenJwt.GerarToken(loginAtual, nomeLoginAtual, codigoRfAtual, perfil, listaPermissoes);
 
                 return new TrocaPerfilDto
                 {
-                    Token = servicoTokenJwt.GerarToken(loginAtual, nomeLoginAtual, codigoRfAtual, perfil, listaPermissoes),
+                    Token = tokenStr,
+                    DataHoraExpiracao = servicoTokenJwt.ObterDataHoraExpiracao(),
                     EhProfessor = usuario.EhProfessor(),
                     EhProfessorCj = usuario.EhProfessorCj(),
                     EhProfessorPoa = usuario.EhProfessorPoa()
@@ -216,7 +221,7 @@ namespace SME.SGP.Aplicacao
             return retorno;
         }
 
-        public async Task<string> RevalidarLogin()
+        public async Task<RevalidacaoTokenDto> RevalidarLogin()
         {
             // Obter Login do token atual
             var login = servicoTokenJwt.ObterLogin();
@@ -230,7 +235,7 @@ namespace SME.SGP.Aplicacao
             // Busca lista de permissões do EOL
             var permissionamentos = await servicoEOL.ObterPermissoesPorPerfil(guidPerfil);
             if (permissionamentos == null || !permissionamentos.Any())
-                return string.Empty;
+                return null;
 
             var listaPermissoes = permissionamentos
                 .Distinct()
@@ -239,7 +244,11 @@ namespace SME.SGP.Aplicacao
 
             servicoTokenJwt.RevogarToken(login);
 
-            return servicoTokenJwt.GerarToken(login, dadosUsuario.Nome, usuario.CodigoRf, usuario.PerfilAtual, listaPermissoes);
+            return new RevalidacaoTokenDto()
+            {
+                Token = servicoTokenJwt.GerarToken(login, dadosUsuario.Nome, usuario.CodigoRf, usuario.PerfilAtual, listaPermissoes),
+                DataHoraExpiracao = servicoTokenJwt.ObterDataHoraExpiracao()
+            };
         }
 
         public void Sair()

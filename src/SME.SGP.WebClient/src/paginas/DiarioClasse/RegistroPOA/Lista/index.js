@@ -29,7 +29,8 @@ function RegistroPOALista() {
   const { loaderSecao } = useSelector(store => store.loader);
   const usuarioLogado = useSelector(store => store.usuario);
   const permissoesTela = usuarioLogado.permissoes;
-  const { anoLetivo } = usuarioLogado.turmaSelecionada;
+  const anoLetivo =
+    usuarioLogado.turmaSelecionada.anoLetivo || window.moment().format('YYYY');
 
   const colunas = [
     {
@@ -92,6 +93,10 @@ function RegistroPOALista() {
       }
     }
   };
+
+  useEffect(() => {
+    console.log(filtro);
+  }, [filtro]);
 
   const onChangeFiltro = useCallback(
     valoresFiltro => {

@@ -17,6 +17,9 @@ namespace SME.SGP.Aplicacao
         bool TemPerfilNoToken(string guid);
         string ObterLogin();
 
+        DateTime ObterDataHoraExpiracao();
+        DateTime ObterDataHoraCriacao();
+
         Guid ObterPerfil();
     }
 }
