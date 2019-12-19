@@ -2,10 +2,13 @@ import ServicoFiltro from '~/servicos/Componentes/ServicoFiltro';
 import tipoEscolaDTO from '~/dtos/tipoEscolaDto';
 
 class FiltroHelper {
-  obterModalidades = async () => {
+  obterModalidades = async ({ consideraHistorico, anoLetivoSelecionado }) => {
     const modalidadesLista = [];
 
-    return ServicoFiltro.listarModalidades()
+    return ServicoFiltro.listarModalidades({
+      consideraHistorico,
+      anoLetivoSelecionado,
+    })
       .then(resposta => {
         if (resposta.data) {
           resposta.data.forEach(modalidade => {
@@ -21,10 +24,18 @@ class FiltroHelper {
       .catch(() => modalidadesLista);
   };
 
-  obterPeriodos = async modalidade => {
+  obterPeriodos = async ({
+    consideraHistorico,
+    modalidadeSelecionada,
+    anoLetivoSelecionado,
+  }) => {
     const periodos = [];
 
-    return ServicoFiltro.listarPeriodos(modalidade)
+    return ServicoFiltro.listarPeriodos({
+      consideraHistorico,
+      modalidadeSelecionada,
+      anoLetivoSelecionado,
+    })
       .then(resposta => {
         if (resposta.data) {
           resposta.data.forEach(periodo => {
@@ -37,10 +48,20 @@ class FiltroHelper {
       .catch(() => periodos);
   };
 
-  obterDres = async (modalidade, periodo) => {
+  obterDres = async ({
+    consideraHistorico,
+    modalidadeSelecionada,
+    periodoSelecionado,
+    anoLetivoSelecionado,
+  }) => {
     const dres = [];
 
-    return ServicoFiltro.listarDres(modalidade, periodo)
+    return ServicoFiltro.listarDres({
+      consideraHistorico,
+      modalidadeSelecionada,
+      periodoSelecionado,
+      anoLetivoSelecionado,
+    })
       .then(resposta => {
         if (resposta.data) {
           resposta.data.forEach(dre => {
@@ -56,10 +77,22 @@ class FiltroHelper {
       .catch(() => dres);
   };
 
-  obterUnidadesEscolares = async (modalidade, dre, periodo) => {
+  obterUnidadesEscolares = async ({
+    consideraHistorico,
+    modalidadeSelecionada,
+    dreSelecionada,
+    periodoSelecionado,
+    anoLetivoSelecionado,
+  }) => {
     const unidadesEscolares = [];
 
-    return ServicoFiltro.listarUnidadesEscolares(dre, modalidade, periodo)
+    return ServicoFiltro.listarUnidadesEscolares({
+      consideraHistorico,
+      modalidadeSelecionada,
+      dreSelecionada,
+      periodoSelecionado,
+      anoLetivoSelecionado,
+    })
       .then(resposta => {
         if (resposta.data) {
           resposta.data.forEach(unidade => {
@@ -74,10 +107,22 @@ class FiltroHelper {
       .catch(() => unidadesEscolares);
   };
 
-  obterTurmas = async (modalidade, unidadeEscolar, periodo) => {
+  obterTurmas = async ({
+    consideraHistorico,
+    modalidadeSelecionada,
+    unidadeEscolarSelecionada,
+    periodoSelecionado,
+    anoLetivoSelecionado,
+  }) => {
     const turmas = [];
 
-    return ServicoFiltro.listarTurmas(unidadeEscolar, modalidade, periodo)
+    return ServicoFiltro.listarTurmas({
+      consideraHistorico,
+      modalidadeSelecionada,
+      unidadeEscolarSelecionada,
+      periodoSelecionado,
+      anoLetivoSelecionado,
+    })
       .then(resposta => {
         if (resposta.data) {
           resposta.data.forEach(turma => {
