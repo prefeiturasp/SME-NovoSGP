@@ -31,7 +31,7 @@ const EventosLista = () => {
   const [somenteConsulta, setSomenteConsulta] = useState(false);
 
   const [listaCalendarioEscolar, setListaCalendarioEscolar] = useState([]);
-  const [listaDre, setlistaDre] = useState([]);
+  const [listaDre, setListaDre] = useState([]);
   const [campoUeDesabilitado, setCampoUeDesabilitado] = useState(true);
   const [dreSelecionada, setDreSelecionada] = useState();
   const [listaUe, setListaUe] = useState([]);
@@ -124,12 +124,12 @@ const EventosLista = () => {
     if (dres.sucesso) {
       dres.conteudo.sort(FiltroHelper.ordenarLista('nome'));
       dres.conteudo.unshift({ codigo: 0, nome: 'Todas' });
-      setlistaDre(dres.conteudo);
+      setListaDre(dres.conteudo);
       return;
     }
 
     erro(dres.erro);
-    setlistaDre([]);
+    setListaDre([]);
   };
 
   useEffect(() => {
@@ -206,7 +206,7 @@ const EventosLista = () => {
     if (!sucesso) {
       setListaUe([]);
       erro(ues.erro);
-      setlistaDre([]);
+      setListaDre([]);
       return;
     }
 
@@ -303,8 +303,14 @@ const EventosLista = () => {
       tipoCalendarioId: valoresForm.tipoCalendarioId,
       nomeEvento,
       tipoEventoId: tipoEvento,
-      ueId: valoresForm.ueId === 0 ? '' : valoresForm.ueId,
-      dreId: valoresForm.dreId === 0 ? '' : valoresForm.dreId,
+      ueId:
+        valoresForm.ueId && valoresForm.ueId.toString() === '0'
+          ? ''
+          : valoresForm.ueId,
+      dreId:
+        valoresForm.dreId && valoresForm.dreId.toString() === '0'
+          ? ''
+          : valoresForm.dreId,
       dataInicio: valoresForm.dataInicio && valoresForm.dataInicio.toDate(),
       dataFim: valoresForm.dataInicio && valoresForm.dataFim.toDate(),
       EhTodasDres: valoresForm.dreId && valoresForm.dreId.toString() === '0',
