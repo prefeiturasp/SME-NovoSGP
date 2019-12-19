@@ -79,8 +79,8 @@ function RegistroPOALista() {
         if (excluir) {
           const mensagemSucesso = `${
             itensSelecionados.length > 1
-              ? 'Atribuições excluídas'
-              : 'Atribuição excluída'
+              ? 'Registros excluídos'
+              : 'Registro excluído'
           } com sucesso.`;
           sucesso(mensagemSucesso);
           setFiltro({
@@ -119,7 +119,7 @@ function RegistroPOALista() {
 
   return (
     <>
-      <Cabecalho pagina="Registro do professor orientador da área" />
+      <Cabecalho pagina="Registro do Professor Orientador de Área" />
       <Loader loading={loaderSecao}>
         <Card mx="mx-0">
           <ButtonGroup
