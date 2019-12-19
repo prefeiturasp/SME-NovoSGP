@@ -11,7 +11,10 @@ import api from '~/servicos/api';
 import Button from '~/componentes/button';
 import history from '~/servicos/history';
 import { store } from '~/redux';
-import { zeraCalendario } from '~/redux/modulos/calendarioEscolar/actions';
+import {
+  zeraCalendario,
+  atribuiEventosMes,
+} from '~/redux/modulos/calendarioEscolar/actions';
 import ModalidadeDTO from '~/dtos/modalidade';
 import FiltroHelper from '~/componentes-sgp/filtro/helper';
 import tipoEscolaDTO from '~/dtos/tipoEscolaDto';
@@ -233,6 +236,8 @@ const CalendarioEscolar = () => {
     unidadeEscolarSelecionada,
   });
 
+  const [carregandoMeses, setCarregandoMeses] = useState(false);
+
   useEffect(() => {
     if (tipoCalendarioSelecionado) {
       consultarDiasLetivos();
@@ -268,12 +273,17 @@ const CalendarioEscolar = () => {
   }, [eventoSme]);
 
   useEffect(() => {
+    if (!dreSelecionada && carregandoMeses) {
+      setCarregandoDres(true);
+      return;
+    }
+    setCarregandoDres(false);
     if (dres.length === 1) {
       setDreSelecionada(dres[0].valor);
     } else if (dres && eventoCalendarioEdicao && eventoCalendarioEdicao.dre) {
       setDreSelecionada(eventoCalendarioEdicao.dre);
     }
-  }, [dres]);
+  }, [dres, carregandoMeses]);
 
   const unidadesEscolaresStore = useSelector(
     state => state.filtro.unidadesEscolares
@@ -306,6 +316,11 @@ const CalendarioEscolar = () => {
   };
 
   useEffect(() => {
+    if (carregandoMeses && dreSelecionada && !unidadeEscolarSelecionada) {
+      setCarregandoUes(true);
+      return;
+    }
+    setCarregandoUes(false);
     if (unidadesEscolares.length === 1) {
       setUnidadeEscolarSelecionada(unidadesEscolares[0].valor);
     } else if (
@@ -315,7 +330,7 @@ const CalendarioEscolar = () => {
     ) {
       setDreSelecionada(eventoCalendarioEdicao.unidadeEscolar);
     }
-  }, [unidadesEscolares]);
+  }, [unidadesEscolares, carregandoMeses]);
 
   const aoSelecionarDre = dre => {
     setDreSelecionada(dre);
@@ -349,6 +364,47 @@ const CalendarioEscolar = () => {
       unidadeEscolarSelecionada,
     });
   }, [unidadeEscolarSelecionada]);
+
+  useEffect(() => {
+    let estado = true;
+    if (estado) {
+      if (tipoCalendarioSelecionado) {
+        setCarregandoMeses(true);
+        api
+          .get(
+            `v1/calendarios/eventos/meses?EhEventoSme=${eventoSme}&${
+              dreSelecionada ? `DreId=${dreSelecionada}&` : ''
+            }${
+              tipoCalendarioSelecionado
+                ? `IdTipoCalendario=${tipoCalendarioSelecionado}&`
+                : ''
+            }${
+              unidadeEscolarSelecionada
+                ? `UeId=${unidadeEscolarSelecionada}`
+                : ''
+            }`
+          )
+          .then(resposta => {
+            if (resposta.data) {
+              resposta.data.forEach(item => {
+                if (item && item.mes > 0) {
+                  store.dispatch(atribuiEventosMes(item.mes, item.eventos));
+                }
+              });
+            }
+            setCarregandoMeses(false);
+          });
+      }
+    }
+    return () => {
+      estado = false;
+    };
+  }, [
+    tipoCalendarioSelecionado,
+    eventoSme,
+    dreSelecionada,
+    unidadeEscolarSelecionada,
+  ]);
 
   return (
     <Div className="col-12">
@@ -463,7 +519,9 @@ const CalendarioEscolar = () => {
           </Div>
         </Grid>
         <Grid cols={12}>
-          <Calendario filtros={filtros} />
+          <Loader loading={carregandoMeses}>
+            <Calendario filtros={filtros} />
+          </Loader>
         </Grid>
       </Card>
     </Div>
