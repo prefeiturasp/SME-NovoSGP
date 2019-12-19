@@ -435,6 +435,8 @@ namespace SME.SGP.Dominio.Servicos
             }
             else
             {
+                var temEventoLiberacaoExcepcional = await repositorioEvento.TemEventoNosDiasETipo(evento.DataInicio.Date, evento.DataFim.Date, TipoEvento.LiberacaoExcepcional, evento.TipoCalendarioId, evento.UeId, evento.DreId);
+
                 if (evento.TipoEvento.Codigo == (long)TipoEvento.Recesso || evento.TipoEvento.Codigo == (long)TipoEvento.ReposicaoNoRecesso)
                 {
                     return devePassarPorWorkflow;
@@ -443,21 +445,29 @@ namespace SME.SGP.Dominio.Servicos
                 {
                     if (await repositorioEvento.TemEventoNosDiasETipo(evento.DataInicio.Date, evento.DataFim.Date, TipoEvento.Recesso, evento.TipoCalendarioId, string.Empty, string.Empty))
                     {
-                        if (evento.TipoEvento.Codigo == (long)TipoEvento.ReposicaoDoDia || evento.TipoEvento.Codigo == (long)TipoEvento.ReposicaoDeAula)
+                        if (evento.TipoEvento.LocalOcorrencia == EventoLocalOcorrencia.UE)
                         {
-                            return devePassarPorWorkflow;
+                            if (temEventoLiberacaoExcepcional)
+                                return true;
+
+                            if (evento.TipoEvento.Codigo == (long)TipoEvento.ReposicaoDoDia || evento.TipoEvento.Codigo == (long)TipoEvento.ReposicaoDeAula)
+                            {
+                                return devePassarPorWorkflow;
+                            }
+                            else
+                                throw new NegocioException("Não é possível cadastrar o evento.");
                         }
-                        else
-                            throw new NegocioException("Não é possível cadastrar o evento.");
+                        else return devePassarPorWorkflow;
                     }
                     else
                     {
                         var estaNoPeriodoEscolar = periodos.Any(c => c.PeriodoInicio.Date <= evento.DataInicio.Date && c.PeriodoFim.Date >= evento.DataFim.Date);
-                        var temEventoLiberacaoExcepcional = await repositorioEvento.TemEventoNosDiasETipo(evento.DataInicio.Date, evento.DataFim.Date, TipoEvento.LiberacaoExcepcional, evento.TipoCalendarioId, evento.UeId, evento.DreId);
+
                         if (estaNoPeriodoEscolar)
                         {
                             var temEventoSuspensaoAtividades = await repositorioEvento.TemEventoNosDiasETipo(evento.DataInicio.Date, evento.DataFim.Date, TipoEvento.SuspensaoAtividades, evento.TipoCalendarioId, string.Empty, string.Empty);
-                            if (evento.TipoEvento.Codigo == (long)TipoEvento.Feriado || temEventoSuspensaoAtividades)
+                            var temEventoFeriado = await repositorioEvento.TemEventoNosDiasETipo(evento.DataInicio.Date, evento.DataFim.Date, TipoEvento.Feriado, evento.TipoCalendarioId, string.Empty, string.Empty);
+                            if (temEventoFeriado || temEventoSuspensaoAtividades || evento.DataInicio.DayOfWeek == DayOfWeek.Saturday || evento.DataInicio.DayOfWeek == DayOfWeek.Sunday || evento.DataFim.DayOfWeek == DayOfWeek.Saturday || evento.DataFim.DayOfWeek == DayOfWeek.Sunday)
                             {
                                 if (temEventoLiberacaoExcepcional)
                                     return true;
@@ -479,62 +489,6 @@ namespace SME.SGP.Dominio.Servicos
                         }
                     }
                 }
-
-                //var estaNoPeriodoEscolar = periodos.Any(c => c.PeriodoInicio.Date <= evento.DataInicio.Date && c.PeriodoFim.Date >= evento.DataFim.Date);
-                //await VerificaSeEventoAconteceJuntoComOrganizacaoEscolar(evento, usuario);
-                //var temEventoLiberacaoExcepcional = await repositorioEvento.TemEventoNosDiasETipo(evento.DataInicio.Date, evento.DataFim.Date, TipoEvento.LiberacaoExcepcional, evento.TipoCalendarioId, evento.UeId, evento.DreId);
-                //if (estaNoPeriodoEscolar)
-                //{
-                //    if (await repositorioEvento.TemEventoNosDiasETipo(evento.DataInicio.Date, evento.DataFim.Date, TipoEvento.Recesso, evento.TipoCalendarioId, string.Empty, string.Empty))
-                //    {
-                //        if (evento.TipoEvento.Codigo == (int)TipoEvento.ReposicaoNoRecesso)
-                //        {
-                //            if (usuario.EhPerfilUE())
-                //            {
-                //                var eventosReposicaoNoRecesso = await repositorioEvento.EventosNosDiasETipo(evento.DataInicio.Date, evento.DataFim.Date, TipoEvento.ReposicaoNoRecesso, evento.TipoCalendarioId, string.Empty, string.Empty);
-                //                if (!eventosReposicaoNoRecesso.Any(a => a.TipoPerfilCadastro == TipoPerfil.SME))
-                //                {
-                //                    if (!temEventoLiberacaoExcepcional)
-                //                    {
-                //                        throw new NegocioException("Não é possível persistir esse evento pois a data informada está fora do período letivo.");
-                //                    }
-                //                    else devePassarPorWorkflow = true;
-                //                }
-                //            }
-                //        }
-                //        else
-                //        {
-                //            if (!temEventoLiberacaoExcepcional)
-                //            {
-                //                throw new NegocioException("Não é possível persistir esse evento pois a data informada está fora do período letivo.");
-                //            }
-                //            else devePassarPorWorkflow = true;
-                //        }
-                //    }
-                //    else
-                //    {
-                //        var temEventoSuspensaoAtividades = await repositorioEvento.TemEventoNosDiasETipo(evento.DataInicio.Date, evento.DataFim.Date, TipoEvento.SuspensaoAtividades, evento.TipoCalendarioId, string.Empty, string.Empty);
-                //        if (temEventoSuspensaoAtividades)
-                //        {
-                //            if (!temEventoLiberacaoExcepcional)
-                //            {
-                //                throw new NegocioException("A data do evento coincide com o evento de suspensão de atividades da UE. Ajuste a data do evento ou apague o evento de suspensão.");
-                //            }
-                //            else devePassarPorWorkflow = true;
-                //        }
-                //    }
-                //}
-                //else
-                //{
-                //    if (evento.TipoEvento.Codigo != (int)TipoEvento.OrganizacaoEscolar)
-                //    {
-                //        if (!temEventoLiberacaoExcepcional)
-                //        {
-                //            throw new NegocioException("Não é possível persistir esse evento pois a data informada está fora do período letivo.");
-                //        }
-                //        else devePassarPorWorkflow = true;
-                //    }
-                //}
             }
 
             return devePassarPorWorkflow;

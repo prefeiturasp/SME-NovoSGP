@@ -49,7 +49,8 @@ namespace SME.SGP.Aplicacao
             var usuario = await servicoUsuario.ObterUsuarioLogado();
 
             return await repositorioEvento.ObterEventosPorDia(calendarioEventosMesesFiltro, mes, dia, usuario, usuario.PerfilAtual,
-                usuario.TemPerfilSupervisorOuDiretor(), usuario.PodeVisualizarEventosOcorrenciaDre());
+                usuario.TemPerfilSupervisorOuDiretor(), usuario.PodeVisualizarEventosOcorrenciaDre(),
+                        usuario.PodeVisualizarEventosLibExcepRepoRecessoGestoresUeDreSme());
         }
 
         public async Task<EventoCompletoDto> ObterPorId(long id)
@@ -68,7 +69,10 @@ namespace SME.SGP.Aplicacao
             var usuario = await servicoUsuario.ObterUsuarioLogado();
             var perfilAtual = servicoUsuario.ObterPerfilAtual();
 
-            var listaQuery = await repositorioEvento.ObterQuantidadeDeEventosPorDia(calendarioEventosMesesFiltro, mes, usuario, perfilAtual, usuario.TemPerfilSupervisorOuDiretor(), usuario.PodeVisualizarEventosOcorrenciaDre());
+            var listaQuery = await repositorioEvento.ObterQuantidadeDeEventosPorDia(calendarioEventosMesesFiltro, mes, usuario, perfilAtual, usuario.TemPerfilSupervisorOuDiretor(),
+                usuario.PodeVisualizarEventosOcorrenciaDre(),
+                usuario.PodeVisualizarEventosLibExcepRepoRecessoGestoresUeDreSme());
+
             List<CalendarioTipoEventoPorDiaDto> listaRetorno = new List<CalendarioTipoEventoPorDiaDto>();
 
             if (listaQuery.Any())
@@ -93,7 +97,8 @@ namespace SME.SGP.Aplicacao
         {
             var usuario = await servicoUsuario.ObterUsuarioLogado();
 
-            return await repositorioEvento.ObterQuantidadeDeEventosPorMeses(calendarioEventosMesesFiltro, usuario, usuario.PerfilAtual, usuario.PodeVisualizarEventosOcorrenciaDre());
+            return await repositorioEvento.ObterQuantidadeDeEventosPorMeses(calendarioEventosMesesFiltro, usuario, usuario.PerfilAtual, usuario.PodeVisualizarEventosOcorrenciaDre(),
+                        usuario.PodeVisualizarEventosLibExcepRepoRecessoGestoresUeDreSme());
         }
 
         private bool EhEventoSME(Evento evento)
