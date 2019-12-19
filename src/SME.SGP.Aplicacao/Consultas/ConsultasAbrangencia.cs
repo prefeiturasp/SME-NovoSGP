@@ -44,12 +44,12 @@ namespace SME.SGP.Aplicacao
             return await repositorioAbrangencia.ObterDres(login, perfil, modalidade, periodo);
         }
 
-        public async Task<IEnumerable<EnumeradoRetornoDto>> ObterModalidades()
+        public async Task<IEnumerable<EnumeradoRetornoDto>> ObterModalidades(int anoLetivo)
         {
             var login = servicoUsuario.ObterLoginAtual();
             var perfil = servicoUsuario.ObterPerfilAtual();
 
-            var lista = await repositorioAbrangencia.ObterModalidades(login, perfil);
+            var lista = await repositorioAbrangencia.ObterModalidades(login, perfil, anoLetivo);
 
             return from a in lista
                    select new EnumeradoRetornoDto() { Id = a, Descricao = ((Modalidade)a).GetAttribute<DisplayAttribute>().Name };
