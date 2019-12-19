@@ -1,70 +1,69 @@
-import { Base } from '../componentes/colors';
 import styled from 'styled-components';
+import { Base } from '../componentes/colors';
 
 export const MenuBody = styled.div`
-  background:${Base.Roxo};
+  background: ${Base.Roxo};
   padding: 0 !important;
   position: fixed;
   left: 0%;
   height: 100%;
 
-  .footer-content{
+  .footer-content {
     display: flex;
     justify-content: center;
   }
 `;
 
 export const DivFooter = styled.div`
-
-bottom: 0;
-position: fixed;
-display: flex;
-justify-content: center;
-flex-direction: column;
-align-items: center;
-
-.ant-layout-footer{
-  align-items: center;
-  color: ${Base.Branco};
-  background: ${Base.Roxo};
-  text-align: center;
-  padding: 0;
   bottom: 0;
-  margin-bottom:2px;
-}
-.descricao{
-  width: 110px;
-  font-size:9px;
-  word-wrap: break-word;
-}
+  position: fixed;
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+  align-items: center;
 
-@media (max-width: 790px){
-  .descricao{
-    width: 93px;
-    font-size:8px;
+  .ant-layout-footer {
+    align-items: center;
+    color: ${Base.Branco};
+    background: ${Base.Roxo};
+    text-align: center;
+    padding: 0;
+    bottom: 0;
+    margin-bottom: 2px;
   }
-}
-.logo-secretaria{
-  width: 100%;
-  padding-bottom: 10px;
-}
+  .descricao {
+    width: 110px;
+    font-size: 9px;
+    word-wrap: break-word;
+  }
+
+  @media (max-width: 790px) {
+    .descricao {
+      width: 93px;
+      font-size: 8px;
+    }
+  }
+  .logo-secretaria {
+    width: 100%;
+    padding-bottom: 10px;
+  }
 `;
 
 export const Topo = styled.div`
-  width:100%;
+  width: 100%;
 
-  .conteudo{
+  .conteudo {
     height: 20px;
   }
-  .arrow{
+  .arrow {
     float: right;
   }
 
-  .arrow i{
+  .arrow i {
     margin: 8px 12px 0px 0px;
   }
 
-  .perfil{
+  .perfil {
     display: flex;
     justify-content: center;
     flex-direction: column;
@@ -72,12 +71,13 @@ export const Topo = styled.div`
     height: 150px;
     color: ${Base.Branco};
     width: 100%;
-    a, a:hover{
+    a,
+    a:hover {
       color: ${Base.Branco} !important;
     }
   }
 
-  .perfil-retraido{
+  .perfil-retraido {
     display: flex;
     justify-content: center;
     flex-direction: column;
@@ -89,7 +89,7 @@ export const Topo = styled.div`
   }
 
   @media (max-height: 650px) {
-    .perfil-retraido{
+    .perfil-retraido {
       margin-bottom: 0;
     }
   }
@@ -102,10 +102,10 @@ export const Topo = styled.div`
     width: 60px;
     height: 60px;
     margin-bottom: 10px;
-    background:${Base.Branco};
+    background: ${Base.Branco};
   }
 
-  .nome{
+  .nome {
     width: 200px;
     border-radius: 15px;
     border: 1px solid ${Base.Branco};
@@ -120,15 +120,19 @@ export const Topo = styled.div`
     text-align: center;
   }
 
-  .perfil-edit{
+  .perfil-edit {
     font-size: 10px !important;
   }
 
-  .perfil-edit i{
+  .perfil-edit #perfil-edit {
+    color: ${Base.Branco};
+  }
+
+  .perfil-edit i {
     margin-right: 4px;
   }
 
-  .icone-perfil{
+  .icone-perfil {
     color: ${Base.CinzaBotao};
     background: ${Base.Branco};
     font-size: 60px;
@@ -139,7 +143,7 @@ export const Topo = styled.div`
 `;
 
 export const MenuScope = styled.div`
-/*----MENU EXPANDIDO----*/
+  /*----MENU EXPANDIDO----*/
   position: absolute;
   width: 100%;
   overflow-y: auto;
@@ -147,7 +151,7 @@ export const MenuScope = styled.div`
 
   ::-webkit-scrollbar {
     width: 10px;
-    background:${Base.RoxoFundo};
+    background: ${Base.RoxoFundo};
     border-radius: 4px;
   }
 
@@ -158,7 +162,7 @@ export const MenuScope = styled.div`
     background: ${Base.RoxoClaro};
   }
 
-  .menu-scope{
+  .menu-scope {
     display: flex;
     flex-direction: row;
     justify-content: center;
@@ -166,46 +170,49 @@ export const MenuScope = styled.div`
     margin: 0 10px 0 10px;
   }
 
-  .menu-scope-retraido{
+  .menu-scope-retraido {
     margin: 0 !important;
   }
 
-  .icons{
+  .icons {
     font-style: normal !important;
     margin-right: 12px;
     height: 18px;
     width: 13.5px;
   }
 
-  .ant-menu{
+  .ant-menu {
     background: ${Base.Roxo};
     width: 100%;
   }
 
-  .ant-menu-submenu-title, .ant-menu-item{
+  .ant-menu-submenu-title,
+  .ant-menu-item {
     height: 35px !important;
   }
 
-  .ant-menu-item, .ant-menu-submenu-open {
+  .ant-menu-item,
+  .ant-menu-submenu-open {
     background: ${Base.Branco} !important;
   }
 
-  .ant-menu-submenu-title:first-child, .ant-menu-submenu-open{
-    border-radius:4px;
+  .ant-menu-submenu-title:first-child,
+  .ant-menu-submenu-open {
+    border-radius: 4px;
   }
 
-  .ant-menu-submenu-title{
-    margin-top:2px !important;
+  .ant-menu-submenu-title {
+    margin-top: 2px !important;
     padding-left: 15px !important;
     font-size: 14px !important;
     font-weight: bold;
   }
 
-  .ant-menu-item:last-child, .ant-menu-inline.ant-menu-sub:last-child{
-    border-bottom-right-radius:4px !important;
-    border-bottom-left-radius:4px !important;
+  .ant-menu-item:last-child,
+  .ant-menu-inline.ant-menu-sub:last-child {
+    border-bottom-right-radius: 4px !important;
+    border-bottom-left-radius: 4px !important;
   }
-
 
   .ant-menu-item {
     padding-left: 40px !important;
@@ -216,23 +223,24 @@ export const MenuScope = styled.div`
     padding-bottom: 10px !important;
   }
 
-  .ant-menu-item-selected{
+  .ant-menu-item-selected {
     background: ${Base.CinzaMenu} !important;
     border-bottom-width: 8px;
     padding-left: 32px !important;
     border-left: solid ${Base.RoxoClaro} 8px !important;
   }
 
-  .ant-menu-dark:not(:disabled), .ant-menu-submenu-arrow{
+  .ant-menu-dark:not(:disabled),
+  .ant-menu-submenu-arrow {
     color: ${Base.Branco};
     opacity: initial !important;
   }
 
- .ant-menu-submenu-title:hover .ant-menu-submenu-arrow::before {
+  .ant-menu-submenu-title:hover .ant-menu-submenu-arrow::before {
     background: ${Base.Roxo} !important;
   }
 
-  .ant-menu-submenu-title:hover  .ant-menu-submenu-arrow::after {
+  .ant-menu-submenu-title:hover .ant-menu-submenu-arrow::after {
     color: ${Base.Branco} !important;
     background: ${Base.Roxo} !important;
   }
@@ -244,78 +252,77 @@ export const MenuScope = styled.div`
     background: ${Base.Roxo} !important;
   }
 
-  .menuItem{
+  .menuItem {
     color: ${Base.CinzaMenuItem} !important;
     white-space: normal;
   }
 
-  .ant-menu-submenu-title:hover:not(:disabled), .ant-menu-inline.ant-menu-sub, .ant-menu-submenu-open{
+  .ant-menu-submenu-title:hover:not(:disabled),
+  .ant-menu-inline.ant-menu-sub,
+  .ant-menu-submenu-open {
     background: ${Base.Branco};
     color: ${Base.Roxo};
   }
 
-  .ant-menu-dark> .ant-menu-submenu-disabled > .ant-menu-submenu-title{
+  .ant-menu-dark > .ant-menu-submenu-disabled > .ant-menu-submenu-title {
     opacity: initial;
     background: ${Base.Roxo};
-    color:  ${Base.CinzaDesabilitado};
+    color: ${Base.CinzaDesabilitado};
   }
 
-  .ant-menu-dark> .ant-menu-submenu-open{
-    color:  ${Base.Roxo};
+  .ant-menu-dark > .ant-menu-submenu-open {
+    color: ${Base.Roxo};
   }
 
-  .ant-menu-inline.ant-menu-sub{
+  .ant-menu-inline.ant-menu-sub {
     background: ${Base.Branco} !important;
   }
 
-  .menu-scope{
+  .menu-scope {
     display: flex;
     flex-direction: column;
     justify-content: center;
-    align-items: center
+    align-items: center;
   }
 
-  .submenu-subnivel{
+  .submenu-subnivel {
     padding-left: 25px !important;
     color: ${Base.CinzaMenuItem} !important;
     font-size: 14px !important;
 
-    &:hover{
+    &:hover {
       color: ${Base.Roxo} !important;
     }
   }
 
   /*----MENU RETRAÍDO----*/
-  .ant-menu-vertical{
-    width:100%;
+  .ant-menu-vertical {
+    width: 100%;
   }
 
-
-  .ant-menu:not(.ant-menu-inline) .ant-menu-submenu-open{
+  .ant-menu:not(.ant-menu-inline) .ant-menu-submenu-open {
     color: ${Base.Roxo};
   }
 
-  .ant-menu-vertical> .ant-menu-submenu{
+  .ant-menu-vertical > .ant-menu-submenu {
     border-radius: 0 !important;
-    .ant-menu-submenu-title{
+    .ant-menu-submenu-title {
       border-radius: 0 !important;
       height: 60px !important;
-      .item-menu-retraido{
+      .item-menu-retraido {
         margin-top: 5px;
         display: flex;
         justify-content: center;
         flex-direction: column;
         align-items: center;
-        font-weight:normal;
+        font-weight: normal;
         font-size: 12px;
       }
     }
   }
 
-  .icons-retraido{
+  .icons-retraido {
     margin-top: 0px !important;
     font-size: 25px;
   }
-  `;
-
-
+`;
