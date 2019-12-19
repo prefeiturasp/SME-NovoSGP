@@ -57,6 +57,11 @@ namespace SME.SGP.Dominio
             Perfis = perfisUsuario;
         }
 
+        public bool EhPerfilDRE()
+        {
+            return Perfis.Any(c => c.Tipo == TipoPerfil.DRE && c.CodigoPerfil == PerfilAtual);
+        }
+
         public bool EhPerfilSME()
         {
             return Perfis.Any(c => c.Tipo == TipoPerfil.SME && c.CodigoPerfil == PerfilAtual);
@@ -225,6 +230,13 @@ namespace SME.SGP.Dominio
         public bool TemPerfilSupervisorOuDiretor()
         {
             return (PerfilAtual == Dominio.Perfis.PERFIL_DIRETOR || PerfilAtual == Dominio.Perfis.PERFIL_SUPERVISOR);
+        }
+
+        public bool TemPerfilGestaoUes()
+        {
+            return (PerfilAtual == Dominio.Perfis.PERFIL_DIRETOR || PerfilAtual == Dominio.Perfis.PERFIL_AD ||
+                    PerfilAtual == Dominio.Perfis.PERFIL_SECRETARIO || PerfilAtual == Dominio.Perfis.PERFIL_CP ||
+                    EhPerfilSME() || EhPerfilDRE());
         }
 
         public bool TokenRecuperacaoSenhaEstaValido()
