@@ -82,6 +82,13 @@ namespace SME.SGP.Dominio.Servicos
                 if (frequenciaGeralAluno.PercentualFrequencia < 100)
                     repositorioFrequenciaAlunoDisciplinaPeriodo.Salvar(frequenciaGeralAluno);
             }
+            else
+            {
+                var frequenciaAluno = repositorioFrequenciaAlunoDisciplinaPeriodo.ObterPorAlunoData(codigoAluno, dataAtual, TipoFrequenciaAluno.Geral);
+
+                if (frequenciaAluno != null)
+                    repositorioFrequenciaAlunoDisciplinaPeriodo.Remover(frequenciaAluno);
+            }
         }
 
         private void RegistraFrequenciaPorDisciplina(Aula aula, DateTime dataAtual, int totalAulasNaDisciplina, string codigoAluno)
@@ -100,6 +107,13 @@ namespace SME.SGP.Dominio.Servicos
 
                 if (frequenciaAluno.PercentualFrequencia < 100)
                     repositorioFrequenciaAlunoDisciplinaPeriodo.Salvar(frequenciaAluno);
+            }
+            else
+            {
+                var frequenciaAluno = repositorioFrequenciaAlunoDisciplinaPeriodo.ObterPorAlunoData(codigoAluno, dataAtual, TipoFrequenciaAluno.PorDisciplina);
+
+                if (frequenciaAluno != null)
+                    repositorioFrequenciaAlunoDisciplinaPeriodo.Remover(frequenciaAluno);
             }
         }
     }
