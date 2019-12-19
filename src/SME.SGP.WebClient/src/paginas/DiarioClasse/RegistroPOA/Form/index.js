@@ -52,12 +52,14 @@ function RegistroPOAForm({ match }) {
   const somenteConsulta = verificaSomenteConsulta(
     permissoesTela[RotasDto.REGISTRO_POA]
   );
+
   const [novoRegistro, setNovoRegistro] = useState(true);
   const [modoEdicao, setModoEdicao] = useState(false);
   const [auditoria, setAuditoria] = useState({});
   const [valoresCarregados, setValoresCarregados] = useState(null);
   const [refForm, setRefForm] = useState({});
   const [descricao, setDescricao] = useState('');
+  const ehEdicaoRegistro = match && match.params && match.params.id > 0;
   const [valoresIniciais, setValoresIniciais] = useState({
     mes: '',
     titulo: '',
@@ -83,6 +85,12 @@ function RegistroPOAForm({ match }) {
     arrayCampos.forEach(campo => {
       form.setFieldTouched(campo, true, true);
     });
+
+    if (form.values.descricao === '<p><br></p>') {
+      erro('É necessário informar a descrição');
+      return;
+    }
+
     form.validateForm().then(() => {
       if (form.isValid || Object.keys(form.errors).length === 0) {
         form.submitForm(form);
@@ -260,7 +268,9 @@ function RegistroPOAForm({ match }) {
                   form={form}
                   permissoesTela={permissoesTela[RotasDto.REGISTRO_POA]}
                   novoRegistro={novoRegistro}
-                  labelBotaoPrincipal="Cadastrar"
+                  labelBotaoPrincipal={
+                    ehEdicaoRegistro ? 'Alterar' : 'Cadastrar'
+                  }
                   onClickBotaoPrincipal={() => onClickBotaoPrincipal(form)}
                   onClickCancelar={formulario => onClickCancelar(formulario)}
                   onClickVoltar={() => onClickVoltar()}
@@ -313,7 +323,6 @@ function RegistroPOAForm({ match }) {
                       label="Título"
                       placeholder="Digite o título do registro"
                       form={form}
-                      iconeBusca
                       desabilitado={somenteConsulta}
                     />
                   </Grid>
