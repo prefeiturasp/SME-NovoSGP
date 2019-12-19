@@ -6,7 +6,7 @@ namespace SME.SGP.Infra
     {
         public DateTime? DataAvaliacao { get; set; }
         public string[] DisciplinaContidaRegenciaId { get; set; }
-        public string DisciplinaId { get; set; }
+        public string[] DisciplinasId { get; set; }
         public string DreId { get; set; }
         public long? Id { get; set; }
         public string Nome { get; set; }
