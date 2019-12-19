@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import shortid from 'shortid';
+import { Checkbox } from 'antd';
 import {
   selecionarTurma,
   turmasUsuario,
@@ -26,6 +27,7 @@ import {
   salvarDres,
   salvarUnidadesEscolares,
   salvarTurmas,
+  limparDadosFiltro,
 } from '~/redux/modulos/filtro/actions';
 import FiltroHelper from './helper';
 import { erro } from '~/servicos/alertas';
@@ -106,14 +108,22 @@ const Filtro = () => {
   );
   const [resultadosFiltro, setResultadosFiltro] = useState([]);
 
+  const [consideraHistorico, setConsideraHistorico] = useState(false);
+
+  const aoSelecionarHistorico = () => {
+    setConsideraHistorico(!consideraHistorico);
+  };
+
   const obterDres = useCallback(
     async (estado, periodo) => {
       if (!modalidadeSelecionada) return;
 
-      const listaDres = await FiltroHelper.obterDres(
+      const listaDres = await FiltroHelper.obterDres({
+        consideraHistorico,
         modalidadeSelecionada,
-        periodo
-      );
+        periodoSelecionado: periodo,
+        anoLetivoSelecionado,
+      });
 
       if (estado) {
         dispatch(salvarDres(listaDres));
@@ -121,7 +131,7 @@ const Filtro = () => {
         setCampoDreDesabilitado(listaDres.length === 1);
       }
     },
-    [dispatch, modalidadeSelecionada]
+    [anoLetivoSelecionado, consideraHistorico, dispatch, modalidadeSelecionada]
   );
 
   const aplicarFiltro = useCallback(() => {
@@ -225,11 +235,18 @@ const Filtro = () => {
   const filtro = useSelector(state => state.filtro);
 
   useEffect(() => {
+    dispatch(limparDadosFiltro());
+    setAnoLetivoSelecionado();
+  }, [consideraHistorico]);
+
+  useEffect(() => {
     let estado = true;
 
     const obterAnosLetivos = async deveSalvarAnosLetivos => {
       if (deveSalvarAnosLetivos) {
-        const anosLetivo = await ServicoFiltro.listarAnosLetivos()
+        const anosLetivo = await ServicoFiltro.listarAnosLetivos({
+          consideraHistorico,
+        })
           .then(resposta => {
             const anos = [];
 
@@ -254,7 +271,7 @@ const Filtro = () => {
       estado = false;
       return estado;
     };
-  }, [dispatch, filtro]);
+  }, [consideraHistorico, dispatch, filtro]);
 
   useEffect(() => {
     let estado = true;
@@ -290,7 +307,10 @@ const Filtro = () => {
       setCampoModalidadeDesabilitado(true);
     } else {
       const obterModalidades = async deveSalvarModalidade => {
-        const modalidadesLista = await FiltroHelper.obterModalidades();
+        const modalidadesLista = await FiltroHelper.obterModalidades({
+          consideraHistorico,
+          anoLetivoSelecionado,
+        });
 
         if (deveSalvarModalidade) {
           setModalidades(modalidadesLista);
@@ -298,13 +318,13 @@ const Filtro = () => {
           setCampoModalidadeDesabilitado(modalidadesLista.length === 1);
         }
       };
-      obterModalidades(estado);
+      obterModalidades(estado && anoLetivoSelecionado);
     }
     return () => {
       estado = false;
       return estado;
     };
-  }, [anoLetivoSelecionado, dispatch]);
+  }, [anoLetivoSelecionado, consideraHistorico, dispatch]);
 
   useEffect(() => {
     if (modalidades && modalidades.length === 1)
@@ -315,7 +335,11 @@ const Filtro = () => {
     let estado = true;
 
     const obterPeriodos = async deveSalvarPeriodos => {
-      const periodo = await FiltroHelper.obterPeriodos(modalidadeSelecionada);
+      const periodo = await FiltroHelper.obterPeriodos({
+        consideraHistorico,
+        modalidadeSelecionada,
+        anoLetivoSelecionado,
+      });
 
       if (!modalidade) return;
 
@@ -335,17 +359,23 @@ const Filtro = () => {
       modalidadeSelecionada &&
       modalidadeSelecionada.toString() === modalidade.EJA.toString()
     ) {
-      obterPeriodos(estado);
+      obterPeriodos(estado && anoLetivoSelecionado && modalidadeSelecionada);
       setCampoDreDesabilitado(true);
     } else {
-      obterDres(estado);
+      obterDres(estado && anoLetivoSelecionado && modalidadeSelecionada);
     }
 
     return () => {
       estado = false;
       return estado;
     };
-  }, [obterDres, dispatch, modalidadeSelecionada]);
+  }, [
+    obterDres,
+    dispatch,
+    modalidadeSelecionada,
+    consideraHistorico,
+    anoLetivoSelecionado,
+  ]);
 
   useEffect(() => {
     if (periodos && periodos.length === 1)
@@ -367,8 +397,13 @@ const Filtro = () => {
       return;
     }
 
-    obterDres(estado, periodoSelecionado);
-  }, [obterDres, modalidadeSelecionada, periodoSelecionado]);
+    obterDres(estado && anoLetivoSelecionado, periodoSelecionado);
+  }, [
+    obterDres,
+    modalidadeSelecionada,
+    periodoSelecionado,
+    anoLetivoSelecionado,
+  ]);
 
   useEffect(() => {
     if (dres && dres.length === 1) setDreSelecionada(dres[0].valor);
@@ -379,11 +414,13 @@ const Filtro = () => {
     const obterUnidadesEscolares = async (deveSalvarUes, periodo) => {
       if (!modalidadeSelecionada) return;
 
-      const ues = await FiltroHelper.obterUnidadesEscolares(
+      const ues = await FiltroHelper.obterUnidadesEscolares({
+        consideraHistorico,
         modalidadeSelecionada,
         dreSelecionada,
-        periodo
-      );
+        periodoSelecionado: periodo,
+        anoLetivoSelecionado,
+      });
 
       if (!ues) {
         setDreSelecionada();
@@ -409,14 +446,24 @@ const Filtro = () => {
           ? periodoSelecionado
           : null;
 
-      obterUnidadesEscolares(estado, periodo);
+      obterUnidadesEscolares(
+        estado && anoLetivoSelecionado && dreSelecionada,
+        periodo
+      );
     }
 
     return () => {
       estado = false;
       return estado;
     };
-  }, [dispatch, dreSelecionada, modalidadeSelecionada, periodoSelecionado]);
+  }, [
+    anoLetivoSelecionado,
+    consideraHistorico,
+    dispatch,
+    dreSelecionada,
+    modalidadeSelecionada,
+    periodoSelecionado,
+  ]);
 
   useEffect(() => {
     if (unidadesEscolares && unidadesEscolares.length === 1)
@@ -433,11 +480,13 @@ const Filtro = () => {
 
       if (!modalidadeSelecionada) return;
 
-      const listaTurmas = await FiltroHelper.obterTurmas(
+      const listaTurmas = await FiltroHelper.obterTurmas({
+        consideraHistorico,
         modalidadeSelecionada,
         unidadeEscolarSelecionada,
-        periodo
-      );
+        periodoSelecionado: periodo,
+        anoLetivoSelecionado,
+      });
 
       if (!listaTurmas || listaTurmas.length === 0) {
         setUnidadeEscolarSelecionada();
@@ -459,7 +508,7 @@ const Filtro = () => {
       setTurmaSelecionada();
       setCampoTurmaDesabilitado(true);
     } else {
-      obterTurmas(estado);
+      obterTurmas(estado && anoLetivoSelecionado && unidadeEscolarSelecionada);
     }
 
     return () => {
@@ -467,6 +516,8 @@ const Filtro = () => {
       return estado;
     };
   }, [
+    anoLetivoSelecionado,
+    consideraHistorico,
     dispatch,
     modalidadeSelecionada,
     periodoSelecionado,
@@ -530,11 +581,13 @@ const Filtro = () => {
     setTextoAutocomplete(texto);
 
     if (texto.length >= 2) {
-      api.get(`v1/abrangencias/${texto}`).then(resposta => {
-        if (resposta.data) {
-          setResultadosFiltro(resposta.data);
-        }
-      });
+      api
+        .get(`v1/${consideraHistorico}/abrangencias/${texto}`)
+        .then(resposta => {
+          if (resposta.data) {
+            setResultadosFiltro(resposta.data);
+          }
+        });
     }
   };
 
@@ -720,8 +773,18 @@ const Filtro = () => {
         {alternarFocoBusca && (
           <div
             ref={divBuscaRef}
-            className="container d-block position-absolute bg-white shadow rounded mt-1 px-3 pt-5 pb-1"
+            className="container d-block position-absolute bg-white shadow rounded mt-1 px-3 pt-4 pb-1"
           >
+            <div className="form-row">
+              <Grid cols={12} className="form-group">
+                <Checkbox
+                  checked={consideraHistorico}
+                  onChange={aoSelecionarHistorico}
+                >
+                  Exibir histórico?
+                </Checkbox>
+              </Grid>
+            </div>
             <div className="form-row">
               <Grid cols={3} className="form-group">
                 <SelectComponent
