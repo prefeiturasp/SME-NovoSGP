@@ -5,6 +5,9 @@ import PropTypes from 'prop-types';
 import { Form, Formik } from 'formik';
 import * as Yup from 'yup';
 
+// Redux
+import { useSelector } from 'react-redux';
+
 // Componentes
 import { Grid, CampoTexto, Localizador } from '~/componentes';
 import MesesDropDown from '../../../componentes/MesesDropDown';
@@ -16,9 +19,9 @@ import { DreDropDown, UeDropDown } from '~/componentes-sgp';
 import { Row } from './styles';
 
 function Filtro({ onFiltrar }) {
+  const { anoLetivo } = useSelector(store => store.usuario.turmaSelecionada);
   const [refForm, setRefForm] = useState({});
   const [valoresIniciais] = useState({
-    // mes: '',
     titulo: '',
   });
 
@@ -51,7 +54,7 @@ function Filtro({ onFiltrar }) {
               <DreDropDown
                 url="v1/dres/atribuicoes"
                 form={form}
-                onChange={valor => null}
+                onChange={() => null}
               />
             </Grid>
             <Grid cols={6}>
@@ -66,7 +69,7 @@ function Filtro({ onFiltrar }) {
           <Row className="row mb-2">
             <Localizador
               dreId={form.values.dreId}
-              anoLetivo="2019"
+              anoLetivo={anoLetivo}
               form={form}
               onChange={() => null}
             />

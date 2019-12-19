@@ -99,6 +99,7 @@ function RegistroPOALista() {
         ...valoresFiltro,
         CodigoRf: valoresFiltro.professorRf,
         anoLetivo,
+        mes: valoresFiltro.mes || 0,
       });
     },
     [anoLetivo]
