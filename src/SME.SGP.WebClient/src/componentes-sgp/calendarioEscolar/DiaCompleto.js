@@ -13,6 +13,8 @@ import {
   selecionaDia,
   salvarEventoCalendarioEdicao,
 } from '~/redux/modulos/calendarioEscolar/actions';
+import Loader from '~/componentes/loader';
+import RotasDTO from '~/dtos/rotasDto';
 
 const Div = styled.div``;
 const Evento = styled(Div)`
@@ -41,7 +43,17 @@ const SemEvento = () => {
 
 const DiaCompleto = props => {
   const { dias, mesAtual, filtros } = props;
+  const {
+    tipoCalendarioSelecionado,
+    eventoSme,
+    dreSelecionada,
+    unidadeEscolarSelecionada,
+  } = filtros;
   const [eventosDia, setEventosDia] = useState([]);
+
+  const permissaoTela = useSelector(
+    state => state.usuario.permissoes[RotasDTO.CALENDARIO_ESCOLAR]
+  );
 
   const diaSelecionado = useSelector(
     state => state.calendarioEscolar.diaSelecionado
@@ -52,35 +64,39 @@ const DiaCompleto = props => {
   for (let i = 0; i < dias.length; i += 1)
     if (dias[i] === diaSelecionado) estaAberto = true;
 
+  const [carregandoDia, setCarregandoDia] = useState(false);
+
   useEffect(() => {
     let estado = true;
     if (estado) {
       if (diaSelecionado && estaAberto) {
-        if (filtros && Object.entries(filtros).length > 0) {
-          setEventosDia([]);
-          const {
-            tipoCalendarioSelecionado = '',
-            eventoSme = true,
-            dreSelecionada = '',
-            unidadeEscolarSelecionada = '',
-          } = filtros;
-          if (tipoCalendarioSelecionado) {
-            api
-              .get(
-                `v1/calendarios/eventos/meses/${mesAtual}/dias/${diaSelecionado.getDate()}?EhEventoSme=${eventoSme}&${dreSelecionada &&
-                  `DreId=${dreSelecionada}&`}${tipoCalendarioSelecionado &&
-                  `IdTipoCalendario=${tipoCalendarioSelecionado}&`}${unidadeEscolarSelecionada &&
-                  `UeId=${unidadeEscolarSelecionada}`}`
-              )
-              .then(resposta => {
-                if (resposta.data) setEventosDia(resposta.data);
-                else setEventosDia([]);
-              })
-              .catch(() => {
-                setEventosDia([]);
-              });
-          } else setEventosDia([]);
-        }
+        setEventosDia([]);
+        if (tipoCalendarioSelecionado) {
+          setCarregandoDia(true);
+          api
+            .get(
+              `v1/calendarios/eventos/meses/${mesAtual}/dias/${diaSelecionado.getDate()}?EhEventoSme=${eventoSme}&${
+                dreSelecionada ? `DreId=${dreSelecionada}&` : ''
+              }${
+                tipoCalendarioSelecionado
+                  ? `IdTipoCalendario=${tipoCalendarioSelecionado}&`
+                  : ''
+              }${
+                unidadeEscolarSelecionada
+                  ? `UeId=${unidadeEscolarSelecionada}`
+                  : ''
+              }`
+            )
+            .then(resposta => {
+              if (resposta.data) setEventosDia(resposta.data);
+              else setEventosDia([]);
+              setCarregandoDia(false);
+            })
+            .catch(() => {
+              setEventosDia([]);
+              setCarregandoDia(false);
+            });
+        } else setEventosDia([]);
       } else setEventosDia([]);
     }
     return () => {
@@ -94,14 +110,7 @@ const DiaCompleto = props => {
   }, [filtros]);
 
   const aoClicarEvento = id => {
-    if (filtros && Object.entries(filtros).length > 0) {
-      const {
-        tipoCalendarioSelecionado = '',
-        eventoSme = true,
-        dreSelecionada = '',
-        unidadeEscolarSelecionada = '',
-      } = filtros;
-
+    if (permissaoTela && permissaoTela.podeIncluir) {
       store.dispatch(
         salvarEventoCalendarioEdicao(
           tipoCalendarioSelecionado,
@@ -112,46 +121,49 @@ const DiaCompleto = props => {
           diaSelecionado
         )
       );
+      history.push(`calendario-escolar/eventos/editar/${id}`);
     }
-
-    history.push(`calendario-escolar/eventos/editar/${id}`);
   };
 
   return (
     estaAberto && (
-      <Div className="border-bottom border-top-0 h-100 p-3">
-        {eventosDia && eventosDia.length > 0 ? (
-          <Div className="list-group list-group-flush fade show">
-            {eventosDia.map(evento => {
-              return (
-                <Evento
-                  key={shortid.generate()}
-                  className="list-group-item list-group-item-action d-flex rounded"
-                  onClick={() => aoClicarEvento(evento.id)}
-                  style={{ cursor: 'pointer' }}
-                >
-                  <Grid cols={1} className="pl-0">
-                    <Botao
-                      label={evento.tipoEvento}
-                      color={Colors.CinzaBotao}
-                      border
-                      steady
-                    />
-                  </Grid>
-                  <Grid
-                    cols={11}
-                    className="align-self-center font-weight-bold pl-0"
+      <Loader loading={carregandoDia} tip="">
+        <Div className="border-bottom border-top-0 h-100 p-3">
+          {eventosDia && eventosDia.length > 0 ? (
+            <Div className="list-group list-group-flush fade show">
+              {eventosDia.map(evento => {
+                return (
+                  <Evento
+                    key={shortid.generate()}
+                    className="list-group-item list-group-item-action d-flex rounded"
+                    onClick={() => aoClicarEvento(evento.id)}
+                    style={{ cursor: 'pointer' }}
                   >
-                    <Div>{evento.descricao ? evento.descricao : 'Evento'}</Div>
-                  </Grid>
-                </Evento>
-              );
-            })}
-          </Div>
-        ) : (
-          <SemEvento />
-        )}
-      </Div>
+                    <Grid cols={1} className="pl-0">
+                      <Botao
+                        label={evento.tipoEvento}
+                        color={Colors.CinzaBotao}
+                        border
+                        steady
+                      />
+                    </Grid>
+                    <Grid
+                      cols={11}
+                      className="align-self-center font-weight-bold pl-0"
+                    >
+                      <Div>
+                        {evento.descricao ? evento.descricao : 'Evento'}
+                      </Div>
+                    </Grid>
+                  </Evento>
+                );
+              })}
+            </Div>
+          ) : (
+            <SemEvento />
+          )}
+        </Div>
+      </Loader>
     )
   );
 };

@@ -19,8 +19,7 @@ namespace SME.SGP.Api.Middlewares
 
         public async Task InvokeAsync(HttpContext context, RequestDelegate next)
         {
-            if ((servicoToken.TokenPresente() && servicoToken.TokenAtivo())
-                || !servicoToken.TokenPresente())
+            if (!servicoToken.TokenPresente() || servicoToken.TokenAtivo())
             {
                 await next(context);
 
