@@ -289,6 +289,7 @@ function AtribuicaoEsporadicaForm({ match }) {
                         form={form}
                         onChange={() => null}
                         desabilitado={somenteConsulta || valoresIniciais.id}
+                        incluirEmei
                       />
                     </Row>
                   </Grid>

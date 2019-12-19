@@ -11,11 +11,27 @@ using System.Threading.Tasks;
 namespace SME.SGP.Api.Controllers
 {
     [ApiController]
-    [Route("api/v1/abrangencias")]
+    [Route("api/v1/abrangencias/{consideraHistorico}")]
     [Authorize("Bearer")]
     public class AbrangenciaController : ControllerBase
     {
         private readonly IConsultasAbrangencia consultasAbrangencia;
+        private bool ConsideraHistorico
+        {
+            get
+            {
+                if (this.RouteData != null && this.RouteData.Values != null)
+                {
+                    var consideraHistoricoParam = (string)this.RouteData.Values["consideraHistorico"];
+
+                    if (!string.IsNullOrWhiteSpace(consideraHistoricoParam))
+                        return bool.Parse(consideraHistoricoParam);
+                }
+
+                return false;
+
+            }
+        }
 
         public AbrangenciaController(IConsultasAbrangencia consultasAbrangencia)
         {
@@ -65,9 +81,9 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(IEnumerable<EnumeradoRetornoDto>), 200)]
         [ProducesResponseType(401)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        public async Task<IActionResult> ObterModalidades()
+        public async Task<IActionResult> ObterModalidades(int anoLetivo)
         {
-            return Ok(await consultasAbrangencia.ObterModalidades());
+            return Ok(await consultasAbrangencia.ObterModalidades(anoLetivo));
         }
 
         [HttpGet("semestres")]

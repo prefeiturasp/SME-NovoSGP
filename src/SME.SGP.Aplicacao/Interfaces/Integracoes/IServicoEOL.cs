@@ -18,6 +18,7 @@ namespace SME.SGP.Aplicacao.Integracoes
         Task<UsuarioEolAutenticacaoRetornoDto> Autenticar(string login, string senha);
 
         Task<AbrangenciaRetornoEolDto> ObterAbrangencia(string login, Guid perfil);
+        Task<AbrangenciaCompactaVigenteRetornoEOLDTO> ObterAbrangenciaCompactaVigente(string login, Guid perfil);
 
         Task<AbrangenciaRetornoEolDto> ObterAbrangenciaParaSupervisor(string[] uesIds);
 
@@ -78,5 +79,8 @@ namespace SME.SGP.Aplicacao.Integracoes
         Task RemoverCJSeNecessario(Guid usuarioId);
 
         Task<bool> ValidarProfessor(string professorRf);
+
+        EstruturaInstitucionalRetornoEolDTO ObterEstruturaInstuticionalVigentePorTurma(string[] codigosTurma = null);
+        EstruturaInstitucionalRetornoEolDTO ObterEstruturaInstuticionalVigentePorDre();
     }
 }
