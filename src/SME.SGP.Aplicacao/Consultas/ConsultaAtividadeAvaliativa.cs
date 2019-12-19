@@ -144,12 +144,12 @@ namespace SME.SGP.Aplicacao
             {
                 foreach (var filtro in dto.AtividadeAvaliativaTurmaDatas)
                 {
-                    if (string.IsNullOrEmpty(filtro.DisciplinaId))
+                    if (filtro.DisciplinasId.Length <= 0)
                         throw new NegocioException("É necessário informar a disciplina");
-                    var disciplina = ObterDisciplina(Convert.ToInt32(filtro.DisciplinaId));
+                    var disciplina = ObterDisciplina(Convert.ToInt32(filtro.DisciplinasId[0]));
                     var usuario = await servicoUsuario.ObterUsuarioLogado();
                     DateTime dataAvaliacao = filtro.DataAvaliacao.Date;
-                    var aula = await repositorioAula.ObterAulas(filtro.TurmaId.ToString(), null, usuario.CodigoRf, dataAvaliacao, filtro.DisciplinaId);
+                    var aula = await repositorioAula.ObterAulas(filtro.TurmaId.ToString(), null, usuario.CodigoRf, dataAvaliacao, filtro.DisciplinasId);
 
                     //verificar se tem para essa atividade
                     if (!aula.Any())
@@ -178,7 +178,7 @@ namespace SME.SGP.Aplicacao
 
                     if (disciplina.Regencia)
                     {
-                        if (await repositorioAtividadeAvaliativa.VerificarSeJaExisteAvaliacaoRegencia(dataAvaliacao, null, null, filtro.TurmaId.ToString(), filtro.DisciplinaId, null, usuario.CodigoRf, null))
+                        if (await repositorioAtividadeAvaliativa.VerificarSeJaExisteAvaliacaoRegencia(dataAvaliacao, null, null, filtro.TurmaId.ToString(), filtro.DisciplinasId, null, usuario.CodigoRf, null))
                         {
                             retorno.Add(new AtividadeAvaliativaExistenteRetornoDto()
                             {
@@ -191,7 +191,7 @@ namespace SME.SGP.Aplicacao
                     }
                     else
                     {
-                        if (await repositorioAtividadeAvaliativa.VerificarSeJaExisteAvaliacaoNaoRegencia(dataAvaliacao, null, null, filtro.TurmaId.ToString(), filtro.DisciplinaId, usuario.CodigoRf, null))
+                        if (await repositorioAtividadeAvaliativa.VerificarSeJaExisteAvaliacaoNaoRegencia(dataAvaliacao, null, null, filtro.TurmaId.ToString(), filtro.DisciplinasId, usuario.CodigoRf, null))
                         {
                             retorno.Add(new AtividadeAvaliativaExistenteRetornoDto()
                             {

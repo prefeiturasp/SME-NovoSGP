@@ -249,12 +249,12 @@ namespace SME.SGP.Aplicacao
 
         public async Task Validar(FiltroAtividadeAvaliativaDto filtro)
         {
-            if (string.IsNullOrEmpty(filtro.DisciplinaId))
+            if (filtro.DisciplinasId.Length <= 0)
                 throw new NegocioException("É necessário informar a disciplina");
-            var disciplina = ObterDisciplina(filtro.DisciplinaId);
+            var disciplina = ObterDisciplina(filtro.DisciplinasId[0]);
             var usuario = await servicoUsuario.ObterUsuarioLogado();
             DateTime dataAvaliacao = filtro.DataAvaliacao.Value.Date;
-            var aula = await repositorioAula.ObterAulas(filtro.TurmaId, filtro.UeID, usuario.CodigoRf, dataAvaliacao, filtro.DisciplinaId);
+            var aula = await repositorioAula.ObterAulas(filtro.TurmaId, filtro.UeID, usuario.CodigoRf, dataAvaliacao, filtro.DisciplinasId);
 
             //verificar se tem para essa atividade
             if (!aula.Any())
@@ -266,21 +266,21 @@ namespace SME.SGP.Aplicacao
                 throw new NegocioException("Não foi encontrado nenhum período escolar para essa data.");
 
             //verificar se já existe atividade com o mesmo nome no mesmo bimestre
-            if (await repositorioAtividadeAvaliativa.VerificarSeJaExisteAvaliacaoComMesmoNome(filtro.Nome, filtro.DreId, filtro.UeID, filtro.TurmaId, filtro.DisciplinaId, usuario.CodigoRf, perioEscolar.PeriodoInicio, perioEscolar.PeriodoFim, filtro.Id))
+            if (await repositorioAtividadeAvaliativa.VerificarSeJaExisteAvaliacaoComMesmoNome(filtro.Nome, filtro.DreId, filtro.UeID, filtro.TurmaId, filtro.DisciplinasId, usuario.CodigoRf, perioEscolar.PeriodoInicio, perioEscolar.PeriodoFim, filtro.Id))
             {
                 throw new NegocioException("Já existe atividade avaliativa cadastrada com esse nome para esse bimestre.");
             }
 
             if (disciplina.Regencia)
             {
-                if (await repositorioAtividadeAvaliativa.VerificarSeJaExisteAvaliacaoRegencia(dataAvaliacao, filtro.DreId, filtro.UeID, filtro.TurmaId, filtro.DisciplinaId, filtro.DisciplinaContidaRegenciaId, usuario.CodigoRf, filtro.Id))
+                if (await repositorioAtividadeAvaliativa.VerificarSeJaExisteAvaliacaoRegencia(dataAvaliacao, filtro.DreId, filtro.UeID, filtro.TurmaId, filtro.DisciplinasId, filtro.DisciplinaContidaRegenciaId, usuario.CodigoRf, filtro.Id))
                 {
                     throw new NegocioException("Já existe atividade avaliativa cadastrada para essa data e disciplina.");
                 }
             }
             else
             {
-                if (await repositorioAtividadeAvaliativa.VerificarSeJaExisteAvaliacaoNaoRegencia(dataAvaliacao, filtro.DreId, filtro.UeID, filtro.TurmaId, filtro.DisciplinaId, usuario.CodigoRf, filtro.Id))
+                if (await repositorioAtividadeAvaliativa.VerificarSeJaExisteAvaliacaoNaoRegencia(dataAvaliacao, filtro.DreId, filtro.UeID, filtro.TurmaId, filtro.DisciplinasId, usuario.CodigoRf, filtro.Id))
                 {
                     throw new NegocioException("Já existe atividade avaliativa cadastrada para essa data e disciplina.");
                 }
