@@ -6,7 +6,6 @@ import { Form, Formik } from 'formik';
 import * as Yup from 'yup';
 
 // Redux
-import { useSelector } from 'react-redux';
 
 // Componentes
 import { Grid, CampoTexto, Localizador } from '~/componentes';
@@ -17,9 +16,12 @@ import { DreDropDown, UeDropDown } from '~/componentes-sgp';
 
 // Styles
 import { Row } from './styles';
+import { store } from '~/redux';
 
 function Filtro({ onFiltrar }) {
-  const { anoLetivo } = useSelector(store => store.usuario.turmaSelecionada);
+  const anoLetivo =
+    store.getState().usuario.turmaSelecionada.anoLetivo ||
+    window.moment().format('YYYY');
   const [refForm, setRefForm] = useState({});
   const [valoresIniciais] = useState({
     titulo: '',
