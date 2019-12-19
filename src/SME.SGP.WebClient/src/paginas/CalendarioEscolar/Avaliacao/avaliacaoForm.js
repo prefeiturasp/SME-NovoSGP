@@ -87,13 +87,22 @@ const AvaliacaoForm = ({ match }) => {
   const [descricao, setDescricao] = useState('');
   const [listaDisciplinasRegencia, setListaDisciplinasRegencia] = useState([]);
 
+  const usuario = useSelector(store => store.usuario);
+
+  const { turmaSelecionada } = usuario;
+  const turmaId = turmaSelecionada ? turmaSelecionada.turma : 0;
+
   const cadastrarAvaliacao = async dados => {
     const avaliacao = {};
 
-    if (eventoAulaCalendarioEdicao) {
+    if (Object.entries(eventoAulaCalendarioEdicao).length) {
       avaliacao.dreId = eventoAulaCalendarioEdicao.dre;
       avaliacao.turmaId = eventoAulaCalendarioEdicao.turma;
       avaliacao.ueId = eventoAulaCalendarioEdicao.unidadeEscolar;
+    } else if (Object.entries(turmaSelecionada).length) {
+      avaliacao.dreId = turmaSelecionada.dre;
+      avaliacao.turmaId = turmaSelecionada.turma;
+      avaliacao.ueId = turmaSelecionada.unidadeEscolar;
     }
 
     const disciplinas = [];
@@ -157,8 +166,6 @@ const AvaliacaoForm = ({ match }) => {
     })
   );
 
-  const usuario = useSelector(store => store.usuario);
-
   const [dataAvaliacao, setdataAvaliacao] = useState();
 
   const [listaCategorias] = useState([
@@ -191,9 +198,6 @@ const AvaliacaoForm = ({ match }) => {
       aoTrocarTextEditor('');
     }
   };
-
-  const { turmaSelecionada } = usuario;
-  const turmaId = turmaSelecionada ? turmaSelecionada.turma : 0;
 
   const obterDisciplinas = async () => {
     const disciplinas = await ServicoAvaliacao.listarDisciplinas(
@@ -453,10 +457,7 @@ const AvaliacaoForm = ({ match }) => {
                     form={form}
                     ref={campoNomeRef}
                     onChange={e => {
-                      setDadosAvaliacao({
-                        ...dadosAvaliacao,
-                        nome: e.target.value,
-                      });
+                      form.setFieldValue('nome', e.target.value);
                       aoTrocarCampos();
                     }}
                   />
