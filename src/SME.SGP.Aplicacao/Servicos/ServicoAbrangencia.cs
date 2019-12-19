@@ -270,7 +270,7 @@ namespace SME.SGP.Aplicacao.Servicos
         {
             if (consultaEol != null)
             {
-                return new Task<AbrangenciaCompactaVigenteRetornoEOLDTO>(() =>
+                return Task.Factory.StartNew(() =>
                 {
                     var resultado = consultaEol.Result;
                     return new AbrangenciaCompactaVigenteRetornoEOLDTO()
