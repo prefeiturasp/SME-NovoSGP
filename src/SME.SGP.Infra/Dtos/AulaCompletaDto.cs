@@ -17,5 +17,6 @@ namespace SME.SGP.Infra
         public string TurmaNome { get; set; }
         public string UeId { get; set; }
         public string UeNome { get; set; }
+        public bool AulaCJ { get; set; }
     }
 }
