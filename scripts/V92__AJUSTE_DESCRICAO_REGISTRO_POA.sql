@@ -1,0 +1,1 @@
+ALTER TABLE public.registro_poa ALTER COLUMN descricao TYPE varchar USING descricao::varchar;
