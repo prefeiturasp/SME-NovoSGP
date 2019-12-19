@@ -22,7 +22,7 @@ namespace SME.SGP.Aplicacao
 
         Task<UsuarioReinicioSenhaDto> ReiniciarSenha(string codigoRf);
 
-        Task<string> RevalidarLogin();
+        Task<RevalidacaoTokenDto> RevalidarLogin();
 
         void Sair();
 
