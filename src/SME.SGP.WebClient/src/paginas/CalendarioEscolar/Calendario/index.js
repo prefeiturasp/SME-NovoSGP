@@ -53,12 +53,15 @@ const CalendarioEscolar = () => {
         anosLetivosAbrangencia.forEach(ano => {
           if (!anos.includes(ano.valor)) anos.push(ano.valor);
         });
-        const tipos = lista.data.filter(tipo => {
-          return (
-            modalidades.indexOf(tipo.modalidade) > -1 &&
-            anos.indexOf(tipo.anoLetivo) > -1
-          );
-        });
+        const tipos = lista.data
+          .filter(tipo => {
+            return anos.indexOf(tipo.anoLetivo) > -1;
+          })
+          .filter(tipo => {
+            if (Object.entries(turmaSelecionadaStore).length)
+              return modalidades.indexOf(tipo.modalidade) > -1;
+            return true;
+          });
         tipos.forEach(tipo => {
           tiposCalendarioLista.push({
             desc: tipo.nome,
@@ -110,13 +113,30 @@ const CalendarioEscolar = () => {
             return tipo.modalidade === modalidadeSelecionada;
           })
         );
-      } else {
-        setTiposCalendario(
-          await obterTiposCalendario(listarModalidadesPorAbrangencia())
-        );
       }
+    } else {
+      setTiposCalendario(
+        await obterTiposCalendario(listarModalidadesPorAbrangencia())
+      );
     }
   };
+
+  useEffect(() => {
+    if (tiposCalendario.length && tiposCalendario.length === 1) {
+      if (Object.entries(turmaSelecionadaStore).length) {
+        const modalidadeSelecionada =
+          turmaSelecionadaStore.modalidade === ModalidadeDTO.EJA.toString()
+            ? 2
+            : 1;
+        const tipoCalendario = tiposCalendario.filter(tipo => {
+          return tipo.modalidade === modalidadeSelecionada;
+        })[0];
+        if (tipoCalendario) {
+          setTipoCalendarioSelecionado(tipoCalendario.valor.toString());
+        }
+      }
+    }
+  }, [tiposCalendario, turmaSelecionadaStore]);
 
   const listarTiposCalendario = async () => {
     listarTiposCalendarioPorTurmaSelecionada(
@@ -248,7 +268,9 @@ const CalendarioEscolar = () => {
   }, [eventoSme]);
 
   useEffect(() => {
-    if (dres && eventoCalendarioEdicao && eventoCalendarioEdicao.dre) {
+    if (dres.length === 1) {
+      setDreSelecionada(dres[0].valor);
+    } else if (dres && eventoCalendarioEdicao && eventoCalendarioEdicao.dre) {
       setDreSelecionada(eventoCalendarioEdicao.dre);
     }
   }, [dres]);
@@ -284,7 +306,9 @@ const CalendarioEscolar = () => {
   };
 
   useEffect(() => {
-    if (
+    if (unidadesEscolares.length === 1) {
+      setUnidadeEscolarSelecionada(unidadesEscolares[0].valor);
+    } else if (
       unidadesEscolares &&
       eventoCalendarioEdicao &&
       eventoCalendarioEdicao.unidadeEscolar

@@ -123,7 +123,9 @@ const EventosLista = () => {
 
     if (dres.sucesso) {
       dres.conteudo.sort(FiltroHelper.ordenarLista('nome'));
-      dres.conteudo.unshift({ codigo: 0, nome: 'Todas' });
+      if (dres.conteudo.length > 1) {
+        dres.conteudo.unshift({ codigo: 0, nome: 'Todas' });
+      }
       setListaDre(dres.conteudo);
       return;
     }
@@ -131,6 +133,16 @@ const EventosLista = () => {
     erro(dres.erro);
     setListaDre([]);
   };
+
+  const [dreDesabilitada, setDreDesabilitada] = useState(false);
+  const [ueDesabilitada, setUeDesabilitada] = useState(false);
+
+  useEffect(() => {
+    if (listaDre.length === 1 && usuario.possuiPerfilDre) {
+      setDreSelecionada(listaDre[0].codigo.toString());
+      setDreDesabilitada(true);
+    }
+  }, [listaDre]);
 
   useEffect(() => {
     const obterListaEventos = async () => {
@@ -228,6 +240,13 @@ const EventosLista = () => {
   };
 
   useEffect(() => {
+    if (listaUe.length === 1 && !usuario.possuiPerfilSmeOuDre) {
+      refForm.setFieldValue('ueId', listaUe[0].codigo.toString());
+      setUeDesabilitada(true);
+    }
+  }, [listaUe]);
+
+  useEffect(() => {
     if (dreSelecionada) listarUes();
 
     if (selecionouCalendario) validarFiltrar();
@@ -237,7 +256,7 @@ const EventosLista = () => {
     history.push(URL_HOME);
   };
 
-  const onChangeUe = () => {
+  const onChangeUe = async ueId => {
     if (selecionouCalendario) validarFiltrar();
   };
 
@@ -427,6 +446,7 @@ const EventosLista = () => {
                     valueOption="codigo"
                     valueText="nome"
                     onChange={onChangeDreId}
+                    disabled={dreDesabilitada}
                     placeholder="Selecione uma DRE (Opcional)"
                     form={form}
                   />
@@ -439,7 +459,7 @@ const EventosLista = () => {
                     valueOption="codigo"
                     valueText="nome"
                     onChange={onChangeUe}
-                    disabled={campoUeDesabilitado}
+                    disabled={campoUeDesabilitado || ueDesabilitada}
                     placeholder="Selecione uma UE (Opcional)"
                     form={form}
                   />
