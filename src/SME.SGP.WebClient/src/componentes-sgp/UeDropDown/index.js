@@ -10,7 +10,7 @@ import AbrangenciaServico from '~/servicos/Abrangencia';
 import FiltroHelper from '~/componentes-sgp/filtro/helper';
 import tipoEscolaDTO from '~/dtos/tipoEscolaDto';
 
-function UeDropDown({ form, onChange, dreId, label, url }) {
+function UeDropDown({ form, onChange, dreId, label, url, desabilitado }) {
   const [listaUes, setListaUes] = useState([]);
 
   async function buscarUes() {
@@ -53,7 +53,7 @@ function UeDropDown({ form, onChange, dreId, label, url }) {
       valueOption="valor"
       valueText="desc"
       placeholder="Unidade Escolar (UE)"
-      disabled={listaUes.length === 0 || listaUes.length === 1}
+      disabled={listaUes.length === 0 || listaUes.length === 1 || desabilitado}
     />
   );
 }
@@ -67,6 +67,7 @@ UeDropDown.propTypes = {
   dreId: PropTypes.string,
   label: PropTypes.string,
   url: PropTypes.string,
+  desabilitado: PropTypes.bool,
 };
 
 UeDropDown.defaultProps = {
@@ -75,6 +76,7 @@ UeDropDown.defaultProps = {
   dreId: '',
   label: null,
   url: '',
+  desabilitado: false,
 };
 
 export default UeDropDown;

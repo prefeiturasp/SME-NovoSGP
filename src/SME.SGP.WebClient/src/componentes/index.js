@@ -16,3 +16,5 @@ export { default as Localizador } from './Localizador';
 export { default as ButtonGroup } from './ButtonGroup';
 export { default as ListaPaginada } from './listaPaginada/listaPaginada';
 export { default as CheckboxComponent } from './checkbox';
+export { default as CampoTextoBusca } from './campoTextoBusca';
+export { default as TextEditor } from './textEditor';
