@@ -53,7 +53,7 @@ namespace SME.SGP.Dominio.Servicos
                 ausencias.Where(a => a.NumeroAula == quantidadeOriginal).ToList()
                     .ForEach(ausencia =>
                     {
-                        for (var n=quantidadeOriginal+1; n <= quantidadeAtual; n++)
+                        for (var n = quantidadeOriginal + 1; n <= quantidadeAtual; n++)
                         {
                             var clone = (RegistroAusenciaAluno)ausencia.Clone();
                             clone.NumeroAula = n;
@@ -109,7 +109,7 @@ namespace SME.SGP.Dominio.Servicos
 
             registroFrequencia = RegistraFrequenciaTurma(aula, registroFrequencia);
 
-            RegistraAusenciaAlunos(registroAusenciaAlunos, alunos, registroFrequencia, aula.Quantidade);
+            RegistraAusenciaAlunos(registroAusenciaAlunos, alunos, registroFrequencia, aula.Quantidade, aula.DataAula);
 
             unitOfWork.PersistirTransacao();
 
@@ -148,23 +148,21 @@ namespace SME.SGP.Dominio.Servicos
             return turma;
         }
 
-        private void RegistraAusenciaAlunos(IEnumerable<RegistroAusenciaAluno> registroAusenciaAlunos, IEnumerable<AlunoPorTurmaResposta> alunos, RegistroFrequencia registroFrequencia, int quantidadeAulas)
+        private void RegistraAusenciaAlunos(IEnumerable<RegistroAusenciaAluno> registroAusenciaAlunos, IEnumerable<AlunoPorTurmaResposta> alunos, RegistroFrequencia registroFrequencia, int quantidadeAulas, DateTime dataAula)
         {
             foreach (var ausencia in registroAusenciaAlunos)
             {
                 if (ausencia.NumeroAula > quantidadeAulas)
-                {
                     throw new NegocioException($"O número de aula informado: Aula {ausencia.NumeroAula} não foi encontrado.");
-                }
+
                 var aluno = alunos.FirstOrDefault(c => c.CodigoAluno == ausencia.CodigoAluno);
+
                 if (aluno == null)
-                {
                     throw new NegocioException("O aluno informado na frequência não pertence a essa turma.");
-                }
-                if (aluno.EstaInativo())
-                {
+
+                if (aluno.EstaInativo() && dataAula >= aluno.DataSituacao)
                     throw new NegocioException($"Não foi possível registrar a frequência pois o aluno: '{aluno.NomeAluno}' está com a situação: '{aluno.SituacaoMatricula}'.");
-                }
+
                 ausencia.RegistroFrequenciaId = registroFrequencia.Id;
                 repositorioRegistroAusenciaAluno.Salvar(ausencia);
             }
