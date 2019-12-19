@@ -107,6 +107,7 @@ const Perfil = props => {
               ehProfessor,
               ehProfessorCj,
               ehProfessorPoa,
+              dataHoraExpiracao
             } = resp.data;
             store.dispatch(
               salvarDadosLogin({
@@ -115,6 +116,7 @@ const Perfil = props => {
                 ehProfessor,
                 ehProfessorCj,
                 ehProfessorPoa,
+                dataHoraExpiracao,
               })
             );
             setMenusPermissoes();

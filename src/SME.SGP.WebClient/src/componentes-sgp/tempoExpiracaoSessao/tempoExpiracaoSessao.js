@@ -1,9 +1,12 @@
 import React, { useEffect, useState } from 'react';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
 import Button from '~/componentes/button';
 import { Base, Colors } from '~/componentes/colors';
-import { salvarLoginRevalidado } from '~/redux/modulos/usuario/actions';
+import {
+  salvarLoginRevalidado,
+  Deslogar,
+} from '~/redux/modulos/usuario/actions';
 import { erros } from '~/servicos/alertas';
 import api from '~/servicos/api';
 
@@ -61,21 +64,63 @@ const CaixaTempoExpiracao = styled.div`
 `;
 
 const TempoExpiracaoSessao = () => {
+  const dataHoraExpiracao = useSelector(store => store.usuario.dataHoraExpiracao);
+
   const dispatch = useDispatch();
 
-  const [mostraTempoExpiracao, setMostraTempoExpiracao] = useState(true);
+  const [mostraTempoExpiracao, setMostraTempoExpiracao] = useState(false);
+  const [tempoParaExpirar, setTempoParaExpirar] = useState({
+    expiraEm: '',
+    diferenca: '',
+  });
 
-  // useEffect(() => {
-  //   const interval = setInterval(() => {
-  //     setMostraTempoExpiracao(!mostraTempoExpiracao);
-  //   }, 5000);
-  //   return () => clearInterval(interval);
-  // }, [mostraTempoExpiracao]);
+  const calcularTempoExpiracao = () => {
+    const diferenca = +new Date(dataHoraExpiracao) - +new Date();
+
+    if (diferenca > 0) {
+      const quinzeMinutos = 900000;
+      const tempoParaExibir =
+        diferenca > quinzeMinutos ? diferenca - quinzeMinutos : 1;
+      setTempoParaExpirar({
+        expiraNaData: dataHoraExpiracao,
+        tempoParaExibir,
+        jaExpirou: diferenca < 1,
+      });
+    }
+  };
+
+  const deslogarDoUsuario = () => {
+    dispatch(Deslogar());
+  };
+
+  useEffect(() => {
+    if (dataHoraExpiracao) {
+      calcularTempoExpiracao();
+    }
+  }, [dataHoraExpiracao]);
+
+  useEffect(() => {
+    if (tempoParaExpirar && tempoParaExpirar.expiraNaData) {
+      if (tempoParaExpirar.tempoParaExibir > 0) {
+        const timeOutExpiracao = setTimeout(() => {
+          setMostraTempoExpiracao(true);
+        }, tempoParaExpirar.tempoParaExibir);
+        return () => clearTimeout(timeOutExpiracao);
+      } else {
+        if (tempoParaExpirar.jaExpirou) {
+          alert('Ja expirou!!');
+        }
+      }
+    } else {
+      setMostraTempoExpiracao(false);
+    }
+  }, [tempoParaExpirar]);
 
   const revalidarAutenticacao = async () => {
     const autenticado = await api
       .post('v1/autenticacao/revalidar')
       .catch(e => erros(e));
+    setMostraTempoExpiracao(false);
     dispatch(
       salvarLoginRevalidado({
         token: autenticado.data,
@@ -94,7 +139,10 @@ const TempoExpiracaoSessao = () => {
           <CaixaTempoExpiracao>
             <i className="far fa-clock icone-tempo" />
             <span className="tempo-restante">
-              <ContadorExpiracao />
+              <ContadorExpiracao
+                dataHoraExpiracao={dataHoraExpiracao}
+                deslogarDoUsuario={deslogarDoUsuario}
+              />
             </span>
             <Button
               icon="sync-alt"
