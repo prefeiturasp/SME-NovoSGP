@@ -51,7 +51,7 @@ const AtribuicaoSupervisorCadastro = ({ match }) => {
   useEffect(() => {
     async function obterListaDres() {
       await api
-        .get('v1/abrangencias/dres')
+        .get('v1/abrangencias/false/dres')
         .then(resposta => {
           setListaDres(resposta.data);
           if (match.params.dreId) {
