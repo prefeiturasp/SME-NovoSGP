@@ -48,7 +48,7 @@ export default function AtribuicaoSupervisorLista() {
 
   useEffect(() => {
     async function carregarDres() {
-      const dres = await api.get('v1/abrangencias/dres');
+      const dres = await api.get('v1/abrangencias/false/dres');
       setListaDres(dres.data.sort(FiltroHelper.ordenarLista('nome')));
     }
 
@@ -238,7 +238,7 @@ export default function AtribuicaoSupervisorLista() {
   }
 
   async function carregarUes(dre) {
-    const ues = await api.get(`/v1/abrangencias/dres/${dre}/ues`);
+    const ues = await api.get(`/v1/abrangencias/false/dres/${dre}/ues`);
     if (ues.data) {
       ues.data.forEach(
         ue => (ue.nome = `${tipoEscolaDTO[ue.tipoEscola]} ${ue.nome}`)
