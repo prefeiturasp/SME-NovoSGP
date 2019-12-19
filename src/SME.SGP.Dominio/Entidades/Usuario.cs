@@ -57,6 +57,11 @@ namespace SME.SGP.Dominio
             Perfis = perfisUsuario;
         }
 
+        public bool PodeVisualizarEventosLibExcepRepoRecessoGestoresUeDreSme()
+        {
+            throw new NotImplementedException();
+        }
+
         public bool EhPerfilSME()
         {
             return Perfis.Any(c => c.Tipo == TipoPerfil.SME && c.CodigoPerfil == PerfilAtual);

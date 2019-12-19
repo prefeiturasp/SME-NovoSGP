@@ -40,7 +40,8 @@ namespace SME.SGP.Aplicacao
                         usuario,
                         usuario.PerfilAtual,
                         usuario.TemPerfilSupervisorOuDiretor(),
-                        usuario.PodeVisualizarEventosOcorrenciaDre()));
+                        usuario.PodeVisualizarEventosOcorrenciaDre(),
+                        usuario.PodeVisualizarEventosLibExcepRepoRecessoGestoresUeDreSme()));
         }
 
         public async Task<IEnumerable<CalendarioEventosNoDiaRetornoDto>> ObterEventosPorDia(CalendarioEventosFiltroDto calendarioEventosMesesFiltro, int mes, int dia)
@@ -60,11 +61,6 @@ namespace SME.SGP.Aplicacao
             bool podeAlterarSME = EhEventoSME(evento) || EhEventoSME(evento) && usuario.EhPerfilSME();
 
             return MapearParaDto(evento, podeAlterarSME);
-        }
-
-        private bool EhEventoSME(Evento evento)
-        {
-            return evento.UeId == null && evento.DreId == null;
         }
 
         public async Task<IEnumerable<CalendarioTipoEventoPorDiaDto>> ObterQuantidadeDeEventosPorDia(CalendarioEventosFiltroDto calendarioEventosMesesFiltro, int mes)
@@ -98,6 +94,11 @@ namespace SME.SGP.Aplicacao
             var usuario = await servicoUsuario.ObterUsuarioLogado();
 
             return await repositorioEvento.ObterQuantidadeDeEventosPorMeses(calendarioEventosMesesFiltro, usuario, usuario.PerfilAtual, usuario.PodeVisualizarEventosOcorrenciaDre());
+        }
+
+        private bool EhEventoSME(Evento evento)
+        {
+            return evento.UeId == null && evento.DreId == null;
         }
 
         private IEnumerable<EventoCompletoDto> MapearEventosParaDto(IEnumerable<Evento> items)
