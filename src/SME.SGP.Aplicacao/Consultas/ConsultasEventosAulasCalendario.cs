@@ -112,7 +112,7 @@ namespace SME.SGP.Aplicacao
                eventosAulas.Add(new EventosAulasTipoDiaDto
                {
                    Id = x.Id,
-                   TipoEvento = "Aula",
+                   TipoEvento = x.AulaCJ ? "CJ" : "Aula",
                    DadosAula = new DadosAulaDto
                    {
                        Disciplina = $"{(disciplina?.Nome ?? "Disciplina não encontrada")} {(x.TipoAula == TipoAula.Reposicao ? "(Reposição)" : "")} {(x.Status == EntidadeStatus.AguardandoAprovacao ? "- Aguardando aprovação" : "")}",
