@@ -156,7 +156,7 @@ const DiaCompleto = props => {
   }, [filtros]);
 
   const aoClicarEvento = (id, tipo) => {
-    if (permissaoTela && permissaoTela.podeIncluir) {
+    if (permissaoTela && permissaoTela.podeAlterar) {
       salvarDadosEventoAula();
       if (tipo === TiposEventoAulaDTO.Aula || tipo === TiposEventoAulaDTO.CJ) {
         history.push(`${RotasDTO.CADASTRO_DE_AULA}/editar/${id}`);
@@ -167,7 +167,7 @@ const DiaCompleto = props => {
   };
 
   const aoClicarEditarAvaliacao = id => {
-    if (permissaoTela && permissaoTela.podeIncluir) {
+    if (permissaoTela && permissaoTela.podeAlterar) {
       salvarDadosEventoAula();
       history.push(`${RotasDTO.CADASTRO_DE_AVALIACAO}/editar/${id}`);
     }
@@ -190,6 +190,9 @@ const DiaCompleto = props => {
                     <Evento
                       className="d-flex rounded w-100 py-2 px-3"
                       style={{ cursor: 'pointer' }}
+                      onClick={() =>
+                        aoClicarEvento(evento.id, evento.tipoEvento)
+                      }
                     >
                       <Grid
                         cols={
@@ -197,9 +200,6 @@ const DiaCompleto = props => {
                             1) ||
                           (evento.tipoEvento === TiposEventoAulaDTO.CJ && 1) ||
                           2
-                        }
-                        onClick={() =>
-                          aoClicarEvento(evento.id, evento.tipoEvento)
                         }
                         className="pl-0"
                       >
@@ -211,9 +211,6 @@ const DiaCompleto = props => {
                             (evento.tipoEvento === TiposEventoAulaDTO.CJ &&
                               Colors.Laranja) ||
                             Colors.CinzaBotao
-                          }
-                          onClick={() =>
-                            aoClicarEvento(evento.id, evento.tipoEvento)
                           }
                           className="w-100"
                           height={
@@ -231,9 +228,6 @@ const DiaCompleto = props => {
                         evento.dadosAula && (
                           <Grid cols={1} className="px-0">
                             <Botao
-                              onClick={() =>
-                                aoClicarEvento(evento.id, evento.tipoEvento)
-                              }
                               label={window
                                 .moment(evento.dadosAula.horario, 'LT')
                                 .format('LT')}
@@ -261,9 +255,6 @@ const DiaCompleto = props => {
                             TiposEventoAulaDTO.Aula ||
                             evento.tipoEvento === TiposEventoAulaDTO.CJ) &&
                             'pl-3'}`}
-                          onClick={() =>
-                            aoClicarEvento(evento.id, evento.tipoEvento)
-                          }
                         >
                           {evento.tipoEvento !== TiposEventoAulaDTO.Aula &&
                             evento.tipoEvento !== TiposEventoAulaDTO.CJ &&
