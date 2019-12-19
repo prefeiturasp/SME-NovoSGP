@@ -472,7 +472,6 @@ namespace SME.SGP.Dados.Repositorios
             query.AppendLine("et.ativo = true");
             query.AppendLine("and et.excluido = false");
             query.AppendLine("and e.excluido = false");
-            query.AppendLine("and e.status = 2");
 
             if (!string.IsNullOrEmpty(dreId))
                 query.AppendLine($"and e.dre_id = @dreId");
@@ -1054,7 +1053,7 @@ namespace SME.SGP.Dados.Repositorios
 
         private static void MontaQueryCabecalho(StringBuilder query)
         {
-            query.AppendLine("select");
+            query.AppendLine("select distinct");
             query.AppendLine("e.id as EventoId,");
             query.AppendLine("e.id,");
             query.AppendLine("e.nome,");

@@ -57,9 +57,9 @@ namespace SME.SGP.Dominio
             Perfis = perfisUsuario;
         }
 
-        public bool PodeVisualizarEventosLibExcepRepoRecessoGestoresUeDreSme()
+        public bool EhPerfilDRE()
         {
-            throw new NotImplementedException();
+            return Perfis.Any(c => c.Tipo == TipoPerfil.DRE && c.CodigoPerfil == PerfilAtual);
         }
 
         public bool EhPerfilSME()
@@ -175,6 +175,11 @@ namespace SME.SGP.Dominio
         public bool PodeReiniciarSenha()
         {
             return !string.IsNullOrEmpty(Email);
+        }
+
+        public bool PodeVisualizarEventosLibExcepRepoRecessoGestoresUeDreSme()
+        {
+            return (PerfilAtual == Dominio.Perfis.PERFIL_AD || PerfilAtual == Dominio.Perfis.PERFIL_CP || PerfilAtual == Dominio.Perfis.PERFIL_DIRETOR || EhPerfilSME() || EhPerfilDRE());
         }
 
         public bool PodeVisualizarEventosOcorrenciaDre()
