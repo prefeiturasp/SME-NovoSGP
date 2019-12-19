@@ -171,7 +171,7 @@ namespace SME.SGP.Aplicacao
                 foreach (var supervisorEscolaDre in supervisoresEscolasDres.GroupBy(a => a.SupervisorId).Select(a => a.Key).ToList())
                 {
                     var supervisorEscolasDto = new SupervisorEscolasDto();
-                    supervisorEscolasDto.SupervisorNome = supervisores.FirstOrDefault(a => a.CodigoRF == supervisorEscolaDre).NomeServidor;
+                    supervisorEscolasDto.SupervisorNome = supervisores.FirstOrDefault(a => a.CodigoRF == supervisorEscolaDre)?.NomeServidor;
                     supervisorEscolasDto.SupervisorId = supervisorEscolaDre;
 
                     var idsEscolasDoSupervisor = supervisoresEscolasDres.Where(a => a.SupervisorId == supervisorEscolaDre)
