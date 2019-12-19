@@ -58,7 +58,10 @@ namespace SME.SGP.Aplicacao
             var data = filtro.Data.Date;
 
             var perfil = servicoUsuario.ObterPerfilAtual();
-            var rf = servicoUsuario.ObterRf();
+
+            var usuario = await servicoUsuario.ObterUsuarioLogado();
+
+            string rf = usuario.TemPerfilGestaoUes() ? string.Empty : usuario.CodigoRf;
 
             var eventos = await repositorioEvento.ObterEventosPorTipoDeCalendarioDreUeDia(filtro.TipoCalendarioId, filtro.DreId, filtro.UeId, data, filtro.EhEventoSme);
             var aulas = await repositorioAula.ObterAulasCompleto(filtro.TipoCalendarioId, filtro.TurmaId, filtro.UeId, data, perfil, rf);
@@ -141,7 +144,9 @@ namespace SME.SGP.Aplicacao
             if (!filtro.TodasTurmas && string.IsNullOrWhiteSpace(filtro.TurmaId))
                 throw new NegocioException("É necessario informar uma turma para pesquisa");
 
-            var rf = servicoUsuario.ObterRf();
+            var usuario = await servicoUsuario.ObterUsuarioLogado();
+
+            string rf = usuario.TemPerfilGestaoUes() ? string.Empty : usuario.CodigoRf;
 
             var diasPeriodoEscolares = comandosDiasLetivos.BuscarDiasLetivos(filtro.TipoCalendarioId);
             var diasAulas = await repositorioAula.ObterAulas(filtro.TipoCalendarioId, filtro.TurmaId, filtro.UeId, rf);
@@ -166,7 +171,10 @@ namespace SME.SGP.Aplicacao
             if (!filtro.TodasTurmas && string.IsNullOrWhiteSpace(filtro.TurmaId))
                 throw new NegocioException("É necessario informar uma turma para pesquisa");
 
-            var rf = servicoUsuario.ObterRf();
+            var usuario = await servicoUsuario.ObterUsuarioLogado();
+
+            string rf = usuario.TemPerfilGestaoUes() ? string.Empty : usuario.CodigoRf;
+
             var eventosAulas = new List<EventosAulasTipoCalendarioDto>();
             var ano = repositorioPeriodoEscolar.ObterPorTipoCalendario(filtro.TipoCalendarioId).FirstOrDefault().PeriodoInicio.Year;
             var aulas = await repositorioAula.ObterAulas(filtro.TipoCalendarioId, filtro.TurmaId, filtro.UeId, rf, filtro.Mes);
