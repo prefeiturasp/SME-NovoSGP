@@ -273,13 +273,13 @@ namespace SME.SGP.Dados.Repositorios
             {
                 queryCount.AppendLine("union distinct");
                 queryCount.AppendLine(queryCountCabecalho);
-                MontaQueryListarFromWhereParaSupervisorDiretorVisualizarEmAprovacao(query, tipoCalendarioId, tipoEventoId, dataInicio, dataFim, nomeEvento, dreId, ueId, podeVisualizarEventosLocalOcorrenciaDre);
+                MontaQueryListarFromWhereParaSupervisorDiretorVisualizarEmAprovacao(queryCount, tipoCalendarioId, tipoEventoId, dataInicio, dataFim, nomeEvento, dreId, ueId, podeVisualizarEventosLocalOcorrenciaDre);
             }
             if (podeVisualizarEventosLibExcepRepoRecessoGestoresUeDreSme)
             {
-                query.AppendLine("union distinct");
-                MontaQueryCabecalho(query);
-                MontaQueryListarFromWhereParaVisualizarEventosLibExcepRepoRecessoGestoresUeDreSme(query, tipoCalendarioId, tipoEventoId, dataInicio, dataFim, nomeEvento, dreId, ueId);
+                queryCount.AppendLine("union distinct");
+                queryCount.AppendLine(queryCountCabecalho);
+                MontaQueryListarFromWhereParaVisualizarEventosLibExcepRepoRecessoGestoresUeDreSme(queryCount, tipoCalendarioId, tipoEventoId, dataInicio, dataFim, nomeEvento, dreId, ueId);
             }
             retornoPaginado.TotalRegistros = (await database.Conexao.QueryAsync<int>(queryCount.ToString(), new
             {
