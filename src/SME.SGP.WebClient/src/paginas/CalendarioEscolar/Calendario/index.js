@@ -183,7 +183,7 @@ const CalendarioEscolar = () => {
   const obterDres = () => {
     setCarregandoDres(true);
     api
-      .get('v1/abrangencias/dres')
+      .get('v1/abrangencias/false/dres')
       .then(resposta => {
         if (resposta.data) {
           const lista = [];
@@ -261,7 +261,7 @@ const CalendarioEscolar = () => {
   const obterUnidadesEscolares = () => {
     setCarregandoUes(true);
     api
-      .get(`v1/abrangencias/dres/${dreSelecionada}/ues`)
+      .get(`v1/abrangencias/false/dres/${dreSelecionada}/ues`)
       .then(resposta => {
         if (resposta.data) {
           const lista = [];
