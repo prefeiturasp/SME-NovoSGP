@@ -60,14 +60,6 @@ export default function bimestres(state = INICIAL, action) {
         draft.bimestresErro = state.bimestresErro;
 
         break;
-      case '@bimestres/PrePostBimestre':
-        draft.bimestres = state.bimestres.map(bimestre => {
-          bimestre.paraEnviar = false;
-          return bimestre;
-        });
-        draft.bimestresErro = state.bimestresErro;
-
-        break;
       case '@bimestres/SalvarMateria':
         draft.bimestres[action.payload.indice].materias =
           action.payload.materias;
@@ -90,7 +82,10 @@ export default function bimestres(state = INICIAL, action) {
         ].selecionada = action.payload.selecionarMateria;
         draft.bimestresErro = state.bimestresErro;
 
-        if (state.bimestres[action.payload.indice])
+        const setarObjetivoFunc =
+          state.bimestres[action.payload.indice].setarObjetivo;
+
+        if (state.bimestres[action.payload.indice] && setarObjetivoFunc)
           draft.bimestres[action.payload.indice].objetivo = state.bimestres[
             action.payload.indice
           ].setarObjetivo();
@@ -118,8 +113,12 @@ export default function bimestres(state = INICIAL, action) {
         break;
 
       case '@bimestres/SetarDescricaoFunction':
-        const bimestre = draft.bimestres[action.payload.indice];
-        if (bimestre) bimestre.setarObjetivo = action.payload.setarObjetivo;
+        const bimestre = state.bimestres[action.payload.indice];
+
+        if (bimestre && action.payload.setarObjetivo)
+          draft.bimestres[action.payload.indice].setarObjetivo =
+            action.payload.setarObjetivo;
+
         draft.bimestresErro = state.bimestresErro;
 
         break;
