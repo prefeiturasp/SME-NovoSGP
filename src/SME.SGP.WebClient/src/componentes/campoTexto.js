@@ -19,6 +19,13 @@ const Campo = styled.div`
   label {
     font-weight: bold;
   }
+  .ant-input-affix-wrapper .ant-input:not(:first-child) {
+    padding-left: 40px;
+  }
+  .form-control {
+    // border: 0;
+    // height: auto !important;
+  }
 `;
 
 const CampoTexto = React.forwardRef((props, ref) => {
@@ -93,7 +100,12 @@ const CampoTexto = React.forwardRef((props, ref) => {
             onChange={onChange}
             disabled={desabilitado}
             onKeyDown={onKeyDown}
-            value={value}
+            placeholder={placeholder}
+            onChange={onChangeCampo}
+            style={style}
+            prefix={iconeBusca && <i className="fa fa-search fa-lg" />}
+            value={value || form.values[name]}
+            allowClear={allowClear}
           />
         )}
       </Campo>
