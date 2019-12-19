@@ -237,7 +237,7 @@ const Filtro = () => {
   useEffect(() => {
     dispatch(limparDadosFiltro());
     setAnoLetivoSelecionado();
-  }, [consideraHistorico]);
+  }, [consideraHistorico, dispatch]);
 
   useEffect(() => {
     let estado = true;

@@ -16,6 +16,7 @@ import { Div, Titulo, Badge, InseridoAlterado } from './avaliacao.css';
 import RotasDTO from '~/dtos/rotasDto';
 import ServicoAvaliacao from '~/servicos/Paginas/Calendario/ServicoAvaliacao';
 import { erro, sucesso, confirmar } from '~/servicos/alertas';
+import ModalCopiarAvaliacao from './componentes/ModalCopiarAvaliacao';
 
 const AvaliacaoForm = ({ match }) => {
   const permissaoTela = useSelector(
@@ -315,6 +316,7 @@ const AvaliacaoForm = ({ match }) => {
 
   return (
     <Div className="col-12">
+      <ModalCopiarAvaliacao show={true} />
       <Grid cols={12} className="mb-1 p-0">
         <Titulo className="font-weight-bold">
           {`Cadastro de avaliação - ${
@@ -475,6 +477,21 @@ const AvaliacaoForm = ({ match }) => {
                   />
                 </Grid>
               </Div>
+              {idAvaliacao && (
+                <Div className="row" style={{ marginTop: '14px' }}>
+                  <Grid cols={12}>
+                    <Button
+                      label="Copiar avaliação"
+                      icon="clipboard"
+                      color={Colors.Azul}
+                      border
+                      className="btnGroupItem"
+                      onClick={() => null}
+                      disabled={!idAvaliacao}
+                    />
+                  </Grid>
+                </Div>
+              )}
             </Form>
             <Div className="row">
               <Grid cols={12}>
