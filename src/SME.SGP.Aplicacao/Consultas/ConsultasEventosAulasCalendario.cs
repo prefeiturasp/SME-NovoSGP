@@ -107,26 +107,26 @@ namespace SME.SGP.Aplicacao
                     }
                 }
 
-               var turma = turmasAbrangencia.FirstOrDefault(t => t.CodigoTurma.Equals(x.TurmaId));
+                var turma = turmasAbrangencia.FirstOrDefault(t => t.CodigoTurma.Equals(x.TurmaId));
 
-               eventosAulas.Add(new EventosAulasTipoDiaDto
-               {
-                   Id = x.Id,
-                   TipoEvento = "Aula",
-                   DadosAula = new DadosAulaDto
-                   {
-                       Disciplina = $"{(disciplina?.Nome ?? "Disciplina não encontrada")} {(x.TipoAula == TipoAula.Reposicao ? "(Reposição)" : "")} {(x.Status == EntidadeStatus.AguardandoAprovacao ? "- Aguardando aprovação" : "")}",
-                       EhRegencia = disciplina.Regencia,
-                       podeCadastrarAvaliacao = podeCriarAtividade,
-                       Horario = x.DataAula.ToString("hh:mm tt", CultureInfo.InvariantCulture),
-                       Modalidade = turma?.Modalidade.GetAttribute<DisplayAttribute>().Name ?? "Modalidade",
-                       Tipo = turma?.TipoEscola.GetAttribute<DisplayAttribute>().ShortName ?? "Escola",
-                       Turma = x.TurmaNome,
-                       UnidadeEscolar = x.UeNome,
-                       Atividade = listaAtividades
-                   }
-               });
-           });
+                eventosAulas.Add(new EventosAulasTipoDiaDto
+                {
+                    Id = x.Id,
+                    TipoEvento = x.AulaCJ ? "CJ" : "Aula",
+                    DadosAula = new DadosAulaDto
+                    {
+                        Disciplina = $"{(disciplina?.Nome ?? "Disciplina não encontrada")} {(x.TipoAula == TipoAula.Reposicao ? "(Reposição)" : "")} {(x.Status == EntidadeStatus.AguardandoAprovacao ? "- Aguardando aprovação" : "")}",
+                        EhRegencia = disciplina.Regencia,
+                        podeCadastrarAvaliacao = podeCriarAtividade,
+                        Horario = x.DataAula.ToString("hh:mm tt", CultureInfo.InvariantCulture),
+                        Modalidade = turma?.Modalidade.GetAttribute<DisplayAttribute>().Name ?? "Modalidade",
+                        Tipo = turma?.TipoEscola.GetAttribute<DisplayAttribute>().ShortName ?? "Escola",
+                        Turma = x.TurmaNome,
+                        UnidadeEscolar = x.UeNome,
+                        Atividade = listaAtividades
+                    }
+                });
+            });
 
             return new DiaEventoAula
             {

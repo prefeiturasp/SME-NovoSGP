@@ -153,13 +153,13 @@ namespace SME.SGP.Aplicacao
         {
             var mensagens = new List<RetornoCopiarAtividadeAvaliativaDto>();
 
-            mensagens.AddRange(await ValidarCopias(atividadeAvaliativaDto, usuarioRf));
-
-            if (mensagens.Any())
-                return mensagens;
-
             if (atividadeAvaliativaDto.TurmasParaCopiar != null && atividadeAvaliativaDto.TurmasParaCopiar.Any())
             {
+                mensagens.AddRange(await ValidarCopias(atividadeAvaliativaDto, usuarioRf));
+
+                if (mensagens.Any())
+                    return mensagens;
+
                 foreach (var turma in atividadeAvaliativaDto.TurmasParaCopiar)
                 {
                     atividadeAvaliativaDto.TurmaId = turma.TurmaId;
