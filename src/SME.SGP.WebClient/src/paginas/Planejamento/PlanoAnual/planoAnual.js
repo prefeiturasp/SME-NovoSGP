@@ -183,7 +183,7 @@ export default function PlanoAnual() {
   };
 
   const obterDisciplinasPlanoAnual = async () => {
-    const turmaPrograma = turmaSelecionada.ano === '0';
+    const turmaPrograma = !!(turmaSelecionada.ano === '0');
 
     const disciplinas = await PlanoAnualHelper.ObterDisciplinasPlano(
       usuario.rf || usuario.usuario,
@@ -360,8 +360,6 @@ export default function PlanoAnual() {
   };
 
   const modalCopiarConteudoAlertaVisivel = () => {
-    console.log(modalCopiarConteudo.turmasComPlanoAnual);
-
     return modalCopiarConteudo.turmasSelecionadas.some(selecionada =>
       modalCopiarConteudo.turmasComPlanoAnual.includes(selecionada)
     );
@@ -623,6 +621,7 @@ export default function PlanoAnual() {
                       ref={bim.focado ? refFocado : null}
                       disabled={ehDisabled}
                       key={bim.indice}
+                      bimestre={bim}
                       indice={bim.indice}
                       focado={bim.focado}
                       modalidadeEja={ehEja}

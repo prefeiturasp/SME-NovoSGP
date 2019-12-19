@@ -45,8 +45,8 @@ namespace SME.SGP.Dados.Repositorios
 
         private string MontarSelect()
         {
-            return @"select apb.id, ap.criado_em as CriadoEm, ap.criado_por as CriadoPor, ap.alterado_em as AlteradoEm, ap.alterado_por as AlteradoPor,
-                         ap.alterado_rf as AlteradoRF, ap.criado_rf as CriadoRF, p.bimestre, p.periodo_inicio as inicio, p.periodo_fim as fim, 
+            return @"select apb.id, apb.criado_em as CriadoEm, apb.criado_por as CriadoPor, apb.alterado_em as AlteradoEm, apb.alterado_por as AlteradoPor,
+                         apb.alterado_rf as AlteradoRF, apb.criado_rf as CriadoRF, p.bimestre, p.periodo_inicio as inicio, p.periodo_fim as fim, 
                          apb.aulas_previstas as Previstas,
                          COUNT(a.id) filter (where a.tipo_aula = 1 and a.aula_cj = false) as CriadasTitular,
                          COUNT(a.id) filter (where a.tipo_aula = 1 and a.aula_cj = true) as CriadasCJ,

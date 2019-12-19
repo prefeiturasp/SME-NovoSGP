@@ -1,12 +1,11 @@
 ﻿using Dapper;
 using Dommel;
-using SME.SGP.Dados.Contexto;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
+using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using SME.SGP.Infra;
 
 namespace SME.SGP.Dados.Repositorios
 {
@@ -49,6 +48,26 @@ namespace SME.SGP.Dados.Repositorios
         public RepositorioTurma(ISgpContext contexto)
         {
             this.contexto = contexto;
+        }
+
+        public IEnumerable<Turma> MaterializarCodigosTurma(string[] idTurmas, out string[] codigosNaoEncontrados)
+        {
+            List<Turma> resultado = new List<Turma>();
+            List<string> naoEncontrados = new List<string>();
+
+            for (int i = 0; i < idTurmas.Count(); i = i + 900)
+            {
+                var iteracao = idTurmas.Skip(i).Take(900);
+
+                var armazenados = contexto.Conexao.Query<Turma>(QuerySincronizacao.Replace("#ids", string.Join(",", idTurmas.Select(x => $"'{x}'"))));
+
+                naoEncontrados.AddRange(iteracao.Where(x => !armazenados.Select(y => y.CodigoTurma).Contains(x)));
+
+                resultado.AddRange(armazenados);
+            }
+            codigosNaoEncontrados = naoEncontrados.ToArray();
+
+            return resultado;
         }
 
         public Turma ObterPorId(string turmaId)
@@ -109,7 +128,8 @@ namespace SME.SGP.Dados.Repositorios
 
                 var armazenados = contexto.Conexao.Query<Turma>(QuerySincronizacao.Replace("#ids", string.Join(",", iteracao.Select(x => $"'{x.CodigoTurma}'")))).ToList();
 
-                var novos = iteracao.Where(x => !armazenados.Select(y => y.CodigoTurma).Contains(x.CodigoTurma)).ToList();
+                var idsArmazenados = armazenados.Select(y => y.CodigoTurma);
+                var novos = iteracao.Where(x => !idsArmazenados.Contains(x.CodigoTurma)).ToList();
 
                 foreach (var item in novos)
                 {

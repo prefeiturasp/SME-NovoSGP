@@ -18,10 +18,13 @@ namespace SME.SGP.Aplicacao.Integracoes
         Task<UsuarioEolAutenticacaoRetornoDto> Autenticar(string login, string senha);
 
         Task<AbrangenciaRetornoEolDto> ObterAbrangencia(string login, Guid perfil);
+        Task<AbrangenciaCompactaVigenteRetornoEOLDTO> ObterAbrangenciaCompactaVigente(string login, Guid perfil);
 
         Task<AbrangenciaRetornoEolDto> ObterAbrangenciaParaSupervisor(string[] uesIds);
 
         Task<IEnumerable<AlunoPorTurmaResposta>> ObterAlunosPorTurma(string turmaId);
+
+        Task<IEnumerable<AlunoPorTurmaResposta>> ObterAlunosPorTurma(string turmaId, int anoLetivo);
 
         Task<IEnumerable<DisciplinaResposta>> ObterDisciplinasParaPlanejamento(long codigoTurma, string login, Guid perfil);
 
@@ -53,11 +56,15 @@ namespace SME.SGP.Aplicacao.Integracoes
 
         Task<IEnumerable<ProfessorResumoDto>> ObterProfessoresAutoComplete(int anoLetivo, string dreId, string nomeProfessor);
 
+        Task<IEnumerable<ProfessorResumoDto>> ObterProfessoresAutoComplete(int anoLetivo, string dreId, string nomeProfessor, bool incluirEmei);
+
         Task<IEnumerable<ProfessorTitularDisciplinaEol>> ObterProfessoresTitularesDisciplinas(string turmaCodigo, string professorRf = null);
 
         Task<UsuarioResumoCoreDto> ObterResumoCore(string login);
 
         Task<ProfessorResumoDto> ObterResumoProfessorPorRFAnoLetivo(string codigoRF, int anoLetivo);
+
+        Task<ProfessorResumoDto> ObterResumoProfessorPorRFAnoLetivo(string codigoRF, int anoLetivo, bool incluirEmei);
 
         IEnumerable<SupervisoresRetornoDto> ObterSupervisoresPorCodigo(string[] codigoSupervisores);
 
@@ -72,5 +79,8 @@ namespace SME.SGP.Aplicacao.Integracoes
         Task RemoverCJSeNecessario(Guid usuarioId);
 
         Task<bool> ValidarProfessor(string professorRf);
+
+        EstruturaInstitucionalRetornoEolDTO ObterEstruturaInstuticionalVigentePorTurma(string[] codigosTurma = null);
+        EstruturaInstitucionalRetornoEolDTO ObterEstruturaInstuticionalVigentePorDre();
     }
 }
