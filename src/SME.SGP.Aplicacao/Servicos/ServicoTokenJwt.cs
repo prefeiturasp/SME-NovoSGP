@@ -18,6 +18,7 @@ namespace SME.SGP.Aplicacao.Servicos
         private readonly IConfiguration configuration;
         private readonly IHttpContextAccessor httpContextAccessor;
         private readonly IRepositorioCache cache;
+        private string tokenGerado;
 
         public ServicoTokenJwt(IConfiguration configuration,
                                IHttpContextAccessor httpContextAccessor,
@@ -56,12 +57,12 @@ namespace SME.SGP.Aplicacao.Servicos
                         SecurityAlgorithms.HmacSha256)
                 );
 
-            var tokenStr = new JwtSecurityTokenHandler()
+            tokenGerado = new JwtSecurityTokenHandler()
                       .WriteToken(token);
 
-            SalvarToken(usuarioLogin, tokenStr);
+            SalvarToken(usuarioLogin);
 
-            return tokenStr;
+            return tokenGerado;
         }
 
         public bool TemPerfilNoToken(string guid)
@@ -71,6 +72,10 @@ namespace SME.SGP.Aplicacao.Servicos
 
         private string ObterTokenAtual()
         {
+            // Obtem token gerado ou o token da autenticação do contexto
+            if (!string.IsNullOrEmpty(tokenGerado))
+                return tokenGerado;
+
             var authorizationHeader = httpContextAccessor.HttpContext.Request.Headers["authorization"];
 
             return authorizationHeader == StringValues.Empty
@@ -99,16 +104,48 @@ namespace SME.SGP.Aplicacao.Servicos
         public Guid ObterPerfil()
             => ObterPerfilDoToken(ObterTokenAtual());
 
+        public DateTime ObterDataHoraExpiracao()
+        {
+            var tokenStr = ObterTokenAtual();
+            if (!string.IsNullOrEmpty(tokenStr))
+            {
+                var token = (new JwtSecurityTokenHandler()).ReadToken(tokenStr) as JwtSecurityToken;
+                // Remove o fuso horario
+                return token.ValidTo.AddHours(-3);
+            }
+            return DateTime.MinValue;
+        }
+
+        public DateTime ObterDataHoraCriacao()
+            => ObterDataHoraCriacao(ObterTokenAtual());
+
         #region Private Methods
         private bool TokenAtivo(string token)
         {
             var tokenCache = cache.Obter(ObterChaveToken(token));
-            
-            return tokenCache == null || tokenCache == token;
+
+            // Quando não conseguir obter o token do cache assume que o atual é valido
+            if (tokenCache == null)
+                return true;
+
+            var tokenAtual = ObterTokenAtual();
+            if (tokenAtual == tokenCache)
+                return true;
+
+            // Verifica se o token atual é mais recente que o cache
+            if ((tokenCache != token) && (ObterDataHoraCriacao(tokenAtual) > ObterDataHoraCriacao(tokenCache)))
+            {
+                tokenGerado = tokenAtual;
+
+                SalvarToken(ObterLogin());
+                return true;
+            }
+
+            return false;
         }
 
-        private void SalvarToken(string usuarioLogin, string tokenStr)
-            => cache.SalvarAsync(ObterChaveLogin(usuarioLogin), tokenStr).Wait();
+        private void SalvarToken(string usuarioLogin)
+            => cache.SalvarAsync(ObterChaveLogin(usuarioLogin), tokenGerado).Wait();
 
         private string ObterChave(string nome)
             => $"token:{nome}";
@@ -135,6 +172,18 @@ namespace SME.SGP.Aplicacao.Servicos
             => Guid.Parse(ObterClaims(token)
                 .FirstOrDefault(claim => claim.Type == "perfil")?.Value 
                 ?? string.Empty);
+
+        private DateTime ObterDataHoraCriacao(string tokenStr)
+        {
+            if (!string.IsNullOrEmpty(tokenStr))
+            {
+                var token = (new JwtSecurityTokenHandler()).ReadToken(tokenStr) as JwtSecurityToken;
+                // Remove o fuso horario
+                return token.ValidFrom.AddHours(-3);
+            }
+
+            return DateTime.MinValue;
+        }
         #endregion
     }
 }

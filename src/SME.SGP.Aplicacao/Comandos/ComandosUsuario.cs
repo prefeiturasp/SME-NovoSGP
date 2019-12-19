@@ -152,6 +152,9 @@ namespace SME.SGP.Aplicacao
             retornoAutenticacaoEol.Item1.Token =
                 servicoTokenJwt.GerarToken(login, dadosUsuario.Nome, usuario.CodigoRf, retornoAutenticacaoEol.Item1.PerfisUsuario.PerfilSelecionado, listaPermissoes);
 
+            retornoAutenticacaoEol.Item1.DataHoraExpiracao = servicoTokenJwt.ObterDataHoraExpiracao();
+            var fromDate = servicoTokenJwt.ObterDataHoraCriacao();
+
             usuario.AtualizaUltimoLogin();
 
             repositorioUsuario.Salvar(usuario);
