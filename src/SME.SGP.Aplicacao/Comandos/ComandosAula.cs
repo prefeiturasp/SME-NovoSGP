@@ -25,9 +25,10 @@ namespace SME.SGP.Aplicacao
         {
             var usuario = await servicoUsuario.ObterUsuarioLogado();
             var aulaOrigem = repositorioAula.ObterPorId(id);
+            var aulaOrigemQuantidade = aulaOrigem.Quantidade;
             var aula = MapearDtoParaEntidade(dto, usuario.CodigoRf, usuario.EhProfessorCj(), aulaOrigem);
 
-            return servicoAula.Salvar(aula, usuario, dto.RecorrenciaAula, aulaOrigem.Quantidade);
+            return servicoAula.Salvar(aula, usuario, dto.RecorrenciaAula, aulaOrigemQuantidade);
         }
 
         public async Task<string> Excluir(long id, RecorrenciaAula recorrencia)
