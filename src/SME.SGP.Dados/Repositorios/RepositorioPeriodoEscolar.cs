@@ -1,12 +1,11 @@
 ﻿using Dapper;
-using SME.SGP.Dados.Contexto;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
+using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using SME.SGP.Infra;
 
 namespace SME.SGP.Dados.Repositorios
 {
@@ -27,10 +26,10 @@ namespace SME.SGP.Dados.Repositorios
             StringBuilder query = new StringBuilder();
             MontaQuery(query);
             query.AppendLine("where tipo_calendario_id = @tipoCalendarioId");
-            query.AppendLine("and periodo_inicio <= @data");
-            query.AppendLine("and periodo_fim >= @data");
+            query.AppendLine("and periodo_inicio::date <= date(@dataPeriodo)");
+            query.AppendLine("and periodo_fim::date >= date(@dataPeriodo)");
 
-            return database.Conexao.QueryFirstOrDefault<PeriodoEscolar>(query.ToString(), new { tipoCalendarioId, data });
+            return database.Conexao.QueryFirstOrDefault<PeriodoEscolar>(query.ToString(), new { tipoCalendarioId, dataPeriodo = data.Date });
         }
 
         public PeriodoEscolar ObterPorTipoCalendarioData(long tipoCalendarioId, DateTime dataInicio, DateTime dataFim)
