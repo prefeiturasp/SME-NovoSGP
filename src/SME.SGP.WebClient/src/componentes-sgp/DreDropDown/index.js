@@ -11,7 +11,7 @@ import AbrangenciaServico from '~/servicos/Abrangencia';
 import { valorNuloOuVazio } from '~/utils/funcoes/gerais';
 import FiltroHelper from '~/componentes-sgp/filtro/helper';
 
-function DreDropDown({ form, onChange, label, url }) {
+function DreDropDown({ form, onChange, label, url, desabilitado }) {
   const [listaDres, setListaDres] = useState([]);
 
   useEffect(() => {
@@ -56,7 +56,7 @@ function DreDropDown({ form, onChange, label, url }) {
       valueOption="valor"
       valueText="desc"
       placeholder="Diretoria Regional De Educação (DRE)"
-      disabled={listaDres.length === 1}
+      disabled={listaDres.length === 1 || desabilitado}
     />
   );
 }
@@ -69,6 +69,7 @@ DreDropDown.propTypes = {
   onChange: PropTypes.func,
   label: PropTypes.string,
   url: PropTypes.string,
+  desabilitado: PropTypes.bool,
 };
 
 DreDropDown.defaultProps = {
@@ -76,6 +77,7 @@ DreDropDown.defaultProps = {
   onChange: () => {},
   label: null,
   url: null,
+  desabilitado: false,
 };
 
 export default DreDropDown;
