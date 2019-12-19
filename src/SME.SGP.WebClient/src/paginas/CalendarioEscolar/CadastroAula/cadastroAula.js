@@ -48,6 +48,7 @@ const CadastroAula = ({ match }) => {
   const [existeFrequenciaPlanoAula, setExisteFrequenciaPlanoAula] = useState(
     false
   );
+  const [ehAulaUnica, setEhAulaUnica] = useState(false);
   const [
     visualizarFormExcRecorrencia,
     setVisualizarFormExcRecorrencia,
@@ -217,15 +218,24 @@ const CadastroAula = ({ match }) => {
         `v1/calendarios/professores/aulas/${id}/recorrencias/serie`
       );
       const dadosRecorrencia = respRecorrencia.data;
+
+      if (respRecorrencia && dadosRecorrencia) {
+        setEhAulaUnica(
+          dadosRecorrencia.recorrenciaAula === recorrencia.AULA_UNICA
+        );
+
+        setExisteFrequenciaPlanoAula(
+          dadosRecorrencia.existeFrequenciaOuPlanoAula
+        );
+      }
+
       if (
         respRecorrencia &&
         dadosRecorrencia &&
         dadosRecorrencia.recorrenciaAula !== recorrencia.AULA_UNICA
       ) {
         setQuantidadeRecorrencia(dadosRecorrencia.quantidadeAulasRecorrentes);
-        setExisteFrequenciaPlanoAula(
-          dadosRecorrencia.existeFrequenciaOuPlanoAula
-        );
+
         setOpcoesRecorrencia([
           ...getRecorrenciasHabilitadas(opcoesRecorrencia, dadosRecorrencia),
         ]);
@@ -323,6 +333,7 @@ const CadastroAula = ({ match }) => {
     setControlaQuantidadeAula(true);
     setQuantidadeMaximaAulas(0);
     setModoEdicao(false);
+    setEhAulaUnica(false);
   };
 
   const onChangeCampos = () => {
@@ -384,8 +395,10 @@ const CadastroAula = ({ match }) => {
   };
 
   const onClickCadastrar = async valoresForm => {
-    var observacao = existeFrequenciaPlanoAula
-      ? 'Esta aula, ou sua recorrencia, já possui frequência registrada, após a alteração você deverá acessar a aula e revisar a frequência'
+    const observacao = existeFrequenciaPlanoAula
+      ? `Esta aula${
+          ehAulaUnica ? '' : ', ou sua recorrencia'
+        }, já possui frequência registrada, após a alteração você deverá acessar a aula e revisar a frequência`
       : '';
     if (
       quantidadeRecorrencia > 1 &&
