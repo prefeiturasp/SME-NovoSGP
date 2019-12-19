@@ -1,0 +1,368 @@
+import React, { useState, useEffect, useRef, useCallback } from 'react';
+import PropTypes from 'prop-types';
+import _ from 'lodash';
+
+// Form
+import { Formik, Form } from 'formik';
+import * as Yup from 'yup';
+
+// Redux
+import { useSelector, useDispatch } from 'react-redux';
+import { setLoaderSecao } from '~/redux/modulos/loader/actions';
+
+// Serviços
+import RotasDto from '~/dtos/rotasDto';
+import history from '~/servicos/history';
+import RegistroPOAServico from '~/servicos/Paginas/DiarioClasse/RegistroPOA';
+import { erros, erro, sucesso, confirmar } from '~/servicos/alertas';
+import { setBreadcrumbManual } from '~/servicos/breadcrumb-services';
+import { verificaSomenteConsulta } from '~/servicos/servico-navegacao';
+
+// Componentes SGP
+import { Cabecalho, DreDropDown, UeDropDown } from '~/componentes-sgp';
+
+// Componentes
+import {
+  Card,
+  ButtonGroup,
+  Grid,
+  TextEditor,
+  Label,
+  CampoTexto,
+  Localizador,
+  Loader,
+  Auditoria,
+} from '~/componentes';
+import MesesDropDown from '../componentes/MesesDropDown';
+
+// Styles
+import { Row } from './styles';
+
+// Funçoes
+import { validaSeObjetoEhNuloOuVazio } from '~/utils/funcoes/gerais';
+
+function RegistroPOAForm({ match }) {
+  const dispatch = useDispatch();
+  const textEditorRef = useRef(null);
+  const carregando = useSelector(store => store.loader.loaderSecao);
+  const permissoesTela = useSelector(store => store.usuario.permissoes);
+  const anoLetivo = useSelector(
+    store => store.usuario.turmaSelecionada.anoLetivo
+  );
+  const somenteConsulta = verificaSomenteConsulta(
+    permissoesTela[RotasDto.REGISTRO_POA]
+  );
+  const [novoRegistro, setNovoRegistro] = useState(true);
+  const [modoEdicao, setModoEdicao] = useState(false);
+  const [auditoria, setAuditoria] = useState({});
+  const [valoresCarregados, setValoresCarregados] = useState(null);
+  const [refForm, setRefForm] = useState({});
+  const [descricao, setDescricao] = useState('');
+  const [valoresIniciais, setValoresIniciais] = useState({
+    mes: '',
+    titulo: '',
+    descricao: '',
+    professorRf: '',
+    professorNome: '',
+    dreId: '',
+    ueId: '',
+  });
+
+  const validacoes = () => {
+    return Yup.object({
+      mes: Yup.number().required('Campo obrigatório!'),
+      titulo: Yup.string().required('O campo "Título" é obrigatório!'),
+      professorRf: Yup.number()
+        .typeError('Informar um número inteiro')
+        .required('Campo obrigatório'),
+    });
+  };
+
+  const validaAntesDoSubmit = form => {
+    const arrayCampos = Object.keys(valoresIniciais);
+    arrayCampos.forEach(campo => {
+      form.setFieldTouched(campo, true, true);
+    });
+    form.validateForm().then(() => {
+      if (form.isValid || Object.keys(form.errors).length === 0) {
+        form.submitForm(form);
+      }
+    });
+  };
+
+  const onClickBotaoPrincipal = form => {
+    const formComEditor = {
+      ...form,
+      values: {
+        ...form.values,
+        descricao: textEditorRef.current.state.value,
+        anoLetivo,
+      },
+    };
+    validaAntesDoSubmit(formComEditor);
+  };
+
+  const onSubmitFormulario = async valores => {
+    try {
+      dispatch(setLoaderSecao(true));
+      const cadastrado = await RegistroPOAServico.salvarRegistroPOA(
+        {
+          ...valores,
+          codigoRf: valores.professorRf,
+          nome: valores.professorNome,
+          descricao,
+          anoLetivo,
+        },
+        valores.id || null
+      );
+      if (cadastrado && cadastrado.status === 200) {
+        dispatch(setLoaderSecao(false));
+        sucesso('Registro salvo com sucesso.');
+        history.push('/diario-classe/registro-poa');
+      }
+    } catch (err) {
+      if (err) {
+        dispatch(setLoaderSecao(false));
+        erro(err.response.data.mensagens[0]);
+      }
+    }
+  };
+
+  const onClickVoltar = async () => {
+    if (modoEdicao) {
+      const confirmou = await confirmar(
+        'Atenção',
+        'Você não salvou as informações preenchidas.',
+        'Deseja realmente cancelar as alterações?'
+      );
+      if (confirmou) {
+        history.push('/diario-classe/registro-poa');
+      }
+    } else {
+      history.push('/diario-classe/registro-poa');
+    }
+  };
+
+  const onClickCancelar = async form => {
+    if (!modoEdicao) return;
+    const confirmou = await confirmar(
+      'Atenção',
+      'Você não salvou as informações preenchidas.',
+      'Deseja realmente cancelar as alterações?'
+    );
+    if (confirmou) {
+      form.resetForm();
+      setModoEdicao(false);
+    }
+  };
+
+  const onClickExcluir = async form => {
+    if (validaSeObjetoEhNuloOuVazio(form.values)) return;
+
+    const confirmado = await confirmar(
+      'Excluir registro',
+      form.values.titulo,
+      `Deseja realmente excluir este item?`,
+      'Excluir',
+      'Cancelar'
+    );
+    if (confirmado) {
+      const excluir = await RegistroPOAServico.deletarRegistroPOA(
+        form.values.id
+      );
+      if (excluir) {
+        sucesso(`Registro excluido com sucesso!`);
+        history.push('/diario-classe/registro-poa');
+      }
+    }
+  };
+
+  const buscarPorId = useCallback(
+    async id => {
+      try {
+        dispatch(setLoaderSecao(true));
+        const registro = await RegistroPOAServico.buscarRegistroPOA(id);
+        if (registro && registro.data) {
+          setValoresIniciais({
+            ...registro.data,
+            mes: String(registro.data.mes),
+            professorRf: registro.data.codigoRf,
+            professorNome: registro.data.nome,
+            titulo: registro.data.titulo,
+          });
+          setDescricao(registro.data.descricao);
+          setAuditoria({
+            criadoPor: registro.data.criadoPor,
+            criadoRf: registro.data.criadoRF > 0 ? registro.data.criadoRF : '',
+            criadoEm: registro.data.criadoEm,
+            alteradoPor: registro.data.alteradoPor,
+            alteradoRf:
+              registro.data.alteradoRF > 0 ? registro.data.alteradoRF : '',
+            alteradoEm: registro.data.alteradoEm,
+          });
+          setValoresCarregados(true);
+          dispatch(setLoaderSecao(false));
+        }
+      } catch (err) {
+        dispatch(setLoaderSecao(false));
+        erros(err);
+      }
+    },
+    [dispatch]
+  );
+
+  const validaFormulario = valores => {
+    if (validaSeObjetoEhNuloOuVazio(valores)) return;
+    if (
+      (!modoEdicao &&
+        valoresCarregados &&
+        !_.isEqual(
+          refForm.getFormikContext().initialValues,
+          refForm.getFormikContext().values
+        )) ||
+      (!modoEdicao &&
+        novoRegistro &&
+        !_.isEqual(
+          refForm.getFormikContext().initialValues,
+          refForm.getFormikContext().values
+        ))
+    ) {
+      setModoEdicao(true);
+    }
+  };
+
+  useEffect(() => {
+    if (match && match.params && match.params.id) {
+      setNovoRegistro(false);
+      setBreadcrumbManual(match.url, 'Registro', '/diario-classe/registro-poa');
+      buscarPorId(match.params.id);
+    }
+  }, [buscarPorId, match]);
+
+  return (
+    <>
+      <Cabecalho pagina="Registro" />
+      <Loader loading={carregando}>
+        <Card>
+          <Formik
+            enableReinitialize
+            initialValues={valoresIniciais}
+            validationSchema={validacoes}
+            onSubmit={valores => onSubmitFormulario(valores)}
+            validate={valores => validaFormulario(valores)}
+            ref={refFormik => setRefForm(refFormik)}
+            validateOnBlur
+            validateOnChange
+          >
+            {form => (
+              <Form>
+                <ButtonGroup
+                  form={form}
+                  permissoesTela={permissoesTela[RotasDto.REGISTRO_POA]}
+                  novoRegistro={novoRegistro}
+                  labelBotaoPrincipal="Cadastrar"
+                  onClickBotaoPrincipal={() => onClickBotaoPrincipal(form)}
+                  onClickCancelar={formulario => onClickCancelar(formulario)}
+                  onClickVoltar={() => onClickVoltar()}
+                  onClickExcluir={() => onClickExcluir(form)}
+                  modoEdicao={modoEdicao}
+                />
+                <Row className="row mb-2">
+                  <Grid cols={6}>
+                    <DreDropDown
+                      url="v1/dres/atribuicoes"
+                      label="Diretoria Regional de Educação (DRE)"
+                      form={form}
+                      onChange={() => null}
+                      desabilitado={somenteConsulta}
+                    />
+                  </Grid>
+                  <Grid cols={6}>
+                    <UeDropDown
+                      dreId={form.values.dreId}
+                      label="Unidade Escolar (UE)"
+                      form={form}
+                      url="v1/dres"
+                      onChange={() => null}
+                      desabilitado={somenteConsulta}
+                    />
+                  </Grid>
+                </Row>
+                <Row className="row mb-2">
+                  <Localizador
+                    dreId={form.values.dreId}
+                    anoLetivo={anoLetivo}
+                    form={form}
+                    onChange={() => null}
+                    showLabel
+                    desabilitado={somenteConsulta}
+                  />
+                </Row>
+                <Row className="row">
+                  <Grid cols={2}>
+                    <MesesDropDown
+                      label="Mês"
+                      form={form}
+                      desabilitado={somenteConsulta}
+                    />
+                  </Grid>
+                  <Grid cols={10}>
+                    <CampoTexto
+                      name="titulo"
+                      id="titulo"
+                      label="Título"
+                      placeholder="Digite o título do registro"
+                      form={form}
+                      iconeBusca
+                      desabilitado={somenteConsulta}
+                    />
+                  </Grid>
+                </Row>
+                <Row className="row">
+                  <Grid cols={12}>
+                    <Label text="Descrição" />
+                    <TextEditor
+                      className="form-control w-100"
+                      ref={textEditorRef}
+                      id="descricao"
+                      alt="Descrição"
+                      name="descricao"
+                      onBlur={valor => setDescricao(valor)}
+                      value={descricao}
+                      maxlength={500}
+                      toolbar
+                      disabled={somenteConsulta}
+                    />
+                  </Grid>
+                </Row>
+              </Form>
+            )}
+          </Formik>
+          {auditoria && (
+            <Auditoria
+              criadoEm={auditoria.criadoEm}
+              criadoPor={auditoria.criadoPor}
+              criadoRf={auditoria.criadoRf}
+              alteradoPor={auditoria.alteradoPor}
+              alteradoEm={auditoria.alteradoEm}
+              alteradoRf={auditoria.alteradoRf}
+            />
+          )}
+        </Card>
+      </Loader>
+    </>
+  );
+}
+
+RegistroPOAForm.propTypes = {
+  match: PropTypes.oneOfType([
+    PropTypes.objectOf(PropTypes.object),
+    PropTypes.any,
+  ]),
+};
+
+RegistroPOAForm.defaultProps = {
+  match: {},
+};
+
+export default RegistroPOAForm;

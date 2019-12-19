@@ -77,6 +77,11 @@ namespace SME.SGP.Dominio
             return PerfilAtual == Dominio.Perfis.PERFIL_CJ;
         }
 
+        public bool EhProfessorPoa()
+        {
+            return PerfilAtual == Dominio.Perfis.PERFIL_POA;
+        }
+
         public void FinalizarRecuperacaoSenha()
         {
             TokenRecuperacaoSenha = null;

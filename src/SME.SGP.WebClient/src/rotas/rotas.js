@@ -34,6 +34,8 @@ import Notas from '~/paginas/DiarioClasse/Notas/notas';
 import TipoAvaliacaoLista from '~paginas/Configuracoes/TipoAvaliacao/tipoAvaliacaoLista';
 import TipoAvaliacaoForm from '~paginas/Configuracoes/TipoAvaliacao/tipoAvaliacaoForm';
 import AulaDadaAulaPrevista from '~/paginas/DiarioClasse/AulaDadaAulaPrevista/aulaDadaAulaPrevista';
+import RegistroPOALista from '~/paginas/DiarioClasse/RegistroPOA/Lista';
+import RegistroPOAForm from '~/paginas/DiarioClasse/RegistroPOA/Form';
 
 const rotas = new Map();
 
@@ -485,6 +487,36 @@ rotas.set(`${RotasDto.AULA_DADA_AULA_PREVISTA}`, {
   exact: true,
   tipo: RotasTipo.EstruturadaAutenticada,
   temPermissionamento: false,
+});
+
+rotas.set(`${RotasDto.REGISTRO_POA}`, {
+  breadcrumbName: 'Registro POA',
+  menu: ['Diário de Classe'],
+  parent: '/',
+  component: RegistroPOALista,
+  exact: true,
+  tipo: RotasTipo.EstruturadaAutenticada,
+  temPermissionamento: false,
+});
+
+rotas.set(`${RotasDto.REGISTRO_POA}/novo`, {
+  breadcrumbName: 'Registro',
+  parent: RotasDto.REGISTRO_POA,
+  component: RegistroPOAForm,
+  exact: true,
+  tipo: RotasTipo.EstruturadaAutenticada,
+  temPermissionamento: true,
+  chavePermissao: RotasDto.REGISTRO_POA,
+});
+
+rotas.set(`${RotasDto.REGISTRO_POA}/editar/:id`, {
+  breadcrumbName: 'Registro',
+  parent: RotasDto.REGISTRO_POA,
+  component: RegistroPOAForm,
+  exact: true,
+  tipo: RotasTipo.EstruturadaAutenticada,
+  temPermissionamento: true,
+  chavePermissao: RotasDto.REGISTRO_POA,
 });
 
 const rotasArray = [];
