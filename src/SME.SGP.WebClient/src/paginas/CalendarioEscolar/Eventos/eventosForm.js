@@ -122,7 +122,7 @@ const EventosForm = ({ match }) => {
 
   useEffect(() => {
     const montarConsultas = async () => {
-      const dres = await api.get('v1/abrangencias/dres');
+      const dres = await api.get('v1/abrangencias/false/dres');
       if (dres.data) {
         setListaDres(dres.data.sort(FiltroHelper.ordenarLista('nome')));
       } else {
@@ -491,7 +491,7 @@ const EventosForm = ({ match }) => {
   };
 
   const obterUesPorDre = dre => {
-    return api.get(`/v1/abrangencias/dres/${dre}/ues`);
+    return api.get(`/v1/abrangencias/false/dres/${dre}/ues`);
   };
 
   const onClickRecorrencia = () => {
