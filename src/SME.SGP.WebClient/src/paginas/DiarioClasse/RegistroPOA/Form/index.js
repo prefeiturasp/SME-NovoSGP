@@ -29,7 +29,6 @@ import {
   TextEditor,
   Label,
   CampoTexto,
-  momentSchema,
   Localizador,
   Loader,
   Auditoria,
@@ -257,7 +256,6 @@ function RegistroPOAForm({ match }) {
           >
             {form => (
               <Form>
-                {console.log(permissoesTela)}
                 <ButtonGroup
                   form={form}
                   permissoesTela={permissoesTela[RotasDto.REGISTRO_POA]}
@@ -275,7 +273,8 @@ function RegistroPOAForm({ match }) {
                       url="v1/dres/atribuicoes"
                       label="Diretoria Regional de Educação (DRE)"
                       form={form}
-                      onChange={valor => null}
+                      onChange={() => null}
+                      desabilitado={somenteConsulta}
                     />
                   </Grid>
                   <Grid cols={6}>
@@ -285,6 +284,7 @@ function RegistroPOAForm({ match }) {
                       form={form}
                       url="v1/dres"
                       onChange={() => null}
+                      desabilitado={somenteConsulta}
                     />
                   </Grid>
                 </Row>
@@ -295,11 +295,16 @@ function RegistroPOAForm({ match }) {
                     form={form}
                     onChange={() => null}
                     showLabel
+                    desabilitado={somenteConsulta}
                   />
                 </Row>
                 <Row className="row">
                   <Grid cols={2}>
-                    <MesesDropDown label="Mês" form={form} />
+                    <MesesDropDown
+                      label="Mês"
+                      form={form}
+                      desabilitado={somenteConsulta}
+                    />
                   </Grid>
                   <Grid cols={10}>
                     <CampoTexto
@@ -309,6 +314,7 @@ function RegistroPOAForm({ match }) {
                       placeholder="Digite o título do registro"
                       form={form}
                       iconeBusca
+                      desabilitado={somenteConsulta}
                     />
                   </Grid>
                 </Row>
@@ -325,7 +331,7 @@ function RegistroPOAForm({ match }) {
                       value={descricao}
                       maxlength={500}
                       toolbar
-                      disabled={valoresIniciais.possuiAvaliacao}
+                      disabled={somenteConsulta}
                     />
                   </Grid>
                 </Row>

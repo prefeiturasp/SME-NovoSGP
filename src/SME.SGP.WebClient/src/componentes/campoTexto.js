@@ -82,6 +82,7 @@ const CampoTexto = React.forwardRef((props, ref) => {
             component={type || Input}
             type={maskType}
             readOnly={desabilitado}
+            disabled={desabilitado}
             onBlur={executaOnBlur}
             maxLength={maxlength || ''}
             innerRef={ref}

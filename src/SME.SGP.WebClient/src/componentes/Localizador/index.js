@@ -131,8 +131,8 @@ function Localizador({
   }, [form.initialValues]);
 
   useEffect(() => {
-    const { ehProfessor, ehProfessorCj, rf } = usuario;
-    if (ehProfessor || ehProfessorCj) {
+    const { ehProfessor, ehProfessorCj, ehProfessorPoa, rf } = usuario;
+    if (ehProfessor || ehProfessorCj || ehProfessorPoa) {
       onBuscarPorRF({ rf });
     }
   }, [onBuscarPorRF, usuario]);
@@ -153,6 +153,7 @@ function Localizador({
             desabilitado ||
             usuario.ehProfessor ||
             usuario.ehProfessorCj ||
+            usuario.ehProfessorPoa ||
             desabilitarCampo.rf
           }
         />
@@ -170,6 +171,7 @@ function Localizador({
             desabilitado ||
             usuario.ehProfessor ||
             usuario.ehProfessorCj ||
+            usuario.ehProfessorPoa ||
             desabilitarCampo.nome
           }
         />
