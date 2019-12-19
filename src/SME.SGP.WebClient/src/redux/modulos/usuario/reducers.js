@@ -49,6 +49,10 @@ export default function usuario(state = inicial, action) {
         draft.menu = action.payload.menu;
         draft.ehProfessorPoa = action.payload.ehProfessorPoa;
         break;
+      case '@usuario/salvarLoginRevalidado':
+        draft.token = action.payload.token;
+        draft.dataLogin = new Date();
+        break;
       case '@usuario/deslogar':
         draft.rf = '';
         draft.token = '';
