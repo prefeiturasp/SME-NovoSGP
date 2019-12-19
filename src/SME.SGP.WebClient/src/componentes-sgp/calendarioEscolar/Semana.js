@@ -1,10 +1,9 @@
-﻿import React, { useState, useEffect } from 'react';
+﻿import React, { useState, useEffect, useCallback } from 'react';
 import PropTypes from 'prop-types';
 import styled from 'styled-components';
 import { useSelector } from 'react-redux';
 import shortid from 'shortid';
 import { Base } from '~/componentes/colors';
-import api from '~/servicos/api';
 import { store } from '~/redux';
 import {
   selecionaDia,
@@ -26,52 +25,24 @@ const TipoEvento = styled(Div)`
 `;
 
 const Dia = props => {
-  const { dia, mesAtual, filtros, diaSelecionado } = props;
+  const {
+    dia,
+    mesAtual,
+    diaSelecionado,
+    tipoEventosDiaLista: tipoLista,
+  } = props;
   const [tipoEventosDiaLista, setTipoEventosDiaLista] = useState([]);
 
   useEffect(() => {
-    let estado = true;
-    if (estado) {
-      if (mesAtual && dia) {
-        if (filtros && Object.entries(filtros).length > 0) {
-          const {
-            tipoCalendarioSelecionado = '',
-            eventoSme = true,
-            dreSelecionada = '',
-            unidadeEscolarSelecionada = '',
-          } = filtros;
-          if (tipoCalendarioSelecionado) {
-            api
-              .get(
-                `v1/calendarios/eventos/meses/${mesAtual}/tipos?EhEventoSme=${eventoSme}&${dreSelecionada &&
-                  `DreId=${dreSelecionada}&`}${tipoCalendarioSelecionado &&
-                  `IdTipoCalendario=${tipoCalendarioSelecionado}&`}${unidadeEscolarSelecionada &&
-                  `UeId=${unidadeEscolarSelecionada}`}`
-              )
-              .then(resposta => {
-                if (resposta.data) {
-                  const lista = resposta.data.filter(
-                    evento => evento.dia === dia.getDate()
-                  )[0];
-                  if (lista.tiposEvento.length > 2) lista.tiposEvento.pop();
-                  setTipoEventosDiaLista(lista);
-                } else setTipoEventosDiaLista([]);
-              })
-              .catch(() => {
-                setTipoEventosDiaLista([]);
-              });
-          } else setTipoEventosDiaLista([]);
-        }
-      }
+    if (dia && mesAtual && tipoLista.length) {
+      const lista = tipoLista.filter(evento => evento.dia === dia.getDate())[0];
+      if (lista) setTipoEventosDiaLista(lista);
     }
-    return () => {
-      estado = false;
-    };
-  }, [filtros, mesAtual]);
+  }, [dia, mesAtual, tipoLista]);
 
-  const selecionaDiaAberto = () => {
+  const selecionaDiaAberto = useCallback(() => {
     store.dispatch(selecionaDia(dia));
-  };
+  }, [dia]);
 
   const eventoCalendarioEdicao = useSelector(
     state => state.calendarioEscolar.eventoCalendarioEdicao
@@ -90,7 +61,7 @@ const Dia = props => {
       }
     }, 3000);
     return () => clearTimeout(abrirDiaEventoCalendarioEdicao);
-  }, [eventoCalendarioEdicao]);
+  }, [dia, eventoCalendarioEdicao, selecionaDiaAberto]);
 
   const style = {
     cursor: 'pointer',
@@ -136,11 +107,6 @@ const Dia = props => {
                   </TipoEvento>
                 );
               })}
-              {tipoEventosDiaLista.quantidadeDeEventos > 3 && (
-                <Div style={{ fontSize: 10 }}>
-                  Mais {tipoEventosDiaLista.quantidadeDeEventos} eventos
-                </Div>
-              )}
             </TipoEventosLista>
           )}
       </Div>
@@ -151,25 +117,25 @@ const Dia = props => {
 Dia.propTypes = {
   dia: PropTypes.oneOfType([PropTypes.array, PropTypes.object]),
   mesAtual: PropTypes.number,
-  filtros: PropTypes.oneOfType([PropTypes.array, PropTypes.object]),
   diaSelecionado: PropTypes.oneOfType([
     PropTypes.instanceOf(Date),
     PropTypes.string,
   ]),
+  tipoEventosDiaLista: PropTypes.oneOfType([PropTypes.array]),
 };
 
 Dia.defaultProps = {
   dia: {},
   mesAtual: 0,
-  filtros: {},
   diaSelecionado: '',
+  tipoEventosDiaLista: [],
 };
 
 const Semana = props => {
   const diaSelecionado = useSelector(
     state => state.calendarioEscolar.diaSelecionado
   );
-  const { inicial, dias, mesAtual, filtros } = props;
+  const { inicial, dias, mesAtual, filtros, tipoEventosDiaLista } = props;
 
   return (
     <Div>
@@ -180,6 +146,7 @@ const Semana = props => {
           mesAtual={mesAtual}
           filtros={filtros}
           diaSelecionado={diaSelecionado}
+          tipoEventosDiaLista={tipoEventosDiaLista}
         />
         <Dia
           className={`${inicial ? '' : 'border-top-0'}`}
@@ -187,6 +154,7 @@ const Semana = props => {
           mesAtual={mesAtual}
           filtros={filtros}
           diaSelecionado={diaSelecionado}
+          tipoEventosDiaLista={tipoEventosDiaLista}
         />
         <Dia
           className={`${inicial ? '' : 'border-top-0'}`}
@@ -194,6 +162,7 @@ const Semana = props => {
           mesAtual={mesAtual}
           filtros={filtros}
           diaSelecionado={diaSelecionado}
+          tipoEventosDiaLista={tipoEventosDiaLista}
         />
         <Dia
           className={`${inicial ? '' : 'border-top-0'}`}
@@ -201,6 +170,7 @@ const Semana = props => {
           mesAtual={mesAtual}
           filtros={filtros}
           diaSelecionado={diaSelecionado}
+          tipoEventosDiaLista={tipoEventosDiaLista}
         />
         <Dia
           className={`${inicial ? '' : 'border-top-0'}`}
@@ -208,6 +178,7 @@ const Semana = props => {
           mesAtual={mesAtual}
           filtros={filtros}
           diaSelecionado={diaSelecionado}
+          tipoEventosDiaLista={tipoEventosDiaLista}
         />
         <Dia
           className={`${inicial ? '' : 'border-top-0'}`}
@@ -215,6 +186,7 @@ const Semana = props => {
           mesAtual={mesAtual}
           filtros={filtros}
           diaSelecionado={diaSelecionado}
+          tipoEventosDiaLista={tipoEventosDiaLista}
         />
         <Dia
           className={`${
@@ -224,6 +196,7 @@ const Semana = props => {
           mesAtual={mesAtual}
           filtros={filtros}
           diaSelecionado={diaSelecionado}
+          tipoEventosDiaLista={tipoEventosDiaLista}
         />
       </Div>
     </Div>
@@ -235,6 +208,7 @@ Semana.propTypes = {
   dias: PropTypes.oneOfType([PropTypes.array, PropTypes.object]),
   mesAtual: PropTypes.number,
   filtros: PropTypes.oneOfType([PropTypes.array, PropTypes.object]),
+  tipoEventosDiaLista: PropTypes.oneOfType([PropTypes.array]),
 };
 
 Semana.defaultProps = {
@@ -242,6 +216,7 @@ Semana.defaultProps = {
   dias: [],
   mesAtual: 0,
   filtros: {},
+  tipoEventosDiaLista: [],
 };
 
 export default Semana;
