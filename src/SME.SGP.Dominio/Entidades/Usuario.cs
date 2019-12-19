@@ -182,6 +182,11 @@ namespace SME.SGP.Dominio
             return !string.IsNullOrEmpty(Email);
         }
 
+        public bool PodeVisualizarEventosLibExcepRepoRecessoGestoresUeDreSme()
+        {
+            return (PerfilAtual == Dominio.Perfis.PERFIL_AD || PerfilAtual == Dominio.Perfis.PERFIL_CP || PerfilAtual == Dominio.Perfis.PERFIL_DIRETOR || EhPerfilSME() || EhPerfilDRE());
+        }
+
         public bool PodeVisualizarEventosOcorrenciaDre()
         {
             var perfilAtual = Perfis.FirstOrDefault(a => a.CodigoPerfil == PerfilAtual);
