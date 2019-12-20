@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback, useReducer } from 'react';
 import t from 'prop-types';
 import shortid from 'shortid';
 
@@ -23,24 +23,32 @@ import { Row } from './styles';
 // Serviço
 import api from '~/servicos/api';
 import PlanoAulaServico from '~/servicos/Paginas/PlanoAula';
-import AbrangenciaServico from '~/servicos/Abrangencia';
 import AvaliacaoServico from '~/servicos/Paginas/Calendario/ServicoAvaliacao';
 import { erros, erro, sucesso } from '~/servicos/alertas';
 
-function ModalCopiarAvaliacao({ show, disciplina, onClose, planoAula }) {
+// Reducer
+import Reducer, {
+  estadoInicial,
+  adicionarAvaliacao,
+  excluirAvaliacao,
+  carregarData,
+  selecionarTurma,
+  diasParaHabilitar,
+  selecionarData,
+  erroData,
+} from './reducer';
+
+// Funções
+import { valorNuloOuVazio } from '~/utils/funcoes/gerais';
+
+function ModalCopiarAvaliacao({ show, disciplina, onClose, onSalvarCopias }) {
   const filtro = useSelector(store => store.usuario.turmaSelecionada);
   const carregando = useSelector(store => store.loader.loaderModal);
   const dispatch = useDispatch();
-  const [confirmado, setConfirmado] = useState(false);
-  const [alerta, setAlerta] = useState(false);
   const [listaTurmas, setListaTurmas] = useState([]);
   const [turmas, setTurmas] = useState([]);
-  const [valoresCheckbox, setValoresCheckbox] = useState({
-    objetivosAprendizagem: true,
-    desenvolvimentoAula: true,
-    recuperacaoContinua: false,
-    licaoCasa: false,
-  });
+
+  const [estado, disparar] = useReducer(Reducer, estadoInicial);
 
   useEffect(() => {
     async function buscaTurmas() {
@@ -67,179 +75,98 @@ function ModalCopiarAvaliacao({ show, disciplina, onClose, planoAula }) {
     disciplina,
   ]);
 
-  const adicionarTurma = () => {
-    setTurmas([
-      ...turmas,
-      {
-        id: shortid.generate(),
-        turmaId: '',
-        data: '',
-        temErro: false,
-        mensagemErro: 'Data já possui conteúdo',
-      },
-    ]);
-  };
+  const adicionarTurma = () => disparar(adicionarAvaliacao());
 
-  const onClickExcluir = item => {
-    setTurmas(turmas.filter(x => x.id !== item.id));
-  };
+  const onClickExcluir = item => disparar(excluirAvaliacao(item.id));
 
-  const onChangeTurma = async (turma, linha) => {
-    try {
-      setTurmas(
-        turmas.map(x =>
-          x.id === linha.id
-            ? {
-                ...linha,
-                carregandoData: true,
-              }
-            : x
-        )
-      );
+  const onChangeTurma = useCallback(
+    async (turma, linha) => {
+      try {
+        if (valorNuloOuVazio(turma)) {
+          disparar(selecionarTurma({ id: linha.id, turmaId: turma }));
+          disparar(selecionarData({ id: linha.id, data: '' }));
+          disparar(erroData({ id: linha.id, turmaId: String(0) }));
+          return;
+        }
 
-      // TODO: Remover ano letivo chumbado
-      const { data, status } = await api.get(
-        `v1/calendarios/frequencias/aulas/datas/2019/turmas/${turma}/disciplinas/${disciplina}`
-      );
-      if (data && status === 200) {
-        setTurmas(
-          turmas.map(x =>
-            x.id === linha.id
-              ? {
-                  ...linha,
-                  turmaId: turma,
-                  carregandoData: false,
-                  diasParaHabilitar: data.map(y =>
-                    window.moment(y.data).format('YYYY-MM-DD')
-                  ),
-                }
-              : x
-          )
+        disparar(carregarData({ id: linha.id, valor: true }));
+
+        // TODO: Remover ano letivo chumbado
+        const { data, status } = await api.get(
+          `v1/calendarios/frequencias/aulas/datas/${filtro.anoLetivo}/turmas/${turma}/disciplinas/${disciplina}`
         );
+
+        if (data && status === 200) {
+          disparar(carregarData({ id: linha.id, valor: false }));
+          disparar(selecionarTurma({ id: linha.id, turmaId: turma }));
+          disparar(diasParaHabilitar({ id: linha.id, datas: data }));
+        }
+      } catch (error) {
+        erro(error);
       }
-    } catch (error) {
-      erro(error);
-    }
-  };
+    },
+    [disciplina, filtro.anoLetivo]
+  );
 
   const onChangeData = async (dataSelecionada, linha) => {
     try {
-      setTurmas(
-        turmas.map(x =>
-          x.id === linha.id
-            ? {
-                ...linha,
-                data: dataSelecionada,
-              }
-            : x
-        )
-      );
-
+      disparar(selecionarData({ id: linha.id, data: dataSelecionada }));
+      disparar(carregarData({ id: linha.id, valor: true }));
       const { data, status } = await AvaliacaoServico.verificarSeExiste({
-        planoAulaTurmaDatas: turmas.map(x => ({
-          data: x.data,
+        atividadeAvaliativaTurmaDatas: estado.turmas.map(x => ({
+          dataAvaliacao: dataSelecionada,
           turmaId: x.turmaId,
           disciplinaId: disciplina,
         })),
       });
+
       if (data && status === 200) {
-        const temErro = data.filter(x => x.existe === true);
+        disparar(carregarData({ id: linha.id, valor: false }));
+        const temErro = data.filter(x => x.erro === true);
         if (temErro.length > 0) {
           temErro.forEach(err => {
-            setTurmas(
-              turmas.map(x =>
-                x.turmaId === String(err.turmaId)
-                  ? {
-                      ...x,
-                      data: dataSelecionada,
-                      temErro: true,
-                      mensagemErro: 'Turma já possui avaliação',
-                    }
-                  : x
-              )
-            );
+            disparar(erroData({ id: linha.id, turmaId: String(err.turmaId) }));
           });
+        } else {
+          disparar(erroData({ id: linha.id, turmaId: String(0) }));
         }
       }
     } catch (error) {
-      console.log(error);
+      disparar(carregarData({ id: linha.id, valor: false }));
+      disparar(erroData({ id: linha.id, turmaId: String(0) }));
     }
   };
 
   const onCloseModal = () => {
-    setValoresCheckbox({
-      objetivosAprendizagem: true,
-      desenvolvimentoAula: true,
-      recuperacaoContinua: false,
-      licaoCasa: false,
-    });
     setTurmas([]);
-    setAlerta(false);
     onClose();
   };
 
   const onClickSalvar = async () => {
     try {
-      if (!confirmado) {
-        dispatch(setLoaderModal(true));
-        const { data, status } = await PlanoAulaServico.verificarSeExiste({
-          planoAulaTurmaDatas: turmas.map(x => ({
-            data: x.data,
-            turmaId: x.turmaId,
-            disciplinaId: disciplina,
-          })),
-        });
+      dispatch(setLoaderModal(true));
+      onSalvarCopias(
+        estado.turmas.map(x => ({ turmaId: x.turmaId, dataAvaliacao: x.data }))
+      );
 
-        if (data && status === 200) {
-          const temErro = data.filter(x => x.existe === true);
-          if (temErro.length > 0) {
-            temErro.forEach(err => {
-              setTurmas(
-                turmas.map(x =>
-                  x.turmaId === String(err.turmaId)
-                    ? {
-                        ...x,
-                        temErro: true,
-                        mensagemErro: 'Data já possui conteúdo',
-                      }
-                    : x
-                )
-              );
-            });
-            setAlerta(true);
-          }
-          setConfirmado(true);
-          dispatch(setLoaderModal(false));
-        }
-      }
-
-      if (confirmado) {
-        dispatch(setLoaderModal(true));
-        const {
-          data: dados,
-          status: resposta,
-        } = await PlanoAulaServico.migrarPlano({
-          idsPlanoTurmasDestino: turmas.map(x => ({
-            ...x,
-            sobreescrever: true,
-          })),
-          planoAulaId: planoAula.id,
-          disciplinaId: disciplina,
-          migrarLicaoCasa: valoresCheckbox.licaoCasa,
-          migrarRecuperacaoAula: valoresCheckbox.recuperacaoContinua,
-          migrarObjetivos: valoresCheckbox.objetivosAprendizagem,
-        });
-        if (dados || resposta === 200) {
-          sucesso('Plano de aula copiado com sucesso!');
-          dispatch(setLoaderModal(false));
-          onCloseModal();
-        }
-      }
+      setTimeout(() => {
+        dispatch(setLoaderModal(false));
+        onClose();
+      }, 1000);
     } catch (error) {
       erros(error);
       dispatch(setLoaderModal(false));
     }
   };
+
+  const desabilitarSalvar = useCallback(() => {
+    const turmaNaoPreenchida = estado.turmas.some(x => !x.turmaId || !x.data);
+    const ehVazioOuTemErro =
+      estado.turmas.length < 1 || estado.turmas.some(x => x.temErro);
+    const naoEstaCarregando =
+      estado.turmas.some(x => x.carregandoData) || carregando;
+    return ehVazioOuTemErro || turmaNaoPreenchida || naoEstaCarregando;
+  }, [estado, carregando]);
 
   return (
     <ModalConteudoHtml
@@ -251,15 +178,10 @@ function ModalCopiarAvaliacao({ show, disciplina, onClose, planoAula }) {
       onConfirmacaoPrincipal={() => onClickSalvar()}
       labelBotaoPrincipal="Confirmar"
       labelBotaoSecundario="Descartar"
-      perguntaAtencao={
-        alerta &&
-        'Os planos de aula de algumas turmas, já possuem conteúdo que será sobrescrito. Deseja continuar?'
-      }
-      tituloAtencao={alerta && 'Atenção'}
-      desabilitarBotaoPrincipal={turmas.length < 1}
+      desabilitarBotaoPrincipal={desabilitarSalvar()}
     >
       <Loader loading={carregando}>
-        {turmas.map(linha => (
+        {estado.turmas.map(linha => (
           <Row key={shortid.generate()} className="row">
             <Grid cols={5}>
               <TurmasDropDown
@@ -267,7 +189,10 @@ function ModalCopiarAvaliacao({ show, disciplina, onClose, planoAula }) {
                 modalidadeId={filtro.modalidade}
                 valor={linha.turmaId}
                 onChange={turma => onChangeTurma(turma, linha)}
-                dados={listaTurmas}
+                dados={
+                  listaTurmas.filter(x => !estado.turmas.includes(x.turmaId)) ||
+                  []
+                }
               />
             </Grid>
             <Grid cols={5}>
@@ -313,14 +238,14 @@ ModalCopiarAvaliacao.propTypes = {
   show: t.bool,
   disciplina: t.string,
   onClose: t.func,
-  planoAula: t.oneOfType([t.object]),
+  onSalvarCopias: t.func,
 };
 
 ModalCopiarAvaliacao.defaultProps = {
   show: false,
   disciplina: null,
   onClose: null,
-  planoAula: null,
+  onSalvarCopias: null,
 };
 
 export default ModalCopiarAvaliacao;

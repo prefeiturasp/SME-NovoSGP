@@ -90,6 +90,7 @@ const AvaliacaoForm = ({ match }) => {
   );
 
   const [descricao, setDescricao] = useState('');
+  const [copias, setCopias] = useState([]);
   const [listaDisciplinasRegencia, setListaDisciplinasRegencia] = useState([]);
 
   const usuario = useSelector(store => store.usuario);
@@ -328,6 +329,7 @@ const AvaliacaoForm = ({ match }) => {
         show={mostrarModalCopiarAvaliacao}
         onClose={() => setMostrarModalCopiarAvaliacao(false)}
         disciplina={dadosAvaliacao && dadosAvaliacao.disciplinaId}
+        onSalvarCopias={copias => setCopias(copias)}
       />
       <Grid cols={12} className="mb-1 p-0">
         <Titulo className="font-weight-bold">
@@ -488,7 +490,7 @@ const AvaliacaoForm = ({ match }) => {
               </Div>
               {idAvaliacao && (
                 <Div className="row" style={{ marginTop: '14px' }}>
-                  <Grid cols={12}>
+                  <Grid cols={4}>
                     <Button
                       label="Copiar avaliação"
                       icon="clipboard"
@@ -498,6 +500,11 @@ const AvaliacaoForm = ({ match }) => {
                       onClick={() => setMostrarModalCopiarAvaliacao(true)}
                       disabled={!idAvaliacao}
                     />
+                  </Grid>
+                  <Grid cols={6}>
+                    {copias.map(x => (
+                      <span>{x.turmaId}</span>
+                    ))}
                   </Grid>
                 </Div>
               )}
