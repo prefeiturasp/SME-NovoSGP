@@ -84,10 +84,10 @@ namespace SME.SGP.Aplicacao
             {
                 List<string> mensagens = new List<string>();
 
-                if (aula.Previstas.Quantidade != (aula.Criadas.QuantidadeCJ + aula.Criadas.QuantidadeTitular) && aula.Fim < DateTime.Now)
+                if (aula.Previstas.Quantidade != (aula.Criadas.QuantidadeCJ + aula.Criadas.QuantidadeTitular) && aula.Fim.Date >= DateTime.Today)
                     mensagens.Add("Quantidade de aulas previstas diferente da quantidade de aulas criadas.");
 
-                if (aula.Previstas.Quantidade != (aula.Cumpridas + aula.Reposicoes) && aula.Fim < DateTime.Now)
+                if (aula.Previstas.Quantidade != (aula.Cumpridas + aula.Reposicoes) && aula.Fim.Date< DateTime.Today)
                     mensagens.Add("Quantidade de aulas previstas diferente do somatório de aulas dadas + aulas repostas, após o final do bimestre.");
 
                 if (mensagens.Any())
