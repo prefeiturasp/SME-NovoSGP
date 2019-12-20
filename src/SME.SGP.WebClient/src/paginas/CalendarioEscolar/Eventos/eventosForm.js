@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import shortid from 'shortid';
 
 // Redux
@@ -37,6 +37,7 @@ import { setBreadcrumbManual } from '~/servicos/breadcrumb-services';
 import history from '~/servicos/history';
 import servicoEvento from '~/servicos/Paginas/Calendario/ServicoEvento';
 import { verificaSomenteConsulta } from '~/servicos/servico-navegacao';
+import LocalOcorrencia from '~/constantes/localOcorrencia';
 
 // Styles
 import {
@@ -81,6 +82,7 @@ const EventosForm = ({ match }) => {
   const [calendarioEscolarAtual, setCalendarioEscolarAtual] = useState([]);
   const [listaDres, setListaDres] = useState([]);
   const [listaUes, setListaUes] = useState([]);
+  const [listaTipoEventoOrigem, setListaTipoEventoOrigem] = useState([]);
   const [listaTipoEvento, setListaTipoEvento] = useState([]);
   const [listaCalendarioParaCopiar, setlistaCalendarioParaCopiar] = useState(
     []
@@ -89,6 +91,9 @@ const EventosForm = ({ match }) => {
     listaCalendarioParaCopiarInicial,
     setlistaCalendarioParaCopiarInicial,
   ] = useState([]);
+  const refFormulario = useRef(null);
+  const [dreDesabilitada, setDreDesabilitada] = useState(false);
+  const [ueDesabilitada, setUeDesabilitada] = useState(false);
 
   const [idEvento, setIdEvento] = useState(0);
   const inicial = {
@@ -125,6 +130,7 @@ const EventosForm = ({ match }) => {
       const dres = await api.get('v1/abrangencias/false/dres');
       if (dres.data) {
         setListaDres(dres.data.sort(FiltroHelper.ordenarLista('nome')));
+        setDreDesabilitada(dres.data.length === 1);
       } else {
         setListaDres([]);
       }
@@ -132,8 +138,10 @@ const EventosForm = ({ match }) => {
       const tiposEvento = await api.get('v1/calendarios/eventos/tipos/listar');
       if (tiposEvento && tiposEvento.data && tiposEvento.data.items) {
         setListaTipoEvento(tiposEvento.data.items);
+        setListaTipoEventoOrigem(tiposEvento.data.items);
       } else {
         setListaTipoEvento([]);
+        setListaTipoEventoOrigem([]);
       }
     };
     setSomenteConsulta(verificaSomenteConsulta(permissoesTela));
@@ -149,12 +157,41 @@ const EventosForm = ({ match }) => {
   }, [somenteConsulta, novoRegistro]);
 
   useEffect(() => {
-    validarConsultaModoEdicaoENovo();
-  }, [listaTipoEvento]);
-
-  useEffect(() => {
     montaValidacoes();
   }, [eventoTipoFeriadoSelecionado, tipoDataUnico]);
+
+  useEffect(() => {
+    if (
+      listaDres.length === 1 &&
+      (usuarioStore.possuiPerfilDre || !usuarioStore.possuiPerfilSmeOuDre)
+    ) {
+      refFormulario.current.setFieldValue(
+        'dreId',
+        listaDres[0].codigo.toString()
+      );
+
+      setListaTipoEvento(filtraSomenteDRE());
+    }
+  }, [listaDres]);
+
+  useEffect(() => {
+    if (listaUes.length === 1) {
+      refFormulario.current.setFieldValue(
+        'ueId',
+        listaUes[0].codigo.toString()
+      );
+
+      setListaTipoEvento(filtraSomenteUE());
+    }
+  }, [listaUes]);
+
+  useEffect(() => {
+    filtraTipoEvento(
+      refFormulario.current.state.values.dreId,
+      refFormulario.current.state.values.ueId
+    );
+    validarConsultaModoEdicaoENovo();
+  }, [listaTipoEventoOrigem]);
 
   const validarConsultaModoEdicaoENovo = async () => {
     if (match && match.params && match.params.id) {
@@ -177,6 +214,7 @@ const EventosForm = ({ match }) => {
             ue => (ue.nome = `${tipoEscolaDTO[ue.tipoEscola]} ${ue.nome}`)
           );
           setListaUes(ues.data.sort(FiltroHelper.ordenarLista('nome')));
+          setUeDesabilitada(ues.data.length === 1);
         } else {
           setListaUes([]);
         }
@@ -199,8 +237,39 @@ const EventosForm = ({ match }) => {
     }
   };
 
+  const filtraSomenteSME = () =>
+    listaTipoEventoOrigem.filter(
+      element =>
+        element.localOcorrencia === LocalOcorrencia.SME ||
+        element.localOcorrencia === LocalOcorrencia.SMEUE ||
+        element.localOcorrencia === LocalOcorrencia.TODOS
+    );
+
+  const filtraSomenteDRE = () =>
+    listaTipoEventoOrigem.filter(
+      element =>
+        element.localOcorrencia === LocalOcorrencia.DRE ||
+        element.localOcorrencia === LocalOcorrencia.TODOS
+    );
+
+  const filtraSomenteUE = () =>
+    listaTipoEventoOrigem.filter(
+      element =>
+        element.localOcorrencia === LocalOcorrencia.UE ||
+        element.localOcorrencia === LocalOcorrencia.SMEUE ||
+        element.localOcorrencia === LocalOcorrencia.TODOS
+    );
+
+  const filtraTipoEvento = (dre, ue) => {
+    if (ue) return setListaTipoEvento(filtraSomenteUE());
+
+    if (dre) return setListaTipoEvento(filtraSomenteDRE());
+
+    setListaTipoEvento(filtraSomenteSME());
+  };
+
   const montaValidacoes = () => {
-    let val = {
+    const val = {
       dataInicio: momentSchema.required('Data obrigatória'),
       nome: Yup.string().required('Nome obrigatório'),
       tipoCalendarioId: Yup.string().required('Calendário obrigatório'),
@@ -469,12 +538,20 @@ const EventosForm = ({ match }) => {
     }
   };
 
+  const onChangeUe = (ue, form) => {
+    filtraTipoEvento(form.values.dreId, ue);
+
+    onChangeCampos();
+  };
+
   const onChangeDre = (dre, form) => {
     setListaUes([]);
     form.setFieldValue('ueId', undefined);
+
     if (dre) {
       carregarUes(dre);
     }
+    filtraTipoEvento(dre);
     onChangeCampos();
   };
 
@@ -670,6 +747,7 @@ const EventosForm = ({ match }) => {
           validateOnChange
           validateOnBlur
           validate={values => onValidate(values)}
+          ref={refFormulario}
         >
           {form => (
             <Form className="col-md-12 mb-4">
@@ -748,7 +826,7 @@ const EventosForm = ({ match }) => {
                     onChange={e => onChangeDre(e, form)}
                     label="Diretoria Regional de Educação (DRE)"
                     placeholder="Diretoria Regional de Educação (DRE)"
-                    disabled={desabilitarCampos}
+                    disabled={desabilitarCampos || dreDesabilitada}
                   />
                 </div>
                 <div className="col-sm-12 col-md-12 col-lg-6 col-xl-6 pb-2">
@@ -758,10 +836,10 @@ const EventosForm = ({ match }) => {
                     lista={listaUes}
                     valueOption="codigo"
                     valueText="nome"
-                    onChange={onChangeCampos}
+                    onChange={e => onChangeUe(e, form)}
                     label="Unidade Escolar (UE)"
                     placeholder="Unidade Escolar (UE)"
-                    disabled={desabilitarCampos}
+                    disabled={desabilitarCampos || ueDesabilitada}
                   />
                 </div>
                 <div className="col-sm-12 col-md-6 col-lg-6 col-xl-6 pb-2">
