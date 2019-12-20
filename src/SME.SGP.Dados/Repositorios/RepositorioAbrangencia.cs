@@ -67,7 +67,7 @@ namespace SME.SGP.Dados.Repositorios
             return (await database.Conexao.QueryAsync<bool>(query, new { login, perfil })).FirstOrDefault();
         }
 
-        public async Task<IEnumerable<AbrangenciaFiltroRetorno>> ObterAbrangenciaPorFiltro(string texto, string login, Guid perfil)
+        public async Task<IEnumerable<AbrangenciaFiltroRetorno>> ObterAbrangenciaPorFiltro(string texto, string login, Guid perfil, bool consideraHistorico)
         {
             texto = $"%{texto.ToUpper()}%";
 
@@ -96,7 +96,32 @@ namespace SME.SGP.Dados.Repositorios
                         order by va.ue_nome
                         OFFSET 0 ROWS FETCH NEXT  10 ROWS ONLY";
 
-            return (await database.Conexao.QueryAsync<AbrangenciaFiltroRetorno>(query, new { texto, login, perfil })).AsList();
+            var queryHistorica = @"select
+                                    va.modalidade_codigo as modalidade,
+                                    va.turma_ano_letivo as anoLetivo,
+                                    va.turma_ano as  ano,
+                                    va.dre_codigo as codigoDre,
+                                    va.turma_id as codigoTurma,
+                                    va.ue_codigo as codigoUe,
+                                    u.tipo_escola as tipoEscola,
+                                    va.dre_nome as nomeDre,
+                                    va.turma_nome as nomeTurma,
+                                    va.ue_nome as nomeUe,
+                                    va.turma_semestre as semestre,
+                                    va.qt_duracao_aula as qtDuracaoAula,
+                                    va.tipo_turno as tipoTurno
+                                from
+                                    v_abrangencia_historica va
+                                inner join ue u
+	                                on u.ue_id = va.ue_codigo
+                                where
+                                    va.usuario_id = (select id from usuario where login = @login)
+                                    and va.usuario_perfil = @perfil
+                                    and (upper(va.turma_nome) like @texto OR upper(f_unaccent(va.ue_nome)) LIKE @texto)
+                                order by va.ue_nome
+                                OFFSET 0 ROWS FETCH NEXT  10 ROWS ONLY";
+
+            return (await database.Conexao.QueryAsync<AbrangenciaFiltroRetorno>(consideraHistorico ? queryHistorica : query, new { texto, login, perfil })).AsList();
         }
 
         public Task<IEnumerable<AbrangenciaSinteticaDto>> ObterAbrangenciaSintetica(string login, Guid perfil, string turmaId = "")
@@ -153,6 +178,32 @@ namespace SME.SGP.Dados.Repositorios
                 .FirstOrDefault();
         }
 
+        public async Task<IEnumerable<int>> ObterAnosLetivos(string login, Guid perfil, bool consideraHistorico)
+        {
+            var query = @"
+                        select
+	                        distinct va.turma_ano_letivo
+                        from
+	                        v_abrangencia va
+                        where
+	                        va.turma_ano_letivo is not null
+                            and va.usuario_perfil = @perfil
+                            and va.usuario_id = (select id from usuario where login = @login)
+                        order by turma_ano_letivo asc";
+            var queryHistorica = @"
+                        select
+	                        distinct va.turma_ano_letivo
+                        from
+	                        v_abrangencia_historica va
+                        where
+	                        va.turma_ano_letivo is not null
+                            and va.usuario_perfil = @perfil
+                            and va.usuario_id = (select id from usuario where login = @login)
+                        order by turma_ano_letivo asc";
+
+            return (await database.Conexao.QueryAsync<int>(consideraHistorico ? queryHistorica : query, new { login, perfil }));
+        }
+
         public async Task<AbrangenciaDreRetorno> ObterDre(string dreCodigo, string ueCodigo, string login, Guid perfil)
         {
             var query = new StringBuilder();
@@ -178,7 +229,7 @@ namespace SME.SGP.Dados.Repositorios
             return (await database.Conexao.QueryFirstOrDefaultAsync<AbrangenciaDreRetorno>(query.ToString(), new { dreCodigo, ueCodigo, login, perfil }));
         }
 
-        public async Task<IEnumerable<AbrangenciaDreRetorno>> ObterDres(string login, Guid perfil, Modalidade? modalidade = null, int periodo = 0)
+        public async Task<IEnumerable<AbrangenciaDreRetorno>> ObterDres(string login, Guid perfil, Modalidade? modalidade = null, int periodo = 0, bool consideraHistorico = false)
         {
             var query = new StringBuilder();
 
@@ -187,7 +238,10 @@ namespace SME.SGP.Dados.Repositorios
             query.AppendLine("va.dre_codigo as codigo,");
             query.AppendLine("va.dre_nome as nome");
             query.AppendLine("from");
-            query.AppendLine("v_abrangencia va");
+            if (consideraHistorico)
+                query.AppendLine("v_abrangencia_historica va");
+            else
+                query.AppendLine("v_abrangencia va");
             query.AppendLine("where");
             query.AppendLine("va.usuario_id = (select id from usuario where login = @login)");
             query.AppendLine("and va.usuario_perfil = @perfil");
@@ -202,21 +256,31 @@ namespace SME.SGP.Dados.Repositorios
             return (await database.Conexao.QueryAsync<AbrangenciaDreRetorno>(query.ToString(), new { login, perfil, modalidade = (modalidade.HasValue ? modalidade.Value : 0), semestre = periodo })).AsList();
         }
 
-        public async Task<IEnumerable<int>> ObterModalidades(string login, Guid perfil)
+        public async Task<IEnumerable<int>> ObterModalidades(string login, Guid perfil, int anoLetivo, bool consideraHistorico)
         {
             var query = @"select
-                        distinct va.modalidade_codigo
-                    from
-                        v_abrangencia va
-                    where
-                        va.usuario_id = (select id from usuario where login = @login)
-                        and va.usuario_perfil = @perfil
-                        and va.modalidade_codigo is not null";
+                            distinct va.modalidade_codigo
+                        from
+                            v_abrangencia va
+                        where
+                            va.usuario_id = (select id from usuario where login = @login)
+                            and va.usuario_perfil = @perfil
+                            and va.modalidade_codigo is not null
+                            and va.turma_ano_letivo = @anoLetivo";
+            var queryHistorica = @"select
+                            distinct va.modalidade_codigo
+                        from
+                            v_abrangencia_historica va
+                        where
+                            va.usuario_id = (select id from usuario where login = @login)
+                            and va.usuario_perfil = @perfil
+                            and va.modalidade_codigo is not null
+                            and va.turma_ano_letivo = @anoLetivo";
 
-            return (await database.Conexao.QueryAsync<int>(query, new { login, perfil })).AsList();
+            return (await database.Conexao.QueryAsync<int>(consideraHistorico ? queryHistorica : query, new { login, perfil, anoLetivo })).AsList();
         }
 
-        public async Task<IEnumerable<int>> ObterSemestres(string login, Guid perfil, Modalidade modalidade)
+        public async Task<IEnumerable<int>> ObterSemestres(string login, Guid perfil, Modalidade modalidade, bool consideraHistorico)
         {
             var query = @"select distinct va.turma_semestre as semestre
                         from
@@ -226,15 +290,21 @@ namespace SME.SGP.Dados.Repositorios
                             and va.usuario_perfil = @perfil
                             and va.modalidade_codigo = @modalidade
                             and va.turma_semestre is not null";
+            var queryHistorica = @"select distinct va.turma_semestre as semestre
+                        from
+                            v_abrangencia_historica va
+                        where
+                            va.usuario_id = (select id from usuario where login = @login)
+                            and va.usuario_perfil = @perfil
+                            and va.modalidade_codigo = @modalidade
+                            and va.turma_semestre is not null";
 
-            return (await database.Conexao.QueryAsync<int>(query, new { login, perfil, modalidade })).AsList();
+            return (await database.Conexao.QueryAsync<int>(consideraHistorico ? queryHistorica : query, new { login, perfil, modalidade })).AsList();
         }
 
-        public async Task<IEnumerable<AbrangenciaTurmaRetorno>> ObterTurmas(string codigoUe, string login, Guid perfil, Modalidade modalidade, int periodo = 0)
+        public async Task<IEnumerable<AbrangenciaTurmaRetorno>> ObterTurmas(string codigoUe, string login, Guid perfil, Modalidade modalidade, int periodo = 0, bool consideraHistorico = false)
         {
-            StringBuilder query = new StringBuilder();
-
-            query.AppendLine(@"select distinct
+            var queryBase = @"select distinct
                                 va.turma_ano as ano,
                                 va.turma_ano_letivo as anoLetivo,
                                 va.turma_id as codigo,
@@ -249,7 +319,30 @@ namespace SME.SGP.Dados.Repositorios
                                 va.ue_codigo = @codigoUe
                                 and va.turma_id is not null
                                 and va.usuario_id = (select id from usuario where login = @login)
-                                and va.usuario_perfil = @perfil");
+                                and va.usuario_perfil = @perfil";
+            var queryBaseHistorica = @"select distinct
+                                va.turma_ano as ano,
+                                va.turma_ano_letivo as anoLetivo,
+                                va.turma_id as codigo,
+                                va.modalidade_codigo as codigoModalidade,
+                                va.turma_nome as nome,
+	                            va.turma_semestre as semestre,
+                                va.qt_duracao_aula as qtDuracaoAula,
+                                va.tipo_turno as tipoTurno
+                            from
+                                v_abrangencia_historica va
+                            where
+                                va.ue_codigo = @codigoUe
+                                and va.turma_id is not null
+                                and va.usuario_id = (select id from usuario where login = @login)
+                                and va.usuario_perfil = @perfil";
+
+            StringBuilder query = new StringBuilder();
+
+            if (consideraHistorico)
+                query.AppendLine(queryBaseHistorica);
+            else
+                query.AppendLine(queryBase);
 
             if (modalidade > 0)
                 query.AppendLine("and va.modalidade_codigo = @modalidade");
@@ -280,7 +373,7 @@ namespace SME.SGP.Dados.Repositorios
             return (await database.Conexao.QueryFirstOrDefaultAsync<AbrangenciaUeRetorno>(query.ToString(), new { codigo, login, perfil }));
         }
 
-        public async Task<IEnumerable<AbrangenciaUeRetorno>> ObterUes(string codigoDre, string login, Guid perfil, Modalidade? modalidade = null, int periodo = 0)
+        public async Task<IEnumerable<AbrangenciaUeRetorno>> ObterUes(string codigoDre, string login, Guid perfil, Modalidade? modalidade = null, int periodo = 0, bool consideraHistorico = false)
         {
             var query = new StringBuilder();
 
@@ -289,7 +382,10 @@ namespace SME.SGP.Dados.Repositorios
             query.AppendLine("va.ue_nome as nome,");
             query.AppendLine("u.tipo_escola as tipoEscola");
             query.AppendLine("from");
-            query.AppendLine("v_abrangencia va");
+            if (consideraHistorico)
+                query.AppendLine("v_abrangencia_historica va");
+            else
+                query.AppendLine("v_abrangencia va");
             query.AppendLine("inner join ue u");
             query.AppendLine("on u.ue_id = va.ue_codigo");
             query.AppendLine("where");

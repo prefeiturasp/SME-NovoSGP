@@ -10,6 +10,7 @@ import { setLoaderTabela } from '~/redux/modulos/loader/actions';
 
 import { Container } from './listaPaginada.css';
 import api from '~/servicos/api';
+import { erro } from '~/servicos/alertas';
 
 const ListaPaginada = props => {
   const {
@@ -22,6 +23,7 @@ const ListaPaginada = props => {
     onSelecionarLinhas,
     selecionarItems,
     filtroEhValido,
+    onErro,
   } = props;
 
   const dispatch = useDispatch();
@@ -98,6 +100,15 @@ const ListaPaginada = props => {
       })
       .catch(err => {
         dispatch(setLoaderTabela(false));
+        if (
+          err.response &&
+          err.response.data &&
+          err.response.data.mensagens &&
+          err.response.data.mensagens.length
+        ) {
+          if (onErro) onErro(err);
+          else erro(err.response.data.mensagens[0]);
+        }
       });
   };
 

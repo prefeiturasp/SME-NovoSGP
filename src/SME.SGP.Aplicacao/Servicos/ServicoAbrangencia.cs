@@ -64,7 +64,6 @@ namespace SME.SGP.Aplicacao.Servicos
             }
         }
 
-
         private async Task BuscaAbrangenciaEPersiste(string login, Guid perfil)
         {
             try
@@ -111,6 +110,20 @@ namespace SME.SGP.Aplicacao.Servicos
             }
         }
 
+        private IEnumerable<Turma> ImportarTurmasNaoEncontradas(string[] codigosNaoEncontrados)
+        {
+            IEnumerable<Turma> resultado = Enumerable.Empty<Turma>();
+
+            if (codigosNaoEncontrados != null && codigosNaoEncontrados.Length > 0)
+            {
+                var turmasEol = servicoEOL.ObterEstruturaInstuticionalVigentePorTurma(codigosTurma: codigosNaoEncontrados);
+                if (turmasEol != null)
+                    SincronizarEstruturaInstitucional(turmasEol);
+            }
+
+            return repositorioTurma.MaterializarCodigosTurma(codigosNaoEncontrados, out codigosNaoEncontrados);
+        }
+
         private void MaterializarEstruturaInstitucional(AbrangenciaCompactaVigenteRetornoEOLDTO abrangenciaEol, ref IEnumerable<Dre> dres, ref IEnumerable<Ue> ues, ref IEnumerable<Turma> turmas)
         {
             string[] codigosNaoEncontrados;
@@ -126,36 +139,6 @@ namespace SME.SGP.Aplicacao.Servicos
                 turmas = repositorioTurma.MaterializarCodigosTurma(abrangenciaEol.IdTurmas, out codigosNaoEncontrados)
                     .Union(ImportarTurmasNaoEncontradas(codigosNaoEncontrados));
             }
-        }
-
-        private IEnumerable<Turma> ImportarTurmasNaoEncontradas(string[] codigosNaoEncontrados)
-        {
-            IEnumerable<Turma> resultado = Enumerable.Empty<Turma>();
-
-            if (codigosNaoEncontrados != null && codigosNaoEncontrados.Length > 0)
-            {
-                var turmasEol = servicoEOL.ObterEstruturaInstuticionalVigentePorTurma(codigosTurma: codigosNaoEncontrados);
-                SincronizarEstruturaInstitucional(turmasEol);
-            }
-
-            return repositorioTurma.MaterializarCodigosTurma(codigosNaoEncontrados, out codigosNaoEncontrados);
-        }
-
-        private Task<AbrangenciaCompactaVigenteRetornoEOLDTO> TratarRetornoSupervisor(Task<AbrangenciaRetornoEolDto> consultaEol)
-        {
-            if (consultaEol != null)
-            {
-                return new Task<AbrangenciaCompactaVigenteRetornoEOLDTO>(() =>
-                {
-                    var resultado = consultaEol.Result;
-                    return new AbrangenciaCompactaVigenteRetornoEOLDTO()
-                    {
-                        Abrangencia = resultado.Abrangencia,
-                        IdUes = resultado.Dres.SelectMany(x => x.Ues.Select(y => y.Codigo)).ToArray()
-                    };
-                });
-            }
-            return null;
         }
 
         private Task<AbrangenciaRetornoEolDto> ObterAbrangenciaEolSupervisor(string login)
@@ -281,6 +264,23 @@ namespace SME.SGP.Aplicacao.Servicos
                 await BuscaAbrangenciaEPersiste(login, perfil);
                 unitOfWork.PersistirTransacao();
             }
+        }
+
+        private Task<AbrangenciaCompactaVigenteRetornoEOLDTO> TratarRetornoSupervisor(Task<AbrangenciaRetornoEolDto> consultaEol)
+        {
+            if (consultaEol != null)
+            {
+                return Task.Factory.StartNew(() =>
+                {
+                    var resultado = consultaEol.Result;
+                    return new AbrangenciaCompactaVigenteRetornoEOLDTO()
+                    {
+                        Abrangencia = resultado.Abrangencia,
+                        IdUes = resultado.Dres.SelectMany(x => x.Ues.Select(y => y.Codigo)).ToArray()
+                    };
+                });
+            }
+            return null;
         }
     }
 }

@@ -23,6 +23,7 @@ const RotasDto = {
   TIPO_AVALIACAO: '/configuracoes/tipo-avaliacao',
   NOTAS: '/diario-classe/notas',
   AULA_DADA_AULA_PREVISTA: '/diario-classe/aula-dada-aula-prevista',
+  REGISTRO_POA: '/diario-classe/registro-poa',
 };
 
 export default RotasDto;

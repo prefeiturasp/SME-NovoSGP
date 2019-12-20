@@ -3,11 +3,11 @@ import api from '~/servicos/api';
 const AbrangenciaServico = {
   buscarDres(url = '') {
     if (url) return api.get(url);
-    return api.get(`/v1/abrangencias/dres`);
+    return api.get(`/v1/abrangencias/false/dres`);
   },
   buscarUes(dreId, url = '') {
     if (url) return api.get(`${url}/${dreId}/ues/atribuicoes`);
-    return api.get(`/v1/abrangencias/dres/${dreId}/ues`);
+    return api.get(`/v1/abrangencias/false/dres/${dreId}/ues`);
   },
   buscarModalidades() {
     return api.get(`v1/abrangencias/modalidades`);
@@ -23,7 +23,7 @@ const AbrangenciaServico = {
       params = { ...params, periodo };
     }
 
-    return api.get(`v1/abrangencias/dres/ues/${ue}/turmas`, {
+    return api.get(`v1/abrangencias/false/dres/ues/${ue}/turmas`, {
       params,
     });
   },

@@ -58,7 +58,10 @@ namespace SME.SGP.Aplicacao
             var data = filtro.Data.Date;
 
             var perfil = servicoUsuario.ObterPerfilAtual();
-            var rf = servicoUsuario.ObterRf();
+
+            var usuario = await servicoUsuario.ObterUsuarioLogado();
+
+            string rf = usuario.TemPerfilGestaoUes() ? string.Empty : usuario.CodigoRf;
 
             var eventos = await repositorioEvento.ObterEventosPorTipoDeCalendarioDreUeDia(filtro.TipoCalendarioId, filtro.DreId, filtro.UeId, data, filtro.EhEventoSme);
             var aulas = await repositorioAula.ObterAulasCompleto(filtro.TipoCalendarioId, filtro.TurmaId, filtro.UeId, data, perfil, rf);
@@ -104,26 +107,26 @@ namespace SME.SGP.Aplicacao
                     }
                 }
 
-               var turma = turmasAbrangencia.FirstOrDefault(t => t.CodigoTurma.Equals(x.TurmaId));
+                var turma = turmasAbrangencia.FirstOrDefault(t => t.CodigoTurma.Equals(x.TurmaId));
 
-               eventosAulas.Add(new EventosAulasTipoDiaDto
-               {
-                   Id = x.Id,
-                   TipoEvento = "Aula",
-                   DadosAula = new DadosAulaDto
-                   {
-                       Disciplina = $"{(disciplina?.Nome ?? "Disciplina não encontrada")} {(x.TipoAula == TipoAula.Reposicao ? "(Reposição)" : "")} {(x.Status == EntidadeStatus.AguardandoAprovacao ? "- Aguardando aprovação" : "")}",
-                       EhRegencia = disciplina.Regencia,
-                       podeCadastrarAvaliacao = podeCriarAtividade,
-                       Horario = x.DataAula.ToString("hh:mm tt", CultureInfo.InvariantCulture),
-                       Modalidade = turma?.Modalidade.GetAttribute<DisplayAttribute>().Name ?? "Modalidade",
-                       Tipo = turma?.TipoEscola.GetAttribute<DisplayAttribute>().ShortName ?? "Escola",
-                       Turma = x.TurmaNome,
-                       UnidadeEscolar = x.UeNome,
-                       Atividade = listaAtividades
-                   }
-               });
-           });
+                eventosAulas.Add(new EventosAulasTipoDiaDto
+                {
+                    Id = x.Id,
+                    TipoEvento = x.AulaCJ ? "CJ" : "Aula",
+                    DadosAula = new DadosAulaDto
+                    {
+                        Disciplina = $"{(disciplina?.Nome ?? "Disciplina não encontrada")} {(x.TipoAula == TipoAula.Reposicao ? "(Reposição)" : "")} {(x.Status == EntidadeStatus.AguardandoAprovacao ? "- Aguardando aprovação" : "")}",
+                        EhRegencia = disciplina.Regencia,
+                        podeCadastrarAvaliacao = podeCriarAtividade,
+                        Horario = x.DataAula.ToString("hh:mm tt", CultureInfo.InvariantCulture),
+                        Modalidade = turma?.Modalidade.GetAttribute<DisplayAttribute>().Name ?? "Modalidade",
+                        Tipo = turma?.TipoEscola.GetAttribute<DisplayAttribute>().ShortName ?? "Escola",
+                        Turma = x.TurmaNome,
+                        UnidadeEscolar = x.UeNome,
+                        Atividade = listaAtividades
+                    }
+                });
+            });
 
             return new DiaEventoAula
             {
@@ -141,7 +144,9 @@ namespace SME.SGP.Aplicacao
             if (!filtro.TodasTurmas && string.IsNullOrWhiteSpace(filtro.TurmaId))
                 throw new NegocioException("É necessario informar uma turma para pesquisa");
 
-            var rf = servicoUsuario.ObterRf();
+            var usuario = await servicoUsuario.ObterUsuarioLogado();
+
+            string rf = usuario.TemPerfilGestaoUes() ? string.Empty : usuario.CodigoRf;
 
             var diasPeriodoEscolares = comandosDiasLetivos.BuscarDiasLetivos(filtro.TipoCalendarioId);
             var diasAulas = await repositorioAula.ObterAulas(filtro.TipoCalendarioId, filtro.TurmaId, filtro.UeId, rf);
@@ -166,7 +171,10 @@ namespace SME.SGP.Aplicacao
             if (!filtro.TodasTurmas && string.IsNullOrWhiteSpace(filtro.TurmaId))
                 throw new NegocioException("É necessario informar uma turma para pesquisa");
 
-            var rf = servicoUsuario.ObterRf();
+            var usuario = await servicoUsuario.ObterUsuarioLogado();
+
+            string rf = usuario.TemPerfilGestaoUes() ? string.Empty : usuario.CodigoRf;
+
             var eventosAulas = new List<EventosAulasTipoCalendarioDto>();
             var ano = repositorioPeriodoEscolar.ObterPorTipoCalendario(filtro.TipoCalendarioId).FirstOrDefault().PeriodoInicio.Year;
             var aulas = await repositorioAula.ObterAulas(filtro.TipoCalendarioId, filtro.TurmaId, filtro.UeId, rf, filtro.Mes);

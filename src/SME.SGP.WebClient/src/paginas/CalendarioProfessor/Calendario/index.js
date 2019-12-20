@@ -41,6 +41,8 @@ const CalendarioProfessor = () => {
   const anosLetivosAbrangencia = useSelector(state => state.filtro.anosLetivos);
 
   const [carregandoTipos, setCarregandoTipos] = useState(false);
+  const [carregandoDres, setCarregandoDres] = useState(false);
+  const [carregandoUes, setCarregandoUes] = useState(false);
 
   const obterTiposCalendario = async modalidades => {
     setCarregandoTipos(true);
@@ -147,6 +149,23 @@ const CalendarioProfessor = () => {
   }, [eventoAulaCalendarioEdicao, tiposCalendario]);
 
   useEffect(() => {
+    if (tiposCalendario.length && tiposCalendario.length === 1) {
+      if (Object.entries(turmaSelecionadaStore).length) {
+        const modalidadeSelecionada =
+          turmaSelecionadaStore.modalidade === ModalidadeDTO.EJA.toString()
+            ? 2
+            : 1;
+        const tipoCalendario = tiposCalendario.filter(tipo => {
+          return tipo.modalidade === modalidadeSelecionada;
+        })[0];
+        if (tipoCalendario) {
+          setTipoCalendarioSelecionado(tipoCalendario.valor.toString());
+        }
+      }
+    }
+  }, [tiposCalendario, turmaSelecionadaStore]);
+
+  useEffect(() => {
     listarTiposCalendarioPorTurmaSelecionada();
   }, [turmaSelecionadaStore, anosLetivosAbrangencia]);
 
@@ -192,8 +211,9 @@ const CalendarioProfessor = () => {
   const [dres, setDres] = useState([]);
 
   const obterDres = () => {
+    setCarregandoDres(true);
     api
-      .get('v1/abrangencias/dres')
+      .get('v1/abrangencias/false/dres')
       .then(resposta => {
         if (resposta.data) {
           const lista = [];
@@ -206,11 +226,13 @@ const CalendarioProfessor = () => {
               });
             });
             setDres(lista.sort(FiltroHelper.ordenarLista('desc')));
+            setCarregandoDres(false);
           }
         }
       })
       .catch(() => {
         setDres(dresStore);
+        setCarregandoDres(false);
       });
   };
 
@@ -277,8 +299,9 @@ const CalendarioProfessor = () => {
   );
 
   const obterUnidadesEscolares = () => {
+    setCarregandoUes(true);
     api
-      .get(`v1/abrangencias/dres/${dreSelecionada}/ues`)
+      .get(`v1/abrangencias/false/dres/${dreSelecionada}/ues`)
       .then(resposta => {
         if (resposta.data) {
           const lista = [];
@@ -290,11 +313,13 @@ const CalendarioProfessor = () => {
               });
             });
             setUnidadesEscolares(lista.sort(FiltroHelper.ordenarLista('desc')));
+            setCarregandoUes(false);
           }
         }
       })
       .catch(() => {
         setUnidadesEscolares(unidadesEscolaresStore);
+        setCarregandoUes(false);
       });
   };
 
@@ -377,7 +402,6 @@ const CalendarioProfessor = () => {
           setTurmaSelecionada();
           setTodasTurmas(false);
         }
-        setTurmaDesabilitada(true);
       } else if (Object.entries(eventoAulaCalendarioEdicao).length) {
         setOpcaoTurma(
           listaTurmas[eventoAulaCalendarioEdicao.turma ? 1 : 0].valor.toString()
@@ -388,6 +412,7 @@ const CalendarioProfessor = () => {
         setOpcaoTurma(listaTurmas[1].valor.toString());
         setTurmaSelecionada(turmaSelecionadaStore.turma);
         setTodasTurmas(false);
+        setTurmaDesabilitada(true);
       }
     }
   }, [
@@ -528,28 +553,32 @@ const CalendarioProfessor = () => {
               </Div>
             </Grid>
             <Grid cols={5}>
-              <SelectComponent
-                className="fonte-14"
-                onChange={aoSelecionarDre}
-                lista={dres}
-                valueOption="valor"
-                valueText="desc"
-                valueSelect={dreSelecionada}
-                placeholder="Diretoria Regional de Educação (DRE)"
-                disabled={!tipoCalendarioSelecionado || dreDesabilitada}
-              />
+              <Loader loading={carregandoDres} tip="">
+                <SelectComponent
+                  className="fonte-14"
+                  onChange={aoSelecionarDre}
+                  lista={dres}
+                  valueOption="valor"
+                  valueText="desc"
+                  valueSelect={dreSelecionada}
+                  placeholder="Diretoria Regional de Educação (DRE)"
+                  disabled={!tipoCalendarioSelecionado || dreDesabilitada}
+                />
+              </Loader>
             </Grid>
             <Grid cols={4}>
-              <SelectComponent
-                className="fonte-14"
-                onChange={aoSelecionarUnidadeEscolar}
-                lista={unidadesEscolares}
-                valueOption="valor"
-                valueText="desc"
-                valueSelect={unidadeEscolarSelecionada}
-                placeholder="Unidade Escolar (UE)"
-                disabled={!dreSelecionada || unidadeEscolarDesabilitada}
-              />
+              <Loader loading={carregandoUes} tip="">
+                <SelectComponent
+                  className="fonte-14"
+                  onChange={aoSelecionarUnidadeEscolar}
+                  lista={unidadesEscolares}
+                  valueOption="valor"
+                  valueText="desc"
+                  valueSelect={unidadeEscolarSelecionada}
+                  placeholder="Unidade Escolar (UE)"
+                  disabled={!dreSelecionada || unidadeEscolarDesabilitada}
+                />
+              </Loader>
             </Grid>
             <Grid cols={2}>
               <SelectComponent

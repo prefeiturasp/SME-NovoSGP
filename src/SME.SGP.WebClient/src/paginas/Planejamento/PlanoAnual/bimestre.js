@@ -61,7 +61,7 @@ const BimestreComponent = React.forwardRef((props, ref) => {
 
   const bimestreJaObtidoServidor = bimestre.ehExpandido;
 
-  useLayoutEffect(() => {
+  useEffect(() => {
     if (!bimestre.setarObjetivo) {
       setarDescricaoFunction(descricaoFunction);
     }
