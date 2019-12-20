@@ -38,13 +38,13 @@ namespace SME.SGP.Dominio.Servicos
             return pascoa;
         }
 
-        public void VerficaSeExisteFeriadosMoveisEInclui(int ano)
+        public async Task VerficaSeExisteFeriadosMoveisEInclui(int ano)
         {
-            var feriadosMoveis = repositorioFeriadoCalendario.ObterFeriadosCalendario(new Infra.FiltroFeriadoCalendarioDto()
+            var feriadosMoveis = await repositorioFeriadoCalendario.ObterFeriadosCalendario(new Infra.FiltroFeriadoCalendarioDto()
             {
                 Tipo = TipoFeriadoCalendario.Movel,
                 Ano = ano
-            }).Result;
+            });
 
             if (!feriadosMoveis.Any())
             {
