@@ -16,7 +16,6 @@ import {
   Loader,
 } from '~/componentes';
 import TurmasDropDown from '~/componentes-sgp/TurmasDropDown';
-import ListaCheckbox from './componentes/ListaCheckbox';
 
 // Styles
 import { Row } from './styles';
@@ -25,6 +24,7 @@ import { Row } from './styles';
 import api from '~/servicos/api';
 import PlanoAulaServico from '~/servicos/Paginas/PlanoAula';
 import AbrangenciaServico from '~/servicos/Abrangencia';
+import AvaliacaoServico from '~/servicos/Paginas/Calendario/ServicoAvaliacao';
 import { erros, erro, sucesso } from '~/servicos/alertas';
 
 function ModalCopiarAvaliacao({ show, disciplina, onClose, planoAula }) {
@@ -44,24 +44,28 @@ function ModalCopiarAvaliacao({ show, disciplina, onClose, planoAula }) {
 
   useEffect(() => {
     async function buscaTurmas() {
-      const { data } = await AbrangenciaServico.buscarTurmas(
-        filtro.unidadeEscolar,
-        filtro.modalidade
+      const { data } = await AvaliacaoServico.listarTurmasModal(
+        filtro.turma,
+        disciplina
       );
 
       if (data) {
         setListaTurmas(
-          data
-            .filter(x => x.ano === filtro.ano)
-            .map(item => ({
-              desc: item.nome,
-              valor: item.codigo,
-            }))
+          data.map(item => ({
+            desc: item.nome,
+            valor: item.codigo,
+          }))
         );
       }
     }
-    buscaTurmas();
-  }, [filtro.unidadeEscolar, filtro.modalidade, filtro.ano]);
+    if (filtro.turma && disciplina) buscaTurmas();
+  }, [
+    filtro.unidadeEscolar,
+    filtro.modalidade,
+    filtro.ano,
+    filtro.turma,
+    disciplina,
+  ]);
 
   const adicionarTurma = () => {
     setTurmas([
@@ -82,6 +86,17 @@ function ModalCopiarAvaliacao({ show, disciplina, onClose, planoAula }) {
 
   const onChangeTurma = async (turma, linha) => {
     try {
+      setTurmas(
+        turmas.map(x =>
+          x.id === linha.id
+            ? {
+                ...linha,
+                carregandoData: true,
+              }
+            : x
+        )
+      );
+
       // TODO: Remover ano letivo chumbado
       const { data, status } = await api.get(
         `v1/calendarios/frequencias/aulas/datas/2019/turmas/${turma}/disciplinas/${disciplina}`
@@ -93,6 +108,7 @@ function ModalCopiarAvaliacao({ show, disciplina, onClose, planoAula }) {
               ? {
                   ...linha,
                   turmaId: turma,
+                  carregandoData: false,
                   diasParaHabilitar: data.map(y =>
                     window.moment(y.data).format('YYYY-MM-DD')
                   ),
@@ -107,16 +123,47 @@ function ModalCopiarAvaliacao({ show, disciplina, onClose, planoAula }) {
   };
 
   const onChangeData = async (dataSelecionada, linha) => {
-    setTurmas(
-      turmas.map(x =>
-        x.id === linha.id
-          ? {
-              ...linha,
-              data: dataSelecionada,
-            }
-          : x
-      )
-    );
+    try {
+      setTurmas(
+        turmas.map(x =>
+          x.id === linha.id
+            ? {
+                ...linha,
+                data: dataSelecionada,
+              }
+            : x
+        )
+      );
+
+      const { data, status } = await AvaliacaoServico.verificarSeExiste({
+        planoAulaTurmaDatas: turmas.map(x => ({
+          data: x.data,
+          turmaId: x.turmaId,
+          disciplinaId: disciplina,
+        })),
+      });
+      if (data && status === 200) {
+        const temErro = data.filter(x => x.existe === true);
+        if (temErro.length > 0) {
+          temErro.forEach(err => {
+            setTurmas(
+              turmas.map(x =>
+                x.turmaId === String(err.turmaId)
+                  ? {
+                      ...x,
+                      data: dataSelecionada,
+                      temErro: true,
+                      mensagemErro: 'Turma já possui avaliação',
+                    }
+                  : x
+              )
+            );
+          });
+        }
+      }
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   const onCloseModal = () => {
@@ -233,6 +280,8 @@ function ModalCopiarAvaliacao({ show, disciplina, onClose, planoAula }) {
                 temErro={linha.temErro}
                 mensagemErro={linha.mensagemErro}
                 diasParaHabilitar={linha.diasParaHabilitar}
+                desabilitado={!linha.turmaId}
+                carregando={linha.carregandoData}
               />
             </Grid>
             <Grid cols={2}>
