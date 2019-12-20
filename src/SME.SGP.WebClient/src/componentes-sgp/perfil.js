@@ -111,6 +111,7 @@ const Perfil = props => {
             } = resp.data;
             store.dispatch(
               salvarDadosLogin({
+                ...usuarioStore,
                 token,
                 rf: usuarioStore.rf,
                 ehProfessor,
