@@ -74,10 +74,10 @@ namespace SME.SGP.Aplicacao
                                                     TipoParametroSistema.PercentualFrequenciaAlerta,
                                                     bimestre.PeriodoInicio.Year));
 
-            foreach (var aluno in alunosDaTurma)
+            foreach (var aluno in alunosDaTurma.Where(a => a.NumeroAlunoChamada <= 0))
             {
                 // Apos o bimestre da inatividade o aluno não aparece mais na lista de frequencia
-                if (aluno.EstaInativo() && (aluno.DataSituacao < bimestre.PeriodoInicio) || aluno.NumeroAlunoChamada <= 0)
+                if (aluno.EstaInativo() && (aluno.DataSituacao < bimestre.PeriodoInicio))
                     continue;
 
                 var registroFrequenciaAluno = new RegistroFrequenciaAlunoDto
