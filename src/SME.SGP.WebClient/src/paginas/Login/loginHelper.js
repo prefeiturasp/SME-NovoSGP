@@ -32,6 +32,7 @@ class LoginHelper {
         ehProfessor: autenticacao.dados.perfisUsuario.ehProfessor,
         ehProfessorCj: autenticacao.dados.perfisUsuario.ehProfessorCj,
         ehProfessorPoa: autenticacao.dados.perfisUsuario.ehProfessorPoa,
+        dataHoraExpiracao: autenticacao.dados.dataHoraExpiracao,
       })
     );
 

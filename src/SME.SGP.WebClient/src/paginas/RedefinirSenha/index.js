@@ -192,6 +192,7 @@ const RedefinirSenha = props => {
             possuiPerfilSme:
               requisicao.resposta.data.perfisUsuario.possuiPerfilSme,
             ehProfessorCj: requisicao.resposta.data.perfisUsuario.ehProfessorCj,
+            dataHoraExpiracao: requisicao.resposta.data.dataHoraExpiracao,
           })
         );
         history.push(URL_HOME);
