@@ -41,7 +41,7 @@ const ContadorExpiracao = props => {
 
   return (
     <>
-      {tempoParaExpirar.minutos
+      {tempoParaExpirar.minutos || tempoParaExpirar.segundos
         ? montarExibicaoTempo(tempoParaExpirar.minutos) +
           ':' +
           montarExibicaoTempo(tempoParaExpirar.segundos)
