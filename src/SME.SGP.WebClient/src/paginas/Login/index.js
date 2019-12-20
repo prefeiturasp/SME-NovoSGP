@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import * as Yup from 'yup';
 import { Tooltip } from 'antd';
 import { Formik, Form } from 'formik';
@@ -29,6 +29,7 @@ import CampoTexto from '~/componentes/campoTexto';
 import { URL_RECUPERARSENHA } from '~/constantes/url';
 import history from '~/servicos/history';
 import { Loader } from '~/componentes';
+import { setExibirMensagemSessaoExpirou } from '~/redux/modulos/usuario/actions';
 
 const Login = props => {
   const dispatch = useDispatch();
@@ -42,6 +43,10 @@ const Login = props => {
     usuario: '',
     senha: '',
   });
+
+  const exibirMensagemSessaoExpirou = useSelector(
+    store => store.usuario.exibirMensagemSessaoExpirou
+  );
 
   let redirect = null;
 
@@ -68,6 +73,7 @@ const Login = props => {
       senha: dados.senha,
     });
     setErroGeral('');
+    dispatch(setExibirMensagemSessaoExpirou(false));
     const { sucesso, ...retorno } = await helper.acessar(dados);
     if (!sucesso) {
       setErroGeral(retorno.erroGeral);
@@ -93,6 +99,12 @@ const Login = props => {
       document.removeEventListener('keyup', aoPressionarTecla);
     };
   }, []);
+
+  useEffect(() => {
+    if (exibirMensagemSessaoExpirou) {
+      setErroGeral('Sua sessão expirou!');
+    }
+  }, [exibirMensagemSessaoExpirou]);
 
   const navegarParaRecuperarSenha = () => {
     history.push({

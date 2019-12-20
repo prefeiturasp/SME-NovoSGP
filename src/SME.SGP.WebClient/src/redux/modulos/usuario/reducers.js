@@ -48,6 +48,12 @@ export default function usuario(state = inicial, action) {
         draft.ehProfessor = action.payload.ehProfessor;
         draft.menu = action.payload.menu;
         draft.ehProfessorPoa = action.payload.ehProfessorPoa;
+        draft.dataHoraExpiracao = action.payload.dataHoraExpiracao;
+        break;
+      case '@usuario/salvarLoginRevalidado':
+        draft.token = action.payload.token;
+        draft.dataLogin = new Date();
+        draft.dataHoraExpiracao = action.payload.dataHoraExpiracao;
         break;
       case '@usuario/deslogar':
         draft.rf = '';
@@ -86,6 +92,9 @@ export default function usuario(state = inicial, action) {
         break;
       case '@usuario/setPermissoes':
         draft.permissoes = action.payload;
+        break;
+      case '@usuario/setExibirMensagemSessaoExpirou':
+        draft.exibirMensagemSessaoExpirou = action.payload;
         break;
       default:
         break;

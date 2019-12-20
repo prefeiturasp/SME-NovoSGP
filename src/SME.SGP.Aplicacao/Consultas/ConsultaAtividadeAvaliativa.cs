@@ -115,7 +115,8 @@ namespace SME.SGP.Aplicacao
             var lstTurmasCJ = await repositorioAtribuicaoCJ.ObterPorFiltros(turma.ModalidadeCodigo, null, null,
                                     Convert.ToInt64(disciplinaId), usuario.CodigoRf, null, true);
 
-            var turmasTitular = turmasAtribuidasAoProfessor.Where(t => t.Ano == turma.Ano &&
+            var turmasTitular = turmasAtribuidasAoProfessor.Where(t => t.AnoLetivo == turma.AnoLetivo &&
+                                                                       t.Ano == turma.Ano &&
                                                                        t.Modalidade == turma.ModalidadeCodigo.ToString() &&
                                                                        t.CodTurma.ToString() != turma.CodigoTurma);
 
@@ -126,7 +127,8 @@ namespace SME.SGP.Aplicacao
                   .ToList());
             }
 
-            var turmasCJ = lstTurmasCJ.Where(t => t.Turma.Ano == turma.Ano &&
+            var turmasCJ = lstTurmasCJ.Where(t => t.Turma.AnoLetivo == turma.AnoLetivo &&
+                                                  t.Turma.Ano == turma.Ano &&
                                                   t.Turma.ModalidadeCodigo == turma.ModalidadeCodigo &&
                                                   t.TurmaId != turma.CodigoTurma);
 

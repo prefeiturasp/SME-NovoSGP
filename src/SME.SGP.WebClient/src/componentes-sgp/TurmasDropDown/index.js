@@ -1,4 +1,4 @@
-import React, { useEffect, useCallback, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import t from 'prop-types';
 
 // Componentes
@@ -62,7 +62,7 @@ function TurmasDropDown({
       valueText="desc"
       placeholder="Turma"
       valueSelect={valor}
-      disabled={listaTurmas.length === 0 || listaTurmas.length === 1}
+      disabled={form && (listaTurmas.length === 0 || listaTurmas.length === 1)}
     />
   );
 }
