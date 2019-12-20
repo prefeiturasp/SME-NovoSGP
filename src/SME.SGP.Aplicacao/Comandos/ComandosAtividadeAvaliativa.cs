@@ -83,17 +83,17 @@ namespace SME.SGP.Aplicacao
                 foreach(var atividadeDisciplina in atividadeDisciplinas)
                 {
                     atividadeDisciplina.Excluir();
-                    var existeDisciplina = dto.DisciplinasId.Select(a => a == atividadeDisciplina.DisciplinaId).FirstOrDefault();
+                    var existeDisciplina = dto.DisciplinasId.Any(a => a == atividadeDisciplina.DisciplinaId);
                     if(existeDisciplina)
                     {
                         atividadeDisciplina.Excluido = false;
-                        await repositorioAtividadeAvaliativaDisciplina.SalvarAsync(atividadeDisciplina);
                     }
+                    await repositorioAtividadeAvaliativaDisciplina.SalvarAsync(atividadeDisciplina);
                 }
 
                 foreach(var disciplinaId in dto.DisciplinasId)
                 {
-                    var existeDisciplina = atividadeDisciplinas.Select(a => a.DisciplinaId == disciplinaId).FirstOrDefault();
+                    var existeDisciplina = atividadeDisciplinas.Any(a => a.DisciplinaId == disciplinaId);
                     if (!existeDisciplina)
                     {
                         var novaDisciplina = new AtividadeAvaliativaDisciplina
