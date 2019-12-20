@@ -48,6 +48,12 @@ export default function usuario(state = inicial, action) {
         draft.ehProfessor = action.payload.ehProfessor;
         draft.menu = action.payload.menu;
         draft.ehProfessorPoa = action.payload.ehProfessorPoa;
+        draft.dataHoraExpiracao = action.payload.dataHoraExpiracao;
+        break;
+      case '@usuario/salvarLoginRevalidado':
+        draft.token = action.payload.token;
+        draft.dataLogin = new Date();
+        draft.dataHoraExpiracao = action.payload.dataHoraExpiracao;
         break;
       case '@usuario/deslogar':
         draft.rf = '';

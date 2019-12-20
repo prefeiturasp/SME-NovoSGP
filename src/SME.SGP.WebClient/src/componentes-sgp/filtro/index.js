@@ -243,6 +243,8 @@ const Filtro = () => {
     let estado = true;
 
     const obterAnosLetivos = async deveSalvarAnosLetivos => {
+      const anoAtual = window.moment().format('YYYY');
+
       if (deveSalvarAnosLetivos) {
         const anosLetivo = await ServicoFiltro.listarAnosLetivos({
           consideraHistorico,
@@ -259,6 +261,13 @@ const Filtro = () => {
             return anos;
           })
           .catch(() => []);
+
+        if (!anosLetivo.length) {
+          anosLetivo.push({
+            desc: anoAtual,
+            valor: anoAtual,
+          });
+        }
 
         dispatch(salvarAnosLetivos(anosLetivo));
         setAnosLetivos(anosLetivo);
