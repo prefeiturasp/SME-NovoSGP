@@ -126,8 +126,8 @@ namespace SME.SGP.Dominio.Servicos
                 throw new NegocioException("Você não pode criar aulas para essa UE/Turma/Disciplina.");
 
             var temLiberacaoExcepcionalNessaData = servicoDiaLetivo.ValidaSeEhLiberacaoExcepcional(aula.DataAula, aula.TipoCalendarioId, aula.UeId);
-           
-              if (!temLiberacaoExcepcionalNessaData)
+
+            if (!temLiberacaoExcepcionalNessaData)
             {
                 if (!servicoDiaLetivo.ValidarSeEhDiaLetivo(aula.DataAula, aula.TipoCalendarioId, null, aula.UeId))
                     throw new NegocioException("Não é possível cadastrar essa aula pois a data informada está fora do período letivo.");
@@ -167,7 +167,7 @@ namespace SME.SGP.Dominio.Servicos
                 // Busca quantidade de aulas semanais da grade de aula
                 var semana = (aula.DataAula.DayOfYear / 7) + 1;
                 var gradeAulas = consultasGrade.ObterGradeAulasTurmaProfessor(aula.TurmaId, int.Parse(aula.DisciplinaId), semana.ToString(), aula.DataAula, usuario.CodigoRf).Result;
-                               
+
                 var quantidadeAulasRestantes = gradeAulas == null ? int.MaxValue : gradeAulas.QuantidadeAulasRestante;
 
                 if (!ehInclusao)
@@ -217,9 +217,16 @@ namespace SME.SGP.Dominio.Servicos
             var dataRecorrencia = aula.DataAula.AddDays(7);
             var aulasRecorrencia = repositorioAula.ObterAulasRecorrencia(aula.AulaPaiId ?? aula.Id, aula.Id, fimRecorrencia).Result;
             List<(DateTime data, string erro)> aulasQueDeramErro = new List<(DateTime, string)>();
+            List<(DateTime data, bool existeFrequencia, bool existePlanoAula)> aulasComFrenciaOuPlano = new List<(DateTime data, bool existeFrequencia, bool existePlanoAula)>();
 
             foreach (var aulaRecorrente in aulasRecorrencia)
             {
+                var existeFrequencia = consultasFrequencia.FrequenciaAulaRegistrada(aulaRecorrente.Id).Result;
+                var existePlanoAula = consultasPlanoAula.PlanoAulaRegistrado(aulaRecorrente.Id).Result;
+
+                if (existeFrequencia || existePlanoAula)
+                    aulasComFrenciaOuPlano.Add((aulaRecorrente.DataAula, existeFrequencia, existePlanoAula));
+
                 var quantidadeOriginal = aulaRecorrente.Quantidade;
 
                 aulaRecorrente.DataAula = dataRecorrencia;
@@ -242,7 +249,7 @@ namespace SME.SGP.Dominio.Servicos
                 dataRecorrencia = dataRecorrencia.AddDays(7);
             }
 
-            NotificarUsuario(usuario, aula, Operacao.Alteracao, aulasRecorrencia.Count() - aulasQueDeramErro.Count, aulasQueDeramErro);
+            NotificarUsuario(usuario, aula, Operacao.Alteracao, aulasRecorrencia.Count() - aulasQueDeramErro.Count, aulasQueDeramErro, aulasComFrenciaOuPlano);
         }
 
         private async Task ExcluirAula(Aula aula, string CodigoRf)
@@ -369,7 +376,7 @@ namespace SME.SGP.Dominio.Servicos
                 {
                     var frequenciaPlano = aulaFrequenciaOuPlano.existeFrequencia ?
                                             $"Frequência{(aulaFrequenciaOuPlano.existePlanoAula ? " e Plano de Aula" : "")}"
-                                            :  "Plano de Aula";
+                                            : "Plano de Aula";
                     mensagemUsuario.Append($"<br /> {aulaFrequenciaOuPlano.data.ToString("dd/MM/yyyy")} - {frequenciaPlano}");
                 }
             }
