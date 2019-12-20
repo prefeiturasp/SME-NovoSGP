@@ -65,6 +65,7 @@ export default function PlanoAnual() {
 
   const bimestresErro = useSelector(state => state.bimestres.bimestresErro);
   const usuario = useSelector(state => state.usuario);
+  const carregandoModal = useSelector(state => state.loader.loaderModal);
 
   const permissoesTela = usuario.permissoes[RotasDto.PLANO_ANUAL];
   const [somenteConsulta, setSomenteConsulta] = useState(false);
@@ -381,7 +382,9 @@ export default function PlanoAnual() {
       ? `As turmas ${turmasReportar.join(
           ', '
         )} já possuem plano anual que serão sobrescritos ao realizar a cópia. Deseja continuar?`
-      : `A turma ${turmasReportar[0]} já possui plano anual que será sobrescrito ao realizar a cópia. Deseja continuar?`;
+      : `A turma ${
+          turmasReportar[0]
+        } já possui plano anual que será sobrescrito ao realizar a cópia. Deseja continuar?`;
   };
 
   const onChangeCopiarConteudo = selecionadas => {
@@ -519,21 +522,23 @@ export default function PlanoAnual() {
           modalCopiarConteudo.turmasSelecionadas.length < 1
         }
       >
-        <Label
-          htmlFor="SelecaoTurma"
-          alt="Selecione uma ou mais turmas de destino"
-        >
-          Copiar para a(s) turma(s)
-        </Label>
-        <SelectComponent
-          id="SelecaoTurma"
-          lista={modalCopiarConteudo.listSelect}
-          valueOption="valor"
-          valueText="desc"
-          onChange={onChangeCopiarConteudo}
-          valueSelect={modalCopiarConteudo.turmasSelecionadas}
-          multiple
-        />
+        <Loader loading={modalCopiarConteudo.loader}>
+          <Label
+            htmlFor="SelecaoTurma"
+            alt="Selecione uma ou mais turmas de destino"
+          >
+            Copiar para a(s) turma(s)
+          </Label>
+          <SelectComponent
+            id="SelecaoTurma"
+            lista={modalCopiarConteudo.listSelect}
+            valueOption="valor"
+            valueText="desc"
+            onChange={onChangeCopiarConteudo}
+            valueSelect={modalCopiarConteudo.turmasSelecionadas}
+            multiple
+          />
+        </Loader>
       </ModalConteudoHtml>
       <Grid cols={12} className="p-0">
         <Planejamento> PLANEJAMENTO </Planejamento>
