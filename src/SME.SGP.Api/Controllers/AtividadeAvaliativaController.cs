@@ -80,7 +80,7 @@ namespace SME.SGP.Api.Controllers
             return Ok();
         }
 
-        [HttpGet("validar-existente")]
+        [HttpPost("validar-existente")]
         [ProducesResponseType(typeof(IEnumerable<AtividadeAvaliativaExistenteRetornoDto>), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [Permissao(Permissao.CP_I, Policy = "Bearer")]
