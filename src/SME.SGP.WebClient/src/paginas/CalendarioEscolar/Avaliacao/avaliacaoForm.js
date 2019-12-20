@@ -19,6 +19,10 @@ import { erro, sucesso, confirmar } from '~/servicos/alertas';
 import ModalCopiarAvaliacao from './componentes/ModalCopiarAvaliacao';
 
 const AvaliacaoForm = ({ match }) => {
+  const [
+    mostrarModalCopiarAvaliacao,
+    setMostrarModalCopiarAvaliacao,
+  ] = useState(false);
   const permissaoTela = useSelector(
     state => state.usuario.permissoes[RotasDTO.CADASTRO_DE_AVALIACAO]
   );
@@ -320,7 +324,11 @@ const AvaliacaoForm = ({ match }) => {
 
   return (
     <Div className="col-12">
-      <ModalCopiarAvaliacao show={true} />
+      <ModalCopiarAvaliacao
+        show={mostrarModalCopiarAvaliacao}
+        onClose={() => setMostrarModalCopiarAvaliacao(false)}
+        disciplina={dadosAvaliacao && dadosAvaliacao.disciplinaId}
+      />
       <Grid cols={12} className="mb-1 p-0">
         <Titulo className="font-weight-bold">
           {`Cadastro de avaliação - ${
@@ -487,7 +495,7 @@ const AvaliacaoForm = ({ match }) => {
                       color={Colors.Azul}
                       border
                       className="btnGroupItem"
-                      onClick={() => null}
+                      onClick={() => setMostrarModalCopiarAvaliacao(true)}
                       disabled={!idAvaliacao}
                     />
                   </Grid>
