@@ -110,8 +110,7 @@ namespace SME.SGP.Aplicacao.Servicos
             if (!string.IsNullOrEmpty(tokenStr))
             {
                 var token = (new JwtSecurityTokenHandler()).ReadToken(tokenStr) as JwtSecurityToken;
-                // Remove o fuso horario
-                return token.ValidTo.AddHours(-3);
+                return token.ValidTo;
             }
             return DateTime.MinValue;
         }
@@ -178,8 +177,7 @@ namespace SME.SGP.Aplicacao.Servicos
             if (!string.IsNullOrEmpty(tokenStr))
             {
                 var token = (new JwtSecurityTokenHandler()).ReadToken(tokenStr) as JwtSecurityToken;
-                // Remove o fuso horario
-                return token.ValidFrom.AddHours(-3);
+                return token.ValidFrom;
             }
 
             return DateTime.MinValue;

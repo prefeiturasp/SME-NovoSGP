@@ -16,8 +16,13 @@ import { Div, Titulo, Badge, InseridoAlterado } from './avaliacao.css';
 import RotasDTO from '~/dtos/rotasDto';
 import ServicoAvaliacao from '~/servicos/Paginas/Calendario/ServicoAvaliacao';
 import { erro, sucesso, confirmar } from '~/servicos/alertas';
+import ModalCopiarAvaliacao from './componentes/ModalCopiarAvaliacao';
 
 const AvaliacaoForm = ({ match }) => {
+  const [
+    mostrarModalCopiarAvaliacao,
+    setMostrarModalCopiarAvaliacao,
+  ] = useState(false);
   const permissaoTela = useSelector(
     state => state.usuario.permissoes[RotasDTO.CADASTRO_DE_AVALIACAO]
   );
@@ -85,6 +90,7 @@ const AvaliacaoForm = ({ match }) => {
   );
 
   const [descricao, setDescricao] = useState('');
+  const [copias, setCopias] = useState([]);
   const [listaDisciplinasRegencia, setListaDisciplinasRegencia] = useState([]);
 
   const usuario = useSelector(store => store.usuario);
@@ -121,6 +127,10 @@ const AvaliacaoForm = ({ match }) => {
     const dadosValidacao = {
       ...dados,
       ...avaliacao,
+      turmasParaCopiar: copias.map(z => ({
+        turmaId: z.turmaId,
+        dataAtividadeAvaliativa: z.dataAvaliacao,
+      })),
     };
 
     delete dadosValidacao.categoriaId;
@@ -133,6 +143,10 @@ const AvaliacaoForm = ({ match }) => {
         const salvar = await ServicoAvaliacao.salvar(idAvaliacao, {
           ...dados,
           ...avaliacao,
+          turmasParaCopiar: copias.map(z => ({
+            turmaId: z.turmaId,
+            dataAtividadeAvaliativa: z.dataAvaliacao,
+          })),
         });
 
         if (salvar && salvar.status === 200) {
@@ -319,6 +333,15 @@ const AvaliacaoForm = ({ match }) => {
 
   return (
     <Div className="col-12">
+      <ModalCopiarAvaliacao
+        show={mostrarModalCopiarAvaliacao}
+        onClose={() => setMostrarModalCopiarAvaliacao(false)}
+        disciplina={dadosAvaliacao && dadosAvaliacao.disciplinaId}
+        onSalvarCopias={copiasAvaliacoes => {
+          setCopias(copiasAvaliacoes);
+          setModoEdicao(true);
+        }}
+      />
       <Grid cols={12} className="mb-1 p-0">
         <Titulo className="font-weight-bold">
           {`Cadastro de avaliação - ${
@@ -474,6 +497,34 @@ const AvaliacaoForm = ({ match }) => {
                     value={descricao}
                     maxlength={500}
                   />
+                </Grid>
+              </Div>
+              <Div className="row" style={{ marginTop: '14px' }}>
+                <Grid
+                  style={{ display: 'flex', justifyContent: 'flex-start' }}
+                  cols={12}
+                >
+                  <Button
+                    label="Copiar avaliação"
+                    icon="clipboard"
+                    color={Colors.Azul}
+                    border
+                    className="btnGroupItem"
+                    onClick={() => setMostrarModalCopiarAvaliacao(true)}
+                  />
+                  {copias.length > 0 && (
+                    <div style={{ marginLeft: '14px' }}>
+                      <span>Avaliação será copiada para: </span>
+                      <br />
+                      {copias.map(x => (
+                        <span style={{ display: 'block' }}>
+                          <strong>Turma:</strong> &nbsp;
+                          {x.turma[0].desc} <strong>Data: &nbsp;</strong>
+                          {window.moment(x.dataAvaliacao).format('DD/MM/YYYY')}
+                        </span>
+                      ))}
+                    </div>
+                  )}
                 </Grid>
               </Div>
             </Form>

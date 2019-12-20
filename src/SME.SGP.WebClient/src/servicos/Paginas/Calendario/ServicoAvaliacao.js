@@ -13,6 +13,16 @@ class ServicoAvaliacao {
     return api.get('v1/atividade-avaliativa/tipos/listar');
   };
 
+  listarTurmasModal = async (turma, disciplina) => {
+    return api.get(
+      `v1/atividade-avaliativa/turmas/${turma}/disciplinas/${disciplina}`
+    );
+  };
+
+  verificarSeExiste = async dados => {
+    return api.post(`v1/atividade-avaliativa/validar-existente`, dados);
+  };
+
   buscar = async id => {
     return api.get(`v1/atividade-avaliativa/${id}`);
   };
