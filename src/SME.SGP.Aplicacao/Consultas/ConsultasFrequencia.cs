@@ -77,7 +77,7 @@ namespace SME.SGP.Aplicacao
             foreach (var aluno in alunosDaTurma)
             {
                 // Apos o bimestre da inatividade o aluno não aparece mais na lista de frequencia
-                if (aluno.EstaInativo() && (aluno.DataSituacao < bimestre.PeriodoInicio))
+                if (aluno.EstaInativo() && (aluno.DataSituacao < bimestre.PeriodoInicio) || aluno.NumeroAlunoChamada <= 0)
                     continue;
 
                 var registroFrequenciaAluno = new RegistroFrequenciaAlunoDto
