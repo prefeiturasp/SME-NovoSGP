@@ -195,11 +195,8 @@ namespace SME.SGP.Aplicacao
         private static bool PodeEditarNotaOuConceito(Usuario usuarioLogado, string professorTitularDaTurmaDisciplinaRf,
             AtividadeAvaliativa atividadeAvaliativa, AlunoPorTurmaResposta aluno)
         {
-            if (atividadeAvaliativa.DataAvaliacao > aluno.DataSituacao &&
-                (aluno.CodigoSituacaoMatricula != SituacaoMatriculaAluno.Ativo &&
-                aluno.CodigoSituacaoMatricula != SituacaoMatriculaAluno.PendenteRematricula &&
-                aluno.CodigoSituacaoMatricula != SituacaoMatriculaAluno.Rematriculado &&
-                aluno.CodigoSituacaoMatricula != SituacaoMatriculaAluno.SemContinuidade))
+            if (aluno.CodigoSituacaoMatricula != SituacaoMatriculaAluno.Ativo && aluno.CodigoSituacaoMatricula != SituacaoMatriculaAluno.PendenteRematricula &&
+                aluno.CodigoSituacaoMatricula != SituacaoMatriculaAluno.Rematriculado && aluno.CodigoSituacaoMatricula != SituacaoMatriculaAluno.SemContinuidade)
                 return false;
 
             if (atividadeAvaliativa.DataAvaliacao.Date > DateTime.Today)
