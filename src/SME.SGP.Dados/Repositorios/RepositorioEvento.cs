@@ -971,11 +971,6 @@ namespace SME.SGP.Dados.Repositorios
             query.AppendLine("evento e");
             query.AppendLine("inner join evento_tipo et on");
             query.AppendLine("e.tipo_evento_id = et.id");
-            query.AppendLine("inner join v_abrangencia a on");
-            query.AppendLine("a.ue_codigo = e.ue_id");
-            query.AppendLine("and a.dre_codigo = e.dre_id");
-            query.AppendLine("and a.usuario_id = @usuarioId");
-            query.AppendLine("and a.usuario_perfil = @usuarioPerfil");
             query.AppendLine("where");
             query.AppendLine("et.ativo = true");
             query.AppendLine("and et.excluido = false");
@@ -1068,7 +1063,7 @@ namespace SME.SGP.Dados.Repositorios
             query.AppendLine("evento e");
             query.AppendLine("inner join evento_tipo et on");
             query.AppendLine("e.tipo_evento_id = et.id");
-            query.AppendLine("left join v_abrangencia a on");
+            query.AppendLine("inner join v_abrangencia a on");
             query.AppendLine("a.ue_codigo = e.ue_id");
             query.AppendLine("and a.dre_codigo = e.dre_id");
             query.AppendLine("and a.usuario_id = @usuarioId");
