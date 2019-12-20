@@ -258,7 +258,7 @@ const Filtro = () => {
 
             return anos;
           })
-          .catch(() => []);
+          .catch(() => [{ desc: 2019, valor: 2019 }]);
 
         dispatch(salvarAnosLetivos(anosLetivo));
         setAnosLetivos(anosLetivo);
