@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import shortid from 'shortid';
 
 // Redux
@@ -37,6 +37,7 @@ import { setBreadcrumbManual } from '~/servicos/breadcrumb-services';
 import history from '~/servicos/history';
 import servicoEvento from '~/servicos/Paginas/Calendario/ServicoEvento';
 import { verificaSomenteConsulta } from '~/servicos/servico-navegacao';
+import LocalOcorrencia from '~/constantes/localOcorrencia';
 
 // Styles
 import {
@@ -81,6 +82,7 @@ const EventosForm = ({ match }) => {
   const [calendarioEscolarAtual, setCalendarioEscolarAtual] = useState([]);
   const [listaDres, setListaDres] = useState([]);
   const [listaUes, setListaUes] = useState([]);
+  const [listaTipoEventoOrigem, setListaTipoEventoOrigem] = useState([]);
   const [listaTipoEvento, setListaTipoEvento] = useState([]);
   const [listaCalendarioParaCopiar, setlistaCalendarioParaCopiar] = useState(
     []
@@ -89,6 +91,7 @@ const EventosForm = ({ match }) => {
     listaCalendarioParaCopiarInicial,
     setlistaCalendarioParaCopiarInicial,
   ] = useState([]);
+  const refFormulario = useRef(null);
 
   const [idEvento, setIdEvento] = useState(0);
   const inicial = {
@@ -132,8 +135,10 @@ const EventosForm = ({ match }) => {
       const tiposEvento = await api.get('v1/calendarios/eventos/tipos/listar');
       if (tiposEvento && tiposEvento.data && tiposEvento.data.items) {
         setListaTipoEvento(tiposEvento.data.items);
+        setListaTipoEventoOrigem(tiposEvento.data.items);
       } else {
         setListaTipoEvento([]);
+        setListaTipoEventoOrigem([]);
       }
     };
     setSomenteConsulta(verificaSomenteConsulta(permissoesTela));
@@ -199,8 +204,43 @@ const EventosForm = ({ match }) => {
     }
   };
 
+  useEffect(() => {
+    filtraTipoEvento();
+  }, [listaTipoEventoOrigem]);
+
+  const filtraSomenteSME = () =>
+    listaTipoEventoOrigem.filter(
+      element =>
+        element.localOcorrencia === LocalOcorrencia.SME ||
+        element.localOcorrencia === LocalOcorrencia.SMEUE ||
+        element.localOcorrencia === LocalOcorrencia.TODOS
+    );
+
+  const filtraSomenteDRE = () =>
+    listaTipoEventoOrigem.filter(
+      element =>
+        element.localOcorrencia === LocalOcorrencia.DRE ||
+        element.localOcorrencia === LocalOcorrencia.TODOS
+    );
+
+  const filtraSomenteUE = () =>
+    listaTipoEventoOrigem.filter(
+      element =>
+        element.localOcorrencia === LocalOcorrencia.UE ||
+        element.localOcorrencia === LocalOcorrencia.SMEUE ||
+        element.localOcorrencia === LocalOcorrencia.TODOS
+    );
+
+  const filtraTipoEvento = (dre, ue) => {
+    if (ue) return setListaTipoEvento(filtraSomenteUE());
+
+    if (dre) return setListaTipoEvento(filtraSomenteDRE());
+
+    setListaTipoEvento(filtraSomenteSME());
+  };
+
   const montaValidacoes = () => {
-    let val = {
+    const val = {
       dataInicio: momentSchema.required('Data obrigatória'),
       nome: Yup.string().required('Nome obrigatório'),
       tipoCalendarioId: Yup.string().required('Calendário obrigatório'),
@@ -469,12 +509,20 @@ const EventosForm = ({ match }) => {
     }
   };
 
+  const onChangeUe = (ue, form) => {
+    filtraTipoEvento(form.values.dreId, ue);
+
+    onChangeCampos();
+  };
+
   const onChangeDre = (dre, form) => {
     setListaUes([]);
     form.setFieldValue('ueId', undefined);
+
     if (dre) {
       carregarUes(dre);
     }
+    filtraTipoEvento(dre);
     onChangeCampos();
   };
 
@@ -670,6 +718,7 @@ const EventosForm = ({ match }) => {
           validateOnChange
           validateOnBlur
           validate={values => onValidate(values)}
+          ref={refFormulario}
         >
           {form => (
             <Form className="col-md-12 mb-4">
@@ -758,7 +807,7 @@ const EventosForm = ({ match }) => {
                     lista={listaUes}
                     valueOption="codigo"
                     valueText="nome"
-                    onChange={onChangeCampos}
+                    onChange={e => onChangeUe(e, form)}
                     label="Unidade Escolar (UE)"
                     placeholder="Unidade Escolar (UE)"
                     disabled={desabilitarCampos}
