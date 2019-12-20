@@ -1,11 +1,11 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
 import Button from '~/componentes/button';
 import { Base, Colors } from '~/componentes/colors';
 import {
-  salvarLoginRevalidado,
   Deslogar,
+  salvarLoginRevalidado,
 } from '~/redux/modulos/usuario/actions';
 import { erros } from '~/servicos/alertas';
 import api from '~/servicos/api';
@@ -64,7 +64,9 @@ const CaixaTempoExpiracao = styled.div`
 `;
 
 const TempoExpiracaoSessao = () => {
-  const dataHoraExpiracao = useSelector(store => store.usuario.dataHoraExpiracao);
+  const dataHoraExpiracao = useSelector(
+    store => store.usuario.dataHoraExpiracao
+  );
 
   const dispatch = useDispatch();
 
@@ -74,7 +76,7 @@ const TempoExpiracaoSessao = () => {
     diferenca: '',
   });
 
-  const calcularTempoExpiracao = () => {
+  const calcularTempoExpiracao = useCallback(() => {
     const diferenca = +new Date(dataHoraExpiracao) - +new Date();
 
     if (diferenca > 0) {
@@ -87,17 +89,17 @@ const TempoExpiracaoSessao = () => {
         jaExpirou: diferenca < 1,
       });
     }
-  };
+  }, [dataHoraExpiracao]);
 
-  const deslogarDoUsuario = () => {
+  const deslogarDoUsuario = useCallback(() => {
     dispatch(Deslogar());
-  };
+  }, [dispatch]);
 
   useEffect(() => {
     if (dataHoraExpiracao) {
       calcularTempoExpiracao();
     }
-  }, [dataHoraExpiracao]);
+  }, [calcularTempoExpiracao, dataHoraExpiracao]);
 
   useEffect(() => {
     if (tempoParaExpirar && tempoParaExpirar.expiraNaData) {
@@ -106,15 +108,13 @@ const TempoExpiracaoSessao = () => {
           setMostraTempoExpiracao(true);
         }, tempoParaExpirar.tempoParaExibir);
         return () => clearTimeout(timeOutExpiracao);
-      } else {
-        if (tempoParaExpirar.jaExpirou) {
-          alert('Ja expirou!!');
-        }
       }
-    } else {
-      setMostraTempoExpiracao(false);
+      if (tempoParaExpirar.jaExpirou) {
+        return deslogarDoUsuario();
+      }
     }
-  }, [tempoParaExpirar]);
+    return setMostraTempoExpiracao(false);
+  }, [deslogarDoUsuario, tempoParaExpirar]);
 
   const revalidarAutenticacao = async () => {
     const autenticado = await api
