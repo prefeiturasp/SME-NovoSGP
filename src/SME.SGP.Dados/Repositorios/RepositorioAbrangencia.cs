@@ -34,6 +34,18 @@ namespace SME.SGP.Dados.Repositorios
             }
         }
 
+        public void MarcarAbrangenciasNaoVinculadas(IEnumerable<long> ids)
+        {
+            const string comando = @"update public.abrangencia set historico = true where id in (#ids)";
+
+            for (int i = 0; i < ids.Count(); i = i + 900)
+            {
+                var iteracao = ids.Skip(i).Take(900);
+
+                database.Conexao.Execute(comando.Replace("#ids", string.Join(",", iteracao.Concat(new long[] { 0 }))));
+            }
+        }
+
         public void InserirAbrangencias(IEnumerable<Abrangencia> abrangencias, string login)
         {
             foreach (var item in abrangencias)
@@ -422,6 +434,60 @@ namespace SME.SGP.Dados.Repositorios
             }
 
             database.Execute(query, new { login, perfil });
+        }
+
+        public IEnumerable<Turma> ObterTurmasMarcadasParaDesvinculo(string login, Guid perfil)
+        {
+            var query = @"
+                        select
+	                        t.*
+                        from
+	                        abrangencia va
+                        inner join turma t on
+	                        t.id = va.turma_id
+	                        and va.usuario_id = (select id from usuario where login = @login)
+	                        and va.usuario_perfil = @perfil
+                        where va.historico = true and va.dt_fim_vinculo is null;";
+
+            return database.Conexao.Query<Turma>(query, new { login, perfil });
+        }
+
+        public void FinalizarVinculos(string login, Guid perfil, string codigoTurma, DateTime dataFimVinculo)
+        {
+            const string comando = @"
+                                update public.abrangencia 
+	                                set historico = true,
+                                        dt_fim_vinculo = @dataFimVinculo
+                                where 
+	                                usuario_id = (select id from usuario where login = @login)
+	                                and perfil = @perfil
+	                                and turma_id = (select id from turma t where turma_id = @codigoTurma)";
+
+            database.Conexao.Execute(comando, new { login, perfil, codigoTurma, dataFimVinculo });
+        }
+
+        public void DesfazerMarcacaoAbrangenciasNaoVinculadas(string login, Guid perfil, IEnumerable<Turma> turmasNaoCobertas)
+        {
+            const string comando = @"
+                                update public.abrangencia 
+	                                set historico = false 
+                                where 
+	                                usuario_id = (select id from usuario where login = @login)
+	                                and perfil = @perfil
+	                                and turma_id in (select id from turma t where turma_id in (#ids))";
+
+            for (int i = 0; i < turmasNaoCobertas.Count(); i = i + 900)
+            {
+                var iteracao = turmasNaoCobertas.Skip(i).Take(900);
+
+                database.Conexao.Execute(comando.Replace("#ids", string.Join(",", iteracao.Select(x => x.Id).Concat(new long[] { 0 }))), new { login, perfil });
+            }
+        }
+
+        public DateTime? ObterDataUltimoProcessamento()
+        { 
+            const string query = "select ultimo_processamento from public.sincronismo_turma_historica";
+            return database.Conexao.Query<DateTime?>(query).FirstOrDefault();
         }
     }
 }

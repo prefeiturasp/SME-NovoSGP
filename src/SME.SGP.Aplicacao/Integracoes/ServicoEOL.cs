@@ -601,5 +601,44 @@ namespace SME.SGP.Aplicacao.Integracoes
             return null;
         }
 
+        public Task<IEnumerable<TurmaInativaRetornoEolDto>> ObterTurmasFinalizadas(DateTime? dataFim, string[] turmasFiltro)
+        {
+            return Task.Factory.StartNew(() =>
+            {
+                var filtroTurmas = new StringContent(JsonConvert.SerializeObject(turmasFiltro ?? new string[] { }), UnicodeEncoding.UTF8, "application/json");
+                string filtroDataFim = string.Empty;
+
+                if (dataFim.HasValue)
+                    filtroDataFim = $"?dataFim = {dataFim.Value.ToString("yyyy-MM-dd")}";
+
+                string url = $"abrangencia/turmas-finalizadas{filtroDataFim}";
+
+                httpClient.DefaultRequestHeaders.Clear();
+
+                var resposta = httpClient.PostAsync(url, filtroTurmas).Result;
+
+                if (resposta.IsSuccessStatusCode)
+                {
+                    var json = resposta.Content.ReadAsStringAsync().Result;
+                    return JsonConvert.DeserializeObject<IEnumerable<TurmaInativaRetornoEolDto>>(json);
+                }
+                return Enumerable.Empty<TurmaInativaRetornoEolDto>();
+            });
+        }
+
+        public Task<IEnumerable<VinculoTurmaFinalizadoRetornoEolDto>> ObterVinculosFinalizados(string login)
+        {
+            return Task.Factory.StartNew(() =>
+            {
+                var resposta = httpClient.GetAsync($"abrangencia/vinculos-finalizados/{login}").Result;
+
+                if (resposta.IsSuccessStatusCode)
+                {
+                    var json = resposta.Content.ReadAsStringAsync().Result;
+                    return JsonConvert.DeserializeObject<IEnumerable<VinculoTurmaFinalizadoRetornoEolDto>>(json);
+                }
+                return Enumerable.Empty<VinculoTurmaFinalizadoRetornoEolDto>();
+            });
+        }
     }
 }

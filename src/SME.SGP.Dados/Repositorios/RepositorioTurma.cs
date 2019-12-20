@@ -43,11 +43,25 @@ namespace SME.SGP.Dados.Repositorios
                     where
 	                    id = @id;";
 
+        private const string UpdateFinalizarTurma = @"
+                    update
+	                    public.turma
+                    set
+	                    historica = true,
+	                    dt_fim_eol = @dataFim
+                    where
+	                    turma_id = @codigoTurma;";
+
         private readonly ISgpContext contexto;
 
         public RepositorioTurma(ISgpContext contexto)
         {
             this.contexto = contexto;
+        }
+
+        public void FinalizarTurma(string codigoTurma, DateTime dataFim)
+        {
+            contexto.Conexao.Execute(UpdateFinalizarTurma, new { dataFim, codigoTurma });
         }
 
         public IEnumerable<Turma> MaterializarCodigosTurma(string[] idTurmas, out string[] codigosNaoEncontrados)

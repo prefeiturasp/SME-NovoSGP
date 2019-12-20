@@ -62,7 +62,11 @@ namespace SME.SGP.Aplicacao.Integracoes
 
         Task<UsuarioResumoCoreDto> ObterResumoCore(string login);
 
+        Task<IEnumerable<TurmaInativaRetornoEolDto>> ObterTurmasFinalizadas(DateTime? dataFim, string[] turmasFiltro);
+
         Task<ProfessorResumoDto> ObterResumoProfessorPorRFAnoLetivo(string codigoRF, int anoLetivo);
+
+        Task<IEnumerable<VinculoTurmaFinalizadoRetornoEolDto>> ObterVinculosFinalizados(string login);
 
         Task<ProfessorResumoDto> ObterResumoProfessorPorRFAnoLetivo(string codigoRF, int anoLetivo, bool incluirEmei);
 

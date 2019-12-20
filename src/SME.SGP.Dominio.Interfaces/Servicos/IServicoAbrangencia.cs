@@ -14,5 +14,8 @@ namespace SME.SGP.Dominio.Interfaces
         void SalvarAbrangencias(IEnumerable<Abrangencia> abrangencias, string login);
 
         void SincronizarEstruturaInstitucionalVigenteCompleta();
+        void SincronizarDesvinculoTurma(string login, Guid perfil);
+
+        void SincronizarTurmasEncerradas();
     }
 }

@@ -1,4 +1,5 @@
 ﻿using Sentry;
+using SME.Background.Core;
 using SME.SGP.Aplicacao.Integracoes;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Enumerados;
@@ -48,6 +49,49 @@ namespace SME.SGP.Aplicacao.Servicos
         public void SalvarAbrangencias(IEnumerable<Abrangencia> abrangencias, string login)
         {
             repositorioAbrangencia.InserirAbrangencias(abrangencias, login);
+        }
+
+        public void SincronizarDesvinculoTurma(string login, Guid perfil)
+        {
+            var turmasMarcadas = repositorioAbrangencia.ObterTurmasMarcadasParaDesvinculo(login, perfil);
+
+            if (turmasMarcadas != null && turmasMarcadas.Count() > 0)
+            {
+                var turmasFinalizadasConsulta = servicoEOL.ObterTurmasFinalizadas(null, turmasMarcadas.Select(x => x.CodigoTurma).ToArray());
+                var vinculosFinalizadosConsulta = servicoEOL.ObterVinculosFinalizados(login);
+
+                var turmasFinalizadas = turmasFinalizadasConsulta.Result;
+
+                if (turmasFinalizadas.Count() > 0)
+                {
+                    foreach (var item in turmasFinalizadas)
+                        repositorioTurma.FinalizarTurma(item.CodigoTurma, item.DataFim);
+                }
+
+                var vinculosFinalizados = vinculosFinalizadosConsulta.Result;
+
+                if (vinculosFinalizados.Count() > 0)
+                {
+                    foreach (var item in vinculosFinalizados)
+                        repositorioAbrangencia.FinalizarVinculos(login, perfil, item.CodigoTurma, item.DataFimVinculo);
+                }
+
+                var turmasNaoCobertas = turmasMarcadas.Where(x => !vinculosFinalizados.Any(y => y.CodigoTurma == x.CodigoTurma) && !turmasFinalizadas.Any(y => y.CodigoTurma == x.CodigoTurma));
+
+                // Se por qualquer motivo marcamos indevidademente o fim da abrangencia, desfazemos!
+                if (turmasNaoCobertas != null && turmasNaoCobertas.Count() > 0)
+                    repositorioAbrangencia.DesfazerMarcacaoAbrangenciasNaoVinculadas(login, perfil, turmasNaoCobertas);
+            }
+        }
+
+        public void SincronizarTurmasEncerradas()
+        {
+            var ultimoProcessamento = repositorioAbrangencia.ObterDataUltimoProcessamento() ?? new DateTime(DateTime.Today.Year, 1, 1);
+
+            var turmasEncerradas = servicoEOL.ObterTurmasFinalizadas(ultimoProcessamento, null).Result;
+
+            foreach (var item in turmasEncerradas)
+                repositorioTurma.FinalizarTurma(item.CodigoTurma, item.DataFim);
         }
 
         public void SincronizarEstruturaInstitucionalVigenteCompleta()
@@ -167,7 +211,10 @@ namespace SME.SGP.Aplicacao.Servicos
 
             var paraExcluir = abrangenciaSintetica.Where(x => !turmas.Select(y => y.Id).Contains(x.TurmaId)).Select(x => x.Id);
 
-            repositorioAbrangencia.ExcluirAbrangencias(paraExcluir);
+            repositorioAbrangencia.MarcarAbrangenciasNaoVinculadas(paraExcluir);
+
+            if (paraExcluir != null && paraExcluir.Count() > 0)
+                Cliente.Executar<IServicoAbrangencia>(x => x.SincronizarDesvinculoTurma(login, perfil));
         }
 
         private void SincronizarAbrangencia(IEnumerable<AbrangenciaSinteticaDto> abrangenciaSintetica, Infra.Enumerados.Abrangencia abrangencia, bool ehSupervisor, IEnumerable<Dre> dres, IEnumerable<Ue> ues, IEnumerable<Turma> turmas, string login, Guid perfil)

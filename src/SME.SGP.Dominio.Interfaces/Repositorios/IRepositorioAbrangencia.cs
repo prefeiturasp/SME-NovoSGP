@@ -10,6 +10,8 @@ namespace SME.SGP.Dominio.Interfaces
     {
         void ExcluirAbrangencias(IEnumerable<long> ids);
 
+        void MarcarAbrangenciasNaoVinculadas(IEnumerable<long> ids);
+
         void InserirAbrangencias(IEnumerable<Abrangencia> enumerable, string login);
 
         Task<bool> JaExisteAbrangencia(string login, Guid perfil);
@@ -37,5 +39,9 @@ namespace SME.SGP.Dominio.Interfaces
         void RemoverAbrangenciasForaEscopo(string login, Guid perfil, TipoAbrangencia porTurma);
 
         Task<IEnumerable<int>> ObterAnosLetivos(string login, Guid perfil, bool consideraHistorico);
+        IEnumerable<Turma> ObterTurmasMarcadasParaDesvinculo(string login, Guid perfil);
+        void FinalizarVinculos(string login, Guid perfil, string codigoTurma, DateTime dataFimVinculo);
+        void DesfazerMarcacaoAbrangenciasNaoVinculadas(string login, Guid perfil, IEnumerable<Turma> turmasNaoCobertas);
+        DateTime? ObterDataUltimoProcessamento();
     }
 }

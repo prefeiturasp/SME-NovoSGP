@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace SME.SGP.Dominio.Interfaces
 {
@@ -10,5 +11,6 @@ namespace SME.SGP.Dominio.Interfaces
 
         IEnumerable<Turma> Sincronizar(IEnumerable<Turma> entidades, IEnumerable<Ue> ues);
         IEnumerable<Turma> MaterializarCodigosTurma(string[] idTurmas, out string[] codigosNaoEncontrados);
+        void FinalizarTurma(string codigoTurma, DateTime dataFim);
     }
 }
