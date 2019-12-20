@@ -92,6 +92,8 @@ const EventosForm = ({ match }) => {
     setlistaCalendarioParaCopiarInicial,
   ] = useState([]);
   const refFormulario = useRef(null);
+  const [dreDesabilitada, setDreDesabilitada] = useState(false);
+  const [ueDesabilitada, setUeDesabilitada] = useState(false);
 
   const [idEvento, setIdEvento] = useState(0);
   const inicial = {
@@ -128,6 +130,7 @@ const EventosForm = ({ match }) => {
       const dres = await api.get('v1/abrangencias/false/dres');
       if (dres.data) {
         setListaDres(dres.data.sort(FiltroHelper.ordenarLista('nome')));
+        setDreDesabilitada(dres.data.length === 1);
       } else {
         setListaDres([]);
       }
@@ -154,12 +157,41 @@ const EventosForm = ({ match }) => {
   }, [somenteConsulta, novoRegistro]);
 
   useEffect(() => {
-    validarConsultaModoEdicaoENovo();
-  }, [listaTipoEvento]);
-
-  useEffect(() => {
     montaValidacoes();
   }, [eventoTipoFeriadoSelecionado, tipoDataUnico]);
+
+  useEffect(() => {
+    if (
+      listaDres.length === 1 &&
+      (usuarioStore.possuiPerfilDre || !usuarioStore.possuiPerfilSmeOuDre)
+    ) {
+      refFormulario.current.setFieldValue(
+        'dreId',
+        listaDres[0].codigo.toString()
+      );
+
+      setListaTipoEvento(filtraSomenteDRE());
+    }
+  }, [listaDres]);
+
+  useEffect(() => {
+    if (listaUes.length === 1) {
+      refFormulario.current.setFieldValue(
+        'ueId',
+        listaUes[0].codigo.toString()
+      );
+
+      setListaTipoEvento(filtraSomenteUE());
+    }
+  }, [listaUes]);
+
+  useEffect(() => {
+    filtraTipoEvento(
+      refFormulario.current.state.values.dreId,
+      refFormulario.current.state.values.ueId
+    );
+    validarConsultaModoEdicaoENovo();
+  }, [listaTipoEventoOrigem]);
 
   const validarConsultaModoEdicaoENovo = async () => {
     if (match && match.params && match.params.id) {
@@ -182,6 +214,7 @@ const EventosForm = ({ match }) => {
             ue => (ue.nome = `${tipoEscolaDTO[ue.tipoEscola]} ${ue.nome}`)
           );
           setListaUes(ues.data.sort(FiltroHelper.ordenarLista('nome')));
+          setUeDesabilitada(ues.data.length === 1);
         } else {
           setListaUes([]);
         }
@@ -203,10 +236,6 @@ const EventosForm = ({ match }) => {
       setCalendarioEscolarAtual([]);
     }
   };
-
-  useEffect(() => {
-    filtraTipoEvento();
-  }, [listaTipoEventoOrigem]);
 
   const filtraSomenteSME = () =>
     listaTipoEventoOrigem.filter(
@@ -797,7 +826,7 @@ const EventosForm = ({ match }) => {
                     onChange={e => onChangeDre(e, form)}
                     label="Diretoria Regional de Educação (DRE)"
                     placeholder="Diretoria Regional de Educação (DRE)"
-                    disabled={desabilitarCampos}
+                    disabled={desabilitarCampos || dreDesabilitada}
                   />
                 </div>
                 <div className="col-sm-12 col-md-12 col-lg-6 col-xl-6 pb-2">
@@ -810,7 +839,7 @@ const EventosForm = ({ match }) => {
                     onChange={e => onChangeUe(e, form)}
                     label="Unidade Escolar (UE)"
                     placeholder="Unidade Escolar (UE)"
-                    disabled={desabilitarCampos}
+                    disabled={desabilitarCampos || ueDesabilitada}
                   />
                 </div>
                 <div className="col-sm-12 col-md-6 col-lg-6 col-xl-6 pb-2">
