@@ -485,9 +485,15 @@ namespace SME.SGP.Dados.Repositorios
         }
 
         public DateTime? ObterDataUltimoProcessamento()
-        { 
+        {
             const string query = "select ultimo_processamento from public.sincronismo_turma_historica";
             return database.Conexao.Query<DateTime?>(query).FirstOrDefault();
+        }
+
+        public void AtualizarUltimoProcessamento(DateTime data)
+        {
+            const string comando = "update public.sincronismo_turma_historica set ultimo_processamento = @data;";
+            database.Conexao.Execute(comando, new { data });
         }
     }
 }

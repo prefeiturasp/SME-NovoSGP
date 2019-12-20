@@ -92,6 +92,8 @@ namespace SME.SGP.Aplicacao.Servicos
 
             foreach (var item in turmasEncerradas)
                 repositorioTurma.FinalizarTurma(item.CodigoTurma, item.DataFim);
+
+            repositorioAbrangencia.AtualizarUltimoProcessamento(turmasEncerradas.Max(x=> x.DataFim));
         }
 
         public void SincronizarEstruturaInstitucionalVigenteCompleta()

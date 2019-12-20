@@ -43,5 +43,6 @@ namespace SME.SGP.Dominio.Interfaces
         void FinalizarVinculos(string login, Guid perfil, string codigoTurma, DateTime dataFimVinculo);
         void DesfazerMarcacaoAbrangenciasNaoVinculadas(string login, Guid perfil, IEnumerable<Turma> turmasNaoCobertas);
         DateTime? ObterDataUltimoProcessamento();
+        void AtualizarUltimoProcessamento(DateTime dateTime);
     }
 }
