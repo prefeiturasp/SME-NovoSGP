@@ -260,12 +260,14 @@ const Filtro = () => {
 
             return anos;
           })
-          .catch(() => [
-            {
-              desc: anoAtual,
-              valor: anoAtual,
-            },
-          ]);
+          .catch(() => []);
+
+        if (!anosLetivo.length) {
+          anosLetivo.push({
+            desc: anoAtual,
+            valor: anoAtual,
+          });
+        }
 
         dispatch(salvarAnosLetivos(anosLetivo));
         setAnosLetivos(anosLetivo);
