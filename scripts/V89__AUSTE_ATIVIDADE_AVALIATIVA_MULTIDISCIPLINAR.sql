@@ -12,7 +12,7 @@
     CONSTRAINT atividade_avaliativa_disciplina_pk PRIMARY KEY (id)
 );
 
-select f_cria_fk_se_nao_existir('atividade_avaliativa_disciplina', 'atividade_avaliativa_disciplina_fk', 'FOREIGN KEY (id_atividade_avaliativa) REFERENCES atividade_avaliativa (id)');
+select f_cria_fk_se_nao_existir('atividade_avaliativa_disciplina', 'atividade_avaliativa_disciplina_fk', 'FOREIGN KEY (atividade_avaliativa_id) REFERENCES atividade_avaliativa (id)');
 
 DELETE from public.atividade_avaliativa WHERE 1=1;
 
