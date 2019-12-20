@@ -15,7 +15,7 @@ namespace SME.SGP.Dados.Repositorios
         {
         }
 
-        public async Task<IEnumerable<FeriadoCalendario>> ObterFeriadosCalendario(FiltroFeriadoCalendarioDto filtro)
+        public IEnumerable<FeriadoCalendario> ObterFeriadosCalendario(FiltroFeriadoCalendarioDto filtro)
         {
             if (!string.IsNullOrEmpty(filtro.Nome))
             {
@@ -45,7 +45,7 @@ namespace SME.SGP.Dados.Repositorios
             if (filtro.Ano > 0)
                 query.AppendLine("and EXTRACT(year FROM data_feriado) = @Ano");
 
-            var listaRetorno = await database.Conexao.QueryAsync<FeriadoCalendario>(query.ToString(), new
+            var listaRetorno = database.Conexao.Query<FeriadoCalendario>(query.ToString(), new
             {
                 filtro.Nome,
                 filtro.Abrangencia,

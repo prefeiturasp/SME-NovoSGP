@@ -44,7 +44,7 @@ namespace SME.SGP.Dominio.Servicos
             {
                 Tipo = TipoFeriadoCalendario.Movel,
                 Ano = ano
-            }).Result;
+            });
 
             if (!feriadosMoveis.Any())
             {
