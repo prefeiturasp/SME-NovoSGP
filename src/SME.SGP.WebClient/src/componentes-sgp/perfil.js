@@ -102,13 +102,20 @@ const Perfil = props => {
         api
           .put(`v1/autenticacao/perfis/${perfilNovo[0].codigoPerfil}`)
           .then(resp => {
-            const { token, ehProfessor, ehProfessorCj } = resp.data;
+            const {
+              token,
+              ehProfessor,
+              ehProfessorCj,
+              ehProfessorPoa,
+            } = resp.data;
             store.dispatch(
               salvarDadosLogin({
+                ...usuarioStore,
                 token,
                 rf: usuarioStore.rf,
                 ehProfessor,
                 ehProfessorCj,
+                ehProfessorPoa,
               })
             );
             setMenusPermissoes();

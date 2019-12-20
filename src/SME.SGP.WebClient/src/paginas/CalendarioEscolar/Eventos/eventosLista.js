@@ -22,6 +22,7 @@ import Alert from '~/componentes/alert';
 import ServicoEvento from '~/servicos/Paginas/Calendario/ServicoEvento';
 import FiltroHelper from '~/componentes-sgp/filtro/helper';
 import tipoEscolaDTO from '~/dtos/tipoEscolaDto';
+import { Loader } from '~/componentes';
 
 const EventosLista = () => {
   const usuario = useSelector(store => store.usuario);
@@ -30,7 +31,7 @@ const EventosLista = () => {
   const [somenteConsulta, setSomenteConsulta] = useState(false);
 
   const [listaCalendarioEscolar, setListaCalendarioEscolar] = useState([]);
-  const [listaDre, setlistaDre] = useState([]);
+  const [listaDre, setListaDre] = useState([]);
   const [campoUeDesabilitado, setCampoUeDesabilitado] = useState(true);
   const [dreSelecionada, setDreSelecionada] = useState();
   const [listaUe, setListaUe] = useState([]);
@@ -41,6 +42,8 @@ const EventosLista = () => {
   const [eventosSelecionados, setEventosSelecionados] = useState([]);
   const [filtro, setFiltro] = useState({});
   const [selecionouCalendario, setSelecionouCalendario] = useState(false);
+
+  const [carregandoTipos, setCarregandoTipos] = useState(false);
 
   const [refForm, setRefForm] = useState();
 
@@ -119,13 +122,31 @@ const EventosLista = () => {
     const dres = await ServicoEvento.listarDres();
 
     if (dres.sucesso) {
-      setlistaDre(dres.conteudo.sort(FiltroHelper.ordenarLista('nome')));
+      dres.conteudo.sort(FiltroHelper.ordenarLista('nome'));
+      if (dres.conteudo.length > 1) {
+        dres.conteudo.unshift({ codigo: 0, nome: 'Todas' });
+      }
+      setListaDre(dres.conteudo);
       return;
     }
 
     erro(dres.erro);
-    setlistaDre([]);
+    setListaDre([]);
   };
+
+  const [dreDesabilitada, setDreDesabilitada] = useState(false);
+  const [ueDesabilitada, setUeDesabilitada] = useState(false);
+
+  useEffect(() => {
+    if (
+      listaDre.length === 1 &&
+      (usuario.possuiPerfilDre || !usuario.possuiPerfilSmeOuDre)
+    ) {
+      refForm.setFieldValue('dreId', listaDre[0].codigo.toString());
+      setDreSelecionada(listaDre[0].codigo.toString());
+      setDreDesabilitada(true);
+    }
+  }, [listaDre]);
 
   useEffect(() => {
     const obterListaEventos = async () => {
@@ -139,6 +160,7 @@ const EventosLista = () => {
     };
 
     const consultaTipoCalendario = async () => {
+      setCarregandoTipos(true);
       const tiposCalendario = await api.get('v1/calendarios/tipos');
 
       if (
@@ -150,10 +172,11 @@ const EventosLista = () => {
           tipo.id = String(tipo.id);
           tipo.descricaoTipoCalendario = `${tipo.anoLetivo} - ${tipo.nome} - ${tipo.descricaoPeriodo}`;
         });
-
         setListaCalendarioEscolar(tiposCalendario.data);
+        setCarregandoTipos(false);
       } else {
         setListaCalendarioEscolar([]);
+        setCarregandoTipos(false);
       }
     };
 
@@ -181,6 +204,12 @@ const EventosLista = () => {
   }, [filtro]);
 
   const listarUes = async () => {
+    if (dreSelecionada && dreSelecionada.toString() === '0') {
+      const uesTodas = [{ codigo: 0, nome: 'Todas' }];
+      setListaUe(uesTodas);
+      return;
+    }
+
     if (
       !dreSelecionada ||
       dreSelecionada === '' ||
@@ -193,7 +222,7 @@ const EventosLista = () => {
     if (!sucesso) {
       setListaUe([]);
       erro(ues.erro);
-      setlistaDre([]);
+      setListaDre([]);
       return;
     }
 
@@ -204,12 +233,24 @@ const EventosLista = () => {
     )
       setCampoUeDesabilitado(true);
 
-    ues.conteudo.forEach(
-      ue => (ue.nome = `${tipoEscolaDTO[ue.tipoEscola]} ${ue.nome}`)
-    );
-
-    setListaUe(ues.conteudo.sort(FiltroHelper.ordenarLista('nome')));
+    if (ues.conteudo) {
+      ues.conteudo.forEach(
+        ue => (ue.nome = `${tipoEscolaDTO[ue.tipoEscola]} ${ue.nome}`)
+      );
+      ues.conteudo.sort(FiltroHelper.ordenarLista('nome'));
+      if (ues.conteudo.length > 1) {
+        ues.conteudo.unshift({ codigo: 0, nome: 'Todas' });
+      }
+      setListaUe(ues.conteudo);
+    }
   };
+
+  useEffect(() => {
+    if (listaUe.length === 1 && !usuario.possuiPerfilSmeOuDre) {
+      refForm.setFieldValue('ueId', listaUe[0].codigo.toString());
+      setUeDesabilitada(true);
+    }
+  }, [listaUe]);
 
   useEffect(() => {
     if (dreSelecionada) listarUes();
@@ -221,7 +262,7 @@ const EventosLista = () => {
     history.push(URL_HOME);
   };
 
-  const onChangeUe = () => {
+  const onChangeUe = async ueId => {
     if (selecionouCalendario) validarFiltrar();
   };
 
@@ -287,10 +328,18 @@ const EventosLista = () => {
       tipoCalendarioId: valoresForm.tipoCalendarioId,
       nomeEvento,
       tipoEventoId: tipoEvento,
-      ueId: valoresForm.ueId,
-      dreId: valoresForm.dreId,
+      ueId:
+        valoresForm.ueId && valoresForm.ueId.toString() === '0'
+          ? ''
+          : valoresForm.ueId,
+      dreId:
+        valoresForm.dreId && valoresForm.dreId.toString() === '0'
+          ? ''
+          : valoresForm.dreId,
       dataInicio: valoresForm.dataInicio && valoresForm.dataInicio.toDate(),
       dataFim: valoresForm.dataInicio && valoresForm.dataFim.toDate(),
+      EhTodasDres: valoresForm.dreId && valoresForm.dreId.toString() === '0',
+      EhTodasUes: valoresForm.ueId && valoresForm.ueId.toString() === '0',
     };
     setFiltro(params);
     setEventosSelecionados([]);
@@ -382,16 +431,18 @@ const EventosLista = () => {
             <Form className="col-md-12 mb-4">
               <div className="row">
                 <div className="col-sm-12 col-md-4 col-lg-4 col-xl-4 pb-2">
-                  <SelectComponent
-                    name="tipoCalendarioId"
-                    id="select-tipo-calendario"
-                    lista={listaCalendarioEscolar}
-                    valueOption="id"
-                    valueText="descricaoTipoCalendario"
-                    onChange={onChangeCalendarioId}
-                    placeholder="Selecione um calendário"
-                    form={form}
-                  />
+                  <Loader loading={carregandoTipos} tip="">
+                    <SelectComponent
+                      name="tipoCalendarioId"
+                      id="select-tipo-calendario"
+                      lista={listaCalendarioEscolar}
+                      valueOption="id"
+                      valueText="descricaoTipoCalendario"
+                      onChange={onChangeCalendarioId}
+                      placeholder="Selecione um calendário"
+                      form={form}
+                    />
+                  </Loader>
                 </div>
                 <div className="col-sm-12 col-md-4 col-lg-4 col-xl-4 pb-2">
                   <SelectComponent
@@ -401,6 +452,7 @@ const EventosLista = () => {
                     valueOption="codigo"
                     valueText="nome"
                     onChange={onChangeDreId}
+                    disabled={dreDesabilitada}
                     placeholder="Selecione uma DRE (Opcional)"
                     form={form}
                   />
@@ -413,7 +465,7 @@ const EventosLista = () => {
                     valueOption="codigo"
                     valueText="nome"
                     onChange={onChangeUe}
-                    disabled={campoUeDesabilitado}
+                    disabled={campoUeDesabilitado || ueDesabilitada}
                     placeholder="Selecione uma UE (Opcional)"
                     form={form}
                   />
