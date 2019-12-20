@@ -20,7 +20,7 @@ class ServicoAvaliacao {
   };
 
   verificarSeExiste = async dados => {
-    return api.post(`v1/atividade-avaliativa/verificar-existente`, dados);
+    return api.post(`v1/atividade-avaliativa/validar-existente`, dados);
   };
 
   buscar = async id => {
