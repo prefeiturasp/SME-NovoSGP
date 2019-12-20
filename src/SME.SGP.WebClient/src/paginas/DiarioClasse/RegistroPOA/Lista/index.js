@@ -24,6 +24,7 @@ import { renderizarMes } from '~/utils/funcoes/dataMes';
 function RegistroPOALista() {
   const [itensSelecionados, setItensSelecionados] = useState([]);
   const [filtro, setFiltro] = useState({});
+  const [filtroValido, setFiltroValido] = useState(false);
   const [somenteConsulta, setSomenteConsulta] = useState(false);
   const dispatch = useDispatch();
   const { loaderSecao } = useSelector(store => store.loader);
@@ -95,7 +96,7 @@ function RegistroPOALista() {
   };
 
   useEffect(() => {
-    console.log(filtro);
+    setFiltroValido(ehFiltroValido());
   }, [filtro]);
 
   const onChangeFiltro = useCallback(
@@ -110,7 +111,7 @@ function RegistroPOALista() {
     [anoLetivo]
   );
 
-  const filtroValido = () =>
+  const ehFiltroValido = () =>
     !!filtro.dreId && !!filtro.ueId && !!filtro.professorRf;
 
   useEffect(() => {
@@ -148,7 +149,7 @@ function RegistroPOALista() {
               multiSelecao
               filtro={filtro}
               selecionarItems={onSelecionarItems}
-              filtroEhValido={filtroValido()}
+              filtroEhValido={filtroValido}
               onErro={err => erro(JSON.stringify(err))}
             />
           </div>
