@@ -125,6 +125,7 @@ namespace SME.SGP.Dados.Repositorios
             MontaQueryCabecalho(query);
             query.AppendLine(fromCompleto);
             MontaWhere(query, dataAvaliacao, dreId, ueId, null, null, turmaId, professorRf);
+            query.AppendLine("group by a.id, ta.id");
 
             return (await database.Conexao.QueryAsync<AtividadeAvaliativa>(query.ToString(), new
             {
@@ -369,6 +370,7 @@ namespace SME.SGP.Dados.Repositorios
             if (disciplinasId != null && disciplinasId.Length > 0)
             {
                 query.AppendLine("and aad.disciplina_id =  ANY(@disciplinasId)");
+                query.AppendLine("and aad.excluido =  false");
             }
             if (ehRegencia.HasValue)
             {

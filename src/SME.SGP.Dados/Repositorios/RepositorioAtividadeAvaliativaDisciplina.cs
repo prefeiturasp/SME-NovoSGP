@@ -44,6 +44,7 @@ namespace SME.SGP.Dados.Repositorios
             query.AppendLine("SELECT 1 FROM atividade_avaliativa_disciplina");
             query.AppendLine("WHERE atividade_avaliativa_id = @atividadeAvaliativaId");
             query.AppendLine("AND disciplina_id = @disciplinaId");
+            query.AppendLine("AND excluido = false");
 
             return database.Query<bool>(query.ToString(), new { atividadeAvaliativaId, disciplinaId }).SingleOrDefault();
         }

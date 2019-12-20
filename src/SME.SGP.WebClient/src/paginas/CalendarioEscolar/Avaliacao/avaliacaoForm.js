@@ -151,26 +151,18 @@ const AvaliacaoForm = ({ match }) => {
 
   const categorias = { NORMAL: 1, INTERDISCIPLINAR: 2 };
 
-  const montaValidacoes = () => {
-    const ehInterdisciplinar =
-      refForm.state &&
-      refForm.state.values &&
-      refForm.state.values.categoriaId === categorias.INTERDISCIPLINAR;
-    const disciplinaRequired = Yup.string().required(
-      'Selecione o componente curricular'
-    );
+  const montaValidacoes = ehInterdisciplinar => {
     const val = {
       categoriaId: Yup.string().required('Selecione a categoria'),
-      disciplinasId: ehInterdisciplinar
-        ? disciplinaRequired.test({
-            name: 'quantidadeDisciplinas',
-            exclusive: true,
-            message:
-              'Para categoria Interdisciplinar informe mais que uma disciplina',
-            test: value =>
-              listaDisciplinasSelecionadas.length ? value > 1 : true,
-          })
-        : disciplinaRequired,
+      disciplinasId: Yup.string()
+        .required('Selecione o componente curricular')
+        .test({
+          name: 'quantidadeDisciplinas',
+          exclusive: true,
+          message:
+            'Para categoria Interdisciplinar informe mais que uma disciplina',
+          test: value => (ehInterdisciplinar ? value.length > 1 : true),
+        }),
       tipoAvaliacaoId: Yup.string().required(
         'Selecione o tipo de atividade avaliativa'
       ),
@@ -180,10 +172,10 @@ const AvaliacaoForm = ({ match }) => {
         'A descrição não deve ter mais de 500 caracteres'
       ),
     };
-    return Yup.object(val);
+    setValidacoes(Yup.object(val));
   };
 
-  const [validacoes, setValidacoes] = useState(montaValidacoes());
+  const [validacoes, setValidacoes] = useState(undefined);
   const usuario = useSelector(store => store.usuario);
 
   const [dataAvaliacao, setdataAvaliacao] = useState();
@@ -258,6 +250,8 @@ const AvaliacaoForm = ({ match }) => {
       setTemRegencia(true);
     }
   };
+
+  useEffect(() => montaValidacoes(false), []);
 
   useEffect(() => {
     if (!idAvaliacao && listaDisciplinas.length === 1) {
@@ -436,7 +430,7 @@ const AvaliacaoForm = ({ match }) => {
                     onChange={e => {
                       aoTrocarCampos();
                       resetDisciplinasSelecionadas(form);
-                      montaValidacoes();
+                      montaValidacoes(e.target.value);
                     }}
                   />
                 </Grid>
