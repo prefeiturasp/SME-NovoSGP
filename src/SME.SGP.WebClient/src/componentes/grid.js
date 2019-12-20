@@ -2,9 +2,12 @@ import React from 'react';
 import PropTypes from 'prop-types';
 
 const Grid = props => {
-  const { cols, className, children } = props;
+  const { cols, className, children, style } = props;
   return (
-    <div className={`col-xl-${cols} col-lg-${cols} col-sm-12 ${className}`}>
+    <div
+      style={style}
+      className={`col-xl-${cols} col-lg-${cols} col-sm-12 ${className}`}
+    >
       {children}
     </div>
   );
@@ -14,12 +17,14 @@ Grid.propTypes = {
   cols: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
   className: PropTypes.string,
   children: PropTypes.node,
+  style: PropTypes.oneOfType([PropTypes.any]),
 };
 
 Grid.defaultProps = {
   cols: 12,
   className: '',
   children: () => {},
+  style: null,
 };
 
 export default Grid;

@@ -127,6 +127,10 @@ const AvaliacaoForm = ({ match }) => {
     const dadosValidacao = {
       ...dados,
       ...avaliacao,
+      turmasParaCopiar: copias.map(z => ({
+        turmaId: z.turmaId,
+        dataAtividadeAvaliativa: z.dataAvaliacao,
+      })),
     };
 
     delete dadosValidacao.categoriaId;
@@ -139,6 +143,10 @@ const AvaliacaoForm = ({ match }) => {
         const salvar = await ServicoAvaliacao.salvar(idAvaliacao, {
           ...dados,
           ...avaliacao,
+          turmasParaCopiar: copias.map(z => ({
+            turmaId: z.turmaId,
+            dataAtividadeAvaliativa: z.dataAvaliacao,
+          })),
         });
 
         if (salvar && salvar.status === 200) {
@@ -329,7 +337,10 @@ const AvaliacaoForm = ({ match }) => {
         show={mostrarModalCopiarAvaliacao}
         onClose={() => setMostrarModalCopiarAvaliacao(false)}
         disciplina={dadosAvaliacao && dadosAvaliacao.disciplinaId}
-        onSalvarCopias={copias => setCopias(copias)}
+        onSalvarCopias={copiasAvaliacoes => {
+          setCopias(copiasAvaliacoes);
+          setModoEdicao(true);
+        }}
       />
       <Grid cols={12} className="mb-1 p-0">
         <Titulo className="font-weight-bold">
@@ -488,26 +499,34 @@ const AvaliacaoForm = ({ match }) => {
                   />
                 </Grid>
               </Div>
-              {idAvaliacao && (
-                <Div className="row" style={{ marginTop: '14px' }}>
-                  <Grid cols={4}>
-                    <Button
-                      label="Copiar avaliação"
-                      icon="clipboard"
-                      color={Colors.Azul}
-                      border
-                      className="btnGroupItem"
-                      onClick={() => setMostrarModalCopiarAvaliacao(true)}
-                      disabled={!idAvaliacao}
-                    />
-                  </Grid>
-                  <Grid cols={6}>
-                    {copias.map(x => (
-                      <span>{x.turmaId}</span>
-                    ))}
-                  </Grid>
-                </Div>
-              )}
+              <Div className="row" style={{ marginTop: '14px' }}>
+                <Grid
+                  style={{ display: 'flex', justifyContent: 'flex-start' }}
+                  cols={12}
+                >
+                  <Button
+                    label="Copiar avaliação"
+                    icon="clipboard"
+                    color={Colors.Azul}
+                    border
+                    className="btnGroupItem"
+                    onClick={() => setMostrarModalCopiarAvaliacao(true)}
+                  />
+                  {copias.length > 0 && (
+                    <div style={{ marginLeft: '14px' }}>
+                      <span>Avaliação será copiada para: </span>
+                      <br />
+                      {copias.map(x => (
+                        <span style={{ display: 'block' }}>
+                          <strong>Turma:</strong> &nbsp;
+                          {x.turma[0].desc} <strong>Data: &nbsp;</strong>
+                          {window.moment(x.dataAvaliacao).format('DD/MM/YYYY')}
+                        </span>
+                      ))}
+                    </div>
+                  )}
+                </Grid>
+              </Div>
             </Form>
             <Div className="row">
               <Grid cols={12}>
