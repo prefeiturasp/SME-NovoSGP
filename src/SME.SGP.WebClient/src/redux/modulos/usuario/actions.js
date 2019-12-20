@@ -12,6 +12,13 @@ export function salvarDadosLogin(Login) {
   };
 }
 
+export function salvarLoginRevalidado(Login) {
+  return {
+    type: '@usuario/salvarLoginRevalidado',
+    payload: Login,
+  };
+}
+
 export function Deslogar() {
   return {
     type: '@usuario/deslogar',
@@ -77,5 +84,12 @@ export function setPermissoes(permissoes) {
   return {
     type: '@usuario/setPermissoes',
     payload: permissoes,
+  };
+}
+
+export function setExibirMensagemSessaoExpirou(sessaoExpirou) {
+  return {
+    type: '@usuario/setExibirMensagemSessaoExpirou',
+    payload: sessaoExpirou,
   };
 }

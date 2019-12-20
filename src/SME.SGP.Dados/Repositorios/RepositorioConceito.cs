@@ -18,10 +18,10 @@ namespace SME.SGP.Dados.Repositorios
         {
             var sql = @"select id, valor, descricao, aprovado, ativo, inicio_vigencia, fim_vigencia,
                     criado_em, criado_por, criado_rf, alterado_em, alterado_por, alterado_rf
-                    from conceito_valores where inicio_vigencia <= @dataAvaliacao
-                    and(fim_vigencia >= @dataAvaliacao or ativo = true)";
+                    from conceito_valores where date(inicio_vigencia) <= @dataAvaliacao
+                    and(date(fim_vigencia) >= @dataAvaliacao or ativo = true)";
 
-            var parametros = new { dataAvaliacao };
+            var parametros = new { dataAvaliacao = dataAvaliacao.Date };
 
             return database.Query<Conceito>(sql, parametros);
         }
