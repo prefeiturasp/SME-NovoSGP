@@ -125,7 +125,7 @@ namespace SME.SGP.Dominio.Servicos
 
             repositorioEvento.Salvar(evento);
 
-            var enviarParaWorkflow = devePassarPorWorkflowLiberacaoExcepcional || evento.DataInicio.Date < DateTime.Today && evento.TipoEvento.Codigo != (long)TipoEvento.LiberacaoExcepcional;
+            var enviarParaWorkflow = !string.IsNullOrWhiteSpace(evento.UeId) && (devePassarPorWorkflowLiberacaoExcepcional || evento.DataInicio.Date < DateTime.Today && evento.TipoEvento.Codigo != (long)TipoEvento.LiberacaoExcepcional);
 
             if (enviarParaWorkflow)
                 await PersistirWorkflowEvento(evento, devePassarPorWorkflowLiberacaoExcepcional);
