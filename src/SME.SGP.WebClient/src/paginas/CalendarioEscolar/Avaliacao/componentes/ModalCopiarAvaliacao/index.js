@@ -146,7 +146,11 @@ function ModalCopiarAvaliacao({ show, disciplina, onClose, onSalvarCopias }) {
     try {
       dispatch(setLoaderModal(true));
       onSalvarCopias(
-        estado.turmas.map(x => ({ turmaId: x.turmaId, dataAvaliacao: x.data }))
+        estado.turmas.map(x => ({
+          turmaId: x.turmaId,
+          dataAvaliacao: x.data,
+          turma: listaTurmas.filter(y => x.turmaId === y.valor),
+        }))
       );
 
       setTimeout(() => {
@@ -223,7 +227,7 @@ function ModalCopiarAvaliacao({ show, disciplina, onClose, onSalvarCopias }) {
         <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
           <Button
             label="Adicionar turma"
-            color={Colors.Roxo}
+            color={Colors.Azul}
             border
             className="btnGroupItem"
             onClick={adicionarTurma}
