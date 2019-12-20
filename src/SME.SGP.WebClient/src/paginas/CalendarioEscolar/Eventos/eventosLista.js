@@ -1,6 +1,6 @@
 import { Form, Formik } from 'formik';
 import * as moment from 'moment';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback, useRef } from 'react';
 import { useSelector } from 'react-redux';
 import * as Yup from 'yup';
 import Cabecalho from '~/componentes-sgp/cabecalho';
@@ -55,6 +55,7 @@ const EventosLista = () => {
     dataFim: '',
   });
 
+  const [filtroValido, setFiltroValido] = useState({ valido: false });
   const [validacoes] = useState(
     Yup.object({
       dataInicio: momentSchema.test(
@@ -83,6 +84,25 @@ const EventosLista = () => {
       ),
     })
   );
+
+  const validarFiltrar = useCallback(async () => {
+    if (refForm) {
+      const valido = await refForm.validateForm();
+      if (valido) {
+        refForm.handleSubmit(e => e);
+        setFiltroValido({ valido: true });
+      } else {
+        setFiltroValido({ valido: false });
+      }
+    }
+  }, [refForm]);
+
+  const filtrar = (campo, valor) => {
+    const filtroAtual = filtro;
+    filtroAtual[campo] = valor;
+    setFiltro({ ...filtroAtual });
+    validarFiltrar();
+  };
 
   const formatarCampoDataGrid = data => {
     let dataFormatada = '';
@@ -146,7 +166,12 @@ const EventosLista = () => {
       setDreSelecionada(listaDre[0].codigo.toString());
       setDreDesabilitada(true);
     }
-  }, [listaDre]);
+  }, [
+    listaDre,
+    refForm,
+    usuario.possuiPerfilDre,
+    usuario.possuiPerfilSmeOuDre,
+  ]);
 
   useEffect(() => {
     const obterListaEventos = async () => {
@@ -184,17 +209,7 @@ const EventosLista = () => {
     obterListaEventos();
     consultaTipoCalendario();
     listarDres();
-  }, []);
-
-  const validarFiltrar = () => {
-    if (refForm) {
-      refForm.validateForm().then(() => refForm.handleSubmit(e => e));
-    }
-  };
-
-  useEffect(() => {
-    validarFiltrar();
-  }, [nomeEvento, tipoEvento]);
+  }, [permissoesTela]);
 
   useEffect(() => {
     const semTipoSelecionado =
@@ -203,72 +218,65 @@ const EventosLista = () => {
     setMesangemAlerta(semTipoSelecionado);
   }, [filtro]);
 
-  const listarUes = async () => {
-    if (dreSelecionada && dreSelecionada.toString() === '0') {
-      const uesTodas = [{ codigo: 0, nome: 'Todas' }];
-      setListaUe(uesTodas);
-      return;
-    }
-
-    if (
-      !dreSelecionada ||
-      dreSelecionada === '' ||
-      Object.entries(dreSelecionada).length === 0
-    )
-      return;
-
-    const ues = await ServicoEvento.listarUes(dreSelecionada);
-
-    if (!sucesso) {
-      setListaUe([]);
-      erro(ues.erro);
-      setListaDre([]);
-      return;
-    }
-
-    if (
-      !ues.conteudo ||
-      ues.conteudo.length === 0 ||
-      Object.entries(ues.conteudo).length === 0
-    )
-      setCampoUeDesabilitado(true);
-
-    if (ues.conteudo) {
-      ues.conteudo.forEach(
-        ue => (ue.nome = `${tipoEscolaDTO[ue.tipoEscola]} ${ue.nome}`)
-      );
-      ues.conteudo.sort(FiltroHelper.ordenarLista('nome'));
-      if (ues.conteudo.length > 1) {
-        ues.conteudo.unshift({ codigo: 0, nome: 'Todas' });
-      }
-      setListaUe(ues.conteudo);
-    }
-  };
-
   useEffect(() => {
     if (listaUe.length === 1 && !usuario.possuiPerfilSmeOuDre) {
       refForm.setFieldValue('ueId', listaUe[0].codigo.toString());
       setUeDesabilitada(true);
     }
-  }, [listaUe]);
+  }, [listaUe, refForm, usuario.possuiPerfilSmeOuDre]);
 
   useEffect(() => {
-    if (dreSelecionada) listarUes();
+    const listarUes = async () => {
+      if (dreSelecionada && dreSelecionada.toString() === '0') {
+        const uesTodas = [{ codigo: 0, nome: 'Todas' }];
+        setListaUe(uesTodas);
+        return;
+      }
 
-    if (selecionouCalendario) validarFiltrar();
-  }, [dreSelecionada]);
+      if (
+        !dreSelecionada ||
+        dreSelecionada === '' ||
+        Object.entries(dreSelecionada).length === 0
+      )
+        return;
+
+      const ues = await ServicoEvento.listarUes(dreSelecionada);
+
+      if (!sucesso) {
+        setListaUe([]);
+        erro(ues.erro);
+        setListaDre([]);
+        return;
+      }
+
+      if (
+        !ues.conteudo ||
+        ues.conteudo.length === 0 ||
+        Object.entries(ues.conteudo).length === 0
+      )
+        setCampoUeDesabilitado(true);
+
+      if (ues.conteudo) {
+        ues.conteudo.forEach(
+          ue => (ue.nome = `${tipoEscolaDTO[ue.tipoEscola]} ${ue.nome}`)
+        );
+        ues.conteudo.sort(FiltroHelper.ordenarLista('nome'));
+        if (ues.conteudo.length > 1) {
+          ues.conteudo.unshift({ codigo: 0, nome: 'Todas' });
+        }
+        setListaUe(ues.conteudo);
+      }
+    };
+    if (dreSelecionada) listarUes();
+  }, [dreSelecionada, selecionouCalendario]);
 
   const onClickVoltar = () => {
     history.push(URL_HOME);
   };
 
-  const onChangeUe = async ueId => {
-    if (selecionouCalendario) validarFiltrar();
-  };
-
   const onChangeDreId = async dreId => {
     refForm.setFieldValue('ueId', undefined);
-
+    filtrar('dreId', dreId);
     if (dreId) {
       setDreSelecionada(dreId);
       setCampoUeDesabilitado(false);
@@ -317,38 +325,46 @@ const EventosLista = () => {
 
   const onChangeNomeEvento = e => {
     setNomeEvento(e.target.value);
+    filtrar('nomeEvento', e.target.value);
   };
 
   const onChangeTipoEvento = tipo => {
     setTipoEvento(tipo);
+    filtrar('tipoEventoId', tipo);
   };
 
-  const onFiltrar = valoresForm => {
-    const params = {
-      tipoCalendarioId: valoresForm.tipoCalendarioId,
-      nomeEvento,
-      tipoEventoId: tipoEvento,
-      ueId:
-        valoresForm.ueId && valoresForm.ueId.toString() === '0'
-          ? ''
-          : valoresForm.ueId,
-      dreId:
-        valoresForm.dreId && valoresForm.dreId.toString() === '0'
-          ? ''
-          : valoresForm.dreId,
-      dataInicio: valoresForm.dataInicio && valoresForm.dataInicio.toDate(),
-      dataFim: valoresForm.dataInicio && valoresForm.dataFim.toDate(),
-      EhTodasDres: valoresForm.dreId && valoresForm.dreId.toString() === '0',
-      EhTodasUes: valoresForm.ueId && valoresForm.ueId.toString() === '0',
-    };
-    setFiltro(params);
-    setEventosSelecionados([]);
+  const validaDataInicio = dataInicio => {
+    setFiltroValido({ valido: false });
+
+    const filtroAtual = filtro;
+
+    filtroAtual.dataInicio = dataInicio && dataInicio.toDate();
+    setFiltro({ ...filtroAtual });
+
+    if (filtroAtual.dataInicio && filtroAtual.dataFim) {
+      validarFiltrar();
+    }
+  };
+
+  const validaDataFim = dataFim => {
+    setFiltroValido({ valido: false });
+
+    const filtroAtual = filtro;
+    filtroAtual.dataFim = dataFim && dataFim.toDate();
+
+    setFiltro({ ...filtroAtual });
+
+    if (filtroAtual.dataInicio && filtroAtual.dataFim) {
+      validarFiltrar();
+    }
   };
 
   const onChangeCalendarioId = tipoCalendarioId => {
     if (tipoCalendarioId) {
       setSelecionouCalendario(true);
+      filtrar('tipoCalendarioId', tipoCalendarioId);
     } else {
+      setFiltroValido(false);
       setSelecionouCalendario(false);
       setDreSelecionada([]);
       setListaUe([]);
@@ -357,7 +373,6 @@ const EventosLista = () => {
       setNomeEvento('');
       refForm.resetForm();
     }
-    validarFiltrar();
   };
 
   const onClickEditar = evento => {
@@ -423,7 +438,7 @@ const EventosLista = () => {
           enableReinitialize
           initialValues={valoresIniciais}
           validationSchema={validacoes}
-          onSubmit={valores => onFiltrar(valores)}
+          onSubmit={() => true}
           validateOnChange
           validateOnBlur
         >
@@ -464,7 +479,7 @@ const EventosLista = () => {
                     lista={listaUe}
                     valueOption="codigo"
                     valueText="nome"
-                    onChange={onChangeUe}
+                    onChange={ueId => filtrar('ueId', ueId)}
                     disabled={campoUeDesabilitado || ueDesabilitada}
                     placeholder="Selecione uma UE (Opcional)"
                     form={form}
@@ -496,7 +511,7 @@ const EventosLista = () => {
                   <CampoData
                     formatoData="DD/MM/YYYY"
                     name="dataInicio"
-                    onChange={validarFiltrar}
+                    onChange={data => validaDataInicio(data)}
                     placeholder="Data início"
                     form={form}
                     desabilitado={!selecionouCalendario}
@@ -506,7 +521,7 @@ const EventosLista = () => {
                   <CampoData
                     formatoData="DD/MM/YYYY"
                     name="dataFim"
-                    onChange={validarFiltrar}
+                    onChange={data => validaDataFim(data)}
                     placeholder="Data fim"
                     form={form}
                     desabilitado={!selecionouCalendario}
@@ -527,6 +542,7 @@ const EventosLista = () => {
               onClick={onClickEditar}
               multiSelecao
               selecionarItems={onSelecionarItems}
+              filtroEhValido={filtroValido.valido}
             />
           ) : (
             ''
