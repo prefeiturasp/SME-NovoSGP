@@ -93,6 +93,9 @@ export default function usuario(state = inicial, action) {
       case '@usuario/setPermissoes':
         draft.permissoes = action.payload;
         break;
+      case '@usuario/setExibirMensagemSessaoExpirou':
+        draft.exibirMensagemSessaoExpirou = action.payload;
+        break;
       default:
         break;
     }
