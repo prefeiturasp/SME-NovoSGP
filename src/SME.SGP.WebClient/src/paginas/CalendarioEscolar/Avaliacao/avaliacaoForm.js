@@ -151,7 +151,8 @@ const AvaliacaoForm = ({ match }) => {
 
   const categorias = { NORMAL: 1, INTERDISCIPLINAR: 2 };
 
-  const montaValidacoes = ehInterdisciplinar => {
+  const montaValidacoes = categoria => {
+    const ehInterdisciplinar = categoria === categorias.INTERDISCIPLINAR;
     const val = {
       categoriaId: Yup.string().required('Selecione a categoria'),
       disciplinasId: Yup.string()
@@ -251,7 +252,7 @@ const AvaliacaoForm = ({ match }) => {
     }
   };
 
-  useEffect(() => montaValidacoes(false), []);
+  useEffect(() => montaValidacoes(categorias.NORMAL), []);
 
   useEffect(() => {
     if (!idAvaliacao && listaDisciplinas.length === 1) {
