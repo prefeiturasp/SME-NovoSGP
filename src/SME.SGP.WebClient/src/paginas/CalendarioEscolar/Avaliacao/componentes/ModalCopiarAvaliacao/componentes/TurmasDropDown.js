@@ -1,23 +1,16 @@
-import React, { useEffect, useMemo, useState } from 'react';
-import t from 'prop-types';
+import React, { useState, useEffect } from 'react';
+import PropTypes from 'prop-types';
 
 // Componentes
 import { SelectComponent } from '~/componentes';
 
-// Serviços
+// Servicos
 import AbrangenciaServico from '~/servicos/Abrangencia';
 
-function TurmasDropDown({
-  form,
-  onChange,
-  label,
-  ueId,
-  modalidadeId,
-  valor,
-  dados,
-}) {
+function TurmasDropDown({ form, onChange, label }) {
   const [listaTurmas, setListaTurmas] = useState([]);
 
+  const { ueId, modalidadeId } = form.values;
   useEffect(() => {
     async function buscaTurmas() {
       const { data } = await AbrangenciaServico.buscarTurmas(
@@ -34,21 +27,19 @@ function TurmasDropDown({
       }
     }
 
-    if (ueId && modalidadeId && !dados) {
+    if (ueId && modalidadeId) {
       buscaTurmas();
-    } else if (dados) {
-      setListaTurmas(dados);
     } else {
       setListaTurmas([]);
     }
-  }, [dados, modalidadeId, ueId]);
+  }, [ueId, modalidadeId]);
 
   useEffect(() => {
-    if (listaTurmas.length === 1 && form) {
+    if (listaTurmas.length === 1) {
       form.setFieldValue('turmaId', listaTurmas[0].valor);
       onChange(listaTurmas[0].valor);
     }
-  }, [form, listaTurmas, onChange]);
+  }, [listaTurmas]);
 
   return (
     <SelectComponent
@@ -61,30 +52,23 @@ function TurmasDropDown({
       valueOption="valor"
       valueText="desc"
       placeholder="Turma"
-      valueSelect={valor}
-      disabled={form && (listaTurmas.length === 0 || listaTurmas.length === 1)}
     />
   );
 }
 
 TurmasDropDown.propTypes = {
-  onChange: t.func,
-  form: t.oneOfType([t.objectOf(t.object), t.any]),
-  label: t.string,
-  ueId: t.string,
-  modalidadeId: t.string,
-  valor: t.string,
-  dados: t.oneOfType([t.object]),
+  form: PropTypes.oneOfType([
+    PropTypes.objectOf(PropTypes.object),
+    PropTypes.any,
+  ]),
+  onChange: PropTypes.func,
+  label: PropTypes.string,
 };
 
 TurmasDropDown.defaultProps = {
+  form: {},
   onChange: () => {},
-  form: null,
   label: null,
-  ueId: null,
-  modalidadeId: null,
-  valor: '',
-  dados: null,
 };
 
 export default TurmasDropDown;
