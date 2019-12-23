@@ -1,11 +1,9 @@
 import PropTypes from 'prop-types';
-import React, { useEffect, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import React from 'react';
+import { useSelector } from 'react-redux';
 import Button from '~/componentes/button';
 import { Colors } from '~/componentes/colors';
-import { setModoEdicaoGeral } from '~/redux/modulos/notasConceitos/actions';
-import RotasDto from '~/dtos/rotasDto';
-import { verificaSomenteConsulta } from '~/servicos/servico-navegacao';
+import { confirmar } from '~/servicos/alertas';
 
 const BotoesAcoessNotasConceitos = props => {
   const {
@@ -15,34 +13,22 @@ const BotoesAcoessNotasConceitos = props => {
     desabilitarBotao,
   } = props;
 
-  const dispatch = useDispatch();
   const modoEdicaoGeral = useSelector(
     store => store.notasConceitos.modoEdicaoGeral
   );
 
   const onCancelar = async () => {
     if (modoEdicaoGeral) {
-      if (
-        window.confirm(
-          `Você não salvou as informações preenchidas. Deseja realmente cancelar as alterações?`
-        )
-      ) {
-        onClickCancelar(true);
-        dispatch(setModoEdicaoGeral(false));
-      } else {
-        onClickCancelar(false);
+      const confirmou = await confirmar(
+        'Atenção',
+        'Você não salvou as informações preenchidas.',
+        'Deseja realmente cancelar as alterações?'
+      );
+      if (confirmou) {
+        return onClickCancelar(true);
       }
-      // TODO - Voltar esse fonte apois ajuste de modal de confirmação
-      // const confirmou = await confirmar(
-      //   'Atenção',
-      //   'Você não salvou as informações preenchidas.',
-      //   'Deseja realmente cancelar as alterações?'
-      // );
-      // if (confirmou) {
-      //   setModoEdicao(false);
-      //   obterDadosBimestres(disciplinaSelecionada, 0);
-      // }
     }
+    return onClickCancelar(false);
   };
 
   return (
