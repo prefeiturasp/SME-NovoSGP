@@ -18,10 +18,10 @@ namespace SME.SGP.Dominio.Servicos
 
         public bool ValidarSeEhDiaLetivo(DateTime data, long tipoCalendarioId, string dreId, string ueId)
         {
-            var periodoEscolar = repositorioPeriodoEscolar.ObterPorTipoCalendarioData(tipoCalendarioId, data);
+            var periodoEscolar = repositorioPeriodoEscolar.ObterPorTipoCalendarioData(tipoCalendarioId, data.Local());
             if (periodoEscolar == null)
                 return false;
-            if (!repositorioEvento.EhEventoLetivoPorTipoDeCalendarioDataDreUe(tipoCalendarioId, data, dreId, ueId))
+            if (!repositorioEvento.EhEventoLetivoPorTipoDeCalendarioDataDreUe(tipoCalendarioId, data.Local(), dreId, ueId))
                 return false;
             return data.DayOfWeek != DayOfWeek.Saturday && data.DayOfWeek != DayOfWeek.Sunday;
         }
@@ -38,19 +38,10 @@ namespace SME.SGP.Dominio.Servicos
             return true;
         }
 
-        private bool ValidaSeEhFinalSemana(DateTime inicio, DateTime fim)
-        {
-            for (DateTime data = inicio; data <= fim; data = data.AddDays(1))
-                if (data.DayOfWeek == DayOfWeek.Saturday || data.DayOfWeek == DayOfWeek.Sunday)
-                    return false;
-            return true;
-        }
-
         public bool ValidaSeEhLiberacaoExcepcional(DateTime data, long tipoCalendarioId, string ueId)
         {
             try
             {
-                 
                 List<Evento> eventos = repositorioEvento.EhEventoLetivoPorLiberacaoExcepcional(tipoCalendarioId, data, ueId);
                 // EventoLetivo
                 if (eventos.Exists(x => x.TipoEvento.Codigo == Convert.ToInt32(TipoEvento.LiberacaoExcepcional)))
@@ -62,11 +53,16 @@ namespace SME.SGP.Dominio.Servicos
             }
             catch (Exception ex)
             {
-
                 throw ex;
             }
-          
+        }
 
+        private bool ValidaSeEhFinalSemana(DateTime inicio, DateTime fim)
+        {
+            for (DateTime data = inicio; data <= fim; data = data.AddDays(1))
+                if (data.DayOfWeek == DayOfWeek.Saturday || data.DayOfWeek == DayOfWeek.Sunday)
+                    return false;
+            return true;
         }
     }
 }
