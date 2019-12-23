@@ -50,7 +50,7 @@ namespace SME.SGP.Dados.Repositorios
             var sql = new StringBuilder();
 
             sql.AppendLine(@"select * from atribuicao_esporadica
-                    where professor_rf = @professorRF and
+                    where not excluido and professor_rf = @professorRF and
                     ((@dataInicio >= data_inicio and @dataInicio <= data_fim) or
                     (@dataFim  >= data_inicio and @dataFim <= data_fim) or
                     (data_inicio >= @dataInicio and data_inicio <= @dataFim) or
