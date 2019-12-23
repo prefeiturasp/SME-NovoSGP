@@ -324,6 +324,7 @@ const Notas = () => {
         }
       }
     } else {
+      resetarTela();
       obterDadosBimestres(disciplinaId, 0);
       setDisciplinaSelecionada(disciplinaId);
     }
