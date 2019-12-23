@@ -99,7 +99,7 @@ const ListaPaginada = props => {
     );
   };
 
-  const filtrar = useCallback(() => {
+  const filtrar = () => {
     dispatch(setLoaderTabela(true));
     api
       .get(urlBusca, { params: filtroLocal })
@@ -120,7 +120,7 @@ const ListaPaginada = props => {
           else erro(err.response.data.mensagens[0]);
         }
       });
-  }, [dispatch, filtroLocal, onErro, urlBusca]);
+  };
 
   useEffect(() => {
     setFiltroLocal(filtro);
@@ -128,9 +128,10 @@ const ListaPaginada = props => {
 
   useEffect(() => {
     if (filtroEhValido) {
+      console.log(filtroEhValido);
       filtrar();
     }
-  }, [filtroEhValido, filtrar]);
+  }, [filtroEhValido, filtroLocal]);
 
   const executaPaginacao = pagina => {
     const novaPagina = { ...paginaAtual, ...pagina };
