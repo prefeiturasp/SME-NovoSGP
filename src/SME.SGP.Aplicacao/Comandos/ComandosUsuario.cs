@@ -224,10 +224,12 @@ namespace SME.SGP.Aplicacao
         public async Task<RevalidacaoTokenDto> RevalidarLogin()
         {
             // Obter Login do token atual
-            var login = servicoTokenJwt.ObterLogin();
+            var login = servicoUsuario.ObterLoginAtual();
+            string codigoRfAtual = servicoUsuario.ObterRf();
+            string nomeLoginAtual = servicoUsuario.ObterNomeLoginAtual();
 
             var dadosUsuario = await servicoEOL.ObterMeusDados(login);
-            var usuario = servicoUsuario.ObterUsuarioPorCodigoRfLoginOuAdiciona(dadosUsuario.CodigoRf, login, dadosUsuario.Nome, dadosUsuario.Email);
+            var usuario = servicoUsuario.ObterUsuarioPorCodigoRfLoginOuAdiciona(codigoRfAtual, login, nomeLoginAtual, dadosUsuario.Email);
 
             // Obter Perfil do token atual
             var guidPerfil = servicoTokenJwt.ObterPerfil();
@@ -246,7 +248,7 @@ namespace SME.SGP.Aplicacao
 
             return new RevalidacaoTokenDto()
             {
-                Token = servicoTokenJwt.GerarToken(login, dadosUsuario.Nome, usuario.CodigoRf, usuario.PerfilAtual, listaPermissoes),
+                Token = servicoTokenJwt.GerarToken(login, nomeLoginAtual, codigoRfAtual, guidPerfil, listaPermissoes),
                 DataHoraExpiracao = servicoTokenJwt.ObterDataHoraExpiracao()
             };
         }
