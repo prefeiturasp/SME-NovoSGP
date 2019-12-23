@@ -67,10 +67,10 @@ namespace SME.SGP.Aplicacao
             int horascadastradas;
 
             if (ehRegencia)
-                horascadastradas = await consultasAula.ObterQuantidadeAulasTurmaDiaProfessor(turma.ToString(), disciplina.ToString(), dataAula, codigoRf);
+                horascadastradas = await consultasAula.ObterQuantidadeAulasTurmaDiaProfessor(turma.CodigoTurma, disciplina.ToString(), dataAula, codigoRf);
             else
                 // Busca horas aula cadastradas para a disciplina na turma
-                horascadastradas = await consultasAula.ObterQuantidadeAulasTurmaSemanaProfessor(turma.ToString(), disciplina.ToString(), semana, codigoRf);
+                horascadastradas = await consultasAula.ObterQuantidadeAulasTurmaSemanaProfessor(turma.CodigoTurma, disciplina.ToString(), semana, codigoRf);
 
             return new GradeComponenteTurmaAulasDto
             {
