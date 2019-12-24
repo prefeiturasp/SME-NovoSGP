@@ -623,7 +623,7 @@ namespace SME.SGP.Dados.Repositorios
             query.AppendLine("inner");
             query.AppendLine("join evento_tipo et on");
             query.AppendLine("e.tipo_evento_id = et.id");
-            query.AppendLine("inner");
+            query.AppendLine("left");
             query.AppendLine("join v_abrangencia a on");
             query.AppendLine("a.ue_codigo = e.ue_id");
             query.AppendLine("and a.dre_codigo = e.dre_id");
