@@ -86,7 +86,6 @@ const TipoAvaliacaoForm = ({ match }) => {
   };
 
   const onClickCancelar = async form => {
-    // debugger;
     // if (!modoEdicao) return;
     const confirmou = await confirmar(
       'Atenção',

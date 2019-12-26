@@ -138,15 +138,14 @@ namespace SME.SGP.Dominio.Servicos
 
             var ehInclusao = aula.Id == 0;
 
+            var turma = repositorioTurma.ObterTurmaComUeEDrePorId(aula.TurmaId);
+
+            if (turma == null)
+                throw new NegocioException("Turma não localizada.");
             if (aula.RecorrenciaAula == RecorrenciaAula.AulaUnica && aula.TipoAula == TipoAula.Reposicao)
             {
                 var aulas = repositorioAula.ObterAulas(aula.TipoCalendarioId, aula.TurmaId, aula.UeId, usuario.CodigoRf).Result;
                 var quantidadeDeAulasSomadas = aulas.ToList().FindAll(x => x.DataAula.Date == aula.DataAula.Date).Sum(x => x.Quantidade) + aula.Quantidade;
-
-                var turma = repositorioTurma.ObterTurmaComUeEDrePorId(aula.TurmaId);
-
-                if (turma == null)
-                    throw new NegocioException("Turma não localizada.");
 
                 if (ReposicaoDeAulaPrecisaDeAprovacao(quantidadeDeAulasSomadas, turma))
                 {
@@ -169,17 +168,50 @@ namespace SME.SGP.Dominio.Servicos
 
                 var quantidadeAulasRestantes = gradeAulas == null ? int.MaxValue : gradeAulas.QuantidadeAulasRestante;
 
+                var disciplinas = servicoEOL.ObterDisciplinasPorIds(new[] { Convert.ToInt64(aula.DisciplinaId) });
+                if (disciplinas == null || !disciplinas.Any())
+                {
+                    throw new NegocioException("Disciplina não encontrada.");
+                }
+                var disciplina = disciplinas.First();
                 if (!ehInclusao)
                 {
-                    // Na alteração tem que considerar que uma aula possa estar mudando de dia na mesma semana, então não soma as aulas do proprio registro
-                    var aulasSemana = repositorioAula.ObterAulas(aula.TipoCalendarioId, aula.TurmaId, aula.UeId, usuario.CodigoRf, mes: null, semanaAno: semana, disciplinaId: aula.DisciplinaId).Result;
-                    var quantidadeAulasSemana = aulasSemana.Where(a => a.Id != aula.Id).Sum(a => a.Quantidade);
+                    if (disciplina.Regencia)
+                    {
+                        if (turma.ModalidadeCodigo == Modalidade.EJA)
+                        {
+                            if (aula.Quantidade != 5)
+                                throw new NegocioException("Para regência de EJA só é permitido a criação de 5 aulas por dia.");
+                        }
+                        else if (aula.Quantidade != 1)
+                            throw new NegocioException("Para regência de classe só é permitido a criação de 1 (uma) aula por dia.");
+                    }
+                    else
+                    {
+                        // Na alteração tem que considerar que uma aula possa estar mudando de dia na mesma semana, então não soma as aulas do proprio registro
+                        var aulasSemana = repositorioAula.ObterAulas(aula.TipoCalendarioId, aula.TurmaId, aula.UeId, usuario.CodigoRf, mes: null, semanaAno: semana, disciplinaId: aula.DisciplinaId).Result;
+                        var quantidadeAulasSemana = aulasSemana.Where(a => a.Id != aula.Id).Sum(a => a.Quantidade);
 
-                    quantidadeAulasRestantes = gradeAulas == null ? int.MaxValue : gradeAulas.QuantidadeAulasGrade - quantidadeAulasSemana;
+                        quantidadeAulasRestantes = gradeAulas == null ? int.MaxValue : gradeAulas.QuantidadeAulasGrade - quantidadeAulasSemana;
+                        if ((gradeAulas != null) && (quantidadeAulasRestantes < aula.Quantidade))
+                            throw new NegocioException("Quantidade de aulas superior ao limíte de aulas da grade.");
+                    }
                 }
-
-                if ((gradeAulas != null) && (quantidadeAulasRestantes < aula.Quantidade))
-                    throw new NegocioException("Quantidade de aulas superior ao limíte de aulas da grade.");
+                else
+                {
+                    if (disciplina.Regencia)
+                    {
+                        var aulaNoDia = repositorioAula.ObterAulas(aula.TurmaId, aula.UeId, "", data: aula.DataAula, aula.DisciplinaId).Result;
+                        if (aulaNoDia != null && aulaNoDia.Any())
+                        {
+                            if (turma.ModalidadeCodigo == Modalidade.EJA)
+                                throw new NegocioException("Para regência de EJA só é permitido a criação de 5 aulas por dia.");
+                            else throw new NegocioException("Para regência de classe só é permitido a criação de 1 (uma) aula por dia.");
+                        }
+                    }
+                    if ((gradeAulas != null) && (quantidadeAulasRestantes < aula.Quantidade))
+                        throw new NegocioException("Quantidade de aulas superior ao limíte de aulas da grade.");
+                }
             }
 
             repositorioAula.Salvar(aula);

@@ -123,11 +123,14 @@ const TempoExpiracaoSessao = () => {
       .post('v1/autenticacao/revalidar')
       .catch(e => erros(e));
     setMostraTempoExpiracao(false);
-    dispatch(
-      salvarLoginRevalidado({
-        token: autenticado.data,
-      })
-    );
+    if (autenticado && autenticado.data && autenticado.data.token) {
+      dispatch(
+        salvarLoginRevalidado({
+          token: autenticado.data.token,
+          dataHoraExpiracao: autenticado.data.dataHoraExpiracao,
+        })
+      );
+    }
   };
 
   return (
