@@ -53,7 +53,7 @@ namespace SME.Background.Core
             if (processadores.TryAdd(tipoProcessamento, processador) && !processador.Registrado)
             {
                 processador.Registrar();
-                //Console.WriteLine($"O processador {processador.GetType().Name} foi registrado para o tipo de processamento {tipoProcessamento.ToString()}");
+                Console.WriteLine($"O processador {processador.GetType().Name} foi registrado para o tipo de processamento {tipoProcessamento.ToString()}");
             }
         }
     }
