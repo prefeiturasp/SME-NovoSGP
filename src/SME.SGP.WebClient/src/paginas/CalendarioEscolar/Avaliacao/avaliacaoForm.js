@@ -129,7 +129,7 @@ const AvaliacaoForm = ({ match }) => {
     avaliacao.dataAvaliacao = window.moment(diaAvaliacao).format();
     avaliacao.descricao = descricao;
 
-    dados.disciplinasId = [...dados.disciplinasId];
+    dados.disciplinasId = [dados.disciplinasId];
 
     const dadosValidacao = {
       ...dados,
@@ -246,7 +246,7 @@ const AvaliacaoForm = ({ match }) => {
     );
     if (disciplinas.data) {
       const dadosDsiciplina = disciplinas.data;
-      setListaDisciplinas(dadosDsiciplina);
+      await setListaDisciplinas(dadosDsiciplina);
       if (dadosDsiciplina.length > 1) {
         listaCategorias.map(categoria => {
           if (categoria.value === categorias.INTERDISCIPLINAR) {
@@ -271,8 +271,6 @@ const AvaliacaoForm = ({ match }) => {
     }
   };
 
-  useEffect(() => montaValidacoes(categorias.NORMAL), []);
-
   useEffect(() => {
     if (!idAvaliacao && listaDisciplinas.length === 1) {
       if (listaDisciplinas[0].regencia) {
@@ -281,7 +279,7 @@ const AvaliacaoForm = ({ match }) => {
       }
       setDadosAvaliacao({
         ...dadosAvaliacao,
-        disciplinaId: listaDisciplinas[0].codigoComponenteCurricular.toString(),
+        disciplinasId: listaDisciplinas[0].codigoComponenteCurricular.toString(),
       });
       setDisciplinaDesabilitada(true);
     }
@@ -302,6 +300,7 @@ const AvaliacaoForm = ({ match }) => {
 
   useEffect(() => {
     setdataAvaliacao(window.moment(diaAvaliacao));
+    montaValidacoes(categorias.NORMAL);
     obterDisciplinas();
     obterlistaTiposAvaliacao();
 
