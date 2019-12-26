@@ -153,7 +153,7 @@ namespace SME.SGP.Aplicacao
                 TipoCalendarioId = aula.TipoCalendarioId,
                 TipoAula = aula.TipoAula,
                 Quantidade = aula.Quantidade,
-                DataAula = aula.DataAula,
+                DataAula = aula.DataAula.Local(),
                 RecorrenciaAula = aula.RecorrenciaAula,
                 AlteradoEm = aula.AlteradoEm,
                 AlteradoPor = aula.AlteradoPor,
