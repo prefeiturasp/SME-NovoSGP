@@ -46,7 +46,7 @@ namespace SME.Background.Hangfire
                 .SetDataCompatibilityLevel(CompatibilityLevel.Version_170)
                 .UseSimpleAssemblyNameTypeSerializer()
                 .UseRecommendedSerializerSettings()
-                .UsePostgreSqlStorage(configuration.GetSection($"ConnectionStrings:{connectionString}").Value, new PostgreSqlStorageOptions()
+                .UsePostgreSqlStorage(configuration.GetConnectionString(connectionString), new PostgreSqlStorageOptions()
                 {
                     SchemaName = "hangfire"
                 });
