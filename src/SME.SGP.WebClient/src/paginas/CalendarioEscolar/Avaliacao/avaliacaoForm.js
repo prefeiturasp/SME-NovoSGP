@@ -129,7 +129,7 @@ const AvaliacaoForm = ({ match }) => {
     avaliacao.dataAvaliacao = window.moment(diaAvaliacao).format();
     avaliacao.descricao = descricao;
 
-    dados.disciplinasId = [dados.disciplinasId];
+    dados.disciplinasId = [...dados.disciplinasId];
 
     const dadosValidacao = {
       ...dados,
