@@ -68,12 +68,12 @@ namespace SME.SGP.Dados.Repositorios
             return (await database.Conexao.QueryAsync<AulaDto>(query.ToString(), new { tipoCalendarioId, turmaId, ueId, mes, CodigoRf }));
         }
 
-        public async Task<IEnumerable<AulaDto>> ObterAulas(string turmaId, string ueId, string CodigoRf, DateTime? data, string disciplinaId)
+        public async Task<IEnumerable<AulaDto>> ObterAulas(string turmaId, string ueId, string codigoRf, DateTime? data, string disciplinaId)
         {
             StringBuilder query = new StringBuilder();
             MontaCabecalho(query);
             query.AppendLine("FROM aula a");
-            MontaWhere(query, null, turmaId, ueId, null, data, CodigoRf, disciplinaId);
+            MontaWhere(query, null, turmaId, ueId, null, data, codigoRf, disciplinaId);
 
             return (await database.Conexao.QueryAsync<AulaDto>(query.ToString(), new
             {
@@ -81,8 +81,8 @@ namespace SME.SGP.Dados.Repositorios
                 disciplinaId,
                 turmaId,
                 ueId,
-                CodigoRf,
-                data
+                codigoRf,
+                data = data.HasValue ? data.Value.Date : data
             }));
         }
 

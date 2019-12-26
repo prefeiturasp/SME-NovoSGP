@@ -84,7 +84,7 @@ namespace SME.SGP.Aplicacao
 
                     professorRfTitularTurmaDisciplina = await ObterRfProfessorTitularDisciplina(turmaCodigo, disciplinaCodigo, atividadesAvaliativasdoBimestre);
 
-                    foreach (var aluno in alunos.Where(a => a.NumeroAlunoChamada <= 0).OrderBy(a => a.NumeroAlunoChamada).ThenBy(a => a.NomeValido()))
+                    foreach (var aluno in alunos.Where(a => a.NumeroAlunoChamada > 0).OrderBy(a => a.NumeroAlunoChamada).ThenBy(a => a.NomeValido()))
                     {
                         var notaConceitoAluno = new NotasConceitosAlunoRetornoDto() { Id = aluno.CodigoAluno, Nome = aluno.NomeValido(), NumeroChamada = aluno.NumeroAlunoChamada };
                         var notasAvaliacoes = new List<NotasConceitosNotaAvaliacaoRetornoDto>();
