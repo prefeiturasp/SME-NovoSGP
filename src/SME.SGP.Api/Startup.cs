@@ -67,8 +67,6 @@ namespace SME.SGP.Api
                 Predicate = _ => true,
                 ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse
             });
-
-            app.UseHealthChecksUI();
         }
 
         // This method gets called by the runtime. Use this method to add services to the container.
@@ -119,8 +117,7 @@ namespace SME.SGP.Api
             else
                 Orquestrador.Desativar();
 
-            services.AddHealthChecksUI()
-                    .AddHealthChecks()
+            services.AddHealthChecks()
                     .AddRedis(
                         Configuration.GetConnectionString("SGP-Redis"),
                         "Redis Cache",
