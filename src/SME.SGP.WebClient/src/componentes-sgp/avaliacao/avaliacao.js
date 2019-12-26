@@ -56,7 +56,7 @@ const Avaliacao = props => {
       ? dados.avaliacoes.map(() => {
           return (
             <th key={shortid.generate()} className="width-150">
-              {/* TODO - INTERDISCIPLINAR */}
+              <CaixaMarcadores>Interdisciplinar</CaixaMarcadores>
             </th>
           );
         })
