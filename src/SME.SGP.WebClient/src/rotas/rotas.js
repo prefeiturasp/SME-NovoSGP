@@ -480,7 +480,7 @@ rotas.set(`${RotasDto.TIPO_AVALIACAO}/editar/:id`, {
 });
 
 rotas.set(`${RotasDto.AULA_DADA_AULA_PREVISTA}`, {
-  breadcrumbName: 'Aula dada X Aula prevista',
+  breadcrumbName: 'Aula prevista X Aula dada',
   menu: ['Diário de Classe'],
   parent: '/',
   component: AulaDadaAulaPrevista,
