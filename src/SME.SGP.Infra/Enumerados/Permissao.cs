@@ -313,16 +313,16 @@
         [PermissaoMenu(Menu = "Tipo de Avaliação", Icone = "fas fa-book-reader", Agrupamento = "Configurações", OrdemAgrupamento = 7, OrdemMenu = 2, EhAlteracao = true, Url = "/configuracoes/tipo-avaliacao")]
         TA_A = 103,
 
-        [PermissaoMenu(Menu = "Aulas Dadas x Aulas Previstas", Icone = "", Agrupamento = "Diário de Classe", OrdemAgrupamento = 1, OrdemMenu = 4, EhInclusao = true, Url = "/diario-classe/aula-dada-aula-prevista")]
+        [PermissaoMenu(Menu = "Aula prevista X Aula dada", Icone = "", Agrupamento = "Diário de Classe", OrdemAgrupamento = 1, OrdemMenu = 4, EhInclusao = true, Url = "/diario-classe/aula-dada-aula-prevista")]
         ADAP_I = 104,
 
-        [PermissaoMenu(Menu = "Aulas Dadas x Aulas Previstas", Icone = "", Agrupamento = "Diário de Classe", OrdemAgrupamento = 1, OrdemMenu = 4, EhAlteracao = true, Url = "/diario-classe/aula-dada-aula-prevista")]
+        [PermissaoMenu(Menu = "Aula prevista X Aula dada", Icone = "", Agrupamento = "Diário de Classe", OrdemAgrupamento = 1, OrdemMenu = 4, EhAlteracao = true, Url = "/diario-classe/aula-dada-aula-prevista")]
         ADAP_A = 105,
 
-        [PermissaoMenu(Menu = "Aulas Dadas x Aulas Previstas", Icone = "", Agrupamento = "Diário de Classe", OrdemAgrupamento = 1, OrdemMenu = 4, EhConsulta = true, Url = "/diario-classe/aula-dada-aula-prevista")]
+        [PermissaoMenu(Menu = "Aula prevista X Aula dada", Icone = "", Agrupamento = "Diário de Classe", OrdemAgrupamento = 1, OrdemMenu = 4, EhConsulta = true, Url = "/diario-classe/aula-dada-aula-prevista")]
         ADAP_C = 106,
 
-        [PermissaoMenu(Menu = "Aulas Dadas x Aulas Previstas", Icone = "", Agrupamento = "Diário de Classe", OrdemAgrupamento = 1, OrdemMenu = 4, EhExclusao = true, Url = "/diario-classe/aula-dada-aula-prevista")]
+        [PermissaoMenu(Menu = "Aula prevista X Aula dada", Icone = "", Agrupamento = "Diário de Classe", OrdemAgrupamento = 1, OrdemMenu = 4, EhExclusao = true, Url = "/diario-classe/aula-dada-aula-prevista")]
         ADAP_E = 107,
 
         [PermissaoMenu(Menu = "Registro POA", Icone = "", Agrupamento = "Diário de Classe", OrdemAgrupamento = 1, OrdemMenu = 5, EhInclusao = true, Url = "/diario-classe/registro-poa")]
