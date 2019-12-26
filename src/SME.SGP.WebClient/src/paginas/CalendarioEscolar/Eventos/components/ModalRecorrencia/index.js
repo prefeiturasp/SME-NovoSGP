@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import PropTypes from 'prop-types';
 
 // Form
@@ -57,7 +57,7 @@ function ModalRecorrencia({
   /**
    * @description Verifica se o botao de salvar deve ser habilitado
    */
-  const formIsValid = () => {
+  const formIsValid = useCallback(() => {
     const isMonthSelected = tipoRecorrencia.value === '2';
     const noDiaIsValid = padraoRecorrencia === '0' && diaNumero > 0;
     const notNoDiaIsValid =
@@ -72,14 +72,21 @@ function ModalRecorrencia({
     }
 
     return false;
-  };
+  }, [
+    dataInicio,
+    diaNumero,
+    diaSemana,
+    diasSemana.length,
+    padraoRecorrencia,
+    tipoRecorrencia.value,
+  ]);
 
   useEffect(() => {
     if (initialValues) {
       setDataInicio(initialValues.dataInicio);
       setValoresIniciais(initialValues);
     }
-  });
+  }, [initialValues]);
 
   useEffect(() => {
     setHabilitaSalvar(formIsValid());
@@ -92,6 +99,7 @@ function ModalRecorrencia({
     padraoRecorrencia,
     quantidadeRecorrencia,
     tipoRecorrencia,
+    formIsValid,
   ]);
 
   const onChangeWeekDay = day => {
@@ -101,14 +109,6 @@ function ModalRecorrencia({
     } else {
       setDiasSemana([...diasSemana, day]);
     }
-  };
-
-  const onCloseModal = () => {
-    setDataInicio('');
-    setDataTermino('');
-    setDiasSemana([]);
-    setValoresIniciais(valoresDefault);
-    onCloseRecorrencia();
   };
 
   const onChangeDataInicio = e => setDataInicio(e);
@@ -155,12 +155,31 @@ function ModalRecorrencia({
     });
   };
 
+  const onCloseModal = () => {
+    setDataInicio('');
+    setDataTermino('');
+    setDiasSemana([]);
+    setValoresIniciais(valoresDefault);
+    onSaveRecorrencia(valoresDefault);
+    onCloseRecorrencia();
+  };
+
+  const desabilitarData = current => {
+    if (current) {
+      return (
+        current < window.moment().startOf('year') ||
+        current > window.moment().endOf('year')
+      );
+    }
+    return false;
+  };
+
   return (
     <ContainerModal>
       <ModalConteudoHtml
         titulo="Repetir"
         visivel={show}
-        closable={!!true}
+        closable
         onClose={() => onCloseModal()}
         onConfirmacaoSecundaria={() => onCloseModal()}
         onConfirmacaoPrincipal={() => onSubmitRecorrencia()}
@@ -187,6 +206,7 @@ function ModalRecorrencia({
                     onChange={onChangeDataInicio}
                     placeholder="DD/MM/AAAA"
                     formatoData="DD/MM/YYYY"
+                    desabilitarData={desabilitarData}
                   />
                 </div>
                 <div className="col-lg-6">
@@ -196,6 +216,7 @@ function ModalRecorrencia({
                     onChange={onChangeDataTermino}
                     placeholder="DD/MM/AAAA"
                     formatoData="DD/MM/YYYY"
+                    desabilitarData={desabilitarData}
                   />
                 </div>
               </LinhaBootstrap>
