@@ -44,6 +44,21 @@ namespace SME.SGP.Dominio
 
             var atividadesAvaliativas = repositorioAtividadeAvaliativa.ListarPorIds(idsAtividadesAvaliativas);
 
+            var ativadadesMultidisciplina = new List<AtividadeAvaliativa>();
+
+            foreach (var atividade in atividadesAvaliativas)
+            {
+                if (atividade.Categoria.Equals(CategoriaAtividadeAvaliativa.Interdisciplinar))
+                {
+
+                }
+            }
+
+            if (ativadadesMultidisciplina.Count > 0)
+            {
+                atividadesAvaliativas.ToList().AddRange(ativadadesMultidisciplina);
+            }
+
             var alunos = await servicoEOL.ObterAlunosPorTurma(turmaId);
 
             if (alunos == null || !alunos.Any())
