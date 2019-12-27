@@ -111,10 +111,7 @@ const EventosForm = ({ match }) => {
   };
   const [valoresIniciais, setValoresIniciais] = useState(inicial);
 
-  const opcoesLetivo = [
-    { label: 'Sim', value: 1 },
-    { label: 'Não', value: 2 },
-  ];
+  const opcoesLetivo = [{ label: 'Sim', value: 1 }, { label: 'Não', value: 2 }];
 
   const [validacoes, setValidacoes] = useState({});
 
@@ -462,12 +459,18 @@ const EventosForm = ({ match }) => {
     /**
      * @description Metodo a ser disparado quando receber a mensagem do servidor
      */
-    const sucessoAoSalvar = resposta => {
+    const sucessoAoSalvar = (resposta, recorrencia) => {
       if (tiposCalendarioParaCopiar && tiposCalendarioParaCopiar.length > 0) {
         setListaMensagensCopiarEvento(resposta.data);
         setExibirModalRetornoCopiarEvento(true);
       } else {
-        sucesso(resposta.data[0].mensagem);
+        if (!recorrencia) {
+          sucesso(resposta.data[0].mensagem);
+        } else {
+          sucesso(
+            'Evento cadastrado com sucesso. Serão cadastrados eventos recorrentes, em breve você receberá uma notificação com o resultado do processamento.'
+          );
+        }
         history.push('/calendario-escolar/eventos');
       }
     };
@@ -491,7 +494,7 @@ const EventosForm = ({ match }) => {
 
       cadastrado = await servicoEvento.salvar(idEvento || 0, payload);
       if (cadastrado && cadastrado.status === 200) {
-        sucessoAoSalvar(cadastrado);
+        sucessoAoSalvar(cadastrado, recorrencia);
       }
     } catch (e) {
       if (e && e.response && e.response.status === 602) {
@@ -502,7 +505,7 @@ const EventosForm = ({ match }) => {
             DataConfirmada: true,
           });
           if (request) {
-            sucessoAoSalvar(request);
+            sucessoAoSalvar(request, recorrencia);
           }
         }
         return false;
@@ -934,7 +937,7 @@ const EventosForm = ({ match }) => {
                       !!valoresIniciais.id
                     }
                   />
-                  {!!recorrencia && (
+                  {!!recorrencia && recorrencia.dataInicio && (
                     <small>Existe recorrência cadastrada</small>
                   )}
                 </div>
