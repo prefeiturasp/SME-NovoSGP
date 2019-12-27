@@ -120,7 +120,7 @@ namespace SME.SGP.Aplicacao
             {
                 new RetornoCopiarEventoDto(retornoCadasradoEvento, true)
             };
-            Background.Core.Cliente.Executar<IComandosEvento>(x => x.GravarRecorrencia(eventoDto, evento));
+            Background.Core.Cliente.Executar(() => GravarRecorrencia(eventoDto, evento));
             mensagens.AddRange(await CopiarEventos(eventoDto));
 
             return mensagens;

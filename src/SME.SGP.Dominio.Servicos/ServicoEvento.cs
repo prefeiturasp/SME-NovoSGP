@@ -134,7 +134,7 @@ namespace SME.SGP.Dominio.Servicos
 
             if (evento.EventoPaiId.HasValue && evento.EventoPaiId > 0 && alterarRecorrenciaCompleta)
             {
-                SME.Background.Core.Cliente.Executar<IServicoEvento>(x => x.AlterarRecorrenciaEventos(evento, alterarRecorrenciaCompleta));
+                SME.Background.Core.Cliente.Executar(() => AlterarRecorrenciaEventos(evento, alterarRecorrenciaCompleta));
             }
 
             if (ehAlteracao)
