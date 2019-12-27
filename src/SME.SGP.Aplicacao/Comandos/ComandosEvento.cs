@@ -100,8 +100,8 @@ namespace SME.SGP.Aplicacao
 
         private Evento MapearParaEntidade(Evento evento, EventoDto eventoDto)
         {
-            evento.DataFim = eventoDto.DataFim.HasValue ? eventoDto.DataFim.Value : eventoDto.DataInicio;
-            evento.DataInicio = eventoDto.DataInicio;
+            evento.DataFim = eventoDto.DataFim.HasValue ? eventoDto.DataFim.Value.Local() : eventoDto.DataInicio.Local();
+            evento.DataInicio = eventoDto.DataInicio.Local();
             evento.Descricao = eventoDto.Descricao;
             evento.DreId = eventoDto.DreId;
             evento.FeriadoId = eventoDto.FeriadoId;

@@ -60,7 +60,7 @@ namespace SME.SGP.Aplicacao
             aulaEntity.DisciplinaId = dto.DisciplinaId;
             aulaEntity.TurmaId = dto.TurmaId;
             aulaEntity.TipoCalendarioId = dto.TipoCalendarioId;
-            aulaEntity.DataAula = dto.DataAula;
+            aulaEntity.DataAula = dto.DataAula.Local();
             aulaEntity.Quantidade = dto.Quantidade;
             aulaEntity.TipoAula = dto.TipoAula;
             aulaEntity.AulaCJ = usuarioEhCJ;
