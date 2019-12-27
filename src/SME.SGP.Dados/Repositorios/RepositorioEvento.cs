@@ -80,7 +80,7 @@ namespace SME.SGP.Dados.Repositorios
 
         public bool EhEventoLetivoPorTipoDeCalendarioDataDreUe(long tipoCalendarioId, DateTime data, string dreId, string ueId)
         {
-            string cabecalho = "select min(letivo) from evento e where e.excluido = false";
+            string cabecalho = "select count(id) from evento e where e.excluido = false";
             string whereTipoCalendario = "and e.tipo_calendario_id = @tipoCalendarioId";
             StringBuilder query = new StringBuilder();
             query.AppendLine(cabecalho);
@@ -90,13 +90,20 @@ namespace SME.SGP.Dados.Repositorios
             else if (string.IsNullOrEmpty(ueId))
                 query.AppendLine("and e.dre_id is null and e.ue_id is null");
             query.AppendLine("and e.data_inicio <= @data and e.data_fim >= @data");
+            query.AppendLine("and e.letivo = 2");
+
             if (!string.IsNullOrEmpty(ueId))
             {
                 query.AppendLine("UNION");
                 query.AppendLine(cabecalho);
                 query.AppendLine(whereTipoCalendario);
-                query.AppendLine("and e.dre_id = @dreId and e.ue_id = @ueId");
+
+                if (!string.IsNullOrEmpty(dreId))
+                    query.AppendLine("and e.dre_id = @dreId");
+
+                query.AppendLine("and e.ue_id = @ueId");
                 query.AppendLine("and e.data_inicio <= @data and e.data_fim >= @data");
+                query.AppendLine("and e.letivo = 2");
             }
 
             if (!string.IsNullOrEmpty(dreId) || !string.IsNullOrEmpty(ueId))
@@ -106,10 +113,11 @@ namespace SME.SGP.Dados.Repositorios
                 query.AppendLine(whereTipoCalendario);
                 query.AppendLine("and e.dre_id is null and e.ue_id is null");
                 query.AppendLine("and e.data_inicio <= @data and e.data_fim >= @data");
+                query.AppendLine("and e.letivo = 2");
             }
 
-            var retorno = database.Conexao.QueryFirstOrDefault<int?>(query.ToString(), new { tipoCalendarioId, dreId, ueId, data });
-            return retorno == 1 || retorno == null;
+            var retorno = database.Conexao.Query<int?>(query.ToString(), new { tipoCalendarioId, dreId, ueId, data = data.Date });
+            return retorno == null || retorno.Sum() == 0;
         }
 
         public async Task<IEnumerable<Evento>> EventosNosDiasETipo(DateTime dataInicio, DateTime dataFim, TipoEvento tipoEventoCodigo, long tipoCalendarioId, string UeId, string DreId)
