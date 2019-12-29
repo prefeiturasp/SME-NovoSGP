@@ -81,7 +81,7 @@ namespace SME.SGP.Aplicacao
                         .OrderBy(a => a.DataAvaliacao)
                         .ToList();
                     var alunosIds = alunos.Select(a => a.CodigoAluno).Distinct();
-                    var notas = repositorioNotasConceitos.ObterNotasPorAlunosAtividadesAvaliativas(atividadesAvaliativasdoBimestre.Select(a => a.Id).Distinct(), alunosIds);
+                    var notas = repositorioNotasConceitos.ObterNotasPorAlunosAtividadesAvaliativas(atividadesAvaliativasdoBimestre.Select(a => a.Id).Distinct(), alunosIds, disciplinaCodigo);
                     var ausenciasAtividadesAvaliativas = await repositorioFrequencia.ObterAusencias(turmaCodigo, disciplinaCodigo, atividadesAvaliativasdoBimestre.Select(a => a.DataAvaliacao).Distinct().ToArray(), alunosIds.ToArray());
 
                     var professorRfTitularTurmaDisciplina = string.Empty;

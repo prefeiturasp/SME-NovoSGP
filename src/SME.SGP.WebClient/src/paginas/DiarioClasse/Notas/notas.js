@@ -269,6 +269,7 @@ const Notas = () => {
       return api
         .post(`v1/avaliacoes/notas`, {
           turmaId: usuario.turmaSelecionada.turma,
+          disciplinaId: disciplinaSelecionada,
           notasConceitos: valoresBimestresSalvar,
         })
         .then(salvouNotas => {

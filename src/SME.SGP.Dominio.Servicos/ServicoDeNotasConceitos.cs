@@ -13,6 +13,7 @@ namespace SME.SGP.Dominio
     {
         private readonly IConsultasAbrangencia consultasAbrangencia;
         private readonly IRepositorioAtividadeAvaliativa repositorioAtividadeAvaliativa;
+        private readonly IRepositorioAtividadeAvaliativaDisciplina repositorioAtividadeAvaliativaDisciplina;
         private readonly IRepositorioCiclo repositorioCiclo;
         private readonly IRepositorioConceito repositorioConceito;
         private readonly IRepositorioNotaParametro repositorioNotaParametro;
@@ -25,7 +26,8 @@ namespace SME.SGP.Dominio
             IServicoEOL servicoEOL, IConsultasAbrangencia consultasAbrangencia,
             IRepositorioNotaTipoValor repositorioNotaTipoValor, IRepositorioCiclo repositorioCiclo,
             IRepositorioConceito repositorioConceito, IRepositorioNotaParametro repositorioNotaParametro,
-            IRepositorioNotasConceitos repositorioNotasConceitos, IUnitOfWork unitOfWork)
+            IRepositorioNotasConceitos repositorioNotasConceitos, IUnitOfWork unitOfWork,
+            IRepositorioAtividadeAvaliativaDisciplina repositorioAtividadeAvaliativaDisciplina)
         {
             this.repositorioAtividadeAvaliativa = repositorioAtividadeAvaliativa ?? throw new ArgumentNullException(nameof(repositorioAtividadeAvaliativa));
             this.servicoEOL = servicoEOL ?? throw new ArgumentNullException(nameof(servicoEOL));
@@ -36,28 +38,14 @@ namespace SME.SGP.Dominio
             this.repositorioNotaParametro = repositorioNotaParametro ?? throw new ArgumentNullException(nameof(repositorioNotaParametro));
             this.repositorioNotasConceitos = repositorioNotasConceitos ?? throw new ArgumentNullException(nameof(repositorioNotasConceitos));
             this.unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
+            this.repositorioAtividadeAvaliativaDisciplina = repositorioAtividadeAvaliativaDisciplina ?? throw new ArgumentNullException(nameof(repositorioAtividadeAvaliativaDisciplina));
         }
 
-        public async Task Salvar(IEnumerable<NotaConceito> notasConceitos, string professorRf, string turmaId)
+        public async Task Salvar(IEnumerable<NotaConceito> notasConceitos, string professorRf, string turmaId, string disciplinaId)
         {
             var idsAtividadesAvaliativas = notasConceitos.Select(x => x.AtividadeAvaliativaID);
 
             var atividadesAvaliativas = repositorioAtividadeAvaliativa.ListarPorIds(idsAtividadesAvaliativas);
-
-            var ativadadesMultidisciplina = new List<AtividadeAvaliativa>();
-
-            foreach (var atividade in atividadesAvaliativas)
-            {
-                if (atividade.Categoria.Equals(CategoriaAtividadeAvaliativa.Interdisciplinar))
-                {
-
-                }
-            }
-
-            if (ativadadesMultidisciplina.Count > 0)
-            {
-                atividadesAvaliativas.ToList().AddRange(ativadadesMultidisciplina);
-            }
 
             var alunos = await servicoEOL.ObterAlunosPorTurma(turmaId);
 
@@ -74,7 +62,7 @@ namespace SME.SGP.Dominio
             {
                 var avaliacao = atividadesAvaliativas.FirstOrDefault(x => x.Id == notasPorAvaliacao.Key);
 
-                entidadesSalvar.AddRange(ValidarEObter(notasPorAvaliacao.ToList(), avaliacao, alunos, professorRf));
+                entidadesSalvar.AddRange(ValidarEObter(notasPorAvaliacao.ToList(), avaliacao, alunos, professorRf, disciplinaId));
             }
 
             SalvarNoBanco(entidadesSalvar);
@@ -148,8 +136,9 @@ namespace SME.SGP.Dominio
                 throw new NegocioException("Somente o professor que criou a avaliação, pode atribuir e/ou editar notas/conceitos");
         }
 
-        private IEnumerable<NotaConceito> ValidarEObter(IEnumerable<NotaConceito> notasConceitos, AtividadeAvaliativa atividadeAvaliativa, IEnumerable<AlunoPorTurmaResposta> alunos, string professorRf)
+        private IEnumerable<NotaConceito> ValidarEObter(IEnumerable<NotaConceito> notasConceitos, AtividadeAvaliativa atividadeAvaliativa, IEnumerable<AlunoPorTurmaResposta> alunos, string professorRf, string disciplinaId)
         {
+            var notasMultidisciplina = new List<NotaConceito>();
             notasConceitos.ToList().ForEach(notaConceito =>
             {
                 var tipoNota = TipoNotaPorAvaliacao(atividadeAvaliativa);
@@ -178,9 +167,31 @@ namespace SME.SGP.Dominio
                 }
 
                 notaConceito.TipoNota = (TipoNota)tipoNota.Id;
+                notaConceito.DisciplinaId = disciplinaId;
+                if (atividadeAvaliativa.Categoria.Equals(CategoriaAtividadeAvaliativa.Interdisciplinar) && notaConceito.Id.Equals(0))
+                {
+                    var atividadeDisciplinas = repositorioAtividadeAvaliativaDisciplina.ListarPorIdAtividade(atividadeAvaliativa.Id).Result;
+                    foreach(var atividade in atividadeDisciplinas)
+                    {
+                        if (!atividade.DisciplinaId.Equals(disciplinaId))
+                        {
+                            notasMultidisciplina.Add(new NotaConceito
+                            {
+                                AlunoId = notaConceito.AlunoId,
+                                AtividadeAvaliativaID = notaConceito.AtividadeAvaliativaID,
+                                DisciplinaId = atividade.DisciplinaId,
+                                Nota = notaConceito.Nota,
+                                Conceito = notaConceito.Conceito,
+                                TipoNota = notaConceito.TipoNota
+                            });
+                        }
+                    }
+                }
             });
+            var result = notasConceitos.ToList();
+            result.AddRange(notasMultidisciplina);
 
-            return notasConceitos;
+            return result;
         }
     }
 }
