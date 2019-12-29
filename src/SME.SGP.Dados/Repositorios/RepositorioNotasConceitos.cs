@@ -13,7 +13,7 @@ namespace SME.SGP.Dados.Repositorios
         {
         }
 
-        public IEnumerable<NotaConceito> ObterNotasPorAlunosAtividadesAvaliativas(IEnumerable<long> atividadesAvaliativas, IEnumerable<string> alunosIds)
+        public IEnumerable<NotaConceito> ObterNotasPorAlunosAtividadesAvaliativas(IEnumerable<long> atividadesAvaliativas, IEnumerable<string> alunosIds, string disciplinaId)
         {
             var atividadesAvaliativasString = string.Join(",", atividadesAvaliativas);
             var alunosIdsString = $"'{string.Join("','", alunosIds)}'";
@@ -21,7 +21,8 @@ namespace SME.SGP.Dados.Repositorios
             var sql = $@"select id, atividade_avaliativa, aluno_id, nota, conceito, tipo_nota, criado_em,
                         criado_por, criado_rf, alterado_em, alterado_por, alterado_rf
                         from notas_conceito where atividade_avaliativa in
-                        ({atividadesAvaliativasString}) and aluno_id in ({alunosIdsString})";
+                        ({atividadesAvaliativasString}) and aluno_id in ({alunosIdsString})
+                        and disciplina_id = {disciplinaId}";
 
             return database.Query<NotaConceito>(sql);
         }
