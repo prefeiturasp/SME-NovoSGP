@@ -1,4 +1,5 @@
-﻿using SME.SGP.Dominio;
+﻿using SME.SGP.Aplicacao.Integracoes;
+using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System;
@@ -19,6 +20,7 @@ namespace SME.SGP.Aplicacao
         private readonly IRepositorioAula repositorioAula;
         private readonly IRepositorioObjetivoAprendizagemPlano repositorioObjetivoAprendizagemPlano;
         private readonly IRepositorioObjetivoAprendizagemAula repositorioObjetivosAula;
+        private readonly IServicoEOL servicoEol;
         private readonly IServicoUsuario servicoUsuario;
         private readonly IUnitOfWork unitOfWork;
 
@@ -32,7 +34,8 @@ namespace SME.SGP.Aplicacao
                         IConsultasPlanoAnual consultasPlanoAnual,
                         IConsultasProfessor consultasProfessor,
                         IServicoUsuario servicoUsuario,
-                        IUnitOfWork unitOfWork)
+                        IUnitOfWork unitOfWork,
+                        IServicoEOL servicoEol)
         {
             this.repositorio = repositorioPlanoAula;
             this.repositorioObjetivosAula = repositorioObjetivosAula;
@@ -44,11 +47,18 @@ namespace SME.SGP.Aplicacao
             this.consultasObjetivoAprendizagem = consultasObjetivoAprendizagem;
             this.consultasPlanoAnual = consultasPlanoAnual;
             this.unitOfWork = unitOfWork;
+            this.servicoEol = servicoEol ?? throw new ArgumentNullException(nameof(servicoEol));
             this.servicoUsuario = servicoUsuario;
         }
 
         public async Task ExcluirPlanoDaAula(long aulaId)
         {
+            var usuario = await servicoUsuario.ObterUsuarioLogado();
+            var aula = repositorioAula.ObterPorId(aulaId);
+
+            if (usuario.PerfilAtual == Perfis.PERFIL_PROFESSOR || usuario.PerfilAtual == Perfis.PERFIL_CJ)
+                VerificaSeProfessorPodePersistirTurma(usuario.CodigoRf, aula.TurmaId, aula.DataAula);
+
             await repositorio.ExcluirPlanoDaAula(aulaId);
         }
 
@@ -99,10 +109,15 @@ namespace SME.SGP.Aplicacao
         public async Task Salvar(PlanoAulaDto planoAulaDto, bool controlarTransacao = true)
         {
             var aula = repositorioAula.ObterPorId(planoAulaDto.AulaId);
-            var abrangenciaTurma = await consultasAbrangencia.ObterAbrangenciaTurma(aula.TurmaId);
 
+            var abrangenciaTurma = await consultasAbrangencia.ObterAbrangenciaTurma(aula.TurmaId);
             if (abrangenciaTurma == null)
                 throw new NegocioException("Usuario sem acesso a turma da respectiva aula");
+
+            var usuario = await servicoUsuario.ObterUsuarioLogado();
+
+            if (usuario.PerfilAtual == Perfis.PERFIL_PROFESSOR || usuario.PerfilAtual == Perfis.PERFIL_CJ)
+                VerificaSeProfessorPodePersistirTurma(usuario.CodigoRf, aula.TurmaId, aula.DataAula);
 
             PlanoAula planoAula = await repositorio.ObterPlanoAulaPorAula(planoAulaDto.AulaId);
             planoAula = MapearParaDominio(planoAulaDto, planoAula);
@@ -124,7 +139,6 @@ namespace SME.SGP.Aplicacao
                 // Para professores substitutos (CJ) a seleção dos objetivos deve ser opcional
                 if (!permitePlanoSemObjetivos)
                 {
-                    var usuario = await servicoUsuario.ObterUsuarioLogado();
                     permitePlanoSemObjetivos = usuario.EhProfessorCj();
                 }
 
@@ -256,6 +270,12 @@ namespace SME.SGP.Aplicacao
 
                )
                 throw new NegocioException("Somente é possível migrar o plano de aula para turmas atribuidas ao professor");
+        }
+
+        private void VerificaSeProfessorPodePersistirTurma(string codigoRf, string turmaId, DateTime dataAula)
+        {
+            if (!servicoEol.ProfessorPodePersistirTurma(codigoRf, turmaId, dataAula))
+                throw new NegocioException("Você não pode fazer alterações ou inclusões nesta turma e data.");
         }
     }
 }
