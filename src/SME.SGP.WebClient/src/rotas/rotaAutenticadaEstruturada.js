@@ -18,6 +18,7 @@ const RotaAutenticadaEstruturada = memo(
     const permissoes = useSelector(state => state.usuario.permissoes);
     const primeiroAcesso = useSelector(state => state.usuario.modificarSenha);
     const carregandoPerfil = useSelector(state => state.usuario.menu);
+    const { loaderGeral } = useSelector(state => state.loader);
 
     dispatch(setSomenteConsulta(false));
 
@@ -38,7 +39,7 @@ const RotaAutenticadaEstruturada = memo(
     }
 
     return (
-      <Loader loading={!carregandoPerfil}>
+      <Loader loading={loaderGeral || !carregandoPerfil}>
         <Route {...propriedades} component={Component} />
       </Loader>
     );
