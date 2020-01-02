@@ -5,6 +5,7 @@ using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Dominio
@@ -20,7 +21,10 @@ namespace SME.SGP.Dominio
         private readonly IRepositorioNotasConceitos repositorioNotasConceitos;
         private readonly IRepositorioNotaTipoValor repositorioNotaTipoValor;
         private readonly IRepositorioPeriodoEscolar repositorioPeriodoEscolar;
+        private readonly IRepositorioAula repositorioAula;
+        private readonly IRepositorioTurma repositorioTurma;
         private readonly IServicoEOL servicoEOL;
+        private readonly IServicoUsuario servicoUsuario;
         private readonly IUnitOfWork unitOfWork;
         private readonly IServicoNotificacao servicoNotificacao;
 
@@ -30,7 +34,8 @@ namespace SME.SGP.Dominio
             IRepositorioConceito repositorioConceito, IRepositorioNotaParametro repositorioNotaParametro,
             IRepositorioNotasConceitos repositorioNotasConceitos, IUnitOfWork unitOfWork,
             IRepositorioAtividadeAvaliativaDisciplina repositorioAtividadeAvaliativaDisciplina,
-            IServicoNotificacao servicoNotificacao, IRepositorioPeriodoEscolar repositorioPeriodoEscolar)
+            IServicoNotificacao servicoNotificacao, IRepositorioPeriodoEscolar repositorioPeriodoEscolar,
+            IRepositorioAula repositorioAula, IRepositorioTurma repositorioTurma, IServicoUsuario servicoUsuario)
         {
             this.repositorioAtividadeAvaliativa = repositorioAtividadeAvaliativa ?? throw new ArgumentNullException(nameof(repositorioAtividadeAvaliativa));
             this.servicoEOL = servicoEOL ?? throw new ArgumentNullException(nameof(servicoEOL));
@@ -41,9 +46,12 @@ namespace SME.SGP.Dominio
             this.repositorioNotaParametro = repositorioNotaParametro ?? throw new ArgumentNullException(nameof(repositorioNotaParametro));
             this.repositorioNotasConceitos = repositorioNotasConceitos ?? throw new ArgumentNullException(nameof(repositorioNotasConceitos));
             this.repositorioPeriodoEscolar = repositorioPeriodoEscolar ?? throw new ArgumentNullException(nameof(repositorioPeriodoEscolar));
-            this.unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
             this.repositorioAtividadeAvaliativaDisciplina = repositorioAtividadeAvaliativaDisciplina ?? throw new ArgumentNullException(nameof(repositorioAtividadeAvaliativaDisciplina));
+            this.repositorioAula = repositorioAula ?? throw new ArgumentNullException(nameof(repositorioAula));
+            this.repositorioTurma = repositorioTurma ?? throw new ArgumentNullException(nameof(repositorioTurma));
+            this.unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
             this.servicoNotificacao = servicoNotificacao ?? throw new ArgumentNullException(nameof(servicoNotificacao));
+            this.servicoUsuario = servicoUsuario ?? throw new ArgumentNullException(nameof(servicoUsuario));
         }
 
         public async Task Salvar(IEnumerable<NotaConceito> notasConceitos, string professorRf, string turmaId, string disciplinaId)
@@ -144,6 +152,7 @@ namespace SME.SGP.Dominio
         private IEnumerable<NotaConceito> ValidarEObter(IEnumerable<NotaConceito> notasConceitos, AtividadeAvaliativa atividadeAvaliativa, IEnumerable<AlunoPorTurmaResposta> alunos, string professorRf, string disciplinaId)
         {
             var notasMultidisciplina = new List<NotaConceito>();
+            var alunosNotasExtemporaneas = new StringBuilder();
             notasConceitos.ToList().ForEach(notaConceito =>
             {
                 var tipoNota = TipoNotaPorAvaliacao(atividadeAvaliativa);
@@ -197,26 +206,48 @@ namespace SME.SGP.Dominio
 
                 if(notaConceito.Id > 0)
                 {
-                    //var ehBimestreAtual = EhBimestreAtual(atividadeAvaliativa.Tipo)
+                    var dataFinal = atividadeAvaliativa.DataAvaliacao.AddHours(23).AddMinutes(59).AddSeconds(59);
+                    var aula = repositorioAula.ObterAulaIntervaloTurmaDisciplina(atividadeAvaliativa.DataAvaliacao, dataFinal, atividadeAvaliativa.TurmaId, disciplinaId).Result;
+
+                    IEnumerable<PeriodoEscolar> periodosEscolares = repositorioPeriodoEscolar.ObterPorTipoCalendario(aula.TipoCalendarioId);
+                    var dataPesquisa = DateTime.Now;
+
+                    var periodoEscolar = periodosEscolares.FirstOrDefault(x => x.PeriodoInicio.Date <= dataPesquisa.Date && x.PeriodoFim.Date >= dataPesquisa.Date);
+                    var periodoEscolarInformado = periodosEscolares.FirstOrDefault(x => x.PeriodoInicio.Date <= atividadeAvaliativa.DataAvaliacao.Date && x.PeriodoFim.Date >= atividadeAvaliativa.DataAvaliacao.Date);
+                    var ehBimestreAtual = periodoEscolar.Bimestre.Equals(periodoEscolarInformado.Bimestre);
+
+                    if (!ehBimestreAtual)
+                    {
+                        alunosNotasExtemporaneas.AppendLine($"<li>{aluno.CodigoAluno} - {aluno.NomeAluno}</li>");
+                    }
                 }
             });
+
+            if (alunosNotasExtemporaneas.ToString().Length > 0)
+            {
+                var turma = repositorioTurma.ObterTurmaComUeEDrePorId(atividadeAvaliativa.TurmaId);
+                var usuario = servicoUsuario.ObterUsuarioLogado().Result;
+                var dataAtual = DateTime.Now;
+                string mensagem = $"<p>Os resultados da atividade avaliativa 'Redação sobre as férias' da turma {turma.Nome} da {turma.Ue.Nome} (DRE {turma.Ue.Dre.Nome}) no bimestre 2 de {turma.AnoLetivo} foram alterados " +
+                    $"pelo Professor ${usuario.Nome} ({usuario.CodigoRf}) em {dataAtual.ToString("dd/MM/yyyy")} às {dataAtual.ToString("HH:mm")} para os seguintes alunos:</p><br/>{alunosNotasExtemporaneas.ToString()}";
+                servicoNotificacao.Salvar(new Notificacao()
+                {
+                    Ano = atividadeAvaliativa.CriadoEm.Year,
+                    Categoria = NotificacaoCategoria.Alerta,
+                    DreId = atividadeAvaliativa.DreId,
+                    Mensagem = mensagem,
+                    UsuarioId = usuario.Id,
+                    Tipo = NotificacaoTipo.Notas,
+                    Titulo = $"Alteração em Atividade Avaliativa - Turma {turma.Nome}",
+                    TurmaId = atividadeAvaliativa.TurmaId,
+                    UeId = atividadeAvaliativa.UeId,
+                });
+            }
+
             var result = notasConceitos.ToList();
             result.AddRange(notasMultidisciplina);
-
             return result;
         }
-
-        private bool EhBimestreAtual(long tipoCalendarioId, DateTime dataAvaliacao)
-        {
-            IEnumerable<PeriodoEscolar> periodosEscolares = repositorioPeriodoEscolar.ObterPorTipoCalendario(tipoCalendarioId);
-            var dataPesquisa = DateTime.Now;
-
-            var periodoEscolar = periodosEscolares.FirstOrDefault(x => x.PeriodoInicio.Date <= dataPesquisa.Date && x.PeriodoFim.Date >= dataPesquisa.Date);
-            var periodoEscolarInformado = periodosEscolares.FirstOrDefault(x => x.PeriodoInicio.Date <= dataAvaliacao.Date && x.PeriodoFim.Date >= dataAvaliacao.Date);
-
-            return periodoEscolar.Bimestre.Equals(periodoEscolarInformado.Bimestre);
-        }
-
 
     }
 }

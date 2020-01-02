@@ -32,6 +32,24 @@ namespace SME.SGP.Dados.Repositorios
             });
         }
 
+        public async Task<AulaConsultaDto> ObterAulaIntervaloTurmaDisciplina(DateTime dataInicio, DateTime dataFim, string turmaId, string disciplinaId)
+        {
+            var query = @"select *
+                 from aula
+                where not excluido
+                  and DATE(data_aula) between @dataInicio and @dataFim
+                  and turma_id = @turmaId
+                  and disciplina_id = @disciplinaId";
+
+            return await database.Conexao.QueryFirstOrDefaultAsync<AulaConsultaDto>(query, new
+            {
+                dataInicio = dataInicio.Date,
+                dataFim = dataFim.Date,
+                turmaId,
+                disciplinaId
+            });
+        }
+
         public async Task<IEnumerable<AulaDto>> ObterAulas(long tipoCalendarioId, string turmaId, string ueId, string codigoRf, int? mes = null, int? semanaAno = null, string disciplinaId = null)
         {
             StringBuilder query = new StringBuilder();

@@ -8,6 +8,7 @@ namespace SME.SGP.Dominio.Interfaces
     public interface IRepositorioAula : IRepositorioBase<Aula>
     {
         Task<AulaConsultaDto> ObterAulaDataTurmaDisciplina(DateTime data, string turmaId, string disciplinaId);
+        Task<AulaConsultaDto> ObterAulaIntervaloTurmaDisciplina(DateTime dataInicio, DateTime dataFim, string turmaId, string disciplinaId);
 
         Task<IEnumerable<AulaDto>> ObterAulas(long tipoCalendarioId, string turmaId, string ueId, string CodigoRf, int? mes = null, int? semanaAno = null, string disciplinaId = null);
 
