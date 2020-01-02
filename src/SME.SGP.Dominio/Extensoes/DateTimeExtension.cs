@@ -8,7 +8,10 @@ namespace SME.SGP.Dominio
 
         public static DateTime Local(this DateTime data)
         {
-            return TimeZoneInfo.ConvertTimeFromUtc(data, fusoHorarioBrasil);
+            if (data.TimeOfDay.TotalSeconds > 0)
+                return TimeZoneInfo.ConvertTimeFromUtc(data, fusoHorarioBrasil);
+            else
+                return data;
         }
 
         public static DateTime ObterDomingo(this DateTime data)

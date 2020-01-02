@@ -47,6 +47,7 @@ const CalendarioProfessor = () => {
   const obterTiposCalendario = async modalidades => {
     setCarregandoTipos(true);
     const lista = await ServicoCalendarios.obterTiposCalendario();
+
     if (lista && lista.data) {
       const tiposCalendarioLista = [];
       if (lista.data) {
@@ -418,10 +419,8 @@ const CalendarioProfessor = () => {
   }, [
     turmas,
     turmaSelecionadaStore,
-    eventoAulaCalendarioEdicao,
     usuario.ehProfessor,
     usuario.ehProfessorCj,
-    opcaoTurma,
     listaTurmas,
     unidadeEscolarSelecionada,
   ]);
@@ -432,8 +431,8 @@ const CalendarioProfessor = () => {
 
   useEffect(() => {
     if (opcaoTurma === '1') {
-      setTodasTurmas(true);
       setTurmaSelecionada();
+      setTodasTurmas(true);
     } else if (opcaoTurma === '2') {
       if (Object.entries(turmaSelecionadaStore).length) {
         setTurmaSelecionada(turmaSelecionadaStore.turma);
