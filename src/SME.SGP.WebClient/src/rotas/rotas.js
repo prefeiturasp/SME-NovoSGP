@@ -437,7 +437,8 @@ rotas.set(`${RotasDto.FREQUENCIA_PLANO_AULA}`, {
   component: FrequenciaPlanoAula,
   exact: true,
   tipo: RotasTipo.EstruturadaAutenticada,
-  temPermissionamento: false,
+  temPermissionamento: true,
+  chavePermissao: RotasDto.FREQUENCIA_PLANO_AULA,
 });
 
 rotas.set(`${RotasDto.NOTAS}`, {
