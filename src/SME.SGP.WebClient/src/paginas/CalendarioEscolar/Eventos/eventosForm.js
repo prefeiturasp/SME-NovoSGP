@@ -111,10 +111,7 @@ const EventosForm = ({ match }) => {
   };
   const [valoresIniciais, setValoresIniciais] = useState(inicial);
 
-  const opcoesLetivo = [
-    { label: 'Sim', value: 1 },
-    { label: 'Não', value: 2 },
-  ];
+  const opcoesLetivo = [{ label: 'Sim', value: 1 }, { label: 'Não', value: 2 }];
 
   const [validacoes, setValidacoes] = useState({});
 
@@ -130,7 +127,10 @@ const EventosForm = ({ match }) => {
       const dres = await api.get('v1/abrangencias/false/dres');
       if (dres.data) {
         setListaDres(dres.data.sort(FiltroHelper.ordenarLista('nome')));
-        setDreDesabilitada(dres.data.length === 1);
+        if (dres.data.length === 1) {
+          setDreDesabilitada(true);
+          carregarUes(dres.data[0].codigo);
+        }
       } else {
         setListaDres([]);
       }
@@ -462,12 +462,18 @@ const EventosForm = ({ match }) => {
     /**
      * @description Metodo a ser disparado quando receber a mensagem do servidor
      */
-    const sucessoAoSalvar = resposta => {
+    const sucessoAoSalvar = (resposta, recorrencia) => {
       if (tiposCalendarioParaCopiar && tiposCalendarioParaCopiar.length > 0) {
         setListaMensagensCopiarEvento(resposta.data);
         setExibirModalRetornoCopiarEvento(true);
       } else {
-        sucesso(resposta.data[0].mensagem);
+        if (!recorrencia) {
+          sucesso(resposta.data[0].mensagem);
+        } else {
+          sucesso(
+            'Evento cadastrado com sucesso. Serão cadastrados eventos recorrentes, em breve você receberá uma notificação com o resultado do processamento.'
+          );
+        }
         history.push('/calendario-escolar/eventos');
       }
     };
@@ -491,7 +497,7 @@ const EventosForm = ({ match }) => {
 
       cadastrado = await servicoEvento.salvar(idEvento || 0, payload);
       if (cadastrado && cadastrado.status === 200) {
-        sucessoAoSalvar(cadastrado);
+        sucessoAoSalvar(cadastrado, recorrencia);
       }
     } catch (e) {
       if (e && e.response && e.response.status === 602) {
@@ -502,7 +508,7 @@ const EventosForm = ({ match }) => {
             DataConfirmada: true,
           });
           if (request) {
-            sucessoAoSalvar(request);
+            sucessoAoSalvar(request, recorrencia);
           }
         }
         return false;
@@ -857,7 +863,7 @@ const EventosForm = ({ match }) => {
                     eventoTipoFeriadoSelecionado
                       ? 'col-md-3 col-lg-3 col-xl-3'
                       : 'col-md-6 col-lg-6 col-xl-6'
-                  } pb-2`}
+                    } pb-2`}
                 >
                   <SelectComponent
                     form={form}
@@ -889,8 +895,8 @@ const EventosForm = ({ match }) => {
                     />
                   </div>
                 ) : (
-                  ''
-                )}
+                    ''
+                  )}
                 <div className="col-sm-12 col-md-6 col-lg-3 col-xl-3 pb-2">
                   <CampoData
                     form={form}
@@ -908,18 +914,18 @@ const EventosForm = ({ match }) => {
                 {tipoDataUnico ? (
                   ''
                 ) : (
-                  <div className="col-sm-12 col-md-6 col-lg-3 col-xl-3 pb-2">
-                    <CampoData
-                      form={form}
-                      label="Data fim do evento"
-                      placeholder="Data fim do evento"
-                      formatoData="DD/MM/YYYY"
-                      name="dataFim"
-                      onChange={onChangeCampos}
-                      desabilitado={desabilitarCampos}
-                    />
-                  </div>
-                )}
+                    <div className="col-sm-12 col-md-6 col-lg-3 col-xl-3 pb-2">
+                      <CampoData
+                        form={form}
+                        label="Data fim do evento"
+                        placeholder="Data fim do evento"
+                        formatoData="DD/MM/YYYY"
+                        name="dataFim"
+                        onChange={onChangeCampos}
+                        desabilitado={desabilitarCampos}
+                      />
+                    </div>
+                  )}
                 <div className="col-sm-12 col-md-2 col-lg-2 col-xl-2 pb-2">
                   <Button
                     label="Repetir"
@@ -934,7 +940,7 @@ const EventosForm = ({ match }) => {
                       !!valoresIniciais.id
                     }
                   />
-                  {!!recorrencia && (
+                  {!!recorrencia && recorrencia.dataInicio && (
                     <small>Existe recorrência cadastrada</small>
                   )}
                 </div>
@@ -974,16 +980,16 @@ const EventosForm = ({ match }) => {
                     disabled={desabilitarCampos}
                   />
                   {listaCalendarioParaCopiar &&
-                  listaCalendarioParaCopiar.length ? (
-                    <ListaCopiarEventos>
-                      <div className="mb-1">
-                        Evento será copiado para os calendários:
+                    listaCalendarioParaCopiar.length ? (
+                      <ListaCopiarEventos>
+                        <div className="mb-1">
+                          Evento será copiado para os calendários:
                       </div>
-                      {montarExibicaoEventosCopiar()}
-                    </ListaCopiarEventos>
-                  ) : (
-                    ''
-                  )}
+                        {montarExibicaoEventosCopiar()}
+                      </ListaCopiarEventos>
+                    ) : (
+                      ''
+                    )}
                 </div>
               </div>
             </Form>
@@ -999,8 +1005,8 @@ const EventosForm = ({ match }) => {
             alteradoRf={auditoria.alteradoRf}
           />
         ) : (
-          ''
-        )}
+            ''
+          )}
         <ModalConteudoHtml
           key="copiarEvento"
           visivel={exibirModalCopiarEvento}
@@ -1046,11 +1052,11 @@ const EventosForm = ({ match }) => {
                   {item.mensagem}
                 </strong>
               ) : (
-                <strong className="text-danger">
-                  <i className="fas fa-times mr-3" />
-                  {item.mensagem}
-                </strong>
-              )}
+                  <strong className="text-danger">
+                    <i className="fas fa-times mr-3" />
+                    {item.mensagem}
+                  </strong>
+                )}
             </p>
           ))}
         </ModalConteudoHtml>
