@@ -19,15 +19,18 @@ namespace SME.SGP.Dominio
         private readonly IRepositorioNotaParametro repositorioNotaParametro;
         private readonly IRepositorioNotasConceitos repositorioNotasConceitos;
         private readonly IRepositorioNotaTipoValor repositorioNotaTipoValor;
+        private readonly IRepositorioPeriodoEscolar repositorioPeriodoEscolar;
         private readonly IServicoEOL servicoEOL;
         private readonly IUnitOfWork unitOfWork;
+        private readonly IServicoNotificacao servicoNotificacao;
 
         public ServicoDeNotasConceitos(IRepositorioAtividadeAvaliativa repositorioAtividadeAvaliativa,
             IServicoEOL servicoEOL, IConsultasAbrangencia consultasAbrangencia,
             IRepositorioNotaTipoValor repositorioNotaTipoValor, IRepositorioCiclo repositorioCiclo,
             IRepositorioConceito repositorioConceito, IRepositorioNotaParametro repositorioNotaParametro,
             IRepositorioNotasConceitos repositorioNotasConceitos, IUnitOfWork unitOfWork,
-            IRepositorioAtividadeAvaliativaDisciplina repositorioAtividadeAvaliativaDisciplina)
+            IRepositorioAtividadeAvaliativaDisciplina repositorioAtividadeAvaliativaDisciplina,
+            IServicoNotificacao servicoNotificacao, IRepositorioPeriodoEscolar repositorioPeriodoEscolar)
         {
             this.repositorioAtividadeAvaliativa = repositorioAtividadeAvaliativa ?? throw new ArgumentNullException(nameof(repositorioAtividadeAvaliativa));
             this.servicoEOL = servicoEOL ?? throw new ArgumentNullException(nameof(servicoEOL));
@@ -37,8 +40,10 @@ namespace SME.SGP.Dominio
             this.repositorioConceito = repositorioConceito ?? throw new ArgumentNullException(nameof(repositorioConceito));
             this.repositorioNotaParametro = repositorioNotaParametro ?? throw new ArgumentNullException(nameof(repositorioNotaParametro));
             this.repositorioNotasConceitos = repositorioNotasConceitos ?? throw new ArgumentNullException(nameof(repositorioNotasConceitos));
+            this.repositorioPeriodoEscolar = repositorioPeriodoEscolar ?? throw new ArgumentNullException(nameof(repositorioPeriodoEscolar));
             this.unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
             this.repositorioAtividadeAvaliativaDisciplina = repositorioAtividadeAvaliativaDisciplina ?? throw new ArgumentNullException(nameof(repositorioAtividadeAvaliativaDisciplina));
+            this.servicoNotificacao = servicoNotificacao ?? throw new ArgumentNullException(nameof(servicoNotificacao));
         }
 
         public async Task Salvar(IEnumerable<NotaConceito> notasConceitos, string professorRf, string turmaId, string disciplinaId)
@@ -144,7 +149,9 @@ namespace SME.SGP.Dominio
                 var tipoNota = TipoNotaPorAvaliacao(atividadeAvaliativa);
 
                 if (notaConceito.Id > 0)
+                {
                     notaConceito.Validar(professorRf);
+                }
 
                 var aluno = alunos.FirstOrDefault(a => a.CodigoAluno.Equals(notaConceito.AlunoId));
 
@@ -187,11 +194,29 @@ namespace SME.SGP.Dominio
                         }
                     }
                 }
+
+                if(notaConceito.Id > 0)
+                {
+                    //var ehBimestreAtual = EhBimestreAtual(atividadeAvaliativa.Tipo)
+                }
             });
             var result = notasConceitos.ToList();
             result.AddRange(notasMultidisciplina);
 
             return result;
         }
+
+        private bool EhBimestreAtual(long tipoCalendarioId, DateTime dataAvaliacao)
+        {
+            IEnumerable<PeriodoEscolar> periodosEscolares = repositorioPeriodoEscolar.ObterPorTipoCalendario(tipoCalendarioId);
+            var dataPesquisa = DateTime.Now;
+
+            var periodoEscolar = periodosEscolares.FirstOrDefault(x => x.PeriodoInicio.Date <= dataPesquisa.Date && x.PeriodoFim.Date >= dataPesquisa.Date);
+            var periodoEscolarInformado = periodosEscolares.FirstOrDefault(x => x.PeriodoInicio.Date <= dataAvaliacao.Date && x.PeriodoFim.Date >= dataAvaliacao.Date);
+
+            return periodoEscolar.Bimestre.Equals(periodoEscolarInformado.Bimestre);
+        }
+
+
     }
 }

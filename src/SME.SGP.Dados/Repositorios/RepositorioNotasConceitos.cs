@@ -22,7 +22,7 @@ namespace SME.SGP.Dados.Repositorios
                         criado_por, criado_rf, alterado_em, alterado_por, alterado_rf
                         from notas_conceito where atividade_avaliativa in
                         ({atividadesAvaliativasString}) and aluno_id in ({alunosIdsString})
-                        and disciplina_id = {disciplinaId}";
+                        and disciplina_id = '{disciplinaId}'";
 
             return database.Query<NotaConceito>(sql);
         }
