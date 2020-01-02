@@ -307,7 +307,7 @@ namespace SME.SGP.Aplicacao
             atividadeAvaliativa.TipoAvaliacaoId = dto.TipoAvaliacaoId;
             atividadeAvaliativa.NomeAvaliacao = dto.Nome;
             atividadeAvaliativa.DescricaoAvaliacao = dto.Descricao;
-            atividadeAvaliativa.DataAvaliacao = dto.DataAvaliacao;
+            atividadeAvaliativa.DataAvaliacao = dto.DataAvaliacao.Local();
             atividadeAvaliativa.EhRegencia = ehRegencia;
             return atividadeAvaliativa;
         }
@@ -322,7 +322,7 @@ namespace SME.SGP.Aplicacao
             atividadeAvaliativa.TipoAvaliacaoId = dto.TipoAvaliacaoId;
             atividadeAvaliativa.NomeAvaliacao = dto.Nome;
             atividadeAvaliativa.DescricaoAvaliacao = dto.Descricao;
-            atividadeAvaliativa.DataAvaliacao = dto.DataAvaliacao;
+            atividadeAvaliativa.DataAvaliacao = dto.DataAvaliacao.Local();
             atividadeAvaliativa.EhRegencia = dto.EhRegencia;
             return atividadeAvaliativa;
         }

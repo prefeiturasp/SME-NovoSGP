@@ -39,8 +39,8 @@ namespace SME.SGP.Aplicacao
             return new AtribuicaoEsporadica
             {
                 UeId = Dto.UeId,
-                DataFim = Dto.DataFim,
-                DataInicio = Dto.DataInicio,
+                DataFim = Dto.DataFim.Local(),
+                DataInicio = Dto.DataInicio.Local(),
                 DreId = Dto.DreId,
                 Id = Dto.Id,
                 ProfessorRf = Dto.ProfessorRf
@@ -57,8 +57,8 @@ namespace SME.SGP.Aplicacao
             if (entidade == null || string.IsNullOrWhiteSpace(entidade.ProfessorRf))
                 throw new NegocioException($"Não foi encontrado atribuição de codigo {atribuicaoEsporadicaDto.Id}");
 
-            entidade.DataFim = atribuicaoEsporadicaDto.DataFim;
-            entidade.DataInicio = atribuicaoEsporadicaDto.DataInicio;
+            entidade.DataFim = atribuicaoEsporadicaDto.DataFim.Local();
+            entidade.DataInicio = atribuicaoEsporadicaDto.DataInicio.Local();
 
             return entidade;
         }
