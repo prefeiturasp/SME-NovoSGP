@@ -1,8 +1,8 @@
 ﻿using Dapper;
-using SME.SGP.Dados.Contexto;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
+using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
@@ -14,7 +14,7 @@ namespace SME.SGP.Dados.Repositorios
         {
         }
 
-        public PlanoAnualCompletoDto ObterPlanoAnualCompletoPorAnoEscolaBimestreETurma(int ano, string escolaId, long turmaId, int bimestre, long componenteCurricularEolId)
+        public PlanoAnualCompletoDto ObterPlanoAnualCompletoPorAnoEscolaBimestreETurma(int ano, string escolaId, string turmaId, int bimestre, long componenteCurricularEolId)
         {
             StringBuilder query = new StringBuilder();
 
@@ -35,6 +35,28 @@ namespace SME.SGP.Dados.Repositorios
             query.AppendLine("	pa.id");
 
             return database.Conexao.Query<PlanoAnualCompletoDto>(query.ToString(), new { ano, escolaId, turmaId, bimestre, componenteCurricularEolId }).SingleOrDefault();
+        }
+
+        public IEnumerable<PlanoAnualCompletoDto> ObterPlanoAnualCompletoPorAnoUEETurma(int ano, string ueId, string turmaId, long componenteCurricularEolId)
+        {
+            StringBuilder query = new StringBuilder();
+
+            query.AppendLine("select");
+            query.AppendLine("	pa.ano as AnoLetivo, pa.*, pa.migrado, ");
+            query.AppendLine("	string_agg(distinct cast(oap.objetivo_aprendizagem_jurema_id as text), ',') as ObjetivosAprendizagemPlano");
+            query.AppendLine("from");
+            query.AppendLine("	plano_anual pa");
+            query.AppendLine("left join objetivo_aprendizagem_plano oap on");
+            query.AppendLine("	pa.id = oap.plano_id");
+            query.AppendLine("where");
+            query.AppendLine("	pa.ano = @ano");
+            query.AppendLine("	and pa.escola_id = @ueId");
+            query.AppendLine("	and pa.turma_id = @turmaId");
+            query.AppendLine("	and pa.componente_curricular_eol_id = @componenteCurricularEolId");
+            query.AppendLine("group by");
+            query.AppendLine("	pa.id");
+
+            return database.Conexao.Query<PlanoAnualCompletoDto>(query.ToString(), new { ano, ueId, turmaId = int.Parse(turmaId), componenteCurricularEolId });
         }
 
         public PlanoAnual ObterPlanoAnualSimplificadoPorAnoEscolaBimestreETurma(int ano, string escolaId, long turmaId, int bimestre, long disciplinaId)
@@ -63,7 +85,7 @@ namespace SME.SGP.Dados.Repositorios
                 }).SingleOrDefault();
         }
 
-        public PlanoAnualObjetivosDisciplinaDto ObterPlanoObjetivosEscolaTurmaDisciplina(int ano, string escolaId, long turmaId, int bimestre, long componenteCurricularEolId, long disciplinaId)
+        public PlanoAnualObjetivosDisciplinaDto ObterPlanoObjetivosEscolaTurmaDisciplina(int ano, string escolaId, string turmaId, int bimestre, long componenteCurricularEolId, long disciplinaId)
         {
             string query = @"select
                     	pa.ano as AnoLetivo, pa.Bimestre,
@@ -81,18 +103,18 @@ namespace SME.SGP.Dados.Repositorios
 
             var componenteEolId = componenteCurricularEolId.ToString();
 
-            return database.Conexao.Query<PlanoAnualObjetivosDisciplinaDto>(query.ToString(), new 
-            { 
-                ano, 
+            return database.Conexao.Query<PlanoAnualObjetivosDisciplinaDto>(query.ToString(), new
+            {
+                ano,
                 bimestre,
-                escolaId, 
-                turmaId, 
+                escolaId,
+                turmaId,
                 componenteEolId,
                 disciplinaId
             }).SingleOrDefault();
         }
 
-        public bool ValidarPlanoExistentePorAnoEscolaTurmaEBimestre(int ano, string escolaId, long turmaId, int bimestre, long componenteCurricularEolId)
+        public bool ValidarPlanoExistentePorAnoEscolaTurmaEBimestre(int ano, string escolaId, string turmaId, int bimestre, long componenteCurricularEolId)
         {
             var query = @"select
 	                            1

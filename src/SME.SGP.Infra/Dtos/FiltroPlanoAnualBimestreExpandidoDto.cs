@@ -17,7 +17,7 @@ namespace SME.SGP.Infra
         [EnumeradoRequirido(ErrorMessage = "É obrigatorio informar o tipo de modalidade")]
         public Modalidade ModalidadePlanoAnual { get; set; }
 
-        [Required(ErrorMessage = "A turma deve ser informada")]
-        public int TurmaId { get; set; }
+        [Required(ErrorMessage = "A turma deve ser informada", AllowEmptyStrings = false)]
+        public string TurmaId { get; set; }
     }
 }

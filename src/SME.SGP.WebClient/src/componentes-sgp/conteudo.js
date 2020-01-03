@@ -3,7 +3,7 @@ import { useSelector } from 'react-redux';
 import { Switch } from 'react-router-dom';
 import shortid from 'shortid';
 import rotasArray from '~/rotas/rotas';
-
+import Editor from '~/componentes/editor/editor';
 import RotaAutenticadaEstruturada from '../rotas/rotaAutenticadaEstruturada';
 import BreadcrumbSgp from './breadcrumb-sgp';
 import Mensagens from './mensagens/mensagens';
@@ -13,10 +13,13 @@ import TempoExpiracaoSessao from './tempoExpiracaoSessao/tempoExpiracaoSessao';
 const Conteudo = () => {
   const menuRetraido = useSelector(store => store.navegacao.retraido);
 
+  const onChange = dados => console.log(dados);
+
   return (
     <div style={{ marginLeft: menuRetraido ? '115px' : '250px' }}>
       <TempoExpiracaoSessao />
       <BreadcrumbSgp />
+      {/* <Editor onChange={onChange} /> */}
       <div className="row h-100">
         <main role="main" className="col-md-12 col-lg-12 col-sm-12 col-xl-12">
           <ModalConfirmacao />
