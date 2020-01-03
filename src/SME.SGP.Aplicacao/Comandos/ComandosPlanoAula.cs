@@ -142,6 +142,12 @@ namespace SME.SGP.Aplicacao
                     permitePlanoSemObjetivos = usuario.EhProfessorCj();
                 }
 
+                // Caso a disciplina não possui vinculo com Jurema, os objetivos não devem ser exigidos
+                if (!permitePlanoSemObjetivos)
+                {
+                    permitePlanoSemObjetivos = !(await consultasObjetivoAprendizagem.DisciplinaPossuiObjetivosDeAprendizagem(Convert.ToInt32(aula.DisciplinaId)));
+                }
+
                 if (!permitePlanoSemObjetivos)
                     throw new NegocioException("A seleção de objetivos de aprendizagem é obrigatória para criação do plano de aula");
             }
