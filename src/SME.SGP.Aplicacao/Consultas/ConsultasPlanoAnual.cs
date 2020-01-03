@@ -14,16 +14,19 @@ namespace SME.SGP.Aplicacao
         private readonly IRepositorioPeriodoEscolar repositorioPeriodoEscolar;
         private readonly IRepositorioPlanoAnual repositorioPlanoAnual;
         private readonly IRepositorioTipoCalendario repositorioTipoCalendario;
+        private readonly IRepositorioTurma repositorioTurma;
 
         public ConsultasPlanoAnual(IRepositorioPlanoAnual repositorioPlanoAnual,
                                    IConsultasObjetivoAprendizagem consultasObjetivoAprendizagem,
                                    IRepositorioPeriodoEscolar repositorioPeriodoEscolar,
-                                   IRepositorioTipoCalendario repositorioTipoCalendario)
+                                   IRepositorioTipoCalendario repositorioTipoCalendario,
+                                   IRepositorioTurma repositorioTurma)
         {
             this.repositorioPlanoAnual = repositorioPlanoAnual ?? throw new System.ArgumentNullException(nameof(repositorioPlanoAnual));
             this.consultasObjetivoAprendizagem = consultasObjetivoAprendizagem ?? throw new System.ArgumentNullException(nameof(consultasObjetivoAprendizagem));
             this.repositorioPeriodoEscolar = repositorioPeriodoEscolar ?? throw new ArgumentNullException(nameof(repositorioPeriodoEscolar));
             this.repositorioTipoCalendario = repositorioTipoCalendario ?? throw new ArgumentNullException(nameof(repositorioTipoCalendario));
+            this.repositorioTurma = repositorioTurma ?? throw new ArgumentNullException(nameof(repositorioTurma));
         }
 
         public async Task<PlanoAnualCompletoDto> ObterBimestreExpandido(FiltroPlanoAnualBimestreExpandidoDto filtro)
@@ -103,12 +106,69 @@ namespace SME.SGP.Aplicacao
                     }
                 }
             }
+            else
+                planoAnual = ObterNovoPlanoAnual(filtroPlanoAnualDto.TurmaId, filtroPlanoAnualDto.AnoLetivo, filtroPlanoAnualDto.EscolaId);
             return planoAnual;
+        }
+
+        public async Task<IEnumerable<PlanoAnualCompletoDto>> ObterPorUETurmaAnoEComponenteCurricular(string ueId, string turmaId, int anoLetivo, long componenteCurricularEolId)
+        {
+            var periodos = ObterPeriodoEscolar(turmaId, anoLetivo);
+            var dataAtual = DateTime.UtcNow.Local().Date;
+            var listaPlanoAnual = repositorioPlanoAnual.ObterPlanoAnualCompletoPorAnoUEETurma(anoLetivo, ueId, turmaId, componenteCurricularEolId);
+            if (listaPlanoAnual != null && listaPlanoAnual.Any())
+            {
+                var objetivosAprendizagem = await consultasObjetivoAprendizagem.Listar();
+                foreach (var planoAnual in listaPlanoAnual)
+                {
+                    var periodo = periodos.FirstOrDefault(c => c.Bimestre == planoAnual.Bimestre);
+                    if (periodo == null)
+                        throw new NegocioException("Plano anual com data fora do período escolar. Contate o suporte.");
+                    if (periodo.PeriodoFim.Local() >= dataAtual && periodo.PeriodoInicio.Local() <= dataAtual)
+                    {
+                        planoAnual.Obrigatorio = true;
+                    }
+                    if (planoAnual.IdsObjetivosAprendizagem == null)
+                        continue;
+
+                    foreach (var idObjetivo in planoAnual.IdsObjetivosAprendizagem)
+                    {
+                        var objetivo = objetivosAprendizagem.FirstOrDefault(c => c.Id == idObjetivo);
+                        if (objetivo != null)
+                        {
+                            planoAnual.ObjetivosAprendizagem.Add(objetivo);
+                        }
+                    }
+                }
+                if (listaPlanoAnual.Count() != periodos.Count())
+                {
+                    var periodosFaltantes = periodos.Where(c => !listaPlanoAnual.Any(p => p.Bimestre == c.Bimestre));
+                    var planosFaltantes = ObterNovoPlanoAnualCompleto(turmaId, anoLetivo, ueId, periodosFaltantes, dataAtual).ToList();
+                    planosFaltantes.AddRange(listaPlanoAnual);
+                    listaPlanoAnual = planosFaltantes;
+                }
+            }
+            else
+                listaPlanoAnual = ObterNovoPlanoAnualCompleto(turmaId, anoLetivo, ueId, periodos, dataAtual);
+            return listaPlanoAnual.OrderBy(c => c.Bimestre);
         }
 
         public bool ValidarPlanoAnualExistente(FiltroPlanoAnualDto filtroPlanoAnualDto)
         {
             return repositorioPlanoAnual.ValidarPlanoExistentePorAnoEscolaTurmaEBimestre(filtroPlanoAnualDto.AnoLetivo, filtroPlanoAnualDto.EscolaId, filtroPlanoAnualDto.TurmaId, filtroPlanoAnualDto.Bimestre, filtroPlanoAnualDto.ComponenteCurricularEolId);
+        }
+
+        private static PlanoAnualCompletoDto ObterPlanoAnualPorBimestre(string turmaId, int anoLetivo, string ueId, int bimestre, bool obrigatorio)
+        {
+            return new PlanoAnualCompletoDto
+            {
+                Bimestre = bimestre,
+                Migrado = false,
+                EscolaId = ueId,
+                TurmaId = turmaId,
+                AnoLetivo = anoLetivo,
+                Obrigatorio = obrigatorio
+            };
         }
 
         private ModalidadeTipoCalendario ModalidadeParaModalidadeTipoCalendario(Modalidade modalidade)
@@ -123,7 +183,7 @@ namespace SME.SGP.Aplicacao
             }
         }
 
-        private FiltroPlanoAnualDto ObtenhaFiltro(int anoLetivo, long componenteCurricularEolId, string escolaId, int turmaId, int bimestre)
+        private FiltroPlanoAnualDto ObtenhaFiltro(int anoLetivo, long componenteCurricularEolId, string escolaId, string turmaId, int bimestre)
         {
             return new FiltroPlanoAnualDto
             {
@@ -133,6 +193,56 @@ namespace SME.SGP.Aplicacao
                 TurmaId = turmaId,
                 Bimestre = bimestre
             };
+        }
+
+        private PlanoAnualCompletoDto ObterNovoPlanoAnual(string turmaId, int anoLetivo, string ueId)
+        {
+            var periodos = ObterPeriodoEscolar(turmaId, anoLetivo);
+            var periodo = periodos.FirstOrDefault(c => c.PeriodoFim >= DateTime.Now.Date && c.PeriodoInicio <= DateTime.Now.Date);
+            return new PlanoAnualCompletoDto
+            {
+                Bimestre = periodo.Bimestre,
+                Migrado = false,
+                EscolaId = ueId,
+                TurmaId = turmaId,
+            };
+        }
+
+        private IEnumerable<PlanoAnualCompletoDto> ObterNovoPlanoAnualCompleto(string turmaId, int anoLetivo, string ueId, IEnumerable<PeriodoEscolar> periodos, DateTime dataAtual)
+        {
+            var listaPlanoAnual = new List<PlanoAnualCompletoDto>();
+            foreach (var periodo in periodos)
+            {
+                var obrigatorio = false;
+                if (periodo.PeriodoFim.Local() >= dataAtual && periodo.PeriodoInicio.Local() <= dataAtual)
+                {
+                    obrigatorio = true;
+                }
+                listaPlanoAnual.Add(ObterPlanoAnualPorBimestre(turmaId, anoLetivo, ueId, periodo.Bimestre, obrigatorio));
+            }
+            return listaPlanoAnual;
+        }
+
+        private IEnumerable<PeriodoEscolar> ObterPeriodoEscolar(string turmaId, int anoLetivo)
+        {
+            var turma = repositorioTurma.ObterPorId(turmaId);
+            if (turma == null)
+            {
+                throw new NegocioException("Turma não encontrada.");
+            }
+            var modalidade = turma.ModalidadeCodigo == Modalidade.EJA ? ModalidadeTipoCalendario.EJA : ModalidadeTipoCalendario.FundamentalMedio;
+            var tipoCalendario = repositorioTipoCalendario.BuscarPorAnoLetivoEModalidade(anoLetivo, modalidade);
+            if (tipoCalendario == null)
+            {
+                throw new NegocioException("Tipo de calendário não encontrado.");
+            }
+
+            var periodos = repositorioPeriodoEscolar.ObterPorTipoCalendario(tipoCalendario.Id);
+            if (periodos == null)
+            {
+                throw new NegocioException("Período escolar não encontrado.");
+            }
+            return periodos;
         }
 
         private IEnumerable<PeriodoEscolar> ObterPeriodoEscolar(int anoLetivo, Modalidade modalidade)

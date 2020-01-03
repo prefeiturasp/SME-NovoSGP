@@ -28,7 +28,8 @@ namespace SME.SGP.Infra
         public bool Migrado { get; set; }
         public List<ObjetivoAprendizagemDto> ObjetivosAprendizagem { get; set; }
 
-        public long TurmaId { get; set; }
+        public string TurmaId { get; set; }
+        public bool Obrigatorio { get; set; }
         private string ObjetivosAprendizagemPlano { get; }
     }
 }
