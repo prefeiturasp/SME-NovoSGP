@@ -205,7 +205,7 @@ namespace SME.SGP.Dados.Repositorios
 
         public bool ExisteEventoPorTipoCalendarioId(long tipoCalendarioId)
         {
-            var query = "select 1 from evento where tipo_calendario_id = @tipoCalendarioId;";
+            var query = "select 1 from evento where tipo_calendario_id = @tipoCalendarioId and excluido = false;";
             return database.Conexao.QueryFirstOrDefault<bool>(query, new { tipoCalendarioId });
         }
 
