@@ -178,9 +178,10 @@ const AulaDadaAulaPrevista = () => {
 
   const onClickVoltar = async () => {
     if (modoEdicao) {
-      const confirmado = perguntaAoSalvar();
+      const confirmado = await perguntaAoSalvar();
       if (confirmado) {
         await salvar();
+        history.push(URL_HOME);
       }
     } else {
       history.push(URL_HOME);

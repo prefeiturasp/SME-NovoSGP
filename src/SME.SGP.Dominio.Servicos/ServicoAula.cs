@@ -224,7 +224,7 @@ namespace SME.SGP.Dominio.Servicos
             // Verifica recorrencia da gravação
             if (recorrencia != RecorrenciaAula.AulaUnica)
             {
-                Background.Core.Cliente.Executar<IServicoAula>(x => x.GravarRecorrencia(ehInclusao, aula, usuario, recorrencia));
+                Background.Core.Cliente.Executar(() => GravarRecorrencia(ehInclusao, aula, usuario, recorrencia));
 
                 var mensagem = ehInclusao ? "cadastrada" : "alterada";
                 return $"Aula {mensagem} com sucesso. Serão {mensagem}s aulas recorrentes, em breve você receberá uma notificação com o resultado do processamento.";

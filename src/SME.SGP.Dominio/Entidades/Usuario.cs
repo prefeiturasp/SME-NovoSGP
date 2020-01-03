@@ -125,15 +125,21 @@ namespace SME.SGP.Dominio
 
         public void PodeAlterarEvento(Evento evento)
         {
-            if (evento.TipoEvento.LocalOcorrencia == EventoLocalOcorrencia.DRE)
+            if (evento.CriadoRF != this.CodigoRf)
             {
-                if (evento.TipoPerfilCadastro == TipoPerfil.SME)
+                if (string.IsNullOrEmpty(evento.DreId) && string.IsNullOrEmpty(evento.UeId) && !PossuiPerfilSme())
+                    throw new NegocioException("Evento da SME só pode ser editado por usuario com perfil SME.");
+
+                if (evento.TipoEvento.LocalOcorrencia == EventoLocalOcorrencia.DRE)
                 {
-                    if (evento.TipoPerfilCadastro != ObterTipoPerfilAtual())
+                    if (evento.TipoPerfilCadastro == TipoPerfil.SME)
+                    {
+                        if (evento.TipoPerfilCadastro != ObterTipoPerfilAtual())
+                            throw new NegocioException("Você não tem permissão para alterar este evento.");
+                    }
+                    else if (PerfilAtual != Dominio.Perfis.PERFIL_DIRETOR && PerfilAtual != Dominio.Perfis.PERFIL_AD && PerfilAtual != Dominio.Perfis.PERFIL_CP)
                         throw new NegocioException("Você não tem permissão para alterar este evento.");
                 }
-                else if (PerfilAtual != Dominio.Perfis.PERFIL_DIRETOR && PerfilAtual != Dominio.Perfis.PERFIL_AD && PerfilAtual != Dominio.Perfis.PERFIL_CP)
-                    throw new NegocioException("Você não tem permissão para alterar este evento.");
             }
         }
 
