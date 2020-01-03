@@ -103,7 +103,7 @@ namespace SME.SGP.Dominio.Servicos
 
             if (!evento.PermiteConcomitancia())
             {
-                var existeOutroEventoNaMesmaData = repositorioEvento.ExisteEventoNaMesmaDataECalendario(evento.DataInicio, evento.TipoCalendarioId);
+                var existeOutroEventoNaMesmaData = repositorioEvento.ExisteEventoNaMesmaDataECalendario(evento.DataInicio, evento.TipoCalendarioId, evento.Id);
                 if (existeOutroEventoNaMesmaData)
                 {
                     throw new NegocioException("Não é permitido cadastrar um evento nesta data pois esse tipo de evento não permite concomitância.");
