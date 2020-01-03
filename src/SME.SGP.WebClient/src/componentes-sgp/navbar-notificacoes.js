@@ -84,11 +84,12 @@ const NavbarNotificacoes = props => {
 
   const usuario = useSelector(state => state.usuario);
   const notificacoes = useSelector(state => state.notificacoes);
+  const { loaderGeral } = useSelector(state => state.loader);
 
   useEffect(() => {
     let consultaJaRetornou = true;
     const interval = setInterval(() => {
-      if (consultaJaRetornou && usuario.rf.length > 0) {
+      if (!loaderGeral && consultaJaRetornou && usuario.rf.length > 0) {
         consultaJaRetornou = false;
         servicoNotificacao
           .buscaNotificacoesPorAnoRf(2019, usuario.rf)
@@ -102,7 +103,7 @@ const NavbarNotificacoes = props => {
       }
     }, 60000);
     return () => clearInterval(interval);
-  }, [usuario.rf]);
+  }, [usuario.rf, loaderGeral]);
 
   useEffect(() => {
     if (usuario.rf.length > 0)

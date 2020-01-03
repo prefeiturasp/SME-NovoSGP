@@ -185,10 +185,10 @@ namespace SME.SGP.Dados.Repositorios
             }));
         }
 
-        public bool ExisteEventoNaMesmaDataECalendario(DateTime dataInicio, long tipoCalendarioId)
+        public bool ExisteEventoNaMesmaDataECalendario(DateTime dataInicio, long tipoCalendarioId, long eventoId)
         {
-            var query = "select 1 from evento where data_inicio = @dataInicio and tipo_calendario_id = @tipoCalendarioId;";
-            return database.Conexao.QueryFirstOrDefault<bool>(query, new { dataInicio, tipoCalendarioId });
+            var query = "select 1 from evento where data_inicio = @dataInicio and tipo_calendario_id = @tipoCalendarioId and id <> :eventoId;";
+            return database.Conexao.QueryFirstOrDefault<bool>(query, new { dataInicio, tipoCalendarioId, eventoId });
         }
 
         public bool ExisteEventoPorEventoTipoId(long eventoTipoId)
