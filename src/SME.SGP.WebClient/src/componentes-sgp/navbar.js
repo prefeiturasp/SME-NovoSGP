@@ -14,6 +14,7 @@ import { URL_LOGIN, URL_HOME } from '~/constantes/url';
 import { limparDadosFiltro } from '~/redux/modulos/filtro/actions';
 
 const Nav = styled.nav`
+  z-index: 3000;
   height: 70px !important;
   padding-left: 15px !important;
   padding-right: 15px !important;
