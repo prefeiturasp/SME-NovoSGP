@@ -1,39 +1,47 @@
 import React, { useState, useEffect } from 'react';
 import Disciplina from './disciplina';
 
-const Disciplinas = ({ disciplinas, onChange }) => {
-  const [lista, setLista] = useState(disciplinas);
+const Disciplinas = ({ disciplinas, preSelecionadas, onChange }) => {
+  const [listaDisciplinas, setListaDisciplinas] = useState(disciplinas);
   const [disciplinasSelecionadas, setDisciplinasSelecionadas] = useState([]);
 
   useEffect(() => {
     if (disciplinas) {
-      setLista(disciplinas);
+      setListaDisciplinas(disciplinas);
       setDisciplinasSelecionadas([]);
     }
   }, [disciplinas, onChange]);
 
   const selecionarDisciplina = (codigoComponenteCurricular, selecionada) => {
-    const listaDisciplinas = disciplinasSelecionadas;
-    const indiceDisciplina = listaDisciplinas.findIndex(
+    const listaDisciplinasSelecionadas = disciplinasSelecionadas;
+    const indiceDisciplina = listaDisciplinasSelecionadas.findIndex(
       c => c === codigoComponenteCurricular
     );
     if (indiceDisciplina >= 0) {
       if (!selecionada) {
-        listaDisciplinas.splice(indiceDisciplina, 1);
+        listaDisciplinasSelecionadas.splice(indiceDisciplina, 1);
       }
     } else if (selecionada) {
-      listaDisciplinas.push(codigoComponenteCurricular);
+      listaDisciplinasSelecionadas.push(codigoComponenteCurricular);
     }
-    setDisciplinasSelecionadas([...listaDisciplinas]);
-    onChange(listaDisciplinas);
+    setDisciplinasSelecionadas([...listaDisciplinasSelecionadas]);
+    onChange(listaDisciplinasSelecionadas);
   };
+
+  useEffect(() => {
+    setDisciplinasSelecionadas(preSelecionadas);
+    onChange(preSelecionadas);
+  }, [preSelecionadas]);
 
   return (
     <>
-      {lista.map(disciplina => (
+      {listaDisciplinas.map(disciplina => (
         <Disciplina
           disciplina={disciplina}
           onClick={selecionarDisciplina}
+          preSelecionada={preSelecionadas.find(
+            c => c == disciplina.codigoComponenteCurricular
+          )}
           key={disciplina.codigoComponenteCurricular}
         />
       ))}

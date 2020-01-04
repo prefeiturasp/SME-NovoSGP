@@ -11,6 +11,7 @@ namespace SME.SGP.Aplicacao
     public class ConsultasPlanoAnual : IConsultasPlanoAnual
     {
         private readonly IConsultasObjetivoAprendizagem consultasObjetivoAprendizagem;
+        private readonly IRepositorioComponenteCurricular repositorioComponenteCurricular;
         private readonly IRepositorioPeriodoEscolar repositorioPeriodoEscolar;
         private readonly IRepositorioPlanoAnual repositorioPlanoAnual;
         private readonly IRepositorioTipoCalendario repositorioTipoCalendario;
@@ -20,13 +21,15 @@ namespace SME.SGP.Aplicacao
                                    IConsultasObjetivoAprendizagem consultasObjetivoAprendizagem,
                                    IRepositorioPeriodoEscolar repositorioPeriodoEscolar,
                                    IRepositorioTipoCalendario repositorioTipoCalendario,
-                                   IRepositorioTurma repositorioTurma)
+                                   IRepositorioTurma repositorioTurma,
+                                   IRepositorioComponenteCurricular repositorioComponenteCurricular)
         {
             this.repositorioPlanoAnual = repositorioPlanoAnual ?? throw new System.ArgumentNullException(nameof(repositorioPlanoAnual));
             this.consultasObjetivoAprendizagem = consultasObjetivoAprendizagem ?? throw new System.ArgumentNullException(nameof(consultasObjetivoAprendizagem));
             this.repositorioPeriodoEscolar = repositorioPeriodoEscolar ?? throw new ArgumentNullException(nameof(repositorioPeriodoEscolar));
             this.repositorioTipoCalendario = repositorioTipoCalendario ?? throw new ArgumentNullException(nameof(repositorioTipoCalendario));
             this.repositorioTurma = repositorioTurma ?? throw new ArgumentNullException(nameof(repositorioTurma));
+            this.repositorioComponenteCurricular = repositorioComponenteCurricular ?? throw new ArgumentNullException(nameof(repositorioComponenteCurricular));
         }
 
         public async Task<PlanoAnualCompletoDto> ObterBimestreExpandido(FiltroPlanoAnualBimestreExpandidoDto filtro)
@@ -116,6 +119,7 @@ namespace SME.SGP.Aplicacao
             var periodos = ObterPeriodoEscolar(turmaId, anoLetivo);
             var dataAtual = DateTime.UtcNow.Local().Date;
             var listaPlanoAnual = repositorioPlanoAnual.ObterPlanoAnualCompletoPorAnoUEETurma(anoLetivo, ueId, turmaId, componenteCurricularEolId);
+            var componentesCurricularesEol = repositorioComponenteCurricular.Listar();
             if (listaPlanoAnual != null && listaPlanoAnual.Any())
             {
                 var objetivosAprendizagem = await consultasObjetivoAprendizagem.Listar();
@@ -136,6 +140,11 @@ namespace SME.SGP.Aplicacao
                         var objetivo = objetivosAprendizagem.FirstOrDefault(c => c.Id == idObjetivo);
                         if (objetivo != null)
                         {
+                            var componenteCurricularEol = componentesCurricularesEol.FirstOrDefault(c => c.CodigoJurema == objetivo.IdComponenteCurricular);
+                            if (componenteCurricularEol != null)
+                            {
+                                objetivo.ComponenteCurricularEolId = componenteCurricularEol.CodigoEOL;
+                            }
                             planoAnual.ObjetivosAprendizagem.Add(objetivo);
                         }
                     }

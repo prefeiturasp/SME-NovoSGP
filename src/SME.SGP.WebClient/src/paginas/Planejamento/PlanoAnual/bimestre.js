@@ -9,7 +9,13 @@ import { erros } from '~/servicos/alertas';
 
 const Bimestre = ({ bimestre, disciplinas, regencia, ano, onChange }) => {
   const [objetivosAprendizagem, setObjetivosAprendizagem] = useState([]);
-  const [objetivosSelecionados, setObjetivosSelecionados] = useState([]);
+  const [objetivosCarregados, setObjetivosCarregados] = useState(false);
+  const [objetivosSelecionados, setObjetivosSelecionados] = useState(
+    bimestre.objetivosAprendizagem
+  );
+  const [disciplinasPreSelecionadas, setDisciplinasPreSelecionadas] = useState(
+    bimestre.objetivosAprendizagem.map(c => c.componenteCurricularEolId)
+  );
   const [descricaoObjetivo, setDescricaoObjetivo] = useState(
     bimestre.descricao
   );
@@ -24,6 +30,7 @@ const Bimestre = ({ bimestre, disciplinas, regencia, ano, onChange }) => {
           )
           .then(resposta => {
             setObjetivosAprendizagem(resposta.data);
+            setObjetivosCarregados(true);
           })
           .catch(e => erros(e));
     } else setObjetivosAprendizagem([]);
@@ -54,13 +61,38 @@ const Bimestre = ({ bimestre, disciplinas, regencia, ano, onChange }) => {
   }, [objetivosAprendizagem]);
 
   useEffect(() => {
-    const bimestreAtual = {
-      ...bimestre,
-      objetivosAprendizagem: objetivosSelecionados,
-      descricao: descricaoObjetivo,
-    };
-    onChange(bimestreAtual);
-  }, [bimestre, descricaoObjetivo, objetivosSelecionados, onChange]);
+    if (
+      objetivosCarregados &&
+      bimestre.objetivosAprendizagem &&
+      bimestre.objetivosAprendizagem.length > 0 &&
+      objetivosAprendizagem &&
+      objetivosAprendizagem.length > 0
+    ) {
+      const componentesCurricularesId = bimestre.objetivosAprendizagem.map(
+        c => c.id
+      );
+      const listaObjetivosAprendizagemSelecionados = objetivosAprendizagem.map(
+        c => {
+          if (componentesCurricularesId.includes(c.id)) {
+            c.selecionado = true;
+          }
+          return c;
+        }
+      );
+      setObjetivosAprendizagem([...listaObjetivosAprendizagemSelecionados]);
+    }
+  }, [objetivosCarregados]);
+
+  useEffect(() => {
+    if (objetivosSelecionados && objetivosSelecionados.length > 0) {
+      const bimestreAtual = {
+        ...bimestre,
+        objetivosAprendizagem: objetivosSelecionados,
+        descricao: descricaoObjetivo,
+      };
+      onChange(bimestreAtual);
+    }
+  }, [bimestre, descricaoObjetivo, objetivosSelecionados]);
 
   return (
     <div className="row">
@@ -71,6 +103,7 @@ const Bimestre = ({ bimestre, disciplinas, regencia, ano, onChange }) => {
         <div>
           <Disciplinas
             disciplinas={disciplinas}
+            preSelecionadas={disciplinasPreSelecionadas}
             onChange={onChangeDisciplinasSelecionadas}
           />
         </div>
