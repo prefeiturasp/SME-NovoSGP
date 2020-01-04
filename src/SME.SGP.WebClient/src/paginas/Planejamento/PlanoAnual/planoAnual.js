@@ -45,12 +45,6 @@ const PlanoAnual = () => {
 
   const [disciplinaSelecionada, setDisciplinaSelecionada] = useState('');
 
-  const definirRefPainel = (bimestre, ref) => {
-    const indiceRefPainel = refsPainel.findIndex(c => c.bimestre == bimestre);
-    refsPainel[indiceRefPainel].ref = ref;
-    setRefsPainel([...refsPainel]);
-  };
-
   const onChangeDisciplinas = codigoDisciplina => {
     const disciplina = listaDisciplinas.find(
       c => c.codigoComponenteCurricular == codigoDisciplina

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Badge } from './bimestre.css';
 
-const Disciplina = ({ disciplina, onClick }) => {
+const Disciplina = ({ disciplina, preSelecionada, onClick }) => {
   const [selecionada, setSelecionada] = useState(false);
 
   const onClickDisciplina = () => {
@@ -12,6 +12,10 @@ const Disciplina = ({ disciplina, onClick }) => {
   useEffect(() => {
     setSelecionada(false);
   }, [disciplina]);
+
+  useEffect(() => {
+    setSelecionada(!!preSelecionada);
+  }, [preSelecionada]);
 
   return (
     <Badge
