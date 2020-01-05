@@ -80,11 +80,12 @@ function ModalCopiarConteudo({ show, disciplina, onClose, planoAula }) {
     setTurmas(turmas.filter(x => x.id !== item.id));
   };
 
+  const { anoLetivo } = filtro;
+
   const onChangeTurma = async (turma, linha) => {
     try {
-      // TODO: Remover ano letivo chumbado
       const { data, status } = await api.get(
-        `v1/calendarios/frequencias/aulas/datas/2019/turmas/${turma}/disciplinas/${disciplina}`
+        `v1/calendarios/frequencias/aulas/datas/${anoLetivo}/turmas/${turma}/disciplinas/${disciplina}`
       );
       if (data && status === 200) {
         setTurmas(
