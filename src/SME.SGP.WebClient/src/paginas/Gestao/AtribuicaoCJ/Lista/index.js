@@ -69,9 +69,11 @@ function AtribuicaoCJLista() {
     );
   };
 
+  const anoAtual = window.moment().format('YYYY');
+
   const onChangeFiltro = valoresFiltro => {
     setFiltro({
-      AnoLetivo: '2019',
+      AnoLetivo: anoAtual,
       DreId: valoresFiltro.dreId,
       UeId: valoresFiltro.ueId,
       UsuarioRF: valoresFiltro.professorRf,

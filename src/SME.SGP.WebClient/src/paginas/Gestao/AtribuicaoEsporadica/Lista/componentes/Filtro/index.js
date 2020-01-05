@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useEffect, memo } from 'react';
+import React, { useState, useCallback, memo } from 'react';
 import PropTypes from 'prop-types';
 
 // Formulario
@@ -20,17 +20,17 @@ import { Row } from './styles';
 // Utils
 import { validaSeObjetoEhNuloOuVazio } from '~/utils/funcoes/gerais';
 
-import {
-  selecionarDre,
-  selecionarUe,
-} from '~/redux/modulos/atribuicaoEsporadica/actions';
+import { selecionarUe } from '~/redux/modulos/atribuicaoEsporadica/actions';
 
 const Filtro = memo(({ onFiltrar }) => {
   const dispatch = useDispatch();
   const [refForm, setRefForm] = useState({});
   const [dreId, setDreId] = useState('');
+
+  const anoAtual = window.moment().format('YYYY');
+
   const [valoresIniciais] = useState({
-    anoLetivo: '2019',
+    anoLetivo: anoAtual,
     dreId: '',
     ueId: '',
     professorRf: '',
@@ -83,7 +83,7 @@ const Filtro = memo(({ onFiltrar }) => {
           <Row className="row">
             <Localizador
               dreId={dreId}
-              anoLetivo="2019"
+              anoLetivo={anoAtual}
               form={form}
               onChange={valor => valor}
               incluirEmei

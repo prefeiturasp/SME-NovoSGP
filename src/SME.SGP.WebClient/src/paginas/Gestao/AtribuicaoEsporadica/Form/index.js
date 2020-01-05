@@ -58,6 +58,9 @@ function AtribuicaoEsporadicaForm({ match }) {
   const [auditoria, setAuditoria] = useState({});
   const [valoresCarregados, setValoresCarregados] = useState(null);
   const [refForm, setRefForm] = useState({});
+
+  const anoAtual = window.moment().format('YYYY');
+
   const [valoresIniciais, setValoresIniciais] = useState({
     professorRf: '',
     professorNome: '',
@@ -65,7 +68,7 @@ function AtribuicaoEsporadicaForm({ match }) {
     dataFim: '',
     ueId: '',
     dreId: '',
-    anoLetivo: '2019',
+    anoLetivo: anoAtual,
   });
 
   const validacoes = () => {
