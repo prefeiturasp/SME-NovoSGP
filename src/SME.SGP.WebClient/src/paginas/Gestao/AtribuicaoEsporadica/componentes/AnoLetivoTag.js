@@ -21,11 +21,13 @@ function AnoLetivoTag({ form, label }) {
     }
   }, []);
 
+  const anoAtual = window.moment().format('YYYY');
+
   return (
     <>
       {label && <Label text={label} />}
       <Tag tamanho="grande" fluido centralizado>
-        2019
+        {anoAtual}
       </Tag>
     </>
   );

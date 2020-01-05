@@ -86,13 +86,15 @@ const NavbarNotificacoes = props => {
   const notificacoes = useSelector(state => state.notificacoes);
   const { loaderGeral } = useSelector(state => state.loader);
 
+  const anoAtual = window.moment().format('YYYY');
+
   useEffect(() => {
     let consultaJaRetornou = true;
     const interval = setInterval(() => {
       if (!loaderGeral && consultaJaRetornou && usuario.rf.length > 0) {
         consultaJaRetornou = false;
         servicoNotificacao
-          .buscaNotificacoesPorAnoRf(2019, usuario.rf)
+          .buscaNotificacoesPorAnoRf(anoAtual, usuario.rf)
           .then(() => {
             consultaJaRetornou = true;
           })
@@ -108,7 +110,7 @@ const NavbarNotificacoes = props => {
   useEffect(() => {
     if (usuario.rf.length > 0)
       if (notificacoes.notificacoes.length === 0)
-        servicoNotificacao.buscaNotificacoesPorAnoRf(2019, usuario.rf);
+        servicoNotificacao.buscaNotificacoesPorAnoRf(anoAtual, usuario.rf);
   }, [notificacoes.notificacoes.length, usuario.rf]);
 
   useLayoutEffect(() => {
@@ -139,10 +141,7 @@ const NavbarNotificacoes = props => {
 
   return (
     <div ref={listaRef} className="position-relative">
-      <Botao
-        className="text-center stretched-link"
-        onClick={onClickBotao}
-      >
+      <Botao className="text-center stretched-link" onClick={onClickBotao}>
         <Count count={notificacoes.quantidade} overflowCount={99}>
           <Icone className="fa fa-bell fa-lg" />
         </Count>

@@ -78,6 +78,8 @@ const DetalheNotificacao = ({ match }) => {
     setIdNotificacao(match.params.id);
   }, [match.params.id]);
 
+  const anoAtual = window.moment().format('YYYY');
+
   useEffect(() => {
     const buscaLinhaTempo = () => {
       api
@@ -106,7 +108,7 @@ const DetalheNotificacao = ({ match }) => {
     }
     if (notificacao.categoriaId === notificacaoCategoria.Aviso) {
       if (usuario.rf.length > 0)
-        servicoNotificacao.buscaNotificacoesPorAnoRf(2019, usuario.rf);
+        servicoNotificacao.buscaNotificacoesPorAnoRf(anoAtual, usuario.rf);
     }
   }, [notificacao]);
 
@@ -115,7 +117,7 @@ const DetalheNotificacao = ({ match }) => {
     servicoNotificacao.marcarComoLida(idsNotificacoes, () => {
       history.push(urlTelaNotificacoes);
       if (usuario.rf.length > 0)
-        servicoNotificacao.buscaNotificacoesPorAnoRf(2019, usuario.rf);
+        servicoNotificacao.buscaNotificacoesPorAnoRf(anoAtual, usuario.rf);
     });
   };
 
@@ -129,7 +131,7 @@ const DetalheNotificacao = ({ match }) => {
       servicoNotificacao.excluir(idsNotificacoes, () => {
         history.push(urlTelaNotificacoes);
         if (usuario.rf.length > 0)
-          servicoNotificacao.buscaNotificacoesPorAnoRf(2019, usuario.rf);
+          servicoNotificacao.buscaNotificacoesPorAnoRf(anoAtual, usuario.rf);
       });
     }
   };
@@ -225,7 +227,7 @@ const DetalheNotificacao = ({ match }) => {
                       setAprovar(true);
                       if (usuario.rf.length > 0)
                         servicoNotificacao.buscaNotificacoesPorAnoRf(
-                          2019,
+                          anoAtual,
                           usuario.rf
                         );
                       form.validateForm().then(() => form.handleSubmit(e));
@@ -343,7 +345,7 @@ const DetalheNotificacao = ({ match }) => {
                     MENSAGEM:{' '}
                     <span
                       dangerouslySetInnerHTML={{ __html: notificacao.mensagem }}
-                    ></span>
+                    />
                   </div>
                 </div>
                 {notificacao.categoriaId ===
