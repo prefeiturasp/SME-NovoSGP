@@ -200,7 +200,7 @@ namespace SME.SGP.Aplicacao
         {
             if (usuario.PerfilAtual == Perfis.PERFIL_PROFESSOR)
             {
-                if (!servicoEOL.ProfessorPodePersistirTurma(usuario.CodigoRf, planoAnualDto.TurmaId.ToString(), DateTime.Now.Local()))
+                if (!servicoEOL.ProfessorPodePersistirTurma(usuario.CodigoRf, planoAnualDto.TurmaId.ToString(), DateTime.Now.Local()).Result)
                     throw new NegocioException("Você não pode fazer alterações ou inclusões nesta turma e data.");
             }
 
