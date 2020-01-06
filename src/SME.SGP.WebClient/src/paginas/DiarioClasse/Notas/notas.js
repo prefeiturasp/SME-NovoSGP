@@ -21,7 +21,7 @@ import { verificaSomenteConsulta } from '~/servicos/servico-navegacao';
 
 const { TabPane } = Tabs;
 
-const Notas = () => {
+const Notas = ({ match }) => {
   const usuario = useSelector(store => store.usuario);
   const dispatch = useDispatch();
   const modoEdicaoGeral = useSelector(
@@ -162,6 +162,10 @@ const Notas = () => {
       setDisciplinaSelecionada(String(disciplina.codigoComponenteCurricular));
       setDesabilitarDisciplina(true);
       obterDadosBimestres(disciplina.codigoComponenteCurricular);
+    }
+    if (match && match.params && match.params.disciplinaId && match.params.bimestre) {
+      setDisciplinaSelecionada(String(match.params.disciplinaId));
+      obterDadosBimestres(match.params.disciplinaId, match.params.bimestre);
     }
   }, [obterDadosBimestres, usuario.turmaSelecionada.turma]);
 
@@ -482,8 +486,8 @@ const Notas = () => {
                           />
                         </TabPane>
                       ) : (
-                        ''
-                      )}
+                          ''
+                        )}
                       {segundoBimestre.numero ? (
                         <TabPane
                           tab={segundoBimestre.descricao}
@@ -497,8 +501,8 @@ const Notas = () => {
                           />
                         </TabPane>
                       ) : (
-                        ''
-                      )}
+                          ''
+                        )}
                       {terceiroBimestre.numero ? (
                         <TabPane
                           tab={terceiroBimestre.descricao}
@@ -512,8 +516,8 @@ const Notas = () => {
                           />
                         </TabPane>
                       ) : (
-                        ''
-                      )}
+                          ''
+                        )}
                       {quartoBimestre.numero ? (
                         <TabPane
                           tab={quartoBimestre.descricao}
@@ -527,8 +531,8 @@ const Notas = () => {
                           />
                         </TabPane>
                       ) : (
-                        ''
-                      )}
+                          ''
+                        )}
                     </ContainerTabsCard>
                   </div>
                 </div>
@@ -550,8 +554,8 @@ const Notas = () => {
                 </div>
               </>
             ) : (
-              ''
-            )}
+                ''
+              )}
           </div>
         </Card>
       </Loader>
