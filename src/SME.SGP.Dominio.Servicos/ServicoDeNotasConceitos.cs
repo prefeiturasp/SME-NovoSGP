@@ -1,4 +1,5 @@
-﻿using SME.SGP.Aplicacao;
+﻿using Microsoft.Extensions.Configuration;
+using SME.SGP.Aplicacao;
 using SME.SGP.Aplicacao.Integracoes;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
@@ -13,6 +14,7 @@ namespace SME.SGP.Dominio
     public class ServicoDeNotasConceitos : IServicoDeNotasConceitos
     {
         private readonly IConsultasAbrangencia consultasAbrangencia;
+        private readonly IConfiguration configuration;
         private readonly IRepositorioAtividadeAvaliativa repositorioAtividadeAvaliativa;
         private readonly IRepositorioAtividadeAvaliativaDisciplina repositorioAtividadeAvaliativaDisciplina;
         private readonly IRepositorioCiclo repositorioCiclo;
@@ -27,6 +29,7 @@ namespace SME.SGP.Dominio
         private readonly IServicoUsuario servicoUsuario;
         private readonly IUnitOfWork unitOfWork;
         private readonly IServicoNotificacao servicoNotificacao;
+        private readonly string hostAplicacao;
 
         public ServicoDeNotasConceitos(IRepositorioAtividadeAvaliativa repositorioAtividadeAvaliativa,
             IServicoEOL servicoEOL, IConsultasAbrangencia consultasAbrangencia,
@@ -35,7 +38,8 @@ namespace SME.SGP.Dominio
             IRepositorioNotasConceitos repositorioNotasConceitos, IUnitOfWork unitOfWork,
             IRepositorioAtividadeAvaliativaDisciplina repositorioAtividadeAvaliativaDisciplina,
             IServicoNotificacao servicoNotificacao, IRepositorioPeriodoEscolar repositorioPeriodoEscolar,
-            IRepositorioAula repositorioAula, IRepositorioTurma repositorioTurma, IServicoUsuario servicoUsuario)
+            IRepositorioAula repositorioAula, IRepositorioTurma repositorioTurma, IServicoUsuario servicoUsuario,
+            IConfiguration configuration)
         {
             this.repositorioAtividadeAvaliativa = repositorioAtividadeAvaliativa ?? throw new ArgumentNullException(nameof(repositorioAtividadeAvaliativa));
             this.servicoEOL = servicoEOL ?? throw new ArgumentNullException(nameof(servicoEOL));
@@ -52,6 +56,8 @@ namespace SME.SGP.Dominio
             this.unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
             this.servicoNotificacao = servicoNotificacao ?? throw new ArgumentNullException(nameof(servicoNotificacao));
             this.servicoUsuario = servicoUsuario ?? throw new ArgumentNullException(nameof(servicoUsuario));
+            this.configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
+            this.hostAplicacao = configuration["UrlFrontEnd"];
         }
 
         public async Task Salvar(IEnumerable<NotaConceito> notasConceitos, string professorRf, string turmaId, string disciplinaId)
@@ -71,14 +77,101 @@ namespace SME.SGP.Dominio
 
             var notasPorAvaliacoes = notasConceitos.GroupBy(x => x.AtividadeAvaliativaID);
 
+            var usuario = servicoUsuario.ObterUsuarioLogado().Result;
+
             foreach (var notasPorAvaliacao in notasPorAvaliacoes)
             {
                 var avaliacao = atividadesAvaliativas.FirstOrDefault(x => x.Id == notasPorAvaliacao.Key);
 
-                entidadesSalvar.AddRange(ValidarEObter(notasPorAvaliacao.ToList(), avaliacao, alunos, professorRf, disciplinaId));
+                entidadesSalvar.AddRange(ValidarEObter(notasPorAvaliacao.ToList(), avaliacao, alunos, professorRf, disciplinaId, usuario));
+
             }
 
             SalvarNoBanco(entidadesSalvar);
+            var alunosId = alunos.Select(a => a.CodigoAluno).ToList();
+            validarMediaAlunos(idsAtividadesAvaliativas, alunosId, usuario, disciplinaId);
+        }
+
+        public void validarMediaAlunos(IEnumerable<long> idsAtividadesAvaliativas, IEnumerable<string> alunosId, Usuario usuario, string disciplinaId)
+        {
+            var somaNotas = 0.0;
+            var somaConceitos = 0;
+            var dataAtual = DateTime.Now;
+            var notasConceitos = repositorioNotasConceitos.ObterNotasPorAlunosAtividadesAvaliativas(idsAtividadesAvaliativas, alunosId, disciplinaId);
+            int quantidadeAlunos = alunosId.Count();
+            var atividadesAvaliativas = repositorioAtividadeAvaliativa.ListarPorIds(idsAtividadesAvaliativas);
+
+            var notasPorAvaliacoes = notasConceitos.GroupBy(x => x.AtividadeAvaliativaID);
+
+            foreach (var notasPorAvaliacao in notasPorAvaliacoes)
+            {
+                var atividadeAvaliativa = atividadesAvaliativas.FirstOrDefault(x => x.Id == notasPorAvaliacao.Key);
+                var valoresConceito = repositorioConceito.ObterPorDataAvaliacao(atividadeAvaliativa.DataAvaliacao);
+                var tipoNota = TipoNotaPorAvaliacao(atividadeAvaliativa);
+                var ehTipoNota = tipoNota.TipoNota == TipoNota.Nota;
+                var notaParametro = repositorioNotaParametro.ObterPorDataAvaliacao(atividadeAvaliativa.DataAvaliacao);
+                var turma = repositorioTurma.ObterTurmaComUeEDrePorId(atividadeAvaliativa.TurmaId);
+
+                var periodosEscolares = BuscarPeriodosEscolaresDaAtividade(atividadeAvaliativa, disciplinaId);
+                var periodoAtividade = periodosEscolares.FirstOrDefault(x => x.PeriodoInicio.Date <= atividadeAvaliativa.DataAvaliacao.Date && x.PeriodoFim.Date >= atividadeAvaliativa.DataAvaliacao.Date);
+
+                foreach (var nota in notasPorAvaliacao)
+                {
+                    if (ehTipoNota)
+                    {
+                        somaNotas += nota.Nota;
+                    }
+                    else
+                    {
+                        var conceito = valoresConceito.FirstOrDefault(a => a.Id == nota.Conceito);
+                        somaConceitos += conceito.Aprovado ? 1 : 0;
+                    }
+                }
+                string mensagemNotasConceitos = $"<p>Os resultados da atividade avaliativa '{atividadeAvaliativa.NomeAvaliacao}' da turma {turma.Nome} da {turma.Ue.Nome} (DRE {turma.Ue.Dre.Nome}) no bimestre {periodoAtividade.Bimestre} de {turma.AnoLetivo} foram alterados " +
+              $"pelo Professor {usuario.Nome} ({usuario.CodigoRf}) em {dataAtual.ToString("dd/MM/yyyy")} às {dataAtual.ToString("HH:mm")} estão abaixo da média.</p>" +
+              $"<a href='{hostAplicacao}diario-classe/notas/{disciplinaId}/{periodoAtividade.Bimestre}'>Clique aqui para visualizar os detalhes.</a>";
+
+                if (ehTipoNota)
+                {
+                    var media = somaNotas / quantidadeAlunos;
+                    if (media < notaParametro.Media)
+                    {
+
+                        servicoNotificacao.Salvar(new Notificacao()
+                        {
+                            Ano = atividadeAvaliativa.CriadoEm.Year,
+                            Categoria = NotificacaoCategoria.Alerta,
+                            DreId = atividadeAvaliativa.DreId,
+                            Mensagem = mensagemNotasConceitos,
+                            UsuarioId = usuario.Id,
+                            Tipo = NotificacaoTipo.Notas,
+                            Titulo = $"Resultados de Atividade Avaliativa - Turma {turma.Nome}",
+                            TurmaId = atividadeAvaliativa.TurmaId,
+                            UeId = atividadeAvaliativa.UeId,
+                        });
+                    }
+                }
+                else
+                {
+                    if (somaConceitos < (quantidadeAlunos % 2))
+                    {
+
+                        servicoNotificacao.Salvar(new Notificacao()
+                        {
+                            Ano = atividadeAvaliativa.CriadoEm.Year,
+                            Categoria = NotificacaoCategoria.Alerta,
+                            DreId = atividadeAvaliativa.DreId,
+                            Mensagem = mensagemNotasConceitos,
+                            UsuarioId = usuario.Id,
+                            Tipo = NotificacaoTipo.Notas,
+                            Titulo = $"Resultados de Atividade Avaliativa - Turma {turma.Nome}",
+                            TurmaId = atividadeAvaliativa.TurmaId,
+                            UeId = atividadeAvaliativa.UeId,
+                        });
+                    }
+                }
+
+            }
         }
 
         public NotaTipoValor TipoNotaPorAvaliacao(AtividadeAvaliativa atividadeAvaliativa)
@@ -149,14 +242,18 @@ namespace SME.SGP.Dominio
                 throw new NegocioException("Somente o professor que criou a avaliação, pode atribuir e/ou editar notas/conceitos");
         }
 
-        private IEnumerable<NotaConceito> ValidarEObter(IEnumerable<NotaConceito> notasConceitos, AtividadeAvaliativa atividadeAvaliativa, IEnumerable<AlunoPorTurmaResposta> alunos, string professorRf, string disciplinaId)
+        private IEnumerable<NotaConceito> ValidarEObter(IEnumerable<NotaConceito> notasConceitos, AtividadeAvaliativa atividadeAvaliativa, IEnumerable<AlunoPorTurmaResposta> alunos, string professorRf, string disciplinaId, Usuario usuario)
         {
             var notasMultidisciplina = new List<NotaConceito>();
             var alunosNotasExtemporaneas = new StringBuilder();
+            var bimestreInformado = 0;
+            var nota = notasConceitos.FirstOrDefault();
+            var tipoNota = TipoNotaPorAvaliacao(atividadeAvaliativa);
+            var notaParametro = repositorioNotaParametro.ObterPorDataAvaliacao(atividadeAvaliativa.DataAvaliacao);
+            var dataAtual = DateTime.Now;
+            var turma = repositorioTurma.ObterTurmaComUeEDrePorId(atividadeAvaliativa.TurmaId);
             notasConceitos.ToList().ForEach(notaConceito =>
             {
-                var tipoNota = TipoNotaPorAvaliacao(atividadeAvaliativa);
-
                 if (notaConceito.Id > 0)
                 {
                     notaConceito.Validar(professorRf);
@@ -169,14 +266,15 @@ namespace SME.SGP.Dominio
 
                 if (tipoNota.TipoNota == TipoNota.Nota)
                 {
-                    var notaParametro = repositorioNotaParametro.ObterPorDataAvaliacao(atividadeAvaliativa.DataAvaliacao);
+                    notaConceito.ValidarNota(notaParametro, aluno.NomeAluno);
                     if (notaParametro == null)
                         throw new NegocioException("Não foi possível localizar o parâmetro de nota.");
-                    notaConceito.ValidarNota(notaParametro, aluno.NomeAluno);
                 }
                 else
                 {
                     var conceitos = repositorioConceito.ObterPorDataAvaliacao(atividadeAvaliativa.DataAvaliacao);
+                    var conceito = conceitos.FirstOrDefault(c => c.Id.Equals(nota.Conceito));
+
                     if (conceitos == null)
                         throw new NegocioException("Não foi possível localizar o parâmetro de conceito.");
                     notaConceito.ValidarConceitos(conceitos, aluno.NomeAluno);
@@ -187,7 +285,7 @@ namespace SME.SGP.Dominio
                 if (atividadeAvaliativa.Categoria.Equals(CategoriaAtividadeAvaliativa.Interdisciplinar) && notaConceito.Id.Equals(0))
                 {
                     var atividadeDisciplinas = repositorioAtividadeAvaliativaDisciplina.ListarPorIdAtividade(atividadeAvaliativa.Id).Result;
-                    foreach(var atividade in atividadeDisciplinas)
+                    foreach (var atividade in atividadeDisciplinas)
                     {
                         if (!atividade.DisciplinaId.Equals(disciplinaId))
                         {
@@ -204,17 +302,14 @@ namespace SME.SGP.Dominio
                     }
                 }
 
-                if(notaConceito.Id > 0)
+                if (notaConceito.Id > 0)
                 {
-                    var dataFinal = atividadeAvaliativa.DataAvaliacao.AddHours(23).AddMinutes(59).AddSeconds(59);
-                    var aula = repositorioAula.ObterAulaIntervaloTurmaDisciplina(atividadeAvaliativa.DataAvaliacao, dataFinal, atividadeAvaliativa.TurmaId, disciplinaId).Result;
-
-                    IEnumerable<PeriodoEscolar> periodosEscolares = repositorioPeriodoEscolar.ObterPorTipoCalendario(aula.TipoCalendarioId);
                     var dataPesquisa = DateTime.Now;
-
+                    var periodosEscolares = BuscarPeriodosEscolaresDaAtividade(atividadeAvaliativa, disciplinaId);
                     var periodoEscolar = periodosEscolares.FirstOrDefault(x => x.PeriodoInicio.Date <= dataPesquisa.Date && x.PeriodoFim.Date >= dataPesquisa.Date);
                     var periodoEscolarInformado = periodosEscolares.FirstOrDefault(x => x.PeriodoInicio.Date <= atividadeAvaliativa.DataAvaliacao.Date && x.PeriodoFim.Date >= atividadeAvaliativa.DataAvaliacao.Date);
                     var ehBimestreAtual = periodoEscolar.Bimestre.Equals(periodoEscolarInformado.Bimestre);
+                    bimestreInformado = periodoEscolarInformado.Bimestre;
 
                     if (!ehBimestreAtual)
                     {
@@ -225,11 +320,9 @@ namespace SME.SGP.Dominio
 
             if (alunosNotasExtemporaneas.ToString().Length > 0)
             {
-                var turma = repositorioTurma.ObterTurmaComUeEDrePorId(atividadeAvaliativa.TurmaId);
-                var usuario = servicoUsuario.ObterUsuarioLogado().Result;
-                var dataAtual = DateTime.Now;
-                string mensagem = $"<p>Os resultados da atividade avaliativa 'Redação sobre as férias' da turma {turma.Nome} da {turma.Ue.Nome} (DRE {turma.Ue.Dre.Nome}) no bimestre 2 de {turma.AnoLetivo} foram alterados " +
-                    $"pelo Professor ${usuario.Nome} ({usuario.CodigoRf}) em {dataAtual.ToString("dd/MM/yyyy")} às {dataAtual.ToString("HH:mm")} para os seguintes alunos:</p><br/>{alunosNotasExtemporaneas.ToString()}";
+                string mensagem = $"<p>Os resultados da atividade avaliativa '{atividadeAvaliativa.NomeAvaliacao}' da turma {turma.Nome} da {turma.Ue.Nome} (DRE {turma.Ue.Dre.Nome}) no bimestre {bimestreInformado} de {turma.AnoLetivo} foram alterados " +
+                    $"pelo Professor {usuario.Nome} ({usuario.CodigoRf}) em {dataAtual.ToString("dd/MM/yyyy")} às {dataAtual.ToString("HH:mm")} para os seguintes alunos:</p><br/>{alunosNotasExtemporaneas.ToString()}" +
+                    $"<a href='{hostAplicacao}diario-classe/notas/{nota.DisciplinaId}/{bimestreInformado}'>Clique aqui para visualizar os detalhes.</a>";
                 servicoNotificacao.Salvar(new Notificacao()
                 {
                     Ano = atividadeAvaliativa.CriadoEm.Year,
@@ -247,6 +340,15 @@ namespace SME.SGP.Dominio
             var result = notasConceitos.ToList();
             result.AddRange(notasMultidisciplina);
             return result;
+        }
+
+        private IEnumerable<PeriodoEscolar> BuscarPeriodosEscolaresDaAtividade(AtividadeAvaliativa atividadeAvaliativa, string disciplinaId)
+        {
+            var dataFinal = atividadeAvaliativa.DataAvaliacao.AddHours(23).AddMinutes(59).AddSeconds(59);
+            var aula = repositorioAula.ObterAulaIntervaloTurmaDisciplina(atividadeAvaliativa.DataAvaliacao, dataFinal, atividadeAvaliativa.TurmaId, disciplinaId).Result;
+
+            IEnumerable<PeriodoEscolar> periodosEscolares = repositorioPeriodoEscolar.ObterPorTipoCalendario(aula.TipoCalendarioId);
+            return periodosEscolares;
         }
 
     }
