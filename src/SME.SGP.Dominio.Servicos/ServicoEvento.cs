@@ -169,6 +169,11 @@ namespace SME.SGP.Dominio.Servicos
 
         public void SalvarRecorrencia(Evento evento, DateTime dataInicial, DateTime? dataFinal, int? diaDeOcorrencia, IEnumerable<DayOfWeek> diasDaSemana, PadraoRecorrencia padraoRecorrencia, PadraoRecorrenciaMensal? padraoRecorrenciaMensal, int repeteACada)
         {
+            if(evento.DataInicio.Date != evento.DataFim.Date)
+            {
+                throw new NegocioException("A recorrência somente é permitida quando o evento possui data única.");
+            }
+
             if (evento.EventoPaiId.HasValue && evento.EventoPaiId > 0)
             {
                 throw new NegocioException("Este evento já pertence a uma recorrência, por isso não é permitido gerar uma nova.");
@@ -298,7 +303,7 @@ namespace SME.SGP.Dominio.Servicos
             {
                 var textoInicial = notificacoesSucesso.Count > 1 ? "Foram" : "Foi";
                 mensagemNotificacao.Append($"<br>{textoInicial} cadastrado(s) {notificacoesSucesso.Count} evento(s) de '{evento.TipoEvento.Descricao}' no calendário '{tipoCalendario.Nome}' de {tipoCalendario.AnoLetivo} nas seguintes datas:<br>");
-                notificacoesSucesso.ForEach(data => mensagemNotificacao.AppendLine($"<br>{data.ToShortDateString()}"));
+                notificacoesSucesso.ForEach(data => mensagemNotificacao.AppendLine($"<br>{data.ToString("dd/MM/yyyy")}"));
             }
             if (notificacoesFalha.Any())
             {
