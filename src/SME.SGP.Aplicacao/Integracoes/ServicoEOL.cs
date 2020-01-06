@@ -520,9 +520,17 @@ namespace SME.SGP.Aplicacao.Integracoes
             return turmas;
         }
 
-        public bool ProfessorPodePersistirTurma(string professorRf, string codigoTurma, DateTime data)
+        public async Task<bool> ProfessorPodePersistirTurma(string professorRf, string codigoTurma, DateTime data)
         {
-            return true;
+            httpClient.DefaultRequestHeaders.Clear();
+
+            var resposta = await httpClient.GetAsync($"professores/{professorRf}/turmas/{codigoTurma}/atribuicao/verificar/data?dataConsulta={data.Date}");
+            if (resposta.IsSuccessStatusCode)
+            {
+                var json = resposta.Content.ReadAsStringAsync().Result;
+                return JsonConvert.DeserializeObject<bool>(json);
+            }
+            else throw new Exception("Não foi possível validar a atribuição do professor no EOL.");
         }
 
         public async Task ReiniciarSenha(string codigoRf)
