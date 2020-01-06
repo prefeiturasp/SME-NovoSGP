@@ -185,10 +185,10 @@ namespace SME.SGP.Dados.Repositorios
             }));
         }
 
-        public bool ExisteEventoNaMesmaDataECalendario(DateTime dataInicio, long tipoCalendarioId)
+        public bool ExisteEventoNaMesmaDataECalendario(DateTime dataInicio, long tipoCalendarioId, long eventoId)
         {
-            var query = "select 1 from evento where data_inicio = @dataInicio and tipo_calendario_id = @tipoCalendarioId;";
-            return database.Conexao.QueryFirstOrDefault<bool>(query, new { dataInicio, tipoCalendarioId });
+            var query = "select 1 from evento where data_inicio = @dataInicio and tipo_calendario_id = @tipoCalendarioId and id <> :eventoId;";
+            return database.Conexao.QueryFirstOrDefault<bool>(query, new { dataInicio, tipoCalendarioId, eventoId });
         }
 
         public bool ExisteEventoPorEventoTipoId(long eventoTipoId)
@@ -205,7 +205,7 @@ namespace SME.SGP.Dados.Repositorios
 
         public bool ExisteEventoPorTipoCalendarioId(long tipoCalendarioId)
         {
-            var query = "select 1 from evento where tipo_calendario_id = @tipoCalendarioId;";
+            var query = "select 1 from evento where tipo_calendario_id = @tipoCalendarioId and excluido = false;";
             return database.Conexao.QueryFirstOrDefault<bool>(query, new { tipoCalendarioId });
         }
 

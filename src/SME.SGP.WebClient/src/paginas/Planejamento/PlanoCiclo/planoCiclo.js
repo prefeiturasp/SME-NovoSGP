@@ -449,6 +449,8 @@ export default function PlanoCiclo() {
     return true;
   };
 
+  const anoAtual = window.moment().format('YYYY');
+
   return (
     <>
       <div className="col-md-12">
@@ -470,7 +472,7 @@ export default function PlanoCiclo() {
         <Titulo>
           {modalidadeEja ? 'Plano de Etapa' : 'Plano de Ciclo'}
           <TituloAno>
-            {' / 2019 '}
+            {` / ${anoAtual} `}
             <i className="fas fa-retweet" />
           </TituloAno>
           {registroMigrado ? (
