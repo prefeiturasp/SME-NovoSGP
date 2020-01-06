@@ -99,11 +99,17 @@ namespace SME.SGP.Aplicacao
             }
             if (!idsInvalidos.Trim().Equals(""))
             {
-                throw new NegocioException($"Houve um erro ao excluir os tipos de calendário ids '{idsInvalidos}'. Um dos tipos de calendário não existe");
+                if (idsInvalidos.IndexOf(',') > -1)
+                    throw new NegocioException($"Houve um erro ao excluir os tipos de calendário ids '{idsInvalidos}'. Um dos tipos de calendário não existe");
+                else
+                    throw new NegocioException($"Houve um erro ao excluir o tipo de calendário ids '{idsInvalidos}'. O tipo de calendário não existe");
             }
             if (!tiposInválidos.Trim().Equals(""))
             {
-                throw new NegocioException($"Houve um erro ao excluir os tipos de calendário '{tiposInválidos}'. Os tipos de calendário possuem eventos vínculados");
+                if (tiposInválidos.IndexOf(',') > -1)
+                    throw new NegocioException($"Houve um erro ao excluir os tipos de calendário '{tiposInválidos}'. Os tipos de calendário possuem eventos vinculados");
+                else
+                    throw new NegocioException($"Houve um erro ao excluir o tipo de calendário '{tiposInválidos}'. O tipo de calendário possui eventos vinculados");
             }
         }
 
