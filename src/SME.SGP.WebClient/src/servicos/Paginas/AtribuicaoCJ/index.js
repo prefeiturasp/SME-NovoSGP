@@ -1,5 +1,7 @@
 import api from '~/servicos/api';
 
+const anoAtual = window.moment().format('YYYY');
+
 const AtribuicaoCJServico = {
   buscarLista(params) {
     return api.get(`/v1/atribuicoes/cjs`, { params });
@@ -13,10 +15,10 @@ const AtribuicaoCJServico = {
     return api.post(`/v1/atribuicoes/cjs`, data);
   },
   buscarModalidades(ue) {
-    return api.get(`/v1/ues/${ue}/modalidades?ano=2019`);
+    return api.get(`/v1/ues/${ue}/modalidades?ano=${anoAtual}`);
   },
   buscarTurmas(ue, modalidade) {
-    return api.get(`/v1/ues/${ue}/modalidades/${modalidade}?ano=2019`);
+    return api.get(`/v1/ues/${ue}/modalidades/${modalidade}?ano=${anoAtual}`);
   },
 };
 
