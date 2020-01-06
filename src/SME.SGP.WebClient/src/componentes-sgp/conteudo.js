@@ -3,7 +3,7 @@ import { useSelector } from 'react-redux';
 import { Switch } from 'react-router-dom';
 import shortid from 'shortid';
 import rotasArray from '~/rotas/rotas';
-
+import Editor from '~/componentes/editor/editor';
 import RotaAutenticadaEstruturada from '../rotas/rotaAutenticadaEstruturada';
 import BreadcrumbSgp from './breadcrumb-sgp';
 import Mensagens from './mensagens/mensagens';

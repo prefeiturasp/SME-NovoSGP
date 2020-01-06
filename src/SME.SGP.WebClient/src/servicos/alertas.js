@@ -22,7 +22,7 @@ const exibirAlerta = (tipo, mensagem, fixo = false) => {
   if (!fixo) {
     setTimeout(() => {
       store.dispatch(removerAlerta(id));
-    }, 3000);
+    }, 5000);
   }
   window.scroll(0, 0);
 };
