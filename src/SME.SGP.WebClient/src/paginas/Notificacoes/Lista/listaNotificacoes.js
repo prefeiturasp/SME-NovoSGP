@@ -18,18 +18,62 @@ import CampoTextoBusca from '~/componentes/campoTextoBusca';
 import { URL_HOME } from '~/constantes/url';
 import RotasDto from '~/dtos/rotasDto';
 import { verificaSomenteConsulta } from '~/servicos/servico-navegacao';
+import { validaSeObjetoEhNuloOuVazio } from '~/utils/funcoes/gerais';
 
 export default function NotificacoesLista() {
   const [idNotificacoesSelecionadas, setIdNotificacoesSelecionadas] = useState(
     []
   );
 
+  const colunas = [
+    {
+      title: 'Código',
+      dataIndex: 'codigo',
+      render: (text, row) => montarLinhasTabela(text, row),
+      align: 'center',
+    },
+    {
+      title: 'Tipo',
+      dataIndex: 'tipo',
+      render: (text, row) => montarLinhasTabela(text, row),
+    },
+    {
+      title: 'Categoria',
+      dataIndex: 'descricaoCategoria',
+      render: (text, row) => montarLinhasTabela(text, row),
+    },
+    {
+      title: 'Título',
+      dataIndex: 'titulo',
+      render: (text, row) => montarLinhasTabela(text, row),
+    },
+    {
+      title: 'Situação',
+      dataIndex: 'descricaoStatus',
+      render: (text, row) => montarLinhasTabela(text, row, true),
+    },
+    {
+      title: 'Data/Hora',
+      dataIndex: 'data',
+      width: 200,
+      align: 'center',
+      render: (text, row) => {
+        const dataFormatada = moment(text).format('DD/MM/YYYY HH:mm:ss');
+        return montarLinhasTabela(dataFormatada, row);
+      },
+    },
+  ];
+
+  const usuario = useSelector(store => store.usuario);
+  const turmaSelecionada = useSelector(store => store.usuario.turmaSelecionada);
+
   const [notificacoesSelecionadas, setNotificacoesSelecionadas] = useState([]);
-  const [notificacoes, setNotificacoes] = useState([]);
   const [listaCategorias, setListaCategorias] = useState([]);
   const [listaStatus, setListaStatus] = useState([]);
   const [listaTipos, setTipos] = useState([]);
-  const [filtro, setFiltro] = useState({});
+  const [filtro, setFiltro] = useState({
+    usuarioRf: usuario.rf,
+  });
 
   const [dropdownTurmaSelecionada, setTurmaSelecionada] = useState();
   const [statusSelecionado, setStatusSelecionado] = useState();
@@ -44,78 +88,35 @@ export default function NotificacoesLista() {
   const [desabilitarTurma, setDesabilitarTurma] = useState(true);
   const [colunasTabela, setColunasTabela] = useState([]);
 
-  const usuario = useSelector(store => store.usuario);
   const permissoesTela = usuario.permissoes[RotasDto.NOTIFICACOES];
 
-  useEffect(() => {
-    const colunas = [
-      {
-        title: 'Código',
-        dataIndex: 'codigo',
-        render: (text, row) => montarLinhasTabela(text, row),
-        align: 'center',
-      },
-      {
-        title: 'Tipo',
-        dataIndex: 'tipo',
-        render: (text, row) => montarLinhasTabela(text, row),
-      },
-      {
-        title: 'Categoria',
-        dataIndex: 'descricaoCategoria',
-        render: (text, row) => montarLinhasTabela(text, row),
-      },
-      {
-        title: 'Título',
-        dataIndex: 'titulo',
-        render: (text, row) => montarLinhasTabela(text, row),
-      },
-      {
-        title: 'Situação',
-        dataIndex: 'descricaoStatus',
-        render: (text, row) => montarLinhasTabela(text, row, true),
-      },
-      {
-        title: 'Data/Hora',
-        dataIndex: 'data',
-        width: 200,
-        align: 'center',
-        render: (text, row) => {
-          const dataFormatada = moment(text).format('DD/MM/YYYY HH:mm:ss');
-          return montarLinhasTabela(dataFormatada, row);
-        },
-      },
-    ];
+  async function carregarListas() {
+    const status = await api.get('v1/notificacoes/status');
+    setListaStatus(status.data);
 
+    const categorias = await api.get('v1/notificacoes/categorias');
+    setListaCategorias(categorias.data);
+
+    const tipos = await api.get('v1/notificacoes/tipos');
+    setTipos(tipos.data);
+  }
+
+  useEffect(() => {
     setColunasTabela(colunas);
     verificaSomenteConsulta(permissoesTela);
     setDesabilitarBotaoExcluir(permissoesTela.podeExcluir);
-  }, []);
-
-  useEffect(() => {
-    async function carregarListas() {
-      const status = await api.get('v1/notificacoes/status');
-      setListaStatus(status.data);
-
-      const categorias = await api.get('v1/notificacoes/categorias');
-      setListaCategorias(categorias.data);
-
-      const tipos = await api.get('v1/notificacoes/tipos');
-      setTipos(tipos.data);
-    }
-
     carregarListas();
   }, []);
 
   useEffect(() => {
-    if (usuario && usuario.turmaSelecionada) {
+    if (usuario && turmaSelecionada) {
       setDesabilitarTurma(false);
     } else {
       setDesabilitarTurma(true);
       setTurmaSelecionada('');
     }
     onClickFiltrar();
-  }, [usuario.turmaSelecionada]);
+  }, [turmaSelecionada]);
 
   useEffect(() => {
     onClickFiltrar();
@@ -136,10 +137,16 @@ export default function NotificacoesLista() {
 
   function montarLinhasTabela(text, row, colunaSituacao) {
     return colunaSituacao ? (
-        <span className={row.status === notificacaoStatus.Pendente ? 'cor-vermelho font-weight-bold text-uppercase' : 'cor-novo-registro-lista'}>
-          {statusLista[row.status]}
-        </span>
-      ) : (
+      <span
+        className={
+          row.status === notificacaoStatus.Pendente
+            ? 'cor-vermelho font-weight-bold text-uppercase'
+            : 'cor-novo-registro-lista'
+        }
+      >
+        {statusLista[row.status]}
+      </span>
+    ) : (
       text
     );
   }
@@ -208,17 +215,17 @@ export default function NotificacoesLista() {
       status: statusSelecionado,
       tipo: tipoSelecionado,
       titulo: tituloSelecionado || null,
-      usuarioRf: usuario.rf,
+      usuarioRf: usuario.rf || null,
       anoLetivo: usuario.filtroAtual.anoLetivo,
     };
     if (dropdownTurmaSelecionada && dropdownTurmaSelecionada == '2') {
-      if (usuario.turmaSelecionada) {
-        paramsQuery.ano = usuario.turmaSelecionada.ano;
-        paramsQuery.dreId = usuario.turmaSelecionada.dre;
-        paramsQuery.ueId = usuario.turmaSelecionada.unidadeEscolar;
+      if (turmaSelecionada) {
+        paramsQuery.ano = turmaSelecionada.ano;
+        paramsQuery.dreId = turmaSelecionada.dre;
+        paramsQuery.ueId = turmaSelecionada.unidadeEscolar;
       }
-      if (usuario.turmaSelecionada && !desabilitarTurma) {
-        paramsQuery.turmaId = usuario.turmaSelecionada.unidadeEscolar;
+      if (turmaSelecionada && !desabilitarTurma) {
+        paramsQuery.turmaId = turmaSelecionada.unidadeEscolar;
       }
     }
     setFiltro(paramsQuery);
@@ -227,6 +234,10 @@ export default function NotificacoesLista() {
   async function onClickFiltrar() {
     filtrarNotificacoes();
   }
+
+  const validarFiltro = () => {
+    return !validaSeObjetoEhNuloOuVazio(filtro);
+  };
 
   function marcarComoLida() {
     if (!permissoesTela.podeAlterar) return;
@@ -252,9 +263,7 @@ export default function NotificacoesLista() {
   }
 
   function quandoTeclaParaBaixoPesquisaCodigo(e) {
-      if ((e.key === 'e') ||
-          (e.key === '-'))
-          e.preventDefault();
+    if (e.key === 'e' || e.key === '-') e.preventDefault();
   }
 
   function quandoClicarVoltar() {
@@ -372,6 +381,7 @@ export default function NotificacoesLista() {
             onClick={permissoesTela.podeAlterar && onClickEditar}
             multiSelecao
             selecionarItems={onSelecionarItems}
+            filtroEhValido={validarFiltro()}
           />
         </div>
       </EstiloLista>
