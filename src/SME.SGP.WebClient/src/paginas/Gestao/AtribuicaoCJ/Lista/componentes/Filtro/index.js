@@ -15,9 +15,11 @@ import UeDropDown from '~/componentes-sgp/UeDropDown/';
 // Styles
 import { Row } from './styles';
 
+const anoAtual = window.moment().format('YYYY');
+
 function Filtro({ onFiltrar }) {
   const [refForm, setRefForm] = useState({});
-  const [anoLetivo] = useState('2019');
+  const [anoLetivo] = useState(anoAtual);
   const [valoresIniciais] = useState({
     anoLetivo: '',
     dreId: '',

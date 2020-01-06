@@ -103,9 +103,11 @@ function AtribuicaoEsporadicaLista() {
     history.push(`/gestao/atribuicao-esporadica/editar/${item.id}`);
   };
 
+  const anoAtual = window.moment().format('YYYY');
+
   const onChangeFiltro = useCallback(valoresFiltro => {
     setFiltro({
-      AnoLetivo: '2019',
+      AnoLetivo: anoAtual,
       DreId: valoresFiltro.dreId,
       UeId: valoresFiltro.ueId,
       ProfessorRF: valoresFiltro.professorRf,

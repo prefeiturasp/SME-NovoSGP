@@ -29,7 +29,10 @@ const TipoCalendarioEscolarForm = ({ match }) => {
   const [auditoria, setAuditoria] = useState([]);
   const [modoEdicao, setModoEdicao] = useState(false);
   const [novoRegistro, setNovoRegistro] = useState(true);
-  const [anoLetivo, setAnoLetivo] = useState('2019');
+
+  const anoAtual = window.moment().format('YYYY');
+
+  const [anoLetivo, setAnoLetivo] = useState(anoAtual);
   const [idTipoCalendario, setIdTipoCalendario] = useState(0);
   const [exibirAuditoria, setExibirAuditoria] = useState(false);
   const valoresIniciaisForm = {
