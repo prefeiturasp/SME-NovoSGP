@@ -16,13 +16,15 @@ namespace SME.SGP.Aplicacao
         private readonly IRepositorioPlanoAnual repositorioPlanoAnual;
         private readonly IRepositorioTipoCalendario repositorioTipoCalendario;
         private readonly IRepositorioTurma repositorioTurma;
+        private readonly IServicoUsuario servicoUsuario;
 
         public ConsultasPlanoAnual(IRepositorioPlanoAnual repositorioPlanoAnual,
                                    IConsultasObjetivoAprendizagem consultasObjetivoAprendizagem,
                                    IRepositorioPeriodoEscolar repositorioPeriodoEscolar,
                                    IRepositorioTipoCalendario repositorioTipoCalendario,
                                    IRepositorioTurma repositorioTurma,
-                                   IRepositorioComponenteCurricular repositorioComponenteCurricular)
+                                   IRepositorioComponenteCurricular repositorioComponenteCurricular,
+                                   IServicoUsuario servicoUsuario)
         {
             this.repositorioPlanoAnual = repositorioPlanoAnual ?? throw new System.ArgumentNullException(nameof(repositorioPlanoAnual));
             this.consultasObjetivoAprendizagem = consultasObjetivoAprendizagem ?? throw new System.ArgumentNullException(nameof(consultasObjetivoAprendizagem));
@@ -30,6 +32,7 @@ namespace SME.SGP.Aplicacao
             this.repositorioTipoCalendario = repositorioTipoCalendario ?? throw new ArgumentNullException(nameof(repositorioTipoCalendario));
             this.repositorioTurma = repositorioTurma ?? throw new ArgumentNullException(nameof(repositorioTurma));
             this.repositorioComponenteCurricular = repositorioComponenteCurricular ?? throw new ArgumentNullException(nameof(repositorioComponenteCurricular));
+            this.servicoUsuario = servicoUsuario ?? throw new ArgumentNullException(nameof(servicoUsuario));
         }
 
         public async Task<PlanoAnualCompletoDto> ObterBimestreExpandido(FiltroPlanoAnualBimestreExpandidoDto filtro)
@@ -160,6 +163,25 @@ namespace SME.SGP.Aplicacao
             else
                 listaPlanoAnual = ObterNovoPlanoAnualCompleto(turmaId, anoLetivo, ueId, periodos, dataAtual);
             return listaPlanoAnual.OrderBy(c => c.Bimestre);
+        }
+
+        public void ObterTurmasParaCopia(int ano, string turmaId)
+        {
+            //var usuario = servicoUsuario.ObterUsuarioLogado();
+            //var turma = repositorioTurma.ObterPorId(turmaId);
+            //if (turma == null)
+            //    throw new NegocioException("Turma não encontrada.");
+
+            //var turmasAtribuidas = repositorioPlanoAnual.ObterTurmasParaCopiaPorAnoEUsuario(ano, usuario.Id);
+            //if (turmasAtribuidas == null || !turmasAtribuidas.Any(c => c.CodigoTurma != turmaId))
+            //    throw new NegocioException("Nenhuma turma disponível para cópia.");
+
+            //turmasAtribuidas.Select(c => new TurmaParaCopiaPlanoAnualDto
+            //{
+            //    Id = c.Id,
+            //    Nome = c.Nome,
+            //    TurmaId = c.CodigoTurma
+            //})
         }
 
         public bool ValidarPlanoAnualExistente(FiltroPlanoAnualDto filtroPlanoAnualDto)
