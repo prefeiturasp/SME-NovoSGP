@@ -13,7 +13,7 @@ import atribuicaoEsporadica from './atribuicaoEsporadica/reducers';
 import loader from './loader/reducer';
 import notasConceitos from './notasConceitos/reducer';
 
-export default combineReducers({
+const reducers = combineReducers({
   navegacao,
   alertas,
   usuario,
@@ -27,3 +27,11 @@ export default combineReducers({
   loader,
   notasConceitos,
 });
+
+const rootReducer = (state, action) => {
+  if (action.type === '@sessao/limpar') state = undefined;
+
+  return reducers(state, action);
+};
+
+export default rootReducer;
