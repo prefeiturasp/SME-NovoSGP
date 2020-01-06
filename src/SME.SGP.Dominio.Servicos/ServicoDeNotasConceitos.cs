@@ -119,7 +119,7 @@ namespace SME.SGP.Dominio
                 {
                     if (ehTipoNota)
                     {
-                        somaNotas += nota.Nota;
+                        somaNotas += nota.Nota >= notaParametro.Media ? 1 : 0;
                     }
                     else
                     {
@@ -133,8 +133,7 @@ namespace SME.SGP.Dominio
 
                 if (ehTipoNota)
                 {
-                    var media = somaNotas / quantidadeAlunos;
-                    if (media < notaParametro.Media)
+                    if (somaNotas < (quantidadeAlunos / 2))
                     {
 
                         servicoNotificacao.Salvar(new Notificacao()
@@ -153,7 +152,7 @@ namespace SME.SGP.Dominio
                 }
                 else
                 {
-                    if (somaConceitos < (quantidadeAlunos % 2))
+                    if (somaConceitos < (quantidadeAlunos / 2))
                     {
 
                         servicoNotificacao.Salvar(new Notificacao()
