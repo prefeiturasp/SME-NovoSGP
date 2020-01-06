@@ -2,6 +2,7 @@
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
+using SME.SGP.Infra.Dtos;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -112,6 +113,22 @@ namespace SME.SGP.Dados.Repositorios
                 componenteEolId,
                 disciplinaId
             }).SingleOrDefault();
+        }
+
+        public IEnumerable<TurmaParaCopiaPlanoAnualDto> ObterTurmasParaCopiaPorAnoEUsuario(int ano, long usuarioId)
+        {
+            var query = @"select
+                            t.*,
+                            p.id as possui_plano
+                        from
+	                        turma t
+                        inner join abrangencia a on
+	                        a.turma_id = t.id
+	                        left join plano_anual p on p.turma_id = a.turma_id
+                        where
+	                        a.usuario_id = @usuarioId and t.ano = @ano and not a.historico";
+
+            return database.Conexao.Query<TurmaParaCopiaPlanoAnualDto>(query, new { ano, usuarioId });
         }
 
         public bool ValidarPlanoExistentePorAnoEscolaTurmaEBimestre(int ano, string escolaId, string turmaId, int bimestre, long componenteCurricularEolId)

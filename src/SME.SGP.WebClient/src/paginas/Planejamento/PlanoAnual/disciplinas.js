@@ -1,31 +1,36 @@
 import React, { useState, useEffect } from 'react';
 import Disciplina from './disciplina';
 
-const Disciplinas = ({ disciplinas, preSelecionadas, onChange }) => {
+const Disciplinas = ({
+  disciplinas,
+  preSelecionadas,
+  layoutEspecial,
+  onChange,
+}) => {
   const [listaDisciplinas, setListaDisciplinas] = useState(disciplinas);
   const [disciplinasSelecionadas, setDisciplinasSelecionadas] = useState([]);
 
   useEffect(() => {
     if (disciplinas) {
       setListaDisciplinas(disciplinas);
-      setDisciplinasSelecionadas([]);
     }
   }, [disciplinas, onChange]);
 
   const selecionarDisciplina = (codigoComponenteCurricular, selecionada) => {
-    const listaDisciplinasSelecionadas = disciplinasSelecionadas;
-    const indiceDisciplina = listaDisciplinasSelecionadas.findIndex(
-      c => c === codigoComponenteCurricular
-    );
-    if (indiceDisciplina >= 0) {
-      if (!selecionada) {
-        listaDisciplinasSelecionadas.splice(indiceDisciplina, 1);
+    if (!layoutEspecial) {
+      const indiceDisciplina = disciplinasSelecionadas.findIndex(
+        c => c === codigoComponenteCurricular
+      );
+      if (indiceDisciplina >= 0) {
+        if (!selecionada) {
+          disciplinasSelecionadas.splice(indiceDisciplina, 1);
+        }
+      } else if (selecionada) {
+        disciplinasSelecionadas.push(codigoComponenteCurricular);
       }
-    } else if (selecionada) {
-      listaDisciplinasSelecionadas.push(codigoComponenteCurricular);
+      setDisciplinasSelecionadas([...disciplinasSelecionadas]);
+      onChange(disciplinasSelecionadas);
     }
-    setDisciplinasSelecionadas([...listaDisciplinasSelecionadas]);
-    onChange(listaDisciplinasSelecionadas);
   };
 
   useEffect(() => {
@@ -43,6 +48,7 @@ const Disciplinas = ({ disciplinas, preSelecionadas, onChange }) => {
             c => c == disciplina.codigoComponenteCurricular
           )}
           key={disciplina.codigoComponenteCurricular}
+          layoutEspecial={layoutEspecial}
         />
       ))}
     </>

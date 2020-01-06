@@ -27,3 +27,8 @@ export const ListItemButton = styled(ListItem)`
     background: ${Base.AzulAnakiwa} !important;
   }
 `;
+
+export const Erro = styled.div`
+  color: ${Base.Vermelho};
+  font-size: 0.8rem;
+`;
