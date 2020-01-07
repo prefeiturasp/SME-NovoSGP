@@ -120,7 +120,7 @@ namespace SME.SGP.Aplicacao
         public async Task<IEnumerable<PlanoAnualCompletoDto>> ObterPorUETurmaAnoEComponenteCurricular(string ueId, string turmaId, int anoLetivo, long componenteCurricularEolId)
         {
             var periodos = ObterPeriodoEscolar(turmaId, anoLetivo);
-            var dataAtual = DateTime.UtcNow.Local().Date;
+            var dataAtual = DateTime.Now.Date;
             var listaPlanoAnual = repositorioPlanoAnual.ObterPlanoAnualCompletoPorAnoUEETurma(anoLetivo, ueId, turmaId, componenteCurricularEolId);
             var componentesCurricularesEol = repositorioComponenteCurricular.Listar();
             if (listaPlanoAnual != null && listaPlanoAnual.Any())
