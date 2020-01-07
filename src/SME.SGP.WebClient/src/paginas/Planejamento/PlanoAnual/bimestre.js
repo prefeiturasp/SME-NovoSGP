@@ -152,7 +152,7 @@ const Bimestre = ({
             erros.map(e => <Erro key={e}>{e}</Erro>)}
           {!layoutEspecial && (
             <h6 className="d-inline-block font-weight-bold my-0 fonte-14 mb-2">
-              Objetivos de aprendizagem
+              Objetivos de aprendizagem e desenvolvimento
             </h6>
           )}
           <div className="mt-3">
