@@ -79,7 +79,7 @@ namespace SME.SGP.Aplicacao.Integracoes
 
         Task<IEnumerable<TurmaPorUEResposta>> ObterTurmasPorUE(string ueId, string anoLetivo);
 
-        bool ProfessorPodePersistirTurma(string professorRf, string codigoTurma, DateTime data);
+        Task<bool> ProfessorPodePersistirTurma(string professorRf, string codigoTurma, DateTime data);
 
         Task ReiniciarSenha(string login);
 

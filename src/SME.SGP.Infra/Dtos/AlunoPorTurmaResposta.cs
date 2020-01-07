@@ -20,6 +20,11 @@ namespace SME.SGP.Infra
         public string TurmaRemanejamento { get; set; }
         public string TurmaTransferencia { get; set; }
 
+        public bool DeveMostrarNaChamada()
+        {
+            return !EstaInativo() || (EstaInativo() || NumeroAlunoChamada > 0);
+        }
+
         public bool EstaInativo()
             => !(new[] { SituacaoMatriculaAluno.Ativo,
                         SituacaoMatriculaAluno.Rematriculado,
