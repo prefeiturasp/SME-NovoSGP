@@ -524,7 +524,7 @@ namespace SME.SGP.Aplicacao.Integracoes
         {
             httpClient.DefaultRequestHeaders.Clear();
 
-            var resposta = await httpClient.GetAsync($"professores/{professorRf}/turmas/{codigoTurma}/atribuicao/verificar/data?dataConsulta={data.ToShortDateString().Replace("/", "%2F")}");
+            var resposta = await httpClient.GetAsync($"professores/{professorRf}/turmas/{codigoTurma}/atribuicao/verificar/data?dataConsula={data.ToShortDateString()}");
             if (resposta.IsSuccessStatusCode)
             {
                 var json = resposta.Content.ReadAsStringAsync().Result;
