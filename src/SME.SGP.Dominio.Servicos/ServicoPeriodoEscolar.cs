@@ -28,7 +28,7 @@ namespace SME.SGP.Dominio
 
             bool eja = tipo.Modalidade == ModalidadeTipoCalendario.EJA;
 
-            int quantidadeBimestres = eja ? 2 : 4;
+            int quantidadeBimestres = tipo.Periodo == Periodo.Semestral ? 2 : 4;
 
             ValidarEntidade(periodos, tipo.AnoLetivo, eja, quantidadeBimestres);
 
