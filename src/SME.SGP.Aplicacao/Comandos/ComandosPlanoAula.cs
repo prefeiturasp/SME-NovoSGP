@@ -278,9 +278,9 @@ namespace SME.SGP.Aplicacao
                 throw new NegocioException("Somente é possível migrar o plano de aula para turmas atribuidas ao professor");
         }
 
-        private void VerificaSeProfessorPodePersistirTurma(string codigoRf, string turmaId, DateTime dataAula)
+        private async void VerificaSeProfessorPodePersistirTurma(string codigoRf, string turmaId, DateTime dataAula)
         {
-            if (!servicoEol.ProfessorPodePersistirTurma(codigoRf, turmaId, dataAula))
+            if (!await servicoEol.ProfessorPodePersistirTurma(codigoRf, turmaId, dataAula))
                 throw new NegocioException("Você não pode fazer alterações ou inclusões nesta turma e data.");
         }
     }
