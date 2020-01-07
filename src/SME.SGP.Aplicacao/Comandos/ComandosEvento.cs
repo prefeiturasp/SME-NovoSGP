@@ -100,8 +100,8 @@ namespace SME.SGP.Aplicacao
 
         private Evento MapearParaEntidade(Evento evento, EventoDto eventoDto)
         {
-            evento.DataFim = eventoDto.DataFim.HasValue ? eventoDto.DataFim.Value : eventoDto.DataInicio;
-            evento.DataInicio = eventoDto.DataInicio;
+            evento.DataFim = eventoDto.DataFim.HasValue ? eventoDto.DataFim.Value.Local() : eventoDto.DataInicio.Local();
+            evento.DataInicio = eventoDto.DataInicio.Local();
             evento.Descricao = eventoDto.Descricao;
             evento.DreId = eventoDto.DreId;
             evento.FeriadoId = eventoDto.FeriadoId;
@@ -120,7 +120,7 @@ namespace SME.SGP.Aplicacao
             {
                 new RetornoCopiarEventoDto(retornoCadasradoEvento, true)
             };
-            Background.Core.Cliente.Executar<IComandosEvento>(x => x.GravarRecorrencia(eventoDto, evento));
+            Background.Core.Cliente.Executar(() => GravarRecorrencia(eventoDto, evento));
             mensagens.AddRange(await CopiarEventos(eventoDto));
 
             return mensagens;

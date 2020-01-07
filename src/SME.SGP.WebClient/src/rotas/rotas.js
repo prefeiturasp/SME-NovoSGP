@@ -437,7 +437,8 @@ rotas.set(`${RotasDto.FREQUENCIA_PLANO_AULA}`, {
   component: FrequenciaPlanoAula,
   exact: true,
   tipo: RotasTipo.EstruturadaAutenticada,
-  temPermissionamento: false,
+  temPermissionamento: true,
+  chavePermissao: RotasDto.FREQUENCIA_PLANO_AULA,
 });
 
 rotas.set(`${RotasDto.NOTAS}`, {
@@ -480,7 +481,7 @@ rotas.set(`${RotasDto.TIPO_AVALIACAO}/editar/:id`, {
 });
 
 rotas.set(`${RotasDto.AULA_DADA_AULA_PREVISTA}`, {
-  breadcrumbName: 'Aula dada X Aula prevista',
+  breadcrumbName: 'Aula prevista X Aula dada',
   menu: ['Diário de Classe'],
   parent: '/',
   component: AulaDadaAulaPrevista,

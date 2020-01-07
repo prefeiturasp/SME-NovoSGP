@@ -1,18 +1,8 @@
-import React, {
-  useState,
-  useEffect,
-  useCallback,
-  useRef,
-  useMemo,
-} from 'react';
+import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 
 // Componentes
 import { Table } from 'antd';
-
-// Redux
-import { useSelector, useDispatch } from 'react-redux';
-import { setLoaderTabela } from '~/redux/modulos/loader/actions';
 
 import { Container } from './listaPaginada.css';
 import api from '~/servicos/api';
@@ -32,13 +22,11 @@ const ListaPaginada = props => {
     onErro,
   } = props;
 
-  const dispatch = useDispatch();
-  const carregando = useSelector(store => store.loader.loaderTabela);
+  const [carregando, setCarregando] = useState(false);
 
   const [total, setTotal] = useState(0);
   const [linhas, setLinhas] = useState([]);
   const [linhasSelecionadas, setLinhasSelecionadas] = useState([]);
-  const [filtroLocal, setFiltroLocal] = useState(null);
 
   const [paginaAtual, setPaginaAtual] = useState({
     defaultPageSize: 10,
@@ -99,17 +87,15 @@ const ListaPaginada = props => {
     );
   };
 
-  const filtrar = useCallback(() => {
-    dispatch(setLoaderTabela(true));
+  const filtrar = () => {
+    setCarregando(true);
     api
-      .get(urlBusca, { params: filtroLocal })
+      .get(urlBusca, { params: filtro })
       .then(resposta => {
         setTotal(resposta.data.totalRegistros);
         setLinhas(resposta.data.items);
-        dispatch(setLoaderTabela(false));
       })
       .catch(err => {
-        dispatch(setLoaderTabela(false));
         if (
           err.response &&
           err.response.data &&
@@ -119,18 +105,15 @@ const ListaPaginada = props => {
           if (onErro) onErro(err);
           else erro(err.response.data.mensagens[0]);
         }
-      });
-  }, [dispatch, filtroLocal, onErro, urlBusca]);
-
-  useEffect(() => {
-    setFiltroLocal(filtro);
-  }, [filtro, paginaAtual]);
+      })
+      .finally(() => setCarregando(false));
+  };
 
   useEffect(() => {
     if (filtroEhValido) {
       filtrar();
     }
-  }, [filtroEhValido, filtrar]);
+  }, [filtroEhValido, filtro, paginaAtual]);
 
   const executaPaginacao = pagina => {
     const novaPagina = { ...paginaAtual, ...pagina };

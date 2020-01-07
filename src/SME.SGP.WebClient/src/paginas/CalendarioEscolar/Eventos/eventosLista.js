@@ -51,6 +51,8 @@ const EventosLista = () => {
     tipoCalendarioId: undefined,
     dreId: undefined,
     ueId: undefined,
+    ehTodasDres: false,
+    ehTodasUes: false,
     dataInicio: '',
     dataFim: '',
   });
@@ -274,14 +276,24 @@ const EventosLista = () => {
     history.push(URL_HOME);
   };
 
+  const onChangeUeId = async ueId => {
+    filtrar('ehTodasUes', ueId === '0');
+    filtrar('ueId', ueId === '0' ? '' : ueId);
+  };
+
   const onChangeDreId = async dreId => {
     refForm.setFieldValue('ueId', undefined);
-    filtrar('dreId', dreId);
+    filtrar('ehTodasDres', dreId === '0');
+    filtrar('dreId', dreId === '0' ? '' : dreId);
+
     if (dreId) {
       setDreSelecionada(dreId);
       setCampoUeDesabilitado(false);
       return;
     }
+
+    filtrar('ehTodasUes', false);
+    filtrar('ueId', '');
 
     setCampoUeDesabilitado(true);
     setListaUe([]);
@@ -479,7 +491,7 @@ const EventosLista = () => {
                     lista={listaUe}
                     valueOption="codigo"
                     valueText="nome"
-                    onChange={ueId => filtrar('ueId', ueId)}
+                    onChange={ueId => onChangeUeId(ueId)}
                     disabled={campoUeDesabilitado || ueDesabilitada}
                     placeholder="Selecione uma UE (Opcional)"
                     form={form}

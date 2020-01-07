@@ -223,6 +223,8 @@ function AtribuicaoCJForm({ match, location }) {
     }
   }, [refForm, valoresForm]);
 
+  const anoAtual = window.moment().format('YYYY');
+
   return (
     <>
       <Cabecalho pagina="Atribuição" />
@@ -274,7 +276,7 @@ function AtribuicaoCJForm({ match, location }) {
                     <Row className="row">
                       <Localizador
                         dreId={form.values.dreId}
-                        anoLetivo="2019"
+                        anoLetivo={anoAtual}
                         showLabel
                         form={form}
                         onChange={() => null}

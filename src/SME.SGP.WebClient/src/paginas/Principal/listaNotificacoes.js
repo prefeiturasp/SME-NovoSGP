@@ -13,9 +13,12 @@ const ListaNotificacoes = () => {
   const usuario = useSelector(state => state.usuario);
   const [carregando, setCarregando] = useState(true);
 
+  const anoAtual = window.moment().format('YYYY');
+
   useEffect(() => {
-    servicoNotificacao.buscaNotificacoesPorAnoRf(2019, usuario.rf);
+    servicoNotificacao.buscaNotificacoesPorAnoRf(anoAtual, usuario.rf);
   }, [usuario.rf]);
+
   const notificacoes = useSelector(state => state.notificacoes);
 
   useEffect(() => {

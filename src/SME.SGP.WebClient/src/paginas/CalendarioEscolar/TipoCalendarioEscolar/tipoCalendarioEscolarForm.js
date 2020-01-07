@@ -29,7 +29,10 @@ const TipoCalendarioEscolarForm = ({ match }) => {
   const [auditoria, setAuditoria] = useState([]);
   const [modoEdicao, setModoEdicao] = useState(false);
   const [novoRegistro, setNovoRegistro] = useState(true);
-  const [anoLetivo, setAnoLetivo] = useState('2019');
+
+  const anoAtual = window.moment().format('YYYY');
+
+  const [anoLetivo, setAnoLetivo] = useState(anoAtual);
   const [idTipoCalendario, setIdTipoCalendario] = useState(0);
   const [exibirAuditoria, setExibirAuditoria] = useState(false);
   const valoresIniciaisForm = {
@@ -157,8 +160,13 @@ const TipoCalendarioEscolarForm = ({ match }) => {
   const onClickCadastrar = async valoresForm => {
     valoresForm.id = idTipoCalendario || 0;
     valoresForm.anoLetivo = anoLetivo;
-    const cadastrado = await api
-      .post('v1/calendarios/tipos', valoresForm)
+    var metodo = idTipoCalendario ? 'put' : 'post';
+    var url = 'v1/calendarios/tipos';
+    if (idTipoCalendario)
+      url += '/' + idTipoCalendario;
+
+    const cadastrado = await api[metodo]
+      (url, valoresForm)
       .catch(e => erros(e));
     if (cadastrado) {
       sucesso('Suas informações foram salvas com sucesso.');
@@ -211,7 +219,7 @@ const TipoCalendarioEscolarForm = ({ match }) => {
       <Cabecalho
         pagina={`${
           idTipoCalendario > 0 ? 'Alterar' : 'Cadastro do'
-        } Tipo de Calendário Escolar`}
+          } Tipo de Calendário Escolar`}
       />
       <Card>
         <Formik
@@ -327,8 +335,8 @@ const TipoCalendarioEscolarForm = ({ match }) => {
             alteradoRf={auditoria.alteradoRf}
           />
         ) : (
-          ''
-        )}
+            ''
+          )}
       </Card>
     </>
   );

@@ -10,7 +10,7 @@ import { ContainerTabsCard } from '~/componentes/tabs/tabs.css';
 import { URL_HOME } from '~/constantes/url';
 import notasConceitos from '~/dtos/notasConceitos';
 import { setModoEdicaoGeral } from '~/redux/modulos/notasConceitos/actions';
-import { erros, sucesso } from '~/servicos/alertas';
+import { erros, sucesso, confirmar } from '~/servicos/alertas';
 import api from '~/servicos/api';
 import history from '~/servicos/history';
 
@@ -193,18 +193,11 @@ const Notas = () => {
   }, [obterDisciplinas, usuario.turmaSelecionada.turma, resetarTela]);
 
   const pergutarParaSalvar = () => {
-    if (
-      window.confirm(`Suas alterações não foram salvas, deseja salvar agora?`)
-    ) {
-      return true;
-    }
-    return false;
-    // TODO - Voltar esse fonte apois ajuste de modal de confirmação
-    // return confirmar(
-    //   'Atenção',
-    //   '',
-    //   'Suas alterações não foram salvas, deseja salvar agora?'
-    // );
+    return confirmar(
+      'Atenção',
+      '',
+      'Suas alterações não foram salvas, deseja salvar agora?'
+    );
   };
 
   const irParaHome = () => {
@@ -331,6 +324,7 @@ const Notas = () => {
         }
       }
     } else {
+      resetarTela();
       obterDadosBimestres(disciplinaId, 0);
       setDisciplinaSelecionada(disciplinaId);
     }
@@ -404,8 +398,8 @@ const Notas = () => {
 
   const onClickCancelar = async cancelar => {
     if (cancelar) {
-      dispatch(setModoEdicaoGeral(false));
       obterDadosBimestres(disciplinaSelecionada, bimestreCorrente);
+      dispatch(setModoEdicaoGeral(false));
     }
   };
 

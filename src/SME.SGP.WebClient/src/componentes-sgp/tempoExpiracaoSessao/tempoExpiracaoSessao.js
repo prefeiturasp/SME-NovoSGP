@@ -6,6 +6,7 @@ import { Base, Colors } from '~/componentes/colors';
 import {
   Deslogar,
   salvarLoginRevalidado,
+  setExibirMensagemSessaoExpirou,
 } from '~/redux/modulos/usuario/actions';
 import { erros } from '~/servicos/alertas';
 import api from '~/servicos/api';
@@ -92,6 +93,7 @@ const TempoExpiracaoSessao = () => {
   }, [dataHoraExpiracao]);
 
   const deslogarDoUsuario = useCallback(() => {
+    dispatch(setExibirMensagemSessaoExpirou(true));
     dispatch(Deslogar());
   }, [dispatch]);
 
@@ -121,11 +123,14 @@ const TempoExpiracaoSessao = () => {
       .post('v1/autenticacao/revalidar')
       .catch(e => erros(e));
     setMostraTempoExpiracao(false);
-    dispatch(
-      salvarLoginRevalidado({
-        token: autenticado.data,
-      })
-    );
+    if (autenticado && autenticado.data && autenticado.data.token) {
+      dispatch(
+        salvarLoginRevalidado({
+          token: autenticado.data.token,
+          dataHoraExpiracao: autenticado.data.dataHoraExpiracao,
+        })
+      );
+    }
   };
 
   return (

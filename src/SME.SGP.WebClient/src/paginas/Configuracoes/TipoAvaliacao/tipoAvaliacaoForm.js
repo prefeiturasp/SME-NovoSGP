@@ -86,7 +86,6 @@ const TipoAvaliacaoForm = ({ match }) => {
   };
 
   const onClickCancelar = async form => {
-    // debugger;
     // if (!modoEdicao) return;
     const confirmou = await confirmar(
       'Atenção',
@@ -141,7 +140,6 @@ const TipoAvaliacaoForm = ({ match }) => {
 
   const onSubmitFormulario = async valores => {
     try {
-      debugger;
       let cadastrado;
       if (!idTipoAvaliacao) {
         cadastrado = await servicoTipoAvaliaco.salvarTipoAvaliacao({
