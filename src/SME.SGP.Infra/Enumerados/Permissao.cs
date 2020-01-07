@@ -15,17 +15,17 @@
         //[PermissaoMenu(Menu = "Sondagem", Icone = "fas fa-book-reader", Agrupamento = "Diário de Classe", OrdemAgrupamento = 1, OrdemMenu = 9, EhAlteracao = true)]
         //S_A = 4,
 
-        [PermissaoMenu(Menu = "Relatório de Sondagem", Icone = "fas fa-file-alt", Agrupamento = "Relatórios", OrdemAgrupamento = 2, OrdemMenu = 8)]
-        SR_C = 5,
+        //[PermissaoMenu(Menu = "Relatório de Sondagem", Icone = "fas fa-file-alt", Agrupamento = "Relatórios", OrdemAgrupamento = 2, OrdemMenu = 8)]
+        //SR_C = 5,
 
-        [PermissaoMenu(Menu = "Relatório de Sondagem", Icone = "fas fa-file-alt", Agrupamento = "Relatórios", OrdemAgrupamento = 2, OrdemMenu = 8)]
-        SR_I = 6,
+        //[PermissaoMenu(Menu = "Relatório de Sondagem", Icone = "fas fa-file-alt", Agrupamento = "Relatórios", OrdemAgrupamento = 2, OrdemMenu = 8)]
+        //SR_I = 6,
 
-        [PermissaoMenu(Menu = "Relatório de Sondagem", Icone = "fas fa-file-alt", Agrupamento = "Relatórios", OrdemAgrupamento = 2, OrdemMenu = 8)]
-        SR_E = 7,
+        //[PermissaoMenu(Menu = "Relatório de Sondagem", Icone = "fas fa-file-alt", Agrupamento = "Relatórios", OrdemAgrupamento = 2, OrdemMenu = 8)]
+        //SR_E = 7,
 
-        [PermissaoMenu(Menu = "Relatório de Sondagem", Icone = "fas fa-file-alt", Agrupamento = "Relatórios", OrdemAgrupamento = 2, OrdemMenu = 8)]
-        SR_A = 8,
+        //[PermissaoMenu(Menu = "Relatório de Sondagem", Icone = "fas fa-file-alt", Agrupamento = "Relatórios", OrdemAgrupamento = 2, OrdemMenu = 8)]
+        //SR_A = 8,
 
         [PermissaoMenu(Menu = "Boletim", Icone = "fas fa-book-reader", Agrupamento = "Diário de Classe", OrdemAgrupamento = 1, OrdemMenu = 3, EhConsulta = true)]
         B_C = 9,
@@ -42,14 +42,14 @@
         [PermissaoMenu(Menu = "Calendário Escolar", Icone = "fas fa-calendar-alt", Agrupamento = "Calendário Escolar", OrdemAgrupamento = 5, OrdemMenu = 1, Url = "/calendario-escolar", EhAlteracao = true)]
         C_A = 13,
 
-        [PermissaoMenu(Menu = "Frequência", Icone = "fas fa-file-alt", Agrupamento = "Relatórios", EhMenu = false, EhConsulta = true)]
-        F_C = 14,
+        //[PermissaoMenu(Menu = "Frequência", Icone = "fas fa-file-alt", Agrupamento = "Relatórios", EhMenu = false, EhConsulta = true)]
+        //F_C = 14,
 
-        [PermissaoMenu(Menu = "Frequência", Icone = "fas fa-file-alt", Agrupamento = "Relatórios", EhMenu = false, EhInclusao = true)]
-        F_I = 15,
+        //[PermissaoMenu(Menu = "Frequência", Icone = "fas fa-file-alt", Agrupamento = "Relatórios", EhMenu = false, EhInclusao = true)]
+        //F_I = 15,
 
-        [PermissaoMenu(Menu = "Frequência", Icone = "fas fa-file-alt", Agrupamento = "Relatórios", EhMenu = false, EhExclusao = true)]
-        F_E = 16,
+        //[PermissaoMenu(Menu = "Frequência", Icone = "fas fa-file-alt", Agrupamento = "Relatórios", EhMenu = false, EhExclusao = true)]
+        //F_E = 16,
 
         [PermissaoMenu(Menu = "Plano de aula/Frequência", Icone = "fas fa-book-reader", EhMenu = false, EhAlteracao = true)]
         F_A = 17,
@@ -138,8 +138,8 @@
         [PermissaoMenu(EhMenu = false, EhAlteracao = true, Menu = "Atribuição Professor", Agrupamento = "Atribuição Professor")]
         AP_A = 45,
 
-        [PermissaoMenu(Menu = "Relatório Consulta", Icone = "fas fa-file-alt", Agrupamento = "Relatórios", OrdemAgrupamento = 2, OrdemMenu = 2)]
-        R_C = 46,
+        //[PermissaoMenu(Menu = "Relatório Consulta", Icone = "fas fa-file-alt", Agrupamento = "Relatórios", OrdemAgrupamento = 2, OrdemMenu = 2)]
+        //R_C = 46,
 
         [PermissaoMenu(Menu = "Usuários", Icone = "fas fa-book-reader", Agrupamento = "Configurações", OrdemAgrupamento = 7, OrdemMenu = 1, Url = "/usuarios/reiniciar-senha", EhAlteracao = true,
            EhSubMenu = true, EhConsulta = true, SubMenu = "Reiniciar Senha")]
