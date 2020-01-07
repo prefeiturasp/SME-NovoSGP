@@ -47,7 +47,7 @@ namespace SME.SGP.Aplicacao.Consultas
                     Bimestre = (aulaDto.DataAula.Month + 2) / 3,
                     ComponenteCurricularEolId = long.Parse(aulaDto.DisciplinaId),
                     EscolaId = aulaDto.UeId,
-                    TurmaId = int.Parse(aulaDto.TurmaId)
+                    TurmaId = aulaDto.TurmaId
                 });
 
                 // Carrega objetivos já cadastrados no plano de aula

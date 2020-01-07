@@ -13,5 +13,6 @@ namespace SME.SGP.Infra
         public long Id { get; set; }
 
         public long IdComponenteCurricular { get; set; }
+        public long ComponenteCurricularEolId { get; set; }
     }
 }

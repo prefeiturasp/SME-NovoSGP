@@ -9,7 +9,6 @@ namespace SME.SGP.Dominio
         public CategoriaAtividadeAvaliativa Categoria { get; set; }
         public DateTime DataAvaliacao { get; set; }
         public string DescricaoAvaliacao { get; set; }
-        public long DisciplinaId { get; set; }
         public string DreId { get; set; }
         public bool EhRegencia { get; set; }
         public bool Excluido { get; set; }

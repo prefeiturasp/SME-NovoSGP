@@ -38,10 +38,10 @@ namespace SME.SGP.Api.Controllers
             return Ok(consultasProfessor.Listar(codigoRf));
         }
 
-        [HttpGet("{codigoRF}/turmas/{codigoTurma}/disciplinas/")]
+        [HttpGet("turmas/{codigoTurma}/disciplinas/")]
         [ProducesResponseType(typeof(IEnumerable<DisciplinaDto>), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        public async Task<IActionResult> Get(string codigoTurma, string codigoRF, [FromQuery] bool turmaPrograma, [FromServices]IConsultasDisciplina consultasDisciplina)
+        public async Task<IActionResult> Get(string codigoTurma, [FromQuery] bool turmaPrograma, [FromServices]IConsultasDisciplina consultasDisciplina)
         {
             return Ok(await consultasDisciplina.ObterDisciplinasPorProfessorETurma(codigoTurma, turmaPrograma));
         }

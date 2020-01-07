@@ -140,7 +140,6 @@ const TipoAvaliacaoForm = ({ match }) => {
 
   const onSubmitFormulario = async valores => {
     try {
-      debugger;
       let cadastrado;
       if (!idTipoAvaliacao) {
         cadastrado = await servicoTipoAvaliaco.salvarTipoAvaliacao({
