@@ -28,22 +28,22 @@ namespace SME.SGP.Aplicacao
             var alunos = notasConceitosDto.Select(x => x.AlunoId).ToList();
             var avaliacoes = notasConceitosDto.Select(x => x.AtividadeAvaliativaId).ToList();
 
-            var notasBanco = repositorioNotasConceitos.ObterNotasPorAlunosAtividadesAvaliativas(avaliacoes, alunos);
+            var notasBanco = repositorioNotasConceitos.ObterNotasPorAlunosAtividadesAvaliativas(avaliacoes, alunos, notaConceitoLista.DisciplinaId);
 
             var professorRf = servicoUsuario.ObterRf();
 
             var notasSalvar = new List<NotaConceito>();
 
             if (notasBanco == null || !notasBanco.Any())
-                await IncluirTodasNotas(notasConceitosDto, notasSalvar, professorRf, notaConceitoLista.TurmaId);
+                await IncluirTodasNotas(notasConceitosDto, notasSalvar, professorRf, notaConceitoLista.TurmaId, notaConceitoLista.DisciplinaId);
             else
-                await TratarInclusaoEdicaoNotas(notasConceitosDto, notasBanco, notasSalvar, professorRf, notaConceitoLista.TurmaId);
+                await TratarInclusaoEdicaoNotas(notasConceitosDto, notasBanco, notasSalvar, professorRf, notaConceitoLista.TurmaId, notaConceitoLista.DisciplinaId);
         }
 
-        private async Task IncluirTodasNotas(IEnumerable<NotaConceitoDto> notasConceitosDto, List<NotaConceito> notasSalvar, string professorRf, string turmaId)
+        private async Task IncluirTodasNotas(IEnumerable<NotaConceitoDto> notasConceitosDto, List<NotaConceito> notasSalvar, string professorRf, string turmaId, string disiplinaId)
         {
             notasSalvar = notasConceitosDto.Select(x => ObterEntidadeInclusao(x)).ToList();
-            await servicosDeNotasConceitos.Salvar(notasSalvar, professorRf, turmaId);
+            await servicosDeNotasConceitos.Salvar(notasSalvar, professorRf, turmaId, disiplinaId);
         }
 
         private NotaConceito ObterEntidadeEdicao(NotaConceitoDto dto, NotaConceito entidade)
@@ -65,7 +65,7 @@ namespace SME.SGP.Aplicacao
             };
         }
 
-        private async Task TratarInclusaoEdicaoNotas(IEnumerable<NotaConceitoDto> notasConceitosDto, IEnumerable<NotaConceito> notasBanco, List<NotaConceito> notasSalvar, string professorRf, string turmaId)
+        private async Task TratarInclusaoEdicaoNotas(IEnumerable<NotaConceitoDto> notasConceitosDto, IEnumerable<NotaConceito> notasBanco, List<NotaConceito> notasSalvar, string professorRf, string turmaId, string disciplinaId)
         {
             var notasEdicao = notasConceitosDto.Where(dto => notasBanco.Any(banco => banco.AlunoId == dto.AlunoId && banco.AtividadeAvaliativaID == dto.AtividadeAvaliativaId))
                 .Select(dto => ObterEntidadeEdicao(dto, notasBanco.FirstOrDefault(banco => banco.AtividadeAvaliativaID == dto.AtividadeAvaliativaId && banco.AlunoId == dto.AlunoId)));
@@ -75,7 +75,7 @@ namespace SME.SGP.Aplicacao
             notasSalvar.AddRange(notasEdicao);
             notasSalvar.AddRange(notasInclusao);
 
-            await servicosDeNotasConceitos.Salvar(notasSalvar, professorRf, turmaId);
+            await servicosDeNotasConceitos.Salvar(notasSalvar, professorRf, turmaId, disciplinaId);
         }
     }
 }
