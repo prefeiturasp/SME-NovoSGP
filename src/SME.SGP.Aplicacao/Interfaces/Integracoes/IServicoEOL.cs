@@ -18,6 +18,7 @@ namespace SME.SGP.Aplicacao.Integracoes
         Task<UsuarioEolAutenticacaoRetornoDto> Autenticar(string login, string senha);
 
         Task<AbrangenciaRetornoEolDto> ObterAbrangencia(string login, Guid perfil);
+
         Task<AbrangenciaCompactaVigenteRetornoEOLDTO> ObterAbrangenciaCompactaVigente(string login, Guid perfil);
 
         Task<AbrangenciaRetornoEolDto> ObterAbrangenciaParaSupervisor(string[] uesIds);
@@ -37,6 +38,10 @@ namespace SME.SGP.Aplicacao.Integracoes
         IEnumerable<EscolasRetornoDto> ObterEscolasPorCodigo(string[] codigoUes);
 
         IEnumerable<EscolasRetornoDto> ObterEscolasPorDre(string dreId);
+
+        EstruturaInstitucionalRetornoEolDTO ObterEstruturaInstuticionalVigentePorDre();
+
+        EstruturaInstitucionalRetornoEolDTO ObterEstruturaInstuticionalVigentePorTurma(string[] codigosTurma = null);
 
         IEnumerable<UsuarioEolRetornoDto> ObterFuncionariosPorCargoUe(string UeId, long cargoId);
 
@@ -74,13 +79,12 @@ namespace SME.SGP.Aplicacao.Integracoes
 
         Task<IEnumerable<TurmaPorUEResposta>> ObterTurmasPorUE(string ueId, string anoLetivo);
 
+        bool ProfessorPodePersistirTurma(string professorRf, string codigoTurma, DateTime data);
+
         Task ReiniciarSenha(string login);
 
         Task RemoverCJSeNecessario(Guid usuarioId);
 
         Task<bool> ValidarProfessor(string professorRf);
-
-        EstruturaInstitucionalRetornoEolDTO ObterEstruturaInstuticionalVigentePorTurma(string[] codigosTurma = null);
-        EstruturaInstitucionalRetornoEolDTO ObterEstruturaInstuticionalVigentePorDre();
     }
 }

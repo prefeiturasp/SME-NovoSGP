@@ -1,11 +1,14 @@
 ﻿using Dapper;
+using HealthChecks.UI.Client;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Prometheus;
 using SME.Background.Core;
 using SME.Background.Hangfire;
+using SME.SGP.Api.HealthCheck;
 using SME.SGP.Api.Middlewares;
 using SME.SGP.Background;
 using SME.SGP.Dados.Mapeamentos;
@@ -58,6 +61,12 @@ namespace SME.SGP.Api
             app.UseMvc();
             app.UseMetricServer();
             app.UseStaticFiles();
+
+            app.UseHealthChecks("/healthz", new HealthCheckOptions()
+            {
+                Predicate = _ => true,
+                ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse
+            });
         }
 
         // This method gets called by the runtime. Use this method to add services to the container.
@@ -107,6 +116,18 @@ namespace SME.SGP.Api
             }
             else
                 Orquestrador.Desativar();
+
+            services.AddHealthChecks()
+                    .AddRedis(
+                        Configuration.GetConnectionString("SGP-Redis"),
+                        "Redis Cache",
+                        null,
+                        tags: new string[] { "db", "redis" })
+                    .AddNpgSql(
+                        Configuration.GetConnectionString("SGP-Postgres"),
+                        name: "Postgres")
+                    .AddCheck<ApiJuremaCheck>("API Jurema")
+                    .AddCheck<ApiEolCheck>("API EOL");
         }
     }
 }

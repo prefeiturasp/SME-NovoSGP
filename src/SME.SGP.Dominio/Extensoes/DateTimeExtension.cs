@@ -4,6 +4,16 @@ namespace SME.SGP.Dominio
 {
     public static class DateTimeExtension
     {
+        private static readonly TimeZoneInfo fusoHorarioBrasil = TimeZoneInfo.FindSystemTimeZoneById("E. South America Standard Time");
+
+        public static DateTime Local(this DateTime data)
+        {
+            if (data.TimeOfDay.TotalSeconds > 0)
+                return TimeZoneInfo.ConvertTimeFromUtc(data, fusoHorarioBrasil);
+            else
+                return data;
+        }
+
         public static DateTime ObterDomingo(this DateTime data)
         {
             if (data.DayOfWeek == DayOfWeek.Sunday)
