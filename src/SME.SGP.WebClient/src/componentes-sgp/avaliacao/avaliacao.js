@@ -53,14 +53,30 @@ const Avaliacao = props => {
 
   const montarCabecalhoInterdisciplinar = () => {
     return dados.avaliacoes && dados.avaliacoes.length > 0
-      ? dados.avaliacoes.map(() => {
-          return (
+      ? dados.avaliacoes.map(avaliacao => {
+          return avaliacao.ehInterdisciplinar ? (
             <th key={shortid.generate()} className="width-150">
-              {/* TODO - INTERDISCIPLINAR */}
+              <Tooltip
+                title={montarToolTipDisciplinas(avaliacao.disciplinas)}
+                placement="bottom"
+                overlayStyle={{ fontSize: '12px' }}
+              >
+                <CaixaMarcadores>Interdisciplinar</CaixaMarcadores>
+              </Tooltip>
             </th>
+          ) : (
+            <th key={shortid.generate()} className="width-150"></th>
           );
         })
       : '';
+  };
+
+  const montarToolTipDisciplinas = disciplinas => {
+    let nomes = '';
+    disciplinas.forEach(nomeDisciplina => {
+      nomes += nomes.length > 0 ? `, ${nomeDisciplina}` : nomeDisciplina;
+    });
+    return nomes;
   };
 
   const montarCampoNotaConceito = nota => {

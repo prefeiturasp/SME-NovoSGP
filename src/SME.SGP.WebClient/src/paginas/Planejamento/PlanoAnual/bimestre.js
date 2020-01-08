@@ -1,338 +1,249 @@
-import React, { useEffect, useRef, useLayoutEffect, useState } from 'react';
-import {
-  Badge,
-  ObjetivosList,
-  ListItemButton,
-  ListItem,
-  H5,
-  BoxAuditoria,
-} from './bimestre.css';
-import CardCollapse from '../../../componentes/cardCollapse';
-import Grid from '../../../componentes/grid';
-import Button from '../../../componentes/button';
-import TextEditor from '../../../componentes/textEditor';
-import { Colors } from '../../../componentes/colors';
+import React, { useState, useEffect, useMemo } from 'react';
+import Disciplinas from './disciplinas';
+import { ListItem, ListItemButton, ListaObjetivos, Erro } from './bimestre.css';
+import { Button, Colors, Grid, Auditoria, Loader } from '~/componentes';
 import Seta from '../../../recursos/Seta.svg';
-import { useDispatch, useSelector } from 'react-redux';
-import {
-  ObterObjetivosCall,
-  SalvarEhExpandido,
-  SelecionarMateria,
-  SetarDescricaoFunction,
-  SelecionarObjetivo,
-  SetarDescricao,
-  ObterBimestreServidor,
-  removerSelecaoTodosObjetivos,
-} from '../../../redux/modulos/planoAnual/action';
-import Auditoria from '~/componentes/auditoria';
+import Editor from '~/componentes/editor/editor';
+import servicoPlanoAnual from '~/servicos/Paginas/ServicoPlanoAnual';
+import { erros as mostrarErros } from '~/servicos/alertas';
 
-//Utilizado para importar a função scrollIntoViewIfNeeded para navegadores que não possuem essa funcionalidade.
-import '../../../componentes/scrollIntoViewIfNeeded';
-import modalidade from '~/dtos/modalidade';
-import { erro } from '~/servicos/alertas';
+const Bimestre = ({
+  bimestre,
+  disciplinas,
+  regencia,
+  ano,
+  erros,
+  ehEja,
+  ehMedio,
+  disciplinaSemObjetivo,
+  selecionarObjetivo,
+  onChangeDescricaoObjetivo,
+}) => {
+  const [objetivosAprendizagem, setObjetivosAprendizagem] = useState([]);
+  const [objetivosCarregados, setObjetivosCarregados] = useState(false);
+  const [objetivosSelecionados, setObjetivosSelecionados] = useState(
+    bimestre.objetivosAprendizagem
+  );
+  const [disciplinasPreSelecionadas, setDisciplinasPreSelecionadas] = useState(
+    bimestre.objetivosAprendizagem.map(c => c.componenteCurricularEolId)
+  );
+  const [descricaoObjetivo, setDescricaoObjetivo] = useState(
+    bimestre.descricao
+  );
+  const [layoutEspecial, setLayoutEspecial] = useState(false);
+  const [carregandoDados, setCarregandoDados] = useState(false);
 
-const BimestreComponent = React.forwardRef((props, ref) => {
-  const dispatch = useDispatch();
-
-  const {
-    indice,
-    disabled,
-    modalidadeEja,
-    disciplinaSelecionada,
-    bimestre,
-  } = props;
-
-  const { LayoutEspecial } = bimestre;
-
-  const { materias } = bimestre;
-
-  const objetivos = bimestre.objetivosAprendizagem;
-
-  const [idObjetivoFocado, setIDObjetivoFocado] = useState('0');
-
-  const [estadoAdicionalEditorTexto, setEstadoAdicionalEditorTexto] = useState({
-    focado: false,
-    ultimoFoco: null,
-  });
-
-  const textEditorRef = useRef(null);
-
-  const ListRef = useRef(null);
-
-  const bimestreJaObtidoServidor = bimestre.ehExpandido;
-
-  useEffect(() => {
-    if (!bimestre.setarObjetivo) {
-      setarDescricaoFunction(descricaoFunction);
-    }
-  }, []);
-
-  useEffect(() => {
-    obterObjetivos();
-  }, [materias]);
-
-  useLayoutEffect(() => {
-    focarObjetivo();
-  }, [objetivos]);
-
-  const descricaoFunction = () => {
-    return textEditorRef.current.state.value;
+  const onChangeDisciplinasSelecionadas = disciplinasSelecionadas => {
+    if (disciplinasSelecionadas && disciplinasSelecionadas.length > 0) {
+      setCarregandoDados(true);
+      servicoPlanoAnual
+        .obterObjetivosPorAnoEComponenteCurricular(ano, disciplinasSelecionadas)
+        .then(resposta => {
+          if (objetivosSelecionados && objetivosSelecionados.length > 0) {
+            resposta.data.forEach(c => {
+              const objetivo = objetivosSelecionados.find(o => {
+                if (o.id == c.id) {
+                  return o;
+                }
+              });
+              if (objetivo) {
+                c.selecionado = true;
+              } else {
+                c.selecionado = false;
+              }
+            });
+          }
+          setObjetivosAprendizagem(resposta.data);
+          setObjetivosCarregados(true);
+          setCarregandoDados(false);
+        })
+        .catch(e => {
+          mostrarErros(e);
+          setCarregandoDados(false);
+        });
+    } else setObjetivosAprendizagem([]);
   };
 
-  const setarDescricaoFunction = descricaoFunction => {
-    dispatch(SetarDescricaoFunction(indice, descricaoFunction));
+  const selecionaObjetivo = objetivo => {
+    const objetivoAprendizagem = objetivo;
+    objetivoAprendizagem.selecionado = !objetivoAprendizagem.selecionado;
+    setObjetivosAprendizagem([...objetivosAprendizagem]);
+    selecionarObjetivo(bimestre.bimestre, objetivoAprendizagem);
   };
 
-  const obterObjetivos = () => {
-    dispatch(ObterObjetivosCall(bimestre));
+  const onChangeDescricaoObjetivos = descricao => {
+    setDescricaoObjetivo(descricao);
+    onChangeDescricaoObjetivo(bimestre.bimestre, descricao);
   };
 
-  const setarDescricao = descricao => {
-    setarDescricaoFunction(descricaoFunction);
-    dispatch(SetarDescricao(indice, descricao));
-  };
-
-  const selecionarMaterias = (index, selecionarMaterias) => {
-    dispatch(SelecionarMateria(indice, index, selecionarMaterias));
-  };
-
-  const focarObjetivo = () => {
-    if (!idObjetivoFocado || idObjetivoFocado === '0') return;
-
-    const Elem = document.getElementById(idObjetivoFocado);
-
-    if (!Elem) return;
-
-    const listDivObjetivos = ListRef.current;
-    Elem.scrollIntoViewIfNeeded(listDivObjetivos);
-  };
-
-  const setObjetivoFocado = objetivoId => {
-    setIDObjetivoFocado(objetivoId);
-  };
-
-  const selecionarObjetivo = (index, ariaPressed) => {
-    dispatch(SelecionarObjetivo(indice, index, ariaPressed));
-  };
-
-  const setEhExpandido = ehExpandido => {
-    if (bimestre) dispatch(SalvarEhExpandido(indice, ehExpandido));
-  };
-
-  const selecionaMateria = async e => {
-    const index = e.target.getAttribute('data-index');
-    const ariaPressed = e.target.getAttribute('aria-pressed') !== 'true';
-
-    setEhExpandido(true);
-
-    selecionarMaterias(index, ariaPressed);
-  };
-
-  const selecionaObjetivo = e => {
-    const index = e.target.getAttribute('data-index');
-    const ariaPressed = e.target.getAttribute('aria-pressed') !== 'true';
-
-    setObjetivoFocado(e.target.id);
-
-    selecionarObjetivo(index, ariaPressed);
-  };
-
-  const onClickTextEditor = ultimoFoco => {
-    if (!bimestre.ehEdicao) {
-      setEhExpandido(true);
-
-      setEstadoAdicionalEditorTexto({
-        focado: true,
-        ultimoFoco,
-      });
-    }
-  };
-
-  const removeObjetivoSelecionado = e => {
-    const index = bimestre.objetivosAprendizagem.findIndex(
-      objetivo => objetivo.id == e.target.getAttribute('data-indice')
-    );
-
-    selecionarObjetivo(index, false);
-  };
-
-  const removerTodosObjetivoSelecionado = () => {
-    dispatch(removerSelecaoTodosObjetivos(indice));
-  };
-
-  const onBlurTextEditor = value => {
-    if (!bimestre) return;
-
-    setEhExpandido(true);
-
-    setEstadoAdicionalEditorTexto({
-      focado: false,
-      ultimoFoco: null,
+  const removerTodosObjetivos = () => {
+    objetivosAprendizagem.forEach(c => {
+      c.selecionado = false;
     });
-
-    setarDescricao(value);
-    setarDescricaoFunction(descricaoFunction);
+    setObjetivosAprendizagem([...objetivosAprendizagem]);
+    objetivosSelecionados.forEach(c =>
+      selecionarObjetivo(bimestre.bimestre, c)
+    );
+    setObjetivosSelecionados([]);
   };
 
-  const onClickBimestre = () => {
-    if (!disciplinaSelecionada) {
-      erro(
-        'Não é possivel salvar um plano anual sem selecionar uma disciplina'
+  useMemo(() => {
+    setLayoutEspecial(ehEja || ehMedio || disciplinaSemObjetivo);
+  }, [disciplinaSemObjetivo, ehEja, ehMedio]);
+
+  useMemo(() => {
+    const listaObjetivosSelecionados = objetivosAprendizagem.filter(
+      c => c.selecionado
+    );
+    setObjetivosSelecionados(listaObjetivosSelecionados);
+  }, [objetivosAprendizagem]);
+
+  useEffect(() => {
+    if (
+      objetivosCarregados &&
+      bimestre.objetivosAprendizagem &&
+      bimestre.objetivosAprendizagem.length > 0 &&
+      objetivosAprendizagem &&
+      objetivosAprendizagem.length > 0
+    ) {
+      const componentesCurricularesId = bimestre.objetivosAprendizagem.map(
+        c => c.id
       );
-      return;
+      const listaObjetivosAprendizagemSelecionados = objetivosAprendizagem.map(
+        c => {
+          if (componentesCurricularesId.includes(c.id)) {
+            c.selecionado = true;
+          }
+          return c;
+        }
+      );
+      setObjetivosAprendizagem([...listaObjetivosAprendizagemSelecionados]);
     }
+  }, [objetivosCarregados]);
 
-    if (!bimestreJaObtidoServidor)
-      dispatch(
-        ObterBimestreServidor(bimestre, disciplinaSelecionada, LayoutEspecial)
-      );
-  };
+  useEffect(() => {
+    setObjetivosSelecionados(bimestre.objetivosAprendizagem);
+    const componentesCurricularesId = bimestre.objetivosAprendizagem.map(
+      c => c.id
+    );
+    const listaObjetivosAprendizagemSelecionados = objetivosAprendizagem.map(
+      c => {
+        if (componentesCurricularesId.includes(c.id)) {
+          c.selecionado = true;
+        } else {
+          c.selecionado = false;
+        }
+        return c;
+      }
+    );
+    setObjetivosAprendizagem([...listaObjetivosAprendizagemSelecionados]);
+  }, [bimestre.objetivosAprendizagem]);
+
+  useEffect(() => {
+    setDescricaoObjetivo(bimestre.descricao);
+  }, [bimestre.descricao]);
 
   return (
-    <CardCollapse
-      key={indice}
-      ref={ref}
-      onClick={onClickBimestre}
-      titulo={bimestre.nome}
-      indice={`Bimestre${indice}`}
-      show={bimestre.ehExpandido}
-      disabled={disabled}
-      alt={`Card ${indice}º Bimestre`}
-    >
+    <Loader loading={carregandoDados}>
       <div className="row">
-        <Grid cols={LayoutEspecial ? 12 : 6} className="m-b-10">
-          {LayoutEspecial ? null : (
-            <h6 className="d-inline-block font-weight-bold my-0 fonte-14">
-              Objetivos de aprendizagem
+        <Grid cols={6} className="m-b-10">
+          {erros &&
+            erros.length > 0 &&
+            erros.map(e => <Erro key={e}>{e}</Erro>)}
+          {!layoutEspecial && (
+            <h6 className="d-inline-block font-weight-bold my-0 fonte-14 mb-2">
+              Objetivos de Aprendizagem e Desenvolvimento
             </h6>
           )}
-          <div>
-            {bimestre.materias && bimestre.materias.length > 0
-              ? bimestre.materias.map((materia, indice) => {
-                  return (
-                    <Badge
-                      role="button"
-                      onClick={selecionaMateria}
-                      aria-pressed={materia.selecionada && true}
-                      id={materia.codigo}
-                      data-index={indice}
-                      alt={materia.materia}
-                      key={materia.codigo}
-                      disabled={
-                        disabled || LayoutEspecial || !materia.possuiObjetivos
-                      }
-                      readonly={LayoutEspecial}
-                      className={`badge badge-pill border text-dark bg-white font-weight-light px-2 py-1 ${
-                        LayoutEspecial ? '' : 'mt-3'
-                      } mr-2`}
-                    >
-                      {materia.materia}
-                    </Badge>
-                  );
-                })
-              : null}
+          <div className="mt-3">
+            <Disciplinas
+              disciplinas={disciplinas}
+              preSelecionadas={disciplinasPreSelecionadas}
+              onChange={onChangeDisciplinasSelecionadas}
+              layoutEspecial={layoutEspecial}
+            />
           </div>
-          {LayoutEspecial ? null : (
-            <ObjetivosList ref={ListRef} className="mt-4 overflow-auto">
-              {bimestre.objetivosAprendizagem &&
-              bimestre.objetivosAprendizagem.length > 0
-                ? bimestre.objetivosAprendizagem.map((objetivo, index) => {
-                    return (
-                      <ul
-                        key={`${objetivo.id}Bimestre${index}`}
-                        className="list-group list-group-horizontal mt-3"
-                      >
-                        <ListItemButton
-                          className="list-group-item d-flex align-items-center font-weight-bold fonte-14"
-                          role="button"
-                          id={`${indice}Bimestre${objetivo.id}`}
-                          aria-pressed={objetivo.selected ? true : false}
-                          data-index={index}
-                          onClick={selecionaObjetivo}
-                          onKeyUp={selecionaObjetivo}
-                          disabled={disabled}
-                          alt={`Codigo do Objetivo : ${objetivo.codigo} `}
-                        >
-                          {objetivo.codigo}
-                        </ListItemButton>
-                        <ListItem
-                          alt={objetivo.descricao}
-                          className="list-group-item flex-fill p-2 fonte-12"
-                        >
-                          {objetivo.descricao}
-                        </ListItem>
-                      </ul>
-                    );
-                  })
-                : null}
-            </ObjetivosList>
+
+          {!layoutEspecial && (
+            <ListaObjetivos className="mt-4 overflow-auto">
+              {objetivosAprendizagem &&
+                objetivosAprendizagem.length > 0 &&
+                objetivosAprendizagem.map((objetivo, index) => (
+                  <ul
+                    className="list-group list-group-horizontal mt-3"
+                    key={objetivo.codigo}
+                  >
+                    <ListItemButton
+                      className={`list-group-item d-flex align-items-center font-weight-bold fonte-14 ${objetivo.selecionado &&
+                        'selecionado'}`}
+                      role="button"
+                      onClick={() => selecionaObjetivo(objetivo)}
+                      alt={`Codigo do Objetivo : ${objetivo.codigo} `}
+                    >
+                      {objetivo.codigo}
+                    </ListItemButton>
+                    <ListItem
+                      alt={objetivo.descricao}
+                      className="list-group-item flex-fill p-2 fonte-12"
+                    >
+                      {objetivo.descricao}
+                    </ListItem>
+                  </ul>
+                ))}
+            </ListaObjetivos>
           )}
         </Grid>
-        <Grid cols={LayoutEspecial ? 12 : 6}>
-          {LayoutEspecial ? null : (
+        <Grid cols={layoutEspecial ? 12 : 6}>
+          {!layoutEspecial && (
             <h6 className="d-inline-block font-weight-bold my-0 fonte-14">
-              Objetivos de aprendizagem e meus objetivos (Currículo da cidade)
+              Objetivos de Aprendizagem e Desenvolvimento/Objetivos específicos
             </h6>
           )}
-          {LayoutEspecial ? null : (
-            <div
-              className="row col-md-12 d-flex"
-              role="group"
-              aria-label={`${bimestre.objetivosAprendizagem &&
-                bimestre.objetivosAprendizagem.length > 0 &&
-                bimestre.objetivosAprendizagem.filter(
-                  objetivo => objetivo.selected
-                ).length} objetivos selecionados`}
-            >
-              {bimestre.objetivosAprendizagem &&
-              bimestre.objetivosAprendizagem.length > 0
-                ? bimestre.objetivosAprendizagem
-                    .filter(objetivo => objetivo.selected)
-                    .map(selecionado => {
-                      return (
-                        <Button
-                          key={`Objetivo${selecionado.id}Selecionado${indice}`}
-                          label={selecionado.codigo}
-                          color={Colors.AzulAnakiwa}
-                          bold
-                          id={`Objetivo${selecionado.id}Selecionado${indice}Id`}
-                          indice={selecionado.id}
-                          disabled={disabled}
-                          steady
-                          remove
-                          className="text-dark mt-3 mr-2 stretched-link"
-                          onClick={removeObjetivoSelecionado}
-                        />
-                      );
-                    })
-                : null}
-              {bimestre.objetivosAprendizagem &&
-              bimestre.objetivosAprendizagem.length > 0 &&
-              bimestre.objetivosAprendizagem.filter(x => x.selected).length >
-                1 ? (
-                <Button
-                  key={`removerTodos`}
-                  label={`Remover Todos`}
-                  color={Colors.CinzaBotao}
-                  bold
-                  alt="Remover todos os objetivos selecionados"
-                  id={`removerTodos`}
-                  height="38px"
-                  width="92px"
-                  fontSize="12px"
-                  padding="0px 5px"
-                  lineHeight="1.2"
-                  steady
-                  border
-                  className="text-dark mt-3 mr-2 stretched-link"
-                  onClick={removerTodosObjetivoSelecionado}
-                />
-              ) : null}
-            </div>
-          )}
+          <div
+            className="row col-md-12 d-flex"
+            role="group"
+            aria-label={`${objetivosSelecionados.length} objetivos selecionados`}
+          >
+            {objetivosSelecionados &&
+              objetivosSelecionados.length > 0 &&
+              objetivosSelecionados.map(selecionado => {
+                return (
+                  <Button
+                    key={selecionado.codigo}
+                    label={selecionado.codigo}
+                    color={Colors.AzulAnakiwa}
+                    bold
+                    indice={selecionado.id}
+                    steady
+                    remove
+                    className="text-dark mt-3 mr-2 stretched-link"
+                    onClick={() => selecionaObjetivo(selecionado)}
+                  />
+                );
+              })}
+            {objetivosSelecionados && objetivosSelecionados.length > 1 ? (
+              <Button
+                key="removerTodos"
+                label="Remover Todos"
+                color={Colors.CinzaBotao}
+                bold
+                alt="Remover todos os objetivos selecionados"
+                id="removerTodos"
+                height="38px"
+                width="92px"
+                fontSize="12px"
+                padding="0px 5px"
+                lineHeight="1.2"
+                steady
+                border
+                className="text-dark mt-3 mr-2 stretched-link"
+                onClick={() => removerTodosObjetivos()}
+              />
+            ) : null}
+          </div>
           <div className="mt-4">
             <h6 className="d-inline-block font-weight-bold my-0 mr-2 fonte-14">
-              {modalidadeEja ? 'Planejamento Semestral' : 'Planejamento Anual'}
+              Planejamento Anual
             </h6>
             <span className="text-secondary font-italic fonte-12">
               Itens autorais do professor
@@ -364,20 +275,10 @@ const BimestreComponent = React.forwardRef((props, ref) => {
               </li>
             </ul>
             <fieldset className="mt-3">
-              <form action="">
-                <TextEditor
-                  className="form-control"
-                  ref={textEditorRef}
-                  id="textEditor"
-                  height="135px"
-                  alt="Descrição do plano Anual"
-                  disabled={disabled}
-                  estadoAdicional={estadoAdicionalEditorTexto}
-                  onClick={onClickTextEditor}
-                  value={bimestre.objetivo}
-                  onBlur={onBlurTextEditor}
-                />
-              </form>
+              <Editor
+                onChange={onChangeDescricaoObjetivos}
+                inicial={descricaoObjetivo}
+              />
             </fieldset>
             <Grid cols={12} className="p-0">
               <Auditoria
@@ -392,8 +293,7 @@ const BimestreComponent = React.forwardRef((props, ref) => {
           </div>
         </Grid>
       </div>
-    </CardCollapse>
+    </Loader>
   );
-});
-
-export default BimestreComponent;
+};
+export default Bimestre;
