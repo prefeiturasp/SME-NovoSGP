@@ -95,7 +95,7 @@ namespace SME.SGP.Dados.Repositorios
 
             MontaQueryCabecalho(sql, false);
             sql.AppendLine(fromCompleto);
-            sql.AppendLine("where 1=1");
+            sql.AppendLine("where a.excluido = false");
             sql.AppendLine("and a.turma_id = @turmaCodigo");
             sql.AppendLine("and a.data_avaliacao >= @inicioPeriodo and a.data_avaliacao <= @fimPeriodo");
             sql.AppendLine("and aad.disciplina_id = @disciplinaId");
