@@ -1,645 +1,463 @@
-import React, { useEffect, useState, useRef } from 'react';
-import { useSelector, useDispatch } from 'react-redux';
-import _ from 'lodash';
+import React, { useState, useEffect, useRef } from 'react';
+import { useSelector } from 'react-redux';
+import { Collapse } from 'antd';
+import Row from '~/componentes/row';
 import {
-  SalvarDisciplinasPlanoAnual,
-  PrePost,
-  RemoverFocado,
-  Post,
-  Salvar,
-  setBimestresErro,
-  setLimpartBimestresErro,
-  LimparDisciplinaPlanoAnual,
-  SelecionarDisciplinaPlanoAnual,
-  LimparBimestres,
-  SalvarBimestres,
-} from '../../../redux/modulos/planoAnual/action';
-import Grid from '../../../componentes/grid';
-import Button from '../../../componentes/button';
-import { Colors } from '../../../componentes/colors';
-import Card from '../../../componentes/card';
-import Bimestre from './bimestre';
-import Row from '../../../componentes/row';
-import Alert from '../../../componentes/alert';
-import ModalMultiLinhas from '../../../componentes/modalMultiLinhas';
-import ModalConfirmacao from '../../../componentes/modalConfirmacao';
-import history from '../../../servicos/history';
-import { URL_HOME } from '../../../constantes/url';
-import { erro, sucesso, confirmar } from '../../../servicos/alertas';
-import ModalConteudoHtml from '../../../componentes/modalConteudoHtml';
-import PlanoAnualHelper from './planoAnualHelper';
-import FiltroPlanoAnualDto from '~/dtos/filtroPlanoAnualDto';
+  Grid,
+  Card,
+  SelectComponent,
+  Button,
+  Colors,
+  Loader,
+} from '~/componentes';
+import CopiarConteudo from './copiarConteudo';
+import Alert from '~/componentes/alert';
+import modalidade from '~/dtos/modalidade';
 import {
   Titulo,
   TituloAno,
   Planejamento,
-  Select,
-  Label,
+  ContainerBimestres,
 } from './planoAnual.css';
-import modalidade from '~/dtos/modalidade';
-import SelectComponent from '~/componentes/select';
-import { store } from '~/redux';
-import FiltroPlanoAnualExpandidoDto from '~/dtos/filtroPlanoAnualExpandidoDto';
-import RotasDto from '~/dtos/rotasDto';
-import { verificaSomenteConsulta } from '~/servicos/servico-navegacao';
 import { RegistroMigrado } from '~/componentes-sgp/registro-migrado';
-import { Loader } from '~/componentes';
+import servicoDisciplinas from '~/servicos/Paginas/ServicoDisciplina';
+import { erros, sucesso, confirmar } from '~/servicos/alertas';
+import servicoPlanoAnual from '~/servicos/Paginas/ServicoPlanoAnual';
+import Bimestre from './bimestre';
+import history from '~/servicos/history';
 
-export default function PlanoAnual() {
-  const [carregandoBimestres, setCarregandoBimestres] = useState(false);
-  const bimestres = useSelector(state => state.bimestres.bimestres);
+const { Panel } = Collapse;
 
-  const bimestreFocado = useSelector(state =>
-    state.bimestres.bimestres.find(x => x && x.focado)
-  );
+const PlanoAnual = () => {
+  const turmaSelecionada = useSelector(c => c.usuario.turmaSelecionada);
+  const [possuiTurmaSelecionada, setPossuiTurmaSelecionada] = useState(false);
+  const [ehEja, setEhEja] = useState(false);
+  const [planoAnual, setPlanoAnual] = useState([]);
+  const [registroMigrado, setRegistroMigrado] = useState(false);
+  const [emEdicao, setEmEdicao] = useState(false);
+  const [carregandoDados, setCarregandoDados] = useState(false);
+  const [exibirCopiarConteudo, setExibirCopiarConteudo] = useState(false);
+  const [listaDisciplinas, setListaDisciplinas] = useState([]);
+  const [bimestreExpandido, setBimestreExpandido] = useState('');
+  const [listaErros, setListaErros] = useState([[], [], [], []]);
+  const [refsPainel, setRefsPainel] = useState([
+    useRef(),
+    useRef(),
+    useRef(),
+    useRef(),
+  ]);
 
-  const disciplinasPlanoAnual = useSelector(
-    state => state.bimestres.disciplinasPlanoAnual
-  );
+  const [
+    listaDisciplinasPlanejamento,
+    setListaDisciplinasPlanejamento,
+  ] = useState([]);
+  const [
+    codigoDisciplinaSelecionada,
+    setCodigoDisciplinaSelecionada,
+  ] = useState('');
 
-  const disciplinaSelecionada = useSelector(
-    state =>
-      state.bimestres.disciplinasPlanoAnual &&
-      state.bimestres.disciplinasPlanoAnual.find(x => x.selecionada)
-  );
+  const [disciplinaSelecionada, setDisciplinaSelecionada] = useState('');
 
-  const bimestresErro = useSelector(state => state.bimestres.bimestresErro);
-  const usuario = useSelector(state => state.usuario);
-  const carregandoModal = useSelector(state => state.loader.loaderModal);
-
-  const permissoesTela = usuario.permissoes[RotasDto.PLANO_ANUAL];
-  const [somenteConsulta, setSomenteConsulta] = useState(false);
-
-  const { turmaSelecionada } = usuario;
-  const emEdicao = bimestres.filter(x => x.ehEdicao).length > 0;
-
-  const [ehDisabled, setDisabled] = useState(
-    somenteConsulta || !permissoesTela || !permissoesTela.podeAlterar
-      ? true
-      : !usuario.turmaSelecionada.turma
-  );
-
-  useEffect(() => {
-    setDisabled(
-      somenteConsulta || !permissoesTela || !permissoesTela.podeAlterar
-        ? true
-        : !usuario.turmaSelecionada.turma
+  const onChangeDisciplinas = codigoDisciplina => {
+    const disciplina = listaDisciplinas.find(
+      c => c.codigoComponenteCurricular == codigoDisciplina
     );
-  }, [permissoesTela, somenteConsulta, usuario.turmaSelecionada.turma]);
-
-  const ehDisabledComPermissao = !usuario.turmaSelecionada.turma;
-  const dispatch = useDispatch();
-  const [modalConfirmacaoVisivel, setModalConfirmacaoVisivel] = useState({
-    modalVisivel: false,
-    sairTela: false,
-  });
-
-  const refFocado = useRef(null);
-  const ehEja = !!(
-    turmaSelecionada && Number(turmaSelecionada.modalidade) === modalidade.EJA
-  );
-
-  const ehMedio = !!(
-    turmaSelecionada &&
-    turmaSelecionada.codModalidade === modalidade.ENSINO_MEDIO
-  );
-
-  const [disciplinaSemObjetivo, setDisciplinaSemObjetivo] = useState(false);
-  const [modalCopiarConteudo, setModalCopiarConteudo] = useState({
-    visivel: false,
-    listSelect: [],
-    turmasSelecionadas: [],
-    turmasComPlanoAnual: [],
-    loader: false,
-  });
-
-  const recarregarPlanoAnual =
-    bimestres.filter(bimestre => bimestre.recarregarPlanoAnual).length > 0;
-
-  const LayoutEspecial = () => ehEja || ehMedio || disciplinaSemObjetivo;
-
-  const anoLetivo = turmaSelecionada ? turmaSelecionada.anoLetivo : 0;
-  const escolaId = turmaSelecionada ? turmaSelecionada.unidadeEscolar : 0;
-  const anoEscolar = turmaSelecionada ? turmaSelecionada.ano : 0;
-  const turmaId = turmaSelecionada ? turmaSelecionada.turma : 0;
-
-  useEffect(() => {
-    VerificarEnvio();
-
-    if (recarregarPlanoAnual) verificarSeEhEdicao();
-  }, [bimestres]);
-
-  useEffect(() => {
-    setSomenteConsulta(verificaSomenteConsulta(permissoesTela));
-    document.addEventListener('keydown', onF5Click, true);
-    document.addEventListener('keyup', onF5Click, true);
-
-    return () => {
-      document.removeEventListener('keydown', null);
-      document.removeEventListener('keyup', null);
-
-      if (bimestres) dispatch(LimparBimestres());
-
-      if (disciplinasPlanoAnual) dispatch(LimparDisciplinaPlanoAnual());
-    };
-  }, []);
-
-  useEffect(() => {
-    if (!ehDisabledComPermissao) obterDisciplinasPlanoAnual();
-  }, [turmaSelecionada]);
-
-  function onF5Click(e) {
-    const bimestres = store.getState().bimestres.bimestres;
-    const emEdicao = bimestres.filter(x => x.ehEdicao).length > 0;
-
-    if (e.code === 'F5') {
-      if (emEdicao) {
-        e.preventDefault();
-        setModalConfirmacaoVisivel({
-          modalVisivel: true,
-          sairTela: false,
-        });
-      }
-    }
-  }
-
-  useEffect(() => {
-    if (bimestreFocado && refFocado.current) {
-      refFocado.current.scrollIntoViewIfNeeded(refFocado.current);
-
-      dispatch(RemoverFocado());
-    }
-  }, [bimestreFocado]);
-
-  useEffect(() => {
-    verificarSeEhEdicao();
-  }, [disciplinaSelecionada]);
-
-  const VerificarEnvio = () => {
-    const BimestresParaEnviar = bimestres.filter(x => x.paraEnviar);
-
-    if (BimestresParaEnviar && BimestresParaEnviar.length > 0) {
-      dispatch(Post(BimestresParaEnviar, disciplinaSelecionada.codigo));
-    }
+    setDisciplinaSelecionada(disciplina);
+    setCodigoDisciplinaSelecionada(codigoDisciplina);
   };
 
-  const obterDisciplinasPlanoAnual = async () => {
-    const turmaPrograma = !!(turmaSelecionada.ano === '0');
-
-    const disciplinas = await PlanoAnualHelper.ObterDisciplinasPlano(
-      usuario.rf || usuario.usuario,
-      turmaId,
-      turmaPrograma
+  const obterPlano = bimestre => {
+    const indiceBimestreAlterado = planoAnual.findIndex(
+      c => c.bimestre == bimestre
     );
-
-    dispatch(SalvarDisciplinasPlanoAnual(disciplinas));
-
-    if (disciplinas && disciplinas.length === 1)
-      dispatch(SelecionarDisciplinaPlanoAnual(disciplinas[0].codigo));
+    return planoAnual[indiceBimestreAlterado];
+  };
+  const onChangeBimestre = bimestre => {
+    const plano = obterPlano(bimestre.bimestre);
+    plano.descricao = bimestre.descricao;
+    plano.objetivosAprendizagem = bimestre.objetivosAprendizagem;
+    plano.alterado = true;
+    setEmEdicao(true);
   };
 
-  const verificarSeEhEdicao = async () => {
-    dispatch(LimparBimestres());
-
-    if (!turmaSelecionada) return;
-
-    if (!disciplinaSelecionada) return;
-
-    const filtro = new FiltroPlanoAnualDto(
-      anoLetivo,
-      1,
-      escolaId,
-      turmaId,
-      disciplinaSelecionada.codigo
+  const selecionarObjetivo = (bimestre, objetivo) => {
+    const plano = obterPlano(bimestre);
+    const indiceObjetivo = plano.objetivosAprendizagem.findIndex(
+      c => c.id == objetivo.id
     );
-
-    const ehEdicao = await PlanoAnualHelper.verificarSeExiste(filtro, ehEja);
-
-    const turmaPrograma = turmaSelecionada.ano === '0';
-
-    const disciplinas = await PlanoAnualHelper.ObterDiscplinasObjetivos(
-      turmaId,
-      disciplinaSelecionada,
-      turmaPrograma
-    );
-
-    const semObjetivos =
-      disciplinas && disciplinas.filter(x => !x.possuiObjetivos).length > 0;
-
-    setDisciplinaSemObjetivo(semObjetivos);
-
-    const bimestres = PlanoAnualHelper.ObtenhaBimestres(
-      disciplinas,
-      ehEdicao,
-      filtro,
-      anoEscolar,
-      LayoutEspecial() || semObjetivos,
-      ehEja
-    );
-
-    dispatch(SalvarBimestres(bimestres));
-    setCarregandoBimestres(false);
-
-    if (ehEdicao) {
-      const filtro = new FiltroPlanoAnualExpandidoDto(
-        anoLetivo,
-        disciplinaSelecionada.codigo,
-        escolaId,
-        turmaSelecionada.modalidade,
-        turmaId
-      );
-
-      const retornoBimestre = await PlanoAnualHelper.ObterBimestreExpandido(
-        filtro
-      );
-
-      if (!retornoBimestre.sucesso) return;
-
-      const bimestreExpandido = retornoBimestre.bimestre;
-
-      if (!bimestreExpandido) return;
-
-      dispatch(
-        Salvar(bimestreExpandido.bimestre, {
-          ...bimestres[bimestreExpandido.bimestre],
-          objetivo: bimestreExpandido.descricao,
-          ehExpandido: true,
-          id: bimestreExpandido.id,
-          alteradoPor: bimestreExpandido.alteradoPor,
-          alteradoEm: bimestreExpandido.alteradoEm,
-          alteradoRF: bimestreExpandido.alteradoRF,
-          criadoRF: bimestreExpandido.criadoRF,
-          criadoEm: bimestreExpandido.criadoEm,
-          focado: true,
-          LayoutEspecial:
-            bimestreExpandido.migrado ||
-            (bimestres[bimestreExpandido.bimestre] &&
-              bimestres[bimestreExpandido.bimestre].LayoutEspecial),
-          migrado: bimestreExpandido.migrado,
-          criadoPor: bimestreExpandido.criadoPor,
-          objetivosAprendizagem: bimestreExpandido.objetivosAprendizagem
-            ? bimestreExpandido.objetivosAprendizagem.map(obj => {
-                obj.selected = true;
-                return obj;
-              })
-            : [],
-        })
-      );
-    }
-  };
-
-  const confirmarCancelamento = () => {
-    if (modalConfirmacaoVisivel.sairTela) {
-      history.push(URL_HOME);
+    if (indiceObjetivo > -1) {
+      plano.objetivosAprendizagem.splice(indiceObjetivo, 1);
     } else {
-      cancelarModalConfirmacao();
-      verificarSeEhEdicao();
+      plano.objetivosAprendizagem.push(objetivo);
+    }
+    plano.alterado = true;
+    setPlanoAnual([...planoAnual]);
+    setEmEdicao(true);
+  };
+
+  const onChangeDescricaoObjetivo = (bimestre, descricao) => {
+    const plano = obterPlano(bimestre);
+    if (plano.descricao != descricao) {
+      setEmEdicao(true);
+      plano.descricao = descricao;
+      plano.alterado = true;
+      setPlanoAnual([...planoAnual]);
     }
   };
 
-  const onClickCancelar = () => {
-    verificarSeEhEdicao();
+  const validarBimestres = planos => {
+    const err = [[], [], [], []];
+    let possuiErro = false;
+    if (planos && planos.length > 0) {
+      planos.forEach(plano => {
+        if (
+          !plano.objetivosAprendizagem ||
+          (!plano.objetivosAprendizagem.length > 0 && !ehEja)
+        ) {
+          possuiErro = true;
+          err[plano.bimestre - 1].push(
+            'Ao menos um objetivo de aprendizagem deve ser selecionado.'
+          );
+        }
+        if (!plano.descricao) {
+          possuiErro = true;
+          err[plano.bimestre - 1].push(
+            'A descrição do plano deve ser informada.'
+          );
+        }
+      });
+      setListaErros([...err]);
+    }
+
+    if (!possuiErro) {
+      return null;
+    }
+    return err;
   };
 
-  const AoMudarDisciplinaPlanoAnual = async e => {
-    setCarregandoBimestres(true);
-    const valor = e.target && e.target.value * 1;
+  const limparErros = () => {
+    const err = [[], [], [], []];
+    setListaErros(err);
+  };
 
-    if (!emEdicao) return alterarValorDisciplina(valor);
-
-    const confirmarPerderDados = await confirmar(
+  const cancelar = async () => {
+    const confirmou = await confirmar(
       'Atenção',
       'Você não salvou as informações preenchidas',
-      'Deseja realmente cancelar as alterações?',
-      'Sim',
-      'Não'
+      'Deseja realmente cancelar as alterações?'
     );
-
-    if (confirmarPerderDados) alterarValorDisciplina(valor);
-  };
-
-  const alterarValorDisciplina = valor => {
-    if (valor === 0 || !valor) {
-      dispatch(LimparDisciplinaPlanoAnual());
-      return;
+    if (confirmou) {
+      limparErros();
+      servicoPlanoAnual
+        .obter(
+          turmaSelecionada.anoLetivo,
+          codigoDisciplinaSelecionada,
+          turmaSelecionada.unidadeEscolar,
+          turmaSelecionada.turma
+        )
+        .then(resposta => {
+          setPlanoAnual(resposta.data);
+          setEmEdicao(false);
+        })
+        .catch(e => erros(e));
     }
-
-    dispatch(SelecionarDisciplinaPlanoAnual(valor));
   };
 
-  const cancelarModalConfirmacao = () => {
-    setModalConfirmacaoVisivel({
-      modalVisivel: false,
-      sairTela: false,
-    });
+  const abrirCopiarConteudo = async () => {
+    setExibirCopiarConteudo(true);
   };
 
-  const onClickSalvar = () => {
-    dispatch(PrePost());
+  const salvar = () => {
+    const plano = {
+      anoLetivo: turmaSelecionada.anoLetivo,
+      bimestres: planoAnual.filter(c => c.alterado || c.obrigatorio),
+      componenteCurricularEolId:
+        disciplinaSelecionada.codigoComponenteCurricular,
+      turmaId: turmaSelecionada.turma,
+      escolaId: turmaSelecionada.unidadeEscolar,
+    };
+
+    const err = validarBimestres(plano.bimestres);
+    if (!err || err.length == 0) {
+      setCarregandoDados(true);
+      servicoPlanoAnual
+        .salvar(plano)
+        .then(() => {
+          setCarregandoDados(false);
+          sucesso('Registro salvo com sucesso.');
+          setEmEdicao(false);
+        })
+        .catch(e => {
+          setCarregandoDados(false);
+          erros(e);
+        });
+    } else {
+      const erro = err.findIndex(c => !!c.length > 0);
+      if (erro > -1) {
+        const refBimestre = refsPainel[erro];
+        if (refBimestre && refBimestre.current) {
+          if (erro + 1 != bimestreExpandido) {
+            setBimestreExpandido([erro + 1]);
+          }
+          window.scrollTo(0, refsPainel[erro].current.offsetTop);
+        }
+      }
+    }
   };
 
-  const onCopiarConteudoClick = async () => {
-    const turmasCopiarConteudo = await PlanoAnualHelper.ObtenhaTurmasCopiarConteudo(
-      anoLetivo,
-      escolaId,
-      turmaId,
-      disciplinaSelecionada,
-      ehEja,
-      usuario,
-      turmaSelecionada
-    );
+  //define o bimestre expandido
+  useEffect(() => {
+    if (planoAnual && planoAnual.length > 0 && !emEdicao) {
+      const expandido = planoAnual.find(c => c.obrigatorio);
+      if (expandido) setBimestreExpandido([expandido.bimestre]);
+    }
+  }, [planoAnual]);
 
-    if (!turmasCopiarConteudo) return;
+  //expande o bimestre atual
+  useEffect(() => {
+    if (bimestreExpandido) {
+      const refBimestre = refsPainel[bimestreExpandido - 1];
+      if (refBimestre && refBimestre.current) {
+        setTimeout(() => {
+          window.scrollTo(
+            0,
+            refsPainel[bimestreExpandido - 1].current.offsetTop
+          );
+        }, 500);
+      }
+    }
+  }, [bimestreExpandido, refsPainel]);
 
-    modalCopiarConteudo.listSelect = turmasCopiarConteudo;
-    modalCopiarConteudo.visivel = true;
-    modalCopiarConteudo.turmasComPlanoAnual = turmasCopiarConteudo
-      .filter(x => x.temPlano)
-      .map(x => x.valor);
-
-    setModalCopiarConteudo({ ...modalCopiarConteudo });
-  };
-
-  const modalCopiarConteudoAlertaVisivel = () => {
-    return modalCopiarConteudo.turmasSelecionadas.some(selecionada =>
-      modalCopiarConteudo.turmasComPlanoAnual.includes(selecionada)
-    );
-  };
-
-  const modalCopiarConteudoAtencaoTexto = () => {
-    const turmasReportar = usuario.turmasUsuario
-      ? usuario.turmasUsuario
-          .filter(
-            turma =>
-              modalCopiarConteudo.turmasSelecionadas.includes(
-                `${turma.valor}`
-              ) && modalCopiarConteudo.turmasComPlanoAnual.includes(turma.valor)
-          )
-          .map(turma => turma.desc)
-      : [];
-
-    return turmasReportar.length > 1
-      ? `As turmas ${turmasReportar.join(
-          ', '
-        )} já possuem plano anual que serão sobrescritos ao realizar a cópia. Deseja continuar?`
-      : `A turma ${
-          turmasReportar[0]
-        } já possui plano anual que será sobrescrito ao realizar a cópia. Deseja continuar?`;
-  };
-
-  const onChangeCopiarConteudo = selecionadas => {
-    modalCopiarConteudo.turmasSelecionadas = selecionadas;
-    setModalCopiarConteudo({ ...modalCopiarConteudo });
-  };
-
-  const onCloseCopiarConteudo = () => {
-    setModalCopiarConteudo({
-      ...modalCopiarConteudo,
-      visivel: false,
-      listSelect: [],
-      turmasSelecionadas: [],
-      loader: false,
-      turmasComPlanoAnual: [],
-    });
-  };
-
-  const onConfirmarCopiarConteudo = () => {
-    setModalCopiarConteudo({
-      ...modalCopiarConteudo,
-      loader: true,
-    });
-
-    CopiarConteudo().finally(() => onCloseCopiarConteudo());
-  };
-
-  const CopiarConteudo = async () => {
-    const qtdBimestres = ehEja ? 2 : 4;
-
-    const bimestresCopiar = await PlanoAnualHelper.ObtenhaBimestresCopiarConteudo(
-      anoLetivo,
-      escolaId,
-      turmaId,
-      qtdBimestres,
-      disciplinaSelecionada
-    );
-
-    if (!bimestresCopiar) return erro('Não foi possivel copiar o conteudo');
-
-    const planoAnualEnviar = PlanoAnualHelper.TratarBimestresCopiarConteudo(
-      bimestresCopiar,
-      disciplinaSelecionada
-    );
-
-    const retornoCopia = await PlanoAnualHelper.CopiarConteudo(
-      planoAnualEnviar,
-      usuario.rf || usuario.usuario,
-      modalCopiarConteudo.turmasSelecionadas
-    );
-
-    if (retornoCopia.sucesso) return sucesso('Plano copiado com sucesso');
-
-    dispatch(
-      setBimestresErro({
-        type: 'erro',
-        content: retornoCopia.erro.error,
-        title: 'Ocorreu uma falha',
-        onClose: () => dispatch(setLimpartBimestresErro()),
-        visible: true,
+  //carrega lista de disciplinas
+  useEffect(() => {
+    setEmEdicao(false);
+    setCarregandoDados(true);
+    servicoDisciplinas
+      .obterDisciplinasPorTurma(turmaSelecionada.turma)
+      .then(resposta => {
+        setCarregandoDados(false);
+        setListaDisciplinas(resposta.data);
+        if (resposta.data.length === 1) {
+          const disciplina = resposta.data[0];
+          setDisciplinaSelecionada(disciplina);
+          setCodigoDisciplinaSelecionada(
+            String(disciplina.codigoComponenteCurricular)
+          );
+        }
       })
-    );
-  };
-
-  const onCancelarCopiarConteudo = () => {
-    onCloseCopiarConteudo();
-  };
-
-  const voltarParaHome = () => {
-    if (emEdicao)
-      setModalConfirmacaoVisivel({
-        modalVisivel: true,
-        sairTela: true,
+      .catch(e => {
+        setCarregandoDados(false);
+        erros(e);
       });
-    else history.push(URL_HOME);
-  };
+  }, [turmaSelecionada.ano, turmaSelecionada.turma]);
+
+  //carrega a lista de planos
+  useEffect(() => {
+    if (codigoDisciplinaSelecionada) {
+      setCarregandoDados(true);
+      servicoPlanoAnual
+        .obter(
+          turmaSelecionada.anoLetivo,
+          codigoDisciplinaSelecionada,
+          turmaSelecionada.unidadeEscolar,
+          turmaSelecionada.turma
+        )
+        .then(resposta => {
+          setCarregandoDados(false);
+          limparErros();
+          setPlanoAnual(resposta.data);
+          const migrado = resposta.data.filter(c => c.migrado);
+          setRegistroMigrado(migrado && migrado.length > 0);
+          setEmEdicao(false);
+        })
+        .catch(e => {
+          setCarregandoDados(false);
+          setPlanoAnual([]);
+          setEmEdicao(false);
+          erros(e);
+        });
+
+      const turmaPrograma = !!(turmaSelecionada.ano === '0');
+      setCarregandoDados(true);
+      servicoDisciplinas
+        .obterDisciplinasPlanejamento(
+          codigoDisciplinaSelecionada,
+          turmaSelecionada.turma,
+          turmaPrograma,
+          disciplinaSelecionada.regencia
+        )
+        .then(resposta => {
+          setCarregandoDados(false);
+          setListaDisciplinasPlanejamento(
+            resposta.data.map(disciplina => {
+              return {
+                ...disciplina,
+                selecionada: false,
+              };
+            })
+          );
+        })
+        .catch(e => {
+          setCarregandoDados(false);
+          setPlanoAnual([]);
+          setEmEdicao(false);
+          erros(e);
+        });
+    }
+  }, [
+    codigoDisciplinaSelecionada,
+    disciplinaSelecionada.regencia,
+    turmaSelecionada,
+  ]);
+
+  useEffect(() => {
+    setPossuiTurmaSelecionada(turmaSelecionada && turmaSelecionada.turma);
+    setEmEdicao(false);
+    if (turmaSelecionada && turmaSelecionada.turma) {
+      setEhEja(turmaSelecionada.modalidade == modalidade.EJA);
+    }
+  }, [turmaSelecionada]);
 
   return (
     <>
-      <div className="col-md-12">
-        {!turmaSelecionada.turma ? (
-          <Row className="mb-0 pb-0">
-            <Grid cols={12} className="mb-0 pb-0">
-              <Alert
-                alerta={{
-                  tipo: 'warning',
-                  id: 'AlertaPrincipal',
-                  mensagem: 'Você precisa escolher uma turma.',
+      {/* <CopiarConteudo
+        visivel={exibirCopiarConteudo}
+        anoLetivo={turmaSelecionada.anoLetivo}
+        codigoDisciplinaSelecionada={codigoDisciplinaSelecionada}
+        unidadeEscolar={turmaSelecionada.unidadeEscolar}
+        turmaId={turmaSelecionada.turma}
+        onCancelarCopiarConteudo={() => setExibirCopiarConteudo(false)}
+        onCloseCopiarConteudo={() => setExibirCopiarConteudo(false)}
+        onConfirmarCopiarConteudo
+      /> */}
+      <Loader loading={carregandoDados}>
+        <div className="col-md-12">
+          {!possuiTurmaSelecionada ? (
+            <Row className="mb-0 pb-0">
+              <Grid cols={12} className="mb-0 pb-0">
+                <Alert
+                  alerta={{
+                    tipo: 'warning',
+                    id: 'AlertaPrincipal',
+                    mensagem: 'Você precisa escolher uma turma.',
+                  }}
+                  className="mb-0"
+                />
+              </Grid>
+            </Row>
+          ) : null}
+        </div>
+        <Grid cols={12} className="p-0">
+          <Planejamento> PLANEJAMENTO </Planejamento>
+          <Titulo>
+            {ehEja ? 'Plano Semestral' : 'Plano Anual'}
+            <TituloAno>{` / ${turmaSelecionada.anoLetivo}`}</TituloAno>
+            {registroMigrado && (
+              <RegistroMigrado className="float-right">
+                Registro Migrado
+              </RegistroMigrado>
+            )}
+          </Titulo>
+        </Grid>
+        <Card className="col-md-12 p-0" mx="mx-0">
+          <div className="col-md-4">
+            <SelectComponent
+              name="disciplinas"
+              id="disciplinas"
+              lista={listaDisciplinas}
+              valueOption="codigoComponenteCurricular"
+              valueText="nome"
+              onChange={onChangeDisciplinas}
+              valueSelect={codigoDisciplinaSelecionada}
+              placeholder="Selecione uma disciplina"
+              disabled={listaDisciplinas && listaDisciplinas.length === 1}
+            />
+          </div>
+          <div className="col-md-8 d-flex justify-content-end">
+            {/* <Button
+              label="Copiar Conteúdo"
+              icon="share-square"
+              className="mr-3"
+              color={Colors.Azul}
+              border
+              onClick={abrirCopiarConteudo}
+            /> */}
+            <Button
+              label="Voltar"
+              icon="arrow-left"
+              color={Colors.Azul}
+              border
+              className="mr-3"
+              onClick={() => history.push('/')}
+            />
+            <Button
+              label="Cancelar"
+              color={Colors.Roxo}
+              border
+              bold
+              className="mr-3"
+              disabled={!emEdicao}
+              onClick={cancelar}
+            />
+            <Button
+              label="Salvar"
+              color={Colors.Roxo}
+              bold
+              onClick={salvar}
+              disabled={!emEdicao}
+            />
+          </div>
+          <Grid cols={12} className="p-2">
+            <ContainerBimestres>
+              <Collapse
+                bordered={false}
+                expandIconPosition="right"
+                defaultActiveKey={bimestreExpandido}
+                activeKey={bimestreExpandido}
+                onChange={c => {
+                  setBimestreExpandido(c);
                 }}
-                className="mb-0"
-              />
-            </Grid>
-          </Row>
-        ) : null}
-      </div>
-      <ModalMultiLinhas
-        key="errosBimestre"
-        visivel={bimestresErro.visible}
-        onClose={bimestresErro.onClose}
-        type={bimestresErro.type}
-        conteudo={bimestresErro.content}
-        titulo={bimestresErro.title}
-      />
-      <ModalConfirmacao
-        key="confirmacaoDeSaida"
-        visivel={modalConfirmacaoVisivel.modalVisivel}
-        onConfirmacaoPrincipal={cancelarModalConfirmacao}
-        onConfirmacaoSecundaria={confirmarCancelamento}
-        onClose={cancelarModalConfirmacao}
-        labelPrincipal="Não"
-        labelSecundaria="Sim"
-        titulo="Atenção"
-        conteudo="Você não salvou as informações preenchidas"
-        perguntaDoConteudo="Deseja realmente cancelar as alterações?"
-      />
-      <ModalConteudoHtml
-        key="copiarConteudo"
-        visivel={modalCopiarConteudo.visivel}
-        onConfirmacaoPrincipal={onConfirmarCopiarConteudo}
-        onConfirmacaoSecundaria={onCancelarCopiarConteudo}
-        onClose={onCloseCopiarConteudo}
-        labelBotaoPrincipal="Copiar"
-        tituloAtencao={modalCopiarConteudoAlertaVisivel() ? 'Atenção' : null}
-        perguntaAtencao={
-          modalCopiarConteudoAlertaVisivel()
-            ? modalCopiarConteudoAtencaoTexto()
-            : null
-        }
-        labelBotaoSecundario="Cancelar"
-        titulo="Copiar Conteúdo"
-        closable={false}
-        loader={modalCopiarConteudo.loader}
-        desabilitarBotaoPrincipal={
-          modalCopiarConteudo.turmasSelecionadas &&
-          modalCopiarConteudo.turmasSelecionadas.length < 1
-        }
-      >
-        <Loader loading={modalCopiarConteudo.loader}>
-          <Label
-            htmlFor="SelecaoTurma"
-            alt="Selecione uma ou mais turmas de destino"
-          >
-            Copiar para a(s) turma(s)
-          </Label>
-          <SelectComponent
-            id="SelecaoTurma"
-            lista={modalCopiarConteudo.listSelect}
-            valueOption="valor"
-            valueText="desc"
-            onChange={onChangeCopiarConteudo}
-            valueSelect={modalCopiarConteudo.turmasSelecionadas}
-            multiple
-          />
-        </Loader>
-      </ModalConteudoHtml>
-      <Grid cols={12} className="p-0">
-        <Planejamento> PLANEJAMENTO </Planejamento>
-        <Titulo>
-          {ehEja ? 'Plano Semestral' : 'Plano Anual'}
-          <TituloAno>{` / ${anoLetivo || new Date().getFullYear()}`}</TituloAno>
-          {bimestres.filter(bimestre => bimestre.migrado).length > 0 && (
-            <RegistroMigrado className="float-right">
-              Registro Migrado
-            </RegistroMigrado>
-          )}
-        </Titulo>
-      </Grid>
-      <Card className="col-md-12 p-0" mx="mx-0">
-        <Grid cols={8} className="d-flex justify-content-start mb-3">
-          <Select
-            placeholder="Selecione uma disciplina"
-            onChange={AoMudarDisciplinaPlanoAnual}
-            disabled={
-              ehDisabledComPermissao ||
-              (disciplinasPlanoAnual && disciplinasPlanoAnual.length === 1)
-            }
-            className="col-md-6 form-control p-r-10"
-            value={disciplinaSelecionada ? disciplinaSelecionada.codigo : 0}
-          >
-            <option value={0}> Selecione uma disciplina </option>
-            {disciplinasPlanoAnual &&
-              disciplinasPlanoAnual.map(disciplina => {
-                return (
-                  <option
-                    key={disciplina.codigo + disciplina.nome}
-                    value={disciplina.codigo}
-                  >
-                    {disciplina.nome}
-                  </option>
-                );
-              })}
-          </Select>
-          <Button
-            label="Copiar Conteúdo"
-            icon="share-square"
-            className="ml-3"
-            color={Colors.Azul}
-            onClick={onCopiarConteudoClick}
-            border
-            disabled={ehDisabled || !(turmaSelecionada && !emEdicao)}
-          />
-        </Grid>
-        <Grid cols={4} className="d-flex justify-content-end mb-3">
-          <Button
-            label="Voltar"
-            icon="arrow-left"
-            color={Colors.Azul}
-            onClick={voltarParaHome}
-            border
-            className="mr-3"
-          />
-          <Button
-            label="Cancelar"
-            color={Colors.Roxo}
-            onClick={onClickCancelar}
-            border
-            bold
-            className="mr-3"
-            disabled={somenteConsulta}
-          />
-          <Button
-            label="Salvar"
-            color={Colors.Roxo}
-            onClick={onClickSalvar}
-            disabled={!emEdicao || ehDisabled}
-            border={!emEdicao || ehDisabled}
-            bold
-          />
-        </Grid>
-        <Grid cols={12}>
-          <Loader
-            loading={carregandoBimestres}
-            className={`d-block w-100 h-100 ${carregandoBimestres && 'p-5'}`}
-          >
-            {bimestres && disciplinaSelecionada
-              ? bimestres.map(bim => {
-                  return (
-                    <Bimestre
-                      ref={bim.focado ? refFocado : null}
-                      disabled={ehDisabled}
-                      key={bim.indice}
-                      bimestre={bim}
-                      indice={bim.indice}
-                      focado={bim.focado}
-                      modalidadeEja={ehEja}
-                      disciplinaSelecionada={
-                        disciplinaSelecionada && disciplinaSelecionada.codigo
-                      }
-                    />
-                  );
-                })
-              : null}
-          </Loader>
-        </Grid>
-      </Card>
+              >
+                {planoAnual &&
+                  planoAnual.length > 0 &&
+                  planoAnual.map(plano => (
+                    <Panel
+                      header={`${plano.bimestre}º ${
+                        ehEja ? 'Semestre' : 'Bimestre'
+                      }`}
+                      key={plano.bimestre}
+                    >
+                      <div ref={refsPainel[plano.bimestre - 1]}>
+                        <Bimestre
+                          className="fade"
+                          disciplinas={listaDisciplinasPlanejamento}
+                          bimestre={plano}
+                          ano={turmaSelecionada.ano}
+                          ehEja={ehEja}
+                          ehMedio={
+                            turmaSelecionada.codModalidade ===
+                            modalidade.ENSINO_MEDIO
+                          }
+                          disciplinaSemObjetivo={
+                            !disciplinaSelecionada.possuiObjetivos
+                          }
+                          regencia={disciplinaSelecionada.regencia}
+                          onChange={onChangeBimestre}
+                          key={plano.bimestre}
+                          erros={listaErros[plano.bimestre - 1]}
+                          selecionarObjetivo={selecionarObjetivo}
+                          onChangeDescricaoObjetivo={onChangeDescricaoObjetivo}
+                        />
+                      </div>
+                    </Panel>
+                  ))}
+              </Collapse>
+            </ContainerBimestres>
+          </Grid>
+        </Card>
+      </Loader>
     </>
   );
-}
+};
+
+export default PlanoAnual;
