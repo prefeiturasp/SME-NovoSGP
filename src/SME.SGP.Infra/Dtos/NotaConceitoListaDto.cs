@@ -11,5 +11,6 @@ namespace SME.SGP.Infra
 
         [Required(ErrorMessage = "É obrigatorio informar o Id da turma")]
         public string TurmaId { get; set; }
+        public string  DisciplinaId { get; set; }
     }
 }

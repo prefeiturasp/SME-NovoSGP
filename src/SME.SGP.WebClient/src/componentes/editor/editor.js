@@ -10,6 +10,14 @@ export default function Editor(props) {
       editor={ClassicEditor}
       config={{
         language: 'pt-br',
+        removePlugins: [
+          'Image',
+          'ImageCaption',
+          'ImageStyle',
+          'ImageToolbar',
+          'ImageUpload',
+          'Indent',
+        ],
       }}
       data={inicial || ''}
       onChange={(event, editor) => {
