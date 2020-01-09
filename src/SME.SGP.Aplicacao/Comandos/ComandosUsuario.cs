@@ -208,11 +208,11 @@ namespace SME.SGP.Aplicacao
 
         public async Task<UsuarioReinicioSenhaDto> ReiniciarSenha(string codigoRf)
         {
-            var usuario = servicoUsuario.ObterUsuarioPorCodigoRfLoginOuAdiciona(codigoRf);
+            var usuario = await servicoEOL.ObterMeusDados(codigoRf);
 
             var retorno = new UsuarioReinicioSenhaDto();
 
-            if (!usuario.PodeReiniciarSenha())
+            if (String.IsNullOrEmpty(usuario.Email))
                 retorno.DeveAtualizarEmail = true;
             else
             {
@@ -262,17 +262,19 @@ namespace SME.SGP.Aplicacao
             repositorioCache.SalvarAsync(chaveRedis, string.Empty);
         }
 
-        public string SolicitarRecuperacaoSenha(string login)
+        public async Task<string> SolicitarRecuperacaoSenha(string login)
         {
             var usuario = repositorioUsuario.ObterPorCodigoRfLogin(null, login);
             if (usuario == null)
             {
                 throw new NegocioException("Usuário não encontrado.");
             }
+            var usuarioCore = await servicoEOL.ObterMeusDados(login);
+            usuario.DefinirEmail(usuarioCore.Email);
             usuario.IniciarRecuperacaoDeSenha();
             repositorioUsuario.Salvar(usuario);
-            EnviarEmailRecuperacao(usuario);
-            return usuario.Email;
+            EnviarEmailRecuperacao(usuario, usuarioCore.Email);
+            return usuarioCore.Email;
         }
 
         public bool TokenRecuperacaoSenhaEstaValido(Guid token)
@@ -281,7 +283,7 @@ namespace SME.SGP.Aplicacao
             return usuario != null && usuario.TokenRecuperacaoSenhaEstaValido();
         }
 
-        private void EnviarEmailRecuperacao(Usuario usuario)
+        private void EnviarEmailRecuperacao(Usuario usuario, string email)
         {
             string caminho = $"{Directory.GetCurrentDirectory()}/wwwroot/ModelosEmail/RecuperacaoSenha.txt";
             var textoArquivo = File.ReadAllText(caminho);
@@ -291,7 +293,7 @@ namespace SME.SGP.Aplicacao
                 .Replace("#RF", usuario.CodigoRf)
                 .Replace("#URL_BASE#", urlFrontEnd)
                 .Replace("#LINK", $"{urlFrontEnd}redefinir-senha/{usuario.TokenRecuperacaoSenha.ToString()}");
-            servicoEmail.Enviar(usuario.Email, "Recuperação de senha do SGP", textoEmail);
+            servicoEmail.Enviar(email, "Recuperação de senha do SGP", textoEmail);
         }
 
         private async Task<IEnumerable<Guid>> ValidarPerfilCJ(string codigoRF, Guid codigoUsuarioCore, IEnumerable<Guid> perfilsAtual, string login)
