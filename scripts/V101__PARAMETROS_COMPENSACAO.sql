@@ -16,7 +16,7 @@ where
     into 
     public.parametros_sistema (nome,descricao,valor,ano,criado_em,criado_por, criado_rf,tipo)
 select
-	'CompensacaoAusenciaPercentualFund2','Percentual de frequ�ncia onde a compensação de ausência considera abaixo do limite para Fund2','50',null,now(),'Carga Inicial','Carga Inicial',11
+	'CompensacaoAusenciaPercentualFund2','Percentual de frequência onde a compensação de ausência considera abaixo do limite para Fund2','50',null,now(),'Carga Inicial','Carga Inicial',11
 where
 	not exists(
 	select
