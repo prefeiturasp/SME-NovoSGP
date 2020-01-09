@@ -188,7 +188,7 @@ const Login = props => {
                           </Loader>
                           <Centralizar className="mt-1">
                             <LabelLink onClick={navegarParaRecuperarSenha}>
-                              Esqueci minha senha.
+                              Esqueci minha senha
                             </LabelLink>
                           </Centralizar>
                         </FormGroup>
