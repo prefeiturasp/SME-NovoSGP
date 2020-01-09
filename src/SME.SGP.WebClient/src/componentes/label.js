@@ -17,9 +17,9 @@ const Container = styled.div`
   }
 `;
 
-const Label = ({ text, control }) => {
+const Label = ({ text, control, center }) => {
   return (
-    <Container>
+    <Container className={center && 'text-center'}>
       <label htmlFor={control} id={text}>
         {text}
       </label>
@@ -29,11 +29,13 @@ const Label = ({ text, control }) => {
 Label.propTypes = {
   text: PropTypes.string,
   control: PropTypes.string,
+  center: PropTypes.bool,
 };
 
 Label.defaultProps = {
   text: PropTypes.string,
   control: null,
+  center: false,
 };
 
 export default Label;

@@ -18,6 +18,7 @@ namespace SME.SGP.Aplicacao.Teste.Consultas
         private readonly Mock<IServicoDeNotasConceitos> servicoDeNotasConceitos;
         private readonly Mock<IServicoEOL> servicoEOL;
         private readonly Mock<IServicoUsuario> servicoUsuario;
+        private readonly Mock<IRepositorioAtividadeAvaliativaDisciplina> repositorioAtividadeAvaliativaDisciplina;
 
         public ConsultasNotasConceitosTeste()
         {
@@ -30,9 +31,10 @@ namespace SME.SGP.Aplicacao.Teste.Consultas
             servicoAluno = new Mock<IServicoAluno>();
             repositorioNotaParametro = new Mock<IRepositorioNotaParametro>();
             repositorioAtividadeAvaliativa = new Mock<IRepositorioAtividadeAvaliativa>();
+            repositorioAtividadeAvaliativaDisciplina = new Mock<IRepositorioAtividadeAvaliativaDisciplina>();
 
             consultasNotasConceito = new ConsultasNotasConceitos(servicoEOL.Object, consultaAtividadeAvaliativa.Object, servicoDeNotasConceitos.Object, repositorioNotasConceitos.Object,
-                repositorioFrequencia.Object, servicoUsuario.Object, servicoAluno.Object, repositorioNotaParametro.Object, repositorioAtividadeAvaliativa.Object);
+                repositorioFrequencia.Object, servicoUsuario.Object, servicoAluno.Object, repositorioNotaParametro.Object, repositorioAtividadeAvaliativa.Object, repositorioAtividadeAvaliativaDisciplina.Object);
         }
 
         [Theory]
