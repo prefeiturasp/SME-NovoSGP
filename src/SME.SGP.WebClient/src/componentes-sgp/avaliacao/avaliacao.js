@@ -10,6 +10,7 @@ import Ordenacao from '../Ordenacao/ordenacao';
 import { Lista, CaixaMarcadores, IconePlusMarcadores } from './avaliacao.css';
 import CampoConceito from './campoConceito';
 import CampoNota from './campoNota';
+import { LabelSemDados } from '~/componentes';
 
 const Avaliacao = props => {
   const dispatch = useDispatch();
@@ -136,7 +137,10 @@ const Avaliacao = props => {
               </thead>
             </table>
           ) : (
-            ''
+            <LabelSemDados
+              text="Bimestre selecionado não possui atividade avaliativa cadastrada"
+              center
+            />
           )}
           <table className="table mb-0">
             <tbody className="tabela-avaliacao-tbody">
