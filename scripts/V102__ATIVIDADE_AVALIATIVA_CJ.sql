@@ -1,0 +1,1 @@
+﻿ALTER TABLE ATIVIDADE_AVALIATIVA ADD COLUMN eh_cj boolean default false;

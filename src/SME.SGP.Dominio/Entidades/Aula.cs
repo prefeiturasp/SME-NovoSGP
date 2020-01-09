@@ -1,5 +1,4 @@
-﻿using SME.SGP.Dominio.Entidades;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -44,6 +43,7 @@ namespace SME.SGP.Dominio
             };
         }
 
+        public bool AulaCJ { get; set; }
         public Aula AulaPai { get; set; }
         public long? AulaPaiId { get; set; }
         public DateTime DataAula { get; set; }
@@ -78,8 +78,6 @@ namespace SME.SGP.Dominio
         public string UeId { get; set; }
 
         public long WorkflowAprovacaoId { get; set; }
-
-        public bool AulaCJ { get; set; }
 
         public void AdicionarAulaPai(Aula aula)
         {
@@ -135,6 +133,16 @@ namespace SME.SGP.Dominio
                 throw new NegocioException("A turma deve ser informada.");
 
             return !(EhAulaCompartilhada || (EhTecnologiaAprendizagem && turma.ModalidadeCodigo == Modalidade.EJA));
+        }
+
+        public void PodeSerAlterada(Usuario usuario)
+        {
+            if (AulaCJ)
+            {
+                if (usuario.EhProfessor() || usuario.EhProfessorCj())
+                    if (usuario.CodigoRf != this.CriadoRF)
+                        throw new NegocioException("Você não pode alterar esta Atividade Avaliativa.");
+            }
         }
 
         public void ReprovarWorkflow()

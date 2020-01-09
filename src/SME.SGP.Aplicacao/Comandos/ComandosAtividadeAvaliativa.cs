@@ -60,6 +60,10 @@ namespace SME.SGP.Aplicacao
 
             var atividadeDisciplinas = await repositorioAtividadeAvaliativaDisciplina.ListarPorIdAtividade(id);
 
+            atividadeAvaliativa.PodeSerAlterada(usuario);
+
+            VerificaSeProfessorPodePersistirTurma(usuario.CodigoRf, atividadeAvaliativa.TurmaId, atividadeAvaliativa.DataAvaliacao);
+
             unitOfWork.IniciarTransacao();
 
             if (disciplina.Regencia)
@@ -117,6 +121,13 @@ namespace SME.SGP.Aplicacao
             var atividadeAvaliativa = repositorioAtividadeAvaliativa.ObterPorId(idAtividadeAvaliativa);
             if (atividadeAvaliativa is null)
                 throw new NegocioException("Não foi possível localizar esta avaliação.");
+
+            var usuario = await servicoUsuario.ObterUsuarioLogado();
+
+            atividadeAvaliativa.PodeSerAlterada(usuario);
+
+            VerificaSeProfessorPodePersistirTurma(usuario.CodigoRf, atividadeAvaliativa.TurmaId, atividadeAvaliativa.DataAvaliacao);
+
             var atividadeDisciplinas = await repositorioAtividadeAvaliativaDisciplina.ListarPorIdAtividade(idAtividadeAvaliativa);
 
             unitOfWork.IniciarTransacao();
