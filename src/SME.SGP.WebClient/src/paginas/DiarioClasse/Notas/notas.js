@@ -1,7 +1,7 @@
 import { Tabs } from 'antd';
 import React, { useCallback, useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { Loader } from '~/componentes';
+import { Loader, Grid } from '~/componentes';
 import Avaliacao from '~/componentes-sgp/avaliacao/avaliacao';
 import Cabecalho from '~/componentes-sgp/cabecalho';
 import Card from '~/componentes/card';
@@ -18,6 +18,8 @@ import BotoesAcoessNotasConceitos from './botoesAcoes';
 import { Container, ContainerAuditoria } from './notas.css';
 import RotasDto from '~/dtos/rotasDto';
 import { verificaSomenteConsulta } from '~/servicos/servico-navegacao';
+import Row from '~/componentes/row';
+import Alert from '~/componentes/alert';
 
 const { TabPane } = Tabs;
 
@@ -441,6 +443,22 @@ const Notas = ({ match }) => {
 
   return (
     <Container>
+      {!usuario.turmaSelecionada.turma ? (
+        <Row className="mb-0 pb-0">
+          <Grid cols={12} className="mb-0 pb-0">
+            <Container>
+              <Alert
+                alerta={{
+                  tipo: 'warning',
+                  id: 'AlertaPrincipal',
+                  mensagem: 'Você precisa escolher uma turma.',
+                  estiloTitulo: { fontSize: '18px' },
+                }}
+              />
+            </Container>
+          </Grid>
+        </Row>
+      ) : null}
       <Cabecalho pagina={tituloNotasConceitos} />
       <Loader loading={carregandoListaBimestres}>
         <Card>
