@@ -109,14 +109,7 @@ const MesCompleto = props => {
         } else setTipoEventosDiaLista([]);
       }
     },
-    [
-      tipoCalendarioSelecionado,
-      eventoSme,
-      dreSelecionada,
-      unidadeEscolarSelecionada,
-      turmaSelecionada,
-      todasTurmas,
-    ]
+    [filtros]
   );
 
   useEffect(() => {
@@ -141,7 +134,7 @@ const MesCompleto = props => {
       obterTipoEventosDia(mesSelecionado);
     }
     return () => setEstaAberto({ ...estaAberto, [mesSelecionado]: false });
-  }, [mesSelecionado]);
+  }, [mesSelecionado, turmaSelecionada]);
 
   return mesSelecionado > 0 && estaAberto[mesSelecionado] ? (
     <Div
