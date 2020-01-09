@@ -151,9 +151,9 @@ namespace SME.SGP.Api.Controllers
         [HttpPost("solicitar-recuperacao-senha")]
         [ProducesResponseType(typeof(string), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        public IActionResult SolicitarRecuperacaoSenha(string login)
+        public async Task<IActionResult> SolicitarRecuperacaoSenha(string login)
         {
-            return Ok(comandosUsuario.SolicitarRecuperacaoSenha(login));
+            return Ok(await comandosUsuario.SolicitarRecuperacaoSenha(login));
         }
 
         [HttpGet("valida-token-recuperacao-senha/{token}")]
