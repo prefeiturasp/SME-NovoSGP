@@ -60,7 +60,7 @@ namespace SME.SGP.Dominio.Servicos
             }
             if (alunos == null || !alunos.Any())
             {
-                throw new NegocioException("A lista de alunos a turma e a disciplina devem ser informados para calcular a frequência.");
+                throw new NegocioException("A lista de alunos a turma e o componente curricular devem ser informados para calcular a frequência.");
             }
 
             return aula;

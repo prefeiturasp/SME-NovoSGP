@@ -46,7 +46,7 @@ namespace SME.SGP.Aplicacao
             // Busca disciplina no EOL para validar se é regente
             var disciplinaEOL = servicoEOL.ObterDisciplinasPorIds(new long[] { disciplina });
             if (disciplinaEOL == null)
-                throw new NegocioException("Disciplina não localizada.");
+                throw new NegocioException("Componente curricular não localizado.");
 
             bool ehRegencia = disciplinaEOL.FirstOrDefault().Regencia;
 

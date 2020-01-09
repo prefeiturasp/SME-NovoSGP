@@ -88,7 +88,7 @@ namespace SME.SGP.Aplicacao
             var disciplinasEol = servicoEOL.ObterDisciplinasPorIds(idsDisciplinas);
 
             if (!disciplinasEol.Any())
-                throw new NegocioException("Não foi possível obter as descrições das disciplinas no Eol.");
+                throw new NegocioException("Não foi possível obter as descrições dos componentes curriculares no Eol.");
 
             var professoresDisciplinas = listaDto
                 .GroupBy(a => new { a.ProfessorRf, a.Modalidade, a.TurmaId, a.UeId }).ToList();

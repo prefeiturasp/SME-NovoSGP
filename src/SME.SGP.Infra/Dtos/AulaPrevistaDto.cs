@@ -6,7 +6,7 @@ namespace SME.SGP.Infra
 {
     public class AulaPrevistaDto
     {
-        [Required(ErrorMessage = "A disciplina deve ser informada")]
+        [Required(ErrorMessage = "O componente curricular deve ser informado")]
         public string DisciplinaId { get; set; }
 
         [EnumeradoRequirido(ErrorMessage = "A modalidade deve ser informada")]

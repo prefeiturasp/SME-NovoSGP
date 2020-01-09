@@ -119,7 +119,7 @@ namespace SME.SGP.Aplicacao
                     TipoEvento = x.AulaCJ ? "CJ" : "Aula",
                     DadosAula = new DadosAulaDto
                     {
-                        Disciplina = $"{(disciplina?.Nome ?? "Disciplina não encontrada")} {(x.TipoAula == TipoAula.Reposicao ? "(Reposição)" : "")} {(x.Status == EntidadeStatus.AguardandoAprovacao ? "- Aguardando aprovação" : "")}",
+                        Disciplina = $"{(disciplina?.Nome ?? "Componente curricular não encontrado")} {(x.TipoAula == TipoAula.Reposicao ? "(Reposição)" : "")} {(x.Status == EntidadeStatus.AguardandoAprovacao ? "- Aguardando aprovação" : "")}",
                         EhRegencia = disciplina.Regencia,
                         podeCadastrarAvaliacao = podeCriarAtividade,
                         Horario = x.DataAula.ToString("hh:mm tt", CultureInfo.InvariantCulture),

@@ -13,7 +13,7 @@ namespace SME.SGP.Infra
         [Required(ErrorMessage = "O id do plano de aula deve ser informado")]
         public long PlanoAulaId { get; set; }
 
-        [Required(ErrorMessage = "A disciplina deve ser informada")]
+        [Required(ErrorMessage = "O componente curricular deve ser informado")]
         public string DisciplinaId { get; set; }
 
         public bool MigrarLicaoCasa { get; set; }

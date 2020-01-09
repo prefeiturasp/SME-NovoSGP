@@ -125,7 +125,7 @@ namespace SME.SGP.Dominio.Servicos
             var usuarioPodeCriarAulaNaTurmaUeEModalidade = repositorioAula.UsuarioPodeCriarAulaNaUeTurmaEModalidade(aula, tipoCalendario.Modalidade);
 
             if (disciplinasProfessor == null || !disciplinasProfessor.Any(c => c.ToString() == aula.DisciplinaId) || !usuarioPodeCriarAulaNaTurmaUeEModalidade)
-                throw new NegocioException("Você não pode criar aulas para essa UE/Turma/Disciplina.");
+                throw new NegocioException("Você não pode criar aulas para essa UE/Turma/Componente Curricular.");
 
             var temLiberacaoExcepcionalNessaData = servicoDiaLetivo.ValidaSeEhLiberacaoExcepcional(aula.DataAula, aula.TipoCalendarioId, aula.UeId);
 
@@ -162,7 +162,7 @@ namespace SME.SGP.Dominio.Servicos
             else
             {
                 if (usuario.EhProfessorCj() && aula.Quantidade > 2)
-                    throw new NegocioException("Quantidade de aulas por dia/disciplina excedido.");
+                    throw new NegocioException("Quantidade de aulas por dia/componente curricular excedido.");
 
                 // Busca quantidade de aulas semanais da grade de aula
                 var semana = (aula.DataAula.DayOfYear / 7) + 1;
@@ -173,7 +173,7 @@ namespace SME.SGP.Dominio.Servicos
                 var disciplinas = servicoEOL.ObterDisciplinasPorIds(new[] { Convert.ToInt64(aula.DisciplinaId) });
                 if (disciplinas == null || !disciplinas.Any())
                 {
-                    throw new NegocioException("Disciplina não encontrada.");
+                    throw new NegocioException("Componente curricular não encontrado.");
                 }
                 var disciplina = disciplinas.First();
                 if (!ehInclusao)
@@ -386,19 +386,19 @@ namespace SME.SGP.Dominio.Servicos
             var disciplinasEol = servicoEOL.ObterDisciplinasPorCodigoTurmaLoginEPerfil(aula.TurmaId, usuario.Login, perfilAtual).Result;
 
             if (disciplinasEol is null || !disciplinasEol.Any())
-                throw new NegocioException($"Não foi possível localizar as disciplinas da turma {aula.TurmaId}");
+                throw new NegocioException($"Não foi possível localizar os componentes curriculares da turma {aula.TurmaId}");
 
             var disciplina = disciplinasEol.FirstOrDefault(a => a.CodigoComponenteCurricular == int.Parse(aula.DisciplinaId));
 
             if (disciplina == null)
-                throw new NegocioException($"Não foi possível localizar a disciplina de Id {aula.DisciplinaId}.");
+                throw new NegocioException($"Não foi possível localizar o componente curricular de Id {aula.DisciplinaId}.");
 
             var operacaoStr = operacao == Operacao.Inclusao ? "Criação" : operacao == Operacao.Alteracao ? "Alteração" : "Exclusão";
             var tituloMensagem = $"{operacaoStr} de Aulas de {disciplina.Nome} na turma {turma.Nome}";
             StringBuilder mensagemUsuario = new StringBuilder();
 
             operacaoStr = operacao == Operacao.Inclusao ? "criadas" : operacao == Operacao.Alteracao ? "alteradas" : "excluídas";
-            mensagemUsuario.Append($"Foram {operacaoStr} {quantidade} aulas da disciplina {disciplina.Nome} para a turma {turma.Nome} da {turma.Ue?.Nome} ({turma.Ue?.Dre?.Nome}).");
+            mensagemUsuario.Append($"Foram {operacaoStr} {quantidade} aulas do componente curricular {disciplina.Nome} para a turma {turma.Nome} da {turma.Ue?.Nome} ({turma.Ue?.Dre?.Nome}).");
 
             if (aulasComFrenciaOuPlano != null && aulasComFrenciaOuPlano.Any())
             {
@@ -493,12 +493,12 @@ namespace SME.SGP.Dominio.Servicos
             var disciplinasEol = servicoEOL.ObterDisciplinasPorCodigoTurmaLoginEPerfil(aula.TurmaId, usuario.Login, usuario.PerfilAtual).Result;
 
             if (disciplinasEol is null && !disciplinasEol.Any())
-                throw new NegocioException($"Não foi possível localizar as disciplinas da turma {aula.TurmaId}");
+                throw new NegocioException($"Não foi possível localizar os componentes curriculares da turma {aula.TurmaId}");
 
             var disciplina = disciplinasEol.FirstOrDefault(a => a.CodigoComponenteCurricular == int.Parse(aula.DisciplinaId));
 
             if (disciplina == null)
-                throw new NegocioException($"Não foi possível localizar a disciplina de Id {aula.DisciplinaId}.");
+                throw new NegocioException($"Não foi possível localizar o componente curricular de Id {aula.DisciplinaId}.");
 
             return disciplina.Nome;
         }
