@@ -103,6 +103,8 @@ namespace SME.SGP.Dominio.Servicos
             if (tipoCalendario == null)
                 throw new NegocioException("O tipo de calendário não foi encontrado.");
 
+            VerificaSeProfessorPodePersistirTurma(usuario.CodigoRf, aula.TurmaId, aula.DataAula);
+
             IEnumerable<long> disciplinasProfessor = null;
 
             if (usuario.EhProfessorCj())
@@ -499,6 +501,12 @@ namespace SME.SGP.Dominio.Servicos
                 throw new NegocioException($"Não foi possível localizar a disciplina de Id {aula.DisciplinaId}.");
 
             return disciplina.Nome;
+        }
+
+        private async void VerificaSeProfessorPodePersistirTurma(string codigoRf, string turmaId, DateTime dataAula)
+        {
+            if (!await servicoEOL.ProfessorPodePersistirTurma(codigoRf, turmaId, dataAula))
+                throw new NegocioException("Você não pode fazer alterações ou inclusões nesta turma e data.");
         }
     }
 }

@@ -67,14 +67,7 @@ const Calendario = props => {
     return () => {
       estado = false;
     };
-  }, [
-    tipoCalendarioSelecionado,
-    eventoSme,
-    dreSelecionada,
-    unidadeEscolarSelecionada,
-    turmaSelecionada,
-    todasTurmas,
-  ]);
+  }, [filtros]);
 
   return (
     <Loader loading={carregandoMeses}>
