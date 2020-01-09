@@ -21,7 +21,9 @@ const Dia = props => {
   useEffect(() => {
     if (dia && mesAtual && tipoLista.length) {
       const lista = tipoLista.filter(evento => evento.dia === dia.getDate())[0];
-      if (lista) setTipoEventosDiaLista(lista);
+      setTipoEventosDiaLista(lista);
+    } else {
+      setTipoEventosDiaLista([]);
     }
   }, [dia, mesAtual, tipoLista]);
 

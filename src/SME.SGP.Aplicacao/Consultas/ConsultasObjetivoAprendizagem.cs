@@ -14,6 +14,11 @@ namespace SME.SGP.Aplicacao
 {
     public class ConsultasObjetivoAprendizagem : IConsultasObjetivoAprendizagem
     {
+        private readonly Dictionary<int, string> Anos = new Dictionary<int, string>
+        {
+           {1,"first"},{2,"second"},{3,"third"},{4,"fourth"},{5,"fifth"},{6,"sixth"},{7,"seventh"},{8,"eighth"},{9,"ninth"}
+        };
+
         private readonly IConfiguration configuration;
         private readonly IRepositorioCache repositorioCache;
         private readonly IRepositorioComponenteCurricular repositorioComponenteCurricular;
@@ -21,10 +26,10 @@ namespace SME.SGP.Aplicacao
         private readonly IServicoJurema servicoJurema;
 
         public ConsultasObjetivoAprendizagem(IServicoJurema servicoJurema,
-                                             IRepositorioCache repositorioCache,
-                                             IRepositorioComponenteCurricular repositorioComponenteCurricular,
-                                             IRepositorioObjetivoAprendizagemPlano repositorioObjetivosPlano,
-                                             IConfiguration configuration)
+                                                     IRepositorioCache repositorioCache,
+                                                     IRepositorioComponenteCurricular repositorioComponenteCurricular,
+                                                     IRepositorioObjetivoAprendizagemPlano repositorioObjetivosPlano,
+                                                     IConfiguration configuration)
         {
             this.servicoJurema = servicoJurema ?? throw new ArgumentNullException(nameof(servicoJurema));
             this.repositorioCache = repositorioCache ?? throw new ArgumentNullException(nameof(repositorioCache));
@@ -120,8 +125,7 @@ namespace SME.SGP.Aplicacao
             foreach (var objetivoDto in objetivos)
             {
                 var codigo = objetivoDto.Codigo.Replace("(", "").Replace(")", "");
-                var anoString = codigo.Substring(3, 1);
-                int.TryParse(anoString, out int ano);
+                var ano = Anos.FirstOrDefault(x => x.Value.Equals(objetivoDto.Ano)).Key;
                 if (ano != 0)
                 {
                     yield return new ObjetivoAprendizagemDto()
