@@ -490,7 +490,10 @@ export default function PlanoCiclo() {
             <div className="col-md-6">
               <div className="row">
                 <div className="col-md-6">
-                  <Loader loading={carregandoCiclos} tip="">
+                  <Loader
+                    loading={turmaSelecionada.turma && carregandoCiclos}
+                    tip=""
+                  >
                     <SelectComponent
                       className="col-md-12"
                       name="tipo-ciclo"
