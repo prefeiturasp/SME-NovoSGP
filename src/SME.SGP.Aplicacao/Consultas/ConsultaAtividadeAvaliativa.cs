@@ -14,15 +14,15 @@ namespace SME.SGP.Aplicacao
     {
         private readonly IConsultasProfessor consultasProfessor;
         private readonly IRepositorioAtividadeAvaliativa repositorioAtividadeAvaliativa;
-        private readonly IRepositorioAtividadeAvaliativaRegencia repositorioAtividadeAvaliativaRegencia;
         private readonly IRepositorioAtividadeAvaliativaDisciplina repositorioAtividadeAvaliativaDisciplina;
+        private readonly IRepositorioAtividadeAvaliativaRegencia repositorioAtividadeAvaliativaRegencia;
+        private readonly IRepositorioAtribuicaoCJ repositorioAtribuicaoCJ;
+        private readonly IRepositorioAula repositorioAula;
         private readonly IRepositorioPeriodoEscolar repositorioPeriodoEscolar;
         private readonly IRepositorioTipoCalendario repositorioTipoCalendario;
         private readonly IRepositorioTurma repositorioTurma;
-        private readonly IRepositorioAula repositorioAula;
-        private readonly IRepositorioAtribuicaoCJ repositorioAtribuicaoCJ;
-        private readonly IServicoUsuario servicoUsuario;
         private readonly IServicoEOL servicoEOL;
+        private readonly IServicoUsuario servicoUsuario;
 
         public ConsultaAtividadeAvaliativa(
             IConsultasProfessor consultasProfessor,
@@ -64,7 +64,7 @@ namespace SME.SGP.Aplicacao
                         ));
         }
 
-        public async Task<(IEnumerable<AtividadeAvaliativa>, int quantidadeBimestres, PeriodoEscolar periodoAtual)> ObterAvaliacoesEBimestres(string turmaCodigo, string disciplinaId, int anoLetivo, int? bimestre, ModalidadeTipoCalendario modalidadeTipoCalendario)
+        public async Task<AvaliacoesBimestresDto> ObterAvaliacoesEBimestres(string turmaCodigo, string disciplinaId, int anoLetivo, int? bimestre, ModalidadeTipoCalendario modalidadeTipoCalendario)
         {
             var tipoCalendario = repositorioTipoCalendario.BuscarPorAnoLetivoEModalidade(anoLetivo, modalidadeTipoCalendario);
 
@@ -86,10 +86,12 @@ namespace SME.SGP.Aplicacao
 
             var avaliacoes = await repositorioAtividadeAvaliativa.ListarPorTurmaDisciplinaPeriodo(turmaCodigo, disciplinaId, periodoEscolar.PeriodoInicio, periodoEscolar.PeriodoFim);
 
-            if (avaliacoes == null || !avaliacoes.Any())
-                throw new NegocioException("Não foi encontrada nenhuma avaliação para o bimestre informado.");
-
-            return (avaliacoes, periodosEscolares.Count(), periodoEscolar);
+            return new AvaliacoesBimestresDto
+            {
+                Avaliacoes = avaliacoes,
+                PeriodoAtual = periodoEscolar,
+                QuantidadeBimestres = periodosEscolares.Count()
+            };
         }
 
         public async Task<AtividadeAvaliativaCompletaDto> ObterPorIdAsync(long id)
