@@ -158,10 +158,8 @@ const FrequenciaPlanoAula = () => {
       const disciplinas = await ServicoDisciplina.obterDisciplinasPorTurma(
         turmaId
       );
-      if (disciplinas.data) {
+      if (disciplinas.data && disciplinas.data.length) {
         setListaDisciplinas(disciplinas.data);
-      } else {
-        setListaDisciplinas([]);
       }
       if (disciplinas.data && disciplinas.data.length === 1) {
         const disciplina = disciplinas.data[0];
