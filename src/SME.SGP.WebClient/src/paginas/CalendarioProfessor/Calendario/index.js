@@ -18,6 +18,7 @@ import ServicoCalendarios from '~/servicos/Paginas/Calendario/ServicoCalendarios
 import FiltroHelper from '~/componentes-sgp/filtro/helper';
 import tipoEscolaDTO from '~/dtos/tipoEscolaDto';
 import { Loader } from '~/componentes';
+import Alert from '~/componentes/alert';
 
 const Div = styled.div``;
 const Titulo = styled(Div)`
@@ -469,6 +470,19 @@ const CalendarioProfessor = () => {
 
   return (
     <Div className="col-12">
+      {turmaSelecionadaStore && turmaSelecionadaStore.turma ? (
+        ''
+      ) : (
+        <Alert
+          alerta={{
+            tipo: 'warning',
+            id: 'plano-ciclo-selecione-turma',
+            mensagem: 'Você precisa escolher uma turma.',
+            estiloTitulo: { fontSize: '18px' },
+          }}
+          className="mb-0"
+        />
+      )}
       <Grid cols={12} className="mb-1 p-0">
         <Titulo className="font-weight-bold">Calendário do professor</Titulo>
       </Grid>
@@ -529,73 +543,77 @@ const CalendarioProfessor = () => {
             </Grid>
           </Div>
         </Grid>
-        <Grid cols={12} className="mb-4">
-          <Div className="row">
-            <Grid cols={1} className="d-flex align-items-center pr-0">
-              <Div className="w-100">
-                <Tooltip
-                  placement="top"
-                  title={`${
-                    eventoSme
-                      ? 'Exibindo eventos da SME'
-                      : 'Não exibindo eventos da SME'
-                  }`}
-                >
-                  <Switch
-                    onChange={aoTrocarEventoSme}
-                    checked={eventoSme}
-                    size="small"
-                    className="mr-2"
+        {turmaSelecionadaStore && turmaSelecionadaStore.turma ? (
+          <>
+            <Grid cols={12} className="mb-4">
+              <Div className="row">
+                <Grid cols={1} className="d-flex align-items-center pr-0">
+                  <Div className="w-100">
+                    <Tooltip
+                      placement="top"
+                      title={`${
+                        eventoSme
+                          ? 'Exibindo eventos da SME'
+                          : 'Não exibindo eventos da SME'
+                      }`}
+                    >
+                      <Switch
+                        onChange={aoTrocarEventoSme}
+                        checked={eventoSme}
+                        size="small"
+                        className="mr-2"
+                      />
+                      <Label className="my-auto">SME</Label>
+                    </Tooltip>
+                  </Div>
+                </Grid>
+                <Grid cols={5}>
+                  <Loader loading={carregandoDres} tip="">
+                    <SelectComponent
+                      className="fonte-14"
+                      onChange={aoSelecionarDre}
+                      lista={dres}
+                      valueOption="valor"
+                      valueText="desc"
+                      valueSelect={dreSelecionada}
+                      placeholder="Diretoria Regional de Educação (DRE)"
+                      disabled={!tipoCalendarioSelecionado || dreDesabilitada}
+                    />
+                  </Loader>
+                </Grid>
+                <Grid cols={4}>
+                  <Loader loading={carregandoUes} tip="">
+                    <SelectComponent
+                      className="fonte-14"
+                      onChange={aoSelecionarUnidadeEscolar}
+                      lista={unidadesEscolares}
+                      valueOption="valor"
+                      valueText="desc"
+                      valueSelect={unidadeEscolarSelecionada}
+                      placeholder="Unidade Escolar (UE)"
+                      disabled={!dreSelecionada || unidadeEscolarDesabilitada}
+                    />
+                  </Loader>
+                </Grid>
+                <Grid cols={2}>
+                  <SelectComponent
+                    className="fonte-14"
+                    onChange={aoSelecionarTurma}
+                    lista={turmas}
+                    valueOption="valor"
+                    valueText="desc"
+                    valueSelect={opcaoTurma}
+                    placeholder="Turma"
+                    disabled={!unidadeEscolarSelecionada || turmaDesabilitada}
                   />
-                  <Label className="my-auto">SME</Label>
-                </Tooltip>
+                </Grid>
               </Div>
             </Grid>
-            <Grid cols={5}>
-              <Loader loading={carregandoDres} tip="">
-                <SelectComponent
-                  className="fonte-14"
-                  onChange={aoSelecionarDre}
-                  lista={dres}
-                  valueOption="valor"
-                  valueText="desc"
-                  valueSelect={dreSelecionada}
-                  placeholder="Diretoria Regional de Educação (DRE)"
-                  disabled={!tipoCalendarioSelecionado || dreDesabilitada}
-                />
-              </Loader>
+            <Grid cols={12}>
+              <Calendario filtros={filtros} />
             </Grid>
-            <Grid cols={4}>
-              <Loader loading={carregandoUes} tip="">
-                <SelectComponent
-                  className="fonte-14"
-                  onChange={aoSelecionarUnidadeEscolar}
-                  lista={unidadesEscolares}
-                  valueOption="valor"
-                  valueText="desc"
-                  valueSelect={unidadeEscolarSelecionada}
-                  placeholder="Unidade Escolar (UE)"
-                  disabled={!dreSelecionada || unidadeEscolarDesabilitada}
-                />
-              </Loader>
-            </Grid>
-            <Grid cols={2}>
-              <SelectComponent
-                className="fonte-14"
-                onChange={aoSelecionarTurma}
-                lista={turmas}
-                valueOption="valor"
-                valueText="desc"
-                valueSelect={opcaoTurma}
-                placeholder="Turma"
-                disabled={!unidadeEscolarSelecionada || turmaDesabilitada}
-              />
-            </Grid>
-          </Div>
-        </Grid>
-        <Grid cols={12}>
-          <Calendario filtros={filtros} />
-        </Grid>
+          </>
+        ) : null}
       </Card>
     </Div>
   );
