@@ -8,6 +8,6 @@ namespace SME.SGP.Aplicacao
 {
     public interface IConsultasCompensacaoAusencia
     {
-        Task<IEnumerable<CompensacaoAusencia>> Listar(string DisciplinaId, int Bimestre, string NomeAtividade);
+        Task<IEnumerable<CompensacaoAusencia>> Listar(string disciplinaId, int bimestre, string nomeAtividade);
     }
 }
