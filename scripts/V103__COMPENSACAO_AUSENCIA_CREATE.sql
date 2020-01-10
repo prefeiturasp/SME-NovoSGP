@@ -4,7 +4,7 @@ CREATE TABLE public.compensacao_ausencia (
 	id int8 NOT NULL GENERATED ALWAYS AS identity,
 	bimestre int4 NOT NULL,
     disciplina_id varchar(15) NOT NULL,
-    turma_id varchar(15) NOT NULL,
+    turma_id int8 NOT NULL,
     nome varchar not null,
     descricao varchar not null,
 	
