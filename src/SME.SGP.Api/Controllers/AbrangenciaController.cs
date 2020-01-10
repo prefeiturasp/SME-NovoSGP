@@ -16,6 +16,13 @@ namespace SME.SGP.Api.Controllers
     public class AbrangenciaController : ControllerBase
     {
         private readonly IConsultasAbrangencia consultasAbrangencia;
+
+        public AbrangenciaController(IConsultasAbrangencia consultasAbrangencia)
+        {
+            this.consultasAbrangencia = consultasAbrangencia ??
+               throw new System.ArgumentNullException(nameof(consultasAbrangencia));
+        }
+
         private bool ConsideraHistorico
         {
             get
@@ -29,14 +36,7 @@ namespace SME.SGP.Api.Controllers
                 }
 
                 return false;
-
             }
-        }
-
-        public AbrangenciaController(IConsultasAbrangencia consultasAbrangencia)
-        {
-            this.consultasAbrangencia = consultasAbrangencia ??
-               throw new System.ArgumentNullException(nameof(consultasAbrangencia));
         }
 
         [HttpGet("{filtro}")]
@@ -82,11 +82,17 @@ namespace SME.SGP.Api.Controllers
 
         [HttpGet("modalidades")]
         [ProducesResponseType(typeof(IEnumerable<EnumeradoRetornoDto>), 200)]
+        [ProducesResponseType(204)]
         [ProducesResponseType(401)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         public async Task<IActionResult> ObterModalidades(int anoLetivo)
         {
-            return Ok(await consultasAbrangencia.ObterModalidades(anoLetivo, ConsideraHistorico));
+            var retorno = await consultasAbrangencia.ObterModalidades(anoLetivo, ConsideraHistorico);
+
+            if (retorno.Any())
+                return Ok(retorno);
+
+            return NoContent();
         }
 
         [HttpGet("semestres")]
