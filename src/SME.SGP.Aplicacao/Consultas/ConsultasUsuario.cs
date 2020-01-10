@@ -22,11 +22,6 @@ namespace SME.SGP.Aplicacao
         {
             var login = servicoUsuario.ObterLoginAtual();
             var meusDados = await servicoEOL.ObterMeusDados(login);
-            var dadosUsuarioSgp = repositorioUsuario.ObterPorCodigoRfLogin(null, login);
-            if (dadosUsuarioSgp != null)
-            {
-                meusDados.Email = dadosUsuarioSgp.Email;
-            }
             return meusDados;
         }
 
