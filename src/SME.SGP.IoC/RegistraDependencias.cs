@@ -54,6 +54,9 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IComandosNotasConceitos, ComandosNotasConceitos>();
             services.TryAddScoped<IComandosAulaPrevista, ComandosAulaPrevista>();
             services.TryAddScoped<IComandosRegistroPoa, ComandosRegistroPoa>();
+            services.TryAddScoped<IComandosCompensacaoAusencia, ComandosCompensacaoAusencia>();
+            services.TryAddScoped<IComandosCompensacaoAusenciaAluno, ComandosCompensacaoAusenciaAluno>();
+            services.TryAddScoped<IComandosCompensacaoAusenciaDisciplinaRegencia, ComandosCompensacaoAusenciaDisciplinaRegencia>();
         }
 
         private static void RegistrarConsultas(IServiceCollection services)
@@ -94,6 +97,9 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IConsultasNotasConceitos, ConsultasNotasConceitos>();
             services.TryAddScoped<IConsultasAtribuicoes, ConsultasAtribuicoes>();
             services.TryAddScoped<IConsultasRegistroPoa, ConsultasRegistroPoa>();
+            services.TryAddScoped<IConsultasCompensacaoAusencia, ConsultasCompensacaoAusencia>();
+            services.TryAddScoped<IConsultasCompensacaoAusenciaAluno, ConsultasCompensacaoAusenciaAluno>();
+            services.TryAddScoped<IConsultasCompensacaoAusenciaDisciplinaRegencia, ConsultasCompensacaoAusenciaDisciplinaRegencia>();
         }
 
         private static void RegistrarContextos(IServiceCollection services)
@@ -160,6 +166,9 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IRepositorioAulaPrevistaBimestre, RepositorioAulaPrevistaBimestre>();
             services.TryAddScoped<IRepositorioRegistroPoa, RepositorioRegistroPoa>();
             services.TryAddScoped<IRepositorioAtividadeAvaliativaDisciplina, RepositorioAtividadeAvaliativaDisciplina>();
+            services.TryAddScoped<IRepositorioCompensacaoAusencia, RepositorioCompensacaoAusencia>();
+            services.TryAddScoped<IRepositorioCompensacaoAusenciaAluno, RepositorioCompensacaoAusenciaAluno>();
+            services.TryAddScoped<IRepositorioCompensacaoAusenciaDisciplinaRegencia, RepositorioCompensacaoAusenciaDisciplinaRegencia>();
         }
 
         private static void RegistrarServicos(IServiceCollection services)
@@ -188,6 +197,7 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IServicoAtribuicaoCJ, ServicoAtribuicaoCJ>();
             services.TryAddScoped<IServicoEventoMatricula, ServicoEventoMatricula>();
             services.TryAddScoped<IServicoAluno, ServicoAluno>();
+            services.TryAddScoped<IServicoCompensacaoAusencia, ServicoCompensacaoAusencia>();
         }
     }
 }
