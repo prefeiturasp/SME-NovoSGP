@@ -15,7 +15,7 @@ namespace SME.SGP.Dados
         {
         }
 
-        public async Task<IEnumerable<CompensacaoAusencia>> Listar(string DisciplinaId, int Bimestre, string NomeAtividade)
+        public async Task<IEnumerable<CompensacaoAusencia>> Listar(string disciplinaId, int bimestre, string nomeAtividade)
         {
             throw new NotImplementedException();
         }
