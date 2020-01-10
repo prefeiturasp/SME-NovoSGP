@@ -165,7 +165,7 @@ namespace SME.SGP.Dominio
             if (string.IsNullOrEmpty(login))
                 login = codigoRf;
 
-            usuario = new Usuario() { CodigoRf = codigoRf, Login = login, Nome = nome, Email = email };
+            usuario = new Usuario() { CodigoRf = codigoRf, Login = login, Nome = nome };
 
             repositorioUsuario.Salvar(usuario);
 
@@ -205,7 +205,7 @@ namespace SME.SGP.Dominio
 
         private async Task AlterarEmail(Usuario usuario, string novoEmail)
         {
-            var outrosUsuariosComMesmoEmail = repositorioUsuario.ExisteUsuarioComMesmoEmail(novoEmail, usuario.Id);
+            var outrosUsuariosComMesmoEmail = await servicoEOL.ExisteUsuarioComMesmoEmail(usuario.Login, novoEmail);
 
             if (outrosUsuariosComMesmoEmail)
                 throw new NegocioException("Já existe outro usuário com o e-mail informado.");
@@ -218,6 +218,8 @@ namespace SME.SGP.Dominio
             usuario.DefinirPerfis(perfisUsuario);
             usuario.DefinirEmail(novoEmail);
             repositorioUsuario.Salvar(usuario);
+            await servicoEOL.AlterarEmail(usuario.Login, novoEmail);
+
         }
     }
 }
