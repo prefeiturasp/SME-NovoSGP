@@ -43,7 +43,7 @@ namespace SME.SGP.Dominio.Servicos.Teste
             var email = "teste@teste.com";
             var usuario = new Usuario() { Id = 5, Login = login };
             repositorioUsuario.Setup(a => a.ObterPorCodigoRfLogin(string.Empty, login)).Returns(usuario);
-            repositorioUsuario.Setup(a => a.ExisteUsuarioComMesmoEmail(email, usuario.Id)).Returns(false);
+            servicoEol.Setup(a => a.ExisteUsuarioComMesmoEmail(email, usuario.Login)).Returns(Task.FromResult(false));
             repositorioPrioridadePerfil.Setup(c => c.ObterPerfisPorIds(It.IsAny<IEnumerable<Guid>>()))
                 .Returns(new List<PrioridadePerfil>() {
                     new PrioridadePerfil
@@ -70,7 +70,7 @@ namespace SME.SGP.Dominio.Servicos.Teste
             var email = "teste@teste.com";
             var usuario = new Usuario() { Id = 5, Login = codigoRf, CodigoRf = codigoRf };
             repositorioUsuario.Setup(a => a.ObterPorCodigoRfLogin(codigoRf, string.Empty)).Returns(usuario);
-            repositorioUsuario.Setup(a => a.ExisteUsuarioComMesmoEmail(email, usuario.Id)).Returns(false);
+            servicoEol.Setup(a => a.ExisteUsuarioComMesmoEmail(email, usuario.Login)).Returns(Task.FromResult(false));
             servicoEol.Setup(a => a.ObterPerfisPorLogin(codigoRf)).Returns(Task.FromResult(new UsuarioEolAutenticacaoRetornoDto()));
             repositorioUsuario.Setup(a => a.Salvar(usuario)).Returns(usuario.Id);
             repositorioPrioridadePerfil.Setup(c => c.ObterPerfisPorIds(It.IsAny<IEnumerable<Guid>>()))
