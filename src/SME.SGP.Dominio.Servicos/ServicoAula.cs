@@ -105,6 +105,9 @@ namespace SME.SGP.Dominio.Servicos
 
             VerificaSeProfessorPodePersistirTurma(usuario.CodigoRf, aula.TurmaId, aula.DataAula);
 
+            if (aula.Id > 0)
+                aula.PodeSerAlterada(usuario);
+
             IEnumerable<long> disciplinasProfessor = null;
 
             if (usuario.EhProfessorCj())
@@ -289,6 +292,9 @@ namespace SME.SGP.Dominio.Servicos
         {
             if (await repositorioAtividadeAvaliativa.VerificarSeExisteAvaliacao(aula.DataAula.Date, aula.UeId, aula.TurmaId, CodigoRf, aula.DisciplinaId))
                 throw new NegocioException("Aula com avaliação vinculada. Para excluir esta aula primeiro deverá ser excluída a avaliação.");
+
+            VerificaSeProfessorPodePersistirTurma(CodigoRf, aula.TurmaId, aula.DataAula);
+
             await servicoFrequencia.ExcluirFrequenciaAula(aula.Id);
             await comandosPlanoAula.ExcluirPlanoDaAula(aula.Id);
             aula.Excluido = true;

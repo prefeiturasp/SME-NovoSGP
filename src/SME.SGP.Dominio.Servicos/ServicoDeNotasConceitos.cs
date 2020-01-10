@@ -13,23 +13,23 @@ namespace SME.SGP.Dominio
 {
     public class ServicoDeNotasConceitos : IServicoDeNotasConceitos
     {
-        private readonly IConsultasAbrangencia consultasAbrangencia;
         private readonly IConfiguration configuration;
+        private readonly IConsultasAbrangencia consultasAbrangencia;
+        private readonly string hostAplicacao;
         private readonly IRepositorioAtividadeAvaliativa repositorioAtividadeAvaliativa;
         private readonly IRepositorioAtividadeAvaliativaDisciplina repositorioAtividadeAvaliativaDisciplina;
+        private readonly IRepositorioAula repositorioAula;
         private readonly IRepositorioCiclo repositorioCiclo;
         private readonly IRepositorioConceito repositorioConceito;
         private readonly IRepositorioNotaParametro repositorioNotaParametro;
         private readonly IRepositorioNotasConceitos repositorioNotasConceitos;
         private readonly IRepositorioNotaTipoValor repositorioNotaTipoValor;
         private readonly IRepositorioPeriodoEscolar repositorioPeriodoEscolar;
-        private readonly IRepositorioAula repositorioAula;
         private readonly IRepositorioTurma repositorioTurma;
         private readonly IServicoEOL servicoEOL;
+        private readonly IServicoNotificacao servicoNotificacao;
         private readonly IServicoUsuario servicoUsuario;
         private readonly IUnitOfWork unitOfWork;
-        private readonly IServicoNotificacao servicoNotificacao;
-        private readonly string hostAplicacao;
 
         public ServicoDeNotasConceitos(IRepositorioAtividadeAvaliativa repositorioAtividadeAvaliativa,
             IServicoEOL servicoEOL, IConsultasAbrangencia consultasAbrangencia,
@@ -84,12 +84,21 @@ namespace SME.SGP.Dominio
                 var avaliacao = atividadesAvaliativas.FirstOrDefault(x => x.Id == notasPorAvaliacao.Key);
 
                 entidadesSalvar.AddRange(ValidarEObter(notasPorAvaliacao.ToList(), avaliacao, alunos, professorRf, disciplinaId, usuario));
-
             }
 
             SalvarNoBanco(entidadesSalvar);
             var alunosId = alunos.Select(a => a.CodigoAluno).ToList();
             validarMediaAlunos(idsAtividadesAvaliativas, alunosId, usuario, disciplinaId);
+        }
+
+        public NotaTipoValor TipoNotaPorAvaliacao(AtividadeAvaliativa atividadeAvaliativa)
+        {
+            var notaTipo = ObterNotaTipo(atividadeAvaliativa.TurmaId, atividadeAvaliativa.DataAvaliacao).Result;
+
+            if (notaTipo == null)
+                throw new NegocioException("Não foi encontrado tipo de nota para a avaliação informada");
+
+            return notaTipo;
         }
 
         public void validarMediaAlunos(IEnumerable<long> idsAtividadesAvaliativas, IEnumerable<string> alunosId, Usuario usuario, string disciplinaId)
@@ -135,7 +144,6 @@ namespace SME.SGP.Dominio
                 {
                     if (somaNotas < (quantidadeAlunos / 2))
                     {
-
                         servicoNotificacao.Salvar(new Notificacao()
                         {
                             Ano = atividadeAvaliativa.CriadoEm.Year,
@@ -154,7 +162,6 @@ namespace SME.SGP.Dominio
                 {
                     if (somaConceitos < (quantidadeAlunos / 2))
                     {
-
                         servicoNotificacao.Salvar(new Notificacao()
                         {
                             Ano = atividadeAvaliativa.CriadoEm.Year,
@@ -169,18 +176,7 @@ namespace SME.SGP.Dominio
                         });
                     }
                 }
-
             }
-        }
-
-        public NotaTipoValor TipoNotaPorAvaliacao(AtividadeAvaliativa atividadeAvaliativa)
-        {
-            var notaTipo = ObterNotaTipo(atividadeAvaliativa.TurmaId, atividadeAvaliativa.DataAvaliacao).Result;
-
-            if (notaTipo == null)
-                throw new NegocioException("Não foi encontrado tipo de nota para a avaliação informada");
-
-            return notaTipo;
         }
 
         private static void ValidarSeAtividadesAvaliativasExistem(IEnumerable<long> avaliacoesAlteradasIds, IEnumerable<AtividadeAvaliativa> avaliacoes)
@@ -192,6 +188,15 @@ namespace SME.SGP.Dominio
                 if (atividadeavaliativa == null)
                     throw new NegocioException($"Não foi encontrada atividade avaliativa com o codigo {avalicaoAlteradaId}");
             });
+        }
+
+        private IEnumerable<PeriodoEscolar> BuscarPeriodosEscolaresDaAtividade(AtividadeAvaliativa atividadeAvaliativa, string disciplinaId)
+        {
+            var dataFinal = atividadeAvaliativa.DataAvaliacao.AddHours(23).AddMinutes(59).AddSeconds(59);
+            var aula = repositorioAula.ObterAulaIntervaloTurmaDisciplina(atividadeAvaliativa.DataAvaliacao, dataFinal, atividadeAvaliativa.TurmaId, disciplinaId).Result;
+
+            IEnumerable<PeriodoEscolar> periodosEscolares = repositorioPeriodoEscolar.ObterPorTipoCalendario(aula.TipoCalendarioId);
+            return periodosEscolares;
         }
 
         private async Task<NotaTipoValor> ObterNotaTipo(string turmaId, DateTime dataAvaliacao)
@@ -251,6 +256,10 @@ namespace SME.SGP.Dominio
             var notaParametro = repositorioNotaParametro.ObterPorDataAvaliacao(atividadeAvaliativa.DataAvaliacao);
             var dataAtual = DateTime.Now;
             var turma = repositorioTurma.ObterTurmaComUeEDrePorId(atividadeAvaliativa.TurmaId);
+
+            if (usuario.PerfilAtual == Perfis.PERFIL_PROFESSOR)
+                VerificaSeProfessorPodePersistirTurma(professorRf, atividadeAvaliativa.TurmaId, dataAtual);
+
             notasConceitos.ToList().ForEach(notaConceito =>
             {
                 if (notaConceito.Id > 0)
@@ -341,14 +350,10 @@ namespace SME.SGP.Dominio
             return result;
         }
 
-        private IEnumerable<PeriodoEscolar> BuscarPeriodosEscolaresDaAtividade(AtividadeAvaliativa atividadeAvaliativa, string disciplinaId)
+        private async void VerificaSeProfessorPodePersistirTurma(string codigoRf, string turmaId, DateTime dataAula)
         {
-            var dataFinal = atividadeAvaliativa.DataAvaliacao.AddHours(23).AddMinutes(59).AddSeconds(59);
-            var aula = repositorioAula.ObterAulaIntervaloTurmaDisciplina(atividadeAvaliativa.DataAvaliacao, dataFinal, atividadeAvaliativa.TurmaId, disciplinaId).Result;
-
-            IEnumerable<PeriodoEscolar> periodosEscolares = repositorioPeriodoEscolar.ObterPorTipoCalendario(aula.TipoCalendarioId);
-            return periodosEscolares;
+            if (!await servicoEOL.ProfessorPodePersistirTurma(codigoRf, turmaId, dataAula))
+                throw new NegocioException("Você não pode fazer alterações ou inclusões nesta turma e data.");
         }
-
     }
 }
