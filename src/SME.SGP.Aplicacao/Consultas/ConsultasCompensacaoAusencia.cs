@@ -16,7 +16,7 @@ namespace SME.SGP.Aplicacao
             this.repositorioCompensacaoAusencia = repositorioCompensacaoAusencia ?? throw new ArgumentNullException(nameof(repositorioCompensacaoAusencia));
         }
 
-        public Task<IEnumerable<CompensacaoAusencia>> Listar(string DisciplinaId, int Bimestre, string NomeAtividade)
+        public Task<IEnumerable<CompensacaoAusencia>> Listar(string disciplinaId, int bimestre, string nomeAtividade)
         {
             throw new NotImplementedException();
         }
