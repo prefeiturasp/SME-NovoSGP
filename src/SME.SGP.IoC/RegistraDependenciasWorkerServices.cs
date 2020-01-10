@@ -50,6 +50,9 @@ namespace SME.SGP.IoC
             services.TryAddScopedWorkerService<IComandosPlanoAula, ComandosPlanoAula>();
             services.TryAddScopedWorkerService<IComandosEventoMatricula, ComandosEventoMatricula>();
             services.TryAddScopedWorkerService<IComandosRegistroPoa, ComandosRegistroPoa>();
+            services.TryAddScopedWorkerService<IComandosCompensacaoAusencia, ComandosCompensacaoAusencia>();
+            services.TryAddScopedWorkerService<IComandosCompensacaoAusenciaAluno, ComandosCompensacaoAusenciaAluno>();
+            services.TryAddScopedWorkerService<IComandosCompensacaoAusenciaDisciplinaRegencia, ComandosCompensacaoAusenciaDisciplinaRegencia>();
         }
 
         private static void RegistrarConsultas(IServiceCollection services)
@@ -82,6 +85,9 @@ namespace SME.SGP.IoC
             services.TryAddScopedWorkerService<IConsultasRegistroPoa, ConsultasRegistroPoa>();
             services.TryAddScopedWorkerService<IConsultasPlanoAula, ConsultasPlanoAula>();
             services.TryAddScopedWorkerService<IConsultasObjetivoAprendizagemAula, ConsultasObjetivoAprendizagemAula>();
+            services.TryAddScopedWorkerService<IConsultasCompensacaoAusencia, ConsultasCompensacaoAusencia>();
+            services.TryAddScopedWorkerService<IConsultasCompensacaoAusenciaAluno, ConsultasCompensacaoAusenciaAluno>();
+            services.TryAddScopedWorkerService<IConsultasCompensacaoAusenciaDisciplinaRegencia, ConsultasCompensacaoAusenciaDisciplinaRegencia>();
         }
 
         private static void RegistrarContextos(IServiceCollection services)
@@ -139,6 +145,9 @@ namespace SME.SGP.IoC
             services.TryAddScopedWorkerService<IRepositorioNotificacaoAulaPrevista, RepositorioNotificacaoAulaPrevista>();
             services.TryAddScopedWorkerService<IRepositorioAulaPrevista, RepositorioAulaPrevista>();
             services.TryAddScopedWorkerService<IRepositorioRegistroPoa, RepositorioRegistroPoa>();
+            services.TryAddScopedWorkerService<IRepositorioCompensacaoAusencia, RepositorioCompensacaoAusencia>();
+            services.TryAddScopedWorkerService<IRepositorioCompensacaoAusenciaAluno, RepositorioCompensacaoAusenciaAluno>();
+            services.TryAddScopedWorkerService<IRepositorioCompensacaoAusenciaDisciplinaRegencia, RepositorioCompensacaoAusenciaDisciplinaRegencia>();
         }
 
         private static void RegistrarServicos(IServiceCollection services)
@@ -165,6 +174,7 @@ namespace SME.SGP.IoC
             services.TryAddScopedWorkerService<IServicoNotificacaoAulaPrevista, ServicoNotificacaoAulaPrevista>();
             services.TryAddScopedWorkerService<IServicoEventoMatricula, ServicoEventoMatricula>();
             services.TryAddScopedWorkerService<IServicoAluno, ServicoAluno>();
+            services.TryAddScopedWorkerService<IServicoCompensacaoAusencia, ServicoCompensacaoAusencia>();
         }
 
         private static void ResgistraDependenciaHttp(IServiceCollection services)
