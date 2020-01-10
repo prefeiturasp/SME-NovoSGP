@@ -20,6 +20,7 @@ CREATE TABLE public.compensacao_ausencia (
 );
 CREATE INDEX compensacao_ausencia_disciplina_idx ON public.compensacao_ausencia USING btree (disciplina_id);
 CREATE INDEX compensacao_ausencia_turma_idx ON public.compensacao_ausencia USING btree (turma_id);
+ALTER TABLE public.compensacao_ausencia ADD CONSTRAINT compensacao_ausencia_turma_fk FOREIGN KEY (turma_id) REFERENCES turma(id);
 
 -- COMPENSACAO AUSENCIA x ALUNO
 DROP TABLE if exists public.compensacao_ausencia_aluno;
