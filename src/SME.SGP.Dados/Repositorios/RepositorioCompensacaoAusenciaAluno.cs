@@ -1,4 +1,5 @@
-﻿using SME.SGP.Dominio;
+﻿using Dapper;
+using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System;
@@ -14,9 +15,14 @@ namespace SME.SGP.Dados.Repositorios
         {
         }
 
-        public Task<IEnumerable<CompensacaoAusenciaAluno>> ObterPorCompensacao(long compensacaoId)
+        public async Task<IEnumerable<CompensacaoAusenciaAluno>> ObterPorCompensacao(long compensacaoId)
         {
-            throw new NotImplementedException();
+            var query = @"select * 
+                            from compensacao_ausencia_aluno 
+                        where not excluido 
+                          and compensacao_id = @compensacaoId";
+
+            return await database.Conexao.QueryAsync<CompensacaoAusenciaAluno>(query, new { compensacaoId });
         }
     }
 }

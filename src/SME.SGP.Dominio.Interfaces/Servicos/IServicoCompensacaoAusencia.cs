@@ -8,6 +8,6 @@ namespace SME.SGP.Dominio.Interfaces
 {
     public interface IServicoCompensacaoAusencia
     {
-        Task Salvar(long id, CompensacaoAusenciaDto compensacao);
+        Task Salvar(long id, CompensacaoAusenciaDto compensacaoDto);
     }
 }
