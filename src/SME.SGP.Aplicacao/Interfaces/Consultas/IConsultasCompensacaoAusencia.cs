@@ -1,4 +1,5 @@
 ﻿using SME.SGP.Dominio;
+using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -8,6 +9,6 @@ namespace SME.SGP.Aplicacao
 {
     public interface IConsultasCompensacaoAusencia
     {
-        Task<IEnumerable<CompensacaoAusencia>> Listar(string disciplinaId, int bimestre, string nomeAtividade);
+        Task<IEnumerable<CompensacaoAusenciaListagemDto>> Listar(string turmaId, string disciplinaId, int bimestre, string nomeAtividade, string nomeAluno);
     }
 }

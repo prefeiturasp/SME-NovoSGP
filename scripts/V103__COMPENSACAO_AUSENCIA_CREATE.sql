@@ -15,6 +15,7 @@ CREATE TABLE public.compensacao_ausencia (
     criado_rf varchar(200)  NOT NULL,
     alterado_rf varchar(200),
     excluido boolean not null default false,
+    migrado boolean not null default false,
     
     CONSTRAINT compensacao_ausencia_pk PRIMARY KEY (id)
 );

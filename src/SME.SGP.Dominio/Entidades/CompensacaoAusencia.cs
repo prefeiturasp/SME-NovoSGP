@@ -6,6 +6,11 @@ namespace SME.SGP.Dominio
 {
     public class CompensacaoAusencia : EntidadeBase
     {
+        public CompensacaoAusencia()
+        {
+            Alunos = new List<CompensacaoAusenciaAluno>();
+        }
+
         public bool Excluido { get; set; }
         public bool Migrado { get; set; }
         public int Bimestre { get; set; }
@@ -14,5 +19,7 @@ namespace SME.SGP.Dominio
         public Turma Turma { get; set; }
         public string Nome { get; set; }
         public string Descricao { get; set; }
+
+        public List<CompensacaoAusenciaAluno> Alunos { get; set; }
     }
 }
