@@ -11,9 +11,6 @@ namespace SME.SGP.Dominio
         AguardandoAprovacao = 2,
 
         [Display(Description = "Recusado")]
-        Recusado = 3,
-
-        [Display(Description = "Excluído")]
-        Excluido = 4
+        Recusado = 3
     }
 }
