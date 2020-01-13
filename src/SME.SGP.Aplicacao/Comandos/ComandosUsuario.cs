@@ -1,10 +1,10 @@
 ﻿using Microsoft.Extensions.Configuration;
 using SME.SGP.Aplicacao.Integracoes;
-using SME.SGP.Aplicacao.Servicos;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -14,6 +14,8 @@ namespace SME.SGP.Aplicacao
     public class ComandosUsuario : IComandosUsuario
     {
         private readonly IConfiguration configuration;
+        private readonly IRepositorioAtribuicaoCJ repositorioAtribuicaoCJ;
+        private readonly IRepositorioAtribuicaoEsporadica repositorioAtribuicaoEsporadica;
         private readonly IRepositorioCache repositorioCache;
         private readonly IRepositorioUsuario repositorioUsuario;
         private readonly IServicoAbrangencia servicoAbrangencia;
@@ -33,23 +35,19 @@ namespace SME.SGP.Aplicacao
             IServicoEmail servicoEmail,
             IConfiguration configuration,
             IRepositorioCache repositorioCache,
-            IServicoAbrangencia servicoAbrangencia)
+            IServicoAbrangencia servicoAbrangencia,
+            IRepositorioAtribuicaoEsporadica repositorioAtribuicaoEsporadica,
+            IRepositorioAtribuicaoCJ repositorioAtribuicaoCJ)
         {
-            this.repositorioUsuario = repositorioUsuario ??
-                throw new System.ArgumentNullException(nameof(repositorioUsuario));
-            this.servicoAutenticacao = servicoAutenticacao ??
-                throw new System.ArgumentNullException(nameof(servicoAutenticacao));
-            this.servicoUsuario = servicoUsuario ??
-                throw new System.ArgumentNullException(nameof(servicoUsuario));
-            this.servicoPerfil = servicoPerfil ??
-                throw new System.ArgumentNullException(nameof(servicoPerfil));
-            this.servicoEOL = servicoEOL ??
-                throw new System.ArgumentNullException(nameof(servicoEOL));
-            this.servicoTokenJwt = servicoTokenJwt ??
-                throw new System.ArgumentNullException(nameof(servicoTokenJwt));
-            this.servicoAbrangencia = servicoAbrangencia ??
-                throw new System.ArgumentNullException(nameof(servicoAbrangencia));
-
+            this.repositorioUsuario = repositorioUsuario ?? throw new ArgumentNullException(nameof(repositorioUsuario));
+            this.servicoAutenticacao = servicoAutenticacao ?? throw new ArgumentNullException(nameof(servicoAutenticacao));
+            this.servicoUsuario = servicoUsuario ?? throw new ArgumentNullException(nameof(servicoUsuario));
+            this.servicoPerfil = servicoPerfil ?? throw new ArgumentNullException(nameof(servicoPerfil));
+            this.servicoEOL = servicoEOL ?? throw new ArgumentNullException(nameof(servicoEOL));
+            this.servicoTokenJwt = servicoTokenJwt ?? throw new ArgumentNullException(nameof(servicoTokenJwt));
+            this.servicoAbrangencia = servicoAbrangencia ?? throw new ArgumentNullException(nameof(servicoAbrangencia));
+            this.repositorioAtribuicaoEsporadica = repositorioAtribuicaoEsporadica ?? throw new ArgumentNullException(nameof(repositorioAtribuicaoEsporadica));
+            this.repositorioAtribuicaoCJ = repositorioAtribuicaoCJ ?? throw new ArgumentNullException(nameof(repositorioAtribuicaoCJ));
             this.servicoEmail = servicoEmail ?? throw new ArgumentNullException(nameof(servicoEmail));
             this.configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
             this.repositorioCache = repositorioCache ?? throw new ArgumentNullException(nameof(repositorioCache));
@@ -118,43 +116,61 @@ namespace SME.SGP.Aplicacao
 
         public async Task<UsuarioAutenticacaoRetornoDto> Autenticar(string login, string senha)
         {
+            login = login.Trim().ToLower();
+
             var retornoAutenticacaoEol = await servicoAutenticacao.AutenticarNoEol(login, senha);
 
-            if (retornoAutenticacaoEol.Item1.Autenticado)
+            if (!retornoAutenticacaoEol.Item1.Autenticado)
+                return retornoAutenticacaoEol.Item1;
+
+            if (!retornoAutenticacaoEol.Item4 && retornoAutenticacaoEol.Item5)
+                retornoAutenticacaoEol.Item3 = ValidarPerfilCJ(retornoAutenticacaoEol.Item2, retornoAutenticacaoEol.Item1.UsuarioId, retornoAutenticacaoEol.Item3, login).Result;
+
+            var dadosUsuario = await servicoEOL.ObterMeusDados(login);
+
+            var usuario = servicoUsuario.ObterUsuarioPorCodigoRfLoginOuAdiciona(retornoAutenticacaoEol.Item2, login, dadosUsuario.Nome, dadosUsuario.Email);
+
+            retornoAutenticacaoEol.Item1.PerfisUsuario = servicoPerfil.DefinirPerfilPrioritario(retornoAutenticacaoEol.Item3, usuario);
+
+            var perfilSelecionado = retornoAutenticacaoEol.Item1.PerfisUsuario.PerfilSelecionado;
+
+            var permissionamentos = await servicoEOL.ObterPermissoesPorPerfil(perfilSelecionado);
+
+            if (permissionamentos == null || !permissionamentos.Any())
             {
-                var usuario = servicoUsuario.ObterUsuarioPorCodigoRfLoginOuAdiciona(retornoAutenticacaoEol.Item2, login);
-
-                retornoAutenticacaoEol.Item1.PerfisUsuario = servicoPerfil.DefinirPerfilPrioritario(retornoAutenticacaoEol.Item3, usuario);
-
-                var perfilSelecionado = retornoAutenticacaoEol.Item1.PerfisUsuario.PerfilSelecionado;
-
-                var permissionamentos = await servicoEOL.ObterPermissoesPorPerfil(perfilSelecionado);
-
-                if (permissionamentos == null || !permissionamentos.Any())
-                {
-                    retornoAutenticacaoEol.Item1.Autenticado = false;
-                }
-                else
-                {
-                    var listaPermissoes = permissionamentos
-                        .Distinct()
-                        .Select(a => (Permissao)a)
-                        .ToList();
-
-                    retornoAutenticacaoEol.Item1.Token = servicoTokenJwt.GerarToken(login, usuario.CodigoRf, retornoAutenticacaoEol.Item1.PerfisUsuario.PerfilSelecionado, listaPermissoes);
-
-                    usuario.AtualizaUltimoLogin();
-                    repositorioUsuario.Salvar(usuario);
-                    await servicoAbrangencia.Salvar(login, perfilSelecionado, true);
-                }
+                retornoAutenticacaoEol.Item1.Autenticado = false;
+                return retornoAutenticacaoEol.Item1;
             }
+
+            var listaPermissoes = permissionamentos
+                .Distinct()
+                .Select(a => (Permissao)a)
+                .ToList();
+
+            // Revoga token atual para geração de um novo
+            servicoTokenJwt.RevogarToken(login);
+
+            // Gera novo token e guarda em cache
+            retornoAutenticacaoEol.Item1.Token =
+                servicoTokenJwt.GerarToken(login, dadosUsuario.Nome, usuario.CodigoRf, retornoAutenticacaoEol.Item1.PerfisUsuario.PerfilSelecionado, listaPermissoes);
+
+            retornoAutenticacaoEol.Item1.DataHoraExpiracao = servicoTokenJwt.ObterDataHoraExpiracao();
+            //var fromDate = servicoTokenJwt.ObterDataHoraCriacao();
+
+            usuario.AtualizaUltimoLogin();
+
+            repositorioUsuario.Salvar(usuario);
+
+            await servicoAbrangencia.Salvar(login, perfilSelecionado, true);
+
             return retornoAutenticacaoEol.Item1;
         }
 
-        public async Task<string> ModificarPerfil(Guid perfil)
+        public async Task<TrocaPerfilDto> ModificarPerfil(Guid perfil)
         {
             string loginAtual = servicoUsuario.ObterLoginAtual();
             string codigoRfAtual = servicoUsuario.ObterRf();
+            string nomeLoginAtual = servicoUsuario.ObterNomeLoginAtual();
 
             await servicoUsuario.PodeModificarPerfil(perfil, loginAtual);
 
@@ -172,8 +188,21 @@ namespace SME.SGP.Aplicacao
                     .ToList();
 
                 await servicoAbrangencia.Salvar(loginAtual, perfil, false);
+                var usuario = await servicoUsuario.ObterUsuarioLogado();
 
-                return servicoTokenJwt.GerarToken(loginAtual, codigoRfAtual, perfil, listaPermissoes);
+                usuario.DefinirPerfilAtual(perfil);
+
+                servicoTokenJwt.RevogarToken(loginAtual);
+                var tokenStr = servicoTokenJwt.GerarToken(loginAtual, nomeLoginAtual, codigoRfAtual, perfil, listaPermissoes);
+
+                return new TrocaPerfilDto
+                {
+                    Token = tokenStr,
+                    DataHoraExpiracao = servicoTokenJwt.ObterDataHoraExpiracao(),
+                    EhProfessor = usuario.EhProfessor(),
+                    EhProfessorCj = usuario.EhProfessorCj(),
+                    EhProfessorPoa = usuario.EhProfessorPoa()
+                };
             }
         }
 
@@ -192,6 +221,38 @@ namespace SME.SGP.Aplicacao
             }
 
             return retorno;
+        }
+
+        public async Task<RevalidacaoTokenDto> RevalidarLogin()
+        {
+            // Obter Login do token atual
+            var login = servicoUsuario.ObterLoginAtual();
+            string codigoRfAtual = servicoUsuario.ObterRf();
+            string nomeLoginAtual = servicoUsuario.ObterNomeLoginAtual();
+
+            var dadosUsuario = await servicoEOL.ObterMeusDados(login);
+            var usuario = servicoUsuario.ObterUsuarioPorCodigoRfLoginOuAdiciona(codigoRfAtual, login, nomeLoginAtual, dadosUsuario.Email);
+
+            // Obter Perfil do token atual
+            var guidPerfil = servicoTokenJwt.ObterPerfil();
+
+            // Busca lista de permissões do EOL
+            var permissionamentos = await servicoEOL.ObterPermissoesPorPerfil(guidPerfil);
+            if (permissionamentos == null || !permissionamentos.Any())
+                return null;
+
+            var listaPermissoes = permissionamentos
+                .Distinct()
+                .Select(a => (Permissao)a)
+                .ToList();
+
+            servicoTokenJwt.RevogarToken(login);
+
+            return new RevalidacaoTokenDto()
+            {
+                Token = servicoTokenJwt.GerarToken(login, nomeLoginAtual, codigoRfAtual, guidPerfil, listaPermissoes),
+                DataHoraExpiracao = servicoTokenJwt.ObterDataHoraExpiracao()
+            };
         }
 
         public void Sair()
@@ -224,13 +285,32 @@ namespace SME.SGP.Aplicacao
         {
             string caminho = $"{Directory.GetCurrentDirectory()}/wwwroot/ModelosEmail/RecuperacaoSenha.txt";
             var textoArquivo = File.ReadAllText(caminho);
-            var urlFrontEnd = configuration["UrlFrontEnt"];
+            var urlFrontEnd = configuration["UrlFrontEnd"];
             var textoEmail = textoArquivo
                 .Replace("#NOME", usuario.Nome)
                 .Replace("#RF", usuario.CodigoRf)
                 .Replace("#URL_BASE#", urlFrontEnd)
                 .Replace("#LINK", $"{urlFrontEnd}redefinir-senha/{usuario.TokenRecuperacaoSenha.ToString()}");
             servicoEmail.Enviar(usuario.Email, "Recuperação de senha do SGP", textoEmail);
+        }
+
+        private async Task<IEnumerable<Guid>> ValidarPerfilCJ(string codigoRF, Guid codigoUsuarioCore, IEnumerable<Guid> perfilsAtual, string login)
+        {
+            var atribuicaoCJ = repositorioAtribuicaoCJ.ObterAtribuicaoAtiva(codigoRF);
+
+            if (atribuicaoCJ != null && atribuicaoCJ.Any())
+                return perfilsAtual;
+
+            var atribuicaoEsporadica = repositorioAtribuicaoEsporadica.ObterUltimaPorRF(codigoRF);
+
+            if (atribuicaoEsporadica != null && !string.IsNullOrWhiteSpace(atribuicaoEsporadica.ProfessorRf) && atribuicaoEsporadica.DataFim > DateTime.Today)
+                return perfilsAtual;
+
+            await servicoEOL.RemoverCJSeNecessario(codigoUsuarioCore);
+
+            var usuarioEol = await servicoEOL.ObterPerfisPorLogin(login);
+
+            return usuarioEol.Perfis;
         }
     }
 }

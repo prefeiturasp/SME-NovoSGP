@@ -18,6 +18,9 @@ import { store } from '~/redux';
 import RotasDto from '~/dtos/rotasDto';
 import { verificaSomenteConsulta } from '~/servicos/servico-navegacao';
 
+import FiltroHelper from '~/componentes-sgp/filtro/helper';
+import tipoEscolaDTO from '~/dtos/tipoEscolaDto';
+
 export default function ReiniciarSenha() {
   const [linhaSelecionada, setLinhaSelecionada] = useState({});
   const [listaUsuario, setListaUsuario] = useState([]);
@@ -81,10 +84,14 @@ export default function ReiniciarSenha() {
   useEffect(() => {
     const carregarDres = async () => {
       const dres = await api.get('v1/dres');
-      setListaDres(dres.data);
+      if (dres.data) {
+        setListaDres(dres.data.sort(FiltroHelper.ordenarLista('nome')));
+      } else {
+        setListaDres([]);
+      }
     };
-    carregarDres();
 
+    carregarDres();
     verificaSomenteConsulta(permissoesTela);
   }, []);
 
@@ -112,8 +119,15 @@ export default function ReiniciarSenha() {
   };
 
   const carregarUes = async dre => {
-    const ues = await api.get(`/v1/dres/${dre}/ues`);
-    setListaUes(ues.data || []);
+    const ues = await api.get(`/v1/abrangencias/false/dres/${dre}/ues`);
+    if (ues.data) {
+      ues.data.forEach(
+        ue => (ue.nome = `${tipoEscolaDTO[ue.tipoEscola]} ${ue.nome}`)
+      );
+      setListaUes(ues.data.sort(FiltroHelper.ordenarLista('nome')));
+    } else {
+      setListaUes([]);
+    }
   };
 
   const onClickFiltrar = async () => {

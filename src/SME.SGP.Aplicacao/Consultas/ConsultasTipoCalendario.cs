@@ -10,10 +10,12 @@ namespace SME.SGP.Aplicacao
     public class ConsultasTipoCalendario : IConsultasTipoCalendario
     {
         private readonly IRepositorioTipoCalendario repositorio;
+        private readonly IRepositorioEvento repositorioEvento;
 
-        public ConsultasTipoCalendario(IRepositorioTipoCalendario repositorio)
+        public ConsultasTipoCalendario(IRepositorioTipoCalendario repositorio, IRepositorioEvento repositorioEvento)
         {
             this.repositorio = repositorio ?? throw new System.ArgumentNullException(nameof(repositorio));
+            this.repositorioEvento = repositorioEvento ?? throw new System.ArgumentNullException(nameof(repositorioEvento));
         }
 
         public TipoCalendarioCompletoDto BuscarPorAnoLetivoEModalidade(int anoLetivo, ModalidadeTipoCalendario modalidade)
@@ -54,6 +56,7 @@ namespace SME.SGP.Aplicacao
 
         public TipoCalendarioCompletoDto EntidadeParaDtoCompleto(TipoCalendario entidade)
         {
+            bool possuiEventos = repositorioEvento.ExisteEventoPorTipoCalendarioId(entidade.Id);
             return new TipoCalendarioCompletoDto
             {
                 Id = entidade.Id,
@@ -68,6 +71,7 @@ namespace SME.SGP.Aplicacao
                 CriadoEm = entidade.CriadoEm,
                 CriadoPor = entidade.CriadoPor,
                 DescricaoPeriodo = entidade.Periodo.GetAttribute<DisplayAttribute>().Name,
+                PossuiEventos = possuiEventos
             };
         }
 

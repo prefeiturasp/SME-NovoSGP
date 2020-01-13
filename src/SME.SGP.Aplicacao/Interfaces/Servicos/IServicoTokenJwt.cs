@@ -6,8 +6,20 @@ namespace SME.SGP.Aplicacao
 {
     public interface IServicoTokenJwt
     {
-        string GerarToken(string usuarioLogin, string codigoRf, Guid guidPerfil, IEnumerable<Permissao> permissionamentos);
+        string GerarToken(string usuarioLogin, string usuarioNome, string codigoRf, Guid guidPerfil, IEnumerable<Permissao> permissionamentos);
+
+        void RevogarToken(string login);
+
+        bool TokenAtivo();
+
+        bool TokenPresente();
 
         bool TemPerfilNoToken(string guid);
+        string ObterLogin();
+
+        DateTime ObterDataHoraExpiracao();
+        DateTime ObterDataHoraCriacao();
+
+        Guid ObterPerfil();
     }
 }

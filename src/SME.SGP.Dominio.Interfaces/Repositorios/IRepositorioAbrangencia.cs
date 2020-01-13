@@ -1,4 +1,5 @@
-﻿using SME.SGP.Dto;
+﻿using SME.SGP.Dominio.Enumerados;
+using SME.SGP.Dto;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -7,26 +8,34 @@ namespace SME.SGP.Dominio.Interfaces
 {
     public interface IRepositorioAbrangencia
     {
+        void ExcluirAbrangencias(IEnumerable<long> ids);
+
+        void InserirAbrangencias(IEnumerable<Abrangencia> enumerable, string login);
+
         Task<bool> JaExisteAbrangencia(string login, Guid perfil);
 
-        Task<IEnumerable<AbrangenciaFiltroRetorno>> ObterAbrangenciaPorFiltro(string texto, string login, Guid perfil);
+        Task<IEnumerable<AbrangenciaFiltroRetorno>> ObterAbrangenciaPorFiltro(string texto, string login, Guid perfil, bool consideraHistorico);
 
-        Task<IEnumerable<AbrangenciaDreRetorno>> ObterDres(string login, Guid perfil, Modalidade? modalidade = null);
+        Task<IEnumerable<AbrangenciaSinteticaDto>> ObterAbrangenciaSintetica(string login, Guid perfil, string turmaId = "");
 
-        Task<IEnumerable<int>> ObterModalidades(string login, Guid perfil);
+        Task<AbrangenciaFiltroRetorno> ObterAbrangenciaTurma(string turma, string login, Guid perfil);
 
-        Task<IEnumerable<int>> ObterSemestres(string login, Guid perfil, Modalidade modalidade);
+        Task<AbrangenciaDreRetorno> ObterDre(string dreCodigo, string ueCodigo, string login, Guid perfil);
 
-        Task<IEnumerable<AbrangenciaTurmaRetorno>> ObterTurmas(string codigoUe, string login, Guid perfil, Modalidade modalidade);
+        Task<IEnumerable<AbrangenciaDreRetorno>> ObterDres(string login, Guid perfil, Modalidade? modalidade = null, int periodo = 0, bool consideraHistorico = false);
 
-        Task<IEnumerable<AbrangenciaUeRetorno>> ObterUes(string codigoDre, string login, Guid perfil, Modalidade? modalidade = null);
+        Task<IEnumerable<int>> ObterModalidades(string login, Guid perfil, int anoLetivo, bool consideraHistorico);
 
-        Task RemoverAbrangencias(string login);
+        Task<IEnumerable<int>> ObterSemestres(string login, Guid perfil, Modalidade modalidade, bool consideraHistorico);
 
-        Task<long> SalvarDre(AbrangenciaDreRetornoEolDto abrangenciaDre, string login, Guid perfil);
+        Task<IEnumerable<AbrangenciaTurmaRetorno>> ObterTurmas(string codigoUe, string login, Guid perfil, Modalidade modalidade, int periodo = 0, bool consideraHistorico = false);
 
-        Task<long> SalvarTurma(AbrangenciaTurmaRetornoEolDto abrangenciaTurma, long idAbragenciaUe);
+        Task<AbrangenciaUeRetorno> ObterUe(string codigo, string login, Guid perfil);
 
-        Task<long> SalvarUe(AbrangenciaUeRetornoEolDto abrangenciaUe, long idAbragenciaDre);
+        Task<IEnumerable<AbrangenciaUeRetorno>> ObterUes(string codigoDre, string login, Guid perfil, Modalidade? modalidade = null, int periodo = 0, bool consideraHistorico = false);
+
+        void RemoverAbrangenciasForaEscopo(string login, Guid perfil, TipoAbrangencia porTurma);
+
+        Task<IEnumerable<int>> ObterAnosLetivos(string login, Guid perfil, bool consideraHistorico);
     }
 }

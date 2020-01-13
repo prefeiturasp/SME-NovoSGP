@@ -1,8 +1,9 @@
-﻿using Microsoft.AspNetCore.Http;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 using SME.SGP.Aplicacao.Integracoes;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
+using SME.SGP.Infra.Contexto;
+using SME.SGP.Infra.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,7 +16,7 @@ namespace SME.SGP.Dominio
         private const string CLAIM_PERFIL_ATUAL = "perfil";
         private const string CLAIM_PERMISSAO = "http://schemas.microsoft.com/ws/2008/06/identity/claims/role";
         private const string CLAIM_RF = "rf";
-        private readonly IHttpContextAccessor httpContextAccessor;
+        private readonly IContextoAplicacao contextoAplicacao;
         private readonly IRepositorioCache repositorioCache;
         private readonly IRepositorioPrioridadePerfil repositorioPrioridadePerfil;
         private readonly IRepositorioUsuario repositorioUsuario;
@@ -26,14 +27,14 @@ namespace SME.SGP.Dominio
                               IServicoEOL servicoEOL,
                               IRepositorioPrioridadePerfil repositorioPrioridadePerfil,
                               IUnitOfWork unitOfWork,
-                              IHttpContextAccessor httpContextAccessor,
+                              IContextoAplicacao contextoAplicacao,
                               IRepositorioCache repositorioCache)
         {
             this.repositorioUsuario = repositorioUsuario ?? throw new ArgumentNullException(nameof(repositorioUsuario));
             this.servicoEOL = servicoEOL ?? throw new ArgumentNullException(nameof(servicoEOL));
             this.repositorioPrioridadePerfil = repositorioPrioridadePerfil;
             this.unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
-            this.httpContextAccessor = httpContextAccessor ?? throw new ArgumentNullException(nameof(httpContextAccessor));
+            this.contextoAplicacao = contextoAplicacao ?? throw new ArgumentNullException(nameof(contextoAplicacao));
             this.repositorioCache = repositorioCache ?? throw new ArgumentNullException(nameof(repositorioCache));
         }
 
@@ -58,17 +59,26 @@ namespace SME.SGP.Dominio
 
         public string ObterClaim(string nomeClaim)
         {
-            var claim = httpContextAccessor.HttpContext.User.Claims.FirstOrDefault(a => a.Type == nomeClaim);
+            var claim = contextoAplicacao.ObterVarivel<IEnumerable<InternalClaim>>("Claims").FirstOrDefault(a => a.Type == nomeClaim);
             return claim?.Value;
         }
 
         public string ObterLoginAtual()
         {
-            var loginAtual = httpContextAccessor.HttpContext.User.Claims.FirstOrDefault(a => a.Type == "login");
+            var loginAtual = contextoAplicacao.ObterVarivel<string>("login");
             if (loginAtual == null)
                 throw new NegocioException("Não foi possível localizar o login no token");
 
-            return loginAtual.Value;
+            return loginAtual;
+        }
+
+        public string ObterNomeLoginAtual()
+        {
+            var nomeLoginAtual = contextoAplicacao.ObterVarivel<string>("NomeUsuario");
+            if (nomeLoginAtual == null)
+                throw new NegocioException("Não foi possível localizar o nome do login no token");
+
+            return nomeLoginAtual;
         }
 
         public Guid ObterPerfilAtual()
@@ -76,9 +86,25 @@ namespace SME.SGP.Dominio
             return Guid.Parse(ObterClaim(CLAIM_PERFIL_ATUAL));
         }
 
+        public async Task<IEnumerable<PrioridadePerfil>> ObterPerfisUsuario(string login)
+        {
+            var chaveRedis = $"perfis-usuario-{login}";
+
+            var perfisPorLogin = await servicoEOL.ObterPerfisPorLogin(login);
+
+            if (perfisPorLogin == null)
+                throw new NegocioException($"Não foi possível obter os perfis do usuário {login}");
+
+            var perfisDoUsuario = repositorioPrioridadePerfil.ObterPerfisPorIds(perfisPorLogin.Perfis);
+
+            _ = repositorioCache.SalvarAsync(chaveRedis, JsonConvert.SerializeObject(perfisDoUsuario));
+
+            return perfisDoUsuario;
+        }
+
         public IEnumerable<Permissao> ObterPermissoes()
         {
-            var claims = httpContextAccessor.HttpContext.User.Claims.Where(a => a.Type == CLAIM_PERMISSAO);
+            var claims = contextoAplicacao.ObterVarivel<IEnumerable<InternalClaim>>("Claims").Where(a => a.Type == CLAIM_PERMISSAO);
             List<Permissao> retorno = new List<Permissao>();
 
             if (claims.Any())
@@ -113,34 +139,33 @@ namespace SME.SGP.Dominio
 
             IEnumerable<PrioridadePerfil> perfisDoUsuario = null;
 
-            if (string.IsNullOrWhiteSpace(perfisUsuarioString))
-            {
-                var perfisPorLogin = await servicoEOL.ObterPerfisPorLogin(login);
-                if (perfisPorLogin == null)
-                    throw new NegocioException($"Não foi possível obter os perfis do usuário {login}");
+            perfisDoUsuario = string.IsNullOrWhiteSpace(perfisUsuarioString)
+                ? await ObterPerfisUsuario(login)
+                : JsonConvert.DeserializeObject<IEnumerable<PrioridadePerfil>>(perfisUsuarioString);
 
-                perfisDoUsuario = repositorioPrioridadePerfil.ObterPerfisPorIds(perfisPorLogin.Perfis);
-                _ = repositorioCache.SalvarAsync(chaveRedis, JsonConvert.SerializeObject(perfisDoUsuario));
-            }
-            else
-            {
-                perfisDoUsuario = JsonConvert.DeserializeObject<IEnumerable<PrioridadePerfil>>(perfisUsuarioString);
-            }
             usuario.DefinirPerfis(perfisDoUsuario);
+            usuario.DefinirPerfilAtual(ObterPerfilAtual());
 
             return usuario;
         }
 
-        public Usuario ObterUsuarioPorCodigoRfLoginOuAdiciona(string codigoRf, string login = "")
+        public Usuario ObterUsuarioPorCodigoRfLoginOuAdiciona(string codigoRf, string login = "", string nome = "", string email = "")
         {
             var usuario = repositorioUsuario.ObterPorCodigoRfLogin(codigoRf, login);
             if (usuario != null)
+            {
+                if (string.IsNullOrEmpty(usuario.Nome) && !string.IsNullOrEmpty(nome))
+                {
+                    usuario.Nome = nome;
+                    repositorioUsuario.Salvar(usuario);
+                }
                 return usuario;
+            }
 
             if (string.IsNullOrEmpty(login))
                 login = codigoRf;
 
-            usuario = new Usuario() { CodigoRf = codigoRf, Login = login };
+            usuario = new Usuario() { CodigoRf = codigoRf, Login = login, Nome = nome, Email = email };
 
             repositorioUsuario.Salvar(usuario);
 
@@ -155,6 +180,27 @@ namespace SME.SGP.Dominio
 
             if (!perfisDoUsuario.Perfis.Contains(perfilParaModificar))
                 throw new NegocioException($"O usuário {login} não possui acesso ao perfil {perfilParaModificar}");
+        }
+
+        public void RemoverPerfisUsuarioAtual()
+        {
+            var login = ObterLoginAtual();
+
+            RemoverPerfisUsuarioCache(login);
+        }
+
+        public void RemoverPerfisUsuarioCache(string login)
+        {
+            var chaveRedis = $"perfis-usuario-{login}";
+
+            _ = repositorioCache.RemoverAsync(chaveRedis);
+        }
+
+        public bool UsuarioLogadoPossuiPerfilSme()
+        {
+            var usuarioLogado = ObterUsuarioLogado().Result;
+
+            return usuarioLogado.PossuiPerfilSme();
         }
 
         private async Task AlterarEmail(Usuario usuario, string novoEmail)

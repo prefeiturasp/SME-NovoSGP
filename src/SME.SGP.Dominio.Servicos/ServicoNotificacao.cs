@@ -14,12 +14,19 @@ namespace SME.SGP.Dominio.Servicos
 
         public void GeraNovoCodigo(Notificacao notificacao)
         {
-            notificacao.Codigo = ObtemNovoCodigo();
+            if (notificacao.Codigo == 0)
+                notificacao.Codigo = ObtemNovoCodigo();
         }
 
         public long ObtemNovoCodigo()
         {
             return repositorioNotificacao.ObterUltimoCodigoPorAno(DateTime.Now.Year) + 1;
+        }
+
+        public void Salvar(Notificacao notificacao)
+        {
+            GeraNovoCodigo(notificacao);
+            repositorioNotificacao.Salvar(notificacao);
         }
     }
 }

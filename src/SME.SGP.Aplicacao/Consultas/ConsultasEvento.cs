@@ -1,9 +1,9 @@
-﻿using Microsoft.AspNetCore.Http;
-using SME.SGP.Dominio;
+﻿using SME.SGP.Dominio;
 using SME.SGP.Dominio.Entidades;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Dto;
 using SME.SGP.Infra;
+using SME.SGP.Infra.Interfaces;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -13,37 +13,66 @@ namespace SME.SGP.Aplicacao
     public class ConsultasEvento : ConsultasBase, IConsultasEvento
     {
         private readonly IRepositorioEvento repositorioEvento;
+        private readonly IServicoUsuario servicoUsuario;
 
         public ConsultasEvento(IRepositorioEvento repositorioEvento,
-                               IHttpContextAccessor httpContext) : base(httpContext)
+                               IContextoAplicacao contextoAplicacao, IServicoUsuario servicoUsuario) : base(contextoAplicacao)
         {
             this.repositorioEvento = repositorioEvento ?? throw new System.ArgumentNullException(nameof(repositorioEvento));
+            this.servicoUsuario = servicoUsuario ?? throw new System.ArgumentNullException(nameof(servicoUsuario));
         }
 
         public async Task<PaginacaoResultadoDto<EventoCompletoDto>> Listar(FiltroEventosDto filtroEventosDto)
         {
+            var usuario = await servicoUsuario.ObterUsuarioLogado();
+
             return MapearParaDtoComPaginacao(await repositorioEvento
                 .Listar(filtroEventosDto.TipoCalendarioId,
                         filtroEventosDto.TipoEventoId,
                         filtroEventosDto.NomeEvento,
                         filtroEventosDto.DataInicio,
                         filtroEventosDto.DataFim,
-                        Paginacao));
+                        Paginacao,
+                        filtroEventosDto.DreId,
+                        filtroEventosDto.UeId,
+                        filtroEventosDto.EhTodasDres,
+                        filtroEventosDto.EhTodasUes,
+                        usuario,
+                        usuario.PerfilAtual,
+                        usuario.TemPerfilSupervisorOuDiretor(),
+                        usuario.PodeVisualizarEventosOcorrenciaDre(),
+                        usuario.PodeVisualizarEventosLibExcepRepoRecessoGestoresUeDreSme()));
         }
 
-        public Task<IEnumerable<CalendarioEventosNoDiaRetornoDto>> ObterEventosPorDia(CalendarioEventosFiltroDto calendarioEventosMesesFiltro, int mes, int dia)
+        public async Task<IEnumerable<CalendarioEventosNoDiaRetornoDto>> ObterEventosPorDia(CalendarioEventosFiltroDto calendarioEventosMesesFiltro, int mes, int dia)
         {
-            return repositorioEvento.ObterEventosPorDia(calendarioEventosMesesFiltro, mes, dia);
+            var usuario = await servicoUsuario.ObterUsuarioLogado();
+
+            return await repositorioEvento.ObterEventosPorDia(calendarioEventosMesesFiltro, mes, dia, usuario, usuario.PerfilAtual,
+                usuario.TemPerfilSupervisorOuDiretor(), usuario.PodeVisualizarEventosOcorrenciaDre(),
+                        usuario.PodeVisualizarEventosLibExcepRepoRecessoGestoresUeDreSme());
         }
 
-        public EventoCompletoDto ObterPorId(long id)
+        public async Task<EventoCompletoDto> ObterPorId(long id)
         {
-            return MapearParaDto(repositorioEvento.ObterPorId(id));
+            var evento = repositorioEvento.ObterPorId(id);
+            var usuario = await servicoUsuario.ObterUsuarioLogado();
+
+            //verificar se o evento e o perfil do usuário é SME para possibilitar alteração
+            bool podeAlterarSME = EhEventoSME(evento) || EhEventoSME(evento) && usuario.EhPerfilSME();
+
+            return MapearParaDto(evento, podeAlterarSME);
         }
 
         public async Task<IEnumerable<CalendarioTipoEventoPorDiaDto>> ObterQuantidadeDeEventosPorDia(CalendarioEventosFiltroDto calendarioEventosMesesFiltro, int mes)
         {
-            var listaQuery = await repositorioEvento.ObterQuantidadeDeEventosPorDia(calendarioEventosMesesFiltro, mes);
+            var usuario = await servicoUsuario.ObterUsuarioLogado();
+            var perfilAtual = servicoUsuario.ObterPerfilAtual();
+
+            var listaQuery = await repositorioEvento.ObterQuantidadeDeEventosPorDia(calendarioEventosMesesFiltro, mes, usuario, perfilAtual, usuario.TemPerfilSupervisorOuDiretor(),
+                usuario.PodeVisualizarEventosOcorrenciaDre(),
+                usuario.PodeVisualizarEventosLibExcepRepoRecessoGestoresUeDreSme());
+
             List<CalendarioTipoEventoPorDiaDto> listaRetorno = new List<CalendarioTipoEventoPorDiaDto>();
 
             if (listaQuery.Any())
@@ -52,12 +81,11 @@ namespace SME.SGP.Aplicacao
 
                 listaDiasEventos.ForEach(a =>
                 {
-                    var tipoEventos = a.Take(3).Select(b => b.TipoEvento).ToList();
+                    var tipoEventos = a.GroupBy(b => b.TipoEvento).Select(b => b.Key).ToList();
                     listaRetorno.Add(new CalendarioTipoEventoPorDiaDto()
                     {
                         Dia = a.Key,
                         TiposEvento = tipoEventos.ToArray(),
-                        QuantidadeDeEventos = a.Count()
                     });
                 });
             }
@@ -65,9 +93,17 @@ namespace SME.SGP.Aplicacao
             return listaRetorno;
         }
 
-        public Task<IEnumerable<CalendarioEventosMesesDto>> ObterQuantidadeDeEventosPorMeses(CalendarioEventosFiltroDto calendarioEventosMesesFiltro)
+        public async Task<IEnumerable<CalendarioEventosMesesDto>> ObterQuantidadeDeEventosPorMeses(CalendarioEventosFiltroDto calendarioEventosMesesFiltro)
         {
-            return repositorioEvento.ObterQuantidadeDeEventosPorMeses(calendarioEventosMesesFiltro);
+            var usuario = await servicoUsuario.ObterUsuarioLogado();
+
+            return await repositorioEvento.ObterQuantidadeDeEventosPorMeses(calendarioEventosMesesFiltro, usuario, usuario.PerfilAtual, usuario.PodeVisualizarEventosOcorrenciaDre(),
+                        usuario.PodeVisualizarEventosLibExcepRepoRecessoGestoresUeDreSme());
+        }
+
+        private bool EhEventoSME(Evento evento)
+        {
+            return evento.UeId == null && evento.DreId == null;
         }
 
         private IEnumerable<EventoCompletoDto> MapearEventosParaDto(IEnumerable<Evento> items)
@@ -75,7 +111,7 @@ namespace SME.SGP.Aplicacao
             return items?.Select(c => MapearParaDto(c));
         }
 
-        private EventoCompletoDto MapearParaDto(Evento evento)
+        private EventoCompletoDto MapearParaDto(Evento evento, bool? podeAlterar = null)
         {
             return evento == null ? null : new EventoCompletoDto
             {
@@ -97,7 +133,8 @@ namespace SME.SGP.Aplicacao
                 CriadoPor = evento.CriadoPor,
                 CriadoRF = evento.CriadoRF,
                 TipoEvento = MapearTipoEvento(evento.TipoEvento),
-                Migrado = evento.Migrado
+                Migrado = evento.Migrado,
+                PodeAlterar = podeAlterar
             };
         }
 
@@ -113,6 +150,12 @@ namespace SME.SGP.Aplicacao
                 TotalPaginas = eventosPaginados.TotalPaginas,
                 TotalRegistros = eventosPaginados.TotalRegistros
             };
+        }
+
+        private async Task<bool> MapearPodeAlterarEventoSMEAsync(Evento evento)
+        {
+            var usuario = await servicoUsuario.ObterUsuarioLogado();
+            return !EhEventoSME(evento) || (EhEventoSME(evento) && usuario.EhPerfilSME());
         }
 
         private EventoTipoDto MapearTipoEvento(EventoTipo tipoEvento)

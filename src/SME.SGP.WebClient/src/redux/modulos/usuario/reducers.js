@@ -18,8 +18,11 @@ const inicial = {
   possuiPerfilSmeOuDre: false,
   possuiPerfilDre: false,
   possuiPerfilSme: false,
+  ehProfessorCj: false,
+  ehProfessor: false,
+  ehProfessorPoa: false,
   menu: [],
-  permissoes: []
+  permissoes: [],
 };
 
 export default function usuario(state = inicial, action) {
@@ -41,7 +44,16 @@ export default function usuario(state = inicial, action) {
         draft.possuiPerfilSmeOuDre = action.payload.possuiPerfilSmeOuDre;
         draft.possuiPerfilDre = action.payload.possuiPerfilDre;
         draft.possuiPerfilSme = action.payload.possuiPerfilSme;
+        draft.ehProfessorCj = action.payload.ehProfessorCj;
+        draft.ehProfessor = action.payload.ehProfessor;
         draft.menu = action.payload.menu;
+        draft.ehProfessorPoa = action.payload.ehProfessorPoa;
+        draft.dataHoraExpiracao = action.payload.dataHoraExpiracao;
+        break;
+      case '@usuario/salvarLoginRevalidado':
+        draft.token = action.payload.token;
+        draft.dataLogin = new Date();
+        draft.dataHoraExpiracao = action.payload.dataHoraExpiracao;
         break;
       case '@usuario/deslogar':
         draft.rf = '';
@@ -55,6 +67,7 @@ export default function usuario(state = inicial, action) {
         draft.dadosUsuario = [];
         draft.menu = [];
         draft.permissoes = [];
+        draft.ehProfessor = false;
         break;
       case '@usuario/selecionarTurma':
         draft.turmaSelecionada = action.payload;
@@ -79,6 +92,9 @@ export default function usuario(state = inicial, action) {
         break;
       case '@usuario/setPermissoes':
         draft.permissoes = action.payload;
+        break;
+      case '@usuario/setExibirMensagemSessaoExpirou':
+        draft.exibirMensagemSessaoExpirou = action.payload;
         break;
       default:
         break;

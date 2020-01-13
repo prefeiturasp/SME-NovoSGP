@@ -1,28 +1,42 @@
-﻿using SME.SGP.Dominio.Entidades;
+﻿using Microsoft.Extensions.Configuration;
+using SME.SGP.Aplicacao;
+using SME.SGP.Dominio.Entidades;
 using SME.SGP.Dominio.Interfaces;
+using SME.SGP.Dto;
 using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Dominio.Servicos
 {
     public class ServicoEvento : IServicoEvento
     {
+        private readonly IComandosWorkflowAprovacao comandosWorkflowAprovacao;
+        private readonly IConfiguration configuration;
+        private readonly IRepositorioAbrangencia repositorioAbrangencia;
         private readonly IRepositorioEvento repositorioEvento;
         private readonly IRepositorioEventoTipo repositorioEventoTipo;
         private readonly IRepositorioFeriadoCalendario repositorioFeriadoCalendario;
         private readonly IRepositorioPeriodoEscolar repositorioPeriodoEscolar;
         private readonly IRepositorioTipoCalendario repositorioTipoCalendario;
+        private readonly IServicoDiaLetivo servicoDiaLetivo;
+        private readonly IServicoLog servicoLog;
+        private readonly IServicoNotificacao servicoNotificacao;
         private readonly IServicoUsuario servicoUsuario;
+        private readonly IUnitOfWork unitOfWork;
 
         public ServicoEvento(IRepositorioEvento repositorioEvento,
                              IRepositorioEventoTipo repositorioEventoTipo,
                              IRepositorioPeriodoEscolar repositorioPeriodoEscolar,
                              IServicoUsuario servicoUsuario,
                              IRepositorioFeriadoCalendario repositorioFeriadoCalendario,
-                             IRepositorioTipoCalendario repositorioTipoCalendario)
+                             IRepositorioTipoCalendario repositorioTipoCalendario,
+                             IComandosWorkflowAprovacao comandosWorkflowAprovacao,
+                             IRepositorioAbrangencia repositorioAbrangencia, IConfiguration configuration,
+                             IUnitOfWork unitOfWork, IServicoNotificacao servicoNotificacao, IServicoLog servicoLog, IServicoDiaLetivo servicoDiaLetivo)
         {
             this.repositorioEvento = repositorioEvento ?? throw new System.ArgumentNullException(nameof(repositorioEvento));
             this.repositorioEventoTipo = repositorioEventoTipo ?? throw new System.ArgumentNullException(nameof(repositorioEventoTipo));
@@ -30,6 +44,13 @@ namespace SME.SGP.Dominio.Servicos
             this.servicoUsuario = servicoUsuario ?? throw new System.ArgumentNullException(nameof(servicoUsuario));
             this.repositorioFeriadoCalendario = repositorioFeriadoCalendario ?? throw new System.ArgumentNullException(nameof(repositorioFeriadoCalendario));
             this.repositorioTipoCalendario = repositorioTipoCalendario ?? throw new System.ArgumentNullException(nameof(repositorioTipoCalendario));
+            this.comandosWorkflowAprovacao = comandosWorkflowAprovacao ?? throw new ArgumentNullException(nameof(comandosWorkflowAprovacao));
+            this.repositorioAbrangencia = repositorioAbrangencia ?? throw new ArgumentNullException(nameof(repositorioAbrangencia));
+            this.configuration = configuration;
+            this.unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
+            this.servicoNotificacao = servicoNotificacao ?? throw new ArgumentNullException(nameof(servicoNotificacao));
+            this.servicoLog = servicoLog ?? throw new ArgumentNullException(nameof(servicoLog));
+            this.servicoDiaLetivo = servicoDiaLetivo ?? throw new ArgumentNullException(nameof(servicoDiaLetivo));
         }
 
         public static DateTime ObterProximoDiaDaSemana(DateTime data, DayOfWeek diaDaSemana)
@@ -38,31 +59,51 @@ namespace SME.SGP.Dominio.Servicos
             return data.AddDays(diasParaAdicionar);
         }
 
-        public async Task Salvar(Evento evento, bool dataConfirmada = false)
+        public void AlterarRecorrenciaEventos(Evento evento, bool alterarRecorrenciaCompleta)
         {
-            var tipoEvento = repositorioEventoTipo.ObterPorId(evento.TipoEventoId);
-
-            if (tipoEvento == null)
+            if (evento.EventoPaiId.HasValue && evento.EventoPaiId > 0 && alterarRecorrenciaCompleta)
             {
-                throw new NegocioException("O tipo do evento deve ser informado.");
+                IEnumerable<Evento> eventos = repositorioEvento.ObterEventosPorRecorrencia(evento.Id, evento.EventoPaiId.Value, evento.DataInicio);
+                if (eventos != null && eventos.Any())
+                {
+                    foreach (var eventoASerAlterado in eventos)
+                    {
+                        var eventoAlterado = AlterarEventoDeRecorrencia(evento, eventoASerAlterado);
+                        repositorioEvento.Salvar(eventoAlterado);
+                    }
+                }
             }
+        }
 
-            var tipoCalendario = repositorioTipoCalendario.ObterPorId(evento.TipoCalendarioId);
-            if (tipoCalendario == null)
-            {
-                throw new NegocioException("Calendário não encontrado.");
-            }
-            evento.AdicionarTipoEvento(tipoEvento);
+        public async Task<string> Salvar(Evento evento, bool alterarRecorrenciaCompleta = false, bool dataConfirmada = false)
+        {
+            ObterTipoEvento(evento);
+
+            TipoCalendario tipoCalendario = ObterTipoCalendario(evento);
 
             evento.ValidaPeriodoEvento();
 
             var usuario = await servicoUsuario.ObterUsuarioLogado();
 
+            bool ehAlteracao = true;
+
+            if (evento.Id == 0)
+            {
+                ehAlteracao = false;
+                evento.TipoPerfilCadastro = usuario.ObterTipoPerfilAtual();
+            }
+            else
+            {
+                var entidadeNaoModificada = repositorioEvento.ObterPorId(evento.Id);
+                ObterTipoEvento(entidadeNaoModificada);
+                usuario.PodeAlterarEvento(entidadeNaoModificada);
+            }
+
             usuario.PodeCriarEvento(evento);
 
             if (!evento.PermiteConcomitancia())
             {
-                var existeOutroEventoNaMesmaData = repositorioEvento.ExisteEventoNaMesmaDataECalendario(evento.DataInicio, evento.TipoCalendarioId);
+                var existeOutroEventoNaMesmaData = repositorioEvento.ExisteEventoNaMesmaDataECalendario(evento.DataInicio, evento.TipoCalendarioId, evento.Id);
                 if (existeOutroEventoNaMesmaData)
                 {
                     throw new NegocioException("Não é permitido cadastrar um evento nesta data pois esse tipo de evento não permite concomitância.");
@@ -72,13 +113,42 @@ namespace SME.SGP.Dominio.Servicos
             var periodos = repositorioPeriodoEscolar.ObterPorTipoCalendario(evento.TipoCalendarioId);
 
             if (evento.DeveSerEmDiaLetivo())
-            {
                 evento.EstaNoPeriodoLetivo(periodos);
-            }
 
-            await VerificaParticularidadesSME(evento, usuario, periodos, dataConfirmada);
+            usuario.PodeCriarEventoComDataPassada(evento);
+
+            bool devePassarPorWorkflowLiberacaoExcepcional = await ValidaDatasETiposDeEventos(evento, dataConfirmada, usuario, periodos);
+
+            AtribuirNullSeVazio(evento);
+
+            unitOfWork.IniciarTransacao();
 
             repositorioEvento.Salvar(evento);
+
+            var enviarParaWorkflow = !string.IsNullOrWhiteSpace(evento.UeId) && (devePassarPorWorkflowLiberacaoExcepcional || evento.DataInicio.Date < DateTime.Today && evento.TipoEvento.Codigo != (long)TipoEvento.LiberacaoExcepcional);
+
+            if (enviarParaWorkflow)
+                await PersistirWorkflowEvento(evento, devePassarPorWorkflowLiberacaoExcepcional);
+
+            unitOfWork.PersistirTransacao();
+
+            if (evento.EventoPaiId.HasValue && evento.EventoPaiId > 0 && alterarRecorrenciaCompleta)
+            {
+                SME.Background.Core.Cliente.Executar(() => AlterarRecorrenciaEventos(evento, alterarRecorrenciaCompleta));
+            }
+
+            if (ehAlteracao)
+            {
+                if (enviarParaWorkflow)
+                    return "Evento alterado e será válido após aprovação.";
+                else return "Evento alterado com sucesso.";
+            }
+            else
+            {
+                if (enviarParaWorkflow)
+                    return "Evento cadastrado e será válido após aprovação.";
+                else return "Evento cadastrado com sucesso.";
+            }
         }
 
         public async Task SalvarEventoFeriadosAoCadastrarTipoCalendario(TipoCalendario tipoCalendario)
@@ -97,30 +167,158 @@ namespace SME.SGP.Dominio.Servicos
                 TratarErros(feriadosErro);
         }
 
-        public async Task SalvarRecorrencia(Evento evento, DateTime dataInicial, DateTime? dataFinal, int? diaDeOcorrencia, IEnumerable<DayOfWeek> diasDaSemana, PadraoRecorrencia padraoRecorrencia, PadraoRecorrenciaMensal? padraoRecorrenciaMensal, int repeteACada)
+        public void SalvarRecorrencia(Evento evento, DateTime dataInicial, DateTime? dataFinal, int? diaDeOcorrencia, IEnumerable<DayOfWeek> diasDaSemana, PadraoRecorrencia padraoRecorrencia, PadraoRecorrenciaMensal? padraoRecorrenciaMensal, int repeteACada)
         {
+            if(evento.DataInicio.Date != evento.DataFim.Date)
+            {
+                throw new NegocioException("A recorrência somente é permitida quando o evento possui data única.");
+            }
+
+            if (evento.EventoPaiId.HasValue && evento.EventoPaiId > 0)
+            {
+                throw new NegocioException("Este evento já pertence a uma recorrência, por isso não é permitido gerar uma nova.");
+            }
             if (!dataFinal.HasValue)
             {
                 var periodoEscolar = repositorioPeriodoEscolar.ObterPorTipoCalendario(evento.TipoCalendarioId);
+                if (periodoEscolar == null || !periodoEscolar.Any())
+                {
+                    throw new NegocioException("Não é possível cadastrar o evento pois não existe período escolar cadastrado para este calendário.");
+                }
                 var periodoAtual = periodoEscolar.FirstOrDefault(c => DateTime.Now >= c.PeriodoInicio && DateTime.Now <= c.PeriodoFim);
                 dataFinal = periodoAtual.PeriodoFim;
             }
             var eventos = evento.ObterRecorrencia(padraoRecorrencia, padraoRecorrenciaMensal, dataInicial, dataFinal.Value, diasDaSemana, repeteACada, diaDeOcorrencia);
+            var notificacoesSucesso = new List<DateTime>();
+            var notificacoesFalha = new List<string>();
             foreach (var novoEvento in eventos)
             {
                 try
                 {
-                    await Salvar(novoEvento);
+                    if (!servicoDiaLetivo.ValidarSeEhDiaLetivo(novoEvento.DataInicio, novoEvento.DataInicio, novoEvento.TipoCalendarioId, novoEvento.Letivo == EventoLetivo.Sim, novoEvento.TipoEventoId))
+                    {
+                        notificacoesFalha.Add($"{novoEvento.DataInicio.ToShortDateString()} - Não é possível cadastrar esse evento pois a data informada está fora do período letivo.");
+                    }
+                    else
+                    {
+                        Salvar(novoEvento).Wait();
+                        notificacoesSucesso.Add(novoEvento.DataInicio);
+                    }
                 }
                 catch (NegocioException nex)
                 {
-                    //TODO GERAR NOTIFICAÇÃO DE FEEDBACK
+                    notificacoesFalha.Add($"{novoEvento.DataInicio.ToShortDateString()} - {nex.Message}");
                 }
                 catch (Exception ex)
                 {
-                    //TODO GERAR NOTIFICAÇÃO DE FEEDBACK
+                    notificacoesFalha.Add($"{novoEvento.DataInicio.ToShortDateString()} - Ocorreu um erro interno.");
+                    servicoLog.Registrar(ex);
                 }
             }
+            var usuarioLogado = servicoUsuario.ObterUsuarioLogado().Result;
+            EnviarNotificacaoRegistroDeRecorrencia(evento, notificacoesSucesso, notificacoesFalha, usuarioLogado.Id);
+        }
+
+        private static void AtribuirNullSeVazio(Evento evento)
+        {
+            if (string.IsNullOrWhiteSpace(evento.DreId))
+                evento.DreId = null;
+
+            if (string.IsNullOrWhiteSpace(evento.UeId))
+                evento.UeId = null;
+        }
+
+        private Evento AlterarEventoDeRecorrencia(Evento evento, Evento eventoASerAlterado)
+        {
+            eventoASerAlterado.Descricao = evento.Descricao;
+            eventoASerAlterado.DreId = evento.DreId;
+            eventoASerAlterado.FeriadoId = evento.FeriadoId;
+            eventoASerAlterado.Letivo = evento.Letivo;
+            eventoASerAlterado.Nome = evento.Nome;
+            eventoASerAlterado.TipoCalendarioId = evento.TipoCalendarioId;
+            eventoASerAlterado.TipoEventoId = evento.TipoEventoId;
+            eventoASerAlterado.UeId = evento.UeId;
+            return eventoASerAlterado;
+        }
+
+        private long CriarWorkflowParaDataPassada(Evento evento, AbrangenciaUeRetorno escola, string linkParaEvento)
+        {
+            var wfAprovacaoEvento = new WorkflowAprovacaoDto()
+            {
+                Ano = evento.DataInicio.Year,
+                NotificacaoCategoria = NotificacaoCategoria.Workflow_Aprovacao,
+                EntidadeParaAprovarId = evento.Id,
+                Tipo = WorkflowAprovacaoTipo.Evento_Data_Passada,
+                UeId = evento.UeId,
+                DreId = evento.DreId,
+                NotificacaoTitulo = "Criação de evento com data passada",
+                NotificacaoTipo = NotificacaoTipo.Calendario,
+                NotificacaoMensagem = $"O evento {evento.Nome} - {evento.DataInicio.Day}/{evento.DataInicio.Month}/{evento.DataInicio.Year} foi criado no calendário {evento.TipoCalendario.Nome} da {escola.Nome}. Para que este evento seja considerado válido, você precisa aceitar esta notificação. Para visualizar o evento clique <a href='{linkParaEvento}'>aqui</a>."
+            };
+
+            wfAprovacaoEvento.Niveis.Add(new WorkflowAprovacaoNivelDto()
+            {
+                Cargo = Cargo.Supervisor,
+                Nivel = 1
+            });
+
+            return comandosWorkflowAprovacao.Salvar(wfAprovacaoEvento);
+        }
+
+        private long CriarWorkflowParaEventoExcepcionais(Evento evento, Dto.AbrangenciaUeRetorno escola, string linkParaEvento)
+        {
+            var wfAprovacaoEvento = new WorkflowAprovacaoDto()
+            {
+                Ano = evento.DataInicio.Year,
+                NotificacaoCategoria = NotificacaoCategoria.Workflow_Aprovacao,
+                EntidadeParaAprovarId = evento.Id,
+                Tipo = WorkflowAprovacaoTipo.Evento_Liberacao_Excepcional,
+                UeId = evento.UeId,
+                DreId = evento.DreId,
+                NotificacaoTitulo = "Criação de Eventos Excepcionais",
+                NotificacaoTipo = NotificacaoTipo.Calendario,
+                NotificacaoMensagem = $"O evento {evento.Nome} - {evento.DataInicio.Day}/{evento.DataInicio.Month}/{evento.DataInicio.Year} foi criado no calendário {evento.TipoCalendario.Nome} da {escola.Nome}. Para que este evento seja considerado válido, você precisa aceitar esta notificação. Para visualizar o evento clique <a href='{linkParaEvento}'>aqui</a>."
+            };
+
+            wfAprovacaoEvento.Niveis.Add(new WorkflowAprovacaoNivelDto()
+            {
+                Cargo = Cargo.Diretor,
+                Nivel = 1
+            });
+            wfAprovacaoEvento.Niveis.Add(new WorkflowAprovacaoNivelDto()
+            {
+                Cargo = Cargo.Supervisor,
+                Nivel = 2
+            });
+
+            return comandosWorkflowAprovacao.Salvar(wfAprovacaoEvento);
+        }
+
+        private void EnviarNotificacaoRegistroDeRecorrencia(Evento evento, List<DateTime> notificacoesSucesso, List<string> notificacoesFalha, long usuarioId)
+        {
+            var tipoCalendario = repositorioTipoCalendario.ObterPorId(evento.TipoCalendarioId);
+
+            var mensagemNotificacao = new StringBuilder();
+            if (notificacoesSucesso.Any())
+            {
+                var textoInicial = notificacoesSucesso.Count > 1 ? "Foram" : "Foi";
+                mensagemNotificacao.Append($"<br>{textoInicial} cadastrado(s) {notificacoesSucesso.Count} evento(s) de '{evento.TipoEvento.Descricao}' no calendário '{tipoCalendario.Nome}' de {tipoCalendario.AnoLetivo} nas seguintes datas:<br>");
+                notificacoesSucesso.ForEach(data => mensagemNotificacao.AppendLine($"<br>{data.ToString("dd/MM/yyyy")}"));
+            }
+            if (notificacoesFalha.Any())
+            {
+                mensagemNotificacao.AppendLine($"<br>Não foi possível cadastrar o(s) evento(s) na(s) seguinte(s) data(s)<br>");
+                notificacoesFalha.ForEach(mensagem => mensagemNotificacao.AppendLine($"<br>{mensagem}"));
+            }
+            var notificacao = new Notificacao()
+            {
+                Titulo = $"Criação de Eventos Recorrentes - {evento.Nome}",
+                Mensagem = mensagemNotificacao.ToString(),
+                UsuarioId = usuarioId,
+                Tipo = NotificacaoTipo.Calendario,
+                Categoria = NotificacaoCategoria.Aviso
+            };
+            servicoNotificacao.Salvar(notificacao);
         }
 
         private Evento MapearEntidade(TipoCalendario tipoCalendario, FeriadoCalendario x, Entidades.EventoTipo tipoEventoFeriado)
@@ -147,8 +345,8 @@ namespace SME.SGP.Dominio.Servicos
             var feriadosMoveis = await repositorioFeriadoCalendario.ObterFeriadosCalendario(new FiltroFeriadoCalendarioDto { Ano = DateTime.Now.Year, Tipo = TipoFeriadoCalendario.Movel });
             var feriadosFixos = await repositorioFeriadoCalendario.ObterFeriadosCalendario(new FiltroFeriadoCalendarioDto { Tipo = TipoFeriadoCalendario.Fixo });
 
-            var feriados = feriadosFixos.ToList();
-            feriados.AddRange(feriadosMoveis);
+            var feriados = feriadosFixos?.ToList();
+            feriados?.AddRange(feriadosMoveis);
 
             if (feriados == null || !feriados.Any())
                 throw new NegocioException("Nenhum feriado foi encontrado");
@@ -164,6 +362,49 @@ namespace SME.SGP.Dominio.Servicos
             return tipoEventoFeriado;
         }
 
+        private TipoCalendario ObterTipoCalendario(Evento evento)
+        {
+            var tipoCalendario = repositorioTipoCalendario.ObterPorId(evento.TipoCalendarioId);
+            if (tipoCalendario == null)
+                throw new NegocioException("Calendário não encontrado.");
+
+            evento.AdicionarTipoCalendario(tipoCalendario);
+            return tipoCalendario;
+        }
+
+        private void ObterTipoEvento(Evento evento)
+        {
+            var tipoEvento = repositorioEventoTipo.ObterPorId(evento.TipoEventoId);
+
+            if (tipoEvento == null)
+                throw new NegocioException("O tipo do evento deve ser informado.");
+
+            evento.AdicionarTipoEvento(tipoEvento);
+        }
+
+        private async Task PersistirWorkflowEvento(Evento evento, bool workflowDeLiberacaoExcepcional)
+        {
+            var loginAtual = servicoUsuario.ObterLoginAtual();
+            var perfilAtual = servicoUsuario.ObterPerfilAtual();
+            var escola = await repositorioAbrangencia.ObterUe(evento.UeId, loginAtual, perfilAtual);
+
+            if (escola == null)
+                throw new NegocioException($"Não foi possível localizar a escola da criação do evento.");
+
+            var linkParaEvento = $"{configuration["UrlFrontEnd"]}calendario-escolar/eventos/editar/:{evento.Id}/";
+
+            long idWorkflow = 0;
+
+            if (workflowDeLiberacaoExcepcional)
+                idWorkflow = CriarWorkflowParaEventoExcepcionais(evento, escola, linkParaEvento);
+            else if (evento.DataInicio.Date < DateTime.Today)
+                idWorkflow = CriarWorkflowParaDataPassada(evento, escola, linkParaEvento);
+
+            evento.EnviarParaWorkflowDeAprovacao(idWorkflow);
+
+            repositorioEvento.Salvar(evento);
+        }
+
         private async Task SalvarListaEventos(IEnumerable<Evento> eventos, List<long> feriadosErro)
         {
             foreach (var evento in eventos)
@@ -172,7 +413,7 @@ namespace SME.SGP.Dominio.Servicos
                 {
                     await repositorioEvento.SalvarAsync(evento);
                 }
-                catch (Exception ex)
+                catch (Exception)
                 {
                     feriadosErro.Add(evento.FeriadoId.Value);
                 }
@@ -189,18 +430,78 @@ namespace SME.SGP.Dominio.Servicos
             throw new NegocioException(mensagemErro);
         }
 
-        private async Task VerificaParticularidadesSME(Evento evento, Usuario usuario, IEnumerable<PeriodoEscolar> periodos, bool dataConfirmada)
+        private async Task<bool> ValidaDatasETiposDeEventos(Evento evento, bool dataConfirmada, Usuario usuario, IEnumerable<PeriodoEscolar> periodos)
         {
-            usuario.PodeCriarEventoComDataPassada(evento);
-            evento.PodeCriarEventoOrganizacaoEscolar(usuario);
-            await VerificaSeEventoAconteceJuntoComOrganizacaoEscolar(evento, usuario);
+            var devePassarPorWorkflow = false;
 
-            evento.PodeCriarEventoLiberacaoExcepcional(evento, usuario, dataConfirmada, periodos);
+            if (evento.TipoEvento.Codigo == (int)TipoEvento.LiberacaoExcepcional)
+            {
+                evento.PodeCriarEventoLiberacaoExcepcional(usuario, dataConfirmada, periodos);
+            }
+            else
+            {
+                var temEventoLiberacaoExcepcional = await repositorioEvento.TemEventoNosDiasETipo(evento.DataInicio.Date, evento.DataFim.Date, TipoEvento.LiberacaoExcepcional, evento.TipoCalendarioId, evento.UeId, evento.DreId);
+
+                if (evento.TipoEvento.Codigo == (long)TipoEvento.Recesso || evento.TipoEvento.Codigo == (long)TipoEvento.ReposicaoNoRecesso)
+                {
+                    return devePassarPorWorkflow;
+                }
+                else
+                {
+                    if (await repositorioEvento.TemEventoNosDiasETipo(evento.DataInicio.Date, evento.DataFim.Date, TipoEvento.Recesso, evento.TipoCalendarioId, string.Empty, string.Empty))
+                    {
+                        if (evento.TipoEvento.LocalOcorrencia == EventoLocalOcorrencia.UE)
+                        {
+                            if (temEventoLiberacaoExcepcional)
+                                return true;
+
+                            if (evento.TipoEvento.Codigo == (long)TipoEvento.ReposicaoDoDia || evento.TipoEvento.Codigo == (long)TipoEvento.ReposicaoDeAula)
+                            {
+                                return devePassarPorWorkflow;
+                            }
+                            else
+                                throw new NegocioException("Não é possível cadastrar o evento.");
+                        }
+                        else return devePassarPorWorkflow;
+                    }
+                    else
+                    {
+                        var estaNoPeriodoEscolar = periodos.Any(c => c.PeriodoInicio.Date <= evento.DataInicio.Date && c.PeriodoFim.Date >= evento.DataFim.Date);
+
+                        if (estaNoPeriodoEscolar)
+                        {
+                            var temEventoSuspensaoAtividades = await repositorioEvento.TemEventoNosDiasETipo(evento.DataInicio.Date, evento.DataFim.Date, TipoEvento.SuspensaoAtividades, evento.TipoCalendarioId, string.Empty, string.Empty);
+                            var temEventoFeriado = await repositorioEvento.TemEventoNosDiasETipo(evento.DataInicio.Date, evento.DataFim.Date, TipoEvento.Feriado, evento.TipoCalendarioId, string.Empty, string.Empty);
+                            if (temEventoFeriado || temEventoSuspensaoAtividades || evento.DataInicio.DayOfWeek == DayOfWeek.Saturday || evento.DataInicio.DayOfWeek == DayOfWeek.Sunday || evento.DataFim.DayOfWeek == DayOfWeek.Saturday || evento.DataFim.DayOfWeek == DayOfWeek.Sunday)
+                            {
+                                if (temEventoLiberacaoExcepcional)
+                                    return true;
+                                else throw new NegocioException("Não é possível cadastrar o evento.");
+                            }
+                        }
+                        else
+                        {
+                            if (evento.TipoEvento.Codigo == (long)TipoEvento.OrganizacaoEscolar || evento.TipoEvento.Codigo == (long)TipoEvento.RecreioNasFerias)
+                            {
+                                return devePassarPorWorkflow;
+                            }
+                            else
+                            {
+                                if (temEventoLiberacaoExcepcional)
+                                    return true;
+                                else throw new NegocioException("Não é possível cadastrar o evento.");
+                            }
+                        }
+                    }
+                }
+            }
+
+            return devePassarPorWorkflow;
         }
 
         private async Task VerificaSeEventoAconteceJuntoComOrganizacaoEscolar(Evento evento, Usuario usuario)
         {
-            var eventos = await repositorioEvento.ObterEventosPorTipoETipoCalendario((long)TipoEventoEnum.OrganizacaoEscolar, evento.TipoCalendarioId);
+            var eventos = await repositorioEvento.ObterEventosPorTipoETipoCalendario((long)TipoEvento.OrganizacaoEscolar, evento.TipoCalendarioId);
             evento.VerificaSeEventoAconteceJuntoComOrganizacaoEscolar(eventos, usuario);
         }
     }

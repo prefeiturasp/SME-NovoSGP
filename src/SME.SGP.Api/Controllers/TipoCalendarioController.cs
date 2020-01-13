@@ -24,6 +24,16 @@ namespace SME.SGP.Api.Controllers
             this.comandos = comandos ?? throw new System.ArgumentNullException(nameof(comandos));
         }
 
+        [HttpPut("{id}")]
+        [ProducesResponseType(200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [Permissao(Permissao.TCE_A, Policy = "Bearer")]
+        public async Task<IActionResult> Alterar([FromBody]TipoCalendarioDto dto, long id)
+        {
+            await comandos.Alterar(dto, id);
+            return Ok();
+        }
+
         [HttpGet]
         [ProducesResponseType(typeof(IEnumerable<TipoCalendarioDto>), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
@@ -37,10 +47,20 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(TipoCalendarioCompletoDto), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [Route("{id}")]
-        [Permissao(Permissao.TCE_C, Policy = "Bearer")]
+        [Permissao(Permissao.TCE_C, Permissao.E_C, Policy = "Bearer")]
         public IActionResult BuscarUm(long id)
         {
             return Ok(consultas.BuscarPorId(id));
+        }
+
+        [HttpPost]
+        [ProducesResponseType(200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [Permissao(Permissao.TCE_I, Policy = "Bearer")]
+        public async Task<IActionResult> Incluir([FromBody]TipoCalendarioDto dto)
+        {
+            await comandos.Incluir(dto);
+            return Ok();
         }
 
         [HttpDelete]
@@ -50,16 +70,6 @@ namespace SME.SGP.Api.Controllers
         public IActionResult MarcarExcluidos([FromBody]long[] ids)
         {
             comandos.MarcarExcluidos(ids);
-            return Ok();
-        }
-
-        [HttpPost]
-        [ProducesResponseType(200)]
-        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        [Permissao(Permissao.TCE_I, Permissao.TCE_A, Policy = "Bearer")]
-        public async Task<IActionResult> Salvar([FromBody]TipoCalendarioDto dto)
-        {
-            await comandos.Salvar(dto);
             return Ok();
         }
     }

@@ -1,4 +1,4 @@
-﻿using SME.SGP.Dominio.Entidades;
+﻿using System;
 using System.Collections.Generic;
 
 namespace SME.SGP.Dominio.Interfaces
@@ -6,5 +6,9 @@ namespace SME.SGP.Dominio.Interfaces
     public interface IRepositorioPeriodoEscolar : IRepositorioBase<PeriodoEscolar>
     {
         IEnumerable<PeriodoEscolar> ObterPorTipoCalendario(long tipoCalendarioId);
+
+        PeriodoEscolar ObterPorTipoCalendarioData(long tipoCalendarioId, DateTime data);
+
+        PeriodoEscolar ObterPorTipoCalendarioData(long tipoCalendarioId, DateTime dataInicio, DateTime dataFim);
     }
 }

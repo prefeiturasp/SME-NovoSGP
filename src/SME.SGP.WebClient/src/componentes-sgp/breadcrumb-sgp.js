@@ -8,24 +8,23 @@ import styled from 'styled-components';
 import { rotaAtiva } from '../redux/modulos/navegacao/actions';
 import modalidade from '~/dtos/modalidade';
 
+const BreadcrumbBody = styled.div`
+  padding: 10px 0 5px 15px !important;
+  font-size: 12px;
+  a,
+  a:hover {
+    color: ${Base.Roxo};
+  }
+  a:hover {
+    text-decoration: underline;
+  }
+  .icone-seta {
+    margin-right: 10px;
+    margin-left: 10px;
+    color: ${Base.Roxo};
+  }
+`;
 const BreadcrumbSgp = () => {
-  const BreadcrumbBody = styled.div`
-    padding: 10px 0 5px 15px !important;
-    font-size: 12px;
-    a, a:hover {
-      color: ${Base.AzulBreadcrumb};
-    }
-
-    a:hover{
-      text-decoration: underline;
-    }
-
-    .icone-seta {
-      margin-right: 10px;
-      margin-left: 10px;
-    }
-  `;
-
   const NavegacaoStore = useSelector(store => store.navegacao);
 
   const UsuarioStrore = useSelector(store => store.usuario);
@@ -47,28 +46,33 @@ const BreadcrumbSgp = () => {
       UsuarioStrore.turmaSelecionada.length &&
       UsuarioStrore.turmaSelecionada[0].codModalidade == modalidade.EJA
     ) {
-      rotas.get('/planejamento/plano-ciclo').breadcrumbName = "Plano de Etapa";
-      rotas.get('/planejamento/plano-anual').breadcrumbName = "Plano Semestral";
+      rotas.get('/planejamento/plano-ciclo').breadcrumbName = 'Plano de Etapa';
+      rotas.get('/planejamento/plano-anual').breadcrumbName = 'Plano Semestral';
     } else {
-      rotas.get('/planejamento/plano-ciclo').breadcrumbName = "Plano de Ciclo";
-      rotas.get('/planejamento/plano-anual').breadcrumbName = "Plano Anual";
+      rotas.get('/planejamento/plano-ciclo').breadcrumbName = 'Plano de Ciclo';
+      rotas.get('/planejamento/plano-anual').breadcrumbName = 'Plano Anual';
     }
-  }
+  };
 
   useEffect(() => {
     carregaBreadcrumbs();
   }, [NavegacaoStore.rotaAtiva]);
 
-  useEffect(() => { carregaBreadcrumbs(); }, [UsuarioStrore.turmaSelecionada]);
+  useEffect(() => {
+    carregaBreadcrumbs();
+  }, [UsuarioStrore.turmaSelecionada]);
 
-  useEffect(window.onbeforeunload = () => {
-    depoisDeCarregar()
-  }, []);
+  useEffect(
+    (window.onbeforeunload = () => {
+      depoisDeCarregar();
+    }),
+    []
+  );
 
   const depoisDeCarregar = () => {
     localStorage.setItem('rota-atual', window.location.pathname);
     store.dispatch(rotaAtiva(window.location.pathname));
-  }
+  };
 
   const carregaBreadcrumbs = () => {
     verificaTrocaNomesBreadcrumb();
@@ -78,19 +82,26 @@ const BreadcrumbSgp = () => {
     } else if (rotaDinamica && itemRotaDinamica.path === rotaAtual) {
       setItensBreadcrumb(itemRotaDinamica);
     } else {
-      const itemHome = rotas.get("/");
+      const itemHome = rotas.get('/');
       setItensBreadcrumb(itemHome);
     }
   };
 
-  const setItensBreadcrumb = (item) => {
+  const setItensBreadcrumb = item => {
     const newItens = [];
     carregaBreadcrumbsExtra(item, newItens);
     newItens.push(
-      criarItemBreadcrumb(item.breadcrumbName, rotaAtual, true, true, item.icone, item.dicaIcone)
+      criarItemBreadcrumb(
+        item.breadcrumbName,
+        rotaAtual,
+        true,
+        true,
+        item.icone,
+        item.dicaIcone
+      )
     );
     setItens(newItens);
-  }
+  };
 
   const carregaBreadcrumbsExtra = (item, newItens) => {
     const itemParent = rotas.get(item.parent);
@@ -114,9 +125,16 @@ const BreadcrumbSgp = () => {
     if (item.menu && item.menu.length) {
       item.menu.forEach((menu, i) => {
         newItens.push(
-          criarItemBreadcrumb(menu, item.path + '-menu' + i, true, false, item.icone, item.dicaIcone)
+          criarItemBreadcrumb(
+            menu,
+            item.path + '-menu' + i,
+            true,
+            false,
+            item.icone,
+            item.dicaIcone
+          )
         );
-      })
+      });
     }
   };
 
@@ -131,30 +149,46 @@ const BreadcrumbSgp = () => {
     return { breadcrumbName, path, ehEstatico, ehRotaAtual, icone, dicaIcone };
   };
 
-  const ocultarBreadcrumb = () =>{
-   const path = itens[0].path;
-   if(itens.length === 1){
-     return  path === '/' || (itemRotaAtual && itemRotaAtual.path !== path)
-     || (itemRotaDinamica && itemRotaDinamica.path !== path);
-   }
-   return false;
-  }
+  const ocultarBreadcrumb = () => {
+    const path = itens[0].path;
+    if (itens.length === 1) {
+      return (
+        path === '/' ||
+        (itemRotaAtual && itemRotaAtual.path !== path) ||
+        (itemRotaDinamica && itemRotaDinamica.path !== path)
+      );
+    }
+    return false;
+  };
 
   return (
     <BreadcrumbBody>
-
       {itens.map(item => {
         return (
-          <Breadcrumb.Item key={item.path} separator="" hidden={ocultarBreadcrumb()}>
+          <Breadcrumb.Item
+            key={item.path}
+            separator=""
+            hidden={ocultarBreadcrumb()}
+          >
             <Link hidden={item.ehEstatico} to={item.path}>
-              <i className={item.icone} title={item.breadcrumbName} title={item.dicaIcone}/>
+              <i
+                className={item.icone}
+                title={item.breadcrumbName}
+                title={item.dicaIcone}
+              />
               <span hidden={item.path === '/'}>{item.breadcrumbName}</span>
             </Link>
-            <i hidden={!item.ehEstatico} className={item.icone} title={item.dicaIcone} />
-            <span hidden={!item.ehEstatico || item.path === '/'}>{item.breadcrumbName}</span>
+            <i
+              hidden={!item.ehEstatico}
+              className={item.icone}
+              title={item.dicaIcone}
+            />
+            <span hidden={!item.ehEstatico || item.path === '/'}>
+              {item.breadcrumbName}
+            </span>
             <i
               hidden={item.ehRotaAtual}
-              style={{ color: Base.AzulBreadcrumb }}
+              style={{ color: Base.Roxo }}
               className="fas fa-chevron-circle-right icone-seta"
             />
           </Breadcrumb.Item>

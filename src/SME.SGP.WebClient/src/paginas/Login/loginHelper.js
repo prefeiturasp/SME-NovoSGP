@@ -25,19 +25,23 @@ class LoginHelper {
         usuario: login.usuario,
         modificarSenha: autenticacao.dados.modificarSenha,
         perfisUsuario: autenticacao.dados.perfisUsuario,
-        possuiPerfilSmeOuDre: autenticacao.dados.perfisUsuario.possuiPerfilSmeOuDre,
+        possuiPerfilSmeOuDre:
+          autenticacao.dados.perfisUsuario.possuiPerfilSmeOuDre,
         possuiPerfilDre: autenticacao.dados.perfisUsuario.possuiPerfilDre,
         possuiPerfilSme: autenticacao.dados.perfisUsuario.possuiPerfilSme,
+        ehProfessor: autenticacao.dados.perfisUsuario.ehProfessor,
+        ehProfessorCj: autenticacao.dados.perfisUsuario.ehProfessorCj,
+        ehProfessorPoa: autenticacao.dados.perfisUsuario.ehProfessorPoa,
+        dataHoraExpiracao: autenticacao.dados.dataHoraExpiracao,
       })
     );
-
-    obterMeusDados();
-    setMenusPermissoes();
 
     if (autenticacao.dados.modificarSenha) {
       history.push(URL_REDEFINIRSENHA);
       return { sucesso: false, erroGeral: '' };
     }
+    obterMeusDados();
+    setMenusPermissoes();
 
     if (this.redirect) history.push(atob(this.redirect));
     else history.push(URL_HOME);

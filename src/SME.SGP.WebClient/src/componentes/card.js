@@ -1,15 +1,21 @@
 import React from 'react';
+import styled from 'styled-components';
+
+const CardEstilo = styled.div`
+  padding: 16px !important;
+  border-radius: 0.25rem;
+`;
 
 const Card = props => {
   const { children, className, mtop, mx } = props;
 
   return (
-    <div
-      className={`row shadow py-3 px-2 ${mx ? mx : 'mx-2'} ${mtop ||
+    <CardEstilo
+      className={`row shadow ${!mx ? 'mx-2' : mx} ${mtop ||
         ''} bg-white ${className || ''}`}
     >
       {children}
-    </div>
+    </CardEstilo>
   );
 };
 

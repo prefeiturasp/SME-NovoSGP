@@ -32,9 +32,9 @@ export default function bimestres(state = INICIAL, action) {
         draft.disciplinasPlanoAnual.forEach(disciplina => {
           disciplina.selecionada = false;
         });
-
         draft.disciplinasPlanoAnual.find(
-          disciplina => disciplina.codigo == action.payload.codigo
+          disciplina =>
+            disciplina.codigo.toString() === action.payload.codigo.toString()
         ).selecionada = true;
         break;
       case '@bimestres/LimparDisciplinaPlanoAnual':
@@ -56,14 +56,6 @@ export default function bimestres(state = INICIAL, action) {
             ].setarObjetivo();
 
           draft.bimestres[elem.indice].paraEnviar = true;
-        });
-        draft.bimestresErro = state.bimestresErro;
-
-        break;
-      case '@bimestres/PrePostBimestre':
-        draft.bimestres = state.bimestres.map(bimestre => {
-          bimestre.paraEnviar = false;
-          return bimestre;
         });
         draft.bimestresErro = state.bimestresErro;
 
@@ -90,15 +82,20 @@ export default function bimestres(state = INICIAL, action) {
         ].selecionada = action.payload.selecionarMateria;
         draft.bimestresErro = state.bimestresErro;
 
-        if (state.bimestres[action.payload.indice])
+        const setarObjetivoFunc =
+          state.bimestres[action.payload.indice].setarObjetivo;
+
+        if (state.bimestres[action.payload.indice] && setarObjetivoFunc)
           draft.bimestres[action.payload.indice].objetivo = state.bimestres[
             action.payload.indice
           ].setarObjetivo();
 
         break;
       case '@bimestres/SalvarObjetivos':
-        draft.bimestres[action.payload.indice].objetivosAprendizagem =
-          action.payload.objetivos;
+        if (state.bimestres[action.payload.indice])
+          draft.bimestres[action.payload.indice].objetivosAprendizagem =
+            action.payload.objetivos;
+
         draft.bimestresErro = state.bimestresErro;
 
         break;
@@ -116,8 +113,12 @@ export default function bimestres(state = INICIAL, action) {
         break;
 
       case '@bimestres/SetarDescricaoFunction':
-        draft.bimestres[action.payload.indice].setarObjetivo =
-          action.payload.setarObjetivo;
+        const bimestre = state.bimestres[action.payload.indice];
+
+        if (bimestre && action.payload.setarObjetivo)
+          draft.bimestres[action.payload.indice].setarObjetivo =
+            action.payload.setarObjetivo;
+
         draft.bimestresErro = state.bimestresErro;
 
         break;

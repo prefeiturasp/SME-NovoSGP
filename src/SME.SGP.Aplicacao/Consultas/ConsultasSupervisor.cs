@@ -164,13 +164,14 @@ namespace SME.SGP.Aplicacao
             if (supervisoresEscolasDres.Any())
             {
                 var supervisores = servicoEOL.ObterSupervisoresPorCodigo(supervisoresEscolasDres.Select(a => a.SupervisorId).ToArray());
+
                 if (supervisores == null)
                     throw new System.Exception("Não foi possível localizar o nome dos supervisores na API Eol");
 
                 foreach (var supervisorEscolaDre in supervisoresEscolasDres.GroupBy(a => a.SupervisorId).Select(a => a.Key).ToList())
                 {
                     var supervisorEscolasDto = new SupervisorEscolasDto();
-                    supervisorEscolasDto.SupervisorNome = supervisores.FirstOrDefault(a => a.CodigoRF == supervisorEscolaDre).NomeServidor;
+                    supervisorEscolasDto.SupervisorNome = supervisores.FirstOrDefault(a => a.CodigoRF == supervisorEscolaDre)?.NomeServidor;
                     supervisorEscolasDto.SupervisorId = supervisorEscolaDre;
 
                     var idsEscolasDoSupervisor = supervisoresEscolasDres.Where(a => a.SupervisorId == supervisorEscolaDre)

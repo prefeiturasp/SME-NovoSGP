@@ -6,17 +6,32 @@ import usuario from './usuario/reducers';
 import notificacoes from './notificacoes/reducers';
 import perfil from './perfil/reducers';
 import calendarioEscolar from './calendarioEscolar/reducers';
+import calendarioProfessor from './calendarioProfessor/reducers';
 import bimestres from './planoAnual/reducers';
 import filtro from './filtro/reducers';
+import atribuicaoEsporadica from './atribuicaoEsporadica/reducers';
+import loader from './loader/reducer';
+import notasConceitos from './notasConceitos/reducer';
 
-export default combineReducers({
+const reducers = combineReducers({
   navegacao,
   alertas,
   usuario,
   perfil,
   calendarioEscolar,
   notificacoes,
-  perfil,
   bimestres,
   filtro,
+  calendarioProfessor,
+  atribuicaoEsporadica,
+  loader,
+  notasConceitos,
 });
+
+const rootReducer = (state, action) => {
+  if (action.type === '@sessao/limpar') state = undefined;
+
+  return reducers(state, action);
+};
+
+export default rootReducer;

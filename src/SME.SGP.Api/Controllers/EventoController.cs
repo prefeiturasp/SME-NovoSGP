@@ -2,7 +2,6 @@
 using Microsoft.AspNetCore.Mvc;
 using SME.SGP.Api.Filtros;
 using SME.SGP.Aplicacao;
-using SME.SGP.Aplicacao.Interfaces;
 using SME.SGP.Infra;
 using System.Collections.Generic;
 using System.Linq;
@@ -25,7 +24,7 @@ namespace SME.SGP.Api.Controllers
         }
 
         [HttpPost]
-        [ProducesResponseType(200)]
+        [ProducesResponseType(typeof(IEnumerable<RetornoCopiarEventoDto>), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [Permissao(Permissao.E_I, Policy = "Bearer")]
         public async Task<IActionResult> Criar([FromServices]IComandosEvento comandosEvento, [FromBody]EventoDto eventoDto)
@@ -86,9 +85,9 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [ProducesResponseType(typeof(RetornoBaseDto), 601)]
         [Permissao(Permissao.E_C, Policy = "Bearer")]
-        public IActionResult ObterPorId(long id, [FromServices] IConsultasEvento consultasEvento)
+        public async Task<IActionResult> ObterPorId(long id, [FromServices] IConsultasEvento consultasEvento)
         {
-            return Ok(consultasEvento.ObterPorId(id));
+            return Ok(await consultasEvento.ObterPorId(id));
         }
 
         [HttpGet("meses/{mes}/tipos")]
