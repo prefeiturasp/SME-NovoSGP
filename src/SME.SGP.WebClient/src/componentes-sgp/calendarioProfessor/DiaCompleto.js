@@ -156,7 +156,7 @@ const DiaCompleto = props => {
   }, [filtros]);
 
   const aoClicarEvento = (id, tipo) => {
-    if (permissaoTela && permissaoTela.podeAlterar) {
+    if (permissaoTela && permissaoTela.podeConsultar) {
       salvarDadosEventoAula();
       if (tipo === TiposEventoAulaDTO.Aula || tipo === TiposEventoAulaDTO.CJ) {
         history.push(`${RotasDTO.CADASTRO_DE_AULA}/editar/${id}`);
@@ -167,7 +167,7 @@ const DiaCompleto = props => {
   };
 
   const aoClicarEditarAvaliacao = id => {
-    if (permissaoTela && permissaoTela.podeAlterar) {
+    if (permissaoTela && permissaoTela.podeConsultar) {
       salvarDadosEventoAula();
       history.push(`${RotasDTO.CADASTRO_DE_AVALIACAO}/editar/${id}`);
     }
