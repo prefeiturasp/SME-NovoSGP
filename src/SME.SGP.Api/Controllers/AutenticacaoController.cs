@@ -164,5 +164,16 @@ namespace SME.SGP.Api.Controllers
         {
             return Ok(comandosUsuario.TokenRecuperacaoSenhaEstaValido(token));
         }
+
+        [HttpGet("abrangencia/executar")]
+        [ProducesResponseType(200)]
+        [AllowAnonymous]
+        public IActionResult Executar()
+        {
+            comandosUsuario.ExecutarWorkerAbrangencia();
+
+            return Ok();
+        }
+
     }
 }
