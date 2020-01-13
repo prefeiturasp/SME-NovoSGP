@@ -15,7 +15,11 @@ namespace SME.SGP.Dominio.Interfaces
 
         string ObterLoginAtual();
 
+        string ObterNomeLoginAtual();
+
         Guid ObterPerfilAtual();
+
+        Task<IEnumerable<PrioridadePerfil>> ObterPerfisUsuario(string login);
 
         IEnumerable<Permissao> ObterPermissoes();
 
@@ -23,8 +27,14 @@ namespace SME.SGP.Dominio.Interfaces
 
         Task<Usuario> ObterUsuarioLogado();
 
-        Usuario ObterUsuarioPorCodigoRfLoginOuAdiciona(string codigoRf, string login = "");
+        Usuario ObterUsuarioPorCodigoRfLoginOuAdiciona(string codigoRf, string login = "", string nome = "", string email = "");
 
         Task PodeModificarPerfil(Guid perfilParaModificar, string login);
+
+        void RemoverPerfisUsuarioAtual();
+
+        void RemoverPerfisUsuarioCache(string login);
+
+        bool UsuarioLogadoPossuiPerfilSme();
     }
 }

@@ -1,4 +1,6 @@
-﻿namespace SME.SGP.Infra
+﻿using System;
+
+namespace SME.SGP.Infra
 {
     public class UsuarioAutenticacaoRetornoDto
     {
@@ -11,6 +13,8 @@
         public bool Autenticado { get; set; }
         public bool ModificarSenha { get; set; }
         public PerfisPorPrioridadeDto PerfisUsuario { get; set; }
+        public DateTime DataHoraExpiracao { get; set; }
         public string Token { get; set; }
+        public Guid UsuarioId { get; set; }
     }
 }

@@ -3,8 +3,11 @@ using Microsoft.AspNetCore.Mvc;
 using SME.SGP.Api.Filtros;
 using SME.SGP.Aplicacao;
 using SME.SGP.Dominio;
+using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Api.Controllers
@@ -37,7 +40,7 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(200)]
         [ProducesResponseType(401)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        [ProducesResponseType(typeof(UsuarioAutenticacaoRetornoDto), 200)]
+        [ProducesResponseType(typeof(TrocaPerfilDto), 200)]
         [Route("perfis/{guid}")]
         [Authorize("Bearer")]
         public async Task<IActionResult> AtualizarPerfil(Guid guid)
@@ -45,9 +48,9 @@ namespace SME.SGP.Api.Controllers
             if (guid == Guid.Empty)
                 throw new NegocioException("Informe um perfil");
 
-            var retornoAutenticacao = await comandosUsuario.ModificarPerfil(guid);
+            var retorno = await comandosUsuario.ModificarPerfil(guid);
 
-            return Ok(retornoAutenticacao);
+            return Ok(retorno);
         }
 
         [HttpPost]
@@ -63,6 +66,19 @@ namespace SME.SGP.Api.Controllers
                 return StatusCode(401);
 
             return Ok(retornoAutenticacao);
+        }
+
+        [HttpGet("{login}/perfis/listar")]
+        [ProducesResponseType(200)]
+        [ProducesResponseType(typeof(IEnumerable<PrioridadePerfil>), 500)]
+        public async Task<IActionResult> ListarPerfisUsuario(string login, [FromServices]IServicoUsuario servicoUsuario)
+        {
+            var retorno = await servicoUsuario.ObterPerfisUsuario(login);
+
+            if (retorno == null || !retorno.Any())
+                return NoContent();
+
+            return Ok(retorno);
         }
 
         [HttpPost("primeiro-acesso")]
@@ -107,6 +123,19 @@ namespace SME.SGP.Api.Controllers
             if (retorno.DeveAtualizarEmail)
                 return StatusCode(601, retorno);
             else return Ok(retorno);
+        }
+
+        [HttpPost("revalidar")]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [ProducesResponseType(typeof(UsuarioReinicioSenhaDto), 200)]
+        public async Task<IActionResult> Revalidar()
+        {
+            var tokenRetorno = await comandosUsuario.RevalidarLogin();
+
+            if (tokenRetorno == null)
+                return StatusCode(401);
+
+            return Ok(tokenRetorno);
         }
 
         [HttpGet("sair")]

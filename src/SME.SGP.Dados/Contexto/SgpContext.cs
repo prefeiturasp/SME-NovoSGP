@@ -1,6 +1,7 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Configuration;
+﻿using Microsoft.Extensions.Configuration;
 using Npgsql;
+using SME.SGP.Infra;
+using SME.SGP.Infra.Interfaces;
 using System;
 using System.Data;
 
@@ -8,16 +9,25 @@ namespace SME.SGP.Dados.Contexto
 {
     public class SgpContext : ISgpContext
     {
-        private readonly IHttpContextAccessor httpContextAccessor;
+        private readonly NpgsqlConnection conexao;
+        private readonly IContextoAplicacao contextoAplicacao;
 
-        public SgpContext(IConfiguration configuration, IHttpContextAccessor httpContextAccessor)
+        public SgpContext(IConfiguration configuration, IContextoAplicacao contextoAplicacao)
         {
-            Conexao = new NpgsqlConnection(configuration.GetConnectionString("SGP-Postgres"));
-            Open();
-            this.httpContextAccessor = httpContextAccessor ?? throw new ArgumentNullException(nameof(httpContextAccessor));
+            conexao = new NpgsqlConnection(configuration.GetConnectionString("SGP-Postgres"));
+            this.contextoAplicacao = contextoAplicacao ?? throw new ArgumentNullException(nameof(contextoAplicacao));
         }
 
-        public NpgsqlConnection Conexao { get; }
+        public IDbConnection Conexao
+        {
+            get
+            {
+                if (conexao.State != ConnectionState.Open)
+                    Open();
+                return conexao;
+            }
+        }
+
         public string ConnectionString { get { return Conexao.ConnectionString; } set { Conexao.ConnectionString = value; } }
 
         public int ConnectionTimeout => Conexao.ConnectionTimeout;
@@ -27,13 +37,14 @@ namespace SME.SGP.Dados.Contexto
         public ConnectionState State => Conexao.State;
 
         public string UsuarioLogado =>
-                                       httpContextAccessor.HttpContext?.User?.Identity?.Name ?? "Sistema";
+                                       contextoAplicacao.UsuarioLogado;
 
         public string UsuarioLogadoNomeCompleto =>
-                                          httpContextAccessor.HttpContext?.User?.FindFirst("Nome")?.Value ?? "Sistema";
+                                          contextoAplicacao.NomeUsuario;
 
         public string UsuarioLogadoRF =>
-                                          httpContextAccessor.HttpContext?.User?.FindFirst("RF")?.Value ?? "0";
+                                          contextoAplicacao.ObterVarivel<string>("RF") ?? "0";
+
 
         public IDbTransaction BeginTransaction()
         {
@@ -64,8 +75,8 @@ namespace SME.SGP.Dados.Contexto
 
         public void Open()
         {
-            if (Conexao.State != ConnectionState.Open)
-                Conexao.Open();
+            if (conexao.State != ConnectionState.Open)
+                conexao.Open();
         }
     }
 }

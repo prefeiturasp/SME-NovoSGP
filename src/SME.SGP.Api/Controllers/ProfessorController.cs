@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using SME.SGP.Api.Filtros;
 using SME.SGP.Aplicacao;
+using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -21,6 +22,13 @@ namespace SME.SGP.Api.Controllers
             this.consultasProfessor = consultasProfessor;
         }
 
+        [HttpGet("eventos/matriculas")]
+        public async Task<IActionResult> EventosMatricula([FromServices] IServicoEventoMatricula eventos)
+        {
+            eventos.ExecutaCargaEventos();
+            return Ok();
+        }
+
         [HttpGet]
         [Route("{codigoRf}/turmas")]
         [ProducesResponseType(typeof(IEnumerable<ProfessorTurmaDto>), 200)]
@@ -30,12 +38,12 @@ namespace SME.SGP.Api.Controllers
             return Ok(consultasProfessor.Listar(codigoRf));
         }
 
-        [HttpGet("{codigoRF}/turmas/{codigoTurma}/disciplinas/")]
+        [HttpGet("turmas/{codigoTurma}/disciplinas/")]
         [ProducesResponseType(typeof(IEnumerable<DisciplinaDto>), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        public async Task<IActionResult> Get(long codigoTurma, string codigoRF, [FromServices]IConsultasDisciplina consultasDisciplina)
+        public async Task<IActionResult> Get(string codigoTurma, [FromQuery] bool turmaPrograma, [FromServices]IConsultasDisciplina consultasDisciplina)
         {
-            return Ok(await consultasDisciplina.ObterDisciplinasPorProfessorETurma(codigoTurma));
+            return Ok(await consultasDisciplina.ObterDisciplinasPorProfessorETurma(codigoTurma, turmaPrograma));
         }
 
         [HttpGet("{codigoRF}/escolas/{codigoEscola}/turmas/anos-letivos/{anoLetivo}")]
@@ -55,6 +63,52 @@ namespace SME.SGP.Api.Controllers
             filtroDisciplinaPlanejamentoDto.CodigoTurma = codigoTurma;
 
             return Ok(await consultasDisciplina.ObterDisciplinasParaPlanejamento(filtroDisciplinaPlanejamentoDto));
+        }
+
+        [HttpGet("{codigoRF}/resumo/{anoLetivo}/{incluirEmei}")]
+        [ProducesResponseType(typeof(ProfessorResumoDto), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        public async Task<IActionResult> Resumo(string codigoRF, int anoLetivo, bool incluirEmei)
+        {
+            var retorno = await consultasProfessor.ObterResumoPorRFAnoLetivo(codigoRF, anoLetivo, incluirEmei);
+
+            return Ok(retorno);
+        }
+
+        [HttpGet("{codigoRF}/resumo/{anoLetivo}")]
+        [ProducesResponseType(typeof(ProfessorResumoDto), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        public async Task<IActionResult> Resumo(string codigoRF, int anoLetivo)
+        {
+            var retorno = await consultasProfessor.ObterResumoPorRFAnoLetivo(codigoRF, anoLetivo);
+
+            return Ok(retorno);
+        }
+
+        [HttpGet("{anoLetivo}/autocomplete/{dreId}/{incluirEmei}")]
+        [ProducesResponseType(typeof(IEnumerable<ProfessorResumoDto>), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        public async Task<IActionResult> ResumoAutoComplete(int anoLetivo, string dreId, string nomeProfessor, bool incluirEmei)
+        {
+            var retorno = await consultasProfessor.ObterResumoAutoComplete(anoLetivo, dreId, nomeProfessor, incluirEmei);
+
+            if (retorno == null)
+                return NoContent();
+
+            return Ok(retorno);
+        }
+
+        [HttpGet("{anoLetivo}/autocomplete/{dreId}")]
+        [ProducesResponseType(typeof(IEnumerable<ProfessorResumoDto>), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        public async Task<IActionResult> ResumoAutoComplete(int anoLetivo, string dreId, string nomeProfessor)
+        {
+            var retorno = await consultasProfessor.ObterResumoAutoComplete(anoLetivo, dreId, nomeProfessor);
+
+            if (retorno == null)
+                return NoContent();
+
+            return Ok(retorno);
         }
     }
 }

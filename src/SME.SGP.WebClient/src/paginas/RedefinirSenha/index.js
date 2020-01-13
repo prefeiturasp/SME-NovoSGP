@@ -26,6 +26,14 @@ import ServicoPrimeiroAcesso from '~/servicos/Paginas/ServicoPrimeiroAcesso';
 import { salvarDadosLogin, Deslogar } from '~/redux/modulos/usuario/actions';
 import { store } from '~/redux';
 import Erro from '../RecuperarSenha/erro';
+import { setMenusPermissoes } from '~/servicos/servico-navegacao';
+import { obterMeusDados } from '~/servicos/Paginas/ServicoUsuario';
+
+const Item = styled.li`
+  ${props => props.status === true && `color: ${Base.Verde}`};
+  ${props => props.status === false && `color: ${Base.VermelhoNotificacao}`};
+  font-weight: normal;
+`;
 
 const RedefinirSenha = props => {
   const [senhas, setSenhas] = useState({
@@ -50,12 +58,6 @@ const RedefinirSenha = props => {
     iguais: '',
     espacoBranco: '',
   });
-
-  const Item = styled.li`
-    ${props => props.status === true && `color: ${Base.Verde}`};
-    ${props => props.status === false && `color: ${Base.VermelhoNotificacao}`};
-    font-weight: normal;
-  `;
 
   const montaIcone = status => {
     let estilo = 'd-none';
@@ -172,6 +174,9 @@ const RedefinirSenha = props => {
         confirmarSenha: senha,
       });
       if (requisicao.sucesso) {
+        obterMeusDados();
+        setMenusPermissoes();
+
         const rf = Number.isInteger(usuario * 1) ? usuario : '';
         store.dispatch(
           salvarDadosLogin({
@@ -186,6 +191,8 @@ const RedefinirSenha = props => {
               requisicao.resposta.data.perfisUsuario.possuiPerfilDre,
             possuiPerfilSme:
               requisicao.resposta.data.perfisUsuario.possuiPerfilSme,
+            ehProfessorCj: requisicao.resposta.data.perfisUsuario.ehProfessorCj,
+            dataHoraExpiracao: requisicao.resposta.data.dataHoraExpiracao,
           })
         );
         history.push(URL_HOME);

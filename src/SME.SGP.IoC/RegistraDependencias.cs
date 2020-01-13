@@ -1,4 +1,4 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using SME.SGP.Aplicacao;
 using SME.SGP.Aplicacao.Consultas;
@@ -11,6 +11,9 @@ using SME.SGP.Dados.Repositorios;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Dominio.Servicos;
+using SME.SGP.Infra;
+using SME.SGP.Infra.Contexto;
+using SME.SGP.Infra.Interfaces;
 
 namespace SME.SGP.IoC
 {
@@ -38,7 +41,19 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IComandosPeriodoEscolar, ComandosPeriodoEscolar>();
             services.TryAddScoped<IComandosEventoTipo, ComandosEventoTipo>();
             services.TryAddScoped<IComandosEvento, ComandosEvento>();
+            services.TryAddScoped<IComandosDiasLetivos, ComandosDiasLetivos>();
             services.TryAddScoped<IComandosAula, ComandosAula>();
+            services.TryAddScoped<IComandosGrade, ComandosGrade>();
+            services.TryAddScoped<IComandoFrequencia, ComandoFrequencia>();
+            services.TryAddScoped<IComandosAtribuicaoEsporadica, ComandosAtribuicaoEsporadica>();
+            services.TryAddScoped<IComandosAtividadeAvaliativa, ComandosAtividadeAvaliativa>();
+            services.TryAddScoped<IComandosTipoAvaliacao, ComandosTipoAavaliacao>();
+            services.TryAddScoped<IComandosPlanoAula, ComandosPlanoAula>();
+            services.TryAddScoped<IComandosAtribuicaoCJ, ComandosAtribuicaoCJ>();
+            services.TryAddScoped<IComandosEventoMatricula, ComandosEventoMatricula>();
+            services.TryAddScoped<IComandosNotasConceitos, ComandosNotasConceitos>();
+            services.TryAddScoped<IComandosAulaPrevista, ComandosAulaPrevista>();
+            services.TryAddScoped<IComandosRegistroPoa, ComandosRegistroPoa>();
         }
 
         private static void RegistrarConsultas(IServiceCollection services)
@@ -64,10 +79,26 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IConsultasEventoTipo, ConsultasEventoTipo>();
             services.TryAddScoped<IConsultasEvento, ConsultasEvento>();
             services.TryAddScoped<IConsultasAula, ConsultasAula>();
+            services.TryAddScoped<IConsultasEventosAulasCalendario, ConsultasEventosAulasCalendario>();
+            services.TryAddScoped<IConsultasGrade, ConsultasGrade>();
+            services.TryAddScoped<IConsultasFrequencia, ConsultasFrequencia>();
+            services.TryAddScoped<IConsultasPlanoAula, ConsultasPlanoAula>();
+            services.TryAddScoped<IConsultasObjetivoAprendizagemAula, ConsultasObjetivoAprendizagemAula>();
+            services.TryAddScoped<IConsultasAtribuicaoEsporadica, ConsultasAtribuicaoEsporadica>();
+            services.TryAddScoped<IConsultaAtividadeAvaliativa, ConsultaAtividadeAvaliativa>();
+            services.TryAddScoped<IConsultaTipoAvaliacao, ConsultaTipoAvaliacao>();
+            services.TryAddScoped<IConsultasAtribuicaoCJ, ConsultasAtribuicaoCJ>();
+            services.TryAddScoped<IConsultasUe, ConsultasUe>();
+            services.TryAddScoped<IConsultasEventoMatricula, ConsultasEventoMatricula>();
+            services.TryAddScoped<IConsultasAulaPrevista, ConsultasAulaPrevista>();
+            services.TryAddScoped<IConsultasNotasConceitos, ConsultasNotasConceitos>();
+            services.TryAddScoped<IConsultasAtribuicoes, ConsultasAtribuicoes>();
+            services.TryAddScoped<IConsultasRegistroPoa, ConsultasRegistroPoa>();
         }
 
         private static void RegistrarContextos(IServiceCollection services)
         {
+            services.TryAddScoped<IContextoAplicacao, ContextoHttp>();
             services.TryAddScoped<ISgpContext, SgpContext>();
             services.TryAddScoped<IUnitOfWork, UnitOfWork>();
         }
@@ -99,7 +130,35 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IRepositorioPeriodoEscolar, RepositorioPeriodoEscolar>();
             services.TryAddScoped<IRepositorioEvento, RepositorioEvento>();
             services.TryAddScoped<IRepositorioEventoTipo, RepositorioEventoTipo>();
+            services.TryAddScoped<IRepositorioParametrosSistema, RepositorioParametrosSistema>();
             services.TryAddScoped<IRepositorioAula, RepositorioAula>();
+            services.TryAddScoped<IRepositorioGrade, RepositorioGrade>();
+            services.TryAddScoped<IRepositorioGradeFiltro, RepositorioGradeFiltro>();
+            services.TryAddScoped<IRepositorioGradeDisciplina, RepositorioGradeDisciplina>();
+            services.TryAddScoped<IRepositorioFrequencia, RepositorioFrequencia>();
+            services.TryAddScoped<IRepositorioRegistroAusenciaAluno, RepositorioRegistroAusenciaAluno>();
+            services.TryAddScoped<IRepositorioAtribuicaoEsporadica, RepositorioAtribuicaoEsporadica>();
+            services.TryAddScoped<IRepositorioFrequenciaAlunoDisciplinaPeriodo, RepositorioFrequenciaAlunoDisciplinaPeriodo>();
+            services.TryAddScoped<IRepositorioAtividadeAvaliativa, RepositorioAtividadeAvaliativa>();
+            services.TryAddScoped<IRepositorioTipoAvaliacao, RepositorioTipoAvaliacao>();
+            services.TryAddScoped<IRepositorioPlanoAula, RepositorioPlanoAula>();
+            services.TryAddScoped<IRepositorioObjetivoAprendizagemAula, RepositorioObjetivoAprendizagemAula>();
+            services.TryAddScoped<IRepositorioAtribuicaoCJ, RepositorioAtribuicaoCJ>();
+            services.TryAddScoped<IRepositorioDre, RepositorioDre>();
+            services.TryAddScoped<IRepositorioUe, RepositorioUe>();
+            services.TryAddScoped<IRepositorioTurma, RepositorioTurma>();
+            services.TryAddScoped<IRepositorioAtividadeAvaliativaRegencia, RepositorioAtividadeAvaliativaRegencia>();
+            services.TryAddScoped<IRepositorioNotasConceitos, RepositorioNotasConceitos>();
+            services.TryAddScoped<IRepositorioAtividadeAvaliativa, RepositorioAtividadeAvaliativa>();
+            services.TryAddScoped<IRepositorioConceito, RepositorioConceito>();
+            services.TryAddScoped<IRepositorioNotaParametro, RepositorioNotaParametro>();
+            services.TryAddScoped<IRepositorioNotaTipoValor, RepositorioNotaTipoValor>();
+            services.TryAddScoped<IRepositorioNotificacaoFrequencia, RepositorioNotificacaoFrequencia>();
+            services.TryAddScoped<IRepositorioEventoMatricula, RepositorioEventoMatricula>();
+            services.TryAddScoped<IRepositorioAulaPrevista, RepositorioAulaPrevista>();
+            services.TryAddScoped<IRepositorioNotificacaoAulaPrevista, RepositorioNotificacaoAulaPrevista>();
+            services.TryAddScoped<IRepositorioAulaPrevistaBimestre, RepositorioAulaPrevistaBimestre>();
+            services.TryAddScoped<IRepositorioRegistroPoa, RepositorioRegistroPoa>();
         }
 
         private static void RegistrarServicos(IServiceCollection services)
@@ -116,6 +175,18 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IServicoFeriadoCalendario, ServicoFeriadoCalendario>();
             services.TryAddScoped<IServicoAbrangencia, ServicoAbrangencia>();
             services.TryAddScoped<IServicoEvento, ServicoEvento>();
+            services.TryAddScoped<IServicoDiaLetivo, ServicoDiaLetivo>();
+            services.TryAddScoped<IServicoLog, ServicoLog>();
+            services.TryAddScoped<IServicoFrequencia, ServicoFrequencia>();
+            services.TryAddScoped<IServicoAula, ServicoAula>();
+            services.TryAddScoped<IServicoAtribuicaoEsporadica, ServicoAtribuicaoEsporadica>();
+            services.TryAddScoped<IServicoCalculoFrequencia, ServicoCalculoFrequencia>();
+            services.TryAddScoped<IServicoDeNotasConceitos, ServicoDeNotasConceitos>();
+            services.TryAddScoped<IServicoNotificacaoFrequencia, ServicoNotificacaoFrequencia>();
+            services.TryAddScoped<IServicoNotificacaoAulaPrevista, ServicoNotificacaoAulaPrevista>();
+            services.TryAddScoped<IServicoAtribuicaoCJ, ServicoAtribuicaoCJ>();
+            services.TryAddScoped<IServicoEventoMatricula, ServicoEventoMatricula>();
+            services.TryAddScoped<IServicoAluno, ServicoAluno>();
         }
     }
 }

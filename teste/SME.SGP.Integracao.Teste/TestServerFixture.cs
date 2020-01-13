@@ -2,10 +2,12 @@
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.PlatformAbstractions;
+using Moq;
 using Npgsql;
 using Postgres2Go;
 using SME.SGP.Api;
 using SME.SGP.Aplicacao.Servicos;
+using SME.SGP.Dados.Repositorios;
 using SME.SGP.Infra;
 using System;
 using System.IO;
@@ -47,7 +49,9 @@ namespace SME.SGP.Integracao.Teste
                     .AddJsonFile(ObterArquivoConfiguracao(), optional: false)
                     .Build();
 
-                servicoTokenJwt = new ServicoTokenJwt(config);
+                //TODO: INJETAR UM REPOSITORIO DE CACHE E HTTPCONTEXT
+                var repositorioCache = new Mock<RepositorioCache>();
+                servicoTokenJwt = new ServicoTokenJwt(config, null, repositorioCache.Object);
             }
             catch (Exception ex)
             {
@@ -66,12 +70,14 @@ namespace SME.SGP.Integracao.Teste
             runner.Dispose();
         }
 
-        public string GerarToken(Permissao[] permissoes, string login = "teste", string codigoRf = "123", string guidPerfil = "")
+        public string GerarToken(Permissao[] permissoes, string login = "teste", string nomeLogin = "teste", string codigoRf = "123", string guidPerfil = "")
         {
             if (string.IsNullOrEmpty(guidPerfil))
                 guidPerfil = Guid.NewGuid().ToString();
 
-            return servicoTokenJwt.GerarToken(login, codigoRf, Guid.Parse(guidPerfil), permissoes);
+            string token = servicoTokenJwt.GerarToken(login, nomeLogin, codigoRf, Guid.Parse(guidPerfil), permissoes);
+
+            return token;
         }
 
         public string ObterArquivoConfiguracao()

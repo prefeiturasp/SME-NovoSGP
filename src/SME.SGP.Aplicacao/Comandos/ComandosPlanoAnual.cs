@@ -1,4 +1,5 @@
-﻿using SME.SGP.Dominio;
+﻿using SME.SGP.Aplicacao.Integracoes;
+using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System;
@@ -15,6 +16,8 @@ namespace SME.SGP.Aplicacao
         private readonly IRepositorioComponenteCurricular repositorioComponenteCurricular;
         private readonly IRepositorioObjetivoAprendizagemPlano repositorioObjetivoAprendizagemPlano;
         private readonly IRepositorioPlanoAnual repositorioPlanoAnual;
+        private readonly IServicoEOL servicoEOL;
+        private readonly IServicoUsuario servicoUsuario;
         private readonly IUnitOfWork unitOfWork;
 
         public ComandosPlanoAnual(IRepositorioPlanoAnual repositorioPlanoAnual,
@@ -22,7 +25,9 @@ namespace SME.SGP.Aplicacao
                                   IRepositorioComponenteCurricular repositorioComponenteCurricular,
                                   IConsultasObjetivoAprendizagem consultasObjetivoAprendizagem,
                                   IConsultasProfessor consultasProfessor,
-                                  IUnitOfWork unitOfWork)
+                                  IUnitOfWork unitOfWork,
+                                  IServicoUsuario servicoUsuario,
+                                  IServicoEOL servicoEOL)
         {
             this.repositorioPlanoAnual = repositorioPlanoAnual ?? throw new ArgumentNullException(nameof(repositorioPlanoAnual));
             this.repositorioObjetivoAprendizagemPlano = repositorioObjetivoAprendizagemPlano ?? throw new ArgumentNullException(nameof(repositorioObjetivoAprendizagemPlano));
@@ -30,61 +35,65 @@ namespace SME.SGP.Aplicacao
             this.consultasObjetivoAprendizagem = consultasObjetivoAprendizagem ?? throw new ArgumentNullException(nameof(consultasObjetivoAprendizagem));
             this.consultasProfessor = consultasProfessor ?? throw new ArgumentNullException(nameof(consultasProfessor));
             this.unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
+            this.servicoUsuario = servicoUsuario ?? throw new ArgumentNullException(nameof(servicoUsuario));
+            this.servicoEOL = servicoEOL ?? throw new ArgumentNullException(nameof(servicoEOL));
         }
 
         public async Task Migrar(MigrarPlanoAnualDto migrarPlanoAnualDto)
         {
             var planoAnualDto = migrarPlanoAnualDto.PlanoAnual;
+            var usuarioAtual = servicoUsuario.ObterUsuarioLogado().Result;
 
-            using (var transacao = unitOfWork.IniciarTransacao())
+            unitOfWork.IniciarTransacao();
+
+            foreach (var bimestrePlanoAnual in planoAnualDto.Bimestres)
             {
-                foreach (var bimestrePlanoAnual in planoAnualDto.Bimestres)
+                var planoAnualOrigem = ObterPlanoAnualSimplificado(planoAnualDto, bimestrePlanoAnual.Bimestre.Value);
+
+                if (planoAnualOrigem == null)
+                    throw new NegocioException("Plano anual de origem não encontrado");
+
+                await ValidaTurmasProfessor(migrarPlanoAnualDto, planoAnualDto);
+
+                foreach (var turmaId in migrarPlanoAnualDto.IdsTurmasDestino)
                 {
-                    var planoAnualOrigem = ObterPlanoAnualSimplificado(planoAnualDto, bimestrePlanoAnual.Bimestre.Value);
+                    var planoCopia = new PlanoAnualDto(
+                        planoAnualDto.AnoLetivo,
+                        planoAnualDto.Bimestres,
+                        planoAnualDto.EscolaId,
+                        planoAnualDto.Id,
+                        planoAnualDto.TurmaId,
+                        planoAnualDto.ComponenteCurricularEolId);
 
-                    if (planoAnualOrigem == null)
-                        throw new NegocioException("Plano anual de origem não encontrado");
+                    planoCopia.TurmaId = turmaId;
 
-                    await ValidaTurmasProfessor(migrarPlanoAnualDto, planoAnualDto);
+                    var planoAnual = ObterPlanoAnualSimplificado(planoCopia, bimestrePlanoAnual.Bimestre.Value);
 
-                    foreach (var turmaId in migrarPlanoAnualDto.IdsTurmasDestino)
-                    {
-                        var planoCopia = new PlanoAnualDto(
-                            planoAnualDto.AnoLetivo,
-                            planoAnualDto.Bimestres,
-                            planoAnualDto.EscolaId,
-                            planoAnualDto.Id,
-                            planoAnualDto.TurmaId,
-                            planoAnualDto.ComponenteCurricularEolId);
+                    if (planoAnual == null)
+                        planoAnual = MapearParaDominio(planoCopia, planoAnual, bimestrePlanoAnual);
 
-                        planoCopia.TurmaId = turmaId;
+                    planoAnual.Descricao = planoAnualOrigem.Descricao;
+                    Salvar(planoCopia, planoAnual, bimestrePlanoAnual, usuarioAtual);
 
-                        var planoAnual = ObterPlanoAnualSimplificado(planoCopia, bimestrePlanoAnual.Bimestre.Value);
-
-                        if (planoAnual == null)
-                            planoAnual = MapearParaDominio(planoCopia, planoAnual, bimestrePlanoAnual);
-
-                        planoAnual.Descricao = planoAnualOrigem.Descricao;
-                        Salvar(planoCopia, planoAnual, bimestrePlanoAnual);
-                    }
+                    unitOfWork.PersistirTransacao();
                 }
-
-                unitOfWork.PersistirTransacao();
             }
         }
 
         public void Salvar(PlanoAnualDto planoAnualDto)
         {
-            using (var transacao = unitOfWork.IniciarTransacao())
+            unitOfWork.IniciarTransacao();
+
+            var usuarioAtual = servicoUsuario.ObterUsuarioLogado().Result;
+
+            foreach (var bimestrePlanoAnual in planoAnualDto.Bimestres)
             {
-                foreach (var bimestrePlanoAnual in planoAnualDto.Bimestres)
-                {
-                    PlanoAnual planoAnual = ObterPlanoAnualSimplificado(planoAnualDto, bimestrePlanoAnual.Bimestre.Value);
-                    planoAnual = MapearParaDominio(planoAnualDto, planoAnual, bimestrePlanoAnual);
-                    Salvar(planoAnualDto, planoAnual, bimestrePlanoAnual);
-                }
-                unitOfWork.PersistirTransacao();
+                PlanoAnual planoAnual = ObterPlanoAnualSimplificado(planoAnualDto, bimestrePlanoAnual.Bimestre.Value);
+                planoAnual = MapearParaDominio(planoAnualDto, planoAnual, bimestrePlanoAnual);
+                Salvar(planoAnualDto, planoAnual, bimestrePlanoAnual, usuarioAtual);
             }
+
+            unitOfWork.PersistirTransacao();
         }
 
         private static void ValidarObjetivoPertenceAoComponenteCurricular(IEnumerable<ObjetivoAprendizagemDto> objetivosAprendizagem,
@@ -187,8 +196,14 @@ namespace SME.SGP.Aplicacao
             }
         }
 
-        private void Salvar(PlanoAnualDto planoAnualDto, PlanoAnual planoAnual, BimestrePlanoAnualDto bimestrePlanoAnualDto)
+        private void Salvar(PlanoAnualDto planoAnualDto, PlanoAnual planoAnual, BimestrePlanoAnualDto bimestrePlanoAnualDto, Usuario usuario)
         {
+            if (usuario.PerfilAtual == Perfis.PERFIL_PROFESSOR)
+            {
+                if (!servicoEOL.ProfessorPodePersistirTurma(usuario.CodigoRf, planoAnualDto.TurmaId.ToString(), DateTime.Now))
+                    throw new NegocioException("Você não pode fazer alterações ou inclusões nesta turma e data.");
+            }
+
             planoAnualDto.Id = repositorioPlanoAnual.Salvar(planoAnual);
             if (!planoAnual.Migrado)
                 AjustarObjetivosAprendizagem(planoAnualDto, bimestrePlanoAnualDto);

@@ -1,5 +1,4 @@
 ﻿using Moq;
-using SME.SGP.Aplicacao.Interfaces;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Entidades;
 using SME.SGP.Dominio.Interfaces;
@@ -13,27 +12,38 @@ namespace SME.SGP.Aplicacao.Teste.Comandos
     public class ComandosEventoTipoTeste
     {
         private readonly Mock<IRepositorioEventoTipo> repositorioEventoTipo;
+        private readonly Mock<IRepositorioEvento> repositorioEvento;
         private readonly Mock<IUnitOfWork> unitOfWork;
         private IComandosEventoTipo comandosEventoTipo;
 
         public ComandosEventoTipoTeste()
         {
             repositorioEventoTipo = new Mock<IRepositorioEventoTipo>();
+            repositorioEvento = new Mock<IRepositorioEvento>();
             unitOfWork = new Mock<IUnitOfWork>();
-            comandosEventoTipo = new ComandosEventoTipo(repositorioEventoTipo.Object, unitOfWork.Object);
+            comandosEventoTipo = new ComandosEventoTipo(repositorioEventoTipo.Object, unitOfWork.Object, repositorioEvento.Object);
         }
 
         [Fact(DisplayName = "Deve_Disparar_Excecao_Ao_Instanciar_Sem_Dependencia")]
         public void Deve_Disparar_Excecao_Ao_Instanciar_Sem_Dependencia()
         {
-            Assert.Throws<ArgumentNullException>(() => comandosEventoTipo = new ComandosEventoTipo(null, unitOfWork.Object));
-            Assert.Throws<ArgumentNullException>(() => comandosEventoTipo = new ComandosEventoTipo(repositorioEventoTipo.Object, null));
+            Assert.Throws<ArgumentNullException>(() => comandosEventoTipo = new ComandosEventoTipo(null, unitOfWork.Object, repositorioEvento.Object));
+            Assert.Throws<ArgumentNullException>(() => comandosEventoTipo = new ComandosEventoTipo(repositorioEventoTipo.Object, null, repositorioEvento.Object));
         }
 
         [Fact(DisplayName = "Deve_Disparer_Excecao_Ao_Remover_Evento_Inexistente")]
         public void Deve_Disparer_Excecao_Ao_Remover_Evento_Inexistente()
         {
             repositorioEventoTipo.Setup(x => x.ObterPorId(It.IsAny<long>())).Returns<EventoTipo>(null);
+
+            Assert.Throws<NegocioException>(() => comandosEventoTipo.Remover(new List<long> { 1, 2, 3 }));
+        }
+
+        [Fact(DisplayName = "Deve_Disparer_Excecao_Ao_Remover_Evento_Tipo_Com_Eventos")]
+        public void Deve_Disparer_Excecao_Ao_Remover_Evento_Tipo_Com_Eventos()
+        {
+            repositorioEventoTipo.Setup(x => x.Salvar(It.IsAny<EventoTipo>())).Returns(1);
+            repositorioEvento.Setup(x => x.ExisteEventoPorEventoTipoId(It.IsAny<long>())).Returns(true);
 
             Assert.Throws<NegocioException>(() => comandosEventoTipo.Remover(new List<long> { 1, 2, 3 }));
         }

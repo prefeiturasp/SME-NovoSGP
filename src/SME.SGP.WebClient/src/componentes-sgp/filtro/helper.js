@@ -1,26 +1,14 @@
 import ServicoFiltro from '~/servicos/Componentes/ServicoFiltro';
+import tipoEscolaDTO from '~/dtos/tipoEscolaDto';
 
-export default class FiltroHelper {
-  static async ObtenhaAnosLetivos() {
-    const anosLetivos = [];
-
-    return await ServicoFiltro.listarAnosLetivos()
-      .then(resposta => {
-        if (resposta.data) {
-          resposta.data.forEach(ano => {
-            anosLetivos.push({ desc: ano, valor: ano });
-          });
-        }
-
-        return anosLetivos;
-      })
-      .catch(() => anosLetivos);
-  }
-
-  static async ObtenhaModalidades() {
+class FiltroHelper {
+  obterModalidades = async ({ consideraHistorico, anoLetivoSelecionado }) => {
     const modalidadesLista = [];
 
-    return await ServicoFiltro.listarModalidades()
+    return ServicoFiltro.listarModalidades({
+      consideraHistorico,
+      anoLetivoSelecionado,
+    })
       .then(resposta => {
         if (resposta.data) {
           resposta.data.forEach(modalidade => {
@@ -34,12 +22,20 @@ export default class FiltroHelper {
         return modalidadesLista;
       })
       .catch(() => modalidadesLista);
-  }
+  };
 
-  static async ObtenhaPeriodos(modalidade) {
+  obterPeriodos = async ({
+    consideraHistorico,
+    modalidadeSelecionada,
+    anoLetivoSelecionado,
+  }) => {
     const periodos = [];
 
-    return await ServicoFiltro.listarPeriodos(modalidade)
+    return ServicoFiltro.listarPeriodos({
+      consideraHistorico,
+      modalidadeSelecionada,
+      anoLetivoSelecionado,
+    })
       .then(resposta => {
         if (resposta.data) {
           resposta.data.forEach(periodo => {
@@ -50,12 +46,22 @@ export default class FiltroHelper {
         return periodos;
       })
       .catch(() => periodos);
-  }
+  };
 
-  static async ObtenhaDres(modalidade) {
+  obterDres = async ({
+    consideraHistorico,
+    modalidadeSelecionada,
+    periodoSelecionado,
+    anoLetivoSelecionado,
+  }) => {
     const dres = [];
 
-    return await ServicoFiltro.listarDres(modalidade)
+    return ServicoFiltro.listarDres({
+      consideraHistorico,
+      modalidadeSelecionada,
+      periodoSelecionado,
+      anoLetivoSelecionado,
+    })
       .then(resposta => {
         if (resposta.data) {
           resposta.data.forEach(dre => {
@@ -66,33 +72,57 @@ export default class FiltroHelper {
             });
           });
         }
-        return dres;
+        return dres.sort(this.ordenarLista('desc'));
       })
       .catch(() => dres);
-  }
+  };
 
-  static async ObtenhaUnidadesEscolares(modalidade, dre) {
+  obterUnidadesEscolares = async ({
+    consideraHistorico,
+    modalidadeSelecionada,
+    dreSelecionada,
+    periodoSelecionado,
+    anoLetivoSelecionado,
+  }) => {
     const unidadesEscolares = [];
 
-    return await ServicoFiltro.listarUnidadesEscolares(dre, modalidade)
+    return ServicoFiltro.listarUnidadesEscolares({
+      consideraHistorico,
+      modalidadeSelecionada,
+      dreSelecionada,
+      periodoSelecionado,
+      anoLetivoSelecionado,
+    })
       .then(resposta => {
         if (resposta.data) {
           resposta.data.forEach(unidade => {
             unidadesEscolares.push({
-              desc: unidade.nome,
+              desc: `${tipoEscolaDTO[unidade.tipoEscola]} ${unidade.nome}`,
               valor: unidade.codigo,
             });
           });
         }
-        return unidadesEscolares;
+        return unidadesEscolares.sort(this.ordenarLista('desc'));
       })
       .catch(() => unidadesEscolares);
-  }
+  };
 
-  static async ObtenhaTurmas(modalidade, unidadeEscolar) {
+  obterTurmas = async ({
+    consideraHistorico,
+    modalidadeSelecionada,
+    unidadeEscolarSelecionada,
+    periodoSelecionado,
+    anoLetivoSelecionado,
+  }) => {
     const turmas = [];
 
-    return await ServicoFiltro.listarTurmas(unidadeEscolar, modalidade)
+    return ServicoFiltro.listarTurmas({
+      consideraHistorico,
+      modalidadeSelecionada,
+      unidadeEscolarSelecionada,
+      periodoSelecionado,
+      anoLetivoSelecionado,
+    })
       .then(resposta => {
         if (resposta.data) {
           resposta.data.forEach(turma => {
@@ -106,5 +136,26 @@ export default class FiltroHelper {
         return turmas;
       })
       .catch(() => turmas);
-  }
+  };
+
+  ordenarLista = indice => {
+    return function innerSort(a, b) {
+      if (!a.hasOwnProperty(indice) || !b.hasOwnProperty(indice)) return 0;
+
+      const itemA =
+        typeof a[indice] === 'string' ? a[indice].toUpperCase() : a[indice];
+      const itemB =
+        typeof b[indice] === 'string' ? b[indice].toUpperCase() : b[indice];
+
+      let ordem = 0;
+      if (itemA > itemB) {
+        ordem = 1;
+      } else if (itemA < itemB) {
+        ordem = -1;
+      }
+      return ordem;
+    };
+  };
 }
+
+export default new FiltroHelper();

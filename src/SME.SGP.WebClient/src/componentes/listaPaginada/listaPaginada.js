@@ -1,8 +1,12 @@
-import { Table } from 'antd';
-import PropTypes from 'prop-types';
 import React, { useState, useEffect } from 'react';
+import PropTypes from 'prop-types';
+
+// Componentes
+import { Table } from 'antd';
+
 import { Container } from './listaPaginada.css';
 import api from '~/servicos/api';
+import { erro } from '~/servicos/alertas';
 
 const ListaPaginada = props => {
   const {
@@ -14,7 +18,11 @@ const ListaPaginada = props => {
     multiSelecao,
     onSelecionarLinhas,
     selecionarItems,
+    filtroEhValido,
+    onErro,
   } = props;
+
+  const [carregando, setCarregando] = useState(false);
 
   const [total, setTotal] = useState(0);
   const [linhas, setLinhas] = useState([]);
@@ -29,6 +37,8 @@ const ListaPaginada = props => {
     locale: { items_per_page: 'Linhas' },
     current: 1,
   });
+
+  const [urlBusca, setUrlBusca] = useState(url);
 
   const selecionaItems = selecionadas => {
     if (selecionarItems) {
@@ -71,26 +81,39 @@ const ListaPaginada = props => {
     }
   };
 
-  const obterPaginacao = () => {
-    return `numeroPagina=${paginaAtual.current}&numeroRegistros=${paginaAtual.pageSize}`;
+  const defineUrlBusca = pagina => {
+    setUrlBusca(
+      `${url}?numeroPagina=${pagina.current}&numeroRegistros=${pagina.pageSize}`
+    );
   };
 
   const filtrar = () => {
-    api.get(`${url}?${obterPaginacao()}`, { params: filtro }).then(resposta => {
-      setTotal(resposta.data.totalRegistros);
-      setLinhas(resposta.data.items);
-    });
+    setCarregando(true);
+    api
+      .get(urlBusca, { params: filtro })
+      .then(resposta => {
+        setTotal(resposta.data.totalRegistros);
+        setLinhas(resposta.data.items);
+      })
+      .catch(err => {
+        if (
+          err.response &&
+          err.response.data &&
+          err.response.data.mensagens &&
+          err.response.data.mensagens.length
+        ) {
+          if (onErro) onErro(err);
+          else erro(err.response.data.mensagens[0]);
+        }
+      })
+      .finally(() => setCarregando(false));
   };
 
   useEffect(() => {
-    filtrar();
-  }, [paginaAtual]);
-
-  useEffect(() => {
-    const novaPagina = { ...paginaAtual, current: 1 };
-    setPaginaAtual(novaPagina);
-    filtrar();
-  }, [filtro]);
+    if (filtroEhValido) {
+      filtrar();
+    }
+  }, [filtroEhValido, filtro, paginaAtual]);
 
   const executaPaginacao = pagina => {
     const novaPagina = { ...paginaAtual, ...pagina };
@@ -98,6 +121,7 @@ const ListaPaginada = props => {
       novaPagina.current = 1;
     }
     setPaginaAtual(novaPagina);
+    defineUrlBusca(novaPagina);
   };
 
   return (
@@ -153,6 +177,7 @@ const ListaPaginada = props => {
           };
         }}
         onChange={executaPaginacao}
+        loading={carregando}
       />
     </Container>
   );
@@ -167,6 +192,8 @@ ListaPaginada.propTypes = {
   url: PropTypes.string,
   colunaChave: PropTypes.string,
   filtro: PropTypes.oneOfType([PropTypes.object]),
+  filtroEhValido: PropTypes.bool,
+  onErro: PropTypes.oneOfType([PropTypes.func]),
 };
 
 ListaPaginada.defaultProps = {
@@ -178,6 +205,8 @@ ListaPaginada.defaultProps = {
   url: '',
   colunaChave: 'id',
   filtro: null,
+  filtroEhValido: true,
+  onErro: () => {},
 };
 
 export default ListaPaginada;

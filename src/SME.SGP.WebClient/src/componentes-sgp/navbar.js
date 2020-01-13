@@ -12,63 +12,67 @@ import { Deslogar } from '~/redux/modulos/usuario/actions';
 import history from '~/servicos/history';
 import { URL_LOGIN, URL_HOME } from '~/constantes/url';
 import { limparDadosFiltro } from '~/redux/modulos/filtro/actions';
+import { LimparSessao } from '~/redux/modulos/sessao/actions';
+
+const Nav = styled.nav`
+  z-index: 3000;
+  height: 70px !important;
+  padding-left: 15px !important;
+  padding-right: 15px !important;
+  @media (max-width: 767.98px) {
+    height: 140px !important;
+  }
+`;
+
+const Logo = styled.img`
+  height: 65px !important;
+  width: 75px !important;
+`;
+
+const Botoes = styled.div`
+  height: 45px !important;
+  z-index: 101;
+`;
+
+const Botao = styled.a`
+  display: block !important;
+  text-align: center !important;
+  cursor: pointer;
+`;
+
+const Icone = styled.i`
+  align-items: center !important;
+  background: ${Base.Roxo} !important;
+  border-radius: 50% !important;
+  color: ${Base.Branco} !important;
+  display: flex !important;
+  justify-content: center !important;
+  font-size: 15px !important;
+  height: 28px !important;
+  width: 28px !important;
+`;
+
+const Texto = styled.span`
+  font-size: 10px !important;
+`;
+
+const Div = styled.div`
+  margin-left: ${props =>
+    props.retraido ? '120px !important' : '260px !important'};
+  @media (max-width: 767.98px) {
+    left: 50%;
+    margin-left: 0 !important;
+    transform: translateX(-50%) translateY(-0.5rem);
+  }
+`;
 
 const Navbar = () => {
   const retraido = useSelector(state => state.navegacao.retraido);
 
-  const Nav = styled.nav`
-    height: 70px !important;
-    padding-left: 15px !important;
-    padding-right: 15px !important;
-    @media (max-width: 767.98px) {
-      height: 140px !important;
-    }
-  `;
-
-  const Logo = styled.img`
-    height: 65px !important;
-    width: 75px !important;
-  `;
-
-  const Botoes = styled.div`
-    height: 45px !important;
-    z-index: 101;
-  `;
-
-  const Botao = styled.a`
-    display: block !important;
-    text-align: center !important;
-    cursor: pointer;
-  `;
-
-  const Icone = styled.i`
-    align-items: center !important;
-    background: ${Base.Roxo} !important;
-    border-radius: 50% !important;
-    color: ${Base.Branco} !important;
-    display: flex !important;
-    justify-content: center !important;
-    font-size: 15px !important;
-    height: 28px !important;
-    width: 28px !important;
-  `;
-
-  const Texto = styled.span`
-    font-size: 10px !important;
-  `;
-
-  const Div = styled.div`
-    margin-left: ${retraido ? '120px' : '260px'} !important;
-    @media (max-width: 767.98px) {
-      left: 50%;
-      margin-left: 0 !important;
-      transform: translateX(-50%) translateY(-0.5rem);
-    }
-  `;
-
   const onClickSair = () => {
     store.dispatch(limparDadosFiltro());
     store.dispatch(Deslogar());
+    store.dispatch(LimparSessao());
     history.push(URL_LOGIN);
   };
 
@@ -119,7 +123,10 @@ const Navbar = () => {
               </ul>
             </Botoes>
           </div>
-          <Div className="d-flex align-self-xl-center align-self-lg-center align-self-md-end align-self-sm-end w-100 position-absolute mb-sm-2 mb-md-2">
+          <Div
+            retraido={retraido}
+            className="d-flex align-self-xl-center align-self-lg-center align-self-md-end align-self-sm-end w-100 position-absolute mb-sm-2 mb-md-2"
+          >
             <Filtro />
           </Div>
         </div>

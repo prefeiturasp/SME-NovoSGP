@@ -2,6 +2,7 @@
 using SME.SGP.Api.Filtros;
 using SME.SGP.Aplicacao;
 using SME.SGP.Infra;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Api.Controllers
@@ -11,6 +12,15 @@ namespace SME.SGP.Api.Controllers
     [ValidaDto]
     public class PlanoAnualController : ControllerBase
     {
+        [HttpGet]
+        [ProducesResponseType(typeof(IEnumerable<PlanoAnualCompletoDto>), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [Permissao(Permissao.PA_C, Policy = "Bearer")]
+        public async Task<IActionResult> Get(string turmaId, string ueId, int anoLetivo, long componenteCurricularEolId, [FromServices]IConsultasPlanoAnual consultasPlanoAnual)
+        {
+            return Ok(await consultasPlanoAnual.ObterPorUETurmaAnoEComponenteCurricular(ueId, turmaId, anoLetivo, componenteCurricularEolId));
+        }
+
         [HttpPost("migrar")]
         [ProducesResponseType(200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
@@ -37,6 +47,20 @@ namespace SME.SGP.Api.Controllers
         public async Task<IActionResult> ObterExpandido(FiltroPlanoAnualBimestreExpandidoDto filtroPlanoAnualDto, [FromServices]IConsultasPlanoAnual consultasPlanoAnual)
         {
             return Ok(await consultasPlanoAnual.ObterBimestreExpandido(filtroPlanoAnualDto));
+        }
+
+        [HttpGet("objetivos")]
+        [ProducesResponseType(typeof(PlanoAnualCompletoDto), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [ProducesResponseType(204)]
+        [Permissao(Permissao.PA_C, Policy = "Bearer")]
+        public async Task<IActionResult> ObterObjetivos(FiltroPlanoAnualDisciplinaDto filtro, [FromServices]IConsultasPlanoAnual consultasPlanoAnual)
+        {
+            var objetivosPlano = await consultasPlanoAnual.ObterObjetivosEscolaTurmaDisciplina(filtro);
+            if (objetivosPlano != null)
+                return Ok(objetivosPlano);
+            else
+                return StatusCode(204);
         }
 
         [HttpPost]

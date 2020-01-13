@@ -26,7 +26,13 @@ const DetalheNotificacao = ({ match }) => {
   const [listaDeStatus, setListaDeStatus] = useState([]);
   const [aprovar, setAprovar] = useState(false);
 
-  const titulosNiveis = ['', 'Aguardando aceite', 'Aceita', 'Recusada', 'Sem status'];
+  const titulosNiveis = [
+    '',
+    'Aguardando aceite',
+    'Aceita',
+    'Recusada',
+    'Sem status',
+  ];
 
   const usuario = useSelector(state => state.usuario);
   const permissoesTela = usuario.permissoes[RotasDto.NOTIFICACOES];
@@ -72,6 +78,8 @@ const DetalheNotificacao = ({ match }) => {
     setIdNotificacao(match.params.id);
   }, [match.params.id]);
 
+  const anoAtual = window.moment().format('YYYY');
+
   useEffect(() => {
     const buscaLinhaTempo = () => {
       api
@@ -100,7 +108,7 @@ const DetalheNotificacao = ({ match }) => {
     }
     if (notificacao.categoriaId === notificacaoCategoria.Aviso) {
       if (usuario.rf.length > 0)
-        servicoNotificacao.buscaNotificacoesPorAnoRf(2019, usuario.rf);
+        servicoNotificacao.buscaNotificacoesPorAnoRf(anoAtual, usuario.rf);
     }
   }, [notificacao]);
 
@@ -109,7 +117,7 @@ const DetalheNotificacao = ({ match }) => {
     servicoNotificacao.marcarComoLida(idsNotificacoes, () => {
       history.push(urlTelaNotificacoes);
       if (usuario.rf.length > 0)
-        servicoNotificacao.buscaNotificacoesPorAnoRf(2019, usuario.rf);
+        servicoNotificacao.buscaNotificacoesPorAnoRf(anoAtual, usuario.rf);
     });
   };
 
@@ -123,7 +131,7 @@ const DetalheNotificacao = ({ match }) => {
       servicoNotificacao.excluir(idsNotificacoes, () => {
         history.push(urlTelaNotificacoes);
         if (usuario.rf.length > 0)
-          servicoNotificacao.buscaNotificacoesPorAnoRf(2019, usuario.rf);
+          servicoNotificacao.buscaNotificacoesPorAnoRf(anoAtual, usuario.rf);
       });
     }
   };
@@ -219,7 +227,7 @@ const DetalheNotificacao = ({ match }) => {
                       setAprovar(true);
                       if (usuario.rf.length > 0)
                         servicoNotificacao.buscaNotificacoesPorAnoRf(
-                          2019,
+                          anoAtual,
                           usuario.rf
                         );
                       form.validateForm().then(() => form.handleSubmit(e));
@@ -319,10 +327,10 @@ const DetalheNotificacao = ({ match }) => {
                                     : ''
                                 }`}
                               >
-                                {
-                                  notificacao.statusId ===
-                                  notificacaoStatus.Pendente
-                                  ? 'Não Lida' : notificacao.situacao}
+                                {notificacao.statusId ===
+                                notificacaoStatus.Pendente
+                                  ? 'Não Lida'
+                                  : notificacao.situacao}
                               </div>
                             </div>
                           </div>
@@ -334,7 +342,10 @@ const DetalheNotificacao = ({ match }) => {
                 <hr className="mt-hr" />
                 <div className="row">
                   <div className="col-xs-12 col-md-12 col-lg-12 mensagem">
-                    MENSAGEM: {notificacao.mensagem}
+                    MENSAGEM:{' '}
+                    <span
+                      dangerouslySetInnerHTML={{ __html: notificacao.mensagem }}
+                    />
                   </div>
                 </div>
                 {notificacao.categoriaId ===

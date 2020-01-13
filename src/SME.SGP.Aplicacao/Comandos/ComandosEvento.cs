@@ -1,5 +1,4 @@
-﻿using SME.SGP.Aplicacao.Interfaces;
-using SME.SGP.Dominio;
+﻿using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System;
@@ -15,7 +14,8 @@ namespace SME.SGP.Aplicacao
         private readonly IServicoEvento servicoEvento;
 
         public ComandosEvento(IRepositorioEvento repositorioEvento,
-                              IServicoEvento servicoEvento)
+                              IServicoEvento servicoEvento,
+                              IServicoDiaLetivo servicoDiaLetivo)
         {
             this.repositorioEvento = repositorioEvento ?? throw new ArgumentNullException(nameof(repositorioEvento));
             this.servicoEvento = servicoEvento ?? throw new ArgumentNullException(nameof(servicoEvento));
@@ -24,19 +24,14 @@ namespace SME.SGP.Aplicacao
         public async Task<IEnumerable<RetornoCopiarEventoDto>> Alterar(long id, EventoDto eventoDto)
         {
             var evento = repositorioEvento.ObterPorId(id);
-
             evento = MapearParaEntidade(evento, eventoDto);
-            await servicoEvento.Salvar(evento);
-            await GravarRecorrencia(eventoDto, evento);
-            return await CopiarEventos(eventoDto);
+            return await SalvarEvento(eventoDto, evento);
         }
 
         public async Task<IEnumerable<RetornoCopiarEventoDto>> Criar(EventoDto eventoDto)
         {
             var evento = MapearParaEntidade(new Evento(), eventoDto);
-            await servicoEvento.Salvar(evento, eventoDto.DataConfirmada);
-            await GravarRecorrencia(eventoDto, evento);
-            return await CopiarEventos(eventoDto);
+            return await SalvarEvento(eventoDto, evento);
         }
 
         public void Excluir(long[] idsEventos)
@@ -63,6 +58,22 @@ namespace SME.SGP.Aplicacao
                 throw new NegocioException($"Não foi possível excluir os eventos de ids {string.Join(",", idsComErroAoExcluir)}");
         }
 
+        public void GravarRecorrencia(EventoDto eventoDto, Evento evento)
+        {
+            if (eventoDto.RecorrenciaEventos != null)
+            {
+                var recorrencia = eventoDto.RecorrenciaEventos;
+                servicoEvento.SalvarRecorrencia(evento,
+                                                recorrencia.DataInicio,
+                                                recorrencia.DataFim,
+                                                recorrencia.DiaDeOcorrencia,
+                                                recorrencia.DiasDaSemana,
+                                                recorrencia.Padrao,
+                                                recorrencia.PadraoRecorrenciaMensal,
+                                                recorrencia.RepeteACada);
+            }
+        }
+
         private async Task<IEnumerable<RetornoCopiarEventoDto>> CopiarEventos(EventoDto eventoDto)
         {
             var mensagens = new List<RetornoCopiarEventoDto>();
@@ -87,26 +98,10 @@ namespace SME.SGP.Aplicacao
             return mensagens;
         }
 
-        private async Task GravarRecorrencia(EventoDto eventoDto, Evento evento)
-        {
-            if (eventoDto.RecorrenciaEventos != null)
-            {
-                var recorrencia = eventoDto.RecorrenciaEventos;
-                await servicoEvento.SalvarRecorrencia(evento,
-                                                recorrencia.DataInicio,
-                                                recorrencia.DataFim,
-                                                recorrencia.DiaDeOcorrencia,
-                                                recorrencia.DiasDaSemana,
-                                                recorrencia.Padrao,
-                                                recorrencia.PadraoRecorrenciaMensal,
-                                                recorrencia.RepeteACada);
-            }
-        }
-
         private Evento MapearParaEntidade(Evento evento, EventoDto eventoDto)
         {
-            evento.DataFim = eventoDto.DataFim.HasValue ? eventoDto.DataFim.Value : eventoDto.DataInicio;
-            evento.DataInicio = eventoDto.DataInicio;
+            evento.DataFim = eventoDto.DataFim.HasValue ? eventoDto.DataFim.Value.Local() : eventoDto.DataInicio.Local();
+            evento.DataInicio = eventoDto.DataInicio.Local();
             evento.Descricao = eventoDto.Descricao;
             evento.DreId = eventoDto.DreId;
             evento.FeriadoId = eventoDto.FeriadoId;
@@ -116,6 +111,19 @@ namespace SME.SGP.Aplicacao
             evento.TipoEventoId = eventoDto.TipoEventoId;
             evento.UeId = eventoDto.UeId;
             return evento;
+        }
+
+        private async Task<IEnumerable<RetornoCopiarEventoDto>> SalvarEvento(EventoDto eventoDto, Evento evento)
+        {
+            var retornoCadasradoEvento = await servicoEvento.Salvar(evento, eventoDto.AlterarARecorrenciaCompleta, eventoDto.DataConfirmada);
+            var mensagens = new List<RetornoCopiarEventoDto>
+            {
+                new RetornoCopiarEventoDto(retornoCadasradoEvento, true)
+            };
+            Background.Core.Cliente.Executar(() => GravarRecorrencia(eventoDto, evento));
+            mensagens.AddRange(await CopiarEventos(eventoDto));
+
+            return mensagens;
         }
     }
 }

@@ -12,6 +12,7 @@ namespace SME.SGP.Infra
             DataConfirmada = false;
         }
 
+        public bool AlterarARecorrenciaCompleta { get; set; }
         public bool DataConfirmada { get; set; }
         public DateTime? DataFim { get; set; }
 
@@ -22,6 +23,7 @@ namespace SME.SGP.Infra
         public string Descricao { get; set; }
 
         public string DreId { get; set; }
+        public long? EventoPaiId { get; set; }
         public long? FeriadoId { get; set; }
         public EventoLetivo Letivo { get; set; }
 

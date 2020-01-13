@@ -17,6 +17,6 @@ namespace SME.SGP.Infra
         public string EscolaId { get; set; }
 
         [Required(ErrorMessage = "A turma deve ser informada")]
-        public int TurmaId { get; set; }
+        public string TurmaId { get; set; }
     }
 }

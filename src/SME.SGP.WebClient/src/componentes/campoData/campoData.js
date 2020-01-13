@@ -1,6 +1,6 @@
 import 'moment/locale/pt-br';
 
-import { DatePicker, TimePicker } from 'antd';
+import { DatePicker, TimePicker, Icon } from 'antd';
 import locale from 'antd/es/date-picker/locale/pt_BR';
 import { Field } from 'formik';
 import * as moment from 'moment';
@@ -15,7 +15,7 @@ import Label from '../label';
 class MomentSchema extends Yup.mixed {
   constructor() {
     super({ type: 'momentschema' });
-    this.transforms.push(function(value) {
+    this.transforms.push(value => {
       if (this.isType(value)) return moment(value);
       return moment.invalid();
     });
@@ -23,6 +23,8 @@ class MomentSchema extends Yup.mixed {
 }
 
 const Campo = styled.div`
+  width: 100%;
+
   span {
     color: ${Base.Vermelho};
   }
@@ -52,26 +54,75 @@ const Campo = styled.div`
   .ant-calendar-picker {
     width: 100%;
   }
+
+  .ant-calendar-disabled-cell.ant-calendar-today .ant-calendar-date {
+    background-color: #f5f5f5;
+    ::before {
+      border: 0;
+    }
+  }
+
+  .ant-calendar-today .ant-calendar-date {
+    color: black;
+    border: 0;
+  }
+
+  label {
+    font-weight: bold;
+  }
 `;
 
-const CampoData = props => {
-  const {
-    formatoData,
-    placeholder,
-    label,
-    name,
-    id,
-    form,
-    desabilitado,
-    className,
-    onChange,
-    valor,
-    desabilitarData,
-    somenteHora,
-  } = props;
+const CampoData = ({
+  formatoData,
+  placeholder,
+  label,
+  name,
+  id,
+  form,
+  desabilitado,
+  className,
+  onChange,
+  valor,
+  desabilitarData,
+  diasParaHabilitar,
+  somenteHora,
+  temErro,
+  mensagemErro,
+  carregando,
+}) => {
+  const habilitarDatas = dataAtual => {
+    let retorno = true;
+    const ehParaHabilitar =
+      !!diasParaHabilitar &&
+      diasParaHabilitar.length >= 1 &&
+      !!diasParaHabilitar.find(x => x === dataAtual.format('YYYY-MM-DD'));
+
+    if (
+      !!diasParaHabilitar === false &&
+      typeof desabilitarData === 'function'
+    ) {
+      retorno = desabilitarData(dataAtual);
+    } else if (
+      !!diasParaHabilitar &&
+      diasParaHabilitar.length >= 1 &&
+      typeof desabilitarData === 'function'
+    ) {
+      retorno = !ehParaHabilitar || desabilitarData(dataAtual);
+    } else if (
+      !!diasParaHabilitar &&
+      diasParaHabilitar.length >= 1 &&
+      !!desabilitarData === false
+    ) {
+      retorno = !ehParaHabilitar;
+    } else if (!!diasParaHabilitar === false && !!desabilitarData === false) {
+      retorno = false;
+    }
+
+    return retorno;
+  };
 
   const possuiErro = () => {
-    return form && form.errors[name] && form.touched[name];
+    return (form && form.errors[name] && form.touched[name]) || temErro;
   };
 
   const executaOnBlur = event => {
@@ -81,6 +132,12 @@ const CampoData = props => {
     }
   };
 
+  const Icone = carregando ? (
+    <Icon style={{ fontSize: '16px', lineHeight: 0 }} type="loading" spin />
+  ) : (
+    <Icon style={{ fontSize: '16px', lineHeight: 0 }} type="calendar" />
+  );
+
   const campoDataAntComValidacoes = () => {
     return (
       <Field
@@ -89,7 +146,8 @@ const CampoData = props => {
         format={formatoData}
         component={DatePicker}
         placeholder={placeholder}
-        suffixIcon={<i className="fas fa-calendar-alt" />}
+        // suffixIcon={<i className="fas fa-calendar-alt spin" />}
+        suffixIcon={Icone}
         name={name}
         id={id || name}
         onBlur={executaOnBlur}
@@ -97,12 +155,13 @@ const CampoData = props => {
           form ? `${possuiErro() ? 'is-invalid' : ''} ${className || ''}` : ''
         }
         onChange={valorData => {
-          valorData = valorData || '';
-          form.setFieldValue(name, valorData);
+          form.setFieldValue(name, valorData || '');
           onChange(valorData);
+          form.setFieldTouched(name, true, true);
         }}
         value={form.values[name] || null}
-        disabledDate={desabilitarData}
+        disabledDate={habilitarDatas}
+        showToday={false}
       />
     );
   };
@@ -114,16 +173,18 @@ const CampoData = props => {
         locale={locale}
         format={formatoData}
         placeholder={placeholder}
-        suffixIcon={<i className="fas fa-calendar-alt" />}
+        // suffixIcon={<i className="fas fa-calendar-alt" />}
+        suffixIcon={Icone}
         name={name}
         id={id || name}
+        className={`${possuiErro() ? 'is-invalid' : ''} ${className || ''}`}
         onBlur={executaOnBlur}
-        className={className || ''}
         onChange={valorData => {
-          valorData = valorData || '';
-          onChange(valorData);
+          onChange(valorData || '');
         }}
         value={valor || null}
+        disabledDate={habilitarDatas}
+        showToday={false}
       />
     );
   };
@@ -143,11 +204,12 @@ const CampoData = props => {
           form ? `${possuiErro() ? 'is-invalid' : ''} ${className || ''}` : ''
         }
         onChange={valorHora => {
-          valorHora = valorHora || '';
-          form.setFieldValue(name, valorHora);
+          form.setFieldValue(name, valorHora || '');
           onChange(valorHora);
+          form.setFieldTouched(name, true, true);
         }}
         value={form.values[name] || null}
+        showToday={false}
       />
     );
   };
@@ -159,12 +221,20 @@ const CampoData = props => {
     return form ? campoDataAntComValidacoes() : campoDataAntSemValidacoes();
   };
 
+  const obterErros = () => {
+    return (form && form.touched[name] && form.errors[name]) || temErro ? (
+      <span>{(form && form.errors[name]) || mensagemErro}</span>
+    ) : (
+      ''
+    );
+  };
+
   return (
     <>
       <Campo>
         {label ? <Label text={label} control={name} /> : ''}
         {validaTipoCampo()}
-        {form ? <span>{form.errors[name]}</span> : ''}
+        {obterErros()}
       </Campo>
     </>
   );
@@ -178,7 +248,15 @@ CampoData.propTypes = {
   desabilitado: PropTypes.bool,
   somenteHora: PropTypes.bool,
   onChange: PropTypes.func,
-  valor: PropTypes.any,
+  valor: PropTypes.oneOfType([PropTypes.any]),
+  form: PropTypes.oneOfType([PropTypes.object, PropTypes.any]),
+  name: PropTypes.string,
+  id: PropTypes.string,
+  desabilitarData: PropTypes.func,
+  diasParaHabilitar: PropTypes.oneOfType([PropTypes.array]),
+  temErro: PropTypes.bool,
+  mensagemErro: PropTypes.string,
+  carregando: PropTypes.bool,
 };
 
 CampoData.defaultProps = {
@@ -189,6 +267,15 @@ CampoData.defaultProps = {
   desabilitado: false,
   somenteHora: false,
   onChange: () => {},
+  valor: null,
+  form: null,
+  name: null,
+  id: null,
+  desabilitarData: null,
+  diasParaHabilitar: null,
+  temErro: null,
+  mensagemErro: null,
+  carregando: false,
 };
 
 const momentSchema = new MomentSchema();

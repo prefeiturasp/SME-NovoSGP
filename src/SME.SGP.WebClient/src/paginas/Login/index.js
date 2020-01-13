@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import * as Yup from 'yup';
 import { Tooltip } from 'antd';
 import { Formik, Form } from 'formik';
@@ -28,17 +28,25 @@ import {
 import CampoTexto from '~/componentes/campoTexto';
 import { URL_RECUPERARSENHA } from '~/constantes/url';
 import history from '~/servicos/history';
+import { Loader } from '~/componentes';
+import { setExibirMensagemSessaoExpirou } from '~/redux/modulos/usuario/actions';
 
 const Login = props => {
   const dispatch = useDispatch();
   const inputUsuarioRf = useRef();
   const btnAcessar = useRef();
 
+  const [carregando, setCarregando] = useState(false);
+
   const [erroGeral, setErroGeral] = useState('');
   const [login, setLogin] = useState({
     usuario: '',
     senha: '',
   });
+
+  const exibirMensagemSessaoExpirou = useSelector(
+    store => store.usuario.exibirMensagemSessaoExpirou
+  );
 
   let redirect = null;
 
@@ -59,14 +67,18 @@ const Login = props => {
   );
 
   const realizarLogin = async dados => {
+    setCarregando(true);
     setLogin({
       usuario: dados.usuario,
       senha: dados.senha,
     });
     setErroGeral('');
-
+    dispatch(setExibirMensagemSessaoExpirou(false));
     const { sucesso, ...retorno } = await helper.acessar(dados);
-    if (!sucesso) setErroGeral(retorno.erroGeral);
+    if (!sucesso) {
+      setErroGeral(retorno.erroGeral);
+      setCarregando(false);
+    }
   };
 
   const aoPressionarTecla = e => {
@@ -87,6 +99,12 @@ const Login = props => {
       document.removeEventListener('keyup', aoPressionarTecla);
     };
   }, []);
+
+  useEffect(() => {
+    if (exibirMensagemSessaoExpirou) {
+      setErroGeral('Sua sessão expirou!');
+    }
+  }, [exibirMensagemSessaoExpirou]);
 
   const navegarParaRecuperarSenha = () => {
     history.push({
@@ -159,13 +177,15 @@ const Login = props => {
                           icon
                         />
                         <FormGroup>
-                          <Button
-                            className="btn-block d-block"
-                            label="Acessar"
-                            color={Colors.Roxo}
-                            ref={btnAcessar}
-                            onClick={e => aoClicarBotaoAutenticar(form, e)}
-                          />
+                          <Loader loading={carregando} tip="">
+                            <Button
+                              className="btn-block d-block"
+                              label="Acessar"
+                              color={Colors.Roxo}
+                              ref={btnAcessar}
+                              onClick={e => aoClicarBotaoAutenticar(form, e)}
+                            />
+                          </Loader>
                           <Centralizar className="mt-1">
                             <LabelLink onClick={navegarParaRecuperarSenha}>
                               Esqueci minha senha

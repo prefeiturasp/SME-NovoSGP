@@ -1,0 +1,18 @@
+﻿using System.Collections.Generic;
+using System.Threading.Tasks;
+
+namespace SME.SGP.Dominio.Interfaces
+{
+    public interface IServicoFrequencia
+    {
+        Task ExcluirFrequenciaAula(long aulaId);
+
+        IEnumerable<RegistroAusenciaAluno> ObterListaAusenciasPorAula(long aulaId);
+
+        RegistroFrequencia ObterRegistroFrequenciaPorAulaId(long aulaId);
+
+        Task Registrar(long aulaId, IEnumerable<RegistroAusenciaAluno> registroAusenciaAlunos);
+
+        Task AtualizarQuantidadeFrequencia(long aulaId, int quantidadeOriginal, int quantidadeAtual);
+    }
+}

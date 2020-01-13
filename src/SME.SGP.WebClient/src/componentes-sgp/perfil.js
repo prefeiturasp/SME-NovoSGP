@@ -1,22 +1,28 @@
-import React, { useState, useLayoutEffect, useRef } from 'react';
-import styled from 'styled-components';
-import { useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
+import React, { useLayoutEffect, useRef, useState } from 'react';
+import { useSelector } from 'react-redux';
+import styled from 'styled-components';
+import { limparDadosFiltro } from '~/redux/modulos/filtro/actions';
+import { setLoaderGeral } from '~/redux/modulos/loader/actions';
+import {
+  Deslogar,
+  removerTurma,
+  salvarDadosLogin,
+} from '~/redux/modulos/usuario/actions';
+import { erro } from '~/servicos/alertas';
+import api from '~/servicos/api';
+import { setMenusPermissoes } from '~/servicos/servico-navegacao';
+
 import { Base } from '../componentes/colors';
-import history from '../servicos/history';
 import { store } from '../redux';
 import { perfilSelecionado } from '../redux/modulos/perfil/actions';
-import api from '~/servicos/api';
-import { salvarDadosLogin, Deslogar } from '~/redux/modulos/usuario/actions';
-import { erro } from '~/servicos/alertas';
-import { setMenusPermissoes } from '~/servicos/servico-navegacao';
+import history from '../servicos/history';
 
 const Perfil = props => {
   const { Botao, Icone, Texto } = props;
   const [ocultaPerfis, setarOcultaPerfis] = useState(true);
-  const perfilStore = useSelector(store => store.perfil);
-
-  const usuarioStore = useSelector(store => store.usuario);
+  const perfilStore = useSelector(e => e.perfil);
+  const usuarioStore = useSelector(e => e.usuario);
 
   const listaRef = useRef();
 
@@ -82,37 +88,79 @@ const Perfil = props => {
     }
   `;
 
+  const limparFiltro = () => {
+    store.dispatch(limparDadosFiltro());
+    store.dispatch(removerTurma());
+  };
+
   const gravarPerfilSelecionado = perfil => {
     if (perfil) {
       const perfilNovo = perfilStore.perfis.filter(
         item => item.codigoPerfil === perfil
       );
-      store.dispatch(perfilSelecionado(perfilNovo[0]));
-      setarOcultaPerfis(true);
+
       if (
         perfilStore.perfilSelecionado.codigoPerfil !==
         perfilNovo[0].codigoPerfil
       ) {
+        store.dispatch(setLoaderGeral(true));
         api
           .put(`v1/autenticacao/perfis/${perfilNovo[0].codigoPerfil}`)
           .then(resp => {
-            const token = resp.data;
+            const {
+              token,
+              ehProfessor,
+              ehProfessorCj,
+              ehProfessorPoa,
+              dataHoraExpiracao,
+            } = resp.data;
+
+            const {
+              rf,
+              modificarSenha,
+              possuiPerfilSmeOuDre,
+              possuiPerfilDre,
+              possuiPerfilSme,
+              menu,
+            } = usuarioStore;
+
             store.dispatch(
               salvarDadosLogin({
-                token: token,
-                rf: usuarioStore.rf,
+                token,
+                rf,
+                usuario: usuarioStore,
+                modificarSenha,
+                possuiPerfilSmeOuDre,
+                possuiPerfilDre,
+                possuiPerfilSme,
+                ehProfessorCj,
+                ehProfessor,
+                menu,
+                ehProfessorPoa,
+                dataHoraExpiracao,
               })
             );
+
             setMenusPermissoes();
+            limparFiltro();
+            store.dispatch(perfilSelecionado(perfilNovo[0]));
+            setTimeout(() => {
+              store.dispatch(setLoaderGeral(false));
+            }, 1000);
           })
-          .catch(err => {
+          .catch(() => {
             erro('Sua sessão expirou');
             setTimeout(() => {
               store.dispatch(Deslogar());
             }, 2000);
           });
         history.push('/');
+      } else {
+        store.dispatch(perfilSelecionado(perfilNovo[0]));
+        limparFiltro();
       }
+    } else {
+      limparFiltro();
     }
   };
 
@@ -158,9 +206,9 @@ const Perfil = props => {
             {perfilStore.perfis.map(item => (
               <Item
                 key={item.codigoPerfil}
-                onClick={e =>
-                  gravarPerfilSelecionado(e.currentTarget.accessKey)
-                }
+                onClick={e => {
+                  gravarPerfilSelecionado(e.currentTarget.accessKey);
+                }}
                 accessKey={item.codigoPerfil}
               >
                 <td style={{ width: '20px' }}>

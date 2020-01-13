@@ -4,7 +4,7 @@ import { store } from '~/redux';
 import history from '~/servicos/history';
 import { URL_LOGIN } from '~/constantes/url';
 import { Deslogar } from '~/redux/modulos/usuario/actions';
-import { getObjetoStorageUsuario} from '~/servicos/servico-navegacao';
+import { getObjetoStorageUsuario } from '~/servicos/servico-navegacao';
 
 let url = '';
 
@@ -33,9 +33,9 @@ api.interceptors.request.use(async config => {
 api.interceptors.response.use(
   response => response,
   error => {
-    const autenticacao = error.response && error.response.config.url.includes(
-      '/api/v1/autenticacao'
-    );
+    const autenticacao =
+      error.response &&
+      error.response.config.url.includes('/api/v1/autenticacao');
 
     if (error.response && error.response.status === 401 && !autenticacao) {
       const path = window.location.pathname;
