@@ -173,7 +173,7 @@ const CadastroAula = ({ match }) => {
 
     const val = {
       tipoAula: Yup.string().required('Tipo obrigatório'),
-      disciplinaId: Yup.string().required('Disciplina obrigatório'),
+      disciplinaId: Yup.string().required('Componente curricular obrigatório'),
       dataAula: momentSchema.required('Hora obrigatória'),
       dataAulaCompleta: momentSchema.required('Data obrigatória'),
       recorrenciaAula: Yup.string().required('Recorrência obrigatória'),
@@ -744,8 +744,8 @@ const CadastroAula = ({ match }) => {
                     valueOption="codigoComponenteCurricular"
                     valueText="nome"
                     onChange={e => onChangeDisciplinas(e, form)}
-                    label="Disciplina"
-                    placeholder="Disciplina"
+                    label="Componente curricular"
+                    placeholder="Selecione um componente curricular"
                     disabled={
                       !!(
                         listaDisciplinas &&
