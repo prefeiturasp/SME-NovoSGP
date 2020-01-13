@@ -99,8 +99,11 @@ namespace SME.SGP.Dominio.Servicos
 
                 unitOfWork.IniciarTransacao();
 
-                foreach (WorkflowAprovacaoNivel wfNivel in workflow.Niveis.Where(n => n.Notificacoes.ToList().Count > 0))
+                foreach (WorkflowAprovacaoNivel wfNivel in workflow.Niveis)
                 {
+                    wfNivel.Status = WorkflowAprovacaoNivelStatus.Excluido;
+                    workflowAprovacaoNivel.Salvar(wfNivel);
+
                     foreach (Notificacao notificacao in wfNivel.Notificacoes)
                     {
                         repositorioWorkflowAprovacaoNivelNotificacao.ExcluirPorWorkflowNivelNotificacaoId(wfNivel.Id, notificacao.Id);
