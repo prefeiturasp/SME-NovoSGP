@@ -12,7 +12,8 @@ const inicial = {
   dadosUsuario: [],
   modificarSenha: '',
   meusDados: {
-    foto: '',
+    foto:
+      'https://graziellanicolai.com.br/wp-content/uploads/2018/03/Graziella-perfil.jpg',
   },
   possuiPerfilSmeOuDre: false,
   possuiPerfilDre: false,
@@ -55,9 +56,18 @@ export default function usuario(state = inicial, action) {
         draft.dataHoraExpiracao = action.payload.dataHoraExpiracao;
         break;
       case '@usuario/deslogar':
-        draft = inicial;
-        localStorage.clear();
-        window.location.reload(true);
+        draft.rf = '';
+        draft.token = '';
+        draft.dataLogin = null;
+        draft.logado = false;
+        draft.usuario = '';
+        draft.modificarSenha = '';
+        draft.turmasUsuario = [];
+        draft.turmaSelecionada = [];
+        draft.dadosUsuario = [];
+        draft.menu = [];
+        draft.permissoes = [];
+        draft.ehProfessor = false;
         break;
       case '@usuario/selecionarTurma':
         draft.turmaSelecionada = action.payload;
