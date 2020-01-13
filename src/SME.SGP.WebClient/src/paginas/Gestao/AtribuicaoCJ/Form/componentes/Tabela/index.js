@@ -10,7 +10,7 @@ import { DataTable } from '~/componentes';
 function Tabela({ carregando, lista, onChangeSubstituir }) {
   const colunas = [
     {
-      title: 'Disciplina',
+      title: 'Componente curricular',
       dataIndex: 'disciplina',
       key: 'disciplina',
     },
