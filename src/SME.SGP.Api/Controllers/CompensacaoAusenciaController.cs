@@ -27,6 +27,7 @@ namespace SME.SGP.Api.Controllers
         [HttpPost()]
         [ProducesResponseType(200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 601)]
         //[Permissao(Permissao.ADAP_C, Policy = "Bearer")]
         public async Task<IActionResult> Inserir([FromBody] CompensacaoAusenciaDto compensacao, [FromServices] IComandosCompensacaoAusencia comandos)
         {
