@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.Configuration;
+using SME.Background.Core;
 using SME.SGP.Aplicacao;
 using SME.SGP.Aplicacao.Integracoes;
 using SME.SGP.Aplicacao.Integracoes.Respostas;
@@ -62,7 +63,7 @@ namespace SME.SGP.Dominio.Servicos
             this.consultasPlanoAula = consultasPlanoAula ?? throw new ArgumentNullException(nameof(consultasPlanoAula));
             this.servicoLog = servicoLog ?? throw new ArgumentNullException(nameof(servicoLog));
             this.comandosWorkflowAprovacao = comandosWorkflowAprovacao ?? throw new ArgumentNullException(nameof(comandosWorkflowAprovacao));
-            this.configuration = configuration;
+            this.configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
             this.servicoNotificacao = servicoNotificacao ?? throw new ArgumentNullException(nameof(servicoNotificacao));
             this.comandosPlanoAula = comandosPlanoAula ?? throw new ArgumentNullException(nameof(comandosPlanoAula));
             this.servicoFrequencia = servicoFrequencia ?? throw new ArgumentNullException(nameof(servicoFrequencia));
@@ -106,7 +107,7 @@ namespace SME.SGP.Dominio.Servicos
             if (tipoCalendario == null)
                 throw new NegocioException("O tipo de calendário não foi encontrado.");
 
-            VerificaSeProfessorPodePersistirTurma(usuario.CodigoRf, aula.TurmaId, aula.DataAula);
+           VerificaSeProfessorPodePersistirTurma(usuario.CodigoRf, aula.TurmaId, aula.DataAula);
 
             if (aula.Id > 0)
                 aula.PodeSerAlterada(usuario);
@@ -232,7 +233,7 @@ namespace SME.SGP.Dominio.Servicos
             // Verifica recorrencia da gravação
             if (recorrencia != RecorrenciaAula.AulaUnica)
             {
-                Background.Core.Cliente.Executar(() => GravarRecorrencia(ehInclusao, aula, usuario, recorrencia));
+                Cliente.Executar(() => GravarRecorrencia(ehInclusao, aula, usuario, recorrencia));
 
                 var mensagem = ehInclusao ? "cadastrada" : "alterada";
                 return $"Aula {mensagem} com sucesso. Serão {mensagem}s aulas recorrentes, em breve você receberá uma notificação com o resultado do processamento.";
@@ -513,9 +514,9 @@ namespace SME.SGP.Dominio.Servicos
             return disciplina.Nome;
         }
 
-        private async void VerificaSeProfessorPodePersistirTurma(string codigoRf, string turmaId, DateTime dataAula)
+        private void VerificaSeProfessorPodePersistirTurma(string codigoRf, string turmaId, DateTime dataAula)
         {
-            if (!await servicoEOL.ProfessorPodePersistirTurma(codigoRf, turmaId, dataAula))
+            if (!servicoEOL.ProfessorPodePersistirTurma(codigoRf, turmaId, dataAula).Result)
                 throw new NegocioException("Você não pode fazer alterações ou inclusões nesta turma e data.");
         }
     }
