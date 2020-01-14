@@ -38,6 +38,9 @@ const PlanoAnual = () => {
   const [carregandoDados, setCarregandoDados] = useState(false);
   const [exibirCopiarConteudo, setExibirCopiarConteudo] = useState(false);
   const [listaDisciplinas, setListaDisciplinas] = useState([]);
+  const [listaBimestresPreenchidos, setListaBimestresPreenchidos] = useState(
+    []
+  );
   const [bimestreExpandido, setBimestreExpandido] = useState('');
   const [listaErros, setListaErros] = useState([[], [], [], []]);
   const [refsPainel, setRefsPainel] = useState([
@@ -186,6 +189,13 @@ const PlanoAnual = () => {
           setCarregandoDados(false);
           sucesso('Registro salvo com sucesso.');
           setEmEdicao(false);
+          setListaBimestresPreenchidos(
+            plano.bimestres
+              .filter(c => c.descricao && c.descricao.length > 0)
+              .map(c => {
+                return { nome: `${c.bimestre} º Bimestre`, valor: c.bimestre };
+              })
+          );
         })
         .catch(e => {
           setCarregandoDados(false);
@@ -269,6 +279,13 @@ const PlanoAnual = () => {
           const migrado = resposta.data.filter(c => c.migrado);
           setRegistroMigrado(migrado && migrado.length > 0);
           setEmEdicao(false);
+          setListaBimestresPreenchidos(
+            resposta.data
+              .filter(c => c.descricao && c.descricao.length > 0)
+              .map(c => {
+                return { nome: `${c.bimestre} º Bimestre`, valor: c.bimestre };
+              })
+          );
         })
         .catch(e => {
           setCarregandoDados(false);
@@ -318,18 +335,19 @@ const PlanoAnual = () => {
     }
   }, [turmaSelecionada]);
 
+  const fecharCopiarConteudo = () => {
+    setExibirCopiarConteudo(false);
+  };
+
   return (
     <>
-      {/* <CopiarConteudo
+      <CopiarConteudo
         visivel={exibirCopiarConteudo}
-        anoLetivo={turmaSelecionada.anoLetivo}
-        codigoDisciplinaSelecionada={codigoDisciplinaSelecionada}
-        unidadeEscolar={turmaSelecionada.unidadeEscolar}
+        listaBimestresPreenchidos={listaBimestresPreenchidos}
+        componenteCurricularEolId={codigoDisciplinaSelecionada}
         turmaId={turmaSelecionada.turma}
-        onCancelarCopiarConteudo={() => setExibirCopiarConteudo(false)}
-        onCloseCopiarConteudo={() => setExibirCopiarConteudo(false)}
-        onConfirmarCopiarConteudo
-      /> */}
+        onCloseCopiarConteudo={fecharCopiarConteudo}
+      />
       <Loader loading={carregandoDados}>
         <div className="col-md-12">
           {!possuiTurmaSelecionada ? (
@@ -374,14 +392,15 @@ const PlanoAnual = () => {
             />
           </div>
           <div className="col-md-8 d-flex justify-content-end">
-            {/* <Button
+            <Button
               label="Copiar Conteúdo"
               icon="share-square"
               className="mr-3"
               color={Colors.Azul}
               border
               onClick={abrirCopiarConteudo}
-            /> */}
+              disabled={emEdicao}
+            />
             <Button
               label="Voltar"
               icon="arrow-left"

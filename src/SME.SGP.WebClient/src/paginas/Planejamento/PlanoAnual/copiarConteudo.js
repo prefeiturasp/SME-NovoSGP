@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import { useSelector } from 'react-redux';
 import {
   ModalConteudoHtml,
   Loader,
@@ -10,102 +9,80 @@ import servicoPlanoAnual from '~/servicos/Paginas/ServicoPlanoAnual';
 
 const CopiarConteudo = ({
   visivel,
-  anoLetivo,
-  codigoDisciplinaSelecionada,
-  unidadeEscolar,
   turmaId,
-  onConfirmarCopiarConteudo,
-  onCancelarCopiarConteudo,
+  componenteCurricularEolId,
   onCloseCopiarConteudo,
-  onChangeCopiarConteudo,
+  listaBimestresPreenchidos,
 }) => {
   const [turmasSelecionadas, setTurmasSelecionadas] = useState([]);
-  const [turmasComPlanoAnual, setTurmasComPlanoAnual] = useState([]);
+  const [bimestresSelecionados, setBimestresSelecionados] = useState([]);
   const [listaTurmas, setListaTurmas] = useState([]);
   const [loader, setLoader] = useState(false);
 
-  const turmasUsuario = useSelector(c => c.usuario.turmasUsuario);
+  useEffect(() => {
+    if (componenteCurricularEolId && turmaId)
+      servicoPlanoAnual
+        .obterTurmasParaCopia(turmaId, componenteCurricularEolId)
+        .then(c => {
+          setListaTurmas(c.data);
+        })
+        .catch(e => {
+          debugger;
+        });
+  }, [componenteCurricularEolId, turmaId]);
+
+  const fecharCopiarConteudo = () => {
+    setTurmasSelecionadas([]);
+    setBimestresSelecionados([]);
+    onCloseCopiarConteudo();
+  };
 
   useEffect(() => {
-    servicoPlanoAnual
-      .obterTurmasParaCopia(
-        turmasUsuario,
-        anoLetivo,
-        codigoDisciplinaSelecionada,
-        unidadeEscolar,
-        turmaId
-      )
-      .then(c => {
-        setListaTurmas(c);
-      })
-      .catch(e => {
-        debugger;
-      });
-  }, []);
+    console.log(listaBimestresPreenchidos);
+  }, [listaBimestresPreenchidos]);
 
-  const modalCopiarConteudoAlertaVisivel = () => {
-    return turmasSelecionadas.some(selecionada =>
-      turmasComPlanoAnual.includes(selecionada)
-    );
-  };
-
-  const modalCopiarConteudoAtencaoTexto = () => {
-    const turmasReportar = turmasUsuario
-      ? turmasUsuario
-          .filter(
-            turma =>
-              turmasSelecionadas.includes(`${turma.valor}`) &&
-              turmasComPlanoAnual.includes(turma.valor)
-          )
-          .map(turma => turma.desc)
-      : [];
-
-    return turmasReportar.length > 1
-      ? `As turmas ${turmasReportar.join(
-          ', '
-        )} já possuem plano anual que serão sobrescritos ao realizar a cópia. Deseja continuar?`
-      : `A turma ${turmasReportar[0]} já possui plano anual que será sobrescrito ao realizar a cópia. Deseja continuar?`;
-  };
+  const copiar = () => {};
 
   return (
     <ModalConteudoHtml
       key="copiarConteudo"
       visivel={visivel}
-      onConfirmacaoPrincipal={onConfirmarCopiarConteudo}
-      onConfirmacaoSecundaria={onCancelarCopiarConteudo}
-      onClose={onCloseCopiarConteudo}
+      // onConfirmacaoPrincipal={onConfirmarCopiarConteudo}
+      onConfirmacaoSecundaria={fecharCopiarConteudo}
+      onClose={fecharCopiarConteudo}
       labelBotaoPrincipal="Copiar"
-      tituloAtencao={modalCopiarConteudoAlertaVisivel() ? 'Atenção' : null}
-      perguntaAtencao={
-        modalCopiarConteudoAlertaVisivel()
-          ? modalCopiarConteudoAtencaoTexto()
-          : null
-      }
+      // tituloAtencao="Atenção"
+      // perguntaAtencao="pergunta"
       labelBotaoSecundario="Cancelar"
       titulo="Copiar Conteúdo"
       closable={false}
       loader={loader}
-      desabilitarBotaoPrincipal={
-        turmasSelecionadas && turmasSelecionadas.length < 1
-      }
+      desabilitarBotaoPrincipal={false}
     >
-      <Loader loading={loader}>
-        <Label
-          htmlFor="SelecaoTurma"
-          alt="Selecione uma ou mais turmas de destino"
-        >
-          Copiar para a(s) turma(s)
-        </Label>
+      <div>
+        <label>Copiar para a(s) turma(s)</label>
         <SelectComponent
           id="SelecaoTurma"
           lista={listaTurmas}
-          valueOption="valor"
-          valueText="desc"
-          onChange={onChangeCopiarConteudo}
+          valueOption="codTurma"
+          valueText="nomeTurma"
           valueSelect={turmasSelecionadas}
           multiple
+          placeholder="Selecione uma ou mais turmas"
+          onChange={turmas => setTurmasSelecionadas(turmas)}
         />
-      </Loader>
+        <label>Copiar para o(s) bimestre(s)</label>
+        <SelectComponent
+          id="bimestres"
+          lista={listaBimestresPreenchidos}
+          valueOption="valor"
+          valueText="nome"
+          valueSelect={bimestresSelecionados}
+          multiple
+          placeholder="Selecione um ou mais bimestres"
+          onChange={turmas => setBimestresSelecionados(turmas)}
+        />
+      </div>
     </ModalConteudoHtml>
   );
 };
