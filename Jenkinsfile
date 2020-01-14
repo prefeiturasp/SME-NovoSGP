@@ -16,7 +16,7 @@ pipeline {
       stage('CheckOut') {
         steps {
           //git 'https://github.com/prefeiturasp/SME-NovoSGP.git'
-          checkout([$class: 'GitSCM', branches: [[name: '*/${GIT_BRANCH}']], doGenerateSubmoduleConfigurations: false, extensions: [], submoduleCfg: [], userRemoteConfigs: [[url: 'https://github.com/prefeiturasp/SME-NovoSGP.git']]])  
+          checkout scm
           
           sh "echo MINHA BRANCH É ${GIT_BRANCH}"
           //sh 'printenv'
