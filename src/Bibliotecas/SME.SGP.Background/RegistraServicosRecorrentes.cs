@@ -18,6 +18,8 @@ namespace SME.SGP.Background
 
             // de segunda a sexta as 10, 14 e 16 horas
             Cliente.ExecutarPeriodicamente<IServicoAbrangencia>(c => c.SincronizarEstruturaInstitucionalVigenteCompleta(), "0 13,17,19 * * 1-5");
+
+            Cliente.Executar<IServicoAbrangencia>(c => c.SincronizarEstruturaInstitucionalVigenteCompleta());
         }
     }
 }
