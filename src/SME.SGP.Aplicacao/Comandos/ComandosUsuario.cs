@@ -223,11 +223,6 @@ namespace SME.SGP.Aplicacao
             return retorno;
         }
 
-        public void ExecutarWorkerAbrangencia()
-        {
-            Background.Core.Cliente.Executar<IServicoAbrangencia>(c => c.SincronizarEstruturaInstitucionalVigenteCompleta());
-        }
-
         public async Task<RevalidacaoTokenDto> RevalidarLogin()
         {
             // Obter Login do token atual

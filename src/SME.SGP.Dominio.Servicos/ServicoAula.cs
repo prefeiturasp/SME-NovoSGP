@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.Configuration;
+using SME.Background.Core;
 using SME.SGP.Aplicacao;
 using SME.SGP.Aplicacao.Integracoes;
 using SME.SGP.Aplicacao.Integracoes.Respostas;
@@ -229,7 +230,7 @@ namespace SME.SGP.Dominio.Servicos
             // Verifica recorrencia da gravação
             if (recorrencia != RecorrenciaAula.AulaUnica)
             {
-                Background.Core.Cliente.Executar(() => GravarRecorrencia(ehInclusao, aula, usuario, recorrencia));
+                Cliente.Executar(() => GravarRecorrencia(ehInclusao, aula, usuario, recorrencia));
 
                 var mensagem = ehInclusao ? "cadastrada" : "alterada";
                 return $"Aula {mensagem} com sucesso. Serão {mensagem}s aulas recorrentes, em breve você receberá uma notificação com o resultado do processamento.";
@@ -509,9 +510,9 @@ namespace SME.SGP.Dominio.Servicos
             return disciplina.Nome;
         }
 
-        private async void VerificaSeProfessorPodePersistirTurma(string codigoRf, string turmaId, DateTime dataAula)
+        private void VerificaSeProfessorPodePersistirTurma(string codigoRf, string turmaId, DateTime dataAula)
         {
-            if (!await servicoEOL.ProfessorPodePersistirTurma(codigoRf, turmaId, dataAula))
+            if (!servicoEOL.ProfessorPodePersistirTurma(codigoRf, turmaId, dataAula).Result)
                 throw new NegocioException("Você não pode fazer alterações ou inclusões nesta turma e data.");
         }
     }
