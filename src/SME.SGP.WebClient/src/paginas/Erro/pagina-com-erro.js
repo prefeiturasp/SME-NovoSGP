@@ -4,30 +4,9 @@ import Button from '~/componentes/button';
 import { Colors } from '~/componentes/colors';
 import history from '~/servicos/history';
 import { URL_HOME } from '~/constantes/url';
-import styled from 'styled-components';
+import { Corpo } from './pagina-com-erro.css';
 
 const PaginaComErro = () => {
-  const Corpo = styled.div`
-    display: flex;
-    justify-content: center;
-    flex-direction: column;
-    align-items: center;
-    min-height: 400px;
-    font-size: 16px;
-    span {
-      padding-bottom: 10px !important;
-    }
-
-    .msg-principal {
-      font-size: 24px;
-    }
-
-    .not-found {
-      font-size: 70px;
-      padding-bottom: 10px;
-    }
-  `;
-
   const onClickVoltar = () => {
     history.push(URL_HOME);
   };
