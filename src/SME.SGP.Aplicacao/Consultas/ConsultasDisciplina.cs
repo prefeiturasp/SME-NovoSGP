@@ -111,7 +111,7 @@ namespace SME.SGP.Aplicacao
                         CodigoComponenteCurricular = disciplina.CodigoComponenteCurricular,
                         Nome = disciplina.Nome,
                         Regencia = disciplina.Regencia,
-                        DocenciaCompartilhada = disciplina.DocenciaCompartilhada,
+                        Compartilhada = disciplina.Compartilhada,
                         PossuiObjetivos = !turmaPrograma && await consultasObjetivoAprendizagem
                         .DisciplinaPossuiObjetivosDeAprendizagem(disciplina.CodigoComponenteCurricular)
                     });
@@ -128,7 +128,8 @@ namespace SME.SGP.Aplicacao
                 {
                     CodigoComponenteCurricular = disciplinaEol.CodigoComponenteCurricular,
                     Nome = disciplinaEol.Nome,
-                    Regencia = disciplinaEol.Regencia
+                    Regencia = disciplinaEol.Regencia,
+                    Compartilhada = disciplinaEol.Compartilhada
                 };
             }
         }
