@@ -16,12 +16,12 @@ namespace SME.SGP.Api.Controllers
     public class CompensacaoAusenciaController : ControllerBase
     {
         [HttpGet()]
-        [ProducesResponseType(typeof(CompensacaoAusenciaListagemDto), 200)]
+        [ProducesResponseType(typeof(PaginacaoResultadoDto<CompensacaoAusenciaListagemDto>), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         //[Permissao(Permissao.ADAP_C, Policy = "Bearer")]
         public async Task<IActionResult> listar([FromQuery] FiltroCompensacoesAusenciaDto filtros, [FromServices] IConsultasCompensacaoAusencia consultas)
         {
-            return Ok(await consultas.Listar(filtros.TurmaId, filtros.DisciplinaId, filtros.Bimestre, filtros.AtividadeNome, filtros.AlunoNome));
+            return Ok(await consultas.ListarPaginado(filtros.TurmaId, filtros.DisciplinaId, filtros.Bimestre, filtros.AtividadeNome, filtros.AlunoNome));
         }
     }
 }

@@ -9,6 +9,6 @@ namespace SME.SGP.Aplicacao
 {
     public interface IConsultasCompensacaoAusencia
     {
-        Task<IEnumerable<CompensacaoAusenciaListagemDto>> Listar(string turmaId, string disciplinaId, int bimestre, string nomeAtividade, string nomeAluno);
+        Task<PaginacaoResultadoDto<CompensacaoAusenciaListagemDto>> ListarPaginado(string turmaId, string disciplinaId, int bimestre, string nomeAtividade, string nomeAluno);
     }
 }
