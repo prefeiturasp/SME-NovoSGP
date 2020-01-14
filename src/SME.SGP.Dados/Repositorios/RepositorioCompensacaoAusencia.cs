@@ -22,7 +22,8 @@ namespace SME.SGP.Dados
                           from compensacao_ausencia c
                          inner join turma t on t.id = c.turma_id
                           left join compensacao_ausencia_aluno a on a.compensacao_ausencia_id = c.id
-                          where t.turma_id = @turmaId");
+                          where not c.excluido
+                            and t.turma_id = @turmaId");
 
             if (!string.IsNullOrEmpty(disciplinaId))
                 query.AppendLine("and c.disciplina_id = @disciplinaId");
@@ -54,6 +55,19 @@ namespace SME.SGP.Dados
                 splitOn: "id, id");
 
             return compensacoes;
+        }
+
+        public async Task<CompensacaoAusencia> ObterPorAnoTurmaENome(int anoLetivo, long turmaId, string nome, long idIgnorar)
+        {
+            var query = @"select * 
+                            from compensacao_ausencia c
+                          where not excluido
+                            and ano_letivo = @anoLetivo
+                            and turma_id = @turmaId
+                            and nome = @nome
+                            and id <> @idIgnorar";
+
+            return await database.Conexao.QueryFirstOrDefaultAsync<CompensacaoAusencia>(query, new { anoLetivo, turmaId, nome, idIgnorar });
         }
     }
 }
