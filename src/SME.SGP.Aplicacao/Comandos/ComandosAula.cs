@@ -58,6 +58,7 @@ namespace SME.SGP.Aplicacao
             }
             aulaEntity.UeId = dto.UeId;
             aulaEntity.DisciplinaId = dto.DisciplinaId;
+            aulaEntity.DisciplinaCompartilhadaId = dto.DisciplinaCompartilhadaId;
             aulaEntity.TurmaId = dto.TurmaId;
             aulaEntity.TipoCalendarioId = dto.TipoCalendarioId;
             aulaEntity.DataAula = dto.DataAula.Local();
