@@ -94,6 +94,7 @@ const FrequenciaPlanoAula = () => {
   const [mostrarErros, setMostarErros] = useState(false);
 
   const [carregandoSalvar, setCarregandoSalvar] = useState(false);
+  const [dataSugerida, setDataSugerida] = useState('');
 
   const obterDatasDeAulasDisponiveis = useCallback(
     async disciplinaId => {
@@ -152,16 +153,13 @@ const FrequenciaPlanoAula = () => {
   };
 
   useEffect(() => {
-    if (turmaId || turmaSelecionada.turma) setCarregandoDisciplinas(true);
-
     const obterDisciplinas = async () => {
+      setCarregandoDisciplinas(true);
       const disciplinas = await ServicoDisciplina.obterDisciplinasPorTurma(
         turmaId
       );
-      if (disciplinas.data) {
+      if (disciplinas.data && disciplinas.data.length) {
         setListaDisciplinas(disciplinas.data);
-      } else {
-        setListaDisciplinas([]);
       }
       if (disciplinas.data && disciplinas.data.length === 1) {
         const disciplina = disciplinas.data[0];
@@ -176,17 +174,27 @@ const FrequenciaPlanoAula = () => {
       setCarregandoDisciplinas(false);
     };
 
-    if (turmaId || turmaSelecionada.turma) {
-      setDisciplinaSelecionada(undefined);
-      setDisciplinaIdSelecionada(undefined);
+    // Metodo usando para controlar quando troca uma turna no filtro principal
+    // So pode consultar apois todoas as flags foram resetadas
+    const podeConsultar = () => {
+      return (
+        disciplinaSelecionada === undefined &&
+        disciplinaIdSelecionada === undefined &&
+        dataSelecionada === '' &&
+        frequencia &&
+        frequencia.length < 1 &&
+        aulaId === 0 &&
+        listaDisciplinas &&
+        listaDisciplinas.length < 1 &&
+        listaDatasAulas &&
+        listaDatasAulas.length < 1 &&
+        diasParaHabilitar &&
+        diasParaHabilitar.length < 1
+      );
+    };
+
+    if (podeConsultar() && (turmaId || turmaSelecionada.turma)) {
       obterDisciplinas(turmaId || turmaSelecionada.turma);
-    } else {
-      resetarTelaFrequencia();
-      setAulaId(0);
-      setListaDisciplinas([]);
-      setListaDatasAulas([]);
-      setDesabilitarDisciplina(false);
-      setDiasParaHabilitar([]);
     }
 
     const somenteConsultarFrequencia = verificaSomenteConsulta(permissoesTela);
@@ -197,7 +205,26 @@ const FrequenciaPlanoAula = () => {
     permissoesTela,
     turmaId,
     turmaSelecionada.turma,
+    disciplinaSelecionada,
+    disciplinaIdSelecionada,
+    dataSelecionada,
+    frequencia,
+    aulaId,
+    listaDisciplinas,
+    listaDatasAulas,
+    diasParaHabilitar,
   ]);
+
+  // Caso tenha alteração abaixo alterar o podeConsultar() também!
+  useEffect(() => {
+    setDataSugerida('');
+    resetarTelaFrequencia();
+    setAulaId(0);
+    setListaDisciplinas([]);
+    setListaDatasAulas([]);
+    setDesabilitarDisciplina(false);
+    setDiasParaHabilitar([]);
+  }, [turmaSelecionada.turma]);
 
   useEffect(() => {
     const desabilitar =
@@ -583,21 +610,26 @@ const FrequenciaPlanoAula = () => {
     [obterAulaSelecionada, resetarPlanoAula, obterPlanoAula]
   );
 
-  const obterDataAulaSugerida = useCallback(
-    datasDeAulas => {
-      const habilitar = datasDeAulas.map(item =>
-        window.moment(item.data).format('YYYY-MM-DD')
-      );
-      const dataAtual = window.moment(new Date()).format('YYYY-MM-DD');
-      const dataSugerida = habilitar.find(
-        data => data <= window.moment(dataAtual).format('YYYY-MM-DD')
-      );
-      if (dataSugerida) {
-        validaSeTemIdAula(window.moment(dataSugerida));
-      }
-    },
-    [validaSeTemIdAula]
-  );
+  const obterDataAulaSugerida = useCallback(datasDeAulas => {
+    const habilitar = datasDeAulas.map(item =>
+      window.moment(item.data).format('YYYY-MM-DD')
+    );
+    const dataAtual = window.moment(new Date()).format('YYYY-MM-DD');
+    const datasIgualMenorHoje = habilitar.filter(
+      d => d <= window.moment(dataAtual).format('YYYY-MM-DD')
+    );
+
+    const ordenar = (a, b) => {
+      return window.moment(b).valueOf() - window.moment(a).valueOf();
+    };
+    const retorno = datasIgualMenorHoje.sort(ordenar);
+
+    if (retorno && retorno.length && retorno[0]) {
+      setDataSugerida(retorno[0]);
+    } else {
+      setDataSugerida('');
+    }
+  }, []);
 
   const onChangeData = async data => {
     if (modoEdicaoFrequencia || modoEdicaoPlanoAula) {
@@ -617,6 +649,13 @@ const FrequenciaPlanoAula = () => {
       validaSeTemIdAula(data);
     }
   };
+
+  useEffect(() => {
+    if (dataSugerida) {
+      validaSeTemIdAula(window.moment(dataSugerida));
+      setDataSugerida('');
+    }
+  }, [dataSugerida, validaSeTemIdAula]);
 
   useEffect(() => {
     if (listaDatasAulas && listaDatasAulas.length) {
@@ -727,8 +766,11 @@ const FrequenciaPlanoAula = () => {
                   valueText="nome"
                   valueSelect={disciplinaIdSelecionada}
                   onChange={onChangeDisciplinas}
-                  placeholder="Disciplina"
-                  disabled={desabilitarDisciplina}
+                  placeholder="Selecione um componente curricular"
+                  disabled={
+                    desabilitarDisciplina ||
+                    !(usuario && turmaSelecionada.turma)
+                  }
                 />
               </Loader>
             </div>

@@ -524,7 +524,9 @@ namespace SME.SGP.Aplicacao.Integracoes
         {
             httpClient.DefaultRequestHeaders.Clear();
 
-            var resposta = await httpClient.GetAsync($"professores/{professorRf}/turmas/{codigoTurma}/atribuicao/verificar/data?dataConsulta={data.ToShortDateString()}");
+            var dataString = data.ToString("s");
+
+            var resposta = await httpClient.GetAsync($"professores/{professorRf}/turmas/{codigoTurma}/atribuicao/verificar/data?dataConsulta={dataString}");
             if (resposta.IsSuccessStatusCode)
             {
                 var json = resposta.Content.ReadAsStringAsync().Result;
@@ -571,7 +573,6 @@ namespace SME.SGP.Aplicacao.Integracoes
             }
             return false;
         }
-
         private IEnumerable<DisciplinaDto> MapearParaDtoDisciplinas(IEnumerable<RetornoDisciplinaDto> disciplinas)
         {
             return disciplinas.Select(x => new DisciplinaDto
@@ -612,6 +613,36 @@ namespace SME.SGP.Aplicacao.Integracoes
                 return JsonConvert.DeserializeObject<IEnumerable<DisciplinaResposta>>(json);
             }
             return null;
+        }
+
+        public async Task<bool> ExisteUsuarioComMesmoEmail(string login, string email)
+        {
+            var resposta = await httpClient.GetAsync($"autenticacaoSgp/{login}/ValidarEmailExistente/{email}/");
+
+            if (resposta.IsSuccessStatusCode)
+            {
+                var json = await resposta.Content.ReadAsStringAsync();
+                return JsonConvert.DeserializeObject<bool>(json);
+            }
+            return false;
+        }
+
+        public async Task AlterarEmail(string login, string email)
+        {
+            httpClient.DefaultRequestHeaders.Clear();
+
+            var valoresParaEnvio = new List<KeyValuePair<string, string>> {
+                { new KeyValuePair<string, string>("usuario", login) },
+                { new KeyValuePair<string, string>("email", email) }};
+
+            var resposta = await httpClient.PostAsync($"AutenticacaoSgp/AlterarEmail", new FormUrlEncodedContent(valoresParaEnvio));
+
+            if (resposta.IsSuccessStatusCode)
+                return;
+
+            var mensagem = await resposta.Content.ReadAsStringAsync();
+
+            throw new NegocioException(mensagem);
         }
     }
 }
