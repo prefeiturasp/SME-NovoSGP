@@ -119,6 +119,7 @@ namespace SME.SGP.Aplicacao
         public async Task Excluir(long idAtividadeAvaliativa)
         {
             var atividadeAvaliativa = repositorioAtividadeAvaliativa.ObterPorId(idAtividadeAvaliativa);
+
             if (atividadeAvaliativa is null)
                 throw new NegocioException("Não foi possível localizar esta avaliação.");
 
@@ -131,7 +132,7 @@ namespace SME.SGP.Aplicacao
             var atividadeDisciplinas = await repositorioAtividadeAvaliativaDisciplina.ListarPorIdAtividade(idAtividadeAvaliativa);
 
             unitOfWork.IniciarTransacao();
-            
+
             atividadeAvaliativa.Excluir();
             await repositorioAtividadeAvaliativa.SalvarAsync(atividadeAvaliativa);
 
@@ -424,9 +425,9 @@ namespace SME.SGP.Aplicacao
             return mensagens;
         }
 
-        private async void VerificaSeProfessorPodePersistirTurma(string codigoRf, string turmaId, DateTime dataAula)
+        private void VerificaSeProfessorPodePersistirTurma(string codigoRf, string turmaId, DateTime dataAula)
         {
-            if (!await servicoEOL.ProfessorPodePersistirTurma(codigoRf, turmaId, dataAula))
+            if (!servicoEOL.ProfessorPodePersistirTurma(codigoRf, turmaId, dataAula).Result)
                 throw new NegocioException("Você não pode fazer alterações ou inclusões nesta turma e data.");
         }
     }

@@ -121,7 +121,7 @@ namespace SME.SGP.Dominio
                 var notaParametro = repositorioNotaParametro.ObterPorDataAvaliacao(atividadeAvaliativa.DataAvaliacao);
                 var turma = repositorioTurma.ObterTurmaComUeEDrePorId(atividadeAvaliativa.TurmaId);
 
-                var periodosEscolares = BuscarPeriodosEscolaresDaAtividade(atividadeAvaliativa, disciplinaId);
+                var periodosEscolares = BuscarPeriodosEscolaresDaAtividade(atividadeAvaliativa);
                 var periodoAtividade = periodosEscolares.FirstOrDefault(x => x.PeriodoInicio.Date <= atividadeAvaliativa.DataAvaliacao.Date && x.PeriodoFim.Date >= atividadeAvaliativa.DataAvaliacao.Date);
 
                 foreach (var nota in notasPorAvaliacao)
@@ -190,10 +190,13 @@ namespace SME.SGP.Dominio
             });
         }
 
-        private IEnumerable<PeriodoEscolar> BuscarPeriodosEscolaresDaAtividade(AtividadeAvaliativa atividadeAvaliativa, string disciplinaId)
+        private IEnumerable<PeriodoEscolar> BuscarPeriodosEscolaresDaAtividade(AtividadeAvaliativa atividadeAvaliativa)
         {
-            var dataFinal = atividadeAvaliativa.DataAvaliacao.AddHours(23).AddMinutes(59).AddSeconds(59);
-            var aula = repositorioAula.ObterAulaIntervaloTurmaDisciplina(atividadeAvaliativa.DataAvaliacao, dataFinal, atividadeAvaliativa.TurmaId, disciplinaId).Result;
+            var dataFinal = atividadeAvaliativa.DataAvaliacao.Date.AddHours(23).AddMinutes(59).AddSeconds(59);
+            var aula = repositorioAula.ObterAulaIntervaloTurmaDisciplina(atividadeAvaliativa.DataAvaliacao, dataFinal, atividadeAvaliativa.TurmaId, atividadeAvaliativa.Id).Result;
+
+            if (aula == null)
+                throw new NegocioException($"Não encontrada aula para a atividade avaliativa '{atividadeAvaliativa.NomeAvaliacao}' no dia {atividadeAvaliativa.DataAvaliacao.Date.ToString("dd/MM/yyyy")}");
 
             IEnumerable<PeriodoEscolar> periodosEscolares = repositorioPeriodoEscolar.ObterPorTipoCalendario(aula.TipoCalendarioId);
             return periodosEscolares;
@@ -313,7 +316,7 @@ namespace SME.SGP.Dominio
                 if (notaConceito.Id > 0)
                 {
                     var dataPesquisa = DateTime.Now;
-                    var periodosEscolares = BuscarPeriodosEscolaresDaAtividade(atividadeAvaliativa, disciplinaId);
+                    var periodosEscolares = BuscarPeriodosEscolaresDaAtividade(atividadeAvaliativa);
                     var periodoEscolar = periodosEscolares.FirstOrDefault(x => x.PeriodoInicio.Date <= dataPesquisa.Date && x.PeriodoFim.Date >= dataPesquisa.Date);
                     var periodoEscolarInformado = periodosEscolares.FirstOrDefault(x => x.PeriodoInicio.Date <= atividadeAvaliativa.DataAvaliacao.Date && x.PeriodoFim.Date >= atividadeAvaliativa.DataAvaliacao.Date);
                     var ehBimestreAtual = periodoEscolar.Bimestre.Equals(periodoEscolarInformado.Bimestre);
@@ -350,9 +353,9 @@ namespace SME.SGP.Dominio
             return result;
         }
 
-        private async void VerificaSeProfessorPodePersistirTurma(string codigoRf, string turmaId, DateTime dataAula)
+        private void VerificaSeProfessorPodePersistirTurma(string codigoRf, string turmaId, DateTime dataAula)
         {
-            if (!await servicoEOL.ProfessorPodePersistirTurma(codigoRf, turmaId, dataAula))
+            if (!servicoEOL.ProfessorPodePersistirTurma(codigoRf, turmaId, dataAula).Result)
                 throw new NegocioException("Você não pode fazer alterações ou inclusões nesta turma e data.");
         }
     }
