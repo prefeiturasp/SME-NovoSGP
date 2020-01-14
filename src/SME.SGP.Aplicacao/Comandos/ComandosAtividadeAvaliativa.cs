@@ -131,13 +131,16 @@ namespace SME.SGP.Aplicacao
             var atividadeDisciplinas = await repositorioAtividadeAvaliativaDisciplina.ListarPorIdAtividade(idAtividadeAvaliativa);
 
             unitOfWork.IniciarTransacao();
+            
+            atividadeAvaliativa.Excluir();
+            await repositorioAtividadeAvaliativa.SalvarAsync(atividadeAvaliativa);
 
             foreach (var atividadeDisciplina in atividadeDisciplinas)
             {
                 var disciplina = ObterDisciplina(atividadeDisciplina.DisciplinaId);
+
                 atividadeDisciplina.Excluir();
-                atividadeAvaliativa.Excluir();
-                await repositorioAtividadeAvaliativa.SalvarAsync(atividadeAvaliativa);
+
                 if (disciplina.Regencia)
                 {
                     var regencias = await repositorioAtividadeAvaliativaRegencia.Listar(atividadeAvaliativa.Id);
@@ -149,6 +152,8 @@ namespace SME.SGP.Aplicacao
                 }
                 await repositorioAtividadeAvaliativaDisciplina.SalvarAsync(atividadeDisciplina);
             }
+
+            unitOfWork.PersistirTransacao();
         }
 
         public async Task<IEnumerable<RetornoCopiarAtividadeAvaliativaDto>> Inserir(AtividadeAvaliativaDto dto)
