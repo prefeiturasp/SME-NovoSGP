@@ -7,20 +7,16 @@ pipeline {
     
     options {
       buildDiscarder(logRotator(numToKeepStr: '5', artifactNumToKeepStr: '5'))
-      disableConcurrentBuilds()              
+      disableConcurrentBuilds()
+      skipDefaultCheckout()  
     }
     
         
     stages {
       stage('CheckOut') {
         steps {
-          git 'https://github.com/prefeiturasp/SME-NovoSGP.git'
-          //checkout scm  
-          //sh 'ls -la'
-          sh "echo MINHA BRANCH É ${GIT_BRANCH}"
-          //sh 'printenv'
-            
-            
+          
+          checkout scm  
         }
       }
       
