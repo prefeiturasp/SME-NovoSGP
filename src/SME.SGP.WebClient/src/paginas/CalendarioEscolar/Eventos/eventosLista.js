@@ -40,7 +40,12 @@ const EventosLista = () => {
   const [tipoEvento, setTipoEvento] = useState(undefined);
   const [mensagemAlerta, setMesangemAlerta] = useState(false);
   const [eventosSelecionados, setEventosSelecionados] = useState([]);
-  const [filtro, setFiltro] = useState({});
+  const [filtro, setFiltro] = useState({
+    dreId: '',
+    ueId: '',
+    ehTodasDres: false,
+    ehTodasUes: false,
+  });
   const [selecionouCalendario, setSelecionouCalendario] = useState(false);
 
   const [carregandoTipos, setCarregandoTipos] = useState(false);
