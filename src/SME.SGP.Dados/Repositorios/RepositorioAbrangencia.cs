@@ -1,5 +1,4 @@
 ﻿using Dapper;
-using SME.SGP.Dados.Contexto;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Dominio.Interfaces;
@@ -24,7 +23,7 @@ namespace SME.SGP.Dados.Repositorios
 
         public void ExcluirAbrangencias(IEnumerable<long> ids)
         {
-            const string comando = @"delete from public.abrangencia where id in (#ids)";
+            const string comando = @"delete from public.abrangencia where id in (#ids) and historico = false";
 
             for (int i = 0; i < ids.Count(); i = i + 900)
             {
@@ -404,7 +403,7 @@ namespace SME.SGP.Dados.Repositorios
 
         public void RemoverAbrangenciasForaEscopo(string login, Guid perfil, TipoAbrangencia escopo)
         {
-            var query = "delete from abrangencia where usuario_id = (select id from usuario where login = @login) and perfil = @perfil and #escopo";
+            var query = "delete from abrangencia where usuario_id = (select id from usuario where login = @login) and historico = false and perfil = @perfil and #escopo";
 
             switch (escopo)
             {
