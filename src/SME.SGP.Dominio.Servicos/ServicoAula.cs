@@ -511,8 +511,8 @@ namespace SME.SGP.Dominio.Servicos
 
         private async void VerificaSeProfessorPodePersistirTurma(string codigoRf, string turmaId, DateTime dataAula)
         {
-            if (!await servicoEOL.ProfessorPodePersistirTurma(codigoRf, turmaId, dataAula))
-                throw new NegocioException("Você não pode fazer alterações ou inclusões nesta turma e data.");
+            //if (!await servicoEOL.ProfessorPodePersistirTurma(codigoRf, turmaId, dataAula))
+            //    throw new NegocioException("Você não pode fazer alterações ou inclusões nesta turma e data.");
         }
     }
 }
