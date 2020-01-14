@@ -89,6 +89,11 @@ namespace SME.SGP.Aplicacao
             foreach (var bimestrePlanoAnual in planoAnualDto.Bimestres)
             {
                 PlanoAnual planoAnual = ObterPlanoAnualSimplificado(planoAnualDto, bimestrePlanoAnual.Bimestre.Value);
+                if (planoAnual != null)
+                {
+                    if (usuarioAtual.PerfilAtual == Perfis.PERFIL_PROFESSOR && !servicoEOL.ProfessorPodePersistirTurma(usuarioAtual.CodigoRf, planoAnualDto.TurmaId.ToString(), DateTime.Now).Result)
+                        throw new NegocioException("Você não pode fazer alterações ou inclusões nesta turma e data.");
+                }
                 planoAnual = MapearParaDominio(planoAnualDto, planoAnual, bimestrePlanoAnual);
                 Salvar(planoAnualDto, planoAnual, bimestrePlanoAnual, usuarioAtual);
             }
@@ -198,12 +203,6 @@ namespace SME.SGP.Aplicacao
 
         private void Salvar(PlanoAnualDto planoAnualDto, PlanoAnual planoAnual, BimestrePlanoAnualDto bimestrePlanoAnualDto, Usuario usuario)
         {
-            if (usuario.PerfilAtual == Perfis.PERFIL_PROFESSOR)
-            {
-                if (!servicoEOL.ProfessorPodePersistirTurma(usuario.CodigoRf, planoAnualDto.TurmaId.ToString(), DateTime.Now).Result)
-                    throw new NegocioException("Você não pode fazer alterações ou inclusões nesta turma e data.");
-            }
-
             planoAnualDto.Id = repositorioPlanoAnual.Salvar(planoAnual);
             if (!planoAnual.Migrado)
                 AjustarObjetivosAprendizagem(planoAnualDto, bimestrePlanoAnualDto);
