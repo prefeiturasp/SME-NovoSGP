@@ -8,6 +8,7 @@ import Auditoria from '~/componentes/auditoria';
 import Button from '~/componentes/button';
 import Card from '~/componentes/card';
 import { Colors } from '~/componentes/colors';
+import Editor from '~/componentes/editor/editor';
 import SelectComponent from '~/componentes/select';
 import modalidade from '~/dtos/modalidade';
 import { confirmar, erros, sucesso } from '~/servicos/alertas';
@@ -35,15 +36,17 @@ const CompensacaoAusenciaForm = ({ match }) => {
     disciplina: undefined,
     bimestre: '',
     atividade: '',
+    detalhes: '',
   });
 
   const [validacoes] = useState(
     Yup.object({
       disciplina: Yup.string().required('Disciplina obrigatória'),
-      bimestre: Yup.string().required('Bimestre obrigatorio'),
+      bimestre: Yup.string().required('Bimestre obrigatório'),
       atividade: Yup.string()
         .required('Atividade obrigatória')
         .max(250, 'Máximo 250 caracteres'),
+      detalhes: Yup.string().required('Detalhe obrigatório'),
     })
   );
 
@@ -70,6 +73,7 @@ const CompensacaoAusenciaForm = ({ match }) => {
             disciplina: String(disciplina.codigoComponenteCurricular),
             bimestre: '',
             atividade: '',
+            detalhes: '',
           };
           setValoresIniciais(valoresIniciaisForm);
         }
@@ -105,7 +109,7 @@ const CompensacaoAusenciaForm = ({ match }) => {
     const consultaPorId = async () => {
       setBreadcrumbManual(
         match.url,
-        'Compensação de Ausência',
+        'Alterar Compensação de Ausência',
         '/diario-classe/compensacao-ausencia'
       );
       setIdCompensacaoAusencia(match.params.id);
@@ -326,6 +330,14 @@ const CompensacaoAusenciaForm = ({ match }) => {
                     placeholder="Atividade"
                     name="atividade"
                     onChange={onChangeCampos}
+                  />
+                </div>
+                <div className="col-sm-12 col-md-12 col-lg-12 col-xl-12 mb-2">
+                  <Editor
+                    form={form}
+                    name="detalhes"
+                    onChange={onChangeCampos}
+                    label="Detalhamento da atividade"
                   />
                 </div>
               </div>
