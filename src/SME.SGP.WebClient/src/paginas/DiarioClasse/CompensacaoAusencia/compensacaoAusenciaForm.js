@@ -2,12 +2,11 @@ import { Form, Formik } from 'formik';
 import React, { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import * as Yup from 'yup';
-import { CampoTexto, Loader } from '~/componentes';
+import { CampoTexto, Colors, Label, Loader } from '~/componentes';
 import Cabecalho from '~/componentes-sgp/cabecalho';
 import Auditoria from '~/componentes/auditoria';
 import Button from '~/componentes/button';
 import Card from '~/componentes/card';
-import { Colors } from '~/componentes/colors';
 import Editor from '~/componentes/editor/editor';
 import SelectComponent from '~/componentes/select';
 import modalidade from '~/dtos/modalidade';
@@ -16,6 +15,8 @@ import { setBreadcrumbManual } from '~/servicos/breadcrumb-services';
 import history from '~/servicos/history';
 import ServicoCompensacaoAusencia from '~/servicos/Paginas/DiarioClasse/ServicoCompensacaoAusencia';
 import ServicoDisciplina from '~/servicos/Paginas/ServicoDisciplina';
+
+import { Badge } from './styles';
 
 const CompensacaoAusenciaForm = ({ match }) => {
   const usuario = useSelector(store => store.usuario);
@@ -31,6 +32,9 @@ const CompensacaoAusenciaForm = ({ match }) => {
   const [listaBimestres, setListaBimestres] = useState([]);
   const [auditoria, setAuditoria] = useState([]);
   const [exibirAuditoria, setExibirAuditoria] = useState(false);
+  const [listaDisciplinasRegencia, setListaDisciplinasRegencia] = useState([]);
+  const [temRegencia, setTemRegencia] = useState(false);
+  const [refForm, setRefForm] = useState({});
 
   const [valoresIniciais, setValoresIniciais] = useState({
     disciplina: undefined,
@@ -50,7 +54,62 @@ const CompensacaoAusenciaForm = ({ match }) => {
     })
   );
 
-  const resetarForm = () => {};
+  const resetarForm = () => {
+    if (refForm && refForm.resetForm) {
+      refForm.resetForm();
+    }
+    setListaDisciplinasRegencia([]);
+    setTemRegencia(false);
+  };
+
+  const onChangeCampos = () => {
+    if (!modoEdicao) {
+      setModoEdicao(true);
+    }
+  };
+
+  const selecionarDisciplina = indice => {
+    const disciplinas = [...listaDisciplinasRegencia];
+    disciplinas[indice].selecionada = !disciplinas[indice].selecionada;
+    setListaDisciplinasRegencia(disciplinas);
+    onChangeCampos();
+  };
+
+  const obterDisciplinasRegencia = async codigoDisciplinaSelecionada => {
+    const disciplina = listaDisciplinas.find(
+      c => c.codigoComponenteCurricular == codigoDisciplinaSelecionada
+    );
+    // TODO REMOVER
+    if (disciplina) {
+      disciplina.regencia = true;
+    }
+    // TODO REMOVER
+    if (disciplina && disciplina.regencia) {
+      const disciplinasRegencia = await ServicoDisciplina.obterDisciplinasPlanejamento(
+        codigoDisciplinaSelecionada,
+        turmaSelecionada.turma,
+        false,
+        disciplina.regencia
+      ).catch(e => erros(e));
+
+      if (
+        disciplinasRegencia &&
+        disciplinasRegencia.data &&
+        disciplinasRegencia.data.length
+      ) {
+        setListaDisciplinasRegencia(disciplinasRegencia.data);
+        setTemRegencia(true);
+      }
+    } else {
+      setListaDisciplinasRegencia([]);
+      setTemRegencia(false);
+    }
+  };
+
+  const onChangeDisciplina = codigoDisciplina => {
+    obterDisciplinasRegencia(codigoDisciplina);
+    onChangeCampos();
+  };
 
   useEffect(() => {
     const obterDisciplinas = async () => {
@@ -213,15 +272,15 @@ const CompensacaoAusenciaForm = ({ match }) => {
     }
   };
 
-  const onChangeCampos = () => {
-    if (!modoEdicao) {
-      setModoEdicao(true);
-    }
-  };
-
   const onClickCadastrar = async valoresForm => {
     const paramas = valoresForm;
     paramas.id = idCompensacaoAusencia;
+
+    if (temRegencia) {
+      paramas.listaDisciplinasRegencia = listaDisciplinasRegencia.filter(
+        item => item.selecionada
+      );
+    }
     console.log(paramas);
 
     const cadastrado = await ServicoCompensacaoAusencia.salvar(
@@ -244,6 +303,7 @@ const CompensacaoAusenciaForm = ({ match }) => {
       <Card>
         <Formik
           enableReinitialize
+          ref={refF => setRefForm(refF)}
           initialValues={valoresIniciais}
           validationSchema={validacoes}
           onSubmit={onClickCadastrar}
@@ -304,7 +364,7 @@ const CompensacaoAusenciaForm = ({ match }) => {
                       lista={listaDisciplinas}
                       valueOption="codigoComponenteCurricular"
                       valueText="nome"
-                      onChange={onChangeCampos}
+                      onChange={onChangeDisciplina}
                       placeholder="Disciplina"
                       disabled={desabilitarDisciplina}
                     />
@@ -332,6 +392,29 @@ const CompensacaoAusenciaForm = ({ match }) => {
                     onChange={onChangeCampos}
                   />
                 </div>
+                {temRegencia && listaDisciplinasRegencia && (
+                  <div className="col-sm-12 col-md-12 col-lg-5 col-xl-5 mb-2">
+                    <Label text="Componente curricular" />
+                    {listaDisciplinasRegencia.map((disciplina, indice) => {
+                      return (
+                        <Badge
+                          key={disciplina.codigoComponenteCurricular}
+                          role="button"
+                          onClick={e => {
+                            e.preventDefault();
+                            selecionarDisciplina(indice);
+                          }}
+                          aria-pressed={disciplina.selecionada && true}
+                          alt={disciplina.nome}
+                          className="badge badge-pill border text-dark bg-white font-weight-light px-2 py-1 mr-2"
+                        >
+                          {disciplina.nome}
+                        </Badge>
+                      );
+                    })}
+                  </div>
+                )}
+
                 <div className="col-sm-12 col-md-12 col-lg-12 col-xl-12 mb-2">
                   <Editor
                     form={form}
