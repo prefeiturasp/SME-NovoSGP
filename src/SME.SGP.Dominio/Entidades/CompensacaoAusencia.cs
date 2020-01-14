@@ -11,6 +11,7 @@ namespace SME.SGP.Dominio
             Alunos = new List<CompensacaoAusenciaAluno>();
         }
 
+        public int AnoLetivo { get; set; }
         public bool Excluido { get; set; }
         public bool Migrado { get; set; }
         public int Bimestre { get; set; }

@@ -37,6 +37,8 @@ namespace SME.SGP.Dominio
         public double TotalAulas { get; set; }
         public double TotalAusencias { get; set; }
 
+        public double NumeroFaltasNaoCompensadas { get => TotalAusencias; }
+
         public FrequenciaAluno DefinirFrequencia(int totalAusencias, int totalAulas, TipoFrequenciaAluno tipoFrequencia)
         {
             Tipo = tipoFrequencia;
