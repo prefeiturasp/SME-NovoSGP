@@ -11,6 +11,7 @@ namespace SME.SGP.Dominio
         }
 
         public int Ano { get; set; }
+        public bool Excluido { get; set; }
         public string DreId { get; set; }
         public IEnumerable<WorkflowAprovacaoNivel> Niveis { get { return niveis; } }
         public string NotifacaoMensagem { get; set; }

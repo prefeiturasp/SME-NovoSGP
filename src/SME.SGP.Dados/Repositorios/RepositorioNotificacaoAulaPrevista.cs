@@ -24,13 +24,14 @@ namespace SME.SGP.Dados.Repositorios
                           inner join ue on ue.id = t.ue_id
                           inner join dre on dre.id = ue.dre_id
                           inner join periodo_escolar pe on a.tipo_calendario_id = pe.tipo_calendario_id and a.data_aula between pe.periodo_inicio and pe.periodo_fim  
-                          left join aula_prevista ap on pe.tipo_calendario_id = ap.tipo_calendario_id and pe.bimestre = ap.bimestre
+                          left join aula_prevista ap on ap.tipo_calendario_id = pe.tipo_calendario_id
+                          left join aula_prevista_bimestre apb on ap.id = apb.aula_prevista_id and pe.bimestre = apb.bimestre
                          where (a.id is null or not a.excluido)
                            and now() between pe.periodo_inicio and pe.periodo_fim
                            and DATE_PART('day', age(pe.periodo_fim, date(now()))) <= @limiteDias
                          group by
-                         	a.turma_id, t.nome, ue.ue_id , ue.nome, dre.dre_id, dre.nome, ap.aulas_previstas, a.disciplina_id, pe.bimestre
-                         having  COUNT(a.*) filter (where a.tipo_aula = 1) <> coalesce(ap.aulas_previstas, 0)
+                         	a.turma_id, t.nome, ue.ue_id , ue.nome, dre.dre_id, dre.nome, apb.aulas_previstas, a.disciplina_id, pe.bimestre
+                         having  COUNT(a.*) filter (where a.tipo_aula = 1) <> coalesce(apb.aulas_previstas, 0)
                         order by dre.dre_id, ue.ue_id, a.turma_id";
 
             return database.Conexao.Query<RegistroAulaPrevistaDivergenteDto>(query, new { limiteDias });
