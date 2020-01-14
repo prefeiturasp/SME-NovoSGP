@@ -14,6 +14,9 @@ namespace SME.SGP.Dominio
         Reprovado = 3,
 
         [Display(Name = "Sem Status")]
-        SemStatus = 4
+        SemStatus = 4,
+
+        [Display(Name = "Excluído")]
+        Excluido = 5
     }
 }

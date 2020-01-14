@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace SME.SGP.Dominio.Servicos
 {
@@ -23,6 +24,8 @@ namespace SME.SGP.Dominio.Servicos
         private readonly IServicoNotificacao servicoNotificacao;
         private readonly IServicoUsuario servicoUsuario;
         private readonly IRepositorioWorkflowAprovacaoNivel workflowAprovacaoNivel;
+        private readonly IRepositorioWorkflowAprovacao repositorioWorkflowAprovacao;
+        private readonly IUnitOfWork unitOfWork;
 
         public ServicoWorkflowAprovacao(IRepositorioNotificacao repositorioNotificacao,
                                         IRepositorioWorkflowAprovacaoNivelNotificacao repositorioWorkflowAprovacaoNivelNotificacao,
@@ -35,7 +38,9 @@ namespace SME.SGP.Dominio.Servicos
                                         IConfiguration configuration,
                                         IRepositorioAula repositorioAula,
                                         IRepositorioUe repositorioUe,
-                                        IRepositorioTurma repositorioTurma)
+                                        IRepositorioTurma repositorioTurma,
+                                        IRepositorioWorkflowAprovacao repositorioWorkflowAprovacao,
+                                        IUnitOfWork unitOfWork)
         {
             this.repositorioNotificacao = repositorioNotificacao ?? throw new System.ArgumentNullException(nameof(repositorioNotificacao));
             this.repositorioWorkflowAprovacaoNivelNotificacao = repositorioWorkflowAprovacaoNivelNotificacao ?? throw new System.ArgumentNullException(nameof(repositorioWorkflowAprovacaoNivelNotificacao));
@@ -49,6 +54,8 @@ namespace SME.SGP.Dominio.Servicos
             this.repositorioAula = repositorioAula ?? throw new ArgumentException(nameof(repositorioAula));
             this.repositorioUe = repositorioUe ?? throw new ArgumentNullException(nameof(repositorioUe));
             this.repositorioTurma = repositorioTurma ?? throw new ArgumentNullException(nameof(repositorioTurma));
+            this.repositorioWorkflowAprovacao = repositorioWorkflowAprovacao ?? throw new ArgumentNullException(nameof(repositorioWorkflowAprovacao));
+            this.unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
         }
 
         public void Aprovar(WorkflowAprovacao workflow, bool aprovar, string observacao, long notificacaoId)
@@ -78,6 +85,36 @@ namespace SME.SGP.Dominio.Servicos
             else
             {
                 EnviaNotificacaoParaNiveis(workflowAprovacao.Niveis.ToList());
+            }
+        }
+
+        public async Task ExcluirWorkflowNotificacoes(long id)
+        {
+            if (id > 0)
+            {
+                var workflow = repositorioWorkflowAprovacao.ObterEntidadeCompleta(id);
+
+                if (workflow.Niveis.Any(n => n.Status == WorkflowAprovacaoNivelStatus.Reprovado))
+                    return;
+
+                unitOfWork.IniciarTransacao();
+
+                foreach (WorkflowAprovacaoNivel wfNivel in workflow.Niveis)
+                {
+                    wfNivel.Status = WorkflowAprovacaoNivelStatus.Excluido;
+                    workflowAprovacaoNivel.Salvar(wfNivel);
+
+                    foreach (Notificacao notificacao in wfNivel.Notificacoes)
+                    {
+                        repositorioWorkflowAprovacaoNivelNotificacao.ExcluirPorWorkflowNivelNotificacaoId(wfNivel.Id, notificacao.Id);
+                        repositorioNotificacao.Remover(notificacao);
+                    }
+                }
+
+                workflow.Excluido = true;
+                await repositorioWorkflowAprovacao.SalvarAsync(workflow);
+
+                unitOfWork.PersistirTransacao();
             }
         }
 
