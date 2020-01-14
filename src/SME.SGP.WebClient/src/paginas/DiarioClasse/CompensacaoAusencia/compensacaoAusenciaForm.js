@@ -1,12 +1,360 @@
-import React from 'react';
+import { Form, Formik } from 'formik';
+import React, { useEffect, useState } from 'react';
+import { useSelector } from 'react-redux';
+import * as Yup from 'yup';
+import { CampoTexto, Loader } from '~/componentes';
 import Cabecalho from '~/componentes-sgp/cabecalho';
+import Auditoria from '~/componentes/auditoria';
+import Button from '~/componentes/button';
 import Card from '~/componentes/card';
+import { Colors } from '~/componentes/colors';
+import Editor from '~/componentes/editor/editor';
+import SelectComponent from '~/componentes/select';
+import modalidade from '~/dtos/modalidade';
+import { confirmar, erros, sucesso } from '~/servicos/alertas';
+import { setBreadcrumbManual } from '~/servicos/breadcrumb-services';
+import history from '~/servicos/history';
+import ServicoCompensacaoAusencia from '~/servicos/Paginas/DiarioClasse/ServicoCompensacaoAusencia';
+import ServicoDisciplina from '~/servicos/Paginas/ServicoDisciplina';
 
-const CompensacaoAusenciaForm = () => {
+const CompensacaoAusenciaForm = ({ match }) => {
+  const usuario = useSelector(store => store.usuario);
+
+  const { turmaSelecionada } = usuario;
+
+  const [listaDisciplinas, setListaDisciplinas] = useState([]);
+  const [carregandoDisciplinas, setCarregandoDisciplinas] = useState(false);
+  const [desabilitarDisciplina, setDesabilitarDisciplina] = useState(false);
+  const [novoRegistro, setNovoRegistro] = useState(true);
+  const [modoEdicao, setModoEdicao] = useState(false);
+  const [idCompensacaoAusencia, setIdCompensacaoAusencia] = useState(0);
+  const [listaBimestres, setListaBimestres] = useState([]);
+  const [auditoria, setAuditoria] = useState([]);
+  const [exibirAuditoria, setExibirAuditoria] = useState(false);
+
+  const [valoresIniciais, setValoresIniciais] = useState({
+    disciplina: undefined,
+    bimestre: '',
+    atividade: '',
+    detalhes: '',
+  });
+
+  const [validacoes] = useState(
+    Yup.object({
+      disciplina: Yup.string().required('Disciplina obrigatória'),
+      bimestre: Yup.string().required('Bimestre obrigatório'),
+      atividade: Yup.string()
+        .required('Atividade obrigatória')
+        .max(250, 'Máximo 250 caracteres'),
+      detalhes: Yup.string().required('Detalhe obrigatório'),
+    })
+  );
+
+  const resetarForm = () => {};
+
+  useEffect(() => {
+    const obterDisciplinas = async () => {
+      setCarregandoDisciplinas(true);
+      const disciplinas = await ServicoDisciplina.obterDisciplinasPorTurma(
+        turmaSelecionada.turma
+      );
+      if (disciplinas.data && disciplinas.data.length) {
+        setListaDisciplinas(disciplinas.data);
+      } else {
+        setListaDisciplinas([]);
+      }
+
+      if (disciplinas.data && disciplinas.data.length === 1) {
+        setDesabilitarDisciplina(true);
+
+        if (!(match && match.params && match.params.id)) {
+          const disciplina = disciplinas.data[0];
+          const valoresIniciaisForm = {
+            disciplina: String(disciplina.codigoComponenteCurricular),
+            bimestre: '',
+            atividade: '',
+            detalhes: '',
+          };
+          setValoresIniciais(valoresIniciaisForm);
+        }
+      }
+      setCarregandoDisciplinas(false);
+    };
+
+    if (turmaSelecionada.turma) {
+      resetarForm();
+      obterDisciplinas(turmaSelecionada.turma);
+    } else {
+      resetarForm();
+    }
+
+    let listaBi = [];
+    if (turmaSelecionada.modalidade == modalidade.EJA) {
+      listaBi = [
+        { valor: 1, descricao: '1° Bimestre' },
+        { valor: 2, descricao: '2° Bimestre' },
+      ];
+    } else {
+      listaBi = [
+        { valor: 1, descricao: '1° Bimestre' },
+        { valor: 2, descricao: '2° Bimestre' },
+        { valor: 3, descricao: '3° Bimestre' },
+        { valor: 4, descricao: '4° Bimestre' },
+      ];
+    }
+    setListaBimestres(listaBi);
+  }, [match, turmaSelecionada.modalidade, turmaSelecionada.turma]);
+
+  useEffect(() => {
+    const consultaPorId = async () => {
+      setBreadcrumbManual(
+        match.url,
+        'Alterar Compensação de Ausência',
+        '/diario-classe/compensacao-ausencia'
+      );
+      setIdCompensacaoAusencia(match.params.id);
+
+      const dadosEdicao = await ServicoCompensacaoAusencia.obterPorId(
+        match.params.id
+      ).catch(e => erros(e));
+
+      if (dadosEdicao && dadosEdicao.data) {
+        setValoresIniciais({
+          disciplina: String(dadosEdicao.data.disciplina),
+          bimestre: dadosEdicao.data.bimestre,
+          atividade: dadosEdicao.data.atividade,
+        });
+        setAuditoria({
+          criadoPor: dadosEdicao.data.criadoPor,
+          criadoRf: dadosEdicao.data.criadoRf,
+          criadoEm: dadosEdicao.data.criadoEm,
+          alteradoPor: dadosEdicao.data.alteradoPor,
+          alteradoRf: dadosEdicao.data.alteradoRf,
+          alteradoEm: dadosEdicao.data.alteradoEm,
+        });
+        setExibirAuditoria(true);
+      }
+      setNovoRegistro(false);
+    };
+
+    if (turmaSelecionada.turma && match && match.params && match.params.id) {
+      consultaPorId(match.params.id);
+    }
+  }, [match, turmaSelecionada.turma]);
+
+  const validaAntesDoSubmit = form => {
+    const arrayCampos = Object.keys(valoresIniciais);
+    arrayCampos.forEach(campo => {
+      form.setFieldTouched(campo, true, true);
+    });
+    form.validateForm().then(() => {
+      if (form.isValid || Object.keys(form.errors).length == 0) {
+        form.handleSubmit(e => e);
+      }
+    });
+  };
+
+  const onClickExcluir = async () => {
+    if (!novoRegistro) {
+      const confirmado = await confirmar(
+        'Excluir compensação',
+        '',
+        'Você tem certeza que deseja excluir este registro',
+        'Excluir',
+        'Cancelar'
+      );
+      if (confirmado) {
+        const excluir = await ServicoCompensacaoAusencia.deletar([
+          idCompensacaoAusencia,
+        ]).catch(e => erros(e));
+
+        if (excluir && excluir.status == 200) {
+          sucesso('Compensação excluída com sucesso.');
+          history.push('/diario-classe/compensacao-ausencia');
+        }
+      }
+    }
+  };
+
+  const resetarTela = form => {
+    form.resetForm();
+    setModoEdicao(false);
+  };
+
+  const onClickCancelar = async form => {
+    if (modoEdicao) {
+      const confirmou = await confirmar(
+        'Atenção',
+        'Você não salvou as informações preenchidas.',
+        'Deseja realmente cancelar as alterações?'
+      );
+      if (confirmou) {
+        resetarTela(form);
+      }
+    }
+  };
+
+  const perguntaAoSalvar = async () => {
+    return confirmar(
+      'Atenção',
+      '',
+      'Suas alterações não foram salvas, deseja salvar agora?'
+    );
+  };
+
+  const onClickVoltar = async form => {
+    if (modoEdicao) {
+      const confirmado = await perguntaAoSalvar();
+      if (confirmado) {
+        validaAntesDoSubmit(form);
+      }
+    } else {
+      history.push('/diario-classe/compensacao-ausencia');
+    }
+  };
+
+  const onChangeCampos = () => {
+    if (!modoEdicao) {
+      setModoEdicao(true);
+    }
+  };
+
+  const onClickCadastrar = async valoresForm => {
+    const paramas = valoresForm;
+    paramas.id = idCompensacaoAusencia;
+    console.log(paramas);
+
+    const cadastrado = await ServicoCompensacaoAusencia.salvar(
+      paramas
+    ).catch(e => erros(e));
+
+    if (cadastrado && cadastrado.status == 200) {
+      if (idCompensacaoAusencia) {
+        sucesso('Tipo de feriado alterado com sucesso.');
+      } else {
+        sucesso('Novo tipo de feriado criado com sucesso.');
+      }
+      history.push('/diario-classe/compensacao-ausencia');
+    }
+  };
+
   return (
     <>
       <Cabecalho pagina="Cadastrar Compensação de Ausência" />
-      <Card>TESTE FORM</Card>
+      <Card>
+        <Formik
+          enableReinitialize
+          initialValues={valoresIniciais}
+          validationSchema={validacoes}
+          onSubmit={onClickCadastrar}
+          validateOnChange
+          validateOnBlur
+        >
+          {form => (
+            <Form className="col-md-12 mb-4">
+              <div className="d-flex justify-content-end pb-4">
+                <Button
+                  id="btn-voltar"
+                  label="Voltar"
+                  icon="arrow-left"
+                  color={Colors.Azul}
+                  border
+                  className="mr-2"
+                  onClick={() => onClickVoltar(form)}
+                />
+                <Button
+                  id="btn-cancelar"
+                  label="Cancelar"
+                  color={Colors.Roxo}
+                  border
+                  className="mr-2"
+                  onClick={() => onClickCancelar(form)}
+                  disabled={!modoEdicao}
+                />
+                <Button
+                  id="btn-excluir"
+                  label="Excluir"
+                  color={Colors.Vermelho}
+                  border
+                  className="mr-2"
+                  disabled={novoRegistro}
+                  onClick={onClickExcluir}
+                />
+                <Button
+                  id="btn-salvar"
+                  label={`${
+                    idCompensacaoAusencia > 0 ? 'Alterar' : 'Cadastrar'
+                  }`}
+                  color={Colors.Roxo}
+                  border
+                  bold
+                  className="mr-2"
+                  onClick={() => validaAntesDoSubmit(form)}
+                />
+              </div>
+
+              <div className="row">
+                <div className="col-sm-12 col-md-8 col-lg-4 col-xl-4 mb-2">
+                  <Loader loading={carregandoDisciplinas} tip="">
+                    <SelectComponent
+                      form={form}
+                      id="disciplina"
+                      label="Disciplina"
+                      name="disciplina"
+                      lista={listaDisciplinas}
+                      valueOption="codigoComponenteCurricular"
+                      valueText="nome"
+                      onChange={onChangeCampos}
+                      placeholder="Disciplina"
+                      disabled={desabilitarDisciplina}
+                    />
+                  </Loader>
+                </div>
+                <div className="col-sm-12 col-md-4 col-lg-3 col-xl-3 mb-2">
+                  <SelectComponent
+                    form={form}
+                    id="bimestre"
+                    label="Bimestre"
+                    name="bimestre"
+                    valueOption="valor"
+                    valueText="descricao"
+                    onChange={onChangeCampos}
+                    placeholder="Bimestre"
+                    lista={listaBimestres}
+                  />
+                </div>
+                <div className="col-sm-12 col-md-12 col-lg-5 col-xl-5 mb-2">
+                  <CampoTexto
+                    form={form}
+                    label="Atividade"
+                    placeholder="Atividade"
+                    name="atividade"
+                    onChange={onChangeCampos}
+                  />
+                </div>
+                <div className="col-sm-12 col-md-12 col-lg-12 col-xl-12 mb-2">
+                  <Editor
+                    form={form}
+                    name="detalhes"
+                    onChange={onChangeCampos}
+                    label="Detalhamento da atividade"
+                  />
+                </div>
+              </div>
+            </Form>
+          )}
+        </Formik>
+        {exibirAuditoria ? (
+          <Auditoria
+            criadoEm={auditoria.criadoEm}
+            criadoPor={auditoria.criadoPor}
+            alteradoPor={auditoria.alteradoPor}
+            alteradoEm={auditoria.alteradoEm}
+          />
+        ) : (
+          ''
+        )}
+      </Card>
     </>
   );
 };
