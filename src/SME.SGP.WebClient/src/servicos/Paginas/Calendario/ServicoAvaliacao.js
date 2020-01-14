@@ -2,7 +2,7 @@ import api from '~/servicos/api';
 
 class ServicoAvaliacao {
   listarDisciplinas = async (rf, turma) => {
-    return api.get(`v1/professores/${rf}/turmas/${turma}/disciplinas`);
+    return api.get(`v1/professores/turmas/${turma}/disciplinas`);
   };
 
   listarDisciplinasRegencia = async turma => {

@@ -9,6 +9,10 @@ namespace SME.SGP.Aplicacao.Integracoes
 {
     public interface IServicoEOL
     {
+        Task AlterarEmail(string login, string email);
+
+        Task<bool> ExisteUsuarioComMesmoEmail(string login, string email);
+
         Task<AlterarSenhaRespostaDto> AlterarSenha(string login, string novaSenha);
 
         Task AtribuirCJSeNecessario(Guid usuarioId);

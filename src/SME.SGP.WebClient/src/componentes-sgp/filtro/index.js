@@ -591,7 +591,7 @@ const Filtro = () => {
 
     if (texto.length >= 2) {
       api
-        .get(`v1/${consideraHistorico}/abrangencias/${texto}`)
+        .get(`v1/abrangencias/${consideraHistorico}/${texto}`)
         .then(resposta => {
           if (resposta.data) {
             setResultadosFiltro(resposta.data);

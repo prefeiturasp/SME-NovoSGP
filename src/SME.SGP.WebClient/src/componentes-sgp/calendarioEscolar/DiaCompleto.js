@@ -146,7 +146,7 @@ const DiaCompleto = props => {
                   >
                     <Div cols={1} className="pl-0">
                       <Botao
-                        label={evento.tipoEvento}
+                        label="Evento"
                         color={Colors.CinzaBotao}
                         border
                         steady
@@ -154,11 +154,9 @@ const DiaCompleto = props => {
                     </Div>
                     <Div
                       cols={11}
-                      className="align-self-center font-weight-bold pl-0"
+                      className="align-self-center font-weight-bold"
                     >
-                      <Div>
-                        {evento.descricao ? evento.descricao : 'Evento'}
-                      </Div>
+                      <Div>{evento.nome ? evento.nome : 'Evento'}</Div>
                     </Div>
                   </Evento>
                 );

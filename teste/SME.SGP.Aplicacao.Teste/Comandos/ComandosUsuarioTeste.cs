@@ -1,7 +1,6 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Moq;
 using SME.SGP.Aplicacao.Integracoes;
-using SME.SGP.Aplicacao.Servicos;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using Xunit;
@@ -46,7 +45,7 @@ namespace SME.SGP.Aplicacao.Teste.Comandos
         {
             //ARRANGE
             var codifoRfTeste = "codigoRfTeste";
-            servicoUsuario.Setup(a => a.ObterUsuarioPorCodigoRfLoginOuAdiciona(codifoRfTeste, string.Empty, string.Empty, string.Empty)).Returns(new Dominio.Usuario() { Email = "emaildeteste@teste.com" });
+            servicoUsuario.Setup(a => a.ObterUsuarioPorCodigoRfLoginOuAdiciona(codifoRfTeste, string.Empty, string.Empty, string.Empty)).Returns(new Dominio.Usuario());
             servicoEOL.Setup(a => a.ReiniciarSenha(codifoRfTeste));
 
             //ACT
