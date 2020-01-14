@@ -16,7 +16,12 @@ namespace SME.SGP.Dados.Repositorios
 
         public Task<IEnumerable<CompensacaoAusenciaAluno>> ObterPorCompensacao(long compensacaoId)
         {
-            throw new NotImplementedException();
+            var query = @"select * 
+                            from compensacao_ausencia_aluno 
+                        where not excluido 
+                          and compensacao_ausencia_id = @compensacaoId";
+
+            return await database.Conexao.QueryAsync<CompensacaoAusenciaAluno>(query, new { compensacaoId });
         }
     }
 }
