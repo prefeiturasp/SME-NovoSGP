@@ -14,6 +14,7 @@ import { confirmar, erros, sucesso } from '~/servicos/alertas';
 import history from '~/servicos/history';
 import ServicoCompensacaoAusencia from '~/servicos/Paginas/DiarioClasse/ServicoCompensacaoAusencia';
 import ServicoDisciplina from '~/servicos/Paginas/ServicoDisciplina';
+import { AlunosCompensacao } from './styles';
 
 const CompensacaoAusenciaLista = () => {
   const usuario = useSelector(store => store.usuario);
@@ -35,7 +36,13 @@ const CompensacaoAusenciaLista = () => {
 
   const montaExibicaoAlunos = dados => {
     // TODO Ver como vai vir a lista de alunos do back para montar conforme protótipo!
-    return dados;
+    return (
+      <AlunosCompensacao>
+        {dados.map(aluno => (
+          <span>{aluno}</span>
+        ))}
+      </AlunosCompensacao>
+    );
   };
 
   const colunas = [
@@ -46,7 +53,7 @@ const CompensacaoAusenciaLista = () => {
     },
     {
       title: 'Atividade',
-      dataIndex: 'atividade',
+      dataIndex: 'atividadeNome',
       width: '30%',
     },
     {
@@ -59,14 +66,22 @@ const CompensacaoAusenciaLista = () => {
 
   const filtrar = useCallback(() => {
     const paramsFiltrar = {
-      disciplina: disciplinaIdSelecionada,
-      nomeAluno,
-      nomeAtividade,
+      turmaId: turmaSelecionada.turma,
+      disciplinaId: disciplinaIdSelecionada,
       bimestre: bimestreSelecionado,
+      alunoNome: nomeAluno,
+      atividadeNome: nomeAtividade,
     };
+    setCompensacoesSelecionadas([]);
     setFiltro({ ...paramsFiltrar });
     console.log(paramsFiltrar);
-  }, [disciplinaIdSelecionada, nomeAluno, nomeAtividade, bimestreSelecionado]);
+  }, [
+    disciplinaIdSelecionada,
+    nomeAluno,
+    nomeAtividade,
+    bimestreSelecionado,
+    turmaSelecionada.turma,
+  ]);
 
   const resetarFiltro = () => {
     setListaDisciplinas([]);
@@ -82,13 +97,14 @@ const CompensacaoAusenciaLista = () => {
       setCarregandoDisciplinas(true);
       const disciplinas = await ServicoDisciplina.obterDisciplinasPorTurma(
         turmaSelecionada.turma
-      );
-      if (disciplinas.data && disciplinas.data.length) {
+      ).catch(e => erros(e));
+
+      if (disciplinas && disciplinas.data && disciplinas.data.length) {
         setListaDisciplinas(disciplinas.data);
       } else {
         setListaDisciplinas([]);
       }
-      if (disciplinas.data && disciplinas.data.length === 1) {
+      if (disciplinas && disciplinas.data && disciplinas.data.length === 1) {
         const disciplina = disciplinas.data[0];
         setDisciplinaIdSelecionada(
           String(disciplina.codigoComponenteCurricular)
@@ -184,7 +200,6 @@ const CompensacaoAusenciaLista = () => {
               : 'Compensação excluída'
           } com sucesso.`;
           sucesso(mensagemSucesso);
-          setCompensacoesSelecionadas([]);
           filtrar();
         }
       }
@@ -268,64 +283,56 @@ const CompensacaoAusenciaLista = () => {
                 />
               </Loader>
             </div>
-            {disciplinaIdSelecionada ? (
-              <>
-                <div className="col-sm-12 col-md-3 col-lg-3 col-xl-3 mb-2">
-                  <SelectComponent
-                    id="bimestre"
-                    name="bimestre"
-                    onChange={onChangeBimestre}
-                    valueOption="valor"
-                    valueText="descricao"
-                    lista={listaBimestres}
-                    placeholder="Bimestre"
-                    valueSelect={bimestreSelecionado}
-                  />
-                </div>
-                <div className="col-sm-12 col-md-3 col-lg-3 col-xl-3 mb-2">
-                  <CampoTexto
-                    name="nomeAtividade"
-                    id="nomeAtividade"
-                    placeholder="Nome da Atividade"
-                    iconeBusca
-                    allowClear
-                    onChange={onChangeNomeAtividade}
-                    value={nomeAtividade}
-                  />
-                </div>
-                <div className="col-sm-12 col-md-3 col-lg-3 col-xl-3 mb-2">
-                  <CampoTexto
-                    name="nomeAtividade"
-                    id="nomeAtividade"
-                    placeholder="Nome do Aluno"
-                    iconeBusca
-                    allowClear
-                    onChange={onChangeNomeAluno}
-                    value={nomeAluno}
-                  />
-                </div>
-              </>
-            ) : (
-              ''
-            )}
+            <div className="col-sm-12 col-md-3 col-lg-3 col-xl-3 mb-2">
+              <SelectComponent
+                id="bimestre"
+                name="bimestre"
+                onChange={onChangeBimestre}
+                valueOption="valor"
+                valueText="descricao"
+                lista={listaBimestres}
+                placeholder="Bimestre"
+                valueSelect={bimestreSelecionado}
+                disabled={!disciplinaIdSelecionada}
+              />
+            </div>
+            <div className="col-sm-12 col-md-3 col-lg-3 col-xl-3 mb-2">
+              <CampoTexto
+                name="nomeAtividade"
+                id="nomeAtividade"
+                placeholder="Nome da Atividade"
+                iconeBusca
+                allowClear
+                onChange={onChangeNomeAtividade}
+                value={nomeAtividade}
+                desabilitado={!disciplinaIdSelecionada}
+              />
+            </div>
+            <div className="col-sm-12 col-md-3 col-lg-3 col-xl-3 mb-2">
+              <CampoTexto
+                name="nomeAtividade"
+                id="nomeAtividade"
+                placeholder="Nome do Aluno"
+                iconeBusca
+                allowClear
+                onChange={onChangeNomeAluno}
+                value={nomeAluno}
+                desabilitado={!disciplinaIdSelecionada}
+              />
+            </div>
           </div>
         </div>
         <div className="col-md-12 pt-2">
-          {disciplinaIdSelecionada ? (
-            <ListaPaginada
-              // TODO MUdal URL
-              url="v1/compensacoes"
-              id="lista-compensacao"
-              colunaChave="id"
-              colunas={colunas}
-              filtro={filtro}
-              onClick={onClickEditar}
-              multiSelecao
-              selecionarItems={onSelecionarItems}
-            />
-          ) : (
-            ''
-          )}
+          <ListaPaginada
+            url="v1/compensacoes/ausencia"
+            id="lista-compensacao"
+            colunaChave="id"
+            colunas={colunas}
+            filtro={filtro}
+            onClick={onClickEditar}
+            multiSelecao
+            selecionarItems={onSelecionarItems}
+          />
         </div>
       </Card>
     </>
