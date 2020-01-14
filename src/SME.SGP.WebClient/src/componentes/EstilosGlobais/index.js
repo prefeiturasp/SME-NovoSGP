@@ -1,10 +1,11 @@
 import styled from 'styled-components';
 
-export const Row = styled.div`
+export const Linha = styled.div`
   [class*='col-'] {
     padding: 0 8px !important;
     @media screen and (min-width: 0px) and (max-width: 900px) {
       padding: 0 !important;
+      margin-bottom: 5px !important;
     }
   }
 
@@ -19,6 +20,6 @@ export const Row = styled.div`
   @media screen and (min-width: 0px) and (max-width: 900px) {
     padding: 0 !important;
     margin-bottom: 0 !important;
-    margin-top: 0 !important;
+    margin-bottom: 5px !important;
   }
 `;
