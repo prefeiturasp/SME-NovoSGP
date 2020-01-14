@@ -9,7 +9,9 @@ namespace SME.SGP.Infra
 
         public List<AtividadeAvaliativa> Atividade { get; set; }
         public string Disciplina { get; set; }
+        public string DisciplinaCompartilhada { get; set; }
         public bool EhRegencia { get; set; }
+        public bool EhCompartilhada { get; set; }
         public string Horario { get; set; }
         public string Modalidade { get; set; }
         public string Tipo { get; set; }

@@ -81,7 +81,9 @@ namespace SME.SGP.Aplicacao
             if (temTurmaInformada)
                 disciplinasRegencia = await servicoEOL.ObterDisciplinasParaPlanejamento(Convert.ToInt64(filtro.TurmaId), rf, perfil);
 
-            var idsDisciplinasAulas = aulas.Select(a => long.Parse(a.DisciplinaId)).Distinct();
+            var idsDisciplinasAulas = aulas.Select(a => long.Parse(a.DisciplinaId)).Distinct().Concat(
+                                      aulas.Where(a => !String.IsNullOrEmpty(a.DisciplinaCompartilhadaId))
+                                           .Select(a => long.Parse(a.DisciplinaCompartilhadaId)).Distinct());
             var disciplinasEol = servicoEOL.ObterDisciplinasPorIds(idsDisciplinasAulas.ToArray());
 
             aulas
@@ -92,6 +94,7 @@ namespace SME.SGP.Aplicacao
                 var listaAtividades = atividades.Where(w => w.DataAvaliacao.Date == x.DataAula.Date && w.TurmaId == x.TurmaId 
                 && PossuiDisciplinas(w.Id, x.DisciplinaId)).ToList();
                 var disciplina = disciplinasEol?.FirstOrDefault(d => d.CodigoComponenteCurricular.ToString().Equals(x.DisciplinaId));
+                var disciplinaCompartilhada = disciplinasEol?.FirstOrDefault(d => d.CodigoComponenteCurricular.ToString().Equals(x.DisciplinaCompartilhadaId));
                 if (atividades != null && disciplina != null)
                 {
                     foreach (var item in listaAtividades)
@@ -120,7 +123,9 @@ namespace SME.SGP.Aplicacao
                     DadosAula = new DadosAulaDto
                     {
                         Disciplina = $"{(disciplina?.Nome ?? "Disciplina não encontrada")} {(x.TipoAula == TipoAula.Reposicao ? "(Reposição)" : "")} {(x.Status == EntidadeStatus.AguardandoAprovacao ? "- Aguardando aprovação" : "")}",
+                        DisciplinaCompartilhada = $"{(disciplinaCompartilhada?.Nome ?? "Disciplina não encontrada")} ",
                         EhRegencia = disciplina.Regencia,
+                        EhCompartilhada = disciplina.Compartilhada,
                         podeCadastrarAvaliacao = podeCriarAtividade,
                         Horario = x.DataAula.ToString("hh:mm tt", CultureInfo.InvariantCulture),
                         Modalidade = turma?.Modalidade.GetAttribute<DisplayAttribute>().Name ?? "Modalidade",
