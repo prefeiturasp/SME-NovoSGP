@@ -1,9 +1,13 @@
 import api from '~/servicos/api';
 
 // TODO Alterar quando tiver o back pronto
-const urlPadrao = `v1/compensacao-ausencia`;
+const urlPadrao = `/v1/compensacoes/ausencia`;
 
 class ServicoCompensacaoAusencia {
+  buscarLista = params => {
+    return api.get(urlPadrao, { params });
+  };
+
   salvar = async (id, compensacao) => {
     let url = urlPadrao;
     if (id) {
