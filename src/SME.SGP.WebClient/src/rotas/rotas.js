@@ -36,6 +36,7 @@ import TipoAvaliacaoForm from '~paginas/Configuracoes/TipoAvaliacao/tipoAvaliaca
 import AulaDadaAulaPrevista from '~/paginas/DiarioClasse/AulaDadaAulaPrevista/aulaDadaAulaPrevista';
 import RegistroPOALista from '~/paginas/DiarioClasse/RegistroPOA/Lista';
 import RegistroPOAForm from '~/paginas/DiarioClasse/RegistroPOA/Form';
+import NaoEncontrado from '~/paginas/Erro/nao-encontrado';
 
 const rotas = new Map();
 
@@ -529,6 +530,24 @@ rotas.set(`${RotasDto.REGISTRO_POA}/editar/:id`, {
   tipo: RotasTipo.EstruturadaAutenticada,
   temPermissionamento: true,
   chavePermissao: RotasDto.REGISTRO_POA,
+});
+
+rotas.set('*', {
+  breadcrumbName: 'Erro',
+  parent: '/',
+  component: NaoEncontrado,
+  exact: true,
+  tipo: RotasTipo.EstruturadaAutenticada,
+  temPermissionamento: false,
+});
+
+rotas.set('/erro', {
+  breadcrumbName: 'Erro',
+  parent: '/',
+  component: NaoEncontrado,
+  exact: true,
+  tipo: RotasTipo.EstruturadaAutenticada,
+  temPermissionamento: false,
 });
 
 const rotasArray = [];
