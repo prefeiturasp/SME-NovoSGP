@@ -26,8 +26,6 @@ namespace SME.SGP.Aplicacao
 
         void Sair();
 
-        void ExecutarWorkerAbrangencia();
-
         Task<string> SolicitarRecuperacaoSenha(string login);
 
         bool TokenRecuperacaoSenhaEstaValido(Guid token);
