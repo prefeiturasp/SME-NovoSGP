@@ -28,7 +28,7 @@ const CompensacaoAusenciaLista = () => {
   const [filtro, setFiltro] = useState({});
   const [nomeAtividade, setNomeAtividade] = useState('');
   const [nomeAluno, setNomeAluno] = useState('');
-  const [listaBimestres, setListaBimestres] = useState(false);
+  const [listaBimestres, setListaBimestres] = useState([]);
   const [disciplinaIdSelecionada, setDisciplinaIdSelecionada] = useState(
     undefined
   );
