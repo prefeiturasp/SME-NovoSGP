@@ -90,32 +90,32 @@ namespace SME.SGP.Dominio.Servicos
 
         public async Task ExcluirWorkflowNotificacoes(long id)
         {
-            if (id > 0)
+            var workflow = repositorioWorkflowAprovacao.ObterEntidadeCompleta(id);
+
+            if(workflow ==  null)
+                throw new NegocioException("Não foi possível localizar o fluxo de aprovação.");
+
+            if (workflow.Niveis.Any(n => n.Status == WorkflowAprovacaoNivelStatus.Reprovado))
+                return;
+
+            unitOfWork.IniciarTransacao();
+
+            foreach (WorkflowAprovacaoNivel wfNivel in workflow.Niveis)
             {
-                var workflow = repositorioWorkflowAprovacao.ObterEntidadeCompleta(id);
+                wfNivel.Status = WorkflowAprovacaoNivelStatus.Excluido;
+                workflowAprovacaoNivel.Salvar(wfNivel);
 
-                if (workflow.Niveis.Any(n => n.Status == WorkflowAprovacaoNivelStatus.Reprovado))
-                    return;
-
-                unitOfWork.IniciarTransacao();
-
-                foreach (WorkflowAprovacaoNivel wfNivel in workflow.Niveis)
+                foreach (Notificacao notificacao in wfNivel.Notificacoes)
                 {
-                    wfNivel.Status = WorkflowAprovacaoNivelStatus.Excluido;
-                    workflowAprovacaoNivel.Salvar(wfNivel);
-
-                    foreach (Notificacao notificacao in wfNivel.Notificacoes)
-                    {
-                        repositorioWorkflowAprovacaoNivelNotificacao.ExcluirPorWorkflowNivelNotificacaoId(wfNivel.Id, notificacao.Id);
-                        repositorioNotificacao.Remover(notificacao);
-                    }
+                    repositorioWorkflowAprovacaoNivelNotificacao.ExcluirPorWorkflowNivelNotificacaoId(wfNivel.Id, notificacao.Id);
+                    repositorioNotificacao.Remover(notificacao);
                 }
-
-                workflow.Excluido = true;
-                await repositorioWorkflowAprovacao.SalvarAsync(workflow);
-
-                unitOfWork.PersistirTransacao();
             }
+
+            workflow.Excluido = true;
+            await repositorioWorkflowAprovacao.SalvarAsync(workflow);
+
+            unitOfWork.PersistirTransacao();
         }
 
         private void AprovarNivel(WorkflowAprovacaoNivel nivel, long notificacaoId, WorkflowAprovacao workflow, long codigoDaNotificacao)

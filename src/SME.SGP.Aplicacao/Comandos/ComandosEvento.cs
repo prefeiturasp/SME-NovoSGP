@@ -46,8 +46,8 @@ namespace SME.SGP.Aplicacao
                 {
                     var evento = repositorioEvento.ObterPorId(idEvento);
 
-                    servicoWorkflowAprovacao.ExcluirWorkflowNotificacoes(evento.WorkflowAprovacaoId.HasValue ?
-                                                                         evento.WorkflowAprovacaoId.Value : 0);
+                    if (evento.WorkflowAprovacaoId.HasValue)
+                        servicoWorkflowAprovacao.ExcluirWorkflowNotificacoes(evento.WorkflowAprovacaoId.Value);
 
                     evento.Excluir();
 
