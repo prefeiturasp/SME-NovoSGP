@@ -12,13 +12,15 @@ namespace SME.SGP.Aplicacao
     {
         private readonly IRepositorioEvento repositorioEvento;
         private readonly IServicoEvento servicoEvento;
+        private readonly IServicoWorkflowAprovacao servicoWorkflowAprovacao;
 
         public ComandosEvento(IRepositorioEvento repositorioEvento,
                               IServicoEvento servicoEvento,
-                              IServicoDiaLetivo servicoDiaLetivo)
+                              IServicoWorkflowAprovacao servicoWorkflowAprovacao)
         {
             this.repositorioEvento = repositorioEvento ?? throw new ArgumentNullException(nameof(repositorioEvento));
             this.servicoEvento = servicoEvento ?? throw new ArgumentNullException(nameof(servicoEvento));
+            this.servicoWorkflowAprovacao = servicoWorkflowAprovacao ?? throw new ArgumentNullException(nameof(servicoWorkflowAprovacao));
         }
 
         public async Task<IEnumerable<RetornoCopiarEventoDto>> Alterar(long id, EventoDto eventoDto)
@@ -43,6 +45,9 @@ namespace SME.SGP.Aplicacao
                 try
                 {
                     var evento = repositorioEvento.ObterPorId(idEvento);
+
+                    servicoWorkflowAprovacao.ExcluirWorkflowNotificacoes(evento.WorkflowAprovacaoId.HasValue ?
+                                                                         evento.WorkflowAprovacaoId.Value : 0);
 
                     evento.Excluir();
 
