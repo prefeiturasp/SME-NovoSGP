@@ -6,6 +6,6 @@
         public string Nome { get; set; }
         public bool PossuiObjetivos { get; set; }
         public bool Regencia { get; set; }
-        public bool DocenciaCompartilhada { get; set; }
+        public bool Compartilhada { get; set; }
     }
 }
