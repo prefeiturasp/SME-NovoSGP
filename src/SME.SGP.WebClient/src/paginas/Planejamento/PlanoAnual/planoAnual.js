@@ -370,7 +370,7 @@ const PlanoAnual = () => {
               valueText="nome"
               onChange={onChangeDisciplinas}
               valueSelect={codigoDisciplinaSelecionada}
-              placeholder="Selecione uma disciplina"
+              placeholder="Selecione um componente curricular"
               disabled={listaDisciplinas && listaDisciplinas.length === 1}
             />
           </div>
