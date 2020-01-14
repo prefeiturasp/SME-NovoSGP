@@ -664,7 +664,7 @@ const CadastroAula = ({ match }) => {
           {form => (
             <Form className="col-md-12 mb-4">
               <div className="row pb-3">
-                <div className="col-md-2 pb-2 d-flex justify-content-start">
+                <div className="col-md-4 pb-2 d-flex justify-content-start">
                   <CampoData
                     form={form}
                     placeholder="Data da aula"
@@ -674,7 +674,7 @@ const CadastroAula = ({ match }) => {
                     onChange={onChangeCampos}
                   />
                 </div>
-                <div className="col-md-10 pb-2 d-flex justify-content-end">
+                <div className="col-md-8 pb-2 d-flex justify-content-end">
                   <Button
                     label="Voltar"
                     icon="arrow-left"
