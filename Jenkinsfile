@@ -18,7 +18,7 @@ pipeline {
           //git 'https://github.com/prefeiturasp/SME-NovoSGP.git'
           checkout scm
           
-          sh "echo MINHA BRANCH É ${GIT_BRANCH}"
+          //sh "echo MINHA BRANCH É ${GIT_BRANCH}"
           //sh 'printenv'
             
             
