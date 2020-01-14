@@ -49,22 +49,22 @@ namespace SME.SGP.Aplicacao
 
         private Aula MapearDtoParaEntidade(AulaDto dto, string usuarioRf, bool usuarioEhCJ, Aula aula = null)
         {
-            Aula EntidadeAula = aula ?? new Aula();
-            if (string.IsNullOrEmpty(EntidadeAula.ProfessorRf))
+            Aula entidadeAula = aula ?? new Aula();
+            if (string.IsNullOrEmpty(entidadeAula.ProfessorRf))
             {
-                EntidadeAula.ProfessorRf = usuarioRf;
+                entidadeAula.ProfessorRf = usuarioRf;
                 // Alteração não muda recorrencia da aula
-                EntidadeAula.RecorrenciaAula = dto.RecorrenciaAula;
+                entidadeAula.RecorrenciaAula = dto.RecorrenciaAula;
             }
-            EntidadeAula.UeId = dto.UeId;
-            EntidadeAula.DisciplinaId = dto.DisciplinaId;
-            EntidadeAula.TurmaId = dto.TurmaId;
-            EntidadeAula.TipoCalendarioId = dto.TipoCalendarioId;
-            EntidadeAula.DataAula = dto.DataAula.Local();
-            EntidadeAula.Quantidade = dto.Quantidade;
-            EntidadeAula.TipoAula = dto.TipoAula;
-            EntidadeAula.AulaCJ = usuarioEhCJ;
-            return EntidadeAula;
+            entidadeAula.UeId = dto.UeId;
+            entidadeAula.DisciplinaId = dto.DisciplinaId;
+            entidadeAula.TurmaId = dto.TurmaId;
+            entidadeAula.TipoCalendarioId = dto.TipoCalendarioId;
+            entidadeAula.DataAula = dto.DataAula.Local();
+            entidadeAula.Quantidade = dto.Quantidade;
+            entidadeAula.TipoAula = dto.TipoAula;
+            entidadeAula.AulaCJ = usuarioEhCJ;
+            return entidadeAula;
         }
     }
 }
