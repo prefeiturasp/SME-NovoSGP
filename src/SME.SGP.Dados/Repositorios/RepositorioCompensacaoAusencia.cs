@@ -57,5 +57,18 @@ namespace SME.SGP.Dados
 
             return query.ToString();
         }
+
+        public async Task<CompensacaoAusencia> ObterPorAnoTurmaENome(int anoLetivo, long turmaId, string nome, long idIgnorar)
+        {
+            var query = @"select * 
+                            from compensacao_ausencia c
+                          where not excluido
+                            and ano_letivo = @anoLetivo
+                            and turma_id = @turmaId
+                            and nome = @nome
+                            and id <> @idIgnorar";
+
+            return await database.Conexao.QueryFirstOrDefaultAsync<CompensacaoAusencia>(query, new { anoLetivo, turmaId, nome, idIgnorar });
+        }
     }
 }
