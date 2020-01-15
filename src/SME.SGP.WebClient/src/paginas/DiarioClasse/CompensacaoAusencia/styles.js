@@ -1,4 +1,5 @@
 import styled from 'styled-components';
+import { Base } from '~/componentes';
 
 export const AlunosCompensacao = styled.div`
   span {
@@ -9,5 +10,16 @@ export const AlunosCompensacao = styled.div`
     font-size: 11px;
     color: rgba(0, 0, 0, 0.65);
     background-color: #ffffff;
+  }
+`;
+
+export const Badge = styled.button`
+  &:last-child {
+    margin-right: 10 !important;
+  }
+
+  &[aria-pressed='true'] {
+    background: ${Base.Roxo} !important;
+    color: white !important;
   }
 `;
