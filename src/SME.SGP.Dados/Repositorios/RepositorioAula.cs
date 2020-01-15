@@ -318,6 +318,7 @@ namespace SME.SGP.Dados.Repositorios
             query.AppendLine("a.aula_pai_id,");
             query.AppendLine("a.ue_id,");
             query.AppendLine("a.disciplina_id,");
+            query.AppendLine("a.disciplina_compartilhada_id,");
             query.AppendLine("a.turma_id,");
             query.AppendLine("a.tipo_calendario_id,");
             query.AppendLine("a.professor_rf,");

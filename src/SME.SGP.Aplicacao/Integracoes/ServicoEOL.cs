@@ -579,7 +579,8 @@ namespace SME.SGP.Aplicacao.Integracoes
             {
                 CodigoComponenteCurricular = x.CdComponenteCurricular,
                 Nome = x.Descricao,
-                Regencia = x.EhRegencia
+                Regencia = x.EhRegencia,
+                Compartilhada = x.EhCompartilhada
             });
         }
 
