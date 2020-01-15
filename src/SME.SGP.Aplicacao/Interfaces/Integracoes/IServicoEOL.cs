@@ -11,8 +11,6 @@ namespace SME.SGP.Aplicacao.Integracoes
     {
         Task AlterarEmail(string login, string email);
 
-        Task<bool> ExisteUsuarioComMesmoEmail(string login, string email);
-
         Task<AlterarSenhaRespostaDto> AlterarSenha(string login, string novaSenha);
 
         Task AtribuirCJSeNecessario(Guid usuarioId);
@@ -20,6 +18,8 @@ namespace SME.SGP.Aplicacao.Integracoes
         Task AtribuirCJSeNecessario(string codigoRf);
 
         Task<UsuarioEolAutenticacaoRetornoDto> Autenticar(string login, string senha);
+
+        Task<bool> ExisteUsuarioComMesmoEmail(string login, string email);
 
         Task<AbrangenciaRetornoEolDto> ObterAbrangencia(string login, Guid perfil);
 
@@ -80,6 +80,8 @@ namespace SME.SGP.Aplicacao.Integracoes
         IEnumerable<SupervisoresRetornoDto> ObterSupervisoresPorDre(string dreId);
 
         Task<IEnumerable<TurmaDto>> ObterTurmasAtribuidasAoProfessorPorEscolaEAnoLetivo(string rfProfessor, string codigoEscola, int anoLetivo);
+
+        Task<IEnumerable<TurmaParaCopiaPlanoAnualDto>> ObterTurmasParaCopiaPlanoAnual(string codigoRf, int componenteCurricularId, int codigoTurma);
 
         Task<IEnumerable<TurmaPorUEResposta>> ObterTurmasPorUE(string ueId, string anoLetivo);
 
