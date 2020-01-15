@@ -7,17 +7,18 @@ pipeline {
     
     options {
       buildDiscarder(logRotator(numToKeepStr: '5', artifactNumToKeepStr: '5'))
-      disableConcurrentBuilds()              
+      disableConcurrentBuilds()
+      skipDefaultCheckout()  
     }
     
         
     stages {
       stage('CheckOut') {
         steps {
-          git 'https://github.com/prefeiturasp/SME-NovoSGP.git'
-          //checkout scm  
-          //sh 'ls -la'
-          sh "echo MINHA BRANCH É ${GIT_BRANCH}"
+          //git 'https://github.com/prefeiturasp/SME-NovoSGP.git'
+          checkout scm
+          
+          //sh "echo MINHA BRANCH É ${GIT_BRANCH}"
           //sh 'printenv'
             
             
@@ -57,7 +58,7 @@ pipeline {
         steps {
           
           //Execuita os testes gerando um relatorio formato trx
-          //sh 'dotnet test --logger "trx;LogFileName=TestResults.trx"'
+            //sh 'dotnet test --logger "trx;LogFileName=TestResults.trx"'
             sh 'echo executando testes'
           //Publica o relatorio de testes
           //mstest()

@@ -338,8 +338,9 @@ const PlanoAnual = () => {
                 <Alert
                   alerta={{
                     tipo: 'warning',
-                    id: 'AlertaPrincipal',
+                    id: 'plano-anual-selecione-turma',
                     mensagem: 'Você precisa escolher uma turma.',
+                    estiloTitulo: { fontSize: '18px' },
                   }}
                   className="mb-0"
                 />
@@ -369,7 +370,7 @@ const PlanoAnual = () => {
               valueText="nome"
               onChange={onChangeDisciplinas}
               valueSelect={codigoDisciplinaSelecionada}
-              placeholder="Selecione uma disciplina"
+              placeholder="Selecione um componente curricular"
               disabled={listaDisciplinas && listaDisciplinas.length === 1}
             />
           </div>
@@ -396,7 +397,7 @@ const PlanoAnual = () => {
               border
               bold
               className="mr-3"
-              disabled={!emEdicao}
+              disabled={!emEdicao || !Object.entries(turmaSelecionada).length}
               onClick={cancelar}
             />
             <Button

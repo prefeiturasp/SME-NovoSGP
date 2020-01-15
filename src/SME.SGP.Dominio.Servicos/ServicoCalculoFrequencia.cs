@@ -20,17 +20,15 @@ namespace SME.SGP.Dominio.Servicos
             this.repositorioFrequenciaAlunoDisciplinaPeriodo = repositorioFrequenciaAlunoDisciplinaPeriodo ?? throw new ArgumentNullException(nameof(repositorioFrequenciaAlunoDisciplinaPeriodo));
         }
 
-        public void CalcularFrequenciaPorTurma(IEnumerable<string> alunos, long aulaId)
+        public void CalcularFrequenciaPorTurma(IEnumerable<string> alunos, DateTime dataAula, string turmaId, string disciplinaId)
         {
-            Aula aula = ObterAula(alunos, aulaId);
-
-            var totalAulasNaDisciplina = repositorioRegistroAusenciaAluno.ObterTotalAulasPorDisciplinaETurma(aula.DataAula, aula.DisciplinaId, aula.TurmaId);
-            var totalAulasDaTurmaGeral = repositorioRegistroAusenciaAluno.ObterTotalAulasPorDisciplinaETurma(aula.DataAula, string.Empty, aula.TurmaId);
+            var totalAulasNaDisciplina = repositorioRegistroAusenciaAluno.ObterTotalAulasPorDisciplinaETurma(dataAula, disciplinaId, turmaId);
+            var totalAulasDaTurmaGeral = repositorioRegistroAusenciaAluno.ObterTotalAulasPorDisciplinaETurma(dataAula, string.Empty, turmaId);
 
             foreach (var codigoAluno in alunos)
             {
-                RegistraFrequenciaPorDisciplina(aula, aula.DataAula, totalAulasNaDisciplina, codigoAluno);
-                RegistraFrequenciaGeral(aula, aula.DataAula, codigoAluno, totalAulasDaTurmaGeral);
+                RegistraFrequenciaPorDisciplina(turmaId, disciplinaId, dataAula, totalAulasNaDisciplina, codigoAluno);
+                RegistraFrequenciaGeral(turmaId, dataAula, codigoAluno, totalAulasDaTurmaGeral);
             }
         }
 
@@ -51,24 +49,9 @@ namespace SME.SGP.Dominio.Servicos
                          ) : frequenciaAluno.DefinirFrequencia(totalAusencias, totalAulas, tipo);
         }
 
-        private Aula ObterAula(IEnumerable<string> alunos, long aulaId)
+        private void RegistraFrequenciaGeral(string turmaId, DateTime dataAtual, string codigoAluno, int totalAulasDaTurma)
         {
-            var aula = repositorioAula.ObterPorId(aulaId);
-            if (aula == null)
-            {
-                throw new NegocioException("Aula não encontrada ao calcular percentual de frequência.");
-            }
-            if (alunos == null || !alunos.Any())
-            {
-                throw new NegocioException("A lista de alunos a turma e a disciplina devem ser informados para calcular a frequência.");
-            }
-
-            return aula;
-        }
-
-        private void RegistraFrequenciaGeral(Aula aula, DateTime dataAtual, string codigoAluno, int totalAulasDaTurma)
-        {
-            var totalAusenciasGeralAluno = repositorioRegistroAusenciaAluno.ObterTotalAusenciasPorAlunoETurma(dataAtual, codigoAluno, string.Empty, aula.TurmaId);
+            var totalAusenciasGeralAluno = repositorioRegistroAusenciaAluno.ObterTotalAusenciasPorAlunoETurma(dataAtual, codigoAluno, string.Empty, turmaId);
             if (totalAusenciasGeralAluno != null)
             {
                 var frequenciaGeralAluno = MapearFrequenciaAluno(codigoAluno,
@@ -91,13 +74,13 @@ namespace SME.SGP.Dominio.Servicos
             }
         }
 
-        private void RegistraFrequenciaPorDisciplina(Aula aula, DateTime dataAtual, int totalAulasNaDisciplina, string codigoAluno)
+        private void RegistraFrequenciaPorDisciplina(string turmaId, string disciplinaId, DateTime dataAtual, int totalAulasNaDisciplina, string codigoAluno)
         {
-            var ausenciasAlunoPorDisciplina = repositorioRegistroAusenciaAluno.ObterTotalAusenciasPorAlunoETurma(dataAtual, codigoAluno, aula.DisciplinaId, aula.TurmaId);
+            var ausenciasAlunoPorDisciplina = repositorioRegistroAusenciaAluno.ObterTotalAusenciasPorAlunoETurma(dataAtual, codigoAluno, disciplinaId, turmaId);
             if (ausenciasAlunoPorDisciplina != null)
             {
                 var frequenciaAluno = MapearFrequenciaAluno(codigoAluno,
-                                                            aula.DisciplinaId,
+                                                            disciplinaId,
                                                             ausenciasAlunoPorDisciplina.PeriodoInicio,
                                                             ausenciasAlunoPorDisciplina.PeriodoFim,
                                                             ausenciasAlunoPorDisciplina.Bimestre,

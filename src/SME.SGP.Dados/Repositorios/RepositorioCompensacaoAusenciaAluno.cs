@@ -1,4 +1,5 @@
-﻿using SME.SGP.Dominio;
+﻿using Dapper;
+using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System;
@@ -14,7 +15,7 @@ namespace SME.SGP.Dados.Repositorios
         {
         }
 
-        public Task<IEnumerable<CompensacaoAusenciaAluno>> ObterPorCompensacao(long compensacaoId)
+        public async Task<IEnumerable<CompensacaoAusenciaAluno>> ObterPorCompensacao(long compensacaoId)
         {
             var query = @"select * 
                             from compensacao_ausencia_aluno 
