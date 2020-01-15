@@ -34,6 +34,10 @@ const PlanoAnual = () => {
   const [ehEja, setEhEja] = useState(false);
   const [planoAnual, setPlanoAnual] = useState([]);
   const [registroMigrado, setRegistroMigrado] = useState(false);
+  const [
+    possuiTurmasDisponiveisParaCopia,
+    setPossuiTurmasDisponiveisParaCopia,
+  ] = useState(false);
   const [emEdicao, setEmEdicao] = useState(false);
   const [carregandoDados, setCarregandoDados] = useState(false);
   const [exibirCopiarConteudo, setExibirCopiarConteudo] = useState(false);
@@ -114,8 +118,9 @@ const PlanoAnual = () => {
     if (planos && planos.length > 0) {
       planos.forEach(plano => {
         if (
-          !plano.objetivosAprendizagem ||
-          (!plano.objetivosAprendizagem.length > 0 && !ehEja)
+          disciplinaSelecionada.possuiObjetivos &&
+          (!plano.objetivosAprendizagem ||
+            (!plano.objetivosAprendizagem.length > 0 && !ehEja))
         ) {
           possuiErro = true;
           err[plano.bimestre - 1].push(
@@ -190,7 +195,7 @@ const PlanoAnual = () => {
           sucesso('Registro salvo com sucesso.');
           setEmEdicao(false);
           setListaBimestresPreenchidos(
-            plano.bimestres
+            planoAnual
               .filter(c => c.descricao && c.descricao.length > 0)
               .map(c => {
                 return { nome: `${c.bimestre} º Bimestre`, valor: c.bimestre };
@@ -339,6 +344,9 @@ const PlanoAnual = () => {
     setExibirCopiarConteudo(false);
   };
 
+  const onChangePossuiTurmasDisponiveisParaCopia = possuiTurmas => {
+    setPossuiTurmasDisponiveisParaCopia(possuiTurmas);
+  };
   return (
     <>
       <CopiarConteudo
@@ -347,6 +355,17 @@ const PlanoAnual = () => {
         componenteCurricularEolId={codigoDisciplinaSelecionada}
         turmaId={turmaSelecionada.turma}
         onCloseCopiarConteudo={fecharCopiarConteudo}
+        planoAnual={{
+          anoLetivo: turmaSelecionada.anoLetivo,
+          bimestres: planoAnual,
+          componenteCurricularEolId:
+            disciplinaSelecionada.codigoComponenteCurricular,
+          turmaId: turmaSelecionada.turma,
+          escolaId: turmaSelecionada.unidadeEscolar,
+        }}
+        onChangePossuiTurmasDisponiveisParaCopia={
+          onChangePossuiTurmasDisponiveisParaCopia
+        }
       />
       <Loader loading={carregandoDados}>
         <div className="col-md-12">
@@ -377,8 +396,8 @@ const PlanoAnual = () => {
             )}
           </Titulo>
         </Grid>
-        <Card className="col-md-12 p-0" mx="mx-0">
-          <div className="col-md-4">
+        <Card className="col-md-12 p-0 float-right" mx="mx-0">
+          <div className="col-md-4 col-xs-12">
             <SelectComponent
               name="disciplinas"
               id="disciplinas"
@@ -391,15 +410,15 @@ const PlanoAnual = () => {
               disabled={listaDisciplinas && listaDisciplinas.length === 1}
             />
           </div>
-          <div className="col-md-8 d-flex justify-content-end">
+          <div className="col-md-8 col-sm-2 d-flex justify-content-end">
             <Button
               label="Copiar Conteúdo"
               icon="share-square"
-              className="mr-3"
               color={Colors.Azul}
+              className="mr-3"
               border
               onClick={abrirCopiarConteudo}
-              disabled={emEdicao}
+              disabled={emEdicao || !possuiTurmasDisponiveisParaCopia}
             />
             <Button
               label="Voltar"
@@ -414,8 +433,8 @@ const PlanoAnual = () => {
               color={Colors.Roxo}
               border
               bold
-              className="mr-3"
               disabled={!emEdicao}
+              className="mr-3"
               onClick={cancelar}
             />
             <Button

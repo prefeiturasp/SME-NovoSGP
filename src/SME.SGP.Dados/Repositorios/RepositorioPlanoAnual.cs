@@ -133,13 +133,14 @@ namespace SME.SGP.Dados.Repositorios
         public IEnumerable<TurmaParaCopiaPlanoAnualDto> ValidaSeTurmasPossuemPlanoAnual(string[] turmasId)
         {
             var query = @"select
-                            t.*,
-                            p.id as possui_plano
+	                        t.*,
+	                        (select 1 from plano_anual where turma_id = t.turma_id::int8 limit 1) as possuiPlano
                         from
 	                        turma t
                         inner join abrangencia a on
 	                        a.turma_id = t.id
-	                        left join plano_anual p on p.turma_id = a.turma_id
+                        left join plano_anual p on
+	                        p.turma_id = a.turma_id
                         where
 	                        t.turma_id = Any(@turmasId) and not a.historico";
 
