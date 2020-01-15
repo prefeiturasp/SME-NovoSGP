@@ -21,6 +21,6 @@ namespace SME.SGP.Dominio
         public string Nome { get; set; }
         public string Descricao { get; set; }
 
-        public List<CompensacaoAusenciaAluno> Alunos { get; set; }
+        public IEnumerable<CompensacaoAusenciaAluno> Alunos { get; set; }
     }
 }
