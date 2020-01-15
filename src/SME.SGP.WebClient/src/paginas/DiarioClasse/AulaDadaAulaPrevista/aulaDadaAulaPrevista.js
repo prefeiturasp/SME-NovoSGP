@@ -241,8 +241,8 @@ const AulaDadaAulaPrevista = () => {
                 valueText="nome"
                 valueSelect={disciplinaIdSelecionada}
                 onChange={onChangeDisciplinas}
-                placeholder="Disciplina"
-                disabled={desabilitarDisciplina}
+                placeholder="Selecione um componente curricular"
+                disabled={desabilitarDisciplina || !turmaSelecionada.turma}
               />
             </div>
             <div className="col-sm-12 col-lg-8 col-md-8 d-flex justify-content-end pb-4">

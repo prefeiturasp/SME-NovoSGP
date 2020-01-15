@@ -47,8 +47,13 @@ namespace SME.SGP.IoC
             services.TryAddScopedWorkerService<IComandosGrade, ComandosGrade>();
             services.TryAddScopedWorkerService<IComandoFrequencia, ComandoFrequencia>();
             services.TryAddScopedWorkerService<IComandosAtribuicaoEsporadica, ComandosAtribuicaoEsporadica>();
+            services.TryAddScopedWorkerService<IComandosAtividadeAvaliativa, ComandosAtividadeAvaliativa>();
+            services.TryAddScopedWorkerService<IComandosTipoAvaliacao, ComandosTipoAavaliacao>();
             services.TryAddScopedWorkerService<IComandosPlanoAula, ComandosPlanoAula>();
+            services.TryAddScopedWorkerService<IComandosAtribuicaoCJ, ComandosAtribuicaoCJ>();
             services.TryAddScopedWorkerService<IComandosEventoMatricula, ComandosEventoMatricula>();
+            services.TryAddScopedWorkerService<IComandosNotasConceitos, ComandosNotasConceitos>();
+            services.TryAddScopedWorkerService<IComandosAulaPrevista, ComandosAulaPrevista>();
             services.TryAddScopedWorkerService<IComandosRegistroPoa, ComandosRegistroPoa>();
             services.TryAddScopedWorkerService<IComandosCompensacaoAusencia, ComandosCompensacaoAusencia>();
             services.TryAddScopedWorkerService<IComandosCompensacaoAusenciaAluno, ComandosCompensacaoAusenciaAluno>();
@@ -88,6 +93,14 @@ namespace SME.SGP.IoC
             services.TryAddScopedWorkerService<IConsultasCompensacaoAusencia, ConsultasCompensacaoAusencia>();
             services.TryAddScopedWorkerService<IConsultasCompensacaoAusenciaAluno, ConsultasCompensacaoAusenciaAluno>();
             services.TryAddScopedWorkerService<IConsultasCompensacaoAusenciaDisciplinaRegencia, ConsultasCompensacaoAusenciaDisciplinaRegencia>();
+            services.TryAddScopedWorkerService<IConsultasAulaPrevista, ConsultasAulaPrevista>();
+            services.TryAddScopedWorkerService<IConsultasNotasConceitos, ConsultasNotasConceitos>();
+            services.TryAddScopedWorkerService<IConsultasAtribuicoes, ConsultasAtribuicoes>();
+            services.TryAddScopedWorkerService<IConsultaAtividadeAvaliativa, ConsultaAtividadeAvaliativa>();
+            services.TryAddScopedWorkerService<IConsultaTipoAvaliacao, ConsultaTipoAvaliacao>();
+            services.TryAddScopedWorkerService<IConsultasAtribuicaoCJ, ConsultasAtribuicaoCJ>();
+            services.TryAddScopedWorkerService<IConsultasUe, ConsultasUe>();
+            services.TryAddScopedWorkerService<IConsultasEventosAulasCalendario, ConsultasEventosAulasCalendario>();
         }
 
         private static void RegistrarContextos(IServiceCollection services)
@@ -99,55 +112,63 @@ namespace SME.SGP.IoC
 
         private static void RegistrarRepositorios(IServiceCollection services)
         {
-            services.TryAddScopedWorkerService<IRepositorioPlanoCiclo, RepositorioPlanoCiclo>();
-            services.TryAddScopedWorkerService<IRepositorioMatrizSaberPlano, RepositorioMatrizSaberPlano>();
-            services.TryAddScopedWorkerService<IRepositorioObjetivoDesenvolvimentoPlano, RepositorioObjetivoDesenvolvimentoPlano>();
-            services.TryAddScopedWorkerService<IRepositorioMatrizSaber, RepositorioMatrizSaber>();
-            services.TryAddScopedWorkerService<IRepositorioObjetivoDesenvolvimento, RepositorioObjetivoDesenvolvimento>();
-            services.TryAddScopedWorkerService<IRepositorioCiclo, RepositorioCiclo>();
-            services.TryAddScopedWorkerService<IRepositorioPlanoAnual, RepositorioPlanoAnual>();
-            services.TryAddScopedWorkerService<IRepositorioObjetivoAprendizagemPlano, RepositorioObjetivoAprendizagemPlano>();
-            services.TryAddScopedWorkerService<IRepositorioCache, RepositorioCache>();
-            services.TryAddScopedWorkerService<IRepositorioComponenteCurricular, RepositorioComponenteCurricular>();
-            services.TryAddScopedWorkerService<IRepositorioSupervisorEscolaDre, RepositorioSupervisorEscolaDre>();
-            services.TryAddScopedWorkerService<IRepositorioNotificacao, RepositorioNotificacao>();
-            services.TryAddScopedWorkerService<IRepositorioWorkflowAprovacao, RepositorioWorkflowAprovacao>();
-            services.TryAddScopedWorkerService<IRepositorioWorkflowAprovacaoNivelNotificacao, RepositorioWorkflowAprovaNivelNotificacao>();
-            services.TryAddScopedWorkerService<IRepositorioWorkflowAprovacaoNivel, RepositorioWorkflowAprovacaoNivel>();
-            services.TryAddScopedWorkerService<IRepositorioUsuario, RepositorioUsuario>();
-            services.TryAddScopedWorkerService<IRepositorioWorkflowAprovacaoNivelUsuario, RepositorioWorkflowAprovacaoNivelUsuario>();
-            services.TryAddScopedWorkerService<IRepositorioPrioridadePerfil, RepositorioPrioridadePerfil>();
-            services.TryAddScopedWorkerService<IRepositorioConfiguracaoEmail, RepositorioConfiguracaoEmail>();
             services.TryAddScopedWorkerService<IRepositorioAbrangencia, RepositorioAbrangencia>();
-            services.TryAddScopedWorkerService<IRepositorioTipoCalendario, RepositorioTipoCalendario>();
-            services.TryAddScopedWorkerService<IRepositorioFeriadoCalendario, RepositorioFeriadoCalendario>();
-            services.TryAddScopedWorkerService<IRepositorioPeriodoEscolar, RepositorioPeriodoEscolar>();
-            services.TryAddScopedWorkerService<IRepositorioEvento, RepositorioEvento>();
-            services.TryAddScopedWorkerService<IRepositorioEventoTipo, RepositorioEventoTipo>();
-            services.TryAddScopedWorkerService<IRepositorioParametrosSistema, RepositorioParametrosSistema>();
-            services.TryAddScopedWorkerService<IRepositorioAula, RepositorioAula>();
-            services.TryAddScopedWorkerService<IRepositorioGrade, RepositorioGrade>();
-            services.TryAddScopedWorkerService<IRepositorioGradeFiltro, RepositorioGradeFiltro>();
-            services.TryAddScopedWorkerService<IRepositorioGradeDisciplina, RepositorioGradeDisciplina>();
-            services.TryAddScopedWorkerService<IRepositorioFrequencia, RepositorioFrequencia>();
-            services.TryAddScopedWorkerService<IRepositorioRegistroAusenciaAluno, RepositorioRegistroAusenciaAluno>();
-            services.TryAddScopedWorkerService<IRepositorioAtribuicaoEsporadica, RepositorioAtribuicaoEsporadica>();
-            services.TryAddScopedWorkerService<IRepositorioDre, RepositorioDre>();
-            services.TryAddScopedWorkerService<IRepositorioUe, RepositorioUe>();
-            services.TryAddScopedWorkerService<IRepositorioTurma, RepositorioTurma>();
-            services.TryAddScopedWorkerService<IRepositorioFrequenciaAlunoDisciplinaPeriodo, RepositorioFrequenciaAlunoDisciplinaPeriodo>();
-            services.TryAddScopedWorkerService<IRepositorioNotificacaoFrequencia, RepositorioNotificacaoFrequencia>();
-            services.TryAddScopedWorkerService<IRepositorioPlanoAula, RepositorioPlanoAula>();
-            services.TryAddScopedWorkerService<IRepositorioObjetivoAprendizagemAula, RepositorioObjetivoAprendizagemAula>();
-            services.TryAddScopedWorkerService<IRepositorioAtribuicaoCJ, RepositorioAtribuicaoCJ>();
             services.TryAddScopedWorkerService<IRepositorioAtividadeAvaliativa, RepositorioAtividadeAvaliativa>();
-            services.TryAddScopedWorkerService<IRepositorioEventoMatricula, RepositorioEventoMatricula>();
-            services.TryAddScopedWorkerService<IRepositorioNotificacaoAulaPrevista, RepositorioNotificacaoAulaPrevista>();
+            services.TryAddScopedWorkerService<IRepositorioAtividadeAvaliativaDisciplina, RepositorioAtividadeAvaliativaDisciplina>();
+            services.TryAddScopedWorkerService<IRepositorioAtividadeAvaliativaRegencia, RepositorioAtividadeAvaliativaRegencia>();
+            services.TryAddScopedWorkerService<IRepositorioAtribuicaoCJ, RepositorioAtribuicaoCJ>();
+            services.TryAddScopedWorkerService<IRepositorioAtribuicaoEsporadica, RepositorioAtribuicaoEsporadica>();
+            services.TryAddScopedWorkerService<IRepositorioAula, RepositorioAula>();
             services.TryAddScopedWorkerService<IRepositorioAulaPrevista, RepositorioAulaPrevista>();
+            services.TryAddScopedWorkerService<IRepositorioAulaPrevistaBimestre, RepositorioAulaPrevistaBimestre>();
+            services.TryAddScopedWorkerService<IRepositorioCache, RepositorioCache>();
+            services.TryAddScopedWorkerService<IRepositorioCiclo, RepositorioCiclo>();
+            services.TryAddScopedWorkerService<IRepositorioComponenteCurricular, RepositorioComponenteCurricular>();
+            services.TryAddScopedWorkerService<IRepositorioConceito, RepositorioConceito>();
+            services.TryAddScopedWorkerService<IRepositorioConfiguracaoEmail, RepositorioConfiguracaoEmail>();
+            services.TryAddScopedWorkerService<IRepositorioDre, RepositorioDre>();
+            services.TryAddScopedWorkerService<IRepositorioEvento, RepositorioEvento>();
+            services.TryAddScopedWorkerService<IRepositorioEventoMatricula, RepositorioEventoMatricula>();
+            services.TryAddScopedWorkerService<IRepositorioEventoTipo, RepositorioEventoTipo>();
+            services.TryAddScopedWorkerService<IRepositorioFeriadoCalendario, RepositorioFeriadoCalendario>();
+            services.TryAddScopedWorkerService<IRepositorioFrequencia, RepositorioFrequencia>();
+            services.TryAddScopedWorkerService<IRepositorioFrequenciaAlunoDisciplinaPeriodo, RepositorioFrequenciaAlunoDisciplinaPeriodo>();
+            services.TryAddScopedWorkerService<IRepositorioGrade, RepositorioGrade>();
+            services.TryAddScopedWorkerService<IRepositorioGradeDisciplina, RepositorioGradeDisciplina>();
+            services.TryAddScopedWorkerService<IRepositorioGradeFiltro, RepositorioGradeFiltro>();
+            services.TryAddScopedWorkerService<IRepositorioMatrizSaber, RepositorioMatrizSaber>();
+            services.TryAddScopedWorkerService<IRepositorioMatrizSaberPlano, RepositorioMatrizSaberPlano>();
+            services.TryAddScopedWorkerService<IRepositorioNotaParametro, RepositorioNotaParametro>();
+            services.TryAddScopedWorkerService<IRepositorioNotaTipoValor, RepositorioNotaTipoValor>();
+            services.TryAddScopedWorkerService<IRepositorioNotasConceitos, RepositorioNotasConceitos>();
+            services.TryAddScopedWorkerService<IRepositorioNotificacao, RepositorioNotificacao>();
+            services.TryAddScopedWorkerService<IRepositorioNotificacaoAulaPrevista, RepositorioNotificacaoAulaPrevista>();
+            services.TryAddScopedWorkerService<IRepositorioNotificacaoFrequencia, RepositorioNotificacaoFrequencia>();
+            services.TryAddScopedWorkerService<IRepositorioObjetivoAprendizagemAula, RepositorioObjetivoAprendizagemAula>();
+            services.TryAddScopedWorkerService<IRepositorioObjetivoAprendizagemPlano, RepositorioObjetivoAprendizagemPlano>();
+            services.TryAddScopedWorkerService<IRepositorioObjetivoDesenvolvimento, RepositorioObjetivoDesenvolvimento>();
+            services.TryAddScopedWorkerService<IRepositorioObjetivoDesenvolvimentoPlano, RepositorioObjetivoDesenvolvimentoPlano>();
+            services.TryAddScopedWorkerService<IRepositorioParametrosSistema, RepositorioParametrosSistema>();
+            services.TryAddScopedWorkerService<IRepositorioPeriodoEscolar, RepositorioPeriodoEscolar>();
+            services.TryAddScopedWorkerService<IRepositorioPlanoAnual, RepositorioPlanoAnual>();
+            services.TryAddScopedWorkerService<IRepositorioPlanoAula, RepositorioPlanoAula>();
+            services.TryAddScopedWorkerService<IRepositorioPlanoCiclo, RepositorioPlanoCiclo>();
+            services.TryAddScopedWorkerService<IRepositorioPrioridadePerfil, RepositorioPrioridadePerfil>();
+            services.TryAddScopedWorkerService<IRepositorioRegistroAusenciaAluno, RepositorioRegistroAusenciaAluno>();
             services.TryAddScopedWorkerService<IRepositorioRegistroPoa, RepositorioRegistroPoa>();
             services.TryAddScopedWorkerService<IRepositorioCompensacaoAusencia, RepositorioCompensacaoAusencia>();
             services.TryAddScopedWorkerService<IRepositorioCompensacaoAusenciaAluno, RepositorioCompensacaoAusenciaAluno>();
             services.TryAddScopedWorkerService<IRepositorioCompensacaoAusenciaDisciplinaRegencia, RepositorioCompensacaoAusenciaDisciplinaRegencia>();
+            services.TryAddScopedWorkerService<IRepositorioSupervisorEscolaDre, RepositorioSupervisorEscolaDre>();
+            services.TryAddScopedWorkerService<IRepositorioTipoAvaliacao, RepositorioTipoAvaliacao>();
+            services.TryAddScopedWorkerService<IRepositorioTipoCalendario, RepositorioTipoCalendario>();
+            services.TryAddScopedWorkerService<IRepositorioTurma, RepositorioTurma>();
+            services.TryAddScopedWorkerService<IRepositorioUe, RepositorioUe>();
+            services.TryAddScopedWorkerService<IRepositorioUsuario, RepositorioUsuario>();
+            services.TryAddScopedWorkerService<IRepositorioWorkflowAprovacao, RepositorioWorkflowAprovacao>();
+            services.TryAddScopedWorkerService<IRepositorioWorkflowAprovacaoNivel, RepositorioWorkflowAprovacaoNivel>();
+            services.TryAddScopedWorkerService<IRepositorioWorkflowAprovacaoNivelNotificacao, RepositorioWorkflowAprovaNivelNotificacao>();
+            services.TryAddScopedWorkerService<IRepositorioWorkflowAprovacaoNivelUsuario, RepositorioWorkflowAprovacaoNivelUsuario>();
         }
 
         private static void RegistrarServicos(IServiceCollection services)
@@ -175,6 +196,8 @@ namespace SME.SGP.IoC
             services.TryAddScopedWorkerService<IServicoEventoMatricula, ServicoEventoMatricula>();
             services.TryAddScopedWorkerService<IServicoAluno, ServicoAluno>();
             services.TryAddScopedWorkerService<IServicoCompensacaoAusencia, ServicoCompensacaoAusencia>();
+            services.TryAddScopedWorkerService<IServicoAtribuicaoCJ, ServicoAtribuicaoCJ>();
+            services.TryAddScopedWorkerService<IServicoDeNotasConceitos, ServicoDeNotasConceitos>();
         }
 
         private static void ResgistraDependenciaHttp(IServiceCollection services)

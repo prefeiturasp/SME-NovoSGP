@@ -186,7 +186,7 @@ const AvaliacaoForm = ({ match }) => {
           name: 'quantidadeDisciplinas',
           exclusive: true,
           message:
-            'Para categoria Interdisciplinar informe mais que uma disciplina',
+            'Para categoria Interdisciplinar informe mais que um componente curricular',
           test: value => (ehInterdisciplinar ? value.length > 1 : true),
         }),
       tipoAvaliacaoId: Yup.string().required(
@@ -502,7 +502,7 @@ const AvaliacaoForm = ({ match }) => {
                         valueOption="codigoComponenteCurricular"
                         valueText="nome"
                         disabled={disciplinaDesabilitada}
-                        placeholder="Disciplina"
+                        placeholder="Selecione um componente curricular"
                         valueSelect={listaDisciplinasSelecionadas}
                         form={form}
                         multiple
@@ -517,7 +517,7 @@ const AvaliacaoForm = ({ match }) => {
                         valueOption="codigoComponenteCurricular"
                         valueText="nome"
                         disabled={disciplinaDesabilitada}
-                        placeholder="Disciplina"
+                        placeholder="Selecione um componente curricular"
                         form={form}
                         onChange={aoTrocarCampos}
                       />
