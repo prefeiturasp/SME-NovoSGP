@@ -59,7 +59,6 @@ namespace SME.SGP.Aplicacao
                 if (planoAnualOrigem == null)
                     throw new NegocioException("Plano anual de origem não encontrado");
 
-                //await ValidaTurmasProfessor(migrarPlanoAnualDto, planoAnualDto, usuarioAtual.CodigoRf);
                 var bimestreAtual = planoAnualDto.Bimestres.FirstOrDefault(c => c.Bimestre == bimestrePlanoAnual);
                 foreach (var turmaId in migrarPlanoAnualDto.IdsTurmasDestino)
                 {
