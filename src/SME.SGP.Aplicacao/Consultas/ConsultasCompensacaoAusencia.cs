@@ -44,12 +44,6 @@ namespace SME.SGP.Aplicacao
                 {
                     foreach (var aluno in compensacaoAusencia.Alunos)
                     {
-                        if (compensacaoDto.Alunos.Count == 3)
-                        {
-                            compensacaoDto.Alunos.Add($"mais {compensacaoAusencia.Alunos.Count() - 3} alunos");
-                            break;
-                        }
-
                         // Adiciona nome do aluno no Dto de retorno
                         var alunoEol = alunos.FirstOrDefault(a => a.CodigoAluno == aluno.CodigoAluno);
                         if (alunoEol != null)
@@ -61,7 +55,17 @@ namespace SME.SGP.Aplicacao
             };
 
             if (!string.IsNullOrEmpty(nomeAluno))
-                listaCompensacoesDto = listaCompensacoesDto.Where(c => c.Alunos.Exists(a => a.Contains(nomeAluno))).ToList();
+                listaCompensacoesDto = listaCompensacoesDto.Where(c => c.Alunos.Exists(a => a.ToLower().Contains(nomeAluno.ToLower()))).ToList();
+
+            // Mostrar apenas 3 alunos
+            foreach (var compensacaoDto in listaCompensacoesDto.Where(c => c.Alunos.Count > 3))
+            {
+                var qtd = compensacaoDto.Alunos.Count();
+                compensacaoDto.Alunos = compensacaoDto.Alunos.GetRange(0, 3);
+                compensacaoDto.Alunos.Add($"mais {qtd - 3} alunos");
+            }
+
+
 
             var resultado = new PaginacaoResultadoDto<CompensacaoAusenciaListagemDto>();
             resultado.TotalPaginas = listaCompensacoes.TotalPaginas;

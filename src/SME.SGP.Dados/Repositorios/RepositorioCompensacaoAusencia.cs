@@ -25,7 +25,9 @@ namespace SME.SGP.Dados
             query.AppendLine(";");
             query.AppendLine(MontaQuery(paginacao, disciplinaId, bimestre, nomeAtividade, true));
 
-            using (var multi = await database.Conexao.QueryMultipleAsync(query.ToString(), new { turmaId, disciplinaId, bimestre, nomeAtividade }))
+            var nomeAtividadeTratado = $"%{(nomeAtividade ?? "").ToLower()}%";
+
+            using (var multi = await database.Conexao.QueryMultipleAsync(query.ToString(), new { turmaId, disciplinaId, bimestre, nomeAtividade = nomeAtividadeTratado }))
             {
                 retorno.Items = multi.Read<CompensacaoAusencia>().ToList();
                 retorno.TotalRegistros = multi.ReadFirst<int>();
@@ -42,7 +44,7 @@ namespace SME.SGP.Dados
             var query = new StringBuilder(string.Format(@"select {0}
                           from compensacao_ausencia c
                          inner join turma t on t.id = c.turma_id
-                          where not c.excluido
+                          where not c.excluido  
                             and t.turma_id = @turmaId ", select));
 
             if (!string.IsNullOrEmpty(disciplinaId))
@@ -50,7 +52,7 @@ namespace SME.SGP.Dados
             if (bimestre != 0)
                 query.AppendLine("and c.bimestre = @bimestre");
             if (!string.IsNullOrEmpty(nomeAtividade))
-                query.AppendLine("and c.nome like '%@nomeAtividade%'");
+                query.AppendLine("and lower(f_unaccent(c.nome)) like @nomeAtividade");
 
             if (paginacao.QuantidadeRegistros > 0 && !contador)
                 query.AppendLine($"OFFSET {paginacao.QuantidadeRegistrosIgnorados} ROWS FETCH NEXT {paginacao.QuantidadeRegistros} ROWS ONLY");
