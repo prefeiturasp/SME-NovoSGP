@@ -12,5 +12,8 @@ namespace SME.SGP.Dominio
         public string CodigoAluno { get; set; }
         public int QuantidadeFaltasCompensadas { get; set; }
         public bool Notificado { get; set; }
+
+        public void Excluir()
+            => Excluido = true;
     }
 }
