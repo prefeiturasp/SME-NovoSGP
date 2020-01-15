@@ -118,6 +118,9 @@ namespace SME.SGP.Aplicacao
             return registroFrequenciaDto;
         }
 
+        public FrequenciaAluno ObterPorAlunoDisciplinaData(string codigoAluno, string disciplinaId, DateTime dataAtual)
+            => repositorioFrequenciaAlunoDisciplinaPeriodo.ObterPorAlunoDisciplinaData(codigoAluno, disciplinaId, dataAtual);
+
         private IndicativoFrequenciaDto ObterIndicativoFrequencia(AlunoPorTurmaResposta aluno, string disciplinaId, PeriodoEscolarDto bimestre, int percentualAlerta, int percentualCritico)
         {
             var frequenciaAluno = repositorioFrequenciaAlunoDisciplinaPeriodo.Obter(aluno.CodigoAluno, disciplinaId, bimestre.PeriodoInicio, bimestre.PeriodoFim, TipoFrequenciaAluno.PorDisciplina);
