@@ -9,6 +9,7 @@ namespace SME.SGP.Dados
             ToTable("compensacao_ausencia");
             Map(c => c.DisciplinaId).ToColumn("disciplina_id");
             Map(c => c.TurmaId).ToColumn("turma_id");
+            Map(c => c.AnoLetivo).ToColumn("ano_letivo");
         }
     }
 }

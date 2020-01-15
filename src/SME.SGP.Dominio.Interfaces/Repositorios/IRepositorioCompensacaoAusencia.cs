@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Dominio.Interfaces
 {
-    public interface IRepositorioCompensacaoAusencia
+    public interface IRepositorioCompensacaoAusencia: IRepositorioBase<CompensacaoAusencia>
     {
         Task<PaginacaoResultadoDto<CompensacaoAusencia>> Listar(Paginacao paginacao, string turmaId, string disciplinaId, int bimestre, string nomeAtividade);
 

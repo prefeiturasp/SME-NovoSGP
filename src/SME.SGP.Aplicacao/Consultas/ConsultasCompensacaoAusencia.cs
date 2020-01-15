@@ -75,6 +75,7 @@ namespace SME.SGP.Aplicacao
             => compensacaoAusencia == null ? null : 
             new CompensacaoAusenciaListagemDto()
             {
+                Id = compensacaoAusencia.Id,
                 Bimestre = compensacaoAusencia.Bimestre,
                 AtividadeNome = compensacaoAusencia.Nome,
                 Alunos = new List<string>()
