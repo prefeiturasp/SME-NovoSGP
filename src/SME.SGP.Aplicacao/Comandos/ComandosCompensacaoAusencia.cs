@@ -19,9 +19,10 @@ namespace SME.SGP.Aplicacao
             this.servicoCompensacaoAusencia = servicoCompensacaoAusencia ?? throw new ArgumentNullException(nameof(servicoCompensacaoAusencia));
         }
 
+        public async Task Alterar(long id, CompensacaoAusenciaDto compensacao)
+            => await servicoCompensacaoAusencia.Salvar(id, compensacao);
+
         public async Task Inserir(CompensacaoAusenciaDto compensacao)
-        {
-            await servicoCompensacaoAusencia.Salvar(0, compensacao);
-        }
+            => await servicoCompensacaoAusencia.Salvar(0, compensacao);
     }
 }
