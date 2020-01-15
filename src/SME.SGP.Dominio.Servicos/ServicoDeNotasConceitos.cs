@@ -77,7 +77,7 @@ namespace SME.SGP.Dominio
 
             var notasPorAvaliacoes = notasConceitos.GroupBy(x => x.AtividadeAvaliativaID);
 
-            var usuario = servicoUsuario.ObterUsuarioLogado().Result;
+            var usuario = await servicoUsuario.ObterUsuarioLogado();
 
             foreach (var notasPorAvaliacao in notasPorAvaliacoes)
             {
@@ -216,15 +216,14 @@ namespace SME.SGP.Dominio
 
         private void SalvarNoBanco(List<NotaConceito> EntidadesSalvar)
         {
-            using (var transacao = unitOfWork.IniciarTransacao())
-            {
-                foreach (var entidade in EntidadesSalvar)
-                {
-                    repositorioNotasConceitos.Salvar(entidade);
-                }
+            unitOfWork.IniciarTransacao();
 
-                unitOfWork.PersistirTransacao();
+            foreach (var entidade in EntidadesSalvar)
+            {
+                repositorioNotasConceitos.Salvar(entidade);
             }
+
+            unitOfWork.PersistirTransacao();
         }
 
         private void ValidarAvaliacoes(IEnumerable<long> avaliacoesAlteradasIds, IEnumerable<AtividadeAvaliativa> atividadesAvaliativas, string professorRf)

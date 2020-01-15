@@ -766,8 +766,11 @@ const FrequenciaPlanoAula = () => {
                   valueText="nome"
                   valueSelect={disciplinaIdSelecionada}
                   onChange={onChangeDisciplinas}
-                  placeholder="Disciplina"
-                  disabled={desabilitarDisciplina}
+                  placeholder="Selecione um componente curricular"
+                  disabled={
+                    desabilitarDisciplina ||
+                    !(usuario && turmaSelecionada.turma)
+                  }
                 />
               </Loader>
             </div>
