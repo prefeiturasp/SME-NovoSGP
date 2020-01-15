@@ -27,7 +27,7 @@ const Nav = styled.nav`
 const Logo = styled.img`
   height: 65px !important;
   width: 75px !important;
-  @media screen and (max-width: 900px) {
+  @media screen and (max-width: 993px) {
     width: 4rem !important;
   }
 `;
