@@ -483,8 +483,10 @@ const Notas = ({ match }) => {
                   valueText="nome"
                   valueSelect={disciplinaSelecionada}
                   onChange={onChangeDisciplinas}
-                  placeholder="Disciplina"
-                  disabled={desabilitarDisciplina}
+                  placeholder="Selecione um componente curricular"
+                  disabled={
+                    desabilitarDisciplina || !usuario.turmaSelecionada.turma
+                  }
                 />
               </div>
             </div>

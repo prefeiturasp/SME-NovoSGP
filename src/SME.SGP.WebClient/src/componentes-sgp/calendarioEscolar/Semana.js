@@ -103,7 +103,7 @@ const Dia = props => {
                     key={shortid.generate()}
                     className="d-block badge badge-pill badge-light ml-auto mr-0"
                   >
-                    {tipoEvento}
+                    {tipoEvento && 'Evento'}
                   </TipoEvento>
                 );
               })}

@@ -40,7 +40,7 @@ function AtribuicaoCJLista() {
       key: 'turma',
     },
     {
-      title: 'Disciplinas',
+      title: 'Componente curricular',
       dataIndex: 'disciplinas',
       key: 'disciplinas',
       width: '80%',
