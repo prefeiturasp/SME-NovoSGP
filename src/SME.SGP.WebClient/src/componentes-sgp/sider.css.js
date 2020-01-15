@@ -9,7 +9,7 @@ export const MenuBody = styled.div`
   height: 100%;
   width: ${props => (props.retraido ? `115px` : `250px`)};
 
-  @media screen and (max-width: 900px) {
+  @media screen and (max-width: 993px) {
     width: 115px !important;
   }
 
@@ -333,7 +333,7 @@ export const MenuScope = styled.div`
 `;
 
 export const IconeRetrair = styled.a`
-  @media screen and (max-width: 900px) {
+  @media screen and (max-width: 993px) {
     visibility: hidden;
   }
 `;
