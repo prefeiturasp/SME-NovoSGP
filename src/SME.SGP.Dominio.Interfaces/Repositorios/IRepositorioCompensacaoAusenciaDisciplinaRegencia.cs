@@ -7,5 +7,6 @@ namespace SME.SGP.Dominio.Interfaces
 {
     public interface IRepositorioCompensacaoAusenciaDisciplinaRegencia
     {
+        Task<IEnumerable<CompensacaoAusenciaDisciplinaRegencia>> ObterPorCompensacao(long compensacaoId);
     }
 }

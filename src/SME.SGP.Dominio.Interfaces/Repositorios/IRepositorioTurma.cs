@@ -6,6 +6,8 @@ namespace SME.SGP.Dominio.Interfaces
     {
         Turma ObterPorId(string turmaId);
 
+        Turma ObterPorId(long id);
+
         Turma ObterTurmaComUeEDrePorId(string turmaId);
 
         IEnumerable<Turma> Sincronizar(IEnumerable<Turma> entidades, IEnumerable<Ue> ues);
