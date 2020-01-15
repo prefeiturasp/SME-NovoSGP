@@ -15,5 +15,8 @@ namespace SME.SGP.Aplicacao
         {
             this.repositorioCompensacaoAusenciaAluno = repositorioCompensacaoAusenciaAluno ?? throw new ArgumentNullException(nameof(repositorioCompensacaoAusenciaAluno));
         }
+
+        public async Task<IEnumerable<CompensacaoAusenciaAluno>> ObterPorCompensacao(long compensacaoId)
+            => await repositorioCompensacaoAusenciaAluno.ObterPorCompensacao(compensacaoId);
     }
 }
