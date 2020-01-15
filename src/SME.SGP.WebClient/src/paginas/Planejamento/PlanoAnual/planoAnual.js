@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useSelector } from 'react-redux';
 import { Collapse } from 'antd';
 import Row from '~/componentes/row';
+
 import {
   Grid,
   Card,
@@ -47,12 +48,7 @@ const PlanoAnual = () => {
   );
   const [bimestreExpandido, setBimestreExpandido] = useState('');
   const [listaErros, setListaErros] = useState([[], [], [], []]);
-  const [refsPainel, setRefsPainel] = useState([
-    useRef(),
-    useRef(),
-    useRef(),
-    useRef(),
-  ]);
+  const [refsPainel] = useState([useRef(), useRef(), useRef(), useRef()]);
 
   const [
     listaDisciplinasPlanejamento,
@@ -479,7 +475,6 @@ const PlanoAnual = () => {
                           disciplinaSemObjetivo={
                             !disciplinaSelecionada.possuiObjetivos
                           }
-                          regencia={disciplinaSelecionada.regencia}
                           onChange={onChangeBimestre}
                           key={plano.bimestre}
                           erros={listaErros[plano.bimestre - 1]}
