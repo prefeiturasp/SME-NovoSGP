@@ -21,11 +21,12 @@ const CompensacaoAusenciaLista = () => {
 
   const { turmaSelecionada } = usuario;
 
+  const [exibirLista, setExibirLista] = useState(false);
   const [carregandoDisciplinas, setCarregandoDisciplinas] = useState(false);
   const [desabilitarDisciplina, setDesabilitarDisciplina] = useState(false);
   const [listaDisciplinas, setListaDisciplinas] = useState([]);
   const [compensacoesSelecionadas, setCompensacoesSelecionadas] = useState([]);
-  const [bimestreSelecionado, setBimestreSelecionado] = useState([]);
+  const [bimestreSelecionado, setBimestreSelecionado] = useState('');
   const [filtro, setFiltro] = useState({});
   const [nomeAtividade, setNomeAtividade] = useState('');
   const [nomeAluno, setNomeAluno] = useState('');
@@ -35,7 +36,6 @@ const CompensacaoAusenciaLista = () => {
   );
 
   const montaExibicaoAlunos = dados => {
-    // TODO Ver como vai vir a lista de alunos do back para montar conforme protótipo!
     return (
       <AlunosCompensacao>
         {dados.map(aluno => (
@@ -139,6 +139,11 @@ const CompensacaoAusenciaLista = () => {
   }, [turmaSelecionada.turma, turmaSelecionada.modalidade]);
 
   useEffect(() => {
+    if (disciplinaIdSelecionada) {
+      setExibirLista(true);
+    } else {
+      setExibirLista(false);
+    }
     filtrar();
   }, [disciplinaIdSelecionada, filtrar]);
 
@@ -322,18 +327,22 @@ const CompensacaoAusenciaLista = () => {
             </div>
           </div>
         </div>
-        <div className="col-md-12 pt-2">
-          <ListaPaginada
-            url="v1/compensacoes/ausencia"
-            id="lista-compensacao"
-            colunaChave="id"
-            colunas={colunas}
-            filtro={filtro}
-            onClick={onClickEditar}
-            multiSelecao
-            selecionarItems={onSelecionarItems}
-          />
-        </div>
+        {exibirLista ? (
+          <div className="col-md-12 pt-2">
+            <ListaPaginada
+              url="v1/compensacoes/ausencia"
+              id="lista-compensacao"
+              colunaChave="id"
+              colunas={colunas}
+              filtro={filtro}
+              onClick={onClickEditar}
+              multiSelecao
+              selecionarItems={onSelecionarItems}
+            />
+          </div>
+        ) : (
+          ''
+        )}
       </Card>
     </>
   );
