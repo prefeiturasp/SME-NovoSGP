@@ -540,14 +540,6 @@ namespace SME.SGP.Aplicacao.Integracoes
         {
             httpClient.DefaultRequestHeaders.Clear();
 
-            //var valoresParaEnvio = new List<KeyValuePair<string, string>> {
-            //    { new KeyValuePair<string, string>("codigoRf", codigoRf) },
-            //    { new KeyValuePair<string, string>("componenteCurricular", componenteCurricularId.ToString()) },
-            //    { new KeyValuePair<string, string>("codigoTurma", codigoTurma.ToString()) }
-            //};
-
-            //var resposta = await httpClient.PostAsync($"funcionarios/BuscarTurmasElegiveis", new FormUrlEncodedContent(valoresParaEnvio));
-
             var parametros = JsonConvert.SerializeObject(new
             {
                 codigoRf,
