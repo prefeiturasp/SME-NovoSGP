@@ -24,6 +24,15 @@ namespace SME.SGP.Api.Controllers
             return Ok(await consultas.ListarPaginado(filtros.TurmaId, filtros.DisciplinaId, filtros.Bimestre, filtros.AtividadeNome, filtros.AlunoNome));
         }
 
+        [HttpGet("{id}")]
+        [ProducesResponseType(typeof(PaginacaoResultadoDto<CompensacaoAusenciaListagemDto>), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        //[Permissao(Permissao.ADAP_C, Policy = "Bearer")]
+        public async Task<IActionResult> Obter(long id, [FromServices] IConsultasCompensacaoAusencia consultas)
+        {
+            return Ok(await consultas.ObterPorId(id));
+        }
+
         [HttpPost()]
         [ProducesResponseType(200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
