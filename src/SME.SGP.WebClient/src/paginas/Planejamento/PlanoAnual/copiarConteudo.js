@@ -63,7 +63,7 @@ const CopiarConteudo = ({
         bimestresDestino: bimestresSelecionados,
       })
       .then(() => {
-        sucesso('Plano anual copiado com sucesso.');
+        sucesso('Planejamento copiado com sucesso.');
         fecharCopiarConteudo();
       })
       .catch(e => {
@@ -146,7 +146,7 @@ const CopiarConteudo = ({
                 onChange={onChangeTurmasSelecionadas}
                 form={form}
               />
-              <label>Copiar para o(s) bimestre(s)</label>
+              <label className="mt-3">Copiar para o(s) bimestre(s)</label>
               <SelectComponent
                 id="bimestres"
                 name="bimestres"
