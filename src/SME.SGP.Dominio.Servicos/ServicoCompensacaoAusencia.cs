@@ -128,7 +128,7 @@ namespace SME.SGP.Dominio.Servicos
             foreach (var aluno in alunos)
             {
                 var frequenciaAluno = repositorioFrequencia.ObterPorAlunoDisciplinaData(aluno.CodigoAluno, disciplinaId, periodo.PeriodoFim);
-                var faltasNaoCompensadas = frequenciaAluno.NumeroFaltasNaoCompensadas - aluno.QuantidadeFaltasCompensadas;
+                var faltasNaoCompensadas = frequenciaAluno.NumeroFaltasNaoCompensadas + aluno.QuantidadeFaltasCompensadas;
 
                 var alunoDto = alunosDto.FirstOrDefault(a => a.AlunoCodigo == aluno.CodigoAluno);
                 if (alunoDto.QtdFaltasCompensadas > faltasNaoCompensadas)
