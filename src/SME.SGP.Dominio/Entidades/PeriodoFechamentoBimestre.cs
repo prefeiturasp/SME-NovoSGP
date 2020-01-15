@@ -2,7 +2,7 @@
 
 namespace SME.SGP.Dominio
 {
-    public class PeriodoFechamentoBimestre : EntidadeBase
+    public class PeriodoFechamentoBimestre
     {
         public PeriodoFechamentoBimestre(PeriodoEscolar periodoEscolar, DateTime inicioDoFechamento, DateTime finalDoFechamento)
         {
