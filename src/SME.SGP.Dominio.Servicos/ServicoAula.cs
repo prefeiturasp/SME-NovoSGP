@@ -107,7 +107,7 @@ namespace SME.SGP.Dominio.Servicos
             if (tipoCalendario == null)
                 throw new NegocioException("O tipo de calendário não foi encontrado.");
 
-           VerificaSeProfessorPodePersistirTurma(usuario.CodigoRf, aula.TurmaId, aula.DataAula);
+            VerificaSeProfessorPodePersistirTurma(usuario.CodigoRf, aula.TurmaId, aula.DataAula);
 
             if (aula.Id > 0)
                 aula.PodeSerAlterada(usuario);
@@ -233,7 +233,7 @@ namespace SME.SGP.Dominio.Servicos
             // Verifica recorrencia da gravação
             if (recorrencia != RecorrenciaAula.AulaUnica)
             {
-                Cliente.Executar(() => GravarRecorrencia(ehInclusao, aula, usuario, recorrencia));
+                Cliente.Executar<IServicoAula>(s => s.GravarRecorrencia(ehInclusao, aula, usuario, recorrencia));
 
                 var mensagem = ehInclusao ? "cadastrada" : "alterada";
                 return $"Aula {mensagem} com sucesso. Serão {mensagem}s aulas recorrentes, em breve você receberá uma notificação com o resultado do processamento.";
