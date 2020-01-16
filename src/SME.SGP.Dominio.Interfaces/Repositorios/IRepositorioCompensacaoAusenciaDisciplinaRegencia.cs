@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Dominio.Interfaces
 {
-    public interface IRepositorioCompensacaoAusenciaDisciplinaRegencia
+    public interface IRepositorioCompensacaoAusenciaDisciplinaRegencia: IRepositorioBase<CompensacaoAusenciaDisciplinaRegencia>
     {
         Task<IEnumerable<CompensacaoAusenciaDisciplinaRegencia>> ObterPorCompensacao(long compensacaoId);
     }

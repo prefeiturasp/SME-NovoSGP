@@ -10,5 +10,8 @@ namespace SME.SGP.Dominio
         public long CompensacaoAusenciaId { get; set; }
         public CompensacaoAusencia CompensacaoAusencia { get; set; }
         public string DisciplinaId { get; set; }
+
+        public void Excluir()
+            => Excluido = true;
     }
 }
