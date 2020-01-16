@@ -24,5 +24,22 @@ namespace SME.SGP.Dados.Repositorios
 
             return await database.Conexao.QueryAsync<CompensacaoAusenciaAluno>(query, new { compensacaoId });
         }
+
+        public int ObterTotalCompensacoesPorAlunoETurma(int bimestre, string codigoAluno, string disciplinaId, string turmaId)
+        {
+            var query = new StringBuilder(@"select coalesce(sum(a.qtd_faltas_compensadas), 0)
+                                from compensacao_ausencia_aluno a
+                                inner join compensacao_ausencia c on c.id = a.compensacao_ausencia_id
+                                inner join turma t on t.id = c.turma_id
+                                where not a.excluido 
+                                    and c.bimestre = @bimestre
+                                    and a.codigo_aluno = @codigoAluno
+                                    and t.turma_id = @turmaId ");
+
+            if (!string.IsNullOrEmpty(disciplinaId))
+                query.Append("and c.disciplina_id = @disciplinaId");
+
+            return database.Conexao.QueryFirst<int>(query.ToString(), new { bimestre, codigoAluno, disciplinaId, turmaId });
+        }
     }
 }
