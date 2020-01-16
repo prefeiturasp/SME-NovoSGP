@@ -44,7 +44,7 @@ export default function Editor(props) {
   const editorComValidacoes = () => {
     return (
       <Campo>
-        <div className={form ? `${possuiErro() ? 'is-invalid' : ''}}` : ''}>
+        <div className={form ? (possuiErro() ? 'is-invalid' : '') : ''}>
           <Field
             name={name}
             component={CKEditor}
