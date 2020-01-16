@@ -9,5 +9,6 @@ namespace SME.SGP.Dominio.Interfaces
     public interface IServicoCompensacaoAusencia
     {
         Task Salvar(long id, CompensacaoAusenciaDto compensacaoDto);
+        Task Excluir(long[] compensacoesIds);
     }
 }
