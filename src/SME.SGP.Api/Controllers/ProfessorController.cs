@@ -5,6 +5,7 @@ using SME.SGP.Aplicacao;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Api.Controllers
@@ -35,7 +36,12 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         public IActionResult Get(string codigoRf)
         {
-            return Ok(consultasProfessor.Listar(codigoRf));
+            var retorno = consultasProfessor.Listar(codigoRf);
+
+            if (!retorno.Any())
+                return NoContent();
+
+            return Ok(retorno);
         }
 
         [HttpGet("turmas/{codigoTurma}/disciplinas/")]
@@ -43,7 +49,12 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         public async Task<IActionResult> Get(string codigoTurma, [FromQuery] bool turmaPrograma, [FromServices]IConsultasDisciplina consultasDisciplina)
         {
-            return Ok(await consultasDisciplina.ObterDisciplinasPorProfessorETurma(codigoTurma, turmaPrograma));
+            var retorno = await consultasDisciplina.ObterDisciplinasPorProfessorETurma(codigoTurma, turmaPrograma);
+
+            if (!retorno.Any())
+                return NoContent();
+
+            return Ok(retorno);
         }
 
         [HttpGet("{codigoRF}/escolas/{codigoEscola}/turmas/anos-letivos/{anoLetivo}")]
@@ -51,7 +62,12 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         public async Task<IActionResult> Get(string codigoRF, string codigoEscola, int anoLetivo, [FromServices]IConsultasProfessor consultasProfessor)
         {
-            return Ok(await consultasProfessor.ObterTurmasAtribuidasAoProfessorPorEscolaEAnoLetivo(codigoRF, codigoEscola, anoLetivo));
+            var retorno = await consultasProfessor.ObterTurmasAtribuidasAoProfessorPorEscolaEAnoLetivo(codigoRF, codigoEscola, anoLetivo);
+
+            if (!retorno.Any())
+                return NoContent();
+
+            return Ok(retorno);
         }
 
         [HttpGet("turmas/{codigoTurma}/disciplinas/planejamento")]
@@ -62,7 +78,12 @@ namespace SME.SGP.Api.Controllers
         {
             filtroDisciplinaPlanejamentoDto.CodigoTurma = codigoTurma;
 
-            return Ok(await consultasDisciplina.ObterDisciplinasParaPlanejamento(filtroDisciplinaPlanejamentoDto));
+            var retorno = await consultasDisciplina.ObterDisciplinasParaPlanejamento(filtroDisciplinaPlanejamentoDto);
+
+            if (!retorno.Any())
+                return NoContent();
+
+            return Ok(retorno);
         }
 
         [HttpGet("{codigoRF}/resumo/{anoLetivo}/{incluirEmei}")]
