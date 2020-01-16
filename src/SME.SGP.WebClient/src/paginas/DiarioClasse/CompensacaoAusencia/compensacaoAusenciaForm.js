@@ -1,5 +1,5 @@
 import { Form, Formik } from 'formik';
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import * as Yup from 'yup';
 import { CampoTexto, Colors, Label, Loader } from '~/componentes';
@@ -16,8 +16,9 @@ import history from '~/servicos/history';
 import ServicoCompensacaoAusencia from '~/servicos/Paginas/DiarioClasse/ServicoCompensacaoAusencia';
 import ServicoDisciplina from '~/servicos/Paginas/ServicoDisciplina';
 
-import { Badge } from './styles';
-import CompensacaoAusenciaListaAlunos from './listasAlunos/compensacaoAusenciaListaAlunos';
+import ListaAlunos from './listasAlunos/listaAlunos';
+import ListaAlunosAusenciasCompensadas from './listasAlunos/listaAlunosAusenciasCompensadas';
+import { Badge, BotaoListaAlunos, ColunaBotaoListaAlunos } from './styles';
 
 const CompensacaoAusenciaForm = ({ match }) => {
   const usuario = useSelector(store => store.usuario);
@@ -37,31 +38,133 @@ const CompensacaoAusenciaForm = ({ match }) => {
   const [temRegencia, setTemRegencia] = useState(false);
   const [refForm, setRefForm] = useState({});
 
+  const [alunosAusenciaTurma, setAlunosAusenciaTurma] = useState([]);
+  const [alunosAusenciaCompensada, setAlunosAusenciaCompensada] = useState([]);
+  const [idsAlunos, setIdsAlunos] = useState([]);
+  const [
+    idsAlunosAusenciaCompensadas,
+    setIdsAlunosAusenciaCompensadas,
+  ] = useState([]);
+
   const [valoresIniciais, setValoresIniciais] = useState({
-    disciplina: undefined,
+    disciplinaId: undefined,
     bimestre: '',
     atividade: '',
-    detalhes: '',
+    descricao: '',
   });
 
   const [validacoes] = useState(
     Yup.object({
-      disciplina: Yup.string().required('Disciplina obrigatória'),
+      disciplinaId: Yup.string().required('Disciplina obrigatória'),
       bimestre: Yup.string().required('Bimestre obrigatório'),
       atividade: Yup.string()
         .required('Atividade obrigatória')
         .max(250, 'Máximo 250 caracteres'),
-      detalhes: Yup.string().required('Detalhe obrigatório'),
+      descricao: Yup.string().required('Detalhe obrigatório'),
     })
   );
 
-  const resetarForm = () => {
+  useEffect(() => {
+    const alunosUm = [
+      {
+        alunoCodigo: '3897768',
+        nome: 'FERNANDA MORAES ANTUNES',
+        qtdFaltasCompensadas: 1,
+        frequencia: '70%',
+        faltas: 23,
+      },
+      {
+        alunoCodigo: '3488433',
+        nome: 'camila',
+        qtdFaltasCompensadas: 3,
+        frequencia: '70%',
+        faltas: 23,
+      },
+      {
+        alunoCodigo: '4',
+        nome: 'joao',
+        qtdFaltasCompensadas: 2,
+        frequencia: '70%',
+        faltas: 23,
+      },
+      {
+        alunoCodigo: '5',
+        nome: 'ana',
+        qtdFaltasCompensadas: 2,
+        frequencia: '70%',
+        faltas: 23,
+      },
+      {
+        alunoCodigo: '6',
+        nome: 'asdasdasd',
+        qtdFaltasCompensadas: 2,
+        frequencia: '70%',
+        faltas: 23,
+      },
+      {
+        alunoCodigo: '7',
+        nome: 'aaaaaaa',
+        qtdFaltasCompensadas: 2,
+        frequencia: '70%',
+        faltas: 23,
+      },
+      {
+        alunoCodigo: '8',
+        nome: 'jovem',
+        qtdFaltasCompensadas: 2,
+        frequencia: '70%',
+        faltas: 23,
+      },
+      {
+        alunoCodigo: '9',
+        nome: 'gui',
+        qtdFaltasCompensadas: 2,
+        frequencia: '70%',
+        faltas: 23,
+      },
+      {
+        alunoCodigo: '10',
+        nome: 'amanda',
+        qtdFaltasCompensadas: 2,
+        frequencia: '70%',
+        faltas: 23,
+      },
+      {
+        alunoCodigo: '11',
+        nome: 'jana',
+        qtdFaltasCompensadas: 2,
+        frequencia: '70%',
+        faltas: 23,
+      },
+      {
+        alunoCodigo: '12',
+        nome: 'menina',
+        qtdFaltasCompensadas: 2,
+        frequencia: '70%',
+        faltas: 23,
+      },
+    ];
+
+    const alunosDois = [
+      {
+        alunoCodigo: '1',
+        nome: 'teste',
+        frequencia: '70%',
+        faltas: 23,
+      },
+    ];
+
+    setAlunosAusenciaTurma(alunosUm);
+    setAlunosAusenciaCompensada(alunosDois);
+  }, []);
+
+  const resetarForm = useCallback(() => {
     if (refForm && refForm.resetForm) {
       refForm.resetForm();
     }
     setListaDisciplinasRegencia([]);
     setTemRegencia(false);
-  };
+  }, [refForm]);
 
   const onChangeCampos = () => {
     if (!modoEdicao) {
@@ -130,10 +233,10 @@ const CompensacaoAusenciaForm = ({ match }) => {
         if (!(match && match.params && match.params.id)) {
           const disciplina = disciplinas.data[0];
           const valoresIniciaisForm = {
-            disciplina: String(disciplina.codigoComponenteCurricular),
+            disciplinaId: String(disciplina.codigoComponenteCurricular),
             bimestre: '',
             atividade: '',
-            detalhes: '',
+            descricao: '',
           };
           setValoresIniciais(valoresIniciaisForm);
         }
@@ -163,7 +266,7 @@ const CompensacaoAusenciaForm = ({ match }) => {
       ];
     }
     setListaBimestres(listaBi);
-  }, [match, turmaSelecionada.modalidade, turmaSelecionada.turma]);
+  }, [match, turmaSelecionada.modalidade, turmaSelecionada.turma, resetarForm]);
 
   useEffect(() => {
     const consultaPorId = async () => {
@@ -180,7 +283,7 @@ const CompensacaoAusenciaForm = ({ match }) => {
 
       if (dadosEdicao && dadosEdicao.data) {
         setValoresIniciais({
-          disciplina: String(dadosEdicao.data.disciplina),
+          disciplinaId: String(dadosEdicao.data.disciplinaId),
           bimestre: dadosEdicao.data.bimestre,
           atividade: dadosEdicao.data.atividade,
         });
@@ -276,15 +379,23 @@ const CompensacaoAusenciaForm = ({ match }) => {
   const onClickCadastrar = async valoresForm => {
     const paramas = valoresForm;
     paramas.id = idCompensacaoAusencia;
+    paramas.turmaId = turmaSelecionada.turma;
 
     if (temRegencia) {
-      paramas.listaDisciplinasRegencia = listaDisciplinasRegencia.filter(
+      paramas.disciplinasRegenciaIds = listaDisciplinasRegencia.filter(
         item => item.selecionada
       );
     }
+    paramas.alunos = alunosAusenciaCompensada.map(item => {
+      return {
+        alunoCodigo: item.alunoCodigo,
+        qtdFaltasCompensadas: item.qtdFaltasCompensadas,
+      };
+    });
     console.log(paramas);
 
     const cadastrado = await ServicoCompensacaoAusencia.salvar(
+      paramas.id,
       paramas
     ).catch(e => erros(e));
 
@@ -298,72 +409,56 @@ const CompensacaoAusenciaForm = ({ match }) => {
     }
   };
 
-  const alunosCompensacao = [
-    {
-      alunoCodigo: '2',
-      nome: 'jorge',
-      qtdFaltasCompensadas: 2,
-    },
-    {
-      alunoCodigo: '3',
-      nome: 'camila',
-      qtdFaltasCompensadas: 2,
-    },
-    {
-      alunoCodigo: '4',
-      nome: 'joao',
-      qtdFaltasCompensadas: 2,
-    },
-    {
-      alunoCodigo: '5',
-      nome: 'ana',
-      qtdFaltasCompensadas: 2,
-    },
-    {
-      alunoCodigo: '6',
-      nome: 'asdasdasd',
-      qtdFaltasCompensadas: 2,
-    },
-    {
-      alunoCodigo: '7',
-      nome: 'aaaaaaa',
-      qtdFaltasCompensadas: 2,
-    },
-    {
-      alunoCodigo: '8',
-      nome: 'jovem',
-      qtdFaltasCompensadas: 2,
-    },
-    {
-      alunoCodigo: '9',
-      nome: 'gui',
-      qtdFaltasCompensadas: 2,
-    },
-    {
-      alunoCodigo: '10',
-      nome: 'amanda',
-      qtdFaltasCompensadas: 2,
-    },
-    {
-      alunoCodigo: '11',
-      nome: 'jana',
-      qtdFaltasCompensadas: 2,
-    },
-    {
-      alunoCodigo: '12',
-      nome: 'menina',
-      qtdFaltasCompensadas: 2,
-    },
-  ];
+  const obterListaAlunosComIdsSelecionados = (list, ids) => {
+    return list.filter(item => ids.find(id => id == item.alunoCodigo));
+  };
 
-  const alunos = [
-    {
-      alunoCodigo: '1',
-      nome: 'teste',
-      frequencia: '70%',
-      faltas: 23,
-    },
-  ];
+  const obterListaAlunosSemIdsSelecionados = (list, ids) => {
+    return list.filter(item => !ids.find(id => id == item.alunoCodigo));
+  };
+
+  const onClickAdicionarAlunos = () => {
+    const novaListaAlunosAusenciaCompensada = obterListaAlunosComIdsSelecionados(
+      alunosAusenciaTurma,
+      idsAlunos
+    );
+
+    const novaListaAlunos = obterListaAlunosSemIdsSelecionados(
+      alunosAusenciaTurma,
+      idsAlunos
+    );
+
+    setAlunosAusenciaTurma([...novaListaAlunos]);
+    setAlunosAusenciaCompensada([
+      ...novaListaAlunosAusenciaCompensada,
+      ...alunosAusenciaCompensada,
+    ]);
+    setIdsAlunos([]);
+  };
+
+  const onClickRemoverAlunos = () => {
+    const novaListaAlunos = obterListaAlunosComIdsSelecionados(
+      alunosAusenciaCompensada,
+      idsAlunosAusenciaCompensadas
+    );
+
+    const novaListaAlunosAusenciaCompensada = obterListaAlunosSemIdsSelecionados(
+      alunosAusenciaCompensada,
+      idsAlunosAusenciaCompensadas
+    );
+
+    setAlunosAusenciaTurma([...novaListaAlunos, ...alunosAusenciaTurma]);
+    setAlunosAusenciaCompensada([...novaListaAlunosAusenciaCompensada]);
+    setIdsAlunosAusenciaCompensadas([]);
+  };
+
+  const onSelectRowAlunos = ids => {
+    setIdsAlunos(ids);
+  };
+
+  const onSelectRowAlunosAusenciaCompensada = ids => {
+    setIdsAlunosAusenciaCompensadas(ids);
+  };
 
   return (
     <>
@@ -428,7 +523,7 @@ const CompensacaoAusenciaForm = ({ match }) => {
                       form={form}
                       id="disciplina"
                       label="Disciplina"
-                      name="disciplina"
+                      name="disciplinaId"
                       lista={listaDisciplinas}
                       valueOption="codigoComponenteCurricular"
                       valueText="nome"
@@ -487,17 +582,38 @@ const CompensacaoAusenciaForm = ({ match }) => {
                 <div className="col-sm-12 col-md-12 col-lg-12 col-xl-12 mb-2">
                   <Editor
                     form={form}
-                    name="detalhes"
+                    name="descricao"
                     onChange={onChangeCampos}
                     label="Detalhamento da atividade"
                   />
                 </div>
               </div>
               <div className="row">
-                <CompensacaoAusenciaListaAlunos
-                  lista={alunos}
-                  listaAusenciaCompensada={alunosCompensacao}
-                />
+                <div className="col-md-5">
+                  <ListaAlunos
+                    lista={alunosAusenciaTurma}
+                    onSelectRow={onSelectRowAlunos}
+                    idsAlunos={idsAlunos}
+                  />
+                </div>
+                <ColunaBotaoListaAlunos className="col-md-2">
+                  <BotaoListaAlunos
+                    className="mb-2"
+                    onClick={onClickAdicionarAlunos}
+                  >
+                    <i className="fas fa-chevron-right" />
+                  </BotaoListaAlunos>
+                  <BotaoListaAlunos onClick={onClickRemoverAlunos}>
+                    <i className="fas fa-chevron-left" />
+                  </BotaoListaAlunos>
+                </ColunaBotaoListaAlunos>
+                <div className="col-md-5">
+                  <ListaAlunosAusenciasCompensadas
+                    listaAusenciaCompensada={alunosAusenciaCompensada}
+                    onSelectRow={onSelectRowAlunosAusenciaCompensada}
+                    idsAlunosAusenciaCompensadas={idsAlunosAusenciaCompensadas}
+                  />
+                </div>
               </div>
             </Form>
           )}
