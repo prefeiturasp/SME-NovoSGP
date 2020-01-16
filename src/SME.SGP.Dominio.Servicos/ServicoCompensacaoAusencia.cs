@@ -128,7 +128,10 @@ namespace SME.SGP.Dominio.Servicos
             foreach (var aluno in alunos)
             {
                 var frequenciaAluno = repositorioFrequencia.ObterPorAlunoDisciplinaData(aluno.CodigoAluno, disciplinaId, periodo.PeriodoFim);
-                var faltasNaoCompensadas = frequenciaAluno.NumeroFaltasNaoCompensadas - aluno.QuantidadeFaltasCompensadas;
+                if (frequenciaAluno == null)
+                    throw new NegocioException($"Aluno [{aluno.CodigoAluno}] não possui ausência registrada. Não é possível incluí-lo na compensação.");
+                    
+                var faltasNaoCompensadas = frequenciaAluno.NumeroFaltasNaoCompensadas + aluno.QuantidadeFaltasCompensadas;
 
                 var alunoDto = alunosDto.FirstOrDefault(a => a.AlunoCodigo == aluno.CodigoAluno);
                 if (alunoDto.QtdFaltasCompensadas > faltasNaoCompensadas)
