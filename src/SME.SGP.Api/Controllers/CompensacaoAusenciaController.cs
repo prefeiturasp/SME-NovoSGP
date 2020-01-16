@@ -25,7 +25,7 @@ namespace SME.SGP.Api.Controllers
         }
 
         [HttpGet("{id}")]
-        [ProducesResponseType(typeof(PaginacaoResultadoDto<CompensacaoAusenciaListagemDto>), 200)]
+        [ProducesResponseType(typeof(PaginacaoResultadoDto<CompensacaoAusenciaCompletoDto>), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         //[Permissao(Permissao.ADAP_C, Policy = "Bearer")]
         public async Task<IActionResult> Obter(long id, [FromServices] IConsultasCompensacaoAusencia consultas)
