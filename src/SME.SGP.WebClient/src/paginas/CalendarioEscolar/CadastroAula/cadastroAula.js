@@ -714,7 +714,7 @@ const CadastroAula = ({ match }) => {
                 </div>
               </div>
               <div className="row">
-                <div className="col-sm-12 col-md-5 col-lg-3 col-xl-3 mb-2">
+                <div className="col-sm-12 col-md-5 col-lg-3 col-xl-3 mb-2 mr-0 pr-0">
                   <RadioGroupButton
                     desabilitado={!novoRegistro}
                     id="tipo-aula"
@@ -724,13 +724,7 @@ const CadastroAula = ({ match }) => {
                     name="tipoAula"
                     onChange={e => {
                       setEhReposicao(e.target.value === 2);
-                      // setAula({
-                      //   ...aula,
-                      //   tipoAula: e.target.value,
-                      //   recorrenciaAula: e.target.value === 2 ? 1 : '',
-                      // });
                       onChangeCampos();
-                      // montaValidacoes();
                       setControlaQuantidadeAula(ehReposicao);
                     }}
                   />
@@ -766,6 +760,26 @@ const CadastroAula = ({ match }) => {
                     somenteHora
                   />
                 </div>
+                <div className="col-sm-12 col-md-12 col-lg-12 col-xl-12 pb-3">
+                  <SelectComponent
+                    id="disciplinaCompartilhadaId"
+                    form={form}
+                    name="disciplinaCompartilhadaId"
+                    lista={listaDisciplinas}
+                    valueOption="codigoComponenteCurricular"
+                    valueText="nome"
+                    onChange={e => onChangeDisciplinas(e, form)}
+                    label="Componente curricular compartilhado"
+                    placeholder="Selecione um componente curricular compartilhado"
+                    disabled={
+                      !!(
+                        listaDisciplinas &&
+                        listaDisciplinas.length &&
+                        listaDisciplinas.length === 1
+                      ) || !novoRegistro
+                    }
+                  />
+                </div>
                 <div className="col-sm-12 col-md-8 col-lg-8 col-xl-5 mb-2 d-flex justify-content-start">
                   <RadioGroupButton
                     id="quantidadeRadio"
@@ -779,7 +793,7 @@ const CadastroAula = ({ match }) => {
                     }}
                     className="text-nowrap"
                   />
-                  <div className="mt-4 ml-2 mr-2 text-nowrap">
+                  <div className="mt-4 ml-0 mr-2 text-nowrap">
                     ou informe a quantidade
                   </div>
                   <CampoTexto
@@ -796,7 +810,6 @@ const CadastroAula = ({ match }) => {
                     onChange={() => {
                       refForm.setFieldValue('quantidadeRadio', 0);
                       onChangeCampos();
-                      // montaValidacoes();
                     }}
                     icon
                   />
@@ -812,7 +825,6 @@ const CadastroAula = ({ match }) => {
                     onChange={e => {
                       onChangeCampos();
                       setEhRecorrencia(e.target.value !== 1);
-                      // montaValidacoes();
                     }}
                   />
                 </div>
