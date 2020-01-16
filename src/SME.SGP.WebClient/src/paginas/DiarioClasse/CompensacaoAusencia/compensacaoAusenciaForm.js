@@ -64,100 +64,6 @@ const CompensacaoAusenciaForm = ({ match }) => {
     })
   );
 
-  useEffect(() => {
-    const alunosUm = [
-      {
-        alunoCodigo: '3897768',
-        nome: 'FERNANDA MORAES ANTUNES',
-        qtdFaltasCompensadas: 1,
-        frequencia: '70%',
-        faltas: 23,
-      },
-      {
-        alunoCodigo: '3488433',
-        nome: 'camila',
-        qtdFaltasCompensadas: 3,
-        frequencia: '70%',
-        faltas: 23,
-      },
-      {
-        alunoCodigo: '4',
-        nome: 'joao',
-        qtdFaltasCompensadas: 2,
-        frequencia: '70%',
-        faltas: 23,
-      },
-      {
-        alunoCodigo: '5',
-        nome: 'ana',
-        qtdFaltasCompensadas: 2,
-        frequencia: '70%',
-        faltas: 23,
-      },
-      {
-        alunoCodigo: '6',
-        nome: 'asdasdasd',
-        qtdFaltasCompensadas: 2,
-        frequencia: '70%',
-        faltas: 23,
-      },
-      {
-        alunoCodigo: '7',
-        nome: 'aaaaaaa',
-        qtdFaltasCompensadas: 2,
-        frequencia: '70%',
-        faltas: 23,
-      },
-      {
-        alunoCodigo: '8',
-        nome: 'jovem',
-        qtdFaltasCompensadas: 2,
-        frequencia: '70%',
-        faltas: 23,
-      },
-      {
-        alunoCodigo: '9',
-        nome: 'gui',
-        qtdFaltasCompensadas: 2,
-        frequencia: '70%',
-        faltas: 23,
-      },
-      {
-        alunoCodigo: '10',
-        nome: 'amanda',
-        qtdFaltasCompensadas: 2,
-        frequencia: '70%',
-        faltas: 23,
-      },
-      {
-        alunoCodigo: '11',
-        nome: 'jana',
-        qtdFaltasCompensadas: 2,
-        frequencia: '70%',
-        faltas: 23,
-      },
-      {
-        alunoCodigo: '12',
-        nome: 'menina',
-        qtdFaltasCompensadas: 2,
-        frequencia: '70%',
-        faltas: 23,
-      },
-    ];
-
-    const alunosDois = [
-      {
-        alunoCodigo: '1',
-        nome: 'teste',
-        frequencia: '70%',
-        faltas: 23,
-      },
-    ];
-
-    setAlunosAusenciaTurma(alunosUm);
-    setAlunosAusenciaCompensada(alunosDois);
-  }, []);
-
   const resetarForm = useCallback(() => {
     if (refForm && refForm.resetForm) {
       refForm.resetForm();
@@ -304,6 +210,29 @@ const CompensacaoAusenciaForm = ({ match }) => {
       consultaPorId(match.params.id);
     }
   }, [match, turmaSelecionada.turma]);
+
+  const obterAlunosComAusencia = async (disciplinaId, bimestre) => {
+    const alunos = await ServicoCompensacaoAusencia.obterAlunosComAusencia(
+      turmaSelecionada.turma,
+      disciplinaId,
+      bimestre
+    ).catch(e => erros(e));
+    if (alunos && alunos.data && alunos.data.length) {
+      // TODO Remover quando o back ajusta alunoCodigo para ID
+      const a = alunos.data.map(item => {
+        item.alunoCodigo = item.id;
+        return item;
+      });
+      setAlunosAusenciaTurma([...a]);
+    } else {
+      setAlunosAusenciaTurma([]);
+    }
+  };
+
+  const onChangeBimestre = (bimestre, form) => {
+    obterAlunosComAusencia(form.values.disciplinaId, bimestre);
+    onChangeCampos();
+  };
 
   const validaAntesDoSubmit = form => {
     const arrayCampos = Object.keys(valoresIniciais);
@@ -541,7 +470,7 @@ const CompensacaoAusenciaForm = ({ match }) => {
                     name="bimestre"
                     valueOption="valor"
                     valueText="descricao"
-                    onChange={onChangeCampos}
+                    onChange={bi => onChangeBimestre(bi, form)}
                     placeholder="Bimestre"
                     lista={listaBimestres}
                   />
