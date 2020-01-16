@@ -59,11 +59,11 @@ namespace SME.SGP.Aplicacao
 
             var alunosEOL = await servicoEOL.ObterAlunosPorTurma(turmaId);
             if (alunosEOL == null || !alunosEOL.Any())
-                throw new Exception("Não foram localizados alunos para a turma selecionada.");
+                throw new NegocioException("Não foram localizados alunos para a turma selecionada.");
 
             var disciplinasEOL = servicoEOL.ObterDisciplinasPorIds(new long[] { long.Parse(disciplinaId) });
             if (disciplinasEOL == null || !disciplinasEOL.Any())
-                throw new Exception("Disciplina informada não localizada no EOL.");
+                throw new NegocioException("Disciplina informada não localizada no EOL.");
 
             var quantidadeMaximaCompensacoes = int.Parse(repositorioParametrosSistema.ObterValorPorTipoEAno(TipoParametroSistema.QuantidadeMaximaCompensacaoAusencia));
             var percentualFrequenciaAlerta = int.Parse(repositorioParametrosSistema.ObterValorPorTipoEAno(disciplinasEOL.First().Regencia ? TipoParametroSistema.CompensacaoAusenciaPercentualRegenciaClasse : TipoParametroSistema.CompensacaoAusenciaPercentualFund2));
