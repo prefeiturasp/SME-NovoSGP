@@ -111,7 +111,8 @@ namespace SME.SGP.Aplicacao
                     alunoDto.AlunoNome = alunoEol.NomeAluno;
 
                     var frequenciaAluno = consultasFrequencia.ObterPorAlunoDisciplinaData(aluno.CodigoAluno, compensacao.DisciplinaId, DateTime.Now);
-                    alunoDto.QuantidadeFaltasTotais = frequenciaAluno.NumeroFaltasNaoCompensadas;
+                    if (frequenciaAluno != null)
+                        alunoDto.QuantidadeFaltasTotais = frequenciaAluno.NumeroFaltasNaoCompensadas;
 
                     compensacaoDto.Alunos.Add(alunoDto);
                 }
@@ -145,7 +146,7 @@ namespace SME.SGP.Aplicacao
             => aluno == null ? null :
             new CompensacaoAusenciaAlunoCompletoDto()
             { 
-                AlunoCodigo = aluno.CodigoAluno,
+                Id = aluno.CodigoAluno,
                 QtdFaltasCompensadas = aluno.QuantidadeFaltasCompensadas
             };
 

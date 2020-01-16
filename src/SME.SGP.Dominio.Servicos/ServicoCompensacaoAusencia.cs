@@ -112,45 +112,65 @@ namespace SME.SGP.Dominio.Servicos
 
         private async Task GravarCompensacaoAlunos(bool alteracao, long compensacaoId, string turmaId, string disciplinaId, IEnumerable<CompensacaoAusenciaAlunoDto> alunosDto, PeriodoEscolarDto periodo)
         {
+            var mensagensExcessao = new StringBuilder();
+
             List<CompensacaoAusenciaAluno> listaPersistencia = new List<CompensacaoAusenciaAluno>();
             IEnumerable<CompensacaoAusenciaAluno> alunos = new List<CompensacaoAusenciaAluno>();
+
             if (alteracao)
                 alunos = await repositorioCompensacaoAusenciaAluno.ObterPorCompensacao(compensacaoId);
 
             // excluir os removidos da lista
-            foreach(var alunoRemovido in alunos.Where(a => !alunosDto.Any(d => d.AlunoCodigo == a.CodigoAluno)))
+            foreach(var alunoRemovido in alunos.Where(a => !alunosDto.Any(d => d.Id == a.CodigoAluno)))
             {
                 alunoRemovido.Excluir();
                 listaPersistencia.Add(alunoRemovido);
             }
 
             // altera as faltas compensadas
-            foreach (var aluno in alunos)
+            foreach (var aluno in alunos.Where(a => !a.Excluido))
             {
                 var frequenciaAluno = repositorioFrequencia.ObterPorAlunoDisciplinaData(aluno.CodigoAluno, disciplinaId, periodo.PeriodoFim);
                 if (frequenciaAluno == null)
-                    throw new NegocioException($"Aluno [{aluno.CodigoAluno}] não possui ausência registrada. Não é possível incluí-lo na compensação.");
-                    
+                {
+                    mensagensExcessao.Append($"O aluno(a) [{aluno.CodigoAluno}] não possui ausência para compensar. ");
+                    continue;
+                }
+
                 var faltasNaoCompensadas = frequenciaAluno.NumeroFaltasNaoCompensadas + aluno.QuantidadeFaltasCompensadas;
 
-                var alunoDto = alunosDto.FirstOrDefault(a => a.AlunoCodigo == aluno.CodigoAluno);
+                var alunoDto = alunosDto.FirstOrDefault(a => a.Id == aluno.CodigoAluno);
                 if (alunoDto.QtdFaltasCompensadas > faltasNaoCompensadas)
-                    throw new NegocioException($"O aluno(a) [{alunoDto.AlunoCodigo}] possui apenas {frequenciaAluno.NumeroFaltasNaoCompensadas} faltas não compensadas.");
+                {
+                    mensagensExcessao.Append($"O aluno(a) [{alunoDto.Id}] possui apenas {frequenciaAluno.NumeroFaltasNaoCompensadas} faltas não compensadas. ");
+                    continue;
+                }
 
                 aluno.QuantidadeFaltasCompensadas = alunoDto.QtdFaltasCompensadas;
                 listaPersistencia.Add(aluno);
             }
 
             // adiciona os alunos novos
-            foreach(var alunoDto in alunosDto.Where(d => !alunos.Any(a => a.CodigoAluno == d.AlunoCodigo)))
+            foreach (var alunoDto in alunosDto.Where(d => !alunos.Any(a => a.CodigoAluno == d.Id)))
             {
-                var frequenciaAluno = repositorioFrequencia.ObterPorAlunoDisciplinaData(alunoDto.AlunoCodigo, disciplinaId, periodo.PeriodoFim);
+                var frequenciaAluno = repositorioFrequencia.ObterPorAlunoDisciplinaData(alunoDto.Id, disciplinaId, periodo.PeriodoFim);
+                if (frequenciaAluno == null)
+                {
+                    mensagensExcessao.Append($"O aluno(a) [{alunoDto.Id}] não possui ausência para compensar. ");
+                    continue;
+                }
 
                 if (alunoDto.QtdFaltasCompensadas > frequenciaAluno.NumeroFaltasNaoCompensadas)
-                    throw new NegocioException($"O aluno(a) [{alunoDto.AlunoCodigo}] possui apenas {frequenciaAluno.NumeroFaltasNaoCompensadas} faltas não compensadas.");
+                {
+                    mensagensExcessao.Append($"O aluno(a) [{alunoDto.Id}] possui apenas {frequenciaAluno.NumeroFaltasNaoCompensadas} faltas não compensadas. ");
+                    continue;
+                }
 
                 listaPersistencia.Add(MapearCompensacaoAlunoEntidade(compensacaoId, alunoDto));
             }
+
+            if (!string.IsNullOrEmpty(mensagensExcessao.ToString()))
+                throw new NegocioException(mensagensExcessao.ToString());
 
             listaPersistencia.ForEach(aluno => repositorioCompensacaoAusenciaAluno.Salvar(aluno));
 
@@ -163,7 +183,7 @@ namespace SME.SGP.Dominio.Servicos
             => new CompensacaoAusenciaAluno()
             { 
                 CompensacaoAusenciaId = compensacaoId,
-                CodigoAluno = alunoDto.AlunoCodigo,
+                CodigoAluno = alunoDto.Id,
                 QuantidadeFaltasCompensadas = alunoDto.QtdFaltasCompensadas,
                 Notificado = false,
                 Excluido = false
