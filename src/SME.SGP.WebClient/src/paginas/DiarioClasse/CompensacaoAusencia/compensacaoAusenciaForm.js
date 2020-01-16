@@ -17,6 +17,7 @@ import ServicoCompensacaoAusencia from '~/servicos/Paginas/DiarioClasse/ServicoC
 import ServicoDisciplina from '~/servicos/Paginas/ServicoDisciplina';
 
 import { Badge } from './styles';
+import CompensacaoAusenciaListaAlunos from './listasAlunos/compensacaoAusenciaListaAlunos';
 
 const CompensacaoAusenciaForm = ({ match }) => {
   const usuario = useSelector(store => store.usuario);
@@ -150,15 +151,15 @@ const CompensacaoAusenciaForm = ({ match }) => {
     let listaBi = [];
     if (turmaSelecionada.modalidade == modalidade.EJA) {
       listaBi = [
-        { valor: 1, descricao: '1° Bimestre' },
-        { valor: 2, descricao: '2° Bimestre' },
+        { valor: 1, descricao: '1°' },
+        { valor: 2, descricao: '2°' },
       ];
     } else {
       listaBi = [
-        { valor: 1, descricao: '1° Bimestre' },
-        { valor: 2, descricao: '2° Bimestre' },
-        { valor: 3, descricao: '3° Bimestre' },
-        { valor: 4, descricao: '4° Bimestre' },
+        { valor: 1, descricao: '1°' },
+        { valor: 2, descricao: '2°' },
+        { valor: 3, descricao: '3°' },
+        { valor: 4, descricao: '4°' },
       ];
     }
     setListaBimestres(listaBi);
@@ -297,6 +298,73 @@ const CompensacaoAusenciaForm = ({ match }) => {
     }
   };
 
+  const alunosCompensacao = [
+    {
+      alunoCodigo: '2',
+      nome: 'jorge',
+      qtdFaltasCompensadas: 2,
+    },
+    {
+      alunoCodigo: '3',
+      nome: 'camila',
+      qtdFaltasCompensadas: 2,
+    },
+    {
+      alunoCodigo: '4',
+      nome: 'joao',
+      qtdFaltasCompensadas: 2,
+    },
+    {
+      alunoCodigo: '5',
+      nome: 'ana',
+      qtdFaltasCompensadas: 2,
+    },
+    {
+      alunoCodigo: '6',
+      nome: 'asdasdasd',
+      qtdFaltasCompensadas: 2,
+    },
+    {
+      alunoCodigo: '7',
+      nome: 'aaaaaaa',
+      qtdFaltasCompensadas: 2,
+    },
+    {
+      alunoCodigo: '8',
+      nome: 'jovem',
+      qtdFaltasCompensadas: 2,
+    },
+    {
+      alunoCodigo: '9',
+      nome: 'gui',
+      qtdFaltasCompensadas: 2,
+    },
+    {
+      alunoCodigo: '10',
+      nome: 'amanda',
+      qtdFaltasCompensadas: 2,
+    },
+    {
+      alunoCodigo: '11',
+      nome: 'jana',
+      qtdFaltasCompensadas: 2,
+    },
+    {
+      alunoCodigo: '12',
+      nome: 'menina',
+      qtdFaltasCompensadas: 2,
+    },
+  ];
+
+  const alunos = [
+    {
+      alunoCodigo: '1',
+      nome: 'teste',
+      frequencia: '70%',
+      faltas: 23,
+    },
+  ];
+
   return (
     <>
       <Cabecalho pagina="Cadastrar Compensação de Ausência" />
@@ -370,7 +438,7 @@ const CompensacaoAusenciaForm = ({ match }) => {
                     />
                   </Loader>
                 </div>
-                <div className="col-sm-12 col-md-4 col-lg-3 col-xl-3 mb-2">
+                <div className="col-sm-12 col-md-4 col-lg-2 col-xl-2 mb-2">
                   <SelectComponent
                     form={form}
                     id="bimestre"
@@ -383,13 +451,14 @@ const CompensacaoAusenciaForm = ({ match }) => {
                     lista={listaBimestres}
                   />
                 </div>
-                <div className="col-sm-12 col-md-12 col-lg-5 col-xl-5 mb-2">
+                <div className="col-sm-12 col-md-12 col-lg-6 col-xl-6 mb-2">
                   <CampoTexto
                     form={form}
                     label="Atividade"
                     placeholder="Atividade"
                     name="atividade"
                     onChange={onChangeCampos}
+                    type="input"
                   />
                 </div>
                 {temRegencia && listaDisciplinasRegencia && (
@@ -423,6 +492,12 @@ const CompensacaoAusenciaForm = ({ match }) => {
                     label="Detalhamento da atividade"
                   />
                 </div>
+              </div>
+              <div className="row">
+                <CompensacaoAusenciaListaAlunos
+                  lista={alunos}
+                  listaAusenciaCompensada={alunosCompensacao}
+                />
               </div>
             </Form>
           )}

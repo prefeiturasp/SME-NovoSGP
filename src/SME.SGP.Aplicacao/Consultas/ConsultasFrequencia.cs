@@ -184,6 +184,9 @@ namespace SME.SGP.Aplicacao
             return registroFrequenciaDto;
         }
 
+        public FrequenciaAluno ObterPorAlunoDisciplinaData(string codigoAluno, string disciplinaId, DateTime dataAtual)
+            => repositorioFrequenciaAlunoDisciplinaPeriodo.ObterPorAlunoDisciplinaData(codigoAluno, disciplinaId, dataAtual);
+
         private IndicativoFrequenciaDto ObterIndicativoFrequencia(AlunoPorTurmaResposta aluno, string disciplinaId, PeriodoEscolarDto bimestre, int percentualAlerta, int percentualCritico)
         {
             var frequenciaAluno = repositorioFrequenciaAlunoDisciplinaPeriodo.Obter(aluno.CodigoAluno, disciplinaId, bimestre.PeriodoInicio, bimestre.PeriodoFim, TipoFrequenciaAluno.PorDisciplina);
@@ -191,11 +194,10 @@ namespace SME.SGP.Aplicacao
             if (frequenciaAluno == null)
                 return null;
 
-            var percentualFrequencia = (int)(100 - (frequenciaAluno.TotalAusencias / frequenciaAluno.TotalAulas * 100));
-
+            int percentualFrequencia = (int)frequenciaAluno.PercentualFrequencia;
             // Critico
             if (percentualFrequencia <= percentualCritico)
-                return new IndicativoFrequenciaDto() { Tipo = TipoIndicativoFrequencia.Critico, Percentual = percentualFrequencia };
+                return new IndicativoFrequenciaDto() { Tipo = TipoIndicativoFrequencia.Critico, Percentual = percentualFrequencia};
 
             // Alerta
             if (percentualFrequencia <= percentualAlerta)

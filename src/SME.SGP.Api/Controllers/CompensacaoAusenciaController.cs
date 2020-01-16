@@ -24,6 +24,15 @@ namespace SME.SGP.Api.Controllers
             return Ok(await consultas.ListarPaginado(filtros.TurmaId, filtros.DisciplinaId, filtros.Bimestre, filtros.AtividadeNome, filtros.AlunoNome));
         }
 
+        [HttpGet("{id}")]
+        [ProducesResponseType(typeof(PaginacaoResultadoDto<CompensacaoAusenciaListagemDto>), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        //[Permissao(Permissao.ADAP_C, Policy = "Bearer")]
+        public async Task<IActionResult> Obter(long id, [FromServices] IConsultasCompensacaoAusencia consultas)
+        {
+            return Ok(await consultas.ObterPorId(id));
+        }
+
         [HttpPost()]
         [ProducesResponseType(200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
@@ -32,6 +41,17 @@ namespace SME.SGP.Api.Controllers
         public async Task<IActionResult> Inserir([FromBody] CompensacaoAusenciaDto compensacao, [FromServices] IComandosCompensacaoAusencia comandos)
         {
             await comandos.Inserir(compensacao);
+            return Ok();
+        }
+
+        [HttpPut("{id}")]
+        [ProducesResponseType(200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 601)]
+        //[Permissao(Permissao.ADAP_C, Policy = "Bearer")]
+        public async Task<IActionResult> Alterar(long id, [FromBody] CompensacaoAusenciaDto compensacao, [FromServices] IComandosCompensacaoAusencia comandos)
+        {
+            await comandos.Alterar(id, compensacao);
             return Ok();
         }
     }
