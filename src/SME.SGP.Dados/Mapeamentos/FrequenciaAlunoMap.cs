@@ -13,8 +13,10 @@ namespace SME.SGP.Dados.Mapeamentos
             Map(a => a.PeriodoFim).ToColumn("periodo_fim");
             Map(a => a.TotalAulas).ToColumn("total_aulas");
             Map(a => a.TotalAusencias).ToColumn("total_ausencias");
+            Map(a => a.TotalCompensacoes).ToColumn("total_compensacoes");
             Map(a => a.Tipo).ToColumn("tipo");
             Map(a => a.PercentualFrequencia).Ignore();
+            Map(a => a.NumeroFaltasNaoCompensadas).Ignore();
         }
     }
 }
