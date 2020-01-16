@@ -18,7 +18,7 @@ namespace SME.SGP.Dados
 
         public async Task<IEnumerable<CompensacaoAusenciaDisciplinaRegencia>> ObterPorCompensacao(long compensacaoId)
         {
-            var query = @"select * from compensacao_ausencia_disciplina_regencia where compensacao_ausencia_id = @compensacaoId";
+            var query = @"select * from compensacao_ausencia_disciplina_regencia where not excluido and compensacao_ausencia_id = @compensacaoId";
 
             return await database.Conexao.QueryAsync<CompensacaoAusenciaDisciplinaRegencia>(query, new { compensacaoId });
         }
