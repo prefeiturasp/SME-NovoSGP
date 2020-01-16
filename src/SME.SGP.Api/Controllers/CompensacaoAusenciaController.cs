@@ -43,5 +43,16 @@ namespace SME.SGP.Api.Controllers
             await comandos.Inserir(compensacao);
             return Ok();
         }
+
+        [HttpPut("{id}")]
+        [ProducesResponseType(200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 601)]
+        //[Permissao(Permissao.ADAP_C, Policy = "Bearer")]
+        public async Task<IActionResult> Alterar(long id, [FromBody] CompensacaoAusenciaDto compensacao, [FromServices] IComandosCompensacaoAusencia comandos)
+        {
+            await comandos.Alterar(id, compensacao);
+            return Ok();
+        }
     }
 }
