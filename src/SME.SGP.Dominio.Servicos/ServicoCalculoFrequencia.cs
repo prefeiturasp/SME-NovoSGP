@@ -68,8 +68,12 @@ namespace SME.SGP.Dominio.Servicos
                                                                     totalAulasDaTurma,
                                                                     totalCompensacoesGeralAluno,
                                                                     TipoFrequenciaAluno.Geral);
+
                 if (frequenciaGeralAluno.PercentualFrequencia < 100)
                     repositorioFrequenciaAlunoDisciplinaPeriodo.Salvar(frequenciaGeralAluno);
+                else
+                if (frequenciaGeralAluno.Id > 0)
+                    repositorioFrequenciaAlunoDisciplinaPeriodo.Remover(frequenciaGeralAluno);
             }
             else
             {
@@ -98,6 +102,9 @@ namespace SME.SGP.Dominio.Servicos
 
                 if (frequenciaAluno.PercentualFrequencia < 100)
                     repositorioFrequenciaAlunoDisciplinaPeriodo.Salvar(frequenciaAluno);
+                else
+                if (frequenciaAluno.Id > 0)
+                    repositorioFrequenciaAlunoDisciplinaPeriodo.Remover(frequenciaAluno);
             }
             else
             {
