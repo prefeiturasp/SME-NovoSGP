@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { Form, Formik } from 'formik';
 import Cabecalho from '~/componentes-sgp/cabecalho';
 import Button from '~/componentes/button';
-import { CampoData } from '~/componentes/campoData/campoData.js';
 import Card from '~/componentes/card';
 import { Colors } from '~/componentes/colors';
 import SelectComponent from '~/componentes/select';
@@ -12,13 +11,18 @@ import {
 } from './periodo-fechamento-abertura.css';
 import api from '~/servicos/api';
 import periodo from '~/dtos/periodo';
+import { CampoData, Loader } from '~/componentes';
 
 const PeriodoFechamentoAbertura = () => {
   const [listaCalendarioEscolar, setListaCalendarioEscolar] = useState([]);
+  const [listaDres, setListaDres] = useState([]);
+  const [listaUes, setListaUes] = useState([]);
   const [
     calendarioEscolarSelecionado,
     setCalendarioEscolarSelecionado,
   ] = useState('');
+  const [dreSelecionada, setDreSelecionada] = useState('');
+  const [ueSlecionada, setUeSelecionada] = useState('');
   const [ehTipoCalendarioAnual, setEhTipoCalendarioAnual] = useState(true);
   const [desabilitaCampos, setDesabilitaCampos] = useState(false);
 
@@ -44,9 +48,13 @@ const PeriodoFechamentoAbertura = () => {
   };
   const [valoresIniciais, setValoresIniciais] = useState(valoresFormInicial);
   const [validacoes, setValidacoes] = useState();
+  const [carregandoTipos, setCarregandoTipos] = useState(false);
+  const [carregandoDres, setCarregandoDres] = useState(false);
+  const [carregandoUes, setCarregandoUes] = useState(false);
 
   useEffect(() => {
     async function consultaTipos() {
+      setCarregandoTipos(true);
       const listaTipo = await api.get('v1/calendarios/tipos');
       if (listaTipo && listaTipo.data && listaTipo.data.length) {
         listaTipo.data.map(item => {
@@ -59,9 +67,10 @@ const PeriodoFechamentoAbertura = () => {
       }
     }
     consultaTipos();
+    setCarregandoTipos(false);
   }, []);
 
-  const onChangeCamposData = () => {};
+  const onChangeCamposData = () => { };
 
   const onchangeCalendarioEscolar = (id, form) => {
     const tipoSelecionado = listaCalendarioEscolar.find(item => item.id == id);
@@ -74,13 +83,17 @@ const PeriodoFechamentoAbertura = () => {
     setCalendarioEscolarSelecionado(id);
   };
 
-  const onClickVoltar = () => {};
+  const onChangeDre = () => { };
 
-  const onClickCancelar = form => {};
+  const onChangeUe = () => { };
 
-  const validaAntesDoSubmit = form => {};
+  const onClickVoltar = () => { };
 
-  const onSubmit = form => {};
+  const onClickCancelar = form => { };
+
+  const validaAntesDoSubmit = form => { };
+
+  const onSubmit = form => { };
 
   const criaBimestre = (form, descricao, chaveDataInicial, chaveDataFinal) => {
     return (
@@ -129,18 +142,7 @@ const PeriodoFechamentoAbertura = () => {
           {form => (
             <Form className="col-md-12">
               <div className="row">
-                <div className="col-sm-12 col-md-5 col-lg-4 col-xl-4 mb-4">
-                  <SelectComponent
-                    name="calEscolar"
-                    id="calEscolar"
-                    lista={listaCalendarioEscolar}
-                    valueOption="id"
-                    valueText="descricaoTipoCalendario"
-                    onChange={id => onchangeCalendarioEscolar(id, form)}
-                    valueSelect={calendarioEscolarSelecionado}
-                  />
-                </div>
-                <div className="col-sm-12 col-md-7 col-lg-8 col-xl-8 d-flex justify-content-end mb-4">
+                <div className="col-md-12 d-flex justify-content-end pb-4">
                   <Button
                     label="Voltar"
                     icon="arrow-left"
@@ -165,46 +167,93 @@ const PeriodoFechamentoAbertura = () => {
                     onClick={() => validaAntesDoSubmit(form)}
                   />
                 </div>
+                <div className="col-md-12 pb-2">
+                  <Loader loading={carregandoTipos} tip="">
+                    <div style={{ maxWidth: '250px' }}>
+                      <SelectComponent
+                        name="tipoCalendario"
+                        id="tipoCalendario"
+                        placeholder="Tipo de Calendário Escolar"
+                        lista={listaCalendarioEscolar}
+                        valueOption="id"
+                        valueText="descricaoTipoCalendario"
+                        onChange={id => onchangeCalendarioEscolar(id, form)}
+                        valueSelect={calendarioEscolarSelecionado}
+                        disabled={false}
+                      />
+                    </div>
+                  </Loader>
+                </div><br />
+                <div className="col-md-6 pb-2">
+                  <Loader loading={carregandoDres} tip="">
+                    <SelectComponent
+                      name="dre"
+                      id="dre"
+                      placeholder="Diretoria Regional de Educação (DRE)"
+                      lista={listaDres}
+                      valueOption="valor"
+                      valueText="desc"
+                      onChange={id => onChangeDre()}
+                      valueSelect={dreSelecionada}
+                      disabled={false}
+                    />
+                  </Loader>
+                </div>
+                <div className="col-md-6 pb-2">
+                  <Loader loading={carregandoUes} tip="">
+                    <SelectComponent
+                      name="ue"
+                      id="ue"
+                      placeholder="Unidade Escolar (UE)"
+                      lista={listaUes}
+                      valueOption="value"
+                      valueText="desc"
+                      onChange={id => onChangeUe()}
+                      valueSelect={ueSlecionada}
+                      disabled={false}
+                    />
+                  </Loader>
+                </div>
               </div>
               {listaCalendarioEscolar &&
-              listaCalendarioEscolar.length &&
-              calendarioEscolarSelecionado ? (
-                <>
-                  {criaBimestre(
-                    form,
-                    '1 ° Bimestre',
-                    chaveBimestre.primeiroInicio,
-                    chaveBimestre.primeiroFinal
-                  )}
-                  {criaBimestre(
-                    form,
-                    '2 ° Bimestre',
-                    chaveBimestre.segundoInicio,
-                    chaveBimestre.segundoFinal
-                  )}
+                listaCalendarioEscolar.length &&
+                calendarioEscolarSelecionado ? (
+                  <>
+                    {criaBimestre(
+                      form,
+                      '1 ° Bimestre',
+                      chaveBimestre.primeiroInicio,
+                      chaveBimestre.primeiroFinal
+                    )}
+                    {criaBimestre(
+                      form,
+                      '2 ° Bimestre',
+                      chaveBimestre.segundoInicio,
+                      chaveBimestre.segundoFinal
+                    )}
 
-                  {ehTipoCalendarioAnual ? (
-                    <>
-                      {criaBimestre(
-                        form,
-                        '3 ° Bimestre',
-                        chaveBimestre.terceiroInicio,
-                        chaveBimestre.terceiroFinal
+                    {ehTipoCalendarioAnual ? (
+                      <>
+                        {criaBimestre(
+                          form,
+                          '3 ° Bimestre',
+                          chaveBimestre.terceiroInicio,
+                          chaveBimestre.terceiroFinal
+                        )}
+                        {criaBimestre(
+                          form,
+                          '4 ° Bimestre',
+                          chaveBimestre.quartoInicio,
+                          chaveBimestre.quartoFinal
+                        )}
+                      </>
+                    ) : (
+                        ''
                       )}
-                      {criaBimestre(
-                        form,
-                        '4 ° Bimestre',
-                        chaveBimestre.quartoInicio,
-                        chaveBimestre.quartoFinal
-                      )}
-                    </>
-                  ) : (
-                    ''
-                  )}
-                </>
-              ) : (
-                ''
-              )}
+                  </>
+                ) : (
+                  ''
+                )}
             </Form>
           )}
         </Formik>
