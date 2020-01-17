@@ -21,6 +21,7 @@ namespace SME.SGP.Dominio.Servicos
         private readonly IRepositorioTipoCalendario repositorioTipoCalendario;
         private readonly IRepositorioTurma repositorioTurma;
         private readonly IServicoEOL servicoEOL;
+        private readonly IServicoUsuario servicoUsuario;
         private readonly IUnitOfWork unitOfWork;
 
         public ServicoCompensacaoAusencia(IRepositorioCompensacaoAusencia repositorioCompensacaoAusencia,
@@ -30,6 +31,7 @@ namespace SME.SGP.Dominio.Servicos
                                           IConsultasPeriodoEscolar consultasPeriodoEscolar,
                                           IRepositorioTipoCalendario repositorioTipoCalendario,
                                           IServicoEOL servicoEOL,
+                                          IServicoUsuario servicoUsuario,
                                           IRepositorioTurma repositorioTurma,
                                           IUnitOfWork unitOfWork)
         {
@@ -41,6 +43,7 @@ namespace SME.SGP.Dominio.Servicos
             this.repositorioTipoCalendario = repositorioTipoCalendario ?? throw new System.ArgumentNullException(nameof(repositorioTipoCalendario));
             this.repositorioTurma = repositorioTurma ?? throw new System.ArgumentNullException(nameof(repositorioTurma));
             this.servicoEOL = servicoEOL ?? throw new System.ArgumentNullException(nameof(servicoEOL));
+            this.servicoUsuario = servicoUsuario ?? throw new System.ArgumentNullException(nameof(servicoUsuario));
             this.unitOfWork = unitOfWork ?? throw new System.ArgumentNullException(nameof(unitOfWork));
         }
 
@@ -49,13 +52,17 @@ namespace SME.SGP.Dominio.Servicos
             // Busca dados da turma
             var turma = BuscaTurma(compensacaoDto.TurmaId);
 
+            // Consiste periodo
+            var periodo = BuscaPeriodo(turma.AnoLetivo, turma.ModalidadeCodigo, compensacaoDto.Bimestre, turma.Semestre);
+
+            var usuario = await servicoUsuario.ObterUsuarioLogado();
+
+            ValidaProfessorPodePersistirTurma(compensacaoDto.TurmaId, usuario.CodigoRf, periodo.PeriodoFim);
+
             // Valida mesma compensação no ano
             var compensacaoExistente = await repositorioCompensacaoAusencia.ObterPorAnoTurmaENome(turma.AnoLetivo, turma.Id, compensacaoDto.Atividade, id);
             if (compensacaoExistente != null)
                 throw new NegocioException("Já existe essa compensação cadastrada para turma no ano letivo.");
-
-            // Consiste periodo
-            var periodo = BuscaPeriodo(turma.AnoLetivo, turma.ModalidadeCodigo, compensacaoDto.Bimestre, turma.Semestre);
 
             // Carrega dasdos da disciplina no EOL
             ConsisteDisciplina(long.Parse(compensacaoDto.DisciplinaId), compensacaoDto.DisciplinasRegenciaIds);
@@ -308,5 +315,12 @@ namespace SME.SGP.Dominio.Servicos
             if (idsComErroAoExcluir.Any())
                 throw new NegocioException($"Não foi possível excluir as compensações de ids {string.Join(",", idsComErroAoExcluir)}");
         }
+
+        private async void ValidaProfessorPodePersistirTurma(string turmaId, string codigoRf, DateTime dataAula)
+        {
+            if (!await servicoEOL.ProfessorPodePersistirTurma(codigoRf, turmaId, dataAula.Local()))
+                throw new NegocioException("Você não pode fazer alterações ou inclusões nesta turma e data.");
+        }
+
     }
 }
