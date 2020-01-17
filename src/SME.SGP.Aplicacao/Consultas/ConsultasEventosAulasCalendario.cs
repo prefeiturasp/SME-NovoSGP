@@ -91,7 +91,7 @@ namespace SME.SGP.Aplicacao
             .ForEach(x =>
             {
                 bool podeCriarAtividade = true;
-                var listaAtividades = atividades.Where(w => w.DataAvaliacao.Date == x.DataAula.Date && w.TurmaId == x.TurmaId 
+                var listaAtividades = atividades.Where(w => w.DataAvaliacao.Date == x.DataAula.Date && w.TurmaId == x.TurmaId
                 && PossuiDisciplinas(w.Id, x.DisciplinaId)).ToList();
                 var disciplina = disciplinasEol?.FirstOrDefault(d => d.CodigoComponenteCurricular.ToString().Equals(x.DisciplinaId));
                 var disciplinaCompartilhada = disciplinasEol?.FirstOrDefault(d => d.CodigoComponenteCurricular.ToString().Equals(x.DisciplinaCompartilhadaId));
@@ -102,6 +102,8 @@ namespace SME.SGP.Aplicacao
                         if (disciplina.Regencia)
                         {
                             var disciplinasRegenciasComAtividades = repositorioAtividadeAvaliativaRegencia.Listar(item.Id).Result;
+
+                            disciplinasRegenciasComAtividades.ToList().ForEach(r => r.DisciplinaContidaRegenciaNome = disciplinasRegencia?.FirstOrDefault(d => d.CodigoComponenteCurricular.ToString().Equals(r.DisciplinaContidaRegenciaId)).Nome);
 
                             item.AtividadeAvaliativaRegencia = new List<AtividadeAvaliativaRegencia>();
                             item.AtividadeAvaliativaRegencia.AddRange(disciplinasRegenciasComAtividades);
@@ -122,7 +124,9 @@ namespace SME.SGP.Aplicacao
                     TipoEvento = x.AulaCJ ? "CJ" : "Aula",
                     DadosAula = new DadosAulaDto
                     {
+                        DisciplinaId = disciplina?.CodigoComponenteCurricular ?? null,
                         Disciplina = $"{(disciplina?.Nome ?? "Disciplina não encontrada")} {(x.TipoAula == TipoAula.Reposicao ? "(Reposição)" : "")} {(x.Status == EntidadeStatus.AguardandoAprovacao ? "- Aguardando aprovação" : "")}",
+                        DisciplinaCompartilhadaId = disciplinaCompartilhada?.CodigoComponenteCurricular ?? null,
                         DisciplinaCompartilhada = $"{(disciplinaCompartilhada?.Nome ?? "Disciplina não encontrada")} ",
                         EhRegencia = disciplina.Regencia,
                         EhCompartilhada = disciplina.Compartilhada,
