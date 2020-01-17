@@ -12,7 +12,7 @@ import { useDispatch } from 'react-redux';
 import { Grid, CampoTexto, SelectComponent } from '~/componentes';
 
 // Styles
-import { Row } from './styles';
+import { Linha } from '~/componentes/EstilosGlobais';
 
 function Filtro({ onFiltrar }) {
   const dispatch = useDispatch();
@@ -58,7 +58,7 @@ function Filtro({ onFiltrar }) {
     >
       {form => (
         <Form className="col-md-12 mb-4">
-          <Row className="row mb-2">
+          <Linha className="row mb-2">
             <Grid cols={4}>
               <CampoTexto
                 form={form}
@@ -100,7 +100,7 @@ function Filtro({ onFiltrar }) {
                 // disabled={campoAnoLetivoDesabilitado}
               />
             </Grid>
-          </Row>
+          </Linha>
         </Form>
       )}
     </Formik>
