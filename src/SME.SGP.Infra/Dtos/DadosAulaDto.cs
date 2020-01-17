@@ -8,7 +8,9 @@ namespace SME.SGP.Infra
         public bool podeCadastrarAvaliacao;
 
         public List<AtividadeAvaliativa> Atividade { get; set; }
+        public int? DisciplinaId { get; set; }
         public string Disciplina { get; set; }
+        public int? DisciplinaCompartilhadaId { get; set; }
         public string DisciplinaCompartilhada { get; set; }
         public bool EhRegencia { get; set; }
         public bool EhCompartilhada { get; set; }
