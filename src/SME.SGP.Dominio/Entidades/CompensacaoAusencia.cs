@@ -22,5 +22,8 @@ namespace SME.SGP.Dominio
         public string Descricao { get; set; }
 
         public IEnumerable<CompensacaoAusenciaAluno> Alunos { get; set; }
+
+        public void Excluir()
+            => Excluido = true;
     }
 }
