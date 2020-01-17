@@ -64,6 +64,7 @@ const CadastroAula = ({ match }) => {
   const [inicial, setInicial] = useState({
     tipoAula: 1,
     disciplinaId: undefined,
+    disciplinaCompartilhadaId: undefined,
     quantidadeTexto: '',
     quantidadeRadio: 0,
     dataAula: '',
@@ -255,6 +256,9 @@ const CadastroAula = ({ match }) => {
       const val = {
         tipoAula: buscaAula.data.tipoAula,
         disciplinaId: String(buscaAula.data.disciplinaId),
+        disciplinaCompartilhadaId: String(
+          buscaAula.data.disciplinaCompartilhadaId
+        ),
         dataAula: buscaAula.data.dataAula
           ? window.moment(buscaAula.data.dataAula)
           : window.moment(),
@@ -730,7 +734,7 @@ const CadastroAula = ({ match }) => {
                 </div>
                 <div className="col-sm-12 col-md-7 col-lg-9 col-xl-6 mb-2">
                   <SelectComponent
-                    id="disciplina"
+                    id="disciplinaId"
                     form={form}
                     name="disciplinaId"
                     lista={listaDisciplinas}
@@ -759,26 +763,21 @@ const CadastroAula = ({ match }) => {
                     somenteHora
                   />
                 </div>
-                <div className="col-sm-12 col-md-12 col-lg-12 col-xl-12 pb-3">
-                  <SelectComponent
-                    id="disciplinaCompartilhadaId"
-                    form={form}
-                    name="disciplinaCompartilhadaId"
-                    lista={listaDisciplinas}
-                    valueOption="codigoComponenteCurricular"
-                    valueText="nome"
-                    onChange={e => onChangeDisciplinas(e, form)}
-                    label="Componente curricular compartilhado"
-                    placeholder="Selecione um componente curricular compartilhado"
-                    disabled={
-                      !!(
-                        listaDisciplinas &&
-                        listaDisciplinas.length &&
-                        listaDisciplinas.length === 1
-                      ) || !novoRegistro
-                    }
-                  />
-                </div>
+                {!disciplinaCompartilhada && (
+                  <div className="col-sm-12 col-md-12 col-lg-12 col-xl-12 pb-3">
+                    <SelectComponent
+                      id="disciplinaCompartilhadaId"
+                      form={form}
+                      name="disciplinaCompartilhadaId"
+                      lista={listaDisciplinas}
+                      valueOption="codigoComponenteCurricular"
+                      valueText="nome"
+                      onChange={e => onChangeDisciplinas(e, form)}
+                      label="Componente curricular compartilhado"
+                      placeholder="Selecione um componente curricular compartilhado"
+                    />
+                  </div>
+                )}
                 <div className="col-sm-12 col-md-8 col-lg-8 col-xl-5 mb-2 d-flex justify-content-start">
                   <RadioGroupButton
                     id="quantidadeRadio"
