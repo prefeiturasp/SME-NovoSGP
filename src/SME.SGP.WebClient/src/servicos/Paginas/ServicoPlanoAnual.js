@@ -16,6 +16,16 @@ class ServicoPlanoAnual {
   salvar = planoAnual => {
     return api.post('v1/planos/anual', planoAnual);
   };
+
+  obterTurmasParaCopia = (turmaId, componenteCurricularEolId) => {
+    return api.get(
+      `v1/planos/anual/turmas/copia?turmaId=${turmaId}&componenteCurricular=${componenteCurricularEolId}`
+    );
+  };
+
+  copiarConteudo = migrarConteudoPlanoAnual => {
+    return api.post(`v1/planos/anual/migrar`, migrarConteudoPlanoAnual);
+  };
 }
 
 export default new ServicoPlanoAnual();

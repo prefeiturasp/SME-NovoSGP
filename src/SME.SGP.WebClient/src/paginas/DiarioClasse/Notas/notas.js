@@ -1,7 +1,7 @@
 import { Tabs } from 'antd';
 import React, { useCallback, useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { Loader } from '~/componentes';
+import { Loader, Grid } from '~/componentes';
 import Avaliacao from '~/componentes-sgp/avaliacao/avaliacao';
 import Cabecalho from '~/componentes-sgp/cabecalho';
 import Card from '~/componentes/card';
@@ -18,10 +18,12 @@ import BotoesAcoessNotasConceitos from './botoesAcoes';
 import { Container, ContainerAuditoria } from './notas.css';
 import RotasDto from '~/dtos/rotasDto';
 import { verificaSomenteConsulta } from '~/servicos/servico-navegacao';
+import Row from '~/componentes/row';
+import Alert from '~/componentes/alert';
 
 const { TabPane } = Tabs;
 
-const Notas = () => {
+const Notas = ({ match }) => {
   const usuario = useSelector(store => store.usuario);
   const dispatch = useDispatch();
   const modoEdicaoGeral = useSelector(
@@ -133,6 +135,7 @@ const Notas = () => {
               default:
                 break;
             }
+
             if (bimestreAtualizado.alunos.length > 0) {
               setBimestreCorrente(bimestreAtualizado.numero);
             }
@@ -153,7 +156,7 @@ const Notas = () => {
   );
 
   const obterDisciplinas = useCallback(async () => {
-    const url = `v1/professores/123/turmas/${usuario.turmaSelecionada.turma}/disciplinas`;
+    const url = `v1/professores/turmas/${usuario.turmaSelecionada.turma}/disciplinas`;
     const disciplinas = await api.get(url);
 
     setListaDisciplinas(disciplinas.data);
@@ -162,6 +165,15 @@ const Notas = () => {
       setDisciplinaSelecionada(String(disciplina.codigoComponenteCurricular));
       setDesabilitarDisciplina(true);
       obterDadosBimestres(disciplina.codigoComponenteCurricular);
+    }
+    if (
+      match &&
+      match.params &&
+      match.params.disciplinaId &&
+      match.params.bimestre
+    ) {
+      setDisciplinaSelecionada(String(match.params.disciplinaId));
+      obterDadosBimestres(match.params.disciplinaId, match.params.bimestre);
     }
   }, [obterDadosBimestres, usuario.turmaSelecionada.turma]);
 
@@ -269,6 +281,7 @@ const Notas = () => {
       return api
         .post(`v1/avaliacoes/notas`, {
           turmaId: usuario.turmaSelecionada.turma,
+          disciplinaId: disciplinaSelecionada,
           notasConceitos: valoresBimestresSalvar,
         })
         .then(salvouNotas => {
@@ -430,6 +443,22 @@ const Notas = () => {
 
   return (
     <Container>
+      {!usuario.turmaSelecionada.turma ? (
+        <Row className="mb-0 pb-0">
+          <Grid cols={12} className="mb-0 pb-0">
+            <Container>
+              <Alert
+                alerta={{
+                  tipo: 'warning',
+                  id: 'AlertaPrincipal',
+                  mensagem: 'Você precisa escolher uma turma.',
+                  estiloTitulo: { fontSize: '18px' },
+                }}
+              />
+            </Container>
+          </Grid>
+        </Row>
+      ) : null}
       <Cabecalho pagina={tituloNotasConceitos} />
       <Loader loading={carregandoListaBimestres}>
         <Card>
@@ -454,103 +483,102 @@ const Notas = () => {
                   valueText="nome"
                   valueSelect={disciplinaSelecionada}
                   onChange={onChangeDisciplinas}
-                  placeholder="Disciplina"
-                  disabled={desabilitarDisciplina}
+                  placeholder="Selecione um componente curricular"
+                  disabled={
+                    desabilitarDisciplina || !usuario.turmaSelecionada.turma
+                  }
                 />
               </div>
             </div>
-            {bimestreCorrente > 0 ? (
-              <>
-                <div className="row">
-                  <div className="col-sm-12 col-md-12 col-lg-12 col-xl-12 mb-2">
-                    <ContainerTabsCard
-                      type="card"
-                      onChange={onChangeTab}
-                      activeKey={String(bimestreCorrente)}
-                    >
-                      {primeiroBimestre.numero ? (
-                        <TabPane
-                          tab={primeiroBimestre.descricao}
-                          key={primeiroBimestre.numero}
-                        >
-                          <Avaliacao
-                            dados={primeiroBimestre}
-                            notaTipo={notaTipo}
-                            onChangeOrdenacao={onChangeOrdenacao}
-                            desabilitarCampos={desabilitarCampos}
-                          />
-                        </TabPane>
-                      ) : (
-                        ''
-                      )}
-                      {segundoBimestre.numero ? (
-                        <TabPane
-                          tab={segundoBimestre.descricao}
-                          key={segundoBimestre.numero}
-                        >
-                          <Avaliacao
-                            dados={segundoBimestre}
-                            notaTipo={notaTipo}
-                            onChangeOrdenacao={onChangeOrdenacao}
-                            desabilitarCampos={desabilitarCampos}
-                          />
-                        </TabPane>
-                      ) : (
-                        ''
-                      )}
-                      {terceiroBimestre.numero ? (
-                        <TabPane
-                          tab={terceiroBimestre.descricao}
-                          key={terceiroBimestre.numero}
-                        >
-                          <Avaliacao
-                            dados={terceiroBimestre}
-                            notaTipo={notaTipo}
-                            onChangeOrdenacao={onChangeOrdenacao}
-                            desabilitarCampos={desabilitarCampos}
-                          />
-                        </TabPane>
-                      ) : (
-                        ''
-                      )}
-                      {quartoBimestre.numero ? (
-                        <TabPane
-                          tab={quartoBimestre.descricao}
-                          key={quartoBimestre.numero}
-                        >
-                          <Avaliacao
-                            dados={quartoBimestre}
-                            notaTipo={notaTipo}
-                            onChangeOrdenacao={onChangeOrdenacao}
-                            desabilitarCampos={desabilitarCampos}
-                          />
-                        </TabPane>
-                      ) : (
-                        ''
-                      )}
-                    </ContainerTabsCard>
-                  </div>
+
+            <>
+              <div className="row">
+                <div className="col-sm-12 col-md-12 col-lg-12 col-xl-12 mb-2">
+                  <ContainerTabsCard
+                    type="card"
+                    onChange={onChangeTab}
+                    activeKey={String(bimestreCorrente)}
+                  >
+                    {primeiroBimestre.numero ? (
+                      <TabPane
+                        tab={primeiroBimestre.descricao}
+                        key={primeiroBimestre.numero}
+                      >
+                        <Avaliacao
+                          dados={primeiroBimestre}
+                          notaTipo={notaTipo}
+                          onChangeOrdenacao={onChangeOrdenacao}
+                          desabilitarCampos={desabilitarCampos}
+                        />
+                      </TabPane>
+                    ) : (
+                      ''
+                    )}
+                    {segundoBimestre.numero ? (
+                      <TabPane
+                        tab={segundoBimestre.descricao}
+                        key={segundoBimestre.numero}
+                      >
+                        <Avaliacao
+                          dados={segundoBimestre}
+                          notaTipo={notaTipo}
+                          onChangeOrdenacao={onChangeOrdenacao}
+                          desabilitarCampos={desabilitarCampos}
+                        />
+                      </TabPane>
+                    ) : (
+                      ''
+                    )}
+                    {terceiroBimestre.numero ? (
+                      <TabPane
+                        tab={terceiroBimestre.descricao}
+                        key={terceiroBimestre.numero}
+                      >
+                        <Avaliacao
+                          dados={terceiroBimestre}
+                          notaTipo={notaTipo}
+                          onChangeOrdenacao={onChangeOrdenacao}
+                          desabilitarCampos={desabilitarCampos}
+                        />
+                      </TabPane>
+                    ) : (
+                      ''
+                    )}
+                    {quartoBimestre.numero ? (
+                      <TabPane
+                        tab={quartoBimestre.descricao}
+                        key={quartoBimestre.numero}
+                      >
+                        <Avaliacao
+                          dados={quartoBimestre}
+                          notaTipo={notaTipo}
+                          onChangeOrdenacao={onChangeOrdenacao}
+                          desabilitarCampos={desabilitarCampos}
+                        />
+                      </TabPane>
+                    ) : (
+                      ''
+                    )}
+                  </ContainerTabsCard>
                 </div>
-                <div className="row mt-2 mb-2 mt-2">
-                  <div className="col-md-12">
-                    <ContainerAuditoria style={{ float: 'left' }}>
-                      <span>
-                        <p>{auditoriaInfo.auditoriaInserido || ''}</p>
-                        <p>{auditoriaInfo.auditoriaAlterado || ''}</p>
-                      </span>
-                    </ContainerAuditoria>
-                    <span style={{ float: 'right' }} className="mt-1 ml-1">
-                      Aluno ausente na data da avaliação
+              </div>
+              <div className="row mt-2 mb-2 mt-2">
+                <div className="col-md-12">
+                  <ContainerAuditoria style={{ float: 'left' }}>
+                    <span>
+                      <p>{auditoriaInfo.auditoriaInserido || ''}</p>
+                      <p>{auditoriaInfo.auditoriaAlterado || ''}</p>
                     </span>
-                    <span className="icon-legenda-aluno-ausente">
-                      <i className="fas fa-user-times" />
-                    </span>
-                  </div>
+                  </ContainerAuditoria>
+                  <span style={{ float: 'right' }} className="mt-1 ml-1">
+                    Aluno ausente na data da avaliação
+                  </span>
+                  <span className="icon-legenda-aluno-ausente">
+                    <i className="fas fa-user-times" />
+                  </span>
                 </div>
-              </>
-            ) : (
-              ''
-            )}
+              </div>
+            </>
           </div>
         </Card>
       </Loader>

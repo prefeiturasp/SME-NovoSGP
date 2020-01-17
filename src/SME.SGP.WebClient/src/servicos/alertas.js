@@ -36,10 +36,16 @@ const erro = mensagem => {
 };
 
 const erros = listaErros => {
-  if (listaErros && listaErros.response && listaErros.response.data)
+  if (
+    listaErros &&
+    listaErros.response &&
+    listaErros.response.data &&
+    listaErros.response.data.mensagens
+  ) {
     listaErros.response.data.mensagens.forEach(mensagem => erro(mensagem));
-  else erro('Ocorreu um erro interno.');
+  } else erro('Ocorreu um erro interno.');
 };
+
 const confirmacao = (
   titulo,
   texto,
