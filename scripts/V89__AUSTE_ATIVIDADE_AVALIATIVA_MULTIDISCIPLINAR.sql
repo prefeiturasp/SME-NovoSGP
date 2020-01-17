@@ -14,6 +14,8 @@
 
 select f_cria_fk_se_nao_existir('atividade_avaliativa_disciplina', 'atividade_avaliativa_disciplina_fk', 'FOREIGN KEY (atividade_avaliativa_id) REFERENCES atividade_avaliativa (id)');
 
+DELETE from public.atividade_avaliativa_regencia where 1=1;
+DELETE from public.notas_conceito where 1=1;
 DELETE from public.atividade_avaliativa WHERE 1=1;
 
 ALTER TABLE public.atividade_avaliativa DROP COLUMN disciplina_id;
