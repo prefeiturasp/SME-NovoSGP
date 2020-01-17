@@ -3,6 +3,7 @@ import React, { useEffect, useState, useCallback } from 'react';
 import { useSelector } from 'react-redux';
 import * as Yup from 'yup';
 import moment from 'moment';
+import PropTypes from 'prop-types';
 import Cabecalho from '~/componentes-sgp/cabecalho';
 import Auditoria from '~/componentes/auditoria';
 import Button from '~/componentes/button';
@@ -74,6 +75,10 @@ const CadastroAula = ({ match }) => {
     dataAulaCompleta: window.moment(diaAula),
   });
   const [aula] = useState(inicial);
+
+  const [idDisciplina, setIdDisciplina] = useState();
+  const [disciplinaCompartilhada, setDisciplinaCompartilhada] = useState(false);
+
   const opcoesTipoAula = [
     { label: 'Normal', value: 1 },
     { label: 'Reposição', value: 2 },
@@ -124,6 +129,182 @@ const CadastroAula = ({ match }) => {
     tipoRecorrenciaExclusao: recorrencia.AULA_UNICA,
   };
 
+  const onChangeCampos = () => {
+    if (!modoEdicao) {
+      setModoEdicao(true);
+    }
+  };
+
+  const onChangeDisciplinas = async id => {
+    onChangeCampos();
+
+    setIdDisciplina(id);
+    const disciplina = listaDisciplinas.find(c => c.id === id);
+
+    const { regencia } = disciplina || false;
+    setEhRegencia(regencia);
+    const resultado = await api
+      .get(`v1/grades/aulas/turmas/${turmaId}/disciplinas/${id}`, {
+        params: {
+          data: dataAula ? dataAula.format('YYYY-MM-DD') : null,
+        },
+      })
+      .then(res => res)
+      .catch(err => {
+        const mensagemErro =
+          err &&
+          err.response &&
+          err.response.data &&
+          err.response.data.mensagens;
+
+        if (mensagemErro) {
+          erro(mensagemErro.join(','));
+          return null;
+        }
+
+        erro('Ocorreu um erro, por favor contate o suporte');
+
+        return null;
+      });
+
+    if (resultado) {
+      if (resultado.status === 200) {
+        setControlaQuantidadeAula(true);
+        setQuantidadeMaximaAulas(resultado.data.quantidadeAulasRestante);
+        if (resultado.data.quantidadeAulasRestante > 0) {
+          setControlaQuantidadeAula(true);
+        }
+      } else if (resultado.status === 204) {
+        setControlaQuantidadeAula(false);
+      }
+    }
+  };
+
+  useEffect(() => {
+    if (idDisciplina && listaDisciplinas.length) {
+      const disciplina = listaDisciplinas.filter(
+        item => item.codigoComponenteCurricular === idDisciplina
+      );
+      if (disciplina) setDisciplinaCompartilhada(disciplina.compartilhada);
+    }
+  }, [idDisciplina, listaDisciplinas]);
+
+  const getRecorrenciasHabilitadas = (opcoes, dadosRecorrencia) => {
+    opcoes.forEach(item => {
+      if (
+        item.value === dadosRecorrencia.recorrenciaAula ||
+        item.value === recorrencia.AULA_UNICA
+      ) {
+        item.disabled = false;
+      } else {
+        item.disabled = true;
+      }
+    });
+    return opcoes;
+  };
+
+  const consultaPorId = async id => {
+    const buscaAula = await api
+      .get(`v1/calendarios/professores/aulas/${id}`)
+      .catch(e => {
+        if (
+          e &&
+          e.response &&
+          e.response.data &&
+          Array.isArray(e.response.data)
+        ) {
+          erros(e);
+        }
+      });
+    setNovoRegistro(false);
+    if (buscaAula && buscaAula.data) {
+      setDataAula(moment(buscaAula.data.dataAula));
+      const respRecorrencia = await api.get(
+        `v1/calendarios/professores/aulas/${id}/recorrencias/serie`
+      );
+      const dadosRecorrencia = respRecorrencia.data;
+
+      if (respRecorrencia && dadosRecorrencia) {
+        setEhAulaUnica(
+          dadosRecorrencia.recorrenciaAula === recorrencia.AULA_UNICA
+        );
+
+        setExisteFrequenciaPlanoAula(
+          dadosRecorrencia.existeFrequenciaOuPlanoAula
+        );
+      }
+
+      if (
+        respRecorrencia &&
+        dadosRecorrencia &&
+        dadosRecorrencia.recorrenciaAula !== recorrencia.AULA_UNICA
+      ) {
+        setQuantidadeRecorrencia(dadosRecorrencia.quantidadeAulasRecorrentes);
+
+        setOpcoesRecorrencia([
+          ...getRecorrenciasHabilitadas(opcoesRecorrencia, dadosRecorrencia),
+        ]);
+        setOpcoesExcluirRecorrencia([
+          ...getRecorrenciasHabilitadas(
+            opcoesExcluirRecorrencia,
+            dadosRecorrencia
+          ),
+        ]);
+      }
+
+      const val = {
+        tipoAula: buscaAula.data.tipoAula,
+        disciplinaId: String(buscaAula.data.disciplinaId),
+        dataAula: buscaAula.data.dataAula
+          ? window.moment(buscaAula.data.dataAula)
+          : window.moment(),
+        recorrenciaAula: recorrencia.AULA_UNICA,
+        id: buscaAula.data.id,
+        tipoCalendarioId: buscaAula.data.tipoCalendarioId,
+        ueId: buscaAula.data.ueId,
+        turmaId: buscaAula.data.turmaId,
+        dataAulaCompleta: window.moment(buscaAula.data.dataAula),
+      };
+      if (buscaAula.data.quantidade > 0 && buscaAula.data.quantidade < 3) {
+        val.quantidadeRadio = buscaAula.data.quantidade;
+        val.quantidadeTexto = '';
+      } else if (
+        buscaAula.data.quantidade > 0 &&
+        buscaAula.data.quantidade > 2
+      ) {
+        val.quantidadeTexto = buscaAula.data.quantidade;
+      }
+      setInicial(val);
+      setAuditoria({
+        criadoPor: buscaAula.data.criadoPor,
+        criadoRf: buscaAula.data.criadoRF > 0 ? buscaAula.data.criadoRF : '',
+        criadoEm: buscaAula.data.criadoEm,
+        alteradoPor: buscaAula.data.alteradoPor,
+        alteradoRf:
+          buscaAula.data.alteradoRF > 0 ? buscaAula.data.alteradoRF : '',
+        alteradoEm: buscaAula.data.alteradoEm,
+      });
+      setExibirAuditoria(true);
+    }
+  };
+
+  const validarConsultaModoEdicaoENovo = async () => {
+    setBreadcrumbManual(
+      match.url,
+      'Cadastro de Aula',
+      '/calendario-escolar/calendario-professor'
+    );
+
+    if (match && match.params && match.params.id) {
+      setNovoRegistro(false);
+      setIdAula(match.params.id);
+      consultaPorId(match.params.id);
+    } else {
+      setNovoRegistro(true);
+      setDataAula(window.moment(diaAula));
+    }
+  };
+
   useEffect(() => {
     const obterDisciplinas = async () => {
       const disciplinas = await api.get(
@@ -131,7 +312,7 @@ const CadastroAula = ({ match }) => {
       );
       setListaDisciplinas(disciplinas.data);
 
-      if (disciplinas.data && disciplinas.data.length == 1) {
+      if (disciplinas.data && disciplinas.data.length === 1) {
         inicial.disciplinaId = String(
           disciplinas.data[0].codigoComponenteCurricular
         );
@@ -186,22 +367,19 @@ const CadastroAula = ({ match }) => {
     };
 
     if (!ehReposicao) {
-      //todo
+      // TODO
       if (ehRecorrencia) {
-        //todo
+        // TODO
       }
-      //TODO
+      // TODO
       if (controlaQuantidadeAula) {
-        //todo
+        // TODO
       }
-      //validar se esta usando radio ou texto
       if (ehRegencia) {
         if (turmaSelecionada.modalidade === modalidade.EJA) {
-          // aula.quantidade = 5;
           setInicial({ ...inicial, quantidadeTexto: 5, quantidadeRadio: '' });
           setEhEja(true);
         } else {
-          //todo limpar campo texto;
           setInicial({ ...inicial, quantidadeTexto: '', quantidadeRadio: 1 });
           setEhEja(false);
         }
@@ -228,117 +406,12 @@ const CadastroAula = ({ match }) => {
     montaValidacoes();
   }, [montaValidacoes]);
 
-  const validarConsultaModoEdicaoENovo = async () => {
-    setBreadcrumbManual(
-      match.url,
-      'Cadastro de Aula',
-      '/calendario-escolar/calendario-professor'
-    );
-
-    if (match && match.params && match.params.id) {
-      setNovoRegistro(false);
-      setIdAula(match.params.id);
-      consultaPorId(match.params.id);
-    } else {
-      setNovoRegistro(true);
-      setDataAula(window.moment(diaAula));
-      // TODO
-    }
-  };
-
-  const consultaPorId = async id => {
-    const aula = await api
-      .get(`v1/calendarios/professores/aulas/${id}`)
-      .catch(e => {
-        if (
-          e &&
-          e.response &&
-          e.response.data &&
-          Array.isArray(e.response.data)
-        ) {
-          erros(e);
-        }
-      });
-    setNovoRegistro(false);
-    if (aula && aula.data) {
-      setDataAula(moment(aula.data.dataAula));
-      const respRecorrencia = await api.get(
-        `v1/calendarios/professores/aulas/${id}/recorrencias/serie`
-      );
-      const dadosRecorrencia = respRecorrencia.data;
-
-      if (respRecorrencia && dadosRecorrencia) {
-        setEhAulaUnica(
-          dadosRecorrencia.recorrenciaAula === recorrencia.AULA_UNICA
-        );
-
-        setExisteFrequenciaPlanoAula(
-          dadosRecorrencia.existeFrequenciaOuPlanoAula
-        );
-      }
-
-      if (
-        respRecorrencia &&
-        dadosRecorrencia &&
-        dadosRecorrencia.recorrenciaAula !== recorrencia.AULA_UNICA
-      ) {
-        setQuantidadeRecorrencia(dadosRecorrencia.quantidadeAulasRecorrentes);
-
-        setOpcoesRecorrencia([
-          ...getRecorrenciasHabilitadas(opcoesRecorrencia, dadosRecorrencia),
-        ]);
-        setOpcoesExcluirRecorrencia([
-          ...getRecorrenciasHabilitadas(
-            opcoesExcluirRecorrencia,
-            dadosRecorrencia
-          ),
-        ]);
-      }
-
-      const val = {
-        tipoAula: aula.data.tipoAula,
-        disciplinaId: String(aula.data.disciplinaId),
-        dataAula: aula.data.dataAula
-          ? window.moment(aula.data.dataAula)
-          : window.moment(),
-        recorrenciaAula: recorrencia.AULA_UNICA,
-        id: aula.data.id,
-        tipoCalendarioId: aula.data.tipoCalendarioId,
-        ueId: aula.data.ueId,
-        turmaId: aula.data.turmaId,
-        dataAulaCompleta: window.moment(aula.data.dataAula),
-      };
-      if (aula.data.quantidade > 0 && aula.data.quantidade < 3) {
-        val.quantidadeRadio = aula.data.quantidade;
-        val.quantidadeTexto = '';
-      } else if (aula.data.quantidade > 0 && aula.data.quantidade > 2) {
-        val.quantidadeTexto = aula.data.quantidade;
-      }
-      setInicial(val);
-      setAuditoria({
-        criadoPor: aula.data.criadoPor,
-        criadoRf: aula.data.criadoRF > 0 ? aula.data.criadoRF : '',
-        criadoEm: aula.data.criadoEm,
-        alteradoPor: aula.data.alteradoPor,
-        alteradoRf: aula.data.alteradoRF > 0 ? aula.data.alteradoRF : '',
-        alteradoEm: aula.data.alteradoEm,
-      });
-      setExibirAuditoria(true);
-    }
-  };
-
-  const getRecorrenciasHabilitadas = (opcoesRecorrencia, dadosRecorrencia) => {
-    opcoesRecorrencia.forEach(item => {
-      if (
-        item.value === dadosRecorrencia.recorrenciaAula ||
-        item.value === recorrencia.AULA_UNICA
-      ) {
-        item.disabled = false;
-      } else {
-        item.disabled = true;
-      }
-    });
-    return opcoesRecorrencia;
+  const resetarTela = form => {
+    form.resetForm();
+    setControlaQuantidadeAula(true);
+    setQuantidadeMaximaAulas(0);
+    setModoEdicao(false);
+    setEhAulaUnica(false);
   };
 
   const onClickCancelar = async form => {
@@ -355,82 +428,40 @@ const CadastroAula = ({ match }) => {
     }
   };
 
-  const onClickVoltar = async () => {
-    if (modoEdicao) {
-      const confirmado = await confirmar(
-        'Atenção',
-        '',
-        'Suas alterações não foram salvas, deseja salvar agora?',
-        'Sim',
-        'Não'
-      );
+  const salvar = async valoresForm => {
+    const dados = { ...valoresForm };
+    const data =
+      dados.dataAulaCompleta && dados.dataAulaCompleta.format('YYYY-MM-DD');
+    const hora = dados.dataAula && dados.dataAula.format('HH:mm');
 
-      if (confirmado) {
-        onClickCadastrar(refForm.state.values);
-      } else {
+    dados.dataAula = moment(`${data}T${hora}`);
+    if (dados.quantidadeRadio && dados.quantidadeRadio > 0) {
+      dados.quantidade = dados.quantidadeRadio;
+    } else if (dados.quantidadeTexto && dados.quantidadeTexto > 0) {
+      dados.quantidade = dados.quantidadeTexto;
+    }
+
+    if (novoRegistro) {
+      dados.tipoCalendarioId = match.params.tipoCalendarioId;
+      dados.ueId = ueId;
+      dados.turmaId = turmaId;
+    }
+
+    const cadastrado = await ServicoAula.salvar(idAula, dados).catch(e =>
+      erros(e)
+    );
+    if (cadastrado) {
+      if (cadastrado.status === 200) {
+        if (cadastrado.data) sucesso(cadastrado.data.mensagens[0]);
         history.push('/calendario-escolar/calendario-professor');
-      }
-    } else {
-      history.push('/calendario-escolar/calendario-professor');
-    }
-  };
-
-  const resetarTela = form => {
-    form.resetForm();
-    setControlaQuantidadeAula(true);
-    setQuantidadeMaximaAulas(0);
-    setModoEdicao(false);
-    setEhAulaUnica(false);
-  };
-
-  const onChangeCampos = () => {
-    if (!modoEdicao) {
-      setModoEdicao(true);
-    }
-  };
-
-  const onChangeDisciplinas = async id => {
-    onChangeCampos();
-
-    const disciplina = listaDisciplinas.find(c => c.id === id);
-    const { regencia } = disciplina || false;
-    setEhRegencia(regencia);
-    const resultado = await api
-      .get(`v1/grades/aulas/turmas/${turmaId}/disciplinas/${id}`, {
-        params: {
-          data: dataAula ? dataAula.format('YYYY-MM-DD') : null,
-        },
-      })
-      .then(res => res)
-      .catch(err => {
-        const mensagemErro =
-          err &&
-          err.response &&
-          err.response.data &&
-          err.response.data.mensagens;
-
-        if (mensagemErro) {
-          erro(mensagemErro.join(','));
-          return null;
-        }
-
-        erro('Ocorreu um erro, por favor contate o suporte');
-
-        return null;
-      });
-
-    if (resultado) {
-      if (resultado.status === 200) {
-        setControlaQuantidadeAula(true);
-        setQuantidadeMaximaAulas(resultado.data.quantidadeAulasRestante);
-        if (resultado.data.quantidadeAulasRestante > 0) {
-          setControlaQuantidadeAula(true);
-        }
-      } else if (resultado.status === 204) {
-        setControlaQuantidadeAula(false);
+      } else if (cadastrado.response) {
+        erro(
+          cadastrado.response.status === 601
+            ? cadastrado.response.data.mensagens
+            : 'Houve uma falha ao salvar a aula, por favor contate o suporte'
+        );
       }
     }
-    // montaValidacoes();
   };
 
   const onClickCadastrar = async valoresForm => {
@@ -471,59 +502,43 @@ const CadastroAula = ({ match }) => {
     }
   };
 
-  const salvar = async valoresForm => {
-    const dados = { ...valoresForm };
-    const data =
-      dados.dataAulaCompleta && dados.dataAulaCompleta.format('YYYY-MM-DD');
-    const hora = dados.dataAula && dados.dataAula.format('HH:mm');
+  const onClickVoltar = async () => {
+    if (modoEdicao) {
+      const confirmado = await confirmar(
+        'Atenção',
+        '',
+        'Suas alterações não foram salvas, deseja salvar agora?',
+        'Sim',
+        'Não'
+      );
 
-    dados.dataAula = moment(`${data}T${hora}`);
-    if (dados.quantidadeRadio && dados.quantidadeRadio > 0) {
-      dados.quantidade = dados.quantidadeRadio;
-    } else if (dados.quantidadeTexto && dados.quantidadeTexto > 0) {
-      dados.quantidade = dados.quantidadeTexto;
-    }
-
-    if (novoRegistro) {
-      dados.tipoCalendarioId = match.params.tipoCalendarioId;
-      dados.ueId = ueId;
-      dados.turmaId = turmaId;
-      // valoresForm.dataAula = dataAula;
-    }
-
-    // const cadastrado = idAula
-    //   ? await api
-    //       .put(`v1/calendarios/professores/aulas/${idAula}`, {
-    //         ...valoresForm,
-    //         dataAula: valoresForm.dataAula.format(),
-    //       })
-    //       .then(resp => resp)
-    //       .catch(err => err)
-    //   : await api
-    //       .post('v1/calendarios/professores/aulas', valoresForm)
-    //       .then(resp => resp)
-    //       .catch(err => err);
-
-    const cadastrado = await ServicoAula.salvar(idAula, dados).catch(e =>
-      erros(e)
-    );
-    if (cadastrado) {
-      if (cadastrado.status === 200) {
-        if (cadastrado.data) sucesso(cadastrado.data.mensagens[0]);
+      if (confirmado) {
+        onClickCadastrar(refForm.state.values);
+      } else {
         history.push('/calendario-escolar/calendario-professor');
-      } else if (cadastrado.response) {
-        erro(
-          cadastrado.response.status === 601
-            ? cadastrado.response.data.mensagens
-            : 'Houve uma falha ao salvar a aula, por favor contate o suporte'
-        );
       }
+    } else {
+      history.push('/calendario-escolar/calendario-professor');
+    }
+  };
+
+  const excluir = async tipoRecorrencia => {
+    const exclusao = await api
+      .delete(
+        `v1/calendarios/professores/aulas/${idAula}/recorrencias/${tipoRecorrencia}`
+      )
+      .catch(e => erros(e));
+    if (exclusao) {
+      if (tipoRecorrencia === recorrencia.AULA_UNICA) {
+        sucesso('Aula excluída com sucesso.');
+      } else if (exclusao.status === 200) sucesso(exclusao.data.mensagens[0]);
+      history.push('/calendario-escolar/calendario-professor');
     }
   };
 
   const onClickExcluir = async () => {
     if (!novoRegistro) {
-      var observacao = existeFrequenciaPlanoAula
+      const observacao = existeFrequenciaPlanoAula
         ? 'Obs: Esta aula ou sua recorrência possui frequência ou plano de aula registrado, ao excluí-la estará excluindo esse registro também'
         : '';
 
@@ -546,29 +561,13 @@ const CadastroAula = ({ match }) => {
     }
   };
 
-  const excluir = async tipoRecorrencia => {
-    const excluir = await api
-      .delete(
-        `v1/calendarios/professores/aulas/${idAula}/recorrencias/${tipoRecorrencia}`
-      )
-      .catch(e => erros(e));
-    if (excluir) {
-      if (tipoRecorrencia === recorrencia.AULA_UNICA) {
-        sucesso('Aula excluída com sucesso.');
-      } else {
-        if (excluir.status === 200) sucesso(excluir.data.mensagens[0]);
-      }
-      history.push('/calendario-escolar/calendario-professor');
-    }
-  };
-
   const validaAntesDoSubmit = form => {
     const arrayCampos = Object.keys(aula);
     arrayCampos.forEach(campo => {
       form.setFieldTouched(campo, true, true);
     });
     form.validateForm().then(() => {
-      if (form.isValid || Object.keys(form.errors).length == 0) {
+      if (form.isValid || Object.keys(form.errors).length === 0) {
         form.handleSubmit(e => e);
       }
     });
@@ -847,6 +846,14 @@ const CadastroAula = ({ match }) => {
       </Card>
     </>
   );
+};
+
+CadastroAula.propTypes = {
+  match: PropTypes.oneOfType([PropTypes.array, PropTypes.object]),
+};
+
+CadastroAula.defaultProps = {
+  match: {},
 };
 
 export default CadastroAula;
