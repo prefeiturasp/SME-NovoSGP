@@ -55,6 +55,7 @@ namespace SME.SGP.IoC
             services.TryAddScopedWorkerService<IComandosNotasConceitos, ComandosNotasConceitos>();
             services.TryAddScopedWorkerService<IComandosAulaPrevista, ComandosAulaPrevista>();
             services.TryAddScopedWorkerService<IComandosRegistroPoa, ComandosRegistroPoa>();
+            services.TryAddScopedWorkerService<IComandosFechamentoReabertura, ComandosFechamentoReabertura>();
         }
 
         private static void RegistrarConsultas(IServiceCollection services)
@@ -95,6 +96,7 @@ namespace SME.SGP.IoC
             services.TryAddScopedWorkerService<IConsultasAtribuicaoCJ, ConsultasAtribuicaoCJ>();
             services.TryAddScopedWorkerService<IConsultasUe, ConsultasUe>();
             services.TryAddScopedWorkerService<IConsultasEventosAulasCalendario, ConsultasEventosAulasCalendario>();
+            services.TryAddScopedWorkerService<IConsultasFechamentoReabertura, ConsultasFechamentoReabertura>();
         }
 
         private static void RegistrarContextos(IServiceCollection services)
@@ -160,6 +162,7 @@ namespace SME.SGP.IoC
             services.TryAddScopedWorkerService<IRepositorioWorkflowAprovacaoNivel, RepositorioWorkflowAprovacaoNivel>();
             services.TryAddScopedWorkerService<IRepositorioWorkflowAprovacaoNivelNotificacao, RepositorioWorkflowAprovaNivelNotificacao>();
             services.TryAddScopedWorkerService<IRepositorioWorkflowAprovacaoNivelUsuario, RepositorioWorkflowAprovacaoNivelUsuario>();
+            services.TryAddScopedWorkerService<IRepositorioFechamentoReabertura, RepositorioFechamentoReabertura>();
         }
 
         private static void RegistrarServicos(IServiceCollection services)
