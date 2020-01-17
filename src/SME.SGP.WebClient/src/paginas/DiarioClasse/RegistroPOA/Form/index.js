@@ -311,7 +311,7 @@ function RegistroPOAForm({ match }) {
                 <Row className="row">
                   <Grid cols={2}>
                     <MesesDropDown
-                      label="Mês"
+                      label="Bimestre"
                       form={form}
                       desabilitado={somenteConsulta}
                     />
