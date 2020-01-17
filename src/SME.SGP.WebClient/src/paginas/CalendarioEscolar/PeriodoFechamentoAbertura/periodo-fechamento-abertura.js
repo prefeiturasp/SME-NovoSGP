@@ -85,7 +85,7 @@ const PeriodoFechamentoAbertura = () => {
   useEffect(() => {
     const carregarDres = async () => {
       setCarregandoDres(true);
-      const dres = await api.get('v1/dres').finally(() => {
+      const dres = await api.get(`v1/abrangencias/false/dres`).finally(() => {
         setCarregandoDres(false);
       });
       if (dres.data) {
