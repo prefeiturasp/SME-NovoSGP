@@ -62,7 +62,7 @@ namespace SME.SGP.Aplicacao
 
             atividadeAvaliativa.PodeSerAlterada(usuario);
 
-            VerificaSeProfessorPodePersistirTurma(usuario.CodigoRf, atividadeAvaliativa.TurmaId, atividadeAvaliativa.DataAvaliacao);
+            await VerificaSeProfessorPodePersistirTurma(usuario.CodigoRf, atividadeAvaliativa.TurmaId, atividadeAvaliativa.DataAvaliacao);
 
             unitOfWork.IniciarTransacao();
 
@@ -127,7 +127,7 @@ namespace SME.SGP.Aplicacao
 
             atividadeAvaliativa.PodeSerAlterada(usuario);
 
-            VerificaSeProfessorPodePersistirTurma(usuario.CodigoRf, atividadeAvaliativa.TurmaId, atividadeAvaliativa.DataAvaliacao);
+            await VerificaSeProfessorPodePersistirTurma(usuario.CodigoRf, atividadeAvaliativa.TurmaId, atividadeAvaliativa.DataAvaliacao);
 
             var atividadeDisciplinas = await repositorioAtividadeAvaliativaDisciplina.ListarPorIdAtividade(idAtividadeAvaliativa);
 
@@ -335,7 +335,7 @@ namespace SME.SGP.Aplicacao
         {
             var mensagens = new List<RetornoCopiarAtividadeAvaliativaDto>();
 
-            VerificaSeProfessorPodePersistirTurma(atividadeAvaliativa.ProfessorRf, atividadeAvaliativa.TurmaId, atividadeAvaliativa.DataAvaliacao.Date);
+            await VerificaSeProfessorPodePersistirTurma(atividadeAvaliativa.ProfessorRf, atividadeAvaliativa.TurmaId, atividadeAvaliativa.DataAvaliacao.Date);
 
             unitOfWork.IniciarTransacao();
 
@@ -425,9 +425,9 @@ namespace SME.SGP.Aplicacao
             return mensagens;
         }
 
-        private void VerificaSeProfessorPodePersistirTurma(string codigoRf, string turmaId, DateTime dataAula)
+        private async Task VerificaSeProfessorPodePersistirTurma(string codigoRf, string turmaId, DateTime dataAula)
         {
-            if (!servicoEOL.ProfessorPodePersistirTurma(codigoRf, turmaId, dataAula).Result)
+            if (!await servicoEOL.ProfessorPodePersistirTurma(codigoRf, turmaId, dataAula))
                 throw new NegocioException("Você não pode fazer alterações ou inclusões nesta turma e data.");
         }
     }
