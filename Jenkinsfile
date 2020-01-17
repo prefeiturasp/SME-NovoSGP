@@ -15,13 +15,8 @@ pipeline {
     stages {
       stage('CheckOut') {
         steps {
-          //git 'https://github.com/prefeiturasp/SME-NovoSGP.git'
-          checkout scm
           
-          //sh "echo MINHA BRANCH É ${GIT_BRANCH}"
-          //sh 'printenv'
-            
-            
+          checkout scm  
         }
       }
       
@@ -61,7 +56,7 @@ pipeline {
             //sh 'dotnet test --logger "trx;LogFileName=TestResults.trx"'
             sh 'echo executando testes'
           //Publica o relatorio de testes
-          //mstest()
+           // mstest()
           
         }
      }
