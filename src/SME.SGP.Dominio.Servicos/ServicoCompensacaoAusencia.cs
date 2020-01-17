@@ -97,7 +97,22 @@ namespace SME.SGP.Dominio.Servicos
         private PeriodoEscolarDto BuscaPeriodo(int anoLetivo, Modalidade modalidadeCodigo, int bimestre, int semestre)
         {
             var tipoCalendario = repositorioTipoCalendario.BuscarPorAnoLetivoEModalidade(anoLetivo, modalidadeCodigo == Modalidade.EJA ? ModalidadeTipoCalendario.EJA : ModalidadeTipoCalendario.FundamentalMedio);
-            var periodo = consultasPeriodoEscolar.ObterPorTipoCalendario(tipoCalendario.Id).Periodos.FirstOrDefault(p => p.Bimestre == bimestre);
+
+            PeriodoEscolarDto periodo = null;
+            // Eja possui 2 calendarios por ano
+            if (modalidadeCodigo == Modalidade.EJA)
+            {
+                if (semestre == 1)
+                    periodo = consultasPeriodoEscolar.ObterPorTipoCalendario(tipoCalendario.Id).Periodos
+                        .FirstOrDefault(p => p.Bimestre == bimestre && p.PeriodoInicio < new DateTime(anoLetivo, 6, 1));
+                else
+                    periodo = consultasPeriodoEscolar.ObterPorTipoCalendario(tipoCalendario.Id).Periodos
+                        .FirstOrDefault(p => p.Bimestre == bimestre && p.PeriodoFim > new DateTime(anoLetivo, 6, 1));
+            }
+            else
+                periodo = consultasPeriodoEscolar.ObterPorTipoCalendario(tipoCalendario.Id).Periodos
+                    .FirstOrDefault(p => p.Bimestre == bimestre);
+
             // TODO alterar verificação para checagem de periodo de fechamento e reabertura do fechamento depois de implementado
             if (DateTime.Now < periodo.PeriodoInicio || DateTime.Now > periodo.PeriodoFim)
                 throw new NegocioException($"Período do {bimestre}º Bimestre não esta aberto");
@@ -234,6 +249,64 @@ namespace SME.SGP.Dominio.Servicos
             compensacao.Descricao = compensacaoDto.Descricao;
 
             return compensacao;
+        }
+
+        public async Task Excluir(long[] compensacoesIds)
+        {
+            var compensacoesExcluir = new List<CompensacaoAusencia>();
+            var compensacoesAlunosExcluir = new List<CompensacaoAusenciaAluno>();
+            var compensacoesDisciplinasExcluir = new List<CompensacaoAusenciaDisciplinaRegencia>();
+
+            List<long> idsComErroAoExcluir = new List<long>();
+
+            // Carrega lista de objetos a excluir marcando-los para exclusão
+            foreach (var compensacaoId in compensacoesIds)
+            {
+                var compensacao = repositorioCompensacaoAusencia.ObterPorId(compensacaoId);
+                compensacao.Excluir();
+                compensacoesExcluir.Add(compensacao);
+
+                var compensacoesAlunos = await repositorioCompensacaoAusenciaAluno.ObterPorCompensacao(compensacaoId);
+                foreach(var compensacaoAluno in compensacoesAlunos)
+                {
+                    compensacaoAluno.Excluir();
+                    compensacoesAlunosExcluir.Add(compensacaoAluno);
+                }
+
+                var compensacoesDisciplinas = await repositorioCompensacaoAusenciaDisciplinaRegencia.ObterPorCompensacao(compensacaoId);
+                foreach (var compensacaoDisciplina in compensacoesDisciplinas)
+                {
+                    compensacaoDisciplina.Excluir();
+                    compensacoesDisciplinasExcluir.Add(compensacaoDisciplina);
+                }
+            }
+
+            // Excluir lista carregada
+            foreach(var compensacaoExcluir in compensacoesExcluir)
+            {
+                unitOfWork.IniciarTransacao();
+                try
+                {
+                    // Exclui dependencias
+                    compensacoesAlunosExcluir.Where(c => c.CompensacaoAusenciaId == compensacaoExcluir.Id).ToList()
+                        .ForEach(c => repositorioCompensacaoAusenciaAluno.Salvar(c));
+                    compensacoesDisciplinasExcluir.Where(c => c.CompensacaoAusenciaId == compensacaoExcluir.Id).ToList()
+                        .ForEach(c => repositorioCompensacaoAusenciaDisciplinaRegencia.Salvar(c));
+
+                    // Exclui compensação
+                    await repositorioCompensacaoAusencia.SalvarAsync(compensacaoExcluir);
+
+                    unitOfWork.PersistirTransacao();
+                }
+                catch (Exception)
+                {
+                    idsComErroAoExcluir.Add(compensacaoExcluir.Id);
+                    unitOfWork.Rollback();
+                }
+            }
+
+            if (idsComErroAoExcluir.Any())
+                throw new NegocioException($"Não foi possível excluir as compensações de ids {string.Join(",", idsComErroAoExcluir)}");
         }
     }
 }
