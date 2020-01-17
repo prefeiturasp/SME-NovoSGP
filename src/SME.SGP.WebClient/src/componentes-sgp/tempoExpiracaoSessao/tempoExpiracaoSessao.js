@@ -76,10 +76,10 @@ const TempoExpiracaoSessao = () => {
     expiraEm: '',
     diferenca: '',
   });
+  const [botaoDesabilitado, setBotaoDesabilitado] = useState(false);
 
   const calcularTempoExpiracao = useCallback(() => {
     const diferenca = +new Date(dataHoraExpiracao) - +new Date();
-
     if (diferenca > 0) {
       const quinzeMinutos = 900000;
       const tempoParaExibir =
@@ -119,10 +119,16 @@ const TempoExpiracaoSessao = () => {
   }, [deslogarDoUsuario, tempoParaExpirar]);
 
   const revalidarAutenticacao = async () => {
+    setBotaoDesabilitado(true);
+    api.CancelarRequisicoes('Cancelado pelo usuário');
+
     const autenticado = await api
       .post('v1/autenticacao/revalidar')
-      .catch(e => erros(e));
+      .catch(e => erros(e))
+      .finally(() => setBotaoDesabilitado(false));
+
     setMostraTempoExpiracao(false);
+
     if (autenticado && autenticado.data && autenticado.data.token) {
       dispatch(
         salvarLoginRevalidado({
@@ -155,6 +161,7 @@ const TempoExpiracaoSessao = () => {
               border
               className="botao-refresh"
               onClick={revalidarAutenticacao}
+              disabled={botaoDesabilitado}
             />
           </CaixaTempoExpiracao>
         </Container>

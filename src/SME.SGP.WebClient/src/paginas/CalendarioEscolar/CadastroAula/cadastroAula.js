@@ -1,7 +1,8 @@
 import { Form, Formik } from 'formik';
-import React, { useEffect, useState, useCallback, useRef } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import { useSelector } from 'react-redux';
 import * as Yup from 'yup';
+import moment from 'moment';
 import Cabecalho from '~/componentes-sgp/cabecalho';
 import Auditoria from '~/componentes/auditoria';
 import Button from '~/componentes/button';
@@ -20,7 +21,6 @@ import { ModalConteudoHtml } from '~/componentes';
 import Alert from '~/componentes/alert';
 import modalidade from '~/dtos/modalidade';
 import ServicoAula from '~/servicos/Paginas/ServicoAula';
-import moment from 'moment';
 
 const CadastroAula = ({ match }) => {
   const usuario = useSelector(store => store.usuario);
@@ -73,7 +73,7 @@ const CadastroAula = ({ match }) => {
     turmaId: '',
     dataAulaCompleta: window.moment(diaAula),
   });
-  const [aula, setAula] = useState(inicial);
+  const [aula] = useState(inicial);
   const opcoesTipoAula = [
     { label: 'Normal', value: 1 },
     { label: 'Reposição', value: 2 },
@@ -127,7 +127,7 @@ const CadastroAula = ({ match }) => {
   useEffect(() => {
     const obterDisciplinas = async () => {
       const disciplinas = await api.get(
-        `v1/professores/${usuario.rf}/turmas/${turmaId}/disciplinas`
+        `v1/professores/turmas/${turmaId}/disciplinas`
       );
       setListaDisciplinas(disciplinas.data);
 
@@ -173,7 +173,7 @@ const CadastroAula = ({ match }) => {
 
     const val = {
       tipoAula: Yup.string().required('Tipo obrigatório'),
-      disciplinaId: Yup.string().required('Disciplina obrigatório'),
+      disciplinaId: Yup.string().required('Componente curricular obrigatório'),
       dataAula: momentSchema.required('Hora obrigatória'),
       dataAulaCompleta: momentSchema.required('Data obrigatória'),
       recorrenciaAula: Yup.string().required('Recorrência obrigatória'),
@@ -389,7 +389,7 @@ const CadastroAula = ({ match }) => {
     }
   };
 
-  const onChangeDisciplinas = async (id, form) => {
+  const onChangeDisciplinas = async id => {
     onChangeCampos();
 
     const disciplina = listaDisciplinas.find(c => c.id === id);
@@ -744,8 +744,8 @@ const CadastroAula = ({ match }) => {
                     valueOption="codigoComponenteCurricular"
                     valueText="nome"
                     onChange={e => onChangeDisciplinas(e, form)}
-                    label="Disciplina"
-                    placeholder="Disciplina"
+                    label="Componente curricular"
+                    placeholder="Selecione um componente curricular"
                     disabled={
                       !!(
                         listaDisciplinas &&
@@ -773,7 +773,7 @@ const CadastroAula = ({ match }) => {
                     form={form}
                     opcoes={opcoesQuantidadeAulas}
                     name="quantidadeRadio"
-                    onChange={e => {
+                    onChange={() => {
                       onChangeCampos();
                       refForm.setFieldValue('quantidadeTexto', '');
                     }}
@@ -793,7 +793,7 @@ const CadastroAula = ({ match }) => {
                       (quantidadeMaximaAulas < 3 && controlaQuantidadeAula) ||
                       (ehRegencia && !ehReposicao)
                     }
-                    onChange={e => {
+                    onChange={() => {
                       refForm.setFieldValue('quantidadeRadio', 0);
                       onChangeCampos();
                       // montaValidacoes();

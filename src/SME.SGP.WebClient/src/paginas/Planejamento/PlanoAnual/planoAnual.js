@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useSelector } from 'react-redux';
 import { Collapse } from 'antd';
 import Row from '~/componentes/row';
+
 import {
   Grid,
   Card,
@@ -34,18 +35,20 @@ const PlanoAnual = () => {
   const [ehEja, setEhEja] = useState(false);
   const [planoAnual, setPlanoAnual] = useState([]);
   const [registroMigrado, setRegistroMigrado] = useState(false);
+  const [
+    possuiTurmasDisponiveisParaCopia,
+    setPossuiTurmasDisponiveisParaCopia,
+  ] = useState(false);
   const [emEdicao, setEmEdicao] = useState(false);
   const [carregandoDados, setCarregandoDados] = useState(false);
   const [exibirCopiarConteudo, setExibirCopiarConteudo] = useState(false);
   const [listaDisciplinas, setListaDisciplinas] = useState([]);
+  const [listaBimestresPreenchidos, setListaBimestresPreenchidos] = useState(
+    []
+  );
   const [bimestreExpandido, setBimestreExpandido] = useState('');
   const [listaErros, setListaErros] = useState([[], [], [], []]);
-  const [refsPainel, setRefsPainel] = useState([
-    useRef(),
-    useRef(),
-    useRef(),
-    useRef(),
-  ]);
+  const [refsPainel] = useState([useRef(), useRef(), useRef(), useRef()]);
 
   const [
     listaDisciplinasPlanejamento,
@@ -111,8 +114,9 @@ const PlanoAnual = () => {
     if (planos && planos.length > 0) {
       planos.forEach(plano => {
         if (
-          !plano.objetivosAprendizagem ||
-          (!plano.objetivosAprendizagem.length > 0 && !ehEja)
+          disciplinaSelecionada.possuiObjetivos &&
+          (!plano.objetivosAprendizagem ||
+            (!plano.objetivosAprendizagem.length > 0 && !ehEja))
         ) {
           possuiErro = true;
           err[plano.bimestre - 1].push(
@@ -186,6 +190,13 @@ const PlanoAnual = () => {
           setCarregandoDados(false);
           sucesso('Registro salvo com sucesso.');
           setEmEdicao(false);
+          setListaBimestresPreenchidos(
+            planoAnual
+              .filter(c => c.descricao && c.descricao.length > 0)
+              .map(c => {
+                return { nome: `${c.bimestre} º Bimestre`, valor: c.bimestre };
+              })
+          );
         })
         .catch(e => {
           setCarregandoDados(false);
@@ -269,6 +280,13 @@ const PlanoAnual = () => {
           const migrado = resposta.data.filter(c => c.migrado);
           setRegistroMigrado(migrado && migrado.length > 0);
           setEmEdicao(false);
+          setListaBimestresPreenchidos(
+            resposta.data
+              .filter(c => c.descricao && c.descricao.length > 0)
+              .map(c => {
+                return { nome: `${c.bimestre} º Bimestre`, valor: c.bimestre };
+              })
+          );
         })
         .catch(e => {
           setCarregandoDados(false);
@@ -318,18 +336,33 @@ const PlanoAnual = () => {
     }
   }, [turmaSelecionada]);
 
+  const fecharCopiarConteudo = () => {
+    setExibirCopiarConteudo(false);
+  };
+
+  const onChangePossuiTurmasDisponiveisParaCopia = possuiTurmas => {
+    setPossuiTurmasDisponiveisParaCopia(possuiTurmas);
+  };
   return (
     <>
-      {/* <CopiarConteudo
+      <CopiarConteudo
         visivel={exibirCopiarConteudo}
-        anoLetivo={turmaSelecionada.anoLetivo}
-        codigoDisciplinaSelecionada={codigoDisciplinaSelecionada}
-        unidadeEscolar={turmaSelecionada.unidadeEscolar}
+        listaBimestresPreenchidos={listaBimestresPreenchidos}
+        componenteCurricularEolId={codigoDisciplinaSelecionada}
         turmaId={turmaSelecionada.turma}
-        onCancelarCopiarConteudo={() => setExibirCopiarConteudo(false)}
-        onCloseCopiarConteudo={() => setExibirCopiarConteudo(false)}
-        onConfirmarCopiarConteudo
-      /> */}
+        onCloseCopiarConteudo={fecharCopiarConteudo}
+        planoAnual={{
+          anoLetivo: turmaSelecionada.anoLetivo,
+          bimestres: planoAnual,
+          componenteCurricularEolId:
+            disciplinaSelecionada.codigoComponenteCurricular,
+          turmaId: turmaSelecionada.turma,
+          escolaId: turmaSelecionada.unidadeEscolar,
+        }}
+        onChangePossuiTurmasDisponiveisParaCopia={
+          onChangePossuiTurmasDisponiveisParaCopia
+        }
+      />
       <Loader loading={carregandoDados}>
         <div className="col-md-12">
           {!possuiTurmaSelecionada ? (
@@ -338,8 +371,9 @@ const PlanoAnual = () => {
                 <Alert
                   alerta={{
                     tipo: 'warning',
-                    id: 'AlertaPrincipal',
+                    id: 'plano-anual-selecione-turma',
                     mensagem: 'Você precisa escolher uma turma.',
+                    estiloTitulo: { fontSize: '18px' },
                   }}
                   className="mb-0"
                 />
@@ -359,8 +393,8 @@ const PlanoAnual = () => {
             )}
           </Titulo>
         </Grid>
-        <Card className="col-md-12 p-0" mx="mx-0">
-          <div className="col-md-4">
+        <Card className="col-md-12 p-0 float-right" mx="mx-0">
+          <div className="col-md-4 col-xs-12">
             <SelectComponent
               name="disciplinas"
               id="disciplinas"
@@ -369,19 +403,20 @@ const PlanoAnual = () => {
               valueText="nome"
               onChange={onChangeDisciplinas}
               valueSelect={codigoDisciplinaSelecionada}
-              placeholder="Selecione uma disciplina"
+              placeholder="Selecione um componente curricular"
               disabled={listaDisciplinas && listaDisciplinas.length === 1}
             />
           </div>
-          <div className="col-md-8 d-flex justify-content-end">
-            {/* <Button
+          <div className="col-md-8 col-sm-2 d-flex justify-content-end">
+            <Button
               label="Copiar Conteúdo"
               icon="share-square"
-              className="mr-3"
               color={Colors.Azul}
+              className="mr-3"
               border
               onClick={abrirCopiarConteudo}
-            /> */}
+              disabled={emEdicao || !possuiTurmasDisponiveisParaCopia}
+            />
             <Button
               label="Voltar"
               icon="arrow-left"
@@ -395,8 +430,9 @@ const PlanoAnual = () => {
               color={Colors.Roxo}
               border
               bold
-              className="mr-3"
               disabled={!emEdicao}
+              className="mr-3"
+              disabled={!emEdicao || !Object.entries(turmaSelecionada).length}
               onClick={cancelar}
             />
             <Button
@@ -441,7 +477,6 @@ const PlanoAnual = () => {
                           disciplinaSemObjetivo={
                             !disciplinaSelecionada.possuiObjetivos
                           }
-                          regencia={disciplinaSelecionada.regencia}
                           onChange={onChangeBimestre}
                           key={plano.bimestre}
                           erros={listaErros[plano.bimestre - 1]}

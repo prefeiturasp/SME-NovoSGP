@@ -13,6 +13,7 @@ namespace SME.SGP.Infra
         public string UeId { get; set; }
         public long TipoCalendarioId { get; set; }
         public TipoAula TipoAula { get; set; }
+        public bool AulaCJ { get; set; }
         public int Quantidade { get; set; }
         public DateTime DataAula { get; set; }
         public RecorrenciaAula RecorrenciaAula { get; set; }

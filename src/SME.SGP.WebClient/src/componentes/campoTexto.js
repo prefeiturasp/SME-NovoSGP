@@ -22,10 +22,6 @@ const Campo = styled.div`
   .ant-input-affix-wrapper .ant-input:not(:first-child) {
     padding-left: 40px;
   }
-  .form-control {
-    // border: 0;
-    // height: auto !important;
-  }
 `;
 
 const CampoTexto = React.forwardRef((props, ref) => {
@@ -42,7 +38,7 @@ const CampoTexto = React.forwardRef((props, ref) => {
     onKeyDown,
     value,
     desabilitado,
-    maxlength,
+    maxLength,
     label,
     semMensagem,
     style,
@@ -84,7 +80,7 @@ const CampoTexto = React.forwardRef((props, ref) => {
             readOnly={desabilitado}
             disabled={desabilitado}
             onBlur={executaOnBlur}
-            maxLength={maxlength || ''}
+            maxLength={maxLength || ''}
             innerRef={ref}
             onKeyDown={onKeyDown}
             placeholder={placeholder}
@@ -109,7 +105,7 @@ const CampoTexto = React.forwardRef((props, ref) => {
           onKeyDown={onKeyDown}
           value={value}
           prefix={iconeBusca && <i className="fa fa-search fa-lg" />}
-          allowClear
+          allowClear={allowClear}
         />
       )}
     </Campo>
@@ -120,12 +116,16 @@ CampoTexto.propTypes = {
   onChange: PropTypes.func,
   semMensagem: PropTypes.bool,
   form: PropTypes.oneOfType([PropTypes.any]),
+  maxLength: PropTypes.oneOfType([PropTypes.number]),
+  allowClear: PropTypes.bool,
 };
 
 CampoTexto.defaultProps = {
   onChange: () => {},
   semMensagem: false,
   form: null,
+  maxLength: 100,
+  allowClear: true,
 };
 
 export default CampoTexto;

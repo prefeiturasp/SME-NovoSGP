@@ -16,6 +16,13 @@ namespace SME.SGP.Api.Controllers
     public class AbrangenciaController : ControllerBase
     {
         private readonly IConsultasAbrangencia consultasAbrangencia;
+
+        public AbrangenciaController(IConsultasAbrangencia consultasAbrangencia)
+        {
+            this.consultasAbrangencia = consultasAbrangencia ??
+               throw new System.ArgumentNullException(nameof(consultasAbrangencia));
+        }
+
         private bool ConsideraHistorico
         {
             get
@@ -29,14 +36,7 @@ namespace SME.SGP.Api.Controllers
                 }
 
                 return false;
-
             }
-        }
-
-        public AbrangenciaController(IConsultasAbrangencia consultasAbrangencia)
-        {
-            this.consultasAbrangencia = consultasAbrangencia ??
-               throw new System.ArgumentNullException(nameof(consultasAbrangencia));
         }
 
         [HttpGet("{filtro}")]
@@ -61,18 +61,20 @@ namespace SME.SGP.Api.Controllers
         public IActionResult ObterAnosLetivos()
         {
             int[] retorno = consultasAbrangencia.ObterAnosLetivos(ConsideraHistorico).Result.ToArray();
-            if (retorno.Any())
-                return Ok(retorno);
-            else return StatusCode(204);
+
+            if (!retorno.Any())
+                return NoContent();
+
+            return Ok(retorno);
         }
 
         [HttpGet("dres")]
         [ProducesResponseType(typeof(IEnumerable<AbrangenciaDreRetorno>), 200)]
         [ProducesResponseType(401)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        public async Task<IActionResult> ObterDres([FromQuery]Modalidade? modalidade, [FromQuery]int periodo = 0)
+        public async Task<IActionResult> ObterDres([FromQuery]Modalidade? modalidade, [FromQuery]int periodo = 0, [FromQuery]int anoLetivo = 0)
         {
-            var dres = await consultasAbrangencia.ObterDres(modalidade, periodo, ConsideraHistorico);
+            var dres = await consultasAbrangencia.ObterDres(modalidade, periodo, ConsideraHistorico, anoLetivo);
 
             if (dres.Any())
                 return Ok(dres);
@@ -86,19 +88,26 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         public async Task<IActionResult> ObterModalidades(int anoLetivo)
         {
-            return Ok(await consultasAbrangencia.ObterModalidades(anoLetivo, ConsideraHistorico));
+            var retorno = await consultasAbrangencia.ObterModalidades(anoLetivo, ConsideraHistorico);
+
+            if (!retorno.Any())
+                return NoContent();
+
+            return Ok(retorno);
         }
 
         [HttpGet("semestres")]
         [ProducesResponseType(typeof(int[]), 200)]
         [ProducesResponseType(401)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        public async Task<IActionResult> ObterSemestres([FromQuery]Modalidade modalidade)
+        public async Task<IActionResult> ObterSemestres([FromQuery]Modalidade modalidade, [FromQuery]int anoLetivo = 0)
         {
-            var retorno = await consultasAbrangencia.ObterSemestres(modalidade, ConsideraHistorico);
-            if (retorno.Any())
-                return Ok(retorno);
-            else return StatusCode(204);
+            var retorno = await consultasAbrangencia.ObterSemestres(modalidade, ConsideraHistorico, anoLetivo);
+
+            if (!retorno.Any())
+                return NoContent();
+
+            return Ok(retorno);
         }
 
         [HttpGet("dres/ues/{codigoUe}/turmas")]
@@ -106,12 +115,14 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(401)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [ProducesResponseType(typeof(RetornoBaseDto), 601)]
-        public async Task<IActionResult> ObterTurmas(string codigoUe, [FromQuery]Modalidade modalidade, int periodo = 0)
+        public async Task<IActionResult> ObterTurmas(string codigoUe, [FromQuery]Modalidade modalidade, int periodo = 0, [FromQuery]int anoLetivo = 0)
         {
-            var turmas = await consultasAbrangencia.ObterTurmas(codigoUe, modalidade, periodo, ConsideraHistorico);
-            if (turmas.Any())
-                return Ok(turmas);
-            else return StatusCode(204);
+            var turmas = await consultasAbrangencia.ObterTurmas(codigoUe, modalidade, periodo, ConsideraHistorico, anoLetivo);
+
+            if (!turmas.Any())
+                return NoContent();
+
+            return Ok(turmas);
         }
 
         [HttpGet("dres/{codigoDre}/ues")]
@@ -119,14 +130,14 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(401)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [ProducesResponseType(typeof(RetornoBaseDto), 601)]
-        public async Task<IActionResult> ObterUes(string codigoDre, [FromQuery]Modalidade? modalidade, [FromQuery]int periodo = 0)
+        public async Task<IActionResult> ObterUes(string codigoDre, [FromQuery]Modalidade? modalidade, [FromQuery]int periodo = 0, [FromQuery]int anoLetivo = 0)
         {
-            var ues = await consultasAbrangencia.ObterUes(codigoDre, modalidade, periodo, ConsideraHistorico);
+            var ues = await consultasAbrangencia.ObterUes(codigoDre, modalidade, periodo, ConsideraHistorico, anoLetivo);
 
-            if (ues.Any())
-                return Ok(ues);
+            if (!ues.Any())
+                return NoContent();
 
-            return StatusCode(204);
+            return Ok(ues);
         }
     }
 }

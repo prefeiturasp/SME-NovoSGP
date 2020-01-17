@@ -10,7 +10,7 @@ namespace SME.SGP.Dominio
         private const string MENSAGEM_ERRO_USUARIO_SEM_ACESSO = "Usuário sem perfis de acesso.";
 
         public string CodigoRf { get; set; }
-        public string Email { get; set; }
+        private string Email { get; set; }
         public DateTime? ExpiracaoRecuperacaoSenha { get; set; }
         public string Login { get; set; }
         public string Nome { get; set; }
