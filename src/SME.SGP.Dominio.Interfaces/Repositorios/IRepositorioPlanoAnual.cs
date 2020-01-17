@@ -1,5 +1,4 @@
 ﻿using SME.SGP.Infra;
-using SME.SGP.Infra.Dtos;
 using System.Collections.Generic;
 
 namespace SME.SGP.Dominio.Interfaces
@@ -14,8 +13,8 @@ namespace SME.SGP.Dominio.Interfaces
 
         PlanoAnualObjetivosDisciplinaDto ObterPlanoObjetivosEscolaTurmaDisciplina(int ano, string escolaId, string turmaId, int bimestre, long componenteCurricularEolId, long disciplinaId);
 
-        IEnumerable<TurmaParaCopiaPlanoAnualDto> ObterTurmasParaCopiaPorAnoEUsuario(int ano, long usuarioId);
-
         bool ValidarPlanoExistentePorAnoEscolaTurmaEBimestre(int ano, string escolaId, string turmaId, int bimestre, long componenteCurricularEolId);
+
+        IEnumerable<TurmaParaCopiaPlanoAnualDto> ValidaSeTurmasPossuemPlanoAnual(string[] turmasId);
     }
 }
