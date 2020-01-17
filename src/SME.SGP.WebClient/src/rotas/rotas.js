@@ -441,6 +441,17 @@ rotas.set(`${RotasDto.FREQUENCIA_PLANO_AULA}`, {
   chavePermissao: RotasDto.FREQUENCIA_PLANO_AULA,
 });
 
+rotas.set(`${RotasDto.NOTAS}/:disciplinaId/:bimestre`, {
+  breadcrumbName: 'Notas',
+  menu: ['Diário de Classe'],
+  parent: '/',
+  component: Notas,
+  exact: true,
+  tipo: RotasTipo.EstruturadaAutenticada,
+  temPermissionamento: true,
+  chavePermissao: RotasDto.NOTAS,
+});
+
 rotas.set(`${RotasDto.NOTAS}`, {
   breadcrumbName: 'Notas',
   menu: ['Diário de Classe'],

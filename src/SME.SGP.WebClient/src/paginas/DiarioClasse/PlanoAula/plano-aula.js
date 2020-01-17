@@ -6,6 +6,7 @@ import Button from '~/componentes/button';
 import CardCollapse from '~/componentes/cardCollapse';
 import Grid from '~/componentes/grid';
 import TextEditor from '~/componentes/textEditor';
+import Editor from '~/componentes/editor/editor';
 import {
   Badge,
   Corpo,
@@ -385,18 +386,10 @@ const PlanoAula = props => {
                     </Descritivo>
                   ) : null}
                   <fieldset className="mt-3">
-                    <form action="">
-                      <TextEditor
-                        disabled={desabilitarCampos}
-                        className="form-control"
-                        ref={textEditorObjetivosRef}
-                        id="textEditor-meus_objetivos"
-                        height="135px"
-                        alt="Meus objetivos específicos"
-                        value={planoAula.descricao}
-                        onBlur={onBlurMeusObjetivos}
-                      />
-                    </form>
+                    <Editor
+                      onChange={onBlurMeusObjetivos}
+                      inicial={planoAula.descricao}
+                    />
                   </fieldset>
                 </Grid>
               </Grid>
@@ -412,18 +405,10 @@ const PlanoAula = props => {
             configCabecalho={configCabecalho}
           >
             <fieldset className="mt-3">
-              <form action="">
-                <TextEditor
-                  disabled={desabilitarCampos}
-                  className="form-control"
-                  id="textEditor-desenv-aula"
-                  ref={textEditorDesenvAulaRef}
-                  height="135px"
-                  alt="Desenvolvimento da aula"
-                  value={planoAula.desenvolvimentoAula}
-                  onBlur={onBlurDesenvolvimentoAula}
-                />
-              </form>
+              <Editor
+                onChange={onBlurDesenvolvimentoAula}
+                inicial={planoAula.desenvolvimentoAula}
+              />
             </fieldset>
           </CardCollapse>
 
@@ -436,18 +421,10 @@ const PlanoAula = props => {
             configCabecalho={configCabecalho}
           >
             <fieldset className="mt-3">
-              <form action="">
-                <TextEditor
-                  disabled={desabilitarCampos}
-                  className="form-control"
-                  id="textEditor-rec-continua"
-                  ref={textEditorRecContinuaRef}
-                  height="135px"
-                  alt="Recuperação contínua"
-                  value={planoAula.recuperacaoAula}
-                  onBlur={onBlurRecuperacaoContinua}
-                />
-              </form>
+              <Editor
+                onChange={onBlurRecuperacaoContinua}
+                inicial={planoAula.recuperacaoAula}
+              />
             </fieldset>
           </CardCollapse>
 
@@ -460,18 +437,10 @@ const PlanoAula = props => {
             configCabecalho={configCabecalho}
           >
             <fieldset className="mt-3">
-              <form action="">
-                <TextEditor
-                  disabled={desabilitarCampos}
-                  className="form-control"
-                  id="textEditor-licao-casa"
-                  ref={textEditorLicaoCasaRef}
-                  height="135px"
-                  alt="Lição de casa"
-                  value={planoAula.licaoCasa}
-                  onBlur={onBlurLicaoCasa}
-                />
-              </form>
+              <Editor
+                onChange={onBlurLicaoCasa}
+                inicial={planoAula.licaoCasa}
+              />
             </fieldset>
           </CardCollapse>
           {planoAula.id > 0 && auditoria ? (

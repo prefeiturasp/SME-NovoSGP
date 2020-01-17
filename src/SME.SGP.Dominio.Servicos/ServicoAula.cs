@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.Configuration;
+using SME.Background.Core;
 using SME.SGP.Aplicacao;
 using SME.SGP.Aplicacao.Integracoes;
 using SME.SGP.Aplicacao.Integracoes.Respostas;
@@ -31,6 +32,7 @@ namespace SME.SGP.Dominio.Servicos
         private readonly IServicoFrequencia servicoFrequencia;
         private readonly IServicoLog servicoLog;
         private readonly IServicoNotificacao servicoNotificacao;
+        private readonly IServicoWorkflowAprovacao servicoWorkflowAprovacao;
 
         public ServicoAula(IRepositorioAula repositorioAula,
                            IServicoEOL servicoEOL,
@@ -48,7 +50,8 @@ namespace SME.SGP.Dominio.Servicos
                            IConfiguration configuration,
                            IRepositorioAtividadeAvaliativa repositorioAtividadeAvaliativa,
                            IRepositorioAtribuicaoCJ repositorioAtribuicaoCJ,
-                           IRepositorioTurma repositorioTurma)
+                           IRepositorioTurma repositorioTurma,
+                           IServicoWorkflowAprovacao servicoWorkflowAprovacao)
         {
             this.repositorioAula = repositorioAula ?? throw new System.ArgumentNullException(nameof(repositorioAula));
             this.servicoEOL = servicoEOL ?? throw new System.ArgumentNullException(nameof(servicoEOL));
@@ -60,13 +63,14 @@ namespace SME.SGP.Dominio.Servicos
             this.consultasPlanoAula = consultasPlanoAula ?? throw new ArgumentNullException(nameof(consultasPlanoAula));
             this.servicoLog = servicoLog ?? throw new ArgumentNullException(nameof(servicoLog));
             this.comandosWorkflowAprovacao = comandosWorkflowAprovacao ?? throw new ArgumentNullException(nameof(comandosWorkflowAprovacao));
-            this.configuration = configuration;
+            this.configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
             this.servicoNotificacao = servicoNotificacao ?? throw new ArgumentNullException(nameof(servicoNotificacao));
             this.comandosPlanoAula = comandosPlanoAula ?? throw new ArgumentNullException(nameof(comandosPlanoAula));
             this.servicoFrequencia = servicoFrequencia ?? throw new ArgumentNullException(nameof(servicoFrequencia));
             this.repositorioAtividadeAvaliativa = repositorioAtividadeAvaliativa ?? throw new ArgumentNullException(nameof(repositorioAtividadeAvaliativa));
             this.repositorioAtribuicaoCJ = repositorioAtribuicaoCJ ?? throw new ArgumentNullException(nameof(repositorioAtribuicaoCJ));
             this.repositorioTurma = repositorioTurma ?? throw new ArgumentNullException(nameof(repositorioTurma));
+            this.servicoWorkflowAprovacao = servicoWorkflowAprovacao ?? throw new ArgumentNullException(nameof(servicoWorkflowAprovacao));
         }
 
         private enum Operacao
@@ -102,6 +106,11 @@ namespace SME.SGP.Dominio.Servicos
 
             if (tipoCalendario == null)
                 throw new NegocioException("O tipo de calendário não foi encontrado.");
+
+            VerificaSeProfessorPodePersistirTurma(usuario.CodigoRf, aula.TurmaId, aula.DataAula);
+
+            if (aula.Id > 0)
+                aula.PodeSerAlterada(usuario);
 
             IEnumerable<long> disciplinasProfessor = null;
 
@@ -224,7 +233,7 @@ namespace SME.SGP.Dominio.Servicos
             // Verifica recorrencia da gravação
             if (recorrencia != RecorrenciaAula.AulaUnica)
             {
-                Background.Core.Cliente.Executar(() => GravarRecorrencia(ehInclusao, aula, usuario, recorrencia));
+                Cliente.Executar<IServicoAula>(s => s.GravarRecorrencia(ehInclusao, aula, usuario, recorrencia));
 
                 var mensagem = ehInclusao ? "cadastrada" : "alterada";
                 return $"Aula {mensagem} com sucesso. Serão {mensagem}s aulas recorrentes, em breve você receberá uma notificação com o resultado do processamento.";
@@ -287,6 +296,10 @@ namespace SME.SGP.Dominio.Servicos
         {
             if (await repositorioAtividadeAvaliativa.VerificarSeExisteAvaliacao(aula.DataAula.Date, aula.UeId, aula.TurmaId, CodigoRf, aula.DisciplinaId))
                 throw new NegocioException("Aula com avaliação vinculada. Para excluir esta aula primeiro deverá ser excluída a avaliação.");
+
+            VerificaSeProfessorPodePersistirTurma(CodigoRf, aula.TurmaId, aula.DataAula);
+
+            await servicoWorkflowAprovacao.ExcluirWorkflowNotificacoes(aula.WorkflowAprovacaoId);
             await servicoFrequencia.ExcluirFrequenciaAula(aula.Id);
             await comandosPlanoAula.ExcluirPlanoDaAula(aula.Id);
             aula.Excluido = true;
@@ -499,6 +512,12 @@ namespace SME.SGP.Dominio.Servicos
                 throw new NegocioException($"Não foi possível localizar a disciplina de Id {aula.DisciplinaId}.");
 
             return disciplina.Nome;
+        }
+
+        private void VerificaSeProfessorPodePersistirTurma(string codigoRf, string turmaId, DateTime dataAula)
+        {
+            if (!servicoEOL.ProfessorPodePersistirTurma(codigoRf, turmaId, dataAula).Result)
+                throw new NegocioException("Você não pode fazer alterações ou inclusões nesta turma e data.");
         }
     }
 }

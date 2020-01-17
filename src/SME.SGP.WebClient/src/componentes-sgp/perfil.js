@@ -93,6 +93,10 @@ const Perfil = props => {
     store.dispatch(removerTurma());
   };
 
+  const cancelarRequisicoesPendentes = () => {
+    api.CancelarRequisicoes('Cancelado pelo usuário');
+  };
+
   const gravarPerfilSelecionado = perfil => {
     if (perfil) {
       const perfilNovo = perfilStore.perfis.filter(
@@ -164,6 +168,11 @@ const Perfil = props => {
     }
   };
 
+  const onClickPerfil = e => {
+    cancelarRequisicoesPendentes();
+    gravarPerfilSelecionado(e.currentTarget.accessKey);
+  };
+
   const onClickBotao = () => {
     if (perfilStore.perfis.length > 1) {
       setarOcultaPerfis(!ocultaPerfis);
@@ -206,9 +215,7 @@ const Perfil = props => {
             {perfilStore.perfis.map(item => (
               <Item
                 key={item.codigoPerfil}
-                onClick={e => {
-                  gravarPerfilSelecionado(e.currentTarget.accessKey);
-                }}
+                onClick={onClickPerfil}
                 accessKey={item.codigoPerfil}
               >
                 <td style={{ width: '20px' }}>

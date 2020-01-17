@@ -12,6 +12,8 @@ namespace SME.SGP.Infra
         [Required(ErrorMessage = "A disciplina deve ser informada")]
         public string DisciplinaId { get; set; }
 
+        public string DisciplinaCompartilhadaId { get; set; }
+
         public int Id { get; set; }
 
         [Required(ErrorMessage = "A quantidade de aulas deve ser informada")]
