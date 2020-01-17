@@ -763,7 +763,7 @@ const CadastroAula = ({ match }) => {
                     somenteHora
                   />
                 </div>
-                {!disciplinaCompartilhada && (
+                {disciplinaCompartilhada && (
                   <div className="col-sm-12 col-md-12 col-lg-12 col-xl-12 pb-3">
                     <SelectComponent
                       id="disciplinaCompartilhadaId"
