@@ -12,17 +12,18 @@ import {
 import api from '~/servicos/api';
 import periodo from '~/dtos/periodo';
 import { CampoData, Loader } from '~/componentes';
+import FiltroHelper from '~/componentes-sgp/filtro/helper';
+import tipoEscolaDTO from '~/dtos/tipoEscolaDto';
 
 const PeriodoFechamentoAbertura = () => {
   const [listaCalendarioEscolar, setListaCalendarioEscolar] = useState([]);
   const [listaDres, setListaDres] = useState([]);
   const [listaUes, setListaUes] = useState([]);
-  const [
-    calendarioEscolarSelecionado,
-    setCalendarioEscolarSelecionado,
-  ] = useState('');
+  const [tipoCalendarioSelecionado, setTipoCalendarioSelecionado] = useState(
+    ''
+  );
   const [dreSelecionada, setDreSelecionada] = useState('');
-  const [ueSlecionada, setUeSelecionada] = useState('');
+  const [ueSelecionada, setUeSelecionada] = useState('');
   const [ehTipoCalendarioAnual, setEhTipoCalendarioAnual] = useState(true);
   const [desabilitaCampos, setDesabilitaCampos] = useState(false);
 
@@ -51,6 +52,11 @@ const PeriodoFechamentoAbertura = () => {
   const [carregandoTipos, setCarregandoTipos] = useState(false);
   const [carregandoDres, setCarregandoDres] = useState(false);
   const [carregandoUes, setCarregandoUes] = useState(false);
+  const [desabilitarTipoCalendario, setDesabilitarTipoCalendario] = useState(
+    false
+  );
+  const [desabilitaDre, setDesabilitaDre] = useState(false);
+  const [desabilitaUe, setDesabilitaUe] = useState(false);
 
   useEffect(() => {
     async function consultaTipos() {
@@ -62,17 +68,44 @@ const PeriodoFechamentoAbertura = () => {
           item.descricaoTipoCalendario = `${item.anoLetivo} - ${item.nome} - ${item.descricaoPeriodo}`;
         });
         setListaCalendarioEscolar(listaTipo.data);
+        if (listaTipo.data.length === 1) {
+          setTipoCalendarioSelecionado(listaTipo.data[0].id);
+          setDesabilitarTipoCalendario(true);
+        } else {
+          setDesabilitarTipoCalendario(false);
+        }
       } else {
         setListaCalendarioEscolar([]);
       }
+      setCarregandoTipos(false);
     }
     consultaTipos();
-    setCarregandoTipos(false);
   }, []);
 
-  const onChangeCamposData = () => { };
+  useEffect(() => {
+    const carregarDres = async () => {
+      setCarregandoDres(true);
+      const dres = await api.get('v1/dres').finally(() => {
+        setCarregandoDres(false);
+      });
+      if (dres.data) {
+        setListaDres(dres.data.sort(FiltroHelper.ordenarLista('nome')));
+        if (dres.data.length === 1) {
+          setDreSelecionada(dres.data[0].id);
+          setDesabilitaDre(true);
+        } else {
+          setDesabilitaDre(false);
+        }
+      } else {
+        setListaDres([]);
+      }
+    };
+    carregarDres();
+  }, []);
 
-  const onchangeCalendarioEscolar = (id, form) => {
+  const onChangeCamposData = () => {};
+
+  const onchangeTipoCalendarioEscolar = (id, form) => {
     const tipoSelecionado = listaCalendarioEscolar.find(item => item.id == id);
 
     if (tipoSelecionado && tipoSelecionado.periodo == periodo.Anual) {
@@ -80,20 +113,49 @@ const PeriodoFechamentoAbertura = () => {
     } else {
       setEhTipoCalendarioAnual(false);
     }
-    setCalendarioEscolarSelecionado(id);
+    setTipoCalendarioSelecionado(id);
   };
 
-  const onChangeDre = () => { };
+  const onChangeDre = dreId => {
+    setDreSelecionada(dreId);
+    setUeSelecionada(null);
+    carregarUes(dreId);
+  };
 
-  const onChangeUe = () => { };
+  const carregarUes = async dre => {
+    setCarregandoUes(true);
+    const ues = await api
+      .get(`/v1/abrangencias/false/dres/${dre}/ues`)
+      .finally(() => {
+        setCarregandoUes(false);
+      });
+    if (ues.data) {
+      ues.data.forEach(
+        ue => (ue.nome = `${tipoEscolaDTO[ue.tipoEscola]} ${ue.nome}`)
+      );
+      if (ues.data.length === 1) {
+        setDesabilitaUe(true);
+        setUeSelecionada(ues.data[0].codigo);
+      } else {
+        setDesabilitaUe(false);
+      }
+      setListaUes(ues.data.sort(FiltroHelper.ordenarLista('nome')));
+    } else {
+      setListaUes([]);
+    }
+  };
 
-  const onClickVoltar = () => { };
+  const onChangeUe = codigo => {
+    setUeSelecionada(codigo);
+  };
 
-  const onClickCancelar = form => { };
+  const onClickVoltar = () => {};
 
-  const validaAntesDoSubmit = form => { };
+  const onClickCancelar = form => {};
 
-  const onSubmit = form => { };
+  const validaAntesDoSubmit = form => {};
+
+  const onSubmit = form => {};
 
   const criaBimestre = (form, descricao, chaveDataInicial, chaveDataFinal) => {
     return (
@@ -177,13 +239,14 @@ const PeriodoFechamentoAbertura = () => {
                         lista={listaCalendarioEscolar}
                         valueOption="id"
                         valueText="descricaoTipoCalendario"
-                        onChange={id => onchangeCalendarioEscolar(id, form)}
-                        valueSelect={calendarioEscolarSelecionado}
-                        disabled={false}
+                        onChange={id => onchangeTipoCalendarioEscolar(id, form)}
+                        valueSelect={tipoCalendarioSelecionado}
+                        disabled={desabilitarTipoCalendario}
                       />
                     </div>
                   </Loader>
-                </div><br />
+                </div>
+                <br />
                 <div className="col-md-6 pb-2">
                   <Loader loading={carregandoDres} tip="">
                     <SelectComponent
@@ -191,11 +254,11 @@ const PeriodoFechamentoAbertura = () => {
                       id="dre"
                       placeholder="Diretoria Regional de Educação (DRE)"
                       lista={listaDres}
-                      valueOption="valor"
-                      valueText="desc"
-                      onChange={id => onChangeDre()}
+                      valueOption="id"
+                      valueText="nome"
+                      onChange={id => onChangeDre(id)}
                       valueSelect={dreSelecionada}
-                      disabled={false}
+                      disabled={desabilitaDre}
                     />
                   </Loader>
                 </div>
@@ -206,54 +269,54 @@ const PeriodoFechamentoAbertura = () => {
                       id="ue"
                       placeholder="Unidade Escolar (UE)"
                       lista={listaUes}
-                      valueOption="value"
-                      valueText="desc"
-                      onChange={id => onChangeUe()}
-                      valueSelect={ueSlecionada}
-                      disabled={false}
+                      valueOption="codigo"
+                      valueText="nome"
+                      onChange={codigo => onChangeUe(codigo)}
+                      valueSelect={ueSelecionada}
+                      disabled={desabilitaUe}
                     />
                   </Loader>
                 </div>
               </div>
               {listaCalendarioEscolar &&
-                listaCalendarioEscolar.length &&
-                calendarioEscolarSelecionado ? (
-                  <>
-                    {criaBimestre(
-                      form,
-                      '1 ° Bimestre',
-                      chaveBimestre.primeiroInicio,
-                      chaveBimestre.primeiroFinal
-                    )}
-                    {criaBimestre(
-                      form,
-                      '2 ° Bimestre',
-                      chaveBimestre.segundoInicio,
-                      chaveBimestre.segundoFinal
-                    )}
+              listaCalendarioEscolar.length &&
+              tipoCalendarioSelecionado ? (
+                <>
+                  {criaBimestre(
+                    form,
+                    '1 ° Bimestre',
+                    chaveBimestre.primeiroInicio,
+                    chaveBimestre.primeiroFinal
+                  )}
+                  {criaBimestre(
+                    form,
+                    '2 ° Bimestre',
+                    chaveBimestre.segundoInicio,
+                    chaveBimestre.segundoFinal
+                  )}
 
-                    {ehTipoCalendarioAnual ? (
-                      <>
-                        {criaBimestre(
-                          form,
-                          '3 ° Bimestre',
-                          chaveBimestre.terceiroInicio,
-                          chaveBimestre.terceiroFinal
-                        )}
-                        {criaBimestre(
-                          form,
-                          '4 ° Bimestre',
-                          chaveBimestre.quartoInicio,
-                          chaveBimestre.quartoFinal
-                        )}
-                      </>
-                    ) : (
-                        ''
+                  {ehTipoCalendarioAnual ? (
+                    <>
+                      {criaBimestre(
+                        form,
+                        '3 ° Bimestre',
+                        chaveBimestre.terceiroInicio,
+                        chaveBimestre.terceiroFinal
                       )}
-                  </>
-                ) : (
-                  ''
-                )}
+                      {criaBimestre(
+                        form,
+                        '4 ° Bimestre',
+                        chaveBimestre.quartoInicio,
+                        chaveBimestre.quartoFinal
+                      )}
+                    </>
+                  ) : (
+                    ''
+                  )}
+                </>
+              ) : (
+                ''
+              )}
             </Form>
           )}
         </Formik>
