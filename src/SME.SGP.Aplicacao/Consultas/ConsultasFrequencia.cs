@@ -96,7 +96,12 @@ namespace SME.SGP.Aplicacao
                 // Indicativo de frequencia do aluno
                 registroFrequenciaAluno.IndicativoFrequencia = ObterIndicativoFrequencia(aluno, aula.DisciplinaId, bimestre, percentualAlerta, percentualCritico);
 
-                if (aula.PermiteRegistroFrequencia(turma))
+                var disciplinaAula = servicoEOL.ObterDisciplinasPorIds(new long[] { Convert.ToInt64(aula.DisciplinaId) });
+
+                if (disciplinaAula == null || disciplinaAula.ToList().Count <= 0)
+                    throw new NegocioException("Disciplina da aula não encontrada");
+
+                if (disciplinaAula.FirstOrDefault().RegistroFrequencia)
                 {
                     var ausenciasAluno = ausencias.Where(c => c.CodigoAluno == aluno.CodigoAluno);
 

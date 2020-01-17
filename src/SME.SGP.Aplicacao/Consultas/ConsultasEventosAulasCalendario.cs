@@ -91,7 +91,7 @@ namespace SME.SGP.Aplicacao
             .ForEach(x =>
             {
                 bool podeCriarAtividade = true;
-                var listaAtividades = atividades.Where(w => w.DataAvaliacao.Date == x.DataAula.Date && w.TurmaId == x.TurmaId 
+                var listaAtividades = atividades.Where(w => w.DataAvaliacao.Date == x.DataAula.Date && w.TurmaId == x.TurmaId
                 && PossuiDisciplinas(w.Id, x.DisciplinaId)).ToList();
                 var disciplina = disciplinasEol?.FirstOrDefault(d => d.CodigoComponenteCurricular.ToString().Equals(x.DisciplinaId));
                 var disciplinaCompartilhada = disciplinasEol?.FirstOrDefault(d => d.CodigoComponenteCurricular.ToString().Equals(x.DisciplinaCompartilhadaId));
@@ -126,6 +126,7 @@ namespace SME.SGP.Aplicacao
                         DisciplinaCompartilhada = $"{(disciplinaCompartilhada?.Nome ?? "Disciplina não encontrada")} ",
                         EhRegencia = disciplina.Regencia,
                         EhCompartilhada = disciplina.Compartilhada,
+                        PermiteRegistroFrequencia = disciplina.RegistroFrequencia,
                         podeCadastrarAvaliacao = podeCriarAtividade,
                         Horario = x.DataAula.ToString("hh:mm tt", CultureInfo.InvariantCulture),
                         Modalidade = turma?.Modalidade.GetAttribute<DisplayAttribute>().Name ?? "Modalidade",
