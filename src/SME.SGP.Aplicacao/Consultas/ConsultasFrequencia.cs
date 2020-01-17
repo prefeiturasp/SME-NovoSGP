@@ -74,6 +74,11 @@ namespace SME.SGP.Aplicacao
                                                     TipoParametroSistema.PercentualFrequenciaAlerta,
                                                     bimestre.PeriodoInicio.Year));
 
+            var disciplinaAula = servicoEOL.ObterDisciplinasPorIds(new long[] { Convert.ToInt64(aula.DisciplinaId) });
+
+            if (disciplinaAula == null || disciplinaAula.ToList().Count <= 0)
+                throw new NegocioException("Disciplina da aula não encontrada");
+
             foreach (var aluno in alunosDaTurma.Where(a => a.DeveMostrarNaChamada()))
             {
                 // Apos o bimestre da inatividade o aluno não aparece mais na lista de frequencia
@@ -95,11 +100,6 @@ namespace SME.SGP.Aplicacao
 
                 // Indicativo de frequencia do aluno
                 registroFrequenciaAluno.IndicativoFrequencia = ObterIndicativoFrequencia(aluno, aula.DisciplinaId, bimestre, percentualAlerta, percentualCritico);
-
-                var disciplinaAula = servicoEOL.ObterDisciplinasPorIds(new long[] { Convert.ToInt64(aula.DisciplinaId) });
-
-                if (disciplinaAula == null || disciplinaAula.ToList().Count <= 0)
-                    throw new NegocioException("Disciplina da aula não encontrada");
 
                 if (disciplinaAula.FirstOrDefault().RegistroFrequencia)
                 {
