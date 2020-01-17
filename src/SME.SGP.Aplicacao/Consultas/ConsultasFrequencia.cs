@@ -78,9 +78,9 @@ namespace SME.SGP.Aplicacao
 
                 alunosAusentesDto.Add(new AlunoAusenteDto()
                 {
-                    Id = long.Parse(alunoEOL.CodigoAluno),
+                    Id = alunoEOL.CodigoAluno,
                     Nome = alunoEOL.NomeAluno,
-                    QuantidadeFaltas = faltasNaoCompensadas,
+                    QuantidadeFaltasTotais = faltasNaoCompensadas,
                     MaximoCompensacoesPermitidas = quantidadeMaximaCompensacoes > faltasNaoCompensadas ? faltasNaoCompensadas : quantidadeMaximaCompensacoes,
                     Alerta = frequenciaAluno.PercentualFrequencia <= percentualFrequenciaAlerta
                 });

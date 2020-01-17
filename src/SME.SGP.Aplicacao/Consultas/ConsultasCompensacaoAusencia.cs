@@ -108,11 +108,14 @@ namespace SME.SGP.Aplicacao
                 if (alunoEol != null)
                 {
                     var alunoDto = MapearParaDtoAlunos(aluno);
-                    alunoDto.AlunoNome = alunoEol.NomeAluno;
+                    alunoDto.Nome = alunoEol.NomeAluno;
 
                     var frequenciaAluno = consultasFrequencia.ObterPorAlunoDisciplinaData(aluno.CodigoAluno, compensacao.DisciplinaId, DateTime.Now);
                     if (frequenciaAluno != null)
+                    {
                         alunoDto.QuantidadeFaltasTotais = frequenciaAluno.NumeroFaltasNaoCompensadas;
+                        alunoDto.PercentualFrequencia = frequenciaAluno.PercentualFrequencia;
+                    }
 
                     compensacaoDto.Alunos.Add(alunoDto);
                 }
@@ -147,7 +150,7 @@ namespace SME.SGP.Aplicacao
             new CompensacaoAusenciaAlunoCompletoDto()
             { 
                 Id = aluno.CodigoAluno,
-                QtdFaltasCompensadas = aluno.QuantidadeFaltasCompensadas
+                QuantidadeFaltasCompensadas = aluno.QuantidadeFaltasCompensadas
             };
 
         private CompensacaoAusenciaListagemDto MapearParaDto(CompensacaoAusencia compensacaoAusencia)
