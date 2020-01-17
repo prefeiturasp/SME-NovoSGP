@@ -7,18 +7,36 @@ import { CardTabelaAlunos } from '../styles';
 const ListaAlunos = props => {
   const { lista, idsAlunos, onSelectRow } = props;
 
+  const montaExibicaoPercentual = (frequencia, dadosAluno) => {
+    if (dadosAluno.alerta) {
+      return (
+        <>
+          {`${frequencia}% `}
+          <i
+            className="fas fa-exclamation-triangle"
+            style={{ color: '#b40c02' }}
+          />
+        </>
+      );
+    }
+    return frequencia ? `${frequencia}%` : '';
+  };
+
   const colunasListaAlunos = [
     {
       title: 'Nome',
       dataIndex: 'nome',
+      ellipsis: true,
     },
     {
       title: 'Frequência',
-      dataIndex: 'frequencia',
+      dataIndex: 'percentualFrequencia',
+      render: (frequencia, dadosAluno) =>
+        montaExibicaoPercentual(frequencia, dadosAluno),
     },
     {
       title: 'Faltas',
-      dataIndex: 'faltas',
+      dataIndex: 'quantidadeFaltasTotais',
     },
   ];
 
@@ -30,7 +48,6 @@ const ListaAlunos = props => {
       <DataTable
         scroll={{ y: 420 }}
         id="lista-alunos"
-        idLinha="alunoCodigo"
         selectedRowKeys={idsAlunos}
         onSelectRow={onSelectRowAlunos}
         columns={colunasListaAlunos}

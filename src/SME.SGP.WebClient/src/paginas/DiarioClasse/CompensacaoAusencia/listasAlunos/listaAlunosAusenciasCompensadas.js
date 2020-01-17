@@ -1,6 +1,7 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 import { DataTable } from '~/componentes';
+import SelectComponent from '~/componentes/select';
 
 import { CardTabelaAlunos } from '../styles';
 
@@ -9,16 +10,60 @@ const ListaAlunosAusenciasCompensadas = props => {
     listaAusenciaCompensada,
     idsAlunosAusenciaCompensadas,
     onSelectRow,
+    atualizarValoresListaCompensacao,
   } = props;
+
+  const atualizarValores = (qt, indexAluno) => {
+    if (indexAluno >= 0) {
+      const lista = listaAusenciaCompensada;
+      lista[indexAluno].quantidadeFaltasCompensadas = qt;
+      atualizarValoresListaCompensacao(lista);
+    }
+  };
+
+  const montaCompensacao = (qtCompensada, dadosAluno) => {
+    const listaMaximoCompensar = [];
+    const qtMaxima = dadosAluno.maximoCompensacoesPermitidas;
+    for (let index = 0; index < qtMaxima; index++) {
+      listaMaximoCompensar.push({
+        valor: String(index + 1),
+        descricao: String(index + 1),
+      });
+    }
+
+    return (
+      <SelectComponent
+        onChange={qt => {
+          const aluno = listaAusenciaCompensada.find(
+            item => item.id == dadosAluno.id
+          );
+          let indexAluno = null;
+          if (aluno) {
+            indexAluno = listaAusenciaCompensada.indexOf(aluno);
+          }
+          atualizarValores(qt, indexAluno);
+        }}
+        valueOption="valor"
+        valueText="descricao"
+        lista={listaMaximoCompensar}
+        valueSelect={qtCompensada || undefined}
+        placeholder="Faltas"
+      />
+    );
+  };
 
   const colunasListaAlunosAusenciaCompensada = [
     {
       title: 'Nome',
       dataIndex: 'nome',
+      ellipsis: true,
     },
     {
       title: 'Compensações',
-      dataIndex: 'qtdFaltasCompensadas',
+      dataIndex: 'quantidadeFaltasCompensadas',
+      render: (qtdFaltas, dadosAluno) => {
+        return montaCompensacao(qtdFaltas, dadosAluno);
+      },
     },
   ];
 
@@ -31,7 +76,6 @@ const ListaAlunosAusenciasCompensadas = props => {
       <DataTable
         scroll={{ y: 420 }}
         id="lista-alunos-ausencia-compensada"
-        idLinha="alunoCodigo"
         selectedRowKeys={idsAlunosAusenciaCompensadas}
         onSelectRow={onSelectRowAlunos}
         columns={colunasListaAlunosAusenciaCompensada}
@@ -54,12 +98,14 @@ ListaAlunosAusenciasCompensadas.propTypes = {
     PropTypes.string,
   ]),
   onSelectRow: PropTypes.func,
+  atualizarValoresListaCompensacao: PropTypes.func,
 };
 
 ListaAlunosAusenciasCompensadas.defaultProps = {
   listaAusenciaCompensada: [],
   idsAlunosAusenciaCompensadas: [],
   onSelectRow: () => {},
+  atualizarValoresListaCompensacao: () => {},
 };
 
 export default ListaAlunosAusenciasCompensadas;
