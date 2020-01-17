@@ -6,7 +6,7 @@ namespace SME.SGP.Infra
 {
     public class CompensacaoAusenciaAlunoDto
     {
-        public string AlunoCodigo { get; set; }
+        public string Id { get; set; }
         public int QtdFaltasCompensadas { get; set; }
     }
 }
