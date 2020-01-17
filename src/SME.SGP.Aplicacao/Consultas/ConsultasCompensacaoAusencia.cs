@@ -18,6 +18,7 @@ namespace SME.SGP.Aplicacao
         private readonly IConsultasCompensacaoAusenciaDisciplinaRegencia consultasCompensacaoAusenciaDisciplinaRegencia;
         private readonly IConsultasFrequencia consultasFrequencia;
         private readonly IRepositorioTurma repositorioTurma;
+        private readonly IRepositorioParametrosSistema repositorioParametrosSistema;
         private readonly IServicoEOL servicoEOL;
 
         public ConsultasCompensacaoAusencia(IRepositorioCompensacaoAusencia repositorioCompensacaoAusencia, 
@@ -25,6 +26,7 @@ namespace SME.SGP.Aplicacao
                                             IConsultasCompensacaoAusenciaDisciplinaRegencia consultasCompensacaoAusenciaDisciplinaRegencia,
                                             IConsultasFrequencia consultasFrequencia,
                                             IRepositorioTurma repositorioTurma,
+                                            IRepositorioParametrosSistema repositorioParametrosSistema,
                                             IServicoEOL servicoEOL, 
                                             IContextoAplicacao contextoAplicacao) : base(contextoAplicacao)
         {
@@ -33,6 +35,7 @@ namespace SME.SGP.Aplicacao
             this.consultasCompensacaoAusenciaDisciplinaRegencia = consultasCompensacaoAusenciaDisciplinaRegencia ?? throw new ArgumentNullException(nameof(consultasCompensacaoAusenciaDisciplinaRegencia));
             this.consultasFrequencia = consultasFrequencia ?? throw new ArgumentNullException(nameof(consultasFrequencia));
             this.repositorioTurma = repositorioTurma ?? throw new ArgumentNullException(nameof(repositorioTurma));
+            this.repositorioParametrosSistema = repositorioParametrosSistema ?? throw new ArgumentNullException(nameof(repositorioParametrosSistema));
             this.servicoEOL = servicoEOL ?? throw new ArgumentNullException(nameof(servicoEOL));
         }
 
@@ -101,6 +104,13 @@ namespace SME.SGP.Aplicacao
             if (alunos == null)
                 throw new NegocioException("Alunos não localizados para a turma.");
 
+            var disciplinasEOL = servicoEOL.ObterDisciplinasPorIds(new long[] { long.Parse(compensacao.DisciplinaId) });
+            if (disciplinasEOL == null || !disciplinasEOL.Any())
+                throw new NegocioException("Disciplina informada na compensação não localizada no EOL.");
+
+            var quantidadeMaximaCompensacoes = int.Parse(repositorioParametrosSistema.ObterValorPorTipoEAno(TipoParametroSistema.QuantidadeMaximaCompensacaoAusencia));
+            var percentualFrequenciaAlerta = int.Parse(repositorioParametrosSistema.ObterValorPorTipoEAno(disciplinasEOL.First().Regencia ? TipoParametroSistema.CompensacaoAusenciaPercentualRegenciaClasse : TipoParametroSistema.CompensacaoAusenciaPercentualFund2));
+
             foreach (var aluno in compensacao.Alunos)
             {
                 // Adiciona nome do aluno no Dto de retorno
@@ -113,17 +123,15 @@ namespace SME.SGP.Aplicacao
                     var frequenciaAluno = consultasFrequencia.ObterPorAlunoDisciplinaData(aluno.CodigoAluno, compensacao.DisciplinaId, DateTime.Now);
                     if (frequenciaAluno != null)
                     {
-                        alunoDto.QuantidadeFaltasTotais = frequenciaAluno.NumeroFaltasNaoCompensadas;
+                        alunoDto.QuantidadeFaltasTotais = int.Parse((frequenciaAluno.NumeroFaltasNaoCompensadas + alunoDto.QuantidadeFaltasCompensadas).ToString());
                         alunoDto.PercentualFrequencia = frequenciaAluno.PercentualFrequencia;
+                        alunoDto.MaximoCompensacoesPermitidas = quantidadeMaximaCompensacoes > alunoDto.QuantidadeFaltasTotais ? alunoDto.QuantidadeFaltasTotais : quantidadeMaximaCompensacoes;
+                        alunoDto.Alerta = frequenciaAluno.PercentualFrequencia <= percentualFrequenciaAlerta;
                     }
 
                     compensacaoDto.Alunos.Add(alunoDto);
                 }
             }
-
-            var disciplinasEOL = servicoEOL.ObterDisciplinasPorIds(new long[] { long.Parse(compensacao.DisciplinaId) });
-            if (disciplinasEOL == null || !disciplinasEOL.Any())
-                throw new NegocioException("Disciplina vinculada a compensação não localizada no EOL.");
 
             if (disciplinasEOL.First().Regencia)
             {
@@ -173,7 +181,15 @@ namespace SME.SGP.Aplicacao
                 Atividade = compensacaoAusencia.Nome,
                 Descricao = compensacaoAusencia.Descricao,
                 DisciplinasRegencia = new List<DisciplinaNomeDto>(),
-                Alunos = new List<CompensacaoAusenciaAlunoCompletoDto>()
+                Alunos = new List<CompensacaoAusenciaAlunoCompletoDto>(),
+
+                CriadoPor = compensacaoAusencia.CriadoPor,
+                CriadoRf = compensacaoAusencia.CriadoRF,
+                CriadoEm = compensacaoAusencia.CriadoEm,
+                AlteradoPor = compensacaoAusencia.AlteradoPor,
+                AlteradoRf = compensacaoAusencia.AlteradoRF,
+                AlteradoEm = compensacaoAusencia.AlteradoEm,
+                Migrado = compensacaoAusencia.Migrado
             };
     }
 }
