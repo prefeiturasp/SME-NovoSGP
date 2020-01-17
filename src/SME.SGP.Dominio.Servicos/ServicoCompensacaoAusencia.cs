@@ -97,7 +97,22 @@ namespace SME.SGP.Dominio.Servicos
         private PeriodoEscolarDto BuscaPeriodo(int anoLetivo, Modalidade modalidadeCodigo, int bimestre, int semestre)
         {
             var tipoCalendario = repositorioTipoCalendario.BuscarPorAnoLetivoEModalidade(anoLetivo, modalidadeCodigo == Modalidade.EJA ? ModalidadeTipoCalendario.EJA : ModalidadeTipoCalendario.FundamentalMedio);
-            var periodo = consultasPeriodoEscolar.ObterPorTipoCalendario(tipoCalendario.Id).Periodos.FirstOrDefault(p => p.Bimestre == bimestre);
+
+            PeriodoEscolarDto periodo = null;
+            // Eja possui 2 calendarios por ano
+            if (modalidadeCodigo == Modalidade.EJA)
+            {
+                if (semestre == 1)
+                    periodo = consultasPeriodoEscolar.ObterPorTipoCalendario(tipoCalendario.Id).Periodos
+                        .FirstOrDefault(p => p.Bimestre == bimestre && p.PeriodoInicio < new DateTime(anoLetivo, 6, 1));
+                else
+                    periodo = consultasPeriodoEscolar.ObterPorTipoCalendario(tipoCalendario.Id).Periodos
+                        .FirstOrDefault(p => p.Bimestre == bimestre && p.PeriodoFim > new DateTime(anoLetivo, 6, 1));
+            }
+            else
+                periodo = consultasPeriodoEscolar.ObterPorTipoCalendario(tipoCalendario.Id).Periodos
+                    .FirstOrDefault(p => p.Bimestre == bimestre);
+
             // TODO alterar verificação para checagem de periodo de fechamento e reabertura do fechamento depois de implementado
             if (DateTime.Now < periodo.PeriodoInicio || DateTime.Now > periodo.PeriodoFim)
                 throw new NegocioException($"Período do {bimestre}º Bimestre não esta aberto");
