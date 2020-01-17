@@ -1,4 +1,5 @@
-﻿using SME.SGP.Dominio.Interfaces;
+﻿using SME.SGP.Aplicacao.Interfaces;
+using SME.SGP.Dominio.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,27 +12,38 @@ namespace SME.SGP.Dominio.Servicos
         private readonly IRepositorioFrequenciaAlunoDisciplinaPeriodo repositorioFrequenciaAlunoDisciplinaPeriodo;
         private readonly IRepositorioRegistroAusenciaAluno repositorioRegistroAusenciaAluno;
         private readonly IRepositorioCompensacaoAusenciaAluno repositorioCompensacaoAusenciaAluno;
+        private readonly IComandosProcessoExecutando comandosProcessoExecutando;
 
         public ServicoCalculoFrequencia(IRepositorioAula repositorioAula,
                                         IRepositorioRegistroAusenciaAluno repositorioRegistroAusenciaAluno,
                                         IRepositorioFrequenciaAlunoDisciplinaPeriodo repositorioFrequenciaAlunoDisciplinaPeriodo,
-                                        IRepositorioCompensacaoAusenciaAluno repositorioCompensacaoAusenciaAluno)
+                                        IRepositorioCompensacaoAusenciaAluno repositorioCompensacaoAusenciaAluno,
+                                        IComandosProcessoExecutando comandosProcessoExecutando)
         {
             this.repositorioAula = repositorioAula ?? throw new ArgumentNullException(nameof(repositorioAula));
             this.repositorioRegistroAusenciaAluno = repositorioRegistroAusenciaAluno ?? throw new ArgumentNullException(nameof(repositorioRegistroAusenciaAluno));
             this.repositorioFrequenciaAlunoDisciplinaPeriodo = repositorioFrequenciaAlunoDisciplinaPeriodo ?? throw new ArgumentNullException(nameof(repositorioFrequenciaAlunoDisciplinaPeriodo));
             this.repositorioCompensacaoAusenciaAluno = repositorioCompensacaoAusenciaAluno ?? throw new ArgumentNullException(nameof(repositorioCompensacaoAusenciaAluno));
+            this.comandosProcessoExecutando = comandosProcessoExecutando ?? throw new ArgumentNullException(nameof(comandosProcessoExecutando));
         }
 
         public void CalcularFrequenciaPorTurma(IEnumerable<string> alunos, DateTime dataAula, string turmaId, string disciplinaId)
         {
-            var totalAulasNaDisciplina = repositorioRegistroAusenciaAluno.ObterTotalAulasPorDisciplinaETurma(dataAula, disciplinaId, turmaId);
-            var totalAulasDaTurmaGeral = repositorioRegistroAusenciaAluno.ObterTotalAulasPorDisciplinaETurma(dataAula, string.Empty, turmaId);
-
-            foreach (var codigoAluno in alunos)
+            comandosProcessoExecutando.IncluirCalculoFrequencia(turmaId, disciplinaId);
+            try
             {
-                RegistraFrequenciaPorDisciplina(turmaId, disciplinaId, dataAula, totalAulasNaDisciplina, codigoAluno);
-                RegistraFrequenciaGeral(turmaId, dataAula, codigoAluno, totalAulasDaTurmaGeral);
+                var totalAulasNaDisciplina = repositorioRegistroAusenciaAluno.ObterTotalAulasPorDisciplinaETurma(dataAula, disciplinaId, turmaId);
+                var totalAulasDaTurmaGeral = repositorioRegistroAusenciaAluno.ObterTotalAulasPorDisciplinaETurma(dataAula, string.Empty, turmaId);
+
+                foreach (var codigoAluno in alunos)
+                {
+                    RegistraFrequenciaPorDisciplina(turmaId, disciplinaId, dataAula, totalAulasNaDisciplina, codigoAluno);
+                    RegistraFrequenciaGeral(turmaId, dataAula, codigoAluno, totalAulasDaTurmaGeral);
+                }
+            }
+            finally
+            {
+                comandosProcessoExecutando.ExcluirCalculoFrequencia(turmaId, disciplinaId);
             }
         }
 
