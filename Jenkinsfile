@@ -1,3 +1,5 @@
+//Elaborado para SME
+
 pipeline {
     agent {
       node { 
