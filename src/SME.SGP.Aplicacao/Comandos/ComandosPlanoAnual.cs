@@ -42,42 +42,38 @@ namespace SME.SGP.Aplicacao
         public async Task Migrar(MigrarPlanoAnualDto migrarPlanoAnualDto)
         {
             var planoAnualDto = migrarPlanoAnualDto.PlanoAnual;
-            var usuarioAtual = servicoUsuario.ObterUsuarioLogado().Result;
+            var planoCopia = new PlanoAnualDto(
+                planoAnualDto.AnoLetivo,
+                planoAnualDto.Bimestres,
+                planoAnualDto.EscolaId,
+                planoAnualDto.Id,
+                planoAnualDto.TurmaId,
+                planoAnualDto.ComponenteCurricularEolId);
 
             unitOfWork.IniciarTransacao();
 
-            foreach (var bimestrePlanoAnual in planoAnualDto.Bimestres)
+            foreach (var bimestrePlanoAnual in migrarPlanoAnualDto.BimestresDestino.OrderBy(c => c))
             {
-                var planoAnualOrigem = ObterPlanoAnualSimplificado(planoAnualDto, bimestrePlanoAnual.Bimestre.Value);
+                var planoAnualOrigem = ObterPlanoAnualSimplificado(planoAnualDto, bimestrePlanoAnual);
 
                 if (planoAnualOrigem == null)
                     throw new NegocioException("Plano anual de origem não encontrado");
 
-                await ValidaTurmasProfessor(migrarPlanoAnualDto, planoAnualDto);
-
+                var bimestreAtual = planoAnualDto.Bimestres.FirstOrDefault(c => c.Bimestre == bimestrePlanoAnual);
                 foreach (var turmaId in migrarPlanoAnualDto.IdsTurmasDestino)
                 {
-                    var planoCopia = new PlanoAnualDto(
-                        planoAnualDto.AnoLetivo,
-                        planoAnualDto.Bimestres,
-                        planoAnualDto.EscolaId,
-                        planoAnualDto.Id,
-                        planoAnualDto.TurmaId,
-                        planoAnualDto.ComponenteCurricularEolId);
-
                     planoCopia.TurmaId = turmaId;
 
-                    var planoAnual = ObterPlanoAnualSimplificado(planoCopia, bimestrePlanoAnual.Bimestre.Value);
+                    var planoAnual = ObterPlanoAnualSimplificado(planoCopia, bimestrePlanoAnual);
 
                     if (planoAnual == null)
-                        planoAnual = MapearParaDominio(planoCopia, planoAnual, bimestrePlanoAnual);
+                        planoAnual = MapearParaDominio(planoCopia, planoAnual, bimestrePlanoAnual, bimestreAtual.Descricao);
 
                     planoAnual.Descricao = planoAnualOrigem.Descricao;
-                    Salvar(planoCopia, planoAnual, bimestrePlanoAnual, usuarioAtual);
-
-                    unitOfWork.PersistirTransacao();
+                    Salvar(planoCopia, planoAnual, bimestreAtual);
                 }
             }
+            unitOfWork.PersistirTransacao();
         }
 
         public void Salvar(PlanoAnualDto planoAnualDto)
@@ -85,12 +81,20 @@ namespace SME.SGP.Aplicacao
             unitOfWork.IniciarTransacao();
 
             var usuarioAtual = servicoUsuario.ObterUsuarioLogado().Result;
-
+            if (string.IsNullOrWhiteSpace(usuarioAtual.CodigoRf))
+            {
+                throw new NegocioException("Não foi possível obter o RF do usuário.");
+            }
             foreach (var bimestrePlanoAnual in planoAnualDto.Bimestres)
             {
                 PlanoAnual planoAnual = ObterPlanoAnualSimplificado(planoAnualDto, bimestrePlanoAnual.Bimestre.Value);
-                planoAnual = MapearParaDominio(planoAnualDto, planoAnual, bimestrePlanoAnual);
-                Salvar(planoAnualDto, planoAnual, bimestrePlanoAnual, usuarioAtual);
+                if (planoAnual != null)
+                {
+                    if (usuarioAtual.PerfilAtual == Perfis.PERFIL_PROFESSOR && !servicoEOL.ProfessorPodePersistirTurma(usuarioAtual.CodigoRf, planoAnualDto.TurmaId.ToString(), DateTime.Now).Result)
+                        throw new NegocioException("Você não pode fazer alterações ou inclusões nesta turma e data.");
+                }
+                planoAnual = MapearParaDominio(planoAnualDto, planoAnual, bimestrePlanoAnual.Bimestre.Value, bimestrePlanoAnual.Descricao);
+                Salvar(planoAnualDto, planoAnual, bimestrePlanoAnual);
             }
 
             unitOfWork.PersistirTransacao();
@@ -136,15 +140,15 @@ namespace SME.SGP.Aplicacao
             }
         }
 
-        private PlanoAnual MapearParaDominio(PlanoAnualDto planoAnualDto, PlanoAnual planoAnual, BimestrePlanoAnualDto bimestrePlanoAnual)
+        private PlanoAnual MapearParaDominio(PlanoAnualDto planoAnualDto, PlanoAnual planoAnual, int bimestre, string descricao)
         {
             if (planoAnual == null)
             {
                 planoAnual = new PlanoAnual();
             }
             planoAnual.Ano = planoAnualDto.AnoLetivo.Value;
-            planoAnual.Bimestre = bimestrePlanoAnual.Bimestre.Value;
-            planoAnual.Descricao = bimestrePlanoAnual.Descricao;
+            planoAnual.Bimestre = bimestre;
+            planoAnual.Descricao = descricao;
             planoAnual.EscolaId = planoAnualDto.EscolaId;
             planoAnual.TurmaId = planoAnualDto.TurmaId.Value;
             planoAnual.ComponenteCurricularEolId = planoAnualDto.ComponenteCurricularEolId;
@@ -196,14 +200,8 @@ namespace SME.SGP.Aplicacao
             }
         }
 
-        private void Salvar(PlanoAnualDto planoAnualDto, PlanoAnual planoAnual, BimestrePlanoAnualDto bimestrePlanoAnualDto, Usuario usuario)
+        private void Salvar(PlanoAnualDto planoAnualDto, PlanoAnual planoAnual, BimestrePlanoAnualDto bimestrePlanoAnualDto)
         {
-            if (usuario.PerfilAtual == Perfis.PERFIL_PROFESSOR)
-            {
-                if (!servicoEOL.ProfessorPodePersistirTurma(usuario.CodigoRf, planoAnualDto.TurmaId.ToString(), DateTime.Now))
-                    throw new NegocioException("Você não pode fazer alterações ou inclusões nesta turma e data.");
-            }
-
             planoAnualDto.Id = repositorioPlanoAnual.Salvar(planoAnual);
             if (!planoAnual.Migrado)
                 AjustarObjetivosAprendizagem(planoAnualDto, bimestrePlanoAnualDto);
@@ -226,9 +224,9 @@ namespace SME.SGP.Aplicacao
             });
         }
 
-        private async Task ValidaTurmasProfessor(MigrarPlanoAnualDto migrarPlanoAnualDto, PlanoAnualDto planoAnualDto)
+        private async Task ValidaTurmasProfessor(MigrarPlanoAnualDto migrarPlanoAnualDto, PlanoAnualDto planoAnualDto, string codigoRF)
         {
-            var turmasAtribuidasAoProfessor = await consultasProfessor.ObterTurmasAtribuidasAoProfessorPorEscolaEAnoLetivo(migrarPlanoAnualDto.RFProfessor, planoAnualDto.EscolaId, planoAnualDto.AnoLetivo.Value);
+            var turmasAtribuidasAoProfessor = await consultasProfessor.ObterTurmasAtribuidasAoProfessorPorEscolaEAnoLetivo(codigoRF, planoAnualDto.EscolaId, planoAnualDto.AnoLetivo.Value);
             var idsTurmasProfessor = turmasAtribuidasAoProfessor?.Select(c => c.CodigoTurma).ToList();
 
             if (idsTurmasProfessor == null || migrarPlanoAnualDto.IdsTurmasDestino.Any(c => !idsTurmasProfessor.Contains(c)))

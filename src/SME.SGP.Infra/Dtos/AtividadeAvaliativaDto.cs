@@ -19,7 +19,8 @@ namespace SME.SGP.Infra
         public string[] DisciplinaContidaRegenciaId { get; set; }
 
         [Required(ErrorMessage = "A Disciplina da atividade avaliativa deve ser informada.")]
-        public long DisciplinaId { get; set; }
+        [ListaTemElementos(ErrorMessage = "É necessário informar ao menos uma disciplina")]
+        public string[] DisciplinasId { get; set; }
 
         [Required(ErrorMessage = "A Dre da atividade avaliativa deve ser informado.")]
         [MaxLength(15, ErrorMessage = "A Dre deve conter no máximo 15 caracteres.")]

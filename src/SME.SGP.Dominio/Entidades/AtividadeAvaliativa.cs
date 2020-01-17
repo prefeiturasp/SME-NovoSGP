@@ -9,8 +9,8 @@ namespace SME.SGP.Dominio
         public CategoriaAtividadeAvaliativa Categoria { get; set; }
         public DateTime DataAvaliacao { get; set; }
         public string DescricaoAvaliacao { get; set; }
-        public long DisciplinaId { get; set; }
         public string DreId { get; set; }
+        public bool EhCj { get; set; }
         public bool EhRegencia { get; set; }
         public bool Excluido { get; set; }
         public string NomeAvaliacao { get; set; }
@@ -35,6 +35,16 @@ namespace SME.SGP.Dominio
             if (Excluido)
                 throw new NegocioException("Esta avaliação já está excluida.");
             Excluido = true;
+        }
+
+        public void PodeSerAlterada(Usuario usuario)
+        {
+            if (EhCj)
+            {
+                if (usuario.EhProfessor() || usuario.EhProfessorCj())
+                    if (usuario.CodigoRf != this.CriadoRF)
+                        throw new NegocioException("Você não pode alterar esta Atividade Avaliativa.");
+            }
         }
     }
 }
