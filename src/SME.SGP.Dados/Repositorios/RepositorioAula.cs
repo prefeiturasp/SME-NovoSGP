@@ -32,6 +32,24 @@ namespace SME.SGP.Dados.Repositorios
             });
         }
 
+        public async Task<AulaConsultaDto> ObterAulaIntervaloTurmaDisciplina(DateTime dataInicio, DateTime dataFim, string turmaId, string disciplinaId)
+        {
+            var query = @"select *
+                 from aula
+                where not excluido
+                  and DATE(data_aula) between @dataInicio and @dataFim
+                  and turma_id = @turmaId
+                  and disciplina_id = @disciplinaId";
+
+            return await database.Conexao.QueryFirstOrDefaultAsync<AulaConsultaDto>(query, new
+            {
+                dataInicio = dataInicio.Date,
+                dataFim = dataFim.Date,
+                turmaId,
+                disciplinaId
+            });
+        }
+
         public async Task<IEnumerable<AulaDto>> ObterAulas(long tipoCalendarioId, string turmaId, string ueId, string codigoRf, int? mes = null, int? semanaAno = null, string disciplinaId = null)
         {
             StringBuilder query = new StringBuilder();
@@ -39,6 +57,15 @@ namespace SME.SGP.Dados.Repositorios
             query.AppendLine("FROM public.aula a");
             MontaWhere(query, tipoCalendarioId, turmaId, ueId, mes, null, codigoRf, disciplinaId, semanaAno);
             return (await database.Conexao.QueryAsync<AulaDto>(query.ToString(), new { tipoCalendarioId, turmaId, ueId, codigoRf, mes, semanaAno, disciplinaId }));
+        }
+
+        public async Task<IEnumerable<AulaDto>> ObterAulas(string turmaId, string ueId, string codigoRf, DateTime? data, string[] disciplinasId)
+        {
+            StringBuilder query = new StringBuilder();
+            MontaCabecalho(query);
+            query.AppendLine("FROM public.aula a");
+            MontaWhere(query, null, turmaId, ueId, null, data, codigoRf, null, null,disciplinasId);
+            return (await database.Conexao.QueryAsync<AulaDto>(query.ToString(), new { turmaId, ueId, data, codigoRf, disciplinasId }));
         }
 
         public async Task<IEnumerable<AulaDto>> ObterAulas(long tipoCalendarioId, string turmaId, string ueId, string CodigoRf)
@@ -76,6 +103,7 @@ namespace SME.SGP.Dados.Repositorios
                 data = data.HasValue ? data.Value.Date : data
             }));
         }
+
 
         public async Task<IEnumerable<AulaCompletaDto>> ObterAulasCompleto(long tipoCalendarioId, string turmaId, string ueId, DateTime data, Guid perfil, string CodigoRf)
         {
@@ -290,6 +318,7 @@ namespace SME.SGP.Dados.Repositorios
             query.AppendLine("a.aula_pai_id,");
             query.AppendLine("a.ue_id,");
             query.AppendLine("a.disciplina_id,");
+            query.AppendLine("a.disciplina_compartilhada_id,");
             query.AppendLine("a.turma_id,");
             query.AppendLine("a.tipo_calendario_id,");
             query.AppendLine("a.professor_rf,");
@@ -334,7 +363,7 @@ namespace SME.SGP.Dados.Repositorios
             query.AppendLine("a.migrado;");
         }
 
-        private static void MontaWhere(StringBuilder query, long? tipoCalendarioId, string turmaId, string ueId, int? mes = null, DateTime? data = null, string codigoRf = null, string disciplinaId = null, int? semanaAno = null)
+        private static void MontaWhere(StringBuilder query, long? tipoCalendarioId, string turmaId, string ueId, int? mes = null, DateTime? data = null, string codigoRf = null, string disciplinaId = null, int? semanaAno = null, string[] disciplinasId = null)
         {
             query.AppendLine("WHERE a.excluido = false");
             query.AppendLine("AND a.status <> 3");
@@ -355,6 +384,8 @@ namespace SME.SGP.Dados.Repositorios
                 query.AppendLine("AND a.professor_rf = @CodigoRf");
             if (!string.IsNullOrEmpty(disciplinaId))
                 query.AppendLine("AND a.disciplina_id = @disciplinaId");
+            if (disciplinasId != null && disciplinasId.Length > 0)
+                query.AppendLine("AND a.disciplina_id = ANY(@disciplinasId)");
         }
     }
 }

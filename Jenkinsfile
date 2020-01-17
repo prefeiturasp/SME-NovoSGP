@@ -7,20 +7,16 @@ pipeline {
     
     options {
       buildDiscarder(logRotator(numToKeepStr: '5', artifactNumToKeepStr: '5'))
-      disableConcurrentBuilds()              
+      disableConcurrentBuilds()
+      skipDefaultCheckout()  
     }
     
         
     stages {
       stage('CheckOut') {
         steps {
-          git 'https://github.com/prefeiturasp/SME-NovoSGP.git'
-          //checkout scm  
-          //sh 'ls -la'
-          sh "echo MINHA BRANCH É ${GIT_BRANCH}"
-          //sh 'printenv'
-            
-            
+          
+          checkout scm  
         }
       }
       
@@ -57,10 +53,10 @@ pipeline {
         steps {
           
           //Execuita os testes gerando um relatorio formato trx
-          //sh 'dotnet test --logger "trx;LogFileName=TestResults.trx"'
+            //sh 'dotnet test --logger "trx;LogFileName=TestResults.trx"'
             sh 'echo executando testes'
           //Publica o relatorio de testes
-          //mstest()
+           // mstest()
           
         }
      }
@@ -135,7 +131,7 @@ pipeline {
                //  withCredentials([string(credentialsId: 'webhook-backend', variable: 'WH-teams')]) {
                //  office365ConnectorSend color: '008000', message: "O Build ${BUILD_DISPLAY_NAME} - Requer uma aprovação para deploy !!!", status: 'SUCESSO', webhookUrl: '$WH-teams'
                //}
-                 telegramSend("${JOB_NAME}...O Build ${BUILD_DISPLAY_NAME} - Requer uma aprovação para deploy !!!\nBranch name: ${GIT_BRANCH}\n Consulte o log para detalhes -> [Job logs](${env.BUILD_URL}console)\n")
+                 telegramSend("${JOB_NAME}...O Build ${BUILD_DISPLAY_NAME} - Requer uma aprovação para deploy !!!\n Consulte o log para detalhes -> [Job logs](${env.BUILD_URL}console)\n")
                  input message: 'Deseja realizar o deploy?', ok: 'SIM', submitter: 'marcos_costa,danieli_paula,everton_nogueira'
             }
                  sh 'echo Deploying homologacao'

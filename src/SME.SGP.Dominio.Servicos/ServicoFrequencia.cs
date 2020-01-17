@@ -90,6 +90,8 @@ namespace SME.SGP.Dominio.Servicos
 
         public async Task Registrar(long aulaId, IEnumerable<RegistroAusenciaAluno> registroAusenciaAlunos)
         {
+            var usuario = await servicoUsuario.ObterUsuarioLogado();
+
             var aula = ObterAula(aulaId);
             var turma = ObterTurma(aula.TurmaId);
 
@@ -98,8 +100,9 @@ namespace SME.SGP.Dominio.Servicos
                 throw new NegocioException("Não é permitido registro de frequência para este componente curricular.");
             }
 
-            var usuario = await servicoUsuario.ObterUsuarioLogado();
-            await ValidaSeUsuarioPodeCriarAula(aula, usuario);
+            ValidaSeUsuarioPodeCriarAula(aula, usuario);
+            ValidaProfessorPodePersistirTurma(aula.TurmaId, usuario.CodigoRf, aula.DataAula);
+
             var alunos = await ObterAlunos(aula);
 
             var registroFrequencia = repositorioFrequencia.ObterRegistroFrequenciaPorAulaId(aulaId);
@@ -180,7 +183,13 @@ namespace SME.SGP.Dominio.Servicos
             return registroFrequencia;
         }
 
-        private async Task ValidaSeUsuarioPodeCriarAula(Aula aula, Usuario usuario)
+        private async void ValidaProfessorPodePersistirTurma(string turmaId, string codigoRf, DateTime dataAula)
+        {
+            if (!await servicoEOL.ProfessorPodePersistirTurma(codigoRf, turmaId, dataAula.Local()))
+                throw new NegocioException("Você não pode fazer alterações ou inclusões nesta turma e data.");
+        }
+
+        private void ValidaSeUsuarioPodeCriarAula(Aula aula, Usuario usuario)
         {
             if (!usuario.PodeRegistrarFrequencia(aula))
             {

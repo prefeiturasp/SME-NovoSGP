@@ -1,15 +1,26 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import CKEditor from '@ckeditor/ckeditor5-react';
 import ClassicEditor from '@ckeditor/ckeditor5-build-classic';
 import '@ckeditor/ckeditor5-build-classic/build/translations/pt-br';
 
 export default function Editor(props) {
   const { onChange, inicial } = props;
+
   return (
     <CKEditor
       editor={ClassicEditor}
       config={{
         language: 'pt-br',
+        removePlugins: [
+          'Image',
+          'ImageCaption',
+          'ImageStyle',
+          'ImageToolbar',
+          'Indent',
+          'IndentToolbar',
+          'IndentStyle',
+          'Outdent',
+        ],
       }}
       data={inicial || ''}
       onChange={(event, editor) => {

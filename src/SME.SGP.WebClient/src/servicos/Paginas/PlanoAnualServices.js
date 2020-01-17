@@ -204,7 +204,7 @@ const Service = {
       DTO.ComponenteCurricularEolId === '' ||
       typeof DTO.ComponenteCurricularEolId === 'undefined'
     )
-      Erros.push('Disciplina do plano anual não informada');
+      Erros.push('Componente curricular do plano anual não informada');
 
     if (
       !DTO.EscolaId ||

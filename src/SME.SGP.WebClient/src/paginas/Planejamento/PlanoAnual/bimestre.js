@@ -10,7 +10,6 @@ import { erros as mostrarErros } from '~/servicos/alertas';
 const Bimestre = ({
   bimestre,
   disciplinas,
-  regencia,
   ano,
   erros,
   ehEja,
@@ -152,7 +151,7 @@ const Bimestre = ({
             erros.map(e => <Erro key={e}>{e}</Erro>)}
           {!layoutEspecial && (
             <h6 className="d-inline-block font-weight-bold my-0 fonte-14 mb-2">
-              Objetivos de aprendizagem
+              Objetivos de Aprendizagem e Desenvolvimento
             </h6>
           )}
           <div className="mt-3">
@@ -196,7 +195,7 @@ const Bimestre = ({
         <Grid cols={layoutEspecial ? 12 : 6}>
           {!layoutEspecial && (
             <h6 className="d-inline-block font-weight-bold my-0 fonte-14">
-              Objetivos de aprendizagem e meus objetivos (Currículo da cidade)
+              Objetivos de Aprendizagem e Desenvolvimento/Objetivos específicos
             </h6>
           )}
           <div
@@ -296,4 +295,5 @@ const Bimestre = ({
     </Loader>
   );
 };
+
 export default Bimestre;
