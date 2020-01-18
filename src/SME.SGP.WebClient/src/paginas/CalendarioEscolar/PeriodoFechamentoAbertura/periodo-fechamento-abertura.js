@@ -12,9 +12,11 @@ import {
 } from './periodo-fechamento-abertura.css';
 import api from '~/servicos/api';
 import periodo from '~/dtos/periodo';
-import { CampoData, Loader, momentSchema } from '~/componentes';
+import { CampoData, Loader, momentSchema, Auditoria } from '~/componentes';
 import FiltroHelper from '~/componentes-sgp/filtro/helper';
 import tipoEscolaDTO from '~/dtos/tipoEscolaDto';
+import history from '~/servicos/history';
+import { URL_HOME } from '~/constantes/url';
 
 const PeriodoFechamentoAbertura = () => {
   const [listaTipoCalendarioEscolar, setListaTipoCalendarioEscolar] = useState(
@@ -61,6 +63,9 @@ const PeriodoFechamentoAbertura = () => {
   const [desabilitaDre, setDesabilitaDre] = useState(false);
   const [desabilitaUe, setDesabilitaUe] = useState(false);
   const [anoLetivo, setAnoLetivo] = useState(new Date().getFullYear());
+  const [modoEdicao, setModoEdicao] = useState(false);
+  const [periodos, setPeriodos] = useState([]);
+  const [auditoria, setAuditoria] = useState([]);
 
   useEffect(() => {
     async function consultaTipos() {
@@ -107,7 +112,9 @@ const PeriodoFechamentoAbertura = () => {
     carregarDres();
   }, []);
 
-  const onChangeCamposData = valor => {};
+  const onChangeCamposData = valor => {
+    setModoEdicao(true);
+  };
 
   const validacaoAnoLetivo = () => {
     return momentSchema.test({
@@ -245,11 +252,32 @@ const PeriodoFechamentoAbertura = () => {
     setUeSelecionada(codigo);
   };
 
-  const onClickVoltar = () => {};
+  const onClickVoltar = () => {
+    history.push(URL_HOME);
+  };
 
-  const onClickCancelar = form => {};
+  const validaAntesDoSubmit = form => {
+    const arrayCampos = Object.keys(valoresFormInicial);
+    arrayCampos.forEach(campo => {
+      form.setFieldTouched(campo, true, true);
+    });
+    form.validateForm().then(() => {
+      if (
+        form.isValid ||
+        (Object.keys(form.errors).length == 0 &&
+          Object.keys(form.values).length > 0)
+      ) {
+        form.handleSubmit(e => e);
+      }
+    });
+  };
 
-  const validaAntesDoSubmit = form => {};
+  const onClickCancelar = form => {
+    form.resetForm();
+    setModoEdicao(false);
+  };
+
+  const buscarPeriodosPorTipoCalendario = id => {};
 
   const onSubmit = form => {};
 
@@ -315,6 +343,7 @@ const PeriodoFechamentoAbertura = () => {
                     border
                     bold
                     className="mr-3"
+                    disabled={!modoEdicao}
                     onClick={() => onClickCancelar(form)}
                   />
                   <Button
@@ -322,6 +351,7 @@ const PeriodoFechamentoAbertura = () => {
                     color={Colors.Roxo}
                     border
                     bold
+                    disabled={!modoEdicao}
                     onClick={() => validaAntesDoSubmit(form)}
                   />
                 </div>
@@ -416,6 +446,14 @@ const PeriodoFechamentoAbertura = () => {
             </Form>
           )}
         </Formik>
+        <Auditoria
+          criadoEm={auditoria.criadoEm}
+          criadoPor={auditoria.criadoPor}
+          criadoRf={auditoria.criadoRf}
+          alteradoPor={auditoria.alteradoPor}
+          alteradoEm={auditoria.alteradoEm}
+          alteradoRf={auditoria.alteradoRf}
+        />
       </Card>
     </>
   );
