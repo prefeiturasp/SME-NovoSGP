@@ -405,6 +405,17 @@ namespace SME.SGP.Dados.Repositorios
             return (await database.Conexao.QueryAsync<AbrangenciaUeRetorno>(query.ToString(), parametros)).AsList();
         }
 
+        public bool PossuiAbrangenciaTurmaAtivaPorLogin(string login)
+        {
+            var sql = @"select count(*) from usuario u
+                        inner join abrangencia a on a.usuario_id = u.id
+                        where u.login = @login and historico = false and turma_id is not null;";
+
+            var parametros = new { login };
+
+            return database.Conexao.QueryFirstOrDefault<int>(sql, parametros) > 0;
+        }
+
         public void RemoverAbrangenciasForaEscopo(string login, Guid perfil, TipoAbrangencia escopo)
         {
             var query = "delete from abrangencia where usuario_id = (select id from usuario where login = @login) and historico = false and perfil = @perfil and #escopo";
