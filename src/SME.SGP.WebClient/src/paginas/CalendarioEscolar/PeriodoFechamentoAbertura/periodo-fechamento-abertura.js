@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Form, Formik } from 'formik';
+import * as Yup from 'yup';
 import Cabecalho from '~/componentes-sgp/cabecalho';
 import Button from '~/componentes/button';
 import Card from '~/componentes/card';
@@ -11,12 +12,14 @@ import {
 } from './periodo-fechamento-abertura.css';
 import api from '~/servicos/api';
 import periodo from '~/dtos/periodo';
-import { CampoData, Loader } from '~/componentes';
+import { CampoData, Loader, momentSchema } from '~/componentes';
 import FiltroHelper from '~/componentes-sgp/filtro/helper';
 import tipoEscolaDTO from '~/dtos/tipoEscolaDto';
 
 const PeriodoFechamentoAbertura = () => {
-  const [listaCalendarioEscolar, setListaCalendarioEscolar] = useState([]);
+  const [listaTipoCalendarioEscolar, setListaTipoCalendarioEscolar] = useState(
+    []
+  );
   const [listaDres, setListaDres] = useState([]);
   const [listaUes, setListaUes] = useState([]);
   const [tipoCalendarioSelecionado, setTipoCalendarioSelecionado] = useState(
@@ -57,6 +60,7 @@ const PeriodoFechamentoAbertura = () => {
   );
   const [desabilitaDre, setDesabilitaDre] = useState(false);
   const [desabilitaUe, setDesabilitaUe] = useState(false);
+  const [anoLetivo, setAnoLetivo] = useState(new Date().getFullYear());
 
   useEffect(() => {
     async function consultaTipos() {
@@ -67,7 +71,7 @@ const PeriodoFechamentoAbertura = () => {
           item.id = String(item.id);
           item.descricaoTipoCalendario = `${item.anoLetivo} - ${item.nome} - ${item.descricaoPeriodo}`;
         });
-        setListaCalendarioEscolar(listaTipo.data);
+        setListaTipoCalendarioEscolar(listaTipo.data);
         if (listaTipo.data.length === 1) {
           setTipoCalendarioSelecionado(listaTipo.data[0].id);
           setDesabilitarTipoCalendario(true);
@@ -75,7 +79,7 @@ const PeriodoFechamentoAbertura = () => {
           setDesabilitarTipoCalendario(false);
         }
       } else {
-        setListaCalendarioEscolar([]);
+        setListaTipoCalendarioEscolar([]);
       }
       setCarregandoTipos(false);
     }
@@ -103,10 +107,102 @@ const PeriodoFechamentoAbertura = () => {
     carregarDres();
   }, []);
 
-  const onChangeCamposData = () => {};
+  const onChangeCamposData = valor => {};
+
+  const validacaoAnoLetivo = () => {
+    return momentSchema.test({
+      name: 'teste',
+      exclusive: true,
+      message: 'Data inváçida',
+      test: value => value.year().toString() === anoLetivo.toString(),
+    });
+  };
+
+  const validacaoPrimeiroBim = {
+    primeiroBimestreDataInicial: momentSchema.required(
+      'Data inicial obrigatória'
+    ),
+    primeiroBimestreDataFinal: momentSchema
+      .required('Data final obrigatória')
+      .dataMenorIgualQue(
+        'primeiroBimestreDataInicial',
+        'primeiroBimestreDataFinal',
+        'Data inválida'
+      ),
+  };
+
+  const validacaoSegundoBim = {
+    segundoBimestreDataInicial: momentSchema
+      .required('Data inicial obrigatória')
+      .dataMenorIgualQue(
+        'primeiroBimestreDataFinal',
+        'segundoBimestreDataInicial',
+        'Data inválida'
+      ),
+    segundoBimestreDataFinal: momentSchema
+      .required('Data final obrigatória')
+      .dataMenorIgualQue(
+        'segundoBimestreDataInicial',
+        'segundoBimestreDataFinal',
+        'Data inválida'
+      ),
+  };
+
+  const validacaoTerceiroBim = {
+    terceiroBimestreDataInicial: momentSchema
+      .required('Data inicial obrigatória')
+      .dataMenorIgualQue(
+        'segundoBimestreDataFinal',
+        'terceiroBimestreDataInicial',
+        'Data inválida'
+      ),
+    terceiroBimestreDataFinal: momentSchema
+      .required('Data final obrigatória')
+      .dataMenorIgualQue(
+        'terceiroBimestreDataInicial',
+        'terceiroBimestreDataFinal',
+        'Data inválida'
+      ),
+  };
+
+  const validacaoQuartoBim = {
+    quartoBimestreDataInicial: momentSchema
+      .required('Data inicial obrigatória')
+      .dataMenorIgualQue(
+        'terceiroBimestreDataFinal',
+        'quartoBimestreDataInicial',
+        'Data inválida'
+      ),
+    quartoBimestreDataFinal: momentSchema
+      .required('Data final obrigatória')
+      .dataMenorIgualQue(
+        'quartoBimestreDataInicial',
+        'quartoBimestreDataFinal',
+        'Data inválida'
+      ),
+  };
+
+  useEffect(() => {
+    let periodos = {};
+    if (ehTipoCalendarioAnual) {
+      periodos = Object.assign(
+        {},
+        validacaoPrimeiroBim,
+        validacaoSegundoBim,
+        validacaoTerceiroBim,
+        validacaoQuartoBim
+      );
+    } else {
+      periodos = Object.assign({}, validacaoPrimeiroBim, validacaoSegundoBim);
+    }
+    setValidacoes(Yup.object().shape(periodos));
+  }, [ehTipoCalendarioAnual]);
 
   const onchangeTipoCalendarioEscolar = (id, form) => {
-    const tipoSelecionado = listaCalendarioEscolar.find(item => item.id == id);
+    const tipoSelecionado = listaTipoCalendarioEscolar.find(
+      item => item.id == id
+    );
+    setAnoLetivo(tipoSelecionado.anoLetivo);
 
     if (tipoSelecionado && tipoSelecionado.periodo == periodo.Anual) {
       setEhTipoCalendarioAnual(true);
@@ -116,10 +212,10 @@ const PeriodoFechamentoAbertura = () => {
     setTipoCalendarioSelecionado(id);
   };
 
-  const onChangeDre = dreId => {
-    setDreSelecionada(dreId);
+  const onChangeDre = codigo => {
+    setDreSelecionada(codigo);
     setUeSelecionada(null);
-    carregarUes(dreId);
+    carregarUes(codigo);
   };
 
   const carregarUes = async dre => {
@@ -171,7 +267,7 @@ const PeriodoFechamentoAbertura = () => {
             placeholder="Início do Bimestre"
             formatoData="DD/MM/YYYY"
             name={chaveDataInicial}
-            onChange={onChangeCamposData}
+            onChange={valor => onChangeCamposData(valor)}
             desabilitado={desabilitaCampos}
           />
         </div>
@@ -231,12 +327,12 @@ const PeriodoFechamentoAbertura = () => {
                 </div>
                 <div className="col-md-12 pb-2">
                   <Loader loading={carregandoTipos} tip="">
-                    <div style={{ maxWidth: '250px' }}>
+                    <div style={{ maxWidth: '300px' }}>
                       <SelectComponent
                         name="tipoCalendario"
                         id="tipoCalendario"
                         placeholder="Tipo de Calendário Escolar"
-                        lista={listaCalendarioEscolar}
+                        lista={listaTipoCalendarioEscolar}
                         valueOption="id"
                         valueText="descricaoTipoCalendario"
                         onChange={id => onchangeTipoCalendarioEscolar(id, form)}
@@ -254,9 +350,9 @@ const PeriodoFechamentoAbertura = () => {
                       id="dre"
                       placeholder="Diretoria Regional de Educação (DRE)"
                       lista={listaDres}
-                      valueOption="id"
+                      valueOption="codigo"
                       valueText="nome"
-                      onChange={id => onChangeDre(id)}
+                      onChange={codigo => onChangeDre(codigo)}
                       valueSelect={dreSelecionada}
                       disabled={desabilitaDre}
                     />
@@ -278,8 +374,8 @@ const PeriodoFechamentoAbertura = () => {
                   </Loader>
                 </div>
               </div>
-              {listaCalendarioEscolar &&
-              listaCalendarioEscolar.length &&
+              {listaTipoCalendarioEscolar &&
+              listaTipoCalendarioEscolar.length &&
               tipoCalendarioSelecionado ? (
                 <>
                   {criaBimestre(
