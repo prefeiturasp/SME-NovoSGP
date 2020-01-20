@@ -42,6 +42,10 @@ const DiaCompleto = props => {
   const permissaoTela = useSelector(
     state => state.usuario.permissoes[RotasDTO.CALENDARIO_PROFESSOR]
   );
+
+  const usuario = useSelector(state => state.usuario);
+  const { turmaSelecionada: turmaSelecionadaStore } = usuario;
+
   const diaSelecionado = useSelector(
     state => state.calendarioProfessor.diaSelecionado
   );
@@ -74,6 +78,7 @@ const DiaCompleto = props => {
               ueId: unidadeEscolarSelecionada,
               turmaId: turmaSelecionada,
               todasTurmas,
+              turmaHistorico: turmaSelecionadaStore.consideraHistorico,
             })
             .then(resposta => {
               if (resposta.data) setEventosDia(resposta.data);
