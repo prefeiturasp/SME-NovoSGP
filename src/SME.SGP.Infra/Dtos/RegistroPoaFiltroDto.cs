@@ -6,7 +6,7 @@ namespace SME.SGP.Infra
     {
         public int AnoLetivo { get; set; }
 
-        [Range(0, 4, ErrorMessage = "Os meses devem ser infomados entre 1 e 4")]
+        [Range(0, 4, ErrorMessage = "Os bimestres devem ser infomados entre 1 e 4")]
         public int Bimestre { get; set; }
 
         [Required(ErrorMessage = "O código rf é obrigatório")]
