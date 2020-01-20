@@ -9,10 +9,11 @@ namespace SME.SGP.Infra
             FechamentosBimestres = new List<FechamentoBimestreDto>();
         }
 
-        public string DreId { get; set; }
+        public long? DreId { get; set; }
         public IEnumerable<FechamentoBimestreDto> FechamentosBimestres { get; set; }
         public long Id { get; set; }
+        public bool Migrado { get; set; }
         public long TipoCalendarioId { get; set; }
-        public string UeId { get; set; }
+        public long? UeId { get; set; }
     }
 }

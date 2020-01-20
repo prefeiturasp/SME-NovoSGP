@@ -5,7 +5,7 @@ namespace SME.SGP.Dominio
 {
     public class Fechamento : EntidadeBase
     {
-        public Fechamento(string dreId, string ueId)
+        public Fechamento(long? dreId, long? ueId)
         {
             DreId = dreId;
             UeId = ueId;
@@ -17,10 +17,10 @@ namespace SME.SGP.Dominio
             fechamentosBimestre = new List<FechamentoBimestre>();
         }
 
-        public string DreId { get; set; }
-
+        public long? DreId { get; set; }
         public IEnumerable<FechamentoBimestre> FechamentosBimestre => fechamentosBimestre;
-        public string UeId { get; set; }
+        public bool Migrado { get; set; }
+        public long? UeId { get; set; }
         private List<FechamentoBimestre> fechamentosBimestre { get; set; }
 
         public void AdicionarFechamentoBimestre(PeriodoEscolar periodoEscolar, FechamentoBimestre fechamentoBimestre)
@@ -40,10 +40,10 @@ namespace SME.SGP.Dominio
                 throw new NegocioException("As datas do período de fechamento devem ser no mesmo ano do tipo de calendário informado.");
             }
 
-            if (fechamentoBimestre.InicioDoFechamento > fechamentoBimestre.FinalDoFechamento)
-            {
-                throw new NegocioException("A data de início do fechamento deve ser menor que a data final.");
-            }
+            //if (fechamentoBimestre.InicioDoFechamento > fechamentoBimestre.FinalDoFechamento)
+            //{
+            //    throw new NegocioException("A data de início do fechamento deve ser menor que a data final.");
+            //}
 
             if (fechamentosBimestre.Any(c => c.PeriodoEscolar.Bimestre == periodoEscolar.Bimestre))
             {
@@ -61,7 +61,7 @@ namespace SME.SGP.Dominio
 
         public void ValidarIntervaloDatasDreEUe(List<FechamentoBimestre> periodoFechamentoSMEDRE)
         {
-            var tipoFechamentoASerValidado = !string.IsNullOrWhiteSpace(UeId) ? "UE" : "Dre";
+            var tipoFechamentoASerValidado = UeId.HasValue ? "UE" : "Dre";
             if (periodoFechamentoSMEDRE == null)
             {
                 throw new NegocioException("O período de fechamento da SME não foi encontrado.");

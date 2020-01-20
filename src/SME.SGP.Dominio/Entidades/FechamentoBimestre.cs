@@ -16,6 +16,8 @@ namespace SME.SGP.Dominio
         {
         }
 
+        public Fechamento Fechamento { get; set; }
+        public long FechamentoId { get; set; }
         public DateTime FinalDoFechamento { get; set; }
         public long Id { get; set; }
         public DateTime InicioDoFechamento { get; set; }
