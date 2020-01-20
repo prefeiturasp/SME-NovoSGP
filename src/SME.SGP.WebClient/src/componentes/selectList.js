@@ -69,6 +69,10 @@ const Container = styled.div`
       width: 100% !important;
       padding: 15px;
     }
+
+    @media screen and (max-width: 900px) {
+      padding: 6px;
+    }
   }
 
   .ant-transfer-list-header-title {
@@ -94,14 +98,25 @@ const Container = styled.div`
     i {
       font-style: normal;
       font-size: 26px !important;
+
+      @media screen and (max-width: 900px) {
+        display: block;
+        font-size: 15px !important;
+      }
     }
 
     &[disabled] {
       background-color: #ffffff !important;
       border-color: ${Base.Roxo} !important;
       svg {
-        color:  ${Base.Roxo} !important;
+        color: ${Base.Roxo} !important;
       }
+    }
+
+    @media screen and (max-width: 900px) {
+      height: 25px;
+      width: 25px;
+      padding-left: 0;
     }
   }
 

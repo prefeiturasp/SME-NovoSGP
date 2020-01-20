@@ -12,7 +12,6 @@ namespace SME.SGP.Aplicacao
 {
     public class ConsultasDisciplina : IConsultasDisciplina
     {
-        private readonly int[] codigosDisciplinasRegencia = { 138, 2, 89, 7, 8 };
         private readonly IConsultasObjetivoAprendizagem consultasObjetivoAprendizagem;
         private readonly IRepositorioAtribuicaoCJ repositorioAtribuicaoCJ;
         private readonly IRepositorioCache repositorioCache;
@@ -112,6 +111,7 @@ namespace SME.SGP.Aplicacao
                         Nome = disciplina.Nome,
                         Regencia = disciplina.Regencia,
                         Compartilhada = disciplina.Compartilhada,
+                        RegistroFrequencia = disciplina.RegistroFrequencia,
                         PossuiObjetivos = !turmaPrograma && await consultasObjetivoAprendizagem
                         .DisciplinaPossuiObjetivosDeAprendizagem(disciplina.CodigoComponenteCurricular)
                     });
@@ -129,7 +129,8 @@ namespace SME.SGP.Aplicacao
                     CodigoComponenteCurricular = disciplinaEol.CodigoComponenteCurricular,
                     Nome = disciplinaEol.Nome,
                     Regencia = disciplinaEol.Regencia,
-                    Compartilhada = disciplinaEol.Compartilhada
+                    Compartilhada = disciplinaEol.Compartilhada,
+                    RegistroFrequencia = disciplinaEol.RegistroFrequencia
                 };
             }
         }
@@ -140,7 +141,7 @@ namespace SME.SGP.Aplicacao
                 return disciplinas;
 
             if (filtroDisciplinaPlanejamentoDto.Regencia)
-                return disciplinas.Where(x => codigosDisciplinasRegencia.Contains(x.CodigoComponenteCurricular));
+                return disciplinas.Where(x => !x.Regencia);
 
             return disciplinas.Where(x => x.CodigoComponenteCurricular == filtroDisciplinaPlanejamentoDto.CodigoDisciplina);
         }
