@@ -7,7 +7,13 @@ import notasConceitos from '~/dtos/notasConceitos';
 import { setModoEdicaoGeral } from '~/redux/modulos/notasConceitos/actions';
 
 import Ordenacao from '../Ordenacao/ordenacao';
-import { Lista, CaixaMarcadores, IconePlusMarcadores } from './avaliacao.css';
+import {
+  Lista,
+  CaixaMarcadores,
+  IconePlusMarcadores,
+  CabecalhoNotaConceitoFinal,
+  LinhaNotaConceitoFinal,
+} from './avaliacao.css';
 import CampoConceito from './campoConceito';
 import CampoNota from './campoNota';
 import { LabelSemDados } from '~/componentes';
@@ -128,6 +134,12 @@ const Avaliacao = props => {
                       />
                     </th>
                     {montarCabecalhoAvaliacoes()}
+                    <CabecalhoNotaConceitoFinal
+                      className="width-150"
+                      rowspan="2"
+                    >
+                      Nota final
+                    </CabecalhoNotaConceitoFinal>
                   </tr>
                   <tr>
                     <th colSpan="2" className="width-460 " />
@@ -180,7 +192,7 @@ const Avaliacao = props => {
                                   className={`width-150 ${
                                     nota.podeEditar ? '' : 'desabilitar-nota'
                                   }`}
-                                  style={{ padding: '3px' }}
+                                  //style={{ padding: '3px' }}
                                 >
                                   {montarCampoNotaConceito(nota)}
                                   {nota.ausente ? (
@@ -194,6 +206,14 @@ const Avaliacao = props => {
                               );
                             })
                           : ''}
+                        <LinhaNotaConceitoFinal className="width-150">
+                          {montarCampoNotaConceito({
+                            atividadeAvaliativaId: null,
+                            ausente: null,
+                            notaConceito: '',
+                            podeEditar: true,
+                          })}
+                        </LinhaNotaConceitoFinal>
                       </tr>
                       {expandirLinha[i] ? (
                         <>

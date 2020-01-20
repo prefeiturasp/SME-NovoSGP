@@ -115,12 +115,10 @@ export const Lista = styled.div`
   }
 
   .aluno-conceitos {
-    border-top: solid 2px white;
-    background-color: white;
     border-radius: 7px;
-    border-right: solid 22px white;
     padding-left: 2px;
     margin-left: 13px;
+    padding-right: 15px;
   }
 
   .aluno-ausente-conceitos {
@@ -133,12 +131,8 @@ export const Lista = styled.div`
   }
 
   .aluno-notas {
-    border-top: solid 3px white !important;
-    background-color: white !important;
     border-radius: 7px !important;
-    border-right: solid 20px white !important;
     padding-left: 3px !important;
-    margin-left: 23px !important;
   }
 
   .aluno-ausente-notas {
@@ -228,4 +222,14 @@ export const IconePlusMarcadores = styled.i`
   font-size: 16px;
   margin-left: 5px;
   cursor: pointer;
+`;
+
+export const CabecalhoNotaConceitoFinal = styled.th`
+  box-shadow: -8px -3px 8px -4px #8080804d;
+  border-bottom: 0 !important;
+`;
+
+export const LinhaNotaConceitoFinal = styled.td`
+  box-shadow: -8px 0px 8px -4px #8080804d;
+  background: ${Base.CinzaFundo};
 `;
