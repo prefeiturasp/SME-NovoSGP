@@ -6,9 +6,12 @@ namespace SME.SGP.Dominio.Interfaces
     {
         IEnumerable<Dre> ListarPorCodigos(string[] dresCodigos);
 
+        IEnumerable<Dre> MaterializarCodigosDre(string[] idDres, out string[] naoEncontradas);
+
+        Dre ObterPorCodigo(string codigo);
+
         IEnumerable<Dre> ObterTodas();
 
         IEnumerable<Dre> Sincronizar(IEnumerable<Dre> entidades);
-        IEnumerable<Dre> MaterializarCodigosDre(string[] idDres, out string[] naoEncontradas);
     }
 }

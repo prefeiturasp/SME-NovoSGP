@@ -18,7 +18,37 @@ namespace SME.SGP.Dados.Repositorios
             this.database = database;
         }
 
-        public async Task<PaginacaoResultadoDto<FechamentoReabertura>> Listar(long tipoCalendarioId, long? dreId, long? ueId, Paginacao paginacao)
+        public async Task<IEnumerable<FechamentoReabertura>> Listar(long tipoCalendarioId, long? dreId, long? ueId)
+        {
+            var query = new StringBuilder();
+            MontaQueryListarCabecalho(query);
+            MontaQueryListarFrom(query);
+            MontaQueryListarWhere(query, tipoCalendarioId, dreId, ueId);
+
+            var lookup = new Dictionary<long, FechamentoReabertura>();
+
+            await database.Conexao.QueryAsync<FechamentoReabertura, FechamentoReaberturaBimestre, FechamentoReabertura>(query.ToString(), (fechamento, bimestre) =>
+            {
+                FechamentoReabertura fechamentoReabertura;
+                if (!lookup.TryGetValue(fechamento.Id, out fechamentoReabertura))
+                {
+                    fechamentoReabertura = fechamento;
+                    lookup.Add(fechamento.Id, fechamentoReabertura);
+                }
+
+                fechamentoReabertura.Adicionar(bimestre);
+                return fechamentoReabertura;
+            }, new
+            {
+                tipoCalendarioId,
+                dreId,
+                ueId
+            });
+
+            return lookup.Values;
+        }
+
+        public async Task<PaginacaoResultadoDto<FechamentoReabertura>> ListarPaginado(long tipoCalendarioId, long? dreId, long? ueId, Paginacao paginacao)
         {
             StringBuilder query = new StringBuilder();
 

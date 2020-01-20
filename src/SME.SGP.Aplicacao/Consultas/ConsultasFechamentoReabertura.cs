@@ -22,7 +22,7 @@ namespace SME.SGP.Aplicacao
 
         public async Task<PaginacaoResultadoDto<FechamentoReaberturaListagemDto>> Listar(long tipoCalendarioId, long? dreId, long? ueId)
         {
-            var listaEntidades = await repositorioFechamentoReabertura.Listar(tipoCalendarioId, dreId, ueId, Paginacao);
+            var listaEntidades = await repositorioFechamentoReabertura.ListarPaginado(tipoCalendarioId, dreId, ueId, Paginacao);
 
             return MapearListaEntidadeParaDto(listaEntidades);
         }
