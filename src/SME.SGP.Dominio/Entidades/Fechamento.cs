@@ -83,17 +83,5 @@ namespace SME.SGP.Dominio
                 }
             }
         }
-
-        public void ValidarQuantidadePeriodos()
-        {
-            //if (TipoCalendario.Modalidade == ModalidadeTipoCalendario.FundamentalMedio && fechamentosBimestre.Count != 4)
-            //{
-            //    throw new NegocioException("Calendários de Fundamental e Médio devem possuir 4 Bimestres.");
-            //}
-            //else if (TipoCalendario.Modalidade == ModalidadeTipoCalendario.EJA && fechamentosBimestre.Count != 2)
-            //{
-            //    throw new NegocioException("Calendários de EJA devem possuir 2 Bimestres.");
-            //}
-        }
     }
 }
