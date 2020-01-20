@@ -82,6 +82,7 @@ namespace SME.SGP.Aplicacao
                     Nome = alunoEOL.NomeAluno,
                     QuantidadeFaltasTotais = faltasNaoCompensadas,
                     MaximoCompensacoesPermitidas = quantidadeMaximaCompensacoes > faltasNaoCompensadas ? faltasNaoCompensadas : quantidadeMaximaCompensacoes,
+                    PercentualFrequencia = frequenciaAluno.PercentualFrequencia,
                     Alerta = frequenciaAluno.PercentualFrequencia <= percentualFrequenciaAlerta
                 });
             }
