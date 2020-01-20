@@ -56,8 +56,10 @@ export default function Editor(props) {
                 'ImageCaption',
                 'ImageStyle',
                 'ImageToolbar',
-                'ImageUpload',
                 'Indent',
+                'IndentToolbar',
+                'IndentStyle',
+                'Outdent',
               ],
             }}
             data={form.values[name] || ''}
@@ -84,8 +86,10 @@ export default function Editor(props) {
             'ImageCaption',
             'ImageStyle',
             'ImageToolbar',
-            'ImageUpload',
             'Indent',
+            'IndentToolbar',
+            'IndentStyle',
+            'Outdent',
           ],
         }}
         data={inicial || ''}

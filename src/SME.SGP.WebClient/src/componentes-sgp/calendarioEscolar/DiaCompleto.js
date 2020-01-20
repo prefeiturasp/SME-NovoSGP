@@ -18,6 +18,11 @@ import RotasDTO from '~/dtos/rotasDto';
 
 const Div = styled.div``;
 const Evento = styled(Div)`
+  display: flex;
+
+  div:first-child {
+    margin-right: 1rem;
+  }
   &:hover {
     background: ${Base.Roxo};
     color: ${Base.Branco};
@@ -135,24 +140,24 @@ const DiaCompleto = props => {
                 return (
                   <Evento
                     key={shortid.generate()}
-                    className="list-group-item list-group-item-action d-flex rounded"
+                    className="list-group-item list-group-item-action d-flex rounded oi"
                     onClick={() => aoClicarEvento(evento.id)}
                     style={{ cursor: 'pointer' }}
                   >
-                    <Grid cols={1} className="pl-0">
+                    <Div cols={1} className="pl-0">
                       <Botao
                         label="Evento"
                         color={Colors.CinzaBotao}
                         border
                         steady
                       />
-                    </Grid>
-                    <Grid
+                    </Div>
+                    <Div
                       cols={11}
                       className="align-self-center font-weight-bold"
                     >
                       <Div>{evento.nome ? evento.nome : 'Evento'}</Div>
-                    </Grid>
+                    </Div>
                   </Evento>
                 );
               })}

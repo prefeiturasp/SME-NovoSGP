@@ -81,7 +81,8 @@ namespace SME.SGP.Aplicacao
             return repositorio.ObterDatasDeAulasPorAnoTurmaEDisciplina(anoLetivo, turma, disciplina, usuarioLogado.Id, usuarioRF)?.Select(a => new DataAulasProfessorDto
             {
                 Data = a.DataAula,
-                IdAula = a.Id
+                IdAula = a.Id,
+                AulaCJ = a.AulaCJ
             });
         }
 
@@ -148,6 +149,7 @@ namespace SME.SGP.Aplicacao
             {
                 Id = aula.Id,
                 DisciplinaId = aula.DisciplinaId,
+                DisciplinaCompartilhadaId = aula.DisciplinaCompartilhadaId,
                 TurmaId = aula.TurmaId,
                 UeId = aula.UeId,
                 TipoCalendarioId = aula.TipoCalendarioId,
