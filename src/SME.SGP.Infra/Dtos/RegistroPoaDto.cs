@@ -7,6 +7,9 @@ namespace SME.SGP.Infra
         [Range(1, double.MaxValue, ErrorMessage = "Deve ser informado o ano letivo")]
         public int AnoLetivo { get; set; }
 
+        [Range(1, 4, ErrorMessage = "O bimestre deve ser informado entre 1 e 4")]
+        public int Bimestre { get; set; }
+
         [Required(ErrorMessage = "Deve ser informado o código RF")]
         public string CodigoRf { get; set; }
 
@@ -18,10 +21,6 @@ namespace SME.SGP.Infra
 
         public bool Excluido { get; set; }
         public long Id { get; set; }
-
-        [Range(1, 12, ErrorMessage = "O mes deve ser informado entre Janeiro (1) e Dezembro (12)")]
-        public int Mes { get; set; }
-
         public string Nome { get; set; }
 
         [Required(ErrorMessage = "Deve ser informado o título")]
