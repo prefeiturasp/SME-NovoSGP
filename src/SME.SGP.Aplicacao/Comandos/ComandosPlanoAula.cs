@@ -57,7 +57,7 @@ namespace SME.SGP.Aplicacao
             var aula = repositorioAula.ObterPorId(aulaId);
 
             if (usuario.PerfilAtual == Perfis.PERFIL_PROFESSOR || usuario.PerfilAtual == Perfis.PERFIL_CJ)
-                VerificaSeProfessorPodePersistirTurma(usuario.CodigoRf, aula.TurmaId, aula.DataAula);
+                await VerificaSeProfessorPodePersistirTurma(usuario.CodigoRf, aula.TurmaId, aula.DataAula);
 
             await repositorio.ExcluirPlanoDaAula(aulaId);
         }
@@ -117,7 +117,7 @@ namespace SME.SGP.Aplicacao
             var usuario = await servicoUsuario.ObterUsuarioLogado();
 
             if (usuario.PerfilAtual == Perfis.PERFIL_PROFESSOR || usuario.PerfilAtual == Perfis.PERFIL_CJ)
-                VerificaSeProfessorPodePersistirTurma(usuario.CodigoRf, aula.TurmaId, aula.DataAula);
+                await VerificaSeProfessorPodePersistirTurma(usuario.CodigoRf, aula.TurmaId, aula.DataAula);
 
             PlanoAula planoAula = await repositorio.ObterPlanoAulaPorAula(planoAulaDto.AulaId);
             planoAula = MapearParaDominio(planoAulaDto, planoAula);
@@ -278,7 +278,7 @@ namespace SME.SGP.Aplicacao
                 throw new NegocioException("Somente é possível migrar o plano de aula para turmas atribuidas ao professor");
         }
 
-        private async void VerificaSeProfessorPodePersistirTurma(string codigoRf, string turmaId, DateTime dataAula)
+        private async Task VerificaSeProfessorPodePersistirTurma(string codigoRf, string turmaId, DateTime dataAula)
         {
             if (!await servicoEol.ProfessorPodePersistirTurma(codigoRf, turmaId, dataAula))
                 throw new NegocioException("Você não pode fazer alterações ou inclusões nesta turma e data.");
