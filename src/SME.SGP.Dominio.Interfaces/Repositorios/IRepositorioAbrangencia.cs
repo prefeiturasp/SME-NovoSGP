@@ -36,6 +36,8 @@ namespace SME.SGP.Dominio.Interfaces
 
         Task<IEnumerable<AbrangenciaUeRetorno>> ObterUes(string codigoDre, string login, Guid perfil, Modalidade? modalidade = null, int periodo = 0, bool consideraHistorico = false, int anoLetivo = 0);
 
+        bool PossuiAbrangenciaTurmaAtivaPorLogin(string login);
+
         void RemoverAbrangenciasForaEscopo(string login, Guid perfil, TipoAbrangencia porTurma);
     }
 }
