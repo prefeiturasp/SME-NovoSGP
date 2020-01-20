@@ -84,7 +84,7 @@ namespace SME.SGP.Aplicacao.Consultas
                 Excluido = registroPoa.Excluido,
                 Id = registroPoa.Id,
                 AnoLetivo = registroPoa.AnoLetivo,
-                Bismestre = registroPoa.Bimestre,
+                Bimestre = registroPoa.Bimestre,
                 Titulo = registroPoa.Titulo,
                 UeId = registroPoa.UeId
             };
@@ -106,7 +106,7 @@ namespace SME.SGP.Aplicacao.Consultas
                 DreId = registroPoa.DreId,
                 Excluido = registroPoa.Excluido,
                 Id = registroPoa.Id,
-                Bismestre = registroPoa.Bimestre,
+                Bimestre = registroPoa.Bimestre,
                 Titulo = registroPoa.Titulo,
                 UeId = registroPoa.UeId
             };
