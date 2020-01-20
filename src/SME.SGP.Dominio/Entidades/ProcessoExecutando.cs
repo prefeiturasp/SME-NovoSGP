@@ -10,5 +10,6 @@ namespace SME.SGP.Dominio
         public TipoProcesso TipoProcesso { get; set; }
         public string TurmaId { get; set; }
         public string DisciplinaId { get; set; }
+        public int Bimestre { get; set; }
     }
 }

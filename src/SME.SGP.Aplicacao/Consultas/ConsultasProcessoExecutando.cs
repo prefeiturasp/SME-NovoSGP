@@ -16,7 +16,7 @@ namespace SME.SGP.Aplicacao
             this.repositorio = repositorio ?? throw new ArgumentNullException(nameof(repositorio));
         }
 
-        public async Task<bool> ExecutandoCalculoFrequencia(string turmaId, string disciplinaId)
-            => (await repositorio.ObterProcessoCalculoFrequencia(turmaId, disciplinaId)) != null;
+        public async Task<bool> ExecutandoCalculoFrequencia(string turmaId, string disciplinaId, int bimestre)
+            => (await repositorio.ObterProcessoCalculoFrequencia(turmaId, disciplinaId, bimestre)) != null;
     }
 }
