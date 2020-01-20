@@ -40,7 +40,7 @@ namespace SME.SGP.Dominio.Servicos
         {
             var bimestre = ObterBimestre(dataAula, turmaId, disciplinaId);
 
-            comandosProcessoExecutando.IncluirCalculoFrequencia(turmaId, disciplinaId, bimestre);
+            comandosProcessoExecutando.IncluirCalculoFrequencia(turmaId, disciplinaId, bimestre).Wait();
             try
             {
                 var totalAulasNaDisciplina = repositorioRegistroAusenciaAluno.ObterTotalAulasPorDisciplinaETurma(dataAula, disciplinaId, turmaId);
@@ -54,7 +54,7 @@ namespace SME.SGP.Dominio.Servicos
             }
             finally
             {
-                comandosProcessoExecutando.ExcluirCalculoFrequencia(turmaId, disciplinaId, bimestre);
+                comandosProcessoExecutando.ExcluirCalculoFrequencia(turmaId, disciplinaId, bimestre).Wait();
             }
         }
 
@@ -123,7 +123,7 @@ namespace SME.SGP.Dominio.Servicos
                                                             totalCompensacoesDisciplinaAluno,
                                                             TipoFrequenciaAluno.PorDisciplina);
 
-                if (frequenciaAluno.PercentualFrequencia < 100)
+                if (frequenciaAluno.TotalAusencias > 0)
                     repositorioFrequenciaAlunoDisciplinaPeriodo.Salvar(frequenciaAluno);
                 else
                 if (frequenciaAluno.Id > 0)
