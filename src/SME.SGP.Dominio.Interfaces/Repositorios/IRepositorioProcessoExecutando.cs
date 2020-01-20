@@ -5,8 +5,10 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Dominio.Interfaces
 {
-    public interface IRepositorioProcessoExecutando : IRepositorioBase<ProcessoExecutando>
+    public interface IRepositorioProcessoExecutando
     {
         Task<ProcessoExecutando> ObterProcessoCalculoFrequencia(string turmaId, string disciplinaId);
+        Task<long> SalvarAsync(ProcessoExecutando processo);
+        void Remover(ProcessoExecutando processo);
     }
 }
