@@ -122,7 +122,6 @@ const Filtro = () => {
 
   const aoSelecionarHistorico = () => {
     setAnoLetivoSelecionado();
-    setConsideraHistorico(!consideraHistorico);
     dispatch(DefinirConsideraHistorico(!consideraHistorico));
   };
 
@@ -262,33 +261,33 @@ const Filtro = () => {
     const obterAnosLetivos = async deveSalvarAnosLetivos => {
       const anoAtual = window.moment().format('YYYY');
 
-      if (deveSalvarAnosLetivos) {
-        const anosLetivo = await ServicoFiltro.listarAnosLetivos({
-          consideraHistorico,
+      if (!deveSalvarAnosLetivos) return;
+
+      const anosLetivo = await ServicoFiltro.listarAnosLetivos({
+        consideraHistorico,
+      })
+        .then(resposta => {
+          const anos = [];
+
+          if (resposta.data) {
+            resposta.data.forEach(ano => {
+              anos.push({ desc: ano, valor: ano });
+            });
+          }
+
+          return anos;
         })
-          .then(resposta => {
-            const anos = [];
+        .catch(() => []);
 
-            if (resposta.data) {
-              resposta.data.forEach(ano => {
-                anos.push({ desc: ano, valor: ano });
-              });
-            }
-
-            return anos;
-          })
-          .catch(() => []);
-
-        if (!anosLetivo.length) {
-          anosLetivo.push({
-            desc: anoAtual,
-            valor: anoAtual,
-          });
-        }
-
-        dispatch(salvarAnosLetivos(anosLetivo));
-        setAnosLetivos(anosLetivo);
+      if (!anosLetivo.length) {
+        anosLetivo.push({
+          desc: anoAtual,
+          valor: anoAtual,
+        });
       }
+
+      dispatch(salvarAnosLetivos(anosLetivo));
+      setAnosLetivos(anosLetivo);
     };
 
     obterAnosLetivos(estado && !filtro.anosLetivos.length);
