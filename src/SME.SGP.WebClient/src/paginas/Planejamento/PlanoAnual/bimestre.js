@@ -10,7 +10,6 @@ import { erros as mostrarErros } from '~/servicos/alertas';
 const Bimestre = ({
   bimestre,
   disciplinas,
-  regencia,
   ano,
   erros,
   ehEja,
@@ -296,4 +295,5 @@ const Bimestre = ({
     </Loader>
   );
 };
+
 export default Bimestre;

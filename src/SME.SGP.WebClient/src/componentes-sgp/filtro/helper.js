@@ -133,13 +133,14 @@ class FiltroHelper {
             });
           });
         }
-        return turmas;
+        return turmas.sort(this.ordenarLista('desc'));
       })
       .catch(() => turmas);
   };
 
   ordenarLista = indice => {
     return function innerSort(a, b) {
+      // eslint-disable-next-line no-prototype-builtins
       if (!a.hasOwnProperty(indice) || !b.hasOwnProperty(indice)) return 0;
 
       const itemA =
