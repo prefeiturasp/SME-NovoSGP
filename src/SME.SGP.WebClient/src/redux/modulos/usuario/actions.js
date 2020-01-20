@@ -45,6 +45,13 @@ export function removerTurma() {
   };
 }
 
+export function DefinirConsideraHistorico(payload) {
+  return {
+    type: '@usuario/SetarConsideraHistorico',
+    payload,
+  };
+}
+
 export function meusDados(dados) {
   return {
     type: '@usuario/meusDados',
