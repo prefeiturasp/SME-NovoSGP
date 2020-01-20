@@ -8,7 +8,7 @@ namespace SME.SGP.Infra
         public int AnoLetivo { get; set; }
 
         [Range(1, 4, ErrorMessage = "O bimestre deve ser informado entre 1 e 4")]
-        public int Bismestre { get; set; }
+        public int Bimestre { get; set; }
 
         [Required(ErrorMessage = "Deve ser informado o código RF")]
         public string CodigoRf { get; set; }

@@ -51,7 +51,7 @@ namespace SME.SGP.Aplicacao
 
             entidade.Titulo = registroPoaDto.Titulo;
             entidade.Descricao = registroPoaDto.Descricao;
-            entidade.Bimestre = registroPoaDto.Bismestre;
+            entidade.Bimestre = registroPoaDto.Bimestre;
 
             return entidade;
         }
@@ -65,7 +65,7 @@ namespace SME.SGP.Aplicacao
                 AnoLetivo = registroPoaDto.AnoLetivo,
                 UeId = registroPoaDto.UeId,
                 CodigoRf = registroPoaDto.CodigoRf,
-                Bimestre = registroPoaDto.Bismestre,
+                Bimestre = registroPoaDto.Bimestre,
                 Titulo = registroPoaDto.Titulo,
             };
         }
