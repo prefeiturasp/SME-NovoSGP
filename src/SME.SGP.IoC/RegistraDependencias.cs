@@ -95,7 +95,7 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IConsultasNotasConceitos, ConsultasNotasConceitos>();
             services.TryAddScoped<IConsultasAtribuicoes, ConsultasAtribuicoes>();
             services.TryAddScoped<IConsultasRegistroPoa, ConsultasRegistroPoa>();
-            services.TryAddScoped<IConsultasPeriodoFechamento, ConsultasPeriodoFechamento>();
+            services.TryAddScoped<IConsultasFechamento, ConsultasFechamento>();
         }
 
         private static void RegistrarContextos(IServiceCollection services)
@@ -162,7 +162,7 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IRepositorioAulaPrevistaBimestre, RepositorioAulaPrevistaBimestre>();
             services.TryAddScoped<IRepositorioRegistroPoa, RepositorioRegistroPoa>();
             services.TryAddScoped<IRepositorioAtividadeAvaliativaDisciplina, RepositorioAtividadeAvaliativaDisciplina>();
-            services.TryAddScoped<IRepositorioPeriodoFechamento, RepositorioPeriodoFechamento>();
+            services.TryAddScoped<IRepositorioFechamento, RepositorioFechamento>();
         }
 
         private static void RegistrarServicos(IServiceCollection services)
@@ -191,7 +191,7 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IServicoAtribuicaoCJ, ServicoAtribuicaoCJ>();
             services.TryAddScoped<IServicoEventoMatricula, ServicoEventoMatricula>();
             services.TryAddScoped<IServicoAluno, ServicoAluno>();
-            services.TryAddScoped<IServicoPeriodoFechamento, ServicoPeriodoFechamento>();
+            services.TryAddScoped<IServicoFechamento, ServicoFechamento>();
         }
     }
 }
