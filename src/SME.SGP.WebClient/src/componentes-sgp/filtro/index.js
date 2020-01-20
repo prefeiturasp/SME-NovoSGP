@@ -6,6 +6,7 @@ import {
   selecionarTurma,
   turmasUsuario,
   removerTurma,
+  DefinirConsideraHistorico,
 } from '~/redux/modulos/usuario/actions';
 import Grid from '~/componentes/grid';
 import Button from '~/componentes/button';
@@ -33,6 +34,7 @@ import FiltroHelper from './helper';
 import { erro } from '~/servicos/alertas';
 import modalidade from '~/dtos/modalidade';
 import ServicoFiltro from '~/servicos/Componentes/ServicoFiltro';
+import { Loader } from '~/componentes';
 
 const Filtro = () => {
   const dispatch = useDispatch();
@@ -43,6 +45,12 @@ const Filtro = () => {
 
   const divBuscaRef = useRef();
   const campoBuscaRef = useRef();
+
+  const [carregandoModalidades, setCarregandoModalidades] = useState(false);
+  const [carregandoPeriodos, setCarregandoPeriodos] = useState(false);
+  const [carregandoDres, setCarregandoDres] = useState(false);
+  const [carregandoUes, setCarregandoUes] = useState(false);
+  const [carregandoTurmas, setCarregandoTurmas] = useState(false);
 
   const usuarioStore = useSelector(state => state.usuario);
   const turmaUsuarioSelecionada = usuarioStore.turmaSelecionada;
@@ -64,7 +72,7 @@ const Filtro = () => {
   const [campoTurmaDesabilitado, setCampoTurmaDesabilitado] = useState(true);
 
   const anosLetivoStore = useSelector(state => state.filtro.anosLetivos);
-  const [anosLetivos, setAnosLetivos] = useState(anosLetivoStore);
+  const [anosLetivos, setAnosLetivos] = useState(anosLetivoStore || []);
   const [anoLetivoSelecionado, setAnoLetivoSelecionado] = useState(
     turmaUsuarioSelecionada ? turmaUsuarioSelecionada.anoLetivo : ''
   );
@@ -108,15 +116,21 @@ const Filtro = () => {
   );
   const [resultadosFiltro, setResultadosFiltro] = useState([]);
 
-  const [consideraHistorico, setConsideraHistorico] = useState(false);
+  const [consideraHistorico, setConsideraHistorico] = useState(
+    turmaUsuarioSelecionada && !!turmaUsuarioSelecionada.consideraHistorico
+  );
 
   const aoSelecionarHistorico = () => {
+    setAnoLetivoSelecionado();
     setConsideraHistorico(!consideraHistorico);
+    dispatch(DefinirConsideraHistorico(!consideraHistorico));
   };
 
   const obterDres = useCallback(
     async (estado, periodo) => {
       if (!modalidadeSelecionada) return;
+
+      setCarregandoDres(true);
 
       const listaDres = await FiltroHelper.obterDres({
         consideraHistorico,
@@ -130,6 +144,8 @@ const Filtro = () => {
         setDres(listaDres);
         setCampoDreDesabilitado(listaDres.length === 1);
       }
+
+      setCarregandoDres(false);
     },
     [anoLetivoSelecionado, consideraHistorico, dispatch, modalidadeSelecionada]
   );
@@ -171,6 +187,7 @@ const Filtro = () => {
         ano: turmaSelecionadaCompleta.ano,
         desc: `${modalidadeDesc.desc} - ${turmaDesc.desc} - ${unidadeEscolarDesc.desc}`,
         periodo: periodoSelecionado || 0,
+        consideraHistorico: consideraHistorico,
       };
 
       dispatch(turmasUsuario(turmas));
@@ -292,6 +309,7 @@ const Filtro = () => {
     setUnidadeEscolarSelecionada(turmaUsuarioSelecionada.unidadeEscolar || '');
     setTurmaSelecionada(turmaUsuarioSelecionada.turma || '');
     setTextoAutocomplete(turmaUsuarioSelecionada.desc || '');
+    setConsideraHistorico(!!turmaUsuarioSelecionada.consideraHistorico);
 
     if (!turmaUsuarioSelecionada.length) setCampoAnoLetivoDesabilitado(false);
 
@@ -316,6 +334,8 @@ const Filtro = () => {
       setCampoModalidadeDesabilitado(true);
     } else {
       const obterModalidades = async deveSalvarModalidade => {
+        setCarregandoModalidades(true);
+
         const modalidadesLista = await FiltroHelper.obterModalidades({
           consideraHistorico,
           anoLetivoSelecionado,
@@ -326,6 +346,8 @@ const Filtro = () => {
           dispatch(salvarModalidades(modalidadesLista));
           setCampoModalidadeDesabilitado(modalidadesLista.length === 1);
         }
+
+        setCarregandoModalidades(false);
       };
       obterModalidades(estado && anoLetivoSelecionado);
     }
@@ -344,6 +366,8 @@ const Filtro = () => {
     let estado = true;
 
     const obterPeriodos = async deveSalvarPeriodos => {
+      setCarregandoPeriodos(true);
+
       const periodo = await FiltroHelper.obterPeriodos({
         consideraHistorico,
         modalidadeSelecionada,
@@ -357,6 +381,8 @@ const Filtro = () => {
         setPeriodos(periodo);
         setCampoPeriodoDesabilitado(periodo.length === 1);
       }
+
+      setCarregandoPeriodos(false);
     };
 
     if (!modalidadeSelecionada) {
@@ -423,6 +449,8 @@ const Filtro = () => {
     const obterUnidadesEscolares = async (deveSalvarUes, periodo) => {
       if (!modalidadeSelecionada) return;
 
+      setCarregandoUes(true);
+
       const ues = await FiltroHelper.obterUnidadesEscolares({
         consideraHistorico,
         modalidadeSelecionada,
@@ -443,6 +471,8 @@ const Filtro = () => {
         setUnidadesEscolares(ues);
         setCampoUnidadeEscolarDesabilitado(ues.length === 1);
       }
+
+      setCarregandoUes(false);
     };
 
     if (!dreSelecionada) {
@@ -489,6 +519,8 @@ const Filtro = () => {
 
       if (!modalidadeSelecionada) return;
 
+      setCarregandoTurmas(true);
+
       const listaTurmas = await FiltroHelper.obterTurmas({
         consideraHistorico,
         modalidadeSelecionada,
@@ -509,6 +541,8 @@ const Filtro = () => {
         setTurmas(listaTurmas);
         setCampoTurmaDesabilitado(listaTurmas.length === 1);
       }
+
+      setCarregandoTurmas(false);
     };
 
     let estado = true;
@@ -611,6 +645,7 @@ const Filtro = () => {
       turma: resultado.codigoTurma,
       desc: resultado.descricaoFiltro,
       periodo: resultado.semestre,
+      consideraHistorico: consideraHistorico,
     };
 
     dispatch(selecionarTurma(turma));
@@ -819,81 +854,91 @@ const Filtro = () => {
                 }
                 className="form-group"
               >
-                <SelectComponent
-                  className="fonte-14"
-                  onChange={aoTrocarModalidade}
-                  lista={modalidades}
-                  valueOption="valor"
-                  containerVinculoId="containerFiltro"
-                  valueText="desc"
-                  valueSelect={
-                    modalidadeSelecionada && `${modalidadeSelecionada}`
-                  }
-                  placeholder="Modalidade"
-                  disabled={campoModalidadeDesabilitado}
-                />
+                <Loader loading={carregandoModalidades} tip="">
+                  <SelectComponent
+                    className="fonte-14"
+                    onChange={aoTrocarModalidade}
+                    lista={modalidades}
+                    valueOption="valor"
+                    containerVinculoId="containerFiltro"
+                    valueText="desc"
+                    valueSelect={
+                      modalidadeSelecionada && `${modalidadeSelecionada}`
+                    }
+                    placeholder="Modalidade"
+                    disabled={campoModalidadeDesabilitado}
+                  />
+                </Loader>
               </Grid>
               {modalidadeSelecionada &&
                 modalidadeSelecionada.toString() ===
                   modalidade.EJA.toString() && (
                   <Grid cols={4} className="form-group">
-                    <SelectComponent
-                      className="fonte-14"
-                      onChange={aoTrocarPeriodo}
-                      lista={periodos}
-                      valueOption="valor"
-                      containerVinculoId="containerFiltro"
-                      valueText="desc"
-                      valueSelect={
-                        periodoSelecionado && `${periodoSelecionado}`
-                      }
-                      placeholder="Período"
-                      disabled={campoPeriodoDesabilitado}
-                    />
+                    <Loader loading={carregandoPeriodos} tip="">
+                      <SelectComponent
+                        className="fonte-14"
+                        onChange={aoTrocarPeriodo}
+                        lista={periodos}
+                        valueOption="valor"
+                        containerVinculoId="containerFiltro"
+                        valueText="desc"
+                        valueSelect={
+                          periodoSelecionado && `${periodoSelecionado}`
+                        }
+                        placeholder="Período"
+                        disabled={campoPeriodoDesabilitado}
+                      />
+                    </Loader>
                   </Grid>
                 )}
             </div>
             <div className="form-group">
-              <SelectComponent
-                className="fonte-14"
-                onChange={aoTrocarDre}
-                lista={dres}
-                valueOption="valor"
-                containerVinculoId="containerFiltro"
-                valueText="desc"
-                valueSelect={dreSelecionada && `${dreSelecionada}`}
-                placeholder="Diretoria Regional De Educação (DRE)"
-                disabled={campoDreDesabilitado}
-              />
+              <Loader loading={carregandoDres} tip="">
+                <SelectComponent
+                  className="fonte-14"
+                  onChange={aoTrocarDre}
+                  lista={dres}
+                  valueOption="valor"
+                  containerVinculoId="containerFiltro"
+                  valueText="desc"
+                  valueSelect={dreSelecionada && `${dreSelecionada}`}
+                  placeholder="Diretoria Regional De Educação (DRE)"
+                  disabled={campoDreDesabilitado}
+                />
+              </Loader>
             </div>
             <div className="form-group">
-              <SelectComponent
-                className="fonte-14"
-                onChange={aoTrocarUnidadeEscolar}
-                lista={unidadesEscolares}
-                valueOption="valor"
-                containerVinculoId="containerFiltro"
-                valueText="desc"
-                valueSelect={
-                  unidadeEscolarSelecionada && `${unidadeEscolarSelecionada}`
-                }
-                placeholder="Unidade Escolar (UE)"
-                disabled={campoUnidadeEscolarDesabilitado}
-              />
+              <Loader loading={carregandoUes} tip="">
+                <SelectComponent
+                  className="fonte-14"
+                  onChange={aoTrocarUnidadeEscolar}
+                  lista={unidadesEscolares}
+                  valueOption="valor"
+                  containerVinculoId="containerFiltro"
+                  valueText="desc"
+                  valueSelect={
+                    unidadeEscolarSelecionada && `${unidadeEscolarSelecionada}`
+                  }
+                  placeholder="Unidade Escolar (UE)"
+                  disabled={campoUnidadeEscolarDesabilitado}
+                />
+              </Loader>
             </div>
             <div className="form-row d-flex justify-content-between">
               <Grid cols={3} className="form-group">
-                <SelectComponent
-                  className="fonte-14"
-                  onChange={aoTrocarTurma}
-                  lista={turmas}
-                  valueOption="valor"
-                  valueText="desc"
-                  containerVinculoId="containerFiltro"
-                  valueSelect={turmaSelecionada && `${turmaSelecionada}`}
-                  placeholder="Turma"
-                  disabled={campoTurmaDesabilitado}
-                />
+                <Loader loading={carregandoTurmas} tip="">
+                  <SelectComponent
+                    className="fonte-14"
+                    onChange={aoTrocarTurma}
+                    lista={turmas}
+                    valueOption="valor"
+                    valueText="desc"
+                    containerVinculoId="containerFiltro"
+                    valueSelect={turmaSelecionada && `${turmaSelecionada}`}
+                    placeholder="Turma"
+                    disabled={campoTurmaDesabilitado}
+                  />
+                </Loader>
               </Grid>
               <Grid cols={3} className="form-group text-right">
                 <Button

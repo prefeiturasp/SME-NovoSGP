@@ -58,6 +58,7 @@ namespace SME.SGP.Aplicacao
             }
             entidadeAula.UeId = dto.UeId;
             entidadeAula.DisciplinaId = dto.DisciplinaId;
+            entidadeAula.DisciplinaCompartilhadaId = dto.DisciplinaCompartilhadaId;
             entidadeAula.TurmaId = dto.TurmaId;
             entidadeAula.TipoCalendarioId = dto.TipoCalendarioId;
             entidadeAula.DataAula = dto.DataAula.Local();

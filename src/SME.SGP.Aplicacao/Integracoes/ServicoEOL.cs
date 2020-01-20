@@ -26,6 +26,24 @@ namespace SME.SGP.Aplicacao.Integracoes
             this.cache = cache;
         }
 
+        public async Task AlterarEmail(string login, string email)
+        {
+            httpClient.DefaultRequestHeaders.Clear();
+
+            var valoresParaEnvio = new List<KeyValuePair<string, string>> {
+                { new KeyValuePair<string, string>("usuario", login) },
+                { new KeyValuePair<string, string>("email", email) }};
+
+            var resposta = await httpClient.PostAsync($"AutenticacaoSgp/AlterarEmail", new FormUrlEncodedContent(valoresParaEnvio));
+
+            if (resposta.IsSuccessStatusCode)
+                return;
+
+            var mensagem = await resposta.Content.ReadAsStringAsync();
+
+            throw new NegocioException(mensagem);
+        }
+
         public async Task<AlterarSenhaRespostaDto> AlterarSenha(string login, string novaSenha)
         {
             httpClient.DefaultRequestHeaders.Clear();
@@ -81,6 +99,18 @@ namespace SME.SGP.Aplicacao.Integracoes
                 return JsonConvert.DeserializeObject<UsuarioEolAutenticacaoRetornoDto>(json);
             }
             else return null;
+        }
+
+        public async Task<bool> ExisteUsuarioComMesmoEmail(string login, string email)
+        {
+            var resposta = await httpClient.GetAsync($"autenticacaoSgp/{login}/ValidarEmailExistente/{email}/");
+
+            if (resposta.IsSuccessStatusCode)
+            {
+                var json = await resposta.Content.ReadAsStringAsync();
+                return JsonConvert.DeserializeObject<bool>(json);
+            }
+            return false;
         }
 
         public async Task<AbrangenciaRetornoEolDto> ObterAbrangencia(string login, Guid perfil)
@@ -525,6 +555,27 @@ namespace SME.SGP.Aplicacao.Integracoes
             return null;
         }
 
+        public async Task<IEnumerable<TurmaParaCopiaPlanoAnualDto>> ObterTurmasParaCopiaPlanoAnual(string codigoRf, int componenteCurricularId, int codigoTurma)
+        {
+            httpClient.DefaultRequestHeaders.Clear();
+
+            var parametros = JsonConvert.SerializeObject(new
+            {
+                codigoRf,
+                componenteCurricular = componenteCurricularId,
+                codigoTurma
+            });
+
+            var resposta = await httpClient.PostAsync($"funcionarios/BuscarTurmasElegiveis", new StringContent(parametros, Encoding.UTF8, "application/json-patch+json"));
+            var turmas = new List<TurmaParaCopiaPlanoAnualDto>();
+            if (resposta.IsSuccessStatusCode)
+            {
+                var json = await resposta.Content.ReadAsStringAsync();
+                turmas = JsonConvert.DeserializeObject<List<TurmaParaCopiaPlanoAnualDto>>(json);
+            }
+            return turmas;
+        }
+
         public async Task<IEnumerable<TurmaPorUEResposta>> ObterTurmasPorUE(string ueId, string anoLetivo)
         {
             httpClient.DefaultRequestHeaders.Clear();
@@ -592,13 +643,16 @@ namespace SME.SGP.Aplicacao.Integracoes
             }
             return false;
         }
+
         private IEnumerable<DisciplinaDto> MapearParaDtoDisciplinas(IEnumerable<RetornoDisciplinaDto> disciplinas)
         {
             return disciplinas.Select(x => new DisciplinaDto
             {
                 CodigoComponenteCurricular = x.CdComponenteCurricular,
                 Nome = x.Descricao,
-                Regencia = x.EhRegencia
+                Regencia = x.EhRegencia,
+                Compartilhada = x.EhCompartilhada,
+                RegistroFrequencia = x.PermiteRegistroFrequencia
             });
         }
 
@@ -632,36 +686,6 @@ namespace SME.SGP.Aplicacao.Integracoes
                 return JsonConvert.DeserializeObject<IEnumerable<DisciplinaResposta>>(json);
             }
             return null;
-        }
-
-        public async Task<bool> ExisteUsuarioComMesmoEmail(string login, string email)
-        {
-            var resposta = await httpClient.GetAsync($"autenticacaoSgp/{login}/ValidarEmailExistente/{email}/");
-
-            if (resposta.IsSuccessStatusCode)
-            {
-                var json = await resposta.Content.ReadAsStringAsync();
-                return JsonConvert.DeserializeObject<bool>(json);
-            }
-            return false;
-        }
-
-        public async Task AlterarEmail(string login, string email)
-        {
-            httpClient.DefaultRequestHeaders.Clear();
-
-            var valoresParaEnvio = new List<KeyValuePair<string, string>> {
-                { new KeyValuePair<string, string>("usuario", login) },
-                { new KeyValuePair<string, string>("email", email) }};
-
-            var resposta = await httpClient.PostAsync($"AutenticacaoSgp/AlterarEmail", new FormUrlEncodedContent(valoresParaEnvio));
-
-            if (resposta.IsSuccessStatusCode)
-                return;
-
-            var mensagem = await resposta.Content.ReadAsStringAsync();
-
-            throw new NegocioException(mensagem);
         }
     }
 }

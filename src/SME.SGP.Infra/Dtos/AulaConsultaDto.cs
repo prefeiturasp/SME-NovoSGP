@@ -9,10 +9,12 @@ namespace SME.SGP.Infra
     {
         public long Id { get; set; }
         public string DisciplinaId { get; set; }
+        public string DisciplinaCompartilhadaId { get; set; }
         public string TurmaId { get; set; }
         public string UeId { get; set; }
         public long TipoCalendarioId { get; set; }
         public TipoAula TipoAula { get; set; }
+        public bool AulaCJ { get; set; }
         public int Quantidade { get; set; }
         public DateTime DataAula { get; set; }
         public RecorrenciaAula RecorrenciaAula { get; set; }

@@ -570,12 +570,6 @@ const Notas = ({ match }) => {
                       <p>{auditoriaInfo.auditoriaAlterado || ''}</p>
                     </span>
                   </ContainerAuditoria>
-                  <span style={{ float: 'right' }} className="mt-1 ml-1">
-                    Aluno ausente na data da avaliação
-                  </span>
-                  <span className="icon-legenda-aluno-ausente">
-                    <i className="fas fa-user-times" />
-                  </span>
                 </div>
               </div>
             </>

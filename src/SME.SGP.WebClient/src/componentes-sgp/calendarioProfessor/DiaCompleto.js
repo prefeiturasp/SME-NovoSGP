@@ -42,6 +42,10 @@ const DiaCompleto = props => {
   const permissaoTela = useSelector(
     state => state.usuario.permissoes[RotasDTO.CALENDARIO_PROFESSOR]
   );
+
+  const usuario = useSelector(state => state.usuario);
+  const { turmaSelecionada: turmaSelecionadaStore } = usuario;
+
   const diaSelecionado = useSelector(
     state => state.calendarioProfessor.diaSelecionado
   );
@@ -74,6 +78,7 @@ const DiaCompleto = props => {
               ueId: unidadeEscolarSelecionada,
               turmaId: turmaSelecionada,
               todasTurmas,
+              turmaHistorico: turmaSelecionadaStore.consideraHistorico,
             })
             .then(resposta => {
               if (resposta.data) setEventosDia(resposta.data);
@@ -176,7 +181,7 @@ const DiaCompleto = props => {
   return (
     estaAberto && (
       <Loader loading={carregandoDia} tip="">
-        <Div className="border-bottom border-top-0 h-100 p-3">
+        <Div className="border-bottom border-top-0 h-100 p-md-1 p-3">
           {eventosDia &&
           eventosDia.eventosAulas &&
           eventosDia.eventosAulas.length > 0 ? (
@@ -194,14 +199,14 @@ const DiaCompleto = props => {
                         aoClicarEvento(evento.id, evento.tipoEvento)
                       }
                     >
-                      <Grid
+                      <Div
                         cols={
                           (evento.tipoEvento === TiposEventoAulaDTO.Aula &&
                             1) ||
                           (evento.tipoEvento === TiposEventoAulaDTO.CJ && 1) ||
                           2
                         }
-                        className="pl-0"
+                        className="px-1"
                       >
                         <Botao
                           label={evento.tipoEvento}
@@ -222,11 +227,11 @@ const DiaCompleto = props => {
                           border
                           steady
                         />
-                      </Grid>
+                      </Div>
                       {(evento.tipoEvento === TiposEventoAulaDTO.Aula ||
                         evento.tipoEvento === TiposEventoAulaDTO.CJ) &&
                         evento.dadosAula && (
-                          <Grid cols={1} className="px-0">
+                          <Div cols={1} className="px-1">
                             <Botao
                               label={window
                                 .moment(evento.dadosAula.horario, 'LT')
@@ -236,9 +241,9 @@ const DiaCompleto = props => {
                               border
                               steady
                             />
-                          </Grid>
+                          </Div>
                         )}
-                      <Grid
+                      <Div
                         cols={
                           evento.tipoEvento === TiposEventoAulaDTO.Aula ||
                           evento.tipoEvento === TiposEventoAulaDTO.CJ
@@ -254,7 +259,7 @@ const DiaCompleto = props => {
                           className={`${(evento.tipoEvento ===
                             TiposEventoAulaDTO.Aula ||
                             evento.tipoEvento === TiposEventoAulaDTO.CJ) &&
-                            'pl-3'}`}
+                            'pl-3 descricao'}`}
                         >
                           {evento.tipoEvento !== TiposEventoAulaDTO.Aula &&
                             evento.tipoEvento !== TiposEventoAulaDTO.CJ &&
@@ -264,15 +269,15 @@ const DiaCompleto = props => {
                             evento.dadosAula &&
                             `${evento.dadosAula.turma} - ${evento.dadosAula.modalidade} - ${evento.dadosAula.tipo} - ${evento.dadosAula.unidadeEscolar} - ${evento.dadosAula.disciplina}`}
                         </Div>
-                      </Grid>
+                      </Div>
                     </Evento>
                     {evento.dadosAula && evento.dadosAula.atividade.length
                       ? evento.dadosAula.atividade.map(atividade => {
                           return (
-                            <Grid
+                            <Div
                               key={atividade.id}
                               cols={2}
-                              className="pr-0 d-flex align-items-center"
+                              className="pr-0 d-flex align-items-center px-2 p-x-md-3"
                             >
                               <Botao
                                 label="Avaliação"
@@ -283,7 +288,7 @@ const DiaCompleto = props => {
                                 }
                                 border
                               />
-                            </Grid>
+                            </Div>
                           );
                         })
                       : null}
