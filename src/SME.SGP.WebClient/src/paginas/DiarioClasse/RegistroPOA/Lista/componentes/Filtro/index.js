@@ -15,7 +15,7 @@ import MesesDropDown from '../../../componentes/MesesDropDown';
 import { DreDropDown, UeDropDown } from '~/componentes-sgp';
 
 // Styles
-import { Row } from './styles';
+import { Linha } from '~/componentes/EstilosGlobais';
 import { store } from '~/redux';
 
 function Filtro({ onFiltrar }) {
@@ -51,7 +51,7 @@ function Filtro({ onFiltrar }) {
     >
       {form => (
         <Form className="col-md-12 mb-4">
-          <Row className="row mb-2">
+          <Linha className="row mb-2">
             <Grid cols={6}>
               <DreDropDown
                 url="v1/dres/atribuicoes"
@@ -67,16 +67,16 @@ function Filtro({ onFiltrar }) {
                 onChange={() => null}
               />
             </Grid>
-          </Row>
-          <Row className="row mb-2">
+          </Linha>
+          <Linha className="row mb-2">
             <Localizador
               dreId={form.values.dreId}
               anoLetivo={anoLetivo}
               form={form}
               onChange={() => null}
             />
-          </Row>
-          <Row className="row mb-2">
+          </Linha>
+          <Linha className="row mb-2">
             <Grid cols={2}>
               <MesesDropDown form={form} />
             </Grid>
@@ -90,7 +90,7 @@ function Filtro({ onFiltrar }) {
                 allowClear
               />
             </Grid>
-          </Row>
+          </Linha>
         </Form>
       )}
     </Formik>

@@ -3,7 +3,13 @@ import { Menu, Layout, Tooltip } from 'antd';
 import { Link } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import { Base } from '../componentes/colors';
-import { MenuBody, DivFooter, MenuScope, Topo } from './sider.css';
+import {
+  MenuBody,
+  DivFooter,
+  MenuScope,
+  Topo,
+  IconeRetrair,
+} from './sider.css';
 import LogoMenuFooter from '../recursos/LogoMenuFooter.svg';
 import { store } from '../redux';
 import {
@@ -147,20 +153,19 @@ const Sider = () => {
   };
 
   return (
-    <MenuBody
-      id="main"
-      style={{ width: NavegacaoStore.retraido ? '115px' : '250px' }}
-    >
+    <MenuBody id="main" retraido={NavegacaoStore.retraido}>
       <Sider
         style={{ background: Base.Roxo, height: '100%' }}
         collapsed={NavegacaoStore.retraido}
         onCollapse={NavegacaoStore.retraido}
         width="250px"
         collapsedWidth="115px"
+        breakpoint="lg"
+        onBreakpoint={breakpoint => store.dispatch(menuRetraido(breakpoint))}
       >
         <Topo>
           <div className="conteudo">
-            <a className="arrow" onClick={alternarRetraido}>
+            <IconeRetrair className="arrow" onClick={alternarRetraido}>
               <i
                 style={{ color: Base.Branco }}
                 className={
@@ -169,7 +174,7 @@ const Sider = () => {
                     : 'fas fa-chevron-circle-left'
                 }
               />
-            </a>
+            </IconeRetrair>
           </div>
           <div
             className={NavegacaoStore.retraido ? 'perfil-retraido' : 'perfil'}
@@ -226,7 +231,7 @@ const Sider = () => {
           <DivFooter>
             <Footer>
               <div className="logo-secretaria" hidden>
-                <img src={LogoMenuFooter} />
+                <img alt="Logotipo SME" src={LogoMenuFooter} />
               </div>
               <div className="descricao">
                 <span>SME-SP-SGP - Distribuído sob a Licença AGPL V3</span>

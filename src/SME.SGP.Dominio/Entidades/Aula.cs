@@ -48,6 +48,7 @@ namespace SME.SGP.Dominio
         public long? AulaPaiId { get; set; }
         public DateTime DataAula { get; set; }
         public string DisciplinaId { get; set; }
+        public string DisciplinaCompartilhadaId { get; set; }
 
         public bool EhAEE => ComponentesDeAEEColaborativo.Any(c => c == DisciplinaId);
         public bool EhAEEContraturno => ComponentesDeAEEContraturno.Any(c => c == DisciplinaId);

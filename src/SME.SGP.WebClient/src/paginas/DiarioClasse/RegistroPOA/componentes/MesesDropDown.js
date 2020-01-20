@@ -4,55 +4,15 @@ import t from 'prop-types';
 // Componentes
 import { SelectComponent } from '~/componentes';
 
-function MesesDropDown({ form, label, desabilitado }) {
+function MesesDropDown({ form, label, desabilitado, name }) {
   const listaMeses = [
     {
       valor: '1',
-      desc: 'Janeiro',
+      desc: '1',
     },
     {
       valor: '2',
-      desc: 'Fevereiro',
-    },
-    {
-      valor: '3',
-      desc: 'Março',
-    },
-    {
-      valor: '4',
-      desc: 'Abril',
-    },
-    {
-      valor: '5',
-      desc: 'Maio',
-    },
-    {
-      valor: '6',
-      desc: 'Junho',
-    },
-    {
-      valor: '7',
-      desc: 'Julho',
-    },
-    {
-      valor: '8',
-      desc: 'Agosto',
-    },
-    {
-      valor: '9',
-      desc: 'Setembro',
-    },
-    {
-      valor: '10',
-      desc: 'Outubro',
-    },
-    {
-      valor: '11',
-      desc: 'Novembro',
-    },
-    {
-      valor: '12',
-      desc: 'Dezembro',
+      desc: '2',
     },
   ];
 
@@ -63,8 +23,8 @@ function MesesDropDown({ form, label, desabilitado }) {
       valueText="desc"
       lista={listaMeses}
       form={form}
-      name="mes"
-      placeholder="Mês"
+      name={name}
+      placeholder="Bimestre"
       className="select-mes"
       disabled={desabilitado}
     />
@@ -75,12 +35,14 @@ MesesDropDown.propTypes = {
   form: t.oneOfType([t.any]),
   label: t.string,
   desabilitado: t.bool,
+  name: t.string,
 };
 
 MesesDropDown.defaultProps = {
   form: null,
   label: null,
   desabilitado: false,
+  name: 'mes',
 };
 
 export default MesesDropDown;

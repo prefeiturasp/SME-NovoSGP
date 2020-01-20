@@ -9,6 +9,7 @@ namespace SME.SGP.Dados.Mapeamentos
             ToTable("aula");
             Map(a => a.UeId).ToColumn("ue_id");
             Map(a => a.DisciplinaId).ToColumn("disciplina_id");
+            Map(a => a.DisciplinaCompartilhadaId).ToColumn("disciplina_compartilhada_id");
             Map(a => a.TurmaId).ToColumn("turma_id");
             Map(a => a.TipoCalendarioId).ToColumn("tipo_calendario_id");
             Map(a => a.ProfessorRf).ToColumn("professor_rf");
