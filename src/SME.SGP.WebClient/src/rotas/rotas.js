@@ -36,6 +36,7 @@ import TipoAvaliacaoForm from '~paginas/Configuracoes/TipoAvaliacao/tipoAvaliaca
 import AulaDadaAulaPrevista from '~/paginas/DiarioClasse/AulaDadaAulaPrevista/aulaDadaAulaPrevista';
 import RegistroPOALista from '~/paginas/DiarioClasse/RegistroPOA/Lista';
 import RegistroPOAForm from '~/paginas/DiarioClasse/RegistroPOA/Form';
+import PeriodoFechamentoAbertura from '~/paginas/CalendarioEscolar/PeriodoFechamentoAbertura/periodo-fechamento-abertura';
 
 const rotas = new Map();
 
@@ -529,6 +530,16 @@ rotas.set(`${RotasDto.REGISTRO_POA}/editar/:id`, {
   tipo: RotasTipo.EstruturadaAutenticada,
   temPermissionamento: true,
   chavePermissao: RotasDto.REGISTRO_POA,
+});
+
+rotas.set(`${RotasDto.PERIODO_FECHAMENTO_ABERTURA}`, {
+  breadcrumbName: 'Abertura',
+  menu: ['Calendário Escolar', 'Período de Fechamento'],
+  parent: '/',
+  component: PeriodoFechamentoAbertura,
+  exact: true,
+  tipo: RotasTipo.EstruturadaAutenticada,
+  temPermissionamento: false,
 });
 
 const rotasArray = [];
