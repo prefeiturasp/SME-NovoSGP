@@ -61,7 +61,7 @@ function RegistroPOAForm({ match }) {
   const [descricao, setDescricao] = useState('');
   const ehEdicaoRegistro = match && match.params && match.params.id > 0;
   const [valoresIniciais, setValoresIniciais] = useState({
-    mes: '',
+    bimestre: '',
     titulo: '',
     descricao: '',
     professorRf: '',
@@ -72,7 +72,7 @@ function RegistroPOAForm({ match }) {
 
   const validacoes = () => {
     return Yup.object({
-      mes: Yup.number().required('Campo obrigatório!'),
+      bimestre: Yup.number().required('Campo obrigatório!'),
       titulo: Yup.string().required('O campo "Título" é obrigatório!'),
       professorRf: Yup.number()
         .typeError('Informar um número inteiro')
@@ -193,7 +193,7 @@ function RegistroPOAForm({ match }) {
         if (registro && registro.data) {
           setValoresIniciais({
             ...registro.data,
-            mes: String(registro.data.mes),
+            bimestre: String(registro.data.bimestre),
             professorRf: registro.data.codigoRf,
             professorNome: registro.data.nome,
             titulo: registro.data.titulo,
@@ -312,6 +312,7 @@ function RegistroPOAForm({ match }) {
                   <Grid cols={2}>
                     <MesesDropDown
                       label="Bimestre"
+                      name="bimestre"
                       form={form}
                       desabilitado={somenteConsulta}
                     />

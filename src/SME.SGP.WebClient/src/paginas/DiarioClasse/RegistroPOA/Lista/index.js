@@ -18,9 +18,6 @@ import { Cabecalho } from '~/componentes-sgp';
 import { Loader, Card, ButtonGroup, ListaPaginada } from '~/componentes';
 import Filtro from './componentes/Filtro';
 
-// Funções
-import { renderizarMes } from '~/utils/funcoes/dataMes';
-
 function RegistroPOALista() {
   const [itensSelecionados, setItensSelecionados] = useState([]);
   const [filtro, setFiltro] = useState({});
@@ -35,12 +32,9 @@ function RegistroPOALista() {
 
   const colunas = [
     {
-      title: 'Mês',
-      dataIndex: 'mes',
+      title: 'Bimestre',
+      dataIndex: 'bimestre',
       width: '20%',
-      render: valor => {
-        return renderizarMes(valor);
-      },
     },
     {
       title: 'Título',
@@ -105,7 +99,7 @@ function RegistroPOALista() {
         ...valoresFiltro,
         CodigoRf: valoresFiltro.professorRf,
         anoLetivo,
-        mes: valoresFiltro.mes || 0,
+        bimestre: valoresFiltro.bimestre || 0,
       });
     },
     [anoLetivo]
