@@ -42,6 +42,7 @@ const PlanoAula = props => {
     ehMedio,
     temObjetivos,
     setTemObjetivos,
+    expandido,
     auditoria,
     temAvaliacao,
   } = props;
@@ -50,7 +51,7 @@ const PlanoAula = props => {
   const usuario = useSelector(state => state.usuario);
   const { turmaSelecionada } = usuario;
   const turmaId = turmaSelecionada ? turmaSelecionada.turma : 0;
-  const [mostrarCardPrincipal, setMostrarCardPrincipal] = useState(true);
+  const [mostrarCardPrincipal, setMostrarCardPrincipal] = useState(expandido);
   const [mostrarModalCopiarConteudo, setMostrarModalCopiarConteudo] = useState(
     false
   );
