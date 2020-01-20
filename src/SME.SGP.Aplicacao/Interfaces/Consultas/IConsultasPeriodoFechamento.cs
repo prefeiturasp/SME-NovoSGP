@@ -1,10 +1,9 @@
-﻿using SME.SGP.Dominio;
-using System.Collections.Generic;
+﻿using SME.SGP.Infra;
 
 namespace SME.SGP.Aplicacao
 {
-    public interface IConsultasPeriodoFechamento
+    public interface IConsultasFechamento
     {
-        IEnumerable<PeriodoFechamento> GetTeste();
+        FechamentoDto ObterPorTipoCalendarioDreEUe(FiltroFechamentoDto fechamentoDto);
     }
 }

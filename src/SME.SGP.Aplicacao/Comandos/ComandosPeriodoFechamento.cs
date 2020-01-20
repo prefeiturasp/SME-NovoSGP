@@ -4,9 +4,9 @@ namespace SME.SGP.Aplicacao
 {
     public class ComandosPeriodoFechamento : IComandosPeriodoFechamento
     {
-        private readonly IServicoPeriodoFechamento servicoPeriodoFechamento;
+        private readonly IServicoFechamento servicoPeriodoFechamento;
 
-        public ComandosPeriodoFechamento(IServicoPeriodoFechamento servicoPeriodoFechamento)
+        public ComandosPeriodoFechamento(IServicoFechamento servicoPeriodoFechamento)
         {
             this.servicoPeriodoFechamento = servicoPeriodoFechamento ?? throw new System.ArgumentNullException(nameof(servicoPeriodoFechamento));
         }

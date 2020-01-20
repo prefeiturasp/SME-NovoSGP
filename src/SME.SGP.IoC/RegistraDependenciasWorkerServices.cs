@@ -96,7 +96,7 @@ namespace SME.SGP.IoC
             services.TryAddScopedWorkerService<IConsultasAtribuicaoCJ, ConsultasAtribuicaoCJ>();
             services.TryAddScopedWorkerService<IConsultasUe, ConsultasUe>();
             services.TryAddScopedWorkerService<IConsultasEventosAulasCalendario, ConsultasEventosAulasCalendario>();
-            services.TryAddScopedWorkerService<IConsultasPeriodoFechamento, ConsultasPeriodoFechamento>();
+            services.TryAddScopedWorkerService<IConsultasFechamento, ConsultasFechamento>();
         }
 
         private static void RegistrarContextos(IServiceCollection services)
@@ -162,7 +162,7 @@ namespace SME.SGP.IoC
             services.TryAddScopedWorkerService<IRepositorioWorkflowAprovacaoNivel, RepositorioWorkflowAprovacaoNivel>();
             services.TryAddScopedWorkerService<IRepositorioWorkflowAprovacaoNivelNotificacao, RepositorioWorkflowAprovaNivelNotificacao>();
             services.TryAddScopedWorkerService<IRepositorioWorkflowAprovacaoNivelUsuario, RepositorioWorkflowAprovacaoNivelUsuario>();
-            services.TryAddScopedWorkerService<IRepositorioPeriodoFechamento, RepositorioPeriodoFechamento>();
+            services.TryAddScopedWorkerService<IRepositorioFechamento, RepositorioFechamento>();
         }
 
         private static void RegistrarServicos(IServiceCollection services)
@@ -191,7 +191,7 @@ namespace SME.SGP.IoC
             services.TryAddScopedWorkerService<IServicoAluno, ServicoAluno>();
             services.TryAddScopedWorkerService<IServicoAtribuicaoCJ, ServicoAtribuicaoCJ>();
             services.TryAddScopedWorkerService<IServicoDeNotasConceitos, ServicoDeNotasConceitos>();
-            services.TryAddScopedWorkerService<IServicoPeriodoFechamento, ServicoPeriodoFechamento>();
+            services.TryAddScopedWorkerService<IServicoFechamento, ServicoFechamento>();
         }
 
         private static void ResgistraDependenciaHttp(IServiceCollection services)
