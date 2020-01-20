@@ -23,17 +23,18 @@ namespace SME.SGP.Aplicacao
         public void Excluir(ProcessoExecutando processo)
             => repositorio.Remover(processo);
 
-        public async Task IncluirCalculoFrequencia(string turmaId, string disciplinaId)
+        public async Task IncluirCalculoFrequencia(string turmaId, string disciplinaId, int bimestre)
             => await Incluir(new ProcessoExecutando()
             {
                 TipoProcesso = TipoProcesso.CalculoFrequencia,
                 TurmaId = turmaId,
-                DisciplinaId = disciplinaId
+                DisciplinaId = disciplinaId,
+                Bimestre = bimestre
             });
 
-        public async Task ExcluirCalculoFrequencia(string turmaId, string disciplinaId)
+        public async Task ExcluirCalculoFrequencia(string turmaId, string disciplinaId, int bimestre)
         {
-            var processo = await repositorio.ObterProcessoCalculoFrequencia(turmaId, disciplinaId);
+            var processo = await repositorio.ObterProcessoCalculoFrequencia(turmaId, disciplinaId, bimestre);
             if (processo != null)
                 Excluir(processo);
         }

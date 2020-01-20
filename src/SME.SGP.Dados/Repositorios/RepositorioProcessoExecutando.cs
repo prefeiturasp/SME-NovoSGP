@@ -20,15 +20,16 @@ namespace SME.SGP.Dados
             this.database = database;
         }
 
-        public async Task<ProcessoExecutando> ObterProcessoCalculoFrequencia(string turmaId, string disciplinaId)
+        public async Task<ProcessoExecutando> ObterProcessoCalculoFrequencia(string turmaId, string disciplinaId, int bimestre)
         {
             var query = @"select * 
                             from processo_executando
                            where tipo_processo = 1
                              and turma_id = @turmaId
-                             and disciplina_id = @disciplinaId";
+                             and disciplina_id = @disciplinaId
+                             and bimestre = @bimestre";
 
-            return await database.Conexao.QueryFirstOrDefaultAsync<ProcessoExecutando>(query, new { turmaId, disciplinaId });
+            return await database.Conexao.QueryFirstOrDefaultAsync<ProcessoExecutando>(query, new { turmaId, disciplinaId, bimestre });
         }
 
         public void Remover(ProcessoExecutando processo)
