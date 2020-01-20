@@ -15,5 +15,8 @@ namespace SME.SGP.Aplicacao.Integracoes.Respostas
 
         [JsonProperty("compartilhada")]
         public bool Compartilhada { get; set; }
+        
+        [JsonProperty("registrofrequencia")]
+        public bool RegistroFrequencia { get; set; }
     }
 }
