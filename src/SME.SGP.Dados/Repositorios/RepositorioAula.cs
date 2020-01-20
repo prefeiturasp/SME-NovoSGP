@@ -32,21 +32,23 @@ namespace SME.SGP.Dados.Repositorios
             });
         }
 
-        public async Task<AulaConsultaDto> ObterAulaIntervaloTurmaDisciplina(DateTime dataInicio, DateTime dataFim, string turmaId, string disciplinaId)
+        public async Task<AulaConsultaDto> ObterAulaIntervaloTurmaDisciplina(DateTime dataInicio, DateTime dataFim, string turmaId, long atividadeAvaliativaId)
         {
             var query = @"select *
                  from aula
                 where not excluido
                   and DATE(data_aula) between @dataInicio and @dataFim
                   and turma_id = @turmaId
-                  and disciplina_id = @disciplinaId";
+                  and disciplina_id in (
+                select disciplina_id from atividade_avaliativa_disciplina aad
+               where atividade_avaliativa_id = @atividadeAvaliativaId)";
 
             return await database.Conexao.QueryFirstOrDefaultAsync<AulaConsultaDto>(query, new
             {
                 dataInicio = dataInicio.Date,
                 dataFim = dataFim.Date,
                 turmaId,
-                disciplinaId
+                atividadeAvaliativaId
             });
         }
 
@@ -64,7 +66,7 @@ namespace SME.SGP.Dados.Repositorios
             StringBuilder query = new StringBuilder();
             MontaCabecalho(query);
             query.AppendLine("FROM public.aula a");
-            MontaWhere(query, null, turmaId, ueId, null, data, codigoRf, null, null,disciplinasId);
+            MontaWhere(query, null, turmaId, ueId, null, data, codigoRf, null, null, disciplinasId);
             return (await database.Conexao.QueryAsync<AulaDto>(query.ToString(), new { turmaId, ueId, data, codigoRf, disciplinasId }));
         }
 
@@ -104,15 +106,15 @@ namespace SME.SGP.Dados.Repositorios
             }));
         }
 
-
-        public async Task<IEnumerable<AulaCompletaDto>> ObterAulasCompleto(long tipoCalendarioId, string turmaId, string ueId, DateTime data, Guid perfil, string CodigoRf)
+        public async Task<IEnumerable<AulaCompletaDto>> ObterAulasCompleto(long tipoCalendarioId, string turmaId, string ueId, DateTime data, Guid perfil, string CodigoRf, bool turmaHistorico = false)
         {
             StringBuilder query = new StringBuilder();
             MontaCabecalho(query);
             query.AppendLine(",ab.turma_nome,");
             query.AppendLine("ab.ue_nome");
             query.AppendLine("FROM public.aula a");
-            query.AppendLine("INNER JOIN v_abrangencia ab on a.turma_id = ab.turma_id");
+            query.AppendLine($"INNER JOIN {(turmaHistorico ? "v_abrangencia_historica" : "v_abrangencia")} ab");
+            query.AppendLine("on a.turma_id = ab.turma_id");
             MontaWhere(query, tipoCalendarioId, turmaId, ueId, null, data, CodigoRf);
             MontaGroupBy(query);
             return (await database.Conexao.QueryAsync<AulaCompletaDto>(query.ToString(), new { tipoCalendarioId, turmaId, ueId, data, perfil, CodigoRf }));

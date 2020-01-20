@@ -53,17 +53,14 @@ export default function ReiniciarSenha() {
     {
       title: 'Nome do usuário',
       dataIndex: 'nomeServidor',
-      width: '66%',
     },
     {
       title: 'Registro Funcional (RF)',
       dataIndex: 'codigoRf',
-      width: '30%',
     },
     {
       title: 'Ação',
       dataIndex: 'acaoReiniciar',
-      width: '3%',
       render: (texto, linha) => {
         return (
           <div className="botao-reiniciar-tabela-acao">
@@ -327,7 +324,7 @@ export default function ReiniciarSenha() {
               perguntaAtencao={validaSeTemEmailCadastrado()}
               labelBotaoSecundario="Cancelar"
               titulo="Reiniciar Senha"
-              closable={false}
+              closable
             >
               <b> Deseja realmente reiniciar essa senha? </b>
 

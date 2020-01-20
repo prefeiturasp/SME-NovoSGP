@@ -16,7 +16,7 @@ import { verificaSomenteConsulta } from '~/servicos/servico-navegacao';
 const TipoEventosLista = () => {
   const Div = styled.div`
     .select-local {
-      max-width: 185px;
+      
     }
   `;
 
@@ -194,41 +194,7 @@ const TipoEventosLista = () => {
       </Grid>
       <Card className="rounded" mx="mx-auto">
         <Div className="row w-100 mx-auto mb-5">
-          <Div className="col-3" style={{ maxWidth: '20%' }}>
-            <SelectComponent
-              placeholder="Local de ocorrência"
-              valueOption="valor"
-              valueText="descricao"
-              lista={listaLocalOcorrencia}
-              valueSelect={localOcorrenciaSelecionado}
-              onChange={aoSelecionarLocalOcorrencia}
-              className="select-local"
-            />
-          </Div>
-          <Div className="col-2">
-            <SelectComponent
-              placeholder="Letivo"
-              valueOption="valor"
-              valueText="descricao"
-              lista={listaLetivo}
-              valueSelect={letivoSelecionado}
-              onChange={aoSelecionarLetivo}
-            />
-          </Div>
-          <Div className="col-4 position-relative">
-            <Busca className="fa fa-search fa-lg bg-transparent position-absolute text-center" />
-            <CampoTexto
-              className="form-control form-control-lg"
-              placeholder="Digite o nome do tipo de evento"
-              onChange={aoDigitarNomeTipoEvento}
-              value={nomeTipoEvento}
-              ref={campoNomeTipoEventoRef}
-            />
-          </Div>
-          <Div
-            className="col-3 d-flex justify-content-end"
-            style={{ flex: '0 0 30%', maxWidth: '30%', width: '30%' }}
-          >
+          <Div className="col-12 d-flex justify-content-end">
             <Button
               label="Voltar"
               Icone="arrow-left"
@@ -252,6 +218,39 @@ const TipoEventosLista = () => {
               onClick={clicouBotaoNovo}
               disabled={!permissoesTela.podeIncluir}
               bold
+            />
+          </Div>
+        </Div>
+        <Div className="row mb-3 w-100 mx-auto">
+          <Div className="col-4">
+            <SelectComponent
+              placeholder="Local de ocorrência"
+              valueOption="valor"
+              valueText="descricao"
+              lista={listaLocalOcorrencia}
+              valueSelect={localOcorrenciaSelecionado}
+              onChange={aoSelecionarLocalOcorrencia}
+              className="select-local"
+            />
+          </Div>
+          <Div className="col-3">
+            <SelectComponent
+              placeholder="Letivo"
+              valueOption="valor"
+              valueText="descricao"
+              lista={listaLetivo}
+              valueSelect={letivoSelecionado}
+              onChange={aoSelecionarLetivo}
+            />
+          </Div>
+          <Div className="col-5 position-relative">
+            <Busca className="fa fa-search fa-lg bg-transparent position-absolute text-center" />
+            <CampoTexto
+              className="form-control form-control-lg"
+              placeholder="Digite o nome do tipo de evento"
+              onChange={aoDigitarNomeTipoEvento}
+              value={nomeTipoEvento}
+              ref={campoNomeTipoEventoRef}
             />
           </Div>
         </Div>

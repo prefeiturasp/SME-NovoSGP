@@ -8,6 +8,7 @@ const Container = styled.div`
   font-weight: bold;
   color: #42474a;
   margin-top: 16px;
+  width: 100%;
 `;
 const Auditoria = ({
   criadoPor,
@@ -27,7 +28,7 @@ const Auditoria = ({
   return (
     <Container>
       {criadoPor ? (
-        <div className="col-xs-12 col-md-6 col-lg-12 d-flex justify-content-start mt-2">
+        <div className="col-xs-12 col-md-12 col-lg-12 d-flex justify-content-start mt-2">
           INSERIDO por {criadoPor} {criadoRf && `(rf: ${criadoRf})`} em{' '}
           {`${criado.format('DD/MM/YYYY')} às ${criado.format('HH:mm')}`}
         </div>
@@ -35,7 +36,7 @@ const Auditoria = ({
         ''
       )}
       {alteradoPor ? (
-        <div className="col-xs-12 col-md-6 col-lg-12 d-flex justify-content-start mt-2">
+        <div className="col-xs-12 col-md-12 col-lg-12 d-flex justify-content-start mt-2">
           ALTERADO por {alteradoPor} {alteradoRf && `(rf: ${alteradoRf})`} em{' '}
           {`${alterado.format('DD/MM/YYYY')}  às ${alterado.format('HH:mm')}`}
         </div>
