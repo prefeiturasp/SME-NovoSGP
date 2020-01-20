@@ -115,7 +115,9 @@ const Filtro = () => {
   );
   const [resultadosFiltro, setResultadosFiltro] = useState([]);
 
-  const [consideraHistorico, setConsideraHistorico] = useState(false);
+  const [consideraHistorico, setConsideraHistorico] = useState(
+    turmaUsuarioSelecionada && !!turmaUsuarioSelecionada.consideraHistorico
+  );
 
   const aoSelecionarHistorico = () => {
     setAnoLetivoSelecionado();
@@ -183,6 +185,7 @@ const Filtro = () => {
         ano: turmaSelecionadaCompleta.ano,
         desc: `${modalidadeDesc.desc} - ${turmaDesc.desc} - ${unidadeEscolarDesc.desc}`,
         periodo: periodoSelecionado || 0,
+        consideraHistorico: consideraHistorico,
       };
 
       dispatch(turmasUsuario(turmas));
@@ -304,6 +307,7 @@ const Filtro = () => {
     setUnidadeEscolarSelecionada(turmaUsuarioSelecionada.unidadeEscolar || '');
     setTurmaSelecionada(turmaUsuarioSelecionada.turma || '');
     setTextoAutocomplete(turmaUsuarioSelecionada.desc || '');
+    setConsideraHistorico(!!turmaUsuarioSelecionada.consideraHistorico);
 
     if (!turmaUsuarioSelecionada.length) setCampoAnoLetivoDesabilitado(false);
 
@@ -639,6 +643,7 @@ const Filtro = () => {
       turma: resultado.codigoTurma,
       desc: resultado.descricaoFiltro,
       periodo: resultado.semestre,
+      consideraHistorico: consideraHistorico,
     };
 
     dispatch(selecionarTurma(turma));
