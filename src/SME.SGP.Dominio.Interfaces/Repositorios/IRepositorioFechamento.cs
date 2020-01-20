@@ -2,6 +2,6 @@
 {
     public interface IRepositorioFechamento : IRepositorioBase<Fechamento>
     {
-        Fechamento ObterPorTipoCalendarioDreEUE(long tipoCalendarioId, string dreId, string ueId);
+        Fechamento ObterPorTipoCalendarioDreEUE(long tipoCalendarioId, long? dreId, long? ueId);
     }
 }

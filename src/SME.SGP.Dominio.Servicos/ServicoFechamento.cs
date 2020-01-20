@@ -15,12 +15,14 @@ namespace SME.SGP.Dominio.Servicos
             this.repositorioFechamento = repositorioFechamento ?? throw new ArgumentNullException(nameof(repositorioFechamento));
         }
 
-        public FechamentoDto ObterPorTipoCalendarioDreEUe(long tipoCalendarioId, string dreId, string ueId)
+        public FechamentoDto ObterPorTipoCalendarioDreEUe(long tipoCalendarioId, long? dreId, long? ueId)
         {
-            var fechamentoSMEDre = repositorioFechamento.ObterPorTipoCalendarioDreEUE(tipoCalendarioId, dreId, string.Empty);
+            var fechamentoSMEDre = repositorioFechamento.ObterPorTipoCalendarioDreEUE(tipoCalendarioId, dreId, null);
             if (fechamentoSMEDre == null)
             {
-                throw new NegocioException("Fechamento da SME não encontrado para este tipo de calendário.");
+                fechamentoSMEDre = repositorioFechamento.ObterPorTipoCalendarioDreEUE(tipoCalendarioId, null, null);
+                if (fechamentoSMEDre == null)
+                    throw new NegocioException("Fechamento da SME/Dre não encontrado para este tipo de calendário.");
             }
 
             var fechamentoDreUe = MapearParaDto(repositorioFechamento.ObterPorTipoCalendarioDreEUE(tipoCalendarioId, dreId, ueId));

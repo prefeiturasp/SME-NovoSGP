@@ -4,6 +4,6 @@ namespace SME.SGP.Dominio.Interfaces
 {
     public interface IServicoFechamento
     {
-        FechamentoDto ObterPorTipoCalendarioDreEUe(long tipoCalendarioId, string dreId, string ueId);
+        FechamentoDto ObterPorTipoCalendarioDreEUe(long tipoCalendarioId, long? dreId, long? ueId);
     }
 }
