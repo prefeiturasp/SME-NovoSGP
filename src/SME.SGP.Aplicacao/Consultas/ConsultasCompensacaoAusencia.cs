@@ -128,6 +128,8 @@ namespace SME.SGP.Aplicacao
                         alunoDto.MaximoCompensacoesPermitidas = quantidadeMaximaCompensacoes > alunoDto.QuantidadeFaltasTotais ? alunoDto.QuantidadeFaltasTotais : quantidadeMaximaCompensacoes;
                         alunoDto.Alerta = frequenciaAluno.PercentualFrequencia <= percentualFrequenciaAlerta;
                     }
+                    else
+                        alunoDto.PercentualFrequencia = 100;
 
                     compensacaoDto.Alunos.Add(alunoDto);
                 }
