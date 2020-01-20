@@ -185,39 +185,33 @@ function RegistroPOAForm({ match }) {
     }
   };
 
-  const buscarPorId = useCallback(
-    async id => {
-      try {
-        dispatch(setLoaderSecao(true));
-        const registro = await RegistroPOAServico.buscarRegistroPOA(id);
-        if (registro && registro.data) {
-          setValoresIniciais({
-            ...registro.data,
-            bimestre: String(registro.data.bimestre),
-            professorRf: registro.data.codigoRf,
-            professorNome: registro.data.nome,
-            titulo: registro.data.titulo,
-          });
-          setDescricao(registro.data.descricao);
-          setAuditoria({
-            criadoPor: registro.data.criadoPor,
-            criadoRf: registro.data.criadoRF > 0 ? registro.data.criadoRF : '',
-            criadoEm: registro.data.criadoEm,
-            alteradoPor: registro.data.alteradoPor,
-            alteradoRf:
-              registro.data.alteradoRF > 0 ? registro.data.alteradoRF : '',
-            alteradoEm: registro.data.alteradoEm,
-          });
-          setValoresCarregados(true);
-          dispatch(setLoaderSecao(false));
-        }
-      } catch (err) {
-        dispatch(setLoaderSecao(false));
-        erros(err);
+  const buscarPorId = useCallback(async id => {
+    try {
+      const registro = await RegistroPOAServico.buscarRegistroPOA(id);
+      if (registro && registro.data) {
+        setValoresIniciais({
+          ...registro.data,
+          bimestre: String(registro.data.bimestre),
+          professorRf: registro.data.codigoRf,
+          professorNome: registro.data.nome,
+          titulo: registro.data.titulo,
+        });
+        setDescricao(registro.data.descricao);
+        setAuditoria({
+          criadoPor: registro.data.criadoPor,
+          criadoRf: registro.data.criadoRF > 0 ? registro.data.criadoRF : '',
+          criadoEm: registro.data.criadoEm,
+          alteradoPor: registro.data.alteradoPor,
+          alteradoRf:
+            registro.data.alteradoRF > 0 ? registro.data.alteradoRF : '',
+          alteradoEm: registro.data.alteradoEm,
+        });
+        setValoresCarregados(true);
       }
-    },
-    [dispatch]
-  );
+    } catch (err) {
+      erros(err);
+    }
+  }, []);
 
   const validaFormulario = valores => {
     if (validaSeObjetoEhNuloOuVazio(valores)) return;
