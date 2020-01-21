@@ -322,5 +322,28 @@ namespace SME.SGP.Dominio.Servicos
                 throw new NegocioException("Você não pode fazer alterações ou inclusões nesta turma e data.");
         }
 
+        public async Task Copiar(CompensacaoAusenciaCopiaDto compensacaoCopia)
+        {
+            var compensacaoOrigem = repositorioCompensacaoAusencia.ObterPorId(compensacaoCopia.CompensacaoOrigemId);
+            if (compensacaoOrigem == null)
+                throw new NegocioException("Compensação de origem não localizada com o identificador informado.");
+
+            CompensacaoAusenciaDto compensacaoDto = new CompensacaoAusenciaDto()
+            {
+                TurmaId = compensacaoCopia.TurmaId,
+                Bimestre = compensacaoCopia.Bimestre,
+                DisciplinaId = compensacaoOrigem.DisciplinaId,
+                Atividade = compensacaoOrigem.Nome,
+                Descricao = compensacaoOrigem.Descricao,
+                DisciplinasRegenciaIds = new List<string>(),
+                Alunos = new List<CompensacaoAusenciaAlunoDto>()
+            };
+                
+            var disciplinasRegencia = await repositorioCompensacaoAusenciaDisciplinaRegencia.ObterPorCompensacao(compensacaoOrigem.Id);
+            if (disciplinasRegencia != null && disciplinasRegencia.Any())
+                compensacaoDto.DisciplinasRegenciaIds = disciplinasRegencia.Select(s => s.DisciplinaId);
+
+            await Salvar(0, compensacaoDto);
+        }
     }
 }
