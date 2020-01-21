@@ -11,10 +11,12 @@ import { store } from '~/redux';
 import {
   selecionaDia,
   salvarEventoAulaCalendarioEdicao,
+  salvarDadosAulaFrequencia,
 } from '~/redux/modulos/calendarioProfessor/actions';
 import TiposEventoAulaDTO from '~/dtos/tiposEventoAula';
 import RotasDTO from '~/dtos/rotasDto';
 import Loader from '~/componentes/loader';
+import { SelectComponent } from '~/componentes';
 
 const SemEvento = () => {
   return (
@@ -178,6 +180,11 @@ const DiaCompleto = props => {
     }
   };
 
+  const irParaFrequencia = (disciplinaId, dia) => {
+    store.dispatch(salvarDadosAulaFrequencia(disciplinaId, dia));
+    history.push(`${RotasDTO.FREQUENCIA_PLANO_AULA}`);
+  };
+
   return (
     estaAberto && (
       <Loader loading={carregandoDia} tip="">
@@ -271,27 +278,46 @@ const DiaCompleto = props => {
                         </Div>
                       </Div>
                     </Evento>
-                    {evento.dadosAula && evento.dadosAula.atividade.length
-                      ? evento.dadosAula.atividade.map(atividade => {
-                          return (
-                            <Div
-                              key={atividade.id}
-                              cols={2}
-                              className="pr-0 d-flex align-items-center px-2 p-x-md-3"
-                            >
-                              <Botao
-                                label="Avaliação"
-                                color={Colors.Roxo}
-                                className="w-100 position-relative zIndex"
-                                onClick={() =>
-                                  aoClicarEditarAvaliacao(atividade.id)
-                                }
-                                border
-                              />
-                            </Div>
-                          );
-                        })
-                      : null}
+                    {evento.dadosAula && turmaSelecionada ? (
+                      <Grid
+                        cols={2}
+                        className="pr-0 d-flex align-items-center px-2 p-x-md-3"
+                      >
+                        <Botao
+                          label="Frequência"
+                          color={Colors.Roxo}
+                          className="w-100 position-relative btn-sm zIndex"
+                          onClick={() =>
+                            irParaFrequencia(
+                              evento.dadosAula.disciplinaId,
+                              diaSelecionado
+                            )
+                          }
+                          height="24px"
+                          padding="0 1rem"
+                          border
+                        />
+                      </Grid>
+                    ) : null}
+                    {evento.dadosAula && evento.dadosAula.atividade.length ? (
+                      <Grid
+                        cols={2}
+                        className="pr-0 d-flex align-items-center px-2 p-x-md-3"
+                      >
+                        <SelectComponent
+                          lista={evento.dadosAula.atividade}
+                          classNameContainer="w-100"
+                          className="fonte-14"
+                          onChange={aoClicarEditarAvaliacao}
+                          valueOption="id"
+                          valueText="nomeAvaliacao"
+                          placeholder="Avaliação"
+                          size="small"
+                          border={Base.Roxo}
+                          color={Base.Roxo}
+                        />
+                      </Grid>
+                    ) : null}
                   </Div>
                 );
               })}
