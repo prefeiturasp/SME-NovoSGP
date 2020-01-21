@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Form, Formik } from 'formik';
 import * as Yup from 'yup';
+import { DreDropDown, UeDropDown } from 'componentes-sgp';
 import Cabecalho from '~/componentes-sgp/cabecalho';
 import Button from '~/componentes/button';
 import Card from '~/componentes/card';
@@ -375,7 +376,7 @@ const PeriodoFechamentoAbertura = () => {
                 <br />
                 <div className="col-md-6 pb-2">
                   <Loader loading={carregandoDres} tip="">
-                    <SelectComponent
+                    {/* <SelectComponent
                       name="dre"
                       id="dre"
                       placeholder="Diretoria Regional de Educação (DRE)"
@@ -385,12 +386,18 @@ const PeriodoFechamentoAbertura = () => {
                       onChange={codigo => onChangeDre(codigo)}
                       valueSelect={dreSelecionada}
                       disabled={desabilitaDre}
+                    /> */}
+                    <DreDropDown
+                      label="Diretoria Regional de Educação (DRE)"
+                      form={form}
+                      onChange={() => null}
+                      desabilitado={false}
                     />
                   </Loader>
                 </div>
                 <div className="col-md-6 pb-2">
                   <Loader loading={carregandoUes} tip="">
-                    <SelectComponent
+                    {/* <SelectComponent
                       name="ue"
                       id="ue"
                       placeholder="Unidade Escolar (UE)"
@@ -400,6 +407,14 @@ const PeriodoFechamentoAbertura = () => {
                       onChange={codigo => onChangeUe(codigo)}
                       valueSelect={ueSelecionada}
                       disabled={desabilitaUe}
+                    /> */}
+                    <UeDropDown
+                      dreId={form.values.dreId}
+                      label="Unidade Escolar (UE)"
+                      form={form}
+                      url="v1/dres"
+                      onChange={() => null}
+                      desabilitado={false}
                     />
                   </Loader>
                 </div>
