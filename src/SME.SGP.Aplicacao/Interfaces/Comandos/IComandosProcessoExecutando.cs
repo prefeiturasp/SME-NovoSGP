@@ -11,7 +11,7 @@ namespace SME.SGP.Aplicacao.Interfaces
         Task Incluir(ProcessoExecutando processo);
         void Excluir(ProcessoExecutando processo);
 
-        Task IncluirCalculoFrequencia(string turmaId, string disciplinaId);
-        Task ExcluirCalculoFrequencia(string turmaId, string disciplinaId);
+        Task IncluirCalculoFrequencia(string turmaId, string disciplinaId, int bimestre);
+        Task ExcluirCalculoFrequencia(string turmaId, string disciplinaId, int bimestre);
     }
 }
