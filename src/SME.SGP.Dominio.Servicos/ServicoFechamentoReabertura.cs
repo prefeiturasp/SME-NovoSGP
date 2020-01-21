@@ -1,7 +1,4 @@
 ﻿using SME.SGP.Dominio.Interfaces;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Dominio.Servicos
@@ -17,35 +14,46 @@ namespace SME.SGP.Dominio.Servicos
 
         public async Task Salvar(FechamentoReabertura fechamentoReabertura)
         {
-            fechamentoReabertura.PodeSalvar();
-            await VerificaSeTemReaberturasHierarquicas(fechamentoReabertura);
+            var fechamentoReaberturas = await repositorioFechamentoReabertura.Listar(fechamentoReabertura.TipoCalendarioId, null, null);
+
+            fechamentoReabertura.PodeSalvar(fechamentoReaberturas);
+            //await VerificaSeTemReaberturasHierarquicas(fechamentoReabertura);
         }
 
-        private bool EstaNoRangeDeDatas(IEnumerable<(DateTime, DateTime)> datas, FechamentoReabertura fechamentoReabertura)
-        {
-            return datas.Any(a => (fechamentoReabertura.Inicio.Date <= a.Item1.Date && fechamentoReabertura.Fim.Date >= a.Item2.Date)
-            || (fechamentoReabertura.Inicio <= a.Item2.Date && fechamentoReabertura.Fim.Date >= a.Item2.Date)
-            || (fechamentoReabertura.Inicio >= a.Item1.Date && fechamentoReabertura.Fim.Date <= a.Item2.Date));
-        }
+        //private async Task VerificaSeTemReaberturasHierarquicas(FechamentoReabertura fechamentoReabertura)
+        //{
+        //    if (fechamentoReabertura.EhParaDre())
+        //    {
+        //        var fechamentoReaberturaSME = await repositorioFechamentoReabertura.Listar(fechamentoReabertura.TipoCalendarioId, null, null);
 
-        private async Task VerificaSeTemReaberturasHierarquicas(FechamentoReabertura fechamentoReabertura)
-        {
-            if (fechamentoReabertura.EhParaDre())
-            {
-                var fechamentoReaberturaSME = await repositorioFechamentoReabertura.Listar(fechamentoReabertura.TipoCalendarioId, null, null);
+        //        if (fechamentoReaberturaSME.Any())
+        //        {
+        //            var datasDosFechamentosSME = fechamentoReaberturaSME.Select(a => { return (a.Inicio.Date, a.Fim.Date); });
+        //            fechamentoReabertura.PodePersistirNesteNasDatas(datasDosFechamentosSME);
+        //        }
+        //        else throw new NegocioException("Não há Reabertura de Fechamento cadastrado pela SME.");
+        //    }
+        //    else if (fechamentoReabertura.EhParaUe())
+        //    {
+        //        var fechamentoReaberturaDre = await repositorioFechamentoReabertura.Listar(fechamentoReabertura.TipoCalendarioId, fechamentoReabertura.DreId, null);
 
-                if (fechamentoReaberturaSME.Any())
-                {
-                    var datasDosFechamentosSME = fechamentoReaberturaSME.Select(a => { return (a.Inicio.Date, a.Fim.Date); });
+        //        if (fechamentoReaberturaDre.Any())
+        //        {
+        //            var datasDosFechamentosSME = fechamentoReaberturaDre.Select(a => { return (a.Inicio.Date, a.Fim.Date); });
+        //            fechamentoReabertura.PodePersistirNesteNasDatas(datasDosFechamentosSME);
+        //        }
+        //        else
+        //        {
+        //            var fechamentoReaberturaSME = await repositorioFechamentoReabertura.Listar(fechamentoReabertura.TipoCalendarioId, null, null);
 
-                    if (!EstaNoRangeDeDatas(datasDosFechamentosSME, fechamentoReabertura))
-                        throw new NegocioException("Não há Reabertura de Fechamento cadastrado pela SME neste período informado.");
-                }
-                else throw new NegocioException("Não há Reabertura de Fechamento cadastrado pela SME.");
-            }
-            else if (fechamentoReabertura.EhParaUe())
-            {
-            }
-        }
+        //            if (fechamentoReaberturaSME.Any())
+        //            {
+        //                var datasDosFechamentosSME = fechamentoReaberturaSME.Select(a => { return (a.Inicio.Date, a.Fim.Date); });
+        //                fechamentoReabertura.PodePersistirNesteNasDatas(datasDosFechamentosSME);
+        //            }
+        //            else throw new NegocioException("Não há Reabertura de Fechamento cadastrado pela SME.");
+        //        }
+        //    }
+        //}
     }
 }
