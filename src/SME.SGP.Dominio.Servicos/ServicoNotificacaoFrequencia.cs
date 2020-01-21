@@ -17,6 +17,11 @@ namespace SME.SGP.Dominio.Servicos
         private readonly IRepositorioNotificacaoFrequencia repositorioNotificacaoFrequencia;
         private readonly IRepositorioParametrosSistema repositorioParametrosSistema;
         private readonly IRepositorioSupervisorEscolaDre repositorioSupervisorEscolaDre;
+        private readonly IRepositorioCompensacaoAusencia repositorioCompensacaoAusencia;
+        private readonly IRepositorioCompensacaoAusenciaAluno repositorioCompensacaoAusenciaAluno;
+        private readonly IRepositorioTurma repositorioTurma;
+        private readonly IRepositorioUe repositorioUe;
+        private readonly IRepositorioDre repositorioDre;
         private readonly IServicoEOL servicoEOL;
         private readonly IServicoNotificacao servicoNotificacao;
         private readonly IServicoUsuario servicoUsuario;
@@ -25,6 +30,11 @@ namespace SME.SGP.Dominio.Servicos
                                             IRepositorioParametrosSistema repositorioParametrosSistema,
                                             IRepositorioFrequencia repositorioFrequencia,
                                             IRepositorioSupervisorEscolaDre repositorioSupervisorEscolaDre,
+                                            IRepositorioCompensacaoAusencia repositorioCompensacaoAusencia,
+                                            IRepositorioCompensacaoAusenciaAluno repositorioCompensacaoAusenciaAluno,
+                                            IRepositorioTurma repositorioTurma,
+                                            IRepositorioUe repositorioUe,
+                                            IRepositorioDre repositorioDre,
                                             IServicoNotificacao servicoNotificacao,
                                             IServicoUsuario servicoUsuario,
                                             IServicoEOL servicoEOL,
@@ -36,6 +46,11 @@ namespace SME.SGP.Dominio.Servicos
             this.repositorioFrequencia = repositorioFrequencia ?? throw new ArgumentNullException(nameof(repositorioFrequencia));
             this.servicoUsuario = servicoUsuario ?? throw new ArgumentNullException(nameof(servicoUsuario));
             this.repositorioSupervisorEscolaDre = repositorioSupervisorEscolaDre ?? throw new ArgumentNullException(nameof(repositorioSupervisorEscolaDre));
+            this.repositorioCompensacaoAusencia = repositorioCompensacaoAusencia ?? throw new ArgumentNullException(nameof(repositorioCompensacaoAusencia));
+            this.repositorioCompensacaoAusenciaAluno = repositorioCompensacaoAusenciaAluno ?? throw new ArgumentNullException(nameof(repositorioCompensacaoAusenciaAluno));
+            this.repositorioTurma = repositorioTurma ?? throw new ArgumentNullException(nameof(repositorioTurma));
+            this.repositorioUe = repositorioUe ?? throw new ArgumentNullException(nameof(repositorioUe));
+            this.repositorioDre = repositorioDre ?? throw new ArgumentNullException(nameof(repositorioDre));
             this.servicoEOL = servicoEOL ?? throw new ArgumentNullException(nameof(servicoEOL));
             this.configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
         }
@@ -82,6 +97,96 @@ namespace SME.SGP.Dominio.Servicos
                     NotificaAlteracaoFrequencia(usuario, registroFrequencia, professor.Nome);
                 }
             }
+        }
+
+        public void NotificarCompensacaoAusencia(long compensacaoId)
+        {
+            // Verifica se compensação possui alunos vinculados
+            var alunos = repositorioCompensacaoAusenciaAluno.ObterPorCompensacao(compensacaoId).Result;
+            if (alunos == null || !alunos.Any())
+                return;
+
+            // Verifica se possui aluno não notificado na compensação
+            alunos = alunos.Where(a => !a.Notificado);
+            if (!alunos.Any())
+                return;
+
+            // Carrega dados da compensacao a notificar
+            var compensacao = repositorioCompensacaoAusencia.ObterPorId(compensacaoId);
+            var turma = repositorioTurma.ObterPorId(compensacao.TurmaId);
+            var ue = repositorioUe.ObterUEPorTurma(turma.CodigoTurma);
+            var dre = repositorioDre.ObterPorId(ue.DreId);
+            var disciplinaEOL = ObterNomeDisciplina(compensacao.DisciplinaId);
+            MeusDadosDto professor = servicoEOL.ObterMeusDados(compensacao.CriadoRF).Result;
+
+            // Carrega dados dos alunos não notificados
+            var alunosTurma = servicoEOL.ObterAlunosPorTurma(turma.CodigoTurma).Result;
+            var alunosDto = new List<CompensacaoAusenciaAlunoQtdDto>();
+            foreach (var aluno in alunos)
+            {
+                var alunoEol = alunosTurma.FirstOrDefault(a => a.CodigoAluno == aluno.CodigoAluno);
+                alunosDto.Add(new CompensacaoAusenciaAlunoQtdDto()
+                {
+                    CodigoAluno = aluno.CodigoAluno,
+                    NomeAluno = alunoEol.NomeAluno,
+                    QuantidadeCompensacoes = aluno.QuantidadeFaltasCompensadas
+                });
+            }
+
+            var gestores = BuscaGestoresUe(ue.CodigoUe);
+            if (gestores != null && gestores.Any())
+            {
+                foreach(var gestor in gestores)
+                {
+                    NotificarCompensacaoAusencia(compensacaoId
+                            , gestor
+                            , professor.Nome
+                            , disciplinaEOL
+                            , turma.CodigoTurma
+                            , turma.Nome
+                            , ue.CodigoUe
+                            , ue.Nome
+                            , dre.CodigoDre
+                            , dre.Nome
+                            , compensacao.Bimestre
+                            , compensacao.Nome
+                            , alunosDto);
+                }
+            }
+        }
+
+        private void NotificarCompensacaoAusencia(long compensacaoId, Usuario usuario, string professor, string disciplina, 
+            string codigoTurma, string turma, string codigoUe, string escola, string codigoDre, string dre, 
+            int bimestre, string atividade, List<CompensacaoAusenciaAlunoQtdDto> alunos)
+        {
+            var tituloMensagem = $"Atividade de compensação da turma {turma}";
+
+            StringBuilder mensagemUsuario = new StringBuilder();
+            mensagemUsuario.Append($"A atividade de compensação '{atividade}' da disciplina de {disciplina} foi cadastrada para a turma {turma} da {escola} (DRE {dre}) no {bimestre}º Bimestre pelo professor {professor}.");
+            mensagemUsuario.Append("  O(s) seguinte(s) aluno(s) foi(ram) vinculado(s) a atividade:");
+
+            mensagemUsuario.Append("Nº / Nome do aluno  / Quantidade de aulas compensadas");
+            foreach(var aluno in alunos)
+            {
+                mensagemUsuario.Append($"{aluno.CodigoAluno} - {aluno.NomeAluno} - {aluno.QuantidadeCompensacoes}");
+            }
+
+            var hostAplicacao = configuration["UrlFrontEnd"];
+            mensagemUsuario.Append($"<a href='{hostAplicacao}/diario-classe/compensacao-ausencia/{compensacaoId}'>Para consultar detalhes da atividade clique aqui.</a>");
+
+            var notificacao = new Notificacao()
+            {
+                Ano = DateTime.Now.Year,
+                Categoria = NotificacaoCategoria.Aviso,
+                Tipo = NotificacaoTipo.Frequencia,
+                Titulo = tituloMensagem,
+                Mensagem = mensagemUsuario.ToString(),
+                UsuarioId = usuario.Id,
+                TurmaId = codigoTurma,
+                UeId = codigoUe,
+                DreId = codigoDre,
+            };
+            servicoNotificacao.Salvar(notificacao);
         }
 
         private IEnumerable<Usuario> BuscaGestoresUe(string codigoUe)
@@ -157,7 +262,7 @@ namespace SME.SGP.Dominio.Servicos
 
         private void NotificaAlteracaoFrequencia(Usuario usuario, RegistroFrequenciaAulaDto registroFrequencia, string usuarioAlteracao)
         {
-            // TODO carregar nomes da turma, escola, disciplina e professor para notificacao
+            // carregar nomes da turma, escola, disciplina e professor para notificacao
             var disciplina = ObterNomeDisciplina(registroFrequencia.CodigoDisciplina);
 
             var tituloMensagem = $"Título: Alteração extemporânea de frequência  da turma {registroFrequencia.NomeTurma} na disciplina {disciplina}.";

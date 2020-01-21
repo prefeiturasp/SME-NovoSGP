@@ -72,21 +72,25 @@ namespace SME.SGP.Dominio.Servicos
             compensacao.TurmaId = turma.Id;
             compensacao.AnoLetivo = turma.AnoLetivo;
 
+            List<string> codigosAlunosCompensacao = new List<string>();
             unitOfWork.IniciarTransacao();
             try
             {
                 await repositorioCompensacaoAusencia.SalvarAsync(compensacao);
                 await GravarDisciplinasRegencia(id > 0, compensacao.Id, compensacaoDto.DisciplinasRegenciaIds);
-                var codigosAlunosCompensacao = await GravarCompensacaoAlunos(id > 0, compensacao.Id, compensacaoDto.TurmaId, compensacaoDto.DisciplinaId, compensacaoDto.Alunos, periodo);
+                codigosAlunosCompensacao = await GravarCompensacaoAlunos(id > 0, compensacao.Id, compensacaoDto.TurmaId, compensacaoDto.DisciplinaId, compensacaoDto.Alunos, periodo);
                 unitOfWork.PersistirTransacao();
-
-                Cliente.Executar<IServicoCalculoFrequencia>(c => c.CalcularFrequenciaPorTurma(codigosAlunosCompensacao, periodo.PeriodoFim, compensacaoDto.TurmaId, compensacaoDto.DisciplinaId));
             }
             catch (Exception)
             {
                 unitOfWork.Rollback();
                 throw;
             }
+
+            if (codigosAlunosCompensacao.Any())
+                Cliente.Executar<IServicoCalculoFrequencia>(c => c.CalcularFrequenciaPorTurma(codigosAlunosCompensacao, periodo.PeriodoFim, compensacaoDto.TurmaId, compensacaoDto.DisciplinaId));
+
+            Cliente.Executar<IServicoNotificacaoFrequencia>(c => c.NotificarCompensacaoAusencia(compensacao.Id));
         }
 
         private void ConsisteDisciplina(long disciplinaId, IEnumerable<string> disciplinasRegenciaIds)
