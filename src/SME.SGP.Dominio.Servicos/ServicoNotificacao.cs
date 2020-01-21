@@ -56,7 +56,7 @@ namespace SME.SGP.Dominio.Servicos
                 Cargo? cargoProximoNivel = ObterProximoNivel(cargo, primeiroNivel);
 
                 if (!cargoProximoNivel.HasValue)
-                    throw new NegocioException($"Não foram encontrados funcionários de cargo {cargo.GetAttribute<DisplayAttribute>().Name} para a escola de código {codigoUe}.");
+                    return null;
 
                 return ObterFuncionariosPorNivel(codigoUe, cargoProximoNivel, false);
             }
