@@ -69,7 +69,7 @@ pipeline {
                  
                  sh 'echo Deploying desenvolvimento'
                 
-                // Start JOB Rundeck para build das imagens Docker e push SME Registry
+        // Start JOB Rundeck para build das imagens Docker e push SME Registry
       
           script {
            step([$class: "RundeckNotifier",
@@ -90,7 +90,7 @@ pipeline {
               tailLog: true])
            }
                 
-       //Start JOB Rundeck para update de deploy Kubernetes 
+       //Start JOB Rundeck para update de deploy Kubernetes DEV
          
          script {
             step([$class: "RundeckNotifier",
@@ -128,21 +128,18 @@ pipeline {
             }
             steps {
                  timeout(time: 24, unit: "HOURS") {
-               //  withCredentials([string(credentialsId: 'webhook-backend', variable: 'WH-teams')]) {
-               //  office365ConnectorSend color: '008000', message: "O Build ${BUILD_DISPLAY_NAME} - Requer uma aprovação para deploy !!!", status: 'SUCESSO', webhookUrl: '$WH-teams'
-               //}
+               
                  telegramSend("${JOB_NAME}...O Build ${BUILD_DISPLAY_NAME} - Requer uma aprovação para deploy !!!\n Consulte o log para detalhes -> [Job logs](${env.BUILD_URL}console)\n")
                  input message: 'Deseja realizar o deploy?', ok: 'SIM', submitter: 'marcos_costa,danieli_paula,everton_nogueira'
             }
                  sh 'echo Deploying homologacao'
                 
-                // Start JOB Rundeck para build das imagens Docker e push Azure repo
+        // Start JOB Rundeck para build das imagens Docker e push registry SME
       
           script {
            step([$class: "RundeckNotifier",
               includeRundeckLogs: true,
-                // JOB USADO PARA TESTE RUNDECK
-                //jobId: "07abb9c0-c66f-4119-8a86-bf7f0cb98199",
+                
                
               //JOB DE BUILD
               jobId: "397ce3f8-0af7-4d26-b65b-19f09ccf6c82",
@@ -165,6 +162,63 @@ pipeline {
             step([$class: "RundeckNotifier",
               includeRundeckLogs: true,
               jobId: "ec4238e5-4aab-4b5d-b949-aa46d6b2b09d",
+              nodeFilters: "",
+              //options: """
+              //     PARAM_1=value1
+               //    PARAM_2=value2
+              //     PARAM_3=
+              //     """,
+              rundeckInstance: "Rundeck-SME",
+              shouldFailTheBuild: true,
+              shouldWaitForRundeckJob: true,
+              tags: "",
+              tailLog: true])
+           }
+      
+       
+            }
+        }
+
+        stage('Deploy produção') {
+            when {
+                branch 'master'
+            }
+            steps {
+                 timeout(time: 24, unit: "HOURS") {
+               
+                 telegramSend("${JOB_NAME}...O Build ${BUILD_DISPLAY_NAME} - Requer uma aprovação para deploy !!!\n Consulte o log para detalhes -> [Job logs](${env.BUILD_URL}console)\n")
+                 input message: 'Deseja realizar o deploy?', ok: 'SIM', submitter: 'marcos_costa,danieli_paula,everton_nogueira'
+            }
+                 sh 'echo Deploy produção'
+                
+        // Start JOB Rundeck para build das imagens Docker e push registry SME
+      
+          script {
+           step([$class: "RundeckNotifier",
+              includeRundeckLogs: true,
+            
+               
+              //JOB DE BUILD
+              jobId: "b6ff0cbf-6267-41af-bb56-5cdc3eb86902",
+              nodeFilters: "",
+              //options: """
+              //     PARAM_1=value1
+               //    PARAM_2=value2
+              //     PARAM_3=
+              //     """,
+              rundeckInstance: "Rundeck-SME",
+              shouldFailTheBuild: true,
+              shouldWaitForRundeckJob: true,
+              tags: "",
+              tailLog: true])
+           }
+                
+       //Start JOB Rundeck para deploy em produção 
+         
+         script {
+            step([$class: "RundeckNotifier",
+              includeRundeckLogs: true,
+              jobId: "6a3d314b-672b-4fe3-9759-0b08847eb27e",
               nodeFilters: "",
               //options: """
               //     PARAM_1=value1
