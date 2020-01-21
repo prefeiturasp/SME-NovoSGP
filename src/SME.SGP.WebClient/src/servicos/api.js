@@ -9,10 +9,10 @@ let url = '';
 
 let CancelToken = axios.CancelToken.source();
 
-urlBase().then(resposta => (url = resposta.data));
+// urlBase().then(resposta => (url = resposta.data));
 
 const api = axios.create({
-  baseURL: url,
+  baseURL: process.env.REACT_APP_API_URL,
 });
 
 const renovaCancelToken = () => {
@@ -22,13 +22,12 @@ const renovaCancelToken = () => {
 api.interceptors.request.use(async config => {
   const token = store.getState().usuario.token;
 
-  if (!url) url = await urlBase();
-
+  // if (!url) url = await urlBase();
   if (token) config.headers.Authorization = `Bearer ${token}`;
 
   config.cancelToken = CancelToken.token;
 
-  config.baseURL = url;
+  // config.baseURL = url;
 
   return config;
 });
