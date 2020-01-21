@@ -93,6 +93,9 @@ namespace SME.SGP.Dominio.Servicos
             // Buscar gestor da Ue
             var funcionariosRetornoEol = servicoNotificacao.ObterFuncionariosPorNivel(codigoUe, Cargo.CP);
 
+            if (funcionariosRetornoEol == null)
+                return null;
+
             if (!funcionariosRetornoEol.Any(x => x.Cargo == Cargo.Diretor))
                 funcionariosRetornoEol = funcionariosRetornoEol.Concat(servicoNotificacao.ObterFuncionariosPorNivel(codigoUe, Cargo.Diretor, false));
 
@@ -121,7 +124,7 @@ namespace SME.SGP.Dominio.Servicos
         {
             var funcionariosRetorno = servicoNotificacao.ObterFuncionariosPorNivel(codigoUe, Cargo.Supervisor);
 
-            if (cargosNotificados.Any(c => funcionariosRetorno.Any(f => f.Cargo == c)))
+            if (funcionariosRetorno == null || cargosNotificados.Any(c => funcionariosRetorno.Any(f => f.Cargo == c)))
                 return null;
 
             var usuarios = new List<(Cargo?, Usuario)>();
@@ -205,7 +208,7 @@ namespace SME.SGP.Dominio.Servicos
                         if (usuarios != null)
                         {
                             var cargosLinq = cargosNotificados;
-                            var cargosNaoNotificados =  usuarios.GroupBy(u => u.Item1)
+                            var cargosNaoNotificados = usuarios.GroupBy(u => u.Item1)
                                                         .Select(u => u.Key)
                                                         .Where(c => cargosLinq.Contains(c));
 
