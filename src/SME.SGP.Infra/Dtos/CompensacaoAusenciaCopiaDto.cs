@@ -7,7 +7,7 @@ namespace SME.SGP.Infra
 {
     public class CompensacaoAusenciaCopiaDto
     {
-        [Required(ErrorMessage = "Deve ser informada a compensação de origem da copia!")]
+        [Required(ErrorMessage = "Deve ser informada a compensação de origem da cópia!")]
         public long CompensacaoOrigemId { get; set; }
 
         public string TurmaId { get; set; }
