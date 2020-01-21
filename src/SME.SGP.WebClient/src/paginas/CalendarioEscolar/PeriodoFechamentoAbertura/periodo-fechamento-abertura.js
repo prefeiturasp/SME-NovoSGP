@@ -18,6 +18,7 @@ import FiltroHelper from '~/componentes-sgp/filtro/helper';
 import tipoEscolaDTO from '~/dtos/tipoEscolaDto';
 import history from '~/servicos/history';
 import { URL_HOME } from '~/constantes/url';
+import { erros } from '~/servicos/alertas';
 
 const PeriodoFechamentoAbertura = () => {
   const [listaTipoCalendarioEscolar, setListaTipoCalendarioEscolar] = useState(
@@ -65,7 +66,7 @@ const PeriodoFechamentoAbertura = () => {
   const [desabilitaUe, setDesabilitaUe] = useState(false);
   const [anoLetivo, setAnoLetivo] = useState(new Date().getFullYear());
   const [modoEdicao, setModoEdicao] = useState(false);
-  const [periodos, setPeriodos] = useState([]);
+  const [periodos, setPeriodos] = useState({});
   const [auditoria, setAuditoria] = useState([]);
 
   useEffect(() => {
@@ -93,25 +94,41 @@ const PeriodoFechamentoAbertura = () => {
   }, []);
 
   useEffect(() => {
-    const carregarDres = async () => {
-      setCarregandoDres(true);
-      const dres = await api.get(`v1/abrangencias/false/dres`).finally(() => {
-        setCarregandoDres(false);
-      });
-      if (dres.data) {
-        setListaDres(dres.data.sort(FiltroHelper.ordenarLista('nome')));
-        if (dres.data.length === 1) {
-          setDreSelecionada(dres.data[0].id);
-          setDesabilitaDre(true);
-        } else {
-          setDesabilitaDre(false);
-        }
-      } else {
-        setListaDres([]);
-      }
-    };
-    carregarDres();
+    // const carregarDres = async () => {
+    //   setCarregandoDres(true);
+    //   const dres = await api.get(`v1/abrangencias/false/dres`).finally(() => {
+    //     setCarregandoDres(false);
+    //   });
+    //   if (dres.data) {
+    //     setListaDres(dres.data.sort(FiltroHelper.ordenarLista('nome')));
+    //     if (dres.data.length === 1) {
+    //       setDreSelecionada(dres.data[0].id);
+    //       setDesabilitaDre(true);
+    //     } else {
+    //       setDesabilitaDre(false);
+    //     }
+    //   } else {
+    //     setListaDres([]);
+    //   }
+    // };
+    // carregarDres();
+    // console.log(process.env.REACT_APP_ENF);
   }, []);
+
+  useEffect(() => {
+    if (tipoCalendarioSelecionado) {
+      api
+        .get(
+          `/v1/periodos/fechamentos/aberturas?tipoCalendarioId=${tipoCalendarioSelecionado}`
+        )
+        .then(resposta => {
+          setPeriodos(resposta.data);
+        })
+        .catch(e => {
+          erros(e);
+        });
+    }
+  }, [tipoCalendarioSelecionado]);
 
   const onChangeCamposData = valor => {
     setModoEdicao(true);
@@ -126,131 +143,33 @@ const PeriodoFechamentoAbertura = () => {
     });
   };
 
-  const validacaoPrimeiroBim = {
-    primeiroBimestreDataInicial: momentSchema.required(
-      'Data inicial obrigatória'
-    ),
-    primeiroBimestreDataFinal: momentSchema
-      .required('Data final obrigatória')
-      .dataMenorIgualQue(
-        'primeiroBimestreDataInicial',
-        'primeiroBimestreDataFinal',
-        'Data inválida'
-      ),
-  };
-
-  const validacaoSegundoBim = {
-    segundoBimestreDataInicial: momentSchema
-      .required('Data inicial obrigatória')
-      .dataMenorIgualQue(
-        'primeiroBimestreDataFinal',
-        'segundoBimestreDataInicial',
-        'Data inválida'
-      ),
-    segundoBimestreDataFinal: momentSchema
-      .required('Data final obrigatória')
-      .dataMenorIgualQue(
-        'segundoBimestreDataInicial',
-        'segundoBimestreDataFinal',
-        'Data inválida'
-      ),
-  };
-
-  const validacaoTerceiroBim = {
-    terceiroBimestreDataInicial: momentSchema
-      .required('Data inicial obrigatória')
-      .dataMenorIgualQue(
-        'segundoBimestreDataFinal',
-        'terceiroBimestreDataInicial',
-        'Data inválida'
-      ),
-    terceiroBimestreDataFinal: momentSchema
-      .required('Data final obrigatória')
-      .dataMenorIgualQue(
-        'terceiroBimestreDataInicial',
-        'terceiroBimestreDataFinal',
-        'Data inválida'
-      ),
-  };
-
-  const validacaoQuartoBim = {
-    quartoBimestreDataInicial: momentSchema
-      .required('Data inicial obrigatória')
-      .dataMenorIgualQue(
-        'terceiroBimestreDataFinal',
-        'quartoBimestreDataInicial',
-        'Data inválida'
-      ),
-    quartoBimestreDataFinal: momentSchema
-      .required('Data final obrigatória')
-      .dataMenorIgualQue(
-        'quartoBimestreDataInicial',
-        'quartoBimestreDataFinal',
-        'Data inválida'
-      ),
-  };
-
-  useEffect(() => {
-    let periodos = {};
-    if (ehTipoCalendarioAnual) {
-      periodos = Object.assign(
-        {},
-        validacaoPrimeiroBim,
-        validacaoSegundoBim,
-        validacaoTerceiroBim,
-        validacaoQuartoBim
-      );
-    } else {
-      periodos = Object.assign({}, validacaoPrimeiroBim, validacaoSegundoBim);
-    }
-    setValidacoes(Yup.object().shape(periodos));
-  }, [ehTipoCalendarioAnual]);
+  // useEffect(() => {
+  //   let periodos = {};
+  //   if (ehTipoCalendarioAnual) {
+  //     periodos = Object.assign(
+  //       {},
+  //       validacaoPrimeiroBim,
+  //       validacaoSegundoBim,
+  //       validacaoTerceiroBim,
+  //       validacaoQuartoBim
+  //     );
+  //   } else {
+  //     periodos = Object.assign({}, validacaoPrimeiroBim, validacaoSegundoBim);
+  //   }
+  //   setValidacoes(Yup.object().shape(periodos));
+  // }, [ehTipoCalendarioAnual]);
 
   const onchangeTipoCalendarioEscolar = (id, form) => {
-    const tipoSelecionado = listaTipoCalendarioEscolar.find(
-      item => item.id == id
-    );
-    setAnoLetivo(tipoSelecionado.anoLetivo);
-
-    if (tipoSelecionado && tipoSelecionado.periodo == periodo.Anual) {
-      setEhTipoCalendarioAnual(true);
-    } else {
-      setEhTipoCalendarioAnual(false);
-    }
+    // const tipoSelecionado = listaTipoCalendarioEscolar.find(
+    //   item => item.id == id
+    // );
+    // setAnoLetivo(tipoSelecionado.anoLetivo);
+    // if (tipoSelecionado && tipoSelecionado.periodo == periodo.Anual) {
+    //   setEhTipoCalendarioAnual(true);
+    // } else {
+    //   setEhTipoCalendarioAnual(false);
+    // }
     setTipoCalendarioSelecionado(id);
-  };
-
-  const onChangeDre = codigo => {
-    setDreSelecionada(codigo);
-    setUeSelecionada(null);
-    carregarUes(codigo);
-  };
-
-  const carregarUes = async dre => {
-    setCarregandoUes(true);
-    const ues = await api
-      .get(`/v1/abrangencias/false/dres/${dre}/ues`)
-      .finally(() => {
-        setCarregandoUes(false);
-      });
-    if (ues.data) {
-      ues.data.forEach(
-        ue => (ue.nome = `${tipoEscolaDTO[ue.tipoEscola]} ${ue.nome}`)
-      );
-      if (ues.data.length === 1) {
-        setDesabilitaUe(true);
-        setUeSelecionada(ues.data[0].codigo);
-      } else {
-        setDesabilitaUe(false);
-      }
-      setListaUes(ues.data.sort(FiltroHelper.ordenarLista('nome')));
-    } else {
-      setListaUes([]);
-    }
-  };
-
-  const onChangeUe = codigo => {
-    setUeSelecionada(codigo);
   };
 
   const onClickVoltar = () => {
@@ -258,19 +177,19 @@ const PeriodoFechamentoAbertura = () => {
   };
 
   const validaAntesDoSubmit = form => {
-    const arrayCampos = Object.keys(valoresFormInicial);
-    arrayCampos.forEach(campo => {
-      form.setFieldTouched(campo, true, true);
-    });
-    form.validateForm().then(() => {
-      if (
-        form.isValid ||
-        (Object.keys(form.errors).length == 0 &&
-          Object.keys(form.values).length > 0)
-      ) {
-        form.handleSubmit(e => e);
-      }
-    });
+    // const arrayCampos = Object.keys(valoresFormInicial);
+    // arrayCampos.forEach(campo => {
+    //   form.setFieldTouched(campo, true, true);
+    // });
+    // form.validateForm().then(() => {
+    //   if (
+    //     form.isValid ||
+    //     (Object.keys(form.errors).length == 0 &&
+    //       Object.keys(form.values).length > 0)
+    //   ) {
+    //     form.handleSubmit(e => e);
+    //   }
+    // });
   };
 
   const onClickCancelar = form => {
@@ -376,17 +295,6 @@ const PeriodoFechamentoAbertura = () => {
                 <br />
                 <div className="col-md-6 pb-2">
                   <Loader loading={carregandoDres} tip="">
-                    {/* <SelectComponent
-                      name="dre"
-                      id="dre"
-                      placeholder="Diretoria Regional de Educação (DRE)"
-                      lista={listaDres}
-                      valueOption="codigo"
-                      valueText="nome"
-                      onChange={codigo => onChangeDre(codigo)}
-                      valueSelect={dreSelecionada}
-                      disabled={desabilitaDre}
-                    /> */}
                     <DreDropDown
                       label="Diretoria Regional de Educação (DRE)"
                       form={form}
@@ -397,17 +305,6 @@ const PeriodoFechamentoAbertura = () => {
                 </div>
                 <div className="col-md-6 pb-2">
                   <Loader loading={carregandoUes} tip="">
-                    {/* <SelectComponent
-                      name="ue"
-                      id="ue"
-                      placeholder="Unidade Escolar (UE)"
-                      lista={listaUes}
-                      valueOption="codigo"
-                      valueText="nome"
-                      onChange={codigo => onChangeUe(codigo)}
-                      valueSelect={ueSelecionada}
-                      disabled={desabilitaUe}
-                    /> */}
                     <UeDropDown
                       dreId={form.values.dreId}
                       label="Unidade Escolar (UE)"
@@ -421,38 +318,16 @@ const PeriodoFechamentoAbertura = () => {
               </div>
               {listaTipoCalendarioEscolar &&
               listaTipoCalendarioEscolar.length &&
-              tipoCalendarioSelecionado ? (
+              periodos &&
+              periodos.fechamentosBimestres ? (
                 <>
-                  {criaBimestre(
-                    form,
-                    '1 ° Bimestre',
-                    chaveBimestre.primeiroInicio,
-                    chaveBimestre.primeiroFinal
-                  )}
-                  {criaBimestre(
-                    form,
-                    '2 ° Bimestre',
-                    chaveBimestre.segundoInicio,
-                    chaveBimestre.segundoFinal
-                  )}
-
-                  {ehTipoCalendarioAnual ? (
-                    <>
-                      {criaBimestre(
-                        form,
-                        '3 ° Bimestre',
-                        chaveBimestre.terceiroInicio,
-                        chaveBimestre.terceiroFinal
-                      )}
-                      {criaBimestre(
-                        form,
-                        '4 ° Bimestre',
-                        chaveBimestre.quartoInicio,
-                        chaveBimestre.quartoFinal
-                      )}
-                    </>
-                  ) : (
-                    ''
+                  {periodos.fechamentosBimestres.map(c =>
+                    criaBimestre(
+                      form,
+                      `${c.bimestre} ° Bimestre`,
+                      c.inicioDoFechamento,
+                      c.finalDoFechamento
+                    )
                   )}
                 </>
               ) : (

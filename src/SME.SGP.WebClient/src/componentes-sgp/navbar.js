@@ -103,6 +103,15 @@ const Navbar = () => {
             } col-sm-8`}
           >
             <Botoes className="align-self-xl-center align-self-lg-center align-self-md-start align-self-sm-start mt-xl-0 mt-lg-0 mt-md-4 mt-sm-4">
+              <span
+                onClick={() =>
+                  history.push(
+                    '/calendario-escolar/periodo-fechamento-abertura'
+                  )
+                }
+              >
+                teste
+              </span>
               <ul className="list-inline p-0 m-0">
                 <li className="list-inline-item mr-4">
                   <NavbarNotificacoes
