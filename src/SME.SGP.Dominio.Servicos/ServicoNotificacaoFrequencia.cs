@@ -42,10 +42,14 @@ namespace SME.SGP.Dominio.Servicos
 
         public void ExecutaNotificacaoFrequencia()
         {
+            var cargosNotificados = new List<Cargo?>();
+
             Console.WriteLine($"Notificando usuários de aulas sem frequência.");
-            NotificarAusenciaFrequencia(TipoNotificacaoFrequencia.Professor);
-            NotificarAusenciaFrequencia(TipoNotificacaoFrequencia.GestorUe);
-            NotificarAusenciaFrequencia(TipoNotificacaoFrequencia.SupervisorUe);
+
+            NotificarAusenciaFrequencia(TipoNotificacaoFrequencia.Professor, ref cargosNotificados);
+            NotificarAusenciaFrequencia(TipoNotificacaoFrequencia.SupervisorUe, ref cargosNotificados);
+            NotificarAusenciaFrequencia(TipoNotificacaoFrequencia.GestorUe, ref cargosNotificados);
+
             Console.WriteLine($"Rotina finalizada.");
         }
 
@@ -179,7 +183,7 @@ namespace SME.SGP.Dominio.Servicos
             servicoNotificacao.Salvar(notificacao);
         }
 
-        private void NotificarAusenciaFrequencia(TipoNotificacaoFrequencia tipo)
+        private void NotificarAusenciaFrequencia(TipoNotificacaoFrequencia tipo, ref List<Cargo?> cargosNotificados)
         {
             // Busca registro de aula sem frequencia e sem notificação do tipo
             IEnumerable<RegistroFrequenciaFaltanteDto> turmasSemRegistro = null;
@@ -199,10 +203,19 @@ namespace SME.SGP.Dominio.Servicos
                         var usuarios = BuscaUsuarioNotificacao(turma, tipo);
 
                         if (usuarios != null)
-                            foreach (var usuario in usuarios)
+                        {
+                            var cargosLinq = cargosNotificados;
+                            var cargosNaoNotificados =  usuarios.GroupBy(u => u.Item1)
+                                                        .Select(u => u.Key)
+                                                        .Where(c => cargosLinq.Contains(c));
+
+                            foreach (var usuario in usuarios.Where(u => cargosNaoNotificados.Contains(u.Item1)))
                             {
                                 NotificaRegistroFrequencia(usuario.Item2, turma, tipo);
                             }
+
+                            cargosNotificados.AddRange(cargosNaoNotificados);
+                        }
                     }
                     else
                         Console.WriteLine($"Notificação não necessária pois quantidade de aulas sem frequência: {turma.Aulas?.Count() ?? 0 } está dentro do limite: {qtdAulasNotificacao}.");
