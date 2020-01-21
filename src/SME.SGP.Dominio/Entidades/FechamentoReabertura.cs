@@ -87,6 +87,13 @@ namespace SME.SGP.Dominio
             return !(DreId is null) && !(UeId is null);
         }
 
+        public bool EstaNoRangeDeDatas(DateTime dataInicio, DateTime datafim)
+        {
+            return (Inicio.Date <= dataInicio.Date && Fim >= datafim.Date)
+            || (Inicio.Date <= datafim.Date && Fim >= datafim.Date)
+            || (Inicio.Date >= dataInicio.Date && Fim <= datafim.Date);
+        }
+
         public void PodeSalvar(IEnumerable<FechamentoReabertura> fechamentosCadastrados)
         {
             if (Inicio > Fim)
@@ -139,7 +146,11 @@ namespace SME.SGP.Dominio
                 var fechamentosSME = fechamentosCadastrados.Where(a => a.EhParaSme());
                 if (!(fechamentosSME is null) && fechamentosCadastrados.Any())
                 {
-                    PodePersistirNesteNasDatas()
+                    foreach (var fechamento in fechamentosSME)
+                    {
+                        if (EstaNoRangeDeDatas(fechamento.Inicio, fechamento.Fim))
+                            throw new NegocioException($"Não é possível persistir pois já existe uma reabertura cadastrada que começa em {fechamento.Inicio.ToString("dd/MM/yyyy")} e finaliza em {fechamento.Fim.ToString("dd/MM/yyyy")}");
+                    }
                 }
             }
         }
