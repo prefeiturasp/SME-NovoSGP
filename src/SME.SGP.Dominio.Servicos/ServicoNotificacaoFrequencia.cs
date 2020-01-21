@@ -208,9 +208,10 @@ namespace SME.SGP.Dominio.Servicos
                         if (usuarios != null)
                         {
                             var cargosLinq = cargosNotificados;
-                            var cargosNaoNotificados = usuarios.GroupBy(u => u.Item1)
-                                                        .Select(u => u.Key)
-                                                        .Where(c => cargosLinq.Contains(c));
+                            var cargosNaoNotificados = usuarios.Select(u => u.Item1)
+                                                        .GroupBy(u => u)
+                                                        .Where(w => !cargosLinq.Contains(w.Key))
+                                                        .Select(s => s.Key);
 
                             foreach (var usuario in usuarios.Where(u => cargosNaoNotificados.Contains(u.Item1)))
                             {
