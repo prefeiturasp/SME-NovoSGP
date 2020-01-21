@@ -30,6 +30,11 @@ class ServicoCompensacaoAusencia {
     const urlAlunosComAusenciaNoBimestre = `/v1/calendarios/frequencias/ausencias/turmas/${turmaId}/disciplinas/${disciplinaId}/bimestres/${bimestre}`;
     return api.get(urlAlunosComAusenciaNoBimestre);
   };
+
+  obterStatusCalculoFrequencia = async (turmaId, disciplinaId) => {
+    const url = `/v1/processos/executando/frequencias/turma/${turmaId}/disciplina/${disciplinaId}`;
+    return api.get(url);
+  };
 }
 
 export default new ServicoCompensacaoAusencia();

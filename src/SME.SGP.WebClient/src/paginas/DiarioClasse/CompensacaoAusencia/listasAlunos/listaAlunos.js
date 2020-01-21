@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types';
-import React, { useState } from 'react';
-import { DataTable } from '~/componentes';
+import React from 'react';
+import { DataTable, Label } from '~/componentes';
 
 import { CardTabelaAlunos } from '../styles';
 
@@ -44,20 +44,23 @@ const ListaAlunos = props => {
     onSelectRow(ids);
   };
   return (
-    <CardTabelaAlunos>
-      <DataTable
-        scroll={{ y: 420 }}
-        id="lista-alunos"
-        selectedRowKeys={idsAlunos}
-        onSelectRow={onSelectRowAlunos}
-        columns={colunasListaAlunos}
-        dataSource={lista}
-        selectMultipleRows
-        onClickRow={() => {}}
-        pagination={false}
-        pageSize={9999}
-      />
-    </CardTabelaAlunos>
+    <>
+      <Label text="" />
+      <CardTabelaAlunos>
+        <DataTable
+          scroll={{ y: 420 }}
+          id="lista-alunos"
+          selectedRowKeys={idsAlunos}
+          onSelectRow={onSelectRowAlunos}
+          columns={colunasListaAlunos}
+          dataSource={lista}
+          selectMultipleRows
+          onClickRow={() => {}}
+          pagination={false}
+          pageSize={9999}
+        />
+      </CardTabelaAlunos>
+    </>
   );
 };
 

@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types';
 import React from 'react';
-import { DataTable } from '~/componentes';
+import { DataTable, Label } from '~/componentes';
 import SelectComponent from '~/componentes/select';
 
 import { CardTabelaAlunos } from '../styles';
@@ -62,7 +62,7 @@ const ListaAlunosAusenciasCompensadas = props => {
       title: 'Compensações',
       dataIndex: 'quantidadeFaltasCompensadas',
       render: (qtdFaltas, dadosAluno) => {
-        return montaCompensacao(qtdFaltas, dadosAluno);
+        return montaCompensacao(qtdFaltas ? String(qtdFaltas) : '', dadosAluno);
       },
     },
   ];
@@ -72,19 +72,22 @@ const ListaAlunosAusenciasCompensadas = props => {
   };
 
   return (
-    <CardTabelaAlunos>
-      <DataTable
-        scroll={{ y: 420 }}
-        id="lista-alunos-ausencia-compensada"
-        selectedRowKeys={idsAlunosAusenciaCompensadas}
-        onSelectRow={onSelectRowAlunos}
-        columns={colunasListaAlunosAusenciaCompensada}
-        dataSource={listaAusenciaCompensada}
-        selectMultipleRows
-        pagination={false}
-        pageSize={9999}
-      />
-    </CardTabelaAlunos>
+    <>
+      <Label text="Alunos com Ausências Compensadas" />
+      <CardTabelaAlunos>
+        <DataTable
+          scroll={{ y: 420 }}
+          id="lista-alunos-ausencia-compensada"
+          selectedRowKeys={idsAlunosAusenciaCompensadas}
+          onSelectRow={onSelectRowAlunos}
+          columns={colunasListaAlunosAusenciaCompensada}
+          dataSource={listaAusenciaCompensada}
+          selectMultipleRows
+          pagination={false}
+          pageSize={9999}
+        />
+      </CardTabelaAlunos>
+    </>
   );
 };
 

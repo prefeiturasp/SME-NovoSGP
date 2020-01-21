@@ -74,7 +74,6 @@ const CompensacaoAusenciaLista = () => {
     };
     setCompensacoesSelecionadas([]);
     setFiltro({ ...paramsFiltrar });
-    console.log(paramsFiltrar);
   }, [
     disciplinaIdSelecionada,
     nomeAluno,
@@ -168,8 +167,26 @@ const CompensacaoAusenciaLista = () => {
     setBimestreSelecionado(bimestre);
   };
 
-  const onClickEditar = compoensacao => {
-    history.push(`compensacao-ausencia/editar/${compoensacao.id}`);
+  const validaSePodeEditar = async () => {
+    let podeEditar = false;
+    const exucutandoCalculoFrequencia = await ServicoCompensacaoAusencia.obterStatusCalculoFrequencia(
+      turmaSelecionada.turma,
+      disciplinaIdSelecionada
+    ).catch(e => {
+      erros(e);
+      podeEditar = false;
+    });
+    if (exucutandoCalculoFrequencia && exucutandoCalculoFrequencia.data) {
+      podeEditar = true;
+    }
+    return podeEditar;
+  };
+
+  const onClickEditar = async compensacao => {
+    const podeEditar = validaSePodeEditar();
+    if (podeEditar) {
+      history.push(`compensacao-ausencia/editar/${compensacao.id}`);
+    }
   };
 
   const onClickVoltar = () => {
