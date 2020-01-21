@@ -8,6 +8,7 @@ CREATE table if not exists public.fechamento_reabertura (
                 tipo_calendario_id int8 not null,
                 dre_id int8 null,
                 ue_id int8 null,
+				status int NOT NULL,
                 migrado boolean default false,
                 
                 criado_em timestamp  NOT NULL,
