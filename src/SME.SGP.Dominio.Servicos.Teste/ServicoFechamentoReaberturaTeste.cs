@@ -13,7 +13,8 @@ namespace SME.SGP.Dominio.Servicos.Teste
     {
         private readonly List<object[]> _data = new List<object[]>
     {
-        new object[] { new List<(DateTime, DateTime)> { (new DateTime(2020, 01, 01), new DateTime(2020, 01, 10)), (new DateTime(2020, 02, 01), new DateTime(2020, 02, 10)) } , new DateTime(2020, 01, 02), new DateTime(2020, 01, 03) }
+        new object[] { new List<(DateTime, DateTime)> { (new DateTime(2020, 01, 01), new DateTime(2020, 01, 10)), (new DateTime(2020, 02, 01), new DateTime(2020, 02, 10)) } , new DateTime(2020, 01, 02), new DateTime(2020, 01, 15) },
+        new object[] { new List<(DateTime, DateTime)> { (new DateTime(2020, 01, 10), new DateTime(2020, 01, 20)), (new DateTime(2020, 02, 10), new DateTime(2020, 02, 20)) } , new DateTime(2020, 01, 02), new DateTime(2020, 01, 01) }
     };
 
         public IEnumerator<object[]> GetEnumerator()
