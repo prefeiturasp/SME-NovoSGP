@@ -167,11 +167,12 @@ const CompensacaoAusenciaLista = () => {
     setBimestreSelecionado(bimestre);
   };
 
-  const validaSePodeEditar = async () => {
+  const validaSePodeEditar = async bimestre => {
     let podeEditar = false;
     const exucutandoCalculoFrequencia = await ServicoCompensacaoAusencia.obterStatusCalculoFrequencia(
       turmaSelecionada.turma,
-      disciplinaIdSelecionada
+      disciplinaIdSelecionada,
+      bimestre
     ).catch(e => {
       erros(e);
       podeEditar = false;
@@ -183,7 +184,7 @@ const CompensacaoAusenciaLista = () => {
   };
 
   const onClickEditar = async compensacao => {
-    const podeEditar = validaSePodeEditar();
+    const podeEditar = validaSePodeEditar(compensacao.bimestre);
     if (podeEditar) {
       history.push(`compensacao-ausencia/editar/${compensacao.id}`);
     }

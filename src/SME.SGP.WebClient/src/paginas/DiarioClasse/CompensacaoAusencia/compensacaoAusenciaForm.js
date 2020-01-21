@@ -65,7 +65,6 @@ const CompensacaoAusenciaForm = ({ match }) => {
       atividade: Yup.string()
         .required('Atividade obrigatória')
         .max(250, 'Máximo 250 caracteres'),
-      descricao: Yup.string().required('Detalhe obrigatório'),
     })
   );
 
@@ -156,8 +155,10 @@ const CompensacaoAusenciaForm = ({ match }) => {
             descricao: '',
           };
           setValoresIniciais(valoresIniciaisForm);
-          setCarregouInformacoes(true);
         }
+      }
+      if (!(match && match.params && match.params.id)) {
+        setCarregouInformacoes(true);
       }
       setCarregandoDisciplinas(false);
     };
@@ -186,8 +187,15 @@ const CompensacaoAusenciaForm = ({ match }) => {
     setListaBimestres(listaBi);
   }, [match, turmaSelecionada.modalidade, turmaSelecionada.turma, resetarForm]);
 
+  const removerAlunosDuplicadosEdicao = (alunosTurma, alunosEdicao) => {
+    const novaLista = alunosTurma.filter(
+      aluno => !alunosEdicao.find(al => al.id == aluno.id)
+    );
+    return novaLista;
+  };
+
   const obterAlunosComAusencia = useCallback(
-    async (disciplinaId, bimestre) => {
+    async (disciplinaId, bimestre, listaAlunosEdicao) => {
       setCarregandoListaAlunosFrequencia(true);
       const alunos = await ServicoCompensacaoAusencia.obterAlunosComAusencia(
         turmaSelecionada.turma,
@@ -199,7 +207,15 @@ const CompensacaoAusenciaForm = ({ match }) => {
         erros(e);
       });
       if (alunos && alunos.data && alunos.data.length) {
-        setAlunosAusenciaTurma([...alunos.data]);
+        if (listaAlunosEdicao && listaAlunosEdicao.length) {
+          const listaSemDuplicados = removerAlunosDuplicadosEdicao(
+            alunos.data,
+            listaAlunosEdicao
+          );
+          setAlunosAusenciaTurma([...listaSemDuplicados]);
+        } else {
+          setAlunosAusenciaTurma([...alunos.data]);
+        }
       } else {
         setAlunosAusenciaTurma([]);
       }
@@ -234,7 +250,8 @@ const CompensacaoAusenciaForm = ({ match }) => {
 
         obterAlunosComAusencia(
           dadosEdicao.data.disciplinaId,
-          dadosEdicao.data.bimestre
+          dadosEdicao.data.bimestre,
+          dadosEdicao.data.alunos
         );
 
         setAuditoria({
@@ -302,7 +319,7 @@ const CompensacaoAusenciaForm = ({ match }) => {
     }
   };
 
-  const resetarTela = async form => {
+  const resetarTelaEdicaoComId = async form => {
     const dadosEdicao = await ServicoCompensacaoAusencia.obterPorId(
       match.params.id
     ).catch(e => {
@@ -316,7 +333,11 @@ const CompensacaoAusenciaForm = ({ match }) => {
       } else {
         setAlunosAusenciaCompensada([]);
       }
-      obterAlunosComAusencia(form.values.disciplinaId, form.values.bimestre);
+      obterAlunosComAusencia(
+        form.values.disciplinaId,
+        form.values.bimestre,
+        dadosEdicao.data.alunos
+      );
       form.resetForm();
       setModoEdicao(false);
     }
@@ -330,7 +351,16 @@ const CompensacaoAusenciaForm = ({ match }) => {
         'Deseja realmente cancelar as alterações?'
       );
       if (confirmou) {
-        resetarTela(form);
+        if (match && match.params && match.params.id) {
+          resetarTelaEdicaoComId(form);
+        } else {
+          setIdsAlunos([]);
+          setAlunosAusenciaTurma([]);
+          setIdsAlunosAusenciaCompensadas([]);
+          setAlunosAusenciaCompensada([]);
+          form.resetForm();
+          setModoEdicao(false);
+        }
       }
     }
   };
@@ -400,38 +430,60 @@ const CompensacaoAusenciaForm = ({ match }) => {
   };
 
   const onClickAdicionarAlunos = () => {
-    const novaListaAlunosAusenciaCompensada = obterListaAlunosComIdsSelecionados(
-      alunosAusenciaTurma,
-      idsAlunos
-    );
+    if (idsAlunos && idsAlunos.length) {
+      const novaListaAlunosAusenciaCompensada = obterListaAlunosComIdsSelecionados(
+        alunosAusenciaTurma,
+        idsAlunos
+      );
 
-    const novaListaAlunos = obterListaAlunosSemIdsSelecionados(
-      alunosAusenciaTurma,
-      idsAlunos
-    );
+      const novaListaAlunos = obterListaAlunosSemIdsSelecionados(
+        alunosAusenciaTurma,
+        idsAlunos
+      );
 
-    setAlunosAusenciaTurma([...novaListaAlunos]);
-    setAlunosAusenciaCompensada([
-      ...novaListaAlunosAusenciaCompensada,
-      ...alunosAusenciaCompensada,
-    ]);
-    setIdsAlunos([]);
+      onChangeCampos();
+      setAlunosAusenciaTurma([...novaListaAlunos]);
+      setAlunosAusenciaCompensada([
+        ...novaListaAlunosAusenciaCompensada,
+        ...alunosAusenciaCompensada,
+      ]);
+      setIdsAlunos([]);
+    }
   };
 
-  const onClickRemoverAlunos = () => {
-    const novaListaAlunos = obterListaAlunosComIdsSelecionados(
-      alunosAusenciaCompensada,
-      idsAlunosAusenciaCompensadas
-    );
+  const onClickRemoverAlunos = async () => {
+    if (idsAlunosAusenciaCompensadas && idsAlunosAusenciaCompensadas.length) {
+      const listaAlunosRemover = alunosAusenciaCompensada.filter(item =>
+        idsAlunosAusenciaCompensadas.find(id => id == item.id)
+      );
+      const confirmado = await confirmar(
+        'Excluir aluno',
+        listaAlunosRemover.map(item => {
+          return `${item.id} - ${item.nome}`;
+        }),
+        'A frequência de aluno será recalculada somente quando salvar as suas alteraçãos. Deseja continuar?',
+        'Excluir',
+        'Cancelar',
+        true
+      );
 
-    const novaListaAlunosAusenciaCompensada = obterListaAlunosSemIdsSelecionados(
-      alunosAusenciaCompensada,
-      idsAlunosAusenciaCompensadas
-    );
+      if (confirmado) {
+        const novaListaAlunos = obterListaAlunosComIdsSelecionados(
+          alunosAusenciaCompensada,
+          idsAlunosAusenciaCompensadas
+        );
 
-    setAlunosAusenciaTurma([...novaListaAlunos, ...alunosAusenciaTurma]);
-    setAlunosAusenciaCompensada([...novaListaAlunosAusenciaCompensada]);
-    setIdsAlunosAusenciaCompensadas([]);
+        const novaListaAlunosAusenciaCompensada = obterListaAlunosSemIdsSelecionados(
+          alunosAusenciaCompensada,
+          idsAlunosAusenciaCompensadas
+        );
+
+        onChangeCampos();
+        setAlunosAusenciaTurma([...novaListaAlunos, ...alunosAusenciaTurma]);
+        setAlunosAusenciaCompensada([...novaListaAlunosAusenciaCompensada]);
+        setIdsAlunosAusenciaCompensadas([]);
+      }
+    }
   };
 
   const onSelectRowAlunos = ids => {
@@ -543,6 +595,7 @@ const CompensacaoAusenciaForm = ({ match }) => {
                       name="atividade"
                       onChange={onChangeCampos}
                       type="input"
+                      maxLength="250"
                     />
                   </div>
                   {temRegencia && listaDisciplinasRegencia && (
