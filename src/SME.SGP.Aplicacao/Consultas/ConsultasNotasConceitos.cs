@@ -40,16 +40,16 @@ namespace SME.SGP.Aplicacao
             this.repositorioAtividadeAvaliativaDisciplina = repositorioAtividadeAvaliativaDisciplina ?? throw new ArgumentNullException(nameof(repositorioAtividadeAvaliativaDisciplina));
         }
 
-        public async Task<NotasConceitosRetornoDto> ListarNotasConceitos(string turmaCodigo, int? bimestre, int anoLetivo, string disciplinaCodigo, Modalidade modalidade)
+        public async Task<NotasConceitosRetornoDto> ListarNotasConceitos(ListaNotasConceitosConsultaDto filtro)
         {
-            var modalidadeTipoCalendario = ObterModalidadeCalendario(modalidade);
+            var modalidadeTipoCalendario = ObterModalidadeCalendario(filtro.Modalidade);
 
-            var atividadesAvaliativaEBimestres = await consultasAtividadeAvaliativa.ObterAvaliacoesEBimestres(turmaCodigo, disciplinaCodigo, anoLetivo, bimestre, modalidadeTipoCalendario);
+            var atividadesAvaliativaEBimestres = await consultasAtividadeAvaliativa.ObterAvaliacoesEBimestres(filtro.TurmaCodigo, filtro.DisciplinaCodigo, filtro.AnoLetivo, filtro.Bimestre, modalidadeTipoCalendario);
 
             if (atividadesAvaliativaEBimestres.Avaliacoes is null || !atividadesAvaliativaEBimestres.Avaliacoes.Any())
                 return ObterRetornoGenericoBimestreAtualVazio(atividadesAvaliativaEBimestres);
 
-            var alunos = await servicoEOL.ObterAlunosPorTurma(turmaCodigo);
+            var alunos = await servicoEOL.ObterAlunosPorTurma(filtro.TurmaCodigo, filtro.AnoLetivo);
 
             if (alunos == null || !alunos.Any())
                 throw new NegocioException("Não foi encontrado alunos para a turma informada");
@@ -81,12 +81,12 @@ namespace SME.SGP.Aplicacao
                         .OrderBy(a => a.DataAvaliacao)
                         .ToList();
                     var alunosIds = alunos.Select(a => a.CodigoAluno).Distinct();
-                    var notas = repositorioNotasConceitos.ObterNotasPorAlunosAtividadesAvaliativas(atividadesAvaliativasdoBimestre.Select(a => a.Id).Distinct(), alunosIds, disciplinaCodigo);
-                    var ausenciasAtividadesAvaliativas = await repositorioFrequencia.ObterAusencias(turmaCodigo, disciplinaCodigo, atividadesAvaliativasdoBimestre.Select(a => a.DataAvaliacao).Distinct().ToArray(), alunosIds.ToArray());
+                    var notas = repositorioNotasConceitos.ObterNotasPorAlunosAtividadesAvaliativas(atividadesAvaliativasdoBimestre.Select(a => a.Id).Distinct(), alunosIds, filtro.DisciplinaCodigo);
+                    var ausenciasAtividadesAvaliativas = await repositorioFrequencia.ObterAusencias(filtro.TurmaCodigo, filtro.DisciplinaCodigo, atividadesAvaliativasdoBimestre.Select(a => a.DataAvaliacao).Distinct().ToArray(), alunosIds.ToArray());
 
                     var professorRfTitularTurmaDisciplina = string.Empty;
 
-                    professorRfTitularTurmaDisciplina = await ObterRfProfessorTitularDisciplina(turmaCodigo, disciplinaCodigo, atividadesAvaliativasdoBimestre);
+                    professorRfTitularTurmaDisciplina = await ObterRfProfessorTitularDisciplina(filtro.TurmaCodigo, filtro.DisciplinaCodigo, atividadesAvaliativasdoBimestre);
 
                     foreach (var aluno in alunos.Where(a => a.NumeroAlunoChamada > 0 || a.CodigoSituacaoMatricula.Equals(SituacaoMatriculaAluno.Ativo)).OrderBy(a => a.NumeroAlunoChamada).ThenBy(a => a.NomeValido()))
                     {
@@ -165,7 +165,7 @@ namespace SME.SGP.Aplicacao
 
                     if (atividadeAvaliativaParaObterTipoNota != null)
                     {
-                        var notaTipo = servicoDeNotasConceitos.TipoNotaPorAvaliacao(atividadeAvaliativaParaObterTipoNota);
+                        var notaTipo = await servicoDeNotasConceitos.TipoNotaPorAvaliacao(atividadeAvaliativaParaObterTipoNota, filtro.TurmaHistorico);
                         if (notaTipo == null)
                             throw new NegocioException("Não foi possível obter o tipo de nota desta avaliação.");
 
@@ -180,13 +180,13 @@ namespace SME.SGP.Aplicacao
             return retorno;
         }
 
-        public TipoNota ObterNotaTipo(long turmaId, int anoLetivo)
+        public async Task<TipoNota> ObterNotaTipo(long turmaId, int anoLetivo, bool consideraHistorico)
         {
-            var notaTipo = servicoDeNotasConceitos.TipoNotaPorAvaliacao(new AtividadeAvaliativa()
+            var notaTipo = await servicoDeNotasConceitos.TipoNotaPorAvaliacao(new AtividadeAvaliativa()
             {
                 TurmaId = turmaId.ToString(),
                 DataAvaliacao = new DateTime(anoLetivo, 3, 1)
-            });
+            }, consideraHistorico);
 
             return notaTipo.TipoNota;
         }
