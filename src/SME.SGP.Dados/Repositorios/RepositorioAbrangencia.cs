@@ -147,9 +147,11 @@ namespace SME.SGP.Dados.Repositorios
             return database.Conexao.QueryAsync<AbrangenciaSinteticaDto>(query.ToString(), new { login, perfil, turmaId });
         }
 
-        public async Task<AbrangenciaFiltroRetorno> ObterAbrangenciaTurma(string turma, string login, Guid perfil)
+        public async Task<AbrangenciaFiltroRetorno> ObterAbrangenciaTurma(string turma, string login, Guid perfil, bool consideraHistorico = false)
         {
-            var query = @"select
+            var query = new StringBuilder();
+
+            query.AppendLine(@"select
                             va.modalidade_codigo as modalidade,
                             va.turma_ano_letivo as anoLetivo,
 	                        va.turma_ano as  ano,
@@ -162,18 +164,19 @@ namespace SME.SGP.Dados.Repositorios
 	                        va.ue_nome as nomeUe,
 	                        va.turma_semestre as semestre,
                             va.qt_duracao_aula as qtDuracaoAula,
-                            va.tipo_turno as tipoTurno
-                        from
-                            v_abrangencia va
-                        inner join ue u
+                            va.tipo_turno as tipoTurno from");
+
+            query.AppendLine($"{(consideraHistorico ? "v_abrangencia_historica" : "v_abrangencia")} va");
+
+            query.AppendLine(@"inner join ue u
                             on u.ue_id = va.ue_codigo
                         where
 	                        va.usuario_id = (select id from usuario where login = @login)
                             and va.usuario_perfil = @perfil
                             and va.turma_id = @turma
-                        order by va.ue_nome";
+                        order by va.ue_nome");
 
-            return (await database.Conexao.QueryAsync<AbrangenciaFiltroRetorno>(query, new { turma, login, perfil }))
+            return (await database.Conexao.QueryAsync<AbrangenciaFiltroRetorno>(query.ToString(), new { turma, login, perfil }))
                 .FirstOrDefault();
         }
 
