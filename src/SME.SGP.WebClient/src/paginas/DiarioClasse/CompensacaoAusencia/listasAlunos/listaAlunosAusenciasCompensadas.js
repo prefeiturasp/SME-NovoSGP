@@ -23,7 +23,10 @@ const ListaAlunosAusenciasCompensadas = props => {
 
   const montaCompensacao = (qtCompensada, dadosAluno) => {
     const listaMaximoCompensar = [];
-    const qtMaxima = dadosAluno.maximoCompensacoesPermitidas;
+    let qtMaxima = dadosAluno.maximoCompensacoesPermitidas;
+    if (qtMaxima > 10) {
+      qtMaxima = 10;
+    }
     for (let index = 0; index < qtMaxima; index++) {
       listaMaximoCompensar.push({
         valor: String(index + 1),
