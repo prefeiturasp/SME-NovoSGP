@@ -61,7 +61,7 @@ namespace SME.SGP.Dominio.Servicos
             // Verifica se ultrapassou o limite de dias para alteração
             if (qtdDiasAlteracao >= qtdDiasParametro)
             {
-                var usuariosNotificacao = new List<Usuario>();
+                var usuariosNotificacao = new List<(Cargo?, Usuario)>();
 
                 // Dados da Aula
                 var registroFrequencia = repositorioFrequencia.ObterAulaDaFrequencia(registroFrequenciaId);
@@ -73,37 +73,33 @@ namespace SME.SGP.Dominio.Servicos
                     usuariosNotificacao.AddRange(usuarios);
 
                 // Supervisores
-                usuarios = BuscaSupervisoresUe(registroFrequencia.CodigoUe);
+                usuarios = BuscaSupervisoresUe(registroFrequencia.CodigoUe, usuariosNotificacao.Select(u => u.Item1));
                 if (usuarios != null)
                     usuariosNotificacao.AddRange(usuarios);
 
                 foreach (var usuario in usuariosNotificacao)
                 {
-                    NotificaAlteracaoFrequencia(usuario, registroFrequencia, professor.Nome);
+                    NotificaAlteracaoFrequencia(usuario.Item2, registroFrequencia, professor.Nome);
                 }
             }
         }
 
-        private IEnumerable<Usuario> BuscaGestoresUe(string codigoUe)
+        private IEnumerable<(Cargo? Cargo, Usuario Usuario)> BuscaGestoresUe(string codigoUe)
         {
             // Buscar gestor da Ue
-            List<UsuarioEolRetornoDto> funcionariosRetornoEol = new List<UsuarioEolRetornoDto>();
+            var funcionariosRetornoEol = servicoNotificacao.ObterFuncionariosPorNivel(codigoUe, Cargo.CP);
 
-            var cps = servicoEOL.ObterFuncionariosPorCargoUe(codigoUe, (int)Cargo.CP);
-            if (cps != null && cps.Any())
-                funcionariosRetornoEol.AddRange(cps);
-            var diretores = servicoEOL.ObterFuncionariosPorCargoUe(codigoUe, (int)Cargo.Diretor);
-            if (diretores != null && diretores.Any())
-                funcionariosRetornoEol.AddRange(diretores);
+            if (!funcionariosRetornoEol.Any(x => x.Cargo == Cargo.Diretor))
+                funcionariosRetornoEol = funcionariosRetornoEol.Concat(servicoNotificacao.ObterFuncionariosPorNivel(codigoUe, Cargo.Diretor, false));
 
-            var usuarios = new List<Usuario>();
+            var usuarios = new List<(Cargo?, Usuario)>();
             foreach (var usuarioEol in funcionariosRetornoEol)
-                usuarios.Add(servicoUsuario.ObterUsuarioPorCodigoRfLoginOuAdiciona(usuarioEol.CodigoRf));
+                usuarios.Add((usuarioEol.Cargo, servicoUsuario.ObterUsuarioPorCodigoRfLoginOuAdiciona(usuarioEol.Id)));
 
             return usuarios;
         }
 
-        private IEnumerable<Usuario> BuscaProfessorAula(RegistroFrequenciaFaltanteDto turma)
+        private IEnumerable<(Cargo?, Usuario)> BuscaProfessorAula(RegistroFrequenciaFaltanteDto turma)
         {
             // Buscar professor da ultima aula
             var professorRf = turma.Aulas
@@ -111,29 +107,29 @@ namespace SME.SGP.Dominio.Servicos
                     .Last().ProfessorId;
             var usuario = servicoUsuario.ObterUsuarioPorCodigoRfLoginOuAdiciona(professorRf.ToString());
 
-            return usuario != null ? new List<Usuario>()
+            return usuario != null ? new List<(Cargo?, Usuario)>()
             {
-                usuario
+                (null, usuario)
             } : null;
         }
 
-        private IEnumerable<Usuario> BuscaSupervisoresUe(string codigoUe)
+        private IEnumerable<(Cargo?, Usuario)> BuscaSupervisoresUe(string codigoUe, IEnumerable<Cargo?> cargosNotificados)
         {
-            // Buscar supervisor da Ue
-            var supervisoresEscola = repositorioSupervisorEscolaDre.ObtemSupervisoresPorUe(codigoUe);
-            if (supervisoresEscola == null || supervisoresEscola.Count() == 0)
+            var funcionariosRetorno = servicoNotificacao.ObterFuncionariosPorNivel(codigoUe, Cargo.Supervisor);
+
+            if (cargosNotificados.Any(c => funcionariosRetorno.Any(f => f.Cargo == c)))
                 return null;
 
-            var usuarios = new List<Usuario>();
-            foreach (var supervisorEscola in supervisoresEscola)
-                usuarios.Add(servicoUsuario.ObterUsuarioPorCodigoRfLoginOuAdiciona(supervisorEscola.SupervisorId));
+            var usuarios = new List<(Cargo?, Usuario)>();
+            foreach (var funcionario in funcionariosRetorno)
+                usuarios.Add((funcionario.Cargo, servicoUsuario.ObterUsuarioPorCodigoRfLoginOuAdiciona(funcionario.Id)));
 
             return usuarios;
         }
 
-        private IEnumerable<Usuario> BuscaUsuarioNotificacao(RegistroFrequenciaFaltanteDto turma, TipoNotificacaoFrequencia tipo)
+        private IEnumerable<(Cargo?, Usuario)> BuscaUsuarioNotificacao(RegistroFrequenciaFaltanteDto turma, TipoNotificacaoFrequencia tipo)
         {
-            IEnumerable<Usuario> usuarios = Enumerable.Empty<Usuario>();
+            IEnumerable<(Cargo?, Usuario)> usuarios = Enumerable.Empty<(Cargo?, Usuario)>();
             switch (tipo)
             {
                 case TipoNotificacaoFrequencia.Professor:
@@ -145,7 +141,7 @@ namespace SME.SGP.Dominio.Servicos
                     break;
 
                 case TipoNotificacaoFrequencia.SupervisorUe:
-                    usuarios = BuscaSupervisoresUe(turma.CodigoUe);
+                    usuarios = BuscaSupervisoresUe(turma.CodigoUe, usuarios.Select(u => u.Item1));
                     break;
 
                 default:
@@ -205,7 +201,7 @@ namespace SME.SGP.Dominio.Servicos
                         if (usuarios != null)
                             foreach (var usuario in usuarios)
                             {
-                                NotificaRegistroFrequencia(usuario, turma, tipo);
+                                NotificaRegistroFrequencia(usuario.Item2, turma, tipo);
                             }
                     }
                     else
