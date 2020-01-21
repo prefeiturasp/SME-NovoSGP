@@ -71,7 +71,7 @@ namespace SME.SGP.Aplicacao
             foreach(var alunoEOL in alunosEOL)
             {
                 var frequenciaAluno = repositorioFrequenciaAlunoDisciplinaPeriodo.ObterPorAlunoDisciplinaData(alunoEOL.CodigoAluno, disciplinaId, periodo.PeriodoFim);
-                if (frequenciaAluno == null)
+                if (frequenciaAluno == null || frequenciaAluno.NumeroFaltasNaoCompensadas == 0)
                     continue;
 
                 var faltasNaoCompensadas = int.Parse(frequenciaAluno.NumeroFaltasNaoCompensadas.ToString());
