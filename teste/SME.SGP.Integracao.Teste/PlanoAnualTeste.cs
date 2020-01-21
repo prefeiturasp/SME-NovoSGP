@@ -101,7 +101,7 @@ namespace SME.SGP.Integracao.Teste
                     new BimestrePlanoAnualDto
                     {
                         Bimestre = 1,
-                        Descricao = "Primeiro bismestre do primeiro ano",
+                        Descricao = "Primeiro bimestre do primeiro ano",
                         ObjetivosAprendizagem = new List<ObjetivoAprendizagemSimplificadoDto>()
                         {
                             new ObjetivoAprendizagemSimplificadoDto()

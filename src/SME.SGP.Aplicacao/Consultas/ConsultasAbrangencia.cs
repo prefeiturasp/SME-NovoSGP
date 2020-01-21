@@ -28,12 +28,12 @@ namespace SME.SGP.Aplicacao
             return await repositorioAbrangencia.ObterAbrangenciaPorFiltro(texto, login, perfil, consideraHistorico);
         }
 
-        public async Task<AbrangenciaFiltroRetorno> ObterAbrangenciaTurma(string turma)
+        public async Task<AbrangenciaFiltroRetorno> ObterAbrangenciaTurma(string turma, bool consideraHistorico = false)
         {
             var login = servicoUsuario.ObterLoginAtual();
             var perfil = servicoUsuario.ObterPerfilAtual();
 
-            return await repositorioAbrangencia.ObterAbrangenciaTurma(turma, login, perfil);
+            return await repositorioAbrangencia.ObterAbrangenciaTurma(turma, login, perfil, consideraHistorico);
         }
 
         public async Task<IEnumerable<int>> ObterAnosLetivos(bool consideraHistorico)
