@@ -48,7 +48,10 @@ namespace SME.SGP.Aplicacao.Consultas
                     ComponenteCurricularEolId = long.Parse(aulaDto.DisciplinaId),
                     EscolaId = aulaDto.UeId,
                     TurmaId = aulaDto.TurmaId
-                });
+                }, seNaoExistirRetornaNovo: false);
+
+                if (planoAnual == null)
+                    throw new NegocioException("Não foi possível carregar o plano de aula porque não há plano anual cadastrado");
 
                 // Carrega objetivos já cadastrados no plano de aula
                 var objetivosAula = await consultasObjetivosAula.ObterObjetivosPlanoAula(plano.Id);
