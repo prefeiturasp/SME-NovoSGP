@@ -112,6 +112,58 @@ pipeline {
        
             }
         }
+		
+		stage('Deploy DEV-rc2') {
+            when {
+                branch 'development-rc2'
+            }
+            steps {
+                 
+                 sh 'echo Deploying desenvolvimento RC2'
+                
+        // Start JOB Rundeck para build das imagens Docker e push SME Registry
+      
+          script {
+           step([$class: "RundeckNotifier",
+              includeRundeckLogs: true,
+                               
+              //JOB DE BUILD
+              jobId: "29e93baa-a956-46ac-b805-23862ddc6863",
+              nodeFilters: "",
+              //options: """
+              //     PARAM_1=value1
+               //    PARAM_2=value2
+              //     PARAM_3=
+              //     """,
+              rundeckInstance: "Rundeck-SME",
+              shouldFailTheBuild: true,
+              shouldWaitForRundeckJob: true,
+              tags: "",
+              tailLog: true])
+           }
+                
+       //Start JOB Rundeck para update de deploy Kubernetes DEV
+         
+         script {
+            step([$class: "RundeckNotifier",
+              includeRundeckLogs: true,
+              jobId: "7b136020-3ddd-4fce-9ac7-4fc9c4b9b2af",
+              nodeFilters: "",
+              //options: """
+              //     PARAM_1=value1
+               //    PARAM_2=value2
+              //     PARAM_3=
+              //     """,
+              rundeckInstance: "Rundeck-SME",
+              shouldFailTheBuild: true,
+              shouldWaitForRundeckJob: true,
+              tags: "",
+              tailLog: true])
+           }
+      
+       
+            }
+        }
         
         stage('Deploy QA') {
             when {
@@ -122,7 +174,7 @@ pipeline {
             }
         }
       
-      stage('Deploy homologacao') {
+      stage('Deploy HOM') {
             when {
                 branch 'release'
             }
@@ -179,7 +231,7 @@ pipeline {
             }
         }
 
-        stage('Deploy produção') {
+        stage('Deploy PROD') {
             when {
                 branch 'master'
             }
@@ -241,38 +293,30 @@ pipeline {
     
 post {
         always {
-            //step ([$class: 'MSTestPublisher', testResultsFile:"**/*.trx", failOnError: false, keepLongStdio: true])
+            
             echo 'One way or another, I have finished'
             
             
         }
         success {
-           // withCredentials([string(credentialsId: 'webhook-backend', variable: 'WH-teams')]) {
-           //   office365ConnectorSend color: '008000', message: "O Build ${BUILD_DISPLAY_NAME} - Esta ok !!!  <${env.BUILD_URL}> ", status: 'SUCESSO', webhookUrl: '$WH-teams'
-           // }
+           
             telegramSend("${JOB_NAME}...O Build ${BUILD_DISPLAY_NAME} - Esta ok !!!\n Consulte o log para detalhes -> [Job logs](${env.BUILD_URL}console)\n\n Uma nova versão da aplicação esta disponivel!!!")
         }
         unstable {
-           // withCredentials([string(credentialsId: 'webhook-backend', variable: 'WH-teams')]) {
-           //  office365ConnectorSend color: 'ffa500', message: "O Build ${BUILD_DISPLAY_NAME} <${env.BUILD_URL}> - Esta instavel ...Verifique os logs para corrigir o problema'", status: 'INSTAVEL', webhookUrl: '$WH-teams'
-           //}
+           
             telegramSend("O Build ${BUILD_DISPLAY_NAME} <${env.BUILD_URL}> - Esta instavel ...\nConsulte o log para detalhes -> [Job logs](${env.BUILD_URL}console)")
         }
         failure {
-            // withCredentials([string(credentialsId: 'webhook-backend', variable: 'WH-teams')]) {
-            //   office365ConnectorSend color: 'd00000', message: "O Build ${BUILD_DISPLAY_NAME} <${env.BUILD_URL}> - Quebrou. Verifique os logs para corrigir o problema'", status: 'FALHOU', webhookUrl: '$WH-teams'
-            // }
+           
              telegramSend("${JOB_NAME}...O Build ${BUILD_DISPLAY_NAME}  - Quebrou. \nConsulte o log para detalhes -> [Job logs](${env.BUILD_URL}console)")
         }
         changed {
-             //withCredentials([string(credentialsId: 'webhook-backend', variable: 'WH-teams')]) {
+             
                echo 'Things were different before...'
-            // }
+            
         }
        aborted {
-             //withCredentials([string(credentialsId: 'webhook-API', variable: 'WHapi-teams')]) {
-             //  office365ConnectorSend color: 'd00000', message: "O Build ${BUILD_DISPLAY_NAME} <${env.BUILD_URL}> - Quebrou. Verifique os logs para corrigir o problema'", status: 'FALHOU', webhookUrl: '$WHapi-teams'
-             //}
+            
              telegramSend("O Build ${BUILD_DISPLAY_NAME} - Foi abortado.\nConsulte o log para detalhes -> [Job logs](${env.BUILD_URL}console)")
         }
     }
