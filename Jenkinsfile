@@ -231,9 +231,7 @@ pipeline {
             }
         }
 
-
         stage('Deploy PROD') {
-
             when {
                 branch 'master'
             }
