@@ -46,6 +46,14 @@ namespace SME.SGP.Api.Controllers
             return Ok(await consultasDisciplina.ObterDisciplinasPorProfessorETurma(codigoTurma, turmaPrograma));
         }
 
+        [HttpGet("turmas/{codigoTurma}/docencias-compartilhadas/disciplinas/")]
+        [ProducesResponseType(typeof(IEnumerable<DisciplinaDto>), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        public async Task<IActionResult> ObterDisciplinasCompartilhadas(string codigoTurma, [FromQuery] bool turmaPrograma, [FromServices]IConsultasDisciplina consultasDisciplina)
+        {
+            return Ok(await consultasDisciplina.ObterDisciplinasPorTurma(codigoTurma, turmaPrograma));
+        }
+
         [HttpGet("{codigoRF}/escolas/{codigoEscola}/turmas/anos-letivos/{anoLetivo}")]
         [ProducesResponseType(typeof(IEnumerable<DisciplinaDto>), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
