@@ -2,6 +2,7 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import { DataTable, Label } from '~/componentes';
 import SelectComponent from '~/componentes/select';
+import { confirmar } from '~/servicos/alertas';
 
 import { CardTabelaAlunos } from '../styles';
 
@@ -13,8 +14,17 @@ const ListaAlunosAusenciasCompensadas = props => {
     atualizarValoresListaCompensacao,
   } = props;
 
-  const atualizarValores = (qt, indexAluno) => {
-    if (indexAluno >= 0) {
+  const atualizarValores = async (qt, indexAluno, aluno) => {
+    const confirmado = await confirmar(
+      'Alterar quantidade',
+      `${aluno.id} - ${aluno.nome}`,
+      'A frequência do seguinte aluno será recalculada somente quando salvar as suas alterações',
+      'Alterar',
+      'Cancelar',
+      true
+    );
+
+    if (confirmado && indexAluno >= 0) {
       const lista = listaAusenciaCompensada;
       lista[indexAluno].quantidadeFaltasCompensadas = qt;
       atualizarValoresListaCompensacao(lista);
@@ -23,10 +33,7 @@ const ListaAlunosAusenciasCompensadas = props => {
 
   const montaCompensacao = (qtCompensada, dadosAluno) => {
     const listaMaximoCompensar = [];
-    let qtMaxima = dadosAluno.maximoCompensacoesPermitidas;
-    if (qtMaxima > 10) {
-      qtMaxima = 10;
-    }
+    const qtMaxima = dadosAluno.maximoCompensacoesPermitidas;
     for (let index = 0; index < qtMaxima; index++) {
       listaMaximoCompensar.push({
         valor: String(index + 1),
@@ -44,7 +51,7 @@ const ListaAlunosAusenciasCompensadas = props => {
           if (aluno) {
             indexAluno = listaAusenciaCompensada.indexOf(aluno);
           }
-          atualizarValores(qt, indexAluno);
+          atualizarValores(qt, indexAluno, aluno);
         }}
         valueOption="valor"
         valueText="descricao"
