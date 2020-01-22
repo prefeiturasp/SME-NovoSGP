@@ -130,6 +130,7 @@ const DiaCompleto = props => {
       <BotoesAuxiliaresEstilo>
         {temAula && podeCadastrarAvaliacao ? (
           <Botao
+            id={shortid.generate()}
             key={shortid.generate()}
             onClick={aoClicarBotaoNovaAvaliacao}
             label="Nova Avaliação"
@@ -139,6 +140,7 @@ const DiaCompleto = props => {
           />
         ) : null}
         <Botao
+          id={shortid.generate()}
           key={shortid.generate()}
           onClick={aoClicarBotaoNovaAula}
           label="Nova Aula"
