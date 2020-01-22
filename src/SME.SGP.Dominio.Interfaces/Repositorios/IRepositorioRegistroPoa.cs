@@ -5,6 +5,6 @@ namespace SME.SGP.Dominio.Interfaces
 {
     public interface IRepositorioRegistroPoa : IRepositorioBase<RegistroPoa>
     {
-        Task<PaginacaoResultadoDto<RegistroPoa>> ListarPaginado(string codigoRf, string dreId, int mes, string ueId, string titulo, int anoLetivo, Paginacao paginacao);
+        Task<PaginacaoResultadoDto<RegistroPoa>> ListarPaginado(string codigoRf, string dreId, int bimestre, string ueId, string titulo, int anoLetivo, Paginacao paginacao);
     }
 }

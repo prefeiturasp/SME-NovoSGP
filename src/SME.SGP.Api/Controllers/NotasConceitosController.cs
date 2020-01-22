@@ -18,8 +18,7 @@ namespace SME.SGP.Api.Controllers
         [Permissao(Permissao.NC_A, Permissao.NC_I, Policy = "Bearer")]
         public async Task<IActionResult> Get([FromQuery]ListaNotasConceitosConsultaDto consultaListaNotasConceitosDto, [FromServices] IConsultasNotasConceitos consultasNotasConceitos)
         {
-            return Ok(await consultasNotasConceitos.ListarNotasConceitos(consultaListaNotasConceitosDto.TurmaCodigo, consultaListaNotasConceitosDto.Bimestre,
-                consultaListaNotasConceitosDto.AnoLetivo, consultaListaNotasConceitosDto.DisciplinaCodigo, consultaListaNotasConceitosDto.Modalidade));
+            return Ok(await consultasNotasConceitos.ListarNotasConceitos(consultaListaNotasConceitosDto));
         }
 
         [HttpGet("/api/v1/avaliacoes/{atividadeAvaliativaId}/notas/{nota}/arredondamento")]
@@ -35,9 +34,9 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(TipoNota), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [Permissao(Permissao.NC_A, Permissao.NC_I, Policy = "Bearer")]
-        public IActionResult ObterNotaTipo(long turmaId, int anoLetivo, [FromServices]IConsultasNotasConceitos consultasNotasConceitos)
+        public async Task<IActionResult> ObterNotaTipo(long turmaId, int anoLetivo,[FromQuery]bool consideraHistorico, [FromServices]IConsultasNotasConceitos consultasNotasConceitos)
         {
-            return Ok(consultasNotasConceitos.ObterNotaTipo(turmaId, anoLetivo));
+            return Ok(await consultasNotasConceitos.ObterNotaTipo(turmaId, anoLetivo, consideraHistorico));
         }
 
         [HttpPost]
