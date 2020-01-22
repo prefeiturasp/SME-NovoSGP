@@ -4,6 +4,7 @@ import { useSelector } from 'react-redux';
 import * as Yup from 'yup';
 import moment from 'moment';
 import PropTypes from 'prop-types';
+import shortid from 'shortid';
 import Cabecalho from '~/componentes-sgp/cabecalho';
 import Auditoria from '~/componentes/auditoria';
 import Button from '~/componentes/button';
@@ -694,6 +695,7 @@ const CadastroAula = ({ match }) => {
                 </div>
                 <div className="col-md-8 pb-2 d-flex justify-content-end">
                   <Button
+                    id={shortid.generate()}
                     label="Voltar"
                     icon="arrow-left"
                     color={Colors.Azul}
@@ -702,6 +704,7 @@ const CadastroAula = ({ match }) => {
                     onClick={onClickVoltar}
                   />
                   <Button
+                    id={shortid.generate()}
                     label="Cancelar"
                     color={Colors.Roxo}
                     border
@@ -710,6 +713,7 @@ const CadastroAula = ({ match }) => {
                     disabled={!modoEdicao}
                   />
                   <Button
+                    id={shortid.generate()}
                     label="Excluir"
                     color={Colors.Vermelho}
                     border
@@ -718,6 +722,7 @@ const CadastroAula = ({ match }) => {
                     onClick={onClickExcluir}
                   />
                   <Button
+                    id={shortid.generate()}
                     label={novoRegistro ? 'Cadastrar' : 'Alterar'}
                     color={Colors.Roxo}
                     border
