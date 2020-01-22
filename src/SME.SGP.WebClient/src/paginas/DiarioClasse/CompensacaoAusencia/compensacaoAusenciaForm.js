@@ -704,15 +704,15 @@ const CompensacaoAusenciaForm = ({ match }) => {
                     />
                   </div>
                 </div>
-                <div className="row mt-2">
-                  <div className="col-md-5">
+                <div className="mt-2" style={{ flexGrow: 1, display: 'flex' }}>
+                  <div>
                     <ListaAlunos
                       lista={alunosAusenciaTurma}
                       onSelectRow={onSelectRowAlunos}
                       idsAlunos={idsAlunos}
                     />
                   </div>
-                  <ColunaBotaoListaAlunos className="col-md-2">
+                  <ColunaBotaoListaAlunos style={{ margin: '15px' }}>
                     <BotaoListaAlunos
                       className="mb-2"
                       onClick={onClickAdicionarAlunos}
@@ -723,7 +723,7 @@ const CompensacaoAusenciaForm = ({ match }) => {
                       <i className="fas fa-chevron-left" />
                     </BotaoListaAlunos>
                   </ColunaBotaoListaAlunos>
-                  <div className="col-md-5">
+                  <div>
                     <ListaAlunosAusenciasCompensadas
                       listaAusenciaCompensada={alunosAusenciaCompensada}
                       onSelectRow={onSelectRowAlunosAusenciaCompensada}
