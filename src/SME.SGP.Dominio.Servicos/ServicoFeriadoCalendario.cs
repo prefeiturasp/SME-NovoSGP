@@ -45,7 +45,7 @@ namespace SME.SGP.Dominio.Servicos
                 Ano = ano
             }).Result;
 
-            if (feriadosMoveis != null && feriadosMoveis.Any())
+            if (feriadosMoveis == null || !feriadosMoveis.Any())
             {
                 IncluirFeriadosMoveis(ano);
             }
