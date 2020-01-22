@@ -25,7 +25,7 @@ const Campo = styled.div`
 `;
 
 export default function Editor(props) {
-  const { onChange, inicial, form, name, label, temErro, mensagemErro } = props;
+  const { onChange, inicial, form, name, label, temErro, mensagemErro, desabilitar } = props;
 
   const possuiErro = () => {
     return (form && form.errors[name] && form.touched[name]) || temErro;
@@ -49,6 +49,7 @@ export default function Editor(props) {
             name={name}
             component={CKEditor}
             editor={ClassicEditor}
+            disabled={desabilitar || false}
             config={{
               language: 'pt-br',
               removePlugins: [
@@ -80,6 +81,7 @@ export default function Editor(props) {
       <CKEditor
         editor={ClassicEditor}
         config={{
+          readOnly: desabilitar || false,
           language: 'pt-br',
           removePlugins: [
             'Image',

@@ -10,6 +10,7 @@ import Card from '~/componentes/card';
 import Editor from '~/componentes/editor/editor';
 import SelectComponent from '~/componentes/select';
 import modalidade from '~/dtos/modalidade';
+import RotasDto from '~/dtos/rotasDto';
 import { confirmar, erros, sucesso } from '~/servicos/alertas';
 import { setBreadcrumbManual } from '~/servicos/breadcrumb-services';
 import history from '~/servicos/history';
@@ -19,9 +20,14 @@ import ServicoDisciplina from '~/servicos/Paginas/ServicoDisciplina';
 import ListaAlunos from './listasAlunos/listaAlunos';
 import ListaAlunosAusenciasCompensadas from './listasAlunos/listaAlunosAusenciasCompensadas';
 import { Badge, BotaoListaAlunos, ColunaBotaoListaAlunos } from './styles';
+import { verificaSomenteConsulta } from '~/servicos/servico-navegacao';
 
 const CompensacaoAusenciaForm = ({ match }) => {
   const usuario = useSelector(store => store.usuario);
+
+  const permissoesTela = usuario.permissoes[RotasDto.COMPENSACAO_AUSENCIA];
+  const [somenteConsulta, setSomenteConsulta] = useState(false);
+  const [desabilitarCampos, setDesabilitarCampos] = useState(false);
 
   const { turmaSelecionada } = usuario;
 
@@ -68,6 +74,17 @@ const CompensacaoAusenciaForm = ({ match }) => {
     })
   );
 
+  useEffect(() => {
+    setSomenteConsulta(verificaSomenteConsulta(permissoesTela));
+  }, [permissoesTela]);
+
+  useEffect(() => {
+    const desabilitar = novoRegistro
+      ? somenteConsulta || !permissoesTela.podeIncluir
+      : somenteConsulta || !permissoesTela.podeAlterar;
+    setDesabilitarCampos(desabilitar);
+  }, [somenteConsulta, novoRegistro, permissoesTela]);
+
   const resetarForm = useCallback(() => {
     if (refForm && refForm.resetForm) {
       refForm.resetForm();
@@ -77,7 +94,7 @@ const CompensacaoAusenciaForm = ({ match }) => {
   }, [refForm]);
 
   const onChangeCampos = () => {
-    if (carregouInformacoes && !modoEdicao) {
+    if (!desabilitarCampos && carregouInformacoes && !modoEdicao) {
       setModoEdicao(true);
     }
   };
@@ -504,7 +521,7 @@ const CompensacaoAusenciaForm = ({ match }) => {
   };
 
   const onClickAdicionarAlunos = () => {
-    if (idsAlunos && idsAlunos.length) {
+    if (!desabilitarCampos && idsAlunos && idsAlunos.length) {
       const novaListaAlunosAusenciaCompensada = obterListaAlunosComIdsSelecionados(
         alunosAusenciaTurma,
         idsAlunos
@@ -526,7 +543,11 @@ const CompensacaoAusenciaForm = ({ match }) => {
   };
 
   const onClickRemoverAlunos = async () => {
-    if (idsAlunosAusenciaCompensadas && idsAlunosAusenciaCompensadas.length) {
+    if (
+      !desabilitarCampos &&
+      idsAlunosAusenciaCompensadas &&
+      idsAlunosAusenciaCompensadas.length
+    ) {
       const listaAlunosRemover = alunosAusenciaCompensada.filter(item =>
         idsAlunosAusenciaCompensadas.find(id => id == item.id)
       );
@@ -561,16 +582,22 @@ const CompensacaoAusenciaForm = ({ match }) => {
   };
 
   const onSelectRowAlunos = ids => {
-    setIdsAlunos(ids);
+    if (!desabilitarCampos) {
+      setIdsAlunos(ids);
+    }
   };
 
   const onSelectRowAlunosAusenciaCompensada = ids => {
-    setIdsAlunosAusenciaCompensadas(ids);
+    if (!desabilitarCampos) {
+      setIdsAlunosAusenciaCompensadas(ids);
+    }
   };
 
   const atualizarValoresListaCompensacao = novaListaAlunos => {
-    onChangeCampos();
-    setAlunosAusenciaCompensada([...novaListaAlunos]);
+    if (!desabilitarCampos) {
+      onChangeCampos();
+      setAlunosAusenciaCompensada([...novaListaAlunos]);
+    }
   };
 
   return (
@@ -614,7 +641,11 @@ const CompensacaoAusenciaForm = ({ match }) => {
                     color={Colors.Vermelho}
                     border
                     className="mr-2"
-                    disabled={novoRegistro}
+                    disabled={
+                      somenteConsulta ||
+                      !permissoesTela.podeExcluir ||
+                      novoRegistro
+                    }
                     onClick={onClickExcluir}
                   />
                   <Button
@@ -627,6 +658,7 @@ const CompensacaoAusenciaForm = ({ match }) => {
                     bold
                     className="mr-2"
                     onClick={() => validaAntesDoSubmit(form)}
+                    disabled={desabilitarCampos}
                   />
                 </div>
 
@@ -643,7 +675,11 @@ const CompensacaoAusenciaForm = ({ match }) => {
                         valueText="nome"
                         onChange={valor => onChangeDisciplina(valor, form)}
                         placeholder="Disciplina"
-                        disabled={desabilitarDisciplina || !novoRegistro}
+                        disabled={
+                          desabilitarCampos ||
+                          desabilitarDisciplina ||
+                          !novoRegistro
+                        }
                       />
                     </Loader>
                   </div>
@@ -658,7 +694,7 @@ const CompensacaoAusenciaForm = ({ match }) => {
                       valueText="descricao"
                       onChange={bi => onChangeBimestre(bi, form)}
                       placeholder="Bimestre"
-                      disabled={!novoRegistro}
+                      disabled={desabilitarCampos || !novoRegistro}
                     />
                   </div>
                   <div className="col-sm-12 col-md-12 col-lg-6 col-xl-6 mb-2">
@@ -670,6 +706,7 @@ const CompensacaoAusenciaForm = ({ match }) => {
                       onChange={onChangeCampos}
                       type="input"
                       maxLength="250"
+                      desabilitado={desabilitarCampos}
                     />
                   </div>
                   {temRegencia && listaDisciplinasRegencia && (
@@ -682,7 +719,9 @@ const CompensacaoAusenciaForm = ({ match }) => {
                             role="button"
                             onClick={e => {
                               e.preventDefault();
-                              selecionarDisciplina(indice);
+                              if (!desabilitarCampos) {
+                                selecionarDisciplina(indice);
+                              }
                             }}
                             aria-pressed={disciplina.selecionada && true}
                             alt={disciplina.nome}
@@ -701,6 +740,7 @@ const CompensacaoAusenciaForm = ({ match }) => {
                       name="descricao"
                       onChange={onChangeCampos}
                       label="Detalhamento da atividade"
+                      desabilitar={desabilitarCampos}
                     />
                   </div>
                 </div>
@@ -733,6 +773,7 @@ const CompensacaoAusenciaForm = ({ match }) => {
                       atualizarValoresListaCompensacao={
                         atualizarValoresListaCompensacao
                       }
+                      desabilitarCampos={desabilitarCampos}
                     />
                   </div>
                 </div>
