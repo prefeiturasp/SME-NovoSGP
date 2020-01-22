@@ -11,16 +11,16 @@ import Editor from '~/componentes/editor/editor';
 import SelectComponent from '~/componentes/select';
 import modalidade from '~/dtos/modalidade';
 import RotasDto from '~/dtos/rotasDto';
-import { confirmar, erros, sucesso } from '~/servicos/alertas';
+import { confirmar, erro, erros, sucesso } from '~/servicos/alertas';
 import { setBreadcrumbManual } from '~/servicos/breadcrumb-services';
 import history from '~/servicos/history';
 import ServicoCompensacaoAusencia from '~/servicos/Paginas/DiarioClasse/ServicoCompensacaoAusencia';
 import ServicoDisciplina from '~/servicos/Paginas/ServicoDisciplina';
+import { verificaSomenteConsulta } from '~/servicos/servico-navegacao';
 
 import ListaAlunos from './listasAlunos/listaAlunos';
 import ListaAlunosAusenciasCompensadas from './listasAlunos/listaAlunosAusenciasCompensadas';
 import { Badge, BotaoListaAlunos, ColunaBotaoListaAlunos } from './styles';
-import { verificaSomenteConsulta } from '~/servicos/servico-navegacao';
 
 const CompensacaoAusenciaForm = ({ match }) => {
   const usuario = useSelector(store => store.usuario);
@@ -49,6 +49,10 @@ const CompensacaoAusenciaForm = ({ match }) => {
   const [temRegencia, setTemRegencia] = useState(false);
   const [refForm, setRefForm] = useState({});
 
+  const [
+    alunosAusenciaTurmaOriginal,
+    setAlunosAusenciaTurmaOriginal,
+  ] = useState([]);
   const [alunosAusenciaTurma, setAlunosAusenciaTurma] = useState([]);
   const [alunosAusenciaCompensada, setAlunosAusenciaCompensada] = useState([]);
   const [idsAlunos, setIdsAlunos] = useState([]);
@@ -56,6 +60,7 @@ const CompensacaoAusenciaForm = ({ match }) => {
     idsAlunosAusenciaCompensadas,
     setIdsAlunosAusenciaCompensadas,
   ] = useState([]);
+  const [selecaoAlunoSelecionado, setSelecaoAlunoSelecionado] = useState('');
 
   const [valoresIniciais, setValoresIniciais] = useState({
     disciplinaId: undefined,
@@ -166,6 +171,7 @@ const CompensacaoAusenciaForm = ({ match }) => {
 
   const onChangeDisciplina = (codigoDisciplina, form) => {
     setAlunosAusenciaTurma([]);
+    setAlunosAusenciaTurmaOriginal([]);
     setAlunosAusenciaCompensada([]);
     setIdsAlunosAusenciaCompensadas([]);
     setIdsAlunos([]);
@@ -278,6 +284,7 @@ const CompensacaoAusenciaForm = ({ match }) => {
       ).catch(e => {
         setCarregandoListaAlunosFrequencia(false);
         setAlunosAusenciaTurma([]);
+        setAlunosAusenciaTurmaOriginal([]);
         erros(e);
       });
       if (alunos && alunos.data && alunos.data.length) {
@@ -287,11 +294,14 @@ const CompensacaoAusenciaForm = ({ match }) => {
             listaAlunosEdicao
           );
           setAlunosAusenciaTurma([...listaSemDuplicados]);
+          setAlunosAusenciaTurmaOriginal([...listaSemDuplicados]);
         } else {
           setAlunosAusenciaTurma([...alunos.data]);
+          setAlunosAusenciaTurmaOriginal([...alunos.data]);
         }
       } else {
         setAlunosAusenciaTurma([]);
+        setAlunosAusenciaTurmaOriginal([]);
       }
       setCarregandoListaAlunosFrequencia(false);
     },
@@ -360,16 +370,45 @@ const CompensacaoAusenciaForm = ({ match }) => {
     selecionarDisciplinas,
   ]);
 
-  const onChangeBimestre = (bimestre, form) => {
-    setAlunosAusenciaCompensada([]);
-    setIdsAlunosAusenciaCompensadas([]);
-    setIdsAlunos([]);
-    if (bimestre && form && form.values.disciplinaId) {
-      obterAlunosComAusencia(form.values.disciplinaId, bimestre);
-    } else {
-      setAlunosAusenciaTurma([]);
+  const onChangeBimestre = async (bimestre, form) => {
+    let podeEditar = false;
+    const exucutandoCalculoFrequencia = await ServicoCompensacaoAusencia.obterStatusCalculoFrequencia(
+      turmaSelecionada.turma,
+      form.values.disciplinaId,
+      bimestre
+    ).catch(e => {
+      erros(e);
+    });
+    if (
+      exucutandoCalculoFrequencia &&
+      exucutandoCalculoFrequencia.status == 200
+    ) {
+      const temProcessoEmExecucao =
+        exucutandoCalculoFrequencia && exucutandoCalculoFrequencia.data;
+
+      if (temProcessoEmExecucao) {
+        podeEditar = false;
+      } else {
+        podeEditar = true;
+      }
+
+      if (podeEditar) {
+        setAlunosAusenciaCompensada([]);
+        setIdsAlunosAusenciaCompensadas([]);
+        setIdsAlunos([]);
+        if (bimestre && form && form.values.disciplinaId) {
+          obterAlunosComAusencia(form.values.disciplinaId, bimestre);
+        } else {
+          setAlunosAusenciaTurma([]);
+          setAlunosAusenciaTurmaOriginal([]);
+        }
+        onChangeCampos();
+      } else {
+        erro(
+          'No momento não é possível realizar a edição pois tem cálculo(s) em processo, tente mais tarde!'
+        );
+      }
     }
-    onChangeCampos();
   };
 
   const validaAntesDoSubmit = form => {
@@ -448,6 +487,7 @@ const CompensacaoAusenciaForm = ({ match }) => {
         } else {
           setIdsAlunos([]);
           setAlunosAusenciaTurma([]);
+          setAlunosAusenciaTurmaOriginal([]);
           setIdsAlunosAusenciaCompensadas([]);
           setAlunosAusenciaCompensada([]);
           form.resetForm();
@@ -532,7 +572,13 @@ const CompensacaoAusenciaForm = ({ match }) => {
         idsAlunos
       );
 
+      const novaListaAlunosOriginal = obterListaAlunosSemIdsSelecionados(
+        alunosAusenciaTurmaOriginal,
+        idsAlunos
+      );
+
       onChangeCampos();
+      setAlunosAusenciaTurmaOriginal([...novaListaAlunosOriginal]);
       setAlunosAusenciaTurma([...novaListaAlunos]);
       setAlunosAusenciaCompensada([
         ...novaListaAlunosAusenciaCompensada,
@@ -563,6 +609,11 @@ const CompensacaoAusenciaForm = ({ match }) => {
       );
 
       if (confirmado) {
+        const novaListaAlunosOriginal = obterListaAlunosComIdsSelecionados(
+          alunosAusenciaTurmaOriginal,
+          idsAlunosAusenciaCompensadas
+        );
+
         const novaListaAlunos = obterListaAlunosComIdsSelecionados(
           alunosAusenciaCompensada,
           idsAlunosAusenciaCompensadas
@@ -574,6 +625,7 @@ const CompensacaoAusenciaForm = ({ match }) => {
         );
 
         onChangeCampos();
+        setAlunosAusenciaTurmaOriginal([...novaListaAlunosOriginal]);
         setAlunosAusenciaTurma([...novaListaAlunos, ...alunosAusenciaTurma]);
         setAlunosAusenciaCompensada([...novaListaAlunosAusenciaCompensada]);
         setIdsAlunosAusenciaCompensadas([]);
@@ -598,6 +650,36 @@ const CompensacaoAusenciaForm = ({ match }) => {
       onChangeCampos();
       setAlunosAusenciaCompensada([...novaListaAlunos]);
     }
+  };
+
+  const onChangeSelecaoAluno = e => {
+    const valor = e.target.value;
+
+    const listaParaPesquisar =
+      alunosAusenciaTurmaOriginal && alunosAusenciaTurmaOriginal.length
+        ? alunosAusenciaTurmaOriginal
+        : alunosAusenciaTurma;
+
+    if (!selecaoAlunoSelecionado) {
+      setAlunosAusenciaTurmaOriginal(alunosAusenciaTurma);
+    }
+
+    if (!valor) {
+      setAlunosAusenciaTurma([...alunosAusenciaTurmaOriginal]);
+    }
+
+    if (valor) {
+      const listaNova = listaParaPesquisar.filter(aluno => {
+        return aluno.nome
+          .toString()
+          .toLowerCase()
+          .includes(valor.toLowerCase());
+      });
+      setAlunosAusenciaTurma(listaNova);
+    }
+
+    setSelecaoAlunoSelecionado(valor);
+    setIdsAlunos([]);
   };
 
   return (
@@ -741,6 +823,18 @@ const CompensacaoAusenciaForm = ({ match }) => {
                       onChange={onChangeCampos}
                       label="Detalhamento da atividade"
                       desabilitar={desabilitarCampos}
+                    />
+                  </div>
+                </div>
+                <div className="row">
+                  <div className="col-sm-5 col-md-5 col-lg-5 col-xl-5 mb-2">
+                    <CampoTexto
+                      label="Seleção dos alunos"
+                      placeholder="Digite o nome do aluno"
+                      onChange={onChangeSelecaoAluno}
+                      value={selecaoAlunoSelecionado}
+                      type="input"
+                      icon
                     />
                   </div>
                 </div>
