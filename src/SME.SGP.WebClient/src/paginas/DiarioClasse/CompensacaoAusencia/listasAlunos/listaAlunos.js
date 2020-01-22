@@ -1,24 +1,42 @@
 import PropTypes from 'prop-types';
-import React, { useState } from 'react';
-import { DataTable } from '~/componentes';
+import React from 'react';
+import { DataTable, Label } from '~/componentes';
 
 import { CardTabelaAlunos } from '../styles';
 
 const ListaAlunos = props => {
   const { lista, idsAlunos, onSelectRow } = props;
 
+  const montaExibicaoPercentual = (frequencia, dadosAluno) => {
+    if (dadosAluno.alerta) {
+      return (
+        <>
+          {`${frequencia}% `}
+          <i
+            className="fas fa-exclamation-triangle"
+            style={{ color: '#b40c02' }}
+          />
+        </>
+      );
+    }
+    return frequencia ? `${frequencia}%` : '';
+  };
+
   const colunasListaAlunos = [
     {
       title: 'Nome',
       dataIndex: 'nome',
+      ellipsis: true,
     },
     {
       title: 'Frequência',
-      dataIndex: 'frequencia',
+      dataIndex: 'percentualFrequencia',
+      render: (frequencia, dadosAluno) =>
+        montaExibicaoPercentual(frequencia, dadosAluno),
     },
     {
       title: 'Faltas',
-      dataIndex: 'faltas',
+      dataIndex: 'quantidadeFaltasTotais',
     },
   ];
 
@@ -26,21 +44,23 @@ const ListaAlunos = props => {
     onSelectRow(ids);
   };
   return (
-    <CardTabelaAlunos>
-      <DataTable
-        scroll={{ y: 420 }}
-        id="lista-alunos"
-        idLinha="alunoCodigo"
-        selectedRowKeys={idsAlunos}
-        onSelectRow={onSelectRowAlunos}
-        columns={colunasListaAlunos}
-        dataSource={lista}
-        selectMultipleRows
-        onClickRow={() => {}}
-        pagination={false}
-        pageSize={9999}
-      />
-    </CardTabelaAlunos>
+    <>
+      <Label text="" />
+      <CardTabelaAlunos>
+        <DataTable
+          scroll={{ y: 420 }}
+          id="lista-alunos"
+          selectedRowKeys={idsAlunos}
+          onSelectRow={onSelectRowAlunos}
+          columns={colunasListaAlunos}
+          dataSource={lista}
+          selectMultipleRows
+          onClickRow={() => {}}
+          pagination={false}
+          pageSize={9999}
+        />
+      </CardTabelaAlunos>
+    </>
   );
 };
 
