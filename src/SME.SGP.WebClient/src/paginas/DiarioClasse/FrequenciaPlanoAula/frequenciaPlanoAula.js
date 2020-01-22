@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import styled from 'styled-components';
+import shortid from 'shortid';
 import { CampoData, Auditoria, Loader } from '~/componentes';
 import Cabecalho from '~/componentes-sgp/cabecalho';
 import ListaFrequencia from '~/componentes-sgp/ListaFrequencia/listaFrequencia';
@@ -73,7 +74,6 @@ const FrequenciaPlanoAula = () => {
   const [exibirAuditoria, setExibirAuditoria] = useState(false);
   const [desabilitarCampos, setDesabilitarCampos] = useState(false);
   const [modoEdicaoPlanoAula, setModoEdicaoPlanoAula] = useState(false);
-  const [ehRegencia, setEhRegencia] = useState(false);
   const [aula, setAula] = useState(undefined);
   const [auditoriaPlano, setAuditoriaPlano] = useState([]);
   const [planoAula, setPlanoAula] = useState({
@@ -97,6 +97,10 @@ const FrequenciaPlanoAula = () => {
   const [dataSugerida, setDataSugerida] = useState('');
 
   const [planoAulaExpandido, setPlanoAulaExpandido] = useState(false);
+
+  const dadosAulaFrequencia = useSelector(
+    state => state.calendarioProfessor.dadosAulaFrequencia
+  );
 
   const obterDatasDeAulasDisponiveis = useCallback(
     async disciplinaId => {
@@ -176,8 +180,8 @@ const FrequenciaPlanoAula = () => {
       setCarregandoDisciplinas(false);
     };
 
-    // Metodo usando para controlar quando troca uma turna no filtro principal
-    // So pode consultar apois todoas as flags foram resetadas
+    // Método usado para controlar quando troca uma turna no filtro principal
+    // Só pode consultar apois todoas as flags foram resetadas
     const podeConsultar = () => {
       return (
         disciplinaSelecionada === undefined &&
@@ -217,7 +221,7 @@ const FrequenciaPlanoAula = () => {
     diasParaHabilitar,
   ]);
 
-  // Caso tenha alteração abaixo alterar o podeConsultar() também!
+  // Caso exista alteração aqui, alterar o podeConsultar() também
   useEffect(() => {
     setDataSugerida('');
     resetarTelaFrequencia();
@@ -241,10 +245,10 @@ const FrequenciaPlanoAula = () => {
     somenteConsulta,
   ]);
 
-  const obterListaFrequencia = async aulaId => {
-    setAulaId(aulaId);
+  const obterListaFrequencia = async id => {
+    setAulaId(id);
     const frequenciaAlunos = await api
-      .get(`v1/calendarios/frequencias`, { params: { aulaId } })
+      .get(`v1/calendarios/frequencias`, { params: { id } })
       .catch(e => erros(e));
     if (frequenciaAlunos && frequenciaAlunos.data) {
       setFrequenciaId(frequenciaAlunos.data.id);
@@ -505,7 +509,6 @@ const FrequenciaPlanoAula = () => {
   };
 
   const resetarPlanoAula = useCallback(() => {
-    setEhRegencia(false);
     planoAula.descricao = null;
     setTemObjetivos(false);
     planoAula.qtdAulas = 0;
@@ -619,6 +622,15 @@ const FrequenciaPlanoAula = () => {
     },
     [obterAulaSelecionada, resetarPlanoAula, obterPlanoAula]
   );
+
+  useEffect(() => {
+    if (dadosAulaFrequencia) {
+      if (listaDisciplinas.length) {
+        setDisciplinaIdSelecionada(String(dadosAulaFrequencia.disciplinaId));
+      }
+      validaSeTemIdAula(dadosAulaFrequencia.dia);
+    }
+  }, [dadosAulaFrequencia]);
 
   const obterDataAulaSugerida = useCallback(datasDeAulas => {
     const habilitar = datasDeAulas.map(item =>
@@ -734,6 +746,7 @@ const FrequenciaPlanoAula = () => {
           <div className="row">
             <div className="col-md-12 d-flex justify-content-end pb-4">
               <Button
+                id={shortid.generate()}
                 label="Voltar"
                 icon="arrow-left"
                 color={Colors.Azul}
@@ -742,6 +755,7 @@ const FrequenciaPlanoAula = () => {
                 onClick={onClickVoltar}
               />
               <Button
+                id={shortid.generate()}
                 label="Cancelar"
                 color={Colors.Roxo}
                 border
@@ -751,6 +765,7 @@ const FrequenciaPlanoAula = () => {
               />
               <Loader loading={carregandoSalvar} tip="">
                 <Button
+                  id={shortid.generate()}
                   label="Salvar"
                   color={Colors.Roxo}
                   border

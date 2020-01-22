@@ -186,7 +186,7 @@ const Filtro = () => {
         ano: turmaSelecionadaCompleta.ano,
         desc: `${modalidadeDesc.desc} - ${turmaDesc.desc} - ${unidadeEscolarDesc.desc}`,
         periodo: periodoSelecionado || 0,
-        consideraHistorico: consideraHistorico,
+        consideraHistorico,
       };
 
       dispatch(turmasUsuario(turmas));
@@ -644,7 +644,7 @@ const Filtro = () => {
       turma: resultado.codigoTurma,
       desc: resultado.descricaoFiltro,
       periodo: resultado.semestre,
-      consideraHistorico: consideraHistorico,
+      consideraHistorico,
     };
 
     dispatch(selecionarTurma(turma));
@@ -941,6 +941,7 @@ const Filtro = () => {
               </Grid>
               <Grid cols={3} className="form-group text-right">
                 <Button
+                  id={shortid.generate()}
                   label="Aplicar filtro"
                   color={Colors.Roxo}
                   className="ml-auto"
