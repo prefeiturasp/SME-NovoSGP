@@ -1,4 +1,5 @@
-﻿using SME.SGP.Aplicacao.Interfaces;
+﻿using SME.SGP.Aplicacao;
+using SME.SGP.Aplicacao.Interfaces;
 using SME.SGP.Dominio.Interfaces;
 using System;
 using System.Collections.Generic;
@@ -11,34 +12,36 @@ namespace SME.SGP.Dominio.Servicos
         private readonly IRepositorioFrequenciaAlunoDisciplinaPeriodo repositorioFrequenciaAlunoDisciplinaPeriodo;
         private readonly IRepositorioRegistroAusenciaAluno repositorioRegistroAusenciaAluno;
         private readonly IRepositorioCompensacaoAusenciaAluno repositorioCompensacaoAusenciaAluno;
-        private readonly IRepositorioPeriodoEscolar repositorioPeriodoEscolar;
+        private readonly IRepositorioTurma repositorioTurma;
+        private readonly IConsultasPeriodoEscolar consultasPeriodoEscolar;
         private readonly IComandosProcessoExecutando comandosProcessoExecutando;
 
         public ServicoCalculoFrequencia(IRepositorioAula repositorioAula,
                                         IRepositorioRegistroAusenciaAluno repositorioRegistroAusenciaAluno,
                                         IRepositorioFrequenciaAlunoDisciplinaPeriodo repositorioFrequenciaAlunoDisciplinaPeriodo,
                                         IRepositorioCompensacaoAusenciaAluno repositorioCompensacaoAusenciaAluno,
-                                        IRepositorioPeriodoEscolar repositorioPeriodoEscolar,
+                                        IRepositorioTurma repositorioTurma,
+                                        IConsultasPeriodoEscolar consultasPeriodoEscolar,
                                         IComandosProcessoExecutando comandosProcessoExecutando)
         {
             this.repositorioAula = repositorioAula ?? throw new ArgumentNullException(nameof(repositorioAula));
             this.repositorioRegistroAusenciaAluno = repositorioRegistroAusenciaAluno ?? throw new ArgumentNullException(nameof(repositorioRegistroAusenciaAluno));
             this.repositorioFrequenciaAlunoDisciplinaPeriodo = repositorioFrequenciaAlunoDisciplinaPeriodo ?? throw new ArgumentNullException(nameof(repositorioFrequenciaAlunoDisciplinaPeriodo));
             this.repositorioCompensacaoAusenciaAluno = repositorioCompensacaoAusenciaAluno ?? throw new ArgumentNullException(nameof(repositorioCompensacaoAusenciaAluno));
-            this.repositorioPeriodoEscolar = repositorioPeriodoEscolar ?? throw new ArgumentNullException(nameof(repositorioPeriodoEscolar));
+            this.repositorioTurma = repositorioTurma ?? throw new ArgumentNullException(nameof(repositorioTurma));
+            this.consultasPeriodoEscolar = consultasPeriodoEscolar ?? throw new ArgumentNullException(nameof(consultasPeriodoEscolar));
             this.comandosProcessoExecutando = comandosProcessoExecutando ?? throw new ArgumentNullException(nameof(comandosProcessoExecutando));
         }
 
-        private int ObterBimestre(DateTime data, string turmaId, string disciplinaId)
+        private int ObterBimestre(DateTime data, string turmaId)
         {
-            var aula = repositorioAula.ObterAulaDataTurmaDisciplina(data, turmaId, disciplinaId).Result;
-            var periodo = repositorioPeriodoEscolar.ObterPorTipoCalendarioData(aula.TipoCalendarioId, data);
-            return periodo.Bimestre;
+            var turma = repositorioTurma.ObterPorId(turmaId);
+            return consultasPeriodoEscolar.ObterBimestre(data, turma.ModalidadeCodigo);
         }
 
         public void CalcularFrequenciaPorTurma(IEnumerable<string> alunos, DateTime dataAula, string turmaId, string disciplinaId)
         {
-            var bimestre = ObterBimestre(dataAula, turmaId, disciplinaId);
+            var bimestre = ObterBimestre(dataAula, turmaId);
 
             comandosProcessoExecutando.IncluirCalculoFrequencia(turmaId, disciplinaId, bimestre).Wait();
             try

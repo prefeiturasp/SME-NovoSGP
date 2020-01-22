@@ -80,5 +80,8 @@ namespace SME.SGP.Aplicacao.Consultas
                 }).ToList()
             };
         }
+
+        public int ObterBimestre(DateTime data, Modalidade modalidade)
+            => ((data.Month + 2) / 3) - (modalidade == Modalidade.EJA && data.Month >= 6 ? 2 : 0);
     }
 }
