@@ -168,7 +168,9 @@ const Filtro = () => {
       );
 
       setTextoAutocomplete(
-        `${modalidadeDesc.desc} - ${turmaDesc.desc} - ${unidadeEscolarDesc.desc}`
+        `${modalidadeDesc ? modalidadeDesc.desc : 'Modalidade'} - ${
+          turmaDesc ? turmaDesc.desc : 'Turma'
+        } - ${unidadeEscolarDesc ? unidadeEscolarDesc.desc : 'Unidade Escolar'}`
       );
 
       setAlternarFocoBusca(false);
@@ -176,6 +178,8 @@ const Filtro = () => {
       const turmaSelecionadaCompleta = turmas.find(
         item => item.valor.toString() === turmaSelecionada
       );
+
+      if (!turmaSelecionadaCompleta) return;
 
       const turma = {
         anoLetivo: anoLetivoSelecionado,
