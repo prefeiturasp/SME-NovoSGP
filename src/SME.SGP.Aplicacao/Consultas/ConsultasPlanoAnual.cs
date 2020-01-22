@@ -97,9 +97,10 @@ namespace SME.SGP.Aplicacao
             return planoAnual;
         }
 
-        public async Task<PlanoAnualCompletoDto> ObterPorEscolaTurmaAnoEBimestre(FiltroPlanoAnualDto filtroPlanoAnualDto)
+        public async Task<PlanoAnualCompletoDto> ObterPorEscolaTurmaAnoEBimestre(FiltroPlanoAnualDto filtroPlanoAnualDto, bool seNaoExistirRetornaNovo = true)
         {
             var planoAnual = repositorioPlanoAnual.ObterPlanoAnualCompletoPorAnoEscolaBimestreETurma(filtroPlanoAnualDto.AnoLetivo, filtroPlanoAnualDto.EscolaId, filtroPlanoAnualDto.TurmaId, filtroPlanoAnualDto.Bimestre, filtroPlanoAnualDto.ComponenteCurricularEolId);
+
             if (planoAnual != null)
             {
                 var objetivosAprendizagem = await consultasObjetivoAprendizagem.Listar();
@@ -116,8 +117,9 @@ namespace SME.SGP.Aplicacao
                     }
                 }
             }
-            else
+            else if (seNaoExistirRetornaNovo)
                 planoAnual = ObterNovoPlanoAnual(filtroPlanoAnualDto.TurmaId, filtroPlanoAnualDto.AnoLetivo, filtroPlanoAnualDto.EscolaId);
+
             return planoAnual;
         }
 
@@ -226,7 +228,9 @@ namespace SME.SGP.Aplicacao
         private PlanoAnualCompletoDto ObterNovoPlanoAnual(string turmaId, int anoLetivo, string ueId)
         {
             var periodos = ObterPeriodoEscolar(turmaId, anoLetivo);
+
             var periodo = periodos.FirstOrDefault(c => c.PeriodoFim >= DateTime.Now.Date && c.PeriodoInicio <= DateTime.Now.Date);
+
             return new PlanoAnualCompletoDto
             {
                 Bimestre = periodo.Bimestre,

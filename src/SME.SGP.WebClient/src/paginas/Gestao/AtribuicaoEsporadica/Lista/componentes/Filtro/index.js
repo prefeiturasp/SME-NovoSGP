@@ -15,7 +15,7 @@ import UeDropDown from '~/componentes-sgp/UeDropDown';
 import AnoLetivoTag from '../../../componentes/AnoLetivoTag';
 
 // Styles
-import { Row } from './styles';
+import { Linha } from '~/componentes/EstilosGlobais';
 
 // Utils
 import { validaSeObjetoEhNuloOuVazio } from '~/utils/funcoes/gerais';
@@ -65,7 +65,7 @@ const Filtro = memo(({ onFiltrar }) => {
     >
       {form => (
         <Form className="col-md-12 mb-4">
-          <Row className="row mb-2">
+          <Linha className="row mb-2">
             <Grid cols={2}>
               <AnoLetivoTag form={form} />
             </Grid>
@@ -79,8 +79,8 @@ const Filtro = memo(({ onFiltrar }) => {
                 onChange={valor => dispatch(selecionarUe(valor))}
               />
             </Grid>
-          </Row>
-          <Row className="row">
+          </Linha>
+          <Linha className="row">
             <Localizador
               dreId={dreId}
               anoLetivo={anoAtual}
@@ -88,7 +88,7 @@ const Filtro = memo(({ onFiltrar }) => {
               onChange={valor => valor}
               incluirEmei
             />
-          </Row>
+          </Linha>
         </Form>
       )}
     </Formik>
