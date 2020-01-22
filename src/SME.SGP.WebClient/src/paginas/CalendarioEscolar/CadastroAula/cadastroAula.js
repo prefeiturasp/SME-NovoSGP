@@ -186,7 +186,7 @@ const CadastroAula = ({ match }) => {
       const disciplina = listaDisciplinas.filter(
         item => item.codigoComponenteCurricular === idDisciplina
       );
-      if (disciplina) setDisciplinaCompartilhada(disciplina.compartilhada);
+      if (disciplina) setDisciplinaCompartilhada(disciplina[0].compartilhada);
     }
   }, [idDisciplina, listaDisciplinas]);
 

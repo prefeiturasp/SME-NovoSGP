@@ -3,6 +3,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import * as Yup from 'yup';
 import { Tooltip } from 'antd';
 import { Formik, Form } from 'formik';
+import shortid from 'shortid';
 import LoginHelper from './loginHelper';
 import Row from '~/componentes/row';
 import LogoDoSgp from '~/recursos/LogoSgpTexto.svg';
@@ -179,6 +180,7 @@ const Login = props => {
                         <FormGroup>
                           <Loader loading={carregando} tip="">
                             <Button
+                              id={shortid.generate()}
                               className="btn-block d-block"
                               label="Acessar"
                               color={Colors.Roxo}
