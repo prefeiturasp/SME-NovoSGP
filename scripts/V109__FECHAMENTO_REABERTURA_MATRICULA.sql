@@ -8,6 +8,7 @@ CREATE table if not exists public.fechamento_reabertura (
                 tipo_calendario_id int8 not null,
                 dre_id int8 null,
                 ue_id int8 null,
+				wf_aprovacao_id  int8 null,
 				status int NOT NULL,
                 migrado boolean default false,
                 
@@ -25,6 +26,7 @@ CREATE table if not exists public.fechamento_reabertura (
 select f_cria_fk_se_nao_existir('fechamento_reabertura', 'fechamento_reabertura_ue_fk', 'FOREIGN KEY (ue_id) REFERENCES ue(id)');
 select f_cria_fk_se_nao_existir('fechamento_reabertura', 'fechamento_reabertura_dre_fk', 'FOREIGN KEY (dre_id) REFERENCES dre(id)');
 select f_cria_fk_se_nao_existir('fechamento_reabertura', 'fechamento_reabertura_tipo_calendario_fk', 'FOREIGN KEY (tipo_calendario_id) REFERENCES tipo_calendario(id)');
+select f_cria_fk_se_nao_existir('fechamento_reabertura', 'fechamento_reabertura_wf_aprovacao_fk', 'FOREIGN KEY (wf_aprovacao_id) REFERENCES wf_aprovacao(id)');
 
 CREATE INDEX fechamento_reabertura_inicio_idx ON public.fechamento_reabertura USING btree (inicio);
 CREATE INDEX fechamento_reabertura_fim_idx ON public.fechamento_reabertura USING btree (fim);

@@ -1,4 +1,5 @@
 ﻿using Dapper;
+using Dommel;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
@@ -98,6 +99,11 @@ namespace SME.SGP.Dados.Repositorios
 
             retornoPaginado.TotalPaginas = (int)Math.Ceiling((double)retornoPaginado.TotalRegistros / paginacao.QuantidadeRegistros);
             return retornoPaginado;
+        }
+
+        public async Task SalvarBimestre(FechamentoReaberturaBimestre fechamentoReabertura)
+        {
+            await database.Conexao.InsertAsync(fechamentoReabertura);
         }
 
         private void MontaQueryListarCabecalho(StringBuilder query)

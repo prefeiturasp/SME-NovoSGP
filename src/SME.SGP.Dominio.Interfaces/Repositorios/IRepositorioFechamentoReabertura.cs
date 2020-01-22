@@ -9,5 +9,7 @@ namespace SME.SGP.Dominio.Interfaces
         Task<IEnumerable<FechamentoReabertura>> Listar(long tipoCalendarioId, long? dreId, long? ueId);
 
         Task<PaginacaoResultadoDto<FechamentoReabertura>> ListarPaginado(long tipoCalendarioId, long? dreId, long? ueId, Paginacao paginacao);
+
+        Task SalvarBimestre(FechamentoReaberturaBimestre fechamentoReabertura);
     }
 }
