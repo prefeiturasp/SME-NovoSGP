@@ -10,7 +10,6 @@ namespace SME.SGP.Dominio
         private const string MENSAGEM_ERRO_USUARIO_SEM_ACESSO = "Usuário sem perfis de acesso.";
 
         public string CodigoRf { get; set; }
-        private string Email { get; set; }
         public DateTime? ExpiracaoRecuperacaoSenha { get; set; }
         public string Login { get; set; }
         public string Nome { get; set; }
@@ -19,6 +18,7 @@ namespace SME.SGP.Dominio
         public IEnumerable<PrioridadePerfil> Perfis { get; private set; }
         public Guid? TokenRecuperacaoSenha { get; set; }
         public DateTime UltimoLogin { get; set; }
+        private string Email { get; set; }
         private IList<Notificacao> notificacoes { get; set; }
 
         public void Adicionar(Notificacao notificacao)
@@ -104,17 +104,16 @@ namespace SME.SGP.Dominio
             ExpiracaoRecuperacaoSenha = DateTime.Now.AddHours(6);
         }
 
-        public Guid ObterPerfilPrioritario()
+        public Guid ObterPerfilPrioritario(bool possuiTurmaAtiva)
         {
             if (Perfis == null || !Perfis.Any())
-            {
                 throw new NegocioException(MENSAGEM_ERRO_USUARIO_SEM_ACESSO);
-            }
-            var possuiPerfilPrioritario = Perfis.Any(c => c.CodigoPerfil == Dominio.Perfis.PERFIL_PROFESSOR);
+
+            var possuiPerfilPrioritario = Perfis.Any(c => c.CodigoPerfil == Dominio.Perfis.PERFIL_PROFESSOR && possuiTurmaAtiva);
+
             if (possuiPerfilPrioritario)
-            {
                 return Dominio.Perfis.PERFIL_PROFESSOR;
-            }
+
             return Perfis.FirstOrDefault().CodigoPerfil;
         }
 
@@ -238,16 +237,16 @@ namespace SME.SGP.Dominio
             return Perfis != null && Perfis.Any(c => c.Tipo == TipoPerfil.UE);
         }
 
-        public bool TemPerfilSupervisorOuDiretor()
-        {
-            return (PerfilAtual == Dominio.Perfis.PERFIL_DIRETOR || PerfilAtual == Dominio.Perfis.PERFIL_SUPERVISOR);
-        }
-
         public bool TemPerfilGestaoUes()
         {
             return (PerfilAtual == Dominio.Perfis.PERFIL_DIRETOR || PerfilAtual == Dominio.Perfis.PERFIL_AD ||
                     PerfilAtual == Dominio.Perfis.PERFIL_SECRETARIO || PerfilAtual == Dominio.Perfis.PERFIL_CP ||
                     EhPerfilSME() || EhPerfilDRE());
+        }
+
+        public bool TemPerfilSupervisorOuDiretor()
+        {
+            return (PerfilAtual == Dominio.Perfis.PERFIL_DIRETOR || PerfilAtual == Dominio.Perfis.PERFIL_SUPERVISOR);
         }
 
         public bool TokenRecuperacaoSenhaEstaValido()

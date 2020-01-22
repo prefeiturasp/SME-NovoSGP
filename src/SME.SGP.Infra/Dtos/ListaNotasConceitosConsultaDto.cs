@@ -9,5 +9,6 @@ namespace SME.SGP.Infra
         public string DisciplinaCodigo { get; set; }
         public Modalidade Modalidade { get; set; }
         public string TurmaCodigo { get; set; }
+        public bool TurmaHistorico { get; set; }
     }
 }

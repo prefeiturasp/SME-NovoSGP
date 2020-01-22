@@ -96,6 +96,8 @@ const FrequenciaPlanoAula = () => {
   const [carregandoSalvar, setCarregandoSalvar] = useState(false);
   const [dataSugerida, setDataSugerida] = useState('');
 
+  const [planoAulaExpandido, setPlanoAulaExpandido] = useState(false);
+
   const obterDatasDeAulasDisponiveis = useCallback(
     async disciplinaId => {
       setCarregandoDiasParaHabilitar(true);
@@ -267,7 +269,15 @@ const FrequenciaPlanoAula = () => {
     async aula => {
       const plano = await api
         .get(`v1/planos/aulas/${aula.idAula}`)
-        .catch(e => erros(e));
+        .then(resp => {
+          setPlanoAulaExpandido(true);
+          return resp;
+        })
+        .catch(e => {
+          setPlanoAulaExpandido(false);
+          erros(e);
+        });
+
       const dadosPlano = plano && plano.data;
       if (dadosPlano) {
         planoAula.qtdAulas = dadosPlano.qtdAulas;
@@ -852,6 +862,7 @@ const FrequenciaPlanoAula = () => {
                   setTemObjetivos={e => setTemObjetivos(e)}
                   permissoesTela={permissoesTela}
                   somenteConsulta={somenteConsulta}
+                  expandido={planoAulaExpandido}
                   temObjetivos={temObjetivos}
                   temAvaliacao={temAvaliacao}
                   auditoria={auditoriaPlano}

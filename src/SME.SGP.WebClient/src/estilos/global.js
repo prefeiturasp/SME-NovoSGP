@@ -49,6 +49,18 @@ export default createGlobalStyle`
     font-size: 16px !important;
   }
 
+  .ant-calendar-picker-container {
+    z-index: 9999 !important;
+  }
+
+  .ant-select-dropdown {
+    z-index: 9999 !important;
+  }
+
+  .ant-modal, .ant-modal-wrap {
+    z-index: 9999 !important;
+  }
+
   .ant-select-dropdown-menu-item:hover {
     background-color: ${Base.Roxo}  !important;
     color: #ffffff;

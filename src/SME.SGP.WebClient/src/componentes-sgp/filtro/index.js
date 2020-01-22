@@ -6,6 +6,7 @@ import {
   selecionarTurma,
   turmasUsuario,
   removerTurma,
+  DefinirConsideraHistorico,
 } from '~/redux/modulos/usuario/actions';
 import Grid from '~/componentes/grid';
 import Button from '~/componentes/button';
@@ -71,7 +72,7 @@ const Filtro = () => {
   const [campoTurmaDesabilitado, setCampoTurmaDesabilitado] = useState(true);
 
   const anosLetivoStore = useSelector(state => state.filtro.anosLetivos);
-  const [anosLetivos, setAnosLetivos] = useState(anosLetivoStore);
+  const [anosLetivos, setAnosLetivos] = useState(anosLetivoStore || []);
   const [anoLetivoSelecionado, setAnoLetivoSelecionado] = useState(
     turmaUsuarioSelecionada ? turmaUsuarioSelecionada.anoLetivo : ''
   );
@@ -115,11 +116,13 @@ const Filtro = () => {
   );
   const [resultadosFiltro, setResultadosFiltro] = useState([]);
 
-  const [consideraHistorico, setConsideraHistorico] = useState(false);
+  const [consideraHistorico, setConsideraHistorico] = useState(
+    turmaUsuarioSelecionada && !!turmaUsuarioSelecionada.consideraHistorico
+  );
 
   const aoSelecionarHistorico = () => {
     setAnoLetivoSelecionado();
-    setConsideraHistorico(!consideraHistorico);
+    dispatch(DefinirConsideraHistorico(!consideraHistorico));
   };
 
   const obterDres = useCallback(
@@ -183,6 +186,7 @@ const Filtro = () => {
         ano: turmaSelecionadaCompleta.ano,
         desc: `${modalidadeDesc.desc} - ${turmaDesc.desc} - ${unidadeEscolarDesc.desc}`,
         periodo: periodoSelecionado || 0,
+        consideraHistorico: consideraHistorico,
       };
 
       dispatch(turmasUsuario(turmas));
@@ -257,33 +261,33 @@ const Filtro = () => {
     const obterAnosLetivos = async deveSalvarAnosLetivos => {
       const anoAtual = window.moment().format('YYYY');
 
-      if (deveSalvarAnosLetivos) {
-        const anosLetivo = await ServicoFiltro.listarAnosLetivos({
-          consideraHistorico,
+      if (!deveSalvarAnosLetivos) return;
+
+      const anosLetivo = await ServicoFiltro.listarAnosLetivos({
+        consideraHistorico,
+      })
+        .then(resposta => {
+          const anos = [];
+
+          if (resposta.data) {
+            resposta.data.forEach(ano => {
+              anos.push({ desc: ano, valor: ano });
+            });
+          }
+
+          return anos;
         })
-          .then(resposta => {
-            const anos = [];
+        .catch(() => []);
 
-            if (resposta.data) {
-              resposta.data.forEach(ano => {
-                anos.push({ desc: ano, valor: ano });
-              });
-            }
-
-            return anos;
-          })
-          .catch(() => []);
-
-        if (!anosLetivo.length) {
-          anosLetivo.push({
-            desc: anoAtual,
-            valor: anoAtual,
-          });
-        }
-
-        dispatch(salvarAnosLetivos(anosLetivo));
-        setAnosLetivos(anosLetivo);
+      if (!anosLetivo.length) {
+        anosLetivo.push({
+          desc: anoAtual,
+          valor: anoAtual,
+        });
       }
+
+      dispatch(salvarAnosLetivos(anosLetivo));
+      setAnosLetivos(anosLetivo);
     };
 
     obterAnosLetivos(estado && !filtro.anosLetivos.length);
@@ -304,6 +308,7 @@ const Filtro = () => {
     setUnidadeEscolarSelecionada(turmaUsuarioSelecionada.unidadeEscolar || '');
     setTurmaSelecionada(turmaUsuarioSelecionada.turma || '');
     setTextoAutocomplete(turmaUsuarioSelecionada.desc || '');
+    setConsideraHistorico(!!turmaUsuarioSelecionada.consideraHistorico);
 
     if (!turmaUsuarioSelecionada.length) setCampoAnoLetivoDesabilitado(false);
 
@@ -639,6 +644,7 @@ const Filtro = () => {
       turma: resultado.codigoTurma,
       desc: resultado.descricaoFiltro,
       periodo: resultado.semestre,
+      consideraHistorico: consideraHistorico,
     };
 
     dispatch(selecionarTurma(turma));

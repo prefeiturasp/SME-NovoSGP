@@ -18,8 +18,8 @@ namespace SME.SGP.Aplicacao
         private readonly IComandosDiasLetivos comandosDiasLetivos;
         private readonly IConsultasAbrangencia consultasAbrangencia;
         private readonly IRepositorioAtividadeAvaliativa repositorioAtividadeAvaliativa;
-        private readonly IRepositorioAtividadeAvaliativaRegencia repositorioAtividadeAvaliativaRegencia;
         private readonly IRepositorioAtividadeAvaliativaDisciplina repositorioAtividadeAvaliativaDisciplina;
+        private readonly IRepositorioAtividadeAvaliativaRegencia repositorioAtividadeAvaliativaRegencia;
         private readonly IRepositorioAula repositorioAula;
         private readonly IRepositorioEvento repositorioEvento;
         private readonly IRepositorioPeriodoEscolar repositorioPeriodoEscolar;
@@ -67,14 +67,14 @@ namespace SME.SGP.Aplicacao
             string rf = usuario.TemPerfilGestaoUes() ? string.Empty : usuario.CodigoRf;
 
             var eventos = await repositorioEvento.ObterEventosPorTipoDeCalendarioDreUeDia(filtro.TipoCalendarioId, filtro.DreId, filtro.UeId, data, filtro.EhEventoSme);
-            var aulas = await repositorioAula.ObterAulasCompleto(filtro.TipoCalendarioId, filtro.TurmaId, filtro.UeId, data, perfil, rf);
+            var aulas = await repositorioAula.ObterAulasCompleto(filtro.TipoCalendarioId, filtro.TurmaId, filtro.UeId, data, perfil, rf, filtro.TurmaHistorico);
             var atividades = await repositorioAtividadeAvaliativa.ObterAtividadesPorDia(filtro.DreId, filtro.UeId, data, rf, filtro.TurmaId);
 
             ObterEventosParaEventosAulasDia(eventosAulas, eventos);
 
             var turmasAulas = aulas.GroupBy(x => x.TurmaId).Select(x => x.Key);
 
-            var turmasAbrangencia = await ObterTurmasAbrangencia(turmasAulas);
+            var turmasAbrangencia = await ObterTurmasAbrangencia(turmasAulas, filtro.TurmaHistorico);
 
             IEnumerable<DisciplinaResposta> disciplinasRegencia = Enumerable.Empty<DisciplinaResposta>();
 
@@ -130,6 +130,7 @@ namespace SME.SGP.Aplicacao
                         DisciplinaCompartilhada = $"{(disciplinaCompartilhada?.Nome ?? "Disciplina não encontrada")} ",
                         EhRegencia = disciplina.Regencia,
                         EhCompartilhada = disciplina.Compartilhada,
+                        PermiteRegistroFrequencia = disciplina.RegistroFrequencia,
                         podeCadastrarAvaliacao = podeCriarAtividade,
                         Horario = x.DataAula.ToString("hh:mm tt", CultureInfo.InvariantCulture),
                         Modalidade = turma?.Modalidade.GetAttribute<DisplayAttribute>().Name ?? "Modalidade",
@@ -189,7 +190,14 @@ namespace SME.SGP.Aplicacao
             string rf = usuario.TemPerfilGestaoUes() ? string.Empty : usuario.CodigoRf;
 
             var eventosAulas = new List<EventosAulasTipoCalendarioDto>();
-            var ano = repositorioPeriodoEscolar.ObterPorTipoCalendario(filtro.TipoCalendarioId).FirstOrDefault().PeriodoInicio.Year;
+
+            var periodoEscolar = repositorioPeriodoEscolar.ObterPorTipoCalendario(filtro.TipoCalendarioId);
+
+            if (periodoEscolar is null || !periodoEscolar.Any())
+                throw new NegocioException($"Não existe periodo escolar cadastrado para o tipo de calendario de id {filtro.TipoCalendarioId}");
+
+            var ano = periodoEscolar.FirstOrDefault().PeriodoInicio.Year;
+
             var aulas = await repositorioAula.ObterAulas(filtro.TipoCalendarioId, filtro.TurmaId, filtro.UeId, rf, filtro.Mes);
             var eventos = await repositorioEvento.ObterEventosPorTipoDeCalendarioDreUeMes(filtro.TipoCalendarioId, filtro.DreId, filtro.UeId, filtro.Mes, filtro.EhEventoSme);
             var atividadesAvaliativas = await repositorioAtividadeAvaliativa.ObterAtividadesPorMes(filtro.DreId, filtro.UeId, filtro.Mes, ano, rf, filtro.TurmaId);
@@ -293,13 +301,13 @@ namespace SME.SGP.Aplicacao
             return dias;
         }
 
-        private async Task<IEnumerable<AbrangenciaFiltroRetorno>> ObterTurmasAbrangencia(IEnumerable<string> turmasAulas)
+        private async Task<IEnumerable<AbrangenciaFiltroRetorno>> ObterTurmasAbrangencia(IEnumerable<string> turmasAulas, bool ehTurmaHistorico)
         {
             var turmasRetorno = new List<AbrangenciaFiltroRetorno>();
 
             foreach (var turma in turmasAulas)
             {
-                var turmaAbrangencia = await consultasAbrangencia.ObterAbrangenciaTurma(turma);
+                var turmaAbrangencia = await consultasAbrangencia.ObterAbrangenciaTurma(turma, ehTurmaHistorico);
 
                 if (turmaAbrangencia != null)
                     turmasRetorno.Add(turmaAbrangencia);
