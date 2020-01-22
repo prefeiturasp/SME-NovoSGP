@@ -79,6 +79,10 @@ const CadastroAula = ({ match }) => {
 
   const [idDisciplina, setIdDisciplina] = useState();
   const [disciplinaCompartilhada, setDisciplinaCompartilhada] = useState(false);
+  const [
+    listaDisciplinasCompartilhadas,
+    setListaDisciplinasCompartilhadas,
+  ] = useState([]);
 
   const opcoesTipoAula = [
     { label: 'Normal', value: 1 },
@@ -186,9 +190,20 @@ const CadastroAula = ({ match }) => {
       const disciplina = listaDisciplinas.filter(
         item => item.codigoComponenteCurricular === idDisciplina
       );
-      if (disciplina) setDisciplinaCompartilhada(disciplina[0].compartilhada);
+      if (disciplina && disciplina[0])
+        setDisciplinaCompartilhada(disciplina[0].compartilhada);
     }
   }, [idDisciplina, listaDisciplinas]);
+
+  useEffect(() => {
+    const buscarDisciplinasCompartilhadas = async () => {
+      const disciplinas = await api.get(
+        `v1/professores/turmas/${turmaId}/docencias-compartilhadas/disciplinas`
+      );
+      setListaDisciplinasCompartilhadas(disciplinas.data);
+    };
+    if (disciplinaCompartilhada) buscarDisciplinasCompartilhadas();
+  }, [disciplinaCompartilhada, turmaId]);
 
   const getRecorrenciasHabilitadas = (opcoes, dadosRecorrencia) => {
     opcoes.forEach(item => {
@@ -769,10 +784,9 @@ const CadastroAula = ({ match }) => {
                       id="disciplinaCompartilhadaId"
                       form={form}
                       name="disciplinaCompartilhadaId"
-                      lista={listaDisciplinas}
+                      lista={listaDisciplinasCompartilhadas}
                       valueOption="codigoComponenteCurricular"
                       valueText="nome"
-                      onChange={e => onChangeDisciplinas(e, form)}
                       label="Componente curricular compartilhado"
                       placeholder="Selecione um componente curricular compartilhado"
                     />
