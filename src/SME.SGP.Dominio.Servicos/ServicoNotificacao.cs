@@ -70,7 +70,7 @@ namespace SME.SGP.Dominio.Servicos
 
         }
 
-        private Cargo? ObterProximoNivel(Cargo? cargo, bool primeiroNivel)
+        public Cargo? ObterProximoNivel(Cargo? cargo, bool primeiroNivel)
         {
             if (!cargo.HasValue)
                 return null;

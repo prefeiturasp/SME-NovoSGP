@@ -200,11 +200,11 @@ namespace SME.SGP.Dominio.Servicos
             foreach (var aprovaNivel in niveis)
             {
                 if (!cargosNotificados.Contains(aprovaNivel.Cargo))
-                    cargosNotificados.Add(EnviaNotificacaoParaNivel(aprovaNivel, codigoNotificacao, true));
+                    cargosNotificados.Add(EnviaNotificacaoParaNivel(aprovaNivel, codigoNotificacao));
             }
         }
 
-        private Cargo? EnviaNotificacaoParaNivel(WorkflowAprovacaoNivel nivel, long codigoNotificacao, bool primeiroNivel)
+        private Cargo? EnviaNotificacaoParaNivel(WorkflowAprovacaoNivel nivel, long codigoNotificacao)
         {
             Notificacao notificacao;
             List<Usuario> usuarios = nivel.Usuarios.ToList();
