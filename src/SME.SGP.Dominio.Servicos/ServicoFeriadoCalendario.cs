@@ -3,7 +3,6 @@ using SME.SGP.Infra;
 using System;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
-using System.Threading.Tasks;
 
 namespace SME.SGP.Dominio.Servicos
 {
@@ -38,13 +37,13 @@ namespace SME.SGP.Dominio.Servicos
             return pascoa;
         }
 
-        public async Task VerficaSeExisteFeriadosMoveisEInclui(int ano)
+        public void VerficaSeExisteFeriadosMoveisEInclui(int ano)
         {
-            var feriadosMoveis = await repositorioFeriadoCalendario.ObterFeriadosCalendario(new Infra.FiltroFeriadoCalendarioDto()
+            var feriadosMoveis = repositorioFeriadoCalendario.ObterFeriadosCalendario(new Infra.FiltroFeriadoCalendarioDto()
             {
                 Tipo = TipoFeriadoCalendario.Movel,
                 Ano = ano
-            });
+            }).Result;
 
             if (feriadosMoveis != null && feriadosMoveis.Any())
             {
