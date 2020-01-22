@@ -10,14 +10,14 @@ import ListaPaginada from '~/componentes/listaPaginada/listaPaginada';
 import SelectComponent from '~/componentes/select';
 import { URL_HOME } from '~/constantes/url';
 import modalidade from '~/dtos/modalidade';
-import { confirmar, erros, sucesso } from '~/servicos/alertas';
+import RotasDto from '~/dtos/rotasDto';
+import { confirmar, erro, erros, sucesso } from '~/servicos/alertas';
 import history from '~/servicos/history';
 import ServicoCompensacaoAusencia from '~/servicos/Paginas/DiarioClasse/ServicoCompensacaoAusencia';
 import ServicoDisciplina from '~/servicos/Paginas/ServicoDisciplina';
-import { AlunosCompensacao } from './styles';
-import RotasDto from '~/dtos/rotasDto';
-
 import { verificaSomenteConsulta } from '~/servicos/servico-navegacao';
+
+import { AlunosCompensacao } from './styles';
 
 const CompensacaoAusenciaLista = () => {
   const usuario = useSelector(store => store.usuario);
@@ -176,26 +176,36 @@ const CompensacaoAusenciaLista = () => {
     setBimestreSelecionado(bimestre);
   };
 
-  const validaSePodeEditar = async bimestre => {
+  const onClickEditar = async compensacao => {
     let podeEditar = false;
     const exucutandoCalculoFrequencia = await ServicoCompensacaoAusencia.obterStatusCalculoFrequencia(
       turmaSelecionada.turma,
       disciplinaIdSelecionada,
-      bimestre
+      compensacao.bimestre
     ).catch(e => {
       erros(e);
-      podeEditar = false;
     });
-    if (exucutandoCalculoFrequencia && exucutandoCalculoFrequencia.data) {
-      podeEditar = true;
-    }
-    return podeEditar;
-  };
 
-  const onClickEditar = async compensacao => {
-    const podeEditar = validaSePodeEditar(compensacao.bimestre);
-    if (podeEditar) {
-      history.push(`compensacao-ausencia/editar/${compensacao.id}`);
+    if (
+      exucutandoCalculoFrequencia &&
+      exucutandoCalculoFrequencia.status == 200
+    ) {
+      const temProcessoEmExecucao =
+        exucutandoCalculoFrequencia && exucutandoCalculoFrequencia.data;
+
+      if (temProcessoEmExecucao) {
+        podeEditar = false;
+      } else {
+        podeEditar = true;
+      }
+
+      if (podeEditar) {
+        history.push(`compensacao-ausencia/editar/${compensacao.id}`);
+      } else {
+        erro(
+          'No momento não é possível realizar a edição pois tem cálculo(s) em processo, tente mais tarde!'
+        );
+      }
     }
   };
 
