@@ -143,20 +143,27 @@ const CompensacaoAusenciaForm = ({ match }) => {
         setListaDisciplinas([]);
       }
 
+      const valoresIniciaisForm = {
+        disciplinaId: '',
+        bimestre: '',
+        atividade: '',
+        descricao: '',
+      };
       if (disciplinas.data && disciplinas.data.length === 1) {
         setDesabilitarDisciplina(true);
 
         if (!(match && match.params && match.params.id)) {
           const disciplina = disciplinas.data[0];
-          const valoresIniciaisForm = {
-            disciplinaId: String(disciplina.codigoComponenteCurricular),
-            bimestre: '',
-            atividade: '',
-            descricao: '',
-          };
-          setValoresIniciais(valoresIniciaisForm);
+          valoresIniciaisForm.disciplinaId = String(
+            disciplina.codigoComponenteCurricular
+          );
         }
+      } else {
+        setDesabilitarDisciplina(false);
       }
+
+      setValoresIniciais(valoresIniciaisForm);
+
       if (!(match && match.params && match.params.id)) {
         setCarregouInformacoes(true);
       }
@@ -168,6 +175,7 @@ const CompensacaoAusenciaForm = ({ match }) => {
       obterDisciplinas(turmaSelecionada.turma);
     } else {
       resetarForm();
+      history.push('/diario-classe/compensacao-ausencia');
     }
 
     let listaBi = [];
@@ -186,6 +194,19 @@ const CompensacaoAusenciaForm = ({ match }) => {
     }
     setListaBimestres(listaBi);
   }, [match, turmaSelecionada.modalidade, turmaSelecionada.turma, resetarForm]);
+
+  useEffect(() => {
+    // Quando alterar a turma volta para a tela de listagem!
+    if (carregouInformacoes && !novoRegistro) {
+      history.push('/diario-classe/compensacao-ausencia');
+    } else if (
+      novoRegistro &&
+      carregouInformacoes &&
+      !(listaDisciplinas && listaDisciplinas.length)
+    ) {
+      history.push('/diario-classe/compensacao-ausencia');
+    }
+  }, [turmaSelecionada.turma]);
 
   const removerAlunosDuplicadosEdicao = (alunosTurma, alunosEdicao) => {
     const novaLista = alunosTurma.filter(
@@ -404,7 +425,6 @@ const CompensacaoAusenciaForm = ({ match }) => {
         qtdFaltasCompensadas: item.quantidadeFaltasCompensadas,
       };
     });
-    console.log(paramas);
 
     const cadastrado = await ServicoCompensacaoAusencia.salvar(
       paramas.id,
@@ -461,7 +481,7 @@ const CompensacaoAusenciaForm = ({ match }) => {
         listaAlunosRemover.map(item => {
           return `${item.id} - ${item.nome}`;
         }),
-        'A frequência de aluno será recalculada somente quando salvar as suas alteraçãos. Deseja continuar?',
+        'A frequência do(s) seguinte(s) aluno(s) será recalculada somente quando salvar as suas alterações',
         'Excluir',
         'Cancelar',
         true
