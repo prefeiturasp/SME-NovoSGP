@@ -42,7 +42,7 @@ namespace SME.SGP.Dominio.Servicos
 
         public void ExecutaNotificacaoFrequencia()
         {
-            var cargosNotificados = new List<Cargo?>();
+            var cargosNotificados = new List<(string, Cargo?)>();
 
             Console.WriteLine($"Notificando usuários de aulas sem frequência.");
 
@@ -96,8 +96,18 @@ namespace SME.SGP.Dominio.Servicos
             if (funcionariosRetornoEol == null)
                 return null;
 
-            if (!funcionariosRetornoEol.Any(x => x.Cargo == Cargo.Diretor))
-                funcionariosRetornoEol = funcionariosRetornoEol.Concat(servicoNotificacao.ObterFuncionariosPorNivel(codigoUe, Cargo.Diretor, false));
+            var cargoNotificacao = funcionariosRetornoEol.GroupBy(f => f.Cargo).Select(f => f.Key).First();
+            Cargo? proximoNivel = null;
+
+            if (cargoNotificacao == Cargo.CP || cargoNotificacao == Cargo.AD)
+                proximoNivel = Cargo.Diretor;
+            else
+                proximoNivel = servicoNotificacao.ObterProximoNivel(cargoNotificacao, false);
+
+            if (proximoNivel != null)
+                funcionariosRetornoEol = funcionariosRetornoEol.Concat(servicoNotificacao.ObterFuncionariosPorNivel(codigoUe, proximoNivel));
+            else
+                return null;
 
             var usuarios = new List<(Cargo?, Usuario)>();
             foreach (var usuarioEol in funcionariosRetornoEol)
@@ -186,7 +196,7 @@ namespace SME.SGP.Dominio.Servicos
             servicoNotificacao.Salvar(notificacao);
         }
 
-        private void NotificarAusenciaFrequencia(TipoNotificacaoFrequencia tipo, ref List<Cargo?> cargosNotificados)
+        private void NotificarAusenciaFrequencia(TipoNotificacaoFrequencia tipo, ref List<(string, Cargo?)> cargosNotificados)
         {
             // Busca registro de aula sem frequencia e sem notificação do tipo
             IEnumerable<RegistroFrequenciaFaltanteDto> turmasSemRegistro = null;
@@ -210,15 +220,15 @@ namespace SME.SGP.Dominio.Servicos
                             var cargosLinq = cargosNotificados;
                             var cargosNaoNotificados = usuarios.Select(u => u.Item1)
                                                         .GroupBy(u => u)
-                                                        .Where(w => !cargosLinq.Contains(w.Key))
-                                                        .Select(s => s.Key);
+                                                        .Where(w => !cargosLinq.Any(l => l.Item1 == turma.CodigoTurma && l.Item2 == w.Key))
+                                                        .Select(s => new { turma.CodigoTurma, s.Key });
 
-                            foreach (var usuario in usuarios.Where(u => cargosNaoNotificados.Contains(u.Item1)))
+                            foreach (var usuario in usuarios.Where(u => cargosNaoNotificados.Select(c => c.Key).Contains(u.Item1)))
                             {
                                 NotificaRegistroFrequencia(usuario.Item2, turma, tipo);
                             }
 
-                            cargosNotificados.AddRange(cargosNaoNotificados);
+                            cargosNotificados.AddRange(cargosNaoNotificados.Select(n => (n.CodigoTurma, n.Key)));
                         }
                     }
                     else
