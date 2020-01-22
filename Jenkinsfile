@@ -115,7 +115,7 @@ pipeline {
 		
 		stage('Deploy DEV-rc2') {
             when {
-                branch 'development-rc2'
+                branch 'development-r2'
             }
             steps {
                  
