@@ -302,6 +302,9 @@ namespace SME.SGP.Dominio.Servicos
             // Excluir lista carregada
             foreach(var compensacaoExcluir in compensacoesExcluir)
             {
+                var turma = repositorioTurma.ObterPorId(compensacaoExcluir.TurmaId);
+                var periodo = BuscaPeriodo(turma.AnoLetivo, turma.ModalidadeCodigo, compensacaoExcluir.Bimestre, turma.Semestre);
+
                 unitOfWork.IniciarTransacao();
                 try
                 {
@@ -318,6 +321,9 @@ namespace SME.SGP.Dominio.Servicos
                     repositorioNotificacaoCompensacaoAusencia.Excluir(compensacaoExcluir.Id);
 
                     unitOfWork.PersistirTransacao();
+
+                    if (alunosDaCompensacao.Any())
+                        Cliente.Executar<IServicoCalculoFrequencia>(c => c.CalcularFrequenciaPorTurma(alunosDaCompensacao.Select(a => a.CodigoAluno), periodo.PeriodoFim, turma.CodigoTurma, compensacaoExcluir.DisciplinaId));
                 }
                 catch (Exception)
                 {
