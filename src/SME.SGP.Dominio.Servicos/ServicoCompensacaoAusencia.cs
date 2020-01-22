@@ -20,6 +20,7 @@ namespace SME.SGP.Dominio.Servicos
         private readonly IConsultasPeriodoEscolar consultasPeriodoEscolar;
         private readonly IRepositorioTipoCalendario repositorioTipoCalendario;
         private readonly IRepositorioTurma repositorioTurma;
+        private readonly IRepositorioNotificacaoCompensacaoAusencia repositorioNotificacaoCompensacaoAusencia;
         private readonly IServicoEOL servicoEOL;
         private readonly IServicoUsuario servicoUsuario;
         private readonly IUnitOfWork unitOfWork;
@@ -33,6 +34,7 @@ namespace SME.SGP.Dominio.Servicos
                                           IServicoEOL servicoEOL,
                                           IServicoUsuario servicoUsuario,
                                           IRepositorioTurma repositorioTurma,
+                                          IRepositorioNotificacaoCompensacaoAusencia repositorioNotificacaoCompensacaoAusencia,
                                           IUnitOfWork unitOfWork)
         {
             this.repositorioCompensacaoAusencia = repositorioCompensacaoAusencia ?? throw new System.ArgumentNullException(nameof(repositorioCompensacaoAusencia));
@@ -42,6 +44,7 @@ namespace SME.SGP.Dominio.Servicos
             this.consultasPeriodoEscolar = consultasPeriodoEscolar ?? throw new System.ArgumentNullException(nameof(consultasPeriodoEscolar));
             this.repositorioTipoCalendario = repositorioTipoCalendario ?? throw new System.ArgumentNullException(nameof(repositorioTipoCalendario));
             this.repositorioTurma = repositorioTurma ?? throw new System.ArgumentNullException(nameof(repositorioTurma));
+            this.repositorioNotificacaoCompensacaoAusencia = repositorioNotificacaoCompensacaoAusencia ?? throw new System.ArgumentNullException(nameof(repositorioNotificacaoCompensacaoAusencia));
             this.servicoEOL = servicoEOL ?? throw new System.ArgumentNullException(nameof(servicoEOL));
             this.servicoUsuario = servicoUsuario ?? throw new System.ArgumentNullException(nameof(servicoUsuario));
             this.unitOfWork = unitOfWork ?? throw new System.ArgumentNullException(nameof(unitOfWork));
@@ -303,13 +306,16 @@ namespace SME.SGP.Dominio.Servicos
                 try
                 {
                     // Exclui dependencias
-                    compensacoesAlunosExcluir.Where(c => c.CompensacaoAusenciaId == compensacaoExcluir.Id).ToList()
-                        .ForEach(c => repositorioCompensacaoAusenciaAluno.Salvar(c));
+                    var alunosDaCompensacao = compensacoesAlunosExcluir.Where(c => c.CompensacaoAusenciaId == compensacaoExcluir.Id).ToList();
+                    alunosDaCompensacao.ForEach(c => repositorioCompensacaoAusenciaAluno.Salvar(c));
+                    
                     compensacoesDisciplinasExcluir.Where(c => c.CompensacaoAusenciaId == compensacaoExcluir.Id).ToList()
                         .ForEach(c => repositorioCompensacaoAusenciaDisciplinaRegencia.Salvar(c));
 
                     // Exclui compensação
                     await repositorioCompensacaoAusencia.SalvarAsync(compensacaoExcluir);
+                    // Excluir notificações
+                    repositorioNotificacaoCompensacaoAusencia.Excluir(compensacaoExcluir.Id);
 
                     unitOfWork.PersistirTransacao();
                 }

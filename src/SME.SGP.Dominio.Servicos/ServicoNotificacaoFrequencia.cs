@@ -22,6 +22,7 @@ namespace SME.SGP.Dominio.Servicos
         private readonly IRepositorioTurma repositorioTurma;
         private readonly IRepositorioUe repositorioUe;
         private readonly IRepositorioDre repositorioDre;
+        private readonly IRepositorioNotificacaoCompensacaoAusencia repositorioNotificacaoCompensacaoAusencia;
         private readonly IServicoEOL servicoEOL;
         private readonly IServicoNotificacao servicoNotificacao;
         private readonly IServicoUsuario servicoUsuario;
@@ -35,6 +36,7 @@ namespace SME.SGP.Dominio.Servicos
                                             IRepositorioTurma repositorioTurma,
                                             IRepositorioUe repositorioUe,
                                             IRepositorioDre repositorioDre,
+                                            IRepositorioNotificacaoCompensacaoAusencia repositorioNotificacaoCompensacaoAusencia,
                                             IServicoNotificacao servicoNotificacao,
                                             IServicoUsuario servicoUsuario,
                                             IServicoEOL servicoEOL,
@@ -51,6 +53,7 @@ namespace SME.SGP.Dominio.Servicos
             this.repositorioTurma = repositorioTurma ?? throw new ArgumentNullException(nameof(repositorioTurma));
             this.repositorioUe = repositorioUe ?? throw new ArgumentNullException(nameof(repositorioUe));
             this.repositorioDre = repositorioDre ?? throw new ArgumentNullException(nameof(repositorioDre));
+            this.repositorioNotificacaoCompensacaoAusencia = repositorioNotificacaoCompensacaoAusencia ?? throw new ArgumentNullException(nameof(repositorioNotificacaoCompensacaoAusencia));
             this.servicoEOL = servicoEOL ?? throw new ArgumentNullException(nameof(servicoEOL));
             this.configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
         }
@@ -138,7 +141,7 @@ namespace SME.SGP.Dominio.Servicos
             {
                 foreach(var gestor in gestores)
                 {
-                    NotificarCompensacaoAusencia(compensacaoId
+                    var notificacaoId = NotificarCompensacaoAusencia(compensacaoId
                             , gestor
                             , professor.Nome
                             , disciplinaEOL
@@ -151,25 +154,42 @@ namespace SME.SGP.Dominio.Servicos
                             , compensacao.Bimestre
                             , compensacao.Nome
                             , alunosDto);
+
+                    // Grava vinculo de notificação x compensação
+                    repositorioNotificacaoCompensacaoAusencia.Inserir(notificacaoId, compensacaoId);
                 }
+
+                // Marca aluno como notificado
+                alunosDto.ForEach(alunoDto =>
+                {
+                    var aluno = alunos.FirstOrDefault(a => a.CodigoAluno == alunoDto.CodigoAluno);
+                    aluno.Notificado = true;
+                    repositorioCompensacaoAusenciaAluno.Salvar(aluno);
+                });
             }
         }
 
-        private void NotificarCompensacaoAusencia(long compensacaoId, Usuario usuario, string professor, string disciplina, 
+        private long NotificarCompensacaoAusencia(long compensacaoId, Usuario usuario, string professor, string disciplina, 
             string codigoTurma, string turma, string codigoUe, string escola, string codigoDre, string dre, 
             int bimestre, string atividade, List<CompensacaoAusenciaAlunoQtdDto> alunos)
         {
             var tituloMensagem = $"Atividade de compensação da turma {turma}";
 
             StringBuilder mensagemUsuario = new StringBuilder();
-            mensagemUsuario.Append($"A atividade de compensação '{atividade}' da disciplina de {disciplina} foi cadastrada para a turma {turma} da {escola} (DRE {dre}) no {bimestre}º Bimestre pelo professor {professor}.");
-            mensagemUsuario.Append("  O(s) seguinte(s) aluno(s) foi(ram) vinculado(s) a atividade:");
+            mensagemUsuario.AppendLine($"<p>A atividade de compensação '{atividade}' da disciplina de {disciplina} foi cadastrada para a turma {turma} da {escola} (DRE {dre}) no {bimestre}º Bimestre pelo professor {professor}.</p>");
+            mensagemUsuario.AppendLine("<p>O(s) seguinte(s) aluno(s) foi(ram) vinculado(s) a atividade:</p>");
 
-            mensagemUsuario.Append("Nº / Nome do aluno  / Quantidade de aulas compensadas");
-            foreach(var aluno in alunos)
+            mensagemUsuario.AppendLine("<table>");
+            mensagemUsuario.AppendLine("<tr>");
+            mensagemUsuario.AppendLine("<td>Nº</td><td>Nome do aluno</td><td>Quantidade de aulas compensadas</td>");
+            mensagemUsuario.AppendLine("</tr>");
+            foreach (var aluno in alunos)
             {
-                mensagemUsuario.Append($"{aluno.CodigoAluno} - {aluno.NomeAluno} - {aluno.QuantidadeCompensacoes}");
+                mensagemUsuario.AppendLine("<tr>");
+                mensagemUsuario.Append($"<td>{aluno.CodigoAluno} </td><td> {aluno.NomeAluno} </td><td> {aluno.QuantidadeCompensacoes}</td>");
+                mensagemUsuario.AppendLine("</tr>");
             }
+            mensagemUsuario.AppendLine("</table>");
 
             var hostAplicacao = configuration["UrlFrontEnd"];
             mensagemUsuario.Append($"<a href='{hostAplicacao}/diario-classe/compensacao-ausencia/{compensacaoId}'>Para consultar detalhes da atividade clique aqui.</a>");
@@ -187,6 +207,7 @@ namespace SME.SGP.Dominio.Servicos
                 DreId = codigoDre,
             };
             servicoNotificacao.Salvar(notificacao);
+            return notificacao.Id;
         }
 
         private IEnumerable<Usuario> BuscaGestoresUe(string codigoUe)
