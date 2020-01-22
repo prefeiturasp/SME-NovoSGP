@@ -111,6 +111,7 @@ const ListaPaginada = props => {
 
   useEffect(() => {
     if (filtroEhValido) {
+      setLinhasSelecionadas([]);
       filtrar();
     }
   }, [filtroEhValido, filtro, paginaAtual]);

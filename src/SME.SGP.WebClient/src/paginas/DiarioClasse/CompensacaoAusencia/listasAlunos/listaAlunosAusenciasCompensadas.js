@@ -12,6 +12,7 @@ const ListaAlunosAusenciasCompensadas = props => {
     idsAlunosAusenciaCompensadas,
     onSelectRow,
     atualizarValoresListaCompensacao,
+    desabilitarCampos,
   } = props;
 
   const atualizarValores = async (qt, indexAluno, aluno) => {
@@ -44,14 +45,16 @@ const ListaAlunosAusenciasCompensadas = props => {
     return (
       <SelectComponent
         onChange={qt => {
-          const aluno = listaAusenciaCompensada.find(
-            item => item.id == dadosAluno.id
-          );
-          let indexAluno = null;
-          if (aluno) {
-            indexAluno = listaAusenciaCompensada.indexOf(aluno);
+          if (!desabilitarCampos) {
+            const aluno = listaAusenciaCompensada.find(
+              item => item.id == dadosAluno.id
+            );
+            let indexAluno = null;
+            if (aluno) {
+              indexAluno = listaAusenciaCompensada.indexOf(aluno);
+            }
+            atualizarValores(qt, indexAluno, aluno);
           }
-          atualizarValores(qt, indexAluno, aluno);
         }}
         valueOption="valor"
         valueText="descricao"
@@ -112,6 +115,7 @@ ListaAlunosAusenciasCompensadas.propTypes = {
   ]),
   onSelectRow: PropTypes.func,
   atualizarValoresListaCompensacao: PropTypes.func,
+  desabilitarCampos: PropTypes.bool,
 };
 
 ListaAlunosAusenciasCompensadas.defaultProps = {
@@ -119,6 +123,7 @@ ListaAlunosAusenciasCompensadas.defaultProps = {
   idsAlunosAusenciaCompensadas: [],
   onSelectRow: () => {},
   atualizarValoresListaCompensacao: () => {},
+  desabilitarCampos: false,
 };
 
 export default ListaAlunosAusenciasCompensadas;
