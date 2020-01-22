@@ -151,9 +151,9 @@ namespace SME.SGP.Dominio.Servicos
             }
         }
 
-        public async Task SalvarEventoFeriadosAoCadastrarTipoCalendario(TipoCalendario tipoCalendario)
+        public void SalvarEventoFeriadosAoCadastrarTipoCalendario(TipoCalendario tipoCalendario)
         {
-            var feriados = await ObterEValidarFeriados();
+            var feriados = ObterEValidarFeriados().Result;
 
             var tipoEventoFeriado = ObterEValidarTipoEventoFeriado();
 
@@ -161,7 +161,7 @@ namespace SME.SGP.Dominio.Servicos
 
             var feriadosErro = new List<long>();
 
-            await SalvarListaEventos(eventos, feriadosErro);
+            SalvarListaEventos(eventos, feriadosErro).Wait();
 
             if (feriadosErro.Any())
                 TratarErros(feriadosErro);
@@ -169,7 +169,7 @@ namespace SME.SGP.Dominio.Servicos
 
         public void SalvarRecorrencia(Evento evento, DateTime dataInicial, DateTime? dataFinal, int? diaDeOcorrencia, IEnumerable<DayOfWeek> diasDaSemana, PadraoRecorrencia padraoRecorrencia, PadraoRecorrenciaMensal? padraoRecorrenciaMensal, int repeteACada)
         {
-            if(evento.DataInicio.Date != evento.DataFim.Date)
+            if (evento.DataInicio.Date != evento.DataFim.Date)
             {
                 throw new NegocioException("A recorrência somente é permitida quando o evento possui data única.");
             }
