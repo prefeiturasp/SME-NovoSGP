@@ -28,8 +28,8 @@ namespace SME.SGP.Dados.Repositorios
                           from aula a
                          inner join periodo_escolar p on a.tipo_calendario_id = p.tipo_calendario_id and  a.data_aula BETWEEN p.periodo_inicio AND p.periodo_fim
                          inner join tipo_calendario tp on a.tipo_calendario_id = tp.id
-                         where (a.id is null or not a.excluido) and
-                           and tp.situacao and not tp.excluido and
+                         where (a.id is null or not a.excluido) 
+                           and tp.situacao and not tp.excluido 
                            and now() between p.periodo_inicio and p.periodo_fim
                            and DATE_PART('day', age(p.periodo_fim, date(now()))) <= @limiteDias
                            and p.bimestre = @bimestre
