@@ -90,43 +90,69 @@ const CompensacaoAusenciaForm = ({ match }) => {
     onChangeCampos();
   };
 
-  const obterDisciplinasRegencia = async codigoDisciplinaSelecionada => {
-    const disciplina = listaDisciplinas.find(
-      c => c.codigoComponenteCurricular == codigoDisciplinaSelecionada
-    );
-    // TODO REMOVER
-    // if (disciplina) {
-    //   disciplina.regencia = true;
-    // }
-    // TODO REMOVER
-    if (disciplina && disciplina.regencia) {
-      const disciplinasRegencia = await ServicoDisciplina.obterDisciplinasPlanejamento(
-        codigoDisciplinaSelecionada,
-        turmaSelecionada.turma,
-        false,
-        disciplina.regencia
-      ).catch(e => erros(e));
+  const selecionarDisciplinas = useCallback(
+    (disciplinasRegenciaEdicao, disciplinasRegencia) => {
+      const disciplinas = [...disciplinasRegencia];
+      disciplinasRegenciaEdicao.forEach(item => {
+        disciplinas.forEach((disci, indice) => {
+          if (item.codigo == disci.codigoComponenteCurricular) {
+            disciplinas[indice].selecionada = !disciplinas[indice].selecionada;
+            disciplinas[indice].codigo =
+              disciplinas[indice].codigoComponenteCurricular;
+          }
+        });
+      });
+      setListaDisciplinasRegencia(disciplinas);
+    },
+    []
+  );
 
-      if (
-        disciplinasRegencia &&
-        disciplinasRegencia.data &&
-        disciplinasRegencia.data.length
-      ) {
-        setListaDisciplinasRegencia(disciplinasRegencia.data);
-        setTemRegencia(true);
+  const obterDisciplinasRegencia = useCallback(
+    async (
+      codigoDisciplinaSelecionada,
+      disciplinasLista,
+      disciplinasRegenciaEdicao
+    ) => {
+      const disciplina = disciplinasLista.find(
+        c => c.codigoComponenteCurricular == codigoDisciplinaSelecionada
+      );
+      if (disciplina && disciplina.regencia) {
+        const disciplinasRegencia = await ServicoDisciplina.obterDisciplinasPlanejamento(
+          codigoDisciplinaSelecionada,
+          turmaSelecionada.turma,
+          false,
+          disciplina.regencia
+        ).catch(e => erros(e));
+
+        if (
+          disciplinasRegencia &&
+          disciplinasRegencia.data &&
+          disciplinasRegencia.data.length
+        ) {
+          setListaDisciplinasRegencia(disciplinasRegencia.data);
+          setTemRegencia(true);
+
+          if (disciplinasRegenciaEdicao && disciplinasRegenciaEdicao.length) {
+            selecionarDisciplinas(
+              disciplinasRegenciaEdicao,
+              disciplinasRegencia.data
+            );
+          }
+        }
+      } else {
+        setListaDisciplinasRegencia([]);
+        setTemRegencia(false);
       }
-    } else {
-      setListaDisciplinasRegencia([]);
-      setTemRegencia(false);
-    }
-  };
+    },
+    [turmaSelecionada.turma, selecionarDisciplinas]
+  );
 
   const onChangeDisciplina = (codigoDisciplina, form) => {
     setAlunosAusenciaTurma([]);
     setAlunosAusenciaCompensada([]);
     setIdsAlunosAusenciaCompensadas([]);
     setIdsAlunos([]);
-    obterDisciplinasRegencia(codigoDisciplina);
+    obterDisciplinasRegencia(codigoDisciplina, listaDisciplinas);
     onChangeCampos();
     form.setFieldValue('bimestre', '');
   };
@@ -156,6 +182,10 @@ const CompensacaoAusenciaForm = ({ match }) => {
           const disciplina = disciplinas.data[0];
           valoresIniciaisForm.disciplinaId = String(
             disciplina.codigoComponenteCurricular
+          );
+          obterDisciplinasRegencia(
+            String(disciplina.codigoComponenteCurricular),
+            disciplinas.data
           );
         }
       } else {
@@ -193,7 +223,13 @@ const CompensacaoAusenciaForm = ({ match }) => {
       ];
     }
     setListaBimestres(listaBi);
-  }, [match, turmaSelecionada.modalidade, turmaSelecionada.turma, resetarForm]);
+  }, [
+    match,
+    turmaSelecionada.modalidade,
+    turmaSelecionada.turma,
+    resetarForm,
+    obterDisciplinasRegencia,
+  ]);
 
   useEffect(() => {
     // Quando alterar a turma volta para a tela de listagem!
@@ -275,6 +311,12 @@ const CompensacaoAusenciaForm = ({ match }) => {
           dadosEdicao.data.alunos
         );
 
+        obterDisciplinasRegencia(
+          dadosEdicao.data.disciplinaId,
+          listaDisciplinas,
+          dadosEdicao.data.disciplinasRegencia
+        );
+
         setAuditoria({
           criadoPor: dadosEdicao.data.criadoPor,
           criadoRf: dadosEdicao.data.criadoRf,
@@ -292,7 +334,14 @@ const CompensacaoAusenciaForm = ({ match }) => {
     if (turmaSelecionada.turma && match && match.params && match.params.id) {
       consultaPorId();
     }
-  }, [match, turmaSelecionada.turma, obterAlunosComAusencia]);
+  }, [
+    match,
+    turmaSelecionada.turma,
+    obterAlunosComAusencia,
+    obterDisciplinasRegencia,
+    listaDisciplinas,
+    selecionarDisciplinas,
+  ]);
 
   const onChangeBimestre = (bimestre, form) => {
     setAlunosAusenciaCompensada([]);
@@ -358,6 +407,11 @@ const CompensacaoAusenciaForm = ({ match }) => {
         form.values.disciplinaId,
         form.values.bimestre,
         dadosEdicao.data.alunos
+      );
+      obterDisciplinasRegencia(
+        form.values.disciplinaId,
+        listaDisciplinas,
+        dadosEdicao.data.disciplinasRegencia
       );
       form.resetForm();
       setModoEdicao(false);
