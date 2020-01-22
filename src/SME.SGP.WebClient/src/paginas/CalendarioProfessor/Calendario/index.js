@@ -507,6 +507,7 @@ const CalendarioProfessor = () => {
               {diasLetivos && diasLetivos.dias ? (
                 <Div>
                   <Button
+                    id={shortid.generate()}
                     label={diasLetivos.dias.toString()}
                     color={
                       diasLetivos.estaAbaixoPermitido
