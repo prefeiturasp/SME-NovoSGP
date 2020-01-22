@@ -71,7 +71,7 @@ namespace SME.SGP.Aplicacao.Teste.Consultas
             repositorioGrade.Setup(c => c.ObterHorasComponente(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<int>()))
                 .Returns(Task.FromResult(5));
 
-            consultasAbrangencia.Setup(c => c.ObterAbrangenciaTurma(It.IsAny<string>()))
+            consultasAbrangencia.Setup(c => c.ObterAbrangenciaTurma(It.IsAny<string>(), It.IsAny<bool>()))
                 .Returns(Task.FromResult(new Dto.AbrangenciaFiltroRetorno()));
         }
     }

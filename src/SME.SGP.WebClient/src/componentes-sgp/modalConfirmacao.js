@@ -38,14 +38,15 @@ const ModalConfirmacao = () => {
         footer={[
           <ContainerBotoes key={shortid.generate()}>
             <Button
+              id={shortid.generate()}
               key={shortid.generate()}
               onClick={() => fecharConfirmacao(true)}
-              S
               label={confirmacao.textoOk}
               color={Colors.Azul}
               border
             />
             <Button
+              id={shortid.generate()}
               key={shortid.generate()}
               onClick={() => fecharConfirmacao(false)}
               label={confirmacao.textoCancelar}

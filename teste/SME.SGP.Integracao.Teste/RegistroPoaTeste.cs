@@ -79,7 +79,7 @@ namespace SME.SGP.Integracao.Teste
                 CodigoRf = "7777710",
                 Descricao = "Teste 123",
                 DreId = "1",
-                Mes = DateTime.Now.Month,
+                Bimestre = DateTime.Now.Month,
                 Titulo = "Teste integrado",
                 UeId = "1"
             };

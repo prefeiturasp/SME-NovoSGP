@@ -18,7 +18,7 @@ namespace SME.SGP.Dominio.Interfaces
 
         Task<IEnumerable<AbrangenciaSinteticaDto>> ObterAbrangenciaSintetica(string login, Guid perfil, string turmaId = "");
 
-        Task<AbrangenciaFiltroRetorno> ObterAbrangenciaTurma(string turma, string login, Guid perfil);
+        Task<AbrangenciaFiltroRetorno> ObterAbrangenciaTurma(string turma, string login, Guid perfil, bool consideraHistorico = false);
 
         Task<IEnumerable<int>> ObterAnosLetivos(string login, Guid perfil, bool consideraHistorico);
 
@@ -35,6 +35,8 @@ namespace SME.SGP.Dominio.Interfaces
         Task<AbrangenciaUeRetorno> ObterUe(string codigo, string login, Guid perfil);
 
         Task<IEnumerable<AbrangenciaUeRetorno>> ObterUes(string codigoDre, string login, Guid perfil, Modalidade? modalidade = null, int periodo = 0, bool consideraHistorico = false, int anoLetivo = 0);
+
+        bool PossuiAbrangenciaTurmaAtivaPorLogin(string login);
 
         void RemoverAbrangenciasForaEscopo(string login, Guid perfil, TipoAbrangencia porTurma);
     }
