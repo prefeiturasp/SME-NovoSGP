@@ -112,7 +112,7 @@ DataTable.propTypes = {
   locale: PropTypes.object,
   idLinha: PropTypes.string,
   id: PropTypes.string,
-  scroll: PropTypes.string,
+  scroll: PropTypes.object,
 };
 
 DataTable.defaultProps = {

@@ -15,11 +15,16 @@ import history from '~/servicos/history';
 import ServicoCompensacaoAusencia from '~/servicos/Paginas/DiarioClasse/ServicoCompensacaoAusencia';
 import ServicoDisciplina from '~/servicos/Paginas/ServicoDisciplina';
 import { AlunosCompensacao } from './styles';
+import RotasDto from '~/dtos/rotasDto';
+
+import { verificaSomenteConsulta } from '~/servicos/servico-navegacao';
 
 const CompensacaoAusenciaLista = () => {
   const usuario = useSelector(store => store.usuario);
-
   const { turmaSelecionada } = usuario;
+
+  const permissoesTela = usuario.permissoes[RotasDto.COMPENSACAO_AUSENCIA];
+  const [somenteConsulta, setSomenteConsulta] = useState(false);
 
   const [exibirLista, setExibirLista] = useState(false);
   const [carregandoDisciplinas, setCarregandoDisciplinas] = useState(false);
@@ -34,6 +39,10 @@ const CompensacaoAusenciaLista = () => {
   const [disciplinaIdSelecionada, setDisciplinaIdSelecionada] = useState(
     undefined
   );
+
+  useEffect(() => {
+    setSomenteConsulta(verificaSomenteConsulta(permissoesTela));
+  }, [permissoesTela]);
 
   const montaExibicaoAlunos = dados => {
     return (
@@ -74,7 +83,6 @@ const CompensacaoAusenciaLista = () => {
     };
     setCompensacoesSelecionadas([]);
     setFiltro({ ...paramsFiltrar });
-    console.log(paramsFiltrar);
   }, [
     disciplinaIdSelecionada,
     nomeAluno,
@@ -168,15 +176,33 @@ const CompensacaoAusenciaLista = () => {
     setBimestreSelecionado(bimestre);
   };
 
-  const onClickEditar = compoensacao => {
-    history.push(`compensacao-ausencia/editar/${compoensacao.id}`);
+  const validaSePodeEditar = async bimestre => {
+    let podeEditar = false;
+    const exucutandoCalculoFrequencia = await ServicoCompensacaoAusencia.obterStatusCalculoFrequencia(
+      turmaSelecionada.turma,
+      disciplinaIdSelecionada,
+      bimestre
+    ).catch(e => {
+      erros(e);
+      podeEditar = false;
+    });
+    if (exucutandoCalculoFrequencia && exucutandoCalculoFrequencia.data) {
+      podeEditar = true;
+    }
+    return podeEditar;
+  };
+
+  const onClickEditar = async compensacao => {
+    const podeEditar = validaSePodeEditar(compensacao.bimestre);
+    if (podeEditar) {
+      history.push(`compensacao-ausencia/editar/${compensacao.id}`);
+    }
   };
 
   const onClickVoltar = () => {
     history.push(URL_HOME);
   };
 
-  // TODO Testar quando tiver o back pronto!
   const onClickExcluir = async () => {
     if (compensacoesSelecionadas && compensacoesSelecionadas.length > 0) {
       const listaExcluir = compensacoesSelecionadas.map(
@@ -254,8 +280,9 @@ const CompensacaoAusenciaLista = () => {
                 className="mr-2"
                 onClick={onClickExcluir}
                 disabled={
-                  compensacoesSelecionadas &&
-                  compensacoesSelecionadas.length < 1
+                  !permissoesTela.podeExcluir ||
+                  (compensacoesSelecionadas &&
+                    compensacoesSelecionadas.length < 1)
                 }
               />
               <Button
@@ -266,6 +293,8 @@ const CompensacaoAusenciaLista = () => {
                 className="mr-2"
                 onClick={onClickNovo}
                 disabled={
+                  somenteConsulta ||
+                  !permissoesTela.podeIncluir ||
                   !turmaSelecionada.turma ||
                   (turmaSelecionada.turma && listaDisciplinas.length < 1)
                 }
