@@ -153,7 +153,7 @@ namespace SME.SGP.Dominio.Servicos
 
         public void SalvarEventoFeriadosAoCadastrarTipoCalendario(TipoCalendario tipoCalendario)
         {
-            var feriados = ObterEValidarFeriados().Result;
+            var feriados = ObterEValidarFeriados();
 
             var tipoEventoFeriado = ObterEValidarTipoEventoFeriado();
 
@@ -161,7 +161,7 @@ namespace SME.SGP.Dominio.Servicos
 
             var feriadosErro = new List<long>();
 
-            SalvarListaEventos(eventos, feriadosErro).Wait();
+            SalvarListaEventos(eventos, feriadosErro);
 
             if (feriadosErro.Any())
                 TratarErros(feriadosErro);
@@ -340,10 +340,10 @@ namespace SME.SGP.Dominio.Servicos
             };
         }
 
-        private async Task<IEnumerable<FeriadoCalendario>> ObterEValidarFeriados()
+        private IEnumerable<FeriadoCalendario> ObterEValidarFeriados()
         {
-            var feriadosMoveis = await repositorioFeriadoCalendario.ObterFeriadosCalendario(new FiltroFeriadoCalendarioDto { Ano = DateTime.Now.Year, Tipo = TipoFeriadoCalendario.Movel });
-            var feriadosFixos = await repositorioFeriadoCalendario.ObterFeriadosCalendario(new FiltroFeriadoCalendarioDto { Tipo = TipoFeriadoCalendario.Fixo });
+            var feriadosMoveis = repositorioFeriadoCalendario.ObterFeriadosCalendario(new FiltroFeriadoCalendarioDto { Ano = DateTime.Now.Year, Tipo = TipoFeriadoCalendario.Movel }).Result;
+            var feriadosFixos = repositorioFeriadoCalendario.ObterFeriadosCalendario(new FiltroFeriadoCalendarioDto { Tipo = TipoFeriadoCalendario.Fixo }).Result;
 
             var feriados = feriadosFixos?.ToList();
             feriados?.AddRange(feriadosMoveis);
@@ -405,13 +405,13 @@ namespace SME.SGP.Dominio.Servicos
             repositorioEvento.Salvar(evento);
         }
 
-        private async Task SalvarListaEventos(IEnumerable<Evento> eventos, List<long> feriadosErro)
+        private void SalvarListaEventos(IEnumerable<Evento> eventos, List<long> feriadosErro)
         {
             foreach (var evento in eventos)
             {
                 try
                 {
-                    await repositorioEvento.SalvarAsync(evento);
+                    repositorioEvento.Salvar(evento);
                 }
                 catch (Exception)
                 {
