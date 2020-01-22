@@ -44,6 +44,11 @@ namespace SME.SGP.Dados.Repositorios
             return contexto.Conexao.QueryFirstOrDefault<Dre>("select * from dre where dre_id = @codigo", new { codigo });
         }
 
+        public Dre ObterPorId(long dreId)
+        {
+            return contexto.Conexao.QueryFirstOrDefault<Dre>("select * from dre where id = @dreId", new { dreId });
+        }
+
         public IEnumerable<Dre> ObterTodas()
         {
             return contexto.Conexao.Query<Dre>("select id, dre_id, abreviacao, nome from dre");

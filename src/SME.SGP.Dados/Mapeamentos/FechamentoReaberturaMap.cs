@@ -15,6 +15,9 @@ namespace SME.SGP.Dados.Mapeamentos
 
             Map(a => a.TipoCalendario).Ignore();
             Map(a => a.TipoCalendarioId).ToColumn("tipo_calendario_id");
+
+            Map(a => a.WorkflowAprovacao).Ignore();
+            Map(a => a.WorkflowAprovacaoId).ToColumn("wf_aprovacao_id");
         }
     }
 }

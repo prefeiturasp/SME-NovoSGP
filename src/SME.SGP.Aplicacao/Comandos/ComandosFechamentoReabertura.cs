@@ -3,6 +3,7 @@ using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
@@ -11,18 +12,21 @@ namespace SME.SGP.Aplicacao
         public readonly IRepositorioDre repositorioDre;
         public readonly IRepositorioTipoCalendario repositorioTipoCalendario;
         public readonly IRepositorioUe repositorioUe;
+        private readonly IServicoFechamentoReabertura servicoFechamentoReabertura;
 
         public ComandosFechamentoReabertura(IRepositorioDre repositorioDre, IRepositorioUe repositorioUe,
-                                            IRepositorioTipoCalendario repositorioTipoCalendario)
+                                            IRepositorioTipoCalendario repositorioTipoCalendario, IServicoFechamentoReabertura servicoFechamentoReabertura)
         {
             this.repositorioDre = repositorioDre ?? throw new ArgumentNullException(nameof(repositorioDre));
             this.repositorioUe = repositorioUe ?? throw new ArgumentNullException(nameof(repositorioUe));
             this.repositorioTipoCalendario = repositorioTipoCalendario ?? throw new ArgumentNullException(nameof(repositorioTipoCalendario));
+            this.servicoFechamentoReabertura = servicoFechamentoReabertura ?? throw new ArgumentNullException(nameof(servicoFechamentoReabertura));
         }
 
-        public void Salvar(FechamentoReaberturaPersistenciaDto fechamentoReaberturaPersistenciaDto)
+        public async Task Salvar(FechamentoReaberturaPersistenciaDto fechamentoReaberturaPersistenciaDto)
         {
             FechamentoReabertura entidade = TransformarDtoEmEntidadeParaPersistencia(fechamentoReaberturaPersistenciaDto);
+            await servicoFechamentoReabertura.Salvar(entidade);
         }
 
         private FechamentoReabertura TransformarDtoEmEntidadeParaPersistencia(FechamentoReaberturaPersistenciaDto fechamentoReaberturaPersistenciaDto)

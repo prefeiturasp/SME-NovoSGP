@@ -23,11 +23,10 @@ namespace SME.SGP.Dominio
         public TipoCalendario TipoCalendario { get; set; }
 
         public long TipoCalendarioId { get; set; }
-
         public Ue Ue { get; set; }
-
         public long? UeId { get; set; }
-
+        public WorkflowAprovacao WorkflowAprovacao { get; set; }
+        public long? WorkflowAprovacaoId { get; set; }
         private List<FechamentoReaberturaBimestre> bimestres { get; set; }
 
         public void Adicionar(FechamentoReaberturaBimestre bimestre)
@@ -67,6 +66,11 @@ namespace SME.SGP.Dominio
             }
         }
 
+        public bool DeveCriarEventos()
+        {
+            return EhParaUe() && Status == EntidadeStatus.Aprovado;
+        }
+
         public bool EhParaDre()
         {
             return UeId is null && !(DreId is null) && DreId > 0;
@@ -89,6 +93,11 @@ namespace SME.SGP.Dominio
             || (Inicio.Date >= dataInicio.Date && Fim <= datafim.Date);
         }
 
+        public object ObterBimestresNumeral()
+        {
+            return string.Join(",", bimestres.Select(a => $"{a.Bimestre.ToString()}º").ToArray());
+        }
+
         public void PodeSalvar(IEnumerable<FechamentoReabertura> fechamentosCadastrados)
         {
             if (Inicio > Fim)
@@ -99,6 +108,14 @@ namespace SME.SGP.Dominio
 
             VerificaFechamentosHierarquicos(fechamentosCadastrados);
             VerificaFechamentosNoMesmoPeriodo(fechamentosCadastrados);
+        }
+
+        public void VerificaStatus()
+        {
+            if (EhParaUe() && Inicio.Year < DateTime.Today.Year)
+            {
+                Status = EntidadeStatus.AguardandoAprovacao;
+            }
         }
 
         private bool PodePersistirNesteNasDatas(IEnumerable<(DateTime, DateTime)> datasDosFechamentosSME)
@@ -112,7 +129,7 @@ namespace SME.SGP.Dominio
             if (EhParaDre())
             {
                 var fechamentosSME = fechamentosCadastrados.Where(a => a.EhParaSme()).ToList();
-                if (fechamentosSME is null && !fechamentosSME.Any())
+                if (fechamentosSME is null || !fechamentosSME.Any())
                     throw new NegocioException("Não há Reabertura de Fechamento cadastrado pela SME.");
 
                 if (!PodePersistirNesteNasDatas(fechamentosSME.Select(a => { return (a.Inicio.Date, a.Fim.Date); })))
@@ -122,7 +139,7 @@ namespace SME.SGP.Dominio
             {
                 var fechamentos = fechamentosCadastrados.Where(a => a.EhParaDre() && a.DreId == DreId).ToList();
 
-                if (fechamentos is null && !fechamentos.Any())
+                if (fechamentos is null || !fechamentos.Any())
                 {
                     fechamentos = fechamentosCadastrados.Where(a => a.EhParaSme()).ToList();
                     if (fechamentos is null && !fechamentos.Any())

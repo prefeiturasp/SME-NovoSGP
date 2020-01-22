@@ -10,6 +10,8 @@ namespace SME.SGP.Dominio.Interfaces
 
         Dre ObterPorCodigo(string codigo);
 
+        Dre ObterPorId(long value);
+
         IEnumerable<Dre> ObterTodas();
 
         IEnumerable<Dre> Sincronizar(IEnumerable<Dre> entidades);
