@@ -133,7 +133,7 @@ namespace SME.SGP.Aplicacao
                         DisciplinaCompartilhada = $"{(disciplinaCompartilhada?.Nome ?? "Disciplina não encontrada")} ",
                         EhRegencia = disciplina.Regencia,
                         EhCompartilhada = disciplina.Compartilhada,
-                        PermiteRegistroFrequencia = disciplina.RegistroFrequencia && !x.SomenteConsulta,
+                        PermiteRegistroFrequencia = disciplina.RegistraFrequencia && !x.SomenteConsulta,
                         podeCadastrarAvaliacao = podeCriarAtividade,
                         Horario = x.DataAula.ToString("hh:mm tt", CultureInfo.InvariantCulture),
                         Modalidade = turma?.Modalidade.GetAttribute<DisplayAttribute>().Name ?? "Modalidade",
@@ -264,6 +264,19 @@ namespace SME.SGP.Aplicacao
                 }));
         }
 
+        private static void VerificarAulasSomenteConsulta(IEnumerable<DisciplinaResposta> disciplinas, IEnumerable<AulaCompletaDto> aulas)
+        {
+            aulas.ToList().ForEach(aula =>
+            {
+                var disciplina = disciplinas.FirstOrDefault(d
+                    => d.CodigoComponenteCurricular.ToString().Equals(aula.DisciplinaId));
+
+                var disciplinaId = disciplina == null ? "" : disciplina.CodigoComponenteCurricular.ToString();
+
+                aula.VerificarSomenteConsulta(disciplinaId);
+            });
+        }
+
         private List<EventosAulasCalendarioDto> MapearParaDto(List<DateTime> dias)
         {
             List<EventosAulasCalendarioDto> eventosAulas = new List<EventosAulasCalendarioDto>();
@@ -285,15 +298,7 @@ namespace SME.SGP.Aplicacao
         {
             var aulas = await repositorioAula.ObterAulasCompleto(filtro.TipoCalendarioId, filtro.TurmaId, filtro.UeId, data, perfil, filtro.TurmaHistorico);
 
-            aulas.ToList().ForEach(aula =>
-            {
-                var disciplina = disciplinas.FirstOrDefault(d
-                    => d.CodigoComponenteCurricular.ToString().Equals(aula.DisciplinaId));
-
-                var disciplinaId = disciplina == null ? "" : disciplina.CodigoComponenteCurricular.ToString();
-
-                aula.VerificarSomenteConsulta(disciplinaId);
-            });
+            VerificarAulasSomenteConsulta(disciplinas, aulas);
 
             if (string.IsNullOrWhiteSpace(professorRf))
                 return aulas;
