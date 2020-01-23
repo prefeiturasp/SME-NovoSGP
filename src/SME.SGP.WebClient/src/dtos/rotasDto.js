@@ -24,6 +24,8 @@ const RotasDto = {
   NOTAS: '/diario-classe/notas',
   AULA_DADA_AULA_PREVISTA: '/diario-classe/aula-dada-aula-prevista',
   REGISTRO_POA: '/diario-classe/registro-poa',
+  PERIODO_FECHAMENTO_REABERTURA:
+    '/calendario-escolar/periodo-fechamento-reabertura',
 };
 
 export default RotasDto;
