@@ -1,4 +1,5 @@
 ﻿using Moq;
+using SME.SGP.Aplicacao;
 using SME.SGP.Dominio.Interfaces;
 using System;
 using System.Collections;
@@ -26,13 +27,20 @@ namespace SME.SGP.Dominio.Servicos.Teste
 
     public class ServicoFechamentoReaberturaTeste
     {
+        private readonly Mock<IComandosWorkflowAprovacao> comandosWorkflowAprovacao;
         private readonly Mock<IRepositorioFechamentoReabertura> repositorioFechamentoReabertura;
         private readonly IServicoFechamentoReabertura servicoFechamentoReabertura;
+        private readonly Mock<IServicoUsuario> servicoUsuario;
+        private readonly Mock<IUnitOfWork> unitOfWork;
 
         public ServicoFechamentoReaberturaTeste()
         {
             repositorioFechamentoReabertura = new Mock<IRepositorioFechamentoReabertura>();
-            servicoFechamentoReabertura = new ServicoFechamentoReabertura(repositorioFechamentoReabertura.Object);
+            servicoUsuario = new Mock<IServicoUsuario>();
+
+            unitOfWork = new Mock<IUnitOfWork>();
+            comandosWorkflowAprovacao = new Mock<IComandosWorkflowAprovacao>();
+            servicoFechamentoReabertura = new ServicoFechamentoReabertura(repositorioFechamentoReabertura.Object, unitOfWork.Object, comandosWorkflowAprovacao.Object, servicoUsuario.Object);
         }
 
         [Theory, ClassData(typeof(DatasParaTestarFechamento))]

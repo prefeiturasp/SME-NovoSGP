@@ -8,6 +8,7 @@ namespace SME.SGP.Dominio
     {
         public FechamentoReabertura()
         {
+            Status = EntidadeStatus.Aprovado;
             bimestres = new List<FechamentoReaberturaBimestre>();
         }
 
@@ -37,6 +38,12 @@ namespace SME.SGP.Dominio
                 bimestre.FechamentoAberturaId = this.Id;
                 bimestres.Add(bimestre);
             }
+        }
+
+        public void AprovarWorkFlow()
+        {
+            if (Status == EntidadeStatus.AguardandoAprovacao)
+                Status = EntidadeStatus.Aprovado;
         }
 
         public void AtualizarDre(Dre dre)
@@ -98,7 +105,7 @@ namespace SME.SGP.Dominio
             return string.Join(",", bimestres.Select(a => $"{a.Bimestre.ToString()}º").ToArray());
         }
 
-        public void PodeSalvar(IEnumerable<FechamentoReabertura> fechamentosCadastrados)
+        public void PodeSalvar(IEnumerable<FechamentoReabertura> fechamentosCadastrados, Usuario usuario)
         {
             if (Inicio > Fim)
                 throw new NegocioException("A data início não pode ser maior que a data fim.");
@@ -106,8 +113,25 @@ namespace SME.SGP.Dominio
             if (TipoCalendario.AnoLetivo != Inicio.Year || TipoCalendario.AnoLetivo != Fim.Year)
                 throw new NegocioException("O ano não pode ser diferente do ano do Tipo de Calendário.");
 
+            if (usuario.EhPerfilUE())
+            {
+                if (!EhParaUe())
+                    throw new NegocioException("Perfil Ue deverá somente cadastrar reabertura de fechamento para Ues.");
+            }
+            else if (usuario.EhPerfilDRE())
+            {
+                if (EhParaSme())
+                    throw new NegocioException("Perfil Dre deverá somente cadastrar reabertura de fechamento para Dres e Ues.");
+            }
+
             VerificaFechamentosHierarquicos(fechamentosCadastrados);
             VerificaFechamentosNoMesmoPeriodo(fechamentosCadastrados);
+        }
+
+        public void ReprovarWorkFlow()
+        {
+            if (Status == EntidadeStatus.AguardandoAprovacao)
+                Status = EntidadeStatus.Recusado;
         }
 
         public void VerificaStatus()

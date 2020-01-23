@@ -15,17 +15,18 @@ namespace SME.SGP.Dominio.Servicos
         private readonly IConfiguration configuration;
         private readonly IRepositorioAula repositorioAula;
         private readonly IRepositorioEvento repositorioEvento;
+        private readonly IRepositorioFechamentoReabertura repositorioFechamentoReabertura;
         private readonly IRepositorioNotificacao repositorioNotificacao;
         private readonly IRepositorioSupervisorEscolaDre repositorioSupervisorEscolaDre;
         private readonly IRepositorioTurma repositorioTurma;
         private readonly IRepositorioUe repositorioUe;
+        private readonly IRepositorioWorkflowAprovacao repositorioWorkflowAprovacao;
         private readonly IRepositorioWorkflowAprovacaoNivelNotificacao repositorioWorkflowAprovacaoNivelNotificacao;
         private readonly IServicoEOL servicoEOL;
         private readonly IServicoNotificacao servicoNotificacao;
         private readonly IServicoUsuario servicoUsuario;
-        private readonly IRepositorioWorkflowAprovacaoNivel workflowAprovacaoNivel;
-        private readonly IRepositorioWorkflowAprovacao repositorioWorkflowAprovacao;
         private readonly IUnitOfWork unitOfWork;
+        private readonly IRepositorioWorkflowAprovacaoNivel workflowAprovacaoNivel;
 
         public ServicoWorkflowAprovacao(IRepositorioNotificacao repositorioNotificacao,
                                         IRepositorioWorkflowAprovacaoNivelNotificacao repositorioWorkflowAprovacaoNivelNotificacao,
@@ -40,7 +41,8 @@ namespace SME.SGP.Dominio.Servicos
                                         IRepositorioUe repositorioUe,
                                         IRepositorioTurma repositorioTurma,
                                         IRepositorioWorkflowAprovacao repositorioWorkflowAprovacao,
-                                        IUnitOfWork unitOfWork)
+                                        IUnitOfWork unitOfWork,
+                                        IRepositorioFechamentoReabertura repositorioFechamentoReabertura)
         {
             this.repositorioNotificacao = repositorioNotificacao ?? throw new System.ArgumentNullException(nameof(repositorioNotificacao));
             this.repositorioWorkflowAprovacaoNivelNotificacao = repositorioWorkflowAprovacaoNivelNotificacao ?? throw new System.ArgumentNullException(nameof(repositorioWorkflowAprovacaoNivelNotificacao));
@@ -56,6 +58,7 @@ namespace SME.SGP.Dominio.Servicos
             this.repositorioTurma = repositorioTurma ?? throw new ArgumentNullException(nameof(repositorioTurma));
             this.repositorioWorkflowAprovacao = repositorioWorkflowAprovacao ?? throw new ArgumentNullException(nameof(repositorioWorkflowAprovacao));
             this.unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
+            this.repositorioFechamentoReabertura = repositorioFechamentoReabertura ?? throw new ArgumentNullException(nameof(repositorioFechamentoReabertura));
         }
 
         public void Aprovar(WorkflowAprovacao workflow, bool aprovar, string observacao, long notificacaoId)
@@ -92,7 +95,7 @@ namespace SME.SGP.Dominio.Servicos
         {
             var workflow = repositorioWorkflowAprovacao.ObterEntidadeCompleta(id);
 
-            if(workflow ==  null)
+            if (workflow == null)
                 throw new NegocioException("Não foi possível localizar o fluxo de aprovação.");
 
             if (workflow.Niveis.Any(n => n.Status == WorkflowAprovacaoNivelStatus.Reprovado))
@@ -137,6 +140,10 @@ namespace SME.SGP.Dominio.Servicos
                 {
                     AprovarUltimoNivelDeEventoDataPassada(codigoDaNotificacao, workflow.Id);
                 }
+                else if (workflow.Tipo == WorkflowAprovacaoTipo.Fechamento_Reabertura)
+                {
+                    AprovarUltimoNivelDeEventoFechamentoReabertura(codigoDaNotificacao, workflow.Id);
+                }
             }
         }
 
@@ -163,6 +170,21 @@ namespace SME.SGP.Dominio.Servicos
 
             NotificarCriadorEventoDataPassadaAprovado(evento, codigoDaNotificacao);
             NotificarDiretorUeEventoDataPassadaAprovado(evento, codigoDaNotificacao);
+        }
+
+        private void AprovarUltimoNivelDeEventoFechamentoReabertura(long codigoDaNotificacao, long workflowId)
+        {
+            FechamentoReabertura fechamentoReabertura = repositorioFechamentoReabertura.ObterPorWorkflowId(workflowId);
+            if (fechamentoReabertura == null)
+                throw new NegocioException("Não foi possível localizar a reabertura do fechamento do fluxo de aprovação.");
+
+            fechamentoReabertura.AprovarWorkFlow();
+            //TODO: CRIAR EVENTOS;
+
+            repositorioFechamentoReabertura.Salvar(fechamentoReabertura);
+
+            NotificarAdminSgpUeFechamentoReaberturaAprovado(fechamentoReabertura, codigoDaNotificacao);
+            NotificarDiretorUeFechamentoReaberturaAprovado(fechamentoReabertura, codigoDaNotificacao);
         }
 
         private void AprovarUltimoNivelEventoLiberacaoExcepcional(long codigoDaNotificacao, long workflowId)
@@ -263,6 +285,64 @@ namespace SME.SGP.Dominio.Servicos
                     nivel.Status = WorkflowAprovacaoNivelStatus.AguardandoAprovacao;
                     workflowAprovacaoNivel.Salvar(nivel);
                 }
+            }
+        }
+
+        private void NotificarAdminSgpUeFechamentoReaberturaAprovado(FechamentoReabertura fechamentoReabertura, long codigoDaNotificacao)
+        {
+            var adminsSgpUe = servicoEOL.ObterAdministradoresSGP(fechamentoReabertura.Ue.CodigoUe).Result;
+            if (adminsSgpUe == null || !adminsSgpUe.Any())
+                throw new NegocioException("Não foi possível notificar o Administrador SGP da Ue.");
+
+            foreach (var adminSgpUe in adminsSgpUe)
+            {
+                var usuario = servicoUsuario.ObterUsuarioPorCodigoRfLoginOuAdiciona(adminSgpUe);
+
+                repositorioNotificacao.Salvar(new Notificacao()
+                {
+                    UeId = fechamentoReabertura.Ue.CodigoUe,
+                    UsuarioId = usuario.Id,
+                    Ano = fechamentoReabertura.CriadoEm.Year,
+                    Categoria = NotificacaoCategoria.Aviso,
+                    DreId = fechamentoReabertura.Dre.CodigoDre,
+                    Titulo = "Cadastro de período de reabertura de fechamento - ano anterior",
+                    Tipo = NotificacaoTipo.Calendario,
+                    Codigo = codigoDaNotificacao,
+                    Mensagem = $@"O período de reabertura do fechamento de bimestre abaixo da {fechamentoReabertura.Ue.Nome} ({fechamentoReabertura.Dre.Nome}) foi aprovado pela supervisão escolar. <br />
+                                  Descrição: { fechamentoReabertura.Descricao} < br />
+                                  Início: { fechamentoReabertura.Inicio.ToString("dd/MM/yyyy")} < br />
+                                  Fim: { fechamentoReabertura.Fim.ToString("dd/MM/yyyy")} < br />
+                                  Bimestres: { fechamentoReabertura.ObterBimestresNumeral()}"
+                });
+            }
+        }
+
+        private void NotificarAdminSgpUeFechamentoReaberturaReprovado(FechamentoReabertura fechamentoReabertura, long codigoDaNotificacao, string motivo)
+        {
+            var adminsSgpUe = servicoEOL.ObterAdministradoresSGP(fechamentoReabertura.Ue.CodigoUe).Result;
+            if (adminsSgpUe == null || !adminsSgpUe.Any())
+                throw new NegocioException("Não foi possível notificar o Administrador SGP da Ue.");
+
+            foreach (var adminSgpUe in adminsSgpUe)
+            {
+                var usuario = servicoUsuario.ObterUsuarioPorCodigoRfLoginOuAdiciona(adminSgpUe);
+
+                repositorioNotificacao.Salvar(new Notificacao()
+                {
+                    UeId = fechamentoReabertura.Ue.CodigoUe,
+                    UsuarioId = usuario.Id,
+                    Ano = fechamentoReabertura.CriadoEm.Year,
+                    Categoria = NotificacaoCategoria.Aviso,
+                    DreId = fechamentoReabertura.Dre.CodigoDre,
+                    Titulo = "Cadastro de período de reabertura de fechamento - ano anterior",
+                    Tipo = NotificacaoTipo.Calendario,
+                    Codigo = codigoDaNotificacao,
+                    Mensagem = $@"O período de reabertura do fechamento de bimestre abaixo da {fechamentoReabertura.Ue.Nome} ({fechamentoReabertura.Dre.Nome}) foi reprovado pela supervisão escolar. Motivo: {motivo} <br />
+                                  Descrição: { fechamentoReabertura.Descricao} < br />
+                                  Início: { fechamentoReabertura.Inicio.ToString("dd/MM/yyyy")} < br />
+                                  Fim: { fechamentoReabertura.Fim.ToString("dd/MM/yyyy")} < br />
+                                  Bimestres: { fechamentoReabertura.ObterBimestresNumeral()}"
+                });
             }
         }
 
@@ -416,6 +496,66 @@ namespace SME.SGP.Dominio.Servicos
             }
         }
 
+        private void NotificarDiretorUeFechamentoReaberturaAprovado(FechamentoReabertura fechamentoReabertura, long codigoDaNotificacao)
+        {
+            var diretoresDaEscola = servicoEOL.ObterFuncionariosPorCargoUe(fechamentoReabertura.Ue.CodigoUe, (long)Cargo.Diretor);
+
+            if (diretoresDaEscola == null && !diretoresDaEscola.Any())
+                throw new NegocioException("Não foi possível localizar o diretor da Ue desta reabertura de fechamento.");
+
+            foreach (var diretorDaEscola in diretoresDaEscola)
+            {
+                var usuario = servicoUsuario.ObterUsuarioPorCodigoRfLoginOuAdiciona(diretorDaEscola.CodigoRf);
+
+                repositorioNotificacao.Salvar(new Notificacao()
+                {
+                    UeId = fechamentoReabertura.Ue.CodigoUe,
+                    UsuarioId = usuario.Id,
+                    Ano = fechamentoReabertura.CriadoEm.Year,
+                    Categoria = NotificacaoCategoria.Aviso,
+                    DreId = fechamentoReabertura.Dre.CodigoDre,
+                    Titulo = "Cadastro de período de reabertura de fechamento - ano anterior",
+                    Tipo = NotificacaoTipo.Calendario,
+                    Codigo = codigoDaNotificacao,
+                    Mensagem = $@"O período de reabertura do fechamento de bimestre abaixo da {fechamentoReabertura.Ue.Nome} ({fechamentoReabertura.Dre.Nome}) foi aprovado pela supervisão escolar. <br />
+                                  Descrição: { fechamentoReabertura.Descricao} < br />
+                                  Início: { fechamentoReabertura.Inicio.ToString("dd/MM/yyyy")} < br />
+                                  Fim: { fechamentoReabertura.Fim.ToString("dd/MM/yyyy")} < br />
+                                  Bimestres: { fechamentoReabertura.ObterBimestresNumeral()}"
+                });
+            }
+        }
+
+        private void NotificarDiretorUeFechamentoReaberturaReprovado(FechamentoReabertura fechamentoReabertura, long codigoDaNotificacao, string motivo)
+        {
+            var diretoresDaEscola = servicoEOL.ObterFuncionariosPorCargoUe(fechamentoReabertura.Ue.CodigoUe, (long)Cargo.Diretor);
+
+            if (diretoresDaEscola == null && !diretoresDaEscola.Any())
+                throw new NegocioException("Não foi possível localizar o diretor da Ue desta reabertura de fechamento.");
+
+            foreach (var diretorDaEscola in diretoresDaEscola)
+            {
+                var usuario = servicoUsuario.ObterUsuarioPorCodigoRfLoginOuAdiciona(diretorDaEscola.CodigoRf);
+
+                repositorioNotificacao.Salvar(new Notificacao()
+                {
+                    UeId = fechamentoReabertura.Ue.CodigoUe,
+                    UsuarioId = usuario.Id,
+                    Ano = fechamentoReabertura.CriadoEm.Year,
+                    Categoria = NotificacaoCategoria.Aviso,
+                    DreId = fechamentoReabertura.Dre.CodigoDre,
+                    Titulo = "Cadastro de período de reabertura de fechamento - ano anterior",
+                    Tipo = NotificacaoTipo.Calendario,
+                    Codigo = codigoDaNotificacao,
+                    Mensagem = $@"O período de reabertura do fechamento de bimestre abaixo da {fechamentoReabertura.Ue.Nome} ({fechamentoReabertura.Dre.Nome}) foi reprovado pela supervisão escolar. Motivo: {motivo} <br />
+                                  Descrição: { fechamentoReabertura.Descricao} < br />
+                                  Início: { fechamentoReabertura.Inicio.ToString("dd/MM/yyyy")} < br />
+                                  Fim: { fechamentoReabertura.Fim.ToString("dd/MM/yyyy")} < br />
+                                  Bimestres: { fechamentoReabertura.ObterBimestresNumeral()}"
+                });
+            }
+        }
+
         private void NotificarEventoQueFoiReprovado(Evento evento, long codigoDaNotificacao, Usuario usuario, string motivoRecusa, string nomeEscola)
         {
             repositorioNotificacao.Salvar(new Notificacao()
@@ -445,6 +585,10 @@ namespace SME.SGP.Dominio.Servicos
             else if (workflow.Tipo == WorkflowAprovacaoTipo.Evento_Data_Passada)
             {
                 TrataReprovacaoEventoDataPassada(workflow, codigoDaNotificacao, motivo);
+            }
+            else if (workflow.Tipo == WorkflowAprovacaoTipo.Fechamento_Reabertura)
+            {
+                TrataReprovacaoFechamentoReabertura(workflow, codigoDaNotificacao, motivo);
             }
         }
 
@@ -490,6 +634,20 @@ namespace SME.SGP.Dominio.Servicos
             }
             var usuario = servicoUsuario.ObterUsuarioPorCodigoRfLoginOuAdiciona(evento.CriadoRF);
             NotificarEventoQueFoiReprovado(evento, codigoDaNotificacao, usuario, motivo, escola.Nome);
+        }
+
+        private void TrataReprovacaoFechamentoReabertura(WorkflowAprovacao workflow, long codigoDaNotificacao, string motivo)
+        {
+            FechamentoReabertura fechamentoReabertura = repositorioFechamentoReabertura.ObterPorWorkflowId(workflow.Id);
+            if (fechamentoReabertura == null)
+                throw new NegocioException("Não foi possível localizar a reabertura do fechamento do fluxo de aprovação.");
+
+            fechamentoReabertura.ReprovarWorkFlow();
+
+            repositorioFechamentoReabertura.Salvar(fechamentoReabertura);
+
+            NotificarAdminSgpUeFechamentoReaberturaReprovado(fechamentoReabertura, codigoDaNotificacao, motivo);
+            NotificarDiretorUeFechamentoReaberturaReprovado(fechamentoReabertura, codigoDaNotificacao, motivo);
         }
 
         private void TrataReprovacaoReposicaoAula(WorkflowAprovacao workflow, long codigoDaNotificacao, string motivo)

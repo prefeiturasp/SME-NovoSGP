@@ -5,6 +5,7 @@ using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -17,6 +18,11 @@ namespace SME.SGP.Dados.Repositorios
         public RepositorioFechamentoReabertura(ISgpContext database) : base(database)
         {
             this.database = database;
+        }
+
+        public void ExcluirBimestres(long id)
+        {
+            database.Conexao.Execute("DELETE FROM FECHAMENTO_REABERTURA_BIMESTRE FRB WHERE FRB.FECHAMENTO_REABERTURA_ID = @id", new { id });
         }
 
         public async Task<IEnumerable<FechamentoReabertura>> Listar(long tipoCalendarioId, long? dreId, long? ueId)
@@ -101,6 +107,40 @@ namespace SME.SGP.Dados.Repositorios
             return retornoPaginado;
         }
 
+        public FechamentoReabertura ObterPorWorkflowId(long workflowId)
+        {
+            var query = @"select fr.*, frb.*, ue.*, dre.*
+                            from fechamento_reabertura fr
+                            join fechamento_reabertura_bimestre frb
+                            on frb.fechamento_reabertura_id = fr.id
+                            left join ue
+                            on fr.ue_id = ue.id
+                            left join dre
+                            on fr.dre_id = dre.id
+                            where fr.wf_aprovacao_id = @workflowId";
+
+            var lookup = new Dictionary<long, FechamentoReabertura>();
+
+            database.Conexao.Query<FechamentoReabertura, FechamentoReaberturaBimestre, Ue, Dre, FechamentoReabertura>(query.ToString(), (fechamento, bimestre, ue, dre) =>
+           {
+               FechamentoReabertura fechamentoReabertura;
+               if (!lookup.TryGetValue(fechamento.Id, out fechamentoReabertura))
+               {
+                   fechamentoReabertura = fechamento;
+                   lookup.Add(fechamento.Id, fechamentoReabertura);
+               }
+               fechamentoReabertura.AtualizarDre(dre);
+               fechamentoReabertura.AtualizarUe(ue);
+               fechamentoReabertura.Adicionar(bimestre);
+               return fechamentoReabertura;
+           }, new
+           {
+               workflowId,
+           });
+
+            return lookup.Values.FirstOrDefault();
+        }
+
         public async Task SalvarBimestre(FechamentoReaberturaBimestre fechamentoReabertura)
         {
             await database.Conexao.InsertAsync(fechamentoReabertura);
@@ -128,7 +168,7 @@ namespace SME.SGP.Dados.Repositorios
 
         private void MontaQueryListarWhere(StringBuilder query, long tipoCalendarioId, long? dreId, long? ueId)
         {
-            query.AppendLine("where excluido = false");
+            query.AppendLine("where excluido = false and status <> 3");
 
             if (tipoCalendarioId > 0)
                 query.AppendLine("and fr.tipo_calendario_id = @tipoCalendarioId");
