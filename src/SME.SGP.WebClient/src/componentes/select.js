@@ -114,7 +114,11 @@ const SelectComponent = React.forwardRef((props, ref) => {
       lista.length > 0 &&
       lista.map(item => {
         return (
-          <Option key={shortid.generate()} value={`${item[valueOption]}`}>
+          <Option
+            key={shortid.generate()}
+            value={`${item[valueOption]}`}
+            title={`${item[valueText]}`}
+          >
             {`${item[valueText]}`}
           </Option>
         );
