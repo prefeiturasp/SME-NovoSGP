@@ -26,6 +26,8 @@ import ModalMultiLinhas from '~/componentes/modalMultiLinhas';
 import modalidade from '~/dtos/modalidade';
 import ServicoDisciplina from '~/servicos/Paginas/ServicoDisciplina';
 import Grid from '~/componentes/grid';
+import { store } from '~/redux';
+import { salvarDadosAulaFrequencia } from '~/redux/modulos/calendarioProfessor/actions';
 
 const FrequenciaPlanoAula = () => {
   const usuario = useSelector(store => store.usuario);
@@ -100,7 +102,7 @@ const FrequenciaPlanoAula = () => {
   const [planoAulaExpandido, setPlanoAulaExpandido] = useState(false);
 
   const dadosAulaFrequencia = useSelector(
-    state => state.calendarioProfessor.dadosAulaFrequencia
+    store => store.calendarioProfessor.dadosAulaFrequencia
   );
 
   const obterDatasDeAulasDisponiveis = useCallback(
@@ -572,6 +574,7 @@ const FrequenciaPlanoAula = () => {
   };
 
   const onChangeDisciplinas = async disciplinaId => {
+    if (!disciplinaId) store.dispatch(salvarDadosAulaFrequencia());
     if (modoEdicaoFrequencia || modoEdicaoPlanoAula) {
       const confirmarParaSalvar = await pergutarParaSalvar();
       if (confirmarParaSalvar) {
@@ -611,6 +614,12 @@ const FrequenciaPlanoAula = () => {
     });
   };
 
+  useEffect(() => {
+    return () => {
+      store.dispatch(salvarDadosAulaFrequencia());
+    };
+  }, []);
+
   const [exibeEscolhaAula, setExibeEscolhaAula] = useState(false);
   const [ehAulaCj, setEhAulaCj] = useState(false);
 
@@ -620,6 +629,8 @@ const FrequenciaPlanoAula = () => {
 
   useEffect(() => {
     if (exibeEscolhaAula) {
+      setCarregandoFrequencia(true);
+      setCarregandoMaterias(true);
       const aulaDataSelecionada = obterAulaSelecionada(dataSelecionada);
       const aulaSelecionada = aulaDataSelecionada.find(
         item => item.aulaCJ === ehAulaCj
@@ -633,6 +644,8 @@ const FrequenciaPlanoAula = () => {
           obterAvaliacao(aulaSelecionada.idAula, dataSelecionada);
         }
       }
+      setCarregandoFrequencia(false);
+      setCarregandoMaterias(false);
     }
   }, [ehAulaCj]);
 
@@ -642,7 +655,7 @@ const FrequenciaPlanoAula = () => {
       resetarTelaFrequencia(true, true);
       resetarPlanoAula();
       const aulaDataSelecionada = obterAulaSelecionada(data);
-      if (aulaDataSelecionada) {
+      if (aulaDataSelecionada.length) {
         if (
           !usuario.ehProfessor &&
           !usuario.ehProfessorCj &&
@@ -670,11 +683,11 @@ const FrequenciaPlanoAula = () => {
   );
 
   useEffect(() => {
-    if (dadosAulaFrequencia) {
-      if (listaDisciplinas.length) {
+    if (Object.entries(dadosAulaFrequencia).length) {
+      if (listaDisciplinas.length && dadosAulaFrequencia.disciplinaId) {
         setDisciplinaIdSelecionada(String(dadosAulaFrequencia.disciplinaId));
       }
-      if (diasParaHabilitar)
+      if (diasParaHabilitar && dadosAulaFrequencia.dia)
         validaSeTemIdAula(window.moment(dadosAulaFrequencia.dia));
     }
   }, [dadosAulaFrequencia, listaDisciplinas, diasParaHabilitar]);
@@ -773,13 +786,13 @@ const FrequenciaPlanoAula = () => {
               className="alert alert-info alert-dismissible fade show text-center"
               role="alert"
             >
-              Atenção, existe uma avaliação neste dia:{' '}
+              Atenção, existe uma avaliação neste dia:
               <LinkAcao onClick={acessarEditarAvaliacao}>
                 Editar Avaliação
-              </LinkAcao>{' '}
+              </LinkAcao>
               {dataVigente && (
                 <>
-                  ou{' '}
+                  ou
                   <LinkAcao onClick={acessarNotasConceitos}>
                     Acessar Notas e Conceitos
                   </LinkAcao>
