@@ -31,8 +31,11 @@ namespace SME.SGP.Aplicacao
 
         public AulaConsultaDto BuscarPorId(long id)
         {
+            var usuarioLogado = servicoUsuario.ObterUsuarioLogado().Result;
+
             var aula = repositorio.ObterPorId(id);
-            return MapearParaDto(aula);
+
+            return MapearParaDto(aula, usuarioLogado.CodigoRf);
         }
 
         public async Task<bool> ChecarFrequenciaPlanoAula(long aulaId)
@@ -143,7 +146,7 @@ namespace SME.SGP.Aplicacao
             => new string[] { "1214", "1215", "1216", "1217", "1218", "1219", "1220", "1221", "1222", "1223" }
                 .Contains(disciplina);
 
-        private AulaConsultaDto MapearParaDto(Aula aula)
+        private AulaConsultaDto MapearParaDto(Aula aula, string professorRF)
         {
             AulaConsultaDto dto = new AulaConsultaDto()
             {
@@ -155,6 +158,7 @@ namespace SME.SGP.Aplicacao
                 TipoCalendarioId = aula.TipoCalendarioId,
                 TipoAula = aula.TipoAula,
                 Quantidade = aula.Quantidade,
+                ProfessorRf = aula.ProfessorRf,
                 DataAula = aula.DataAula.Local(),
                 RecorrenciaAula = aula.RecorrenciaAula,
                 AlteradoEm = aula.AlteradoEm,
@@ -164,6 +168,9 @@ namespace SME.SGP.Aplicacao
                 CriadoPor = aula.CriadoPor,
                 CriadoRF = aula.CriadoRF
             };
+
+            dto.VerificarSomenteLeitura(professorRF);
+
             return dto;
         }
     }

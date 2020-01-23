@@ -13,7 +13,14 @@ import Card from '~/componentes/card';
 import { Colors } from '~/componentes/colors';
 import RadioGroupButton from '~/componentes/radioGroupButton';
 import SelectComponent from '~/componentes/select';
-import { confirmar, erros, sucesso, erro } from '~/servicos/alertas';
+import {
+  confirmar,
+  erros,
+  sucesso,
+  erro,
+  exibirAlerta,
+  fecharModalConfirmacao,
+} from '~/servicos/alertas';
 import api from '~/servicos/api';
 import { setBreadcrumbManual } from '~/servicos/breadcrumb-services';
 import history from '~/servicos/history';
@@ -22,6 +29,8 @@ import { ModalConteudoHtml } from '~/componentes';
 import Alert from '~/componentes/alert';
 import modalidade from '~/dtos/modalidade';
 import ServicoAula from '~/servicos/Paginas/ServicoAula';
+import { removerAlerta } from '~/redux/modulos/alertas/actions';
+import { store } from '~/redux';
 
 const CadastroAula = ({ match }) => {
   const usuario = useSelector(store => store.usuario);
@@ -52,6 +61,11 @@ const CadastroAula = ({ match }) => {
   const [existeFrequenciaPlanoAula, setExisteFrequenciaPlanoAula] = useState(
     false
   );
+  const [somenteLeitura, SetSomenteLeitura] = useState(false);
+  const [
+    idNotificacaoSomenteLeitura,
+    setIdNotificacaoSomenteLeitura,
+  ] = useState(null);
   const [ehAulaUnica, setEhAulaUnica] = useState(false);
   const [ehRegencia, setEhRegencia] = useState(false);
   const [ehEJA, setEhEja] = useState(false);
@@ -140,6 +154,12 @@ const CadastroAula = ({ match }) => {
     }
   };
 
+  useEffect(() => {
+    return () => {
+      store.dispatch(removerAlerta(idNotificacaoSomenteLeitura));
+    };
+  }, []);
+
   const onChangeDisciplinas = async id => {
     onChangeCampos();
 
@@ -194,6 +214,18 @@ const CadastroAula = ({ match }) => {
         setDisciplinaCompartilhada(disciplina[0].compartilhada);
     }
   }, [idDisciplina, listaDisciplinas]);
+
+  useEffect(() => {
+    if (somenteLeitura) {
+      const id = exibirAlerta(
+        'warning',
+        'Você possui permissão somente de leitura nesta aula',
+        true
+      );
+
+      setIdNotificacaoSomenteLeitura(id);
+    }
+  }, [somenteLeitura]);
 
   useEffect(() => {
     const buscarDisciplinasCompartilhadas = async () => {
@@ -267,6 +299,8 @@ const CadastroAula = ({ match }) => {
           ),
         ]);
       }
+
+      SetSomenteLeitura(buscaAula.data.somenteLeitura);
 
       const val = {
         tipoAula: buscaAula.data.tipoAula,
@@ -522,7 +556,7 @@ const CadastroAula = ({ match }) => {
   };
 
   const onClickVoltar = async () => {
-    if (modoEdicao) {
+    if (modoEdicao && !somenteLeitura) {
       const confirmado = await confirmar(
         'Atenção',
         '',
@@ -688,6 +722,7 @@ const CadastroAula = ({ match }) => {
                     placeholder="Data da aula"
                     formatoData="DD/MM/YYYY"
                     label=""
+                    desabilitado={somenteLeitura}
                     name="dataAulaCompleta"
                     onChange={onChangeCampos}
                   />
@@ -707,7 +742,7 @@ const CadastroAula = ({ match }) => {
                     border
                     className="mr-2"
                     onClick={() => onClickCancelar(form)}
-                    disabled={!modoEdicao}
+                    disabled={somenteLeitura || !modoEdicao}
                   />
                   <Button
                     label="Excluir"
@@ -716,6 +751,7 @@ const CadastroAula = ({ match }) => {
                     className="mr-2"
                     hidden={novoRegistro}
                     onClick={onClickExcluir}
+                    disabled={somenteLeitura}
                   />
                   <Button
                     label={novoRegistro ? 'Cadastrar' : 'Alterar'}
@@ -724,6 +760,7 @@ const CadastroAula = ({ match }) => {
                     bold
                     className="mr-2"
                     disabled={
+                      somenteLeitura ||
                       (novoRegistro && !permissaoTela.podeIncluir) ||
                       (!novoRegistro && !permissaoTela.podeAlterar)
                     }
@@ -734,7 +771,7 @@ const CadastroAula = ({ match }) => {
               <div className="row">
                 <div className="col-sm-12 col-md-5 col-lg-3 col-xl-3 mb-2 mr-0 pr-0">
                   <RadioGroupButton
-                    desabilitado={!novoRegistro}
+                    desabilitado={somenteLeitura || !novoRegistro}
                     id="tipo-aula"
                     label="Tipo de aula"
                     form={form}
@@ -759,11 +796,13 @@ const CadastroAula = ({ match }) => {
                     label="Componente curricular"
                     placeholder="Selecione um componente curricular"
                     disabled={
+                      somenteLeitura ||
                       !!(
                         listaDisciplinas &&
                         listaDisciplinas.length &&
                         listaDisciplinas.length === 1
-                      ) || !novoRegistro
+                      ) ||
+                      !novoRegistro
                     }
                   />
                 </div>
@@ -773,6 +812,7 @@ const CadastroAula = ({ match }) => {
                     label="Horário do início da aula"
                     placeholder="Formato 24 horas"
                     formatoData="HH:mm"
+                    desabilitado={somenteLeitura}
                     name="dataAula"
                     onChange={onChangeCampos}
                     somenteHora
@@ -783,6 +823,7 @@ const CadastroAula = ({ match }) => {
                     <SelectComponent
                       id="disciplinaCompartilhadaId"
                       form={form}
+                      disabled={somenteLeitura}
                       name="disciplinaCompartilhadaId"
                       lista={listaDisciplinasCompartilhadas}
                       valueOption="codigoComponenteCurricular"
@@ -797,6 +838,7 @@ const CadastroAula = ({ match }) => {
                     id="quantidadeRadio"
                     label="Quantidade de Aulas"
                     form={form}
+                    desabilitado={somenteLeitura}
                     opcoes={opcoesQuantidadeAulas}
                     name="quantidadeRadio"
                     onChange={() => {
@@ -815,6 +857,7 @@ const CadastroAula = ({ match }) => {
                     style={{ width: '70px' }}
                     id="quantidadeTexto"
                     desabilitado={
+                      somenteLeitura ||
                       !form.values.disciplinaId ||
                       (quantidadeMaximaAulas < 3 && controlaQuantidadeAula) ||
                       (ehRegencia && !ehReposicao)
@@ -833,7 +876,7 @@ const CadastroAula = ({ match }) => {
                     form={form}
                     opcoes={opcoesRecorrencia}
                     name="recorrenciaAula"
-                    desabilitado={ehReposicao}
+                    desabilitado={somenteLeitura || ehReposicao}
                     onChange={e => {
                       onChangeCampos();
                       setEhRecorrencia(e.target.value !== 1);
