@@ -35,7 +35,9 @@ namespace SME.SGP.Aplicacao
 
             var aula = repositorio.ObterPorId(id);
 
-            return MapearParaDto(aula, usuarioLogado.CodigoRf);
+            var codigoRf = usuarioLogado.TemPerfilGestaoUes() ? null : usuarioLogado.CodigoRf;
+
+            return MapearParaDto(aula, codigoRf);
         }
 
         public async Task<bool> ChecarFrequenciaPlanoAula(long aulaId)
@@ -169,7 +171,8 @@ namespace SME.SGP.Aplicacao
                 CriadoRF = aula.CriadoRF
             };
 
-            dto.VerificarSomenteLeitura(professorRF);
+            if (!string.IsNullOrWhiteSpace(professorRF))
+                dto.VerificarSomenteLeitura(professorRF);
 
             return dto;
         }
