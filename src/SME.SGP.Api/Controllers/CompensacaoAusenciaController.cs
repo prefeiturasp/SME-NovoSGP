@@ -18,7 +18,7 @@ namespace SME.SGP.Api.Controllers
         [HttpGet()]
         [ProducesResponseType(typeof(PaginacaoResultadoDto<CompensacaoAusenciaListagemDto>), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        //[Permissao(Permissao.CA_C, Policy = "Bearer")]
+        [Permissao(Permissao.CA_C, Policy = "Bearer")]
         public async Task<IActionResult> listar([FromQuery] FiltroCompensacoesAusenciaDto filtros, [FromServices] IConsultasCompensacaoAusencia consultas)
         {
             return Ok(await consultas.ListarPaginado(filtros.TurmaId, filtros.DisciplinaId, filtros.Bimestre, filtros.AtividadeNome, filtros.AlunoNome));
@@ -27,7 +27,7 @@ namespace SME.SGP.Api.Controllers
         [HttpGet("{id}")]
         [ProducesResponseType(typeof(PaginacaoResultadoDto<CompensacaoAusenciaCompletoDto>), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        //[Permissao(Permissao.CA_C, Policy = "Bearer")]
+        [Permissao(Permissao.CA_C, Policy = "Bearer")]
         public async Task<IActionResult> Obter(long id, [FromServices] IConsultasCompensacaoAusencia consultas)
         {
             return Ok(await consultas.ObterPorId(id));
@@ -37,7 +37,7 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [ProducesResponseType(typeof(RetornoBaseDto), 601)]
-        //[Permissao(Permissao.CA_I, Policy = "Bearer")]
+        [Permissao(Permissao.CA_I, Policy = "Bearer")]
         public async Task<IActionResult> Inserir([FromBody] CompensacaoAusenciaDto compensacao, [FromServices] IComandosCompensacaoAusencia comandos)
         {
             await comandos.Inserir(compensacao);
@@ -48,7 +48,7 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [ProducesResponseType(typeof(RetornoBaseDto), 601)]
-        //[Permissao(Permissao.CA_A, Policy = "Bearer")]
+        [Permissao(Permissao.CA_A, Policy = "Bearer")]
         public async Task<IActionResult> Alterar(long id, [FromBody] CompensacaoAusenciaDto compensacao, [FromServices] IComandosCompensacaoAusencia comandos)
         {
             await comandos.Alterar(id, compensacao);
@@ -59,7 +59,7 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [ProducesResponseType(typeof(RetornoBaseDto), 601)]
-        //[Permissao(Permissao.CA_E, Policy = "Bearer")]
+        [Permissao(Permissao.CA_E, Policy = "Bearer")]
         public async Task<IActionResult> Excluir(long[] compensacoesIds, [FromServices] IComandosCompensacaoAusencia comandos)
         {
             await comandos.Excluir(compensacoesIds);
