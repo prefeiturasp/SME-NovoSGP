@@ -50,3 +50,13 @@ export function salvarEventoAulaCalendarioEdicao(
     },
   };
 }
+
+export function salvarDadosAulaFrequencia(disciplinaId, dia) {
+  return {
+    type: '@calendarioProfessor/salvarDadosAulaFrequencia',
+    payload: {
+      disciplinaId,
+      dia,
+    },
+  };
+}
