@@ -67,6 +67,7 @@ namespace SME.SGP.Dados.Mapeamentos
                config.AddMap(new CompensacaoAusenciaMap());
                config.AddMap(new CompensacaoAusenciaAlunoMap());
                config.AddMap(new CompensacaoAusenciaDisciplinaRegenciaMap());
+               config.AddMap(new ProcessoExecutandoMap());
                config.ForDommel();
            });
         }

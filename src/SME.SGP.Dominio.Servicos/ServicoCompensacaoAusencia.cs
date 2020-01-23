@@ -76,9 +76,11 @@ namespace SME.SGP.Dominio.Servicos
             try
             {
                 await repositorioCompensacaoAusencia.SalvarAsync(compensacao);
-                await GravarCompensacaoAlunos(id > 0, compensacao.Id, compensacaoDto.TurmaId, compensacaoDto.DisciplinaId, compensacaoDto.Alunos, periodo);
                 await GravarDisciplinasRegencia(id > 0, compensacao.Id, compensacaoDto.DisciplinasRegenciaIds);
+                var codigosAlunosCompensacao = await GravarCompensacaoAlunos(id > 0, compensacao.Id, compensacaoDto.TurmaId, compensacaoDto.DisciplinaId, compensacaoDto.Alunos, periodo);
                 unitOfWork.PersistirTransacao();
+
+                Cliente.Executar<IServicoCalculoFrequencia>(c => c.CalcularFrequenciaPorTurma(codigosAlunosCompensacao, periodo.PeriodoFim, compensacaoDto.TurmaId, compensacaoDto.DisciplinaId));
             }
             catch (Exception)
             {
@@ -138,6 +140,9 @@ namespace SME.SGP.Dominio.Servicos
 
         private async Task GravarDisciplinasRegencia(bool alteracao, long compensacaoId, IEnumerable<string> disciplinasRegenciaIds)
         {
+            if (disciplinasRegenciaIds == null)
+                return;
+
             var listaPersistencia = new List<CompensacaoAusenciaDisciplinaRegencia>();
             IEnumerable<CompensacaoAusenciaDisciplinaRegencia> disciplinas = new List<CompensacaoAusenciaDisciplinaRegencia>();
             if (alteracao)
@@ -164,7 +169,7 @@ namespace SME.SGP.Dominio.Servicos
             listaPersistencia.ForEach(disciplina => repositorioCompensacaoAusenciaDisciplinaRegencia.Salvar(disciplina));
         }
 
-        private async Task GravarCompensacaoAlunos(bool alteracao, long compensacaoId, string turmaId, string disciplinaId, IEnumerable<CompensacaoAusenciaAlunoDto> alunosDto, PeriodoEscolarDto periodo)
+        private async Task<List<string>> GravarCompensacaoAlunos(bool alteracao, long compensacaoId, string turmaId, string disciplinaId, IEnumerable<CompensacaoAusenciaAlunoDto> alunosDto, PeriodoEscolarDto periodo)
         {
             var mensagensExcessao = new StringBuilder();
 
@@ -229,8 +234,7 @@ namespace SME.SGP.Dominio.Servicos
             listaPersistencia.ForEach(aluno => repositorioCompensacaoAusenciaAluno.Salvar(aluno));
 
             // Recalcula Frequencia dos alunos envolvidos na Persistencia
-            var codigosAlunos = listaPersistencia.Select(a => a.CodigoAluno).ToList();
-            Cliente.Executar<IServicoCalculoFrequencia>(c => c.CalcularFrequenciaPorTurma(codigosAlunos, periodo.PeriodoFim, turmaId, disciplinaId));
+            return listaPersistencia.Select(a => a.CodigoAluno).ToList();
         }
 
         private CompensacaoAusenciaAluno MapearCompensacaoAlunoEntidade(long compensacaoId, CompensacaoAusenciaAlunoDto alunoDto)
@@ -291,12 +295,16 @@ namespace SME.SGP.Dominio.Servicos
             // Excluir lista carregada
             foreach(var compensacaoExcluir in compensacoesExcluir)
             {
+                var turma = repositorioTurma.ObterPorId(compensacaoExcluir.TurmaId);
+                var periodo = BuscaPeriodo(turma.AnoLetivo, turma.ModalidadeCodigo, compensacaoExcluir.Bimestre, turma.Semestre);
+
                 unitOfWork.IniciarTransacao();
                 try
                 {
                     // Exclui dependencias
-                    compensacoesAlunosExcluir.Where(c => c.CompensacaoAusenciaId == compensacaoExcluir.Id).ToList()
-                        .ForEach(c => repositorioCompensacaoAusenciaAluno.Salvar(c));
+                    var alunosDaCompensacao = compensacoesAlunosExcluir.Where(c => c.CompensacaoAusenciaId == compensacaoExcluir.Id).ToList();
+                    alunosDaCompensacao.ForEach(c => repositorioCompensacaoAusenciaAluno.Salvar(c));
+
                     compensacoesDisciplinasExcluir.Where(c => c.CompensacaoAusenciaId == compensacaoExcluir.Id).ToList()
                         .ForEach(c => repositorioCompensacaoAusenciaDisciplinaRegencia.Salvar(c));
 
@@ -304,6 +312,9 @@ namespace SME.SGP.Dominio.Servicos
                     await repositorioCompensacaoAusencia.SalvarAsync(compensacaoExcluir);
 
                     unitOfWork.PersistirTransacao();
+
+                    if (alunosDaCompensacao.Any())
+                        Cliente.Executar<IServicoCalculoFrequencia>(c => c.CalcularFrequenciaPorTurma(alunosDaCompensacao.Select(a => a.CodigoAluno), periodo.PeriodoFim, turma.CodigoTurma, compensacaoExcluir.DisciplinaId));
                 }
                 catch (Exception)
                 {

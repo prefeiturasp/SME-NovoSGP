@@ -9,19 +9,22 @@ namespace SME.SGP.Aplicacao.Integracoes
 {
     public class ServicoPerfil : IServicoPerfil
     {
+        private readonly IRepositorioAbrangencia repositorioAbrangencia;
         private readonly IRepositorioPrioridadePerfil repositorioPrioridadePerfil;
 
-        public ServicoPerfil(IRepositorioPrioridadePerfil repositorioPrioridadePerfil)
+        public ServicoPerfil(IRepositorioPrioridadePerfil repositorioPrioridadePerfil, IRepositorioAbrangencia repositorioAbrangencia)
         {
             this.repositorioPrioridadePerfil = repositorioPrioridadePerfil ?? throw new ArgumentNullException(nameof(repositorioPrioridadePerfil));
+            this.repositorioAbrangencia = repositorioAbrangencia ?? throw new ArgumentNullException(nameof(repositorioAbrangencia));
         }
 
         public PerfisPorPrioridadeDto DefinirPerfilPrioritario(IEnumerable<Guid> perfis, Usuario usuario)
         {
             var perfisUsuario = repositorioPrioridadePerfil.ObterPerfisPorIds(perfis);
+            var possuiTurmaAtiva = repositorioAbrangencia.PossuiAbrangenciaTurmaAtivaPorLogin(usuario.Login);
 
             usuario.DefinirPerfis(perfisUsuario);
-            usuario.DefinirPerfilAtual(usuario.ObterPerfilPrioritario());
+            usuario.DefinirPerfilAtual(usuario.ObterPerfilPrioritario(possuiTurmaAtiva));
 
             var perfisPorPrioridade = new PerfisPorPrioridadeDto
             {

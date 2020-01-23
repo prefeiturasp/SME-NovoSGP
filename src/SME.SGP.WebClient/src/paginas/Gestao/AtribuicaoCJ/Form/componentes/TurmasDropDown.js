@@ -7,6 +7,8 @@ import { SelectComponent } from '~/componentes';
 // Servicos
 import AtribuicaoCJServico from '~/servicos/Paginas/AtribuicaoCJ';
 
+import FiltroHelper from '~/componentes-sgp/filtro/helper';
+
 function TurmasDropDown({ form, onChange, label }) {
   const [listaTurmas, setListaTurmas] = useState([]);
 
@@ -19,10 +21,12 @@ function TurmasDropDown({ form, onChange, label }) {
       );
       if (data) {
         setListaTurmas(
-          data.map(item => ({
-            desc: item.nome,
-            valor: item.codigo,
-          }))
+          data
+            .map(item => ({
+              desc: item.nome,
+              valor: item.codigo,
+            }))
+            .sort(FiltroHelper.ordenarLista('desc'))
         );
       }
     }
@@ -52,7 +56,6 @@ function TurmasDropDown({ form, onChange, label }) {
       valueOption="valor"
       valueText="desc"
       placeholder="Turma"
-      // disabled={listaTurmas.length === 0 || listaTurmas.length === 1}
     />
   );
 }
