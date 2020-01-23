@@ -540,7 +540,8 @@ rotas.set(`${RotasDto.COMPENSACAO_AUSENCIA}`, {
   component: CompensacaoAusenciaLista,
   exact: true,
   tipo: RotasTipo.EstruturadaAutenticada,
-  temPermissionamento: false,
+  temPermissionamento: true,
+  chavePermissao: RotasDto.COMPENSACAO_AUSENCIA,
 });
 
 rotas.set(`${RotasDto.COMPENSACAO_AUSENCIA}/novo`, {
@@ -549,7 +550,8 @@ rotas.set(`${RotasDto.COMPENSACAO_AUSENCIA}/novo`, {
   component: CompensacaoAusenciaForm,
   exact: true,
   tipo: RotasTipo.EstruturadaAutenticada,
-  temPermissionamento: false,
+  temPermissionamento: true,
+  chavePermissao: RotasDto.COMPENSACAO_AUSENCIA,
 });
 
 rotas.set(`${RotasDto.COMPENSACAO_AUSENCIA}/editar/:id`, {
@@ -558,7 +560,8 @@ rotas.set(`${RotasDto.COMPENSACAO_AUSENCIA}/editar/:id`, {
   component: CompensacaoAusenciaForm,
   exact: true,
   tipo: RotasTipo.EstruturadaAutenticada,
-  temPermissionamento: false,
+  temPermissionamento: true,
+  chavePermissao: RotasDto.COMPENSACAO_AUSENCIA,
 });
 
 const rotasArray = [];

@@ -10,16 +10,21 @@ import ListaPaginada from '~/componentes/listaPaginada/listaPaginada';
 import SelectComponent from '~/componentes/select';
 import { URL_HOME } from '~/constantes/url';
 import modalidade from '~/dtos/modalidade';
-import { confirmar, erros, sucesso } from '~/servicos/alertas';
+import RotasDto from '~/dtos/rotasDto';
+import { confirmar, erro, erros, sucesso } from '~/servicos/alertas';
 import history from '~/servicos/history';
 import ServicoCompensacaoAusencia from '~/servicos/Paginas/DiarioClasse/ServicoCompensacaoAusencia';
 import ServicoDisciplina from '~/servicos/Paginas/ServicoDisciplina';
+import { verificaSomenteConsulta } from '~/servicos/servico-navegacao';
+
 import { AlunosCompensacao } from './styles';
 
 const CompensacaoAusenciaLista = () => {
   const usuario = useSelector(store => store.usuario);
-
   const { turmaSelecionada } = usuario;
+
+  const permissoesTela = usuario.permissoes[RotasDto.COMPENSACAO_AUSENCIA];
+  const [somenteConsulta, setSomenteConsulta] = useState(false);
 
   const [exibirLista, setExibirLista] = useState(false);
   const [carregandoDisciplinas, setCarregandoDisciplinas] = useState(false);
@@ -34,6 +39,10 @@ const CompensacaoAusenciaLista = () => {
   const [disciplinaIdSelecionada, setDisciplinaIdSelecionada] = useState(
     undefined
   );
+
+  useEffect(() => {
+    setSomenteConsulta(verificaSomenteConsulta(permissoesTela));
+  }, [permissoesTela]);
 
   const montaExibicaoAlunos = dados => {
     return (
@@ -74,7 +83,6 @@ const CompensacaoAusenciaLista = () => {
     };
     setCompensacoesSelecionadas([]);
     setFiltro({ ...paramsFiltrar });
-    console.log(paramsFiltrar);
   }, [
     disciplinaIdSelecionada,
     nomeAluno,
@@ -168,15 +176,43 @@ const CompensacaoAusenciaLista = () => {
     setBimestreSelecionado(bimestre);
   };
 
-  const onClickEditar = compoensacao => {
-    history.push(`compensacao-ausencia/editar/${compoensacao.id}`);
+  const onClickEditar = async compensacao => {
+    let podeEditar = false;
+    const exucutandoCalculoFrequencia = await ServicoCompensacaoAusencia.obterStatusCalculoFrequencia(
+      turmaSelecionada.turma,
+      disciplinaIdSelecionada,
+      compensacao.bimestre
+    ).catch(e => {
+      erros(e);
+    });
+
+    if (
+      exucutandoCalculoFrequencia &&
+      exucutandoCalculoFrequencia.status == 200
+    ) {
+      const temProcessoEmExecucao =
+        exucutandoCalculoFrequencia && exucutandoCalculoFrequencia.data;
+
+      if (temProcessoEmExecucao) {
+        podeEditar = false;
+      } else {
+        podeEditar = true;
+      }
+
+      if (podeEditar) {
+        history.push(`compensacao-ausencia/editar/${compensacao.id}`);
+      } else {
+        erro(
+          'No momento não é possível realizar a edição pois tem cálculo(s) em processo, tente mais tarde!'
+        );
+      }
+    }
   };
 
   const onClickVoltar = () => {
     history.push(URL_HOME);
   };
 
-  // TODO Testar quando tiver o back pronto!
   const onClickExcluir = async () => {
     if (compensacoesSelecionadas && compensacoesSelecionadas.length > 0) {
       const listaExcluir = compensacoesSelecionadas.map(
@@ -254,8 +290,9 @@ const CompensacaoAusenciaLista = () => {
                 className="mr-2"
                 onClick={onClickExcluir}
                 disabled={
-                  compensacoesSelecionadas &&
-                  compensacoesSelecionadas.length < 1
+                  !permissoesTela.podeExcluir ||
+                  (compensacoesSelecionadas &&
+                    compensacoesSelecionadas.length < 1)
                 }
               />
               <Button
@@ -266,6 +303,8 @@ const CompensacaoAusenciaLista = () => {
                 className="mr-2"
                 onClick={onClickNovo}
                 disabled={
+                  somenteConsulta ||
+                  !permissoesTela.podeIncluir ||
                   !turmaSelecionada.turma ||
                   (turmaSelecionada.turma && listaDisciplinas.length < 1)
                 }
