@@ -53,5 +53,23 @@ namespace SME.SGP.Dados.Repositorios
                 tipoFrequencia
             });
         }
+        
+        public FrequenciaAluno ObterPorAlunoDisciplinaData(string codigoAluno, string disciplinaId, DateTime dataAtual)
+        {
+            var query = @"select *
+                        from frequencia_aluno
+                        where codigo_aluno = @codigoAluno
+                            and disciplina_id = @disciplinaId
+	                        and tipo = 1
+	                        and periodo_inicio <= @dataAtual
+	                        and periodo_fim >= @dataAtual";
+
+            return database.QueryFirstOrDefault<FrequenciaAluno>(query, new
+            {
+                codigoAluno,
+                disciplinaId,
+                dataAtual,
+            });
+        }
     }
 }
