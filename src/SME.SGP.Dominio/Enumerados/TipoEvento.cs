@@ -13,6 +13,9 @@ namespace SME.SGP.Dominio
         [Display(Name = "Organização Escolar")]
         OrganizacaoEscolar = 8,
 
+        [Display(Name = "Outros")]
+        Outros = 9,
+
         [Display(Name = "Recesso")]
         Recesso = 11,
 
