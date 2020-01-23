@@ -5,12 +5,15 @@ namespace SME.SGP.Infra
 {
     public class AulaCompletaDto
     {
+        public bool AulaCJ { get; set; }
         public DateTime DataAula { get; set; }
-        public string DisciplinaId { get; set; }
         public string DisciplinaCompartilhadaId { get; set; }
+        public string DisciplinaId { get; set; }
         public int Id { get; set; }
+        public string ProfessorRF { get; set; }
         public int Quantidade { get; set; }
         public RecorrenciaAula RecorrenciaAula { get; set; }
+        public bool SomenteConsulta { get; set; }
         public EntidadeStatus Status { get; set; }
         public TipoAula TipoAula { get; set; }
         public long TipoCalendarioId { get; set; }
@@ -18,6 +21,10 @@ namespace SME.SGP.Infra
         public string TurmaNome { get; set; }
         public string UeId { get; set; }
         public string UeNome { get; set; }
-        public bool AulaCJ { get; set; }
+
+        public void VerificarSomenteConsulta(string professorRf)
+        {
+            SomenteConsulta = !professorRf.Equals(ProfessorRF);
+        }
     }
 }
