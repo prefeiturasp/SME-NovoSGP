@@ -69,7 +69,7 @@ pipeline {
                  
                  sh 'echo Deploying desenvolvimento'
                 
-                // Start JOB Rundeck para build das imagens Docker e push SME Registry
+        // Start JOB Rundeck para build das imagens Docker e push SME Registry
       
           script {
            step([$class: "RundeckNotifier",
@@ -90,12 +90,64 @@ pipeline {
               tailLog: true])
            }
                 
-       //Start JOB Rundeck para update de deploy Kubernetes 
+       //Start JOB Rundeck para update de deploy Kubernetes DEV
          
          script {
             step([$class: "RundeckNotifier",
               includeRundeckLogs: true,
               jobId: "f6c3e74c-6411-466a-84a7-921d637c2645",
+              nodeFilters: "",
+              //options: """
+              //     PARAM_1=value1
+               //    PARAM_2=value2
+              //     PARAM_3=
+              //     """,
+              rundeckInstance: "Rundeck-SME",
+              shouldFailTheBuild: true,
+              shouldWaitForRundeckJob: true,
+              tags: "",
+              tailLog: true])
+           }
+      
+       
+            }
+        }
+		
+		stage('Deploy DEV-rc2') {
+            when {
+                branch 'development-r2'
+            }
+            steps {
+                 
+                 sh 'echo Deploying desenvolvimento RC2'
+                
+        // Start JOB Rundeck para build das imagens Docker e push SME Registry
+      
+          script {
+           step([$class: "RundeckNotifier",
+              includeRundeckLogs: true,
+                               
+              //JOB DE BUILD
+              jobId: "29e93baa-a956-46ac-b805-23862ddc6863",
+              nodeFilters: "",
+              //options: """
+              //     PARAM_1=value1
+               //    PARAM_2=value2
+              //     PARAM_3=
+              //     """,
+              rundeckInstance: "Rundeck-SME",
+              shouldFailTheBuild: true,
+              shouldWaitForRundeckJob: true,
+              tags: "",
+              tailLog: true])
+           }
+                
+       //Start JOB Rundeck para update de deploy Kubernetes DEV
+         
+         script {
+            step([$class: "RundeckNotifier",
+              includeRundeckLogs: true,
+              jobId: "7b136020-3ddd-4fce-9ac7-4fc9c4b9b2af",
               nodeFilters: "",
               //options: """
               //     PARAM_1=value1
@@ -122,27 +174,24 @@ pipeline {
             }
         }
       
-      stage('Deploy homologacao') {
+      stage('Deploy HOM') {
             when {
                 branch 'release'
             }
             steps {
                  timeout(time: 24, unit: "HOURS") {
-               //  withCredentials([string(credentialsId: 'webhook-backend', variable: 'WH-teams')]) {
-               //  office365ConnectorSend color: '008000', message: "O Build ${BUILD_DISPLAY_NAME} - Requer uma aprovação para deploy !!!", status: 'SUCESSO', webhookUrl: '$WH-teams'
-               //}
+               
                  telegramSend("${JOB_NAME}...O Build ${BUILD_DISPLAY_NAME} - Requer uma aprovação para deploy !!!\n Consulte o log para detalhes -> [Job logs](${env.BUILD_URL}console)\n")
                  input message: 'Deseja realizar o deploy?', ok: 'SIM', submitter: 'marcos_costa,danieli_paula,everton_nogueira'
             }
                  sh 'echo Deploying homologacao'
                 
-                // Start JOB Rundeck para build das imagens Docker e push Azure repo
+        // Start JOB Rundeck para build das imagens Docker e push registry SME
       
           script {
            step([$class: "RundeckNotifier",
               includeRundeckLogs: true,
-                // JOB USADO PARA TESTE RUNDECK
-                //jobId: "07abb9c0-c66f-4119-8a86-bf7f0cb98199",
+                
                
               //JOB DE BUILD
               jobId: "397ce3f8-0af7-4d26-b65b-19f09ccf6c82",
@@ -181,44 +230,93 @@ pipeline {
        
             }
         }
+
+        stage('Deploy PROD') {
+            when {
+                branch 'master'
+            }
+            steps {
+                 timeout(time: 24, unit: "HOURS") {
+               
+                 telegramSend("${JOB_NAME}...O Build ${BUILD_DISPLAY_NAME} - Requer uma aprovação para deploy !!!\n Consulte o log para detalhes -> [Job logs](${env.BUILD_URL}console)\n")
+                 input message: 'Deseja realizar o deploy?', ok: 'SIM', submitter: 'marcos_costa,danieli_paula,everton_nogueira'
+            }
+                 sh 'echo Deploy produção'
+                
+        // Start JOB Rundeck para build das imagens Docker e push registry SME
+      
+          script {
+           step([$class: "RundeckNotifier",
+              includeRundeckLogs: true,
+            
+               
+              //JOB DE BUILD
+              jobId: "b6ff0cbf-6267-41af-bb56-5cdc3eb86902",
+              nodeFilters: "",
+              //options: """
+              //     PARAM_1=value1
+               //    PARAM_2=value2
+              //     PARAM_3=
+              //     """,
+              rundeckInstance: "Rundeck-SME",
+              shouldFailTheBuild: true,
+              shouldWaitForRundeckJob: true,
+              tags: "",
+              tailLog: true])
+           }
+                
+       //Start JOB Rundeck para deploy em produção 
+         
+         script {
+            step([$class: "RundeckNotifier",
+              includeRundeckLogs: true,
+              jobId: "6a3d314b-672b-4fe3-9759-0b08847eb27e",
+              nodeFilters: "",
+              //options: """
+              //     PARAM_1=value1
+               //    PARAM_2=value2
+              //     PARAM_3=
+              //     """,
+              rundeckInstance: "Rundeck-SME",
+              shouldFailTheBuild: true,
+              shouldWaitForRundeckJob: true,
+              tags: "",
+              tailLog: true])
+           }
+      
+       
+            }
+        }
      
 }
 
     
 post {
         always {
-            //step ([$class: 'MSTestPublisher', testResultsFile:"**/*.trx", failOnError: false, keepLongStdio: true])
+            
             echo 'One way or another, I have finished'
             
             
         }
         success {
-           // withCredentials([string(credentialsId: 'webhook-backend', variable: 'WH-teams')]) {
-           //   office365ConnectorSend color: '008000', message: "O Build ${BUILD_DISPLAY_NAME} - Esta ok !!!  <${env.BUILD_URL}> ", status: 'SUCESSO', webhookUrl: '$WH-teams'
-           // }
+           
             telegramSend("${JOB_NAME}...O Build ${BUILD_DISPLAY_NAME} - Esta ok !!!\n Consulte o log para detalhes -> [Job logs](${env.BUILD_URL}console)\n\n Uma nova versão da aplicação esta disponivel!!!")
         }
         unstable {
-           // withCredentials([string(credentialsId: 'webhook-backend', variable: 'WH-teams')]) {
-           //  office365ConnectorSend color: 'ffa500', message: "O Build ${BUILD_DISPLAY_NAME} <${env.BUILD_URL}> - Esta instavel ...Verifique os logs para corrigir o problema'", status: 'INSTAVEL', webhookUrl: '$WH-teams'
-           //}
+           
             telegramSend("O Build ${BUILD_DISPLAY_NAME} <${env.BUILD_URL}> - Esta instavel ...\nConsulte o log para detalhes -> [Job logs](${env.BUILD_URL}console)")
         }
         failure {
-            // withCredentials([string(credentialsId: 'webhook-backend', variable: 'WH-teams')]) {
-            //   office365ConnectorSend color: 'd00000', message: "O Build ${BUILD_DISPLAY_NAME} <${env.BUILD_URL}> - Quebrou. Verifique os logs para corrigir o problema'", status: 'FALHOU', webhookUrl: '$WH-teams'
-            // }
+           
              telegramSend("${JOB_NAME}...O Build ${BUILD_DISPLAY_NAME}  - Quebrou. \nConsulte o log para detalhes -> [Job logs](${env.BUILD_URL}console)")
         }
         changed {
-             //withCredentials([string(credentialsId: 'webhook-backend', variable: 'WH-teams')]) {
+             
                echo 'Things were different before...'
-            // }
+            
         }
        aborted {
-             //withCredentials([string(credentialsId: 'webhook-API', variable: 'WHapi-teams')]) {
-             //  office365ConnectorSend color: 'd00000', message: "O Build ${BUILD_DISPLAY_NAME} <${env.BUILD_URL}> - Quebrou. Verifique os logs para corrigir o problema'", status: 'FALHOU', webhookUrl: '$WHapi-teams'
-             //}
+            
              telegramSend("O Build ${BUILD_DISPLAY_NAME} - Foi abortado.\nConsulte o log para detalhes -> [Job logs](${env.BUILD_URL}console)")
         }
     }
