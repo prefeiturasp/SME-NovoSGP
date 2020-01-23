@@ -1,4 +1,5 @@
-﻿using SME.SGP.Dominio;
+﻿using SME.SGP.Aplicacao.Integracoes;
+using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System;
@@ -16,6 +17,7 @@ namespace SME.SGP.Aplicacao
         private readonly IRepositorioPlanoAnual repositorioPlanoAnual;
         private readonly IRepositorioTipoCalendario repositorioTipoCalendario;
         private readonly IRepositorioTurma repositorioTurma;
+        private readonly IServicoEOL servicoEOL;
         private readonly IServicoUsuario servicoUsuario;
 
         public ConsultasPlanoAnual(IRepositorioPlanoAnual repositorioPlanoAnual,
@@ -24,7 +26,8 @@ namespace SME.SGP.Aplicacao
                                    IRepositorioTipoCalendario repositorioTipoCalendario,
                                    IRepositorioTurma repositorioTurma,
                                    IRepositorioComponenteCurricular repositorioComponenteCurricular,
-                                   IServicoUsuario servicoUsuario)
+                                   IServicoUsuario servicoUsuario,
+                                   IServicoEOL servicoEOL)
         {
             this.repositorioPlanoAnual = repositorioPlanoAnual ?? throw new System.ArgumentNullException(nameof(repositorioPlanoAnual));
             this.consultasObjetivoAprendizagem = consultasObjetivoAprendizagem ?? throw new System.ArgumentNullException(nameof(consultasObjetivoAprendizagem));
@@ -33,6 +36,7 @@ namespace SME.SGP.Aplicacao
             this.repositorioTurma = repositorioTurma ?? throw new ArgumentNullException(nameof(repositorioTurma));
             this.repositorioComponenteCurricular = repositorioComponenteCurricular ?? throw new ArgumentNullException(nameof(repositorioComponenteCurricular));
             this.servicoUsuario = servicoUsuario ?? throw new ArgumentNullException(nameof(servicoUsuario));
+            this.servicoEOL = servicoEOL ?? throw new ArgumentNullException(nameof(servicoEOL));
         }
 
         public async Task<PlanoAnualCompletoDto> ObterBimestreExpandido(FiltroPlanoAnualBimestreExpandidoDto filtro)
@@ -165,23 +169,16 @@ namespace SME.SGP.Aplicacao
             return listaPlanoAnual.OrderBy(c => c.Bimestre);
         }
 
-        public void ObterTurmasParaCopia(int ano, string turmaId)
+        public async Task<IEnumerable<TurmaParaCopiaPlanoAnualDto>> ObterTurmasParaCopia(int turmaId, int componenteCurricular)
         {
-            //var usuario = servicoUsuario.ObterUsuarioLogado();
-            //var turma = repositorioTurma.ObterPorId(turmaId);
-            //if (turma == null)
-            //    throw new NegocioException("Turma não encontrada.");
-
-            //var turmasAtribuidas = repositorioPlanoAnual.ObterTurmasParaCopiaPorAnoEUsuario(ano, usuario.Id);
-            //if (turmasAtribuidas == null || !turmasAtribuidas.Any(c => c.CodigoTurma != turmaId))
-            //    throw new NegocioException("Nenhuma turma disponível para cópia.");
-
-            //turmasAtribuidas.Select(c => new TurmaParaCopiaPlanoAnualDto
-            //{
-            //    Id = c.Id,
-            //    Nome = c.Nome,
-            //    TurmaId = c.CodigoTurma
-            //})
+            var usuarioLogado = await servicoUsuario.ObterUsuarioLogado();
+            var turmasEOL = await servicoEOL.ObterTurmasParaCopiaPlanoAnual(usuarioLogado.CodigoRf, componenteCurricular, turmaId);
+            if (turmasEOL != null && turmasEOL.Any())
+            {
+                var idsTurmas = turmasEOL.Select(c => c.TurmaId.ToString());
+                turmasEOL = repositorioPlanoAnual.ValidaSeTurmasPossuemPlanoAnual(idsTurmas.ToArray());
+            }
+            return turmasEOL;
         }
 
         public bool ValidarPlanoAnualExistente(FiltroPlanoAnualDto filtroPlanoAnualDto)

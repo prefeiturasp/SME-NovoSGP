@@ -25,7 +25,7 @@ const Campo = styled.div`
 `;
 
 export default function Editor(props) {
-  const { onChange, inicial, form, name, label, temErro, mensagemErro } = props;
+  const { onChange, inicial, form, name, label, temErro, mensagemErro, desabilitar } = props;
 
   const possuiErro = () => {
     return (form && form.errors[name] && form.touched[name]) || temErro;
@@ -44,11 +44,12 @@ export default function Editor(props) {
   const editorComValidacoes = () => {
     return (
       <Campo>
-        <div className={form ? `${possuiErro() ? 'is-invalid' : ''}}` : ''}>
+        <div className={form ? (possuiErro() ? 'is-invalid' : '') : ''}>
           <Field
             name={name}
             component={CKEditor}
             editor={ClassicEditor}
+            disabled={desabilitar || false}
             config={{
               language: 'pt-br',
               removePlugins: [
@@ -56,8 +57,10 @@ export default function Editor(props) {
                 'ImageCaption',
                 'ImageStyle',
                 'ImageToolbar',
-                'ImageUpload',
                 'Indent',
+                'IndentToolbar',
+                'IndentStyle',
+                'Outdent',
               ],
             }}
             data={form.values[name] || ''}
@@ -78,14 +81,17 @@ export default function Editor(props) {
       <CKEditor
         editor={ClassicEditor}
         config={{
+          readOnly: desabilitar || false,
           language: 'pt-br',
           removePlugins: [
             'Image',
             'ImageCaption',
             'ImageStyle',
             'ImageToolbar',
-            'ImageUpload',
             'Indent',
+            'IndentToolbar',
+            'IndentStyle',
+            'Outdent',
           ],
         }}
         data={inicial || ''}
