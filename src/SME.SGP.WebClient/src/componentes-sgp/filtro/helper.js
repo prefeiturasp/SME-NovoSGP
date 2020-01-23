@@ -5,6 +5,9 @@ class FiltroHelper {
   obterModalidades = async ({ consideraHistorico, anoLetivoSelecionado }) => {
     const modalidadesLista = [];
 
+    if (!anoLetivoSelecionado || typeof anoLetivoSelecionado === 'undefined')
+      return null;
+
     return ServicoFiltro.listarModalidades({
       consideraHistorico,
       anoLetivoSelecionado,
@@ -31,6 +34,9 @@ class FiltroHelper {
   }) => {
     const periodos = [];
 
+    if (!anoLetivoSelecionado || typeof anoLetivoSelecionado === 'undefined')
+      return null;
+
     return ServicoFiltro.listarPeriodos({
       consideraHistorico,
       modalidadeSelecionada,
@@ -55,6 +61,9 @@ class FiltroHelper {
     anoLetivoSelecionado,
   }) => {
     const dres = [];
+
+    if (!anoLetivoSelecionado || typeof anoLetivoSelecionado === 'undefined')
+      return null;
 
     return ServicoFiltro.listarDres({
       consideraHistorico,
@@ -86,6 +95,9 @@ class FiltroHelper {
   }) => {
     const unidadesEscolares = [];
 
+    if (!anoLetivoSelecionado || typeof anoLetivoSelecionado === 'undefined')
+      return null;
+
     return ServicoFiltro.listarUnidadesEscolares({
       consideraHistorico,
       modalidadeSelecionada,
@@ -115,6 +127,9 @@ class FiltroHelper {
     anoLetivoSelecionado,
   }) => {
     const turmas = [];
+
+    if (!anoLetivoSelecionado || typeof anoLetivoSelecionado === 'undefined')
+      return null;
 
     return ServicoFiltro.listarTurmas({
       consideraHistorico,

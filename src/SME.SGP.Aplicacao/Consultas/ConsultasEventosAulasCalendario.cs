@@ -67,7 +67,7 @@ namespace SME.SGP.Aplicacao
             string rf = usuario.TemPerfilGestaoUes() ? string.Empty : usuario.CodigoRf;
 
             var eventos = await repositorioEvento.ObterEventosPorTipoDeCalendarioDreUeDia(filtro.TipoCalendarioId, filtro.DreId, filtro.UeId, data, filtro.EhEventoSme);
-            var aulas = await repositorioAula.ObterAulasCompleto(filtro.TipoCalendarioId, filtro.TurmaId, filtro.UeId, data, perfil, rf, filtro.TurmaHistorico);
+            var aulas = await ObterAulasDia(filtro, data, perfil, rf);
             var atividades = await repositorioAtividadeAvaliativa.ObterAtividadesPorDia(filtro.DreId, filtro.UeId, data, rf, filtro.TurmaId);
 
             ObterEventosParaEventosAulasDia(eventosAulas, eventos);
@@ -229,6 +229,25 @@ namespace SME.SGP.Aplicacao
             return eventosAulas.OrderBy(x => x.Dia);
         }
 
+        private static void ObterAulasCompartilhadas(IEnumerable<AulaCompletaDto> aulas, List<AulaCompletaDto> aulasProfessor, IEnumerable<string> disciplinasCompartilhadas)
+        {
+            var aulasCompartilhadas = aulas.Where(x => !aulasProfessor.Any(y => y.Id == x.Id) && disciplinasCompartilhadas.Any(z => x.DisciplinaId.Equals(z)));
+
+            aulasProfessor.AddRange(aulasCompartilhadas);
+        }
+
+        private static void ObterAulasCompartilhadasRelacionadas(IEnumerable<AulaCompletaDto> aulas, List<AulaCompletaDto> aulasProfessor)
+        {
+            var disciplinasPrincipais = aulasProfessor.Select(x => x.DisciplinaId);
+
+            var aulasRelacionadas = aulas.Where(x => !aulasProfessor.Any(y => y.Id == x.Id) && disciplinasPrincipais.Any(z => z.Equals(x.DisciplinaCompartilhadaId)));
+
+            if (aulasRelacionadas is null || !aulasRelacionadas.Any())
+                return;
+
+            aulasProfessor.AddRange(aulasRelacionadas);
+        }
+
         private static void ObterEventosParaEventosAulasDia(List<EventosAulasTipoDiaDto> eventosAulas, IEnumerable<Evento> eventos)
         {
             eventos
@@ -257,6 +276,24 @@ namespace SME.SGP.Aplicacao
                 });
             }
             return eventosAulas;
+        }
+
+        private async Task<IEnumerable<AulaCompletaDto>> ObterAulasDia(FiltroEventosAulasCalendarioDiaDto filtro, DateTime data, Guid perfil, string professorRf)
+        {
+            var aulas = await repositorioAula.ObterAulasCompleto(filtro.TipoCalendarioId, filtro.TurmaId, filtro.UeId, data, perfil, filtro.TurmaHistorico);
+
+            var aulasProfessor = aulas.Where(x => !string.IsNullOrEmpty(x.ProfessorRF) && x.ProfessorRF.Equals(professorRf)).ToList();
+
+            var disciplinasCompartilhadas = aulasProfessor.Where(x => !string.IsNullOrEmpty(x.DisciplinaCompartilhadaId)).Select(x => x.DisciplinaCompartilhadaId);
+
+            if (disciplinasCompartilhadas.Any())
+                ObterAulasCompartilhadas(aulas, aulasProfessor, disciplinasCompartilhadas);
+
+            ObterAulasCompartilhadasRelacionadas(aulas, aulasProfessor);
+
+            aulasProfessor.ForEach(x => x.VerificarSomenteConsulta(professorRf));
+
+            return aulasProfessor;
         }
 
         private List<DateTime> ObterDias(IEnumerable<AulaDto> aulas)

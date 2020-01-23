@@ -53,6 +53,7 @@ const ModalMultiLinhas = props => {
       centered
       footer={[
         <Button
+          id={shortid.generate()}
           key="btn-sim-confirmacao"
           label="Ok"
           color={Colors.Azul}
