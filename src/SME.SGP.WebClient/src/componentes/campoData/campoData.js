@@ -171,7 +171,6 @@ const CampoData = ({
                 value={value || null}
               />
             </div>
-            {errors[name] ? <span>{errors[name]}</span> : ''}
           </div>
         )}
       </Field>
