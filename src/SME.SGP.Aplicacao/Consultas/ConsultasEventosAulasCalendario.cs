@@ -298,7 +298,8 @@ namespace SME.SGP.Aplicacao
         {
             var aulas = await repositorioAula.ObterAulasCompleto(filtro.TipoCalendarioId, filtro.TurmaId, filtro.UeId, data, perfil, filtro.TurmaHistorico);
 
-            VerificarAulasSomenteConsulta(disciplinas, aulas);
+            if (disciplinas != null)
+                VerificarAulasSomenteConsulta(disciplinas, aulas);
 
             if (string.IsNullOrWhiteSpace(professorRf))
                 return aulas;
