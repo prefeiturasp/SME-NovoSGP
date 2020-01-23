@@ -1,9 +1,10 @@
 ﻿using SME.SGP.Infra;
+using System.Threading.Tasks;
 
 namespace SME.SGP.Dominio.Interfaces
 {
     public interface IServicoFechamento
     {
-        FechamentoDto ObterPorTipoCalendarioDreEUe(long tipoCalendarioId, long? dreId, long? ueId);
+        Task<FechamentoDto> ObterPorTipoCalendarioDreEUe(long tipoCalendarioId, long? dreId, long? ueId);
     }
 }

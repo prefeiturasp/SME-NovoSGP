@@ -1,5 +1,6 @@
 ﻿using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
+using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
@@ -12,9 +13,9 @@ namespace SME.SGP.Aplicacao
             this.servicoFechamento = servicoFechamento ?? throw new System.ArgumentNullException(nameof(servicoFechamento));
         }
 
-        public FechamentoDto ObterPorTipoCalendarioDreEUe(FiltroFechamentoDto fechamentoDto)
+        public async Task<FechamentoDto> ObterPorTipoCalendarioDreEUe(FiltroFechamentoDto fechamentoDto)
         {
-            return servicoFechamento.ObterPorTipoCalendarioDreEUe(fechamentoDto.TipoCalendarioId, fechamentoDto.DreId, fechamentoDto.UeId);
+            return await servicoFechamento.ObterPorTipoCalendarioDreEUe(fechamentoDto.TipoCalendarioId, fechamentoDto.DreId, fechamentoDto.UeId);
         }
     }
 }

@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using SME.SGP.Aplicacao;
 using SME.SGP.Infra;
+using System.Threading.Tasks;
 
 namespace SME.SGP.Api.Controllers
 {
@@ -13,9 +14,9 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(204)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         //[Permissao(Permissao.PFA_C, Policy = "Bearer")]
-        public IActionResult Get([FromQuery]FiltroFechamentoDto fechamentoDto, [FromServices] IConsultasFechamento consultasFechamento)
+        public async Task<IActionResult> Get([FromQuery]FiltroFechamentoDto fechamentoDto, [FromServices] IConsultasFechamento consultasFechamento)
         {
-            return Ok(consultasFechamento.ObterPorTipoCalendarioDreEUe(fechamentoDto));
+            return Ok(await consultasFechamento.ObterPorTipoCalendarioDreEUe(fechamentoDto));
         }
     }
 }

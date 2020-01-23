@@ -1,6 +1,6 @@
 import 'moment/locale/pt-br';
 
-import { DatePicker, TimePicker, Icon, Input } from 'antd';
+import { DatePicker, TimePicker, Icon } from 'antd';
 import locale from 'antd/es/date-picker/locale/pt_BR';
 import { Field } from 'formik';
 import * as moment from 'moment';
@@ -72,7 +72,7 @@ const Campo = styled.div`
   }
 `;
 
-const CampoData = ({
+const CampoDataFormik = ({
   formatoData,
   placeholder,
   label,
@@ -82,15 +82,20 @@ const CampoData = ({
   desabilitado,
   className,
   onChange,
-  valor,
   desabilitarData,
   diasParaHabilitar,
-  somenteHora,
-  temErro,
-  mensagemErro,
   carregando,
-  array,
 }) => {
+  const possuiErro = () => {
+    return form && form.errors[name] && form.touched[name];
+  };
+
+  const Icone = carregando ? (
+    <Icon style={{ fontSize: '16px', lineHeight: 0 }} type="loading" spin />
+  ) : (
+    <Icon style={{ fontSize: '16px', lineHeight: 0 }} type="calendar" />
+  );
+
   const habilitarDatas = dataAtual => {
     let retorno = true;
     const ehParaHabilitar =
@@ -122,10 +127,6 @@ const CampoData = ({
     return retorno;
   };
 
-  const possuiErro = () => {
-    return (form && form.errors[name] && form.touched[name]) || temErro;
-  };
-
   const executaOnBlur = event => {
     const { relatedTarget } = event;
     if (relatedTarget && relatedTarget.getAttribute('type') === 'button') {
@@ -133,126 +134,50 @@ const CampoData = ({
     }
   };
 
-  const Icone = carregando ? (
-    <Icon style={{ fontSize: '16px', lineHeight: 0 }} type="loading" spin />
-  ) : (
-    <Icon style={{ fontSize: '16px', lineHeight: 0 }} type="calendar" />
-  );
-
-  const campoDataAntComValidacoes = () => {
-    return (
-      <Field name={name} id={name}>
-        {({
-          field: { value },
-          form: { setFieldValue, setFieldTouched, errors },
-        }) => (
-          <div>
-            <div>
-              <DatePicker
-                format={formatoData}
-                locale={locale}
-                placeholder={placeholder}
-                suffixIcon={Icone}
-                name={name}
-                id={id || name}
-                onBlur={executaOnBlur}
-                className={
-                  form
-                    ? `${possuiErro() ? 'is-invalid' : ''} ${className || ''}`
-                    : ''
-                }
-                onChange={valorData => {
-                  setFieldValue(name, valorData || '');
-                  onChange(valorData);
-                  setFieldTouched(name, true, true);
-                }}
-                disabledDate={habilitarDatas}
-                showToday={false}
-                value={value || null}
-              />
-            </div>
-            {errors[name] ? <span>{errors[name]}</span> : ''}
-          </div>
-        )}
-      </Field>
-    );
-  };
-
-  const campoDataAntSemValidacoes = () => {
-    return (
-      <DatePicker
-        disabled={desabilitado}
-        locale={locale}
-        format={formatoData}
-        placeholder={placeholder}
-        // suffixIcon={<i className="fas fa-calendar-alt" />}
-        suffixIcon={Icone}
-        name={name}
-        id={id || name}
-        className={`${possuiErro() ? 'is-invalid' : ''} ${className || ''}`}
-        onBlur={executaOnBlur}
-        onChange={valorData => {
-          onChange(valorData || '');
-        }}
-        value={valor || null}
-        disabledDate={habilitarDatas}
-        showToday={false}
-      />
-    );
-  };
-
-  const campoHoraAntComValidacoes = () => {
-    return (
-      <Field
-        disabled={desabilitado}
-        locale={locale}
-        format={formatoData}
-        component={TimePicker}
-        placeholder={placeholder}
-        name={name}
-        id={id || name}
-        onBlur={executaOnBlur}
-        className={
-          form ? `${possuiErro() ? 'is-invalid' : ''} ${className || ''}` : ''
-        }
-        onChange={valorHora => {
-          form.setFieldValue(name, valorHora || '');
-          onChange(valorHora);
-          form.setFieldTouched(name, true, true);
-        }}
-        value={form.values[name] || null}
-        showToday={false}
-      />
-    );
-  };
-
-  const validaTipoCampo = () => {
-    if (somenteHora) {
-      return form ? campoHoraAntComValidacoes() : 'CRIAR COMPONENTE!!';
-    }
-    return form ? campoDataAntComValidacoes() : campoDataAntSemValidacoes();
-  };
-
-  const obterErros = () => {
-    return (form && form.touched[name] && form.errors[name]) || temErro ? (
-      <span>{(form && form.errors[name]) || mensagemErro}</span>
-    ) : (
-      ''
-    );
-  };
-
   return (
     <>
       <Campo>
         {label ? <Label text={label} control={name} /> : ''}
-        {validaTipoCampo()}
-        {obterErros()}
+        <Field name={name} id={name}>
+          {({
+            field: { value },
+            form: { setFieldValue, setFieldTouched, errors },
+          }) => (
+            <div>
+              <div>
+                <DatePicker
+                  format={formatoData}
+                  locale={locale}
+                  placeholder={placeholder}
+                  suffixIcon={Icone}
+                  name={name}
+                  id={id || name}
+                  onBlur={executaOnBlur}
+                  className={
+                    form
+                      ? `${possuiErro() ? 'is-invalid' : ''} ${className || ''}`
+                      : ''
+                  }
+                  onChange={valorData => {
+                    setFieldValue(name, valorData || '');
+                    onChange(valorData);
+                    setFieldTouched(name, true, true);
+                  }}
+                  disabledDate={habilitarDatas}
+                  showToday={false}
+                  value={value || null}
+                />
+              </div>
+              {errors[name] ? <span>{errors[name]}</span> : ''}
+            </div>
+          )}
+        </Field>
       </Campo>
     </>
   );
 };
 
-CampoData.propTypes = {
+CampoDataFormik.propTypes = {
   className: PropTypes.string,
   formatoData: PropTypes.string,
   placeholder: PropTypes.string,
@@ -269,10 +194,9 @@ CampoData.propTypes = {
   temErro: PropTypes.bool,
   mensagemErro: PropTypes.string,
   carregando: PropTypes.bool,
-  array: PropTypes.bool,
 };
 
-CampoData.defaultProps = {
+CampoDataFormik.defaultProps = {
   className: '',
   formatoData: 'DD/MM/YYYY HH:mm:ss',
   placeholder: 'placeholder',
@@ -289,7 +213,6 @@ CampoData.defaultProps = {
   temErro: null,
   mensagemErro: null,
   carregando: false,
-  array: false,
 };
 
 const momentSchema = new MomentSchema();
@@ -316,4 +239,4 @@ Yup.addMethod(
     });
   }
 );
-export { CampoData, momentSchema };
+export { CampoDataFormik, momentSchema };
