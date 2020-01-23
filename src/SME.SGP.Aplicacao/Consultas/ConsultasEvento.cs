@@ -59,7 +59,7 @@ namespace SME.SGP.Aplicacao
             var usuario = await servicoUsuario.ObterUsuarioLogado();
 
             //verificar se o evento e o perfil do usuário é SME para possibilitar alteração
-            bool podeAlterarSME = EhEventoSME(evento) || EhEventoSME(evento) && usuario.EhPerfilSME();
+            bool podeAlterarSME = !EhEventoSME(evento) || EhEventoSME(evento) && usuario.EhPerfilSME();
 
             return MapearParaDto(evento, podeAlterarSME);
         }
