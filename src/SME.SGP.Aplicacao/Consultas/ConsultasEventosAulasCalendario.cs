@@ -130,7 +130,7 @@ namespace SME.SGP.Aplicacao
                         DisciplinaCompartilhada = $"{(disciplinaCompartilhada?.Nome ?? "Disciplina não encontrada")} ",
                         EhRegencia = disciplina.Regencia,
                         EhCompartilhada = disciplina.Compartilhada,
-                        PermiteRegistroFrequencia = disciplina.RegistroFrequencia,
+                        PermiteRegistroFrequencia = disciplina.RegistraFrequencia,
                         podeCadastrarAvaliacao = podeCriarAtividade,
                         Horario = x.DataAula.ToString("hh:mm tt", CultureInfo.InvariantCulture),
                         Modalidade = turma?.Modalidade.GetAttribute<DisplayAttribute>().Name ?? "Modalidade",

@@ -101,7 +101,7 @@ namespace SME.SGP.Aplicacao
                 // Indicativo de frequencia do aluno
                 registroFrequenciaAluno.IndicativoFrequencia = ObterIndicativoFrequencia(aluno, aula.DisciplinaId, bimestre, percentualAlerta, percentualCritico);
 
-                if (disciplinaAula.FirstOrDefault().RegistroFrequencia)
+                if (disciplinaAula.FirstOrDefault().RegistraFrequencia)
                 {
                     var ausenciasAluno = ausencias.Where(c => c.CodigoAluno == aluno.CodigoAluno);
 

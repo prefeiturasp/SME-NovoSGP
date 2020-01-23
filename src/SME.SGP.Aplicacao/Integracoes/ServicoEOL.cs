@@ -633,7 +633,7 @@ namespace SME.SGP.Aplicacao.Integracoes
                 Nome = x.Descricao,
                 Regencia = x.EhRegencia,
                 Compartilhada = x.EhCompartilhada,
-                RegistroFrequencia = x.PermiteRegistroFrequencia
+                RegistraFrequencia = x.RegistraFrequencia
             });
         }
 
