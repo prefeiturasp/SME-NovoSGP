@@ -282,7 +282,9 @@ const DiaCompleto = props => {
                         </Div>
                       </Div>
                     </Evento>
-                    {evento.dadosAula && turmaSelecionada ? (
+                    {evento.dadosAula &&
+                    evento.dadosAula.permiteRegistroFrequencia &&
+                    turmaSelecionada ? (
                       <Grid
                         cols={2}
                         className="pr-0 d-flex align-items-center px-2 p-x-md-3"
