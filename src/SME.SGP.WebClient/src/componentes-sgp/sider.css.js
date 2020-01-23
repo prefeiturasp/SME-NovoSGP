@@ -7,6 +7,11 @@ export const MenuBody = styled.div`
   position: fixed;
   left: 0%;
   height: 100%;
+  width: ${props => (props.retraido ? `115px` : `250px`)};
+
+  @media screen and (max-width: 993px) {
+    width: 115px !important;
+  }
 
   .footer-content {
     display: flex;
@@ -324,5 +329,11 @@ export const MenuScope = styled.div`
   .icons-retraido {
     margin-top: 0px !important;
     font-size: 25px;
+  }
+`;
+
+export const IconeRetrair = styled.a`
+  @media screen and (max-width: 993px) {
+    visibility: hidden;
   }
 `;

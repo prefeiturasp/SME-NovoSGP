@@ -26,6 +26,7 @@ import RotasDto from '~/dtos/rotasDto';
 import history from '~/servicos/history';
 import { selecionaDia } from '~/redux/modulos/calendarioProfessor/actions';
 import { RegistroMigrado } from '~/componentes-sgp/registro-migrado';
+import shortid from 'shortid';
 
 const PlanoAula = props => {
   const {
@@ -42,6 +43,7 @@ const PlanoAula = props => {
     ehMedio,
     temObjetivos,
     setTemObjetivos,
+    expandido,
     auditoria,
     temAvaliacao,
   } = props;
@@ -50,7 +52,7 @@ const PlanoAula = props => {
   const usuario = useSelector(state => state.usuario);
   const { turmaSelecionada } = usuario;
   const turmaId = turmaSelecionada ? turmaSelecionada.turma : 0;
-  const [mostrarCardPrincipal, setMostrarCardPrincipal] = useState(true);
+  const [mostrarCardPrincipal, setMostrarCardPrincipal] = useState(expandido);
   const [mostrarModalCopiarConteudo, setMostrarModalCopiarConteudo] = useState(
     false
   );
@@ -222,6 +224,7 @@ const PlanoAula = props => {
             <span>Quantidade de aulas: {planoAula.qtdAulas}</span>
             {!temAvaliacao ? (
               <Button
+                id={shortid.generate()}
                 label="Nova Avaliação"
                 color={Colors.Roxo}
                 className="ml-auto mr-3"
@@ -229,6 +232,7 @@ const PlanoAula = props => {
               />
             ) : null}
             <Button
+              id={shortid.generate()}
               label="Copiar Conteúdo"
               icon="clipboard"
               color={Colors.Azul}

@@ -144,7 +144,6 @@ const FormularioSenha = () => {
               labelBotaoSecundario="Cancelar"
               titulo="Nova Senha"
               closable
-              width={1024}
             >
               <div className="row">
                 <div className="col-xs-7 col-md-7 col-lg-7">

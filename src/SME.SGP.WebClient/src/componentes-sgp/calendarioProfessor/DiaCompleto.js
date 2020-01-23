@@ -11,10 +11,12 @@ import { store } from '~/redux';
 import {
   selecionaDia,
   salvarEventoAulaCalendarioEdicao,
+  salvarDadosAulaFrequencia,
 } from '~/redux/modulos/calendarioProfessor/actions';
 import TiposEventoAulaDTO from '~/dtos/tiposEventoAula';
 import RotasDTO from '~/dtos/rotasDto';
 import Loader from '~/componentes/loader';
+import { SelectComponent } from '~/componentes';
 
 const SemEvento = () => {
   return (
@@ -42,6 +44,10 @@ const DiaCompleto = props => {
   const permissaoTela = useSelector(
     state => state.usuario.permissoes[RotasDTO.CALENDARIO_PROFESSOR]
   );
+
+  const usuario = useSelector(state => state.usuario);
+  const { turmaSelecionada: turmaSelecionadaStore } = usuario;
+
   const diaSelecionado = useSelector(
     state => state.calendarioProfessor.diaSelecionado
   );
@@ -74,6 +80,7 @@ const DiaCompleto = props => {
               ueId: unidadeEscolarSelecionada,
               turmaId: turmaSelecionada,
               todasTurmas,
+              turmaHistorico: turmaSelecionadaStore.consideraHistorico,
             })
             .then(resposta => {
               if (resposta.data) setEventosDia(resposta.data);
@@ -123,6 +130,7 @@ const DiaCompleto = props => {
       <BotoesAuxiliaresEstilo>
         {temAula && podeCadastrarAvaliacao ? (
           <Botao
+            id={shortid.generate()}
             key={shortid.generate()}
             onClick={aoClicarBotaoNovaAvaliacao}
             label="Nova Avaliação"
@@ -132,6 +140,7 @@ const DiaCompleto = props => {
           />
         ) : null}
         <Botao
+          id={shortid.generate()}
           key={shortid.generate()}
           onClick={aoClicarBotaoNovaAula}
           label="Nova Aula"
@@ -173,10 +182,15 @@ const DiaCompleto = props => {
     }
   };
 
+  const irParaFrequencia = (disciplinaId, dia) => {
+    store.dispatch(salvarDadosAulaFrequencia(disciplinaId, dia));
+    history.push(`${RotasDTO.FREQUENCIA_PLANO_AULA}`);
+  };
+
   return (
     estaAberto && (
       <Loader loading={carregandoDia} tip="">
-        <Div className="border-bottom border-top-0 h-100 p-3">
+        <Div className="border-bottom border-top-0 h-100 p-md-1 p-3">
           {eventosDia &&
           eventosDia.eventosAulas &&
           eventosDia.eventosAulas.length > 0 ? (
@@ -194,16 +208,17 @@ const DiaCompleto = props => {
                         aoClicarEvento(evento.id, evento.tipoEvento)
                       }
                     >
-                      <Grid
+                      <Div
                         cols={
                           (evento.tipoEvento === TiposEventoAulaDTO.Aula &&
                             1) ||
                           (evento.tipoEvento === TiposEventoAulaDTO.CJ && 1) ||
                           2
                         }
-                        className="pl-0"
+                        className="px-1"
                       >
                         <Botao
+                          id={shortid.generate()}
                           label={evento.tipoEvento}
                           color={
                             (evento.tipoEvento === TiposEventoAulaDTO.Aula &&
@@ -222,12 +237,13 @@ const DiaCompleto = props => {
                           border
                           steady
                         />
-                      </Grid>
+                      </Div>
                       {(evento.tipoEvento === TiposEventoAulaDTO.Aula ||
                         evento.tipoEvento === TiposEventoAulaDTO.CJ) &&
                         evento.dadosAula && (
-                          <Grid cols={1} className="px-0">
+                          <Div cols={1} className="px-1">
                             <Botao
+                              id={shortid.generate()}
                               label={window
                                 .moment(evento.dadosAula.horario, 'LT')
                                 .format('LT')}
@@ -236,9 +252,9 @@ const DiaCompleto = props => {
                               border
                               steady
                             />
-                          </Grid>
+                          </Div>
                         )}
-                      <Grid
+                      <Div
                         cols={
                           evento.tipoEvento === TiposEventoAulaDTO.Aula ||
                           evento.tipoEvento === TiposEventoAulaDTO.CJ
@@ -254,7 +270,7 @@ const DiaCompleto = props => {
                           className={`${(evento.tipoEvento ===
                             TiposEventoAulaDTO.Aula ||
                             evento.tipoEvento === TiposEventoAulaDTO.CJ) &&
-                            'pl-3'}`}
+                            'pl-3 descricao'}`}
                         >
                           {evento.tipoEvento !== TiposEventoAulaDTO.Aula &&
                             evento.tipoEvento !== TiposEventoAulaDTO.CJ &&
@@ -264,29 +280,51 @@ const DiaCompleto = props => {
                             evento.dadosAula &&
                             `${evento.dadosAula.turma} - ${evento.dadosAula.modalidade} - ${evento.dadosAula.tipo} - ${evento.dadosAula.unidadeEscolar} - ${evento.dadosAula.disciplina}`}
                         </Div>
-                      </Grid>
+                      </Div>
                     </Evento>
-                    {evento.dadosAula && evento.dadosAula.atividade.length
-                      ? evento.dadosAula.atividade.map(atividade => {
-                          return (
-                            <Grid
-                              key={atividade.id}
-                              cols={2}
-                              className="pr-0 d-flex align-items-center"
-                            >
-                              <Botao
-                                label="Avaliação"
-                                color={Colors.Roxo}
-                                className="w-100 position-relative zIndex"
-                                onClick={() =>
-                                  aoClicarEditarAvaliacao(atividade.id)
-                                }
-                                border
-                              />
-                            </Grid>
-                          );
-                        })
-                      : null}
+                    {evento.dadosAula &&
+                    evento.dadosAula.permiteRegistroFrequencia &&
+                    turmaSelecionada ? (
+                      <Grid
+                        cols={2}
+                        className="pr-0 d-flex align-items-center px-2 p-x-md-3"
+                      >
+                        <Botao
+                          id={shortid.generate()}
+                          label="Frequência"
+                          color={Colors.Roxo}
+                          className="w-100 position-relative btn-sm zIndex"
+                          onClick={() =>
+                            irParaFrequencia(
+                              evento.dadosAula.disciplinaId,
+                              diaSelecionado
+                            )
+                          }
+                          height="24px"
+                          padding="0 1rem"
+                          border
+                        />
+                      </Grid>
+                    ) : null}
+                    {evento.dadosAula && evento.dadosAula.atividade.length ? (
+                      <Grid
+                        cols={2}
+                        className="pr-0 d-flex align-items-center px-2 p-x-md-3"
+                      >
+                        <SelectComponent
+                          lista={evento.dadosAula.atividade}
+                          classNameContainer="w-100"
+                          className="fonte-14"
+                          onChange={aoClicarEditarAvaliacao}
+                          valueOption="id"
+                          valueText="nomeAvaliacao"
+                          placeholder="Avaliação"
+                          size="small"
+                          border={Base.Roxo}
+                          color={Base.Roxo}
+                        />
+                      </Grid>
+                    ) : null}
                   </Div>
                 );
               })}
