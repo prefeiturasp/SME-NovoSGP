@@ -648,7 +648,7 @@ const Filtro = () => {
       turma: resultado.codigoTurma,
       desc: resultado.descricaoFiltro,
       periodo: resultado.semestre,
-      consideraHistorico: consideraHistorico,
+      consideraHistorico,
     };
 
     dispatch(selecionarTurma(turma));
@@ -945,6 +945,7 @@ const Filtro = () => {
               </Grid>
               <Grid cols={3} className="form-group text-right">
                 <Button
+                  id={shortid.generate()}
                   label="Aplicar filtro"
                   color={Colors.Roxo}
                   className="ml-auto"

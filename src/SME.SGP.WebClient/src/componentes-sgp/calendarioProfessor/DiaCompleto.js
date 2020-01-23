@@ -218,6 +218,7 @@ const DiaCompleto = props => {
                         className="px-1"
                       >
                         <Botao
+                          id={shortid.generate()}
                           label={evento.tipoEvento}
                           color={
                             (evento.tipoEvento === TiposEventoAulaDTO.Aula &&
@@ -242,6 +243,7 @@ const DiaCompleto = props => {
                         evento.dadosAula && (
                           <Div cols={1} className="px-1">
                             <Botao
+                              id={shortid.generate()}
                               label={window
                                 .moment(evento.dadosAula.horario, 'LT')
                                 .format('LT')}
@@ -286,6 +288,7 @@ const DiaCompleto = props => {
                         className="pr-0 d-flex align-items-center px-2 p-x-md-3"
                       >
                         <Botao
+                          id={shortid.generate()}
                           label="Frequência"
                           color={Colors.Roxo}
                           className="w-100 position-relative btn-sm zIndex"
