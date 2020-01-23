@@ -544,9 +544,9 @@ const CompensacaoAusenciaForm = ({ match }) => {
 
     if (cadastrado && cadastrado.status == 200) {
       if (idCompensacaoAusencia) {
-        sucesso('Tipo de feriado alterado com sucesso.');
+        sucesso('Compensação alterada com sucesso.');
       } else {
-        sucesso('Novo tipo de feriado criado com sucesso.');
+        sucesso('Compensação criada com sucesso.');
       }
       history.push('/diario-classe/compensacao-ausencia');
     }
