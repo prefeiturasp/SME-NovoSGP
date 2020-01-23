@@ -319,4 +319,8 @@ export default createGlobalStyle`
     list-style-position: inside;
     color:black;
   }
+
+  .erro{
+    color: ${Base.Vermelho}
+  }
 `;

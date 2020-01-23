@@ -1,9 +1,10 @@
 ﻿using SME.SGP.Infra;
+using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
     public interface IConsultasFechamento
     {
-        FechamentoDto ObterPorTipoCalendarioDreEUe(FiltroFechamentoDto fechamentoDto);
+        Task<FechamentoDto> ObterPorTipoCalendarioDreEUe(FiltroFechamentoDto fechamentoDto);
     }
 }
