@@ -339,22 +339,25 @@ namespace SME.SGP.Dominio.Servicos
             if (compensacaoOrigem == null)
                 throw new NegocioException("Compensação de origem não localizada com o identificador informado.");
 
-            CompensacaoAusenciaDto compensacaoDto = new CompensacaoAusenciaDto()
+            foreach(var turmaId in compensacaoCopia.TurmasIds)
             {
-                TurmaId = compensacaoCopia.TurmaId,
-                Bimestre = compensacaoCopia.Bimestre,
-                DisciplinaId = compensacaoOrigem.DisciplinaId,
-                Atividade = compensacaoOrigem.Nome,
-                Descricao = compensacaoOrigem.Descricao,
-                DisciplinasRegenciaIds = new List<string>(),
-                Alunos = new List<CompensacaoAusenciaAlunoDto>()
-            };
+                CompensacaoAusenciaDto compensacaoDto = new CompensacaoAusenciaDto()
+                {
+                    TurmaId = turmaId,
+                    Bimestre = compensacaoCopia.Bimestre,
+                    DisciplinaId = compensacaoOrigem.DisciplinaId,
+                    Atividade = compensacaoOrigem.Nome,
+                    Descricao = compensacaoOrigem.Descricao,
+                    DisciplinasRegenciaIds = new List<string>(),
+                    Alunos = new List<CompensacaoAusenciaAlunoDto>()
+                };
                 
-            var disciplinasRegencia = await repositorioCompensacaoAusenciaDisciplinaRegencia.ObterPorCompensacao(compensacaoOrigem.Id);
-            if (disciplinasRegencia != null && disciplinasRegencia.Any())
-                compensacaoDto.DisciplinasRegenciaIds = disciplinasRegencia.Select(s => s.DisciplinaId);
+                var disciplinasRegencia = await repositorioCompensacaoAusenciaDisciplinaRegencia.ObterPorCompensacao(compensacaoOrigem.Id);
+                if (disciplinasRegencia != null && disciplinasRegencia.Any())
+                    compensacaoDto.DisciplinasRegenciaIds = disciplinasRegencia.Select(s => s.DisciplinaId);
 
-            await Salvar(0, compensacaoDto);
+                await Salvar(0, compensacaoDto);
+            }
         }
     }
 }
