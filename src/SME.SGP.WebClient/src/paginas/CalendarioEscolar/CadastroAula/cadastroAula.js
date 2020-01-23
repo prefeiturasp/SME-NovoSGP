@@ -20,7 +20,6 @@ import {
   sucesso,
   erro,
   exibirAlerta,
-  fecharModalConfirmacao,
 } from '~/servicos/alertas';
 import api from '~/servicos/api';
 import { setBreadcrumbManual } from '~/servicos/breadcrumb-services';
@@ -62,7 +61,7 @@ const CadastroAula = ({ match }) => {
   const [existeFrequenciaPlanoAula, setExisteFrequenciaPlanoAula] = useState(
     false
   );
-  const [somenteLeitura, SetSomenteLeitura] = useState(false);
+  const [somenteLeitura, setSomenteLeitura] = useState(false);
   const [
     idNotificacaoSomenteLeitura,
     setIdNotificacaoSomenteLeitura,
@@ -216,7 +215,14 @@ const CadastroAula = ({ match }) => {
     }
   }, [idDisciplina, listaDisciplinas]);
 
-  useEffect(() => {
+  const buscarDisciplinasCompartilhadas = async () => {
+    const disciplinas = await api.get(
+      `v1/professores/turmas/${turmaId}/docencias-compartilhadas/disciplinas`
+    );
+    return disciplinas.data;
+  };
+
+  const trataSomenteLeitura = async () => {
     if (somenteLeitura) {
       const id = exibirAlerta(
         'warning',
@@ -225,18 +231,18 @@ const CadastroAula = ({ match }) => {
       );
 
       setIdNotificacaoSomenteLeitura(id);
+      setListaDisciplinas(await buscarDisciplinasCompartilhadas());
     }
+  };
+
+  useEffect(() => {
+    trataSomenteLeitura();
   }, [somenteLeitura]);
 
   useEffect(() => {
-    const buscarDisciplinasCompartilhadas = async () => {
-      const disciplinas = await api.get(
-        `v1/professores/turmas/${turmaId}/docencias-compartilhadas/disciplinas`
-      );
-      setListaDisciplinasCompartilhadas(disciplinas.data);
-    };
-    if (disciplinaCompartilhada) buscarDisciplinasCompartilhadas();
-  }, [disciplinaCompartilhada, turmaId]);
+    if (disciplinaCompartilhada)
+      setListaDisciplinasCompartilhadas(buscarDisciplinasCompartilhadas());
+  }, [disciplinaCompartilhada]);
 
   const getRecorrenciasHabilitadas = (opcoes, dadosRecorrencia) => {
     opcoes.forEach(item => {
@@ -301,7 +307,7 @@ const CadastroAula = ({ match }) => {
         ]);
       }
 
-      SetSomenteLeitura(buscaAula.data.somenteLeitura);
+      setSomenteLeitura(buscaAula.data.somenteLeitura);
 
       const val = {
         tipoAula: buscaAula.data.tipoAula,
