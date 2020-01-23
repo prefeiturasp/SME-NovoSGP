@@ -66,8 +66,10 @@ namespace SME.SGP.Aplicacao
 
             string rf = usuario.TemPerfilGestaoUes() ? string.Empty : usuario.CodigoRf;
 
+            var disciplinasUsuario = await servicoEOL.ObterDisciplinasPorCodigoTurmaLoginEPerfil(filtro.TurmaId, usuario.CodigoRf, usuario.PerfilAtual);
+
             var eventos = await repositorioEvento.ObterEventosPorTipoDeCalendarioDreUeDia(filtro.TipoCalendarioId, filtro.DreId, filtro.UeId, data, filtro.EhEventoSme);
-            var aulas = await ObterAulasDia(filtro, data, perfil, rf);
+            var aulas = await ObterAulasDia(filtro, data, perfil, rf, disciplinasUsuario);
             var atividades = await repositorioAtividadeAvaliativa.ObterAtividadesPorDia(filtro.DreId, filtro.UeId, data, rf, filtro.TurmaId);
 
             ObterEventosParaEventosAulasDia(eventosAulas, eventos);
@@ -84,6 +86,7 @@ namespace SME.SGP.Aplicacao
             var idsDisciplinasAulas = aulas.Select(a => long.Parse(a.DisciplinaId)).Distinct().Concat(
                                       aulas.Where(a => !String.IsNullOrEmpty(a.DisciplinaCompartilhadaId))
                                            .Select(a => long.Parse(a.DisciplinaCompartilhadaId)).Distinct());
+
             var disciplinasEol = servicoEOL.ObterDisciplinasPorIds(idsDisciplinasAulas.ToArray());
 
             aulas
@@ -130,7 +133,7 @@ namespace SME.SGP.Aplicacao
                         DisciplinaCompartilhada = $"{(disciplinaCompartilhada?.Nome ?? "Disciplina não encontrada")} ",
                         EhRegencia = disciplina.Regencia,
                         EhCompartilhada = disciplina.Compartilhada,
-                        PermiteRegistroFrequencia = disciplina.RegistraFrequencia,
+                        PermiteRegistroFrequencia = disciplina.RegistraFrequencia && !x.SomenteConsulta,
                         podeCadastrarAvaliacao = podeCriarAtividade,
                         Horario = x.DataAula.ToString("hh:mm tt", CultureInfo.InvariantCulture),
                         Modalidade = turma?.Modalidade.GetAttribute<DisplayAttribute>().Name ?? "Modalidade",
@@ -261,6 +264,19 @@ namespace SME.SGP.Aplicacao
                 }));
         }
 
+        private static void VerificarAulasSomenteConsulta(IEnumerable<DisciplinaResposta> disciplinas, IEnumerable<AulaCompletaDto> aulas)
+        {
+            aulas.ToList().ForEach(aula =>
+            {
+                var disciplina = disciplinas.FirstOrDefault(d
+                    => d.CodigoComponenteCurricular.ToString().Equals(aula.DisciplinaId));
+
+                var disciplinaId = disciplina == null ? "" : disciplina.CodigoComponenteCurricular.ToString();
+
+                aula.VerificarSomenteConsulta(disciplinaId);
+            });
+        }
+
         private List<EventosAulasCalendarioDto> MapearParaDto(List<DateTime> dias)
         {
             List<EventosAulasCalendarioDto> eventosAulas = new List<EventosAulasCalendarioDto>();
@@ -278,9 +294,14 @@ namespace SME.SGP.Aplicacao
             return eventosAulas;
         }
 
-        private async Task<IEnumerable<AulaCompletaDto>> ObterAulasDia(FiltroEventosAulasCalendarioDiaDto filtro, DateTime data, Guid perfil, string professorRf)
+        private async Task<IEnumerable<AulaCompletaDto>> ObterAulasDia(FiltroEventosAulasCalendarioDiaDto filtro, DateTime data, Guid perfil, string professorRf, IEnumerable<DisciplinaResposta> disciplinas)
         {
             var aulas = await repositorioAula.ObterAulasCompleto(filtro.TipoCalendarioId, filtro.TurmaId, filtro.UeId, data, perfil, filtro.TurmaHistorico);
+
+            VerificarAulasSomenteConsulta(disciplinas, aulas);
+
+            if (string.IsNullOrWhiteSpace(professorRf))
+                return aulas;
 
             var aulasProfessor = aulas.Where(x => !string.IsNullOrEmpty(x.ProfessorRF) && x.ProfessorRF.Equals(professorRf)).ToList();
 
@@ -290,8 +311,6 @@ namespace SME.SGP.Aplicacao
                 ObterAulasCompartilhadas(aulas, aulasProfessor, disciplinasCompartilhadas);
 
             ObterAulasCompartilhadasRelacionadas(aulas, aulasProfessor);
-
-            aulasProfessor.ForEach(x => x.VerificarSomenteConsulta(professorRf));
 
             return aulasProfessor;
         }
