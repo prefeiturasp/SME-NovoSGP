@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { Form, Formik } from 'formik';
+import { Form, Formik, FieldArray } from 'formik';
+import * as Yup from 'yup';
+import { DreDropDown, UeDropDown } from 'componentes-sgp';
+import moment from 'moment';
 import Cabecalho from '~/componentes-sgp/cabecalho';
 import Button from '~/componentes/button';
-import { CampoData } from '~/componentes/campoData/campoData.js';
 import Card from '~/componentes/card';
 import { Colors } from '~/componentes/colors';
 import SelectComponent from '~/componentes/select';
@@ -11,78 +13,164 @@ import {
   CaixaBimestre,
 } from './periodo-fechamento-abertura.css';
 import api from '~/servicos/api';
-import periodo from '~/dtos/periodo';
+import { CampoData, Loader, Auditoria } from '~/componentes';
+import history from '~/servicos/history';
+import { URL_HOME } from '~/constantes/url';
+import { erros } from '~/servicos/alertas';
 
 const PeriodoFechamentoAbertura = () => {
-  const [listaCalendarioEscolar, setListaCalendarioEscolar] = useState([]);
-  const [
-    calendarioEscolarSelecionado,
-    setCalendarioEscolarSelecionado,
-  ] = useState('');
-  const [ehTipoCalendarioAnual, setEhTipoCalendarioAnual] = useState(true);
-  const [desabilitaCampos, setDesabilitaCampos] = useState(false);
+  const [listaTipoCalendarioEscolar, setListaTipoCalendarioEscolar] = useState(
+    []
+  );
+  const [tipoCalendarioSelecionado, setTipoCalendarioSelecionado] = useState(
+    ''
+  );
+  const [dreSelecionada, setDreSelecionada] = useState('');
+  const [ueSelecionada, setUeSelecionada] = useState('');
 
-  const chaveBimestre = {
-    primeiroInicio: 'primeiroBimestreDataInicial',
-    primeiroFinal: 'primeiroBimestreDataFinal',
-    segundoInicio: 'segundoBimestreDataInicial',
-    segundoFinal: 'segundoBimestreDataFinal',
-    terceiroInicio: 'terceiroBimestreDataInicial',
-    terceiroFinal: 'terceiroBimestreDataFinal',
-    quartoInicio: 'quartoBimestreDataInicial',
-    quartoFinal: 'quartoBimestreDataFinal',
+  const [carregandoTipos, setCarregandoTipos] = useState(false);
+  const [desabilitarTipoCalendario, setDesabilitarTipoCalendario] = useState(
+    false
+  );
+  const [modoEdicao, setModoEdicao] = useState(false);
+  const obtemPeriodosIniciais = () => {
+    return {
+      dreId: null,
+      ueId: null,
+      tipoCalendarioId: null,
+      migrado: false,
+      id: 0,
+      fechamentosBimestres: [],
+    };
   };
-  const valoresFormInicial = {
-    [chaveBimestre.primeiroInicio]: '',
-    [chaveBimestre.primeiroFinal]: '',
-    [chaveBimestre.segundoInicio]: '',
-    [chaveBimestre.segundoFinal]: '',
-    [chaveBimestre.terceiroInicio]: '',
-    [chaveBimestre.terceiroFinal]: '',
-    [chaveBimestre.quartoInicio]: '',
-    [chaveBimestre.quartoFinal]: '',
-  };
-  const [valoresIniciais, setValoresIniciais] = useState(valoresFormInicial);
-  const [validacoes, setValidacoes] = useState();
+  const [periodos, setPeriodos] = useState(obtemPeriodosIniciais());
+  const [auditoria, setAuditoria] = useState([]);
+
+  const [validacoes, setValidacoes] = useState(
+    Yup.object().shape({
+      fechamentosBimestres: Yup.array().of(
+        Yup.object().shape({
+          inicioDoFechamento: Yup.string().required(
+            'Data de início obrigatória.'
+          ),
+          finalDoFechamento: Yup.string().required('Data final obrigatória.'),
+        })
+      ),
+    })
+  );
 
   useEffect(() => {
     async function consultaTipos() {
+      setCarregandoTipos(true);
       const listaTipo = await api.get('v1/calendarios/tipos');
       if (listaTipo && listaTipo.data && listaTipo.data.length) {
         listaTipo.data.map(item => {
           item.id = String(item.id);
           item.descricaoTipoCalendario = `${item.anoLetivo} - ${item.nome} - ${item.descricaoPeriodo}`;
         });
-        setListaCalendarioEscolar(listaTipo.data);
+        setListaTipoCalendarioEscolar(listaTipo.data);
+        if (listaTipo.data.length === 1) {
+          setTipoCalendarioSelecionado(listaTipo.data[0].id);
+          setDesabilitarTipoCalendario(true);
+        } else {
+          setDesabilitarTipoCalendario(false);
+        }
       } else {
-        setListaCalendarioEscolar([]);
+        setListaTipoCalendarioEscolar([]);
       }
+      setCarregandoTipos(false);
     }
     consultaTipos();
   }, []);
 
-  const onChangeCamposData = () => {};
-
-  const onchangeCalendarioEscolar = (id, form) => {
-    const tipoSelecionado = listaCalendarioEscolar.find(item => item.id == id);
-
-    if (tipoSelecionado && tipoSelecionado.periodo == periodo.Anual) {
-      setEhTipoCalendarioAnual(true);
-    } else {
-      setEhTipoCalendarioAnual(false);
+  useEffect(() => {
+    if (tipoCalendarioSelecionado) {
+      api
+        .get(
+          `/v1/periodos/fechamentos/aberturas?tipoCalendarioId=${tipoCalendarioSelecionado}&dreId=${dreSelecionada}&ueId=${ueSelecionada}`
+        )
+        .then(resposta => {
+          if (resposta.data && resposta.data.fechamentosBimestres) {
+            resposta.data.fechamentosBimestres.forEach(bimestre => {
+              bimestre.inicioDoFechamento = moment(bimestre.inicioDoFechamento);
+              bimestre.finalDoFechamento = moment(bimestre.finalDoFechamento);
+              bimestre.inicioMinimo = moment(bimestre.inicioMinimo);
+              bimestre.finalMaximo = moment(bimestre.finalMaximo);
+            });
+          }
+          setPeriodos(resposta.data);
+        })
+        .catch(e => {
+          setPeriodos(obtemPeriodosIniciais());
+          erros(e);
+        });
     }
-    setCalendarioEscolarSelecionado(id);
+  }, [dreSelecionada, tipoCalendarioSelecionado, ueSelecionada]);
+
+  const onChangeCamposData = valor => {
+    setModoEdicao(true);
   };
 
-  const onClickVoltar = () => {};
+  const onClickVoltar = () => {
+    history.push(URL_HOME);
+  };
 
-  const onClickCancelar = form => {};
+  const validaAntesDoSubmit = form => {
+    form.validateForm().then(() => {
+      if (
+        form.isValid ||
+        (Object.keys(form.errors).length == 0 &&
+          Object.keys(form.values).length > 0)
+      ) {
+        form.handleSubmit(e => e);
+      }
+    });
+  };
 
-  const validaAntesDoSubmit = form => {};
+  const onClickCancelar = form => {
+    form.resetForm();
+    setModoEdicao(false);
+  };
 
-  const onSubmit = form => {};
+  const onSubmit = form => {
+    console.log(form);
+  };
 
-  const criaBimestre = (form, descricao, chaveDataInicial, chaveDataFinal) => {
+  const obterDatasParaHabilitar = (inicio, fim) => {
+    const dias = [];
+    let diaInicial = inicio;
+
+    while (diaInicial <= fim) {
+      dias.push(diaInicial.format('YYYY-MM-DD'));
+      diaInicial = diaInicial.clone().add(1, 'd');
+    }
+    return dias;
+  };
+
+  const possuiErro = (form, campo, indice) => {
+    return (
+      form &&
+      form.errors.fechamentosBimestres &&
+      form.errors.fechamentosBimestres[indice] &&
+      form.errors.fechamentosBimestres[indice][campo]
+    );
+  };
+
+  const obterErros = (form, campo, indice) =>
+    possuiErro(form, campo, indice) && (
+      <span className="erro">
+        {form.errors.fechamentosBimestres[indice][campo]}
+      </span>
+    );
+
+  const criaBimestre = (
+    form,
+    descricao,
+    chaveDataInicial,
+    chaveDataFinal,
+    diasParaHabilitar,
+    indice
+  ) => {
     return (
       <div className="row">
         <div className="col-md-6 mb-2">
@@ -96,9 +184,14 @@ const PeriodoFechamentoAbertura = () => {
             placeholder="Início do Bimestre"
             formatoData="DD/MM/YYYY"
             name={chaveDataInicial}
-            onChange={onChangeCamposData}
-            desabilitado={desabilitaCampos}
+            onChange={valor => onChangeCamposData(valor)}
+            diasParaHabilitar={diasParaHabilitar}
+            className={
+              possuiErro(form, 'inicioDoFechamento', indice) &&
+              'is-invalid mb-1'
+            }
           />
+          {obterErros(form, 'inicioDoFechamento', indice)}
         </div>
         <div className="col-md-3 mb-2">
           <CampoData
@@ -106,9 +199,17 @@ const PeriodoFechamentoAbertura = () => {
             placeholder="Fim do Bimestre"
             formatoData="DD/MM/YYYY"
             name={chaveDataFinal}
+            className={
+              possuiErro(form, 'inicioDoFechamento', indice) &&
+              'is-invalid mb-1'
+            }
             onChange={onChangeCamposData}
-            desabilitado={desabilitaCampos}
+            className={
+              possuiErro(form, 'finalDoFechamento', indice) && 'is-invalid'
+            }
+            diasParaHabilitar={diasParaHabilitar}
           />
+          {obterErros(form, 'finalDoFechamento', indice)}
         </div>
       </div>
     );
@@ -120,7 +221,7 @@ const PeriodoFechamentoAbertura = () => {
       <Card>
         <Formik
           enableReinitialize
-          initialValues={valoresIniciais}
+          initialValues={periodos}
           validationSchema={validacoes}
           onSubmit={values => onSubmit(values)}
           validateOnChange
@@ -128,19 +229,8 @@ const PeriodoFechamentoAbertura = () => {
         >
           {form => (
             <Form className="col-md-12">
-              <div className="row">
-                <div className="col-sm-12 col-md-5 col-lg-4 col-xl-4 mb-4">
-                  <SelectComponent
-                    name="calEscolar"
-                    id="calEscolar"
-                    lista={listaCalendarioEscolar}
-                    valueOption="id"
-                    valueText="descricaoTipoCalendario"
-                    onChange={id => onchangeCalendarioEscolar(id, form)}
-                    valueSelect={calendarioEscolarSelecionado}
-                  />
-                </div>
-                <div className="col-sm-12 col-md-7 col-lg-8 col-xl-8 d-flex justify-content-end mb-4">
+              <div className="row mb-4">
+                <div className="col-md-12 d-flex justify-content-end pb-4">
                   <Button
                     label="Voltar"
                     icon="arrow-left"
@@ -155,6 +245,7 @@ const PeriodoFechamentoAbertura = () => {
                     border
                     bold
                     className="mr-3"
+                    disabled={!modoEdicao}
                     onClick={() => onClickCancelar(form)}
                   />
                   <Button
@@ -162,52 +253,79 @@ const PeriodoFechamentoAbertura = () => {
                     color={Colors.Roxo}
                     border
                     bold
+                    disabled={!modoEdicao}
                     onClick={() => validaAntesDoSubmit(form)}
                   />
                 </div>
+                <div className="col-md-12 pb-2">
+                  <Loader loading={carregandoTipos} tip="">
+                    <div style={{ maxWidth: '300px' }}>
+                      <SelectComponent
+                        name="tipoCalendarioId"
+                        id="tipoCalendarioId"
+                        lista={listaTipoCalendarioEscolar}
+                        valueOption="id"
+                        valueText="descricaoTipoCalendario"
+                        onChange={id => setTipoCalendarioSelecionado(id)}
+                        valueSelect={tipoCalendarioSelecionado}
+                        disabled={desabilitarTipoCalendario}
+                        placeholder="Selecione um tipo de calendário"
+                      />
+                    </div>
+                  </Loader>
+                </div>
+                <br />
+                <div className="col-md-6 pb-2">
+                  {tipoCalendarioSelecionado && (
+                    <DreDropDown
+                      label="Diretoria Regional de Educação (DRE)"
+                      form={form}
+                      onChange={dreId => setDreSelecionada(dreId)}
+                      desabilitado={false}
+                    />
+                  )}
+                </div>
+                <div className="col-md-6 pb-2">
+                  {tipoCalendarioSelecionado && (
+                    <UeDropDown
+                      dreId={form.values.dreId}
+                      label="Unidade Escolar (UE)"
+                      form={form}
+                      url="v1/dres"
+                      onChange={ueId => setUeSelecionada(ueId)}
+                      desabilitado={false}
+                    />
+                  )}
+                </div>
               </div>
-              {listaCalendarioEscolar &&
-              listaCalendarioEscolar.length &&
-              calendarioEscolarSelecionado ? (
-                <>
-                  {criaBimestre(
-                    form,
-                    '1 ° Bimestre',
-                    chaveBimestre.primeiroInicio,
-                    chaveBimestre.primeiroFinal
-                  )}
-                  {criaBimestre(
-                    form,
-                    '2 ° Bimestre',
-                    chaveBimestre.segundoInicio,
-                    chaveBimestre.segundoFinal
-                  )}
-
-                  {ehTipoCalendarioAnual ? (
-                    <>
-                      {criaBimestre(
+              <FieldArray
+                name="fechamentosBimestres"
+                render={() => (
+                  <>
+                    {periodos.fechamentosBimestres.map((c, indice) =>
+                      criaBimestre(
                         form,
-                        '3 ° Bimestre',
-                        chaveBimestre.terceiroInicio,
-                        chaveBimestre.terceiroFinal
-                      )}
-                      {criaBimestre(
-                        form,
-                        '4 ° Bimestre',
-                        chaveBimestre.quartoInicio,
-                        chaveBimestre.quartoFinal
-                      )}
-                    </>
-                  ) : (
-                    ''
-                  )}
-                </>
-              ) : (
-                ''
-              )}
+                        `${c.bimestre} ° Bimestre`,
+                        `fechamentosBimestres[${indice}].inicioDoFechamento`,
+                        `fechamentosBimestres[${indice}].finalDoFechamento`,
+                        obterDatasParaHabilitar(c.inicioMinimo, c.finalMaximo),
+                        indice
+                      )
+                    )}
+                  </>
+                )}
+              />
             </Form>
           )}
         </Formik>
+        <Auditoria
+          criadoEm={auditoria.criadoEm}
+          criadoPor={auditoria.criadoPor}
+          criadoRf={auditoria.criadoRf}
+          alteradoPor={auditoria.alteradoPor}
+          alteradoEm={auditoria.alteradoEm}
+          alteradoRf={auditoria.alteradoRf}
+        />
       </Card>
     </>
   );
