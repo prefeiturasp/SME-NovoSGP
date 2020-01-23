@@ -22,9 +22,9 @@ namespace SME.SGP.Infra
         public string UeId { get; set; }
         public string UeNome { get; set; }
 
-        public void VerificarSomenteConsulta(string professorRf)
+        public void VerificarSomenteConsulta(string disciplinaId)
         {
-            SomenteConsulta = !professorRf.Equals(ProfessorRF);
+            SomenteConsulta = !DisciplinaId.Equals(disciplinaId);
         }
     }
 }
