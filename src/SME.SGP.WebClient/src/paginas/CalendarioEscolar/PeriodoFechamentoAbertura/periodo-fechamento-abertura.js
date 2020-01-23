@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Form, Formik, FieldArray } from 'formik';
 import * as Yup from 'yup';
 import { DreDropDown, UeDropDown } from 'componentes-sgp';
+import moment from 'moment';
 import Cabecalho from '~/componentes-sgp/cabecalho';
 import Button from '~/componentes/button';
 import Card from '~/componentes/card';
@@ -12,15 +13,10 @@ import {
   CaixaBimestre,
 } from './periodo-fechamento-abertura.css';
 import api from '~/servicos/api';
-import periodo from '~/dtos/periodo';
-import { CampoData, Loader, momentSchema, Auditoria } from '~/componentes';
-import FiltroHelper from '~/componentes-sgp/filtro/helper';
-import tipoEscolaDTO from '~/dtos/tipoEscolaDto';
+import { CampoData, Loader, Auditoria } from '~/componentes';
 import history from '~/servicos/history';
 import { URL_HOME } from '~/constantes/url';
 import { erros } from '~/servicos/alertas';
-import moment from 'moment';
-import { CampoDataFormik } from '~/componentes/campoDataFormik/campoDataFormik';
 
 const PeriodoFechamentoAbertura = () => {
   const [listaTipoCalendarioEscolar, setListaTipoCalendarioEscolar] = useState(
@@ -31,14 +27,11 @@ const PeriodoFechamentoAbertura = () => {
   );
   const [dreSelecionada, setDreSelecionada] = useState('');
   const [ueSelecionada, setUeSelecionada] = useState('');
-  const [ehTipoCalendarioAnual, setEhTipoCalendarioAnual] = useState(true);
-  const [desabilitaCampos, setDesabilitaCampos] = useState(false);
 
   const [carregandoTipos, setCarregandoTipos] = useState(false);
   const [desabilitarTipoCalendario, setDesabilitarTipoCalendario] = useState(
     false
   );
-  const [anoLetivo, setAnoLetivo] = useState(new Date().getFullYear());
   const [modoEdicao, setModoEdicao] = useState(false);
   const obtemPeriodosIniciais = () => {
     return {
@@ -114,33 +107,8 @@ const PeriodoFechamentoAbertura = () => {
     }
   }, [dreSelecionada, tipoCalendarioSelecionado, ueSelecionada]);
 
-  // useEffect(() => {
-  //   if (periodos.fechamentosBimestres.length > 0)
-  //     setValidacoes(
-  //       Yup.object({
-  //         fechamentosBimestres: [
-  //           periodos.fechamentosBimestres.map(c =>
-  //             Yup.object({
-  //               inicioDoFechamento: momentSchema.required('Data obrigatória'),
-  //               finalDoFechamento: momentSchema.required('Data obrigatória'),
-  //             })
-  //           ),
-  //         ],
-  //       })
-  //     );
-  // }, [periodos]);
-
   const onChangeCamposData = valor => {
     setModoEdicao(true);
-  };
-
-  const validacaoAnoLetivo = () => {
-    return momentSchema.test({
-      name: 'teste',
-      exclusive: true,
-      message: 'Data inváçida',
-      test: value => value.year().toString() === anoLetivo.toString(),
-    });
   };
 
   const onClickVoltar = () => {
@@ -157,27 +125,12 @@ const PeriodoFechamentoAbertura = () => {
         form.handleSubmit(e => e);
       }
     });
-    // const arrayCampos = Object.keys(valoresFormInicial);
-    // arrayCampos.forEach(campo => {
-    //   form.setFieldTouched(campo, true, true);
-    // });
-    // form.validateForm().then(() => {
-    //   if (
-    //     form.isValid ||
-    //     (Object.keys(form.errors).length == 0 &&
-    //       Object.keys(form.values).length > 0)
-    //   ) {
-    //     form.handleSubmit(e => e);
-    //   }
-    // });
   };
 
   const onClickCancelar = form => {
     form.resetForm();
     setModoEdicao(false);
   };
-
-  const buscarPeriodosPorTipoCalendario = id => {};
 
   const onSubmit = form => {
     console.log(form);
@@ -194,14 +147,21 @@ const PeriodoFechamentoAbertura = () => {
     return dias;
   };
 
-  const obterErros = (form, campo, indice) => (
-    <span className="erro">
-      {form &&
-        form.errors['fechamentosBimestres'] &&
-        form.errors['fechamentosBimestres'][indice] &&
-        form.errors['fechamentosBimestres'][indice][campo]}
-    </span>
-  );
+  const possuiErro = (form, campo, indice) => {
+    return (
+      form &&
+      form.errors.fechamentosBimestres &&
+      form.errors.fechamentosBimestres[indice] &&
+      form.errors.fechamentosBimestres[indice][campo]
+    );
+  };
+
+  const obterErros = (form, campo, indice) =>
+    possuiErro(form, campo, indice) && (
+      <span className="erro">
+        {form.errors.fechamentosBimestres[indice][campo]}
+      </span>
+    );
 
   const criaBimestre = (
     form,
@@ -225,8 +185,11 @@ const PeriodoFechamentoAbertura = () => {
             formatoData="DD/MM/YYYY"
             name={chaveDataInicial}
             onChange={valor => onChangeCamposData(valor)}
-            desabilitado={desabilitaCampos}
             diasParaHabilitar={diasParaHabilitar}
+            className={
+              possuiErro(form, 'inicioDoFechamento', indice) &&
+              'is-invalid mb-1'
+            }
           />
           {obterErros(form, 'inicioDoFechamento', indice)}
         </div>
@@ -236,8 +199,15 @@ const PeriodoFechamentoAbertura = () => {
             placeholder="Fim do Bimestre"
             formatoData="DD/MM/YYYY"
             name={chaveDataFinal}
+            className={
+              possuiErro(form, 'inicioDoFechamento', indice) &&
+              'is-invalid mb-1'
+            }
             onChange={onChangeCamposData}
-            desabilitado={desabilitaCampos}
+            className={
+              possuiErro(form, 'finalDoFechamento', indice) && 'is-invalid'
+            }
+            diasParaHabilitar={diasParaHabilitar}
           />
           {obterErros(form, 'finalDoFechamento', indice)}
         </div>
@@ -330,7 +300,7 @@ const PeriodoFechamentoAbertura = () => {
               </div>
               <FieldArray
                 name="fechamentosBimestres"
-                render={arrayHelpers => (
+                render={() => (
                   <>
                     {periodos.fechamentosBimestres.map((c, indice) =>
                       criaBimestre(
