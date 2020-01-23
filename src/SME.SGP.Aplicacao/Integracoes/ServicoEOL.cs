@@ -155,6 +155,18 @@ namespace SME.SGP.Aplicacao.Integracoes
             else throw new NegocioException("Houve erro ao tentar obter a abrangência do Eol");
         }
 
+        public async Task<string[]> ObterAdministradoresSGP(string codigoDreOuUe)
+        {
+            var resposta = await httpClient.GetAsync($"escolas/{codigoDreOuUe}/administrador-sgp");
+
+            if (resposta.IsSuccessStatusCode)
+            {
+                var json = await resposta.Content.ReadAsStringAsync();
+                return JsonConvert.DeserializeObject<string[]>(json);
+            }
+            return null;
+        }
+
         public async Task<IEnumerable<AlunoPorTurmaResposta>> ObterAlunosPorTurma(string turmaId)
         {
             var alunos = new List<AlunoPorTurmaResposta>();

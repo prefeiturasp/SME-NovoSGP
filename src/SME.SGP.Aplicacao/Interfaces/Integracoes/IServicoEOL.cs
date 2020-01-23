@@ -27,6 +27,8 @@ namespace SME.SGP.Aplicacao.Integracoes
 
         Task<AbrangenciaRetornoEolDto> ObterAbrangenciaParaSupervisor(string[] uesIds);
 
+        Task<string[]> ObterAdministradoresSGP(string codigoDreOuUe);
+
         Task<IEnumerable<AlunoPorTurmaResposta>> ObterAlunosPorTurma(string turmaId);
 
         Task<IEnumerable<AlunoPorTurmaResposta>> ObterAlunosPorTurma(string turmaId, int anoLetivo);

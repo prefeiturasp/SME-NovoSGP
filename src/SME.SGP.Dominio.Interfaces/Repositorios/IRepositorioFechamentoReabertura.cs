@@ -11,5 +11,7 @@ namespace SME.SGP.Dominio.Interfaces
         Task<PaginacaoResultadoDto<FechamentoReabertura>> ListarPaginado(long tipoCalendarioId, long? dreId, long? ueId, Paginacao paginacao);
 
         Task SalvarBimestre(FechamentoReaberturaBimestre fechamentoReabertura);
+        FechamentoReabertura ObterPorWorkflowId(long workflowId);
+        void ExcluirBimestres(long id);
     }
 }
