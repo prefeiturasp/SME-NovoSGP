@@ -1,6 +1,8 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import styled from 'styled-components';
+import shortid from 'shortid';
+import { Switch } from 'antd';
 import { CampoData, Auditoria, Loader } from '~/componentes';
 import Cabecalho from '~/componentes-sgp/cabecalho';
 import ListaFrequencia from '~/componentes-sgp/ListaFrequencia/listaFrequencia';
@@ -24,6 +26,8 @@ import ModalMultiLinhas from '~/componentes/modalMultiLinhas';
 import modalidade from '~/dtos/modalidade';
 import ServicoDisciplina from '~/servicos/Paginas/ServicoDisciplina';
 import Grid from '~/componentes/grid';
+import { store } from '~/redux';
+import { salvarDadosAulaFrequencia } from '~/redux/modulos/calendarioProfessor/actions';
 
 const FrequenciaPlanoAula = () => {
   const usuario = useSelector(store => store.usuario);
@@ -73,7 +77,6 @@ const FrequenciaPlanoAula = () => {
   const [exibirAuditoria, setExibirAuditoria] = useState(false);
   const [desabilitarCampos, setDesabilitarCampos] = useState(false);
   const [modoEdicaoPlanoAula, setModoEdicaoPlanoAula] = useState(false);
-  const [ehRegencia, setEhRegencia] = useState(false);
   const [aula, setAula] = useState(undefined);
   const [auditoriaPlano, setAuditoriaPlano] = useState([]);
   const [planoAula, setPlanoAula] = useState({
@@ -97,6 +100,10 @@ const FrequenciaPlanoAula = () => {
   const [dataSugerida, setDataSugerida] = useState('');
 
   const [planoAulaExpandido, setPlanoAulaExpandido] = useState(false);
+
+  const dadosAulaFrequencia = useSelector(
+    store => store.calendarioProfessor.dadosAulaFrequencia
+  );
 
   const obterDatasDeAulasDisponiveis = useCallback(
     async disciplinaId => {
@@ -176,8 +183,8 @@ const FrequenciaPlanoAula = () => {
       setCarregandoDisciplinas(false);
     };
 
-    // Metodo usando para controlar quando troca uma turna no filtro principal
-    // So pode consultar apois todoas as flags foram resetadas
+    // Método usado para controlar quando troca uma turna no filtro principal
+    // Só pode consultar apois todoas as flags foram resetadas
     const podeConsultar = () => {
       return (
         disciplinaSelecionada === undefined &&
@@ -217,7 +224,7 @@ const FrequenciaPlanoAula = () => {
     diasParaHabilitar,
   ]);
 
-  // Caso tenha alteração abaixo alterar o podeConsultar() também!
+  // Caso exista alteração aqui, alterar o podeConsultar() também
   useEffect(() => {
     setDataSugerida('');
     resetarTelaFrequencia();
@@ -241,10 +248,10 @@ const FrequenciaPlanoAula = () => {
     somenteConsulta,
   ]);
 
-  const obterListaFrequencia = async aulaId => {
-    setAulaId(aulaId);
+  const obterListaFrequencia = async id => {
+    setAulaId(id);
     const frequenciaAlunos = await api
-      .get(`v1/calendarios/frequencias`, { params: { aulaId } })
+      .get(`v1/calendarios/frequencias`, { params: { aulaId: id } })
       .catch(e => erros(e));
     if (frequenciaAlunos && frequenciaAlunos.data) {
       setFrequenciaId(frequenciaAlunos.data.id);
@@ -441,9 +448,12 @@ const FrequenciaPlanoAula = () => {
 
   const obterAulaSelecionada = useCallback(
     data => {
-      const aulaDataSelecionada = listaDatasAulas.find(item =>
-        window.moment(item.data).isSame(data, 'date')
+      const aulaDataSelecionada = listaDatasAulas.filter(
+        item =>
+          window.moment(item.data).format('DD/MM/YYYY') ===
+          window.moment(data).format('DD/MM/YYYY')
       );
+
       return aulaDataSelecionada;
     },
     [listaDatasAulas]
@@ -505,7 +515,6 @@ const FrequenciaPlanoAula = () => {
   };
 
   const resetarPlanoAula = useCallback(() => {
-    setEhRegencia(false);
     planoAula.descricao = null;
     setTemObjetivos(false);
     planoAula.qtdAulas = 0;
@@ -565,6 +574,7 @@ const FrequenciaPlanoAula = () => {
   };
 
   const onChangeDisciplinas = async disciplinaId => {
+    if (!disciplinaId) store.dispatch(salvarDadosAulaFrequencia());
     if (modoEdicaoFrequencia || modoEdicaoPlanoAula) {
       const confirmarParaSalvar = await pergutarParaSalvar();
       if (confirmarParaSalvar) {
@@ -604,21 +614,83 @@ const FrequenciaPlanoAula = () => {
     });
   };
 
+  useEffect(() => {
+    return () => {
+      store.dispatch(salvarDadosAulaFrequencia());
+    };
+  }, []);
+
+  const [exibeEscolhaAula, setExibeEscolhaAula] = useState(false);
+  const [ehAulaCj, setEhAulaCj] = useState(false);
+
+  const aoTrocarAulaCj = () => {
+    setEhAulaCj(!ehAulaCj);
+  };
+
+  useEffect(() => {
+    if (exibeEscolhaAula) {
+      setCarregandoFrequencia(true);
+      setCarregandoMaterias(true);
+      const aulaDataSelecionada = obterAulaSelecionada(dataSelecionada);
+      const aulaSelecionada = aulaDataSelecionada.find(
+        item => item.aulaCJ === ehAulaCj
+      );
+
+      if (aulaSelecionada) {
+        setAula(aulaSelecionada);
+        if (aulaSelecionada && aulaSelecionada.idAula) {
+          obterListaFrequencia(aulaSelecionada.idAula);
+          obterPlanoAula(aulaSelecionada);
+          obterAvaliacao(aulaSelecionada.idAula, dataSelecionada);
+        }
+      }
+      setCarregandoFrequencia(false);
+      setCarregandoMaterias(false);
+    }
+  }, [ehAulaCj]);
+
   const validaSeTemIdAula = useCallback(
     data => {
       setDataSelecionada(data);
       resetarTelaFrequencia(true, true);
       resetarPlanoAula();
       const aulaDataSelecionada = obterAulaSelecionada(data);
-      setAula(aulaDataSelecionada);
-      if (aulaDataSelecionada && aulaDataSelecionada.idAula) {
-        obterListaFrequencia(aulaDataSelecionada.idAula);
-        obterPlanoAula(aulaDataSelecionada);
-        obterAvaliacao(aulaDataSelecionada.idAula, data);
+      if (aulaDataSelecionada.length) {
+        if (
+          !usuario.ehProfessor &&
+          !usuario.ehProfessorCj &&
+          !usuario.ehProfessorPoa &&
+          aulaDataSelecionada.length > 1
+        ) {
+          setExibeEscolhaAula(true);
+        } else {
+          const aulaSelecionada = aulaDataSelecionada.find(
+            item => item.aulaCJ === usuario.ehProfessorCj
+          );
+
+          if (aulaSelecionada) {
+            setAula(aulaSelecionada);
+            if (aulaSelecionada && aulaSelecionada.idAula) {
+              obterListaFrequencia(aulaSelecionada.idAula);
+              obterPlanoAula(aulaSelecionada);
+              obterAvaliacao(aulaSelecionada.idAula, data);
+            }
+          }
+        }
       }
     },
     [obterAulaSelecionada, resetarPlanoAula, obterPlanoAula]
   );
+
+  useEffect(() => {
+    if (Object.entries(dadosAulaFrequencia).length) {
+      if (listaDisciplinas.length && dadosAulaFrequencia.disciplinaId) {
+        setDisciplinaIdSelecionada(String(dadosAulaFrequencia.disciplinaId));
+      }
+      if (diasParaHabilitar && dadosAulaFrequencia.dia)
+        validaSeTemIdAula(window.moment(dadosAulaFrequencia.dia));
+    }
+  }, [dadosAulaFrequencia, listaDisciplinas, diasParaHabilitar]);
 
   const obterDataAulaSugerida = useCallback(datasDeAulas => {
     const habilitar = datasDeAulas.map(item =>
@@ -682,6 +754,8 @@ const FrequenciaPlanoAula = () => {
     font-weight: bold;
   `;
 
+  const Label = styled.label``;
+
   const acessarEditarAvaliacao = () => {
     history.push(`${RotasDto.CADASTRO_DE_AVALIACAO}/editar/${temAvaliacao}`);
   };
@@ -712,13 +786,13 @@ const FrequenciaPlanoAula = () => {
               className="alert alert-info alert-dismissible fade show text-center"
               role="alert"
             >
-              Atenção, existe uma avaliação neste dia:{' '}
+              Atenção, existe uma avaliação neste dia:
               <LinkAcao onClick={acessarEditarAvaliacao}>
                 Editar Avaliação
-              </LinkAcao>{' '}
+              </LinkAcao>
               {dataVigente && (
                 <>
-                  ou{' '}
+                  ou
                   <LinkAcao onClick={acessarNotasConceitos}>
                     Acessar Notas e Conceitos
                   </LinkAcao>
@@ -734,6 +808,7 @@ const FrequenciaPlanoAula = () => {
           <div className="row">
             <div className="col-md-12 d-flex justify-content-end pb-4">
               <Button
+                id={shortid.generate()}
                 label="Voltar"
                 icon="arrow-left"
                 color={Colors.Azul}
@@ -742,6 +817,7 @@ const FrequenciaPlanoAula = () => {
                 onClick={onClickVoltar}
               />
               <Button
+                id={shortid.generate()}
                 label="Cancelar"
                 color={Colors.Roxo}
                 border
@@ -751,6 +827,7 @@ const FrequenciaPlanoAula = () => {
               />
               <Loader loading={carregandoSalvar} tip="">
                 <Button
+                  id={shortid.generate()}
                   label="Salvar"
                   color={Colors.Roxo}
                   border
@@ -791,11 +868,26 @@ const FrequenciaPlanoAula = () => {
                 placeholder="DD/MM/AAAA"
                 formatoData="DD/MM/YYYY"
                 desabilitado={
-                  !disciplinaIdSelecionada || carregandoDiasParaHabilitar
+                  !listaDisciplinas.length ||
+                  !disciplinaIdSelecionada ||
+                  carregandoDiasParaHabilitar
                 }
                 carregando={carregandoDiasParaHabilitar}
                 diasParaHabilitar={diasParaHabilitar}
               />
+            </div>
+            <div className="col-sm-12 col-md-4 col-lg-3 col-xl-3 mb-3">
+              {exibeEscolhaAula && (
+                <>
+                  <Switch
+                    onChange={aoTrocarAulaCj}
+                    checked={ehAulaCj}
+                    size="small"
+                    className="mr-2"
+                  />
+                  <Label className="my-auto">Aula CJ</Label>
+                </>
+              )}
             </div>
           </div>
           {dataSelecionada ? (
