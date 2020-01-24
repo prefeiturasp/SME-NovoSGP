@@ -1,4 +1,5 @@
 ﻿using SME.SGP.Aplicacao.Integracoes;
+using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Dto;
 using SME.SGP.Infra;
@@ -159,32 +160,68 @@ namespace SME.SGP.Aplicacao
             }
         }
 
+        private SupervisorEscolaDre MapearDtoParaEntidade(SupervisorEscolasDreDto dto)
+        {
+            return new SupervisorEscolaDre()
+            {
+                DreId = dto.DreId,
+                SupervisorId = dto.SupervisorId,
+                EscolaId = dto.EscolaId,
+                Id = dto.Id,
+                Excluido = dto.Excluido,
+                AlteradoEm = dto.AlteradoEm,
+                AlteradoPor = dto.AlteradoPor,
+                AlteradoRF = dto.AlteradoRF,
+                CriadoEm = dto.CriadoEm,
+                CriadoPor = dto.CriadoPor,
+                CriadoRF = dto.CriadoRF
+            };
+        }
+
+
         private void TratarRegistrosComSupervisores(IEnumerable<AbrangenciaUeRetorno> escolasPorDre, IEnumerable<SupervisorEscolasDreDto> supervisoresEscolasDres, List<SupervisorEscolasDto> listaRetorno)
         {
             if (supervisoresEscolasDres.Any())
             {
-                var supervisores = servicoEOL.ObterSupervisoresPorCodigo(supervisoresEscolasDres.Select(a => a.SupervisorId).ToArray());
+                var supervisoresIds = supervisoresEscolasDres.GroupBy(a => a.SupervisorId).Select(a => a.Key);
+                var supervisores = servicoEOL.ObterSupervisoresPorCodigo(supervisoresIds.ToArray());
 
-                if (supervisores == null)
-                    throw new System.Exception("Não foi possível localizar o nome dos supervisores na API Eol");
-
-                foreach (var supervisorEscolaDre in supervisoresEscolasDres.GroupBy(a => a.SupervisorId).Select(a => a.Key).ToList())
+                if (supervisores != null && supervisores.Any())
                 {
-                    var supervisorEscolasDto = new SupervisorEscolasDto();
-                    supervisorEscolasDto.SupervisorNome = supervisores.FirstOrDefault(a => a.CodigoRF == supervisorEscolaDre)?.NomeServidor;
-                    supervisorEscolasDto.SupervisorId = supervisorEscolaDre;
+                    if (supervisores.Count() != supervisoresIds.Count())
+                    {
+                        var supervisoresSemAtribuicao = supervisoresEscolasDres.Where(s => !supervisores.Select(e => e.CodigoRF).Contains(s.SupervisorId));
 
-                    var idsEscolasDoSupervisor = supervisoresEscolasDres.Where(a => a.SupervisorId == supervisorEscolaDre)
-                        .Select(a => a.EscolaId)
-                        .ToList();
+                        if (supervisoresSemAtribuicao != null && supervisoresSemAtribuicao.Any())
+                        {
+                            foreach (var supervisor in supervisoresSemAtribuicao)
+                            {
+                                var supervisorEntidadeExclusao = MapearDtoParaEntidade(supervisor);
+                                supervisorEntidadeExclusao.Excluir();
 
-                    var escolas = from t in escolasPorDre
-                                  where idsEscolasDoSupervisor.Contains(t.Codigo)
-                                  select new UnidadeEscolarDto() { Codigo = t.Codigo, Nome = t.Nome };
+                                repositorioSupervisorEscolaDre.Salvar(supervisorEntidadeExclusao);
+                            }
+                        }
+                    }
 
-                    supervisorEscolasDto.Escolas = escolas.ToList();
+                    foreach (var supervisorEscolaDre in supervisoresIds)
+                    {
+                        var supervisorEscolasDto = new SupervisorEscolasDto();
+                        supervisorEscolasDto.SupervisorNome = supervisores.FirstOrDefault(a => a.CodigoRF == supervisorEscolaDre)?.NomeServidor;
+                        supervisorEscolasDto.SupervisorId = supervisorEscolaDre;
 
-                    listaRetorno.Add(supervisorEscolasDto);
+                        var idsEscolasDoSupervisor = supervisoresEscolasDres.Where(a => a.SupervisorId == supervisorEscolaDre)
+                            .Select(a => a.EscolaId)
+                            .ToList();
+
+                        var escolas = from t in escolasPorDre
+                                      where idsEscolasDoSupervisor.Contains(t.Codigo)
+                                      select new UnidadeEscolarDto() { Codigo = t.Codigo, Nome = t.Nome };
+
+                        supervisorEscolasDto.Escolas = escolas.ToList();
+
+                        listaRetorno.Add(supervisorEscolasDto);
+                    }
                 }
             }
         }
