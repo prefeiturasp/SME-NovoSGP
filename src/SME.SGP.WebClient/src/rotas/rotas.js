@@ -37,6 +37,7 @@ import AulaDadaAulaPrevista from '~/paginas/DiarioClasse/AulaDadaAulaPrevista/au
 import RegistroPOALista from '~/paginas/DiarioClasse/RegistroPOA/Lista';
 import RegistroPOAForm from '~/paginas/DiarioClasse/RegistroPOA/Form';
 import PeriodoFechamentoReaberturaLista from '~/paginas/CalendarioEscolar/PeriodoFechamentoReabertura/periodoFechamentoReaberturaLista';
+import PeriodoFechamentoReaberturaForm from '~/paginas/CalendarioEscolar/PeriodoFechamentoReabertura/periodoFechamentoReaberturaForm';
 
 const rotas = new Map();
 
@@ -540,6 +541,26 @@ rotas.set(`${RotasDto.PERIODO_FECHAMENTO_REABERTURA}`, {
   exact: true,
   tipo: RotasTipo.EstruturadaAutenticada,
   temPermissionamento: false,
+});
+
+rotas.set(`${RotasDto.PERIODO_FECHAMENTO_REABERTURA}/novo`, {
+  breadcrumbName: 'Períodos',
+  parent: RotasDto.PERIODO_FECHAMENTO_REABERTURA,
+  component: PeriodoFechamentoReaberturaForm,
+  exact: true,
+  tipo: RotasTipo.EstruturadaAutenticada,
+  temPermissionamento: true,
+  chavePermissao: RotasDto.PERIODO_FECHAMENTO_REABERTURA,
+});
+
+rotas.set(`${RotasDto.PERIODO_FECHAMENTO_REABERTURA}/editar/:id`, {
+  breadcrumbName: 'Períodos',
+  parent: RotasDto.PERIODO_FECHAMENTO_REABERTURA,
+  component: PeriodoFechamentoReaberturaForm,
+  exact: true,
+  tipo: RotasTipo.EstruturadaAutenticada,
+  temPermissionamento: true,
+  chavePermissao: RotasDto.PERIODO_FECHAMENTO_REABERTURA,
 });
 
 const rotasArray = [];
