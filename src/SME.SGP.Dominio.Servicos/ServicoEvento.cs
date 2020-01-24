@@ -151,9 +151,9 @@ namespace SME.SGP.Dominio.Servicos
             }
         }
 
-        public async Task SalvarEventoFeriadosAoCadastrarTipoCalendario(TipoCalendario tipoCalendario)
+        public void SalvarEventoFeriadosAoCadastrarTipoCalendario(TipoCalendario tipoCalendario)
         {
-            var feriados = await ObterEValidarFeriados();
+            var feriados = ObterEValidarFeriados();
 
             var tipoEventoFeriado = ObterEValidarTipoEventoFeriado();
 
@@ -161,7 +161,7 @@ namespace SME.SGP.Dominio.Servicos
 
             var feriadosErro = new List<long>();
 
-            await SalvarListaEventos(eventos, feriadosErro);
+            SalvarListaEventos(eventos, feriadosErro);
 
             if (feriadosErro.Any())
                 TratarErros(feriadosErro);
@@ -169,7 +169,7 @@ namespace SME.SGP.Dominio.Servicos
 
         public void SalvarRecorrencia(Evento evento, DateTime dataInicial, DateTime? dataFinal, int? diaDeOcorrencia, IEnumerable<DayOfWeek> diasDaSemana, PadraoRecorrencia padraoRecorrencia, PadraoRecorrenciaMensal? padraoRecorrenciaMensal, int repeteACada)
         {
-            if(evento.DataInicio.Date != evento.DataFim.Date)
+            if (evento.DataInicio.Date != evento.DataFim.Date)
             {
                 throw new NegocioException("A recorrência somente é permitida quando o evento possui data única.");
             }
@@ -340,10 +340,10 @@ namespace SME.SGP.Dominio.Servicos
             };
         }
 
-        private async Task<IEnumerable<FeriadoCalendario>> ObterEValidarFeriados()
+        private IEnumerable<FeriadoCalendario> ObterEValidarFeriados()
         {
-            var feriadosMoveis = await repositorioFeriadoCalendario.ObterFeriadosCalendario(new FiltroFeriadoCalendarioDto { Ano = DateTime.Now.Year, Tipo = TipoFeriadoCalendario.Movel });
-            var feriadosFixos = await repositorioFeriadoCalendario.ObterFeriadosCalendario(new FiltroFeriadoCalendarioDto { Tipo = TipoFeriadoCalendario.Fixo });
+            var feriadosMoveis = repositorioFeriadoCalendario.ObterFeriadosCalendario(new FiltroFeriadoCalendarioDto { Ano = DateTime.Now.Year, Tipo = TipoFeriadoCalendario.Movel }).Result;
+            var feriadosFixos = repositorioFeriadoCalendario.ObterFeriadosCalendario(new FiltroFeriadoCalendarioDto { Tipo = TipoFeriadoCalendario.Fixo }).Result;
 
             var feriados = feriadosFixos?.ToList();
             feriados?.AddRange(feriadosMoveis);
@@ -405,13 +405,13 @@ namespace SME.SGP.Dominio.Servicos
             repositorioEvento.Salvar(evento);
         }
 
-        private async Task SalvarListaEventos(IEnumerable<Evento> eventos, List<long> feriadosErro)
+        private void SalvarListaEventos(IEnumerable<Evento> eventos, List<long> feriadosErro)
         {
             foreach (var evento in eventos)
             {
                 try
                 {
-                    await repositorioEvento.SalvarAsync(evento);
+                    repositorioEvento.Salvar(evento);
                 }
                 catch (Exception)
                 {
@@ -489,6 +489,8 @@ namespace SME.SGP.Dominio.Servicos
                             {
                                 if (temEventoLiberacaoExcepcional)
                                     return true;
+                                else if (evento.TipoEvento.Codigo == (long)TipoEvento.Outros)
+                                    return devePassarPorWorkflow;
                                 else throw new NegocioException("Não é possível cadastrar o evento.");
                             }
                         }

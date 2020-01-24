@@ -2,8 +2,6 @@
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Text;
-using System.Threading;
 
 namespace SME.SGP.Infra.Escopo
 {
@@ -15,9 +13,8 @@ namespace SME.SGP.Infra.Escopo
             TransientServices = new ConcurrentDictionary<string, List<IDisposable>>();
         }
 
-        public static ConcurrentDictionary<string, List<IDisposable>> TransientServices { get; set; }
         public static ConcurrentDictionary<string, WorkerContext> TransientContexts { get; set; }
-
+        public static ConcurrentDictionary<string, List<IDisposable>> TransientServices { get; set; }
 
         public static IDisposable AddTransientDisposableServices(IDisposable service)
         {
@@ -45,10 +42,12 @@ namespace SME.SGP.Infra.Escopo
 
             if (TransientServices.TryRemove(WorkerContext.ContextIdentifier, out services))
             {
-                foreach (var item in services)
-                    if (item != null)
-                        item.Dispose();
-
+                if (services != null)
+                {
+                    foreach (var item in services)
+                        if (item != null)
+                            item.Dispose();
+                }
             }
             if (TransientContexts.TryRemove(WorkerContext.ContextIdentifier, out context))
                 context.Dispose();

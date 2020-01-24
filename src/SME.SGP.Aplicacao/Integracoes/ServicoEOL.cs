@@ -2,6 +2,7 @@
 using Sentry;
 using SME.SGP.Aplicacao.Integracoes.Respostas;
 using SME.SGP.Dominio;
+using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Dto;
 using SME.SGP.Infra;
 using System;
@@ -17,10 +18,12 @@ namespace SME.SGP.Aplicacao.Integracoes
     public class ServicoEOL : IServicoEOL
     {
         private readonly HttpClient httpClient;
+        private readonly IRepositorioCache cache;
 
-        public ServicoEOL(HttpClient httpClient)
+        public ServicoEOL(HttpClient httpClient, IRepositorioCache cache)
         {
             this.httpClient = httpClient;
+            this.cache = cache;
         }
 
         public async Task AlterarEmail(string login, string email)
@@ -158,15 +161,31 @@ namespace SME.SGP.Aplicacao.Integracoes
         public async Task<IEnumerable<AlunoPorTurmaResposta>> ObterAlunosPorTurma(string turmaId)
         {
             var alunos = new List<AlunoPorTurmaResposta>();
-            var resposta = await httpClient.GetAsync($"turmas/{turmaId}");
-            if (resposta.IsSuccessStatusCode)
+
+            var chaveCache = ObterChaveCacheAlunosTurma(turmaId);
+            var cacheAlunos = cache.Obter(chaveCache);
+            if (cacheAlunos != null)
             {
-                var json = await resposta.Content.ReadAsStringAsync();
-                alunos = JsonConvert.DeserializeObject<List<AlunoPorTurmaResposta>>(json);
+                alunos = JsonConvert.DeserializeObject<List<AlunoPorTurmaResposta>>(cacheAlunos);
+            }
+            else
+            {
+                var resposta = await httpClient.GetAsync($"turmas/{turmaId}");
+                if (resposta.IsSuccessStatusCode)
+                {
+                    var json = await resposta.Content.ReadAsStringAsync();
+                    alunos = JsonConvert.DeserializeObject<List<AlunoPorTurmaResposta>>(json);
+
+                    // Salva em cache por 5 min
+                    await cache.SalvarAsync(chaveCache, json, 5);
+                }
             }
 
             return alunos;
         }
+
+        private string ObterChaveCacheAlunosTurma(string turmaId)
+            => $"alunos-turma:{turmaId}";
 
         public async Task<IEnumerable<AlunoPorTurmaResposta>> ObterAlunosPorTurma(string turmaId, int anoLetivo)
         {
@@ -179,6 +198,12 @@ namespace SME.SGP.Aplicacao.Integracoes
             }
 
             return alunos;
+        }
+
+        public async Task<IEnumerable<DisciplinaResposta>> ObterDisciplinasPorCodigoTurma(string codigoTurma)
+        {
+            var url = $"funcionarios/turmas/{codigoTurma}/disciplinas";
+            return await ObterDisciplinas(url);
         }
 
         public async Task<IEnumerable<DisciplinaResposta>> ObterDisciplinasParaPlanejamento(long codigoTurma, string login, Guid perfil)
@@ -633,7 +658,7 @@ namespace SME.SGP.Aplicacao.Integracoes
                 Nome = x.Descricao,
                 Regencia = x.EhRegencia,
                 Compartilhada = x.EhCompartilhada,
-                RegistroFrequencia = x.PermiteRegistroFrequencia
+                RegistraFrequencia = x.RegistraFrequencia
             });
         }
 

@@ -80,6 +80,7 @@ const Notas = ({ match }) => {
         disciplinaCodigo: disciplinaId,
         modalidade: usuario.turmaSelecionada.modalidade,
         turmaCodigo: usuario.turmaSelecionada.turma,
+        turmaHistorico: usuario.turmaSelecionada.consideraHistorico,
       };
       const dados = await api
         .get('v1/avaliacoes/notas/', { params })
@@ -178,7 +179,7 @@ const Notas = ({ match }) => {
   }, [obterDadosBimestres, usuario.turmaSelecionada.turma]);
 
   const obterTituloTela = useCallback(async () => {
-    const url = `v1/avaliacoes/notas/turmas/${usuario.turmaSelecionada.turma}/anos-letivos/${usuario.turmaSelecionada.anoLetivo}/tipos`;
+    const url = `v1/avaliacoes/notas/turmas/${usuario.turmaSelecionada.turma}/anos-letivos/${usuario.turmaSelecionada.anoLetivo}/tipos?consideraHistorico=${usuario.turmaSelecionada.consideraHistorico}`;
     const tipoNotaTurmaSelecionada = await api.get(url);
     if (
       Number(notasConceitos.Conceitos) === Number(tipoNotaTurmaSelecionada.data)
