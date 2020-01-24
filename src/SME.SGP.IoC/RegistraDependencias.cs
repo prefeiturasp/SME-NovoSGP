@@ -94,6 +94,8 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IConsultasNotasConceitos, ConsultasNotasConceitos>();
             services.TryAddScoped<IConsultasAtribuicoes, ConsultasAtribuicoes>();
             services.TryAddScoped<IConsultasRegistroPoa, ConsultasRegistroPoa>();
+            services.TryAddScoped<IConsultaRecuperacaoParalela, ConsultasRecuperacaoParalela>();
+            services.TryAddScoped<IComandosRecuperacaoParalela, ComandosRecuperacaoParalela>();
         }
 
         private static void RegistrarContextos(IServiceCollection services)
@@ -160,6 +162,8 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IRepositorioAulaPrevistaBimestre, RepositorioAulaPrevistaBimestre>();
             services.TryAddScoped<IRepositorioRegistroPoa, RepositorioRegistroPoa>();
             services.TryAddScoped<IRepositorioAtividadeAvaliativaDisciplina, RepositorioAtividadeAvaliativaDisciplina>();
+            services.TryAddScoped<IRepositorioRecuperacaoParalela, RepositorioRecuperacaoParalela>();
+            services.TryAddScoped<IRepositorioRecuperacaoParalelaPeriodo, RepositorioRecuperacaoParalelaPeriodo>();
         }
 
         private static void RegistrarServicos(IServiceCollection services)
