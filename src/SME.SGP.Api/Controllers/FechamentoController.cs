@@ -18,5 +18,16 @@ namespace SME.SGP.Api.Controllers
         {
             return Ok(await consultasFechamento.ObterPorTipoCalendarioDreEUe(fechamentoDto));
         }
+
+        [HttpPost]
+        [ProducesResponseType(typeof(FechamentoDto), 200)]
+        [ProducesResponseType(204)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        //[Permissao(Permissao.PFA_C, Policy = "Bearer")]
+        public async Task<IActionResult> Post([FromBody]FechamentoDto fechamentoDto, [FromServices] IComandosFechamento comandosFechamento)
+        {
+            await comandosFechamento.Salvar(fechamentoDto);
+            return Ok();
+        }
     }
 }

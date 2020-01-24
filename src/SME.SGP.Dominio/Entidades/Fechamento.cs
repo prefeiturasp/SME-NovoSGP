@@ -17,46 +17,63 @@ namespace SME.SGP.Dominio
             fechamentosBimestre = new List<FechamentoBimestre>();
         }
 
+        public Dre Dre { get; set; }
         public long? DreId { get; set; }
         public IEnumerable<FechamentoBimestre> FechamentosBimestre => fechamentosBimestre;
         public bool Migrado { get; set; }
+        public Ue Ue { get; set; }
         public long? UeId { get; set; }
         private List<FechamentoBimestre> fechamentosBimestre { get; set; }
 
-        public void AdicionarFechamentoBimestre(PeriodoEscolar periodoEscolar, FechamentoBimestre fechamentoBimestre)
+        public void AdicionarDre(Dre dre)
         {
-            if (periodoEscolar == null)
-            {
-                throw new NegocioException("O período escolar não foi encontrado.");
-            }
-            if (periodoEscolar.TipoCalendarioId == 0 || periodoEscolar.TipoCalendario == null)
-            {
-                throw new NegocioException("O tipo de calendário não foi encontrado.");
-            }
+            Dre = dre;
+        }
 
-            if (periodoEscolar.TipoCalendario.AnoLetivo
-                != fechamentoBimestre.InicioDoFechamento.Year || periodoEscolar.TipoCalendario.AnoLetivo != fechamentoBimestre.FinalDoFechamento.Year)
-            {
-                throw new NegocioException("As datas do período de fechamento devem ser no mesmo ano do tipo de calendário informado.");
-            }
-
-            //if (fechamentoBimestre.InicioDoFechamento > fechamentoBimestre.FinalDoFechamento)
+        public void AdicionarFechamentoBimestre(FechamentoBimestre fechamentoBimestre)
+        {
+            //if (periodoEscolar == null)
             //{
-            //    throw new NegocioException("A data de início do fechamento deve ser menor que a data final.");
+            //    throw new NegocioException("O período escolar não foi encontrado.");
+            //}
+            //if (periodoEscolar.TipoCalendarioId == 0 || periodoEscolar.TipoCalendario == null)
+            //{
+            //    throw new NegocioException("O tipo de calendário não foi encontrado.");
             //}
 
-            if (fechamentosBimestre.Any(c => c.PeriodoEscolar.Bimestre == periodoEscolar.Bimestre))
+            //if (periodoEscolar.TipoCalendario.AnoLetivo
+            //    != fechamentoBimestre.InicioDoFechamento.Year || periodoEscolar.TipoCalendario.AnoLetivo != fechamentoBimestre.FinalDoFechamento.Year)
+            //{
+            //    throw new NegocioException("As datas do período de fechamento devem ser no mesmo ano do tipo de calendário informado.");
+            //}
+
+            if (fechamentoBimestre.InicioDoFechamento > fechamentoBimestre.FinalDoFechamento)
+            {
+                throw new NegocioException("A data de início do fechamento deve ser menor que a data final.");
+            }
+
+            if (fechamentosBimestre.Any(c => c.PeriodoEscolar.Bimestre == fechamentoBimestre.PeriodoEscolar.Bimestre))
             {
                 throw new NegocioException("Esse período escolar já foi adicionado.");
             }
 
-            var periodoComDataInvalida = fechamentosBimestre.FirstOrDefault(c => c.PeriodoEscolar.Bimestre < periodoEscolar.Bimestre && c.FinalDoFechamento > fechamentoBimestre.InicioDoFechamento);
+            var periodoComDataInvalida = fechamentosBimestre.FirstOrDefault(c => c.PeriodoEscolar.Bimestre < fechamentoBimestre.PeriodoEscolar.Bimestre && c.FinalDoFechamento > fechamentoBimestre.InicioDoFechamento);
             if (periodoComDataInvalida != null)
             {
-                throw new NegocioException($"A data de início do fechamento do {periodoEscolar.Bimestre}º Bimestre deve ser menor que a data final do {periodoComDataInvalida.PeriodoEscolar.Bimestre}º Bimestre.");
+                throw new NegocioException($"A data de início do fechamento do {fechamentoBimestre.PeriodoEscolar.Bimestre}º Bimestre deve ser menor que a data final do {periodoComDataInvalida.PeriodoEscolar.Bimestre}º Bimestre.");
             }
-            fechamentoBimestre.AdicionarPeriodoEscolar(periodoEscolar);
+            //fechamentoBimestre.AdicionarPeriodoEscolar(periodoEscolar);
             fechamentosBimestre.Add(fechamentoBimestre);
+        }
+
+        public void AdicionarUe(Ue ue)
+        {
+            Ue = ue;
+        }
+
+        public FechamentoBimestre ObterFechamentoBimestre(long periodoEscolarId)
+        {
+            return fechamentosBimestre.FirstOrDefault(c => c.PeriodoEscolarId == periodoEscolarId);
         }
 
         public void ValidarIntervaloDatasDreEUe(List<FechamentoBimestre> periodoFechamentoSMEDRE)

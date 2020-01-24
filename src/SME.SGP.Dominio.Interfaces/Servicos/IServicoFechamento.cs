@@ -5,6 +5,8 @@ namespace SME.SGP.Dominio.Interfaces
 {
     public interface IServicoFechamento
     {
-        Task<FechamentoDto> ObterPorTipoCalendarioDreEUe(long tipoCalendarioId, long? dreId, long? ueId);
+        Task<FechamentoDto> ObterPorTipoCalendarioDreEUe(long tipoCalendarioId, string dreId, string ueId);
+
+        Task Salvar(FechamentoDto fechamentoDto);
     }
 }
