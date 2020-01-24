@@ -54,7 +54,7 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IComandosNotasConceitos, ComandosNotasConceitos>();
             services.TryAddScoped<IComandosAulaPrevista, ComandosAulaPrevista>();
             services.TryAddScoped<IComandosRegistroPoa, ComandosRegistroPoa>();
-            services.TryAddScoped<IComandosPeriodoFechamento, ComandosPeriodoFechamento>();
+            services.TryAddScoped<IComandosFechamento, ComandosFechamento>();
         }
 
         private static void RegistrarConsultas(IServiceCollection services)
