@@ -142,44 +142,45 @@ namespace SME.SGP.Dominio.Servicos
         {
             if (fechamentoReabertura.EhParaDre() || fechamentoReabertura.EhParaSme())
             {
-                var fechamentosParaAtualizar = new List<(FechamentoReabertura, bool, bool)>();
+                var fechamentosParaAtualizarTupple = new List<(FechamentoReabertura, bool, bool)>();
+                var fechamentosParaAtualizar = new List<FechamentoReabertura>();
 
                 if (fechamentoReabertura.EhParaDre())
                 {
-                    var fechamentosReaberturasParaAtualizar = fechamentoReaberturas.Where(a => a.EhParaUe() && a.DreId == fechamentoReabertura.DreId).ToList();
-
-                    foreach (var fechamentoReaberturasParaAtualizar in fechamentosReaberturasParaAtualizar)
-                    {
-                        var atualizaInicio = false;
-                        var atualizaFim = false;
-
-                        if (fechamentoReaberturasParaAtualizar.Inicio < fechamentoReabertura.Inicio)
-                        {
-                            fechamentoReaberturasParaAtualizar.Inicio = fechamentoReabertura.Inicio;
-                            atualizaInicio = true;
-                        }
-
-                        if (fechamentoReaberturasParaAtualizar.Fim > fechamentoReabertura.Fim)
-                        {
-                            fechamentoReaberturasParaAtualizar.Fim = fechamentoReabertura.Fim;
-                            atualizaFim = true;
-                        }
-
-                        if (atualizaInicio || atualizaFim)
-                            fechamentosParaAtualizar.Add((fechamentoReaberturasParaAtualizar, atualizaInicio, atualizaFim));
-                    }
+                    fechamentosParaAtualizar = fechamentoReaberturas.Where(a => a.EhParaUe() && a.DreId == fechamentoReabertura.DreId).ToList();
                 }
-                else if (fechamentoReabertura.EhParaSme())
+            }
+            else if (fechamentoReabertura.EhParaSme())
+            {
+                //fechamentosComDataFinalMaior = fechamentoReaberturas.Where(a => a.Fim > fechamentoReabertura.Fim && (a.EhParaUe() || a.EhParaDre())).ToList();
+                //fechamentosComDataInicialMenor = fechamentoReaberturas.Where(a => a.Inicio < fechamentoReabertura.Inicio && (a.EhParaUe() || a.EhParaDre())).ToList();
+            }
+
+            foreach (var fechamentoReaberturasParaAtualizar in fechamentosParaAtualizar)
+            {
+                var atualizaInicio = false;
+                var atualizaFim = false;
+
+                if (fechamentoReaberturasParaAtualizar.Inicio < fechamentoReabertura.Inicio)
                 {
-                    fechamentosComDataFinalMaior = fechamentoReaberturas.Where(a => a.Fim > fechamentoReabertura.Fim && (a.EhParaUe() || a.EhParaDre())).ToList();
-                    fechamentosComDataInicialMenor = fechamentoReaberturas.Where(a => a.Inicio < fechamentoReabertura.Inicio && (a.EhParaUe() || a.EhParaDre())).ToList();
+                    fechamentoReaberturasParaAtualizar.Inicio = fechamentoReabertura.Inicio;
+                    atualizaInicio = true;
                 }
 
-                AtualizaFechamentosComDatasDistintas(fechamentoReabertura, fechamentosComDataFinalMaior, fechamentosComDataInicialMenor);
+                if (fechamentoReaberturasParaAtualizar.Fim > fechamentoReabertura.Fim)
+                {
+                    fechamentoReaberturasParaAtualizar.Fim = fechamentoReabertura.Fim;
+                    atualizaFim = true;
+                }
 
-                fechamentosComDataFinalMaior.AddRange(fechamentosComDataInicialMenor);
+                if (atualizaInicio || atualizaFim)
+                    fechamentosParaAtualizarTupple.Add((fechamentoReaberturasParaAtualizar, atualizaInicio, atualizaFim));
 
-                var fechamentosParaNotificar = fechamentosComDataFinalMaior.Select(a => a.Id).Distinct();
+                //AtualizaFechamentosComDatasDistintas(fechamentoReabertura, fechamentosComDataFinalMaior, fechamentosComDataInicialMenor);
+
+                //fechamentosComDataFinalMaior.AddRange(fechamentosComDataInicialMenor);
+
+                //var fechamentosParaNotificar = fechamentosComDataFinalMaior.Select(a => a.Id).Distinct();
             }
         }
     }
