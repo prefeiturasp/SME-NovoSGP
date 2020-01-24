@@ -2,6 +2,7 @@ import React from 'react';
 import { Modal, Row } from 'antd';
 import styled from 'styled-components';
 import PropTypes from 'prop-types';
+import shortid from 'shortid';
 import Card from './cardBootstrap';
 import Button from './button';
 import { Base, Colors } from './colors';
@@ -132,6 +133,7 @@ const ModalConteudoHtml = props => {
         ) : (
           <div className="d-flex justify-content-end" hidden={esconderBotoes}>
             <Button
+              id={shortid.generate()}
               key="btn-sim-confirmacao"
               label={labelBotaoSecundario}
               color={Colors.Roxo}
@@ -142,6 +144,7 @@ const ModalConteudoHtml = props => {
               hidden={esconderBotaoSecundario}
             />
             <Button
+              id={shortid.generate()}
               key="btn-nao-confirmacao"
               label={labelBotaoPrincipal}
               color={Colors.Roxo}

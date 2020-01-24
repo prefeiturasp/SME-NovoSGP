@@ -8,59 +8,6 @@ import { Field } from 'formik';
 import { Base } from './colors';
 import Label from './label';
 
-const Container = styled.div`
-  .ant-select {
-    width: 100%;
-  }
-
-  .ant-select-arrow {
-    color: ${Base.CinzaMako};
-  }
-  .ant-select-selection--single {
-    align-items: center;
-    display: flex;
-    height: 38px;
-  }
-  .ant-select-selection__rendered {
-    width: 98%;
-  }
-  .ant-select-selection__placeholder {
-    display: block;
-  }
-  .ant-select .ant-select-search__field {
-    display: block;
-    max-width: 100% !important;
-  }
-  .ant-select-selection-selected-value {
-    font-weight: bold;
-  }
-  .ant-select-selection--multiple {
-    min-height: 38px;
-
-    .ant-select-selection__placeholder {
-      line-height: 25px;
-    }
-
-    .ant-select-selection__rendered {
-      margin-top: 3px;
-    }
-  }
-
-  div[class*='is-invalid'] {
-    .ant-select-selection {
-      border-color: #dc3545 !important;
-    }
-  }
-
-  label {
-    font-weight: bold;
-  }
-`;
-
-const Erro = styled.span`
-  color: ${Base.Vermelho};
-`;
-
 const SelectComponent = React.forwardRef((props, ref) => {
   const {
     name,
@@ -80,7 +27,80 @@ const SelectComponent = React.forwardRef((props, ref) => {
     disabled,
     form,
     showSearch,
+    size,
+    border,
+    color,
   } = props;
+
+  const Container = styled.div`
+    ${size && size === 'small' && 'height: 24px;'}
+
+    .ant-select {
+      width: 100%;
+    }
+
+    .ant-select-arrow {
+      color: ${Base.CinzaMako};
+    }
+
+    .ant-select-selection {
+      ${border && `border-color: ${border};`}
+    }
+
+    .ant-select-selection__placeholder {
+      ${color && `color: ${color};`}
+      ${border && color && 'font-weight: bold !important;'}
+    }
+
+    .ant-select-selection--single {
+      align-items: center;
+      display: flex;
+      ${!size && 'height: 38px;'}
+    }
+
+    .ant-select-selection__rendered {
+      width: 98%;
+    }
+
+    .ant-select-selection__placeholder {
+      display: block;
+    }
+
+    .ant-select .ant-select-search__field {
+      display: block;
+      max-width: 100% !important;
+    }
+
+    .ant-select-selection-selected-value {
+      font-weight: bold;
+    }
+
+    .ant-select-selection--multiple {
+      min-height: 38px;
+
+      .ant-select-selection__placeholder {
+        line-height: 25px;
+      }
+
+      .ant-select-selection__rendered {
+        margin-top: 3px;
+      }
+    }
+
+    div[class*='is-invalid'] {
+      .ant-select-selection {
+        border-color: #dc3545 !important;
+      }
+    }
+
+    label {
+      font-weight: bold;
+    }
+  `;
+
+  const Erro = styled.span`
+    color: ${Base.Vermelho};
+  `;
 
   const { Option } = Select;
 
@@ -94,7 +114,11 @@ const SelectComponent = React.forwardRef((props, ref) => {
       lista.length > 0 &&
       lista.map(item => {
         return (
-          <Option key={shortid.generate()} value={`${item[valueOption]}`}>
+          <Option
+            key={shortid.generate()}
+            value={`${item[valueOption]}`}
+            title={`${item[valueText]}`}
+          >
             {`${item[valueText]}`}
           </Option>
         );
@@ -134,7 +158,7 @@ const SelectComponent = React.forwardRef((props, ref) => {
       onChange={e => {
         form.setFieldValue(name, e || '');
         form.setFieldTouched(name, true, true);
-        onChange && onChange(e || '');
+        if (onChange) onChange(e || '');
       }}
       innerRef={ref}
     >
@@ -163,6 +187,7 @@ const SelectComponent = React.forwardRef((props, ref) => {
       disabled={disabled}
       ref={ref}
       showSearch={showSearch}
+      size={size || 'default'}
     >
       {opcoesLista()}
     </Select>
@@ -180,15 +205,23 @@ SelectComponent.propTypes = {
   name: PropTypes.string,
   id: PropTypes.string,
   className: PropTypes.string,
+  classNameContainer: PropTypes.string,
   onChange: PropTypes.func,
   label: PropTypes.string,
   valueText: PropTypes.string,
   valueOption: PropTypes.string.isRequired,
-  valueSelect: PropTypes.any,
+  valueSelect: PropTypes.string,
   lista: PropTypes.array,
   placeholder: PropTypes.string,
+  alt: PropTypes.string,
+  multiple: PropTypes.bool,
+  containerVinculoId: PropTypes.string,
   disabled: PropTypes.bool,
+  form: PropTypes.any,
   showSearch: PropTypes.bool,
+  size: PropTypes.string,
+  border: PropTypes.string,
+  color: PropTypes.string,
 };
 
 export default SelectComponent;

@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import { useSelector } from 'react-redux';
 import { Tooltip, Switch } from 'antd';
+import shortid from 'shortid';
 import Card from '~/componentes/card';
 import Grid from '~/componentes/grid';
 import Calendario from '~/componentes-sgp/calendarioProfessor/Calendario';
@@ -506,6 +507,7 @@ const CalendarioProfessor = () => {
               {diasLetivos && diasLetivos.dias ? (
                 <Div>
                   <Button
+                    id={shortid.generate()}
                     label={diasLetivos.dias.toString()}
                     color={
                       diasLetivos.estaAbaixoPermitido
@@ -533,6 +535,7 @@ const CalendarioProfessor = () => {
             </Grid>
             <Grid cols={4}>
               <Button
+                id={shortid.generate()}
                 label="Voltar"
                 icon="arrow-left"
                 color={Colors.Azul}
