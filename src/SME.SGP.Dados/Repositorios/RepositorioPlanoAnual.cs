@@ -2,6 +2,7 @@
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -34,7 +35,7 @@ namespace SME.SGP.Dados.Repositorios
             query.AppendLine("group by");
             query.AppendLine("	pa.id");
 
-            return database.Conexao.Query<PlanoAnualCompletoDto>(query.ToString(), new { ano, escolaId, turmaId, bimestre, componenteCurricularEolId }).SingleOrDefault();
+            return database.Conexao.QueryFirstOrDefault<PlanoAnualCompletoDto>(query.ToString(), new { ano, escolaId, turmaId = Convert.ToInt32(turmaId), bimestre, componenteCurricularEolId });
         }
 
         public IEnumerable<PlanoAnualCompletoDto> ObterPlanoAnualCompletoPorAnoUEETurma(int ano, string ueId, string turmaId, long componenteCurricularEolId)

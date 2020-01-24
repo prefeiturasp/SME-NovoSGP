@@ -79,6 +79,7 @@ export default function usuario(state = inicial, action) {
         draft.meusDados = action.payload;
         break;
       case '@usuario/SetarConsideraHistorico':
+        console.log(state.turmaSelecionada);
         draft.turmaSelecionada['consideraHistorico'] = action.payload;
         break;
       case '@usuario/meusDadosSalvarEmail':
