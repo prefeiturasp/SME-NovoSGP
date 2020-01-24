@@ -74,7 +74,7 @@ namespace SME.SGP.Aplicacao
 
             var turmasAulas = aulas.GroupBy(x => x.TurmaId).Select(x => x.Key);
 
-            var turmasAbrangencia = await ObterTurmasAbrangencia(turmasAulas);
+            var turmasAbrangencia = await ObterTurmasAbrangencia(turmasAulas, filtro.TurmaHistorico);
 
             IEnumerable<DisciplinaResposta> disciplinasRegencia = Enumerable.Empty<DisciplinaResposta>();
 
@@ -301,13 +301,13 @@ namespace SME.SGP.Aplicacao
             return dias;
         }
 
-        private async Task<IEnumerable<AbrangenciaFiltroRetorno>> ObterTurmasAbrangencia(IEnumerable<string> turmasAulas)
+        private async Task<IEnumerable<AbrangenciaFiltroRetorno>> ObterTurmasAbrangencia(IEnumerable<string> turmasAulas, bool ehTurmaHistorico)
         {
             var turmasRetorno = new List<AbrangenciaFiltroRetorno>();
 
             foreach (var turma in turmasAulas)
             {
-                var turmaAbrangencia = await consultasAbrangencia.ObterAbrangenciaTurma(turma);
+                var turmaAbrangencia = await consultasAbrangencia.ObterAbrangenciaTurma(turma, ehTurmaHistorico);
 
                 if (turmaAbrangencia != null)
                     turmasRetorno.Add(turmaAbrangencia);

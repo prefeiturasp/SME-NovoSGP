@@ -10,7 +10,7 @@ namespace SME.SGP.Aplicacao
     {
         Task<IEnumerable<AbrangenciaFiltroRetorno>> ObterAbrangenciaPorfiltro(string texto, bool consideraHistorico);
 
-        Task<AbrangenciaFiltroRetorno> ObterAbrangenciaTurma(string turma);
+        Task<AbrangenciaFiltroRetorno> ObterAbrangenciaTurma(string turma, bool consideraHistorico = false);
 
         Task<IEnumerable<int>> ObterAnosLetivos(bool consideraHistorico);
 
