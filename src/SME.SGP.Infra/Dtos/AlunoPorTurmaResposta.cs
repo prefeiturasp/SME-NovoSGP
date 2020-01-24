@@ -14,9 +14,11 @@ namespace SME.SGP.Infra
         public string NomeAluno { get; set; }
         public string NomeSocialAluno { get; set; }
         public int NumeroAlunoChamada { get; set; }
+        public char? ParecerConclusivo { get; set; }
         public bool PossuiDeficiencia { get; set; }
         public string SituacaoMatricula { get; set; }
         public bool Transferencia_Interna { get; set; }
+        public string TurmaEscola { get; set; }
         public string TurmaRemanejamento { get; set; }
         public string TurmaTransferencia { get; set; }
 
