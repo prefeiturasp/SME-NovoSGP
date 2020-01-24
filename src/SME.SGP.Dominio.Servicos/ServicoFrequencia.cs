@@ -185,7 +185,7 @@ namespace SME.SGP.Dominio.Servicos
 
         private async Task ValidaProfessorPodePersistirTurma(string turmaId, string codigoRf, DateTime dataAula)
         {
-            if (!servicoEOL.ProfessorPodePersistirTurma(codigoRf, turmaId, dataAula.Local()).Result)
+            if (!servicoUsuario.PodePersistirTurma(codigoRf, turmaId, dataAula.Local()).Result)
                 throw new NegocioException("Você não pode fazer alterações ou inclusões nesta turma e data.");
         }
 
