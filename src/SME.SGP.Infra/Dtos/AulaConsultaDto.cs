@@ -25,9 +25,9 @@ namespace SME.SGP.Infra
         public string TurmaId { get; set; }
         public string UeId { get; set; }
 
-        public void VerificarSomenteLeitura(string professorRF)
+        public void VerificarSomenteLeitura(string disciplinaId)
         {
-            SomenteLeitura = !ProfessorRf.Equals(professorRF);
+            SomenteLeitura = string.IsNullOrWhiteSpace(disciplinaId) || !DisciplinaId.Equals(disciplinaId);
         }
     }
 }
