@@ -12,6 +12,18 @@ namespace SME.SGP.Api.Controllers
     [Authorize("Bearer")]
     public class FechamentoReaberturaController : ControllerBase
     {
+        [HttpPut("{id}")]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 601)]
+        [ProducesResponseType(200)]
+        //[Permissao(Permissao.PFR_C, Policy = "Bearer")]
+        public async Task<IActionResult> Alterar([FromServices] IComandosFechamentoReabertura comandosFechamentoReabertura,
+            [FromBody]FechamentoReaberturaPersistenciaDto fechamentoReaberturaPersistenciaDto, long id)
+        {
+            await comandosFechamentoReabertura.Alterar(fechamentoReaberturaPersistenciaDto, id);
+            return Ok();
+        }
+
         [HttpGet]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [ProducesResponseType(typeof(RetornoBaseDto), 601)]
