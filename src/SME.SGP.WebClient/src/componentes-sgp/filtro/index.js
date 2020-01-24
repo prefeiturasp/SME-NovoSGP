@@ -122,7 +122,6 @@ const Filtro = () => {
 
   const aoSelecionarHistorico = () => {
     setAnoLetivoSelecionado();
-    setConsideraHistorico(!consideraHistorico);
     dispatch(DefinirConsideraHistorico(!consideraHistorico));
   };
 
@@ -169,7 +168,9 @@ const Filtro = () => {
       );
 
       setTextoAutocomplete(
-        `${modalidadeDesc.desc} - ${turmaDesc.desc} - ${unidadeEscolarDesc.desc}`
+        `${modalidadeDesc ? modalidadeDesc.desc : 'Modalidade'} - ${
+          turmaDesc ? turmaDesc.desc : 'Turma'
+        } - ${unidadeEscolarDesc ? unidadeEscolarDesc.desc : 'Unidade Escolar'}`
       );
 
       setAlternarFocoBusca(false);
@@ -177,6 +178,8 @@ const Filtro = () => {
       const turmaSelecionadaCompleta = turmas.find(
         item => item.valor.toString() === turmaSelecionada
       );
+
+      if (!turmaSelecionadaCompleta) return;
 
       const turma = {
         anoLetivo: anoLetivoSelecionado,
@@ -187,7 +190,7 @@ const Filtro = () => {
         ano: turmaSelecionadaCompleta.ano,
         desc: `${modalidadeDesc.desc} - ${turmaDesc.desc} - ${unidadeEscolarDesc.desc}`,
         periodo: periodoSelecionado || 0,
-        consideraHistorico: consideraHistorico,
+        consideraHistorico,
       };
 
       dispatch(turmasUsuario(turmas));
@@ -262,33 +265,33 @@ const Filtro = () => {
     const obterAnosLetivos = async deveSalvarAnosLetivos => {
       const anoAtual = window.moment().format('YYYY');
 
-      if (deveSalvarAnosLetivos) {
-        const anosLetivo = await ServicoFiltro.listarAnosLetivos({
-          consideraHistorico,
+      if (!deveSalvarAnosLetivos) return;
+
+      const anosLetivo = await ServicoFiltro.listarAnosLetivos({
+        consideraHistorico,
+      })
+        .then(resposta => {
+          const anos = [];
+
+          if (resposta.data) {
+            resposta.data.forEach(ano => {
+              anos.push({ desc: ano, valor: ano });
+            });
+          }
+
+          return anos;
         })
-          .then(resposta => {
-            const anos = [];
+        .catch(() => []);
 
-            if (resposta.data) {
-              resposta.data.forEach(ano => {
-                anos.push({ desc: ano, valor: ano });
-              });
-            }
-
-            return anos;
-          })
-          .catch(() => []);
-
-        if (!anosLetivo.length) {
-          anosLetivo.push({
-            desc: anoAtual,
-            valor: anoAtual,
-          });
-        }
-
-        dispatch(salvarAnosLetivos(anosLetivo));
-        setAnosLetivos(anosLetivo);
+      if (!anosLetivo.length) {
+        anosLetivo.push({
+          desc: anoAtual,
+          valor: anoAtual,
+        });
       }
+
+      dispatch(salvarAnosLetivos(anosLetivo));
+      setAnosLetivos(anosLetivo);
     };
 
     obterAnosLetivos(estado && !filtro.anosLetivos.length);
@@ -645,7 +648,7 @@ const Filtro = () => {
       turma: resultado.codigoTurma,
       desc: resultado.descricaoFiltro,
       periodo: resultado.semestre,
-      consideraHistorico: consideraHistorico,
+      consideraHistorico,
     };
 
     dispatch(selecionarTurma(turma));
@@ -942,6 +945,7 @@ const Filtro = () => {
               </Grid>
               <Grid cols={3} className="form-group text-right">
                 <Button
+                  id={shortid.generate()}
                   label="Aplicar filtro"
                   color={Colors.Roxo}
                   className="ml-auto"

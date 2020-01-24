@@ -106,7 +106,7 @@ namespace SME.SGP.Dados.Repositorios
             }));
         }
 
-        public async Task<IEnumerable<AulaCompletaDto>> ObterAulasCompleto(long tipoCalendarioId, string turmaId, string ueId, DateTime data, Guid perfil, string CodigoRf, bool turmaHistorico = false)
+        public async Task<IEnumerable<AulaCompletaDto>> ObterAulasCompleto(long tipoCalendarioId, string turmaId, string ueId, DateTime data, Guid perfil, bool turmaHistorico = false)
         {
             StringBuilder query = new StringBuilder();
             MontaCabecalho(query);
@@ -115,9 +115,10 @@ namespace SME.SGP.Dados.Repositorios
             query.AppendLine("FROM public.aula a");
             query.AppendLine($"INNER JOIN {(turmaHistorico ? "v_abrangencia_historica" : "v_abrangencia")} ab");
             query.AppendLine("on a.turma_id = ab.turma_id");
-            MontaWhere(query, tipoCalendarioId, turmaId, ueId, null, data, CodigoRf);
+            MontaWhere(query, tipoCalendarioId, turmaId, ueId, null, data);
             MontaGroupBy(query);
-            return (await database.Conexao.QueryAsync<AulaCompletaDto>(query.ToString(), new { tipoCalendarioId, turmaId, ueId, data, perfil, CodigoRf }));
+
+            return (await database.Conexao.QueryAsync<AulaCompletaDto>(query.ToString(), new { tipoCalendarioId, turmaId, ueId, data, perfil }));
         }
 
         public IEnumerable<Aula> ObterAulasPorTurmaEAnoLetivo(string turmaId, string anoLetivo)

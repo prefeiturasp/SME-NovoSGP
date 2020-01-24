@@ -66,15 +66,17 @@ namespace SME.SGP.Aplicacao
 
             string rf = usuario.TemPerfilGestaoUes() ? string.Empty : usuario.CodigoRf;
 
+            var disciplinasUsuario = await servicoEOL.ObterDisciplinasPorCodigoTurmaLoginEPerfil(filtro.TurmaId, usuario.CodigoRf, usuario.PerfilAtual);
+
             var eventos = await repositorioEvento.ObterEventosPorTipoDeCalendarioDreUeDia(filtro.TipoCalendarioId, filtro.DreId, filtro.UeId, data, filtro.EhEventoSme);
-            var aulas = await repositorioAula.ObterAulasCompleto(filtro.TipoCalendarioId, filtro.TurmaId, filtro.UeId, data, perfil, rf, filtro.TurmaHistorico);
+            var aulas = await ObterAulasDia(filtro, data, perfil, rf, disciplinasUsuario);
             var atividades = await repositorioAtividadeAvaliativa.ObterAtividadesPorDia(filtro.DreId, filtro.UeId, data, rf, filtro.TurmaId);
 
             ObterEventosParaEventosAulasDia(eventosAulas, eventos);
 
             var turmasAulas = aulas.GroupBy(x => x.TurmaId).Select(x => x.Key);
 
-            var turmasAbrangencia = await ObterTurmasAbrangencia(turmasAulas);
+            var turmasAbrangencia = await ObterTurmasAbrangencia(turmasAulas, filtro.TurmaHistorico);
 
             IEnumerable<DisciplinaResposta> disciplinasRegencia = Enumerable.Empty<DisciplinaResposta>();
 
@@ -84,6 +86,7 @@ namespace SME.SGP.Aplicacao
             var idsDisciplinasAulas = aulas.Select(a => long.Parse(a.DisciplinaId)).Distinct().Concat(
                                       aulas.Where(a => !String.IsNullOrEmpty(a.DisciplinaCompartilhadaId))
                                            .Select(a => long.Parse(a.DisciplinaCompartilhadaId)).Distinct());
+
             var disciplinasEol = servicoEOL.ObterDisciplinasPorIds(idsDisciplinasAulas.ToArray());
 
             aulas
@@ -130,7 +133,7 @@ namespace SME.SGP.Aplicacao
                         DisciplinaCompartilhada = $"{(disciplinaCompartilhada?.Nome ?? "Disciplina não encontrada")} ",
                         EhRegencia = disciplina.Regencia,
                         EhCompartilhada = disciplina.Compartilhada,
-                        PermiteRegistroFrequencia = disciplina.RegistroFrequencia,
+                        PermiteRegistroFrequencia = disciplina.RegistraFrequencia && !x.SomenteConsulta,
                         podeCadastrarAvaliacao = podeCriarAtividade,
                         Horario = x.DataAula.ToString("hh:mm tt", CultureInfo.InvariantCulture),
                         Modalidade = turma?.Modalidade.GetAttribute<DisplayAttribute>().Name ?? "Modalidade",
@@ -229,6 +232,25 @@ namespace SME.SGP.Aplicacao
             return eventosAulas.OrderBy(x => x.Dia);
         }
 
+        private static void ObterAulasCompartilhadas(IEnumerable<AulaCompletaDto> aulas, List<AulaCompletaDto> aulasProfessor, IEnumerable<string> disciplinasCompartilhadas)
+        {
+            var aulasCompartilhadas = aulas.Where(x => !aulasProfessor.Any(y => y.Id == x.Id) && disciplinasCompartilhadas.Any(z => x.DisciplinaId.Equals(z)));
+
+            aulasProfessor.AddRange(aulasCompartilhadas);
+        }
+
+        private static void ObterAulasCompartilhadasRelacionadas(IEnumerable<AulaCompletaDto> aulas, List<AulaCompletaDto> aulasProfessor)
+        {
+            var disciplinasPrincipais = aulasProfessor.Select(x => x.DisciplinaId);
+
+            var aulasRelacionadas = aulas.Where(x => !aulasProfessor.Any(y => y.Id == x.Id) && disciplinasPrincipais.Any(z => z.Equals(x.DisciplinaCompartilhadaId)));
+
+            if (aulasRelacionadas is null || !aulasRelacionadas.Any())
+                return;
+
+            aulasProfessor.AddRange(aulasRelacionadas);
+        }
+
         private static void ObterEventosParaEventosAulasDia(List<EventosAulasTipoDiaDto> eventosAulas, IEnumerable<Evento> eventos)
         {
             eventos
@@ -240,6 +262,19 @@ namespace SME.SGP.Aplicacao
                     Id = x.Id,
                     TipoEvento = x.Descricao
                 }));
+        }
+
+        private static void VerificarAulasSomenteConsulta(IEnumerable<DisciplinaResposta> disciplinas, IEnumerable<AulaCompletaDto> aulas)
+        {
+            aulas.ToList().ForEach(aula =>
+            {
+                var disciplina = disciplinas.FirstOrDefault(d
+                    => d.CodigoComponenteCurricular.ToString().Equals(aula.DisciplinaId));
+
+                var disciplinaId = disciplina == null ? "" : disciplina.CodigoComponenteCurricular.ToString();
+
+                aula.VerificarSomenteConsulta(disciplinaId);
+            });
         }
 
         private List<EventosAulasCalendarioDto> MapearParaDto(List<DateTime> dias)
@@ -257,6 +292,28 @@ namespace SME.SGP.Aplicacao
                 });
             }
             return eventosAulas;
+        }
+
+        private async Task<IEnumerable<AulaCompletaDto>> ObterAulasDia(FiltroEventosAulasCalendarioDiaDto filtro, DateTime data, Guid perfil, string professorRf, IEnumerable<DisciplinaResposta> disciplinas)
+        {
+            var aulas = await repositorioAula.ObterAulasCompleto(filtro.TipoCalendarioId, filtro.TurmaId, filtro.UeId, data, perfil, filtro.TurmaHistorico);
+
+            if (disciplinas != null)
+                VerificarAulasSomenteConsulta(disciplinas, aulas);
+
+            if (string.IsNullOrWhiteSpace(professorRf))
+                return aulas;
+
+            var aulasProfessor = aulas.Where(x => !string.IsNullOrEmpty(x.ProfessorRF) && x.ProfessorRF.Equals(professorRf)).ToList();
+
+            var disciplinasCompartilhadas = aulasProfessor.Where(x => !string.IsNullOrEmpty(x.DisciplinaCompartilhadaId)).Select(x => x.DisciplinaCompartilhadaId);
+
+            if (disciplinasCompartilhadas.Any())
+                ObterAulasCompartilhadas(aulas, aulasProfessor, disciplinasCompartilhadas);
+
+            ObterAulasCompartilhadasRelacionadas(aulas, aulasProfessor);
+
+            return aulasProfessor;
         }
 
         private List<DateTime> ObterDias(IEnumerable<AulaDto> aulas)
@@ -301,13 +358,13 @@ namespace SME.SGP.Aplicacao
             return dias;
         }
 
-        private async Task<IEnumerable<AbrangenciaFiltroRetorno>> ObterTurmasAbrangencia(IEnumerable<string> turmasAulas)
+        private async Task<IEnumerable<AbrangenciaFiltroRetorno>> ObterTurmasAbrangencia(IEnumerable<string> turmasAulas, bool ehTurmaHistorico)
         {
             var turmasRetorno = new List<AbrangenciaFiltroRetorno>();
 
             foreach (var turma in turmasAulas)
             {
-                var turmaAbrangencia = await consultasAbrangencia.ObterAbrangenciaTurma(turma);
+                var turmaAbrangencia = await consultasAbrangencia.ObterAbrangenciaTurma(turma, ehTurmaHistorico);
 
                 if (turmaAbrangencia != null)
                     turmasRetorno.Add(turmaAbrangencia);

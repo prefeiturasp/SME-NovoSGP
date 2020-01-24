@@ -34,7 +34,7 @@ namespace SME.SGP.Aplicacao.Consultas
             PlanoAulaRetornoDto planoAulaDto = new PlanoAulaRetornoDto();
             // Busca plano de aula por data e disciplina da aula
             var plano = await repositorio.ObterPlanoAulaPorAula(aulaId);
-            var aulaDto = consultasAula.BuscarPorId(aulaId);
+            var aulaDto = await consultasAula.BuscarPorId(aulaId);
             var atividadeAvaliativa = await repositorioAtividadeAvaliativa.ObterAtividadeAvaliativa(aulaDto.DataAula.Date, aulaDto.DisciplinaId, aulaDto.TurmaId, aulaDto.UeId);
             if (plano != null)
             {
@@ -48,7 +48,10 @@ namespace SME.SGP.Aplicacao.Consultas
                     ComponenteCurricularEolId = long.Parse(aulaDto.DisciplinaId),
                     EscolaId = aulaDto.UeId,
                     TurmaId = aulaDto.TurmaId
-                });
+                }, seNaoExistirRetornaNovo: false);
+
+                if (planoAnual == null)
+                    throw new NegocioException("Não foi possível carregar o plano de aula porque não há plano anual cadastrado");
 
                 // Carrega objetivos já cadastrados no plano de aula
                 var objetivosAula = await consultasObjetivosAula.ObterObjetivosPlanoAula(plano.Id);
