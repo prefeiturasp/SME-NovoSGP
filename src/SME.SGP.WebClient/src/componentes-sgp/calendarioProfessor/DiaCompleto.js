@@ -285,8 +285,8 @@ const DiaCompleto = props => {
                     {evento.dadosAula &&
                     evento.dadosAula.permiteRegistroFrequencia &&
                     turmaSelecionada ? (
-                      <Grid
-                        cols={2}
+                      <Div
+                        // cols={2}
                         className="pr-0 d-flex align-items-center px-2 p-x-md-3"
                       >
                         <Botao
@@ -304,7 +304,7 @@ const DiaCompleto = props => {
                           padding="0 1rem"
                           border
                         />
-                      </Grid>
+                      </Div>
                     ) : null}
                     {evento.dadosAula && evento.dadosAula.atividade.length ? (
                       <Grid
