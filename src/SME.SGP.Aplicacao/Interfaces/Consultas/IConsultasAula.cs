@@ -8,7 +8,7 @@ namespace SME.SGP.Aplicacao
 {
     public interface IConsultasAula
     {
-        AulaConsultaDto BuscarPorId(long id);
+        Task<AulaConsultaDto> BuscarPorId(long id);
 
         Task<bool> ChecarFrequenciaPlanoAula(long aulaId);
 
