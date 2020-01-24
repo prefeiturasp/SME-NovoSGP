@@ -3,7 +3,6 @@ CREATE TABLE IF NOT EXISTS public.fechamento
     id bigint NOT NULL generated always as identity,
     ue_id bigint NULL,
     dre_id bigint NULL,
-	excluido BOOLEAN NOT NULL,
     migrado bool NOT NULL DEFAULT false,
     criado_em timestamp NOT NULL,
 	criado_por varchar(200) NOT NULL,

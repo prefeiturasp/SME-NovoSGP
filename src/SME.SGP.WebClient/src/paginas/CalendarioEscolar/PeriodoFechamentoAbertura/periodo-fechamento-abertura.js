@@ -16,7 +16,8 @@ import api from '~/servicos/api';
 import { CampoData, Loader, Auditoria } from '~/componentes';
 import history from '~/servicos/history';
 import { URL_HOME } from '~/constantes/url';
-import { erros } from '~/servicos/alertas';
+import { erros, sucesso } from '~/servicos/alertas';
+import ServicoPeriodoFechamento from '~/servicos/Paginas/Calendario/ServicoPeriodoFechamento';
 
 const PeriodoFechamentoAbertura = () => {
   const [listaTipoCalendarioEscolar, setListaTipoCalendarioEscolar] = useState(
@@ -28,6 +29,7 @@ const PeriodoFechamentoAbertura = () => {
   const [dreSelecionada, setDreSelecionada] = useState('');
   const [ueSelecionada, setUeSelecionada] = useState('');
 
+  const [emProcessamento, setEmprocessamento] = useState(false);
   const [carregandoTipos, setCarregandoTipos] = useState(false);
   const [desabilitarTipoCalendario, setDesabilitarTipoCalendario] = useState(
     false
@@ -38,12 +40,13 @@ const PeriodoFechamentoAbertura = () => {
       dreId: null,
       ueId: null,
       tipoCalendarioId: null,
+      periodoEscolarId: null,
       migrado: false,
       id: 0,
       fechamentosBimestres: [],
     };
   };
-  const [periodos, setPeriodos] = useState(obtemPeriodosIniciais());
+  const [fechamento, setFechamento] = useState(obtemPeriodosIniciais());
   const [auditoria, setAuditoria] = useState([]);
 
   const [validacoes, setValidacoes] = useState(
@@ -85,10 +88,12 @@ const PeriodoFechamentoAbertura = () => {
 
   useEffect(() => {
     if (tipoCalendarioSelecionado) {
-      api
-        .get(
-          `/v1/periodos/fechamentos/aberturas?tipoCalendarioId=${tipoCalendarioSelecionado}&dreId=${dreSelecionada}&ueId=${ueSelecionada}`
-        )
+      setEmprocessamento(true);
+      ServicoPeriodoFechamento.obterPorTipoCalendarioDreEUe(
+        tipoCalendarioSelecionado,
+        dreSelecionada,
+        ueSelecionada
+      )
         .then(resposta => {
           if (resposta.data && resposta.data.fechamentosBimestres) {
             resposta.data.fechamentosBimestres.forEach(bimestre => {
@@ -98,12 +103,13 @@ const PeriodoFechamentoAbertura = () => {
               bimestre.finalMaximo = moment(bimestre.finalMaximo);
             });
           }
-          setPeriodos(resposta.data);
+          setFechamento(resposta.data);
         })
         .catch(e => {
-          setPeriodos(obtemPeriodosIniciais());
+          setFechamento(obtemPeriodosIniciais());
           erros(e);
-        });
+        })
+        .finally(() => setEmprocessamento(false));
     }
   }, [dreSelecionada, tipoCalendarioSelecionado, ueSelecionada]);
 
@@ -133,7 +139,12 @@ const PeriodoFechamentoAbertura = () => {
   };
 
   const onSubmit = form => {
-    console.log(form);
+    ServicoPeriodoFechamento.salvar(form)
+      .then(() => {
+        sucesso('Períodos salvos com sucesso.');
+      })
+      .catch(e => erros(e))
+      .finally(() => setEmprocessamento(false));
   };
 
   const obterDatasParaHabilitar = (inicio, fim) => {
@@ -199,10 +210,6 @@ const PeriodoFechamentoAbertura = () => {
             placeholder="Fim do Bimestre"
             formatoData="DD/MM/YYYY"
             name={chaveDataFinal}
-            className={
-              possuiErro(form, 'inicioDoFechamento', indice) &&
-              'is-invalid mb-1'
-            }
             onChange={onChangeCamposData}
             className={
               possuiErro(form, 'finalDoFechamento', indice) && 'is-invalid'
@@ -217,116 +224,121 @@ const PeriodoFechamentoAbertura = () => {
 
   return (
     <>
-      <Cabecalho pagina="Período de Fechamento (Abertura)" />
-      <Card>
-        <Formik
-          enableReinitialize
-          initialValues={periodos}
-          validationSchema={validacoes}
-          onSubmit={values => onSubmit(values)}
-          validateOnChange
-          validateOnBlur
-        >
-          {form => (
-            <Form className="col-md-12">
-              <div className="row mb-4">
-                <div className="col-md-12 d-flex justify-content-end pb-4">
-                  <Button
-                    label="Voltar"
-                    icon="arrow-left"
-                    color={Colors.Azul}
-                    border
-                    className="mr-3"
-                    onClick={onClickVoltar}
-                  />
-                  <Button
-                    label="Cancelar"
-                    color={Colors.Roxo}
-                    border
-                    bold
-                    className="mr-3"
-                    disabled={!modoEdicao}
-                    onClick={() => onClickCancelar(form)}
-                  />
-                  <Button
-                    label="Cadastrar"
-                    color={Colors.Roxo}
-                    border
-                    bold
-                    disabled={!modoEdicao}
-                    onClick={() => validaAntesDoSubmit(form)}
-                  />
-                </div>
-                <div className="col-md-12 pb-2">
-                  <Loader loading={carregandoTipos} tip="">
-                    <div style={{ maxWidth: '300px' }}>
-                      <SelectComponent
-                        name="tipoCalendarioId"
-                        id="tipoCalendarioId"
-                        lista={listaTipoCalendarioEscolar}
-                        valueOption="id"
-                        valueText="descricaoTipoCalendario"
-                        onChange={id => setTipoCalendarioSelecionado(id)}
-                        valueSelect={tipoCalendarioSelecionado}
-                        disabled={desabilitarTipoCalendario}
-                        placeholder="Selecione um tipo de calendário"
+      <Loader loading={emProcessamento}>
+        <Cabecalho pagina="Período de Fechamento (Abertura)" />
+        <Card>
+          <Formik
+            enableReinitialize
+            initialValues={fechamento}
+            validationSchema={validacoes}
+            onSubmit={values => onSubmit(values)}
+            validateOnChange
+            validateOnBlur
+          >
+            {form => (
+              <Form className="col-md-12">
+                <div className="row mb-4">
+                  <div className="col-md-12 d-flex justify-content-end pb-4">
+                    <Button
+                      label="Voltar"
+                      icon="arrow-left"
+                      color={Colors.Azul}
+                      border
+                      className="mr-3"
+                      onClick={onClickVoltar}
+                    />
+                    <Button
+                      label="Cancelar"
+                      color={Colors.Roxo}
+                      border
+                      bold
+                      className="mr-3"
+                      disabled={!modoEdicao}
+                      onClick={() => onClickCancelar(form)}
+                    />
+                    <Button
+                      label="Cadastrar"
+                      color={Colors.Roxo}
+                      border
+                      bold
+                      // disabled={!modoEdicao}
+                      onClick={() => validaAntesDoSubmit(form)}
+                    />
+                  </div>
+                  <div className="col-md-12 pb-2">
+                    <Loader loading={carregandoTipos} tip="">
+                      <div style={{ maxWidth: '300px' }}>
+                        <SelectComponent
+                          name="tipoCalendarioId"
+                          id="tipoCalendarioId"
+                          lista={listaTipoCalendarioEscolar}
+                          valueOption="id"
+                          valueText="descricaoTipoCalendario"
+                          onChange={id => setTipoCalendarioSelecionado(id)}
+                          valueSelect={tipoCalendarioSelecionado}
+                          disabled={desabilitarTipoCalendario}
+                          placeholder="Selecione um tipo de calendário"
+                        />
+                      </div>
+                    </Loader>
+                  </div>
+                  <br />
+                  <div className="col-md-6 pb-2">
+                    {tipoCalendarioSelecionado && (
+                      <DreDropDown
+                        label="Diretoria Regional de Educação (DRE)"
+                        form={form}
+                        onChange={dreId => setDreSelecionada(dreId)}
+                        desabilitado={false}
                       />
-                    </div>
-                  </Loader>
-                </div>
-                <br />
-                <div className="col-md-6 pb-2">
-                  {tipoCalendarioSelecionado && (
-                    <DreDropDown
-                      label="Diretoria Regional de Educação (DRE)"
-                      form={form}
-                      onChange={dreId => setDreSelecionada(dreId)}
-                      desabilitado={false}
-                    />
-                  )}
-                </div>
-                <div className="col-md-6 pb-2">
-                  {tipoCalendarioSelecionado && (
-                    <UeDropDown
-                      dreId={form.values.dreId}
-                      label="Unidade Escolar (UE)"
-                      form={form}
-                      url="v1/dres"
-                      onChange={ueId => setUeSelecionada(ueId)}
-                      desabilitado={false}
-                    />
-                  )}
-                </div>
-              </div>
-              <FieldArray
-                name="fechamentosBimestres"
-                render={() => (
-                  <>
-                    {periodos.fechamentosBimestres.map((c, indice) =>
-                      criaBimestre(
-                        form,
-                        `${c.bimestre} ° Bimestre`,
-                        `fechamentosBimestres[${indice}].inicioDoFechamento`,
-                        `fechamentosBimestres[${indice}].finalDoFechamento`,
-                        obterDatasParaHabilitar(c.inicioMinimo, c.finalMaximo),
-                        indice
-                      )
                     )}
-                  </>
-                )}
-              />
-            </Form>
-          )}
-        </Formik>
-        <Auditoria
-          criadoEm={auditoria.criadoEm}
-          criadoPor={auditoria.criadoPor}
-          criadoRf={auditoria.criadoRf}
-          alteradoPor={auditoria.alteradoPor}
-          alteradoEm={auditoria.alteradoEm}
-          alteradoRf={auditoria.alteradoRf}
-        />
-      </Card>
+                  </div>
+                  <div className="col-md-6 pb-2">
+                    {tipoCalendarioSelecionado && (
+                      <UeDropDown
+                        dreId={form.values.dreId}
+                        label="Unidade Escolar (UE)"
+                        form={form}
+                        url="v1/dres"
+                        onChange={ueId => setUeSelecionada(ueId)}
+                        desabilitado={false}
+                      />
+                    )}
+                  </div>
+                </div>
+                <FieldArray
+                  name="fechamentosBimestres"
+                  render={() => (
+                    <>
+                      {fechamento.fechamentosBimestres.map((c, indice) =>
+                        criaBimestre(
+                          form,
+                          `${c.bimestre} ° Bimestre`,
+                          `fechamentosBimestres[${indice}].inicioDoFechamento`,
+                          `fechamentosBimestres[${indice}].finalDoFechamento`,
+                          obterDatasParaHabilitar(
+                            c.inicioMinimo,
+                            c.finalMaximo
+                          ),
+                          indice
+                        )
+                      )}
+                    </>
+                  )}
+                />
+              </Form>
+            )}
+          </Formik>
+          <Auditoria
+            criadoEm={auditoria.criadoEm}
+            criadoPor={auditoria.criadoPor}
+            criadoRf={auditoria.criadoRf}
+            alteradoPor={auditoria.alteradoPor}
+            alteradoEm={auditoria.alteradoEm}
+            alteradoRf={auditoria.alteradoRf}
+          />
+        </Card>
+      </Loader>
     </>
   );
 };
