@@ -775,13 +775,12 @@ const EventosForm = ({ match }) => {
                   />
                 </div>
                 <div className="col-sm-12 col-md-6 col-lg-6 col-xl-4 pb-2">
-                  <div className="row">
-                    {/* TODO - Mock */}
+                  {/* <div className="row">
                     <CaixaDiasLetivos>2016</CaixaDiasLetivos>
                     <TextoDiasLetivos>
                       Nº de Dias Letivos no Calendário
                     </TextoDiasLetivos>
-                  </div>
+                  </div> */}
                 </div>
                 <div className="col-sm-12 col-md-12 col-lg-12 col-xl-4 pb-2 d-flex justify-content-end">
                   <Button

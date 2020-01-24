@@ -10,8 +10,8 @@ namespace SME.SGP.Aplicacao
 {
     public class ComandoFrequencia : IComandoFrequencia
     {
-        private readonly IServicoFrequencia servicoFrequencia;
         private readonly IConsultasAula consultasAula;
+        private readonly IServicoFrequencia servicoFrequencia;
 
         public ComandoFrequencia(IServicoFrequencia servicoFrequencia,
                                  IConsultasAula consultasAula)
@@ -31,7 +31,7 @@ namespace SME.SGP.Aplicacao
                 throw new NegocioException("A lista de alunos a turma e a disciplina devem ser informados para calcular a frequência.");
             }
 
-            var aula = consultasAula.BuscarPorId(frequenciaDto.AulaId);
+            var aula = await consultasAula.BuscarPorId(frequenciaDto.AulaId);
             Cliente.Executar<IServicoCalculoFrequencia>(c => c.CalcularFrequenciaPorTurma(alunos, aula.DataAula, aula.TurmaId, aula.DisciplinaId));
         }
 

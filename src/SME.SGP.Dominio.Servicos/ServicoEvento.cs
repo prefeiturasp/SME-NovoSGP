@@ -489,6 +489,8 @@ namespace SME.SGP.Dominio.Servicos
                             {
                                 if (temEventoLiberacaoExcepcional)
                                     return true;
+                                else if (evento.TipoEvento.Codigo == (long)TipoEvento.Outros)
+                                    return devePassarPorWorkflow;
                                 else throw new NegocioException("Não é possível cadastrar o evento.");
                             }
                         }
