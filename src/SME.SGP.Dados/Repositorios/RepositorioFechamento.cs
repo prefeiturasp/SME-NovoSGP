@@ -1,4 +1,5 @@
 ﻿using Dapper;
+using Dommel;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
@@ -16,7 +17,7 @@ namespace SME.SGP.Dados.Repositorios
 
         public Fechamento ObterPorTipoCalendarioDreEUE(long tipoCalendarioId, long? dreId, long? ueId)
         {
-            var query = new StringBuilder("select f.*,fb.*,p.*, t.*");
+            var query = new StringBuilder("select f.*,fb.*,p.*, t.*, d.*,u.*");
             query.AppendLine("from");
             query.AppendLine("fechamento f");
             query.AppendLine("inner join fechamento_bimestre fb on");
@@ -25,6 +26,8 @@ namespace SME.SGP.Dados.Repositorios
             query.AppendLine("fb.periodo_escolar_id = p.id");
             query.AppendLine("inner join tipo_calendario t on");
             query.AppendLine("p.tipo_calendario_id = t.id");
+            query.AppendLine("left join dre d on f.dre_id = d.id");
+            query.AppendLine("left join ue u on f.ue_id = u.id");
             query.AppendLine("where 1=1");
             query.AppendLine("and p.tipo_calendario_id = @tipoCalendarioId");
 
@@ -38,25 +41,44 @@ namespace SME.SGP.Dados.Repositorios
 
             var lookup = new Dictionary<long, Fechamento>();
 
-            var lista = database.Conexao.Query<Fechamento, FechamentoBimestre, PeriodoEscolar, TipoCalendario, Fechamento>(query.ToString(), (fechamento, fechamentoBimestre, periodoEscolar, tipoCalendario) =>
-             {
-                 Fechamento periodoFechamento;
-                 if (!lookup.TryGetValue(fechamento.Id, out periodoFechamento))
-                 {
-                     periodoFechamento = fechamento;
-                     lookup.Add(fechamento.Id, periodoFechamento);
-                 }
+            var lista = database.Conexao.Query<Fechamento, FechamentoBimestre, PeriodoEscolar, TipoCalendario, Dre, Ue, Fechamento>(query.ToString(), (fechamento, fechamentoBimestre, periodoEscolar, tipoCalendario, dre, ue) =>
+               {
+                   Fechamento periodoFechamento;
+                   if (!lookup.TryGetValue(fechamento.Id, out periodoFechamento))
+                   {
+                       periodoFechamento = fechamento;
+                       lookup.Add(fechamento.Id, periodoFechamento);
+                   }
 
-                 periodoEscolar.AdicionarTipoCalendario(tipoCalendario);
-                 periodoFechamento.AdicionarFechamentoBimestre(periodoEscolar, fechamentoBimestre);
-                 return periodoFechamento;
-             }, new
-             {
-                 tipoCalendarioId,
-                 dreId,
-                 ueId
-             });
+                   periodoEscolar.AdicionarTipoCalendario(tipoCalendario);
+                   fechamentoBimestre.AdicionarPeriodoEscolar(periodoEscolar);
+                   periodoFechamento.AdicionarFechamentoBimestre(fechamentoBimestre);
+                   periodoFechamento.AdicionarDre(dre);
+                   periodoFechamento.AdicionarUe(ue);
+                   return periodoFechamento;
+               }, new
+               {
+                   tipoCalendarioId,
+                   dreId,
+                   ueId
+               });
             return lookup.Values.FirstOrDefault();
+        }
+
+        public void SalvarBimestres(IEnumerable<FechamentoBimestre> fechamentosBimestre, long fechamentoId)
+        {
+            if (fechamentosBimestre == null || !fechamentosBimestre.Any())
+            {
+                throw new NegocioException("A lista de bimestres é obrigatória.");
+            }
+
+            foreach (var bimestre in fechamentosBimestre)
+            {
+                bimestre.FechamentoId = fechamentoId;
+                if (bimestre.Id > 0)
+                    database.Conexao.Update(bimestre);
+                else database.Conexao.Insert(bimestre);
+            }
         }
     }
 }
