@@ -9,5 +9,6 @@ namespace SME.SGP.Infra
         public string CodigoAluno { get; set; }
         public string NomeAluno { get; set; }
         public int QuantidadeCompensacoes { get; set; }
+        public double PercentualFrequencia { get; set; }
     }
 }
