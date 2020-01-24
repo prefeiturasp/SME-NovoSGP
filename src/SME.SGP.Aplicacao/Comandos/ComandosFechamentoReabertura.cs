@@ -12,21 +12,42 @@ namespace SME.SGP.Aplicacao
         public readonly IRepositorioDre repositorioDre;
         public readonly IRepositorioTipoCalendario repositorioTipoCalendario;
         public readonly IRepositorioUe repositorioUe;
+        private readonly IRepositorioFechamentoReabertura repositorioFechamentoReabertura;
         private readonly IServicoFechamentoReabertura servicoFechamentoReabertura;
 
         public ComandosFechamentoReabertura(IRepositorioDre repositorioDre, IRepositorioUe repositorioUe,
-                                            IRepositorioTipoCalendario repositorioTipoCalendario, IServicoFechamentoReabertura servicoFechamentoReabertura)
+                                            IRepositorioTipoCalendario repositorioTipoCalendario, IServicoFechamentoReabertura servicoFechamentoReabertura,
+                                            IRepositorioFechamentoReabertura repositorioFechamentoReabertura)
         {
             this.repositorioDre = repositorioDre ?? throw new ArgumentNullException(nameof(repositorioDre));
             this.repositorioUe = repositorioUe ?? throw new ArgumentNullException(nameof(repositorioUe));
             this.repositorioTipoCalendario = repositorioTipoCalendario ?? throw new ArgumentNullException(nameof(repositorioTipoCalendario));
             this.servicoFechamentoReabertura = servicoFechamentoReabertura ?? throw new ArgumentNullException(nameof(servicoFechamentoReabertura));
+            this.repositorioFechamentoReabertura = repositorioFechamentoReabertura ?? throw new ArgumentNullException(nameof(repositorioFechamentoReabertura));
+        }
+
+        public async Task Alterar(FechamentoReaberturaPersistenciaDto fechamentoReaberturaPersistenciaDto, long id)
+        {
+            var fechamentoReabertura = repositorioFechamentoReabertura.ObterCompleto(id, 0);
+            if (fechamentoReabertura == null)
+                throw new NegocioException("Não foi possível localizar esta Reabertura de Fechamento.");
+
+            var dataInicioAnterior = fechamentoReabertura.Inicio;
+            var dataFimAnterior = fechamentoReabertura.Fim;
+
+            AtualizarEntidadeComDto(fechamentoReabertura, fechamentoReaberturaPersistenciaDto);
+
+            await servicoFechamentoReabertura.Alterar(fechamentoReabertura, dataInicioAnterior, dataFimAnterior);
         }
 
         public async Task Salvar(FechamentoReaberturaPersistenciaDto fechamentoReaberturaPersistenciaDto)
         {
             FechamentoReabertura entidade = TransformarDtoEmEntidadeParaPersistencia(fechamentoReaberturaPersistenciaDto);
             await servicoFechamentoReabertura.Salvar(entidade);
+        }
+
+        private void AtualizarEntidadeComDto(FechamentoReabertura fechamentoReabertura, FechamentoReaberturaPersistenciaDto fechamentoReaberturaPersistenciaDto)
+        {
         }
 
         private FechamentoReabertura TransformarDtoEmEntidadeParaPersistencia(FechamentoReaberturaPersistenciaDto fechamentoReaberturaPersistenciaDto)

@@ -174,7 +174,7 @@ namespace SME.SGP.Dominio.Servicos
 
         private void AprovarUltimoNivelDeEventoFechamentoReabertura(long codigoDaNotificacao, long workflowId)
         {
-            FechamentoReabertura fechamentoReabertura = repositorioFechamentoReabertura.ObterPorWorkflowId(workflowId);
+            FechamentoReabertura fechamentoReabertura = repositorioFechamentoReabertura.ObterCompleto(0, workflowId);
             if (fechamentoReabertura == null)
                 throw new NegocioException("Não foi possível localizar a reabertura do fechamento do fluxo de aprovação.");
 
@@ -638,7 +638,7 @@ namespace SME.SGP.Dominio.Servicos
 
         private void TrataReprovacaoFechamentoReabertura(WorkflowAprovacao workflow, long codigoDaNotificacao, string motivo)
         {
-            FechamentoReabertura fechamentoReabertura = repositorioFechamentoReabertura.ObterPorWorkflowId(workflow.Id);
+            FechamentoReabertura fechamentoReabertura = repositorioFechamentoReabertura.ObterCompleto(0, workflow.Id);
             if (fechamentoReabertura == null)
                 throw new NegocioException("Não foi possível localizar a reabertura do fechamento do fluxo de aprovação.");
 

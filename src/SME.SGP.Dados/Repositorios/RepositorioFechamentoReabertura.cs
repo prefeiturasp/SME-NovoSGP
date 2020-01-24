@@ -107,21 +107,29 @@ namespace SME.SGP.Dados.Repositorios
             return retornoPaginado;
         }
 
-        public FechamentoReabertura ObterPorWorkflowId(long workflowId)
+        public FechamentoReabertura ObterCompleto(long idFechamentoReabertura, long workflowId)
         {
-            var query = @"select fr.*, frb.*, ue.*, dre.*
+            var query = new StringBuilder(@"select fr.*, frb.*, ue.*, dre.*, tc.*
                             from fechamento_reabertura fr
                             join fechamento_reabertura_bimestre frb
                             on frb.fechamento_reabertura_id = fr.id
+                            inner join tipo_calendario tc
+                            on fr.tipo_calendario_id = tc.id
                             left join ue
                             on fr.ue_id = ue.id
                             left join dre
                             on fr.dre_id = dre.id
-                            where fr.wf_aprovacao_id = @workflowId";
+                            where fr.excluido = false");
+
+            if (idFechamentoReabertura != 0)
+                query.AppendLine("and fr.id = @idFechamentoReabertura");
+
+            if (workflowId > 0)
+                query.AppendLine("and fr.wf_aprovacao_id = @workflowId");
 
             var lookup = new Dictionary<long, FechamentoReabertura>();
 
-            database.Conexao.Query<FechamentoReabertura, FechamentoReaberturaBimestre, Ue, Dre, FechamentoReabertura>(query.ToString(), (fechamento, bimestre, ue, dre) =>
+            database.Conexao.Query<FechamentoReabertura, FechamentoReaberturaBimestre, Ue, Dre, TipoCalendario, FechamentoReabertura>(query.ToString(), (fechamento, bimestre, ue, dre, tipoCalendario) =>
            {
                FechamentoReabertura fechamentoReabertura;
                if (!lookup.TryGetValue(fechamento.Id, out fechamentoReabertura))
@@ -131,14 +139,21 @@ namespace SME.SGP.Dados.Repositorios
                }
                fechamentoReabertura.AtualizarDre(dre);
                fechamentoReabertura.AtualizarUe(ue);
+               fechamentoReabertura.AtualizarTipoCalendario(tipoCalendario);
                fechamentoReabertura.Adicionar(bimestre);
                return fechamentoReabertura;
            }, new
            {
-               workflowId,
+               idFechamentoReabertura,
+               workflowId
            });
 
             return lookup.Values.FirstOrDefault();
+        }
+
+        public FechamentoReabertura ObterPorIdCompleto(long id)
+        {
+            throw new NotImplementedException();
         }
 
         public async Task SalvarBimestre(FechamentoReaberturaBimestre fechamentoReabertura)
