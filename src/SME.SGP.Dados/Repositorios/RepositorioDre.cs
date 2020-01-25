@@ -28,6 +28,27 @@ namespace SME.SGP.Dados.Repositorios
             return contexto.Conexao.Query<Dre>(query, new { dresCodigos });
         }
 
+        public IEnumerable<Dre> MaterializarCodigosDre(string[] idDres, out string[] naoEncontradas)
+        {
+            List<Dre> resultado = new List<Dre>();
+
+            var armazenados = contexto.Conexao.Query<Dre>(QuerySincronizacao.Replace("#ids", string.Join(",", idDres.Select(x => $"'{x}'"))));
+
+            naoEncontradas = idDres.Where(x => !armazenados.Select(y => y.CodigoDre).Contains(x)).ToArray();
+
+            return armazenados;
+        }
+
+        public Dre ObterPorCodigo(string codigo)
+        {
+            return contexto.Conexao.QueryFirstOrDefault<Dre>("select * from dre where dre_id = @codigo", new { codigo });
+        }
+
+        public Dre ObterPorId(long dreId)
+        {
+            return contexto.Conexao.QueryFirstOrDefault<Dre>("select * from dre where id = @dreId", new { dreId });
+        }
+
         public IEnumerable<Dre> ObterTodas()
         {
             return contexto.Conexao.Query<Dre>("select id, dre_id, abreviacao, nome from dre");
@@ -73,17 +94,6 @@ namespace SME.SGP.Dados.Repositorios
             resultado.AddRange(armazenados.Where(x => !resultado.Select(y => y.CodigoDre).Contains(x.CodigoDre)));
 
             return resultado;
-        }
-
-        public IEnumerable<Dre> MaterializarCodigosDre(string[] idDres, out string[] naoEncontradas)
-        {
-            List<Dre> resultado = new List<Dre>();
-
-            var armazenados = contexto.Conexao.Query<Dre>(QuerySincronizacao.Replace("#ids", string.Join(",", idDres.Select(x => $"'{x}'"))));
-
-            naoEncontradas = idDres.Where(x => !armazenados.Select(y => y.CodigoDre).Contains(x)).ToArray();
-
-            return armazenados;
         }
     }
 }
