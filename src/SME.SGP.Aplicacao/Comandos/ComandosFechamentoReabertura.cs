@@ -26,7 +26,7 @@ namespace SME.SGP.Aplicacao
             this.repositorioFechamentoReabertura = repositorioFechamentoReabertura ?? throw new ArgumentNullException(nameof(repositorioFechamentoReabertura));
         }
 
-        public async Task Alterar(FechamentoReaberturaAlteracaoDto fechamentoReaberturaPersistenciaDto, long id)
+        public async Task<string> Alterar(FechamentoReaberturaAlteracaoDto fechamentoReaberturaPersistenciaDto, long id)
         {
             var fechamentoReabertura = repositorioFechamentoReabertura.ObterCompleto(id, 0);
             if (fechamentoReabertura == null)
@@ -37,13 +37,13 @@ namespace SME.SGP.Aplicacao
 
             AtualizarEntidadeComDto(fechamentoReabertura, fechamentoReaberturaPersistenciaDto);
 
-            await servicoFechamentoReabertura.Alterar(fechamentoReabertura, dataInicioAnterior, dataFimAnterior);
+            return await servicoFechamentoReabertura.Alterar(fechamentoReabertura, dataInicioAnterior, dataFimAnterior);
         }
 
-        public async Task Salvar(FechamentoReaberturaPersistenciaDto fechamentoReaberturaPersistenciaDto)
+        public async Task<string> Salvar(FechamentoReaberturaPersistenciaDto fechamentoReaberturaPersistenciaDto)
         {
             FechamentoReabertura entidade = TransformarDtoEmEntidadeParaPersistencia(fechamentoReaberturaPersistenciaDto);
-            await servicoFechamentoReabertura.Salvar(entidade);
+            return await servicoFechamentoReabertura.Salvar(entidade);
         }
 
         private void AtualizarEntidadeComDto(FechamentoReabertura fechamentoReabertura, FechamentoReaberturaAlteracaoDto fechamentoReaberturaPersistenciaDto)

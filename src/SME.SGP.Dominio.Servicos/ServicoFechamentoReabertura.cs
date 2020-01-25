@@ -29,7 +29,7 @@ namespace SME.SGP.Dominio.Servicos
             this.servicoNotificacao = servicoNotificacao ?? throw new ArgumentNullException(nameof(servicoNotificacao));
         }
 
-        public async Task Alterar(FechamentoReabertura fechamentoReabertura, DateTime dataInicialAnterior, DateTime dataFimAnterior)
+        public async Task<string> Alterar(FechamentoReabertura fechamentoReabertura, DateTime dataInicialAnterior, DateTime dataFimAnterior)
         {
             var fechamentoReaberturas = await repositorioFechamentoReabertura.Listar(fechamentoReabertura.TipoCalendarioId, null, null);
 
@@ -46,10 +46,13 @@ namespace SME.SGP.Dominio.Servicos
 
             var fechamentoReaberturaId = await repositorioFechamentoReabertura.SalvarAsync(fechamentoReabertura);
 
+            var mensagemRetorno = "Reabertura de Fechamento alterado com sucesso.";
+
             if (fechamentoReabertura.Status == EntidadeStatus.AguardandoAprovacao)
             {
                 fechamentoReabertura.WorkflowAprovacaoId = PersistirWorkflowFechamentoReabertura(fechamentoReabertura);
                 await repositorioFechamentoReabertura.SalvarAsync(fechamentoReabertura);
+                mensagemRetorno = "Reabertura de Fechamento alterado e será válido após aprovação.";
             }
             else if (fechamentoReabertura.DeveCriarEventos())
             {
@@ -59,9 +62,11 @@ namespace SME.SGP.Dominio.Servicos
             VerificaEAtualizaFechamentosReaberturasParaAlterar(fechamentoReabertura, fechamentoReaberturasParaAtualizar);
 
             unitOfWork.PersistirTransacao();
+
+            return mensagemRetorno;
         }
 
-        public async Task Salvar(FechamentoReabertura fechamentoReabertura)
+        public async Task<string> Salvar(FechamentoReabertura fechamentoReabertura)
         {
             var fechamentoReaberturas = await repositorioFechamentoReabertura.Listar(fechamentoReabertura.TipoCalendarioId, null, null);
 
@@ -74,6 +79,8 @@ namespace SME.SGP.Dominio.Servicos
 
             var fechamentoReaberturaId = await repositorioFechamentoReabertura.SalvarAsync(fechamentoReabertura);
 
+            var mensagemRetorno = "Reabertura de Fechamento cadastrada com sucesso";
+
             foreach (var fechamentoReaberturaBimestre in fechamentoReabertura.Bimestres)
             {
                 fechamentoReaberturaBimestre.FechamentoAberturaId = fechamentoReaberturaId;
@@ -84,6 +91,7 @@ namespace SME.SGP.Dominio.Servicos
             {
                 fechamentoReabertura.WorkflowAprovacaoId = PersistirWorkflowFechamentoReabertura(fechamentoReabertura);
                 await repositorioFechamentoReabertura.SalvarAsync(fechamentoReabertura);
+                mensagemRetorno = "Reabertura de Fechamento cadastrado e será válido após aprovação.";
             }
             else if (fechamentoReabertura.DeveCriarEventos())
             {
@@ -91,6 +99,8 @@ namespace SME.SGP.Dominio.Servicos
             }
 
             unitOfWork.PersistirTransacao();
+
+            return mensagemRetorno;
         }
 
         private void AtualizaFechamentosComDatasDistintas(FechamentoReabertura fechamentoReabertura, List<(FechamentoReabertura, bool, bool)> fechamentosReaberturasParaAtualizar)
