@@ -14,15 +14,16 @@ namespace SME.SGP.Dados.Repositorios
         {
         }
 
-        public async Task<IEnumerable<RetornoRecuperacaoParalela>> Listar(long turmaId)
+        public async Task<IEnumerable<RetornoRecuperacaoParalela>> Listar(long turmaId, int periodoId)
         {
             var query = new StringBuilder();
             query.AppendLine(MontaCamposCabecalhoSimples());
             query.AppendLine("from recuperacao_paralela rec ");
             query.AppendLine("left join recuperacao_paralela_periodo_objetivo_resposta recRel on rec.id = recRel.id  ");
             query.AppendLine("where rec.turma_id = @turmaId ");
+            query.AppendLine("and rec.periodo_recuperacao_paralela_id = @periodoId ");
             query.AppendLine("and rec.excluido = false ");
-            return await database.Conexao.QueryAsync<RetornoRecuperacaoParalela>(query.ToString(), new { turmaId });
+            return await database.Conexao.QueryAsync<RetornoRecuperacaoParalela>(query.ToString(), new { turmaId, periodoId });
         }
 
         private string MontaCamposCabecalhoSimples()

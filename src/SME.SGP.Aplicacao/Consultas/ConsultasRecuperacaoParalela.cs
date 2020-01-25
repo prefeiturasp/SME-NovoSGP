@@ -27,11 +27,11 @@ namespace SME.SGP.Aplicacao
             this.servicoEOL = servicoEOL ?? throw new ArgumentNullException(nameof(servicoEOL));
         }
 
-        public async Task<IEnumerable<RecuperacaoParalelaDto>> Listar(FiltroRecuperacaoParalelaDto filtro)
+        public async Task<RecuperacaoParalelaListagemDto> Listar(FiltroRecuperacaoParalelaDto filtro)
         {
             var alunosEol = await servicoEOL.ObterAlunosAtivosPorTurma(filtro.TurmaId);
-            var alunosRecuperacaoParalela = await repositorioRecuperacaoParalela.Listar(filtro.TurmaId);
-            return MapearParaDto(alunosEol, alunosRecuperacaoParalela, filtro.TurmaId);
+            var alunosRecuperacaoParalela = await repositorioRecuperacaoParalela.Listar(filtro.TurmaId, filtro.PeriodoId);
+            return MapearParaDto(alunosEol, alunosRecuperacaoParalela, filtro.TurmaId, filtro.PeriodoId);
         }
 
         public Task<object> ListarPeriodo()
@@ -39,34 +39,32 @@ namespace SME.SGP.Aplicacao
             throw new NotImplementedException();
         }
 
-        private IEnumerable<RecuperacaoParalelaDto> MapearParaDto(IEnumerable<AlunoPorTurmaResposta> alunosEol, IEnumerable<RetornoRecuperacaoParalela> alunosRecuperacaoParalela, long turmaId)
+        private RecuperacaoParalelaListagemDto MapearParaDto(IEnumerable<AlunoPorTurmaResposta> alunosEol, IEnumerable<RetornoRecuperacaoParalela> alunosRecuperacaoParalela, long turmaId, int periodoId)
         {
             var alunos = alunosEol.Where(w => !alunosRecuperacaoParalela.Select(s => s.AlunoId).Contains(Convert.ToInt32(w.CodigoAluno))).ToList();
             var alunosRecParalela = alunosRecuperacaoParalela.ToList();
-            var periodos = repositorioRecuperacaoParalelaPeriodo.Listar();
             alunos.ForEach(x => alunosRecParalela.Add(new RetornoRecuperacaoParalela { AlunoId = Convert.ToInt64(x.CodigoAluno) }));
             var retorno = alunosRecParalela.Select(s => new { s.AlunoId, s.Id }).Distinct();
-            return retorno?.Select(x => new RecuperacaoParalelaDto
+            return new RecuperacaoParalelaListagemDto
             {
-                Id = x.Id,
-                Nome = alunosEol.Where(w => Convert.ToInt32(w.CodigoAluno) == x.AlunoId).Select(s => s.NomeAluno).FirstOrDefault(),
-                NumeroChamada = alunosEol.Where(w => Convert.ToInt32(w.CodigoAluno) == x.AlunoId).Select(s => s.NumeroAlunoChamada).FirstOrDefault(),
-                Turma = alunosEol.Where(w => Convert.ToInt32(w.CodigoAluno) == x.AlunoId).Select(s => s.TurmaEscola).FirstOrDefault(),
-                Periodos = periodos
-                        .Select(ps => new RecuperacaoParalelaPeriodoDto
-                        {
-                            Id = ps.Id,
-                            Descricao = ps.Descricao,
-                            Nome = ps.Nome,
-                            Respostas = alunosRecuperacaoParalela
-                                        .Where(w => w.Id == x.Id)
-                                        .Select(s => new RespostaDto
-                                        {
-                                            ObjetivoId = s.ObjetivoId,
-                                            RespostaId = s.RespostaId
-                                        }).ToList()
-                        }).ToList()
-            }).ToList();
+                Periodo = new RecuperacaoParalelaPeriodoDto
+                {
+                    Id = periodoId,
+                    Alunos = retorno.Select(a => new RecuperacaoParalelaAlunoDto
+                    {
+                        Nome = alunosEol.Where(w => Convert.ToInt32(w.CodigoAluno) == a.AlunoId).Select(s => s.NomeAluno).FirstOrDefault(),
+                        NumeroChamada = alunosEol.Where(w => Convert.ToInt32(w.CodigoAluno) == a.AlunoId).Select(s => s.NumeroAlunoChamada).FirstOrDefault(),
+                        Turma = alunosEol.Where(w => Convert.ToInt32(w.CodigoAluno) == a.AlunoId).Select(s => s.TurmaEscola).FirstOrDefault(),
+                        Respostas = alunosRecuperacaoParalela
+                                                    .Where(w => w.Id == a.Id)
+                                                    .Select(s => new RespostaDto
+                                                    {
+                                                        ObjetivoId = s.ObjetivoId,
+                                                        RespostaId = s.RespostaId
+                                                    }).ToList()
+                    }).ToList()
+                }
+            };
         }
     }
 }

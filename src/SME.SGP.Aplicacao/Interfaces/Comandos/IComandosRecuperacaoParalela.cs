@@ -6,6 +6,6 @@ namespace SME.SGP.Aplicacao
 {
     public interface IComandosRecuperacaoParalela
     {
-        Task<IEnumerable<RecuperacaoParalelaDto>> Salvar(IEnumerable<RecuperacaoParalelaDto> recuperacaoParalelaDto);
+        Task<IEnumerable<RecuperacaoParalelaListagemDto>> Salvar(RecuperacaoParalelaDto recuperacaoParalelaDto);
     }
 }
