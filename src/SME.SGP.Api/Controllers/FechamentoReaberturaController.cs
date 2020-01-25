@@ -18,7 +18,7 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(200)]
         //[Permissao(Permissao.PFR_C, Policy = "Bearer")]
         public async Task<IActionResult> Alterar([FromServices] IComandosFechamentoReabertura comandosFechamentoReabertura,
-            [FromBody]FechamentoReaberturaPersistenciaDto fechamentoReaberturaPersistenciaDto, long id)
+            [FromBody]FechamentoReaberturaAlteracaoDto fechamentoReaberturaPersistenciaDto, long id)
         {
             await comandosFechamentoReabertura.Alterar(fechamentoReaberturaPersistenciaDto, id);
             return Ok();

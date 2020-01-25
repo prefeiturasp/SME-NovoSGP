@@ -5,7 +5,8 @@ namespace SME.SGP.Aplicacao
 {
     public interface IComandosFechamentoReabertura
     {
+        Task Alterar(FechamentoReaberturaAlteracaoDto fechamentoReaberturaPersistenciaDto, long id);
+
         Task Salvar(FechamentoReaberturaPersistenciaDto fechamentoReaberturaPersistenciaDto);
-        Task Alterar(FechamentoReaberturaPersistenciaDto fechamentoReaberturaPersistenciaDto, long id);
     }
 }
