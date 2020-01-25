@@ -28,13 +28,13 @@ namespace SME.SGP.Dados.Repositorios
         public async Task<IEnumerable<FechamentoReabertura>> Listar(long tipoCalendarioId, long? dreId, long? ueId)
         {
             var query = new StringBuilder();
-            MontaQueryListarCabecalho(query);
-            MontaQueryListarFrom(query);
+            MontaQueryCabecalhoCompleto(query);
+            MontaQueryFromCompleto(query);
             MontaQueryListarWhere(query, tipoCalendarioId, dreId, ueId);
 
             var lookup = new Dictionary<long, FechamentoReabertura>();
 
-            await database.Conexao.QueryAsync<FechamentoReabertura, FechamentoReaberturaBimestre, FechamentoReabertura>(query.ToString(), (fechamento, bimestre) =>
+            database.Conexao.Query<FechamentoReabertura, FechamentoReaberturaBimestre, Ue, Dre, TipoCalendario, FechamentoReabertura>(query.ToString(), (fechamento, bimestre, ue, dre, tipoCalendario) =>
             {
                 FechamentoReabertura fechamentoReabertura;
                 if (!lookup.TryGetValue(fechamento.Id, out fechamentoReabertura))
@@ -42,7 +42,9 @@ namespace SME.SGP.Dados.Repositorios
                     fechamentoReabertura = fechamento;
                     lookup.Add(fechamento.Id, fechamentoReabertura);
                 }
-
+                fechamentoReabertura.AtualizarDre(dre);
+                fechamentoReabertura.AtualizarUe(ue);
+                fechamentoReabertura.AtualizarTipoCalendario(tipoCalendario);
                 fechamentoReabertura.Adicionar(bimestre);
                 return fechamentoReabertura;
             }, new
@@ -62,8 +64,8 @@ namespace SME.SGP.Dados.Repositorios
             if (paginacao == null || paginacao.QuantidadeRegistros == 0)
                 paginacao = new Paginacao(1, 10);
 
-            MontaQueryListarCabecalho(query);
-            MontaQueryListarFrom(query);
+            MontaQueryCabecalhoCompleto(query);
+            MontaQueryFromCompleto(query);
             MontaQueryListarWhere(query, tipoCalendarioId, dreId, ueId);
 
             var retornoPaginado = new PaginacaoResultadoDto<FechamentoReabertura>();
@@ -109,17 +111,11 @@ namespace SME.SGP.Dados.Repositorios
 
         public FechamentoReabertura ObterCompleto(long idFechamentoReabertura, long workflowId)
         {
-            var query = new StringBuilder(@"select fr.*, frb.*, ue.*, dre.*, tc.*
-                            from fechamento_reabertura fr
-                            join fechamento_reabertura_bimestre frb
-                            on frb.fechamento_reabertura_id = fr.id
-                            inner join tipo_calendario tc
-                            on fr.tipo_calendario_id = tc.id
-                            left join ue
-                            on fr.ue_id = ue.id
-                            left join dre
-                            on fr.dre_id = dre.id
-                            where fr.excluido = false");
+            var query = new StringBuilder();
+            MontaQueryCabecalhoCompleto(query);
+            MontaQueryFromCompleto(query);
+
+            query.AppendLine("where  1=1");
 
             if (idFechamentoReabertura != 0)
                 query.AppendLine("and fr.id = @idFechamentoReabertura");
@@ -161,9 +157,22 @@ namespace SME.SGP.Dados.Repositorios
             await database.Conexao.InsertAsync(fechamentoReabertura);
         }
 
-        private void MontaQueryListarCabecalho(StringBuilder query)
+        private void MontaQueryCabecalhoCompleto(StringBuilder query)
         {
-            query.AppendLine("select fr.*, frb.*");
+            query.AppendLine("select fr.*, frb.*, ue.*, dre.*, tc.*");
+        }
+
+        private void MontaQueryFromCompleto(StringBuilder query)
+        {
+            query.AppendLine("from fechamento_reabertura fr");
+            query.AppendLine("join fechamento_reabertura_bimestre frb");
+            query.AppendLine("on frb.fechamento_reabertura_id = fr.id");
+            query.AppendLine("inner join tipo_calendario tc");
+            query.AppendLine("on fr.tipo_calendario_id = tc.id");
+            query.AppendLine("left join ue");
+            query.AppendLine("on fr.ue_id = ue.id");
+            query.AppendLine("left join dre");
+            query.AppendLine("on fr.dre_id = dre.id");
         }
 
         private void MontaQueryListarCount(StringBuilder query, long tipoCalendarioId, long? dreId, long? ueId)
@@ -173,17 +182,9 @@ namespace SME.SGP.Dados.Repositorios
             MontaQueryListarWhere(query, tipoCalendarioId, dreId, ueId);
         }
 
-        private void MontaQueryListarFrom(StringBuilder query)
-        {
-            query.AppendLine("from fechamento_reabertura fr");
-            query.AppendLine("inner");
-            query.AppendLine("join fechamento_reabertura_bimestre frb");
-            query.AppendLine("on frb.fechamento_reabertura_id = fr.id");
-        }
-
         private void MontaQueryListarWhere(StringBuilder query, long tipoCalendarioId, long? dreId, long? ueId)
         {
-            query.AppendLine("where excluido = false and status <> 3");
+            query.AppendLine("where fr.excluido = false and fr.status <> 3");
 
             if (tipoCalendarioId > 0)
                 query.AppendLine("and fr.tipo_calendario_id = @tipoCalendarioId");

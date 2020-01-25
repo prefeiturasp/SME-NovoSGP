@@ -34,25 +34,17 @@ namespace SME.SGP.Dominio.Servicos
             var fechamentoReaberturas = await repositorioFechamentoReabertura.Listar(fechamentoReabertura.TipoCalendarioId, null, null);
 
             var fechamentoReaberturasParaVerificar = fechamentoReaberturas.Where(a => a.Id != fechamentoReabertura.Id);
-            var fechamentoReaberturasParaAtualizar = fechamentoReaberturas.Where(a => a.Id != fechamentoReabertura.Id && a.Inicio >= dataInicialAnterior && a.Fim <= dataFimAnterior);
+            var fechamentoReaberturasParaAtualizar = fechamentoReaberturas.Where(a => a.Id != fechamentoReabertura.Id && fechamentoReabertura.Inicio > a.Inicio || a.Fim > fechamentoReabertura.Fim);
 
             var usuarioAtual = await servicoUsuario.ObterUsuarioLogado();
 
-            fechamentoReabertura.PodeSalvar(fechamentoReaberturas, usuarioAtual);
+            fechamentoReabertura.PodeSalvar(fechamentoReaberturasParaVerificar, usuarioAtual);
 
             fechamentoReabertura.VerificaStatus();
 
             unitOfWork.IniciarTransacao();
 
             var fechamentoReaberturaId = await repositorioFechamentoReabertura.SalvarAsync(fechamentoReabertura);
-
-            repositorioFechamentoReabertura.ExcluirBimestres(fechamentoReabertura.Id);
-
-            foreach (var fechamentoReaberturaBimestre in fechamentoReabertura.Bimestres)
-            {
-                fechamentoReaberturaBimestre.FechamentoAberturaId = fechamentoReaberturaId;
-                await repositorioFechamentoReabertura.SalvarBimestre(fechamentoReaberturaBimestre);
-            }
 
             if (fechamentoReabertura.Status == EntidadeStatus.AguardandoAprovacao)
             {
@@ -112,14 +104,11 @@ namespace SME.SGP.Dominio.Servicos
 
         private void NotificarSobreAlteracaoNoFechamentoReabertura((FechamentoReabertura, bool, bool) fechamentoReaberturaParaAtualizar)
         {
-            //Se for dre, notificar o ADM do SGP na DRE.
-            //Se for Ue, notificar ADM do SGP na UE e para o Diretor.
-
             var fechamentoReabertura = fechamentoReaberturaParaAtualizar.Item1;
 
             var notificacao = new Notificacao()
             {
-                UeId = fechamentoReabertura.Ue.CodigoUe,
+                UeId = fechamentoReabertura.Ue is null ? null : fechamentoReabertura.Ue.CodigoUe,
                 Ano = fechamentoReabertura.CriadoEm.Year,
                 Categoria = NotificacaoCategoria.Aviso,
                 DreId = fechamentoReabertura.Dre.CodigoDre,
@@ -134,34 +123,43 @@ namespace SME.SGP.Dominio.Servicos
             if (fechamentoReabertura.EhParaDre())
             {
                 var adminsSgpDre = servicoEOL.ObterAdministradoresSGP(fechamentoReabertura.Dre.CodigoDre).Result;
-                if (adminsSgpDre == null || !adminsSgpDre.Any())
-                    throw new NegocioException($"Não foram localizados diretores SGP Dre {fechamentoReabertura.Dre.CodigoDre}.");
-
-                foreach (var adminSgpUe in adminsSgpDre)
+                if (adminsSgpDre != null || !adminsSgpDre.Any())
                 {
-                    var usuario = servicoUsuario.ObterUsuarioPorCodigoRfLoginOuAdiciona(adminSgpUe);
-                    notificacao.UsuarioId = usuario.Id;
+                    foreach (var adminSgpUe in adminsSgpDre)
+                    {
+                        var usuario = servicoUsuario.ObterUsuarioPorCodigoRfLoginOuAdiciona(adminSgpUe);
+                        notificacao.UsuarioId = usuario.Id;
 
-                    servicoNotificacao.Salvar(notificacao);
+                        servicoNotificacao.Salvar(notificacao);
+                    }
                 }
             }
             else if (fechamentoReabertura.EhParaUe())
             {
                 var adminsSgpUe = servicoEOL.ObterAdministradoresSGP(fechamentoReabertura.Ue.CodigoUe).Result;
-                if (adminsSgpUe == null || !adminsSgpUe.Any())
-                    throw new NegocioException($"Não foram localizados diretores SGP Ue {fechamentoReabertura.Ue.CodigoUe}.");
 
-                foreach (var adminSgpUe in adminsSgpUe)
+                if (adminsSgpUe != null && adminsSgpUe.Any())
                 {
-                    var usuario = servicoUsuario.ObterUsuarioPorCodigoRfLoginOuAdiciona(adminSgpUe);
-                    notificacao.UsuarioId = usuario.Id;
+                    foreach (var adminSgpUe in adminsSgpUe)
+                    {
+                        var usuario = servicoUsuario.ObterUsuarioPorCodigoRfLoginOuAdiciona(adminSgpUe);
+                        notificacao.UsuarioId = usuario.Id;
 
-                    servicoNotificacao.Salvar(notificacao);
+                        servicoNotificacao.Salvar(notificacao);
+                    }
                 }
 
                 var diretores = servicoEOL.ObterFuncionariosPorCargoUe(fechamentoReabertura.Ue.CodigoUe, (long)Cargo.Diretor);
                 if (diretores == null || !diretores.Any())
                     throw new NegocioException($"Não foram localizados diretores para Ue {fechamentoReabertura.Ue.CodigoUe}.");
+
+                foreach (var diretor in diretores)
+                {
+                    var usuario = servicoUsuario.ObterUsuarioPorCodigoRfLoginOuAdiciona(diretor.CodigoRf);
+                    notificacao.UsuarioId = usuario.Id;
+
+                    servicoNotificacao.Salvar(notificacao);
+                }
             }
         }
 
@@ -195,11 +193,11 @@ namespace SME.SGP.Dominio.Servicos
 
         private void VerificaEAtualizaFechamentosReaberturasParaAlterar(FechamentoReabertura fechamentoReabertura, IEnumerable<FechamentoReabertura> fechamentoReaberturas)
         {
-            var fechamentosParaAtualizarTupple = new List<(FechamentoReabertura, bool, bool)>();
-            var fechamentosParaAtualizar = new List<FechamentoReabertura>();
-
             if (fechamentoReabertura.EhParaDre() || fechamentoReabertura.EhParaSme())
             {
+                var fechamentosParaAtualizarTupple = new List<(FechamentoReabertura, bool, bool)>();
+                var fechamentosParaAtualizar = new List<FechamentoReabertura>();
+
                 if (fechamentoReabertura.EhParaDre())
                 {
                     fechamentosParaAtualizar = fechamentoReaberturas.Where(a => a.EhParaUe() && a.DreId == fechamentoReabertura.DreId).ToList();
@@ -208,30 +206,30 @@ namespace SME.SGP.Dominio.Servicos
                 {
                     fechamentosParaAtualizar = fechamentoReaberturas.Where(a => !a.EhParaSme()).ToList();
                 }
-            }
 
-            foreach (var fechamentoReaberturasParaAtualizar in fechamentosParaAtualizar)
-            {
-                var atualizaInicio = false;
-                var atualizaFim = false;
-
-                if (fechamentoReaberturasParaAtualizar.Inicio < fechamentoReabertura.Inicio)
+                foreach (var fechamentoReaberturasParaAtualizar in fechamentosParaAtualizar)
                 {
-                    fechamentoReaberturasParaAtualizar.Inicio = fechamentoReabertura.Inicio;
-                    atualizaInicio = true;
+                    var atualizaInicio = false;
+                    var atualizaFim = false;
+
+                    if (fechamentoReaberturasParaAtualizar.Inicio < fechamentoReabertura.Inicio)
+                    {
+                        fechamentoReaberturasParaAtualizar.Inicio = fechamentoReabertura.Inicio;
+                        atualizaInicio = true;
+                    }
+
+                    if (fechamentoReaberturasParaAtualizar.Fim > fechamentoReabertura.Fim)
+                    {
+                        fechamentoReaberturasParaAtualizar.Fim = fechamentoReabertura.Fim;
+                        atualizaFim = true;
+                    }
+
+                    if (atualizaInicio || atualizaFim)
+                        fechamentosParaAtualizarTupple.Add((fechamentoReaberturasParaAtualizar, atualizaInicio, atualizaFim));
                 }
 
-                if (fechamentoReaberturasParaAtualizar.Fim > fechamentoReabertura.Fim)
-                {
-                    fechamentoReaberturasParaAtualizar.Fim = fechamentoReabertura.Fim;
-                    atualizaFim = true;
-                }
-
-                if (atualizaInicio || atualizaFim)
-                    fechamentosParaAtualizarTupple.Add((fechamentoReaberturasParaAtualizar, atualizaInicio, atualizaFim));
+                AtualizaFechamentosComDatasDistintas(fechamentoReabertura, fechamentosParaAtualizarTupple);
             }
-
-            AtualizaFechamentosComDatasDistintas(fechamentoReabertura, fechamentosParaAtualizarTupple);
         }
     }
 }
