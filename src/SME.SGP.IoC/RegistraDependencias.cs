@@ -191,6 +191,7 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IServicoAtribuicaoCJ, ServicoAtribuicaoCJ>();
             services.TryAddScoped<IServicoEventoMatricula, ServicoEventoMatricula>();
             services.TryAddScoped<IServicoAluno, ServicoAluno>();
+            services.TryAddScoped<IServicoFechamentoReabertura, ServicoFechamentoReabertura>();
         }
     }
 }
