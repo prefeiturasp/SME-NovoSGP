@@ -21,8 +21,7 @@ namespace SME.SGP.Api.Controllers
         }
 
         [HttpPost]
-        [ProducesResponseType(typeof(FechamentoDto), 200)]
-        [ProducesResponseType(204)]
+        [ProducesResponseType(200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [Permissao(Permissao.PFA_I, Permissao.PFA_A, Policy = "Bearer")]
         public async Task<IActionResult> Post([FromBody]FechamentoDto fechamentoDto, [FromServices] IComandosFechamento comandosFechamento)
