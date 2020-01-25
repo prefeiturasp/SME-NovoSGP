@@ -23,7 +23,7 @@ namespace SME.SGP.Api.Controllers
         }
 
         [HttpGet("listar")]
-        [ProducesResponseType(typeof(IEnumerable<RecuperacaoParalelaDto>), 200)]
+        [ProducesResponseType(typeof(IEnumerable<RecuperacaoParalelaListagemDto>), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         public async Task<IActionResult> Listar([FromQuery]FiltroRecuperacaoParalelaDto filtro)
         {
@@ -38,13 +38,13 @@ namespace SME.SGP.Api.Controllers
         //    return Ok(await consultaRecuperacaoParalela.ListarPeriodo());
         //}
 
-        //[HttpPost]
-        //[ProducesResponseType(200)]
-        //[ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        //[Permissao(Permissao.CP_I, Policy = "Bearer")]
-        //public async Task<IActionResult> PostAsync([FromBody]IEnumerable<RecuperacaoParalelaDto> recuperacaoParalelaPeriodoDto)
-        //{
-        //    return Ok(await comandosRecuperacaoParalela.Salvar(recuperacaoParalelaPeriodoDto));
-        //}
+        [HttpPost]
+        [ProducesResponseType(200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [Permissao(Permissao.CP_I, Policy = "Bearer")]
+        public async Task<IActionResult> PostAsync([FromBody]RecuperacaoParalelaDto recuperacaoParalelaPeriodoDto)
+        {
+            return Ok(await comandosRecuperacaoParalela.Salvar(recuperacaoParalelaPeriodoDto));
+        }
     }
 }

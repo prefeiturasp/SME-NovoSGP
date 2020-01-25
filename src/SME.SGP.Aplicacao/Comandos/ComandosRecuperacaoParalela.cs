@@ -18,9 +18,24 @@ namespace SME.SGP.Aplicacao
             this.unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
         }
 
-        Task<IEnumerable<RecuperacaoParalelaDto>> IComandosRecuperacaoParalela.Salvar(IEnumerable<RecuperacaoParalelaDto> recuperacaoParalelaDto)
+        async Task<IEnumerable<RecuperacaoParalelaListagemDto>> IComandosRecuperacaoParalela.Salvar(RecuperacaoParalelaDto recuperacaoParalelaDto)
         {
-            throw new NotImplementedException();
+            var list = new List<RecuperacaoParalelaListagemDto>();
+            foreach (var item in recuperacaoParalelaDto.Periodo.Alunos)
+            {
+                var entidade = new RecuperacaoParalela
+                {
+                    Id = item.Id,
+                    TurmaId = item.TurmaId,
+                    Aluno_id = item.TurmaId,
+                    CriadoEm = item.CriadoEm,
+                    CriadoPor = item.CriadoPor,
+                    CriadoRF = item.CriadoRF,
+                };
+
+                await repositorioRecuperacaoParalela.SalvarAsync(entidade);
+            }
+            return list;
         }
     }
 }
