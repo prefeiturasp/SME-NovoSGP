@@ -15,13 +15,12 @@ namespace SME.SGP.Api.Controllers
         [HttpPut("{id}")]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [ProducesResponseType(typeof(RetornoBaseDto), 601)]
-        [ProducesResponseType(200)]
-        //[Permissao(Permissao.PFR_C, Policy = "Bearer")]
+        [ProducesResponseType(typeof(string), 200)]
+        [Permissao(Permissao.PFR_A, Policy = "Bearer")]
         public async Task<IActionResult> Alterar([FromServices] IComandosFechamentoReabertura comandosFechamentoReabertura,
             [FromBody]FechamentoReaberturaAlteracaoDto fechamentoReaberturaPersistenciaDto, long id)
         {
-            await comandosFechamentoReabertura.Alterar(fechamentoReaberturaPersistenciaDto, id);
-            return Ok();
+            return Ok(await comandosFechamentoReabertura.Alterar(fechamentoReaberturaPersistenciaDto, id));
         }
 
         [HttpGet]
@@ -37,12 +36,11 @@ namespace SME.SGP.Api.Controllers
         [HttpPost]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [ProducesResponseType(typeof(RetornoBaseDto), 601)]
-        [ProducesResponseType(200)]
-        //[Permissao(Permissao.PFR_C, Policy = "Bearer")]
+        [ProducesResponseType(typeof(string), 200)]
+        [Permissao(Permissao.PFR_I, Policy = "Bearer")]
         public async Task<IActionResult> Salvar([FromServices] IComandosFechamentoReabertura comandosFechamentoReabertura, [FromBody]FechamentoReaberturaPersistenciaDto fechamentoReaberturaPersistenciaDto)
         {
-            await comandosFechamentoReabertura.Salvar(fechamentoReaberturaPersistenciaDto);
-            return Ok();
+            return Ok(await comandosFechamentoReabertura.Salvar(fechamentoReaberturaPersistenciaDto));
         }
     }
 }
