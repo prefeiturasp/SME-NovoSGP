@@ -1,11 +1,10 @@
 ﻿using Dapper;
-using SME.SGP.Dados.Contexto;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
+using SME.SGP.Infra;
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
-using SME.SGP.Infra;
 
 namespace SME.SGP.Dados.Repositorios
 {
@@ -17,15 +16,17 @@ namespace SME.SGP.Dados.Repositorios
 
         public TipoCalendario BuscarPorAnoLetivoEModalidade(int anoLetivo, ModalidadeTipoCalendario modalidade)
         {
-            StringBuilder query = new StringBuilder();
-
-            query.AppendLine("select *");
-            query.AppendLine("from tipo_calendario");
-            query.AppendLine("where excluido = false");
-            query.AppendLine("and ano_letivo = @anoLetivo");
+            StringBuilder query = ObterQueryListarPorAnoLetivo();
             query.AppendLine("and modalidade = @modalidade");
 
             return database.Conexao.QueryFirstOrDefault<TipoCalendario>(query.ToString(), new { anoLetivo, modalidade = (int)modalidade });
+        }
+
+        public IEnumerable<TipoCalendario> ListarPorAnoLetivo(int anoLetivo)
+        {
+            StringBuilder query = ObterQueryListarPorAnoLetivo();
+
+            return database.Conexao.Query<TipoCalendario>(query.ToString(), new { anoLetivo });
         }
 
         public override TipoCalendario ObterPorId(long id)
@@ -72,6 +73,17 @@ namespace SME.SGP.Dados.Repositorios
             int quantidadeRegistrosExistentes = await database.Conexao.QueryFirstAsync<int>(query.ToString(), new { id, nomeMaiusculo });
 
             return quantidadeRegistrosExistentes > 0;
+        }
+
+        private static StringBuilder ObterQueryListarPorAnoLetivo()
+        {
+            StringBuilder query = new StringBuilder();
+
+            query.AppendLine("select *");
+            query.AppendLine("from tipo_calendario");
+            query.AppendLine("where excluido = false");
+            query.AppendLine("and ano_letivo = @anoLetivo");
+            return query;
         }
     }
 }
