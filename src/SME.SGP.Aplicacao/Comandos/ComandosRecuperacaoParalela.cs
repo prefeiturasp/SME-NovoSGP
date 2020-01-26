@@ -21,17 +21,18 @@ namespace SME.SGP.Aplicacao
         async Task<IEnumerable<RecuperacaoParalelaListagemDto>> IComandosRecuperacaoParalela.Salvar(RecuperacaoParalelaDto recuperacaoParalelaDto)
         {
             var list = new List<RecuperacaoParalelaListagemDto>();
+            unitOfWork.IniciarTransacao();
             foreach (var item in recuperacaoParalelaDto.Periodo.Alunos)
             {
-                var entidade = new RecuperacaoParalela
+                var recuperacaoParalela = new RecuperacaoParalela
                 {
                     Id = item.Id,
                     TurmaId = item.TurmaId,
-                    Aluno_id = item.TurmaId
+                    Aluno_id = item.CodAluno
                 };
-
-                await repositorioRecuperacaoParalela.SalvarAsync(entidade);
+                await repositorioRecuperacaoParalela.SalvarAsync(recuperacaoParalela);
             }
+            unitOfWork.PersistirTransacao();
             return list;
         }
     }

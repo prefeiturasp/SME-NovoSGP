@@ -60,6 +60,7 @@ namespace SME.SGP.Aplicacao
                     {
                         Nome = alunosEol.Where(w => Convert.ToInt32(w.CodigoAluno) == a.AlunoId).Select(s => s.NomeAluno).FirstOrDefault(),
                         NumeroChamada = alunosEol.Where(w => Convert.ToInt32(w.CodigoAluno) == a.AlunoId).Select(s => s.NumeroAlunoChamada).FirstOrDefault(),
+                        CodAluno = a.AlunoId,
                         Turma = alunosEol.Where(w => Convert.ToInt32(w.CodigoAluno) == a.AlunoId).Select(s => s.TurmaEscola).FirstOrDefault(),
                         Respostas = alunosRecuperacaoParalela
                                                     .Where(w => w.Id == a.Id)
