@@ -23,6 +23,24 @@ namespace SME.SGP.Aplicacao.Integracoes
             this.httpClient = httpClient;
         }
 
+        public async Task AlterarEmail(string login, string email)
+        {
+            httpClient.DefaultRequestHeaders.Clear();
+
+            var valoresParaEnvio = new List<KeyValuePair<string, string>> {
+                { new KeyValuePair<string, string>("usuario", login) },
+                { new KeyValuePair<string, string>("email", email) }};
+
+            var resposta = await httpClient.PostAsync($"AutenticacaoSgp/AlterarEmail", new FormUrlEncodedContent(valoresParaEnvio));
+
+            if (resposta.IsSuccessStatusCode)
+                return;
+
+            var mensagem = await resposta.Content.ReadAsStringAsync();
+
+            throw new NegocioException(mensagem);
+        }
+
         public async Task<AlterarSenhaRespostaDto> AlterarSenha(string login, string novaSenha)
         {
             httpClient.DefaultRequestHeaders.Clear();
@@ -80,6 +98,18 @@ namespace SME.SGP.Aplicacao.Integracoes
             else return null;
         }
 
+        public async Task<bool> ExisteUsuarioComMesmoEmail(string login, string email)
+        {
+            var resposta = await httpClient.GetAsync($"autenticacaoSgp/{login}/ValidarEmailExistente/{email}/");
+
+            if (resposta.IsSuccessStatusCode)
+            {
+                var json = await resposta.Content.ReadAsStringAsync();
+                return JsonConvert.DeserializeObject<bool>(json);
+            }
+            return false;
+        }
+
         public async Task<AbrangenciaRetornoEolDto> ObterAbrangencia(string login, Guid perfil)
         {
             var resposta = await httpClient.GetAsync($"funcionarios/{login}/perfis/{perfil.ToString()}/turmas");
@@ -123,6 +153,18 @@ namespace SME.SGP.Aplicacao.Integracoes
                 return JsonConvert.DeserializeObject<AbrangenciaRetornoEolDto>(jsonRetorno);
             }
             else throw new NegocioException("Houve erro ao tentar obter a abrangência do Eol");
+        }
+
+        public async Task<string[]> ObterAdministradoresSGPParaNotificar(string codigoDreOuUe)
+        {
+            var resposta = await httpClient.GetAsync($"escolas/{codigoDreOuUe}/administrador-sgp");
+
+            if (resposta.IsSuccessStatusCode)
+            {
+                var json = await resposta.Content.ReadAsStringAsync();
+                return JsonConvert.DeserializeObject<string[]>(json);
+            }
+            return null;
         }
 
         public async Task<IEnumerable<AlunoPorTurmaResposta>> ObterAlunosPorTurma(string turmaId)
@@ -573,6 +615,7 @@ namespace SME.SGP.Aplicacao.Integracoes
             }
             return false;
         }
+
         private IEnumerable<DisciplinaDto> MapearParaDtoDisciplinas(IEnumerable<RetornoDisciplinaDto> disciplinas)
         {
             return disciplinas.Select(x => new DisciplinaDto
@@ -613,36 +656,6 @@ namespace SME.SGP.Aplicacao.Integracoes
                 return JsonConvert.DeserializeObject<IEnumerable<DisciplinaResposta>>(json);
             }
             return null;
-        }
-
-        public async Task<bool> ExisteUsuarioComMesmoEmail(string login, string email)
-        {
-            var resposta = await httpClient.GetAsync($"autenticacaoSgp/{login}/ValidarEmailExistente/{email}/");
-
-            if (resposta.IsSuccessStatusCode)
-            {
-                var json = await resposta.Content.ReadAsStringAsync();
-                return JsonConvert.DeserializeObject<bool>(json);
-            }
-            return false;
-        }
-
-        public async Task AlterarEmail(string login, string email)
-        {
-            httpClient.DefaultRequestHeaders.Clear();
-
-            var valoresParaEnvio = new List<KeyValuePair<string, string>> {
-                { new KeyValuePair<string, string>("usuario", login) },
-                { new KeyValuePair<string, string>("email", email) }};
-
-            var resposta = await httpClient.PostAsync($"AutenticacaoSgp/AlterarEmail", new FormUrlEncodedContent(valoresParaEnvio));
-
-            if (resposta.IsSuccessStatusCode)
-                return;
-
-            var mensagem = await resposta.Content.ReadAsStringAsync();
-
-            throw new NegocioException(mensagem);
         }
     }
 }

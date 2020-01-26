@@ -1,10 +1,12 @@
 ﻿using SME.Background.Core;
+using SME.SGP.Aplicacao.Integracoes;
 using SME.SGP.Dominio.Entidades;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Dominio.Servicos
@@ -19,6 +21,8 @@ namespace SME.SGP.Dominio.Servicos
         private readonly IRepositorioTipoCalendario repositorioTipoCalendario;
         private readonly IRepositorioEventoTipo repositorioTipoEvento;
         private readonly IRepositorioUe repositorioUe;
+        private readonly IServicoEOL servicoEol;
+        private readonly IServicoNotificacao servicoNotificacao;
         private readonly IServicoUsuario servicoUsuario;
         private readonly IUnitOfWork unitOfWork;
 
@@ -31,6 +35,8 @@ namespace SME.SGP.Dominio.Servicos
                                  IRepositorioEventoFechamento repositorioEventoFechamento,
                                  IRepositorioEvento repositorioEvento,
                                  IRepositorioEventoTipo repositorioTipoEvento,
+                                 IServicoEOL servicoEol,
+                                 IServicoNotificacao servicoNotificacao,
                                  IUnitOfWork unitOfWork)
         {
             this.repositorioFechamento = repositorioFechamento ?? throw new ArgumentNullException(nameof(repositorioFechamento));
@@ -42,16 +48,20 @@ namespace SME.SGP.Dominio.Servicos
             this.repositorioEventoFechamento = repositorioEventoFechamento ?? throw new ArgumentNullException(nameof(repositorioEventoFechamento));
             this.repositorioEvento = repositorioEvento ?? throw new ArgumentNullException(nameof(repositorioEvento));
             this.repositorioTipoEvento = repositorioTipoEvento ?? throw new ArgumentNullException(nameof(repositorioTipoEvento));
+            this.servicoEol = servicoEol ?? throw new ArgumentNullException(nameof(servicoEol));
+            this.servicoNotificacao = servicoNotificacao ?? throw new ArgumentNullException(nameof(servicoNotificacao));
             this.unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
         }
 
         public async Task AlterarPeriodosComHierarquiaInferior(Fechamento fechamento)
         {
+            var ehParaDre = fechamento.DreId != null && fechamento.DreId > 0;
             unitOfWork.IniciarTransacao();
             foreach (var fechamentoBimestre in fechamento.FechamentosBimestre)
             {
                 repositorioFechamento.AlterarPeriodosComHierarquiaInferior(fechamentoBimestre.InicioDoFechamento, fechamentoBimestre.FinalDoFechamento, fechamentoBimestre.PeriodoEscolarId, fechamento.DreId);
             }
+            EnviarNotificacaoDeAlteracaoDePeriodo(fechamento, fechamento.FechamentosBimestre, ehParaDre);
             unitOfWork.PersistirTransacao();
         }
 
@@ -148,6 +158,34 @@ namespace SME.SGP.Dominio.Servicos
                 Cliente.Executar<IServicoFechamento>(c => c.AlterarPeriodosComHierarquiaInferior(fechamento));
         }
 
+        private static Notificacao MontaNotificacao(string nomeEntidade, string tipoEntidade, IEnumerable<FechamentoBimestre> fechamentosBimestre, string codigoUe, string codigoDre)
+        {
+            var mensagem = new StringBuilder();
+            mensagem.AppendLine($"A { tipoEntidade} realizou alterações em datas de abertura do período de fechamento de bimestre e as datas definidas pela ");
+            mensagem.Append($"{nomeEntidade} foram ajustadas.");
+            mensagem.AppendLine("<br> As novas datas são: <br><br>");
+
+            foreach (var bimestre in fechamentosBimestre)
+            {
+                mensagem.AppendLine($"{ bimestre.PeriodoEscolar.TipoCalendario.Nome } - { bimestre.PeriodoEscolar.TipoCalendario.AnoLetivo }");
+                mensagem.Append($" {bimestre.PeriodoEscolar.Bimestre}º Bimestre - ");
+                mensagem.Append($"Início: {bimestre.InicioDoFechamento.ToString("dd/MM/yyyy")} - ");
+                mensagem.Append($"Fim: {bimestre.FinalDoFechamento.ToString("dd/MM/yyyy")}<br>");
+            }
+
+            var notificacao = new Notificacao()
+            {
+                UeId = codigoUe,
+                Ano = fechamentosBimestre.FirstOrDefault().PeriodoEscolar.TipoCalendario.AnoLetivo,
+                Categoria = NotificacaoCategoria.Alerta,
+                DreId = codigoDre,
+                Titulo = "Alteração em datas de fechamento de bimestre",
+                Tipo = NotificacaoTipo.Calendario,
+                Mensagem = mensagem.ToString()
+            };
+            return notificacao;
+        }
+
         private void AtualizaEventoDeFechamento(FechamentoBimestre bimestre, EventoFechamento fechamentoExistente)
         {
             var eventoExistente = repositorioEvento.ObterPorId(fechamentoExistente.EventoId);
@@ -202,6 +240,64 @@ namespace SME.SGP.Dominio.Servicos
                         CriaEventoDeFechamento(fechamento, tipoEvento, bimestre);
                     }
                 }
+            }
+        }
+
+        private void EnviaNotificacaoParaDre(IEnumerable<FechamentoBimestre> fechamentosBimestre)
+        {
+            var dres = repositorioDre.ObterTodas();
+            if (dres != null && dres.Any())
+            {
+                foreach (var dre in dres)
+                {
+                    Notificacao notificacao = MontaNotificacao(dre.Nome, "SME", fechamentosBimestre, null, dre.CodigoDre);
+                    var adminsSgpDre = servicoEol.ObterAdministradoresSGPParaNotificar(dre.CodigoDre).Result;
+                    if (adminsSgpDre != null && adminsSgpDre.Any())
+                    {
+                        foreach (var adminSgpUe in adminsSgpDre)
+                        {
+                            var usuario = servicoUsuario.ObterUsuarioPorCodigoRfLoginOuAdiciona(adminSgpUe);
+                            notificacao.UsuarioId = usuario.Id;
+
+                            servicoNotificacao.Salvar(notificacao);
+                        }
+                    }
+                }
+            }
+        }
+
+        private void EnviaNotificacaoParaUe(IEnumerable<FechamentoBimestre> fechamentosBimestre, long dreId)
+        {
+            var ues = repositorioUe.ObterPorDre(dreId);
+            if (ues != null && ues.Any())
+            {
+                foreach (var ue in ues)
+                {
+                    Notificacao notificacao = MontaNotificacao(ue.Nome, "DRE", fechamentosBimestre, null, ue.CodigoUe);
+                    var diretores = servicoEol.ObterFuncionariosPorCargoUe(ue.CodigoUe, (long)Cargo.Diretor);
+                    if (diretores == null || !diretores.Any())
+                        throw new NegocioException($"Não foram localizados diretores para Ue {ue.CodigoUe}.");
+
+                    foreach (var diretor in diretores)
+                    {
+                        var usuario = servicoUsuario.ObterUsuarioPorCodigoRfLoginOuAdiciona(diretor.CodigoRf);
+                        notificacao.UsuarioId = usuario.Id;
+
+                        servicoNotificacao.Salvar(notificacao);
+                    }
+                }
+            }
+        }
+
+        private void EnviarNotificacaoDeAlteracaoDePeriodo(Fechamento fechamento, IEnumerable<FechamentoBimestre> fechamentosBimestre, bool paraDre)
+        {
+            if (paraDre)
+            {
+                EnviaNotificacaoParaDre(fechamentosBimestre);
+            }
+            else
+            {
+                EnviaNotificacaoParaUe(fechamentosBimestre, fechamento.DreId.Value);
             }
         }
 
@@ -274,12 +370,11 @@ namespace SME.SGP.Dominio.Servicos
         private (Dre, Ue) ObterDreEUe(string codigoDre, string codigoUe)
         {
             Dre dre = null;
-            Ue ue = null;
             if (!string.IsNullOrWhiteSpace(codigoDre))
             {
                 dre = repositorioDre.ObterPorCodigo(codigoDre.ToString());
             }
-            ue = null;
+            Ue ue = null;
             if (!string.IsNullOrWhiteSpace(codigoUe))
             {
                 ue = repositorioUe.ObterPorCodigo(codigoUe.ToString());
