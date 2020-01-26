@@ -81,7 +81,8 @@ namespace SME.SGP.Aplicacao
                 Id = fechamentoReabertura.Id,
                 BimestresQuantidadeTotal = fechamentoReabertura.TipoCalendario.QuantidadeDeBimestres(),
                 DreCodigo = fechamentoReabertura.Dre?.CodigoDre,
-                UeCodigo = fechamentoReabertura.Ue?.CodigoUe
+                UeCodigo = fechamentoReabertura.Ue?.CodigoUe,
+                TipoCalendarioId = fechamentoReabertura.TipoCalendarioId
             };
         }
     }
