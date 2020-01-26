@@ -2,13 +2,14 @@
 
 namespace SME.SGP.Infra
 {
-    public class FechamentoDto
+    public class FechamentoDto : AuditoriaDto
     {
         public FechamentoDto()
         {
             FechamentosBimestres = new List<FechamentoBimestreDto>();
         }
 
+        public bool ConfirmouAlteracaoHierarquica { get; set; }
         public string DreId { get; set; }
         public IEnumerable<FechamentoBimestreDto> FechamentosBimestres { get; set; }
         public long Id { get; set; }

@@ -3,6 +3,7 @@ using Dommel;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -13,6 +14,29 @@ namespace SME.SGP.Dados.Repositorios
     {
         public RepositorioFechamento(ISgpContext conexao) : base(conexao)
         {
+        }
+
+        public void AlterarPeriodosComHierarquiaInferior(DateTime inicioDoFechamento, DateTime finalDoFechamento, long periodoEscolarId, long? dreId)
+        {
+            var query = new StringBuilder("update ");
+            query.AppendLine("fechamento_bimestre");
+            query.AppendLine("set");
+            query.AppendLine("inicio_fechamento = @inicioDoFechamento, ");
+            query.AppendLine("final_fechamento = @finalDoFechamento");
+            query.AppendLine("where");
+            query.AppendLine("(inicio_fechamento < @inicioDoFechamento or final_fechamento > @finalDoFechamento)");
+            query.AppendLine("and periodo_escolar_id = @periodoEscolarId");
+            if (dreId.HasValue)
+            {
+                query.AppendLine("and fechamento_id = Any(select id from fechamento where dre_id = @dreId)");
+            }
+            database.Conexao.Execute(query.ToString(), new
+            {
+                inicioDoFechamento,
+                finalDoFechamento,
+                periodoEscolarId,
+                dreId
+            });
         }
 
         public Fechamento ObterPorTipoCalendarioDreEUE(long tipoCalendarioId, long? dreId, long? ueId)
@@ -79,6 +103,29 @@ namespace SME.SGP.Dados.Repositorios
                     database.Conexao.Update(bimestre);
                 else database.Conexao.Insert(bimestre);
             }
+        }
+
+        public bool ValidaRegistrosForaDoPeriodo(DateTime inicioDoFechamento, DateTime finalDoFechamento, long fechamentoId, long periodoEscolarId, long? dreId)
+        {
+            var query = new StringBuilder("select 1 from fechamento_bimestre fb ");
+            query.AppendLine("where");
+            query.AppendLine("(fb.inicio_fechamento::date < @inicioDoFechamento::date");
+            query.AppendLine("or fb.final_fechamento::date > @finalDoFechamento::date)");
+            query.AppendLine("and fb.periodo_escolar_id = @periodoEscolarId");
+            query.AppendLine("and fb.fechamento_id <> @fechamentoId");
+            if (dreId.HasValue)
+            {
+                query.AppendLine("and fb.fechamento_id = Any(select id from fechamento where dre_id = @dreId)");
+            }
+
+            return database.Conexao.QueryFirstOrDefault<bool>(query.ToString(), new
+            {
+                inicioDoFechamento,
+                finalDoFechamento,
+                periodoEscolarId,
+                dreId,
+                fechamentoId
+            });
         }
     }
 }
