@@ -5,6 +5,8 @@ namespace SME.SGP.Aplicacao
 {
     public interface IConsultasFechamentoReabertura
     {
-        Task<PaginacaoResultadoDto<FechamentoReaberturaListagemDto>> Listar(long tipoCalendarioId, long? dreId, long? ueId);
+        Task<PaginacaoResultadoDto<FechamentoReaberturaListagemDto>> Listar(long tipoCalendarioId, string dreCodigo, string ueCodigo);
+
+        FechamentoReaberturaRetornoDto ObterPorId(long id);
     }
 }
