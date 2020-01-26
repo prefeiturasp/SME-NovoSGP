@@ -37,14 +37,12 @@ namespace SME.SGP.Dominio.Servicos
 
         public async Task AlterarPeriodosComHierarquiaInferior(Fechamento fechamento)
         {
-            using (var transacao = unitOfWork.IniciarTransacao())
+            unitOfWork.IniciarTransacao();
+            foreach (var fechamentoBimestre in fechamento.FechamentosBimestre)
             {
-                foreach (var fechamentoBimestre in fechamento.FechamentosBimestre)
-                {
-                    repositorioFechamento.AlterarPeriodosComHierarquiaInferior(fechamentoBimestre.InicioDoFechamento, fechamentoBimestre.FinalDoFechamento, fechamentoBimestre.PeriodoEscolarId, fechamento.DreId);
-                }
-                unitOfWork.PersistirTransacao();
+                repositorioFechamento.AlterarPeriodosComHierarquiaInferior(fechamentoBimestre.InicioDoFechamento, fechamentoBimestre.FinalDoFechamento, fechamentoBimestre.PeriodoEscolarId, fechamento.DreId);
             }
+            unitOfWork.PersistirTransacao();
         }
 
         public async Task<FechamentoDto> ObterPorTipoCalendarioDreEUe(long tipoCalendarioId, string dreId, string ueId)
@@ -125,12 +123,10 @@ namespace SME.SGP.Dominio.Servicos
             ValidarHierarquiaPeriodos(ehSme, ehDre, fechamento);
             ValidarRegistrosForaDoPeriodo(fechamentoDto, fechamento, ehSme, ehDre);
 
-            using (var transacao = unitOfWork.IniciarTransacao())
-            {
-                var id = repositorioFechamento.Salvar(fechamento);
-                repositorioFechamento.SalvarBimestres(fechamento.FechamentosBimestre, id);
-                unitOfWork.PersistirTransacao();
-            }
+            unitOfWork.IniciarTransacao();
+            var id = repositorioFechamento.Salvar(fechamento);
+            repositorioFechamento.SalvarBimestres(fechamento.FechamentosBimestre, id);
+            unitOfWork.PersistirTransacao();
 
             ExecutaAlterarPeriodosComHierarquiaInferior(fechamentoDto, fechamento, ehSme);
         }
