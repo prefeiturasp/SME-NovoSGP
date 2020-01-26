@@ -101,7 +101,7 @@ namespace SME.SGP.Dados.Repositorios
                 bimestre.FechamentoId = fechamentoId;
                 if (bimestre.Id > 0)
                     database.Conexao.Update(bimestre);
-                else database.Conexao.Insert(bimestre);
+                else bimestre.Id = (long)database.Conexao.Insert(bimestre);
             }
         }
 
