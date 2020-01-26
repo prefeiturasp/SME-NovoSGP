@@ -9,7 +9,7 @@ namespace SME.SGP.Infra
         public string AlteradoRF { get; set; }
         public long AlunoId { get; set; }
         public bool Ativo { get; set; }
-        public DateTime CriadoEm { get; set; }
+        public DateTime? CriadoEm { get; set; }
         public string CriadoPor { get; set; }
         public string CriadoRF { get; set; }
         public long Id { get; set; }

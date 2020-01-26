@@ -50,6 +50,12 @@ namespace SME.SGP.Aplicacao
                 Periodo = new RecuperacaoParalelaPeriodoDto
                 {
                     Id = periodoId,
+                    CriadoPor = alunosRecParalela.FirstOrDefault().CriadoPor,
+                    AlteradoPor = alunosRecParalela.FirstOrDefault().AlteradoPor,
+                    AlteradoEm = alunosRecParalela.FirstOrDefault().AlteradoEm,
+                    AlteradoRF = alunosRecParalela.FirstOrDefault().AlteradoRF,
+                    CriadoEm = alunosRecParalela.FirstOrDefault().CriadoEm == DateTime.MinValue ? null : alunosRecParalela.FirstOrDefault().CriadoEm,
+                    CriadoRF = alunosRecParalela.FirstOrDefault().CriadoRF,
                     Alunos = retorno.Select(a => new RecuperacaoParalelaAlunoDto
                     {
                         Nome = alunosEol.Where(w => Convert.ToInt32(w.CodigoAluno) == a.AlunoId).Select(s => s.NomeAluno).FirstOrDefault(),
