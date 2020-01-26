@@ -1,10 +1,10 @@
-import { DreDropDown, UeDropDown } from 'componentes-sgp';
 import { Form, Formik } from 'formik';
+import * as moment from 'moment';
 import React, { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import * as Yup from 'yup';
 import { CampoData, Loader, momentSchema } from '~/componentes';
-import { Cabecalho } from '~/componentes-sgp';
+import { Cabecalho, DreDropDown, UeDropDown } from '~/componentes-sgp';
 import Auditoria from '~/componentes/auditoria';
 import Button from '~/componentes/button';
 import CampoTexto from '~/componentes/campoTexto';
@@ -12,10 +12,13 @@ import Card from '~/componentes/card';
 import { Colors } from '~/componentes/colors';
 import SelectComponent from '~/componentes/select';
 import modalidade from '~/dtos/modalidade';
+import RotasDto from '~/dtos/rotasDto';
+import { confirmar, erros, sucesso } from '~/servicos/alertas';
 import api from '~/servicos/api';
+import { setBreadcrumbManual } from '~/servicos/breadcrumb-services';
 import history from '~/servicos/history';
 
-const PeriodoFechamentoReaberturaForm = () => {
+const PeriodoFechamentoReaberturaForm = ({ match }) => {
   const usuarioStore = useSelector(store => store.usuario);
 
   const [listaTipoCalendarioEscolar, setListaTipoCalendarioEscolar] = useState(
@@ -30,6 +33,8 @@ const PeriodoFechamentoReaberturaForm = () => {
   const [validacoes, setValidacoes] = useState({});
   const [exibirAuditoria, setExibirAuditoria] = useState(false);
   const [auditoria, setAuditoria] = useState([]);
+  const [novoRegistro, setNovoRegistro] = useState(true);
+  const [modoEdicao, setModoEdicao] = useState(false);
 
   const [valoresIniciais, setValoresIniciais] = useState({
     tipoCalendarioId: undefined,
@@ -73,6 +78,12 @@ const PeriodoFechamentoReaberturaForm = () => {
     setListaBimestres(listaNova);
   };
 
+  const onChangeCampos = () => {
+    if (!modoEdicao) {
+      setModoEdicao(true);
+    }
+  };
+
   useEffect(() => {
     async function consultaTipos() {
       setCarregandoTipos(true);
@@ -85,16 +96,18 @@ const PeriodoFechamentoReaberturaForm = () => {
         setListaTipoCalendarioEscolar(listaTipo.data);
         if (listaTipo.data.length === 1) {
           setDesabilitarTipoCalendario(true);
-          const valores = {
-            tipoCalendarioId: listaTipo.data[0].id,
-            dreId: undefined,
-            ueId: undefined,
-            dataInicio: '',
-            dataFim: '',
-            descricao: '',
-            bimestres: [],
-          };
-          setValoresIniciais(valores);
+          if (!(match && match.params && match.params.id)) {
+            const valores = {
+              tipoCalendarioId: listaTipo.data[0].id,
+              dreId: undefined,
+              ueId: undefined,
+              dataInicio: '',
+              dataFim: '',
+              descricao: '',
+              bimestres: [],
+            };
+            setValoresIniciais(valores);
+          }
           montarListaBimestres(listaTipo.data[0].modalidade);
         } else {
           setDesabilitarTipoCalendario(false);
@@ -106,6 +119,58 @@ const PeriodoFechamentoReaberturaForm = () => {
     }
     consultaTipos();
   }, []);
+
+  useEffect(() => {
+    const consultaPorId = async () => {
+      if (
+        match &&
+        match.params &&
+        match.params.id &&
+        listaTipoCalendarioEscolar.length
+      ) {
+        setBreadcrumbManual(
+          match.url,
+          'Períodos',
+          RotasDto.PERIODO_FECHAMENTO_REABERTURA
+        );
+        setIdFechamentoReabertura(match.params.id);
+        const cadastrado = await api
+          .get(`v1/fechamentos/reaberturas/${match.params.id}`)
+          .catch(e => erros(e));
+
+        if (cadastrado && cadastrado.data) {
+          const calendario = listaTipoCalendarioEscolar.find(
+            item => item.id == cadastrado.data.tipoCalendarioId
+          );
+          if (calendario) {
+            montarListaBimestres(calendario.modalidade);
+          }
+          setValoresIniciais({
+            tipoCalendarioId: String(cadastrado.data.tipoCalendarioId),
+            dreId: cadastrado.data.dreCodigo || undefined,
+            ueId: cadastrado.data.ueCodigo || undefined,
+            dataInicio: moment(cadastrado.data.dataInicio),
+            dataFim: moment(cadastrado.data.dataFim),
+            descricao: cadastrado.data.descricao,
+            bimestres: cadastrado.data.bimestres.map(item => String(item)),
+          });
+
+          setAuditoria({
+            criadoPor: cadastrado.data.criadoPor,
+            criadoRf: cadastrado.data.criadoRf,
+            criadoEm: cadastrado.data.criadoEm,
+            alteradoPor: cadastrado.data.alteradoPor,
+            alteradoRf: cadastrado.data.alteradoRf,
+            alteradoEm: cadastrado.data.alteradoEm,
+          });
+          setExibirAuditoria(true);
+        }
+        setNovoRegistro(false);
+      }
+    };
+
+    consultaPorId();
+  }, [match, listaTipoCalendarioEscolar]);
 
   useEffect(() => {
     const montaValidacoes = () => {
@@ -131,12 +196,78 @@ const PeriodoFechamentoReaberturaForm = () => {
     montaValidacoes();
   }, [usuarioStore.possuiPerfilSme, usuarioStore.possuiPerfilSmeOuDre]);
 
-  const onClickVoltar = () => {
-    history.push('/calendario-escolar/periodo-fechamento-reabertura');
+  const perguntaAoSalvar = async () => {
+    return confirmar(
+      'Atenção',
+      '',
+      'Suas alterações não foram salvas, deseja salvar agora?'
+    );
   };
 
-  const onClickExcluir = () => {};
-  const onClickCancelar = () => {};
+  const validaAntesDoSubmit = form => {
+    const arrayCampos = Object.keys(valoresIniciais);
+    arrayCampos.forEach(campo => {
+      form.setFieldTouched(campo, true, true);
+    });
+    form.validateForm().then(() => {
+      if (form.isValid || Object.keys(form.errors).length == 0) {
+        form.handleSubmit(e => e);
+      }
+    });
+  };
+
+  const onClickVoltar = async form => {
+    if (modoEdicao) {
+      const confirmado = await perguntaAoSalvar();
+      if (confirmado) {
+        validaAntesDoSubmit(form);
+      }
+    } else {
+      history.push(RotasDto.PERIODO_FECHAMENTO_REABERTURA);
+    }
+  };
+
+  const onClickExcluir = async () => {
+    if (!novoRegistro) {
+      const confirmado = await confirmar(
+        'Excluir Fechamento',
+        '',
+        'Deseja realmente excluir este fechamento?',
+        'Excluir',
+        'Cancelar'
+      );
+      if (confirmado) {
+        const parametrosDelete = { data: [idFechamentoReabertura] };
+        const excluir = await api
+          .delete('v1/fechamentos/reaberturas', parametrosDelete)
+          .catch(e => erros(e));
+
+        if (excluir && excluir.status == 200) {
+          sucesso('Fechamento excluído com sucesso.');
+          history.push(RotasDto.PERIODO_FECHAMENTO_REABERTURA);
+        }
+      }
+    }
+  };
+
+  const resetarTela = form => {
+    form.resetForm();
+    setModoEdicao(false);
+    setListaBimestres([]);
+  };
+
+  const onClickCancelar = async form => {
+    if (modoEdicao) {
+      const confirmou = await confirmar(
+        'Atenção',
+        'Você não salvou as informações preenchidas.',
+        'Deseja realmente cancelar as alterações?'
+      );
+      if (confirmou) {
+        resetarTela(form);
+      }
+    }
+  };
 
   const obterBimestresSalvar = valoresForm => {
     const todosBimestres = valoresForm.bimestres.find(item => item == '5');
@@ -156,23 +287,33 @@ const PeriodoFechamentoReaberturaForm = () => {
 
     return valoresForm.bimestres;
   };
-  const onClickCadastrar = valoresForm => {
-    const prametrosParaSalvar = { ...valoresForm };
-    prametrosParaSalvar.bimestres = obterBimestresSalvar(prametrosParaSalvar);
+  const onClickCadastrar = async valoresForm => {
+    const bimestres = obterBimestresSalvar(valoresForm);
+    const {
+      descricao,
+      dreId,
+      dataFim,
+      dataInicio,
+      tipoCalendarioId,
+      ueId,
+    } = valoresForm;
+    const prametrosParaSalvar = {
+      bimestres,
+      descricao,
+      dreCodigo: dreId,
+      fim: dataFim,
+      inicio: dataInicio,
+      tipoCalendarioId,
+      ueCodigo: ueId,
+    };
+    const cadastrado = await api
+      .post('v1/fechamentos/reaberturas', prametrosParaSalvar)
+      .catch(e => erros(e));
 
-    console.log(prametrosParaSalvar);
-  };
-
-  const validaAntesDoSubmit = form => {
-    const arrayCampos = Object.keys(valoresIniciais);
-    arrayCampos.forEach(campo => {
-      form.setFieldTouched(campo, true, true);
-    });
-    form.validateForm().then(() => {
-      if (form.isValid || Object.keys(form.errors).length == 0) {
-        form.handleSubmit(e => e);
-      }
-    });
+    if (cadastrado && cadastrado.status == 200) {
+      sucesso('Reabertura de Fechamento cadastrada com sucesso');
+      history.push(RotasDto.PERIODO_FECHAMENTO_REABERTURA);
+    }
   };
 
   const onChangeTipoCalendario = (tipoId, form) => {
@@ -185,6 +326,7 @@ const PeriodoFechamentoReaberturaForm = () => {
       }
     }
     form.setFieldValue('bimestres', []);
+    onChangeCampos();
   };
 
   return (
@@ -209,7 +351,7 @@ const PeriodoFechamentoReaberturaForm = () => {
                     color={Colors.Azul}
                     border
                     className="mr-2"
-                    onClick={onClickVoltar}
+                    onClick={() => onClickVoltar(form)}
                   />
                   <Button
                     label="Cancelar"
@@ -217,6 +359,7 @@ const PeriodoFechamentoReaberturaForm = () => {
                     border
                     className="mr-2"
                     onClick={() => onClickCancelar(form)}
+                    disabled={!modoEdicao}
                   />
                   <Button
                     label="Excluir"
@@ -224,6 +367,7 @@ const PeriodoFechamentoReaberturaForm = () => {
                     border
                     className="mr-2"
                     onClick={onClickExcluir}
+                    disabled={novoRegistro}
                   />
                   <Button
                     label={`${
@@ -256,18 +400,26 @@ const PeriodoFechamentoReaberturaForm = () => {
                 </div>
                 <div className="col-sm-6 col-md-6 col-lg-6 col-xl-6 mb-2">
                   <DreDropDown
+                    name="dreId"
                     label="Diretoria Regional de Educação (DRE)"
                     form={form}
                     desabilitado={false}
+                    onChange={() => {
+                      onChangeCampos();
+                    }}
                   />
                 </div>
                 <div className="col-sm-6 col-md-6 col-lg-6 col-xl-6 mb-2">
                   <UeDropDown
+                    name="ueId"
                     dreId={form.values.dreId}
                     label="Unidade Escolar (UE)"
                     form={form}
                     url="v1/dres"
                     desabilitado={false}
+                    onChange={() => {
+                      onChangeCampos();
+                    }}
                   />
                 </div>
                 <div className="col-sm-12 col-md-12 col-lg-12 col-xl-12 mb-2">
@@ -277,6 +429,9 @@ const PeriodoFechamentoReaberturaForm = () => {
                     id="descricao"
                     type="textarea"
                     form={form}
+                    onChange={() => {
+                      onChangeCampos();
+                    }}
                   />
                 </div>
                 <div className="col-sm-2 col-md-2 col-lg-2 col-xl-2 mb-2">
@@ -286,6 +441,9 @@ const PeriodoFechamentoReaberturaForm = () => {
                     name="dataInicio"
                     placeholder="DD/MM/AAAA"
                     formatoData="DD/MM/YYYY"
+                    onChange={() => {
+                      onChangeCampos();
+                    }}
                   />
                 </div>
                 <div className="col-sm-2 col-md-2 col-lg-2 col-xl-2 mb-2">
@@ -295,6 +453,9 @@ const PeriodoFechamentoReaberturaForm = () => {
                     name="dataFim"
                     placeholder="DD/MM/AAAA"
                     formatoData="DD/MM/YYYY"
+                    onChange={() => {
+                      onChangeCampos();
+                    }}
                   />
                 </div>
                 <div className="col-sm-4 col-md-4 col-lg-4 col-xl-4 mb-2">
@@ -307,6 +468,7 @@ const PeriodoFechamentoReaberturaForm = () => {
                     onChange={valor => {
                       if (valor.includes('5')) {
                         form.setFieldValue('bimestres', ['5']);
+                        onChangeCampos();
                       }
                     }}
                     valueOption="valor"
