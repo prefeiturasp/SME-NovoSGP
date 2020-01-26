@@ -30,7 +30,17 @@ namespace SME.SGP.Api.Controllers
         [Permissao(Permissao.PFR_C, Policy = "Bearer")]
         public async Task<IActionResult> Listar([FromServices] IConsultasFechamentoReabertura consultasFechamentoReabertura, [FromQuery]FechamentoReaberturaFiltroDto fechamentoReaberturaFiltroDto)
         {
-            return Ok(await consultasFechamentoReabertura.Listar(fechamentoReaberturaFiltroDto.TipoCalendarioId, fechamentoReaberturaFiltroDto.DreId, fechamentoReaberturaFiltroDto.UeId));
+            return Ok(await consultasFechamentoReabertura.Listar(fechamentoReaberturaFiltroDto.TipoCalendarioId, fechamentoReaberturaFiltroDto.DreCodigo, fechamentoReaberturaFiltroDto.UeCodigo));
+        }
+
+        [HttpGet("{id}")]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 601)]
+        [ProducesResponseType(typeof(FechamentoReaberturaRetornoDto), 200)]
+        [Permissao(Permissao.PFR_C, Policy = "Bearer")]
+        public IActionResult ObterPorId([FromServices] IConsultasFechamentoReabertura consultasFechamentoReabertura, long id)
+        {
+            return Ok(consultasFechamentoReabertura.ObterPorId(id));
         }
 
         [HttpPost]
