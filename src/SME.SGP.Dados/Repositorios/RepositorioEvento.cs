@@ -1039,6 +1039,7 @@ namespace SME.SGP.Dados.Repositorios
             query.AppendLine("et.tipo_data,");
             query.AppendLine("et.descricao,");
             query.AppendLine("et.excluido");
+            query.AppendLine("et.somente_leitura");
         }
 
         private static void MontaQueryFrom(StringBuilder query)
