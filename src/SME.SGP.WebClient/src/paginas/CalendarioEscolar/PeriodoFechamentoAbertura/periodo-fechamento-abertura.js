@@ -132,6 +132,7 @@ const PeriodoFechamentoAbertura = () => {
             alteradoEm: resposta.data.alteradoEm,
             alteradoRf: resposta.data.alteradoRf,
           });
+          setModoEdicao(true);
         })
         .catch(e => {
           setFechamento(obtemPeriodosIniciais());
@@ -166,6 +167,10 @@ const PeriodoFechamentoAbertura = () => {
   const onClickCancelar = form => {
     form.resetForm();
     setModoEdicao(false);
+    setDreSelecionada('');
+    setUeSelecionada('');
+    setTipoCalendarioSelecionado('');
+    setFechamento(obtemPeriodosIniciais());
   };
 
   const onSubmit = async (form, confirmou = false) => {
@@ -176,6 +181,7 @@ const PeriodoFechamentoAbertura = () => {
     })
       .then(() => {
         sucesso('Períodos salvos com sucesso.');
+        setModoEdicao(false);
       })
       .catch(async e => {
         if (e && e.response && e.response.status === 602) {
