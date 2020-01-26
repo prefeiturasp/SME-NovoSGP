@@ -1,14 +1,14 @@
-import { DreDropDown, UeDropDown } from 'componentes-sgp';
 import { Form, Formik } from 'formik';
 import * as moment from 'moment';
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { ListaPaginada, Loader } from '~/componentes';
-import { Cabecalho } from '~/componentes-sgp';
+import { Cabecalho, DreDropDown, UeDropDown } from '~/componentes-sgp';
 import Button from '~/componentes/button';
 import Card from '~/componentes/card';
 import { Colors } from '~/componentes/colors';
 import SelectComponent from '~/componentes/select';
 import { URL_HOME } from '~/constantes/url';
+import { confirmar, erros, sucesso } from '~/servicos/alertas';
 import api from '~/servicos/api';
 import history from '~/servicos/history';
 
@@ -23,14 +23,16 @@ const PeriodoFechamentoReaberturaLista = () => {
     false
   );
   const [carregandoTipos, setCarregandoTipos] = useState(false);
-  const [reaberturasSelecionadas, setReaberturasSelecionadas] = useState([]);
+  const [idsReaberturasSelecionadas, setIdsReaberturasSelecionadas] = useState(
+    []
+  );
 
   const [ueSelecionada, setUeSelecionada] = useState(undefined);
   const [dreSelecionada, setDreSelecionada] = useState('');
   const [filtroValido, setFiltroValido] = useState(false);
   const [filtro, setFiltro] = useState({});
 
-  useEffect(() => {
+  const onFiltrar = useCallback(() => {
     if (tipoCalendarioSelecionado) {
       const novoFiltro = {
         tipoCalendarioId: tipoCalendarioSelecionado,
@@ -38,16 +40,23 @@ const PeriodoFechamentoReaberturaLista = () => {
 
       if (dreSelecionada) {
         novoFiltro.dreId = dreSelecionada;
-      }
-      if (ueSelecionada) {
-        novoFiltro.ueId = ueSelecionada;
+        if (ueSelecionada) {
+          novoFiltro.ueId = ueSelecionada;
+        }
+      } else {
+        novoFiltro.ueId = '';
+        setUeSelecionada('');
       }
       setFiltroValido(true);
       setFiltro({ ...novoFiltro });
     } else {
       setFiltroValido(false);
     }
-  }, [tipoCalendarioSelecionado, ueSelecionada, dreSelecionada]);
+  }, [dreSelecionada, tipoCalendarioSelecionado, ueSelecionada]);
+
+  useEffect(() => {
+    onFiltrar();
+  }, [tipoCalendarioSelecionado, ueSelecionada, dreSelecionada, onFiltrar]);
 
   useEffect(() => {
     async function consultaTipos() {
@@ -77,19 +86,38 @@ const PeriodoFechamentoReaberturaLista = () => {
     history.push(URL_HOME);
   };
 
-  const onClickExcluir = async () => {};
+  const onClickExcluir = async () => {
+    const confirmado = await confirmar(
+      'Excluir Fechamento(s)',
+      '',
+      'Você tem certeza que deseja excluir este(s) registros(s)?',
+      'Excluir',
+      'Cancelar'
+    );
+    if (confirmado) {
+      const parametrosDelete = { data: idsReaberturasSelecionadas };
+      const excluir = await api
+        .delete('v1/fechamentos/reaberturas', parametrosDelete)
+        .catch(e => erros(e));
+      if (excluir && excluir.status == 200) {
+        setIdsReaberturasSelecionadas([]);
+        sucesso('Fechamento(s) excluído(s) com sucesso.');
+        onFiltrar();
+      }
+    }
+  };
 
   const onClickNovo = () => {
     history.push(`/calendario-escolar/periodo-fechamento-reabertura/novo`);
   };
   const onClickEditar = item => {
     history.push(
-      `/calendario-escolar/periodo-fechamento-reabertura/novo/${item.id}`
+      `/calendario-escolar/periodo-fechamento-reabertura/editar/${item.id}`
     );
   };
 
   const onSelecionarItems = ids => {
-    setReaberturasSelecionadas(ids);
+    setIdsReaberturasSelecionadas(ids);
   };
 
   const formatarCampoDataGrid = data => {
@@ -104,7 +132,7 @@ const PeriodoFechamentoReaberturaLista = () => {
     {
       title: 'Descrição',
       dataIndex: 'descricao',
-      width: '45%',
+      width: '65%',
     },
     {
       title: 'Início',
@@ -126,7 +154,11 @@ const PeriodoFechamentoReaberturaLista = () => {
       <Card>
         <Formik
           enableReinitialize
-          initialValues={{ ueId: undefined, dreId: undefined }}
+          initialValues={{
+            ueId: undefined,
+            dreId: undefined,
+            tipoCalendarioId: undefined,
+          }}
           validateOnChange
           validateOnBlur
         >
@@ -148,6 +180,10 @@ const PeriodoFechamentoReaberturaLista = () => {
                     border
                     className="mr-2"
                     onClick={onClickExcluir}
+                    disabled={
+                      idsReaberturasSelecionadas &&
+                      idsReaberturasSelecionadas.length < 1
+                    }
                   />
                   <Button
                     label="Novo"
