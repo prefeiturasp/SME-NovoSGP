@@ -27,10 +27,7 @@ namespace SME.SGP.Aplicacao
                 {
                     Id = item.Id,
                     TurmaId = item.TurmaId,
-                    Aluno_id = item.TurmaId,
-                    CriadoEm = item.CriadoEm,
-                    CriadoPor = item.CriadoPor,
-                    CriadoRF = item.CriadoRF,
+                    Aluno_id = item.TurmaId
                 };
 
                 await repositorioRecuperacaoParalela.SalvarAsync(entidade);
