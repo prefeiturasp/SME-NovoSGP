@@ -1,4 +1,5 @@
 ﻿using SME.Background.Core;
+using SME.SGP.Dominio.Entidades;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System;
@@ -11,9 +12,12 @@ namespace SME.SGP.Dominio.Servicos
     public class ServicoFechamento : IServicoFechamento
     {
         private readonly IRepositorioDre repositorioDre;
+        private readonly IRepositorioEvento repositorioEvento;
+        private readonly IRepositorioEventoFechamento repositorioEventoFechamento;
         private readonly IRepositorioFechamento repositorioFechamento;
         private readonly IRepositorioPeriodoEscolar repositorioPeriodoEscolar;
         private readonly IRepositorioTipoCalendario repositorioTipoCalendario;
+        private readonly IRepositorioEventoTipo repositorioTipoEvento;
         private readonly IRepositorioUe repositorioUe;
         private readonly IServicoUsuario servicoUsuario;
         private readonly IUnitOfWork unitOfWork;
@@ -24,6 +28,9 @@ namespace SME.SGP.Dominio.Servicos
                                  IRepositorioPeriodoEscolar repositorioPeriodoEscolar,
                                  IRepositorioDre repositorioDre,
                                  IRepositorioUe repositorioUe,
+                                 IRepositorioEventoFechamento repositorioEventoFechamento,
+                                 IRepositorioEvento repositorioEvento,
+                                 IRepositorioEventoTipo repositorioTipoEvento,
                                  IUnitOfWork unitOfWork)
         {
             this.repositorioFechamento = repositorioFechamento ?? throw new ArgumentNullException(nameof(repositorioFechamento));
@@ -32,6 +39,9 @@ namespace SME.SGP.Dominio.Servicos
             this.repositorioPeriodoEscolar = repositorioPeriodoEscolar ?? throw new ArgumentNullException(nameof(repositorioPeriodoEscolar));
             this.repositorioDre = repositorioDre ?? throw new ArgumentNullException(nameof(repositorioDre));
             this.repositorioUe = repositorioUe ?? throw new ArgumentNullException(nameof(repositorioUe));
+            this.repositorioEventoFechamento = repositorioEventoFechamento ?? throw new ArgumentNullException(nameof(repositorioEventoFechamento));
+            this.repositorioEvento = repositorioEvento ?? throw new ArgumentNullException(nameof(repositorioEvento));
+            this.repositorioTipoEvento = repositorioTipoEvento ?? throw new ArgumentNullException(nameof(repositorioTipoEvento));
             this.unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
         }
 
@@ -129,12 +139,70 @@ namespace SME.SGP.Dominio.Servicos
             unitOfWork.PersistirTransacao();
 
             ExecutaAlterarPeriodosComHierarquiaInferior(fechamentoDto, fechamento, ehSme);
+            CriarEventoFechamento(fechamento);
         }
 
         private static void ExecutaAlterarPeriodosComHierarquiaInferior(FechamentoDto fechamentoDto, Fechamento fechamento, bool ehSme)
         {
             if ((ehSme && !fechamento.DreId.HasValue) || !fechamento.UeId.HasValue && fechamentoDto.ConfirmouAlteracaoHierarquica)
                 Cliente.Executar<IServicoFechamento>(c => c.AlterarPeriodosComHierarquiaInferior(fechamento));
+        }
+
+        private void AtualizaEventoDeFechamento(FechamentoBimestre bimestre, EventoFechamento fechamentoExistente)
+        {
+            var eventoExistente = repositorioEvento.ObterPorId(fechamentoExistente.EventoId);
+            if (eventoExistente != null)
+            {
+                eventoExistente.DataInicio = bimestre.InicioDoFechamento;
+                eventoExistente.DataFim = bimestre.FinalDoFechamento;
+                repositorioEvento.Salvar(eventoExistente);
+            }
+        }
+
+        private void CriaEventoDeFechamento(Fechamento fechamento, EventoTipo tipoEvento, FechamentoBimestre bimestre)
+        {
+            var evento = new Evento()
+            {
+                DataInicio = bimestre.InicioDoFechamento,
+                DataFim = bimestre.FinalDoFechamento,
+                DreId = fechamento.Dre?.CodigoDre,
+                UeId = fechamento.Ue?.CodigoUe,
+                Nome = $"Fechamento do {bimestre.PeriodoEscolar?.Bimestre}º bimestre",
+                TipoEventoId = tipoEvento.Id,
+                TipoCalendarioId = bimestre.PeriodoEscolar.TipoCalendarioId
+            };
+            var eventoId = repositorioEvento.Salvar(evento);
+            repositorioEventoFechamento.Salvar(new EventoFechamento()
+            {
+                FechamentoId = bimestre.Id,
+                EventoId = eventoId
+            });
+        }
+
+        private void CriarEventoFechamento(Fechamento fechamento)
+        {
+            if (fechamento.UeId > 0)
+            {
+                var tipoEvento = repositorioTipoEvento.ObterTipoEventoPorTipo(TipoEvento.FechamentoBimestre);
+                if (tipoEvento == null)
+                {
+                    throw new NegocioException("Tipo de evento de fechamento de bimestre não encontrado na base de dados.");
+                }
+
+                foreach (var bimestre in fechamento.FechamentosBimestre)
+                {
+                    EventoFechamento fechamentoExistente = repositorioEventoFechamento.ObterPorIdFechamento(bimestre.Id);
+
+                    if (fechamentoExistente != null)
+                    {
+                        AtualizaEventoDeFechamento(bimestre, fechamentoExistente);
+                    }
+                    else
+                    {
+                        CriaEventoDeFechamento(fechamento, tipoEvento, bimestre);
+                    }
+                }
+            }
         }
 
         private IEnumerable<FechamentoBimestreDto> MapearFechamentoBimestreParaDto(Fechamento fechamento)

@@ -108,6 +108,7 @@ const EventosForm = ({ match }) => {
     tipoEventoId: '',
     ueId: '',
     recorrenciaEventos: null,
+    podeAlterar: true,
   };
   const [valoresIniciais, setValoresIniciais] = useState(inicial);
 
@@ -336,6 +337,7 @@ const EventosForm = ({ match }) => {
           : undefined,
         id: evento.data.id,
         recorrenciaEventos: evento.data.recorrenciaEventos,
+        podeAlterar: evento.data.podeAlterar,
       });
       setAuditoria({
         criadoPor: evento.data.criadoPor,
@@ -395,7 +397,7 @@ const EventosForm = ({ match }) => {
   };
 
   const onClickVoltar = async () => {
-    if (modoEdicao) {
+    if (modoEdicao && valoresIniciais.podeAlterar) {
       const confirmado = await confirmar(
         'Atenção',
         'Você não salvou as informações preenchidas.',
@@ -798,7 +800,7 @@ const EventosForm = ({ match }) => {
                     border
                     className="mr-2"
                     onClick={() => onClickCancelar(form)}
-                    disabled={!modoEdicao}
+                    disabled={!modoEdicao || !valoresIniciais.podeAlterar}
                   />
                   <Button
                     label="Excluir"
@@ -810,7 +812,8 @@ const EventosForm = ({ match }) => {
                     disabled={
                       somenteConsulta ||
                       !permissoesTela.podeExcluir ||
-                      novoRegistro
+                      novoRegistro ||
+                      !valoresIniciais.podeAlterar
                     }
                   />
                   <Button
@@ -820,7 +823,7 @@ const EventosForm = ({ match }) => {
                     bold
                     className="mr-2"
                     onClick={() => validaAntesDoSubmit(form)}
-                    disabled={desabilitarCampos}
+                    disabled={desabilitarCampos || !valoresIniciais.podeAlterar}
                   />
                 </div>
               </div>
