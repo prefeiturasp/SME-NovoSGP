@@ -19,12 +19,5 @@ namespace SME.SGP.Infra
         public Periodo Periodo { get; set; }
         public bool PossuiEventos { get; set; }
         public bool Situacao { get; set; }
-
-        public int QuantidadeDeBimestres()
-        {
-            if (Modalidade == ModalidadeTipoCalendario.EJA)
-                return 2;
-            else return 4;
-        }
     }
 }
