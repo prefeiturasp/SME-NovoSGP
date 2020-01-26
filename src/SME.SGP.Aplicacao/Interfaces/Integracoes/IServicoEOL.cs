@@ -11,8 +11,6 @@ namespace SME.SGP.Aplicacao.Integracoes
     {
         Task AlterarEmail(string login, string email);
 
-        Task<bool> ExisteUsuarioComMesmoEmail(string login, string email);
-
         Task<AlterarSenhaRespostaDto> AlterarSenha(string login, string novaSenha);
 
         Task AtribuirCJSeNecessario(Guid usuarioId);
@@ -21,11 +19,15 @@ namespace SME.SGP.Aplicacao.Integracoes
 
         Task<UsuarioEolAutenticacaoRetornoDto> Autenticar(string login, string senha);
 
+        Task<bool> ExisteUsuarioComMesmoEmail(string login, string email);
+
         Task<AbrangenciaRetornoEolDto> ObterAbrangencia(string login, Guid perfil);
 
         Task<AbrangenciaCompactaVigenteRetornoEOLDTO> ObterAbrangenciaCompactaVigente(string login, Guid perfil);
 
         Task<AbrangenciaRetornoEolDto> ObterAbrangenciaParaSupervisor(string[] uesIds);
+
+        Task<string[]> ObterAdministradoresSGPParaNotificar(string codigoDreOuUe);
 
         Task<IEnumerable<AlunoPorTurmaResposta>> ObterAlunosPorTurma(string turmaId);
 
