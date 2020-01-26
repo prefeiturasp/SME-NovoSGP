@@ -163,6 +163,7 @@ namespace SME.SGP.IoC
             services.TryAddScopedWorkerService<IRepositorioWorkflowAprovacaoNivelNotificacao, RepositorioWorkflowAprovaNivelNotificacao>();
             services.TryAddScopedWorkerService<IRepositorioWorkflowAprovacaoNivelUsuario, RepositorioWorkflowAprovacaoNivelUsuario>();
             services.TryAddScopedWorkerService<IRepositorioFechamento, RepositorioFechamento>();
+            services.TryAddScopedWorkerService<IRepositorioEventoFechamento, RepositorioEventoFechamento>();
         }
 
         private static void RegistrarServicos(IServiceCollection services)
