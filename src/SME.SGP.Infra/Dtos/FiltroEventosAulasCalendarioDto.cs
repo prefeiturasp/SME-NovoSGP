@@ -15,6 +15,7 @@ namespace SME.SGP.Infra
 
         public bool TodasTurmas { get; set; }
 
+        public bool TurmaHistorico { get; set; }
         public string TurmaId { get; set; }
 
         [Required(ErrorMessage = "O campo UeId é obrigatório")]

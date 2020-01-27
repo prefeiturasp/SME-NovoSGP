@@ -2,6 +2,7 @@ import { Dropdown, Menu } from 'antd';
 import PropTypes from 'prop-types';
 import React from 'react';
 import styled from 'styled-components';
+import shortid from 'shortid';
 import Button from '~/componentes/button';
 import { Base, Colors } from '~/componentes/colors';
 
@@ -110,13 +111,13 @@ const Ordenacao = props => {
   return (
     <Container trigger={['click']} overlay={menu} placement="bottomLeft">
       <Button
+        id={shortid.generate()}
         label="Ordenar"
         icon="exchange-alt"
         color={Colors.Azul}
         border
         className={`mr-2 ${className}`}
-      >
-           </Button>
+      />
     </Container>
   );
 };

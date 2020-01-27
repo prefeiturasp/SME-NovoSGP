@@ -16,6 +16,8 @@ const TipoEventosLista = styled(Div)`
   right: 10px;
 `;
 const TipoEvento = styled(Div)`
+  background-color: ${props => (props.cor ? props.cor : Base.Roxo)};
+  color: ${Base.Branco};
   font-size: 10px;
   margin-bottom: 2px;
   width: 60px;
@@ -101,7 +103,8 @@ const Dia = props => {
                 return (
                   <TipoEvento
                     key={shortid.generate()}
-                    className="d-block badge badge-pill badge-light ml-auto mr-0"
+                    className="d-block badge badge-pill ml-auto mr-0"
+                    cor={Base.RoxoEventoCalendario}
                   >
                     {tipoEvento && 'Evento'}
                   </TipoEvento>

@@ -9,9 +9,13 @@ export const Div = styled.div`
 `;
 
 export const Evento = styled(Div)`
+  display: flex;
   &:hover {
     background: ${Base.Roxo};
     color: ${Base.Branco};
+  }
+
+  .descricao {
   }
 `;
 
@@ -28,6 +32,5 @@ export const BotoesAuxiliaresEstilo = styled(Div)`
   display: flex;
   justify-content: flex-end;
   padding: 16px;
-  padding-bottom: 0;
   width: 100%;
 `;

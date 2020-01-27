@@ -36,6 +36,14 @@ namespace SME.SGP.Aplicacao
             SME.Background.Core.Cliente.Executar<IComandosTipoCalendario>(x => x.ExecutarMetodosAsync(dto, false, tipoCalendario));
         }
 
+        public void ExecutarMetodosAsync(TipoCalendarioDto dto, bool inclusao, TipoCalendario tipoCalendario)
+        {
+            servicoFeriadoCalendario.VerficaSeExisteFeriadosMoveisEInclui(dto.AnoLetivo);
+
+            if (inclusao)
+                servicoEvento.SalvarEventoFeriadosAoCadastrarTipoCalendario(tipoCalendario);
+        }
+
         public async Task Incluir(TipoCalendarioDto dto)
         {
             var tipoCalendario = MapearParaDominio(dto, 0);
@@ -111,14 +119,6 @@ namespace SME.SGP.Aplicacao
                 else
                     throw new NegocioException($"Houve um erro ao excluir o tipo de calendário '{tiposInválidos}'. O tipo de calendário possui eventos vinculados");
             }
-        }
-
-        public void ExecutarMetodosAsync(TipoCalendarioDto dto, bool inclusao, TipoCalendario tipoCalendario)
-        {
-            servicoFeriadoCalendario.VerficaSeExisteFeriadosMoveisEInclui(dto.AnoLetivo);
-
-            if (inclusao)
-                servicoEvento.SalvarEventoFeriadosAoCadastrarTipoCalendario(tipoCalendario);
         }
     }
 }

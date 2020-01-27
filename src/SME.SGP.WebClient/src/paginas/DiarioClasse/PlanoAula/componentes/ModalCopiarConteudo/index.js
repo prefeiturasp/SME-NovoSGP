@@ -256,6 +256,7 @@ function ModalCopiarConteudo({ show, disciplina, onClose, planoAula }) {
         ))}
         <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
           <Button
+            id={shortid.generate()}
             label="Adicionar turma"
             color={Colors.Roxo}
             border

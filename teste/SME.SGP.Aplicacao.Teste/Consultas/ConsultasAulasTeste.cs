@@ -1,4 +1,5 @@
 ﻿using Moq;
+using SME.SGP.Aplicacao.Integracoes;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
@@ -16,6 +17,7 @@ namespace SME.SGP.Aplicacao.Teste.Consultas
         private readonly Mock<IConsultasPeriodoEscolar> consultasPeriodoEscolar;
         private readonly Mock<IRepositorioAula> repositorioAula;
         private readonly Mock<IRepositorioPlanoAula> repositorioPlanoAula;
+        private readonly Mock<IServicoEOL> servicoEol;
         private readonly Mock<IServicoUsuario> servicoUsuario;
 
         public ConsultasAulasTeste()
@@ -25,15 +27,16 @@ namespace SME.SGP.Aplicacao.Teste.Consultas
             consultasPeriodoEscolar = new Mock<IConsultasPeriodoEscolar>();
             repositorioPlanoAula = new Mock<IRepositorioPlanoAula>();
             consultasFrequencia = new Mock<IConsultasFrequencia>();
-            consultas = new ConsultasAula(repositorioAula.Object, consultasPeriodoEscolar.Object, consultasFrequencia.Object, repositorioPlanoAula.Object, servicoUsuario.Object);
+            servicoEol = new Mock<IServicoEOL>();
+            consultas = new ConsultasAula(repositorioAula.Object, consultasPeriodoEscolar.Object, consultasFrequencia.Object, repositorioPlanoAula.Object, servicoUsuario.Object, servicoEol.Object);
 
             Setup();
         }
 
         [Fact]
-        public void DeveObterAulaPorId()
+        public async Task DeveObterAulaPorId()
         {
-            var aulaDto = consultas.BuscarPorId(1);
+            var aulaDto = await consultas.BuscarPorId(1);
 
             Assert.NotNull(aulaDto);
             Assert.True(aulaDto.Id == 1);

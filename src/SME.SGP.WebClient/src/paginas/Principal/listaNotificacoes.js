@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import styled from 'styled-components';
 import * as moment from 'moment';
+import shortid from 'shortid';
 import DataTable from '~/componentes/table/dataTable';
 import { Colors } from '~/componentes/colors';
 import Button from '~/componentes/button';
@@ -100,6 +101,7 @@ const ListaNotificacoes = () => {
           locale={{ emptyText: 'Você não tem nenhuma notificação!' }}
         />
         <Button
+          id={shortid.generate()}
           label="Ver tudo"
           className="btn-lg btn-block"
           color={Colors.Roxo}

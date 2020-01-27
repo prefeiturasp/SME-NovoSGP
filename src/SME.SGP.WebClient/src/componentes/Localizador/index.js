@@ -135,7 +135,7 @@ function Localizador({
     if (ehProfessor || ehProfessorCj || ehProfessorPoa) {
       onBuscarPorRF({ rf });
     }
-  }, [onBuscarPorRF, usuario]);
+  }, [onBuscarPorRF, usuario, dreId]);
 
   return (
     <>
