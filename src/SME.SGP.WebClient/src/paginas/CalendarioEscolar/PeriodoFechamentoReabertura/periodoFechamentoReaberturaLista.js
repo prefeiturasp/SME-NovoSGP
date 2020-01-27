@@ -9,8 +9,9 @@ import { Colors } from '~/componentes/colors';
 import SelectComponent from '~/componentes/select';
 import { URL_HOME } from '~/constantes/url';
 import { confirmar, erros, sucesso } from '~/servicos/alertas';
-import api from '~/servicos/api';
 import history from '~/servicos/history';
+import ServicoCalendarios from '~/servicos/Paginas/Calendario/ServicoCalendarios';
+import ServicoFechamentoReabertura from '~/servicos/Paginas/Calendario/ServicoFechamentoReabertura';
 
 const PeriodoFechamentoReaberturaLista = () => {
   const [listaTipoCalendarioEscolar, setListaTipoCalendarioEscolar] = useState(
@@ -61,7 +62,7 @@ const PeriodoFechamentoReaberturaLista = () => {
   useEffect(() => {
     async function consultaTipos() {
       setCarregandoTipos(true);
-      const listaTipo = await api.get('v1/calendarios/tipos');
+      const listaTipo = await ServicoCalendarios.obterTiposCalendario();
       if (listaTipo && listaTipo.data && listaTipo.data.length) {
         listaTipo.data.map(item => {
           item.id = String(item.id);
@@ -95,13 +96,13 @@ const PeriodoFechamentoReaberturaLista = () => {
       'Cancelar'
     );
     if (confirmado) {
-      const parametrosDelete = { data: idsReaberturasSelecionadas };
-      const excluir = await api
-        .delete('v1/fechamentos/reaberturas', parametrosDelete)
-        .catch(e => erros(e));
+      const excluir = await ServicoFechamentoReabertura.deletar(
+        idsReaberturasSelecionadas
+      ).catch(e => erros(e));
+
       if (excluir && excluir.status == 200) {
         setIdsReaberturasSelecionadas([]);
-        sucesso('Fechamento(s) excluído(s) com sucesso.');
+        sucesso(excluir.data);
         onFiltrar();
       }
     }
