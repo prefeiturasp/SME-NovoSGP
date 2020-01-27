@@ -39,12 +39,12 @@ const PeriodoFechamentoReaberturaLista = () => {
       };
 
       if (dreSelecionada) {
-        novoFiltro.dreId = dreSelecionada;
+        novoFiltro.dreCodigo = dreSelecionada;
         if (ueSelecionada) {
-          novoFiltro.ueId = ueSelecionada;
+          novoFiltro.ueCodigo = ueSelecionada;
         }
       } else {
-        novoFiltro.ueId = '';
+        novoFiltro.ueCodigo = '';
         setUeSelecionada('');
       }
       setFiltroValido(true);
