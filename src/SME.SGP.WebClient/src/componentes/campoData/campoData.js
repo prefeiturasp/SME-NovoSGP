@@ -149,6 +149,7 @@ const CampoData = ({
           <div>
             <div>
               <DatePicker
+                disabled={desabilitado}
                 format={formatoData}
                 locale={locale}
                 placeholder={placeholder}
