@@ -100,6 +100,19 @@ namespace SME.SGP.Dominio
             || (Inicio.Date >= dataInicio.Date && Fim <= datafim.Date);
         }
 
+        public bool[] ObterBimestresArrayCompleto()
+        {
+            var totalBimestres = TipoCalendario.QuantidadeDeBimestres();
+            bool[] arrayBimestres = new bool[totalBimestres];
+
+            foreach (var bimestre in bimestres)
+            {
+                arrayBimestres[bimestre.Bimestre - 1] = true;
+            }
+
+            return arrayBimestres;
+        }
+
         public object ObterBimestresNumeral()
         {
             return string.Join(",", bimestres.Select(a => $"{a.Bimestre.ToString()}º").ToArray());
