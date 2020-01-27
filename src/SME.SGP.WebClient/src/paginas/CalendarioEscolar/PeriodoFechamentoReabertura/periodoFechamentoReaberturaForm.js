@@ -14,9 +14,10 @@ import SelectComponent from '~/componentes/select';
 import modalidade from '~/dtos/modalidade';
 import RotasDto from '~/dtos/rotasDto';
 import { confirmar, erros, sucesso } from '~/servicos/alertas';
-import api from '~/servicos/api';
 import { setBreadcrumbManual } from '~/servicos/breadcrumb-services';
 import history from '~/servicos/history';
+import ServicoCalendarios from '~/servicos/Paginas/Calendario/ServicoCalendarios';
+import ServicoFechamentoReabertura from '~/servicos/Paginas/Calendario/ServicoFechamentoReabertura';
 
 const PeriodoFechamentoReaberturaForm = ({ match }) => {
   const usuarioStore = useSelector(store => store.usuario);
@@ -33,7 +34,7 @@ const PeriodoFechamentoReaberturaForm = ({ match }) => {
   const [validacoes, setValidacoes] = useState({});
   const [exibirAuditoria, setExibirAuditoria] = useState(false);
   const [auditoria, setAuditoria] = useState([]);
-  const [novoRegistro, setNovoRegistro] = useState(true);
+  const [novoRegistro, setNovoRegistro] = useState(false);
   const [modoEdicao, setModoEdicao] = useState(false);
 
   const [valoresIniciais, setValoresIniciais] = useState({
@@ -87,7 +88,7 @@ const PeriodoFechamentoReaberturaForm = ({ match }) => {
   useEffect(() => {
     async function consultaTipos() {
       setCarregandoTipos(true);
-      const listaTipo = await api.get('v1/calendarios/tipos');
+      const listaTipo = await ServicoCalendarios.obterTiposCalendario();
       if (listaTipo && listaTipo.data && listaTipo.data.length) {
         listaTipo.data.map(item => {
           item.id = String(item.id);
@@ -107,6 +108,7 @@ const PeriodoFechamentoReaberturaForm = ({ match }) => {
               bimestres: [],
             };
             setValoresIniciais(valores);
+            setNovoRegistro(true);
           }
           montarListaBimestres(listaTipo.data[0].modalidade);
         } else {
@@ -134,9 +136,9 @@ const PeriodoFechamentoReaberturaForm = ({ match }) => {
           RotasDto.PERIODO_FECHAMENTO_REABERTURA
         );
         setIdFechamentoReabertura(match.params.id);
-        const cadastrado = await api
-          .get(`v1/fechamentos/reaberturas/${match.params.id}`)
-          .catch(e => erros(e));
+        const cadastrado = await ServicoFechamentoReabertura.obterPorId(
+          match.params.id
+        ).catch(e => erros(e));
 
         if (cadastrado && cadastrado.data) {
           const calendario = listaTipoCalendarioEscolar.find(
@@ -237,13 +239,12 @@ const PeriodoFechamentoReaberturaForm = ({ match }) => {
         'Cancelar'
       );
       if (confirmado) {
-        const parametrosDelete = { data: [idFechamentoReabertura] };
-        const excluir = await api
-          .delete('v1/fechamentos/reaberturas', parametrosDelete)
-          .catch(e => erros(e));
+        const excluir = await ServicoFechamentoReabertura.deletar(
+          idFechamentoReabertura
+        ).catch(e => erros(e));
 
         if (excluir && excluir.status == 200) {
-          sucesso('Fechamento excluído com sucesso.');
+          sucesso(excluir.data);
           history.push(RotasDto.PERIODO_FECHAMENTO_REABERTURA);
         }
       }
@@ -305,13 +306,15 @@ const PeriodoFechamentoReaberturaForm = ({ match }) => {
       inicio: dataInicio,
       tipoCalendarioId,
       ueCodigo: ueId,
+      id: idFechamentoReabertura,
     };
-    const cadastrado = await api
-      .post('v1/fechamentos/reaberturas', prametrosParaSalvar)
-      .catch(e => erros(e));
+    const cadastrado = await ServicoFechamentoReabertura.salvar(
+      idFechamentoReabertura,
+      prametrosParaSalvar
+    ).catch(e => erros(e));
 
     if (cadastrado && cadastrado.status == 200) {
-      sucesso('Reabertura de Fechamento cadastrada com sucesso');
+      sucesso(cadastrado.data);
       history.push(RotasDto.PERIODO_FECHAMENTO_REABERTURA);
     }
   };
@@ -391,7 +394,7 @@ const PeriodoFechamentoReaberturaForm = ({ match }) => {
                         lista={listaTipoCalendarioEscolar}
                         valueOption="id"
                         valueText="descricaoTipoCalendario"
-                        disabled={desabilitarTipoCalendario}
+                        disabled={!novoRegistro || desabilitarTipoCalendario}
                         placeholder="Selecione um tipo de calendário"
                         onChange={valor => onChangeTipoCalendario(valor, form)}
                       />
@@ -403,9 +406,11 @@ const PeriodoFechamentoReaberturaForm = ({ match }) => {
                     name="dreId"
                     label="Diretoria Regional de Educação (DRE)"
                     form={form}
-                    desabilitado={false}
+                    desabilitado={!novoRegistro}
                     onChange={() => {
-                      onChangeCampos();
+                      if (novoRegistro) {
+                        onChangeCampos();
+                      }
                     }}
                   />
                 </div>
@@ -416,9 +421,11 @@ const PeriodoFechamentoReaberturaForm = ({ match }) => {
                     label="Unidade Escolar (UE)"
                     form={form}
                     url="v1/dres"
-                    desabilitado={false}
+                    desabilitado={!novoRegistro}
                     onChange={() => {
-                      onChangeCampos();
+                      if (novoRegistro) {
+                        onChangeCampos();
+                      }
                     }}
                   />
                 </div>
@@ -429,9 +436,8 @@ const PeriodoFechamentoReaberturaForm = ({ match }) => {
                     id="descricao"
                     type="textarea"
                     form={form}
-                    onChange={() => {
-                      onChangeCampos();
-                    }}
+                    onChange={onChangeCampos}
+                    desabilitado={!novoRegistro}
                   />
                 </div>
                 <div className="col-sm-2 col-md-2 col-lg-2 col-xl-2 mb-2">
@@ -441,9 +447,7 @@ const PeriodoFechamentoReaberturaForm = ({ match }) => {
                     name="dataInicio"
                     placeholder="DD/MM/AAAA"
                     formatoData="DD/MM/YYYY"
-                    onChange={() => {
-                      onChangeCampos();
-                    }}
+                    onChange={onChangeCampos}
                   />
                 </div>
                 <div className="col-sm-2 col-md-2 col-lg-2 col-xl-2 mb-2">
@@ -453,9 +457,7 @@ const PeriodoFechamentoReaberturaForm = ({ match }) => {
                     name="dataFim"
                     placeholder="DD/MM/AAAA"
                     formatoData="DD/MM/YYYY"
-                    onChange={() => {
-                      onChangeCampos();
-                    }}
+                    onChange={onChangeCampos}
                   />
                 </div>
                 <div className="col-sm-4 col-md-4 col-lg-4 col-xl-4 mb-2">
@@ -475,22 +477,23 @@ const PeriodoFechamentoReaberturaForm = ({ match }) => {
                     valueText="descricao"
                     placeholder="Selecione bimestre(s)"
                     multiple
+                    disabled={!novoRegistro}
                   />
                 </div>
+                {exibirAuditoria ? (
+                  <Auditoria
+                    criadoEm={auditoria.criadoEm}
+                    criadoPor={auditoria.criadoPor}
+                    alteradoPor={auditoria.alteradoPor}
+                    alteradoEm={auditoria.alteradoEm}
+                  />
+                ) : (
+                  ''
+                )}
               </div>
             </Form>
           )}
         </Formik>
-        {exibirAuditoria ? (
-          <Auditoria
-            criadoEm={auditoria.criadoEm}
-            criadoPor={auditoria.criadoPor}
-            alteradoPor={auditoria.alteradoPor}
-            alteradoEm={auditoria.alteradoEm}
-          />
-        ) : (
-          ''
-        )}
       </Card>
     </>
   );
