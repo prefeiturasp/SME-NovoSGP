@@ -2,6 +2,7 @@
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Interfaces;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -82,7 +83,13 @@ namespace SME.SGP.Aplicacao
                 BimestresQuantidadeTotal = fechamentoReabertura.TipoCalendario.QuantidadeDeBimestres(),
                 DreCodigo = fechamentoReabertura.Dre?.CodigoDre,
                 UeCodigo = fechamentoReabertura.Ue?.CodigoUe,
-                TipoCalendarioId = fechamentoReabertura.TipoCalendarioId
+                TipoCalendarioId = fechamentoReabertura.TipoCalendarioId,
+                CriadoEm = fechamentoReabertura.CriadoEm,
+                AlteradoEm = fechamentoReabertura.AlteradoEm ?? DateTime.MinValue,
+                CriadoPor = fechamentoReabertura.CriadoPor,
+                AlteradoPor = fechamentoReabertura.AlteradoPor,
+                AlteradoRF = fechamentoReabertura.AlteradoRF,
+                CriadoRF = fechamentoReabertura.CriadoRF
             };
         }
     }

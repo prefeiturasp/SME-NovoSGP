@@ -133,7 +133,7 @@ namespace SME.SGP.Dominio.Servicos
             if (fechamentoReabertura.EhParaDre())
             {
                 var adminsSgpDre = servicoEOL.ObterAdministradoresSGP(fechamentoReabertura.Dre.CodigoDre).Result;
-                if (adminsSgpDre != null || !adminsSgpDre.Any())
+                if (adminsSgpDre != null || adminsSgpDre.Any())
                 {
                     foreach (var adminSgpUe in adminsSgpDre)
                     {
