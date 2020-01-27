@@ -1,9 +1,8 @@
-﻿using Dapper.FluentMap.Dommel.Mapping;
-using SME.SGP.Dominio;
+﻿using SME.SGP.Dominio;
 
 namespace SME.SGP.Dados.Mapeamentos
 {
-    public class RecuperacaoParalelaMap : DommelEntityMap<RecuperacaoParalela>
+    public class RecuperacaoParalelaMap : BaseMap<RecuperacaoParalela>
     {
         public RecuperacaoParalelaMap()
         {

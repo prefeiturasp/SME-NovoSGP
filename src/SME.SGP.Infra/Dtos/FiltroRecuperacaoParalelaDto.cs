@@ -2,7 +2,7 @@
 {
     public class FiltroRecuperacaoParalelaDto
     {
-        public int PeriodoId { get; set; }
+        public long PeriodoId { get; set; }
         public long TurmaId { get; set; }
     }
 }

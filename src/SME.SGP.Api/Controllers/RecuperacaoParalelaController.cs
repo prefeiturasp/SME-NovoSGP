@@ -41,7 +41,7 @@ namespace SME.SGP.Api.Controllers
         [HttpPost]
         [ProducesResponseType(200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        [Permissao(Permissao.CP_I, Policy = "Bearer")]
+        //[Permissao(Permissao.CP_I, Policy = "Bearer")]
         public async Task<IActionResult> PostAsync([FromBody]RecuperacaoParalelaDto recuperacaoParalelaPeriodoDto)
         {
             return Ok(await comandosRecuperacaoParalela.Salvar(recuperacaoParalelaPeriodoDto));

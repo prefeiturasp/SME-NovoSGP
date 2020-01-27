@@ -3,22 +3,30 @@ using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Dto;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
     public class ComandosRecuperacaoParalela : IComandosRecuperacaoParalela
     {
+        private readonly IConsultaRecuperacaoParalela consultaRecuperacaoParalela;
         private readonly IRepositorioRecuperacaoParalela repositorioRecuperacaoParalela;
+        private readonly IRepositorioRecuperacaoParalelaPeriodoObjetivoResposta repositorioRecuperacaoParalelaPeriodoObjetivoResposta;
         private readonly IUnitOfWork unitOfWork;
 
-        public ComandosRecuperacaoParalela(IRepositorioRecuperacaoParalela repositorioRecuperacaoParalela, IUnitOfWork unitOfWork)
+        public ComandosRecuperacaoParalela(IRepositorioRecuperacaoParalela repositorioRecuperacaoParalela,
+            IRepositorioRecuperacaoParalelaPeriodoObjetivoResposta repositorioRecuperacaoParalelaPeriodoObjetivo,
+            IConsultaRecuperacaoParalela consultaRecuperacaoParalela,
+            IUnitOfWork unitOfWork)
         {
             this.repositorioRecuperacaoParalela = repositorioRecuperacaoParalela ?? throw new ArgumentNullException(nameof(repositorioRecuperacaoParalela));
+            this.repositorioRecuperacaoParalelaPeriodoObjetivoResposta = repositorioRecuperacaoParalelaPeriodoObjetivo ?? throw new ArgumentNullException(nameof(repositorioRecuperacaoParalelaPeriodoObjetivo));
+            this.consultaRecuperacaoParalela = consultaRecuperacaoParalela ?? throw new ArgumentNullException(nameof(consultaRecuperacaoParalela));
             this.unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
         }
 
-        async Task<IEnumerable<RecuperacaoParalelaListagemDto>> IComandosRecuperacaoParalela.Salvar(RecuperacaoParalelaDto recuperacaoParalelaDto)
+        public async Task<RecuperacaoParalelaListagemDto> Salvar(RecuperacaoParalelaDto recuperacaoParalelaDto)
         {
             var list = new List<RecuperacaoParalelaListagemDto>();
             unitOfWork.IniciarTransacao();
@@ -28,12 +36,30 @@ namespace SME.SGP.Aplicacao
                 {
                     Id = item.Id,
                     TurmaId = item.TurmaId,
-                    Aluno_id = item.CodAluno
+                    Aluno_id = item.CodAluno,
+                    CriadoEm = recuperacaoParalelaDto.Periodo.CriadoEm ?? default,
+                    CriadoRF = recuperacaoParalelaDto.Periodo.CriadoRF ?? null,
+                    CriadoPor = recuperacaoParalelaDto.Periodo.CriadoPor ?? null
                 };
                 await repositorioRecuperacaoParalela.SalvarAsync(recuperacaoParalela);
+                await repositorioRecuperacaoParalelaPeriodoObjetivoResposta.Excluir(item.Id);
+                foreach (var resposta in recuperacaoParalelaDto.Periodo.Alunos.Where(w => w.Id == item.Id).FirstOrDefault().Respostas)
+                {
+                    await repositorioRecuperacaoParalelaPeriodoObjetivoResposta.SalvarAsync(new RecuperacaoParalelaPeriodoObjetivoResposta
+                    {
+                        ObjetivoId = resposta.ObjetivoId,
+                        PeriodoRecuperacaoParalelaId = recuperacaoParalelaDto.Periodo.Id,
+                        RecuperacaoParalelaId = recuperacaoParalela.Id,
+                        RespostaId = resposta.RespostaId
+                    });
+                }
             }
             unitOfWork.PersistirTransacao();
-            return list;
+            return await consultaRecuperacaoParalela.Listar(new Infra.FiltroRecuperacaoParalelaDto
+            {
+                PeriodoId = recuperacaoParalelaDto.Periodo.Id,
+                TurmaId = recuperacaoParalelaDto.Periodo.Alunos.FirstOrDefault().TurmaId
+            });
         }
     }
 }

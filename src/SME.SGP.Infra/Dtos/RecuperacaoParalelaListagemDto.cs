@@ -4,6 +4,6 @@ namespace SME.SGP.Dto
 {
     public class RecuperacaoParalelaListagemDto
     {
-        public RecuperacaoParalelaPeriodoDto Periodo { get; set; }
+        public RecuperacaoParalelaPeriodoListagemDto Periodo { get; set; }
     }
 }
