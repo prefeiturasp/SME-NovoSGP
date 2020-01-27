@@ -216,7 +216,7 @@ const CalendarioProfessor = () => {
   const obterDres = () => {
     setCarregandoDres(true);
     api
-      .get('v1/abrangencias/false/dres')
+      .get(`v1/abrangencias/${turmaSelecionadaStore.consideraHistorico}/dres`)
       .then(resposta => {
         if (resposta.data) {
           const lista = [];
@@ -304,7 +304,7 @@ const CalendarioProfessor = () => {
   const obterUnidadesEscolares = () => {
     setCarregandoUes(true);
     api
-      .get(`v1/abrangencias/false/dres/${dreSelecionada}/ues`)
+      .get(`v1/abrangencias/${turmaSelecionadaStore.consideraHistorico}/dres/${dreSelecionada}/ues`)
       .then(resposta => {
         if (resposta.data) {
           const lista = [];
@@ -474,16 +474,16 @@ const CalendarioProfessor = () => {
       {turmaSelecionadaStore && turmaSelecionadaStore.turma ? (
         ''
       ) : (
-        <Alert
-          alerta={{
-            tipo: 'warning',
-            id: 'plano-ciclo-selecione-turma',
-            mensagem: 'Você precisa escolher uma turma.',
-            estiloTitulo: { fontSize: '18px' },
-          }}
-          className="mb-0"
-        />
-      )}
+          <Alert
+            alerta={{
+              tipo: 'warning',
+              id: 'plano-ciclo-selecione-turma',
+              mensagem: 'Você precisa escolher uma turma.',
+              estiloTitulo: { fontSize: '18px' },
+            }}
+            className="mb-0"
+          />
+        )}
       <Grid cols={12} className="mb-1 p-0">
         <Titulo className="font-weight-bold">Calendário do professor</Titulo>
       </Grid>
@@ -521,8 +521,8 @@ const CalendarioProfessor = () => {
                   </Div>
                 </Div>
               ) : (
-                <Div />
-              )}
+                  <Div />
+                )}
               {diasLetivos && diasLetivos.estaAbaixoPermitido && (
                 <Div
                   className="clearfix font-weight-bold pt-2"
@@ -558,7 +558,7 @@ const CalendarioProfessor = () => {
                         eventoSme
                           ? 'Exibindo eventos da SME'
                           : 'Não exibindo eventos da SME'
-                      }`}
+                        }`}
                     >
                       <Switch
                         onChange={aoTrocarEventoSme}
