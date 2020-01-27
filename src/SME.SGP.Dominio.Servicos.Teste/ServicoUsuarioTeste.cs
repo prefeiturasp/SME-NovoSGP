@@ -13,6 +13,7 @@ namespace SME.SGP.Dominio.Servicos.Teste
 {
     public class ServicoUsuarioTeste
     {
+        private readonly Mock<IRepositorioAtribuicaoCJ> repositorioAtribuicaoCj;
         private readonly Mock<IRepositorioCache> repositorioCache;
         private readonly Mock<IRepositorioPrioridadePerfil> repositorioPrioridadePerfil;
         private readonly Mock<IRepositorioUsuario> repositorioUsuario;
@@ -29,10 +30,11 @@ namespace SME.SGP.Dominio.Servicos.Teste
             repositorioCache = new Mock<IRepositorioCache>();
             var obj = new HttpContextAccessor();
             obj.HttpContext = new DefaultHttpContext();
+            repositorioAtribuicaoCj = new Mock<IRepositorioAtribuicaoCJ>();
 
             var context = new ContextoHttp(obj);
 
-            servicoUsuario = new ServicoUsuario(repositorioUsuario.Object, servicoEol.Object, repositorioPrioridadePerfil.Object, unitOfWork.Object, context, repositorioCache.Object);
+            servicoUsuario = new ServicoUsuario(repositorioUsuario.Object, servicoEol.Object, repositorioPrioridadePerfil.Object, unitOfWork.Object, context, repositorioCache.Object, repositorioAtribuicaoCj.Object);
         }
 
         [Fact]
