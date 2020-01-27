@@ -2,7 +2,7 @@
 
 namespace SME.SGP.Infra
 {
-    public class FechamentoReaberturaRetornoDto
+    public class FechamentoReaberturaRetornoDto : AuditoriaDto
     {
         public int[] Bimestres { get; set; }
         public int BimestresQuantidadeTotal { get; set; }
