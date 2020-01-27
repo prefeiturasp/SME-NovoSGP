@@ -5,6 +5,8 @@ using SME.SGP.Infra;
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
+using SME.SGP.Infra;
+using System;
 
 namespace SME.SGP.Dados.Repositorios
 {
@@ -14,12 +16,27 @@ namespace SME.SGP.Dados.Repositorios
         {
         }
 
-        public TipoCalendario BuscarPorAnoLetivoEModalidade(int anoLetivo, ModalidadeTipoCalendario modalidade)
+        public TipoCalendario BuscarPorAnoLetivoEModalidade(int anoLetivo, ModalidadeTipoCalendario modalidade, int semestre = 0)
         {
-            StringBuilder query = ObterQueryListarPorAnoLetivo();
-            query.AppendLine("and modalidade = @modalidade");
+            StringBuilder query = new StringBuilder();
 
-            return database.Conexao.QueryFirstOrDefault<TipoCalendario>(query.ToString(), new { anoLetivo, modalidade = (int)modalidade });
+            query.AppendLine("select *");
+            query.AppendLine("from tipo_calendario t");
+            query.AppendLine("where t.excluido = false");
+            query.AppendLine("and t.ano_letivo = @anoLetivo");
+            query.AppendLine("and t.modalidade = @modalidade");
+
+            DateTime dataReferencia = DateTime.MinValue;
+            if (modalidade == ModalidadeTipoCalendario.EJA)
+            {
+                var periodoReferencia = semestre == 1 ? "periodo_inicio < @dataReferencia" : "periodo_fim > @dataReferencia";
+                query.AppendLine($"and exists(select 0 from periodo_escolar p tipo_calendario_id = t.id and {periodoReferencia})");
+
+                // 1/6/ano ou 1/7/ano dependendo do semestre
+                dataReferencia = new DateTime(anoLetivo, semestre == 1 ? 6 : 7, 1);
+            }
+
+            return database.Conexao.QueryFirstOrDefault<TipoCalendario>(query.ToString(), new { anoLetivo, modalidade = (int)modalidade, dataReferencia });
         }
 
         public IEnumerable<TipoCalendario> ListarPorAnoLetivo(int anoLetivo)

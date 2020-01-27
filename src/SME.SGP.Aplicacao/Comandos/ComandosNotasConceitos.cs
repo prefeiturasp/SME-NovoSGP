@@ -26,6 +26,7 @@ namespace SME.SGP.Aplicacao
             var notasConceitosDto = notaConceitoLista.NotasConceitos;
 
             var alunos = notasConceitosDto.Select(x => x.AlunoId).ToList();
+
             var avaliacoes = notasConceitosDto.Select(x => x.AtividadeAvaliativaId).ToList();
 
             var notasBanco = repositorioNotasConceitos.ObterNotasPorAlunosAtividadesAvaliativas(avaliacoes, alunos, notaConceitoLista.DisciplinaId);

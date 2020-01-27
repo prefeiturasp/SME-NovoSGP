@@ -1,5 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import shortid from 'shortid';
 
 // Componentes
 import { Button, Colors } from '~/componentes';
@@ -34,6 +35,7 @@ function ButtonGroup({
   return (
     <ButtonGroupEstilo className="col-md-12 d-flex justify-content-end p-0">
       <Button
+        id={shortid.generate()}
         label="Voltar"
         icon="arrow-left"
         color={Colors.Azul}
@@ -43,6 +45,7 @@ function ButtonGroup({
       />
       {typeof onClickCancelar === 'function' && (
         <Button
+          id={shortid.generate()}
           label="Cancelar"
           color={Colors.Roxo}
           border
@@ -57,6 +60,7 @@ function ButtonGroup({
       )}
       {typeof onClickExcluir === 'function' && (
         <Button
+          id={shortid.generate()}
           label="Excluir"
           color={Colors.Roxo}
           border
@@ -66,6 +70,7 @@ function ButtonGroup({
         />
       )}
       <Button
+        id={shortid.generate()}
         label={labelBotaoPrincipal}
         color={Colors.Roxo}
         border
