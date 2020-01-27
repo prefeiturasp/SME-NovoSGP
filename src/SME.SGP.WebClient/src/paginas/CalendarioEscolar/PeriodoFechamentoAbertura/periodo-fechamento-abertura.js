@@ -20,9 +20,14 @@ import { URL_HOME } from '~/constantes/url';
 import { erros, sucesso, confirmar } from '~/servicos/alertas';
 import ServicoPeriodoFechamento from '~/servicos/Paginas/Calendario/ServicoPeriodoFechamento';
 import { RegistroMigrado } from '~/componentes-sgp/registro-migrado';
+import RotasDto from '~/dtos/rotasDto';
+import { verificaSomenteConsulta } from '~/servicos/servico-navegacao';
 
 const PeriodoFechamentoAbertura = () => {
   const usuarioLogado = useSelector(store => store.usuario);
+  const [somenteConsulta, setSomenteConsulta] = useState(false);
+  const permissoesTela =
+    usuarioLogado.permissoes[RotasDto.PERIODO_FECHAMENTO_ABERTURA];
 
   const [listaTipoCalendarioEscolar, setListaTipoCalendarioEscolar] = useState(
     []
@@ -40,6 +45,9 @@ const PeriodoFechamentoAbertura = () => {
     false
   );
   const [modoEdicao, setModoEdicao] = useState(false);
+  const [desabilitarCampos, setDesabilitarCampos] = useState(false);
+  const [idFechamentoAbertura, setIdFechamentoAbertura] = useState(0);
+
   const obtemPeriodosIniciais = () => {
     return {
       dreId: null,
@@ -66,6 +74,24 @@ const PeriodoFechamentoAbertura = () => {
       ),
     })
   );
+
+  useEffect(() => {
+    const somenteConsultarFrequencia = verificaSomenteConsulta(permissoesTela);
+    setSomenteConsulta(somenteConsultarFrequencia);
+  }, [permissoesTela]);
+
+  useEffect(() => {
+    const desabilitar =
+      idFechamentoAbertura > 0
+        ? somenteConsulta || !permissoesTela.podeAlterar
+        : somenteConsulta || !permissoesTela.podeIncluir;
+    setDesabilitarCampos(desabilitar);
+  }, [
+    idFechamentoAbertura,
+    permissoesTela.podeAlterar,
+    permissoesTela.podeIncluir,
+    somenteConsulta,
+  ]);
 
   useEffect(() => {
     setTipoCalendarioSelecionado(null);
@@ -132,6 +158,7 @@ const PeriodoFechamentoAbertura = () => {
             alteradoEm: resposta.data.alteradoEm,
             alteradoRf: resposta.data.alteradoRf,
           });
+          setIdFechamentoAbertura(resposta.data.id);
           setModoEdicao(true);
         })
         .catch(e => {
@@ -261,6 +288,7 @@ const PeriodoFechamentoAbertura = () => {
               possuiErro(form, 'inicioDoFechamento', indice) &&
               'is-invalid mb-1'
             }
+            desabilitado={desabilitarCampos}
           />
           {obterErros(form, 'inicioDoFechamento', indice)}
         </div>
@@ -275,6 +303,7 @@ const PeriodoFechamentoAbertura = () => {
               possuiErro(form, 'finalDoFechamento', indice) && 'is-invalid'
             }
             diasParaHabilitar={diasParaHabilitar}
+            desabilitado={desabilitarCampos}
           />
           {obterErros(form, 'finalDoFechamento', indice)}
         </div>
@@ -319,7 +348,7 @@ const PeriodoFechamentoAbertura = () => {
                       border
                       bold
                       className="mr-3"
-                      disabled={!modoEdicao}
+                      disabled={desabilitarCampos || !modoEdicao}
                       onClick={() => onClickCancelar(form)}
                     />
                     <Button
@@ -327,7 +356,7 @@ const PeriodoFechamentoAbertura = () => {
                       color={Colors.Roxo}
                       border
                       bold
-                      disabled={!modoEdicao}
+                      disabled={desabilitarCampos || !modoEdicao}
                       onClick={() => validaAntesDoSubmit(form)}
                     />
                   </div>
@@ -355,6 +384,7 @@ const PeriodoFechamentoAbertura = () => {
                         label="Diretoria Regional de Educação (DRE)"
                         form={form}
                         onChange={dreId => onChangeDre(dreId)}
+                        desabilitado={desabilitarCampos}
                       />
                     )}
                   </div>
@@ -366,6 +396,7 @@ const PeriodoFechamentoAbertura = () => {
                         form={form}
                         url="v1/dres"
                         onChange={ueId => setUeSelecionada(ueId)}
+                        desabilitado={desabilitarCampos}
                       />
                     )}
                   </div>

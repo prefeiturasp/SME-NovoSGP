@@ -539,7 +539,8 @@ rotas.set(`${RotasDto.PERIODO_FECHAMENTO_ABERTURA}`, {
   component: PeriodoFechamentoAbertura,
   exact: true,
   tipo: RotasTipo.EstruturadaAutenticada,
-  temPermissionamento: false,
+  temPermissionamento: true,
+  chavePermissao: RotasDto.PERIODO_FECHAMENTO_ABERTURA,
 });
 
 const rotasArray = [];
