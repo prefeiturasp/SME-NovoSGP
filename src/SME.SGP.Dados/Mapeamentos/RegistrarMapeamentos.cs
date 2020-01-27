@@ -70,6 +70,7 @@ namespace SME.SGP.Dados.Mapeamentos
                config.AddMap(new ProcessoExecutandoMap());
                config.AddMap(new RecuperacaoParalelaMap());
                config.AddMap(new RecuperacaoParalelaPeriodoMap());
+               config.AddMap(new RecuperacaoParalelaPeriodoObjetivoRespostaMap());
                config.ForDommel();
            });
         }

@@ -39,7 +39,7 @@ namespace SME.SGP.Aplicacao
             throw new NotImplementedException();
         }
 
-        private RecuperacaoParalelaListagemDto MapearParaDto(IEnumerable<AlunoPorTurmaResposta> alunosEol, IEnumerable<RetornoRecuperacaoParalela> alunosRecuperacaoParalela, long turmaId, int periodoId)
+        private RecuperacaoParalelaListagemDto MapearParaDto(IEnumerable<AlunoPorTurmaResposta> alunosEol, IEnumerable<RetornoRecuperacaoParalela> alunosRecuperacaoParalela, long turmaId, long periodoId)
         {
             var alunos = alunosEol.Where(w => !alunosRecuperacaoParalela.Select(s => s.AlunoId).Contains(Convert.ToInt32(w.CodigoAluno))).ToList();
             var alunosRecParalela = alunosRecuperacaoParalela.ToList();
@@ -47,21 +47,23 @@ namespace SME.SGP.Aplicacao
             var retorno = alunosRecParalela.Select(s => new { s.AlunoId, s.Id }).Distinct();
             return new RecuperacaoParalelaListagemDto
             {
-                Periodo = new RecuperacaoParalelaPeriodoDto
+                Periodo = new RecuperacaoParalelaPeriodoListagemDto
                 {
                     Id = periodoId,
-                    CriadoPor = alunosRecParalela.FirstOrDefault().CriadoPor,
-                    AlteradoPor = alunosRecParalela.FirstOrDefault().AlteradoPor,
-                    AlteradoEm = alunosRecParalela.FirstOrDefault().AlteradoEm,
-                    AlteradoRF = alunosRecParalela.FirstOrDefault().AlteradoRF,
-                    CriadoEm = alunosRecParalela.FirstOrDefault().CriadoEm == DateTime.MinValue ? null : alunosRecParalela.FirstOrDefault().CriadoEm,
-                    CriadoRF = alunosRecParalela.FirstOrDefault().CriadoRF,
-                    Alunos = retorno.Select(a => new RecuperacaoParalelaAlunoDto
+                    CriadoPor = alunosRecParalela.OrderByDescending(o => o.CriadoEm).FirstOrDefault().CriadoPor,
+                    AlteradoPor = alunosRecParalela.OrderByDescending(o => o.AlteradoEm).FirstOrDefault().AlteradoPor,
+                    AlteradoEm = alunosRecParalela.OrderByDescending(o => o.AlteradoEm).FirstOrDefault().AlteradoEm,
+                    AlteradoRF = alunosRecParalela.OrderByDescending(o => o.AlteradoEm).FirstOrDefault().AlteradoRF,
+                    CriadoEm = alunosRecParalela.OrderByDescending(o => o.CriadoEm).FirstOrDefault().CriadoEm == DateTime.MinValue ? null : alunosRecParalela.FirstOrDefault().CriadoEm,
+                    CriadoRF = alunosRecParalela.OrderByDescending(o => o.CriadoEm).FirstOrDefault().CriadoRF,
+                    Alunos = retorno.Select(a => new RecuperacaoParalelaAlunoListagemDto
                     {
+                        Id = a.Id,
                         Nome = alunosEol.Where(w => Convert.ToInt32(w.CodigoAluno) == a.AlunoId).Select(s => s.NomeAluno).FirstOrDefault(),
                         NumeroChamada = alunosEol.Where(w => Convert.ToInt32(w.CodigoAluno) == a.AlunoId).Select(s => s.NumeroAlunoChamada).FirstOrDefault(),
                         CodAluno = a.AlunoId,
                         Turma = alunosEol.Where(w => Convert.ToInt32(w.CodigoAluno) == a.AlunoId).Select(s => s.TurmaEscola).FirstOrDefault(),
+                        TurmaId = turmaId,
                         Respostas = alunosRecuperacaoParalela
                                                     .Where(w => w.Id == a.Id)
                                                     .Select(s => new RespostaDto
