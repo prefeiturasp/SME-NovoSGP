@@ -1,8 +1,9 @@
 import { Form, Formik } from 'formik';
 import * as moment from 'moment';
-import React, { useEffect, useState, useCallback, useRef } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import { useSelector } from 'react-redux';
 import * as Yup from 'yup';
+import shortid from 'shortid';
 import Cabecalho from '~/componentes-sgp/cabecalho';
 import Button from '~/componentes/button';
 import { CampoData, momentSchema } from '~/componentes/campoData/campoData';
@@ -414,6 +415,7 @@ const EventosLista = () => {
       <Card>
         <div className="col-md-12 d-flex justify-content-end pb-4">
           <Button
+            id={shortid.generate()}
             label="Voltar"
             icon="arrow-left"
             color={Colors.Azul}
@@ -422,6 +424,7 @@ const EventosLista = () => {
             onClick={onClickVoltar}
           />
           <Button
+            id={shortid.generate()}
             label="Excluir"
             color={Colors.Vermelho}
             border
@@ -434,6 +437,7 @@ const EventosLista = () => {
             hidden={!selecionouCalendario}
           />
           <Button
+            id={shortid.generate()}
             label="Novo"
             color={Colors.Roxo}
             border
