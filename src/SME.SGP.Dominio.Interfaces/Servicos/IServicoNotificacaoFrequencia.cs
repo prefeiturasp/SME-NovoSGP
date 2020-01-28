@@ -8,5 +8,7 @@ namespace SME.SGP.Dominio.Interfaces
     {
         void ExecutaNotificacaoFrequencia();
         void VerificaRegraAlteracaoFrequencia(long registroFrequenciaId, DateTime criadoEm, DateTime alteradoEm, long usuarioAlteracaoId);
+        void NotificarCompensacaoAusencia(long compensacaoId);
+        void VerificaNotificacaoBimestral();
     }
 }

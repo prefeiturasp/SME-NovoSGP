@@ -61,13 +61,14 @@ namespace SME.SGP.Dominio.Servicos
             }
         }
 
-        private FrequenciaAluno MapearFrequenciaAluno(string codigoAluno, string disciplinaId, DateTime periodoInicio, DateTime periodoFim, int bimestre, int totalAusencias, int totalAulas, int totalCompensacoes, TipoFrequenciaAluno tipo)
+        private FrequenciaAluno MapearFrequenciaAluno(string codigoAluno, string turmaId, string disciplinaId, DateTime periodoInicio, DateTime periodoFim, int bimestre, int totalAusencias, int totalAulas, int totalCompensacoes, TipoFrequenciaAluno tipo)
         {
             var frequenciaAluno = repositorioFrequenciaAlunoDisciplinaPeriodo.Obter(codigoAluno, disciplinaId, periodoInicio, periodoFim, tipo);
             return frequenciaAluno == null ?
             new FrequenciaAluno
                          (
                              codigoAluno,
+                             turmaId,
                              disciplinaId,
                              periodoInicio,
                              periodoFim,
@@ -86,6 +87,7 @@ namespace SME.SGP.Dominio.Servicos
             {
                 var totalCompensacoesGeralAluno = repositorioCompensacaoAusenciaAluno.ObterTotalCompensacoesPorAlunoETurma(totalAusenciasGeralAluno.Bimestre, codigoAluno, string.Empty, turmaId);
                 var frequenciaGeralAluno = MapearFrequenciaAluno(codigoAluno,
+                                                                    turmaId,
                                                                     string.Empty,
                                                                     totalAusenciasGeralAluno.PeriodoInicio,
                                                                     totalAusenciasGeralAluno.PeriodoFim,
@@ -117,6 +119,7 @@ namespace SME.SGP.Dominio.Servicos
             {
                 var totalCompensacoesDisciplinaAluno = repositorioCompensacaoAusenciaAluno.ObterTotalCompensacoesPorAlunoETurma(ausenciasAlunoPorDisciplina.Bimestre, codigoAluno, string.Empty, turmaId);
                 var frequenciaAluno = MapearFrequenciaAluno(codigoAluno,
+                                                            turmaId,
                                                             disciplinaId,
                                                             ausenciasAlunoPorDisciplina.PeriodoInicio,
                                                             ausenciasAlunoPorDisciplina.PeriodoFim,
