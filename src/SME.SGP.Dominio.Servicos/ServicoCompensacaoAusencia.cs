@@ -20,6 +20,7 @@ namespace SME.SGP.Dominio.Servicos
         private readonly IConsultasPeriodoEscolar consultasPeriodoEscolar;
         private readonly IRepositorioTipoCalendario repositorioTipoCalendario;
         private readonly IRepositorioTurma repositorioTurma;
+        private readonly IRepositorioNotificacaoCompensacaoAusencia repositorioNotificacaoCompensacaoAusencia;
         private readonly IServicoEOL servicoEOL;
         private readonly IServicoUsuario servicoUsuario;
         private readonly IUnitOfWork unitOfWork;
@@ -33,6 +34,7 @@ namespace SME.SGP.Dominio.Servicos
                                           IServicoEOL servicoEOL,
                                           IServicoUsuario servicoUsuario,
                                           IRepositorioTurma repositorioTurma,
+                                          IRepositorioNotificacaoCompensacaoAusencia repositorioNotificacaoCompensacaoAusencia,
                                           IUnitOfWork unitOfWork)
         {
             this.repositorioCompensacaoAusencia = repositorioCompensacaoAusencia ?? throw new System.ArgumentNullException(nameof(repositorioCompensacaoAusencia));
@@ -42,6 +44,7 @@ namespace SME.SGP.Dominio.Servicos
             this.consultasPeriodoEscolar = consultasPeriodoEscolar ?? throw new System.ArgumentNullException(nameof(consultasPeriodoEscolar));
             this.repositorioTipoCalendario = repositorioTipoCalendario ?? throw new System.ArgumentNullException(nameof(repositorioTipoCalendario));
             this.repositorioTurma = repositorioTurma ?? throw new System.ArgumentNullException(nameof(repositorioTurma));
+            this.repositorioNotificacaoCompensacaoAusencia = repositorioNotificacaoCompensacaoAusencia ?? throw new System.ArgumentNullException(nameof(repositorioNotificacaoCompensacaoAusencia));
             this.servicoEOL = servicoEOL ?? throw new System.ArgumentNullException(nameof(servicoEOL));
             this.servicoUsuario = servicoUsuario ?? throw new System.ArgumentNullException(nameof(servicoUsuario));
             this.unitOfWork = unitOfWork ?? throw new System.ArgumentNullException(nameof(unitOfWork));
@@ -74,21 +77,25 @@ namespace SME.SGP.Dominio.Servicos
             compensacao.TurmaId = turma.Id;
             compensacao.AnoLetivo = turma.AnoLetivo;
 
+            List<string> codigosAlunosCompensacao = new List<string>();
             unitOfWork.IniciarTransacao();
             try
             {
                 await repositorioCompensacaoAusencia.SalvarAsync(compensacao);
                 await GravarDisciplinasRegencia(id > 0, compensacao.Id, compensacaoDto.DisciplinasRegenciaIds);
-                var codigosAlunosCompensacao = await GravarCompensacaoAlunos(id > 0, compensacao.Id, compensacaoDto.TurmaId, compensacaoDto.DisciplinaId, compensacaoDto.Alunos, periodo);
+                codigosAlunosCompensacao = await GravarCompensacaoAlunos(id > 0, compensacao.Id, compensacaoDto.TurmaId, compensacaoDto.DisciplinaId, compensacaoDto.Alunos, periodo);
                 unitOfWork.PersistirTransacao();
-
-                Cliente.Executar<IServicoCalculoFrequencia>(c => c.CalcularFrequenciaPorTurma(codigosAlunosCompensacao, periodo.PeriodoFim, compensacaoDto.TurmaId, compensacaoDto.DisciplinaId));
             }
             catch (Exception)
             {
                 unitOfWork.Rollback();
                 throw;
             }
+
+            if (codigosAlunosCompensacao.Any())
+                Cliente.Executar<IServicoCalculoFrequencia>(c => c.CalcularFrequenciaPorTurma(codigosAlunosCompensacao, periodo.PeriodoFim, compensacaoDto.TurmaId, compensacaoDto.DisciplinaId));
+
+            Cliente.Executar<IServicoNotificacaoFrequencia>(c => c.NotificarCompensacaoAusencia(compensacao.Id));
         }
 
         private async Task ConsistirAlunos(IEnumerable<CompensacaoAusenciaAlunoDto> alunos, long compensacaoId, int bimestre)
@@ -320,12 +327,14 @@ namespace SME.SGP.Dominio.Servicos
                     // Exclui dependencias
                     var alunosDaCompensacao = compensacoesAlunosExcluir.Where(c => c.CompensacaoAusenciaId == compensacaoExcluir.Id).ToList();
                     alunosDaCompensacao.ForEach(c => repositorioCompensacaoAusenciaAluno.Salvar(c));
-
+                    
                     compensacoesDisciplinasExcluir.Where(c => c.CompensacaoAusenciaId == compensacaoExcluir.Id).ToList()
                         .ForEach(c => repositorioCompensacaoAusenciaDisciplinaRegencia.Salvar(c));
 
                     // Exclui compensação
                     await repositorioCompensacaoAusencia.SalvarAsync(compensacaoExcluir);
+                    // Excluir notificações
+                    repositorioNotificacaoCompensacaoAusencia.Excluir(compensacaoExcluir.Id);
 
                     unitOfWork.PersistirTransacao();
 
