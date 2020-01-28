@@ -327,10 +327,10 @@ namespace SME.SGP.Dados.Repositorios
             query.AppendLine("  or(e.dre_id is null ");
             query.AppendLine("    and e.ue_id is null)) ");
 
-            if (dreId != "0")
+            if (!string.IsNullOrEmpty(dreId) && dreId != "0")
                 query.AppendLine($"and e.dre_id = @dreId");
 
-            if (ueId != "0")
+            if (!string.IsNullOrEmpty(ueId) && ueId != "0")
                 query.AppendLine($"and e.ue_id  = @ueId");
 
             if (tipoCalendarioId.HasValue)
