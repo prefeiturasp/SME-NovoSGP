@@ -156,7 +156,7 @@ namespace SME.SGP.Dominio.Servicos
                 foreach (var gestor in gestores)
                 {
                     var notificacaoId = NotificarCompensacaoAusencia(compensacaoId
-                            , gestor
+                            , gestor.Usuario
                             , professor.Nome
                             , disciplinaEOL
                             , turma.CodigoTurma
@@ -273,7 +273,7 @@ namespace SME.SGP.Dominio.Servicos
                                                             turmasDRE.Key.CodigoDre,
                                                             turmasDRE.Key.Nome,
                                                             disciplinaEOL.Nome,
-                                                            gestor.Id,
+                                                            gestor.Usuario.Id,
                                                             alunosDto);
                                     }
                                 });
@@ -358,7 +358,7 @@ namespace SME.SGP.Dominio.Servicos
             return notificacao.Id;
         }
 
-        private IEnumerable<Usuario> BuscaGestoresUe(string codigoUe)
+        private IEnumerable<(Cargo? Cargo, Usuario Usuario)> BuscaGestoresUe(string codigoUe)
         {
             // Buscar gestor da Ue
             var funcionariosRetornoEol = servicoNotificacao.ObterFuncionariosPorNivel(codigoUe, Cargo.CP);
