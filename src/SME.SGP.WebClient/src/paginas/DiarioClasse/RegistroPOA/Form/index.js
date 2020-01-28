@@ -325,12 +325,12 @@ function RegistroPOAForm({ match }) {
                 </Row>
                 <Row className="row">
                   <Grid cols={12}>
-                    <Label text="Descrição" />
+                    <Label text="Registro das atividades realizadas junto aos professores ao longo do bimestre, considerando a análise e o acompanhamento do planejamento docente" />
                     <TextEditor
                       className="form-control w-100"
                       ref={textEditorRef}
                       id="descricao"
-                      alt="Descrição"
+                      alt="Registro das atividades realizadas junto aos professores ao longo do bimestre, considerando a análise e o acompanhamento do planejamento docente"
                       name="descricao"
                       onBlur={valor => setDescricao(valor)}
                       value={descricao}
