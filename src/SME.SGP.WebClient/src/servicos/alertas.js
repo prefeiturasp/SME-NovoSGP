@@ -25,6 +25,8 @@ const exibirAlerta = (tipo, mensagem, fixo = false) => {
     }, 5000);
   }
   window.scroll(0, 0);
+
+  return id;
 };
 
 const sucesso = mensagem => {
@@ -78,7 +80,7 @@ const erroMensagem = (titulo, texto) => {
   });
 };
 
-const confirmar = (titulo, texto, textoNegrito, textoOk, textoCancelar) => {
+const confirmar = (titulo, texto, textoNegrito, textoOk, textoCancelar, primeiroExibirTextoNegrito) => {
   return new Promise((resolve, reject) => {
     store.dispatch(
       alertaConfirmar(
@@ -87,7 +89,8 @@ const confirmar = (titulo, texto, textoNegrito, textoOk, textoCancelar) => {
         textoNegrito,
         resolve,
         textoOk,
-        textoCancelar
+        textoCancelar,
+        primeiroExibirTextoNegrito
       )
     );
   });

@@ -103,7 +103,7 @@ namespace SME.SGP.Aplicacao.Teste.Comandos
         public async void Deve_Incluir_Plano_Aula_Sem_Objetivos_Modalidade_EJA()
         {
             //ARRANGE
-            repositorioAbrangencia.Setup(a => a.ObterAbrangenciaTurma(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<Guid>()))
+            repositorioAbrangencia.Setup(a => a.ObterAbrangenciaTurma(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<Guid>(), It.IsAny<bool>()))
                 .Returns(Task.FromResult(new AbrangenciaFiltroRetorno()
                 {
                     Ano = 2019,
@@ -183,7 +183,7 @@ namespace SME.SGP.Aplicacao.Teste.Comandos
                 Modalidade = Modalidade.Fundamental
             };
 
-            repositorioAbrangencia.Setup(a => a.ObterAbrangenciaTurma(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<Guid>()))
+            repositorioAbrangencia.Setup(a => a.ObterAbrangenciaTurma(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<Guid>(), It.IsAny<bool>()))
                 .Returns(Task.FromResult(abrangencia));
         }
     }

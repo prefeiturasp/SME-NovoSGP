@@ -51,11 +51,12 @@ namespace SME.SGP.Dados.Repositorios
             var query = @"select o.*
                    from plano_anual pa 
                   inner join objetivo_aprendizagem_plano o on o.plano_id = pa.id
+                  inner join componente_curricular cc on cc.id = o.componente_curricular_id
                   where pa.ano = @ano
                     and pa.bimestre = @bimestre
                     and pa.componente_curricular_eol_id = @componenteCurricularId
                     and pa.turma_id = @turmaId
-                    and o.componente_curricular_id = @disciplinaId";
+                    and cc.codigo_eol = @disciplinaId";
 
             return database.Conexao.Query<ObjetivoAprendizagemPlano>(query, new { ano, bimestre, componenteCurricularId, turmaId, disciplinaId });
         }

@@ -17,9 +17,12 @@ namespace SME.SGP.Aplicacao
         private readonly IConsultasCompensacaoAusenciaAluno consultasCompensacaoAusenciaAluno;
         private readonly IConsultasCompensacaoAusenciaDisciplinaRegencia consultasCompensacaoAusenciaDisciplinaRegencia;
         private readonly IConsultasFrequencia consultasFrequencia;
+        private readonly IConsultasProfessor consultasProfessor;
+        private readonly IConsultasUe consultasUe;
         private readonly IRepositorioTurma repositorioTurma;
         private readonly IRepositorioParametrosSistema repositorioParametrosSistema;
         private readonly IServicoEOL servicoEOL;
+        private readonly IServicoUsuario servicoUsuario;
 
         public ConsultasCompensacaoAusencia(IRepositorioCompensacaoAusencia repositorioCompensacaoAusencia, 
                                             IConsultasCompensacaoAusenciaAluno consultasCompensacaoAusenciaAluno,
@@ -28,15 +31,21 @@ namespace SME.SGP.Aplicacao
                                             IRepositorioTurma repositorioTurma,
                                             IRepositorioParametrosSistema repositorioParametrosSistema,
                                             IServicoEOL servicoEOL, 
-                                            IContextoAplicacao contextoAplicacao) : base(contextoAplicacao)
+                                            IServicoUsuario servicoUsuario,
+                                            IContextoAplicacao contextoAplicacao, 
+                                            IConsultasProfessor consultasProfessor, 
+                                            IConsultasUe consultasUe) : base(contextoAplicacao)
         {
             this.repositorioCompensacaoAusencia = repositorioCompensacaoAusencia ?? throw new ArgumentNullException(nameof(repositorioCompensacaoAusencia));
             this.consultasCompensacaoAusenciaAluno = consultasCompensacaoAusenciaAluno ?? throw new ArgumentNullException(nameof(consultasCompensacaoAusenciaAluno));
             this.consultasCompensacaoAusenciaDisciplinaRegencia = consultasCompensacaoAusenciaDisciplinaRegencia ?? throw new ArgumentNullException(nameof(consultasCompensacaoAusenciaDisciplinaRegencia));
             this.consultasFrequencia = consultasFrequencia ?? throw new ArgumentNullException(nameof(consultasFrequencia));
+            this.consultasProfessor = consultasProfessor ?? throw new ArgumentNullException(nameof(consultasProfessor));
             this.repositorioTurma = repositorioTurma ?? throw new ArgumentNullException(nameof(repositorioTurma));
             this.repositorioParametrosSistema = repositorioParametrosSistema ?? throw new ArgumentNullException(nameof(repositorioParametrosSistema));
             this.servicoEOL = servicoEOL ?? throw new ArgumentNullException(nameof(servicoEOL));
+            this.servicoUsuario = servicoUsuario ?? throw new ArgumentNullException(nameof(servicoUsuario));
+            this.consultasUe = consultasUe ?? throw new ArgumentNullException(nameof(consultasUe));
         }
 
         public async Task<PaginacaoResultadoDto<CompensacaoAusenciaListagemDto>> ListarPaginado(string turmaId, string disciplinaId, int bimestre, string nomeAtividade, string nomeAluno)
@@ -193,5 +202,24 @@ namespace SME.SGP.Aplicacao
                 AlteradoEm = compensacaoAusencia.AlteradoEm,
                 Migrado = compensacaoAusencia.Migrado
             };
+
+        public async Task<IEnumerable<TurmaRetornoDto>> ObterTurmasParaCopia(string turmaOrigemId)
+        {
+            var professorRf = servicoUsuario.ObterRf();
+            var turmaOrigem = repositorioTurma.ObterPorId(turmaOrigemId);
+
+            var ue = await consultasUe.ObterPorId(turmaOrigem.UeId);
+            var turmas = servicoEOL.ObterListaTurmasPorProfessor(professorRf);
+
+            return turmas.Where(t => t.CodTurma.ToString() != turmaOrigem.CodigoTurma
+                            && t.CodEscola == ue.CodigoUe 
+                            && t.AnoLetivo == turmaOrigem.AnoLetivo 
+                            && t.Ano == turmaOrigem.Ano)
+                    .Select(t => new TurmaRetornoDto()
+                    {
+                        Codigo = t.CodTurma.ToString(),
+                        Nome = t.NomeTurma
+                    });
+        }
     }
 }
