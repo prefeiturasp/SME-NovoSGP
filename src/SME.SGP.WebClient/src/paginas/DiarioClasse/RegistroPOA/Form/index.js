@@ -160,6 +160,7 @@ function RegistroPOAForm({ match }) {
     );
     if (confirmou) {
       form.resetForm();
+      setDescricao('');
       setModoEdicao(false);
     }
   };

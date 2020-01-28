@@ -8,11 +8,19 @@ function MesesDropDown({ form, label, desabilitado, name }) {
   const listaMeses = [
     {
       valor: '1',
-      desc: '1',
+      desc: '1º Bimestre',
     },
     {
       valor: '2',
-      desc: '2',
+      desc: '2º Bimestre',
+    },
+    {
+      valor: '3',
+      desc: '3º Bimestre',
+    },
+    {
+      valor: '4',
+      desc: '4º Bimestre',
     },
   ];
 
