@@ -75,8 +75,8 @@ function RegistroPOAForm({ match }) {
       bimestre: Yup.number().required('Campo obrigatório!'),
       titulo: Yup.string().required('O campo "Título" é obrigatório!'),
       professorRf: Yup.number()
-        .typeError('Informar um número inteiro')
-        .required('Campo obrigatório'),
+        .typeError('Informar um número inteiro!')
+        .required('Campo obrigatório!'),
     });
   };
 
@@ -86,8 +86,8 @@ function RegistroPOAForm({ match }) {
       form.setFieldTouched(campo, true, true);
     });
 
-    if (form.values.descricao === '<p><br></p>') {
-      erro('É necessário informar a descrição');
+    if (!form.values.descricao.length) {
+      erro('O campo "Descrição" é obrigatório!');
       return;
     }
 
