@@ -12,7 +12,7 @@ import { confirmar, erros, sucesso } from '~/servicos/alertas';
 import api from '~/servicos/api';
 import history from '~/servicos/history';
 import { CampoBimestre } from './periodoFechamentoReaberuraLista.css';
-import periodo from '~/dtos/periodo';
+import modalidadeTipoCalendario from '~/dtos/modalidadeTipoCalendario';
 
 const PeriodoFechamentoReaberturaLista = () => {
   const [listaTipoCalendarioEscolar, setListaTipoCalendarioEscolar] = useState(
@@ -210,7 +210,7 @@ const PeriodoFechamentoReaberturaLista = () => {
 
   const onChangeTipoCalendario = id => {
     const tipo = listaTipoCalendarioEscolar.find(t => t.id === id);
-    if (tipo.periodo === periodo.Anual) {
+    if (tipo.modalidade === modalidadeTipoCalendario.FUNDAMENTAL_MEDIO) {
       setColunasBimestre(getColunasBimestreAnual);
     } else {
       setColunasBimestre(getColunasBimestreSemestral);
