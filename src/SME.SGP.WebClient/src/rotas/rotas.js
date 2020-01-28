@@ -564,6 +564,16 @@ rotas.set(`${RotasDto.COMPENSACAO_AUSENCIA}/editar/:id`, {
   chavePermissao: RotasDto.COMPENSACAO_AUSENCIA,
 });
 
+// rotas.set(`${RotasDto.FECHAMENTO_BIMESTRE}`, {
+//   breadcrumbName: 'Fechamento',
+//   parent: RotasDto.COMPENSACAO_AUSENCIA,
+//   component: CompensacaoAusenciaForm,
+//   exact: true,
+//   tipo: RotasTipo.EstruturadaAutenticada,
+//   temPermissionamento: true,
+//   chavePermissao: RotasDto.COMPENSACAO_AUSENCIA,
+// });
+
 const rotasArray = [];
 for (var [key, value] of rotas) {
   const rota = value;
