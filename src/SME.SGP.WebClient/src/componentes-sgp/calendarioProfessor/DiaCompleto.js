@@ -238,22 +238,6 @@ const DiaCompleto = props => {
                           steady
                         />
                       </Div>
-                      {(evento.tipoEvento === TiposEventoAulaDTO.Aula ||
-                        evento.tipoEvento === TiposEventoAulaDTO.CJ) &&
-                        evento.dadosAula && (
-                          <Div cols={1} className="px-1">
-                            <Botao
-                              id={shortid.generate()}
-                              label={window
-                                .moment(evento.dadosAula.horario, 'LT')
-                                .format('LT')}
-                              color={Colors.CinzaBotao}
-                              className="w-100 px-2"
-                              border
-                              steady
-                            />
-                          </Div>
-                        )}
                       <Div
                         cols={
                           evento.tipoEvento === TiposEventoAulaDTO.Aula ||
