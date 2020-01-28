@@ -40,6 +40,17 @@ namespace SME.SGP.Aplicacao
             return await servicoFechamentoReabertura.Alterar(fechamentoReabertura, dataInicioAnterior, dataFimAnterior);
         }
 
+        public async Task<string> Excluir(long[] ids)
+        {
+            var fechamentos = await repositorioFechamentoReabertura.Listar(0, 0, 0, ids);
+
+            foreach (var fechamento in fechamentos)
+            {
+            }
+
+            return "ok";
+        }
+
         public async Task<string> Salvar(FechamentoReaberturaPersistenciaDto fechamentoReaberturaPersistenciaDto)
         {
             FechamentoReabertura entidade = TransformarDtoEmEntidadeParaPersistencia(fechamentoReaberturaPersistenciaDto);

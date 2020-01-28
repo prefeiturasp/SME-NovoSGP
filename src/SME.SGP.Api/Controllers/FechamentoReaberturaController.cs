@@ -23,6 +23,16 @@ namespace SME.SGP.Api.Controllers
             return Ok(await comandosFechamentoReabertura.Alterar(fechamentoReaberturaPersistenciaDto, id));
         }
 
+        [HttpDelete]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 601)]
+        [ProducesResponseType(typeof(string), 200)]
+        [Permissao(Permissao.PFR_E, Policy = "Bearer")]
+        public async Task<IActionResult> Excluir([FromServices] IComandosFechamentoReabertura comandosFechamentoReabertura, [FromQuery]long[] ids)
+        {
+            return Ok(await comandosFechamentoReabertura.Excluir(ids));
+        }
+
         [HttpGet]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [ProducesResponseType(typeof(RetornoBaseDto), 601)]
