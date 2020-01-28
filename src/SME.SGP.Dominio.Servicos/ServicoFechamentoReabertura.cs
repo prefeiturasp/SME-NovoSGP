@@ -31,7 +31,7 @@ namespace SME.SGP.Dominio.Servicos
 
         public async Task<string> Alterar(FechamentoReabertura fechamentoReabertura, DateTime dataInicialAnterior, DateTime dataFimAnterior)
         {
-            var fechamentoReaberturas = await repositorioFechamentoReabertura.Listar(fechamentoReabertura.TipoCalendarioId, null, null);
+            var fechamentoReaberturas = await repositorioFechamentoReabertura.Listar(fechamentoReabertura.TipoCalendarioId, null, null, null);
 
             var fechamentoReaberturasParaVerificar = fechamentoReaberturas.Where(a => a.Id != fechamentoReabertura.Id);
             var fechamentoReaberturasParaAtualizar = fechamentoReaberturas.Where(a => a.Id != fechamentoReabertura.Id && fechamentoReabertura.Inicio > a.Inicio || a.Fim > fechamentoReabertura.Fim);
@@ -68,7 +68,7 @@ namespace SME.SGP.Dominio.Servicos
 
         public async Task<string> Salvar(FechamentoReabertura fechamentoReabertura)
         {
-            var fechamentoReaberturas = await repositorioFechamentoReabertura.Listar(fechamentoReabertura.TipoCalendarioId, null, null);
+            var fechamentoReaberturas = await repositorioFechamentoReabertura.Listar(fechamentoReabertura.TipoCalendarioId, null, null, null);
 
             var usuarioAtual = await servicoUsuario.ObterUsuarioLogado();
             fechamentoReabertura.PodeSalvar(fechamentoReaberturas, usuarioAtual);
@@ -133,7 +133,7 @@ namespace SME.SGP.Dominio.Servicos
             if (fechamentoReabertura.EhParaDre())
             {
                 var adminsSgpDre = servicoEOL.ObterAdministradoresSGP(fechamentoReabertura.Dre.CodigoDre).Result;
-                if (adminsSgpDre != null || !adminsSgpDre.Any())
+                if (adminsSgpDre != null || adminsSgpDre.Any())
                 {
                     foreach (var adminSgpUe in adminsSgpDre)
                     {

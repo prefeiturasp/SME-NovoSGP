@@ -25,7 +25,7 @@ namespace SME.SGP.Dados.Repositorios
             database.Conexao.Execute("DELETE FROM FECHAMENTO_REABERTURA_BIMESTRE FRB WHERE FRB.FECHAMENTO_REABERTURA_ID = @id", new { id });
         }
 
-        public async Task<IEnumerable<FechamentoReabertura>> Listar(long tipoCalendarioId, long? dreId, long? ueId)
+        public async Task<IEnumerable<FechamentoReabertura>> Listar(long tipoCalendarioId, long? dreId, long? ueId, long[] ids = null)
         {
             var query = new StringBuilder();
             MontaQueryCabecalhoCompleto(query);
@@ -34,7 +34,7 @@ namespace SME.SGP.Dados.Repositorios
 
             var lookup = new Dictionary<long, FechamentoReabertura>();
 
-            database.Conexao.Query<FechamentoReabertura, FechamentoReaberturaBimestre, Ue, Dre, TipoCalendario, FechamentoReabertura>(query.ToString(), (fechamento, bimestre, ue, dre, tipoCalendario) =>
+            await database.Conexao.QueryAsync<FechamentoReabertura, FechamentoReaberturaBimestre, Ue, Dre, TipoCalendario, FechamentoReabertura>(query.ToString(), (fechamento, bimestre, ue, dre, tipoCalendario) =>
             {
                 FechamentoReabertura fechamentoReabertura;
                 if (!lookup.TryGetValue(fechamento.Id, out fechamentoReabertura))
@@ -75,7 +75,7 @@ namespace SME.SGP.Dados.Repositorios
             if (paginacao.QuantidadeRegistros != 0)
                 query.AppendFormat(" OFFSET {0} ROWS FETCH NEXT {1} ROWS ONLY ", paginacao.QuantidadeRegistrosIgnorados, paginacao.QuantidadeRegistros);
 
-            database.Conexao.Query<FechamentoReabertura, FechamentoReaberturaBimestre, Ue, Dre, TipoCalendario, FechamentoReabertura>(query.ToString(), (fechamento, bimestre, ue, dre, tipoCalendario) =>
+            await database.Conexao.QueryAsync<FechamentoReabertura, FechamentoReaberturaBimestre, Ue, Dre, TipoCalendario, FechamentoReabertura>(query.ToString(), (fechamento, bimestre, ue, dre, tipoCalendario) =>
             {
                 FechamentoReabertura fechamentoReabertura;
                 if (!lookup.TryGetValue(fechamento.Id, out fechamentoReabertura))
@@ -190,7 +190,7 @@ namespace SME.SGP.Dados.Repositorios
             MontaQueryListarWhere(query, tipoCalendarioId, 0, 0, dreCodigo, ueCodigo);
         }
 
-        private void MontaQueryListarWhere(StringBuilder query, long tipoCalendarioId, long? dreId, long? ueId, string dreCodigo = "", string ueCodigo = "")
+        private void MontaQueryListarWhere(StringBuilder query, long tipoCalendarioId, long? dreId, long? ueId, string dreCodigo = "", string ueCodigo = "", long[] ids = null)
         {
             query.AppendLine("where fr.excluido = false and fr.status <> 3");
 
@@ -208,6 +208,9 @@ namespace SME.SGP.Dados.Repositorios
 
             if (!string.IsNullOrEmpty(ueCodigo))
                 query.AppendLine("and ue.ue_id = @ueCodigo");
+
+            if (ids != null && ids.Any())
+                query.AppendLine("and fr.id = ANY(@ids)");
         }
     }
 }

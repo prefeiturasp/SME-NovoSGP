@@ -105,6 +105,17 @@ namespace SME.SGP.Dominio
             return string.Join(",", bimestres.Select(a => $"{a.Bimestre.ToString()}º").ToArray());
         }
 
+        public bool[] ObterBimestresSelecionados()
+        {
+            bool[] bimestresArray = new bool[TipoCalendario.QuantidadeDeBimestres()];
+
+            foreach (var bimestre in bimestres)
+            {
+                bimestresArray[bimestre.Bimestre - 1] = true;
+            }
+            return bimestresArray;
+        }
+
         public void PodeSalvar(IEnumerable<FechamentoReabertura> fechamentosCadastrados, Usuario usuario)
         {
             if (Inicio > Fim)
