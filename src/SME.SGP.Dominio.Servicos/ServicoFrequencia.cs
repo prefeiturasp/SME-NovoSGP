@@ -123,7 +123,7 @@ namespace SME.SGP.Dominio.Servicos
 
         private async Task<IEnumerable<AlunoPorTurmaResposta>> ObterAlunos(Aula aula)
         {
-            var alunos = await servicoEOL.ObterAlunosPorTurma(aula.TurmaId);
+            var alunos = await servicoEOL.ObterAlunosPorTurma(aula.TurmaId, aula.DataAula.Year);
             if (alunos == null || !alunos.Any())
             {
                 throw new NegocioException("Não foram encontrados alunos para a turma informada.");
