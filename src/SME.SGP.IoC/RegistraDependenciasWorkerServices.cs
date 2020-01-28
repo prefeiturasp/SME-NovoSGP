@@ -59,6 +59,7 @@ namespace SME.SGP.IoC
             services.TryAddScopedWorkerService<IComandosCompensacaoAusenciaAluno, ComandosCompensacaoAusenciaAluno>();
             services.TryAddScopedWorkerService<IComandosCompensacaoAusenciaDisciplinaRegencia, ComandosCompensacaoAusenciaDisciplinaRegencia>();
             services.TryAddScopedWorkerService<IComandosProcessoExecutando, ComandosProcessoExecutando>();
+            services.TryAddScopedWorkerService<IComandosFechamento, ComandosFechamento>();
         }
 
         private static void RegistrarConsultas(IServiceCollection services)
@@ -103,6 +104,7 @@ namespace SME.SGP.IoC
             services.TryAddScopedWorkerService<IConsultasUe, ConsultasUe>();
             services.TryAddScopedWorkerService<IConsultasEventosAulasCalendario, ConsultasEventosAulasCalendario>();
             services.TryAddScopedWorkerService<IConsultasProcessoExecutando, ConsultasProcessoExecutando>();
+            services.TryAddScopedWorkerService<IConsultasFechamento, ConsultasFechamento>();
         }
 
         private static void RegistrarContextos(IServiceCollection services)
@@ -172,6 +174,8 @@ namespace SME.SGP.IoC
             services.TryAddScopedWorkerService<IRepositorioWorkflowAprovacaoNivelNotificacao, RepositorioWorkflowAprovaNivelNotificacao>();
             services.TryAddScopedWorkerService<IRepositorioWorkflowAprovacaoNivelUsuario, RepositorioWorkflowAprovacaoNivelUsuario>();
             services.TryAddScopedWorkerService<IRepositorioProcessoExecutando, RepositorioProcessoExecutando>();
+            services.TryAddScopedWorkerService<IRepositorioFechamento, RepositorioFechamento>();
+            services.TryAddScopedWorkerService<IRepositorioEventoFechamento, RepositorioEventoFechamento>();
         }
 
         private static void RegistrarServicos(IServiceCollection services)
@@ -201,6 +205,7 @@ namespace SME.SGP.IoC
             services.TryAddScopedWorkerService<IServicoCompensacaoAusencia, ServicoCompensacaoAusencia>();
             services.TryAddScopedWorkerService<IServicoAtribuicaoCJ, ServicoAtribuicaoCJ>();
             services.TryAddScopedWorkerService<IServicoDeNotasConceitos, ServicoDeNotasConceitos>();
+            services.TryAddScopedWorkerService<IServicoFechamento, ServicoFechamento>();
         }
 
         private static void ResgistraDependenciaHttp(IServiceCollection services)
