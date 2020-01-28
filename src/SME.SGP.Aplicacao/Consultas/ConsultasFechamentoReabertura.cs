@@ -39,7 +39,7 @@ namespace SME.SGP.Aplicacao
         {
             return new FechamentoReaberturaListagemDto()
             {
-                Bimestres = item.Bimestres.Select(a => a.Bimestre).ToArray(),
+                Bimestres = item.ObterBimestresSelecionados(),
                 DataInicio = item.Inicio,
                 DataFim = item.Fim,
                 Descricao = item.Descricao,
@@ -75,7 +75,7 @@ namespace SME.SGP.Aplicacao
         {
             return new FechamentoReaberturaRetornoDto()
             {
-                Bimestres = fechamentoReabertura.Bimestres.Select(a => a.Bimestre).ToArray(),
+                Bimestres = fechamentoReabertura.ObterBimestresSelecionados(),
                 DataInicio = fechamentoReabertura.Inicio,
                 DataFim = fechamentoReabertura.Fim,
                 Descricao = fechamentoReabertura.Descricao,
