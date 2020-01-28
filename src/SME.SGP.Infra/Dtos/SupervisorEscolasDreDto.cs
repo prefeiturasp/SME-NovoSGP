@@ -6,5 +6,6 @@
         public string EscolaId { get; set; }
         public long Id { get; set; }
         public string SupervisorId { get; set; }
+        public bool Excluido { get; set; }
     }
 }
