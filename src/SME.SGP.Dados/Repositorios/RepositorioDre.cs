@@ -91,17 +91,6 @@ namespace SME.SGP.Dados.Repositorios
             return resultado;
         }
 
-        public IEnumerable<Dre> MaterializarCodigosDre(string[] idDres, out string[] naoEncontradas)
-        {
-            List<Dre> resultado = new List<Dre>();
-
-            var armazenados = contexto.Conexao.Query<Dre>(QuerySincronizacao.Replace("#ids", string.Join(",", idDres.Select(x => $"'{x}'"))));
-
-            naoEncontradas = idDres.Where(x => !armazenados.Select(y => y.CodigoDre).Contains(x)).ToArray();
-
-            return armazenados;
-        }
-
         public Dre ObterPorId(long id)
             => contexto.Conexao.QueryFirst<Dre>("select * from public.dre where id = @id", new { id });
     }
