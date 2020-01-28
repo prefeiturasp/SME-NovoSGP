@@ -7,6 +7,8 @@ namespace SME.SGP.Aplicacao
     {
         Task<string> Alterar(FechamentoReaberturaAlteracaoDto fechamentoReaberturaPersistenciaDto, long id);
 
+        Task<string> Excluir(long[] ids);
+
         Task<string> Salvar(FechamentoReaberturaPersistenciaDto fechamentoReaberturaPersistenciaDto);
     }
 }
