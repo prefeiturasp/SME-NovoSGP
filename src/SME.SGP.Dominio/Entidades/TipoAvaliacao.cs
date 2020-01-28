@@ -2,6 +2,7 @@
 {
     public class TipoAvaliacao : EntidadeBase
     {
+        public int AvaliacoesNecessariasPorBimestre { get; set; }
         public string Descricao { get; set; }
         public bool Excluido { get; set; }
         public string Nome { get; set; }
