@@ -1,6 +1,6 @@
 import 'moment/locale/pt-br';
 
-import { DatePicker, TimePicker, Icon } from 'antd';
+import { DatePicker, TimePicker, Icon, Input } from 'antd';
 import locale from 'antd/es/date-picker/locale/pt_BR';
 import { Field } from 'formik';
 import * as moment from 'moment';
@@ -89,6 +89,7 @@ const CampoData = ({
   temErro,
   mensagemErro,
   carregando,
+  array,
 }) => {
   const habilitarDatas = dataAtual => {
     let retorno = true;
@@ -140,29 +141,40 @@ const CampoData = ({
 
   const campoDataAntComValidacoes = () => {
     return (
-      <Field
-        disabled={desabilitado}
-        locale={locale}
-        format={formatoData}
-        component={DatePicker}
-        placeholder={placeholder}
-        // suffixIcon={<i className="fas fa-calendar-alt spin" />}
-        suffixIcon={Icone}
-        name={name}
-        id={id || name}
-        onBlur={executaOnBlur}
-        className={
-          form ? `${possuiErro() ? 'is-invalid' : ''} ${className || ''}` : ''
-        }
-        onChange={valorData => {
-          form.setFieldValue(name, valorData || '');
-          onChange(valorData);
-          form.setFieldTouched(name, true, true);
-        }}
-        value={form.values[name] || null}
-        disabledDate={habilitarDatas}
-        showToday={false}
-      />
+      <Field name={name} id={name}>
+        {({
+          field: { value },
+          form: { setFieldValue, setFieldTouched, errors },
+        }) => (
+          <div>
+            <div>
+              <DatePicker
+                disabled={desabilitado}
+                format={formatoData}
+                locale={locale}
+                placeholder={placeholder}
+                suffixIcon={Icone}
+                name={name}
+                id={id || name}
+                onBlur={executaOnBlur}
+                className={
+                  form
+                    ? `${possuiErro() ? 'is-invalid' : ''} ${className || ''}`
+                    : ''
+                }
+                onChange={valorData => {
+                  setFieldValue(name, valorData || '');
+                  onChange(valorData);
+                  setFieldTouched(name, true, true);
+                }}
+                disabledDate={habilitarDatas}
+                showToday={false}
+                value={value || null}
+              />
+            </div>
+          </div>
+        )}
+      </Field>
     );
   };
 
@@ -257,6 +269,7 @@ CampoData.propTypes = {
   temErro: PropTypes.bool,
   mensagemErro: PropTypes.string,
   carregando: PropTypes.bool,
+  array: PropTypes.bool,
 };
 
 CampoData.defaultProps = {
@@ -276,6 +289,7 @@ CampoData.defaultProps = {
   temErro: null,
   mensagemErro: null,
   carregando: false,
+  array: false,
 };
 
 const momentSchema = new MomentSchema();

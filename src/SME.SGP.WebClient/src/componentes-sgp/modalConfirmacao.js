@@ -22,6 +22,7 @@ const ContainerBotoes = styled.div`
 const ModalConfirmacao = () => {
   const dispatch = useDispatch();
   const confirmacao = useSelector(state => state.alertas.confirmacao);
+  const { primeiroExibirTextoNegrito } = confirmacao;
 
   const fecharConfirmacao = resultado => {
     if (confirmacao) confirmacao.resolve(resultado);
@@ -38,14 +39,15 @@ const ModalConfirmacao = () => {
         footer={[
           <ContainerBotoes key={shortid.generate()}>
             <Button
+              id={shortid.generate()}
               key={shortid.generate()}
               onClick={() => fecharConfirmacao(true)}
-              S
               label={confirmacao.textoOk}
               color={Colors.Azul}
               border
             />
             <Button
+              id={shortid.generate()}
               key={shortid.generate()}
               onClick={() => fecharConfirmacao(false)}
               label={confirmacao.textoCancelar}
@@ -55,13 +57,15 @@ const ModalConfirmacao = () => {
           </ContainerBotoes>,
         ]}
       >
-        {confirmacao.texto && Array.isArray(confirmacao.texto)
-          ? confirmacao.texto.map(item => (
-              <div key={shortid.generate()}>{item}</div>
-            ))
-          : confirmacao.texto}
-        {confirmacao.texto ? <br /> : ''}
-        <b>{confirmacao.textoNegrito}</b>
+        {primeiroExibirTextoNegrito ? <b>{confirmacao.textoNegrito}</b> : ''}
+        <div className="mb-2 mt-2">
+          {confirmacao.texto && Array.isArray(confirmacao.texto)
+            ? confirmacao.texto.map(item => (
+                <div key={shortid.generate()}>{item}</div>
+              ))
+            : confirmacao.texto}
+        </div>
+        {!primeiroExibirTextoNegrito ? <b>{confirmacao.textoNegrito}</b> : ''}
       </Modal>
     </ContainerModal>
   );

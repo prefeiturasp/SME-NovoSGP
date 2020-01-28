@@ -96,7 +96,7 @@ namespace SME.SGP.Aplicacao.Teste.Consultas
                 TurmaId = "1"
             };
 
-            consultasAula.Setup(a => a.BuscarPorId(It.IsAny<long>()))
+            consultasAula.Setup(a => a.BuscarPorId(It.IsAny<long>()).Result)
                 .Returns(aula);
 
             // Plano anual
@@ -108,7 +108,7 @@ namespace SME.SGP.Aplicacao.Teste.Consultas
                 }
             };
 
-            consultasPlanoAnual.Setup(a => a.ObterPorEscolaTurmaAnoEBimestre(It.IsAny<FiltroPlanoAnualDto>()))
+            consultasPlanoAnual.Setup(a => a.ObterPorEscolaTurmaAnoEBimestre(It.IsAny<FiltroPlanoAnualDto>(), It.IsAny<bool>()))
                 .Returns(Task.FromResult(planoAnual));
         }
     }

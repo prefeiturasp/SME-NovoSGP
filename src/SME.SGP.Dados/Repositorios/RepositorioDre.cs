@@ -28,6 +28,22 @@ namespace SME.SGP.Dados.Repositorios
             return contexto.Conexao.Query<Dre>(query, new { dresCodigos });
         }
 
+        public IEnumerable<Dre> MaterializarCodigosDre(string[] idDres, out string[] naoEncontradas)
+        {
+            List<Dre> resultado = new List<Dre>();
+
+            var armazenados = contexto.Conexao.Query<Dre>(QuerySincronizacao.Replace("#ids", string.Join(",", idDres.Select(x => $"'{x}'"))));
+
+            naoEncontradas = idDres.Where(x => !armazenados.Select(y => y.CodigoDre).Contains(x)).ToArray();
+
+            return armazenados;
+        }
+
+        public Dre ObterPorCodigo(string dreId)
+        {
+            return contexto.QueryFirstOrDefault<Dre>("select * from dre where dre_id = @dreId", new { dreId });
+        }
+
         public IEnumerable<Dre> ObterTodas()
         {
             return contexto.Conexao.Query<Dre>("select id, dre_id, abreviacao, nome from dre");

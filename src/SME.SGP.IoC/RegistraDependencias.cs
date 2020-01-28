@@ -59,6 +59,8 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IComandosCompensacaoAusenciaAluno, ComandosCompensacaoAusenciaAluno>();
             services.TryAddScoped<IComandosCompensacaoAusenciaDisciplinaRegencia, ComandosCompensacaoAusenciaDisciplinaRegencia>();
             services.TryAddScoped<IComandosProcessoExecutando, ComandosProcessoExecutando>();
+            services.TryAddScoped<IComandosEventoFechamento, ComandosEventoFechamento>();
+            services.TryAddScoped<IComandosFechamento, ComandosFechamento>();
         }
 
         private static void RegistrarConsultas(IServiceCollection services)
@@ -103,6 +105,8 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IConsultasCompensacaoAusenciaAluno, ConsultasCompensacaoAusenciaAluno>();
             services.TryAddScoped<IConsultasCompensacaoAusenciaDisciplinaRegencia, ConsultasCompensacaoAusenciaDisciplinaRegencia>();
             services.TryAddScoped<IConsultasProcessoExecutando, ConsultasProcessoExecutando>();
+            services.TryAddScoped<IConsultasFechamento, ConsultasFechamento>();
+            services.TryAddScoped<IConsultasEventoFechamento, ConsultasEventoFechamento>();
         }
 
         private static void RegistrarContextos(IServiceCollection services)
@@ -174,6 +178,8 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IRepositorioCompensacaoAusenciaDisciplinaRegencia, RepositorioCompensacaoAusenciaDisciplinaRegencia>();
             services.TryAddScoped<IRepositorioProcessoExecutando, RepositorioProcessoExecutando>();
             services.TryAddScoped<IRepositorioNotificacaoCompensacaoAusencia, RepositorioNotificacaoCompensacaoAusencia>();
+            services.TryAddScoped<IRepositorioFechamento, RepositorioFechamento>();
+            services.TryAddScoped<IRepositorioEventoFechamento, RepositorioEventoFechamento>();
         }
 
         private static void RegistrarServicos(IServiceCollection services)
@@ -203,6 +209,7 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IServicoEventoMatricula, ServicoEventoMatricula>();
             services.TryAddScoped<IServicoAluno, ServicoAluno>();
             services.TryAddScoped<IServicoCompensacaoAusencia, ServicoCompensacaoAusencia>();
+            services.TryAddScoped<IServicoFechamento, ServicoFechamento>();
         }
     }
 }

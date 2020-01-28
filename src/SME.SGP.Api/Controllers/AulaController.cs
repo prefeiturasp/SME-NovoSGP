@@ -4,7 +4,6 @@ using SME.SGP.Api.Filtros;
 using SME.SGP.Aplicacao;
 using SME.SGP.Dominio;
 using SME.SGP.Infra;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Api.Controllers
@@ -30,9 +29,9 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(AulaConsultaDto), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [Permissao(Permissao.CP_C, Policy = "Bearer")]
-        public IActionResult BuscarPorId(long id, [FromServices]IConsultasAula consultas)
+        public async Task<IActionResult> BuscarPorId(long id, [FromServices]IConsultasAula consultas)
         {
-            var aula = consultas.BuscarPorId(id);
+            var aula = await consultas.BuscarPorId(id);
             return Ok(aula);
         }
 
@@ -66,12 +65,12 @@ namespace SME.SGP.Api.Controllers
         public async Task<IActionResult> ObterRecorrenciaDaSerie(long aulaId, [FromServices]IConsultasAula consultas)
         {
             var recorrencia = await consultas.ObterRecorrenciaDaSerie(aulaId);
-            var quantidadeAulas = recorrencia == (int)RecorrenciaAula.AulaUnica ? 1 
+            var quantidadeAulas = recorrencia == (int)RecorrenciaAula.AulaUnica ? 1
                 : await consultas.ObterQuantidadeAulasRecorrentes(aulaId, RecorrenciaAula.RepetirTodosBimestres);
             var existeFrequenciaPlanoAula = await consultas.ChecarFrequenciaPlanoNaRecorrencia(aulaId);
 
-            return Ok(new AulaRecorrenciaDto() 
-            { 
+            return Ok(new AulaRecorrenciaDto()
+            {
                 AulaId = aulaId,
                 RecorrenciaAula = recorrencia,
                 QuantidadeAulasRecorrentes = quantidadeAulas,
