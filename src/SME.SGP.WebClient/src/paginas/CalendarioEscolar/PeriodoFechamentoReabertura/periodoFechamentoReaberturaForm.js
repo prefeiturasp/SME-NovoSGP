@@ -11,12 +11,12 @@ import CampoTexto from '~/componentes/campoTexto';
 import Card from '~/componentes/card';
 import { Colors } from '~/componentes/colors';
 import SelectComponent from '~/componentes/select';
-import modalidade from '~/dtos/modalidade';
 import RotasDto from '~/dtos/rotasDto';
 import { confirmar, erros, sucesso } from '~/servicos/alertas';
 import api from '~/servicos/api';
 import { setBreadcrumbManual } from '~/servicos/breadcrumb-services';
 import history from '~/servicos/history';
+import modalidadeTipoCalendario from '~/dtos/modalidadeTipoCalendario';
 
 const PeriodoFechamentoReaberturaForm = ({ match }) => {
   const usuarioStore = useSelector(store => store.usuario);
@@ -58,7 +58,7 @@ const PeriodoFechamentoReaberturaForm = ({ match }) => {
       },
     ];
 
-    if (tipoModalidade != modalidade.EJA) {
+    if (tipoModalidade != modalidadeTipoCalendario.EJA) {
       listaNova.push(
         {
           valor: 3,
@@ -139,6 +139,12 @@ const PeriodoFechamentoReaberturaForm = ({ match }) => {
           .catch(e => erros(e));
 
         if (cadastrado && cadastrado.data) {
+          const bimestres = [];
+          for (var i = 0; i < cadastrado.data.bimestres.length; i++) {
+            const bimestre = cadastrado.data.bimestres[i];
+            if (bimestre) bimestres.push(i + 1);
+          }
+          cadastrado.data.bimestres = [...bimestres];
           const calendario = listaTipoCalendarioEscolar.find(
             item => item.id == cadastrado.data.tipoCalendarioId
           );
@@ -278,7 +284,7 @@ const PeriodoFechamentoReaberturaForm = ({ match }) => {
       if (
         calendarioSelecionado &&
         calendarioSelecionado.modalidade &&
-        calendarioSelecionado.modalidade == modalidade.EJA
+        calendarioSelecionado.modalidade == modalidadeTipoCalendario.EJA
       ) {
         return ['1', '2'];
       }
@@ -372,7 +378,7 @@ const PeriodoFechamentoReaberturaForm = ({ match }) => {
                   <Button
                     label={`${
                       idFechamentoReabertura > 0 ? 'Alterar' : 'Cadastrar'
-                    }`}
+                      }`}
                     color={Colors.Roxo}
                     border
                     bold
@@ -489,8 +495,8 @@ const PeriodoFechamentoReaberturaForm = ({ match }) => {
             alteradoEm={auditoria.alteradoEm}
           />
         ) : (
-          ''
-        )}
+            ''
+          )}
       </Card>
     </>
   );
