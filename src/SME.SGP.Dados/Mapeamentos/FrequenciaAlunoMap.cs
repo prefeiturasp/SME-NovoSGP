@@ -8,6 +8,7 @@ namespace SME.SGP.Dados.Mapeamentos
         {
             ToTable("frequencia_aluno");
             Map(a => a.CodigoAluno).ToColumn("codigo_aluno");
+            Map(a => a.TurmaId).ToColumn("turma_id");
             Map(a => a.DisciplinaId).ToColumn("disciplina_id");
             Map(a => a.PeriodoInicio).ToColumn("periodo_inicio");
             Map(a => a.PeriodoFim).ToColumn("periodo_fim");
