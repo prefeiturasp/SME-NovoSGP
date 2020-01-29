@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace SME.SGP.Dominio.Interfaces
 {
-    public interface IRepositorioFechamento : IRepositorioBase<PeriodoFechamento>
+    public interface IRepositorioPeriodoFechamento : IRepositorioBase<PeriodoFechamento>
     {
         void AlterarPeriodosComHierarquiaInferior(DateTime inicioDoFechamento, DateTime finalDoFechamento, long periodoEscolarId, long? dreId);
 
