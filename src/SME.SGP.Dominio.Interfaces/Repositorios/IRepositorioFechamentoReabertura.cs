@@ -14,6 +14,10 @@ namespace SME.SGP.Dominio.Interfaces
 
         FechamentoReabertura ObterCompleto(long idFechamentoReabertura = 0, long workflowId = 0);
 
-        Task SalvarBimestre(FechamentoReaberturaBimestre fechamentoReabertura);
+        Task<IEnumerable<FechamentoReaberturaNotificacao>> ObterNotificacoes(long id);
+
+        Task SalvarBimestreAsync(FechamentoReaberturaBimestre fechamentoReabertura);
+
+        Task SalvarNotificacaoAsync(FechamentoReaberturaNotificacao fechamentoReaberturaNotificacao);
     }
 }

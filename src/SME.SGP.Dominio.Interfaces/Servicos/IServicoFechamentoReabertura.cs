@@ -5,8 +5,10 @@ namespace SME.SGP.Dominio.Interfaces
 {
     public interface IServicoFechamentoReabertura
     {
-        Task<string> Alterar(FechamentoReabertura fechamentoReabertura, DateTime dataInicialAnterior, DateTime dataFimAnterior);
+        Task<string> AlterarAsync(FechamentoReabertura fechamentoReabertura, DateTime dataInicialAnterior, DateTime dataFimAnterior);
 
-        Task<string> Salvar(FechamentoReabertura fechamentoReabertura);
+        Task<string> ExcluirAsync(FechamentoReabertura fechamento);
+
+        Task<string> SalvarAsync(FechamentoReabertura fechamentoReabertura);
     }
 }
