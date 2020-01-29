@@ -10,7 +10,7 @@ using System.Text;
 
 namespace SME.SGP.Dados.Repositorios
 {
-    public class RepositorioPeriodoFechamento : RepositorioBase<PeriodoFechamento>, IRepositorioFechamento
+    public class RepositorioPeriodoFechamento : RepositorioBase<PeriodoFechamento>, IRepositorioPeriodoFechamento
     {
         public RepositorioPeriodoFechamento(ISgpContext conexao) : base(conexao)
         {
