@@ -68,8 +68,8 @@ namespace SME.SGP.Dados.Mapeamentos
                config.AddMap(new CompensacaoAusenciaAlunoMap());
                config.AddMap(new CompensacaoAusenciaDisciplinaRegenciaMap());
                config.AddMap(new ProcessoExecutandoMap());
-               config.AddMap(new FechamentoMap());
-               config.AddMap(new FechamentoBimestreMap());
+               config.AddMap(new PeriodoFechamentoMap());
+               config.AddMap(new PeriodoFechamentoBimestreMap());
                config.AddMap(new EventoFechamentoMap());
                config.ForDommel();
            });

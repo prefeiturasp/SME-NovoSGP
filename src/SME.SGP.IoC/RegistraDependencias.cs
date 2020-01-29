@@ -177,7 +177,7 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IRepositorioCompensacaoAusenciaAluno, RepositorioCompensacaoAusenciaAluno>();
             services.TryAddScoped<IRepositorioCompensacaoAusenciaDisciplinaRegencia, RepositorioCompensacaoAusenciaDisciplinaRegencia>();
             services.TryAddScoped<IRepositorioProcessoExecutando, RepositorioProcessoExecutando>();
-            services.TryAddScoped<IRepositorioFechamento, RepositorioFechamento>();
+            services.TryAddScoped<IRepositorioFechamento, RepositorioPeriodoFechamento>();
             services.TryAddScoped<IRepositorioEventoFechamento, RepositorioEventoFechamento>();
         }
 

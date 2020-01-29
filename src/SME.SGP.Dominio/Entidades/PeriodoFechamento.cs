@@ -3,34 +3,34 @@ using System.Linq;
 
 namespace SME.SGP.Dominio
 {
-    public class Fechamento : EntidadeBase
+    public class PeriodoFechamento : EntidadeBase
     {
-        public Fechamento(long? dreId, long? ueId)
+        public PeriodoFechamento(long? dreId, long? ueId)
         {
             DreId = dreId;
             UeId = ueId;
-            fechamentosBimestre = new List<FechamentoBimestre>();
+            fechamentosBimestre = new List<PeriodoFechamentoBimestre>();
         }
 
-        protected Fechamento()
+        protected PeriodoFechamento()
         {
-            fechamentosBimestre = new List<FechamentoBimestre>();
+            fechamentosBimestre = new List<PeriodoFechamentoBimestre>();
         }
 
         public Dre Dre { get; set; }
         public long? DreId { get; set; }
-        public IEnumerable<FechamentoBimestre> FechamentosBimestre => fechamentosBimestre;
+        public IEnumerable<PeriodoFechamentoBimestre> FechamentosBimestre => fechamentosBimestre;
         public bool Migrado { get; set; }
         public Ue Ue { get; set; }
         public long? UeId { get; set; }
-        private List<FechamentoBimestre> fechamentosBimestre { get; set; }
+        private List<PeriodoFechamentoBimestre> fechamentosBimestre { get; set; }
 
         public void AdicionarDre(Dre dre)
         {
             Dre = dre;
         }
 
-        public void AdicionarFechamentoBimestre(FechamentoBimestre fechamentoBimestre)
+        public void AdicionarFechamentoBimestre(PeriodoFechamentoBimestre fechamentoBimestre)
         {
             //if (periodoEscolar == null)
             //{
@@ -71,12 +71,12 @@ namespace SME.SGP.Dominio
             Ue = ue;
         }
 
-        public FechamentoBimestre ObterFechamentoBimestre(long periodoEscolarId)
+        public PeriodoFechamentoBimestre ObterFechamentoBimestre(long periodoEscolarId)
         {
             return fechamentosBimestre.FirstOrDefault(c => c.PeriodoEscolarId == periodoEscolarId);
         }
 
-        public void ValidarIntervaloDatasDreEUe(List<FechamentoBimestre> periodoFechamentoSMEDRE)
+        public void ValidarIntervaloDatasDreEUe(List<PeriodoFechamentoBimestre> periodoFechamentoSMEDRE)
         {
             var tipoFechamentoASerValidado = UeId.HasValue ? "UE" : "Dre";
             if (periodoFechamentoSMEDRE == null)
