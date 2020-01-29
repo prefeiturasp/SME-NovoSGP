@@ -1,5 +1,6 @@
 ﻿using SME.SGP.Dominio.Interfaces;
 using System;
+using System.Threading.Tasks;
 
 namespace SME.SGP.Dominio.Servicos
 {
@@ -10,6 +11,11 @@ namespace SME.SGP.Dominio.Servicos
         public ServicoNotificacao(IRepositorioNotificacao repositorioNotificacao)
         {
             this.repositorioNotificacao = repositorioNotificacao ?? throw new ArgumentNullException(nameof(repositorioNotificacao));
+        }
+
+        public async Task ExcluirFisicamenteAsync(long[] ids)
+        {
+            await repositorioNotificacao.ExcluirPorIdsAsync(ids);
         }
 
         public void GeraNovoCodigo(Notificacao notificacao)

@@ -10,6 +10,7 @@ namespace SME.SGP.Dominio
         {
             Status = EntidadeStatus.Aprovado;
             bimestres = new List<FechamentoReaberturaBimestre>();
+            Excluido = false;
         }
 
         public IEnumerable<FechamentoReaberturaBimestre> Bimestres { get { return bimestres; } }
@@ -17,12 +18,12 @@ namespace SME.SGP.Dominio
         public string Descricao { get; set; }
         public Dre Dre { get; set; }
         public long? DreId { get; set; }
+        public bool Excluido { get; set; }
         public DateTime Fim { get; set; }
         public DateTime Inicio { get; set; }
         public bool Migrado { get; set; }
         public EntidadeStatus Status { get; set; }
         public TipoCalendario TipoCalendario { get; set; }
-
         public long TipoCalendarioId { get; set; }
         public Ue Ue { get; set; }
         public long? UeId { get; set; }
@@ -98,6 +99,14 @@ namespace SME.SGP.Dominio
             return (Inicio.Date <= dataInicio.Date && Fim >= datafim.Date)
             || (Inicio.Date <= datafim.Date && Fim >= datafim.Date)
             || (Inicio.Date >= dataInicio.Date && Fim <= datafim.Date);
+        }
+
+        public void Excluir()
+        {
+            if (Excluido)
+                throw new NegocioException($"Não é possível excluir o fechamento {Id} pois o mesmo já se encontra excluído.");
+
+            Excluido = true;
         }
 
         public object ObterBimestresNumeral()
