@@ -65,5 +65,26 @@ namespace SME.SGP.Api.Controllers
             await comandos.Excluir(compensacoesIds);
             return Ok();
         }
+
+        [HttpGet("copiar/turmas/{turmaOrigemCodigo}")]
+        [ProducesResponseType(typeof(IEnumerable<TurmaRetornoDto>), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        //[Permissao(Permissao.CA_C, Policy = "Bearer")]
+        public async Task<IActionResult> ObterTurmasCopia(string turmaOrigemCodigo, [FromServices] IConsultasCompensacaoAusencia consultas)
+        {
+            return Ok(await consultas.ObterTurmasParaCopia(turmaOrigemCodigo));
+        }
+
+        [HttpPost("copiar")]
+        [ProducesResponseType(200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 601)]
+        [Permissao(Permissao.CA_I, Policy = "Bearer")]
+        public async Task<IActionResult> Copiar([FromBody] CompensacaoAusenciaCopiaDto compensacaoCopia, [FromServices] IComandosCompensacaoAusencia comandos)
+        {
+            await comandos.Copiar(compensacaoCopia);
+            return Ok();
+        }
+
     }
 }

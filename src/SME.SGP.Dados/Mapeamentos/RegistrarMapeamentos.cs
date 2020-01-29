@@ -70,6 +70,7 @@ namespace SME.SGP.Dados.Mapeamentos
                config.AddMap(new ProcessoExecutandoMap());
                config.AddMap(new PeriodoFechamentoMap());
                config.AddMap(new PeriodoFechamentoBimestreMap());
+               config.AddMap(new NotificacaoCompensacaoAusenciaMap());
                config.AddMap(new EventoFechamentoMap());
                config.ForDommel();
            });
