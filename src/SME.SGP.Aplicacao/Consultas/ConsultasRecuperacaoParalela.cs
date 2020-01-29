@@ -12,18 +12,27 @@ namespace SME.SGP.Aplicacao
 {
     public class ConsultasRecuperacaoParalela : ConsultasBase, IConsultaRecuperacaoParalela
     {
+        private readonly IRepositorioEixo repositorioEixo;
+        private readonly IRepositorioObjetivo repositorioObjetivo;
         private readonly IRepositorioRecuperacaoParalela repositorioRecuperacaoParalela;
         private readonly IRepositorioRecuperacaoParalelaPeriodo repositorioRecuperacaoParalelaPeriodo;
+        private readonly IRepositorioResposta repositorioResposta;
         private readonly IServicoEOL servicoEOL;
 
         public ConsultasRecuperacaoParalela(
             IRepositorioRecuperacaoParalela repositorioRecuperacaoParalela,
             IRepositorioRecuperacaoParalelaPeriodo repositorioRecuperacaoParalelaPeriodo,
+            IRepositorioEixo repositorioEixo,
+            IRepositorioObjetivo repositorioObjetivo,
+            IRepositorioResposta repositorioResposta,
             IServicoEOL servicoEOL,
             IContextoAplicacao contextoAplicacao) : base(contextoAplicacao)
         {
             this.repositorioRecuperacaoParalela = repositorioRecuperacaoParalela ?? throw new ArgumentNullException(nameof(repositorioRecuperacaoParalela));
             this.repositorioRecuperacaoParalelaPeriodo = repositorioRecuperacaoParalelaPeriodo ?? throw new ArgumentNullException(nameof(repositorioRecuperacaoParalelaPeriodo));
+            this.repositorioEixo = repositorioEixo ?? throw new ArgumentNullException(nameof(repositorioEixo));
+            this.repositorioObjetivo = repositorioObjetivo ?? throw new ArgumentNullException(nameof(repositorioObjetivo));
+            this.repositorioResposta = repositorioResposta ?? throw new ArgumentNullException(nameof(repositorioResposta));
             this.servicoEOL = servicoEOL ?? throw new ArgumentNullException(nameof(servicoEOL));
         }
 
@@ -31,22 +40,24 @@ namespace SME.SGP.Aplicacao
         {
             var alunosEol = await servicoEOL.ObterAlunosAtivosPorTurma(filtro.TurmaId);
             var alunosRecuperacaoParalela = await repositorioRecuperacaoParalela.Listar(filtro.TurmaId, filtro.PeriodoId);
-            return MapearParaDto(alunosEol, alunosRecuperacaoParalela, filtro.TurmaId, filtro.PeriodoId);
+            return await MapearParaDtoAsync(alunosEol, alunosRecuperacaoParalela, filtro.TurmaId, filtro.PeriodoId);
         }
 
-        public Task<object> ListarPeriodo()
-        {
-            throw new NotImplementedException();
-        }
-
-        private RecuperacaoParalelaListagemDto MapearParaDto(IEnumerable<AlunoPorTurmaResposta> alunosEol, IEnumerable<RetornoRecuperacaoParalela> alunosRecuperacaoParalela, long turmaId, long periodoId)
+        private async Task<RecuperacaoParalelaListagemDto> MapearParaDtoAsync(IEnumerable<AlunoPorTurmaResposta> alunosEol, IEnumerable<RetornoRecuperacaoParalela> alunosRecuperacaoParalela, long turmaId, long periodoId)
         {
             var alunos = alunosEol.Where(w => !alunosRecuperacaoParalela.Select(s => s.AlunoId).Contains(Convert.ToInt32(w.CodigoAluno))).ToList();
+            var respostas = await repositorioResposta.ListarRespostas();
+            var objetivos = await repositorioObjetivo.ListarObjetivos();
+            var eixos = await repositorioEixo.Listar(periodoId);
+
             var alunosRecParalela = alunosRecuperacaoParalela.ToList();
             alunos.ForEach(x => alunosRecParalela.Add(new RetornoRecuperacaoParalela { AlunoId = Convert.ToInt64(x.CodigoAluno) }));
             var retorno = alunosRecParalela.Select(s => new { s.AlunoId, s.Id }).Distinct();
             return new RecuperacaoParalelaListagemDto
             {
+                Eixos = eixos,
+                Objetivos = objetivos,
+                Respostas = respostas,
                 Periodo = new RecuperacaoParalelaPeriodoListagemDto
                 {
                     Id = periodoId,
@@ -66,7 +77,7 @@ namespace SME.SGP.Aplicacao
                         TurmaId = turmaId,
                         Respostas = alunosRecuperacaoParalela
                                                     .Where(w => w.Id == a.Id)
-                                                    .Select(s => new RespostaDto
+                                                    .Select(s => new ObjetivoRespostaDto
                                                     {
                                                         ObjetivoId = s.ObjetivoId,
                                                         RespostaId = s.RespostaId

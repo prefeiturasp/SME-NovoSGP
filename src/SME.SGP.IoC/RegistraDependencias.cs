@@ -177,6 +177,9 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IRepositorioRecuperacaoParalela, RepositorioRecuperacaoParalela>();
             services.TryAddScoped<IRepositorioRecuperacaoParalelaPeriodo, RepositorioRecuperacaoParalelaPeriodo>();
             services.TryAddScoped<IRepositorioRecuperacaoParalelaPeriodoObjetivoResposta, RepositorioRecuperacaoParalelaPeriodoObjetivoResposta>();
+            services.TryAddScoped<IRepositorioEixo, RepositorioEixo>();
+            services.TryAddScoped<IRepositorioResposta, RepositorioResposta>();
+            services.TryAddScoped<IRepositorioObjetivo, RepositorioObjetivo>();
         }
 
         private static void RegistrarServicos(IServiceCollection services)

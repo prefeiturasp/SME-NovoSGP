@@ -7,7 +7,5 @@ namespace SME.SGP.Aplicacao
     public interface IConsultaRecuperacaoParalela
     {
         Task<RecuperacaoParalelaListagemDto> Listar(FiltroRecuperacaoParalelaDto filtro);
-
-        Task<object> ListarPeriodo();
     }
 }
