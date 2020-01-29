@@ -11,7 +11,7 @@ import CampoTexto from '~/componentes/campoTexto';
 import Card from '~/componentes/card';
 import { Colors } from '~/componentes/colors';
 import SelectComponent from '~/componentes/select';
-import modalidade from '~/dtos/modalidade';
+import modalidadeTipoCalendario from '~/dtos/modalidadeTipoCalendario';
 import RotasDto from '~/dtos/rotasDto';
 import { confirmar, erros, sucesso } from '~/servicos/alertas';
 import { setBreadcrumbManual } from '~/servicos/breadcrumb-services';
@@ -59,7 +59,7 @@ const PeriodoFechamentoReaberturaForm = ({ match }) => {
       },
     ];
 
-    if (tipoModalidade != modalidade.EJA) {
+    if (tipoModalidade != modalidadeTipoCalendario.EJA) {
       listaNova.push(
         {
           valor: 3,
@@ -141,6 +141,12 @@ const PeriodoFechamentoReaberturaForm = ({ match }) => {
         ).catch(e => erros(e));
 
         if (cadastrado && cadastrado.data) {
+          const bimestres = [];
+          for (var i = 0; i < cadastrado.data.bimestres.length; i++) {
+            const bimestre = cadastrado.data.bimestres[i];
+            if (bimestre) bimestres.push(i + 1);
+          }
+          cadastrado.data.bimestres = [...bimestres];
           const calendario = listaTipoCalendarioEscolar.find(
             item => item.id == cadastrado.data.tipoCalendarioId
           );
@@ -279,7 +285,7 @@ const PeriodoFechamentoReaberturaForm = ({ match }) => {
       if (
         calendarioSelecionado &&
         calendarioSelecionado.modalidade &&
-        calendarioSelecionado.modalidade == modalidade.EJA
+        calendarioSelecionado.modalidade == modalidadeTipoCalendario.EJA
       ) {
         return ['1', '2'];
       }
@@ -494,6 +500,17 @@ const PeriodoFechamentoReaberturaForm = ({ match }) => {
             </Form>
           )}
         </Formik>
+
+        {exibirAuditoria ? (
+          <Auditoria
+            criadoEm={auditoria.criadoEm}
+            criadoPor={auditoria.criadoPor}
+            alteradoPor={auditoria.alteradoPor}
+            alteradoEm={auditoria.alteradoEm}
+          />
+        ) : (
+          ''
+        )}
       </Card>
     </>
   );
