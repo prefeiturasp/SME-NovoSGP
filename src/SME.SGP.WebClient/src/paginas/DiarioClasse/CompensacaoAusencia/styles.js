@@ -59,3 +59,10 @@ export const CardTabelaAlunos = styled.div`
   box-shadow: 0 6px 18px 0 rgba(0, 0, 0, 0.15);
   background-color: #ffffff;
 `;
+
+export const ListaCopiarCompensacoes = styled.div`
+  display: inline-block;
+  vertical-align: middle;
+  margin-top: 20px;
+`;
+
