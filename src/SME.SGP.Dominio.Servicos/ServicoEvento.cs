@@ -6,6 +6,7 @@ using SME.SGP.Dto;
 using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -460,7 +461,7 @@ namespace SME.SGP.Dominio.Servicos
                                 return devePassarPorWorkflow;
                             }
                             else
-                                throw new NegocioException("Não é possível cadastrar o evento.");
+                                throw new NegocioException($"O tipo de evento '{((TipoEvento)evento.TipoEvento.Codigo).GetAttribute<DisplayAttribute>().Name}' não pode ser cadastrado no recesso.");
                         }
                         else return devePassarPorWorkflow;
                     }
@@ -476,7 +477,16 @@ namespace SME.SGP.Dominio.Servicos
                             {
                                 if (temEventoLiberacaoExcepcional)
                                     return true;
-                                else throw new NegocioException("Não é possível cadastrar o evento.");
+                                else
+                                {
+                                    if (temEventoFeriado)
+                                        throw new NegocioException("Não é possível cadastrar o evento pois há feriado na data selecionada.");
+                                    else if (temEventoSuspensaoAtividades)
+                                        throw new NegocioException("Não é possível cadastrar o evento pois há evento de suspensão de atividades na data informada.");
+                                    else if(evento.DataInicio.DayOfWeek == DayOfWeek.Saturday || evento.DataInicio.DayOfWeek == DayOfWeek.Sunday)
+                                        throw new NegocioException("Não é possível cadastrar o evento letivo no final de semana.");
+
+                                }
                             }
                         }
                         else
@@ -491,7 +501,7 @@ namespace SME.SGP.Dominio.Servicos
                                     return true;
                                 else if (evento.TipoEvento.Codigo == (long)TipoEvento.Outros)
                                     return devePassarPorWorkflow;
-                                else throw new NegocioException("Não é possível cadastrar o evento.");
+                                else throw new NegocioException($"O tipo de evento '{((TipoEvento)evento.TipoEvento.Codigo).GetAttribute<DisplayAttribute>().Name}' não pode ser cadastrado fora do período escolar.");
                             }
                         }
                     }
