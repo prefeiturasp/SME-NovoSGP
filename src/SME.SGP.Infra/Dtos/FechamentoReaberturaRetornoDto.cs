@@ -4,7 +4,7 @@ namespace SME.SGP.Infra
 {
     public class FechamentoReaberturaRetornoDto : AuditoriaDto
     {
-        public int[] Bimestres { get; set; }
+        public bool[] Bimestres { get; set; }
         public int BimestresQuantidadeTotal { get; set; }
         public DateTime DataFim { get; set; }
         public DateTime DataInicio { get; set; }
