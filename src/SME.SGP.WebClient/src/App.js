@@ -15,6 +15,7 @@ import RotaAutenticadaEstruturada from './rotas/rotaAutenticadaEstruturada';
 import RotaNaoAutenticadaDesestruturada from './rotas/rotaNaoAutenticadaDesestruturada';
 import RotaAutenticadaDesestruturada from './rotas/rotaAutenticadaDesestruturada';
 import { rotaAtiva } from './redux/modulos/navegacao/actions';
+import CapturaErros from './captura-erros';
 
 function App() {
   history.listen(location => {
@@ -25,28 +26,30 @@ function App() {
     <Provider store={store}>
       <PersistGate loading={null} persistor={persistor}>
         <Router history={history}>
-          <GlobalStyle />
-          <div className="h-100">
-            <Switch>
-              <RotaAutenticadaDesestruturada
-                component={RedefinirSenha}
-                path="/redefinir-senha"
-              />
-              <RotaNaoAutenticadaDesestruturada
-                component={RedefinirSenha}
-                path="/redefinir-senha/:token"
-              />
-              <RotaNaoAutenticadaDesestruturada
-                component={RecuperarSenha}
-                path="/recuperar-senha"
-              />
-              <RotaNaoAutenticadaDesestruturada
-                component={Login}
-                path="/login/:redirect?/"
-              />
-              <RotaAutenticadaEstruturada component={Pagina} path="/" />
-            </Switch>
-          </div>
+          <CapturaErros>
+            <GlobalStyle />
+            <div className="h-100">
+              <Switch>
+                <RotaAutenticadaDesestruturada
+                  component={RedefinirSenha}
+                  path="/redefinir-senha"
+                />
+                <RotaNaoAutenticadaDesestruturada
+                  component={RedefinirSenha}
+                  path="/redefinir-senha/:token"
+                />
+                <RotaNaoAutenticadaDesestruturada
+                  component={RecuperarSenha}
+                  path="/recuperar-senha"
+                />
+                <RotaNaoAutenticadaDesestruturada
+                  component={Login}
+                  path="/login/:redirect?/"
+                />
+                <RotaAutenticadaEstruturada component={Pagina} path="/" />
+              </Switch>
+            </div>
+          </CapturaErros>
         </Router>
       </PersistGate>
     </Provider>
