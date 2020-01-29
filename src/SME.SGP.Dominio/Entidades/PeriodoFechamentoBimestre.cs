@@ -2,9 +2,9 @@
 
 namespace SME.SGP.Dominio
 {
-    public class FechamentoBimestre
+    public class PeriodoFechamentoBimestre
     {
-        public FechamentoBimestre(long fechamentoId,
+        public PeriodoFechamentoBimestre(long fechamentoId,
                                   PeriodoEscolar periodoEscolar,
                                   DateTime inicioDoFechamento,
                                   DateTime finalDoFechamento)
@@ -16,11 +16,11 @@ namespace SME.SGP.Dominio
             PeriodoEscolarId = periodoEscolar.Id;
         }
 
-        protected FechamentoBimestre()
+        protected PeriodoFechamentoBimestre()
         {
         }
 
-        public Fechamento Fechamento { get; set; }
+        public PeriodoFechamento Fechamento { get; set; }
         public long FechamentoId { get; set; }
         public DateTime FinalDoFechamento { get; set; }
         public long Id { get; set; }
