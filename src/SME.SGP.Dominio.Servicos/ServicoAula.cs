@@ -115,33 +115,15 @@ namespace SME.SGP.Dominio.Servicos
             if (aula.Id > 0)
                 aula.PodeSerAlterada(usuario);
 
-            IEnumerable<long> disciplinasProfessor = null;
-
-            if (usuario.EhProfessorCj())
-            {
-                IEnumerable<AtribuicaoCJ> lstDisciplinasProfCJ = repositorioAtribuicaoCJ.ObterPorFiltros(null, aula.TurmaId, aula.UeId, 0, usuario.CodigoRf, usuario.Nome, null).Result;
-
-                if (lstDisciplinasProfCJ != null && lstDisciplinasProfCJ.Any())
-                    disciplinasProfessor = lstDisciplinasProfCJ.Select(d => d.DisciplinaId);
-            }
-            else
-            {
-                IEnumerable<DisciplinaResposta> lstDisciplinasProf = servicoEOL.ObterDisciplinasPorCodigoTurmaLoginEPerfil(aula.TurmaId, usuario.Login, usuario.PerfilAtual).Result;
-
-                if (lstDisciplinasProf != null && lstDisciplinasProf.Any())
-                    disciplinasProfessor = lstDisciplinasProf.Select(d => Convert.ToInt64(d.CodigoComponenteCurricular));
-            }
+            var disciplinasProfessor = usuario.EhProfessorCj() ? ObterDisciplinasProfessorCJ(aula, usuario) : ObterDisciplinasProfessor(aula, usuario);
 
             if (disciplinasProfessor == null || !disciplinasProfessor.Any(c => c.ToString() == aula.DisciplinaId))
                 throw new NegocioException("Você não pode criar aulas para essa UE/Turma/Disciplina.");
 
             var temLiberacaoExcepcionalNessaData = servicoDiaLetivo.ValidaSeEhLiberacaoExcepcional(aula.DataAula, aula.TipoCalendarioId, aula.UeId);
 
-            if (!temLiberacaoExcepcionalNessaData)
-            {
-                if (!servicoDiaLetivo.ValidarSeEhDiaLetivo(aula.DataAula, aula.TipoCalendarioId, null, aula.UeId))
-                    throw new NegocioException("Não é possível cadastrar essa aula pois a data informada está fora do período letivo.");
-            }
+            if (!temLiberacaoExcepcionalNessaData && !servicoDiaLetivo.ValidarSeEhDiaLetivo(aula.DataAula, aula.TipoCalendarioId, null, aula.UeId))
+                throw new NegocioException("Não é possível cadastrar essa aula pois a data informada está fora do período letivo.");
 
             if (aula.RecorrenciaAula != RecorrenciaAula.AulaUnica && aula.TipoAula == TipoAula.Reposicao)
                 throw new NegocioException("Uma aula do tipo Reposição não pode ser recorrente.");
@@ -152,6 +134,7 @@ namespace SME.SGP.Dominio.Servicos
 
             if (turma == null)
                 throw new NegocioException("Turma não localizada.");
+
             if (aula.RecorrenciaAula == RecorrenciaAula.AulaUnica && aula.TipoAula == TipoAula.Reposicao)
             {
                 var aulas = repositorioAula.ObterAulas(aula.TipoCalendarioId, aula.TurmaId, aula.UeId, usuario.CodigoRf).Result;
@@ -179,11 +162,12 @@ namespace SME.SGP.Dominio.Servicos
                 var quantidadeAulasRestantes = gradeAulas == null ? int.MaxValue : gradeAulas.QuantidadeAulasRestante;
 
                 var disciplinas = servicoEOL.ObterDisciplinasPorIds(new[] { Convert.ToInt64(aula.DisciplinaId) });
+
                 if (disciplinas == null || !disciplinas.Any())
-                {
                     throw new NegocioException("Disciplina não encontrada.");
-                }
+
                 var disciplina = disciplinas.First();
+
                 if (!ehInclusao)
                 {
                     if (disciplina.Regencia)
@@ -241,6 +225,21 @@ namespace SME.SGP.Dominio.Servicos
             }
 
             return "Aula cadastrada com sucesso.";
+        }
+
+        private IEnumerable<long> ObterDisciplinasProfessor(Aula aula, Usuario usuario)
+        {
+
+            IEnumerable<DisciplinaResposta> lstDisciplinasProf = servicoEOL.ObterDisciplinasPorCodigoTurmaLoginEPerfil(aula.TurmaId, usuario.Login, usuario.PerfilAtual).Result;
+
+            return lstDisciplinasProf != null && lstDisciplinasProf.Any() ? lstDisciplinasProf.Select(d => Convert.ToInt64(d.CodigoComponenteCurricular)) : null;
+        }
+
+        private IEnumerable<long> ObterDisciplinasProfessorCJ(Aula aula, Usuario usuario)
+        {
+            IEnumerable<AtribuicaoCJ> lstDisciplinasProfCJ = repositorioAtribuicaoCJ.ObterPorFiltros(null, aula.TurmaId, aula.UeId, 0, usuario.CodigoRf, usuario.Nome, null).Result;
+
+            return lstDisciplinasProfCJ != null && lstDisciplinasProfCJ.Any() ? lstDisciplinasProfCJ.Select(d => d.DisciplinaId) : null;
         }
 
         private static bool ReposicaoDeAulaPrecisaDeAprovacao(int quantidadeAulasExistentesNoDia, Turma turma)
