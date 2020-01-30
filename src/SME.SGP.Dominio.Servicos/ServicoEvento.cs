@@ -449,7 +449,7 @@ namespace SME.SGP.Dominio.Servicos
                 }
                 else
                 {
-                    if (await repositorioEvento.TemEventoNosDiasETipo(evento.DataInicio.Date, evento.DataFim.Date, TipoEvento.Recesso, evento.TipoCalendarioId, string.Empty, string.Empty))
+                    if (await repositorioEvento.TemEventoNosDiasETipo(evento.DataInicio.Date, evento.DataFim.Date, TipoEvento.ReposicaoNoRecesso, evento.TipoCalendarioId, string.Empty, string.Empty))
                     {
                         if (evento.TipoEvento.LocalOcorrencia == EventoLocalOcorrencia.UE)
                         {
