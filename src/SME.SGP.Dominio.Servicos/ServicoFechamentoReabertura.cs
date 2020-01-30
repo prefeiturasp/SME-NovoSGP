@@ -29,12 +29,12 @@ namespace SME.SGP.Dominio.Servicos
             this.servicoNotificacao = servicoNotificacao ?? throw new ArgumentNullException(nameof(servicoNotificacao));
         }
 
-        public async Task<string> Alterar(FechamentoReabertura fechamentoReabertura, DateTime dataInicialAnterior, DateTime dataFimAnterior)
+        public async Task<string> AlterarAsync(FechamentoReabertura fechamentoReabertura, DateTime dataInicialAnterior, DateTime dataFimAnterior)
         {
             var fechamentoReaberturas = await repositorioFechamentoReabertura.Listar(fechamentoReabertura.TipoCalendarioId, null, null, null);
 
             var fechamentoReaberturasParaVerificar = fechamentoReaberturas.Where(a => a.Id != fechamentoReabertura.Id);
-            var fechamentoReaberturasParaAtualizar = fechamentoReaberturas.Where(a => a.Id != fechamentoReabertura.Id && fechamentoReabertura.Inicio > a.Inicio || a.Fim > fechamentoReabertura.Fim);
+            var fechamentoReaberturasParaAtualizar = fechamentoReaberturasParaVerificar.Where(a => fechamentoReabertura.Inicio > a.Inicio || a.Fim > fechamentoReabertura.Fim);
 
             var usuarioAtual = await servicoUsuario.ObterUsuarioLogado();
 
@@ -59,14 +59,55 @@ namespace SME.SGP.Dominio.Servicos
                 //Criar eventos;
             }
 
-            VerificaEAtualizaFechamentosReaberturasParaAlterar(fechamentoReabertura, fechamentoReaberturasParaAtualizar);
+            await VerificaEAtualizaFechamentosReaberturasParaAlterar(fechamentoReabertura, fechamentoReaberturasParaAtualizar);
 
             unitOfWork.PersistirTransacao();
 
             return mensagemRetorno;
         }
 
-        public async Task<string> Salvar(FechamentoReabertura fechamentoReabertura)
+        public async Task<string> ExcluirAsync(FechamentoReabertura fechamentoReabertura)
+        {
+            unitOfWork.IniciarTransacao();
+
+            try
+            {
+                fechamentoReabertura.Excluir();
+                await repositorioFechamentoReabertura.SalvarAsync(fechamentoReabertura);
+
+                if (fechamentoReabertura.EhParaUe())
+                {
+                    await ExcluirVinculosAysnc(fechamentoReabertura);
+                }
+                else
+                {
+                    var fechamentoReaberturas = await repositorioFechamentoReabertura.Listar(fechamentoReabertura.TipoCalendarioId, null, null, null);
+                    var fechamentoReaberturasParaExcluir = fechamentoReaberturas.Where(a => a.Id != fechamentoReabertura.Id && fechamentoReabertura.Inicio > a.Inicio || a.Fim > fechamentoReabertura.Fim);
+
+                    if (fechamentoReaberturasParaExcluir != null && fechamentoReaberturasParaExcluir.Any())
+                    {
+                        foreach (var fechamentoReaberturaParaExcluir in fechamentoReaberturasParaExcluir)
+                        {
+                            await ExcluirVinculosAysnc(fechamentoReaberturaParaExcluir);
+                        }
+                    }
+                }
+            }
+            catch (NegocioException nEx)
+            {
+                return nEx.Message;
+            }
+            catch (Exception)
+            {
+                return $"Não foi possível excluir o fechamento de reabertura de código {fechamentoReabertura.Id}";
+            }
+
+            unitOfWork.PersistirTransacao();
+
+            return "Exclusão efetuada com sucesso.";
+        }
+
+        public async Task<string> SalvarAsync(FechamentoReabertura fechamentoReabertura)
         {
             var fechamentoReaberturas = await repositorioFechamentoReabertura.Listar(fechamentoReabertura.TipoCalendarioId, null, null, null);
 
@@ -84,7 +125,7 @@ namespace SME.SGP.Dominio.Servicos
             foreach (var fechamentoReaberturaBimestre in fechamentoReabertura.Bimestres)
             {
                 fechamentoReaberturaBimestre.FechamentoAberturaId = fechamentoReaberturaId;
-                await repositorioFechamentoReabertura.SalvarBimestre(fechamentoReaberturaBimestre);
+                await repositorioFechamentoReabertura.SalvarBimestreAsync(fechamentoReaberturaBimestre);
             }
 
             if (fechamentoReabertura.Status == EntidadeStatus.AguardandoAprovacao)
@@ -103,16 +144,31 @@ namespace SME.SGP.Dominio.Servicos
             return mensagemRetorno;
         }
 
-        private void AtualizaFechamentosComDatasDistintas(FechamentoReabertura fechamentoReabertura, List<(FechamentoReabertura, bool, bool)> fechamentosReaberturasParaAtualizar)
+        private async Task AtualizaFechamentosComDatasDistintas(FechamentoReabertura fechamentoReabertura, List<(FechamentoReabertura, bool, bool)> fechamentosReaberturasParaAtualizar)
         {
             foreach (var fechamentoReaberturaParaAtualizar in fechamentosReaberturasParaAtualizar)
             {
                 repositorioFechamentoReabertura.Salvar(fechamentoReaberturaParaAtualizar.Item1);
-                NotificarSobreAlteracaoNoFechamentoReabertura(fechamentoReaberturaParaAtualizar);
+                await NotificarSobreAlteracaoNoFechamentoReabertura(fechamentoReaberturaParaAtualizar);
             }
         }
 
-        private void NotificarSobreAlteracaoNoFechamentoReabertura((FechamentoReabertura, bool, bool) fechamentoReaberturaParaAtualizar)
+        private async Task ExcluirVinculosAysnc(FechamentoReabertura fechamentoReaberturaParaExcluir)
+        {
+            if (fechamentoReaberturaParaExcluir.WorkflowAprovacaoId.HasValue)
+            {
+                await comandosWorkflowAprovacao.ExcluirAsync(fechamentoReaberturaParaExcluir.WorkflowAprovacaoId.Value);
+            }
+
+            var notificacoesParaExcluir = await repositorioFechamentoReabertura.ObterNotificacoes(fechamentoReaberturaParaExcluir.Id);
+            if (notificacoesParaExcluir != null && notificacoesParaExcluir.Any())
+            {
+                await repositorioFechamentoReabertura.ExcluirVinculoDeNotificacoesAsync(fechamentoReaberturaParaExcluir.Id);
+                await servicoNotificacao.ExcluirFisicamenteAsync(notificacoesParaExcluir.Select(a => a.NotificacaoId).ToArray());
+            }
+        }
+
+        private async Task NotificarSobreAlteracaoNoFechamentoReabertura((FechamentoReabertura, bool, bool) fechamentoReaberturaParaAtualizar)
         {
             var fechamentoReabertura = fechamentoReaberturaParaAtualizar.Item1;
 
@@ -141,6 +197,7 @@ namespace SME.SGP.Dominio.Servicos
                         notificacao.UsuarioId = usuario.Id;
 
                         servicoNotificacao.Salvar(notificacao);
+                        await repositorioFechamentoReabertura.SalvarNotificacaoAsync(new FechamentoReaberturaNotificacao() { FechamentoReaberturaId = fechamentoReabertura.Id, NotificacaoId = notificacao.Id });
                     }
                 }
             }
@@ -156,6 +213,7 @@ namespace SME.SGP.Dominio.Servicos
                         notificacao.UsuarioId = usuario.Id;
 
                         servicoNotificacao.Salvar(notificacao);
+                        await repositorioFechamentoReabertura.SalvarNotificacaoAsync(new FechamentoReaberturaNotificacao() { FechamentoReaberturaId = fechamentoReabertura.Id, NotificacaoId = notificacao.Id });
                     }
                 }
 
@@ -169,6 +227,7 @@ namespace SME.SGP.Dominio.Servicos
                     notificacao.UsuarioId = usuario.Id;
 
                     servicoNotificacao.Salvar(notificacao);
+                    await repositorioFechamentoReabertura.SalvarNotificacaoAsync(new FechamentoReaberturaNotificacao() { FechamentoReaberturaId = fechamentoReabertura.Id, NotificacaoId = notificacao.Id });
                 }
             }
         }
@@ -201,7 +260,7 @@ namespace SME.SGP.Dominio.Servicos
             return comandosWorkflowAprovacao.Salvar(wfAprovacaoEvento);
         }
 
-        private void VerificaEAtualizaFechamentosReaberturasParaAlterar(FechamentoReabertura fechamentoReabertura, IEnumerable<FechamentoReabertura> fechamentoReaberturas)
+        private async Task VerificaEAtualizaFechamentosReaberturasParaAlterar(FechamentoReabertura fechamentoReabertura, IEnumerable<FechamentoReabertura> fechamentoReaberturas)
         {
             if (fechamentoReabertura.EhParaDre() || fechamentoReabertura.EhParaSme())
             {
@@ -238,7 +297,7 @@ namespace SME.SGP.Dominio.Servicos
                         fechamentosParaAtualizarTupple.Add((fechamentoReaberturasParaAtualizar, atualizaInicio, atualizaFim));
                 }
 
-                AtualizaFechamentosComDatasDistintas(fechamentoReabertura, fechamentosParaAtualizarTupple);
+                await AtualizaFechamentosComDatasDistintas(fechamentoReabertura, fechamentosParaAtualizarTupple);
             }
         }
     }

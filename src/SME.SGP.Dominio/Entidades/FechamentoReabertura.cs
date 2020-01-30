@@ -10,6 +10,7 @@ namespace SME.SGP.Dominio
         {
             Status = EntidadeStatus.Aprovado;
             bimestres = new List<FechamentoReaberturaBimestre>();
+            Excluido = false;
         }
 
         public IEnumerable<FechamentoReaberturaBimestre> Bimestres { get { return bimestres; } }
@@ -17,12 +18,12 @@ namespace SME.SGP.Dominio
         public string Descricao { get; set; }
         public Dre Dre { get; set; }
         public long? DreId { get; set; }
+        public bool Excluido { get; set; }
         public DateTime Fim { get; set; }
         public DateTime Inicio { get; set; }
         public bool Migrado { get; set; }
         public EntidadeStatus Status { get; set; }
         public TipoCalendario TipoCalendario { get; set; }
-
         public long TipoCalendarioId { get; set; }
         public Ue Ue { get; set; }
         public long? UeId { get; set; }
@@ -100,6 +101,14 @@ namespace SME.SGP.Dominio
             || (Inicio.Date >= dataInicio.Date && Fim <= datafim.Date);
         }
 
+        public void Excluir()
+        {
+            if (Excluido)
+                throw new NegocioException($"Não é possível excluir o fechamento {Id} pois o mesmo já se encontra excluído.");
+
+            Excluido = true;
+        }
+
         public object ObterBimestresNumeral()
         {
             return string.Join(",", bimestres.Select(a => $"{a.Bimestre.ToString()}º").ToArray());
@@ -120,9 +129,6 @@ namespace SME.SGP.Dominio
         {
             if (Inicio > Fim)
                 throw new NegocioException("A data início não pode ser maior que a data fim.");
-
-            if (TipoCalendario.AnoLetivo != Inicio.Year || TipoCalendario.AnoLetivo != Fim.Year)
-                throw new NegocioException("O ano não pode ser diferente do ano do Tipo de Calendário.");
 
             if (usuario.EhPerfilUE())
             {
@@ -147,7 +153,7 @@ namespace SME.SGP.Dominio
 
         public void VerificaStatus()
         {
-            if (EhParaUe() && Inicio.Year < DateTime.Today.Year)
+            if (EhParaUe() && TipoCalendario.AnoLetivo < DateTime.Today.Year)
             {
                 Status = EntidadeStatus.AguardandoAprovacao;
             }

@@ -2,6 +2,7 @@
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -37,24 +38,31 @@ namespace SME.SGP.Aplicacao
 
             AtualizarEntidadeComDto(fechamentoReabertura, fechamentoReaberturaPersistenciaDto);
 
-            return await servicoFechamentoReabertura.Alterar(fechamentoReabertura, dataInicioAnterior, dataFimAnterior);
+            return await servicoFechamentoReabertura.AlterarAsync(fechamentoReabertura, dataInicioAnterior, dataFimAnterior);
         }
 
         public async Task<string> Excluir(long[] ids)
         {
             var fechamentos = await repositorioFechamentoReabertura.Listar(0, 0, 0, ids);
+            if (fechamentos != null && !fechamentos.Any())
+                throw new NegocioException("Não foram localizados fechamento(s) válido(s) para exclusão.");
+
+            var Mensagens = new List<string>();
 
             foreach (var fechamento in fechamentos)
             {
+                var mensagem = await servicoFechamentoReabertura.ExcluirAsync(fechamento);
+                if (!string.IsNullOrEmpty(mensagem))
+                    Mensagens.Add(mensagem);
             }
 
-            return "ok";
+            return string.Join(" <br />", Mensagens);
         }
 
         public async Task<string> Salvar(FechamentoReaberturaPersistenciaDto fechamentoReaberturaPersistenciaDto)
         {
             FechamentoReabertura entidade = TransformarDtoEmEntidadeParaPersistencia(fechamentoReaberturaPersistenciaDto);
-            return await servicoFechamentoReabertura.Salvar(entidade);
+            return await servicoFechamentoReabertura.SalvarAsync(entidade);
         }
 
         private void AtualizarEntidadeComDto(FechamentoReabertura fechamentoReabertura, FechamentoReaberturaAlteracaoDto fechamentoReaberturaPersistenciaDto)

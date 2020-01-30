@@ -66,6 +66,7 @@ namespace SME.SGP.Dados.Mapeamentos
                config.AddMap(new AtividadeAvaliativaDisciplinaMap());
                config.AddMap(new FechamentoReaberturaMap());
                config.AddMap(new FechamentoReaberturaBimestreMap());
+               config.AddMap(new FechamentoReaberturaNotificacaoMap());
                config.ForDommel();
            });
         }
