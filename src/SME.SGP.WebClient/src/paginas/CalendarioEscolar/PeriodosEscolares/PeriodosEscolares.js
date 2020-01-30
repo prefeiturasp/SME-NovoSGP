@@ -2,6 +2,7 @@ import { Form, Formik } from 'formik';
 import React, { useEffect, useState } from 'react';
 import * as Yup from 'yup';
 import { useSelector } from 'react-redux';
+import shortid from 'shortid';
 import Cabecalho from '~/componentes-sgp/cabecalho';
 import Button from '~/componentes/button';
 import { CampoData, momentSchema } from '~/componentes/campoData/campoData';
@@ -109,9 +110,16 @@ const PeriodosEscolares = () => {
       ),
   };
 
+  const { turmaSelecionada } = usuario;
+
   useEffect(() => {
     async function consultaTipos() {
-      const listaTipo = await api.get('v1/calendarios/tipos');
+      const anoAtual = window.moment().format('YYYY');
+      const listaTipo = await api.get(
+        usuario && turmaSelecionada && turmaSelecionada.anoLetivo
+          ? `v1/calendarios/tipos/anos-letivos/${turmaSelecionada.anoLetivo}`
+          : `v1/calendarios/tipos/anos-letivos/${anoAtual}`
+      );
       if (listaTipo && listaTipo.data && listaTipo.data.length) {
         listaTipo.data.map(item => {
           item.id = String(item.id);
@@ -224,6 +232,11 @@ const PeriodosEscolares = () => {
     history.push(URL_HOME);
   };
 
+  const resetarTela = form => {
+    form.resetForm();
+    setModoEdicao(false);
+  };
+
   const onClickCancelar = async form => {
     if (modoEdicao) {
       const confirmou = await confirmar(
@@ -235,20 +248,6 @@ const PeriodosEscolares = () => {
         resetarTela(form);
       }
     }
-  };
-
-  const onchangeCalendarioEscolar = (id, form) => {
-    const tipoSelecionado = listaCalendarioEscolar.find(item => item.id == id);
-
-    if (tipoSelecionado && tipoSelecionado.periodo == periodo.Anual) {
-      setIsTipoCalendarioAnual(true);
-    } else {
-      setIsTipoCalendarioAnual(false);
-    }
-    setCalendarioEscolarSelecionado(id);
-    resetarTela(form);
-    setValoresIniciais({});
-    consultarPeriodoPorId(id);
   };
 
   const consultarPeriodoPorId = async id => {
@@ -308,9 +307,18 @@ const PeriodosEscolares = () => {
     setValoresIniciais(bimestresValorInicial);
   };
 
-  const resetarTela = form => {
-    form.resetForm();
-    setModoEdicao(false);
+  const onchangeCalendarioEscolar = (id, form) => {
+    const tipoSelecionado = listaCalendarioEscolar.find(item => item.id == id);
+
+    if (tipoSelecionado && tipoSelecionado.periodo == periodo.Anual) {
+      setIsTipoCalendarioAnual(true);
+    } else {
+      setIsTipoCalendarioAnual(false);
+    }
+    setCalendarioEscolarSelecionado(id);
+    resetarTela(form);
+    setValoresIniciais({});
+    consultarPeriodoPorId(id);
   };
 
   const onChangeCamposData = () => {
@@ -458,7 +466,7 @@ const PeriodosEscolares = () => {
     form.validateForm().then(() => {
       if (
         form.isValid ||
-        (Object.keys(form.errors).length == 0 &&
+        (Object.keys(form.errors).length === 0 &&
           Object.keys(form.values).length > 0)
       ) {
         form.handleSubmit(e => e);
@@ -494,6 +502,7 @@ const PeriodosEscolares = () => {
                 </div>
                 <div className="col-sm-12 col-md-7 col-lg-8 col-xl-8 d-flex justify-content-end mb-4">
                   <Button
+                    id={shortid.generate()}
                     label="Voltar"
                     icon="arrow-left"
                     color={Colors.Azul}
@@ -502,6 +511,7 @@ const PeriodosEscolares = () => {
                     onClick={onClickVoltar}
                   />
                   <Button
+                    id={shortid.generate()}
                     label="Cancelar"
                     color={Colors.Roxo}
                     border
@@ -511,6 +521,7 @@ const PeriodosEscolares = () => {
                     disabled={!modoEdicao || desabilitaCampos}
                   />
                   <Button
+                    id={shortid.generate()}
                     label="Cadastrar"
                     color={Colors.Roxo}
                     border
