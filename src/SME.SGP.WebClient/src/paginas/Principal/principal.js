@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useSelector } from 'react-redux';
 import styled from 'styled-components';
 import Card from '../../componentes/card';
@@ -23,20 +23,24 @@ const Principal = () => {
   const [modalidadeEja, setModalidadeEja] = useState(false);
 
   const usuario = useSelector(state => state.usuario);
+  const perfil = useSelector(state => state.perfil.perfilSelecionado);
+  const modalidades = useSelector(state => state.filtro.modalidades);
 
   useEffect(() => {
     if (
       usuario &&
       usuario.turmaSelecionada &&
-      usuario.turmaSelecionada.modalidade == modalidade.EJA
+      usuario.turmaSelecionada.modalidade &&
+      usuario.turmaSelecionada.modalidade.toString() ===
+        modalidade.EJA.toString()
     ) {
       setModalidadeEja(true);
     } else {
       setModalidadeEja(false);
     }
-  }, [usuario.turmaSelecionada]);
+  }, [usuario, usuario.turmaSelecionada]);
 
-  const validarFiltro = () => {
+  const validarFiltro = useCallback(() => {
     if (!usuario.turmaSelecionada) {
       setTurmaSelecionada(false);
       setEscolaSelecionada(false);
@@ -48,11 +52,11 @@ const Principal = () => {
 
     setTurmaSelecionada(temTurma);
     setEscolaSelecionada(temEscola);
-  };
+  }, [usuario.turmaSelecionada]);
 
   useEffect(() => {
     validarFiltro();
-  }, [usuario]);
+  }, [usuario, validarFiltro]);
 
   const cicloLiberado = () => {
     return escolaSelecionada;
@@ -85,6 +89,28 @@ const Principal = () => {
 
   return (
     <div className="col-md-12">
+      {modalidades &&
+      !modalidades.length &&
+      !usuario.ehProfessorCj &&
+      !usuario.ehProfessor &&
+      !usuario.ehProfessorPoa &&
+      perfil &&
+      perfil.nomePerfil === 'Supervisor' ? (
+        <Row className="mb-0 pb-0">
+          <Grid cols={12} className="mb-0 pb-0">
+            <Container>
+              <Alert
+                alerta={{
+                  tipo: 'warning',
+                  id: 'AlertaPrincipal',
+                  mensagem: `Não foi possível obter as escolas atribuídas ao supervisor ${usuario.rf}`,
+                  estiloTitulo: { fontSize: '18px' },
+                }}
+              />
+            </Container>
+          </Grid>
+        </Row>
+      ) : null}
       {!turmaSelecionada ? (
         <Row className="mb-0 pb-0">
           <Grid cols={12} className="mb-0 pb-0">
@@ -93,7 +119,7 @@ const Principal = () => {
                 alerta={{
                   tipo: 'warning',
                   id: 'AlertaPrincipal',
-                  mensagem: 'Você precisa escolher uma turma.',
+                  mensagem: 'Você precisa escolher uma turma',
                   estiloTitulo: { fontSize: '18px' },
                 }}
               />
