@@ -26,7 +26,7 @@ namespace SME.SGP.Dados.Repositorios
             query.AppendLine("and excluido = false");
             //se não for encaminhamento, não traz os específicos do período
             if (RecuperacaoParalelaId != (int)PeriodoRecuperacaoParalela.Encaminhamento)
-                query.AppendLine("and recuperacao_paralela_id is null");
+                query.AppendLine("and recuperacao_paralela_periodo_id is null");
 
             var listaRetorno = await database.Conexao.QueryAsync<EixoDto>(query.ToString(), new
             {

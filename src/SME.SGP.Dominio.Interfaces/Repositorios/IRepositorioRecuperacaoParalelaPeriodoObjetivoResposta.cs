@@ -4,6 +4,6 @@ namespace SME.SGP.Dominio.Interfaces
 {
     public interface IRepositorioRecuperacaoParalelaPeriodoObjetivoResposta : IRepositorioBase<RecuperacaoParalelaPeriodoObjetivoResposta>
     {
-        Task Excluir(long RecuperacaoParalelaId);
+        Task Excluir(long RecuperacaoParalelaId, long PeriodoId);
     }
 }

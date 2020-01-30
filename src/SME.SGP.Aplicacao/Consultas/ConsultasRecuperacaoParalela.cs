@@ -18,6 +18,7 @@ namespace SME.SGP.Aplicacao
         private readonly IRepositorioRecuperacaoParalelaPeriodo repositorioRecuperacaoParalelaPeriodo;
         private readonly IRepositorioResposta repositorioResposta;
         private readonly IServicoEOL servicoEOL;
+        private readonly IServicoRecuperacaoParalela servicoRecuperacaoParalela;
 
         public ConsultasRecuperacaoParalela(
             IRepositorioRecuperacaoParalela repositorioRecuperacaoParalela,
@@ -26,6 +27,7 @@ namespace SME.SGP.Aplicacao
             IRepositorioObjetivo repositorioObjetivo,
             IRepositorioResposta repositorioResposta,
             IServicoEOL servicoEOL,
+            IServicoRecuperacaoParalela servicoRecuperacaoParalela,
             IContextoAplicacao contextoAplicacao) : base(contextoAplicacao)
         {
             this.repositorioRecuperacaoParalela = repositorioRecuperacaoParalela ?? throw new ArgumentNullException(nameof(repositorioRecuperacaoParalela));
@@ -33,6 +35,7 @@ namespace SME.SGP.Aplicacao
             this.repositorioEixo = repositorioEixo ?? throw new ArgumentNullException(nameof(repositorioEixo));
             this.repositorioObjetivo = repositorioObjetivo ?? throw new ArgumentNullException(nameof(repositorioObjetivo));
             this.repositorioResposta = repositorioResposta ?? throw new ArgumentNullException(nameof(repositorioResposta));
+            this.servicoRecuperacaoParalela = servicoRecuperacaoParalela ?? throw new ArgumentNullException(nameof(servicoRecuperacaoParalela));
             this.servicoEOL = servicoEOL ?? throw new ArgumentNullException(nameof(servicoEOL));
         }
 
@@ -46,11 +49,11 @@ namespace SME.SGP.Aplicacao
         private async Task<RecuperacaoParalelaListagemDto> MapearParaDtoAsync(IEnumerable<AlunoPorTurmaResposta> alunosEol, IEnumerable<RetornoRecuperacaoParalela> alunosRecuperacaoParalela, long turmaId, long periodoId)
         {
             var alunos = alunosEol.Where(w => !alunosRecuperacaoParalela.Select(s => s.AlunoId).Contains(Convert.ToInt32(w.CodigoAluno))).ToList();
-            var respostas = await repositorioResposta.ListarRespostas();
-            var objetivos = await repositorioObjetivo.ListarObjetivos();
+            var respostas = await repositorioResposta.Listar(periodoId);
+            var objetivos = await repositorioObjetivo.Listar(periodoId);
             var eixos = await repositorioEixo.Listar(periodoId);
 
-            var alunosRecParalela = alunosRecuperacaoParalela.ToList();
+            var alunosRecParalela = alunosRecuperacaoParalela.Where(w => w.PeriodoRecuperacaoParalelaId == periodoId).ToList();
             alunos.ForEach(x => alunosRecParalela.Add(new RetornoRecuperacaoParalela { AlunoId = Convert.ToInt64(x.CodigoAluno) }));
             var retorno = alunosRecParalela.Select(s => new { s.AlunoId, s.Id }).Distinct();
             return new RecuperacaoParalelaListagemDto
@@ -70,6 +73,11 @@ namespace SME.SGP.Aplicacao
                     Alunos = retorno.Select(a => new RecuperacaoParalelaAlunoListagemDto
                     {
                         Id = a.Id,
+                        Concluido = servicoRecuperacaoParalela.ObterStatusRecuperacaoParalela(
+                            alunosRecuperacaoParalela
+                            .Where(w => w.Id == a.Id)
+                            .Count(),
+                            objetivos.Count()),
                         Nome = alunosEol.Where(w => Convert.ToInt32(w.CodigoAluno) == a.AlunoId).Select(s => s.NomeAluno).FirstOrDefault(),
                         NumeroChamada = alunosEol.Where(w => Convert.ToInt32(w.CodigoAluno) == a.AlunoId).Select(s => s.NumeroAlunoChamada).FirstOrDefault(),
                         CodAluno = a.AlunoId,
