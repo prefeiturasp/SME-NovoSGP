@@ -200,6 +200,7 @@ const Filtro = () => {
     }
   }, [
     anoLetivoSelecionado,
+    consideraHistorico,
     dispatch,
     dreSelecionada,
     modalidadeSelecionada,
@@ -361,8 +362,9 @@ const Filtro = () => {
   }, [anoLetivoSelecionado, consideraHistorico, dispatch]);
 
   useEffect(() => {
-    if (modalidades && modalidades.length === 1)
+    if (modalidades && modalidades.length === 1) {
       setModalidadeSelecionada(modalidades[0].valor);
+    }
   }, [modalidades]);
 
   useEffect(() => {
