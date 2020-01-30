@@ -70,8 +70,6 @@ namespace SME.SGP.Dominio.Servicos
             // Carrega dasdos da disciplina no EOL
             ConsisteDisciplina(long.Parse(compensacaoDto.DisciplinaId), compensacaoDto.DisciplinasRegenciaIds);
 
-            await ConsistirAlunos(compensacaoDto.Alunos, id, compensacaoDto.Bimestre);
-
             // Persiste os dados
             var compensacao = MapearEntidade(id, compensacaoDto);
             compensacao.TurmaId = turma.Id;
@@ -96,20 +94,6 @@ namespace SME.SGP.Dominio.Servicos
                 Cliente.Executar<IServicoCalculoFrequencia>(c => c.CalcularFrequenciaPorTurma(codigosAlunosCompensacao, periodo.PeriodoFim, compensacaoDto.TurmaId, compensacaoDto.DisciplinaId));
 
             Cliente.Executar<IServicoNotificacaoFrequencia>(c => c.NotificarCompensacaoAusencia(compensacao.Id));
-        }
-
-        private async Task ConsistirAlunos(IEnumerable<CompensacaoAusenciaAlunoDto> alunos, long compensacaoId, int bimestre)
-        {
-            var errosValidacao = new StringBuilder();
-            foreach(var aluno in alunos)
-            {
-                var compensacoes = await repositorioCompensacaoAusenciaAluno.ObterCompensacoesAluno(aluno.Id, compensacaoId, bimestre);
-                if (compensacoes != null && compensacoes.Any())
-                    errosValidacao.AppendLine($"O aluno [{aluno.Id}] já possui compensação no bimestre e não pode fazer parte de uma nova compensação no mesmo bimestre.");
-            }
-
-            if (errosValidacao.ToString() != string.Empty)
-                throw new NegocioException(errosValidacao.ToString());
         }
 
         private void ConsisteDisciplina(long disciplinaId, IEnumerable<string> disciplinasRegenciaIds)
