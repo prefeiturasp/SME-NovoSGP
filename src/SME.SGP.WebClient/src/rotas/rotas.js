@@ -504,7 +504,7 @@ rotas.set(`${RotasDto.AULA_DADA_AULA_PREVISTA}`, {
 
 rotas.set(`${RotasDto.REGISTRO_POA}`, {
   breadcrumbName: 'Registro POA',
-  menu: ['Diário de Classe'],
+  menu: ['Planejamento'],
   parent: '/',
   component: RegistroPOALista,
   exact: true,

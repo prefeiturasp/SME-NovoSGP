@@ -141,7 +141,7 @@ function RegistroPOALista() {
 
   return (
     <>
-      <Cabecalho pagina="Registro do Professor Orientador de Área" />
+      <Cabecalho pagina="Registro do professor orientador de área" />
       <Loader loading={loaderSecao}>
         <Card mx="mx-0">
           <ButtonGroup
