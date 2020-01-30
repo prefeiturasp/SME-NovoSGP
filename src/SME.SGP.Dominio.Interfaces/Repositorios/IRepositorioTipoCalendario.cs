@@ -7,6 +7,8 @@ namespace SME.SGP.Dominio.Interfaces
     {
         TipoCalendario BuscarPorAnoLetivoEModalidade(int anoLetivo, ModalidadeTipoCalendario modalidade);
 
+        IEnumerable<TipoCalendario> BuscarPorAnoLetivo(int anoLetivo);
+
         IEnumerable<TipoCalendario> ObterTiposCalendario();
 
         Task<bool> VerificarRegistroExistente(long id, string nome);
