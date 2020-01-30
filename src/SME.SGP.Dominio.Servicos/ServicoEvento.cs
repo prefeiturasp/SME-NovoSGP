@@ -75,7 +75,7 @@ namespace SME.SGP.Dominio.Servicos
             }
         }
 
-        public async Task<string> Salvar(Evento evento, bool alterarRecorrenciaCompleta = false, bool dataConfirmada = false)
+        public async Task<string> Salvar(Evento evento, bool alterarRecorrenciaCompleta = false, bool dataConfirmada = false, bool unitOfWorkJaEmUso = false)
         {
             ObterTipoEvento(evento);
 
@@ -121,7 +121,8 @@ namespace SME.SGP.Dominio.Servicos
 
             AtribuirNullSeVazio(evento);
 
-            unitOfWork.IniciarTransacao();
+            if (!unitOfWorkJaEmUso)
+                unitOfWork.IniciarTransacao();
 
             repositorioEvento.Salvar(evento);
 
@@ -130,7 +131,8 @@ namespace SME.SGP.Dominio.Servicos
             if (enviarParaWorkflow)
                 await PersistirWorkflowEvento(evento, devePassarPorWorkflowLiberacaoExcepcional);
 
-            unitOfWork.PersistirTransacao();
+            if (!unitOfWorkJaEmUso)
+                unitOfWork.PersistirTransacao();
 
             if (evento.EventoPaiId.HasValue && evento.EventoPaiId > 0 && alterarRecorrenciaCompleta)
             {
@@ -169,7 +171,7 @@ namespace SME.SGP.Dominio.Servicos
 
         public void SalvarRecorrencia(Evento evento, DateTime dataInicial, DateTime? dataFinal, int? diaDeOcorrencia, IEnumerable<DayOfWeek> diasDaSemana, PadraoRecorrencia padraoRecorrencia, PadraoRecorrenciaMensal? padraoRecorrenciaMensal, int repeteACada)
         {
-            if(evento.DataInicio.Date != evento.DataFim.Date)
+            if (evento.DataInicio.Date != evento.DataFim.Date)
             {
                 throw new NegocioException("A recorrência somente é permitida quando o evento possui data única.");
             }
@@ -434,6 +436,8 @@ namespace SME.SGP.Dominio.Servicos
         {
             var devePassarPorWorkflow = false;
 
+            if (evento.TipoEvento.Codigo == (int)TipoEvento.FechamentoDoBimestre)
+                return false;
             if (evento.TipoEvento.Codigo == (int)TipoEvento.LiberacaoExcepcional)
             {
                 evento.PodeCriarEventoLiberacaoExcepcional(usuario, dataConfirmada, periodos);
