@@ -176,6 +176,8 @@ const EventosLista = () => {
     usuario.possuiPerfilSmeOuDre,
   ]);
 
+  const { turmaSelecionada } = usuario;
+
   useEffect(() => {
     const obterListaEventos = async () => {
       const tiposEvento = await api.get('v1/calendarios/eventos/tipos/listar');
@@ -189,7 +191,12 @@ const EventosLista = () => {
 
     const consultaTipoCalendario = async () => {
       setCarregandoTipos(true);
-      const tiposCalendario = await api.get('v1/calendarios/tipos');
+      const anoAtual = window.moment().format('YYYY');
+      const tiposCalendario = await api.get(
+        usuario && turmaSelecionada && turmaSelecionada.anoLetivo
+          ? `v1/calendarios/tipos/anos-letivos/${turmaSelecionada.anoLetivo}`
+          : `v1/calendarios/tipos/anos-letivos/${anoAtual}`
+      );
 
       if (
         tiposCalendario &&
@@ -405,13 +412,13 @@ const EventosLista = () => {
               tipo: 'warning',
               id: 'AlertaPrincipal',
               mensagem:
-                'Para cadastrar ou listar eventos você precisa selecionar um tipo de calendário.',
+                'Para cadastrar ou listar eventos você precisa selecionar um tipo de calendário',
             }}
             className="mb-0"
           />
         </Grid>
       )}
-      <Cabecalho pagina="Evento do Calendário Escolar" />
+      <Cabecalho pagina="Eventos do calendário escolar" />
       <Card>
         <div className="col-md-12 d-flex justify-content-end pb-4">
           <Button
