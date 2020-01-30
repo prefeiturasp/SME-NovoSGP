@@ -2,20 +2,17 @@
 {
     public class Pendencia : EntidadeBase
     {
-        public Pendencia(string descricao, Fechamento fechamento, long fechamentoId, SituacaoPendencia situacao, TipoPendencia tipo, string titulo)
+        public Pendencia(string titulo, string descricao, long fechamentoId, TipoPendencia tipo = TipoPendencia.Fechamento)
         {
             if (string.IsNullOrWhiteSpace(titulo))
                 throw new NegocioException("O título é obrigatório.");
 
             if (string.IsNullOrWhiteSpace(descricao))
                 throw new NegocioException("A descrição é obrigatória.");
-            if (fechamento == null)
-                throw new NegocioException("O fehchamento é obrigatório.");
 
             Descricao = descricao;
-            Fechamento = fechamento;
             FechamentoId = fechamentoId;
-            Situacao = situacao;
+            Situacao = SituacaoPendencia.Pendente;
             Tipo = tipo;
             Titulo = titulo;
         }
