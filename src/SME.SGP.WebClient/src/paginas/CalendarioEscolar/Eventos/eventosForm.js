@@ -596,8 +596,15 @@ const EventosForm = ({ match }) => {
     setShowModalRecorrencia(true);
   };
 
+  const { turmaSelecionada } = usuarioStore;
+
   const onClickCopiarEvento = async () => {
-    const tiposCalendario = await api.get('v1/calendarios/tipos');
+    const anoAtual = window.moment().format('YYYY');
+    const tiposCalendario = await api.get(
+      usuarioStore && turmaSelecionada && turmaSelecionada.anoLetivo
+        ? `v1/calendarios/tipos/anos-letivos/${turmaSelecionada.anoLetivo}`
+        : `v1/calendarios/tipos/anos-letivos/${anoAtual}`
+    );
     if (
       tiposCalendario &&
       tiposCalendario.data &&
@@ -752,7 +759,7 @@ const EventosForm = ({ match }) => {
 
   return (
     <>
-      <Cabecalho pagina="Cadastro de Eventos no Calendário Escolar" />
+      <Cabecalho pagina="Cadastro de eventos no calendário escolar" />
       <ModalRecorrencia
         onCloseRecorrencia={onCloseRecorrencia}
         onSaveRecorrencia={onSaveRecorrencia}
