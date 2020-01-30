@@ -130,9 +130,6 @@ namespace SME.SGP.Dominio
             if (Inicio > Fim)
                 throw new NegocioException("A data início não pode ser maior que a data fim.");
 
-            if (TipoCalendario.AnoLetivo != Inicio.Year || TipoCalendario.AnoLetivo != Fim.Year)
-                throw new NegocioException("O ano não pode ser diferente do ano do Tipo de Calendário.");
-
             if (usuario.EhPerfilUE())
             {
                 if (!EhParaUe())
@@ -156,7 +153,7 @@ namespace SME.SGP.Dominio
 
         public void VerificaStatus()
         {
-            if (EhParaUe() && Inicio.Year < DateTime.Today.Year)
+            if (EhParaUe() && TipoCalendario.AnoLetivo < DateTime.Today.Year)
             {
                 Status = EntidadeStatus.AguardandoAprovacao;
             }
