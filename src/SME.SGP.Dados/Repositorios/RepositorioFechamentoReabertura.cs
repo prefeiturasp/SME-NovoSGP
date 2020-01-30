@@ -25,12 +25,17 @@ namespace SME.SGP.Dados.Repositorios
             database.Conexao.Execute("DELETE FROM FECHAMENTO_REABERTURA_BIMESTRE FRB WHERE FRB.FECHAMENTO_REABERTURA_ID = @id", new { id });
         }
 
+        public async Task ExcluirVinculoDeNotificacoesAsync(long fechamentoReaberturaId)
+        {
+            await database.Conexao.ExecuteAsync("DELETE FROM FECHAMENTO_REABERTURA_NOTIFICACAO WHERE FECHAMENTO_REABERTURA_ID = @fechamentoReaberturaId", new { fechamentoReaberturaId });
+        }
+
         public async Task<IEnumerable<FechamentoReabertura>> Listar(long tipoCalendarioId, long? dreId, long? ueId, long[] ids = null)
         {
             var query = new StringBuilder();
             MontaQueryCabecalhoCompleto(query);
             MontaQueryFromCompleto(query);
-            MontaQueryListarWhere(query, tipoCalendarioId, dreId, ueId);
+            MontaQueryListarWhere(query, tipoCalendarioId, dreId, ueId, ids: ids);
 
             var lookup = new Dictionary<long, FechamentoReabertura>();
 
@@ -51,7 +56,8 @@ namespace SME.SGP.Dados.Repositorios
             {
                 tipoCalendarioId,
                 dreId,
-                ueId
+                ueId,
+                ids
             });
 
             return lookup.Values;
@@ -149,14 +155,19 @@ namespace SME.SGP.Dados.Repositorios
             return lookup.Values.FirstOrDefault();
         }
 
-        public FechamentoReabertura ObterPorIdCompleto(long id)
+        public async Task<IEnumerable<FechamentoReaberturaNotificacao>> ObterNotificacoes(long id)
         {
-            throw new NotImplementedException();
+            return await database.Conexao.QueryAsync<FechamentoReaberturaNotificacao>("SELECT * FROM FECHAMENTO_REABERTURA_NOTIFICACAO FRN WHERE FRN.FECHAMENTO_REABERTURA_ID = @Id", new { id });
         }
 
-        public async Task SalvarBimestre(FechamentoReaberturaBimestre fechamentoReabertura)
+        public async Task SalvarBimestreAsync(FechamentoReaberturaBimestre fechamentoReabertura)
         {
             await database.Conexao.InsertAsync(fechamentoReabertura);
+        }
+
+        public async Task SalvarNotificacaoAsync(FechamentoReaberturaNotificacao fechamentoReaberturaNotificacao)
+        {
+            await database.Conexao.InsertAsync(fechamentoReaberturaNotificacao);
         }
 
         private void MontaQueryCabecalhoCompleto(StringBuilder query)

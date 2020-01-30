@@ -73,7 +73,7 @@ namespace SME.SGP.Dominio.Servicos.Teste
 
             repositorioFechamentoReabertura.Setup(a => a.Listar(fechamentoReabertura.TipoCalendarioId, null, null, null)).Returns(Task.FromResult(GeraFechamentosParaValidatarData(datas)));
 
-            await Assert.ThrowsAsync<NegocioException>(() => servicoFechamentoReabertura.Salvar(fechamentoReabertura));
+            await Assert.ThrowsAsync<NegocioException>(() => servicoFechamentoReabertura.SalvarAsync(fechamentoReabertura));
         }
 
         private IEnumerable<FechamentoReabertura> GeraFechamentosParaValidatarData(IEnumerable<(DateTime, DateTime)> datas)
