@@ -6,9 +6,9 @@ namespace SME.SGP.Aplicacao
 {
     public class ConsultasFechamento : IConsultasFechamento
     {
-        private readonly IServicoFechamento servicoFechamento;
+        private readonly IServicoPeriodoFechamento servicoFechamento;
 
-        public ConsultasFechamento(IServicoFechamento servicoFechamento)
+        public ConsultasFechamento(IServicoPeriodoFechamento servicoFechamento)
         {
             this.servicoFechamento = servicoFechamento ?? throw new System.ArgumentNullException(nameof(servicoFechamento));
         }

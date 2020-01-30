@@ -210,6 +210,7 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IServicoEventoMatricula, ServicoEventoMatricula>();
             services.TryAddScoped<IServicoAluno, ServicoAluno>();
             services.TryAddScoped<IServicoCompensacaoAusencia, ServicoCompensacaoAusencia>();
+            services.TryAddScoped<IServicoPeriodoFechamento, ServicoPeriodoFechamento>();
             services.TryAddScoped<IServicoFechamento, ServicoFechamento>();
         }
     }

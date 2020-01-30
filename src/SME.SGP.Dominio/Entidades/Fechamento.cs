@@ -4,7 +4,7 @@ namespace SME.SGP.Dominio
 {
     public class Fechamento : EntidadeBase
     {
-        public Fechamento(string disciplinaId, long periodoEscolarId, SituacaoFechamento situacao, long turmaId)
+        public Fechamento(long turmaId, string disciplinaId, long periodoEscolarId, SituacaoFechamento situacao = SituacaoFechamento.EmProcessamento)
         {
             DisciplinaId = disciplinaId;
             Pendencias = new List<Pendencia>();

@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Dominio.Servicos
 {
-    public class ServicoFechamento : IServicoFechamento
+    public class ServicoPeriodoFechamento : IServicoPeriodoFechamento
     {
         private readonly IRepositorioDre repositorioDre;
         private readonly IRepositorioEvento repositorioEvento;
@@ -26,7 +26,7 @@ namespace SME.SGP.Dominio.Servicos
         private readonly IServicoUsuario servicoUsuario;
         private readonly IUnitOfWork unitOfWork;
 
-        public ServicoFechamento(IRepositorioPeriodoFechamento repositorioFechamento,
+        public ServicoPeriodoFechamento(IRepositorioPeriodoFechamento repositorioFechamento,
                                  IServicoUsuario servicoUsuario,
                                  IRepositorioTipoCalendario repositorioTipoCalendario,
                                  IRepositorioPeriodoEscolar repositorioPeriodoEscolar,
@@ -155,7 +155,7 @@ namespace SME.SGP.Dominio.Servicos
         private static void ExecutaAlterarPeriodosComHierarquiaInferior(FechamentoDto fechamentoDto, PeriodoFechamento fechamento, bool ehSme)
         {
             if ((ehSme && !fechamento.DreId.HasValue) || (fechamento.DreId.HasValue && !fechamento.UeId.HasValue) && fechamentoDto.ConfirmouAlteracaoHierarquica)
-                Cliente.Executar<IServicoFechamento>(c => c.AlterarPeriodosComHierarquiaInferior(fechamento));
+                Cliente.Executar<IServicoPeriodoFechamento>(c => c.AlterarPeriodosComHierarquiaInferior(fechamento));
         }
 
         private static Notificacao MontaNotificacao(string nomeEntidade, string tipoEntidade, IEnumerable<PeriodoFechamentoBimestre> fechamentosBimestre, string codigoUe, string codigoDre)
