@@ -8,10 +8,13 @@ const ListaAlunos = props => {
   const { lista, idsAlunos, onSelectRow } = props;
 
   const montaExibicaoPercentual = (frequencia, dadosAluno) => {
+    const frequenciaArredondada = frequencia
+      ? Number(frequencia).toFixed(2)
+      : '';
     if (dadosAluno.alerta) {
       return (
         <>
-          {`${frequencia}% `}
+          {`${frequenciaArredondada}% `}
           <i
             className="fas fa-exclamation-triangle"
             style={{ color: '#b40c02' }}
@@ -19,7 +22,7 @@ const ListaAlunos = props => {
         </>
       );
     }
-    return frequencia ? `${frequencia}%` : '';
+    return `${frequenciaArredondada}%`;
   };
 
   const colunasListaAlunos = [
