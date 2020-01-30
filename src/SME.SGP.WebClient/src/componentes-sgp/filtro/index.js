@@ -6,7 +6,7 @@ import {
   selecionarTurma,
   turmasUsuario,
   removerTurma,
-  DefinirConsideraHistorico,
+  setarConsideraHistorico,
 } from '~/redux/modulos/usuario/actions';
 import Grid from '~/componentes/grid';
 import Button from '~/componentes/button';
@@ -121,8 +121,9 @@ const Filtro = () => {
   );
 
   const aoSelecionarHistorico = () => {
-    setAnoLetivoSelecionado();
-    dispatch(DefinirConsideraHistorico(!consideraHistorico));
+    setTextoAutocomplete('');
+    dispatch(removerTurma());
+    dispatch(setarConsideraHistorico(!consideraHistorico));
   };
 
   const obterDres = useCallback(
@@ -256,9 +257,7 @@ const Filtro = () => {
   const filtro = useSelector(state => state.filtro);
 
   useEffect(() => {
-    dispatch(removerTurma());
     dispatch(limparDadosFiltro());
-    setAnoLetivoSelecionado();
   }, [consideraHistorico, dispatch]);
 
   useEffect(() => {
