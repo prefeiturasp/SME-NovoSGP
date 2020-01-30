@@ -462,7 +462,7 @@ namespace SME.SGP.Dados.Repositorios
             query.AppendLine("et.ativo = true");
             query.AppendLine("and et.excluido = false");
             query.AppendLine("and e.excluido = false");
-            query.AppendLine("and e.status = 2");
+            query.AppendLine("and e.status in (1, 2)");
             query.AppendFormat(" and et.codigo in ({0}) ", string.Join(",", new int[] { (int)TipoEvento.LiberacaoExcepcional, (int)TipoEvento.ReposicaoNoRecesso }));
 
             //if (string.IsNullOrEmpty(dreId))
