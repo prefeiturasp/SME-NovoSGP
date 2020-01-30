@@ -13,11 +13,8 @@ namespace SME.SGP.Dados.Repositorios
 {
     public class RepositorioFechamentoReabertura : RepositorioBase<FechamentoReabertura>, IRepositorioFechamentoReabertura
     {
-        protected readonly ISgpContext database;
-
         public RepositorioFechamentoReabertura(ISgpContext database) : base(database)
         {
-            this.database = database;
         }
 
         public void ExcluirBimestres(long id)
