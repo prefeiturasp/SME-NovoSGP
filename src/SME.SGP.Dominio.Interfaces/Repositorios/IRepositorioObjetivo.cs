@@ -6,6 +6,6 @@ namespace SME.SGP.Dominio.Interfaces
 {
     public interface IRepositorioObjetivo : IRepositorioBase<Objetivo>
     {
-        Task<IEnumerable<ObjetivoDto>> ListarObjetivos();
+        Task<IEnumerable<ObjetivoDto>> Listar(long periodoId);
     }
 }

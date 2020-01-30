@@ -13,12 +13,13 @@ namespace SME.SGP.Dados.Repositorios
         {
         }
 
-        public async Task Excluir(long RecuperacaoParalelaId)
+        public async Task Excluir(long RecuperacaoParalelaId, long PeriodoId)
         {
             var query = new StringBuilder();
-            query.AppendLine("delete from  recuperacao_paralela_periodo_objetivo_resposta ");
-            query.AppendLine("where recuperacao_paralela_id = @RecuperacaoParalelaId  ");
-            await database.Conexao.QueryAsync<RetornoRecuperacaoParalela>(query.ToString(), new { RecuperacaoParalelaId });
+            query.AppendLine("delete from  recuperacao_paralela_periodo_objetivo_resposta");
+            query.AppendLine("where recuperacao_paralela_id = @RecuperacaoParalelaId");
+            query.AppendLine("and periodo_recuperacao_paralela_id = @PeriodoId");
+            await database.Conexao.QueryAsync<RetornoRecuperacaoParalela>(query.ToString(), new { RecuperacaoParalelaId, PeriodoId });
         }
     }
 }

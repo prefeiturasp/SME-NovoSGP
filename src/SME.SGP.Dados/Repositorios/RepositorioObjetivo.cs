@@ -13,17 +13,23 @@ namespace SME.SGP.Dados.Repositorios
         public RepositorioObjetivo(ISgpContext database) : base(database)
         { }
 
-        public async Task<IEnumerable<ObjetivoDto>> ListarObjetivos()
+        public async Task<IEnumerable<ObjetivoDto>> Listar(long periodoId)
         {
             StringBuilder query = new StringBuilder();
             query.AppendLine("select");
-            query.AppendLine("id,");
-            query.AppendLine("eixo_id,");
-            query.AppendLine("nome,");
-            query.AppendLine("descricao");
-            query.AppendLine("from objetivo");
-            query.AppendLine("where (dt_fim is null or dt_fim <= now())");
-            query.AppendLine("and excluido = false");
+            query.AppendLine("o.id,");
+            query.AppendLine("o.eixo_id,");
+            query.AppendLine("o.nome,");
+            query.AppendLine("o.descricao");
+            query.AppendLine("from objetivo o ");
+            query.AppendLine("inner join eixo e on o.eixo_id = e.id ");
+            query.AppendLine("where (o.dt_fim is null or o.dt_fim <= now())");
+            query.AppendLine("and o.excluido = false");
+            //se não for encaminhamento, não traz os específicos do período
+            if (periodoId != (int)PeriodoRecuperacaoParalela.Encaminhamento)
+                query.AppendLine("and e.recuperacao_paralela_periodo_id is null");
+            else
+                query.AppendLine("and o.EhEspecifico = false");
             var listaRetorno = await database.Conexao.QueryAsync<ObjetivoDto>(query.ToString());
 
             return listaRetorno;

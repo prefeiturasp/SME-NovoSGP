@@ -6,6 +6,6 @@ namespace SME.SGP.Dominio.Interfaces
 {
     public interface IRepositorioResposta : IRepositorioBase<Resposta>
     {
-        Task<IEnumerable<RespostaDto>> ListarRespostas();
+        Task<IEnumerable<RespostaDto>> Listar(long periodoId);
     }
 }
