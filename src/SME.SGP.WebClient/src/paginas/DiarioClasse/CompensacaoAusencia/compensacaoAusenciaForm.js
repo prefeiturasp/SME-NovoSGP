@@ -519,6 +519,8 @@ const CompensacaoAusenciaForm = ({ match }) => {
       const confirmado = await perguntaAoSalvar();
       if (confirmado) {
         validaAntesDoSubmit(form);
+      } else {
+        history.push('/diario-classe/compensacao-ausencia')
       }
     } else {
       history.push('/diario-classe/compensacao-ausencia');
@@ -739,8 +741,8 @@ const CompensacaoAusenciaForm = ({ match }) => {
           compensacoesParaCopiar={compensacoesParaCopiar}
         />
       ) : (
-        ''
-      )}
+          ''
+        )}
 
       <Cabecalho pagina="Cadastrar Compensação de Ausência" />
       <Card>
@@ -792,7 +794,7 @@ const CompensacaoAusenciaForm = ({ match }) => {
                     id="btn-salvar"
                     label={`${
                       idCompensacaoAusencia > 0 ? 'Alterar' : 'Cadastrar'
-                    }`}
+                      }`}
                     color={Colors.Roxo}
                     border
                     bold
@@ -937,8 +939,8 @@ const CompensacaoAusenciaForm = ({ match }) => {
                     alteradoEm={auditoria.alteradoEm}
                   />
                 ) : (
-                  ''
-                )}
+                    ''
+                  )}
                 <div className="row mt-3">
                   <div className="col-md-12">
                     <Button
@@ -951,22 +953,22 @@ const CompensacaoAusenciaForm = ({ match }) => {
                       disabled={novoRegistro || desabilitarCampos}
                     />
                     {compensacoesParaCopiar &&
-                    compensacoesParaCopiar.compensacaoOrigemId ? (
-                      <ListaCopiarCompensacoes>
-                        <div className="mb-1">
-                          Compensação será copiada para:
+                      compensacoesParaCopiar.compensacaoOrigemId ? (
+                        <ListaCopiarCompensacoes>
+                          <div className="mb-1">
+                            Compensação será copiada para:
                         </div>
-                        <div
-                          className="font-weight-bold"
-                          key={`bimestre-${shortid.generate()}`}
-                        >
-                          - Bimestre {compensacoesParaCopiar.bimestre}
-                        </div>
-                        {montarExibicaoCompensacoesCopiar()}
-                      </ListaCopiarCompensacoes>
-                    ) : (
-                      ''
-                    )}
+                          <div
+                            className="font-weight-bold"
+                            key={`bimestre-${shortid.generate()}`}
+                          >
+                            - Bimestre {compensacoesParaCopiar.bimestre}
+                          </div>
+                          {montarExibicaoCompensacoesCopiar()}
+                        </ListaCopiarCompensacoes>
+                      ) : (
+                        ''
+                      )}
                   </div>
                 </div>
               </Form>
