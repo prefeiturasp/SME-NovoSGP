@@ -18,9 +18,15 @@ import { setBreadcrumbManual } from '~/servicos/breadcrumb-services';
 import history from '~/servicos/history';
 import ServicoCalendarios from '~/servicos/Paginas/Calendario/ServicoCalendarios';
 import ServicoFechamentoReabertura from '~/servicos/Paginas/Calendario/ServicoFechamentoReabertura';
+import { verificaSomenteConsulta } from '~/servicos/servico-navegacao';
 
 const PeriodoFechamentoReaberturaForm = ({ match }) => {
   const usuarioStore = useSelector(store => store.usuario);
+
+  const permissoesTela =
+    usuarioStore.permissoes[RotasDto.PERIODO_FECHAMENTO_REABERTURA];
+  const [somenteConsulta, setSomenteConsulta] = useState(false);
+  const [desabilitarCampos, setDesabilitarCampos] = useState(false);
 
   const [listaTipoCalendarioEscolar, setListaTipoCalendarioEscolar] = useState(
     []
@@ -80,10 +86,21 @@ const PeriodoFechamentoReaberturaForm = ({ match }) => {
   };
 
   const onChangeCampos = () => {
-    if (!modoEdicao) {
+    if (!desabilitarCampos && !modoEdicao) {
       setModoEdicao(true);
     }
   };
+
+  useEffect(() => {
+    setSomenteConsulta(verificaSomenteConsulta(permissoesTela));
+  }, [permissoesTela]);
+
+  useEffect(() => {
+    const desabilitar = novoRegistro
+      ? somenteConsulta || !permissoesTela.podeIncluir
+      : somenteConsulta || !permissoesTela.podeAlterar;
+    setDesabilitarCampos(desabilitar);
+  }, [somenteConsulta, novoRegistro, permissoesTela]);
 
   useEffect(() => {
     async function consultaTipos() {
@@ -245,9 +262,9 @@ const PeriodoFechamentoReaberturaForm = ({ match }) => {
         'Cancelar'
       );
       if (confirmado) {
-        const excluir = await ServicoFechamentoReabertura.deletar(
-          idFechamentoReabertura
-        ).catch(e => erros(e));
+        const excluir = await ServicoFechamentoReabertura.deletar([
+          idFechamentoReabertura,
+        ]).catch(e => erros(e));
 
         if (excluir && excluir.status == 200) {
           sucesso(excluir.data);
@@ -317,8 +334,32 @@ const PeriodoFechamentoReaberturaForm = ({ match }) => {
     const cadastrado = await ServicoFechamentoReabertura.salvar(
       idFechamentoReabertura,
       prametrosParaSalvar
-    ).catch(e => erros(e));
-
+    ).catch(async e => {
+      if (e && e.response && e.response.status == 602) {
+        const mensagens =
+          e && e.response && e.response.data && e.response.data.mensagens;
+        if (mensagens) {
+          const alteracaoConfirmacao = await confirmar(
+            'Atenção',
+            '',
+            mensagens[0]
+          );
+          if (alteracaoConfirmacao) {
+            const cadastradoAlteracao = await ServicoFechamentoReabertura.salvar(
+              idFechamentoReabertura,
+              prametrosParaSalvar,
+              true
+            );
+            if (cadastradoAlteracao && cadastradoAlteracao.status == 200) {
+              sucesso(cadastradoAlteracao.data);
+              history.push(RotasDto.PERIODO_FECHAMENTO_REABERTURA);
+            }
+          }
+        }
+      } else {
+        erros(e);
+      }
+    });
     if (cadastrado && cadastrado.status == 200) {
       sucesso(cadastrado.data);
       history.push(RotasDto.PERIODO_FECHAMENTO_REABERTURA);
@@ -376,7 +417,11 @@ const PeriodoFechamentoReaberturaForm = ({ match }) => {
                     border
                     className="mr-2"
                     onClick={onClickExcluir}
-                    disabled={novoRegistro}
+                    disabled={
+                      somenteConsulta ||
+                      !permissoesTela.podeExcluir ||
+                      novoRegistro
+                    }
                   />
                   <Button
                     label={`${
@@ -387,6 +432,7 @@ const PeriodoFechamentoReaberturaForm = ({ match }) => {
                     bold
                     className="mr-2"
                     onClick={() => validaAntesDoSubmit(form)}
+                    disabled={desabilitarCampos}
                   />
                 </div>
                 <div className="col-sm-12 col-md-12 col-lg-12 col-xl-12 mb-2">
@@ -400,7 +446,11 @@ const PeriodoFechamentoReaberturaForm = ({ match }) => {
                         lista={listaTipoCalendarioEscolar}
                         valueOption="id"
                         valueText="descricaoTipoCalendario"
-                        disabled={!novoRegistro || desabilitarTipoCalendario}
+                        disabled={
+                          desabilitarCampos ||
+                          !novoRegistro ||
+                          desabilitarTipoCalendario
+                        }
                         placeholder="Selecione um tipo de calendário"
                         onChange={valor => onChangeTipoCalendario(valor, form)}
                       />
@@ -412,7 +462,7 @@ const PeriodoFechamentoReaberturaForm = ({ match }) => {
                     name="dreId"
                     label="Diretoria Regional de Educação (DRE)"
                     form={form}
-                    desabilitado={!novoRegistro}
+                    desabilitado={desabilitarCampos || !novoRegistro}
                     onChange={() => {
                       if (novoRegistro) {
                         onChangeCampos();
@@ -427,7 +477,7 @@ const PeriodoFechamentoReaberturaForm = ({ match }) => {
                     label="Unidade Escolar (UE)"
                     form={form}
                     url="v1/dres"
-                    desabilitado={!novoRegistro}
+                    desabilitado={desabilitarCampos || !novoRegistro}
                     onChange={() => {
                       if (novoRegistro) {
                         onChangeCampos();
@@ -443,7 +493,7 @@ const PeriodoFechamentoReaberturaForm = ({ match }) => {
                     type="textarea"
                     form={form}
                     onChange={onChangeCampos}
-                    desabilitado={!novoRegistro}
+                    desabilitado={desabilitarCampos || !novoRegistro}
                   />
                 </div>
                 <div className="col-sm-2 col-md-2 col-lg-2 col-xl-2 mb-2">
@@ -454,6 +504,7 @@ const PeriodoFechamentoReaberturaForm = ({ match }) => {
                     placeholder="DD/MM/AAAA"
                     formatoData="DD/MM/YYYY"
                     onChange={onChangeCampos}
+                    desabilitado={desabilitarCampos}
                   />
                 </div>
                 <div className="col-sm-2 col-md-2 col-lg-2 col-xl-2 mb-2">
@@ -464,6 +515,7 @@ const PeriodoFechamentoReaberturaForm = ({ match }) => {
                     placeholder="DD/MM/AAAA"
                     formatoData="DD/MM/YYYY"
                     onChange={onChangeCampos}
+                    desabilitado={desabilitarCampos}
                   />
                 </div>
                 <div className="col-sm-4 col-md-4 col-lg-4 col-xl-4 mb-2">
@@ -483,7 +535,7 @@ const PeriodoFechamentoReaberturaForm = ({ match }) => {
                     valueText="descricao"
                     placeholder="Selecione bimestre(s)"
                     multiple
-                    disabled={!novoRegistro}
+                    disabled={desabilitarCampos || !novoRegistro}
                   />
                 </div>
                 {exibirAuditoria ? (
@@ -500,17 +552,6 @@ const PeriodoFechamentoReaberturaForm = ({ match }) => {
             </Form>
           )}
         </Formik>
-
-        {exibirAuditoria ? (
-          <Auditoria
-            criadoEm={auditoria.criadoEm}
-            criadoPor={auditoria.criadoPor}
-            alteradoPor={auditoria.alteradoPor}
-            alteradoEm={auditoria.alteradoEm}
-          />
-        ) : (
-          ''
-        )}
       </Card>
     </>
   );
