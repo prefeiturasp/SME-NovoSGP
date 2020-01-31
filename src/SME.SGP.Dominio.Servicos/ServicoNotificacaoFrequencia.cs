@@ -225,7 +225,11 @@ namespace SME.SGP.Dominio.Servicos
                 // Carrega dados das turmas (ue e dre)
                 var turmas = new List<Turma>();
                 alunosAusentes.Select(a => a.TurmaId).Distinct().ToList()
-                    .ForEach(turmaId => turmas.Add(repositorioTurma.ObterTurmaComUeEDrePorId(turmaId)));
+                    .ForEach(turmaId =>
+                    {
+                        if (turmaId != null)
+                            turmas.Add(repositorioTurma.ObterTurmaComUeEDrePorId(turmaId));
+                    });
 
                 var percentualFrequenciaFund = double.Parse(repositorioParametrosSistema.ObterValorPorTipoEAno(TipoParametroSistema.CompensacaoAusenciaPercentualFund2));
                 var percentualFrequenciaRegencia = double.Parse(repositorioParametrosSistema.ObterValorPorTipoEAno(TipoParametroSistema.CompensacaoAusenciaPercentualRegenciaClasse));
