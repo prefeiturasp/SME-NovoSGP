@@ -38,6 +38,7 @@ import RegistroPOALista from '~/paginas/DiarioClasse/RegistroPOA/Lista';
 import RegistroPOAForm from '~/paginas/DiarioClasse/RegistroPOA/Form';
 import CompensacaoAusenciaLista from '~/paginas/DiarioClasse/CompensacaoAusencia/compensacaoAusenciaLista';
 import CompensacaoAusenciaForm from '~/paginas/DiarioClasse/CompensacaoAusencia/compensacaoAusenciaForm';
+import RelatorioPAPAcompanhamento from '~/paginas/Relatorios/PAP/Acompanhamento';
 
 const rotas = new Map();
 
@@ -562,6 +563,15 @@ rotas.set(`${RotasDto.COMPENSACAO_AUSENCIA}/editar/:id`, {
   tipo: RotasTipo.EstruturadaAutenticada,
   temPermissionamento: true,
   chavePermissao: RotasDto.COMPENSACAO_AUSENCIA,
+});
+
+rotas.set(RotasDto.RELATORIO_PAP_ACOMPANHAMENTO, {
+  breadcrumbName: 'Acompanhamento',
+  menu: ['Relatórios', 'PAP'],
+  parent: '/',
+  component: RelatorioPAPAcompanhamento,
+  exact: true,
+  tipo: RotasTipo.EstruturadaAutenticada, // temPermissionamento: true, // chavePermissao: RotasDto.REINICIAR_SENHA,
 });
 
 const rotasArray = [];

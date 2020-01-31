@@ -25,6 +25,7 @@ const RotasDto = {
   AULA_DADA_AULA_PREVISTA: '/diario-classe/aula-dada-aula-prevista',
   REGISTRO_POA: '/diario-classe/registro-poa',
   COMPENSACAO_AUSENCIA: '/diario-classe/compensacao-ausencia',
+  RELATORIO_PAP_ACOMPANHAMENTO: '/relatorios/pap/acompanhamento',
 };
 
 export default RotasDto;
