@@ -181,15 +181,15 @@ namespace SME.SGP.Aplicacao.Integracoes
             return alunos;
         }
 
-        public async Task<IEnumerable<DisciplinaResposta>> ObterDisciplinasPorCodigoTurma(string codigoTurma)
-        {
-            var url = $"funcionarios/turmas/{codigoTurma}/disciplinas";
-            return await ObterDisciplinas(url);
-        }
-
         public async Task<IEnumerable<DisciplinaResposta>> ObterDisciplinasParaPlanejamento(long codigoTurma, string login, Guid perfil)
         {
             var url = $"funcionarios/{login}/perfis/{perfil}/turmas/{codigoTurma}/disciplinas/planejamento";
+            return await ObterDisciplinas(url);
+        }
+
+        public async Task<IEnumerable<DisciplinaResposta>> ObterDisciplinasPorCodigoTurma(string codigoTurma)
+        {
+            var url = $"funcionarios/turmas/{codigoTurma}/disciplinas";
             return await ObterDisciplinas(url);
         }
 
@@ -577,19 +577,19 @@ namespace SME.SGP.Aplicacao.Integracoes
             return turmas;
         }
 
-        public async Task<bool> ProfessorPodePersistirTurma(string professorRf, string codigoTurma, DateTime data)
+        public async Task<bool> PodePersistirTurma(string professorRf, string codigoTurma, DateTime data)
         {
             httpClient.DefaultRequestHeaders.Clear();
 
             var dataString = data.ToString("s");
 
             var resposta = await httpClient.GetAsync($"professores/{professorRf}/turmas/{codigoTurma}/atribuicao/verificar/data?dataConsulta={dataString}");
-            if (resposta.IsSuccessStatusCode)
-            {
-                var json = resposta.Content.ReadAsStringAsync().Result;
-                return JsonConvert.DeserializeObject<bool>(json);
-            }
-            else throw new Exception("Não foi possível validar a atribuição do professor no EOL.");
+
+            if (!resposta.IsSuccessStatusCode)
+                throw new NegocioException("Não foi possível validar a atribuição do professor no EOL.");
+
+            var json = resposta.Content.ReadAsStringAsync().Result;
+            return JsonConvert.DeserializeObject<bool>(json);
         }
 
         public async Task ReiniciarSenha(string codigoRf)

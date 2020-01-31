@@ -6,6 +6,7 @@ using SME.SGP.Dto;
 using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -448,7 +449,7 @@ namespace SME.SGP.Dominio.Servicos
                 }
                 else
                 {
-                    if (await repositorioEvento.TemEventoNosDiasETipo(evento.DataInicio.Date, evento.DataFim.Date, TipoEvento.Recesso, evento.TipoCalendarioId, string.Empty, string.Empty))
+                    if (await repositorioEvento.TemEventoNosDiasETipo(evento.DataInicio.Date, evento.DataFim.Date, TipoEvento.ReposicaoNoRecesso, evento.TipoCalendarioId, string.Empty, string.Empty))
                     {
                         if (evento.TipoEvento.LocalOcorrencia == EventoLocalOcorrencia.UE)
                         {
@@ -460,7 +461,7 @@ namespace SME.SGP.Dominio.Servicos
                                 return devePassarPorWorkflow;
                             }
                             else
-                                throw new NegocioException("Não é possível cadastrar o evento.");
+                                throw new NegocioException($"O tipo de evento '{((TipoEvento)evento.TipoEvento.Codigo).GetAttribute<DisplayAttribute>().Name}' não pode ser cadastrado no recesso.");
                         }
                         else return devePassarPorWorkflow;
                     }
@@ -472,11 +473,20 @@ namespace SME.SGP.Dominio.Servicos
                         {
                             var temEventoSuspensaoAtividades = await repositorioEvento.TemEventoNosDiasETipo(evento.DataInicio.Date, evento.DataFim.Date, TipoEvento.SuspensaoAtividades, evento.TipoCalendarioId, string.Empty, string.Empty);
                             var temEventoFeriado = await repositorioEvento.TemEventoNosDiasETipo(evento.DataInicio.Date, evento.DataFim.Date, TipoEvento.Feriado, evento.TipoCalendarioId, string.Empty, string.Empty);
-                            if (temEventoFeriado || temEventoSuspensaoAtividades || evento.DataInicio.DayOfWeek == DayOfWeek.Saturday || evento.DataInicio.DayOfWeek == DayOfWeek.Sunday || evento.DataFim.DayOfWeek == DayOfWeek.Saturday || evento.DataFim.DayOfWeek == DayOfWeek.Sunday)
+                            if ((temEventoFeriado || temEventoSuspensaoAtividades || evento.DataInicio.DayOfWeek == DayOfWeek.Saturday || evento.DataInicio.DayOfWeek == DayOfWeek.Sunday || evento.DataFim.DayOfWeek == DayOfWeek.Saturday || evento.DataFim.DayOfWeek == DayOfWeek.Sunday) && evento.Letivo == EventoLetivo.Sim)
                             {
                                 if (temEventoLiberacaoExcepcional)
                                     return true;
-                                else throw new NegocioException("Não é possível cadastrar o evento.");
+                                else
+                                {
+                                    if (temEventoFeriado)
+                                        throw new NegocioException("Não é possível cadastrar o evento pois há feriado na data selecionada.");
+                                    else if (temEventoSuspensaoAtividades)
+                                        throw new NegocioException("Não é possível cadastrar o evento pois há evento de suspensão de atividades na data informada.");
+                                    else if(evento.DataInicio.DayOfWeek == DayOfWeek.Saturday || evento.DataInicio.DayOfWeek == DayOfWeek.Sunday)
+                                        throw new NegocioException("Não é possível cadastrar o evento letivo no final de semana.");
+
+                                }
                             }
                         }
                         else
@@ -491,7 +501,7 @@ namespace SME.SGP.Dominio.Servicos
                                     return true;
                                 else if (evento.TipoEvento.Codigo == (long)TipoEvento.Outros)
                                     return devePassarPorWorkflow;
-                                else throw new NegocioException("Não é possível cadastrar o evento.");
+                                else throw new NegocioException($"O tipo de evento '{((TipoEvento)evento.TipoEvento.Codigo).GetAttribute<DisplayAttribute>().Name}' não pode ser cadastrado fora do período escolar.");
                             }
                         }
                     }
